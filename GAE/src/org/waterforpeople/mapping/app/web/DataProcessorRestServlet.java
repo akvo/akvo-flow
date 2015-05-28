@@ -20,10 +20,7 @@ import static com.gallatinsystems.common.util.MemCacheUtils.containsKey;
 import static com.gallatinsystems.common.util.MemCacheUtils.initCache;
 import static com.gallatinsystems.common.util.MemCacheUtils.putObject;
 
-import java.io.BufferedInputStream;
-import java.net.URL;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
@@ -33,7 +30,6 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
-import java.util.zip.ZipInputStream;
 
 import javax.jdo.PersistenceManager;
 import javax.jdo.Query;
@@ -48,7 +44,6 @@ import org.waterforpeople.mapping.analytics.dao.SurveyQuestionSummaryDao;
 import org.waterforpeople.mapping.analytics.domain.SurveyQuestionSummary;
 import org.waterforpeople.mapping.app.web.dto.DataProcessorRequest;
 import org.waterforpeople.mapping.dao.AccessPointDao;
-import org.waterforpeople.mapping.dao.DeviceFilesDao;
 import org.waterforpeople.mapping.dao.QuestionAnswerStoreDao;
 import org.waterforpeople.mapping.dao.SurveyInstanceDAO;
 import org.waterforpeople.mapping.dataexport.SurveyReplicationImporter;
@@ -58,7 +53,6 @@ import org.waterforpeople.mapping.domain.QuestionAnswerStore;
 import org.waterforpeople.mapping.domain.SurveyInstance;
 
 import com.gallatinsystems.common.Constants;
-import com.gallatinsystems.device.domain.DeviceFiles;
 import com.gallatinsystems.framework.rest.AbstractRestApiServlet;
 import com.gallatinsystems.framework.rest.RestRequest;
 import com.gallatinsystems.framework.rest.RestResponse;
@@ -140,8 +134,57 @@ public class DataProcessorRestServlet extends AbstractRestApiServlet {
                     .getQuestionGroupId());
             QuestionGroup originalQuestionGroup = new QuestionGroupDao()
                     .getByKey(Long.valueOf(dpReq.getSource()));
+            boolean isCopyingSingleQuestionGroup = dpReq.getIsCopyingSingleQuestionGroup();
             if (originalQuestionGroup != null && newQuestionGroup != null) {
-                copyQuestionGroup(originalQuestionGroup, newQuestionGroup);
+                copyQuestionGroup(originalQuestionGroup, newQuestionGroup,
+                        isCopyingSingleQuestionGroup);
+            }
+        } else if (DataProcessorRequest.FIX_QUESTIONGROUP_DEPENDENCIES_ACTION
+                .equalsIgnoreCase(dpReq.getAction())) {
+            QuestionGroup newQuestionGroup = new QuestionGroupDao().getByKey(dpReq
+                    .getQuestionGroupId());
+            QuestionGroup originalQuestionGroup = new QuestionGroupDao()
+                    .getByKey(Long.valueOf(dpReq.getSource()));
+
+            if (originalQuestionGroup != null && newQuestionGroup != null) {
+                final List<Long> unresolvedDependentIds = dpReq.getDependentQuestionIds();
+                final List<Question> processedQuestionList = fixQuestionGroupDependencies(
+                        newQuestionGroup, originalQuestionGroup, unresolvedDependentIds);
+
+                // check all resolved else reschedule
+                List<Question> unresolvedDependencies = new ArrayList<Question>();
+                for (Question q : processedQuestionList) {
+                    if (q.getDependentQuestionId() == null) {
+                        unresolvedDependencies.add(q);
+                    }
+                }
+
+                if (!unresolvedDependencies.isEmpty()) {
+                    TaskOptions options = TaskOptions.Builder
+                            .withUrl("/app_worker/dataprocessor")
+                            .param(DataProcessorRequest.ACTION_PARAM, dpReq.getAction())
+                            .param(DataProcessorRequest.QUESTION_GROUP_ID_PARAM,
+                                    dpReq.getQuestionGroupId().toString())
+                            .param(DataProcessorRequest.SOURCE_PARAM, dpReq.getSource());
+                    for (Question q : unresolvedDependencies) {
+                        options.param(DataProcessorRequest.DEPENDENT_QUESTION_PARAM,
+                                Long.toString(q.getKey().getId()));
+                    }
+
+                    int retry = dpReq.getRetry();
+                    if (unresolvedDependencies.size() == unresolvedDependentIds.size()) {
+                        // in case none of dependencies were resolved include retry param
+                        options.param(DataProcessorRequest.RETRY_PARAM, Integer.toString(++retry));
+                    }
+                    if (retry < DataProcessorRequest.MAX_TASK_RETRIES) {
+                        Queue queue = QueueFactory.getQueue("dataUpdate");
+                        queue.add(options);
+                    } else {
+                        log.severe("Failed to resolve dependencies for copied QuestionGroup "
+                                + newQuestionGroup.getKey().getId() + " after multiple retries");
+                    }
+                }
+
             }
         } else if (DataProcessorRequest.IMPORT_REMOTE_SURVEY_ACTION
                 .equalsIgnoreCase(dpReq.getAction())) {
@@ -150,9 +193,6 @@ public class DataProcessorRestServlet extends AbstractRestApiServlet {
         } else if (DataProcessorRequest.RESCORE_AP_ACTION
                 .equalsIgnoreCase(dpReq.getAction())) {
             rescoreAp(dpReq.getCountry());
-        } else if (DataProcessorRequest.FIX_NULL_SUBMITTER_ACTION
-                .equalsIgnoreCase(dpReq.getAction())) {
-            fixNullSubmitter();
         } else if (DataProcessorRequest.FIX_DUPLICATE_OTHER_TEXT_ACTION
                 .equalsIgnoreCase(dpReq.getAction())) {
             fixDuplicateOtherText();
@@ -349,44 +389,6 @@ public class DataProcessorRestServlet extends AbstractRestApiServlet {
         }
     }
 
-    private void fixNullSubmitter() {
-        SurveyInstanceDAO instDao = new SurveyInstanceDAO();
-        List<SurveyInstance> instances = instDao.listInstanceBySubmitter(null);
-
-        if (instances != null) {
-            DeviceFilesDao dfDao = new DeviceFilesDao();
-            for (SurveyInstance inst : instances) {
-                DeviceFiles f = dfDao.findByInstance(inst.getKey().getId());
-                if (f != null) {
-                    try {
-                        URL url = new URL(f.getURI());
-                        BufferedInputStream bis = new BufferedInputStream(
-                                url.openStream());
-                        ZipInputStream zis = new ZipInputStream(bis);
-                        ArrayList<String> lines = TaskServlet
-                                .extractDataFromZip(zis);
-                        zis.close();
-
-                        if (lines != null) {
-                            for (String line : lines) {
-                                String[] parts = line.split("\t");
-                                if (parts.length > 5) {
-                                    if (parts[5] != null
-                                            && parts[5].trim().length() > 0) {
-                                        inst.setSubmitterName(parts[5]);
-                                        break;
-                                    }
-                                }
-                            }
-                        }
-                    } catch (Exception e) {
-                        log("Could not download zip: " + f.getURI());
-                    }
-                }
-            }
-        }
-    }
-
     @SuppressWarnings({
             "unchecked", "rawtypes"
     })
@@ -535,7 +537,6 @@ public class DataProcessorRestServlet extends AbstractRestApiServlet {
     private void copySurvey(Long copiedSurveyId, Long originalSurveyId) {
 
         final QuestionGroupDao qgDao = new QuestionGroupDao();
-        final Map<Long, Long> qMap = new HashMap<Long, Long>();
 
         final List<QuestionGroup> qgList = qgDao.listQuestionGroupBySurvey(originalSurveyId);
 
@@ -548,7 +549,7 @@ public class DataProcessorRestServlet extends AbstractRestApiServlet {
 
         log.log(Level.INFO, "Copying " + qgList.size() + " `QuestionGroup`");
         for (final QuestionGroup sourceQG : qgList) {
-            SurveyUtils.copyQuestionGroup(sourceQG, copiedSurveyId, qMap);
+            SurveyUtils.copyQuestionGroup(sourceQG, copiedSurveyId, false);
         }
 
         final SurveyDAO sDao = new SurveyDAO();
@@ -572,10 +573,11 @@ public class DataProcessorRestServlet extends AbstractRestApiServlet {
      *
      * @param questionGroup
      */
-    private void copyQuestionGroup(QuestionGroup sourceQuestionGroup, QuestionGroup newQuestionGroup) {
-        final Map<Long, Long> qMap = new HashMap<Long, Long>(); // TODO: remove this param as it
-                                                                // seems redundant.
+    private void copyQuestionGroup(QuestionGroup sourceQuestionGroup,
+            QuestionGroup newQuestionGroup, boolean isCopyingSingleQuestionGroup) {
+        final Map<Long, Long> qMap = new HashMap<Long, Long>();
         final QuestionDao qDao = new QuestionDao();
+        final QuestionGroupDao qgDao = new QuestionGroupDao();
 
         final Long surveyId = sourceQuestionGroup.getSurveyId();
 
@@ -610,11 +612,115 @@ public class DataProcessorRestServlet extends AbstractRestApiServlet {
                 "Fixing dependencies for " + dependentQuestionList.size()
                         + " `Question`");
 
-        for (Question nQ : dependentQuestionList) {
-            nQ.setDependentQuestionId(qMap.get(nQ.getDependentQuestionId()));
+        for (Question newDependentQuestion : dependentQuestionList) {
+            // for dependencies where both questions are in same group, they are resolved when each
+            // question is in different group, then id is set to null to be resolved later by a task
+            newDependentQuestion.setDependentQuestionId(qMap.get(newDependentQuestion
+                    .getDependentQuestionId()));
         }
 
         qDao.save(dependentQuestionList);
+
+        // set status of question group to READY
+        newQuestionGroup.setStatus(QuestionGroup.Status.READY);
+        qgDao.save(newQuestionGroup);
+
+        final List<Long> unresolvedDependentQuestionIds = new ArrayList<Long>();
+        for (Question q : dependentQuestionList) {
+            if (q.getDependentQuestionId() == null) {
+                if (isCopyingSingleQuestionGroup) {
+                    Question originalQuestion = qDao.getByKey(q.getSourceQuestionId());
+                    q.setDependentQuestionId(originalQuestion.getDependentQuestionId());
+                    qDao.save(q);
+                } else {
+                    unresolvedDependentQuestionIds.add(q.getKey().getId());
+                }
+            }
+        }
+
+        if (!unresolvedDependentQuestionIds.isEmpty()) {
+            // fire task to resolve unresolved dependencies
+            TaskOptions options = TaskOptions.Builder
+                    .withUrl("/app_worker/dataprocessor")
+                    .param(DataProcessorRequest.ACTION_PARAM,
+                            DataProcessorRequest.FIX_QUESTIONGROUP_DEPENDENCIES_ACTION)
+                    .param(DataProcessorRequest.QUESTION_GROUP_ID_PARAM,
+                            Long.toString(newQuestionGroup.getKey().getId()))
+                    .param(DataProcessorRequest.SOURCE_PARAM,
+                            Long.toString(sourceQuestionGroup.getKey().getId()));
+            for (Long id : unresolvedDependentQuestionIds) {
+                options.param(DataProcessorRequest.DEPENDENT_QUESTION_PARAM, id.toString());
+            }
+
+            Queue queue = QueueFactory.getQueue("dataUpdate");
+            queue.add(options);
+        }
+    }
+
+    /**
+     * Resolve dependencies for copied questions that are not in the same group as the question on
+     * which they are dependent
+     *
+     * @param newQuestionGroupId the copied question group
+     * @param oldQuestionGroupId the original question group from which this copy has been made
+     * @param dependentQuestionIdsList list of ids for questions in the copied group that are
+     *            dependent on questions *not* in the copied group
+     * @return returns the list of dependentQuestions that has been processed.
+     */
+    private List<Question> fixQuestionGroupDependencies(QuestionGroup newQuestionGroup,
+            QuestionGroup oldQuestionGroup, List<Long> dependentQuestionIdsList) {
+
+        log.info("Resolving dependencies for " + dependentQuestionIdsList.size() + " questions");
+        QuestionDao qDao = new QuestionDao();
+
+        final List<Question> unresolvedDependentQuestions = qDao
+                .listByKeys(dependentQuestionIdsList);
+        List<Question> originalDependentQuestions = new ArrayList<Question>();
+
+        for (Question q : unresolvedDependentQuestions) {
+            if (q.getSourceQuestionId() != null) {
+                Question source = qDao.getByKey(q.getSourceQuestionId());
+                if (source == null) {
+                    continue;
+                }
+                originalDependentQuestions.add(source);
+            }
+        }
+
+        // build mapping from unresolved qn-> original qn -> new dependency question
+        Map<Long, Question> originalQuestionsIdMap = new HashMap<Long, Question>();
+        List<Long> originalDependentQuestionIds = new ArrayList<Long>();
+        for (Question q : originalDependentQuestions) {
+            originalQuestionsIdMap.put(q.getKey().getId(), q);
+            if (q.getDependentQuestionId() != null) {
+                originalDependentQuestionIds.add(q.getDependentQuestionId());
+            }
+        }
+
+        List<Question> newQuestions = qDao.listBySourceQuestionId(originalDependentQuestionIds);
+
+        Map<Long, Question> newQuestionsSourceIdMap = new HashMap<Long, Question>();
+        for (Question q : newQuestions) {
+            if (q.getSourceQuestionId() != null) {
+                newQuestionsSourceIdMap.put(q.getSourceQuestionId(), q);
+            }
+        }
+
+        // resolve question dependencies
+        for (Question unresolved : unresolvedDependentQuestions) {
+            Question source = originalQuestionsIdMap.get(unresolved.getSourceQuestionId());
+            if (source == null) {
+                continue;
+            }
+
+            if (newQuestionsSourceIdMap.containsKey(source.getDependentQuestionId())) {
+                Question newQuestion = newQuestionsSourceIdMap.get(source.getDependentQuestionId());
+                unresolved.setDependentQuestionId(newQuestion.getKey().getId());
+            }
+        }
+
+        qDao.save(unresolvedDependentQuestions);
+        return unresolvedDependentQuestions;
     }
 
     /**
@@ -1441,34 +1547,28 @@ public class DataProcessorRestServlet extends AbstractRestApiServlet {
 
     private void deleteCascadeNodes(Long cascadeResourceId, Long parentNodeId) {
         final CascadeNodeDao dao = new CascadeNodeDao();
-        List<CascadeNode> nodes = Collections.emptyList();
+        List<CascadeNode> nodes = dao.listCascadeNodesByResourceAndParentId(cascadeResourceId,
+                parentNodeId == null ? 0l : parentNodeId);
 
-        if (parentNodeId == null) {
-            nodes = dao.list(Constants.ALL_RESULTS, QAS_PAGE_SIZE);
-        } else {
-            nodes = dao.listCascadeNodesByResourceAndParentId(cascadeResourceId, parentNodeId);
-        }
-
-        int count = nodes.size();
-
-        if (count == 0) {
-            log.log(Level.INFO, String.format(
-                    "No CascadeNode found with cascadeResourceId = %s , parentNodeId = %s",
-                    cascadeResourceId, parentNodeId));
+        if (nodes.isEmpty()) {
             return;
         }
 
-        if (parentNodeId == null) {
-            dao.delete(nodes);
-            if (count == QAS_PAGE_SIZE) {
-                scheduleCascadeNodeDeletion(cascadeResourceId, parentNodeId);
-            }
-        } else {
+        if (!areLeafNodes(dao, cascadeResourceId, nodes)) {
             for (CascadeNode node : nodes) {
                 scheduleCascadeNodeDeletion(cascadeResourceId, node.getKey().getId());
             }
-            dao.delete(nodes);
         }
+
+        dao.delete(nodes);
+    }
+
+    private boolean areLeafNodes(CascadeNodeDao dao, Long cascadeResourceId,
+            List<CascadeNode> nodes) {
+        CascadeNode firstNode = nodes.get(0);
+        List<CascadeNode> childNodes = dao.listCascadeNodesByResourceAndParentId(
+                cascadeResourceId, firstNode.getKey().getId());
+        return childNodes.size() == 0;
     }
 
     private void scheduleCascadeNodeDeletion(Long cascadeResourceId, Long parentNodeId) {

@@ -35,6 +35,10 @@
       {{#view FLOW.QuestionGroupItemView contentBinding="questionGroup"}}
         <div class="questionGroupBlock">
           <header><span class="qtnGroupHead">{{t _group}} {{view.content.order}}</span>
+
+          {{#if view.amCopying}} <div class="copyingSpinner">{{t _copying}} </div>
+          {{/if}}
+
             {{#if view.showQGroupNameEditField}}
               {{view Ember.TextField valueBinding="view.questionGroupName" size=45}} <a {{action "saveQuestionGroupNameEdit" target="this"}} class="smallBtn">{{t _save}}</a>
               <a {{action "cancelQuestionGroupNameEdit" target="this"}}>{{t _cancel}}</a>
@@ -43,16 +47,28 @@
             {{/if}}
             <nav class="qtnGroupMenu">
               <ul>
-                {{#if view.amVisible}}
-                  <li><a {{action "toggleVisibility" target="this"}} class="showQuestionGroup shown" id="">{{t _hide_questions}} </a></li>
+                 {{#if view.amVisible}}
+                   <li><a {{action "toggleVisibility" target="this"}} class="showQuestionGroup shown">{{t _hide_questions}} </a></li>
+                   <li><a {{action "doQGroupNameEdit" target="this"}} class="editQuestionGroup">{{t _edit_group_name}}</a></li>
+                   <li><a {{action confirm FLOW.dialogControl.delQG target="FLOW.dialogControl"}} class="deleteQuestionGroup">{{t _delete}}</a></li>
+                   <li><a {{action "doQGroupCopy" target="this"}} class="copyQuestionGroup">{{t _copy}}</a></li>
+                   <li><a {{action "doQGroupMove" target="this"}} class="moveQuestionGroup">{{t _move}}</a> </li>
                 {{else}}
-                  <li><a {{action "toggleVisibility" target="this"}} class="showQuestionGroup" id="">{{t _show_questions}} </a></li>
+                  {{#if view.amCopying}}
+                    <li><a {{action "toggleVisibility" target="this"}} class="showQuestionGroup disabled" style="pointer-events: none;">{{t _show_questions}} </a></li>
+                    <li><a {{action "doQGroupNameEdit" target="this"}} class="editQuestionGroup disabled" style="pointer-events: none;">{{t _edit_group_name}}</a></li>
+                    <li><a {{action confirm FLOW.dialogControl.delQG target="FLOW.dialogControl"}} class="deleteQuestionGroup disabled" style="pointer-events: none;" id="">{{t _delete}}</a></li>
+                    <li><a {{action "doQGroupCopy" target="this"}} class="copyQuestionGroup disabled" style="pointer-events: none;">{{t _copy}}</a></li>
+                    <li><a {{action "doQGroupMove" target="this"}} class="moveQuestionGroup disabled" style="pointer-events: none;">{{t _move}}</a></li>
+                  {{else}}
+                    <li><a {{action "toggleVisibility" target="this"}} class="showQuestionGroup">{{t _show_questions}} </a></li>
+                    <li><a {{action "doQGroupNameEdit" target="this"}} class="editQuestionGroup">{{t _edit_group_name}}</a></li>
+                    <li><a  {{action confirm FLOW.dialogControl.delQG target="FLOW.dialogControl"}} class="deleteQuestionGroup">{{t _delete}}</a></li>
+                    <li><a {{action "doQGroupCopy" target="this"}} class="copyQuestionGroup">{{t _copy}}</a></li>
+                    <li><a {{action "doQGroupMove" target="this"}} class="moveQuestionGroup">{{t _move}}</a></li>
+                    <li><label class="labelcheckbox"> {{view Ember.Checkbox checkedBinding="view.content.repeatable"}}Repeatable</label></li>
+                  {{/if}}
                 {{/if}}
-                <li><a {{action "doQGroupNameEdit" target="this"}} class="editQuestionGroup" id="">{{t _edit_group_name}}</a></li>
-                <li><a {{action confirm FLOW.dialogControl.delQG target="FLOW.dialogControl"}} class="deleteQuestionGroup">{{t _delete}}</a> </li>
-                <li><a {{action "doQGroupCopy" target="this"}} class="copyQuestionGroup" id="">{{t _copy}}</a></li>
-                <li><a {{action "doQGroupMove" target="this"}} class="moveQuestionGroup" id="">{{t _move}}</a> </li>
-                <li><label class="labelcheckbox"> {{view Ember.Checkbox checkedBinding="view.content.repeatable"}}Repeatable</label></li>
               </ul>
             </nav>
           </header>

@@ -188,6 +188,23 @@ FLOW.surveyGroupControl = Ember.ArrayController.create({
     ancestors.push("/"); // add the root level folder to ancestors list
     return ancestors;
   },
+
+  /* retrieve a survey group based on its id and check based on its
+  path whether or not a user is able to delete data in the group. Used
+  for monitoring groups */
+  userCanDeleteData: function(surveyGroupId) {
+    var surveyGroupPath;
+    var surveyGroups = FLOW.store.filter(FLOW.SurveyGroup, function(sg){
+        return sg.get('keyId') === surveyGroupId;
+    });
+
+    if(surveyGroups && surveyGroups.get('firstObject')) {
+        surveyGroupPath = surveyGroups.get('firstObject').get('path');
+        return FLOW.userControl.canDeleteData(surveyGroupPath);
+    } else {
+        return false; // need survey group and path, otherwise prevent delete
+    }
+  },
 });
 
 
@@ -558,7 +575,29 @@ FLOW.surveyControl = Ember.ArrayController.create({
 
   selectForm: function(evt) {
     FLOW.selectedControl.set('selectedSurvey', evt.context);
-  }
+    //  we don't allow copying or moving between forms
+    FLOW.selectedControl.set('selectedForMoveQuestionGroup',null);
+    FLOW.selectedControl.set('selectedForCopyQuestionGroup',null);
+    FLOW.selectedControl.set('selectedForMoveQuestion',null);
+    FLOW.selectedControl.set('selectedForCopyQuestion',null);
+  },
+
+  /* retrieve a survey and check based on its path whether the user
+  is allowed to delete survey instances related to the survey */
+  userCanDeleteData: function(surveyId) {
+    var survey;
+    this.get('content').forEach(function(item){
+        if(item.get('keyId') === surveyId) {
+            survey = item;
+        }
+    });
+
+    if(survey && survey.get('path')) {
+        return FLOW.userControl.canDeleteData(survey.get('path'))
+    } else {
+        return false; // need survey and survey path, otherwise prevent delete
+    }
+  },
 });
 
 
@@ -591,6 +630,12 @@ FLOW.questionGroupControl = Ember.ArrayController.create({
     }
     this.setFilteredContent();
   }.observes('FLOW.selectedControl.selectedSurvey'),
+
+  getQuestionGroup: function (id) {
+	  FLOW.store.findQuery(FLOW.QuestionGroup,{
+		  questionGroupId: id
+	  });
+  },
 
   // true if all items have been saved
   // used in models.js
@@ -656,6 +701,12 @@ FLOW.questionControl = Ember.ArrayController.create({
       }));
     }
   }.observes('FLOW.selectedControl.selectedSurvey'),
+
+  populateQuestionGroupQuestions: function (qgId) {
+        this.set('content', FLOW.store.findQuery(FLOW.Question, {
+          questionGroupId: qgId
+        }));
+    },
 
   // used for surveyInstances in data edit popup
   doSurveyIdQuery: function (surveyId) {
@@ -1342,6 +1393,12 @@ FLOW.translationControl = Ember.ArrayController.create({
     this.get('toBeDeletedTranslations').forEach(function (item) {
       _self.deleteRecord(item);
     });
+
+    // make survey unpublished
+    survey = FLOW.store.find(FLOW.Survey,surveyId);
+    if (!Ember.empty(survey)){
+        survey.set('status','NOT_PUBLISHED');
+    }
     FLOW.store.commit();
     this.set('toBeDeletedTranslations', []);
   }

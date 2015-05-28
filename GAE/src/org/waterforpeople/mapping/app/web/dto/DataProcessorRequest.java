@@ -16,7 +16,12 @@
 
 package org.waterforpeople.mapping.app.web.dto;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import javax.servlet.http.HttpServletRequest;
+
+import org.apache.commons.lang.StringUtils;
 
 import com.gallatinsystems.framework.rest.RestError;
 import com.gallatinsystems.framework.rest.RestRequest;
@@ -34,8 +39,8 @@ public class DataProcessorRequest extends RestRequest {
     public static final String COPY_SURVEY = "copySurvey";
     public static final String COPY_QUESTION_GROUP = "copyQuestionGroup";
     public static final String FIX_OPTIONS2VALUES_ACTION = "fixOptions2Values";
-    public static final String FIX_NULL_SUBMITTER_ACTION = "fixNullSubmitter";
     public static final String FIX_DUPLICATE_OTHER_TEXT_ACTION = "fixDuplicateOtherText";
+    public static final String FIX_QUESTIONGROUP_DEPENDENCIES_ACTION = "fixQuestionGroupDepencencies";
     public static final String DELETE_DUPLICATE_QAS = "deleteDuplicatedQAS";
     public static final String RECOMPUTE_LOCALE_CLUSTERS = "recomputeLocaleClusters";
     public static final String SURVEY_INSTANCE_SUMMARIZER = "surveyInstanceSummarizer";
@@ -46,12 +51,15 @@ public class DataProcessorRequest extends RestRequest {
     public static final String COUNTRY_PARAM = "country";
     public static final String SURVEY_ID_PARAM = "surveyId";
     public static final String QUESTION_GROUP_ID_PARAM = "questionGroupId";
+    public static final String IS_COPYING_SINGLE_QUESTION_GROUP_PARAM = "isCopyingSingleQuestionGroup";
     public static final String COUNTER_ID_PARAM = "summaryCounterId";
     public static final String SURVEY_INSTANCE_PARAM = "surveyInstanceId";
     public static final String QAS_ID_PARAM = "qasId";
     public static final String DELTA_PARAM = "delta";
     public static final String API_KEY_PARAM = "apiKey";
     public static final String OFFSET_PARAM = "offset";
+    public static final String DEPENDENT_QUESTION_PARAM = "depedentQuestionId";
+    public static final String RETRY_PARAM = "retry";
     public static final String CHANGE_LOCALE_TYPE_ACTION = "changeLocaleType";
     public static final String ADD_SURVEY_INSTANCE_TO_LOCALES_ACTION = "addSurveyInstanceToLocales";
     public static final String ADD_CREATION_SURVEY_ID_TO_LOCALE = "addCreationSurveyIdToLocale";
@@ -64,12 +72,14 @@ public class DataProcessorRequest extends RestRequest {
     public static final String DELETE_CASCADE_NODES = "deleteCascadeNodes";
     public static final String CASCADE_RESOURCE_ID = "cascadeResourceId";
     public static final String PARENT_NODE_ID = "parentNodeId";
+    public static final int MAX_TASK_RETRIES = 3;
 
     private String country;
     private String source;
     private Long surveyId;
     private Long surveyInstanceId;
     private Long questionGroupId;
+    private boolean isCopyingSingleQuestionGroup = false;
     private Long qasId;
     private Integer delta;
     private String apiKey;
@@ -77,6 +87,8 @@ public class DataProcessorRequest extends RestRequest {
     private Long summaryCounterId;
     private Long cascadeResourceId = 0L;
     private Long parentNodeId = null;
+    private List<Long> dependentQuestionIds;
+    private int retry = 0;
 
     @Override
     protected void populateFields(HttpServletRequest req) throws Exception {
@@ -98,6 +110,13 @@ public class DataProcessorRequest extends RestRequest {
                 addError(new RestError(RestError.BAD_DATATYPE_CODE,
                         RestError.BAD_DATATYPE_MESSAGE, QUESTION_GROUP_ID_PARAM
                                 + " must be a number"));
+            }
+        }
+        if (req.getParameter(IS_COPYING_SINGLE_QUESTION_GROUP_PARAM) != null) {
+            if ("true".equals(req.getParameter(IS_COPYING_SINGLE_QUESTION_GROUP_PARAM))) {
+                isCopyingSingleQuestionGroup = true;
+            } else {
+                isCopyingSingleQuestionGroup = false;
             }
         }
         if (req.getParameter(SURVEY_INSTANCE_PARAM) != null) {
@@ -144,6 +163,30 @@ public class DataProcessorRequest extends RestRequest {
                 addError(new RestError(RestError.BAD_DATATYPE_CODE,
                         RestError.BAD_DATATYPE_MESSAGE, COUNTER_ID_PARAM
                                 + " must be a number"));
+            }
+        }
+
+        if (req.getParameter(DEPENDENT_QUESTION_PARAM) != null) {
+            String[] idStrings = req.getParameterValues(DEPENDENT_QUESTION_PARAM);
+            dependentQuestionIds = new ArrayList<Long>();
+            try {
+                for (int i = 0; i < idStrings.length; i++) {
+                    if (StringUtils.isNotBlank(idStrings[i])) {
+                        dependentQuestionIds.add(Long.parseLong(idStrings[i]));
+                    }
+                }
+            } catch (NumberFormatException e) {
+                addError(new RestError(RestError.BAD_DATATYPE_CODE, RestError.BAD_DATATYPE_MESSAGE,
+                        DEPENDENT_QUESTION_PARAM + " must be a number"));
+            }
+        }
+
+        if (req.getParameter(RETRY_PARAM) != null) {
+            try {
+                retry = Integer.valueOf(req.getParameter(RETRY_PARAM));
+            } catch (NumberFormatException e) {
+                addError(new RestError(RestError.BAD_DATATYPE_CODE, RestError.BAD_DATATYPE_MESSAGE,
+                        RETRY_PARAM + " must be a number"));
             }
         }
 
@@ -210,6 +253,10 @@ public class DataProcessorRequest extends RestRequest {
         this.questionGroupId = questionGroupId;
     }
 
+    public boolean getIsCopyingSingleQuestionGroup() {
+        return isCopyingSingleQuestionGroup;
+    }
+
     public Long getQasId() {
         return qasId;
     }
@@ -266,5 +313,21 @@ public class DataProcessorRequest extends RestRequest {
 
     public void setParentNodeId(Long parentNodeId) {
         this.parentNodeId = parentNodeId;
+    }
+
+    public List<Long> getDependentQuestionIds() {
+        return dependentQuestionIds;
+    }
+
+    public void setDependentQuestionIds(List<Long> dependentQuestionIds) {
+        this.dependentQuestionIds = dependentQuestionIds;
+    }
+
+    public int getRetry() {
+        return retry;
+    }
+
+    public void setRetry(int retry) {
+        this.retry = retry;
     }
 }

@@ -49,6 +49,11 @@
 
 	</path>
 
+    <path id="translate.classpath">
+        <pathelement location="${app_lib_dir}/commons-io-2.4.jar" />
+        <pathelement path="${app_classes_dir}" />
+    </path>
+
 	<target name="check-files">
 	    <available file="build.properties" property="properties.file.exists" />
 	</target>
@@ -81,12 +86,6 @@
 			</condition>
 		</fail>
 		<copy file="${config}/appengine-web.xml" tofile="${app_dir}/appengine-web.xml" overwrite="true" verbose="true" />
-		<copy file="${config}/survey.properties" tofile="../WFPMapping/device/survey/res/raw/survey.properties" overwrite="true" verbose="true"/>
-		<copy file="${config}/index.html" tofile="war/index.html" overwrite="true" verbose="true" failonerror="false"/>
-		<copy file="${config}/images/wsp_logo.gif" tofile="war/images/wfp-logo.gif" overwrite="true" verbose="true" failonerror="false"/>
-		<copy file="${config}/images/wsp_logo.jpg" tofile="war/images/wfp_flow.jpg" overwrite="true" verbose="true" failonerror="false"/>
-		<copy file="${config}/images/wsp_logo.jpg" tofile="war/images/wfp_flow_header.jpg" overwrite="true" verbose="true" failonerror="false"/>
-		<copy file="${config}/placemarkExternalMap.vm" tofile="war/placemarkExternalMap.vm" overwrite="true" verbose="true" failonerror="false"/>
 		<loadfile property="app.id" srcFile="${app_dir}/appengine-web.xml">
 			<filterchain>
 				<linecontains>
@@ -127,7 +126,7 @@
 	<target name="translate" depends="compile" description="Generates the en.properties file from handlebars template and JS files">
     <java classname="services.TranslationGenerator" failonerror="true">
       <arg line="${dashboard} ${ui-strings}" />
-      <classpath refid="project.classpath" />
+      <classpath refid="translate.classpath" />
     </java>
   </target>
 
@@ -175,15 +174,7 @@
 		</exec>
 
                 <exec dir="../Dashboard/app/cljs" executable="lein" failonerror="true">
-                    <env key="DASHBOARD_TAB" value="users" />
-                    <arg value="clean" />
-                </exec>
-
-                <exec dir="../Dashboard/app/cljs" executable="lein" failonerror="true">
-                    <env key="DASHBOARD_TAB" value="users" />
-                    <arg value="cljsbuild" />
-                    <arg value="once" />
-                    <arg value="adv" />
+                    <arg value="build" />
                 </exec>
 
 		<exec dir="../" executable="git" outputproperty="app.version">

@@ -54,6 +54,7 @@ FLOW.ReportLoader = Ember.Object.create({
 
     criteria.opts.imgPrefix = FLOW.Env.photo_url_root;
     criteria.opts.uploadUrl = FLOW.Env.surveyuploadurl;
+    criteria.opts.appId = FLOW.Env.appId;
 
     if (opts) {
       Ember.keys(opts).forEach(function (k) {
@@ -68,11 +69,15 @@ FLOW.ReportLoader = Ember.Object.create({
     criteria.opts.lastCollection = '' + (exportType === 'RAW_DATA' && FLOW.selectedControl.get('selectedSurveyGroup').get('monitoringGroup') && !!FLOW.editControl.lastCollection);
     criteria.opts.useQuestionId = '' + !!FLOW.editControl.useQuestionId;
     var fromDate = FLOW.dateControl.get('fromDate');
-    if (fromDate !== null) {
+    if (fromDate == null) {
+      delete criteria.opts.from;
+    } else {
       criteria.opts.from = fromDate;
     }
     var toDate = FLOW.dateControl.get('toDate');
-    if (toDate !== null) {
+    if (toDate == null) {
+      delete criteria.opts.to;
+    } else {
       criteria.opts.to = toDate;
     }
     criteria.opts.email = FLOW.currentUser.email;
@@ -158,6 +163,8 @@ FLOW.ExportReportsAppletView = FLOW.View.extend({
     FLOW.selectedControl.set('surveySelection', FLOW.SurveySelection.create());
     FLOW.selectedControl.set('selectedSurvey', null);
     FLOW.editControl.set('useQuestionId', false);
+    FLOW.dateControl.set('fromDate', null);
+    FLOW.dateControl.set('toDate', null);
     FLOW.uploader.registerEvents();
   },
 
@@ -180,6 +187,10 @@ FLOW.ExportReportsAppletView = FLOW.View.extend({
       return;
     }
     FLOW.ReportLoader.load('RAW_DATA', sId);
+  },
+
+  toggleShowAdvancedSettings: function() {
+    this.set('showAdvancedSettings', !this.get('showAdvancedSettings'));
   },
 
   showRawTextFileExport: function () {

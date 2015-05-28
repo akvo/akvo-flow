@@ -64,7 +64,7 @@ FLOW.deviceControl = Ember.ArrayController.create({
 
 FLOW.devicesInGroupControl = Ember.ArrayController.create({
   content: null,
-  sortProperties: ['phoneNumber'],
+  sortProperties: ['combinedName'],
   sortAscending: true,
   setDevicesInGroup: function () {
     var deviceGroupId;

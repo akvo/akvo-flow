@@ -5,6 +5,80 @@ Read more about the [Akvo Platform](http://www.akvo.org/blog/?p=4822).
 
 Akvo FLOW Dashboard release notes
 ----
+#1.8.6
+Date: 14 May 2015
+
+# New and noteworthy
+* Add support for Tetum language [#1263]
+
+# Resolved issues
+* Support JSON as data serialization [#1247]
+* Data script for getting the number of data points and submitted forms [#1261]
+
+#1.8.5.2
+Date: 8 May 2015
+
+# Resolved issues
+* The wrong form is shown as registration form [#1267]
+
+#1.8.5.1
+Date: 27 April 2015
+
+# New and noteworthy
+* Date filtering on data cleaning tab. When downloading data via the data cleaning tab it’s now possible to select to and from dates [#1160]
+* Folders and surveys are now ordered alphabetically in dropdown selections [#1212]
+* Dependant questions are now resolved correctly when copying a survey [#1217, #1258]
+* The checkbox for using question id in raw data exports has moved under a new “Advanced Settings” section and the text describing the option has been clarified [#1232]
+* Comma characters are now disallowed as part of folder, survey and form titles [#1252]
+
+# Resolved issues
+* Log data change events [#1130]
+* Script to add new permissions for existing users [#1221]
+* Improvements to application build and deployments code [#1229]
+* Enable form publishing after translation changes [#1231]
+* Made the dashboard aware of the current instance application id [#1238]
+* Date fields are no longer pre-populated with previous selections in export reports and data cleaning tabs [#1248]
+* Ensure that `createdDateTime` and `lastUpdateDateTime` properties are set on copied questions [#1259]
+
+#1.8.4
+Date: 7 April 2015
+
+## New and noteworthy
+
+* Enable "All Folders" shortcut for a normal user when coupling a user role with a folder. An administrator who has access to "All Folders" is in turn able to assign the same to another user instead of assigning folders one-by-one as was the case previously [#1197]
+* When defining questions and help tooltip text, the user will get a *maximum length* warning if the contents of either one of these fields exceeds 500 characters in length. [#1184]
+* A new data deletion permission has been added. The permission to delete data can now be selectively applied per survey or per folder for each user [#1115]
+* When copying a question group, we now show UI feedback informing the user whether copying is still going on or has been completed. [#857]
+
+## Resolved issues
+* Truncate the display name if it is over 500 characters [#1213]
+* Disabeling creation of surveys at the first level of the survey tab [#1190]
+* Disable moving questions from one form to the other [#1187]
+* Delay cascade version increase until successfully pusblished [#1186]
+* Review data processing task failures [#1185]
+* Add confirmation to delete button cascade resource [#1170]
+* Make manual loading of survey in wrong FLOW app impossible [#1071]
+* Fix strange behaviour whilst editing question groups which have been copied within a survey [#857]
+* Show devices in alphabetical order in assignment screen [#834]
+* Export fails when NUMBER question contains invalid data [#337]
+
+#1.8.3
+Date: 12 March 2015
+
+## Resolved issues
+* Optimize cascade question deletion [#1177]
+* Fix cascade question export bug [#1168]
+* Hide Survey ID from dashboard [#1166]
+* Fix error when revoking a user's API Key [#1156]
+* Update to latest clojurescript & om releases [#1117]
+* Refactor projectMigration to a data script [#1150] 
+
+#1.8.2.1
+Date: 3 March 2015
+
+## Resolved issues
+* Fixed bug where deleting a cascadeResource deletes all the cascadeNodes [#1171]
+
 #1.8.2
 Date: 20 February 2015
 

@@ -264,7 +264,6 @@ FLOW.QuestionGroupItemTranslationView = FLOW.View.extend({
 
 
 FLOW.QuestionGroupItemView = FLOW.View.extend({
-  content: null,
   // question group content comes through binding in handlebars file
   zeroItem: false,
   renderView: false,
@@ -272,6 +271,11 @@ FLOW.QuestionGroupItemView = FLOW.View.extend({
   showQGroupNameEditField: false,
   questionGroupName: null,
   repeatable: false,
+  pollingTimer: null,
+
+  amCopying: function(){
+      return this.content.get('status') == "COPYING";
+  }.property('this.content.status'),
 
   amVisible: function () {
     var selected, isVis;
@@ -384,6 +388,7 @@ FLOW.QuestionGroupItemView = FLOW.View.extend({
         "name": Ember.String.loc('_new_group_please_change_name'),
         "order": insertAfterOrder + 1,
         "path": path,
+        "status": "READY",
         "surveyId": FLOW.selectedControl.selectedSurvey.get('keyId')
       });
 
@@ -490,8 +495,59 @@ FLOW.QuestionGroupItemView = FLOW.View.extend({
     FLOW.selectedControl.set('selectedForMoveQuestionGroup', null);
   },
 
+  ajaxCall: function(qgId){
+      self = this;
+      $.ajax({
+          url: '/rest/question_groups/' + qgId,
+          type: 'GET',
+          success: function(data) {
+            if (data.question_group.status == "READY") {
+                // reload this question group the Ember way, so the UI is updated
+                FLOW.questionGroupControl.getQuestionGroup(self.content.get('keyId'));
+                // load the questions inside this question group
+                FLOW.questionControl.populateQuestionGroupQuestions(self.content.get('keyId'));
+            } else {
+                // fire the remote check again
+                self.pollQuestionGroupCopy();
+            }
+          },
+          error: function() {
+            console.error("Error in checking ready status survey group copy");
+          }
+      });
+  },
+
+  pollQuestionGroupCopy: function(){
+      clearTimeout(this.pollingTimer);
+      self = this;
+      // if the status is 'copying', fire the remote check
+      if (this.get('amCopying')) {
+          this.pollingTimer = setTimeout(function () {
+              self.ajaxCall(self.content.get('keyId'));
+          },2000);
+      }
+  },
+
+  // cycle until our local question group has an id
+  // when this is done, start monitoring the status of the remote question group
+  pollQuestionGroupId: function(){
+      clearTimeout(this.pollingTimer);
+      if (this.get('amCopying')){
+          self = this;
+          this.pollingTimer = setTimeout(function () {
+              // if the question group has a keyId, we can start polling it remotely
+              if (!Ember.empty(self.content.get('keyId'))) {
+                  // we have an id and can start polling remotely
+                  self.pollQuestionGroupCopy();
+              } else {
+                  // we need to wait until we have an id
+                  self.pollQuestionGroupId();
+              }
+          },1000);
+      }
+  }.observes('this.amCopying'),
+
   // execute group copy to selected location
-  // TODO should this copy all questions in the group?
   doQGroupCopyHere: function () {
     var insertAfterOrder, path, sId, questionGroupsInSurvey;
     path = FLOW.selectedControl.selectedSurveyGroup.get('code') + "/" + FLOW.selectedControl.selectedSurvey.get('name');
@@ -520,6 +576,7 @@ FLOW.QuestionGroupItemView = FLOW.View.extend({
       "code": FLOW.selectedControl.selectedForCopyQuestionGroup.get('code'),
       "name": FLOW.selectedControl.selectedForCopyQuestionGroup.get('code'),
       "path": path,
+      "status": "COPYING",
       "surveyId": FLOW.selectedControl.selectedForCopyQuestionGroup.get('surveyId'),
       "sourceId":FLOW.selectedControl.selectedForCopyQuestionGroup.get('keyId'),
       "repeatable":FLOW.selectedControl.selectedForCopyQuestionGroup.get('repeatable')

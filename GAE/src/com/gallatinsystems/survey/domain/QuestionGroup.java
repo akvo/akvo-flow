@@ -1,5 +1,5 @@
 /*
- *  Copyright (C) 2010-2012 Stichting Akvo (Akvo Foundation)
+ *  Copyright (C) 2010-2015 Stichting Akvo (Akvo Foundation)
  *
  *  This file is part of Akvo FLOW.
  *
@@ -46,6 +46,11 @@ public class QuestionGroup extends BaseDomain {
     private Long surveyId;
     private Integer order;
     private Boolean repeatable;
+    private Status status = null;
+
+    public enum Status {
+        READY, COPYING
+    };
 
     public Integer getOrder() {
         return order;
@@ -124,6 +129,14 @@ public class QuestionGroup extends BaseDomain {
         translationMap.put(t.getLanguageCode(), t);
     }
     
+    public Status getStatus() {
+        return status;
+    }
+    
+    public void setStatus(Status status) {
+        this.status = status;
+    }
+    
     public void setRepeatable(Boolean repeatable) {
         this.repeatable = repeatable;
     }
@@ -131,5 +144,5 @@ public class QuestionGroup extends BaseDomain {
     public Boolean getRepeatable() {
         return repeatable;
     }
-
+    
 }

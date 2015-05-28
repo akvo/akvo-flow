@@ -1,5 +1,5 @@
 /*
- *  Copyright (C) 2010-2012 Stichting Akvo (Akvo Foundation)
+ *  Copyright (C) 2010-2015 Stichting Akvo (Akvo Foundation)
  *
  *  This file is part of Akvo FLOW.
  *
@@ -47,7 +47,6 @@ import com.gallatinsystems.user.domain.UserAuthorization;
 import com.google.appengine.api.datastore.Cursor;
 import com.google.appengine.api.datastore.Key;
 import com.google.appengine.api.datastore.KeyFactory;
-
 /**
  * This is a reusable data access object that supports basic operations (save, find by property,
  * list).
@@ -97,34 +96,12 @@ public class BaseDAO<T extends BaseDomain> {
      * @return
      */
     public <E extends BaseDomain> E save(E obj) {
-
         PersistenceManager pm = PersistenceFilter.getManager();
-        if (obj.getCreatedDateTime() == null) {
-            obj.setCreatedDateTime(new Date());
-        }
         obj.setLastUpdateDateTime(new Date());
-        obj = pm.makePersistent(obj);
-
-        return obj;
-    }
-
-    /**
-     * saves an object and then flushes the persistence manager. In most cases, this method should
-     * <b>NOT</b> be used (prefer the normal save method instead).
-     *
-     * @param <E>
-     * @param obj
-     * @return
-     */
-    public <E extends BaseDomain> E saveAndFlush(E obj) {
-        PersistenceManager pm = PersistenceFilter.getManager();
         if (obj.getCreatedDateTime() == null) {
-            obj.setCreatedDateTime(new Date());
+            obj.setCreatedDateTime(obj.getLastUpdateDateTime());
         }
-        obj.setLastUpdateDateTime(new Date());
         obj = pm.makePersistent(obj);
-        pm.flush();
-
         return obj;
     }
 
@@ -139,16 +116,13 @@ public class BaseDAO<T extends BaseDomain> {
     public <E extends BaseDomain> Collection<E> save(Collection<E> objList) {
         if (objList != null) {
             for (E item : objList) {
-
-                if (item.getCreatedDateTime() == null) {
-                    item.setCreatedDateTime(new Date());
-                }
-
                 item.setLastUpdateDateTime(new Date());
+                if (item.getCreatedDateTime() == null) {
+                    item.setCreatedDateTime(item.getLastUpdateDateTime());
+                }
             }
             PersistenceManager pm = PersistenceFilter.getManager();
             objList = pm.makePersistentAll(objList);
-
         }
         return objList;
     }
@@ -412,6 +386,26 @@ public class BaseDAO<T extends BaseDomain> {
     public List<T> listByKeys(Long[] ids) {
         if (ids == null) {
             return null;
+        }
+        final List<T> list = new ArrayList<T>();
+        for (Long id : ids) {
+            final T obj = getByKey(id);
+            if (obj != null) {
+                list.add(obj);
+            }
+        }
+        return list;
+    }
+
+    /**
+     * Retrieves a List of objects by key where the keys are represented by a Collection of Longs
+     *
+     * @param ids List of Long representing the keys of objects
+     * @return empty list if ids is null, otherwise a list of objects
+     */
+    public List<T> listByKeys(List<Long> ids) {
+        if (ids == null) {
+            return Collections.emptyList();
         }
         final List<T> list = new ArrayList<T>();
         for (Long id : ids) {

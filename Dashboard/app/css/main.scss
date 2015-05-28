@@ -278,13 +278,13 @@ pre {
     display: none;
     padding: 0.5em 1em;
     max-width: 15%;
-    background: rgb(255, 255, 165);
+    font-weight: bold;
+    background: lighten(rgb(255, 255, 165), 10%);
     -webkit-box-shadow: 0 0 2px rgb(0, 0, 0);
-    box-shadow: 0 0 2px rgb(0, 0, 0);
-    font-size: 1.5em;
-    font-family: Georgia, "Times New Roman", Times, serif;
-    line-height: 1.3em;
     -o-box-shadow: 0 0 2px rgb(0, 0, 0);
+    box-shadow: 0 0 2px rgb(0, 0, 0);
+    @include border-radius(5px);
+    z-index: 12999;
 }
 
 .loadSave {
@@ -1248,6 +1248,10 @@ tfoot tr {
     -o-border-radius: 0;
 }
 
+.disabled {
+    @include disabledMix;
+}
+
 .dataTabMenu {
     position: absolute;
     top: 30px;
@@ -1552,7 +1556,7 @@ th.action {
 }
 
 #assignSurveys .fieldSetWrap fieldset.formLeftPanel div.formSelectorList {
-    display:block;
+    display: block;
     width: 100%;
     margin-top: 30px;
     select {
@@ -1648,7 +1652,7 @@ th.action {
                 &.active {
                     background: rgb(0, 0, 0);
                     &:hover {
-                        background: rgb(0, 0, 0);    
+                        background: rgb(0, 0, 0);
                     }
                     a {
                         color: white;
@@ -1685,7 +1689,6 @@ th.action {
         }
     }
 }
-
 
 /* Survey styles
 --------------------------------------------- */
@@ -2271,12 +2274,14 @@ a.addSurvey {
     -webkit-transition: color 0.2s ease-in, background-color 0.2s ease-in;
     transition: color 0.2s ease-in, background-color 0.2s ease-in;
     &.noChanges {
-        background: rgba(32, 32, 36, 0.1) url(../images/IconPlusWhite.svg) 2px center no-repeat;
+        background: rgba(32, 32, 36, 0.05) url(../images/IconPlusWhite.svg) 2px center no-repeat;
         cursor: default;
         background-size: 25px 45px;
+        color: rgba(32, 32, 36, 0.1);
         &:hover {
-            background: rgba(32, 32, 36, 0.1) url(../images/IconPlusWhite.svg) 2px center no-repeat;
+            background: rgba(32, 32, 36, 0.05) url(../images/IconPlusWhite.svg) 2px center no-repeat;
             background-size: 25px 45px;
+            color: rgba(32, 32, 36, 0.1);
         }
     }
 }
@@ -3023,12 +3028,14 @@ label[for="surveyLanguage"] a.helpIcon {
         }
     }
 }
+
 div.published {
     .publishNewSurvey {
         pointer-events: none;
-        opacity:0.2;
+        opacity: 0.2;
     }
 }
+
 a.publishProjectBtn {
     text-transform: uppercase;
     background: $anchorLink url(../images/IconPublishWhite.svg) left center no-repeat;
@@ -3368,6 +3375,9 @@ nav.questionActionMenu a:hover {
     background: url(../images/IconShow.svg) left center no-repeat;
     text-align: left;
     padding-left: 17px;
+    &.disabled {
+        background: none;
+    }
 }
 
 .aQuestionSet header nav.qtnGroupMenu ul li a.showQuestionGroup:hover {
@@ -3905,9 +3915,10 @@ table.dataTable.notificationTable thead tr th a:visited {
     -webkit-align-items: flex-start;
     align-items: flex-start;
     select:first-child {
-        margin-left:1%;
+        margin-left: 1%;
     }
 }
+
 .filterData {
     h3 {
         margin: 0 0 5px 5px;
@@ -3926,7 +3937,7 @@ table.dataTable.notificationTable thead tr th a:visited {
 div.dataCollectedDate input {
     display: inline;
     height: 20px;
-    background:white url(../images/icon_cal.png) right center no-repeat;
+    background: white url(../images/icon_cal.png) right center no-repeat;
 }
 
 .filterData label {
@@ -3968,9 +3979,35 @@ div.dataCollectedDate {
     width: 50%;
     height: 20px;
     text-align: left;
+    @include responsive(small-max-screens) {
+        width: 100%;
+    }
+
     .rawDataReport & {
         float: none;
-        margin-top:15px;
+        margin-top: 35px;
+    }
+}
+
+.rawDataReport {
+    .exportAdvancedOpt {
+        display: block;
+        margin: 15px 0 35px 5px;
+        .showCollapse {
+            background: $anchorLink;
+            color: white;
+            text-transform: uppercase;
+            display: inline-block;
+            padding: 2px 7px 0px 7px;
+            display: inline-block;
+            margin: -2px 0 0 0;
+            border-radius: 3px;
+        }
+        label {
+            color:rgba($akvoBlack, 0.5);
+            margin-top:5px;
+            text-transform: none;
+        }
     }
 }
 
@@ -5100,19 +5137,22 @@ table.surveyTranslate .qHelpTooltip label.qTooltip + input {
             -webkit-flex-wrap: nowrap;
             -webkit-align-items: center;
             -webkit-align-content: center;
+            -webkit-justify-content: space-around;
+            justify-content: space-around;
             flex-direction: row;
             flex-wrap: nowrap;
             align-items: center;
             align-content: center;
             margin-top: 10px;
             li {
-                width: 33.33333%;
+                width: 49.75%;
                 text-align: center;
                 padding: 10px 0;
                 background: rgba(32, 32, 36, 0.2);
                 color: rgb(128, 130, 133);
                 text-transform: uppercase;
                 font-size: 1.5em;
+                flex-grow: 2;
                 @include noWrapTxt;
                 span {
                     display: block;
@@ -5283,7 +5323,7 @@ table.surveyTranslate .qHelpTooltip label.qTooltip + input {
                             a {
                                 color: $anchorLinkHover;
                             }
-                        }                 
+                        }
                     }
                 }
                 &.newFormTab {
@@ -5886,8 +5926,10 @@ a.importBtn {
 }
 
 .disabled {
+    cursor: default;
     color: rgba(128, 128, 128, 0.1);
     &:hover {
+        cursor: default;
         color: rgba(128, 128, 128, 0.1);
     }
 }
@@ -6014,4 +6056,17 @@ li.disable {
     .resumable-progress {
         margin-top: 15px;
     }
+}
+
+.copyingSpinner {
+    position: absolute;
+    left: 45%;
+    z-index: 9999999;
+    border-radius: 3px;
+    box-shadow: 0 5px 8px rgba(212, 212, 212, 0.5);
+    padding: 5px 3px 5px 25px;
+    background: rgb(248, 248, 248) url(../images/loader.gif) 5px center no-repeat;
+    color: rgb(252, 159, 0);
+    font-weight: bold;
+    font-size: 1.2em;
 }

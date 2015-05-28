@@ -23,7 +23,7 @@
             [org.akvo.flow.dashboard.ajax-helpers :refer (default-ajax-config)]
             [om.core :as om :include-macros true]
             [sablono.core :as html :refer-macros (html)]
-            [ajax.core :refer (ajax-request GET POST PUT DELETE)])
+            [ajax.core :refer (url-request-format GET POST PUT DELETE)])
   (:require-macros [org.akvo.flow.dashboard.t :refer (t>)]))
 
 (defn panel-header-section [{:keys [user close!]} owner]
@@ -117,6 +117,11 @@
     (assert (integer? permission-list))
     (zero? permission-list)))
 
+(defn admin? [user]
+  (let [permission-list (aget user "permissionList")]
+    (assert (integer? permission-list))
+    (= permission-list 10)))
+
 (defn survey-or-folder [s]
   (let [name (get s "name")
         type (get s "projectType")]
@@ -129,7 +134,7 @@
     (concat (sort-by #(get % "name") folders)
             (sort-by #(get % "name") surveys))))
 
-(defn roles-and-permissions [{:keys [user roles-store projects-store user-auth-store]} owner]
+(defn roles-and-permissions [{:keys [user users-store roles-store projects-store user-auth-store]} owner]
   (reify
     om/IInitState
     (init-state [this]
@@ -167,8 +172,16 @@
                                 "projectType")
                            "PROJECT_FOLDER"))
                 [:div.form-group
-                 (let [projects (if (and (empty? selected-folders)
-                                         (super-admin? (current-user)))
+                 (let [current-user (current-user)
+                       projects (if (and (empty? selected-folders)
+                                         (or (super-admin? current-user)
+                                             (and (admin? current-user)
+                                                  (let [current-user-id (store/get-user-id-by-email users-store
+                                                                                                    (aget current-user "email"))
+                                                        object-paths (into #{} (map #(get % "objectPath")
+                                                                                    (user-auth-store/get-by-user-id user-auth-store
+                                                                                                                    current-user-id)))]
+                                                    (contains? object-paths "/")))))
                                   (cons {"name" (t> _all_folders) "keyId" 0 "projectType" "PROJECT_FOLDER"}
                                         (projects-store/get-projects projects-store nil))
                                   (projects-store/get-projects projects-store (get (peek selected-folders) "keyId")))]
@@ -225,7 +238,8 @@
 (defn revoke-apikeys [owner user]
   (DELETE (str "/rest/users/" (get user "keyId") "/apikeys")
           (merge default-ajax-config
-                 {:handler (fn [response]
+                 {:format (url-request-format)
+                  :handler (fn [response]
                              (om/set-state! owner {:access-key nil :secret nil})
                              (dispatch :new-access-key {:access-key nil :user user}))})))
 
@@ -267,7 +281,7 @@
                                                    (revoke-apikeys owner user))}
            (b/icon :ban-circle) " " (t> _revoke)]]]]))))
 
-(defn user-details [{:keys [close! user projects-store roles-store user-auth-store]} owner]
+(defn user-details [{:keys [close! user users-store projects-store roles-store user-auth-store]} owner]
   (reify
     om/IRender
     (render [this]
@@ -284,7 +298,8 @@
         (when (get user "keyId")
           [:div
            (om/build roles-and-permissions {:user user
-                                           :projects-store projects-store
-                                           :roles-store roles-store
-                                           :user-auth-store user-auth-store})
+                                            :users-store users-store
+                                            :projects-store projects-store
+                                            :roles-store roles-store
+                                            :user-auth-store user-auth-store})
           (om/build api-keys-section {:user user})])]))))

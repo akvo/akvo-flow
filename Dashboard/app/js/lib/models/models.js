@@ -152,6 +152,7 @@ FLOW.QuestionGroup = FLOW.BaseModel.extend({
   path: DS.attr('string'),
   code: DS.attr('string'),
   surveyId: DS.attr('number'),
+  status: DS.attr('string'),
   sourceId: DS.attr('number', {
     defaultValue: null
   }),

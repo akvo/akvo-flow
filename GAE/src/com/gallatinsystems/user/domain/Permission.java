@@ -39,7 +39,8 @@ public enum Permission {
 
     // there is no GAE URI for data export / import as this is handled by FLOW services so we use
     // empty strings as placeholders
-    DATA_CLEANING("", "");
+    DATA_CLEANING("", ""),
+    DATA_DELETE("DELETE", "/rest/survey_instances");
 
     private final String httpMethod;
     private final String uriPrefix;

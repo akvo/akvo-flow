@@ -153,6 +153,7 @@ FLOW.dialogControl = Ember.Object.create({
   delSI: "delSI",
   delSI2: "delSI2",
   delSL: "delSL",
+  delCR: "delCR",
   makeMonitor: "makeMonitor",
   delForm: "delForm",
   showDialog: false,
@@ -248,6 +249,12 @@ FLOW.dialogControl = Ember.Object.create({
       this.set('showDialog', true);
       break;
 
+    case "delCR":
+        this.set('header', Ember.String.loc('_delete_cascade_resource_header'));
+        this.set('message', Ember.String.loc('_delete_cascade_resource_text'));
+        this.set('showDialog', true);
+      break;
+
     default:
     }
   },
@@ -320,6 +327,11 @@ FLOW.dialogControl = Ember.Object.create({
       this.set('showDialog', false);
       FLOW.surveyControl.deleteForm();
       break;
+      
+    case "delCR":
+        this.set('showDialog', false);
+        view.deleteResource(view, arguments);
+        break;
 
     default:
     }

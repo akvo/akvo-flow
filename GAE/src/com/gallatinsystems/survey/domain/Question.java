@@ -79,6 +79,11 @@ public class Question extends BaseDomain {
     private Boolean localeNameFlag;
     private Boolean localeLocationFlag;
 
+    /*
+     * ID of the question from which this question was originally copied.
+     */
+    private Long sourceQuestionId;
+
     /**
      * Geoshape question options
      */
@@ -434,8 +439,16 @@ public class Question extends BaseDomain {
     public void setAllowPolygon(Boolean allowPolygon) {
         this.allowPolygon = allowPolygon;
     }
-    
+
     public Boolean getAllowPolygon() {
         return allowPolygon;
+    }
+
+    public Long getSourceQuestionId() {
+        return sourceQuestionId;
+    }
+
+    public void setSourceQuestionId(Long originalQuestionId) {
+        this.sourceQuestionId = originalQuestionId;
     }
 }
