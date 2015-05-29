@@ -61,10 +61,8 @@ public class PlacemarkRestService {
     @RequestMapping(method = RequestMethod.GET, value = "")
     @ResponseBody
     public Map<String, Object> listPlaceMarks(
-            @RequestParam(value = "bbString", defaultValue = "")
-            String boundingBoxString,
-            @RequestParam(value = "gcLevel", defaultValue = "")
-            Integer gcLevel) {
+            @RequestParam(value = "bbString", defaultValue = "") String boundingBoxString,
+            @RequestParam(value = "gcLevel", defaultValue = "") Integer gcLevel) {
         // assume we are on the public map
         Boolean allPlacemarks = false;
         log.log(Level.FINE, "received request for: " + boundingBoxString + ", " + gcLevel);
@@ -85,8 +83,7 @@ public class PlacemarkRestService {
 
     @RequestMapping(method = RequestMethod.GET, value = "/{id}")
     @ResponseBody
-    public Map<String, Object> placeMarkDetails(@PathVariable("id")
-    Long id) {
+    public Map<String, Object> placeMarkDetails(@PathVariable("id") Long id) {
         return getPlacemarkResponseById(id);
     }
 

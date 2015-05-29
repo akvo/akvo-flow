@@ -81,6 +81,10 @@ public class InstanceConfigurator {
         if (enableChangeEvents == null) {
             enableChangeEvents = "false";
         }
+        String useGoogleMapsLayers = cli.getOptionValue("gm");
+        if (useGoogleMapsLayers == null) {
+            useGoogleMapsLayers = "false";
+        }
         String alias = cli.getOptionValue("a");
         String emailFrom = cli.getOptionValue("ef");
         String emailTo = cli.getOptionValue("et");
@@ -224,6 +228,7 @@ public class InstanceConfigurator {
         webData.put("flowServices", flowServices);
         webData.put("eventNotification", eventNotification);
         webData.put("enableChangeEvents", enableChangeEvents);
+        webData.put("useGoogleMapsLayers", useGoogleMapsLayers);
         webData.put("apiKey", apiKey);
         webData.put("emailFrom", emailFrom);
         webData.put("emailTo", emailTo);
@@ -299,6 +304,13 @@ public class InstanceConfigurator {
         enableChangeEvents.setArgs(1);
         enableChangeEvents.setRequired(false);
 
+        Option useGoogleMapsLayers = new Option("gm",
+                "true if the instance should use Google Maps layers instead of Mapbox");
+
+        useGoogleMapsLayers.setLongOpt("useGoogleMapsLayers");
+        useGoogleMapsLayers.setArgs(1);
+        useGoogleMapsLayers.setRequired(false);
+
         Option outputFolder = new Option("o",
                 "Output folder for configuration files");
         outputFolder.setLongOpt("outFolder");
@@ -327,6 +339,7 @@ public class InstanceConfigurator {
         options.addOption(flowServices);
         options.addOption(eventNotification);
         options.addOption(enableChangeEvents);
+        options.addOption(useGoogleMapsLayers);
         options.addOption(alias);
         options.addOption(signingKey);
 
