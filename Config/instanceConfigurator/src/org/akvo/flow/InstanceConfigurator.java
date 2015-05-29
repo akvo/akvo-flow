@@ -85,6 +85,10 @@ public class InstanceConfigurator {
         if (useGoogleMapsLayers == null) {
             useGoogleMapsLayers = "false";
         }
+        String googleMapsRegionBias = cli.getOptionValue("rb");
+        if (googleMapsRegionBias == null) {
+            googleMapsRegionBias = "";
+        }
         String alias = cli.getOptionValue("a");
         String emailFrom = cli.getOptionValue("ef");
         String emailTo = cli.getOptionValue("et");
@@ -229,6 +233,7 @@ public class InstanceConfigurator {
         webData.put("eventNotification", eventNotification);
         webData.put("enableChangeEvents", enableChangeEvents);
         webData.put("useGoogleMapsLayers", useGoogleMapsLayers);
+        webData.put("googleMapsRegionBias", googleMapsRegionBias);
         webData.put("apiKey", apiKey);
         webData.put("emailFrom", emailFrom);
         webData.put("emailTo", emailTo);
@@ -306,10 +311,15 @@ public class InstanceConfigurator {
 
         Option useGoogleMapsLayers = new Option("gm",
                 "true if the instance should use Google Maps layers instead of Mapbox");
-
         useGoogleMapsLayers.setLongOpt("useGoogleMapsLayers");
         useGoogleMapsLayers.setArgs(1);
         useGoogleMapsLayers.setRequired(false);
+
+        Option googleMapsRegionBias = new Option("rb",
+                "Region bias code (only available for google maps layers)");
+        googleMapsRegionBias.setLongOpt("googleMapsRegionBias");
+        googleMapsRegionBias.setArgs(1);
+        googleMapsRegionBias.setRequired(false);
 
         Option outputFolder = new Option("o",
                 "Output folder for configuration files");

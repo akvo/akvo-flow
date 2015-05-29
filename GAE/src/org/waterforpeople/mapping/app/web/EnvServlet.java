@@ -63,6 +63,7 @@ public class EnvServlet extends HttpServlet {
         properties.add("showExternalSourcesFeature");
         properties.add("appId");
         properties.add("useGoogleMapsLayers");
+        properties.add("googleMapsRegionBias");
     }
 
     @Override
@@ -111,6 +112,10 @@ public class EnvServlet extends HttpServlet {
 
         if (props.get("useGoogleMapsLayers") == null) {
             props.put("useGoogleMapsLayers", "false");
+        }
+
+        if (props.get("googleMapsRegionBias") == null) {
+            props.put("googleMapsRegionBias", "");
         }
 
         final BaseDAO<Country> countryDAO = new BaseDAO<Country>(Country.class);
