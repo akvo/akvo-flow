@@ -16,8 +16,7 @@
     <!-- Stylesheets -->
     <link rel="stylesheet" href="css/screen.css" media="screen,projection" />
     <script src='//api.tiles.mapbox.com/mapbox.js/v1.6.1/mapbox.js'></script>
-    <script src="//maps.google.com/maps/api/js?v=3.2&sensor=false"></script>
-    <script src="/vendorjs/js/vendor/Google.js"></script>
+
     <link href='//api.tiles.mapbox.com/mapbox.js/v1.6.1/mapbox.css' rel='stylesheet' />
     <link href="//fonts.googleapis.com/css?family=Open+Sans:400,300,600,700,400italic,600italic,300italic|Montserrat:400,700|Raleway|Dancing+Script:400,700" rel="stylesheet" type="text/css">
 </head>
@@ -47,6 +46,13 @@
     <script>
         loader.require('akvo-flow/main');
     </script>
+    <script>
+      var regionBias = FLOW.Env.googleMapsRegionBias;
+      var region = regionBias ? '&region=' + regionBias : '';
+      document.write('<script src="//maps.google.com/maps/api/js?v=3.2&sensor=false' + region + '"><\/script>');
+    </script>
+    <script src="/vendorjs/js/vendor/Google.js"></script>
+
     <script src="/vendorjs/js/vendor/iframeResizer.min.js"></script>
     <script src="js/flowDashboard.js"></script>
 
