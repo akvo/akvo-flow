@@ -350,6 +350,7 @@ public class InstanceConfigurator {
         options.addOption(eventNotification);
         options.addOption(enableChangeEvents);
         options.addOption(useGoogleMapsLayers);
+        options.addOption(googleMapsRegionBias);
         options.addOption(alias);
         options.addOption(signingKey);
 
