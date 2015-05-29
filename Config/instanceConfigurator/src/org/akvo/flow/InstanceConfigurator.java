@@ -1,5 +1,5 @@
 /*
- *  Copyright (C) 2014 Stichting Akvo (Akvo Foundation)
+ *  Copyright (C) 2014-2015 Stichting Akvo (Akvo Foundation)
  *
  *  This file is part of Akvo FLOW.
  *
@@ -80,6 +80,14 @@ public class InstanceConfigurator {
         String enableChangeEvents = cli.getOptionValue("ce");
         if (enableChangeEvents == null) {
             enableChangeEvents = "false";
+        }
+        String useGoogleMapsLayers = cli.getOptionValue("gm");
+        if (useGoogleMapsLayers == null) {
+            useGoogleMapsLayers = "false";
+        }
+        String googleMapsRegionBias = cli.getOptionValue("rb");
+        if (googleMapsRegionBias == null) {
+            googleMapsRegionBias = "";
         }
         String alias = cli.getOptionValue("a");
         String emailFrom = cli.getOptionValue("ef");
@@ -224,6 +232,8 @@ public class InstanceConfigurator {
         webData.put("flowServices", flowServices);
         webData.put("eventNotification", eventNotification);
         webData.put("enableChangeEvents", enableChangeEvents);
+        webData.put("useGoogleMapsLayers", useGoogleMapsLayers);
+        webData.put("googleMapsRegionBias", googleMapsRegionBias);
         webData.put("apiKey", apiKey);
         webData.put("emailFrom", emailFrom);
         webData.put("emailTo", emailTo);
@@ -299,6 +309,18 @@ public class InstanceConfigurator {
         enableChangeEvents.setArgs(1);
         enableChangeEvents.setRequired(false);
 
+        Option useGoogleMapsLayers = new Option("gm",
+                "true if the instance should use Google Maps layers instead of Mapbox");
+        useGoogleMapsLayers.setLongOpt("useGoogleMapsLayers");
+        useGoogleMapsLayers.setArgs(1);
+        useGoogleMapsLayers.setRequired(false);
+
+        Option googleMapsRegionBias = new Option("rb",
+                "Region bias code (only available for google maps layers)");
+        googleMapsRegionBias.setLongOpt("googleMapsRegionBias");
+        googleMapsRegionBias.setArgs(1);
+        googleMapsRegionBias.setRequired(false);
+
         Option outputFolder = new Option("o",
                 "Output folder for configuration files");
         outputFolder.setLongOpt("outFolder");
@@ -327,6 +349,8 @@ public class InstanceConfigurator {
         options.addOption(flowServices);
         options.addOption(eventNotification);
         options.addOption(enableChangeEvents);
+        options.addOption(useGoogleMapsLayers);
+        options.addOption(googleMapsRegionBias);
         options.addOption(alias);
         options.addOption(signingKey);
 
