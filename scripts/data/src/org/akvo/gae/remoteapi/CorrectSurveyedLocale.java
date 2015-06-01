@@ -24,10 +24,12 @@ import java.util.Map;
 import com.google.appengine.api.datastore.DatastoreService;
 import com.google.appengine.api.datastore.Entity;
 import com.google.appengine.api.datastore.EntityNotFoundException;
+import com.google.appengine.api.datastore.FetchOptions;
 import com.google.appengine.api.datastore.KeyFactory;
 import com.google.appengine.api.datastore.Query;
 import com.google.appengine.api.datastore.Query.Filter;
 import com.google.appengine.api.datastore.Query.FilterOperator;
+
 import static org.akvo.gae.remoteapi.DataUtils.*;
 
 /**
@@ -104,13 +106,7 @@ public class CorrectSurveyedLocale implements Process {
         Filter surveyFilter = new Query.FilterPredicate("surveyGroupId", FilterOperator.EQUAL,
                 surveyId);
         Query q = new Query(FORM_KIND).setFilter(surveyFilter);
-
-        List<Entity> surveyForms = new ArrayList<Entity>();
-        for (Entity survey : ds.prepare(q).asIterable()) {
-            surveyForms.add(survey);
-        }
-
-        return surveyForms;
+        return ds.prepare(q).asList(FetchOptions.Builder.withDefaults());
     }
 
     /**
