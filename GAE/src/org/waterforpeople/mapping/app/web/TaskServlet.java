@@ -529,10 +529,6 @@ public class TaskServlet extends AbstractRestApiServlet {
     
     /**
      * Send an email regarding file processing status/outcome
-     *
-     * @param fileProcessingRequest
-     * @param subject
-     * @param messageBody
      */
     private void sendMail(String filename, String body, Exception e) {
         String subject = "Device File Processing Error: " + filename;
