@@ -1,5 +1,5 @@
 /*
- *  Copyright (C) 2010-2012 Stichting Akvo (Akvo Foundation)
+ *  Copyright (C) 2010-2015 Stichting Akvo (Akvo Foundation)
  *
  *  This file is part of Akvo FLOW.
  *
@@ -19,6 +19,8 @@ package org.waterforpeople.mapping.app.web;
 import java.io.BufferedInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
+import java.io.PrintWriter;
+import java.io.StringWriter;
 import java.net.URLConnection;
 import java.security.GeneralSecurityException;
 import java.security.MessageDigest;
@@ -192,9 +194,7 @@ public class TaskServlet extends AbstractRestApiServlet {
                         + deviceFile.getURI() + " : " + iex.getMessage();
                 log.log(Level.SEVERE, message);
                 deviceFile.addProcessingMessage(message);
-                MailUtil.sendMail(FROM_ADDRESS, "FLOW", recepientList,
-                        "Device File Processing Error: " + fileName, message);
-
+                sendMail(fileName, message, iex);
             }
 
             if (unparsedLines != null && unparsedLines.size() > 0) {
@@ -290,19 +290,14 @@ public class TaskServlet extends AbstractRestApiServlet {
                 String message = "Error empty file: " + deviceFile.getURI();
                 log.log(Level.SEVERE, message);
                 deviceFile.addProcessingMessage(message);
-                MailUtil.sendMail(FROM_ADDRESS, "FLOW", recepientList,
-                        "Device File Processing Error: " + fileName, DEVICE_FILE_PATH + fileName
-                                + "\n" + message);
-
+                sendMail(fileName, message, null);
             }
 
             dfDao.save(dfList);
             zis.close();
         } catch (Exception e) {
             log.log(Level.SEVERE, "Could not process data file", e);
-            MailUtil.sendMail(FROM_ADDRESS, "FLOW", recepientList,
-                    "Device File Processing Error: " + fileName, DEVICE_FILE_PATH + fileName + "\n"
-                            + (e.getMessage() != null ? e.getMessage() : ""));
+            sendMail(fileName, "", e);
         }
 
         return surveyInstances;
@@ -530,6 +525,26 @@ public class TaskServlet extends AbstractRestApiServlet {
             }
             msgDao.save(message);
         }
+    }
+    
+    /**
+     * Send an email regarding file processing status/outcome
+     *
+     * @param fileProcessingRequest
+     * @param subject
+     * @param messageBody
+     */
+    private void sendMail(String filename, String body, Exception e) {
+        String subject = "Device File Processing Error: " + filename;
+        String messageBody = DEVICE_FILE_PATH + filename + "\n" + body;
+        if (e != null) {
+            messageBody += "\n" + e.getMessage();
+            StringWriter sw = new StringWriter();
+            e.printStackTrace(new PrintWriter(sw));
+            messageBody += "\n" + sw.toString();
+        }
+
+        MailUtil.sendMail(FROM_ADDRESS, "FLOW", recepientList, subject, messageBody);
     }
 
 }
