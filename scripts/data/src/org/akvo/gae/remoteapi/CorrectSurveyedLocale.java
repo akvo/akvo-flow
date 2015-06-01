@@ -60,7 +60,7 @@ public class CorrectSurveyedLocale implements Process {
         Long registrationFormId = (Long) monitoringSurvey.getProperty("newLocaleSurveyId");
 
         if (registrationFormId == null) {
-            System.err.println("Unable to identify registration form.");
+            System.err.println("Unable to identify registration form for survey: " + surveyId);
             System.exit(1);
         }
 
