@@ -19,7 +19,9 @@ package com.gallatinsystems.survey.dao;
 import java.net.URLEncoder;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.TreeMap;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -95,10 +97,12 @@ public class SurveyUtils {
     }
 
     public static QuestionGroup copyQuestionGroup(QuestionGroup source,
-            Long newSurveyId, boolean isCopyingSingleQuestionGroup) {
+            Long newSurveyId) {
 
         final QuestionGroupDao qgDao = new QuestionGroupDao();
+        final QuestionDao qDao = new QuestionDao();
         final QuestionGroup tmp = new QuestionGroup();
+        final Map<Long, Long> questionIdMap = new HashMap<Long, Long>();
 
         BeanUtils.copyProperties(source, tmp, Constants.EXCLUDED_PROPERTIES);
         tmp.setSurveyId(null); // reset parent SurveyId, it will get set by the
@@ -112,20 +116,52 @@ public class SurveyUtils {
         log.log(Level.INFO, "New `QuestionGroup` ID: "
                 + newQuestionGroup.getKey().getId());
 
-        final Queue queue = QueueFactory.getDefaultQueue();
+        SurveyUtils.copyTranslation(source.getKey().getId(), newQuestionGroup
+                .getKey().getId(), newSurveyId, newQuestionGroup.getKey().getId(),
+                ParentType.QUESTION_GROUP_NAME,
+                ParentType.QUESTION_GROUP_DESC);
 
-        final TaskOptions options = TaskOptions.Builder
-                .withUrl("/app_worker/dataprocessor")
-                .param(DataProcessorRequest.ACTION_PARAM,
-                        DataProcessorRequest.COPY_QUESTION_GROUP)
-                .param(DataProcessorRequest.QUESTION_GROUP_ID_PARAM,
-                        String.valueOf(newQuestionGroup.getKey().getId()))
-                .param(DataProcessorRequest.SOURCE_PARAM,
-                        String.valueOf(source.getKey().getId()))
-                .param(DataProcessorRequest.IS_COPYING_SINGLE_QUESTION_GROUP_PARAM,
-                        String.valueOf(isCopyingSingleQuestionGroup));
+        List<Question> qList = qDao.listQuestionsInOrderForGroup(source
+                .getKey().getId());
 
-        queue.add(options);
+        if (qList == null) {
+            return newQuestionGroup;
+        }
+
+        log.log(Level.INFO, "Copying " + qList.size() + " `Question`");
+
+        final List<Question> dependentQuestionList = new ArrayList<Question>();
+
+        int qCount = 1;
+        for (Question question : qList) {
+            final Question questionCopy = SurveyUtils.copyQuestion(question, newQuestionGroup
+                    .getKey().getId(), qCount++, newSurveyId);
+            questionIdMap.put(question.getKey().getId(), questionCopy.getKey().getId());
+            if (questionCopy.getDependentFlag() != null && questionCopy.getDependentFlag()) {
+                dependentQuestionList.add(questionCopy);
+            }
+        }
+
+        // fixing dependencies
+        log.log(Level.INFO,
+                "Fixing dependencies for " + dependentQuestionList.size()
+                        + " `Question`");
+
+        for (Question newDependentQuestion : dependentQuestionList) {
+            Long originalDependentId = newDependentQuestion.getDependentQuestionId();
+            if (originalDependentId == null) {
+                log.log(Level.FINE, "No dependent id for dependent question "
+                        + newDependentQuestion.getKey());
+                continue;
+            }
+            newDependentQuestion.setDependentQuestionId(questionIdMap.get(originalDependentId));
+        }
+
+        qDao.save(dependentQuestionList);
+
+        // set status of question group to READY
+        newQuestionGroup.setStatus(QuestionGroup.Status.READY);
+        qgDao.save(newQuestionGroup);
 
         return newQuestionGroup;
     }

@@ -549,7 +549,7 @@ public class DataProcessorRestServlet extends AbstractRestApiServlet {
 
         log.log(Level.INFO, "Copying " + qgList.size() + " `QuestionGroup`");
         for (final QuestionGroup sourceQG : qgList) {
-            SurveyUtils.copyQuestionGroup(sourceQG, copiedSurveyId, false);
+            SurveyUtils.copyQuestionGroup(sourceQG, copiedSurveyId);
         }
 
         final SurveyDAO sDao = new SurveyDAO();
