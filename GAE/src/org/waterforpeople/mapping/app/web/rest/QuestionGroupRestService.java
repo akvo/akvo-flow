@@ -282,7 +282,7 @@ public class QuestionGroupRestService {
 
             QuestionGroup sourceQuestionGroup = qgDao.getByKey(questionGroupDto.getSourceId());
             questionGroup = SurveyUtils.copyQuestionGroup(sourceQuestionGroup,
-                    sourceQuestionGroup.getSurveyId());
+                    null, sourceQuestionGroup.getSurveyId());
             questionGroup.setOrder(questionGroupDto.getOrder());
             questionGroup.setStatus(QuestionGroup.Status.COPYING);
         } else {

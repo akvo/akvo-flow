@@ -36,6 +36,7 @@ import org.waterforpeople.mapping.app.web.dto.DataProcessorRequest;
 import com.gallatinsystems.common.Constants;
 import com.gallatinsystems.common.util.HttpUtil;
 import com.gallatinsystems.common.util.PropertyUtil;
+import com.gallatinsystems.framework.domain.BaseDomain;
 import com.gallatinsystems.survey.domain.CascadeResource;
 import com.gallatinsystems.survey.domain.CascadeResource.Status;
 import com.gallatinsystems.survey.domain.Question;
@@ -96,36 +97,24 @@ public class SurveyUtils {
         return newSurvey;
     }
 
-    public static QuestionGroup copyQuestionGroup(QuestionGroup source,
-            Long newSurveyId) {
+    public static QuestionGroup copyQuestionGroup(QuestionGroup sourceGroup,
+            QuestionGroup copyGroup, Long newSurveyId) {
 
         final QuestionGroupDao qgDao = new QuestionGroupDao();
         final QuestionDao qDao = new QuestionDao();
-        final QuestionGroup tmp = new QuestionGroup();
         final Map<Long, Long> questionIdMap = new HashMap<Long, Long>();
+        final Long sourceGroupId = sourceGroup.getKey().getId();
+        final Long copyGroupId = copyGroup.getKey().getId();
 
-        BeanUtils.copyProperties(source, tmp, Constants.EXCLUDED_PROPERTIES);
-        tmp.setSurveyId(null); // reset parent SurveyId, it will get set by the
-                               // save action
+        copyGroup.setSurveyId(newSurveyId);
 
-        log.log(Level.INFO, "Copying `QuestionGroup` "
-                + source.getKey().getId());
+        SurveyUtils.copyTranslation(sourceGroupId, copyGroupId, newSurveyId, copyGroupId,
+                ParentType.QUESTION_GROUP_NAME, ParentType.QUESTION_GROUP_DESC);
 
-        final QuestionGroup newQuestionGroup = qgDao.save(tmp, newSurveyId);
-
-        log.log(Level.INFO, "New `QuestionGroup` ID: "
-                + newQuestionGroup.getKey().getId());
-
-        SurveyUtils.copyTranslation(source.getKey().getId(), newQuestionGroup
-                .getKey().getId(), newSurveyId, newQuestionGroup.getKey().getId(),
-                ParentType.QUESTION_GROUP_NAME,
-                ParentType.QUESTION_GROUP_DESC);
-
-        List<Question> qList = qDao.listQuestionsInOrderForGroup(source
-                .getKey().getId());
+        List<Question> qList = qDao.listQuestionsInOrderForGroup(sourceGroupId);
 
         if (qList == null) {
-            return newQuestionGroup;
+            return copyGroup;
         }
 
         log.log(Level.INFO, "Copying " + qList.size() + " `Question`");
@@ -134,8 +123,8 @@ public class SurveyUtils {
 
         int qCount = 1;
         for (Question question : qList) {
-            final Question questionCopy = SurveyUtils.copyQuestion(question, newQuestionGroup
-                    .getKey().getId(), qCount++, newSurveyId);
+            final Question questionCopy = SurveyUtils.copyQuestion(question, copyGroupId, qCount++,
+                    newSurveyId);
             questionIdMap.put(question.getKey().getId(), questionCopy.getKey().getId());
             if (questionCopy.getDependentFlag() != null && questionCopy.getDependentFlag()) {
                 dependentQuestionList.add(questionCopy);
@@ -143,9 +132,8 @@ public class SurveyUtils {
         }
 
         // fixing dependencies
-        log.log(Level.INFO,
-                "Fixing dependencies for " + dependentQuestionList.size()
-                        + " `Question`");
+        log.log(Level.INFO, "Fixing dependencies for " + dependentQuestionList.size()
+                + " `Question`");
 
         for (Question newDependentQuestion : dependentQuestionList) {
             Long originalDependentId = newDependentQuestion.getDependentQuestionId();
@@ -160,10 +148,10 @@ public class SurveyUtils {
         qDao.save(dependentQuestionList);
 
         // set status of question group to READY
-        newQuestionGroup.setStatus(QuestionGroup.Status.READY);
-        qgDao.save(newQuestionGroup);
+        copyGroup.setStatus(QuestionGroup.Status.READY);
+        qgDao.save(copyGroup);
 
-        return newQuestionGroup;
+        return copyGroup;
     }
 
     public static Question copyQuestion(Question source,
@@ -445,5 +433,19 @@ public class SurveyUtils {
         }
 
         return parentPaths;
+    }
+
+    /**
+     * Copy publicly visible properties from one BaseDomain subclass to another. Should be used for
+     * two classes of the same type.
+     *
+     * @param source
+     * @param copy
+     */
+    public static void shallowCopy(BaseDomain source, BaseDomain copy) {
+        BeanUtils.copyProperties(source, copy, Constants.EXCLUDED_PROPERTIES);
+        String kind = source.getKey().getKind();
+        log.log(Level.INFO, "Copying `" + kind + "` " + source.getKey().getId());
+        log.log(Level.INFO, "New `" + kind + "` ID: " + copy.getKey().getId());
     }
 }
