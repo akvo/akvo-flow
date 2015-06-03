@@ -130,14 +130,12 @@ public class DataProcessorRestServlet extends AbstractRestApiServlet {
             copySurvey(dpReq.getSurveyId(), Long.valueOf(dpReq.getSource()));
         } else if (DataProcessorRequest.COPY_QUESTION_GROUP.equalsIgnoreCase(dpReq
                 .getAction())) {
-            QuestionGroup newQuestionGroup = new QuestionGroupDao().getByKey(dpReq
-                    .getQuestionGroupId());
-            QuestionGroup originalQuestionGroup = new QuestionGroupDao()
-                    .getByKey(Long.valueOf(dpReq.getSource()));
-            boolean isCopyingSingleQuestionGroup = dpReq.getIsCopyingSingleQuestionGroup();
+            QuestionGroupDao qgDao = new QuestionGroupDao();
+            QuestionGroup newQuestionGroup = qgDao.getByKey(dpReq.getQuestionGroupId());
+            QuestionGroup originalQuestionGroup = qgDao.getByKey(Long.valueOf(dpReq.getSource()));
             if (originalQuestionGroup != null && newQuestionGroup != null) {
-                copyQuestionGroup(originalQuestionGroup, newQuestionGroup,
-                        isCopyingSingleQuestionGroup);
+                SurveyUtils.copyQuestionGroup(originalQuestionGroup, newQuestionGroup,
+                        originalQuestionGroup.getSurveyId());
             }
         } else if (DataProcessorRequest.FIX_QUESTIONGROUP_DEPENDENCIES_ACTION
                 .equalsIgnoreCase(dpReq.getAction())) {

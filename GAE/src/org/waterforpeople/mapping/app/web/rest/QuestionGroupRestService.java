@@ -33,6 +33,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.waterforpeople.mapping.app.gwt.client.survey.QuestionGroupDto;
 import org.waterforpeople.mapping.app.util.DtoMarshaller;
+import org.waterforpeople.mapping.app.web.dto.DataProcessorRequest;
 import org.waterforpeople.mapping.app.web.dto.SurveyTaskRequest;
 import org.waterforpeople.mapping.app.web.rest.dto.QuestionGroupPayload;
 import org.waterforpeople.mapping.app.web.rest.dto.RestStatusDto;
@@ -45,6 +46,7 @@ import com.gallatinsystems.survey.dao.SurveyUtils;
 import com.gallatinsystems.survey.domain.Question;
 import com.gallatinsystems.survey.domain.QuestionGroup;
 import com.gallatinsystems.surveyal.dao.SurveyalValueDao;
+import com.google.appengine.api.taskqueue.Queue;
 import com.google.appengine.api.taskqueue.QueueFactory;
 import com.google.appengine.api.taskqueue.TaskOptions;
 
@@ -278,13 +280,7 @@ public class QuestionGroupRestService {
         // deal with copying a question group
         if (questionGroupDto.getSourceId() != null) {
             // copy question group
-            final QuestionGroupDao qgDao = new QuestionGroupDao();
-
-            QuestionGroup sourceQuestionGroup = qgDao.getByKey(questionGroupDto.getSourceId());
-            questionGroup = SurveyUtils.copyQuestionGroup(sourceQuestionGroup,
-                    null, sourceQuestionGroup.getSurveyId());
-            questionGroup.setOrder(questionGroupDto.getOrder());
-            questionGroup.setStatus(QuestionGroup.Status.COPYING);
+            questionGroup = copyGroup(questionGroupDto);
         } else {
             // new question group
             questionGroup = new QuestionGroup();
@@ -308,5 +304,36 @@ public class QuestionGroupRestService {
         response.put("meta", statusDto);
         response.put("question_group", dto);
         return response;
+    }
+
+    /**
+     * Copy a question group within a survey
+     *
+     * @param questionGroupDto
+     * @return
+     */
+    private QuestionGroup copyGroup(QuestionGroupDto questionGroupDto) {
+        final QuestionGroupDao qgDao = new QuestionGroupDao();
+        QuestionGroup sourceGroup = qgDao.getByKey(questionGroupDto.getSourceId());
+        final QuestionGroup copyGroup = qgDao.save(new QuestionGroup());
+
+        SurveyUtils.shallowCopy(sourceGroup, copyGroup);
+        copyGroup.setOrder(questionGroupDto.getOrder());
+        copyGroup.setStatus(QuestionGroup.Status.COPYING);
+
+        // schedule deep copy
+        final Queue queue = QueueFactory.getDefaultQueue();
+        final TaskOptions options = TaskOptions.Builder
+                .withUrl("/app_worker/dataprocessor")
+                .param(DataProcessorRequest.ACTION_PARAM,
+                        DataProcessorRequest.COPY_QUESTION_GROUP)
+                .param(DataProcessorRequest.QUESTION_GROUP_ID_PARAM,
+                        String.valueOf(copyGroup.getKey().getId()))
+                .param(DataProcessorRequest.SOURCE_PARAM,
+                        String.valueOf(sourceGroup.getKey().getId()));
+
+        queue.add(options);
+
+        return copyGroup;
     }
 }
