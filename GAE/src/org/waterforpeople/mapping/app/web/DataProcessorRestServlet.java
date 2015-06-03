@@ -78,7 +78,6 @@ import com.gallatinsystems.survey.domain.QuestionGroup;
 import com.gallatinsystems.survey.domain.QuestionOption;
 import com.gallatinsystems.survey.domain.Survey;
 import com.gallatinsystems.survey.domain.Translation;
-import com.gallatinsystems.survey.domain.Translation.ParentType;
 import com.gallatinsystems.surveyal.dao.SurveyalValueDao;
 import com.gallatinsystems.surveyal.dao.SurveyedLocaleDao;
 import com.gallatinsystems.surveyal.domain.SurveyalValue;
@@ -566,95 +565,6 @@ public class DataProcessorRestServlet extends AbstractRestApiServlet {
                 + originalSurvey.getName() + ") completed");
         mDao.save(message);
 
-    }
-
-    /**
-     * Copy a question group within the same survey
-     *
-     * @param questionGroup
-     */
-    private void copyQuestionGroup(QuestionGroup sourceQuestionGroup,
-            QuestionGroup newQuestionGroup, boolean isCopyingSingleQuestionGroup) {
-        final Map<Long, Long> qMap = new HashMap<Long, Long>();
-        final QuestionDao qDao = new QuestionDao();
-        final QuestionGroupDao qgDao = new QuestionGroupDao();
-
-        final Long surveyId = sourceQuestionGroup.getSurveyId();
-
-        SurveyUtils.copyTranslation(sourceQuestionGroup.getKey().getId(), newQuestionGroup
-                .getKey().getId(), surveyId, newQuestionGroup.getKey().getId(),
-                ParentType.QUESTION_GROUP_NAME,
-                ParentType.QUESTION_GROUP_DESC);
-
-        List<Question> qList = qDao.listQuestionsInOrderForGroup(sourceQuestionGroup
-                .getKey().getId());
-
-        if (qList == null) {
-            return;
-        }
-
-        log.log(Level.INFO, "Copying " + qList.size() + " `Question`");
-
-        final List<Question> dependentQuestionList = new ArrayList<Question>();
-
-        int qCount = 1;
-        for (Question q : qList) {
-            final Question qTmp = SurveyUtils.copyQuestion(q, newQuestionGroup
-                    .getKey().getId(), qCount++, surveyId);
-            qMap.put(q.getKey().getId(), qTmp.getKey().getId());
-            if (qTmp.getDependentFlag() != null && qTmp.getDependentFlag()) {
-                dependentQuestionList.add(qTmp);
-            }
-        }
-
-        // fixing dependencies
-        log.log(Level.INFO,
-                "Fixing dependencies for " + dependentQuestionList.size()
-                        + " `Question`");
-
-        for (Question newDependentQuestion : dependentQuestionList) {
-            // for dependencies where both questions are in same group, they are resolved when each
-            // question is in different group, then id is set to null to be resolved later by a task
-            newDependentQuestion.setDependentQuestionId(qMap.get(newDependentQuestion
-                    .getDependentQuestionId()));
-        }
-
-        qDao.save(dependentQuestionList);
-
-        // set status of question group to READY
-        newQuestionGroup.setStatus(QuestionGroup.Status.READY);
-        qgDao.save(newQuestionGroup);
-
-        final List<Long> unresolvedDependentQuestionIds = new ArrayList<Long>();
-        for (Question q : dependentQuestionList) {
-            if (q.getDependentQuestionId() == null) {
-                if (isCopyingSingleQuestionGroup) {
-                    Question originalQuestion = qDao.getByKey(q.getSourceQuestionId());
-                    q.setDependentQuestionId(originalQuestion.getDependentQuestionId());
-                    qDao.save(q);
-                } else {
-                    unresolvedDependentQuestionIds.add(q.getKey().getId());
-                }
-            }
-        }
-
-        if (!unresolvedDependentQuestionIds.isEmpty()) {
-            // fire task to resolve unresolved dependencies
-            TaskOptions options = TaskOptions.Builder
-                    .withUrl("/app_worker/dataprocessor")
-                    .param(DataProcessorRequest.ACTION_PARAM,
-                            DataProcessorRequest.FIX_QUESTIONGROUP_DEPENDENCIES_ACTION)
-                    .param(DataProcessorRequest.QUESTION_GROUP_ID_PARAM,
-                            Long.toString(newQuestionGroup.getKey().getId()))
-                    .param(DataProcessorRequest.SOURCE_PARAM,
-                            Long.toString(sourceQuestionGroup.getKey().getId()));
-            for (Long id : unresolvedDependentQuestionIds) {
-                options.param(DataProcessorRequest.DEPENDENT_QUESTION_PARAM, id.toString());
-            }
-
-            Queue queue = QueueFactory.getQueue("dataUpdate");
-            queue.add(options);
-        }
     }
 
     /**
