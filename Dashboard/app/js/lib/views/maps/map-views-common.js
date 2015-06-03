@@ -45,8 +45,54 @@ FLOW.NavMapsView = FLOW.View.extend({
     Once the view is in the DOM create the map
   */
   didInsertElement: function () {
-	var self = this;
-    // insert the map
+    console.log("anything");
+
+    var self = this;
+
+    // create leaflet map
+  	var map = L.map('flowMap', {scrollWheelZoom: false}).setView([-0.703107, 36.765], 2);
+  	L.tileLayer('http://{s}.{base}.maps.cit.api.here.com/maptile/2.1/maptile/{mapID}/normal.day.transit/{z}/{x}/{y}/256/png8?app_id={app_id}&app_code={app_code}', {
+  		attribution: 'Map &copy; 1987-2014 <a href="http://developer.here.com">HERE</a>',
+  		subdomains: '1234',
+  		mapID: 'newest',
+  		app_id: 'Y8m9dK2brESDPGJPdrvs',
+  		app_code: 'dq2MYIvjAotR8tHvY8Q_Dg',
+  		base: 'base',
+  		maxZoom: 18
+  	}).addTo(map);
+
+  	// add cartodb layer with one sublayer
+  	cartodb.createLayer(map, {
+  			user_name: 'flowaglimmerofhope-hrd',
+  			type: 'namedmap',
+  			named_map: {
+  				name: "data_points_map",
+  				layers: [{
+  					layer_name: "t",
+  					interactivity: "cartodb_id, name, identifier"
+  				}]
+  			}
+  	},{
+  		tiler_domain: "cartodb.akvo.org",
+  		tiler_port: "8181",
+  		tiler_protocol: "http",
+  		no_cdn: true
+  	})
+  	.addTo(map)
+  	.done(function(layer) {
+  			layer.getSubLayer(0).setInteraction(true);
+
+  			// on mouseover
+  			layer.getSubLayer(0).on('featureOver', function(e, pos, pixel, data) {
+  					// print data to console log
+  					console.log("Event #" + data.cartodb_id + ", name " + data.name + ", identifier: " + data.identifier);
+  			});
+
+  			// show infowindows on click
+  			cdb.vis.Vis.addInfowindow(map, layer.getSubLayer(0), ['cartodb_id', 'name', 'identifier']);
+  	});
+
+    /*// insert the map
     this.map = L.mapbox.map('flowMap', 'akvo.he30g8mm')
       .setView([-0.703107, 36.765], 2);
 
@@ -68,11 +114,12 @@ FLOW.NavMapsView = FLOW.View.extend({
     this.geoModel = create_geomodel();
 
     //load points for the visible map
-    this.redoMap();
+    this.redoMap();*/
 
     this.$('#mapDetailsHideShow').click(function () {
       self.handleShowHideDetails();
     });
+
     // Slide in detailspane after 1 sec
     this.hideDetailsPane(1000);
   },
