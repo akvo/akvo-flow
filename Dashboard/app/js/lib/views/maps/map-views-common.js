@@ -45,7 +45,6 @@ FLOW.NavMapsView = FLOW.View.extend({
     Once the view is in the DOM create the map
   */
   didInsertElement: function () {
-<<<<<<< HEAD
     console.log("anything");
 
     var self = this;
@@ -102,31 +101,6 @@ FLOW.NavMapsView = FLOW.View.extend({
       'Streets': L.mapbox.tileLayer('akvo.he2pdjhk'),
       'Satellite': L.mapbox.tileLayer('akvo.he30neh4')
     }).addTo(this.map);
-=======
-    var self = this;
-
-    // insert the map
-    if (FLOW.Env.useGoogleMapsLayers) {
-       this.map = new L.Map('flowMap', {center: new L.LatLng(-0.703107, 36.765), zoom: 2});
-       var roadmap = new L.Google("ROADMAP");
-       var terrain = new L.Google('TERRAIN');
-       var satellite = new L.Google('SATELLITE');
-       this.map.addLayer(roadmap);
-       this.map.addControl(new L.Control.Layers({
-         'Roadmap': roadmap,
-         'Satellite': satellite,
-         'Terrain': terrain
-       }, {}));
-    } else {
-       this.map = L.mapbox.map('flowMap', 'akvo.he30g8mm').setView([-0.703107, 36.765], 2);
-
-       L.control.layers({
-         'Terrain': L.mapbox.tileLayer('akvo.he30g8mm').addTo(this.map),
-         'Streets': L.mapbox.tileLayer('akvo.he2pdjhk'),
-         'Satellite': L.mapbox.tileLayer('akvo.he30neh4')
-       }).addTo(this.map);
-    }
->>>>>>> 61ce5e2874be37c418712299812e6329754f8765
 
     // add scale indication to map
     L.control.scale({position:'topleft', maxWidth:150}).addTo(this.map);
