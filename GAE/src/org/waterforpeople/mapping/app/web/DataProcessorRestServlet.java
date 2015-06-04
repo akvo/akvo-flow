@@ -135,6 +135,10 @@ public class DataProcessorRestServlet extends AbstractRestApiServlet {
             if (originalQuestionGroup != null && newQuestionGroup != null) {
                 SurveyUtils.copyQuestionGroup(originalQuestionGroup, newQuestionGroup,
                         originalQuestionGroup.getSurveyId(), null);
+
+                newQuestionGroup.setStatus(QuestionGroup.Status.READY); // copied
+                qgDao.save(newQuestionGroup);
+
             }
         } else if (DataProcessorRequest.FIX_QUESTIONGROUP_DEPENDENCIES_ACTION
                 .equalsIgnoreCase(dpReq.getAction())) {
@@ -546,11 +550,17 @@ public class DataProcessorRestServlet extends AbstractRestApiServlet {
         }
 
         log.log(Level.INFO, "Copying " + qgList.size() + " `QuestionGroup`");
+
+        List<QuestionGroup> qgCopyList = new ArrayList<QuestionGroup>();
         for (final QuestionGroup sourceGroup : qgList) {
             QuestionGroup copyGroup = qgDao.save(new QuestionGroup());
             SurveyUtils.shallowCopy(sourceGroup, copyGroup);
-            SurveyUtils.copyQuestionGroup(sourceGroup, copyGroup, copiedSurveyId, qDependencyResolutionMap);
+            SurveyUtils.copyQuestionGroup(sourceGroup, copyGroup, copiedSurveyId,
+                    qDependencyResolutionMap);
+            copyGroup.setStatus(QuestionGroup.Status.READY); // copied
+            qgCopyList.add(copyGroup);
         }
+        qgDao.save(qgCopyList);
 
         final SurveyDAO sDao = new SurveyDAO();
         final Survey copiedSurvey = SurveyUtils.resetSurveyState(copiedSurveyId);

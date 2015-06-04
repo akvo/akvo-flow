@@ -99,7 +99,6 @@ public class SurveyUtils {
     public static QuestionGroup copyQuestionGroup(QuestionGroup sourceGroup,
             QuestionGroup copyGroup, Long newSurveyId, Map<Long, Long> qDependencyResolutionMap) {
 
-        final QuestionGroupDao qgDao = new QuestionGroupDao();
         final QuestionDao qDao = new QuestionDao();
         final Long sourceGroupId = sourceGroup.getKey().getId();
         final Long copyGroupId = copyGroup.getKey().getId();
@@ -145,10 +144,6 @@ public class SurveyUtils {
 
         log.log(Level.INFO, "Resolved dependencies for " + dependentQuestionList.size()
                 + " `Question`");
-
-        // set status of question group to READY
-        copyGroup.setStatus(QuestionGroup.Status.READY);
-        qgDao.save(copyGroup);
 
         return copyGroup;
     }
