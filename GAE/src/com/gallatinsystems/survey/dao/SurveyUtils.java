@@ -19,7 +19,6 @@ package com.gallatinsystems.survey.dao;
 import java.net.URLEncoder;
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
@@ -98,11 +97,10 @@ public class SurveyUtils {
     }
 
     public static QuestionGroup copyQuestionGroup(QuestionGroup sourceGroup,
-            QuestionGroup copyGroup, Long newSurveyId) {
+            QuestionGroup copyGroup, Long newSurveyId, Map<Long, Long> qDependencyResolutionMap) {
 
         final QuestionGroupDao qgDao = new QuestionGroupDao();
         final QuestionDao qDao = new QuestionDao();
-        final Map<Long, Long> questionIdMap = new HashMap<Long, Long>();
         final Long sourceGroupId = sourceGroup.getKey().getId();
         final Long copyGroupId = copyGroup.getKey().getId();
 
@@ -119,33 +117,34 @@ public class SurveyUtils {
 
         log.log(Level.INFO, "Copying " + qList.size() + " `Question`");
 
-        final List<Question> dependentQuestionList = new ArrayList<Question>();
-
         int qCount = 1;
+        List<Question> qCopyList = new ArrayList<Question>();
         for (Question question : qList) {
             final Question questionCopy = SurveyUtils.copyQuestion(question, copyGroupId, qCount++,
                     newSurveyId);
-            questionIdMap.put(question.getKey().getId(), questionCopy.getKey().getId());
-            if (questionCopy.getDependentFlag() != null && questionCopy.getDependentFlag()) {
-                dependentQuestionList.add(questionCopy);
-            }
+            qCopyList.add(questionCopy);
+        }
+
+        if (qDependencyResolutionMap == null) {
+            return copyGroup;
         }
 
         // fixing dependencies
-        log.log(Level.INFO, "Fixing dependencies for " + dependentQuestionList.size()
-                + " `Question`");
-
-        for (Question newDependentQuestion : dependentQuestionList) {
-            Long originalDependentId = newDependentQuestion.getDependentQuestionId();
-            if (originalDependentId == null) {
-                log.log(Level.FINE, "No dependent id for dependent question "
-                        + newDependentQuestion.getKey());
+        final List<Question> dependentQuestionList = new ArrayList<Question>();
+        for (Question questionCopy : qCopyList) {
+            qDependencyResolutionMap.put(questionCopy.getSourceQuestionId(), questionCopy.getKey()
+                    .getId());
+            if (questionCopy.getDependentFlag() == null || !questionCopy.getDependentFlag()) {
                 continue;
             }
-            newDependentQuestion.setDependentQuestionId(questionIdMap.get(originalDependentId));
+            Long originalDependentId = questionCopy.getDependentQuestionId();
+            questionCopy.setDependentQuestionId(qDependencyResolutionMap.get(originalDependentId));
+            dependentQuestionList.add(questionCopy);
         }
-
         qDao.save(dependentQuestionList);
+
+        log.log(Level.INFO, "Resolved dependencies for " + dependentQuestionList.size()
+                + " `Question`");
 
         // set status of question group to READY
         copyGroup.setStatus(QuestionGroup.Status.READY);

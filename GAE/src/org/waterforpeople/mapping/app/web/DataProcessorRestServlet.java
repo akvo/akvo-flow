@@ -134,7 +134,7 @@ public class DataProcessorRestServlet extends AbstractRestApiServlet {
             QuestionGroup originalQuestionGroup = qgDao.getByKey(Long.valueOf(dpReq.getSource()));
             if (originalQuestionGroup != null && newQuestionGroup != null) {
                 SurveyUtils.copyQuestionGroup(originalQuestionGroup, newQuestionGroup,
-                        originalQuestionGroup.getSurveyId());
+                        originalQuestionGroup.getSurveyId(), null);
             }
         } else if (DataProcessorRequest.FIX_QUESTIONGROUP_DEPENDENCIES_ACTION
                 .equalsIgnoreCase(dpReq.getAction())) {
@@ -536,6 +536,7 @@ public class DataProcessorRestServlet extends AbstractRestApiServlet {
         final QuestionGroupDao qgDao = new QuestionGroupDao();
 
         final List<QuestionGroup> qgList = qgDao.listQuestionGroupBySurvey(originalSurveyId);
+        final Map<Long, Long> qDependencyResolutionMap = new HashMap<Long, Long>();
 
         if (qgList == null) {
             log.log(Level.INFO, "Nothing to copy from {surveyId: " + originalSurveyId
@@ -548,7 +549,7 @@ public class DataProcessorRestServlet extends AbstractRestApiServlet {
         for (final QuestionGroup sourceGroup : qgList) {
             QuestionGroup copyGroup = qgDao.save(new QuestionGroup());
             SurveyUtils.shallowCopy(sourceGroup, copyGroup);
-            SurveyUtils.copyQuestionGroup(sourceGroup, copyGroup, copiedSurveyId);
+            SurveyUtils.copyQuestionGroup(sourceGroup, copyGroup, copiedSurveyId, qDependencyResolutionMap);
         }
 
         final SurveyDAO sDao = new SurveyDAO();
