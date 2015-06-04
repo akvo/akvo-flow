@@ -83,6 +83,8 @@ public class TaskServlet extends AbstractRestApiServlet {
     private final static String EMAIL_FROM_ADDRESS_KEY = "emailFromAddress";
     private TreeMap<String, String> recepientList = null;
     private static final String OBJECTKEY_PREFIX = "devicezip/";
+    
+    private static final Object LOCK = new Object();
 
     public TaskServlet() {
         DEVICE_FILE_PATH = com.gallatinsystems.common.util.PropertyUtil
@@ -195,7 +197,10 @@ public class TaskServlet extends AbstractRestApiServlet {
         } else {
             deviceFile.setProcessedStatus(StatusCode.PROCESSED_NO_ERRORS);
             for (SurveyInstance si : surveyInstances) {
-                si = siDao.save(si, deviceFile);
+                synchronized (LOCK) {
+                    // Synchronize datastore access.
+                    si = siDao.save(si, deviceFile);
+                }
                 // Fire a survey event
                 SurveyEventHelper.fireEvent(SurveyEventHelper.SUBMISSION_EVENT,
                         si.getSurveyId(), si.getKey().getId());
