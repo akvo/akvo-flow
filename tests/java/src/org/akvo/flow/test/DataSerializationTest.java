@@ -39,10 +39,23 @@ public class DataSerializationTest {
             + "\"responses\": ["
             + "{\"questionId\": \"1111\", \"answerType\": \"VALUE\", \"value\":\"questionvalue\"}"
             + "]}";
+    private static final String JSON_SURVEY_INSTANCE_EXTRA_FIELDS = "{"
+            + "\"formId\": 555, \"submissionDate\": 1234,"
+            + "\"duration\": 10, \"dataPointId\": \"xyz\","
+            + "\"uuid\": \"abc\", \"deviceId\": \"test\","
+            + "\"username\": \"testuser\","
+            + "\"undeclaredField\": \"undeclaredValue\","
+            + "\"responses\": ["
+            + "{\"questionId\": \"1111\", \"answerType\": \"VALUE\", \"value\":\"questionvalue\"}"
+            + "]}";
 
     @Test
     public void JSONTest() {
         SurveyInstance si = SurveyInstanceHandler.fromJSON(JSON_SURVEY_INSTANCE);
+        testSurveyInstance(si, true, true);
+        
+        // Additional (undeclared) fields
+        si = SurveyInstanceHandler.fromJSON(JSON_SURVEY_INSTANCE_EXTRA_FIELDS);
         testSurveyInstance(si, true, true);
     }
 
