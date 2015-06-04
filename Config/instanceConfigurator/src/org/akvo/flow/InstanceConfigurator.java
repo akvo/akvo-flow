@@ -318,18 +318,18 @@ public class InstanceConfigurator {
         googleMapsRegionBias.setArgs(1);
         googleMapsRegionBias.setRequired(false);
 
-        Option useCartodb = new Option("mc",
+        Option useCartodb = new Option("cm",
                 "True if the dashboard should use cartodb maps");
         useCartodb.setLongOpt("useCartodb");
         useCartodb.setArgs(1);
         useCartodb.setRequired(false);
 
-        Option cartodbApiKey = new Option("mc", "Cartodb api key");
+        Option cartodbApiKey = new Option("ck", "Cartodb api key");
         cartodbApiKey.setLongOpt("cartodbApiKey");
         cartodbApiKey.setArgs(1);
         cartodbApiKey.setRequired(false);
 
-        Option cartodbSqlApi = new Option("ms",
+        Option cartodbSqlApi = new Option("cs",
                 "Url endpoint for the cartodb sql api");
         cartodbSqlApi.setLongOpt("cartodbSqlApi");
         cartodbSqlApi.setArgs(1);
