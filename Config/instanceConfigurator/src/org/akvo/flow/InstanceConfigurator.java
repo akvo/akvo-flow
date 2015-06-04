@@ -77,18 +77,12 @@ public class InstanceConfigurator {
         String outFolder = cli.getOptionValue("o");
         String flowServices = cli.getOptionValue("fs");
         String eventNotification = cli.getOptionValue("en");
-        String enableChangeEvents = cli.getOptionValue("ce");
-        if (enableChangeEvents == null) {
-            enableChangeEvents = "false";
-        }
-        String useGoogleMapsLayers = cli.getOptionValue("gm");
-        if (useGoogleMapsLayers == null) {
-            useGoogleMapsLayers = "false";
-        }
-        String googleMapsRegionBias = cli.getOptionValue("rb");
-        if (googleMapsRegionBias == null) {
-            googleMapsRegionBias = "";
-        }
+        String enableChangeEvents = cli.getOptionValue("ce", "false");
+        String useGoogleMapsLayers = cli.getOptionValue("gm", "false");
+        String googleMapsRegionBias = cli.getOptionValue("rb", "");
+        String useCartodb = cli.getOptionValue("cm", "false");
+        String cartodbApiKey = cli.getOptionValue("ck", "");
+        String cartodbSqlApi = cli.getOptionValue("cs", "");
         String alias = cli.getOptionValue("a");
         String emailFrom = cli.getOptionValue("ef");
         String emailTo = cli.getOptionValue("et");
@@ -234,6 +228,9 @@ public class InstanceConfigurator {
         webData.put("enableChangeEvents", enableChangeEvents);
         webData.put("useGoogleMapsLayers", useGoogleMapsLayers);
         webData.put("googleMapsRegionBias", googleMapsRegionBias);
+        webData.put("useCartodb", useCartodb);
+        webData.put("cartodbApiKey", cartodbApiKey);
+        webData.put("cartodbSqlApi", cartodbSqlApi);
         webData.put("apiKey", apiKey);
         webData.put("emailFrom", emailFrom);
         webData.put("emailTo", emailTo);
@@ -321,6 +318,23 @@ public class InstanceConfigurator {
         googleMapsRegionBias.setArgs(1);
         googleMapsRegionBias.setRequired(false);
 
+        Option useCartodb = new Option("mc",
+                "True if the dashboard should use cartodb maps");
+        useCartodb.setLongOpt("useCartodb");
+        useCartodb.setArgs(1);
+        useCartodb.setRequired(false);
+
+        Option cartodbApiKey = new Option("mc", "Cartodb api key");
+        cartodbApiKey.setLongOpt("cartodbApiKey");
+        cartodbApiKey.setArgs(1);
+        cartodbApiKey.setRequired(false);
+
+        Option cartodbSqlApi = new Option("ms",
+                "Url endpoint for the cartodb sql api");
+        cartodbSqlApi.setLongOpt("cartodbSqlApi");
+        cartodbSqlApi.setArgs(1);
+        cartodbSqlApi.setRequired(false);
+
         Option outputFolder = new Option("o",
                 "Output folder for configuration files");
         outputFolder.setLongOpt("outFolder");
@@ -351,6 +365,9 @@ public class InstanceConfigurator {
         options.addOption(enableChangeEvents);
         options.addOption(useGoogleMapsLayers);
         options.addOption(googleMapsRegionBias);
+        options.addOption(useCartodb);
+        options.addOption(cartodbApiKey);
+        options.addOption(cartodbSqlApi);
         options.addOption(alias);
         options.addOption(signingKey);
 
