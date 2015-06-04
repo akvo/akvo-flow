@@ -51,7 +51,6 @@ public class DataProcessorRequest extends RestRequest {
     public static final String COUNTRY_PARAM = "country";
     public static final String SURVEY_ID_PARAM = "surveyId";
     public static final String QUESTION_GROUP_ID_PARAM = "questionGroupId";
-    public static final String IS_COPYING_SINGLE_QUESTION_GROUP_PARAM = "isCopyingSingleQuestionGroup";
     public static final String COUNTER_ID_PARAM = "summaryCounterId";
     public static final String SURVEY_INSTANCE_PARAM = "surveyInstanceId";
     public static final String QAS_ID_PARAM = "qasId";
@@ -79,7 +78,6 @@ public class DataProcessorRequest extends RestRequest {
     private Long surveyId;
     private Long surveyInstanceId;
     private Long questionGroupId;
-    private boolean isCopyingSingleQuestionGroup = false;
     private Long qasId;
     private Integer delta;
     private String apiKey;
@@ -110,13 +108,6 @@ public class DataProcessorRequest extends RestRequest {
                 addError(new RestError(RestError.BAD_DATATYPE_CODE,
                         RestError.BAD_DATATYPE_MESSAGE, QUESTION_GROUP_ID_PARAM
                                 + " must be a number"));
-            }
-        }
-        if (req.getParameter(IS_COPYING_SINGLE_QUESTION_GROUP_PARAM) != null) {
-            if ("true".equals(req.getParameter(IS_COPYING_SINGLE_QUESTION_GROUP_PARAM))) {
-                isCopyingSingleQuestionGroup = true;
-            } else {
-                isCopyingSingleQuestionGroup = false;
             }
         }
         if (req.getParameter(SURVEY_INSTANCE_PARAM) != null) {
@@ -251,10 +242,6 @@ public class DataProcessorRequest extends RestRequest {
 
     public void setQuestionGroupId(Long questionGroupId) {
         this.questionGroupId = questionGroupId;
-    }
-
-    public boolean getIsCopyingSingleQuestionGroup() {
-        return isCopyingSingleQuestionGroup;
     }
 
     public Long getQasId() {
