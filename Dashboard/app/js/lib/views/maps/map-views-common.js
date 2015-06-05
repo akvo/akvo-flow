@@ -45,76 +45,78 @@ FLOW.NavMapsView = FLOW.View.extend({
     Once the view is in the DOM create the map
   */
   didInsertElement: function () {
-    console.log("anything");
+    console.log(FLOW.Env);
 
     var self = this;
 
-    // create leaflet map
-  	var map = L.map('flowMap', {scrollWheelZoom: false}).setView([-0.703107, 36.765], 2);
-  	L.tileLayer('http://{s}.{base}.maps.cit.api.here.com/maptile/2.1/maptile/{mapID}/normal.day.transit/{z}/{x}/{y}/256/png8?app_id={app_id}&app_code={app_code}', {
-  		attribution: 'Map &copy; 1987-2014 <a href="http://developer.here.com">HERE</a>',
-  		subdomains: '1234',
-  		mapID: 'newest',
-  		app_id: 'Y8m9dK2brESDPGJPdrvs',
-  		app_code: 'dq2MYIvjAotR8tHvY8Q_Dg',
-  		base: 'base',
-  		maxZoom: 18
-  	}).addTo(map);
+    if(FLOW.Env.useCartodb){
+      // create leaflet map
+    	var map = L.map('flowMap', {scrollWheelZoom: false}).setView([-0.703107, 36.765], 2);
+    	L.tileLayer('http://{s}.{base}.maps.cit.api.here.com/maptile/2.1/maptile/{mapID}/normal.day.transit/{z}/{x}/{y}/256/png8?app_id={app_id}&app_code={app_code}', {
+    		attribution: 'Map &copy; 1987-2014 <a href="http://developer.here.com">HERE</a>',
+    		subdomains: '1234',
+    		mapID: 'newest',
+    		app_id: 'Y8m9dK2brESDPGJPdrvs',
+    		app_code: 'dq2MYIvjAotR8tHvY8Q_Dg',
+    		base: 'base',
+    		maxZoom: 18
+    	}).addTo(map);
 
-  	// add cartodb layer with one sublayer
-  	cartodb.createLayer(map, {
-  			user_name: 'flowaglimmerofhope-hrd',
-  			type: 'namedmap',
-  			named_map: {
-  				name: "data_points_map",
-  				layers: [{
-  					layer_name: "t",
-  					interactivity: "cartodb_id, name, identifier"
-  				}]
-  			}
-  	},{
-  		tiler_domain: "cartodb.akvo.org",
-  		tiler_port: "8181",
-  		tiler_protocol: "http",
-  		no_cdn: true
-  	})
-  	.addTo(map)
-  	.done(function(layer) {
-  			layer.getSubLayer(0).setInteraction(true);
+    	// add cartodb layer with one sublayer
+    	cartodb.createLayer(map, {
+    			user_name: 'flowaglimmerofhope-hrd',
+    			type: 'namedmap',
+    			named_map: {
+    				name: "data_points_map",
+    				layers: [{
+    					layer_name: "t",
+    					interactivity: "cartodb_id, name, identifier"
+    				}]
+    			}
+    	},{
+    		tiler_domain: "cartodb.akvo.org",
+    		tiler_port: "8181",
+    		tiler_protocol: "http",
+    		no_cdn: true
+    	})
+    	.addTo(map)
+    	.done(function(layer) {
+    			layer.getSubLayer(0).setInteraction(true);
 
-  			// on mouseover
-  			layer.getSubLayer(0).on('featureOver', function(e, pos, pixel, data) {
-  					// print data to console log
-  					console.log("Event #" + data.cartodb_id + ", name " + data.name + ", identifier: " + data.identifier);
-  			});
+    			// on mouseover
+    			layer.getSubLayer(0).on('featureOver', function(e, pos, pixel, data) {
+    					// print data to console log
+    					//console.log("Event #" + data.cartodb_id + ", name " + data.name + ", identifier: " + data.identifier);
+    			});
 
-  			// show infowindows on click
-  			cdb.vis.Vis.addInfowindow(map, layer.getSubLayer(0), ['cartodb_id', 'name', 'identifier']);
-  	});
+    			// show infowindows on click
+    			cdb.vis.Vis.addInfowindow(map, layer.getSubLayer(0), ['cartodb_id', 'name', 'identifier']);
+    	});
+    }else{
+      /*// insert the map
+      this.map = L.mapbox.map('flowMap', 'akvo.he30g8mm')
+        .setView([-0.703107, 36.765], 2);
 
-    /*// insert the map
-    this.map = L.mapbox.map('flowMap', 'akvo.he30g8mm')
-      .setView([-0.703107, 36.765], 2);
+      L.control.layers({
+        'Terrain': L.mapbox.tileLayer('akvo.he30g8mm').addTo(this.map),
+        'Streets': L.mapbox.tileLayer('akvo.he2pdjhk'),
+        'Satellite': L.mapbox.tileLayer('akvo.he30neh4')
+      }).addTo(this.map);
 
-    L.control.layers({
-      'Terrain': L.mapbox.tileLayer('akvo.he30g8mm').addTo(this.map),
-      'Streets': L.mapbox.tileLayer('akvo.he2pdjhk'),
-      'Satellite': L.mapbox.tileLayer('akvo.he30neh4')
-    }).addTo(this.map);
+      // add scale indication to map
+      L.control.scale({position:'topleft', maxWidth:150}).addTo(this.map);
 
-    // add scale indication to map
-    L.control.scale({position:'topleft', maxWidth:150}).addTo(this.map);
+      // couple listener to end of zoom or drag
+      this.map.on('moveend', function (e) {
+        self.redoMap();
+      });
 
-    // couple listener to end of zoom or drag
-    this.map.on('moveend', function (e) {
-      self.redoMap();
-    });
+      FLOW.placemarkController.set('map', this.map);
+      this.geoModel = create_geomodel();
 
-    FLOW.placemarkController.set('map', this.map);
-    this.geoModel = create_geomodel();
-
-    //load points for the visible map
-    this.redoMap();*/
+      //load points for the visible map
+      this.redoMap();*/
+    }
 
     this.$('#mapDetailsHideShow').click(function () {
       self.handleShowHideDetails();
@@ -123,7 +125,6 @@ FLOW.NavMapsView = FLOW.View.extend({
     // Slide in detailspane after 1 sec
     this.hideDetailsPane(1000);
   },
-
 
   /**
     Helper function to dispatch to either hide or show details pane
