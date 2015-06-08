@@ -266,8 +266,7 @@ public class SurveyalRestServlet extends AbstractRestApiServlet {
             latitude = (Double) geoLocationMap.get(MapUtils.LATITUDE);
             longitude = (Double) geoLocationMap.get(MapUtils.LONGITUDE);
 
-            if (!latitude.equals(locale.getLatitude())
-                    || !longitude.equals(locale.getLongitude())) {
+            if (locale.getGeocells() == null || locale.getGeocells().isEmpty()) {
                 locale.setLatitude(latitude);
                 locale.setLongitude(longitude);
                 try {
