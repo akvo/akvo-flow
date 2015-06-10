@@ -45,11 +45,28 @@ FLOW.NavMapsView = FLOW.View.extend({
     Once the view is in the DOM create the map
   */
   didInsertElement: function () {
-    console.log(FLOW.Env);
+    //console.log(FLOW.Env);
 
     var self = this;
 
     if(FLOW.Env.useCartodb){
+
+      $.get("http://localhost:8080/cartodb_rest_api/index.php/data/surveys", function(data, status){
+    		//console.log(data);
+        var rows = [];
+        if(data["rows"].length > 0){
+          rows = data["rows"];
+          rows.sort(function(el1, el2){
+        		return self.compare(el1, el2, "name")
+        	});
+
+          for(var i=0; i<rows.length; i++){
+            //console.log(data["rows"][i]["name"]);
+            $("#survey_selector").append('<option value="'+rows[i]["id"]+'">'+rows[i]["name"]+'</option>');
+          }
+        }
+    	});
+
       // create leaflet map
     	var map = L.map('flowMap', {scrollWheelZoom: false}).setView([-0.703107, 36.765], 2);
     	L.tileLayer('http://{s}.{base}.maps.cit.api.here.com/maptile/2.1/maptile/{mapID}/normal.day.transit/{z}/{x}/{y}/256/png8?app_id={app_id}&app_code={app_code}', {
@@ -225,6 +242,10 @@ FLOW.NavMapsView = FLOW.View.extend({
           verticalBars[3]);
       }
     }, this);
+  },
+
+  compare: function (el1, el2, index) {
+  	return el1[index] == el2[index] ? 0 : (el1[index] < el2[index] ? -1 : 1);
   }
 
 });
