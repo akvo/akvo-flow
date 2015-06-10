@@ -53,6 +53,33 @@ public class CartodbRestService {
         }
     }
 
+    @RequestMapping(method = RequestMethod.GET, value = "surveys")
+    @ResponseBody
+    public Map<String, Object> listSurveys() {
+        Map<String, Object> response = new HashMap<>();
+        response.put("surveys", null);
+        try {
+            response.put("surveys", queryCartodb("SELECT * FROM survey"));
+            return response;
+        } catch (IOException e) {
+            return response;
+        }
+    }
+
+    @RequestMapping(method = RequestMethod.GET, value = "forms")
+    @ResponseBody
+    public Map<String, Object> getForms(@RequestParam("surveyId") Long surveyId) {
+        Map<String, Object> response = new HashMap<>();
+        response.put("forms", null);
+        try {
+            response.put("forms",
+                    queryCartodb(String.format("SELECT * FROM form WHERE survey_id=%d", surveyId)));
+            return response;
+        } catch (IOException e) {
+            return response;
+        }
+    }
+
     private static List<Map<String, Object>> queryCartodb(String query) throws IOException {
 
         String urlString = String.format(SQL_API + "?q=%s&api_key=%s",
