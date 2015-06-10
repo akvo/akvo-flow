@@ -51,11 +51,11 @@ FLOW.NavMapsView = FLOW.View.extend({
 
     if(FLOW.Env.useCartodb){
 
-      $.get("http://localhost:8080/cartodb_rest_api/index.php/data/surveys", function(data, status){
+      $.get("/rest/cartodb/surveys", function(data, status){
     		//console.log(data);
         var rows = [];
-        if(data["rows"].length > 0){
-          rows = data["rows"];
+        if(data["surveys"].length > 0){
+          rows = data["surveys"];
           rows.sort(function(el1, el2){
         		return self.compare(el1, el2, "name")
         	});
