@@ -5,6 +5,15 @@ Read more about the [Akvo Platform](http://www.akvo.org/blog/?p=4822).
 
 Akvo FLOW Dashboard release notes
 ----
+#1.8.7
+Date: 11 June 2015
+
+# Resolved issues
+* Fix geocells computation [#1295]
+* Multiple `SurveyedLocale` entities created for the same `surveyedLocaleIdentifier` [#1282]
+* `QuestionGroup` does not resolve all dependent questions correctly when copying `Survey` [#1217]
+* Bring back google map satelite layer [#919]
+
 #1.8.6.1
 Date: 29 May 2015
 
