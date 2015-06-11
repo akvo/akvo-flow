@@ -5,6 +5,12 @@ Read more about the [Akvo Platform](http://www.akvo.org/blog/?p=4822).
 
 Akvo FLOW Dashboard release notes
 ----
+#1.8.7.1
+Date: 11 June 2015
+
+# Resolved issues
+* Add check for missing survey when recomputing clusters #1302
+
 #1.8.7
 Date: 11 June 2015
 
