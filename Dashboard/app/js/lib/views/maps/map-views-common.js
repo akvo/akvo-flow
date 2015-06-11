@@ -50,6 +50,7 @@ FLOW.NavMapsView = FLOW.View.extend({
     var self = this;
 
     if(FLOW.Env.useCartodb){
+      var data_layer;
 
       $.get("/rest/cartodb/surveys", function(data, status){
     		//console.log(data);
@@ -82,14 +83,20 @@ FLOW.NavMapsView = FLOW.View.extend({
     	// add cartodb layer with one sublayer
     	cartodb.createLayer(map, {
     			user_name: 'flowaglimmerofhope-hrd',
-    			type: 'namedmap',
+          type: 'cartodb',
+    			sublayers: [{
+    		    sql: "SELECT * FROM data_point",
+    		    cartocss: '/** simple visualization */#data_point{marker-fill-opacity: 0.9;marker-line-color: #FFF;marker-line-width: 1.5;marker-line-opacity: 1;marker-placement: point;marker-type: ellipse;marker-width: 10;marker-fill: #FF6600;marker-allow-overlap: true;}',
+            interactivity: "name, survey_id, id, identifier"
+    		  }]
+    			/*type: 'namedmap',
     			named_map: {
     				name: "data_points_map",
     				layers: [{
     					layer_name: "t",
     					interactivity: "cartodb_id, name, identifier"
     				}]
-    			}
+    			}*/
     	},{
     		tiler_domain: "cartodb.akvo.org",
     		tiler_port: "8181",
@@ -98,7 +105,10 @@ FLOW.NavMapsView = FLOW.View.extend({
     	})
     	.addTo(map)
     	.done(function(layer) {
+          data_layer = layer.getSubLayer(0);
+
     			layer.getSubLayer(0).setInteraction(true);
+          self.addCursorInteraction(layer);
 
     			// on mouseover
     			layer.getSubLayer(0).on('featureOver', function(e, pos, pixel, data) {
@@ -106,9 +116,38 @@ FLOW.NavMapsView = FLOW.View.extend({
     					//console.log("Event #" + data.cartodb_id + ", name " + data.name + ", identifier: " + data.identifier);
     			});
 
+          layer.getSubLayer(0).infowindow.set('template', $('#infowindow_template').html());
+
+          layer.getSubLayer(0).on('featureClick', function(e, latlng, pos, data) {
+            //todo: place marker on clicked point's latlng
+            $.get("/rest/cartodb/answers?dataPointId="+data.id+"&surveyId="+data.survey_id, function(point_data, status){
+              console.log(point_data);
+            });
+            //console.log("Hey! You clicked " + data.cartodb_id);
+          });
+
     			// show infowindows on click
-    			cdb.vis.Vis.addInfowindow(map, layer.getSubLayer(0), ['cartodb_id', 'name', 'identifier']);
+    			//cdb.vis.Vis.addInfowindow(map, layer.getSubLayer(0), ['name', 'identifier']);
     	});
+
+      $( "#survey_selector" ).change(function() {
+        if($( "#survey_selector" ).val() == ""){
+          LayerActions['all']();
+        }else{
+          LayerActions['survey']();
+        }
+      });
+
+      var LayerActions = {
+      		all: function(){
+      			data_layer.setSQL("SELECT * FROM data_point");
+      			return true;
+      		},
+      		survey: function(){
+            data_layer.setSQL("SELECT * FROM data_point WHERE survey_id = '"+$( "#survey_selector option:selected" ).val()+"'");
+      			return true;
+      		}
+      }
     }else{
       /*// insert the map
       this.map = L.mapbox.map('flowMap', 'akvo.he30g8mm')
@@ -246,6 +285,24 @@ FLOW.NavMapsView = FLOW.View.extend({
 
   compare: function (el1, el2, index) {
   	return el1[index] == el2[index] ? 0 : (el1[index] < el2[index] ? -1 : 1);
+  },
+
+  addCursorInteraction: function (layer) {
+    var hovers = [];
+
+    layer.bind('featureOver', function(e, latlon, pxPos, data, layer) {
+      hovers[layer] = 1;
+      if(_.any(hovers)) {
+        $('#flowMap').css('cursor', 'pointer');
+      }
+    });
+
+    layer.bind('featureOut', function(m, layer) {
+      hovers[layer] = 0;
+      if(!_.any(hovers)) {
+        $('#flowMap').css({"cursor":"-moz-grabbing","cursor":"-webkit-grabbing"});
+      }
+    });
   }
 
 });

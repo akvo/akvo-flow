@@ -12,13 +12,29 @@
       </select>
     </div>
     <div style="width: 150px; float: left">
-      <label for="form_selector">Select a form</label>
+      <!-- <label for="form_selector">Select a form</label>
       <select class="" name="form_selector" id="form_selector">
         <option value="">--All--</option>
-      </select>
+      </select> -->
     </div>
   </div>
   <div id="flowMap"></div>
+  <script type="infowindow/html" id="infowindow_template">
+    <div class="cartodb-popup">
+      <a href="#close" class="cartodb-popup-close-button close">x</a>
+       <div class="cartodb-popup-content-wrapper">
+         <div class="cartodb-popup-header">
+           <img style="width: 100%" src="http://cartodb.com/assets/logos/logos_full_cartodb_light.png"></src>
+         </div>
+         <div class="cartodb-popup-content">
+           <!-- content.data contains the field info -->
+           <h4>Title: </h4>
+           <p>Content</p>
+         </div>
+       </div>
+       <div class="cartodb-popup-tip-container"></div>
+    </div>
+  </script>
   {{#view FLOW.PlacemarkDetailView controllerBinding="FLOW.placemarkDetailController"}}
     <div id="pointDetails">
       {{#if content}}
