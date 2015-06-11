@@ -81,10 +81,13 @@ public class MapUtils {
                     showOnPublicMap = (Boolean) cache.get(pubKey);
                 } else {
                     Survey s = sDao.getByKey(surveyId);
-                    SurveyGroup surveyGroup = SurveyUtils.retrieveSurveyGroup(s.getSurveyGroupId());
                     if (s != null) {
-                        showOnPublicMap = surveyGroup.getPrivacyLevel() == PrivacyLevel.PUBLIC;
-                        putObject(cache, pubKey, showOnPublicMap);
+                        SurveyGroup surveyGroup = SurveyUtils.retrieveSurveyGroup(s
+                                .getSurveyGroupId());
+                        if (surveyGroup != null) {
+                            showOnPublicMap = surveyGroup.getPrivacyLevel() == PrivacyLevel.PUBLIC;
+                            putObject(cache, pubKey, showOnPublicMap);
+                        }
                     }
                 }
             }
