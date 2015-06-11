@@ -25,6 +25,7 @@ public class CartodbRestService {
 
     private static final String API_KEY = PropertyUtil.getProperty("cartodbApiKey");
     private static final String SQL_API = PropertyUtil.getProperty("cartodbSqlApi");
+    private static final ObjectMapper objectMapper = new ObjectMapper();
 
     @RequestMapping(method = RequestMethod.GET, value = "answers")
     @ResponseBody
@@ -80,22 +81,18 @@ public class CartodbRestService {
         }
     }
 
+    @SuppressWarnings("unchecked")
     private static List<Map<String, Object>> queryCartodb(String query) throws IOException {
-
         String urlString = String.format(SQL_API + "?q=%s&api_key=%s",
                 URLEncoder.encode(query, "UTF-8"), API_KEY);
-
         URL url = new URL(urlString);
         HttpURLConnection connection = (HttpURLConnection) url.openConnection();
         connection.setDoOutput(true);
         connection.setRequestMethod("GET");
         connection.setRequestProperty("Content-Type", "application/json");
 
-        ObjectMapper m = new ObjectMapper();
-        JsonNode jsonNode = m.readTree(connection.getInputStream());
+        JsonNode jsonNode = objectMapper.readTree(connection.getInputStream());
 
-        JsonNode rows = jsonNode.get("rows");
-
-        return m.convertValue(rows, List.class);
+        return objectMapper.convertValue(jsonNode.get("rows"), List.class);
     }
 }
