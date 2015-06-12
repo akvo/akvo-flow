@@ -50,6 +50,7 @@ FLOW.NavMapsView = FLOW.View.extend({
     var self = this;
 
     if(FLOW.Env.useCartodb){
+      //Define the data layer
       var data_layer;
 
       $.get("/rest/cartodb/surveys", function(data, status){
@@ -62,7 +63,7 @@ FLOW.NavMapsView = FLOW.View.extend({
         	});
 
           for(var i=0; i<rows.length; i++){
-            //console.log(data["rows"][i]["name"]);
+            //append return survey list to the survey selector element
             $("#survey_selector").append('<option value="'+rows[i]["id"]+'">'+rows[i]["name"]+'</option>');
           }
         }
@@ -89,14 +90,6 @@ FLOW.NavMapsView = FLOW.View.extend({
     		    cartocss: '/** simple visualization */#data_point{marker-fill-opacity: 0.9;marker-line-color: #FFF;marker-line-width: 1.5;marker-line-opacity: 1;marker-placement: point;marker-type: ellipse;marker-width: 10;marker-fill: #FF6600;marker-allow-overlap: true;}',
             interactivity: "name, survey_id, id, identifier"
     		  }]
-    			/*type: 'namedmap',
-    			named_map: {
-    				name: "data_points_map",
-    				layers: [{
-    					layer_name: "t",
-    					interactivity: "cartodb_id, name, identifier"
-    				}]
-    			}*/
     	},{
     		tiler_domain: "cartodb.akvo.org",
     		tiler_port: "8181",
@@ -115,19 +108,15 @@ FLOW.NavMapsView = FLOW.View.extend({
     					// print data to console log
     					//console.log("Event #" + data.cartodb_id + ", name " + data.name + ", identifier: " + data.identifier);
     			});
-
-          layer.getSubLayer(0).infowindow.set('template', $('#infowindow_template').html());
-
           layer.getSubLayer(0).on('featureClick', function(e, latlng, pos, data) {
-            //todo: place marker on clicked point's latlng
+            //open a popup and pass some clicked point data
+            self.openPopup(map, data.identifier, latlng);
+
+            //get all clicked point data
             $.get("/rest/cartodb/answers?dataPointId="+data.id+"&surveyId="+data.survey_id, function(point_data, status){
               console.log(point_data);
             });
-            //console.log("Hey! You clicked " + data.cartodb_id);
           });
-
-    			// show infowindows on click
-    			//cdb.vis.Vis.addInfowindow(map, layer.getSubLayer(0), ['name', 'identifier']);
     	});
 
       $( "#survey_selector" ).change(function() {
@@ -149,7 +138,7 @@ FLOW.NavMapsView = FLOW.View.extend({
       		}
       }
     }else{
-      /*// insert the map
+      // insert the map
       this.map = L.mapbox.map('flowMap', 'akvo.he30g8mm')
         .setView([-0.703107, 36.765], 2);
 
@@ -171,7 +160,7 @@ FLOW.NavMapsView = FLOW.View.extend({
       this.geoModel = create_geomodel();
 
       //load points for the visible map
-      this.redoMap();*/
+      this.redoMap();
     }
 
     this.$('#mapDetailsHideShow').click(function () {
@@ -303,6 +292,13 @@ FLOW.NavMapsView = FLOW.View.extend({
         $('#flowMap').css({"cursor":"-moz-grabbing","cursor":"-webkit-grabbing"});
       }
     });
+  },
+
+  openPopup: function(mapObject, popupContent, latLng){
+    L.popup()
+    .setLatLng(latLng)
+    .setContent(popupContent)
+    .openOn(mapObject);
   }
 
 });

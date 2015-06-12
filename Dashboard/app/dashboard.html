@@ -15,11 +15,6 @@
         <![endif]-->
     <!-- Stylesheets -->
     <link rel="stylesheet" href="css/screen.css" media="screen,projection" />
-    <!-- <script src='//api.tiles.mapbox.com/mapbox.js/v1.6.1/mapbox.js'></script>
-    <link href='//api.tiles.mapbox.com/mapbox.js/v1.6.1/mapbox.css' rel='stylesheet' /> -->
-
-    <link rel="stylesheet" href="//libs.cartocdn.com/cartodb.js/v3/3.11/themes/css/cartodb.css" />
-    <script type="text/javascript" src="//libs.cartocdn.com/cartodb.js/v3/3.11/cartodb.js"></script>
 
     <link href="//fonts.googleapis.com/css?family=Open+Sans:400,300,600,700,400italic,600italic,300italic|Montserrat:400,700|Raleway|Dancing+Script:400,700" rel="stylesheet" type="text/css">
 </head>
@@ -45,6 +40,25 @@
     <script src="/ui-strings.js"></script>
     <script src="/flowenv.js"></script>
     <script src="/currentuser.js"></script>
+    <script type="text/javascript">
+    $(function(){
+      var head = document.getElementsByTagName('head')[0];
+      var link = document.createElement('link');
+      var script = document.createElement('script');
+
+      link.rel = 'stylesheet';
+      script.type = 'text/javascript';
+      if(FLOW.Env.useCartodb){
+        link.href = "//libs.cartocdn.com/cartodb.js/v3/3.11/themes/css/cartodb.css";
+        script.src = "//libs.cartocdn.com/cartodb.js/v3/3.11/cartodb.js";
+      }else{
+        link.href = "//api.tiles.mapbox.com/mapbox.js/v1.6.1/mapbox.css";
+        script.src = "//api.tiles.mapbox.com/mapbox.js/v1.6.1/mapbox.js";
+      }
+      head.appendChild(link);
+      head.appendChild(script);
+    });
+    </script>
     <script src="js/app.js"></script>
     <script>
         loader.require('akvo-flow/main');
