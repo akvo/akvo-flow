@@ -22,9 +22,17 @@ public class DataUtils {
 
     public final static String DATA_POINT_KIND = "SurveyInstance";
 
+    public final static String USER_KIND = "User";
+
     public final static String DATA_POINT_STRING_ID = "surveyedLocaleIdentifier";
 
     public final static String DATA_POINT_NUMERICAL_ID = "surveyedLocaleId";
+
+    public final static String USER_EMAIL_FIELD = "emailAddress";
+
+    public final static String USER_PERMISSION_FIELD = "permissionList";
+
+    public final static String USER_ROLE_FIELD = "superAdmin";
 
     private final static int DEFAULT_BATCH_SIZE = 1000;
 
