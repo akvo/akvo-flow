@@ -25,6 +25,7 @@ import java.util.TreeMap;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+import org.akvo.flow.domain.SecuredObject;
 import org.apache.commons.lang.ArrayUtils;
 import org.apache.commons.lang.StringUtils;
 import org.json.JSONObject;
@@ -265,6 +266,25 @@ public class SurveyUtils {
         }
 
         return sg.getPath() + "/" + s.getName();
+    }
+
+    public static List<Long> retrieveAncestorIds(SecuredObject s) {
+        List<Long> ancestorIds = new ArrayList<Long>();
+        if (s.getParentObject() == null) {
+            return null;
+        }
+
+        SecuredObject parent = s.getParentObject();
+        if (parent == null) {
+            return null;
+        }
+
+        if (parent.listAncestorIds() != null) {
+            ancestorIds.addAll(parent.listAncestorIds());
+        }
+        ancestorIds.add(parent.getObjectId()); // add parent id to returned ancestor list
+
+        return ancestorIds;
     }
 
     public static String fixPath(String oldPath, String newName) {
