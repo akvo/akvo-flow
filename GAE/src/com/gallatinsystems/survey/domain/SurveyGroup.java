@@ -23,13 +23,15 @@ import java.util.List;
 import javax.jdo.annotations.NotPersistent;
 import javax.jdo.annotations.PersistenceCapable;
 
+import org.akvo.flow.domain.SecuredObject;
+
 import com.gallatinsystems.framework.domain.BaseDomain;
 
 /**
  * a grouping of surveys.
  */
 @PersistenceCapable
-public class SurveyGroup extends BaseDomain {
+public class SurveyGroup extends BaseDomain implements SecuredObject {
 
     private static final long serialVersionUID = 8941584684617286776L;
     private String name = null;
@@ -43,6 +45,7 @@ public class SurveyGroup extends BaseDomain {
     private String defaultLanguageCode;
     private PrivacyLevel privacyLevel;
     private Boolean published;
+    private List<Long> ancestorIds;
 
     @NotPersistent
     private HashMap<String, Translation> altTextMap;
@@ -165,5 +168,18 @@ public class SurveyGroup extends BaseDomain {
 
     public void setPublished(Boolean published) {
         this.published = published;
+    }
+
+    public List<Long> getAncestorIds() {
+        return ancestorIds;
+    }
+
+    public void setAncestorIds(List<Long> ancestorIds) {
+        this.ancestorIds = ancestorIds;
+    }
+
+    @Override
+    public List<Long> listAncestors() {
+        return ancestorIds;
     }
 }

@@ -17,10 +17,13 @@
 package com.gallatinsystems.survey.domain;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.TreeMap;
 
 import javax.jdo.annotations.NotPersistent;
 import javax.jdo.annotations.PersistenceCapable;
+
+import org.akvo.flow.domain.SecuredObject;
 
 import com.gallatinsystems.framework.domain.BaseDomain;
 
@@ -30,7 +33,7 @@ import com.gallatinsystems.framework.domain.BaseDomain;
  * language is considered primary.
  */
 @PersistenceCapable
-public class Survey extends BaseDomain {
+public class Survey extends BaseDomain implements SecuredObject {
 
     private static final long serialVersionUID = -8638039212962768687L;
     @NotPersistent
@@ -50,6 +53,7 @@ public class Survey extends BaseDomain {
     private String pointType;
     private String defaultLanguageCode;
     private Boolean requireApproval;
+    private List<Long> ancestorIds;
 
     public enum Status {
         PUBLISHED, NOT_PUBLISHED, IMPORTED, VERIFIED, COPYING
@@ -206,5 +210,18 @@ public class Survey extends BaseDomain {
 
     public Boolean getRequireApproval() {
         return requireApproval;
+    }
+
+    public List<Long> getAncestorIds() {
+        return ancestorIds;
+    }
+
+    public void setAncestorIds(List<Long> ancestorIds) {
+        this.ancestorIds = ancestorIds;
+    }
+
+    @Override
+    public List<Long> listAncestors() {
+        return ancestorIds;
     }
 }
