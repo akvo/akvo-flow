@@ -43,6 +43,8 @@ import com.gallatinsystems.survey.dao.SurveyUtils;
 import com.gallatinsystems.survey.domain.Survey;
 import com.gallatinsystems.survey.domain.SurveyGroup;
 
+import static com.gallatinsystems.common.Constants.ANCESTOR_IDS_FIELD;
+
 @Controller
 @RequestMapping("/survey_groups")
 public class SurveyGroupRestService {
@@ -181,7 +183,7 @@ public class SurveyGroupRestService {
                     // or provided by the Dao.
                     BeanUtils.copyProperties(surveyGroupDto, s, new String[] {
                             "createdDateTime", "lastUpdateDateTime",
-                            "displayName", "questionGroupList"
+                            "displayName", "questionGroupList", ANCESTOR_IDS_FIELD
                     });
 
                     String name = s.getName();
@@ -199,6 +201,7 @@ public class SurveyGroupRestService {
 
                     s = surveyGroupDao.save(s);
 
+                    s.setAncestorIds(SurveyUtils.retrieveAncestorIds(s));
                     dto = new SurveyGroupDto();
                     DtoMarshaller.copyToDto(s, dto);
                     statusDto.setStatus("ok");
@@ -232,8 +235,10 @@ public class SurveyGroupRestService {
             // provided by the Dao.
             BeanUtils.copyProperties(surveyGroupDto, s, new String[] {
                     "createdDateTime", "lastUpdateDateTime", "displayName",
-                    "questionGroupList"
+                    "questionGroupList", ANCESTOR_IDS_FIELD
             });
+
+            s.setAncestorIds(SurveyUtils.retrieveAncestorIds(s));
 
             // Make sure that code and name are the same
             s.setCode(s.getName());
