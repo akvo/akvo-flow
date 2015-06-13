@@ -41,7 +41,6 @@ import com.gallatinsystems.gis.map.MapUtils;
 import com.gallatinsystems.survey.dao.QuestionDao;
 import com.gallatinsystems.survey.dao.SurveyDAO;
 import com.gallatinsystems.survey.domain.Question;
-import com.gallatinsystems.survey.domain.Survey;
 
 import static com.gallatinsystems.common.Constants.MAX_LENGTH;
 
@@ -405,16 +404,33 @@ public class SurveyInstance extends BaseDomain implements SecuredObject {
     }
 
     @Override
-    public List<Long> listAncestors() {
+    public SecuredObject getParentObject() {
         if (surveyId == null) {
             return null;
         }
 
-        Survey s = new SurveyDAO().getByKey(surveyId);
+        return new SurveyDAO().getByKey(surveyId);
+    }
+
+    @Override
+    public Long getObjectId() {
+        if (key == null) {
+            return null;
+        }
+        return key.getId();
+    }
+
+    @Override
+    public List<Long> listAncestorIds() {
+        if (surveyId == null) {
+            return null;
+        }
+
+        SecuredObject s = new SurveyDAO().getByKey(surveyId);
         if (s == null) {
             return null;
         }
 
-        return s.listAncestors();
+        return s.listAncestorIds();
     }
 }

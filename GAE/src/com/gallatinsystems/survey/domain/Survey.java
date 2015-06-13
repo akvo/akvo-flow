@@ -1,5 +1,5 @@
 /*
- *  Copyright (C) 2010-2012 Stichting Akvo (Akvo Foundation)
+ *  Copyright (C) 2010-2015 Stichting Akvo (Akvo Foundation)
  *
  *  This file is part of Akvo FLOW.
  *
@@ -26,6 +26,7 @@ import javax.jdo.annotations.PersistenceCapable;
 import org.akvo.flow.domain.SecuredObject;
 
 import com.gallatinsystems.framework.domain.BaseDomain;
+import com.gallatinsystems.survey.dao.SurveyGroupDAO;
 
 /**
  * Survey are a collection of questionGroups (that, in turn, have collections of questions). A
@@ -53,7 +54,6 @@ public class Survey extends BaseDomain implements SecuredObject {
     private String pointType;
     private String defaultLanguageCode;
     private Boolean requireApproval;
-    private List<Long> ancestorIds;
 
     public enum Status {
         PUBLISHED, NOT_PUBLISHED, IMPORTED, VERIFIED, COPYING
@@ -212,16 +212,25 @@ public class Survey extends BaseDomain implements SecuredObject {
         return requireApproval;
     }
 
-    public List<Long> getAncestorIds() {
-        return ancestorIds;
-    }
+    @Override
+    public SecuredObject getParentObject() {
+        if (surveyGroupId == null) {
+            return null;
+        }
 
-    public void setAncestorIds(List<Long> ancestorIds) {
-        this.ancestorIds = ancestorIds;
+        return new SurveyGroupDAO().getByKey(surveyGroupId);
     }
 
     @Override
-    public List<Long> listAncestors() {
+    public Long getObjectId() {
+        if (key == null) {
+            return null;
+        }
+        return key.getId();
+    }
+
+    @Override
+    public List<Long> listAncestorIds() {
         return ancestorIds;
     }
 }

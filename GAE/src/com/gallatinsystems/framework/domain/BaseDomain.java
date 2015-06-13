@@ -18,6 +18,7 @@ package com.gallatinsystems.framework.domain;
 
 import java.io.Serializable;
 import java.util.Date;
+import java.util.List;
 
 import javax.jdo.annotations.IdGeneratorStrategy;
 import javax.jdo.annotations.Inheritance;
@@ -31,7 +32,7 @@ import com.google.appengine.api.datastore.Key;
 /**
  * base class for all persistent objects. It defines 5 fields common to all persistent objects (key
  * plus 4 audit fields).
- * 
+ *
  * @author Christopher Fagiani
  */
 @PersistenceCapable
@@ -46,6 +47,7 @@ public abstract class BaseDomain implements Serializable {
     protected Date lastUpdateDateTime;
     protected Long lastUpdateUserId;
     protected Long createUserId;
+    protected List<Long> ancestorIds;
 
     public Key getKey() {
         return key;
@@ -85,5 +87,13 @@ public abstract class BaseDomain implements Serializable {
 
     public void setCreateUserId(Long createUserId) {
         this.createUserId = createUserId;
+    }
+
+    public List<Long> getAncestorIds() {
+        return ancestorIds;
+    }
+
+    public void setAncestorIds(List<Long> ancestorIds) {
+        this.ancestorIds = ancestorIds;
     }
 }
