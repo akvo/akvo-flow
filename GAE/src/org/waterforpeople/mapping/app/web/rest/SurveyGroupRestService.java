@@ -85,13 +85,13 @@ public class SurveyGroupRestService {
         }
 
         // if we are here, it is a regular request
-        List<SurveyGroup> surveys = surveyGroupDao.listAllFilteredByUserAuthorization();
+        List<SurveyGroup> surveyGroups = surveyGroupDao.listAllFilteredByUserAuthorization();
         SurveyDAO surveyDao = new SurveyDAO();
-        if (surveys != null) {
-            for (SurveyGroup s : surveys) {
+        if (surveyGroups != null) {
+            for (SurveyGroup sg : surveyGroups) {
                 SurveyGroupDto dto = new SurveyGroupDto();
-                DtoMarshaller.copyToDto(s, dto);
-                List<Survey> surveyList = surveyDao.listSurveysByGroup(s.getKey().getId());
+                DtoMarshaller.copyToDto(sg, dto);
+                List<Survey> surveyList = surveyDao.listSurveysByGroup(sg.getKey().getId());
                 if (surveyList != null && !surveyList.isEmpty()) {
                     SurveyDto sDto = new SurveyDto();
                     // we don't want/need the full object
