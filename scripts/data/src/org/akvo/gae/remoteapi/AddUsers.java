@@ -70,6 +70,7 @@ public class AddUsers implements Process {
             String[] userParts = line.split(",", 3);
             if (userParts.length < 3 || userParts[0].trim().length() == 0) {
                 System.out.println("Skipping user: " + line);
+                continue;
             }
             Entity user = new Entity(USER_KIND);
             user.setProperty(USER_EMAIL_FIELD, userParts[0].trim());
