@@ -42,6 +42,7 @@ import org.waterforpeople.mapping.app.web.rest.dto.RestStatusDto;
 import org.waterforpeople.mapping.app.web.rest.dto.SurveyPayload;
 import org.waterforpeople.mapping.dao.QuestionAnswerStoreDao;
 
+import static com.gallatinsystems.common.Constants.ANCESTOR_IDS_FIELD;
 import com.gallatinsystems.survey.dao.SurveyDAO;
 import com.gallatinsystems.survey.dao.SurveyUtils;
 import com.gallatinsystems.survey.domain.Survey;
@@ -257,8 +258,10 @@ public class SurveyRestService {
                     BeanUtils.copyProperties(surveyDto, s, new String[] {
                             "createdDateTime", "status", "sector", "version",
                             "lastUpdateDateTime", "description",
-                            "instanceCount"
+                            "instanceCount", ANCESTOR_IDS_FIELD
                     });
+
+                    s.setAncestorIds(SurveyUtils.retrieveAncestorIds(s));
 
                     s.setDesc(surveyDto.getDescription());
 
@@ -359,7 +362,7 @@ public class SurveyRestService {
         BeanUtils.copyProperties(dto, s, new String[] {
                 "createdDateTime",
                 "status", "sector", "version", "lastUpdateDateTime",
-                "displayName", "questionGroupList", "instanceCount"
+                "displayName", "questionGroupList", "instanceCount", ANCESTOR_IDS_FIELD
         });
 
         if (dto.getStatus() != null) {
@@ -369,6 +372,8 @@ public class SurveyRestService {
         if (dto.getSector() != null) {
             s.setSector(Survey.Sector.valueOf(dto.getSector()));
         }
+
+        s.setAncestorIds(SurveyUtils.retrieveAncestorIds(s));
 
         // ignore version number sent by Dashboard and initialise
         s.getVersion();
