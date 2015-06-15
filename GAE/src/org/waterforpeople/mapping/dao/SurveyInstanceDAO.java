@@ -69,15 +69,15 @@ import com.google.appengine.api.taskqueue.TaskOptions;
 
 public class SurveyInstanceDAO extends BaseDAO<SurveyInstance> {
     private static final String DEFAULT_ORG_PROP = "defaultOrg";
+    private final QuestionAnswerStoreDao qasDao = new QuestionAnswerStoreDao();
+    private final DeviceDAO deviceDao = new DeviceDAO();
+    private final QuestionDao questionDao = new QuestionDao();
 
     public SurveyInstanceDAO() {
         super(SurveyInstance.class);
     }
     
     public SurveyInstance save(SurveyInstance si, DeviceFiles deviceFile) {
-        final QuestionAnswerStoreDao qasDao = new QuestionAnswerStoreDao();
-        final DeviceDAO deviceDao = new DeviceDAO();
-        
         // Check whether the instance is already stored in the database.
         boolean isNew = true;
         SurveyInstance existing = findByUUID(si.getUuid());
@@ -99,21 +99,17 @@ public class SurveyInstanceDAO extends BaseDAO<SurveyInstance> {
         final Set<QuestionAnswerStore> locations = new HashSet<>();
         final List<QuestionAnswerStore> responses = new ArrayList<>();
         for (QuestionAnswerStore qas : si.getQuestionAnswersStore()) {
-            qas.setSurveyInstanceId(surveyInstanceId);
-            if (qasDao.isCached(Long.valueOf(qas.getQuestionID()), surveyInstanceId)) {
-                log.log(Level.INFO,
-                        "Skipping QAS already present in datasore [SurveyInstance, Survey, Question]: "
-                                + surveyInstanceId + ", " + si.getSurveyId() + ", " + qas.getQuestionID());
-                continue; // Already stored
+            if (isValid(qas, si)) {
+                qas.setSurveyInstanceId(surveyInstanceId);
+                
+                if (Question.Type.GEO.toString().equals(qas.getType()) && isNew) {
+                    locations.add(qas);
+                } else if ("IMAGE".equals(qas.getType())) {
+                    // The device send values as IMAGE and not PHOTO.
+                    images.add(qas);
+                }
+                responses.add(qas);
             }
-            
-            if (Question.Type.GEO.toString().equals(qas.getType()) && isNew) {
-                locations.add(qas);
-            } else if ("IMAGE".equals(qas.getType())) {
-                // The device send values as IMAGE and not PHOTO.
-                images.add(qas);
-            }
-            responses.add(qas);
         }
         
         // batch save all responses
@@ -167,6 +163,27 @@ public class SurveyInstanceDAO extends BaseDAO<SurveyInstance> {
         si.updateSummaryCounts(true);
         
         return si;
+    }
+    
+    private boolean isValid(QuestionAnswerStore qas, SurveyInstance si) {
+        try {
+            Long qid = Long.valueOf(qas.getQuestionID());
+            if (qasDao.isCached(qid, si.getKey().getId())) {
+                log.log(Level.INFO,
+                        "Skipping QAS already present in datasore [SurveyInstance, Survey, Question]: "
+                                + qas.getSurveyInstanceId() + ", " + si.getSurveyId() + ", " + qas.getQuestionID());
+                return false;
+            } else if (questionDao.getByKey(qid) == null) {
+                log.log(Level.WARNING, String.format("Question %d not found in the datastore", qid));
+                return false;
+            }
+        } catch (NumberFormatException e) {
+            log.log(Level.WARNING, String.format(
+                    e.getMessage() + "\n%s is not a valid question id", qas.getQuestionID()));
+            return false;
+        }
+            
+        return true;
     }
     
     private SurveyedLocale saveSurveyedLocale(SurveyInstance si) {
