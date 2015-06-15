@@ -21,7 +21,7 @@ import javax.servlet.http.HttpServletRequest;
 public class DeviceNotificationRequest extends LocationBeaconRequest {
 
     private static final long serialVersionUID = 287773188257035166L;
-    private static final String SURVEYS_PARAM = "sid";
+    private static final String SURVEYS_PARAM = "formId";
     
     private String[] surveyIds;
     

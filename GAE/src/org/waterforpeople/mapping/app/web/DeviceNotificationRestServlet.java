@@ -104,7 +104,7 @@ public class DeviceNotificationRestServlet extends AbstractRestApiServlet {
 
         json.put("missingFiles", missingFiles);
         json.put("missingUnknown", missingUnknown);
-        json.put("deletedSurveys", deletedSurveys);
+        json.put("deletedForms", deletedSurveys);
 
         getResponse().getWriter().println(json.toString());
     }
