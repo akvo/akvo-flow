@@ -17,7 +17,9 @@
 package org.waterforpeople.mapping.app.web.dto;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 import com.gallatinsystems.device.domain.DeviceFileJobQueue;
 import com.gallatinsystems.framework.rest.RestResponse;
@@ -28,6 +30,7 @@ public class DeviceNotificationResponse extends RestResponse {
 
     List<String> missingFiles = new ArrayList<String>();
     List<String> missingFilesUnknown = new ArrayList<String>();
+    Set<Long> deletedSurveys = new HashSet<>();
 
     public void setMissingFiles(List<DeviceFileJobQueue> byDevice) {
         missingFiles = new ArrayList<String>();
@@ -49,6 +52,14 @@ public class DeviceNotificationResponse extends RestResponse {
 
     public List<String> getMissingUnknown() {
         return missingFilesUnknown;
+    }
+    
+    public void setDeletedSurvey(Set<Long> deletedSurveys) {
+        this.deletedSurveys = deletedSurveys;
+    }
+    
+    public Set<Long> getDeletedSurveys() {
+        return deletedSurveys;
     }
 
 }
