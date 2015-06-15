@@ -55,11 +55,11 @@ public class UserAuthorizationDAO extends BaseDAO<UserAuthorization> {
      *
      * @param userId
      * @param roleId
-     * @param objectPath
+     * @param secureObjectId
      * @return
      */
     @SuppressWarnings("unchecked")
-    public UserAuthorization findUserAuthorization(Long userId, Long roleId, String objectPath) {
+    public UserAuthorization findUserAuthorization(Long userId, Long roleId, Long secureObjectId) {
         PersistenceManager pm = PersistenceFilter.getManager();
         javax.jdo.Query query = pm.newQuery(UserAuthorization.class);
 
@@ -72,8 +72,8 @@ public class UserAuthorizationDAO extends BaseDAO<UserAuthorization> {
                 paramMap);
         appendNonNullParam("roleId", filterString, paramString,
                 "Long", roleId, paramMap);
-        appendNonNullParam("objectPath", filterString, paramString,
-                "String", objectPath, paramMap);
+        appendNonNullParam("securedObjectId", filterString, paramString,
+                "Long", secureObjectId, paramMap);
 
         query.setFilter(filterString.toString());
         query.declareParameters(paramString.toString());
