@@ -520,6 +520,11 @@ input[type="submit"] {
         li {
             flex-grow:1;
             text-align:center;
+            &.deleteBtn {
+                display: relative;
+                top:inherit;
+                left:inherit;
+            }
             &:first-child {
                 margin-left: 0.5%;
                 text-align: left;
