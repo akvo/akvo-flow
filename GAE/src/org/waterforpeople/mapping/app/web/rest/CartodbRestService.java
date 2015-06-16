@@ -54,6 +54,28 @@ public class CartodbRestService {
         }
     }
 
+    @RequestMapping(method = RequestMethod.GET, value = "point_data")
+    @ResponseBody
+    public Map<String, Object> getPointData(@RequestParam("dataPointId") Long dataPointId,
+            @RequestParam("formId") Long formId) {
+
+        Map<String, Object> response = new HashMap<>();
+        response.put("answers", null);
+
+        try {
+            String rawDataQuery = String.format(
+                    "SELECT * FROM raw_data_%s WHERE data_point_id=%d",
+                    formId, dataPointId);
+            List<Map<String, Object>> rawDataResponse = queryCartodb(rawDataQuery);
+            if (!rawDataResponse.isEmpty()) {
+                response.put("answers", rawDataResponse.get(0));
+            }
+            return response;
+        } catch (IOException e) {
+            return response;
+        }
+    }
+
     @RequestMapping(method = RequestMethod.GET, value = "surveys")
     @ResponseBody
     public Map<String, Object> listSurveys() {

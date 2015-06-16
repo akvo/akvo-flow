@@ -112,10 +112,17 @@ FLOW.NavMapsView = FLOW.View.extend({
             //open a popup and pass some clicked point data
             self.openPopup(map, data.identifier, latlng);
 
-            //get all clicked point data
-            $.get("/rest/cartodb/answers?dataPointId="+data.id+"&surveyId="+data.survey_id, function(point_data, status){
-              console.log(point_data);
-            });
+            if($("#form_selector").val() != ""){
+              //get all clicked point data
+              $.get("/rest/cartodb/point_data?dataPointId="+data.id+"&formId="+$("#form_selector").val(), function(point_data, status){
+                console.log(point_data);
+              });
+            }else{
+              //get all clicked point data
+              $.get("/rest/cartodb/answers?dataPointId="+data.id+"&surveyId="+data.survey_id, function(point_data, status){
+                console.log(point_data);
+              });
+            }
           });
     	});
 
@@ -123,7 +130,34 @@ FLOW.NavMapsView = FLOW.View.extend({
         if($( "#survey_selector" ).val() == ""){
           LayerActions['all']();
         }else{
+          //get a list of forms on a survey
+          $.get("/rest/cartodb/forms?surveyId="+$( "#survey_selector" ).val(), function(data, status){
+        		//console.log(data);
+            $("#form_selector option[value!='']").remove();
+            var rows = [];
+            if(data["forms"].length > 0){
+              console.log(data);
+              rows = data["forms"];
+              rows.sort(function(el1, el2){
+            		return self.compare(el1, el2, "name")
+            	});
+
+              for(var i=0; i<rows.length; i++){
+                //append return survey list to the survey selector element
+                $("#form_selector").append('<option value="'+rows[i]["id"]+'">'+rows[i]["name"]+'</option>');
+              }
+            }
+        	});
           LayerActions['survey']();
+        }
+      });
+
+      $( "#form_selector" ).change(function() {
+        if($( "#form_selector" ).val() == ""){
+          LayerActions['survey']();
+        }else{
+          //get a list of forms on a survey
+          LayerActions['form']();
         }
       });
 
@@ -135,7 +169,11 @@ FLOW.NavMapsView = FLOW.View.extend({
       		survey: function(){
             data_layer.setSQL("SELECT * FROM data_point WHERE survey_id = '"+$( "#survey_selector option:selected" ).val()+"'");
       			return true;
-      		}
+      		},
+          form : function(){
+            data_layer.setSQL("SELECT d.* FROM data_point d LEFT JOIN form f ON d.survey_id = f.survey_id WHERE f.id = '"+$( "#form_selector option:selected" ).val()+"'");
+            return true;
+          }
       }
     }else{
       // insert the map
