@@ -50,6 +50,26 @@ FLOW.NavMapsView = FLOW.View.extend({
     var self = this;
 
     if(FLOW.Env.useCartodb){
+      mapContent = '<div style="width: 100%">'
+      +'<div style="float: left; width: 100%">'
+      +'<div style="float: left">'
+      +'<label for="survey_selector">Select a survey</label>'
+      +'<select class="" name="survey_selector" id="survey_selector">'
+      +'<option value="">--All--</option>'
+      +'</select>'
+      +'</div>'
+      +'<!-- <div style="width: 150px; float: left">'
+      +'<label for="form_selector">Select a form</label>'
+      +'<select class="" name="form_selector" id="form_selector">'
+      +'<option value="">--All--</option>'
+      +'</select>'
+      +'</div> -->'
+      +'</div>'
+      +'<div style="float: left; width:100%; height: 550px" id="cartodbd_flowMap"></div>'
+      +'</div>';
+
+      $("#flowMap").html(mapContent);
+
       //Define the data layer
       var data_layer;
 
@@ -70,7 +90,7 @@ FLOW.NavMapsView = FLOW.View.extend({
     	});
 
       // create leaflet map
-    	var map = L.map('flowMap', {scrollWheelZoom: false}).setView([-0.703107, 36.765], 2);
+    	var map = L.map('cartodbd_flowMap', {scrollWheelZoom: false}).setView([-0.703107, 36.765], 2);
     	L.tileLayer('http://{s}.{base}.maps.cit.api.here.com/maptile/2.1/maptile/{mapID}/normal.day.transit/{z}/{x}/{y}/256/png8?app_id={app_id}&app_code={app_code}', {
     		attribution: 'Map &copy; 1987-2014 <a href="http://developer.here.com">HERE</a>',
     		subdomains: '1234',
@@ -110,28 +130,36 @@ FLOW.NavMapsView = FLOW.View.extend({
     			});
           layer.getSubLayer(0).on('featureClick', function(e, latlng, pos, data) {
             //open a popup and pass some clicked point data
-            self.openPopup(map, data.identifier, latlng);
+            var clicked_point_content = "<table>";
 
-            if($("#form_selector").val() != ""){
+            self.openPopup(map, "identifier: "+data.identifier, latlng);
+
+            self.showDetailsPane();
+
+            /*if($("#form_selector").val() != ""){
               //get all clicked point data
-              $.get("/rest/cartodb/point_data?dataPointId="+data.id+"&formId="+$("#form_selector").val(), function(point_data, status){
-                console.log(point_data);
-              });
+              self.getCartodbPointData("/rest/cartodb/point_data?dataPointId="+data.id+"&formId="+$("#form_selector").val());
             }else{
               //get all clicked point data
-              $.get("/rest/cartodb/answers?dataPointId="+data.id+"&surveyId="+data.survey_id, function(point_data, status){
-                console.log(point_data);
-              });
-            }
+              self.getCartodbPointData("/rest/cartodb/answers?dataPointId="+data.id+"&surveyId="+data.survey_id);
+            }*/
+
+            self.getCartodbPointData("/rest/cartodb/answers?dataPointId="+data.id+"&surveyId="+data.survey_id);
+
           });
     	});
+
+      map.on('popupclose', function(e) {
+        self.hideDetailsPane();
+        $("#pointDetails").html("");
+      });
 
       $( "#survey_selector" ).change(function() {
         if($( "#survey_selector" ).val() == ""){
           LayerActions['all']();
         }else{
           //get a list of forms on a survey
-          $.get("/rest/cartodb/forms?surveyId="+$( "#survey_selector" ).val(), function(data, status){
+          /*$.get("/rest/cartodb/forms?surveyId="+$( "#survey_selector" ).val(), function(data, status){
         		//console.log(data);
             $("#form_selector option[value!='']").remove();
             var rows = [];
@@ -147,7 +175,7 @@ FLOW.NavMapsView = FLOW.View.extend({
                 $("#form_selector").append('<option value="'+rows[i]["id"]+'">'+rows[i]["name"]+'</option>');
               }
             }
-        	});
+        	});*/
           LayerActions['survey']();
         }
       });
@@ -171,7 +199,7 @@ FLOW.NavMapsView = FLOW.View.extend({
       			return true;
       		},
           form : function(){
-            data_layer.setSQL("SELECT d.* FROM data_point d LEFT JOIN form f ON d.survey_id = f.survey_id WHERE f.id = '"+$( "#form_selector option:selected" ).val()+"'");
+            data_layer.setSQL("SELECT data_point.* FROM data_point LEFT JOIN raw_data_"+$( "#form_selector option:selected" ).val()+" ON data_point.id = raw_data_"+$( "#form_selector option:selected" ).val()+".data_point_id");
             return true;
           }
       }
@@ -320,14 +348,14 @@ FLOW.NavMapsView = FLOW.View.extend({
     layer.bind('featureOver', function(e, latlon, pxPos, data, layer) {
       hovers[layer] = 1;
       if(_.any(hovers)) {
-        $('#flowMap').css('cursor', 'pointer');
+        $('#cartodbd_flowMap').css('cursor', 'pointer');
       }
     });
 
     layer.bind('featureOut', function(m, layer) {
       hovers[layer] = 0;
       if(!_.any(hovers)) {
-        $('#flowMap').css({"cursor":"-moz-grabbing","cursor":"-webkit-grabbing"});
+        $('#cartodbd_flowMap').css({"cursor":"-moz-grabbing","cursor":"-webkit-grabbing"});
       }
     });
   },
@@ -337,6 +365,27 @@ FLOW.NavMapsView = FLOW.View.extend({
     .setLatLng(latLng)
     .setContent(popupContent)
     .openOn(mapObject);
+  },
+
+  getCartodbPointData: function(url){
+    $("#pointDetails").html("");
+    $.get(url, function(point_data, status){
+      var clicked_point_content = "";
+      console.log(point_data);
+
+      if (point_data['answers'] != null) {
+        clicked_point_content += "<table>";
+        for (column in point_data['answers']){
+          clicked_point_content += "<tr><td><b>"+column+": </b></td>";
+          clicked_point_content += "<td>"+point_data['answers'][column]+"</td></tr>";
+        }
+        clicked_point_content += "</table>";
+      }else{
+        clicked_point_content += "No details";
+      }
+
+      $("#pointDetails").html(clicked_point_content);
+    });
   }
 
 });

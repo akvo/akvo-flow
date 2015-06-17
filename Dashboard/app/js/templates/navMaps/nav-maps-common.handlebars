@@ -3,21 +3,6 @@
   <div id="dropdown-holder">
     <div id="mapDetailsHideShow" class="drawHandle hideMapD">{{t _hide}} &rsaquo;</div>
   </div>
-
-  <div>
-    <div style="width: 150px; float: left">
-      <label for="survey_selector">Select a survey</label>
-      <select class="" name="survey_selector" id="survey_selector">
-        <option value="">--All--</option>
-      </select>
-    </div>
-    <div style="width: 150px; float: left">
-      <label for="form_selector">Select a form</label>
-      <select class="" name="form_selector" id="form_selector">
-        <option value="">--All--</option>
-      </select>
-    </div>
-  </div>
   <div id="flowMap"></div>
   {{#view FLOW.PlacemarkDetailView controllerBinding="FLOW.placemarkDetailController"}}
     <div id="pointDetails">
