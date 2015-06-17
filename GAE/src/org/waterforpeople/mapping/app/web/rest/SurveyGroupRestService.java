@@ -16,6 +16,8 @@
 
 package org.waterforpeople.mapping.app.web.rest;
 
+import static com.gallatinsystems.common.Constants.ANCESTOR_IDS_FIELD;
+
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -42,8 +44,6 @@ import com.gallatinsystems.survey.dao.SurveyGroupDAO;
 import com.gallatinsystems.survey.dao.SurveyUtils;
 import com.gallatinsystems.survey.domain.Survey;
 import com.gallatinsystems.survey.domain.SurveyGroup;
-
-import static com.gallatinsystems.common.Constants.ANCESTOR_IDS_FIELD;
 
 @Controller
 @RequestMapping("/survey_groups")
@@ -111,6 +111,7 @@ public class SurveyGroupRestService {
     public Map<String, SurveyGroupDto> findSurveyGroupById(
             @PathVariable("id") Long id) {
         final Map<String, SurveyGroupDto> response = new HashMap<String, SurveyGroupDto>();
+
         SurveyGroup s = surveyGroupDao.getByKey(id);
         SurveyGroupDto dto = null;
         if (s != null) {

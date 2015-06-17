@@ -3,12 +3,13 @@ function capitaliseFirstLetter(string) {
 }
 
 if (!String.prototype.trim) {
-  String.prototype.trim=function(){return this.replace(/^\s+|\s+$/g, '');};
+  String.prototype.trim = function(){
+    return this.replace(/^\s+|\s+$/g, '');
+  };
 }
 
 FLOW.ProjectListView = FLOW.View.extend({
   templateName: 'navSurveys/project-list'
-
 });
 
 FLOW.ProjectView = FLOW.View.extend({
@@ -417,8 +418,8 @@ FLOW.SurveyGroupMainView = FLOW.View.extend({
   saveNewSurveyGroupName: function () {
     if (!Ember.empty(this.get('surveyGroupName').trim())){
       FLOW.store.createRecord(FLOW.SurveyGroup, {
-	"code": capitaliseFirstLetter(this.get('surveyGroupName')),
-	"name": capitaliseFirstLetter(this.get('surveyGroupName'))
+        "code": capitaliseFirstLetter(this.get('surveyGroupName')),
+        "name": capitaliseFirstLetter(this.get('surveyGroupName'))
       });
       FLOW.store.commit();
     }

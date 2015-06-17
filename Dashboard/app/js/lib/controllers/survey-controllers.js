@@ -148,9 +148,9 @@ FLOW.surveyGroupControl = Ember.ArrayController.create({
 
   // load all Survey Groups
   populate: function (f) {
-	var fn = (f && $.isFunction(f) && f) || FLOW.alwaysTrue;
-	FLOW.store.find(FLOW.SurveyGroup);
-	this.setFilteredContent(fn);
+    var fn = (f && $.isFunction(f) && f) || FLOW.alwaysTrue;
+    FLOW.store.find(FLOW.SurveyGroup);
+    this.setFilteredContent(fn);
   },
 
   // checks if data store contains surveys within this survey group.
@@ -275,7 +275,7 @@ FLOW.projectControl = Ember.ArrayController.create({
   currentFolders: function() {
     var self = this;
     var currentProject = this.get('currentProject');
-    var parentId = currentProject ? currentProject.get('keyId') : null;
+    var parentId = currentProject ? currentProject.get('keyId') : 0;
     return this.get('content').filter(function(project) {
       return project.get('parentId') === parentId;
     }).sort(function(a, b) {
@@ -355,6 +355,7 @@ FLOW.projectControl = Ember.ArrayController.create({
   },
 
   selectRootProject: function() {
+    // TODO: this.setCurrentProject(0); ?
     this.setCurrentProject(null);
   },
 
@@ -369,7 +370,7 @@ FLOW.projectControl = Ember.ArrayController.create({
 
   createNewProject: function(folder) {
     var currentFolder = this.get('currentProject');
-    var currentFolderId = currentFolder ? currentFolder.get('keyId') : null;
+    var currentFolderId = currentFolder ? currentFolder.get('keyId') : 0;
 
     var name = folder ? Ember.String.loc('_new_folder').trim() : Ember.String.loc('_new_survey').trim();
     var projectType = folder ? "PROJECT_FOLDER" : "PROJECT";
@@ -413,7 +414,7 @@ FLOW.projectControl = Ember.ArrayController.create({
   },
 
   endMoveProject: function(evt) {
-    var newFolderId = this.get('currentProject') ? this.get('currentProject').get('keyId') : null;
+    var newFolderId = this.get('currentProject') ? this.get('currentProject').get('keyId') : 0;
     var project = this.get('moveTarget');
     var path = this.get('currentProjectPath') + "/" + project.get('name');
     project.set('parentId', newFolderId);
@@ -428,7 +429,7 @@ FLOW.projectControl = Ember.ArrayController.create({
     FLOW.store.findQuery(FLOW.Action, {
       action: 'copyProject',
       targetId: this.get('copyTarget').get('keyId'),
-      folderId: currentFolder ? currentFolder.get('keyId') : null,
+      folderId: currentFolder ? currentFolder.get('keyId') : 0,
     });
 
     FLOW.store.commit();
