@@ -355,7 +355,6 @@ FLOW.projectControl = Ember.ArrayController.create({
   },
 
   selectRootProject: function() {
-    // TODO: this.setCurrentProject(0); ?
     this.setCurrentProject(null);
   },
 
