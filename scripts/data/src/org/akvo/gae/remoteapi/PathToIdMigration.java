@@ -60,6 +60,7 @@ public class PathToIdMigration implements Process {
         if (parentId == null) {
             System.out.println(String.format(
                     "Could not find parentId for SurveyGroup %s", id));
+            System.exit(0);
         }
 
         aIds.add(parentId);
