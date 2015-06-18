@@ -58,7 +58,7 @@ FLOW.NavMapsView = FLOW.View.extend({
       +'<option value="">--All--</option>'
       +'</select>'
       +'</div>'
-      +'<!-- <div style="width: 150px; float: left">'
+      +'<!-- <div style="float: left">'
       +'<label for="form_selector">Select a form</label>'
       +'<select class="" name="form_selector" id="form_selector">'
       +'<option value="">--All--</option>'
@@ -199,7 +199,10 @@ FLOW.NavMapsView = FLOW.View.extend({
       			return true;
       		},
           form : function(){
-            data_layer.setSQL("SELECT data_point.* FROM data_point LEFT JOIN raw_data_"+$( "#form_selector option:selected" ).val()+" ON data_point.id = raw_data_"+$( "#form_selector option:selected" ).val()+".data_point_id");
+            data_layer.setSQL("SELECT data_point.* FROM data_point LEFT JOIN raw_data_"
+              +$( "#form_selector option:selected" ).val()+" ON data_point.id = raw_data_"
+              +$( "#form_selector option:selected" ).val()+".data_point_id WHERE raw_data_"
+              +$( "#form_selector option:selected" ).val()+".data_point_id IS NOT NULL");
             return true;
           }
       }
@@ -371,20 +374,35 @@ FLOW.NavMapsView = FLOW.View.extend({
     $("#pointDetails").html("");
     $.get(url, function(point_data, status){
       var clicked_point_content = "";
-      console.log(point_data);
+      //console.log(point_data);
 
       if (point_data['answers'] != null) {
-        clicked_point_content += "<table>";
-        for (column in point_data['answers']){
-          clicked_point_content += "<tr><td><b>"+column+": </b></td>";
-          clicked_point_content += "<td>"+point_data['answers'][column]+"</td></tr>";
-        }
-        clicked_point_content += "</table>";
+        questions_query_data = {};
+        questions_query_data['form_id'] = point_data['formId'];
+
+        //post request for questions
+        $.post(
+      			"/rest/cartodb/questions",
+            questions_query_data,
+      			function(questions_data, status){
+      				//console.log(questions_data);
+              clicked_point_content += "<table>";
+              for (column in point_data['answers']){
+                for(var i=0; i<questions_data['questions'].length; i++){
+                  if (column.match("^"+questions_data['questions'][i].id)) {
+                    //console.log(questions_data['questions'][i].display_text);
+                    clicked_point_content += "<tr><td>"+questions_data['questions'][i].display_text+":&nbsp;</td>";
+                    clicked_point_content += "<td>"+point_data['answers'][column]+"</td></tr>";
+                  }
+                }
+              }
+              clicked_point_content += "</table>";
+              $("#pointDetails").html(clicked_point_content);
+      			});
       }else{
         clicked_point_content += "No details";
+        $("#pointDetails").html(clicked_point_content);
       }
-
-      $("#pointDetails").html(clicked_point_content);
     });
   }
 

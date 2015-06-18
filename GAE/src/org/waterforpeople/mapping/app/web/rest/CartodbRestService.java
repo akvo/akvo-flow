@@ -34,12 +34,15 @@ public class CartodbRestService {
 
         Map<String, Object> response = new HashMap<>();
         response.put("answers", null);
+        response.put("formId", null);
 
         try {
             String formIdQuery = String.format("SELECT id FROM form WHERE survey_id=%d", surveyId);
             List<Map<String, Object>> formIdResponse = queryCartodb(formIdQuery);
             if (!formIdResponse.isEmpty()) {
                 Integer formId = (Integer) formIdResponse.get(0).get("id");
+                response.put("formId", formId);
+
                 String rawDataQuery = String.format(
                         "SELECT * FROM raw_data_%s WHERE data_point_id=%d",
                         formId, dataPointId);
@@ -61,6 +64,7 @@ public class CartodbRestService {
 
         Map<String, Object> response = new HashMap<>();
         response.put("answers", null);
+        response.put("formId", formId);
 
         try {
             String rawDataQuery = String.format(
@@ -70,6 +74,21 @@ public class CartodbRestService {
             if (!rawDataResponse.isEmpty()) {
                 response.put("answers", rawDataResponse.get(0));
             }
+            return response;
+        } catch (IOException e) {
+            return response;
+        }
+    }
+
+    @RequestMapping(method = RequestMethod.POST, value = "questions")
+    @ResponseBody
+    public Map<String, Object> getQuestions(@RequestParam(value = "form_id", required = true) Long formId) {
+
+        Map<String, Object> response = new HashMap<>();
+        response.put("questions", null);
+        try {
+            response.put("questions",
+                    queryCartodb(String.format("SELECT * FROM question WHERE form_id = %d", formId)));
             return response;
         } catch (IOException e) {
             return response;
