@@ -18,12 +18,24 @@ package org.akvo.flow.domain;
 
 import java.util.List;
 
+import com.gallatinsystems.framework.domain.BaseDomain;
+
 /**
  * Interface to define methods that should be overridden by objects to which access is restricted
  * via user permissions
  */
 public interface SecuredObject {
     public SecuredObject getParentObject();
+
+    /**
+     * Update the ancestor ids for all child entities. If cascade is true, then cascade ancestor ids
+     * updates to include all the subsequent child entities. Return a list of all the updated child
+     * entities
+     *
+     * @param cascade
+     * @return
+     */
+    public List<BaseDomain> updateAncestorIds(boolean cascade);
 
     public Long getObjectId();
 

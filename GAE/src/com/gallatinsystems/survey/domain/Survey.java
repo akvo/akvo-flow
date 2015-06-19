@@ -16,6 +16,7 @@
 
 package com.gallatinsystems.survey.domain;
 
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.TreeMap;
@@ -69,7 +70,7 @@ public class Survey extends BaseDomain implements SecuredObject {
     }
 
     public void incrementVersion() {
-        if(version == null) {
+        if (version == null) {
             getVersion();
         } else {
             version++;
@@ -141,7 +142,7 @@ public class Survey extends BaseDomain implements SecuredObject {
     }
 
     public Double getVersion() {
-        if(version == null) {
+        if (version == null) {
             // existing survey without version number is a
             // newly created one so return 1.0
             version = 1.0d;
@@ -232,5 +233,11 @@ public class Survey extends BaseDomain implements SecuredObject {
     @Override
     public List<Long> listAncestorIds() {
         return ancestorIds;
+    }
+
+    @Override
+    public List<BaseDomain> updateAncestorIds(boolean cascade) {
+        // do not update or return any childobjects. Survey entities are the leaves
+        return Collections.emptyList();
     }
 }

@@ -275,9 +275,6 @@ public class SurveyUtils {
         }
 
         SecuredObject parent = s.getParentObject();
-        if (parent == null) {
-            return null;
-        }
 
         if (parent.listAncestorIds() != null) {
             ancestorIds.addAll(parent.listAncestorIds());
@@ -461,5 +458,24 @@ public class SurveyUtils {
         String kind = source.getKey().getKind();
         log.log(Level.INFO, "Copying `" + kind + "` " + source.getKey().getId());
         log.log(Level.INFO, "New `" + kind + "` ID: " + copy.getKey().getId());
+    }
+
+    /**
+     * Set the non-persistent child objects of a SurveyGroup entity
+     *
+     * @param surveyGroup
+     */
+    public static void setChildObjects(SurveyGroup surveyGroup) {
+        if (surveyGroup == null || surveyGroup.getKey() == null) {
+            return;
+        }
+
+        Long surveyGroupId = surveyGroup.getKey().getId();
+
+        List<SurveyGroup> childFolders = new SurveyGroupDAO().listByProjectFolderId(surveyGroupId);
+        surveyGroup.setChildFolders(childFolders);
+
+        List<Survey> childForms = new SurveyDAO().listSurveysByGroup(surveyGroupId);
+        surveyGroup.setChildForms(childForms);
     }
 }

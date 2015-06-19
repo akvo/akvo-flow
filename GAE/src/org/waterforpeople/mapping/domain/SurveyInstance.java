@@ -18,6 +18,7 @@ package org.waterforpeople.mapping.domain;
 
 import java.lang.reflect.Field;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
@@ -308,7 +309,8 @@ public class SurveyInstance extends BaseDomain implements SecuredObject {
 
     public void setSurveyedLocaleDisplayName(String surveyedLocaleDisplayName) {
         this.surveyedLocaleDisplayName = surveyedLocaleDisplayName.length() > MAX_LENGTH ? surveyedLocaleDisplayName
-                .substring(0, MAX_LENGTH).trim() : surveyedLocaleDisplayName;
+                .substring(0, MAX_LENGTH).trim()
+                : surveyedLocaleDisplayName;
     }
 
     /**
@@ -432,5 +434,11 @@ public class SurveyInstance extends BaseDomain implements SecuredObject {
         }
 
         return s.listAncestorIds();
+    }
+
+    @Override
+    public List<BaseDomain> updateAncestorIds(boolean cascade) {
+        // do not update or return any child objects. Survey entities are the leaves
+        return Collections.emptyList();
     }
 }

@@ -17,6 +17,7 @@
 package com.gallatinsystems.survey.domain;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 
@@ -27,6 +28,7 @@ import org.akvo.flow.domain.SecuredObject;
 
 import com.gallatinsystems.framework.domain.BaseDomain;
 import com.gallatinsystems.survey.dao.SurveyGroupDAO;
+import com.gallatinsystems.survey.dao.SurveyUtils;
 
 /**
  * a grouping of surveys.
@@ -51,6 +53,12 @@ public class SurveyGroup extends BaseDomain implements SecuredObject {
     private HashMap<String, Translation> altTextMap;
     @NotPersistent
     private List<Survey> surveyList = null;
+
+    @NotPersistent
+    private List<SurveyGroup> childFolders;
+
+    @NotPersistent
+    private List<Survey> childForms;
 
     public enum ProjectType {
         PROJECT_FOLDER, PROJECT
@@ -190,5 +198,51 @@ public class SurveyGroup extends BaseDomain implements SecuredObject {
     @Override
     public List<Long> listAncestorIds() {
         return ancestorIds;
+    }
+
+    @Override
+    public List<BaseDomain> updateAncestorIds(boolean cascade) {
+        if (ancestorIds == null || key == null) {
+            return Collections.emptyList();
+        }
+
+        List<BaseDomain> updatedEntities = new ArrayList<BaseDomain>();
+        List<Long> childAncestorIds = new ArrayList<Long>(ancestorIds);
+        childAncestorIds.add(key.getId());
+
+        if (childFolders != null) {
+            for (SurveyGroup sg : childFolders) {
+                sg.setAncestorIds(childAncestorIds);
+                if (cascade) {
+                    SurveyUtils.setChildObjects(sg);
+                    updatedEntities.addAll(sg.updateAncestorIds(cascade));
+                }
+            }
+            updatedEntities.addAll(childFolders);
+        }
+
+        if (childForms != null) {
+            for (Survey s : childForms) {
+                s.setAncestorIds(childAncestorIds);
+            }
+            updatedEntities.addAll(childForms);
+        }
+        return updatedEntities;
+    }
+
+    public List<SurveyGroup> getChildFolders() {
+        return childFolders;
+    }
+
+    public void setChildFolders(List<SurveyGroup> childFolders) {
+        this.childFolders = childFolders;
+    }
+
+    public List<Survey> getChildForms() {
+        return childForms;
+    }
+
+    public void setChildForms(List<Survey> childForms) {
+        this.childForms = childForms;
     }
 }
