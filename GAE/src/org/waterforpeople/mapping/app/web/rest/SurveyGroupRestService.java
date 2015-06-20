@@ -181,7 +181,7 @@ public class SurveyGroupRestService {
         }
 
         boolean hasMoved = requestDto.getParentId() == null || s.getParentId() == null
-                || requestDto.getParentId().equals(s.getParentId());
+                || !requestDto.getParentId().equals(s.getParentId());
 
         BeanUtils.copyProperties(requestDto, s, new String[] {
                 "createdDateTime", "lastUpdateDateTime",
@@ -202,8 +202,8 @@ public class SurveyGroupRestService {
         s.setPublished(false);
 
         s.setAncestorIds(SurveyUtils.retrieveAncestorIds(s));
-
         if (hasMoved) {
+            SurveyUtils.setChildObjects(s);
             surveyGroupDao.save(s.updateAncestorIds(true));
         }
 
