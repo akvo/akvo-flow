@@ -346,6 +346,13 @@ public class ActionRestService {
         }
         projectCopy.setPath(parentPath + "/" + projectCopy.getName());
         projectCopy.setParentId(folderId);
+
+        boolean isCopiedToDifferentFolder = projectSource.getParentId() != null && folderId != null
+                && !projectSource.getParentId().equals(folderId);
+        if (isCopiedToDifferentFolder) {
+            // reset ancestorIds when copying to a different folder
+            projectCopy.setAncestorIds(SurveyUtils.retrieveAncestorIds(projectCopy));
+        }
         projectCopy.setPublished(false);
 
         SurveyGroup savedProjectCopy = surveyGroupDao.save(projectCopy);
