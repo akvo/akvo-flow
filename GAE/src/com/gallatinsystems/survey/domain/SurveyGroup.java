@@ -24,8 +24,10 @@ import java.util.List;
 import javax.jdo.annotations.NotPersistent;
 import javax.jdo.annotations.PersistenceCapable;
 
+import org.akvo.flow.domain.RootFolder;
 import org.akvo.flow.domain.SecuredObject;
 
+import com.gallatinsystems.common.Constants;
 import com.gallatinsystems.framework.domain.BaseDomain;
 import com.gallatinsystems.survey.dao.SurveyGroupDAO;
 import com.gallatinsystems.survey.dao.SurveyUtils;
@@ -182,6 +184,8 @@ public class SurveyGroup extends BaseDomain implements SecuredObject {
     public SecuredObject getParentObject() {
         if (parentId == null) {
             return null;
+        } else if (Constants.ROOT_FOLDER_ID.equals(parentId)) {
+            return new RootFolder();
         }
 
         return new SurveyGroupDAO().getByKey(parentId);
