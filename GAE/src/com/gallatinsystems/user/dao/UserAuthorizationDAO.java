@@ -41,6 +41,26 @@ public class UserAuthorizationDAO extends BaseDAO<UserAuthorization> {
     }
 
     /**
+     * List the user authorizations
+     *
+     * @param userId
+     * @param ancestorIds
+     * @return
+     */
+    @SuppressWarnings("unchecked")
+    public List<UserAuthorization> listByObjectIds(Long userId, List<Long> ancestorIds) {
+        if (ancestorIds == null || ancestorIds.isEmpty()) {
+            return Collections.emptyList();
+        }
+        PersistenceManager pm = PersistenceFilter.getManager();
+        String queryString = "userId == :p1 && :p2.contains(securedObjectId)";
+        javax.jdo.Query query = pm.newQuery(UserAuthorization.class, queryString);
+        List<UserAuthorization> results = (List<UserAuthorization>) query.execute(userId,
+                ancestorIds);
+        return results;
+    }
+
+    /**
      * List the user authorizations that correspond to a specific user
      *
      * @param userId
