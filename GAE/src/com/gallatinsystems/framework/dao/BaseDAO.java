@@ -21,8 +21,10 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.logging.Logger;
 import java.util.regex.Pattern;
 
@@ -286,6 +288,7 @@ public class BaseDAO<T extends BaseDomain> {
     @SuppressWarnings({
             "rawtypes", "unchecked"
     })
+    @Deprecated
     public List filterByUserAuthorization(List allObjectsList) {
         if (!concreteClass.isAssignableFrom(SurveyGroup.class)
                 && !concreteClass.isAssignableFrom(Survey.class)) {
@@ -355,6 +358,74 @@ public class BaseDAO<T extends BaseDomain> {
             }
         }
         return authorizedList;
+    }
+
+    /**
+     * Return a list of survey groups or surveys that are accessible by the current user, filtered
+     * by object ids
+     *
+     * @return
+     */
+    @SuppressWarnings({
+            "rawtypes", "unchecked"
+    })
+    public List filterByUserAuthorizationObjectId(List allObjectsList) {
+        if (!concreteClass.isAssignableFrom(SurveyGroup.class)
+                && !concreteClass.isAssignableFrom(Survey.class)) {
+            throw new UnsupportedOperationException("Cannot filter "
+                    + concreteClass.getSimpleName());
+        }
+
+        final Authentication authentication = SecurityContextHolder.getContext()
+                .getAuthentication();
+        final Long userId = (Long) authentication.getCredentials();
+
+        // super admin list all
+        if (authentication.getAuthorities().contains(AppRole.SUPER_ADMIN)) {
+            return allObjectsList;
+        }
+
+        UserAuthorizationDAO userAuthorizationDAO = new UserAuthorizationDAO();
+        List<UserAuthorization> userAuthorizationList = userAuthorizationDAO.listByUser(userId);
+        if (userAuthorizationList.isEmpty()) {
+            return Collections.emptyList();
+        }
+
+        Set<Long> securedObjectIds = new HashSet<Long>();
+        for (UserAuthorization auth : userAuthorizationList) {
+            securedObjectIds.add(auth.getSecuredObjectId());
+        }
+        List authorizedList = new ArrayList();
+        if (concreteClass.isAssignableFrom(SurveyGroup.class)) {
+            for (Object obj : allObjectsList) {
+                SurveyGroup sg = (SurveyGroup) obj;
+                List<Long> ancestorIds = sg.getAncestorIds();
+                if (hasAuthorizedAncestors(ancestorIds, securedObjectIds)) {
+                    authorizedList.add(sg);
+                }
+            }
+        } else {
+            for (Object obj : allObjectsList) {
+                Survey s = (Survey) obj;
+                List<Long> ancestorIds = s.getAncestorIds();
+                if (hasAuthorizedAncestors(ancestorIds, securedObjectIds)) {
+                    authorizedList.add(s);
+                }
+            }
+        }
+        return authorizedList;
+    }
+
+    /**
+     * Check whether one or more items in the list of an entity's ancestor ids is present in the
+     * list of authorized objects for a user. Return true if this is the case
+     *
+     * @param ancestorIds
+     * @param securedObjectIds
+     * @return
+     */
+    private boolean hasAuthorizedAncestors(List<Long> ancestorIds, Set<Long> securedObjectIds) {
+        return ancestorIds != null && ancestorIds.removeAll(securedObjectIds);
     }
 
     /**

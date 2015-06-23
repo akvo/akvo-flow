@@ -143,7 +143,7 @@ public class SurveyRestService {
         }
 
         if (surveys != null) {
-            for (Object obj : surveyDao.filterByUserAuthorization(surveys)) {
+            for (Object obj : surveyDao.filterByUserAuthorizationObjectId(surveys)) {
                 SurveyDto dto = new SurveyDto();
                 Survey s = (Survey) obj;
                 DtoMarshaller.copyToDto(s, dto);
