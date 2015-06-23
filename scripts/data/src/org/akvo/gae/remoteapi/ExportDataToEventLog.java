@@ -24,6 +24,9 @@ public class ExportDataToEventLog implements Process {
             Kind.QUESTION_GROUP, Kind.QUESTION, Kind.DATA_POINT,
             Kind.FORM_INSTANCE, Kind.DEVICE_FILE, Kind.ANSWER };
 
+    // The timestamp used for imported data.
+    private static final Date IMPORT_DATE = new Date(0);
+
     @Override
     public void execute(DatastoreService ds, String[] args) throws Exception {
 
@@ -67,7 +70,13 @@ public class ExportDataToEventLog implements Process {
                         public boolean apply(Entity entity) {
                             Date date = (Date) entity
                                     .getProperty("createdDateTime");
-                            return date.before(firstEvent);
+                            if (date == null) {
+                                // If the createdDateTime is not present, assume
+                                // it's old enough to be part of the data import
+                                return true;
+                            } else {
+                                return date.before(firstEvent);
+                            }
                         }
                     });
 
@@ -107,7 +116,8 @@ public class ExportDataToEventLog implements Process {
             EventTypes eventTypes, String orgId) {
 
         Map<String, Object> source = EventUtils.newSource("import");
-        Map<String, Object> context = EventUtils.newContext(new Date(), source);
+        Map<String, Object> context = EventUtils
+                .newContext(IMPORT_DATE, source);
         context.put("import", true);
         Map<String, Object> entityMap = EventUtils.newEntity(eventTypes.type,
                 entity.getKey().getId());
