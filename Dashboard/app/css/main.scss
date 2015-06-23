@@ -522,7 +522,7 @@ input[type="submit"] {
             text-align:center;
             &.deleteBtn {
                 display: relative;
-                top:inherit;
+                top:5px;
                 left:inherit;
             }
             &:first-child {
