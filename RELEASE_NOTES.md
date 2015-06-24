@@ -5,6 +5,28 @@ Read more about the [Akvo Platform](http://www.akvo.org/blog/?p=4822).
 
 Akvo FLOW Dashboard release notes
 ----
+#1.8.7.1
+Date: 11 June 2015
+
+# Resolved issues
+* Add check for missing survey when recomputing clusters #1302
+
+#1.8.7
+Date: 11 June 2015
+
+# Resolved issues
+* Fix geocells computation [#1295]
+* Multiple `SurveyedLocale` entities created for the same `surveyedLocaleIdentifier` [#1282]
+* `QuestionGroup` does not resolve all dependent questions correctly when copying `Survey` [#1217]
+* Bring back google map satelite layer [#919]
+
+#1.8.6.1
+Date: 29 May 2015
+
+# New and noteworthy
+* Add support for Google Maps layers as well as ability to choose region bias [#919]
+
+
 #1.8.6
 Date: 14 May 2015
 
@@ -71,7 +93,7 @@ Date: 12 March 2015
 * Hide Survey ID from dashboard [#1166]
 * Fix error when revoking a user's API Key [#1156]
 * Update to latest clojurescript & om releases [#1117]
-* Refactor projectMigration to a data script [#1150] 
+* Refactor projectMigration to a data script [#1150]
 
 #1.8.2.1
 Date: 3 March 2015
