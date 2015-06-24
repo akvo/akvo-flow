@@ -16,7 +16,6 @@
 
 package org.waterforpeople.mapping.app.web;
 
-import java.util.Arrays;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -110,25 +109,15 @@ public class DeviceNotificationRestServlet extends AbstractRestApiServlet {
     }
 
     private Set<Long> getDeletedSurveys(DeviceNotificationRequest req) {
-        Set<Long> surveyIds = new HashSet<>();
-        String[] args = req.getSurveyIds();
-        if (args != null) {
-            for (String sid : args) {
-                try {
-                    surveyIds.add(Long.parseLong(sid));
-                } catch (NumberFormatException e) {
-                    // ignore non-valid keys
-                }
-            }
-            if (surveyIds.isEmpty()) {
-                return surveyIds;
-            }
-            Set<Long> foundIds = new HashSet<>();
-            for (Survey s : new SurveyDAO().listByKeys(surveyIds.toArray(new Long[surveyIds.size()]))) {
-                foundIds.add(s.getKey().getId());
-            }
-            surveyIds.removeAll(foundIds);
+        Set<Long> surveyIds = req.getSurveyIds();
+        if (surveyIds.isEmpty()) {
+            return surveyIds;
         }
+        Set<Long> foundIds = new HashSet<>();
+        for (Survey s : new SurveyDAO().listByKeys(surveyIds.toArray(new Long[surveyIds.size()]))) {
+            foundIds.add(s.getKey().getId());
+        }
+        surveyIds.removeAll(foundIds);
 
         return surveyIds;
     }

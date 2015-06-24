@@ -16,6 +16,9 @@
 
 package org.waterforpeople.mapping.app.web.dto;
 
+import java.util.HashSet;
+import java.util.Set;
+
 import javax.servlet.http.HttpServletRequest;
 
 public class DeviceNotificationRequest extends LocationBeaconRequest {
@@ -23,20 +26,27 @@ public class DeviceNotificationRequest extends LocationBeaconRequest {
     private static final long serialVersionUID = 287773188257035166L;
     private static final String SURVEYS_PARAM = "formId";
     
-    private String[] surveyIds;
+    private Set<Long> surveyIds;
     
-    public String[] getSurveyIds() {
+    public Set<Long> getSurveyIds() {
         return surveyIds;
-    }
-
-    public void setSurveyIds(String[] surveyIds) {
-        this.surveyIds = surveyIds;
     }
     
     @Override
     protected void populateFields(HttpServletRequest req) throws Exception {
         super.populateFields(req);
-        setSurveyIds(req.getParameterValues(SURVEYS_PARAM));
+        
+        surveyIds = new HashSet<>();
+        String[] args = req.getParameterValues(SURVEYS_PARAM);
+        if (args != null) {
+            for (String sid : args) {
+                try {
+                    surveyIds.add(Long.parseLong(sid));
+                } catch (NumberFormatException e) {
+                    // ignore non-valid keys
+                }
+            }
+        }
     }
     
 
