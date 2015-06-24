@@ -80,6 +80,7 @@ public class ProcessorServlet extends HttpServlet {
             if (formID != null) {
                 SurveyDAO surveyDAO = new SurveyDAO();
                 if (surveyDAO.getById(formID) == null) {
+                    log.warning("Form " + formID + " doesn't exist in the datastore");
                     resp.setStatus(HttpServletResponse.SC_NOT_FOUND);
                     return;
                 }
