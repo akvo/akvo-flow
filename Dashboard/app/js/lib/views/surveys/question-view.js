@@ -155,6 +155,16 @@ FLOW.QuestionView = FLOW.View.extend({
 	    }
 	  }.property('this.type').cacheable(),
 
+  showLocaleName: function () {
+      if (!this.type) {
+          return false;
+      }
+      return this.type.get('value') == 'FREE_TEXT'
+          || this.type.get('value') == 'NUMBER'
+          || this.type.get('value') == 'OPTION'
+          || this.type.get('value') == 'CASCADE';
+  }.property('this.type').cacheable(),
+
   // when we change the question type to GEO, we turn on the
   // localeLocationFLag by default. If we change to something else, we
   // turn the flag of.
