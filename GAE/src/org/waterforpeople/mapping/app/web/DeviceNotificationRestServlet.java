@@ -114,7 +114,8 @@ public class DeviceNotificationRestServlet extends AbstractRestApiServlet {
             return surveyIds;
         }
         Set<Long> foundIds = new HashSet<>();
-        for (Survey s : new SurveyDAO().listByKeys(surveyIds.toArray(new Long[surveyIds.size()]))) {
+        Long[] surveyIdsArray = surveyIds.toArray(new Long[surveyIds.size()]);
+        for (Survey s : new SurveyDAO().listByKeys(surveyIdsArray)) {
             foundIds.add(s.getKey().getId());
         }
         surveyIds.removeAll(foundIds);
