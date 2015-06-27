@@ -425,12 +425,12 @@ public class SurveyInstance extends BaseDomain implements SecuredObject {
     @Override
     public List<Long> listAncestorIds() {
         if (surveyId == null) {
-            return null;
+            return Collections.emptyList();
         }
 
         SecuredObject s = new SurveyDAO().getByKey(surveyId);
         if (s == null) {
-            return null;
+            return Collections.emptyList();
         }
 
         return s.listAncestorIds();
