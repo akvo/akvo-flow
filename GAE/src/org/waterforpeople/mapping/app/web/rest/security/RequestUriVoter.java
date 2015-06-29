@@ -124,10 +124,20 @@ public class RequestUriVoter implements AccessDecisionVoter<FilterInvocation> {
      * @return
      */
     private boolean abstainVote(Authentication authentication, FilterInvocation securedObject) {
-        // requester is a super admin user no need to control access or
-        // request URL does not match the URI patterns we consider for voting
-        return authentication.getAuthorities().contains(AppRole.SUPER_ADMIN)
-                || !URI_PATTERN.matcher(securedObject.getRequestUrl()).find();
+        if (!URI_PATTERN.matcher(securedObject.getRequestUrl()).find()) {
+            // request URL does not match the URI patterns we consider for voting
+            return true;
+        } else if (authentication.getAuthorities().contains(AppRole.SUPER_ADMIN)) {
+            // requester is a super admin user no need to control access or
+            return true;
+        } else if ("GET".equals(securedObject.getHttpRequest().getMethod())
+                && parseObjectId(securedObject.getRequestUrl()) == null) {
+            // all GET requests for a set of entities are filtered
+            // via the BaseDAO.filterByUserAuthorizationObjectId()
+            return true;
+        } else {
+            return false;
+        }
     }
 
     /**
@@ -140,27 +150,22 @@ public class RequestUriVoter implements AccessDecisionVoter<FilterInvocation> {
     private int voteFolderSurveyUri(Authentication authentication, FilterInvocation securedObject) {
         String httpMethod = securedObject.getHttpRequest().getMethod();
         String requestUri = securedObject.getRequestUrl();
-        List<Long> ancestorIds = new ArrayList<Long>();
 
-        if ("GET".equals(httpMethod)) {
-            // get specific object (id), otherwise abstain from voting. filtering is done
-            // via the BaseDAO.filterByUserAuthorizationObjectId()
-            Long objectId = parseObjectId(requestUri);
-            if (objectId == null) {
-                return ACCESS_ABSTAIN;
-            }
+        List<Long> ancestorIds = new ArrayList<Long>();
+        Long objectId = parseObjectId(requestUri);
+        if ("GET".equals(httpMethod) || "PUT".equals(httpMethod) || "DELETE".equals(httpMethod)) {
             ancestorIds.addAll(retrieveAncestorIdsFromDataStore(securedObject,
                     parseRequestPrefix(requestUri), objectId));
-        } else if ("PUT".equals(httpMethod)) {
-            ancestorIds.addAll(retrieveAncestorIdsFromDataStore(securedObject,
-                    parseRequestPrefix(requestUri), parseObjectId(requestUri)));
         } else if ("POST".equals(httpMethod)) {
             ancestorIds.addAll(null);
-        } else if ("DELETE".equals(httpMethod)) {
-            ancestorIds.addAll(retrieveAncestorIdsFromDataStore(securedObject,
-                    parseRequestPrefix(requestUri), parseObjectId(requestUri)));
         }
-        // TODO: add survey/form id as well
+
+        // Also check for scenario where the user/role combo has been coupled with the object and
+        // not one of its ancestors. This is only valid for folders/surveys.
+        boolean includeSecuredObjectId = objectId != null;
+        if (includeSecuredObjectId) {
+            ancestorIds.add(objectId);
+        }
         return checkUserAuthorization(authentication, securedObject, ancestorIds);
     }
 
@@ -222,22 +227,15 @@ public class RequestUriVoter implements AccessDecisionVoter<FilterInvocation> {
 
         List<Long> ancestorIds = new ArrayList<Long>();
 
-        if ("GET".equals(httpMethod)) {
-            Long objectId = parseObjectId(requestUri);
-            if (objectId == null) {
-                // if no specific id is requested, abstain from voting. filtering is done
-                // via the BaseDAO.filterByUserAuthorizationObjectId()
-                return ACCESS_ABSTAIN;
-            }
-            ancestorIds = retrieveAncestorIdsFromDataStore(securedObject,
-                    parseRequestPrefix(requestUri), objectId);
-        } else if ("DELETE".equals(httpMethod)) {
+        if ("GET".equals(httpMethod) || "DELETE".equals(httpMethod)) {
             ancestorIds = retrieveAncestorIdsFromDataStore(securedObject,
                     parseRequestPrefix(requestUri), parseObjectId(requestUri));
         } else if ("POST".equals(httpMethod) || "PUT".equals(httpMethod)) {
             // no post or put for survey instances is allowed via rest API at the moment
-            log.warning("A POST or PUT of survey responses is not a supported operation at the moment");
-            return ACCESS_DENIED;
+            String message = "This operation is not supported operation at the moment.";
+            log.warning("POST/PUT survey responses :" + message);
+            throw new AccessDeniedException(
+                    "Access is Denied. " + message);
         }
 
         return checkUserAuthorization(authentication, securedObject, ancestorIds);
