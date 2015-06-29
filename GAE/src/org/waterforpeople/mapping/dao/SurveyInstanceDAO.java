@@ -166,20 +166,14 @@ public class SurveyInstanceDAO extends BaseDAO<SurveyInstance> {
     }
     
     private boolean isProcessable(QuestionAnswerStore qas, SurveyInstance si) {
-        try {
-            Long qid = Long.valueOf(qas.getQuestionID());
-            if (qasDao.isCached(qid, si.getKey().getId())) {
-                log.log(Level.INFO,
-                        "Skipping QAS already present in datasore [SurveyInstance, Survey, Question]: "
-                                + qas.getSurveyInstanceId() + ", " + si.getSurveyId() + ", " + qas.getQuestionID());
-                return false;
-            } else if (questionDao.getByKey(qid) == null) {
-                log.log(Level.WARNING, String.format("Question %d not found in the datastore", qid));
-                return false;
-            }
-        } catch (NumberFormatException e) {
-            log.log(Level.WARNING, String.format(
-                    e.getMessage() + "\n%s is not a valid question id", qas.getQuestionID()));
+        Long qid = Long.valueOf(qas.getQuestionID());
+        if (qasDao.isCached(qid, si.getKey().getId())) {
+            log.log(Level.INFO,
+                    "Skipping QAS already present in datasore [SurveyInstance, Survey, Question]: "
+                            + qas.getSurveyInstanceId() + ", " + si.getSurveyId() + ", " + qas.getQuestionID());
+            return false;
+        } else if (questionDao.getByKey(qid) == null) {
+            log.log(Level.WARNING, String.format("Question %d not found in the datastore", qid));
             return false;
         }
             
