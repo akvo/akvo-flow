@@ -99,7 +99,7 @@ public class SurveyInstanceDAO extends BaseDAO<SurveyInstance> {
         final Set<QuestionAnswerStore> locations = new HashSet<>();
         final List<QuestionAnswerStore> responses = new ArrayList<>();
         for (QuestionAnswerStore qas : si.getQuestionAnswersStore()) {
-            if (isValid(qas, si)) {
+            if (isProcessable(qas, si)) {
                 qas.setSurveyInstanceId(surveyInstanceId);
                 
                 if (Question.Type.GEO.toString().equals(qas.getType()) && isNew) {
@@ -165,7 +165,7 @@ public class SurveyInstanceDAO extends BaseDAO<SurveyInstance> {
         return si;
     }
     
-    private boolean isValid(QuestionAnswerStore qas, SurveyInstance si) {
+    private boolean isProcessable(QuestionAnswerStore qas, SurveyInstance si) {
         try {
             Long qid = Long.valueOf(qas.getQuestionID());
             if (qasDao.isCached(qid, si.getKey().getId())) {
