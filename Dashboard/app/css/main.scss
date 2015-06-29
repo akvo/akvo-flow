@@ -522,8 +522,8 @@ input[type="submit"] {
             text-align:center;
             &.deleteBtn {
                 display: relative;
-                top:5px;
-                left:inherit;
+                top:10px;
+                left:45%;
             }
             &:first-child {
                 margin-left: 0.5%;
