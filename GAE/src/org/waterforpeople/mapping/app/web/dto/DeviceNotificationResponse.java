@@ -30,7 +30,7 @@ public class DeviceNotificationResponse extends RestResponse {
 
     List<String> missingFiles = new ArrayList<String>();
     List<String> missingFilesUnknown = new ArrayList<String>();
-    Set<Long> deletedSurveys = new HashSet<>();
+    Set<Long> deletedSurveys = new HashSet<Long>();
 
     public void setMissingFiles(List<DeviceFileJobQueue> byDevice) {
         missingFiles = new ArrayList<String>();
