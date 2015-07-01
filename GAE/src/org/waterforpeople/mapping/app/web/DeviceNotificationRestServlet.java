@@ -1,5 +1,5 @@
 /*
- *  Copyright (C) 2014 Stichting Akvo (Akvo Foundation)
+ *  Copyright (C) 2014-2015 Stichting Akvo (Akvo Foundation)
  *
  *  This file is part of Akvo FLOW.
  *
@@ -16,7 +16,9 @@
 
 package org.waterforpeople.mapping.app.web;
 
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 import javax.servlet.http.HttpServletRequest;
 
@@ -32,6 +34,8 @@ import com.gallatinsystems.device.domain.DeviceFileJobQueue;
 import com.gallatinsystems.framework.rest.AbstractRestApiServlet;
 import com.gallatinsystems.framework.rest.RestRequest;
 import com.gallatinsystems.framework.rest.RestResponse;
+import com.gallatinsystems.survey.dao.SurveyDAO;
+import com.gallatinsystems.survey.domain.Survey;
 
 public class DeviceNotificationRestServlet extends AbstractRestApiServlet {
 
@@ -54,20 +58,20 @@ public class DeviceNotificationRestServlet extends AbstractRestApiServlet {
     protected RestResponse handleRequest(RestRequest req) throws Exception {
         DeviceNotificationRequest dnReq = (DeviceNotificationRequest) req;
         DeviceNotificationResponse resp = new DeviceNotificationResponse();
+
         Device d = getDevice(dnReq);
-
-        if (d == null) {
-            return resp;
+        if (d != null) {
+            DeviceFileJobQueueDAO jobDao = new DeviceFileJobQueueDAO();
+    
+            List<DeviceFileJobQueue> missingByDevice = jobDao.listByDeviceId(d
+                    .getKey().getId());
+            List<DeviceFileJobQueue> missingUnknown = jobDao.listByUnknownDevice();
+    
+            resp.setMissingFiles(missingByDevice);
+            resp.setMissingUnknown(missingUnknown);
         }
-
-        DeviceFileJobQueueDAO jobDao = new DeviceFileJobQueueDAO();
-
-        List<DeviceFileJobQueue> missingByDevice = jobDao.listByDeviceId(d
-                .getKey().getId());
-        List<DeviceFileJobQueue> missingUnknown = jobDao.listByUnknownDevice();
-
-        resp.setMissingFiles(missingByDevice);
-        resp.setMissingUnknown(missingUnknown);
+        
+        resp.setDeletedSurvey(getDeletedSurveys(dnReq));
 
         return resp;
     }
@@ -83,6 +87,7 @@ public class DeviceNotificationRestServlet extends AbstractRestApiServlet {
         JSONObject json = new JSONObject();
         JSONArray missingFiles = new JSONArray();
         JSONArray missingUnknown = new JSONArray();
+        JSONArray deletedSurveys = new JSONArray();
 
         for (String mf : r.getMissingFiles()) {
             missingFiles.put(mf);
@@ -92,11 +97,32 @@ public class DeviceNotificationRestServlet extends AbstractRestApiServlet {
             missingUnknown.put(mu);
         }
 
+        for (Long id : r.getDeletedSurveys()) {
+            deletedSurveys.put(String.valueOf(id));
+        }
+
         json.put("missingFiles", missingFiles);
         json.put("missingUnknown", missingUnknown);
+        json.put("deletedForms", deletedSurveys);
 
         getResponse().getWriter().println(json.toString());
     }
+
+    private Set<Long> getDeletedSurveys(DeviceNotificationRequest req) {
+        Set<Long> surveyIds = req.getSurveyIds();
+        if (surveyIds.isEmpty()) {
+            return surveyIds;
+        }
+        Set<Long> foundIds = new HashSet<Long>();
+        Long[] surveyIdsArray = surveyIds.toArray(new Long[surveyIds.size()]);
+        for (Survey s : new SurveyDAO().listByKeys(surveyIdsArray)) {
+            foundIds.add(s.getKey().getId());
+        }
+        surveyIds.removeAll(foundIds);
+
+        return surveyIds;
+    }
+    
 
     private Device getDevice(DeviceNotificationRequest req) {
         DeviceDAO deviceDao = new DeviceDAO();
