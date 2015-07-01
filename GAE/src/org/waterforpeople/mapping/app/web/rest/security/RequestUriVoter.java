@@ -154,8 +154,8 @@ public class RequestUriVoter implements AccessDecisionVoter<FilterInvocation> {
         List<Long> ancestorIds = new ArrayList<Long>();
         Long objectId = parseObjectId(requestUri);
         if ("GET".equals(httpMethod) || "PUT".equals(httpMethod) || "DELETE".equals(httpMethod)) {
-            ancestorIds.addAll(retrieveAncestorIdsFromDataStore(securedObject,
-                    parseRequestPrefix(requestUri), objectId));
+            ancestorIds.addAll(retrieveAncestorIdsFromDataStore(parseRequestPrefix(requestUri),
+                    objectId));
         } else if ("POST".equals(httpMethod)) {
             ancestorIds.addAll(null);
         }
@@ -228,8 +228,8 @@ public class RequestUriVoter implements AccessDecisionVoter<FilterInvocation> {
         List<Long> ancestorIds = new ArrayList<Long>();
 
         if ("GET".equals(httpMethod) || "DELETE".equals(httpMethod)) {
-            ancestorIds = retrieveAncestorIdsFromDataStore(securedObject,
-                    parseRequestPrefix(requestUri), parseObjectId(requestUri));
+            ancestorIds = retrieveAncestorIdsFromDataStore(parseRequestPrefix(requestUri),
+                    parseObjectId(requestUri));
         } else if ("POST".equals(httpMethod) || "PUT".equals(httpMethod)) {
             // no post or put for survey instances is allowed via rest API at the moment
             String message = "This operation is not supported operation at the moment.";
@@ -273,13 +273,12 @@ public class RequestUriVoter implements AccessDecisionVoter<FilterInvocation> {
     /**
      * Retrieve the ancestorIds for a secured object from the datastore
      *
-     * @param securedObject
      * @param requestPrefix
      * @param objectId
      * @return
      */
-    private List<Long> retrieveAncestorIdsFromDataStore(FilterInvocation securedObject,
-            String requestPrefix, Long objectId) {
+    private List<Long> retrieveAncestorIdsFromDataStore(String requestPrefix,
+            Long objectId) {
 
         if (requestPrefix == null || objectId == null) {
             log.warning("Failed to identify request parameters requestPrefix=" + requestPrefix
