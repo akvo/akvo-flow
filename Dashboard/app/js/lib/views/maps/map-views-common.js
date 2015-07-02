@@ -49,7 +49,7 @@ FLOW.NavMapsView = FLOW.View.extend({
 
     var self = this;
 
-    if(FLOW.Env.useCartodb){
+    if(FLOW.Env.useCartodb && typeof cartodb != 'undefined'){
       mapContent = '<div style="width: 100%">'
       +'<div style="float: left; width: 100%">'
       +'<div style="float: left">'
@@ -103,7 +103,8 @@ FLOW.NavMapsView = FLOW.View.extend({
 
     	// add cartodb layer with one sublayer
     	cartodb.createLayer(map, {
-    			user_name: 'flowaglimmerofhope-hrd',
+    			//user_name: 'flowaglimmerofhope-hrd',
+          user_name: 'cartodb',
           type: 'cartodb',
     			sublayers: [{
     		    sql: "SELECT * FROM data_point",
@@ -111,7 +112,8 @@ FLOW.NavMapsView = FLOW.View.extend({
             interactivity: "name, survey_id, id, identifier"
     		  }]
     	},{
-    		tiler_domain: "cartodb.akvo.org",
+    		//tiler_domain: "cartodb.akvo.org",
+        tiler_domain: "kymdata.com",
     		tiler_port: "8181",
     		tiler_protocol: "http",
     		no_cdn: true
@@ -159,9 +161,9 @@ FLOW.NavMapsView = FLOW.View.extend({
           LayerActions['all']();
         }else{
           //get a list of forms on a survey
-          /*$.get("/rest/cartodb/forms?surveyId="+$( "#survey_selector" ).val(), function(data, status){
+          $.get("/rest/cartodb/forms?surveyId="+$( "#survey_selector" ).val(), function(data, status){
         		//console.log(data);
-            $("#form_selector option[value!='']").remove();
+            /*$("#form_selector option[value!='']").remove();
             var rows = [];
             if(data["forms"].length > 0){
               console.log(data);
@@ -174,8 +176,8 @@ FLOW.NavMapsView = FLOW.View.extend({
                 //append return survey list to the survey selector element
                 $("#form_selector").append('<option value="'+rows[i]["id"]+'">'+rows[i]["name"]+'</option>');
               }
-            }
-        	});*/
+            }*/
+        	});
           LayerActions['survey']();
         }
       });
@@ -389,7 +391,7 @@ FLOW.NavMapsView = FLOW.View.extend({
               clicked_point_content += "<table>";
               for (column in point_data['answers']){
                 for(var i=0; i<questions_data['questions'].length; i++){
-                  if (column.match("^"+questions_data['questions'][i].id)) {
+                  if (column.match("^_"+questions_data['questions'][i].id)) {
                     //console.log(questions_data['questions'][i].display_text);
                     clicked_point_content += "<tr><td>"+questions_data['questions'][i].display_text+":&nbsp;</td>";
                     clicked_point_content += "<td>"+point_data['answers'][column]+"</td></tr>";

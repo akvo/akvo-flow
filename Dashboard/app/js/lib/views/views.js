@@ -27,7 +27,7 @@ require('akvo-flow/views/devices/assignment-edit-views');
 require('akvo-flow/views/devices/survey-bootstrap-view');
 require('akvo-flow/views/users/user-view');
 
-
+var test = "test";
 FLOW.ApplicationView = Ember.View.extend({
   templateName: 'application/application',
 
