@@ -92,7 +92,7 @@ public class CartodbRestService {
         }
     }
 
-    @RequestMapping(method = RequestMethod.POST, value = "questions")
+    @RequestMapping(method = RequestMethod.GET, value = "questions")
     @ResponseBody
     public Map<String, Object> getQuestions(
             @RequestParam(value = "form_id", required = true) Long formId) {
@@ -102,7 +102,24 @@ public class CartodbRestService {
         try {
             response.put(
                     "questions",
-                    queryCartodb(String.format("SELECT * FROM question WHERE form_id = %d", formId)));
+                    queryCartodb(String.format("SELECT * FROM question WHERE form_id = %d AND type = 'OPTION'", formId)));
+            return response;
+        } catch (IOException e) {
+            return response;
+        }
+    }
+
+    @RequestMapping(method = RequestMethod.GET, value = "columns")
+    @ResponseBody
+    public Map<String, Object> getColumns(
+            @RequestParam(value = "form_id", required = true) Long formId) {
+
+        Map<String, Object> response = new HashMap<>();
+        response.put("column_names", null);
+        try {
+            response.put(
+                    "column_names",
+                    queryCartodb(String.format("SELECT column_name from information_schema.columns where table_name='raw_data_%d'", formId)));
             return response;
         } catch (IOException e) {
             return response;
@@ -130,6 +147,20 @@ public class CartodbRestService {
         try {
             response.put("forms",
                     queryCartodb(String.format("SELECT * FROM form WHERE survey_id=%d", surveyId)));
+            return response;
+        } catch (IOException e) {
+            return response;
+        }
+    }
+
+    @RequestMapping(method = RequestMethod.GET, value = "distinct")
+    @ResponseBody
+    public Map<String, Object> getDistinctValues(@RequestParam("question_name") String questionName, @RequestParam("form_id") Long formId) {
+        Map<String, Object> response = new HashMap<>();
+        response.put("distinct_values", null);
+        try {
+            response.put("distinct_values",
+                    queryCartodb(String.format("SELECT DISTINCT %s FROM raw_data_%d",questionName , formId)));
             return response;
         } catch (IOException e) {
             return response;

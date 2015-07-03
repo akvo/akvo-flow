@@ -5,6 +5,8 @@ FLOW.NavMapsView = FLOW.View.extend({
   detailsPaneVisible: null,
   map: null,
   geomodel: null,
+  cartodb_layer: null,
+  layer_exists_check: 0,
 
   init: function () {
     this._super();
@@ -58,12 +60,19 @@ FLOW.NavMapsView = FLOW.View.extend({
       +'<option value="">--All--</option>'
       +'</select>'
       +'</div>'
-      +'<!-- <div style="float: left">'
+      +'<div style="float: left">'
       +'<label for="form_selector">Select a form</label>'
       +'<select class="" name="form_selector" id="form_selector">'
       +'<option value="">--All--</option>'
       +'</select>'
-      +'</div> -->'
+      +'</div>'
+      +'<div style="float: left">'
+      +'<label for="question_selector">Select a question to style the map by</label>'
+      +'<select class="" name="question_selector" id="question_selector">'
+      +'<option value="">--All--</option>'
+      +'</select>'
+      +'</div>'
+      +'<button style="float: left" id="update_style">Update Points Style</button>'
       +'</div>'
       +'<div style="float: left; width:100%; height: 550px" id="cartodbd_flowMap"></div>'
       +'</div>';
@@ -101,54 +110,31 @@ FLOW.NavMapsView = FLOW.View.extend({
     		maxZoom: 18
     	}).addTo(map);
 
-    	// add cartodb layer with one sublayer
-    	cartodb.createLayer(map, {
-    			//user_name: 'flowaglimmerofhope-hrd',
-          user_name: 'cartodb',
-          type: 'cartodb',
-    			sublayers: [{
-    		    sql: "SELECT * FROM data_point",
-    		    cartocss: '/** simple visualization */#data_point{marker-fill-opacity: 0.9;marker-line-color: #FFF;marker-line-width: 1.5;marker-line-opacity: 1;marker-placement: point;marker-type: ellipse;marker-width: 10;marker-fill: #FF6600;marker-allow-overlap: true;}',
-            interactivity: "name, survey_id, id, identifier"
-    		  }]
-    	},{
-    		//tiler_domain: "cartodb.akvo.org",
-        tiler_domain: "kymdata.com",
-    		tiler_port: "8181",
-    		tiler_protocol: "http",
-    		no_cdn: true
-    	})
-    	.addTo(map)
-    	.done(function(layer) {
-          data_layer = layer.getSubLayer(0);
+      //get list of named maps
+    	$.get("/rest/cartodb/named_maps", function(data, status){
+    		if(data.template_ids){
+    			named_map_check = 0;
+    			for(var i=0; i<data['template_ids'].length; i++){
+    				//check in there is a full "data_point" table named map
+    				if(data['template_ids'][i] == "cartodb@data_point"){
+    					//named map already exists
+    					named_map_check++;
+    				}
+    			}
 
-    			layer.getSubLayer(0).setInteraction(true);
-          self.addCursorInteraction(layer);
-
-    			// on mouseover
-    			layer.getSubLayer(0).on('featureOver', function(e, pos, pixel, data) {
-    					// print data to console log
-    					//console.log("Event #" + data.cartodb_id + ", name " + data.name + ", identifier: " + data.identifier);
-    			});
-          layer.getSubLayer(0).on('featureClick', function(e, latlng, pos, data) {
-            //open a popup and pass some clicked point data
-            var clicked_point_content = "<table>";
-
-            self.openPopup(map, "identifier: "+data.identifier, latlng);
-
-            self.showDetailsPane();
-
-            /*if($("#form_selector").val() != ""){
-              //get all clicked point data
-              self.getCartodbPointData("/rest/cartodb/point_data?dataPointId="+data.id+"&formId="+$("#form_selector").val());
-            }else{
-              //get all clicked point data
-              self.getCartodbPointData("/rest/cartodb/answers?dataPointId="+data.id+"&surveyId="+data.survey_id);
-            }*/
-
-            self.getCartodbPointData("/rest/cartodb/answers?dataPointId="+data.id+"&surveyId="+data.survey_id);
-
-          });
+    			//if named map exists
+    			if(named_map_check>0){
+    				//overlay named map
+    				self.create_layer(map, "data_point", "");
+    			}else{
+    				self.named_maps(
+              map,
+              "data_point",
+              "data_point",
+              "SELECT * FROM data_point",
+              ["name", "survey_id", "id", "identifier"]);
+    			}
+    		}
     	});
 
       map.on('popupclose', function(e) {
@@ -157,57 +143,154 @@ FLOW.NavMapsView = FLOW.View.extend({
       });
 
       $( "#survey_selector" ).change(function() {
-        if($( "#survey_selector" ).val() == ""){
-          LayerActions['all']();
-        }else{
-          //get a list of forms on a survey
+        $("#form_selector option[value!='']").remove();
+      	$("#question_selector option[value!='']").remove();
+
+      	if($( "#survey_selector" ).val() != ""){
+      		//get list of forms in selected survey
           $.get("/rest/cartodb/forms?surveyId="+$( "#survey_selector" ).val(), function(data, status){
         		//console.log(data);
-            /*$("#form_selector option[value!='']").remove();
-            var rows = [];
-            if(data["forms"].length > 0){
-              console.log(data);
-              rows = data["forms"];
-              rows.sort(function(el1, el2){
-            		return self.compare(el1, el2, "name")
-            	});
+        		var rows = [];
+        		if( data["forms"] && data["forms"].length > 0){
+        			rows = data["forms"];
+        			rows.sort(function(el1, el2){
+        				return self.compare(el1, el2, "name")
+        			});
 
-              for(var i=0; i<rows.length; i++){
-                //append return survey list to the survey selector element
-                $("#form_selector").append('<option value="'+rows[i]["id"]+'">'+rows[i]["name"]+'</option>');
-              }
-            }*/
+        			for(var i=0; i<rows.length; i++){
+        				//append return survey list to the survey selector element
+        				$("#form_selector").append('<option value="'+rows[i]["id"]+'">'+rows[i]["name"]+'</option>');
+        			}
+        		}
         	});
-          LayerActions['survey']();
-        }
+
+      		//get list of named maps
+      		$.get("/rest/cartodb/named_maps", function(data, status){
+      			if(data.template_ids){
+      				named_map_check = 0;
+      				for(var i=0; i<data['template_ids'].length; i++){
+      					//check if there is a selectd survey's named map
+      					if(data['template_ids'][i] == "cartodb@data_point_"+$( "#survey_selector" ).val()){
+      						//named map already exists
+      						named_map_check++;
+      					}
+      				}
+
+      				//if named map exists
+      				if(named_map_check>0){
+      					//overlay named map
+      					self.create_layer(map, "data_point_"+$( "#survey_selector" ).val(), "");
+      				}else{
+      					self.named_maps(
+                  map,
+                  "data_point_"+$( "#survey_selector" ).val(),
+                  "data_point",
+                  "SELECT * FROM data_point WHERE survey_id="+$( "#survey_selector" ).val(),
+                  ["name", "survey_id", "id", "identifier"]);
+      				}
+      			}
+      		});
+      	}else{
+      		self.create_layer(map, "data_point", "");
+      	}
       });
 
       $( "#form_selector" ).change(function() {
-        if($( "#form_selector" ).val() == ""){
-          LayerActions['survey']();
-        }else{
-          //get a list of forms on a survey
-          LayerActions['form']();
-        }
+        $("#question_selector option[value!='']").remove();
+
+      	if($( "#form_selector" ).val() != ""){
+      		//get named maps
+      		$.get("/rest/cartodb/named_maps", function(data, status){
+      			if(data.template_ids){
+      				named_map_check = 0;
+      				for(var i=0; i<data['template_ids'].length; i++){
+      					if(data['template_ids'][i] == "cartodb@raw_data_"+$( "#form_selector" ).val()){
+      						//named map already exists
+      						named_map_check++;
+      					}
+      					//console.log(data['template_ids'][i]);
+      				}
+
+      				//if named map exists
+      				if(named_map_check>0){
+      					//overlay named map
+      					self.create_layer(map, "raw_data_"+$( "#form_selector" ).val(), "");
+      				}else{
+      					$.get("/rest/cartodb/columns?form_id="+$( "#form_selector" ).val(), function(columns_data) {
+      						var interactivity = [];
+
+      						if(columns_data.column_names){
+      							for(var j=0; j<columns_data['column_names'].length; j++){
+      								interactivity.push(columns_data['column_names'][j]['column_name']);
+      							}
+      						}
+
+      						self.named_maps(
+                    map,
+                    "raw_data_"+$( "#form_selector" ).val(),
+                    "raw_data_"+$( "#form_selector" ).val(),
+                    "SELECT * FROM raw_data_"+$( "#form_selector" ).val(),
+                    interactivity);
+      				    });
+      				}
+      			}
+      		});
+
+      		self.load_questions($( "#form_selector" ).val());
+      	}else{
+      		self.create_layer(map, "data_point_"+$( "#survey_selector" ).val(), "");
+      	}
       });
 
-      var LayerActions = {
-      		all: function(){
-      			data_layer.setSQL("SELECT * FROM data_point");
-      			return true;
-      		},
-      		survey: function(){
-            data_layer.setSQL("SELECT * FROM data_point WHERE survey_id = '"+$( "#survey_selector option:selected" ).val()+"'");
-      			return true;
-      		},
-          form : function(){
-            data_layer.setSQL("SELECT data_point.* FROM data_point LEFT JOIN raw_data_"
-              +$( "#form_selector option:selected" ).val()+" ON data_point.id = raw_data_"
-              +$( "#form_selector option:selected" ).val()+".data_point_id WHERE raw_data_"
-              +$( "#form_selector option:selected" ).val()+".data_point_id IS NOT NULL");
-            return true;
-          }
-      }
+      $("#update_style").click(function(){
+        if($( "#question_selector" ).val() != ""){
+          $.get("/rest/cartodb/distinct?question_name="+$( "#question_selector" ).val()+"&form_id="+$( "#form_selector" ).val(), function(data, status){
+      			distinct_values = data['distinct_values'];
+      			cartocss = "#raw_data_"+$( "#form_selector" ).val()+"{"
+      				+"marker-fill-opacity: 0.9;"
+      				+"marker-line-color: #FFF;"
+      				+"marker-line-width: 1.5;"
+      				+"marker-line-opacity: 1;"
+      				+"marker-placement: point;"
+      				+"marker-type: ellipse;"
+      				+"marker-width: 10;"
+      				+"marker-allow-overlap: true;"
+      				+"}";
+      			for(var i=0; i<distinct_values.length; i++){
+      				cartocss += "#raw_data_"+$( "#form_selector" ).val()+"["+$( "#question_selector" ).val()+"=\""+distinct_values[i][$( "#question_selector" ).val()]+"\"]";
+      				cartocss += "{";
+      				//cartocss += "marker-fill: #"+Math.random().toString(16).slice(2, 8);
+      				cartocss += "marker-fill: #"+(Math.random()*0xFFFFFF<<0).toString(16)+";";
+      				cartocss += "}";
+      			}
+            console.log(cartocss);
+
+        		$.get("/rest/cartodb/columns?form_id="+$( "#form_selector" ).val(), function(columns_data) {
+        			var interactivity = [];
+
+        			if(columns_data.column_names){
+        				for(var j=0; j<columns_data['column_names'].length; j++){
+        					interactivity.push(columns_data['column_names'][j]['column_name']);
+        				}
+        			}
+
+        			var config_json_data = {};
+        			config_json_data['interactivity'] = interactivity;
+        			config_json_data['map_name'] = 'raw_data_'+$( "#form_selector" ).val();
+        			config_json_data['cartocss'] = cartocss;
+        			config_json_data['sql'] = "SELECT * FROM raw_data_"+$( "#form_selector" ).val();
+
+        			console.log(config_json_data);
+
+        			//edit named maps
+              //place with endpoint for editing nmaed maps to be provided by Jonas here
+        		});
+      		});
+      	}else{
+      		alert("No question selected to style by");
+      	}
+      });
+
     }else{
       // insert the map
       this.map = L.mapbox.map('flowMap', 'akvo.he30g8mm')
@@ -347,6 +430,134 @@ FLOW.NavMapsView = FLOW.View.extend({
   	return el1[index] == el2[index] ? 0 : (el1[index] < el2[index] ? -1 : 1);
   },
 
+  openPopup: function(mapObject, popupContent, latLng){
+    L.popup()
+    .setLatLng(latLng)
+    .setContent(popupContent)
+    .openOn(mapObject);
+  },
+
+  load_questions: function(form_id){
+  	$.get("/rest/cartodb/questions?form_id="+form_id, function(questions_data, status){
+  		var questions_rows = [];
+  		if(questions_data['questions'] && questions_data['questions'].length){
+  			questions_rows = questions_data['questions'];
+  			$.get("/rest/cartodb/columns?form_id="+form_id, function(columns_data, status){
+  				var column_rows = [];
+  				if(columns_data['column_names'] && columns_data['column_names'].length){
+  					column_rows = columns_data['column_names'];
+  					for(var i=0; i<column_rows.length; i++){
+  						for(var j=0; j<questions_rows.length; j++){
+  							//check if column name has question id
+  							if(column_rows[i]['column_name'].includes(questions_rows[j]['id'])){
+  								$("#question_selector").append('<option value="'+column_rows[i]['column_name']+'">'+questions_rows[j]['display_text']+'</option>');
+  							}
+  						}
+  					}
+  				}
+  			});
+  		}
+  	});
+  },
+
+  //create named maps
+  named_maps: function(map, map_name, table, sql, interactivity){
+    var self = this;
+
+  	cartocss = "#"+table+"{"
+  		+"marker-fill-opacity: 0.9;"
+  		+"marker-line-color: #FFF;"
+  		+"marker-line-width: 1.5;"
+  		+"marker-line-opacity: 1;"
+  		+"marker-placement: point;"
+  		+"marker-type: ellipse;"
+  		+"marker-width: 10;"
+  		+"marker-fill: #FF6600;"
+  		+"marker-allow-overlap: true;"
+  		+"}";
+
+  	var config_json_data = {};
+  	config_json_data['interactivity'] = interactivity;
+  	config_json_data['name'] = map_name;
+  	config_json_data['cartocss'] = cartocss;
+  	config_json_data['sql'] = sql;
+
+    console.log(JSON.stringify(config_json_data));
+
+  	/*$.post(
+  			"/rest/cartodb/named_maps",
+  			config_json_data,
+  			function(named_map_data, status){
+  				console.log(named_map_data);
+  				if(named_map_data.template_id){
+  					self.create_layer(map, map_name, "");
+  				}
+  			});*/
+
+    $.ajax({
+      type: 'POST',
+      contentType: "application/json",
+      url: '/rest/cartodb/named_maps',
+      data: JSON.stringify(config_json_data), //turns out you need to stringify the payload before sending it
+      dataType: 'json',
+      success: function(named_map_data){
+        console.log(named_map_data);
+        if(named_map_data.template_id){
+          self.create_layer(map, map_name, "");
+        }
+      }
+    });
+  },
+
+  create_layer: function(map, map_name, interactivity){
+    var self = this;
+
+  	if(self.layer_exists_check == 1){
+  		map.removeLayer(self.cartodb_layer);
+  	}
+
+  	// add cartodb layer with one sublayer
+  	cartodb.createLayer(map, {
+  		user_name: 'cartodb', //to be replaced with dynamic cartodb username
+  		type: 'namedmap',
+  		named_map: {
+  			name: map_name,
+  			layers: [{
+  				layer_name: "t",
+  				interactivity: "id"
+  			}]
+  		}
+  	},{
+  		tiler_domain: "kymdata.com", //to be replaced with dynamic tiler domain
+  		tiler_port: "8181", //to be replaced with dynamic tiler port
+  		tiler_protocol: "http",
+  		no_cdn: true
+  	})
+  	.addTo(map)
+  	.done(function(layer) {
+  		self.layer_exists_check = 1;
+  		self.cartodb_layer = layer;
+
+  		self.addCursorInteraction(layer);
+
+  		current_layer = layer.getSubLayer(0);
+  		current_layer.setInteraction(true);
+
+  		// on mouseover
+  		/*current_layer.on('featureOver', function(e, pos, pixel, data) {
+  				// print data to console log
+  				console.log("Event #" + data.id);
+  		});*/
+
+  		current_layer.on('featureClick', function(e, latlng, pos, data) {
+  			self.openPopup(map, "id: "+data.id, latlng);
+  		});
+
+  		// show infowindows on click
+  		//cdb.vis.Vis.addInfowindow(map, current_layer, ['id']);
+  	});
+  },
+
   addCursorInteraction: function (layer) {
     var hovers = [];
 
@@ -363,13 +574,6 @@ FLOW.NavMapsView = FLOW.View.extend({
         $('#cartodbd_flowMap').css({"cursor":"-moz-grabbing","cursor":"-webkit-grabbing"});
       }
     });
-  },
-
-  openPopup: function(mapObject, popupContent, latLng){
-    L.popup()
-    .setLatLng(latLng)
-    .setContent(popupContent)
-    .openOn(mapObject);
   },
 
   getCartodbPointData: function(url){
