@@ -92,6 +92,14 @@ public class RequestUriVoter implements AccessDecisionVoter<FilterInvocation> {
     @Override
     public int vote(Authentication authentication, FilterInvocation securedObject,
             Collection<ConfigAttribute> attributes) {
+
+        // abstain from voting
+        if (abstainVote(authentication, securedObject)) {
+            return ACCESS_ABSTAIN;
+        }
+
+        // on first login we need to abstain in order to set the user credentials for the
+        // authentication object
         if (authentication.getCredentials() == null) {
             // immediately deny access if unable to identify user
             throw new AccessDeniedException(
@@ -99,11 +107,6 @@ public class RequestUriVoter implements AccessDecisionVoter<FilterInvocation> {
         }
 
         String requestUri = securedObject.getRequestUrl();
-
-        // abstain from voting
-        if (abstainVote(authentication, securedObject)) {
-            return ACCESS_ABSTAIN;
-        }
 
         if (requestUri.startsWith(PROJECT_FOLDER_URI_PREFIX)
                 || requestUri.startsWith(FORM_URI_PREFIX)) {
