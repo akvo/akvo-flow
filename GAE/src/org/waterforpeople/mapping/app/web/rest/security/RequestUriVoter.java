@@ -25,13 +25,21 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import javax.inject.Inject;
+import javax.servlet.http.HttpServletRequest;
+
+import org.akvo.flow.domain.RootFolder;
 import org.akvo.flow.domain.SecuredObject;
+import org.codehaus.jackson.JsonFactory;
+import org.codehaus.jackson.JsonParser;
+import org.codehaus.jackson.JsonToken;
 import org.springframework.security.access.AccessDecisionVoter;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.access.ConfigAttribute;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.web.FilterInvocation;
 import org.waterforpeople.mapping.dao.SurveyInstanceDAO;
+
+import com.gallatinsystems.common.Constants;
 import com.gallatinsystems.survey.dao.SurveyDAO;
 import com.gallatinsystems.survey.dao.SurveyGroupDAO;
 import com.gallatinsystems.user.dao.UserAuthorizationDAO;
@@ -151,16 +159,19 @@ public class RequestUriVoter implements AccessDecisionVoter<FilterInvocation> {
      * @return
      */
     private int voteFolderSurveyUri(Authentication authentication, FilterInvocation securedObject) {
-        String httpMethod = securedObject.getHttpRequest().getMethod();
+        HttpServletRequest request = securedObject.getHttpRequest();
+        String httpMethod = request.getMethod();
         String requestUri = securedObject.getRequestUrl();
 
         List<Long> ancestorIds = new ArrayList<Long>();
-        Long objectId = parseObjectId(requestUri);
+        Long objectId = null;
         if ("GET".equals(httpMethod) || "PUT".equals(httpMethod) || "DELETE".equals(httpMethod)) {
+            objectId = parseObjectId(requestUri);
             ancestorIds.addAll(retrieveAncestorIdsFromDataStore(parseRequestPrefix(requestUri),
                     objectId));
         } else if ("POST".equals(httpMethod)) {
-            ancestorIds.addAll(null);
+            ancestorIds.addAll(retrieveAncestorIdsFromDataStore(parseRequestPrefix(requestUri),
+                    parsePayload(request)));
         }
 
         // Also check for scenario where the user/role combo has been coupled with the object and
@@ -170,6 +181,69 @@ public class RequestUriVoter implements AccessDecisionVoter<FilterInvocation> {
             ancestorIds.add(objectId);
         }
         return checkUserAuthorization(authentication, securedObject, ancestorIds);
+    }
+
+    /**
+     * Retrieve the object id of the parent object associated with the payload.
+     *
+     * @param httpRequest
+     * @return
+     */
+    private Long parsePayload(HttpServletRequest httpRequest) {
+
+        if (httpRequest.getContentType() == null
+                || !httpRequest.getContentType().startsWith("application/json")
+                || httpRequest.getContentLength() == 0) {
+            return null; // if not JSON payload, conversion exception will be thrown later
+        }
+
+        boolean isValidPayload = false;
+        String idString = null;
+
+        try {
+            JsonFactory f = new JsonFactory();
+            JsonParser parser = f.createJsonParser(httpRequest.getInputStream());
+
+            boolean isSurvey = false;
+            boolean isForm = false;
+
+            while (parser.nextToken() != JsonToken.END_OBJECT) {
+                String field = parser.getCurrentName();
+
+                if (null == field) {
+                    continue;
+                } else if ("survey_group".equals(field)) {
+                    isSurvey = true;
+                } else if ("survey".equals(field)) {
+                    isForm = true;
+                } else if ("parentId".equals(field)) {
+                    parser.nextToken();
+                    idString = parser.getText();
+                    isValidPayload = isSurvey && idString != null;
+                } else if ("surveyGroupId".equals(field)) {
+                    parser.nextToken();
+                    idString = parser.getText();
+                    isValidPayload = isForm && idString != null;
+                }
+            }
+        } catch (Exception e) {
+            log.severe(e.getMessage());
+            return null;
+        }
+
+        if (!isValidPayload) {
+            // missing id parameter or wrong combination of survey->parentId or form->surveyGroupId
+            return null;
+        }
+
+        Long objectId = null;
+        try {
+            objectId = Long.parseLong(idString);
+        } catch (NumberFormatException e) {
+            log.warning("Unable to identify the requested object id: " + idString);
+        }
+        return objectId;
+
     }
 
     /**
@@ -291,7 +365,9 @@ public class RequestUriVoter implements AccessDecisionVoter<FilterInvocation> {
 
         List<Long> ancestorIds = new ArrayList<Long>();
         SecuredObject obj = null;
-        if (SURVEY_RESPONSE_URI_PREFIX.equals(requestPrefix)) {
+        if (Constants.ROOT_FOLDER_ID.equals(objectId)) {
+            obj = new RootFolder();
+        } else if (SURVEY_RESPONSE_URI_PREFIX.equals(requestPrefix)) {
             obj = surveyInstanceDao.getByKey(objectId);
         } else if (FORM_URI_PREFIX.equals(requestPrefix)) {
             obj = surveyDao.getByKey(objectId);
