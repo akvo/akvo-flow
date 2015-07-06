@@ -58,19 +58,19 @@ FLOW.NavMapsView = FLOW.View.extend({
       +'<label for="survey_selector">Select a survey</label>'
       +'<select class="" name="survey_selector" id="survey_selector">'
       +'<option value="">--All--</option>'
-      +'</select>'
+      +'</select>&nbsp;'
       +'</div>'
       +'<div style="float: left">'
       +'<label for="form_selector">Select a form</label>'
       +'<select class="" name="form_selector" id="form_selector">'
       +'<option value="">--All--</option>'
-      +'</select>'
+      +'</select>&nbsp;'
       +'</div>'
       +'<div style="float: left">'
       +'<label for="question_selector">Select a question to style the map by</label>'
       +'<select class="" name="question_selector" id="question_selector">'
       +'<option value="">--All--</option>'
-      +'</select>'
+      +'</select>&nbsp;'
       +'</div>'
       +'<button style="float: left" id="update_style">Update Points Style</button>'
       +'</div>'
@@ -283,7 +283,7 @@ FLOW.NavMapsView = FLOW.View.extend({
         			console.log(config_json_data);
 
         			//edit named maps
-              //place with endpoint for editing nmaed maps to be provided by Jonas here
+              //place endpoint for editing nmaed maps to be provided by Jonas here
         		});
       		});
       	}else{
@@ -449,7 +449,7 @@ FLOW.NavMapsView = FLOW.View.extend({
   					for(var i=0; i<column_rows.length; i++){
   						for(var j=0; j<questions_rows.length; j++){
   							//check if column name has question id
-  							if(column_rows[i]['column_name'].includes(questions_rows[j]['id'])){
+  							if(column_rows[i]['column_name'].includes(questions_rows[j]['id']) && questions_rows[j]['type'] == 'OPTION'){
   								$("#question_selector").append('<option value="'+column_rows[i]['column_name']+'">'+questions_rows[j]['display_text']+'</option>');
   							}
   						}
@@ -510,7 +510,7 @@ FLOW.NavMapsView = FLOW.View.extend({
   },
 
   create_layer: function(map, map_name, interactivity){
-    var self = this;
+    var self = this, point_data_url;
 
   	if(self.layer_exists_check == 1){
   		map.removeLayer(self.cartodb_layer);
@@ -551,6 +551,14 @@ FLOW.NavMapsView = FLOW.View.extend({
 
   		current_layer.on('featureClick', function(e, latlng, pos, data) {
   			self.openPopup(map, "id: "+data.id, latlng);
+        self.showDetailsPane();
+        if($("#form_selector").val() == ""){
+          point_data_url = "/rest/cartodb/answers?dataPointId="+data.id+"&surveyId="+data.survey_id;
+        }else{
+          point_data_url = "/rest/cartodb/raw_data?dataPointId="+data.data_point_id+"&formId="+$("#form_selector").val();
+        }
+        //console.log(point_data_url);
+        self.getCartodbPointData(point_data_url);
   		});
 
   		// show infowindows on click
@@ -583,13 +591,9 @@ FLOW.NavMapsView = FLOW.View.extend({
       //console.log(point_data);
 
       if (point_data['answers'] != null) {
-        questions_query_data = {};
-        questions_query_data['form_id'] = point_data['formId'];
-
-        //post request for questions
-        $.post(
-      			"/rest/cartodb/questions",
-            questions_query_data,
+        //get request for questions
+        $.get(
+      			"/rest/cartodb/questions?form_id="+point_data['formId'],
       			function(questions_data, status){
       				//console.log(questions_data);
               clicked_point_content += "<table>";

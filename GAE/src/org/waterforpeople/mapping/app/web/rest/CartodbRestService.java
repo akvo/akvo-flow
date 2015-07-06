@@ -69,7 +69,7 @@ public class CartodbRestService {
         }
     }
 
-    @RequestMapping(method = RequestMethod.GET, value = "point_data")
+    @RequestMapping(method = RequestMethod.GET, value = "raw_data")
     @ResponseBody
     public Map<String, Object> getPointData(@RequestParam("dataPointId") Long dataPointId,
             @RequestParam("formId") Long formId) {
@@ -102,7 +102,7 @@ public class CartodbRestService {
         try {
             response.put(
                     "questions",
-                    queryCartodb(String.format("SELECT * FROM question WHERE form_id = %d AND type = 'OPTION'", formId)));
+                    queryCartodb(String.format("SELECT * FROM question WHERE form_id = %d", formId)));
             return response;
         } catch (IOException e) {
             return response;
