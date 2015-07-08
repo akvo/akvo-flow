@@ -34,6 +34,7 @@ import com.gallatinsystems.device.domain.DeviceFileJobQueue;
 import com.gallatinsystems.messaging.dao.MessageDao;
 import com.gallatinsystems.messaging.domain.Message;
 import com.gallatinsystems.survey.dao.CascadeResourceDao;
+import com.gallatinsystems.survey.dao.SurveyDAO;
 import com.gallatinsystems.survey.domain.CascadeResource;
 import com.gallatinsystems.survey.domain.CascadeResource.Status;
 import com.google.appengine.api.taskqueue.Queue;
@@ -70,7 +71,19 @@ public class ProcessorServlet extends HttpServlet {
             if (fileName == null) {
                 log.info("Request for processing without filename: phoneNumber=(" + phoneNumber
                         + "); IMEI=(" + imei + ")");
+                resp.setStatus(HttpServletResponse.SC_BAD_REQUEST);
                 return;
+            }
+            
+            // If we get a form ID, ensure the form is still present in the datastore
+            Long formID = parseFormID(req);
+            if (formID != null) {
+                SurveyDAO surveyDAO = new SurveyDAO();
+                if (surveyDAO.getById(formID) == null) {
+                    log.warning("Form " + formID + " doesn't exist in the datastore");
+                    resp.setStatus(HttpServletResponse.SC_NOT_FOUND);
+                    return;
+                }
             }
 
             log.info("  ProcessorServlet->filename->" + fileName);
@@ -162,4 +175,18 @@ public class ProcessorServlet extends HttpServlet {
         }
 
     }
+    
+    private Long parseFormID(HttpServletRequest req) {
+        String formID = StringUtils.trim(req.getParameter("formID"));
+        if (StringUtils.isNotBlank(formID)) {
+            try {
+                return Long.valueOf(formID);
+            } catch (NumberFormatException e) {
+                log.warning("Form ID is not a valid number: " + formID);
+            }
+        }
+        
+        return null;
+    }
+    
 }
