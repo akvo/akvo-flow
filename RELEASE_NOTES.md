@@ -5,6 +5,19 @@ Read more about the [Akvo Platform](http://www.akvo.org/blog/?p=4822).
 
 Akvo FLOW Dashboard release notes
 ----
+#1.8.8
+Date: 8 July 2015
+
+# New and noteworthy
+* Warn the user when data is submitted for non-existing forms, e.g. forms that have been deleted [#1183]
+* Changing 'download app' link on dashboard from old /app to new /app2=.  By default we will now offer the newer app version for the download link and the old version remains accessible via `/app` [#1149]
+
+# Resolved issues
+* SurveyedLocale deletion bug [#1329]
+* Skip QAS referencing an invalid question [#1307]
+* `Manage Device Group` popup not displayed properly [#1210]
+* Send events to an event log [#1130]
+
 #1.8.7.1
 Date: 11 June 2015
 
