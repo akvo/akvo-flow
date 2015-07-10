@@ -126,7 +126,7 @@ FLOW.Survey = FLOW.BaseModel.extend({
   description: DS.attr('string'),
   name: DS.attr('string'),
   path: DS.attr('string'),
-  ancestorIds: DS.attr('ancestorIds'),
+  ancestorIds: DS.attr('array'),
   pointType: DS.attr('string'),
   surveyGroupId: DS.attr('number'),
   createdDateTime: DS.attr('number'),
