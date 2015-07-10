@@ -393,7 +393,9 @@ public class BaseDAO<T extends BaseDomain> {
 
         Set<Long> securedObjectIds = new HashSet<Long>();
         for (UserAuthorization auth : userAuthorizationList) {
-            securedObjectIds.add(auth.getSecuredObjectId());
+            if (auth.getSecuredObjectId() != null) {
+                securedObjectIds.add(auth.getSecuredObjectId());
+            }
         }
         List authorizedList = new ArrayList();
         if (concreteClass.isAssignableFrom(SurveyGroup.class)) {
