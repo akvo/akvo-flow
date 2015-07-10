@@ -521,6 +521,7 @@ input[type="submit"] {
             flex-grow:1;
             text-align:center;
             &.deleteBtn {
+                position: initial;
                 display: relative;
                 top:10px;
                 left:45%;
