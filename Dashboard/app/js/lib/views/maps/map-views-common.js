@@ -276,14 +276,27 @@ FLOW.NavMapsView = FLOW.View.extend({
 
         			var config_json_data = {};
         			config_json_data['interactivity'] = interactivity;
-        			config_json_data['map_name'] = 'raw_data_'+$( "#form_selector" ).val();
+        			config_json_data['name'] = 'raw_data_'+$( "#form_selector" ).val();
         			config_json_data['cartocss'] = cartocss;
         			config_json_data['sql'] = "SELECT * FROM raw_data_"+$( "#form_selector" ).val();
 
-        			console.log(config_json_data);
+        			//console.log(JSON.stringify(config_json_data));
 
         			//edit named maps
-              //place endpoint for editing nmaed maps to be provided by Jonas here
+              //place endpoint for editing named maps to be provided by Jonas here
+              $.ajax({
+                type: 'POST',
+                contentType: "application/json",
+                url: '/rest/cartodb/update_map',
+                data: JSON.stringify(config_json_data), //turns out you need to stringify the payload before sending it
+                dataType: 'json',
+                success: function(named_map_data){
+                  console.log(named_map_data);
+                  if(named_map_data.template_id){
+                    self.create_layer(map, "raw_data_"+$( "#form_selector" ).val(), "");
+                  }
+                }
+              });
         		});
       		});
       	}else{
