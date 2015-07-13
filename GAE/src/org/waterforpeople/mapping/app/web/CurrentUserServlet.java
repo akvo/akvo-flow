@@ -120,7 +120,7 @@ public class CurrentUserServlet extends HttpServlet {
         Map<Long, Set<Permission>> permissions = new HashMap<Long, Set<Permission>>();
         for (UserAuthorization auth : authorizationList) {
             UserRole role = roleMap.get(auth.getRoleId());
-            if (role != null) {
+            if (role != null && auth.getSecuredObjectId() != null) {
                 if (permissions.containsKey(auth.getSecuredObjectId())) {
                     permissions.get(auth.getSecuredObjectId()).addAll(role.getPermissions());
                 } else {
