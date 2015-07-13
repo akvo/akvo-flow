@@ -401,8 +401,8 @@ public class BaseDAO<T extends BaseDomain> {
         if (concreteClass.isAssignableFrom(SurveyGroup.class)) {
             for (Object obj : allObjectsList) {
                 SurveyGroup sg = (SurveyGroup) obj;
-                List<Long> ancestorIds = sg.getAncestorIds();
-                if (hasAuthorizedAncestors(ancestorIds, securedObjectIds)) {
+                if (hasAuthorizedAncestors(sg.getAncestorIds(), securedObjectIds)
+                        || securedObjectIds.contains(sg.getKey().getId())) {
                     authorizedList.add(sg);
                 }
             }
@@ -427,7 +427,9 @@ public class BaseDAO<T extends BaseDomain> {
      * @return
      */
     private boolean hasAuthorizedAncestors(List<Long> ancestorIds, Set<Long> securedObjectIds) {
-        return ancestorIds != null && ancestorIds.removeAll(securedObjectIds);
+        // use new List object to prevent side effects on SurveyGroup.ancestorIds property
+        List<Long> idsList = new ArrayList<Long>(ancestorIds);
+        return idsList != null && idsList.removeAll(securedObjectIds);
     }
 
     /**
