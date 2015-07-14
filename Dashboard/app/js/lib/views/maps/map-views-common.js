@@ -612,7 +612,7 @@ FLOW.NavMapsView = FLOW.View.extend({
               clicked_point_content += "<table>";
               for (column in point_data['answers']){
                 for(var i=0; i<questions_data['questions'].length; i++){
-                  if (column.match("^_"+questions_data['questions'][i].id)) {
+                  if (column.match(questions_data['questions'][i].id)) {
                     //console.log(questions_data['questions'][i].display_text);
                     clicked_point_content += "<tr><td>"+questions_data['questions'][i].display_text+":&nbsp;</td>";
                     clicked_point_content += "<td>"+point_data['answers'][column]+"</td></tr>";
