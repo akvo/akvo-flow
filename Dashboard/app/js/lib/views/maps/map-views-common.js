@@ -116,7 +116,7 @@ FLOW.NavMapsView = FLOW.View.extend({
     			named_map_check = 0;
     			for(var i=0; i<data['template_ids'].length; i++){
     				//check in there is a full "data_point" table named map
-    				if(data['template_ids'][i] == "cartodb@data_point"){
+    				if(data['template_ids'][i] == "data_point"){
     					//named map already exists
     					named_map_check++;
     				}
@@ -170,7 +170,7 @@ FLOW.NavMapsView = FLOW.View.extend({
       				named_map_check = 0;
       				for(var i=0; i<data['template_ids'].length; i++){
       					//check if there is a selectd survey's named map
-      					if(data['template_ids'][i] == "cartodb@data_point_"+$( "#survey_selector" ).val()){
+      					if(data['template_ids'][i] == "data_point_"+$( "#survey_selector" ).val()){
       						//named map already exists
       						named_map_check++;
       					}
@@ -204,7 +204,7 @@ FLOW.NavMapsView = FLOW.View.extend({
       			if(data.template_ids){
       				named_map_check = 0;
       				for(var i=0; i<data['template_ids'].length; i++){
-      					if(data['template_ids'][i] == "cartodb@raw_data_"+$( "#form_selector" ).val()){
+      					if(data['template_ids'][i] == "raw_data_"+$( "#form_selector" ).val()){
       						//named map already exists
       						named_map_check++;
       					}
@@ -531,7 +531,7 @@ FLOW.NavMapsView = FLOW.View.extend({
 
   	// add cartodb layer with one sublayer
   	cartodb.createLayer(map, {
-  		user_name: 'cartodb', //to be replaced with dynamic cartodb username
+  		user_name: FLOW.Env.appId, //to be replaced with dynamic cartodb username
   		type: 'namedmap',
   		named_map: {
   			name: map_name,
@@ -541,8 +541,8 @@ FLOW.NavMapsView = FLOW.View.extend({
   			}]
   		}
   	},{
-  		tiler_domain: "kymdata.com", //to be replaced with dynamic tiler domain
-  		tiler_port: "8181", //to be replaced with dynamic tiler port
+  		tiler_domain: FLOW.Env.cartodbHost, //to be replaced with dynamic tiler domain
+  		//tiler_port: FLOW.Env.cartodbTilerPort, //to be replaced with dynamic tiler port
   		tiler_protocol: "http",
   		no_cdn: true
   	})

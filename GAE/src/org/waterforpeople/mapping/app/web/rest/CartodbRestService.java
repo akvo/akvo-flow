@@ -31,11 +31,9 @@ import com.gallatinsystems.common.util.PropertyUtil;
 public class CartodbRestService {
 
     private static final String CDB_API_KEY = PropertyUtil.getProperty("cartodbApiKey");
-    private static final String SQL_API = PropertyUtil.getProperty("cartodbSqlApi");
 
     private static final String CDB_ACCOUNT_NAME = PropertyUtil.getProperty("cartodbAccountName");
     private static final String CDB_HOST = PropertyUtil.getProperty("cartodbHost");
-    private static final String CDB_TILER_PORT = PropertyUtil.getProperty("cartodbTilerPort");
 
     private static final ObjectMapper objectMapper = new ObjectMapper();
 
@@ -199,8 +197,8 @@ public class CartodbRestService {
     public Map<String, Object> updateNamedMap(
             @RequestBody NamedMapPayload payload)
             throws IOException {
-        URL url = new URL(String.format("http://%s.%s:%s/api/v1/map/named/%s?api_key=%s",
-                CDB_ACCOUNT_NAME, CDB_HOST, CDB_TILER_PORT, payload.getName(), CDB_API_KEY));
+        URL url = new URL(String.format("http://%s.%s/api/v1/map/named/%s?api_key=%s",
+                CDB_ACCOUNT_NAME, CDB_HOST, payload.getName(), CDB_API_KEY));
 
         HttpURLConnection connection = (HttpURLConnection) url.openConnection();
         connection.setRequestProperty("Content-Type", "application/json");
@@ -240,20 +238,19 @@ public class CartodbRestService {
     }
 
     private static final URL mapsApiURL() throws MalformedURLException {
-        return new URL(String.format("http://%s.%s:%s/api/v1/map/named?api_key=%s",
-                CDB_ACCOUNT_NAME, CDB_HOST, CDB_TILER_PORT, CDB_API_KEY));
+        return new URL(String.format("http://%s.%s/api/v1/map/named?api_key=%s",
+                CDB_ACCOUNT_NAME, CDB_HOST, CDB_API_KEY));
     }
 
     private static final URL updateMapsApiURL(String named_map) throws MalformedURLException {
-        return new URL(String.format("http://%s.%s:%s/api/v1/map/named/%s?api_key=%s",
-                CDB_ACCOUNT_NAME, CDB_HOST, CDB_TILER_PORT, named_map, CDB_API_KEY));
+        return new URL(String.format("http://%s.%s/api/v1/map/named/%s?api_key=%s",
+                CDB_ACCOUNT_NAME, CDB_HOST, named_map, CDB_API_KEY));
     }
 
     private static final URL sqlApiURL(String query) throws MalformedURLException,
             UnsupportedEncodingException {
-        // TODO: Build URL properly without SQL_API
-        String urlString = String.format(SQL_API + "?q=%s&api_key=%s",
-                URLEncoder.encode(query, "UTF-8"), CDB_API_KEY);
+        String urlString = String.format("http://%s.%s/api/v2/sql?q=%s&api_key=%s",
+                CDB_ACCOUNT_NAME, CDB_HOST, URLEncoder.encode(query, "UTF-8"), CDB_API_KEY);
         return new URL(urlString);
     }
 
