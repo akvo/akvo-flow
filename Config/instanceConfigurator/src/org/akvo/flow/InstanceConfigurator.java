@@ -83,6 +83,8 @@ public class InstanceConfigurator {
         String useCartodb = cli.getOptionValue("cm", "false");
         String cartodbApiKey = cli.getOptionValue("ck", "");
         String cartodbSqlApi = cli.getOptionValue("cs", "");
+        String cartodbHost = cli.getOptionValue("ch", "");
+        String cartodbTilerPort = cli.getOptionValue("ctp", "8181");
         String alias = cli.getOptionValue("a");
         String emailFrom = cli.getOptionValue("ef");
         String emailTo = cli.getOptionValue("et");
@@ -231,6 +233,8 @@ public class InstanceConfigurator {
         webData.put("useCartodb", useCartodb);
         webData.put("cartodbApiKey", cartodbApiKey);
         webData.put("cartodbSqlApi", cartodbSqlApi);
+        webData.put("cartodbHost", cartodbHost);
+        webData.put("cartodbTilerPort", cartodbTilerPort);
         webData.put("apiKey", apiKey);
         webData.put("emailFrom", emailFrom);
         webData.put("emailTo", emailTo);
@@ -335,6 +339,16 @@ public class InstanceConfigurator {
         cartodbSqlApi.setArgs(1);
         cartodbSqlApi.setRequired(false);
 
+        Option cartodbHost = new Option("ch", "Cartodb host");
+        cartodbSqlApi.setLongOpt("cartodbHost");
+        cartodbSqlApi.setArgs(1);
+        cartodbSqlApi.setRequired(false);
+
+        Option cartodbTilerPort = new Option("ctp", "Cartodb tiler port");
+        cartodbSqlApi.setLongOpt("cartodbTilerPort");
+        cartodbSqlApi.setArgs(1);
+        cartodbSqlApi.setRequired(false);
+
         Option outputFolder = new Option("o",
                 "Output folder for configuration files");
         outputFolder.setLongOpt("outFolder");
@@ -368,6 +382,8 @@ public class InstanceConfigurator {
         options.addOption(useCartodb);
         options.addOption(cartodbApiKey);
         options.addOption(cartodbSqlApi);
+        options.addOption(cartodbHost);
+        options.addOption(cartodbTilerPort);
         options.addOption(alias);
         options.addOption(signingKey);
 
