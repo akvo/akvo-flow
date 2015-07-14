@@ -339,6 +339,39 @@ FLOW.projectControl = Ember.ArrayController.create({
       return [];
   }.property('breadCrumbs'),
 
+  currentFolderPermissions: function() {
+      var currentFolder = this.get('currentProject');
+      var currentUserPermissions = FLOW.userControl.currentUserPathPermissions();
+      var folderPermissions = [];
+
+      if (!currentFolder || !currentUserPermissions) {
+        return [];
+      }
+
+      // first check current object id
+      if (currentFolder.get('keyId') in currentUserPermissions) {
+        currentUserPermissions[currentFolder.get('keyId')].forEach(function(item){
+          folderPermissions.push(item);
+        })
+      }
+
+      var ancestorIds = currentFolder.get('ancestorIds');
+      if (!ancestorIds) {
+        return folderPermissions;
+      }
+
+      var i;
+      for(i = 0; i < ancestorIds.length; i++){
+        if (ancestorIds[i] in currentUserPermissions) {
+          currentUserPermissions[ancestorIds[i]].forEach(function(item){
+            folderPermissions.push(item);
+          })
+        }
+      }
+
+      return folderPermissions;
+  }.property('currentProject'),
+
   /* Actions */
   selectProject: function(evt) {
     var project = evt.context;
