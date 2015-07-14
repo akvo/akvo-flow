@@ -170,8 +170,9 @@ public class RequestUriVoter implements AccessDecisionVoter<FilterInvocation> {
             ancestorIds.addAll(retrieveAncestorIdsFromDataStore(parseRequestPrefix(requestUri),
                     objectId));
         } else if ("POST".equals(httpMethod)) {
+            objectId = parsePayload(request);
             ancestorIds.addAll(retrieveAncestorIdsFromDataStore(parseRequestPrefix(requestUri),
-                    parsePayload(request)));
+                    objectId));
         }
 
         // Also check for scenario where the user/role combo has been coupled with the object and
@@ -287,8 +288,7 @@ public class RequestUriVoter implements AccessDecisionVoter<FilterInvocation> {
             }
         }
 
-        // catchall access denied
-        return ACCESS_DENIED;
+        throw new AccessDeniedException("Access is Denied. Insufficient permissions");
     }
 
     /**
