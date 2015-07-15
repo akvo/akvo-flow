@@ -116,7 +116,7 @@ public class SurveyInstanceRestService {
         if (surveyInstanceId != null) {
             SurveyInstance surveyInstance = surveyInstanceDao.getByKey(surveyInstanceId);
             List<SurveyInstanceDto> dtoList = new ArrayList<>();
-            if (surveyInstance != null) {
+            if (surveyInstance != null && surveyInstance.getSurveyId().equals(surveyId)) {
                 SurveyInstanceDto dto = new SurveyInstanceDto();
                 DtoMarshaller.copyToDto(surveyInstance, dto);
                 dtoList.add(dto);
