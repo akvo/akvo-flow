@@ -347,6 +347,7 @@ FLOW.Placemark = FLOW.BaseModel.extend({
 FLOW.SurveyInstance = FLOW.BaseModel.extend({
   approvedFlag: DS.attr('string'),
   approximateLocationFlag: DS.attr('string'),
+  surveyInstanceId: DS.attr('number'),
   surveyId: DS.attr('number'),
   surveyedLocaleId:DS.attr('number'),
   collectionDate: DS.attr('number'),
