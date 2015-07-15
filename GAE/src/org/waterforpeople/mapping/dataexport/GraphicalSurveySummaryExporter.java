@@ -64,7 +64,6 @@ import org.waterforpeople.mapping.app.gwt.client.survey.QuestionDto;
 import org.waterforpeople.mapping.app.gwt.client.survey.QuestionDto.QuestionType;
 import org.waterforpeople.mapping.app.gwt.client.survey.QuestionGroupDto;
 import org.waterforpeople.mapping.app.gwt.client.survey.QuestionOptionDto;
-import org.waterforpeople.mapping.app.gwt.client.survey.SurveyGroupDto;
 import org.waterforpeople.mapping.app.gwt.client.survey.TranslationDto;
 import org.waterforpeople.mapping.app.gwt.client.surveyinstance.SurveyInstanceDto;
 import org.waterforpeople.mapping.app.web.dto.SurveyRestRequest;
@@ -126,6 +125,7 @@ public class GraphicalSurveySummaryExporter extends SurveySummaryExporter {
     private static final Map<String, String> CODE_LABEL;
     private static final Map<String, String> IDENTIFIER_LABEL;
     private static final Map<String, String> DISPLAY_NAME_LABEL;
+    private static final Map<String, String> DEVICE_IDENTIFIER_LABEL;
 
     private static final int CHART_WIDTH = 600;
     private static final int CHART_HEIGHT = 400;
@@ -274,6 +274,10 @@ public class GraphicalSurveySummaryExporter extends SurveySummaryExporter {
         DISPLAY_NAME_LABEL = new HashMap<String, String>();
         DISPLAY_NAME_LABEL.put("en", "Display Name");
         DISPLAY_NAME_LABEL.put("es", "Nombre");
+
+        DEVICE_IDENTIFIER_LABEL = new HashMap<String, String>();
+        DEVICE_IDENTIFIER_LABEL.put("en", "Device identifier");
+        DEVICE_IDENTIFIER_LABEL.put("es", "Identificador de dispositivo");
     }
 
     private CellStyle headerStyle;
@@ -288,7 +292,6 @@ public class GraphicalSurveySummaryExporter extends SurveySummaryExporter {
     private boolean generateCharts;
     private Map<Long, QuestionDto> questionsById;
     private boolean lastCollection = false;
-    private boolean monitoringGroup = false;
     private List<Long> displayNameQuestionIds = new ArrayList<Long>();
 
     @Override
@@ -310,14 +313,6 @@ public class GraphicalSurveySummaryExporter extends SurveySummaryExporter {
         try {
             SwingUtilities.invokeLater(new StatusUpdater(currentStep++,
                     LOADING_QUESTIONS.get(locale)));
-
-            List<SurveyGroupDto> sgs = fetchSurveyGroup(
-                    criteria.get(SurveyRestRequest.SURVEY_ID_PARAM), serverBase,
-                    criteria.get("apiKey"));
-
-            if (sgs != null && !sgs.isEmpty()) {
-                monitoringGroup = sgs.get(0).getMonitoringGroup();
-            }
 
             Map<QuestionGroupDto, List<QuestionDto>> questionMap = loadAllQuestions(
                     criteria.get(SurveyRestRequest.SURVEY_ID_PARAM),
@@ -529,11 +524,9 @@ public class GraphicalSurveySummaryExporter extends SurveySummaryExporter {
         int col = 0;
         MessageDigest digest = MessageDigest.getInstance("MD5");
 
-        if (monitoringGroup) {
-            createCell(row, col++, dto.getSurveyedLocaleIdentifier(), null);
-            createCell(row, col++, dto.getSurveyedLocaleDisplayName(), null);
-        }
-
+        createCell(row, col++, dto.getSurveyedLocaleIdentifier(), null);
+        createCell(row, col++, dto.getSurveyedLocaleDisplayName(), null);
+        createCell(row, col++, dto.getDeviceIdentifier(), null);
         createCell(row, col++, instanceId, null);
         createCell(row, col++, dateString, null);
 
@@ -684,10 +677,9 @@ public class GraphicalSurveySummaryExporter extends SurveySummaryExporter {
 
         int columnIdx = 0;
 
-        if (monitoringGroup) {
-            createCell(row, columnIdx++, IDENTIFIER_LABEL.get(locale), headerStyle);
-            createCell(row, columnIdx++, DISPLAY_NAME_LABEL.get(locale), headerStyle);
-        }
+        createCell(row, columnIdx++, IDENTIFIER_LABEL.get(locale), headerStyle);
+        createCell(row, columnIdx++, DISPLAY_NAME_LABEL.get(locale), headerStyle);
+        createCell(row, columnIdx++, DEVICE_IDENTIFIER_LABEL.get(locale), headerStyle);
 
         createCell(row, columnIdx++, INSTANCE_LABEL.get(locale), headerStyle);
         createCell(row, columnIdx++, SUB_DATE_LABEL.get(locale), headerStyle);
