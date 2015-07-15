@@ -53,11 +53,15 @@
                     <td class="collected">{{#with SI}}{{date1 collectionDate}}{{/with}}</td>
                     <td class="action">
                         <a {{action showEditSurveyInstanceWindow SI target="this" }}>
-                  {{t _edit}}
-                </a>
-                        {{#if view.showSurveyInstanceDeleteButton }} {{#view FLOW.DataItemView contentBinding="SI"}}<a {{action confirm FLOW.dialogControl.delSI2 target="FLOW.dialogControl" }}>
-                  {{t _delete}}
-                </a>{{/view}} {{/if}}
+                            {{t _edit}}
+                        </a>
+                        {{#if view.showSurveyInstanceDeleteButton }}
+                            {{#view FLOW.DataItemView contentBinding="SI"}}
+                                <a {{action confirm FLOW.dialogControl.delSI2 target="FLOW.dialogControl" }}>
+                                    {{t _delete}}
+                                </a>
+                            {{/view}}
+                        {{/if}}
                     </td>
                 </tr>
                 {{/each}}
