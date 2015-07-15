@@ -18,8 +18,8 @@
             </label>
         </div>
         <div class="dataDeviceId">
-            <label class="surveyInstanceId">{{t _survey_instance_id}}:</label>
-            {{view Ember.TextField valueBinding="view.surveyInstanceId" placeholder="" placeholderBinding="Ember.STRINGS._survey_instance_id" size=30}}
+            <label class="surveyInstanceId">{{t _instance_id}}:</label>
+            {{view Ember.TextField valueBinding="view.surveyInstanceId" placeholder="" placeholderBinding="Ember.STRINGS._instance_id" size=30}}
             <label class="devideId">{{t _device_id}}:</label>
             {{view Ember.TextField valueBinding="view.deviceId" placeholder="" placeholderBinding="Ember.STRINGS._device_id" size=30}}
             <label class="submitterName">{{t _submitter_name}}:</label>
@@ -36,7 +36,7 @@
             <thead>
                 <tr>
                     <th class="noArrows"></th>
-                    <th class="noArrows">{{t _id}}</th>
+                    <th class="noArrows">{{t _instance_id}}</th>
                     <th class="noArrows">{{t _form}}</th>
                     <th class="noArrows">{{t _submitter}}</th>
                     <th class="noArrows">{{t _device}}</th>
