@@ -212,9 +212,10 @@ FLOW.ProjectItemView = FLOW.View.extend({
     return langs[this.content.get('defaultLanguageCode')];
   }.property(),
 
-  hideDeleteButton: function () {
+  hideFolderSurveyDeleteButton: function () {
     var c = this.get('content');
-    return !Ember.empty(c.get('surveyList')) || c.get('deleteDisabled');
+    var permissions = FLOW.projectControl.get('currentFolderPermissions');
+    return permissions.indexOf("PROJECT_FOLDER_DELETE") < 0 || !Ember.empty(c.get('surveyList'));
   }.property()
 
 });
