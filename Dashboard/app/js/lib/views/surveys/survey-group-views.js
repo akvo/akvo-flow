@@ -83,8 +83,12 @@ FLOW.Project = FLOW.View.extend({
   isPublished: function() {
     var form = FLOW.selectedControl.get('selectedSurvey');
     return form.get('status') === 'PUBLISHED'
-  }.property('FLOW.selectedControl.selectedSurvey.status')
+  }.property('FLOW.selectedControl.selectedSurvey.status'),
 
+  disableFolderSurveyInputField: function() {
+    var permissions = FLOW.projectControl.get('currentFolderPermissions');
+    return permissions.indexOf("PROJECT_FOLDER_UPDATE") < 0;
+  }.property('FLOW.projectControl.currentProjectPath'),
 });
 
 
