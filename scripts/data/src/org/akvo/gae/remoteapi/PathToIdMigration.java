@@ -15,6 +15,7 @@ public class PathToIdMigration implements Process {
 
     private static final String SURVEY_GROUP = "SurveyGroup";
     private static final String SURVEY = "Survey";
+    private static final String USER_AUTHORIZATION = "UserAuthorization";
 
     @Override
     public void execute(DatastoreService ds, String[] args) throws Exception {
@@ -23,16 +24,27 @@ public class PathToIdMigration implements Process {
                 .asList(FetchOptions.Builder.withDefaults());
         final List<Entity> surveys = ds.prepare(new Query(SURVEY)).asList(
                 FetchOptions.Builder.withDefaults());
+        final List<Entity> userAuthorizations = ds.prepare(
+                new Query(USER_AUTHORIZATION)).asList(
+                FetchOptions.Builder.withDefaults());
 
         Map<Long, Long> idToParentId = new HashMap<>();
+        Map<String, Long> pathToId = new HashMap<>();
 
         for (Entity entity : surveyGroups) {
             // Ensure root folder parentId == 0
+            Long entityId = entity.getKey().getId();
+
             if (entity.getProperty("parentId") == null) {
                 entity.setProperty("parentId", 0L);
             }
-            idToParentId.put(entity.getKey().getId(),
-                    (Long) entity.getProperty("parentId"));
+            idToParentId.put(entityId, (Long) entity.getProperty("parentId"));
+
+            String path = (String) entity.getProperty("path");
+            if (path != null) {
+                pathToId.put(path, entityId);
+            }
+
         }
 
         for (Entity entity : surveys) {
@@ -52,13 +64,36 @@ public class PathToIdMigration implements Process {
             Long entityId = entity.getKey().getId();
             ancestorIds(idToParentId, aIds, entityId);
             if (aIds.isEmpty() || aIds.get(0) != 0) {
-                System.out.println(String.format("Could not generate ancestorIds for Survey or Survey group #%s", entityId));
+                System.out
+                        .println(String
+                                .format("Could not generate ancestorIds for Survey or Survey group #%s",
+                                        entityId));
             } else {
                 entity.setProperty("ancestorIds", aIds);
             }
         }
 
+        // Update user authorizations
+        pathToId.put("/", 0L);
+        for (Entity entity : userAuthorizations) {
+            Long securedObjectId = (Long) entity.getProperty("securedObjectId");
+            String objectPath = (String) entity.getProperty("objectPath");
+            if (objectPath != null) {
+                Long derivedSecuredObjectId = pathToId.get(objectPath);
+
+                if (derivedSecuredObjectId != null) {
+                    entity.setProperty("securedObjectId",
+                            derivedSecuredObjectId);
+                } else {
+                    System.out.println(String.format(
+                            "Could not derive securedObjectId from path %s",
+                            objectPath));
+                }
+            }
+        }
+
         ds.put(surveysAndSurveyGroups);
+        ds.put(userAuthorizations);
     }
 
     private static void ancestorIds(final Map<Long, Long> idToParentId,
