@@ -193,16 +193,16 @@ FLOW.surveyGroupControl = Ember.ArrayController.create({
   path whether or not a user is able to delete data in the group. Used
   for monitoring groups */
   userCanDeleteData: function(surveyGroupId) {
-    var surveyGroupPath;
+    var ancestorIds;
     var surveyGroups = FLOW.store.filter(FLOW.SurveyGroup, function(sg){
         return sg.get('keyId') === surveyGroupId;
     });
 
     if(surveyGroups && surveyGroups.get('firstObject')) {
-        surveyGroupPath = surveyGroups.get('firstObject').get('path');
-        return FLOW.userControl.canDeleteData(surveyGroupPath);
+        ancestorIds = surveyGroups.get('firstObject').get('ancestorIds');
+        return FLOW.userControl.canDeleteData(ancestorIds);
     } else {
-        return false; // need survey group and path, otherwise prevent delete
+        return false; // need survey group and ancestorIds, otherwise prevent delete
     }
   },
 });
@@ -631,6 +631,35 @@ FLOW.surveyControl = Ember.ArrayController.create({
         return false; // need survey and survey path, otherwise prevent delete
     }
   },
+
+  /* retrieve the list of permissions associated with the currently
+    active form */
+  currentFormPermissions: function() {
+    var currentForm = FLOW.selectedControl.get('selectedSurvey');
+    var currentUserPermissions = FLOW.userControl.currentUserPathPermissions();
+    var formPermissions = [];
+
+    if (!currentForm || !currentUserPermissions) {
+      return [];
+    }
+
+    var ancestorIds = currentForm.get('ancestorIds');
+    if (!ancestorIds) {
+      return [];
+    }
+
+    var i;
+    for(i = 0; i < ancestorIds.length; i++){
+      if (ancestorIds[i] in currentUserPermissions) {
+        currentUserPermissions[ancestorIds[i]].forEach(function(item){
+          formPermissions.push(item);
+        })
+      }
+    }
+
+    return formPermissions;
+
+  }.property('FLOW.selectedControl.selectedSurvey'),
 });
 
 
