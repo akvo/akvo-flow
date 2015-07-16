@@ -144,7 +144,46 @@ function createDoughnutChart(){
       })
       .style("fill", "rgb(58,58,58)")
       .style("font", "bold 1.1em helvetica")
-      .text(function(d, i) { return dataSet[i].legendLabel; }); //get the label from our original data array
+      .html(function(d, i) { 
+        var label = dataSet[i].legendLabel;
+
+        // If this label is on the left, wrap the text to keep it inside the SVG
+        if (d3.select(this).attr('text-anchor') === 'end') {
+
+          // The maximum number of characters per line
+          var wrapLength = 28;
+          var labelArray = [];
+          var tspanArray = [];
+
+          if (label.length > wrapLength) {
+            labelArray = label.split(" ");
+            
+            // Group words in the label into lines less than wrapLength long
+            while (labelArray.length > 0) {
+              if (tspanArray.length === 0) {
+                tspanArray[0] = '' + labelArray[0];
+              } else {
+                if (tspanArray[tspanArray.length - 1].length + labelArray[0].length < wrapLength) {
+                  tspanArray[tspanArray.length - 1] += ' ' + labelArray[0];
+                } else {
+                  tspanArray[tspanArray.length] = '' + labelArray[0];            
+                }
+              }
+
+              // remove the word we just processed
+              labelArray.shift();
+            }
+
+            label = '';
+            for (var i = 0; i < tspanArray.length; i++) {
+              tspanArray[i] = '<tspan x="0" dy="15">' + tspanArray[i] + '</tspan>';
+              label += tspanArray[i];
+            }
+          }
+        }
+
+        return label; 
+      }); //get the label from our original data array
 
        // Add a legendLabel to each arc slice...
     vis.append("svg:text")
