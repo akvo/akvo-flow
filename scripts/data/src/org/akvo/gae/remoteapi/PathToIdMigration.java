@@ -36,8 +36,11 @@ public class PathToIdMigration implements Process {
         }
 
         for (Entity entity : surveys) {
+            Long entityId = entity.getKey().getId();
             Long surveyGroupId = (Long) entity.getProperty("surveyGroupId");
-            idToParentId.put(entity.getKey().getId(), surveyGroupId);
+            if (surveyGroupId != null) {
+                idToParentId.put(entityId, surveyGroupId);
+            }
         }
 
         List<Entity> surveysAndSurveyGroups = new ArrayList<>();
@@ -46,8 +49,13 @@ public class PathToIdMigration implements Process {
 
         for (Entity entity : surveysAndSurveyGroups) {
             List<Long> aIds = new ArrayList<>();
-            ancestorIds(idToParentId, aIds, entity.getKey().getId());
-            entity.setProperty("ancestorIds", aIds);
+            Long entityId = entity.getKey().getId();
+            ancestorIds(idToParentId, aIds, entityId);
+            if (aIds.isEmpty() || aIds.get(0) != 0) {
+                System.out.println(String.format("Could not generate ancestorIds for Survey or Survey group #%s", entityId));
+            } else {
+                entity.setProperty("ancestorIds", aIds);
+            }
         }
 
         ds.put(surveysAndSurveyGroups);
@@ -58,9 +66,7 @@ public class PathToIdMigration implements Process {
 
         Long parentId = idToParentId.get(id);
         if (parentId == null) {
-            System.out.println(String.format(
-                    "Could not find parentId for SurveyGroup %s", id));
-            System.exit(0);
+            return;
         }
 
         aIds.add(parentId);
