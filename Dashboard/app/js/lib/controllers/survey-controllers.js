@@ -339,25 +339,6 @@ FLOW.projectControl = Ember.ArrayController.create({
     }
   }.property('breadCrumbs'),
 
-  currentPathPermissions: function() {
-      var currentProjectAncestors = this.get('breadCrumbs').slice();
-      currentProjectAncestors.reverse();// reversed to start matching from the most specific path.
-      var i;
-      var path;
-      for(i = 0; i < currentProjectAncestors.length; i++) {
-          path = currentProjectAncestors[i].get('path');
-          if(path in FLOW.currentUser.pathPermissions){
-              return FLOW.currentUser.pathPermissions[path];
-          }
-      }
-
-      // check for the root path
-      if("/" in FLOW.currentUser.pathPermissions){
-          return FLOW.currentUser.pathPermissions["/"];
-      }
-      return [];
-  }.property('breadCrumbs'),
-
   currentFolderPermissions: function() {
       var currentFolder = this.get('currentProject');
       var currentUserPermissions = FLOW.userControl.currentUserPathPermissions();
