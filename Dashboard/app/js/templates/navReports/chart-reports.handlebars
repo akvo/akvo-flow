@@ -255,7 +255,7 @@ var svg = d3.select("#piechart")
       .style("font", "normal 1em helvetica")
       .html(function(d){
         var num = d.percentage;
-        var output = "<tspan>" + num.toFixed(1).toString() + "%"; + "</tspan>";
+        var output = "<tspan>" + num.toFixed(1).toString() + "%" + "</tspan>";
         output += "<tspan x='0' dy='15'>(" + d.itemCount + ")</tspan>";
 
         return output; 
