@@ -338,8 +338,18 @@ FLOW.projectControl = Ember.ArrayController.create({
       var currentUserPermissions = FLOW.userControl.currentUserPathPermissions();
       var folderPermissions = [];
 
-      if (!currentFolder || !currentUserPermissions) {
+      if (!currentUserPermissions) {
         return [];
+      }
+
+      // root folder
+      if (!currentFolder) {
+        if (currentUserPermissions[0]) {
+          currentUserPermissions[0].forEach(function(item){
+            folderPermissions.push(item);
+          });
+        }
+        return folderPermissions;
       }
 
       // first check current object id
