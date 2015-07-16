@@ -171,7 +171,9 @@ public class RequestUriVoter implements AccessDecisionVoter<FilterInvocation> {
                     objectId));
         } else if ("POST".equals(httpMethod)) {
             objectId = parsePayload(request);
-            ancestorIds.addAll(retrieveAncestorIdsFromDataStore(parseRequestPrefix(requestUri),
+            // POST requests always use FOLDER_URI prefix since we always create a folder or form
+            // within another folder or survey respectively
+            ancestorIds.addAll(retrieveAncestorIdsFromDataStore(PROJECT_FOLDER_URI_PREFIX,
                     objectId));
         }
 
