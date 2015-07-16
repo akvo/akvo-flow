@@ -193,16 +193,16 @@ FLOW.surveyGroupControl = Ember.ArrayController.create({
   path whether or not a user is able to delete data in the group. Used
   for monitoring groups */
   userCanDeleteData: function(surveyGroupId) {
-    var surveyGroupPath;
+    var ancestorIds;
     var surveyGroups = FLOW.store.filter(FLOW.SurveyGroup, function(sg){
         return sg.get('keyId') === surveyGroupId;
     });
 
     if(surveyGroups && surveyGroups.get('firstObject')) {
-        surveyGroupPath = surveyGroups.get('firstObject').get('path');
-        return FLOW.userControl.canDeleteData(surveyGroupPath);
+        ancestorIds = surveyGroups.get('firstObject').get('ancestorIds');
+        return FLOW.userControl.canDeleteData(ancestorIds);
     } else {
-        return false; // need survey group and path, otherwise prevent delete
+        return false; // need survey group and ancestorIds, otherwise prevent delete
     }
   },
 });
