@@ -231,25 +231,44 @@ FLOW.projectControl = Ember.ArrayController.create({
 
   /* return true if the given SurveyGroup's path (partially) matches or is one of the ancestors (paths) of a path for which the data cleaning permission is present. The ancestor SurveyGroups are needed in order to be able to browse to the actual path to which the permission is assigned */
   dataCleaningEnabled: function(surveyGroup) {
-    var pathPermissions = FLOW.userControl.currentUserPathPermissions();
-    var permissionList;
-    var pathStartsWithPattern;
+    var permissions = FLOW.userControl.currentUserPathPermissions();
     var matched = false;
-    for (var key in pathPermissions) {
-        permissionList = pathPermissions[key];
-        if(permissionList.indexOf("DATA_CLEANING") > -1){
-            pathStartsWithPattern = new RegExp('^' + key);
-            if(surveyGroup.get('path').match(pathStartsWithPattern)) {
-                matched = true;
-                break;
-            } else {
-                // match all the ancestor paths to enable browsing to lower level paths
-                FLOW.surveyGroupControl.ancestorPaths(key).forEach(function (path) {
-                    if(!matched && surveyGroup.get('path') === path) {
-                        matched = true;
-                    }
-                });
+    var keyedSurvey = undefined;
+
+    for (var key in permissions) {
+        if(permissions[key].indexOf("DATA_CLEANING") > -1){
+            // check key against survey group
+          if(surveyGroup.get('keyId') == key) { // use == because key is string
+            matched = true;
+            break;
+          }
+
+          // check ancestors to for matching permission from higher level in hierarchy
+          surveyGroup.get('ancestorIds').forEach(function (id) {
+            if(id == key) { // use == because key is string
+              matched = true;
             }
+          });
+
+          if (matched) {
+            break;
+          }
+
+          // finally check for all descendents that may have surveyGroup.keyId in their
+          // ancestor list otherwise will not be able to browse to them.
+          keyedSurvey = FLOW.store.find(FLOW.SurveyGroup, key);
+          if (keyedSurvey) {
+            keyedSurvey.get('ancestorIds').forEach(function (id) {
+              if(id === surveyGroup.get('keyId')) {
+                matched = true;
+              }
+            });
+          }
+
+          // no need to check further
+          if (matched) {
+            break;
+          }
         }
     }
     return matched;
