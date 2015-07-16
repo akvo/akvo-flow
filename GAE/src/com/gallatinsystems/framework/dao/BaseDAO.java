@@ -26,8 +26,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.logging.Logger;
-import java.util.regex.Pattern;
-
 import javax.jdo.JDOObjectNotFoundException;
 import javax.jdo.PersistenceManager;
 
@@ -41,7 +39,6 @@ import org.waterforpeople.mapping.app.web.rest.security.AppRole;
 import com.gallatinsystems.common.Constants;
 import com.gallatinsystems.framework.domain.BaseDomain;
 import com.gallatinsystems.framework.servlet.PersistenceFilter;
-import com.gallatinsystems.survey.dao.SurveyUtils;
 import com.gallatinsystems.survey.domain.Survey;
 import com.gallatinsystems.survey.domain.SurveyGroup;
 import com.gallatinsystems.user.dao.UserAuthorizationDAO;
@@ -278,86 +275,6 @@ public class BaseDAO<T extends BaseDomain> {
 
         results = (List<E>) query.execute();
         return results;
-    }
-
-    /**
-     * Return a list of survey groups or surveys that are accessible by the current user
-     *
-     * @return
-     */
-    @SuppressWarnings({
-            "rawtypes", "unchecked"
-    })
-    @Deprecated
-    public List filterByUserAuthorization(List allObjectsList) {
-        if (!concreteClass.isAssignableFrom(SurveyGroup.class)
-                && !concreteClass.isAssignableFrom(Survey.class)) {
-            throw new UnsupportedOperationException("Cannot filter "
-                    + concreteClass.getSimpleName());
-        }
-
-        final Authentication authentication = SecurityContextHolder.getContext()
-                .getAuthentication();
-        final Long userId = (Long) authentication.getCredentials();
-
-        // super admin list all
-        if (authentication.getAuthorities().contains(AppRole.SUPER_ADMIN)) {
-            return allObjectsList;
-        }
-
-        UserAuthorizationDAO userAuthorizationDAO = new UserAuthorizationDAO();
-        List<UserAuthorization> userAuthorizationList = userAuthorizationDAO.listByUser(userId);
-        if (userAuthorizationList.isEmpty()) {
-            return Collections.emptyList();
-        }
-
-        StringBuilder authorizedPathsRegex = new StringBuilder();
-        StringBuilder authorizedParentPathsRegex = new StringBuilder();
-        for (UserAuthorization auth : userAuthorizationList) {
-            String authorizedPath = auth.getObjectPath();
-            authorizedPathsRegex.append(authorizedPath);
-            authorizedPathsRegex.append("|");
-
-            // include parent folders in order to be able to navigate to sub folder / project
-            for (String parentPath : SurveyUtils.listParentPaths(authorizedPath, false)) {
-                authorizedParentPathsRegex.append(parentPath);
-                authorizedParentPathsRegex.append("|");
-            }
-        }
-
-        // trim the last "|"s
-        authorizedPathsRegex.deleteCharAt(authorizedPathsRegex.length() - 1);
-        if (authorizedParentPathsRegex.length() > 0) {
-            authorizedParentPathsRegex.deleteCharAt(authorizedParentPathsRegex.length() - 1);
-        }
-
-        final Pattern authorizedPaths = Pattern.compile(authorizedPathsRegex.toString());
-        final Pattern authorizedParentPaths = Pattern
-                .compile(authorizedParentPathsRegex.toString());
-
-        List authorizedList = new ArrayList();
-        if (concreteClass.isAssignableFrom(SurveyGroup.class)) {
-            for (Object obj : allObjectsList) {
-                SurveyGroup sg = (SurveyGroup) obj;
-                String sgPath = sg.getPath();
-                if (sgPath != null
-                        && (authorizedPaths.matcher(sgPath).lookingAt() ||
-                        authorizedParentPaths.matcher(sgPath).matches())) {
-                    authorizedList.add(sg);
-                }
-            }
-        } else {
-            for (Object obj : allObjectsList) {
-                Survey s = (Survey) obj;
-                String sPath = s.getPath();
-                if (sPath != null &&
-                        (authorizedPaths.matcher(sPath).lookingAt() ||
-                        authorizedParentPaths.matcher(sPath).matches())) {
-                    authorizedList.add(s);
-                }
-            }
-        }
-        return authorizedList;
     }
 
     /**
