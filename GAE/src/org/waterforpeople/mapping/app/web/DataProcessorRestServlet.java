@@ -1236,11 +1236,11 @@ public class DataProcessorRestServlet extends AbstractRestApiServlet {
                         QuestionAnswerStore qas = qasDao
                                 .getByQuestionAndSurveyInstance(qId, si
                                         .getKey().getId());
-                        if (qas != null) {
+                        if (qas != null && qas.getValue() != null) {
                             if (displayName.length() > 0) {
                                 displayName += " - ";
                             }
-                            displayName += qas.getValue();
+                            displayName += qas.getValue().replaceAll("\\s*\\|\\s*", " - ");
                         }
                     }
                     addSl = true;
