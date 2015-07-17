@@ -183,6 +183,7 @@ var margin = {top: 20, right: 20, bottom: 30, left: 40},
 
  var dataSet = FLOW.chartDataControl.get('chartData');
  var maxPer = FLOW.chartDataControl.get('maxPer');
+ var total = FLOW.chartDataControl.get('total');
 
 var formatPercent = d3.format(".0%");
 
@@ -263,6 +264,14 @@ var svg = d3.select("#piechart")
       .attr("transform",function(d,i){
         return "translate(" + (20+i*40) + "," + (y(d.percentage/100)-20) + ")";
       })
+
+    // "Total answers" label
+    svg.append("svg:text")
+      .attr("text-anchor", "middle")
+      .style("fill", "rgb(58,58,58)")
+      .style("font", "bold 1.1em helvetica")
+      .text("Total: " + total.toString() + " " + Ember.String.loc('_answers'))
+      .attr("transform","translate(140,340)"); 
   }
 
 
@@ -274,8 +283,12 @@ var margin = {top: 20, right: 20, bottom: 30, left: -10},
 
  var dataSet = FLOW.chartDataControl.get('chartData');
  var maxPer = FLOW.chartDataControl.get('maxPer');
+ var total = FLOW.chartDataControl.get('total'); 
 
 var formatPercent = d3.format(".0%");
+
+// Vertical offset for the "Total:" label
+var tLabelY = 30;
 
 // create linear scale for y axis
 var yScaleMax = maxPer/100 + 0.1;
@@ -299,13 +312,21 @@ var svg = d3.select("#piechart")
       .text("Percentage")
       .attr("transform","translate(300,0)");
 
+  // "Total answers" label  
+  svg.append("svg:text")
+    .attr("text-anchor", "left")
+    .style("fill", "rgb(58,58,58)")
+    .style("font", "bold 1.1em helvetica")
+    .text("Total: " + total.toString() + " " + Ember.String.loc('_answers'))
+    .attr("transform","translate(300, " + tLabelY + ")"); 
+
   // add bars
   svg.selectAll(".bar")
       .data(dataSet)
       .enter()
       .append("svg:rect")
       .attr("class", "bar")
-      .attr("y", function(d,i){return 20+i*40;})
+      .attr("y", function(d,i){return 20+tLabelY+i*40;})
       .attr("height", 20)
       .attr("x",function(d){return 300;})
       .attr("width",function(d){return y(d.percentage/100);})
@@ -322,7 +343,7 @@ var svg = d3.select("#piechart")
         return d.legendLabel;
       })
     .attr("transform",function(d,i){
-         return "translate(280," + (35+i*40) +")";
+         return "translate(280," + (35+tLabelY+i*40) +")";
        })
 
     // add numbers on top of bars
@@ -338,7 +359,7 @@ var svg = d3.select("#piechart")
         return num.toFixed(1).toString() + "%" + " (" + d.itemCount + ")";
       })
       .attr("transform",function(d,i){
-        return "translate(" + (305+y(d.percentage/100)) + "," + (35+i*40) + ")";
+        return "translate(" + (305+y(d.percentage/100)) + "," + (35+tLabelY+i*40) + ")";
       })
   }
 
