@@ -144,7 +144,59 @@ function createDoughnutChart(){
       })
       .style("fill", "rgb(58,58,58)")
       .style("font", "bold 1.1em helvetica")
-      .text(function(d, i) { return dataSet[i].legendLabel; }); //get the label from our original data array
+      .html(function(d, i) { 
+        var label = dataSet[i].legendLabel;
+
+        // If this label is on the left, wrap the text to keep it inside the SVG
+        if (d3.select(this).attr('text-anchor') === 'end') {
+
+          // The maximum number of characters per line
+          var wrapLength = 28;
+          var labelArray = [];
+          var tspanArray = [];          
+          var tspanIndex = 0;
+          var addSpace;
+
+          if (label.length > wrapLength) {
+            labelArray = label.split(' ');
+
+            // Group words in the label into lines less than wrapLength long
+            while (labelArray.length > 0) {
+
+              // assume this isn't the first word in this tspan so we don't need a space
+              addSpace = true;
+
+              if (!tspanArray[tspanIndex]) {
+                tspanArray[tspanIndex] = '';
+                addSpace = false;
+              }
+
+              if (tspanArray[tspanIndex].length + labelArray[0].length + 1 > wrapLength) {
+                tspanIndex++;
+                tspanArray[tspanIndex] = '';
+                addSpace = false;
+              }
+
+              if (addSpace) {
+                tspanArray[tspanIndex] += ' ';
+              }
+
+              tspanArray[tspanIndex] += labelArray[0];
+
+              // remove the word we just processed
+              labelArray.shift();
+            }
+
+            label = '';
+            for (var i = 0; i < tspanArray.length; i++) {
+              tspanArray[i] = '<tspan x="0" dy="15">' + tspanArray[i] + '</tspan>';
+              label += tspanArray[i];
+            }
+          }
+        }
+
+        return label; 
+      }); //get the label from our original data array
 
        // Add a legendLabel to each arc slice...
     vis.append("svg:text")
