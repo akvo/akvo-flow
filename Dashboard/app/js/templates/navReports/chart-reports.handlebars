@@ -235,6 +235,7 @@ var margin = {top: 20, right: 20, bottom: 30, left: 40},
 
  var dataSet = FLOW.chartDataControl.get('chartData');
  var maxPer = FLOW.chartDataControl.get('maxPer');
+ var total = FLOW.chartDataControl.get('total');
 
 var formatPercent = d3.format(".0%");
 
@@ -267,7 +268,7 @@ var svg = d3.select("#piechart")
       .append("text")
       .attr("transform", "rotate(-90)")
       .attr("y", 6)
-      .attr("dy", ".71.1em")
+      .attr("dy", "0.71em")
       .style("text-anchor", "end")
       .text("Percentage");
 
@@ -305,26 +306,41 @@ var svg = d3.select("#piechart")
       .attr("text-anchor", "left")
       .style("fill", "rgb(0,0,0)")
       .style("font", "normal 1em helvetica")
-      .text(function(d){
+      .html(function(d){
         var num = d.percentage;
-        return num.toFixed(1).toString() + "%";
+        var output = "<tspan>" + num.toFixed(1).toString() + "%" + "</tspan>";
+        output += "<tspan x='0' dy='15'>(" + d.itemCount + ")</tspan>";
+
+        return output; 
       })
       .attr("transform",function(d,i){
-        return "translate(" + (20+i*40) + "," + (y(d.percentage/100)-5) + ")";
+        return "translate(" + (20+i*40) + "," + (y(d.percentage/100)-20) + ")";
       })
+
+    // "Total answers" label
+    svg.append("svg:text")
+      .attr("text-anchor", "middle")
+      .style("fill", "rgb(58,58,58)")
+      .style("font", "bold 1.1em helvetica")
+      .text("Total: " + total.toString() + " " + Ember.String.loc('_answers'))
+      .attr("transform","translate(140,340)"); 
   }
 
 
   function createHBarChart(){
 // as in http://bl.ocks.org/3885304
-var margin = {top: 20, right: 20, bottom: 30, left: 40},
+var margin = {top: 20, right: 20, bottom: 30, left: -10},
     width = 700 - margin.left - margin.right,
     height = 500 - margin.top - margin.bottom;
 
  var dataSet = FLOW.chartDataControl.get('chartData');
  var maxPer = FLOW.chartDataControl.get('maxPer');
+ var total = FLOW.chartDataControl.get('total'); 
 
 var formatPercent = d3.format(".0%");
+
+// Vertical offset for the "Total:" label
+var tLabelY = 30;
 
 // create linear scale for y axis
 var yScaleMax = maxPer/100 + 0.1;
@@ -348,13 +364,21 @@ var svg = d3.select("#piechart")
       .text("Percentage")
       .attr("transform","translate(300,0)");
 
+  // "Total answers" label  
+  svg.append("svg:text")
+    .attr("text-anchor", "left")
+    .style("fill", "rgb(58,58,58)")
+    .style("font", "bold 1.1em helvetica")
+    .text("Total: " + total.toString() + " " + Ember.String.loc('_answers'))
+    .attr("transform","translate(300, " + tLabelY + ")"); 
+
   // add bars
   svg.selectAll(".bar")
       .data(dataSet)
       .enter()
       .append("svg:rect")
       .attr("class", "bar")
-      .attr("y", function(d,i){return 20+i*40;})
+      .attr("y", function(d,i){return 20+tLabelY+i*40;})
       .attr("height", 20)
       .attr("x",function(d){return 300;})
       .attr("width",function(d){return y(d.percentage/100);})
@@ -371,7 +395,7 @@ var svg = d3.select("#piechart")
         return d.legendLabel;
       })
     .attr("transform",function(d,i){
-         return "translate(280," + (35+i*40) +")";
+         return "translate(280," + (35+tLabelY+i*40) +")";
        })
 
     // add numbers on top of bars
@@ -384,10 +408,10 @@ var svg = d3.select("#piechart")
       .style("font", "normal 1.1em helvetica")
       .text(function(d){
         var num = d.percentage;
-        return num.toFixed(1).toString();
+        return num.toFixed(1).toString() + "%" + " (" + d.itemCount + ")";
       })
       .attr("transform",function(d,i){
-        return "translate(" + (305+y(d.percentage/100)) + "," + (35+i*40) + ")";
+        return "translate(" + (305+y(d.percentage/100)) + "," + (35+tLabelY+i*40) + ")";
       })
   }
 
