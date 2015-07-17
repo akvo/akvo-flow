@@ -153,22 +153,35 @@ function createDoughnutChart(){
           // The maximum number of characters per line
           var wrapLength = 28;
           var labelArray = [];
-          var tspanArray = [];
+          var tspanArray = [];          
+          var tspanIndex = 0;
+          var addSpace;
 
           if (label.length > wrapLength) {
-            labelArray = label.split(" ");
-            
+            labelArray = label.split(' ');
+
             // Group words in the label into lines less than wrapLength long
             while (labelArray.length > 0) {
-              if (tspanArray.length === 0) {
-                tspanArray[0] = '' + labelArray[0];
-              } else {
-                if (tspanArray[tspanArray.length - 1].length + labelArray[0].length < wrapLength) {
-                  tspanArray[tspanArray.length - 1] += ' ' + labelArray[0];
-                } else {
-                  tspanArray[tspanArray.length] = '' + labelArray[0];            
-                }
+
+              // assume this isn't the first word in this tspan so we don't need a space
+              addSpace = true;
+
+              if (!tspanArray[tspanIndex]) {
+                tspanArray[tspanIndex] = '';
+                addSpace = false;
               }
+
+              if (tspanArray[tspanIndex].length + labelArray[0].length + 1 > wrapLength) {
+                tspanIndex++;
+                tspanArray[tspanIndex] = '';
+                addSpace = false;
+              }
+
+              if (addSpace) {
+                tspanArray[tspanIndex] += ' ';
+              }
+
+              tspanArray[tspanIndex] += labelArray[0];
 
               // remove the word we just processed
               labelArray.shift();
