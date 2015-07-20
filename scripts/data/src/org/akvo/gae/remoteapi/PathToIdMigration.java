@@ -43,6 +43,9 @@ public class PathToIdMigration implements Process {
             String path = (String) entity.getProperty("path");
             if (path != null) {
                 pathToId.put(path, entityId);
+            } else {
+                System.out.printf("Path for survey group #%s is not set\n",
+                        entityId);
             }
 
         }
@@ -52,6 +55,9 @@ public class PathToIdMigration implements Process {
             Long surveyGroupId = (Long) entity.getProperty("surveyGroupId");
             if (surveyGroupId != null) {
                 idToParentId.put(entityId, surveyGroupId);
+            } else {
+                System.out.printf("Survey #%s does not have a surveyGroupId\n",
+                        entityId);
             }
         }
 
@@ -65,9 +71,8 @@ public class PathToIdMigration implements Process {
             ancestorIds(idToParentId, aIds, entityId);
             if (aIds.isEmpty() || aIds.get(0) != 0) {
                 System.out
-                        .println(String
-                                .format("Could not generate ancestorIds for Survey or Survey group #%s",
-                                        entityId));
+                        .printf("Could not generate ancestorIds for Survey or Survey group #%s\n",
+                                entityId);
             } else {
                 entity.setProperty("ancestorIds", aIds);
             }
@@ -76,7 +81,6 @@ public class PathToIdMigration implements Process {
         // Update user authorizations
         pathToId.put("/", 0L);
         for (Entity entity : userAuthorizations) {
-            Long securedObjectId = (Long) entity.getProperty("securedObjectId");
             String objectPath = (String) entity.getProperty("objectPath");
             if (objectPath != null) {
                 Long derivedSecuredObjectId = pathToId.get(objectPath);
@@ -85,9 +89,9 @@ public class PathToIdMigration implements Process {
                     entity.setProperty("securedObjectId",
                             derivedSecuredObjectId);
                 } else {
-                    System.out.println(String.format(
-                            "Could not derive securedObjectId from path %s",
-                            objectPath));
+                    System.out.printf(
+                            "Could not derive securedObjectId from path %s\n",
+                            objectPath);
                 }
             }
         }
