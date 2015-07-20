@@ -21,11 +21,11 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.logging.Logger;
-import java.util.regex.Pattern;
-
 import javax.jdo.JDOObjectNotFoundException;
 import javax.jdo.PersistenceManager;
 
@@ -39,7 +39,6 @@ import org.waterforpeople.mapping.app.web.rest.security.AppRole;
 import com.gallatinsystems.common.Constants;
 import com.gallatinsystems.framework.domain.BaseDomain;
 import com.gallatinsystems.framework.servlet.PersistenceFilter;
-import com.gallatinsystems.survey.dao.SurveyUtils;
 import com.gallatinsystems.survey.domain.Survey;
 import com.gallatinsystems.survey.domain.SurveyGroup;
 import com.gallatinsystems.user.dao.UserAuthorizationDAO;
@@ -279,14 +278,15 @@ public class BaseDAO<T extends BaseDomain> {
     }
 
     /**
-     * Return a list of survey groups or surveys that are accessible by the current user
+     * Return a list of survey groups or surveys that are accessible by the current user, filtered
+     * by object ids
      *
      * @return
      */
     @SuppressWarnings({
             "rawtypes", "unchecked"
     })
-    public List filterByUserAuthorization(List allObjectsList) {
+    public List filterByUserAuthorizationObjectId(List allObjectsList) {
         if (!concreteClass.isAssignableFrom(SurveyGroup.class)
                 && !concreteClass.isAssignableFrom(Survey.class)) {
             throw new UnsupportedOperationException("Cannot filter "
@@ -308,53 +308,45 @@ public class BaseDAO<T extends BaseDomain> {
             return Collections.emptyList();
         }
 
-        StringBuilder authorizedPathsRegex = new StringBuilder();
-        StringBuilder authorizedParentPathsRegex = new StringBuilder();
+        Set<Long> securedObjectIds = new HashSet<Long>();
         for (UserAuthorization auth : userAuthorizationList) {
-            String authorizedPath = auth.getObjectPath();
-            authorizedPathsRegex.append(authorizedPath);
-            authorizedPathsRegex.append("|");
-
-            // include parent folders in order to be able to navigate to sub folder / project
-            for (String parentPath : SurveyUtils.listParentPaths(authorizedPath, false)) {
-                authorizedParentPathsRegex.append(parentPath);
-                authorizedParentPathsRegex.append("|");
+            if (auth.getSecuredObjectId() != null) {
+                securedObjectIds.add(auth.getSecuredObjectId());
             }
         }
-
-        // trim the last "|"s
-        authorizedPathsRegex.deleteCharAt(authorizedPathsRegex.length() - 1);
-        if (authorizedParentPathsRegex.length() > 0) {
-            authorizedParentPathsRegex.deleteCharAt(authorizedParentPathsRegex.length() - 1);
-        }
-
-        final Pattern authorizedPaths = Pattern.compile(authorizedPathsRegex.toString());
-        final Pattern authorizedParentPaths = Pattern
-                .compile(authorizedParentPathsRegex.toString());
-
         List authorizedList = new ArrayList();
         if (concreteClass.isAssignableFrom(SurveyGroup.class)) {
             for (Object obj : allObjectsList) {
                 SurveyGroup sg = (SurveyGroup) obj;
-                String sgPath = sg.getPath();
-                if (sgPath != null
-                        && (authorizedPaths.matcher(sgPath).lookingAt() ||
-                        authorizedParentPaths.matcher(sgPath).matches())) {
+                if (hasAuthorizedAncestors(sg.getAncestorIds(), securedObjectIds)
+                        || securedObjectIds.contains(sg.getKey().getId())) {
                     authorizedList.add(sg);
                 }
             }
         } else {
             for (Object obj : allObjectsList) {
                 Survey s = (Survey) obj;
-                String sPath = s.getPath();
-                if (sPath != null &&
-                        (authorizedPaths.matcher(sPath).lookingAt() ||
-                        authorizedParentPaths.matcher(sPath).matches())) {
+                List<Long> ancestorIds = s.getAncestorIds();
+                if (hasAuthorizedAncestors(ancestorIds, securedObjectIds)) {
                     authorizedList.add(s);
                 }
             }
         }
         return authorizedList;
+    }
+
+    /**
+     * Check whether one or more items in the list of an entity's ancestor ids is present in the
+     * list of authorized objects for a user. Return true if this is the case
+     *
+     * @param ancestorIds
+     * @param securedObjectIds
+     * @return
+     */
+    private boolean hasAuthorizedAncestors(List<Long> ancestorIds, Set<Long> securedObjectIds) {
+        // use new List object to prevent side effects on SurveyGroup.ancestorIds property
+        List<Long> idsList = new ArrayList<Long>(ancestorIds);
+        return idsList != null && idsList.removeAll(securedObjectIds);
     }
 
     /**

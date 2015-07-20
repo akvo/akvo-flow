@@ -108,6 +108,11 @@ DS.FLOWRESTAdapter = DS.RESTAdapter.extend({
   },
 
   ajax: function (url, type, hash) {
+    if (type === 'GET' && url.indexOf('rest/survey_groups/0') >= 0) {
+      // Don't fetch the root folder. It doesn't exist.
+      return;
+    }
+
     this._super(url, type, hash);
     if (type == "GET") {
       if (url.indexOf('rest/survey_groups') >= 0) {

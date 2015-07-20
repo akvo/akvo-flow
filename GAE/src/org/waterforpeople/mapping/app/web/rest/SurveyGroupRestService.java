@@ -16,6 +16,8 @@
 
 package org.waterforpeople.mapping.app.web.rest;
 
+import static com.gallatinsystems.common.Constants.ANCESTOR_IDS_FIELD;
+
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -83,13 +85,13 @@ public class SurveyGroupRestService {
         }
 
         // if we are here, it is a regular request
-        List<SurveyGroup> surveys = surveyGroupDao.listAllFilteredByUserAuthorization();
+        List<SurveyGroup> surveyGroups = surveyGroupDao.listAllFilteredByUserAuthorization();
         SurveyDAO surveyDao = new SurveyDAO();
-        if (surveys != null) {
-            for (SurveyGroup s : surveys) {
+        if (surveyGroups != null) {
+            for (SurveyGroup sg : surveyGroups) {
                 SurveyGroupDto dto = new SurveyGroupDto();
-                DtoMarshaller.copyToDto(s, dto);
-                List<Survey> surveyList = surveyDao.listSurveysByGroup(s.getKey().getId());
+                DtoMarshaller.copyToDto(sg, dto);
+                List<Survey> surveyList = surveyDao.listSurveysByGroup(sg.getKey().getId());
                 if (surveyList != null && !surveyList.isEmpty()) {
                     SurveyDto sDto = new SurveyDto();
                     // we don't want/need the full object
@@ -109,6 +111,7 @@ public class SurveyGroupRestService {
     public Map<String, SurveyGroupDto> findSurveyGroupById(
             @PathVariable("id") Long id) {
         final Map<String, SurveyGroupDto> response = new HashMap<String, SurveyGroupDto>();
+
         SurveyGroup s = surveyGroupDao.getByKey(id);
         SurveyGroupDto dto = null;
         if (s != null) {
@@ -159,54 +162,55 @@ public class SurveyGroupRestService {
     public Map<String, Object> saveExistingSurveyGroup(
             @RequestBody SurveyGroupPayload payLoad) {
 
-        final SurveyGroupDto surveyGroupDto = payLoad.getSurvey_group();
         final Map<String, Object> response = new HashMap<String, Object>();
-        SurveyGroupDto dto = null;
-
-        RestStatusDto statusDto = new RestStatusDto();
+        final RestStatusDto statusDto = new RestStatusDto();
         statusDto.setStatus("failed");
-
-        // if the POST data contains a valid surveyGroupDto, continue.
-        // Otherwise, server 400 Bad Request
-        if (surveyGroupDto != null) {
-            Long keyId = surveyGroupDto.getKeyId();
-            SurveyGroup s;
-
-            // if the surveyGroupDto has a key, try to get the surveyGroup.
-            if (keyId != null) {
-                s = surveyGroupDao.getByKey(keyId);
-                // if we find the surveyGroup, update it's properties
-                if (s != null) {
-                    // copy the properties, except the properties that are set
-                    // or provided by the Dao.
-                    BeanUtils.copyProperties(surveyGroupDto, s, new String[] {
-                            "createdDateTime", "lastUpdateDateTime",
-                            "displayName", "questionGroupList"
-                    });
-
-                    String name = s.getName();
-                    if (name != null) {
-                        String trimmedName = name.replaceAll(",", " ").trim();
-                        s.setName(trimmedName);
-                        s.setCode(trimmedName);
-                        s.setPath(SurveyUtils.fixPath(s.getPath(), trimmedName));
-                    }
-
-                    if (Boolean.FALSE.equals(s.getMonitoringGroup())) {
-                        s.setNewLocaleSurveyId(null);
-                    }
-                    s.setPublished(false);
-
-                    s = surveyGroupDao.save(s);
-
-                    dto = new SurveyGroupDto();
-                    DtoMarshaller.copyToDto(s, dto);
-                    statusDto.setStatus("ok");
-                }
-            }
-        }
         response.put("meta", statusDto);
-        response.put("survey_group", dto);
+
+        final SurveyGroupDto requestDto = payLoad.getSurvey_group();
+        final SurveyGroupDto responseDto = new SurveyGroupDto();
+        response.put("survey_group", responseDto);
+
+        if (requestDto == null || requestDto.getKeyId() == null) {
+            return response;
+        }
+
+        SurveyGroup s = surveyGroupDao.getByKey(requestDto.getKeyId());
+        if (s == null) {
+            return response;
+        }
+
+        boolean hasMoved = requestDto.getParentId() == null || s.getParentId() == null
+                || !requestDto.getParentId().equals(s.getParentId());
+
+        BeanUtils.copyProperties(requestDto, s, new String[] {
+                "createdDateTime", "lastUpdateDateTime",
+                "displayName", "questionGroupList", ANCESTOR_IDS_FIELD
+        });
+
+        String name = s.getName();
+        if (name != null) {
+            String trimmedName = name.replaceAll(",", " ").trim();
+            s.setName(trimmedName);
+            s.setCode(trimmedName);
+            s.setPath(SurveyUtils.fixPath(s.getPath(), trimmedName));
+        }
+
+        if (Boolean.FALSE.equals(s.getMonitoringGroup())) {
+            s.setNewLocaleSurveyId(null);
+        }
+        s.setPublished(false);
+
+        s.setAncestorIds(SurveyUtils.retrieveAncestorIds(s));
+        if (hasMoved) {
+            SurveyUtils.setChildObjects(s);
+            surveyGroupDao.save(s.updateAncestorIds(true));
+        }
+
+        s = surveyGroupDao.save(s);
+
+        DtoMarshaller.copyToDto(s, responseDto);
+        statusDto.setStatus("ok");
         return response;
     }
 
@@ -232,8 +236,10 @@ public class SurveyGroupRestService {
             // provided by the Dao.
             BeanUtils.copyProperties(surveyGroupDto, s, new String[] {
                     "createdDateTime", "lastUpdateDateTime", "displayName",
-                    "questionGroupList"
+                    "questionGroupList", ANCESTOR_IDS_FIELD
             });
+
+            s.setAncestorIds(SurveyUtils.retrieveAncestorIds(s));
 
             // Make sure that code and name are the same
             s.setCode(s.getName());

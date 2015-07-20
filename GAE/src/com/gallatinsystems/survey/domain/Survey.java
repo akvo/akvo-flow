@@ -1,5 +1,5 @@
 /*
- *  Copyright (C) 2010-2012 Stichting Akvo (Akvo Foundation)
+ *  Copyright (C) 2010-2015 Stichting Akvo (Akvo Foundation)
  *
  *  This file is part of Akvo FLOW.
  *
@@ -16,13 +16,18 @@
 
 package com.gallatinsystems.survey.domain;
 
+import java.util.Collections;
 import java.util.HashMap;
+import java.util.List;
 import java.util.TreeMap;
 
 import javax.jdo.annotations.NotPersistent;
 import javax.jdo.annotations.PersistenceCapable;
 
+import org.akvo.flow.domain.SecuredObject;
+
 import com.gallatinsystems.framework.domain.BaseDomain;
+import com.gallatinsystems.survey.dao.SurveyGroupDAO;
 
 /**
  * Survey are a collection of questionGroups (that, in turn, have collections of questions). A
@@ -30,7 +35,7 @@ import com.gallatinsystems.framework.domain.BaseDomain;
  * language is considered primary.
  */
 @PersistenceCapable
-public class Survey extends BaseDomain {
+public class Survey extends BaseDomain implements SecuredObject {
 
     private static final long serialVersionUID = -8638039212962768687L;
     @NotPersistent
@@ -65,7 +70,7 @@ public class Survey extends BaseDomain {
     }
 
     public void incrementVersion() {
-        if(version == null) {
+        if (version == null) {
             getVersion();
         } else {
             version++;
@@ -137,7 +142,7 @@ public class Survey extends BaseDomain {
     }
 
     public Double getVersion() {
-        if(version == null) {
+        if (version == null) {
             // existing survey without version number is a
             // newly created one so return 1.0
             version = 1.0d;
@@ -206,5 +211,33 @@ public class Survey extends BaseDomain {
 
     public Boolean getRequireApproval() {
         return requireApproval;
+    }
+
+    @Override
+    public SecuredObject getParentObject() {
+        if (surveyGroupId == null) {
+            return null;
+        }
+
+        return new SurveyGroupDAO().getByKey(surveyGroupId);
+    }
+
+    @Override
+    public Long getObjectId() {
+        if (key == null) {
+            return null;
+        }
+        return key.getId();
+    }
+
+    @Override
+    public List<Long> listAncestorIds() {
+        return ancestorIds;
+    }
+
+    @Override
+    public List<BaseDomain> updateAncestorIds(boolean cascade) {
+        // do not update or return any childobjects. Survey entities are the leaves
+        return Collections.emptyList();
     }
 }

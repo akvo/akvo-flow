@@ -16,6 +16,7 @@
 
 package org.waterforpeople.mapping.app.web.rest;
 
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
@@ -346,11 +347,22 @@ public class ActionRestService {
         }
         projectCopy.setPath(parentPath + "/" + projectCopy.getName());
         projectCopy.setParentId(folderId);
+
+        boolean isCopiedToDifferentFolder = projectSource.getParentId() != null && folderId != null
+                && !projectSource.getParentId().equals(folderId);
+        if (isCopiedToDifferentFolder) {
+            // reset ancestorIds when copying to a different folder
+            projectCopy.setAncestorIds(SurveyUtils.retrieveAncestorIds(projectCopy));
+        }
         projectCopy.setPublished(false);
 
         SurveyGroup savedProjectCopy = surveyGroupDao.save(projectCopy);
 
         List<Survey> surveys = surveyDao.listSurveysByGroup(targetId);
+
+        List<Long> surveysAncestorIds = new ArrayList<Long>(savedProjectCopy.getAncestorIds());
+        surveysAncestorIds.add(savedProjectCopy.getKey().getId());
+
         for (Survey survey : surveys) {
             SurveyDto surveyDto = new SurveyDto();
             surveyDto.setCode(survey.getCode());
@@ -359,6 +371,7 @@ public class ActionRestService {
             surveyDto.setSurveyGroupId(savedProjectCopy.getKey().getId());
             Survey surveyCopy = SurveyUtils.copySurvey(survey, surveyDto);
             surveyCopy.setSurveyGroupId(savedProjectCopy.getKey().getId());
+            survey.setAncestorIds(surveysAncestorIds);
             surveyDao.save(surveyCopy);
         }
         return "success";
