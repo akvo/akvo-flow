@@ -19,15 +19,16 @@
         </div>
         <div class="dataDeviceId">
             {{#if view.validSurveyInstanceId}}
-              <label class="surveyInstanceId tooltip" title="Numeric">{{t _instance_id}}:</label>
+              <label class="surveyInstanceId">{{t _instance_id}}:</label>
             {{else}}
-              <label class="surveyInstanceId tooltip" title="Numeric"><a style="color:red" class="tooltip" title="{{t _instance_id_must_be_a_number}}">{{t _instance_id}}</a>:</label>
+              <label class="surveyInstanceId tooltip"><a style="color:red" class="tooltip" title="{{t _instance_id_must_be_a_number}}">{{t _instance_id}}</a>:</label>
             {{/if}}
             {{view Ember.TextField valueBinding="view.surveyInstanceId" placeholder="" placeholderBinding="Ember.STRINGS._instance_id" size=30}}
             <label class="devideId">{{t _device_id}}:</label>
             {{view Ember.TextField valueBinding="view.deviceId" placeholder="" placeholderBinding="Ember.STRINGS._device_id" size=30}}
             <label class="submitterName">{{t _submitter_name}}:</label>
             {{view Ember.TextField valueBinding="view.submitterName" placeholder="" placeholderBinding="Ember.STRINGS._submitter_name" size=30}}
+
         </div>
 
         <div class="chooseLocationData">
@@ -35,6 +36,10 @@
             <a {{action "doFindSurveyInstances" target="this" }} class="findData standardBtn btnAboveTable"> {{t _find}}</a>
         </div>
     </div>
+    {{#if view.noResults}}
+      <center><div style="color:red; font-size: 1.3em;">{{t _no_results_found}}</div></center>
+    {{/if}}
+
     <section class="fullWidth " id="devicesList">
         <table class="dataTable" id="surveyDataTable">
             <thead>

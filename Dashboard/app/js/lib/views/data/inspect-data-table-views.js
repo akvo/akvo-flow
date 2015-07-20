@@ -235,7 +235,16 @@ FLOW.inspectDataTableView = FLOW.View.extend({
     return this.surveyInstanceId === null ||
       this.surveyInstanceId === "" ||
       this.surveyInstanceId.match(/^\d+$/);
-  }.property('this.surveyInstanceId')
+  }.property('this.surveyInstanceId'),
+
+  noResults: function() {
+    var contents = FLOW.surveyInstanceControl.currentContents;
+    if (contents) {
+      return contents.length === 0
+    } else {
+      return false;
+    }
+  }.property('FLOW.surveyInstanceControl.currentContents')
 
 });
 
