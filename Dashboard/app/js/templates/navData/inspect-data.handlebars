@@ -18,7 +18,11 @@
             </label>
         </div>
         <div class="dataDeviceId">
-            <label class="surveyInstanceId">{{t _instance_id}}:</label>
+            {{#if view.validSurveyInstanceId}}
+              <label class="surveyInstanceId tooltip" title="Numeric">{{t _instance_id}}:</label>
+            {{else}}
+              <label class="surveyInstanceId tooltip" title="Numeric"><a style="color:red" class="tooltip" title="{{t _instance_id_must_be_a_number}}">{{t _instance_id}}</a>:</label>
+            {{/if}}
             {{view Ember.TextField valueBinding="view.surveyInstanceId" placeholder="" placeholderBinding="Ember.STRINGS._instance_id" size=30}}
             <label class="devideId">{{t _device_id}}:</label>
             {{view Ember.TextField valueBinding="view.deviceId" placeholder="" placeholderBinding="Ember.STRINGS._device_id" size=30}}

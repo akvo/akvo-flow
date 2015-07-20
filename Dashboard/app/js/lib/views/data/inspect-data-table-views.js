@@ -229,7 +229,14 @@ FLOW.inspectDataTableView = FLOW.View.extend({
       FLOW.store.commit();
     }
     this.set('showEditSurveyInstanceWindowBool', false);
-  }
+  },
+
+  validSurveyInstanceId: function() {
+    return this.surveyInstanceId === null ||
+      this.surveyInstanceId === "" ||
+      this.surveyInstanceId.match(/^\d+$/);
+  }.property('this.surveyInstanceId')
+
 });
 
 FLOW.DataItemView = FLOW.View.extend({
