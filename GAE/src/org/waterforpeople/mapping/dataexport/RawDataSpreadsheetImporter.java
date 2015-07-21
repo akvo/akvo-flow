@@ -557,7 +557,10 @@ public class RawDataSpreadsheetImporter implements DataImporter {
                     if (!firstQuestionFound && cellValue.matches("[0-9]+\\|.+")) {
                         firstQuestionFound = true;
                         int idx = cell.getColumnIndex();
-                        if (idx != 7) {
+                        // idx == 4, non monitoring, old format
+                        // idx == 6, monitoring, old format
+                        // idx == 7, new format
+                        if (!(idx == 4 || idx == 6 || idx == 7)) {
                             errorMap.put(idx, "Found the first question at the wrong column index");
                             break;
                         }
