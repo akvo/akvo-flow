@@ -277,7 +277,7 @@ FLOW.projectControl = Ember.ArrayController.create({
       return [];
     }
     var id = currentProject.get('keyId');
-    while(id !== null) {
+    while(id !== null && id !== 0) {
       project = FLOW.store.find(FLOW.SurveyGroup, id);
       result.push(project);
       id = project.get('parentId');
