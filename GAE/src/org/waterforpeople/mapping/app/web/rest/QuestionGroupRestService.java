@@ -315,9 +315,10 @@ public class QuestionGroupRestService {
     private QuestionGroup copyGroup(QuestionGroupDto questionGroupDto) {
         final QuestionGroupDao qgDao = new QuestionGroupDao();
         QuestionGroup sourceGroup = qgDao.getByKey(questionGroupDto.getSourceId());
-        final QuestionGroup copyGroup = qgDao.save(new QuestionGroup());
+        QuestionGroup tmpGroup = new QuestionGroup();
 
-        SurveyUtils.shallowCopy(sourceGroup, copyGroup);
+        SurveyUtils.shallowCopy(sourceGroup, tmpGroup);
+        final QuestionGroup copyGroup = qgDao.save(tmpGroup);
         copyGroup.setOrder(questionGroupDto.getOrder());
         copyGroup.setStatus(QuestionGroup.Status.COPYING);
 
