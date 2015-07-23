@@ -234,13 +234,13 @@ FLOW.inspectDataTableView = FLOW.View.extend({
   }.property('this.surveyInstanceId'),
 
   noResults: function() {
-    var contents = FLOW.surveyInstanceControl.currentContents;
-    if (contents) {
-      return contents.length === 0
+    var content = FLOW.surveyInstanceControl.get('content');
+    if (content && content.get('isLoaded')) {
+      return content.get('length') === 0;
     } else {
       return false;
     }
-  }.property('FLOW.surveyInstanceControl.currentContents')
+  }.property('FLOW.surveyInstanceControl.content', 'FLOW.surveyInstanceControl.content.isLoaded')
 
 });
 
