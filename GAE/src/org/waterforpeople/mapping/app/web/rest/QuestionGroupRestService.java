@@ -315,6 +315,8 @@ public class QuestionGroupRestService {
     private QuestionGroup copyGroup(QuestionGroupDto questionGroupDto) {
         final QuestionGroupDao qgDao = new QuestionGroupDao();
         QuestionGroup sourceGroup = qgDao.getByKey(questionGroupDto.getSourceId());
+
+        // need a temp group to avoid state sharing exception
         QuestionGroup tmpGroup = new QuestionGroup();
 
         SurveyUtils.shallowCopy(sourceGroup, tmpGroup);
