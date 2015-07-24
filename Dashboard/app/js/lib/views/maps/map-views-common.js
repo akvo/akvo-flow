@@ -66,14 +66,14 @@ FLOW.NavMapsView = FLOW.View.extend({
       +'<option value="">--All--</option>'
       +'</select>&nbsp;'
       +'</div>'
-      +'<div style="float: left">'
+      +/*'<div style="float: left">'
       +'<label for="question_selector">Select a question to style the map by</label>'
       +'<select class="" name="question_selector" id="question_selector">'
       +'<option value="">--All--</option>'
       +'</select>&nbsp;'
       +'</div>'
       +'<button style="float: left" id="update_style">Update Points Style</button>'
-      +'</div>'
+      +*/'</div>'
       +'<div style="float: left; width:100%; height: 550px" id="cartodbd_flowMap"></div>'
       +'</div>';
 
