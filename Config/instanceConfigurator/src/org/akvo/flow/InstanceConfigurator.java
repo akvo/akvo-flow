@@ -191,6 +191,10 @@ public class InstanceConfigurator {
                 new SimpleDateFormat("yyyy-MM-dd").format(new Date()));
         data.put("accessKey", accessKeys);
 
+        Template t0 = cfg.getTemplate("bucket-policy.ftl");
+        StringWriter bucketPolicy = new StringWriter();
+        t0.process(data, bucketPolicy);
+
         Template t1 = cfg.getTemplate("apk-s3-policy.ftl");
         StringWriter apkPolicy = new StringWriter();
         t1.process(data, apkPolicy);
@@ -198,6 +202,8 @@ public class InstanceConfigurator {
         Template t2 = cfg.getTemplate("gae-s3-policy.ftl");
         StringWriter gaePolicy = new StringWriter();
         t2.process(data, gaePolicy);
+
+        s3Client.setBucketPolicy(bucketName, t0.toString());
 
         iamClient.putUserPolicy(new PutUserPolicyRequest(apkUser, apkUser,
                 Policy.fromJson(apkPolicy.toString()).toJson()));
