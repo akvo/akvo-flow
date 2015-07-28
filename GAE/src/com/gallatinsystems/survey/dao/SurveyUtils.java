@@ -457,7 +457,6 @@ public class SurveyUtils {
         BeanUtils.copyProperties(source, copy, Constants.EXCLUDED_PROPERTIES);
         String kind = source.getKey().getKind();
         log.log(Level.INFO, "Copying `" + kind + "` " + source.getKey().getId());
-        log.log(Level.INFO, "New `" + kind + "` ID: " + copy.getKey().getId());
     }
 
     /**
