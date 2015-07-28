@@ -26,11 +26,13 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.logging.Logger;
+
 import javax.jdo.JDOObjectNotFoundException;
 import javax.jdo.PersistenceManager;
 
 import net.sf.jsr107cache.CacheException;
 
+import org.akvo.flow.domain.SecuredObject;
 import org.datanucleus.store.appengine.query.JDOCursorHelper;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -46,13 +48,13 @@ import com.gallatinsystems.user.domain.UserAuthorization;
 import com.google.appengine.api.datastore.Cursor;
 import com.google.appengine.api.datastore.Key;
 import com.google.appengine.api.datastore.KeyFactory;
+
 /**
  * This is a reusable data access object that supports basic operations (save, find by property,
  * list).
  *
  * @author Christopher Fagiani
- * @param <T>
- *            a persistent class that extends BaseDomain
+ * @param <T> a persistent class that extends BaseDomain
  */
 public class BaseDAO<T extends BaseDomain> {
     public static final int DEFAULT_RESULT_COUNT = 20;
@@ -78,8 +80,7 @@ public class BaseDAO<T extends BaseDomain> {
      * Injected version of the actual Class to pass for the persistentClass in the query creation.
      * This must be set before using this implementation class or any derived class.
      *
-     * @param e
-     *            an instance of the type of object to use for this instance of the DAO
+     * @param e an instance of the type of object to use for this instance of the DAO
      *            implementation.
      */
     public void setDomainClass(Class<T> e) {
@@ -314,13 +315,25 @@ public class BaseDAO<T extends BaseDomain> {
                 securedObjectIds.add(auth.getSecuredObjectId());
             }
         }
-        List authorizedList = new ArrayList();
+
+        // Set of all ancestor ids of secured objects
+        Set<Long> securedAncestorIds = new HashSet<Long>();
+        for (Object obj : allObjectsList) {
+            SecuredObject securedObject = (SecuredObject) obj;
+            if (securedObjectIds.contains(securedObject.getObjectId())) {
+                securedAncestorIds.addAll(securedObject.listAncestorIds());
+            }
+        }
+
+        Set authorizedSet = new HashSet();
         if (concreteClass.isAssignableFrom(SurveyGroup.class)) {
             for (Object obj : allObjectsList) {
                 SurveyGroup sg = (SurveyGroup) obj;
+                Long sgId = sg.getKey().getId();
                 if (hasAuthorizedAncestors(sg.getAncestorIds(), securedObjectIds)
-                        || securedObjectIds.contains(sg.getKey().getId())) {
-                    authorizedList.add(sg);
+                        || securedObjectIds.contains(sgId)
+                        || securedAncestorIds.contains(sgId)) {
+                    authorizedSet.add(sg);
                 }
             }
         } else {
@@ -328,10 +341,14 @@ public class BaseDAO<T extends BaseDomain> {
                 Survey s = (Survey) obj;
                 List<Long> ancestorIds = s.getAncestorIds();
                 if (hasAuthorizedAncestors(ancestorIds, securedObjectIds)) {
-                    authorizedList.add(s);
+                    authorizedSet.add(s);
                 }
             }
         }
+
+        List authorizedList = new ArrayList();
+        authorizedList.addAll(authorizedSet);
+
         return authorizedList;
     }
 
@@ -371,8 +388,7 @@ public class BaseDAO<T extends BaseDomain> {
     /**
      * gets a List of object by key where the key is represented as a Long
      *
-     * @param ids
-     *            Array of Long representing the keys of objects
+     * @param ids Array of Long representing the keys of objects
      * @return null if ids is null, otherwise a list of objects
      */
     public List<T> listByKeys(Long[] ids) {
@@ -559,18 +575,12 @@ public class BaseDAO<T extends BaseDomain> {
     /**
      * utility method to form a hash map of query parameters using an equality operator
      *
-     * @param paramName
-     *            - name of object property
-     * @param filter
-     *            - in/out stringBuilder of query filters
-     * @param param
-     *            -in/out stringBuilder of param names
-     * @param type
-     *            - data type of field
-     * @param value
-     *            - value to bind to param
-     * @param paramMap
-     *            - in/out parameter map
+     * @param paramName - name of object property
+     * @param filter - in/out stringBuilder of query filters
+     * @param param -in/out stringBuilder of param names
+     * @param type - data type of field
+     * @param value - value to bind to param
+     * @param paramMap - in/out parameter map
      */
     protected void appendNonNullParam(String paramName, StringBuilder filter,
             StringBuilder param, String type, Object value,
@@ -582,20 +592,13 @@ public class BaseDAO<T extends BaseDomain> {
     /**
      * utility method to form a hash map of query parameters
      *
-     * @param paramName
-     *            - name of object property
-     * @param filter
-     *            - in/out stringBuilder of query filters
-     * @param param
-     *            -in/out stringBuilder of param names
-     * @param type
-     *            - data type of field
-     * @param value
-     *            - value to bind to param
-     * @param paramMap
-     *            - in/out parameter map
-     * @param operator
-     *            - operator to use
+     * @param paramName - name of object property
+     * @param filter - in/out stringBuilder of query filters
+     * @param param -in/out stringBuilder of param names
+     * @param type - data type of field
+     * @param value - value to bind to param
+     * @param paramMap - in/out parameter map
+     * @param operator - operator to use
      */
     protected void appendNonNullParam(String paramName, StringBuilder filter,
             StringBuilder param, String type, Object value,
