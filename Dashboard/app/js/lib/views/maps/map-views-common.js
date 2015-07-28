@@ -104,8 +104,8 @@ FLOW.NavMapsView = FLOW.View.extend({
     		attribution: 'Map &copy; 1987-2014 <a href="http://developer.here.com">HERE</a>',
     		subdomains: '1234',
     		mapID: 'newest',
-    		app_id: 'Y8m9dK2brESDPGJPdrvs',
-    		app_code: 'dq2MYIvjAotR8tHvY8Q_Dg',
+    		app_id: 'r5lmMPKxiMeZzkTWRAJu',
+    		app_code: 'W6i_Oej7Y8IdgizMp7eSyQ',
     		base: 'base',
     		maxZoom: 18
     	}).addTo(map);
