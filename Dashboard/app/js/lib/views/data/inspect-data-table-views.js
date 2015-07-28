@@ -1,5 +1,6 @@
 FLOW.inspectDataTableView = FLOW.View.extend({
   selectedSurvey: null,
+  surveyInstanceId: null,
   surveyId: null,
   deviceId: null,
   submitterName: null,
@@ -79,7 +80,17 @@ FLOW.inspectDataTableView = FLOW.View.extend({
       this.set('selectedLevel2',null);
     }
 
-    FLOW.surveyInstanceControl.doInstanceQuery(this.get('surveyId'), this.get('deviceId'),this.get('since'), this.get('beginDate'), this.get('endDate'), this.get('submitterName'),this.get('selectedCountryCode'), this.get('selectedLevel1'), this.get('selectedLevel2'));
+    FLOW.surveyInstanceControl.doInstanceQuery(
+      this.get('surveyInstanceId'),
+      this.get('surveyId'),
+      this.get('deviceId'),
+      this.get('since'),
+      this.get('beginDate'),
+      this.get('endDate'),
+      this.get('submitterName'),
+      this.get('selectedCountryCode'),
+      this.get('selectedLevel1'),
+      this.get('selectedLevel2'));
   },
 
   doNextPage: function () {
@@ -194,13 +205,9 @@ FLOW.inspectDataTableView = FLOW.View.extend({
   },
 
   showSurveyInstanceDeleteButton: function() {
-    var currentSurveyId = this.get('surveyId');
-    if(currentSurveyId) {
-        return FLOW.surveyControl.userCanDeleteData(currentSurveyId);
-    } else {
-        return false;
-    }
-  }.property('surveyId'),
+    var permissions = FLOW.surveyControl.get('currentFormPermissions');
+    return permissions.indexOf("DATA_DELETE") >= 0;
+  }.property('FLOW.selectedControl.selectedSurvey'),
 
   doShowDeleteSIDialog: function (event) {
     FLOW.dialogControl.set('activeAction', 'delSI');
@@ -218,7 +225,23 @@ FLOW.inspectDataTableView = FLOW.View.extend({
       FLOW.store.commit();
     }
     this.set('showEditSurveyInstanceWindowBool', false);
-  }
+  },
+
+  validSurveyInstanceId: function() {
+    return this.surveyInstanceId === null ||
+      this.surveyInstanceId === "" ||
+      this.surveyInstanceId.match(/^\d+$/);
+  }.property('this.surveyInstanceId'),
+
+  noResults: function() {
+    var content = FLOW.surveyInstanceControl.get('content');
+    if (content && content.get('isLoaded')) {
+      return content.get('length') === 0;
+    } else {
+      return false;
+    }
+  }.property('FLOW.surveyInstanceControl.content', 'FLOW.surveyInstanceControl.content.isLoaded')
+
 });
 
 FLOW.DataItemView = FLOW.View.extend({
@@ -232,11 +255,11 @@ FLOW.DataItemView = FLOW.View.extend({
         SL = FLOW.store.filter(FLOW.SurveyedLocale,function(item){
             return item.get('keyId') == slKey;
         });
-        // if we have found the surveyedLocale, check if there are more 
+        // if we have found the surveyedLocale, check if there are more
         // formInstances inside it
         if (!Ember.empty(SL)){
             // are there any other formInstances loaded for this surveyedLocale?
-            // if not, we also need to not show the locale any more. 
+            // if not, we also need to not show the locale any more.
             // it will also be deleted automatically in the backend,
             // so this is just to not show it in the UI
             SiList = FLOW.store.filter(FLOW.SurveyInstance,function(item){

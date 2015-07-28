@@ -42,7 +42,14 @@ public class UserAuthorization extends BaseDomain {
      * a specific user. The path is in the form /set/of/paths[/*] and may define a single object or
      * contain a star that specified all subordinate objects
      */
+    @Deprecated
     private String objectPath;
+
+    /*
+     * The id of an object to which a particular authorization, i.e., the user and role, has been
+     * coupled.
+     */
+    private Long securedObjectId;
 
     public Long getUserId() {
         return userId;
@@ -66,5 +73,13 @@ public class UserAuthorization extends BaseDomain {
 
     public void setObjectPath(String objectPath) {
         this.objectPath = objectPath;
+    }
+
+    public Long getSecuredObjectId() {
+        return securedObjectId;
+    }
+
+    public void setSecuredObjectId(Long securedObjectId) {
+        this.securedObjectId = securedObjectId;
     }
 }

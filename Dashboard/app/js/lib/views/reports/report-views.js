@@ -97,7 +97,7 @@ FLOW.chartView = FLOW.View.extend({
           var percentage = 100.0 * item.get('count') / total,
             percString = percentage.toFixed(1);
           chartData.push({
-            "legendLabel": (item.get('response') + ", " + percString + "%"),
+            "legendLabel": (item.get('response') + ", " + percString + "%") + " (" + item.get('count') + ")" ,
             "percentage": 100.0 * item.get('count') / total
           });
         });
@@ -143,7 +143,8 @@ FLOW.chartView = FLOW.View.extend({
         FLOW.surveyQuestionSummaryControl.get('content').forEach(function (item) {
           chartData.push({
             "legendLabel": (item.get('response')),
-            "percentage": 100.0 * item.get('count') / total
+            "percentage": 100.0 * item.get('count') / total,
+            "itemCount": item.get('count')
           });
         });
 
@@ -161,7 +162,8 @@ FLOW.chartView = FLOW.View.extend({
         FLOW.surveyQuestionSummaryControl.get('content').forEach(function (item) {
           chartData.push({
             "legendLabel": (item.get('response')),
-            "percentage": 100.0 * item.get('count') / total
+            "percentage": 100.0 * item.get('count') / total,
+            "itemCount": item.get('count')
           });
         });
 

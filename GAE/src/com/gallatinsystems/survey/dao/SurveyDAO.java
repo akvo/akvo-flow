@@ -137,7 +137,7 @@ public class SurveyDAO extends BaseDAO<Survey> {
     @SuppressWarnings("unchecked")
     public List<Survey> listAllFilteredByUserAuthorization() {
         List<Survey> allSurveys = list(Constants.ALL_RESULTS);
-        return filterByUserAuthorization(allSurveys);
+        return filterByUserAuthorizationObjectId(allSurveys);
     }
 
     /**

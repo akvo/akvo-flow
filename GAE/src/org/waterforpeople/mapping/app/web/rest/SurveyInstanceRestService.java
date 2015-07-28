@@ -78,6 +78,7 @@ public class SurveyInstanceRestService {
             @RequestParam(value = "surveyId", required = false) Long surveyId,
             @RequestParam(value = "since", defaultValue = "") String since,
             @RequestParam(value = "unapprovedOnlyFlag", defaultValue = "") Boolean unapprovedOnlyFlag,
+            @RequestParam(value = "surveyInstanceId", defaultValue = "") Long surveyInstanceId,
             @RequestParam(value = "deviceId", defaultValue = "") String deviceId,
             @RequestParam(value = "submitterName", defaultValue = "") String submitterName,
             @RequestParam(value = "countryCode", defaultValue = "") String countryCode,
@@ -108,6 +109,19 @@ public class SurveyInstanceRestService {
         // for dashboard requests we immediately return empty list of no surveyId is provided
         if (surveyId == null && surveyedLocaleId == null) {
             response.put("survey_instances", Collections.emptyList());
+            return response;
+        }
+
+        // If surveyInstanceId is set return the survey instance
+        if (surveyInstanceId != null) {
+            SurveyInstance surveyInstance = surveyInstanceDao.getByKey(surveyInstanceId);
+            List<SurveyInstanceDto> dtoList = new ArrayList<>();
+            if (surveyInstance != null && surveyInstance.getSurveyId().equals(surveyId)) {
+                SurveyInstanceDto dto = new SurveyInstanceDto();
+                DtoMarshaller.copyToDto(surveyInstance, dto);
+                dtoList.add(dto);
+            }
+            response.put("survey_instances", dtoList);
             return response;
         }
 

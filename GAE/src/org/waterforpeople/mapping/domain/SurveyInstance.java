@@ -18,6 +18,7 @@ package org.waterforpeople.mapping.domain;
 
 import java.lang.reflect.Field;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
@@ -28,6 +29,7 @@ import javax.jdo.annotations.NotPersistent;
 import javax.jdo.annotations.PersistenceCapable;
 import javax.jdo.annotations.Persistent;
 
+import org.akvo.flow.domain.SecuredObject;
 import org.apache.commons.lang.StringUtils;
 import org.waterforpeople.mapping.analytics.dao.SurveyQuestionSummaryDao;
 import org.waterforpeople.mapping.analytics.domain.SurveyQuestionSummary;
@@ -38,11 +40,13 @@ import com.gallatinsystems.device.domain.DeviceFiles;
 import com.gallatinsystems.framework.domain.BaseDomain;
 import com.gallatinsystems.gis.map.MapUtils;
 import com.gallatinsystems.survey.dao.QuestionDao;
+import com.gallatinsystems.survey.dao.SurveyDAO;
 import com.gallatinsystems.survey.domain.Question;
+
 import static com.gallatinsystems.common.Constants.MAX_LENGTH;
 
 @PersistenceCapable(identityType = IdentityType.APPLICATION)
-public class SurveyInstance extends BaseDomain {
+public class SurveyInstance extends BaseDomain implements SecuredObject {
 
     private static final long serialVersionUID = 5840846001731305734L;
 
@@ -305,7 +309,8 @@ public class SurveyInstance extends BaseDomain {
 
     public void setSurveyedLocaleDisplayName(String surveyedLocaleDisplayName) {
         this.surveyedLocaleDisplayName = surveyedLocaleDisplayName.length() > MAX_LENGTH ? surveyedLocaleDisplayName
-                .substring(0, MAX_LENGTH).trim() : surveyedLocaleDisplayName;
+                .substring(0, MAX_LENGTH).trim()
+                : surveyedLocaleDisplayName;
     }
 
     /**
@@ -398,5 +403,42 @@ public class SurveyInstance extends BaseDomain {
 
         summaryDao.save(saveList);
         summaryDao.delete(deleteList);
+    }
+
+    @Override
+    public SecuredObject getParentObject() {
+        if (surveyId == null) {
+            return null;
+        }
+
+        return new SurveyDAO().getByKey(surveyId);
+    }
+
+    @Override
+    public Long getObjectId() {
+        if (key == null) {
+            return null;
+        }
+        return key.getId();
+    }
+
+    @Override
+    public List<Long> listAncestorIds() {
+        if (surveyId == null) {
+            return Collections.emptyList();
+        }
+
+        SecuredObject s = new SurveyDAO().getByKey(surveyId);
+        if (s == null) {
+            return Collections.emptyList();
+        }
+
+        return s.listAncestorIds();
+    }
+
+    @Override
+    public List<BaseDomain> updateAncestorIds(boolean cascade) {
+        // do not update or return any child objects. Survey entities are the leaves
+        return Collections.emptyList();
     }
 }

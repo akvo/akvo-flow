@@ -63,6 +63,9 @@ FLOW.SurveyGroup = FLOW.BaseModel.extend({
   path: DS.attr('string', {
     defaultValue: null
   }),
+  ancestorIds: DS.attr('array', {
+    defaultValue: []
+  }),
   createdDateTime: DS.attr('string', {
     defaultValue: ''
   }),
@@ -99,7 +102,7 @@ FLOW.SurveyGroup = FLOW.BaseModel.extend({
   }),
 
   surveyList: DS.attr('array', {
-	defaultValue: null
+    defaultValue: null
   })
 
 });
@@ -123,6 +126,7 @@ FLOW.Survey = FLOW.BaseModel.extend({
   description: DS.attr('string'),
   name: DS.attr('string'),
   path: DS.attr('string'),
+  ancestorIds: DS.attr('array'),
   pointType: DS.attr('string'),
   surveyGroupId: DS.attr('number'),
   createdDateTime: DS.attr('number'),
@@ -347,6 +351,7 @@ FLOW.Placemark = FLOW.BaseModel.extend({
 FLOW.SurveyInstance = FLOW.BaseModel.extend({
   approvedFlag: DS.attr('string'),
   approximateLocationFlag: DS.attr('string'),
+  surveyInstanceId: DS.attr('number'),
   surveyId: DS.attr('number'),
   surveyedLocaleId:DS.attr('number'),
   collectionDate: DS.attr('number'),
