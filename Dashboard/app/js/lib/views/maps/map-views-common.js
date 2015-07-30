@@ -139,7 +139,7 @@ FLOW.NavMapsView = FLOW.View.extend({
 
       map.on('popupclose', function(e) {
         self.hideDetailsPane();
-        $("#pointDetails").html("");
+        $("#pointDetails").html("<p class=\"noDetails\">No details</p>");
       });
 
       $( "#survey_selector" ).change(function() {
@@ -609,21 +609,42 @@ FLOW.NavMapsView = FLOW.View.extend({
       			"/rest/cartodb/questions?form_id="+point_data['formId'],
       			function(questions_data, status){
       				//console.log(questions_data);
-              clicked_point_content += "<table>";
+              clicked_point_content += "<ul class=\"placeMarkBasicInfo floats-in\">"
+              +"<li>"
+              +"<span>Collected on:</span>"
+              +"<div class=\"placeMarkCollectionDate\">"
+              +point_data['answers']['created_at']
+              +"</div></li><li></li></ul>";
+              //clicked_point_content += "<table>";
+              clicked_point_content += "<dl class=\"floats-in\" style=\"opacity: 1; display: inherit;\">";
               for (column in point_data['answers']){
                 for(var i=0; i<questions_data['questions'].length; i++){
                   if (column.match(questions_data['questions'][i].id)) {
                     //console.log(questions_data['questions'][i].display_text);
-                    clicked_point_content += "<tr><td>"+questions_data['questions'][i].display_text+":&nbsp;</td>";
-                    clicked_point_content += "<td>"+point_data['answers'][column]+"</td></tr>";
+                    clicked_point_content += "<div class=\"defListWrap\"><dt>"+questions_data['questions'][i].display_text+"&nbsp;</dt>";
+
+                    //if question is of type, photo load a html image element
+                    if(questions_data['questions'][i].type == "PHOTO"){
+                      image = "<div class=\":imgContainer photoUrl:shown:hidden\">";
+                      if(point_data['answers'][column] != null){
+                        image_filename = FLOW.Env.photo_url_root+point_data['answers'][column].substring(point_data['answers'][column].lastIndexOf("/")+1);
+                        image += "<a href=\""+image_filename+"\" target=\"_blank\">"
+                        +"<img src=\""+image_filename+"\" alt=\"\"/></a>";
+                      }
+                      image +"</div>";
+                      clicked_point_content += "<dd>"+image+"</dd></div>";
+                    }else{
+                      clicked_point_content += "<dd>"+point_data['answers'][column]+"</dd></div>";
+                    }
                   }
                 }
               }
-              clicked_point_content += "</table>";
+              //clicked_point_content += "</table>";
+              clicked_point_content += "</dl>";
               $("#pointDetails").html(clicked_point_content);
       			});
       }else{
-        clicked_point_content += "No details";
+        clicked_point_content += "<p class=\"noDetails\">No details</p>";
         $("#pointDetails").html(clicked_point_content);
       }
     });
