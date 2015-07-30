@@ -543,7 +543,7 @@ FLOW.NavMapsView = FLOW.View.extend({
   	},{
   		tiler_domain: FLOW.Env.cartodbHost, //to be replaced with dynamic tiler domain
   		//tiler_port: FLOW.Env.cartodbTilerPort, //to be replaced with dynamic tiler port
-  		tiler_protocol: "http",
+  		//tiler_protocol: "https",
   		no_cdn: true
   	})
   	.addTo(map)

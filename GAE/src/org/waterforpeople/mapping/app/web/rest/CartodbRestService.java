@@ -197,7 +197,7 @@ public class CartodbRestService {
     public Map<String, Object> updateNamedMap(
             @RequestBody NamedMapPayload payload)
             throws IOException {
-        URL url = new URL(String.format("http://%s.%s/api/v1/map/named/%s?api_key=%s",
+        URL url = new URL(String.format("https://%s.%s/api/v1/map/named/%s?api_key=%s",
                 CDB_ACCOUNT_NAME, CDB_HOST, payload.getName(), CDB_API_KEY));
 
         HttpURLConnection connection = (HttpURLConnection) url.openConnection();
@@ -238,18 +238,18 @@ public class CartodbRestService {
     }
 
     private static final URL mapsApiURL() throws MalformedURLException {
-        return new URL(String.format("http://%s.%s/api/v1/map/named?api_key=%s",
+        return new URL(String.format("https://%s.%s/api/v1/map/named?api_key=%s",
                 CDB_ACCOUNT_NAME, CDB_HOST, CDB_API_KEY));
     }
 
     private static final URL updateMapsApiURL(String named_map) throws MalformedURLException {
-        return new URL(String.format("http://%s.%s/api/v1/map/named/%s?api_key=%s",
+        return new URL(String.format("https://%s.%s/api/v1/map/named/%s?api_key=%s",
                 CDB_ACCOUNT_NAME, CDB_HOST, named_map, CDB_API_KEY));
     }
 
     private static final URL sqlApiURL(String query) throws MalformedURLException,
             UnsupportedEncodingException {
-        String urlString = String.format("http://%s.%s/api/v2/sql?q=%s&api_key=%s",
+        String urlString = String.format("https://%s.%s/api/v2/sql?q=%s&api_key=%s",
                 CDB_ACCOUNT_NAME, CDB_HOST, URLEncoder.encode(query, "UTF-8"), CDB_API_KEY);
         return new URL(urlString);
     }
