@@ -51,7 +51,18 @@ FLOW.NavMapsView = FLOW.View.extend({
 
     var self = this;
 
-    if(FLOW.Env.mapsProvider === 'cartodb' && typeof cartodb != 'undefined'){
+    if(FLOW.Env.mapsProvider === 'google'){
+      this.map = new L.Map('flowMap', {center: new L.LatLng(-0.703107, 36.765), zoom: 2});
+      var roadmap = new L.Google("ROADMAP");
+      var terrain = new L.Google('TERRAIN');
+      var satellite = new L.Google('SATELLITE');
+      this.map.addLayer(roadmap);
+      this.map.addControl(new L.Control.Layers({
+        'Roadmap': roadmap,
+        'Satellite': satellite,
+        'Terrain': terrain
+      }, {}));
+    }else if(FLOW.Env.mapsProvider === 'cartodb'){ //handle undefined
       mapContent = '<div style="width: 100%">'
       +'<div style="float: left; width: 100%">'
       +'<div style="float: left">'
@@ -66,6 +77,7 @@ FLOW.NavMapsView = FLOW.View.extend({
       +'<option value="">--All--</option>'
       +'</select>&nbsp;'
       +'</div>'
+      +'<div style="float: right; position: relative" id="show_hide"></div>'
       +/*'<div style="float: left">'
       +'<label for="question_selector">Select a question to style the map by</label>'
       +'<select class="" name="question_selector" id="question_selector">'
@@ -78,6 +90,8 @@ FLOW.NavMapsView = FLOW.View.extend({
       +'</div>';
 
       $("#flowMap").html(mapContent);
+      $("#mapDetailsHideShow").detach().appendTo('#show_hide');
+      $("#dropdown-holder").remove();
 
       //Define the data layer
       var data_layer;
@@ -99,7 +113,8 @@ FLOW.NavMapsView = FLOW.View.extend({
     	});
 
       // create leaflet map
-    	var map = L.map('cartodbd_flowMap', {scrollWheelZoom: false}).setView([-0.703107, 36.765], 2);
+    	this.map = L.map('cartodbd_flowMap', {scrollWheelZoom: false}).setView([-0.703107, 36.765], 2);
+      map = this.map;
     	L.tileLayer('http://{s}.{base}.maps.cit.api.here.com/maptile/2.1/maptile/{mapID}/normal.day.transit/{z}/{x}/{y}/256/png8?app_id={app_id}&app_code={app_code}', {
     		attribution: 'Map &copy; 1987-2014 <a href="http://developer.here.com">HERE</a>',
     		subdomains: '1234',
@@ -314,21 +329,21 @@ FLOW.NavMapsView = FLOW.View.extend({
         'Streets': L.mapbox.tileLayer('akvo.he2pdjhk'),
         'Satellite': L.mapbox.tileLayer('akvo.he30neh4')
       }).addTo(this.map);
-
-      // add scale indication to map
-      L.control.scale({position:'topleft', maxWidth:150}).addTo(this.map);
-
-      // couple listener to end of zoom or drag
-      this.map.on('moveend', function (e) {
-        self.redoMap();
-      });
-
-      FLOW.placemarkController.set('map', this.map);
-      this.geoModel = create_geomodel();
-
-      //load points for the visible map
-      this.redoMap();
     }
+
+    // add scale indication to map
+    L.control.scale({position:'topleft', maxWidth:150}).addTo(this.map);
+
+    // couple listener to end of zoom or drag
+    this.map.on('moveend', function (e) {
+      self.redoMap();
+    });
+
+    FLOW.placemarkController.set('map', this.map);
+    this.geoModel = create_geomodel();
+
+    //load points for the visible map
+    this.redoMap();
 
     this.$('#mapDetailsHideShow').click(function () {
       self.handleShowHideDetails();
