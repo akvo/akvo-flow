@@ -266,8 +266,8 @@ public class SurveyalRestServlet extends AbstractRestApiServlet {
             latitude = (Double) geoLocationMap.get(MapUtils.LATITUDE);
             longitude = (Double) geoLocationMap.get(MapUtils.LONGITUDE);
 
-            if (!latitude.equals(locale.getLatitude())
-                    || !longitude.equals(locale.getLongitude())) {
+            if (!latitude.equals(locale.getLatitude()) || !longitude.equals(locale.getLongitude())
+                    || locale.getGeocells() == null || locale.getGeocells().isEmpty()) {
                 locale.setLatitude(latitude);
                 locale.setLongitude(longitude);
                 try {
@@ -376,6 +376,11 @@ public class SurveyalRestServlet extends AbstractRestApiServlet {
         }
 
         MapUtils.recomputeCluster(cache, locale, delta);
+
+        // delete locale if the Delta was a subtraction
+        if (delta < 0) {
+            slDao.delete(locale);
+        }
     }
 
     /**

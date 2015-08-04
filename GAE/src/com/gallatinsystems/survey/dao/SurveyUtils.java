@@ -20,10 +20,12 @@ import java.net.URLEncoder;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
+import java.util.Map;
 import java.util.TreeMap;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+import org.akvo.flow.domain.SecuredObject;
 import org.apache.commons.lang.ArrayUtils;
 import org.apache.commons.lang.StringUtils;
 import org.json.JSONObject;
@@ -34,6 +36,7 @@ import org.waterforpeople.mapping.app.web.dto.DataProcessorRequest;
 import com.gallatinsystems.common.Constants;
 import com.gallatinsystems.common.util.HttpUtil;
 import com.gallatinsystems.common.util.PropertyUtil;
+import com.gallatinsystems.framework.domain.BaseDomain;
 import com.gallatinsystems.survey.domain.CascadeResource;
 import com.gallatinsystems.survey.domain.CascadeResource.Status;
 import com.gallatinsystems.survey.domain.Question;
@@ -94,40 +97,56 @@ public class SurveyUtils {
         return newSurvey;
     }
 
-    public static QuestionGroup copyQuestionGroup(QuestionGroup source,
-            Long newSurveyId, boolean isCopyingSingleQuestionGroup) {
+    public static QuestionGroup copyQuestionGroup(QuestionGroup sourceGroup,
+            QuestionGroup copyGroup, Long newSurveyId, Map<Long, Long> qDependencyResolutionMap) {
 
-        final QuestionGroupDao qgDao = new QuestionGroupDao();
-        final QuestionGroup tmp = new QuestionGroup();
+        final QuestionDao qDao = new QuestionDao();
+        final Long sourceGroupId = sourceGroup.getKey().getId();
+        final Long copyGroupId = copyGroup.getKey().getId();
 
-        BeanUtils.copyProperties(source, tmp, Constants.EXCLUDED_PROPERTIES);
-        tmp.setSurveyId(null); // reset parent SurveyId, it will get set by the
-                               // save action
+        copyGroup.setSurveyId(newSurveyId);
 
-        log.log(Level.INFO, "Copying `QuestionGroup` "
-                + source.getKey().getId());
+        SurveyUtils.copyTranslation(sourceGroupId, copyGroupId, newSurveyId, copyGroupId,
+                ParentType.QUESTION_GROUP_NAME, ParentType.QUESTION_GROUP_DESC);
 
-        final QuestionGroup newQuestionGroup = qgDao.save(tmp, newSurveyId);
+        List<Question> qList = qDao.listQuestionsInOrderForGroup(sourceGroupId);
 
-        log.log(Level.INFO, "New `QuestionGroup` ID: "
-                + newQuestionGroup.getKey().getId());
+        if (qList == null) {
+            return copyGroup;
+        }
 
-        final Queue queue = QueueFactory.getDefaultQueue();
+        log.log(Level.INFO, "Copying " + qList.size() + " `Question`");
 
-        final TaskOptions options = TaskOptions.Builder
-                .withUrl("/app_worker/dataprocessor")
-                .param(DataProcessorRequest.ACTION_PARAM,
-                        DataProcessorRequest.COPY_QUESTION_GROUP)
-                .param(DataProcessorRequest.QUESTION_GROUP_ID_PARAM,
-                        String.valueOf(newQuestionGroup.getKey().getId()))
-                .param(DataProcessorRequest.SOURCE_PARAM,
-                        String.valueOf(source.getKey().getId()))
-                .param(DataProcessorRequest.IS_COPYING_SINGLE_QUESTION_GROUP_PARAM,
-                        String.valueOf(isCopyingSingleQuestionGroup));
+        int qCount = 1;
+        List<Question> qCopyList = new ArrayList<Question>();
+        for (Question question : qList) {
+            final Question questionCopy = SurveyUtils.copyQuestion(question, copyGroupId, qCount++,
+                    newSurveyId);
+            qCopyList.add(questionCopy);
+        }
 
-        queue.add(options);
+        if (qDependencyResolutionMap == null) {
+            return copyGroup;
+        }
 
-        return newQuestionGroup;
+        // fixing dependencies
+        final List<Question> dependentQuestionList = new ArrayList<Question>();
+        for (Question questionCopy : qCopyList) {
+            qDependencyResolutionMap.put(questionCopy.getSourceQuestionId(), questionCopy.getKey()
+                    .getId());
+            if (questionCopy.getDependentFlag() == null || !questionCopy.getDependentFlag()) {
+                continue;
+            }
+            Long originalDependentId = questionCopy.getDependentQuestionId();
+            questionCopy.setDependentQuestionId(qDependencyResolutionMap.get(originalDependentId));
+            dependentQuestionList.add(questionCopy);
+        }
+        qDao.save(dependentQuestionList);
+
+        log.log(Level.INFO, "Resolved dependencies for " + dependentQuestionList.size()
+                + " `Question`");
+
+        return copyGroup;
     }
 
     public static Question copyQuestion(Question source,
@@ -247,6 +266,22 @@ public class SurveyUtils {
         }
 
         return sg.getPath() + "/" + s.getName();
+    }
+
+    public static List<Long> retrieveAncestorIds(SecuredObject s) {
+        List<Long> ancestorIds = new ArrayList<Long>();
+        if (s.getParentObject() == null) {
+            return null;
+        }
+
+        SecuredObject parent = s.getParentObject();
+
+        if (parent.listAncestorIds() != null) {
+            ancestorIds.addAll(parent.listAncestorIds());
+        }
+        ancestorIds.add(parent.getObjectId()); // add parent id to returned ancestor list
+
+        return ancestorIds;
     }
 
     public static String fixPath(String oldPath, String newName) {
@@ -409,5 +444,37 @@ public class SurveyUtils {
         }
 
         return parentPaths;
+    }
+
+    /**
+     * Copy publicly visible properties from one BaseDomain subclass to another. Should be used for
+     * two classes of the same type.
+     *
+     * @param source
+     * @param copy
+     */
+    public static void shallowCopy(BaseDomain source, BaseDomain copy) {
+        BeanUtils.copyProperties(source, copy, Constants.EXCLUDED_PROPERTIES);
+        String kind = source.getKey().getKind();
+        log.log(Level.INFO, "Copying `" + kind + "` " + source.getKey().getId());
+    }
+
+    /**
+     * Set the non-persistent child objects of a SurveyGroup entity
+     *
+     * @param surveyGroup
+     */
+    public static void setChildObjects(SurveyGroup surveyGroup) {
+        if (surveyGroup == null || surveyGroup.getKey() == null) {
+            return;
+        }
+
+        Long surveyGroupId = surveyGroup.getKey().getId();
+
+        List<SurveyGroup> childFolders = new SurveyGroupDAO().listByProjectFolderId(surveyGroupId);
+        surveyGroup.setChildFolders(childFolders);
+
+        List<Survey> childForms = new SurveyDAO().listSurveysByGroup(surveyGroupId);
+        surveyGroup.setChildForms(childForms);
     }
 }

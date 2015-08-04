@@ -55,6 +55,9 @@ public class UserAuthorizationPayload extends BaseDto {
     }
 
     public void setUserId(Long userId) {
+        if (userId == null) {
+            throw new IllegalArgumentException("Invalid userId (" + userId + ")");
+        }
         this.userAuthorization.setUserId(userId);
     }
 
@@ -63,6 +66,9 @@ public class UserAuthorizationPayload extends BaseDto {
     }
 
     public void setRoleId(Long roleId) {
+        if (roleId == null) {
+            throw new IllegalArgumentException("Invalid roleId (" + roleId + ")");
+        }
         this.userAuthorization.setRoleId(roleId);
     }
 
@@ -77,6 +83,17 @@ public class UserAuthorizationPayload extends BaseDto {
             throw new IllegalArgumentException("The specified path is not acceptable ("
                     + objectPath + ")");
         }
+    }
+
+    public Long getSecuredObjectId() {
+        return userAuthorization.getSecuredObjectId();
+    }
+
+    public void setSecuredObjectId(Long objectId) {
+        if (objectId == null) {
+            throw new IllegalArgumentException("Invalid objectId (" + objectId + ")");
+        }
+        userAuthorization.setSecuredObjectId(objectId);
     }
 
     private boolean isAcceptablePath(String objectPath) {

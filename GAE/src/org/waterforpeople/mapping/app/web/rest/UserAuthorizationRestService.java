@@ -77,7 +77,7 @@ public class UserAuthorizationRestService {
         final Map<String, Object> response = new HashMap<String, Object>();
         final UserAuthorization newAuth = requestPayload.getUserAuthorisation();
         final UserAuthorization existingAuth = userAuthorizationDAO.findUserAuthorization(
-                newAuth.getUserId(), newAuth.getRoleId(), newAuth.getObjectPath());
+                newAuth.getUserId(), newAuth.getRoleId(), newAuth.getSecuredObjectId());
 
         UserAuthorizationPayload responsePayload = null;
         if (existingAuth != null) {

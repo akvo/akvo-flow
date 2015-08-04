@@ -78,7 +78,6 @@ import com.gallatinsystems.survey.domain.QuestionGroup;
 import com.gallatinsystems.survey.domain.QuestionOption;
 import com.gallatinsystems.survey.domain.Survey;
 import com.gallatinsystems.survey.domain.Translation;
-import com.gallatinsystems.survey.domain.Translation.ParentType;
 import com.gallatinsystems.surveyal.dao.SurveyalValueDao;
 import com.gallatinsystems.surveyal.dao.SurveyedLocaleDao;
 import com.gallatinsystems.surveyal.domain.SurveyalValue;
@@ -130,14 +129,16 @@ public class DataProcessorRestServlet extends AbstractRestApiServlet {
             copySurvey(dpReq.getSurveyId(), Long.valueOf(dpReq.getSource()));
         } else if (DataProcessorRequest.COPY_QUESTION_GROUP.equalsIgnoreCase(dpReq
                 .getAction())) {
-            QuestionGroup newQuestionGroup = new QuestionGroupDao().getByKey(dpReq
-                    .getQuestionGroupId());
-            QuestionGroup originalQuestionGroup = new QuestionGroupDao()
-                    .getByKey(Long.valueOf(dpReq.getSource()));
-            boolean isCopyingSingleQuestionGroup = dpReq.getIsCopyingSingleQuestionGroup();
+            QuestionGroupDao qgDao = new QuestionGroupDao();
+            QuestionGroup newQuestionGroup = qgDao.getByKey(dpReq.getQuestionGroupId());
+            QuestionGroup originalQuestionGroup = qgDao.getByKey(Long.valueOf(dpReq.getSource()));
             if (originalQuestionGroup != null && newQuestionGroup != null) {
-                copyQuestionGroup(originalQuestionGroup, newQuestionGroup,
-                        isCopyingSingleQuestionGroup);
+                SurveyUtils.copyQuestionGroup(originalQuestionGroup, newQuestionGroup,
+                        originalQuestionGroup.getSurveyId(), null);
+
+                newQuestionGroup.setStatus(QuestionGroup.Status.READY); // copied
+                qgDao.save(newQuestionGroup);
+
             }
         } else if (DataProcessorRequest.FIX_QUESTIONGROUP_DEPENDENCIES_ACTION
                 .equalsIgnoreCase(dpReq.getAction())) {
@@ -539,6 +540,7 @@ public class DataProcessorRestServlet extends AbstractRestApiServlet {
         final QuestionGroupDao qgDao = new QuestionGroupDao();
 
         final List<QuestionGroup> qgList = qgDao.listQuestionGroupBySurvey(originalSurveyId);
+        final Map<Long, Long> qDependencyResolutionMap = new HashMap<Long, Long>();
 
         if (qgList == null) {
             log.log(Level.INFO, "Nothing to copy from {surveyId: " + originalSurveyId
@@ -548,9 +550,19 @@ public class DataProcessorRestServlet extends AbstractRestApiServlet {
         }
 
         log.log(Level.INFO, "Copying " + qgList.size() + " `QuestionGroup`");
-        for (final QuestionGroup sourceQG : qgList) {
-            SurveyUtils.copyQuestionGroup(sourceQG, copiedSurveyId, false);
+
+        List<QuestionGroup> qgCopyList = new ArrayList<QuestionGroup>();
+        for (final QuestionGroup sourceGroup : qgList) {
+            // need a temp group to avoid state sharing exception
+            QuestionGroup tmpGroup = new QuestionGroup();
+            SurveyUtils.shallowCopy(sourceGroup, tmpGroup);
+            final QuestionGroup copyGroup = qgDao.save(tmpGroup);
+            SurveyUtils.copyQuestionGroup(sourceGroup, copyGroup, copiedSurveyId,
+                    qDependencyResolutionMap);
+            copyGroup.setStatus(QuestionGroup.Status.READY); // copied
+            qgCopyList.add(copyGroup);
         }
+        qgDao.save(qgCopyList);
 
         final SurveyDAO sDao = new SurveyDAO();
         final Survey copiedSurvey = SurveyUtils.resetSurveyState(copiedSurveyId);
@@ -566,95 +578,6 @@ public class DataProcessorRestServlet extends AbstractRestApiServlet {
                 + originalSurvey.getName() + ") completed");
         mDao.save(message);
 
-    }
-
-    /**
-     * Copy a question group within the same survey
-     *
-     * @param questionGroup
-     */
-    private void copyQuestionGroup(QuestionGroup sourceQuestionGroup,
-            QuestionGroup newQuestionGroup, boolean isCopyingSingleQuestionGroup) {
-        final Map<Long, Long> qMap = new HashMap<Long, Long>();
-        final QuestionDao qDao = new QuestionDao();
-        final QuestionGroupDao qgDao = new QuestionGroupDao();
-
-        final Long surveyId = sourceQuestionGroup.getSurveyId();
-
-        SurveyUtils.copyTranslation(sourceQuestionGroup.getKey().getId(), newQuestionGroup
-                .getKey().getId(), surveyId, newQuestionGroup.getKey().getId(),
-                ParentType.QUESTION_GROUP_NAME,
-                ParentType.QUESTION_GROUP_DESC);
-
-        List<Question> qList = qDao.listQuestionsInOrderForGroup(sourceQuestionGroup
-                .getKey().getId());
-
-        if (qList == null) {
-            return;
-        }
-
-        log.log(Level.INFO, "Copying " + qList.size() + " `Question`");
-
-        final List<Question> dependentQuestionList = new ArrayList<Question>();
-
-        int qCount = 1;
-        for (Question q : qList) {
-            final Question qTmp = SurveyUtils.copyQuestion(q, newQuestionGroup
-                    .getKey().getId(), qCount++, surveyId);
-            qMap.put(q.getKey().getId(), qTmp.getKey().getId());
-            if (qTmp.getDependentFlag() != null && qTmp.getDependentFlag()) {
-                dependentQuestionList.add(qTmp);
-            }
-        }
-
-        // fixing dependencies
-        log.log(Level.INFO,
-                "Fixing dependencies for " + dependentQuestionList.size()
-                        + " `Question`");
-
-        for (Question newDependentQuestion : dependentQuestionList) {
-            // for dependencies where both questions are in same group, they are resolved when each
-            // question is in different group, then id is set to null to be resolved later by a task
-            newDependentQuestion.setDependentQuestionId(qMap.get(newDependentQuestion
-                    .getDependentQuestionId()));
-        }
-
-        qDao.save(dependentQuestionList);
-
-        // set status of question group to READY
-        newQuestionGroup.setStatus(QuestionGroup.Status.READY);
-        qgDao.save(newQuestionGroup);
-
-        final List<Long> unresolvedDependentQuestionIds = new ArrayList<Long>();
-        for (Question q : dependentQuestionList) {
-            if (q.getDependentQuestionId() == null) {
-                if (isCopyingSingleQuestionGroup) {
-                    Question originalQuestion = qDao.getByKey(q.getSourceQuestionId());
-                    q.setDependentQuestionId(originalQuestion.getDependentQuestionId());
-                    qDao.save(q);
-                } else {
-                    unresolvedDependentQuestionIds.add(q.getKey().getId());
-                }
-            }
-        }
-
-        if (!unresolvedDependentQuestionIds.isEmpty()) {
-            // fire task to resolve unresolved dependencies
-            TaskOptions options = TaskOptions.Builder
-                    .withUrl("/app_worker/dataprocessor")
-                    .param(DataProcessorRequest.ACTION_PARAM,
-                            DataProcessorRequest.FIX_QUESTIONGROUP_DEPENDENCIES_ACTION)
-                    .param(DataProcessorRequest.QUESTION_GROUP_ID_PARAM,
-                            Long.toString(newQuestionGroup.getKey().getId()))
-                    .param(DataProcessorRequest.SOURCE_PARAM,
-                            Long.toString(sourceQuestionGroup.getKey().getId()));
-            for (Long id : unresolvedDependentQuestionIds) {
-                options.param(DataProcessorRequest.DEPENDENT_QUESTION_PARAM, id.toString());
-            }
-
-            Queue queue = QueueFactory.getQueue("dataUpdate");
-            queue.add(options);
-        }
     }
 
     /**
@@ -1315,11 +1238,11 @@ public class DataProcessorRestServlet extends AbstractRestApiServlet {
                         QuestionAnswerStore qas = qasDao
                                 .getByQuestionAndSurveyInstance(qId, si
                                         .getKey().getId());
-                        if (qas != null) {
+                        if (qas != null && qas.getValue() != null) {
                             if (displayName.length() > 0) {
                                 displayName += " - ";
                             }
-                            displayName += qas.getValue();
+                            displayName += qas.getValue().replaceAll("\\s*\\|\\s*", " - ");
                         }
                     }
                     addSl = true;

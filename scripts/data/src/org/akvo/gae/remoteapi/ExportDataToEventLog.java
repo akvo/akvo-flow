@@ -13,15 +13,19 @@ import com.google.appengine.api.datastore.Entity;
 import com.google.appengine.api.datastore.FetchOptions;
 import com.google.appengine.api.datastore.Query;
 import com.google.common.base.Function;
+import com.google.common.base.Predicate;
 import com.google.common.collect.Iterables;
 
 public class ExportDataToEventLog implements Process {
 
     private static final int BATCH_SIZE = 1000;
-
+    private static final String EVENT_QUEUE = "EventQueue";
     private static final String[] kinds = { Kind.SURVEY_GROUP, Kind.FORM,
             Kind.QUESTION_GROUP, Kind.QUESTION, Kind.DATA_POINT,
             Kind.FORM_INSTANCE, Kind.DEVICE_FILE, Kind.ANSWER };
+
+    // The timestamp used for imported data.
+    private static final Date IMPORT_DATE = new Date(0);
 
     @Override
     public void execute(DatastoreService ds, String[] args) throws Exception {
@@ -47,6 +51,8 @@ public class ExportDataToEventLog implements Process {
         final String orgId = args[0];
         final String servicesEndpoint = args[1];
 
+        final Date firstEvent = findFirstEventDate(ds);
+
         for (final String kind : kinds) {
             System.out.println("Exporting " + kind);
             int batch = 0;
@@ -58,8 +64,25 @@ public class ExportDataToEventLog implements Process {
             Iterable<Entity> entities = ds.prepare(kindQuery).asIterable(
                     FetchOptions.Builder.withChunkSize(BATCH_SIZE));
 
+            Iterable<Entity> entitiesNotInEventQueue = Iterables.filter(
+                    entities, new Predicate<Entity>() {
+                        @Override
+                        public boolean apply(Entity entity) {
+                            Date date = (Date) entity
+                                    .getProperty("createdDateTime");
+                            if (date == null) {
+                                // If the createdDateTime is not present, assume
+                                // it's old enough to be part of the data import
+                                return true;
+                            } else {
+                                return date.before(firstEvent);
+                            }
+                        }
+                    });
+
             Iterable<Map<String, Object>> events = Iterables.transform(
-                    entities, new Function<Entity, Map<String, Object>>() {
+                    entitiesNotInEventQueue,
+                    new Function<Entity, Map<String, Object>>() {
                         @Override
                         public Map<String, Object> apply(Entity entity) {
                             return createEvent(entity, eventTypes, orgId);
@@ -77,10 +100,24 @@ public class ExportDataToEventLog implements Process {
         }
     }
 
+    private static Date findFirstEventDate(DatastoreService ds) {
+
+        List<Entity> eventsInQueue = ds.prepare(new Query(EVENT_QUEUE)).asList(
+                FetchOptions.Builder.withDefaults().limit(1));
+
+        if (eventsInQueue.isEmpty()) {
+            return new Date(Long.MAX_VALUE);
+        } else {
+            return (Date) eventsInQueue.get(0).getProperty("createdDateTime");
+        }
+    }
+
     private static Map<String, Object> createEvent(Entity entity,
             EventTypes eventTypes, String orgId) {
+
         Map<String, Object> source = EventUtils.newSource("import");
-        Map<String, Object> context = EventUtils.newContext(new Date(), source);
+        Map<String, Object> context = EventUtils
+                .newContext(IMPORT_DATE, source);
         context.put("import", true);
         Map<String, Object> entityMap = EventUtils.newEntity(eventTypes.type,
                 entity.getKey().getId());

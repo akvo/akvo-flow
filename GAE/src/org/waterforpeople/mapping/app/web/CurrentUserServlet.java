@@ -63,6 +63,11 @@ public class CurrentUserServlet extends HttpServlet {
     @Override
     protected void doGet(HttpServletRequest req, HttpServletResponse resp)
             throws ServletException, IOException {
+        final com.google.appengine.api.users.User currentGoogleUser = UserServiceFactory
+                .getUserService().getCurrentUser();
+        if (currentGoogleUser == null) {
+            return;
+        }
 
         final VelocityEngine engine = new VelocityEngine();
         engine.setProperty("runtime.log.logsystem.class",
@@ -83,8 +88,7 @@ public class CurrentUserServlet extends HttpServlet {
 
         final VelocityContext context = new VelocityContext();
         final UserDao uDao = new UserDao();
-        final String currentUserEmail = UserServiceFactory.getUserService()
-                .getCurrentUser().getEmail().toLowerCase();
+        final String currentUserEmail = currentGoogleUser.getEmail().toLowerCase();
         final User currentUser = uDao.findUserByEmail(currentUserEmail);
 
         context.put("user", currentUser);
@@ -113,14 +117,14 @@ public class CurrentUserServlet extends HttpServlet {
         for (UserRole role : userRoleDAO.list(Constants.ALL_RESULTS)) {
             roleMap.put(role.getKey().getId(), role);
         }
-        Map<String, Set<Permission>> permissions = new HashMap<String, Set<Permission>>();
+        Map<Long, Set<Permission>> permissions = new HashMap<Long, Set<Permission>>();
         for (UserAuthorization auth : authorizationList) {
             UserRole role = roleMap.get(auth.getRoleId());
-            if (role != null) {
-                if (permissions.containsKey(auth.getObjectPath())) {
-                    permissions.get(auth.getObjectPath()).addAll(role.getPermissions());
+            if (role != null && auth.getSecuredObjectId() != null) {
+                if (permissions.containsKey(auth.getSecuredObjectId())) {
+                    permissions.get(auth.getSecuredObjectId()).addAll(role.getPermissions());
                 } else {
-                    permissions.put(auth.getObjectPath(), role.getPermissions());
+                    permissions.put(auth.getSecuredObjectId(), role.getPermissions());
                 }
             }
         }
@@ -149,12 +153,12 @@ public class CurrentUserServlet extends HttpServlet {
      * @param currentUser
      * @param permissions
      */
-    private void addSuperAdminPermissions(User currentUser, Map<String, Set<Permission>> permissions) {
+    private void addSuperAdminPermissions(User currentUser, Map<Long, Set<Permission>> permissions) {
         if (!currentUser.getPermissionList().equals("0")) {
             return;
         }
 
         List<Permission> permissionList = Arrays.asList(Permission.values());
-        permissions.put("/", new HashSet<Permission>(permissionList));
+        permissions.put(Constants.ROOT_FOLDER_ID, new HashSet<Permission>(permissionList));
     }
 }
