@@ -51,7 +51,7 @@ FLOW.NavMapsView = FLOW.View.extend({
 
     var self = this;
 
-    if(FLOW.Env.useCartodb && typeof cartodb != 'undefined'){
+    if(FLOW.Env.mapsProvider === 'cartodb' && typeof cartodb != 'undefined'){
       mapContent = '<div style="width: 100%">'
       +'<div style="float: left; width: 100%">'
       +'<div style="float: left">'

@@ -62,9 +62,8 @@ public class EnvServlet extends HttpServlet {
         properties.add("mandatoryQuestionID");
         properties.add("showExternalSourcesFeature");
         properties.add("appId");
-        properties.add("useGoogleMapsLayers");
+        properties.add("mapsProvider");
         properties.add("googleMapsRegionBias");
-        properties.add("useCartodb");
         properties.add("cartodbHost");
         properties.add("cartodbTilerPort");
     }
@@ -113,16 +112,12 @@ public class EnvServlet extends HttpServlet {
 
         props.put("appId", SystemProperty.applicationId.get());
 
-        if (props.get("useGoogleMapsLayers") == null) {
-            props.put("useGoogleMapsLayers", "false");
+        if (props.get("mapsProvider") == null) {
+            props.put("mapsProvider", "mapbox");
         }
 
         if (props.get("googleMapsRegionBias") == null) {
             props.put("googleMapsRegionBias", "");
-        }
-
-        if (props.get("useCartodb") == null) {
-            props.put("useCartodb", "false");
         }
 
         if (props.get("cartodbHost") == null) {
