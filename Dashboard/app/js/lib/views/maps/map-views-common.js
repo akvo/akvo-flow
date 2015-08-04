@@ -634,7 +634,17 @@ FLOW.NavMapsView = FLOW.View.extend({
                       image +"</div>";
                       clicked_point_content += "<dd>"+image+"</dd></div>";
                     }else{
-                      clicked_point_content += "<dd>"+point_data['answers'][column]+"</dd></div>";
+                      //if point is a geoshape, draw the shape in the side window
+                      if(questions_data['questions'][i].type == "GEOSHAPE"){
+                        geoshape_object = JSON.parse(point_data['answers'][column]);
+                        if(geoshape_object['features'].length > 0){
+                          console.log(geoshape_object['features'][0]['geometry']['coordinates'][0].length);
+                        }
+                        console.log(geoshape_object);
+                        clicked_point_content += "<dd>"+point_data['answers'][column]+"</dd></div>";
+                      }else{
+                        clicked_point_content += "<dd>"+point_data['answers'][column]+"</dd></div>";
+                      }
                     }
                   }
                 }
