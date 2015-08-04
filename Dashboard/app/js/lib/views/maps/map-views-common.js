@@ -63,8 +63,7 @@ FLOW.NavMapsView = FLOW.View.extend({
         'Terrain': terrain
       }, {}));
     }else if(FLOW.Env.mapsProvider === 'cartodb'){ //handle undefined
-      mapContent = '<div style="width: 100%">'
-      +'<div style="float: left; width: 100%">'
+      mapContent = '<div style="float: left; width: 100%">'
       +'<div style="float: left">'
       +'<label for="survey_selector">Select a survey</label>'
       +'<select class="" name="survey_selector" id="survey_selector">'
@@ -86,8 +85,7 @@ FLOW.NavMapsView = FLOW.View.extend({
       +'</div>'
       +'<button style="float: left" id="update_style">Update Points Style</button>'
       +*/'</div>'
-      +'<div style="float: left; width:100%; height: 550px" id="cartodbd_flowMap"></div>'
-      +'</div>';
+      +'<div style="float: left; width:100%; height: 550px" id="cartodbd_flowMap"></div>';
 
       $("#flowMap").html(mapContent);
       $("#mapDetailsHideShow").detach().appendTo('#show_hide');
