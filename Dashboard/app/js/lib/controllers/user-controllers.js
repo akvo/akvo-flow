@@ -44,14 +44,14 @@ FLOW.userControl = Ember.ArrayController.create({
     return ancestors;
   },
 
-  /* query based on survey (group) path whether a user has
+  /* query based on survey (group) ancestorIds whether a user has
   permissions for data deletion */
 
-  canDeleteData: function(surveyPath) {
-    var canDelete = false;
+  canDeleteData: function(ancestorIds) {
     var pathPermissions = this.currentUserPathPermissions();
-    this.ancestorPaths(surveyPath).forEach(function(path){
-        if(path in pathPermissions && pathPermissions[path].indexOf("DATA_DELETE") > -1) {
+    var canDelete = false;
+    ancestorIds.forEach(function(id){
+        if(id in pathPermissions && pathPermissions[id].indexOf("DATA_DELETE") > -1) {
             canDelete = true;
         }
     });

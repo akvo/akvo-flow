@@ -45,15 +45,17 @@
 
 (dispatch-loop
  :user-auth/create auth
- (let [{:keys [user role object-path]} auth]
+ (let [{:keys [user role object-path object-id]} auth]
    (assert (integer? user))
    (assert (integer? role))
    (assert (string? object-path))
+   (assert (integer? object-id))
    (POST "/rest/user_auth"
          (merge ajax/default-ajax-config
                 {:params {"userId" user
                           "roleId" role
-                          "objectPath" object-path}
+                          "objectPath" object-path
+                          "securedObjectId" object-id}
                  :handler (fn [{:strs [user_auth]}]
                             (swap! app-state assoc-in [:user-auth :by-id (get user_auth "keyId")] user_auth)
                             (swap! app-state update-in [:user-auth :by-user-id (get user_auth "userId")] conj user_auth))}))))

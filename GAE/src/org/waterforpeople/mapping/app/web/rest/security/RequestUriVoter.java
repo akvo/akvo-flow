@@ -16,12 +16,10 @@
 
 package org.waterforpeople.mapping.app.web.rest.security;
 
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.HashMap;
+import java.util.Collections;
 import java.util.List;
-import java.util.Map;
 import java.util.logging.Logger;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -29,22 +27,21 @@ import java.util.regex.Pattern;
 import javax.inject.Inject;
 import javax.servlet.http.HttpServletRequest;
 
-import org.apache.commons.lang.StringUtils;
-import org.codehaus.jackson.map.ObjectMapper;
+import org.akvo.flow.domain.RootFolder;
+import org.akvo.flow.domain.SecuredObject;
+import org.codehaus.jackson.JsonFactory;
+import org.codehaus.jackson.JsonParser;
+import org.codehaus.jackson.JsonToken;
 import org.springframework.security.access.AccessDecisionVoter;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.access.ConfigAttribute;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.web.FilterInvocation;
 import org.waterforpeople.mapping.dao.SurveyInstanceDAO;
-import org.waterforpeople.mapping.domain.SurveyInstance;
 
+import com.gallatinsystems.common.Constants;
 import com.gallatinsystems.survey.dao.SurveyDAO;
 import com.gallatinsystems.survey.dao.SurveyGroupDAO;
-import com.gallatinsystems.survey.domain.Survey;
-import com.gallatinsystems.survey.domain.SurveyGroup;
-import com.gallatinsystems.surveyal.dao.SurveyedLocaleDao;
-import com.gallatinsystems.surveyal.domain.SurveyedLocale;
 import com.gallatinsystems.user.dao.UserAuthorizationDAO;
 import com.gallatinsystems.user.dao.UserRoleDao;
 import com.gallatinsystems.user.domain.Permission;
@@ -67,6 +64,14 @@ public class RequestUriVoter implements AccessDecisionVoter<FilterInvocation> {
     private static final Pattern URI_PATTERN = Pattern.compile("(" + PROJECT_FOLDER_URI_PREFIX
             + "|" + FORM_URI_PREFIX + "|" + SURVEY_RESPONSE_URI_PREFIX + ")(" + URI_SUFFIX + ")?");
 
+    private static final Pattern OBJECT_ID_PATTERN = Pattern.compile("("
+            + PROJECT_FOLDER_URI_PREFIX + "|" + FORM_URI_PREFIX + "|" + SURVEY_RESPONSE_URI_PREFIX
+            + ")(" + URI_SUFFIX + ")");
+
+    private static final int PREFIX_GROUP = 1;
+
+    private static final int OBJECT_ID_GROUP = 3;
+
     @Inject
     private UserRoleDao userRoleDao;
 
@@ -78,9 +83,6 @@ public class RequestUriVoter implements AccessDecisionVoter<FilterInvocation> {
 
     @Inject
     private SurveyDAO surveyDao;
-
-    @Inject
-    private SurveyedLocaleDao surveyedLocaleDao;
 
     @Inject
     private SurveyInstanceDAO surveyInstanceDao;
@@ -98,12 +100,21 @@ public class RequestUriVoter implements AccessDecisionVoter<FilterInvocation> {
     @Override
     public int vote(Authentication authentication, FilterInvocation securedObject,
             Collection<ConfigAttribute> attributes) {
-        String requestUri = securedObject.getRequestUrl();
 
         // abstain from voting
         if (abstainVote(authentication, securedObject)) {
             return ACCESS_ABSTAIN;
         }
+
+        // on first login we need to abstain in order to set the user credentials for the
+        // authentication object
+        if (authentication.getCredentials() == null) {
+            // immediately deny access if unable to identify user
+            throw new AccessDeniedException(
+                    "Access is Denied. Unable to identify user");
+        }
+
+        String requestUri = securedObject.getRequestUrl();
 
         if (requestUri.startsWith(PROJECT_FOLDER_URI_PREFIX)
                 || requestUri.startsWith(FORM_URI_PREFIX)) {
@@ -124,10 +135,20 @@ public class RequestUriVoter implements AccessDecisionVoter<FilterInvocation> {
      * @return
      */
     private boolean abstainVote(Authentication authentication, FilterInvocation securedObject) {
-        // requester is a super admin user no need to control access or
-        // request URL does not match the URI patterns we consider for voting
-        return authentication.getAuthorities().contains(AppRole.SUPER_ADMIN)
-                || !URI_PATTERN.matcher(securedObject.getRequestUrl()).find();
+        if (!URI_PATTERN.matcher(securedObject.getRequestUrl()).find()) {
+            // request URL does not match the URI patterns we consider for voting
+            return true;
+        } else if (authentication.getAuthorities().contains(AppRole.SUPER_ADMIN)) {
+            // requester is a super admin user no need to control access or
+            return true;
+        } else if ("GET".equals(securedObject.getHttpRequest().getMethod())
+                && parseObjectId(securedObject.getRequestUrl()) == null) {
+            // all GET requests for a set of entities are filtered
+            // via the BaseDAO.filterByUserAuthorizationObjectId()
+            return true;
+        } else {
+            return false;
+        }
     }
 
     /**
@@ -138,110 +159,117 @@ public class RequestUriVoter implements AccessDecisionVoter<FilterInvocation> {
      * @return
      */
     private int voteFolderSurveyUri(Authentication authentication, FilterInvocation securedObject) {
-        HttpServletRequest httpRequest = securedObject.getHttpRequest();
-        String httpMethod = securedObject.getHttpRequest().getMethod();
+        HttpServletRequest request = securedObject.getHttpRequest();
+        String httpMethod = request.getMethod();
         String requestUri = securedObject.getRequestUrl();
-        String resourcePath = null;
 
-        if ("GET".equals(httpMethod)) {
-            // get specific object (id), otherwise abstain from voting. filtering is done
-            // via the UserAuthorizationDao.listByUserAuthorization()
-            Matcher formFolderMatcher = URI_PATTERN.matcher(requestUri);
-            if (formFolderMatcher.matches() && StringUtils.isNotBlank(formFolderMatcher.group(2))) {
-                resourcePath = retrieveResourcePathFromDataStore(securedObject);
-            }
-            return ACCESS_ABSTAIN;
-        } else if ("POST".equals(httpMethod) || "PUT".equals(httpMethod)) {
-            resourcePath = retrieveResourcePathFromPayload(httpRequest);
-        } else if ("DELETE".equals(httpMethod)) {
-            resourcePath = retrieveResourcePathFromDataStore(securedObject);
+        List<Long> ancestorIds = new ArrayList<Long>();
+        Long objectId = null;
+        if ("GET".equals(httpMethod) || "PUT".equals(httpMethod) || "DELETE".equals(httpMethod)) {
+            objectId = parseObjectId(requestUri);
+            ancestorIds.addAll(retrieveAncestorIdsFromDataStore(parseRequestPrefix(requestUri),
+                    objectId));
+        } else if ("POST".equals(httpMethod)) {
+            objectId = parsePayload(request);
+            // POST requests always use FOLDER_URI prefix since we always create a folder or form
+            // within another folder or survey respectively
+            ancestorIds.addAll(retrieveAncestorIdsFromDataStore(PROJECT_FOLDER_URI_PREFIX,
+                    objectId));
         }
 
-        return checkUserAuthorization(authentication, securedObject, resourcePath);
+        // Also check for scenario where the user/role combo has been coupled with the object and
+        // not one of its ancestors. This is only valid for folders/surveys.
+        boolean includeSecuredObjectId = objectId != null;
+        if (includeSecuredObjectId) {
+            ancestorIds.add(objectId);
+        }
+        return checkUserAuthorization(authentication, securedObject, ancestorIds);
     }
 
     /**
-     * Take the request URI and parse to extract the object Id and the entity kind of the survey or
-     * survey group being accessed
+     * Retrieve the object id of the parent object associated with the payload.
      *
-     * @param requestUri
+     * @param httpRequest
      * @return
      */
-    private Map<String, Object> parseSecuredObject(FilterInvocation securedObject) {
-        String requestUri = securedObject.getRequestUrl();
-        HttpServletRequest httpRequest = securedObject.getHttpRequest();
-        String objectIdStr = null;
-        String entityKind = null;
-        Map<String, Object> params = new HashMap<String, Object>();
+    private Long parsePayload(HttpServletRequest httpRequest) {
 
-        // first check for relevant parameters if they are present in request starting with survey
-        // id which is more specific, then attempt extract object id in request URI for surveys and
-        // survey_groups requests
-        if (httpRequest.getParameter("surveyId") != null) {
-            objectIdStr = httpRequest.getParameter("surveyId");
-            entityKind = "Survey";
-        } else if (httpRequest.getParameter("surveyGroupId") != null) {
-            objectIdStr = httpRequest.getParameter("surveyGroupId");
-            entityKind = "SurveyGroup";
-        } else if (httpRequest.getParameter("surveyedLocaleId") != null) {
-            Long surveyedLocaleId = Long.parseLong(httpRequest.getParameter("surveyedLocaleId"));
-            SurveyedLocale sl = surveyedLocaleDao.getByKey(surveyedLocaleId);
-            objectIdStr = sl.getSurveyGroupId().toString();
-            entityKind = "SurveyGroup";
-        } else if (requestUri.contains("/survey_instances/")) {
+        if (httpRequest.getContentType() == null
+                || !httpRequest.getContentType().startsWith("application/json")
+                || httpRequest.getContentLength() == 0) {
+            return null; // if not JSON payload, conversion exception will be thrown later
+        }
 
-            try {
-                SurveyInstance si = surveyInstanceDao.getByKey(Long.parseLong(requestUri
-                        .substring(requestUri.lastIndexOf("/") + 1)));
+        boolean isValidPayload = false;
+        String idString = null;
 
-                if (si != null) {
-                    objectIdStr = si.getSurveyId().toString();
+        try {
+            JsonFactory f = new JsonFactory();
+            JsonParser parser = f.createJsonParser(httpRequest.getInputStream());
+
+            boolean isSurvey = false;
+            boolean isForm = false;
+
+            while (parser.nextToken() != JsonToken.END_OBJECT) {
+                String field = parser.getCurrentName();
+
+                if (null == field) {
+                    continue;
+                } else if ("survey_group".equals(field)) {
+                    isSurvey = true;
+                } else if ("survey".equals(field)) {
+                    isForm = true;
+                } else if ("parentId".equals(field)) {
+                    parser.nextToken();
+                    idString = parser.getText();
+                    isValidPayload = isSurvey && idString != null;
+                } else if ("surveyGroupId".equals(field)) {
+                    parser.nextToken();
+                    idString = parser.getText();
+                    isValidPayload = isForm && idString != null;
                 }
-
-                entityKind = "Survey";
-
-            } catch (NumberFormatException e) {
             }
-
-        } else if (requestUri.startsWith(PROJECT_FOLDER_URI_PREFIX)
-                || requestUri.startsWith(FORM_URI_PREFIX)) {
-            objectIdStr = requestUri.substring(requestUri.lastIndexOf("/") + 1);
-            entityKind = requestUri.startsWith(PROJECT_FOLDER_URI_PREFIX) ? "SurveyGroup"
-                    : "Survey";
+        } catch (Exception e) {
+            log.severe(e.getMessage());
+            return null;
         }
 
-        if (StringUtils.isNotBlank(objectIdStr)) {
-            try {
-                Long objectId = Long.valueOf(objectIdStr);
-                params.put("objectId", objectId);
-                params.put("entityKind", entityKind);
-            } catch (NumberFormatException e) {
-                log.fine("Not able to convert to  objectId string: " + objectIdStr);
-            }
+        if (!isValidPayload) {
+            // missing id parameter or wrong combination of survey->parentId or form->surveyGroupId
+            return null;
         }
-        return params;
+
+        Long objectId = null;
+        try {
+            objectId = Long.parseLong(idString);
+        } catch (NumberFormatException e) {
+            log.warning("Unable to identify the requested object id: " + idString);
+        }
+        return objectId;
+
     }
 
     /**
-     * Check the authorization of a user based on an identified path
+     * Check the authorization of a user based on the ids of object being accessed or one of its
+     * ancestors.
      *
      * @param authentication
      * @param resourcePath
      * @return
      */
     private int checkUserAuthorization(Authentication authentication,
-            FilterInvocation securedObject, String resourcePath) {
+            FilterInvocation securedObject, List<Long> objectIds) {
         Long userId = (Long) authentication.getCredentials();
 
-        if (resourcePath == null || userId == null) {
+        if (objectIds == null || objectIds.isEmpty()) {
             // no path found
             throw new AccessDeniedException(
-                    "Access is Denied. Unable to identify object path or user");
+                    "Access is Denied. Unable to identify object(s)");
         }
 
         // retrieve user authorizations containing resource paths that make up this one
-        List<UserAuthorization> authorizations = userAuthorizationDao.listByObjectPath(userId,
-                resourcePath);
+        List<UserAuthorization> authorizations = userAuthorizationDao.listByObjectIds(userId,
+                objectIds);
         if (authorizations.isEmpty()) {
             throw new AccessDeniedException("Access is Denied. Insufficient permissions");
         }
@@ -262,8 +290,7 @@ public class RequestUriVoter implements AccessDecisionVoter<FilterInvocation> {
             }
         }
 
-        // catchall access denied
-        return ACCESS_DENIED;
+        throw new AccessDeniedException("Access is Denied. Insufficient permissions");
     }
 
     /**
@@ -276,105 +303,84 @@ public class RequestUriVoter implements AccessDecisionVoter<FilterInvocation> {
     private int voteSurveyResponseUri(Authentication authentication, FilterInvocation securedObject) {
         String httpMethod = securedObject.getHttpRequest().getMethod();
         String requestUri = securedObject.getRequestUrl();
-        String resourcePath = null;
 
-        if ("GET".equals(httpMethod)) {
-            if (requestUri.equals(SURVEY_RESPONSE_URI_PREFIX)) {
-                // if no specific id is requested, abstain from voting. filtering is done
-                // via the UserAuthorizationDao.listByUserAuthorization()
-                return ACCESS_ABSTAIN;
-            }
-            resourcePath = retrieveResourcePathFromDataStore(securedObject);
-        } else if ("DELETE".equals(httpMethod)) {
-            resourcePath = retrieveResourcePathFromDataStore(securedObject);
+        List<Long> ancestorIds = new ArrayList<Long>();
+
+        if ("GET".equals(httpMethod) || "DELETE".equals(httpMethod)) {
+            ancestorIds = retrieveAncestorIdsFromDataStore(parseRequestPrefix(requestUri),
+                    parseObjectId(requestUri));
         } else if ("POST".equals(httpMethod) || "PUT".equals(httpMethod)) {
             // no post or put for survey instances is allowed via rest API at the moment
-            log.info("A POST or PUT of survey responses is not a supported operation at the moment");
-            return ACCESS_DENIED;
-        }
-
-        return checkUserAuthorization(authentication, securedObject, resourcePath);
-    }
-
-    /**
-     * Retrieve the resource path for a secured object that is being accessed. The path is retrieved
-     * from the posted payload. Throws an @{link AccessDeniedException} in cases where a path should
-     * have been found but is missing.
-     *
-     * @param securedObject
-     * @return
-     */
-    @SuppressWarnings("rawtypes")
-    private String retrieveResourcePathFromPayload(HttpServletRequest httpRequest)
-            throws AccessDeniedException {
-
-        if (httpRequest.getContentType() == null
-                || !httpRequest.getContentType().startsWith("application/json")
-                || httpRequest.getContentLength() == 0) {
-            return null; // if not JSON payload, conversion exception will be thrown later
-        }
-
-        ObjectMapper mapper = new ObjectMapper();
-        Map payload = null;
-        try {
-            payload = mapper.readValue(httpRequest.getInputStream(), Map.class);
-        } catch (IOException e) {
-            log.severe(e.toString());
-        }
-
-        Map content = null;
-        if (payload.containsKey("survey_group")) {
-            content = (Map) payload.get("survey_group");
-        } else {
-            content = (Map) payload.get("survey");
-        }
-
-        if (content == null || !content.containsKey("path")) {
-            throw new AccessDeniedException("Access is Denied. Unable to identify object path");
-        }
-
-        return (String) content.get("path");
-    }
-
-    /**
-     * Retrieve the resource path for a secured object that is being accessed. The path is retrieved
-     * from the datastore. Throws an @{link AccessDeniedException} in cases where a path should have
-     * been found but is missing.
-     *
-     * @param securedObject
-     * @return
-     */
-    private String retrieveResourcePathFromDataStore(FilterInvocation securedObject) {
-        String resourcePath = null;
-
-        Map<String, Object> requestParameters = parseSecuredObject(securedObject);
-        String entityKind = (String) requestParameters.get("entityKind");
-        Long objectId = (Long) requestParameters.get("objectId");
-
-        if (entityKind == null || objectId == null) {
-            return null;
-        }
-
-        if (entityKind.equals("Survey")) {
-            Survey s = surveyDao.getByKey(objectId);
-            if (s != null) {
-                resourcePath = s.getPath();
-            }
-        } else if (entityKind.equals("SurveyGroup")) {
-            SurveyGroup sg = surveyGroupDao.getByKey(objectId);
-            if (sg != null) {
-                resourcePath = sg.getPath();
-            }
-        } else {
-            return null;
-        }
-
-        // expecting object with valid path
-        if (resourcePath == null) {
+            String message = "This operation is not supported operation at the moment.";
+            log.warning("POST/PUT survey responses :" + message);
             throw new AccessDeniedException(
-                    "Access is Denied. Unable to identify object path");
+                    "Access is Denied. " + message);
         }
 
-        return resourcePath;
+        return checkUserAuthorization(authentication, securedObject, ancestorIds);
+    }
+
+    /**
+     * Parse request prefix from the requestUri
+     *
+     * @param requestUri
+     * @return
+     */
+    private String parseRequestPrefix(String requestUri) {
+        Matcher requestUriMatcher = URI_PATTERN.matcher(requestUri);
+        if (requestUriMatcher.find()) {
+            return requestUriMatcher.group(PREFIX_GROUP);
+        }
+        return null;
+    }
+
+    /**
+     * Identify requested object id from requestUri
+     *
+     * @param requestUri
+     * @return
+     */
+    private Long parseObjectId(String requestUri) {
+        Matcher objectIdMatcher = OBJECT_ID_PATTERN.matcher(requestUri);
+        if (objectIdMatcher.find()) {
+            String objectIdStr = objectIdMatcher.group(OBJECT_ID_GROUP);
+            return Long.parseLong(objectIdStr);
+        }
+        return null;
+    }
+
+    /**
+     * Retrieve the ancestorIds for a secured object from the datastore
+     *
+     * @param requestPrefix
+     * @param objectId
+     * @return
+     */
+    private List<Long> retrieveAncestorIdsFromDataStore(String requestPrefix,
+            Long objectId) {
+
+        if (requestPrefix == null || objectId == null) {
+            log.warning("Failed to identify request parameters requestPrefix=" + requestPrefix
+                    + "; object=" + objectId);
+            return Collections.emptyList();
+        }
+
+        List<Long> ancestorIds = new ArrayList<Long>();
+        SecuredObject obj = null;
+        if (Constants.ROOT_FOLDER_ID.equals(objectId)) {
+            obj = new RootFolder();
+        } else if (SURVEY_RESPONSE_URI_PREFIX.equals(requestPrefix)) {
+            obj = surveyInstanceDao.getByKey(objectId);
+        } else if (FORM_URI_PREFIX.equals(requestPrefix)) {
+            obj = surveyDao.getByKey(objectId);
+        } else if (PROJECT_FOLDER_URI_PREFIX.equals(requestPrefix)) {
+            obj = surveyGroupDao.getByKey(objectId);
+        }
+
+        if (obj != null) {
+            ancestorIds.addAll(obj.listAncestorIds());
+        }
+
+        return ancestorIds;
     }
 }

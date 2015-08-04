@@ -33,7 +33,6 @@ import com.gallatinsystems.survey.domain.Survey;
 import com.gallatinsystems.survey.domain.SurveyGroup;
 import com.gallatinsystems.survey.domain.SurveyGroup.PrivacyLevel;
 import com.gallatinsystems.surveyal.dao.SurveyedLocaleClusterDao;
-import com.gallatinsystems.surveyal.dao.SurveyedLocaleDao;
 import com.gallatinsystems.surveyal.domain.SurveyedLocale;
 import com.gallatinsystems.surveyal.domain.SurveyedLocaleCluster;
 
@@ -81,10 +80,13 @@ public class MapUtils {
                     showOnPublicMap = (Boolean) cache.get(pubKey);
                 } else {
                     Survey s = sDao.getByKey(surveyId);
-                    SurveyGroup surveyGroup = SurveyUtils.retrieveSurveyGroup(s.getSurveyGroupId());
                     if (s != null) {
-                        showOnPublicMap = surveyGroup.getPrivacyLevel() == PrivacyLevel.PUBLIC;
-                        putObject(cache, pubKey, showOnPublicMap);
+                        SurveyGroup surveyGroup = SurveyUtils.retrieveSurveyGroup(s
+                                .getSurveyGroupId());
+                        if (surveyGroup != null) {
+                            showOnPublicMap = surveyGroup.getPrivacyLevel() == PrivacyLevel.PUBLIC;
+                            putObject(cache, pubKey, showOnPublicMap);
+                        }
                     }
                 }
             }
@@ -173,12 +175,6 @@ public class MapUtils {
                     }
                 }
             }
-        }
-
-        // delete locale if the Delta was a subtraction
-        SurveyedLocaleDao slDao = new SurveyedLocaleDao();
-        if (delta < 0) {
-            slDao.delete(locale);
         }
     }
 

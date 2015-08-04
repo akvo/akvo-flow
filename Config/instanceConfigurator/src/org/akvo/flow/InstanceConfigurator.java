@@ -78,9 +78,8 @@ public class InstanceConfigurator {
         String flowServices = cli.getOptionValue("fs");
         String eventNotification = cli.getOptionValue("en");
         String enableChangeEvents = cli.getOptionValue("ce", "false");
-        String useGoogleMapsLayers = cli.getOptionValue("gm", "false");
+        String mapsProvider = cli.getOptionValue("mapsProvider", "mapbox");
         String googleMapsRegionBias = cli.getOptionValue("rb", "");
-        String useCartodb = cli.getOptionValue("cm", "false");
         String cartodbApiKey = cli.getOptionValue("ck", "");
         String cartodbSqlApi = cli.getOptionValue("cs", "");
         String cartodbHost = cli.getOptionValue("ch", "");
@@ -187,6 +186,10 @@ public class InstanceConfigurator {
                 new SimpleDateFormat("yyyy-MM-dd").format(new Date()));
         data.put("accessKey", accessKeys);
 
+        Template t0 = cfg.getTemplate("bucket-policy.ftl");
+        StringWriter bucketPolicy = new StringWriter();
+        t0.process(data, bucketPolicy);
+
         Template t1 = cfg.getTemplate("apk-s3-policy.ftl");
         StringWriter apkPolicy = new StringWriter();
         t1.process(data, apkPolicy);
@@ -194,6 +197,8 @@ public class InstanceConfigurator {
         Template t2 = cfg.getTemplate("gae-s3-policy.ftl");
         StringWriter gaePolicy = new StringWriter();
         t2.process(data, gaePolicy);
+
+        s3Client.setBucketPolicy(bucketName, t0.toString());
 
         iamClient.putUserPolicy(new PutUserPolicyRequest(apkUser, apkUser,
                 Policy.fromJson(apkPolicy.toString()).toJson()));
@@ -228,9 +233,8 @@ public class InstanceConfigurator {
         webData.put("flowServices", flowServices);
         webData.put("eventNotification", eventNotification);
         webData.put("enableChangeEvents", enableChangeEvents);
-        webData.put("useGoogleMapsLayers", useGoogleMapsLayers);
+        webData.put("mapsProvider", mapsProvider);
         webData.put("googleMapsRegionBias", googleMapsRegionBias);
-        webData.put("useCartodb", useCartodb);
         webData.put("cartodbApiKey", cartodbApiKey);
         webData.put("cartodbSqlApi", cartodbSqlApi);
         webData.put("cartodbHost", cartodbHost);
@@ -310,23 +314,17 @@ public class InstanceConfigurator {
         enableChangeEvents.setArgs(1);
         enableChangeEvents.setRequired(false);
 
-        Option useGoogleMapsLayers = new Option("gm",
-                "true if the instance should use Google Maps layers instead of Mapbox");
-        useGoogleMapsLayers.setLongOpt("useGoogleMapsLayers");
-        useGoogleMapsLayers.setArgs(1);
-        useGoogleMapsLayers.setRequired(false);
+        Option mapsProvider = new Option("mp",
+                "The maps provider to use. One of 'mapbox', 'google', 'cartodb'");
+        mapsProvider.setLongOpt("mapsProvider");
+        mapsProvider.setArgs(1);
+        mapsProvider.setRequired(false);
 
         Option googleMapsRegionBias = new Option("rb",
                 "Region bias code (only available for google maps layers)");
         googleMapsRegionBias.setLongOpt("googleMapsRegionBias");
         googleMapsRegionBias.setArgs(1);
         googleMapsRegionBias.setRequired(false);
-
-        Option useCartodb = new Option("cm",
-                "True if the dashboard should use cartodb maps");
-        useCartodb.setLongOpt("useCartodb");
-        useCartodb.setArgs(1);
-        useCartodb.setRequired(false);
 
         Option cartodbApiKey = new Option("ck", "Cartodb api key");
         cartodbApiKey.setLongOpt("cartodbApiKey");
@@ -377,9 +375,8 @@ public class InstanceConfigurator {
         options.addOption(flowServices);
         options.addOption(eventNotification);
         options.addOption(enableChangeEvents);
-        options.addOption(useGoogleMapsLayers);
+        options.addOption(mapsProvider);
         options.addOption(googleMapsRegionBias);
-        options.addOption(useCartodb);
         options.addOption(cartodbApiKey);
         options.addOption(cartodbSqlApi);
         options.addOption(cartodbHost);

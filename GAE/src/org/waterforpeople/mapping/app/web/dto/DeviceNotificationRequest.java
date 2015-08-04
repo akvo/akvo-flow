@@ -1,5 +1,5 @@
 /*
- *  Copyright (C) 2014 Stichting Akvo (Akvo Foundation)
+ *  Copyright (C) 2014-2015 Stichting Akvo (Akvo Foundation)
  *
  *  This file is part of Akvo FLOW.
  *
@@ -16,9 +16,39 @@
 
 package org.waterforpeople.mapping.app.web.dto;
 
+import java.util.HashSet;
+import java.util.Set;
+
+import javax.servlet.http.HttpServletRequest;
+
 public class DeviceNotificationRequest extends LocationBeaconRequest {
 
     private static final long serialVersionUID = 287773188257035166L;
+    private static final String SURVEYS_PARAM = "formId";
+    
+    private Set<Long> surveyIds;
+    
+    public Set<Long> getSurveyIds() {
+        return surveyIds;
+    }
+    
+    @Override
+    protected void populateFields(HttpServletRequest req) throws Exception {
+        super.populateFields(req);
+        
+        surveyIds = new HashSet<>();
+        String[] args = req.getParameterValues(SURVEYS_PARAM);
+        if (args != null) {
+            for (String sid : args) {
+                try {
+                    surveyIds.add(Long.parseLong(sid));
+                } catch (NumberFormatException e) {
+                    // ignore non-valid keys
+                }
+            }
+        }
+    }
+    
 
     @Override
     protected void populateErrors() {

@@ -40,6 +40,7 @@ public class SurveyDto extends BaseDto {
     private Date createdDateTime;
     private Date lastUpdateDateTime;
     private Long sourceId = null;
+    private List<Long> ancestorIds;
 
     public String getPath() {
         return path;
@@ -174,6 +175,14 @@ public class SurveyDto extends BaseDto {
 
     public void setSourceId(Long sourceId) {
         this.sourceId = sourceId;
+    }
+
+    public List<Long> getAncestorIds() {
+        return ancestorIds;
+    }
+
+    public void setAncestorIds(List<Long> ancestorIds) {
+        this.ancestorIds = ancestorIds;
     }
 
 }
