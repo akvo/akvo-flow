@@ -376,6 +376,11 @@ public class SurveyalRestServlet extends AbstractRestApiServlet {
         }
 
         MapUtils.recomputeCluster(cache, locale, delta);
+
+        // delete locale if the Delta was a subtraction
+        if (delta < 0) {
+            slDao.delete(locale);
+        }
     }
 
     /**
