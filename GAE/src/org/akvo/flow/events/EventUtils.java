@@ -218,7 +218,7 @@ public class EventUtils {
                 }
 
                 addProperty(Key.DESCRIPTION, e.getProperty(Prop.DESCRIPTION), data);
-                addProperty(Key.PUBLIC, e.getProperty(Prop.PRIVACY_LEVEL).toString()
+                addProperty(Key.PUBLIC, String.valueOf(e.getProperty(Prop.PRIVACY_LEVEL))
                         .equals(PrivacyLevel.PUBLIC.toString()), data);
                 break;
             case FORM:

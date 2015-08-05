@@ -18,10 +18,17 @@
             </label>
         </div>
         <div class="dataDeviceId">
+            {{#if view.validSurveyInstanceId}}
+              <label class="surveyInstanceId">{{t _instance_id}}:</label>
+            {{else}}
+              <label class="surveyInstanceId tooltip"><a style="color:red" class="tooltip" title="{{t _instance_id_must_be_a_number}}">{{t _instance_id}}</a>:</label>
+            {{/if}}
+            {{view Ember.TextField valueBinding="view.surveyInstanceId" placeholder="" placeholderBinding="Ember.STRINGS._instance_id" size=30}}
             <label class="devideId">{{t _device_id}}:</label>
             {{view Ember.TextField valueBinding="view.deviceId" placeholder="" placeholderBinding="Ember.STRINGS._device_id" size=30}}
             <label class="submitterName">{{t _submitter_name}}:</label>
             {{view Ember.TextField valueBinding="view.submitterName" placeholder="" placeholderBinding="Ember.STRINGS._submitter_name" size=30}}
+
         </div>
 
         <div class="chooseLocationData">
@@ -29,12 +36,16 @@
             <a {{action "doFindSurveyInstances" target="this" }} class="findData standardBtn btnAboveTable"> {{t _find}}</a>
         </div>
     </div>
+    {{#if view.noResults}}
+      <div style="color:red; font-size: 1.3em;text-align:center">{{t _no_results_found}}</div>
+    {{/if}}
+
     <section class="fullWidth " id="devicesList">
         <table class="dataTable" id="surveyDataTable">
             <thead>
                 <tr>
                     <th class="noArrows"></th>
-                    <th class="noArrows">{{t _id}}</th>
+                    <th class="noArrows">{{t _instance_id}}</th>
                     <th class="noArrows">{{t _form}}</th>
                     <th class="noArrows">{{t _submitter}}</th>
                     <th class="noArrows">{{t _device}}</th>
@@ -53,11 +64,15 @@
                     <td class="collected">{{#with SI}}{{date1 collectionDate}}{{/with}}</td>
                     <td class="action">
                         <a {{action showEditSurveyInstanceWindow SI target="this" }}>
-                  {{t _edit}}
-                </a>
-                        {{#if view.showSurveyInstanceDeleteButton }} {{#view FLOW.DataItemView contentBinding="SI"}}<a {{action confirm FLOW.dialogControl.delSI2 target="FLOW.dialogControl" }}>
-                  {{t _delete}}
-                </a>{{/view}} {{/if}}
+                            {{t _edit}}
+                        </a>
+                        {{#if view.showSurveyInstanceDeleteButton }}
+                            {{#view FLOW.DataItemView contentBinding="SI"}}
+                                <a {{action confirm FLOW.dialogControl.delSI2 target="FLOW.dialogControl" }}>
+                                    {{t _delete}}
+                                </a>
+                            {{/view}}
+                        {{/if}}
                     </td>
                 </tr>
                 {{/each}}

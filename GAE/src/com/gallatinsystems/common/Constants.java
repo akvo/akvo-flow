@@ -1,5 +1,5 @@
 /*
- *  Copyright (C) 2010-2014 Stichting Akvo (Akvo Foundation)
+ *  Copyright (C) 2010-2015 Stichting Akvo (Akvo Foundation)
  *
  *  This file is part of Akvo FLOW.
  *
@@ -33,5 +33,6 @@ public class Constants {
     public static final int MAX_TASK_RETRIES = 7;
     public static final String AWS_ACCESS_ID = "aws_identifier";
     public static final String AWS_SECRET_KEY = "aws_secret_key";
-
+    public static final String ANCESTOR_IDS_FIELD = "ancestorIds";
+    public static final Long ROOT_FOLDER_ID = 0L;
 }

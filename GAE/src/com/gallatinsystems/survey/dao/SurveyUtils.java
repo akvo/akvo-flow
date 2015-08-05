@@ -25,6 +25,7 @@ import java.util.TreeMap;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+import org.akvo.flow.domain.SecuredObject;
 import org.apache.commons.lang.ArrayUtils;
 import org.apache.commons.lang.StringUtils;
 import org.json.JSONObject;
@@ -267,6 +268,22 @@ public class SurveyUtils {
         return sg.getPath() + "/" + s.getName();
     }
 
+    public static List<Long> retrieveAncestorIds(SecuredObject s) {
+        List<Long> ancestorIds = new ArrayList<Long>();
+        if (s.getParentObject() == null) {
+            return null;
+        }
+
+        SecuredObject parent = s.getParentObject();
+
+        if (parent.listAncestorIds() != null) {
+            ancestorIds.addAll(parent.listAncestorIds());
+        }
+        ancestorIds.add(parent.getObjectId()); // add parent id to returned ancestor list
+
+        return ancestorIds;
+    }
+
     public static String fixPath(String oldPath, String newName) {
         if (oldPath == null || newName == null) {
             return oldPath;
@@ -440,6 +457,24 @@ public class SurveyUtils {
         BeanUtils.copyProperties(source, copy, Constants.EXCLUDED_PROPERTIES);
         String kind = source.getKey().getKind();
         log.log(Level.INFO, "Copying `" + kind + "` " + source.getKey().getId());
-        log.log(Level.INFO, "New `" + kind + "` ID: " + copy.getKey().getId());
+    }
+
+    /**
+     * Set the non-persistent child objects of a SurveyGroup entity
+     *
+     * @param surveyGroup
+     */
+    public static void setChildObjects(SurveyGroup surveyGroup) {
+        if (surveyGroup == null || surveyGroup.getKey() == null) {
+            return;
+        }
+
+        Long surveyGroupId = surveyGroup.getKey().getId();
+
+        List<SurveyGroup> childFolders = new SurveyGroupDAO().listByProjectFolderId(surveyGroupId);
+        surveyGroup.setChildFolders(childFolders);
+
+        List<Survey> childForms = new SurveyDAO().listSurveysByGroup(surveyGroupId);
+        surveyGroup.setChildForms(childForms);
     }
 }

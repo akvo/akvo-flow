@@ -33,15 +33,16 @@
             {{/unless}}
             {{#if view.visibleProjectBasics}}
               <form class="projectDetailForm">
-                <label>{{t _survey_title}}</label>{{view Ember.TextField id="projectTitle" valueBinding="FLOW.projectControl.currentProject.name"}}
-                <label>{{t _survey_description}}</label>{{view Ember.TextField id="projectDescription" valueBinding="FLOW.projectControl.currentProject.description"}}
+                <label>{{t _survey_title}}</label>{{view Ember.TextField id="projectTitle" valueBinding="FLOW.projectControl.currentProject.name" disabledBinding="view.disableFolderSurveyInputField"}}
+                <label>{{t _survey_description}}</label>{{view Ember.TextField id="projectDescription" valueBinding="FLOW.projectControl.currentProject.description" disabledBinding="view.disableFolderSurveyInputField"}}
 
                 <ul class="projectSelect floats-in">
                   <li>
                     <label>{{t _privacy_type}}:</label>
                     {{view Ember.Select
                       contentBinding="FLOW.privacyLevelControl.content"
-                      selectionBinding="FLOW.projectControl.currentProject.privacyLevel"}}
+                      selectionBinding="FLOW.projectControl.currentProject.privacyLevel"
+                      disabledBinding="view.disableFolderSurveyInputField"}}
                   </li>
                   <li>
                     <label>{{t _language}}:</label>
@@ -49,7 +50,8 @@
                       contentBinding="FLOW.languageControl.content"
                       selectionBinding="view.selectedLanguage"
                       optionLabelPath="content.label"
-                      optionValuePath="content.value"}}
+                      optionValuePath="content.value"
+                      disabledBinding="view.disableFolderSurveyInputField"}}
                   </li>
                 </ul>
                 {{#if FLOW.projectControl.hasForms}}
@@ -66,7 +68,7 @@
                   {{#if view.showAdvancedSettings}}
                     {{#if view.showMonitoringGroupCheckbox}}
                       <label for="enableMonitoring" class="labelcheckbox">
-                        {{view Ember.Checkbox checkedBinding="FLOW.projectControl.currentProject.monitoringGroup" id="enableMonitoring"}}{{t _enable_monitoring_features}}
+                        {{view Ember.Checkbox checkedBinding="FLOW.projectControl.currentProject.monitoringGroup" id="enableMonitoring" disabledBinding="view.disableFolderSurveyInputField"}}{{t _enable_monitoring_features}}
                       </label>
                     {{/if}}
                     {{#if FLOW.projectControl.currentProject.monitoringGroup}}
@@ -76,7 +78,8 @@
                         contentBinding="FLOW.surveyControl.arrangedContent"
                         selectionBinding="view.selectedRegistrationForm"
                         optionLabelPath="content.code"
-                        optionValuePath="content.keyId"}}
+                        optionValuePath="content.keyId"
+                        disabledBinding="view.disableFolderSurveyInputField"}}
                     {{/if}}
                   {{/if}}
                 {{/if}}

@@ -5,6 +5,23 @@ Read more about the [Akvo Platform](http://www.akvo.org/blog/?p=4822).
 
 Akvo FLOW Dashboard release notes
 ----
+#1.8.9
+Date: 28 July 2015
+
+# New and noteworthy
+* Improve text wrapping when displaying charts [#450]
+* Filter by instance id on data tab [#872]
+* Show both number of responses and percentages in charts [#1004]
+* Enable 'use as data point name' for cascading questions [#1011]
+
+# Resolved issues
+* Replace path with object ids for roles and permissions authorisation [#1215]
+* Layout enhancements when editing data points [#1294]
+* Breadcrumb rendering issue [#1350]
+* Survey copying [#1354]
+* Skip QuestionAnswerStore entities referencing invalid questions [#1335]
+* Optimize fetching of survey groups [#1359]
+
 #1.8.8
 Date: 8 July 2015
 

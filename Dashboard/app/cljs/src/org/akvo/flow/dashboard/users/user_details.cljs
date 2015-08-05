@@ -147,7 +147,7 @@
              [:h2 (t> _roles_and_permissions) ":"]
              [:div.form-inline.text-left.paddingTop.roleEditSelect {:role "name"}
               [:div.form-group
-               (om/build b/dropdown ;;b/select
+               (om/build b/dropdown
                          {:placeholder (t> _select_a_role)
                           :selected selected-role
                           :data (store/get-roles roles-store)
@@ -183,7 +183,7 @@
                                                                                                                     current-user-id)))]
                                                     (contains? object-paths "/")))))
                                   (cons {"name" (t> _all_folders) "keyId" 0 "projectType" "PROJECT_FOLDER"}
-                                        (projects-store/get-projects projects-store nil))
+                                        (projects-store/get-projects projects-store 0))
                                   (projects-store/get-projects projects-store (get (peek selected-folders) "keyId")))]
                    (om/build b/dropdown
                              {:placeholder (t> _select_a_folder_or_survey)
@@ -207,7 +207,8 @@
                                                                      (str "/"
                                                                           (->> selected-folders
                                                                                (map #(get % "name"))
-                                                                               (str/join "/"))))}))}
+                                                                               (str/join "/"))))
+                                                      :object-id (or (get (last selected-folders) "keyId") 0)}))}
                               :plus (t> _add))]]
              (om/build grid
                        {:data (when-let [user-id (get user "keyId")]

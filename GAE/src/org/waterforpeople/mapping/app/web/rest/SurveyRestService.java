@@ -42,6 +42,7 @@ import org.waterforpeople.mapping.app.web.rest.dto.RestStatusDto;
 import org.waterforpeople.mapping.app.web.rest.dto.SurveyPayload;
 import org.waterforpeople.mapping.dao.QuestionAnswerStoreDao;
 
+import static com.gallatinsystems.common.Constants.ANCESTOR_IDS_FIELD;
 import com.gallatinsystems.survey.dao.SurveyDAO;
 import com.gallatinsystems.survey.dao.SurveyUtils;
 import com.gallatinsystems.survey.domain.Survey;
@@ -142,7 +143,7 @@ public class SurveyRestService {
         }
 
         if (surveys != null) {
-            for (Object obj : surveyDao.filterByUserAuthorization(surveys)) {
+            for (Object obj : surveyDao.filterByUserAuthorizationObjectId(surveys)) {
                 SurveyDto dto = new SurveyDto();
                 Survey s = (Survey) obj;
                 DtoMarshaller.copyToDto(s, dto);
@@ -234,69 +235,65 @@ public class SurveyRestService {
     @ResponseBody
     public Map<String, Object> saveExistingSurvey(
             @RequestBody SurveyPayload payLoad) {
-        final SurveyDto surveyDto = payLoad.getSurvey();
+        final SurveyDto requestDto = payLoad.getSurvey();
         final Map<String, Object> response = new HashMap<String, Object>();
-        SurveyDto dto = null;
+        SurveyDto responseDto = null;
 
         RestStatusDto statusDto = new RestStatusDto();
         statusDto.setStatus("failed");
 
         // if the POST data contains a valid surveyDto, continue. Otherwise,
         // server will respond with 400 Bad Request
-        if (surveyDto != null) {
-            Long keyId = surveyDto.getKeyId();
-            Survey s;
+        if (requestDto != null && requestDto.getKeyId() != null) {
+            Survey s = surveyDao.getByKey(requestDto.getKeyId());
 
-            // if the surveyDto has a key, try to get the survey.
-            if (keyId != null) {
-                s = surveyDao.getByKey(keyId);
-                // if we find the survey, update it's properties
-                if (s != null) {
-                    // copy the properties, except the createdDateTime property,
-                    // because it is set in the Dao.
-                    BeanUtils.copyProperties(surveyDto, s, new String[] {
-                            "createdDateTime", "status", "sector", "version",
-                            "lastUpdateDateTime", "description",
-                            "instanceCount"
-                    });
+            if (s != null) {
+                // copy the properties, except the createdDateTime property,
+                // because it is set in the Dao.
+                BeanUtils.copyProperties(requestDto, s, new String[] {
+                        "createdDateTime", "status", "sector", "version",
+                        "lastUpdateDateTime", "description",
+                        "instanceCount", ANCESTOR_IDS_FIELD
+                });
 
-                    s.setDesc(surveyDto.getDescription());
+                s.setAncestorIds(SurveyUtils.retrieveAncestorIds(s));
 
-                    String name = s.getName();
-                    if (name != null) {
-                        String trimmedName = name.replaceAll(",", " ").trim();
-                        s.setName(trimmedName);
-                        s.setCode(trimmedName);
-                        s.setPath(SurveyUtils.fixPath(s.getPath(), trimmedName));
-                    }
+                s.setDesc(requestDto.getDescription());
 
-                    if (surveyDto.getStatus() != null) {
-                        // increment version for surveys already published
-                        if (s.getStatus().equals(Survey.Status.PUBLISHED)
-                                && !s.getStatus().equals(
-                                        Survey.Status.valueOf(surveyDto.getStatus()))) {
-                            s.incrementVersion();
-                        }
-                    }
-                    s.setStatus(Survey.Status.NOT_PUBLISHED);
-                    if (surveyDto.getSector() != null) {
-                        s.setSector(Survey.Sector.valueOf(surveyDto.getSector()));
-                    }
-                    if (!surveyDto.getVersion().equals(s.getVersion().toString())) {
-                        log.log(Level.WARNING, "Survey version does not match (dashboard="
-                                + surveyDto.getVersion() + " datastore=" + s.getVersion() + ")");
-                    }
-
-                    s = surveyDao.save(s);
-                    dto = new SurveyDto();
-                    DtoMarshaller.copyToDto(s, dto);
-                    dto.setDescription(s.getDesc());
-                    statusDto.setStatus("ok");
+                String name = s.getName();
+                if (name != null) {
+                    String trimmedName = name.replaceAll(",", " ").trim();
+                    s.setName(trimmedName);
+                    s.setCode(trimmedName);
+                    s.setPath(SurveyUtils.fixPath(s.getPath(), trimmedName));
                 }
+
+                if (requestDto.getStatus() != null) {
+                    // increment version for surveys already published
+                    if (s.getStatus().equals(Survey.Status.PUBLISHED)
+                            && !s.getStatus().equals(
+                                    Survey.Status.valueOf(requestDto.getStatus()))) {
+                        s.incrementVersion();
+                    }
+                }
+                s.setStatus(Survey.Status.NOT_PUBLISHED);
+                if (requestDto.getSector() != null) {
+                    s.setSector(Survey.Sector.valueOf(requestDto.getSector()));
+                }
+                if (!requestDto.getVersion().equals(s.getVersion().toString())) {
+                    log.log(Level.WARNING, "Survey version does not match (dashboard="
+                            + requestDto.getVersion() + " datastore=" + s.getVersion() + ")");
+                }
+
+                s = surveyDao.save(s);
+                responseDto = new SurveyDto();
+                DtoMarshaller.copyToDto(s, responseDto);
+                responseDto.setDescription(s.getDesc());
+                statusDto.setStatus("ok");
             }
         }
         response.put("meta", statusDto);
-        response.put("survey", dto);
+        response.put("survey", responseDto);
         return response;
     }
 
@@ -359,7 +356,7 @@ public class SurveyRestService {
         BeanUtils.copyProperties(dto, s, new String[] {
                 "createdDateTime",
                 "status", "sector", "version", "lastUpdateDateTime",
-                "displayName", "questionGroupList", "instanceCount"
+                "displayName", "questionGroupList", "instanceCount", ANCESTOR_IDS_FIELD
         });
 
         if (dto.getStatus() != null) {
@@ -369,6 +366,8 @@ public class SurveyRestService {
         if (dto.getSector() != null) {
             s.setSector(Survey.Sector.valueOf(dto.getSector()));
         }
+
+        s.setAncestorIds(SurveyUtils.retrieveAncestorIds(s));
 
         // ignore version number sent by Dashboard and initialise
         s.getVersion();

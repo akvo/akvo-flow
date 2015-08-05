@@ -211,8 +211,9 @@ FLOW.surveyInstanceControl = Ember.ArrayController.create({
     this.set('content', FLOW.store.findQuery(FLOW.SurveyInstance, {}));
   },
 
-  doInstanceQuery: function (surveyId, deviceId, since, beginDate, endDate, submitterName, countryCode, level1, level2) {
+  doInstanceQuery: function (surveyInstanceId, surveyId, deviceId, since, beginDate, endDate, submitterName, countryCode, level1, level2) {
     this.set('content', FLOW.store.findQuery(FLOW.SurveyInstance, {
+			'surveyInstanceId': surveyInstanceId,
       'surveyId': surveyId,
       'deviceId': deviceId,
       'since': since,

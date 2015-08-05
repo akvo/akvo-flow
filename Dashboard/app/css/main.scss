@@ -502,50 +502,52 @@ input[type="submit"] {
     }
 }
 
+
 .editAnswerMenu {
     position: relative;
     margin: 10px auto;
     width: 100%;
     background: rgb(205, 205, 205);
     ul {
-        position: relative;
-        width: 100%;
-        padding: 1.5em 0.5em;
+        @include flexbox;
+        -webkit-align-items: center;
+        align-items: center;
+        -webkit-align-content: center;
+        align-content: center;
+        -webkit-justify-content: space-around;
+        justify-content: space-around;
+        padding:15px 0;
         li {
-            display: inline;
-            margin: 0 0 10px 0;
+            flex-grow:1;
+            text-align:center;
+            &.deleteBtn {
+                position: initial;
+                display: relative;
+                top:10px;
+                left:45%;
+            }
+            &:first-child {
+                margin-left: 0.5%;
+                text-align: left;
+            }
+            &:last-child {
+                margin-right: 0.5%;
+                text-align:right;
+            }
         }
     }
 }
 
 .prevNext {
-    position: relative;
-    display: block;
     margin: 0 auto;
     padding: 1em 2% 1.5em 2%;
     width: 96%;
     background: $darkGrey;
-    .prevBtn {
-        position: absolute;
-        top: 0;
-        left: 0;
-        a {
-            font-weight: bold;
-            font-size: 1.2em;
-            display: inline-block;
-            padding: 0.5em 1em 1em 1em;
-        }
-    }
-    .nextBtn {
-        position: absolute;
-        top: 0;
-        right: 0;
-        a {
-            font-weight: bold;
-            font-size: 1.2em;
-            display: inline-block;
-            padding: 0.5em 1em 1em 1em;
-        }
+    a {
+        font-weight: bold;
+        font-size: 1.2em;
+        display: inline-block;
+        padding: 0.5em 1em 1em 1em;
     }
 }
 
