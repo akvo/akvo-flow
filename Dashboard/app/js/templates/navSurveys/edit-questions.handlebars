@@ -45,6 +45,9 @@
             {{else}}
               <h1 class="qtnGroupTitle"><a {{action "toggleVisibility" target="this"}}>{{view.content.code}}</a></h1>
             {{/if}}
+            {{#if view.amVisible}}
+              <label class="labelcheckbox">{{view Ember.Checkbox checkedBinding="view.content.repeatable"}}{{t _repeatable_question_group}}</label>
+            {{/if}}
             <nav class="qtnGroupMenu">
               <ul>
                 {{#unless view.amCopying}}
@@ -53,7 +56,7 @@
                   {{else}}
                     <li><a {{action "toggleVisibility" target="this"}} class="showQuestionGroup">{{t _show_questions}} </a></li>
                   {{/if}}
-                     <li><a {{action "doQGroupNameEdit" target="this"}} class="editQuestionGroup">{{t _edit_group}}</a></li>
+                     <li><a {{action "doQGroupNameEdit" target="this"}} class="editQuestionGroup">{{t _edit_group_name}}</a></li>
                      <li><a {{action confirm FLOW.dialogControl.delQG target="FLOW.dialogControl"}} class="deleteQuestionGroup">{{t _delete}}</a></li>
                      <li><a {{action "doQGroupCopy" target="this"}} class="copyQuestionGroup">{{t _copy}}</a></li>
                      <li><a {{action "doQGroupMove" target="this"}} class="moveQuestionGroup">{{t _move}}</a> </li>
