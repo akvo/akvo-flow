@@ -1291,6 +1291,35 @@ tfoot tr {
     }
 }
 
+/**************** Inspect Data tab. **************/
+
+#inspectData {
+    label {
+        &.surveyInstance {
+            &.tooltip {
+                a {
+                    color: red;
+                }
+            }
+        }
+    }
+    div {
+        &.noResults {
+            color: red;
+            font-size: 1.3em;
+            text-align: center;
+        }
+    }
+    tr {
+        td {
+            &.survey,
+            &.submitter {
+                text-align: left;
+            }
+        }
+    }
+}
+
 /**************** Assign Survey to devices. **************/
 
 #assignSurveys h2 {
