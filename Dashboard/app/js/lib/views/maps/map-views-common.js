@@ -63,33 +63,24 @@ FLOW.NavMapsView = FLOW.View.extend({
         'Terrain': terrain
       }, {}));
     }else if(FLOW.Env.mapsProvider === 'cartodb'){ //handle undefined
-      mapContent = '<div style="float: left; width: 100%">'
-      +'<div style="float: left">'
-      +'<label for="survey_selector">Select a survey</label>'
-      +'<select class="" name="survey_selector" id="survey_selector">'
-      +'<option value="">--All--</option>'
+      filterContent = '<select style="float: left" class="" name="survey_selector" id="survey_selector">'
+      +'<option value="">--Choose a survey--</option>'
       +'</select>&nbsp;'
-      +'</div>'
+      +'<select style="float: left" class="" name="form_selector" id="form_selector">'
+      +'<option value="">--Choose a form--</option>'
+      +'</select>&nbsp;'/*
       +'<div style="float: left">'
-      +'<label for="form_selector">Select a form</label>'
-      +'<select class="" name="form_selector" id="form_selector">'
-      +'<option value="">--All--</option>'
-      +'</select>&nbsp;'
-      +'</div>'
-      +'<div style="float: right; position: relative" id="show_hide"></div>'
-      +/*'<div style="float: left">'
       +'<label for="question_selector">Select a question to style the map by</label>'
       +'<select class="" name="question_selector" id="question_selector">'
       +'<option value="">--All--</option>'
       +'</select>&nbsp;'
       +'</div>'
       +'<button style="float: left" id="update_style">Update Points Style</button>'
-      +*/'</div>'
-      +'<div style="float: left; width:100%; height: 550px" id="cartodbd_flowMap"></div>';
+      +'<div style="float: left; width:100%; height: 550px" id="cartodb_flowMap"></div>'*/;
 
-      $("#flowMap").html(mapContent);
-      $("#mapDetailsHideShow").detach().appendTo('#show_hide');
-      $("#dropdown-holder").remove();
+      //$("#flowMap").html(mapContent);
+      $("#dropdown-holder").prepend(filterContent);
+      $("#dropdown-holder").append("<div style='clear: both'></div>");
 
       //Define the data layer
       var data_layer;
@@ -111,9 +102,9 @@ FLOW.NavMapsView = FLOW.View.extend({
     	});
 
       // create leaflet map
-    	this.map = L.map('cartodbd_flowMap', {scrollWheelZoom: false}).setView([-0.703107, 36.765], 2);
+    	this.map = L.map('flowMap', {scrollWheelZoom: false}).setView([-0.703107, 36.765], 2);
       map = this.map;
-    	L.tileLayer('http://{s}.{base}.maps.cit.api.here.com/maptile/2.1/maptile/{mapID}/normal.day.transit/{z}/{x}/{y}/256/png8?app_id={app_id}&app_code={app_code}', {
+    	L.tileLayer('https://{s}.{base}.maps.cit.api.here.com/maptile/2.1/maptile/{mapID}/normal.day.transit/{z}/{x}/{y}/256/png8?app_id={app_id}&app_code={app_code}', {
     		attribution: 'Map &copy; 1987-2014 <a href="http://developer.here.com">HERE</a>',
     		subdomains: '1234',
     		mapID: 'newest',
@@ -463,6 +454,15 @@ FLOW.NavMapsView = FLOW.View.extend({
     .openOn(mapObject);
   },
 
+  placeMarker: function(mapObject, latLng){
+    icon = L.icon({
+        iconUrl: 'http://joshuafrazier.info/images/firefox.svg',
+        iconSize: [38, 95], // size of the icon
+        popupAnchor: [0,-15]
+        });
+    L.marker(latLng, {icon: icon}).addTo(mapObject);
+  },
+
   load_questions: function(form_id){
   	$.get("/rest/cartodb/questions?form_id="+form_id, function(questions_data, status){
   		var questions_rows = [];
@@ -598,14 +598,14 @@ FLOW.NavMapsView = FLOW.View.extend({
     layer.bind('featureOver', function(e, latlon, pxPos, data, layer) {
       hovers[layer] = 1;
       if(_.any(hovers)) {
-        $('#cartodbd_flowMap').css('cursor', 'pointer');
+        $('#flowMap').css('cursor', 'pointer');
       }
     });
 
     layer.bind('featureOut', function(m, layer) {
       hovers[layer] = 0;
       if(!_.any(hovers)) {
-        $('#cartodbd_flowMap').css({"cursor":"-moz-grabbing","cursor":"-webkit-grabbing"});
+        $('#flowMap').css({"cursor":"-moz-grabbing","cursor":"-webkit-grabbing"});
       }
     });
   },
