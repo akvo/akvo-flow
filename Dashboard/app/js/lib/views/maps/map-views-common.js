@@ -4,6 +4,7 @@ FLOW.NavMapsView = FLOW.View.extend({
   detailsPaneElements: null,
   detailsPaneVisible: null,
   map: null,
+  marker: null,
   geomodel: null,
   cartodb_layer: null,
   layer_exists_check: 0,
@@ -102,7 +103,7 @@ FLOW.NavMapsView = FLOW.View.extend({
     	});
 
       // create leaflet map
-    	map = L.map('flowMap', {scrollWheelZoom: true}).setView([26.11598592533351, 1.9335937499999998], 2);
+    	map = L.map('flowMap', {scrollWheelZoom: true}).setView([26.11598592533351, 1.9335937499999998], 3);
 
       bounds = new L.LatLngBounds(map.getBounds().getSouthWest(), map.getBounds().getNorthEast());
 
@@ -145,7 +146,7 @@ FLOW.NavMapsView = FLOW.View.extend({
               "data_point",
               "data_point",
               "SELECT * FROM data_point",
-              ["name", "survey_id", "id", "identifier"]);
+              ["name", "survey_id", "id", "identifier", "lat", "lon"]);
     			}
     		}
     	});
@@ -199,7 +200,7 @@ FLOW.NavMapsView = FLOW.View.extend({
                   "data_point_"+$( "#survey_selector" ).val(),
                   "data_point",
                   "SELECT * FROM data_point WHERE survey_id="+$( "#survey_selector" ).val(),
-                  ["name", "survey_id", "id", "identifier"]);
+                  ["name", "survey_id", "id", "identifier", "lat", "lon"]);
       				}
       			}
       		});
@@ -463,13 +464,13 @@ FLOW.NavMapsView = FLOW.View.extend({
     .openOn(mapObject);
   },
 
-  placeMarker: function(mapObject, latLng){
-    icon = L.icon({
-        iconUrl: 'http://joshuafrazier.info/images/firefox.svg',
-        iconSize: [38, 95], // size of the icon
-        popupAnchor: [0,-15]
-        });
-    L.marker(latLng, {icon: icon}).addTo(mapObject);
+  placeMarker: function(mapObject, latlng){
+    markerIcon = new L.Icon({
+      iconUrl: 'images/marker.svg',
+      iconSize: [10, 10]
+    });
+    this.marker = new L.marker(latlng, {icon: markerIcon});
+    this.map.addLayer(this.marker);
   },
 
   load_questions: function(form_id){
@@ -518,16 +519,6 @@ FLOW.NavMapsView = FLOW.View.extend({
   	config_json_data['sql'] = sql;
 
     console.log(JSON.stringify(config_json_data));
-
-  	/*$.post(
-  			"/rest/cartodb/named_maps",
-  			config_json_data,
-  			function(named_map_data, status){
-  				console.log(named_map_data);
-  				if(named_map_data.template_id){
-  					self.create_layer(map, map_name, "");
-  				}
-  			});*/
 
     $.ajax({
       type: 'POST',
@@ -578,26 +569,26 @@ FLOW.NavMapsView = FLOW.View.extend({
   		current_layer = layer.getSubLayer(0);
   		current_layer.setInteraction(true);
 
-  		// on mouseover
-  		/*current_layer.on('featureOver', function(e, pos, pixel, data) {
-  				// print data to console log
-  				console.log("Event #" + data.id);
-  		});*/
-
   		current_layer.on('featureClick', function(e, latlng, pos, data) {
-  			self.openPopup(map, "id: "+data.id, latlng);
+        if(self.marker != null){
+          console.log(latlng);
+          self.map.removeLayer(self.marker);
+        }
+        console.log(data);
+        self.placeMarker(map, [data.lat, data.lon]);
+
+  			//self.openPopup(map, "id: "+data.id, latlng);
         self.showDetailsPane();
         if($("#form_selector").val() == ""){
           point_data_url = "/rest/cartodb/answers?dataPointId="+data.id+"&surveyId="+data.survey_id;
+          self.getCartodbPointData(point_data_url, data.name, data.identifier);
         }else{
           point_data_url = "/rest/cartodb/raw_data?dataPointId="+data.data_point_id+"&formId="+$("#form_selector").val();
+          $.get("/rest/cartodb/data_point?id="+data.data_point_id, function(point_data, status){
+            self.getCartodbPointData(point_data_url, point_data['row']['name'], point_data['row']['identifier']);
+          });
         }
-        //console.log(point_data_url);
-        self.getCartodbPointData(point_data_url);
   		});
-
-  		// show infowindows on click
-  		//cdb.vis.Vis.addInfowindow(map, current_layer, ['id']);
   	});
   },
 
@@ -619,7 +610,7 @@ FLOW.NavMapsView = FLOW.View.extend({
     });
   },
 
-  getCartodbPointData: function(url){
+  getCartodbPointData: function(url, dataPointName, dataPointIdentifier){
     self= this;
     $("#pointDetails").html("");
     $.get(url, function(point_data, status){
@@ -635,6 +626,13 @@ FLOW.NavMapsView = FLOW.View.extend({
               geoshape_coordinates = "";
       				//console.log(questions_data);
               clicked_point_content += "<ul class=\"placeMarkBasicInfo floats-in\">"
+              +"<h3>"
+              +((dataPointName != "" && dataPointName != "null" && dataPointName != null) ? dataPointName : "")
+              +"</h3>"
+              +"<li>"
+              +"<span>Data Point ID:</span>"
+              +"<div style=\"display: inline; margin: 0 0 0 5px;\">"+dataPointIdentifier+"</div>"
+              +"</li>"
               +"<li>"
               +"<span>Collected on:</span>"
               +"<div class=\"placeMarkCollectionDate\">"
