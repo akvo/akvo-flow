@@ -50,6 +50,7 @@
             {{/if}}
             {{#if view.amVisible}}
               <label class="labelcheckbox">{{view Ember.Checkbox checkedBinding="view.content.repeatable"}}{{t _repeatable_question_group}}</label>
+              {{tooltip _repeatable_question_group_tooltip}}
             {{/if}}
             <nav class="qtnGroupMenu">
               <ul>
