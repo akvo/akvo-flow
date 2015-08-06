@@ -328,21 +328,21 @@ FLOW.NavMapsView = FLOW.View.extend({
         'Streets': L.mapbox.tileLayer('akvo.he2pdjhk'),
         'Satellite': L.mapbox.tileLayer('akvo.he30neh4')
       }).addTo(this.map);
+
+      // couple listener to end of zoom or drag
+      this.map.on('moveend', function (e) {
+        self.redoMap();
+      });
+
+      FLOW.placemarkController.set('map', this.map);
+      this.geoModel = create_geomodel();
+
+      //load points for the visible map
+      this.redoMap();
     }
 
     // add scale indication to map
     L.control.scale({position:'topleft', maxWidth:150}).addTo(this.map);
-
-    // couple listener to end of zoom or drag
-    this.map.on('moveend', function (e) {
-      self.redoMap();
-    });
-
-    FLOW.placemarkController.set('map', this.map);
-    this.geoModel = create_geomodel();
-
-    //load points for the visible map
-    this.redoMap();
 
     this.$('#mapDetailsHideShow').click(function () {
       self.handleShowHideDetails();
@@ -464,7 +464,7 @@ FLOW.NavMapsView = FLOW.View.extend({
     .openOn(mapObject);
   },
 
-  placeMarker: function(mapObject, latlng){
+  placeMarker: function(latlng){
     markerIcon = new L.Icon({
       iconUrl: 'images/marker.svg',
       iconSize: [10, 10]
@@ -575,7 +575,7 @@ FLOW.NavMapsView = FLOW.View.extend({
           self.map.removeLayer(self.marker);
         }
         console.log(data);
-        self.placeMarker(map, [data.lat, data.lon]);
+        self.placeMarker([data.lat, data.lon]);
 
   			//self.openPopup(map, "id: "+data.id, latlng);
         self.showDetailsPane();
