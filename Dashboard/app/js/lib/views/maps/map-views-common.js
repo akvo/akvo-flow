@@ -102,17 +102,26 @@ FLOW.NavMapsView = FLOW.View.extend({
     	});
 
       // create leaflet map
-    	this.map = L.map('flowMap', {scrollWheelZoom: false}).setView([-0.703107, 36.765], 2);
-      map = this.map;
-    	L.tileLayer('https://{s}.{base}.maps.cit.api.here.com/maptile/2.1/maptile/{mapID}/normal.day.transit/{z}/{x}/{y}/256/png8?app_id={app_id}&app_code={app_code}', {
+    	map = L.map('flowMap', {scrollWheelZoom: true}).setView([26.11598592533351, 1.9335937499999998], 2);
+
+      bounds = new L.LatLngBounds(map.getBounds().getSouthWest(), map.getBounds().getNorthEast());
+
+      map.options.maxBoundsViscosity = 1.0;
+      map.options.maxBounds = bounds;
+      map.options.maxZoom = 18;
+      map.options.minZoom = 2;
+
+      L.tileLayer('https://{s}.{base}.maps.cit.api.here.com/maptile/2.1/maptile/{mapID}/normal.day.transit/{z}/{x}/{y}/256/png8?app_id={app_id}&app_code={app_code}', {
     		attribution: 'Map &copy; 1987-2014 <a href="http://developer.here.com">HERE</a>',
     		subdomains: '1234',
     		mapID: 'newest',
     		app_id: 'r5lmMPKxiMeZzkTWRAJu',
     		app_code: 'W6i_Oej7Y8IdgizMp7eSyQ',
     		base: 'base',
-    		maxZoom: 18
+        noWrap: true
     	}).addTo(map);
+
+      this.map = map;
 
       //get list of named maps
     	$.get("/rest/cartodb/named_maps", function(data, status){
@@ -450,7 +459,7 @@ FLOW.NavMapsView = FLOW.View.extend({
   openPopup: function(mapObject, popupContent, latLng){
     L.popup()
     .setLatLng(latLng)
-    .setContent(popupContent)
+    .setContent("&nbsp;")
     .openOn(mapObject);
   },
 
@@ -561,7 +570,7 @@ FLOW.NavMapsView = FLOW.View.extend({
   	})
   	.addTo(map)
   	.done(function(layer) {
-  		self.layer_exists_check = 1;
+      self.layer_exists_check = 1;
   		self.cartodb_layer = layer;
 
   		self.addCursorInteraction(layer);
@@ -611,6 +620,7 @@ FLOW.NavMapsView = FLOW.View.extend({
   },
 
   getCartodbPointData: function(url){
+    self= this;
     $("#pointDetails").html("");
     $.get(url, function(point_data, status){
       var clicked_point_content = "";
@@ -621,6 +631,8 @@ FLOW.NavMapsView = FLOW.View.extend({
         $.get(
       			"/rest/cartodb/questions?form_id="+point_data['formId'],
       			function(questions_data, status){
+              geoshape_check = 0;
+              geoshape_coordinates = "";
       				//console.log(questions_data);
               clicked_point_content += "<ul class=\"placeMarkBasicInfo floats-in\">"
               +"<li>"
@@ -647,17 +659,20 @@ FLOW.NavMapsView = FLOW.View.extend({
                       image +"</div>";
                       clicked_point_content += "<dd>"+image+"</dd></div>";
                     }else{
-                      //if point is a geoshape, draw the shape in the side window
+                      clicked_point_content += "<dd>"+point_data['answers'][column]+"</dd></div>";
+                      /*//if point is a geoshape, draw the shape in the side window
                       if(questions_data['questions'][i].type == "GEOSHAPE"){
+                        geoshape_check = 1;
                         geoshape_object = JSON.parse(point_data['answers'][column]);
                         if(geoshape_object['features'].length > 0){
-                          console.log(geoshape_object['features'][0]['geometry']['coordinates'][0].length);
+                          //console.log(geoshape_object['features'][0]['geometry']['coordinates'][0].length);
+                          geoshape_coordinates = geoshape_object['features'][0]['geometry']['coordinates'][0];
                         }
                         console.log(geoshape_object);
-                        clicked_point_content += "<dd>"+point_data['answers'][column]+"</dd></div>";
+                        clicked_point_content += "<dd><div id=\"geoShapeMap\" style=\"width:100%; height: 100px\"></div></dd></div>";
                       }else{
                         clicked_point_content += "<dd>"+point_data['answers'][column]+"</dd></div>";
-                      }
+                      }*/
                     }
                   }
                 }
@@ -665,12 +680,48 @@ FLOW.NavMapsView = FLOW.View.extend({
               //clicked_point_content += "</table>";
               clicked_point_content += "</dl>";
               $("#pointDetails").html(clicked_point_content);
+
+              //if there's geoshape, draw it
+              if(geoshape_check === 1){
+                //self.createGeoshape(geoshape_coordinates);
+              }
       			});
       }else{
         clicked_point_content += "<p class=\"noDetails\">No details</p>";
         $("#pointDetails").html(clicked_point_content);
       }
     });
+  },
+
+  createGeoshape: function(points){
+    var getCentroid = function (arr) {
+      return arr.reduce(function (x,y) {
+        return [x[0] + y[0]/arr.length, x[1] + y[1]/arr.length]
+      }, [0,0])
+    }
+
+    center = getCentroid(points);
+
+    map = L.map('geoShapeMap', {scrollWheelZoom: false}).setView(center, 2);
+    L.tileLayer('https://{s}.{base}.maps.cit.api.here.com/maptile/2.1/maptile/{mapID}/normal.day.transit/{z}/{x}/{y}/256/png8?app_id={app_id}&app_code={app_code}', {
+      attribution: '<a href="http://developer.here.com">HERE</a>',
+      subdomains: '1234',
+      mapID: 'newest',
+      app_id: 'r5lmMPKxiMeZzkTWRAJu',
+      app_code: 'W6i_Oej7Y8IdgizMp7eSyQ',
+      base: 'base',
+      maxZoom: 18
+    }).addTo(map);
+
+    geoshape = L.polygon(points);
+
+    geoshape.addTo(map);
+
+    southWest = geoshape.getBounds().getSouthWest();
+    northEast = geoshape.getBounds().getNorthEast();
+    bounds = new L.LatLngBounds(southWest, northEast);
+
+    map.fitBounds(bounds);
   }
 
 });
