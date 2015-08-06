@@ -40,10 +40,13 @@
           {{/if}}
 
             {{#if view.showQGroupNameEditField}}
-              {{view Ember.TextField valueBinding="view.questionGroupName" size=45}} <a {{action "saveQuestionGroupNameEdit" target="this"}} class="smallBtn">{{t _save}}</a>
-              <a {{action "cancelQuestionGroupNameEdit" target="this"}}>{{t _cancel}}</a>
+              {{view Ember.TextField valueBinding="view.content.code" size=45}}
             {{else}}
               <h1 class="qtnGroupTitle"><a {{action "toggleVisibility" target="this"}}>{{view.content.code}}</a></h1>
+            {{/if}}
+            {{#if view.showSaveCancelButton}}
+              <a {{action "saveQuestionGroup" target="this"}} class="smallBtn">{{t _save}}</a>
+              <a {{action "cancelQuestionGroupNameEdit" target="this"}}>{{t _cancel}}</a>
             {{/if}}
             {{#if view.amVisible}}
               <label class="labelcheckbox">{{view Ember.Checkbox checkedBinding="view.content.repeatable"}}{{t _repeatable_question_group}}</label>
