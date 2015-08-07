@@ -121,12 +121,12 @@ input 'app' do
     concat 'js/app.js'
   end
 
-
   match "static/**/*" do
     concat do |input|
       input.sub(/static\//, '')
     end
-  
+  end
+
   match "css/custom-theme/images/*" do
     concat do |input|
       input.sub(/static\//, '')
