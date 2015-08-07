@@ -425,7 +425,6 @@ FLOW.NavMapsView = FLOW.View.extend({
       data: JSON.stringify(configJsonData), //turns out you need to stringify the payload before sending it
       dataType: 'json',
       success: function(namedMapData){
-        console.log(namedMapData);
         if(namedMapData.template_id){
           self.createLayer(map, mapName, "");
         }
@@ -520,8 +519,7 @@ FLOW.NavMapsView = FLOW.View.extend({
       			function(questionsData, status){
               geoshapeCheck = 0;
               geoshapeCoordinates = "";
-      				//console.log(questionsData);
-              clickedPointContent += "<ul class=\"placeMarkBasicInfo floats-in\">"
+      				clickedPointContent += "<ul class=\"placeMarkBasicInfo floats-in\">"
               +"<h3>"
               +((dataPointName != "" && dataPointName != "null" && dataPointName != null) ? dataPointName : "")
               +"</h3>"
@@ -558,10 +556,8 @@ FLOW.NavMapsView = FLOW.View.extend({
                         geoshapeCheck = 1;
                         geoshape_object = JSON.parse(pointData['answers'][column]);
                         if(geoshape_object['features'].length > 0){
-                          //console.log(geoshape_object['features'][0]['geometry']['coordinates'][0].length);
                           geoshapeCoordinates = geoshape_object['features'][0]['geometry']['coordinates'][0];
                         }
-                        console.log(geoshape_object);
                         clickedPointContent += "<dd><div id=\"geoShapeMap\" style=\"width:100%; height: 100px\"></div></dd></div>";
                       }else{
                         clickedPointContent += "<dd>"+pointData['answers'][column]+"</dd></div>";
