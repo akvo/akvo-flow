@@ -84,3 +84,6 @@ DEPENDENCIES
   sass
   uglifier
   yui-compressor
+
+BUNDLED WITH
+   1.10.3
