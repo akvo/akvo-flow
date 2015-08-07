@@ -25,14 +25,14 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import org.waterforpeople.mapping.app.web.rest.dto.NamedMapPayload;
 
 import com.gallatinsystems.common.util.PropertyUtil;
+import com.google.appengine.api.utils.SystemProperty;
 
 @Controller
 @RequestMapping("/cartodb")
 public class CartodbRestService {
 
     private static final String CDB_API_KEY = PropertyUtil.getProperty("cartodbApiKey");
-
-    private static final String CDB_ACCOUNT_NAME = PropertyUtil.getProperty("cartodbAccountName");
+    private static final String CDB_ACCOUNT_NAME = SystemProperty.applicationId.get();
     private static final String CDB_HOST = PropertyUtil.getProperty("cartodbHost");
 
     private static final ObjectMapper objectMapper = new ObjectMapper();
@@ -137,7 +137,9 @@ public class CartodbRestService {
         try {
             response.put(
                     "column_names",
-                    queryCartodb(String.format("SELECT column_name from information_schema.columns where table_name='raw_data_%d'", formId)));
+                    queryCartodb(String
+                            .format("SELECT column_name from information_schema.columns where table_name='raw_data_%d'",
+                                    formId)));
             return response;
         } catch (IOException e) {
             return response;
@@ -173,12 +175,14 @@ public class CartodbRestService {
 
     @RequestMapping(method = RequestMethod.GET, value = "distinct")
     @ResponseBody
-    public Map<String, Object> getDistinctValues(@RequestParam("question_name") String questionName, @RequestParam("form_id") Long formId) {
+    public Map<String, Object> getDistinctValues(
+            @RequestParam("question_name") String questionName, @RequestParam("form_id") Long formId) {
         Map<String, Object> response = new HashMap<>();
         response.put("distinct_values", null);
         try {
             response.put("distinct_values",
-                    queryCartodb(String.format("SELECT DISTINCT %s FROM raw_data_%d",questionName , formId)));
+                    queryCartodb(String.format("SELECT DISTINCT %s FROM raw_data_%d", questionName,
+                            formId)));
             return response;
         } catch (IOException e) {
             return response;
