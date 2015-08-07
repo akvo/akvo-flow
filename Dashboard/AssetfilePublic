@@ -126,7 +126,12 @@ input 'app' do
     concat do |input|
       input.sub(/static\//, '')
     end
-  end
+  
+  match "css/custom-theme/images/*" do
+    concat do |input|
+      input.sub(/static\//, '')
+    end
+  end  
 
   match "css/**/*.css" do
     if ENV['RAKEP_MODE'] == 'production'
