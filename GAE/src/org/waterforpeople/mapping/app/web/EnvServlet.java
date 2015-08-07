@@ -65,7 +65,6 @@ public class EnvServlet extends HttpServlet {
         properties.add("mapsProvider");
         properties.add("googleMapsRegionBias");
         properties.add("cartodbHost");
-        properties.add("cartodbTilerPort");
     }
 
     @Override
@@ -122,10 +121,6 @@ public class EnvServlet extends HttpServlet {
 
         if (props.get("cartodbHost") == null) {
             props.put("cartodbHost", "");
-        }
-
-        if (props.get("cartodbTilerPort") == null) {
-            props.put("cartodbTilerPort", "");
         }
 
         final BaseDAO<Country> countryDAO = new BaseDAO<Country>(Country.class);
