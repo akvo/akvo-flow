@@ -110,23 +110,23 @@ FLOW.NavMapsView = FLOW.View.extend({
     +'<option value="">--' + Ember.String.loc('_choose_a_form') + '--</option>'
     +'</select>&nbsp;';
 
-    $("#dropdown-holder").prepend(filterContent);
-    $("#dropdown-holder").append("<div style='clear: both'></div>");
+    $('#dropdown-holder').prepend(filterContent);
+    $('#dropdown-holder').append('<div style="clear: both"></div>');
 
     //Define the data layer
     var data_layer;
 
-    $.get("/rest/cartodb/surveys", function(data, status) {
+    $.get('/rest/cartodb/surveys', function(data, status) {
       var rows = [];
-      if (data["surveys"].length > 0) {
-        rows = data["surveys"];
+      if (data['surveys'].length > 0) {
+        rows = data['surveys'];
         rows.sort(function(el1, el2) {
-          return self.compare(el1, el2, "name")
+          return self.compare(el1, el2, 'name')
         });
 
         for (var i=0; i<rows.length; i++) {
           //append return survey list to the survey selector element
-          $("#survey_selector").append('<option value="'+rows[i]["id"]+'">'+rows[i]["name"]+'</option>');
+          $('#survey_selector').append('<option value="'+rows[i]["id"]+'">'+rows[i]["name"]+'</option>');
         }
       }
     });
@@ -154,12 +154,12 @@ FLOW.NavMapsView = FLOW.View.extend({
     this.map = map;
 
     //get list of named maps
-    $.get("/rest/cartodb/named_maps", function(data, status) {
+    $.get('/rest/cartodb/named_maps', function(data, status) {
       if(data.template_ids) {
-        namedMapCheck = 0;
+        var namedMapCheck = 0;
         for (var i=0; i<data['template_ids'].length; i++) {
           //check in there is a full "data_point" table named map
-          if (data['template_ids'][i] == "data_point") {
+          if (data['template_ids'][i] == 'data_point') {
             //named map already exists
             namedMapCheck++;
           }
@@ -168,13 +168,13 @@ FLOW.NavMapsView = FLOW.View.extend({
         //if named map exists
         if (namedMapCheck > 0){
           //overlay named map
-          self.createLayer(map, "data_point", "");
+          self.createLayer(map, 'data_point', '');
         } else {
           self.namedMaps(
             map,
-            "data_point",
-            "data_point",
-            "SELECT * FROM data_point",
+            'data_point',
+            'data_point',
+            'SELECT * FROM data_point',
             ["name", "survey_id", "id", "identifier", "lat", "lon"]);
         }
       }
@@ -184,38 +184,38 @@ FLOW.NavMapsView = FLOW.View.extend({
       if(self.marker != null){
         self.map.removeLayer(self.marker);
         self.hideDetailsPane();
-        $("#pointDetails").html("<p class=\"noDetails\">"+Ember.String.loc('_no_details') +"</p>");
+        $('#pointDetails').html('<p class="noDetails">'+Ember.String.loc('_no_details') +'</p>');
       }
     });
 
-    $("#survey_selector").change(function() {
-      $("#form_selector option[value!='']").remove();
-      $("#question_selector option[value!='']").remove();
+    $('#survey_selector').change(function() {
+      $('#form_selector option[value!=""]').remove();
+      $('#question_selector option[value!=""]').remove();
 
-      if($("#survey_selector").val() !== ""){
+      if($('#survey_selector').val() !== ""){
         //get list of forms in selected survey
-        $.get("/rest/cartodb/forms?surveyId="+$("#survey_selector").val(), function(data, status) {
+        $.get('/rest/cartodb/forms?surveyId='+$('#survey_selector').val(), function(data, status) {
           var rows = [];
-          if(data["forms"] && data["forms"].length > 0) {
-            rows = data["forms"];
+          if(data['forms'] && data['forms'].length > 0) {
+            rows = data['forms'];
             rows.sort(function(el1, el2) {
-              return self.compare(el1, el2, "name")
+              return self.compare(el1, el2, 'name')
             });
 
             for(var i=0; i<rows.length; i++) {
               //append return survey list to the survey selector element
-              $("#form_selector").append('<option value="'+rows[i]["id"]+'">'+rows[i]["name"]+'</option>');
+              $('#form_selector').append('<option value="'+rows[i]["id"]+'">'+rows[i]["name"]+'</option>');
             }
           }
         });
 
         //get list of named maps
-        $.get("/rest/cartodb/named_maps", function(data, status) {
+        $.get('/rest/cartodb/named_maps', function(data, status) {
           if (data.template_ids) {
-            namedMapCheck = 0;
+            var namedMapCheck = 0;
             for (var i=0; i<data['template_ids'].length; i++) {
               //check if there is a selectd survey's named map
-              if(data['template_ids'][i] == "data_point_"+$( "#survey_selector" ).val()){
+              if(data['template_ids'][i] == 'data_point_'+$( "#survey_selector" ).val()){
                 //named map already exists
                 namedMapCheck++;
               }
@@ -224,14 +224,14 @@ FLOW.NavMapsView = FLOW.View.extend({
             //if named map exists
             if (namedMapCheck > 0) {
               //overlay named map
-              self.createLayer(map, "data_point_"+$( "#survey_selector" ).val(), "");
+              self.createLayer(map, 'data_point_'+$( "#survey_selector" ).val(), "");
             } else {
               //create named map
               self.namedMaps(
                 map,
-                "data_point_"+$( "#survey_selector" ).val(),
-                "data_point",
-                "SELECT * FROM data_point WHERE survey_id="+$( "#survey_selector" ).val(),
+                'data_point_'+$( "#survey_selector" ).val(),
+                'data_point',
+                'SELECT * FROM data_point WHERE survey_id='+$( "#survey_selector" ).val(),
                 ["name", "survey_id", "id", "identifier", "lat", "lon"]);
             }
           }
@@ -248,7 +248,7 @@ FLOW.NavMapsView = FLOW.View.extend({
         //get named maps
         $.get("/rest/cartodb/named_maps", function(data, status) {
           if (data.template_ids) {
-            namedMapCheck = 0;
+            var namedMapCheck = 0;
             for (var i=0; i<data['template_ids'].length; i++) {
               if(data['template_ids'][i] === "raw_data_"+$( "#form_selector" ).val()) {
                 //named map already exists
@@ -395,7 +395,7 @@ FLOW.NavMapsView = FLOW.View.extend({
 
   /*Place a marker to highlight clicked point of layer on cartodb map*/
   placeMarker: function(latlng){
-    markerIcon = new L.Icon({
+    var markerIcon = new L.Icon({
       iconUrl: 'images/marker.svg',
       iconSize: [10, 10]
     });
@@ -408,7 +408,7 @@ FLOW.NavMapsView = FLOW.View.extend({
     var self = this;
 
   	//style of points for new layer
-    cartocss = "#"+table+"{"
+    var cartocss = "#"+table+"{"
   		+"marker-fill-opacity: 0.9;"
   		+"marker-line-color: #FFF;"
   		+"marker-line-width: 1.5;"
@@ -472,7 +472,7 @@ FLOW.NavMapsView = FLOW.View.extend({
 
   		self.addCursorInteraction(layer);
 
-  		current_layer = layer.getSubLayer(0);
+  		var current_layer = layer.getSubLayer(0);
   		current_layer.setInteraction(true);
 
   		current_layer.on('featureClick', function(e, latlng, pos, data) {
@@ -482,12 +482,12 @@ FLOW.NavMapsView = FLOW.View.extend({
         self.placeMarker([data.lat, data.lon]);
 
   			self.showDetailsPane();
-        if($("#form_selector").val() == ""){
-          pointDataUrl = "/rest/cartodb/answers?dataPointId="+data.id+"&surveyId="+data.survey_id;
+        if($('#form_selector').val() == ""){
+          pointDataUrl = '/rest/cartodb/answers?dataPointId='+data.id+'&surveyId='+data.survey_id;
           self.getCartodbPointData(pointDataUrl, data.name, data.identifier);
         }else{
-          pointDataUrl = "/rest/cartodb/raw_data?dataPointId="+data.data_point_id+"&formId="+$("#form_selector").val();
-          $.get("/rest/cartodb/data_point?id="+data.data_point_id, function(pointData, status){
+          pointDataUrl = '/rest/cartodb/raw_data?dataPointId='+data.data_point_id+'&formId='+$('#form_selector').val();
+          $.get('/rest/cartodb/data_point?id='+data.data_point_id, function(pointData, status){
             self.getCartodbPointData(pointDataUrl, pointData['row']['name'], pointData['row']['identifier']);
           });
         }
@@ -515,7 +515,7 @@ FLOW.NavMapsView = FLOW.View.extend({
   },
 
   getCartodbPointData: function(url, dataPointName, dataPointIdentifier){
-    self= this;
+    var self = this;
     $("#pointDetails").html("");
     $.get(url, function(pointData, status){
       var clickedPointContent = "";
@@ -525,40 +525,40 @@ FLOW.NavMapsView = FLOW.View.extend({
         $.get(
       			"/rest/cartodb/questions?form_id="+pointData['formId'],
       			function(questionsData, status){
-              geoshapeCheck = 0;
-              geoshapeCoordinates = "";
-      				clickedPointContent += "<ul class=\"placeMarkBasicInfo floats-in\">"
-              +"<h3>"
+              var geoshapeCheck = 0;
+              var geoshapeCoordinates = "";
+      				clickedPointContent += '<ul class="placeMarkBasicInfo floats-in">'
+              +'<h3>'
               +((dataPointName != "" && dataPointName != "null" && dataPointName != null) ? dataPointName : "")
-              +"</h3>"
-              +"<li>"
-              +"<span>"+Ember.String.loc('_data_point_id') +":</span>"
-              +"<div style=\"display: inline; margin: 0 0 0 5px;\">"+dataPointIdentifier+"</div>"
-              +"</li>"
-              +"<li>"
-              +"<span>"+Ember.String.loc('_collected_on') +":</span>"
-              +"<div class=\"placeMarkCollectionDate\">"
+              +'</h3>'
+              +'<li>'
+              +'<span>'+Ember.String.loc('_data_point_id') +':</span>'
+              +'<div style="display: inline; margin: 0 0 0 5px;">'+dataPointIdentifier+'</div>'
+              +'</li>'
+              +'<li>'
+              +'<span>'+Ember.String.loc('_collected_on') +':</span>'
+              +'<div class="placeMarkCollectionDate">'
               +pointData['answers']['created_at']
-              +"</div></li><li></li></ul>";
+              +'</div></li><li></li></ul>';
               //clickedPointContent += "<table>";
-              clickedPointContent += "<dl class=\"floats-in\" style=\"opacity: 1; display: inherit;\">";
+              clickedPointContent += '<dl class="floats-in" style="opacity: 1; display: inherit;">';
               for (column in pointData['answers']){
                 for(var i=0; i<questionsData['questions'].length; i++){
                   if (column.match(questionsData['questions'][i].id)) {
-                    clickedPointContent += "<div class=\"defListWrap\"><dt>"+questionsData['questions'][i].display_text+"&nbsp;</dt>";
+                    clickedPointContent += '<div class="defListWrap"><dt>'+questionsData['questions'][i].display_text+'&nbsp;</dt>';
 
                     //if question is of type, photo load a html image element
                     if(questionsData['questions'][i].type == "PHOTO"){
-                      image = "<div class=\":imgContainer photoUrl:shown:hidden\">";
+                      var image = '<div class=":imgContainer photoUrl:shown:hidden">';
                       if(pointData['answers'][column] != null){
-                        image_filename = FLOW.Env.photo_url_root+pointData['answers'][column].substring(pointData['answers'][column].lastIndexOf("/")+1);
-                        image += "<a href=\""+image_filename+"\" target=\"_blank\">"
-                        +"<img src=\""+image_filename+"\" alt=\"\"/></a>";
+                        var image_filename = FLOW.Env.photo_url_root+pointData['answers'][column].substring(pointData['answers'][column].lastIndexOf("/")+1);
+                        image += '<a href="'+image_filename+'" target="_blank">'
+                        +'<img src="'+image_filename+'" alt=""/></a>';
                       }
-                      image +"</div>";
-                      clickedPointContent += "<dd>"+image+"</dd></div>";
+                      image +'</div>';
+                      clickedPointContent += '<dd>'+image+'</dd></div>';
                     }else{
-                      clickedPointContent += "<dd>"+pointData['answers'][column]+"</dd></div>";
+                      clickedPointContent += '<dd>'+pointData['answers'][column]+'</dd></div>';
                       /*//if point is a geoshape, draw the shape in the side window
                       if(questionsData['questions'][i].type == "GEOSHAPE"){
                         geoshapeCheck = 1;
@@ -574,8 +574,8 @@ FLOW.NavMapsView = FLOW.View.extend({
                   }
                 }
               }
-              clickedPointContent += "</dl>";
-              $("#pointDetails").html(clickedPointContent);
+              clickedPointContent += '</dl>';
+              $('#pointDetails').html(clickedPointContent);
 
               //if there's geoshape, draw it
               if(geoshapeCheck === 1){
@@ -583,8 +583,8 @@ FLOW.NavMapsView = FLOW.View.extend({
               }
       			});
       }else{
-        clickedPointContent += "<p class=\"noDetails\">"+Ember.String.loc('_no_details') +"</p>";
-        $("#pointDetails").html(clickedPointContent);
+        clickedPointContent += '<p class="noDetails">'+Ember.String.loc('_no_details') +'</p>';
+        $('#pointDetails').html(clickedPointContent);
       }
     });
   },
@@ -596,9 +596,9 @@ FLOW.NavMapsView = FLOW.View.extend({
       }, [0,0])
     }
 
-    center = getCentroid(points);
+    var center = getCentroid(points);
 
-    map = L.map('geoShapeMap', {scrollWheelZoom: false}).setView(center, 2);
+    var geoshapeMap = L.map('geoShapeMap', {scrollWheelZoom: false}).setView(center, 2);
     L.tileLayer('https://{s}.{base}.maps.cit.api.here.com/maptile/2.1/maptile/{mapID}/normal.day.transit/{z}/{x}/{y}/256/png8?app_id={app_id}&app_code={app_code}', {
       attribution: '<a href="http://developer.here.com">HERE</a>',
       subdomains: '1234',
@@ -607,17 +607,17 @@ FLOW.NavMapsView = FLOW.View.extend({
       app_code: 'W6i_Oej7Y8IdgizMp7eSyQ',
       base: 'base',
       maxZoom: 18
-    }).addTo(map);
+    }).addTo(geoshapeMap);
 
-    geoshape = L.polygon(points);
+    var geoshape = L.polygon(points);
 
-    geoshape.addTo(map);
+    geoshape.addTo(geoshapeMap);
 
-    southWest = geoshape.getBounds().getSouthWest();
-    northEast = geoshape.getBounds().getNorthEast();
-    bounds = new L.LatLngBounds(southWest, northEast);
+    var southWest = geoshape.getBounds().getSouthWest();
+    var northEast = geoshape.getBounds().getNorthEast();
+    var bounds = new L.LatLngBounds(southWest, northEast);
 
-    map.fitBounds(bounds);
+    geoshapeMap.fitBounds(bounds);
   }
 
 });
