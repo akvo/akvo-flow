@@ -140,7 +140,6 @@ FLOW.inspectDataTableView = FLOW.View.extend({
   // TODO solve when popup is open, no new surveyIdQuery is done
   showEditSurveyInstanceWindow: function (event) {
     FLOW.questionAnswerControl.doQuestionAnswerQuery(event.context.get('keyId'));
-    FLOW.questionControl.doSurveyIdQuery(event.context.get('surveyId'));
     this.get('alreadyLoaded').push(event.context.get('surveyId'));
     this.set('selectedSurveyInstanceId', event.context.get('keyId'));
     this.set('selectedSurveyInstanceNum', event.context.clientId);
