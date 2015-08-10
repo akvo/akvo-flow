@@ -361,7 +361,7 @@ FLOW.NavMapsView = FLOW.View.extend({
   },
 
   compare: function (el1, el2, index) {
-  	return el1[index] == el2[index] ? 0 : (el1[index] < el2[index] ? -1 : 1);
+    return el1[index] == el2[index] ? 0 : (el1[index] < el2[index] ? -1 : 1);
   },
 
   /*Place a marker to highlight clicked point of layer on cartodb map*/
@@ -378,24 +378,24 @@ FLOW.NavMapsView = FLOW.View.extend({
   namedMaps: function(map, mapName, table, sql, interactivity){
     var self = this;
 
-  	//style of points for new layer
+    //style of points for new layer
     var cartocss = "#"+table+"{"
-  		+"marker-fill-opacity: 0.9;"
-  		+"marker-line-color: #FFF;"
-  		+"marker-line-width: 1.5;"
-  		+"marker-line-opacity: 1;"
-  		+"marker-placement: point;"
-  		+"marker-type: ellipse;"
-  		+"marker-width: 10;"
-  		+"marker-fill: #FF6600;"
-  		+"marker-allow-overlap: true;"
-  		+"}";
+      +"marker-fill-opacity: 0.9;"
+      +"marker-line-color: #FFF;"
+      +"marker-line-width: 1.5;"
+      +"marker-line-opacity: 1;"
+      +"marker-placement: point;"
+      +"marker-type: ellipse;"
+      +"marker-width: 10;"
+      +"marker-fill: #FF6600;"
+      +"marker-allow-overlap: true;"
+      +"}";
 
-  	var configJsonData = {};
-  	configJsonData['interactivity'] = interactivity;
-  	configJsonData['name'] = mapName;
-  	configJsonData['cartocss'] = cartocss;
-  	configJsonData['sql'] = sql;
+    var configJsonData = {};
+    configJsonData['interactivity'] = interactivity;
+    configJsonData['name'] = mapName;
+    configJsonData['cartocss'] = cartocss;
+    configJsonData['sql'] = sql;
 
     $.ajax({
       type: 'POST',
@@ -415,44 +415,44 @@ FLOW.NavMapsView = FLOW.View.extend({
   createLayer: function(map, mapName, interactivity){
     var self = this, pointDataUrl;
 
-  	if(self.layerExistsCheck == 1){
-  		map.removeLayer(self.cartodbLayer);
-  	}
+    if(self.layerExistsCheck == 1){
+      map.removeLayer(self.cartodbLayer);
+    }
 
-  	// add cartodb layer with one sublayer
-  	cartodb.createLayer(map, {
-  		user_name: FLOW.Env.appId,
-  		type: 'namedmap',
-  		named_map: {
-  			name: mapName,
-  			layers: [{
-  				layer_name: "t",
-  				interactivity: "id"
-  			}]
-  		}
-  	},{
-  		tiler_domain: FLOW.Env.cartodbHost,
-  		tiler_port: "", //set to empty string to stop cartodb js from appending default port
-  		tiler_protocol: "https",
-  		no_cdn: true
-  	})
-  	.addTo(map)
-  	.done(function(layer) {
+    // add cartodb layer with one sublayer
+    cartodb.createLayer(map, {
+      user_name: FLOW.Env.appId,
+      type: 'namedmap',
+      named_map: {
+        name: mapName,
+        layers: [{
+          layer_name: "t",
+          interactivity: "id"
+        }]
+      }
+    },{
+      tiler_domain: FLOW.Env.cartodbHost,
+      tiler_port: "", //set to empty string to stop cartodb js from appending default port
+      tiler_protocol: "https",
+      no_cdn: true
+    })
+    .addTo(map)
+    .done(function(layer) {
       self.layerExistsCheck = 1;
-  		self.cartodbLayer = layer;
+      self.cartodbLayer = layer;
 
-  		self.addCursorInteraction(layer);
+      self.addCursorInteraction(layer);
 
-  		var current_layer = layer.getSubLayer(0);
-  		current_layer.setInteraction(true);
+      var current_layer = layer.getSubLayer(0);
+      current_layer.setInteraction(true);
 
-  		current_layer.on('featureClick', function(e, latlng, pos, data) {
+      current_layer.on('featureClick', function(e, latlng, pos, data) {
         if(self.marker != null){
           self.map.removeLayer(self.marker);
         }
         self.placeMarker([data.lat, data.lon]);
 
-  			self.showDetailsPane();
+        self.showDetailsPane();
         if($('#form_selector').val() == ""){
           pointDataUrl = '/rest/cartodb/answers?dataPointId='+data.id+'&surveyId='+data.survey_id;
           self.getCartodbPointData(pointDataUrl, data.name, data.identifier);
@@ -462,8 +462,8 @@ FLOW.NavMapsView = FLOW.View.extend({
             self.getCartodbPointData(pointDataUrl, pointData['row']['name'], pointData['row']['identifier']);
           });
         }
-  		});
-  	});
+      });
+    });
   },
 
   /*function is required to manage how the cursor appears on the cartodb map canvas*/
@@ -494,8 +494,8 @@ FLOW.NavMapsView = FLOW.View.extend({
       if (pointData['answers'] != null) {
         //get request for questions
         $.get(
-      			"/rest/cartodb/questions?form_id="+pointData['formId'],
-      			function(questionsData, status){
+            "/rest/cartodb/questions?form_id="+pointData['formId'],
+            function(questionsData, status){
               clickedPointContent += '<ul class="placeMarkBasicInfo floats-in">'
               +'<h3>'
               +((dataPointName != "" && dataPointName != "null" && dataPointName != null) ? dataPointName : "")
@@ -534,7 +534,7 @@ FLOW.NavMapsView = FLOW.View.extend({
               }
               clickedPointContent += '</dl>';
               $('#pointDetails').html(clickedPointContent);
-      			});
+            });
       } else {
         clickedPointContent += '<p class="noDetails">'+Ember.String.loc('_no_details') +'</p>';
         $('#pointDetails').html(clickedPointContent);
