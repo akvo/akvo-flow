@@ -153,7 +153,6 @@ FLOW.NavMapsView = FLOW.View.extend({
 
     this.map = map;
 
-    /*named map logic replacement*/
     var namedMapObject = {};
     namedMapObject['mapObject'] = map;
     namedMapObject['mapName'] = 'data_point';
@@ -162,7 +161,6 @@ FLOW.NavMapsView = FLOW.View.extend({
     namedMapObject['query'] = 'SELECT * FROM data_point';
 
     self.namedMapCheck(namedMapObject);
-    /*end named map logic replacement*/
 
     map.on('click', function(e) {
       if(self.marker != null){
@@ -174,7 +172,6 @@ FLOW.NavMapsView = FLOW.View.extend({
 
     $('#survey_selector').change(function() {
       $('#form_selector option[value!=""]').remove();
-      $('#question_selector option[value!=""]').remove();
 
       if($('#survey_selector').val() !== ""){
         //get list of forms in selected survey
@@ -193,7 +190,6 @@ FLOW.NavMapsView = FLOW.View.extend({
           }
         });
 
-        /*named map logic replacement*/
         var namedMapObject = {};
         namedMapObject['mapObject'] = map;
         namedMapObject['mapName'] = 'data_point_'+$( "#survey_selector" ).val();
@@ -202,17 +198,13 @@ FLOW.NavMapsView = FLOW.View.extend({
         namedMapObject['query'] = 'SELECT * FROM data_point WHERE survey_id='+$( "#survey_selector" ).val();
 
         self.namedMapCheck(namedMapObject);
-        /*end named map logic replacement*/
       } else {
         self.createLayer(map, "data_point", "");
       }
     });
 
     $("#form_selector").change(function() {
-      $("#question_selector option[value!='']").remove();
-
       if ($("#form_selector").val() !== "") {
-        /*logic replacement*/
         //get list of columns to be added to new named map's interactivity
         $.get("/rest/cartodb/columns?form_id="+$( "#form_selector" ).val(), function(columnsData) {
           var namedMapObject = {};
@@ -230,7 +222,6 @@ FLOW.NavMapsView = FLOW.View.extend({
 
           self.namedMapCheck(namedMapObject);
         });
-        /*end named map logic replacement*/
       } else {
         self.createLayer(map, "data_point_"+$("#survey_selector").val(), "");
       }
@@ -243,20 +234,20 @@ FLOW.NavMapsView = FLOW.View.extend({
     var self = this;
     $.get("/rest/cartodb/named_maps", function(data, status) {
       if (data.template_ids) {
-        var mapCheck = 0;
+        var mapExists = false;
         for (var i=0; i<data['template_ids'].length; i++) {
           if(data['template_ids'][i] === namedMapObject.mapName) {
             //named map already exists
-            mapCheck++;
+            mapExists = true;
+            break;
           }
         }
 
-        //if named map exists
-        if (mapCheck > 0) {
+        if (mapExists) {
           //overlay named map
           self.createLayer(namedMapObject.mapObject, namedMapObject.mapName, "");
         }else{
-          //create named map
+          //create new named map
           self.namedMaps(
             namedMapObject.mapObject,
             namedMapObject.mapName,
@@ -505,9 +496,7 @@ FLOW.NavMapsView = FLOW.View.extend({
         $.get(
       			"/rest/cartodb/questions?form_id="+pointData['formId'],
       			function(questionsData, status){
-              var geoshapeCheck = 0;
-              var geoshapeCoordinates = "";
-      				clickedPointContent += '<ul class="placeMarkBasicInfo floats-in">'
+              clickedPointContent += '<ul class="placeMarkBasicInfo floats-in">'
               +'<h3>'
               +((dataPointName != "" && dataPointName != "null" && dataPointName != null) ? dataPointName : "")
               +'</h3>'
@@ -539,67 +528,19 @@ FLOW.NavMapsView = FLOW.View.extend({
                       clickedPointContent += '<dd>'+image+'</dd></div>';
                     }else{
                       clickedPointContent += '<dd>'+pointData['answers'][column]+'</dd></div>';
-                      /*//if point is a geoshape, draw the shape in the side window
-                      if(questionsData['questions'][i].type == "GEOSHAPE"){
-                        geoshapeCheck = 1;
-                        geoshape_object = JSON.parse(pointData['answers'][column]);
-                        if(geoshape_object['features'].length > 0){
-                          geoshapeCoordinates = geoshape_object['features'][0]['geometry']['coordinates'][0];
-                        }
-                        clickedPointContent += "<dd><div id=\"geoShapeMap\" style=\"width:100%; height: 100px\"></div></dd></div>";
-                      }else{
-                        clickedPointContent += "<dd>"+pointData['answers'][column]+"</dd></div>";
-                      }*/
                     }
                   }
                 }
               }
               clickedPointContent += '</dl>';
               $('#pointDetails').html(clickedPointContent);
-
-              //if there's geoshape, draw it
-              if(geoshapeCheck === 1){
-                //self.createGeoshape(geoshapeCoordinates);
-              }
       			});
-      }else{
+      } else {
         clickedPointContent += '<p class="noDetails">'+Ember.String.loc('_no_details') +'</p>';
         $('#pointDetails').html(clickedPointContent);
       }
     });
   },
-
-  createGeoshape: function(points){
-    var getCentroid = function (arr) {
-      return arr.reduce(function (x,y) {
-        return [x[0] + y[0]/arr.length, x[1] + y[1]/arr.length]
-      }, [0,0])
-    }
-
-    var center = getCentroid(points);
-
-    var geoshapeMap = L.map('geoShapeMap', {scrollWheelZoom: false}).setView(center, 2);
-    L.tileLayer('https://{s}.{base}.maps.cit.api.here.com/maptile/2.1/maptile/{mapID}/normal.day.transit/{z}/{x}/{y}/256/png8?app_id={app_id}&app_code={app_code}', {
-      attribution: '<a href="http://developer.here.com">HERE</a>',
-      subdomains: '1234',
-      mapID: 'newest',
-      app_id: 'r5lmMPKxiMeZzkTWRAJu',
-      app_code: 'W6i_Oej7Y8IdgizMp7eSyQ',
-      base: 'base',
-      maxZoom: 18
-    }).addTo(geoshapeMap);
-
-    var geoshape = L.polygon(points);
-
-    geoshape.addTo(geoshapeMap);
-
-    var southWest = geoshape.getBounds().getSouthWest();
-    var northEast = geoshape.getBounds().getNorthEast();
-    var bounds = new L.LatLngBounds(southWest, northEast);
-
-    geoshapeMap.fitBounds(bounds);
-  }
-
 });
 
 
