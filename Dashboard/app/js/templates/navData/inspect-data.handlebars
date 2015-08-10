@@ -21,7 +21,7 @@
             {{#if view.validSurveyInstanceId}}
               <label class="surveyInstanceId">{{t _instance_id}}:</label>
             {{else}}
-              <label class="surveyInstanceId tooltip"><a style="color:red" class="tooltip" title="{{t _instance_id_must_be_a_number}}">{{t _instance_id}}</a>:</label>
+              <label class="surveyInstanceId tooltip"><a class="tooltip" title="{{t _instance_id_must_be_a_number}}">{{t _instance_id}}</a>:</label>
             {{/if}}
             {{view Ember.TextField valueBinding="view.surveyInstanceId" placeholder="" placeholderBinding="Ember.STRINGS._instance_id" size=30}}
             <label class="devideId">{{t _device_id}}:</label>
@@ -37,7 +37,7 @@
         </div>
     </div>
     {{#if view.noResults}}
-      <div style="color:red; font-size: 1.3em;text-align:center">{{t _no_results_found}}</div>
+      <div class="noResults">{{t _no_results_found}}</div>
     {{/if}}
 
     <section class="fullWidth " id="devicesList">
@@ -58,8 +58,8 @@
                 <tr>
                     <td class="device">{{#view FLOW.DataNumView contentBinding="this"}}{{view.rownum}}{{/view}}</td>
                     <td class="device">{{SI.keyId}}</td>
-                    <td class="survey" style="text-align:left;">{{SI.surveyCode}}</td>
-                    <td class="submitter" style="text-align:left;">{{SI.submitterName}}</td>
+                    <td class="survey">{{SI.surveyCode}}</td>
+                    <td class="submitter">{{SI.submitterName}}</td>
                     <td class="device">{{SI.deviceIdentifier}}</td>
                     <td class="collected">{{#with SI}}{{date1 collectionDate}}{{/with}}</td>
                     <td class="action">
@@ -132,9 +132,9 @@
                         {{#each QA in FLOW.questionAnswerControl}} {{#view FLOW.QuestionAnswerView contentBinding="QA"}}
                         <tr>
                             <td class="device">{{QA.keyId}}</td>
-                            <td class="survey" style="text-align:left;">{{QA.questionText}}</td>
+                            <td class="survey">{{QA.questionText}}</td>
 
-                            <td class="submitter" style="text-align:left;">
+                            <td class="submitter">
                                 {{#if view.inEditMode}}
                                 	{{#if view.isOptionType}}
                                 		{{view Ember.Select
