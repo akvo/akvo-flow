@@ -245,7 +245,23 @@ FLOW.NavMapsView = FLOW.View.extend({
       $("#question_selector option[value!='']").remove();
 
       if ($("#form_selector").val() !== "") {
-        //get named maps
+        /*logic replacement*/
+        //get list of columns to be added to new named map's interactivity
+        $.get("/rest/cartodb/columns?form_id="+$( "#form_selector" ).val(), function(columnsData) {
+          var interactivity = [];
+          var query = "SELECT * FROM raw_data_" + $("#form_selector").val();
+
+          if (columnsData.column_names) {
+            for (var j=0; j<columnsData['column_names'].length; j++) {
+              interactivity.push(columnsData['column_names'][j]['column_name']);
+            }
+          }
+
+          self.namedMapCheck(map, "raw_data_"+$("#form_selector").val(), "raw_data_"+$("#form_selector").val(), interactivity, query);
+        });
+        /*end logic replacement*/
+
+        /*//get named maps
         $.get("/rest/cartodb/named_maps", function(data, status) {
           if (data.template_ids) {
             var namedMapCheck = 0;
@@ -281,9 +297,40 @@ FLOW.NavMapsView = FLOW.View.extend({
                 });
             }
           }
-        });
+        });*/
       } else {
         self.createLayer(map, "data_point_"+$("#survey_selector").val(), "");
+      }
+    });
+  },
+
+  /*Check if a named map exists. If one exists, call function to overlay it
+  else call function to create a new one*/
+  namedMapCheck: function(mapObject, mapName, tableName, interactivity, query){
+    var self = this;
+    $.get("/rest/cartodb/named_maps", function(data, status) {
+      if (data.template_ids) {
+        var mapCheck = 0;
+        for (var i=0; i<data['template_ids'].length; i++) {
+          if(data['template_ids'][i] === mapName) {
+            //named map already exists
+            namedMapCheck++;
+          }
+        }
+
+        //if named map exists
+        if (mapCheck > 0) {
+          //overlay named map
+          self.createLayer(mapObject, mapName, "");
+        }else{
+          //create named map
+          self.namedMaps(
+            mapObject,
+            mapName,
+            tableName,
+            query,
+            interactivity);
+        }
       }
     });
   },
