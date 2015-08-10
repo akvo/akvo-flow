@@ -153,32 +153,16 @@ FLOW.NavMapsView = FLOW.View.extend({
 
     this.map = map;
 
-    //get list of named maps
-    $.get('/rest/cartodb/named_maps', function(data, status) {
-      if(data.template_ids) {
-        var namedMapCheck = 0;
-        for (var i=0; i<data['template_ids'].length; i++) {
-          //check in there is a full "data_point" table named map
-          if (data['template_ids'][i] == 'data_point') {
-            //named map already exists
-            namedMapCheck++;
-          }
-        }
+    /*named map logic replacement*/
+    var namedMapObject = {};
+    namedMapObject['mapObject'] = map;
+    namedMapObject['mapName'] = 'data_point';
+    namedMapObject['tableName'] = 'data_point';
+    namedMapObject['interactivity'] = ["name", "survey_id", "id", "identifier", "lat", "lon"];
+    namedMapObject['query'] = 'SELECT * FROM data_point';
 
-        //if named map exists
-        if (namedMapCheck > 0){
-          //overlay named map
-          self.createLayer(map, 'data_point', '');
-        } else {
-          self.namedMaps(
-            map,
-            'data_point',
-            'data_point',
-            'SELECT * FROM data_point',
-            ["name", "survey_id", "id", "identifier", "lat", "lon"]);
-        }
-      }
-    });
+    self.namedMapCheck(namedMapObject);
+    /*end named map logic replacement*/
 
     map.on('click', function(e) {
       if(self.marker != null){
@@ -209,33 +193,16 @@ FLOW.NavMapsView = FLOW.View.extend({
           }
         });
 
-        //get list of named maps
-        $.get('/rest/cartodb/named_maps', function(data, status) {
-          if (data.template_ids) {
-            var namedMapCheck = 0;
-            for (var i=0; i<data['template_ids'].length; i++) {
-              //check if there is a selectd survey's named map
-              if(data['template_ids'][i] == 'data_point_'+$( "#survey_selector" ).val()){
-                //named map already exists
-                namedMapCheck++;
-              }
-            }
+        /*named map logic replacement*/
+        var namedMapObject = {};
+        namedMapObject['mapObject'] = map;
+        namedMapObject['mapName'] = 'data_point_'+$( "#survey_selector" ).val();
+        namedMapObject['tableName'] = 'data_point';
+        namedMapObject['interactivity'] = ["name", "survey_id", "id", "identifier", "lat", "lon"];
+        namedMapObject['query'] = 'SELECT * FROM data_point WHERE survey_id='+$( "#survey_selector" ).val();
 
-            //if named map exists
-            if (namedMapCheck > 0) {
-              //overlay named map
-              self.createLayer(map, 'data_point_'+$( "#survey_selector" ).val(), "");
-            } else {
-              //create named map
-              self.namedMaps(
-                map,
-                'data_point_'+$( "#survey_selector" ).val(),
-                'data_point',
-                'SELECT * FROM data_point WHERE survey_id='+$( "#survey_selector" ).val(),
-                ["name", "survey_id", "id", "identifier", "lat", "lon"]);
-            }
-          }
-        });
+        self.namedMapCheck(namedMapObject);
+        /*end named map logic replacement*/
       } else {
         self.createLayer(map, "data_point", "");
       }
@@ -248,56 +215,22 @@ FLOW.NavMapsView = FLOW.View.extend({
         /*logic replacement*/
         //get list of columns to be added to new named map's interactivity
         $.get("/rest/cartodb/columns?form_id="+$( "#form_selector" ).val(), function(columnsData) {
-          var interactivity = [];
-          var query = "SELECT * FROM raw_data_" + $("#form_selector").val();
+          var namedMapObject = {};
+          namedMapObject['mapObject'] = map;
+          namedMapObject['mapName'] = "raw_data_"+$("#form_selector").val();
+          namedMapObject['tableName'] = "raw_data_"+$("#form_selector").val();
+          namedMapObject['interactivity'] = [];
+          namedMapObject['query'] = "SELECT * FROM raw_data_" + $("#form_selector").val();
 
           if (columnsData.column_names) {
             for (var j=0; j<columnsData['column_names'].length; j++) {
-              interactivity.push(columnsData['column_names'][j]['column_name']);
+              namedMapObject['interactivity'].push(columnsData['column_names'][j]['column_name']);
             }
           }
 
-          self.namedMapCheck(map, "raw_data_"+$("#form_selector").val(), "raw_data_"+$("#form_selector").val(), interactivity, query);
+          self.namedMapCheck(namedMapObject);
         });
-        /*end logic replacement*/
-
-        /*//get named maps
-        $.get("/rest/cartodb/named_maps", function(data, status) {
-          if (data.template_ids) {
-            var namedMapCheck = 0;
-            for (var i=0; i<data['template_ids'].length; i++) {
-              if(data['template_ids'][i] === "raw_data_"+$( "#form_selector" ).val()) {
-                //named map already exists
-                namedMapCheck++;
-              }
-            }
-
-            //if named map exists
-            if (namedMapCheck > 0) {
-              //overlay named map
-              self.createLayer(map, "raw_data_"+$("#form_selector").val(), "");
-            } else {
-              //get list of columns to be added to new named map's interactivity
-              $.get("/rest/cartodb/columns?form_id="+$( "#form_selector" ).val(), function(columnsData) {
-                var interactivity = [];
-
-                if (columnsData.column_names) {
-                  for (var j=0; j<columnsData['column_names'].length; j++) {
-                    interactivity.push(columnsData['column_names'][j]['column_name']);
-                  }
-                }
-
-                //create named map
-                self.namedMaps(
-                  map,
-                  "raw_data_"+$("#form_selector").val(),
-                  "raw_data_"+$("#form_selector").val(),
-                  "SELECT * FROM raw_data_" + $("#form_selector").val(),
-                  interactivity);
-                });
-            }
-          }
-        });*/
+        /*end named map logic replacement*/
       } else {
         self.createLayer(map, "data_point_"+$("#survey_selector").val(), "");
       }
@@ -306,30 +239,30 @@ FLOW.NavMapsView = FLOW.View.extend({
 
   /*Check if a named map exists. If one exists, call function to overlay it
   else call function to create a new one*/
-  namedMapCheck: function(mapObject, mapName, tableName, interactivity, query){
+  namedMapCheck: function(namedMapObject){
     var self = this;
     $.get("/rest/cartodb/named_maps", function(data, status) {
       if (data.template_ids) {
         var mapCheck = 0;
         for (var i=0; i<data['template_ids'].length; i++) {
-          if(data['template_ids'][i] === mapName) {
+          if(data['template_ids'][i] === namedMapObject.mapName) {
             //named map already exists
-            namedMapCheck++;
+            mapCheck++;
           }
         }
 
         //if named map exists
         if (mapCheck > 0) {
           //overlay named map
-          self.createLayer(mapObject, mapName, "");
+          self.createLayer(namedMapObject.mapObject, namedMapObject.mapName, "");
         }else{
           //create named map
           self.namedMaps(
-            mapObject,
-            mapName,
-            tableName,
-            query,
-            interactivity);
+            namedMapObject.mapObject,
+            namedMapObject.mapName,
+            namedMapObject.tableName,
+            namedMapObject.query,
+            namedMapObject.interactivity);
         }
       }
     });
