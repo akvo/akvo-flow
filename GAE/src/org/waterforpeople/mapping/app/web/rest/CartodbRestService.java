@@ -216,34 +216,6 @@ public class CartodbRestService {
         return resultMap;
     }
 
-    @RequestMapping(method = RequestMethod.POST, value = "update_map")
-    @ResponseBody
-    public Map<String, Object> updateNamedMap(
-            @RequestBody NamedMapPayload payload)
-            throws IOException {
-        URL url = new URL(String.format("https://%s.%s/api/v1/map/named/%s?api_key=%s",
-                CDB_ACCOUNT_NAME, CDB_HOST, payload.getName(), CDB_API_KEY));
-
-        HttpURLConnection connection = (HttpURLConnection) url.openConnection();
-        connection.setRequestProperty("Content-Type", "application/json");
-        connection.setRequestProperty("Accept", "application/json");
-        connection.setDoInput(true);
-        connection.setDoOutput(true);
-        connection.setRequestMethod("PUT");
-
-        OutputStreamWriter writer = new OutputStreamWriter(connection.getOutputStream());
-
-        objectMapper.writeValue(writer, buildNamedMap(payload));
-        writer.close();
-
-        InputStream result = connection.getInputStream();
-
-        @SuppressWarnings("unchecked")
-        Map<String, Object> resultMap = objectMapper.readValue(result, Map.class);
-
-        return resultMap;
-    }
-
     @SuppressWarnings("unchecked")
     private static List<Map<String, Object>> queryCartodb(String query) throws IOException {
         HttpURLConnection connection = getConnection("GET", sqlApiURL(query));
@@ -264,11 +236,6 @@ public class CartodbRestService {
     private static final URL mapsApiURL() throws MalformedURLException {
         return new URL(String.format("https://%s.%s/api/v1/map/named?api_key=%s",
                 CDB_ACCOUNT_NAME, CDB_HOST, CDB_API_KEY));
-    }
-
-    private static final URL updateMapsApiURL(String named_map) throws MalformedURLException {
-        return new URL(String.format("https://%s.%s/api/v1/map/named/%s?api_key=%s",
-                CDB_ACCOUNT_NAME, CDB_HOST, named_map, CDB_API_KEY));
     }
 
     private static final URL sqlApiURL(String query) throws MalformedURLException,
