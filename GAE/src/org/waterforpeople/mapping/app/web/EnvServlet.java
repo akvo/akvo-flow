@@ -65,6 +65,8 @@ public class EnvServlet extends HttpServlet {
         properties.add("mapsProvider");
         properties.add("googleMapsRegionBias");
         properties.add("cartodbHost");
+        properties.add("hereMapsAppId");
+        properties.add("hereMapsAppCode");
     }
 
     @Override

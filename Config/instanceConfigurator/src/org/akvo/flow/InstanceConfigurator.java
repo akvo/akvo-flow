@@ -83,6 +83,8 @@ public class InstanceConfigurator {
         String cartodbApiKey = cli.getOptionValue("ck", "");
         String cartodbSqlApi = cli.getOptionValue("cs", "");
         String cartodbHost = cli.getOptionValue("ch", "");
+        String hereMapsAppId = cli.getOptionValue("hmai", "");
+        String hereMapsAppCode = cli.getOptionValue("hmac", "");
         String alias = cli.getOptionValue("a");
         String emailFrom = cli.getOptionValue("ef");
         String emailTo = cli.getOptionValue("et");
@@ -237,6 +239,8 @@ public class InstanceConfigurator {
         webData.put("cartodbApiKey", cartodbApiKey);
         webData.put("cartodbSqlApi", cartodbSqlApi);
         webData.put("cartodbHost", cartodbHost);
+        webData.put("hereMapsAppId", hereMapsAppId);
+        webData.put("hereMapsAppCode", hereMapsAppCode);
         webData.put("apiKey", apiKey);
         webData.put("emailFrom", emailFrom);
         webData.put("emailTo", emailTo);
@@ -340,6 +344,16 @@ public class InstanceConfigurator {
         cartodbSqlApi.setArgs(1);
         cartodbSqlApi.setRequired(false);
 
+        Option hereMapsAppId = new Option("hmai", "Here maps app id");
+        hereMapsAppId.setLongOpt("hereMapsAppId");
+        hereMapsAppId.setArgs(1);
+        hereMapsAppId.setRequired(false);
+
+        Option hereMapsAppCode = new Option("hmac", "Here maps app code");
+        hereMapsAppCode.setLongOpt("hereMapsAppCode");
+        hereMapsAppCode.setArgs(1);
+        hereMapsAppCode.setRequired(false);
+
         Option outputFolder = new Option("o",
                 "Output folder for configuration files");
         outputFolder.setLongOpt("outFolder");
@@ -373,6 +387,8 @@ public class InstanceConfigurator {
         options.addOption(cartodbApiKey);
         options.addOption(cartodbSqlApi);
         options.addOption(cartodbHost);
+        options.addOption(hereMapsAppId);
+        options.addOption(hereMapsAppCode);
         options.addOption(alias);
         options.addOption(signingKey);
 
