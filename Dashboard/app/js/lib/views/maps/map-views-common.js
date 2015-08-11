@@ -4,7 +4,10 @@ FLOW.NavMapsView = FLOW.View.extend({
   detailsPaneElements: null,
   detailsPaneVisible: null,
   map: null,
+  marker: null,
   geomodel: null,
+  cartodbLayer: null,
+  layerExistsCheck: 0,
 
   init: function () {
     this._super();
@@ -47,49 +50,214 @@ FLOW.NavMapsView = FLOW.View.extend({
   didInsertElement: function () {
     var self = this;
 
-    // insert the map
-    if (FLOW.Env.useGoogleMapsLayers) {
-       this.map = new L.Map('flowMap', {center: new L.LatLng(-0.703107, 36.765), zoom: 2});
-       var roadmap = new L.Google("ROADMAP");
-       var terrain = new L.Google('TERRAIN');
-       var satellite = new L.Google('SATELLITE');
-       this.map.addLayer(roadmap);
-       this.map.addControl(new L.Control.Layers({
-         'Roadmap': roadmap,
-         'Satellite': satellite,
-         'Terrain': terrain
-       }, {}));
+    if (FLOW.Env.mapsProvider === 'cartodb') {
+      self.insertCartodbMap();
     } else {
-       this.map = L.mapbox.map('flowMap', 'akvo.he30g8mm').setView([-0.703107, 36.765], 2);
-
-       L.control.layers({
-         'Terrain': L.mapbox.tileLayer('akvo.he30g8mm').addTo(this.map),
-         'Streets': L.mapbox.tileLayer('akvo.he2pdjhk'),
-         'Satellite': L.mapbox.tileLayer('akvo.he30neh4')
-       }).addTo(this.map);
+      if (FLOW.Env.mapsProvider === 'google') {
+        self.insertGoogleMap();
+      } else {
+        self.insertMapboxMap();
+      }
+      // couple listener to end of zoom or drag
+      this.map.on('moveend', function (e) {
+        self.redoMap();
+      });
+      FLOW.placemarkController.set('map', this.map);
+      this.geoModel = create_geomodel();
+      //load points for the visible map
+      this.redoMap();
     }
 
     // add scale indication to map
     L.control.scale({position:'topleft', maxWidth:150}).addTo(this.map);
 
-    // couple listener to end of zoom or drag
-    this.map.on('moveend', function (e) {
-      self.redoMap();
-    });
-
-    FLOW.placemarkController.set('map', this.map);
-    this.geoModel = create_geomodel();
-
-    //load points for the visible map
-    this.redoMap();
-
     this.$('#mapDetailsHideShow').click(function () {
       self.handleShowHideDetails();
     });
+
     // Slide in detailspane after 1 sec
     this.hideDetailsPane(1000);
   },
 
+  insertGoogleMap: function () {
+    this.map = new L.Map('flowMap', {center: new L.LatLng(-0.703107, 36.765), zoom: 2});
+    var roadmap = new L.Google("ROADMAP");
+    var terrain = new L.Google('TERRAIN');
+    var satellite = new L.Google('SATELLITE');
+    this.map.addLayer(roadmap);
+    this.map.addControl(new L.Control.Layers({
+      'Roadmap': roadmap,
+      'Satellite': satellite,
+      'Terrain': terrain
+    }, {}));
+  },
+
+  insertMapboxMap: function() {
+    this.map = L.mapbox.map('flowMap', 'akvo.he30g8mm').setView([-0.703107, 36.765], 2);
+    L.control.layers({
+      'Terrain': L.mapbox.tileLayer('akvo.he30g8mm').addTo(this.map),
+      'Streets': L.mapbox.tileLayer('akvo.he2pdjhk'),
+      'Satellite': L.mapbox.tileLayer('akvo.he30neh4')
+    }).addTo(this.map);
+  },
+
+  insertCartodbMap: function() {
+    var self = this;
+    var filterContent = '<select style="float: left" class="" name="survey_selector" id="survey_selector">'
+    +'<option value="">--' + Ember.String.loc('_choose_a_survey') + '--</option>'
+    +'</select>&nbsp;'
+    +'<select style="float: left" class="" name="form_selector" id="form_selector">'
+    +'<option value="">--' + Ember.String.loc('_choose_a_form') + '--</option>'
+    +'</select>&nbsp;';
+
+    $('#dropdown-holder').prepend(filterContent);
+    $('#dropdown-holder').append('<div style="clear: both"></div>');
+
+    //Define the data layer
+    var data_layer;
+
+    $.get('/rest/cartodb/surveys', function(data, status) {
+      var rows = [];
+      if (data['surveys'].length > 0) {
+        rows = data['surveys'];
+        rows.sort(function(el1, el2) {
+          return self.compare(el1, el2, 'name')
+        });
+
+        for (var i=0; i<rows.length; i++) {
+          //append return survey list to the survey selector element
+          $('#survey_selector').append('<option value="'+rows[i]["id"]+'">'+rows[i]["name"]+'</option>');
+        }
+      }
+    });
+
+    // create leaflet map
+    var map = L.map('flowMap', {scrollWheelZoom: true}).setView([26.11598592533351, 1.9335937499999998], 3);
+
+    var bounds = new L.LatLngBounds(map.getBounds().getSouthWest(), map.getBounds().getNorthEast());
+
+    map.options.maxBoundsViscosity = 1.0;
+    map.options.maxBounds = bounds;
+    map.options.maxZoom = 18;
+    map.options.minZoom = 2;
+
+    L.tileLayer('https://{s}.{base}.maps.cit.api.here.com/maptile/2.1/maptile/{mapID}/normal.day.transit/{z}/{x}/{y}/256/png8?app_id={app_id}&app_code={app_code}', {
+      attribution: 'Map &copy; 1987-2014 <a href="http://developer.here.com">HERE</a>',
+      subdomains: '1234',
+      mapID: 'newest',
+      app_id: FLOW.Env.hereMapsAppId,
+      app_code: FLOW.Env.hereMapsAppCode,
+      base: 'base',
+      noWrap: true
+    }).addTo(map);
+
+    this.map = map;
+
+    var namedMapObject = {};
+    namedMapObject['mapObject'] = map;
+    namedMapObject['mapName'] = 'data_point';
+    namedMapObject['tableName'] = 'data_point';
+    namedMapObject['interactivity'] = ["name", "survey_id", "id", "identifier", "lat", "lon"];
+    namedMapObject['query'] = 'SELECT * FROM data_point';
+
+    self.namedMapCheck(namedMapObject);
+
+    map.on('click', function(e) {
+      if(self.marker != null){
+        self.map.removeLayer(self.marker);
+        self.hideDetailsPane();
+        $('#pointDetails').html('<p class="noDetails">'+Ember.String.loc('_no_details') +'</p>');
+      }
+    });
+
+    $('#survey_selector').change(function() {
+      $('#form_selector option[value!=""]').remove();
+
+      if($('#survey_selector').val() !== ""){
+        //get list of forms in selected survey
+        $.get('/rest/cartodb/forms?surveyId='+$('#survey_selector').val(), function(data, status) {
+          var rows = [];
+          if(data['forms'] && data['forms'].length > 0) {
+            rows = data['forms'];
+            rows.sort(function(el1, el2) {
+              return self.compare(el1, el2, 'name')
+            });
+
+            for(var i=0; i<rows.length; i++) {
+              //append return survey list to the survey selector element
+              $('#form_selector').append('<option value="'+rows[i]["id"]+'">'+rows[i]["name"]+'</option>');
+            }
+          }
+        });
+
+        var namedMapObject = {};
+        namedMapObject['mapObject'] = map;
+        namedMapObject['mapName'] = 'data_point_'+$( "#survey_selector" ).val();
+        namedMapObject['tableName'] = 'data_point';
+        namedMapObject['interactivity'] = ["name", "survey_id", "id", "identifier", "lat", "lon"];
+        namedMapObject['query'] = 'SELECT * FROM data_point WHERE survey_id='+$( "#survey_selector" ).val();
+
+        self.namedMapCheck(namedMapObject);
+      } else {
+        self.createLayer(map, "data_point", "");
+      }
+    });
+
+    $("#form_selector").change(function() {
+      if ($("#form_selector").val() !== "") {
+        //get list of columns to be added to new named map's interactivity
+        $.get("/rest/cartodb/columns?form_id="+$( "#form_selector" ).val(), function(columnsData) {
+          var namedMapObject = {};
+          namedMapObject['mapObject'] = map;
+          namedMapObject['mapName'] = "raw_data_"+$("#form_selector").val();
+          namedMapObject['tableName'] = "raw_data_"+$("#form_selector").val();
+          namedMapObject['interactivity'] = [];
+          namedMapObject['query'] = "SELECT * FROM raw_data_" + $("#form_selector").val();
+
+          if (columnsData.column_names) {
+            for (var j=0; j<columnsData['column_names'].length; j++) {
+              namedMapObject['interactivity'].push(columnsData['column_names'][j]['column_name']);
+            }
+          }
+
+          self.namedMapCheck(namedMapObject);
+        });
+      } else {
+        self.createLayer(map, "data_point_"+$("#survey_selector").val(), "");
+      }
+    });
+  },
+
+  /*Check if a named map exists. If one exists, call function to overlay it
+  else call function to create a new one*/
+  namedMapCheck: function(namedMapObject){
+    var self = this;
+    $.get("/rest/cartodb/named_maps", function(data, status) {
+      if (data.template_ids) {
+        var mapExists = false;
+        for (var i=0; i<data['template_ids'].length; i++) {
+          if(data['template_ids'][i] === namedMapObject.mapName) {
+            //named map already exists
+            mapExists = true;
+            break;
+          }
+        }
+
+        if (mapExists) {
+          //overlay named map
+          self.createLayer(namedMapObject.mapObject, namedMapObject.mapName, "");
+        }else{
+          //create new named map
+          self.namedMaps(
+            namedMapObject.mapObject,
+            namedMapObject.mapName,
+            namedMapObject.tableName,
+            namedMapObject.query,
+            namedMapObject.interactivity);
+        }
+      }
+    });
+  },
 
   /**
     Helper function to dispatch to either hide or show details pane
@@ -190,8 +358,189 @@ FLOW.NavMapsView = FLOW.View.extend({
           verticalBars[3]);
       }
     }, this);
-  }
+  },
 
+  compare: function (el1, el2, index) {
+    return el1[index] == el2[index] ? 0 : (el1[index] < el2[index] ? -1 : 1);
+  },
+
+  /*Place a marker to highlight clicked point of layer on cartodb map*/
+  placeMarker: function(latlng){
+    var markerIcon = new L.Icon({
+      iconUrl: 'images/marker.svg',
+      iconSize: [10, 10]
+    });
+    this.marker = new L.marker(latlng, {icon: markerIcon});
+    this.map.addLayer(this.marker);
+  },
+
+  //create named maps
+  namedMaps: function(map, mapName, table, sql, interactivity){
+    var self = this;
+
+    //style of points for new layer
+    var cartocss = "#"+table+"{"
+      +"marker-fill-opacity: 0.9;"
+      +"marker-line-color: #FFF;"
+      +"marker-line-width: 1.5;"
+      +"marker-line-opacity: 1;"
+      +"marker-placement: point;"
+      +"marker-type: ellipse;"
+      +"marker-width: 10;"
+      +"marker-fill: #FF6600;"
+      +"marker-allow-overlap: true;"
+      +"}";
+
+    var configJsonData = {};
+    configJsonData['interactivity'] = interactivity;
+    configJsonData['name'] = mapName;
+    configJsonData['cartocss'] = cartocss;
+    configJsonData['sql'] = sql;
+
+    $.ajax({
+      type: 'POST',
+      contentType: "application/json",
+      url: '/rest/cartodb/named_maps',
+      data: JSON.stringify(configJsonData), //turns out you need to stringify the payload before sending it
+      dataType: 'json',
+      success: function(namedMapData){
+        if(namedMapData.template_id){
+          self.createLayer(map, mapName, "");
+        }
+      }
+    });
+  },
+
+  /*this function overlays a named map on the cartodb map*/
+  createLayer: function(map, mapName, interactivity){
+    var self = this, pointDataUrl;
+
+    if(self.layerExistsCheck == 1){
+      map.removeLayer(self.cartodbLayer);
+    }
+
+    // add cartodb layer with one sublayer
+    cartodb.createLayer(map, {
+      user_name: FLOW.Env.appId,
+      type: 'namedmap',
+      named_map: {
+        name: mapName,
+        layers: [{
+          layer_name: "t",
+          interactivity: "id"
+        }]
+      }
+    },{
+      tiler_domain: FLOW.Env.cartodbHost,
+      tiler_port: "", //set to empty string to stop cartodb js from appending default port
+      tiler_protocol: "https",
+      no_cdn: true
+    })
+    .addTo(map)
+    .done(function(layer) {
+      self.layerExistsCheck = 1;
+      self.cartodbLayer = layer;
+
+      self.addCursorInteraction(layer);
+
+      var current_layer = layer.getSubLayer(0);
+      current_layer.setInteraction(true);
+
+      current_layer.on('featureClick', function(e, latlng, pos, data) {
+        if(self.marker != null){
+          self.map.removeLayer(self.marker);
+        }
+        self.placeMarker([data.lat, data.lon]);
+
+        self.showDetailsPane();
+        if($('#form_selector').val() == ""){
+          pointDataUrl = '/rest/cartodb/answers?dataPointId='+data.id+'&surveyId='+data.survey_id;
+          self.getCartodbPointData(pointDataUrl, data.name, data.identifier);
+        }else{
+          pointDataUrl = '/rest/cartodb/raw_data?dataPointId='+data.data_point_id+'&formId='+$('#form_selector').val();
+          $.get('/rest/cartodb/data_point?id='+data.data_point_id, function(pointData, status){
+            self.getCartodbPointData(pointDataUrl, pointData['row']['name'], pointData['row']['identifier']);
+          });
+        }
+      });
+    });
+  },
+
+  /*function is required to manage how the cursor appears on the cartodb map canvas*/
+  addCursorInteraction: function (layer) {
+    var hovers = [];
+
+    layer.bind('featureOver', function(e, latlon, pxPos, data, layer) {
+      hovers[layer] = 1;
+      if(_.any(hovers)) {
+        $('#flowMap').css('cursor', 'pointer');
+      }
+    });
+
+    layer.bind('featureOut', function(m, layer) {
+      hovers[layer] = 0;
+      if(!_.any(hovers)) {
+        $('#flowMap').css({"cursor":"-moz-grabbing","cursor":"-webkit-grabbing"});
+      }
+    });
+  },
+
+  getCartodbPointData: function(url, dataPointName, dataPointIdentifier){
+    var self = this;
+    $("#pointDetails").html("");
+    $.get(url, function(pointData, status){
+      var clickedPointContent = "";
+
+      if (pointData['answers'] != null) {
+        //get request for questions
+        $.get(
+            "/rest/cartodb/questions?form_id="+pointData['formId'],
+            function(questionsData, status){
+              clickedPointContent += '<ul class="placeMarkBasicInfo floats-in">'
+              +'<h3>'
+              +((dataPointName != "" && dataPointName != "null" && dataPointName != null) ? dataPointName : "")
+              +'</h3>'
+              +'<li>'
+              +'<span>'+Ember.String.loc('_data_point_id') +':</span>'
+              +'<div style="display: inline; margin: 0 0 0 5px;">'+dataPointIdentifier+'</div>'
+              +'</li>'
+              +'<li>'
+              +'<span>'+Ember.String.loc('_collected_on') +':</span>'
+              +'<div class="placeMarkCollectionDate">'
+              +pointData['answers']['created_at']
+              +'</div></li><li></li></ul>';
+              //clickedPointContent += "<table>";
+              clickedPointContent += '<dl class="floats-in" style="opacity: 1; display: inherit;">';
+              for (column in pointData['answers']){
+                for(var i=0; i<questionsData['questions'].length; i++){
+                  if (column.match(questionsData['questions'][i].id)) {
+                    clickedPointContent += '<div class="defListWrap"><dt>'+questionsData['questions'][i].display_text+'&nbsp;</dt>';
+
+                    //if question is of type, photo load a html image element
+                    if(questionsData['questions'][i].type == "PHOTO"){
+                      var image = '<div class=":imgContainer photoUrl:shown:hidden">';
+                      if(pointData['answers'][column] != null){
+                        var image_filename = FLOW.Env.photo_url_root+pointData['answers'][column].substring(pointData['answers'][column].lastIndexOf("/")+1);
+                        image += '<a href="'+image_filename+'" target="_blank">'
+                        +'<img src="'+image_filename+'" alt=""/></a>';
+                      }
+                      image +'</div>';
+                      clickedPointContent += '<dd>'+image+'</dd></div>';
+                    }else{
+                      clickedPointContent += '<dd>'+pointData['answers'][column]+'</dd></div>';
+                    }
+                  }
+                }
+              }
+              clickedPointContent += '</dl>';
+              $('#pointDetails').html(clickedPointContent);
+            });
+      } else {
+        clickedPointContent += '<p class="noDetails">'+Ember.String.loc('_no_details') +'</p>';
+        $('#pointDetails').html(clickedPointContent);
+      }
+    });
+  },
 });
 
 
