@@ -47,7 +47,6 @@ FLOW.NavMapsView = FLOW.View.extend({
     Once the view is in the DOM create the map
   */
   didInsertElement: function () {
-    //console.log(FLOW.Env);
 
     var self = this;
 

@@ -340,9 +340,9 @@ public class InstanceConfigurator {
         cartodbSqlApi.setRequired(false);
 
         Option cartodbHost = new Option("ch", "Cartodb host");
-        cartodbSqlApi.setLongOpt("cartodbHost");
-        cartodbSqlApi.setArgs(1);
-        cartodbSqlApi.setRequired(false);
+        cartodbHost.setLongOpt("cartodbHost");
+        cartodbHost.setArgs(1);
+        cartodbHost.setRequired(false);
 
         Option hereMapsAppId = new Option("hmai", "Here maps app id");
         hereMapsAppId.setLongOpt("hereMapsAppId");

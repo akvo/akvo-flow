@@ -113,18 +113,6 @@ public class EnvServlet extends HttpServlet {
 
         props.put("appId", SystemProperty.applicationId.get());
 
-        if (props.get("mapsProvider") == null) {
-            props.put("mapsProvider", "mapbox");
-        }
-
-        if (props.get("googleMapsRegionBias") == null) {
-            props.put("googleMapsRegionBias", "");
-        }
-
-        if (props.get("cartodbHost") == null) {
-            props.put("cartodbHost", "");
-        }
-
         final BaseDAO<Country> countryDAO = new BaseDAO<Country>(Country.class);
         final JSONArray jsonArray = new JSONArray();
         for (Country c : countryDAO.list(Constants.ALL_RESULTS)) {
