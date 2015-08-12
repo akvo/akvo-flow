@@ -143,7 +143,7 @@ FLOW.QuestionView = FLOW.View.extend({
     var val;
     if (!Ember.none(this.type)) {
       val = this.type.get('value');
-      return val == 'PHOTO' || val == 'VIDEO';
+      return val == 'PHOTO' || val == 'VIDEO' || val == 'DATE';
     }
   }.property('this.type').cacheable(),
 
