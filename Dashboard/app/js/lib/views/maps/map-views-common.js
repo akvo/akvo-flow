@@ -480,7 +480,7 @@ FLOW.NavMapsView = FLOW.View.extend({
     layer.bind('featureOut', function(m, layer) {
       hovers[layer] = 0;
       if(!_.any(hovers)) {
-        $('#flowMap').css({"cursor":"-moz-grabbing","cursor":"-webkit-grabbing"});
+        $('#flowMap').css({"cursor":"-moz-grab","cursor":"-webkit-grab"});
       }
     });
   },
