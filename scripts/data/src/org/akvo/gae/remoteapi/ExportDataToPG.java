@@ -71,6 +71,7 @@ public class ExportDataToPG implements Process {
         conn.setAutoCommit(false);
 
         long t0 = System.currentTimeMillis();
+        ObjectMapper om = new ObjectMapper();
 
         for (String kind : KINDS) {
 
@@ -96,7 +97,6 @@ public class ExportDataToPG implements Process {
                 long createdAt = createdDateTime == null ? 0 : createdDateTime.getTime();
 
                 StringWriter sw = new StringWriter();
-                ObjectMapper om = new ObjectMapper();
                 om.writeValue(sw, e);
 
                 PGobject payload = new PGobject();
