@@ -16,7 +16,6 @@
 
 package org.akvo.gae.remoteapi;
 
-import java.io.StringWriter;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.PreparedStatement;
@@ -82,6 +81,7 @@ public class ExportDataToPG implements Process {
             PreparedStatement ps0 = conn.prepareStatement(String.format(CREATE_TABLE, tableName));
             ps0.execute();
             conn.commit();
+            ps0.close();
 
             Query q = new Query(kind);
 
@@ -98,12 +98,11 @@ public class ExportDataToPG implements Process {
                 Date createdDateTime = (Date) e.getProperty("createdDateTime");
                 long createdAt = createdDateTime == null ? 0 : createdDateTime.getTime();
 
-                StringWriter sw = new StringWriter();
-                om.writeValue(sw, e);
+                String val = om.writeValueAsString(e).replaceAll("\\\\u0000", "");
 
                 PGobject payload = new PGobject();
                 payload.setType("jsonb");
-                payload.setValue(sw.toString().replaceAll("\\\\u0000", ""));
+                payload.setValue(val);
 
                 Long entityId = e.getKey().getId();
                 Long parentId = e.getKey().getParent() == null ? 0 : e.getKey().getParent().getId();
@@ -121,7 +120,7 @@ public class ExportDataToPG implements Process {
                 }
 
             }
-            ps0.close();
+
             ps.close();
             conn.commit();
             System.out.println("\n");
