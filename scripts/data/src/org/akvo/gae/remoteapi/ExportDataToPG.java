@@ -42,10 +42,12 @@ import com.google.appengine.api.datastore.Query;
 public class ExportDataToPG implements Process {
 
     private static final int BATCH_SIZE = 2000;
-    private static final String[] KINDS = { Kind.SURVEY_GROUP, Kind.FORM,
-            Kind.QUESTION_GROUP, Kind.QUESTION, Kind.DATA_POINT,
-            Kind.FORM_INSTANCE, Kind.DEVICE_FILE, Kind.ANSWER };
-    private static final String CREATE_TABLE = "CREATE TABLE IF NOT EXISTS %s (id bigint PRIMARY KEY, created_at bigint, payload jsonb)";
+    private static final String[] KINDS = {
+            Kind.SURVEY_GROUP, Kind.FORM, Kind.QUESTION_GROUP,
+            Kind.QUESTION, Kind.DATA_POINT, Kind.FORM_INSTANCE,
+            Kind.DEVICE_FILE, Kind.ANSWER
+    };
+    private static final String CREATE_TABLE = "CREATE TABLE IF NOT EXISTS %s (id bigint, created_at bigint, payload jsonb)";
     private static final String INSERT = "INSERT INTO %s VALUES (?, ?, ?)";
 
     private static final Map<String, String> TABLE_NAME = new HashMap<>();
@@ -101,9 +103,12 @@ public class ExportDataToPG implements Process {
 
                 PGobject payload = new PGobject();
                 payload.setType("jsonb");
-                payload.setValue(sw.toString());
+                payload.setValue(sw.toString().replaceAll("\\\\u0000", ""));
 
-                ps.setLong(1, e.getKey().getId());
+                Long entityId = e.getKey().getId();
+                Long parentId = e.getKey().getParent() == null ? 0 : e.getKey().getParent().getId();
+
+                ps.setLong(1, entityId + parentId);
                 ps.setLong(2, createdAt);
                 ps.setObject(3, payload);
 
