@@ -77,18 +77,14 @@ public class InstanceConfigurator {
         String outFolder = cli.getOptionValue("o");
         String flowServices = cli.getOptionValue("fs");
         String eventNotification = cli.getOptionValue("en");
-        String enableChangeEvents = cli.getOptionValue("ce");
-        if (enableChangeEvents == null) {
-            enableChangeEvents = "false";
-        }
-        String useGoogleMapsLayers = cli.getOptionValue("gm");
-        if (useGoogleMapsLayers == null) {
-            useGoogleMapsLayers = "false";
-        }
-        String googleMapsRegionBias = cli.getOptionValue("rb");
-        if (googleMapsRegionBias == null) {
-            googleMapsRegionBias = "";
-        }
+        String enableChangeEvents = cli.getOptionValue("ce", "false");
+        String mapsProvider = cli.getOptionValue("mapsProvider", "mapbox");
+        String googleMapsRegionBias = cli.getOptionValue("rb", "");
+        String cartodbApiKey = cli.getOptionValue("ck", "");
+        String cartodbSqlApi = cli.getOptionValue("cs", "");
+        String cartodbHost = cli.getOptionValue("ch", "");
+        String hereMapsAppId = cli.getOptionValue("hmai", "");
+        String hereMapsAppCode = cli.getOptionValue("hmac", "");
         String alias = cli.getOptionValue("a");
         String emailFrom = cli.getOptionValue("ef");
         String emailTo = cli.getOptionValue("et");
@@ -191,6 +187,10 @@ public class InstanceConfigurator {
                 new SimpleDateFormat("yyyy-MM-dd").format(new Date()));
         data.put("accessKey", accessKeys);
 
+        Template t0 = cfg.getTemplate("bucket-policy.ftl");
+        StringWriter bucketPolicy = new StringWriter();
+        t0.process(data, bucketPolicy);
+
         Template t1 = cfg.getTemplate("apk-s3-policy.ftl");
         StringWriter apkPolicy = new StringWriter();
         t1.process(data, apkPolicy);
@@ -198,6 +198,8 @@ public class InstanceConfigurator {
         Template t2 = cfg.getTemplate("gae-s3-policy.ftl");
         StringWriter gaePolicy = new StringWriter();
         t2.process(data, gaePolicy);
+
+        s3Client.setBucketPolicy(bucketName, t0.toString());
 
         iamClient.putUserPolicy(new PutUserPolicyRequest(apkUser, apkUser,
                 Policy.fromJson(apkPolicy.toString()).toJson()));
@@ -232,8 +234,13 @@ public class InstanceConfigurator {
         webData.put("flowServices", flowServices);
         webData.put("eventNotification", eventNotification);
         webData.put("enableChangeEvents", enableChangeEvents);
-        webData.put("useGoogleMapsLayers", useGoogleMapsLayers);
+        webData.put("mapsProvider", mapsProvider);
         webData.put("googleMapsRegionBias", googleMapsRegionBias);
+        webData.put("cartodbApiKey", cartodbApiKey);
+        webData.put("cartodbSqlApi", cartodbSqlApi);
+        webData.put("cartodbHost", cartodbHost);
+        webData.put("hereMapsAppId", hereMapsAppId);
+        webData.put("hereMapsAppCode", hereMapsAppCode);
         webData.put("apiKey", apiKey);
         webData.put("emailFrom", emailFrom);
         webData.put("emailTo", emailTo);
@@ -309,17 +316,43 @@ public class InstanceConfigurator {
         enableChangeEvents.setArgs(1);
         enableChangeEvents.setRequired(false);
 
-        Option useGoogleMapsLayers = new Option("gm",
-                "true if the instance should use Google Maps layers instead of Mapbox");
-        useGoogleMapsLayers.setLongOpt("useGoogleMapsLayers");
-        useGoogleMapsLayers.setArgs(1);
-        useGoogleMapsLayers.setRequired(false);
+        Option mapsProvider = new Option("mp",
+                "The maps provider to use. One of 'mapbox', 'google', 'cartodb'");
+        mapsProvider.setLongOpt("mapsProvider");
+        mapsProvider.setArgs(1);
+        mapsProvider.setRequired(false);
 
         Option googleMapsRegionBias = new Option("rb",
                 "Region bias code (only available for google maps layers)");
         googleMapsRegionBias.setLongOpt("googleMapsRegionBias");
         googleMapsRegionBias.setArgs(1);
         googleMapsRegionBias.setRequired(false);
+
+        Option cartodbApiKey = new Option("ck", "Cartodb api key");
+        cartodbApiKey.setLongOpt("cartodbApiKey");
+        cartodbApiKey.setArgs(1);
+        cartodbApiKey.setRequired(false);
+
+        Option cartodbSqlApi = new Option("cs",
+                "Url endpoint for the cartodb sql api");
+        cartodbSqlApi.setLongOpt("cartodbSqlApi");
+        cartodbSqlApi.setArgs(1);
+        cartodbSqlApi.setRequired(false);
+
+        Option cartodbHost = new Option("ch", "Cartodb host");
+        cartodbHost.setLongOpt("cartodbHost");
+        cartodbHost.setArgs(1);
+        cartodbHost.setRequired(false);
+
+        Option hereMapsAppId = new Option("hmai", "Here maps app id");
+        hereMapsAppId.setLongOpt("hereMapsAppId");
+        hereMapsAppId.setArgs(1);
+        hereMapsAppId.setRequired(false);
+
+        Option hereMapsAppCode = new Option("hmac", "Here maps app code");
+        hereMapsAppCode.setLongOpt("hereMapsAppCode");
+        hereMapsAppCode.setArgs(1);
+        hereMapsAppCode.setRequired(false);
 
         Option outputFolder = new Option("o",
                 "Output folder for configuration files");
@@ -349,8 +382,13 @@ public class InstanceConfigurator {
         options.addOption(flowServices);
         options.addOption(eventNotification);
         options.addOption(enableChangeEvents);
-        options.addOption(useGoogleMapsLayers);
+        options.addOption(mapsProvider);
         options.addOption(googleMapsRegionBias);
+        options.addOption(cartodbApiKey);
+        options.addOption(cartodbSqlApi);
+        options.addOption(cartodbHost);
+        options.addOption(hereMapsAppId);
+        options.addOption(hereMapsAppCode);
         options.addOption(alias);
         options.addOption(signingKey);
 
