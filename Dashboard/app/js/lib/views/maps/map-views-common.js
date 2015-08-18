@@ -132,7 +132,7 @@ FLOW.NavMapsView = FLOW.View.extend({
     });
 
     // create leaflet map
-    var map = L.map('flowMap', {scrollWheelZoom: true}).setView([26.11598592533351, 1.9335937499999998], 3);
+    var map = L.map('flowMap', {scrollWheelZoom: true}).setView([26.11598592533351, 1.9335937499999998], 2);
 
     var bounds = new L.LatLngBounds(map.getBounds().getSouthWest(), map.getBounds().getNorthEast());
 
@@ -148,7 +148,7 @@ FLOW.NavMapsView = FLOW.View.extend({
       app_id: FLOW.Env.hereMapsAppId,
       app_code: FLOW.Env.hereMapsAppCode,
       base: 'base',
-      noWrap: true
+      noWrap: false
     }).addTo(map);
 
     this.map = map;
@@ -480,7 +480,7 @@ FLOW.NavMapsView = FLOW.View.extend({
     layer.bind('featureOut', function(m, layer) {
       hovers[layer] = 0;
       if(!_.any(hovers)) {
-        $('#flowMap').css({"cursor":"-moz-grabbing","cursor":"-webkit-grabbing"});
+        $('#flowMap').css({"cursor":"-moz-grab","cursor":"-webkit-grab"});
       }
     });
   },
