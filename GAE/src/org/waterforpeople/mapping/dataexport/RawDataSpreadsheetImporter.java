@@ -98,7 +98,7 @@ public class RawDataSpreadsheetImporter implements DataImporter {
      * @return
      * @throws Exception
      */
-    protected Sheet getDataSheet(File file) throws Exception {
+    public Sheet getDataSheet(File file) throws Exception {
         stream = new PushbackInputStream(new FileInputStream(file));
         Workbook wb = null;
         try {
