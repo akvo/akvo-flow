@@ -155,6 +155,14 @@ FLOW.QuestionView = FLOW.View.extend({
 	    }
 	  }.property('this.type').cacheable(),
 
+  amDateType: function () {
+      if (this.type) {
+        return this.type.get('value') == 'DATE';
+      } else {
+        return false;
+      }
+    }.property('this.type').cacheable(),    
+
   showLocaleName: function () {
       if (!this.type) {
           return false;

@@ -73,7 +73,7 @@
                     {{/if}}
                     {{#if FLOW.projectControl.currentProject.monitoringGroup}}
 
-                      <p class="monitoringHint">{{t _choose_the_registration_form}}:</p>
+                      <p class="monitoringHint">{{t _choose_the_registration_form}}: {{tooltip _choose_the_registration_form_tooltip}}</p>
                       {{view Ember.Select
                         contentBinding="FLOW.surveyControl.arrangedContent"
                         selectionBinding="view.selectedRegistrationForm"
