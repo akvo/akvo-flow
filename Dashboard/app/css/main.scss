@@ -1315,14 +1315,6 @@ tfoot tr {
             &.survey,
             &.submitter {
                 text-align: left;
-                .multipleOptionEdit {
-                    color: black;                
-                    .ember-view {
-                        &.ember-checkbox {
-                        width: initial;
-                        }
-                    }
-                }
             }
         }
     }
