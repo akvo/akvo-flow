@@ -5,6 +5,7 @@ FLOW.NavMapsView = FLOW.View.extend({
   detailsPaneVisible: null,
   map: null,
   marker: null,
+  geoShape: null,
   geomodel: null,
   cartodbLayer: null,
   layerExistsCheck: 0,
@@ -167,6 +168,10 @@ FLOW.NavMapsView = FLOW.View.extend({
         self.map.removeLayer(self.marker);
         self.hideDetailsPane();
         $('#pointDetails').html('<p class="noDetails">'+Ember.String.loc('_no_details') +'</p>');
+      }
+
+      if(self.geoShape !== null){
+        //self.map.removeLayer(self.geoShape);
       }
     });
 
@@ -496,6 +501,8 @@ FLOW.NavMapsView = FLOW.View.extend({
         $.get(
             "/rest/cartodb/questions?form_id="+pointData['formId'],
             function(questionsData, status){
+              var geoshapeCheck = false;
+              var geoshapeCoordinates = [];
               clickedPointContent += '<ul class="placeMarkBasicInfo floats-in">'
               +'<h3>'
               +((dataPointName != "" && dataPointName != "null" && dataPointName != null) ? dataPointName : "")
@@ -527,13 +534,36 @@ FLOW.NavMapsView = FLOW.View.extend({
                       image +'</div>';
                       clickedPointContent += '<dd>'+image+'</dd></div>';
                     }else{
-                      clickedPointContent += '<dd>'+pointData['answers'][column]+'</dd></div>';
+                      //clickedPointContent += '<dd>'+pointData['answers'][column]+'</dd></div>';
+                      //if point is a geoshape, draw the shape in the side window
+                      if(questionsData['questions'][i].type == "GEOSHAPE"){
+                        if(pointData['answers'][column] !== "" && pointData['answers'][column] !== null && pointData['answers'][column] !== "null"){
+                          geoshapeCheck = true;
+                          geoshapeObject = JSON.parse(pointData['answers'][column]);
+                          if(geoshapeObject['features'].length > 0){
+                            var geoshapeCoordinatesArray = geoshapeObject['features'][0]['geometry']['coordinates'][0];
+                            for(var j=0; j<geoshapeCoordinatesArray.length; j++){
+                              geoshapeCoordinates.push([geoshapeCoordinatesArray[j][1], geoshapeCoordinatesArray[j][0]]);
+                            }
+                          }
+                          clickedPointContent += "<dd><div id=\"geoShapeMap\" style=\"width:100%; height: 100px\"></div></dd></div>";
+                        }else{
+                          clickedPointContent += "<dd>&nbsp;</dd></div>";
+                        }
+                      }else{
+                        clickedPointContent += "<dd>"+pointData['answers'][column]+"</dd></div>";
+                      }
                     }
                   }
                 }
               }
               clickedPointContent += '</dl>';
               $('#pointDetails').html(clickedPointContent);
+
+              //if there's geoshape, draw it
+              if(geoshapeCheck){
+                self.createGeoshape(geoshapeCoordinates);
+              }
             });
       } else {
         clickedPointContent += '<p class="noDetails">'+Ember.String.loc('_no_details') +'</p>';
@@ -541,6 +571,39 @@ FLOW.NavMapsView = FLOW.View.extend({
       }
     });
   },
+
+  createGeoshape: function(points){
+    var getCentroid = function (arr) {
+      return arr.reduce(function (x,y) {
+        return [x[0] + y[0]/arr.length, x[1] + y[1]/arr.length]
+      }, [0,0])
+    }
+
+    var center = getCentroid(points);
+
+    var geoshapeMap = L.map('geoShapeMap', {scrollWheelZoom: false}).setView(center, 2);
+    L.tileLayer('https://{s}.{base}.maps.cit.api.here.com/maptile/2.1/maptile/{mapID}/normal.day.transit/{z}/{x}/{y}/256/png8?app_id={app_id}&app_code={app_code}', {
+      attribution: '<a href="http://developer.here.com">HERE</a>',
+      subdomains: '1234',
+      mapID: 'newest',
+      app_id: 'r5lmMPKxiMeZzkTWRAJu',
+      app_code: 'W6i_Oej7Y8IdgizMp7eSyQ',
+      base: 'base',
+      maxZoom: 18
+    }).addTo(geoshapeMap);
+
+    this.geoShape = L.polygon(points);
+
+    this.geoShape.addTo(geoshapeMap);
+    //this.geoShape.addTo(this.map);
+
+    var southWest = this.geoShape.getBounds().getSouthWest();
+    var northEast = this.geoShape.getBounds().getNorthEast();
+    var bounds = new L.LatLngBounds(southWest, northEast);
+
+    geoshapeMap.fitBounds(bounds);
+    //this.map.fitBounds(bounds);
+  }
 });
 
 

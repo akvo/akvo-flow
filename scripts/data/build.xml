@@ -1,28 +1,15 @@
-<project basedir=".">
-	<property name="lib" value="lib" />
-	<property name="build" value="bin" />
-	<property name="gae" value="../../GAE" />
+<project default="compile">
+  <property name="lib.dir"
+            value="lib"/>
 
-	<path id="project.classpath">
-		<fileset dir="${lib}">
-			<include name="**/*.jar" />
-		</fileset>
-		<fileset dir="${gae}/war/WEB-INF/lib">
-			<include name="**/*.jar" />
-		</fileset>
-		<pathelement path="${gae}/war/WEB-INF/classes"/>
-		<pathelement path="${build}"/>
-	</path>
+  <path id="classpath">
+    <fileset dir="${lib.dir}" includes="**/*.jar"/>
+  </path>
 
-	<target name="compile">
-		<mkdir dir="${build}" />
-		<javac source="1.7" target="1.7" encoding="UTF8" srcdir="src" destdir="${build}"
-			classpathref="project.classpath" debug="on" includeantruntime="false" />
-	</target>
-
-	<target name="remoteAPI">
-		<java classname="org.akvo.gae.remoteapi.RemoteAPI" classpathref="project.classpath" failonerror="true">
-			<arg line="${args}" />
-		</java>
-	</target>
+  <target name="compile">
+    <mkdir dir="bin"/>
+    <javac srcdir="src" destdir="bin">
+      <classpath refid="classpath"/>
+    </javac>
+  </target>
 </project>
