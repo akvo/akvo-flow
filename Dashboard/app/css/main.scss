@@ -1319,12 +1319,21 @@ tfoot tr {
                     color: black;                
                     .ember-view {
                         &.ember-checkbox {
-                        width: initial;
+                            width: initial;
                         }
                     }
                 }
             }
         }
+    }
+    div.multipleOptionEdit {
+        max-height: 175px;
+        width: 95%;
+        overflow-x: initial;
+        overflow-y: auto;
+        margin-bottom: 10px;
+        padding-left: 5px;
+        background-color: whitesmoke;
     }
 }
 
