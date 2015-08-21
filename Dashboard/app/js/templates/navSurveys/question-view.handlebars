@@ -14,7 +14,7 @@
       {{/if}}
       {{view Ember.TextField valueBinding="view.tip" size=100 }} </label>
     <label>
-      {{t _question_id}}: {{tooltip _question_id_tooltip}}
+      {{t _question_id}}: <span class="fadedText">({{t _optional}})</span> {{tooltip _question_id_tooltip}}
       {{#if view.questionIdValidationFailure }}
       <span style="color:red">{{view.questionIdValidationFailureReason}}</span>
       {{/if}}
