@@ -1380,7 +1380,7 @@ fieldset#assignmentDetails {
 input.hasDatepicker {
     display: inline;
     width: 95%;
-    background: rgb(250, 244, 230) url(../images/icon_cal.png) right center no-repeat;
+    background: rgb(250, 244, 230);
 }
 
 .dateRange div.activeDate,
@@ -3970,7 +3970,7 @@ table.dataTable.notificationTable thead tr th a:visited {
 div.dataCollectedDate input {
     display: inline;
     height: 20px;
-    background: white url(../images/icon_cal.png) right center no-repeat;
+    background: white;
 }
 
 .filterData label {
