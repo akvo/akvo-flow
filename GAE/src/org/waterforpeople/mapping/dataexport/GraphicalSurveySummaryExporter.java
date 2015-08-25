@@ -105,6 +105,7 @@ public class GraphicalSurveySummaryExporter extends SurveySummaryExporter {
     private static final Map<String, String> SUB_DATE_LABEL;
     private static final Map<String, String> SUBMITTER_LABEL;
     private static final Map<String, String> DURATION_LABEL;
+    private static final Map<String, String> REPEAT_LABEL;
     private static final Map<String, String> MEAN_LABEL;
     private static final Map<String, String> MODE_LABEL;
     private static final Map<String, String> MEDIAN_LABEL;
@@ -221,6 +222,10 @@ public class GraphicalSurveySummaryExporter extends SurveySummaryExporter {
         DURATION_LABEL = new HashMap<String, String>();
         DURATION_LABEL.put("en", "Duration");
         DURATION_LABEL.put("es", "Duración");
+
+        REPEAT_LABEL = new HashMap<String, String>();
+        REPEAT_LABEL.put("en", "Repeat");
+        REPEAT_LABEL.put("es", "Repita");
 
         LOADING_QUESTIONS = new HashMap<String, String>();
         LOADING_QUESTIONS.put("en", "Loading Questions");
@@ -566,6 +571,13 @@ public class GraphicalSurveySummaryExporter extends SurveySummaryExporter {
         createCell(row, column++, duration);
         digest.update(duration.getBytes());
 
+        // Write the "Repeat" column
+        for (int i = 0; i <= instanceData.getMaxIterationsCount(); i++) {
+            Row r = getRow(row.getRowNum() + i, sheet);
+            createCell(r, column, String.valueOf(i + 1), null, Cell.CELL_TYPE_NUMERIC);
+        }
+        column++;
+
         for (String q : questionIdList) {
             final Long questionId = Long.valueOf(q);
             final QuestionDto questionDto = questionsById.get(questionId);
@@ -900,6 +912,7 @@ public class GraphicalSurveySummaryExporter extends SurveySummaryExporter {
         createCell(row, columnIdx++, SUB_DATE_LABEL.get(locale), headerStyle);
         createCell(row, columnIdx++, SUBMITTER_LABEL.get(locale), headerStyle);
         createCell(row, columnIdx++, DURATION_LABEL.get(locale), headerStyle);
+        createCell(row, columnIdx++, REPEAT_LABEL.get(locale), headerStyle);
 
         List<String> questionIdList = new ArrayList<String>();
         List<String> nonSummarizableList = new ArrayList<String>();
@@ -1464,6 +1477,7 @@ public class GraphicalSurveySummaryExporter extends SurveySummaryExporter {
         private SurveyInstanceDto surveyInstanceDto;
         // QuestionId -> Iteration -> Answer
         private Map<Long, SortedMap<Long, String>> responseMap;
+        private Long maxIterationsCount;
 
         public InstanceData(SurveyInstanceDto surveyInstanceDto,
                 Map<Long, Map<Long, String>> responseMap) {
@@ -1474,10 +1488,13 @@ public class GraphicalSurveySummaryExporter extends SurveySummaryExporter {
             // TODO: Drop iterations with all empty answers.
             Map<Long, SortedMap<Long, String>> sortedResponseMap = new HashMap<>();
 
+            Long maxIter = 0L;
+
             for (Entry<Long, Map<Long, String>> entry : responseMap.entrySet()) {
                 Map<Long, String> iterationsMap = entry.getValue();
                 SortedMap<Long, String> sortedMap = new TreeMap<>();
                 Long maxIteration = Collections.max(iterationsMap.keySet());
+                maxIter = Math.max(maxIter, maxIteration);
                 for (long i = 0; i <= maxIteration; i++) {
                     String value = iterationsMap.get(i);
                     sortedMap.put(i, value == null ? "" : value);
@@ -1485,10 +1502,15 @@ public class GraphicalSurveySummaryExporter extends SurveySummaryExporter {
                 sortedResponseMap.put(entry.getKey(), sortedMap);
             }
             this.responseMap = sortedResponseMap;
+            this.maxIterationsCount = maxIter;
         }
 
         public SurveyInstanceDto getDto() {
             return surveyInstanceDto;
+        }
+
+        public Long getMaxIterationsCount() {
+            return maxIterationsCount;
         }
     }
 }
