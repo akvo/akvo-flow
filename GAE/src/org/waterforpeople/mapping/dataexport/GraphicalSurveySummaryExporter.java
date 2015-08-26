@@ -608,6 +608,12 @@ public class GraphicalSurveySummaryExporter extends SurveySummaryExporter {
             column += maxColsWritten;
             maxRow = Math.max(maxRow, baseRow + rowOffset);
         }
+
+        if (!useQuestionId) {
+            // now add 1 more col that contains the digest
+            createCell(row, column++, StringUtil.toHexString(digest.digest()), null);
+        }
+
         return maxRow + 1;
     }
 
@@ -1441,7 +1447,7 @@ public class GraphicalSurveySummaryExporter extends SurveySummaryExporter {
         options.put(LOCALE_OPT, "en");
         options.put(TYPE_OPT, RAW_ONLY_TYPE);
         options.put(LAST_COLLECTION_OPT, "false");
-        options.put("useQuestionId", "true");
+        options.put("useQuestionId", "false");
         options.put("email", "email@example.com");
         options.put("from", null);
         options.put("to", null);

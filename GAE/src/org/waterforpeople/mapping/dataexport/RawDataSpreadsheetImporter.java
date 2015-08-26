@@ -155,7 +155,6 @@ public class RawDataSpreadsheetImporter implements DataImporter {
 
             if (results != null) {
                 questionMap = (Map<String, QuestionDto>) results[1];
-
             }
 
             boolean hasDurationCol = true;
@@ -213,7 +212,7 @@ public class RawDataSpreadsheetImporter implements DataImporter {
                     if (cell.getColumnIndex() == instanceIdx) {
                         if (cell.getCellType() == Cell.CELL_TYPE_NUMERIC) {
                             instanceId = new Double(cell.getNumericCellValue())
-                            .intValue() + "";
+                                    .intValue() + "";
                         } else if (cell.getCellType() == Cell.CELL_TYPE_STRING) {
                             instanceId = cell.getStringCellValue();
 
@@ -250,13 +249,13 @@ public class RawDataSpreadsheetImporter implements DataImporter {
                     if (cell.getColumnIndex() == durationIdx) {
                         if (hasDurationCol) {
                             switch (cell.getCellType()) {
-                                // if the cell type is string, we expect hh:mm:ss format
+                            // if the cell type is string, we expect hh:mm:ss format
                                 case Cell.CELL_TYPE_STRING:
                                     duration = cell.getStringCellValue();
                                     durationSeconds = String.valueOf(durationToSeconds(duration));
                                     digest.update(duration.getBytes());
                                     break;
-                                    // if the cell type if numeric, we expect a single seconds value
+                                // if the cell type if numeric, we expect a single seconds value
                                 case Cell.CELL_TYPE_NUMERIC:
                                     durationSeconds = String.valueOf(cell.getNumericCellValue());
                                     digest.update(durationSeconds.getBytes());
@@ -336,9 +335,9 @@ public class RawDataSpreadsheetImporter implements DataImporter {
                                     "questionId="
                                             + questionIDColMap.get(cell
                                                     .getColumnIndex())
-                                                    + "|value=").append(
-                                                            cellVal != null ? URLEncoder.encode(
-                                                                    cellVal, "UTF-8") : "");
+                                            + "|value=").append(
+                                    cellVal != null ? URLEncoder.encode(
+                                            cellVal, "UTF-8") : "");
                         } else {
                             hasValue = true;
                             sb.append("questionId="
@@ -401,8 +400,8 @@ public class RawDataSpreadsheetImporter implements DataImporter {
                             instanceId == null ? null
                                     : getResetUrlString(instanceId, dateString, submitter,
                                             durationSeconds),
-                                            sb.toString(),
-                                            criteria.get(KEY_PARAM));
+                            sb.toString(),
+                            criteria.get(KEY_PARAM));
 
                 } else {
                     // if we didn't need to upload, then just increment our
