@@ -27,7 +27,6 @@ require('akvo-flow/views/devices/assignment-edit-views');
 require('akvo-flow/views/devices/survey-bootstrap-view');
 require('akvo-flow/views/users/user-view');
 
-
 FLOW.ApplicationView = Ember.View.extend({
   templateName: 'application/application',
 
@@ -738,7 +737,7 @@ FLOW.SurveySelectionView = Ember.ContainerView.extend({
   init: function() {
     this._super();
     this.get('childViews').pushObject(FLOW.SelectFolder.create({
-      parentId: null,
+      parentId: 0, // start with the root folder
       idx: 0,
       showMonitoringSurveysOnly: this.get('showMonitoringSurveysOnly') || false
     }));
@@ -754,7 +753,7 @@ FLOW.DataCleaningSurveySelectionView = Ember.ContainerView.extend({
   init: function() {
     this._super();
     this.get('childViews').pushObject(FLOW.SelectFolder.create({
-      parentId: null,
+      parentId: 0, // start with the root folder
       idx: 0,
       showMonitoringSurveysOnly: this.get('showMonitoringSurveysOnly') || false,
       selectionFilter : FLOW.projectControl.dataCleaningEnabled

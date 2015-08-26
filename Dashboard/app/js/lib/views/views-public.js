@@ -4,7 +4,7 @@
 /*global tooltip, makePlaceholders */
 
 require('akvo-flow/core-common');
-require('akvo-flow/views/maps/map-views-common');
+require('akvo-flow/views/maps/map-views-common-public');
 
 
 FLOW.ApplicationView = Ember.View.extend({

@@ -3,12 +3,13 @@ function capitaliseFirstLetter(string) {
 }
 
 if (!String.prototype.trim) {
-  String.prototype.trim=function(){return this.replace(/^\s+|\s+$/g, '');};
+  String.prototype.trim = function(){
+    return this.replace(/^\s+|\s+$/g, '');
+  };
 }
 
 FLOW.ProjectListView = FLOW.View.extend({
   templateName: 'navSurveys/project-list'
-
 });
 
 FLOW.ProjectView = FLOW.View.extend({
@@ -82,8 +83,12 @@ FLOW.Project = FLOW.View.extend({
   isPublished: function() {
     var form = FLOW.selectedControl.get('selectedSurvey');
     return form.get('status') === 'PUBLISHED'
-  }.property('FLOW.selectedControl.selectedSurvey.status')
+  }.property('FLOW.selectedControl.selectedSurvey.status'),
 
+  disableFolderSurveyInputField: function() {
+    var permissions = FLOW.projectControl.get('currentFolderPermissions');
+    return permissions.indexOf("PROJECT_FOLDER_UPDATE") < 0;
+  }.property('FLOW.projectControl.currentProjectPath'),
 });
 
 
@@ -132,8 +137,8 @@ FLOW.ProjectMainView = FLOW.View.extend({
   }.property('FLOW.projectControl.currentProject'),
 
   disableAddFolderButton: function() {
-    var permissions = FLOW.projectControl.get('currentPathPermissions');
-    return !FLOW.role.get('SUPER_ADMIN') && $.inArray("PROJECT_FOLDER_CREATE", permissions) === -1;
+    var permissions = FLOW.projectControl.get('currentFolderPermissions');
+    return permissions.indexOf("PROJECT_FOLDER_CREATE") < 0;
   }.property('FLOW.projectControl.currentProjectPath'),
 
   disableAddSurveyButtonInRoot: function() {
@@ -141,8 +146,8 @@ FLOW.ProjectMainView = FLOW.View.extend({
   }.property('FLOW.projectControl.currentProjectPath'),
 
   disableAddSurveyButton: function() {
-    var permissions = FLOW.projectControl.get('currentPathPermissions');
-    return !FLOW.role.get('SUPER_ADMIN') && $.inArray("PROJECT_FOLDER_CREATE", permissions) === -1;
+    var permissions = FLOW.projectControl.get('currentFolderPermissions');
+    return permissions.indexOf("PROJECT_FOLDER_CREATE") < 0;
   }.property('FLOW.projectControl.currentProjectPath'),
 });
 
@@ -207,9 +212,10 @@ FLOW.ProjectItemView = FLOW.View.extend({
     return langs[this.content.get('defaultLanguageCode')];
   }.property(),
 
-  hideDeleteButton: function () {
+  hideFolderSurveyDeleteButton: function () {
     var c = this.get('content');
-    return !Ember.empty(c.get('surveyList')) || c.get('deleteDisabled');
+    var permissions = FLOW.projectControl.get('currentFolderPermissions');
+    return permissions.indexOf("PROJECT_FOLDER_DELETE") < 0 || !Ember.empty(c.get('surveyList'));
   }.property()
 
 });
@@ -417,8 +423,8 @@ FLOW.SurveyGroupMainView = FLOW.View.extend({
   saveNewSurveyGroupName: function () {
     if (!Ember.empty(this.get('surveyGroupName').trim())){
       FLOW.store.createRecord(FLOW.SurveyGroup, {
-	"code": capitaliseFirstLetter(this.get('surveyGroupName')),
-	"name": capitaliseFirstLetter(this.get('surveyGroupName'))
+        "code": capitaliseFirstLetter(this.get('surveyGroupName')),
+        "name": capitaliseFirstLetter(this.get('surveyGroupName'))
       });
       FLOW.store.commit();
     }

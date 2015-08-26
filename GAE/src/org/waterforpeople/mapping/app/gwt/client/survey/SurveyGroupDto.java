@@ -1,5 +1,5 @@
 /*
- *  Copyright (C) 2010-2012 Stichting Akvo (Akvo Foundation)
+ *  Copyright (C) 2010-2015 Stichting Akvo (Akvo Foundation)
  *
  *  This file is part of Akvo FLOW.
  *
@@ -18,6 +18,7 @@ package org.waterforpeople.mapping.app.gwt.client.survey;
 
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
 
 import com.gallatinsystems.framework.gwt.dto.client.BaseDto;
 import com.gallatinsystems.framework.gwt.dto.client.NamedObject;
@@ -41,6 +42,7 @@ public class SurveyGroupDto extends BaseDto implements NamedObject {
     private String defaultLanguageCode;
     private PrivacyLevel privacyLevel;
     private Boolean published;
+    private List<Long> ancestorIds;
 
     private ArrayList<SurveyDto> surveyList = null;
 
@@ -166,6 +168,14 @@ public class SurveyGroupDto extends BaseDto implements NamedObject {
 
     public void setPublished(Boolean published) {
         this.published = published;
+    }
+
+    public List<Long> getAncestorIds() {
+        return ancestorIds;
+    }
+
+    public void setAncestorIds(List<Long> ancestorIds) {
+        this.ancestorIds = ancestorIds;
     }
 
 }

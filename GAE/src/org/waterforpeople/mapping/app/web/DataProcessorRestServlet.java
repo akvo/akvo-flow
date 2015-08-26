@@ -553,8 +553,10 @@ public class DataProcessorRestServlet extends AbstractRestApiServlet {
 
         List<QuestionGroup> qgCopyList = new ArrayList<QuestionGroup>();
         for (final QuestionGroup sourceGroup : qgList) {
-            QuestionGroup copyGroup = qgDao.save(new QuestionGroup());
-            SurveyUtils.shallowCopy(sourceGroup, copyGroup);
+            // need a temp group to avoid state sharing exception
+            QuestionGroup tmpGroup = new QuestionGroup();
+            SurveyUtils.shallowCopy(sourceGroup, tmpGroup);
+            final QuestionGroup copyGroup = qgDao.save(tmpGroup);
             SurveyUtils.copyQuestionGroup(sourceGroup, copyGroup, copiedSurveyId,
                     qDependencyResolutionMap);
             copyGroup.setStatus(QuestionGroup.Status.READY); // copied
@@ -1236,11 +1238,11 @@ public class DataProcessorRestServlet extends AbstractRestApiServlet {
                         QuestionAnswerStore qas = qasDao
                                 .getByQuestionAndSurveyInstance(qId, si
                                         .getKey().getId());
-                        if (qas != null) {
+                        if (qas != null && qas.getValue() != null) {
                             if (displayName.length() > 0) {
                                 displayName += " - ";
                             }
-                            displayName += qas.getValue();
+                            displayName += qas.getValue().replaceAll("\\s*\\|\\s*", " - ");
                         }
                     }
                     addSl = true;

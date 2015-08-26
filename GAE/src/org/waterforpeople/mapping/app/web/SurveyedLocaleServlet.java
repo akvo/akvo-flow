@@ -1,5 +1,5 @@
 /*
- *  Copyright (C) 2010-2014 Stichting Akvo (Akvo Foundation)
+ *  Copyright (C) 2010-2015 Stichting Akvo (Akvo Foundation)
  *
  *  This file is part of Akvo FLOW.
  *
@@ -159,22 +159,19 @@ public class SurveyedLocaleServlet extends AbstractRestApiServlet {
                     siDto.setCollectionDate(si.getCollectionDate().getTime());
                 }
                 for (SurveyalValue sv : instanceMap.get(instanceId)) {
-                    String svQuestionType = sv.getQuestionType();
-                    String deviceQuestionType = "VALUE";
-                    if (svQuestionType.equals("DATE")) {
-                        deviceQuestionType = "DATE";
-                    } else if (svQuestionType.equals("GEO")) {
-                        deviceQuestionType = "GEO";
-                    } else if (svQuestionType.equals("PHOTO")) {
-                        deviceQuestionType = "IMAGE";
-                    } else if (svQuestionType.equals("VIDEO")) {
-                        deviceQuestionType = "VIDEO";
-                    } else if (svQuestionType.equals("SCAN")) {
-                        deviceQuestionType = "SCAN";
-                    } else if (svQuestionType.equals("OPTION")) {
+                    if (sv.getSurveyQuestionId() == null) {
+                        continue;// The question was deleted before storing the response.
+                    }
+                    
+                    String type = sv.getQuestionType();
+                    if (type == null || "".equals(type)) {
+                        type = "VALUE";
+                    } else if ("PHOTO".equals(type)) {
+                        type = "IMAGE";
+                    } else if ("OPTION".equals(type)) {
                         // first see if we have the question in the map already
                         if (questionTypeMap.containsKey(sv.getSurveyQuestionId())) {
-                            deviceQuestionType = questionTypeMap.get(sv.getSurveyQuestionId());
+                            type = questionTypeMap.get(sv.getSurveyQuestionId());
                         } else {
                             // find question by id
                             Question q = qDao.getByKey(sv.getSurveyQuestionId());
@@ -182,19 +179,16 @@ public class SurveyedLocaleServlet extends AbstractRestApiServlet {
                                 // if the question has the allowOtherFlag set,
                                 // use OTHER as the device question type
                                 if (q.getAllowOtherFlag()) {
-                                    deviceQuestionType = "OTHER";
+                                    type = "OTHER";
                                 }
-                                questionTypeMap.put(sv.getSurveyQuestionId(),
-                                        deviceQuestionType);
+                                questionTypeMap.put(sv.getSurveyQuestionId(), type);
                             }
                         }
                     }
-                    if (!sv.getQuestionType().equals("IMAGE")) {
-                        // add question type
-                        siDto.addProperty(sv.getSurveyQuestionId(),
-                                sv.getStringValue() != null ? sv.getStringValue() : "",
-                                deviceQuestionType);
-                    }
+                    // add question type
+                    siDto.addProperty(sv.getSurveyQuestionId(),
+                            sv.getStringValue() != null ? sv.getStringValue() : "",
+                            type);
                 }
                 dto.getSurveyInstances().add(siDto);
             }

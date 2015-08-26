@@ -148,9 +148,9 @@ FLOW.surveyGroupControl = Ember.ArrayController.create({
 
   // load all Survey Groups
   populate: function (f) {
-	var fn = (f && $.isFunction(f) && f) || FLOW.alwaysTrue;
-	FLOW.store.find(FLOW.SurveyGroup);
-	this.setFilteredContent(fn);
+    var fn = (f && $.isFunction(f) && f) || FLOW.alwaysTrue;
+    FLOW.store.find(FLOW.SurveyGroup);
+    this.setFilteredContent(fn);
   },
 
   // checks if data store contains surveys within this survey group.
@@ -193,16 +193,16 @@ FLOW.surveyGroupControl = Ember.ArrayController.create({
   path whether or not a user is able to delete data in the group. Used
   for monitoring groups */
   userCanDeleteData: function(surveyGroupId) {
-    var surveyGroupPath;
+    var ancestorIds;
     var surveyGroups = FLOW.store.filter(FLOW.SurveyGroup, function(sg){
         return sg.get('keyId') === surveyGroupId;
     });
 
     if(surveyGroups && surveyGroups.get('firstObject')) {
-        surveyGroupPath = surveyGroups.get('firstObject').get('path');
-        return FLOW.userControl.canDeleteData(surveyGroupPath);
+        ancestorIds = surveyGroups.get('firstObject').get('ancestorIds');
+        return FLOW.userControl.canDeleteData(ancestorIds);
     } else {
-        return false; // need survey group and path, otherwise prevent delete
+        return false; // need survey group and ancestorIds, otherwise prevent delete
     }
   },
 });
@@ -229,30 +229,43 @@ FLOW.projectControl = Ember.ArrayController.create({
     window.scrollTo(0,0);
   },
 
-  /* return true if the given SurveyGroup's path (partially) matches or is one of the ancestors (paths) of a path for which the data cleaning permission is present. The ancestor SurveyGroups are needed in order to be able to browse to the actual path to which the permission is assigned */
+  /* return true if the given SurveyGroup's has the data cleaning permission
+   * associated with it, or if one of the ancestors or descendants of the SurveyGroup
+   * has data cleaning permission associated with it.  In the case of descendants we
+   * return true in order to be able to browse to the descendant */
   dataCleaningEnabled: function(surveyGroup) {
-    var pathPermissions = FLOW.userControl.currentUserPathPermissions();
-    var permissionList;
-    var pathStartsWithPattern;
-    var matched = false;
-    for (var key in pathPermissions) {
-        permissionList = pathPermissions[key];
-        if(permissionList.indexOf("DATA_CLEANING") > -1){
-            pathStartsWithPattern = new RegExp('^' + key);
-            if(surveyGroup.get('path').match(pathStartsWithPattern)) {
-                matched = true;
-                break;
-            } else {
-                // match all the ancestor paths to enable browsing to lower level paths
-                FLOW.surveyGroupControl.ancestorPaths(key).forEach(function (path) {
-                    if(!matched && surveyGroup.get('path') === path) {
-                        matched = true;
-                    }
-                });
+    var permissions = FLOW.userControl.currentUserPathPermissions();
+    var keyedSurvey;
+
+    for (var key in permissions) {
+        if(permissions[key].indexOf("DATA_CLEANING") > -1){
+            // check key against survey group
+          if(surveyGroup.get('keyId') === +key) {
+            return true;
+          }
+
+          // check ancestors to for matching permission from higher level in hierarchy
+          var ancestorIds = surveyGroup.get('ancestorIds');
+          for(var i = 0; i < ancestorIds.length; i++){
+            if(ancestorIds[i] === +key) {
+              return true;
             }
+          }
+
+          // finally check for all descendents that may have surveyGroup.keyId in their
+          // ancestor list otherwise will not be able to browse to them.
+          keyedSurvey = FLOW.store.find(FLOW.SurveyGroup, key);
+          if (keyedSurvey) {
+            var keyedAncestorIds = keyedSurvey.get('ancestorIds');
+            for (var j = 0; j < keyedAncestorIds.length; j++) {
+              if(keyedAncestorIds[j] === surveyGroup.get('keyId')) {
+                return true;
+              }
+            }
+          }
         }
     }
-    return matched;
+    return false;
   },
 
   /* Computed properties */
@@ -264,7 +277,7 @@ FLOW.projectControl = Ember.ArrayController.create({
       return [];
     }
     var id = currentProject.get('keyId');
-    while(id !== null) {
+    while(id !== null && id !== 0) {
       project = FLOW.store.find(FLOW.SurveyGroup, id);
       result.push(project);
       id = project.get('parentId');
@@ -275,7 +288,7 @@ FLOW.projectControl = Ember.ArrayController.create({
   currentFolders: function() {
     var self = this;
     var currentProject = this.get('currentProject');
-    var parentId = currentProject ? currentProject.get('keyId') : null;
+    var parentId = currentProject ? currentProject.get('keyId') : 0;
     return this.get('content').filter(function(project) {
       return project.get('parentId') === parentId;
     }).sort(function(a, b) {
@@ -320,24 +333,48 @@ FLOW.projectControl = Ember.ArrayController.create({
     }
   }.property('breadCrumbs'),
 
-  currentPathPermissions: function() {
-      var currentProjectAncestors = this.get('breadCrumbs').slice();
-      currentProjectAncestors.reverse();// reversed to start matching from the most specific path.
-      var i;
-      var path;
-      for(i = 0; i < currentProjectAncestors.length; i++) {
-          path = currentProjectAncestors[i].get('path');
-          if(path in FLOW.currentUser.pathPermissions){
-              return FLOW.currentUser.pathPermissions[path];
-          }
+  currentFolderPermissions: function() {
+      var currentFolder = this.get('currentProject');
+      var currentUserPermissions = FLOW.userControl.currentUserPathPermissions();
+      var folderPermissions = [];
+
+      if (!currentUserPermissions) {
+        return [];
       }
 
-      // check for the root path
-      if("/" in FLOW.currentUser.pathPermissions){
-          return FLOW.currentUser.pathPermissions["/"];
+      // root folder
+      if (!currentFolder) {
+        if (currentUserPermissions[0]) {
+          currentUserPermissions[0].forEach(function(item){
+            folderPermissions.push(item);
+          });
+        }
+        return folderPermissions;
       }
-      return [];
-  }.property('breadCrumbs'),
+
+      // first check current object id
+      if (currentFolder.get('keyId') in currentUserPermissions) {
+        currentUserPermissions[currentFolder.get('keyId')].forEach(function(item){
+          folderPermissions.push(item);
+        });
+      }
+
+      var ancestorIds = currentFolder.get('ancestorIds');
+      if (!ancestorIds) {
+        return folderPermissions;
+      }
+
+      var i;
+      for(i = 0; i < ancestorIds.length; i++){
+        if (ancestorIds[i] in currentUserPermissions) {
+          currentUserPermissions[ancestorIds[i]].forEach(function(item){
+            folderPermissions.push(item);
+          });
+        }
+      }
+
+      return folderPermissions;
+  }.property('currentProject'),
 
   /* Actions */
   selectProject: function(evt) {
@@ -369,7 +406,7 @@ FLOW.projectControl = Ember.ArrayController.create({
 
   createNewProject: function(folder) {
     var currentFolder = this.get('currentProject');
-    var currentFolderId = currentFolder ? currentFolder.get('keyId') : null;
+    var currentFolderId = currentFolder ? currentFolder.get('keyId') : 0;
 
     var name = folder ? Ember.String.loc('_new_folder').trim() : Ember.String.loc('_new_survey').trim();
     var projectType = folder ? "PROJECT_FOLDER" : "PROJECT";
@@ -413,7 +450,7 @@ FLOW.projectControl = Ember.ArrayController.create({
   },
 
   endMoveProject: function(evt) {
-    var newFolderId = this.get('currentProject') ? this.get('currentProject').get('keyId') : null;
+    var newFolderId = this.get('currentProject') ? this.get('currentProject').get('keyId') : 0;
     var project = this.get('moveTarget');
     var path = this.get('currentProjectPath') + "/" + project.get('name');
     project.set('parentId', newFolderId);
@@ -428,7 +465,7 @@ FLOW.projectControl = Ember.ArrayController.create({
     FLOW.store.findQuery(FLOW.Action, {
       action: 'copyProject',
       targetId: this.get('copyTarget').get('keyId'),
-      folderId: currentFolder ? currentFolder.get('keyId') : null,
+      folderId: currentFolder ? currentFolder.get('keyId') : 0,
     });
 
     FLOW.store.commit();
@@ -593,11 +630,40 @@ FLOW.surveyControl = Ember.ArrayController.create({
     });
 
     if(survey && survey.get('path')) {
-        return FLOW.userControl.canDeleteData(survey.get('path'))
+        return FLOW.userControl.canDeleteData(survey.get('path'));
     } else {
         return false; // need survey and survey path, otherwise prevent delete
     }
   },
+
+  /* retrieve the list of permissions associated with the currently
+    active form */
+  currentFormPermissions: function() {
+    var currentForm = FLOW.selectedControl.get('selectedSurvey');
+    var currentUserPermissions = FLOW.userControl.currentUserPathPermissions();
+    var formPermissions = [];
+
+    if (!currentForm || !currentUserPermissions) {
+      return [];
+    }
+
+    var ancestorIds = currentForm.get('ancestorIds');
+    if (!ancestorIds) {
+      return [];
+    }
+
+    var i;
+    for(i = 0; i < ancestorIds.length; i++){
+      if (ancestorIds[i] in currentUserPermissions) {
+        currentUserPermissions[ancestorIds[i]].forEach(function(item){
+          formPermissions.push(item);
+        });
+      }
+    }
+
+    return formPermissions;
+
+  }.property('FLOW.selectedControl.selectedSurvey'),
 });
 
 

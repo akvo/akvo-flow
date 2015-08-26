@@ -1,5 +1,5 @@
 /*
- *  Copyright (C) 2010-2012 Stichting Akvo (Akvo Foundation)
+ *  Copyright (C) 2010-2015 Stichting Akvo (Akvo Foundation)
  *
  *  This file is part of Akvo FLOW.
  *
@@ -99,7 +99,7 @@ public class RawDataSpreadsheetImporter implements DataImporter {
      * @return
      * @throws Exception
      */
-    protected Sheet getDataSheet(File file) throws Exception {
+    public Sheet getDataSheet(File file) throws Exception {
         stream = new PushbackInputStream(new FileInputStream(file));
         Workbook wb = null;
         try {
@@ -303,11 +303,9 @@ public class RawDataSpreadsheetImporter implements DataImporter {
                 String durationSeconds = null;
                 StringBuilder sb = new StringBuilder();
 
-                // Monitoring headers
-                // [identifier, displayName, instanceId, date, submitter, duration, questions...]
-
-                // Non-monitoring headers
-                // [instanceId, date, submitter, duration, questions...]
+                // Headers
+                // [identifier, displayName, deviceIdentifier, instanceId, date, submitter,
+                // duration, questions...]
 
                 int instanceIdx = firstQuestionCol - 4;
                 int dateIdx = firstQuestionCol - 3;
@@ -669,7 +667,10 @@ public class RawDataSpreadsheetImporter implements DataImporter {
                     if (!firstQuestionFound && cellValue.matches("[0-9]+\\|.+")) {
                         firstQuestionFound = true;
                         int idx = cell.getColumnIndex();
-                        if (!(idx == 4 || idx == 6)) {
+                        // idx == 4, non monitoring, old format
+                        // idx == 6, monitoring, old format
+                        // idx == 7, new format
+                        if (!(idx == 4 || idx == 6 || idx == 7)) {
                             errorMap.put(idx, "Found the first question at the wrong column index");
                             break;
                         }

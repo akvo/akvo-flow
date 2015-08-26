@@ -14,7 +14,7 @@
       {{/if}}
       {{view Ember.TextField valueBinding="view.tip" size=100 }} </label>
     <label>
-      {{t _question_id}}: {{tooltip _question_id_tooltip}}
+      {{t _question_id}}: <span class="fadedText">({{t _optional}})</span> {{tooltip _question_id_tooltip}}
       {{#if view.questionIdValidationFailure }}
       <span style="color:red">{{view.questionIdValidationFailureReason}}</span>
       {{/if}}
@@ -40,15 +40,11 @@
       selectionBinding="view.type" }} </label>
 
   {{#if view.showMetaConfig}}
-    {{#if view.amOptionType}}
+    {{#if view.showLocaleName}}
       <label class="labelcheckbox"> {{view Ember.Checkbox checkedBinding="view.localeNameFlag"}}{{t _use_in_record_display}}</label>
-    {{else}} {{#if view.amFreeTextType}}
-        <label class="labelcheckbox"> {{view Ember.Checkbox checkedBinding="view.localeNameFlag"}}{{t _use_in_record_display}}</label>
-    {{else}} {{#if view.amNumberType}}
-        <label class="labelcheckbox"> {{view Ember.Checkbox checkedBinding="view.localeNameFlag"}}{{t _use_in_record_display}}</label>
     {{else}} {{#if view.amGeoType}}
           <label class="labelcheckbox"> {{view Ember.Checkbox checkedBinding="view.localeLocationFlag"}}{{t _use_as_record_location}}</label>
-    {{/if}} {{/if}} {{/if}} {{/if}}
+    {{/if}} {{/if}}
   {{/if}}
 
     <!-- Question specific material -->
