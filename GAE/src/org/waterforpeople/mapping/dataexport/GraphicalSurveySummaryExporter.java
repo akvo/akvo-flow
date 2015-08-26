@@ -36,8 +36,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
-import java.util.SortedMap;
-import java.util.TreeMap;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.ThreadPoolExecutor;
@@ -555,10 +553,11 @@ public class GraphicalSurveySummaryExporter extends SurveySummaryExporter {
         SurveyInstanceDto dto = instanceData.getDto();
 
         Row row = getRow(startRow, sheet);
-        if (monitoringGroup) {
-            createCell(row, column++, dto.getSurveyedLocaleIdentifier());
-            createCell(row, column++, dto.getSurveyedLocaleDisplayName());
-        }
+
+        createCell(row, column++, dto.getSurveyedLocaleIdentifier());
+        createCell(row, column++, dto.getSurveyedLocaleDisplayName());
+        createCell(row, column++, dto.getDeviceIdentifier());
+
         createCell(row, column++, dto.getKeyId().toString());
         Date collectionDate = dto.getCollectionDate();
         String collectionDateString = "";
@@ -583,7 +582,7 @@ public class GraphicalSurveySummaryExporter extends SurveySummaryExporter {
             final QuestionDto questionDto = questionsById.get(questionId);
 
             // TODO Sorted map
-            Map<Long, String> iterationsMap = instanceData.responseMap.get(questionId);
+            Map<Long, String> iterationsMap = instanceData.getResponseMap().get(questionId);
 
             if (iterationsMap == null) {
                 column++; // Hmm, what if this is for a split question? Perhaps
@@ -1475,48 +1474,6 @@ public class GraphicalSurveySummaryExporter extends SurveySummaryExporter {
             if (!GraphicsEnvironment.isHeadless()) {
                 progressDialog.update(step, msg);
             }
-        }
-    }
-
-    private class InstanceData {
-
-        private SurveyInstanceDto surveyInstanceDto;
-        // QuestionId -> Iteration -> Answer
-        private Map<Long, SortedMap<Long, String>> responseMap;
-        private Long maxIterationsCount;
-
-        public InstanceData(SurveyInstanceDto surveyInstanceDto,
-                Map<Long, Map<Long, String>> responseMap) {
-            this.surveyInstanceDto = surveyInstanceDto;
-
-            // Need to normalize the response map and add empty answers for missing iterations
-            // as well as make sure that the iterations are sorted
-            // TODO: Drop iterations with all empty answers.
-            Map<Long, SortedMap<Long, String>> sortedResponseMap = new HashMap<>();
-
-            Long maxIter = 0L;
-
-            for (Entry<Long, Map<Long, String>> entry : responseMap.entrySet()) {
-                Map<Long, String> iterationsMap = entry.getValue();
-                SortedMap<Long, String> sortedMap = new TreeMap<>();
-                Long maxIteration = Collections.max(iterationsMap.keySet());
-                maxIter = Math.max(maxIter, maxIteration);
-                for (long i = 0; i <= maxIteration; i++) {
-                    String value = iterationsMap.get(i);
-                    sortedMap.put(i, value == null ? "" : value);
-                }
-                sortedResponseMap.put(entry.getKey(), sortedMap);
-            }
-            this.responseMap = sortedResponseMap;
-            this.maxIterationsCount = maxIter;
-        }
-
-        public SurveyInstanceDto getDto() {
-            return surveyInstanceDto;
-        }
-
-        public Long getMaxIterationsCount() {
-            return maxIterationsCount;
         }
     }
 }
