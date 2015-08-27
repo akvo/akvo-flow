@@ -243,6 +243,10 @@ FLOW.inspectDataTableView = FLOW.View.extend({
 
 });
 
+FLOW.QuestionAnswerListView = FLOW.View.extend({
+  controller: null,
+});
+
 FLOW.DataItemView = FLOW.View.extend({
   tagName: 'span',
   deleteSI: function () {
