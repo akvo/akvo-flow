@@ -1,3 +1,17 @@
+/*  Copyright (C) 2015 Stichting Akvo (Akvo Foundation)
+ *
+ *  This file is part of Akvo FLOW.
+ *
+ *  Akvo FLOW is free software: you can redistribute it and modify it under the terms of
+ *  the GNU Affero General Public License (AGPL) as published by the Free Software Foundation,
+ *  either version 3 of the License or any later version.
+ *
+ *  Akvo FLOW is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY;
+ *  without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+ *  See the GNU Affero General Public License included below for more details.
+ *
+ *  The full license text can also be seen at <http://www.gnu.org/licenses/agpl.html>.
+ */
 
 package org.waterforpeople.mapping.dataexport;
 
@@ -11,21 +25,21 @@ import java.util.TreeMap;
 import org.waterforpeople.mapping.app.gwt.client.surveyinstance.SurveyInstanceDto;
 
 public class InstanceData {
-    private SurveyInstanceDto surveyInstanceDto;
+
     // QuestionId -> Iteration -> Answer
-    private Map<Long, SortedMap<Long, String>> responseMap;
-    private Long maxIterationsCount;
+    public final Map<Long, SortedMap<Long, String>> responseMap;
+    public final SurveyInstanceDto surveyInstanceDto;
+    public final long maxIterationsCount;
 
     public InstanceData(SurveyInstanceDto surveyInstanceDto,
             Map<Long, Map<Long, String>> responseMap) {
-        this.surveyInstanceDto = surveyInstanceDto;
 
         // Need to normalize the response map and add empty answers for missing iterations
         // as well as make sure that the iterations are sorted
-        // TODO: Drop iterations with all empty answers.
+        // TODO: Drop iterations with all empty answers (?).
         Map<Long, SortedMap<Long, String>> sortedResponseMap = new HashMap<>();
 
-        Long maxIter = 0L;
+        long maxIter = 0L;
 
         for (Entry<Long, Map<Long, String>> entry : responseMap.entrySet()) {
             Map<Long, String> iterationsMap = entry.getValue();
@@ -38,20 +52,9 @@ public class InstanceData {
             }
             sortedResponseMap.put(entry.getKey(), sortedMap);
         }
+
         this.responseMap = sortedResponseMap;
+        this.surveyInstanceDto = surveyInstanceDto;
         this.maxIterationsCount = maxIter;
     }
-
-    public Map<Long, SortedMap<Long, String>> getResponseMap() {
-        return this.responseMap;
-    }
-
-    public SurveyInstanceDto getDto() {
-        return surveyInstanceDto;
-    }
-
-    public Long getMaxIterationsCount() {
-        return maxIterationsCount;
-    }
-
 }

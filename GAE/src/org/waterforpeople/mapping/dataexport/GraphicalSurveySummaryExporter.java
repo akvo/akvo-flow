@@ -36,6 +36,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
+import java.util.SortedMap;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.ThreadPoolExecutor;
@@ -529,22 +530,21 @@ public class GraphicalSurveySummaryExporter extends SurveySummaryExporter {
      * @return The row where the next instance should be written
      * @throws NoSuchAlgorithmException
      */
-    private synchronized int writeInstanceData(Sheet sheet, int startRow,
+    private synchronized int writeInstanceData(Sheet sheet, final int startRow,
             InstanceData instanceData,
             boolean generateSummary, List<String> questionIdList, List<String> unsummarizable,
             Map<String, String> nameToIdMap, Map<String, String> collapseIdMap, SummaryModel model,
             boolean useQuestionId) throws NoSuchAlgorithmException {
 
-        final int baseRow = startRow;
         // maxRow will increase when we write repeatable question groups
-        int maxRow = baseRow;
+        int maxRow = startRow;
 
         // current column
         int column = 0;
 
         MessageDigest digest = MessageDigest.getInstance("MD5");
 
-        SurveyInstanceDto dto = instanceData.getDto();
+        SurveyInstanceDto dto = instanceData.surveyInstanceDto;
 
         Row row = getRow(startRow, sheet);
 
@@ -565,7 +565,7 @@ public class GraphicalSurveySummaryExporter extends SurveySummaryExporter {
         digest.update(duration.getBytes());
 
         // Write the "Repeat" column
-        for (int i = 0; i <= instanceData.getMaxIterationsCount(); i++) {
+        for (int i = 0; i <= instanceData.maxIterationsCount; i++) {
             Row r = getRow(row.getRowNum() + i, sheet);
             createCell(r, column, String.valueOf(i + 1), null, Cell.CELL_TYPE_NUMERIC);
         }
@@ -575,22 +575,21 @@ public class GraphicalSurveySummaryExporter extends SurveySummaryExporter {
             final Long questionId = Long.valueOf(q);
             final QuestionDto questionDto = questionsById.get(questionId);
 
-            // TODO Sorted map
-            Map<Long, String> iterationsMap = instanceData.getResponseMap().get(questionId);
+            SortedMap<Long, String> iterationsMap = instanceData.responseMap.get(questionId);
 
             if (iterationsMap == null) {
-                column++; // Hmm, what if this is for a split question? Perhaps
+                column++; // What if this is for a split question? Perhaps
                           // column+=maxColsWritten?
                 continue;
             }
 
-            // Write downwards (and possibly leftwards) per iteration
+            // Write downwards (and possibly rightwards) per iteration
             int rowOffset = -1;
             int maxColsWritten = 0;
             for (Map.Entry<Long, String> iteration : iterationsMap.entrySet()) {
                 String val = iteration.getValue();
                 rowOffset++;
-                Row iterationRow = getRow(baseRow + rowOffset, sheet);
+                Row iterationRow = getRow(startRow + rowOffset, sheet);
                 int colsWritten = writeAnswer(sheet, iterationRow, column, questionDto,
                         val,
                         useQuestionId,
@@ -599,7 +598,7 @@ public class GraphicalSurveySummaryExporter extends SurveySummaryExporter {
 
             }
             column += maxColsWritten;
-            maxRow = Math.max(maxRow, baseRow + rowOffset);
+            maxRow = Math.max(maxRow, startRow + rowOffset);
         }
 
         if (!useQuestionId) {
