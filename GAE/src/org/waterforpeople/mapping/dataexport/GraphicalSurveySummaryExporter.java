@@ -19,7 +19,6 @@ package org.waterforpeople.mapping.dataexport;
 import java.awt.GraphicsEnvironment;
 import java.io.File;
 import java.io.FileOutputStream;
-import java.io.PrintWriter;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.text.DateFormat;
@@ -223,8 +222,8 @@ public class GraphicalSurveySummaryExporter extends SurveySummaryExporter {
         DURATION_LABEL.put("es", "Duración");
 
         REPEAT_LABEL = new HashMap<String, String>();
-        REPEAT_LABEL.put("en", "Repeat");
-        REPEAT_LABEL.put("es", "Repita");
+        REPEAT_LABEL.put("en", "Repeat no.");
+        REPEAT_LABEL.put("es", "No. repetición");
 
         LOADING_QUESTIONS = new HashMap<String, String>();
         LOADING_QUESTIONS.put("en", "Loading Questions");
@@ -299,7 +298,6 @@ public class GraphicalSurveySummaryExporter extends SurveySummaryExporter {
     private boolean generateCharts;
     private Map<Long, QuestionDto> questionsById;
     private boolean lastCollection = false;
-    private List<Long> displayNameQuestionIds = new ArrayList<Long>();
 
     @Override
     public void export(Map<String, String> criteria, File fileName,
@@ -312,7 +310,6 @@ public class GraphicalSurveySummaryExporter extends SurveySummaryExporter {
         questionsById = new HashMap<Long, QuestionDto>();
         currentStep = 1;
         this.serverBase = serverBase;
-        PrintWriter pw = null;
         boolean useQuestionId = "true".equals(options.get("useQuestionId"));
         String from = options.get("from");
         String to = options.get("to");
@@ -328,9 +325,6 @@ public class GraphicalSurveySummaryExporter extends SurveySummaryExporter {
                 for (List<QuestionDto> qList : questionMap.values()) {
                     for (QuestionDto q : qList) {
                         questionsById.put(q.getKeyId(), q);
-                        if (q.getLocaleNameFlag() != null && q.getLocaleNameFlag()) {
-                            displayNameQuestionIds.add(q.getKeyId());
-                        }
                     }
                 }
             }
@@ -396,13 +390,8 @@ public class GraphicalSurveySummaryExporter extends SurveySummaryExporter {
                         + criteria.get(SurveyRestRequest.SURVEY_ID_PARAM) + " - instance: "
                         + serverBase);
             }
-
         } catch (Exception e) {
             log.error("Error generating report: " + e.getMessage(), e);
-        } finally {
-            if (pw != null) {
-                pw.close();
-            }
         }
     }
 
@@ -451,7 +440,7 @@ public class GraphicalSurveySummaryExporter extends SurveySummaryExporter {
         int started = 0;
         for (Entry<String, String> instanceEntry : instanceMap.entrySet()) {
             final String instanceId = instanceEntry.getKey();
-            final String dateString = instanceEntry.getValue();
+            final String submissionDate = instanceEntry.getValue();
             started++;
             threadPool.execute(new Runnable() {
                 @Override
@@ -475,9 +464,8 @@ public class GraphicalSurveySummaryExporter extends SurveySummaryExporter {
                             if (dto != null) {
                                 done = true;
                             }
-                            log.debug(responseMap);
                             synchronized (allData) {
-                                allData.add(new InstanceData(dto, responseMap));
+                                allData.add(new InstanceData(dto, submissionDate, responseMap));
                             }
 
                         } catch (Exception e) {
@@ -549,27 +537,21 @@ public class GraphicalSurveySummaryExporter extends SurveySummaryExporter {
         Row row = getRow(startRow, sheet);
 
         createCell(row, column++, dto.getSurveyedLocaleIdentifier());
-        createCell(row, column++, dto.getSurveyedLocaleDisplayName());
-        createCell(row, column++, dto.getDeviceIdentifier());
-
-        createCell(row, column++, dto.getKeyId().toString());
-        Date collectionDate = dto.getCollectionDate();
-        String collectionDateString = "";
-        if (collectionDate != null) {
-            collectionDateString = collectionDate.toString();
-        }
-        createCell(row, column++, collectionDateString); // TODO: Formatting?
-        createCell(row, column++, sanitize(dto.getSubmitterName()));
-        String duration = getDurationText(dto.getSurveyalTime());
-        createCell(row, column++, duration);
-        digest.update(duration.getBytes());
-
         // Write the "Repeat" column
         for (int i = 0; i <= instanceData.maxIterationsCount; i++) {
             Row r = getRow(row.getRowNum() + i, sheet);
             createCell(r, column, String.valueOf(i + 1), null, Cell.CELL_TYPE_NUMERIC);
         }
         column++;
+
+        createCell(row, column++, dto.getSurveyedLocaleDisplayName());
+        createCell(row, column++, dto.getDeviceIdentifier());
+        createCell(row, column++, dto.getKeyId().toString());
+        createCell(row, column++, instanceData.submissionDate);
+        createCell(row, column++, sanitize(dto.getSubmitterName()));
+        String duration = getDurationText(dto.getSurveyalTime());
+        createCell(row, column++, duration);
+        digest.update(duration.getBytes());
 
         for (String q : questionIdList) {
             final Long questionId = Long.valueOf(q);
@@ -900,14 +882,13 @@ public class GraphicalSurveySummaryExporter extends SurveySummaryExporter {
         int columnIdx = 0;
 
         createCell(row, columnIdx++, IDENTIFIER_LABEL.get(locale), headerStyle);
+        createCell(row, columnIdx++, REPEAT_LABEL.get(locale), headerStyle);
         createCell(row, columnIdx++, DISPLAY_NAME_LABEL.get(locale), headerStyle);
         createCell(row, columnIdx++, DEVICE_IDENTIFIER_LABEL.get(locale), headerStyle);
-
         createCell(row, columnIdx++, INSTANCE_LABEL.get(locale), headerStyle);
         createCell(row, columnIdx++, SUB_DATE_LABEL.get(locale), headerStyle);
         createCell(row, columnIdx++, SUBMITTER_LABEL.get(locale), headerStyle);
         createCell(row, columnIdx++, DURATION_LABEL.get(locale), headerStyle);
-        createCell(row, columnIdx++, REPEAT_LABEL.get(locale), headerStyle);
 
         List<String> questionIdList = new ArrayList<String>();
         List<String> nonSummarizableList = new ArrayList<String>();

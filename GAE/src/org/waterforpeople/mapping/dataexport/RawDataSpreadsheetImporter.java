@@ -670,7 +670,8 @@ public class RawDataSpreadsheetImporter implements DataImporter {
                         // idx == 4, non monitoring, old format
                         // idx == 6, monitoring, old format
                         // idx == 7, new format
-                        if (!(idx == 4 || idx == 6 || idx == 7)) {
+                        // idx == 8, new format, with repeat column
+                        if (!(idx == 4 || idx == 6 || idx == 7 || idx == 8)) {
                             errorMap.put(idx, "Found the first question at the wrong column index");
                             break;
                         }
