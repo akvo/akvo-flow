@@ -62,8 +62,11 @@ public class EnvServlet extends HttpServlet {
         properties.add("mandatoryQuestionID");
         properties.add("showExternalSourcesFeature");
         properties.add("appId");
-        properties.add("useGoogleMapsLayers");
+        properties.add("mapsProvider");
         properties.add("googleMapsRegionBias");
+        properties.add("cartodbHost");
+        properties.add("hereMapsAppId");
+        properties.add("hereMapsAppCode");
     }
 
     @Override
@@ -109,14 +112,6 @@ public class EnvServlet extends HttpServlet {
         }
 
         props.put("appId", SystemProperty.applicationId.get());
-
-        if (props.get("useGoogleMapsLayers") == null) {
-            props.put("useGoogleMapsLayers", "false");
-        }
-
-        if (props.get("googleMapsRegionBias") == null) {
-            props.put("googleMapsRegionBias", "");
-        }
 
         final BaseDAO<Country> countryDAO = new BaseDAO<Country>(Country.class);
         final JSONArray jsonArray = new JSONArray();

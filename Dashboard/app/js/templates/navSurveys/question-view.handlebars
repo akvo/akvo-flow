@@ -14,7 +14,7 @@
       {{/if}}
       {{view Ember.TextField valueBinding="view.tip" size=100 }} </label>
     <label>
-      {{t _question_id}}: {{tooltip _question_id_tooltip}}
+      {{t _question_id}}: <span class="fadedText">({{t _optional}})</span> {{tooltip _question_id_tooltip}}
       {{#if view.questionIdValidationFailure }}
       <span style="color:red">{{view.questionIdValidationFailureReason}}</span>
       {{/if}}
@@ -51,7 +51,7 @@
 <div class="questionOption floats-in">
 
     {{#if view.amOptionType}}
-      <h1 class="answerNbr">{{t _option_details}}: </h1>
+      <h1 class="answerNbr">{{t _settings}}: </h1>
       <label class="labelcheckbox"> {{view Ember.Checkbox checkedBinding="view.allowMultipleFlag"}}{{t _allow_multiple}} </label>
       <label class="labelcheckbox"> {{view Ember.Checkbox checkedBinding="view.allowOtherFlag"}}{{t _allow_other}} </label>
       <br>
@@ -59,15 +59,15 @@
       {{view Ember.TextArea valueBinding="view.optionList" size="100" rows="7" }}
     {{/if}}
     {{#if view.amFreeTextType}}
-    <h1 class="answerNbr">{{t _free_text_details}}:</h1>
+    <h1 class="answerNbr">{{t _settings}}:</h1>
     <label class="labelcheckbox"> {{view Ember.Checkbox checkedBinding="view.requireDoubleEntry"}}{{t _require_double_entry}} </label>
     {{/if}}
     {{#if view.amBarcodeType}}
-    <h1 class="answerNbr">{{t _barcode_details}}: </h1>
+    <h1 class="answerNbr">{{t _settings}}: </h1>
       <label class="labelcheckbox"> {{view Ember.Checkbox checkedBinding="view.allowMultipleFlag"}}{{t _enable_bulk_barcode_scan}} </label>
     {{/if}}
     {{#if view.amNumberType}}
-    <h1 class="answerNbr">{{t _number_details}}: </h1>
+    <h1 class="answerNbr">{{t _settings}}: </h1>
       <label class="labelcheckbox"> {{view Ember.Checkbox checkedBinding="view.allowSign"}}{{t _allow_sign}} </label>
       <label class="labelcheckbox"> {{view Ember.Checkbox checkedBinding="view.allowDecimal"}}{{t _allow_decimal_point}} </label>
       <label class="labelcheckbox"> {{view Ember.Checkbox checkedBinding="view.requireDoubleEntry"}}{{t _require_double_entry}} </label>
@@ -76,7 +76,7 @@
       <label class="maxValNumb">{{t _max_val}}: {{view Ember.TextField valueBinding="view.maxVal" size=10 }}</label>
     {{/if}}
      {{#if view.amGeoType}}
-    <h1 class="answerNbr">{{t _geo_details}}: </h1>
+    <h1 class="answerNbr">{{t _settings}}: </h1>
       <label class="labelcheckbox"> {{view Ember.Checkbox checkedBinding="view.geoLocked"}}{{t _disable_manual_geo_edit}} </label>
     {{/if}}
 
@@ -97,7 +97,7 @@
         promptBinding="Ember.STRINGS._select_cascade"}}</label>
     {{/if}}
     {{#if view.amGeoshapeType}}
-    <h1 class="answerNbr">{{t _geoshape_details}}: </h1>
+    <h1 class="answerNbr">{{t _settings}}: </h1>
       <label class="labelcheckbox"> {{view Ember.Checkbox checkedBinding="view.allowPoints"}}{{t _allow_points}} </label>
       <label class="labelcheckbox"> {{view Ember.Checkbox checkedBinding="view.allowLine"}}{{t _allow_line}} </label>
       <label class="labelcheckbox"> {{view Ember.Checkbox checkedBinding="view.allowPolygon"}}{{t _allow_polygon}} </label>
@@ -106,7 +106,7 @@
 
     {{#if view.amNoOptionsType}}
     <p class="noOptions">
-      {{t _no_options_for_this_question_type}}
+      {{t _no_additional_settings_for_this_type_of_question}}
     </p>
     {{/if}}
 

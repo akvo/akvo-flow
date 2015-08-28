@@ -5,6 +5,19 @@ Read more about the [Akvo Platform](http://www.akvo.org/blog/?p=4822).
 
 Akvo FLOW Dashboard release notes
 ----
+#1.9.0
+Date: 18 August 2015
+
+# New and noteworthy
+* Enable the use of CartoDB as provider of maps for the dashboard [#1280]
+
+# Resolved issues
+* Append s3 bucket policy in InstanceCreator process [#1361]
+* UX Design and CSS styling of data tab search text [#1346]
+* Add `mapsProvider` system property [#1297]
+* Wrong icon in the previous & next buttons [#1052]
+* Minor UI Regressions - Missing images, spacing on edit survey screen, layout on inspect data [#809]
+
 #1.8.9
 Date: 28 July 2015
 

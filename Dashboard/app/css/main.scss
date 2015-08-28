@@ -1291,6 +1291,35 @@ tfoot tr {
     }
 }
 
+/**************** Inspect Data tab. **************/
+
+#inspectData {
+    label {
+        &.surveyInstanceId {
+            &.tooltip {
+                a {
+                    color: red;
+                }
+            }
+        }
+    }
+    div {
+        &.noResults {
+            color: red;
+            font-size: 1.3em;
+            text-align: center;
+        }
+    }
+    tr {
+        td {
+            &.survey,
+            &.submitter {
+                text-align: left;
+            }
+        }
+    }
+}
+
 /**************** Assign Survey to devices. **************/
 
 #assignSurveys h2 {
@@ -1351,7 +1380,7 @@ fieldset#assignmentDetails {
 input.hasDatepicker {
     display: inline;
     width: 95%;
-    background: rgb(250, 244, 230) url(../images/icon_cal.png) right center no-repeat;
+    background: rgb(250, 244, 230);
 }
 
 .dateRange div.activeDate,
@@ -3941,7 +3970,7 @@ table.dataTable.notificationTable thead tr th a:visited {
 div.dataCollectedDate input {
     display: inline;
     height: 20px;
-    background: white url(../images/icon_cal.png) right center no-repeat;
+    background: white;
 }
 
 .filterData label {
@@ -6073,4 +6102,32 @@ li.disable {
     color: rgb(252, 159, 0);
     font-weight: bold;
     font-size: 1.2em;
+}
+
+/* Set device buttons on device tab to position: fixed */
+.deviceControls {
+    position: fixed;
+    top: 120px;
+    left: 0px;
+    right: 0px;    
+    height: 40px;
+    z-index: 1;    
+    background-color: white;
+    border-bottom: 1px solid $akvoBlack;
+    .dataTabMenu {
+        top: 8px;
+        background: white;
+    }
+    + .dataTable {
+        margin-top: 40px;
+    }
+    @media only screen and (max-width: 600px) {
+        height: 80px;
+        .dataTabMenu {
+            top: 48px;
+        }
+        + .dataTable {
+            margin-top: 80px;
+        }
+    }
 }
