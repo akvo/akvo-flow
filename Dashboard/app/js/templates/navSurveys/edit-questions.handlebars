@@ -40,35 +40,31 @@
           {{/if}}
 
             {{#if view.showQGroupNameEditField}}
-              {{view Ember.TextField valueBinding="view.questionGroupName" size=45}} <a {{action "saveQuestionGroupNameEdit" target="this"}} class="smallBtn">{{t _save}}</a>
-              <a {{action "cancelQuestionGroupNameEdit" target="this"}}>{{t _cancel}}</a>
+              {{view Ember.TextField valueBinding="view.content.code" size=45}}
             {{else}}
               <h1 class="qtnGroupTitle"><a {{action "toggleVisibility" target="this"}}>{{view.content.code}}</a></h1>
             {{/if}}
+            {{#if view.showSaveCancelButton}}
+              <a {{action "saveQuestionGroup" target="this"}} class="smallBtn">{{t _save}}</a>
+              <a {{action "cancelQuestionGroupNameEdit" target="this"}}>{{t _cancel}}</a>
+            {{/if}}
+            {{#if view.amVisible}}
+              <label class="labelcheckbox">{{view Ember.Checkbox checkedBinding="view.content.repeatable"}}{{t _repeatable_question_group}}</label>
+              {{tooltip _repeatable_question_group_tooltip}}
+            {{/if}}
             <nav class="qtnGroupMenu">
               <ul>
-                 {{#if view.amVisible}}
-                   <li><a {{action "toggleVisibility" target="this"}} class="showQuestionGroup shown">{{t _hide_questions}} </a></li>
-                   <li><a {{action "doQGroupNameEdit" target="this"}} class="editQuestionGroup">{{t _edit_group_name}}</a></li>
-                   <li><a {{action confirm FLOW.dialogControl.delQG target="FLOW.dialogControl"}} class="deleteQuestionGroup">{{t _delete}}</a></li>
-                   <li><a {{action "doQGroupCopy" target="this"}} class="copyQuestionGroup">{{t _copy}}</a></li>
-                   <li><a {{action "doQGroupMove" target="this"}} class="moveQuestionGroup">{{t _move}}</a> </li>
-                {{else}}
-                  {{#if view.amCopying}}
-                    <li><a {{action "toggleVisibility" target="this"}} class="showQuestionGroup disabled" style="pointer-events: none;">{{t _show_questions}} </a></li>
-                    <li><a {{action "doQGroupNameEdit" target="this"}} class="editQuestionGroup disabled" style="pointer-events: none;">{{t _edit_group_name}}</a></li>
-                    <li><a {{action confirm FLOW.dialogControl.delQG target="FLOW.dialogControl"}} class="deleteQuestionGroup disabled" style="pointer-events: none;" id="">{{t _delete}}</a></li>
-                    <li><a {{action "doQGroupCopy" target="this"}} class="copyQuestionGroup disabled" style="pointer-events: none;">{{t _copy}}</a></li>
-                    <li><a {{action "doQGroupMove" target="this"}} class="moveQuestionGroup disabled" style="pointer-events: none;">{{t _move}}</a></li>
+                {{#unless view.amCopying}}
+                  {{#if view.amVisible}}
+                    <li><a {{action "toggleVisibility" target="this"}} class="showQuestionGroup shown">{{t _hide_questions}} </a></li>
                   {{else}}
                     <li><a {{action "toggleVisibility" target="this"}} class="showQuestionGroup">{{t _show_questions}} </a></li>
-                    <li><a {{action "doQGroupNameEdit" target="this"}} class="editQuestionGroup">{{t _edit_group_name}}</a></li>
-                    <li><a  {{action confirm FLOW.dialogControl.delQG target="FLOW.dialogControl"}} class="deleteQuestionGroup">{{t _delete}}</a></li>
-                    <li><a {{action "doQGroupCopy" target="this"}} class="copyQuestionGroup">{{t _copy}}</a></li>
-                    <li><a {{action "doQGroupMove" target="this"}} class="moveQuestionGroup">{{t _move}}</a></li>
-                    <li><label class="labelcheckbox"> {{view Ember.Checkbox checkedBinding="view.content.repeatable"}}Repeatable</label></li>
                   {{/if}}
-                {{/if}}
+                     <li><a {{action "doQGroupNameEdit" target="this"}} class="editQuestionGroup">{{t _edit_group_name}}</a></li>
+                     <li><a {{action confirm FLOW.dialogControl.delQG target="FLOW.dialogControl"}} class="deleteQuestionGroup">{{t _delete}}</a></li>
+                     <li><a {{action "doQGroupCopy" target="this"}} class="copyQuestionGroup">{{t _copy}}</a></li>
+                     <li><a {{action "doQGroupMove" target="this"}} class="moveQuestionGroup">{{t _move}}</a> </li>
+                {{/unless}}
               </ul>
             </nav>
           </header>

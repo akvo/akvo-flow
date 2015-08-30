@@ -269,9 +269,8 @@ FLOW.QuestionGroupItemView = FLOW.View.extend({
   renderView: false,
   showQGDeletedialog: false,
   showQGroupNameEditField: false,
-  questionGroupName: null,
-  repeatable: false,
   pollingTimer: null,
+  showSaveCancelButton: false,
 
   amCopying: function(){
       return this.content.get('status') == "COPYING";
@@ -299,30 +298,36 @@ FLOW.QuestionGroupItemView = FLOW.View.extend({
   },
 
   doQGroupNameEdit: function () {
-    this.set('questionGroupName', this.content.get('code'));
     this.set('showQGroupNameEditField', true);
+    this.set('showSaveCancelButton', true);
   },
 
-  // fired when 'save' is clicked while showing edit group name field. Saves the new group name
-  saveQuestionGroupNameEdit: function () {
+  // fired when 'save' is clicked
+  saveQuestionGroup: function () {
     var path, qgId, questionGroup;
     qgId = this.content.get('id');
     questionGroup = FLOW.store.find(FLOW.QuestionGroup, qgId);
     path = FLOW.selectedControl.selectedSurveyGroup.get('code') + "/" + FLOW.selectedControl.selectedSurvey.get('name');
-    questionGroup.set('code', this.get('questionGroupName'));
-    questionGroup.set('name', this.get('questionGroupName'));
+    questionGroup.set('code', this.content.get('code'));
+    questionGroup.set('name', this.content.get('code'));
     questionGroup.set('path', path);
-    questionGroup.set('repeatable', this.content.get('repeatable'));// FIXME: Small hack to handle this for now
-
+    questionGroup.set('repeatable', this.content.get('repeatable'));
     FLOW.selectedControl.selectedSurvey.set('status', 'NOT_PUBLISHED');
-    FLOW.store.commit();
+
     this.set('showQGroupNameEditField', false);
+    this.set('showSaveCancelButton', false);
+
+    FLOW.store.commit();
   },
+
+  repeatableCheckBoxChanged: function () {
+    this.set('showSaveCancelButton', true);
+  }.observes('this.content.repeatable'),
 
   // fired when 'cancel' is clicked while showing edit group name field. Cancels the edit.
   cancelQuestionGroupNameEdit: function () {
-    this.set('questionGroupName', null);
     this.set('showQGroupNameEditField', false);
+    this.set('showSaveCancelButton', false);
   },
 
   // true if one question group has been selected for Move

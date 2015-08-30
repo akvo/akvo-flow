@@ -8,100 +8,118 @@ function formatDate(value) {
 
 
 FLOW.QuestionAnswerView = Ember.View.extend({
-  isTextType: false,
-  isOptionType: false,
-  isNumberType: false,
-  isBarcodeType: false,
-  isGeoshapeType: false,
-  isDateType: false,
-  isPhotoType: false,
-  isVideoType: false,
-  optionsList: [],
+  templateName: 'navData/question-answer',
+
+  isTextType: function(){
+    return this.get('questionType') === 'FREE_TEXT' || this.get('questionType') === 'CASCADE';
+  }.property('this.questionType'),
+
+  isOptionType: function(){
+    return this.get('questionType') === 'OPTION';
+  }.property('this.questionType'),
+
+  isNumberType: function(){
+    return this.get('questionType') === 'NUMBER';
+  }.property('this.questionType'),
+
+  isBarcodeType: function(){
+    return this.get('questionType') === 'SCAN';
+  }.property('this.questionType'),
+
+  isDateType: function(){
+    return this.get('questionType') === 'DATE';
+  }.property('this.questionType'),
+
+  isPhotoType: function(){
+    return this.get('questionType') === 'PHOTO';
+  }.property('this.questionType'),
+
+  isVideoType: function(){
+    return this.get('questionType') === 'VIDEO';
+  }.property('this.questionType'),
+
+  optionsList: function(){
+    var c = this.content;
+    if (Ember.none(c)) {
+      return [];
+    }
+
+    var questionId = c.get('questionID');
+
+    var options = FLOW.store.filter(FLOW.QuestionOption, function (item) {
+      return item.get('questionId') === +questionId;
+    });
+
+    optionArray = options.toArray();
+    optionArray.sort(function (a, b) {
+        return a.get('order') - b.get('order');
+    });
+
+    tempList = [];
+    optionArray.forEach(function (item) {
+      tempList.push(Ember.Object.create({
+        isSelected: false,
+        value: item.get('text')
+      }));
+    });
+    return tempList;
+  }.property('this.content'),
+
   content: null,
-  optionChoice: null,
-  inEditMode: false,
-  isNotEditable: false,
-  value: null,
-  numberValue: null,
-  date: null,
-  photoUrl: null,
 
-  init: function () {
-    this._super();
-    this.doInit();
-  },
-
-  doInit: function () {
-    var q, questionId, type;
-
-    // TODO use filter instead: if the question is not yet there, don't do anything
-    // it will be picked up later at isLoaded.
-    questionId = this.content.get('questionID');
-    q = FLOW.store.find(FLOW.Question, questionId);
-    type = q.get('type');
-    this.set('isTextType', type == 'FREE_TEXT' || type === 'CASCADE');
-    this.set('isOptionType', type == 'OPTION');
-    this.set('isNumberType', type == 'NUMBER');
-    this.set('isBarcodeType', type == 'BARCODE');
-    this.set('isPhotoType', type == 'PHOTO');
-    this.set('isVideoType', type == 'VIDEO');
-    this.set('isDateType', type == 'DATE');
-    this.set('isNotEditable', (type == 'GEO' || type == 'PHOTO' || type == 'VIDEO' || type == 'GEOSHAPE'));
-
-    this.setInitialValue();
-  }.observes('FLOW.questionControl.content.isLoaded'),
-
-
-  setInitialValue: function () {
-    var opList, opListArray, i, sizeList, q, questionId, qaValue, choice = null,
-      date;
-
-    questionId = this.content.get('questionID');
-    q = FLOW.store.find(FLOW.Question, questionId);
-
-    // set value
-    this.set('value', this.content.get('value'));
-
-    if (this.get('isNumberType')) {
-      this.set('numberValue', this.content.get('value'));
-    }
-
-    if (this.get('isDateType') && !Ember.none(this.content.get('value'))) {
-      date = new Date(parseInt(this.content.get('value'), 10));
-      this.set('date', formatDate(date));
-    }
-    if (this.get('isOptionType') && !Ember.none(this.content.get('value'))) {
-      options = FLOW.store.filter(FLOW.QuestionOption, function (item) {
-        return item.get('questionId') == questionId;
-      });
-
-      optionArray = options.toArray();
-      optionArray.sort(function (a, b) {
-    	  return a.get('order') - b.get('order');
-      });
-
-      tempList = [];
-      optionArray.forEach(function (item) {
-        tempList.push(Ember.Object.create({
-          isSelected: false,
-          value: item.get('text')
-        }));
-      });
-      this.set('optionsList', tempList);
-
-      // set answer
-      qaValue = this.content.get('value');
+  optionChoice: function(){
+    var c = this.content;
+    if (!Ember.none(c.get('value'))) {
+      var qaValue = c.get('value');
+      var choice;
       this.get('optionsList').forEach(function (item) {
         if (item.get('value') == qaValue) {
           choice = item;
         }
       });
-      this.set('optionChoice', choice);
+      return choice;
     }
-    if ((this.get('isPhotoType') || this.get('isVideoType')) && !Ember.empty(this.content.get('value'))) {
-      // Since photos have a leading path from devices that we need to trim
-      this.set('photoUrl', FLOW.Env.photo_url_root + this.content.get('value').split('/').pop());
+  }.property('this.content'),
+
+  inEditMode: false,
+
+  isNotEditable: function(){
+    var type = this.get('questionType');
+    return (type == 'GEO' || type == 'PHOTO' || type == 'VIDEO' || type == 'GEOSHAPE');
+  }.property('this.questionType'),
+
+  date: function(){
+    var c = this.content;
+    if (this.isDateType && !Ember.empty(c.get('value'))) {
+      var date = new Date(parseInt(c.get('value'), 10));
+      return formatDate(date);
     }
+  }.property('this.content'),
+
+  photoUrl: function(){
+    var c = this.content;
+    if (!Ember.empty(c.get('value'))) {
+      return FLOW.Env.photo_url_root + c.get('value').split('/').pop();
+    }
+  }.property('this.content,this.isPhotoType,this.isVideoType'),
+
+  questionType: function(){
+    if(this.get('question')){
+      return this.get('question').get('type');
+    }
+  }.property('this.question'),
+
+  question: function(){
+    var c = this.get('content');
+    if (c) {
+      var questionId = this.content.get('questionID');
+      var q = FLOW.questionControl.findProperty('keyId', +questionId);
+      return q;
+    }
+  }.property('FLOW.questionControl.content'),
+
+  init: function () {
+    this._super();
   },
 
   doEdit: function () {
@@ -109,8 +127,6 @@ FLOW.QuestionAnswerView = Ember.View.extend({
   },
 
   doCancel: function () {
-    // revert answer
-    this.setInitialValue();
     this.set('inEditMode', false);
   },
 
@@ -128,11 +144,7 @@ FLOW.QuestionAnswerView = Ember.View.extend({
         }
       }
     } else if (this.get('isOptionType')) {
-      this.content.set('value', this.optionChoice.get('value'));
-    } else if (this.get('isNumberType')) {
-      this.content.set('value', this.get('numberValue'));
-    } else {
-      this.content.set('value', this.get('value'));
+      //this.content.set('value', this.optionChoice.get('value'));
     }
     FLOW.store.commit();
     this.set('inEditMode', false);
@@ -142,5 +154,4 @@ FLOW.QuestionAnswerView = Ember.View.extend({
     // TODO should check for minus sign and decimal point, depending on question setting
     this.set('numberValue', this.get('numberValue').toString().replace(/[^\d.]/g, ""));
   }.observes('this.numberValue')
-
 });

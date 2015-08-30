@@ -312,11 +312,48 @@ FLOW.surveyedLocaleControl = Ember.ArrayController.create({
 FLOW.questionAnswerControl = Ember.ArrayController.create({
   content: null,
 
+  // a computed property that returns a list containing *sub lists*
+  // of responses to questions. Each sub list represents a single iteration
+  // over a set of responses to questions in a specific question group, ordered
+  // by question order. For repeat question groups two adjacent sub lists
+  // represent two iterations of responses for that group
+  contentByGroup: Ember.computed('content.isLoaded', function(key, value) {
+    var content = Ember.get(this, 'content'),
+        self = this;
+    if (content) {
+		var allResponses = [];
+		var groupQuestions = FLOW.questionControl.get('content');
+		var groups = FLOW.questionGroupControl.get('content');
+
+		var groupResponses = [];
+		var groupId;
+		var questionGroupId;
+		var questionId;
+
+		for (var i = 0; i < groups.get('length'); i++) {
+			groupId = groups.objectAt(i).get('keyId');
+			for (var j = 0; j < groupQuestions.get('length'); j++) {
+				questionGroupId = groupQuestions.objectAt(j).get('questionGroupId');
+				if (questionGroupId === groupId) {
+					questionId = groupQuestions.objectAt(j).get('keyId').toString();
+					groupResponses.push(self.findProperty('questionID', questionId));
+				}
+			}
+			allResponses.push(groupResponses);
+			groupResponses = [];
+		}
+
+      return Ember.A(allResponses);
+    }
+
+    return content;
+  }),
+
   doQuestionAnswerQuery: function (surveyInstanceId) {
     this.set('content', FLOW.store.findQuery(FLOW.QuestionAnswer, {
       'surveyInstanceId': surveyInstanceId
     }));
-  }
+  },
 });
 
 FLOW.locationControl = Ember.ArrayController.create({

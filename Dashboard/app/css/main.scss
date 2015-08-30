@@ -6103,3 +6103,31 @@ li.disable {
     font-weight: bold;
     font-size: 1.2em;
 }
+
+/* Set device buttons on device tab to position: fixed */
+.deviceControls {
+    position: fixed;
+    top: 120px;
+    left: 0px;
+    right: 0px;    
+    height: 40px;
+    z-index: 1;    
+    background-color: white;
+    border-bottom: 1px solid $akvoBlack;
+    .dataTabMenu {
+        top: 8px;
+        background: white;
+    }
+    + .dataTable {
+        margin-top: 40px;
+    }
+    @media only screen and (max-width: 600px) {
+        height: 80px;
+        .dataTabMenu {
+            top: 48px;
+        }
+        + .dataTable {
+            margin-top: 80px;
+        }
+    }
+}
