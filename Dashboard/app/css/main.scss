@@ -6131,3 +6131,19 @@ li.disable {
         }
     }
 }
+
+/* Repeatable question groups */
+
+.questionGroupBlock {
+    header {
+        > .labelcheckbox {
+            display: inline-block;
+
+            .ember-checkbox {
+                width: initial;
+                margin: 5px 5px 5px 12px;
+                display: inline-block;
+            }
+        }
+    }
+}
