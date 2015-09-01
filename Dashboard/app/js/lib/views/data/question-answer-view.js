@@ -57,29 +57,12 @@ FLOW.QuestionAnswerView = Ember.View.extend({
 
     tempList = [];
     optionArray.forEach(function (item) {
-      tempList.push(Ember.Object.create({
-        isSelected: false,
-        value: item.get('text')
-      }));
+      tempList.push(item.get('text'));
     });
     return tempList;
   }.property('this.content'),
 
   content: null,
-
-  optionChoice: function(){
-    var c = this.content;
-    if (!Ember.none(c.get('value'))) {
-      var qaValue = c.get('value');
-      var choice;
-      this.get('optionsList').forEach(function (item) {
-        if (item.get('value') == qaValue) {
-          choice = item;
-        }
-      });
-      return choice;
-    }
-  }.property('this.content'),
 
   inEditMode: false,
 
@@ -131,11 +114,12 @@ FLOW.QuestionAnswerView = Ember.View.extend({
   },
 
   doSave: function () {
-    var tempDate = null;
+
     if (this.get('isDateType')) {
       if (Ember.empty(this.get('date'))) {
         this.content.set('value', null);
       } else {
+        var tempDate = null;
         tempDate = Date.parse(this.get('date'));
         if (!isNaN(tempDate)) {
           this.content.set('value', tempDate);
@@ -143,8 +127,6 @@ FLOW.QuestionAnswerView = Ember.View.extend({
           this.content.set('value', null);
         }
       }
-    } else if (this.get('isOptionType')) {
-      //this.content.set('value', this.optionChoice.get('value'));
     }
     FLOW.store.commit();
     this.set('inEditMode', false);
