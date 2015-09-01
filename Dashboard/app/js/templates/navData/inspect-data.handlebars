@@ -122,31 +122,28 @@
                     <!-- TABLE HEADER-->
                     <thead>
                         <tr>
-                            <th class="noArrows">{{t _id}}</th>
-                            <th class="noArrows">{{t _question}}</th>
-                            <th class="noArrows">{{t _answer}}</th>
+                            <th class="noArrows" style="width:10%">{{t _id}}</th>
+                            <th class="noArrows" style="width:60%">{{t _question}}</th>
+                            <th class="noArrows" style="width:30%">{{t _answer}}</th>
                         </tr>
                     </thead>
+                  </table>
                     <!-- TABLE BODY: MAIN CONTENT-->
-                    <tbody>
-                        {{#view FLOW.QuestionAnswerListView controllerBinding="FLOW.questionAnswerControl"}}
-                            {{#each responseSubList in view.controller.contentByGroup}}
-                                {{each responseSubList itemViewClass="FLOW.QuestionAnswerView"}}
-                            {{/each}}
-                        {{/view}}
-                    </tbody>
-                    <!-- TABLE FOOTER-->
-                    <tfoot>
-                        <tr>
-                            <td colspan="7"><small></small>
-                            </td>
-                        </tr>
-                    </tfoot>
-                </table>
-
+                  {{#each responseSubList in FLOW.questionAnswerControl.contentByGroup}}
+                    <h3 style="margin-top:12px">{{responseSubList.groupName}}</h3>
+                    {{#each iterations in responseSubList}}
+                      {{#if iterations.iteration}}
+                        <h5 style="margin-top:8px">Repeat #{{iterations.iteration}}</h5>
+                      {{/if}}
+                      <table class="dataTable" id="surveyDataTable">
+                          <tbody>
+                            {{each iterations itemViewClass="FLOW.QuestionAnswerView"}}
+                          </tbody>
+                        </table>
+                    {{/each}}
+                  {{/each}}
             </div>
         </div>
     </div>
-
 </section>
 {{/view}}

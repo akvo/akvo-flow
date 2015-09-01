@@ -1,7 +1,7 @@
 <tr>
-    <td class="device">{{view.question.order}}</td>
-    <td class="survey" style="text-align:left;">{{view.question.text}}</td>
-    <td class="submitter" style="text-align:left;">
+    <td class="device" style="width:10%">{{view.question.order}}</td>
+    <td class="survey" style="text-align:left;width:60%">{{view.question.text}}</td>
+    <td class="submitter" style="text-align:left;width:30%">
         {{#if view.inEditMode}}
             {{#if view.isOptionType}}
                 {{view Ember.Select
