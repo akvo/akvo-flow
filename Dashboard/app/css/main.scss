@@ -6147,3 +6147,15 @@ li.disable {
         }
     }
 }
+#inspectData {
+    h3 {
+        &.questionGroupName {
+            margin: 10px 0;
+        }
+    }
+    h5 {
+        &.iterationNumber {
+            margin: 16px 0px 5px 8px;
+        }
+    }
+}
