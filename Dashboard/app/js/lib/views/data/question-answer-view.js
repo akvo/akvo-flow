@@ -1,8 +1,8 @@
 // this function is also present in assignment-edit-views.js, we need to consolidate using moment.js
 
-function formatDate(value) {
-  if (!Ember.none(value)) {
-    return value.getFullYear() + "/" + (value.getMonth() + 1) + "/" + value.getDate();
+function formatDate(date) {
+  if (date && !isNaN(date.getTime())) {
+    return date.getFullYear() + "/" + (date.getMonth() + 1) + "/" + date.getDate();
   } else return null;
 }
 
@@ -71,13 +71,7 @@ FLOW.QuestionAnswerView = Ember.View.extend({
     return (type == 'GEO' || type == 'PHOTO' || type == 'VIDEO' || type == 'GEOSHAPE');
   }.property('this.questionType'),
 
-  date: function(){
-    var c = this.content;
-    if (this.isDateType && !Ember.empty(c.get('value'))) {
-      var date = new Date(parseInt(c.get('value'), 10));
-      return formatDate(date);
-    }
-  }.property('this.content'),
+  date: null,
 
   photoUrl: function(){
     var c = this.content;
@@ -107,6 +101,14 @@ FLOW.QuestionAnswerView = Ember.View.extend({
 
   doEdit: function () {
     this.set('inEditMode', true);
+    var c = this.content;
+      console.log("value = " + c.get('value') + " " + Ember.empty(c.get('value')));
+      console.log("date type = " + this.get('isDateType'));
+
+    if (this.get('isDateType') && !Ember.empty(c.get('value'))) {
+      var d = new Date(+c.get('value')); // need to coerce c.get('value') due to milliseconds
+      this.set('date', formatDate(d));
+    }
   },
 
   doCancel: function () {
@@ -116,16 +118,11 @@ FLOW.QuestionAnswerView = Ember.View.extend({
   doSave: function () {
 
     if (this.get('isDateType')) {
-      if (Ember.empty(this.get('date'))) {
+      var d = Date.parse(this.get('date'));
+      if (isNaN(d) || d < 0) {
         this.content.set('value', null);
       } else {
-        var tempDate = null;
-        tempDate = Date.parse(this.get('date'));
-        if (!isNaN(tempDate)) {
-          this.content.set('value', tempDate);
-        } else {
-          this.content.set('value', null);
-        }
+        this.content.set('value', d);
       }
     }
     FLOW.store.commit();
