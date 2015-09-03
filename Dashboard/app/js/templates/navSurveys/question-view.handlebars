@@ -33,27 +33,23 @@
      <a {{action "showAddAttributeDialog" target="this"}} class="addAttribute"><span>+</span>{{t _create_new_tag}} </a> </label>
       {{#if view.attribute}}<label class="labelcheckbox">{{view Ember.Checkbox checkedBinding="view.includeInMap"}}{{t _include_in_map}}</label>{{/if}}
   {{/if}}
-    {{#if view.amDateType}}
-      <label class="selectinLabel"><span>{{t _question_type}}: {{tooltip _question_type_date_tooltip}}</span> {{view Ember.Select
-        contentBinding="FLOW.questionTypeControl.content"
-        optionLabelPath="content.label"
-        optionValuePath="content.value"
-        selectionBinding="view.type" }} </label>
-    {{else}}
+  
+  <label class="selectinLabel">
+    <span>
+      {{t _question_type}}:
+      {{#if view.amDateType}}
+        {{tooltip _question_type_date_tooltip}}
+      {{/if}}          
       {{#if view.amGeoshapeType}}
-        <label class="selectinLabel"><span>{{t _question_type}}: {{tooltip _question_type_geoshape_tooltip}}</span> {{view Ember.Select
-          contentBinding="FLOW.questionTypeControl.content"
-          optionLabelPath="content.label"
-          optionValuePath="content.value"
-          selectionBinding="view.type" }} </label>
-      {{else}}
-        <label class="selectinLabel"><span>{{t _question_type}}:</span> {{view Ember.Select
-          contentBinding="FLOW.questionTypeControl.content"
-          optionLabelPath="content.label"
-          optionValuePath="content.value"
-          selectionBinding="view.type" }} </label>
+        {{tooltip _question_type_geoshape_tooltip}}
       {{/if}}
-    {{/if}}
+    </span>
+    {{view Ember.Select
+      contentBinding="FLOW.questionTypeControl.content"
+      optionLabelPath="content.label"
+      optionValuePath="content.value"
+      selectionBinding="view.type" }}
+  </label>
 
   {{#if view.showMetaConfig}}
     {{#if view.showLocaleName}}
