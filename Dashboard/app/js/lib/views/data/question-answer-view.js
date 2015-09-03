@@ -41,10 +41,9 @@ FLOW.QuestionAnswerView = Ember.View.extend({
     questionId = this.content.get('questionID');
     q = FLOW.store.find(FLOW.Question, questionId);
     type = q.get('type');
-    multipleFlag = q.get('allowMultipleFlag');
     this.set('isTextType', type == 'FREE_TEXT' || type === 'CASCADE');
     this.set('isOptionType', type == 'OPTION');
-    this.set('isMultipleOptionType', multipleFlag === true);
+    this.set('isMultipleOptionType', q.get('allowMultipleFlag'));
     this.set('isNumberType', type == 'NUMBER');
     this.set('isBarcodeType', type == 'BARCODE');
     this.set('isPhotoType', type == 'PHOTO');
