@@ -9,7 +9,7 @@
                         valueBinding="view.content.value"}}
             {{else}}
                 {{#if view.isNumberType}}
-                    {{view Ember.TextField valueBinding="value" size=10 }}
+                    {{view Ember.TextField valueBinding="view.numberValue" size=10 }}
                 {{else}}
                     {{#if view.isTextType}}
                         {{view Ember.TextField valueBinding="value" size=10 }}

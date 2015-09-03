@@ -73,6 +73,8 @@ FLOW.QuestionAnswerView = Ember.View.extend({
 
   date: null,
 
+  numberValue: null,
+
   photoUrl: function(){
     var c = this.content;
     if (!Ember.empty(c.get('value'))) {
@@ -107,6 +109,10 @@ FLOW.QuestionAnswerView = Ember.View.extend({
       var d = new Date(+c.get('value')); // need to coerce c.get('value') due to milliseconds
       this.set('date', formatDate(d));
     }
+
+    if (this.get('isNumberType') && !Ember.empty(c.get('value'))) {
+      this.set('numberValue', c.get('value'));
+    }
   },
 
   doCancel: function () {
@@ -121,6 +127,14 @@ FLOW.QuestionAnswerView = Ember.View.extend({
         this.content.set('value', null);
       } else {
         this.content.set('value', d);
+      }
+    }
+
+    if (this.get('isNumberType')) {
+      if (isNaN(this.numberValue)) {
+        this.content.set('value', null);
+      } else {
+        this.content.set('value', this.numberValue);
       }
     }
     FLOW.store.commit();
