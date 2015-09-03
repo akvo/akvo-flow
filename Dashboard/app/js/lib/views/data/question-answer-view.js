@@ -102,8 +102,6 @@ FLOW.QuestionAnswerView = Ember.View.extend({
   doEdit: function () {
     this.set('inEditMode', true);
     var c = this.content;
-      console.log("value = " + c.get('value') + " " + Ember.empty(c.get('value')));
-      console.log("date type = " + this.get('isDateType'));
 
     if (this.get('isDateType') && !Ember.empty(c.get('value'))) {
       var d = new Date(+c.get('value')); // need to coerce c.get('value') due to milliseconds
