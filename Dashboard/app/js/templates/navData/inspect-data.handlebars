@@ -137,11 +137,21 @@
                             <td class="submitter">
                                 {{#if view.inEditMode}}
                                 	{{#if view.isOptionType}}
-                                		{{view Ember.Select
-                                			contentBinding="view.optionsList"
-                                			optionLabelPath="content.value"
-                                			optionValuePath="content.value"
-                                			selectionBinding="view.optionChoice"}}
+                                        {{#if view.isMultipleOptionType}}
+                                            <div class="multipleOptionEdit">
+                                                {{#each view.optionsList}}
+                                                    <label class="multipleOptionEdit">
+                                                        {{view Ember.Checkbox checkedBinding="isSelected"}} {{value}}
+                                                    </label>
+                                                {{/each}}
+                                            </div>
+                                        {{else}}                                    
+                                    		{{view Ember.Select
+                                    			contentBinding="view.optionsList"
+                                    			optionLabelPath="content.value"
+                                    			optionValuePath="content.value"
+                                    			selectionBinding="view.optionChoice"}}
+                                        {{/if}}
                                 	{{else}}
                                 		{{#if view.isNumberType}}
                                 			{{view Ember.TextField valueBinding="view.numberValue" size=10 }}
@@ -176,7 +186,11 @@
                                 		{{#if view.isDateType}}
                                 			<a {{action doEdit target="this" }}>{{#with QA}}{{date3 value}}{{/with}}</a>
                                 		{{else}}
-                                			<a {{action doEdit target="this" }}>{{QA.value}} {{#with QA}}{{if_blank value}}{{/with}}</a>
+                                            {{#if view.isMultipleOptionType}}
+                                                <a {{action doEdit target="this" }}>{{QA.displayValue}} {{#with QA}}{{if_blank value}}{{/with}}</a>
+                                            {{else}}                                         
+                                                <a {{action doEdit target="this" }}>{{QA.value}} {{#with QA}}{{if_blank value}}{{/with}}</a>
+                                            {{/if}}
                                 		{{/if}}
                                 	{{/if}}
                                 {{/if}}
