@@ -367,7 +367,9 @@ FLOW.questionAnswerControl = Ember.ArrayController.create({
           // TODO: +2 is a workaround for the fact that iterations currently start at -1
           iterationAnswers.iteration = iter+2;
 
-          groupResponses.push(iterationAnswers);
+          if (iterationAnswers.length > 0) {
+            groupResponses.push(iterationAnswers);
+          }
         }
 
         allResponses.push(groupResponses);
