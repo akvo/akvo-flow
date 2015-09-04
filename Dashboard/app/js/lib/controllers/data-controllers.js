@@ -327,12 +327,13 @@ FLOW.questionAnswerControl = Ember.ArrayController.create({
 		var allResponses = [];
 		var groupResponses = [];
 		var answersInGroup = [];
-		var group, groupId, isRepeatable, questionsInGroup, questionGroupId, questionId;
+		var group, groupId, groupName, groupIteration, isRepeatable, questionsInGroup, questionGroupId, questionId;
 
 		for (var i = 0; i < groups.get('length'); i++) {
 			group = groups.objectAt(i);
 			isRepeatable = group.get('repeatable');
 			groupId = group.get('keyId');
+			groupName = group.get('name');
 
 			questionsInGroup = surveyQuestions.filterProperty('questionGroupId',groupId);
 
@@ -342,12 +343,17 @@ FLOW.questionAnswerControl = Ember.ArrayController.create({
 			}
 
 			if (isRepeatable) {
+				groupIteration = 0;
+
 				this.splitIterationAnswers(answersInGroup).forEach(function(iterationAnswers){
 					if (iterationAnswers && iterationAnswers.length) {
+						groupIteration++;
+						iterationAnswers.groupName = groupName + " - " + groupIteration;
 						groupResponses.push(iterationAnswers);
 					}
 				});
 			} else {
+				answersInGroup.groupName = groupName;
 				groupResponses.push(answersInGroup);
 			}
 			allResponses.push(groupResponses);

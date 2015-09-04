@@ -130,11 +130,8 @@
                   </table>
                     <!-- TABLE BODY: MAIN CONTENT-->
                   {{#each responseSubList in FLOW.questionAnswerControl.contentByGroup}}
-                    <h3 class="questionGroupName">{{responseSubList.groupName}}</h3>
                     {{#each iterations in responseSubList}}
-                      {{#if iterations.iteration}}
-                        <h5 class="iterationNumber">Repeat #{{iterations.iteration}}</h5>
-                      {{/if}}
+                      <h3 class="questionGroupName">{{iterations.groupName}}</h3>
                       <table class="dataTable" id="surveyDataTable">
                           <tbody>
                             {{each iterations itemViewClass="FLOW.QuestionAnswerView"}}
