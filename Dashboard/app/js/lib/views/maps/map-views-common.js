@@ -6,6 +6,10 @@ FLOW.NavMapsView = FLOW.View.extend({
   map: null,
   marker: null,
   geoShape: null,
+  geoshapeCoordinates: [],
+  polygons: [],
+  mapZoomLevel: 0,
+  mapCenter: null,
   geomodel: null,
   cartodbLayer: null,
   layerExistsCheck: 0,
@@ -142,7 +146,7 @@ FLOW.NavMapsView = FLOW.View.extend({
     map.options.maxZoom = 18;
     map.options.minZoom = 2;
 
-    L.tileLayer('https://{s}.{base}.maps.cit.api.here.com/maptile/2.1/maptile/{mapID}/normal.day.transit/{z}/{x}/{y}/256/png8?app_id={app_id}&app_code={app_code}', {
+    /*L.tileLayer('https://{s}.{base}.maps.cit.api.here.com/maptile/2.1/maptile/{mapID}/normal.day.transit/{z}/{x}/{y}/256/png8?app_id={app_id}&app_code={app_code}', {
       attribution: 'Map &copy; 1987-2014 <a href="http://developer.here.com">HERE</a>',
       subdomains: '1234',
       mapID: 'newest',
@@ -150,7 +154,38 @@ FLOW.NavMapsView = FLOW.View.extend({
       app_code: FLOW.Env.hereMapsAppCode,
       base: 'base',
       noWrap: false
-    }).addTo(map);
+    }).addTo(map);*/
+
+    var mbAttr = 'Map &copy; 1987-2014 <a href="http://developer.here.com">HERE</a>',
+			mbUrl = 'https://{s}.{base}.maps.cit.api.here.com/maptile/2.1/maptile/{mapID}/{scheme}/{z}/{x}/{y}/256/{format}?app_id={app_id}&app_code={app_code}';
+
+    var normal = L.tileLayer(mbUrl, {
+      scheme: 'normal.day.transit',
+      format: 'png8',
+      attribution: mbAttr,
+      subdomains: '1234',
+      mapID: 'newest',
+      app_id: FLOW.Env.hereMapsAppId,
+      app_code: FLOW.Env.hereMapsAppCode,
+      base: 'base'
+    }).addTo(map),
+    satellite  = L.tileLayer(mbUrl, {
+      scheme: 'hybrid.day',
+      format: 'jpg',
+      attribution: mbAttr,
+      subdomains: '1234',
+      mapID: 'newest',
+      app_id: FLOW.Env.hereMapsAppId,
+      app_code: FLOW.Env.hereMapsAppCode,
+      base: 'aerial'
+    });
+
+    var baseLayers = {
+			"Normal": normal,
+			"Satellite": satellite
+		};
+
+    L.control.layers(baseLayers).addTo(map);
 
     this.map = map;
 
@@ -170,8 +205,15 @@ FLOW.NavMapsView = FLOW.View.extend({
         $('#pointDetails').html('<p class="noDetails">'+Ember.String.loc('_no_details') +'</p>');
       }
 
-      if(self.geoShape !== null){
-        //self.map.removeLayer(self.geoShape);
+      if(self.polygons.length > 0){
+        $('#projectGeoshape').html("Project geoshape onto main map");
+        for(var i=0; i<self.polygons.length; i++){
+          self.map.removeLayer(self.polygons[i]);
+        }
+        //restore the previous zoom level and map center
+        self.map.setZoom(self.mapZoomLevel);
+        self.map.panTo(self.mapCenter);
+        self.polygons = [];
       }
     });
 
@@ -229,6 +271,24 @@ FLOW.NavMapsView = FLOW.View.extend({
         });
       } else {
         self.createLayer(map, "data_point_"+$("#survey_selector").val(), "");
+      }
+    });
+
+    $(document.body).on('click', '#projectGeoshape', function(){
+      if(self.polygons.length > 0){
+        $('#projectGeoshape').html("Project geoshape onto main map");
+        for(var i=0; i<self.polygons.length; i++){
+          self.map.removeLayer(self.polygons[i]);
+        }
+        //restore the previous zoom level and map center
+        self.map.setZoom(self.mapZoomLevel);
+        self.map.panTo(self.mapCenter);
+        self.polygons = [];
+      }else{
+        $('#projectGeoshape').html("Clear geoshape from main map");
+        if(self.geoshapeCoordinates.length > 0){
+          self.projectGeoshape(self.geoshapeCoordinates);
+        }
       }
     });
   },
@@ -327,6 +387,25 @@ FLOW.NavMapsView = FLOW.View.extend({
       opacity: '0',
       display: 'none'
     });
+
+    /*if (FLOW.Env.mapsProvider === 'cartodb'){
+      if(this.marker != null){
+        this.map.removeLayer(self.marker);
+        this.hideDetailsPane();
+        $('#pointDetails').html('<p class="noDetails">'+Ember.String.loc('_no_details') +'</p>');
+      }
+
+      if(this.polygons.length > 0){
+        $('#projectGeoshape').html("Project geoshape onto main map");
+        for(var i=0; i<this.polygons.length; i++){
+          this.map.removeLayer(this.polygons[i]);
+        }
+        //restore the previous zoom level and map center
+        //self.map.setZoom(self.mapZoomLevel);
+        //self.map.panTo(self.mapCenter);
+        this.polygons = [];
+      }
+    }*/
   },
 
 
@@ -443,6 +522,7 @@ FLOW.NavMapsView = FLOW.View.extend({
     })
     .addTo(map)
     .done(function(layer) {
+      layer.setZIndex(1000); //required to ensure that the cartodb layer is not obscured by the here maps base layers
       self.layerExistsCheck = 1;
       self.cartodbLayer = layer;
 
@@ -502,7 +582,11 @@ FLOW.NavMapsView = FLOW.View.extend({
             "/rest/cartodb/questions?form_id="+pointData['formId'],
             function(questionsData, status){
               var geoshapeCheck = false;
-              var geoshapeCoordinates = [];
+              self.geoshapeCoordinates = [];
+
+              var dataCollectionDate = pointData['answers']['created_at'];
+              var date = new Date(dataCollectionDate);
+
               clickedPointContent += '<ul class="placeMarkBasicInfo floats-in">'
               +'<h3>'
               +((dataPointName != "" && dataPointName != "null" && dataPointName != null) ? dataPointName : "")
@@ -514,8 +598,9 @@ FLOW.NavMapsView = FLOW.View.extend({
               +'<li>'
               +'<span>'+Ember.String.loc('_collected_on') +':</span>'
               +'<div class="placeMarkCollectionDate">'
-              +pointData['answers']['created_at']
+              +date.toUTCString()
               +'</div></li><li></li></ul>';
+
               //clickedPointContent += "<table>";
               clickedPointContent += '<dl class="floats-in" style="opacity: 1; display: inherit;">';
               for (column in pointData['answers']){
@@ -538,17 +623,24 @@ FLOW.NavMapsView = FLOW.View.extend({
                       //if point is a geoshape, draw the shape in the side window
                       if(questionsData['questions'][i].type == "GEOSHAPE"){
                         if(pointData['answers'][column] !== "" && pointData['answers'][column] !== null && pointData['answers'][column] !== "null"){
+                          clickedPointContent += "<dd>";
+                          clickedPointContent += '<div id="geoShapeMap" style="width:100%; height: 100px; float: left"></div>';
                           geoshapeCheck = true;
                           geoshapeObject = JSON.parse(pointData['answers'][column]);
                           if(geoshapeObject['features'].length > 0){
                             var geoshapeCoordinatesArray = geoshapeObject['features'][0]['geometry']['coordinates'][0];
                             for(var j=0; j<geoshapeCoordinatesArray.length; j++){
-                              geoshapeCoordinates.push([geoshapeCoordinatesArray[j][1], geoshapeCoordinatesArray[j][0]]);
+                              self.geoshapeCoordinates.push([geoshapeCoordinatesArray[j][1], geoshapeCoordinatesArray[j][0]]);
                             }
+
+                            clickedPointContent += '<div style="float: left; width: 100%"><a id="projectGeoshape">Project geoshape onto main map</a></div>';
+                            clickedPointContent += '<div style="float: left; width: 100%">Points: '+geoshapeObject['features'][0]['properties']['pointCount']+'</div>';
+                            clickedPointContent += '<div style="float: left; width: 100%">Length: '+geoshapeObject['features'][0]['properties']['length']+'</div>';
+                            clickedPointContent += '<div style="float: left; width: 100%">Area: '+geoshapeObject['features'][0]['properties']['area']+'</div>';
                           }
-                          clickedPointContent += "<dd><div id=\"geoShapeMap\" style=\"width:100%; height: 100px\"></div></dd></div>";
+                          clickedPointContent += '</dd></div>';
                         }else{
-                          clickedPointContent += "<dd>&nbsp;</dd></div>";
+                          clickedPointContent += '<dd>&nbsp;</dd></div>';
                         }
                       }else{
                         clickedPointContent += "<dd>"+pointData['answers'][column]+"</dd></div>";
@@ -562,7 +654,7 @@ FLOW.NavMapsView = FLOW.View.extend({
 
               //if there's geoshape, draw it
               if(geoshapeCheck){
-                self.createGeoshape(geoshapeCoordinates);
+                self.createGeoshape(self.geoshapeCoordinates);
               }
             });
       } else {
@@ -586,23 +678,38 @@ FLOW.NavMapsView = FLOW.View.extend({
       attribution: '<a href="http://developer.here.com">HERE</a>',
       subdomains: '1234',
       mapID: 'newest',
-      app_id: 'r5lmMPKxiMeZzkTWRAJu',
-      app_code: 'W6i_Oej7Y8IdgizMp7eSyQ',
+      app_id: FLOW.Env.hereMapsAppId,
+      app_code: FLOW.Env.hereMapsAppCode,
       base: 'base',
       maxZoom: 18
     }).addTo(geoshapeMap);
 
     this.geoShape = L.polygon(points);
-
     this.geoShape.addTo(geoshapeMap);
-    //this.geoShape.addTo(this.map);
 
     var southWest = this.geoShape.getBounds().getSouthWest();
     var northEast = this.geoShape.getBounds().getNorthEast();
     var bounds = new L.LatLngBounds(southWest, northEast);
 
     geoshapeMap.fitBounds(bounds);
-    //this.map.fitBounds(bounds);
+  },
+
+  //function to project geoshape from details panel to main map canvas
+  projectGeoshape: function(coordinates){
+    var geoShape = L.polygon(coordinates);
+    this.polygons.push(geoShape);
+    geoShape.addTo(this.map);
+
+    var southWest = geoShape.getBounds().getSouthWest();
+    var northEast = geoShape.getBounds().getNorthEast();
+    var bounds = new L.LatLngBounds(southWest, northEast);
+
+    //before fitting the geoshape to map, get the current
+    //zoom level and map center first and save them
+    this.mapZoomLevel = this.map.getZoom();
+    this.mapCenter = this.map.getCenter();
+
+    this.map.fitBounds(bounds);
   }
 });
 
