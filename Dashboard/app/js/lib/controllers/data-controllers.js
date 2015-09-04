@@ -368,7 +368,6 @@ FLOW.questionAnswerControl = Ember.ArrayController.create({
           iterationAnswers.iteration = iter+2;
 
           groupResponses.push(iterationAnswers);
-
         }
 
         allResponses.push(groupResponses);
