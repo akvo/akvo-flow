@@ -321,64 +321,60 @@ FLOW.questionAnswerControl = Ember.ArrayController.create({
     var content = Ember.get(this, 'content'),
         self = this;
     if (content) {
-      var groupQuestions = FLOW.questionControl.get('content');
-      var groups = FLOW.questionGroupControl.get('content');
+		var surveyQuestions = FLOW.questionControl.get('content');
+		var groups = FLOW.questionGroupControl.get('content');
 
-      var allResponses = [];
-      var groupResponses = [];
-      var group, groupId, isRepeatable, questionsInGroup, questionGroupId, questionId, answersInGroup;
+		var allResponses = [];
+		var groupResponses = [];
+		var answersInGroup = [];
+		var group, groupId, isRepeatable, questionsInGroup, questionGroupId, questionId;
 
-      for (var i = 0; i < groups.get('length'); i++) {
-        group = groups.objectAt(i);
-        isRepeatable = group.get('repeatable');
+		for (var i = 0; i < groups.get('length'); i++) {
+			group = groups.objectAt(i);
+			isRepeatable = group.get('repeatable');
+			groupId = group.get('keyId');
 
-        groupId = group.get('keyId');
-        questionsInGroup = groupQuestions.filterProperty('questionGroupId',groupId);
+			questionsInGroup = surveyQuestions.filterProperty('questionGroupId',groupId);
 
-        answersInGroup = self.filter(function(answer) {
-          var questionIds = questionsInGroup.map(function(question) {
-              return question.get('keyId').toString();
-          });
-          return questionIds.indexOf(answer.get('questionID')) > -1;
-        });
+			for (var j = 0; j < questionsInGroup.get('length'); j++) {
+				questionId = questionsInGroup[j].get('keyId').toString();
+				answersInGroup = answersInGroup.concat(self.filterProperty('questionID', questionId));
+			}
 
-        groupResponses.groupName = group.get('name');
-
-        if (!isRepeatable) {
-          groupResponses.push(answersInGroup)
-          allResponses.push(groupResponses);
-          groupResponses = [];
-          continue;
-        }
-
-        // determine max of iterations for this group
-        var maxIter = 0;
-        answersInGroup.forEach(function(item){
-          if (item.get('iteration') > maxIter){
-            maxIter = item.get('iteration');
-          }
-        });
-
-        for (var iter = 0; iter <= maxIter; iter++){
-          var iterationAnswers = answersInGroup.filter(function(answer) {
-            return answer.get('iteration') === iter;
-          });
-
-          // TODO: +2 is a workaround for the fact that iterations currently start at -1
-          iterationAnswers.iteration = iter+2;
-
-          if (iterationAnswers.length > 0) {
-            groupResponses.push(iterationAnswers);
-          }
-        }
-
-        allResponses.push(groupResponses);
-        groupResponses = [];
-      }
-      return Ember.A(allResponses);
-    }
-    return content;
+			if (isRepeatable) {
+				this.splitIterationAnswers(answersInGroup).forEach(function(iterationAnswers){
+					if (iterationAnswers && iterationAnswers.length) {
+						groupResponses.push(iterationAnswers);
+					}
+				});
+			} else {
+				groupResponses.push(answersInGroup);
+			}
+			allResponses.push(groupResponses);
+			groupResponses = [];
+			answersInGroup = [];
+		}
+		return Ember.A(allResponses);
+	  }
+	return content;
   }),
+
+  /* take a list of question answer objects containing multiple iterations
+   * and split into a list of sublists, each sublist containing a single iteration
+   * answers group together */
+  splitIterationAnswers: function(allAnswersInRepeatGroup){
+	var allIterations = [];
+	var iteration;
+
+	for(var i = 0; i < allAnswersInRepeatGroup.length; i++) {
+		iteration = allAnswersInRepeatGroup[i].get('iteration');
+		if (!allIterations[iteration]) {
+			allIterations[iteration] = [];
+		}
+		allIterations[iteration].push(allAnswersInRepeatGroup[i]);
+	}
+	return allIterations;
+  },
 
   doQuestionAnswerQuery: function (surveyInstanceId) {
     this.set('content', FLOW.store.findQuery(FLOW.QuestionAnswer, {
