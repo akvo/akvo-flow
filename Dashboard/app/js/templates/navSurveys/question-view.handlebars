@@ -74,7 +74,7 @@
     {{/if}}
     {{#if view.amFreeTextType}}
     <h1 class="answerNbr">{{t _settings}}:</h1>
-    <label class="labelcheckbox"> {{view Ember.Checkbox checkedBinding="view.requireDoubleEntry"}}{{t _require_double_entry}} </label>
+    <label class="labelcheckbox"> {{view Ember.Checkbox checkedBinding="view.requireDoubleEntry"}}{{t _require_double_entry}} {{tooltip _require_double_entry_tooltip}}</label>
     {{/if}}
     {{#if view.amBarcodeType}}
     <h1 class="answerNbr">{{t _settings}}: </h1>
@@ -84,7 +84,7 @@
     <h1 class="answerNbr">{{t _settings}}: </h1>
       <label class="labelcheckbox"> {{view Ember.Checkbox checkedBinding="view.allowSign"}}{{t _allow_sign}} </label>
       <label class="labelcheckbox"> {{view Ember.Checkbox checkedBinding="view.allowDecimal"}}{{t _allow_decimal_point}} </label>
-      <label class="labelcheckbox"> {{view Ember.Checkbox checkedBinding="view.requireDoubleEntry"}}{{t _require_double_entry}} </label>
+      <label class="labelcheckbox"> {{view Ember.Checkbox checkedBinding="view.requireDoubleEntry"}}{{t _require_double_entry}} {{tooltip _require_double_entry_tooltip}}</label>
 
       <label class="minValNumb">{{t _min_val}}: {{view Ember.TextField valueBinding="view.minVal" size=10 }}</label>
       <label class="maxValNumb">{{t _max_val}}: {{view Ember.TextField valueBinding="view.maxVal" size=10 }}</label>
