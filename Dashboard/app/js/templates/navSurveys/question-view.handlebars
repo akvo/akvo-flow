@@ -33,18 +33,32 @@
      <a {{action "showAddAttributeDialog" target="this"}} class="addAttribute"><span>+</span>{{t _create_new_tag}} </a> </label>
       {{#if view.attribute}}<label class="labelcheckbox">{{view Ember.Checkbox checkedBinding="view.includeInMap"}}{{t _include_in_map}}</label>{{/if}}
   {{/if}}
-    <label class="selectinLabel"><span>{{t _question_type}}:</span> {{view Ember.Select
+  
+  <label class="selectinLabel">
+    <span>
+      {{t _question_type}}:
+      {{#if view.amDateType}}
+        {{tooltip _question_type_date_tooltip}}
+      {{/if}}          
+      {{#if view.amGeoshapeType}}
+        {{tooltip _question_type_geoshape_tooltip}}
+      {{/if}}
+    </span>
+    {{view Ember.Select
       contentBinding="FLOW.questionTypeControl.content"
       optionLabelPath="content.label"
       optionValuePath="content.value"
-      selectionBinding="view.type" }} </label>
+      selectionBinding="view.type" }}
+  </label>
 
   {{#if view.showMetaConfig}}
     {{#if view.showLocaleName}}
-      <label class="labelcheckbox"> {{view Ember.Checkbox checkedBinding="view.localeNameFlag"}}{{t _use_in_record_display}}</label>
-    {{else}} {{#if view.amGeoType}}
-          <label class="labelcheckbox"> {{view Ember.Checkbox checkedBinding="view.localeLocationFlag"}}{{t _use_as_record_location}}</label>
-    {{/if}} {{/if}}
+      <label class="labelcheckbox"> {{view Ember.Checkbox checkedBinding="view.localeNameFlag"}}{{t _use_in_record_display}} {{tooltip _use_in_record_display_tooltip}}</p></label>
+    {{else}}
+      {{#if view.amGeoType}}
+          <label class="labelcheckbox"> {{view Ember.Checkbox checkedBinding="view.localeLocationFlag"}}{{t _use_as_record_location}} {{tooltip _use_as_record_location_tooltip}}</label>
+      {{/if}}
+    {{/if}}
   {{/if}}
 
     <!-- Question specific material -->
@@ -60,7 +74,7 @@
     {{/if}}
     {{#if view.amFreeTextType}}
     <h1 class="answerNbr">{{t _settings}}:</h1>
-    <label class="labelcheckbox"> {{view Ember.Checkbox checkedBinding="view.requireDoubleEntry"}}{{t _require_double_entry}} </label>
+    <label class="labelcheckbox"> {{view Ember.Checkbox checkedBinding="view.requireDoubleEntry"}}{{t _require_double_entry}} {{tooltip _require_double_entry_tooltip}}</label>
     {{/if}}
     {{#if view.amBarcodeType}}
     <h1 class="answerNbr">{{t _settings}}: </h1>
@@ -70,7 +84,7 @@
     <h1 class="answerNbr">{{t _settings}}: </h1>
       <label class="labelcheckbox"> {{view Ember.Checkbox checkedBinding="view.allowSign"}}{{t _allow_sign}} </label>
       <label class="labelcheckbox"> {{view Ember.Checkbox checkedBinding="view.allowDecimal"}}{{t _allow_decimal_point}} </label>
-      <label class="labelcheckbox"> {{view Ember.Checkbox checkedBinding="view.requireDoubleEntry"}}{{t _require_double_entry}} </label>
+      <label class="labelcheckbox"> {{view Ember.Checkbox checkedBinding="view.requireDoubleEntry"}}{{t _require_double_entry}} {{tooltip _require_double_entry_tooltip}}</label>
 
       <label class="minValNumb">{{t _min_val}}: {{view Ember.TextField valueBinding="view.minVal" size=10 }}</label>
       <label class="maxValNumb">{{t _max_val}}: {{view Ember.TextField valueBinding="view.maxVal" size=10 }}</label>
@@ -87,7 +101,7 @@
     {{/if}}
 
   	{{#if view.amCascadeType}}
-         <label class="selectinLabel dependencySelect"> {{t _choose_cascade_question_resource}}:
+         <label class="selectinLabel dependencySelect"> {{t _choose_cascade_question_resource}}: {{tooltip _choose_cascade_question_resource_tooltip}}
         {{view Ember.Select
         contentBinding="FLOW.cascadeResourceControl.published"
         selectionBinding="FLOW.selectedControl.selectedCascadeResource"

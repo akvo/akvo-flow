@@ -3,7 +3,7 @@
   
   {{#view FLOW.CurrentDevicesTabView}}
   <div class="deviceControls">
-    <a {{action "showManageDeviceGroupsDialog" target="this"}} class="standardBtn btnAboveTable">{{t _manage_device_groups}}</a> 
+    <a {{action "showManageDeviceGroupsDialog" target="this"}} class="standardBtn btnAboveTable">{{t _manage_device_groups}}</a>
     {{#if FLOW.deviceControl.atLeastOneSelected}}
     <nav class="dataTabMenu">
       <ul>
@@ -27,7 +27,7 @@
       <tr> {{#view FLOW.ColumnView item="select" }}
         {{view Ember.Checkbox checkedBinding="FLOW.deviceControl.allAreSelected"}}
         {{/view}}
-        {{#view FLOW.ColumnView item="IMEI" type="device"}} <a {{action "sort" target="this"}}>{{t _imei}}</a> {{/view}}
+        {{#view FLOW.ColumnView item="IMEI" type="device"}} <a {{action "sort" target="this"}}>{{t _imei}} {{tooltip _imei_tooltip}}</a> {{/view}}
         {{#view FLOW.ColumnView item="phoneNumber" type="device"}} <a {{action "sort" target="this"}}>{{t _phone_number}}</a> {{/view}}
         {{#view FLOW.ColumnView item="deviceIdentifier" type="device"}} <a {{action "sort" target="this"}}>{{t _device_id}}</a> {{/view}}
         {{#view FLOW.ColumnView item="deviceGroup" type="device"}} <a {{action "sort" target="this"}}>{{t _device_group}}</a> {{/view}}
