@@ -16,11 +16,11 @@
           placeholder=""
           placeholderBinding="Ember.STRINGS._identifier"
           size=30}}
-        <label  class="devideId"> {{t _display_name}}:</label>
+        <label  class="devideId"> {{t _data_point_name}}:</label>
         {{view Ember.TextField
           valueBinding="view.displayName"
           placeholder=""
-          placeholderBinding="Ember.STRINGS._display_name"
+          placeholderBinding="Ember.STRINGS._data_point_name"
           size=30}}
 			</div>
       <a {{action "findSurveyedLocale" target="this"}} class="findData standardBtn btnAboveTable">{{t _find}}</a>
@@ -32,7 +32,7 @@
               <th class="noArrows"></th>
               <th class="noArrows">{{t _survey}}</th>
               <th class="noArrows">{{t _identifier}}</th>
-              <th class="noArrows">{{t _display_name}}</th>
+              <th class="noArrows">{{t _data_point_name}}</th>
               <th class="noArrows">{{t _last_update}}</th>
               <th class="noArrows">{{t _action}}</th>
           </tr>

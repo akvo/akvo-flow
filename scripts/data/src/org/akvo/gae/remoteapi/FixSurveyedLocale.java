@@ -17,6 +17,7 @@
 package org.akvo.gae.remoteapi;
 
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 import com.google.appengine.api.datastore.DatastoreService;
@@ -41,8 +42,7 @@ public class FixSurveyedLocale implements Process {
     @Override
     public void execute(DatastoreService ds, String[] args) throws Exception {
 
-        final Filter f = new FilterPredicate("surveyGroupId", FilterOperator.EQUAL, null);
-        final Query q = new Query("SurveyedLocale").setFilter(f);
+        final Query q = new Query("SurveyedLocale");
         final PreparedQuery pq = ds.prepare(q);
 
         final List<Key> toBeRemoved = new ArrayList<>();
@@ -50,6 +50,10 @@ public class FixSurveyedLocale implements Process {
         System.out.println("Processing SurveyedLocales");
 
         for (Entity sl : pq.asIterable(FetchOptions.Builder.withChunkSize(500))) {
+
+            if (sl.getProperty("surveyGroupId") != null) {
+                continue;
+            }
 
             Long surveyId = (Long) sl.getProperty("creationSurveyId");
 
@@ -110,6 +114,7 @@ public class FixSurveyedLocale implements Process {
             }
 
             sl.setProperty("surveyGroupId", surveyGroupId);
+            sl.setProperty("lastUpdateDateTime", new Date());
             ds.put(sl);
         }
 

@@ -2,23 +2,25 @@
   <!-- DEVICES TABLE--> 
   
   {{#view FLOW.CurrentDevicesTabView}}
-  <a {{action "showManageDeviceGroupsDialog" target="this"}} class="standardBtn btnAboveTable">{{t _manage_device_groups}}</a> 
-  {{#if FLOW.deviceControl.atLeastOneSelected}}
-  <nav class="dataTabMenu">
-    <ul>
-      <li><a {{action "showAddToGroupDialog" target="this"}}>{{t _add_to_device_group}}</a></li>
-      <li><a {{action "showRemoveFromGroupDialog" target="this"}}>{{t _remove_from_device_group}}</a></li>
-    </ul>
-  </nav>
-  {{else}}
-  <nav class="dataTabMenu">
-    <ul>
-      <!-- <li><a href="#" class="disabled">{{t _disable_devices}}</a></li> -->
-      <li><a href="#" class="disabled">{{t _add_to_device_group}}</a></li>
-      <li><a href="#" class="disabled">{{t _remove_from_device_group}}</a></li>
-    </ul>
-  </nav>
-  {{/if}}
+  <div class="deviceControls">
+    <a {{action "showManageDeviceGroupsDialog" target="this"}} class="standardBtn btnAboveTable">{{t _manage_device_groups}}</a>
+    {{#if FLOW.deviceControl.atLeastOneSelected}}
+    <nav class="dataTabMenu">
+      <ul>
+        <li><a {{action "showAddToGroupDialog" target="this"}}>{{t _add_to_device_group}}</a></li>
+        <li><a {{action "showRemoveFromGroupDialog" target="this"}}>{{t _remove_from_device_group}}</a></li>
+      </ul>
+    </nav>
+    {{else}}
+    <nav class="dataTabMenu">
+      <ul>
+        <!-- <li><a href="#" class="disabled">{{t _disable_devices}}</a></li> -->
+        <li><a href="#" class="disabled">{{t _add_to_device_group}}</a></li>
+        <li><a href="#" class="disabled">{{t _remove_from_device_group}}</a></li>
+      </ul>
+    </nav>
+    {{/if}}
+  </div>
   <table class="dataTable" id="surveyDataTable">
     <!-- TABLE HEADER-->
     <thead>
