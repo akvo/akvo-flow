@@ -299,6 +299,9 @@ public class GraphicalSurveySummaryExporter extends SurveySummaryExporter {
     private Map<Long, QuestionDto> questionsById;
     private boolean lastCollection = false;
 
+    // store indices of file columns for lookup when generating responses
+    private Map<String, Integer> columnIndexMap = new HashMap<String, Integer>();
+
     @Override
     public void export(Map<String, String> criteria, File fileName,
             String serverBase, Map<String, String> options) {
@@ -881,13 +884,28 @@ public class GraphicalSurveySummaryExporter extends SurveySummaryExporter {
 
         int columnIdx = 0;
 
+        columnIndexMap.put(IDENTIFIER_LABEL.get(locale), columnIdx);
         createCell(row, columnIdx++, IDENTIFIER_LABEL.get(locale), headerStyle);
+
+        columnIndexMap.put(REPEAT_LABEL.get(locale), columnIdx);
         createCell(row, columnIdx++, REPEAT_LABEL.get(locale), headerStyle);
+
+        columnIndexMap.put(DISPLAY_NAME_LABEL.get(locale), columnIdx);
         createCell(row, columnIdx++, DISPLAY_NAME_LABEL.get(locale), headerStyle);
+
+        columnIndexMap.put(DEVICE_IDENTIFIER_LABEL.get(locale), columnIdx);
         createCell(row, columnIdx++, DEVICE_IDENTIFIER_LABEL.get(locale), headerStyle);
+
+        columnIndexMap.put(INSTANCE_LABEL.get(locale), columnIdx);
         createCell(row, columnIdx++, INSTANCE_LABEL.get(locale), headerStyle);
+
+        columnIndexMap.put(SUB_DATE_LABEL.get(locale), columnIdx);
         createCell(row, columnIdx++, SUB_DATE_LABEL.get(locale), headerStyle);
+
+        columnIndexMap.put(SUBMITTER_LABEL.get(locale), columnIdx);
         createCell(row, columnIdx++, SUBMITTER_LABEL.get(locale), headerStyle);
+
+        columnIndexMap.put(DURATION_LABEL.get(locale), columnIdx);
         createCell(row, columnIdx++, DURATION_LABEL.get(locale), headerStyle);
 
         List<String> questionIdList = new ArrayList<String>();
@@ -906,6 +924,7 @@ public class GraphicalSurveySummaryExporter extends SurveySummaryExporter {
                                 && !questionId.equals("");
 
                         String columnLocale = useQID ? "en" : locale;
+                        columnIndexMap.put(q.getKeyId().toString(), offset);
 
                         if (QuestionType.GEO == q.getType()) {
                             if (useQuestionId) {
