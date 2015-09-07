@@ -93,6 +93,8 @@ public class GraphicalSurveySummaryExporter extends SurveySummaryExporter {
 
     private static final String DEFAULT_IMAGE_PREFIX = "http://waterforpeople.s3.amazonaws.com/images/";
 
+    private static final String DIGEST_COLUMN = "NO_TITLE_DIGEST_COLUMN";
+
     private static final Map<String, String> REPORT_HEADER;
     private static final Map<String, String> FREQ_LABEL;
     private static final Map<String, String> PCT_LABEL;
@@ -530,30 +532,30 @@ public class GraphicalSurveySummaryExporter extends SurveySummaryExporter {
         // maxRow will increase when we write repeatable question groups
         int maxRow = startRow;
 
-        // current column
-        int column = 0;
-
         MessageDigest digest = MessageDigest.getInstance("MD5");
 
         SurveyInstanceDto dto = instanceData.surveyInstanceDto;
 
         Row row = getRow(startRow, sheet);
 
-        createCell(row, column++, dto.getSurveyedLocaleIdentifier());
+        createCell(row, columnIndexMap.get(IDENTIFIER_LABEL.get(locale)),
+                dto.getSurveyedLocaleIdentifier());
         // Write the "Repeat" column
         for (int i = 0; i <= instanceData.maxIterationsCount; i++) {
             Row r = getRow(row.getRowNum() + i, sheet);
-            createCell(r, column, String.valueOf(i + 1), null, Cell.CELL_TYPE_NUMERIC);
+            createCell(r, columnIndexMap.get(REPEAT_LABEL.get(locale)), String.valueOf(i + 1),
+                    null, Cell.CELL_TYPE_NUMERIC);
         }
-        column++;
-
-        createCell(row, column++, dto.getSurveyedLocaleDisplayName());
-        createCell(row, column++, dto.getDeviceIdentifier());
-        createCell(row, column++, dto.getKeyId().toString());
-        createCell(row, column++, instanceData.submissionDate);
-        createCell(row, column++, sanitize(dto.getSubmitterName()));
+        createCell(row, columnIndexMap.get(DISPLAY_NAME_LABEL.get(locale)),
+                dto.getSurveyedLocaleDisplayName());
+        createCell(row, columnIndexMap.get(DEVICE_IDENTIFIER_LABEL.get(locale)),
+                dto.getDeviceIdentifier());
+        createCell(row, columnIndexMap.get(INSTANCE_LABEL.get(locale)), dto.getKeyId().toString());
+        createCell(row, columnIndexMap.get(SUB_DATE_LABEL.get(locale)), instanceData.submissionDate);
+        createCell(row, columnIndexMap.get(SUBMITTER_LABEL.get(locale)),
+                sanitize(dto.getSubmitterName()));
         String duration = getDurationText(dto.getSurveyalTime());
-        createCell(row, column++, duration);
+        createCell(row, columnIndexMap.get(DURATION_LABEL.get(locale)), duration);
         digest.update(duration.getBytes());
 
         for (String q : questionIdList) {
@@ -563,32 +565,28 @@ public class GraphicalSurveySummaryExporter extends SurveySummaryExporter {
             SortedMap<Long, String> iterationsMap = instanceData.responseMap.get(questionId);
 
             if (iterationsMap == null) {
-                column++; // What if this is for a split question? Perhaps
-                          // column+=maxColsWritten?
                 continue;
             }
 
             // Write downwards (and possibly rightwards) per iteration
             int rowOffset = -1;
-            int maxColsWritten = 0;
             for (Map.Entry<Long, String> iteration : iterationsMap.entrySet()) {
                 String val = iteration.getValue();
                 rowOffset++;
                 Row iterationRow = getRow(startRow + rowOffset, sheet);
-                int colsWritten = writeAnswer(sheet, iterationRow, column, questionDto,
+                writeAnswer(sheet, iterationRow, columnIndexMap.get(q), questionDto,
                         val,
                         useQuestionId,
                         digest);
-                maxColsWritten = Math.max(maxColsWritten, colsWritten);
 
             }
-            column += maxColsWritten;
             maxRow = Math.max(maxRow, startRow + rowOffset);
         }
 
         if (!useQuestionId) {
             // now add 1 more col that contains the digest
-            createCell(row, column++, StringUtil.toHexString(digest.digest()), null);
+            createCell(row, columnIndexMap.get(DIGEST_COLUMN),
+                    StringUtil.toHexString(digest.digest()), null);
         }
 
         return maxRow + 1;
@@ -602,9 +600,8 @@ public class GraphicalSurveySummaryExporter extends SurveySummaryExporter {
      * @param value
      * @param useQuestionId
      * @param digest
-     * @return The number of columns written for this answer
      */
-    private int writeAnswer(
+    private void writeAnswer(
             Sheet sheet,
             Row row,
             int startColumn,
@@ -705,12 +702,12 @@ public class GraphicalSurveySummaryExporter extends SurveySummaryExporter {
         int col = startColumn;
         for (String cellValue : cells) {
             if (questionType == QuestionType.NUMBER) {
-                createCell(row, col++, cellValue, null, Cell.CELL_TYPE_NUMERIC);
+                createCell(row, col, cellValue, null, Cell.CELL_TYPE_NUMERIC);
             } else {
-                createCell(row, col++, cellValue);
+                createCell(row, col, cellValue);
             }
+            col++; // also takes care of padding incase no cell content added
         }
-        return cells.size();
     }
 
     String sanitize(String s) {
@@ -990,6 +987,9 @@ public class GraphicalSurveySummaryExporter extends SurveySummaryExporter {
                     }
                 }
             }
+
+            // add digest column index
+            columnIndexMap.put(DIGEST_COLUMN, offset);
         }
         Object[] temp = new Object[2];
         temp[0] = questionIdList;
