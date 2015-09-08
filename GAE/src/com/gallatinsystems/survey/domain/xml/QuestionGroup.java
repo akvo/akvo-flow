@@ -55,7 +55,9 @@ public class QuestionGroup {
     @XmlJavaTypeAdapter(CollapsedStringAdapter.class)
     @XmlSchemaType(name = "NMTOKEN")
     protected String order;
-
+    @XmlAttribute(required = false)
+    @XmlJavaTypeAdapter(CollapsedStringAdapter.class)
+    protected String repeatable;
     /**
      * Gets the value of the heading property.
      * 
@@ -116,6 +118,14 @@ public class QuestionGroup {
      */
     public void setOrder(String value) {
         this.order = value;
+    }
+    
+    public void setRepeatable(String repeatable) {
+        this.repeatable = repeatable;
+    }
+    
+    public String getRepeatable() {
+        return repeatable;
     }
 
 }

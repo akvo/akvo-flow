@@ -34,6 +34,7 @@ public class QuestionAnswerStoreDto extends BaseDto {
     private Date collectionDate;
     private Long surveyId;
     private Long surveyInstanceId;
+    private Integer iteration;
     private String oldValue;
     private String questionText;
     private String textualQuestionId;
@@ -116,6 +117,14 @@ public class QuestionAnswerStoreDto extends BaseDto {
 
     public void setTextualQuestionId(String textualQuestionId) {
         this.textualQuestionId = textualQuestionId;
+    }
+
+    public Integer getIteration() {
+        return iteration;
+    }
+
+    public void setIteration(Integer iteration) {
+        this.iteration = iteration;
     }
 
 }

@@ -153,8 +153,12 @@ public class RawDataExporter extends AbstractDataExporter {
                 String dateString = instanceEntry.getValue();
                 if (instanceId != null && instanceId.trim().length() > 0) {
                     try {
-                        Map<String, String> responses = BulkDataServiceClient
-                                .fetchQuestionResponses(instanceId, serverBase, apiKey);
+                        Map<String, String> responses = new HashMap<>();
+                        /*
+                         * BulkDataServiceClient.fetchQuestionResponses(instanceId, serverBase,
+                         * apiKey);
+                         */
+
                         if (responses != null && responses.size() > 0) {
                             pw.write(instanceId);
                             pw.write("\t");
@@ -205,7 +209,7 @@ public class RawDataExporter extends AbstractDataExporter {
                                     } else {
                                         if (qdto != null
                                                 && (QuestionType.PHOTO == qdto.getType() || QuestionType.VIDEO == qdto
-                                                .getType())) {
+                                                        .getType())) {
                                             final int filenameIndex = val.lastIndexOf("/") + 1;
                                             if (filenameIndex > 0 && filenameIndex < val.length()) {
                                                 val = imagePrefix + val.substring(filenameIndex);

@@ -32,6 +32,7 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.ThreadPoolExecutor;
@@ -128,6 +129,117 @@ public class RawDataSpreadsheetImporter implements DataImporter {
         }
     }
 
+    public void runImport(File file, String serverBase, Map<String, String> criteria)
+            throws Exception {
+
+        Sheet sheet = getDataSheet(file);
+        Map<Long, Long> columnIndexToQuestionId = processHeader(sheet);
+        Map<Long, QuestionDto> questionIdToQuestionDto = fetchQuestions(serverBase, criteria);
+
+    }
+
+    /**
+     * Parse a raw data report file into a list of InstanceData
+     *
+     * @param file
+     * @return
+     */
+    public List<InstanceData> parseSheet(Sheet sheet) throws Exception {
+
+        return null;
+    }
+
+    /**
+     * Parse an instance starting from startRow
+     *
+     * @param sheet
+     * @param startRow
+     * @return InstanceData
+     */
+    public InstanceData parse(Sheet sheet, int startRow) {
+
+        // File layout
+        // 0. SurveyedLocaleIdentifier
+        // 1. SurveyedLocaleDisplayName
+        // 2. DeviceIdentifier
+        // 3. SurveyInstanceId
+        // 4. CollectionDate
+        // 5. SubmitterName
+        // 6. SurveyalTime
+        // 7. Repeat
+        // 8 - N. Questions
+        // N + 1. Digest
+
+        Row baseRow = sheet.getRow(startRow);
+        String surveyedLocaleIdentifier = baseRow.getCell(0).getStringCellValue();
+        String surveyedLocaleDisplayName = baseRow.getCell(1).getStringCellValue();
+        String deviceIdentifier = baseRow.getCell(2).getStringCellValue();
+        String surveyInstanceId = baseRow.getCell(3).getStringCellValue();
+        String collectionDate = baseRow.getCell(4).getStringCellValue();
+        String submitterName = baseRow.getCell(5).getStringCellValue();
+        String surveyalTime = baseRow.getCell(6).getStringCellValue();
+        int firstQuestionColumn = 8;
+
+        int iterations = 1;
+
+        // Count the number maximum number of iterations for this instance
+        while (true) {
+            Row row = sheet.getRow(startRow + iterations);
+            if (row == null || row.getCell(7).getStringCellValue().equals("1")) {
+                break;
+            }
+            iterations++;
+        }
+
+        return null;
+    }
+
+    /**
+     * Return a map of column index -> question id
+     *
+     * @param sheet
+     * @return
+     */
+    private static Map<Long, Long> processHeader(Sheet sheet) {
+        Map<Long, Long> columnIndexToQuestionId = new HashMap<>();
+        Row headerRow = sheet.getRow(0);
+
+        for (Cell cell : headerRow) {
+            if (cell.getStringCellValue().indexOf("|") > -1) {
+                String[] parts = cell.getStringCellValue().split("\\|");
+                if (parts[0].trim().length() > 0) {
+                    columnIndexToQuestionId.put(Long.valueOf(cell.getColumnIndex()),
+                            Long.valueOf(parts[0].trim()));
+                }
+            }
+        }
+
+        return columnIndexToQuestionId;
+    }
+
+    /**
+     * @return map from question id to QuestionDto
+     */
+    private static Map<Long, QuestionDto> fetchQuestions(String serverBase,
+            Map<String, String> criteria) throws Exception {
+
+        String surveyId = criteria.get("surveyId");
+        String apiKey = criteria.get("apiKey");
+
+        Object[] results = BulkDataServiceClient.loadQuestions(surveyId, serverBase, apiKey);
+
+        if (results == null) {
+            // TODO proper error reporting
+            throw new Exception("Could not fetch questions");
+        }
+        Map<Long, QuestionDto> questionMap = new HashMap<>();
+        for (Entry<String, QuestionDto> entry : ((Map<String, QuestionDto>) results[1]).entrySet()) {
+            questionMap.put(Long.valueOf(entry.getKey()), entry.getValue());
+
+        }
+        return questionMap;
+    }
+
     @SuppressWarnings("unchecked")
     @Override
     public void executeImport(File file, String serverBase,
@@ -155,7 +267,6 @@ public class RawDataSpreadsheetImporter implements DataImporter {
 
             if (results != null) {
                 questionMap = (Map<String, QuestionDto>) results[1];
-
             }
 
             boolean hasDurationCol = true;
@@ -214,7 +325,6 @@ public class RawDataSpreadsheetImporter implements DataImporter {
                                     .intValue() + "";
                         } else if (cell.getCellType() == Cell.CELL_TYPE_STRING) {
                             instanceId = cell.getStringCellValue();
-
                         }
                         if (instanceId != null) {
                             sb.append(RawDataImportRequest.SURVEY_INSTANCE_ID_PARAM
@@ -560,7 +670,8 @@ public class RawDataSpreadsheetImporter implements DataImporter {
                         // idx == 4, non monitoring, old format
                         // idx == 6, monitoring, old format
                         // idx == 7, new format
-                        if (!(idx == 4 || idx == 6 || idx == 7)) {
+                        // idx == 8, new format, with repeat column
+                        if (!(idx == 4 || idx == 6 || idx == 7 || idx == 8)) {
                             errorMap.put(idx, "Found the first question at the wrong column index");
                             break;
                         }

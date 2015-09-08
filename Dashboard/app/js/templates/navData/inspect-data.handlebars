@@ -122,80 +122,25 @@
                     <!-- TABLE HEADER-->
                     <thead>
                         <tr>
-                            <th class="noArrows">{{t _id}}</th>
-                            <th class="noArrows">{{t _question}}</th>
-                            <th class="noArrows">{{t _answer}}</th>
+                            <th class="noArrows" style="width:10%"></th>
+                            <th class="noArrows" style="width:60%">{{t _question}}</th>
+                            <th class="noArrows" style="width:30%">{{t _answer}}</th>
                         </tr>
                     </thead>
+                  </table>
                     <!-- TABLE BODY: MAIN CONTENT-->
-                    <tbody>
-                        {{#each QA in FLOW.questionAnswerControl}} {{#view FLOW.QuestionAnswerView contentBinding="QA"}}
-                        <tr>
-                            <td class="device">{{QA.keyId}}</td>
-                            <td class="survey">{{QA.questionText}}</td>
-
-                            <td class="submitter">
-                                {{#if view.inEditMode}}
-                                	{{#if view.isOptionType}}
-                                		{{view Ember.Select
-                                			contentBinding="view.optionsList"
-                                			optionLabelPath="content.value"
-                                			optionValuePath="content.value"
-                                			selectionBinding="view.optionChoice"}}
-                                	{{else}}
-                                		{{#if view.isNumberType}}
-                                			{{view Ember.TextField valueBinding="view.numberValue" size=10 }}
-                               			{{else}}
-                               				{{#if view.isTextType}}
-                               					{{view Ember.TextField valueBinding="view.value" size=10 }}
-                               				{{else}}
-                               					{{#if view.isDateType}}
-                               						{{view FLOW.DateField2 valueBinding="view.date" size=30}}
-                               					{{else}}
-                               						{{#if view.isBarcodeType}}
-                               							{{t _the_barcode_app_on_the_device_is_used_here}}
-                               							{{view Ember.TextField valueBinding="view.value" size=10 }}
-                               						{{/if}}
-                               					{{/if}}
-                               				{{/if}}
-                               			{{/if}}
-                               		{{/if}}
-                                <a {{action doSave target="this" }} class="smallBtn">{{t _save}}</a>  <a {{action doCancel target="this" }}>{{t _cancel}}</a>
-                                {{else}}
-                                	{{#if view.isNotEditable}}
-                                		{{#if view.isPhotoType}}
-                                			{{QA.value}} <a {{bindAttr href="view.photoUrl" }} target="_blank">{{t _open_photo}}</a>
-                                		{{else}}
-                                			{{#if view.isVideoType}}
-                                				{{QA.value}} <a {{bindAttr href="view.photoUrl" }} target="_blank">{{t _open_video}}</a>
-                                			{{else}}
-                                				{{QA.value}}
-                                			{{/if}}
-                                		{{/if}}
-                                	{{else}}
-                                		{{#if view.isDateType}}
-                                			<a {{action doEdit target="this" }}>{{#with QA}}{{date3 value}}{{/with}}</a>
-                                		{{else}}
-                                			<a {{action doEdit target="this" }}>{{QA.value}} {{#with QA}}{{if_blank value}}{{/with}}</a>
-                                		{{/if}}
-                                	{{/if}}
-                                {{/if}}
-                            </td>
-                        </tr>
-                        {{/view}} {{/each}}
-                    </tbody>
-                    <!-- TABLE FOOTER-->
-                    <tfoot>
-                        <tr>
-                            <td colspan="7"><small></small>
-                            </td>
-                        </tr>
-                    </tfoot>
-                </table>
-
+                  {{#each responseSubList in FLOW.questionAnswerControl.contentByGroup}}
+                    {{#each iterations in responseSubList}}
+                      <h3 class="questionGroupName">{{iterations.groupName}}</h3>
+                      <table class="dataTable" id="surveyDataTable">
+                          <tbody>
+                            {{each iterations itemViewClass="FLOW.QuestionAnswerView"}}
+                          </tbody>
+                        </table>
+                    {{/each}}
+                  {{/each}}
             </div>
         </div>
     </div>
-
 </section>
 {{/view}}

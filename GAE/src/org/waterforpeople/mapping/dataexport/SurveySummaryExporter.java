@@ -163,8 +163,10 @@ public class SurveySummaryExporter extends AbstractDataExporter {
         Map<String, String> instanceMap = BulkDataServiceClient
                 .fetchInstanceIds(surveyId, serverBase, apiKey, false, null, null, null);
         for (String instanceId : instanceMap.keySet()) {
-            Map<String, String> responseMap = BulkDataServiceClient
-                    .fetchQuestionResponses(instanceId, serverBase, apiKey);
+            // TODO!!
+            Map<String, String> responseMap = new HashMap<>();
+            // Map<String, String> responseMap = BulkDataServiceClient
+            // .fetchQuestionResponses(instanceId, serverBase, apiKey);
             Set<String> rollups = null;
             if (rollupOrder != null && rollupOrder.size() > 0) {
                 rollups = formRollupStrings(responseMap);

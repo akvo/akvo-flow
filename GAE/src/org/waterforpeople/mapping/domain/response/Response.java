@@ -19,6 +19,7 @@ public class Response {
     private String questionId;
     private String answerType;
     private String value;
+    private Integer iteration;
 
     public void setQuestionId(String questionId) {
         this.questionId = questionId;
@@ -42,6 +43,14 @@ public class Response {
 
     public void setAnswerType(String answerType) {
         this.answerType = answerType;
+    }
+    
+    public void setIteration(Integer iteration) {
+        this.iteration = iteration;
+    }
+
+    public Integer getIteration() {
+        return iteration;
     }
     
 }

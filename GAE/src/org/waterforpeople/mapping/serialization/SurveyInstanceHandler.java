@@ -75,6 +75,7 @@ public class SurveyInstanceHandler {
             qas.setCollectionDate(si.getCollectionDate());
             qas.setType(response.getAnswerType());
             qas.setValue(response.getValue());
+            qas.setIteration(response.getIteration());
             
             // If one of the answer types is META_GEO or META_NAME, set up
             // the surveyedLocale corresponding attribute, and skip QAS

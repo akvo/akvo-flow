@@ -45,6 +45,7 @@ public class QuestionGroup extends BaseDomain {
     private String path = null;
     private Long surveyId;
     private Integer order;
+    private Boolean repeatable;
     private Status status = null;
 
     public enum Status {
@@ -127,13 +128,21 @@ public class QuestionGroup extends BaseDomain {
         }
         translationMap.put(t.getLanguageCode(), t);
     }
-
+    
     public Status getStatus() {
         return status;
     }
-
+    
     public void setStatus(Status status) {
         this.status = status;
     }
-
+    
+    public void setRepeatable(Boolean repeatable) {
+        this.repeatable = repeatable;
+    }
+    
+    public Boolean getRepeatable() {
+        return repeatable;
+    }
+    
 }
