@@ -10,13 +10,6 @@
             {{view Ember.Select contentBinding="FLOW.surveyControl.arrangedContent" selectionBinding="FLOW.selectedControl.selectedSurvey" optionLabelPath="content.code" optionValuePath="content.keyId" prompt="" promptBinding="Ember.STRINGS._select_form"}}
           {{/if}}
         </div>
-        <div class="dataCollectedDate">
-            <label class="collectedFrom"><span>{{t _collected_from}}:</span> {{view FLOW.DateField minDate=false valueBinding="FLOW.dateControl.fromDate" elementId="from_date" placeholder="" placeholderBinding="Ember.STRINGS._collected_from" size=30}}
-            </label>
-
-            <label class="collectedTo"><span>{{t _to}}:</span> {{view FLOW.DateField minDate=false valueBinding="FLOW.dateControl.toDate" elementId="to_date" placeholder="" placeholderBinding="Ember.STRINGS._to" size=30}}
-            </label>
-        </div>
         <div class="dataDeviceId">
             {{#if view.validSurveyInstanceId}}
               <label class="surveyInstanceId">{{t _instance_id}}:</label>
@@ -28,7 +21,11 @@
             {{view Ember.TextField valueBinding="view.deviceId" placeholder="" placeholderBinding="Ember.STRINGS._device_id" size=30}}
             <label class="submitterName">{{t _submitter_name}}:</label>
             {{view Ember.TextField valueBinding="view.submitterName" placeholder="" placeholderBinding="Ember.STRINGS._submitter_name" size=30}}
+            <label class="collectedFrom"><span>{{t _collected_from}}:</span> {{view FLOW.DateField minDate=false valueBinding="FLOW.dateControl.fromDate" elementId="from_date" placeholder="" placeholderBinding="Ember.STRINGS._collected_from" size=30}}
+            </label>
 
+            <label class="collectedTo"><span>{{t _to}}:</span> {{view FLOW.DateField minDate=false valueBinding="FLOW.dateControl.toDate" elementId="to_date" placeholder="" placeholderBinding="Ember.STRINGS._to" size=30}}
+            </label>           
         </div>
 
         <div class="chooseLocationData">

@@ -3973,8 +3973,16 @@ div.dataCollectedDate input {
     background: white;
 }
 
+.dataDeviceId {
+    label {
+        input.hasDatepicker {
+            width: initial;
+        }
+    }
+}
+
 .filterData label {
-    display: inline;
+    display: inline-block;
 }
 
 label.collectedTo {
@@ -4042,14 +4050,6 @@ div.dataCollectedDate {
             text-transform: none;
         }
     }
-}
-
-.collectedFrom span {
-    display: block;
-}
-
-.collectedTo span {
-    display: block;
 }
 
 div.dataCollectedDate label {
