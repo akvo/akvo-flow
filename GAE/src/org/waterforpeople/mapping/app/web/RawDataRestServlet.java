@@ -37,6 +37,7 @@ import org.waterforpeople.mapping.dao.SurveyInstanceDAO;
 import org.waterforpeople.mapping.domain.QuestionAnswerStore;
 import org.waterforpeople.mapping.domain.SurveyInstance;
 
+import com.gallatinsystems.common.Constants;
 import com.gallatinsystems.common.util.PropertyUtil;
 import com.gallatinsystems.framework.rest.AbstractRestApiServlet;
 import com.gallatinsystems.framework.rest.RestRequest;
@@ -45,10 +46,15 @@ import com.gallatinsystems.messaging.dao.MessageDao;
 import com.gallatinsystems.messaging.domain.Message;
 import com.gallatinsystems.survey.dao.QuestionDao;
 import com.gallatinsystems.survey.dao.SurveyDAO;
+import com.gallatinsystems.survey.dao.SurveyGroupDAO;
 import com.gallatinsystems.survey.dao.SurveyUtils;
 import com.gallatinsystems.survey.domain.Question;
+import com.gallatinsystems.survey.domain.SurveyGroup;
 import com.gallatinsystems.survey.domain.Question.Type;
 import com.gallatinsystems.survey.domain.Survey;
+import com.gallatinsystems.surveyal.app.web.SurveyalRestRequest;
+import com.gallatinsystems.surveyal.dao.SurveyedLocaleDao;
+import com.gallatinsystems.surveyal.domain.SurveyedLocale;
 import com.google.appengine.api.backends.BackendServiceFactory;
 import com.google.appengine.api.datastore.KeyFactory;
 import com.google.appengine.api.taskqueue.Queue;
@@ -91,11 +97,12 @@ public class RawDataRestServlet extends AbstractRestApiServlet {
             }
 
             boolean isNewInstance = importReq.getSurveyInstanceId() == null;
+            SurveyInstanceDAO siDao = new SurveyInstanceDAO();
             SurveyInstance instance = null;
             if (isNewInstance) {
                 instance = createInstance(importReq);
             } else {
-                instance = new SurveyInstanceDAO().getByKey(importReq.getSurveyInstanceId());
+                instance = siDao.getByKey(importReq.getSurveyInstanceId());
                 if (instance == null) {
                     updateMessageBoard(importReq.getSurveyInstanceId(), "Survey instance id ["
                             + importReq.getSurveyInstanceId() + "] doesn't exist");
@@ -127,7 +134,37 @@ public class RawDataRestServlet extends AbstractRestApiServlet {
             sisi.updateQuestions(dtoList, true, false);
 
             if (isNewInstance) {
-                SurveyInstanceDAO siDao = new SurveyInstanceDAO();
+                // create new surveyed locale and launch task to complete processing
+                SurveyedLocale locale = new SurveyedLocale();
+                locale.setIdentifier(SurveyedLocale.generateBase32Uuid());
+                instance.setSurveyedLocaleIdentifier(locale.getIdentifier());
+
+                SurveyGroup sg = null;
+                if (s.getSurveyGroupId() != null) {
+                    sg = new SurveyGroupDAO().getByKey(s.getSurveyGroupId());
+                }
+                if (sg != null) {
+                    String privacyLevel = sg.getPrivacyLevel() != null ? sg.getPrivacyLevel()
+                            .toString() : SurveyGroup.PrivacyLevel.PRIVATE.toString();
+                    locale.setLocaleType(privacyLevel);
+                    locale.setSurveyGroupId(sg.getKey().getId());
+                    locale.setCreationSurveyId(s.getKey().getId());
+                }
+
+                locale = new SurveyedLocaleDao().save(locale);
+                instance.setSurveyedLocaleId(locale.getKey().getId());
+
+                Queue defaultQueue = QueueFactory.getDefaultQueue();
+                TaskOptions processSurveyedLocaleOptions = TaskOptions.Builder
+                        .withUrl("/app_worker/surveyalservlet")
+                        .param(SurveyalRestRequest.ACTION_PARAM,
+                                SurveyalRestRequest.INGEST_INSTANCE_ACTION)
+                        .param(SurveyalRestRequest.SURVEY_INSTANCE_PARAM,
+                                Long.toString(instance.getKey().getId()))
+                        .countdownMillis(Constants.FIVE_MIN_DELAY);
+                defaultQueue.add(processSurveyedLocaleOptions);
+
+                // data summarisation
                 List<QuestionAnswerStore> qasList = siDao.listQuestionAnswerStoreByType(new Long(
                         importReq.getSurveyInstanceId()), "GEO");
                 if (qasList != null && qasList.size() > 0) {
