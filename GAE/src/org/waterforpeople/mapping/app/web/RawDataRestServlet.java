@@ -161,7 +161,7 @@ public class RawDataRestServlet extends AbstractRestApiServlet {
                                 SurveyalRestRequest.INGEST_INSTANCE_ACTION)
                         .param(SurveyalRestRequest.SURVEY_INSTANCE_PARAM,
                                 Long.toString(instance.getKey().getId()))
-                        .countdownMillis(Constants.FIVE_MIN_DELAY);
+                        .countdownMillis(Constants.TASK_DELAY);
                 defaultQueue.add(processSurveyedLocaleOptions);
 
                 // data summarisation

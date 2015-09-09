@@ -30,7 +30,7 @@ public class Constants {
     public static final int CONNECTION_TIMEOUT = 60 * 1000; // 1min
     public static final int READ_TIMEOUT = 2 * 60 * 1000; // 2min
     public static final int TASK_RETRY_INTERVAL = 2 * 10 * 1000; // 2 mins
-    public static final int FIVE_MIN_DELAY = 5 * 60 * 1000;
+    public static final int TASK_DELAY = 2 * 60 * 1000;
     public static final int MAX_TASK_RETRIES = 7;
     public static final String AWS_ACCESS_ID = "aws_identifier";
     public static final String AWS_SECRET_KEY = "aws_secret_key";
