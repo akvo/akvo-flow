@@ -79,49 +79,39 @@ public class RawDataRestServlet extends AbstractRestApiServlet {
         RawDataImportRequest importReq = (RawDataImportRequest) req;
         if (RawDataImportRequest.SAVE_SURVEY_INSTANCE_ACTION.equals(importReq
                 .getAction())) {
+
+            Survey s = null;
+            if (importReq.getSurveyId() != null) {
+                s = new SurveyDAO().getByKey(importReq.getSurveyId());
+            }
+            if (s == null) {
+                updateMessageBoard(importReq.getSurveyId(), "Survey id [" + importReq.getSurveyId()
+                        + "] doesn't exist");
+                return null;
+            }
+
+            boolean isNewInstance = importReq.getSurveyInstanceId() == null;
+            SurveyInstance instance = null;
+            if (isNewInstance) {
+                instance = createInstance(importReq);
+            } else {
+                instance = new SurveyInstanceDAO().getByKey(importReq.getSurveyInstanceId());
+                if (instance == null) {
+                    updateMessageBoard(importReq.getSurveyInstanceId(), "Survey instance id ["
+                            + importReq.getSurveyInstanceId() + "] doesn't exist");
+                    return null;
+                }
+            }
+
+            if (!instance.getSurveyId().equals(importReq.getSurveyId())) {
+                updateMessageBoard(
+                        importReq.getSurveyInstanceId(),
+                        "Wrong survey selected when importing instance id ["
+                                + importReq.getSurveyInstanceId() + "]");
+                return null;
+            }
+
             List<QuestionAnswerStoreDto> dtoList = new ArrayList<QuestionAnswerStoreDto>();
-            boolean isNew = false;
-
-            if (importReq.getSurveyInstanceId() == null
-                    && importReq.getSurveyId() != null) {
-                // if the instanceID is null, we need to create one
-                createInstance(importReq);
-                isNew = true;
-            }
-
-            if (importReq.getSurveyInstanceId() != null
-                    && importReq.getSurveyId() != null) {
-
-                SurveyInstance si = new SurveyInstanceDAO().getByKey(importReq
-                        .getSurveyInstanceId());
-                Survey s = new SurveyDAO().getByKey(importReq.getSurveyId());
-
-                if (si == null || s == null) {
-                    MessageDao mDao = new MessageDao();
-                    Message message = new Message();
-
-                    message.setObjectId(importReq.getSurveyInstanceId());
-                    message.setActionAbout("importData");
-                    message.setShortMessage("Survey instance id ["
-                            + importReq.getSurveyInstanceId()
-                            + "] doesn't exist");
-                    mDao.save(message);
-                    return null;
-                }
-
-                if (!si.getSurveyId().equals(importReq.getSurveyId())) {
-                    MessageDao mDao = new MessageDao();
-                    Message message = new Message();
-
-                    message.setObjectId(importReq.getSurveyInstanceId());
-                    message.setActionAbout("importData");
-                    message.setShortMessage("Wrong survey selected when importing instance id ["
-                            + importReq.getSurveyInstanceId() + "]");
-                    mDao.save(message);
-                    return null;
-                }
-            }
-
             for (Map.Entry<Long, String[]> item : importReq
                     .getQuestionAnswerMap().entrySet()) {
                 QuestionAnswerStoreDto qasDto = new QuestionAnswerStoreDto();
@@ -136,7 +126,7 @@ public class RawDataRestServlet extends AbstractRestApiServlet {
 
             sisi.updateQuestions(dtoList, true, false);
 
-            if (isNew) {
+            if (isNewInstance) {
                 SurveyInstanceDAO siDao = new SurveyInstanceDAO();
                 List<QuestionAnswerStore> qasList = siDao.listQuestionAnswerStoreByType(new Long(
                         importReq.getSurveyInstanceId()), "GEO");
@@ -311,7 +301,7 @@ public class RawDataRestServlet extends AbstractRestApiServlet {
 
     /**
      * constructs and persists a new surveyInstance using the data from the import request
-     * 
+     *
      * @param importReq
      * @return
      */
@@ -328,15 +318,26 @@ public class RawDataRestServlet extends AbstractRestApiServlet {
         inst.setUuid(UUID.randomUUID().toString());
         inst.setSubmitterName(importReq.getSubmitter());
         inst.setSurveyalTime(importReq.getSurveyDuration());
-        SurveyInstanceDAO instDao = new SurveyInstanceDAO();
-        inst = instDao.save(inst);
+
         // set the key so the subsequent logic can populate it in the
         // QuestionAnswerStore objects
         importReq.setSurveyInstanceId(inst.getKey().getId());
         if (importReq.getCollectionDate() == null) {
             importReq.setCollectionDate(inst.getCollectionDate());
         }
-        return inst;
+
+        SurveyInstanceDAO instDao = new SurveyInstanceDAO();
+        return instDao.save(inst);
+    }
+
+    private void updateMessageBoard(long objectId, String shortMessage) {
+        MessageDao mDao = new MessageDao();
+        Message message = new Message();
+
+        message.setObjectId(objectId);
+        message.setActionAbout("importData");
+        message.setShortMessage(shortMessage);
+        mDao.save(message);
     }
 
     @Override

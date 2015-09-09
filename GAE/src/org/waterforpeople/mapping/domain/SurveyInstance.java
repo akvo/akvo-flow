@@ -157,10 +157,12 @@ public class SurveyInstance extends BaseDomain implements SecuredObject {
         this.surveyedLocaleId = surveyedLocaleId;
     }
 
+    @Deprecated
     public String getApproximateLocationFlag() {
         return approximateLocationFlag;
     }
 
+    @Deprecated
     public void setApproximateLocationFlag(String approximateLocationFlag) {
         this.approximateLocationFlag = approximateLocationFlag;
     }
