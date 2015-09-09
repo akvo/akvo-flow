@@ -94,8 +94,9 @@ public class RawDataRestServlet extends AbstractRestApiServlet {
 
                 SurveyInstance si = new SurveyInstanceDAO().getByKey(importReq
                         .getSurveyInstanceId());
+                Survey s = new SurveyDAO().getByKey(importReq.getSurveyId());
 
-                if (si == null) {
+                if (si == null || s == null) {
                     MessageDao mDao = new MessageDao();
                     Message message = new Message();
 
