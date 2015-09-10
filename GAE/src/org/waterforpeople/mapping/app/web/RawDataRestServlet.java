@@ -100,10 +100,28 @@ public class RawDataRestServlet extends AbstractRestApiServlet {
                 return null;
             }
 
+            SurveyGroup sg = null;
+            if (s.getSurveyGroupId() != null) {
+                sg = sgDao.getByKey(s.getSurveyGroupId());
+            }
+
+            if (sg == null) {
+                updateMessageBoard(importReq.getSurveyId(), "Survey group [" + s.getSurveyGroupId()
+                        + "] doesn't exist");
+                return null;
+            }
+
             boolean isNewInstance = importReq.getSurveyInstanceId() == null;
-            SurveyInstanceDAO siDao = new SurveyInstanceDAO();
+            boolean isMonitoringForm = sg.getMonitoringGroup()
+                    && !sg.getNewLocaleSurveyId().equals(s.getKey().getId());
+
             SurveyInstance instance = null;
             if (isNewInstance) {
+                if (isMonitoringForm) {
+                    updateMessageBoard(s.getKey().getId(),
+                            "Importing new data into a monitoring form is not supported at the moment");
+                    return null;
+                }
                 instance = createInstance(importReq);
             } else {
                 instance = instanceDao.getByKey(importReq.getSurveyInstanceId());
@@ -143,17 +161,11 @@ public class RawDataRestServlet extends AbstractRestApiServlet {
                 locale.setIdentifier(SurveyedLocale.generateBase32Uuid());
                 instance.setSurveyedLocaleIdentifier(locale.getIdentifier());
 
-                SurveyGroup sg = null;
-                if (s.getSurveyGroupId() != null) {
-                    sg = new SurveyGroupDAO().getByKey(s.getSurveyGroupId());
-                }
-                if (sg != null) {
-                    String privacyLevel = sg.getPrivacyLevel() != null ? sg.getPrivacyLevel()
-                            .toString() : SurveyGroup.PrivacyLevel.PRIVATE.toString();
-                    locale.setLocaleType(privacyLevel);
-                    locale.setSurveyGroupId(sg.getKey().getId());
-                    locale.setCreationSurveyId(s.getKey().getId());
-                }
+                String privacyLevel = sg.getPrivacyLevel() != null ? sg.getPrivacyLevel()
+                        .toString() : SurveyGroup.PrivacyLevel.PRIVATE.toString();
+                locale.setLocaleType(privacyLevel);
+                locale.setSurveyGroupId(sg.getKey().getId());
+                locale.setCreationSurveyId(s.getKey().getId());
 
                 locale = new SurveyedLocaleDao().save(locale);
                 instance.setSurveyedLocaleId(locale.getKey().getId());
