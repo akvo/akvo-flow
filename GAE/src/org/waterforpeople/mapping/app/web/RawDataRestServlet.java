@@ -66,9 +66,13 @@ public class RawDataRestServlet extends AbstractRestApiServlet {
     private static final long serialVersionUID = 2409014651721639814L;
 
     private SurveyInstanceDAO instanceDao;
+    private SurveyDAO sDao;
+    private SurveyGroupDAO sgDao;
 
     public RawDataRestServlet() {
         instanceDao = new SurveyInstanceDAO();
+        sDao = new SurveyDAO();
+        sgDao = new SurveyGroupDAO();
     }
 
     @Override
@@ -88,7 +92,7 @@ public class RawDataRestServlet extends AbstractRestApiServlet {
 
             Survey s = null;
             if (importReq.getSurveyId() != null) {
-                s = new SurveyDAO().getByKey(importReq.getSurveyId());
+                s = sDao.getByKey(importReq.getSurveyId());
             }
             if (s == null) {
                 updateMessageBoard(importReq.getSurveyId(), "Survey id [" + importReq.getSurveyId()
@@ -102,7 +106,7 @@ public class RawDataRestServlet extends AbstractRestApiServlet {
             if (isNewInstance) {
                 instance = createInstance(importReq);
             } else {
-                instance = siDao.getByKey(importReq.getSurveyInstanceId());
+                instance = instanceDao.getByKey(importReq.getSurveyInstanceId());
                 if (instance == null) {
                     updateMessageBoard(importReq.getSurveyInstanceId(), "Survey instance id ["
                             + importReq.getSurveyInstanceId() + "] doesn't exist");
@@ -165,8 +169,8 @@ public class RawDataRestServlet extends AbstractRestApiServlet {
                 defaultQueue.add(processSurveyedLocaleOptions);
 
                 // data summarisation
-                List<QuestionAnswerStore> qasList = siDao.listQuestionAnswerStoreByType(new Long(
-                        importReq.getSurveyInstanceId()), "GEO");
+                List<QuestionAnswerStore> qasList = instanceDao.listQuestionAnswerStoreByType(
+                        new Long(importReq.getSurveyInstanceId()), "GEO");
                 if (qasList != null && qasList.size() > 0) {
                     Queue summQueue = QueueFactory.getQueue("dataSummarization");
                     summQueue.add(TaskOptions.Builder
