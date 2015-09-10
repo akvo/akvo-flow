@@ -123,7 +123,7 @@ public class RawDataRestServlet extends AbstractRestApiServlet {
                     .getQuestionAnswerMap().entrySet()) {
                 QuestionAnswerStoreDto qasDto = new QuestionAnswerStoreDto();
                 qasDto.setQuestionID(item.getKey().toString());
-                qasDto.setSurveyInstanceId(importReq.getSurveyInstanceId());
+                qasDto.setSurveyInstanceId(instance.getKey().getId());
                 qasDto.setValue(item.getValue()[0]);
                 qasDto.setType(item.getValue()[1]);
                 qasDto.setSurveyId(importReq.getSurveyId());
@@ -358,13 +358,15 @@ public class RawDataRestServlet extends AbstractRestApiServlet {
 
         // set the key so the subsequent logic can populate it in the
         // QuestionAnswerStore objects
+        SurveyInstanceDAO instDao = new SurveyInstanceDAO();
+        inst = instDao.save(inst);
+
         importReq.setSurveyInstanceId(inst.getKey().getId());
         if (importReq.getCollectionDate() == null) {
             importReq.setCollectionDate(inst.getCollectionDate());
         }
 
-        SurveyInstanceDAO instDao = new SurveyInstanceDAO();
-        return instDao.save(inst);
+        return inst;
     }
 
     private void updateMessageBoard(long objectId, String shortMessage) {
