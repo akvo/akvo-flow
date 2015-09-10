@@ -206,6 +206,7 @@ public class RawDataSpreadsheetImporter implements DataImporter {
                         + "&" + RawDataImportRequest.SURVEY_ID_PARAM + "="
                         + getSurveyId() + "&");
                 boolean needUpload = true;
+                String initialUrl = sb.toString();
 
                 for (Cell cell : row) {
                     if (cell.getColumnIndex() == instanceIdx) {
@@ -393,7 +394,10 @@ public class RawDataSpreadsheetImporter implements DataImporter {
                         }
                     }
                 }
-                if (needUpload) {
+
+                // make sure row in sheet actually contained data
+                boolean isEmptyRow = initialUrl.equals(sb.toString().trim());
+                if (needUpload && !isEmptyRow) {
                     sendDataToServer(
                             serverBase,
                             instanceId == null ? null
@@ -401,7 +405,6 @@ public class RawDataSpreadsheetImporter implements DataImporter {
                                             durationSeconds),
                             sb.toString(),
                             criteria.get(KEY_PARAM));
-
                 } else {
                     // if we didn't need to upload, then just increment our
                     // progress counter
