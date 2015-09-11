@@ -400,9 +400,7 @@ public class RawDataSpreadsheetImporter implements DataImporter {
                 if (needUpload && !isEmptyRow) {
                     sendDataToServer(
                             serverBase,
-                            instanceId == null ? null
-                                    : getResetUrlString(instanceId, dateString, submitter,
-                                            durationSeconds),
+                            null,
                             sb.toString(),
                             criteria.get(KEY_PARAM));
                 } else {
@@ -472,28 +470,6 @@ public class RawDataSpreadsheetImporter implements DataImporter {
         } catch (Exception e) {
             return 0;
         }
-    }
-
-    private String getResetUrlString(String instanceId, String dateString,
-            String submitter, String durationSeconds) throws UnsupportedEncodingException {
-        String url = "action="
-                + RawDataImportRequest.RESET_SURVEY_INSTANCE_ACTION
-                + "&" + RawDataImportRequest.SURVEY_INSTANCE_ID_PARAM
-                + "=" + instanceId
-                + "&" + RawDataImportRequest.SURVEY_ID_PARAM
-                + "=" + getSurveyId()
-                + "&" + RawDataImportRequest.COLLECTION_DATE_PARAM
-                + "=" + URLEncoder.encode(dateString, "UTF-8")
-                + "&" + RawDataImportRequest.SUBMITTER_PARAM
-                + "=" + URLEncoder.encode(submitter, "UTF-8");
-
-        // Duration might be missing in old reports
-        if (durationSeconds != null) {
-            url += "&" + RawDataImportRequest.DURATION_PARAM + "="
-                    + URLEncoder.encode(durationSeconds, "UTF-8");
-        }
-
-        return url;
     }
 
     /**
