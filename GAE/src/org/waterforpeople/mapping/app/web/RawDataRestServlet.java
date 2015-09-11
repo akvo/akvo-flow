@@ -1,5 +1,5 @@
 /*
- *  Copyright (C) 2010-2012 Stichting Akvo (Akvo Foundation)
+ *  Copyright (C) 2010-2015 Stichting Akvo (Akvo Foundation)
  *
  *  This file is part of Akvo FLOW.
  *
@@ -27,7 +27,6 @@ import java.util.logging.Logger;
 import javax.servlet.http.HttpServletRequest;
 
 import org.waterforpeople.mapping.app.gwt.client.survey.QuestionDto.QuestionType;
-import org.waterforpeople.mapping.app.gwt.client.surveyinstance.QuestionAnswerStoreDto;
 import org.waterforpeople.mapping.app.gwt.server.survey.SurveyServiceImpl;
 import org.waterforpeople.mapping.app.gwt.server.surveyinstance.SurveyInstanceServiceImpl;
 import org.waterforpeople.mapping.app.web.dto.DataProcessorRequest;
@@ -68,11 +67,15 @@ public class RawDataRestServlet extends AbstractRestApiServlet {
     private SurveyInstanceDAO instanceDao;
     private SurveyDAO sDao;
     private SurveyGroupDAO sgDao;
+    private QuestionAnswerStoreDao qasDao;
+    private SurveyedLocaleDao slDao;
 
     public RawDataRestServlet() {
         instanceDao = new SurveyInstanceDAO();
         sDao = new SurveyDAO();
         sgDao = new SurveyGroupDAO();
+        qasDao = new QuestionAnswerStoreDao();
+        slDao = new SurveyedLocaleDao();
     }
 
     @Override
@@ -140,20 +143,37 @@ public class RawDataRestServlet extends AbstractRestApiServlet {
                 return null;
             }
 
-            List<QuestionAnswerStoreDto> dtoList = new ArrayList<QuestionAnswerStoreDto>();
-            for (Map.Entry<Long, String[]> item : importReq
-                    .getQuestionAnswerMap().entrySet()) {
-                QuestionAnswerStoreDto qasDto = new QuestionAnswerStoreDto();
-                qasDto.setQuestionID(item.getKey().toString());
-                qasDto.setSurveyInstanceId(instance.getKey().getId());
-                qasDto.setValue(item.getValue()[0]);
-                qasDto.setType(item.getValue()[1]);
-                qasDto.setSurveyId(importReq.getSurveyId());
-                qasDto.setCollectionDate(importReq.getCollectionDate());
-                dtoList.add(qasDto);
-            }
+            // retrieve and update answers for current instance
+            Map<Long, QuestionAnswerStore> existingAnswers = qasDao.mapByQuestionId(qasDao
+                    .listBySurveyInstance(instance.getKey().getId()));
+            Map<Long, String[]> incomingAnswers = importReq.getQuestionAnswerMap();
+            List<QuestionAnswerStore> updatedAnswers = new ArrayList<QuestionAnswerStore>();
 
-            sisi.updateQuestions(dtoList, true, false);
+            for (Map.Entry<Long, String[]> qasEntry : incomingAnswers.entrySet()) {
+                QuestionAnswerStore answer = null;
+                if (existingAnswers.containsKey(qasEntry.getKey())) {
+                    answer = existingAnswers.get(qasEntry.getKey());
+                } else {
+                    answer = new QuestionAnswerStore();
+                    answer.setQuestionID(qasEntry.getKey().toString());
+                    answer.setSurveyInstanceId(instance.getKey().getId());
+                    answer.setSurveyId(s.getKey().getId());
+                    answer.setCollectionDate(instance.getCollectionDate());
+                }
+                answer.setValue(qasEntry.getValue()[0]);
+                answer.setType(qasEntry.getValue()[1]);
+                updatedAnswers.add(answer);
+            }
+            qasDao.save(updatedAnswers);
+
+            // remove entities with no updated response
+            List<QuestionAnswerStore> deletedAnswers = new ArrayList<QuestionAnswerStore>();
+            for (Long qasId : existingAnswers.keySet()) {
+                if (!incomingAnswers.containsKey(qasId)) {
+                    deletedAnswers.add(existingAnswers.get(qasId));
+                }
+            }
+            qasDao.delete(deletedAnswers);
 
             if (isNewInstance) {
                 // create new surveyed locale and launch task to complete processing
@@ -167,8 +187,9 @@ public class RawDataRestServlet extends AbstractRestApiServlet {
                 locale.setSurveyGroupId(sg.getKey().getId());
                 locale.setCreationSurveyId(s.getKey().getId());
 
-                locale = new SurveyedLocaleDao().save(locale);
+                locale = slDao.save(locale);
                 instance.setSurveyedLocaleId(locale.getKey().getId());
+                instanceDao.save(instance);
 
                 Queue defaultQueue = QueueFactory.getDefaultQueue();
                 TaskOptions processSurveyedLocaleOptions = TaskOptions.Builder
@@ -202,6 +223,7 @@ public class RawDataRestServlet extends AbstractRestApiServlet {
             List<QuestionAnswerStore> oldAnswers = instanceDao
                     .listQuestionAnswerStore(importReq.getSurveyInstanceId(),
                             null);
+
             if (oldAnswers != null && oldAnswers.size() > 0) {
                 instanceDao.delete(oldAnswers);
                 if (instance != null) {
@@ -374,8 +396,7 @@ public class RawDataRestServlet extends AbstractRestApiServlet {
 
         // set the key so the subsequent logic can populate it in the
         // QuestionAnswerStore objects
-        SurveyInstanceDAO instDao = new SurveyInstanceDAO();
-        inst = instDao.save(inst);
+        inst = instanceDao.save(inst);
 
         importReq.setSurveyInstanceId(inst.getKey().getId());
         if (importReq.getCollectionDate() == null) {
