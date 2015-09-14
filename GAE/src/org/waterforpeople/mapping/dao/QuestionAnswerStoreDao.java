@@ -1,5 +1,5 @@
 /*
- *  Copyright (C) 2010-2013 Stichting Akvo (Akvo Foundation)
+ *  Copyright (C) 2010-2015 Stichting Akvo (Akvo Foundation)
  *
  *  This file is part of Akvo FLOW.
  *
@@ -21,6 +21,7 @@ import static com.gallatinsystems.common.util.MemCacheUtils.initCache;
 import static com.gallatinsystems.common.util.MemCacheUtils.putObjects;
 
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
@@ -212,6 +213,20 @@ public class QuestionAnswerStoreDao extends BaseDAO<QuestionAnswerStore> {
                 surveyInstanceId, "Long");
         cache(responses);
         return responses;
+    }
+
+    public Map<Long, QuestionAnswerStore> mapByQuestionId(List<QuestionAnswerStore> qasList) {
+        Map<Long, QuestionAnswerStore> qasMap = new HashMap<Long, QuestionAnswerStore>();
+        try {
+            for (QuestionAnswerStore a : qasList) {
+                if (a.getQuestionID() != null) {
+                    qasMap.put(Long.parseLong(a.getQuestionID()), a);
+                }
+            }
+            return qasMap;
+        } catch (NumberFormatException e) {
+            return Collections.emptyMap();
+        }
     }
 
     @SuppressWarnings("unchecked")

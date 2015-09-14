@@ -34,6 +34,7 @@ import org.apache.commons.lang.StringUtils;
 import org.waterforpeople.mapping.analytics.dao.SurveyQuestionSummaryDao;
 import org.waterforpeople.mapping.analytics.domain.SurveyQuestionSummary;
 import org.waterforpeople.mapping.app.gwt.client.survey.QuestionDto.QuestionType;
+import org.waterforpeople.mapping.dao.QuestionAnswerStoreDao;
 import org.waterforpeople.mapping.dao.SurveyInstanceDAO;
 
 import com.gallatinsystems.device.domain.DeviceFiles;
@@ -157,10 +158,12 @@ public class SurveyInstance extends BaseDomain implements SecuredObject {
         this.surveyedLocaleId = surveyedLocaleId;
     }
 
+    @Deprecated
     public String getApproximateLocationFlag() {
         return approximateLocationFlag;
     }
 
+    @Deprecated
     public void setApproximateLocationFlag(String approximateLocationFlag) {
         this.approximateLocationFlag = approximateLocationFlag;
     }
@@ -304,6 +307,30 @@ public class SurveyInstance extends BaseDomain implements SecuredObject {
     }
 
     public String getSurveyedLocaleDisplayName() {
+        if (surveyedLocaleDisplayName == null) {
+            QuestionDao qDao = new QuestionDao();
+            StringBuilder displayName = new StringBuilder();
+            if (this.surveyId != null) {
+                List<Question> displayQuestions = qDao
+                        .listDisplayNameQuestionsBySurveyId(this.surveyId);
+                QuestionAnswerStoreDao qasDao = new QuestionAnswerStoreDao();
+
+                for (Question q : displayQuestions) {
+                    QuestionAnswerStore qas = qasDao.getByQuestionAndSurveyInstance(q.getKey()
+                            .getId(), this.key.getId());
+                    if (qas != null && qas.getValue() != null
+                            && qas.getValue().trim().length() != 0) {
+                        displayName.append(qas.getValue()).append(" - ");
+                    }
+                }
+
+                // trim extra xters
+                // if true means at least one question was processed for display name
+                if (displayName.toString().endsWith(" - ")) {
+                    setSurveyedLocaleDisplayName(displayName.substring(0, displayName.length() - 3));
+                }
+            }
+        }
         return surveyedLocaleDisplayName;
     }
 
