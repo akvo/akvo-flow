@@ -121,17 +121,24 @@ FLOW.NavMapsView = FLOW.View.extend({
     //Define the data layer
     var data_layer;
 
-    $.get('/rest/cartodb/surveys', function(data, status) {
+    $.get('/rest/survey_groups', function(data, status) {
       var rows = [];
-      if (data['surveys'].length > 0) {
-        rows = data['surveys'];
+      if (data['survey_groups'].length > 0) {
+        rows = data['survey_groups'];
         rows.sort(function(el1, el2) {
-          return self.compare(el1, el2, 'name')
+          return self.compare(el1, el2, 'name');
         });
 
         for (var i=0; i<rows.length; i++) {
           //append return survey list to the survey selector element
-          $('#survey_selector').append('<option value="'+rows[i]["id"]+'">'+rows[i]["name"]+'</option>');
+          var surveyGroup = row[i];
+          // Only show surveys. TODO: Hierarchical folder selection
+          if (surveyGroup.projectType === 'PROJECT') {
+            $('#survey_selector').append('<option value="'
+              + surveyGroup.keyId + '">'
+              + surveyGroup.name
+              + '</option>');
+          }
         }
       }
     });
