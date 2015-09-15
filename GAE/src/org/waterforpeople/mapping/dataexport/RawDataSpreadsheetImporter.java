@@ -22,10 +22,10 @@ import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.PushbackInputStream;
-import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
 import java.security.MessageDigest;
 import java.text.DateFormat;
+import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
@@ -301,31 +301,51 @@ public class RawDataSpreadsheetImporter implements DataImporter {
                         String cellVal = parseCellAsString(cell);
                         if (cellVal != null) {
                             cellVal = cellVal.trim();
-                            // need to update digest before manipulating the
-                            // data
-                            digest.update(cellVal.getBytes());
-                            if (cellVal.contains("|")) {
-                                cellVal = cellVal.replaceAll("\\|", "^^");
+
+                            switch (question.getType()) {
+                                case GEO:
+                                case CASCADE:
+                                    String[] parts = cellVal.split("\\|");
+                                    for (int i = 0; i < parts.length; i++) {
+                                        digest.update(parts[i].getBytes());
+                                    }
+                                    cellVal = cellVal.replaceAll("\\|", "^^");
+                                    break;
+
+                                case PHOTO:
+                                case VIDEO:
+                                    digest.update(cellVal.getBytes()); // compute before modifying
+                                    if (cellVal.contains("/")) {
+                                        cellVal = cellVal.substring(cellVal
+                                                .lastIndexOf("/"));
+                                    }
+                                    cellVal = "/sdcard" + cellVal;
+                                    break;
+
+                                case DATE:
+                                    digest.update(cellVal.getBytes());
+                                    try {
+                                        cellVal = DATE_FMT.get().parse(cellVal)
+                                                .getTime()
+                                                + "";
+                                    } catch (ParseException e) {
+                                        log.error("bad date format: "
+                                                + cellVal + "\n" + e.getMessage(), e);
+                                    }
+                                    break;
+
+                                case GEOSHAPE:
+                                case SCAN:
+                                case NUMBER:
+                                case FREE_TEXT:
+                                case OPTION: // while exporting digest is computed with pipes
+                                    digest.update(cellVal.getBytes());
+                                    break;
+
+                                default:
+                                    break;
                             }
-                            if (cellVal.endsWith(".jpg")) {
-                                if (cellVal.contains("/")) {
-                                    cellVal = cellVal.substring(cellVal
-                                            .lastIndexOf("/"));
-                                }
-                                cellVal = "/sdcard" + cellVal;
-                            }
-                            if (cellVal.endsWith("UTC")) {
-                                try {
-                                    cellVal = DATE_FMT.get().parse(cellVal)
-                                            .getTime()
-                                            + "";
-                                } catch (Exception e) {
-                                    log.error("bad date format: "
-                                            + cellVal + "\n" + e.getMessage(), e);
-                                }
-                            }
-                        }
-                        if (cellVal == null) {
+                        } else {
                             cellVal = "";
                         }
 
