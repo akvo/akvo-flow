@@ -11,10 +11,12 @@ FLOW.NavMapsView = FLOW.View.extend({
   mapZoomLevel: 0,
   mapCenter: null,
   hierarchyCount: 0,
+  hierarchyObjectAncestors: 0,
+  previousObjectAncestors: 0,
   hierarchyObject: [],
   geomodel: null,
   cartodbLayer: null,
-  layerExistsCheck: 0,
+  layerExistsCheck: false,
 
   init: function () {
     this._super();
@@ -190,7 +192,7 @@ FLOW.NavMapsView = FLOW.View.extend({
     });
 
     //manage folder and/or survey selection hierarchy
-    self.checkHierarchy(1, 0);
+    self.checkHierarchy(0);
 
     $(document.body).on('change', '.folder_survey_selector', function(){
       $('#form_selector option[value!=""]').remove();
@@ -199,10 +201,10 @@ FLOW.NavMapsView = FLOW.View.extend({
       $(".form_selector").remove();
 
       if($(this).val() !== ""){
+        var keyId = $(this).val();
         //if a survey is selected, load forms to form selector element.
         if($(this).find("option:selected").data('type') === 'PROJECT'){
-          var surveyId = $(this).val();
-          $.get('/rest/cartodb/forms?surveyId='+surveyId, function(data, status) {
+          $.get('/rest/cartodb/forms?surveyId='+keyId, function(data, status) {
             var rows = [];
             if(data['forms'] && data['forms'].length > 0) {
               rows = data['forms'];
@@ -210,8 +212,16 @@ FLOW.NavMapsView = FLOW.View.extend({
                 return self.compare(el1, el2, 'name')
               });
 
+              var hierarchyObject = self.hierarchyObject;
+              for(var j=0; j<hierarchyObject.length; j++){
+                if(hierarchyObject[j].keyId == keyId){
+                  self.hierarchyObjectAncestors = hierarchyObject[j]['ancestorIds'].length;
+                  self.cleanHierarchy();
+                }
+              }
+
               //create folder and/or survey select element
-              var form_selector = $("<select></select>").attr("data-survey-id", surveyId).attr("class", "form_selector");
+              var form_selector = $("<select></select>").attr("data-survey-id", keyId).attr("class", "form_selector");
               form_selector.append('<option value="">--' + Ember.String.loc('_choose_a_form') + '--</option>');
 
               for(var i=0; i<rows.length; i++) {
@@ -225,25 +235,27 @@ FLOW.NavMapsView = FLOW.View.extend({
 
           var namedMapObject = {};
           namedMapObject['mapObject'] = map;
-          namedMapObject['mapName'] = 'data_point_'+surveyId;
+          namedMapObject['mapName'] = 'data_point_'+keyId;
           namedMapObject['tableName'] = 'data_point';
           namedMapObject['interactivity'] = ["name", "survey_id", "id", "identifier", "lat", "lon"];
-          namedMapObject['query'] = 'SELECT * FROM data_point WHERE survey_id='+surveyId;
+          namedMapObject['query'] = 'SELECT * FROM data_point WHERE survey_id='+keyId;
 
           self.namedMapCheck(namedMapObject);
         }else{ //if a folder is selected, load the folder's children on a new 'folder_survey_selector'
+          //first clear any currently overlayed cartodb layer (if any)
+          self.clearCartodbLayer();
+
           var hierarchyObject = self.hierarchyObject;
           for(var i=0; i<hierarchyObject.length; i++){
-            if(hierarchyObject[i].keyId == $(this).find("option:selected").val()){
-              self.checkHierarchy(hierarchyObject[i]['ancestorIds'].length, $(this).find("option:selected").val());
+            if(hierarchyObject[i].keyId == keyId){
+              self.hierarchyObjectAncestors = hierarchyObject[i]['ancestorIds'].length;
+              self.checkHierarchy(keyId);
             }
           }
         }
       }else{ //if nothing is selected, delete all children 'folder_survey_selector's and clear form selector
-        var hierarchyCount = self.hierarchyCount;
         //remove all 'folder_survey_selector's outside of ancestors count
-        var folder_survey_selector_id = $(this).attr('id');
-        self.cleanHierarchy(hierarchyCount, parseInt(folder_survey_selector_id.match(/\d+$/)[0]));
+        self.cleanHierarchy();
 
         self.createLayer(map, "data_point", "");
       }
@@ -480,9 +492,8 @@ FLOW.NavMapsView = FLOW.View.extend({
   createLayer: function(map, mapName, interactivity){
     var self = this, pointDataUrl;
 
-    if(self.layerExistsCheck == 1){
-      map.removeLayer(self.cartodbLayer);
-    }
+    //first clear any currently overlayed cartodb layer
+    self.clearCartodbLayer();
 
     // add cartodb layer with one sublayer
     cartodb.createLayer(map, {
@@ -504,7 +515,7 @@ FLOW.NavMapsView = FLOW.View.extend({
     .addTo(map)
     .done(function(layer) {
       layer.setZIndex(1000); //required to ensure that the cartodb layer is not obscured by the here maps base layers
-      self.layerExistsCheck = 1;
+      self.layerExistsCheck = true;
       self.cartodbLayer = layer;
 
       self.addCursorInteraction(layer);
@@ -692,39 +703,39 @@ FLOW.NavMapsView = FLOW.View.extend({
     this.map.fitBounds(bounds);
   },
 
-  checkHierarchy: function(ancestorsCount, parentFolderId){
+  checkHierarchy: function(parentFolderId){
     var self = this;
 
     //if survey hierarchy object has previously been retrieved, no need to pull it anew
     if(self.hierarchyObject.length > 0){
-      self.manageHierarchy(ancestorsCount, parentFolderId);
+      self.manageHierarchy(parentFolderId);
     }else{
-      $.get('/rest/survey_groups'/*place survey_groups endpoint here*/
+      $.get('http://localhost:8080/akvo_flow_api/index.php/survey_groups/flowaglimmerofhope'/*place survey_groups endpoint here*/
+      //$.get('/rest/survey_groups'/*place survey_groups endpoint here*/
       , function(data, status){
         if(data['survey_groups'].length > 0){
           self.hierarchyObject = data['survey_groups'];
-          self.manageHierarchy(ancestorsCount, parentFolderId);
+          self.manageHierarchy(parentFolderId);
         }
       });
     }
   },
 
-  manageHierarchy: function(ancestorsCount, parentFolderId){
-    var self = this, hierarchyCount = self.hierarchyCount;
+  manageHierarchy: function(parentFolderId){
+    var self = this;
 
     rows = self.hierarchyObject;
     rows.sort(function(el1, el2) {
       return self.compare(el1, el2, 'name');
     });
 
-    self.cleanHierarchy(hierarchyCount, ancestorsCount);
-
-    self.hierarchyCount++;
+    self.cleanHierarchy();
 
     //create folder and/or survey select element
-    var folder_survey_selector = $("<select></select>").attr("id", "folder_survey_selector_"+self.hierarchyCount).attr("class", "folder_survey_selector");
+    var folder_survey_selector = $("<select></select>").attr("id", "folder_survey_selector_"+self.hierarchyObjectAncestors).attr("class", "folder_survey_selector");
+    folder_survey_selector.append('<option value="">--' + Ember.String.loc('_choose_folder_or_survey') + '--</option>');
 
-    folder_survey_selector.append('<option value="">--' + Ember.String.loc('_choose_a_survey') + '--</option>');
+    self.previousObjectAncestors = self.hierarchyObjectAncestors;
 
     for (var i=0; i<rows.length; i++) {
       //append return survey list to the survey selector element
@@ -742,13 +753,21 @@ FLOW.NavMapsView = FLOW.View.extend({
     $("#survey_hierarchy").append(folder_survey_selector);
   },
 
-  cleanHierarchy: function(hierarchyCount, ancestorsCount){
-    //remove all succeeding hierarchy selector elements
-    for(var i=1; i<=hierarchyCount; i++){
-      if(i>ancestorsCount){
+  cleanHierarchy: function(){
+    var self = this;
+
+    if(self.hierarchyObjectAncestors <= self.previousObjectAncestors){
+      for(var i=self.hierarchyObjectAncestors; i<=self.previousObjectAncestors; i++){
         $("#folder_survey_selector_"+i).remove();
-        self.hierarchyCount--;
       }
+    }
+  },
+
+  clearCartodbLayer: function(){
+    //check to confirm that there are no layers displayed on the map
+    if(this.layerExistsCheck){
+      this.map.removeLayer(this.cartodbLayer);
+      this.layerExistsCheck = false;
     }
   }
 });
