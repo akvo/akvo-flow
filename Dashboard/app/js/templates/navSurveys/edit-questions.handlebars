@@ -43,7 +43,7 @@
             {{#if view.showQGroupNameEditField}}
               {{view Ember.TextField valueBinding="view.content.code" size=45}}
             {{else}}
-              <h1><a {{action "toggleVisibility" target="this"}}>{{view.content.code}}</a></h1>
+              <h1 class="qtnGroupTitle"><a {{action "toggleVisibility" target="this"}}>{{view.content.code}}</a></h1>
             {{/if}}
             </div>
             {{#if view.amVisible}}
