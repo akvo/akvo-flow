@@ -3226,6 +3226,13 @@ span.qtnGroupHead {
 
 .qtnGroupTitle {
     margin: 3px 0 0.5em;
+    h1 {
+        color: rgba(141, 198, 63, 1);
+    }
+    input {
+        font-family: $bodyFont;
+        font-size: 1.8em;
+    }
 }
 
 .aQuestionSet header h1.qtnGroupTitle {
