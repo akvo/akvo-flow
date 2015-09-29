@@ -163,15 +163,6 @@ FLOW.NavMapsView = FLOW.View.extend({
 
     this.map = map;
 
-    var namedMapObject = {};
-    namedMapObject['mapObject'] = map;
-    namedMapObject['mapName'] = 'data_point';
-    namedMapObject['tableName'] = 'data_point';
-    namedMapObject['interactivity'] = ["name", "survey_id", "id", "identifier", "lat", "lon"];
-    namedMapObject['query'] = 'SELECT * FROM data_point';
-
-    self.namedMapCheck(namedMapObject);
-
     map.on('click', function(e) {
       if(self.marker != null){
         self.map.removeLayer(self.marker);
@@ -254,10 +245,10 @@ FLOW.NavMapsView = FLOW.View.extend({
           }
         }
       }else{ //if nothing is selected, delete all children 'folder_survey_selector's and clear form selector
+        self.clearCartodbLayer();
+
         //remove all 'folder_survey_selector's outside of ancestors count
         self.cleanHierarchy();
-
-        self.createLayer(map, "data_point", "");
       }
 
     });
@@ -289,7 +280,7 @@ FLOW.NavMapsView = FLOW.View.extend({
 
     $(document.body).on('click', '#projectGeoshape', function(){
       if(self.polygons.length > 0){
-        $('#projectGeoshape').html("Project geoshape onto main map");
+        $('#projectGeoshape').html(Ember.String.loc('_project_geoshape_onto_main_map'));
         for(var i=0; i<self.polygons.length; i++){
           self.map.removeLayer(self.polygons[i]);
         }
@@ -298,7 +289,7 @@ FLOW.NavMapsView = FLOW.View.extend({
         self.map.panTo(self.mapCenter);
         self.polygons = [];
       }else{
-        $('#projectGeoshape').html("Clear geoshape from main map");
+        $('#projectGeoshape').html(Ember.String.loc('_clear_geoshape_from_main_map'));
         if(self.geoshapeCoordinates.length > 0){
           self.projectGeoshape(self.geoshapeCoordinates);
         }
@@ -593,7 +584,6 @@ FLOW.NavMapsView = FLOW.View.extend({
               +date.toUTCString()
               +'</div></li><li></li></ul>';
 
-              //clickedPointContent += "<table>";
               clickedPointContent += '<dl class="floats-in" style="opacity: 1; display: inherit;">';
               for (column in pointData['answers']){
                 for(var i=0; i<questionsData['questions'].length; i++){
@@ -710,8 +700,7 @@ FLOW.NavMapsView = FLOW.View.extend({
     if(self.hierarchyObject.length > 0){
       self.manageHierarchy(parentFolderId);
     }else{
-      $.get('http://localhost:8080/akvo_flow_api/index.php/survey_groups/flowaglimmerofhope'/*place survey_groups endpoint here*/
-      //$.get('/rest/survey_groups'/*place survey_groups endpoint here*/
+      $.get('/rest/survey_groups'/*place survey_groups endpoint here*/
       , function(data, status){
         if(data['survey_groups'].length > 0){
           self.hierarchyObject = data['survey_groups'];
