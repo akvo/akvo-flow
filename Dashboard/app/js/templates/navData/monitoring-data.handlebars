@@ -84,7 +84,6 @@
             <nav class="editAnswerMenu">
           </nav>
         <p></p>
-<section class="fullWidth " id="devicesList">
       <table class="dataTable" id="surveyDataTable">
         <thead>
           <tr>
@@ -115,53 +114,6 @@
                 </a>{{/view}} {{/if}}
               </td>
             </tr>
-            <tr class="si_details" style="background: #fff; display:none;" data-flow-id="si_details_{{unbound SI.id}}">
-              <td colspan="7">
-              <table class="dataTable" id="surveyDataTable">
-            <!-- TABLE HEADER-->
-            <thead>
-                <tr>
-                    <th class="noArrows">{{t _id}}</th>
-                    <th class="noArrows">{{t _question}}</th>
-                    <th class="noArrows">{{t _answer}}</th>
-                </tr>
-            </thead>
-            <!-- TABLE BODY: MAIN CONTENT-->
-            <tbody>
-                {{#each QA in FLOW.questionAnswerControl}}
-                  {{#view FLOW.QuestionAnswerView contentBinding="QA"}}
-                    <tr>
-                      <td class="device">{{QA.keyId}}</td>
-                      <td class="survey" style="text-align:left;">{{QA.questionText}}</td>
-
-                    <td class="submitter" style="text-align:left;">
-                      {{#if view.isNotEditable}}
-                        {{#if view.isPhotoType}}
-                          {{QA.value}}  <a {{bindAttr href="view.photoUrl"}} target="_blank">{{t _open_photo}}</a>
-                        {{else}}
-                          {{QA.value}}
-                        {{/if}}
-                      {{else}}
-                        {{#if view.isDateType}}
-                        <span>{{#with QA}}{{date3 value}}{{/with}}</span>
-                        {{else}}
-                          <span>{{QA.value}} {{#with QA}}{{if_blank value}}{{/with}}</span>
-                        {{/if}}
-                      {{/if}}
-                    </td>
-                    </tr>
-                    {{/view}}
-                {{/each}}
-            </tbody>
-            <!-- TABLE FOOTER-->
-            <tfoot>
-                <tr>
-                    <td colspan="7"><small>This is the footer.</small></td>
-                </tr>
-            </tfoot>
-        </table>
-              </td>
-            </tr>
             {{/each}}
         </tbody>
         <tfoot>
@@ -170,6 +122,24 @@
           </tr>
         </tfoot>
       </table>
+		<table class="dataTable" id="surveyDataTable">
+			<!-- TABLE HEADER-->
+			<thead>
+			  <tr>
+				  <th class="noArrows"></th>
+				<th class="noArrows">{{t _question}}</th>
+				<th class="noArrows">{{t _answer}}</th>
+			  </tr>
+			</thead>
+			<tbody>
+			{{#each responseSubList in FLOW.questionAnswerControl.contentByGroup}}
+				{{#each iterations in responseSubList}}
+					<tr><td colspan="3" style="text-align:left"><h3 class="questionGroupName">{{iterations.groupName}}</h3></td></tr>
+					{{each iterations itemViewClass="FLOW.QuestionAnswerView"}}
+				{{/each}}
+			{{/each}}
+			</tbody>
+		</table>
       <ul class="prevNext">
         <li class="prevBtn">{{#if view.hasPrevPage}}
           <a {{action doPrevPage target='this'}}> &lsaquo; {{t _previous}}</a> {{/if}}
@@ -178,7 +148,6 @@
           <a {{action doNextPage target='this'}}>{{t _next}} &rsaquo;</a>{{/if}}
         </li>
       </ul>
-    </section>
          </div>
       </div>
     </div>
