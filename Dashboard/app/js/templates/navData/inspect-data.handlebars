@@ -124,18 +124,16 @@
                             <th class="noArrows" style="width:30%">{{t _answer}}</th>
                         </tr>
                     </thead>
-                  </table>
                     <!-- TABLE BODY: MAIN CONTENT-->
+                    <tbody>
                   {{#each responseSubList in FLOW.questionAnswerControl.contentByGroup}}
                     {{#each iterations in responseSubList}}
-                      <h3 class="questionGroupName">{{iterations.groupName}}</h3>
-                      <table class="dataTable" id="surveyDataTable">
-                          <tbody>
+                      <tr><td colspan="3" style="text-align:left"><h3 class="questionGroupName">{{iterations.groupName}}</h3></td></tr>
                             {{each iterations itemViewClass="FLOW.QuestionAnswerView"}}
-                          </tbody>
-                        </table>
                     {{/each}}
                   {{/each}}
+                    </tbody>
+                  </table>
             </div>
         </div>
     </div>
