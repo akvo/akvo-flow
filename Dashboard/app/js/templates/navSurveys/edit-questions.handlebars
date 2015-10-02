@@ -51,7 +51,9 @@
               {{tooltip _repeatable_question_group_tooltip}}
             {{/if}}
             {{#if view.showSaveCancelButton}}
-              <a {{action "saveQuestionGroup" target="this"}} class="smallBtn">{{t _save}}</a>
+              <div class="groupSave">
+                <a {{action "saveQuestionGroup" target="this"}} class="smallBtn">{{t _save}}</a>
+              </div>
             {{/if}}
             <nav class="qtnGroupMenu">
               <ul>
