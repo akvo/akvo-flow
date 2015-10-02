@@ -129,7 +129,7 @@
                   {{#each responseSubList in FLOW.questionAnswerControl.contentByGroup}}
                     {{#each iterations in responseSubList}}
                       <tr><td colspan="3" style="text-align:left"><h3 class="questionGroupName">{{iterations.groupName}}</h3></td></tr>
-                            {{each iterations itemViewClass="FLOW.QuestionAnswerView"}}
+                            {{each iterations itemViewClass="FLOW.QuestionAnswerInspectDataView"}}
                     {{/each}}
                   {{/each}}
                     </tbody>
