@@ -143,7 +143,7 @@ FLOW.QuestionView = FLOW.View.extend({
     var val;
     if (!Ember.none(this.type)) {
       val = this.type.get('value');
-      return val == 'PHOTO' || val == 'VIDEO';
+      return val == 'PHOTO' || val == 'VIDEO' || val == 'DATE';
     }
   }.property('this.type').cacheable(),
 
@@ -154,6 +154,14 @@ FLOW.QuestionView = FLOW.View.extend({
 	      return false;
 	    }
 	  }.property('this.type').cacheable(),
+
+  amDateType: function () {
+      if (this.type) {
+        return this.type.get('value') == 'DATE';
+      } else {
+        return false;
+      }
+    }.property('this.type').cacheable(),    
 
   showLocaleName: function () {
       if (!this.type) {

@@ -855,6 +855,9 @@ FLOW.questionControl = Ember.ArrayController.create({
       questionOrder = FLOW.selectedControl.selectedQuestion.get('order');
       optionQuestionList = FLOW.store.filter(FLOW.Question, function (item) {
         qg = FLOW.store.find(FLOW.QuestionGroup, item.get('questionGroupId'));
+        if (qg.get('repeatable')) {
+          return false;
+        }
         qgOrder = qg.get('order');
         if (!(item.get('type') == 'OPTION' && item.get('surveyId') == sId)) return false;
         if (qgOrder > questionGroupOrder) {

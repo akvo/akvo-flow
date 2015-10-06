@@ -228,7 +228,7 @@ Ember.Handlebars.registerHelper("date3", function (property) {
       dateString = curr_date.toString();
     }
 
-    return curr_year + "-" + monthString + "-" + dateString;
+    return curr_year + "/" + monthString + "/" + dateString;
   } else {
     return "";
   }

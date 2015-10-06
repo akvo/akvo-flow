@@ -131,6 +131,10 @@ public class QuestionDto extends BaseDto implements NamedObject {
         this.path = path;
     }
 
+    public QuestionType getQuestionType() {
+        return type;
+    }
+
     public String getQuestionTypeString() {
         return type.toString();
     }

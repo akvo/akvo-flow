@@ -20,7 +20,6 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.TreeMap;
 
 import org.springframework.beans.BeanUtils;
 import org.springframework.stereotype.Controller;
@@ -74,7 +73,7 @@ public class QuestionAnswerRestService {
                         .listQuestionsInOrder(questionAnswerStores.get(0)
                                 .getSurveyId(), null);
 
-                Map<Integer, QuestionAnswerStoreDto> orderedResults = new TreeMap<Integer, QuestionAnswerStoreDto>();
+                results = new ArrayList<>();
 
                 // sort the questionAnswers in the order of the questions
                 int notFoundCount = 0;
@@ -82,7 +81,7 @@ public class QuestionAnswerRestService {
                     for (QuestionAnswerStore qas : questionAnswerStores) {
                         QuestionAnswerStoreDto qasDto = new QuestionAnswerStoreDto();
                         DtoMarshaller.copyToDto(qas, qasDto);
-                        int idx = -1 - notFoundCount;
+                        int idx = -1;
                         for (int i = 0; i < qList.size(); i++) {
                             if (Long.parseLong(qas.getQuestionID()) == qList
                                     .get(i).getKey().getId()) {
@@ -92,21 +91,26 @@ public class QuestionAnswerRestService {
                                 break;
                             }
                         }
-                        // do this to prevent collisions on the -1 key if there
-                        // is more than one questionAnswerStore item that isn't
-                        // in the question list. QuestionAnswerStores that don't
-                        // have a corresponding question are put at the front
-                        // of the map.
+                        
+                        // Store not found items at the beginning
                         if (idx < 0) {
-                            notFoundCount++;
+                            results.add(notFoundCount++, qasDto);
+                            continue;
                         }
-                        orderedResults.put(idx, qasDto);
+                        
+                        idx += notFoundCount;
+                        while (results.size() < idx + 1) {
+                            // Make sure we have enough room for the item
+                            results.add(null);
+                        }
+                        results.add(idx, qasDto);
                     }
                 }
-                results = new ArrayList<QuestionAnswerStoreDto>(
-                        orderedResults.values());
             }
         }
+        
+        // FIXME: use a better solution for removing null items...
+        while(results.remove(null));
 
         response.put("question_answers", results);
         return response;

@@ -38,6 +38,7 @@ import java.util.TimeZone;
 import java.util.TreeMap;
 import java.util.zip.GZIPInputStream;
 
+import org.apache.commons.codec.binary.Base64;
 import org.apache.log4j.Logger;
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -77,21 +78,21 @@ public class BulkDataServiceClient {
 
     /**
      * lists all responses from the server for a surveyInstance submission as a map of values keyed
-     * on questionId
+     * on questionId and iteration
      *
      * @param instanceId
      * @param serverBase
      * @return
      * @throws Exception
      */
-    public static Map<String, String> fetchQuestionResponses(String instanceId,
+    public static Map<Long, Map<Long, String>> fetchQuestionResponses(String instanceId,
             String serverBase, String apiKey) throws Exception {
         String instanceValues = fetchDataFromServer(serverBase
                 + DATA_SERVLET_PATH, "?action="
-                        + DataBackoutRequest.LIST_INSTANCE_RESPONSE_ACTION + "&"
-                        + DataBackoutRequest.SURVEY_INSTANCE_ID_PARAM + "="
-                        + instanceId, true, apiKey);
-        return parseInstanceValues(instanceValues);
+                + DataBackoutRequest.LIST_INSTANCE_RESPONSE_ACTION + "&"
+                + DataBackoutRequest.SURVEY_INSTANCE_ID_PARAM + "="
+                + instanceId, true, apiKey);
+        return parseSurveyInstanceResponse(instanceValues);
     }
 
     public static List<DeviceFilesDto> fetchDeviceFiles(String statusCode,
@@ -284,14 +285,14 @@ public class BulkDataServiceClient {
 
         String instanceString = fetchDataFromServer(serverBase
                 + DATA_SERVLET_PATH, "?action="
-                        + DataBackoutRequest.LIST_INSTANCE_ACTION + "&"
-                        + DataBackoutRequest.SURVEY_ID_PARAM + "=" + surveyId + "&"
-                        + DataBackoutRequest.INCLUDE_DATE_PARAM + "=true" + "&"
-                        + DataBackoutRequest.LAST_COLLECTION_PARAM + "="
-                        + lastCollection + "&"
-                        + DataBackoutRequest.FROM_DATE_PARAM + "=" + from + "&"
-                        + DataBackoutRequest.TO_DATE_PARAM + "=" + to + "&"
-                        + DataBackoutRequest.LIMIT_PARAM + "=" + limit, true, apiKey);
+                + DataBackoutRequest.LIST_INSTANCE_ACTION + "&"
+                + DataBackoutRequest.SURVEY_ID_PARAM + "=" + surveyId + "&"
+                + DataBackoutRequest.INCLUDE_DATE_PARAM + "=true" + "&"
+                + DataBackoutRequest.LAST_COLLECTION_PARAM + "="
+                + lastCollection + "&"
+                + DataBackoutRequest.FROM_DATE_PARAM + "=" + from + "&"
+                + DataBackoutRequest.TO_DATE_PARAM + "=" + to + "&"
+                + DataBackoutRequest.LIMIT_PARAM + "=" + limit, true, apiKey);
 
         if (instanceString != null && instanceString.trim().length() != 0) {
             StringTokenizer strTok = new StringTokenizer(instanceString, ",");
@@ -323,47 +324,39 @@ public class BulkDataServiceClient {
     }
 
     /**
-     * method to parse SurveyInstance response values
-     *
-     * @param data
+     * Parse a survey instance response into a map of answers keyed first by question id and then by
+     * iteration
+     * 
+     * @param responseData
      * @return
      */
-    private static Map<String, String> parseInstanceValues(String data) {
-        Map<String, String> responseMap = new HashMap<String, String>();
-        if (data != null) {
-            StringTokenizer lines = new StringTokenizer(data, "\n");
-            if (lines != null) {
-                while (lines.hasMoreTokens()) {
-                    StringTokenizer strTok = new StringTokenizer(
-                            lines.nextToken(), ",");
-                    String key = null;
-                    String val = "";
-                    if (strTok.hasMoreTokens()) {
-                        key = strTok.nextToken();
-                    }
-                    while (strTok.hasMoreTokens()) {
-                        if (val.length() > 0) {
-                            val += ",";
-                        }
-                        val += strTok.nextToken();
-                    }
-                    if (key != null && key.trim().length() > 0) {
-                        String oldVal = responseMap.get(key);
-                        if (oldVal != null) {
-                            if (val != null) {
-                                if (oldVal.trim().length() < val.trim()
-                                        .length()) {
-                                    responseMap.put(key, val);
-                                }
-                            }
-                        } else {
-                            responseMap.put(key, val);
-                        }
-                    }
-                }
+    private static final Map<Long, Map<Long, String>> parseSurveyInstanceResponse(
+            String responseData) {
+
+        log.debug(responseData);
+        Map<Long, Map<Long, String>> result = new HashMap<>();
+        StringTokenizer lines = new StringTokenizer(responseData, "\n");
+
+        while (lines.hasMoreTokens()) {
+            String line = lines.nextToken();
+            String[] tokens = line.split(",");
+
+            Long questionId = Long.valueOf(tokens[0]);
+            Long iteration = Long.valueOf(tokens[1]);
+            String value = new String(Base64.decodeBase64(tokens[2]));
+
+            Map<Long, String> iterationMap = result.get(questionId);
+            if (iterationMap != null) {
+                assert iterationMap.get(iteration) == null;
+                iterationMap.put(iteration, value);
+            } else {
+                Map<Long, String> newIterationMap = new HashMap<>();
+                newIterationMap.put(iteration, value);
+                result.put(questionId, newIterationMap);
             }
+
         }
-        return responseMap;
+        return result;
     }
 
     /**
@@ -380,9 +373,9 @@ public class BulkDataServiceClient {
 
         dtoList = parseQuestions(fetchDataFromServer(serverBase
                 + SURVEY_SERVLET_PATH, "?action="
-                        + SurveyRestRequest.GET_QUESTION_DETAILS_ACTION + "&"
-                        + SurveyRestRequest.QUESTION_ID_PARAM + "=" + questionId, true,
-                        apiKey));
+                + SurveyRestRequest.GET_QUESTION_DETAILS_ACTION + "&"
+                + SurveyRestRequest.QUESTION_ID_PARAM + "=" + questionId, true,
+                apiKey));
 
         if (dtoList != null && dtoList.size() > 0) {
             return dtoList.get(0);
@@ -438,9 +431,9 @@ public class BulkDataServiceClient {
             Long groupId, String apiKey) throws Exception {
         return parseQuestions(fetchDataFromServer(serverBase
                 + SURVEY_SERVLET_PATH, "?action="
-                        + SurveyRestRequest.LIST_QUESTION_ACTION + "&"
-                        + SurveyRestRequest.QUESTION_GROUP_ID_PARAM + "=" + groupId,
-                        true, apiKey));
+                + SurveyRestRequest.LIST_QUESTION_ACTION + "&"
+                + SurveyRestRequest.QUESTION_GROUP_ID_PARAM + "=" + groupId,
+                true, apiKey));
     }
 
     /**
@@ -455,9 +448,9 @@ public class BulkDataServiceClient {
             String serverBase, String apiKey) throws Exception {
         return parseSurveyInstance(fetchDataFromServer(serverBase
                 + SURVEY_SERVLET_PATH, "?action="
-                        + SurveyRestRequest.GET_SURVEY_INSTANCE_ACTION + "&"
-                        + SurveyRestRequest.INSTANCE_PARAM + "=" + id, true,
-                        apiKey));
+                + SurveyRestRequest.GET_SURVEY_INSTANCE_ACTION + "&"
+                + SurveyRestRequest.INSTANCE_PARAM + "=" + id, true,
+                apiKey));
     }
 
     /**
@@ -472,9 +465,9 @@ public class BulkDataServiceClient {
             String surveyId, String apiKey) throws Exception {
         return parseQuestionGroups(fetchDataFromServer(serverBase
                 + SURVEY_SERVLET_PATH, "?action="
-                        + SurveyRestRequest.LIST_GROUP_ACTION + "&"
-                        + SurveyRestRequest.SURVEY_ID_PARAM + "=" + surveyId, true,
-                        apiKey));
+                + SurveyRestRequest.LIST_GROUP_ACTION + "&"
+                + SurveyRestRequest.SURVEY_ID_PARAM + "=" + surveyId, true,
+                apiKey));
     }
 
     /**
@@ -840,7 +833,7 @@ public class BulkDataServiceClient {
 
                             if (json.has("allowMultipleFlag")
                                     && !"null"
-                                    .equalsIgnoreCase(json.getString("allowMultipleFlag"))) {
+                                            .equalsIgnoreCase(json.getString("allowMultipleFlag"))) {
                                 dto.setAllowMultipleFlag(json.getBoolean("allowMultipleFlag"));
                             }
                             if (json.has("allowOtherFlag")
@@ -983,8 +976,8 @@ public class BulkDataServiceClient {
                                                     .getInt("order"));
                                             if (optJson.has("translationMap")
                                                     && !JSONObject.NULL
-                                                    .equals(optJson
-                                                            .get("translationMap"))) {
+                                                            .equals(optJson
+                                                                    .get("translationMap"))) {
                                                 opt.setTranslationMap(parseTranslations(optJson
                                                         .getJSONObject("translationMap")));
                                             }
@@ -1067,7 +1060,7 @@ public class BulkDataServiceClient {
      */
     public static String fetchDataFromServer(String baseUrl,
             String queryString, boolean shouldSign, String apiKey)
-                    throws Exception {
+            throws Exception {
         if (shouldSign && apiKey != null) {
             if (queryString == null) {
                 queryString = new String();

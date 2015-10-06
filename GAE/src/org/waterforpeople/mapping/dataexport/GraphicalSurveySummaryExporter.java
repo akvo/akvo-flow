@@ -19,8 +19,8 @@ package org.waterforpeople.mapping.dataexport;
 import java.awt.GraphicsEnvironment;
 import java.io.File;
 import java.io.FileOutputStream;
-import java.io.PrintWriter;
 import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
 import java.text.DateFormat;
 import java.text.DecimalFormat;
 import java.text.NumberFormat;
@@ -35,6 +35,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
+import java.util.SortedMap;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.ThreadPoolExecutor;
@@ -92,6 +93,8 @@ public class GraphicalSurveySummaryExporter extends SurveySummaryExporter {
 
     private static final String DEFAULT_IMAGE_PREFIX = "http://waterforpeople.s3.amazonaws.com/images/";
 
+    private static final String DIGEST_COLUMN = "NO_TITLE_DIGEST_COLUMN";
+
     private static final Map<String, String> REPORT_HEADER;
     private static final Map<String, String> FREQ_LABEL;
     private static final Map<String, String> PCT_LABEL;
@@ -101,6 +104,7 @@ public class GraphicalSurveySummaryExporter extends SurveySummaryExporter {
     private static final Map<String, String> SUB_DATE_LABEL;
     private static final Map<String, String> SUBMITTER_LABEL;
     private static final Map<String, String> DURATION_LABEL;
+    private static final Map<String, String> REPEAT_LABEL;
     private static final Map<String, String> MEAN_LABEL;
     private static final Map<String, String> MODE_LABEL;
     private static final Map<String, String> MEDIAN_LABEL;
@@ -219,6 +223,10 @@ public class GraphicalSurveySummaryExporter extends SurveySummaryExporter {
         DURATION_LABEL.put("en", "Duration");
         DURATION_LABEL.put("es", "Duración");
 
+        REPEAT_LABEL = new HashMap<String, String>();
+        REPEAT_LABEL.put("en", "Repeat no.");
+        REPEAT_LABEL.put("es", "No. repetición");
+
         LOADING_QUESTIONS = new HashMap<String, String>();
         LOADING_QUESTIONS.put("en", "Loading Questions");
         LOADING_QUESTIONS.put("es", "Cargando de preguntas");
@@ -292,7 +300,9 @@ public class GraphicalSurveySummaryExporter extends SurveySummaryExporter {
     private boolean generateCharts;
     private Map<Long, QuestionDto> questionsById;
     private boolean lastCollection = false;
-    private List<Long> displayNameQuestionIds = new ArrayList<Long>();
+
+    // store indices of file columns for lookup when generating responses
+    private Map<String, Integer> columnIndexMap = new HashMap<String, Integer>();
 
     @Override
     public void export(Map<String, String> criteria, File fileName,
@@ -305,7 +315,6 @@ public class GraphicalSurveySummaryExporter extends SurveySummaryExporter {
         questionsById = new HashMap<Long, QuestionDto>();
         currentStep = 1;
         this.serverBase = serverBase;
-        PrintWriter pw = null;
         boolean useQuestionId = "true".equals(options.get("useQuestionId"));
         String from = options.get("from");
         String to = options.get("to");
@@ -321,9 +330,6 @@ public class GraphicalSurveySummaryExporter extends SurveySummaryExporter {
                 for (List<QuestionDto> qList : questionMap.values()) {
                     for (QuestionDto q : qList) {
                         questionsById.put(q.getKeyId(), q);
-                        if (q.getLocaleNameFlag() != null && q.getLocaleNameFlag()) {
-                            displayNameQuestionIds.add(q.getKeyId());
-                        }
                     }
                 }
             }
@@ -389,13 +395,8 @@ public class GraphicalSurveySummaryExporter extends SurveySummaryExporter {
                         + criteria.get(SurveyRestRequest.SURVEY_ID_PARAM) + " - instance: "
                         + serverBase);
             }
-
         } catch (Exception e) {
             log.error("Error generating report: " + e.getMessage(), e);
-        } finally {
-            if (pw != null) {
-                pw.close();
-            }
         }
     }
 
@@ -418,7 +419,6 @@ public class GraphicalSurveySummaryExporter extends SurveySummaryExporter {
         final String key = apiKey;
 
         final Sheet sheet = wb.createSheet(RAW_DATA_LABEL.get(locale));
-        int curRow = 1;
 
         final Map<String, String> collapseIdMap = new HashMap<String, String>();
         final Map<String, String> nameToIdMap = new HashMap<String, String>();
@@ -438,18 +438,14 @@ public class GraphicalSurveySummaryExporter extends SurveySummaryExporter {
         final List<String> questionIdList = (List<String>) results[0];
         final List<String> unsummarizable = (List<String>) results[1];
 
-        SwingUtilities.invokeLater(new StatusUpdater(currentStep++,
-                LOADING_INSTANCES.get(locale)));
         Map<String, String> instanceMap = BulkDataServiceClient
                 .fetchInstanceIds(surveyId, serverBase, key, lastCollection, from, to, limit);
-        SwingUtilities.invokeLater(new StatusUpdater(currentStep++,
-                LOADING_INSTANCE_DETAILS.get(locale)));
 
-        final List<RowData> allData = new ArrayList<RowData>();
+        final List<InstanceData> allData = new ArrayList<>();
         int started = 0;
         for (Entry<String, String> instanceEntry : instanceMap.entrySet()) {
             final String instanceId = instanceEntry.getKey();
-            final String dateString = instanceEntry.getValue();
+            final String submissionDate = instanceEntry.getValue();
             started++;
             threadPool.execute(new Runnable() {
                 @Override
@@ -460,7 +456,8 @@ public class GraphicalSurveySummaryExporter extends SurveySummaryExporter {
                     while (!done && attempts < 10) {
                         try {
 
-                            Map<String, String> responseMap = BulkDataServiceClient
+                            // responseMap is a map from question-id -> iteration -> value
+                            Map<Long, Map<Long, String>> responseMap = BulkDataServiceClient
                                     .fetchQuestionResponses(instanceId,
                                             serverBase, key);
 
@@ -468,16 +465,12 @@ public class GraphicalSurveySummaryExporter extends SurveySummaryExporter {
                                     .findSurveyInstance(
                                             Long.parseLong(instanceId.trim()),
                                             serverBase, key);
+
                             if (dto != null) {
                                 done = true;
                             }
                             synchronized (allData) {
-                                RowData rd = new RowData();
-                                rd.setResponseMap(responseMap);
-                                rd.setDto(dto);
-                                rd.setInstanceId(instanceId);
-                                rd.setDateString(dateString);
-                                allData.add(rd);
+                                allData.add(new InstanceData(dto, submissionDate, responseMap));
                             }
 
                         } catch (Exception e) {
@@ -502,17 +495,227 @@ public class GraphicalSurveySummaryExporter extends SurveySummaryExporter {
             }
         }
         // write the data now
-        for (RowData rd : allData) {
-            Row row = getRow(curRow++, sheet);
-            writeRow(row, rd.getDto(), rd.getResponseMap(), rd.getDateString(),
-                    rd.getInstanceId(), generateSummary, questionIdList,
-                    unsummarizable, nameToIdMap, collapseIdMap, model, useQuestionId);
+        int currentRow = 1;
+        for (InstanceData instanceData : allData) {
+            currentRow = writeInstanceData(sheet, currentRow, instanceData, generateSummary,
+                    questionIdList,
+                    unsummarizable,
+                    nameToIdMap, collapseIdMap, model, useQuestionId);
         }
 
         SwingUtilities.invokeLater(new StatusUpdater(currentStep++,
                 WRITING_RAW_DATA.get(locale)));
         threadPool.shutdown();
         return model;
+    }
+
+    /**
+     * @param sheet
+     * @param startRow The start row for this instance
+     * @param instanceData
+     * @param generateSummary
+     * @param questionIdList
+     * @param unsummarizable
+     * @param nameToIdMap
+     * @param collapseIdMap
+     * @param model
+     * @param useQuestionId
+     * @return The row where the next instance should be written
+     * @throws NoSuchAlgorithmException
+     */
+    private synchronized int writeInstanceData(Sheet sheet, final int startRow,
+            InstanceData instanceData,
+            boolean generateSummary, List<String> questionIdList, List<String> unsummarizable,
+            Map<String, String> nameToIdMap, Map<String, String> collapseIdMap, SummaryModel model,
+            boolean useQuestionId) throws NoSuchAlgorithmException {
+
+        // maxRow will increase when we write repeatable question groups
+        int maxRow = startRow;
+
+        MessageDigest digest = MessageDigest.getInstance("MD5");
+
+        SurveyInstanceDto dto = instanceData.surveyInstanceDto;
+
+        Row row = getRow(startRow, sheet);
+
+        createCell(row, columnIndexMap.get(IDENTIFIER_LABEL.get(locale)),
+                dto.getSurveyedLocaleIdentifier());
+        // Write the "Repeat" column
+        for (int i = 0; i <= instanceData.maxIterationsCount; i++) {
+            Row r = getRow(row.getRowNum() + i, sheet);
+            createCell(r, columnIndexMap.get(REPEAT_LABEL.get(locale)), String.valueOf(i + 1),
+                    null, Cell.CELL_TYPE_NUMERIC);
+        }
+        createCell(row, columnIndexMap.get(DISPLAY_NAME_LABEL.get(locale)),
+                dto.getSurveyedLocaleDisplayName());
+        createCell(row, columnIndexMap.get(DEVICE_IDENTIFIER_LABEL.get(locale)),
+                dto.getDeviceIdentifier());
+        createCell(row, columnIndexMap.get(INSTANCE_LABEL.get(locale)), dto.getKeyId().toString());
+        createCell(row, columnIndexMap.get(SUB_DATE_LABEL.get(locale)), instanceData.submissionDate);
+        createCell(row, columnIndexMap.get(SUBMITTER_LABEL.get(locale)),
+                sanitize(dto.getSubmitterName()));
+        String duration = getDurationText(dto.getSurveyalTime());
+        createCell(row, columnIndexMap.get(DURATION_LABEL.get(locale)), duration);
+        digest.update(duration.getBytes());
+
+        for (String q : questionIdList) {
+            final Long questionId = Long.valueOf(q);
+            final QuestionDto questionDto = questionsById.get(questionId);
+
+            SortedMap<Long, String> iterationsMap = instanceData.responseMap.get(questionId);
+
+            if (iterationsMap == null) {
+                continue;
+            }
+
+            // Write downwards (and possibly rightwards) per iteration
+            int rowOffset = -1;
+            for (Map.Entry<Long, String> iteration : iterationsMap.entrySet()) {
+                String val = iteration.getValue();
+                rowOffset++;
+                Row iterationRow = getRow(startRow + rowOffset, sheet);
+                writeAnswer(sheet, iterationRow, columnIndexMap.get(q), questionDto,
+                        val,
+                        useQuestionId,
+                        digest);
+
+            }
+            maxRow = Math.max(maxRow, startRow + rowOffset);
+        }
+
+        if (!useQuestionId) {
+            // now add 1 more col that contains the digest
+            createCell(row, columnIndexMap.get(DIGEST_COLUMN),
+                    StringUtil.toHexString(digest.digest()), null);
+        }
+
+        return maxRow + 1;
+    }
+
+    /**
+     * @param sheet
+     * @param row
+     * @param startColumn
+     * @param questionDto
+     * @param value
+     * @param useQuestionId
+     * @param digest
+     */
+    private void writeAnswer(
+            Sheet sheet,
+            Row row,
+            int startColumn,
+            QuestionDto questionDto,
+            final String value,
+            boolean useQuestionId,
+            MessageDigest digest) {
+
+        assert value != null;
+
+        // Some question types splits the value into several columns.
+        List<String> cells = new ArrayList<>();
+
+        QuestionType questionType = questionDto.getQuestionType();
+        Long questionId = questionDto.getKeyId();
+
+        switch (questionType) {
+            case DATE:
+                try {
+                    String val = DATE_FMT.format(new Date(Long.parseLong(value.trim())));
+                    cells.add(val);
+                } catch (Exception e) {
+                    log.error("Couldn't format value for question id: "
+                            + questionId + " -  " + e.getMessage(), e);
+                    cells.add("");
+                }
+                break;
+
+            case PHOTO:
+                if (value == null) {
+                    cells.add("");
+                    break;
+                }
+                final int filenameIndex = value.lastIndexOf("/") + 1;
+                String val = "";
+                if (filenameIndex > 0 && filenameIndex < value.length()) {
+                    val = imagePrefix + value.substring(filenameIndex);
+                }
+                cells.add(val);
+                break;
+
+            case GEO:
+                String[] geoParts = value.split("\\|");
+                int count = 0;
+                for (count = 0; count < geoParts.length; count++) {
+                    cells.add(geoParts[count]);
+                    digest.update(geoParts[count].getBytes());
+                }
+                // now handle any missing fields
+                for (int j = count; j < 4; j++) {
+                    cells.add("");
+                }
+                break;
+
+            case NUMBER:
+                val = value.trim();
+                cells.add(val);
+                digest.update(val.getBytes());
+                break;
+
+            case CASCADE:
+                if (useQuestionId) {
+                    String cellVal = value.trim();
+                    int levelCount = questionDto.getLevelNames().size();
+                    List<String> parts = new ArrayList<String>(Arrays.asList(cellVal
+                            .split("\\|", levelCount)));
+                    int padCount = levelCount - parts.size();
+
+                    for (int p = 0; p < padCount; p++) { // padding
+                        parts.add("");
+                    }
+
+                    cells.addAll(parts);
+                    for (String lVal : parts) {
+                        digest.update(lVal.getBytes());
+                    }
+                } else {
+                    String cellVal = value.replaceAll("\n", " ").trim();
+                    cells.add(cellVal);
+                    digest.update(cellVal.getBytes());
+                }
+                break;
+
+            case FREE_TEXT:
+            case GEOSHAPE:
+            case NAME:
+            case OPTION:
+            case SCAN:
+            case STRENGTH:
+            case TRACK:
+            case VIDEO:
+                String cellVal = value.replaceAll("\n", " ").trim();
+                cells.add(cellVal);
+                digest.update(cellVal.getBytes());
+                break;
+        }
+
+        int col = startColumn;
+        for (String cellValue : cells) {
+            if (questionType == QuestionType.NUMBER) {
+                createCell(row, col, cellValue, null, Cell.CELL_TYPE_NUMERIC);
+            } else {
+                createCell(row, col, cellValue);
+            }
+            col++; // also takes care of padding incase no cell content added
+        }
+    }
+
+    String sanitize(String s) {
+        if (s == null) {
+            return "";
+        } else {
+            return s.replaceAll("\n", " ").replaceAll("\t", "").trim();
+        }
     }
 
     private synchronized void writeRow(Row row, SurveyInstanceDto dto,
@@ -530,6 +733,7 @@ public class GraphicalSurveySummaryExporter extends SurveySummaryExporter {
         createCell(row, col++, instanceId, null);
         createCell(row, col++, dateString, null);
 
+        // No point for null check here.
         if (dto != null) {
             String name = dto.getSubmitterName();
             if (name != null) {
@@ -677,13 +881,28 @@ public class GraphicalSurveySummaryExporter extends SurveySummaryExporter {
 
         int columnIdx = 0;
 
+        columnIndexMap.put(IDENTIFIER_LABEL.get(locale), columnIdx);
         createCell(row, columnIdx++, IDENTIFIER_LABEL.get(locale), headerStyle);
+
+        columnIndexMap.put(REPEAT_LABEL.get(locale), columnIdx);
+        createCell(row, columnIdx++, REPEAT_LABEL.get(locale), headerStyle);
+
+        columnIndexMap.put(DISPLAY_NAME_LABEL.get(locale), columnIdx);
         createCell(row, columnIdx++, DISPLAY_NAME_LABEL.get(locale), headerStyle);
+
+        columnIndexMap.put(DEVICE_IDENTIFIER_LABEL.get(locale), columnIdx);
         createCell(row, columnIdx++, DEVICE_IDENTIFIER_LABEL.get(locale), headerStyle);
 
+        columnIndexMap.put(INSTANCE_LABEL.get(locale), columnIdx);
         createCell(row, columnIdx++, INSTANCE_LABEL.get(locale), headerStyle);
+
+        columnIndexMap.put(SUB_DATE_LABEL.get(locale), columnIdx);
         createCell(row, columnIdx++, SUB_DATE_LABEL.get(locale), headerStyle);
+
+        columnIndexMap.put(SUBMITTER_LABEL.get(locale), columnIdx);
         createCell(row, columnIdx++, SUBMITTER_LABEL.get(locale), headerStyle);
+
+        columnIndexMap.put(DURATION_LABEL.get(locale), columnIdx);
         createCell(row, columnIdx++, DURATION_LABEL.get(locale), headerStyle);
 
         List<String> questionIdList = new ArrayList<String>();
@@ -702,6 +921,7 @@ public class GraphicalSurveySummaryExporter extends SurveySummaryExporter {
                                 && !questionId.equals("");
 
                         String columnLocale = useQID ? "en" : locale;
+                        columnIndexMap.put(q.getKeyId().toString(), offset);
 
                         if (QuestionType.GEO == q.getType()) {
                             if (useQuestionId) {
@@ -767,6 +987,9 @@ public class GraphicalSurveySummaryExporter extends SurveySummaryExporter {
                     }
                 }
             }
+
+            // add digest column index
+            columnIndexMap.put(DIGEST_COLUMN, offset);
         }
         Object[] temp = new Object[2];
         temp[0] = questionIdList;
@@ -1025,6 +1248,9 @@ public class GraphicalSurveySummaryExporter extends SurveySummaryExporter {
     /**
      * creates a cell in the row passed in and sets the style and value (if non-null)
      */
+    protected Cell createCell(Row row, int col, String value) {
+        return createCell(row, col, value, null, -1);
+    }
 
     protected Cell createCell(Row row, int col, String value, CellStyle style) {
         return createCell(row, col, value, style, -1);
@@ -1062,22 +1288,15 @@ public class GraphicalSurveySummaryExporter extends SurveySummaryExporter {
      * finds or creates the row at the given index
      *
      * @param index
-     * @param rowLocalMax
      * @param sheet
      * @return
      */
     private synchronized Row getRow(int index, Sheet sheet) {
-        Row row = null;
-        if (index < sheet.getLastRowNum()) {
-            row = sheet.getRow(index);
-            if (row == null) {
-                row = sheet.createRow(index);
-            }
-        } else {
+
+        Row row = sheet.getRow(index);
+        if (row == null) {
             row = sheet.createRow(index);
         }
-        log.debug("Row " + index); // debug printout to study backward jumps
-
         return row;
 
     }
@@ -1203,6 +1422,7 @@ public class GraphicalSurveySummaryExporter extends SurveySummaryExporter {
     }
 
     public static void main(String[] args) {
+
         // Log4j stuff - http://stackoverflow.com/a/9003191
         ConsoleAppender console = new ConsoleAppender();
         console.setLayout(new PatternLayout("%d{ISO8601} [%t] %-5p %c - %m%n"));
@@ -1216,10 +1436,10 @@ public class GraphicalSurveySummaryExporter extends SurveySummaryExporter {
         options.put(LOCALE_OPT, "en");
         options.put(TYPE_OPT, RAW_ONLY_TYPE);
         options.put(LAST_COLLECTION_OPT, "false");
-        options.put("useQuestionId", "true");
+        options.put("useQuestionId", "false");
         options.put("email", "email@example.com");
-        options.put("from", "2013/02/03");
-        options.put("to", "2015/03/03");
+        options.put("from", null);
+        options.put("to", null);
         options.put("maxDataReportRows", null);
         criteria.put(SurveyRestRequest.SURVEY_ID_PARAM, args[2]);
         criteria.put("apiKey", args[3]);
@@ -1246,45 +1466,4 @@ public class GraphicalSurveySummaryExporter extends SurveySummaryExporter {
             }
         }
     }
-
-    private class RowData {
-        private Map<String, String> responseMap;
-        private String dateString;
-        private String instanceId;
-        private SurveyInstanceDto dto;
-
-        public Map<String, String> getResponseMap() {
-            return responseMap;
-        }
-
-        public void setResponseMap(Map<String, String> responseMap) {
-            this.responseMap = responseMap;
-        }
-
-        public String getDateString() {
-            return dateString;
-        }
-
-        public void setDateString(String dateString) {
-            this.dateString = dateString;
-        }
-
-        public String getInstanceId() {
-            return instanceId;
-        }
-
-        public void setInstanceId(String instanceId) {
-            this.instanceId = instanceId;
-        }
-
-        public SurveyInstanceDto getDto() {
-            return dto;
-        }
-
-        public void setDto(SurveyInstanceDto dto) {
-            this.dto = dto;
-        }
-
-    }
-
 }

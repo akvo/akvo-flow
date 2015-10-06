@@ -1380,7 +1380,7 @@ fieldset#assignmentDetails {
 input.hasDatepicker {
     display: inline;
     width: 95%;
-    background: rgb(250, 244, 230) url(../images/icon_cal.png) right center no-repeat;
+    background: rgb(250, 244, 230);
 }
 
 .dateRange div.activeDate,
@@ -3226,6 +3226,13 @@ span.qtnGroupHead {
 
 .qtnGroupTitle {
     margin: 3px 0 0.5em;
+    h1 {
+        color: rgba(141, 198, 63, 1);
+    }
+    input {
+        font-family: $bodyFont;
+        font-size: 1.8em;
+    }
 }
 
 .aQuestionSet header h1.qtnGroupTitle {
@@ -3970,11 +3977,19 @@ table.dataTable.notificationTable thead tr th a:visited {
 div.dataCollectedDate input {
     display: inline;
     height: 20px;
-    background: white url(../images/icon_cal.png) right center no-repeat;
+    background: white;
+}
+
+.dataDeviceId {
+    label {
+        input.hasDatepicker {
+            width: initial;
+        }
+    }
 }
 
 .filterData label {
-    display: inline;
+    display: inline-block;
 }
 
 label.collectedTo {
@@ -4042,14 +4057,6 @@ div.dataCollectedDate {
             text-transform: none;
         }
     }
-}
-
-.collectedFrom span {
-    display: block;
-}
-
-.collectedTo span {
-    display: block;
 }
 
 div.dataCollectedDate label {
@@ -6102,4 +6109,67 @@ li.disable {
     color: rgb(252, 159, 0);
     font-weight: bold;
     font-size: 1.2em;
+}
+
+/* Set device buttons on device tab to position: fixed */
+.deviceControls {
+    position: fixed;
+    top: 120px;
+    left: 0px;
+    right: 0px;
+    height: 40px;
+    z-index: 1;
+    background-color: white;
+    border-bottom: 1px solid $akvoBlack;
+    .dataTabMenu {
+        top: 8px;
+        background: white;
+    }
+    + .dataTable {
+        margin-top: 40px;
+    }
+    @media only screen and (max-width: 600px) {
+        height: 80px;
+        .dataTabMenu {
+            top: 48px;
+        }
+        + .dataTable {
+            margin-top: 80px;
+        }
+    }
+}
+
+/* Repeatable question groups */
+
+.questionGroupBlock {
+    header {
+        > .labelcheckbox {
+            display: inline-block;
+
+            .ember-checkbox {
+                width: initial;
+                margin: 5px 5px 5px 12px;
+                display: inline-block;
+            }
+        }
+    }
+}
+#inspectData {
+    h3 {
+        &.questionGroupName {
+            margin: 10px 0;
+        }
+    }
+    h5 {
+        &.iterationNumber {
+            margin: 16px 0px 5px 8px;
+        }
+    }
+}
+
+.groupSave {
+    .smallBtn {
+        margin-top: 0.75em;
+        margin-bottom: 0.75em;
+    }
 }
