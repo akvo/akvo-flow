@@ -10,7 +10,6 @@ FLOW.NavMapsView = FLOW.View.extend({
   polygons: [],
   mapZoomLevel: 0,
   mapCenter: null,
-  hierarchyCount: 0,
   hierarchyObjectAncestors: 0,
   previousObjectAncestors: 0,
   hierarchyObject: [],
@@ -171,7 +170,7 @@ FLOW.NavMapsView = FLOW.View.extend({
       }
 
       if(self.polygons.length > 0){
-        $('#projectGeoshape').html("Project geoshape onto main map");
+        //$('#projectGeoshape').html(Ember.String.loc('_project_geoshape_onto_main_map'));
         for(var i=0; i<self.polygons.length; i++){
           self.map.removeLayer(self.polygons[i]);
         }
@@ -588,7 +587,15 @@ FLOW.NavMapsView = FLOW.View.extend({
               for (column in pointData['answers']){
                 for(var i=0; i<questionsData['questions'].length; i++){
                   if (column.match(questionsData['questions'][i].id)) {
-                    clickedPointContent += '<div class="defListWrap"><dt>'+questionsData['questions'][i].display_text+'&nbsp;</dt>';
+                    //clickedPointContent += '<div class="defListWrap"><dt>'+questionsData['questions'][i].display_text+'&nbsp;</dt>';
+
+                    if(questionsData['questions'][i].type == "GEOSHAPE"){
+                      clickedPointContent += '<h4><div style="float: left">'
+                      +questionsData['questions'][i].display_text
+                      +'</div>&nbsp;<a style="float: right" id="projectGeoshape">'+Ember.String.loc('_project_geoshape_onto_main_map') +'</a></h4>';
+                    }else{
+                      clickedPointContent += '<h4>'+questionsData['questions'][i].display_text+'&nbsp;</h4>';
+                    }
 
                     //if question is of type, photo load a html image element
                     if(questionsData['questions'][i].type == "PHOTO"){
@@ -599,12 +606,14 @@ FLOW.NavMapsView = FLOW.View.extend({
                         +'<img src="'+image_filename+'" alt=""/></a>';
                       }
                       image +'</div>';
-                      clickedPointContent += '<dd>'+image+'</dd></div>';
+                      //clickedPointContent += '<dd>'+image+'</dd></div>';
+                      clickedPointContent += '<div style="float: left; width: 100%">'+image;
                     }else{
                       //if point is a geoshape, draw the shape in the side window
                       if(questionsData['questions'][i].type == "GEOSHAPE"){
                         if(pointData['answers'][column] !== "" && pointData['answers'][column] !== null && pointData['answers'][column] !== "null"){
-                          clickedPointContent += "<dd>";
+                          //clickedPointContent += "<dd>";
+                          clickedPointContent += '<div style="float: left; width: 100%">';
                           clickedPointContent += '<div id="geoShapeMap" style="width:100%; height: 100px; float: left"></div>';
                           geoshapeCheck = true;
                           geoshapeObject = JSON.parse(pointData['answers'][column]);
@@ -614,24 +623,27 @@ FLOW.NavMapsView = FLOW.View.extend({
                               self.geoshapeCoordinates.push([geoshapeCoordinatesArray[j][1], geoshapeCoordinatesArray[j][0]]);
                             }
 
-                            clickedPointContent += '<div style="float: left; width: 100%"><a id="projectGeoshape">Project geoshape onto main map</a></div>';
+                            //clickedPointContent += '<div style="float: left; width: 100%"><a id="projectGeoshape">Project geoshape onto main map</a></div>';
                             clickedPointContent += '<div style="float: left; width: 100%">Points: '+geoshapeObject['features'][0]['properties']['pointCount']+'</div>';
                             clickedPointContent += '<div style="float: left; width: 100%">Length: '+geoshapeObject['features'][0]['properties']['length']+'</div>';
                             clickedPointContent += '<div style="float: left; width: 100%">Area: '+geoshapeObject['features'][0]['properties']['area']+'</div>';
                           }
-                          clickedPointContent += '</dd></div>';
+                          //clickedPointContent += '</dd></div>';
                         }else{
-                          clickedPointContent += '<dd>&nbsp;</dd></div>';
+                          //clickedPointContent += '<dd>&nbsp;</dd></div>';
                         }
                       }else{
-                        clickedPointContent += "<dd>"+pointData['answers'][column]+"</dd></div>";
+                        //clickedPointContent += "<dd>"+pointData['answers'][column]+"</dd></div>";
+                        clickedPointContent += pointData['answers'][column];
                       }
                     }
+                    clickedPointContent += "&nbsp;</div></div><hr>";
                   }
                 }
               }
               clickedPointContent += '</dl>';
               $('#pointDetails').html(clickedPointContent);
+              $('hr').show();
 
               //if there's geoshape, draw it
               if(geoshapeCheck){
@@ -700,7 +712,8 @@ FLOW.NavMapsView = FLOW.View.extend({
     if(self.hierarchyObject.length > 0){
       self.manageHierarchy(parentFolderId);
     }else{
-      $.get('/rest/survey_groups'/*place survey_groups endpoint here*/
+      $.get('http://localhost:8080/akvo_flow_api/index.php/survey_groups/flowaglimmerofhope'/*place survey_groups endpoint here*/
+      //$.get('/rest/survey_groups'/*place survey_groups endpoint here*/
       , function(data, status){
         if(data['survey_groups'].length > 0){
           self.hierarchyObject = data['survey_groups'];
