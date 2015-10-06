@@ -8,7 +8,6 @@ function formatDate(date) {
 
 
 FLOW.QuestionAnswerView = Ember.View.extend({
-  templateName: 'navData/question-answer',
 
   isTextType: function(){
     return this.get('questionType') === 'FREE_TEXT' || this.get('questionType') === 'CASCADE';
@@ -145,4 +144,8 @@ FLOW.QuestionAnswerView = Ember.View.extend({
     // TODO should check for minus sign and decimal point, depending on question setting
     this.set('numberValue', this.get('numberValue').toString().replace(/[^\d.]/g, ""));
   }.observes('this.numberValue')
+});
+
+FLOW.QuestionAnswerInspectDataView = FLOW.QuestionAnswerView.extend({
+  templateName: 'navData/question-answer',
 });

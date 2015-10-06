@@ -320,9 +320,14 @@ FLOW.QuestionGroupItemView = FLOW.View.extend({
     FLOW.store.commit();
   },
 
-  repeatableCheckBoxChanged: function () {
-    this.set('showSaveCancelButton', true);
-  }.observes('this.content.repeatable'),
+  eventManager: Ember.Object.create({
+    click: function(event, clickedView) {
+      if (clickedView.type === 'checkbox') {
+        var parentView = clickedView.get('parentView');
+        parentView.set('showSaveCancelButton', true);
+      }
+    }
+  }),
 
   // fired when 'cancel' is clicked while showing edit group name field. Cancels the edit.
   cancelQuestionGroupNameEdit: function () {
