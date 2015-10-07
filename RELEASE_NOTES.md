@@ -5,6 +5,12 @@ Read more about the [Akvo Platform](http://www.akvo.org/blog/?p=4822).
 
 Akvo FLOW Dashboard release notes
 ----
+#1.9.1.1
+Date: 7 October 2015
+
+# Resolved issues
+* NPE when accessing the SurveyInstance Key before it's saved into the datastore [#1432]
+
 #1.9.1
 Date: 6 October 2015
 
