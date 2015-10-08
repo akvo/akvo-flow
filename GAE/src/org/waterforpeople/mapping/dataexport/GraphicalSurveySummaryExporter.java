@@ -27,6 +27,7 @@ import java.text.NumberFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.Date;
@@ -505,6 +506,7 @@ public class GraphicalSurveySummaryExporter extends SurveySummaryExporter {
 
         SwingUtilities.invokeLater(new StatusUpdater(currentStep++,
                 WRITING_RAW_DATA.get(locale)));
+
         threadPool.shutdown();
         return model;
     }
@@ -587,6 +589,47 @@ public class GraphicalSurveySummaryExporter extends SurveySummaryExporter {
             // now add 1 more col that contains the digest
             createCell(row, columnIndexMap.get(DIGEST_COLUMN),
                     StringUtil.toHexString(digest.digest()), null);
+        }
+
+        // Rebuild old response map format for from instanceData.responseMap
+        // Question id -> response
+        Map<String, String> responseMap = new HashMap<>();
+
+        for (Entry<Long, SortedMap<Long, String>> entry : instanceData.responseMap.entrySet()) {
+            String questionId = entry.getKey().toString();
+
+            // Pick the first iteration response since we currently don't support Repeatable
+            // Question Groups
+            Collection<String> iterations = entry.getValue().values();
+            if (!iterations.isEmpty()) {
+                String response = iterations.iterator().next();
+                responseMap.put(questionId, response);
+            }
+        }
+
+        if (generateSummary && responseMap != null) {
+            Set<String> rollups = null;
+            if (rollupOrder != null && rollupOrder.size() > 0) {
+                rollups = formRollupStrings(responseMap);
+            }
+            for (Entry<String, String> entry : responseMap.entrySet()) {
+                if (!unsummarizable.contains(entry.getKey())) {
+                    String effectiveId = entry.getKey();
+                    if (nameToIdMap.get(effectiveId) != null) {
+                        effectiveId = collapseIdMap.get(nameToIdMap
+                                .get(effectiveId));
+                    }
+                    String[] vals = entry.getValue().split("\\|");
+                    synchronized (model) {
+                        for (int i = 0; i < vals.length; i++) {
+                            if (vals[i] != null && vals[i].trim().length() > 0) {
+                                model.tallyResponse(effectiveId, rollups,
+                                        vals[i]);
+                            }
+                        }
+                    }
+                }
+            }
         }
 
         return maxRow + 1;
@@ -1434,7 +1477,7 @@ public class GraphicalSurveySummaryExporter extends SurveySummaryExporter {
         Map<String, String> criteria = new HashMap<String, String>();
         Map<String, String> options = new HashMap<String, String>();
         options.put(LOCALE_OPT, "en");
-        options.put(TYPE_OPT, RAW_ONLY_TYPE);
+        // options.put(TYPE_OPT, RAW_ONLY_TYPE);
         options.put(LAST_COLLECTION_OPT, "false");
         options.put("useQuestionId", "false");
         options.put("email", "email@example.com");
