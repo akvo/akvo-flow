@@ -5,6 +5,12 @@ Read more about the [Akvo Platform](http://www.akvo.org/blog/?p=4822).
 
 Akvo FLOW Dashboard release notes
 ----
+#1.9.1.3
+Date: 7 October 2015
+
+# Resolved issues
+* Enable dependencies to option questions within a repeat question group [#1439]
+
 #1.9.1.1
 Date: 7 October 2015
 
