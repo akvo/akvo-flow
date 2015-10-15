@@ -23,13 +23,13 @@
             </a>
           {{/each}}
         </div>
-        <dl class="floats-in">
+        <div class="mapInfoDetail">
           {{#each arrangedContent}}
-            {{placemarkDetail}}
+            <p>{{placemarkDetail}}</p>
           {{else}}
             <p class="noDetails">{{t _no_details}}</p>
           {{/each}}
-        </dl>
+        </div>
       {{else}}
         <p class="noDetails">{{t _no_details}}</p>
       {{/if}}
