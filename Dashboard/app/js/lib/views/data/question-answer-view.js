@@ -10,7 +10,11 @@ function formatDate(date) {
 FLOW.QuestionAnswerView = Ember.View.extend({
 
   isTextType: function(){
-    return this.get('questionType') === 'FREE_TEXT' || this.get('questionType') === 'CASCADE';
+    return this.get('questionType') === 'FREE_TEXT';
+  }.property('this.questionType'),
+
+  isCascadeType: function(){
+    return this.get('questionType') === 'CASCADE';
   }.property('this.questionType'),
 
   isOptionType: function(){
@@ -73,6 +77,30 @@ FLOW.QuestionAnswerView = Ember.View.extend({
   date: null,
 
   numberValue: null,
+
+  cascadeValue: function(key, value, previousValue){
+    var c = this.content;
+
+    // getter
+    var cascadeString = "", cascadeJson;
+    if (c && c.get('value')) {
+      if (c.get('value').indexOf("|") > -1) {
+        cascadeString += c.get('value');
+      } else {
+        cascadeJson = JSON.parse(c.get('value'));
+        for (var i = 0; i < cascadeJson.length; i++) {
+          cascadeString +=  cascadeJson[i].name + "|";
+        }
+
+        // strip last pipe
+        if (cascadeString.charAt(cascadeString.length - 1) === "|") {
+          cascadeString = cascadeString.substr(0, cascadeString.length - 1);
+        }
+      }
+      return cascadeString;
+    }
+    return null;
+  }.property('this.content'),
 
   photoUrl: function(){
     var c = this.content;

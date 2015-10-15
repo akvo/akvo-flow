@@ -40,9 +40,11 @@
             {{else}}
                 {{#if view.isDateType}}
                     <a {{action doEdit target="this" }}>{{date3 value}}</a>
+                {{else}} {{#if view.isCascadeType}}
+                    <a {{action doEdit target="this" }}>{{view.cascadeValue}}</a>
                 {{else}}
                     <a {{action doEdit target="this" }}>{{value}}{{if_blank value}}</a>
-                {{/if}}
+                {{/if}} {{/if}}
             {{/if}}
         {{/if}}
     </td>
