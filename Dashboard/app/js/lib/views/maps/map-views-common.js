@@ -582,7 +582,7 @@ FLOW.NavMapsView = FLOW.View.extend({
               +date.toUTCString()
               +'</div></li><li></li></ul>';
 
-              clickedPointContent += '<dl class="floats-in" style="opacity: 1; display: inherit;">';
+              clickedPointContent += '<div class="mapInfoDetail" style="opacity: 1; display: inherit;">';
               for (column in pointData['answers']){
                 for(var i=0; i<questionsData['questions'].length; i++){
                   if (column.match(questionsData['questions'][i].id)) {
@@ -594,6 +594,8 @@ FLOW.NavMapsView = FLOW.View.extend({
                       clickedPointContent += '<h4>'+questionsData['questions'][i].display_text+'&nbsp;</h4>';
                     }
 
+                    clickedPointContent += '<div style="float: left; width: 100%">';
+
                     //if question is of type, photo load a html image element
                     if(questionsData['questions'][i].type == "PHOTO"){
                       var image = '<div class=":imgContainer photoUrl:shown:hidden">';
@@ -603,12 +605,11 @@ FLOW.NavMapsView = FLOW.View.extend({
                         +'<img src="'+image_filename+'" alt=""/></a>';
                       }
                       image +'</div>';
-                      clickedPointContent += '<div style="float: left; width: 100%">'+image;
+                      clickedPointContent += image;
                     }else{
                       //if point is a geoshape, draw the shape in the side window
                       if(questionsData['questions'][i].type == "GEOSHAPE"){
                         if(pointData['answers'][column] !== "" && pointData['answers'][column] !== null && pointData['answers'][column] !== "null"){
-                          clickedPointContent += '<div style="float: left; width: 100%">';
                           clickedPointContent += '<div id="geoShapeMap" style="width:100%; height: 100px; float: left"></div>';
                           geoshapeCheck = true;
                           geoshapeObject = JSON.parse(pointData['answers'][column]);
@@ -619,19 +620,19 @@ FLOW.NavMapsView = FLOW.View.extend({
                             }
 
                             clickedPointContent += '<div style="float: left; width: 100%">Points: '+geoshapeObject['features'][0]['properties']['pointCount']+'</div>';
-                            clickedPointContent += '<div style="float: left; width: 100%">Length: '+geoshapeObject['features'][0]['properties']['length']+'</div>';
-                            clickedPointContent += '<div style="float: left; width: 100%">Area: '+geoshapeObject['features'][0]['properties']['area']+'</div>';
+                            clickedPointContent += '<div style="float: left; width: 100%">Length: '+geoshapeObject['features'][0]['properties']['length']+'m</div>';
+                            clickedPointContent += '<div style="float: left; width: 100%">Area: '+geoshapeObject['features'][0]['properties']['area']+'m&sup2;</div>';
                           }
                         }
                       }else{
                         clickedPointContent += pointData['answers'][column];
                       }
                     }
-                    clickedPointContent += "&nbsp;</div></div><hr>";
+                    clickedPointContent += "&nbsp;</div><hr>";
                   }
                 }
               }
-              clickedPointContent += '</dl>';
+              clickedPointContent += '</div>';
               $('#pointDetails').html(clickedPointContent);
               $('hr').show();
 
