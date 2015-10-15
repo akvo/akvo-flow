@@ -702,8 +702,7 @@ FLOW.NavMapsView = FLOW.View.extend({
     if(self.hierarchyObject.length > 0){
       self.manageHierarchy(parentFolderId);
     }else{
-      $.get('http://localhost:8080/akvo_flow_api/index.php/survey_groups/flowaglimmerofhope'/*place survey_groups endpoint here*/
-      //$.get('/rest/survey_groups'/*place survey_groups endpoint here*/
+      $.get('/rest/survey_groups'/*place survey_groups endpoint here*/
       , function(data, status){
         if(data['survey_groups'].length > 0){
           self.hierarchyObject = data['survey_groups'];
