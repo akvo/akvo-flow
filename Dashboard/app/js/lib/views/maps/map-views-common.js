@@ -180,6 +180,10 @@ FLOW.NavMapsView = FLOW.View.extend({
       }
     });
 
+    map.on('zoomend', function() {
+      $('body, html, #flowMap').scrollTop(0);
+    });
+
     //manage folder and/or survey selection hierarchy
     self.checkHierarchy(0);
 
