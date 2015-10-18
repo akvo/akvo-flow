@@ -30,7 +30,7 @@ public class InstanceData {
     public final Map<Long, SortedMap<Long, String>> responseMap;
     public final SurveyInstanceDto surveyInstanceDto;
     public final String submissionDate;
-    public final long maxIterationsCount;
+    public long maxIterationsCount;
 
     public InstanceData(SurveyInstanceDto surveyInstanceDto,
             String submissionDate,

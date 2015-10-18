@@ -532,11 +532,12 @@ public class GraphicalSurveySummaryExporter extends SurveySummaryExporter {
         // maxRow will increase when we write repeatable question groups
         int maxRow = startRow;
 
-        MessageDigest digest = MessageDigest.getInstance("MD5");
-
         SurveyInstanceDto dto = instanceData.surveyInstanceDto;
 
         Row row = getRow(startRow, sheet);
+
+        // Collect the rows in a list for md5Calculation later.
+        List<Row> rows = new ArrayList<>();
 
         createCell(row, columnIndexMap.get(IDENTIFIER_LABEL.get(locale)),
                 dto.getSurveyedLocaleIdentifier());
@@ -556,8 +557,8 @@ public class GraphicalSurveySummaryExporter extends SurveySummaryExporter {
                 sanitize(dto.getSubmitterName()));
         String duration = getDurationText(dto.getSurveyalTime());
         createCell(row, columnIndexMap.get(DURATION_LABEL.get(locale)), duration);
-        digest.update(duration.getBytes());
 
+        boolean firstQuestion = true;
         for (String q : questionIdList) {
             final Long questionId = Long.valueOf(q);
             final QuestionDto questionDto = questionsById.get(questionId);
@@ -576,17 +577,21 @@ public class GraphicalSurveySummaryExporter extends SurveySummaryExporter {
                 Row iterationRow = getRow(startRow + rowOffset, sheet);
                 writeAnswer(sheet, iterationRow, columnIndexMap.get(q), questionDto,
                         val,
-                        useQuestionId,
-                        digest);
+                        useQuestionId);
 
+                if (firstQuestion) {
+                    rows.add(iterationRow);
+                }
             }
+            firstQuestion = false;
             maxRow = Math.max(maxRow, startRow + rowOffset);
         }
 
+        String digest = ExportUtils.md5Digest(rows, columnIndexMap.get(DIGEST_COLUMN));
+
         if (!useQuestionId) {
             // now add 1 more col that contains the digest
-            createCell(row, columnIndexMap.get(DIGEST_COLUMN),
-                    StringUtil.toHexString(digest.digest()), null);
+            createCell(row, columnIndexMap.get(DIGEST_COLUMN), digest, null);
         }
 
         return maxRow + 1;
@@ -607,8 +612,7 @@ public class GraphicalSurveySummaryExporter extends SurveySummaryExporter {
             int startColumn,
             QuestionDto questionDto,
             final String value,
-            boolean useQuestionId,
-            MessageDigest digest) {
+            boolean useQuestionId) {
 
         assert value != null;
 
@@ -648,7 +652,6 @@ public class GraphicalSurveySummaryExporter extends SurveySummaryExporter {
                 int count = 0;
                 for (count = 0; count < geoParts.length; count++) {
                     cells.add(geoParts[count]);
-                    digest.update(geoParts[count].getBytes());
                 }
                 // now handle any missing fields
                 for (int j = count; j < 4; j++) {
@@ -659,7 +662,6 @@ public class GraphicalSurveySummaryExporter extends SurveySummaryExporter {
             case NUMBER:
                 val = value.trim();
                 cells.add(val);
-                digest.update(val.getBytes());
                 break;
 
             case CASCADE:
@@ -675,13 +677,10 @@ public class GraphicalSurveySummaryExporter extends SurveySummaryExporter {
                     }
 
                     cells.addAll(parts);
-                    for (String lVal : parts) {
-                        digest.update(lVal.getBytes());
-                    }
+
                 } else {
                     String cellVal = value.replaceAll("\n", " ").trim();
                     cells.add(cellVal);
-                    digest.update(cellVal.getBytes());
                 }
                 break;
 
@@ -695,7 +694,6 @@ public class GraphicalSurveySummaryExporter extends SurveySummaryExporter {
             case VIDEO:
                 String cellVal = value.replaceAll("\n", " ").trim();
                 cells.add(cellVal);
-                digest.update(cellVal.getBytes());
                 break;
         }
 
@@ -706,7 +704,7 @@ public class GraphicalSurveySummaryExporter extends SurveySummaryExporter {
             } else {
                 createCell(row, col, cellValue);
             }
-            col++; // also takes care of padding incase no cell content added
+            col++; // also takes care of padding in case no cell content added
         }
     }
 

@@ -22,17 +22,20 @@ import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.PushbackInputStream;
+import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
 import java.security.MessageDigest;
 import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.SortedMap;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.ThreadPoolExecutor;
@@ -49,6 +52,7 @@ import org.apache.poi.ss.usermodel.Workbook;
 import org.apache.poi.ss.usermodel.WorkbookFactory;
 import org.waterforpeople.mapping.app.gwt.client.survey.QuestionDto;
 import org.waterforpeople.mapping.app.gwt.client.survey.QuestionDto.QuestionType;
+import org.waterforpeople.mapping.app.gwt.client.surveyinstance.SurveyInstanceDto;
 import org.waterforpeople.mapping.app.web.dto.RawDataImportRequest;
 import org.waterforpeople.mapping.dataexport.service.BulkDataServiceClient;
 
@@ -136,17 +140,65 @@ public class RawDataSpreadsheetImporter implements DataImporter {
         Map<Long, Long> columnIndexToQuestionId = processHeader(sheet);
         Map<Long, QuestionDto> questionIdToQuestionDto = fetchQuestions(serverBase, criteria);
 
+        List<InstanceData> instanceDataList = parseSheet(sheet, questionIdToQuestionDto,
+                columnIndexToQuestionId);
+
+        List<String> importUrls = new ArrayList<>();
+
+        for (InstanceData instanceData : instanceDataList) {
+            String importUrl = buildImportURL(instanceData, criteria.get("surveyId"),
+                    questionIdToQuestionDto);
+            importUrls.add(importUrl);
+        }
+
+        // TODO In parallell?
+        for (String importUrl : importUrls) {
+            invokeUrl(serverBase, importUrl, true, criteria.get("apiKey"));
+        }
     }
 
     /**
      * Parse a raw data report file into a list of InstanceData
-     *
-     * @param file
+     * 
+     * @param sheet
+     * @param columnIndexToQuestionId
+     * @param questionIdToQuestionDto
      * @return
      */
-    public List<InstanceData> parseSheet(Sheet sheet) throws Exception {
+    public List<InstanceData> parseSheet(Sheet sheet,
+            Map<Long, QuestionDto> questionIdToQuestionDto, Map<Long, Long> columnIndexToQuestionId)
+            throws Exception {
 
-        return null;
+        List<InstanceData> result = new ArrayList<>();
+        int md5Column = Collections.max(columnIndexToQuestionId.keySet()).intValue();
+
+        int row = 1;
+
+        while (true) {
+            InstanceData instanceData = parseInstance(sheet, row, questionIdToQuestionDto,
+                    columnIndexToQuestionId);
+
+            if (instanceData == null) {
+                break;
+            }
+
+            // Get all the parsed rows
+            List<Row> rows = new ArrayList<>();
+            for (int r = row; r < row + instanceData.maxIterationsCount; r++) {
+                rows.add(sheet.getRow(r));
+            }
+            String existingMd5Hash = sheet.getRow(row).getCell(md5Column)
+                    .getStringCellValue();
+            String newMd5Hash = ExportUtils.md5Digest(rows, md5Column - 1);
+
+            if (!newMd5Hash.equals(existingMd5Hash)) {
+                result.add(instanceData);
+            }
+
+            row += instanceData.maxIterationsCount;
+        }
+
+        return result;
     }
 
     /**
@@ -154,30 +206,37 @@ public class RawDataSpreadsheetImporter implements DataImporter {
      *
      * @param sheet
      * @param startRow
+     * @param columnIndexToQuestionId
+     * @param questionIdToQuestionDto
      * @return InstanceData
      */
-    public InstanceData parse(Sheet sheet, int startRow) {
+    public InstanceData parseInstance(Sheet sheet, int startRow,
+            Map<Long, QuestionDto> questionIdToQuestionDto, Map<Long, Long> columnIndexToQuestionId) {
 
         // File layout
         // 0. SurveyedLocaleIdentifier
+        // 7. Repeat
         // 1. SurveyedLocaleDisplayName
         // 2. DeviceIdentifier
         // 3. SurveyInstanceId
         // 4. CollectionDate
         // 5. SubmitterName
         // 6. SurveyalTime
-        // 7. Repeat
+
         // 8 - N. Questions
         // N + 1. Digest
 
         Row baseRow = sheet.getRow(startRow);
+        if (baseRow == null) {
+            return null;
+        }
         String surveyedLocaleIdentifier = baseRow.getCell(0).getStringCellValue();
-        String surveyedLocaleDisplayName = baseRow.getCell(1).getStringCellValue();
-        String deviceIdentifier = baseRow.getCell(2).getStringCellValue();
-        String surveyInstanceId = baseRow.getCell(3).getStringCellValue();
-        String collectionDate = baseRow.getCell(4).getStringCellValue();
-        String submitterName = baseRow.getCell(5).getStringCellValue();
-        String surveyalTime = baseRow.getCell(6).getStringCellValue();
+        String surveyedLocaleDisplayName = baseRow.getCell(2).getStringCellValue();
+        String deviceIdentifier = baseRow.getCell(3).getStringCellValue();
+        String surveyInstanceId = baseRow.getCell(4).getStringCellValue();
+        String collectionDate = baseRow.getCell(5).getStringCellValue();
+        String submitterName = baseRow.getCell(6).getStringCellValue();
+        String surveyalTime = baseRow.getCell(7).getStringCellValue();
         int firstQuestionColumn = 8;
 
         int iterations = 1;
@@ -185,13 +244,59 @@ public class RawDataSpreadsheetImporter implements DataImporter {
         // Count the number maximum number of iterations for this instance
         while (true) {
             Row row = sheet.getRow(startRow + iterations);
-            if (row == null || row.getCell(7).getStringCellValue().equals("1")) {
+            if (row == null || row.getCell(1).getNumericCellValue() == 1.0) {
                 break;
             }
             iterations++;
         }
 
-        return null;
+        // question-id -> iteration -> response
+        Map<Long, Map<Long, String>> responseMap = new HashMap<>();
+
+        for (Entry<Long, Long> m : columnIndexToQuestionId.entrySet()) {
+            long columnIndex = m.getKey();
+            long questionId = m.getValue();
+
+            for (int iter = 0; iter < iterations; iter++) {
+
+                Row iterationRow = sheet.getRow(startRow + iter);
+
+                long iteration = (long) iterationRow.getCell(1).getNumericCellValue();
+
+                Cell cell = iterationRow.getCell((int) columnIndex - 1);
+                String val = "";
+                if (cell != null) {
+                    val = ExportUtils.parseCellAsString(cell);
+
+                    if (val != null && !val.equals("")) {
+                        // Update response map
+                        // iteration -> response
+                        Map<Long, String> iterationToResponse = responseMap.get(questionId);
+
+                        if (iterationToResponse == null) {
+                            iterationToResponse = new HashMap<>();
+                            iterationToResponse.put(iteration - 1, val);
+                            responseMap.put(questionId, iterationToResponse);
+                        } else {
+                            iterationToResponse.put(iteration, val);
+                        }
+                    }
+                }
+            }
+        }
+
+        SurveyInstanceDto surveyInstanceDto = new SurveyInstanceDto();
+        surveyInstanceDto.setSurveyedLocaleIdentifier(surveyedLocaleIdentifier);
+        surveyInstanceDto.setSurveyedLocaleDisplayName(surveyedLocaleDisplayName);
+        surveyInstanceDto.setDeviceIdentifier(deviceIdentifier);
+        surveyInstanceDto.setKeyId(Long.parseLong(surveyInstanceId));
+        surveyInstanceDto.setCollectionDate(new Date()); // TODO: Parse collectionDate
+        surveyInstanceDto.setSubmitterName(submitterName);
+        surveyInstanceDto.setSurveyalTime((long) durationToSeconds(surveyalTime));
+
+        InstanceData instanceData = new InstanceData(surveyInstanceDto, collectionDate, responseMap);
+        instanceData.maxIterationsCount = (long) iterations;
+        return instanceData;
     }
 
     /**
@@ -208,7 +313,7 @@ public class RawDataSpreadsheetImporter implements DataImporter {
             if (cell.getStringCellValue().indexOf("|") > -1) {
                 String[] parts = cell.getStringCellValue().split("\\|");
                 if (parts[0].trim().length() > 0) {
-                    columnIndexToQuestionId.put(Long.valueOf(cell.getColumnIndex()),
+                    columnIndexToQuestionId.put(Long.valueOf(cell.getColumnIndex()) + 1,
                             Long.valueOf(parts[0].trim()));
                 }
             }
@@ -238,6 +343,82 @@ public class RawDataSpreadsheetImporter implements DataImporter {
 
         }
         return questionMap;
+    }
+
+    private static String buildImportURL(InstanceData instanceData, String surveyId,
+            Map<Long, QuestionDto> questionIdToQuestionDto)
+            throws UnsupportedEncodingException {
+
+        StringBuilder sb = new StringBuilder();
+        DateFormat df = new SimpleDateFormat("dd-MM-yyyy HH:mm:ss z");
+        SurveyInstanceDto dto = instanceData.surveyInstanceDto;
+
+        sb.append("action="
+                + RawDataImportRequest.SAVE_SURVEY_INSTANCE_ACTION
+                + "&" + RawDataImportRequest.SURVEY_ID_PARAM + "="
+                + surveyId + "&");
+
+        // Instance id
+        sb.append(RawDataImportRequest.SURVEY_INSTANCE_ID_PARAM + "="
+                + dto.getKeyId() + "&");
+
+        // Collection date
+        // TODO: null-check
+        String dateString = df.format(dto.getCollectionDate());
+
+        sb.append(
+                RawDataImportRequest.COLLECTION_DATE_PARAM + "="
+                        + URLEncoder.encode(dateString,
+                                "UTF-8") + "&");
+
+        // Submitter
+        sb.append("submitter=" + URLEncoder.encode(dto.getSubmitterName(), "UTF-8") + "&");
+
+        // Duration
+        sb.append("duration=" + dto.getSurveyalTime());
+
+        // questionId=123|0=sfijd|2=fjsoi|type=GEO&questionId=...
+        for (Entry<Long, SortedMap<Long, String>> entry : instanceData.responseMap
+                .entrySet()) {
+            Long questionId = entry.getKey();
+            SortedMap<Long, String> iterations = entry.getValue();
+
+            sb.append("&questionId=" + questionId);
+
+            for (Entry<Long, String> iterationEntry : iterations.entrySet()) {
+                Long iteration = iterationEntry.getKey();
+                String response = iterationEntry.getValue();
+
+                sb.append("|" + iteration + "=" + URLEncoder.encode(response, "UTF-8"));
+
+            }
+
+            String typeString = "VALUE";
+            QuestionDto questionDto = questionIdToQuestionDto.get(questionId);
+            if (questionDto != null) {
+                switch (questionDto.getQuestionType()) {
+                    case GEO:
+                        typeString = "GEO";
+                        break;
+                    case PHOTO:
+                        typeString = "IMAGE";
+                        break;
+                    case VIDEO:
+                        typeString = "VIDEO";
+                        break;
+                    case DATE:
+                        typeString = "DATE";
+                        break;
+                    default:
+                        break;
+                }
+            }
+
+            sb.append("|type=" + typeString);
+
+        }
+
+        return sb.toString();
     }
 
     @SuppressWarnings("unchecked")
@@ -408,7 +589,7 @@ public class RawDataSpreadsheetImporter implements DataImporter {
                             continue;
                         }
 
-                        String cellVal = parseCellAsString(cell);
+                        String cellVal = ExportUtils.parseCellAsString(cell);
                         if (cellVal != null) {
                             cellVal = cellVal.trim();
 
@@ -479,7 +660,7 @@ public class RawDataSpreadsheetImporter implements DataImporter {
                                             .startsWith("--")) {
 
                                 for (int i = 1; i < 4; i++) {
-                                    String nextVal = parseCellAsString(row
+                                    String nextVal = ExportUtils.parseCellAsString(row
                                             .getCell(cell.getColumnIndex() + i));
                                     cellVal += "|"
                                             + (nextVal != null ? nextVal : "");
@@ -506,7 +687,7 @@ public class RawDataSpreadsheetImporter implements DataImporter {
                         // as long as the user hasn't messed up the sheet, this
                         // is the md5 digest of the original data
                         try {
-                            String md5 = parseCellAsString(cell);
+                            String md5 = ExportUtils.parseCellAsString(cell);
                             String digestVal = StringUtil.toHexString(digest
                                     .digest());
                             if (md5 != null && md5.equals(digestVal)) {
@@ -688,7 +869,7 @@ public class RawDataSpreadsheetImporter implements DataImporter {
         return errorMap;
     }
 
-    public static void main(String[] args) {
+    public static void main(String[] args) throws Exception {
         if (args.length != 4) {
             log.error("Error.\nUsage:\n\tjava org.waterforpeople.mapping.dataexport.RawDataSpreadsheetImporter <file> <serverBase> <surveyId>");
             System.exit(1);
@@ -699,7 +880,8 @@ public class RawDataSpreadsheetImporter implements DataImporter {
         Map<String, String> configMap = new HashMap<String, String>();
         configMap.put(SURVEY_CONFIG_KEY, args[2].trim());
         configMap.put("apiKey", args[3].trim());
-        r.executeImport(file, serverBaseArg, configMap);
+        r.runImport(file, serverBaseArg, configMap);
+        // r.executeImport(file, serverBaseArg, configMap);
     }
 
     public Long getSurveyId() {
@@ -708,24 +890,6 @@ public class RawDataSpreadsheetImporter implements DataImporter {
 
     public void setSurveyId(Long surveyId) {
         this.surveyId = surveyId;
-    }
-
-    private String parseCellAsString(Cell cell) {
-        String val = null;
-        if (cell != null) {
-            switch (cell.getCellType()) {
-                case Cell.CELL_TYPE_BOOLEAN:
-                    val = cell.getBooleanCellValue() + "";
-                    break;
-                case Cell.CELL_TYPE_NUMERIC:
-                    val = cell.getNumericCellValue() + "";
-                    break;
-                default:
-                    val = cell.getStringCellValue();
-                    break;
-            }
-        }
-        return val;
     }
 
     /**
