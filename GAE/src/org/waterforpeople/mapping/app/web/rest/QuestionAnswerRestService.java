@@ -68,8 +68,7 @@ public class QuestionAnswerRestService {
     @RequestMapping(method = RequestMethod.GET, value = "")
     @ResponseBody
     public Map<String, List<QuestionAnswerStoreDto>> listQABySurveyInstanceId(
-            @RequestParam(value = "surveyInstanceId", defaultValue = "")
-            Long surveyInstanceId) {
+            @RequestParam(value = "surveyInstanceId", defaultValue = "") Long surveyInstanceId) {
         final Map<String, List<QuestionAnswerStoreDto>> response = new HashMap<String, List<QuestionAnswerStoreDto>>();
         List<QuestionAnswerStoreDto> results = new ArrayList<QuestionAnswerStoreDto>();
         List<QuestionAnswerStore> questionAnswerStores = null;
@@ -107,13 +106,13 @@ public class QuestionAnswerRestService {
                                 break;
                             }
                         }
-                        
+
                         // Store not found items at the beginning
                         if (idx < 0) {
                             results.add(notFoundCount++, qasDto);
                             continue;
                         }
-                        
+
                         idx += notFoundCount;
                         while (results.size() < idx + 1) {
                             // Make sure we have enough room for the item
@@ -124,9 +123,10 @@ public class QuestionAnswerRestService {
                 }
             }
         }
-        
+
         // FIXME: use a better solution for removing null items...
-        while(results.remove(null));
+        while (results.remove(null))
+            ;
 
         response.put("question_answers", results);
         return response;
@@ -137,8 +137,7 @@ public class QuestionAnswerRestService {
     @RequestMapping(method = RequestMethod.GET, value = "/{id}")
     @ResponseBody
     public Map<String, QuestionAnswerStoreDto> findQuestionAnswerStore(
-            @PathVariable("id")
-            Long id) {
+            @PathVariable("id") Long id) {
         final Map<String, QuestionAnswerStoreDto> response = new HashMap<String, QuestionAnswerStoreDto>();
         QuestionAnswerStoreDao qaDao = new QuestionAnswerStoreDao();
         QuestionAnswerStore s = qaDao.getByKey(id);
@@ -156,9 +155,8 @@ public class QuestionAnswerRestService {
     @RequestMapping(method = RequestMethod.PUT, value = "/{id}")
     @ResponseBody
     public Map<String, Object> saveExistingQuestionAnswerStore(
-            @RequestBody
-            QuestionAnswerStorePayload payLoad) {
-        final QuestionAnswerStoreDto questionAnswerStoreDto = payLoad
+            @RequestBody QuestionAnswerStorePayload payLoad) {
+        final QuestionAnswerStoreDto requestDto = payLoad
                 .getQuestion_answer();
 
         final RestStatusDto statusDto = new RestStatusDto();
