@@ -241,10 +241,8 @@ public class RawDataImportRequest extends RestRequest {
                                     }
                                 }
                             }
-
                         }
                     }
-
                 }
             }
         }

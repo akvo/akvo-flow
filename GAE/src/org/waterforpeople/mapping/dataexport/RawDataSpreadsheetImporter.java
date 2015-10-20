@@ -32,6 +32,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
@@ -151,10 +152,30 @@ public class RawDataSpreadsheetImporter implements DataImporter {
             importUrls.add(importUrl);
         }
 
-        // TODO In parallell?
         for (String importUrl : importUrls) {
-            invokeUrl(serverBase, importUrl, true, criteria.get("apiKey"));
+            invokeUrl(serverBase, importUrl, true, criteria.get(KEY_PARAM));
         }
+
+        Iterator<Row> rowIterator = sheet.rowIterator();
+        int rowCount = 0;
+        while (rowIterator.hasNext()) {
+            rowIterator.next();
+            rowCount++;
+        }
+
+        // now update the summaries
+        if (rowCount * questionIdToQuestionDto.size() < SIZE_THRESHOLD) {
+            invokeUrl(serverBase, "action="
+                    + RawDataImportRequest.UPDATE_SUMMARIES_ACTION
+                    + "&" + RawDataImportRequest.SURVEY_ID_PARAM
+                    + "=" + surveyId, true, criteria.get(KEY_PARAM));
+        }
+
+        invokeUrl(serverBase, "action="
+                + RawDataImportRequest.SAVE_MESSAGE_ACTION + "&"
+                + RawDataImportRequest.SURVEY_ID_PARAM + "=" + surveyId,
+                true, criteria.get(KEY_PARAM));
+
     }
 
     /**
@@ -340,7 +361,6 @@ public class RawDataSpreadsheetImporter implements DataImporter {
         Map<Long, QuestionDto> questionMap = new HashMap<>();
         for (Entry<String, QuestionDto> entry : ((Map<String, QuestionDto>) results[1]).entrySet()) {
             questionMap.put(Long.valueOf(entry.getKey()), entry.getValue());
-
         }
         return questionMap;
     }

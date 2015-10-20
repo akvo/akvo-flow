@@ -149,93 +149,59 @@ public class RawDataRestServlet extends AbstractRestApiServlet {
                     .mapByQuestionIdAndIteration(qasDao.listBySurveyInstance(instance.getKey()
                             .getId()));
 
-            // Pre repeat-question-groups
-            Map<Long, String[]> incomingAnswers = importReq.getQuestionAnswerMap();
-            // Post repeat-question-groups
             Map<Long, Map<Integer, String[]>> incomingResponses = importReq.getResponseMap();
 
             List<QuestionAnswerStore> updatedAnswers = new ArrayList<QuestionAnswerStore>();
 
-            if (incomingAnswers != null) {
-                // Pre-repeat-question-groups import feature
+            for (Entry<Long, Map<Integer, String[]>> responseEntry : incomingResponses
+                    .entrySet()) {
+                Long questionId = responseEntry.getKey();
+                Map<Integer, String[]> iterationMap = responseEntry.getValue();
 
-                for (Map.Entry<Long, String[]> qasEntry : incomingAnswers.entrySet()) {
+                for (Entry<Integer, String[]> iterationEntry : iterationMap.entrySet()) {
+                    Integer iteration = iterationEntry.getKey();
+                    String response = iterationEntry.getValue()[0];
+                    String type = iterationEntry.getValue()[1];
                     QuestionAnswerStore answer = null;
-                    if (existingAnswers.containsKey(qasEntry.getKey())) {
-                        answer = existingAnswers.get(qasEntry.getKey()).get(1L);
-                    } else {
+                    if (existingAnswers.containsKey(questionId)) {
+                        if (existingAnswers.get(questionId).containsKey(iteration)) {
+                            answer = existingAnswers.get(questionId).get(iteration);
+                        }
+                    }
+
+                    // New answer/iteration
+                    if (answer == null) {
                         answer = new QuestionAnswerStore();
-                        answer.setQuestionID(qasEntry.getKey().toString());
-                        answer.setSurveyInstanceId(instance.getKey().getId());
+                        answer.setQuestionID(questionId.toString());
+                        answer.setSurveyId(instance.getKey().getId());
                         answer.setSurveyId(s.getKey().getId());
                         answer.setCollectionDate(instance.getCollectionDate());
                     }
-                    answer.setValue(qasEntry.getValue()[0]);
-                    answer.setType(qasEntry.getValue()[1]);
+
+                    answer.setValue(response);
+                    answer.setType(type);
                     updatedAnswers.add(answer);
                 }
-            } else {
-                // Post-repeat-question-groups import feature
-                for (Entry<Long, Map<Integer, String[]>> responseEntry : incomingResponses
-                        .entrySet()) {
-                    Long questionId = responseEntry.getKey();
-                    Map<Integer, String[]> iterationMap = responseEntry.getValue();
-
-                    for (Entry<Integer, String[]> iterationEntry : iterationMap.entrySet()) {
-                        Integer iteration = iterationEntry.getKey();
-                        String response = iterationEntry.getValue()[0];
-                        String type = iterationEntry.getValue()[1];
-                        QuestionAnswerStore answer = null;
-                        if (existingAnswers.containsKey(questionId)) {
-                            if (existingAnswers.get(questionId).containsKey(iteration)) {
-                                answer = existingAnswers.get(questionId).get(iteration);
-                            }
-                        }
-
-                        // New answer/iteration
-                        if (answer == null) {
-                            answer = new QuestionAnswerStore();
-                            answer.setQuestionID(questionId.toString());
-                            answer.setSurveyId(instance.getKey().getId());
-                            answer.setSurveyId(s.getKey().getId());
-                            answer.setCollectionDate(instance.getCollectionDate());
-                        }
-
-                        answer.setValue(response);
-                        answer.setType(type);
-                        updatedAnswers.add(answer);
-                    }
-                }
-
             }
+
             qasDao.save(updatedAnswers);
 
             // remove entities with no updated response
             List<QuestionAnswerStore> deletedAnswers = new ArrayList<QuestionAnswerStore>();
 
-            if (incomingAnswers != null) {
-                // Pre repeat-question-groups
-                for (Long qasId : existingAnswers.keySet()) {
-                    if (!incomingAnswers.containsKey(qasId)) {
-                        deletedAnswers.addAll(existingAnswers.get(qasId).values());
-                    }
-                }
-            } else {
-                // Post repeat-question-groups
-                for (Long questionId : existingAnswers.keySet()) {
-                    for (Integer iteration : existingAnswers.get(questionId).keySet()) {
-                        if (incomingResponses.containsKey(questionId)) {
-                            if (!incomingResponses.get(questionId).containsKey(iteration)) {
-                                // Iteration has been deleted
-                                deletedAnswers.add(existingAnswers.get(questionId).get(iteration));
-                            }
-                        } else {
-                            // All iterations has been deleted
-                            deletedAnswers.addAll(existingAnswers.get(questionId).values());
+            for (Long questionId : existingAnswers.keySet()) {
+                for (Integer iteration : existingAnswers.get(questionId).keySet()) {
+                    if (incomingResponses.containsKey(questionId)) {
+                        if (!incomingResponses.get(questionId).containsKey(iteration)) {
+                            // Iteration has been deleted
+                            deletedAnswers.add(existingAnswers.get(questionId).get(iteration));
                         }
+                    } else {
+                        // All iterations has been deleted
+                        deletedAnswers.addAll(existingAnswers.get(questionId).values());
                     }
-
                 }
+
             }
             qasDao.delete(deletedAnswers);
 

@@ -19,7 +19,6 @@ package org.waterforpeople.mapping.dataexport;
 import java.awt.GraphicsEnvironment;
 import java.io.File;
 import java.io.FileOutputStream;
-import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.text.DateFormat;
 import java.text.DecimalFormat;
@@ -34,7 +33,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
-import java.util.Set;
 import java.util.SortedMap;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.LinkedBlockingQueue;
@@ -71,7 +69,6 @@ import org.waterforpeople.mapping.app.web.dto.SurveyRestRequest;
 import org.waterforpeople.mapping.dataexport.service.BulkDataServiceClient;
 
 import com.gallatinsystems.common.util.JFreechartChartUtil;
-import com.gallatinsystems.common.util.StringUtil;
 import com.gallatinsystems.framework.dataexport.applet.ProgressDialog;
 
 /**
@@ -714,150 +711,6 @@ public class GraphicalSurveySummaryExporter extends SurveySummaryExporter {
         } else {
             return s.replaceAll("\n", " ").replaceAll("\t", "").trim();
         }
-    }
-
-    private synchronized void writeRow(Row row, SurveyInstanceDto dto,
-            Map<String, String> responseMap, String dateString,
-            String instanceId, boolean generateSummary,
-            List<String> questionIdList, List<String> unsummarizable,
-            Map<String, String> nameToIdMap, Map<String, String> collapseIdMap,
-            SummaryModel model, boolean useQuestionId) throws Exception {
-        int col = 0;
-        MessageDigest digest = MessageDigest.getInstance("MD5");
-
-        createCell(row, col++, dto.getSurveyedLocaleIdentifier(), null);
-        createCell(row, col++, dto.getSurveyedLocaleDisplayName(), null);
-        createCell(row, col++, dto.getDeviceIdentifier(), null);
-        createCell(row, col++, instanceId, null);
-        createCell(row, col++, dateString, null);
-
-        // No point for null check here.
-        if (dto != null) {
-            String name = dto.getSubmitterName();
-            if (name != null) {
-                createCell(row, col++,
-                        dto.getSubmitterName().replaceAll("\n", " ")
-                                .replaceAll("\t", " ").trim(), null);
-            } else {
-                createCell(row, col++, " ", null);
-            }
-            // Surveyal time
-            final Long duration = dto.getSurveyalTime();
-            final String durationText = getDurationText(duration);
-            createCell(row, col++, durationText, null,
-                    Cell.CELL_TYPE_STRING);
-            // Surveyal time also computes for our hash
-            digest.update(durationText.getBytes());
-        }
-
-        for (String q : questionIdList) {
-            String val = null;
-            QuestionDto qdto = questionsById.get(Long.parseLong(q));
-            if (responseMap != null) {
-                val = responseMap.get(q);
-            }
-            if (val != null) {
-                try {
-                    if (qdto != null && QuestionType.DATE == qdto.getType()) {
-                        val = DATE_FMT.format(new Date(Long.parseLong(val
-                                .trim())));
-                    }
-                } catch (Exception e) {
-                    log.error("couldn't format value for question id: "
-                            + q + " -  " + e.getMessage(), e);
-                }
-
-                if (qdto != null && QuestionType.PHOTO == qdto.getType()) {
-                    final int filenameIndex = val.lastIndexOf("/") + 1;
-                    if (filenameIndex > 0 && filenameIndex < val.length()) {
-                        val = imagePrefix + val.substring(filenameIndex);
-                    }
-                }
-
-                if (qdto != null && QuestionType.GEO == qdto.getType()) {
-                    String[] geoParts = val.split("\\|");
-                    int count = 0;
-                    for (count = 0; count < geoParts.length; count++) {
-                        createCell(row, col++, geoParts[count], null);
-                        digest.update(geoParts[count].getBytes());
-                    }
-                    // now handle any missing fields
-                    for (int j = count; j < 4; j++) {
-                        createCell(row, col++, "", null);
-                    }
-                } else if (qdto != null && QuestionType.NUMBER.equals(qdto.getType())) {
-                    String cellVal = val.trim();
-                    createCell(row, col++, cellVal, null, Cell.CELL_TYPE_NUMERIC);
-                    digest.update(cellVal.getBytes());
-                } else if (qdto != null && QuestionType.CASCADE.equals(qdto.getType())
-                        && useQuestionId) {
-                    String cellVal = val.trim();
-                    int levelCount = qdto.getLevelNames().size();
-                    List<String> parts = new ArrayList<String>(Arrays.asList(cellVal
-                            .split("\\|", levelCount)));
-                    int padCount = levelCount - parts.size();
-
-                    for (int p = 0; p < padCount; p++) { // padding
-                        parts.add("");
-                    }
-
-                    for (String lVal : parts) {
-                        createCell(row, col++, lVal, null, Cell.CELL_TYPE_STRING);
-                        digest.update(lVal.getBytes());
-                    }
-                } else {
-                    String cellVal = val.replaceAll("\n", " ").trim();
-                    createCell(row, col++, cellVal, null);
-                    digest.update(cellVal.getBytes());
-                }
-            } else {
-                if (qdto != null && QuestionType.GEO == qdto.getType()) {
-                    for (int j = 0; j < 4; j++) {
-                        createCell(row, col++, "", null);
-                    }
-                } else if (qdto != null && useQuestionId && QuestionType.CASCADE == qdto.getType()) {
-                    for (int j = 0; j < qdto.getLevelNames().size(); j++) {
-                        createCell(row, col++, "", null);
-                    }
-                } else {
-                    createCell(row, col++, "", null);
-                }
-            }
-        }
-
-        if (!useQuestionId) {
-            // now add 1 more col that contains the digest
-            createCell(row, col++, StringUtil.toHexString(digest.digest()), null);
-        }
-
-        if (generateSummary && responseMap != null) {
-            Set<String> rollups = null;
-            if (rollupOrder != null && rollupOrder.size() > 0) {
-                rollups = formRollupStrings(responseMap);
-            }
-            for (Entry<String, String> entry : responseMap.entrySet()) {
-                if (!unsummarizable.contains(entry.getKey())) {
-                    String effectiveId = entry.getKey();
-                    if (nameToIdMap.get(effectiveId) != null) {
-                        effectiveId = collapseIdMap.get(nameToIdMap
-                                .get(effectiveId));
-                    }
-                    String[] vals = entry.getValue().split("\\|");
-                    synchronized (model) {
-                        for (int i = 0; i < vals.length; i++) {
-                            if (vals[i] != null && vals[i].trim().length() > 0) {
-                                model.tallyResponse(effectiveId, rollups,
-                                        vals[i]);
-                            }
-                        }
-                    }
-                }
-            }
-        }
-        // flush the sheet so far to disk; we will not go back up
-        // TODO: ((SXSSFSheet)sheet).flushRows(0); // retain 0 last rows and
-        // flush all others
-
     }
 
     /**
