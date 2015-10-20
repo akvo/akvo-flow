@@ -533,9 +533,6 @@ public class GraphicalSurveySummaryExporter extends SurveySummaryExporter {
 
         Row row = getRow(startRow, sheet);
 
-        // Collect the rows in a list for md5Calculation later.
-        List<Row> rows = new ArrayList<>();
-
         createCell(row, columnIndexMap.get(IDENTIFIER_LABEL.get(locale)),
                 dto.getSurveyedLocaleIdentifier());
         // Write the "Repeat" column
@@ -555,7 +552,6 @@ public class GraphicalSurveySummaryExporter extends SurveySummaryExporter {
         String duration = getDurationText(dto.getSurveyalTime());
         createCell(row, columnIndexMap.get(DURATION_LABEL.get(locale)), duration);
 
-        boolean firstQuestion = true;
         for (String q : questionIdList) {
             final Long questionId = Long.valueOf(q);
             final QuestionDto questionDto = questionsById.get(questionId);
@@ -575,13 +571,14 @@ public class GraphicalSurveySummaryExporter extends SurveySummaryExporter {
                 writeAnswer(sheet, iterationRow, columnIndexMap.get(q), questionDto,
                         val,
                         useQuestionId);
-
-                if (firstQuestion) {
-                    rows.add(iterationRow);
-                }
             }
-            firstQuestion = false;
             maxRow = Math.max(maxRow, startRow + rowOffset);
+        }
+
+        // Calculate the digest
+        List<Row> rows = new ArrayList<>();
+        for (int r = startRow; r <= maxRow; r++) {
+            rows.add(sheet.getRow(r));
         }
 
         String digest = ExportUtils.md5Digest(rows, columnIndexMap.get(DIGEST_COLUMN));

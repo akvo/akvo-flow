@@ -19,7 +19,7 @@ public class ExportUtils {
      * @return
      */
     public static String parseCellAsString(Cell cell) {
-        String val = null;
+        String val = "";
         if (cell != null) {
             switch (cell.getCellType()) {
                 case Cell.CELL_TYPE_BOOLEAN:

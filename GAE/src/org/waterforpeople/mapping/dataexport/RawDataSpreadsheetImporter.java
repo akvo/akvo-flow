@@ -152,29 +152,28 @@ public class RawDataSpreadsheetImporter implements DataImporter {
             importUrls.add(importUrl);
         }
 
-        for (String importUrl : importUrls) {
-            invokeUrl(serverBase, importUrl, true, criteria.get(KEY_PARAM));
-        }
+        System.out.println(importUrls);
+        System.out.println(importUrls.size());
 
+        for (String importUrl : importUrls) {
+            invokeUrl(serverBase, importUrl, true,
+                    criteria.get(KEY_PARAM));
+        }
         Iterator<Row> rowIterator = sheet.rowIterator();
         int rowCount = 0;
         while (rowIterator.hasNext()) {
             rowIterator.next();
             rowCount++;
         }
-
         // now update the summaries
         if (rowCount * questionIdToQuestionDto.size() < SIZE_THRESHOLD) {
-            invokeUrl(serverBase, "action="
-                    + RawDataImportRequest.UPDATE_SUMMARIES_ACTION
-                    + "&" + RawDataImportRequest.SURVEY_ID_PARAM
-                    + "=" + surveyId, true, criteria.get(KEY_PARAM));
+            invokeUrl(serverBase, "action=" + RawDataImportRequest.UPDATE_SUMMARIES_ACTION + "&" +
+                    RawDataImportRequest.SURVEY_ID_PARAM + "=" + surveyId, true,
+                    criteria.get(KEY_PARAM));
         }
-
-        invokeUrl(serverBase, "action="
-                + RawDataImportRequest.SAVE_MESSAGE_ACTION + "&"
-                + RawDataImportRequest.SURVEY_ID_PARAM + "=" + surveyId,
-                true, criteria.get(KEY_PARAM));
+        invokeUrl(serverBase, "action=" + RawDataImportRequest.SAVE_MESSAGE_ACTION + "&" +
+                RawDataImportRequest.SURVEY_ID_PARAM + "=" + surveyId, true,
+                criteria.get(KEY_PARAM));
 
     }
 
@@ -251,14 +250,13 @@ public class RawDataSpreadsheetImporter implements DataImporter {
         if (baseRow == null) {
             return null;
         }
-        String surveyedLocaleIdentifier = baseRow.getCell(0).getStringCellValue();
-        String surveyedLocaleDisplayName = baseRow.getCell(2).getStringCellValue();
-        String deviceIdentifier = baseRow.getCell(3).getStringCellValue();
-        String surveyInstanceId = baseRow.getCell(4).getStringCellValue();
-        String collectionDate = baseRow.getCell(5).getStringCellValue();
-        String submitterName = baseRow.getCell(6).getStringCellValue();
-        String surveyalTime = baseRow.getCell(7).getStringCellValue();
-        int firstQuestionColumn = 8;
+        String surveyedLocaleIdentifier = ExportUtils.parseCellAsString(baseRow.getCell(0));
+        String surveyedLocaleDisplayName = ExportUtils.parseCellAsString(baseRow.getCell(2));
+        String deviceIdentifier = ExportUtils.parseCellAsString(baseRow.getCell(3));
+        String surveyInstanceId = ExportUtils.parseCellAsString(baseRow.getCell(4));
+        String collectionDate = ExportUtils.parseCellAsString(baseRow.getCell(5));
+        String submitterName = ExportUtils.parseCellAsString(baseRow.getCell(6));
+        String surveyalTime = ExportUtils.parseCellAsString(baseRow.getCell(7));
 
         int iterations = 1;
 
