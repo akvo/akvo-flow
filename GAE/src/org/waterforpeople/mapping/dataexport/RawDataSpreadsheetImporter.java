@@ -152,9 +152,6 @@ public class RawDataSpreadsheetImporter implements DataImporter {
             importUrls.add(importUrl);
         }
 
-        System.out.println(importUrls);
-        System.out.println(importUrls.size());
-
         for (String importUrl : importUrls) {
             invokeUrl(serverBase, importUrl, true,
                     criteria.get(KEY_PARAM));

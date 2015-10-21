@@ -49,8 +49,6 @@ public class ExportUtils {
 
         MessageDigest digest = MessageDigest.getInstance("MD5");
 
-        String rowString = "";
-
         for (Row row : rows) {
             for (Cell cell : row) {
                 if (cell.getColumnIndex() > lastColumnIndex) {
@@ -58,15 +56,12 @@ public class ExportUtils {
                 } else {
                     String val = parseCellAsString(cell);
                     if (val != null && !val.equals("")) {
-                        rowString += val + ",";
                         digest.update(val.getBytes());
                     }
                 }
             }
-            rowString += "\n";
         }
 
-        System.out.println(rowString);
         return StringUtil.toHexString(digest.digest());
     }
 }
