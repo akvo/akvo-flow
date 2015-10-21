@@ -173,7 +173,7 @@ public class RawDataRestServlet extends AbstractRestApiServlet {
                     if (answer == null) {
                         answer = new QuestionAnswerStore();
                         answer.setQuestionID(questionId.toString());
-                        answer.setSurveyId(instance.getKey().getId());
+                        answer.setSurveyInstanceId(instance.getKey().getId());
                         answer.setSurveyId(s.getKey().getId());
                         answer.setCollectionDate(instance.getCollectionDate());
                     }
