@@ -68,8 +68,6 @@ public class RawDataImportRequest extends RestRequest {
     // questionId -> iteration -> [response, type]
     private Map<Long, Map<Integer, String[]>> responseMap = null;
 
-    // old one
-    private HashMap<Long, String[]> questionAnswerMap = null;
     private List<String> fixedFieldValues;
 
     public List<String> getFixedFieldValues() {
@@ -118,15 +116,6 @@ public class RawDataImportRequest extends RestRequest {
         return responseMap;
     }
 
-    public HashMap<Long, String[]> getQuestionAnswerMap() {
-        return questionAnswerMap;
-    }
-
-    public void setQuestionAnswerMap(HashMap<Long, String[]> questionAnswerMap) {
-
-        this.questionAnswerMap = questionAnswerMap;
-    }
-
     public void putResponse(Long questionId, Integer iteration, String value, String type) {
 
         if (responseMap == null) {
@@ -145,15 +134,6 @@ public class RawDataImportRequest extends RestRequest {
         });
         responseMap.put(questionId, iterationMap);
 
-    }
-
-    public void putQuestionAnswer(Long questionId, String value, String type) {
-        if (questionAnswerMap == null)
-            questionAnswerMap = new HashMap<Long, String[]>();
-        questionAnswerMap.put(questionId, new String[] {
-                value,
-                (type != null ? type : "VALUE")
-        });
     }
 
     @Override
@@ -214,31 +194,15 @@ public class RawDataImportRequest extends RestRequest {
                             type = parts[parts.length - 1];
                         }
                         if (val != null) {
-                            if (val.startsWith(VALUE)) {
-                                // Without Repeat Question Groups
-                                if (val.startsWith(VALUE)) {
-                                    val = val.substring(VALUE.length());
-                                }
-                                if (type.startsWith(TYPE)) {
-                                    type = type.substring(TYPE.length());
-                                }
-                                if (val != null && val.contains("^^")) {
-                                    val = val.replaceAll("\\^\\^", "|");
-                                }
-                                putQuestionAnswer(new Long(qId), val, type);
+                            // 0=value|3=value
+                            String[] iterations = val.split("|");
 
-                            } else {
-                                // With Repeat Question Groups
-                                // 0=value|3=value
-                                String[] iterations = val.split("|");
-
-                                for (String iter : iterations) {
-                                    String[] v = iter.split("=");
-                                    if (v.length == 2) {
-                                        Integer iteration = Integer.parseInt(v[0]);
-                                        String response = v[1];
-                                        putResponse(Long.valueOf(qId), iteration, response, type);
-                                    }
+                            for (String iter : iterations) {
+                                String[] v = iter.split("=");
+                                if (v.length == 2) {
+                                    Integer iteration = Integer.parseInt(v[0]);
+                                    String response = v[1];
+                                    putResponse(Long.valueOf(qId), iteration, response, type);
                                 }
                             }
                         }
