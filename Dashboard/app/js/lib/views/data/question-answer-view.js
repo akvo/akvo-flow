@@ -179,7 +179,12 @@ FLOW.QuestionAnswerView = Ember.View.extend({
       }
     }
     FLOW.store.commit();
-    this.set('inEditMode', false);
+    if (FLOW.metaControl.status === 'failed') {
+      this.set('inEditMode', true);
+    } else {
+      this.set('inEditMode', true);
+    }
+
   },
 
   doValidateNumber: function () {
