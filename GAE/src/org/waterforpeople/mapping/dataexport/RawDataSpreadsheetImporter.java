@@ -25,9 +25,6 @@ import java.io.PushbackInputStream;
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
 import java.security.MessageDigest;
-import java.text.DateFormat;
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Date;
@@ -80,12 +77,6 @@ public class RawDataSpreadsheetImporter implements DataImporter {
     private List<String> errorIds;
     private volatile int currentStep;
 
-    private static final ThreadLocal<DateFormat> DATE_FMT = new ThreadLocal<DateFormat>() {
-        @Override
-        protected DateFormat initialValue() {
-            return new SimpleDateFormat("dd-MM-yyyy HH:mm:ss z");
-        };
-    };
     private static final int SIZE_THRESHOLD = 2000 * 400;
 
     static {
@@ -251,7 +242,8 @@ public class RawDataSpreadsheetImporter implements DataImporter {
         String surveyedLocaleDisplayName = ExportUtils.parseCellAsString(baseRow.getCell(2));
         String deviceIdentifier = ExportUtils.parseCellAsString(baseRow.getCell(3));
         String surveyInstanceId = ExportUtils.parseCellAsString(baseRow.getCell(4));
-        String collectionDate = ExportUtils.parseCellAsString(baseRow.getCell(5));
+        Date collectionDate = ExportUtils.parseDate(
+                ExportUtils.parseCellAsString(baseRow.getCell(5)));
         String submitterName = ExportUtils.parseCellAsString(baseRow.getCell(6));
         String surveyalTime = ExportUtils.parseCellAsString(baseRow.getCell(7));
 
@@ -306,11 +298,11 @@ public class RawDataSpreadsheetImporter implements DataImporter {
         surveyInstanceDto.setSurveyedLocaleDisplayName(surveyedLocaleDisplayName);
         surveyInstanceDto.setDeviceIdentifier(deviceIdentifier);
         surveyInstanceDto.setKeyId(Long.parseLong(surveyInstanceId));
-        surveyInstanceDto.setCollectionDate(new Date()); // TODO: Parse collectionDate
+        surveyInstanceDto.setCollectionDate(collectionDate);
         surveyInstanceDto.setSubmitterName(submitterName);
         surveyInstanceDto.setSurveyalTime((long) durationToSeconds(surveyalTime));
 
-        InstanceData instanceData = new InstanceData(surveyInstanceDto, collectionDate, responseMap);
+        InstanceData instanceData = new InstanceData(surveyInstanceDto, responseMap);
         instanceData.maxIterationsCount = (long) iterations;
         return instanceData;
     }
@@ -365,7 +357,6 @@ public class RawDataSpreadsheetImporter implements DataImporter {
             throws UnsupportedEncodingException {
 
         StringBuilder sb = new StringBuilder();
-        DateFormat df = new SimpleDateFormat("dd-MM-yyyy HH:mm:ss z");
         SurveyInstanceDto dto = instanceData.surveyInstanceDto;
 
         sb.append("action="
@@ -379,7 +370,7 @@ public class RawDataSpreadsheetImporter implements DataImporter {
 
         // Collection date
         // TODO: null-check
-        String dateString = df.format(dto.getCollectionDate());
+        String dateString = ExportUtils.formatDate(dto.getCollectionDate());
 
         sb.append(
                 RawDataImportRequest.COLLECTION_DATE_PARAM + "="
@@ -447,7 +438,7 @@ public class RawDataSpreadsheetImporter implements DataImporter {
             jobQueue = new LinkedBlockingQueue<Runnable>();
             threadPool = new ThreadPoolExecutor(5, 5, 10, TimeUnit.SECONDS,
                     jobQueue);
-            DateFormat df = new SimpleDateFormat("dd-MM-yyyy HH:mm:ss z");
+
             setSurveyId(criteria);
 
             Sheet sheet1 = getDataSheet(file);
@@ -534,7 +525,7 @@ public class RawDataSpreadsheetImporter implements DataImporter {
                         } else if (cell.getCellType() == Cell.CELL_TYPE_NUMERIC) {
                             Date date = HSSFDateUtil.getJavaDate(cell
                                     .getNumericCellValue());
-                            dateString = df.format(date);
+                            dateString = ExportUtils.formatDate(date);
                         }
                         if (dateString != null) {
                             sb.append(RawDataImportRequest.COLLECTION_DATE_PARAM
@@ -630,14 +621,7 @@ public class RawDataSpreadsheetImporter implements DataImporter {
 
                                 case DATE:
                                     digest.update(cellVal.getBytes());
-                                    try {
-                                        cellVal = DATE_FMT.get().parse(cellVal)
-                                                .getTime()
-                                                + "";
-                                    } catch (ParseException e) {
-                                        log.error("bad date format: "
-                                                + cellVal + "\n" + e.getMessage(), e);
-                                    }
+                                    cellVal = ExportUtils.parseDate(cellVal).getTime() + "";
                                     break;
 
                                 case GEOSHAPE:

@@ -3,14 +3,26 @@ package org.waterforpeople.mapping.dataexport;
 
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
+import java.text.DateFormat;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.List;
 
+import org.apache.log4j.Logger;
 import org.apache.poi.ss.usermodel.Cell;
 import org.apache.poi.ss.usermodel.Row;
 
 import com.gallatinsystems.common.util.StringUtil;
 
 public class ExportUtils {
+    private static final Logger log = Logger.getLogger(ExportUtils.class);
+    private static final ThreadLocal<DateFormat> DATE_FORMAT = new ThreadLocal<DateFormat>() {
+        @Override
+        protected DateFormat initialValue() {
+            return new SimpleDateFormat("dd-MM-yyyy HH:mm:ss z");
+        };
+    };
 
     /**
      * Parse cell as string independent of cell type
@@ -64,4 +76,18 @@ public class ExportUtils {
 
         return StringUtil.toHexString(digest.digest());
     }
+
+    public static String formatDate(Date date) {
+        return DATE_FORMAT.get().format(date);
+    }
+
+    public static Date parseDate(String dateString) {
+        try {
+            return DATE_FORMAT.get().parse(dateString);
+        } catch (ParseException e) {
+            log.error("bad date format: " + dateString + "\n" + e.getMessage(), e);
+            return null;
+        }
+    }
+
 }

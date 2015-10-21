@@ -20,7 +20,6 @@ import java.awt.GraphicsEnvironment;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.security.NoSuchAlgorithmException;
-import java.text.DateFormat;
 import java.text.DecimalFormat;
 import java.text.NumberFormat;
 import java.text.SimpleDateFormat;
@@ -138,9 +137,6 @@ public class GraphicalSurveySummaryExporter extends SurveySummaryExporter {
     private static final int RAW_STEPS = 5;
     private static final NumberFormat PCT_FMT = DecimalFormat
             .getPercentInstance();
-
-    private static final DateFormat DATE_FMT = new SimpleDateFormat(
-            "dd-MM-yyyy HH:mm:ss z");
 
     static {
         // populate all translations
@@ -467,7 +463,7 @@ public class GraphicalSurveySummaryExporter extends SurveySummaryExporter {
                                 done = true;
                             }
                             synchronized (allData) {
-                                allData.add(new InstanceData(dto, submissionDate, responseMap));
+                                allData.add(new InstanceData(dto, responseMap));
                             }
 
                         } catch (Exception e) {
@@ -546,7 +542,8 @@ public class GraphicalSurveySummaryExporter extends SurveySummaryExporter {
         createCell(row, columnIndexMap.get(DEVICE_IDENTIFIER_LABEL.get(locale)),
                 dto.getDeviceIdentifier());
         createCell(row, columnIndexMap.get(INSTANCE_LABEL.get(locale)), dto.getKeyId().toString());
-        createCell(row, columnIndexMap.get(SUB_DATE_LABEL.get(locale)), instanceData.submissionDate);
+        createCell(row, columnIndexMap.get(SUB_DATE_LABEL.get(locale)),
+                ExportUtils.formatDate(dto.getCollectionDate()));
         createCell(row, columnIndexMap.get(SUBMITTER_LABEL.get(locale)),
                 sanitize(dto.getSubmitterName()));
         String duration = getDurationText(dto.getSurveyalTime());
@@ -619,7 +616,7 @@ public class GraphicalSurveySummaryExporter extends SurveySummaryExporter {
         switch (questionType) {
             case DATE:
                 try {
-                    String val = DATE_FMT.format(new Date(Long.parseLong(value.trim())));
+                    String val = ExportUtils.formatDate(new Date(Long.parseLong(value.trim())));
                     cells.add(val);
                 } catch (Exception e) {
                     log.error("Couldn't format value for question id: "
@@ -1292,6 +1289,7 @@ public class GraphicalSurveySummaryExporter extends SurveySummaryExporter {
         criteria.put(SurveyRestRequest.SURVEY_ID_PARAM, args[2]);
         criteria.put("apiKey", args[3]);
         exporter.export(criteria, new File(args[0]), args[1], options);
+
     }
 
     /**
