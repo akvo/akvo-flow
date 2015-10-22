@@ -275,7 +275,7 @@ public class RawDataSpreadsheetImporter implements DataImporter {
                     if (isGeoQuestion) {
                         String latitude = ExportImportUtils.parseCellAsString(cell);
                         String longitude = ExportImportUtils.parseCellAsString(iterationRow
-                                .getCell((int) columnIndex + 2));
+                                .getCell((int) columnIndex + 1));
                         String elevation = ExportImportUtils.parseCellAsString(iterationRow
                                 .getCell((int) columnIndex + 2));
                         String geoCode = ExportImportUtils.parseCellAsString(iterationRow
