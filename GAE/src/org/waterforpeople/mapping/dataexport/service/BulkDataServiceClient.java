@@ -587,6 +587,10 @@ public class BulkDataServiceClient {
                             && !json.isNull("surveyedLocaleIdentifier")) {
                         dto.setSurveyedLocaleIdentifier(json.getString("surveyedLocaleIdentifier"));
                     }
+
+                    if (json.has("collectionDate")) {
+                        dto.setCollectionDate(new Date(json.getLong("collectionDate")));
+                    }
                 }
             }
         }

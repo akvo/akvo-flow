@@ -78,7 +78,11 @@ public class ExportUtils {
     }
 
     public static String formatDate(Date date) {
-        return DATE_FORMAT.get().format(date);
+        if (date != null) {
+            return DATE_FORMAT.get().format(date);
+        } else {
+            return "";
+        }
     }
 
     public static Date parseDate(String dateString) {

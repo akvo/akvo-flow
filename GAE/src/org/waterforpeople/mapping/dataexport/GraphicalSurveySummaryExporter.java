@@ -438,7 +438,6 @@ public class GraphicalSurveySummaryExporter extends SurveySummaryExporter {
         int started = 0;
         for (Entry<String, String> instanceEntry : instanceMap.entrySet()) {
             final String instanceId = instanceEntry.getKey();
-            final String submissionDate = instanceEntry.getValue();
             started++;
             threadPool.execute(new Runnable() {
                 @Override
