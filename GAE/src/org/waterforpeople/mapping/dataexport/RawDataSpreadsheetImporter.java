@@ -265,7 +265,7 @@ public class RawDataSpreadsheetImporter implements DataImporter {
 
                 long iteration = (long) iterationRow.getCell(1).getNumericCellValue();
 
-                Cell cell = iterationRow.getCell((int) columnIndex - 1);
+                Cell cell = iterationRow.getCell((int) columnIndex);
                 String val = "";
                 if (cell != null) {
                     val = ExportImportUtils.parseCellAsString(cell);
@@ -305,17 +305,18 @@ public class RawDataSpreadsheetImporter implements DataImporter {
      * Return a map of column index -> question id
      *
      * @param sheet
-     * @return
+     * @return A map from column index to question id.
      */
     private static Map<Long, Long> processHeader(Sheet sheet) {
         Map<Long, Long> columnIndexToQuestionId = new HashMap<>();
         Row headerRow = sheet.getRow(0);
 
         for (Cell cell : headerRow) {
-            if (cell.getStringCellValue().indexOf("|") > -1) {
+            String cellValue = cell.getStringCellValue();
+            if (cell.getStringCellValue().indexOf("|") > -1 && !cellValue.startsWith("--GEO")) {
                 String[] parts = cell.getStringCellValue().split("\\|");
                 if (parts[0].trim().length() > 0) {
-                    columnIndexToQuestionId.put(Long.valueOf(cell.getColumnIndex()) + 1,
+                    columnIndexToQuestionId.put(Long.valueOf(cell.getColumnIndex()),
                             Long.valueOf(parts[0].trim()));
                 }
             }
