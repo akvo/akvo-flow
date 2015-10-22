@@ -122,7 +122,7 @@ public class RawDataSpreadsheetImporter implements DataImporter {
             throws Exception {
 
         Sheet sheet = getDataSheet(file);
-        Map<Long, Long> columnIndexToQuestionId = processHeader(sheet);
+        Map<Integer, Long> columnIndexToQuestionId = processHeader(sheet);
         Map<Long, QuestionDto> questionIdToQuestionDto = fetchQuestions(serverBase, criteria);
 
         List<InstanceData> instanceDataList = parseSheet(sheet, questionIdToQuestionDto,
@@ -167,7 +167,8 @@ public class RawDataSpreadsheetImporter implements DataImporter {
      * @return
      */
     public List<InstanceData> parseSheet(Sheet sheet,
-            Map<Long, QuestionDto> questionIdToQuestionDto, Map<Long, Long> columnIndexToQuestionId)
+            Map<Long, QuestionDto> questionIdToQuestionDto,
+            Map<Integer, Long> columnIndexToQuestionId)
             throws Exception {
 
         List<InstanceData> result = new ArrayList<>();
@@ -213,7 +214,8 @@ public class RawDataSpreadsheetImporter implements DataImporter {
      * @return InstanceData
      */
     public InstanceData parseInstance(Sheet sheet, int startRow,
-            Map<Long, QuestionDto> questionIdToQuestionDto, Map<Long, Long> columnIndexToQuestionId) {
+            Map<Long, QuestionDto> questionIdToQuestionDto,
+            Map<Integer, Long> columnIndexToQuestionId) {
 
         // File layout
         // 0. SurveyedLocaleIdentifier
@@ -255,8 +257,8 @@ public class RawDataSpreadsheetImporter implements DataImporter {
         // question-id -> iteration -> response
         Map<Long, Map<Long, String>> responseMap = new HashMap<>();
 
-        for (Entry<Long, Long> m : columnIndexToQuestionId.entrySet()) {
-            long columnIndex = m.getKey();
+        for (Entry<Integer, Long> m : columnIndexToQuestionId.entrySet()) {
+            int columnIndex = m.getKey();
             long questionId = m.getValue();
 
             boolean isGeoQuestion = questionIdToQuestionDto.get(questionId).getQuestionType() == QuestionType.GEO;
@@ -269,17 +271,17 @@ public class RawDataSpreadsheetImporter implements DataImporter {
 
                 String val = "";
 
-                Cell cell = iterationRow.getCell((int) columnIndex);
+                Cell cell = iterationRow.getCell(columnIndex);
 
                 if (cell != null) {
                     if (isGeoQuestion) {
                         String latitude = ExportImportUtils.parseCellAsString(cell);
                         String longitude = ExportImportUtils.parseCellAsString(iterationRow
-                                .getCell((int) columnIndex + 1));
+                                .getCell(columnIndex + 1));
                         String elevation = ExportImportUtils.parseCellAsString(iterationRow
-                                .getCell((int) columnIndex + 2));
+                                .getCell(columnIndex + 2));
                         String geoCode = ExportImportUtils.parseCellAsString(iterationRow
-                                .getCell((int) columnIndex + 3));
+                                .getCell(columnIndex + 3));
                         val = latitude + "|" + longitude + "|" + elevation + "|" + geoCode;
                     } else {
                         val = ExportImportUtils.parseCellAsString(cell);
@@ -321,8 +323,8 @@ public class RawDataSpreadsheetImporter implements DataImporter {
      * @param sheet
      * @return A map from column index to question id.
      */
-    private static Map<Long, Long> processHeader(Sheet sheet) {
-        Map<Long, Long> columnIndexToQuestionId = new HashMap<>();
+    private static Map<Integer, Long> processHeader(Sheet sheet) {
+        Map<Integer, Long> columnIndexToQuestionId = new HashMap<>();
         Row headerRow = sheet.getRow(0);
 
         for (Cell cell : headerRow) {
@@ -330,7 +332,7 @@ public class RawDataSpreadsheetImporter implements DataImporter {
             if (cell.getStringCellValue().indexOf("|") > -1 && !cellValue.startsWith("--GEO")) {
                 String[] parts = cell.getStringCellValue().split("\\|");
                 if (parts[0].trim().length() > 0) {
-                    columnIndexToQuestionId.put(Long.valueOf(cell.getColumnIndex()),
+                    columnIndexToQuestionId.put(cell.getColumnIndex(),
                             Long.valueOf(parts[0].trim()));
                 }
             }
