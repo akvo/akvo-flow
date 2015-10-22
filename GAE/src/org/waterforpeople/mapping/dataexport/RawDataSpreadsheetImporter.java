@@ -25,6 +25,7 @@ import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
 import java.security.MessageDigest;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -175,11 +176,14 @@ public class RawDataSpreadsheetImporter implements DataImporter {
 
         int md5Column = sheet.getRow(0).getLastCellNum();
 
-        int row = 1;
+        // TODO Consider removing this when old (pre repeat question groups) reports no longer need
+        // to be supported
+        boolean hasIterationColumn = Collections.min(columnIndexToQuestionId.keySet()) == 8;
 
+        int row = 1;
         while (true) {
             InstanceData instanceData = parseInstance(sheet, row, questionIdToQuestionDto,
-                    columnIndexToQuestionId);
+                    columnIndexToQuestionId, hasIterationColumn);
 
             if (instanceData == null) {
                 break;
@@ -215,7 +219,7 @@ public class RawDataSpreadsheetImporter implements DataImporter {
      */
     public InstanceData parseInstance(Sheet sheet, int startRow,
             Map<Long, QuestionDto> questionIdToQuestionDto,
-            Map<Integer, Long> columnIndexToQuestionId) {
+            Map<Integer, Long> columnIndexToQuestionId, boolean hasIterationColumn) {
 
         // File layout
         // 0. SurveyedLocaleIdentifier
@@ -235,13 +239,18 @@ public class RawDataSpreadsheetImporter implements DataImporter {
             return null;
         }
         String surveyedLocaleIdentifier = ExportImportUtils.parseCellAsString(baseRow.getCell(0));
-        String surveyedLocaleDisplayName = ExportImportUtils.parseCellAsString(baseRow.getCell(2));
-        String deviceIdentifier = ExportImportUtils.parseCellAsString(baseRow.getCell(3));
-        String surveyInstanceId = ExportImportUtils.parseCellAsString(baseRow.getCell(4));
+        String surveyedLocaleDisplayName = ExportImportUtils.parseCellAsString(baseRow
+                .getCell(hasIterationColumn ? 2 : 1));
+        String deviceIdentifier = ExportImportUtils.parseCellAsString(baseRow
+                .getCell(hasIterationColumn ? 3 : 2));
+        String surveyInstanceId = ExportImportUtils.parseCellAsString(baseRow
+                .getCell(hasIterationColumn ? 4 : 3));
         Date collectionDate = ExportImportUtils.parseDate(
-                ExportImportUtils.parseCellAsString(baseRow.getCell(5)));
-        String submitterName = ExportImportUtils.parseCellAsString(baseRow.getCell(6));
-        String surveyalTime = ExportImportUtils.parseCellAsString(baseRow.getCell(7));
+                ExportImportUtils.parseCellAsString(baseRow.getCell(hasIterationColumn ? 5 : 4)));
+        String submitterName = ExportImportUtils.parseCellAsString(baseRow
+                .getCell(hasIterationColumn ? 6 : 5));
+        String surveyalTime = ExportImportUtils.parseCellAsString(baseRow
+                .getCell(hasIterationColumn ? 7 : 6));
 
         int iterations = 1;
 
@@ -267,8 +276,10 @@ public class RawDataSpreadsheetImporter implements DataImporter {
 
                 Row iterationRow = sheet.getRow(startRow + iter);
 
-                long iteration = (long) iterationRow.getCell(1).getNumericCellValue();
-
+                long iteration = 1;
+                if (hasIterationColumn) {
+                    iteration = (long) iterationRow.getCell(1).getNumericCellValue();
+                }
                 String val = "";
 
                 Cell cell = iterationRow.getCell(columnIndex);
