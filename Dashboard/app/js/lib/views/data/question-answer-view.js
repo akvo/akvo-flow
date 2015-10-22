@@ -87,9 +87,11 @@ FLOW.QuestionAnswerView = Ember.View.extend({
       var cascadeResponse = [];
       var obj = null;
       cascadeNames.forEach(function(item){
-        obj = {};
-        obj.name = item;
-        cascadeResponse.push(obj);
+        if (item.trim().length > 0) {
+          obj = {};
+          obj.name = item.trim();
+          cascadeResponse.push(obj);
+        }
       });
 
       c.set('value', JSON.stringify(cascadeResponse));
