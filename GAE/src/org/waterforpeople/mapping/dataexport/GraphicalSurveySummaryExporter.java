@@ -16,7 +16,6 @@
 
 package org.waterforpeople.mapping.dataexport;
 
-import java.awt.GraphicsEnvironment;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.security.NoSuchAlgorithmException;
@@ -38,8 +37,6 @@ import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicLong;
-
-import javax.swing.SwingUtilities;
 
 import org.apache.log4j.ConsoleAppender;
 import org.apache.log4j.Level;
@@ -68,7 +65,6 @@ import org.waterforpeople.mapping.app.web.dto.SurveyRestRequest;
 import org.waterforpeople.mapping.dataexport.service.BulkDataServiceClient;
 
 import com.gallatinsystems.common.util.JFreechartChartUtil;
-import com.gallatinsystems.framework.dataexport.applet.ProgressDialog;
 
 /**
  * Enhancement of the SurveySummaryExporter to support writing to Excel and including chart images.
@@ -133,8 +129,6 @@ public class GraphicalSurveySummaryExporter extends SurveySummaryExporter {
     private static final int CHART_CELL_HEIGHT = 22;
     private static final String DEFAULT_LOCALE = "en";
     private static final String DEFAULT = "default";
-    private static final int FULL_STEPS = 7;
-    private static final int RAW_STEPS = 5;
     private static final NumberFormat PCT_FMT = DecimalFormat
             .getPercentInstance();
 
@@ -285,9 +279,6 @@ public class GraphicalSurveySummaryExporter extends SurveySummaryExporter {
     private String locale;
     private String imagePrefix;
     private String serverBase;
-    private ProgressDialog progressDialog;
-    private int currentStep;
-    private int maxSteps;
     private boolean isFullReport;
     private boolean performGeoRollup;
     private boolean generateCharts;
@@ -301,20 +292,14 @@ public class GraphicalSurveySummaryExporter extends SurveySummaryExporter {
     public void export(Map<String, String> criteria, File fileName,
             String serverBase, Map<String, String> options) {
         processOptions(options);
-        if (!GraphicsEnvironment.isHeadless()) {
-            progressDialog = new ProgressDialog(maxSteps, locale);
-            progressDialog.setVisible(true);
-        }
+
         questionsById = new HashMap<Long, QuestionDto>();
-        currentStep = 1;
         this.serverBase = serverBase;
         boolean useQuestionId = "true".equals(options.get("useQuestionId"));
         String from = options.get("from");
         String to = options.get("to");
         String limit = options.get("maxDataReportRows");
         try {
-            SwingUtilities.invokeLater(new StatusUpdater(currentStep++,
-                    LOADING_QUESTIONS.get(locale)));
 
             Map<QuestionGroupDto, List<QuestionDto>> questionMap = loadAllQuestions(
                     criteria.get(SurveyRestRequest.SURVEY_ID_PARAM),
@@ -329,11 +314,7 @@ public class GraphicalSurveySummaryExporter extends SurveySummaryExporter {
             if (!DEFAULT_LOCALE.equals(locale) && questionMap.size() > 0) {
                 // if we are using some other locale, we need to check for
                 // translations
-                SwingUtilities.invokeLater(new StatusUpdater(currentStep++,
-                        LOADING_DETAILS.get(locale)));
                 loadFullQuestions(questionMap, criteria.get("apiKey"));
-            } else {
-                currentStep++;
             }
             Workbook wb = new SXSSFWorkbook(100);
             if (questionMap != null && questionMap.size() > 0) {
@@ -350,11 +331,7 @@ public class GraphicalSurveySummaryExporter extends SurveySummaryExporter {
                         criteria.get("apiKey"), lastCollection, useQuestionId,
                         from, to, limit);
                 if (isFullReport) {
-                    SwingUtilities.invokeLater(new StatusUpdater(currentStep++,
-                            WRITING_SUMMARY.get(locale)));
                     writeSummaryReport(questionMap, model, null, wb);
-                    SwingUtilities.invokeLater(new StatusUpdater(currentStep++,
-                            WRITING_ROLLUPS.get(locale)));
                 }
                 if (model.getSectorList() != null
                         && model.getSectorList().size() > 0) {
@@ -381,8 +358,6 @@ public class GraphicalSurveySummaryExporter extends SurveySummaryExporter {
                 wb.write(fileOut);
                 fileOut.close();
 
-                SwingUtilities.invokeLater(new StatusUpdater(currentStep++,
-                        COMPLETE.get(locale)));
             } else {
                 log.info("No questions for survey: "
                         + criteria.get(SurveyRestRequest.SURVEY_ID_PARAM) + " - instance: "
@@ -495,8 +470,6 @@ public class GraphicalSurveySummaryExporter extends SurveySummaryExporter {
                     nameToIdMap, collapseIdMap, model, useQuestionId);
         }
 
-        SwingUtilities.invokeLater(new StatusUpdater(currentStep++,
-                WRITING_RAW_DATA.get(locale)));
         threadPool.shutdown();
         return model;
     }
@@ -1154,7 +1127,6 @@ public class GraphicalSurveySummaryExporter extends SurveySummaryExporter {
     protected void processOptions(Map<String, String> options) {
         isFullReport = true;
         performGeoRollup = true;
-        maxSteps = FULL_STEPS;
         generateCharts = true;
         if (options != null) {
             log.debug(options);
@@ -1163,7 +1135,6 @@ public class GraphicalSurveySummaryExporter extends SurveySummaryExporter {
             imagePrefix = options.get(IMAGE_PREFIX_OPT);
             if (RAW_ONLY_TYPE.equalsIgnoreCase(options.get(TYPE_OPT))) {
                 isFullReport = false;
-                maxSteps = RAW_STEPS;
             }
             if (options.get(DO_ROLLUP_OPT) != null) {
                 if ("false".equalsIgnoreCase(options.get(DO_ROLLUP_OPT))) {
@@ -1291,24 +1262,4 @@ public class GraphicalSurveySummaryExporter extends SurveySummaryExporter {
 
     }
 
-    /**
-     * Private class to handle updating of the UI thread from our worker thread
-     */
-    private class StatusUpdater implements Runnable {
-
-        private int step;
-        private String msg;
-
-        public StatusUpdater(int step, String message) {
-            msg = message;
-            this.step = step;
-        }
-
-        @Override
-        public void run() {
-            if (!GraphicsEnvironment.isHeadless()) {
-                progressDialog.update(step, msg);
-            }
-        }
-    }
 }

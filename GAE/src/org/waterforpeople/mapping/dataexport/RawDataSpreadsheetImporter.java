@@ -16,7 +16,6 @@
 
 package org.waterforpeople.mapping.dataexport;
 
-import java.awt.GraphicsEnvironment;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
@@ -39,8 +38,6 @@ import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
 
-import javax.swing.SwingUtilities;
-
 import org.apache.log4j.Logger;
 import org.apache.poi.hssf.usermodel.HSSFDateUtil;
 import org.apache.poi.ss.usermodel.Cell;
@@ -56,7 +53,6 @@ import org.waterforpeople.mapping.dataexport.service.BulkDataServiceClient;
 
 import com.gallatinsystems.common.util.StringUtil;
 import com.gallatinsystems.framework.dataexport.applet.DataImporter;
-import com.gallatinsystems.framework.dataexport.applet.ProgressDialog;
 
 public class RawDataSpreadsheetImporter implements DataImporter {
 
@@ -70,12 +66,10 @@ public class RawDataSpreadsheetImporter implements DataImporter {
     private static final Map<String, String> COMPLETE;
     private Long surveyId;
     private InputStream stream;
-    private ProgressDialog progressDialog;
     private String locale = DEFAULT_LOCALE;
     private ThreadPoolExecutor threadPool;
     private BlockingQueue<Runnable> jobQueue;
     private List<String> errorIds;
-    private volatile int currentStep;
 
     private static final int SIZE_THRESHOLD = 2000 * 400;
 
@@ -442,11 +436,7 @@ public class RawDataSpreadsheetImporter implements DataImporter {
             setSurveyId(criteria);
 
             Sheet sheet1 = getDataSheet(file);
-            if (!GraphicsEnvironment.isHeadless()) {
-                progressDialog = new ProgressDialog(sheet1.getLastRowNum(),
-                        locale);
-                progressDialog.setVisible(true);
-            }
+
             HashMap<Integer, String> questionIDColMap = new HashMap<Integer, String>();
             Object[] results = BulkDataServiceClient.loadQuestions(
                     getSurveyId().toString(), serverBase, criteria.get("apiKey"));
@@ -460,7 +450,6 @@ public class RawDataSpreadsheetImporter implements DataImporter {
             boolean setFirstQuestionColumnIdx = true;
             int firstQuestionCol = 0;
 
-            currentStep = 0;
             MessageDigest digest = MessageDigest.getInstance("MD5");
             for (Row row : sheet1) {
                 rows++;
@@ -713,11 +702,6 @@ public class RawDataSpreadsheetImporter implements DataImporter {
                             null,
                             sb.toString(),
                             criteria.get(KEY_PARAM));
-                } else {
-                    // if we didn't need to upload, then just increment our
-                    // progress counter
-                    SwingUtilities.invokeLater(new StatusUpdater(currentStep++,
-                            SAVING_DATA.get(locale)));
                 }
             }
             while (!jobQueue.isEmpty() && threadPool.getActiveCount() > 0) {
@@ -745,8 +729,6 @@ public class RawDataSpreadsheetImporter implements DataImporter {
                     + RawDataImportRequest.SURVEY_ID_PARAM + "=" + surveyId,
                     true, criteria.get(KEY_PARAM));
 
-            SwingUtilities.invokeLater(new StatusUpdater(currentStep++,
-                    COMPLETE.get(locale), true));
         } catch (Exception e) {
             e.printStackTrace();
         } finally {
@@ -798,8 +780,6 @@ public class RawDataSpreadsheetImporter implements DataImporter {
             @Override
             public void run() {
                 try {
-                    SwingUtilities.invokeLater(new StatusUpdater(currentStep++,
-                            SAVING_DATA.get(locale)));
                     if (resetUrlString != null) {
                         invokeUrl(serverBase, resetUrlString, true, key);
                     }
@@ -890,32 +870,4 @@ public class RawDataSpreadsheetImporter implements DataImporter {
     public void setSurveyId(Long surveyId) {
         this.surveyId = surveyId;
     }
-
-    /**
-     * Private class to handle updating of the UI thread from our worker thread
-     */
-    private class StatusUpdater implements Runnable {
-
-        private int step;
-        private String msg;
-        private boolean isComplete;
-
-        public StatusUpdater(int step, String message) {
-            this(step, message, false);
-        }
-
-        public StatusUpdater(int step, String message, boolean isComplete) {
-            msg = message;
-            this.step = step;
-            this.isComplete = isComplete;
-        }
-
-        @Override
-        public void run() {
-            if (progressDialog != null) {
-                progressDialog.update(step, msg, isComplete);
-            }
-        }
-    }
-
 }
