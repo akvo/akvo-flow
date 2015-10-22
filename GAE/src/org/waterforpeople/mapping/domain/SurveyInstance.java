@@ -307,7 +307,8 @@ public class SurveyInstance extends BaseDomain implements SecuredObject {
     }
 
     public String getSurveyedLocaleDisplayName() {
-        if (surveyedLocaleDisplayName == null) {
+        // If the name is not set yet, try to build it based on existing QAS (if stored on the DB)
+        if (surveyedLocaleDisplayName == null && key != null) {
             QuestionDao qDao = new QuestionDao();
             StringBuilder displayName = new StringBuilder();
             if (this.surveyId != null) {

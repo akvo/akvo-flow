@@ -5,6 +5,39 @@ Read more about the [Akvo Platform](http://www.akvo.org/blog/?p=4822).
 
 Akvo FLOW Dashboard release notes
 ----
+#1.9.1.3
+Date: 7 October 2015
+
+# Resolved issues
+* Enable dependencies to option questions within a repeat question group [#1439]
+
+#1.9.1.1
+Date: 7 October 2015
+
+# Resolved issues
+* NPE when accessing the SurveyInstance Key before it's saved into the datastore [#1432]
+
+#1.9.1
+Date: 6 October 2015
+
+# New and noteworthy
+* [Repeatable Question Groups](http://flow.readthedocs.org/en/latest/docs/dashboard/surveys/3-creating-editing-survey.html#working-with-question-groups) (Grid questions) - enables specification of a set of questions as repeatable i.e. an enumerator can ask these questions multiple times [#269]
+
+# Resolved issues
+* Positioning of save button for Question Group name [#1419]
+* Folder selection drop down hidden behind calendar elements [#1409]
+* Datascript: Convert PG data into events (unified log) [#1392]
+* Datascript: FixSurveyedLocale datascript does not check all SurveyedLocales [#1390]
+* Datascript: Export event data to Postgres [#1385]
+* Request for icon_cal.png returns a 404 [#1376]
+* Change data view table from Question ID to question order [#1371]
+* Include in-line help in the dashboard [#1332]
+* Unify vocabulary throughout the dashboard and app [#1281]
+* Buttons `ADD DEVICE TO GROUP & REMOVE DEVICE FROM GROUP` not showing when scrolling [#1273]
+* Recover language options (or remove all together) on Data Cleaning tab [#1126]
+* Minor UI improvement - Add New Cascade button [#1044]
+* Specify that the question ID is optional [#1006]
+
 #1.9.0
 Date: 18 August 2015
 

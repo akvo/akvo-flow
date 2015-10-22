@@ -338,7 +338,7 @@ public class BulkDataServiceClient {
 
         while (lines.hasMoreTokens()) {
             String line = lines.nextToken();
-            String[] tokens = line.split(",");
+            String[] tokens = line.split(",", 3);
 
             Long questionId = Long.valueOf(tokens[0]);
             Long iteration = Long.valueOf(tokens[1]);

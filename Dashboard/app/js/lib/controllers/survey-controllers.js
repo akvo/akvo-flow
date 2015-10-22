@@ -849,12 +849,17 @@ FLOW.questionControl = Ember.ArrayController.create({
   // used for display of dependencies: a question can only be dependent on earlier questions
   setEarlierOptionQuestions: function () {
     if (!Ember.none(FLOW.selectedControl.get('selectedQuestion')) && !Ember.none(FLOW.selectedControl.get('selectedQuestionGroup'))) {
-      var optionQuestionList, sId, questionGroupOrder, qgOrder, qg, questionOrder;
+      var optionQuestionList, sId, questionGroupOrder, qgOrder, qg, questionOrder, questionGroupId;
       sId = FLOW.selectedControl.selectedSurvey.get('keyId');
+      questionGroupId = FLOW.selectedControl.selectedQuestionGroup.get('keyId');
       questionGroupOrder = FLOW.selectedControl.selectedQuestionGroup.get('order');
       questionOrder = FLOW.selectedControl.selectedQuestion.get('order');
       optionQuestionList = FLOW.store.filter(FLOW.Question, function (item) {
         qg = FLOW.store.find(FLOW.QuestionGroup, item.get('questionGroupId'));
+        // no dependencies from non-repeat to repeat groups
+        if (qg.get('keyId') != questionGroupId && qg.get('repeatable')) {
+          return false;
+        }
         qgOrder = qg.get('order');
         if (!(item.get('type') == 'OPTION' && item.get('surveyId') == sId)) return false;
         if (qgOrder > questionGroupOrder) {
