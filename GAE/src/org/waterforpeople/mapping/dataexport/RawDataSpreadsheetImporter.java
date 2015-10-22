@@ -259,17 +259,31 @@ public class RawDataSpreadsheetImporter implements DataImporter {
             long columnIndex = m.getKey();
             long questionId = m.getValue();
 
+            boolean isGeoQuestion = questionIdToQuestionDto.get(questionId).getQuestionType() == QuestionType.GEO;
+
             for (int iter = 0; iter < iterations; iter++) {
 
                 Row iterationRow = sheet.getRow(startRow + iter);
 
                 long iteration = (long) iterationRow.getCell(1).getNumericCellValue();
 
-                Cell cell = iterationRow.getCell((int) columnIndex);
                 String val = "";
-                if (cell != null) {
-                    val = ExportImportUtils.parseCellAsString(cell);
 
+                Cell cell = iterationRow.getCell((int) columnIndex);
+
+                if (cell != null) {
+                    if (isGeoQuestion) {
+                        String latitude = ExportImportUtils.parseCellAsString(cell);
+                        String longitude = ExportImportUtils.parseCellAsString(iterationRow
+                                .getCell((int) columnIndex + 2));
+                        String elevation = ExportImportUtils.parseCellAsString(iterationRow
+                                .getCell((int) columnIndex + 2));
+                        String geoCode = ExportImportUtils.parseCellAsString(iterationRow
+                                .getCell((int) columnIndex + 3));
+                        val = latitude + "|" + longitude + "|" + elevation + "|" + geoCode;
+                    } else {
+                        val = ExportImportUtils.parseCellAsString(cell);
+                    }
                     if (val != null && !val.equals("")) {
                         // Update response map
                         // iteration -> response
