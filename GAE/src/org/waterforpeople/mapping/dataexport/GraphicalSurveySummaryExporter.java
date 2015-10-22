@@ -300,7 +300,6 @@ public class GraphicalSurveySummaryExporter extends SurveySummaryExporter {
         String to = options.get("to");
         String limit = options.get("maxDataReportRows");
         try {
-
             Map<QuestionGroupDto, List<QuestionDto>> questionMap = loadAllQuestions(
                     criteria.get(SurveyRestRequest.SURVEY_ID_PARAM),
                     performGeoRollup, serverBase, criteria.get("apiKey"));

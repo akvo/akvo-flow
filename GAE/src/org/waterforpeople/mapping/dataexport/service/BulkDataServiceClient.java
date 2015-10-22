@@ -333,7 +333,6 @@ public class BulkDataServiceClient {
     private static final Map<Long, Map<Long, String>> parseSurveyInstanceResponse(
             String responseData) {
 
-        log.debug(responseData);
         Map<Long, Map<Long, String>> result = new HashMap<>();
         StringTokenizer lines = new StringTokenizer(responseData, "\n");
 
