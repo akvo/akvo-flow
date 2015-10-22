@@ -516,7 +516,7 @@ public class GraphicalSurveySummaryExporter extends SurveySummaryExporter {
                 dto.getDeviceIdentifier());
         createCell(row, columnIndexMap.get(INSTANCE_LABEL.get(locale)), dto.getKeyId().toString());
         createCell(row, columnIndexMap.get(SUB_DATE_LABEL.get(locale)),
-                ExportUtils.formatDate(dto.getCollectionDate()));
+                ExportImportUtils.formatDate(dto.getCollectionDate()));
         createCell(row, columnIndexMap.get(SUBMITTER_LABEL.get(locale)),
                 sanitize(dto.getSubmitterName()));
         String duration = getDurationText(dto.getSurveyalTime());
@@ -551,7 +551,7 @@ public class GraphicalSurveySummaryExporter extends SurveySummaryExporter {
             rows.add(sheet.getRow(r));
         }
 
-        String digest = ExportUtils.md5Digest(rows, columnIndexMap.get(DIGEST_COLUMN));
+        String digest = ExportImportUtils.md5Digest(rows, columnIndexMap.get(DIGEST_COLUMN));
 
         if (!useQuestionId) {
             // now add 1 more col that contains the digest
@@ -630,7 +630,7 @@ public class GraphicalSurveySummaryExporter extends SurveySummaryExporter {
         switch (questionType) {
             case DATE:
                 try {
-                    String val = ExportUtils.formatDate(new Date(Long.parseLong(value.trim())));
+                    String val = ExportImportUtils.formatDate(new Date(Long.parseLong(value.trim())));
                     cells.add(val);
                 } catch (Exception e) {
                     log.error("Couldn't format value for question id: "

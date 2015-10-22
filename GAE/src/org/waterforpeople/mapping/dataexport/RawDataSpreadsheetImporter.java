@@ -25,7 +25,6 @@ import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
 import java.security.MessageDigest;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -172,7 +171,8 @@ public class RawDataSpreadsheetImporter implements DataImporter {
             throws Exception {
 
         List<InstanceData> result = new ArrayList<>();
-        int md5Column = Collections.max(columnIndexToQuestionId.keySet()).intValue();
+
+        int md5Column = sheet.getRow(0).getLastCellNum();
 
         int row = 1;
 
@@ -184,14 +184,14 @@ public class RawDataSpreadsheetImporter implements DataImporter {
                 break;
             }
 
-            // Get all the parsed rows
+            // Get all the parsed rows for md5 calculation
             List<Row> rows = new ArrayList<>();
             for (int r = row; r < row + instanceData.maxIterationsCount; r++) {
                 rows.add(sheet.getRow(r));
             }
             String existingMd5Hash = sheet.getRow(row).getCell(md5Column)
                     .getStringCellValue();
-            String newMd5Hash = ExportUtils.md5Digest(rows, md5Column - 1);
+            String newMd5Hash = ExportImportUtils.md5Digest(rows, md5Column - 1);
 
             if (!newMd5Hash.equals(existingMd5Hash)) {
                 result.add(instanceData);
@@ -232,21 +232,21 @@ public class RawDataSpreadsheetImporter implements DataImporter {
         if (baseRow == null) {
             return null;
         }
-        String surveyedLocaleIdentifier = ExportUtils.parseCellAsString(baseRow.getCell(0));
-        String surveyedLocaleDisplayName = ExportUtils.parseCellAsString(baseRow.getCell(2));
-        String deviceIdentifier = ExportUtils.parseCellAsString(baseRow.getCell(3));
-        String surveyInstanceId = ExportUtils.parseCellAsString(baseRow.getCell(4));
-        Date collectionDate = ExportUtils.parseDate(
-                ExportUtils.parseCellAsString(baseRow.getCell(5)));
-        String submitterName = ExportUtils.parseCellAsString(baseRow.getCell(6));
-        String surveyalTime = ExportUtils.parseCellAsString(baseRow.getCell(7));
+        String surveyedLocaleIdentifier = ExportImportUtils.parseCellAsString(baseRow.getCell(0));
+        String surveyedLocaleDisplayName = ExportImportUtils.parseCellAsString(baseRow.getCell(2));
+        String deviceIdentifier = ExportImportUtils.parseCellAsString(baseRow.getCell(3));
+        String surveyInstanceId = ExportImportUtils.parseCellAsString(baseRow.getCell(4));
+        Date collectionDate = ExportImportUtils.parseDate(
+                ExportImportUtils.parseCellAsString(baseRow.getCell(5)));
+        String submitterName = ExportImportUtils.parseCellAsString(baseRow.getCell(6));
+        String surveyalTime = ExportImportUtils.parseCellAsString(baseRow.getCell(7));
 
         int iterations = 1;
 
-        // Count the number maximum number of iterations for this instance
+        // Count the maximum number of iterations for this instance
         while (true) {
             Row row = sheet.getRow(startRow + iterations);
-            if (row == null || row.getCell(1).getNumericCellValue() == 1.0) {
+            if (row == null || !ExportImportUtils.parseCellAsString(row.getCell(0)).equals("")) {
                 break;
             }
             iterations++;
@@ -268,7 +268,7 @@ public class RawDataSpreadsheetImporter implements DataImporter {
                 Cell cell = iterationRow.getCell((int) columnIndex - 1);
                 String val = "";
                 if (cell != null) {
-                    val = ExportUtils.parseCellAsString(cell);
+                    val = ExportImportUtils.parseCellAsString(cell);
 
                     if (val != null && !val.equals("")) {
                         // Update response map
@@ -364,7 +364,7 @@ public class RawDataSpreadsheetImporter implements DataImporter {
 
         // Collection date
         // TODO: null-check
-        String dateString = ExportUtils.formatDate(dto.getCollectionDate());
+        String dateString = ExportImportUtils.formatDate(dto.getCollectionDate());
 
         sb.append(
                 RawDataImportRequest.COLLECTION_DATE_PARAM + "="
@@ -514,7 +514,7 @@ public class RawDataSpreadsheetImporter implements DataImporter {
                         } else if (cell.getCellType() == Cell.CELL_TYPE_NUMERIC) {
                             Date date = HSSFDateUtil.getJavaDate(cell
                                     .getNumericCellValue());
-                            dateString = ExportUtils.formatDate(date);
+                            dateString = ExportImportUtils.formatDate(date);
                         }
                         if (dateString != null) {
                             sb.append(RawDataImportRequest.COLLECTION_DATE_PARAM
@@ -584,7 +584,7 @@ public class RawDataSpreadsheetImporter implements DataImporter {
                             continue;
                         }
 
-                        String cellVal = ExportUtils.parseCellAsString(cell);
+                        String cellVal = ExportImportUtils.parseCellAsString(cell);
                         if (cellVal != null) {
                             cellVal = cellVal.trim();
 
@@ -610,7 +610,7 @@ public class RawDataSpreadsheetImporter implements DataImporter {
 
                                 case DATE:
                                     digest.update(cellVal.getBytes());
-                                    cellVal = ExportUtils.parseDate(cellVal).getTime() + "";
+                                    cellVal = ExportImportUtils.parseDate(cellVal).getTime() + "";
                                     break;
 
                                 case GEOSHAPE:
@@ -648,7 +648,7 @@ public class RawDataSpreadsheetImporter implements DataImporter {
                                             .startsWith("--")) {
 
                                 for (int i = 1; i < 4; i++) {
-                                    String nextVal = ExportUtils.parseCellAsString(row
+                                    String nextVal = ExportImportUtils.parseCellAsString(row
                                             .getCell(cell.getColumnIndex() + i));
                                     cellVal += "|"
                                             + (nextVal != null ? nextVal : "");
@@ -675,7 +675,7 @@ public class RawDataSpreadsheetImporter implements DataImporter {
                         // as long as the user hasn't messed up the sheet, this
                         // is the md5 digest of the original data
                         try {
-                            String md5 = ExportUtils.parseCellAsString(cell);
+                            String md5 = ExportImportUtils.parseCellAsString(cell);
                             String digestVal = StringUtil.toHexString(digest
                                     .digest());
                             if (md5 != null && md5.equals(digestVal)) {
