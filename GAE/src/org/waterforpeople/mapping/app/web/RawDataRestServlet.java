@@ -196,9 +196,6 @@ public class RawDataRestServlet extends AbstractRestApiServlet {
                             // Iteration has been deleted
                             deletedAnswers.add(existingAnswers.get(questionId).get(iteration));
                         }
-                    } else {
-                        // All iterations has been deleted
-                        deletedAnswers.addAll(existingAnswers.get(questionId).values());
                     }
                 }
 

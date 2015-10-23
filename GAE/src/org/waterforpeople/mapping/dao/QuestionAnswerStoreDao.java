@@ -230,9 +230,9 @@ public class QuestionAnswerStoreDao extends BaseDAO<QuestionAnswerStore> {
 
             if (iterationMap == null) {
                 iterationMap = new HashMap<>();
+                responseMap.put(questionId, iterationMap);
             }
             iterationMap.put(iteration, a);
-            responseMap.put(questionId, iterationMap);
         }
 
         return responseMap;
