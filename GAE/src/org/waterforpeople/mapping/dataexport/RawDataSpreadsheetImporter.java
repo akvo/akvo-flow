@@ -176,7 +176,14 @@ public class RawDataSpreadsheetImporter implements DataImporter {
 
         List<InstanceData> result = new ArrayList<>();
 
-        int md5Column = sheet.getRow(0).getLastCellNum();
+        // Find the last empty/null cell in the header row. This is the position of the md5 hashes
+        int md5Column = 0;
+        for (Cell cell : sheet.getRow(0)) {
+            md5Column++;
+            if (cell == null || cell.getStringCellValue().equals("")) {
+                break;
+            }
+        }
 
         // TODO Consider removing this when old (pre repeat question groups) reports no longer need
         // to be supported
