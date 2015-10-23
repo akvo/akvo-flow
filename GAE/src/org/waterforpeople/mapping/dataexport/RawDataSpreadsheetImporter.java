@@ -266,12 +266,14 @@ public class RawDataSpreadsheetImporter implements DataImporter {
         int iterations = 1;
 
         // Count the maximum number of iterations for this instance
-        while (true) {
-            Row row = sheet.getRow(startRow + iterations);
-            if (row == null || !ExportImportUtils.parseCellAsString(row.getCell(0)).equals("")) {
-                break;
+        if (hasIterationColumn) {
+            while (true) {
+                Row row = sheet.getRow(startRow + iterations);
+                if (row == null || ExportImportUtils.parseCellAsString(row.getCell(1)).equals("1")) {
+                    break;
+                }
+                iterations++;
             }
-            iterations++;
         }
 
         // question-id -> iteration -> response
