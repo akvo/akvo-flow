@@ -104,14 +104,9 @@ FLOW.QuestionAnswerView = Ember.View.extend({
         cascadeString += c.get('value');
       } else {
         cascadeJson = JSON.parse(c.get('value'));
-        for (var i = 0; i < cascadeJson.length; i++) {
-          cascadeString +=  cascadeJson[i].name + "|";
-        }
-
-        // strip last pipe
-        if (cascadeString.charAt(cascadeString.length - 1) === "|") {
-          cascadeString = cascadeString.substr(0, cascadeString.length - 1);
-        }
+        cascadeString = cascadeJson.map(function(item){
+          return item.name;
+        }).join("|");
       }
       return cascadeString;
     }
@@ -181,11 +176,7 @@ FLOW.QuestionAnswerView = Ember.View.extend({
       }
     }
     FLOW.store.commit();
-    if (FLOW.metaControl.status === 'failed') {
-      this.set('inEditMode', true);
-    } else {
-      this.set('inEditMode', true);
-    }
+    this.set('inEditMode', false);
 
   },
 

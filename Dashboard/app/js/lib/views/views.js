@@ -105,15 +105,9 @@ Ember.Handlebars.registerHelper('placemarkDetail', function () {
         // ignore
       } else {
         cascadeJson = JSON.parse(answer);
-        for (var i = 0; i < cascadeJson.length; i++) {
-          cascadeString +=  cascadeJson[i].name + "|";
-        }
-
-        // strip last pipe
-        if (cascadeString.charAt(cascadeString.length - 1) === "|") {
-          cascadeString = cascadeString.substr(0, cascadeString.length - 1);
-        }
-        answer = cascadeString;
+        answer = cascadeJson.map(function(item){
+          return item.name;
+        }).join("|");
       }
   }
 
