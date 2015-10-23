@@ -16,32 +16,28 @@
 
 package org.waterforpeople.mapping.dataexport;
 
-import java.awt.GraphicsEnvironment;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.PushbackInputStream;
+import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
-import java.security.MessageDigest;
-import java.text.DateFormat;
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.SortedMap;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
 
-import javax.swing.SwingUtilities;
-
 import org.apache.log4j.Logger;
-import org.apache.poi.hssf.usermodel.HSSFDateUtil;
 import org.apache.poi.ss.usermodel.Cell;
 import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.ss.usermodel.Sheet;
@@ -49,47 +45,25 @@ import org.apache.poi.ss.usermodel.Workbook;
 import org.apache.poi.ss.usermodel.WorkbookFactory;
 import org.waterforpeople.mapping.app.gwt.client.survey.QuestionDto;
 import org.waterforpeople.mapping.app.gwt.client.survey.QuestionDto.QuestionType;
+import org.waterforpeople.mapping.app.gwt.client.surveyinstance.SurveyInstanceDto;
 import org.waterforpeople.mapping.app.web.dto.RawDataImportRequest;
 import org.waterforpeople.mapping.dataexport.service.BulkDataServiceClient;
 
-import com.gallatinsystems.common.util.StringUtil;
 import com.gallatinsystems.framework.dataexport.applet.DataImporter;
-import com.gallatinsystems.framework.dataexport.applet.ProgressDialog;
 
 public class RawDataSpreadsheetImporter implements DataImporter {
 
     private static final Logger log = Logger.getLogger(RawDataSpreadsheetImporter.class);
 
     private static final String SERVLET_URL = "/rawdatarestapi";
-    private static final String DEFAULT_LOCALE = "en";
     public static final String SURVEY_CONFIG_KEY = "surveyId";
     protected static final String KEY_PARAM = "apiKey";
-    private static final Map<String, String> SAVING_DATA;
-    private static final Map<String, String> COMPLETE;
-    private Long surveyId;
     private InputStream stream;
-    private ProgressDialog progressDialog;
-    private String locale = DEFAULT_LOCALE;
     private ThreadPoolExecutor threadPool;
     private BlockingQueue<Runnable> jobQueue;
     private List<String> errorIds;
-    private volatile int currentStep;
 
-    private static final ThreadLocal<DateFormat> DATE_FMT = new ThreadLocal<DateFormat>() {
-        @Override
-        protected DateFormat initialValue() {
-            return new SimpleDateFormat("dd-MM-yyyy HH:mm:ss z");
-        };
-    };
     private static final int SIZE_THRESHOLD = 2000 * 400;
-
-    static {
-        SAVING_DATA = new HashMap<String, String>();
-        SAVING_DATA.put("en", "Saving Data");
-
-        COMPLETE = new HashMap<String, String>();
-        COMPLETE.put("en", "Complete");
-    }
 
     /**
      * opens a file input stream using the file passed in and tries to return the first worksheet in
@@ -123,30 +97,127 @@ public class RawDataSpreadsheetImporter implements DataImporter {
         }
     }
 
-    protected void setSurveyId(Map<String, String> criteria) {
-        if (criteria != null && criteria.get(SURVEY_CONFIG_KEY) != null) {
-            setSurveyId(new Long(criteria.get(SURVEY_CONFIG_KEY).trim()));
+    public void executeImport(File file, String serverBase, Map<String, String> criteria) {
+        try {
+            Sheet sheet = getDataSheet(file);
+            String surveyId = criteria.get("surveyId");
+            Map<Integer, Long> columnIndexToQuestionId = processHeader(sheet);
+            Map<Long, QuestionDto> questionIdToQuestionDto = fetchQuestions(serverBase, criteria);
+
+            List<InstanceData> instanceDataList = parseSheet(sheet, questionIdToQuestionDto,
+                    columnIndexToQuestionId);
+
+            List<String> importUrls = new ArrayList<>();
+
+            for (InstanceData instanceData : instanceDataList) {
+                String importUrl = buildImportURL(instanceData, surveyId,
+                        questionIdToQuestionDto);
+                importUrls.add(importUrl);
+            }
+
+            // Send updated instances to GAE
+            errorIds = new ArrayList<String>();
+            jobQueue = new LinkedBlockingQueue<Runnable>();
+            threadPool = new ThreadPoolExecutor(5, 5, 10, TimeUnit.SECONDS, jobQueue);
+            for (String importUrl : importUrls) {
+                sendDataToServer(serverBase, importUrl, criteria.get(KEY_PARAM));
+            }
+
+            while (!jobQueue.isEmpty() && threadPool.getActiveCount() > 0) {
+                Thread.sleep(5000);
+            }
+
+            if (errorIds.size() > 0) {
+                log.error("There were ERRORS: ");
+                for (String line : errorIds) {
+                    log.error(line);
+                }
+            }
+
+            // Count the number of rows in the sheet
+            Iterator<Row> rowIterator = sheet.rowIterator();
+            int rowCount = 0;
+            while (rowIterator.hasNext()) {
+                rowIterator.next();
+                rowCount++;
+            }
+
+            Thread.sleep(5000);
+            log.debug("Updating summaries");
+            if (rowCount * questionIdToQuestionDto.size() < SIZE_THRESHOLD) {
+                invokeUrl(serverBase, "action=" + RawDataImportRequest.UPDATE_SUMMARIES_ACTION
+                        + "&" +
+                        RawDataImportRequest.SURVEY_ID_PARAM + "=" + surveyId, true,
+                        criteria.get(KEY_PARAM));
+            }
+            invokeUrl(serverBase, "action=" + RawDataImportRequest.SAVE_MESSAGE_ACTION + "&" +
+                    RawDataImportRequest.SURVEY_ID_PARAM + "=" + surveyId, true,
+                    criteria.get(KEY_PARAM));
+        } catch (Exception e) {
+            e.printStackTrace();
+        } finally {
+            cleanup();
         }
-    }
-
-    public void runImport(File file, String serverBase, Map<String, String> criteria)
-            throws Exception {
-
-        Sheet sheet = getDataSheet(file);
-        Map<Long, Long> columnIndexToQuestionId = processHeader(sheet);
-        Map<Long, QuestionDto> questionIdToQuestionDto = fetchQuestions(serverBase, criteria);
 
     }
 
     /**
      * Parse a raw data report file into a list of InstanceData
-     *
-     * @param file
+     * 
+     * @param sheet
+     * @param columnIndexToQuestionId
+     * @param questionIdToQuestionDto
      * @return
      */
-    public List<InstanceData> parseSheet(Sheet sheet) throws Exception {
+    public List<InstanceData> parseSheet(Sheet sheet,
+            Map<Long, QuestionDto> questionIdToQuestionDto,
+            Map<Integer, Long> columnIndexToQuestionId)
+            throws Exception {
 
-        return null;
+        List<InstanceData> result = new ArrayList<>();
+
+        // Find the last empty/null cell in the header row. This is the position of the md5 hashes
+        int md5Column = 0;
+        for (Cell cell : sheet.getRow(0)) {
+            md5Column++;
+            if (cell == null || cell.getStringCellValue().equals("")) {
+                break;
+            }
+        }
+
+        // TODO Consider removing this when old (pre repeat question groups) reports no longer need
+        // to be supported
+        int firstQuestionColumnIndex = Collections.min(columnIndexToQuestionId.keySet());
+        boolean hasIterationColumn = firstQuestionColumnIndex == 8;
+        boolean hasDeviceIdentifierColumn = firstQuestionColumnIndex == 8
+                || firstQuestionColumnIndex == 7;
+
+        int row = 1;
+        while (true) {
+            InstanceData instanceData = parseInstance(sheet, row, questionIdToQuestionDto,
+                    columnIndexToQuestionId, hasIterationColumn, hasDeviceIdentifierColumn);
+
+            if (instanceData == null) {
+                break;
+            }
+
+            // Get all the parsed rows for md5 calculation
+            List<Row> rows = new ArrayList<>();
+            for (int r = row; r < row + instanceData.maxIterationsCount; r++) {
+                rows.add(sheet.getRow(r));
+            }
+            String existingMd5Hash = sheet.getRow(row).getCell(md5Column)
+                    .getStringCellValue();
+            String newMd5Hash = ExportImportUtils.md5Digest(rows, md5Column - 1);
+
+            if (!newMd5Hash.equals(existingMd5Hash)) {
+                result.add(instanceData);
+            }
+
+            row += instanceData.maxIterationsCount;
+        }
+
+        return result;
     }
 
     /**
@@ -154,61 +225,145 @@ public class RawDataSpreadsheetImporter implements DataImporter {
      *
      * @param sheet
      * @param startRow
+     * @param columnIndexToQuestionId
+     * @param questionIdToQuestionDto
      * @return InstanceData
      */
-    public InstanceData parse(Sheet sheet, int startRow) {
+    public InstanceData parseInstance(Sheet sheet, int startRow,
+            Map<Long, QuestionDto> questionIdToQuestionDto,
+            Map<Integer, Long> columnIndexToQuestionId, boolean hasIterationColumn,
+            boolean hasDeviceIdentifierColumn) {
 
         // File layout
         // 0. SurveyedLocaleIdentifier
-        // 1. SurveyedLocaleDisplayName
-        // 2. DeviceIdentifier
-        // 3. SurveyInstanceId
-        // 4. CollectionDate
-        // 5. SubmitterName
-        // 6. SurveyalTime
-        // 7. Repeat
+        // 1. Repeat (if hasIterationColumn)
+        // 2. SurveyedLocaleDisplayName
+        // 3. DeviceIdentifier (if hasDeviceIdentifierColumn)
+        // 4. SurveyInstanceId
+        // 5. CollectionDate
+        // 6. SubmitterName
+        // 7. SurveyalTime
+
         // 8 - N. Questions
         // N + 1. Digest
 
         Row baseRow = sheet.getRow(startRow);
-        String surveyedLocaleIdentifier = baseRow.getCell(0).getStringCellValue();
-        String surveyedLocaleDisplayName = baseRow.getCell(1).getStringCellValue();
-        String deviceIdentifier = baseRow.getCell(2).getStringCellValue();
-        String surveyInstanceId = baseRow.getCell(3).getStringCellValue();
-        String collectionDate = baseRow.getCell(4).getStringCellValue();
-        String submitterName = baseRow.getCell(5).getStringCellValue();
-        String surveyalTime = baseRow.getCell(6).getStringCellValue();
-        int firstQuestionColumn = 8;
+        if (baseRow == null) {
+            return null;
+        }
+
+        int firstQuestionColumnIndex = Collections.min(columnIndexToQuestionId.keySet());
+        String surveyedLocaleIdentifier = ExportImportUtils.parseCellAsString(baseRow.getCell(0));
+        String surveyedLocaleDisplayName = ExportImportUtils.parseCellAsString(baseRow
+                .getCell(hasIterationColumn ? 2 : 1));
+        String deviceIdentifier = "";
+        if (hasDeviceIdentifierColumn) {
+            deviceIdentifier = ExportImportUtils.parseCellAsString(baseRow
+                    .getCell(hasIterationColumn ? 3 : 2));
+        }
+        String surveyInstanceId = ExportImportUtils.parseCellAsString(baseRow
+                .getCell(firstQuestionColumnIndex - 4));
+        Date collectionDate = ExportImportUtils.parseDate(ExportImportUtils
+                .parseCellAsString(baseRow.getCell(firstQuestionColumnIndex - 3)));
+        String submitterName = ExportImportUtils.parseCellAsString(baseRow
+                .getCell(firstQuestionColumnIndex - 2));
+        String surveyalTime = ExportImportUtils.parseCellAsString(baseRow
+                .getCell(firstQuestionColumnIndex - 1));
 
         int iterations = 1;
 
-        // Count the number maximum number of iterations for this instance
-        while (true) {
-            Row row = sheet.getRow(startRow + iterations);
-            if (row == null || row.getCell(7).getStringCellValue().equals("1")) {
-                break;
+        // Count the maximum number of iterations for this instance
+        if (hasIterationColumn) {
+            while (true) {
+                Row row = sheet.getRow(startRow + iterations);
+                if (row == null || ExportImportUtils.parseCellAsString(row.getCell(1)).equals("1")) {
+                    break;
+                }
+                iterations++;
             }
-            iterations++;
         }
 
-        return null;
+        // question-id -> iteration -> response
+        Map<Long, Map<Long, String>> responseMap = new HashMap<>();
+
+        for (Entry<Integer, Long> m : columnIndexToQuestionId.entrySet()) {
+            int columnIndex = m.getKey();
+            long questionId = m.getValue();
+
+            boolean isGeoQuestion = questionIdToQuestionDto.get(questionId).getQuestionType() == QuestionType.GEO;
+
+            for (int iter = 0; iter < iterations; iter++) {
+
+                Row iterationRow = sheet.getRow(startRow + iter);
+
+                long iteration = 1;
+                if (hasIterationColumn) {
+                    iteration = (long) iterationRow.getCell(1).getNumericCellValue();
+                }
+                String val = "";
+
+                Cell cell = iterationRow.getCell(columnIndex);
+
+                if (cell != null) {
+                    if (isGeoQuestion) {
+                        String latitude = ExportImportUtils.parseCellAsString(cell);
+                        String longitude = ExportImportUtils.parseCellAsString(iterationRow
+                                .getCell(columnIndex + 1));
+                        String elevation = ExportImportUtils.parseCellAsString(iterationRow
+                                .getCell(columnIndex + 2));
+                        String geoCode = ExportImportUtils.parseCellAsString(iterationRow
+                                .getCell(columnIndex + 3));
+                        val = latitude + "|" + longitude + "|" + elevation + "|" + geoCode;
+                    } else {
+                        val = ExportImportUtils.parseCellAsString(cell);
+                    }
+                    if (val != null && !val.equals("")) {
+                        // Update response map
+                        // iteration -> response
+                        Map<Long, String> iterationToResponse = responseMap.get(questionId);
+
+                        if (iterationToResponse == null) {
+                            iterationToResponse = new HashMap<>();
+                            iterationToResponse.put(iteration - 1, val);
+                            responseMap.put(questionId, iterationToResponse);
+                        } else {
+                            iterationToResponse.put(iteration, val);
+                        }
+                    }
+                }
+            }
+        }
+
+        SurveyInstanceDto surveyInstanceDto = new SurveyInstanceDto();
+        surveyInstanceDto.setSurveyedLocaleIdentifier(surveyedLocaleIdentifier);
+        surveyInstanceDto.setSurveyedLocaleDisplayName(surveyedLocaleDisplayName);
+        surveyInstanceDto.setDeviceIdentifier(deviceIdentifier);
+        surveyInstanceDto.setKeyId(Long.parseLong(surveyInstanceId));
+        surveyInstanceDto.setCollectionDate(collectionDate);
+        surveyInstanceDto.setSubmitterName(submitterName);
+        surveyInstanceDto.setSurveyalTime((long) durationToSeconds(surveyalTime));
+
+        InstanceData instanceData = new InstanceData(surveyInstanceDto, responseMap);
+        instanceData.maxIterationsCount = (long) iterations;
+        return instanceData;
     }
 
     /**
      * Return a map of column index -> question id
      *
      * @param sheet
-     * @return
+     * @return A map from column index to question id.
      */
-    private static Map<Long, Long> processHeader(Sheet sheet) {
-        Map<Long, Long> columnIndexToQuestionId = new HashMap<>();
+    private static Map<Integer, Long> processHeader(Sheet sheet) {
+        Map<Integer, Long> columnIndexToQuestionId = new HashMap<>();
         Row headerRow = sheet.getRow(0);
 
         for (Cell cell : headerRow) {
-            if (cell.getStringCellValue().indexOf("|") > -1) {
+            String cellValue = cell.getStringCellValue();
+            if (cell.getStringCellValue().indexOf("|") > -1 && !cellValue.startsWith("--GEO")) {
                 String[] parts = cell.getStringCellValue().split("\\|");
                 if (parts[0].trim().length() > 0) {
-                    columnIndexToQuestionId.put(Long.valueOf(cell.getColumnIndex()),
+                    columnIndexToQuestionId.put(cell.getColumnIndex(),
                             Long.valueOf(parts[0].trim()));
                 }
             }
@@ -235,343 +390,85 @@ public class RawDataSpreadsheetImporter implements DataImporter {
         Map<Long, QuestionDto> questionMap = new HashMap<>();
         for (Entry<String, QuestionDto> entry : ((Map<String, QuestionDto>) results[1]).entrySet()) {
             questionMap.put(Long.valueOf(entry.getKey()), entry.getValue());
-
         }
         return questionMap;
     }
 
-    @SuppressWarnings("unchecked")
-    @Override
-    public void executeImport(File file, String serverBase,
-            Map<String, String> criteria) {
-        try {
+    private static String buildImportURL(InstanceData instanceData, String surveyId,
+            Map<Long, QuestionDto> questionIdToQuestionDto)
+            throws UnsupportedEncodingException {
 
-            int rows = 0;
-            errorIds = new ArrayList<String>();
-            jobQueue = new LinkedBlockingQueue<Runnable>();
-            threadPool = new ThreadPoolExecutor(5, 5, 10, TimeUnit.SECONDS,
-                    jobQueue);
-            DateFormat df = new SimpleDateFormat("dd-MM-yyyy HH:mm:ss z");
-            setSurveyId(criteria);
+        StringBuilder sb = new StringBuilder();
+        SurveyInstanceDto dto = instanceData.surveyInstanceDto;
 
-            Sheet sheet1 = getDataSheet(file);
-            if (!GraphicsEnvironment.isHeadless()) {
-                progressDialog = new ProgressDialog(sheet1.getLastRowNum(),
-                        locale);
-                progressDialog.setVisible(true);
+        sb.append("action="
+                + RawDataImportRequest.SAVE_SURVEY_INSTANCE_ACTION
+                + "&" + RawDataImportRequest.SURVEY_ID_PARAM + "="
+                + surveyId + "&");
+
+        // Instance id
+        sb.append(RawDataImportRequest.SURVEY_INSTANCE_ID_PARAM + "="
+                + dto.getKeyId() + "&");
+
+        // Collection date
+        String dateString = ExportImportUtils.formatDate(dto.getCollectionDate());
+
+        sb.append(
+                RawDataImportRequest.COLLECTION_DATE_PARAM + "="
+                        + URLEncoder.encode(dateString,
+                                "UTF-8") + "&");
+
+        // Submitter
+        sb.append("submitter=" + URLEncoder.encode(dto.getSubmitterName(), "UTF-8") + "&");
+
+        // Duration
+        sb.append("duration=" + dto.getSurveyalTime());
+
+        StringBuilder responseBuilder = new StringBuilder();
+        // questionId=123|0=sfijd|2=fjsoi|type=GEO&questionId=...
+        for (Entry<Long, SortedMap<Long, String>> entry : instanceData.responseMap
+                .entrySet()) {
+            Long questionId = entry.getKey();
+            SortedMap<Long, String> iterations = entry.getValue();
+
+            responseBuilder.append("&questionId=" + questionId);
+
+            for (Entry<Long, String> iterationEntry : iterations.entrySet()) {
+                Long iteration = iterationEntry.getKey();
+                String response = iterationEntry.getValue();
+                // URL encode the response text a second time in order to escape pipe characters
+                responseBuilder
+                        .append("|" + iteration + "=" + URLEncoder.encode(response, "UTF-8"));
             }
-            HashMap<Integer, String> questionIDColMap = new HashMap<Integer, String>();
-            Object[] results = BulkDataServiceClient.loadQuestions(
-                    getSurveyId().toString(), serverBase, criteria.get("apiKey"));
-            Map<String, QuestionDto> questionMap = null;
 
-            if (results != null) {
-                questionMap = (Map<String, QuestionDto>) results[1];
-            }
+            sb.append(URLEncoder.encode(responseBuilder.toString(), "UTF-8"));
 
-            boolean hasDurationCol = true;
-            boolean setFirstQuestionColumnIdx = true;
-            int firstQuestionCol = 0;
-
-            currentStep = 0;
-            MessageDigest digest = MessageDigest.getInstance("MD5");
-            for (Row row : sheet1) {
-                rows++;
-                if (row.getRowNum() == 0) {
-                    // Process headers
-                    for (Cell cell : row) {
-                        if (cell.getStringCellValue().indexOf("|") > -1) {
-                            if (setFirstQuestionColumnIdx) {
-                                firstQuestionCol = cell.getColumnIndex();
-                                setFirstQuestionColumnIdx = false;
-                            }
-
-                            String[] parts = cell.getStringCellValue().split("\\|");
-                            if (parts[0].trim().length() > 0) {
-                                questionIDColMap.put(cell.getColumnIndex(), parts[0].trim());
-                            }
-                        }
-                    }
-                    continue; // move to next row (data)
-                }
-                digest.reset();
-
-                String instanceId = null;
-                String dateString = null;
-                String submitter = null;
-                String duration = null;
-                String durationSeconds = null;
-                StringBuilder sb = new StringBuilder();
-
-                // Headers
-                // [identifier, displayName, deviceIdentifier, instanceId, date, submitter,
-                // duration, questions...]
-
-                int instanceIdx = firstQuestionCol - 4;
-                int dateIdx = firstQuestionCol - 3;
-                int submitterIdx = firstQuestionCol - 2;
-                int durationIdx = firstQuestionCol - 1;
-
-                sb.append("action="
-                        + RawDataImportRequest.SAVE_SURVEY_INSTANCE_ACTION
-                        + "&" + RawDataImportRequest.SURVEY_ID_PARAM + "="
-                        + getSurveyId() + "&");
-                boolean needUpload = true;
-                String initialUrl = sb.toString();
-
-                for (Cell cell : row) {
-                    if (cell.getColumnIndex() == instanceIdx) {
-                        if (cell.getCellType() == Cell.CELL_TYPE_NUMERIC) {
-                            instanceId = new Double(cell.getNumericCellValue())
-                                    .intValue() + "";
-                        } else if (cell.getCellType() == Cell.CELL_TYPE_STRING) {
-                            instanceId = cell.getStringCellValue();
-                        }
-                        if (instanceId != null) {
-                            sb.append(RawDataImportRequest.SURVEY_INSTANCE_ID_PARAM
-                                    + "=" + instanceId + "&");
-                        }
-                    }
-                    if (cell.getColumnIndex() == dateIdx) {
-                        if (cell.getCellType() == Cell.CELL_TYPE_STRING) {
-                            dateString = cell.getStringCellValue();
-                        } else if (cell.getCellType() == Cell.CELL_TYPE_NUMERIC) {
-                            Date date = HSSFDateUtil.getJavaDate(cell
-                                    .getNumericCellValue());
-                            dateString = df.format(date);
-                        }
-                        if (dateString != null) {
-                            sb.append(RawDataImportRequest.COLLECTION_DATE_PARAM
-                                    + "="
-                                    + URLEncoder.encode(dateString, "UTF-8")
-                                    + "&");
-                        }
-                    }
-                    if (cell.getColumnIndex() == submitterIdx) {
-                        if (cell.getCellType() == Cell.CELL_TYPE_STRING) {
-                            submitter = cell.getStringCellValue();
-                            sb.append("submitter="
-                                    + URLEncoder.encode(submitter, "UTF-8")
-                                    + "&");
-                        }
-                    }
-                    // Survey Duration
-                    if (cell.getColumnIndex() == durationIdx) {
-                        if (hasDurationCol) {
-                            switch (cell.getCellType()) {
-                            // if the cell type is string, we expect hh:mm:ss format
-                                case Cell.CELL_TYPE_STRING:
-                                    duration = cell.getStringCellValue();
-                                    durationSeconds = String.valueOf(durationToSeconds(duration));
-                                    digest.update(duration.getBytes());
-                                    break;
-                                // if the cell type if numeric, we expect a single seconds value
-                                case Cell.CELL_TYPE_NUMERIC:
-                                    durationSeconds = String.valueOf(cell.getNumericCellValue());
-                                    digest.update(durationSeconds.getBytes());
-                                    break;
-                                default:
-                                    durationSeconds = "0";
-                                    // don't update the digest, because we want this value to be
-                                    // saved.
-                                    break;
-                            }
-                            sb.append("duration="
-                                    + URLEncoder.encode(durationSeconds, "UTF-8")
-                                    + "&");
-                        }
-                    }
-
-                    boolean hasValue = false;
-                    String qId = questionIDColMap.get(cell.getColumnIndex());
-
-                    if (cell.getColumnIndex() >= firstQuestionCol
-                            && qId != null && !qId.trim().equals("")) {
-                        QuestionDto question = questionMap.get(questionIDColMap
-                                .get(cell.getColumnIndex()));
-                        QuestionType type = null;
-                        // VALUE is default, it is valid for NUMBER, FREE_TEXT, SCAN, OPTION
-                        String typeString = "VALUE";
-                        if (question != null) {
-                            type = question.getType();
-                            if (QuestionType.GEO == type) {
-                                typeString = "GEO";
-                            } else if (QuestionType.PHOTO == type) {
-                                typeString = "IMAGE";
-                            } else if (QuestionType.VIDEO == type) {
-                                typeString = "VIDEO";
-                            } else if (QuestionType.DATE == type) {
-                                typeString = "DATE";
-                            }
-                        } else if (questionIDColMap.get(cell.getColumnIndex())
-                                .startsWith("--")) {
-                            continue;
-                        }
-
-                        String cellVal = parseCellAsString(cell);
-                        if (cellVal != null) {
-                            cellVal = cellVal.trim();
-
-                            switch (question.getType()) {
-                                case GEO:
-                                case CASCADE:
-                                    String[] parts = cellVal.split("\\|");
-                                    for (int i = 0; i < parts.length; i++) {
-                                        digest.update(parts[i].getBytes());
-                                    }
-                                    cellVal = cellVal.replaceAll("\\|", "^^");
-                                    break;
-
-                                case PHOTO:
-                                case VIDEO:
-                                    digest.update(cellVal.getBytes()); // compute before modifying
-                                    if (cellVal.contains("/")) {
-                                        cellVal = cellVal.substring(cellVal
-                                                .lastIndexOf("/"));
-                                    }
-                                    cellVal = "/sdcard" + cellVal;
-                                    break;
-
-                                case DATE:
-                                    digest.update(cellVal.getBytes());
-                                    try {
-                                        cellVal = DATE_FMT.get().parse(cellVal)
-                                                .getTime()
-                                                + "";
-                                    } catch (ParseException e) {
-                                        log.error("bad date format: "
-                                                + cellVal + "\n" + e.getMessage(), e);
-                                    }
-                                    break;
-
-                                case GEOSHAPE:
-                                case SCAN:
-                                case NUMBER:
-                                case FREE_TEXT:
-                                case OPTION: // while exporting digest is computed with pipes
-                                    digest.update(cellVal.getBytes());
-                                    break;
-
-                                default:
-                                    break;
-                            }
-                        } else {
-                            cellVal = "";
-                        }
-
-                        if (type != QuestionType.GEO) {
-                            hasValue = true;
-                            sb.append(
-                                    "questionId="
-                                            + questionIDColMap.get(cell
-                                                    .getColumnIndex())
-                                            + "|value=").append(
-                                    cellVal != null ? URLEncoder.encode(
-                                            cellVal, "UTF-8") : "");
-                        } else {
-                            hasValue = true;
-                            sb.append("questionId="
-                                    + questionIDColMap.get(cell
-                                            .getColumnIndex()) + "|value=");
-                            if (questionIDColMap.get(cell.getColumnIndex() + 1) != null
-                                    && questionIDColMap.get(
-                                            cell.getColumnIndex() + 1)
-                                            .startsWith("--")) {
-
-                                for (int i = 1; i < 4; i++) {
-                                    String nextVal = parseCellAsString(row
-                                            .getCell(cell.getColumnIndex() + i));
-                                    cellVal += "|"
-                                            + (nextVal != null ? nextVal : "");
-                                }
-                                // if the length of the cellVal is too small, which means there is
-                                // no valid info, skip.
-                                if (cellVal.length() < 5) {
-                                    cellVal = "";
-                                }
-                                sb.append(cellVal != null ? URLEncoder.encode(
-                                        cellVal, "UTF-8") : "");
-                            } else {
-                                sb.append(cellVal != null ? URLEncoder.encode(
-                                        cellVal, "UTF-8") : "");
-                            }
-                        }
-
-                        if (hasValue) {
-                            sb.append("|type=").append(typeString).append("&");
-                        }
-                    } else if (cell.getColumnIndex() >= firstQuestionCol) {
-                        // we should only get here if we have a column that
-                        // isn't in the header
-                        // as long as the user hasn't messed up the sheet, this
-                        // is the md5 digest of the original data
-                        try {
-                            String md5 = parseCellAsString(cell);
-                            String digestVal = StringUtil.toHexString(digest
-                                    .digest());
-                            if (md5 != null && md5.equals(digestVal)) {
-                                needUpload = false;
-                            } else if (md5 != null && log.isDebugEnabled()) {
-                                log.debug("Row: " + row.getRowNum()
-                                        + " MD5: " + digestVal + " orig md5: "
-                                        + md5);
-                            }
-                        } catch (Exception e) {
-                            // if we can't handle the md5, then just assume we
-                            // need to update the row
-                            log.error("Couldn't process md5 for row: "
-                                    + row.getRowNum() + " - " + e.getMessage(), e);
-                        }
-                    }
-                }
-
-                // make sure row in sheet actually contained data
-                boolean isEmptyRow = initialUrl.equals(sb.toString().trim());
-                if (needUpload && !isEmptyRow) {
-                    sendDataToServer(
-                            serverBase,
-                            null,
-                            sb.toString(),
-                            criteria.get(KEY_PARAM));
-                } else {
-                    // if we didn't need to upload, then just increment our
-                    // progress counter
-                    SwingUtilities.invokeLater(new StatusUpdater(currentStep++,
-                            SAVING_DATA.get(locale)));
+            String typeString = "VALUE";
+            QuestionDto questionDto = questionIdToQuestionDto.get(questionId);
+            if (questionDto != null) {
+                switch (questionDto.getQuestionType()) {
+                    case GEO:
+                        typeString = "GEO";
+                        break;
+                    case PHOTO:
+                        typeString = "IMAGE";
+                        break;
+                    case VIDEO:
+                        typeString = "VIDEO";
+                        break;
+                    case DATE:
+                        typeString = "DATE";
+                        break;
+                    default:
+                        break;
                 }
             }
-            while (!jobQueue.isEmpty() && threadPool.getActiveCount() > 0) {
-                Thread.sleep(5000);
-            }
-            if (errorIds.size() > 0) {
-                log.error("There were ERRORS: ");
-                for (String line : errorIds) {
-                    log.error(line);
-                }
-            }
-            Thread.sleep(5000);
-            log.debug("Updating summaries");
-            // now update the summaries
-            if ((questionIDColMap.size() * rows) < SIZE_THRESHOLD) {
-                invokeUrl(serverBase,
-                        "action="
-                                + RawDataImportRequest.UPDATE_SUMMARIES_ACTION
-                                + "&" + RawDataImportRequest.SURVEY_ID_PARAM
-                                + "=" + surveyId, true, criteria.get(KEY_PARAM));
-            }
 
-            invokeUrl(serverBase, "action="
-                    + RawDataImportRequest.SAVE_MESSAGE_ACTION + "&"
-                    + RawDataImportRequest.SURVEY_ID_PARAM + "=" + surveyId,
-                    true, criteria.get(KEY_PARAM));
+            sb.append("|type=" + typeString);
 
-            SwingUtilities.invokeLater(new StatusUpdater(currentStep++,
-                    COMPLETE.get(locale), true));
-        } catch (Exception e) {
-            e.printStackTrace();
-        } finally {
-            cleanup();
         }
+
+        return sb.toString();
     }
 
     private Integer durationToSeconds(String duration) {
@@ -603,26 +500,16 @@ public class RawDataSpreadsheetImporter implements DataImporter {
     }
 
     /**
-     * handles calling invokeURL twice (once to reset the instance and again to save the new one) as
-     * a separate job submitted to the thread pool
-     *
      * @param serverBase
      * @param resetUrlString
      * @param saveUrlString
      */
-    private void sendDataToServer(final String serverBase,
-            final String resetUrlString, final String saveUrlString,
+    private void sendDataToServer(final String serverBase, final String saveUrlString,
             final String key) {
         threadPool.execute(new Runnable() {
-
             @Override
             public void run() {
                 try {
-                    SwingUtilities.invokeLater(new StatusUpdater(currentStep++,
-                            SAVING_DATA.get(locale)));
-                    if (resetUrlString != null) {
-                        invokeUrl(serverBase, resetUrlString, true, key);
-                    }
                     invokeUrl(serverBase, saveUrlString, true, key);
                 } catch (Exception e) {
                     errorIds.add(saveUrlString);
@@ -666,11 +553,10 @@ public class RawDataSpreadsheetImporter implements DataImporter {
                     if (!firstQuestionFound && cellValue.matches("[0-9]+\\|.+")) {
                         firstQuestionFound = true;
                         int idx = cell.getColumnIndex();
-                        // idx == 4, non monitoring, old format
                         // idx == 6, monitoring, old format
                         // idx == 7, new format
                         // idx == 8, new format, with repeat column
-                        if (!(idx == 4 || idx == 6 || idx == 7 || idx == 8)) {
+                        if (!(idx == 6 || idx == 7 || idx == 8)) {
                             errorMap.put(idx, "Found the first question at the wrong column index");
                             break;
                         }
@@ -688,7 +574,7 @@ public class RawDataSpreadsheetImporter implements DataImporter {
         return errorMap;
     }
 
-    public static void main(String[] args) {
+    public static void main(String[] args) throws Exception {
         if (args.length != 4) {
             log.error("Error.\nUsage:\n\tjava org.waterforpeople.mapping.dataexport.RawDataSpreadsheetImporter <file> <serverBase> <surveyId>");
             System.exit(1);
@@ -700,59 +586,6 @@ public class RawDataSpreadsheetImporter implements DataImporter {
         configMap.put(SURVEY_CONFIG_KEY, args[2].trim());
         configMap.put("apiKey", args[3].trim());
         r.executeImport(file, serverBaseArg, configMap);
+        // r.executeImport(file, serverBaseArg, configMap);
     }
-
-    public Long getSurveyId() {
-        return surveyId;
-    }
-
-    public void setSurveyId(Long surveyId) {
-        this.surveyId = surveyId;
-    }
-
-    private String parseCellAsString(Cell cell) {
-        String val = null;
-        if (cell != null) {
-            switch (cell.getCellType()) {
-                case Cell.CELL_TYPE_BOOLEAN:
-                    val = cell.getBooleanCellValue() + "";
-                    break;
-                case Cell.CELL_TYPE_NUMERIC:
-                    val = cell.getNumericCellValue() + "";
-                    break;
-                default:
-                    val = cell.getStringCellValue();
-                    break;
-            }
-        }
-        return val;
-    }
-
-    /**
-     * Private class to handle updating of the UI thread from our worker thread
-     */
-    private class StatusUpdater implements Runnable {
-
-        private int step;
-        private String msg;
-        private boolean isComplete;
-
-        public StatusUpdater(int step, String message) {
-            this(step, message, false);
-        }
-
-        public StatusUpdater(int step, String message, boolean isComplete) {
-            msg = message;
-            this.step = step;
-            this.isComplete = isComplete;
-        }
-
-        @Override
-        public void run() {
-            if (progressDialog != null) {
-                progressDialog.update(step, msg, isComplete);
-            }
-        }
-    }
-
 }

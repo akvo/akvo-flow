@@ -333,7 +333,6 @@ public class BulkDataServiceClient {
     private static final Map<Long, Map<Long, String>> parseSurveyInstanceResponse(
             String responseData) {
 
-        log.debug(responseData);
         Map<Long, Map<Long, String>> result = new HashMap<>();
         StringTokenizer lines = new StringTokenizer(responseData, "\n");
 
@@ -586,6 +585,10 @@ public class BulkDataServiceClient {
                     if (json.has("surveyedLocaleIdentifier")
                             && !json.isNull("surveyedLocaleIdentifier")) {
                         dto.setSurveyedLocaleIdentifier(json.getString("surveyedLocaleIdentifier"));
+                    }
+
+                    if (json.has("collectionDate")) {
+                        dto.setCollectionDate(new Date(json.getLong("collectionDate")));
                     }
                 }
             }

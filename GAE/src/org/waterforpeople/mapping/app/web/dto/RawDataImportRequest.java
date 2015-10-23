@@ -1,5 +1,5 @@
 /*
- *  Copyright (C) 2010-2012 Stichting Akvo (Akvo Foundation)
+ *  Copyright (C) 2010-2015 Stichting Akvo (Akvo Foundation)
  *
  *  This file is part of Akvo FLOW.
  *
@@ -23,6 +23,8 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+import java.util.Map.Entry;
 
 import javax.servlet.http.HttpServletRequest;
 
@@ -63,7 +65,10 @@ public class RawDataImportRequest extends RestRequest {
     private Long duration = null;
     private Date collectionDate = null;
     private String submitter = null;
-    private HashMap<Long, String[]> questionAnswerMap = null;
+
+    // questionId -> iteration -> [response, type]
+    private Map<Long, Map<Integer, String[]>> responseMap = null;
+
     private List<String> fixedFieldValues;
 
     public List<String> getFixedFieldValues() {
@@ -108,22 +113,28 @@ public class RawDataImportRequest extends RestRequest {
         this.collectionDate = collectionDate;
     }
 
-    public HashMap<Long, String[]> getQuestionAnswerMap() {
-        return questionAnswerMap;
+    public Map<Long, Map<Integer, String[]>> getResponseMap() {
+        return responseMap;
     }
 
-    public void setQuestionAnswerMap(HashMap<Long, String[]> questionAnswerMap) {
+    public void putResponse(Long questionId, Integer iteration, String value, String type) {
 
-        this.questionAnswerMap = questionAnswerMap;
-    }
+        if (responseMap == null) {
+            responseMap = new HashMap<>();
+        }
 
-    public void putQuestionAnswer(Long questionId, String value, String type) {
-        if (questionAnswerMap == null)
-            questionAnswerMap = new HashMap<Long, String[]>();
-        questionAnswerMap.put(questionId, new String[] {
+        Map<Integer, String[]> iterationMap = responseMap.get(questionId);
+
+        if (iterationMap == null) {
+            iterationMap = new HashMap<>();
+        }
+
+        iterationMap.put(iteration, new String[] {
                 value,
                 (type != null ? type : "VALUE")
         });
+        responseMap.put(questionId, iterationMap);
+
     }
 
     @Override
@@ -161,42 +172,43 @@ public class RawDataImportRequest extends RestRequest {
         if (req.getParameter(QUESTION_ID_PARAM) != null) {
             String[] answers = req.getParameterValues(QUESTION_ID_PARAM);
             if (answers != null) {
-                for (int i = 0; i < answers.length; i++) {
-                    String[] parts = URLDecoder.decode(answers[i], "UTF-8").split("\\|");
-                    String qId = null;
-                    String val = null;
+                for (String answer : answers) {
+                    // answer: questionId=242334|0=abc|1=def|2=ghi|type=VALUE
+                    // The iteration responses are also URLEncoded in order to escape pipe
+                    // characters
+                    String[] parts = URLDecoder.decode(answer, "UTF-8").split("\\|");
+                    Map<Integer, String> iterations = new HashMap<>();
+                    Long questionId = null;
                     String type = null;
-                    if (parts.length > 1) {
-                        qId = parts[0];
+                    for (String part : parts) {
+                        String[] keyValue = part.split("=");
+                        if (keyValue.length == 2) {
+                            String key = keyValue[0];
+                            String val = keyValue[1];
 
-                        if (parts.length == 3) {
-                            val = parts[1];
-                            type = parts[2];
-                        } else {
-                            StringBuffer buf = new StringBuffer();
-                            for (int idx = 1; idx < parts.length - 1; idx++) {
-                                if (idx > 1) {
-                                    buf.append("|");
-                                }
-                                buf.append(parts[idx]);
+                            switch (key) {
+                                case "questionId":
+                                    questionId = Long.valueOf(val);
+                                    break;
+                                case "type":
+                                    type = val;
+                                    break;
+                                default:
+                                    // key is the iteration and value the response
+                                    iterations.put(Integer.valueOf(key),
+                                            URLDecoder.decode(val, "UTF-8"));
+                                    break;
                             }
-                            val = buf.toString();
-                            type = parts[parts.length - 1];
-                        }
-                        if (val != null) {
-                            if (val.startsWith(VALUE)) {
-                                val = val.substring(VALUE.length());
-                            }
-                            if (type.startsWith(TYPE)) {
-                                type = type.substring(TYPE.length());
-                            }
-                            if (val != null && val.contains("^^")) {
-                                val = val.replaceAll("\\^\\^", "|");
-                            }
-                            putQuestionAnswer(new Long(qId), val, type);
                         }
                     }
 
+                    if (questionId != null && type != null) {
+                        for (Entry<Integer, String> iterationEntry : iterations.entrySet()) {
+                            putResponse(questionId, iterationEntry.getKey(),
+                                    iterationEntry.getValue(),
+                                    type);
+                        }
+                    }
                 }
             }
         }

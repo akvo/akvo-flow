@@ -20,6 +20,7 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.UUID;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -48,9 +49,9 @@ import com.gallatinsystems.survey.dao.SurveyDAO;
 import com.gallatinsystems.survey.dao.SurveyGroupDAO;
 import com.gallatinsystems.survey.dao.SurveyUtils;
 import com.gallatinsystems.survey.domain.Question;
-import com.gallatinsystems.survey.domain.SurveyGroup;
 import com.gallatinsystems.survey.domain.Question.Type;
 import com.gallatinsystems.survey.domain.Survey;
+import com.gallatinsystems.survey.domain.SurveyGroup;
 import com.gallatinsystems.surveyal.app.web.SurveyalRestRequest;
 import com.gallatinsystems.surveyal.dao.SurveyedLocaleDao;
 import com.gallatinsystems.surveyal.domain.SurveyedLocale;
@@ -143,35 +144,61 @@ public class RawDataRestServlet extends AbstractRestApiServlet {
                 return null;
             }
 
-            // retrieve and update answers for current instance
-            Map<Long, QuestionAnswerStore> existingAnswers = qasDao.mapByQuestionId(qasDao
-                    .listBySurveyInstance(instance.getKey().getId()));
-            Map<Long, String[]> incomingAnswers = importReq.getQuestionAnswerMap();
+            // questionId -> iteration -> QAS
+            Map<Long, Map<Integer, QuestionAnswerStore>> existingAnswers = qasDao
+                    .mapByQuestionIdAndIteration(qasDao.listBySurveyInstance(instance.getKey()
+                            .getId()));
+
+            Map<Long, Map<Integer, String[]>> incomingResponses = importReq.getResponseMap();
+
             List<QuestionAnswerStore> updatedAnswers = new ArrayList<QuestionAnswerStore>();
 
-            for (Map.Entry<Long, String[]> qasEntry : incomingAnswers.entrySet()) {
-                QuestionAnswerStore answer = null;
-                if (existingAnswers.containsKey(qasEntry.getKey())) {
-                    answer = existingAnswers.get(qasEntry.getKey());
-                } else {
-                    answer = new QuestionAnswerStore();
-                    answer.setQuestionID(qasEntry.getKey().toString());
-                    answer.setSurveyInstanceId(instance.getKey().getId());
-                    answer.setSurveyId(s.getKey().getId());
-                    answer.setCollectionDate(instance.getCollectionDate());
+            for (Entry<Long, Map<Integer, String[]>> responseEntry : incomingResponses
+                    .entrySet()) {
+                Long questionId = responseEntry.getKey();
+                Map<Integer, String[]> iterationMap = responseEntry.getValue();
+
+                for (Entry<Integer, String[]> iterationEntry : iterationMap.entrySet()) {
+                    Integer iteration = iterationEntry.getKey();
+                    String response = iterationEntry.getValue()[0];
+                    String type = iterationEntry.getValue()[1];
+                    QuestionAnswerStore answer = null;
+                    if (existingAnswers.containsKey(questionId)) {
+                        if (existingAnswers.get(questionId).containsKey(iteration)) {
+                            answer = existingAnswers.get(questionId).get(iteration);
+                        }
+                    }
+
+                    // New answer/iteration
+                    if (answer == null) {
+                        answer = new QuestionAnswerStore();
+                        answer.setQuestionID(questionId.toString());
+                        answer.setSurveyInstanceId(instance.getKey().getId());
+                        answer.setSurveyId(s.getKey().getId());
+                        answer.setCollectionDate(instance.getCollectionDate());
+                    }
+
+                    answer.setValue(response);
+                    answer.setType(type);
+                    updatedAnswers.add(answer);
                 }
-                answer.setValue(qasEntry.getValue()[0]);
-                answer.setType(qasEntry.getValue()[1]);
-                updatedAnswers.add(answer);
             }
+
             qasDao.save(updatedAnswers);
 
             // remove entities with no updated response
             List<QuestionAnswerStore> deletedAnswers = new ArrayList<QuestionAnswerStore>();
-            for (Long qasId : existingAnswers.keySet()) {
-                if (!incomingAnswers.containsKey(qasId)) {
-                    deletedAnswers.add(existingAnswers.get(qasId));
+
+            for (Long questionId : existingAnswers.keySet()) {
+                for (Integer iteration : existingAnswers.get(questionId).keySet()) {
+                    if (incomingResponses.containsKey(questionId)) {
+                        if (!incomingResponses.get(questionId).containsKey(iteration)) {
+                            // Iteration has been deleted
+                            deletedAnswers.add(existingAnswers.get(questionId).get(iteration));
+                        }
+                    }
                 }
+
             }
             qasDao.delete(deletedAnswers);
 
