@@ -180,12 +180,15 @@ public class RawDataSpreadsheetImporter implements DataImporter {
 
         // TODO Consider removing this when old (pre repeat question groups) reports no longer need
         // to be supported
-        boolean hasIterationColumn = Collections.min(columnIndexToQuestionId.keySet()) == 8;
+        int firstQuestionColumnIndex = Collections.min(columnIndexToQuestionId.keySet());
+        boolean hasIterationColumn = firstQuestionColumnIndex == 8;
+        boolean hasDeviceIdentifierColumn = firstQuestionColumnIndex == 8
+                || firstQuestionColumnIndex == 7;
 
         int row = 1;
         while (true) {
             InstanceData instanceData = parseInstance(sheet, row, questionIdToQuestionDto,
-                    columnIndexToQuestionId, hasIterationColumn);
+                    columnIndexToQuestionId, hasIterationColumn, hasDeviceIdentifierColumn);
 
             if (instanceData == null) {
                 break;
@@ -221,17 +224,18 @@ public class RawDataSpreadsheetImporter implements DataImporter {
      */
     public InstanceData parseInstance(Sheet sheet, int startRow,
             Map<Long, QuestionDto> questionIdToQuestionDto,
-            Map<Integer, Long> columnIndexToQuestionId, boolean hasIterationColumn) {
+            Map<Integer, Long> columnIndexToQuestionId, boolean hasIterationColumn,
+            boolean hasDeviceIdentifierColumn) {
 
         // File layout
         // 0. SurveyedLocaleIdentifier
-        // 7. Repeat
-        // 1. SurveyedLocaleDisplayName
-        // 2. DeviceIdentifier
-        // 3. SurveyInstanceId
-        // 4. CollectionDate
-        // 5. SubmitterName
-        // 6. SurveyalTime
+        // 1. Repeat (if hasIterationColumn)
+        // 2. SurveyedLocaleDisplayName
+        // 3. DeviceIdentifier (if hasDeviceIdentifierColumn)
+        // 4. SurveyInstanceId
+        // 5. CollectionDate
+        // 6. SubmitterName
+        // 7. SurveyalTime
 
         // 8 - N. Questions
         // N + 1. Digest
@@ -240,19 +244,24 @@ public class RawDataSpreadsheetImporter implements DataImporter {
         if (baseRow == null) {
             return null;
         }
+
+        int firstQuestionColumnIndex = Collections.min(columnIndexToQuestionId.keySet());
         String surveyedLocaleIdentifier = ExportImportUtils.parseCellAsString(baseRow.getCell(0));
         String surveyedLocaleDisplayName = ExportImportUtils.parseCellAsString(baseRow
                 .getCell(hasIterationColumn ? 2 : 1));
-        String deviceIdentifier = ExportImportUtils.parseCellAsString(baseRow
-                .getCell(hasIterationColumn ? 3 : 2));
+        String deviceIdentifier = "";
+        if (hasDeviceIdentifierColumn) {
+            deviceIdentifier = ExportImportUtils.parseCellAsString(baseRow
+                    .getCell(hasIterationColumn ? 3 : 2));
+        }
         String surveyInstanceId = ExportImportUtils.parseCellAsString(baseRow
-                .getCell(hasIterationColumn ? 4 : 3));
-        Date collectionDate = ExportImportUtils.parseDate(
-                ExportImportUtils.parseCellAsString(baseRow.getCell(hasIterationColumn ? 5 : 4)));
+                .getCell(firstQuestionColumnIndex - 4));
+        Date collectionDate = ExportImportUtils.parseDate(ExportImportUtils
+                .parseCellAsString(baseRow.getCell(firstQuestionColumnIndex - 3)));
         String submitterName = ExportImportUtils.parseCellAsString(baseRow
-                .getCell(hasIterationColumn ? 6 : 5));
+                .getCell(firstQuestionColumnIndex - 2));
         String surveyalTime = ExportImportUtils.parseCellAsString(baseRow
-                .getCell(hasIterationColumn ? 7 : 6));
+                .getCell(firstQuestionColumnIndex - 1));
 
         int iterations = 1;
 
@@ -393,7 +402,6 @@ public class RawDataSpreadsheetImporter implements DataImporter {
                 + dto.getKeyId() + "&");
 
         // Collection date
-        // TODO: null-check
         String dateString = ExportImportUtils.formatDate(dto.getCollectionDate());
 
         sb.append(
@@ -533,11 +541,10 @@ public class RawDataSpreadsheetImporter implements DataImporter {
                     if (!firstQuestionFound && cellValue.matches("[0-9]+\\|.+")) {
                         firstQuestionFound = true;
                         int idx = cell.getColumnIndex();
-                        // idx == 4, non monitoring, old format
                         // idx == 6, monitoring, old format
                         // idx == 7, new format
                         // idx == 8, new format, with repeat column
-                        if (!(idx == 4 || idx == 6 || idx == 7 || idx == 8)) {
+                        if (!(idx == 6 || idx == 7 || idx == 8)) {
                             errorMap.put(idx, "Found the first question at the wrong column index");
                             break;
                         }
