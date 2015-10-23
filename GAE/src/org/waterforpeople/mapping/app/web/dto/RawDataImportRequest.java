@@ -24,6 +24,7 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 
 import javax.servlet.http.HttpServletRequest;
 
@@ -171,40 +172,41 @@ public class RawDataImportRequest extends RestRequest {
         if (req.getParameter(QUESTION_ID_PARAM) != null) {
             String[] answers = req.getParameterValues(QUESTION_ID_PARAM);
             if (answers != null) {
-                for (int i = 0; i < answers.length; i++) {
-                    String[] parts = URLDecoder.decode(answers[i], "UTF-8").split("\\|");
-                    String qId = null;
-                    String val = null;
+                for (String answer : answers) {
+                    // answer: questionId=242334|0=abc|1=def|2=ghi|type=VALUE
+                    // The iteration responses are also URLEncoded in order to escape pipe
+                    // characters
+                    String[] parts = URLDecoder.decode(answer, "UTF-8").split("\\|");
+                    Map<Integer, String> iterations = new HashMap<>();
+                    Long questionId = null;
                     String type = null;
-                    if (parts.length > 1) {
-                        qId = parts[0];
+                    for (String part : parts) {
+                        String[] keyValue = part.split("=");
+                        if (keyValue.length == 2) {
+                            String key = keyValue[0];
+                            String val = keyValue[1];
 
-                        if (parts.length == 3) {
-                            val = parts[1];
-                            type = parts[2];
-                        } else {
-                            StringBuffer buf = new StringBuffer();
-                            for (int idx = 1; idx < parts.length - 1; idx++) {
-                                if (idx > 1) {
-                                    buf.append("|");
-                                }
-                                buf.append(parts[idx]);
+                            switch (key) {
+                                case "questionId":
+                                    questionId = Long.valueOf(val);
+                                    break;
+                                case "type":
+                                    type = val;
+                                    break;
+                                default:
+                                    // key is the iteration and value the response
+                                    iterations.put(Integer.valueOf(key),
+                                            URLDecoder.decode(val, "UTF-8"));
+                                    break;
                             }
-                            val = buf.toString();
-                            type = parts[parts.length - 1];
                         }
-                        if (val != null) {
-                            // 0=value|3=value
-                            String[] iterations = val.split("|");
+                    }
 
-                            for (String iter : iterations) {
-                                String[] v = iter.split("=");
-                                if (v.length == 2) {
-                                    Integer iteration = Integer.parseInt(v[0]);
-                                    String response = v[1];
-                                    putResponse(Long.valueOf(qId), iteration, response, type);
-                                }
-                            }
+                    if (questionId != null && type != null) {
+                        for (Entry<Integer, String> iterationEntry : iterations.entrySet()) {
+                            putResponse(questionId, iterationEntry.getKey(),
+                                    iterationEntry.getValue(),
+                                    type);
                         }
                     }
                 }

@@ -424,21 +424,24 @@ public class RawDataSpreadsheetImporter implements DataImporter {
         // Duration
         sb.append("duration=" + dto.getSurveyalTime());
 
+        StringBuilder responseBuilder = new StringBuilder();
         // questionId=123|0=sfijd|2=fjsoi|type=GEO&questionId=...
         for (Entry<Long, SortedMap<Long, String>> entry : instanceData.responseMap
                 .entrySet()) {
             Long questionId = entry.getKey();
             SortedMap<Long, String> iterations = entry.getValue();
 
-            sb.append("&questionId=" + questionId);
+            responseBuilder.append("&questionId=" + questionId);
 
             for (Entry<Long, String> iterationEntry : iterations.entrySet()) {
                 Long iteration = iterationEntry.getKey();
                 String response = iterationEntry.getValue();
-
-                sb.append("|" + iteration + "=" + URLEncoder.encode(response, "UTF-8"));
-
+                // URL encode the response text a second time in order to escape pipe characters
+                responseBuilder
+                        .append("|" + iteration + "=" + URLEncoder.encode(response, "UTF-8"));
             }
+
+            sb.append(URLEncoder.encode(responseBuilder.toString(), "UTF-8"));
 
             String typeString = "VALUE";
             QuestionDto questionDto = questionIdToQuestionDto.get(questionId);
