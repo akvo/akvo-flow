@@ -1,5 +1,5 @@
 /*
- *  Copyright (C) 2014 Stichting Akvo (Akvo Foundation)
+ *  Copyright (C) 2014-2015 Stichting Akvo (Akvo Foundation)
  *
  *  This file is part of Akvo FLOW.
  *
@@ -39,45 +39,46 @@ import com.google.appengine.api.taskqueue.TaskOptions;
  */
 public class CascadeNodeDao extends BaseDAO<CascadeNode> {
     public CascadeNodeDao() {
-		super(CascadeNode.class);
-	}
+        super(CascadeNode.class);
+    }
 
     private static final Logger log = Logger.getLogger(SurveyGroupDAO.class
             .getName());
 
-	/* 
-	 * List Cascade nodes by cascade resource id
-	 */
-	public List<CascadeNode> listCascadeNodesByResource(Long cascadeResourceId) {
-		List<CascadeNode> cnList = listByProperty("cascadeResourceId", cascadeResourceId,
+    /*
+     * List Cascade nodes by cascade resource id
+     */
+    public List<CascadeNode> listCascadeNodesByResource(Long cascadeResourceId) {
+        List<CascadeNode> cnList = listByProperty("cascadeResourceId", cascadeResourceId,
                 "Long", "name", "asc");
-		return cnList;
-	}
+        return cnList;
+    }
 
-	/* 
-	 * List Cascade nodes by cascade resource ID and parent node
-	 */
-	@SuppressWarnings("unchecked")
-	public List<CascadeNode> listCascadeNodesByResourceAndParentId(Long cascadeResourceId, Long parentNodeId){
-		PersistenceManager pm = PersistenceFilter.getManager();
-	    javax.jdo.Query query = pm.newQuery(CascadeNode.class);
-	    Map<String, Object> paramMap = null;
-	    StringBuilder filterString = new StringBuilder();
-	    StringBuilder paramString = new StringBuilder();
-	    paramMap = new HashMap<String, Object>();
-	    appendNonNullParam("cascadeResourceId", filterString, paramString, "Long",
+    /*
+     * List Cascade nodes by cascade resource ID and parent node
+     */
+    @SuppressWarnings("unchecked")
+    public List<CascadeNode> listCascadeNodesByResourceAndParentId(Long cascadeResourceId,
+            Long parentNodeId) {
+        PersistenceManager pm = PersistenceFilter.getManager();
+        javax.jdo.Query query = pm.newQuery(CascadeNode.class);
+        Map<String, Object> paramMap = null;
+        StringBuilder filterString = new StringBuilder();
+        StringBuilder paramString = new StringBuilder();
+        paramMap = new HashMap<String, Object>();
+        appendNonNullParam("cascadeResourceId", filterString, paramString, "Long",
                 cascadeResourceId, paramMap);
-	    appendNonNullParam("parentNodeId", filterString, paramString, "Long",
+        appendNonNullParam("parentNodeId", filterString, paramString, "Long",
                 parentNodeId, paramMap);
 
-	    query.setFilter(filterString.toString());
+        query.setFilter(filterString.toString());
         query.declareParameters(paramString.toString());
 
         return (List<CascadeNode>) query.executeWithMap(paramMap);
-	}
+    }
 
-	public void deleteRecursive(Long cascadeResourceId, Long nodeId){
-		CascadeNode cr = getByKey(nodeId);
+    public void deleteRecursive(Long cascadeResourceId, Long nodeId) {
+        CascadeNode cr = getByKey(nodeId);
         if (cr == null) {
             return;
         }
@@ -100,6 +101,14 @@ public class CascadeNodeDao extends BaseDAO<CascadeNode> {
                             "Error scheduling Cascade Node deletion - cascadeResourceId: %s - parentNodeId: %s",
                             cascadeResourceId, nodeId), e);
         }
-		delete(cr);
-	}
+        delete(cr);
+    }
+
+    public List<CascadeNode> listByName(Long cascadeResourceId, List<String> cascadeNodeNames) {
+        PersistenceManager pm = PersistenceFilter.getManager();
+        String queryString = "cascadeResourceId == :p1 && :p2.contains(name)";
+        javax.jdo.Query query = pm.newQuery(CascadeNode.class, queryString);
+
+        return (List<CascadeNode>) query.execute(cascadeResourceId, cascadeNodeNames);
+    }
 }
