@@ -4214,7 +4214,7 @@ div.dataCollectedDate label input {
     line-height: inherit;
 }
 
-#pointDetails dl {
+#pointDetails div.mapInfoDetail {
     position: relative;
     overflow: hidden;
     padding: 0.5em 0.25%;
@@ -4223,41 +4223,38 @@ div.dataCollectedDate label input {
     letter-spacing: 0em;
     font-family: Verdana, Geneva, sans-serif;
     line-height: 1.2em;
+    h4 {
+        margin:5px 0 10px 0;
+        color: $akvoOrange;
+    }
 }
 
-#pointDetails dl div.defListWrap {
+#pointDetails div.mapInfoDetail div.defListWrap {
     display: table;
     margin: 2px auto;
     padding: 0.2em 0;
     width: 100%;
 }
 
-#pointDetails dl div.defListWrap:nth-child(odd) {
+#pointDetails div.mapInfoDetail div.defListWrap:nth-child(odd) {
     background: rgb(224, 224, 224);
 }
 
-#pointDetails dl div.defListWrap dt {
-    display: table-cell;
-    float: left;
+#pointDetails div.mapInfoDetail div.defListWrap dt {
     padding: 5px 0 5px 0.75%;
     width: 44.25%;
-    color: rgb(124, 124, 124);
-    -webkit-text-shadow: 0px 1px 0 white, 0 -1px 0 rgb(154, 164, 164);
-    -moz-text-shadow: 0px 1px 0 white, 0 -1px 0 rgb(154, 164, 164);
-    -o-text-shadow: 0px 1px 0 white, 0 -1px 0 rgb(154, 164, 164);
-    text-shadow: 0px 1px 0 white, 0 -1px 0 rgb(154, 164, 164);
+    margin:2px 0 15px 0;
+    color: rgba($akvoBlack,0.4);
 }
 
-#pointDetails dl div.defListWrap dd {
-    display: table-cell;
-    float: left;
+#pointDetails div.mapInfoDetail div.defListWrap dd {
     padding: 5px 0 5px 0.75%;
     width: 54.25%;
     color: rgb(0, 0, 0);
 }
 
-#pointDetails dl dt:nth-of-type(1),
-#pointDetails dl dd:nth-of-type(1) {
+#pointDetails div.mapInfoDetail dt:nth-of-type(1),
+#pointDetails div.mapInfoDetail dd:nth-of-type(1) {
     border-top: none;
 }
 
