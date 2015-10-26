@@ -50,7 +50,6 @@ public class SurveyDataImportExportFactory implements DataImportExportFactory {
         {
             put("SURVEY_SPREADSHEET", SurveySpreadsheetImporter.class);
             put("RAW_DATA", RawDataSpreadsheetImporter.class);
-            put("FIXED_FORMAT", FixedFormatRawDataImporter.class);
             put("BULK_SURVEY", SurveyBulkUploader.class);
         }
     };
