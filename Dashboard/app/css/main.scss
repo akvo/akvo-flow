@@ -1672,7 +1672,7 @@ th.action {
                 float: left;
                 margin: 0 1px 0 0;
                 @include border-radius(2px 2px 0 0);
-                background: rgb(201, 201, 201);
+                background: rgba($akvoBlack, 0.5);
                 -webkit-background-clip: padding-box;
                 background-clip: padding-box;
                 -webkit-transition: none;
@@ -1703,19 +1703,13 @@ th.action {
                 a {
                     display: block;
                     padding: 0.75em 1em;
-                    color: rgb(147, 145, 144);
+                    color: white;
                     text-transform: uppercase;
                     -webkit-transition: none;
                     transition: none;
-                    -webkit-text-shadow: 1px 1px 0 rgb(235, 235, 235);
-                    -moz-text-shadow: 1px 1px 0 rgb(235, 235, 235);
-                    text-shadow: 1px 1px 0 rgb(235, 235, 235);
                     font-weight: bold;
                     &:hover {
                         color: white;
-                        text-shadow: none;
-                        -webkit-text-shadow: none;
-                        -moz-text-shadow: none;
                     }
                 }
             }
