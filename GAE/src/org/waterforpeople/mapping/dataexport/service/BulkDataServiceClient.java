@@ -24,6 +24,7 @@ import java.io.UnsupportedEncodingException;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.net.URLEncoder;
+import java.nio.charset.StandardCharsets;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -342,7 +343,7 @@ public class BulkDataServiceClient {
 
             Long questionId = Long.valueOf(tokens[0]);
             Long iteration = Long.valueOf(tokens[1]);
-            String value = new String(Base64.decodeBase64(tokens[2]));
+            String value = new String(Base64.decodeBase64(tokens[2]), StandardCharsets.UTF_8);
 
             Map<Long, String> iterationMap = result.get(questionId);
             if (iterationMap != null) {
