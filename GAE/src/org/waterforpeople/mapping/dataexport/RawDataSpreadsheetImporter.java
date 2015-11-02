@@ -462,7 +462,7 @@ public class RawDataSpreadsheetImporter implements DataImporter {
                 }
             }
 
-            sb.append("|type=" + typeString);
+            sb.append(URLEncoder.encode("|type=" + typeString, "UTF-8"));
 
         }
 
