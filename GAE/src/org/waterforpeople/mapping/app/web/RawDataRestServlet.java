@@ -184,11 +184,11 @@ public class RawDataRestServlet extends AbstractRestApiServlet {
                         answer.setSurveyInstanceId(instance.getKey().getId());
                         answer.setSurveyId(s.getKey().getId());
                         answer.setCollectionDate(instance.getCollectionDate());
+                        answer.setType(type);
+                        answer.setIteration(iteration);
                     }
 
                     answer.setValue(response);
-                    answer.setType(type);
-                    answer.setIteration(iteration);
                     updatedAnswers.add(answer);
                 }
             }
