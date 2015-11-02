@@ -188,6 +188,7 @@ public class RawDataRestServlet extends AbstractRestApiServlet {
 
                     answer.setValue(response);
                     answer.setType(type);
+                    answer.setIteration(iteration);
                     updatedAnswers.add(answer);
                 }
             }
@@ -209,7 +210,7 @@ public class RawDataRestServlet extends AbstractRestApiServlet {
                 }
 
             }
-            log.log(Level.INFO, "Deleting " + updatedAnswers.size() + " question answers");
+            log.log(Level.INFO, "Deleting " + deletedAnswers.size() + " question answers");
             qasDao.delete(deletedAnswers);
 
             if (isNewInstance) {
