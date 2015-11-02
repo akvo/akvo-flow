@@ -122,18 +122,15 @@ public class RawDataSpreadsheetImporter implements DataImporter {
             for (String importUrl : importUrls) {
                 sendDataToServer(serverBase, importUrl, criteria.get(KEY_PARAM));
             }
-
             while (!jobQueue.isEmpty() && threadPool.getActiveCount() > 0) {
                 Thread.sleep(5000);
             }
-
             if (errorIds.size() > 0) {
                 log.error("There were ERRORS: ");
                 for (String line : errorIds) {
                     log.error(line);
                 }
             }
-
             // Count the number of rows in the sheet
             Iterator<Row> rowIterator = sheet.rowIterator();
             int rowCount = 0;
@@ -141,18 +138,17 @@ public class RawDataSpreadsheetImporter implements DataImporter {
                 rowIterator.next();
                 rowCount++;
             }
-
             Thread.sleep(5000);
             log.debug("Updating summaries");
             if (rowCount * questionIdToQuestionDto.size() < SIZE_THRESHOLD) {
                 invokeUrl(serverBase, "action=" + RawDataImportRequest.UPDATE_SUMMARIES_ACTION
-                        + "&" +
-                        RawDataImportRequest.SURVEY_ID_PARAM + "=" + surveyId, true,
+                        + "&" + RawDataImportRequest.SURVEY_ID_PARAM + "=" + surveyId, true,
                         criteria.get(KEY_PARAM));
             }
-            invokeUrl(serverBase, "action=" + RawDataImportRequest.SAVE_MESSAGE_ACTION + "&" +
-                    RawDataImportRequest.SURVEY_ID_PARAM + "=" + surveyId, true,
+            invokeUrl(serverBase, "action=" + RawDataImportRequest.SAVE_MESSAGE_ACTION + "&"
+                    + RawDataImportRequest.SURVEY_ID_PARAM + "=" + surveyId, true,
                     criteria.get(KEY_PARAM));
+
         } catch (Exception e) {
             e.printStackTrace();
         } finally {
@@ -276,7 +272,8 @@ public class RawDataSpreadsheetImporter implements DataImporter {
         if (hasIterationColumn) {
             while (true) {
                 Row row = sheet.getRow(startRow + iterations);
-                if (row == null || ExportImportUtils.parseCellAsString(row.getCell(1)).equals("1")) {
+                if (row == null
+                        || ExportImportUtils.parseCellAsString(row.getCell(1)).equals("1.0")) {
                     break;
                 }
                 iterations++;
@@ -327,7 +324,7 @@ public class RawDataSpreadsheetImporter implements DataImporter {
                             iterationToResponse.put(iteration - 1, val);
                             responseMap.put(questionId, iterationToResponse);
                         } else {
-                            iterationToResponse.put(iteration, val);
+                            iterationToResponse.put(iteration - 1, val);
                         }
                     }
                 }
@@ -375,6 +372,7 @@ public class RawDataSpreadsheetImporter implements DataImporter {
     /**
      * @return map from question id to QuestionDto
      */
+    @SuppressWarnings("unchecked")
     private static Map<Long, QuestionDto> fetchQuestions(String serverBase,
             Map<String, String> criteria) throws Exception {
 
@@ -424,14 +422,14 @@ public class RawDataSpreadsheetImporter implements DataImporter {
         // Duration
         sb.append("duration=" + dto.getSurveyalTime());
 
-        StringBuilder responseBuilder = new StringBuilder();
         // questionId=123|0=sfijd|2=fjsoi|type=GEO&questionId=...
         for (Entry<Long, SortedMap<Long, String>> entry : instanceData.responseMap
                 .entrySet()) {
             Long questionId = entry.getKey();
+            sb.append("&questionId=" + questionId);
             SortedMap<Long, String> iterations = entry.getValue();
 
-            responseBuilder.append("&questionId=" + questionId);
+            StringBuilder responseBuilder = new StringBuilder();
 
             for (Entry<Long, String> iterationEntry : iterations.entrySet()) {
                 Long iteration = iterationEntry.getKey();
@@ -464,7 +462,7 @@ public class RawDataSpreadsheetImporter implements DataImporter {
                 }
             }
 
-            sb.append("|type=" + typeString);
+            sb.append(URLEncoder.encode("|type=" + typeString, "UTF-8"));
 
         }
 
