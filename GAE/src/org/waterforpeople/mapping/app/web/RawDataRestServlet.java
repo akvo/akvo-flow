@@ -151,12 +151,20 @@ public class RawDataRestServlet extends AbstractRestApiServlet {
 
             Map<Long, Map<Integer, String[]>> incomingResponses = importReq.getResponseMap();
 
+            if (incomingResponses.isEmpty()) {
+                log.log(Level.WARNING, "incomingResponses is empty");
+            }
+
             List<QuestionAnswerStore> updatedAnswers = new ArrayList<QuestionAnswerStore>();
 
             for (Entry<Long, Map<Integer, String[]>> responseEntry : incomingResponses
                     .entrySet()) {
                 Long questionId = responseEntry.getKey();
                 Map<Integer, String[]> iterationMap = responseEntry.getValue();
+
+                if (iterationMap.isEmpty()) {
+                    log.log(Level.WARNING, "iterationMap is empty");
+                }
 
                 for (Entry<Integer, String[]> iterationEntry : iterationMap.entrySet()) {
                     Integer iteration = iterationEntry.getKey();
@@ -184,6 +192,7 @@ public class RawDataRestServlet extends AbstractRestApiServlet {
                 }
             }
 
+            log.log(Level.INFO, "Updating " + updatedAnswers.size() + " question answers");
             qasDao.save(updatedAnswers);
 
             // remove entities with no updated response
@@ -200,6 +209,7 @@ public class RawDataRestServlet extends AbstractRestApiServlet {
                 }
 
             }
+            log.log(Level.INFO, "Deleting " + updatedAnswers.size() + " question answers");
             qasDao.delete(deletedAnswers);
 
             if (isNewInstance) {

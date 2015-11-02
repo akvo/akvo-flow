@@ -424,14 +424,14 @@ public class RawDataSpreadsheetImporter implements DataImporter {
         // Duration
         sb.append("duration=" + dto.getSurveyalTime());
 
-        StringBuilder responseBuilder = new StringBuilder();
         // questionId=123|0=sfijd|2=fjsoi|type=GEO&questionId=...
         for (Entry<Long, SortedMap<Long, String>> entry : instanceData.responseMap
                 .entrySet()) {
             Long questionId = entry.getKey();
+            sb.append("&questionId=" + questionId);
             SortedMap<Long, String> iterations = entry.getValue();
 
-            responseBuilder.append("&questionId=" + questionId);
+            StringBuilder responseBuilder = new StringBuilder();
 
             for (Entry<Long, String> iterationEntry : iterations.entrySet()) {
                 Long iteration = iterationEntry.getKey();
