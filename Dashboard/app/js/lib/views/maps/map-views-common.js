@@ -13,6 +13,7 @@ FLOW.NavMapsView = FLOW.View.extend({
   hierarchyObjectAncestors: 0,
   previousObjectAncestors: 0,
   hierarchyObject: [],
+  lastSelectedElement: 0,
   geomodel: null,
   cartodbLayer: null,
   layerExistsCheck: false,
@@ -111,6 +112,16 @@ FLOW.NavMapsView = FLOW.View.extend({
 
   insertCartodbMap: function() {
     var self = this;
+
+    $.ajaxSetup({
+    	beforeSend: function(){
+    		FLOW.savingMessageControl.numLoadingChange(1);
+        },
+    	complete: function(){
+    		FLOW.savingMessageControl.numLoadingChange(-1);
+        }
+    });
+
     var filterContent = '<div id="survey_hierarchy" style="float: left"></div>&nbsp;';
 
     $('#dropdown-holder').prepend(filterContent);
@@ -187,8 +198,12 @@ FLOW.NavMapsView = FLOW.View.extend({
     //manage folder and/or survey selection hierarchy
     self.checkHierarchy(0);
 
-    $(document.body).on('change', '.folder_survey_selector', function(){
+    $(document).off('change', '.folder_survey_selector').on('change', '.folder_survey_selector',function(e) {
+
       $('#form_selector option[value!=""]').remove();
+
+      //remove all 'folder_survey_selector's outside of ancestors count
+      self.cleanHierarchy($(this).attr('id'));
 
       //first remove previously created form selector elements
       $(".form_selector").remove();
@@ -207,9 +222,8 @@ FLOW.NavMapsView = FLOW.View.extend({
 
               var hierarchyObject = self.hierarchyObject;
               for(var j=0; j<hierarchyObject.length; j++){
-                if(hierarchyObject[j].keyId == keyId){
+                if(hierarchyObject[j].keyId === keyId){
                   self.hierarchyObjectAncestors = hierarchyObject[j]['ancestorIds'].length;
-                  self.cleanHierarchy();
                 }
               }
 
@@ -239,23 +253,25 @@ FLOW.NavMapsView = FLOW.View.extend({
           self.clearCartodbLayer();
 
           var hierarchyObject = self.hierarchyObject;
+
           for(var i=0; i<hierarchyObject.length; i++){
-            if(hierarchyObject[i].keyId == keyId){
+            if(hierarchyObject[i].keyId === parseInt(keyId) && self.lastSelectedElement !== parseInt(keyId)){
               self.hierarchyObjectAncestors = hierarchyObject[i]['ancestorIds'].length;
               self.checkHierarchy(keyId);
+              self.lastSelectedElement = parseInt(keyId);
             }
           }
         }
       }else{ //if nothing is selected, delete all children 'folder_survey_selector's and clear form selector
         self.clearCartodbLayer();
-
-        //remove all 'folder_survey_selector's outside of ancestors count
-        self.cleanHierarchy();
       }
 
     });
 
-    $(document.body).on('change', '.form_selector', function(){
+    $(document).off('change', '.form_selector').on('change', '.form_selector',function(e) {
+      //remove all 'folder_survey_selector's outside of ancestors count
+      self.cleanHierarchy($(this).attr('id'));
+
       if ($(this).val() !== "") {
         var formId = $(this).val();
         //get list of columns to be added to new named map's interactivity
@@ -725,8 +741,6 @@ FLOW.NavMapsView = FLOW.View.extend({
       return self.compare(el1, el2, 'name');
     });
 
-    self.cleanHierarchy();
-
     //create folder and/or survey select element
     var folder_survey_selector = $("<select></select>").attr("id", "folder_survey_selector_"+self.hierarchyObjectAncestors).attr("class", "folder_survey_selector");
     folder_survey_selector.append('<option value="">--' + Ember.String.loc('_choose_folder_or_survey') + '--</option>');
@@ -749,14 +763,10 @@ FLOW.NavMapsView = FLOW.View.extend({
     $("#survey_hierarchy").append(folder_survey_selector);
   },
 
-  cleanHierarchy: function(){
+  cleanHierarchy: function(element_id){
     var self = this;
 
-    if(self.hierarchyObjectAncestors <= self.previousObjectAncestors){
-      for(var i=self.hierarchyObjectAncestors; i<=self.previousObjectAncestors; i++){
-        $("#folder_survey_selector_"+i).remove();
-      }
-    }
+    $("#"+element_id).nextAll().remove();
   },
 
   clearCartodbLayer: function(){
