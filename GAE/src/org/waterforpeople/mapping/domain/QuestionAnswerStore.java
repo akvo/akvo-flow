@@ -50,6 +50,7 @@ public class QuestionAnswerStore extends BaseDomain {
     private Long surveyInstanceId;
     private String scoredValue;
     private String strength;
+    private Integer iteration;
 
     public String getStrength() {
         return strength;
@@ -135,6 +136,14 @@ public class QuestionAnswerStore extends BaseDomain {
 
     public void setQuestionID(String questionID) {
         this.questionID = questionID;
+    }
+    
+    public void setIteration(Integer iteration) {
+        this.iteration = iteration;
+    }
+
+    public Integer getIteration() {
+        return iteration;
     }
 
     @Override

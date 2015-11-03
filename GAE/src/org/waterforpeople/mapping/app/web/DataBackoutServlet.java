@@ -24,6 +24,7 @@ import java.util.List;
 
 import javax.servlet.http.HttpServletRequest;
 
+import org.apache.commons.codec.binary.Base64;
 import org.json.JSONObject;
 import org.waterforpeople.mapping.analytics.dao.AccessPointStatusSummaryDao;
 import org.waterforpeople.mapping.analytics.dao.SurveyQuestionSummaryDao;
@@ -147,7 +148,8 @@ public class DataBackoutServlet extends AbstractRestApiServlet {
     }
 
     /**
-     * lists all questionAnswerStore records for a given instance
+     * lists all questionAnswerStore records for a given instance... in a csv like format TODO: We
+     * should probably quote the values somehow, otherwise, what happens if a response contains \n?
      * 
      * @param surveyInstanceId
      * @return
@@ -165,8 +167,15 @@ public class DataBackoutServlet extends AbstractRestApiServlet {
                     } else {
                         isFirst = false;
                     }
-                    result.append(qas.getQuestionID()).append(",")
-                            .append(qas.getValue());
+                    String questionId = qas.getQuestionID();
+                    Integer iteration = qas.getIteration();
+                    iteration = iteration == null ? 0 : iteration;
+                    String value = qas.getValue();
+                    value = value == null ? "" : value;
+
+                    result.append(questionId).append(",")
+                            .append(iteration).append(",")
+                            .append(new String(Base64.encodeBase64(value.getBytes())));
                 }
             }
         }

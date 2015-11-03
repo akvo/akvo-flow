@@ -22,16 +22,17 @@ import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.PushbackInputStream;
-import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
 import java.security.MessageDigest;
 import java.text.DateFormat;
+import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.ThreadPoolExecutor;
@@ -98,7 +99,7 @@ public class RawDataSpreadsheetImporter implements DataImporter {
      * @return
      * @throws Exception
      */
-    protected Sheet getDataSheet(File file) throws Exception {
+    public Sheet getDataSheet(File file) throws Exception {
         stream = new PushbackInputStream(new FileInputStream(file));
         Workbook wb = null;
         try {
@@ -128,6 +129,117 @@ public class RawDataSpreadsheetImporter implements DataImporter {
         }
     }
 
+    public void runImport(File file, String serverBase, Map<String, String> criteria)
+            throws Exception {
+
+        Sheet sheet = getDataSheet(file);
+        Map<Long, Long> columnIndexToQuestionId = processHeader(sheet);
+        Map<Long, QuestionDto> questionIdToQuestionDto = fetchQuestions(serverBase, criteria);
+
+    }
+
+    /**
+     * Parse a raw data report file into a list of InstanceData
+     *
+     * @param file
+     * @return
+     */
+    public List<InstanceData> parseSheet(Sheet sheet) throws Exception {
+
+        return null;
+    }
+
+    /**
+     * Parse an instance starting from startRow
+     *
+     * @param sheet
+     * @param startRow
+     * @return InstanceData
+     */
+    public InstanceData parse(Sheet sheet, int startRow) {
+
+        // File layout
+        // 0. SurveyedLocaleIdentifier
+        // 1. SurveyedLocaleDisplayName
+        // 2. DeviceIdentifier
+        // 3. SurveyInstanceId
+        // 4. CollectionDate
+        // 5. SubmitterName
+        // 6. SurveyalTime
+        // 7. Repeat
+        // 8 - N. Questions
+        // N + 1. Digest
+
+        Row baseRow = sheet.getRow(startRow);
+        String surveyedLocaleIdentifier = baseRow.getCell(0).getStringCellValue();
+        String surveyedLocaleDisplayName = baseRow.getCell(1).getStringCellValue();
+        String deviceIdentifier = baseRow.getCell(2).getStringCellValue();
+        String surveyInstanceId = baseRow.getCell(3).getStringCellValue();
+        String collectionDate = baseRow.getCell(4).getStringCellValue();
+        String submitterName = baseRow.getCell(5).getStringCellValue();
+        String surveyalTime = baseRow.getCell(6).getStringCellValue();
+        int firstQuestionColumn = 8;
+
+        int iterations = 1;
+
+        // Count the number maximum number of iterations for this instance
+        while (true) {
+            Row row = sheet.getRow(startRow + iterations);
+            if (row == null || row.getCell(7).getStringCellValue().equals("1")) {
+                break;
+            }
+            iterations++;
+        }
+
+        return null;
+    }
+
+    /**
+     * Return a map of column index -> question id
+     *
+     * @param sheet
+     * @return
+     */
+    private static Map<Long, Long> processHeader(Sheet sheet) {
+        Map<Long, Long> columnIndexToQuestionId = new HashMap<>();
+        Row headerRow = sheet.getRow(0);
+
+        for (Cell cell : headerRow) {
+            if (cell.getStringCellValue().indexOf("|") > -1) {
+                String[] parts = cell.getStringCellValue().split("\\|");
+                if (parts[0].trim().length() > 0) {
+                    columnIndexToQuestionId.put(Long.valueOf(cell.getColumnIndex()),
+                            Long.valueOf(parts[0].trim()));
+                }
+            }
+        }
+
+        return columnIndexToQuestionId;
+    }
+
+    /**
+     * @return map from question id to QuestionDto
+     */
+    private static Map<Long, QuestionDto> fetchQuestions(String serverBase,
+            Map<String, String> criteria) throws Exception {
+
+        String surveyId = criteria.get("surveyId");
+        String apiKey = criteria.get("apiKey");
+
+        Object[] results = BulkDataServiceClient.loadQuestions(surveyId, serverBase, apiKey);
+
+        if (results == null) {
+            // TODO proper error reporting
+            throw new Exception("Could not fetch questions");
+        }
+        Map<Long, QuestionDto> questionMap = new HashMap<>();
+        for (Entry<String, QuestionDto> entry : ((Map<String, QuestionDto>) results[1]).entrySet()) {
+            questionMap.put(Long.valueOf(entry.getKey()), entry.getValue());
+
+        }
+        return questionMap;
+    }
+
     @SuppressWarnings("unchecked")
     @Override
     public void executeImport(File file, String serverBase,
@@ -155,7 +267,6 @@ public class RawDataSpreadsheetImporter implements DataImporter {
 
             if (results != null) {
                 questionMap = (Map<String, QuestionDto>) results[1];
-
             }
 
             boolean hasDurationCol = true;
@@ -206,6 +317,7 @@ public class RawDataSpreadsheetImporter implements DataImporter {
                         + "&" + RawDataImportRequest.SURVEY_ID_PARAM + "="
                         + getSurveyId() + "&");
                 boolean needUpload = true;
+                String initialUrl = sb.toString();
 
                 for (Cell cell : row) {
                     if (cell.getColumnIndex() == instanceIdx) {
@@ -214,7 +326,6 @@ public class RawDataSpreadsheetImporter implements DataImporter {
                                     .intValue() + "";
                         } else if (cell.getCellType() == Cell.CELL_TYPE_STRING) {
                             instanceId = cell.getStringCellValue();
-
                         }
                         if (instanceId != null) {
                             sb.append(RawDataImportRequest.SURVEY_INSTANCE_ID_PARAM
@@ -300,31 +411,51 @@ public class RawDataSpreadsheetImporter implements DataImporter {
                         String cellVal = parseCellAsString(cell);
                         if (cellVal != null) {
                             cellVal = cellVal.trim();
-                            // need to update digest before manipulating the
-                            // data
-                            digest.update(cellVal.getBytes());
-                            if (cellVal.contains("|")) {
-                                cellVal = cellVal.replaceAll("\\|", "^^");
+
+                            switch (question.getType()) {
+                                case GEO:
+                                case CASCADE:
+                                    String[] parts = cellVal.split("\\|");
+                                    for (int i = 0; i < parts.length; i++) {
+                                        digest.update(parts[i].getBytes());
+                                    }
+                                    cellVal = cellVal.replaceAll("\\|", "^^");
+                                    break;
+
+                                case PHOTO:
+                                case VIDEO:
+                                    digest.update(cellVal.getBytes()); // compute before modifying
+                                    if (cellVal.contains("/")) {
+                                        cellVal = cellVal.substring(cellVal
+                                                .lastIndexOf("/"));
+                                    }
+                                    cellVal = "/sdcard" + cellVal;
+                                    break;
+
+                                case DATE:
+                                    digest.update(cellVal.getBytes());
+                                    try {
+                                        cellVal = DATE_FMT.get().parse(cellVal)
+                                                .getTime()
+                                                + "";
+                                    } catch (ParseException e) {
+                                        log.error("bad date format: "
+                                                + cellVal + "\n" + e.getMessage(), e);
+                                    }
+                                    break;
+
+                                case GEOSHAPE:
+                                case SCAN:
+                                case NUMBER:
+                                case FREE_TEXT:
+                                case OPTION: // while exporting digest is computed with pipes
+                                    digest.update(cellVal.getBytes());
+                                    break;
+
+                                default:
+                                    break;
                             }
-                            if (cellVal.endsWith(".jpg")) {
-                                if (cellVal.contains("/")) {
-                                    cellVal = cellVal.substring(cellVal
-                                            .lastIndexOf("/"));
-                                }
-                                cellVal = "/sdcard" + cellVal;
-                            }
-                            if (cellVal.endsWith("UTC")) {
-                                try {
-                                    cellVal = DATE_FMT.get().parse(cellVal)
-                                            .getTime()
-                                            + "";
-                                } catch (Exception e) {
-                                    log.error("bad date format: "
-                                            + cellVal + "\n" + e.getMessage(), e);
-                                }
-                            }
-                        }
-                        if (cellVal == null) {
+                        } else {
                             cellVal = "";
                         }
 
@@ -393,15 +524,15 @@ public class RawDataSpreadsheetImporter implements DataImporter {
                         }
                     }
                 }
-                if (needUpload) {
+
+                // make sure row in sheet actually contained data
+                boolean isEmptyRow = initialUrl.equals(sb.toString().trim());
+                if (needUpload && !isEmptyRow) {
                     sendDataToServer(
                             serverBase,
-                            instanceId == null ? null
-                                    : getResetUrlString(instanceId, dateString, submitter,
-                                            durationSeconds),
+                            null,
                             sb.toString(),
                             criteria.get(KEY_PARAM));
-
                 } else {
                     // if we didn't need to upload, then just increment our
                     // progress counter
@@ -471,28 +602,6 @@ public class RawDataSpreadsheetImporter implements DataImporter {
         }
     }
 
-    private String getResetUrlString(String instanceId, String dateString,
-            String submitter, String durationSeconds) throws UnsupportedEncodingException {
-        String url = "action="
-                + RawDataImportRequest.RESET_SURVEY_INSTANCE_ACTION
-                + "&" + RawDataImportRequest.SURVEY_INSTANCE_ID_PARAM
-                + "=" + instanceId
-                + "&" + RawDataImportRequest.SURVEY_ID_PARAM
-                + "=" + getSurveyId()
-                + "&" + RawDataImportRequest.COLLECTION_DATE_PARAM
-                + "=" + URLEncoder.encode(dateString, "UTF-8")
-                + "&" + RawDataImportRequest.SUBMITTER_PARAM
-                + "=" + URLEncoder.encode(submitter, "UTF-8");
-
-        // Duration might be missing in old reports
-        if (durationSeconds != null) {
-            url += "&" + RawDataImportRequest.DURATION_PARAM + "="
-                    + URLEncoder.encode(durationSeconds, "UTF-8");
-        }
-
-        return url;
-    }
-
     /**
      * handles calling invokeURL twice (once to reset the instance and again to save the new one) as
      * a separate job submitted to the thread pool
@@ -560,7 +669,8 @@ public class RawDataSpreadsheetImporter implements DataImporter {
                         // idx == 4, non monitoring, old format
                         // idx == 6, monitoring, old format
                         // idx == 7, new format
-                        if (!(idx == 4 || idx == 6 || idx == 7)) {
+                        // idx == 8, new format, with repeat column
+                        if (!(idx == 4 || idx == 6 || idx == 7 || idx == 8)) {
                             errorMap.put(idx, "Found the first question at the wrong column index");
                             break;
                         }

@@ -269,8 +269,8 @@ FLOW.QuestionGroupItemView = FLOW.View.extend({
   renderView: false,
   showQGDeletedialog: false,
   showQGroupNameEditField: false,
-  questionGroupName: null,
   pollingTimer: null,
+  showSaveCancelButton: false,
 
   amCopying: function(){
       return this.content.get('status') == "COPYING";
@@ -298,29 +298,41 @@ FLOW.QuestionGroupItemView = FLOW.View.extend({
   },
 
   doQGroupNameEdit: function () {
-    this.set('questionGroupName', this.content.get('code'));
     this.set('showQGroupNameEditField', true);
+    this.set('showSaveCancelButton', true);
   },
 
-  // fired when 'save' is clicked while showing edit group name field. Saves the new group name
-  saveQuestionGroupNameEdit: function () {
+  // fired when 'save' is clicked
+  saveQuestionGroup: function () {
     var path, qgId, questionGroup;
     qgId = this.content.get('id');
     questionGroup = FLOW.store.find(FLOW.QuestionGroup, qgId);
     path = FLOW.selectedControl.selectedSurveyGroup.get('code') + "/" + FLOW.selectedControl.selectedSurvey.get('name');
-    questionGroup.set('code', this.get('questionGroupName'));
-    questionGroup.set('name', this.get('questionGroupName'));
+    questionGroup.set('code', this.content.get('code'));
+    questionGroup.set('name', this.content.get('code'));
     questionGroup.set('path', path);
-
+    questionGroup.set('repeatable', this.content.get('repeatable'));
     FLOW.selectedControl.selectedSurvey.set('status', 'NOT_PUBLISHED');
-    FLOW.store.commit();
+
     this.set('showQGroupNameEditField', false);
+    this.set('showSaveCancelButton', false);
+
+    FLOW.store.commit();
   },
+
+  eventManager: Ember.Object.create({
+    click: function(event, clickedView) {
+      if (clickedView.type === 'checkbox') {
+        var parentView = clickedView.get('parentView');
+        parentView.set('showSaveCancelButton', true);
+      }
+    }
+  }),
 
   // fired when 'cancel' is clicked while showing edit group name field. Cancels the edit.
   cancelQuestionGroupNameEdit: function () {
-    this.set('questionGroupName', null);
     this.set('showQGroupNameEditField', false);
+    this.set('showSaveCancelButton', false);
   },
 
   // true if one question group has been selected for Move
@@ -576,7 +588,8 @@ FLOW.QuestionGroupItemView = FLOW.View.extend({
       "path": path,
       "status": "COPYING",
       "surveyId": FLOW.selectedControl.selectedForCopyQuestionGroup.get('surveyId'),
-      "sourceId":FLOW.selectedControl.selectedForCopyQuestionGroup.get('keyId')
+      "sourceId":FLOW.selectedControl.selectedForCopyQuestionGroup.get('keyId'),
+      "repeatable":FLOW.selectedControl.selectedForCopyQuestionGroup.get('repeatable')
     });
 
       // get the question groups again, now it contains the new one as well
@@ -590,6 +603,6 @@ FLOW.QuestionGroupItemView = FLOW.View.extend({
     FLOW.selectedControl.selectedSurvey.set('status', 'NOT_PUBLISHED');
     FLOW.store.commit();
     FLOW.selectedControl.set('selectedForCopyQuestionGroup', null);
-  }
+  },
 
 });

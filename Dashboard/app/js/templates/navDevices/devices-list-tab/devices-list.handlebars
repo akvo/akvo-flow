@@ -2,30 +2,32 @@
   <!-- DEVICES TABLE--> 
   
   {{#view FLOW.CurrentDevicesTabView}}
-  <a {{action "showManageDeviceGroupsDialog" target="this"}} class="standardBtn btnAboveTable">{{t _manage_device_groups}}</a> 
-  {{#if FLOW.deviceControl.atLeastOneSelected}}
-  <nav class="dataTabMenu">
-    <ul>
-      <li><a {{action "showAddToGroupDialog" target="this"}}>{{t _add_to_device_group}}</a></li>
-      <li><a {{action "showRemoveFromGroupDialog" target="this"}}>{{t _remove_from_device_group}}</a></li>
-    </ul>
-  </nav>
-  {{else}}
-  <nav class="dataTabMenu">
-    <ul>
-      <!-- <li><a href="#" class="disabled">{{t _disable_devices}}</a></li> -->
-      <li><a href="#" class="disabled">{{t _add_to_device_group}}</a></li>
-      <li><a href="#" class="disabled">{{t _remove_from_device_group}}</a></li>
-    </ul>
-  </nav>
-  {{/if}}
+  <div class="deviceControls">
+    <a {{action "showManageDeviceGroupsDialog" target="this"}} class="standardBtn btnAboveTable">{{t _manage_device_groups}}</a>
+    {{#if FLOW.deviceControl.atLeastOneSelected}}
+    <nav class="dataTabMenu">
+      <ul>
+        <li><a {{action "showAddToGroupDialog" target="this"}}>{{t _add_to_device_group}}</a></li>
+        <li><a {{action "showRemoveFromGroupDialog" target="this"}}>{{t _remove_from_device_group}}</a></li>
+      </ul>
+    </nav>
+    {{else}}
+    <nav class="dataTabMenu">
+      <ul>
+        <!-- <li><a href="#" class="disabled">{{t _disable_devices}}</a></li> -->
+        <li><a href="#" class="disabled">{{t _add_to_device_group}}</a></li>
+        <li><a href="#" class="disabled">{{t _remove_from_device_group}}</a></li>
+      </ul>
+    </nav>
+    {{/if}}
+  </div>
   <table class="dataTable" id="surveyDataTable">
     <!-- TABLE HEADER-->
     <thead>
       <tr> {{#view FLOW.ColumnView item="select" }}
         {{view Ember.Checkbox checkedBinding="FLOW.deviceControl.allAreSelected"}}
         {{/view}}
-        {{#view FLOW.ColumnView item="IMEI" type="device"}} <a {{action "sort" target="this"}}>{{t _imei}}</a> {{/view}}
+        {{#view FLOW.ColumnView item="IMEI" type="device"}} <a {{action "sort" target="this"}}>{{t _imei}} {{tooltip _imei_tooltip}}</a> {{/view}}
         {{#view FLOW.ColumnView item="phoneNumber" type="device"}} <a {{action "sort" target="this"}}>{{t _phone_number}}</a> {{/view}}
         {{#view FLOW.ColumnView item="deviceIdentifier" type="device"}} <a {{action "sort" target="this"}}>{{t _device_id}}</a> {{/view}}
         {{#view FLOW.ColumnView item="deviceGroup" type="device"}} <a {{action "sort" target="this"}}>{{t _device_group}}</a> {{/view}}
