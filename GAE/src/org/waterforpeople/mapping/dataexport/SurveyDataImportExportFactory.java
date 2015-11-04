@@ -1,5 +1,5 @@
 /*
- *  Copyright (C) 2010-2012 Stichting Akvo (Akvo Foundation)
+ *  Copyright (C) 2010-2015 Stichting Akvo (Akvo Foundation)
  *
  *  This file is part of Akvo FLOW.
  *
@@ -50,7 +50,6 @@ public class SurveyDataImportExportFactory implements DataImportExportFactory {
         {
             put("SURVEY_SPREADSHEET", SurveySpreadsheetImporter.class);
             put("RAW_DATA", RawDataSpreadsheetImporter.class);
-            put("FIXED_FORMAT", FixedFormatRawDataImporter.class);
             put("BULK_SURVEY", SurveyBulkUploader.class);
         }
     };

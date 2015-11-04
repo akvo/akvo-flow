@@ -1,5 +1,5 @@
 /*
- *  Copyright (C) 2012 Stichting Akvo (Akvo Foundation)
+ *  Copyright (C) 2012-2015 Stichting Akvo (Akvo Foundation)
  *
  *  This file is part of Akvo FLOW.
  *
@@ -17,10 +17,15 @@
 package org.waterforpeople.mapping.app.web.rest;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import javax.inject.Inject;
+
+import org.json.JSONArray;
+import org.json.JSONException;
 import org.springframework.beans.BeanUtils;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -38,8 +43,10 @@ import org.waterforpeople.mapping.dao.QuestionAnswerStoreDao;
 import org.waterforpeople.mapping.dao.SurveyInstanceDAO;
 import org.waterforpeople.mapping.domain.QuestionAnswerStore;
 
+import com.gallatinsystems.survey.dao.CascadeNodeDao;
 import com.gallatinsystems.survey.dao.QuestionDao;
 import com.gallatinsystems.survey.dao.SurveyUtils;
+import com.gallatinsystems.survey.domain.CascadeNode;
 import com.gallatinsystems.survey.domain.Question;
 import com.gallatinsystems.surveyal.dao.SurveyedLocaleDao;
 import com.gallatinsystems.surveyal.domain.SurveyalValue;
@@ -48,12 +55,20 @@ import com.gallatinsystems.surveyal.domain.SurveyalValue;
 @RequestMapping("/question_answers")
 public class QuestionAnswerRestService {
 
+    @Inject
+    private QuestionAnswerStoreDao questionAnswerStoreDao;
+
+    @Inject
+    private QuestionDao questionDao;
+
+    @Inject
+    private CascadeNodeDao cascadeNodeDao;
+
     // list questionAnswerStores by id
     @RequestMapping(method = RequestMethod.GET, value = "")
     @ResponseBody
     public Map<String, List<QuestionAnswerStoreDto>> listQABySurveyInstanceId(
-            @RequestParam(value = "surveyInstanceId", defaultValue = "")
-            Long surveyInstanceId) {
+            @RequestParam(value = "surveyInstanceId", defaultValue = "") Long surveyInstanceId) {
         final Map<String, List<QuestionAnswerStoreDto>> response = new HashMap<String, List<QuestionAnswerStoreDto>>();
         List<QuestionAnswerStoreDto> results = new ArrayList<QuestionAnswerStoreDto>();
         List<QuestionAnswerStore> questionAnswerStores = null;
@@ -91,13 +106,13 @@ public class QuestionAnswerRestService {
                                 break;
                             }
                         }
-                        
+
                         // Store not found items at the beginning
                         if (idx < 0) {
                             results.add(notFoundCount++, qasDto);
                             continue;
                         }
-                        
+
                         idx += notFoundCount;
                         while (results.size() < idx + 1) {
                             // Make sure we have enough room for the item
@@ -108,9 +123,10 @@ public class QuestionAnswerRestService {
                 }
             }
         }
-        
+
         // FIXME: use a better solution for removing null items...
-        while(results.remove(null));
+        while (results.remove(null))
+            ;
 
         response.put("question_answers", results);
         return response;
@@ -121,8 +137,7 @@ public class QuestionAnswerRestService {
     @RequestMapping(method = RequestMethod.GET, value = "/{id}")
     @ResponseBody
     public Map<String, QuestionAnswerStoreDto> findQuestionAnswerStore(
-            @PathVariable("id")
-            Long id) {
+            @PathVariable("id") Long id) {
         final Map<String, QuestionAnswerStoreDto> response = new HashMap<String, QuestionAnswerStoreDto>();
         QuestionAnswerStoreDao qaDao = new QuestionAnswerStoreDao();
         QuestionAnswerStore s = qaDao.getByKey(id);
@@ -140,54 +155,70 @@ public class QuestionAnswerRestService {
     @RequestMapping(method = RequestMethod.PUT, value = "/{id}")
     @ResponseBody
     public Map<String, Object> saveExistingQuestionAnswerStore(
-            @RequestBody
-            QuestionAnswerStorePayload payLoad) {
-        final QuestionAnswerStoreDto questionAnswerStoreDto = payLoad
+            @RequestBody QuestionAnswerStorePayload payLoad) {
+        final QuestionAnswerStoreDto requestDto = payLoad
                 .getQuestion_answer();
-        final Map<String, Object> response = new HashMap<String, Object>();
-        QuestionAnswerStoreDto dto = null;
-        QuestionAnswerStoreDao qaDao = new QuestionAnswerStoreDao();
 
-        RestStatusDto statusDto = new RestStatusDto();
+        final RestStatusDto statusDto = new RestStatusDto();
         statusDto.setStatus("failed");
+
+        final Map<String, Object> response = new HashMap<String, Object>();
+        response.put("meta", statusDto);
+
+        final QuestionAnswerStoreDto responseDto = new QuestionAnswerStoreDto();
 
         // if the POST data contains a valid questionAnswerStoreDto, continue.
         // Otherwise,
         // server will respond with 400 Bad Request
-        if (questionAnswerStoreDto != null) {
-            Long keyId = questionAnswerStoreDto.getKeyId();
+        if (requestDto != null) {
+            Long keyId = requestDto.getKeyId();
             QuestionAnswerStore qa;
-
             // if the questionAnswerStoreDto has a key, try to get the
             // questionAnswerStore.
             if (keyId != null) {
-                qa = qaDao.getByKey(keyId);
+                qa = questionAnswerStoreDao.getByKey(keyId);
                 // if we find the questionAnswerStore, update it's properties
                 if (qa != null) {
                     // Before updating the properties, fix the questionAnswerSummary counts if it is
                     // an OPTION question
-                    QuestionDao qDao = new QuestionDao();
-                    Question q = qDao.getByKey(Long.parseLong(qa.getQuestionID()));
+                    Question q = questionDao.getByKey(Long.parseLong(qa.getQuestionID()));
                     if (q != null && Question.Type.OPTION.equals(q.getType())) {
                         // decrease count of current item
                         SurveyQuestionSummaryDao.incrementCount(qa, -1);
 
                         // increase count of new item
-                        String newVal = questionAnswerStoreDto.getValue();
+                        String newVal = requestDto.getValue();
                         if (newVal != null && newVal.trim().length() > 0) {
                             SurveyQuestionSummaryDao.incrementCount(
                                     constructQAS(qa.getQuestionID(), newVal), 1);
                         }
+                    } else if (q != null && Question.Type.CASCADE.equals(q.getType())) {
+                        JSONArray cascadeResponse = null;
+                        boolean isValidJson = true;
+                        boolean isValidResponse = true;
+                        try {
+                            cascadeResponse = new JSONArray(requestDto.getValue());
+
+                            isValidResponse = isValidCascadeResponse(q, cascadeResponse);
+                        } catch (JSONException e) {
+                            isValidJson = false;
+                        }
+
+                        // validate individual nodes
+                        if (!isValidJson || !isValidResponse) {
+                            statusDto.setMessage("_invalid_cascade_response");
+                            return response;
+                        }
                     }
                     // copy the properties, except the createdDateTime property,
                     // because it is set in the Dao.
-                    BeanUtils.copyProperties(questionAnswerStoreDto, qa,
+                    BeanUtils.copyProperties(requestDto, qa,
                             new String[] {
                                     "createdDateTime", "status",
                                     "version", "lastUpdateDateTime",
                                     "displayName", "questionGroupList", "questionText"
                             });
-                    qa = qaDao.save(qa);
+                    qa = questionAnswerStoreDao.save(qa);
 
                     // next, update the corresponding surveyalValue object
                     // find surveyalValue based on surveyInstanceId and questionId
@@ -203,17 +234,16 @@ public class QuestionAnswerRestService {
                     }
 
                     // return result to the Dashboard
-                    dto = new QuestionAnswerStoreDto();
-                    DtoMarshaller.copyToDto(qa, dto);
+                    DtoMarshaller.copyToDto(qa, responseDto);
                     // give back the question text as we received it
-                    dto.setQuestionText(questionAnswerStoreDto.getQuestionText());
+                    responseDto.setQuestionText(requestDto.getQuestionText());
                     statusDto.setStatus("ok");
 
                     try {
                         // A PUT is done when editing a QuestionAnswerStore, we
                         // need to invalidate a cached report
                         List<Long> surveyIds = new ArrayList<Long>();
-                        surveyIds.add(questionAnswerStoreDto.getSurveyId());
+                        surveyIds.add(requestDto.getSurveyId());
                         SurveyUtils
                                 .notifyReportService(surveyIds, "invalidate");
                     } catch (Exception e) {
@@ -223,9 +253,80 @@ public class QuestionAnswerRestService {
             }
         }
 
-        response.put("meta", statusDto);
-        response.put("question_answer", dto);
+        response.put("question_answer", responseDto);
         return response;
+    }
+
+    /**
+     * Compare submitted cascade response with nodes from the datastore to determine cascade
+     * response validity
+     *
+     * @param question
+     * @param response
+     * @return
+     * @throws JSONException
+     */
+    private boolean isValidCascadeResponse(Question question, JSONArray response)
+            throws JSONException {
+        boolean valid = false;
+
+        List<String> responseNodeNames = new ArrayList<String>();
+        for (int i = 0; i < response.length(); i++) {
+            responseNodeNames.add(response.getJSONObject(i).getString("name"));
+        }
+
+        List<CascadeNode> nodes = cascadeNodeDao.listByName(question.getCascadeResourceId(),
+                responseNodeNames);
+        List<List<CascadeNode>> cascadePathsList = createCascadeNodePaths(nodes);
+        for (List<CascadeNode> path : cascadePathsList) {
+            if (path.size() != response.length()) {
+                continue;
+            }
+            List<String> pathNodeNames = new ArrayList<String>();
+            for (int i = 0; i < path.size(); i++) {
+                pathNodeNames.add(path.get(i).getName());
+            }
+            if (responseNodeNames.equals(pathNodeNames)) {
+                valid = true;
+                break;
+            }
+        }
+        return valid;
+    }
+
+    /**
+     * Given a list of cascade nodes, split it up into a number of lists containing the cascade
+     * paths within that list of nodes
+     *
+     * @param nodes
+     * @return
+     */
+    private List<List<CascadeNode>> createCascadeNodePaths(List<CascadeNode> nodes) {
+        List<List<CascadeNode>> pathsList = new ArrayList<List<CascadeNode>>();
+        Map<Long, CascadeNode> nodesMap = new HashMap<Long, CascadeNode>();
+
+        for (CascadeNode node : nodes) {
+            nodesMap.put(node.getKey().getId(), node);
+        }
+
+        for (CascadeNode node : nodes) {
+            CascadeNode currentNode = node;
+            List<CascadeNode> path = new ArrayList<CascadeNode>();
+            if (currentNode.getParentNodeId().equals(0L)) {
+                path.add(currentNode);
+            } else {
+                while (currentNode != null && !currentNode.getParentNodeId().equals(0L)) {
+                    path.add(currentNode);
+                    currentNode = nodesMap.get(currentNode.getParentNodeId());
+                }
+                if (currentNode != null) {
+                    path.add(currentNode); // add first element in path
+                }
+            }
+            Collections.reverse(path);
+            pathsList.add(path);
+        }
+        return pathsList;
     }
 
     /**

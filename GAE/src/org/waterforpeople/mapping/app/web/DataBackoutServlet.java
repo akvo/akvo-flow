@@ -16,6 +16,7 @@
 
 package org.waterforpeople.mapping.app.web;
 
+import java.nio.charset.StandardCharsets;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -173,9 +174,12 @@ public class DataBackoutServlet extends AbstractRestApiServlet {
                     String value = qas.getValue();
                     value = value == null ? "" : value;
 
-                    result.append(questionId).append(",")
-                            .append(iteration).append(",")
-                            .append(new String(Base64.encodeBase64(value.getBytes())));
+                    result.append(questionId)
+                            .append(",")
+                            .append(iteration)
+                            .append(",")
+                            .append(Base64.encodeBase64URLSafeString(value
+                                    .getBytes(StandardCharsets.UTF_8)));
                 }
             }
         }

@@ -143,9 +143,11 @@
                       {{else}}
                         {{#if view.isDateType}}
                         <span>{{#with QA}}{{date3 value}}{{/with}}</span>
-                        {{else}}
+						{{else}} {{#if view.isCascadeType}}
+							<span>{{view.cascadeValue}}</span>
+						{{else}}
                           <span>{{QA.value}} {{#with QA}}{{if_blank value}}{{/with}}</span>
-                        {{/if}}
+                        {{/if}} {{/if}}
                       {{/if}}
                     </td>
                     </tr>

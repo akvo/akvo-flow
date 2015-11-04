@@ -46,6 +46,7 @@ import com.gallatinsystems.survey.domain.Survey;
 import com.gallatinsystems.survey.domain.SurveyGroup;
 import com.gallatinsystems.survey.domain.Translation;
 import com.gallatinsystems.survey.domain.Translation.ParentType;
+import com.google.appengine.api.backends.BackendServiceFactory;
 import com.google.appengine.api.taskqueue.Queue;
 import com.google.appengine.api.taskqueue.QueueFactory;
 import com.google.appengine.api.taskqueue.TaskOptions;
@@ -90,7 +91,10 @@ public class SurveyUtils {
                 .param(DataProcessorRequest.SURVEY_ID_PARAM,
                         String.valueOf(newSurvey.getKey().getId()))
                 .param(DataProcessorRequest.SOURCE_PARAM,
-                        String.valueOf(source.getKey().getId()));
+                        String.valueOf(source.getKey().getId()))
+                .header("Host",
+                        BackendServiceFactory.getBackendService()
+                                .getBackendAddress("dataprocessor"));
 
         queue.add(options);
 

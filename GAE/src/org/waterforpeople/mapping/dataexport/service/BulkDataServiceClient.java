@@ -24,6 +24,7 @@ import java.io.UnsupportedEncodingException;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.net.URLEncoder;
+import java.nio.charset.StandardCharsets;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -333,17 +334,16 @@ public class BulkDataServiceClient {
     private static final Map<Long, Map<Long, String>> parseSurveyInstanceResponse(
             String responseData) {
 
-        log.debug(responseData);
         Map<Long, Map<Long, String>> result = new HashMap<>();
         StringTokenizer lines = new StringTokenizer(responseData, "\n");
 
         while (lines.hasMoreTokens()) {
             String line = lines.nextToken();
-            String[] tokens = line.split(",");
+            String[] tokens = line.split(",", 3);
 
             Long questionId = Long.valueOf(tokens[0]);
             Long iteration = Long.valueOf(tokens[1]);
-            String value = new String(Base64.decodeBase64(tokens[2]));
+            String value = new String(Base64.decodeBase64(tokens[2]), StandardCharsets.UTF_8);
 
             Map<Long, String> iterationMap = result.get(questionId);
             if (iterationMap != null) {
@@ -586,6 +586,10 @@ public class BulkDataServiceClient {
                     if (json.has("surveyedLocaleIdentifier")
                             && !json.isNull("surveyedLocaleIdentifier")) {
                         dto.setSurveyedLocaleIdentifier(json.getString("surveyedLocaleIdentifier"));
+                    }
+
+                    if (json.has("collectionDate")) {
+                        dto.setCollectionDate(new Date(json.getLong("collectionDate")));
                     }
                 }
             }

@@ -29,11 +29,9 @@ public class InstanceData {
     // QuestionId -> Iteration -> Answer
     public final Map<Long, SortedMap<Long, String>> responseMap;
     public final SurveyInstanceDto surveyInstanceDto;
-    public final String submissionDate;
-    public final long maxIterationsCount;
+    public long maxIterationsCount;
 
     public InstanceData(SurveyInstanceDto surveyInstanceDto,
-            String submissionDate,
             Map<Long, Map<Long, String>> responseMap) {
 
         // Need to normalize the response map and add empty answers for missing iterations
@@ -57,7 +55,6 @@ public class InstanceData {
 
         this.responseMap = sortedResponseMap;
         this.surveyInstanceDto = surveyInstanceDto;
-        this.submissionDate = submissionDate;
         this.maxIterationsCount = maxIter;
     }
 }

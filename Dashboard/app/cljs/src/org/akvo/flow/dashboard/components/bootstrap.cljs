@@ -61,7 +61,7 @@
 
 
 (comment
-  usage for dropdown component:
+  ;; usage for dropdown component:
 
   (om/build dropdown
             {;; What to show if nothing is selected
