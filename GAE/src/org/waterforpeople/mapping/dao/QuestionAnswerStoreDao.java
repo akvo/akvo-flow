@@ -215,6 +215,29 @@ public class QuestionAnswerStoreDao extends BaseDAO<QuestionAnswerStore> {
         return responses;
     }
 
+    public Map<Long, Map<Integer, QuestionAnswerStore>> mapByQuestionIdAndIteration(
+            List<QuestionAnswerStore> qasList) {
+
+        Map<Long, Map<Integer, QuestionAnswerStore>> responseMap = new HashMap<>();
+
+        for (QuestionAnswerStore a : qasList) {
+            Long questionId = Long.parseLong(a.getQuestionID());
+            Integer iteration = a.getIteration();
+            // default iteration = 0
+            iteration = iteration == null ? 0 : iteration;
+
+            Map<Integer, QuestionAnswerStore> iterationMap = responseMap.get(questionId);
+
+            if (iterationMap == null) {
+                iterationMap = new HashMap<>();
+                responseMap.put(questionId, iterationMap);
+            }
+            iterationMap.put(iteration, a);
+        }
+
+        return responseMap;
+    }
+
     public Map<Long, QuestionAnswerStore> mapByQuestionId(List<QuestionAnswerStore> qasList) {
         Map<Long, QuestionAnswerStore> qasMap = new HashMap<Long, QuestionAnswerStore>();
         try {

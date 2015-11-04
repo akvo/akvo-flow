@@ -10,7 +10,11 @@ function formatDate(date) {
 FLOW.QuestionAnswerView = Ember.View.extend({
 
   isTextType: function(){
-    return this.get('questionType') === 'FREE_TEXT' || this.get('questionType') === 'CASCADE';
+    return this.get('questionType') === 'FREE_TEXT';
+  }.property('this.questionType'),
+
+  isCascadeType: function(){
+    return this.get('questionType') === 'CASCADE';
   }.property('this.questionType'),
 
   isOptionType: function(){
@@ -73,6 +77,41 @@ FLOW.QuestionAnswerView = Ember.View.extend({
   date: null,
 
   numberValue: null,
+
+  cascadeValue: function(key, value, previousValue){
+    var c = this.content;
+    // setter
+    if (arguments.length > 1) {
+      // split according to pipes
+      var cascadeNames = value.split("|");
+      var cascadeResponse = [];
+      var obj = null;
+      cascadeNames.forEach(function(item){
+        if (item.trim().length > 0) {
+          obj = {};
+          obj.name = item.trim();
+          cascadeResponse.push(obj);
+        }
+      });
+
+      c.set('value', JSON.stringify(cascadeResponse));
+    }
+
+    // getter
+    var cascadeString = "", cascadeJson;
+    if (c && c.get('value')) {
+      if (c.get('value').indexOf("|") > -1) {
+        cascadeString += c.get('value');
+      } else {
+        cascadeJson = JSON.parse(c.get('value'));
+        cascadeString = cascadeJson.map(function(item){
+          return item.name;
+        }).join("|");
+      }
+      return cascadeString;
+    }
+    return null;
+  }.property('this.content'),
 
   photoUrl: function(){
     var c = this.content;
@@ -138,6 +177,7 @@ FLOW.QuestionAnswerView = Ember.View.extend({
     }
     FLOW.store.commit();
     this.set('inEditMode', false);
+
   },
 
   doValidateNumber: function () {
