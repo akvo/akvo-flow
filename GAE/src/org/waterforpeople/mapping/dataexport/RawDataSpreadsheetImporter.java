@@ -335,7 +335,9 @@ public class RawDataSpreadsheetImporter implements DataImporter {
         surveyInstanceDto.setSurveyedLocaleIdentifier(surveyedLocaleIdentifier);
         surveyInstanceDto.setSurveyedLocaleDisplayName(surveyedLocaleDisplayName);
         surveyInstanceDto.setDeviceIdentifier(deviceIdentifier);
-        surveyInstanceDto.setKeyId(Long.parseLong(surveyInstanceId));
+        if (!surveyInstanceId.equals("")) {
+            surveyInstanceDto.setKeyId(Long.parseLong(surveyInstanceId));
+        }
         surveyInstanceDto.setCollectionDate(collectionDate);
         surveyInstanceDto.setSubmitterName(submitterName);
         surveyInstanceDto.setSurveyalTime((long) durationToSeconds(surveyalTime));
@@ -405,8 +407,10 @@ public class RawDataSpreadsheetImporter implements DataImporter {
                 + surveyId + "&");
 
         // Instance id
-        sb.append(RawDataImportRequest.SURVEY_INSTANCE_ID_PARAM + "="
-                + dto.getKeyId() + "&");
+        if (dto.getKeyId() != null) {
+            sb.append(RawDataImportRequest.SURVEY_INSTANCE_ID_PARAM + "="
+                    + dto.getKeyId() + "&");
+        }
 
         // Collection date
         String dateString = ExportImportUtils.formatDate(dto.getCollectionDate());
@@ -540,6 +544,7 @@ public class RawDataSpreadsheetImporter implements DataImporter {
             Sheet sheet = getDataSheet(file);
             Row headerRow = sheet.getRow(0);
             boolean firstQuestionFound = false;
+            boolean hasIterationColumn = false;
 
             for (Cell cell : headerRow) {
                 String cellValue = cell.getStringCellValue();
@@ -558,11 +563,33 @@ public class RawDataSpreadsheetImporter implements DataImporter {
                             errorMap.put(idx, "Found the first question at the wrong column index");
                             break;
                         }
+                        if (idx == 8) {
+                            hasIterationColumn = true;
+                        }
+
                     }
                 }
             }
+
             if (!firstQuestionFound) {
                 errorMap.put(-1, "A question could not be found");
+            }
+
+            if (hasIterationColumn) {
+                Iterator<Row> iter = sheet.iterator();
+                iter.next(); // Skip the header row.
+                while (iter.hasNext()) {
+                    Row row = iter.next();
+                    Cell cell = row.getCell(1);
+                    if (cell == null) {
+                        errorMap.put(-1, "Repeat column is empty");
+                        break;
+                    }
+                    if (cell.getCellType() != Cell.CELL_TYPE_NUMERIC) {
+                        errorMap.put(-1, "Repeat column must contain a numeric value");
+                        break;
+                    }
+                }
             }
 
         } catch (Exception e) {
