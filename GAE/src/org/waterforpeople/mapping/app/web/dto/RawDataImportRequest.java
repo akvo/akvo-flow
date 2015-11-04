@@ -25,12 +25,15 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import javax.servlet.http.HttpServletRequest;
 
 import com.gallatinsystems.framework.rest.RestRequest;
 
 public class RawDataImportRequest extends RestRequest {
+    private static final Logger log = Logger.getLogger("RawDataImportRequest");
 
     private static final long serialVersionUID = 3792808180110794885L;
     private static final ThreadLocal<DateFormat> IN_FMT = new ThreadLocal<DateFormat>() {
@@ -39,8 +42,6 @@ public class RawDataImportRequest extends RestRequest {
             return new SimpleDateFormat("dd-MM-yyyy HH:mm:ss z");
         };
     };
-    private static final String VALUE = "value=";
-    private static final String TYPE = "type=";
 
     public static final String SURVEY_INSTANCE_ID_PARAM = "surveyInstanceId";
     public static final String COLLECTION_DATE_PARAM = "collectionDate";
@@ -67,7 +68,7 @@ public class RawDataImportRequest extends RestRequest {
     private String submitter = null;
 
     // questionId -> iteration -> [response, type]
-    private Map<Long, Map<Integer, String[]>> responseMap = null;
+    private Map<Long, Map<Integer, String[]>> responseMap = new HashMap<>();
 
     private List<String> fixedFieldValues;
 
@@ -119,22 +120,17 @@ public class RawDataImportRequest extends RestRequest {
 
     public void putResponse(Long questionId, Integer iteration, String value, String type) {
 
-        if (responseMap == null) {
-            responseMap = new HashMap<>();
-        }
-
         Map<Integer, String[]> iterationMap = responseMap.get(questionId);
 
         if (iterationMap == null) {
             iterationMap = new HashMap<>();
+            responseMap.put(questionId, iterationMap);
         }
 
         iterationMap.put(iteration, new String[] {
                 value,
                 (type != null ? type : "VALUE")
         });
-        responseMap.put(questionId, iterationMap);
-
     }
 
     @Override
@@ -145,11 +141,12 @@ public class RawDataImportRequest extends RestRequest {
 
     @Override
     protected void populateFields(HttpServletRequest req) throws Exception {
+
         if (req.getParameter(LOCALE_ID_PARAM) != null) {
             try {
                 setSurveyedLocaleId(new Long(req.getParameter(LOCALE_ID_PARAM)));
             } catch (Exception e) {
-                // swallow
+                log.info(LOCALE_ID_PARAM + " is missing");
             }
         }
         if (req.getParameter(SURVEY_INSTANCE_ID_PARAM) != null) {
@@ -157,7 +154,7 @@ public class RawDataImportRequest extends RestRequest {
                 setSurveyInstanceId(new Long(
                         req.getParameter(SURVEY_INSTANCE_ID_PARAM)));
             } catch (Exception e) {
-                // swallow
+                log.info(SURVEY_INSTANCE_ID_PARAM + " is missing");
             }
         }
         if (req.getParameter(FIXED_FIELD_VALUE_PARAM) != null) {
@@ -173,23 +170,21 @@ public class RawDataImportRequest extends RestRequest {
             String[] answers = req.getParameterValues(QUESTION_ID_PARAM);
             if (answers != null) {
                 for (String answer : answers) {
-                    // answer: questionId=242334|0=abc|1=def|2=ghi|type=VALUE
+                    // answer: 242334|0=abc|1=def|2=ghi|type=VALUE
                     // The iteration responses are also URLEncoded in order to escape pipe
                     // characters
                     String[] parts = URLDecoder.decode(answer, "UTF-8").split("\\|");
                     Map<Integer, String> iterations = new HashMap<>();
-                    Long questionId = null;
+                    Long questionId = Long.valueOf(parts[0]);
                     String type = null;
-                    for (String part : parts) {
+                    for (int i = 1; i < parts.length; i++) {
+                        String part = parts[i];
                         String[] keyValue = part.split("=");
                         if (keyValue.length == 2) {
                             String key = keyValue[0];
                             String val = keyValue[1];
 
                             switch (key) {
-                                case "questionId":
-                                    questionId = Long.valueOf(val);
-                                    break;
                                 case "type":
                                     type = val;
                                     break;
@@ -208,12 +203,19 @@ public class RawDataImportRequest extends RestRequest {
                                     iterationEntry.getValue(),
                                     type);
                         }
+                    } else {
+                        log.log(Level.WARNING, "Could not parse \"" + answer
+                                + "\" as RawDataImportRequest");
                     }
                 }
             }
+        } else {
+            log.warning("No question answers to import");
         }
         if (req.getParameter(SURVEY_ID_PARAM) != null) {
             surveyId = new Long(req.getParameter(SURVEY_ID_PARAM).trim());
+        } else {
+            log.warning(SURVEY_ID_PARAM + " is missing");
         }
         if (req.getParameter(COLLECTION_DATE_PARAM) != null
                 && req.getParameter(COLLECTION_DATE_PARAM).trim().length() > 0) {
@@ -231,6 +233,8 @@ public class RawDataImportRequest extends RestRequest {
             try {
                 setSurveyDuration(Long.valueOf(req.getParameter(DURATION_PARAM)));
             } catch (NumberFormatException e) {
+                log.warning("Could not parse " + DURATION_PARAM + ": "
+                        + req.getParameter(DURATION_PARAM));
                 setSurveyDuration(0L);
             }
         }

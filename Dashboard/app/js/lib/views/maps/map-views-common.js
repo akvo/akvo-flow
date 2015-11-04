@@ -13,6 +13,7 @@ FLOW.NavMapsView = FLOW.View.extend({
   hierarchyObjectAncestors: 0,
   previousObjectAncestors: 0,
   hierarchyObject: [],
+  lastSelectedElement: 0,
   geomodel: null,
   cartodbLayer: null,
   layerExistsCheck: false,
@@ -111,6 +112,16 @@ FLOW.NavMapsView = FLOW.View.extend({
 
   insertCartodbMap: function() {
     var self = this;
+
+    $.ajaxSetup({
+    	beforeSend: function(){
+    		FLOW.savingMessageControl.numLoadingChange(1);
+        },
+    	complete: function(){
+    		FLOW.savingMessageControl.numLoadingChange(-1);
+        }
+    });
+
     var filterContent = '<div id="survey_hierarchy" style="float: left"></div>&nbsp;';
 
     $('#dropdown-holder').prepend(filterContent);
@@ -187,8 +198,12 @@ FLOW.NavMapsView = FLOW.View.extend({
     //manage folder and/or survey selection hierarchy
     self.checkHierarchy(0);
 
-    $(document.body).on('change', '.folder_survey_selector', function(){
+    $(document).off('change', '.folder_survey_selector').on('change', '.folder_survey_selector',function(e) {
+
       $('#form_selector option[value!=""]').remove();
+
+      //remove all 'folder_survey_selector's outside of ancestors count
+      self.cleanHierarchy($(this).attr('id'));
 
       //first remove previously created form selector elements
       $(".form_selector").remove();
@@ -207,9 +222,8 @@ FLOW.NavMapsView = FLOW.View.extend({
 
               var hierarchyObject = self.hierarchyObject;
               for(var j=0; j<hierarchyObject.length; j++){
-                if(hierarchyObject[j].keyId == keyId){
+                if(hierarchyObject[j].keyId === keyId){
                   self.hierarchyObjectAncestors = hierarchyObject[j]['ancestorIds'].length;
-                  self.cleanHierarchy();
                 }
               }
 
@@ -239,23 +253,25 @@ FLOW.NavMapsView = FLOW.View.extend({
           self.clearCartodbLayer();
 
           var hierarchyObject = self.hierarchyObject;
+
           for(var i=0; i<hierarchyObject.length; i++){
-            if(hierarchyObject[i].keyId == keyId){
+            if(hierarchyObject[i].keyId === parseInt(keyId) && self.lastSelectedElement !== parseInt(keyId)){
               self.hierarchyObjectAncestors = hierarchyObject[i]['ancestorIds'].length;
               self.checkHierarchy(keyId);
+              self.lastSelectedElement = parseInt(keyId);
             }
           }
         }
       }else{ //if nothing is selected, delete all children 'folder_survey_selector's and clear form selector
         self.clearCartodbLayer();
-
-        //remove all 'folder_survey_selector's outside of ancestors count
-        self.cleanHierarchy();
       }
 
     });
 
-    $(document.body).on('change', '.form_selector', function(){
+    $(document).off('change', '.form_selector').on('change', '.form_selector',function(e) {
+      //remove all 'folder_survey_selector's outside of ancestors count
+      self.cleanHierarchy($(this).attr('id'));
+
       if ($(this).val() !== "") {
         var formId = $(this).val();
         //get list of columns to be added to new named map's interactivity
@@ -555,6 +571,20 @@ FLOW.NavMapsView = FLOW.View.extend({
     });
   },
 
+  parseGeoshape: function(geoshapeString) {
+    try {
+      var geoshapeObject = JSON.parse(geoshapeString);
+      if (geoshapeObject['features'].length > 0 &&
+          geoshapeObject['features'][0]["geometry"]["type"] === "Polygon") {
+          return geoshapeObject;
+      } else {
+        return null;
+      }
+    } catch (e) {
+      return null;
+    }
+  },
+
   getCartodbPointData: function(url, dataPointName, dataPointIdentifier){
     var self = this;
     $("#pointDetails").html("");
@@ -590,11 +620,14 @@ FLOW.NavMapsView = FLOW.View.extend({
               for (column in pointData['answers']){
                 for(var i=0; i<questionsData['questions'].length; i++){
                   if (column.match(questionsData['questions'][i].id)) {
-                    if(questionsData['questions'][i].type == "GEOSHAPE"){
-                      clickedPointContent += '<h4><div style="float: left">'
-                      +questionsData['questions'][i].display_text
-                      +'</div>&nbsp;<a style="float: right" id="projectGeoshape">'+Ember.String.loc('_project_geoshape_onto_main_map') +'</a></h4>';
-                    }else{
+                    if(questionsData['questions'][i].type === "GEOSHAPE" && pointData['answers'][column] !== null){
+                      var geoshapeObject = self.parseGeoshape(pointData['answers'][column]);
+                      if(geoshapeObject !== null){
+                        clickedPointContent += '<h4><div style="float: left">'
+                        +questionsData['questions'][i].display_text
+                        +'</div>&nbsp;<a style="float: right" id="projectGeoshape">'+Ember.String.loc('_project_geoshape_onto_main_map') +'</a></h4>';
+                      }
+                    } else {
                       clickedPointContent += '<h4>'+questionsData['questions'][i].display_text+'&nbsp;</h4>';
                     }
 
@@ -612,12 +645,12 @@ FLOW.NavMapsView = FLOW.View.extend({
                       clickedPointContent += image;
                     }else{
                       //if point is a geoshape, draw the shape in the side window
-                      if(questionsData['questions'][i].type == "GEOSHAPE"){
+                      if(questionsData['questions'][i].type == "GEOSHAPE" && pointData['answers'][column] !== null){
                         if(pointData['answers'][column] !== "" && pointData['answers'][column] !== null && pointData['answers'][column] !== "null"){
-                          clickedPointContent += '<div id="geoShapeMap" style="width:100%; height: 100px; float: left"></div>';
-                          geoshapeCheck = true;
-                          geoshapeObject = JSON.parse(pointData['answers'][column]);
-                          if(geoshapeObject['features'].length > 0){
+                          var geoshapeObject = self.parseGeoshape(pointData['answers'][column]);
+                          if(geoshapeObject !== null){
+                            geoshapeCheck = true;
+                            clickedPointContent += '<div id="geoShapeMap" style="width:100%; height: 100px; float: left"></div>';
                             var geoshapeCoordinatesArray = geoshapeObject['features'][0]['geometry']['coordinates'][0];
                             for(var j=0; j<geoshapeCoordinatesArray.length; j++){
                               self.geoshapeCoordinates.push([geoshapeCoordinatesArray[j][1], geoshapeCoordinatesArray[j][0]]);
@@ -725,8 +758,6 @@ FLOW.NavMapsView = FLOW.View.extend({
       return self.compare(el1, el2, 'name');
     });
 
-    self.cleanHierarchy();
-
     //create folder and/or survey select element
     var folder_survey_selector = $("<select></select>").attr("id", "folder_survey_selector_"+self.hierarchyObjectAncestors).attr("class", "folder_survey_selector");
     folder_survey_selector.append('<option value="">--' + Ember.String.loc('_choose_folder_or_survey') + '--</option>');
@@ -749,14 +780,10 @@ FLOW.NavMapsView = FLOW.View.extend({
     $("#survey_hierarchy").append(folder_survey_selector);
   },
 
-  cleanHierarchy: function(){
+  cleanHierarchy: function(element_id){
     var self = this;
 
-    if(self.hierarchyObjectAncestors <= self.previousObjectAncestors){
-      for(var i=self.hierarchyObjectAncestors; i<=self.previousObjectAncestors; i++){
-        $("#folder_survey_selector_"+i).remove();
-      }
-    }
+    $("#"+element_id).nextAll().remove();
   },
 
   clearCartodbLayer: function(){

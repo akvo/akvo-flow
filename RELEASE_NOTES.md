@@ -5,6 +5,20 @@ Read more about the [Akvo Platform](http://www.akvo.org/blog/?p=4822).
 
 Akvo FLOW Dashboard release notes
 ----
+#1.9.2 - Anticipated Alpaca
+Date: 4 November 2015
+
+# New and noteworthy
+* Add import functionality for [data cleaning repeatable question groups](https://akvoflow.supporthero.io/article/show/data-cleaning-tab) [#1421] and [#269]
+* [Visualisation of geoshapes](https://akvoflow.supporthero.io/article/show/maps) responses on the dashboard [#1356]
+* Add the ability to [associate codes to cascade question responses](https://akvoflow.supporthero.io/article/show/cascade-resources-tab) [#1323]
+
+# Resolved issues
+* User tab does not render in Firefox [#1445]
+* `Null` values in the `QuestionAnswerStore` entities cause results to be skipped in report [#1443]
+* Question groups duplicated without user involvement [#1417]
+
+
 #1.9.1.3
 Date: 7 October 2015
 
@@ -21,7 +35,7 @@ Date: 7 October 2015
 Date: 6 October 2015
 
 # New and noteworthy
-* [Repeatable Question Groups](http://flow.readthedocs.org/en/latest/docs/dashboard/surveys/3-creating-editing-survey.html#working-with-question-groups) (Grid questions) - enables specification of a set of questions as repeatable i.e. an enumerator can ask these questions multiple times [#269]
+* [Repeatable Question Groups](https://akvoflow.supporthero.io/article/show/creating-and-editing-a-survey) (Grid questions) - enables specification of a set of questions as repeatable i.e. an enumerator can ask these questions multiple times [#269]
 
 # Resolved issues
 * Positioning of save button for Question Group name [#1419]
