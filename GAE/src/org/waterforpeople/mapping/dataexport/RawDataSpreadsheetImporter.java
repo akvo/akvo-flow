@@ -202,8 +202,13 @@ public class RawDataSpreadsheetImporter implements DataImporter {
             for (int r = row; r < row + instanceData.maxIterationsCount; r++) {
                 rows.add(sheet.getRow(r));
             }
-            String existingMd5Hash = sheet.getRow(row).getCell(md5Column)
-                    .getStringCellValue();
+
+            String existingMd5Hash = "";
+            Cell md5Cell = sheet.getRow(row).getCell(md5Column);
+            // For new data the md5 hash column could be empty
+            if (md5Cell != null) {
+                existingMd5Hash = md5Cell.getStringCellValue();
+            }
             String newMd5Hash = ExportImportUtils.md5Digest(rows, md5Column - 1);
 
             if (!newMd5Hash.equals(existingMd5Hash)) {
