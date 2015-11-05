@@ -43,7 +43,6 @@
                 <tr>
                     <th class="noArrows"></th>
                     <th class="noArrows">{{t _instance_id}}</th>
-                    <th class="noArrows">{{t _form}}</th>
                     <th class="noArrows">{{t _submitter}}</th>
                     <th class="noArrows">{{t _device}}</th>
                     <th class="noArrows">{{t _collected}}</th>
@@ -55,7 +54,6 @@
                 <tr>
                     <td class="device">{{#view FLOW.DataNumView contentBinding="this"}}{{view.rownum}}{{/view}}</td>
                     <td class="device">{{SI.keyId}}</td>
-                    <td class="survey">{{SI.surveyCode}}</td>
                     <td class="submitter">{{SI.submitterName}}</td>
                     <td class="device">{{SI.deviceIdentifier}}</td>
                     <td class="collected">{{#with SI}}{{date1 collectionDate}}{{/with}}</td>
