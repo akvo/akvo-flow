@@ -68,13 +68,7 @@ public class HidePrivateSurveyData implements Process {
                 "surveyGroupId", FilterOperator.IN, privateSurveyGroupIds));
         Set<Long> privateSurveyIds = new HashSet<Long>();
         for (Entity survey : ds.prepare(surveyQuery).asIterable()) {
-            String pointType = (String) survey.getProperty("pointType");
-
-            // forms created after introduction of folders don't have a pointType so adopt privacy
-            // level from above selected 'PRIVATE' survey groups (folder)
-            if (pointType == null || pointType.equals("Household")) {
-                privateSurveyIds.add(survey.getKey().getId());
-            }
+            privateSurveyIds.add(survey.getKey().getId());
         }
 
         // retrieve survey instances for private surveys
