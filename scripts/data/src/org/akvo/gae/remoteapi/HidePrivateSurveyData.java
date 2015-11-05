@@ -63,12 +63,20 @@ public class HidePrivateSurveyData implements Process {
             privateSurveyGroupIds.add(surveyGroup.getKey().getId());
         }
 
+        if (privateSurveyGroupIds.isEmpty()) {
+            return;
+        }
+
         // retrieve survey ids for private groups
         Query surveyQuery = new Query("Survey").setFilter(new Query.FilterPredicate(
                 "surveyGroupId", FilterOperator.IN, privateSurveyGroupIds));
         Set<Long> privateSurveyIds = new HashSet<Long>();
         for (Entity survey : ds.prepare(surveyQuery).asIterable()) {
             privateSurveyIds.add(survey.getKey().getId());
+        }
+
+        if (privateSurveyIds.isEmpty()) {
+            return;
         }
 
         // retrieve survey instances for private surveys
@@ -79,6 +87,10 @@ public class HidePrivateSurveyData implements Process {
         for (Entity surveyInstance : ds.prepare(surveyResponses).asIterable(
                 FetchOptions.Builder.withChunkSize(1000))) {
             surveyInstanceIds.add(surveyInstance.getKey().getId());
+        }
+
+        if (surveyInstanceIds.isEmpty()) {
+            return;
         }
 
         // identify publicly visible surveyed locales for private surveys
