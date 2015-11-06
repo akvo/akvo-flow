@@ -59,6 +59,7 @@ FLOW.MonitoringDataTableView = FLOW.View.extend({
   doPrevPage: function () {
     FLOW.surveyedLocaleControl.get('sinceArray').popObject();
     FLOW.metaControl.set('since', FLOW.surveyedLocaleControl.get('sinceArray')[FLOW.surveyedLocaleControl.get('sinceArray').length - 1]);
+	this.set('cursorStart', FLOW.metaControl.get('since'));
     this.findSurveyedLocale();
     FLOW.surveyedLocaleControl.set('pageNumber', FLOW.surveyedLocaleControl.get('pageNumber') - 1);
   },
