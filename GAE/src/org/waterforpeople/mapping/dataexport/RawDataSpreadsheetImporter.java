@@ -122,18 +122,15 @@ public class RawDataSpreadsheetImporter implements DataImporter {
             for (String importUrl : importUrls) {
                 sendDataToServer(serverBase, importUrl, criteria.get(KEY_PARAM));
             }
-
             while (!jobQueue.isEmpty() && threadPool.getActiveCount() > 0) {
                 Thread.sleep(5000);
             }
-
             if (errorIds.size() > 0) {
                 log.error("There were ERRORS: ");
                 for (String line : errorIds) {
                     log.error(line);
                 }
             }
-
             // Count the number of rows in the sheet
             Iterator<Row> rowIterator = sheet.rowIterator();
             int rowCount = 0;
@@ -141,18 +138,17 @@ public class RawDataSpreadsheetImporter implements DataImporter {
                 rowIterator.next();
                 rowCount++;
             }
-
             Thread.sleep(5000);
             log.debug("Updating summaries");
             if (rowCount * questionIdToQuestionDto.size() < SIZE_THRESHOLD) {
                 invokeUrl(serverBase, "action=" + RawDataImportRequest.UPDATE_SUMMARIES_ACTION
-                        + "&" +
-                        RawDataImportRequest.SURVEY_ID_PARAM + "=" + surveyId, true,
+                        + "&" + RawDataImportRequest.SURVEY_ID_PARAM + "=" + surveyId, true,
                         criteria.get(KEY_PARAM));
             }
-            invokeUrl(serverBase, "action=" + RawDataImportRequest.SAVE_MESSAGE_ACTION + "&" +
-                    RawDataImportRequest.SURVEY_ID_PARAM + "=" + surveyId, true,
+            invokeUrl(serverBase, "action=" + RawDataImportRequest.SAVE_MESSAGE_ACTION + "&"
+                    + RawDataImportRequest.SURVEY_ID_PARAM + "=" + surveyId, true,
                     criteria.get(KEY_PARAM));
+
         } catch (Exception e) {
             e.printStackTrace();
         } finally {
@@ -206,8 +202,13 @@ public class RawDataSpreadsheetImporter implements DataImporter {
             for (int r = row; r < row + instanceData.maxIterationsCount; r++) {
                 rows.add(sheet.getRow(r));
             }
-            String existingMd5Hash = sheet.getRow(row).getCell(md5Column)
-                    .getStringCellValue();
+
+            String existingMd5Hash = "";
+            Cell md5Cell = sheet.getRow(row).getCell(md5Column);
+            // For new data the md5 hash column could be empty
+            if (md5Cell != null) {
+                existingMd5Hash = md5Cell.getStringCellValue();
+            }
             String newMd5Hash = ExportImportUtils.md5Digest(rows, md5Column - 1);
 
             if (!newMd5Hash.equals(existingMd5Hash)) {
@@ -276,7 +277,8 @@ public class RawDataSpreadsheetImporter implements DataImporter {
         if (hasIterationColumn) {
             while (true) {
                 Row row = sheet.getRow(startRow + iterations);
-                if (row == null || ExportImportUtils.parseCellAsString(row.getCell(1)).equals("1")) {
+                if (row == null
+                        || ExportImportUtils.parseCellAsString(row.getCell(1)).equals("1.0")) {
                     break;
                 }
                 iterations++;
@@ -327,7 +329,7 @@ public class RawDataSpreadsheetImporter implements DataImporter {
                             iterationToResponse.put(iteration - 1, val);
                             responseMap.put(questionId, iterationToResponse);
                         } else {
-                            iterationToResponse.put(iteration, val);
+                            iterationToResponse.put(iteration - 1, val);
                         }
                     }
                 }
@@ -338,7 +340,9 @@ public class RawDataSpreadsheetImporter implements DataImporter {
         surveyInstanceDto.setSurveyedLocaleIdentifier(surveyedLocaleIdentifier);
         surveyInstanceDto.setSurveyedLocaleDisplayName(surveyedLocaleDisplayName);
         surveyInstanceDto.setDeviceIdentifier(deviceIdentifier);
-        surveyInstanceDto.setKeyId(Long.parseLong(surveyInstanceId));
+        if (!surveyInstanceId.equals("")) {
+            surveyInstanceDto.setKeyId(Long.parseLong(surveyInstanceId));
+        }
         surveyInstanceDto.setCollectionDate(collectionDate);
         surveyInstanceDto.setSubmitterName(submitterName);
         surveyInstanceDto.setSurveyalTime((long) durationToSeconds(surveyalTime));
@@ -375,6 +379,7 @@ public class RawDataSpreadsheetImporter implements DataImporter {
     /**
      * @return map from question id to QuestionDto
      */
+    @SuppressWarnings("unchecked")
     private static Map<Long, QuestionDto> fetchQuestions(String serverBase,
             Map<String, String> criteria) throws Exception {
 
@@ -407,8 +412,10 @@ public class RawDataSpreadsheetImporter implements DataImporter {
                 + surveyId + "&");
 
         // Instance id
-        sb.append(RawDataImportRequest.SURVEY_INSTANCE_ID_PARAM + "="
-                + dto.getKeyId() + "&");
+        if (dto.getKeyId() != null) {
+            sb.append(RawDataImportRequest.SURVEY_INSTANCE_ID_PARAM + "="
+                    + dto.getKeyId() + "&");
+        }
 
         // Collection date
         String dateString = ExportImportUtils.formatDate(dto.getCollectionDate());
@@ -424,14 +431,14 @@ public class RawDataSpreadsheetImporter implements DataImporter {
         // Duration
         sb.append("duration=" + dto.getSurveyalTime());
 
-        StringBuilder responseBuilder = new StringBuilder();
         // questionId=123|0=sfijd|2=fjsoi|type=GEO&questionId=...
         for (Entry<Long, SortedMap<Long, String>> entry : instanceData.responseMap
                 .entrySet()) {
             Long questionId = entry.getKey();
+            sb.append("&questionId=" + questionId);
             SortedMap<Long, String> iterations = entry.getValue();
 
-            responseBuilder.append("&questionId=" + questionId);
+            StringBuilder responseBuilder = new StringBuilder();
 
             for (Entry<Long, String> iterationEntry : iterations.entrySet()) {
                 Long iteration = iterationEntry.getKey();
@@ -464,7 +471,7 @@ public class RawDataSpreadsheetImporter implements DataImporter {
                 }
             }
 
-            sb.append("|type=" + typeString);
+            sb.append(URLEncoder.encode("|type=" + typeString, "UTF-8"));
 
         }
 
@@ -542,6 +549,7 @@ public class RawDataSpreadsheetImporter implements DataImporter {
             Sheet sheet = getDataSheet(file);
             Row headerRow = sheet.getRow(0);
             boolean firstQuestionFound = false;
+            boolean hasIterationColumn = false;
 
             for (Cell cell : headerRow) {
                 String cellValue = cell.getStringCellValue();
@@ -560,11 +568,33 @@ public class RawDataSpreadsheetImporter implements DataImporter {
                             errorMap.put(idx, "Found the first question at the wrong column index");
                             break;
                         }
+                        if (idx == 8) {
+                            hasIterationColumn = true;
+                        }
+
                     }
                 }
             }
+
             if (!firstQuestionFound) {
                 errorMap.put(-1, "A question could not be found");
+            }
+
+            if (hasIterationColumn) {
+                Iterator<Row> iter = sheet.iterator();
+                iter.next(); // Skip the header row.
+                while (iter.hasNext()) {
+                    Row row = iter.next();
+                    Cell cell = row.getCell(1);
+                    if (cell == null) {
+                        errorMap.put(-1, "Repeat column is empty");
+                        break;
+                    }
+                    if (cell.getCellType() != Cell.CELL_TYPE_NUMERIC) {
+                        errorMap.put(-1, "Repeat column must contain a numeric value");
+                        break;
+                    }
+                }
             }
 
         } catch (Exception e) {
