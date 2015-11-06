@@ -40,7 +40,7 @@
         <tbody>
           {{#each sl in FLOW.surveyedLocaleControl.currentContents}}
             <tr>
-              <td class="device">{{#view FLOW.DataNumView contentBinding="this"}}{{view.rownum}}{{/view}}</td>
+              <td class="device">{{#view FLOW.DataNumView contentBinding="this" pageNumberBinding="view.pageNumber"}}{{view.rownum}}{{/view}}</td>
               <td class="surveyGroup" style="text-align:left;">{{#with sl}}{{sgName surveyGroupId}}{{/with}}</td>
               <td class="identifier" style="text-align:left;">{{sl.identifier}}</td>
               <td class="displayName" style="text-align:left;">{{sl.displayName}}</td>

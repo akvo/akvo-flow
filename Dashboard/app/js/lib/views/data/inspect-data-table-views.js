@@ -295,9 +295,10 @@ FLOW.DataLocaleItemView = FLOW.View.extend({
 
 FLOW.DataNumView = FLOW.View.extend({
   tagName: 'span',
+  pageNumber: 0,
   content: null,
   rownum: function() {
-    return this.get("_parentView.contentIndex") + 1 + 20 * FLOW.surveyInstanceControl.get('pageNumber');
+    return this.get("_parentView.contentIndex") + 1 + 20 * this.get('pageNumber');
   }.property()
 
 });

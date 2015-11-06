@@ -2,6 +2,10 @@ FLOW.MonitoringDataTableView = FLOW.View.extend({
   showingDetailsDialog: false,
   cursorStart: null,
 
+  pageNumber: function(){
+	return FLOW.surveyedLocaleControl.get('pageNumber');
+  }.property('FLOW.surveyedLocaleControl.pageNumber'),
+
   showDetailsDialog: function (evt) {
 	FLOW.surveyInstanceControl.set('content', FLOW.store.findQuery(FLOW.SurveyInstance, {
 		surveyedLocaleId: evt.context.get('keyId')
