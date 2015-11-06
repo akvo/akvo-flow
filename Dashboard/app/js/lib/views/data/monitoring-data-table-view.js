@@ -1,6 +1,6 @@
 FLOW.MonitoringDataTableView = FLOW.View.extend({
   showingDetailsDialog: false,
-  since: null,
+  cursorStart: null,
 
   showDetailsDialog: function (evt) {
 	FLOW.surveyInstanceControl.set('content', FLOW.store.findQuery(FLOW.SurveyInstance, {
@@ -42,11 +42,16 @@ FLOW.MonitoringDataTableView = FLOW.View.extend({
 		  criteria.surveyGroupId = sgId.get('keyId');
 	  }
 
+	  if (this.get('cursorStart')) {
+		criteria.since = this.get('cursorStart');
+	  }
+
 	  FLOW.surveyedLocaleControl.set('content', FLOW.store.findQuery(FLOW.SurveyedLocale, criteria));
   },
 
   doNextPage: function () {
     FLOW.surveyedLocaleControl.get('sinceArray').pushObject(FLOW.metaControl.get('since'));
+	this.set('cursorStart', FLOW.metaControl.get('since'));
     this.findSurveyedLocale();
     FLOW.surveyedLocaleControl.set('pageNumber', FLOW.surveyedLocaleControl.get('pageNumber') + 1);
   },
