@@ -273,7 +273,6 @@ FLOW.surveyedLocaleControl = Ember.ArrayController.create({
   pageNumber: 0,
 
   populate: function () {
-    this.get('sinceArray').pushObject(FLOW.metaControl.get('since'));
     this.set('content', FLOW.store.findQuery(FLOW.SurveyedLocale, {}));
   },
 
