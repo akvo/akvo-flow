@@ -15,6 +15,9 @@ DS.FLOWRESTAdapter = DS.RESTAdapter.extend({
   sideload: function (store, type, json, root) {
     var msg, status, metaObj;
     this._super(store, type, json, root);
+
+    this.setQueryCursor(type, json);
+
     // only change metaControl info if there is actual meta info in the server response
     // and if it does not come from a delete action. We detect this by looking if num == null
     metaObj = this.extractMeta(json);
@@ -104,6 +107,36 @@ DS.FLOWRESTAdapter = DS.RESTAdapter.extend({
         FLOW.dialogControl.set('showCANCEL', false);
         FLOW.dialogControl.set('showDialog', true);
       }
+    }
+  },
+
+  /*  Process the cursor returned by the query. The cursor is used for pagination requests
+      and is based on the type of entities queried */
+  setQueryCursor: function(type, json) {
+    var cursorArray, cursorStart, cursorIndex;
+    if (type === FLOW.SurveyedLocale) {
+      cursorArray = FLOW.surveyedLocaleControl.get('sinceArray');
+    } if (type === FLOW.SurveyInstance) {
+      cursorArray = FLOW.surveyInstanceControl.get('sinceArray');
+    }
+
+    cursorStart = this.extractSince(json);
+    if (!cursorStart) {
+      return;
+    }
+
+    cursorIndex = cursorArray.indexOf(cursorStart);
+    if (cursorIndex === -1) {
+      cursorArray.pushObject(cursorStart);
+    } else {
+      // drop all cursors after the current one
+      cursorArray.splice(cursorIndex + 1, cursorArray.length);
+    }
+
+    if (type === FLOW.SurveyedLocale) {
+      FLOW.surveyedLocaleControl.set('sinceArray', cursorArray);
+    } if (type === FLOW.SurveyInstance) {
+      FLOW.surveyInstanceControl.set('sinceArray', cursorArray);
     }
   },
 
