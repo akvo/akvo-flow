@@ -61,9 +61,9 @@ FLOW.MonitoringDataTableView = FLOW.View.extend({
   },
 
   doPrevPage: function () {
-    FLOW.surveyedLocaleControl.get('sinceArray').popObject();
-    FLOW.metaControl.set('since', FLOW.surveyedLocaleControl.get('sinceArray')[FLOW.surveyedLocaleControl.get('sinceArray').length - 1]);
-	this.set('cursorStart', FLOW.metaControl.get('since'));
+	var cursorArray = FLOW.surveyedLocaleControl.get('sinceArray');
+	var cursorStart = cursorArray.length - 3 > -1 ? cursorArray[cursorArray.length - 3] : null;
+	this.set('cursorStart', cursorStart);
     this.findSurveyedLocale();
     FLOW.surveyedLocaleControl.set('pageNumber', FLOW.surveyedLocaleControl.get('pageNumber') - 1);
   },
@@ -73,6 +73,6 @@ FLOW.MonitoringDataTableView = FLOW.View.extend({
   }.property('FLOW.metaControl.numSLLoaded'),
 
   hasPrevPage: function () {
-    return FLOW.surveyedLocaleControl.get('sinceArray').length != 0;
-  }.property('FLOW.surveyedLocaleControl.sinceArray.length'),
+    return FLOW.surveyedLocaleControl.get('pageNumber');
+  }.property('FLOW.surveyedLocaleControl.pageNumber'),
 });
