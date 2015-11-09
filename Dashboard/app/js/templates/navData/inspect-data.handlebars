@@ -53,7 +53,7 @@
             <tbody>
                 {{#each SI in FLOW.surveyInstanceControl.currentContents}}
                 <tr>
-                    <td class="device">{{#view FLOW.DataNumView contentBinding="this"}}{{view.rownum}}{{/view}}</td>
+                    <td class="device">{{#view FLOW.DataNumView contentBinding="this" pageNumberBinding="FLOW.surveyInstanceControl.pageNumber"}}{{view.rownum}}{{/view}}</td>
                     <td class="device">{{SI.keyId}}</td>
                     <td class="survey">{{SI.surveyCode}}</td>
                     <td class="submitter">{{SI.submitterName}}</td>
