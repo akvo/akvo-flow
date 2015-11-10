@@ -54,15 +54,18 @@ FLOW.MonitoringDataTableView = FLOW.View.extend({
   },
 
   doNextPage: function () {
-	var cursorArray = FLOW.surveyedLocaleControl.get('sinceArray');
-	this.set('cursorStart', cursorArray[cursorArray.length - 1]);
+	var cursorArray, cursorStart;
+	cursorArray = FLOW.surveyedLocaleControl.get('sinceArray');
+	cursorStart = cursorArray.length > 0 ? cursorArray[cursorArray.length - 1] : null;
+	this.set('cursorStart', cursorStart);
     this.findSurveyedLocale();
     FLOW.surveyedLocaleControl.set('pageNumber', FLOW.surveyedLocaleControl.get('pageNumber') + 1);
   },
 
   doPrevPage: function () {
-	var cursorArray = FLOW.surveyedLocaleControl.get('sinceArray');
-	var cursorStart = cursorArray.length - 3 > -1 ? cursorArray[cursorArray.length - 3] : null;
+	var cursorArray, cursorStart;
+	cursorArray = FLOW.surveyedLocaleControl.get('sinceArray');
+	cursorStart = cursorArray.length - 3 > -1 ? cursorArray[cursorArray.length - 3] : null;
 	this.set('cursorStart', cursorStart);
     this.findSurveyedLocale();
     FLOW.surveyedLocaleControl.set('pageNumber', FLOW.surveyedLocaleControl.get('pageNumber') - 1);
