@@ -571,6 +571,20 @@ FLOW.NavMapsView = FLOW.View.extend({
     });
   },
 
+  parseGeoshape: function(geoshapeString) {
+    try {
+      var geoshapeObject = JSON.parse(geoshapeString);
+      if (geoshapeObject['features'].length > 0 &&
+          geoshapeObject['features'][0]["geometry"]["type"] === "Polygon") {
+          return geoshapeObject;
+      } else {
+        return null;
+      }
+    } catch (e) {
+      return null;
+    }
+  },
+
   getCartodbPointData: function(url, dataPointName, dataPointIdentifier){
     var self = this;
     $("#pointDetails").html("");
@@ -607,13 +621,13 @@ FLOW.NavMapsView = FLOW.View.extend({
                 for(var i=0; i<questionsData['questions'].length; i++){
                   if (column.match(questionsData['questions'][i].id)) {
                     if(questionsData['questions'][i].type === "GEOSHAPE" && pointData['answers'][column] !== null){
-                      geoshapeObject = JSON.parse(pointData['answers'][column]);
-                      if(geoshapeObject['features'].length > 0){
+                      var geoshapeObject = self.parseGeoshape(pointData['answers'][column]);
+                      if(geoshapeObject !== null){
                         clickedPointContent += '<h4><div style="float: left">'
                         +questionsData['questions'][i].display_text
                         +'</div>&nbsp;<a style="float: right" id="projectGeoshape">'+Ember.String.loc('_project_geoshape_onto_main_map') +'</a></h4>';
                       }
-                    }else{
+                    } else {
                       clickedPointContent += '<h4>'+questionsData['questions'][i].display_text+'&nbsp;</h4>';
                     }
 
@@ -633,8 +647,8 @@ FLOW.NavMapsView = FLOW.View.extend({
                       //if point is a geoshape, draw the shape in the side window
                       if(questionsData['questions'][i].type == "GEOSHAPE" && pointData['answers'][column] !== null){
                         if(pointData['answers'][column] !== "" && pointData['answers'][column] !== null && pointData['answers'][column] !== "null"){
-                          geoshapeObject = JSON.parse(pointData['answers'][column]);
-                          if(geoshapeObject['features'].length > 0){
+                          var geoshapeObject = self.parseGeoshape(pointData['answers'][column]);
+                          if(geoshapeObject !== null){
                             geoshapeCheck = true;
                             clickedPointContent += '<div id="geoShapeMap" style="width:100%; height: 100px; float: left"></div>';
                             var geoshapeCoordinatesArray = geoshapeObject['features'][0]['geometry']['coordinates'][0];
