@@ -41,6 +41,10 @@ FLOW.QuestionAnswerView = Ember.View.extend({
     return this.get('questionType') === 'VIDEO';
   }.property('this.questionType'),
 
+  isGeoShapeType: function(){
+    return this.get('questionType') === 'GEOSHAPE';
+  }.property('this.questionType'),
+
   optionsList: function(){
     var c = this.content;
     if (Ember.none(c)) {
@@ -119,6 +123,13 @@ FLOW.QuestionAnswerView = Ember.View.extend({
       return FLOW.Env.photo_url_root + c.get('value').split('/').pop();
     }
   }.property('this.content,this.isPhotoType,this.isVideoType'),
+
+  geoShapeObject: function(){
+    var c = this.content;
+    if (!Ember.empty(c.get('value'))) {
+      return c.get('value');
+    }
+  }.property('this.content,this.isGeoShapeType'),
 
   questionType: function(){
     if(this.get('question')){
