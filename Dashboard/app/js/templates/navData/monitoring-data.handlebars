@@ -137,9 +137,87 @@
                       {{#if view.isNotEditable}}
                         {{#if view.isPhotoType}}
                           {{QA.value}}  <a {{bindAttr href="view.photoUrl"}} target="_blank">{{t _open_photo}}</a>
+                        {{else}} {{#if view.isGeoShapeType}}
+                            <div id="geoshapeObject" style="display: none" {{bindAttr data-geoshape="view.geoShapeObject" }}></div>
+                            <div id="geoShapeMap" style="width:99%; height: 150px; float: left"></div>
+                            <div id="geoshapeMetadata" style="float: left; width: 100%"></div>
+                            <script type="text/javascript">
+                            var geoshapeObject = $("#geoshapeObject").data("geoshape");
+                            var geoshapeCoordinates = [], geoshapeMetadata = "";
+                            if(geoshapeObject !== "" && geoshapeObject !== null && geoshapeObject !== "null"){
+                              if(geoshapeObject['features'].length > 0){
+                                var geoshapeCoordinatesArray = geoshapeObject['features'][0]['geometry']['coordinates'][0];
+                                for(var j=0; j<geoshapeCoordinatesArray.length; j++){
+                                  geoshapeCoordinates.push([geoshapeCoordinatesArray[j][1], geoshapeCoordinatesArray[j][0]]);
+                                }
+                                createGeoshape(geoshapeCoordinates);
+
+                                geoshapeMetadata += '<div style="float: left; width: 100%">Points: '+geoshapeObject['features'][0]['properties']['pointCount']+'</div>';
+                                geoshapeMetadata += '<div style="float: left; width: 100%">Length: '+geoshapeObject['features'][0]['properties']['length']+'m</div>';
+                                geoshapeMetadata += '<div style="float: left; width: 100%">Area: '+geoshapeObject['features'][0]['properties']['area']+'m&sup2;</div>';
+                              }
+                            }
+                            $("#geoshapeMetadata").html(geoshapeMetadata);
+
+                            function createGeoshape(points){
+                              var getCentroid = function (arr) {
+                                return arr.reduce(function (x,y) {
+                                  return [x[0] + y[0]/arr.length, x[1] + y[1]/arr.length]
+                                }, [0,0])
+                              }
+
+                              var center = getCentroid(points), geoShape;
+
+                              // create leaflet map
+                              var geoshapeMap = L.map('geoShapeMap', {scrollWheelZoom: false}).setView(center, 2);
+
+                              geoshapeMap.options.maxZoom = 18;
+                              geoshapeMap.options.minZoom = 2;
+
+                              var mbAttr = 'Map &copy; 1987-2014 <a href="http://developer.here.com">HERE</a>',
+                          			mbUrl = 'https://{s}.{base}.maps.cit.api.here.com/maptile/2.1/maptile/{mapID}/{scheme}/{z}/{x}/{y}/256/{format}?app_id={app_id}&app_code={app_code}';
+
+                              var normal = L.tileLayer(mbUrl, {
+                                scheme: 'normal.day.transit',
+                                format: 'png8',
+                                attribution: mbAttr,
+                                subdomains: '1234',
+                                mapID: 'newest',
+                                app_id: FLOW.Env.hereMapsAppId,
+                                app_code: FLOW.Env.hereMapsAppCode,
+                                base: 'base'
+                              }).addTo(geoshapeMap),
+                              satellite  = L.tileLayer(mbUrl, {
+                                scheme: 'hybrid.day',
+                                format: 'jpg',
+                                attribution: mbAttr,
+                                subdomains: '1234',
+                                mapID: 'newest',
+                                app_id: FLOW.Env.hereMapsAppId,
+                                app_code: FLOW.Env.hereMapsAppCode,
+                                base: 'aerial'
+                              });
+
+                              var baseLayers = {
+                          			"Normal": normal,
+                          			"Satellite": satellite
+                          		};
+
+                              L.control.layers(baseLayers).addTo(geoshapeMap);
+
+                              geoShape = L.polygon(points);
+                              geoShape.addTo(geoshapeMap);
+
+                              var southWest = geoShape.getBounds().getSouthWest();
+                              var northEast = geoShape.getBounds().getNorthEast();
+                              var bounds = new L.LatLngBounds(southWest, northEast);
+
+                              geoshapeMap.fitBounds(bounds);
+                            }
+                            </script>
                         {{else}}
                           {{QA.value}}
-                        {{/if}}
+                        {{/if}} {{/if}}
                       {{else}}
                         {{#if view.isDateType}}
                         <span>{{#with QA}}{{date3 value}}{{/with}}</span>
