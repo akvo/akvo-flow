@@ -605,4 +605,12 @@ FLOW.QuestionGroupItemView = FLOW.View.extend({
     FLOW.selectedControl.set('selectedForCopyQuestionGroup', null);
   },
 
+  showQuestionGroupModifyButtons: function() {
+    var survey, permissions;
+    survey = FLOW.selectedControl.get('selectedSurvey');
+    if (!Ember.none(survey)) {
+      permissions = FLOW.permControl.permissions(survey);
+    }
+    return permissions && permissions.indexOf("FORM_UPDATE") > -1;
+  }.property('FLOW.selectedControl.selectedSurvey'),
 });
