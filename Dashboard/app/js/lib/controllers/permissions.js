@@ -137,7 +137,36 @@ FLOW.permControl = Ember.Controller.create({
     this.perms.forEach(function (item) {
       //this.set(item.perm,item.value);
     });
-  }
+  },
+
+  /* Given an entity, process the permissions settings for the current user
+    and return the permissions associated with that entity.  Entity is an Ember object*/
+  permissions: function(entity) {
+    var keyId, ancestorIds, permissions = [], currentUserPermissions = FLOW.userControl.currentUserPathPermissions();
+
+    if (!currentUserPermissions || !entity) { return []; }
+
+    // first check current object id
+    keyId = entity.get('keyId');
+    if (keyId in currentUserPermissions) {
+      permissions = permissions.concat(currentUserPermissions[keyId]);
+    }
+
+    // check ancestor permissions
+    ancestorIds = entity.get('ancestorIds');
+    if (!ancestorIds) {
+      return permissions;
+    }
+
+    var i;
+    for(i = 0; i < ancestorIds.length; i++){
+      if (ancestorIds[i] in currentUserPermissions) {
+        permissions = permissions.concat(currentUserPermissions[ancestorIds[i]]);
+      }
+    }
+
+    return permissions;
+  },
 });
 
 
