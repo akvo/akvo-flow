@@ -4,7 +4,9 @@
 		<ul>
 			<li><a class="publishNewSurvey" {{action "publishSurvey" target="FLOW.surveyControl"}}>{{t _publish}}</a></li>
 			<li><a class="previewNewSurvey" {{action "showPreview" target="FLOW.surveyControl"}}>{{t _preview}}</a></li>
-			<li><a class="deleteSurvey" {{action confirm FLOW.dialogControl.delForm target="FLOW.dialogControl"}}>{{t _delete}}</a></li>
+			{{#if view.showFormDeleteButton}}
+				<li><a class="deleteSurvey" {{action confirm FLOW.dialogControl.delForm target="FLOW.dialogControl"}}>{{t _delete}}</a></li>
+			{{/if}}
 		</ul>
 	</nav>
 	<ul class="formSummary">
