@@ -18,6 +18,7 @@ package org.waterforpeople.mapping.dataexport;
 
 import java.io.File;
 import java.io.FileOutputStream;
+import java.io.IOException;
 import java.security.NoSuchAlgorithmException;
 import java.text.DecimalFormat;
 import java.text.NumberFormat;
@@ -57,6 +58,8 @@ import org.apache.poi.ss.util.CellRangeAddress;
 import org.apache.poi.ss.util.WorkbookUtil;
 import org.apache.poi.xssf.streaming.SXSSFSheet;
 import org.apache.poi.xssf.streaming.SXSSFWorkbook;
+import org.codehaus.jackson.map.ObjectMapper;
+import org.codehaus.jackson.type.TypeReference;
 import org.waterforpeople.mapping.app.gwt.client.survey.QuestionDto;
 import org.waterforpeople.mapping.app.gwt.client.survey.QuestionDto.QuestionType;
 import org.waterforpeople.mapping.app.gwt.client.survey.QuestionGroupDto;
@@ -286,6 +289,7 @@ public class GraphicalSurveySummaryExporter extends SurveySummaryExporter {
     private boolean generateCharts;
     private Map<Long, QuestionDto> questionsById;
     private boolean lastCollection = false;
+    private static final ObjectMapper OBJECT_MAPPER = new ObjectMapper();
 
     // store indices of file columns for lookup when generating responses
     private Map<String, Integer> columnIndexMap = new HashMap<String, Integer>();
@@ -312,6 +316,7 @@ public class GraphicalSurveySummaryExporter extends SurveySummaryExporter {
                     }
                 }
             }
+
             if (!DEFAULT_LOCALE.equals(locale) && questionMap.size() > 0) {
                 // if we are using some other locale, we need to check for
                 // translations
@@ -616,10 +621,11 @@ public class GraphicalSurveySummaryExporter extends SurveySummaryExporter {
             Row row,
             int startColumn,
             QuestionDto questionDto,
-            final String value,
+            String value,
             boolean useQuestionId) {
 
         assert value != null;
+        value = value.trim();
 
         // Some question types splits the value into several columns.
         List<String> cells = new ArrayList<>();
@@ -630,7 +636,8 @@ public class GraphicalSurveySummaryExporter extends SurveySummaryExporter {
         switch (questionType) {
             case DATE:
                 try {
-                    String val = ExportImportUtils.formatDate(new Date(Long.parseLong(value.trim())));
+                    String val = ExportImportUtils
+                            .formatDate(new Date(Long.parseLong(value)));
                     cells.add(val);
                 } catch (Exception e) {
                     log.error("Couldn't format value for question id: "
@@ -665,15 +672,13 @@ public class GraphicalSurveySummaryExporter extends SurveySummaryExporter {
                 break;
 
             case NUMBER:
-                val = value.trim();
-                cells.add(val);
+                cells.add(value);
                 break;
 
             case CASCADE:
                 if (useQuestionId) {
-                    String cellVal = value.trim();
                     int levelCount = questionDto.getLevelNames().size();
-                    List<String> parts = new ArrayList<String>(Arrays.asList(cellVal
+                    List<String> parts = new ArrayList<String>(Arrays.asList(value
                             .split("\\|", levelCount)));
                     int padCount = levelCount - parts.size();
 
@@ -688,11 +693,52 @@ public class GraphicalSurveySummaryExporter extends SurveySummaryExporter {
                     cells.add(cellVal);
                 }
                 break;
+            case OPTION:
+                // The response can be either:
+                // old format: text1|text2|text3
+                // new format: [{"code": "code1", "text": "text1"},
+                // {"code": "code2", "text": "text2"}]
+                boolean isNewFormat = value.startsWith("[");
+                List<Map<String, String>> optionNodes = new ArrayList<>();
+                if (isNewFormat) {
+                    try {
+                        optionNodes = OBJECT_MAPPER.readValue(value,
+                                new TypeReference<List<Map<String, String>>>() {
+                                });
+                    } catch (IOException e) {
+                        log.warn("Could not parse option response: " + value, e);
+                    }
+                } else {
+                    String[] texts = value.split("\\|");
+                    for (String text : texts) {
+                        Map<String, String> node = new HashMap<>();
+                        node.put("text", text.trim());
+                        optionNodes.add(node);
+                    }
+                }
+
+                StringBuilder optionString = new StringBuilder();
+
+                for (Map<String, String> node : optionNodes) {
+                    String code = node.get("code");
+                    String text = node.get("text");
+                    optionString.append("|");
+                    if (code != null) {
+                        optionString.append(code + ":" + text);
+                    } else {
+                        optionString.append(text);
+                    }
+                }
+                if (optionString.length() > 0) {
+                    // Remove the first |
+                    optionString.deleteCharAt(0);
+                }
+                cells.add(optionString.toString());
+                break;
 
             case FREE_TEXT:
             case GEOSHAPE:
             case NAME:
-            case OPTION:
             case SCAN:
             case STRENGTH:
             case TRACK:
