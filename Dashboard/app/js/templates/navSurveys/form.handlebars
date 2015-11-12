@@ -22,9 +22,9 @@
 			{{/unless}}
 			<form class="surveyDetailForm">
 				<label>{{t _form_title}}</label>
-				{{view Ember.TextField valueBinding="form.name"}}
+				{{view Ember.TextField valueBinding="form.name" disabledBinding="view.disableFormFields"}}
 				<label>{{t _form_description}}</label>
-				{{view Ember.TextField valueBinding="form.description"}}
+				{{view Ember.TextField valueBinding="form.description" disabledBinding="view.disableFormFields"}}
 				<label>{{t _manage}}</label>
 				<nav class="newSurveyNav">
 					<ul class="manageStuff">
