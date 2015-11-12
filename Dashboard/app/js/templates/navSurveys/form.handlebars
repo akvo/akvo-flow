@@ -28,8 +28,10 @@
 				<label>{{t _manage}}</label>
 				<nav class="newSurveyNav">
 					<ul class="manageStuff">
+					{{#if view.showFormTranslationsButton}}
 						<li><a class="manageTranslations" {{action "doManageTranslations" target="this"}}>{{t _manage_translations}}</a></li>
 						<li><a class="manageNotifications" {{action "doManageNotifications" target="this"}}>{{t _manage_notifications}}</a></li>
+					{{/if}}
 					</ul>
 				</nav>
 			</form>

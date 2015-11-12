@@ -41,6 +41,12 @@ FLOW.FormView = Ember.View.extend({
 		return permissions && permissions.indexOf("FORM_UPDATE") < 0;
 	}.property('this.form'),
 
+	showFormTranslationsButton: function() {
+		var form = this.get('form');
+		var permissions = FLOW.permControl.permissions(form);
+		return permissions && permissions.indexOf("FORM_UPDATE") > -1;
+	}.property('this.form'),
+
 	showFormDeleteButton: function () {
 		var form = this.get('form');
 		var permissions = FLOW.permControl.permissions(form);
