@@ -691,7 +691,6 @@ public class GraphicalSurveySummaryExporter extends SurveySummaryExporter {
                 } else {
                     for (String part : value.split("\\|")) {
                         Map<String, String> m = new HashMap<>();
-                        // Note: Code is always missing
                         m.put("name", part);
                         parts.add(m);
                     }
@@ -704,12 +703,11 @@ public class GraphicalSurveySummaryExporter extends SurveySummaryExporter {
 
                     int levelCount = questionDto.getLevelNames().size();
                     int padCount = levelCount - parts.size();
-                    boolean tooManyParts = padCount < 0;
 
                     for (Map<String, String> map : parts) {
                         String code = map.get("code");
                         String name = map.get("name");
-                        String nodeVal = code == null ? name : code + ":" + name;
+                        String nodeVal = (code == null ? "" : code + ":") + name;
 
                         if (cells.size() == levelCount) {
                             // Don't create too many cells
@@ -728,17 +726,18 @@ public class GraphicalSurveySummaryExporter extends SurveySummaryExporter {
                     // +---------------------------------
                     // | code1:value1|code2:value2|...
                     // +---------------------------------
-                    String nodeVal = "";
+                    StringBuilder cascadeString = new StringBuilder();
                     for (Map<String, String> node : parts) {
                         String code = node.get("code");
                         String name = node.get("name");
-                        nodeVal += code == null ? name : code + ":" + name + "|";
+                        cascadeString.append("|");
+                        cascadeString.append((code == null ? "" : code + ":") + name);
                     }
-                    if (nodeVal.length() > 0) {
-                        // Drop last pipe character.
-                        nodeVal = nodeVal.substring(0, nodeVal.length() - 1);
+                    if (cascadeString.length() > 0) {
+                        // Drop the first pipe character.
+                        cascadeString.deleteCharAt(0);
                     }
-                    cells.add(nodeVal);
+                    cells.add(cascadeString.toString());
                 }
                 break;
 

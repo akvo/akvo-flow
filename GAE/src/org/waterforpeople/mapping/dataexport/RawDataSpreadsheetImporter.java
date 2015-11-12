@@ -337,6 +337,8 @@ public class RawDataSpreadsheetImporter implements DataImporter {
                                 } else if (codeAndName.length == 2) {
                                     cascadeMap.put("code", codeAndName[0]);
                                     cascadeMap.put("name", codeAndName[1]);
+                                } else {
+                                    log.warn("Invalid cascade node: " + cascadeNode);
                                 }
                                 cascadeList.add(cascadeMap);
                             }
