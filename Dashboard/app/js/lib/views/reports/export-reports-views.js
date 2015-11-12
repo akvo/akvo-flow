@@ -22,6 +22,13 @@ FLOW.ReportLoader = Ember.Object.create({
         exportType: 'RAW_DATA_TEXT',
         opts: {}
     },
+    GEOSHAPE: {
+      surveyId: '75201',
+      exportType: 'GEOSHAPE',
+      opts: {
+        questionId: '12345'
+      }
+    },
     GRAPHICAL_SURVEY_SUMMARY: {
       surveyId: '75201',
       exportType: 'GRAPHICAL_SURVEY_SUMMARY',
@@ -176,6 +183,15 @@ FLOW.ExportReportsAppletView = FLOW.View.extend({
     }
   }.property('FLOW.selectedControl.selectedSurvey'),
 
+  selectedQuestion: function () {
+    if (!Ember.none(FLOW.selectedControl.get('selectedQuestion'))
+        && !Ember.none(FLOW.selectedControl.selectedQuestion.get('keyId'))){
+      return FLOW.selectedControl.selectedQuestion.get('keyId');
+    } else {
+      return null;
+    }
+  }.property('FLOW.selectedControl.selectedQuestion'),
+
   showLastCollection: function () {
     return FLOW.Env.showMonitoringFeature && FLOW.selectedControl.selectedSurveyGroup && FLOW.selectedControl.selectedSurveyGroup.get('monitoringGroup');
   }.property('FLOW.selectedControl.selectedSurveyGroup'),
@@ -187,6 +203,20 @@ FLOW.ExportReportsAppletView = FLOW.View.extend({
       return;
     }
     FLOW.ReportLoader.load('RAW_DATA', sId);
+  },
+
+  showGeoshapeReport: function () {
+    var sId = this.get('selectedSurvey');
+    var qId = this.get('selectedQuestion');
+    if (!sId || !qId) {
+      this.showWarningMessage(
+        Ember.String.loc('_export_data'),
+        Ember.String.loc('_select_survey_and_geoshape_question_warning')
+      );
+      return;
+    }
+    FLOW.ReportLoader.load('GEOSHAPE', sId, {"questionId": qId});
+    debugger;
   },
 
   toggleShowAdvancedSettings: function() {
@@ -240,7 +270,7 @@ FLOW.ExportReportsAppletView = FLOW.View.extend({
   },
 
   showComprehensiveOptions: function () {
-	var sId = this.get('selectedSurvey');
+    var sId = this.get('selectedSurvey');
     if (!sId) {
       this.showWarning();
       return;
@@ -252,17 +282,17 @@ FLOW.ExportReportsAppletView = FLOW.View.extend({
   },
 
   showWarning: function () {
-    FLOW.dialogControl.set('activeAction', 'ignore');
-    FLOW.dialogControl.set('header', Ember.String.loc('_export_data'));
-    FLOW.dialogControl.set('message', Ember.String.loc('_applet_select_survey'));
-    FLOW.dialogControl.set('showCANCEL', false);
-    FLOW.dialogControl.set('showDialog', true);
+    this.showWarningMessage(Ember.String.loc('_export_data'), Ember.String.loc('_applet_select_survey'));
   },
 
   showImportWarning: function (msg) {
+    this.showWarningMessage(Ember.String.loc('_import_clean_data'), msg);
+  },
+
+  showWarningMessage: function(header, message) {
     FLOW.dialogControl.set('activeAction', 'ignore');
-    FLOW.dialogControl.set('header', Ember.String.loc('_import_clean_data'));
-    FLOW.dialogControl.set('message', msg);
+    FLOW.dialogControl.set('header', header);
+    FLOW.dialogControl.set('message', message);
     FLOW.dialogControl.set('showCANCEL', false);
     FLOW.dialogControl.set('showDialog', true);
   }

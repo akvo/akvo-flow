@@ -839,6 +839,14 @@ FLOW.questionControl = Ember.ArrayController.create({
     }
   }.observes('FLOW.selectedControl.selectedQuestionGroup'),
 
+  geoshapeContent: function() {
+    var selectedSurvey = FLOW.selectedControl.get('selectedSurvey');
+    var surveyId = selectedSurvey ? selectedSurvey.get('keyId') : null;
+    return FLOW.store.filter(FLOW.Question, function (question) {
+      return question.get('type') === 'GEOSHAPE' && surveyId === question.get('surveyId');
+    });
+  }.property('content'),
+
   downloadOptionQuestions: function (surveyId) {
 	  this.set('OPTIONcontent', FLOW.store.findQuery(FLOW.Question, {
 	     surveyId: surveyId,
