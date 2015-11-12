@@ -6,9 +6,7 @@ FLOW.userControl = Ember.ArrayController.create({
   dataCleaningPaths: null,
 
   setFilteredContent: function () {
-    this.set('content', FLOW.store.filter(FLOW.User, function (item) {
-      return true;
-    }));
+    this.set('content', FLOW.store.findAll(FLOW.User));
   },
 
   // load all Survey Groups
