@@ -48,5 +48,10 @@ FLOW.FormView = Ember.View.extend({
 	showFormDeleteButton: function () {
 		var form = this.get('form');
 		return FLOW.permControl.canEditForm(form);
+	}.property('this.form'),
+
+	showFormPublishButton: function () {
+		var form = this.get('form');
+		return FLOW.permControl.canEditForm(form);
 	}.property('this.form')
 });
