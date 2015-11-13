@@ -37,19 +37,16 @@ FLOW.FormView = Ember.View.extend({
 
 	disableFormFields: function () {
 		var form = this.get('form');
-		var permissions = FLOW.permControl.permissions(form);
-		return permissions && permissions.indexOf("FORM_UPDATE") < 0;
+		return !FLOW.permControl.canEditForm(form);
 	}.property('this.form'),
 
 	showFormTranslationsButton: function() {
 		var form = this.get('form');
-		var permissions = FLOW.permControl.permissions(form);
-		return permissions && permissions.indexOf("FORM_UPDATE") > -1;
+		return FLOW.permControl.canEditForm(form);
 	}.property('this.form'),
 
 	showFormDeleteButton: function () {
 		var form = this.get('form');
-		var permissions = FLOW.permControl.permissions(form);
-		return permissions && permissions.indexOf("FORM_DELETE") > -1;
+		return FLOW.permControl.canEditForm(form);
 	}.property('this.form')
 });

@@ -606,20 +606,12 @@ FLOW.QuestionGroupItemView = FLOW.View.extend({
   },
 
   showQuestionGroupModifyButtons: function() {
-    var survey, permissions;
-    survey = FLOW.selectedControl.get('selectedSurvey');
-    if (!Ember.none(survey)) {
-      permissions = FLOW.permControl.permissions(survey);
-    }
-    return permissions && permissions.indexOf("FORM_UPDATE") > -1;
+    var form = FLOW.selectedControl.get('selectedSurvey');
+    return FLOW.permControl.canEditForm(form);
   }.property('FLOW.selectedControl.selectedSurvey'),
 
   disableQuestionGroupEditing: function() {
-    var survey, permissions;
-    survey = FLOW.selectedControl.get('selectedSurvey');
-    if (!Ember.none(survey)) {
-      permissions = FLOW.permControl.permissions(survey);
-    }
-    return permissions && permissions.indexOf("FORM_UPDATE") < 0;
+    var form = FLOW.selectedControl.get('selectedSurvey');
+    return !FLOW.permControl.canEditForm(form);
   }.property('FLOW.selectedControl.selectedSurvey'),
 });
