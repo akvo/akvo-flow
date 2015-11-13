@@ -71,15 +71,17 @@
 <div class="geoshapeExport block">
   <h3>{{t _export_geoshape_report}}</h3>
   <p>{{t _export_geoshape_export_text}}</p>
-  {{#if FLOW.selectedControl.selectedSurvey}}
-    {{view Ember.Select
-        contentBinding="FLOW.questionControl.geoshapeContent"
-        selectionBinding="FLOW.selectedControl.selectedQuestion"
-        optionLabelPath="content.text"
-        optionValuePath="content.keyId"
-        prompt=""
-        promptBinding="Ember.STRINGS._select_question"}}
-  {{/if}}
+  <div class="geoshapeSelect">
+    {{#if FLOW.selectedControl.selectedSurvey}}
+      {{view Ember.Select
+          contentBinding="FLOW.questionControl.geoshapeContent"
+          selectionBinding="FLOW.selectedControl.selectedQuestion"
+          optionLabelPath="content.text"
+          optionValuePath="content.keyId"
+          prompt=""
+          promptBinding="Ember.STRINGS._select_question"}}
+    {{/if}}
+  </div>
   <a {{action showGeoshapeReport target="this"}} class="standardBtn"> {{t _export_geoshape}}</a>
 </div>
 
