@@ -4652,6 +4652,25 @@ footer.bottomPage a[rel="self"]:hover {}
     display: inline;
 }
 
+/* Affix the survey select menu to the top of the viewport so it is always visible */
+
+.reportTools {
+    .fixedTop {
+        position: fixed;
+        top: 120px;
+        width: 100%;
+        background-color: white;
+        height: 120px;
+        z-index: 2;
+        border-bottom: thin solid #c6c6c6;
+    }
+    .rawDataReport {
+        &.dataExport {
+            margin-top: 135px;
+        }
+    }
+}
+
 /* ------------------------------------------------------------------------------------------
                                      .Translate Surveys
 ------------------------------------------------------------------------------------------ */
