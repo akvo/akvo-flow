@@ -219,23 +219,18 @@ FLOW.ProjectItemView = FLOW.View.extend({
   }.property(),
 
   showSurveyEditButton: function() {
-    var permissions = [], c;
-
-    c = this.get('content');
-    if (!Ember.none(c)) {
-      permissions = FLOW.permControl.permissions(c);
-    }
-    return permissions.indexOf("PROJECT_FOLDER_UPDATE") > -1;
+    var survey = this.get('content');
+    return FLOW.permControl.canEditSurvey(survey);
   }.property(),
 
   showSurveyMoveButton: function() {
-    // reuse showSurveyEditButton property
-    return this.get('showSurveyEditButton');
+    var survey = this.get('content');
+    return FLOW.permControl.canEditSurvey(survey);
   }.property(),
 
   showSurveyCopyButton: function () {
-    // reuse showSurveyEditButton property
-    return this.get('showSurveyEditButton');
+    var survey = this.get('content');
+    return FLOW.permControl.canEditSurvey(survey);
   }.property()
 });
 
