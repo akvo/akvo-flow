@@ -613,4 +613,13 @@ FLOW.QuestionGroupItemView = FLOW.View.extend({
     }
     return permissions && permissions.indexOf("FORM_UPDATE") > -1;
   }.property('FLOW.selectedControl.selectedSurvey'),
+
+  disableQuestionGroupEditing: function() {
+    var survey, permissions;
+    survey = FLOW.selectedControl.get('selectedSurvey');
+    if (!Ember.none(survey)) {
+      permissions = FLOW.permControl.permissions(survey);
+    }
+    return permissions && permissions.indexOf("FORM_UPDATE") < 0;
+  }.property('FLOW.selectedControl.selectedSurvey'),
 });

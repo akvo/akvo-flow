@@ -49,7 +49,7 @@
             {{/if}}
             </div>
             {{#if view.amVisible}}
-              <label class="labelcheckbox">{{view Ember.Checkbox checkedBinding="view.content.repeatable"}}{{t _repeatable_question_group}}</label>
+              <label class="labelcheckbox">{{view Ember.Checkbox checkedBinding="view.content.repeatable" disabledBinding="view.disableQuestionGroupEditing"}}{{t _repeatable_question_group}}</label>
               {{tooltip _repeatable_question_group_tooltip}}
             {{/if}}
             {{#if view.showSaveCancelButton}}
