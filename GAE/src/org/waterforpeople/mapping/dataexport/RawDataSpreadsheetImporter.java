@@ -349,6 +349,16 @@ public class RawDataSpreadsheetImporter implements DataImporter {
                             }
                             break;
 
+                        case DATE:
+                            String dateString = ExportImportUtils.parseCellAsString(cell);
+                            Date date = ExportImportUtils.parseDate(dateString);
+                            if (date != null) {
+                                val = String.valueOf(date.getTime());
+                            } else {
+                                log.warn("Could not parse date string: " + dateString);
+                            }
+                            break;
+
                         default:
                             val = ExportImportUtils.parseCellAsString(cell);
                             break;
