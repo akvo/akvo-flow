@@ -118,6 +118,38 @@ Ember.Handlebars.registerHelper('placemarkDetail', function () {
   return new Handlebars.SafeString(markup);
 });
 
+/*  Take a timestamp and render it as a date in format
+    YYYY/mm/dd */
+function renderTimeStamp(timestamp) {
+  var d, t, date, month, year;
+  t = parseInt(timestamp, 10);
+  if (isNaN(t)) {
+    return "";
+  }
+
+  d = new Date(t);
+  if (d) {
+    date = d.getDate();
+    month = d.getMonth() + 1;
+    year = d.getFullYear();
+
+    if (month < 10) {
+      monthString = "0" + month.toString();
+    } else {
+      monthString = month.toString();
+    }
+
+    if (date < 10) {
+      dateString = "0" + date.toString();
+    } else {
+      dateString = date.toString();
+    }
+
+    return year + "/" + monthString + "/" + dateString;
+  } else {
+    return "";
+  }
+}
 
 // translates values to labels for languages
 Ember.Handlebars.registerHelper('toLanguage', function (value) {
@@ -223,26 +255,7 @@ Ember.Handlebars.registerHelper("date1", function (property) {
 Ember.Handlebars.registerHelper("date3", function (property) {
   var d, curr_date, curr_month, curr_year, monthString, dateString;
   if (Ember.get(this, property) !== null) {
-    d = new Date(parseInt(Ember.get(this, property), 10));
-    curr_date = d.getDate();
-    curr_month = d.getMonth() + 1;
-    curr_year = d.getFullYear();
-
-    if (curr_month < 10) {
-      monthString = "0" + curr_month.toString();
-    } else {
-      monthString = curr_month.toString();
-    }
-
-    if (curr_date < 10) {
-      dateString = "0" + curr_date.toString();
-    } else {
-      dateString = curr_date.toString();
-    }
-
-    return curr_year + "/" + monthString + "/" + dateString;
-  } else {
-    return "";
+    return renderTimeStamp(Ember.get(this, property));
   }
 });
 
