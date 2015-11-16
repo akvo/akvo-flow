@@ -216,7 +216,6 @@ FLOW.ExportReportsAppletView = FLOW.View.extend({
       return;
     }
     FLOW.ReportLoader.load('GEOSHAPE', sId, {"questionId": qId});
-    debugger;
   },
 
   toggleShowAdvancedSettings: function() {
