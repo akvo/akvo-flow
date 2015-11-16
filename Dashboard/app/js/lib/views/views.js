@@ -93,13 +93,14 @@ Ember.Handlebars.registerHelper('tooltip', function (i18nKey) {
 
 
 Ember.Handlebars.registerHelper('placemarkDetail', function () {
-  var answer, markup, question, cascadeJson, cascadeString = "";
+  var answer, markup, question, cascadeJson, cascadeString = "", questionType;
 
   question = Ember.get(this, 'questionText');
   answer = Ember.get(this, 'stringValue').replace(/\|/g, ' | '); // geo data
   answer = answer.replace(/\//g, ' / '); // also split folder paths
+  questionType = Ember.get(this, 'questionType');
 
-  if (Ember.get(this, 'questionType') === 'CASCADE') {
+  if (questionType === 'CASCADE') {
 
       if (answer.indexOf("|") > -1) {
         // ignore
@@ -109,6 +110,8 @@ Ember.Handlebars.registerHelper('placemarkDetail', function () {
           return item.name;
         }).join("|");
       }
+  } else if (questionType === 'DATE') {
+    answer = renderTimeStamp(answer);
   }
 
   markup = '<div class="defListWrap"><dt>' +
