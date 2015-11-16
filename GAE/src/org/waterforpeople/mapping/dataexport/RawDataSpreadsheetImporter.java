@@ -294,7 +294,6 @@ public class RawDataSpreadsheetImporter implements DataImporter {
             int columnIndex = m.getKey();
             long questionId = m.getValue();
 
-            boolean isGeoQuestion = questionIdToQuestionDto.get(questionId).getQuestionType() == QuestionType.GEO;
             QuestionType questionType = questionIdToQuestionDto.get(questionId).getQuestionType();
 
             for (int iter = 0; iter < iterations; iter++) {
