@@ -137,7 +137,62 @@ FLOW.permControl = Ember.Controller.create({
     this.perms.forEach(function (item) {
       //this.set(item.perm,item.value);
     });
-  }
+  },
+
+  /* Given an entity, process the permissions settings for the current user
+    and return the permissions associated with that entity.  Entity is an Ember object*/
+  permissions: function(entity) {
+    var keyId, ancestorIds, permissions = [], currentUserPermissions = FLOW.userControl.currentUserPathPermissions();
+
+    if (!currentUserPermissions || !entity) { return []; }
+
+    // first check current object id
+    keyId = entity.get('keyId');
+    if (keyId in currentUserPermissions) {
+      permissions = currentUserPermissions[keyId];
+    }
+
+    // check ancestor permissions
+    ancestorIds = entity.get('ancestorIds');
+    if (!ancestorIds) {
+      return permissions;
+    }
+
+    var i;
+    for(i = 0; i < ancestorIds.length; i++){
+      if (ancestorIds[i] in currentUserPermissions) {
+        if (currentUserPermissions[ancestorIds[i]]) {
+          currentUserPermissions[ancestorIds[i]].forEach(function(item){
+            if (permissions.indexOf(item) < 0) {
+              permissions.push(item);
+            }
+          });
+        }
+      }
+    }
+
+    return permissions;
+  },
+
+  /* takes a survey (ember object) and checks whether the current user
+    has edit permissions for the survey */
+  canEditSurvey: function(survey) {
+    var permissions;
+    if (!Ember.none(survey)) {
+      permissions = this.permissions(survey);
+    }
+    return permissions && permissions.indexOf("PROJECT_FOLDER_UPDATE") > -1;
+  },
+
+  /* takes a form (ember object) and checks with user permissions
+  whether the current user has edit permissions for the form */
+  canEditForm: function(form) {
+    var permissions;
+    if (!Ember.none(form)) {
+      permissions = this.permissions(form);
+    }
+    return permissions && permissions.indexOf("FORM_UPDATE") > -1;
+  },
 });
 
 
