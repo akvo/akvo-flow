@@ -624,7 +624,6 @@ public class GraphicalSurveySummaryExporter extends SurveySummaryExporter {
             boolean useQuestionId) {
 
         assert value != null;
-        value = value.trim();
 
         // Some question types splits the value into several columns.
         List<String> cells = new ArrayList<>();
