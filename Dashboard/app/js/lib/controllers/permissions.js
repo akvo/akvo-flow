@@ -149,13 +149,7 @@ FLOW.permControl = Ember.Controller.create({
     // first check current object id
     keyId = entity.get('keyId');
     if (keyId in currentUserPermissions) {
-      if (currentUserPermissions[keyId]) {
-        currentUserPermissions[keyId].forEach(function(item){
-          if (permissions.indexOf(item) < 0) {
-            permissions.push(item);
-          }
-        });
-      }
+      permissions = currentUserPermissions[keyId];
     }
 
     // check ancestor permissions
