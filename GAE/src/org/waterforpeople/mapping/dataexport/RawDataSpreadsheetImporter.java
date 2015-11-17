@@ -294,7 +294,6 @@ public class RawDataSpreadsheetImporter implements DataImporter {
             int columnIndex = m.getKey();
             long questionId = m.getValue();
 
-            boolean isGeoQuestion = questionIdToQuestionDto.get(questionId).getQuestionType() == QuestionType.GEO;
             QuestionType questionType = questionIdToQuestionDto.get(questionId).getQuestionType();
 
             for (int iter = 0; iter < iterations; iter++) {
@@ -346,6 +345,16 @@ public class RawDataSpreadsheetImporter implements DataImporter {
                                 val = OBJECT_MAPPER.writeValueAsString(cascadeList);
                             } catch (IOException e) {
                                 log.warn("Could not parse cascade string: " + cascadeString);
+                            }
+                            break;
+
+                        case DATE:
+                            String dateString = ExportImportUtils.parseCellAsString(cell);
+                            Date date = ExportImportUtils.parseDate(dateString);
+                            if (date != null) {
+                                val = String.valueOf(date.getTime());
+                            } else {
+                                log.warn("Could not parse date string: " + dateString);
                             }
                             break;
 
