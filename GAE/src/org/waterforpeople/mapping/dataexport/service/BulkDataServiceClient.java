@@ -343,7 +343,8 @@ public class BulkDataServiceClient {
 
             Long questionId = Long.valueOf(tokens[0]);
             Long iteration = Long.valueOf(tokens[1]);
-            String value = new String(Base64.decodeBase64(tokens[2]), StandardCharsets.UTF_8);
+            String value = new String(Base64.decodeBase64(tokens[2]), StandardCharsets.UTF_8)
+                    .trim();
 
             Map<Long, String> iterationMap = result.get(questionId);
             if (iterationMap != null) {
