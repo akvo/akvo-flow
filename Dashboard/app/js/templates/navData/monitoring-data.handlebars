@@ -40,7 +40,7 @@
         <tbody>
           {{#each sl in FLOW.surveyedLocaleControl.currentContents}}
             <tr>
-              <td class="device">{{#view FLOW.DataNumView contentBinding="this"}}{{view.rownum}}{{/view}}</td>
+              <td class="device">{{#view FLOW.DataNumView contentBinding="this" pageNumberBinding="view.pageNumber"}}{{view.rownum}}{{/view}}</td>
               <td class="surveyGroup" style="text-align:left;">{{#with sl}}{{sgName surveyGroupId}}{{/with}}</td>
               <td class="identifier" style="text-align:left;">{{sl.identifier}}</td>
               <td class="displayName" style="text-align:left;">{{sl.displayName}}</td>
@@ -172,12 +172,6 @@
         </tfoot>
       </table>
       <ul class="prevNext">
-        <li class="prevBtn">{{#if view.hasPrevPage}}
-          <a {{action doPrevPage target='this'}}> &lsaquo; {{t _previous}}</a> {{/if}}
-        </li>
-        <li class="nextBtn">{{#if view.hasNextPage}}
-          <a {{action doNextPage target='this'}}>{{t _next}} &rsaquo;</a>{{/if}}
-        </li>
       </ul>
          </div>
       </div>
