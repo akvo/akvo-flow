@@ -187,6 +187,14 @@ FLOW.permControl = Ember.Controller.create({
     }
     return permissions && permissions.indexOf("FORM_UPDATE") > -1;
   },
+
+  canEditResponses: function (form) {
+    var permissions;
+    if (!Ember.none(form)) {
+      permissions = this.permissions(form);
+    }
+    return permissions && permissions.indexOf("DATA_UPDATE") > -1;
+  },
 });
 
 
