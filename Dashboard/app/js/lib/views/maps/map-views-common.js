@@ -642,9 +642,9 @@ FLOW.NavMapsView = FLOW.View.extend({
                               self.geoshapeCoordinates.push([geoshapeCoordinatesArray[j][1], geoshapeCoordinatesArray[j][0]]);
                             }
 
-                            clickedPointContent += '<div style="float: left; width: 100%">Points: '+geoshapeObject['features'][0]['properties']['pointCount']+'</div>';
-                            clickedPointContent += '<div style="float: left; width: 100%">Length: '+geoshapeObject['features'][0]['properties']['length']+'m</div>';
-                            clickedPointContent += '<div style="float: left; width: 100%">Area: '+geoshapeObject['features'][0]['properties']['area']+'m&sup2;</div>';
+                            clickedPointContent += '<div style="float: left; width: 100%">'+ Ember.String.loc('_points') +': '+geoshapeObject['features'][0]['properties']['pointCount']+'</div>';
+                            clickedPointContent += '<div style="float: left; width: 100%">'+ Ember.String.loc('_length') +': '+geoshapeObject['features'][0]['properties']['length']+'m</div>';
+                            clickedPointContent += '<div style="float: left; width: 100%">'+ Ember.String.loc('_area') +': '+geoshapeObject['features'][0]['properties']['area']+'m&sup2;</div>';
                           }
                         }
                       }else{
