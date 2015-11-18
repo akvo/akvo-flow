@@ -41,6 +41,12 @@ FLOW.QuestionAnswerView = Ember.View.extend({
     return this.get('questionType') === 'VIDEO';
   }.property('this.questionType'),
 
+  form: function() {
+    if (FLOW.selectedControl.get('selectedSurvey')) {
+      return FLOW.selectedControl.get('selectedSurvey');
+    }
+  }.property('FLOW.selectedControl.selectedSurvey'),
+
   optionsList: function(){
     var c = this.content;
     if (Ember.none(c)) {
@@ -71,8 +77,12 @@ FLOW.QuestionAnswerView = Ember.View.extend({
 
   isNotEditable: function(){
     var type = this.get('questionType');
-    return (type == 'GEO' || type == 'PHOTO' || type == 'VIDEO' || type == 'GEOSHAPE');
-  }.property('this.questionType'),
+    return (type == 'GEO' || type == 'PHOTO' || type == 'VIDEO' || type == 'GEOSHAPE' || !this.get('isEditable'));
+  }.property('this.questionType,this.isEditable'),
+
+  isEditable: function () {
+    return FLOW.permControl.canEditResponses(this.get('form'));
+  }.property('this.form'),
 
   date: null,
 
