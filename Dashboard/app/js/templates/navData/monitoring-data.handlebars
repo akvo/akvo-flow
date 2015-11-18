@@ -142,21 +142,23 @@
                             <div id="geoShapeMap" style="width:99%; height: 150px; float: left"></div>
                             <div id="geoshapeMetadata" style="float: left; width: 100%"></div>
                             <script type="text/javascript">
-                            var geoshapeObject = $("#geoshapeObject").data("geoshape");
+                            var geoShapeString = JSON.stringify($("#geoshapeObject").data("geoshape"));
+                            var geoshapeObject = FLOW.parseGeoshape(geoShapeString);
                             var geoshapeCoordinates = [], geoshapeMetadata = "";
-                            
-                            if(geoshapeObject !== "" && geoshapeObject !== null && geoshapeObject !== "null"){
+
+                            if(geoshapeObject !== null){
                               if(geoshapeObject['features'].length > 0){
                                 var geoshapeCoordinatesArray = geoshapeObject['features'][0]['geometry']['coordinates'][0];
                                 for(var j=0; j<geoshapeCoordinatesArray.length; j++){
                                   geoshapeCoordinates.push([geoshapeCoordinatesArray[j][1], geoshapeCoordinatesArray[j][0]]);
                                 }
                                 FLOW.createGeoshape(geoshapeCoordinates);
-
-                                geoshapeMetadata += '<div style="float: left; width: 100%">Points: '+geoshapeObject['features'][0]['properties']['pointCount']+'</div>';
-                                geoshapeMetadata += '<div style="float: left; width: 100%">Length: '+geoshapeObject['features'][0]['properties']['length']+'m</div>';
-                                geoshapeMetadata += '<div style="float: left; width: 100%">Area: '+geoshapeObject['features'][0]['properties']['area']+'m&sup2;</div>';
+                                geoshapeMetadata += '<div style="float: left; width: 100%">'+ Ember.String.loc('_points') +': '+geoshapeObject['features'][0]['properties']['pointCount']+'</div>';
+                                geoshapeMetadata += '<div style="float: left; width: 100%">'+ Ember.String.loc('_length') +': '+geoshapeObject['features'][0]['properties']['length']+'m</div>';
+                                geoshapeMetadata += '<div style="float: left; width: 100%">'+ Ember.String.loc('_area') +': '+geoshapeObject['features'][0]['properties']['area']+'m&sup2;</div>';
                               }
+                            }else{
+                              $("#geoShapeMap").html(geoShapeString);
                             }
                             $("#geoshapeMetadata").html(geoshapeMetadata);
                             </script>

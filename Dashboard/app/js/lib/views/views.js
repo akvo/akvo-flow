@@ -247,14 +247,19 @@ Ember.Handlebars.registerHelper("date3", function (property) {
 });
 
 FLOW.createGeoshape = function(points){
+  var geoshapeMap;
   var getCentroid = function (arr) {
     return arr.reduce(function (x,y) {
       return [x[0] + y[0]/arr.length, x[1] + y[1]/arr.length]
     }, [0,0])
   }
   var center = getCentroid(points), geoShape;
+
+  //remove map if it already exists
+  if (geoshapeMap !== undefined) { geoshapeMap.remove(); }
+
   // create leaflet map
-  var geoshapeMap = L.map('geoShapeMap', {scrollWheelZoom: false}).setView(center, 2);
+  geoshapeMap = L.map('geoShapeMap', {scrollWheelZoom: false}).setView(center, 2);
   geoshapeMap.options.maxZoom = 18;
   geoshapeMap.options.minZoom = 2;
   var mbAttr = 'Map &copy; 1987-2014 <a href="http://developer.here.com">HERE</a>',
@@ -291,6 +296,20 @@ FLOW.createGeoshape = function(points){
   var bounds = new L.LatLngBounds(southWest, northEast);
   geoshapeMap.fitBounds(bounds);
 };
+
+FLOW.parseGeoshape = function(geoshapeString) {
+  try {
+    var geoshapeObject = JSON.parse(geoshapeString);
+    if (geoshapeObject['features'].length > 0 &&
+        geoshapeObject['features'][0]["geometry"]["type"] === "Polygon") {
+        return geoshapeObject;
+    } else {
+      return null;
+    }
+  } catch (e) {
+    return null;
+  }
+}
 
 Ember.Handlebars.registerHelper("getServer", function () {
   var loc = window.location.href,
