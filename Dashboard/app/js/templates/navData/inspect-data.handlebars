@@ -102,8 +102,11 @@
             <!-- the dialog contents -->
             <div class="confirmDialog dialogWide">
                 <a {{action "doCloseEditSIWindow" target="this" }} class="ok clodeDialog">{{t _close_window}}</a>
-
+                {{#if view.showEditResponseLink}}
                 <h2>{{t _edit_answers}}</h2>
+                {{else}}
+                <h2>{{t _view_answers}}</h2>
+                {{/if}}
                 <nav class="editAnswerMenu">
                     <ul>
                         <li class="prevBtn"><a {{action "doPreviousSI" target="this" }}>&lsaquo; {{t _previous_record}}</a>
