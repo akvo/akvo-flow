@@ -246,17 +246,6 @@ Ember.Handlebars.registerHelper("date3", function (property) {
   }
 });
 
-//unused geographic shape helper
-Ember.Handlebars.registerHelper("geoShape", function (property) {
-  var geoshapeObject = $.parseJSON(Ember.get(this, property));
-
-  if(geoshapeObject !== "" && geoshapeObject !== null && geoshapeObject !== "null"){
-    return new Handlebars.SafeString( geoshapeObject );
-  }
-
-  return null;
-});
-
 FLOW.createGeoshape = function(points){
   var getCentroid = function (arr) {
     return arr.reduce(function (x,y) {

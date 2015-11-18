@@ -129,7 +129,7 @@ FLOW.QuestionAnswerView = Ember.View.extend({
     if (!Ember.empty(c.get('value'))) {
       return c.get('value');
     }
-  }.property('this.content,this.isPhotoType,this.isVideoType'),
+  }.property('this.content,this.isGeoShapeType'),
 
   questionType: function(){
     if(this.get('question')){
