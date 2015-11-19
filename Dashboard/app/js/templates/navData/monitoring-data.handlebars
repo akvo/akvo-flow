@@ -135,6 +135,7 @@
 
                     <td class="submitter" style="text-align:left;">
                       {{#if view.isNotEditable}}
+						<div>&nbsp;</div>
                         {{#if view.isPhotoType}}
                           {{QA.value}}  <a {{bindAttr href="view.photoUrl"}} target="_blank">{{t _open_photo}}</a>
 						{{else}} {{#if view.isCascadeType}}
