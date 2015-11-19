@@ -6,12 +6,12 @@
       {{#unless FLOW.projectControl.isLoading}}
         {{view FLOW.SurveySelectionView showMonitoringSurveysOnly=true}}
       {{/unless}}
-	  </div>
-	  <div class="dataCollectedDate">
-	  </div>
-		<div class="dataDeviceId">
-		<label  class="devideId"> {{t _identifier}}:</label>
-	    {{view Ember.TextField
+    </div>
+    <div class="dataCollectedDate">
+    </div>
+    <div class="dataDeviceId">
+    <label  class="devideId"> {{t _identifier}}:</label>
+      {{view Ember.TextField
           valueBinding="view.identifier"
           placeholder=""
           placeholderBinding="Ember.STRINGS._identifier"
@@ -22,7 +22,7 @@
           placeholder=""
           placeholderBinding="Ember.STRINGS._data_point_name"
           size=30}}
-			</div>
+      </div>
       <a {{action "findSurveyedLocale" target="this"}} class="findData standardBtn btnAboveTable">{{t _find}}</a>
     </div>
     <section class="fullWidth " id="devicesList">
@@ -78,7 +78,7 @@
           <div class="dialogWrap">
         <!-- the dialog contents -->
         <div class="confirmDialog dialogWide">
-		     <a {{action "closeDetailsDialog" target="this"}} class="ok clodeDialog">{{t _close_window}}</a>
+         <a {{action "closeDetailsDialog" target="this"}} class="ok clodeDialog">{{t _close_window}}</a>
 
           <h2>{{t _details}}</h2>
             <nav class="editAnswerMenu">
@@ -134,26 +134,19 @@
                       <td class="survey" style="text-align:left;">{{QA.questionText}}</td>
 
                     <td class="submitter" style="text-align:left;">
-                      {{#if view.isNotEditable}}
-						<div>&nbsp;</div>
                         {{#if view.isPhotoType}}
                           {{QA.value}}  <a {{bindAttr href="view.photoUrl"}} target="_blank">{{t _open_photo}}</a>
-						{{else}} {{#if view.isCascadeType}}
-							<span>{{view.cascadeValue}}</span>
-						{{else}} {{#if view.isDateType}}
-							{{#with QA}}{{date3 value}}{{/with}}
+                        {{else}} {{#if view.isVideoType}}
+                          {{QA.value}} <a {{bindAttr href="view.photoUrl" }} target="_blank">{{t _open_video}}</a>
+                        {{else}} {{#if view.isGeoShapeType}}
+                          {{view FLOW.GeoshapeMapView}}
+                        {{else}} {{#if view.isCascadeType}}
+                          <span>{{view.cascadeValue}}</span>
+                        {{else}} {{#if view.isDateType}}
+                          {{#with QA}}{{date3 value}}{{/with}}
                         {{else}}
-                          {{QA.value}}
-                        {{/if}} {{/if}} {{/if}}
-                      {{else}}
-                        {{#if view.isDateType}}
-                        <span>{{#with QA}}{{date3 value}}{{/with}}</span>
-						{{else}} {{#if view.isCascadeType}}
-							<span>{{view.cascadeValue}}</span>
-						{{else}}
                           <span>{{QA.value}} {{#with QA}}{{if_blank value}}{{/with}}</span>
-                        {{/if}} {{/if}}
-                      {{/if}}
+                        {{/if}} {{/if}} {{/if}} {{/if}} {{/if}}
                     </td>
                     </tr>
                     {{/view}}

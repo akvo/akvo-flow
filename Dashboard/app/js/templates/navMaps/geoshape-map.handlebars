@@ -1,0 +1,10 @@
+<div class="geoshapeMapContainer" style="width:99%; float: left"></div>
+{{#if view.isPolygon}}
+  <div  style="float: left; width: 100%">
+    <div style="float: left; width: 100%">{{t _points}}: {{view.pointCount}}</div>
+    <div style="float: left; width: 100%">{{t _length}}: {{view.length}}m</div>
+    <div style="float: left; width: 100%">{{t _area}}: {{view.area}}m&sup2;</div>
+  </div>
+{{else}}
+    <div> {{view.geoshapeString}} </div>
+{{/if}}

@@ -262,6 +262,20 @@ Ember.Handlebars.registerHelper("date3", function (property) {
   }
 });
 
+FLOW.parseGeoshape = function(geoshapeString) {
+  try {
+    var geoshapeObject = JSON.parse(geoshapeString);
+    if (geoshapeObject['features'].length > 0 &&
+        geoshapeObject['features'][0]["geometry"]["type"] === "Polygon") {
+        return geoshapeObject;
+    } else {
+      return null;
+    }
+  } catch (e) {
+    return null;
+  }
+}
+
 Ember.Handlebars.registerHelper("getServer", function () {
   var loc = window.location.href,
     pos = loc.indexOf("/admin");
