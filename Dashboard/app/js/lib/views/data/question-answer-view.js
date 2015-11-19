@@ -45,6 +45,14 @@ FLOW.QuestionAnswerView = Ember.View.extend({
     return this.get('questionType') === 'GEOSHAPE';
   }.property('this.questionType'),
 
+  nonEditableQuestionTypes: ['GEO', 'PHOTO', 'VIDEO', 'GEOSHAPE'],
+
+  form: function() {
+    if (FLOW.selectedControl.get('selectedSurvey')) {
+      return FLOW.selectedControl.get('selectedSurvey');
+    }
+  }.property('FLOW.selectedControl.selectedSurvey'),
+
   optionsList: function(){
     var c = this.content;
     if (Ember.none(c)) {
@@ -73,10 +81,21 @@ FLOW.QuestionAnswerView = Ember.View.extend({
 
   inEditMode: false,
 
-  isNotEditable: function(){
-    var type = this.get('questionType');
-    return (type == 'GEO' || type == 'PHOTO' || type == 'VIDEO' || type == 'GEOSHAPE');
-  }.property('this.questionType'),
+  isNotEditable: function() {
+    // keep this property to limit template rafactoring
+    return !this.get('isEditable');
+  }.property('this.isEditable'),
+
+  isEditable: function () {
+    var isEditableQuestionType, canEditFormResponses;
+    isEditableQuestionType = this.nonEditableQuestionTypes.indexOf(this.get('questionType')) < 0;
+    if (!isEditableQuestionType) {
+      return false; // no need to check permissions
+    }
+
+    canEditFormResponses = FLOW.permControl.canEditResponses(this.get('form'));
+    return isEditableQuestionType && canEditFormResponses;
+  }.property('this.questionType,this.form'),
 
   date: null,
 

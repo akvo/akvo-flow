@@ -26,12 +26,15 @@
                     {{value}} <a {{bindAttr href="view.photoUrl" }} target="_blank">{{t _open_photo}}</a>
                 {{else}} {{#if view.isVideoType}}
                     {{value}} <a {{bindAttr href="view.photoUrl" }} target="_blank">{{t _open_video}}</a>
-                {{else}}
-                {{#if view.isGeoShapeType}}
+                {{else}} {{#if view.isDateType}}
+                    {{date3 value}}
+                {{else}} {{#if view.isCascadeType}}
+                    {{view.cascadeValue}}
+                {{else}} {{#if view.isGeoShapeType}}
                   {{view FLOW.GeoshapeMapView}}
                 {{else}}
                     {{value}}
-                {{/if}} {{/if}} {{/if}}
+                {{/if}} {{/if}} {{/if}} {{/if}} {{/if}}
             {{else}}
                 {{#if view.isDateType}}
                     <a {{action doEdit target="this" }}>{{date3 value}}</a>

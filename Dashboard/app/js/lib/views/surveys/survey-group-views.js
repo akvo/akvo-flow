@@ -216,8 +216,22 @@ FLOW.ProjectItemView = FLOW.View.extend({
     var c = this.get('content');
     var permissions = FLOW.projectControl.get('currentFolderPermissions');
     return permissions.indexOf("PROJECT_FOLDER_DELETE") < 0 || !Ember.empty(c.get('surveyList'));
-  }.property()
+  }.property(),
 
+  showSurveyEditButton: function() {
+    var survey = this.get('content');
+    return FLOW.permControl.canEditSurvey(survey);
+  }.property(),
+
+  showSurveyMoveButton: function() {
+    var survey = this.get('content');
+    return FLOW.permControl.canEditSurvey(survey);
+  }.property(),
+
+  showSurveyCopyButton: function () {
+    var survey = this.get('content');
+    return FLOW.permControl.canEditSurvey(survey);
+  }.property()
 });
 
 FLOW.FolderEditView = Ember.TextField.extend({

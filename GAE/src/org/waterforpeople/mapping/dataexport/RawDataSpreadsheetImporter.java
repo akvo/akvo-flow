@@ -43,6 +43,7 @@ import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.ss.usermodel.Sheet;
 import org.apache.poi.ss.usermodel.Workbook;
 import org.apache.poi.ss.usermodel.WorkbookFactory;
+import org.codehaus.jackson.map.ObjectMapper;
 import org.waterforpeople.mapping.app.gwt.client.survey.QuestionDto;
 import org.waterforpeople.mapping.app.gwt.client.survey.QuestionDto.QuestionType;
 import org.waterforpeople.mapping.app.gwt.client.surveyinstance.SurveyInstanceDto;
@@ -62,6 +63,7 @@ public class RawDataSpreadsheetImporter implements DataImporter {
     private ThreadPoolExecutor threadPool;
     private BlockingQueue<Runnable> jobQueue;
     private List<String> errorIds;
+    private static final ObjectMapper OBJECT_MAPPER = new ObjectMapper();
 
     private static final int SIZE_THRESHOLD = 2000 * 400;
 
@@ -292,7 +294,7 @@ public class RawDataSpreadsheetImporter implements DataImporter {
             int columnIndex = m.getKey();
             long questionId = m.getValue();
 
-            boolean isGeoQuestion = questionIdToQuestionDto.get(questionId).getQuestionType() == QuestionType.GEO;
+            QuestionType questionType = questionIdToQuestionDto.get(questionId).getQuestionType();
 
             for (int iter = 0; iter < iterations; iter++) {
 
@@ -307,18 +309,60 @@ public class RawDataSpreadsheetImporter implements DataImporter {
                 Cell cell = iterationRow.getCell(columnIndex);
 
                 if (cell != null) {
-                    if (isGeoQuestion) {
-                        String latitude = ExportImportUtils.parseCellAsString(cell);
-                        String longitude = ExportImportUtils.parseCellAsString(iterationRow
-                                .getCell(columnIndex + 1));
-                        String elevation = ExportImportUtils.parseCellAsString(iterationRow
-                                .getCell(columnIndex + 2));
-                        String geoCode = ExportImportUtils.parseCellAsString(iterationRow
-                                .getCell(columnIndex + 3));
-                        val = latitude + "|" + longitude + "|" + elevation + "|" + geoCode;
-                    } else {
-                        val = ExportImportUtils.parseCellAsString(cell);
+                    switch (questionType) {
+                        case GEO:
+                            String latitude = ExportImportUtils.parseCellAsString(cell);
+                            String longitude = ExportImportUtils.parseCellAsString(iterationRow
+                                    .getCell(columnIndex + 1));
+                            String elevation = ExportImportUtils.parseCellAsString(iterationRow
+                                    .getCell(columnIndex + 2));
+                            String geoCode = ExportImportUtils.parseCellAsString(iterationRow
+                                    .getCell(columnIndex + 3));
+                            val = latitude + "|" + longitude + "|" + elevation + "|" + geoCode;
+                            break;
+                        case CASCADE:
+                            // Two different possible formats:
+                            // With codes: code1:val1|code2:val2|...
+                            // Without codes: val1|val2|...
+                            String cascadeString = ExportImportUtils.parseCellAsString(cell);
+                            String[] cascadeParts = cascadeString.split("\\|");
+                            List<Map<String, String>> cascadeList = new ArrayList<>();
+                            for (String cascadeNode : cascadeParts) {
+                                String[] codeAndName = cascadeNode.split(":");
+                                Map<String, String> cascadeMap = new HashMap<>();
+                                if (codeAndName.length == 1) {
+                                    cascadeMap.put("name", codeAndName[0]);
+
+                                } else if (codeAndName.length == 2) {
+                                    cascadeMap.put("code", codeAndName[0]);
+                                    cascadeMap.put("name", codeAndName[1]);
+                                } else {
+                                    log.warn("Invalid cascade node: " + cascadeNode);
+                                }
+                                cascadeList.add(cascadeMap);
+                            }
+                            try {
+                                val = OBJECT_MAPPER.writeValueAsString(cascadeList);
+                            } catch (IOException e) {
+                                log.warn("Could not parse cascade string: " + cascadeString);
+                            }
+                            break;
+
+                        case DATE:
+                            String dateString = ExportImportUtils.parseCellAsString(cell);
+                            Date date = ExportImportUtils.parseDate(dateString);
+                            if (date != null) {
+                                val = String.valueOf(date.getTime());
+                            } else {
+                                log.warn("Could not parse date string: " + dateString);
+                            }
+                            break;
+
+                        default:
+                            val = ExportImportUtils.parseCellAsString(cell);
+                            break;
                     }
+
                     if (val != null && !val.equals("")) {
                         // Update response map
                         // iteration -> response
@@ -465,6 +509,9 @@ public class RawDataSpreadsheetImporter implements DataImporter {
                         break;
                     case DATE:
                         typeString = "DATE";
+                        break;
+                    case CASCADE:
+                        typeString = "CASCADE";
                         break;
                     default:
                         break;

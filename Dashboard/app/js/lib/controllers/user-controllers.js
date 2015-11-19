@@ -6,14 +6,11 @@ FLOW.userControl = Ember.ArrayController.create({
   dataCleaningPaths: null,
 
   setFilteredContent: function () {
-    this.set('content', FLOW.store.filter(FLOW.User, function (item) {
-      return true;
-    }));
+    this.set('content', FLOW.store.findAll(FLOW.User));
   },
 
   // load all Survey Groups
   populate: function () {
-    FLOW.store.find(FLOW.User);
     this.setFilteredContent();
     this.set('sortProperties', ['userName']);
     this.set('sortAscending', true);
