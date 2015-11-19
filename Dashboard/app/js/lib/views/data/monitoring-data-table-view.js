@@ -1,6 +1,10 @@
 FLOW.MonitoringDataTableView = FLOW.View.extend({
   showingDetailsDialog: false,
-  since: null,
+  cursorStart: null,
+
+  pageNumber: function(){
+	return FLOW.surveyedLocaleControl.get('pageNumber');
+  }.property('FLOW.surveyedLocaleControl.pageNumber'),
 
   showDetailsDialog: function (evt) {
 	FLOW.surveyInstanceControl.set('content', FLOW.store.findQuery(FLOW.SurveyInstance, {
@@ -42,18 +46,27 @@ FLOW.MonitoringDataTableView = FLOW.View.extend({
 		  criteria.surveyGroupId = sgId.get('keyId');
 	  }
 
+	  if (this.get('cursorStart')) {
+		criteria.since = this.get('cursorStart');
+	  }
+
 	  FLOW.surveyedLocaleControl.set('content', FLOW.store.findQuery(FLOW.SurveyedLocale, criteria));
   },
 
   doNextPage: function () {
-    FLOW.surveyedLocaleControl.get('sinceArray').pushObject(FLOW.metaControl.get('since'));
+	var cursorArray, cursorStart;
+	cursorArray = FLOW.surveyedLocaleControl.get('sinceArray');
+	cursorStart = cursorArray.length > 0 ? cursorArray[cursorArray.length - 1] : null;
+	this.set('cursorStart', cursorStart);
     this.findSurveyedLocale();
     FLOW.surveyedLocaleControl.set('pageNumber', FLOW.surveyedLocaleControl.get('pageNumber') + 1);
   },
 
   doPrevPage: function () {
-    FLOW.surveyedLocaleControl.get('sinceArray').popObject();
-    FLOW.metaControl.set('since', FLOW.surveyedLocaleControl.get('sinceArray')[FLOW.surveyedLocaleControl.get('sinceArray').length - 1]);
+	var cursorArray, cursorStart;
+	cursorArray = FLOW.surveyedLocaleControl.get('sinceArray');
+	cursorStart = cursorArray.length - 3 > -1 ? cursorArray[cursorArray.length - 3] : null;
+	this.set('cursorStart', cursorStart);
     this.findSurveyedLocale();
     FLOW.surveyedLocaleControl.set('pageNumber', FLOW.surveyedLocaleControl.get('pageNumber') - 1);
   },
@@ -63,6 +76,6 @@ FLOW.MonitoringDataTableView = FLOW.View.extend({
   }.property('FLOW.metaControl.numSLLoaded'),
 
   hasPrevPage: function () {
-    return FLOW.surveyedLocaleControl.get('sinceArray').length != 0;
-  }.property('FLOW.surveyedLocaleControl.sinceArray.length'),
+    return FLOW.surveyedLocaleControl.get('pageNumber');
+  }.property('FLOW.surveyedLocaleControl.pageNumber'),
 });

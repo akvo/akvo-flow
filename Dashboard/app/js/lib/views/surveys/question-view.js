@@ -896,5 +896,10 @@ FLOW.QuestionView = FLOW.View.extend({
         self.set('questionIdValidationFailureReason', msg);
       }
     });
-  }.observes('this.questionId')
+  }.observes('this.questionId'),
+
+  showQuestionModifyButtons: function () {
+    var form = FLOW.selectedControl.get('selectedSurvey');
+    return FLOW.permControl.canEditForm(form);
+  }.property('FLOW.selectedControl.selectedSurvey'),
 });
