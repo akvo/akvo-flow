@@ -4548,6 +4548,17 @@ footer.bottomPage a[rel="self"]:hover {}
     float: left;
     margin: 0 0 1em 1%;
 }
+#reportBlocks.reportTools {
+    .geoshapeExport {
+        .geoshapeSelect {
+            > select {
+                display: block;
+                float: none;
+                margin-left: 0;
+            }
+        }
+    }
+}
 
 .reportTools select:last-child {
     display: inline;
