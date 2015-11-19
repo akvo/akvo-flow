@@ -135,11 +135,16 @@
 
                     <td class="submitter" style="text-align:left;">
                       {{#if view.isNotEditable}}
+						<div>&nbsp;</div>
                         {{#if view.isPhotoType}}
                           {{QA.value}}  <a {{bindAttr href="view.photoUrl"}} target="_blank">{{t _open_photo}}</a>
+						{{else}} {{#if view.isCascadeType}}
+							<span>{{view.cascadeValue}}</span>
+						{{else}} {{#if view.isDateType}}
+							{{#with QA}}{{date3 value}}{{/with}}
                         {{else}}
                           {{QA.value}}
-                        {{/if}}
+                        {{/if}} {{/if}} {{/if}}
                       {{else}}
                         {{#if view.isDateType}}
                         <span>{{#with QA}}{{date3 value}}{{/with}}</span>

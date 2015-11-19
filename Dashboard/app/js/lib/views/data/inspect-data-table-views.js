@@ -16,6 +16,12 @@ FLOW.inspectDataTableView = FLOW.View.extend({
   selectedSurveyInstanceNum: null,
   siString: null,
 
+  form: function() {
+    if (FLOW.selectedControl.get('selectedSurvey')) {
+      return FLOW.selectedControl.get('selectedSurvey');
+    }
+  }.property('FLOW.selectedControl.selectedSurvey'),
+
   init: function () {
     this._super();
     FLOW.selectedControl.set('selectedSurveyGroup', null);
@@ -150,6 +156,10 @@ FLOW.inspectDataTableView = FLOW.View.extend({
     this.set('showEditSurveyInstanceWindowBool', true);
     this.createSurveyInstanceString();
   },
+
+  showEditResponseLink: function () {
+    return FLOW.permControl.canEditResponses(this.get('form'));
+  }.property('this.form'),
 
   doCloseEditSIWindow: function (event) {
     this.set('showEditSurveyInstanceWindowBool', false);
