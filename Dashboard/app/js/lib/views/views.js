@@ -246,57 +246,6 @@ Ember.Handlebars.registerHelper("date3", function (property) {
   }
 });
 
-FLOW.createGeoshape = function(points){
-  var geoshapeMap;
-  var getCentroid = function (arr) {
-    return arr.reduce(function (x,y) {
-      return [x[0] + y[0]/arr.length, x[1] + y[1]/arr.length]
-    }, [0,0])
-  }
-  var center = getCentroid(points), geoShape;
-
-  //remove map if it already exists
-  if (geoshapeMap !== undefined) { geoshapeMap.remove(); }
-
-  // create leaflet map
-  geoshapeMap = L.map('geoShapeMap', {scrollWheelZoom: false}).setView(center, 2);
-  geoshapeMap.options.maxZoom = 18;
-  geoshapeMap.options.minZoom = 2;
-  var mbAttr = 'Map &copy; 1987-2014 <a href="http://developer.here.com">HERE</a>',
-		mbUrl = 'https://{s}.{base}.maps.cit.api.here.com/maptile/2.1/maptile/{mapID}/{scheme}/{z}/{x}/{y}/256/{format}?app_id={app_id}&app_code={app_code}';
-  var normal = L.tileLayer(mbUrl, {
-    scheme: 'normal.day.transit',
-    format: 'png8',
-    attribution: mbAttr,
-    subdomains: '1234',
-    mapID: 'newest',
-    app_id: FLOW.Env.hereMapsAppId,
-    app_code: FLOW.Env.hereMapsAppCode,
-    base: 'base'
-  }).addTo(geoshapeMap),
-  satellite  = L.tileLayer(mbUrl, {
-    scheme: 'hybrid.day',
-    format: 'jpg',
-    attribution: mbAttr,
-    subdomains: '1234',
-    mapID: 'newest',
-    app_id: FLOW.Env.hereMapsAppId,
-    app_code: FLOW.Env.hereMapsAppCode,
-    base: 'aerial'
-  });
-  var baseLayers = {
-		"Normal": normal,
-		"Satellite": satellite
-	};
-  L.control.layers(baseLayers).addTo(geoshapeMap);
-  geoShape = L.polygon(points);
-  geoShape.addTo(geoshapeMap);
-  var southWest = geoShape.getBounds().getSouthWest();
-  var northEast = geoShape.getBounds().getNorthEast();
-  var bounds = new L.LatLngBounds(southWest, northEast);
-  geoshapeMap.fitBounds(bounds);
-};
-
 FLOW.parseGeoshape = function(geoshapeString) {
   try {
     var geoshapeObject = JSON.parse(geoshapeString);
