@@ -1,21 +1,9 @@
-## Akvo FLOW -- Field Level Operations Watch
+<img src="https://raw.githubusercontent.com/akvo/akvo-web/develop/code/wp-content/themes/Akvo-responsive/images/flow60px.png" />
 
-This is the main repository of the Akvo FLOW system, and consists in 2 parts:
-
-* [Akvo FLOW Dashboard](https://github.com/akvo/akvo-flow/tree/master/Dashboard) a modern Dashboard application made with [Ember.js](http://emberjs.com/)
-* [Akvo FLOW Server](https://github.com/akvo/akvo-flow/tree/master/GAE) the backend based on [Google App Engine](https://developers.google.com/appengine/docs/java/) APIs
+[Akvo FLOW](http://akvo.org/products/akvoflow/) is a tool for collecting, evaluating and displaying of geographically referenced data. It is composed of an [android mobile app](https://github.com/akvo/akvo-flow-mobile/) and an online dashboard. This repository contains code for the online dashboard that comprises a [dashboard backend](https://github.com/akvo/akvo-flow/tree/master/GAE) and a [dashboard user interface](https://github.com/akvo/akvo-flow/tree/master/Dashboard) components.  Alongside the dashboard and mobile apps, is a [data import and export component](https://github.com/akvo/akvo-flow-services).
 
 
-Other components of the Akvo FLOW system:
-
-* [Akvo FLOW Survey App](https://github.com/akvo/akvo-flow-mobile/tree/master/survey)
-* [Akvo FLOW Launcher](https://github.com/akvo/akvo-flow-mobile/tree/master/launcher)
-* [Akvo FLOW Services](https://github.com/akvo/akvo-flow-services)
-
-[Akvo FLOW license](https://github.com/akvo/akvo-flow/blob/master/LICENSE.md)
-
-
-## YourKit
+#### YourKit
 
 <img src="http://www.yourkit.com/images/yklogo.png"></img>
 
