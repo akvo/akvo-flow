@@ -633,163 +633,34 @@ public class GraphicalSurveySummaryExporter extends SurveySummaryExporter {
 
         switch (questionType) {
             case DATE:
-                try {
-                    String val = ExportImportUtils
-                            .formatDate(ExportImportUtils.parseDate(value));
-                    cells.add(val);
-                } catch (Exception e) {
-                    log.error("Couldn't format value for question id: "
-                            + questionId + " -  " + e.getMessage(), e);
-                    cells.add("");
-                }
+                cells.add(dateCellValue(value, questionId));
                 break;
 
             case PHOTO:
-                if (value == null) {
-                    cells.add("");
-                    break;
-                }
-                final int filenameIndex = value.lastIndexOf("/") + 1;
-                String val = "";
-                if (filenameIndex > 0 && filenameIndex < value.length()) {
-                    val = imagePrefix + value.substring(filenameIndex);
-                }
-                cells.add(val);
+                cells.add(photoCellValue(value, imagePrefix));
                 break;
 
             case GEO:
-                String[] geoParts = value.split("\\|");
-                int count = 0;
-                for (count = 0; count < geoParts.length; count++) {
-                    cells.add(geoParts[count]);
-                }
-                // now handle any missing fields
-                for (int j = count; j < 4; j++) {
-                    cells.add("");
-                }
+                cells.addAll(geoCellValues(value));
                 break;
 
-            case NUMBER:
-                cells.add(value);
-                break;
-
-            // Two different formats:
-            // old: Foo|Bar|Baz (never contains code)
-            // new: [{"name": "Foo", "code": "A"}, {"name": "Bar", "code": "B"} ... ]
             case CASCADE:
-                List<Map<String, String>> parts = new ArrayList<>();
-
-                if (value.startsWith("[")) {
-                    try {
-                        parts = OBJECT_MAPPER.readValue(value,
-                                new TypeReference<List<Map<String, String>>>() {
-                                });
-                    } catch (IOException e) {
-                        log.warn("Unable to parse CASCADE response - " + value, e);
-                    }
-                } else {
-                    for (String part : value.split("\\|")) {
-                        Map<String, String> m = new HashMap<>();
-                        m.put("name", part);
-                        parts.add(m);
-                    }
-                }
-
-                if (useQuestionId) {
-                    // +------------+------------+-----
-                    // |code1:value1|code2:value2| ...
-                    // +------------+------------+-----
-                    int levelCount = questionDto.getLevelNames().size();
-                    int padCount = levelCount - parts.size();
-
-                    for (Map<String, String> map : parts) {
-                        String code = map.get("code");
-                        String name = map.get("name");
-                        String nodeVal = (code == null ? "" : code + ":") + name;
-
-                        if (cells.size() == levelCount) {
-                            // Don't create too many cells
-                            String currentVal = cells.get(cells.size() - 1);
-                            cells.add(cells.size() - 1, currentVal + "|" + nodeVal);
-                        } else {
-                            cells.add(nodeVal);
-                        }
-                    }
-
-                    for (int p = 0; p < padCount; p++) { // padding
-                        cells.add("");
-                    }
-
-                } else {
-                    // +---------------------------------
-                    // | code1:value1|code2:value2|...
-                    // +---------------------------------
-                    StringBuilder cascadeString = new StringBuilder();
-                    for (Map<String, String> node : parts) {
-                        String code = node.get("code");
-                        String name = node.get("name");
-                        cascadeString.append("|");
-                        cascadeString.append((code == null ? "" : code + ":") + name);
-                    }
-                    if (cascadeString.length() > 0) {
-                        // Drop the first pipe character.
-                        cascadeString.deleteCharAt(0);
-                    }
-                    cells.add(cascadeString.toString());
-                }
+                cells.addAll(cascadeCellValues(value, useQuestionId, questionDto.getLevelNames()
+                        .size()));
                 break;
             case OPTION:
-                // The response can be either:
-                // old format: text1|text2|text3
-                // new format: [{"code": "code1", "text": "text1"},
-                // {"code": "code2", "text": "text2"}]
-                boolean isNewFormat = value.startsWith("[");
-                List<Map<String, String>> optionNodes = new ArrayList<>();
-                if (isNewFormat) {
-                    try {
-                        optionNodes = OBJECT_MAPPER.readValue(value,
-                                new TypeReference<List<Map<String, String>>>() {
-                                });
-                    } catch (IOException e) {
-                        log.warn("Could not parse option response: " + value, e);
-                    }
-                } else {
-                    String[] texts = value.split("\\|");
-                    for (String text : texts) {
-                        Map<String, String> node = new HashMap<>();
-                        node.put("text", text.trim());
-                        optionNodes.add(node);
-                    }
-                }
-
-                StringBuilder optionString = new StringBuilder();
-
-                for (Map<String, String> node : optionNodes) {
-                    String code = node.get("code");
-                    String text = node.get("text");
-                    optionString.append("|");
-                    if (code != null) {
-                        optionString.append(code + ":" + text);
-                    } else {
-                        optionString.append(text);
-                    }
-                }
-                if (optionString.length() > 0) {
-                    // Remove the first |
-                    optionString.deleteCharAt(0);
-                }
-                cells.add(optionString.toString());
+                cells.add(optionCellValue(value));
                 break;
 
             case FREE_TEXT:
+            case NUMBER:
             case GEOSHAPE:
             case NAME:
             case SCAN:
             case STRENGTH:
             case TRACK:
             case VIDEO:
-                String cellVal = value.replaceAll("\n", " ").trim();
-                cells.add(cellVal);
+                cells.add(sanitize(value));
                 break;
         }
 
@@ -804,7 +675,155 @@ public class GraphicalSurveySummaryExporter extends SurveySummaryExporter {
         }
     }
 
-    String sanitize(String s) {
+    private static String dateCellValue(String value, Long questionId) {
+        try {
+            return ExportImportUtils.formatDate(ExportImportUtils.parseDate(value));
+
+        } catch (Exception e) {
+            log.error(
+                    "Couldn't format value for question id: " + questionId + " -  "
+                            + e.getMessage(), e);
+            return "";
+        }
+    }
+
+    private static String photoCellValue(String value, String imagePrefix) {
+        final int filenameIndex = value.lastIndexOf("/") + 1;
+        String cell = "";
+        if (filenameIndex > 0 && filenameIndex < value.length()) {
+            cell = imagePrefix + value.substring(filenameIndex);
+        }
+        return cell;
+    }
+
+    private static List<String> geoCellValues(String value) {
+
+        String[] geoParts = value.split("\\|");
+        List<String> cells = new ArrayList<>();
+        int count = 0;
+        for (count = 0; count < geoParts.length; count++) {
+            cells.add(geoParts[count]);
+        }
+        // now handle any missing fields
+        for (int j = count; j < 4; j++) {
+            cells.add("");
+        }
+
+        return cells;
+    }
+
+    private static List<String> cascadeCellValues(String value, boolean useQuestionId, int levels) {
+        // Two different formats:
+        // old: Foo|Bar|Baz (never contains code)
+        // new: [{"name": "Foo", "code": "A"}, {"name": "Bar", "code": "B"} ... ]
+        List<Map<String, String>> parts = new ArrayList<>();
+        List<String> cells = new ArrayList<>();
+
+        if (value.startsWith("[")) {
+            try {
+                parts = OBJECT_MAPPER.readValue(value,
+                        new TypeReference<List<Map<String, String>>>() {
+                        });
+            } catch (IOException e) {
+                log.warn("Unable to parse CASCADE response - " + value, e);
+            }
+        } else {
+            for (String part : value.split("\\|")) {
+                Map<String, String> m = new HashMap<>();
+                m.put("name", part);
+                parts.add(m);
+            }
+        }
+
+        if (useQuestionId) {
+            // +------------+------------+-----
+            // |code1:value1|code2:value2| ...
+            // +------------+------------+-----
+
+            for (Map<String, String> map : parts) {
+                String code = map.get("code");
+                String name = map.get("name");
+                String nodeVal = (code == null ? "" : code + ":") + name;
+
+                if (cells.size() == levels) {
+                    // Don't create too many cells
+                    String currentVal = cells.get(cells.size() - 1);
+                    cells.add(cells.size() - 1, currentVal + "|" + nodeVal);
+                } else {
+                    cells.add(nodeVal);
+                }
+            }
+
+            int padCount = levels - parts.size();
+            for (int p = 0; p < padCount; p++) { // padding
+                cells.add("");
+            }
+
+        } else {
+            // +---------------------------------
+            // | code1:value1|code2:value2|...
+            // +---------------------------------
+            StringBuilder cascadeString = new StringBuilder();
+            for (Map<String, String> node : parts) {
+                String code = node.get("code");
+                String name = node.get("name");
+                cascadeString.append("|");
+                cascadeString.append((code == null ? "" : code + ":") + name);
+            }
+            if (cascadeString.length() > 0) {
+                // Drop the first pipe character.
+                cascadeString.deleteCharAt(0);
+            }
+            cells.add(cascadeString.toString());
+        }
+
+        return cells;
+    }
+
+    private String optionCellValue(String value) {
+        // The response can be either:
+        // old format: text1|text2|text3
+        // new format: [{"code": "code1", "text": "text1"},
+        // {"code": "code2", "text": "text2"}]
+        boolean isNewFormat = value.startsWith("[");
+        List<Map<String, String>> optionNodes = new ArrayList<>();
+        if (isNewFormat) {
+            try {
+                optionNodes = OBJECT_MAPPER.readValue(value,
+                        new TypeReference<List<Map<String, String>>>() {
+                        });
+            } catch (IOException e) {
+                log.warn("Could not parse option response: " + value, e);
+            }
+        } else {
+            String[] texts = value.split("\\|");
+            for (String text : texts) {
+                Map<String, String> node = new HashMap<>();
+                node.put("text", text.trim());
+                optionNodes.add(node);
+            }
+        }
+
+        StringBuilder optionString = new StringBuilder();
+
+        for (Map<String, String> node : optionNodes) {
+            String code = node.get("code");
+            String text = node.get("text");
+            optionString.append("|");
+            if (code != null) {
+                optionString.append(code + ":" + text);
+            } else {
+                optionString.append(text);
+            }
+        }
+        if (optionString.length() > 0) {
+            // Remove the first |
+            optionString.deleteCharAt(0);
+        }
+        return optionString.toString();
+    }
+
+    private String sanitize(String s) {
         if (s == null) {
             return "";
         } else {
