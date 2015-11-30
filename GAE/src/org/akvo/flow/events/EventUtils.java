@@ -1,3 +1,18 @@
+/*
+ *  Copyright (C) 2015 Stichting Akvo (Akvo Foundation)
+ *
+ *  This file is part of Akvo FLOW.
+ *
+ *  Akvo FLOW is free software: you can redistribute it and modify it under the terms of
+ *  the GNU Affero General Public License (AGPL) as published by the Free Software Foundation,
+ *  either version 3 of the License or any later version.
+ *
+ *  Akvo FLOW is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY;
+ *  without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+ *  See the GNU Affero General Public License included below for more details.
+ *
+ *  The full license text can also be seen at <http://www.gnu.org/licenses/agpl.html>.
+ */
 
 package org.akvo.flow.events;
 
@@ -18,6 +33,7 @@ import org.waterforpeople.mapping.app.web.rest.security.user.GaeUser;
 import com.gallatinsystems.survey.domain.SurveyGroup;
 import com.gallatinsystems.survey.domain.SurveyGroup.PrivacyLevel;
 import com.google.appengine.api.datastore.Entity;
+import com.google.appengine.api.datastore.Text;
 
 public class EventUtils {
 
@@ -95,12 +111,14 @@ public class EventUtils {
         public static final String SURVEY_GROUP_TYPE = "surveyGroupType";
         public static final String APP_ID = "orgId";
         public static final String URL = "url";
+        public static final String ITERATION = "iteration";
     }
 
     static class Prop {
         public static final String SURVEY_INSTANCE_ID = "surveyInstanceId";
         public static final String TYPE = "type";
         public static final String VALUE = "value";
+        public static final String VALUE_TEXT = "valueText";
         public static final String SURVEY_ID = "surveyId";
         public static final String SURVEYED_LOCALE_ID = "surveyedLocaleId";
         public static final String COLLECTION_DATE = "collectionDate";
@@ -126,6 +144,7 @@ public class EventUtils {
         public static final String ALIAS = "alias";
         public static final String EVENT_NOTIFICATION = "eventNotification";
         public static final String ENABLE_CHANGE_EVENTS = "enableChangeEvents";
+        public static final String ITERATION = "iteration";
     }
 
     public static final String SURVEY_GROUP_TYPE_SURVEY = "SURVEY";
@@ -189,8 +208,18 @@ public class EventUtils {
                 addProperty(Key.ANSWER_TYPE, e.getProperty(Prop.TYPE), data);
                 addProperty(Key.QUESTION_ID,
                         Long.valueOf((String) e.getProperty(Prop.QUESTION_ID)), data);
-                addProperty(Key.VALUE, e.getProperty(Prop.VALUE), data);
+
+                Object value = e.getProperty(Prop.VALUE);
+                if (value == null) {
+                    Object text = e.getProperty(Prop.VALUE_TEXT);
+                    if (text != null && text instanceof Text) {
+                        value = ((Text) text).getValue();
+                    }
+                }
+
+                addProperty(Key.VALUE, value, data);
                 addProperty(Key.FORM_ID, e.getProperty(Prop.SURVEY_ID), data);
+                addProperty(Key.ITERATION, e.getProperty(Prop.ITERATION), data);
                 break;
             case FORM_INSTANCE:
                 addProperty(Key.FORM_ID, e.getProperty(Prop.SURVEY_ID), data);

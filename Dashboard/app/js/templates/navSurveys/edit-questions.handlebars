@@ -3,87 +3,7 @@
   <section class="aQuestionSet mainContent" id="setIndex-01">
     <!-- zeroItem indicates that this is the item before the first question group -->
     {{#view FLOW.QuestionGroupItemView zeroItem=true}}
-      <!-- insert, move and copy buttons -->
-      {{#if view.oneSelectedForMove}}
-        <nav class="moveMenu groupActionMenu">
-          <ul>
-            <li><a {{action "doQGroupMoveHere" target="this"}} class="smallBtn">{{t _move_group_here}}</a></li>
-            <li><a {{action "doQGroupMoveCancel" target="this"}} class="">{{t _cancel}}</a></li>
-          </ul>
-        </nav>
-      {{else}}
-        {{#if view.oneSelectedForCopy}}
-          <nav class="copyMenu groupActionMenu">
-            <ul>
-              <li><a {{action "doQGroupCopyHere" target="this"}} class="smallBtn">{{t _paste_group_here}}</a></li>
-              <li><a {{action "doQGroupCopyCancel" target="this"}} class="">{{t _cancel}}</a></li>
-            </ul>
-          </nav>
-        {{else}}
-          <nav class="insertMenu groupActionMenu">
-            <ul>
-              <li><a {{action "doInsertQuestionGroup" target="this"}} class="">{{t _insert_group_here}}</a></li>
-            </ul>
-          </nav>
-        {{/if}}
-      {{/if}}
-      <!-- end insert, move and copy buttons for zero item-->
-    {{/view}}
-
-    <!-- start list of question groups -->
-    {{#each questionGroup in FLOW.questionGroupControl}}
-      {{#view FLOW.QuestionGroupItemView contentBinding="questionGroup"}}
-        <div class="questionGroupBlock">
-          <header><span class="qtnGroupHead">{{t _group}} {{view.content.order}}</span>
-
-          {{#if view.amCopying}} <div class="copyingSpinner">{{t _copying}} </div>
-          {{/if}}
-
-            <div class="qtnGroupTitle">
-            {{#if view.showQGroupNameEditField}}
-              {{view Ember.TextField valueBinding="view.content.code" size=45}}
-            {{else}}
-              <h1 class="qtnGroupTitle"><a {{action "toggleVisibility" target="this"}}>{{view.content.code}}</a></h1>
-            {{/if}}
-            </div>
-            {{#if view.amVisible}}
-              <label class="labelcheckbox">{{view Ember.Checkbox checkedBinding="view.content.repeatable"}}{{t _repeatable_question_group}}</label>
-              {{tooltip _repeatable_question_group_tooltip}}
-            {{/if}}
-            {{#if view.showSaveCancelButton}}
-              <div class="groupSave">
-                <a {{action "saveQuestionGroup" target="this"}} class="smallBtn">{{t _save}}</a>
-              </div>
-            {{/if}}
-            <nav class="qtnGroupMenu">
-              <ul>
-                {{#unless view.amCopying}}
-                  {{#if view.amVisible}}
-                    <li><a {{action "toggleVisibility" target="this"}} class="showQuestionGroup shown">{{t _hide_questions}} </a></li>
-                  {{else}}
-                    <li><a {{action "toggleVisibility" target="this"}} class="showQuestionGroup">{{t _show_questions}} </a></li>
-                  {{/if}}
-                     <li><a {{action "doQGroupNameEdit" target="this"}} class="editQuestionGroup">{{t _edit_group_name}}</a></li>
-                     <li><a {{action confirm FLOW.dialogControl.delQG target="FLOW.dialogControl"}} class="deleteQuestionGroup">{{t _delete}}</a></li>
-                     <li><a {{action "doQGroupCopy" target="this"}} class="copyQuestionGroup">{{t _copy}}</a></li>
-                     <li><a {{action "doQGroupMove" target="this"}} class="moveQuestionGroup">{{t _move}}</a> </li>
-                {{/unless}}
-              </ul>
-            </nav>
-          </header>
-
-          <!-- if the question group is open, show all questions -->
-          {{#if view.amVisible}}
-            <div class="questionSetContent">
-              {{view FLOW.QuestionView zeroItemQuestion=true}}
-                {{#each question in FLOW.questionControl}}
-                  {{view FLOW.QuestionView contentBinding="question" zeroItemQuestion=false}}
-                {{/each}}
-            </div>
-          {{/if}}
-          <!-- end question group block -->
-        </div>
-
+      {{#if view.showQuestionGroupModifyButtons}}
         <!-- insert, move and copy buttons -->
         {{#if view.oneSelectedForMove}}
           <nav class="moveMenu groupActionMenu">
@@ -108,7 +28,93 @@
             </nav>
           {{/if}}
         {{/if}}
-        <!-- end move and copy buttons -->
+      {{/if}}
+      <!-- end insert, move and copy buttons for zero item-->
+    {{/view}}
+
+    <!-- start list of question groups -->
+    {{#each questionGroup in FLOW.questionGroupControl}}
+      {{#view FLOW.QuestionGroupItemView contentBinding="questionGroup"}}
+        <div class="questionGroupBlock">
+          <header><span class="qtnGroupHead">{{t _group}} {{view.content.order}}</span>
+
+          {{#if view.amCopying}} <div class="copyingSpinner">{{t _copying}} </div>
+          {{/if}}
+
+            <div class="qtnGroupTitle">
+            {{#if view.showQGroupNameEditField}}
+              {{view Ember.TextField valueBinding="view.content.code" size=45}}
+            {{else}}
+              <h1 class="qtnGroupTitle"><a {{action "toggleVisibility" target="this"}}>{{view.content.code}}</a></h1>
+            {{/if}}
+            </div>
+            {{#if view.amVisible}}
+              <label class="labelcheckbox">{{view Ember.Checkbox checkedBinding="view.content.repeatable" disabledBinding="view.disableQuestionGroupEditing"}}{{t _repeatable_question_group}}</label>
+              {{tooltip _repeatable_question_group_tooltip}}
+            {{/if}}
+            {{#if view.showSaveCancelButton}}
+              <div class="groupSave">
+                <a {{action "saveQuestionGroup" target="this"}} class="smallBtn">{{t _save}}</a>
+              </div>
+            {{/if}}
+            <nav class="qtnGroupMenu">
+              <ul>
+                {{#unless view.amCopying}}
+                  {{#if view.amVisible}}
+                    <li><a {{action "toggleVisibility" target="this"}} class="showQuestionGroup shown">{{t _hide_questions}} </a></li>
+                  {{else}}
+                    <li><a {{action "toggleVisibility" target="this"}} class="showQuestionGroup">{{t _show_questions}} </a></li>
+                  {{/if}}
+                  {{#if view.showQuestionGroupModifyButtons}}
+                     <li><a {{action "doQGroupNameEdit" target="this"}} class="editQuestionGroup">{{t _edit_group_name}}</a></li>
+                     <li><a {{action confirm FLOW.dialogControl.delQG target="FLOW.dialogControl"}} class="deleteQuestionGroup">{{t _delete}}</a></li>
+                     <li><a {{action "doQGroupCopy" target="this"}} class="copyQuestionGroup">{{t _copy}}</a></li>
+                     <li><a {{action "doQGroupMove" target="this"}} class="moveQuestionGroup">{{t _move}}</a> </li>
+                  {{/if}}
+                {{/unless}}
+              </ul>
+            </nav>
+          </header>
+
+          <!-- if the question group is open, show all questions -->
+          {{#if view.amVisible}}
+            <div class="questionSetContent">
+              {{view FLOW.QuestionView zeroItemQuestion=true}}
+                {{#each question in FLOW.questionControl}}
+                  {{view FLOW.QuestionView contentBinding="question" zeroItemQuestion=false}}
+                {{/each}}
+            </div>
+          {{/if}}
+          <!-- end question group block -->
+        </div>
+
+        {{#if view.showQuestionGroupModifyButtons}}
+          <!-- insert, move and copy buttons -->
+          {{#if view.oneSelectedForMove}}
+            <nav class="moveMenu groupActionMenu">
+              <ul>
+                <li><a {{action "doQGroupMoveHere" target="this"}} class="smallBtn">{{t _move_group_here}}</a></li>
+                <li><a {{action "doQGroupMoveCancel" target="this"}} class="">{{t _cancel}}</a></li>
+              </ul>
+            </nav>
+          {{else}}
+            {{#if view.oneSelectedForCopy}}
+              <nav class="copyMenu groupActionMenu">
+                <ul>
+                  <li><a {{action "doQGroupCopyHere" target="this"}} class="smallBtn">{{t _paste_group_here}}</a></li>
+                  <li><a {{action "doQGroupCopyCancel" target="this"}} class="">{{t _cancel}}</a></li>
+                </ul>
+              </nav>
+            {{else}}
+              <nav class="insertMenu groupActionMenu">
+                <ul>
+                  <li><a {{action "doInsertQuestionGroup" target="this"}} class="">{{t _insert_group_here}}</a></li>
+                </ul>
+              </nav>
+            {{/if}}
+          {{/if}}
+          <!-- end move and copy buttons -->
+        {{/if}}
       {{/view}}
     {{/each}}
   </section>

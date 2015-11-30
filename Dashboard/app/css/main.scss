@@ -1672,7 +1672,7 @@ th.action {
                 float: left;
                 margin: 0 1px 0 0;
                 @include border-radius(2px 2px 0 0);
-                background: rgb(201, 201, 201);
+                background: rgba($akvoBlack, 0.5);
                 -webkit-background-clip: padding-box;
                 background-clip: padding-box;
                 -webkit-transition: none;
@@ -1703,19 +1703,13 @@ th.action {
                 a {
                     display: block;
                     padding: 0.75em 1em;
-                    color: rgb(147, 145, 144);
+                    color: white;
                     text-transform: uppercase;
                     -webkit-transition: none;
                     transition: none;
-                    -webkit-text-shadow: 1px 1px 0 rgb(235, 235, 235);
-                    -moz-text-shadow: 1px 1px 0 rgb(235, 235, 235);
-                    text-shadow: 1px 1px 0 rgb(235, 235, 235);
                     font-weight: bold;
                     &:hover {
                         color: white;
-                        text-shadow: none;
-                        -webkit-text-shadow: none;
-                        -moz-text-shadow: none;
                     }
                 }
             }
@@ -4554,6 +4548,17 @@ footer.bottomPage a[rel="self"]:hover {}
     float: left;
     margin: 0 0 1em 1%;
 }
+#reportBlocks.reportTools {
+    .geoshapeExport {
+        .geoshapeSelect {
+            > select {
+                display: block;
+                float: none;
+                margin-left: 0;
+            }
+        }
+    }
+}
 
 .reportTools select:last-child {
     display: inline;
@@ -4656,6 +4661,25 @@ footer.bottomPage a[rel="self"]:hover {}
 
 .chartSetting .groupChartSelect input {
     display: inline;
+}
+
+/* Affix the survey select menu to the top of the viewport so it is always visible */
+
+.reportTools {
+    .fixedTop {
+        position: fixed;
+        top: 120px;
+        width: 100%;
+        background-color: white;
+        height: 120px;
+        z-index: 2;
+        border-bottom: thin solid #c6c6c6;
+    }
+    .rawDataReport {
+        &.dataExport {
+            margin-top: 135px;
+        }
+    }
 }
 
 /* ------------------------------------------------------------------------------------------

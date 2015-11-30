@@ -16,6 +16,12 @@ FLOW.inspectDataTableView = FLOW.View.extend({
   selectedSurveyInstanceNum: null,
   siString: null,
 
+  form: function() {
+    if (FLOW.selectedControl.get('selectedSurvey')) {
+      return FLOW.selectedControl.get('selectedSurvey');
+    }
+  }.property('FLOW.selectedControl.selectedSurvey'),
+
   init: function () {
     this._super();
     FLOW.selectedControl.set('selectedSurveyGroup', null);
@@ -55,7 +61,6 @@ FLOW.inspectDataTableView = FLOW.View.extend({
       this.set('surveyId', null);
     }
 
-    this.set('since', FLOW.metaControl.get('since'));
     // if we have selected a survey, preload the questions as we'll need them
     // the questions are also loaded once the surveyInstances come in.
     if (FLOW.selectedControl.get('selectedSurvey')) {
@@ -94,14 +99,19 @@ FLOW.inspectDataTableView = FLOW.View.extend({
   },
 
   doNextPage: function () {
-    FLOW.surveyInstanceControl.get('sinceArray').pushObject(FLOW.metaControl.get('since'));
+    var cursorArray, cursor;
+    cursorArray = FLOW.surveyInstanceControl.get('sinceArray');
+    cursor = cursorArray.length > 0 ? cursorArray[cursorArray.length - 1] : null;
+    this.set('since', cursor);
     this.doInstanceQuery();
     FLOW.surveyInstanceControl.set('pageNumber', FLOW.surveyInstanceControl.get('pageNumber') + 1);
   },
 
   doPrevPage: function () {
-    FLOW.surveyInstanceControl.get('sinceArray').popObject();
-    FLOW.metaControl.set('since', FLOW.surveyInstanceControl.get('sinceArray')[FLOW.surveyInstanceControl.get('sinceArray').length - 1]);
+    var cursorArray, cursor;
+    cursorArray = FLOW.surveyInstanceControl.get('sinceArray');
+    cursor = cursorArray.length - 3 > -1 ? cursorArray[cursorArray.length - 3] : null;
+    this.set('since', cursor);
     this.doInstanceQuery();
     FLOW.surveyInstanceControl.set('pageNumber', FLOW.surveyInstanceControl.get('pageNumber') - 1);
   },
@@ -114,8 +124,8 @@ FLOW.inspectDataTableView = FLOW.View.extend({
 
   // not perfect yet, sometimes previous link is shown while there are no previous pages.
   hasPrevPage: function () {
-    FLOW.surveyInstanceControl.get('sinceArray').length !== 1;
-  }.property('FLOW.surveyInstanceControl.sinceArray.length'),
+    return FLOW.surveyInstanceControl.get('pageNumber');
+  }.property('FLOW.surveyInstanceControl.pageNumber'),
 
   createSurveyInstanceString: function () {
     var si;
@@ -146,6 +156,10 @@ FLOW.inspectDataTableView = FLOW.View.extend({
     this.set('showEditSurveyInstanceWindowBool', true);
     this.createSurveyInstanceString();
   },
+
+  showEditResponseLink: function () {
+    return FLOW.permControl.canEditResponses(this.get('form'));
+  }.property('this.form'),
 
   doCloseEditSIWindow: function (event) {
     this.set('showEditSurveyInstanceWindowBool', false);
@@ -295,9 +309,10 @@ FLOW.DataLocaleItemView = FLOW.View.extend({
 
 FLOW.DataNumView = FLOW.View.extend({
   tagName: 'span',
+  pageNumber: 0,
   content: null,
   rownum: function() {
-    return this.get("_parentView.contentIndex") + 1 + 20 * FLOW.surveyInstanceControl.get('pageNumber');
+    return this.get("_parentView.contentIndex") + 1 + 20 * this.get('pageNumber');
   }.property()
 
 });

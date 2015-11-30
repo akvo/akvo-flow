@@ -24,11 +24,9 @@ import java.text.DecimalFormat;
 import java.text.NumberFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Comparator;
-import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -637,7 +635,7 @@ public class GraphicalSurveySummaryExporter extends SurveySummaryExporter {
             case DATE:
                 try {
                     String val = ExportImportUtils
-                            .formatDate(new Date(Long.parseLong(value)));
+                            .formatDate(ExportImportUtils.parseDate(value));
                     cells.add(val);
                 } catch (Exception e) {
                     log.error("Couldn't format value for question id: "
@@ -675,22 +673,69 @@ public class GraphicalSurveySummaryExporter extends SurveySummaryExporter {
                 cells.add(value);
                 break;
 
+            // Two different formats:
+            // old: Foo|Bar|Baz (never contains code)
+            // new: [{"name": "Foo", "code": "A"}, {"name": "Bar", "code": "B"} ... ]
             case CASCADE:
+                List<Map<String, String>> parts = new ArrayList<>();
+
+                if (value.startsWith("[")) {
+                    try {
+                        parts = OBJECT_MAPPER.readValue(value,
+                                new TypeReference<List<Map<String, String>>>() {
+                                });
+                    } catch (IOException e) {
+                        log.warn("Unable to parse CASCADE response - " + value, e);
+                    }
+                } else {
+                    for (String part : value.split("\\|")) {
+                        Map<String, String> m = new HashMap<>();
+                        m.put("name", part);
+                        parts.add(m);
+                    }
+                }
+
                 if (useQuestionId) {
+                    // +------------+------------+-----
+                    // |code1:value1|code2:value2| ...
+                    // +------------+------------+-----
                     int levelCount = questionDto.getLevelNames().size();
-                    List<String> parts = new ArrayList<String>(Arrays.asList(value
-                            .split("\\|", levelCount)));
                     int padCount = levelCount - parts.size();
 
-                    for (int p = 0; p < padCount; p++) { // padding
-                        parts.add("");
+                    for (Map<String, String> map : parts) {
+                        String code = map.get("code");
+                        String name = map.get("name");
+                        String nodeVal = (code == null ? "" : code + ":") + name;
+
+                        if (cells.size() == levelCount) {
+                            // Don't create too many cells
+                            String currentVal = cells.get(cells.size() - 1);
+                            cells.add(cells.size() - 1, currentVal + "|" + nodeVal);
+                        } else {
+                            cells.add(nodeVal);
+                        }
                     }
 
-                    cells.addAll(parts);
+                    for (int p = 0; p < padCount; p++) { // padding
+                        cells.add("");
+                    }
 
                 } else {
-                    String cellVal = value.replaceAll("\n", " ").trim();
-                    cells.add(cellVal);
+                    // +---------------------------------
+                    // | code1:value1|code2:value2|...
+                    // +---------------------------------
+                    StringBuilder cascadeString = new StringBuilder();
+                    for (Map<String, String> node : parts) {
+                        String code = node.get("code");
+                        String name = node.get("name");
+                        cascadeString.append("|");
+                        cascadeString.append((code == null ? "" : code + ":") + name);
+                    }
+                    if (cascadeString.length() > 0) {
+                        // Drop the first pipe character.
+                        cascadeString.deleteCharAt(0);
+                    }
+                    cells.add(cascadeString.toString());
                 }
                 break;
             case OPTION:

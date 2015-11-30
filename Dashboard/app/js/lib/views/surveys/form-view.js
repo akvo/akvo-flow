@@ -5,6 +5,10 @@ FLOW.FormView = Ember.View.extend({
 	manageTranslations: false,
 	manageNotifications: false,
 
+	form: function() {
+		return FLOW.selectedControl.get('selectedSurvey');
+	}.property('FLOW.selectedControl.selectedSurvey'),
+
 	toggleShowFormBasics: function () {
 		this.set('showFormBasics', !this.get('showFormBasics'));
 	},
@@ -30,4 +34,24 @@ FLOW.FormView = Ember.View.extend({
 		this.set('manageTranslations', false);
 		this.set('manageNotifications', true);
 	},
+
+	disableFormFields: function () {
+		var form = this.get('form');
+		return !FLOW.permControl.canEditForm(form);
+	}.property('this.form'),
+
+	showFormTranslationsButton: function() {
+		var form = this.get('form');
+		return FLOW.permControl.canEditForm(form);
+	}.property('this.form'),
+
+	showFormDeleteButton: function () {
+		var form = this.get('form');
+		return FLOW.permControl.canEditForm(form);
+	}.property('this.form'),
+
+	showFormPublishButton: function () {
+		var form = this.get('form');
+		return FLOW.permControl.canEditForm(form);
+	}.property('this.form')
 });

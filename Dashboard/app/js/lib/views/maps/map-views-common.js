@@ -571,20 +571,6 @@ FLOW.NavMapsView = FLOW.View.extend({
     });
   },
 
-  parseGeoshape: function(geoshapeString) {
-    try {
-      var geoshapeObject = JSON.parse(geoshapeString);
-      if (geoshapeObject['features'].length > 0 &&
-          geoshapeObject['features'][0]["geometry"]["type"] === "Polygon") {
-          return geoshapeObject;
-      } else {
-        return null;
-      }
-    } catch (e) {
-      return null;
-    }
-  },
-
   getCartodbPointData: function(url, dataPointName, dataPointIdentifier){
     var self = this;
     $("#pointDetails").html("");
@@ -621,7 +607,7 @@ FLOW.NavMapsView = FLOW.View.extend({
                 for(var i=0; i<questionsData['questions'].length; i++){
                   if (column.match(questionsData['questions'][i].id)) {
                     if(questionsData['questions'][i].type === "GEOSHAPE" && pointData['answers'][column] !== null){
-                      var geoshapeObject = self.parseGeoshape(pointData['answers'][column]);
+                      var geoshapeObject = FLOW.parseGeoshape(pointData['answers'][column]);
                       if(geoshapeObject !== null){
                         clickedPointContent += '<h4><div style="float: left">'
                         +questionsData['questions'][i].display_text
@@ -647,7 +633,7 @@ FLOW.NavMapsView = FLOW.View.extend({
                       //if point is a geoshape, draw the shape in the side window
                       if(questionsData['questions'][i].type == "GEOSHAPE" && pointData['answers'][column] !== null){
                         if(pointData['answers'][column] !== "" && pointData['answers'][column] !== null && pointData['answers'][column] !== "null"){
-                          var geoshapeObject = self.parseGeoshape(pointData['answers'][column]);
+                          var geoshapeObject = FLOW.parseGeoshape(pointData['answers'][column]);
                           if(geoshapeObject !== null){
                             geoshapeCheck = true;
                             clickedPointContent += '<div id="geoShapeMap" style="width:100%; height: 100px; float: left"></div>';
@@ -656,9 +642,9 @@ FLOW.NavMapsView = FLOW.View.extend({
                               self.geoshapeCoordinates.push([geoshapeCoordinatesArray[j][1], geoshapeCoordinatesArray[j][0]]);
                             }
 
-                            clickedPointContent += '<div style="float: left; width: 100%">Points: '+geoshapeObject['features'][0]['properties']['pointCount']+'</div>';
-                            clickedPointContent += '<div style="float: left; width: 100%">Length: '+geoshapeObject['features'][0]['properties']['length']+'m</div>';
-                            clickedPointContent += '<div style="float: left; width: 100%">Area: '+geoshapeObject['features'][0]['properties']['area']+'m&sup2;</div>';
+                            clickedPointContent += '<div style="float: left; width: 100%">'+ Ember.String.loc('_points') +': '+geoshapeObject['features'][0]['properties']['pointCount']+'</div>';
+                            clickedPointContent += '<div style="float: left; width: 100%">'+ Ember.String.loc('_length') +': '+geoshapeObject['features'][0]['properties']['length']+'m</div>';
+                            clickedPointContent += '<div style="float: left; width: 100%">'+ Ember.String.loc('_area') +': '+geoshapeObject['features'][0]['properties']['area']+'m&sup2;</div>';
                           }
                         }
                       }else{
@@ -799,3 +785,100 @@ FLOW.NavMapsView = FLOW.View.extend({
 FLOW.countryView = FLOW.View.extend({});
 FLOW.PlacemarkDetailView = Ember.View.extend({});
 FLOW.PlacemarkDetailPhotoView = Ember.View.extend({});
+
+FLOW.GeoshapeMapView = FLOW.View.extend({
+  templateName: 'navMaps/geoshape-map',
+  geoshape: null,
+
+  didInsertElement: function() {
+    this.set('geoshape', JSON.parse(this.get('parentView.geoShapeObject')));
+    if (this.get('isPolygon')) {
+      var containerNode = this.get('element').getElementsByClassName('geoshapeMapContainer')[0];
+      if (containerNode) {
+        this.initializeMap(containerNode);
+      }
+    }
+  },
+
+  length: function() {
+    return this.geoshape === null ? null : this.geoshape.features[0].properties.length
+  }.property('this.geoshape'),
+
+  area: function() {
+    return this.geoshape === null ? null : this.geoshape.features[0].properties.area
+  }.property('this.geoshape'),
+
+  pointCount: function() {
+    return this.geoshape === null ? null : this.geoshape.features[0].properties.pointCount
+  }.property('this.geoshape'),
+
+  isPolygon: function() {
+    var geoshape = this.get('geoshape');
+    if (geoshape == null) {
+      return false;
+    } else {
+      return geoshape['features'].length > 0 &&
+        geoshape['features'][0]["geometry"]["type"] === "Polygon"
+    }
+  }.property('this.geoshape'),
+
+  geoshapeString: function() {
+    return this.geoshape === null ? null : JSON.stringify(this.geoshape);
+  }.property('this.geoshape'),
+
+  initializeMap: function(containerNode) {
+    containerNode.style.height = "150px";
+    var geoshapeCoordinatesArray = this.get('geoshape')['features'][0]['geometry']['coordinates'][0];
+    var points = [];
+
+    for(var j=0; j<geoshapeCoordinatesArray.length; j++){
+      points.push([geoshapeCoordinatesArray[j][1], geoshapeCoordinatesArray[j][0]]);
+    }
+
+    var center = this.getCentroid(points);
+
+    var geoshapeMap = L.map(containerNode, {scrollWheelZoom: false}).setView(center, 2);
+
+    geoshapeMap.options.maxZoom = 18;
+    geoshapeMap.options.minZoom = 2;
+    var mbAttr = 'Map &copy; 1987-2014 <a href="http://developer.here.com">HERE</a>';
+    var mbUrl = 'https://{s}.{base}.maps.cit.api.here.com/maptile/2.1/maptile/{mapID}/{scheme}/{z}/{x}/{y}/256/{format}?app_id={app_id}&app_code={app_code}';
+    var normal = L.tileLayer(mbUrl, {
+      scheme: 'normal.day.transit',
+      format: 'png8',
+      attribution: mbAttr,
+      subdomains: '1234',
+      mapID: 'newest',
+      app_id: FLOW.Env.hereMapsAppId,
+      app_code: FLOW.Env.hereMapsAppCode,
+      base: 'base'
+    }).addTo(geoshapeMap);
+    var satellite  = L.tileLayer(mbUrl, {
+      scheme: 'hybrid.day',
+      format: 'jpg',
+      attribution: mbAttr,
+      subdomains: '1234',
+      mapID: 'newest',
+      app_id: FLOW.Env.hereMapsAppId,
+      app_code: FLOW.Env.hereMapsAppCode,
+      base: 'aerial'
+    });
+    var baseLayers = {
+      "Normal": normal,
+      "Satellite": satellite
+    };
+    L.control.layers(baseLayers).addTo(geoshapeMap);
+    var geoShape = L.polygon(points);
+    geoShape.addTo(geoshapeMap);
+    var southWest = geoShape.getBounds().getSouthWest();
+    var northEast = geoShape.getBounds().getNorthEast();
+    var bounds = new L.LatLngBounds(southWest, northEast);
+    geoshapeMap.fitBounds(bounds);
+  },
+
+  getCentroid: function (arr) {
+    return arr.reduce(function (x,y) {
+      return [x[0] + y[0]/arr.length, x[1] + y[1]/arr.length]
+    }, [0,0])
+  }
+});

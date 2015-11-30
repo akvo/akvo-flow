@@ -25,7 +25,7 @@
             </label>
 
             <label class="collectedTo"><span>{{t _to}}:</span> {{view FLOW.DateField minDate=false valueBinding="FLOW.dateControl.toDate" elementId="to_date" placeholder="" placeholderBinding="Ember.STRINGS._to" size=30}}
-            </label>           
+            </label>
         </div>
 
         <div class="chooseLocationData">
@@ -43,7 +43,6 @@
                 <tr>
                     <th class="noArrows"></th>
                     <th class="noArrows">{{t _instance_id}}</th>
-                    <th class="noArrows">{{t _form}}</th>
                     <th class="noArrows">{{t _submitter}}</th>
                     <th class="noArrows">{{t _device}}</th>
                     <th class="noArrows">{{t _collected}}</th>
@@ -53,15 +52,18 @@
             <tbody>
                 {{#each SI in FLOW.surveyInstanceControl.currentContents}}
                 <tr>
-                    <td class="device">{{#view FLOW.DataNumView contentBinding="this"}}{{view.rownum}}{{/view}}</td>
+                    <td class="device">{{#view FLOW.DataNumView contentBinding="this" pageNumberBinding="FLOW.surveyInstanceControl.pageNumber"}}{{view.rownum}}{{/view}}</td>
                     <td class="device">{{SI.keyId}}</td>
-                    <td class="survey">{{SI.surveyCode}}</td>
                     <td class="submitter">{{SI.submitterName}}</td>
                     <td class="device">{{SI.deviceIdentifier}}</td>
                     <td class="collected">{{#with SI}}{{date1 collectionDate}}{{/with}}</td>
                     <td class="action">
                         <a {{action showEditSurveyInstanceWindow SI target="this" }}>
-                            {{t _edit}}
+                            {{#if view.showEditResponseLink}}
+                                {{t _edit}}
+                            {{else}}
+                                {{t _view}}
+                            {{/if}}
                         </a>
                         {{#if view.showSurveyInstanceDeleteButton }}
                             {{#view FLOW.DataItemView contentBinding="SI"}}
@@ -98,8 +100,11 @@
             <!-- the dialog contents -->
             <div class="confirmDialog dialogWide">
                 <a {{action "doCloseEditSIWindow" target="this" }} class="ok clodeDialog">{{t _close_window}}</a>
-
+                {{#if view.showEditResponseLink}}
                 <h2>{{t _edit_answers}}</h2>
+                {{else}}
+                <h2>{{t _view_answers}}</h2>
+                {{/if}}
                 <nav class="editAnswerMenu">
                     <ul>
                         <li class="prevBtn"><a {{action "doPreviousSI" target="this" }}>&lsaquo; {{t _previous_record}}</a>
@@ -120,8 +125,8 @@
                     <thead>
                         <tr>
                             <th class="noArrows" style="width:10%"></th>
-                            <th class="noArrows" style="width:60%">{{t _question}}</th>
-                            <th class="noArrows" style="width:30%">{{t _answer}}</th>
+                            <th class="noArrows" style="width:40%">{{t _question}}</th>
+                            <th class="noArrows" style="width:50%">{{t _answer}}</th>
                         </tr>
                     </thead>
                     <!-- TABLE BODY: MAIN CONTENT-->
