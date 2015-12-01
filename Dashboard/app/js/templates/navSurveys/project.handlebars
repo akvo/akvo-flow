@@ -109,7 +109,9 @@
                       {{/view}}
                     {{/each}}
                     {{#if FLOW.projectControl.currentProject.monitoringGroup}}
+                      {{#if view.showAddNewFormButton}}
                       <li class="newFormTab"><a {{action "createForm" target="FLOW.surveyControl"}}><span>+</span>{{t _add_new_form}}</a></li>
+                      {{/if}}
                     {{/if}}
                   </ul>
                 </nav>
