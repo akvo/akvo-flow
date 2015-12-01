@@ -13,9 +13,11 @@
                   </a>
                   {{view FLOW.FolderEditView valueBinding="sg.code" contentBinding="sg"}}
                 {{else}}
+                  {{#if view.showSurveyEditButton}}
                   <a {{action "toggleEditFolderName" sg target="this"}} class="editFolderName">
                     {{t _edit_folder_name}}
                   </a>
+                  {{/if}}
                   <a {{action "selectProject" sg target="FLOW.projectControl"}}>
                     <h2>{{sg.code}}</h2>
                   </a>
