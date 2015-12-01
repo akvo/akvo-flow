@@ -25,7 +25,9 @@
                     {{#unless view.hideFolderSurveyDeleteButton}}
                       <li class="deleteSurvey"><a {{action "deleteProject" sg target="FLOW.projectControl"}}>{{t _delete}}</a></li>
                     {{/unless}}
+                    {{#if view.showSurveyMoveButton}}
                     <li class="moveSurvey"><a {{action "beginMoveProject" sg target="FLOW.projectControl"}}>{{t _move}}</a></li>
+                    {{/if}}
                   </ul>
                </nav>
               {{else}}
