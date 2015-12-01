@@ -100,12 +100,20 @@ public class ExportImportUtils {
     }
 
     public static Date parseDate(String dateString) {
-        try {
-            return DATE_FORMAT.get().parse(dateString);
-        } catch (ParseException e) {
-            log.error("bad date format: " + dateString + "\n" + e.getMessage(), e);
+        if (dateString == null || dateString.equals("")) {
             return null;
         }
+        try {
+            return new Date(Long.parseLong(dateString));
+        } catch (NumberFormatException nfe) {
+            try {
+                return DATE_FORMAT.get().parse(dateString);
+            } catch (ParseException pe) {
+                log.error("bad date format: " + dateString + "\n" + pe.getMessage(), pe);
+                return null;
+            }
+        }
+
     }
 
 }

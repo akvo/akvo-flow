@@ -18,16 +18,15 @@ package org.waterforpeople.mapping.dataexport;
 
 import java.io.File;
 import java.io.FileOutputStream;
+import java.io.IOException;
 import java.security.NoSuchAlgorithmException;
 import java.text.DecimalFormat;
 import java.text.NumberFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Comparator;
-import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -57,6 +56,8 @@ import org.apache.poi.ss.util.CellRangeAddress;
 import org.apache.poi.ss.util.WorkbookUtil;
 import org.apache.poi.xssf.streaming.SXSSFSheet;
 import org.apache.poi.xssf.streaming.SXSSFWorkbook;
+import org.codehaus.jackson.map.ObjectMapper;
+import org.codehaus.jackson.type.TypeReference;
 import org.waterforpeople.mapping.app.gwt.client.survey.QuestionDto;
 import org.waterforpeople.mapping.app.gwt.client.survey.QuestionDto.QuestionType;
 import org.waterforpeople.mapping.app.gwt.client.survey.QuestionGroupDto;
@@ -289,6 +290,8 @@ public class GraphicalSurveySummaryExporter extends SurveySummaryExporter {
 
     // store indices of file columns for lookup when generating responses
     private Map<String, Integer> columnIndexMap = new HashMap<String, Integer>();
+
+    private static final ObjectMapper OBJECT_MAPPER = new ObjectMapper();
 
     @Override
     public void export(Map<String, String> criteria, File fileName,
@@ -616,7 +619,7 @@ public class GraphicalSurveySummaryExporter extends SurveySummaryExporter {
             Row row,
             int startColumn,
             QuestionDto questionDto,
-            final String value,
+            String value,
             boolean useQuestionId) {
 
         assert value != null;
@@ -630,7 +633,8 @@ public class GraphicalSurveySummaryExporter extends SurveySummaryExporter {
         switch (questionType) {
             case DATE:
                 try {
-                    String val = ExportImportUtils.formatDate(new Date(Long.parseLong(value.trim())));
+                    String val = ExportImportUtils
+                            .formatDate(ExportImportUtils.parseDate(value));
                     cells.add(val);
                 } catch (Exception e) {
                     log.error("Couldn't format value for question id: "
@@ -665,27 +669,90 @@ public class GraphicalSurveySummaryExporter extends SurveySummaryExporter {
                 break;
 
             case NUMBER:
-                val = value.trim();
-                cells.add(val);
+                cells.add(value);
                 break;
 
+            // Two different formats:
+            // old: Foo|Bar|Baz (never contains code)
+            // new: [{"name": "Foo", "code": "A"}, {"name": "Bar", "code": "B"} ... ]
             case CASCADE:
-                if (useQuestionId) {
-                    String cellVal = value.trim();
-                    int levelCount = questionDto.getLevelNames().size();
-                    List<String> parts = new ArrayList<String>(Arrays.asList(cellVal
-                            .split("\\|", levelCount)));
-                    int padCount = levelCount - parts.size();
+                List<Map<String, String>> cascadeNodes = new ArrayList<>();
 
-                    for (int p = 0; p < padCount; p++) { // padding
-                        parts.add("");
+                if (value.startsWith("[")) {
+                    try {
+                        cascadeNodes = OBJECT_MAPPER.readValue(value,
+                                new TypeReference<List<Map<String, String>>>() {
+                                });
+                    } catch (IOException e) {
+                        log.warn("Unable to parse CASCADE response - " + value, e);
+                    }
+                } else if (!value.isEmpty()) {
+                    for (String name : value.split("\\|")) {
+                        Map<String, String> m = new HashMap<>();
+                        m.put("name", name);
+                        cascadeNodes.add(m);
+                    }
+                }
+
+                boolean allCodesEqualsName = true;
+                for (Map<String, String> cascadeNode : cascadeNodes) {
+                    String code = cascadeNode.get("code");
+                    String name = cascadeNode.get("name");
+
+                    if (code != null && name != null
+                            && !code.toLowerCase().equals(name.toLowerCase())) {
+                        allCodesEqualsName = false;
+                        break;
+                    }
+                }
+                if (allCodesEqualsName) {
+                    for (Map<String, String> cascadeNode : cascadeNodes) {
+                        cascadeNode.put("code", null);
+                    }
+                }
+
+                if (useQuestionId) {
+                    // +------------+------------+-----
+                    // |code1:value1|code2:value2| ...
+                    // +------------+------------+-----
+
+                    int levelCount = questionDto.getLevelNames().size();
+                    int padCount = levelCount - cascadeNodes.size();
+
+                    for (Map<String, String> map : cascadeNodes) {
+                        String code = map.get("code");
+                        String name = map.get("name");
+                        String nodeVal = (code == null ? "" : code + ":") + name;
+
+                        if (cells.size() == levelCount) {
+                            // Don't create too many cells
+                            String currentVal = cells.get(cells.size() - 1);
+                            cells.add(cells.size() - 1, currentVal + "|" + nodeVal);
+                        } else {
+                            cells.add(nodeVal);
+                        }
                     }
 
-                    cells.addAll(parts);
+                    for (int p = 0; p < padCount; p++) { // padding
+                        cells.add("");
+                    }
 
                 } else {
-                    String cellVal = value.replaceAll("\n", " ").trim();
-                    cells.add(cellVal);
+                    // +---------------------------------
+                    // | code1:value1|code2:value2|...
+                    // +---------------------------------
+                    StringBuilder cascadeString = new StringBuilder();
+                    for (Map<String, String> node : cascadeNodes) {
+                        String code = node.get("code");
+                        String name = node.get("name");
+                        cascadeString.append("|");
+                        cascadeString.append((code == null ? "" : code + ":") + name);
+                    }
+                    if (cascadeString.length() > 0) {
+                        // Drop the first pipe character.
+                        cascadeString.deleteCharAt(0);
+                    }
+                    cells.add(cascadeString.toString());
                 }
                 break;
 

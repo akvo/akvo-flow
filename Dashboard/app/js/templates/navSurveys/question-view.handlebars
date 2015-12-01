@@ -188,10 +188,12 @@
     <!-- nav is only displayed if question is closed -->
     <nav class="smallMenu">
       <ul>
+		{{#if view.showQuestionModifyButtons}}
         <li><a {{action confirm FLOW.dialogControl.delQ target="FLOW.dialogControl"}} class="deleteQuestion">{{t _delete}}</a> </li>
         <li><a {{action "doQuestionCopy" target="this"}} class="copyQuestion" id="">{{t _copy}}</a></li>
         <li><a {{action "doQuestionMove" target="this"}} class="moveQuestion" id="">{{t _move}}</a></li>
         <li><a {{action "doQuestionEdit" target="this"}} class="editQuestion" id="">{{t _edit}}</a></li>
+		{{/if}}
       </ul>
     </nav>
     <h1 class="questionNbr"><span>{{view.content.order}}} </span>{{view.content.text}}</h1>
@@ -201,23 +203,25 @@
 
 {{/unless}}
   <div>
-    {{#if view.oneSelectedForMove}}
-      <nav class="moveQMenu questionActionMenu">
-        <ul>
-          <li><a {{action "doQuestionMoveHere" target="this"}} class="smallBtn">{{t _move_question_here}}</a></li>
-          <li><a {{action "doQuestionMoveCancel" target="this"}} class="">{{t _cancel}}</a></li>
-        </ul>
-      </nav>
-    {{else}}
-      {{#if view.oneSelectedForCopy}}
-        <nav class="copyQMenu questionActionMenu">
-          <ul>
-            <li><a {{action "doQuestionCopyHere" target="this"}} class="smallBtn">{{t _paste_question_here}}</a></li>
-            <li><a {{action "doQuestionCopyCancel" target="this"}} class="">{{t _cancel}}</a></li>
-          </ul>
-        </nav>
-       {{else}}
-         <a {{action "doInsertQuestion" target="this"}} class="addQuestion">{{t _add_new_question}}</a>
-      {{/if}}
-    {{/if}}
+	{{#if view.showQuestionModifyButtons}}
+	  {{#if view.oneSelectedForMove}}
+		<nav class="moveQMenu questionActionMenu">
+		  <ul>
+			<li><a {{action "doQuestionMoveHere" target="this"}} class="smallBtn">{{t _move_question_here}}</a></li>
+			<li><a {{action "doQuestionMoveCancel" target="this"}} class="">{{t _cancel}}</a></li>
+		  </ul>
+		</nav>
+	  {{else}}
+		{{#if view.oneSelectedForCopy}}
+		  <nav class="copyQMenu questionActionMenu">
+			<ul>
+			  <li><a {{action "doQuestionCopyHere" target="this"}} class="smallBtn">{{t _paste_question_here}}</a></li>
+			  <li><a {{action "doQuestionCopyCancel" target="this"}} class="">{{t _cancel}}</a></li>
+			</ul>
+		  </nav>
+		 {{else}}
+		   <a {{action "doInsertQuestion" target="this"}} class="addQuestion">{{t _add_new_question}}</a>
+		{{/if}}
+	  {{/if}}
+	{{/if}}
   </div>
