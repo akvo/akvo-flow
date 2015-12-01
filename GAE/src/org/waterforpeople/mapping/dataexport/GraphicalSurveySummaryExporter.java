@@ -698,7 +698,10 @@ public class GraphicalSurveySummaryExporter extends SurveySummaryExporter {
                 boolean allCodesEqualsName = true;
                 for (Map<String, String> cascadeNode : cascadeNodes) {
                     String code = cascadeNode.get("code");
-                    if (code != null && !code.equals(cascadeNode.get("name"))) {
+                    String name = cascadeNode.get("name");
+
+                    if (code != null && name != null
+                            && !code.toLowerCase().equals(name.toLowerCase())) {
                         allCodesEqualsName = false;
                         break;
                     }
