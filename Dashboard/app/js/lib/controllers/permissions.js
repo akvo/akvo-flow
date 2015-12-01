@@ -146,6 +146,11 @@ FLOW.permControl = Ember.Controller.create({
 
     if (!currentUserPermissions || !entity) { return []; }
 
+    // return superAdmin permissions
+    if ("0" in currentUserPermissions){
+      return currentUserPermissions["0"];
+    }
+
     // first check current object id
     keyId = entity.get('keyId');
     if (keyId in currentUserPermissions) {

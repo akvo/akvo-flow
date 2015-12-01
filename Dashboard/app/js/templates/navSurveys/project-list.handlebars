@@ -13,9 +13,11 @@
                   </a>
                   {{view FLOW.FolderEditView valueBinding="sg.code" contentBinding="sg"}}
                 {{else}}
+                  {{#if view.showSurveyEditButton}}
                   <a {{action "toggleEditFolderName" sg target="this"}} class="editFolderName">
                     {{t _edit_folder_name}}
                   </a>
+                  {{/if}}
                   <a {{action "selectProject" sg target="FLOW.projectControl"}}>
                     <h2>{{sg.code}}</h2>
                   </a>
@@ -25,7 +27,9 @@
                     {{#unless view.hideFolderSurveyDeleteButton}}
                       <li class="deleteSurvey"><a {{action "deleteProject" sg target="FLOW.projectControl"}}>{{t _delete}}</a></li>
                     {{/unless}}
+                    {{#if view.showSurveyMoveButton}}
                     <li class="moveSurvey"><a {{action "beginMoveProject" sg target="FLOW.projectControl"}}>{{t _move}}</a></li>
+                    {{/if}}
                   </ul>
                </nav>
               {{else}}
