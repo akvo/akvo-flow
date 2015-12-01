@@ -437,6 +437,22 @@ public class BulkDataServiceClient {
                 true, apiKey));
     }
 
+    public static Map<Long, List<QuestionOptionDto>> fetchOptionNodes(String surveyId,
+            String serverBase,
+            List<Long> questionIds) {
+        Map<Long, List<QuestionOptionDto>> result = new HashMap<>();
+        for (Long questionId : questionIds) {
+            List<QuestionOptionDto> questionOptions = parseQuestionOptions(fetchDataFromServer(
+                    serverBase
+                            + SURVEY_SERVLET_PATH, "?action="
+                            + SurveyRestRequest.LIST_OPTION_NODE_ACTION + "&"
+                            + SurveyRestRequest.QUESTION_ID_PARAM + "=" + questionId));
+            result.put(questionId, questionOptions);
+        }
+        return result;
+
+    }
+
     /**
      * gets a surveyInstance from the server for a specific id
      *

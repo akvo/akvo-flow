@@ -24,6 +24,7 @@ import java.io.PushbackInputStream;
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
@@ -105,6 +106,8 @@ public class RawDataSpreadsheetImporter implements DataImporter {
             String surveyId = criteria.get("surveyId");
             Map<Integer, Long> columnIndexToQuestionId = processHeader(sheet);
             Map<Long, QuestionDto> questionIdToQuestionDto = fetchQuestions(serverBase, criteria);
+            Map<Long, List<Map<String, String>>> optionNodes = fetchOptionNodes(serverBase,
+                    criteria, questionIdToQuestionDto.values());
 
             List<InstanceData> instanceDataList = parseSheet(sheet, questionIdToQuestionDto,
                     columnIndexToQuestionId);
@@ -348,6 +351,35 @@ public class RawDataSpreadsheetImporter implements DataImporter {
                             }
                             break;
 
+                        case OPTION:
+                            // Two different possible formats:
+                            // With codes: code1:val1|code2:val2|...
+                            // Without codes: val1|val2|...
+                            String optionString = ExportImportUtils.parseCellAsString(cell);
+                            String[] optionParts = optionString.split("\\|");
+                            List<Map<String, String>> optionList = new ArrayList<>();
+                            for (String optionNode : optionParts) {
+                                String[] codeAndText = optionNode.split(":");
+                                Map<String, String> optionMap = new HashMap<>();
+                                if (codeAndText.length == 1) {
+                                    optionMap.put("name", codeAndText[0]);
+
+                                } else if (codeAndText.length == 2) {
+                                    optionMap.put("code", codeAndText[0]);
+                                    optionMap.put("text", codeAndText[1]);
+                                } else {
+                                    log.warn("Invalid option node: " + optionNode);
+                                }
+                                optionList.add(optionMap);
+                            }
+                            try {
+                                val = OBJECT_MAPPER.writeValueAsString(optionList);
+                            } catch (IOException e) {
+                                log.warn("Could not parse option string: " + optionString, e);
+                            }
+
+                            break;
+
                         case DATE:
                             String dateString = ExportImportUtils.parseCellAsString(cell);
                             Date date = ExportImportUtils.parseDate(dateString);
@@ -443,6 +475,23 @@ public class RawDataSpreadsheetImporter implements DataImporter {
         return questionMap;
     }
 
+    private static Map<Long, List<Map<String, String>>> fetchOptionNodes(String serverBase,
+            Map<String, String> criteria, Collection<QuestionDto> questions) {
+        String surveyId = criteria.get("surveyId");
+        String apiKey = criteria.get("apiKey");
+
+        List<Long> optionQuestionIds = new ArrayList<>();
+        for (QuestionDto question : questions) {
+            if (QuestionType.OPTION.equals(question.getQuestionType())) {
+                optionQuestionIds.add(question.getKeyId());
+            }
+        }
+
+        return BulkDataServiceClient.fetchOptionNodes(surveyId, serverBase, apiKey,
+                optionQuestionIds);
+
+    }
+
     private static String buildImportURL(InstanceData instanceData, String surveyId,
             Map<Long, QuestionDto> questionIdToQuestionDto)
             throws UnsupportedEncodingException {
@@ -512,6 +561,9 @@ public class RawDataSpreadsheetImporter implements DataImporter {
                         break;
                     case CASCADE:
                         typeString = "CASCADE";
+                        break;
+                    case OPTION:
+                        typeString = "OPTION";
                         break;
                     default:
                         break;
