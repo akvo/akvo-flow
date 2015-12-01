@@ -677,21 +677,35 @@ public class GraphicalSurveySummaryExporter extends SurveySummaryExporter {
             // old: Foo|Bar|Baz (never contains code)
             // new: [{"name": "Foo", "code": "A"}, {"name": "Bar", "code": "B"} ... ]
             case CASCADE:
-                List<Map<String, String>> parts = new ArrayList<>();
+                List<Map<String, String>> cascadeNodes = new ArrayList<>();
 
                 if (value.startsWith("[")) {
                     try {
-                        parts = OBJECT_MAPPER.readValue(value,
+                        cascadeNodes = OBJECT_MAPPER.readValue(value,
                                 new TypeReference<List<Map<String, String>>>() {
                                 });
                     } catch (IOException e) {
                         log.warn("Unable to parse CASCADE response - " + value, e);
                     }
-                } else {
-                    for (String part : value.split("\\|")) {
+                } else if (!value.isEmpty()) {
+                    for (String name : value.split("\\|")) {
                         Map<String, String> m = new HashMap<>();
-                        m.put("name", part);
-                        parts.add(m);
+                        m.put("name", name);
+                        cascadeNodes.add(m);
+                    }
+                }
+
+                boolean allCodesEqualsName = true;
+                for (Map<String, String> cascadeNode : cascadeNodes) {
+                    String code = cascadeNode.get("code");
+                    if (code != null && !code.equals(cascadeNode.get("name"))) {
+                        allCodesEqualsName = false;
+                        break;
+                    }
+                }
+                if (allCodesEqualsName) {
+                    for (Map<String, String> cascadeNode : cascadeNodes) {
+                        cascadeNode.put("code", null);
                     }
                 }
 
@@ -701,9 +715,9 @@ public class GraphicalSurveySummaryExporter extends SurveySummaryExporter {
                     // +------------+------------+-----
 
                     int levelCount = questionDto.getLevelNames().size();
-                    int padCount = levelCount - parts.size();
+                    int padCount = levelCount - cascadeNodes.size();
 
-                    for (Map<String, String> map : parts) {
+                    for (Map<String, String> map : cascadeNodes) {
                         String code = map.get("code");
                         String name = map.get("name");
                         String nodeVal = (code == null ? "" : code + ":") + name;
@@ -726,7 +740,7 @@ public class GraphicalSurveySummaryExporter extends SurveySummaryExporter {
                     // | code1:value1|code2:value2|...
                     // +---------------------------------
                     StringBuilder cascadeString = new StringBuilder();
-                    for (Map<String, String> node : parts) {
+                    for (Map<String, String> node : cascadeNodes) {
                         String code = node.get("code");
                         String name = node.get("name");
                         cascadeString.append("|");
