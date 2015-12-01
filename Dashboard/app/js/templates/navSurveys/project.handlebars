@@ -90,7 +90,9 @@
             {{#unless FLOW.projectControl.hasForms}}
               <ul>
                   <li class="formList"><p class="noForms">{{t _no_forms_in_this_survey}}</p></li>
+                  {{#if view.showAddNewFormButton}}
                   <li><a class="addMenuAction aBtn addNewForm" {{action "createForm" target="FLOW.surveyControl"}}>{{t _add_new_form}}</a></li>
+                  {{/if}}
               </ul>
             {{/unless}}
           </section>
