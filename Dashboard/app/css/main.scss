@@ -1320,6 +1320,22 @@ tfoot tr {
     }
 }
 
+#inspectData, #monitoringData, .messagesList {
+    .prevNext {
+        .prevBtn {
+            display: inline-block;
+            text-align: left;
+            width: 49%;
+
+        }
+        .nextBtn {
+            display: inline-block;
+            text-align: right;
+            width: 49%;
+        }
+    }
+}
+
 /**************** Assign Survey to devices. **************/
 
 #assignSurveys h2 {

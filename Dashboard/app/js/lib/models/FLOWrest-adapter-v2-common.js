@@ -118,6 +118,8 @@ DS.FLOWRESTAdapter = DS.RESTAdapter.extend({
       cursorArray = FLOW.surveyedLocaleControl.get('sinceArray');
     } else if (type === FLOW.SurveyInstance) {
       cursorArray = FLOW.surveyInstanceControl.get('sinceArray');
+    } else {
+      return;
     }
 
     cursorStart = this.extractSince(json);

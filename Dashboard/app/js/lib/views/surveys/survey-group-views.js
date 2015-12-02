@@ -89,6 +89,11 @@ FLOW.Project = FLOW.View.extend({
     var permissions = FLOW.projectControl.get('currentFolderPermissions');
     return permissions.indexOf("PROJECT_FOLDER_UPDATE") < 0;
   }.property('FLOW.projectControl.currentProjectPath'),
+
+  showAddNewFormButton: function () {
+    var survey = FLOW.projectControl.get('currentProject');
+    return FLOW.permControl.canEditSurvey(survey);
+  }.property(),
 });
 
 
