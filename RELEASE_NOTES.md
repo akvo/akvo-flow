@@ -5,6 +5,28 @@ Read more about the [Akvo Platform](http://www.akvo.org/blog/?p=4822).
 
 Akvo FLOW Dashboard release notes
 ----
+#1.9.3 - Bouncing Badger
+Date: 1 December 2015
+
+# New and noteworthy
+* Change footer links to new Support page - we have created an all new and improved support self-help page for FLOW and we include the link to this page in the dashboard. #1493]
+* Add two new permissions: View data and Edit data - we now make a clear separation between read only and editing permissions when browsing collected data [#1460]
+* Export geographic shapes from the dashboard - it is possible to export geographic shapes as a geojson file that can be imported into existing GIS tools that support this format [#1408]
+* Geoshapes on dashboard - while browsing data on the dashboard, it is possible to see geoshpaes on a map under the inspect data & monitoring tab [#1370]
+* Add codes to cascade questions - this means it is now possible to assign codes to values in cascading questions and view these codes in an exported report to aid with data analysis [#1323]
+
+# Resolved issues
+* Handle date questions correctly in raw data imports [#1486]
+* Export reports tab - fix the dropdown selection so it does not disappear with scrolling [#1484]
+* Enhance answerCreated and answerUpdated events [#1477]
+* Change font color on subtabs [#1451]
+* Remove column 'form' in Inspect data tab [#1415]
+* `Next` button on Data > Monitoring tab does not function [#1299]
+* No `Previous` button when browsing responses under the Data tab [#1125]
+* A user with view permissions can still edit forms [#1124]
+* Date question type not appearing correctly on map questions [#571]
+
+
 #1.9.2 - Anticipated Alpaca
 Date: 4 November 2015
 

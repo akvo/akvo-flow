@@ -648,6 +648,7 @@ public class GraphicalSurveySummaryExporter extends SurveySummaryExporter {
                 cells.addAll(cascadeCellValues(value, useQuestionId, questionDto.getLevelNames()
                         .size()));
                 break;
+
             case OPTION:
                 cells.add(optionCellValue(value));
                 break;
@@ -713,25 +714,39 @@ public class GraphicalSurveySummaryExporter extends SurveySummaryExporter {
     }
 
     private static List<String> cascadeCellValues(String value, boolean useQuestionId, int levels) {
-        // Two different formats:
-        // old: Foo|Bar|Baz (never contains code)
-        // new: [{"name": "Foo", "code": "A"}, {"name": "Bar", "code": "B"} ... ]
-        List<Map<String, String>> parts = new ArrayList<>();
         List<String> cells = new ArrayList<>();
+        List<Map<String, String>> cascadeNodes = new ArrayList<>();
 
         if (value.startsWith("[")) {
             try {
-                parts = OBJECT_MAPPER.readValue(value,
+                cascadeNodes = OBJECT_MAPPER.readValue(value,
                         new TypeReference<List<Map<String, String>>>() {
                         });
             } catch (IOException e) {
                 log.warn("Unable to parse CASCADE response - " + value, e);
             }
-        } else {
-            for (String part : value.split("\\|")) {
+        } else if (!value.isEmpty()) {
+            for (String name : value.split("\\|")) {
                 Map<String, String> m = new HashMap<>();
-                m.put("name", part);
-                parts.add(m);
+                m.put("name", name);
+                cascadeNodes.add(m);
+            }
+        }
+
+        boolean allCodesEqualsName = true;
+        for (Map<String, String> cascadeNode : cascadeNodes) {
+            String code = cascadeNode.get("code");
+            String name = cascadeNode.get("name");
+
+            if (code != null && name != null
+                    && !code.toLowerCase().equals(name.toLowerCase())) {
+                allCodesEqualsName = false;
+                break;
+            }
+        }
+        if (allCodesEqualsName) {
+            for (Map<String, String> cascadeNode : cascadeNodes) {
+                cascadeNode.put("code", null);
             }
         }
 
@@ -740,7 +755,9 @@ public class GraphicalSurveySummaryExporter extends SurveySummaryExporter {
             // |code1:value1|code2:value2| ...
             // +------------+------------+-----
 
-            for (Map<String, String> map : parts) {
+            int padCount = levels - cascadeNodes.size();
+
+            for (Map<String, String> map : cascadeNodes) {
                 String code = map.get("code");
                 String name = map.get("name");
                 String nodeVal = (code == null ? "" : code + ":") + name;
@@ -754,7 +771,6 @@ public class GraphicalSurveySummaryExporter extends SurveySummaryExporter {
                 }
             }
 
-            int padCount = levels - parts.size();
             for (int p = 0; p < padCount; p++) { // padding
                 cells.add("");
             }
@@ -764,7 +780,7 @@ public class GraphicalSurveySummaryExporter extends SurveySummaryExporter {
             // | code1:value1|code2:value2|...
             // +---------------------------------
             StringBuilder cascadeString = new StringBuilder();
-            for (Map<String, String> node : parts) {
+            for (Map<String, String> node : cascadeNodes) {
                 String code = node.get("code");
                 String name = node.get("name");
                 cascadeString.append("|");
@@ -776,7 +792,6 @@ public class GraphicalSurveySummaryExporter extends SurveySummaryExporter {
             }
             cells.add(cascadeString.toString());
         }
-
         return cells;
     }
 
