@@ -58,6 +58,8 @@ public class Option {
     @XmlJavaTypeAdapter(CollapsedStringAdapter.class)
     @XmlSchemaType(name = "NMTOKEN")
     protected String value;
+    @XmlSchemaType(name = "NMTOKEN")
+    protected String code;
 
     /**
      * Gets the value of the content property.
@@ -102,5 +104,13 @@ public class Option {
 
     public void addContent(Object value) {
         content.add(value);
+    }
+    
+    public String getCode() {
+        return code;
+    }
+    
+    public void setCode(String code) {
+        this.code = code;
     }
 }
