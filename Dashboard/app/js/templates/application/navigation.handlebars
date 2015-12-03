@@ -2,8 +2,10 @@
   {{#view view.NavItemView item="navSurveys" }}
     <a {{action doNavSurveys}}>{{t _surveys}}</a>
   {{/view}}
-	{{#view view.NavItemView item="navDevices" }}
+  {{#view view.NavItemView item="navDevices" }}
+	{{#if view.showDevicesButton}}
     <a {{action doNavDevices}}>{{t _devices}}</a>
+	{{/if}}
   {{/view}}
 	{{#view view.NavItemView item="navData" }}
     <a {{action doNavData}}>{{t _data}}</a>

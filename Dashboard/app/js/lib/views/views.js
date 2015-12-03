@@ -374,8 +374,13 @@ FLOW.NavigationView = Em.View.extend({
 
     isActive: function () {
       return this.get('item') === this.get('parentView.selected');
-    }.property('item', 'parentView.selected').cacheable()
-  })
+    }.property('item', 'parentView.selected').cacheable(),
+
+    showDevicesButton: function () {
+      return FLOW.permControl.get('canManageDevices');
+    }.property(),
+  }),
+
 });
 
 // ********************************************************//
