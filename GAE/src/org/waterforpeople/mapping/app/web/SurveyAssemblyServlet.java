@@ -396,7 +396,8 @@ public class SurveyAssemblyServlet extends AbstractRestApiServlet {
 
         StringBuilder sb = new StringBuilder("<questionGroup")
                 .append(Boolean.TRUE.equals(group.getRepeatable()) ? " repeatable=\"true\"" : "")
-                .append("><heading>").append(StringEscapeUtils.escapeXml(group.getCode())).append("</heading>");
+                .append("><heading>").append(StringEscapeUtils.escapeXml(group.getCode()))
+                .append("</heading>");
 
         if (questionList != null) {
             for (Question q : questionList.values()) {

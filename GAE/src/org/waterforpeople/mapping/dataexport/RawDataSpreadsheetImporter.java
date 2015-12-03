@@ -369,6 +369,9 @@ public class RawDataSpreadsheetImporter implements DataImporter {
                             // With codes: code1:val1|code2:val2|...
                             // Without codes: val1|val2|...
                             String optionString = ExportImportUtils.parseCellAsString(cell);
+                            if (optionString.isEmpty()) {
+                                break;
+                            }
                             String[] optionParts = optionString.split("\\|");
                             List<Map<String, Object>> optionList = new ArrayList<>();
                             for (String optionNode : optionParts) {
@@ -411,7 +414,9 @@ public class RawDataSpreadsheetImporter implements DataImporter {
                             }
 
                             try {
-                                val = OBJECT_MAPPER.writeValueAsString(optionList);
+                                if (!optionList.isEmpty()) {
+                                    val = OBJECT_MAPPER.writeValueAsString(optionList);
+                                }
                             } catch (IOException e) {
                                 log.warn("Could not parse option string: " + optionString, e);
                             }

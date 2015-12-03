@@ -59,7 +59,7 @@ public class ExportImportUtils {
                     break;
             }
         }
-        return val;
+        return val.trim();
     }
 
     /**
