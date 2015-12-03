@@ -653,14 +653,7 @@ public class GraphicalSurveySummaryExporter extends SurveySummaryExporter {
                 cells.add(optionCellValue(value));
                 break;
 
-            case FREE_TEXT:
-            case NUMBER:
-            case GEOSHAPE:
-            case NAME:
-            case SCAN:
-            case STRENGTH:
-            case TRACK:
-            case VIDEO:
+            default:
                 cells.add(sanitize(value));
                 break;
         }

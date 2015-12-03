@@ -47,6 +47,7 @@ import org.apache.poi.ss.usermodel.WorkbookFactory;
 import org.codehaus.jackson.map.ObjectMapper;
 import org.waterforpeople.mapping.app.gwt.client.survey.QuestionDto;
 import org.waterforpeople.mapping.app.gwt.client.survey.QuestionDto.QuestionType;
+import org.waterforpeople.mapping.app.gwt.client.survey.QuestionOptionDto;
 import org.waterforpeople.mapping.app.gwt.client.surveyinstance.SurveyInstanceDto;
 import org.waterforpeople.mapping.app.web.dto.RawDataImportRequest;
 import org.waterforpeople.mapping.dataexport.service.BulkDataServiceClient;
@@ -106,11 +107,12 @@ public class RawDataSpreadsheetImporter implements DataImporter {
             String surveyId = criteria.get("surveyId");
             Map<Integer, Long> columnIndexToQuestionId = processHeader(sheet);
             Map<Long, QuestionDto> questionIdToQuestionDto = fetchQuestions(serverBase, criteria);
-            Map<Long, List<Map<String, String>>> optionNodes = fetchOptionNodes(serverBase,
+
+            Map<Long, List<QuestionOptionDto>> optionNodes = fetchOptionNodes(serverBase,
                     criteria, questionIdToQuestionDto.values());
 
             List<InstanceData> instanceDataList = parseSheet(sheet, questionIdToQuestionDto,
-                    columnIndexToQuestionId);
+                    columnIndexToQuestionId, optionNodes);
 
             List<String> importUrls = new ArrayList<>();
 
@@ -155,7 +157,7 @@ public class RawDataSpreadsheetImporter implements DataImporter {
                     criteria.get(KEY_PARAM));
 
         } catch (Exception e) {
-            e.printStackTrace();
+            log.error("Failed to import raw data report", e);
         } finally {
             cleanup();
         }
@@ -168,11 +170,13 @@ public class RawDataSpreadsheetImporter implements DataImporter {
      * @param sheet
      * @param columnIndexToQuestionId
      * @param questionIdToQuestionDto
+     * @param optionNodes
      * @return
      */
     public List<InstanceData> parseSheet(Sheet sheet,
             Map<Long, QuestionDto> questionIdToQuestionDto,
-            Map<Integer, Long> columnIndexToQuestionId)
+            Map<Integer, Long> columnIndexToQuestionId,
+            Map<Long, List<QuestionOptionDto>> optionNodes)
             throws Exception {
 
         List<InstanceData> result = new ArrayList<>();
@@ -196,7 +200,8 @@ public class RawDataSpreadsheetImporter implements DataImporter {
         int row = 1;
         while (true) {
             InstanceData instanceData = parseInstance(sheet, row, questionIdToQuestionDto,
-                    columnIndexToQuestionId, hasIterationColumn, hasDeviceIdentifierColumn);
+                    columnIndexToQuestionId, optionNodes, hasIterationColumn,
+                    hasDeviceIdentifierColumn);
 
             if (instanceData == null) {
                 break;
@@ -233,11 +238,13 @@ public class RawDataSpreadsheetImporter implements DataImporter {
      * @param startRow
      * @param columnIndexToQuestionId
      * @param questionIdToQuestionDto
+     * @param optionNodes
      * @return InstanceData
      */
     public InstanceData parseInstance(Sheet sheet, int startRow,
             Map<Long, QuestionDto> questionIdToQuestionDto,
-            Map<Integer, Long> columnIndexToQuestionId, boolean hasIterationColumn,
+            Map<Integer, Long> columnIndexToQuestionId,
+            Map<Long, List<QuestionOptionDto>> optionNodes, boolean hasIterationColumn,
             boolean hasDeviceIdentifierColumn) {
 
         // File layout
@@ -297,7 +304,8 @@ public class RawDataSpreadsheetImporter implements DataImporter {
             int columnIndex = m.getKey();
             long questionId = m.getValue();
 
-            QuestionType questionType = questionIdToQuestionDto.get(questionId).getQuestionType();
+            QuestionDto questionDto = questionIdToQuestionDto.get(questionId);
+            QuestionType questionType = questionDto.getQuestionType();
 
             for (int iter = 0; iter < iterations; iter++) {
 
@@ -305,7 +313,12 @@ public class RawDataSpreadsheetImporter implements DataImporter {
 
                 long iteration = 1;
                 if (hasIterationColumn) {
-                    iteration = (long) iterationRow.getCell(1).getNumericCellValue();
+                    Cell cell = iterationRow.getCell(1);
+                    if (cell == null) {
+                        iteration = 1;
+                    } else {
+                        iteration = (long) iterationRow.getCell(1).getNumericCellValue();
+                    }
                 }
                 String val = "";
 
@@ -357,12 +370,12 @@ public class RawDataSpreadsheetImporter implements DataImporter {
                             // Without codes: val1|val2|...
                             String optionString = ExportImportUtils.parseCellAsString(cell);
                             String[] optionParts = optionString.split("\\|");
-                            List<Map<String, String>> optionList = new ArrayList<>();
+                            List<Map<String, Object>> optionList = new ArrayList<>();
                             for (String optionNode : optionParts) {
                                 String[] codeAndText = optionNode.split(":");
-                                Map<String, String> optionMap = new HashMap<>();
+                                Map<String, Object> optionMap = new HashMap<>();
                                 if (codeAndText.length == 1) {
-                                    optionMap.put("name", codeAndText[0]);
+                                    optionMap.put("text", codeAndText[0]);
 
                                 } else if (codeAndText.length == 2) {
                                     optionMap.put("code", codeAndText[0]);
@@ -372,6 +385,31 @@ public class RawDataSpreadsheetImporter implements DataImporter {
                                 }
                                 optionList.add(optionMap);
                             }
+
+                            // Should we add the 'allowOther' flag to the last node?
+                            if (Boolean.TRUE.equals(questionDto.getAllowOtherFlag())
+                                    && !optionList.isEmpty()) {
+                                Map<String, Object> lastNode = optionList
+                                        .get(optionList.size() - 1);
+                                String lastNodeText = (String) lastNode.get("text");
+                                boolean isOther = true;
+                                List<QuestionOptionDto> existingOptions = optionNodes
+                                        .get(questionId);
+                                if (existingOptions != null && lastNodeText != null) {
+                                    // Only compare text. Is that enough?
+                                    for (QuestionOptionDto questionOptionDto : existingOptions) {
+                                        if (lastNodeText.equals(questionOptionDto.getText())) {
+                                            isOther = false;
+                                            break;
+                                        }
+                                    }
+                                }
+
+                                if (isOther) {
+                                    lastNode.put("isOther", true);
+                                }
+                            }
+
                             try {
                                 val = OBJECT_MAPPER.writeValueAsString(optionList);
                             } catch (IOException e) {
@@ -475,21 +513,27 @@ public class RawDataSpreadsheetImporter implements DataImporter {
         return questionMap;
     }
 
-    private static Map<Long, List<Map<String, String>>> fetchOptionNodes(String serverBase,
-            Map<String, String> criteria, Collection<QuestionDto> questions) {
-        String surveyId = criteria.get("surveyId");
+    /**
+     * Fetch option nodes for each option question
+     *
+     * @param serverBase
+     * @param criteria
+     * @param questions
+     * @return A mapping from question id to list of option texts
+     */
+    private static Map<Long, List<QuestionOptionDto>> fetchOptionNodes(String serverBase,
+            Map<String, String> criteria, Collection<QuestionDto> questions) throws Exception {
+        String surveyId =
+                criteria.get("surveyId");
         String apiKey = criteria.get("apiKey");
-
         List<Long> optionQuestionIds = new ArrayList<>();
         for (QuestionDto question : questions) {
             if (QuestionType.OPTION.equals(question.getQuestionType())) {
                 optionQuestionIds.add(question.getKeyId());
             }
         }
-
         return BulkDataServiceClient.fetchOptionNodes(surveyId, serverBase, apiKey,
                 optionQuestionIds);
-
     }
 
     private static String buildImportURL(InstanceData instanceData, String surveyId,
@@ -714,7 +758,7 @@ public class RawDataSpreadsheetImporter implements DataImporter {
         Map<String, String> configMap = new HashMap<String, String>();
         configMap.put(SURVEY_CONFIG_KEY, args[2].trim());
         configMap.put("apiKey", args[3].trim());
+
         r.executeImport(file, serverBaseArg, configMap);
-        // r.executeImport(file, serverBaseArg, configMap);
     }
 }
