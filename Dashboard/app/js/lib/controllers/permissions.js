@@ -216,6 +216,16 @@ FLOW.permControl = Ember.Controller.create({
     }
     return false;
   }.property(),
+
+  canManageCascadeResources: function () {
+    var currentUserPermissions = FLOW.userControl.currentUserPathPermissions();
+    for (var perms in currentUserPermissions) {
+      if (currentUserPermissions[perms].indexOf("CASCADE_MANAGE") > -1) {
+        return true;
+      }
+    }
+    return false;
+  }.property(),
 });
 
 

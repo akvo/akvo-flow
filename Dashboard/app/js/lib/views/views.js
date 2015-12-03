@@ -635,7 +635,11 @@ FLOW.DatasubnavView = FLOW.View.extend({
 
     isActive: function () {
       return this.get('item') === this.get('parentView.selected');
-    }.property('item', 'parentView.selected').cacheable()
+    }.property('item', 'parentView.selected').cacheable(),
+
+    showCascadeResourcesButton: function () {
+      return FLOW.permControl.get('canManageCascadeResources');
+    }.property(),
   })
 });
 
