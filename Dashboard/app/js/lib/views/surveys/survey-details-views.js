@@ -337,11 +337,12 @@ FLOW.QuestionGroupItemView = FLOW.View.extend({
 
   // true if one question group has been selected for Move
   oneSelectedForMove: function () {
-    var selectedForMove = FLOW.selectedControl.get('selectedForMoveQuestionGroup');
-    if (selectedForMove) {
-      return true;
-    } else {
-      return false;
+    var selectedForMove, selectedSurvey;
+    selectedForMove = FLOW.selectedControl.get('selectedForMoveQuestionGroup');
+    selectedSurvey = FLOW.selectedControl.get('selectedSurvey');
+
+    if (selectedForMove && selectedSurvey) {
+      return selectedForMove.get('surveyId') === selectedSurvey.get('keyId');
     }
   }.property('FLOW.selectedControl.selectedForMoveQuestionGroup'),
 
