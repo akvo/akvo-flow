@@ -347,11 +347,12 @@ FLOW.QuestionGroupItemView = FLOW.View.extend({
 
   // true if one question group has been selected for Copy
   oneSelectedForCopy: function () {
-    var selectedForCopy = FLOW.selectedControl.get('selectedForCopyQuestionGroup');
-    if (selectedForCopy) {
-      return true;
-    } else {
-      return false;
+    var selectedForCopy, selectedSurvey;
+    selectedForCopy = FLOW.selectedControl.get('selectedForCopyQuestionGroup');
+    selectedSurvey = FLOW.selectedControl.get('selectedSurvey');
+
+    if (selectedForCopy && selectedSurvey) {
+      return selectedForCopy.get('surveyId') === selectedSurvey.get('keyId');
     }
   }.property('FLOW.selectedControl.selectedForCopyQuestionGroup'),
 
