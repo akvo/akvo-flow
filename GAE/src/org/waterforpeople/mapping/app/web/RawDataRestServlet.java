@@ -208,7 +208,6 @@ public class RawDataRestServlet extends AbstractRestApiServlet {
                         }
                     }
                 }
-
             }
             log.log(Level.INFO, "Deleting " + deletedAnswers.size() + " question answers");
             qasDao.delete(deletedAnswers);
