@@ -508,7 +508,7 @@ FLOW.QuestionGroupItemView = FLOW.View.extend({
   },
 
   ajaxCall: function(qgId){
-      self = this;
+      var self = this;
       $.ajax({
           url: '/rest/question_groups/' + qgId,
           type: 'GET',
@@ -518,9 +518,6 @@ FLOW.QuestionGroupItemView = FLOW.View.extend({
                 FLOW.questionGroupControl.getQuestionGroup(self.content.get('keyId'));
                 // load the questions inside this question group
                 FLOW.questionControl.populateQuestionGroupQuestions(self.content.get('keyId'));
-            } else {
-                // fire the remote check again
-                self.pollQuestionGroupCopy();
             }
           },
           error: function() {
@@ -543,17 +540,14 @@ FLOW.QuestionGroupItemView = FLOW.View.extend({
   // cycle until our local question group has an id
   // when this is done, start monitoring the status of the remote question group
   pollQuestionGroupId: function(){
-      clearTimeout(this.pollingTimer);
+      var self = this;
+      clearInterval(this.pollingTimer);
       if (this.get('amCopying')){
-          self = this;
-          this.pollingTimer = setTimeout(function () {
+          this.pollingTimer = setInterval(function () {
               // if the question group has a keyId, we can start polling it remotely
-              if (!Ember.empty(self.content.get('keyId'))) {
+              if (self.content && self.content.get('keyId')) {
                   // we have an id and can start polling remotely
-                  self.pollQuestionGroupCopy();
-              } else {
-                  // we need to wait until we have an id
-                  self.pollQuestionGroupId();
+                  self.ajaxCall(self.content.get('keyId'));
               }
           },1000);
       }
