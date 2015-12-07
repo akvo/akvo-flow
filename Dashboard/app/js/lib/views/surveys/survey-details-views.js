@@ -530,17 +530,6 @@ FLOW.QuestionGroupItemView = FLOW.View.extend({
       });
   },
 
-  pollQuestionGroupCopy: function(){
-      clearTimeout(this.pollingTimer);
-      self = this;
-      // if the status is 'copying', fire the remote check
-      if (this.get('amCopying')) {
-          this.pollingTimer = setTimeout(function () {
-              self.ajaxCall(self.content.get('keyId'));
-          },2000);
-      }
-  },
-
   // cycle until our local question group has an id
   // when this is done, start monitoring the status of the remote question group
   pollQuestionGroupId: function(){
