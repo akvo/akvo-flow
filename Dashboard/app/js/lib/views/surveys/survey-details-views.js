@@ -532,7 +532,7 @@ FLOW.QuestionGroupItemView = FLOW.View.extend({
 
   // cycle until our local question group has an id
   // when this is done, start monitoring the status of the remote question group
-  pollQuestionGroupId: function(){
+  pollQuestionGroupStatus: function(){
       var self = this;
       clearInterval(this.pollingTimer);
       if (this.get('amCopying')){
