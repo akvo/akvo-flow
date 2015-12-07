@@ -581,14 +581,6 @@ FLOW.QuestionGroupItemView = FLOW.View.extend({
       "repeatable":FLOW.selectedControl.selectedForCopyQuestionGroup.get('repeatable')
     });
 
-      // get the question groups again, now it contains the new one as well
-      questionGroupsInSurvey = FLOW.store.filter(FLOW.QuestionGroup, function (item) {
-        return item.get('surveyId') == sId;
-      });
-
-      // restore order in case the order has gone haywire
-      FLOW.questionControl.restoreOrder(questionGroupsInSurvey);
-
     FLOW.selectedControl.selectedSurvey.set('status', 'NOT_PUBLISHED');
     FLOW.store.commit();
     FLOW.selectedControl.set('selectedForCopyQuestionGroup', null);
