@@ -559,7 +559,7 @@ FLOW.QuestionGroupItemView = FLOW.View.extend({
 
     sId = FLOW.selectedControl.selectedSurvey.get('keyId');
     questionGroupsInSurvey = FLOW.store.filter(FLOW.QuestionGroup, function (item) {
-      return item.get('surveyId') == sId;
+      return item.get('surveyId') === sId;
     });
 
     // restore order - move items up to make space
