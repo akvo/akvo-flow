@@ -507,6 +507,10 @@ FLOW.QuestionGroupItemView = FLOW.View.extend({
     FLOW.selectedControl.set('selectedForMoveQuestionGroup', null);
   },
 
+  /*
+   *  Request question group and check whether copying is completed on the server side
+   *  then load questions for that group.
+   */
   ajaxCall: function(qgId){
       var self = this;
       $.ajax({
