@@ -556,6 +556,8 @@ public class DataProcessorRestServlet extends AbstractRestApiServlet {
             // need a temp group to avoid state sharing exception
             QuestionGroup tmpGroup = new QuestionGroup();
             SurveyUtils.shallowCopy(sourceGroup, tmpGroup);
+            tmpGroup.setSurveyId(copiedSurveyId);
+
             final QuestionGroup copyGroup = qgDao.save(tmpGroup);
             SurveyUtils.copyQuestionGroup(sourceGroup, copyGroup, copiedSurveyId,
                     qDependencyResolutionMap);
