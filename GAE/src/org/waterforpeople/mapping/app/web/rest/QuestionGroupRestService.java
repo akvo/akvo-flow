@@ -43,7 +43,6 @@ import org.waterforpeople.mapping.dao.QuestionAnswerStoreDao;
 import com.gallatinsystems.common.Constants;
 import com.gallatinsystems.survey.dao.QuestionDao;
 import com.gallatinsystems.survey.dao.QuestionGroupDao;
-import com.gallatinsystems.survey.dao.SurveyUtils;
 import com.gallatinsystems.survey.domain.Question;
 import com.gallatinsystems.survey.domain.QuestionGroup;
 import com.gallatinsystems.surveyal.dao.SurveyalValueDao;
@@ -318,16 +317,11 @@ public class QuestionGroupRestService {
      * @return
      */
     private QuestionGroup copyGroup(QuestionGroupDto questionGroupDto) {
-        final QuestionGroupDao qgDao = new QuestionGroupDao();
-        QuestionGroup sourceGroup = qgDao.getByKey(questionGroupDto.getSourceId());
-
         // need a temp group to avoid state sharing exception
         QuestionGroup tmpGroup = new QuestionGroup();
-
-        SurveyUtils.shallowCopy(sourceGroup, tmpGroup);
-        final QuestionGroup copyGroup = qgDao.save(tmpGroup);
-        copyGroup.setOrder(questionGroupDto.getOrder());
-        copyGroup.setStatus(QuestionGroup.Status.COPYING);
+        BeanUtils.copyProperties(questionGroupDto, tmpGroup, QUESTION_GROUP_COPY_EXCLUDED_PROPS);
+        tmpGroup.setStatus(QuestionGroup.Status.COPYING);
+        final QuestionGroup copyGroup = questionGroupDao.save(tmpGroup);
 
         // schedule deep copy
         final Queue queue = QueueFactory.getDefaultQueue();
@@ -337,8 +331,7 @@ public class QuestionGroupRestService {
                         DataProcessorRequest.COPY_QUESTION_GROUP)
                 .param(DataProcessorRequest.QUESTION_GROUP_ID_PARAM,
                         String.valueOf(copyGroup.getKey().getId()))
-                .param(DataProcessorRequest.SOURCE_PARAM,
-                        String.valueOf(sourceGroup.getKey().getId()));
+                .param(DataProcessorRequest.SOURCE_PARAM, questionGroupDto.getSourceId().toString());
 
         queue.add(options);
 
