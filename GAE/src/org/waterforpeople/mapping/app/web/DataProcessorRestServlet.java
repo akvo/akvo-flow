@@ -551,7 +551,6 @@ public class DataProcessorRestServlet extends AbstractRestApiServlet {
 
         log.log(Level.INFO, "Copying " + qgList.size() + " `QuestionGroup`");
 
-        List<QuestionGroup> qgCopyList = new ArrayList<QuestionGroup>();
         for (final QuestionGroup sourceGroup : qgList) {
             // need a temp group to avoid state sharing exception
             QuestionGroup tmpGroup = new QuestionGroup();
@@ -561,10 +560,7 @@ public class DataProcessorRestServlet extends AbstractRestApiServlet {
             final QuestionGroup copyGroup = qgDao.save(tmpGroup);
             SurveyUtils.copyQuestionGroup(sourceGroup, copyGroup, copiedSurveyId,
                     qDependencyResolutionMap);
-            copyGroup.setStatus(QuestionGroup.Status.READY); // copied
-            qgCopyList.add(copyGroup);
         }
-        qgDao.save(qgCopyList);
 
         final SurveyDAO sDao = new SurveyDAO();
         final Survey copiedSurvey = SurveyUtils.resetSurveyState(copiedSurveyId);
