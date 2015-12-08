@@ -23,6 +23,7 @@ import java.util.Map;
 
 import javax.inject.Inject;
 
+import org.apache.commons.lang.ArrayUtils;
 import org.springframework.beans.BeanUtils;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -65,6 +66,10 @@ public class QuestionGroupRestService {
 
     @Inject
     private QuestionAnswerStoreDao qasDao;
+
+    // Properties to exclude when copying question groups
+    private static final String[] QUESTION_GROUP_COPY_EXCLUDED_PROPS = (String[]) ArrayUtils.add(
+            Constants.EXCLUDED_PROPERTIES, "status");
 
     // TODO put in meta information?
     // list all questionGroups
