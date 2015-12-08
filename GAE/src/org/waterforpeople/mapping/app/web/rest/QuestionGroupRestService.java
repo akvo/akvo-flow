@@ -292,9 +292,8 @@ public class QuestionGroupRestService {
                     "createdDateTime", "status"
             });
             questionGroup.setStatus(QuestionGroup.Status.valueOf(questionGroupDto.getStatus()));
+            questionGroup = questionGroupDao.save(questionGroup);
         }
-
-        questionGroup = questionGroupDao.save(questionGroup);
 
         if (questionGroup == null) {
             return response;
