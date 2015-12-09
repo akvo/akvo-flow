@@ -437,6 +437,20 @@ public class BulkDataServiceClient {
                 true, apiKey));
     }
 
+    public static Map<Long, List<QuestionOptionDto>> fetchOptionNodes(String surveyId, String
+            serverBase, String apiKey, List<Long> questionIds) throws Exception {
+        Map<Long, List<QuestionOptionDto>> result = new HashMap<>();
+        for (Long questionId : questionIds) {
+            List<QuestionOptionDto> questionOptions =
+                    parseQuestionOptions(fetchDataFromServer(serverBase + SURVEY_SERVLET_PATH,
+                            "?action=" + SurveyRestRequest.LIST_QUESTION_OPTIONS_ACTION + "&"
+                                    + SurveyRestRequest.QUESTION_ID_PARAM + "=" + questionId, true,
+                            apiKey));
+            result.put(questionId, questionOptions);
+        }
+        return result;
+    }
+
     /**
      * gets a surveyInstance from the server for a specific id
      *
@@ -1028,6 +1042,33 @@ public class BulkDataServiceClient {
             return dtoList;
         } else
             return null;
+    }
+
+    /**
+     * @param response
+     * @return
+     */
+    private static List<QuestionOptionDto> parseQuestionOptions(String response) {
+
+        List<QuestionOptionDto> dtoList = new ArrayList<>();
+        try {
+            JSONArray jsonArray = getJsonArray(response);
+
+            if (jsonArray != null) {
+                for (int i = 0; i < jsonArray.length(); i++) {
+                    JSONObject json = jsonArray.getJSONObject(i);
+                    if (json != null) {
+                        QuestionOptionDto dto = new QuestionOptionDto();
+                        dto.setText(json.optString("text", null));
+                        dto.setCode(json.optString("code", null));
+                        dtoList.add(dto);
+                    }
+                }
+            }
+        } catch (Exception e) {
+            log.warn("Could not parse question options: " + response, e);
+        }
+        return dtoList;
     }
 
     @SuppressWarnings("unchecked")

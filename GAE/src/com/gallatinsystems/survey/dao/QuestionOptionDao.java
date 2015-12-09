@@ -1,5 +1,5 @@
 /*
- *  Copyright (C) 2010-2012 Stichting Akvo (Akvo Foundation)
+ *  Copyright (C) 2010-2015 Stichting Akvo (Akvo Foundation)
  *
  *  This file is part of Akvo FLOW.
  *
@@ -39,7 +39,7 @@ public class QuestionOptionDao extends BaseDAO<QuestionOption> {
 
     /**
      * lists all options for a given question id, including the translations (if any)
-     * 
+     *
      * @param questionId
      * @return
      */
@@ -58,6 +58,16 @@ public class QuestionOptionDao extends BaseDAO<QuestionOption> {
             }
         }
         return map;
+    }
+
+    /**
+     * Lists all options for a given question id
+     *
+     * @param questionId
+     * @return
+     */
+    public List<QuestionOption> listByQuestionId(Long questionId) {
+        return listByProperty("questionId", questionId, "Long", "order", "asc");
     }
 
     /**
