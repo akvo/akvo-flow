@@ -314,9 +314,7 @@ public class RawDataSpreadsheetImporter implements DataImporter {
                 long iteration = 1;
                 if (hasIterationColumn) {
                     Cell cell = iterationRow.getCell(1);
-                    if (cell == null) {
-                        iteration = 1;
-                    } else {
+                    if (cell != null) {
                         iteration = (long) iterationRow.getCell(1).getNumericCellValue();
                     }
                 }
@@ -375,16 +373,14 @@ public class RawDataSpreadsheetImporter implements DataImporter {
                             String[] optionParts = optionString.split("\\|");
                             List<Map<String, Object>> optionList = new ArrayList<>();
                             for (String optionNode : optionParts) {
-                                String[] codeAndText = optionNode.split(":");
+                                String[] codeAndText = optionNode.split(":", 2);
                                 Map<String, Object> optionMap = new HashMap<>();
                                 if (codeAndText.length == 1) {
-                                    optionMap.put("text", codeAndText[0]);
+                                    optionMap.put("text", codeAndText[0].trim());
 
                                 } else if (codeAndText.length == 2) {
-                                    optionMap.put("code", codeAndText[0]);
-                                    optionMap.put("text", codeAndText[1]);
-                                } else {
-                                    log.warn("Invalid option node: " + optionNode);
+                                    optionMap.put("code", codeAndText[0].trim());
+                                    optionMap.put("text", codeAndText[1].trim());
                                 }
                                 optionList.add(optionMap);
                             }
@@ -399,7 +395,6 @@ public class RawDataSpreadsheetImporter implements DataImporter {
                                 List<QuestionOptionDto> existingOptions = optionNodes
                                         .get(questionId);
                                 if (existingOptions != null && lastNodeText != null) {
-                                    // Only compare text. Is that enough?
                                     for (QuestionOptionDto questionOptionDto : existingOptions) {
                                         if (lastNodeText.equals(questionOptionDto.getText())) {
                                             isOther = false;
