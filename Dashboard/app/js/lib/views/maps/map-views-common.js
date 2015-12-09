@@ -604,10 +604,11 @@ FLOW.NavMapsView = FLOW.View.extend({
 
               clickedPointContent += '<div class="mapInfoDetail" style="opacity: 1; display: inherit;">';
               for (column in pointData['answers']){
+                var questionAnswer = pointData['answers'][column];
                 for(var i=0; i<questionsData['questions'].length; i++){
                   if (column.match(questionsData['questions'][i].id)) {
-                    if(questionsData['questions'][i].type === "GEOSHAPE" && pointData['answers'][column] !== null){
-                      var geoshapeObject = FLOW.parseGeoshape(pointData['answers'][column]);
+                    if(questionsData['questions'][i].type === "GEOSHAPE" && questionAnswer !== null){
+                      var geoshapeObject = FLOW.parseGeoshape(questionAnswer);
                       if(geoshapeObject !== null){
                         clickedPointContent += '<h4><div style="float: left">'
                         +questionsData['questions'][i].display_text
@@ -622,8 +623,8 @@ FLOW.NavMapsView = FLOW.View.extend({
                     //if question is of type, photo load a html image element
                     if(questionsData['questions'][i].type == "PHOTO"){
                       var image = '<div class=":imgContainer photoUrl:shown:hidden">';
-                      if(pointData['answers'][column] != null){
-                        var image_filename = FLOW.Env.photo_url_root+pointData['answers'][column].substring(pointData['answers'][column].lastIndexOf("/")+1);
+                      if(questionAnswer != null){
+                        var image_filename = FLOW.Env.photo_url_root+questionAnswer.substring(questionAnswer.lastIndexOf("/")+1);
                         image += '<a href="'+image_filename+'" target="_blank">'
                         +'<img src="'+image_filename+'" alt=""/></a>';
                       }
@@ -631,9 +632,9 @@ FLOW.NavMapsView = FLOW.View.extend({
                       clickedPointContent += image;
                     }else{
                       //if point is a geoshape, draw the shape in the side window
-                      if(questionsData['questions'][i].type == "GEOSHAPE" && pointData['answers'][column] !== null){
-                        if(pointData['answers'][column] !== "" && pointData['answers'][column] !== null && pointData['answers'][column] !== "null"){
-                          var geoshapeObject = FLOW.parseGeoshape(pointData['answers'][column]);
+                      if(questionsData['questions'][i].type == "GEOSHAPE" && questionAnswer !== null){
+                        if(questionAnswer !== "" && questionAnswer !== null && questionAnswer !== "null"){
+                          var geoshapeObject = FLOW.parseGeoshape(questionAnswer);
                           if(geoshapeObject !== null){
                             geoshapeCheck = true;
                             clickedPointContent += '<div id="geoShapeMap" style="width:100%; height: 100px; float: left"></div>';
@@ -648,7 +649,12 @@ FLOW.NavMapsView = FLOW.View.extend({
                           }
                         }
                       }else{
-                        clickedPointContent += pointData['answers'][column];
+                        if(questionsData['questions'][i].type == "DATE" && questionAnswer !== "" && questionAnswer !== null && questionAnswer !== "null"){
+                          var dateQuestion = new Date(questionAnswer);
+                          clickedPointContent += dateQuestion.toUTCString();
+                        }else{
+                          clickedPointContent += questionAnswer;
+                        }
                       }
                     }
                     clickedPointContent += "&nbsp;</div><hr>";
@@ -792,7 +798,7 @@ FLOW.GeoshapeMapView = FLOW.View.extend({
 
   didInsertElement: function() {
     this.set('geoshape', JSON.parse(this.get('parentView.geoShapeObject')));
-    if (this.get('isPolygon')) {
+    if (this.get('isPolygon') || this.get('isLineString') || this.get('isMultiPoint')) {
       var containerNode = this.get('element').getElementsByClassName('geoshapeMapContainer')[0];
       if (containerNode) {
         this.initializeMap(containerNode);
@@ -822,13 +828,39 @@ FLOW.GeoshapeMapView = FLOW.View.extend({
     }
   }.property('this.geoshape'),
 
+  isLineString: function() {
+    var geoshape = this.get('geoshape');
+    if (geoshape == null) {
+      return false;
+    } else {
+      return geoshape['features'].length > 0 &&
+        geoshape['features'][0]["geometry"]["type"] === "LineString"
+    }
+  }.property('this.geoshape'),
+
+  isMultiPoint: function() {
+    var geoshape = this.get('geoshape');
+    if (geoshape == null) {
+      return false;
+    } else {
+      return geoshape['features'].length > 0 &&
+        geoshape['features'][0]["geometry"]["type"] === "MultiPoint"
+    }
+  }.property('this.geoshape'),
+
   geoshapeString: function() {
     return this.geoshape === null ? null : JSON.stringify(this.geoshape);
   }.property('this.geoshape'),
 
   initializeMap: function(containerNode) {
     containerNode.style.height = "150px";
-    var geoshapeCoordinatesArray = this.get('geoshape')['features'][0]['geometry']['coordinates'][0];
+
+    var geoshapeCoordinatesArray, geoShapeObjectType = this.get('geoshape')['features'][0]['geometry']['type'];
+    if(geoShapeObjectType === "Polygon"){
+      geoshapeCoordinatesArray = this.get('geoshape')['features'][0]['geometry']['coordinates'][0];
+    } else {
+      geoshapeCoordinatesArray = this.get('geoshape')['features'][0]['geometry']['coordinates'];
+    }
     var points = [];
 
     for(var j=0; j<geoshapeCoordinatesArray.length; j++){
@@ -868,12 +900,22 @@ FLOW.GeoshapeMapView = FLOW.View.extend({
       "Satellite": satellite
     };
     L.control.layers(baseLayers).addTo(geoshapeMap);
-    var geoShape = L.polygon(points);
-    geoShape.addTo(geoshapeMap);
-    var southWest = geoShape.getBounds().getSouthWest();
-    var northEast = geoShape.getBounds().getNorthEast();
-    var bounds = new L.LatLngBounds(southWest, northEast);
-    geoshapeMap.fitBounds(bounds);
+
+    //Draw geoshape based on its type
+    if(geoShapeObjectType === "Polygon"){
+      var geoShapePolygon = L.polygon(points).addTo(geoshapeMap);
+      geoshapeMap.fitBounds(geoShapePolygon.getBounds());
+    }else if (geoShapeObjectType === "MultiPoint") {
+      var geoShapeMarkersArray = [];
+      for (var i = 0; i < points.length; i++) {
+        geoShapeMarkersArray.push(L.marker([points[i][0],points[i][1]]));
+  		}
+      var geoShapeMarkers = L.featureGroup(geoShapeMarkersArray).addTo(geoshapeMap);
+      geoshapeMap.fitBounds(geoShapeMarkers.getBounds());
+    }else if (geoShapeObjectType === "LineString") {
+      var geoShapeLine = L.polyline(points).addTo(geoshapeMap);
+      geoshapeMap.fitBounds(geoShapeLine.getBounds());
+    }
   },
 
   getCentroid: function (arr) {
