@@ -23,6 +23,7 @@ import java.util.Map;
 
 import javax.inject.Inject;
 
+import org.apache.commons.lang.ArrayUtils;
 import org.springframework.beans.BeanUtils;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -42,10 +43,10 @@ import org.waterforpeople.mapping.dao.QuestionAnswerStoreDao;
 import com.gallatinsystems.common.Constants;
 import com.gallatinsystems.survey.dao.QuestionDao;
 import com.gallatinsystems.survey.dao.QuestionGroupDao;
-import com.gallatinsystems.survey.dao.SurveyUtils;
 import com.gallatinsystems.survey.domain.Question;
 import com.gallatinsystems.survey.domain.QuestionGroup;
 import com.gallatinsystems.surveyal.dao.SurveyalValueDao;
+import com.google.appengine.api.backends.BackendServiceFactory;
 import com.google.appengine.api.taskqueue.Queue;
 import com.google.appengine.api.taskqueue.QueueFactory;
 import com.google.appengine.api.taskqueue.TaskOptions;
@@ -65,6 +66,10 @@ public class QuestionGroupRestService {
 
     @Inject
     private QuestionAnswerStoreDao qasDao;
+
+    // Properties to exclude when copying question groups
+    private static final String[] QUESTION_GROUP_COPY_EXCLUDED_PROPS = (String[]) ArrayUtils.add(
+            Constants.EXCLUDED_PROPERTIES, "status");
 
     // TODO put in meta information?
     // list all questionGroups
@@ -288,9 +293,8 @@ public class QuestionGroupRestService {
                     "createdDateTime", "status"
             });
             questionGroup.setStatus(QuestionGroup.Status.valueOf(questionGroupDto.getStatus()));
+            questionGroup = questionGroupDao.save(questionGroup);
         }
-
-        questionGroup = questionGroupDao.save(questionGroup);
 
         if (questionGroup == null) {
             return response;
@@ -313,16 +317,11 @@ public class QuestionGroupRestService {
      * @return
      */
     private QuestionGroup copyGroup(QuestionGroupDto questionGroupDto) {
-        final QuestionGroupDao qgDao = new QuestionGroupDao();
-        QuestionGroup sourceGroup = qgDao.getByKey(questionGroupDto.getSourceId());
-
         // need a temp group to avoid state sharing exception
         QuestionGroup tmpGroup = new QuestionGroup();
-
-        SurveyUtils.shallowCopy(sourceGroup, tmpGroup);
-        final QuestionGroup copyGroup = qgDao.save(tmpGroup);
-        copyGroup.setOrder(questionGroupDto.getOrder());
-        copyGroup.setStatus(QuestionGroup.Status.COPYING);
+        BeanUtils.copyProperties(questionGroupDto, tmpGroup, QUESTION_GROUP_COPY_EXCLUDED_PROPS);
+        tmpGroup.setStatus(QuestionGroup.Status.COPYING);
+        final QuestionGroup copyGroup = questionGroupDao.save(tmpGroup);
 
         // schedule deep copy
         final Queue queue = QueueFactory.getDefaultQueue();
@@ -332,8 +331,10 @@ public class QuestionGroupRestService {
                         DataProcessorRequest.COPY_QUESTION_GROUP)
                 .param(DataProcessorRequest.QUESTION_GROUP_ID_PARAM,
                         String.valueOf(copyGroup.getKey().getId()))
-                .param(DataProcessorRequest.SOURCE_PARAM,
-                        String.valueOf(sourceGroup.getKey().getId()));
+                .param(DataProcessorRequest.SOURCE_PARAM, questionGroupDto.getSourceId().toString())
+                .header("Host",
+                        BackendServiceFactory.getBackendService()
+                                .getBackendAddress("dataprocessor"));
 
         queue.add(options);
 
