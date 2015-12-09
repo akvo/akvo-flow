@@ -46,6 +46,7 @@ import com.gallatinsystems.survey.dao.QuestionGroupDao;
 import com.gallatinsystems.survey.domain.Question;
 import com.gallatinsystems.survey.domain.QuestionGroup;
 import com.gallatinsystems.surveyal.dao.SurveyalValueDao;
+import com.google.appengine.api.backends.BackendServiceFactory;
 import com.google.appengine.api.taskqueue.Queue;
 import com.google.appengine.api.taskqueue.QueueFactory;
 import com.google.appengine.api.taskqueue.TaskOptions;
@@ -330,7 +331,10 @@ public class QuestionGroupRestService {
                         DataProcessorRequest.COPY_QUESTION_GROUP)
                 .param(DataProcessorRequest.QUESTION_GROUP_ID_PARAM,
                         String.valueOf(copyGroup.getKey().getId()))
-                .param(DataProcessorRequest.SOURCE_PARAM, questionGroupDto.getSourceId().toString());
+                .param(DataProcessorRequest.SOURCE_PARAM, questionGroupDto.getSourceId().toString())
+                .header("Host",
+                        BackendServiceFactory.getBackendService()
+                                .getBackendAddress("dataprocessor"));
 
         queue.add(options);
 
