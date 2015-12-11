@@ -184,7 +184,7 @@
                                                     (contains? object-paths "/")))))
                                   (cons {"name" (t> _all_folders) "keyId" 0 "projectType" "PROJECT_FOLDER"}
                                         (projects-store/get-projects projects-store 0))
-                                  (projects-store/get-projects projects-store (get (peek selected-folders) "keyId")))]
+                                  (projects-store/get-projects projects-store (or (get (peek selected-folders) "keyId") 0)))]
                    (om/build b/dropdown
                              {:placeholder (t> _select_a_folder_or_survey)
                               :data (sort-folders-and-surveys projects)
