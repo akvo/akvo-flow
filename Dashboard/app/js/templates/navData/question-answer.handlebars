@@ -30,19 +30,23 @@
                     {{date3 value}}
                 {{else}} {{#if view.isCascadeType}}
                     {{view.cascadeValue}}
+                {{else}} {{#if view.isOptionType}}
+                    {{view FLOW.QuestionAnswerOptionListView contentBinding="view.optionValue"}}
                 {{else}} {{#if view.isGeoShapeType}}
                   {{view FLOW.GeoshapeMapView}}
                 {{else}}
                     {{value}}
-                {{/if}} {{/if}} {{/if}} {{/if}} {{/if}}
+                {{/if}} {{/if}} {{/if}} {{/if}} {{/if}} {{/if}}
             {{else}}
                 {{#if view.isDateType}}
                     <a {{action doEdit target="this" }}>{{date3 value}}</a>
                 {{else}} {{#if view.isCascadeType}}
                     <a {{action doEdit target="this" }}>{{view.cascadeValue}}</a>
+                {{else}} {{#if view.isOptionType}}
+                    <a {{action doEdit target="this" }}>{{view FLOW.QuestionAnswerOptionListView contentBinding="view.optionValue"}}</a>
                 {{else}}
                     <a {{action doEdit target="this" }}>{{value}}{{if_blank value}}</a>
-                {{/if}} {{/if}}
+                {{/if}} {{/if}} {{/if}}
             {{/if}}
         {{/if}}
     </td>

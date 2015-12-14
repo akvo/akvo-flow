@@ -256,6 +256,14 @@ FLOW.QuestionAnswerView = Ember.View.extend({
   }.observes('this.numberValue')
 });
 
+FLOW.QuestionAnswerOptionListView = Ember.CollectionView.extend({
+  tagName: 'ul',
+  content: null,
+  itemViewClass: Ember.View.extend({
+    template: Ember.Handlebars.compile("{{view.content.text}}")
+  })
+});
+
 FLOW.QuestionAnswerInspectDataView = FLOW.QuestionAnswerView.extend({
   templateName: 'navData/question-answer',
 });
