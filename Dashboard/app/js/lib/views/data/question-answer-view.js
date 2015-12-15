@@ -53,9 +53,12 @@ FLOW.QuestionAnswerView = Ember.View.extend({
     }
   }.property('FLOW.selectedControl.selectedSurvey'),
 
+  /*
+   * Get the full list of options related to a particular option type question
+   */
   optionsList: function(){
     var c = this.content;
-    if (Ember.none(c)) {
+    if (Ember.none(c) || !this.get('isOptionType')) {
       return [];
     }
 
@@ -71,11 +74,15 @@ FLOW.QuestionAnswerView = Ember.View.extend({
     });
 
     tempList = [];
+    var obj;
     optionArray.forEach(function (item) {
-      tempList.push(item.get('text'));
+      obj = {};
+      obj.code = item.get('code') ? item.get('code') : item.get('text');
+      obj.text = item.get('text');
+      tempList.push(obj);
     });
     return tempList;
-  }.property('this.content'),
+  }.property('this.content,this.isOptionType'),
 
   content: null,
 
