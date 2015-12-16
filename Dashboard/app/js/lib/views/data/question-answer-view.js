@@ -202,6 +202,15 @@ FLOW.QuestionAnswerView = Ember.View.extend({
     return null;
   }.property('this.content,this.optionsList'),
 
+  selectedOptions: function () {
+    var options = this.get('optionValue');
+    if (options && options.get('length') > 1) {
+      return options;
+    } else {
+      return options.get('firstObject');
+    }
+  }.property('this.optionValue'),
+
   isMultipleSelectOption: function () {
     return this.get('isOptionType') && this.get('question').get('allowMultipleFlag');
   }.property('this.isOptionType'),
