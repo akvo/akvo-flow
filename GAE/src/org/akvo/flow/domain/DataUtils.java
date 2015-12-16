@@ -40,19 +40,13 @@ public class DataUtils {
 
         List<Map<String, String>> optionNodes = new ArrayList<>();
         if (optionResponse.startsWith("[")) {
-            try {
-                optionNodes = JSON_OBJECT_MAPPER.readValue(optionResponse,
-                        new TypeReference<List<Map<String, String>>>() {
-                        });
-                responseArray = new String[optionNodes.size()];
-                for (int i = 0; i < responseArray.length; i++) {
-                    String text = optionNodes.get(i).get("text");
-                    if (text != null && text.trim() != "") {
-                        responseArray[i] = text.trim();
-                    }
+            optionNodes = jsonStringToOptionList(optionResponse);
+            responseArray = new String[optionNodes.size()];
+            for (int i = 0; i < responseArray.length; i++) {
+                String text = optionNodes.get(i).get("text");
+                if (text != null && text.trim() != "") {
+                    responseArray[i] = text.trim();
                 }
-            } catch (IOException e) {
-                return new String[0];
             }
         } else {
             responseArray = optionResponse.split("\\|");
