@@ -60,4 +60,44 @@ public class DataUtils {
 
         return responseArray;
     }
+
+    /**
+     * Convert a JSON string response for OPTION type questions to the legacy pipe separated format
+     *
+     * @param jsonResponse
+     * @return
+     */
+    public static String jsonResponsesToPipeSeparated(String optionResponses) {
+        StringBuilder pipeSeparated = new StringBuilder();
+        for (Map<String, String> option : jsonStringToOptionList(optionResponses)) {
+            if (option.get("text") != null) {
+                pipeSeparated.append("|").append(option.get("text"));
+            }
+        }
+        if (pipeSeparated.length() > 0) {
+            pipeSeparated.deleteCharAt(0);
+        }
+        return pipeSeparated.toString();
+    }
+
+    /**
+     * Convert a JSON string response for OPTION type questions to a list containing corresponding
+     * maps
+     *
+     * @param optionResponse
+     * @return
+     */
+    public static List<Map<String, String>> jsonStringToOptionList(String optionResponse) {
+        List<Map<String, String>> optionNodes = new ArrayList<>();
+        if (optionResponse.startsWith("[")) {
+            try {
+                optionNodes = JSON_OBJECT_MAPPER.readValue(optionResponse,
+                        new TypeReference<List<Map<String, String>>>() {
+                        });
+            } catch (IOException e) {
+                // ignore
+            }
+        }
+        return optionNodes;
+    }
 }
