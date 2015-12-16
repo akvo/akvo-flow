@@ -151,14 +151,20 @@ FLOW.QuestionAnswerView = Ember.View.extend({
    *  The setter takes an object and correctly transforms it into an
    *  array that is later stored in the value property as a string
    *
-   *  The getter retrieves the JSON string response from the value
-   *  property and transforms it into an array.  Retrieved responses
-   *  could be pipe-separated strings in the old format or a JSON
-   *  string in the new format.  An ARRAY is always returned if the
-   *  content property of the view is set.
+   *  The getter retrieves the string response from the value property and
+   *  transforms it into an Ember array consisting of elements from
+   *  the optionsList property.  We return elements from the optionList
+   *  in order to handle binding of the view elements to the value. Retrieved
+   *  responses could be:
+   *   - pipe-separated strings for legacy format e.g. 'text1|text2'
+   *   - JSON string in the current format e.g
+   *    '[{text: "text with code", code: "code"}]'
+   *    '[{text: "only text"}]'
+   *  An ARRAY is always returned if the content property of the
+   *  view is set.
    */
   optionValue: function (key, value, previousValue) {
-    var val, optionObj, options = [], c = this.content;
+    var val, textArray = [], selectedOptions = Ember.A(), c = this.content;
     //setter
     if (c && arguments.length > 1) {
     }
@@ -166,23 +172,35 @@ FLOW.QuestionAnswerView = Ember.View.extend({
     // getter
     if (c && c.get('value')) {
       val = c.get('value');
+
       if (val.charAt(0) === '[') {
-        // new format
-        return JSON.parse(c.get('value'));
+        // responses in JSON format
+        JSON.parse(val).forEach(function (response) {
+          this.get('optionsList').forEach(function (optionObj, index) {
+            if (response.text === optionObj.get('text') &&
+                response.code === optionObj.get('code')) {
+              selectedOptions.addObject(optionObj);
+            }
+          });
+        });
       } else {
-        // old format
+        // responses in pipe separated format
         val.split("|").forEach(function(item){
           if (item.trim().length > 0) {
-            optionObj = {};
-            optionObj.text = item.trim();
-            options.push(optionObj);
+            textArray.push(item.trim());
           }
         });
-        return options;
+
+        this.get('optionsList').forEach(function(optionObj, i) {
+          if (textArray.indexOf(optionObj.get('text')) > -1) {
+            selectedOptions.addObject(optionObj);
+          }
+        });
       }
+      return selectedOptions;
     }
     return null;
-  }.property('this.content'),
+  }.property('this.content,this.optionsList'),
 
   photoUrl: function(){
     var c = this.content;
