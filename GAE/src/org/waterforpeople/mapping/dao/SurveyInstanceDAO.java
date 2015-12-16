@@ -83,7 +83,7 @@ public class SurveyInstanceDAO extends BaseDAO<SurveyInstance> {
         SurveyInstance existing = findByUUID(si.getUuid());
         if (existing != null) {
             si.setKey(existing.getKey());
-            si.setCreatedDateTime(existing.getCollectionDate());
+            si.setCreatedDateTime(existing.getCreatedDateTime());
             isNew = false;
         }
         
