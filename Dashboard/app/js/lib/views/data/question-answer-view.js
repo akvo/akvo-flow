@@ -145,31 +145,20 @@ FLOW.QuestionAnswerView = Ember.View.extend({
   }.property('this.content'),
 
   /*
-   *  A view property to support the getting and setting of old and new
-   *  format values for OPTION type question items / lists.
+   *  A view property to retrieve the string response from the value property
+   *  of an option question and use it to create an Ember array consisting
+   *  of the corresponding elements from the optionsList property, i.e, we return
+   *  selected elements of the optionsList.
    *
-   *  The setter takes an object and correctly transforms it into an
-   *  array that is later stored in the value property as a string
-   *
-   *  The getter retrieves the string response from the value property and
-   *  transforms it into an Ember array consisting of elements from
-   *  the optionsList property.  We return elements from the optionList
-   *  in order to handle binding of the view elements to the value. Retrieved
-   *  responses could be:
+   *  Retrieved responses could be:
    *   - pipe-separated strings for legacy format e.g. 'text1|text2'
    *   - JSON string in the current format e.g
    *    '[{text: "text with code", code: "code"}]'
    *    '[{text: "only text"}]'
-   *  An ARRAY is always returned if the content property of the
-   *  view is set.
    */
   optionValue: function (key, value, previousValue) {
     var val, optionsList, textArray = [], selectedOptions = Ember.A(), c = this.content;
-    //setter
-    if (c && arguments.length > 1) {
-    }
 
-    // getter
     if (c && c.get('value')) {
       val = c.get('value');
       optionsList = this.get('optionsList');
