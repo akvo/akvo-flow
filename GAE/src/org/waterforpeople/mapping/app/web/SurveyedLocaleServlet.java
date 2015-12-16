@@ -24,6 +24,7 @@ import java.util.List;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.apache.commons.lang.StringUtils;
 import org.codehaus.jackson.map.ObjectMapper;
 import org.waterforpeople.mapping.app.web.dto.SurveyInstanceDto;
 import org.waterforpeople.mapping.app.web.dto.SurveyedLocaleDto;
@@ -44,10 +45,11 @@ import com.gallatinsystems.survey.domain.Survey;
 import com.gallatinsystems.surveyal.dao.SurveyedLocaleDao;
 import com.gallatinsystems.surveyal.domain.SurveyalValue;
 import com.gallatinsystems.surveyal.domain.SurveyedLocale;
+import static org.akvo.flow.domain.DataUtils.*;
 
 /**
  * JSON service for returning the list of records for a specific surveyId
- * 
+ *
  * @author Mark Tiele Westra
  */
 public class SurveyedLocaleServlet extends AbstractRestApiServlet {
@@ -104,7 +106,7 @@ public class SurveyedLocaleServlet extends AbstractRestApiServlet {
 
     /**
      * converts the domain objects to dtos and then installs them in a RecordDataResponse object
-     * 
+     *
      * @param lastUpdateTime
      */
     protected SurveyedLocaleResponse convertToResponse(List<SurveyedLocale> slList,
@@ -162,7 +164,7 @@ public class SurveyedLocaleServlet extends AbstractRestApiServlet {
                     if (sv.getSurveyQuestionId() == null) {
                         continue;// The question was deleted before storing the response.
                     }
-                    
+
                     String type = sv.getQuestionType();
                     if (type == null || "".equals(type)) {
                         type = "VALUE";
@@ -185,10 +187,17 @@ public class SurveyedLocaleServlet extends AbstractRestApiServlet {
                             }
                         }
                     }
-                    // add question type
-                    siDto.addProperty(sv.getSurveyQuestionId(),
-                            sv.getStringValue() != null ? sv.getStringValue() : "",
-                            type);
+                    if (StringUtils.isNotBlank(sv.getStringValue())
+                            && ("OTHER".equals(type) || "OPTION".equals(type))
+                            && sv.getStringValue().startsWith("[")) {
+                        String stringValue = jsonResponsesToPipeSeparated(sv.getStringValue());
+                        siDto.addProperty(sv.getSurveyQuestionId(), stringValue, type);
+                    } else {
+                        siDto.addProperty(sv.getSurveyQuestionId(),
+                                sv.getStringValue() != null ? sv.getStringValue() : "",
+                                type);
+                    }
+
                 }
                 dto.getSurveyInstances().add(siDto);
             }
