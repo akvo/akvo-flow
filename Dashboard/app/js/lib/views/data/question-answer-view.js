@@ -164,7 +164,7 @@ FLOW.QuestionAnswerView = Ember.View.extend({
    *  view is set.
    */
   optionValue: function (key, value, previousValue) {
-    var val, textArray = [], selectedOptions = Ember.A(), c = this.content;
+    var val, optionsList, textArray = [], selectedOptions = Ember.A(), c = this.content;
     //setter
     if (c && arguments.length > 1) {
     }
@@ -172,11 +172,12 @@ FLOW.QuestionAnswerView = Ember.View.extend({
     // getter
     if (c && c.get('value')) {
       val = c.get('value');
+      optionsList = this.get('optionsList');
 
       if (val.charAt(0) === '[') {
         // responses in JSON format
         JSON.parse(val).forEach(function (response) {
-          this.get('optionsList').forEach(function (optionObj, index) {
+          optionsList.forEach(function (optionObj, index) {
             if (response.text === optionObj.get('text') &&
                 response.code === optionObj.get('code')) {
               selectedOptions.addObject(optionObj);
@@ -191,7 +192,7 @@ FLOW.QuestionAnswerView = Ember.View.extend({
           }
         });
 
-        this.get('optionsList').forEach(function(optionObj, i) {
+        optionsList.forEach(function(optionObj, i) {
           if (textArray.indexOf(optionObj.get('text')) > -1) {
             selectedOptions.addObject(optionObj);
           }
