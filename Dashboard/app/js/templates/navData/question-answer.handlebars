@@ -6,7 +6,10 @@
             {{#if view.isOptionType}}
                     {{view Ember.Select
                         contentBinding="view.optionsList"
-                        valueBinding="view.content.value"}}
+                        optionLabelPath="content.text"
+                        optionValuePath="content.code"
+                        multipleBinding="view.isMultipleSelectOption"
+                        selectionBinding="view.selectedOptions"}}
             {{else}} {{#if view.isNumberType}}
                     {{view Ember.TextField valueBinding="view.numberValue" size=10 }}
             {{else}} {{#if view.isTextType}}
