@@ -192,7 +192,25 @@ FLOW.QuestionAnswerView = Ember.View.extend({
     return null;
   }.property('this.content,this.optionsList'),
 
-  selectedOptions: function () {
+  /*
+   *  A setter and getter property to set and get the selected elements
+   *  of the selected option question entities.  The setter only works for
+   *  single select options (Ember limitation) and the getter works for both
+   *  single and multi select options
+   *
+   */
+  selectedOptions: function (key, value, previousValue) {
+    // setter
+    if (arguments.length > 1) {
+      var valueObj = {};
+      valueObj.text = value.text;
+      if (value.code) {
+        valueObj.code = value.code;
+      }
+      c.set('value', JSON.stringify([valueObj]));
+    }
+
+    // getter
     var options = this.get('optionValue');
     if (options && options.get('length') > 1) {
       return options;
