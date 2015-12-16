@@ -33,6 +33,11 @@ public class DataUtils {
 
     public static String[] optionResponsesTextArray(String optionResponse) {
         String[] responseArray = null;
+
+        if (optionResponse == null || optionResponse.trim() == "") {
+            return new String[0];
+        }
+
         List<Map<String, String>> optionNodes = new ArrayList<>();
         if (optionResponse.startsWith("[")) {
             try {
@@ -47,7 +52,7 @@ public class DataUtils {
                     }
                 }
             } catch (IOException e) {
-                //
+                return new String[0];
             }
         } else {
             responseArray = optionResponse.split("\\|");
