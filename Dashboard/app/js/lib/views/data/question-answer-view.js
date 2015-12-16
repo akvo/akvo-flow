@@ -59,7 +59,7 @@ FLOW.QuestionAnswerView = Ember.View.extend({
   optionsList: function(){
     var c = this.content;
     if (Ember.none(c) || !this.get('isOptionType')) {
-      return [];
+      return Ember.A([]);
     }
 
     var questionId = c.get('questionID');
@@ -73,12 +73,13 @@ FLOW.QuestionAnswerView = Ember.View.extend({
         return a.get('order') - b.get('order');
     });
 
-    tempList = [];
+    tempList = Ember.A([]);
     var obj;
     optionArray.forEach(function (item) {
-      obj = {};
-      obj.code = item.get('code') ? item.get('code') : item.get('text');
-      obj.text = item.get('text');
+      obj = Ember.Object.create({
+        code : item.get('code'),
+        text : item.get('text')
+      });
       tempList.push(obj);
     });
     return tempList;
