@@ -202,6 +202,10 @@ FLOW.QuestionAnswerView = Ember.View.extend({
     return null;
   }.property('this.content,this.optionsList'),
 
+  isMultipleSelectOption: function () {
+    return this.get('isOptionType') && this.get('question').get('allowMultipleFlag');
+  }.property('this.isOptionType'),
+
   photoUrl: function(){
     var c = this.content;
     if (!Ember.empty(c.get('value'))) {
