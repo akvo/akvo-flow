@@ -145,20 +145,40 @@ FLOW.QuestionAnswerView = Ember.View.extend({
   }.property('this.content'),
 
   /*
-   *  A view property to retrieve the string response from the value property
-   *  of an option question and use it to create an Ember array consisting
-   *  of the corresponding elements from the optionsList property, i.e, we return
-   *  selected elements of the optionsList.
+   *  A view property to set and retrieve the string response from the value property
+   *  of an option question.
    *
-   *  Retrieved responses could be:
+   *  The setter block takes an Ember array consisting of selected elements from the
+   *  optionsList and transforms this into a JSON formatted string stored in the response.
+   *
+   *  The getter block uses the string response to create an Ember array consisting
+   *  of the corresponding elements from the optionsList property, i.e, selected elements
+   *  of the optionsList.
+   *
+   *  Retrieved string responses could be:
    *   - pipe-separated strings for legacy format e.g. 'text1|text2'
    *   - JSON string in the current format e.g
    *    '[{text: "text with code", code: "code"}]'
    *    '[{text: "only text"}]'
    */
   optionValue: function (key, value, previousValue) {
-    var val, optionsList, textArray = [], selectedOptions = Ember.A(), c = this.content;
+    var val, optionsList, valueObj, valueArray = [], textArray = [], selectedOptions = Ember.A(), c = this.content;
 
+    // setter
+    if (c && arguments.length > 1) {
+      selectedOptions = value;
+      selectedOptions.forEach(function (option) {
+        valueObj = {};
+        valueObj.text = option.text;
+        if (option.code) {
+          valueObj.code = option.code;
+        }
+        valueArray.push(valueObj);
+      });
+      c.set('value', JSON.stringify(valueArray));
+    }
+
+    // getter
     if (c && c.get('value')) {
       val = c.get('value');
       optionsList = this.get('optionsList');
