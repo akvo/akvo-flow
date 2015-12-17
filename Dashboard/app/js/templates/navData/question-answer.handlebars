@@ -4,12 +4,14 @@
     <td class="submitter" style="text-align:left;width:50%">
         {{#if view.inEditMode}}
             {{#if view.isOptionType}}
-                    {{view Ember.Select
-                        contentBinding="view.optionsList"
-                        optionLabelPath="content.text"
-                        optionValuePath="content.code"
-                        multipleBinding="view.isMultipleSelectOption"
-                        selectionBinding="view.selectedOptions"}}
+                    {{#if view.isMultipleSelectOption}}
+                    {{else}}
+                        {{view Ember.Select
+                            contentBinding="view.optionsList"
+                            optionLabelPath="content.text"
+                            optionValuePath="content.code"
+                            selectionBinding="view.singleSelectOptionValue"}}
+                    {{/if}}
             {{else}} {{#if view.isNumberType}}
                     {{view Ember.TextField valueBinding="view.numberValue" size=10 }}
             {{else}} {{#if view.isTextType}}
