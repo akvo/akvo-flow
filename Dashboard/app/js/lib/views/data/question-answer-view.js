@@ -219,16 +219,13 @@ FLOW.QuestionAnswerView = Ember.View.extend({
    *
    */
   singleSelectOptionValue: function (key, value, previousValue) {
-    var c = this.content;
+    var selectedOptions, c = this.content;
 
     // setter
     if (c && arguments.length > 1) {
-      var valueObj = {};
-      valueObj.text = value.text;
-      if (value.code) {
-        valueObj.code = value.code;
-      }
-      c.set('value', JSON.stringify([valueObj]));
+      selectedOptions = Ember.A();
+      selectedOptions.push(value);
+      this.set('optionValue', selectedOptions);
     }
 
     // getter
