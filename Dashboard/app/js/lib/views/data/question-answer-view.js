@@ -6,6 +6,9 @@ function formatDate(date) {
   } else return null;
 }
 
+function sortByOrder(a , b) {
+  return a.get('order') - b.get('order');
+}
 
 FLOW.QuestionAnswerView = Ember.View.extend({
 
@@ -78,7 +81,8 @@ FLOW.QuestionAnswerView = Ember.View.extend({
     optionArray.forEach(function (item) {
       obj = Ember.Object.create({
         code : item.get('code'),
-        text : item.get('text')
+        text : item.get('text'),
+        order: item.get('order')
       });
       tempList.push(obj);
     });
@@ -208,7 +212,7 @@ FLOW.QuestionAnswerView = Ember.View.extend({
           }
         });
       }
-      return selectedOptions;
+      return selectedOptions.sort(sortByOrder);
     }
     return null;
   }.property('this.content,this.optionsList'),
