@@ -70,7 +70,7 @@
       <label class="labelcheckbox"> {{view Ember.Checkbox checkedBinding="view.allowOtherFlag"}}{{t _allow_other}} </label>
       <br>
       <p><strong>{{t _options}}:&nbsp;</strong><span class="fadedText"> ({{t _enter_each_choice_on_a_separate_line}})</span> </p>
-      {{view Ember.TextArea valueBinding="view.optionList" size="100" rows="7" }}
+	  {{view FLOW.OptionListView contentBinding="view.optionsListArray"}}
     {{/if}}
     {{#if view.amFreeTextType}}
     <h1 class="answerNbr">{{t _settings}}:</h1>

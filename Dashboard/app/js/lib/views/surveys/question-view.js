@@ -919,3 +919,18 @@ FLOW.QuestionView = FLOW.View.extend({
     return FLOW.permControl.canEditForm(form);
   }.property('FLOW.selectedControl.selectedSurvey'),
 });
+
+/*
+ *  View to render the options for an option type question.
+ */
+FLOW.OptionListView = Ember.CollectionView.extend({
+  tagName: 'ul',
+  content: null,
+  itemViewClass: Ember.View.extend({
+    template: Ember.Handlebars.compile("{{view Ember.TextField valueBinding=\"view.content.code\" size=5}} {{view Ember.TextField valueBinding=\"view.content.text\" size=15}}")
+  }),
+
+  emptyView: Ember.View.extend({
+    template: Ember.Handlebars.compile("{{view Ember.TextField size=5}} {{view Ember.TextField size=15}}")
+  }),
+});
