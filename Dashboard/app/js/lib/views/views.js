@@ -379,6 +379,16 @@ FLOW.NavigationView = Em.View.extend({
     showDevicesButton: function () {
       return FLOW.permControl.get('canManageDevices');
     }.property(),
+
+    eventManager: Ember.Object.create({
+      click: function(event, clickedView) {
+
+        // Add the active tab as a CSS class to html
+        var html = document.querySelector('html');
+        html.className = '';
+        html.classList.add(FLOW.router.navigationController.selected);
+      }
+    }),    
   }),
 
 });

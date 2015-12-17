@@ -6210,3 +6210,21 @@ li.disable {
         margin-bottom: 0.75em;
     }
 }
+
+/* Custom styling for navMaps tab */
+
+html.navMaps {
+    border-top: 0px;
+    header {
+        position: initial;
+    }
+    #flowMap, #pointDetails {
+        height: 75vh
+    }
+    .mapFlow.middleSection {
+        padding: 0;
+    }
+    footer {
+        padding-bottom: 15px;
+    }
+}
