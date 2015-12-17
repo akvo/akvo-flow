@@ -162,13 +162,13 @@ FLOW.QuestionAnswerView = Ember.View.extend({
    *    '[{text: "only text"}]'
    */
   optionValue: function (key, value, previousValue) {
-    var val, optionsList, valueObj, valueArray = [], textArray = [], selectedOptions = Ember.A(), c = this.content;
+    var valueArray = [], selectedOptions = Ember.A(), c = this.content;
 
     // setter
     if (c && arguments.length > 1) {
       selectedOptions = value;
       selectedOptions.forEach(function (option) {
-        valueObj = {};
+        var valueObj = {};
         valueObj.text = option.text;
         if (option.code) {
           valueObj.code = option.code;
@@ -179,6 +179,7 @@ FLOW.QuestionAnswerView = Ember.View.extend({
     }
 
     // getter
+    var val, optionsList, textArray = [];
     if (c && c.get('value')) {
       val = c.get('value');
       optionsList = this.get('optionsList');
