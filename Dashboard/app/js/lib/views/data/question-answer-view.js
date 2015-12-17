@@ -328,6 +328,45 @@ FLOW.QuestionAnswerOptionListView = Ember.CollectionView.extend({
   })
 });
 
+/**
+ * Multi select option editing view that renders question options with the allow
+ * multiple option selected.  THe selection property should be a set of options
+ * that are considered to be selected (checked).  Whenever each options checkbox
+ * is modified, the set bound to the selection property is updated to add or remove
+ * the item.
+ */
+FLOW.QuestionAnswerMultiOptionEditView = Ember.CollectionView.extend({
+  tagName: 'ul',
+  content: null,
+  selection: null,
+  itemViewClass: Ember.View.extend({
+    template: Ember.Handlebars.compile("{{view Ember.Checkbox checkedBinding=\"view.isSelected\"}}{{view.content.text}}"),
+    isSelected: function(key, checked, previousValue) {
+      var selectedOptions = this.get('parentView').get('selection');
+      var newSelectedOptions = Ember.A();
+
+      // setter
+      if (arguments.length > 1) {
+        if (checked) {
+          selectedOptions.addObject(this.content);
+        } else {
+          selectedOptions.removeObject(this.content);
+        }
+        selectedOptions.forEach(function(option){
+          newSelectedOptions.push(option);
+        });
+
+        // Using a copy of the selected options 'newSelectedOptions' in order
+        // to trigger the setter property of the object bound to 'parentView.selection'
+        this.set('parentView.selection', newSelectedOptions);
+      }
+
+      // getter
+      return selectedOptions && selectedOptions.contains(this.content);
+    }.property('this.content'),
+  })
+});
+
 FLOW.QuestionAnswerInspectDataView = FLOW.QuestionAnswerView.extend({
   templateName: 'navData/question-answer',
 });
