@@ -5,6 +5,7 @@
         {{#if view.inEditMode}}
             {{#if view.isOptionType}}
                     {{#if view.isMultipleSelectOption}}
+                        {{view FLOW.QuestionAnswerMultiOptionEditView contentBinding="view.optionsList" selectionBinding="view.multiSelectOptionValue"}}
                     {{else}}
                         {{view Ember.Select
                             contentBinding="view.optionsList"

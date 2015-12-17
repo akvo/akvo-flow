@@ -236,6 +236,23 @@ FLOW.QuestionAnswerView = Ember.View.extend({
     return null;
   }.property('this.optionValue'),
 
+  /*
+   *  A property to enable setting and getting of the selected element
+   *  of a multi-select option question.
+   *
+   */
+  multiSelectOptionValue: function (key, value, previousValue) {
+    var c = this.content;
+
+    // setter
+    if (c && arguments.length > 1) {
+      this.set('optionValue', value);
+    }
+
+    // getter
+    return this.get('optionValue');
+  }.property('this.optionValue'),
+
   isMultipleSelectOption: function () {
     return this.get('isOptionType') && this.get('question').get('allowMultipleFlag');
   }.property('this.isOptionType'),
