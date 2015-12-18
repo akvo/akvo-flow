@@ -906,6 +906,14 @@ FLOW.optionListControl = Ember.ArrayController.create({
   content: []
 });
 
+/*
+ *  Controller for the list of options attached to an option question
+ *
+ */
+FLOW.questionOptionsControl = Ember.ArrayController.create({
+  content: null,
+});
+
 FLOW.previewControl = Ember.ArrayController.create({
   changed: false,
   showPreviewPopup: false,
