@@ -899,7 +899,9 @@ FLOW.questionControl = Ember.ArrayController.create({
   }.property('content.@each.isSaving')
 });
 
-// TODO turn this into radio buttons
+/*
+ *  Note: This controller is for the option list for a question's dependencies
+ */
 FLOW.optionListControl = Ember.ArrayController.create({
   content: []
 });
