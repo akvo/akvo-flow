@@ -87,9 +87,10 @@ FLOW.QuestionView = FLOW.View.extend({
       return false;
     }
   }.property('this.type').cacheable(),
+
   amOptionType: function () {
-    return this.type && this.type.get('value') === 'OPTION';
-  }.property('this.type').cacheable(),
+    return this.content && this.content.get('type') === 'OPTION';
+  }.property('this.content').cacheable(),
 
   amNumberType: function () {
     if (this.type) {
