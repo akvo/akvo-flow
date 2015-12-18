@@ -103,6 +103,8 @@ public class RawDataSpreadsheetImporter implements DataImporter {
 
     public void executeImport(File file, String serverBase, Map<String, String> criteria) {
         try {
+            log.info(String.format("Importing %s to %s using criteria %s", file, serverBase,
+                    criteria));
             Sheet sheet = getDataSheet(file);
             String surveyId = criteria.get("surveyId");
             Map<Integer, Long> columnIndexToQuestionId = processHeader(sheet);
@@ -121,6 +123,9 @@ public class RawDataSpreadsheetImporter implements DataImporter {
                         questionIdToQuestionDto);
                 importUrls.add(importUrl);
             }
+
+            log.info(String.format("Attempting to upload %s form instances to %s",
+                    importUrls.size(), serverBase));
 
             // Send updated instances to GAE
             errorIds = new ArrayList<String>();
@@ -159,6 +164,7 @@ public class RawDataSpreadsheetImporter implements DataImporter {
         } catch (Exception e) {
             log.error("Failed to import raw data report", e);
         } finally {
+            threadPool.shutdown();
             cleanup();
         }
 
@@ -290,7 +296,7 @@ public class RawDataSpreadsheetImporter implements DataImporter {
             while (true) {
                 Row row = sheet.getRow(startRow + iterations);
                 if (row == null
-                        || ExportImportUtils.parseCellAsString(row.getCell(1)).equals("1.0")) {
+                        || ExportImportUtils.parseCellAsString(row.getCell(1)).equals("1")) {
                     break;
                 }
                 iterations++;

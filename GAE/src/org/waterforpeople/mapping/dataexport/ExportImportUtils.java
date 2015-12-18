@@ -25,12 +25,14 @@ import java.util.List;
 
 import org.apache.log4j.Logger;
 import org.apache.poi.ss.usermodel.Cell;
+import org.apache.poi.ss.usermodel.DataFormatter;
 import org.apache.poi.ss.usermodel.Row;
 
 import com.gallatinsystems.common.util.StringUtil;
 
 public class ExportImportUtils {
     private static final Logger log = Logger.getLogger(ExportImportUtils.class);
+    private static final DataFormatter dataFormatter = new DataFormatter();
     private static final ThreadLocal<DateFormat> DATE_FORMAT = new ThreadLocal<DateFormat>() {
         @Override
         protected DateFormat initialValue() {
@@ -45,21 +47,7 @@ public class ExportImportUtils {
      * @return
      */
     public static String parseCellAsString(Cell cell) {
-        String val = "";
-        if (cell != null) {
-            switch (cell.getCellType()) {
-                case Cell.CELL_TYPE_BOOLEAN:
-                    val = cell.getBooleanCellValue() + "";
-                    break;
-                case Cell.CELL_TYPE_NUMERIC:
-                    val = cell.getNumericCellValue() + "";
-                    break;
-                default:
-                    val = cell.getStringCellValue();
-                    break;
-            }
-        }
-        return val.trim();
+        return dataFormatter.formatCellValue(cell).trim();
     }
 
     /**
@@ -113,7 +101,5 @@ public class ExportImportUtils {
                 return null;
             }
         }
-
     }
-
 }
