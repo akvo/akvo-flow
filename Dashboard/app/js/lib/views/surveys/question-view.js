@@ -36,24 +36,19 @@ FLOW.QuestionView = FLOW.View.extend({
   questionTooltipValidationFailure: false,
 
   init: function () {
-    var self, qoList, i;
-    qoList = "";
+    var self, qoList = "", i, c = this.content;
     this._super();
     self = this;
-    if (this.content && this.content.get('type') == 'OPTION') {
-      options = FLOW.store.filter(FLOW.QuestionOption, function (item) {
-        if (!Ember.none(self.content)) {
-          return item.get('questionId') == self.content.get('keyId');
-        } else {
-          return false;
-        }
-      });
-      i = 0;
-      optionArray = options.toArray();
-      optionArray.sort(function (a, b) {
-    	  return a.get('order') - b.get('order');
+
+    // load question options
+    if (c && this.get('amOptionType')) {
+      options = FLOW.store.filter(FLOW.QuestionOption, function (optionItem) {
+          return optionItem.get('questionId') === c.get('keyId');
       });
 
+      i = 0;
+      optionArray = Ember.A(options.toArray().sort(sortByOrder));
+      FLOW.questionOptionsControl.set('content', optionArray);
       optionArray.forEach(function (item) {
         if (i === 0) {
           qoList += item.get('text');
