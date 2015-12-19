@@ -912,6 +912,6 @@ FLOW.OptionListView = Ember.CollectionView.extend({
   }),
 
   emptyView: Ember.View.extend({
-    templateName: 'navSurveys/question-option',
+    template: Ember.Handlebars.compile('<a class="emptyOptionList">{{t _add_option}}</a>'),
   }),
 });
