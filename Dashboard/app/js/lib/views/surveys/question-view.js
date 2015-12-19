@@ -913,6 +913,6 @@ FLOW.OptionListView = Ember.CollectionView.extend({
   }),
 
   emptyView: Ember.View.extend({
-    template: Ember.Handlebars.compile('<a class="emptyOptionList">{{t _add_option}}</a>'),
+    template: Ember.Handlebars.compile('<a class="emptyOptionList" {{action addOption target="FLOW.questionOptionsControl"}}>{{t _add_option}}</a>'),
   }),
 });

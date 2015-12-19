@@ -912,6 +912,17 @@ FLOW.optionListControl = Ember.ArrayController.create({
  */
 FLOW.questionOptionsControl = Ember.ArrayController.create({
   content: null,
+  questionId: null,
+
+  addOption: function() {
+    var c = this.content;
+    c.addObject({
+        code: null,
+        text: null,
+        order: c.get('length') + 1,
+        questionId: this.get('questionId'),
+    });
+  },
 });
 
 FLOW.previewControl = Ember.ArrayController.create({
