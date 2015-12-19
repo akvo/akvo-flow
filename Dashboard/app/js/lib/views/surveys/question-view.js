@@ -41,7 +41,7 @@ FLOW.QuestionView = FLOW.View.extend({
     self = this;
 
     // load question options
-    FLOW.questionOptionsControl.set('content', null);
+    FLOW.questionOptionsControl.set('content', []);
 
     if (c && this.get('amOptionType')) {
       options = FLOW.store.filter(FLOW.QuestionOption, function (optionItem) {
@@ -51,6 +51,7 @@ FLOW.QuestionView = FLOW.View.extend({
       i = 0;
       optionArray = Ember.A(options.toArray().sort(sortByOrder));
       FLOW.questionOptionsControl.set('content', optionArray);
+      FLOW.questionOptionsControl.set('questionId', c.get('keyId'));
       optionArray.forEach(function (item) {
         if (i === 0) {
           qoList += item.get('text');
