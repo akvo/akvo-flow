@@ -176,23 +176,6 @@ FLOW.QuestionView = FLOW.View.extend({
     this.set('localeLocationFlag', this.type.get('value') == 'GEO');
   }.observes('this.type'),
 
-  /*
-   *  An Ember array consisting of the option codes associated to the question
-   *  currently loaded in this view.
-   *
-   */
-  optionsListArray: function () {
-    var options, optionsArray, c = this.content;
-    if (c && this.get('amOptionType')) {
-      options = FLOW.store.filter(FLOW.QuestionOption, function (optionItem) {
-          return optionItem.get('questionId') === c.get('keyId');
-      });
-      optionsArray = Ember.A(options.toArray());
-      return optionsArray.sort(sortByOrder);
-    }
-    return Ember.A();
-  }.property('this.content,this.amOptionType'),
-
   // TODO dependencies
   // TODO options
   doQuestionEdit: function () {
