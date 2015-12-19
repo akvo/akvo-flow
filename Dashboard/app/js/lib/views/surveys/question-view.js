@@ -41,6 +41,8 @@ FLOW.QuestionView = FLOW.View.extend({
     self = this;
 
     // load question options
+    FLOW.questionOptionsControl.set('content', null);
+
     if (c && this.get('amOptionType')) {
       options = FLOW.store.filter(FLOW.QuestionOption, function (optionItem) {
           return optionItem.get('questionId') === c.get('keyId');
