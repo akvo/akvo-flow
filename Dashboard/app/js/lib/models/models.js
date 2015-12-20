@@ -253,7 +253,8 @@ FLOW.QuestionOption = FLOW.BaseModel.extend({
   question: DS.belongsTo('FLOW.Question'),
   order: DS.attr('number'),
   questionId: DS.attr('number'),
-  text: DS.attr('string')
+  text: DS.attr('string'),
+  code: DS.attr('string'),
 });
 
 
