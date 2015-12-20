@@ -914,6 +914,10 @@ FLOW.questionOptionsControl = Ember.ArrayController.create({
   content: null,
   questionId: null,
 
+  /*
+   *  Add a new option object to the content of this controller.  The object
+   *  is not persisted to the data store.
+   */
   addOption: function() {
     var c = this.content;
     c.addObject({
