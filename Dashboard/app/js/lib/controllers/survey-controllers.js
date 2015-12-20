@@ -927,6 +927,15 @@ FLOW.questionOptionsControl = Ember.ArrayController.create({
         questionId: this.get('questionId'),
     });
   },
+
+  /*
+   *  Remove an option from the list of options.
+   *
+   */
+  deleteOption: function(event) {
+    var c = this.content, option = event.view.content;
+    c.removeObject(option);
+  },
 });
 
 FLOW.previewControl = Ember.ArrayController.create({
