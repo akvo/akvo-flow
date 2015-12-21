@@ -954,6 +954,15 @@ FLOW.questionOptionsControl = Ember.ArrayController.create({
       return Ember.String.htmlSafe(error);
     }
 
+    error = this.get('validateDuplicateCodes');
+    if (error && error.trim().length > 0) {
+      return Ember.String.htmlSafe(error);
+    }
+
+    error = this.get('validateDuplicateText');
+    if (error && error.trim().length > 0) {
+      return Ember.String.htmlSafe(error);
+    }
     return null;
   },
 
@@ -1012,6 +1021,66 @@ FLOW.questionOptionsControl = Ember.ArrayController.create({
     }
     return null;
   }.property('this.content.@each.code'),
+
+  /*
+   *  Check for duplicate codes in the created options
+   */
+  validateDuplicateCodes: function () {
+    var options = this.content, error = '';
+
+    if (!options) {
+      return null;
+    }
+
+    var uniqCodes = [];
+    options.forEach(function (option) {
+      if (option.get('code') && option.get('code').trim()){
+        if(uniqCodes.indexOf(option.get('code').trim()) > -1) {
+          error += '<li>' + option.get('code').trim() + '</li>'
+        } else {
+          uniqCodes.push(option.get('code').trim());
+        }
+      }
+    });
+
+    if (error) {
+      error = '<ul>' + error + '</ul>';
+      error = "_duplicate_option_codes\n" + error;
+      return error;
+    }
+
+    return null;
+  }.property('this.content.@each.code'),
+
+  /*
+   *  Check for duplicate texts in the created options
+   */
+  validateDuplicateText: function () {
+    var options = this.content, error = '';
+
+    if (!options) {
+      return null;
+    }
+
+    var uniqText = [];
+    options.forEach(function (option) {
+      if (option.get('text') && option.get('text').trim()){
+        if(uniqText.indexOf(option.get('text').trim()) > -1) {
+          error += '<li>' + option.get('text').trim() + '</li>'
+        } else {
+          uniqText.push(option.get('text').trim());
+        }
+      }
+    });
+
+    if (error) {
+      error = '<ul>' + error + '</ul>';
+      error = "_duplicate_option_text\n" + error;
+      return error;
+    }
+
+    return null;
+  }.property('this.content.@each.text'),
 });
 
 FLOW.previewControl = Ember.ArrayController.create({
