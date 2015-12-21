@@ -311,7 +311,7 @@ FLOW.QuestionView = FLOW.View.extend({
       }
 
     if (this.get('amOptionType')) {
-      var invalidOptions = FLOW.questionOptionsControl.get('validateOptions');
+      var invalidOptions = FLOW.questionOptionsControl.validateOptions();
       if (invalidOptions) {
         this.showMessageDialog(Ember.String.loc('_invalid_options_header'), invalidOptions);
         return;

@@ -950,7 +950,7 @@ FLOW.questionOptionsControl = Ember.ArrayController.create({
     }
 
     return null;
-  }.property('this.validateAllCodesFilled'),
+  },
 
   /*
    * Return an error string if codes are partially filled in
