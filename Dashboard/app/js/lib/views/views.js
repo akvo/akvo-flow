@@ -86,6 +86,8 @@ Ember.Handlebars.registerHelper('tooltip', function (i18nKey) {
   } catch (err) {
     tooltip = i18nKey;
   }
+  // Replace string escape character with matching entity
+  tooltip = tooltip.replace(/\"/g, '&quot;');
   return new Handlebars.SafeString(
     '<a href="#" class="helpIcon tooltip" title="' + tooltip + '">?</a>'
   );
