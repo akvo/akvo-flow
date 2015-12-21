@@ -942,7 +942,11 @@ FLOW.questionOptionsControl = Ember.ArrayController.create({
    *  return an error message.  Valid input returns null
    */
   validateOptions: function () {
-    var error;
+    var options = this.content, error;
+
+    if (!options) {
+      return null;
+    }
 
     error = this.get('validateAllTextFilled');
     if (error && error.trim().length > 0) {
@@ -972,10 +976,6 @@ FLOW.questionOptionsControl = Ember.ArrayController.create({
   validateAllTextFilled: function () {
     var options = this.content, error = '';
 
-    if (!options) {
-      return null;
-    }
-
     options.forEach(function (option) {
       // only take into account options with no text but with text filled in
       if (!option.get('text') || option.get('text').trim().length === 0) {
@@ -998,10 +998,6 @@ FLOW.questionOptionsControl = Ember.ArrayController.create({
    */
   validateAllCodesFilled: function () {
     var options = this.content, error = '', hasCodes;
-
-    if (!options) {
-      return null;
-    }
 
     options.forEach(function (option) {
       // only take into account options with text to be able to give error dialog
@@ -1028,10 +1024,6 @@ FLOW.questionOptionsControl = Ember.ArrayController.create({
   validateDuplicateCodes: function () {
     var options = this.content, error = '';
 
-    if (!options) {
-      return null;
-    }
-
     var uniqCodes = [];
     options.forEach(function (option) {
       if (option.get('code') && option.get('code').trim()){
@@ -1057,10 +1049,6 @@ FLOW.questionOptionsControl = Ember.ArrayController.create({
    */
   validateDuplicateText: function () {
     var options = this.content, error = '';
-
-    if (!options) {
-      return null;
-    }
 
     var uniqText = [];
     options.forEach(function (option) {
