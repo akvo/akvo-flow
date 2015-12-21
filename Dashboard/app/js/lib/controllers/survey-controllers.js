@@ -975,7 +975,7 @@ FLOW.questionOptionsControl = Ember.ArrayController.create({
 
     if (hasCodes && error) {
       error = '<ul>' + error + '</ul>';
-      error = "_missing_some_codes\n" + error;
+      error = "_missing_option_codes\n" + error;
       return error;
     }
     return null;
