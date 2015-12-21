@@ -936,6 +936,13 @@ FLOW.questionOptionsControl = Ember.ArrayController.create({
     var c = this.content, option = event.view.content;
     c.removeObject(option);
   },
+
+  /*
+   *  Validate all code options and if there is invalid input
+   *  return an error message.  Valid input returns null
+   */
+  validateOptions: function () {
+  }.property(),
 });
 
 FLOW.previewControl = Ember.ArrayController.create({

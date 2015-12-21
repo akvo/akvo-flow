@@ -310,6 +310,14 @@ FLOW.QuestionView = FLOW.View.extend({
         return;
       }
 
+    if (this.get('amOptionType')) {
+      var invalidOptions = FLOW.questionOptionsControl.get('validateOptions');
+      if (invalidOptions) {
+        this.showMessageDialog(Ember.String.loc('_invalid_options_header'), invalidOptions);
+        return;
+      }
+    }
+
     if (this.type.get('value') === 'CASCADE' && Ember.empty(FLOW.selectedControl.get('selectedCascadeResource'))) {
         FLOW.dialogControl.set('activeAction', 'ignore');
         FLOW.dialogControl.set('header', Ember.String.loc('_cascade_resources'));
