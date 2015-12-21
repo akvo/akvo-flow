@@ -944,6 +944,11 @@ FLOW.questionOptionsControl = Ember.ArrayController.create({
   validateOptions: function () {
     var error;
 
+    error = this.get('validateAllTextFilled');
+    if (error && error.trim().length > 0) {
+      return Ember.String.htmlSafe(error);
+    }
+
     error = this.get('validateAllCodesFilled');
     if (error && error.trim().length > 0) {
       return Ember.String.htmlSafe(error);
@@ -951,6 +956,33 @@ FLOW.questionOptionsControl = Ember.ArrayController.create({
 
     return null;
   },
+
+  /*
+   *  Return an error string of any text options are left blank
+   */
+  validateAllTextFilled: function () {
+    var options = this.content, error = '';
+
+    if (!options) {
+      return null;
+    }
+
+    options.forEach(function (option) {
+      // only take into account options with no text but with text filled in
+      if (!option.get('text') || option.get('text').trim().length === 0) {
+        if(option.get('code') && option.get('code').trim()) {
+          error += "<li>" + option.get('code').trim() + "</li>"
+        }
+      }
+    });
+
+    if (error) {
+      error = '<ul>' + error + '</ul>';
+      error = "_missing_option_text\n" + error;
+      return error;
+    }
+    return null;
+  }.property('this.content.@each.text'),
 
   /*
    * Return an error string if codes are partially filled in
