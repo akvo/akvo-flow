@@ -967,6 +967,11 @@ FLOW.questionOptionsControl = Ember.ArrayController.create({
     if (error && error.trim().length > 0) {
       return Ember.String.htmlSafe(error);
     }
+
+    error = this.get('validateDisallowedCharacters');
+    if (error && error.trim().length > 0) {
+      return Ember.String.htmlSafe(error);
+    }
     return null;
   },
 
@@ -1069,6 +1074,39 @@ FLOW.questionOptionsControl = Ember.ArrayController.create({
 
     return null;
   }.property('this.content.@each.text'),
+
+  /*
+   *  Check for disallowed xters in option codes
+   */
+  validateDisallowedCharacters: function () {
+    var options = this.content, error = '';
+
+    var reservedCode = [];
+    options.forEach(function (option) {
+      if (option.get('code') && option.get('code').trim()){
+        if(!option.get('code').trim().match(/^[A-Za-z0-9_\-]*$/)) {
+          error += '<li>' + option.get('code').trim() + '</li>'
+        }
+
+        if (option.get('code').trim() === "OTHER") {
+          reservedCode.push(option.get('code').trim());
+        }
+      }
+    });
+
+    if (error) {
+      error = '<ul>' + error + '</ul>';
+      error = "_disallowed_xters_in_code\n" + error;
+      return error;
+    }
+
+    if (reservedCode.length) {
+      error = "_reserved_code";
+      return error;
+    }
+
+    return null;
+  }.property('this.content.@each.code'),
 });
 
 FLOW.previewControl = Ember.ArrayController.create({
