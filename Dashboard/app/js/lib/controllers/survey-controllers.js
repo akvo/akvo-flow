@@ -942,7 +942,44 @@ FLOW.questionOptionsControl = Ember.ArrayController.create({
    *  return an error message.  Valid input returns null
    */
   validateOptions: function () {
-  }.property(),
+    var error;
+
+    error = this.get('validateAllCodesFilled');
+    if (error && error.trim().length > 0) {
+      return Ember.String.htmlSafe(error);
+    }
+
+    return null;
+  }.property('this.validateAllCodesFilled'),
+
+  /*
+   * Return an error string if codes are partially filled in
+   */
+  validateAllCodesFilled: function () {
+    var options = this.content, error = '', hasCodes;
+
+    if (!options) {
+      return null;
+    }
+
+    options.forEach(function (option) {
+      // only take into account options with text to be able to give error dialog
+      if (option.get('text') && option.get('text').trim()) {
+        if(option.get('code') && option.get('code').trim()) {
+          hasCodes = true;
+        } else {
+          error += "<li>" + option.get('text').trim() + "</li>"
+        }
+      }
+    });
+
+    if (hasCodes && error) {
+      error = '<ul>' + error + '</ul>';
+      error = "_missing_some_codes\n" + error;
+      return error;
+    }
+    return null;
+  }.property('this.content.@each.code'),
 });
 
 FLOW.previewControl = Ember.ArrayController.create({
