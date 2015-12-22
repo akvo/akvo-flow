@@ -191,9 +191,9 @@ FLOW.QuestionAnswerView = Ember.View.extend({
       if (val.charAt(0) === '[') {
         // responses in JSON format
         JSON.parse(val).forEach(function (response) {
-          optionsList.forEach(function (optionObj, index) {
+          optionsList.forEach(function (optionObj) {
             if (response.text === optionObj.get('text') &&
-                response.code === optionObj.get('code')) {
+                response.code == optionObj.get('code')) { // '==' because codes could be undefined or null
               selectedOptions.addObject(optionObj);
             }
           });
@@ -215,7 +215,7 @@ FLOW.QuestionAnswerView = Ember.View.extend({
       return selectedOptions.sort(sortByOrder);
     }
     return null;
-  }.property('this.content,this.optionsList'),
+  }.property('this.content'),
 
   /*
    *  A property to enable setting and getting of the selected element
