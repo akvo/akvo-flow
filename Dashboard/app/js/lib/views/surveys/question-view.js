@@ -23,7 +23,6 @@ FLOW.QuestionView = FLOW.View.extend({
   requireDoubleEntry: null,
   dependentFlag: false,
   dependentQuestion: null,
-  optionList: null,
   includeInMap: null,
   showAddAttributeDialogBool: false,
   newAttributeName: null,
@@ -36,9 +35,8 @@ FLOW.QuestionView = FLOW.View.extend({
   questionTooltipValidationFailure: false,
 
   init: function () {
-    var self, qoList = "", i, c = this.content;
+    var c = this.content;
     this._super();
-    self = this;
 
     // load question options
     FLOW.questionOptionsControl.set('content', []);
@@ -48,19 +46,9 @@ FLOW.QuestionView = FLOW.View.extend({
           return optionItem.get('questionId') === c.get('keyId');
       });
 
-      i = 0;
       optionArray = Ember.A(options.toArray().sort(sortByOrder));
       FLOW.questionOptionsControl.set('content', optionArray);
       FLOW.questionOptionsControl.set('questionId', c.get('keyId'));
-      optionArray.forEach(function (item) {
-        if (i === 0) {
-          qoList += item.get('text');
-        } else {
-          qoList += "\n" + item.get('text');
-        }
-        i++;
-      });
-      self.content.set('questionOptionList', qoList);
     }
   },
 
@@ -211,7 +199,6 @@ FLOW.QuestionView = FLOW.View.extend({
     this.set('requireDoubleEntry', FLOW.selectedControl.selectedQuestion.get('requireDoubleEntry'));
     this.set('includeInMap', FLOW.selectedControl.selectedQuestion.get('includeInMap'));
     this.set('dependentFlag', FLOW.selectedControl.selectedQuestion.get('dependentFlag'));
-    this.set('optionList', FLOW.selectedControl.selectedQuestion.get('questionOptionList'));
     this.set('allowPoints', FLOW.selectedControl.selectedQuestion.get('allowPoints'));
     this.set('allowLine', FLOW.selectedControl.selectedQuestion.get('allowLine'));
     this.set('allowPolygon', FLOW.selectedControl.selectedQuestion.get('allowPolygon'));
@@ -401,66 +388,6 @@ FLOW.QuestionView = FLOW.View.extend({
 
     if (this.get('type')) {
       FLOW.selectedControl.selectedQuestion.set('type', this.type.get('value'));
-    }
-
-    // deal with saving options
-    // the questionOptionList field is created in the init method, and contains the list of options as a string
-    // if the list of options is not equal to the edited list, we need to save it
-    if (FLOW.selectedControl.selectedQuestion.get('questionOptionList') != this.get('optionList')) {
-      options = FLOW.store.filter(FLOW.QuestionOption, function (item) {
-        if (!Ember.none(FLOW.selectedControl.selectedQuestion)) {
-          return item.get('questionId') == FLOW.selectedControl.selectedQuestion.get('keyId');
-        } else {
-          return false;
-        }
-      });
-
-      var newOptionStringArray = [];
-      this.get('optionList').split('\n').forEach(function(optionItem){
-            newOptionStringArray.push(optionItem.trim());
-      });
-
-      optionsToDelete = [];
-
-      options.forEach(function (item) {
-        optionsToDelete.push(item.get('keyId'));
-      });
-
-      order = 1;
-      newOptionStringArray.forEach(function (item) {
-        found = false;
-        // skip empty lines
-        if (!Ember.empty(item)) {
-          // if there is an existing option with this value, use it and change order if neccessary
-          options.forEach(function (optionItem) {
-	    if (item == optionItem.get('text')) {
-	      found = true;
-	      // adapt order if necessary
-	      if (optionItem.get('order') != order) {
-                optionItem.set('order', order);
-	      }
-	      // don't delete this one
-	      optionsToDelete.splice(optionsToDelete.indexOf(optionItem.get('keyId')), 1);
-	    }
-          });
-          if (!found) {
-	    // create new one
-	    FLOW.store.createRecord(FLOW.QuestionOption, {
-	      text: item,
-	      questionId: FLOW.selectedControl.selectedQuestion.get('keyId'),
-	      order: order
-	    });
-          }
-          order++;
-        }
-      });
-
-      // delete unused questionOptions
-      for (var ii = 0; ii < optionsToDelete.length; ii++) {
-        opToDel = FLOW.store.find(FLOW.QuestionOption, optionsToDelete[ii]);
-        opToDel.deleteRecord();
-      }
-      FLOW.selectedControl.selectedQuestion.set('questionOptionList', this.get('optionList'));
     }
 
     // deal with cascadeResource

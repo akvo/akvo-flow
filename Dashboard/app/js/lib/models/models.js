@@ -168,7 +168,7 @@ FLOW.QuestionGroup = FLOW.BaseModel.extend({
 
 FLOW.Question = FLOW.BaseModel.extend({
   questionOptions: DS.hasMany('FLOW.QuestionOption'),
-  questionOptionList: null,
+
   allowDecimal: DS.attr('boolean', {
     defaultValue: false
   }),
