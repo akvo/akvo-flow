@@ -317,6 +317,9 @@ FLOW.QuestionView = FLOW.View.extend({
         this.showMessageDialog(Ember.String.loc('_invalid_options_header'), invalidOptions);
         return;
       }
+
+      // save options to the datastore
+      FLOW.questionOptionsControl.persistOptions();
     }
 
     if (this.type.get('value') === 'CASCADE' && Ember.empty(FLOW.selectedControl.get('selectedCascadeResource'))) {

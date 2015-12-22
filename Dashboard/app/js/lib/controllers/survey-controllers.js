@@ -929,6 +929,39 @@ FLOW.questionOptionsControl = Ember.ArrayController.create({
   },
 
   /*
+   *  Persist all the newly added options to the data store.
+   *  Options with empty code and empty text fields are dropped
+   *  from the list.  If they were already persisted in the datastore
+   *  they are deleted
+   *
+   */
+  persistOptions: function () {
+    var options = this.content, blankOptions = [];
+    // remove blank options
+    options.forEach(function (option) {
+      var code = option.get('code') && option.get('code').trim();
+      var text = option.get('text') && option.get('text').trim();
+      if (!code && !text) {
+        blankOptions.push(option);
+        if (option.get('keyId')) {
+          option.deleteRecord();
+        }
+      }
+    });
+    options.removeObjects(blankOptions);
+
+    // reset ordering and persist
+    options.forEach(function (option, index) {
+      var code = option.get('code') && option.get('code').trim();
+      var text = option.get('text') && option.get('text').trim();
+      option.set('order', index);
+      if (!option.get('keyId')) {
+        FLOW.store.createRecord(FLOW.QuestionOption, option);
+      }
+    });
+  },
+
+  /*
    *  Remove an option from the list of options.
    *
    */
