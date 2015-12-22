@@ -1355,6 +1355,43 @@ tfoot tr {
     }
 }
 
+/******* Multiple Option Type question survey entry ******/
+
+p.optionTitle strong {
+    margin-left: 1em;
+}
+.optionListView {
+    li {
+        padding: 0 1em;
+
+        input {
+            display: inline-block;
+
+            &:first-child {
+                width: 10em;
+                margin-right: 1em;
+            }
+            &:nth-child(2) {
+                width: 35em;
+            }
+        }
+
+        a {
+            margin-left: 1em;
+        }
+    }
+    .optionAdd {
+        display: block;
+        width: 10em;
+        padding: 1em;
+        font-weight: bold;
+
+        &:before {
+            content: '+ ';
+        }
+    }
+}
+
 /**************** Assign Survey to devices. **************/
 
 #assignSurveys h2 {
