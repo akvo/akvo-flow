@@ -1029,7 +1029,7 @@ FLOW.questionOptionsControl = Ember.ArrayController.create({
 
     if (error) {
       error = '<ul>' + error + '</ul>';
-      error = "_missing_option_text\n" + error;
+      error = Ember.String.loc('_missing_option_text') + "\n" + error;
       return error;
     }
     return null;
@@ -1054,7 +1054,7 @@ FLOW.questionOptionsControl = Ember.ArrayController.create({
 
     if (hasCodes && error) {
       error = '<ul>' + error + '</ul>';
-      error = "_missing_option_codes\n" + error;
+      error = Ember.String.loc('_missing_option_codes') + "\n" + error;
       return error;
     }
     return null;
@@ -1079,7 +1079,7 @@ FLOW.questionOptionsControl = Ember.ArrayController.create({
 
     if (error) {
       error = '<ul>' + error + '</ul>';
-      error = "_duplicate_option_codes\n" + error;
+      error = Ember.String.loc('_duplicate_option_codes') + "\n" + error;
       return error;
     }
 
@@ -1105,7 +1105,7 @@ FLOW.questionOptionsControl = Ember.ArrayController.create({
 
     if (error) {
       error = '<ul>' + error + '</ul>';
-      error = "_duplicate_option_text\n" + error;
+      error = Ember.String.loc('_duplicate_option_text') + "\n" + error;
       return error;
     }
 
@@ -1133,12 +1133,12 @@ FLOW.questionOptionsControl = Ember.ArrayController.create({
 
     if (error) {
       error = '<ul>' + error + '</ul>';
-      error = "_disallowed_xters_in_code\n" + error;
+      error = Ember.String.loc('_disallowed_xters_in_code') + "\n" + error;
       return error;
     }
 
     if (reservedCode.length) {
-      error = "_reserved_code";
+      error = Ember.String.loc('_reserved_code');
       return error;
     }
 
