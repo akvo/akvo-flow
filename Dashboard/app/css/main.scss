@@ -1336,6 +1336,25 @@ tfoot tr {
     }
 }
 
+/********* Editing Multiple Option Type quesitons ********/
+
+#inspectData {
+    td.multiple-option {
+        > ul {
+            padding: 1em;
+            background: whitesmoke;
+            max-height: 50px;
+            overflow-y: scroll;
+            width: 90%;
+            margin-right: auto;
+            margin-left: auto;
+        }
+        input[type="checkbox"] {
+            width: initial;
+        }
+    }
+}
+
 /**************** Assign Survey to devices. **************/
 
 #assignSurveys h2 {

@@ -1,7 +1,7 @@
 <tr>
     <td class="device" style="width:10%">{{view.question.order}}</td>
     <td class="survey" style="text-align:left;width:40%">{{view.question.text}}</td>
-    <td class="submitter" style="text-align:left;width:50%">
+    <td {{bindAttr class=":submitter view.isMultipleSelectOption:multiple-option"}}>
         {{#if view.inEditMode}}
             {{#if view.isOptionType}}
                     {{#if view.isMultipleSelectOption}}
