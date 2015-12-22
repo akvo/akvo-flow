@@ -935,6 +935,10 @@ FLOW.questionOptionsControl = Ember.ArrayController.create({
   deleteOption: function(event) {
     var c = this.content, option = event.view.content;
     c.removeObject(option);
+
+    if (option.get('keyId')) { // clear persisted versions
+      option.deleteRecord();
+    }
   },
 
   /*
