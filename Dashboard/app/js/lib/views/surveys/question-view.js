@@ -34,24 +34,6 @@ FLOW.QuestionView = FLOW.View.extend({
   questionValidationFailure: false,
   questionTooltipValidationFailure: false,
 
-  init: function () {
-    var c = this.content;
-    this._super();
-
-    // load question options
-    FLOW.questionOptionsControl.set('content', []);
-
-    if (c && this.get('amOptionType')) {
-      options = FLOW.store.filter(FLOW.QuestionOption, function (optionItem) {
-          return optionItem.get('questionId') === c.get('keyId');
-      });
-
-      optionArray = Ember.A(options.toArray().sort(sortByOrder));
-      FLOW.questionOptionsControl.set('content', optionArray);
-      FLOW.questionOptionsControl.set('questionId', c.get('keyId'));
-    }
-  },
-
   showMetaConfig: function () {
     return FLOW.Env.showMonitoringFeature;
   }.property('FLOW.Env.showMonitoringFeature'),
@@ -179,7 +161,8 @@ FLOW.QuestionView = FLOW.View.extend({
 			     Ember.String.loc('_question_is_being_saved_text'));
       return;
     }
-    this.init();
+
+    this.loadQuestionOptions();
 
     FLOW.selectedControl.set('selectedQuestion', this.get('content'));
     this.set('questionId', FLOW.selectedControl.selectedQuestion.get('questionId'));
@@ -245,6 +228,23 @@ FLOW.QuestionView = FLOW.View.extend({
       }
     });
     this.set('type', questionType);
+  },
+
+  /*
+   *  Load the question options for question editing
+   */
+  loadQuestionOptions: function () {
+    var c = this.content;
+    FLOW.questionOptionsControl.set('content', []);
+    FLOW.questionOptionsControl.set('questionId', null);
+
+    options = FLOW.store.filter(FLOW.QuestionOption, function (optionItem) {
+        return optionItem.get('questionId') === c.get('keyId');
+    });
+
+    optionArray = Ember.A(options.toArray().sort(sortByOrder));
+    FLOW.questionOptionsControl.set('content', optionArray);
+    FLOW.questionOptionsControl.set('questionId', c.get('keyId'));
   },
 
   fillOptionList: function () {
