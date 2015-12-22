@@ -985,27 +985,27 @@ FLOW.questionOptionsControl = Ember.ArrayController.create({
       return null;
     }
 
-    error = this.get('validateAllTextFilled');
+    error = this.validateAllTextFilled();
     if (error && error.trim().length > 0) {
       return Ember.String.htmlSafe(error);
     }
 
-    error = this.get('validateAllCodesFilled');
+    error = this.validateAllCodesFilled();
     if (error && error.trim().length > 0) {
       return Ember.String.htmlSafe(error);
     }
 
-    error = this.get('validateDuplicateCodes');
+    error = this.validateDuplicateCodes();
     if (error && error.trim().length > 0) {
       return Ember.String.htmlSafe(error);
     }
 
-    error = this.get('validateDuplicateText');
+    error = this.validateDuplicateText();
     if (error && error.trim().length > 0) {
       return Ember.String.htmlSafe(error);
     }
 
-    error = this.get('validateDisallowedCharacters');
+    error = this.validateDisallowedCharacters();
     if (error && error.trim().length > 0) {
       return Ember.String.htmlSafe(error);
     }
@@ -1033,7 +1033,7 @@ FLOW.questionOptionsControl = Ember.ArrayController.create({
       return error;
     }
     return null;
-  }.property('this.content.@each.text'),
+  },
 
   /*
    * Return an error string if codes are partially filled in
@@ -1058,7 +1058,7 @@ FLOW.questionOptionsControl = Ember.ArrayController.create({
       return error;
     }
     return null;
-  }.property('this.content.@each.code'),
+  },
 
   /*
    *  Check for duplicate codes in the created options
@@ -1084,7 +1084,7 @@ FLOW.questionOptionsControl = Ember.ArrayController.create({
     }
 
     return null;
-  }.property('this.content.@each.code'),
+  },
 
   /*
    *  Check for duplicate texts in the created options
@@ -1110,7 +1110,7 @@ FLOW.questionOptionsControl = Ember.ArrayController.create({
     }
 
     return null;
-  }.property('this.content.@each.text'),
+  },
 
   /*
    *  Check for disallowed xters in option codes
@@ -1143,7 +1143,7 @@ FLOW.questionOptionsControl = Ember.ArrayController.create({
     }
 
     return null;
-  }.property('this.content.@each.code'),
+  },
 });
 
 FLOW.previewControl = Ember.ArrayController.create({
