@@ -953,7 +953,9 @@ FLOW.questionOptionsControl = Ember.ArrayController.create({
     // reset ordering and persist
     options.forEach(function (option, index) {
       var code = option.get('code') && option.get('code').trim();
-      var text = option.get('text') && option.get('text').trim();
+      if (!code) {
+        option.set('code', null); // do not send empty string as code
+      }
       option.set('order', index);
       if (!option.get('keyId')) {
         FLOW.store.createRecord(FLOW.QuestionOption, option);
