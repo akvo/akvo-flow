@@ -164,6 +164,11 @@ FLOW.QuestionAnswerView = Ember.View.extend({
     return null;
   }.property('this.content'),
 
+  /* object properties to include when transforming selected options
+   * to string to store in the datastore
+   */
+  optionValueProperties: ['code', 'text', 'isOther'],
+
   /*
    *  An Ember array consisting of selected elements from the optionsList.
    *  This is later serialised into a string response for the datastore.
@@ -380,6 +385,24 @@ FLOW.QuestionAnswerView = Ember.View.extend({
       } else {
         this.content.set('value', this.numberValue);
       }
+    }
+
+    if (this.get('isOptionType')) {
+      var responseArray = [];
+      this.get('selectedOptionValues').forEach(function(option){
+        var obj = {};
+        if (option.get('code')) {
+          obj.code = option.get('code');
+        }
+        if (option.get('isOther')) {
+          obj.isOther = option.get('isOther');
+          obj.text = option.get('otherText');
+        } else {
+          obj.text = option.get('text');
+        }
+        responseArray.push(obj);
+      });
+      this.content.set('value', JSON.stringify(responseArray));
     }
     FLOW.store.commit();
     this.set('inEditMode', false);
