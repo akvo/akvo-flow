@@ -86,8 +86,18 @@ FLOW.QuestionAnswerView = Ember.View.extend({
       });
       tempList.push(obj);
     });
+
+    // add other option if enabed
+    var setOptionCodes = tempList.get('firstObject').get('code');
+    if (this.get('isOtherOptionEnabled')) {
+      tempList.push(Ember.Object.create({
+        code: setOptionCodes ? "OTHER" : null, // OTHER is default code
+        text: null,
+        order: tempList.get('length'),
+      }));
+    }
     return tempList;
-  }.property('this.content,this.isOptionType'),
+  }.property('this.content'),
 
   content: null,
 
@@ -259,6 +269,10 @@ FLOW.QuestionAnswerView = Ember.View.extend({
 
   isMultipleSelectOption: function () {
     return this.get('isOptionType') && this.get('question').get('allowMultipleFlag');
+  }.property('this.isOptionType'),
+
+  isOtherOptionEnabled: function () {
+    return this.get('isOptionType') && this.get('question').get('allowOtherFlag');
   }.property('this.isOptionType'),
 
   photoUrl: function(){
