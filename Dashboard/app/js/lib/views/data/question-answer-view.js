@@ -385,17 +385,21 @@ FLOW.QuestionAnswerOptionListView = Ember.CollectionView.extend({
 
 /**
  * Multi select option editing view that renders question options with the allow
- * multiple option selected.  THe selection property should be a set of options
+ * multiple option selected.  The selection property should be a set of options
  * that are considered to be selected (checked).  Whenever each options checkbox
  * is modified, the set bound to the selection property is updated to add or remove
  * the item.
+ *
+ * The inline view template displays the selected option's text with its corresponding
+ * checkbox and if the 'allow other' flag is set on the question, it displays in addition
+ * a text box to enable editing the other response text.
  */
 FLOW.QuestionAnswerMultiOptionEditView = Ember.CollectionView.extend({
   tagName: 'ul',
   content: null,
   selection: null,
   itemViewClass: Ember.View.extend({
-    template: Ember.Handlebars.compile("{{view Ember.Checkbox checkedBinding=\"view.isSelected\"}}{{view.content.text}}"),
+    template: Ember.Handlebars.compile('{{view Ember.Checkbox checkedBinding="view.isSelected"}} {{view.content.text}} {{#if view.isOtherOption}} {{view Ember.TextField class="editOtherText" valueBinding="view.content.otherText"}} {{/if}}'),
     isSelected: function(key, checked, previousValue) {
       var selectedOptions = this.get('parentView').get('selection');
       var newSelectedOptions = Ember.A();
@@ -418,6 +422,13 @@ FLOW.QuestionAnswerMultiOptionEditView = Ember.CollectionView.extend({
 
       // getter
       return selectedOptions && selectedOptions.contains(this.content);
+    }.property('this.content'),
+
+    /*
+     *  Check whether the option item is marked `isOther`
+     */
+    isOtherOption: function () {
+      return this.content && this.content.get('isOther');
     }.property('this.content'),
   })
 });
