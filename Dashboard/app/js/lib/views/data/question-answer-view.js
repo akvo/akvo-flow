@@ -211,8 +211,8 @@ FLOW.QuestionAnswerView = Ember.View.extend({
 
             // add other
             if (response.isOther && optionObj.get('isOther') && isOtherEnabled) {
-              optionsList.get('lastObject').set('text', response.text);
-              selectedOptions.addObject(optionsList.get('lastObject'));
+              optionObj.set('text', response.text);
+              selectedOptions.addObject(optionObj);
             }
           });
         });
