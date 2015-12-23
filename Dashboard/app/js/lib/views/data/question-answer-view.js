@@ -165,15 +165,17 @@ FLOW.QuestionAnswerView = Ember.View.extend({
   }.property('this.content'),
 
   /*
-   *  A view property to set and retrieve the string response from the value property
-   *  of an option question.
+   *  An Ember array consisting of selected elements from the optionsList.
+   *  This is later serialised into a string response for the datastore.
+   */
+  selectedOptionValues: null,
+
+  /*
+   *  A view property to set and retrieve the selectedOptionValues array
    *
-   *  The setter block takes an Ember array consisting of selected elements from the
-   *  optionsList and transforms this into a JSON formatted string stored in the response.
-   *
-   *  The getter block uses the string response to create an Ember array consisting
-   *  of the corresponding elements from the optionsList property, i.e, selected elements
-   *  of the optionsList.
+   *  At first load, the getter block uses the string response from the datastore
+   *  to create an Ember array consisting of the corresponding elements from the
+   *  optionsList property, i.e, selected elements of the optionsList.
    *
    *  Retrieved string responses could be:
    *   - pipe-separated strings for legacy format e.g. 'text1|text2'
@@ -185,67 +187,77 @@ FLOW.QuestionAnswerView = Ember.View.extend({
     var valueArray = [], selectedOptions = Ember.A(), c = this.content, isOtherEnabled;
 
     // setter
-    if (c && arguments.length > 1) {
-      selectedOptions = value;
-      selectedOptions.forEach(function (option) {
-        var valueObj = {};
-        valueObj.text = option.text;
-        if (option.code) {
-          valueObj.code = option.code;
-        }
-        valueArray.push(valueObj);
-      });
-      c.set('value', JSON.stringify(valueArray));
+    if (arguments.length > 1) {
+      this.set('selectedOptionValues', value);
     }
 
     // getter
-    var val, optionsList;
-    if (c && c.get('value')) {
-      val = c.get('value');
-      optionsList = this.get('optionsList');
-      isOtherEnabled = this.get('isOtherOptionEnabled');
+    // initial selection setup
+    if (!this.get('selectedOptionValues')) {
+      this.set('selectedOptionValues', this.parseOptionsValueString(c.get('value')));
+    }
+    return this.get('selectedOptionValues');
+  }.property('this.selectedOptionValues'),
 
-      if (val.charAt(0) === '[') {
-        // responses in JSON format
-        JSON.parse(val).forEach(function (response) {
-          optionsList.forEach(function (optionObj) {
-            if (response.text === optionObj.get('text') &&
-                response.code == optionObj.get('code')) { // '==' because codes could be undefined or null
+  /*
+   *  Used to parse a provided string response from the value property of an option question.
+   *  Returns an Ember array consisting of the corresponding elements from the optionsList
+   *  property, i.e, selected elements of the optionsList.
+   *
+   *  The string responses could be:
+   *   - pipe-separated strings for legacy format e.g. 'text1|text2'
+   *   - JSON string in the current format e.g
+   *    '[{text: "text with code", code: "code"}]'
+   *    '[{text: "only text"}]'
+   */
+  parseOptionsValueString: function (optionsValueString) {
+    if (!optionsValueString) {
+      return Ember.A();
+    }
+
+    var selectedOptions = Ember.A();
+    var optionsList = this.get('optionsList');
+    var isOtherEnabled = this.get('isOtherOptionEnabled');
+
+    if (optionsValueString.charAt(0) === '[') {
+      // responses in JSON format
+      JSON.parse(optionsValueString).forEach(function (response) {
+        optionsList.forEach(function (optionObj) {
+          if (response.text === optionObj.get('text') &&
+              response.code == optionObj.get('code')) { // '==' because codes could be undefined or null
+            selectedOptions.addObject(optionObj);
+          }
+
+          // add other
+          if (response.isOther && optionObj.get('isOther') && isOtherEnabled) {
+            optionObj.set('otherText', response.text);
+            selectedOptions.addObject(optionObj);
+          }
+        });
+      });
+    } else {
+      // responses in pipe separated format
+      optionsValueString.split("|").forEach(function(item, textIndex, textArray){
+        var text = item.trim(), isLastItem = textIndex === textArray.length;
+        if (text.length > 0) {
+          optionsList.forEach(function(optionObj) {
+            var optionIsIncluded = optionObj.get('text') && optionObj.get('text') === text;
+            if (optionIsIncluded) {
               selectedOptions.addObject(optionObj);
             }
 
             // add other
-            if (response.isOther && optionObj.get('isOther') && isOtherEnabled) {
-              optionObj.set('otherText', response.text);
+            if (!optionIsIncluded && optionObj.get('isOther') && isOtherEnabled && isLastItem) {
+              optionObj.set('otherText', text);
               selectedOptions.addObject(optionObj);
             }
           });
-        });
-      } else {
-        // responses in pipe separated format
-        val.split("|").forEach(function(item, textIndex, textArray){
-          var text = item.trim(), isLastItem = textIndex === textArray.length;
-          if (text.length > 0) {
-            optionsList.forEach(function(optionObj) {
-              var optionIsIncluded = optionObj.get('text') && optionObj.get('text') === text;
-              if (optionIsIncluded) {
-                selectedOptions.addObject(optionObj);
-              }
-
-              // add other
-              if (!optionIsIncluded && optionObj.get('isOther') && isOtherEnabled && isLastItem) {
-                optionObj.set('otherText', text);
-                selectedOptions.addObject(optionObj);
-              }
-            });
-          }
-        });
-
-      }
-      return selectedOptions.sort(sortByOrder);
+        }
+      });
     }
-    return null;
-  }.property('this.content'),
+
+    return selectedOptions.sort(sortByOrder);
+  },
 
   /*
    *  A property to enable setting and getting of the selected element
