@@ -346,10 +346,6 @@ FLOW.QuestionAnswerView = Ember.View.extend({
     }
   }.property('this.content'),
 
-  init: function () {
-    this._super();
-  },
-
   doEdit: function () {
     this.set('inEditMode', true);
     var c = this.content;
