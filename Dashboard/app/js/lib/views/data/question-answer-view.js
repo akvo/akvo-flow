@@ -194,7 +194,7 @@ FLOW.QuestionAnswerView = Ember.View.extend({
     }
 
     // getter
-    var val, optionsList, textArray = [];
+    var val, optionsList;
     if (c && c.get('value')) {
       val = c.get('value');
       optionsList = this.get('optionsList');
@@ -218,17 +218,24 @@ FLOW.QuestionAnswerView = Ember.View.extend({
         });
       } else {
         // responses in pipe separated format
-        val.split("|").forEach(function(item){
-          if (item.trim().length > 0) {
-            textArray.push(item.trim());
+        val.split("|").forEach(function(item, textIndex, textArray){
+          var text = item.trim(), isLastItem = textIndex === textArray.length;
+          if (text.length > 0) {
+            optionsList.forEach(function(optionObj) {
+              var optionIsIncluded = optionObj.get('text') && optionObj.get('text') === text;
+              if (optionIsIncluded) {
+                selectedOptions.addObject(optionObj);
+              }
+
+              // add other
+              if (!optionIsIncluded && optionObj.get('isOther') && isOtherEnabled && isLastItem) {
+                optionObj.set('text', text);
+                selectedOptions.addObject(optionObj);
+              }
+            });
           }
         });
 
-        optionsList.forEach(function(optionObj, i) {
-          if (textArray.indexOf(optionObj.get('text')) > -1) {
-            selectedOptions.addObject(optionObj);
-          }
-        });
       }
       return selectedOptions.sort(sortByOrder);
     }
