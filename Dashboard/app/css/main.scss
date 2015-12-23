@@ -1354,6 +1354,9 @@ tfoot tr {
         input[type="checkbox"] {
             width: initial;
         }
+    }
+    .editOtherContainer {
+        margin-bottom: 1em;
         .otherLabel {
             display: inline-block; 
             margin-right: 0.5em;
@@ -1365,12 +1368,6 @@ tfoot tr {
             width: 60%;
             margin-left: auto;
             margin-right: 0;
-        }
-        .smallBtn {
-            margin-top: 1em;
-            :before {
-                width: 100%;
-            }
         }
     }
 }

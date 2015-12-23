@@ -14,7 +14,9 @@
                             selectionBinding="view.singleSelectOptionValue"}}
                     {{/if}}
                     {{#if view.isOtherOptionSelected}}
-                        <span class="otherLabel">{{t _other}}</span>{{view Ember.TextField class="editOtherText" size=25 valueBinding="view.optionValue.lastObject.otherText"}}<br/>
+                        <div class="editOtherContainer">
+                            <span class="otherLabel">{{t _other}}</span>{{view Ember.TextField class="editOtherText" size=25 valueBinding="view.optionValue.lastObject.otherText"}}
+                        </div>
                     {{/if}}
             {{else}} {{#if view.isNumberType}}
                     {{view Ember.TextField valueBinding="view.numberValue" size=10 }}
