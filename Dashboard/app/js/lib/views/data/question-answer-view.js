@@ -399,7 +399,7 @@ FLOW.QuestionAnswerMultiOptionEditView = Ember.CollectionView.extend({
   content: null,
   selection: null,
   itemViewClass: Ember.View.extend({
-    template: Ember.Handlebars.compile('{{view Ember.Checkbox checkedBinding="view.isSelected"}} {{view.content.text}} {{#if view.isOtherOption}} {{view Ember.TextField class="editOtherText" valueBinding="view.content.otherText"}} {{/if}}'),
+    template: Ember.Handlebars.compile('{{view Ember.Checkbox checkedBinding="view.isSelected"}} {{view.content.text}}'),
     isSelected: function(key, checked, previousValue) {
       var selectedOptions = this.get('parentView').get('selection');
       var newSelectedOptions = Ember.A();
@@ -422,13 +422,6 @@ FLOW.QuestionAnswerMultiOptionEditView = Ember.CollectionView.extend({
 
       // getter
       return selectedOptions && selectedOptions.contains(this.content);
-    }.property('this.content'),
-
-    /*
-     *  Check whether the option item is marked `isOther`
-     */
-    isOtherOption: function () {
-      return this.content && this.content.get('isOther');
     }.property('this.content'),
   })
 });
