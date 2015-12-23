@@ -94,6 +94,7 @@ FLOW.QuestionAnswerView = Ember.View.extend({
         code: setOptionCodes ? "OTHER" : null, // OTHER is default code
         text: null,
         order: tempList.get('length'),
+        isOther: true,
       }));
     }
     return tempList;
@@ -207,13 +208,13 @@ FLOW.QuestionAnswerView = Ember.View.extend({
                 response.code == optionObj.get('code')) { // '==' because codes could be undefined or null
               selectedOptions.addObject(optionObj);
             }
-          });
 
-          // add other
-          if (isOtherEnabled && response.isOther) {
-            optionsList.get('lastObject').set('text', response.text);
-            selectedOptions.addObject(optionsList.get('lastObject'));
-          }
+            // add other
+            if (response.isOther && optionObj.get('isOther') && isOtherEnabled) {
+              optionsList.get('lastObject').set('text', response.text);
+              selectedOptions.addObject(optionsList.get('lastObject'));
+            }
+          });
         });
       } else {
         // responses in pipe separated format
