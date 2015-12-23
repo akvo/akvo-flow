@@ -288,7 +288,7 @@ FLOW.QuestionAnswerView = Ember.View.extend({
       var q = FLOW.questionControl.findProperty('keyId', +questionId);
       return q;
     }
-  }.property('FLOW.questionControl.content'),
+  }.property('this.content'),
 
   init: function () {
     this._super();
