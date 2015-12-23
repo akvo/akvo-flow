@@ -80,14 +80,15 @@ FLOW.QuestionAnswerView = Ember.View.extend({
     var obj;
     optionArray.forEach(function (item) {
       obj = Ember.Object.create({
-        code : item.get('code'),
-        text : item.get('text'),
+        code : item.get('code') && item.get('code').trim(),
+        text : item.get('text').trim(),
         order: item.get('order')
       });
       tempList.push(obj);
     });
 
     // add other option if enabed
+    // we assume codes are all or nothing
     var setOptionCodes = tempList.get('firstObject').get('code');
     if (this.get('isOtherOptionEnabled')) {
       tempList.push(Ember.Object.create({
