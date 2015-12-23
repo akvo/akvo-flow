@@ -295,6 +295,11 @@ FLOW.QuestionAnswerView = Ember.View.extend({
     return this.get('isOptionType') && this.get('question').get('allowOtherFlag');
   }.property('this.isOptionType'),
 
+  isOtherOptionSelected: function () {
+    var selectedOption = this.get('optionValue') && this.get('optionValue').get('lastObject');
+    return selectedOption && selectedOption.get('isOther');
+  }.property('this.optionValue'),
+
   photoUrl: function(){
     var c = this.content;
     if (!Ember.empty(c.get('value'))) {

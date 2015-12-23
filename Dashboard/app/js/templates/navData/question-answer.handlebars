@@ -13,7 +13,7 @@
                             optionValuePath="content.code"
                             selectionBinding="view.singleSelectOptionValue"}}
                     {{/if}}
-                    {{#if view.isOtherOptionEnabled}}
+                    {{#if view.isOtherOptionSelected}}
                         {{t _other}}{{view Ember.TextField class="editOtherText" size=25 valueBinding="view.optionValue.lastObject.otherText"}}
                     {{/if}}
             {{else}} {{#if view.isNumberType}}
