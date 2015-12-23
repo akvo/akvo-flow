@@ -176,7 +176,7 @@ FLOW.QuestionAnswerView = Ember.View.extend({
    *    '[{text: "only text"}]'
    */
   optionValue: function (key, value, previousValue) {
-    var valueArray = [], selectedOptions = Ember.A(), c = this.content;
+    var valueArray = [], selectedOptions = Ember.A(), c = this.content, isOtherEnabled;
 
     // setter
     if (c && arguments.length > 1) {
@@ -197,6 +197,7 @@ FLOW.QuestionAnswerView = Ember.View.extend({
     if (c && c.get('value')) {
       val = c.get('value');
       optionsList = this.get('optionsList');
+      isOtherEnabled = this.get('isOtherOptionEnabled');
 
       if (val.charAt(0) === '[') {
         // responses in JSON format
@@ -207,6 +208,12 @@ FLOW.QuestionAnswerView = Ember.View.extend({
               selectedOptions.addObject(optionObj);
             }
           });
+
+          // add other
+          if (isOtherEnabled && response.isOther) {
+            optionsList.get('lastObject').set('text', response.text);
+            selectedOptions.addObject(optionsList.get('lastObject'));
+          }
         });
       } else {
         // responses in pipe separated format
