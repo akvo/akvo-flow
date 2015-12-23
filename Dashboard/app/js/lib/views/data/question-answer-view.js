@@ -93,7 +93,11 @@ FLOW.QuestionAnswerView = Ember.View.extend({
     if (this.get('isOtherOptionEnabled')) {
       tempList.push(Ember.Object.create({
         code: setOptionCodes ? "OTHER" : null, // OTHER is default code
-        text: null,
+        otherText: null,
+        text: function () {
+          var suffix = this.get('otherText') ? this.get('otherText') : Ember.String.loc('_other_option_specify');
+          return Ember.String.loc('_other') + ": " + suffix;
+        }.property('this.otherText'),
         order: tempList.get('length'),
         isOther: true,
       }));
@@ -212,7 +216,7 @@ FLOW.QuestionAnswerView = Ember.View.extend({
 
             // add other
             if (response.isOther && optionObj.get('isOther') && isOtherEnabled) {
-              optionObj.set('text', response.text);
+              optionObj.set('otherText', response.text);
               selectedOptions.addObject(optionObj);
             }
           });
@@ -230,7 +234,7 @@ FLOW.QuestionAnswerView = Ember.View.extend({
 
               // add other
               if (!optionIsIncluded && optionObj.get('isOther') && isOtherEnabled && isLastItem) {
-                optionObj.set('text', text);
+                optionObj.set('otherText', text);
                 selectedOptions.addObject(optionObj);
               }
             });
