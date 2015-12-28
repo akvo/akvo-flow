@@ -111,15 +111,11 @@ Ember.Handlebars.registerHelper('placemarkDetail', function () {
           return item.name;
         }).join("|");
       }
-  } else if (questionType === 'OPTION') {
-      if (answer.indexOf("|") > -1) {
-        // ignore
-      } else {
-        optionJson = JSON.parse(answer);
-        answer = optionJson.map(function(item){
-          return item.text;
-        }).join("|");
-      }
+  } else if (questionType === 'OPTION' && answer.charAt(0) === '[') {
+    optionJson = JSON.parse(answer);
+    answer = optionJson.map(function(item){
+      return item.text;
+    }).join("|");
   } else if (questionType === 'DATE') {
     answer = renderTimeStamp(answer);
   }
