@@ -956,10 +956,11 @@ FLOW.questionOptionsControl = Ember.ArrayController.create({
       var text = option.get('text') && option.get('text').trim();
       if (!code) {
         option.set('code', null); // do not send empty string as code
+      } else {
+        option.set('code', code);
       }
 
       // trimmed whitespace
-      option.set('code', code);
       option.set('text', text);
       option.set('order', index);
       if (!option.get('keyId')) {
