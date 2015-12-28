@@ -899,9 +899,259 @@ FLOW.questionControl = Ember.ArrayController.create({
   }.property('content.@each.isSaving')
 });
 
-// TODO turn this into radio buttons
+/*
+ *  Note: This controller is for the option list for a question's dependencies
+ */
 FLOW.optionListControl = Ember.ArrayController.create({
   content: []
+});
+
+/*
+ *  Controller for the list of options attached to an option question
+ *
+ */
+FLOW.questionOptionsControl = Ember.ArrayController.create({
+  content: null,
+  questionId: null,
+
+  /*
+   *  Add a new option object to the content of this controller.  The object
+   *  is not persisted to the data store.
+   */
+  addOption: function() {
+    var c = this.content;
+    c.addObject(Ember.Object.create({
+        code: null,
+        text: null,
+        order: c.get('length') + 1,
+        questionId: this.get('questionId'),
+    }));
+  },
+
+  /*
+   *  Persist all the newly added options to the data store.
+   *  Options with empty code and empty text fields are dropped
+   *  from the list.  If they were already persisted in the datastore
+   *  they are deleted
+   *
+   */
+  persistOptions: function () {
+    var options = this.content, blankOptions = [];
+    // remove blank options
+    options.forEach(function (option) {
+      var code = option.get('code') && option.get('code').trim();
+      var text = option.get('text') && option.get('text').trim();
+      if (!code && !text) {
+        blankOptions.push(option);
+        if (option.get('keyId')) {
+          option.deleteRecord();
+        }
+      }
+    });
+    options.removeObjects(blankOptions);
+
+    // reset ordering and persist
+    options.forEach(function (option, index) {
+      var code = option.get('code') && option.get('code').trim();
+      var text = option.get('text') && option.get('text').trim();
+      if (!code) {
+        option.set('code', null); // do not send empty string as code
+      } else {
+        option.set('code', code);
+      }
+
+      // trimmed whitespace
+      option.set('text', text);
+      option.set('order', index);
+      if (!option.get('keyId')) {
+        FLOW.store.createRecord(FLOW.QuestionOption, option);
+      }
+    });
+  },
+
+  /*
+   *  Remove an option from the list of options.
+   *
+   */
+  deleteOption: function(event) {
+    var c = this.content, option = event.view.content;
+    c.removeObject(option);
+
+    if (option.get('keyId')) { // clear persisted versions
+      option.deleteRecord();
+    }
+  },
+
+  /*
+   *  Validate all code options and if there is invalid input
+   *  return an error message.  Valid input returns null
+   */
+  validateOptions: function () {
+    var options = this.content, error;
+
+    if (!options) {
+      return null;
+    }
+
+    error = this.validateAllTextFilled();
+    if (error && error.trim().length > 0) {
+      return Ember.String.htmlSafe(error);
+    }
+
+    error = this.validateAllCodesFilled();
+    if (error && error.trim().length > 0) {
+      return Ember.String.htmlSafe(error);
+    }
+
+    error = this.validateDuplicateCodes();
+    if (error && error.trim().length > 0) {
+      return Ember.String.htmlSafe(error);
+    }
+
+    error = this.validateDuplicateText();
+    if (error && error.trim().length > 0) {
+      return Ember.String.htmlSafe(error);
+    }
+
+    error = this.validateDisallowedCharacters();
+    if (error && error.trim().length > 0) {
+      return Ember.String.htmlSafe(error);
+    }
+    return null;
+  },
+
+  /*
+   *  Return an error string of any text options are left blank
+   */
+  validateAllTextFilled: function () {
+    var options = this.content, error = '';
+
+    options.forEach(function (option) {
+      // only take into account options with no text but with text filled in
+      if (!option.get('text') || option.get('text').trim().length === 0) {
+        if(option.get('code') && option.get('code').trim()) {
+          error += "<li>" + option.get('code').trim() + "</li>"
+        }
+      }
+    });
+
+    if (error) {
+      error = '<ul>' + error + '</ul>';
+      error = Ember.String.loc('_missing_option_text') + "\n" + error;
+      return error;
+    }
+    return null;
+  },
+
+  /*
+   * Return an error string if codes are partially filled in
+   */
+  validateAllCodesFilled: function () {
+    var options = this.content, error = '', hasCodes;
+
+    options.forEach(function (option) {
+      // only take into account options with text to be able to give error dialog
+      if (option.get('text') && option.get('text').trim()) {
+        if(option.get('code') && option.get('code').trim()) {
+          hasCodes = true;
+        } else {
+          error += "<li>" + option.get('text').trim() + "</li>"
+        }
+      }
+    });
+
+    if (hasCodes && error) {
+      error = '<ul>' + error + '</ul>';
+      error = Ember.String.loc('_missing_option_codes') + "\n" + error;
+      return error;
+    }
+    return null;
+  },
+
+  /*
+   *  Check for duplicate codes in the created options
+   */
+  validateDuplicateCodes: function () {
+    var options = this.content, error = '';
+
+    var uniqCodes = [];
+    options.forEach(function (option) {
+      if (option.get('code') && option.get('code').trim()){
+        if(uniqCodes.indexOf(option.get('code').trim()) > -1) {
+          error += '<li>' + option.get('code').trim() + '</li>'
+        } else {
+          uniqCodes.push(option.get('code').trim());
+        }
+      }
+    });
+
+    if (error) {
+      error = '<ul>' + error + '</ul>';
+      error = Ember.String.loc('_duplicate_option_codes') + "\n" + error;
+      return error;
+    }
+
+    return null;
+  },
+
+  /*
+   *  Check for duplicate texts in the created options
+   */
+  validateDuplicateText: function () {
+    var options = this.content, error = '';
+
+    var uniqText = [];
+    options.forEach(function (option) {
+      if (option.get('text') && option.get('text').trim()){
+        if(uniqText.indexOf(option.get('text').trim()) > -1) {
+          error += '<li>' + option.get('text').trim() + '</li>'
+        } else {
+          uniqText.push(option.get('text').trim());
+        }
+      }
+    });
+
+    if (error) {
+      error = '<ul>' + error + '</ul>';
+      error = Ember.String.loc('_duplicate_option_text') + "\n" + error;
+      return error;
+    }
+
+    return null;
+  },
+
+  /*
+   *  Check for disallowed xters in option codes
+   */
+  validateDisallowedCharacters: function () {
+    var options = this.content, error = '';
+
+    var reservedCode = [];
+    options.forEach(function (option) {
+      if (option.get('code') && option.get('code').trim()){
+        if(!option.get('code').trim().match(/^[A-Za-z0-9_\-]*$/)) {
+          error += '<li>' + option.get('code').trim() + '</li>'
+        }
+
+        if (option.get('code').trim() === "OTHER") {
+          reservedCode.push(option.get('code').trim());
+        }
+      }
+    });
+
+    if (error) {
+      error = '<ul>' + error + '</ul>';
+      error = Ember.String.loc('_disallowed_xters_in_code') + "\n" + error;
+      return error;
+    }
+
+    if (reservedCode.length) {
+      error = Ember.String.loc('_reserved_code');
+      return error;
+    }
+
+    return null;
+  },
 });
 
 FLOW.previewControl = Ember.ArrayController.create({

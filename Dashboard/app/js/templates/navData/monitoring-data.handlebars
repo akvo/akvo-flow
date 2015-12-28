@@ -142,11 +142,13 @@
                           {{view FLOW.GeoshapeMapView}}
                         {{else}} {{#if view.isCascadeType}}
                           <span>{{view.cascadeValue}}</span>
+                        {{else}} {{#if view.isOptionType}}
+                          {{view FLOW.QuestionAnswerOptionListView contentBinding="view.optionValue"}}
                         {{else}} {{#if view.isDateType}}
                           {{#with QA}}{{date3 value}}{{/with}}
                         {{else}}
                           <span>{{QA.value}} {{#with QA}}{{if_blank value}}{{/with}}</span>
-                        {{/if}} {{/if}} {{/if}} {{/if}} {{/if}}
+                        {{/if}} {{/if}} {{/if}} {{/if}} {{/if}} {{/if}}
                     </td>
                     </tr>
                     {{/view}}

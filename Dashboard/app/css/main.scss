@@ -1336,6 +1336,79 @@ tfoot tr {
     }
 }
 
+/********* Editing Multiple Option Type quesitons ********/
+
+#inspectData {
+    td.multiple-option {
+        * {
+            box-sizing: border-box;
+        }
+        > ul {
+            padding: 1em;
+            background: whitesmoke;
+            max-height: 600px;
+            overflow-y: scroll;
+            margin-right: 1em;
+            margin-bottom: 1em;
+        }
+        input[type="checkbox"] {
+            width: initial;
+        }
+    }
+    .editOtherContainer {
+        margin-bottom: 1em;
+        .otherLabel {
+            display: inline-block; 
+            margin-right: 0.5em;
+            &:after {
+                content: ':';
+            }
+        }
+        .editOtherText {
+            width: 60%;
+            margin-left: auto;
+            margin-right: 0;
+        }
+    }
+}
+
+/******* Multiple Option Type question survey entry ******/
+
+p.optionTitle strong {
+    margin-left: 1em;
+}
+.optionListView {
+    li {
+        padding: 0 1em;
+
+        input {
+            display: inline-block;
+
+            &:first-child {
+                width: 10em;
+                margin-right: 1em;
+            }
+            &:nth-child(2) {
+                width: 35em;
+            }
+        }
+
+        a {
+            margin-left: 1em;
+        }
+    }
+    .optionAdd {
+        display: block;
+        width: 10em;
+        padding: 1em;
+        font-weight: bold;
+
+        &:before {
+            content: '+ ';
+        }
+    }
+}
+
 /**************** Assign Survey to devices. **************/
 
 #assignSurveys h2 {

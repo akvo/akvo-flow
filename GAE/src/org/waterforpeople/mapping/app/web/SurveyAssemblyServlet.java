@@ -706,8 +706,10 @@ public class SurveyAssemblyServlet extends AbstractRestApiServlet {
                 t.setContent(qo.getText());
                 option.addContent(t);
                 option.setCode(qo.getCode());
-                option.setValue(qo.getCode() != null ? qo.getCode() : qo
-                        .getText());
+
+                // to maintain backwards compatibility with older app versions, we set the value
+                // attribute and text to the same
+                option.setValue(qo.getText());
                 List<AltText> altTextList = formAltText(qo.getTranslationMap());
                 if (altTextList != null) {
                     for (AltText alt : altTextList) {

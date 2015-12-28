@@ -6,6 +6,9 @@ function formatDate(date) {
   } else return null;
 }
 
+function sortByOrder(a , b) {
+  return a.get('order') - b.get('order');
+}
 
 FLOW.QuestionAnswerView = Ember.View.extend({
 
@@ -53,10 +56,13 @@ FLOW.QuestionAnswerView = Ember.View.extend({
     }
   }.property('FLOW.selectedControl.selectedSurvey'),
 
+  /*
+   * Get the full list of options related to a particular option type question
+   */
   optionsList: function(){
     var c = this.content;
-    if (Ember.none(c)) {
-      return [];
+    if (Ember.none(c) || !this.get('isOptionType')) {
+      return Ember.A([]);
     }
 
     var questionId = c.get('questionID');
@@ -70,10 +76,32 @@ FLOW.QuestionAnswerView = Ember.View.extend({
         return a.get('order') - b.get('order');
     });
 
-    tempList = [];
+    tempList = Ember.A([]);
+    var obj;
     optionArray.forEach(function (item) {
-      tempList.push(item.get('text'));
+      obj = Ember.Object.create({
+        code : item.get('code') && item.get('code').trim(),
+        text : item.get('text').trim(),
+        order: item.get('order')
+      });
+      tempList.push(obj);
     });
+
+    // add other option if enabed
+    // we assume codes are all or nothing
+    var setOptionCodes = tempList.get('firstObject').get('code');
+    if (this.get('isOtherOptionEnabled')) {
+      tempList.push(Ember.Object.create({
+        code: setOptionCodes ? "OTHER" : null, // OTHER is default code
+        otherText: null,
+        text: function () {
+          var suffix = this.get('otherText') ? this.get('otherText') : Ember.String.loc('_other_option_specify');
+          return Ember.String.loc('_other') + ": " + suffix;
+        }.property('this.otherText'),
+        order: tempList.get('length'),
+        isOther: true,
+      }));
+    }
     return tempList;
   }.property('this.content'),
 
@@ -136,6 +164,159 @@ FLOW.QuestionAnswerView = Ember.View.extend({
     return null;
   }.property('this.content'),
 
+  /* object properties to include when transforming selected options
+   * to string to store in the datastore
+   */
+  optionValueProperties: ['code', 'text', 'isOther'],
+
+  /*
+   *  An Ember array consisting of selected elements from the optionsList.
+   *  This is later serialised into a string response for the datastore.
+   */
+  selectedOptionValues: null,
+
+  /*
+   *  A view property to set and retrieve the selectedOptionValues array
+   *
+   *  At first load, the getter block uses the string response from the datastore
+   *  to create an Ember array consisting of the corresponding elements from the
+   *  optionsList property, i.e, selected elements of the optionsList.
+   *
+   *  Retrieved string responses could be:
+   *   - pipe-separated strings for legacy format e.g. 'text1|text2'
+   *   - JSON string in the current format e.g
+   *    '[{text: "text with code", code: "code"}]'
+   *    '[{text: "only text"}]'
+   */
+  optionValue: function (key, value, previousValue) {
+    var valueArray = [], selectedOptions = Ember.A(), c = this.content, isOtherEnabled;
+
+    // setter
+    if (arguments.length > 1) {
+      this.set('selectedOptionValues', value);
+    }
+
+    // getter
+    // initial selection setup
+    if (!this.get('selectedOptionValues')) {
+      this.set('selectedOptionValues', this.parseOptionsValueString(c.get('value')));
+    }
+    return this.get('selectedOptionValues');
+  }.property('this.selectedOptionValues'),
+
+  /*
+   *  Used to parse a provided string response from the value property of an option question.
+   *  Returns an Ember array consisting of the corresponding elements from the optionsList
+   *  property, i.e, selected elements of the optionsList.
+   *
+   *  The string responses could be:
+   *   - pipe-separated strings for legacy format e.g. 'text1|text2'
+   *   - JSON string in the current format e.g
+   *    '[{text: "text with code", code: "code"}]'
+   *    '[{text: "only text"}]'
+   */
+  parseOptionsValueString: function (optionsValueString) {
+    if (!optionsValueString) {
+      return Ember.A();
+    }
+
+    var selectedOptions = Ember.A();
+    var optionsList = this.get('optionsList');
+    var isOtherEnabled = this.get('isOtherOptionEnabled');
+
+    if (optionsValueString.charAt(0) === '[') {
+      // responses in JSON format
+      JSON.parse(optionsValueString).forEach(function (response) {
+        optionsList.forEach(function (optionObj) {
+          if (response.text === optionObj.get('text') &&
+              response.code == optionObj.get('code')) { // '==' because codes could be undefined or null
+            selectedOptions.addObject(optionObj);
+          }
+
+          // add other
+          if (response.isOther && optionObj.get('isOther') && isOtherEnabled) {
+            optionObj.set('otherText', response.text);
+            selectedOptions.addObject(optionObj);
+          }
+        });
+      });
+    } else {
+      // responses in pipe separated format
+      optionsValueString.split("|").forEach(function(item, textIndex, textArray){
+        var text = item.trim(), isLastItem = textIndex === textArray.length;
+        if (text.length > 0) {
+          optionsList.forEach(function(optionObj) {
+            var optionIsIncluded = optionObj.get('text') && optionObj.get('text') === text;
+            if (optionIsIncluded) {
+              selectedOptions.addObject(optionObj);
+            }
+
+            // add other
+            if (!optionIsIncluded && optionObj.get('isOther') && isOtherEnabled && isLastItem) {
+              optionObj.set('otherText', text);
+              selectedOptions.addObject(optionObj);
+            }
+          });
+        }
+      });
+    }
+
+    return selectedOptions.sort(sortByOrder);
+  },
+
+  /*
+   *  A property to enable setting and getting of the selected element
+   *  of a single-select option question.
+   *
+   */
+  singleSelectOptionValue: function (key, value, previousValue) {
+    var selectedOptions, c = this.content;
+
+    // setter
+    if (c && arguments.length > 1) {
+      selectedOptions = Ember.A();
+      selectedOptions.push(value);
+      this.set('optionValue', selectedOptions);
+    }
+
+    // getter
+    var options = this.get('optionValue');
+    if (options && options.get('length') === 1) {
+      return options.get('firstObject');
+    }
+    return null;
+  }.property('this.optionValue'),
+
+  /*
+   *  A property to enable setting and getting of the selected element
+   *  of a multi-select option question.
+   *
+   */
+  multiSelectOptionValue: function (key, value, previousValue) {
+    var c = this.content;
+
+    // setter
+    if (c && arguments.length > 1) {
+      this.set('optionValue', value);
+    }
+
+    // getter
+    return this.get('optionValue');
+  }.property('this.optionValue'),
+
+  isMultipleSelectOption: function () {
+    return this.get('isOptionType') && this.get('question').get('allowMultipleFlag');
+  }.property('this.isOptionType'),
+
+  isOtherOptionEnabled: function () {
+    return this.get('isOptionType') && this.get('question').get('allowOtherFlag');
+  }.property('this.isOptionType'),
+
+  isOtherOptionSelected: function () {
+    var selectedOption = this.get('optionValue') && this.get('optionValue').get('lastObject');
+    return selectedOption && selectedOption.get('isOther');
+  }.property('this.optionValue'),
+
   photoUrl: function(){
     var c = this.content;
     if (!Ember.empty(c.get('value'))) {
@@ -163,11 +344,7 @@ FLOW.QuestionAnswerView = Ember.View.extend({
       var q = FLOW.questionControl.findProperty('keyId', +questionId);
       return q;
     }
-  }.property('FLOW.questionControl.content'),
-
-  init: function () {
-    this._super();
-  },
+  }.property('this.content'),
 
   doEdit: function () {
     this.set('inEditMode', true);
@@ -205,6 +382,24 @@ FLOW.QuestionAnswerView = Ember.View.extend({
         this.content.set('value', this.numberValue);
       }
     }
+
+    if (this.get('isOptionType')) {
+      var responseArray = [];
+      this.get('selectedOptionValues').forEach(function(option){
+        var obj = {};
+        if (option.get('code')) {
+          obj.code = option.get('code');
+        }
+        if (option.get('isOther')) {
+          obj.isOther = option.get('isOther');
+          obj.text = option.get('otherText');
+        } else {
+          obj.text = option.get('text');
+        }
+        responseArray.push(obj);
+      });
+      this.content.set('value', JSON.stringify(responseArray));
+    }
     FLOW.store.commit();
     this.set('inEditMode', false);
 
@@ -214,6 +409,57 @@ FLOW.QuestionAnswerView = Ember.View.extend({
     // TODO should check for minus sign and decimal point, depending on question setting
     this.set('numberValue', this.get('numberValue').toString().replace(/[^\d.]/g, ""));
   }.observes('this.numberValue')
+});
+
+FLOW.QuestionAnswerOptionListView = Ember.CollectionView.extend({
+  tagName: 'ul',
+  content: null,
+  itemViewClass: Ember.View.extend({
+    template: Ember.Handlebars.compile("{{view.content.text}}")
+  })
+});
+
+/**
+ * Multi select option editing view that renders question options with the allow
+ * multiple option selected.  The selection property should be a set of options
+ * that are considered to be selected (checked).  Whenever each options checkbox
+ * is modified, the set bound to the selection property is updated to add or remove
+ * the item.
+ *
+ * The inline view template displays the selected option's text with its corresponding
+ * checkbox and if the 'allow other' flag is set on the question, it displays in addition
+ * a text box to enable editing the other response text.
+ */
+FLOW.QuestionAnswerMultiOptionEditView = Ember.CollectionView.extend({
+  tagName: 'ul',
+  content: null,
+  selection: null,
+  itemViewClass: Ember.View.extend({
+    template: Ember.Handlebars.compile('{{view Ember.Checkbox checkedBinding="view.isSelected"}} {{view.content.text}}'),
+    isSelected: function(key, checked, previousValue) {
+      var selectedOptions = this.get('parentView').get('selection');
+      var newSelectedOptions = Ember.A();
+
+      // setter
+      if (arguments.length > 1) {
+        if (checked) {
+          selectedOptions.addObject(this.content);
+        } else {
+          selectedOptions.removeObject(this.content);
+        }
+        selectedOptions.forEach(function(option){
+          newSelectedOptions.push(option);
+        });
+
+        // Using a copy of the selected options 'newSelectedOptions' in order
+        // to trigger the setter property of the object bound to 'parentView.selection'
+        this.set('parentView.selection', newSelectedOptions);
+      }
+
+      // getter
+      return selectedOptions && selectedOptions.contains(this.content);
+    }.property('this.content'),
+  })
 });
 
 FLOW.QuestionAnswerInspectDataView = FLOW.QuestionAnswerView.extend({

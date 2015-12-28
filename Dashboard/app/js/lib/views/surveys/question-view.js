@@ -1,3 +1,7 @@
+function sortByOrder(a , b) {
+  return a.get('order') - b.get('order');
+}
+
 FLOW.QuestionView = FLOW.View.extend({
   templateName: 'navSurveys/question-view',
   content: null,
@@ -19,7 +23,6 @@ FLOW.QuestionView = FLOW.View.extend({
   requireDoubleEntry: null,
   dependentFlag: false,
   dependentQuestion: null,
-  optionList: null,
   includeInMap: null,
   showAddAttributeDialogBool: false,
   newAttributeName: null,
@@ -30,37 +33,6 @@ FLOW.QuestionView = FLOW.View.extend({
   allowPolygon: true,
   questionValidationFailure: false,
   questionTooltipValidationFailure: false,
-
-  init: function () {
-    var self, qoList, i;
-    qoList = "";
-    this._super();
-    self = this;
-    if (this.content && this.content.get('type') == 'OPTION') {
-      options = FLOW.store.filter(FLOW.QuestionOption, function (item) {
-        if (!Ember.none(self.content)) {
-          return item.get('questionId') == self.content.get('keyId');
-        } else {
-          return false;
-        }
-      });
-      i = 0;
-      optionArray = options.toArray();
-      optionArray.sort(function (a, b) {
-    	  return a.get('order') - b.get('order');
-      });
-
-      optionArray.forEach(function (item) {
-        if (i === 0) {
-          qoList += item.get('text');
-        } else {
-          qoList += "\n" + item.get('text');
-        }
-        i++;
-      });
-      self.content.set('questionOptionList', qoList);
-    }
-  },
 
   showMetaConfig: function () {
     return FLOW.Env.showMonitoringFeature;
@@ -83,13 +55,11 @@ FLOW.QuestionView = FLOW.View.extend({
       return false;
     }
   }.property('this.type').cacheable(),
+
   amOptionType: function () {
-    if (this.type) {
-      return this.type.get('value') == 'OPTION';
-    } else {
-      return false;
-    }
-  }.property('this.type').cacheable(),
+    return (this.content && this.content.get('type') === 'OPTION')
+            || (this.type && this.type.get('value') === "OPTION");
+  }.property('this.type'),
 
   amNumberType: function () {
     if (this.type) {
@@ -180,7 +150,6 @@ FLOW.QuestionView = FLOW.View.extend({
     this.set('localeLocationFlag', this.type.get('value') == 'GEO');
   }.observes('this.type'),
 
-
   // TODO dependencies
   // TODO options
   doQuestionEdit: function () {
@@ -192,7 +161,8 @@ FLOW.QuestionView = FLOW.View.extend({
 			     Ember.String.loc('_question_is_being_saved_text'));
       return;
     }
-    this.init();
+
+    this.loadQuestionOptions();
 
     FLOW.selectedControl.set('selectedQuestion', this.get('content'));
     this.set('questionId', FLOW.selectedControl.selectedQuestion.get('questionId'));
@@ -212,7 +182,6 @@ FLOW.QuestionView = FLOW.View.extend({
     this.set('requireDoubleEntry', FLOW.selectedControl.selectedQuestion.get('requireDoubleEntry'));
     this.set('includeInMap', FLOW.selectedControl.selectedQuestion.get('includeInMap'));
     this.set('dependentFlag', FLOW.selectedControl.selectedQuestion.get('dependentFlag'));
-    this.set('optionList', FLOW.selectedControl.selectedQuestion.get('questionOptionList'));
     this.set('allowPoints', FLOW.selectedControl.selectedQuestion.get('allowPoints'));
     this.set('allowLine', FLOW.selectedControl.selectedQuestion.get('allowLine'));
     this.set('allowPolygon', FLOW.selectedControl.selectedQuestion.get('allowPolygon'));
@@ -259,6 +228,23 @@ FLOW.QuestionView = FLOW.View.extend({
       }
     });
     this.set('type', questionType);
+  },
+
+  /*
+   *  Load the question options for question editing
+   */
+  loadQuestionOptions: function () {
+    var c = this.content;
+    FLOW.questionOptionsControl.set('content', []);
+    FLOW.questionOptionsControl.set('questionId', null);
+
+    options = FLOW.store.filter(FLOW.QuestionOption, function (optionItem) {
+        return optionItem.get('questionId') === c.get('keyId');
+    });
+
+    optionArray = Ember.A(options.toArray().sort(sortByOrder));
+    FLOW.questionOptionsControl.set('content', optionArray);
+    FLOW.questionOptionsControl.set('questionId', c.get('keyId'));
   },
 
   fillOptionList: function () {
@@ -311,6 +297,17 @@ FLOW.QuestionView = FLOW.View.extend({
         this.showMessageDialog(Ember.String.loc('_tooltip_over_500_chars_header'), Ember.String.loc('_tooltip_over_500_chars_text'));
         return;
       }
+
+    if (this.get('amOptionType')) {
+      var invalidOptions = FLOW.questionOptionsControl.validateOptions();
+      if (invalidOptions) {
+        this.showMessageDialog(Ember.String.loc('_invalid_options_header'), invalidOptions);
+        return;
+      }
+
+      // save options to the datastore
+      FLOW.questionOptionsControl.persistOptions();
+    }
 
     if (this.type.get('value') === 'CASCADE' && Ember.empty(FLOW.selectedControl.get('selectedCascadeResource'))) {
         FLOW.dialogControl.set('activeAction', 'ignore');
@@ -391,66 +388,6 @@ FLOW.QuestionView = FLOW.View.extend({
 
     if (this.get('type')) {
       FLOW.selectedControl.selectedQuestion.set('type', this.type.get('value'));
-    }
-
-    // deal with saving options
-    // the questionOptionList field is created in the init method, and contains the list of options as a string
-    // if the list of options is not equal to the edited list, we need to save it
-    if (FLOW.selectedControl.selectedQuestion.get('questionOptionList') != this.get('optionList')) {
-      options = FLOW.store.filter(FLOW.QuestionOption, function (item) {
-        if (!Ember.none(FLOW.selectedControl.selectedQuestion)) {
-          return item.get('questionId') == FLOW.selectedControl.selectedQuestion.get('keyId');
-        } else {
-          return false;
-        }
-      });
-
-      var newOptionStringArray = [];
-      this.get('optionList').split('\n').forEach(function(optionItem){
-            newOptionStringArray.push(optionItem.trim());
-      });
-
-      optionsToDelete = [];
-
-      options.forEach(function (item) {
-        optionsToDelete.push(item.get('keyId'));
-      });
-
-      order = 1;
-      newOptionStringArray.forEach(function (item) {
-        found = false;
-        // skip empty lines
-        if (!Ember.empty(item)) {
-          // if there is an existing option with this value, use it and change order if neccessary
-          options.forEach(function (optionItem) {
-	    if (item == optionItem.get('text')) {
-	      found = true;
-	      // adapt order if necessary
-	      if (optionItem.get('order') != order) {
-                optionItem.set('order', order);
-	      }
-	      // don't delete this one
-	      optionsToDelete.splice(optionsToDelete.indexOf(optionItem.get('keyId')), 1);
-	    }
-          });
-          if (!found) {
-	    // create new one
-	    FLOW.store.createRecord(FLOW.QuestionOption, {
-	      text: item,
-	      questionId: FLOW.selectedControl.selectedQuestion.get('keyId'),
-	      order: order
-	    });
-          }
-          order++;
-        }
-      });
-
-      // delete unused questionOptions
-      for (var ii = 0; ii < optionsToDelete.length; ii++) {
-        opToDel = FLOW.store.find(FLOW.QuestionOption, optionsToDelete[ii]);
-        opToDel.deleteRecord();
-      }
-      FLOW.selectedControl.selectedQuestion.set('questionOptionList', this.get('optionList'));
     }
 
     // deal with cascadeResource
@@ -902,4 +839,15 @@ FLOW.QuestionView = FLOW.View.extend({
     var form = FLOW.selectedControl.get('selectedSurvey');
     return FLOW.permControl.canEditForm(form);
   }.property('FLOW.selectedControl.selectedSurvey'),
+});
+
+/*
+ *  View to render the options for an option type question.
+ */
+FLOW.OptionListView = Ember.CollectionView.extend({
+  tagName: 'ul',
+  content: null,
+  itemViewClass: Ember.View.extend({
+    templateName: 'navSurveys/question-option',
+  }),
 });

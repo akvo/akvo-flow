@@ -94,10 +94,11 @@ Ember.Handlebars.registerHelper('tooltip', function (i18nKey) {
 
 
 Ember.Handlebars.registerHelper('placemarkDetail', function () {
-  var answer, markup, question, cascadeJson, cascadeString = "", questionType;
+  var answer, markup, question, cascadeJson, optionJson, cascadeString = "", questionType;
 
   question = Ember.get(this, 'questionText');
-  answer = Ember.get(this, 'stringValue').replace(/\|/g, ' | '); // geo data
+  answer = Ember.get(this, 'stringValue') || '';
+  answer = answer.replace(/\|/g, ' | '); // geo, option and cascade data
   answer = answer.replace(/\//g, ' / '); // also split folder paths
   questionType = Ember.get(this, 'questionType');
 
@@ -111,6 +112,11 @@ Ember.Handlebars.registerHelper('placemarkDetail', function () {
           return item.name;
         }).join("|");
       }
+  } else if (questionType === 'OPTION' && answer.charAt(0) === '[') {
+    optionJson = JSON.parse(answer);
+    answer = optionJson.map(function(item){
+      return item.text;
+    }).join("|");
   } else if (questionType === 'DATE') {
     answer = renderTimeStamp(answer);
   }
