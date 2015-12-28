@@ -134,12 +134,9 @@ FLOW.QuestionView = FLOW.View.extend({
     }.property('this.type').cacheable(),    
 
   amSignatureType: function () {
-      if (this.type) {
-        return this.type.get('value') == 'SIGNATURE';
-      } else {
-        return false;
-      }
-    }.property('this.type').cacheable(),
+    return (this.content && this.content.get('type') === 'SIGNATURE')
+            || (this.type && this.type.get('value') === 'SIGNATURE');
+  }.property('this.type'),
 
   showLocaleName: function () {
       if (!this.type) {
