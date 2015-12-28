@@ -272,8 +272,7 @@ Ember.Handlebars.registerHelper("date3", function (property) {
 FLOW.parseGeoshape = function(geoshapeString) {
   try {
     var geoshapeObject = JSON.parse(geoshapeString);
-    if (geoshapeObject['features'].length > 0 &&
-        geoshapeObject['features'][0]["geometry"]["type"] === "Polygon") {
+    if (geoshapeObject['features'].length > 0) {
         return geoshapeObject;
     } else {
       return null;
@@ -281,6 +280,78 @@ FLOW.parseGeoshape = function(geoshapeString) {
   } catch (e) {
     return null;
   }
+};
+
+FLOW.drawGeoShape = function(containerNode, geoShapeObject){
+  containerNode.style.height = "150px";
+
+  var geoshapeCoordinatesArray, geoShapeObjectType = geoShapeObject['features'][0]['geometry']['type'];
+  if(geoShapeObjectType === "Polygon"){
+    geoshapeCoordinatesArray = geoShapeObject['features'][0]['geometry']['coordinates'][0];
+  } else {
+    geoshapeCoordinatesArray = geoShapeObject['features'][0]['geometry']['coordinates'];
+  }
+  var points = [];
+
+  for(var j=0; j<geoshapeCoordinatesArray.length; j++){
+    points.push([geoshapeCoordinatesArray[j][1], geoshapeCoordinatesArray[j][0]]);
+  }
+
+  var center = FLOW.getCentroid(points);
+
+  var geoshapeMap = L.map(containerNode, {scrollWheelZoom: false}).setView(center, 2);
+
+  geoshapeMap.options.maxZoom = 18;
+  geoshapeMap.options.minZoom = 2;
+  var mbAttr = 'Map &copy; 1987-2014 <a href="http://developer.here.com">HERE</a>';
+  var mbUrl = 'https://{s}.{base}.maps.cit.api.here.com/maptile/2.1/maptile/{mapID}/{scheme}/{z}/{x}/{y}/256/{format}?app_id={app_id}&app_code={app_code}';
+  var normal = L.tileLayer(mbUrl, {
+    scheme: 'normal.day.transit',
+    format: 'png8',
+    attribution: mbAttr,
+    subdomains: '1234',
+    mapID: 'newest',
+    app_id: FLOW.Env.hereMapsAppId,
+    app_code: FLOW.Env.hereMapsAppCode,
+    base: 'base'
+  }).addTo(geoshapeMap);
+  var satellite  = L.tileLayer(mbUrl, {
+    scheme: 'hybrid.day',
+    format: 'jpg',
+    attribution: mbAttr,
+    subdomains: '1234',
+    mapID: 'newest',
+    app_id: FLOW.Env.hereMapsAppId,
+    app_code: FLOW.Env.hereMapsAppCode,
+    base: 'aerial'
+  });
+  var baseLayers = {
+    "Normal": normal,
+    "Satellite": satellite
+  };
+  L.control.layers(baseLayers).addTo(geoshapeMap);
+
+  //Draw geoshape based on its type
+  if(geoShapeObjectType === "Polygon"){
+    var geoShapePolygon = L.polygon(points).addTo(geoshapeMap);
+    geoshapeMap.fitBounds(geoShapePolygon.getBounds());
+  }else if (geoShapeObjectType === "MultiPoint") {
+    var geoShapeMarkersArray = [];
+    for (var i = 0; i < points.length; i++) {
+      geoShapeMarkersArray.push(L.marker([points[i][0],points[i][1]]));
+    }
+    var geoShapeMarkers = L.featureGroup(geoShapeMarkersArray).addTo(geoshapeMap);
+    geoshapeMap.fitBounds(geoShapeMarkers.getBounds());
+  }else if (geoShapeObjectType === "LineString") {
+    var geoShapeLine = L.polyline(points).addTo(geoshapeMap);
+    geoshapeMap.fitBounds(geoShapeLine.getBounds());
+  }
+};
+
+FLOW.getCentroid = function (arr) {
+  return arr.reduce(function (x,y) {
+    return [x[0] + y[0]/arr.length, x[1] + y[1]/arr.length]
+  }, [0,0])
 }
 
 Ember.Handlebars.registerHelper("getServer", function () {
