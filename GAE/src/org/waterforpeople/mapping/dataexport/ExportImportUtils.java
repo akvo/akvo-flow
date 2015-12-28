@@ -32,7 +32,14 @@ import com.gallatinsystems.common.util.StringUtil;
 
 public class ExportImportUtils {
     private static final Logger log = Logger.getLogger(ExportImportUtils.class);
-    private static final DataFormatter dataFormatter = new DataFormatter();
+
+    private static final ThreadLocal<DataFormatter> DATA_FORMATTER = new ThreadLocal<DataFormatter>() {
+        @Override
+        protected DataFormatter initialValue() {
+            return new DataFormatter();
+        }
+    };
+
     private static final ThreadLocal<DateFormat> DATE_FORMAT = new ThreadLocal<DateFormat>() {
         @Override
         protected DateFormat initialValue() {
@@ -47,7 +54,7 @@ public class ExportImportUtils {
      * @return
      */
     public static String parseCellAsString(Cell cell) {
-        return dataFormatter.formatCellValue(cell).trim();
+        return DATA_FORMATTER.get().formatCellValue(cell).trim();
     }
 
     /**
