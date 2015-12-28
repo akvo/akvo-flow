@@ -187,7 +187,7 @@ FLOW.NavMapsView = FLOW.View.extend({
 
     this.set('showDetailsBool', true);
     details.forEach(function (item) {
-      rawImagePath = item.get('stringValue');
+      rawImagePath = item.get('stringValue') || '';
       verticalBars = rawImagePath.split('|');
       if (verticalBars.length === 4) {
         FLOW.placemarkDetailController.set('selectedPointCode',

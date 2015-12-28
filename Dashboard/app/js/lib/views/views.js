@@ -97,7 +97,8 @@ Ember.Handlebars.registerHelper('placemarkDetail', function () {
   var answer, markup, question, cascadeJson, optionJson, cascadeString = "", questionType;
 
   question = Ember.get(this, 'questionText');
-  answer = Ember.get(this, 'stringValue').replace(/\|/g, ' | '); // geo data
+  answer = Ember.get(this, 'stringValue') || '';
+  answer = answer.replace(/\|/g, ' | '); // geo, option and cascade data
   answer = answer.replace(/\//g, ' / '); // also split folder paths
   questionType = Ember.get(this, 'questionType');
 
