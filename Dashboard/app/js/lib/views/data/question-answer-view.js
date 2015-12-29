@@ -48,6 +48,10 @@ FLOW.QuestionAnswerView = Ember.View.extend({
     return this.get('questionType') === 'GEOSHAPE';
   }.property('this.questionType'),
 
+  isSignatureType: function(){
+    return this.get('questionType') === 'SIGNATURE';
+  }.property('this.questionType'),
+
   nonEditableQuestionTypes: ['GEO', 'PHOTO', 'VIDEO', 'GEOSHAPE', 'SIGNATURE'],
 
   form: function() {
@@ -126,6 +130,31 @@ FLOW.QuestionAnswerView = Ember.View.extend({
   }.property('this.questionType,this.form'),
 
   date: null,
+
+  /*
+   *  Extract base64 signature image data and convert to src attribute for
+   *  HTML img tag
+   */
+  signatureImageSrc: function () {
+    var c = this.content, srcAttr = 'data:image/png;base64,', signatureJson;
+    if (c && c.get('value')) {
+      signatureJson = JSON.parse(c.get('value'));
+      return srcAttr + signatureJson.image;
+    }
+    return null
+  }.property('this.content'),
+
+  /*
+   * Extract signatory from signature response
+   */
+  signatureSignatory: function () {
+    var c = this.content, signatureJson;
+    if (c && c.get('value')) {
+      signatureJson = JSON.parse(c.get('value'));
+      return signatureJson.name.trim();
+    }
+    return null;
+  }.property('this.content'),
 
   numberValue: null,
 

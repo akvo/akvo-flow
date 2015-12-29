@@ -45,9 +45,16 @@
                     {{view FLOW.QuestionAnswerOptionListView contentBinding="view.optionValue"}}
                 {{else}} {{#if view.isGeoShapeType}}
                   {{view FLOW.GeoshapeMapView}}
+                {{else}} {{#if view.isSignatureType}}
+                    {{#if view.signatureImageSrc}}
+                        <div class="signatureImage"><img {{bindAttr src="view.signatureImageSrc"}} /></div>
+                        <div class="signedBySection">{{t _signed_by}}: {{view.signatureSignatory}}</div>
+                    {{else}}
+                        {{t _no_signature_found}}
+                    {{/if}}
                 {{else}}
                     {{value}}
-                {{/if}} {{/if}} {{/if}} {{/if}} {{/if}} {{/if}}
+                {{/if}} {{/if}} {{/if}} {{/if}} {{/if}} {{/if}} {{/if}}
             {{else}}
                 {{#if view.isDateType}}
                     <a {{action doEdit target="this" }}>{{date3 value}}</a>
