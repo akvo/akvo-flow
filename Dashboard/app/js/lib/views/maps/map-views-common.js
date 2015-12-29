@@ -652,7 +652,21 @@ FLOW.NavMapsView = FLOW.View.extend({
                           var dateQuestion = new Date(questionAnswer);
                           clickedPointContent += dateQuestion.toUTCString().slice(0, -13); //remove last 13 x-ters so only date displays
                         }else{
-                          clickedPointContent += questionAnswer;
+                          //if question is cascade type
+                          if(questionsData['questions'][i].type == "CASCADE" && questionAnswer !== null && questionAnswer !== "null"){
+                            var cascadeString = "", cascadeJson;
+                            if (questionAnswer.indexOf("|") > -1) {
+                              cascadeString = questionAnswer;
+                            } else {
+                              cascadeJson = JSON.parse(questionAnswer);
+                              cascadeString = cascadeJson.map(function(item){
+                                return item.name;
+                              }).join("|");
+                            }
+                            clickedPointContent += cascadeString;
+                          }else{
+                            clickedPointContent += questionAnswer;
+                          }
                         }
                       }
                     }
