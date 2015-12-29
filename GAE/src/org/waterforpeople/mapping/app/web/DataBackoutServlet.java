@@ -25,6 +25,7 @@ import java.util.List;
 
 import javax.servlet.http.HttpServletRequest;
 
+import org.akvo.flow.domain.DataUtils;
 import org.apache.commons.codec.binary.Base64;
 import org.json.JSONObject;
 import org.waterforpeople.mapping.analytics.dao.AccessPointStatusSummaryDao;
@@ -172,6 +173,11 @@ public class DataBackoutServlet extends AbstractRestApiServlet {
                     Integer iteration = qas.getIteration();
                     iteration = iteration == null ? 0 : iteration;
                     String value = qas.getValue();
+
+                    // strip image data that will not be used in the excel export
+                    if (Question.Type.SIGNATURE.toString().equals(qas.getType())) {
+                        value = DataUtils.parseSignatory(value);
+                    }
                     value = value == null ? "" : value;
 
                     result.append(questionId)
