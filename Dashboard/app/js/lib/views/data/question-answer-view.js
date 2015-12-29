@@ -48,7 +48,7 @@ FLOW.QuestionAnswerView = Ember.View.extend({
     return this.get('questionType') === 'GEOSHAPE';
   }.property('this.questionType'),
 
-  nonEditableQuestionTypes: ['GEO', 'PHOTO', 'VIDEO', 'GEOSHAPE'],
+  nonEditableQuestionTypes: ['GEO', 'PHOTO', 'VIDEO', 'GEOSHAPE', 'SIGNATURE'],
 
   form: function() {
     if (FLOW.selectedControl.get('selectedSurvey')) {
