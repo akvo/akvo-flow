@@ -31,6 +31,9 @@ FLOW.questionTypeControl = Ember.Object.create({
     }), Ember.Object.create({
       label: Ember.String.loc('_geoshape'),
       value: 'GEOSHAPE'
+    }), Ember.Object.create({
+      label: Ember.String.loc('_signature'),
+      value: 'SIGNATURE'
     })
   ]
 });

@@ -113,7 +113,7 @@ FLOW.QuestionView = FLOW.View.extend({
     var val;
     if (!Ember.none(this.type)) {
       val = this.type.get('value');
-      return val == 'PHOTO' || val == 'VIDEO' || val == 'DATE';
+      return val === 'PHOTO' || val === 'VIDEO' || val === 'DATE' || val === 'SIGNATURE';
     }
   }.property('this.type').cacheable(),
 
@@ -132,6 +132,11 @@ FLOW.QuestionView = FLOW.View.extend({
         return false;
       }
     }.property('this.type').cacheable(),    
+
+  amSignatureType: function () {
+    return (this.content && this.content.get('type') === 'SIGNATURE')
+            || (this.type && this.type.get('value') === 'SIGNATURE');
+  }.property('this.type'),
 
   showLocaleName: function () {
       if (!this.type) {
