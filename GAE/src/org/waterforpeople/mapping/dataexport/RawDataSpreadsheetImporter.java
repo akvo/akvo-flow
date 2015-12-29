@@ -434,6 +434,11 @@ public class RawDataSpreadsheetImporter implements DataImporter {
                             }
                             break;
 
+                        case SIGNATURE:
+                            // we do not allow importing / overwriting signature question responses
+                            val = null;
+                            break;
+
                         default:
                             val = ExportImportUtils.parseCellAsString(cell);
                             break;
