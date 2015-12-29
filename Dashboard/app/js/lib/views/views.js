@@ -94,7 +94,7 @@ Ember.Handlebars.registerHelper('tooltip', function (i18nKey) {
 
 
 Ember.Handlebars.registerHelper('placemarkDetail', function () {
-  var answer, markup, question, cascadeJson, optionJson, cascadeString = "", questionType;
+  var answer, markup, question, cascadeJson, optionJson, cascadeString = "", questionType, imageSrcAttr, signatureJson;
 
   question = Ember.get(this, 'questionText');
   answer = Ember.get(this, 'stringValue') || '';
@@ -117,6 +117,12 @@ Ember.Handlebars.registerHelper('placemarkDetail', function () {
     answer = optionJson.map(function(item){
       return item.text;
     }).join("|");
+  } else if (questionType === 'SIGNATURE') {
+    imageSrcAttr = 'data:image/png;base64,';
+    signatureJson = JSON.parse(answer);
+    answer = signatureJson && imageSrcAttr + signatureJson.image || '';
+    answer = answer && '<img src="' + answer + '" />';
+    answer = answer && answer + '<div>' + Ember.String.loc('_signed_by') + ':' + signatureJson.name + '</div>' || '';
   } else if (questionType === 'DATE') {
     answer = renderTimeStamp(answer);
   }
