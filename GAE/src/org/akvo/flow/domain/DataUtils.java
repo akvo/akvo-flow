@@ -94,4 +94,25 @@ public class DataUtils {
         }
         return optionNodes;
     }
+
+    /**
+     * Process the JSON formatted string value of a signature question and return the string
+     * representing the signatory. A blank string is returned
+     *
+     * @param value
+     * @return
+     */
+    public static String parseSignatory(String value) {
+        String signatory = null;
+        Map<String, String> signatureResponse = null;
+        try {
+            signatureResponse = JSON_OBJECT_MAPPER.readValue(value,
+                    new TypeReference<Map<String, String>>() {
+                    });
+            signatory = signatureResponse.get("name");
+        } catch (IOException e) {
+            // ignore
+        }
+        return signatory;
+    }
 }
