@@ -264,9 +264,13 @@ FLOW.projectControl = Ember.ArrayController.create({
         keyedSurvey = FLOW.store.find(FLOW.SurveyGroup, key);
         if (keyedSurvey) {
           var keyedAncestorIds = keyedSurvey.get('ancestorIds');
-          for (var j = 0; j < keyedAncestorIds.length; j++) {
-            if(keyedAncestorIds[j] === surveyGroup.get('keyId')) {
-              return true;
+          if (keyedAncestorIds === null) {
+            return false;
+          } else {
+            for (var j = 0; j < keyedAncestorIds.length; j++) {
+              if(keyedAncestorIds[j] === surveyGroup.get('keyId')) {
+                return true;
+              }
             }
           }
         }
