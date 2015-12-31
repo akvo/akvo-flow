@@ -272,7 +272,6 @@ FLOW.projectControl = Ember.ArrayController.create({
                 return true;
               }
             }
-
           }
         }
       }
