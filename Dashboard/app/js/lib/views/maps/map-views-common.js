@@ -653,13 +653,13 @@ FLOW.NavMapsView = FLOW.View.extend({
                         case "CASCADE":
                         case "OPTION":
                           var cascadeString = "", cascadeJson;
-                          if (questionAnswer.indexOf("|") > -1) {
-                            cascadeString = questionAnswer;
-                          } else {
+                          if (questionAnswer.charAt(0) === '[') {
                             cascadeJson = JSON.parse(questionAnswer);
                             cascadeString = cascadeJson.map(function(item){
                               return (questionsData['questions'][i].type == "CASCADE") ? item.name : item.text;
                             }).join("|");
+                          } else {
+                            cascadeString = questionAnswer;
                           }
                           clickedPointContent += cascadeString;
                           break;
