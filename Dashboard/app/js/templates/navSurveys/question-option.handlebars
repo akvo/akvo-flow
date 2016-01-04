@@ -1,3 +1,3 @@
-{{view Ember.TextField valueBinding="view.content.code" size=5}}
-{{view Ember.TextField valueBinding="view.content.text" size=15}}
+{{view Ember.TextField valueBinding="view.content.code" placeholderBinding="Ember.STRINGS._code" size=5}}
+{{view Ember.TextField valueBinding="view.content.text" placeholderBinding="Ember.STRINGS._text_placeholder" size=15}}
 <a {{action deleteOption target="FLOW.questionOptionsControl"}}>{{t _delete_option}}</a>
