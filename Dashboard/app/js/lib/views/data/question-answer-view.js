@@ -49,7 +49,7 @@ FLOW.QuestionAnswerView = Ember.View.extend({
   }.property('this.questionType'),
 
   isSignatureType: function(){
-    return this.get('questionType') === 'SIGNATURE';
+    return this.get('questionType') === 'SIGNATURE' || (this.content && this.content.get('type') === 'SIGNATURE');
   }.property('this.questionType'),
 
   nonEditableQuestionTypes: ['GEO', 'PHOTO', 'VIDEO', 'GEOSHAPE', 'SIGNATURE'],
