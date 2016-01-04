@@ -610,20 +610,18 @@ FLOW.NavMapsView = FLOW.View.extend({
 
                     clickedPointContent += '<div style="float: left; width: 100%">';
 
-                    //if question is of type, photo load a html image element
-                    if(questionsData['questions'][i].type == "PHOTO"){
-                      var image = '<div class=":imgContainer photoUrl:shown:hidden">';
-                      if(questionAnswer != null){
-                        var image_filename = FLOW.Env.photo_url_root+questionAnswer.substring(questionAnswer.lastIndexOf("/")+1);
-                        image += '<a href="'+image_filename+'" target="_blank">'
-                        +'<img src="'+image_filename+'" alt=""/></a>';
-                      }
-                      image +'</div>';
-                      clickedPointContent += image;
-                    }else{
-                      //if point is a geoshape, draw the shape in the side window
-                      if(questionsData['questions'][i].type == "GEOSHAPE" && questionAnswer !== null){
-                        if(questionAnswer !== "" && questionAnswer !== null && questionAnswer !== "null"){
+                    if(questionAnswer !== "" && questionAnswer !== null && questionAnswer !== "null"){
+                      switch (questionsData['questions'][i].type) {
+                        case "PHOTO":
+                          var image = '<div class=":imgContainer photoUrl:shown:hidden">';
+                          var image_filename = FLOW.Env.photo_url_root+questionAnswer.substring(questionAnswer.lastIndexOf("/")+1);
+                          image += '<a href="'+image_filename+'" target="_blank">'
+                          +'<img src="'+image_filename+'" alt=""/></a>';
+
+                          image += '</div>';
+                          clickedPointContent += image;
+                          break;
+                        case "GEOSHAPE":
                           geoshapeObject = FLOW.parseGeoshape(questionAnswer);
                           self.geoshapeCoordinates = geoshapeObject;
 
@@ -646,28 +644,27 @@ FLOW.NavMapsView = FLOW.View.extend({
                               clickedPointContent += '<div style="float: left; width: 100%">'+ Ember.String.loc('_area') +': '+geoshapeObject['features'][0]['properties']['area']+'m&sup2;</div>';
                             }
                           }
-                        }
-                      }else{
-                        if(questionsData['questions'][i].type == "DATE" && questionAnswer !== "" && questionAnswer !== null && questionAnswer !== "null"){
-                          var dateQuestion = new Date(questionAnswer);
+                          break;
+                        case "DATE":
+                          var dateQuestion = new Date((isNaN(questionAnswer) === false) ? parseInt(questionAnswer) : questionAnswer);
+                          console.log(questionAnswer+" "+dateQuestion.toUTCString());
                           clickedPointContent += dateQuestion.toUTCString().slice(0, -13); //remove last 13 x-ters so only date displays
-                        }else{
-                          //if question is cascade type
-                          if(questionsData['questions'][i].type == "CASCADE" && questionAnswer !== null && questionAnswer !== "null"){
-                            var cascadeString = "", cascadeJson;
-                            if (questionAnswer.indexOf("|") > -1) {
-                              cascadeString = questionAnswer;
-                            } else {
-                              cascadeJson = JSON.parse(questionAnswer);
-                              cascadeString = cascadeJson.map(function(item){
-                                return item.name;
-                              }).join("|");
-                            }
-                            clickedPointContent += cascadeString;
-                          }else{
-                            clickedPointContent += questionAnswer;
+                          break;
+                        case "CASCADE":
+                        case "OPTION":
+                          var cascadeString = "", cascadeJson;
+                          if (questionAnswer.indexOf("|") > -1) {
+                            cascadeString = questionAnswer;
+                          } else {
+                            cascadeJson = JSON.parse(questionAnswer);
+                            cascadeString = cascadeJson.map(function(item){
+                              return (questionsData['questions'][i].type == "CASCADE") ? item.name : item.text;
+                            }).join("|");
                           }
-                        }
+                          clickedPointContent += cascadeString;
+                          break;
+                        default:
+                          clickedPointContent += questionAnswer
                       }
                     }
                     clickedPointContent += "&nbsp;</div><hr>";
