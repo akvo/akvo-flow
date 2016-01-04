@@ -241,25 +241,32 @@ FLOW.projectControl = Ember.ArrayController.create({
     var keyedSurvey;
 
     for (var key in permissions) {
-        if(permissions[key].indexOf("DATA_CLEANING") > -1){
-            // check key against survey group
-          if(surveyGroup.get('keyId') === +key) {
-            return true;
-          }
+      if(permissions[key].indexOf("DATA_CLEANING") > -1){
+        // check key against survey group
+        if(surveyGroup.get('keyId') === +key) {
+          return true;
+        }
 
-          // check ancestors to for matching permission from higher level in hierarchy
-          var ancestorIds = surveyGroup.get('ancestorIds');
+        // check ancestors to for matching permission from higher level in hierarchy
+        var ancestorIds = surveyGroup.get('ancestorIds');
+        if (ancestorIds === null) {
+          return false;
+        } else {
           for(var i = 0; i < ancestorIds.length; i++){
             if(ancestorIds[i] === +key) {
               return true;
             }
           }
+        }
 
-          // finally check for all descendents that may have surveyGroup.keyId in their
-          // ancestor list otherwise will not be able to browse to them.
-          keyedSurvey = FLOW.store.find(FLOW.SurveyGroup, key);
-          if (keyedSurvey) {
-            var keyedAncestorIds = keyedSurvey.get('ancestorIds');
+        // finally check for all descendents that may have surveyGroup.keyId in their
+        // ancestor list otherwise will not be able to browse to them.
+        keyedSurvey = FLOW.store.find(FLOW.SurveyGroup, key);
+        if (keyedSurvey) {
+          var keyedAncestorIds = keyedSurvey.get('ancestorIds');
+          if (keyedAncestorIds === null) {
+            return false;
+          } else {
             for (var j = 0; j < keyedAncestorIds.length; j++) {
               if(keyedAncestorIds[j] === surveyGroup.get('keyId')) {
                 return true;
@@ -267,6 +274,7 @@ FLOW.projectControl = Ember.ArrayController.create({
             }
           }
         }
+      }
     }
     return false;
   },
