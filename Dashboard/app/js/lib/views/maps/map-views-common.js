@@ -595,9 +595,6 @@ FLOW.NavMapsView = FLOW.View.extend({
               clickedPointContent += '<div class="mapInfoDetail" style="opacity: 1; display: inherit;">';
               for (column in pointData['answers']){
                 var questionAnswer = pointData['answers'][column];
-                if(questionAnswer !== null && questionAnswer !== "null"){
-
-                }
                 for(var i=0; i<questionsData['questions'].length; i++){
                   if (column.match(questionsData['questions'][i].id)) {
                     if(questionsData['questions'][i].type === "GEOSHAPE" && questionAnswer !== null){
