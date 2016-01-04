@@ -647,19 +647,18 @@ FLOW.NavMapsView = FLOW.View.extend({
                           break;
                         case "DATE":
                           var dateQuestion = new Date((isNaN(questionAnswer) === false) ? parseInt(questionAnswer) : questionAnswer);
-                          console.log(questionAnswer+" "+dateQuestion.toUTCString());
                           clickedPointContent += dateQuestion.toUTCString().slice(0, -13); //remove last 13 x-ters so only date displays
                           break;
                         case "CASCADE":
                         case "OPTION":
                           var cascadeString = "", cascadeJson;
-                          if (questionAnswer.indexOf("|") > -1) {
-                            cascadeString = questionAnswer;
-                          } else {
+                          if (questionAnswer.charAt(0) === '[') {
                             cascadeJson = JSON.parse(questionAnswer);
                             cascadeString = cascadeJson.map(function(item){
                               return (questionsData['questions'][i].type == "CASCADE") ? item.name : item.text;
                             }).join("|");
+                          } else {
+                            cascadeString = questionAnswer;
                           }
                           clickedPointContent += cascadeString;
                           break;
