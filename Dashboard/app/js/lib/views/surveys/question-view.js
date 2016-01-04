@@ -247,9 +247,13 @@ FLOW.QuestionView = FLOW.View.extend({
         return optionItem.get('questionId') === c.get('keyId');
     });
 
-    optionArray = Ember.A(options.toArray().sort(sortByOrder));
-    FLOW.questionOptionsControl.set('content', optionArray);
-    FLOW.questionOptionsControl.set('questionId', c.get('keyId'));
+    if (options.get('length')) {
+      optionArray = Ember.A(options.toArray().sort(sortByOrder));
+      FLOW.questionOptionsControl.set('content', optionArray);
+      FLOW.questionOptionsControl.set('questionId', c.get('keyId'));
+    } else {
+      FLOW.questionOptionsControl.loadDefaultOptions();
+    }
   },
 
   fillOptionList: function () {

@@ -926,6 +926,25 @@ FLOW.questionOptionsControl = Ember.ArrayController.create({
   questionId: null,
 
   /*
+   *  Add two empty option objects to the options list.  This is used
+   *  as a default setup for new option questions
+   */
+  loadDefaultOptions: function () {
+    var c = this.content, defaultLength = 2;
+    if (c && c.get('length') === 0) {
+      while (defaultLength > 0) {
+        c.addObject(Ember.Object.create({
+          code: null,
+          text: null,
+          order: c.get('length') + 1,
+          questionId: this.get('questionId'),
+        }));
+        defaultLength--;
+      }
+    }
+  },
+
+  /*
    *  Add a new option object to the content of this controller.  The object
    *  is not persisted to the data store.
    */
