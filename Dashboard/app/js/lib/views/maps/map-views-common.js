@@ -647,7 +647,6 @@ FLOW.NavMapsView = FLOW.View.extend({
                           break;
                         case "DATE":
                           var dateQuestion = new Date((isNaN(questionAnswer) === false) ? parseInt(questionAnswer) : questionAnswer);
-                          console.log(questionAnswer+" "+dateQuestion.toUTCString());
                           clickedPointContent += dateQuestion.toUTCString().slice(0, -13); //remove last 13 x-ters so only date displays
                           break;
                         case "CASCADE":
