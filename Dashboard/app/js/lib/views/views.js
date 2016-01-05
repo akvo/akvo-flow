@@ -288,14 +288,14 @@ FLOW.parseGeoshape = function(geoshapeString) {
   }
 };
 
-FLOW.drawGeoShape = function(containerNode, geoShapeObject){
+FLOW.drawGeoShape = function(containerNode, geoShapeObjectType, geoShapeObjectCoordinates){
   containerNode.style.height = "150px";
 
-  var geoshapeCoordinatesArray, geoShapeObjectType = geoShapeObject['features'][0]['geometry']['type'];
+  var geoshapeCoordinatesArray;
   if(geoShapeObjectType === "Polygon"){
-    geoshapeCoordinatesArray = geoShapeObject['features'][0]['geometry']['coordinates'][0];
+    geoshapeCoordinatesArray = geoShapeObjectCoordinates[0];
   } else {
-    geoshapeCoordinatesArray = geoShapeObject['features'][0]['geometry']['coordinates'];
+    geoshapeCoordinatesArray = geoShapeObjectCoordinates;
   }
   var points = [];
 
@@ -472,7 +472,7 @@ FLOW.NavigationView = Em.View.extend({
         html.className = '';
         html.classList.add(FLOW.router.navigationController.selected);
       }
-    }),    
+    }),
   }),
 
 });
