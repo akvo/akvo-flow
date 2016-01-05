@@ -589,11 +589,10 @@ public class GraphicalSurveySummaryExporter extends SurveySummaryExporter {
                         effectiveId = collapseIdMap.get(nameToIdMap
                                 .get(effectiveId));
                     }
-                    String[] vals;
 
+                    String[] vals;
                     if (entry.getValue().startsWith("[")) {
                         try {
-
                             List<Map<String, String>> optionNodes = OBJECT_MAPPER
                                     .readValue(entry.getValue(),
                                             new TypeReference<List<Map<String, String>>>() {
