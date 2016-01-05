@@ -1062,6 +1062,27 @@ public class GraphicalSurveySummaryExporter extends SurveySummaryExporter {
                         String labelText = count.getKey();
                         if (labelText == null) {
                             labelText = "";
+                        } else {
+                            // Handle the json option question response type
+                            if (labelText.startsWith("[")) {
+                                try {
+                                    List<Map<String, String>> optionNodes = OBJECT_MAPPER
+                                            .readValue(labelText,
+                                                    new TypeReference<List<Map<String, String>>>() {
+                                                    });
+                                    StringBuilder labelTextBuilder = new StringBuilder();
+
+                                    for (Map<String, String> optionNode : optionNodes) {
+                                        labelTextBuilder.append("|");
+                                        labelTextBuilder.append(optionNode.get("text"));
+                                    }
+                                    if (labelTextBuilder.length() > 0) {
+                                        labelTextBuilder.deleteCharAt(0);
+                                    }
+                                    labelText = labelTextBuilder.toString();
+                                } catch (IOException e) {
+                                }
+                            }
                         }
                         StringBuilder builder = new StringBuilder();
                         if (QuestionType.OPTION == question.getType()
@@ -1415,6 +1436,7 @@ public class GraphicalSurveySummaryExporter extends SurveySummaryExporter {
         options.put("from", null);
         options.put("to", null);
         options.put("maxDataReportRows", null);
+
         criteria.put(SurveyRestRequest.SURVEY_ID_PARAM, args[2]);
         criteria.put("apiKey", args[3]);
         exporter.export(criteria, new File(args[0]), args[1], options);
