@@ -589,7 +589,27 @@ public class GraphicalSurveySummaryExporter extends SurveySummaryExporter {
                         effectiveId = collapseIdMap.get(nameToIdMap
                                 .get(effectiveId));
                     }
-                    String[] vals = entry.getValue().split("\\|");
+                    String[] vals;
+
+                    if (entry.getValue().startsWith("[")) {
+                        try {
+
+                            List<Map<String, String>> optionNodes = OBJECT_MAPPER
+                                    .readValue(entry.getValue(),
+                                            new TypeReference<List<Map<String, String>>>() {
+                                            });
+                            List<String> valsList = new ArrayList<>();
+                            for (Map<String, String> optionNode : optionNodes) {
+                                valsList.add(optionNode.get("text"));
+                            }
+                            vals = valsList.toArray(new String[valsList.size()]);
+                        } catch (IOException e) {
+                            vals = entry.getValue().split("\\|");
+                        }
+                    } else {
+                        vals = entry.getValue().split("\\|");
+                    }
+
                     synchronized (model) {
                         for (int i = 0; i < vals.length; i++) {
                             if (vals[i] != null && vals[i].trim().length() > 0) {
