@@ -288,24 +288,9 @@ FLOW.parseGeoshape = function(geoshapeString) {
   }
 };
 
-FLOW.drawGeoShape = function(containerNode, geoShapeObjectType, geoShapeObjectCoordinates){
+FLOW.drawGeoShape = function(containerNode, geoShapeObject){
   containerNode.style.height = "150px";
-
-  var geoshapeCoordinatesArray;
-  if(geoShapeObjectType === "Polygon"){
-    geoshapeCoordinatesArray = geoShapeObjectCoordinates[0];
-  } else {
-    geoshapeCoordinatesArray = geoShapeObjectCoordinates;
-  }
-  var points = [];
-
-  for(var j=0; j<geoshapeCoordinatesArray.length; j++){
-    points.push([geoshapeCoordinatesArray[j][1], geoshapeCoordinatesArray[j][0]]);
-  }
-
-  var center = FLOW.getCentroid(points);
-
-  var geoshapeMap = L.map(containerNode, {scrollWheelZoom: false}).setView(center, 2);
+  var geoshapeMap = L.map(containerNode, {scrollWheelZoom: false}).setView([0, 0], 2);
 
   geoshapeMap.options.maxZoom = 18;
   geoshapeMap.options.minZoom = 2;
@@ -337,21 +322,35 @@ FLOW.drawGeoShape = function(containerNode, geoShapeObjectType, geoShapeObjectCo
   };
   L.control.layers(baseLayers).addTo(geoshapeMap);
 
-  //Draw geoshape based on its type
-  if(geoShapeObjectType === "Polygon"){
-    var geoShapePolygon = L.polygon(points).addTo(geoshapeMap);
-    geoshapeMap.fitBounds(geoShapePolygon.getBounds());
-  }else if (geoShapeObjectType === "MultiPoint") {
-    var geoShapeMarkersArray = [];
-    for (var i = 0; i < points.length; i++) {
-      geoShapeMarkersArray.push(L.marker([points[i][0],points[i][1]]));
+  var featureGroup = new L.featureGroup; //create a leaflet featureGroup to hold all object features
+  for(var i=0; i<geoShapeObject.length; i++){
+    var geoshapeCoordinatesArray, geoShapeObjectType = geoShapeObject[i]["geometry"]["type"];
+    var points = [], geoShape;
+    if(geoShapeObjectType === "Polygon"){
+      geoshapeCoordinatesArray = geoShapeObject[i]["geometry"]['coordinates'][0];
+    } else {
+      geoshapeCoordinatesArray = geoShapeObject[i]["geometry"]['coordinates'];
     }
-    var geoShapeMarkers = L.featureGroup(geoShapeMarkersArray).addTo(geoshapeMap);
-    geoshapeMap.fitBounds(geoShapeMarkers.getBounds());
-  }else if (geoShapeObjectType === "LineString") {
-    var geoShapeLine = L.polyline(points).addTo(geoshapeMap);
-    geoshapeMap.fitBounds(geoShapeLine.getBounds());
+
+    for(var j=0; j<geoshapeCoordinatesArray.length; j++){
+      points.push([geoshapeCoordinatesArray[j][1], geoshapeCoordinatesArray[j][0]]);
+    }
+
+    //Draw geoshape based on its type
+    if(geoShapeObjectType === "Polygon"){
+      geoShape = L.polygon(points).addTo(geoshapeMap);
+    }else if (geoShapeObjectType === "MultiPoint") {
+      var geoShapeMarkersArray = [];
+      for (var k = 0; k < points.length; k++) {
+        geoShapeMarkersArray.push(L.marker([points[k][0],points[k][1]]));
+      }
+      geoShape = L.featureGroup(geoShapeMarkersArray).addTo(geoshapeMap);
+    }else if (geoShapeObjectType === "LineString") {
+      geoShape = L.polyline(points).addTo(geoshapeMap);
+    }
+    featureGroup.addLayer(geoShape);
   }
+  geoshapeMap.fitBounds(featureGroup.getBounds()); //fit featureGroup to map bounds
 };
 
 FLOW.getCentroid = function (arr) {
