@@ -57,8 +57,7 @@ FLOW.QuestionView = FLOW.View.extend({
   }.property('this.type').cacheable(),
 
   amOptionType: function () {
-    return (this.content && this.content.get('type') === 'OPTION')
-            || (this.type && this.type.get('value') === "OPTION");
+    return this.type && this.type.get('value') === 'OPTION';
   }.property('this.type'),
 
   amNumberType: function () {
@@ -241,15 +240,18 @@ FLOW.QuestionView = FLOW.View.extend({
   loadQuestionOptions: function () {
     var c = this.content;
     FLOW.questionOptionsControl.set('content', []);
-    FLOW.questionOptionsControl.set('questionId', null);
+    FLOW.questionOptionsControl.set('questionId', c.get('keyId'));
 
     options = FLOW.store.filter(FLOW.QuestionOption, function (optionItem) {
         return optionItem.get('questionId') === c.get('keyId');
     });
 
-    optionArray = Ember.A(options.toArray().sort(sortByOrder));
-    FLOW.questionOptionsControl.set('content', optionArray);
-    FLOW.questionOptionsControl.set('questionId', c.get('keyId'));
+    if (options.get('length')) {
+      optionArray = Ember.A(options.toArray().sort(sortByOrder));
+      FLOW.questionOptionsControl.set('content', optionArray);
+    } else {
+      FLOW.questionOptionsControl.loadDefaultOptions();
+    }
   },
 
   fillOptionList: function () {

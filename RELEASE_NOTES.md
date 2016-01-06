@@ -5,6 +5,31 @@ Read more about the [Akvo Platform](http://www.akvo.org/blog/?p=4822).
 
 Akvo FLOW Dashboard release notes
 ----
+#1.9.4 - Clamarous Capybara
+Date: 6 January 2016
+
+# New and noteworthy
+* We now have two new permissions, `management of cascades` and `management of assignments` to enable controlling which users are able manipulate these features on the dashboard [#1497]
+* Expanded the rendering of geographic shapes on CartoDB maps to support 'line' and 'points' [#1495]
+* Signature question - a new type of question that enables collecting of signatures of respondents to forms or to particular statements in forms [#1453]
+* Codes for option questions - we now support defining a code and associating it to a particular option item.  These can be used in reports for data analysis and enables defining more advanced option type questions [#828]
+
+# Resolved issues
+* Data cleaning tab fails to load [#1542]
+* Data cleaning NUMBER type can result in datastore values in scientific notation [#1534]
+* CartoDB maps - render cascade resources pipe separated [#1531]
+* Re-ingesting a SurveyInstance sets the wrong creationDateTime [#1530]
+* Use correct HTTP methods for data related permissions [#1516]
+* Date type not rendering correctly on overlay for Cartodb maps [#1512]
+* Copying question groups sometimes fails [#1510]
+* Fix scrolling on CartoDB maps [#1475]
+* Text in in-line help box for French and Spanish versions does not fit [#1462]
+* Minor Issue - Numerical values stored differently on import [#1425]
+* Specific users not able to assign permissions to other users [#1416]
+* Data export: don't use scientific notations for large numbers [#1381]
+* Maps tab does not show the entire map [#1283]
+
+
 #1.9.3 - Bouncing Badger
 Date: 1 December 2015
 
