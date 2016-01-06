@@ -142,11 +142,20 @@
                           {{view FLOW.GeoshapeMapView}}
                         {{else}} {{#if view.isCascadeType}}
                           <span>{{view.cascadeValue}}</span>
+                        {{else}} {{#if view.isOptionType}}
+                          {{view FLOW.QuestionAnswerOptionListView contentBinding="view.optionValue"}}
                         {{else}} {{#if view.isDateType}}
                           {{#with QA}}{{date3 value}}{{/with}}
+                        {{else}} {{#if view.isSignatureType}}
+                            {{#if view.signatureImageSrc}}
+                                <div class="signatureImage"><img {{bindAttr src="view.signatureImageSrc"}} /></div>
+                                <div class="signedBySection">{{t _signed_by}}: {{view.signatureSignatory}}</div>
+                            {{else}}
+                                {{t _no_signature_found}}
+                            {{/if}}
                         {{else}}
                           <span>{{QA.value}} {{#with QA}}{{if_blank value}}{{/with}}</span>
-                        {{/if}} {{/if}} {{/if}} {{/if}} {{/if}}
+                        {{/if}} {{/if}} {{/if}} {{/if}} {{/if}} {{/if}} {{/if}}
                     </td>
                     </tr>
                     {{/view}}

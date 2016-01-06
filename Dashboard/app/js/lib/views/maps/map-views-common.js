@@ -6,12 +6,10 @@ FLOW.NavMapsView = FLOW.View.extend({
   map: null,
   marker: null,
   geoShape: null,
-  geoshapeCoordinates: [],
+  geoshapeCoordinates: null,
   polygons: [],
   mapZoomLevel: 0,
   mapCenter: null,
-  hierarchyObjectAncestors: 0,
-  previousObjectAncestors: 0,
   hierarchyObject: [],
   lastSelectedElement: 0,
   geomodel: null,
@@ -202,8 +200,8 @@ FLOW.NavMapsView = FLOW.View.extend({
 
       $('#form_selector option[value!=""]').remove();
 
-      //remove all 'folder_survey_selector's outside of ancestors count
-      self.cleanHierarchy($(this).attr('id'));
+      //remove all 'folder_survey_selector's after current
+      self.cleanHierarchy($(this));
 
       //first remove previously created form selector elements
       $(".form_selector").remove();
@@ -221,11 +219,6 @@ FLOW.NavMapsView = FLOW.View.extend({
               });
 
               var hierarchyObject = self.hierarchyObject;
-              for(var j=0; j<hierarchyObject.length; j++){
-                if(hierarchyObject[j].keyId === keyId){
-                  self.hierarchyObjectAncestors = hierarchyObject[j]['ancestorIds'].length;
-                }
-              }
 
               //create folder and/or survey select element
               var form_selector = $("<select></select>").attr("data-survey-id", keyId).attr("class", "form_selector");
@@ -256,7 +249,6 @@ FLOW.NavMapsView = FLOW.View.extend({
 
           for(var i=0; i<hierarchyObject.length; i++){
             if(hierarchyObject[i].keyId === parseInt(keyId) && self.lastSelectedElement !== parseInt(keyId)){
-              self.hierarchyObjectAncestors = hierarchyObject[i]['ancestorIds'].length;
               self.checkHierarchy(keyId);
               self.lastSelectedElement = parseInt(keyId);
             }
@@ -269,8 +261,8 @@ FLOW.NavMapsView = FLOW.View.extend({
     });
 
     $(document).off('change', '.form_selector').on('change', '.form_selector',function(e) {
-      //remove all 'folder_survey_selector's outside of ancestors count
-      self.cleanHierarchy($(this).attr('id'));
+      //remove all 'folder_survey_selector's after current
+      self.cleanHierarchy($(this));
 
       if ($(this).val() !== "") {
         var formId = $(this).val();
@@ -308,9 +300,7 @@ FLOW.NavMapsView = FLOW.View.extend({
         self.polygons = [];
       }else{
         $('#projectGeoshape').html(Ember.String.loc('_clear_geoshape_from_main_map'));
-        if(self.geoshapeCoordinates.length > 0){
-          self.projectGeoshape(self.geoshapeCoordinates);
-        }
+        self.projectGeoshape(self.geoshapeCoordinates);
       }
     });
   },
@@ -437,7 +427,7 @@ FLOW.NavMapsView = FLOW.View.extend({
 
     this.set('showDetailsBool', true);
     details.forEach(function (item) {
-      rawImagePath = item.get('stringValue');
+      rawImagePath = item.get('stringValue') || '';
       verticalBars = rawImagePath.split('|');
       if (verticalBars.length === 4) {
         FLOW.placemarkDetailController.set('selectedPointCode',
@@ -582,8 +572,8 @@ FLOW.NavMapsView = FLOW.View.extend({
         $.get(
             "/rest/cartodb/questions?form_id="+pointData['formId'],
             function(questionsData, status){
-              var geoshapeCheck = false;
-              self.geoshapeCoordinates = [];
+              var geoshapeObject, geoshapeCheck = false;
+              self.geoshapeCoordinates = null;
 
               var dataCollectionDate = pointData['answers']['created_at'];
               var date = new Date(dataCollectionDate);
@@ -604,10 +594,11 @@ FLOW.NavMapsView = FLOW.View.extend({
 
               clickedPointContent += '<div class="mapInfoDetail" style="opacity: 1; display: inherit;">';
               for (column in pointData['answers']){
+                var questionAnswer = pointData['answers'][column];
                 for(var i=0; i<questionsData['questions'].length; i++){
                   if (column.match(questionsData['questions'][i].id)) {
-                    if(questionsData['questions'][i].type === "GEOSHAPE" && pointData['answers'][column] !== null){
-                      var geoshapeObject = FLOW.parseGeoshape(pointData['answers'][column]);
+                    if(questionsData['questions'][i].type === "GEOSHAPE" && questionAnswer !== null){
+                      var geoshapeObject = FLOW.parseGeoshape(questionAnswer);
                       if(geoshapeObject !== null){
                         clickedPointContent += '<h4><div style="float: left">'
                         +questionsData['questions'][i].display_text
@@ -619,36 +610,60 @@ FLOW.NavMapsView = FLOW.View.extend({
 
                     clickedPointContent += '<div style="float: left; width: 100%">';
 
-                    //if question is of type, photo load a html image element
-                    if(questionsData['questions'][i].type == "PHOTO"){
-                      var image = '<div class=":imgContainer photoUrl:shown:hidden">';
-                      if(pointData['answers'][column] != null){
-                        var image_filename = FLOW.Env.photo_url_root+pointData['answers'][column].substring(pointData['answers'][column].lastIndexOf("/")+1);
-                        image += '<a href="'+image_filename+'" target="_blank">'
-                        +'<img src="'+image_filename+'" alt=""/></a>';
-                      }
-                      image +'</div>';
-                      clickedPointContent += image;
-                    }else{
-                      //if point is a geoshape, draw the shape in the side window
-                      if(questionsData['questions'][i].type == "GEOSHAPE" && pointData['answers'][column] !== null){
-                        if(pointData['answers'][column] !== "" && pointData['answers'][column] !== null && pointData['answers'][column] !== "null"){
-                          var geoshapeObject = FLOW.parseGeoshape(pointData['answers'][column]);
+                    if(questionAnswer !== "" && questionAnswer !== null && questionAnswer !== "null"){
+                      switch (questionsData['questions'][i].type) {
+                        case "PHOTO":
+                          var image = '<div class=":imgContainer photoUrl:shown:hidden">';
+                          var image_filename = FLOW.Env.photo_url_root+questionAnswer.substring(questionAnswer.lastIndexOf("/")+1);
+                          image += '<a href="'+image_filename+'" target="_blank">'
+                          +'<img src="'+image_filename+'" alt=""/></a>';
+
+                          image += '</div>';
+                          clickedPointContent += image;
+                          break;
+                        case "GEOSHAPE":
+                          geoshapeObject = FLOW.parseGeoshape(questionAnswer);
+                          self.geoshapeCoordinates = geoshapeObject;
+
                           if(geoshapeObject !== null){
                             geoshapeCheck = true;
                             clickedPointContent += '<div id="geoShapeMap" style="width:100%; height: 100px; float: left"></div>';
-                            var geoshapeCoordinatesArray = geoshapeObject['features'][0]['geometry']['coordinates'][0];
-                            for(var j=0; j<geoshapeCoordinatesArray.length; j++){
-                              self.geoshapeCoordinates.push([geoshapeCoordinatesArray[j][1], geoshapeCoordinatesArray[j][0]]);
+
+                            if(geoshapeObject['features'][0]['geometry']['type'] === "Polygon"
+                             || geoshapeObject['features'][0]['geometry']['type'] === "LineString"
+                              || geoshapeObject['features'][0]['geometry']['type'] === "MultiPoint"){
+                              clickedPointContent += '<div style="float: left; width: 100%">'+ Ember.String.loc('_points') +': '+geoshapeObject['features'][0]['properties']['pointCount']+'</div>';
                             }
 
-                            clickedPointContent += '<div style="float: left; width: 100%">'+ Ember.String.loc('_points') +': '+geoshapeObject['features'][0]['properties']['pointCount']+'</div>';
-                            clickedPointContent += '<div style="float: left; width: 100%">'+ Ember.String.loc('_length') +': '+geoshapeObject['features'][0]['properties']['length']+'m</div>';
-                            clickedPointContent += '<div style="float: left; width: 100%">'+ Ember.String.loc('_area') +': '+geoshapeObject['features'][0]['properties']['area']+'m&sup2;</div>';
+                            if(geoshapeObject['features'][0]['geometry']['type'] === "Polygon"
+                             || geoshapeObject['features'][0]['geometry']['type'] === "LineString"){
+                              clickedPointContent += '<div style="float: left; width: 100%">'+ Ember.String.loc('_length') +': '+geoshapeObject['features'][0]['properties']['length']+'m</div>';
+                            }
+
+                            if(geoshapeObject['features'][0]['geometry']['type'] === "Polygon"){
+                              clickedPointContent += '<div style="float: left; width: 100%">'+ Ember.String.loc('_area') +': '+geoshapeObject['features'][0]['properties']['area']+'m&sup2;</div>';
+                            }
                           }
-                        }
-                      }else{
-                        clickedPointContent += pointData['answers'][column];
+                          break;
+                        case "DATE":
+                          var dateQuestion = new Date((isNaN(questionAnswer) === false) ? parseInt(questionAnswer) : questionAnswer);
+                          clickedPointContent += dateQuestion.toUTCString().slice(0, -13); //remove last 13 x-ters so only date displays
+                          break;
+                        case "CASCADE":
+                        case "OPTION":
+                          var cascadeString = "", cascadeJson;
+                          if (questionAnswer.charAt(0) === '[') {
+                            cascadeJson = JSON.parse(questionAnswer);
+                            cascadeString = cascadeJson.map(function(item){
+                              return (questionsData['questions'][i].type == "CASCADE") ? item.name : item.text;
+                            }).join("|");
+                          } else {
+                            cascadeString = questionAnswer;
+                          }
+                          clickedPointContent += cascadeString;
+                          break;
+                        default:
+                          clickedPointContent += questionAnswer
                       }
                     }
                     clickedPointContent += "&nbsp;</div><hr>";
@@ -661,7 +676,7 @@ FLOW.NavMapsView = FLOW.View.extend({
 
               //if there's geoshape, draw it
               if(geoshapeCheck){
-                self.createGeoshape(self.geoshapeCoordinates);
+                FLOW.drawGeoShape($("#geoShapeMap")[0], geoshapeObject);
               }
             });
       } else {
@@ -671,52 +686,39 @@ FLOW.NavMapsView = FLOW.View.extend({
     });
   },
 
-  createGeoshape: function(points){
-    var getCentroid = function (arr) {
-      return arr.reduce(function (x,y) {
-        return [x[0] + y[0]/arr.length, x[1] + y[1]/arr.length]
-      }, [0,0])
-    }
-
-    var center = getCentroid(points);
-
-    var geoshapeMap = L.map('geoShapeMap', {scrollWheelZoom: false}).setView(center, 2);
-    L.tileLayer('https://{s}.{base}.maps.cit.api.here.com/maptile/2.1/maptile/{mapID}/normal.day.transit/{z}/{x}/{y}/256/png8?app_id={app_id}&app_code={app_code}', {
-      attribution: '<a href="http://developer.here.com">HERE</a>',
-      subdomains: '1234',
-      mapID: 'newest',
-      app_id: FLOW.Env.hereMapsAppId,
-      app_code: FLOW.Env.hereMapsAppCode,
-      base: 'base',
-      maxZoom: 18
-    }).addTo(geoshapeMap);
-
-    this.geoShape = L.polygon(points);
-    this.geoShape.addTo(geoshapeMap);
-
-    var southWest = this.geoShape.getBounds().getSouthWest();
-    var northEast = this.geoShape.getBounds().getNorthEast();
-    var bounds = new L.LatLngBounds(southWest, northEast);
-
-    geoshapeMap.fitBounds(bounds);
-  },
-
   //function to project geoshape from details panel to main map canvas
-  projectGeoshape: function(coordinates){
-    var geoShape = L.polygon(coordinates);
-    this.polygons.push(geoShape);
-    geoShape.addTo(this.map);
-
-    var southWest = geoShape.getBounds().getSouthWest();
-    var northEast = geoShape.getBounds().getNorthEast();
-    var bounds = new L.LatLngBounds(southWest, northEast);
+  projectGeoshape: function(geoShapeObject){
+    var points = [], geoShape;
 
     //before fitting the geoshape to map, get the current
     //zoom level and map center first and save them
     this.mapZoomLevel = this.map.getZoom();
     this.mapCenter = this.map.getCenter();
 
-    this.map.fitBounds(bounds);
+    var geoshapeCoordinatesArray, geoShapeObjectType = geoShapeObject['features'][0]['geometry']['type'];
+    if(geoShapeObjectType === "Polygon"){
+      geoshapeCoordinatesArray = geoShapeObject['features'][0]['geometry']['coordinates'][0];
+    } else {
+      geoshapeCoordinatesArray = geoShapeObject['features'][0]['geometry']['coordinates'];
+    }
+
+    for(var j=0; j<geoshapeCoordinatesArray.length; j++){
+      points.push([geoshapeCoordinatesArray[j][1], geoshapeCoordinatesArray[j][0]]);
+    }
+
+    if(geoShapeObjectType === "Polygon"){
+      geoShape = L.polygon(points).addTo(this.map);
+    }else if (geoShapeObjectType === "MultiPoint") {
+      var geoShapeMarkersArray = [];
+      for (var i = 0; i < points.length; i++) {
+        geoShapeMarkersArray.push(L.marker([points[i][0],points[i][1]]));
+      }
+      geoShape = L.featureGroup(geoShapeMarkersArray).addTo(this.map);
+    }else if (geoShapeObjectType === "LineString") {
+      geoShape = L.polyline(points).addTo(this.map);
+    }
+    this.map.fitBounds(geoShape.getBounds());
+    this.polygons.push(geoShape);
   },
 
   checkHierarchy: function(parentFolderId){
@@ -745,10 +747,8 @@ FLOW.NavMapsView = FLOW.View.extend({
     });
 
     //create folder and/or survey select element
-    var folder_survey_selector = $("<select></select>").attr("id", "folder_survey_selector_"+self.hierarchyObjectAncestors).attr("class", "folder_survey_selector");
+    var folder_survey_selector = $("<select></select>").attr("class", "folder_survey_selector");
     folder_survey_selector.append('<option value="">--' + Ember.String.loc('_choose_folder_or_survey') + '--</option>');
-
-    self.previousObjectAncestors = self.hierarchyObjectAncestors;
 
     for (var i=0; i<rows.length; i++) {
       //append return survey list to the survey selector element
@@ -766,10 +766,8 @@ FLOW.NavMapsView = FLOW.View.extend({
     $("#survey_hierarchy").append(folder_survey_selector);
   },
 
-  cleanHierarchy: function(element_id){
-    var self = this;
-
-    $("#"+element_id).nextAll().remove();
+  cleanHierarchy: function(element){
+    $(element).nextAll().remove();
   },
 
   clearCartodbLayer: function(){
@@ -792,10 +790,10 @@ FLOW.GeoshapeMapView = FLOW.View.extend({
 
   didInsertElement: function() {
     this.set('geoshape', JSON.parse(this.get('parentView.geoShapeObject')));
-    if (this.get('isPolygon')) {
+    if (this.get('isPolygon') || this.get('isLineString') || this.get('isMultiPoint')) {
       var containerNode = this.get('element').getElementsByClassName('geoshapeMapContainer')[0];
       if (containerNode) {
-        this.initializeMap(containerNode);
+        FLOW.drawGeoShape(containerNode, this.get('geoshape'));
       }
     }
   },
@@ -822,63 +820,27 @@ FLOW.GeoshapeMapView = FLOW.View.extend({
     }
   }.property('this.geoshape'),
 
-  geoshapeString: function() {
-    return this.geoshape === null ? null : JSON.stringify(this.geoshape);
+  isLineString: function() {
+    var geoshape = this.get('geoshape');
+    if (geoshape == null) {
+      return false;
+    } else {
+      return geoshape['features'].length > 0 &&
+        geoshape['features'][0]["geometry"]["type"] === "LineString"
+    }
   }.property('this.geoshape'),
 
-  initializeMap: function(containerNode) {
-    containerNode.style.height = "150px";
-    var geoshapeCoordinatesArray = this.get('geoshape')['features'][0]['geometry']['coordinates'][0];
-    var points = [];
-
-    for(var j=0; j<geoshapeCoordinatesArray.length; j++){
-      points.push([geoshapeCoordinatesArray[j][1], geoshapeCoordinatesArray[j][0]]);
+  isMultiPoint: function() {
+    var geoshape = this.get('geoshape');
+    if (geoshape == null) {
+      return false;
+    } else {
+      return geoshape['features'].length > 0 &&
+        geoshape['features'][0]["geometry"]["type"] === "MultiPoint"
     }
+  }.property('this.geoshape'),
 
-    var center = this.getCentroid(points);
-
-    var geoshapeMap = L.map(containerNode, {scrollWheelZoom: false}).setView(center, 2);
-
-    geoshapeMap.options.maxZoom = 18;
-    geoshapeMap.options.minZoom = 2;
-    var mbAttr = 'Map &copy; 1987-2014 <a href="http://developer.here.com">HERE</a>';
-    var mbUrl = 'https://{s}.{base}.maps.cit.api.here.com/maptile/2.1/maptile/{mapID}/{scheme}/{z}/{x}/{y}/256/{format}?app_id={app_id}&app_code={app_code}';
-    var normal = L.tileLayer(mbUrl, {
-      scheme: 'normal.day.transit',
-      format: 'png8',
-      attribution: mbAttr,
-      subdomains: '1234',
-      mapID: 'newest',
-      app_id: FLOW.Env.hereMapsAppId,
-      app_code: FLOW.Env.hereMapsAppCode,
-      base: 'base'
-    }).addTo(geoshapeMap);
-    var satellite  = L.tileLayer(mbUrl, {
-      scheme: 'hybrid.day',
-      format: 'jpg',
-      attribution: mbAttr,
-      subdomains: '1234',
-      mapID: 'newest',
-      app_id: FLOW.Env.hereMapsAppId,
-      app_code: FLOW.Env.hereMapsAppCode,
-      base: 'aerial'
-    });
-    var baseLayers = {
-      "Normal": normal,
-      "Satellite": satellite
-    };
-    L.control.layers(baseLayers).addTo(geoshapeMap);
-    var geoShape = L.polygon(points);
-    geoShape.addTo(geoshapeMap);
-    var southWest = geoShape.getBounds().getSouthWest();
-    var northEast = geoShape.getBounds().getNorthEast();
-    var bounds = new L.LatLngBounds(southWest, northEast);
-    geoshapeMap.fitBounds(bounds);
-  },
-
-  getCentroid: function (arr) {
-    return arr.reduce(function (x,y) {
-      return [x[0] + y[0]/arr.length, x[1] + y[1]/arr.length]
-    }, [0,0])
-  }
+  geoshapeString: function() {
+    return this.geoshape === null ? null : JSON.stringify(this.geoshape);
+  }.property('this.geoshape')
 });

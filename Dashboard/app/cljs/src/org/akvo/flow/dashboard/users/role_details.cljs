@@ -35,7 +35,9 @@
    "DATA_CLEANING" (t> _data_cleaning)
    "DATA_READ" (t> _read_data)
    "DATA_UPDATE" (t> _edit_data)
-   "DATA_DELETE" (t> _delete_data)})
+   "DATA_DELETE" (t> _delete_data)
+   "DEVICE_MANAGE" (t> _device_assignment_manage)
+   "CASCADE_MANAGE" (t> _cascade_manage)})
 
 (defn header-section [{:keys [role on-close]} owner]
   (om/component

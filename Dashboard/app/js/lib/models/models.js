@@ -168,7 +168,7 @@ FLOW.QuestionGroup = FLOW.BaseModel.extend({
 
 FLOW.Question = FLOW.BaseModel.extend({
   questionOptions: DS.hasMany('FLOW.QuestionOption'),
-  questionOptionList: null,
+
   allowDecimal: DS.attr('boolean', {
     defaultValue: false
   }),
@@ -253,7 +253,8 @@ FLOW.QuestionOption = FLOW.BaseModel.extend({
   question: DS.belongsTo('FLOW.Question'),
   order: DS.attr('number'),
   questionId: DS.attr('number'),
-  text: DS.attr('string')
+  text: DS.attr('string'),
+  code: DS.attr('string'),
 });
 
 

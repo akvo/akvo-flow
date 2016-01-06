@@ -243,7 +243,7 @@ FLOW.placemarkDetailController = Ember.ArrayController.create({
     }
 
     photoDetails.forEach(function (photo) {
-      rawPhotoUrl = photo.get('stringValue');
+      rawPhotoUrl = photo.get('stringValue') || '';
       // Since photos have a leading path from devices that we need to trim
       photoUrls.push(FLOW.Env.photo_url_root + rawPhotoUrl.split('/').pop());
     });

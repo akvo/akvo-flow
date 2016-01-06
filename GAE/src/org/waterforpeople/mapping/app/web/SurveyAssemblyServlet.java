@@ -100,6 +100,7 @@ public class SurveyAssemblyServlet extends AbstractRestApiServlet {
     public static final String DATE_QUESTION_TYPE = "date";
     public static final String CASCADE_QUESTION_TYPE = "cascade";
     public static final String GEOSHAPE_QUESTION_TYPE = "geoshape";
+    public static final String SIGNATURE_QUESTION_TYPE = "signature";
 
     private static final String SURVEY_UPLOAD_URL = "surveyuploadurl";
     private static final String SURVEY_UPLOAD_DIR = "surveyuploaddir";
@@ -396,7 +397,8 @@ public class SurveyAssemblyServlet extends AbstractRestApiServlet {
 
         StringBuilder sb = new StringBuilder("<questionGroup")
                 .append(Boolean.TRUE.equals(group.getRepeatable()) ? " repeatable=\"true\"" : "")
-                .append("><heading>").append(StringEscapeUtils.escapeXml(group.getCode())).append("</heading>");
+                .append("><heading>").append(StringEscapeUtils.escapeXml(group.getCode()))
+                .append("</heading>");
 
         if (questionList != null) {
             for (Question q : questionList.values()) {
@@ -629,6 +631,8 @@ public class SurveyAssemblyServlet extends AbstractRestApiServlet {
             qXML.setAllowPoints(Boolean.toString(q.getAllowPoints()));
             qXML.setAllowLine(Boolean.toString(q.getAllowLine()));
             qXML.setAllowPolygon(Boolean.toString(q.getAllowPolygon()));
+        } else if (q.getType().equals(Question.Type.SIGNATURE)) {
+            qXML.setType(SIGNATURE_QUESTION_TYPE);
         }
 
         if (q.getType().equals(Question.Type.CASCADE) && q.getCascadeResourceId() != null) {
@@ -704,8 +708,11 @@ public class SurveyAssemblyServlet extends AbstractRestApiServlet {
                 com.gallatinsystems.survey.domain.xml.Text t = new com.gallatinsystems.survey.domain.xml.Text();
                 t.setContent(qo.getText());
                 option.addContent(t);
-                option.setValue(qo.getCode() != null ? qo.getCode() : qo
-                        .getText());
+                option.setCode(qo.getCode());
+
+                // to maintain backwards compatibility with older app versions, we set the value
+                // attribute and text to the same
+                option.setValue(qo.getText());
                 List<AltText> altTextList = formAltText(qo.getTranslationMap());
                 if (altTextList != null) {
                     for (AltText alt : altTextList) {

@@ -86,6 +86,7 @@ Ember.Handlebars.registerHelper('tooltip', function (i18nKey) {
   } catch (err) {
     tooltip = i18nKey;
   }
+  tooltip = Handlebars.Utils.escapeExpression(tooltip);
   return new Handlebars.SafeString(
     '<a href="#" class="helpIcon tooltip" title="' + tooltip + '">?</a>'
   );
@@ -93,10 +94,11 @@ Ember.Handlebars.registerHelper('tooltip', function (i18nKey) {
 
 
 Ember.Handlebars.registerHelper('placemarkDetail', function () {
-  var answer, markup, question, cascadeJson, cascadeString = "", questionType;
+  var answer, markup, question, cascadeJson, optionJson, cascadeString = "", questionType, imageSrcAttr, signatureJson;
 
   question = Ember.get(this, 'questionText');
-  answer = Ember.get(this, 'stringValue').replace(/\|/g, ' | '); // geo data
+  answer = Ember.get(this, 'stringValue') || '';
+  answer = answer.replace(/\|/g, ' | '); // geo, option and cascade data
   answer = answer.replace(/\//g, ' / '); // also split folder paths
   questionType = Ember.get(this, 'questionType');
 
@@ -110,6 +112,17 @@ Ember.Handlebars.registerHelper('placemarkDetail', function () {
           return item.name;
         }).join("|");
       }
+  } else if (questionType === 'OPTION' && answer.charAt(0) === '[') {
+    optionJson = JSON.parse(answer);
+    answer = optionJson.map(function(item){
+      return item.text;
+    }).join("|");
+  } else if (questionType === 'SIGNATURE') {
+    imageSrcAttr = 'data:image/png;base64,';
+    signatureJson = JSON.parse(answer);
+    answer = signatureJson && imageSrcAttr + signatureJson.image || '';
+    answer = answer && '<img src="' + answer + '" />';
+    answer = answer && answer + '<div>' + Ember.String.loc('_signed_by') + ':' + signatureJson.name + '</div>' || '';
   } else if (questionType === 'DATE') {
     answer = renderTimeStamp(answer);
   }
@@ -265,8 +278,7 @@ Ember.Handlebars.registerHelper("date3", function (property) {
 FLOW.parseGeoshape = function(geoshapeString) {
   try {
     var geoshapeObject = JSON.parse(geoshapeString);
-    if (geoshapeObject['features'].length > 0 &&
-        geoshapeObject['features'][0]["geometry"]["type"] === "Polygon") {
+    if (geoshapeObject['features'].length > 0) {
         return geoshapeObject;
     } else {
       return null;
@@ -274,6 +286,78 @@ FLOW.parseGeoshape = function(geoshapeString) {
   } catch (e) {
     return null;
   }
+};
+
+FLOW.drawGeoShape = function(containerNode, geoShapeObject){
+  containerNode.style.height = "150px";
+
+  var geoshapeCoordinatesArray, geoShapeObjectType = geoShapeObject['features'][0]['geometry']['type'];
+  if(geoShapeObjectType === "Polygon"){
+    geoshapeCoordinatesArray = geoShapeObject['features'][0]['geometry']['coordinates'][0];
+  } else {
+    geoshapeCoordinatesArray = geoShapeObject['features'][0]['geometry']['coordinates'];
+  }
+  var points = [];
+
+  for(var j=0; j<geoshapeCoordinatesArray.length; j++){
+    points.push([geoshapeCoordinatesArray[j][1], geoshapeCoordinatesArray[j][0]]);
+  }
+
+  var center = FLOW.getCentroid(points);
+
+  var geoshapeMap = L.map(containerNode, {scrollWheelZoom: false}).setView(center, 2);
+
+  geoshapeMap.options.maxZoom = 18;
+  geoshapeMap.options.minZoom = 2;
+  var mbAttr = 'Map &copy; 1987-2014 <a href="http://developer.here.com">HERE</a>';
+  var mbUrl = 'https://{s}.{base}.maps.cit.api.here.com/maptile/2.1/maptile/{mapID}/{scheme}/{z}/{x}/{y}/256/{format}?app_id={app_id}&app_code={app_code}';
+  var normal = L.tileLayer(mbUrl, {
+    scheme: 'normal.day.transit',
+    format: 'png8',
+    attribution: mbAttr,
+    subdomains: '1234',
+    mapID: 'newest',
+    app_id: FLOW.Env.hereMapsAppId,
+    app_code: FLOW.Env.hereMapsAppCode,
+    base: 'base'
+  }).addTo(geoshapeMap);
+  var satellite  = L.tileLayer(mbUrl, {
+    scheme: 'hybrid.day',
+    format: 'jpg',
+    attribution: mbAttr,
+    subdomains: '1234',
+    mapID: 'newest',
+    app_id: FLOW.Env.hereMapsAppId,
+    app_code: FLOW.Env.hereMapsAppCode,
+    base: 'aerial'
+  });
+  var baseLayers = {
+    "Normal": normal,
+    "Satellite": satellite
+  };
+  L.control.layers(baseLayers).addTo(geoshapeMap);
+
+  //Draw geoshape based on its type
+  if(geoShapeObjectType === "Polygon"){
+    var geoShapePolygon = L.polygon(points).addTo(geoshapeMap);
+    geoshapeMap.fitBounds(geoShapePolygon.getBounds());
+  }else if (geoShapeObjectType === "MultiPoint") {
+    var geoShapeMarkersArray = [];
+    for (var i = 0; i < points.length; i++) {
+      geoShapeMarkersArray.push(L.marker([points[i][0],points[i][1]]));
+    }
+    var geoShapeMarkers = L.featureGroup(geoShapeMarkersArray).addTo(geoshapeMap);
+    geoshapeMap.fitBounds(geoShapeMarkers.getBounds());
+  }else if (geoShapeObjectType === "LineString") {
+    var geoShapeLine = L.polyline(points).addTo(geoshapeMap);
+    geoshapeMap.fitBounds(geoShapeLine.getBounds());
+  }
+};
+
+FLOW.getCentroid = function (arr) {
+  return arr.reduce(function (x,y) {
+    return [x[0] + y[0]/arr.length, x[1] + y[1]/arr.length]
+  }, [0,0])
 }
 
 Ember.Handlebars.registerHelper("getServer", function () {
@@ -374,8 +458,23 @@ FLOW.NavigationView = Em.View.extend({
 
     isActive: function () {
       return this.get('item') === this.get('parentView.selected');
-    }.property('item', 'parentView.selected').cacheable()
-  })
+    }.property('item', 'parentView.selected').cacheable(),
+
+    showDevicesButton: function () {
+      return FLOW.permControl.get('canManageDevices');
+    }.property(),
+
+    eventManager: Ember.Object.create({
+      click: function(event, clickedView) {
+
+        // Add the active tab as a CSS class to html
+        var html = document.querySelector('html');
+        html.className = '';
+        html.classList.add(FLOW.router.navigationController.selected);
+      }
+    }),    
+  }),
+
 });
 
 // ********************************************************//
@@ -630,7 +729,11 @@ FLOW.DatasubnavView = FLOW.View.extend({
 
     isActive: function () {
       return this.get('item') === this.get('parentView.selected');
-    }.property('item', 'parentView.selected').cacheable()
+    }.property('item', 'parentView.selected').cacheable(),
+
+    showCascadeResourcesButton: function () {
+      return FLOW.permControl.get('canManageCascadeResources');
+    }.property(),
   })
 });
 

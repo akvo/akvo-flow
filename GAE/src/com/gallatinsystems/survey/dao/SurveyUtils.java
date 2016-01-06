@@ -108,8 +108,6 @@ public class SurveyUtils {
         final Long sourceGroupId = sourceGroup.getKey().getId();
         final Long copyGroupId = copyGroup.getKey().getId();
 
-        copyGroup.setSurveyId(newSurveyId);
-
         SurveyUtils.copyTranslation(sourceGroupId, copyGroupId, newSurveyId, copyGroupId,
                 ParentType.QUESTION_GROUP_NAME, ParentType.QUESTION_GROUP_DESC);
 

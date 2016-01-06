@@ -160,8 +160,7 @@ public class RawDataImportRequest extends RestRequest {
         if (req.getParameter(FIXED_FIELD_VALUE_PARAM) != null) {
             fixedFieldValues = new ArrayList<String>();
             String[] vals = URLDecoder.decode(req.getParameter(FIXED_FIELD_VALUE_PARAM), "UTF-8")
-                    .split(
-                            FIELD_VAL_DELIMITER);
+                    .split(FIELD_VAL_DELIMITER);
             for (int i = 0; i < vals.length; i++) {
                 fixedFieldValues.add(vals[i]);
             }
@@ -198,6 +197,7 @@ public class RawDataImportRequest extends RestRequest {
                     }
 
                     if (questionId != null && type != null) {
+
                         for (Entry<Integer, String> iterationEntry : iterations.entrySet()) {
                             putResponse(questionId, iterationEntry.getKey(),
                                     iterationEntry.getValue(),

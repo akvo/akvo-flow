@@ -29,6 +29,7 @@ import javax.jdo.annotations.NotPersistent;
 import javax.jdo.annotations.PersistenceCapable;
 import javax.jdo.annotations.Persistent;
 
+import org.akvo.flow.domain.DataUtils;
 import org.akvo.flow.domain.SecuredObject;
 import org.apache.commons.lang.StringUtils;
 import org.waterforpeople.mapping.analytics.dao.SurveyQuestionSummaryDao;
@@ -394,14 +395,15 @@ public class SurveyInstance extends BaseDomain implements SecuredObject {
         List<SurveyQuestionSummary> deleteList = new ArrayList<SurveyQuestionSummary>();
 
         for (QuestionAnswerStore response : questionAnswersStore) {
-            final String questionIdStr = response.getQuestionID();
-            final String[] questionResponse = response.getValue().split("\\|");
             final Long questionId = Long.parseLong(response.getQuestionID());
-
             Question question = qDao.getByKey(questionId);
             if (question == null || !question.canBeCharted()) {
                 continue;
             }
+
+            final String questionIdStr = response.getQuestionID();
+            final String[] questionResponse = DataUtils.optionResponsesTextArray(response
+                    .getValue());
 
             for (int i = 0; i < questionResponse.length; i++) {
                 List<SurveyQuestionSummary> questionSummaryList = summaryDao

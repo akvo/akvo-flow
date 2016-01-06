@@ -39,6 +39,7 @@ import net.sf.jsr107cache.Cache;
 import net.sf.jsr107cache.CacheFactory;
 import net.sf.jsr107cache.CacheManager;
 
+import org.akvo.flow.domain.DataUtils;
 import org.waterforpeople.mapping.analytics.dao.SurveyInstanceSummaryDao;
 import org.waterforpeople.mapping.analytics.dao.SurveyQuestionSummaryDao;
 import org.waterforpeople.mapping.analytics.domain.SurveyQuestionSummary;
@@ -551,18 +552,16 @@ public class DataProcessorRestServlet extends AbstractRestApiServlet {
 
         log.log(Level.INFO, "Copying " + qgList.size() + " `QuestionGroup`");
 
-        List<QuestionGroup> qgCopyList = new ArrayList<QuestionGroup>();
         for (final QuestionGroup sourceGroup : qgList) {
             // need a temp group to avoid state sharing exception
             QuestionGroup tmpGroup = new QuestionGroup();
             SurveyUtils.shallowCopy(sourceGroup, tmpGroup);
+            tmpGroup.setSurveyId(copiedSurveyId);
+
             final QuestionGroup copyGroup = qgDao.save(tmpGroup);
             SurveyUtils.copyQuestionGroup(sourceGroup, copyGroup, copiedSurveyId,
                     qDependencyResolutionMap);
-            copyGroup.setStatus(QuestionGroup.Status.READY); // copied
-            qgCopyList.add(copyGroup);
         }
-        qgDao.save(qgCopyList);
 
         final SurveyDAO sDao = new SurveyDAO();
         final Survey copiedSurvey = SurveyUtils.resetSurveyState(copiedSurveyId);
@@ -807,8 +806,6 @@ public class DataProcessorRestServlet extends AbstractRestApiServlet {
                         cache.put(answer, true);
                     }
 
-                    String val = qas.getValue();
-
                     Map<String, Long> countMap = summaryMap.get(qas
                             .getQuestionID());
 
@@ -818,15 +815,7 @@ public class DataProcessorRestServlet extends AbstractRestApiServlet {
                     }
 
                     // split up multiple answers
-                    String[] answers;
-
-                    if (val != null && val.contains("|")) {
-                        answers = val.split("\\|");
-                    } else {
-                        answers = new String[] {
-                                val
-                        };
-                    }
+                    String[] answers = DataUtils.optionResponsesTextArray(qas.getValue());
 
                     // perform count
                     for (int i = 0; i < answers.length; i++) {

@@ -337,21 +337,23 @@ FLOW.QuestionGroupItemView = FLOW.View.extend({
 
   // true if one question group has been selected for Move
   oneSelectedForMove: function () {
-    var selectedForMove = FLOW.selectedControl.get('selectedForMoveQuestionGroup');
-    if (selectedForMove) {
-      return true;
-    } else {
-      return false;
+    var selectedForMove, selectedSurvey;
+    selectedForMove = FLOW.selectedControl.get('selectedForMoveQuestionGroup');
+    selectedSurvey = FLOW.selectedControl.get('selectedSurvey');
+
+    if (selectedForMove && selectedSurvey) {
+      return selectedForMove.get('surveyId') === selectedSurvey.get('keyId');
     }
   }.property('FLOW.selectedControl.selectedForMoveQuestionGroup'),
 
   // true if one question group has been selected for Copy
   oneSelectedForCopy: function () {
-    var selectedForCopy = FLOW.selectedControl.get('selectedForCopyQuestionGroup');
-    if (selectedForCopy) {
-      return true;
-    } else {
-      return false;
+    var selectedForCopy, selectedSurvey;
+    selectedForCopy = FLOW.selectedControl.get('selectedForCopyQuestionGroup');
+    selectedSurvey = FLOW.selectedControl.get('selectedSurvey');
+
+    if (selectedForCopy && selectedSurvey) {
+      return selectedForCopy.get('surveyId') === selectedSurvey.get('keyId');
     }
   }.property('FLOW.selectedControl.selectedForCopyQuestionGroup'),
 
@@ -505,8 +507,12 @@ FLOW.QuestionGroupItemView = FLOW.View.extend({
     FLOW.selectedControl.set('selectedForMoveQuestionGroup', null);
   },
 
+  /*
+   *  Request question group and check whether copying is completed on the server side
+   *  then load questions for that group.
+   */
   ajaxCall: function(qgId){
-      self = this;
+      var self = this;
       $.ajax({
           url: '/rest/question_groups/' + qgId,
           type: 'GET',
@@ -516,9 +522,6 @@ FLOW.QuestionGroupItemView = FLOW.View.extend({
                 FLOW.questionGroupControl.getQuestionGroup(self.content.get('keyId'));
                 // load the questions inside this question group
                 FLOW.questionControl.populateQuestionGroupQuestions(self.content.get('keyId'));
-            } else {
-                // fire the remote check again
-                self.pollQuestionGroupCopy();
             }
           },
           error: function() {
@@ -527,31 +530,17 @@ FLOW.QuestionGroupItemView = FLOW.View.extend({
       });
   },
 
-  pollQuestionGroupCopy: function(){
-      clearTimeout(this.pollingTimer);
-      self = this;
-      // if the status is 'copying', fire the remote check
-      if (this.get('amCopying')) {
-          this.pollingTimer = setTimeout(function () {
-              self.ajaxCall(self.content.get('keyId'));
-          },2000);
-      }
-  },
-
   // cycle until our local question group has an id
   // when this is done, start monitoring the status of the remote question group
-  pollQuestionGroupId: function(){
-      clearTimeout(this.pollingTimer);
+  pollQuestionGroupStatus: function(){
+      var self = this;
+      clearInterval(this.pollingTimer);
       if (this.get('amCopying')){
-          self = this;
-          this.pollingTimer = setTimeout(function () {
+          this.pollingTimer = setInterval(function () {
               // if the question group has a keyId, we can start polling it remotely
-              if (!Ember.empty(self.content.get('keyId'))) {
+              if (self.content && self.content.get('keyId')) {
                   // we have an id and can start polling remotely
-                  self.pollQuestionGroupCopy();
-              } else {
-                  // we need to wait until we have an id
-                  self.pollQuestionGroupId();
+                  self.ajaxCall(self.content.get('keyId'));
               }
           },1000);
       }
@@ -570,7 +559,7 @@ FLOW.QuestionGroupItemView = FLOW.View.extend({
 
     sId = FLOW.selectedControl.selectedSurvey.get('keyId');
     questionGroupsInSurvey = FLOW.store.filter(FLOW.QuestionGroup, function (item) {
-      return item.get('surveyId') == sId;
+      return item.get('surveyId') === sId;
     });
 
     // restore order - move items up to make space
@@ -591,14 +580,6 @@ FLOW.QuestionGroupItemView = FLOW.View.extend({
       "sourceId":FLOW.selectedControl.selectedForCopyQuestionGroup.get('keyId'),
       "repeatable":FLOW.selectedControl.selectedForCopyQuestionGroup.get('repeatable')
     });
-
-      // get the question groups again, now it contains the new one as well
-      questionGroupsInSurvey = FLOW.store.filter(FLOW.QuestionGroup, function (item) {
-        return item.get('surveyId') == sId;
-      });
-
-      // restore order in case the order has gone haywire
-      FLOW.questionControl.restoreOrder(questionGroupsInSurvey);
 
     FLOW.selectedControl.selectedSurvey.set('status', 'NOT_PUBLISHED');
     FLOW.store.commit();

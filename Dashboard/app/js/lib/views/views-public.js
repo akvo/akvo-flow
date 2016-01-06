@@ -64,6 +64,7 @@ Ember.Handlebars.registerHelper('tooltip', function (i18nKey) {
   } catch (err) {
     tooltip = i18nKey;
   }
+  tooltip = Handlebars.Utils.escapeExpression(tooltip);
   return new Handlebars.SafeString(
     '<a href="#" class="helpIcon tooltip" title="' + tooltip + '">?</a>'
   );
@@ -74,7 +75,8 @@ Ember.Handlebars.registerHelper('placemarkDetail', function () {
   var answer, markup, question;
 
   question = Ember.get(this, 'questionText');
-  answer = Ember.get(this, 'stringValue').replace(/\|/g, ' | ');
+  answer = Ember.get(this, 'stringValue') || '';
+  answer = answer.replace(/\|/g, ' | ');
 
   markup = '<div class="defListWrap"><dt>' +
     question + ':</dt><dd>' +
