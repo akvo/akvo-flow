@@ -272,7 +272,7 @@ FLOW.QuestionAnswerView = Ember.View.extend({
     } else {
       // responses in pipe separated format
       optionsValueString.split("|").forEach(function(item, textIndex, textArray){
-        var text = item.trim(), isLastItem = textIndex === textArray.length;
+        var text = item.trim(), isLastItem = textIndex === textArray.length - 1;
         if (text.length > 0) {
           optionsList.forEach(function(optionObj) {
             var optionIsIncluded = optionObj.get('text') && optionObj.get('text') === text;
