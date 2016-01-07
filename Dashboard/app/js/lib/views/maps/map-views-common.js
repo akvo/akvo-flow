@@ -167,6 +167,8 @@ FLOW.NavMapsView = FLOW.View.extend({
 			"Satellite": satellite
 		};
 
+    FLOW.addExtraMapBoxTileLayer(baseLayers);
+
     L.control.layers(baseLayers).addTo(map);
 
     this.map = map;
