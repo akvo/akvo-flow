@@ -170,14 +170,16 @@ FLOW.QuestionAnswerView = Ember.View.extend({
 	result=Ember.A();
 	if (c && c.get('value')) {
 	  striptestJson = JSON.parse(c.get('value'));
-	  striptestJson.result.forEach(function(item){
-		  image = 'data:image/png;base64,' + item.img;
-		  newResult = {"name":item.name,
+	  if (striptestJson.result && !Ember.empty(striptestJson.result)){
+		  striptestJson.result.forEach(function(item){
+			  image = 'data:image/png;base64,' + item.img;
+			  newResult = {"name":item.name,
 				  "value":item.value,
 				  "unit":item.unit,
 				  "image":image};
-		  result.push(newResult);
-	  });
+			  result.push(newResult);
+		  });
+	   }
 	}
 	this.set('striptestResult',result);
   },
