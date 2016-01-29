@@ -92,18 +92,32 @@ Ember.Handlebars.registerHelper('tooltip', function (i18nKey) {
   );
 });
 
+function isStriptestResult(text){
+	var json
+	json = JSON.parse(text);
+	return (json.type && json.type == 'caddisfly-strip');
+}
+
+function createStriptestMarkup(data){
+	result = '<div class=""><strong>' + data.name + '</strong></div>';
+	data.result.forEach(function(item){
+		result += '<br><div>' + item.name + ': '+ item.value + ' ' + item.unit + '</div>';
+		image = 'data:image/png;base64,' + item.img;
+		result += '<div class=""><img src="' + image + '"/></div>';
+	  });
+	return result;
+}
 
 Ember.Handlebars.registerHelper('placemarkDetail', function () {
   var answer, markup, question, cascadeJson, optionJson, cascadeString = "", questionType, imageSrcAttr, signatureJson;
-
   question = Ember.get(this, 'questionText');
   answer = Ember.get(this, 'stringValue') || '';
+  origAnswer = answer;
   answer = answer.replace(/\|/g, ' | '); // geo, option and cascade data
   answer = answer.replace(/\//g, ' / '); // also split folder paths
   questionType = Ember.get(this, 'questionType');
 
   if (questionType === 'CASCADE') {
-
       if (answer.indexOf("|") > -1) {
         // ignore
       } else {
@@ -119,12 +133,14 @@ Ember.Handlebars.registerHelper('placemarkDetail', function () {
     }).join("|");
   } else if (questionType === 'SIGNATURE') {
     imageSrcAttr = 'data:image/png;base64,';
-    signatureJson = JSON.parse(answer);
+    signatureJson = JSON.parse(origAnswer);
     answer = signatureJson && imageSrcAttr + signatureJson.image || '';
     answer = answer && '<img src="' + answer + '" />';
     answer = answer && answer + '<div>' + Ember.String.loc('_signed_by') + ':' + signatureJson.name + '</div>' || '';
   } else if (questionType === 'DATE') {
     answer = renderTimeStamp(answer);
+  } else if(questionType === 'FREE_TEXT' && isStriptestResult(origAnswer)){
+	answer = createStriptestMarkup(JSON.parse(origAnswer));
   }
 
   markup = '<div class="defListWrap"><dt>' +
