@@ -27,6 +27,7 @@ import javax.servlet.http.HttpServletRequest;
 
 import org.akvo.flow.domain.DataUtils;
 import org.apache.commons.codec.binary.Base64;
+import org.json.JSONException;
 import org.json.JSONObject;
 import org.waterforpeople.mapping.analytics.dao.AccessPointStatusSummaryDao;
 import org.waterforpeople.mapping.analytics.dao.SurveyQuestionSummaryDao;
@@ -150,6 +151,25 @@ public class DataBackoutServlet extends AbstractRestApiServlet {
     }
 
     /**
+     * Checks if this value is a json-formatted strip test result
+     */
+    private Boolean isStriptestJSON(String value){
+    	// a quick check if this is probably JSON
+    	if (!value.startsWith("{")) {
+    		return false;
+    	}
+
+    	try {
+			JSONObject json = new JSONObject(value);
+			// check for presence of strip test type
+			return json.getString("type").equals(DataUtils.STRIP_TEST_TYPE);
+		} catch (JSONException e) {
+			// if something doesn't work out, it is not strip test json, so return false
+			return false;
+		}
+    }
+
+    /**
      * lists all questionAnswerStore records for a given instance... in a csv like format TODO: We
      * should probably quote the values somehow, otherwise, what happens if a response contains \n?
      * 
@@ -178,6 +198,15 @@ public class DataBackoutServlet extends AbstractRestApiServlet {
                     if (Question.Type.SIGNATURE.toString().equals(qas.getType())) {
                         value = DataUtils.parseSignatory(value);
                     }
+
+                    // check if the free text is a strip test result
+                    // in that case, we need to strip out the images
+                    if (Question.Type.FREE_TEXT.toString().equals(qas.getType())) {
+                    	if (isStriptestJSON(value)){
+                    		value = DataUtils.removeImagesInStripTestJSON(value);
+                    	}
+                    }
+
                     value = value == null ? "" : value;
 
                     result.append(questionId)

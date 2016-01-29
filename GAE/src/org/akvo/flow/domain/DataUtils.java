@@ -23,12 +23,19 @@ import java.util.Map;
 
 import org.codehaus.jackson.map.ObjectMapper;
 import org.codehaus.jackson.type.TypeReference;
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
+import org.mortbay.util.ajax.JSON;
+
 
 /**
  * Utilities class for performing transformations on survey data, i.e. response values
  */
 public class DataUtils {
 
+	public static final String STRIP_TEST_TYPE = "caddisfly-strip";
+	public static final String STRIP_TEST_IMAGE_KEY = "img";
     public static final ObjectMapper JSON_OBJECT_MAPPER = new ObjectMapper();
 
     public static String[] optionResponsesTextArray(String optionResponse) {
@@ -114,5 +121,31 @@ public class DataUtils {
             // ignore
         }
         return signatory;
+    }
+    
+    /**
+     * Process the JSON formatted string value of a strip test response, and return the string representing the
+     * results.
+     * 
+     * @param value
+     * @return JSON object
+     */
+    
+    public static String removeImagesInStripTestJSON(String value) {
+    	String error = "{\"error\":\"cannot parse json\"}";
+    	JSONObject json = null;
+    	try {
+			json = new JSONObject(value);
+			String type = json.getString("type");
+			if (type.equals(STRIP_TEST_TYPE)){
+				JSONArray result = json.getJSONArray("result");
+				for (int i = 0; i < result.length(); i++) {
+					  result.getJSONObject(i).remove(STRIP_TEST_IMAGE_KEY);
+				}
+			}
+			return json.toString();
+    	} catch (JSONException e) {
+			return error;
+		}
     }
 }
