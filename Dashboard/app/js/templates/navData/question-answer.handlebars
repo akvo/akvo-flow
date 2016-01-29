@@ -52,8 +52,7 @@
                     {{else}}
                         {{t _no_signature_found}}
                     {{/if}}
-                {{else}}
-                 {{#if view.isExternalSourceType}}
+                {{else}} {{#if view.isExternalSourceType}}
                 	<div class=""><strong>{{t _strip_test_type}}: {{view.striptestName}}</strong></div>
                 	{{#each result in view.striptestResult}}<br>
                 	<div>{{result.name}} : {{result.value}} {{result.unit}}</div>

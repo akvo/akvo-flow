@@ -170,7 +170,6 @@ FLOW.QuestionAnswerView = Ember.View.extend({
 	result=Ember.A();
 	if (c && c.get('value')) {
 	  striptestJson = JSON.parse(c.get('value'));
-	  console.log(striptestJson.result);
 	  striptestJson.result.forEach(function(item){
 		  image = 'data:image/png;base64,' + item.img;
 		  newResult = {"name":item.name,
@@ -194,7 +193,9 @@ FLOW.QuestionAnswerView = Ember.View.extend({
 	  {
 		  this.parseStriptestJson();
 	  }
-	  return striptestJson.name.trim();
+	  if (!Ember.empty(striptestJson.name)){
+		  return striptestJson.name.trim();
+	  }
 	}
     return null;
   }.property('this.content'),
