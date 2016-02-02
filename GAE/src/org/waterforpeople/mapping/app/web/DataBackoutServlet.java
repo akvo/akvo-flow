@@ -62,7 +62,7 @@ import com.google.appengine.api.datastore.Entity;
 public class DataBackoutServlet extends AbstractRestApiServlet {
 
     private static final long serialVersionUID = 4608959174864994769L;
-
+    private static final String QAS_TYPE_VALUE = "VALUE";
     private QuestionDao qDao;
     private SurveyQuestionSummaryDao questionSummaryDao;
     private SurveyInstanceDAO instanceDao;
@@ -194,14 +194,14 @@ public class DataBackoutServlet extends AbstractRestApiServlet {
                     iteration = iteration == null ? 0 : iteration;
                     String value = qas.getValue();
 
-                    // strip image data that will not be used in the excel export
+                    // signature image data that will not be used in the excel export
                     if (Question.Type.SIGNATURE.toString().equals(qas.getType())) {
                         value = DataUtils.parseSignatory(value);
                     }
 
-                    // check if the free text is a strip test result
+                    // check if the response is of type 'value' and is a strip test result
                     // in that case, we need to strip out the images
-                    if (Question.Type.FREE_TEXT.toString().equals(qas.getType())) {
+                    if (qas.getType().equals(QAS_TYPE_VALUE)) {
                     	if (isStriptestJSON(value)){
                     		value = DataUtils.removeImagesInStripTestJSON(value);
                     	}
