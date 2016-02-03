@@ -19,6 +19,7 @@ package com.gallatinsystems.surveyal.domain;
 import java.util.Date;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 import java.util.UUID;
 
@@ -26,6 +27,7 @@ import javax.jdo.annotations.NotPersistent;
 import javax.jdo.annotations.PersistenceCapable;
 
 import com.gallatinsystems.framework.domain.BaseDomain;
+
 import static com.gallatinsystems.common.Constants.MAX_LENGTH;
 
 /**
@@ -312,5 +314,22 @@ public class SurveyedLocale extends BaseDomain {
         return String.format("%s-%s-%s", oldStyleIdentifier.substring(0, 4),
                 oldStyleIdentifier.substring(4, 8),
                 base32Uuid.substring(10));
+    }
+    
+    public static String getDatapointName(List<Long> nameQuestions, Map<Long, String> nameResponses) {
+        StringBuilder sb = new StringBuilder();
+        boolean first = true;
+        for (Long id : nameQuestions) {
+            if (!nameResponses.containsKey(id)) {
+                continue;
+            }
+            if (!first) {
+                sb.append(" - ");
+            }
+            sb.append(nameResponses.get(id));
+            first = false;
+        }
+        
+        return sb.toString();
     }
 }

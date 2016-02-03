@@ -20,6 +20,9 @@ import java.util.Date;
 
 import javax.jdo.annotations.PersistenceCapable;
 
+import org.akvo.flow.domain.DataUtils;
+import org.apache.commons.lang.StringUtils;
+
 import com.gallatinsystems.common.Constants;
 import com.gallatinsystems.framework.domain.BaseDomain;
 import com.google.appengine.api.datastore.Text;
@@ -315,5 +318,28 @@ public class SurveyalValue extends BaseDomain {
     public void setSurveyId(Long surveyId) {
         this.surveyId = surveyId;
     }
+    
+    public String getDatapointNameValue() {
+        String name = getStringValue();
+        if (questionType == null || name == null) {
+            return "";
+        }
 
+        switch (questionType) {
+            case "CASCADE":
+                break;
+            case "OPTION":
+                String[] values = DataUtils.optionResponsesTextArray(name);
+                name = StringUtils.join(values, " - ");
+                break;
+            default:
+                break;
+        }
+        
+        name = name.replaceAll("\\s+", " ");// Trim line breaks, multiple spaces, etc
+        name = name.replaceAll("\\s*\\|\\s*", " - ");// Replace pipes with hyphens
+
+        return name.trim();
+    }
+    
 }
