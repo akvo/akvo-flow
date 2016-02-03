@@ -320,19 +320,21 @@ public class SurveyalValue extends BaseDomain {
     }
     
     public String getDatapointNameValue() {
-        String name = getStringValue();
-        if (questionType == null || name == null) {
+        String response = getStringValue();
+        if (questionType == null || response == null) {
             return "";
         }
 
+        String name;
         switch (questionType) {
             case "CASCADE":
+                name = StringUtils.join(DataUtils.cascadeResponseValues(response), " - ");
                 break;
             case "OPTION":
-                String[] values = DataUtils.optionResponsesTextArray(name);
-                name = StringUtils.join(values, " - ");
+                name = StringUtils.join(DataUtils.optionResponsesTextArray(response), " - ");
                 break;
             default:
+                name = response;
                 break;
         }
         
