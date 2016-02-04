@@ -52,7 +52,11 @@ FLOW.QuestionAnswerView = Ember.View.extend({
     return this.get('questionType') === 'SIGNATURE' || (this.content && this.content.get('type') === 'SIGNATURE');
   }.property('this.questionType'),
 
-  nonEditableQuestionTypes: ['GEO', 'PHOTO', 'VIDEO', 'GEOSHAPE', 'SIGNATURE'],
+  isCaddisflyType: function(){
+	    return this.get('questionType') === 'CADDISFLY' || (this.content && this.content.get('type') === 'CADDISFLY');
+	  }.property('this.questionType'),
+
+  nonEditableQuestionTypes: ['GEO', 'PHOTO', 'VIDEO', 'GEOSHAPE', 'SIGNATURE','CADDISFLY'],
 
   form: function() {
     if (FLOW.selectedControl.get('selectedSurvey')) {

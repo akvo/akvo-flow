@@ -37,7 +37,7 @@ public class Question extends BaseDomain {
 
     public enum Type {
         FREE_TEXT, OPTION, NUMBER, GEO, PHOTO, VIDEO, SCAN, TRACK, NAME, STRENGTH, DATE, CASCADE,
-        GEOSHAPE, SIGNATURE
+        GEOSHAPE, SIGNATURE, CADDISFLY
     };
 
     private Type type = null;

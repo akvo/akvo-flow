@@ -112,7 +112,7 @@ FLOW.QuestionView = FLOW.View.extend({
     var val;
     if (!Ember.none(this.type)) {
       val = this.type.get('value');
-      return val === 'PHOTO' || val === 'VIDEO' || val === 'DATE' || val === 'SIGNATURE';
+      return val === 'PHOTO' || val === 'VIDEO' || val === 'DATE' || val === 'SIGNATURE' || val === 'CADDISFLY';
     }
   }.property('this.type').cacheable(),
 
@@ -136,6 +136,11 @@ FLOW.QuestionView = FLOW.View.extend({
     return (this.content && this.content.get('type') === 'SIGNATURE')
             || (this.type && this.type.get('value') === 'SIGNATURE');
   }.property('this.type'),
+
+  amCaddisflyType: function () {
+	    return (this.content && this.content.get('type') === 'CADDISFLY')
+	            || (this.type && this.type.get('value') === 'CADDISFLY');
+	  }.property('this.type'),
 
   showLocaleName: function () {
       if (!this.type) {
