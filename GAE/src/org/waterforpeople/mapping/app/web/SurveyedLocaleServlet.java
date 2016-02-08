@@ -221,7 +221,7 @@ public class SurveyedLocaleServlet extends AbstractRestApiServlet {
                 dto.getSurveyInstances().add(siDto);
                 if (registrationSurveyId.equals(si.getSurveyId())) {
                     String datapointName = SurveyedLocale.getDatapointName(datapointNameQuestions, nameResponses);
-                    dto.setDisplayName(datapointName);
+                    //dto.setDisplayName(datapointName);
                 }
             }
             dtoList.add(dto);

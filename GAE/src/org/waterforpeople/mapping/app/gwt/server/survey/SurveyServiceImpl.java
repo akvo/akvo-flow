@@ -811,6 +811,8 @@ public class SurveyServiceImpl extends RemoteServiceServlet implements
         com.google.appengine.api.taskqueue.Queue queue = com.google.appengine.api.taskqueue.QueueFactory
                 .getQueue("surveyAssembly");
         queue.add(options);
+        
+        // TODO: schedule datapoint name recomputation (if applies) 
     }
 
     @Override

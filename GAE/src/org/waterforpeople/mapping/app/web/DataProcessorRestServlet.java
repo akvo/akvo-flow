@@ -1504,5 +1504,31 @@ public class DataProcessorRestServlet extends AbstractRestApiServlet {
                             cascadeResourceId, parentNodeId), e);
         }
     }
+    
+    public static void reassembleDatapointName(Long surveyId, Long surveyedLocaleId) {
+        if (surveyId != null) {
+            // if we have a surveyId, try to parse it to long here
+            // if we fail, we break of the whole operation
+            // we don't use the parsed value
+    
+            // check if the survey exists
+            SurveyDAO sDao = new SurveyDAO();
+            Survey s = sDao.getByKey(surveyId);
+            if (s != null) {
+                // fire processing task
+                final TaskOptions options = TaskOptions.Builder
+                        .withUrl("/app_worker/dataprocessor")
+                        .header("Host",
+                                BackendServiceFactory.getBackendService()
+                                        .getBackendAddress("dataprocessor"))
+                        .param(DataProcessorRequest.ACTION_PARAM,
+                                DataProcessorRequest.POPULATE_MONITORING_FIELDS_LOCALE_ACTION)
+                        .param(DataProcessorRequest.SURVEY_ID_PARAM, surveyId.toString());
+                com.google.appengine.api.taskqueue.Queue queue = com.google.appengine.api.taskqueue.QueueFactory
+                        .getQueue("background-processing");
+                queue.add(options);
+            }
+        }
+    }
 
 }
