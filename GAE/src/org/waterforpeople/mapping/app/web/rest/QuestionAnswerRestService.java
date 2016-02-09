@@ -228,15 +228,18 @@ public class QuestionAnswerRestService {
                     SurveyedLocaleDao slDao = new SurveyedLocaleDao();
                     List<SurveyalValue> svals = slDao.listSVByQuestionAndSurveyInstance(
                             surveyInstanceId, Long.parseLong(questionId));
+                    Long surveyedLocaleId = null;
                     if (svals != null && svals.size() > 0) {
                         SurveyalValue sval = svals.get(0);
                         sval.setStringValue(qa.getValue());
                         slDao.save(sval);
+                        // Populate locale id from the only entity containing this attribute
+                        surveyedLocaleId = sval.getSurveyedLocaleId();
                     }
                     
                     // Update datapoint names for this survey, if applies
                     if (q.getLocaleNameFlag()) {
-                        DataProcessorRestServlet.reassembleDatapointName(q.getSurveyId(), null);
+                        DataProcessorRestServlet.reassembleDatapointName(q.getSurveyId(), surveyedLocaleId);
                     }
                     
                     // return result to the Dashboard
