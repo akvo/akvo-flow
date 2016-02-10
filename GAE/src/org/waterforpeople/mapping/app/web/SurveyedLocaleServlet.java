@@ -20,7 +20,6 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -41,14 +40,11 @@ import com.gallatinsystems.framework.rest.RestResponse;
 import com.gallatinsystems.survey.dao.DeviceSurveyJobQueueDAO;
 import com.gallatinsystems.survey.dao.QuestionDao;
 import com.gallatinsystems.survey.dao.SurveyDAO;
-import com.gallatinsystems.survey.dao.SurveyGroupDAO;
 import com.gallatinsystems.survey.domain.Question;
 import com.gallatinsystems.survey.domain.Survey;
-import com.gallatinsystems.survey.domain.SurveyGroup;
 import com.gallatinsystems.surveyal.dao.SurveyedLocaleDao;
 import com.gallatinsystems.surveyal.domain.SurveyalValue;
 import com.gallatinsystems.surveyal.domain.SurveyedLocale;
-
 import static org.akvo.flow.domain.DataUtils.*;
 
 /**
@@ -118,14 +114,11 @@ public class SurveyedLocaleServlet extends AbstractRestApiServlet {
         SurveyedLocaleResponse resp = new SurveyedLocaleResponse();
         SurveyedLocaleDao slDao = new SurveyedLocaleDao();
         QuestionDao qDao = new QuestionDao();
-        SurveyGroup sg = new SurveyGroupDAO().getByKey(surveyGroupId);
-        final Long registrationSurveyId = sg != null ? sg.getNewLocaleSurveyId() : null;
-        if (slList == null || registrationSurveyId == null) {
+        if (slList == null) {
             resp.setCode(String.valueOf(HttpServletResponse.SC_INTERNAL_SERVER_ERROR));
             resp.setMessage("Internal Server Error");
             return resp;
         }
-        final List<Long> datapointNameQuestions = getDatapointNameQuestions(registrationSurveyId);
         // set meta data
         resp.setCode(String.valueOf(HttpServletResponse.SC_OK));
         resp.setResultCount(slList.size());
@@ -135,10 +128,6 @@ public class SurveyedLocaleServlet extends AbstractRestApiServlet {
         HashMap<Long, String> questionTypeMap = new HashMap<Long, String>();
         // for each surveyedLocale, get the surveyalValues and store them in a map
         for (SurveyedLocale sl : slList) {
-            // SurveyalValues are not ordered, yet the datapoint name must preserve flagged questions' ordering.
-            // We'll use a temporary map to store all applicable responses, then build the name.
-            Map<Long, String> nameResponses = new HashMap<>();
-            
             List<SurveyalValue> svList = slDao.listValuesByLocale(sl.getKey().getId());
             HashMap<Long, List<SurveyalValue>> instanceMap = new HashMap<Long, List<SurveyalValue>>();
             if (svList != null && svList.size() > 0) {
@@ -163,19 +152,16 @@ public class SurveyedLocaleServlet extends AbstractRestApiServlet {
             dto.setLastUpdateDateTime(sl.getLastUpdateDateTime());
             SurveyInstanceDAO sDao = new SurveyInstanceDAO();
             for (Long instanceId : instanceMap.keySet()) {
-                nameResponses.clear();
                 SurveyInstanceDto siDto = new SurveyInstanceDto();
                 SurveyInstance si = sDao.getByKey(instanceId);
-                if (si == null) {
-                    continue;
+                if (si != null) {
+                    siDto.setUuid(si.getUuid());
+                    siDto.setSubmitter(si.getSubmitterName());
+                    siDto.setSurveyId(si.getSurveyId());
+                    siDto.setCollectionDate(si.getCollectionDate().getTime());
                 }
-                siDto.setUuid(si.getUuid());
-                siDto.setSubmitter(si.getSubmitterName());
-                siDto.setSurveyId(si.getSurveyId());
-                siDto.setCollectionDate(si.getCollectionDate().getTime());
                 for (SurveyalValue sv : instanceMap.get(instanceId)) {
-                    Long qid = Long.valueOf(sv.getSurveyQuestionId());
-                    if (qid == null) {
+                    if (sv.getSurveyQuestionId() == null) {
                         continue;// The question was deleted before storing the response.
                     }
 
@@ -211,18 +197,9 @@ public class SurveyedLocaleServlet extends AbstractRestApiServlet {
                                 sv.getStringValue() != null ? sv.getStringValue() : "",
                                 type);
                     }
-                    
-                    // Add property to the temporary datapoint name response map
-                    if (datapointNameQuestions.contains(qid)) {
-                        nameResponses.put(qid, sv.getDatapointNameValue());
-                    }
 
                 }
                 dto.getSurveyInstances().add(siDto);
-                if (registrationSurveyId.equals(si.getSurveyId())) {
-                    String datapointName = SurveyedLocale.getDatapointName(datapointNameQuestions, nameResponses);
-                    //dto.setDisplayName(datapointName);
-                }
             }
             dtoList.add(dto);
         }
@@ -250,14 +227,5 @@ public class SurveyedLocaleServlet extends AbstractRestApiServlet {
         } else {
             getResponse().getWriter().println(resp.getMessage());
         }
-    }
-    
-    private List<Long> getDatapointNameQuestions(Long registrationSurveyId) {
-        List<Long> questions = new ArrayList<>();
-        QuestionDao qDao = new QuestionDao();
-        for (Question q : qDao.listDisplayNameQuestionsBySurveyId(registrationSurveyId)) {
-            questions.add(q.getKey().getId());
-        }
-        return questions;
     }
 }
