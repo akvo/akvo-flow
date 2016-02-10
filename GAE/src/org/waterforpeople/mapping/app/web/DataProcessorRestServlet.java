@@ -1551,7 +1551,7 @@ public class DataProcessorRestServlet extends AbstractRestApiServlet {
                     }
                 }
                 
-                String name = SurveyedLocale.getDatapointName(nameQuestions, nameResponses);
+                String name = getDatapointName(nameQuestions, nameResponses);
                 sl.setDisplayName(name);
                 slDao.save(sl);
             } catch (Exception e) {
@@ -1587,6 +1587,23 @@ public class DataProcessorRestServlet extends AbstractRestApiServlet {
         com.google.appengine.api.taskqueue.Queue queue = com.google.appengine.api.taskqueue.QueueFactory
                 .getQueue("background-processing");
         queue.add(options);
+    }
+    
+    private String getDatapointName(List<Long> nameQuestions, Map<Long, String> nameResponses) {
+        StringBuilder sb = new StringBuilder();
+        boolean first = true;
+        for (Long id : nameQuestions) {
+            if (!nameResponses.containsKey(id)) {
+                continue;
+            }
+            if (!first) {
+                sb.append(" - ");
+            }
+            sb.append(nameResponses.get(id));
+            first = false;
+        }
+        
+        return sb.toString();
     }
 
 }

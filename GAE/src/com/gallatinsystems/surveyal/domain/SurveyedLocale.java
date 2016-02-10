@@ -316,20 +316,4 @@ public class SurveyedLocale extends BaseDomain {
                 base32Uuid.substring(10));
     }
     
-    public static String getDatapointName(List<Long> nameQuestions, Map<Long, String> nameResponses) {
-        StringBuilder sb = new StringBuilder();
-        boolean first = true;
-        for (Long id : nameQuestions) {
-            if (!nameResponses.containsKey(id)) {
-                continue;
-            }
-            if (!first) {
-                sb.append(" - ");
-            }
-            sb.append(nameResponses.get(id));
-            first = false;
-        }
-        
-        return sb.toString();
-    }
 }
