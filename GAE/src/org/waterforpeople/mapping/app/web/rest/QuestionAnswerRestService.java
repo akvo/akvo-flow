@@ -238,8 +238,8 @@ public class QuestionAnswerRestService {
                     }
                     
                     // Update datapoint names for this survey, if applies
-                    if (q.getLocaleNameFlag()) {
-                        DataProcessorRestServlet.reassembleDatapointName(q.getSurveyId(), surveyedLocaleId);
+                    if (q.getLocaleNameFlag() && surveyedLocaleId != null) {
+                        DataProcessorRestServlet.scheduleDatapointNameAssembly(q.getSurveyId(), surveyedLocaleId);
                     }
                     
                     // return result to the Dashboard

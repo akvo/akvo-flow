@@ -41,6 +41,7 @@ public class DataProcessorRequest extends RestRequest {
     public static final String FIX_OPTIONS2VALUES_ACTION = "fixOptions2Values";
     public static final String FIX_DUPLICATE_OTHER_TEXT_ACTION = "fixDuplicateOtherText";
     public static final String FIX_QUESTIONGROUP_DEPENDENCIES_ACTION = "fixQuestionGroupDepencencies";
+    public static final String ASSEMBLE_DATAPOINT_NAME = "assembleDatapointName";
     public static final String DELETE_DUPLICATE_QAS = "deleteDuplicatedQAS";
     public static final String RECOMPUTE_LOCALE_CLUSTERS = "recomputeLocaleClusters";
     public static final String SURVEY_INSTANCE_SUMMARIZER = "surveyInstanceSummarizer";
