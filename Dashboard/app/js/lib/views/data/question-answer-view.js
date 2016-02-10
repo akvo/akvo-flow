@@ -166,7 +166,7 @@ FLOW.QuestionAnswerView = Ember.View.extend({
    * parse the strip test JSON result
    */
   parseStriptestJson: function(){
-	var c = this.content, signatureJson, newResult, image;
+	var c = this.content, striptestJson, newResult, image;
 	result=Ember.A();
 	if (c && c.get('value')) {
 	  striptestJson = JSON.parse(c.get('value'));
@@ -188,7 +188,7 @@ FLOW.QuestionAnswerView = Ember.View.extend({
    * Get out the strip test name
    */
   striptestName: function(){
-	var c = this.content, signatureJson;
+	var c = this.content, striptestJson;
 	if (c && c.get('value')) {
 	  striptestJson = JSON.parse(c.get('value'));
 	  if (!Ember.empty(striptestJson.result))
