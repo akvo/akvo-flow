@@ -45,6 +45,7 @@ import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
  *       &lt;attribute name="type" use="required" type="{http://www.w3.org/2001/XMLSchema}NMTOKEN" />
  *       &lt;attribute name="cascadeResource" type="{http://www.w3.org/2001/XMLSchema}NMTOKEN" />
  *       &lt;attribute name="cascadeVersion" type="{http://www.w3.org/2001/XMLSchema}NMTOKEN" />
+ *       &lt;attribute name="caddisflyResource" type="{http://www.w3.org/2001/XMLSchema}NMTOKEN" />
  *       &lt;attribute name="mandatory" use="required">
  *         &lt;simpleType>
  *           &lt;restriction base="{http://www.w3.org/2001/XMLSchema}NMTOKEN">
@@ -107,6 +108,11 @@ public class Question {
     @XmlJavaTypeAdapter(CollapsedStringAdapter.class)
     @XmlSchemaType(name = "NMTOKEN")
     protected String cascadeResource;
+
+    @XmlAttribute(required = false)
+    @XmlJavaTypeAdapter(CollapsedStringAdapter.class)
+    @XmlSchemaType(name = "NMTOKEN")
+    protected String caddisflyResource;
 
     @XmlAttribute(required = true)
     @XmlJavaTypeAdapter(CollapsedStringAdapter.class)
@@ -347,6 +353,24 @@ public class Question {
      */
     public void setCascadeResource(String value) {
         this.cascadeResource = value;
+    }
+    
+    /**
+     * Gets the value of the cascadeResource property.
+     *
+     * @return possible object is {@link String }
+     */
+    public String getCaddisflyResource() {
+        return caddisflyResource;
+    }
+
+    /**
+     * Sets the value of the caddisflyResource property.
+     *
+     * @param value allowed object is {@link String }
+     */
+    public void setCaddisflyResource(String value) {
+        this.caddisflyResource = value;
     }
 
     /**

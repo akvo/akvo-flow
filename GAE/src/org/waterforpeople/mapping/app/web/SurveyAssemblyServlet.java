@@ -101,6 +101,7 @@ public class SurveyAssemblyServlet extends AbstractRestApiServlet {
     public static final String CASCADE_QUESTION_TYPE = "cascade";
     public static final String GEOSHAPE_QUESTION_TYPE = "geoshape";
     public static final String SIGNATURE_QUESTION_TYPE = "signature";
+    public static final String CADDISFLY_QUESTION_TYPE = "caddisfly";
 
     private static final String SURVEY_UPLOAD_URL = "surveyuploadurl";
     private static final String SURVEY_UPLOAD_DIR = "surveyuploaddir";
@@ -633,6 +634,12 @@ public class SurveyAssemblyServlet extends AbstractRestApiServlet {
             qXML.setAllowPolygon(Boolean.toString(q.getAllowPolygon()));
         } else if (q.getType().equals(Question.Type.SIGNATURE)) {
             qXML.setType(SIGNATURE_QUESTION_TYPE);
+        } else if (q.getType().equals(Question.Type.CADDISFLY)) {
+            qXML.setType(CADDISFLY_QUESTION_TYPE);
+        }
+
+        if (q.getType().equals(Question.Type.CADDISFLY) && q.getCaddisflyResourceId() != null) {
+        	qXML.setCaddisflyResource(Long.toString(q.getCaddisflyResourceId()));
         }
 
         if (q.getType().equals(Question.Type.CASCADE) && q.getCascadeResourceId() != null) {
