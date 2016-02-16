@@ -64,6 +64,7 @@ FLOW.selectedControl = Ember.Controller.create({
   selectedCreateNewGroup: false,
   selectedSurveyOPTIONQuestions: null,
   selectedCascadeResource:null,
+  selectedCaddisflyResource:null,
   radioOptions: "",
   cascadeImportNumLevels: null,
   cascadeImportIncludeCodes: null,

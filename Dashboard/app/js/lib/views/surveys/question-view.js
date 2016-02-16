@@ -112,7 +112,7 @@ FLOW.QuestionView = FLOW.View.extend({
     var val;
     if (!Ember.none(this.type)) {
       val = this.type.get('value');
-      return val === 'PHOTO' || val === 'VIDEO' || val === 'DATE' || val === 'SIGNATURE' || val === 'CADDISFLY';
+      return val === 'PHOTO' || val === 'VIDEO' || val === 'DATE' || val === 'SIGNATURE';
     }
   }.property('this.type').cacheable(),
 
@@ -140,7 +140,7 @@ FLOW.QuestionView = FLOW.View.extend({
   amCaddisflyType: function () {
 	    return (this.content && this.content.get('type') === 'CADDISFLY')
 	            || (this.type && this.type.get('value') === 'CADDISFLY');
-	  }.property('this.type'),
+	  }.property('this.type').cacheable(),
 
   showLocaleName: function () {
       if (!this.type) {
@@ -194,12 +194,22 @@ FLOW.QuestionView = FLOW.View.extend({
     this.set('allowPoints', FLOW.selectedControl.selectedQuestion.get('allowPoints'));
     this.set('allowLine', FLOW.selectedControl.selectedQuestion.get('allowLine'));
     this.set('allowPolygon', FLOW.selectedControl.selectedQuestion.get('allowPolygon'));
+    this.set('cascadeResourceId', FLOW.selectedControl.selectedQuestion.get('cascadeResourceId'));
+    this.set('caddisflyResourceId', FLOW.selectedControl.selectedQuestion.get('caddisflyResourceId'));
+
     FLOW.optionListControl.set('content', []);
 
     // if the cascadeResourceId is not null, get the resource
     if (!Ember.empty(FLOW.selectedControl.selectedQuestion.get('cascadeResourceId'))) {
     	cascadeResource = FLOW.store.find(FLOW.CascadeResource,FLOW.selectedControl.selectedQuestion.get('cascadeResourceId'));
     	FLOW.selectedControl.set('selectedCascadeResource', cascadeResource);
+    }
+
+    // if the caddisflyResourceId is not null, get the resource
+    if (!Ember.empty(FLOW.selectedControl.selectedQuestion.get('caddisflyResourceId'))) {
+      console.log("gettting caddisfly resource");
+      caddisflyResource = FLOW.store.find(FLOW.CaddisflyResource,FLOW.selectedControl.selectedQuestion.get('caddisflyResourceId'));
+      FLOW.selectedControl.set('selectedCaddisflyResource', caddisflyResource);
     }
 
     // if the dependentQuestionId is not null, get the question
@@ -343,6 +353,15 @@ FLOW.QuestionView = FLOW.View.extend({
     if (!(this.type.get('value') == 'NUMBER' || this.type.get('value') == 'FREE_TEXT')) {
       this.set('requireDoubleEntry', false);
     }
+    
+    if (!(this.type.get('value') == 'CASCADE')) {
+      this.set('cascadeResourceId', null);
+    }
+    
+    if (!(this.type.get('value') == 'CADDISFLY')) {
+      this.set('caddisflyResourceId', null);
+    }
+    
     path = FLOW.selectedControl.selectedSurveyGroup.get('code') + "/" + FLOW.selectedControl.selectedSurvey.get('name') + "/" + FLOW.selectedControl.selectedQuestionGroup.get('code');
     FLOW.selectedControl.selectedQuestion.set('questionId', this.get('questionId'));
     FLOW.selectedControl.selectedQuestion.set('text', this.get('text'));
@@ -408,6 +427,14 @@ FLOW.QuestionView = FLOW.View.extend({
     		FLOW.selectedControl.selectedQuestion.set('cascadeResourceId',
     				FLOW.selectedControl.selectedCascadeResource.get('keyId'));
     	}
+    }
+    
+    // deal with caddisflyResource
+    if (this.type.get('value') == 'CADDISFLY') {
+      if (!Ember.empty(FLOW.selectedControl.get('selectedCaddisflyResource'))){
+        FLOW.selectedControl.selectedQuestion.set('caddisflyResourceId',
+            FLOW.selectedControl.selectedCaddisflyResource.get('keyId'));
+      }
     }
 
     FLOW.selectedControl.selectedSurvey.set('status', 'NOT_PUBLISHED');
