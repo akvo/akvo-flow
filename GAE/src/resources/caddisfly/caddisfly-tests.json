@@ -1,0 +1,144 @@
+{
+	"tests": [
+
+		{
+			"subtype": "colour",
+			"keyId": 1,
+			"tags": ["water quality"],
+			"name": "Fluoride",
+			"brand": "Akvo Caddisfly",
+			"description": "Measures Fluoride in water. x - xxx ppm",
+			"numResults": 1,
+			"results": [{
+				"name": "Fluoride",
+				"id": "1",
+				"unit": "ppm"
+			}]
+		}, {
+			"subtype": "sensor",
+			"keyId": 2,
+			"tags": ["water quality"],
+			"name": "Electrical Conductivity",
+			"brand": "Akvo Caddisfly",
+			"description": "Electrical Conductivity of water. 0 - 20.000 μS/cm",
+			"numResults": 1,
+			"results": [{
+				"name": "Electrical Conductivity",
+				"id": "1",
+				"unit": "μS/cm"
+			}]
+		}, {
+			"subtype": "striptest",
+			"keyId": 3,
+			"tags": ["water quality"],
+			"name": "Chlorine and Free Chlorine",
+			"brand": "HACH 27450, 50pcs",
+			"description": "Measures chlorine and free chlorine in water. 0 - 10 ppm",
+			"numResults": 2,
+			"results": [{
+				"name": "Total Chlorine",
+				"id": "1",
+				"unit": "ppm"
+			}, {
+				"name": "Free Chlorine",
+				"id": "2",
+				"unit": "ppm"
+			}]
+		}, {
+			"subtype": "striptest",
+			"keyId": 4,
+			"tags": ["water quality"],
+			"name": "Nitrate and Nitrite",
+			"brand": "HACH 27454, 25 pcs",
+			"description": "Measures nitrate and nitrite in water. Nitrate 0 - 50 ppm, Nitrite 0 - 3.0 ppm",
+			"numResults": 2,
+			"results": [{
+				"name": "60-second Nitrate Nitrogen",
+				"id": "1",
+				"unit": "ppm"
+			}, {
+				"name": "30-second Nitrite Nitrogen",
+				"id": "2",
+				"unit": "ppm"
+			}]
+		}, {
+			"subtype": "striptest",
+			"keyId": 5,
+			"tags": ["water quality"],
+			"name": "Total Iron",
+			"brand": "HACH 2745348, 25 pcs. 0 - 5 ppm",
+			"description": "Total dissolved iron",
+			"numResults": 1,
+			"results": [{
+				"name": "Total iron",
+				"id": "1",
+				"unit": "ppm"
+			}]
+		}, {
+			"subtype": "striptest",
+			"keyId": 6,
+			"tags": ["water quality"],
+			"name": "pH 4-9",
+			"brand": "HACH 27456, 50 pcs. Range 4 - 9.",
+			"description": "pH mid range",
+			"numResults": 1,
+			"results": [{
+				"name": "pH",
+				"id": "1",
+				"unit": ""
+			}]
+		}, {
+			"subtype": "striptest",
+			"keyId": 7,
+			"tags": ["water quality"],
+			"name": "Phosphorus",
+			"brand": "HACH 27571, 50 pcs",
+			"description": "Phosphorus, orthophosphate (reactive). 0 - 50 ppm.",
+			"numResults": 1,
+			"results": [{
+				"name": "Phosphorus",
+				"id": "1",
+				"unit": "ppm"
+			}]
+		}, {
+			"subtype": "striptest",
+			"keyId": 8,
+			"tags": ["water quality"],
+			"name": "pH MColorpHast range 0 - 14",
+			"brand": "Merck Millipore 1095350001, 100 pcs",
+			"description": "pH, range 0 - 14",
+			"numResults": 11,
+			"results": [{
+				"name": "pH",
+				"id": "1",
+				"unit": ""
+			}]
+		}, {
+			"subtype": "striptest",
+			"keyId": 9,
+			"tags": ["water quality"],
+			"name": "EZ Arsenic High Range Test Kit (0-500 range)",
+			"brand": "HACH 2822800, 50 pcs",
+			"description": "Measures arsenic levels. This is a dual range test kit - choose this test when the 0-500 ppm range is used.",
+			"numResults": 1,
+			"results": [{
+				"name": "Arsenic",
+				"id": "1",
+				"unit": "ppm"
+			}]
+		}, {
+			"subtype": "striptest",
+			"keyId": 10,
+			"tags": ["water quality"],
+			"name": "EZ Arsenic High Range Test Kit (0-4000 range)",
+			"brand": "HACH 2822800, 50 pcs",
+			"description": "Measures arsenic levels. This is a dual range test kit - choose this test when the 0-4000 ppm range is used.",
+			"numResults": 1,
+			"results": [{
+				"name": "Arsenic",
+				"id": "1",
+				"unit": "ppm"
+			}]
+		}
+	]
+}
