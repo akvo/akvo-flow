@@ -47,6 +47,7 @@ public class QuestionDto extends BaseDto implements NamedObject {
     private Long dependentQuestionId;
     private String dependentQuestionAnswer;
     private Long cascadeResourceId;
+    private Long caddisflyResourceId;
     private Long metricId;
     private QuestionDependencyDto questionDependency = null;
     private Long surveyId;
@@ -480,4 +481,12 @@ public class QuestionDto extends BaseDto implements NamedObject {
     public Boolean getAllowPolygon() {
         return allowPolygon;
     }
+
+	public Long getCaddisflyResourceId() {
+		return caddisflyResourceId;
+	}
+
+	public void setCaddisflyResourceId(Long caddisflyResourceId) {
+		this.caddisflyResourceId = caddisflyResourceId;
+	}
 }
