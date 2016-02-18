@@ -1,5 +1,5 @@
 /*
- *  Copyright (C) 2010-2015 Stichting Akvo (Akvo Foundation)
+ *  Copyright (C) 2010-2016 Stichting Akvo (Akvo Foundation)
  *
  *  This file is part of Akvo FLOW.
  *
@@ -1526,14 +1526,8 @@ public class DataProcessorRestServlet extends AbstractRestApiServlet {
             // get locales by createdSurveyId
             locales = slDao.listLocalesByCreationSurvey(surveyId, Constants.ALL_RESULTS, null);
         }
-        
-        log.info("Assembling datapoint name for SurveyedLocales: " + locales);
 
-        // TODO: Fetch IDs only!
-        List<Long> nameQuestions = new ArrayList<>();
-        for (Question q: qDao.listDisplayNameQuestionsBySurveyId(surveyId)) {
-            nameQuestions.add(q.getKey().getId());
-        }
+        List<Question> nameQuestions = qDao.listDisplayNameQuestionsBySurveyId(surveyId);
         
         SurveyInstance si;
         for (SurveyedLocale sl : locales) {
@@ -1543,17 +1537,11 @@ public class DataProcessorRestServlet extends AbstractRestApiServlet {
                     log.log(Level.WARNING, "Null registartion SurveyInstance for locale: " + sl.getKey().getId());
                     continue;
                 }
-                // Map question id to value responses
-                Map<Long, String> nameResponses = new HashMap<>();
-                for (Long qId : nameQuestions) {
-                    QuestionAnswerStore qas = qasDao.getByQuestionAndSurveyInstance(qId, si.getKey().getId());
-                    if (qas != null && qas.getValue() != null) {
-                        nameResponses.put(qId, qas.getDatapointNameValue());
-                    }
-                }
                 
-                String name = getDatapointName(nameQuestions, nameResponses);
-                sl.setDisplayName(name);
+                List<QuestionAnswerStore> responses = qasDao.listBySurveyInstance(si.getKey().getId());
+                sl.assembleDisplayName(nameQuestions, responses);
+                log.info("Reassembled display name for SurveyedLocale : " + 
+                            sl.getKey().getId() + ": " + sl.getDisplayName());
                 slDao.save(sl);
             } catch (Exception e) {
                 log.log(Level.SEVERE, "Problem while assembling datapoint name: " + e.getMessage(), e);
@@ -1562,37 +1550,19 @@ public class DataProcessorRestServlet extends AbstractRestApiServlet {
     }
     
     public static void scheduleDatapointNameAssembly(Long surveyId, Long surveyedLocaleId) {
+        log.info("Scheduling name assembly for survey id, locale id - " + surveyId+", " + surveyedLocaleId);
         final TaskOptions options = TaskOptions.Builder
                 .withUrl("/app_worker/dataprocessor")
                 .header("Host", BackendServiceFactory.getBackendService().getBackendAddress("dataprocessor"))
-                .param(DataProcessorRequest.ACTION_PARAM, DataProcessorRequest.ASSEMBLE_DATAPOINT_NAME);
+                .param(DataProcessorRequest.ACTION_PARAM, DataProcessorRequest.ASSEMBLE_DATAPOINT_NAME)
+                .param(DataProcessorRequest.SURVEY_ID_PARAM, String.valueOf(surveyId));
         
-        if (surveyId != null) {
-            options.param(DataProcessorRequest.SURVEY_ID_PARAM, String.valueOf(surveyId));
-        }
         if (surveyedLocaleId != null) {
             options.param(DataProcessorRequest.LOCALE_ID_PARAM, String.valueOf(surveyedLocaleId));
         }
         com.google.appengine.api.taskqueue.Queue queue = com.google.appengine.api.taskqueue.QueueFactory
                 .getQueue("background-processing");
         queue.add(options);
-    }
-    
-    private String getDatapointName(List<Long> nameQuestions, Map<Long, String> nameResponses) {
-        StringBuilder sb = new StringBuilder();
-        boolean first = true;
-        for (Long id : nameQuestions) {
-            if (!nameResponses.containsKey(id)) {
-                continue;
-            }
-            if (!first) {
-                sb.append(" - ");
-            }
-            sb.append(nameResponses.get(id));
-            first = false;
-        }
-        
-        return sb.toString();
     }
 
 }

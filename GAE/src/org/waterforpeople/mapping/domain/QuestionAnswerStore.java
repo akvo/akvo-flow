@@ -133,6 +133,14 @@ public class QuestionAnswerStore extends BaseDomain {
         }
     }
 
+    public Long getQuestionIDLong() {
+        try {
+            return Long.valueOf(questionID);
+        } catch (NumberFormatException e) {
+            return null;
+        }
+    }
+
     public String getQuestionID() {
         return questionID;
     }
@@ -191,6 +199,7 @@ public class QuestionAnswerStore extends BaseDomain {
                 name = StringUtils.join(DataUtils.cascadeResponseValues(value), " - ");
                 break;
             case "OPTION":
+            case "OTHER":
                 name = StringUtils.join(DataUtils.optionResponsesTextArray(value), " - ");
                 break;
             default:
