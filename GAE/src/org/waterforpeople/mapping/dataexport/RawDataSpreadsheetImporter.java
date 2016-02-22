@@ -439,6 +439,11 @@ public class RawDataSpreadsheetImporter implements DataImporter {
                             val = null;
                             break;
 
+                        case CADDISFLY:
+                            // we do not allow importing / overwriting Caddisfly question responses
+                            val = null;
+                            break;
+
                         default:
                             val = ExportImportUtils.parseCellAsString(cell);
                             break;
