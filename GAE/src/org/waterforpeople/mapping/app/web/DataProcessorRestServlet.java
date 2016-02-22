@@ -1529,10 +1529,9 @@ public class DataProcessorRestServlet extends AbstractRestApiServlet {
 
         List<Question> nameQuestions = qDao.listDisplayNameQuestionsBySurveyId(surveyId);
         
-        SurveyInstance si;
         for (SurveyedLocale sl : locales) {
             try {
-                si = siDao.getRegistrationSurveyInstance(sl);
+                SurveyInstance si = siDao.getRegistrationSurveyInstance(sl);
                 if (si == null) {
                     log.log(Level.WARNING, "Null registartion SurveyInstance for locale: " + sl.getKey().getId());
                     continue;
