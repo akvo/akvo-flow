@@ -17,7 +17,6 @@
 package org.akvo.flow.domain;
 
 import java.io.IOException;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
@@ -37,10 +36,9 @@ public class DataUtils {
         if (optionResponse == null || optionResponse.trim() == "") {
             return new String[0];
         }
-
-        List<Map<String, String>> optionNodes = new ArrayList<>();
-        if (optionResponse.startsWith("[")) {
-            optionNodes = jsonStringToOptionList(optionResponse);
+        
+        List<Map<String, String>> optionNodes = jsonStringToList(optionResponse);
+        if (optionNodes != null) {
             responseArray = new String[optionNodes.size()];
             for (int i = 0; i < responseArray.length; i++) {
                 String text = optionNodes.get(i).get("text");
@@ -54,6 +52,29 @@ public class DataUtils {
 
         return responseArray;
     }
+    
+    public static String[] cascadeResponseValues(String data) {
+        String[] values = null;
+
+        if (data == null || data.trim() == "") {
+            return new String[0];
+        }
+        
+        List<Map<String, String>> nodes = jsonStringToList(data);
+        if (nodes != null) {
+            values = new String[nodes.size()];
+            for (int i = 0; i < values.length; i++) {
+                String text = nodes.get(i).get("name");
+                if (text != null && text.trim() != "") {
+                    values[i] = text.trim();
+                }
+            }
+        } else {
+            values = data.split("\\|", -1);
+        }
+
+        return values;
+    }
 
     /**
      * Convert a JSON string response for OPTION type questions to the legacy pipe separated format
@@ -63,9 +84,12 @@ public class DataUtils {
      */
     public static String jsonResponsesToPipeSeparated(String optionResponses) {
         StringBuilder pipeSeparated = new StringBuilder();
-        for (Map<String, String> option : jsonStringToOptionList(optionResponses)) {
-            if (option.get("text") != null) {
-                pipeSeparated.append("|").append(option.get("text"));
+        List<Map<String, String>> options = jsonStringToList(optionResponses);
+        if (options != null) {
+            for (Map<String, String> option : options) {
+                if (option.get("text") != null) {
+                    pipeSeparated.append("|").append(option.get("text"));
+                }
             }
         }
         if (pipeSeparated.length() > 0) {
@@ -75,24 +99,20 @@ public class DataUtils {
     }
 
     /**
-     * Convert a JSON string response for OPTION type questions to a list containing corresponding
-     * maps
+     * Convert a JSON string response to a list containing corresponding maps
      *
-     * @param optionResponse
-     * @return
+     * @param data String containing the JSON-formatted response
+     * @return List of maps with response properties
      */
-    public static List<Map<String, String>> jsonStringToOptionList(String optionResponse) {
-        List<Map<String, String>> optionNodes = new ArrayList<>();
-        if (optionResponse.startsWith("[")) {
-            try {
-                optionNodes = JSON_OBJECT_MAPPER.readValue(optionResponse,
-                        new TypeReference<List<Map<String, String>>>() {
-                        });
-            } catch (IOException e) {
-                // ignore
-            }
+    public static List<Map<String, String>> jsonStringToList(String data) {
+        try {
+            return JSON_OBJECT_MAPPER.readValue(data,
+                    new TypeReference<List<Map<String, String>>>() {});
+        } catch (IOException e) {
+            // Data is not JSON-formatted
         }
-        return optionNodes;
+
+        return null;
     }
 
     /**

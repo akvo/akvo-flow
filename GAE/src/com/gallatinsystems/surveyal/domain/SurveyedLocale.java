@@ -1,5 +1,5 @@
 /*
- *  Copyright (C) 2010-2015 Stichting Akvo (Akvo Foundation)
+ *  Copyright (C) 2010-2016 Stichting Akvo (Akvo Foundation)
  *
  *  This file is part of Akvo FLOW.
  *
@@ -16,17 +16,23 @@
 
 package com.gallatinsystems.surveyal.domain;
 
+import static com.gallatinsystems.common.Constants.MAX_LENGTH;
+
 import java.util.Date;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 import java.util.UUID;
 
 import javax.jdo.annotations.NotPersistent;
 import javax.jdo.annotations.PersistenceCapable;
 
+import org.waterforpeople.mapping.domain.QuestionAnswerStore;
+
 import com.gallatinsystems.framework.domain.BaseDomain;
-import static com.gallatinsystems.common.Constants.MAX_LENGTH;
+import com.gallatinsystems.survey.domain.Question;
 
 /**
  * Domain structure to represent a location about which there is data gathered through one or more
@@ -266,6 +272,37 @@ public class SurveyedLocale extends BaseDomain {
     public void setCreationSurveyId(Long creationSurveyId) {
         this.creationSurveyId = creationSurveyId;
     }
+    
+    /**
+     * Given a list of datapoint name questions, and the list of responses for 
+     * this locale's registration form, reassemble the display name
+     */
+    public void assembleDisplayName(List<Question> nameQuestions, List<QuestionAnswerStore> responses) {
+        // Map question id to value responses (faster lookups for each question id)
+        Map<Long, String> nameResponses = new HashMap<>();
+        for (QuestionAnswerStore qas : responses) {
+            Long qId = qas.getQuestionIDLong();
+            if (qId != null && qas.getValue() != null) {
+                nameResponses.put(qId, qas.getDatapointNameValue());
+            }
+        }
+                
+        StringBuilder sb = new StringBuilder();
+        boolean first = true;
+        for (Question q : nameQuestions) {
+            Long id = q.getKey().getId();
+            if (!nameResponses.containsKey(id)) {
+                continue;
+            }
+            if (!first) {
+                sb.append(" - ");
+            }
+            sb.append(nameResponses.get(id));
+            first = false;
+        }
+        
+        displayName = sb.toString();
+    }
 
     /**
      * Creates a base32 version of a UUID. In the output, it replaces the following letters: l, o, i
@@ -313,4 +350,5 @@ public class SurveyedLocale extends BaseDomain {
                 oldStyleIdentifier.substring(4, 8),
                 base32Uuid.substring(10));
     }
+    
 }
