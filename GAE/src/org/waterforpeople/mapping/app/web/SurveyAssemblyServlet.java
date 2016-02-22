@@ -638,8 +638,8 @@ public class SurveyAssemblyServlet extends AbstractRestApiServlet {
             qXML.setType(CADDISFLY_QUESTION_TYPE);
         }
 
-        if (q.getType().equals(Question.Type.CADDISFLY) && q.getCaddisflyResourceId() != null) {
-        	qXML.setCaddisflyResource(Long.toString(q.getCaddisflyResourceId()));
+        if (q.getType().equals(Question.Type.CADDISFLY) && q.getCaddisflyResourceUuid() != null) {
+        	qXML.setCaddisflyResourceUuid(q.getCaddisflyResourceUuid());
         }
 
         if (q.getType().equals(Question.Type.CASCADE) && q.getCascadeResourceId() != null) {

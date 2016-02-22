@@ -43,7 +43,7 @@ import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
  *       &lt;attribute name="locked" type="{http://www.w3.org/2001/XMLSchema}NMTOKEN" />
  *       &lt;attribute name="requireDoubleEntry" type="{http://www.w3.org/2001/XMLSchema}NMTOKEN" />
  *       &lt;attribute name="type" use="required" type="{http://www.w3.org/2001/XMLSchema}NMTOKEN" />
- *       &lt;attribute name="cascadeResource" type="{http://www.w3.org/2001/XMLSchema}NMTOKEN" />
+ *       &lt;attribute name="cascadeResourceUuid" type="{http://www.w3.org/2001/XMLSchema}NMTOKEN" />
  *       &lt;attribute name="cascadeVersion" type="{http://www.w3.org/2001/XMLSchema}NMTOKEN" />
  *       &lt;attribute name="caddisflyResource" type="{http://www.w3.org/2001/XMLSchema}NMTOKEN" />
  *       &lt;attribute name="mandatory" use="required">
@@ -112,7 +112,7 @@ public class Question {
     @XmlAttribute(required = false)
     @XmlJavaTypeAdapter(CollapsedStringAdapter.class)
     @XmlSchemaType(name = "NMTOKEN")
-    protected String caddisflyResource;
+    protected String caddisflyResourceUuid;
 
     @XmlAttribute(required = true)
     @XmlJavaTypeAdapter(CollapsedStringAdapter.class)
@@ -360,17 +360,17 @@ public class Question {
      *
      * @return possible object is {@link String }
      */
-    public String getCaddisflyResource() {
-        return caddisflyResource;
+    public String getCaddisflyResourceUuid() {
+        return caddisflyResourceUuid;
     }
 
     /**
-     * Sets the value of the caddisflyResource property.
+     * Sets the value of the caddisflyResourceUuid property.
      *
      * @param value allowed object is {@link String }
      */
-    public void setCaddisflyResource(String value) {
-        this.caddisflyResource = value;
+    public void setCaddisflyResourceUuid(String value) {
+        this.caddisflyResourceUuid = value;
     }
 
     /**

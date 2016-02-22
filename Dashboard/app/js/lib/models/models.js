@@ -32,6 +32,9 @@ FLOW.CaddisflyResource = FLOW.BaseModel.extend({
   brand: DS.attr('string', {
     defaultValue: ''
   }),
+  uuid: DS.attr('string', {
+    defaultValue: ''
+  }),
   //used in the assignment edit page, not saved to backend
   displayName: null,
 });
@@ -233,7 +236,7 @@ FLOW.Question = FLOW.BaseModel.extend({
   }),
   order: DS.attr('number'),
   cascadeResourceId: DS.attr('number'),
-  caddisflyResourceId:DS.attr('number'),
+  caddisflyResourceUuid:DS.attr('string'),
   path: DS.attr('string'),
   questionGroupId: DS.attr('number'),
   surveyId: DS.attr('number'),

@@ -22,7 +22,8 @@ import org.waterforpeople.mapping.domain.CaddisflyResult;
 public class CaddisflyResource implements Serializable {
 	private static final long serialVersionUID = 1L;	
 	private String name;
-	private int keyId;
+	private String uuid;
+	private Long keyId;
 	private String subtype;
 	private String brand;
 	private String[] tags;
@@ -30,9 +31,9 @@ public class CaddisflyResource implements Serializable {
 	private int numResults;
 	private List<CaddisflyResult> results;
 
-	public CaddisflyResource(String name, int id, String subtype, String brand, String[] tags, String description, int numResults){
+	public CaddisflyResource(String name, String uuid, String subtype, String brand, String[] tags, String description, int numResults){
 		this.setName(name);
-		this.setKeyId(id);
+		this.setUuid(uuid);
 		this.setSubtype(subtype);
 		this.setBrand(brand);
 		this.setTags(tags);
@@ -92,19 +93,27 @@ public class CaddisflyResource implements Serializable {
 		this.numResults = numResults;
 	}
 
-	public int getKeyId() {
-		return keyId;
-	}
-
-	public void setKeyId(int keyId) {
-		this.keyId = keyId;
-	}
-
 	public List<CaddisflyResult> getResults() {
 		return results;
 	}
 
 	public void setResults(List<CaddisflyResult> results) {
 		this.results = results;
+	}
+
+	public String getUuid() {
+		return uuid;
+	}
+
+	public void setUuid(String uuid) {
+		this.uuid = uuid;
+	}
+
+	public Long getKeyId() {
+		return keyId;
+	}
+
+	public void setKeyId(Long keyId) {
+		this.keyId = keyId;
 	}
 }

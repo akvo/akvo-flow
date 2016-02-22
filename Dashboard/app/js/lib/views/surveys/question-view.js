@@ -195,7 +195,7 @@ FLOW.QuestionView = FLOW.View.extend({
     this.set('allowLine', FLOW.selectedControl.selectedQuestion.get('allowLine'));
     this.set('allowPolygon', FLOW.selectedControl.selectedQuestion.get('allowPolygon'));
     this.set('cascadeResourceId', FLOW.selectedControl.selectedQuestion.get('cascadeResourceId'));
-    this.set('caddisflyResourceId', FLOW.selectedControl.selectedQuestion.get('caddisflyResourceId'));
+    this.set('caddisflyResourceUuid', FLOW.selectedControl.selectedQuestion.get('caddisflyResourceUuid'));
 
     FLOW.optionListControl.set('content', []);
 
@@ -205,13 +205,14 @@ FLOW.QuestionView = FLOW.View.extend({
     	FLOW.selectedControl.set('selectedCascadeResource', cascadeResource);
     }
 
-    // if the caddisflyResourceId is not null, get the resource
-    if (!Ember.empty(FLOW.selectedControl.selectedQuestion.get('caddisflyResourceId'))) {
-      console.log("gettting caddisfly resource");
-      caddisflyResource = FLOW.store.find(FLOW.CaddisflyResource,FLOW.selectedControl.selectedQuestion.get('caddisflyResourceId'));
-      FLOW.selectedControl.set('selectedCaddisflyResource', caddisflyResource);
+    // if the caddisflyResourceUuid is not null, get the resource
+    if (!Ember.empty(FLOW.selectedControl.selectedQuestion.get('caddisflyResourceUuid'))) {
+      FLOW.caddisflyResourceControl.get('content').forEach(function (item) {
+        if (item.get('uuid') == FLOW.selectedControl.selectedQuestion.get('caddisflyResourceUuid')) {
+          FLOW.selectedControl.set('selectedCaddisflyResource', item);
+        }
+      });
     }
-
     // if the dependentQuestionId is not null, get the question
     if (!Ember.empty(FLOW.selectedControl.selectedQuestion.get('dependentQuestionId'))) {
       dependentQuestion = FLOW.store.find(FLOW.Question, FLOW.selectedControl.selectedQuestion.get('dependentQuestionId'));
@@ -359,7 +360,7 @@ FLOW.QuestionView = FLOW.View.extend({
     }
     
     if (!(this.type.get('value') == 'CADDISFLY')) {
-      this.set('caddisflyResourceId', null);
+      this.set('caddisflyResourceUuid', null);
     }
     
     path = FLOW.selectedControl.selectedSurveyGroup.get('code') + "/" + FLOW.selectedControl.selectedSurvey.get('name') + "/" + FLOW.selectedControl.selectedQuestionGroup.get('code');
@@ -432,8 +433,8 @@ FLOW.QuestionView = FLOW.View.extend({
     // deal with caddisflyResource
     if (this.type.get('value') == 'CADDISFLY') {
       if (!Ember.empty(FLOW.selectedControl.get('selectedCaddisflyResource'))){
-        FLOW.selectedControl.selectedQuestion.set('caddisflyResourceId',
-            FLOW.selectedControl.selectedCaddisflyResource.get('keyId'));
+        FLOW.selectedControl.selectedQuestion.set('caddisflyResourceUuid',
+            FLOW.selectedControl.selectedCaddisflyResource.get('uuid'));
       }
     }
 

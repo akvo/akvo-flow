@@ -55,7 +55,7 @@ public class Question extends BaseDomain {
     private Long dependentQuestionId;
     private String dependentQuestionAnswer;
     private Long cascadeResourceId;
-    private Long caddisflyResourceId;
+    private String caddisflyResourceUuid;
     private Long metricId;
     @NotPersistent
     private TreeMap<Integer, QuestionOption> questionOptionMap = null;
@@ -453,11 +453,11 @@ public class Question extends BaseDomain {
         this.sourceQuestionId = originalQuestionId;
     }
 
-	public Long getCaddisflyResourceId() {
-		return caddisflyResourceId;
+	public String getCaddisflyResourceUuid() {
+		return caddisflyResourceUuid;
 	}
 
-	public void setCaddisflyResourceId(Long caddisflyResourceId) {
-		this.caddisflyResourceId = caddisflyResourceId;
+	public void setCaddisflyResourceUuid(String caddisflyResourceUuid) {
+		this.caddisflyResourceUuid = caddisflyResourceUuid;
 	}
 }
