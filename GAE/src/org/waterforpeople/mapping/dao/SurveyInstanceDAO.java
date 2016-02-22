@@ -714,5 +714,27 @@ public class SurveyInstanceDAO extends BaseDAO<SurveyInstance> {
     public SurveyInstance findByUUID(String uuid) {
         return findByProperty("uuid", uuid, "String");
     }
+    
+    public SurveyInstance getRegistrationSurveyInstance(SurveyedLocale locale) {
+        PersistenceManager pm = PersistenceFilter.getManager();
+        Query query = pm.newQuery(SurveyInstance.class);
+
+        Map<String, Object> paramMap = null;
+
+        StringBuilder filterString = new StringBuilder();
+        StringBuilder paramString = new StringBuilder();
+        paramMap = new HashMap<String, Object>();
+
+        appendNonNullParam("surveyedLocaleId", filterString, paramString,
+                "Long", locale.getKey().getId(), paramMap);
+        appendNonNullParam("surveyId", filterString, paramString,
+                "Long", locale.getCreationSurveyId(), paramMap);
+        query.setFilter(filterString.toString());
+        query.declareParameters(paramString.toString());
+        query.setUnique(true);
+        query.setOrdering("collectionDate desc");
+        
+        return (SurveyInstance)query.executeWithMap(paramMap);
+    }
 
 }

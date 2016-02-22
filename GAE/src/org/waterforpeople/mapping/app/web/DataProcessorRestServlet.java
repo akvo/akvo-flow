@@ -1,5 +1,5 @@
 /*
- *  Copyright (C) 2010-2015 Stichting Akvo (Akvo Foundation)
+ *  Copyright (C) 2010-2016 Stichting Akvo (Akvo Foundation)
  *
  *  This file is part of Akvo FLOW.
  *
@@ -225,7 +225,7 @@ public class DataProcessorRestServlet extends AbstractRestApiServlet {
             addCreationSurveyIdToLocale(dpReq.getCursor());
         } else if (DataProcessorRequest.POPULATE_MONITORING_FIELDS_LOCALE_ACTION
                 .equalsIgnoreCase(req.getAction())) {
-            populateMonitoringFieldsLocale(dpReq.getCursor(), dpReq.getSurveyId());
+            populateMonitoringFieldsLocale(dpReq.getCursor(), dpReq.getSurveyId(), dpReq.getSurveyedLocaleId());
         } else if (DataProcessorRequest.CREATE_NEW_IDENTIFIERS_LOCALES_ACTION
                 .equalsIgnoreCase(req.getAction())) {
             createNewIdentifiersLocales(dpReq.getCursor(), dpReq.getSurveyId());
@@ -244,6 +244,8 @@ public class DataProcessorRestServlet extends AbstractRestApiServlet {
             }
         } else if (DataProcessorRequest.DELETE_CASCADE_NODES.equalsIgnoreCase(req.getAction())) {
             deleteCascadeNodes(dpReq.getCascadeResourceId(), dpReq.getParentNodeId());
+        } else if (DataProcessorRequest.ASSEMBLE_DATAPOINT_NAME.equalsIgnoreCase(req.getAction())) {
+            assembleDatapointName(dpReq.getSurveyId(), dpReq.getSurveyedLocaleId());
         }
         return new RestResponse();
     }
@@ -1131,19 +1133,23 @@ public class DataProcessorRestServlet extends AbstractRestApiServlet {
      */
     @SuppressWarnings("unchecked")
     public static void populateMonitoringFieldsLocale(String cursor,
-            Long surveyId) {
+            Long surveyId, Long surveyedLocaleId) {
         final SurveyedLocaleDao slDao = new SurveyedLocaleDao();
         final SurveyDAO sDao = new SurveyDAO();
         final SurveyInstanceDAO siDao = new SurveyInstanceDAO();
         final QuestionDao qDao = new QuestionDao();
         final QuestionAnswerStoreDao qasDao = new QuestionAnswerStoreDao();
-
-        // get locales by createdSurveyId
-        final List<SurveyedLocale> results = slDao.listLocalesByCreationSurvey(surveyId, cursor,
-                LOCALE_PAGE_SIZE);
-        log.log(Level.INFO,
-                "found surveyedLocales: "
-                        + results.size());
+        
+        List<SurveyedLocale> locales = null;
+        if (surveyedLocaleId != null) {
+            // Single locale update
+            locales = new ArrayList<>();
+            locales.add(slDao.getById(surveyedLocaleId));
+        } else {
+            // get locales by createdSurveyId
+            locales = slDao.listLocalesByCreationSurvey(surveyId, cursor, LOCALE_PAGE_SIZE);
+            log.log(Level.INFO, "found surveyedLocales: " + locales.size());
+        }
 
         Long sIsurveyId;
         String sgKey;
@@ -1155,7 +1161,7 @@ public class DataProcessorRestServlet extends AbstractRestApiServlet {
         // initialize the memcache
         Cache cache = initCache(12 * 60 * 60); // 12 hours
 
-        for (SurveyedLocale sl : results) {
+        for (SurveyedLocale sl : locales) {
             try {
                 if (sl.getLastSurveyalInstanceId() == null) {
                     log.log(Level.WARNING,
@@ -1250,8 +1256,8 @@ public class DataProcessorRestServlet extends AbstractRestApiServlet {
             }
         }
 
-        if (results.size() == LOCALE_PAGE_SIZE) {
-            final String cursorParam = SurveyedLocaleDao.getCursor(results);
+        if (locales.size() == LOCALE_PAGE_SIZE) {
+            final String cursorParam = SurveyedLocaleDao.getCursor(locales);
             final TaskOptions options = TaskOptions.Builder
                     .withUrl("/app_worker/dataprocessor")
                     .header("Host",
@@ -1503,6 +1509,59 @@ public class DataProcessorRestServlet extends AbstractRestApiServlet {
                             "Error scheduling Cascade Node deletion - cascadeResourceId: %s - parentNodeId: %s",
                             cascadeResourceId, parentNodeId), e);
         }
+    }
+    
+    private void assembleDatapointName(Long surveyId, Long surveyedLocaleId) {
+        final SurveyedLocaleDao slDao = new SurveyedLocaleDao();
+        final SurveyInstanceDAO siDao = new SurveyInstanceDAO();
+        final QuestionDao qDao = new QuestionDao();
+        final QuestionAnswerStoreDao qasDao = new QuestionAnswerStoreDao();
+        
+        List<SurveyedLocale> locales = null;
+        if (surveyedLocaleId != null) {
+            // Single locale update
+            locales = new ArrayList<>();
+            locales.add(slDao.getById(surveyedLocaleId));
+        } else {
+            // get locales by createdSurveyId
+            locales = slDao.listLocalesByCreationSurvey(surveyId, Constants.ALL_RESULTS, null);
+        }
+
+        List<Question> nameQuestions = qDao.listDisplayNameQuestionsBySurveyId(surveyId);
+        
+        for (SurveyedLocale sl : locales) {
+            try {
+                SurveyInstance si = siDao.getRegistrationSurveyInstance(sl);
+                if (si == null) {
+                    log.log(Level.WARNING, "Null registartion SurveyInstance for locale: " + sl.getKey().getId());
+                    continue;
+                }
+                
+                List<QuestionAnswerStore> responses = qasDao.listBySurveyInstance(si.getKey().getId());
+                sl.assembleDisplayName(nameQuestions, responses);
+                log.info("Reassembled display name for SurveyedLocale : " + 
+                            sl.getKey().getId() + ": " + sl.getDisplayName());
+                slDao.save(sl);
+            } catch (Exception e) {
+                log.log(Level.SEVERE, "Problem while assembling datapoint name: " + e.getMessage(), e);
+            }
+        }
+    }
+    
+    public static void scheduleDatapointNameAssembly(Long surveyId, Long surveyedLocaleId) {
+        log.info("Scheduling name assembly for survey id, locale id - " + surveyId+", " + surveyedLocaleId);
+        final TaskOptions options = TaskOptions.Builder
+                .withUrl("/app_worker/dataprocessor")
+                .header("Host", BackendServiceFactory.getBackendService().getBackendAddress("dataprocessor"))
+                .param(DataProcessorRequest.ACTION_PARAM, DataProcessorRequest.ASSEMBLE_DATAPOINT_NAME)
+                .param(DataProcessorRequest.SURVEY_ID_PARAM, String.valueOf(surveyId));
+        
+        if (surveyedLocaleId != null) {
+            options.param(DataProcessorRequest.LOCALE_ID_PARAM, String.valueOf(surveyedLocaleId));
+        }
+        com.google.appengine.api.taskqueue.Queue queue = com.google.appengine.api.taskqueue.QueueFactory
+                .getQueue("background-processing");
+        queue.add(options);
     }
 
 }

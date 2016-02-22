@@ -70,6 +70,7 @@ public class RawDataRestServlet extends AbstractRestApiServlet {
     private SurveyGroupDAO sgDao;
     private QuestionAnswerStoreDao qasDao;
     private SurveyedLocaleDao slDao;
+    private QuestionDao qDao;
 
     public RawDataRestServlet() {
         instanceDao = new SurveyInstanceDAO();
@@ -77,6 +78,7 @@ public class RawDataRestServlet extends AbstractRestApiServlet {
         sgDao = new SurveyGroupDAO();
         qasDao = new QuestionAnswerStoreDao();
         slDao = new SurveyedLocaleDao();
+        qDao = new QuestionDao();
     }
 
     @Override
@@ -211,7 +213,15 @@ public class RawDataRestServlet extends AbstractRestApiServlet {
             }
             log.log(Level.INFO, "Deleting " + deletedAnswers.size() + " question answers");
             qasDao.delete(deletedAnswers);
-
+            
+            if (!isMonitoringForm && !isNewInstance) {
+                // Update datapoint name for this locale
+                SurveyedLocale sl = slDao.getById(instance.getSurveyedLocaleId());
+                sl.assembleDisplayName(
+                        qDao.listDisplayNameQuestionsBySurveyId(s.getKey().getId()), updatedAnswers);
+                slDao.save(sl);
+            }
+            
             if (isNewInstance) {
                 // create new surveyed locale and launch task to complete processing
                 SurveyedLocale locale = new SurveyedLocale();
@@ -223,6 +233,8 @@ public class RawDataRestServlet extends AbstractRestApiServlet {
                 locale.setLocaleType(privacyLevel);
                 locale.setSurveyGroupId(sg.getKey().getId());
                 locale.setCreationSurveyId(s.getKey().getId());
+                locale.assembleDisplayName(
+                        qDao.listDisplayNameQuestionsBySurveyId(s.getKey().getId()), updatedAnswers);
 
                 locale = slDao.save(locale);
                 instance.setSurveyedLocaleId(locale.getKey().getId());
