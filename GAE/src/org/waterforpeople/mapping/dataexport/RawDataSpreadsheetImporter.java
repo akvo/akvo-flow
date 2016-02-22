@@ -760,7 +760,7 @@ public class RawDataSpreadsheetImporter implements DataImporter {
 
     public static void main(String[] args) throws Exception {
         if (args.length != 4) {
-            log.error("Error.\nUsage:\n\tjava org.waterforpeople.mapping.dataexport.RawDataSpreadsheetImporter <file> <serverBase> <surveyId>");
+            log.error("Error.\nUsage:\n\tjava org.waterforpeople.mapping.dataexport.RawDataSpreadsheetImporter <file> <serverBase> <surveyId> <apiKey>");
             System.exit(1);
         }
         File file = new File(args[0].trim());
