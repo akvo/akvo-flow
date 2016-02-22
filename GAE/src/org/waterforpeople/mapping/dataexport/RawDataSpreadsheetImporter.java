@@ -312,6 +312,7 @@ public class RawDataSpreadsheetImporter implements DataImporter {
 
             QuestionDto questionDto = questionIdToQuestionDto.get(questionId);
             QuestionType questionType = questionDto.getQuestionType();
+            Boolean isExternalSource = questionDto.getAllowExternalSources();
 
             for (int iter = 0; iter < iterations; iter++) {
 
@@ -439,6 +440,15 @@ public class RawDataSpreadsheetImporter implements DataImporter {
                             val = null;
                             break;
 
+                        case FREE_TEXT:
+                        	if (isExternalSource){
+                        		// we do not allow importing / overwriting external source results.
+                        		// at the moment, these are stored in FREE_TEXT question answers.
+                        		val = null;
+                        	} else {
+                        		val = ExportImportUtils.parseCellAsString(cell);
+                        	}
+                        	break;
                         default:
                             val = ExportImportUtils.parseCellAsString(cell);
                             break;
@@ -760,7 +770,7 @@ public class RawDataSpreadsheetImporter implements DataImporter {
 
     public static void main(String[] args) throws Exception {
         if (args.length != 4) {
-            log.error("Error.\nUsage:\n\tjava org.waterforpeople.mapping.dataexport.RawDataSpreadsheetImporter <file> <serverBase> <surveyId>");
+            log.error("Error.\nUsage:\n\tjava org.waterforpeople.mapping.dataexport.RawDataSpreadsheetImporter <file> <serverBase> <surveyId> <apiKey>");
             System.exit(1);
         }
         File file = new File(args[0].trim());

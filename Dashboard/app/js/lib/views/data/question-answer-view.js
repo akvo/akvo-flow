@@ -13,8 +13,12 @@ function sortByOrder(a , b) {
 FLOW.QuestionAnswerView = Ember.View.extend({
 
   isTextType: function(){
-    return this.get('questionType') === 'FREE_TEXT';
+    return (this.get('questionType') === 'FREE_TEXT' && !this.get('isAllowExternalSources'));
   }.property('this.questionType'),
+
+  isExternalSourceType: function(){
+	return (this.get('questionType') === 'FREE_TEXT' && this.get('isAllowExternalSources'));
+  }.property('this.questionType','isAllowExternalSources'),
 
   isCascadeType: function(){
     return this.get('questionType') === 'CASCADE';
@@ -120,7 +124,9 @@ FLOW.QuestionAnswerView = Ember.View.extend({
 
   isEditable: function () {
     var isEditableQuestionType, canEditFormResponses;
-    isEditableQuestionType = this.nonEditableQuestionTypes.indexOf(this.get('questionType')) < 0;
+    // we check the isExternalSourceType explicitly, because at the moment
+    // the Free text type is used to hold those answers.
+    isEditableQuestionType = this.nonEditableQuestionTypes.indexOf(this.get('questionType')) < 0 && !this.get('isExternalSourceType');
     if (!isEditableQuestionType) {
       return false; // no need to check permissions
     }
@@ -153,6 +159,46 @@ FLOW.QuestionAnswerView = Ember.View.extend({
       signatureJson = JSON.parse(c.get('value'));
       return signatureJson.name.trim();
     }
+    return null;
+  }.property('this.content'),
+
+  /*
+   * parse the strip test JSON result
+   */
+  parseStriptestJson: function(){
+	var c = this.content, striptestJson, newResult, image;
+	result=Ember.A();
+	if (c && c.get('value')) {
+	  striptestJson = JSON.parse(c.get('value'));
+	  if (striptestJson.result && !Ember.empty(striptestJson.result)){
+		  striptestJson.result.forEach(function(item){
+			  image = 'data:image/png;base64,' + item.img;
+			  newResult = {"name":item.name,
+				  "value":item.value,
+				  "unit":item.unit,
+				  "image":image};
+			  result.push(newResult);
+		  });
+	   }
+	}
+	this.set('striptestResult',result);
+  },
+
+  /*
+   * Get out the strip test name
+   */
+  striptestName: function(){
+	var c = this.content, striptestJson;
+	if (c && c.get('value')) {
+	  striptestJson = JSON.parse(c.get('value'));
+	  if (!Ember.empty(striptestJson.result))
+	  {
+		  this.parseStriptestJson();
+	  }
+	  if (!Ember.empty(striptestJson.name)){
+		  return striptestJson.name.trim();
+	  }
+	}
     return null;
   }.property('this.content'),
 
@@ -340,6 +386,10 @@ FLOW.QuestionAnswerView = Ember.View.extend({
   isOtherOptionEnabled: function () {
     return this.get('isOptionType') && this.get('question').get('allowOtherFlag');
   }.property('this.isOptionType'),
+
+  isAllowExternalSources: function(){
+	  return this.get('question').get('allowExternalSources');
+  }.property('this.question'),
 
   isOtherOptionSelected: function () {
     var selectedOption = this.get('optionValue') && this.get('optionValue').get('lastObject');

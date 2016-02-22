@@ -52,9 +52,15 @@
                     {{else}}
                         {{t _no_signature_found}}
                     {{/if}}
+                {{else}} {{#if view.isExternalSourceType}}
+                	<div class=""><strong>{{t _strip_test_type}}: {{view.striptestName}}</strong></div>
+                	{{#each result in view.striptestResult}}<br>
+                	<div>{{result.name}} : {{result.value}} {{result.unit}}</div>
+                	<div class=""><img {{bindAttr src="result.image"}} /></div>
+                	{{/each}}
                 {{else}}
                     {{value}}
-                {{/if}} {{/if}} {{/if}} {{/if}} {{/if}} {{/if}} {{/if}}
+                {{/if}} {{/if}} {{/if}} {{/if}} {{/if}} {{/if}} {{/if}}{{/if}}
             {{else}}
                 {{#if view.isDateType}}
                     <a {{action doEdit target="this" }}>{{date3 value}}</a>
