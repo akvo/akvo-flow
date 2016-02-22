@@ -153,9 +153,15 @@
                             {{else}}
                                 {{t _no_signature_found}}
                             {{/if}}
-                        {{else}}
+                        {{else}} {{#if view.isCaddisflyType}}
+	                			<div class=""><strong>{{t _test_type}}: {{view.testName}}</strong></div>
+	                			{{#each result in view.testResult}}<br>
+	                			<div>{{result.name}} : {{result.value}} {{result.unit}}</div>
+	                			<div class=""><img {{bindAttr src="result.image"}} /></div>
+	                			{{/each}}
+	                		{{else}}
                           <span>{{QA.value}} {{#with QA}}{{if_blank value}}{{/with}}</span>
-                        {{/if}} {{/if}} {{/if}} {{/if}} {{/if}} {{/if}} {{/if}}
+                        {{/if}} {{/if}} {{/if}} {{/if}} {{/if}} {{/if}} {{/if}} {{/if}}
                     </td>
                     </tr>
                     {{/view}}

@@ -54,7 +54,7 @@ FLOW.QuestionAnswerView = Ember.View.extend({
 
   isCaddisflyType: function(){
 	    return this.get('questionType') === 'CADDISFLY' || (this.content && this.content.get('type') === 'CADDISFLY');
-	  }.property('this.questionType'),
+	}.property('this.questionType'),
 
   nonEditableQuestionTypes: ['GEO', 'PHOTO', 'VIDEO', 'GEOSHAPE', 'SIGNATURE','CADDISFLY'],
 
@@ -157,6 +157,45 @@ FLOW.QuestionAnswerView = Ember.View.extend({
       signatureJson = JSON.parse(c.get('value'));
       return signatureJson.name.trim();
     }
+    return null;
+  }.property('this.content'),
+
+  /*
+  * parse the caddisfly test JSON result
+  */
+  parseTestJson: function(){
+	  var c = this.content, testJson, newResult, image;
+  	result=Ember.A();
+  	if (c && c.get('value')) {
+  	  testJson = JSON.parse(c.get('value'));
+  	  if (testJson.result && !Ember.empty(testJson.result)){
+ 		    testJson.result.forEach(function(item){
+  			  newResult = {"name":item.name,
+  				  "value":item.value,
+  				  "unit":item.unit,
+  	  		};
+  		  	result.push(newResult);
+  		  });
+  	  }
+    }
+    this.set('testResult',result);
+  },
+
+  /*
+   * Get out the caddisfly test name
+  */
+  testName: function(){
+  	var c = this.content, testJson;
+  	if (c && c.get('value')) {
+  	  testJson = JSON.parse(c.get('value'));
+  	  if (!Ember.empty(testJson.result))
+  	  {
+  		  this.parseTestJson();
+  	  }
+  	  if (!Ember.empty(testJson.name)){
+  		  return testJson.name.trim();
+  	  }
+  	}
     return null;
   }.property('this.content'),
 
