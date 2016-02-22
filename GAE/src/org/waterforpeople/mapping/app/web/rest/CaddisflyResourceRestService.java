@@ -18,6 +18,7 @@ package org.waterforpeople.mapping.app.web.rest;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.UUID;
 
 import javax.inject.Inject;
 
@@ -41,7 +42,11 @@ public class CaddisflyResourceRestService {
     public Map<String, List<CaddisflyResource>> listCaddisflyResources() {
         final Map<String, List<CaddisflyResource>> response = new HashMap<String, List<CaddisflyResource>>();
         List<CaddisflyResource> caddisList = caddisflyResourceDao.listResources();
-       
+        // TODO create a keyId for each, because it is needed in the dashboard.
+        for (CaddisflyResource cr : caddisList){
+        	Long id = UUID.fromString(cr.getUuid()).getLeastSignificantBits();
+        	cr.setKeyId(id);
+        }
         response.put("caddisfly_resources", caddisList);
         return response;
     }
