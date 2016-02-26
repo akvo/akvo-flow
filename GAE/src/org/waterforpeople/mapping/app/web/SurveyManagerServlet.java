@@ -112,16 +112,11 @@ public class SurveyManagerServlet extends AbstractRestApiServlet {
                 // now check to see if we need to update the device
                 if (mgrReq.getImei() != null) {
                     dev = deviceDao.getByImei(mgrReq.getImei());
-                }
-                if (dev == null) {
+                } else if (mgrReq.getPhoneNumber() != null) {
                     dev = deviceDao.get(mgrReq.getPhoneNumber());
                 }
-                if (dev != null) {
-                    if (mgrReq.getDeviceId() != null
-                            && mgrReq.getDeviceId().trim().length() > 0) {
-                        dev.setDeviceIdentifier(mgrReq.getDeviceId());
-                    }
-                } else {
+
+                if (dev == null) {
                     // we need to create the device since we haven't seen it
                     // before
                     dev = new Device();
@@ -130,11 +125,14 @@ public class SurveyManagerServlet extends AbstractRestApiServlet {
                     }
                     dev.setPhoneNumber(mgrReq.getPhoneNumber());
                     dev.setDeviceType(DeviceType.CELL_PHONE_ANDROID);
-                    dev.setDeviceIdentifier(mgrReq.getDeviceId());
-                    dev.setLastLocationBeaconTime(new Date());
-                    dev.setGallatinSoftwareManifest(mgrReq.getVersion());
-                    deviceDao.save(dev);
                 }
+                if (mgrReq.getDeviceId() != null
+                        && mgrReq.getDeviceId().trim().length() > 0) {
+                    dev.setDeviceIdentifier(mgrReq.getDeviceId());
+                }
+                dev.setLastLocationBeaconTime(new Date());
+                dev.setGallatinSoftwareManifest(mgrReq.getVersion());
+                deviceDao.save(dev);
             }
         } else if (SurveyManagerRequest.GET_AVAIL_DEVICE_SURVEYGROUP_ACTION
                 .equalsIgnoreCase(req.getAction())) {
