@@ -1,5 +1,5 @@
 /*
- *  Copyright (C) 2010-2012 Stichting Akvo (Akvo Foundation)
+ *  Copyright (C) 2010-2016 Stichting Akvo (Akvo Foundation)
  *
  *  This file is part of Akvo FLOW.
  *
@@ -126,7 +126,7 @@ public class SurveyManagerRequest extends RestRequest {
         }
         imei = req.getParameter(IMEI_PARAM);
         version = req.getParameter(VERSION_PARAM);
-        deviceId = req.getParameter(DEVICE_ID_PARAM);
+        deviceId = req.getParameter(DEVICE_ID_PARAM).trim();
         surveyId = parseLong(req.getParameter(SURVEY_ID_PARAM), SURVEY_ID_PARAM);
         surveyDoc = req.getParameter(SURVEY_DOC_PARAM);
         if (req.getParameter(FILE_START_DATE_PARAM) != null)
