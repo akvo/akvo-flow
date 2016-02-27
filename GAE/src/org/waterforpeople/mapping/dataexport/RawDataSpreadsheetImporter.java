@@ -44,6 +44,7 @@ import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.ss.usermodel.Sheet;
 import org.apache.poi.ss.usermodel.Workbook;
 import org.apache.poi.ss.usermodel.WorkbookFactory;
+import org.apache.poi.ss.util.CellReference;
 import org.codehaus.jackson.map.ObjectMapper;
 import org.waterforpeople.mapping.app.gwt.client.survey.QuestionDto;
 import org.waterforpeople.mapping.app.gwt.client.survey.QuestionDto.QuestionType;
@@ -101,6 +102,7 @@ public class RawDataSpreadsheetImporter implements DataImporter {
         }
     }
 
+    @Override
     public void executeImport(File file, String serverBase, Map<String, String> criteria) {
         try {
             log.info(String.format("Importing %s to %s using criteria %s", file, serverBase,
@@ -473,7 +475,7 @@ public class RawDataSpreadsheetImporter implements DataImporter {
         surveyInstanceDto.setSurveyalTime((long) durationToSeconds(surveyalTime));
 
         InstanceData instanceData = new InstanceData(surveyInstanceDto, responseMap);
-        instanceData.maxIterationsCount = (long) iterations;
+        instanceData.maxIterationsCount = iterations;
         return instanceData;
     }
 
@@ -707,26 +709,33 @@ public class RawDataSpreadsheetImporter implements DataImporter {
 
             for (Cell cell : headerRow) {
                 String cellValue = cell.getStringCellValue();
-                if (firstQuestionFound && !cellValue.matches(".+\\|.+")) {
-                    errorMap.put(cell.getColumnIndex(),
-                            String.format("The header \"%s\" can not be imported", cellValue));
-                    break;
-                } else {
-                    if (!firstQuestionFound && cellValue.matches("[0-9]+\\|.+")) {
-                        firstQuestionFound = true;
-                        int idx = cell.getColumnIndex();
-                        // idx == 6, monitoring, old format
-                        // idx == 7, new format
-                        // idx == 8, new format, with repeat column
-                        if (!(idx == 6 || idx == 7 || idx == 8)) {
-                            errorMap.put(idx, "Found the first question at the wrong column index");
-                            break;
-                        }
-                        if (idx == 8) {
-                            hasIterationColumn = true;
-                        }
+                System.out.println(CellReference.convertNumToColString(cell.getColumnIndex())
+                        + " - cell");
+                if ((cellValue == null || cellValue.trim().isEmpty()) && !isLastCell(cell)) {
+                    errorMap.put(
+                            cell.getColumnIndex(),
+                            String.format(
+                                    "Cannot import data from Column %s - \"%s\". Please check and/or fix the header cell",
+                                    CellReference.convertNumToColString(cell.getColumnIndex()),
+                                    cellValue));
 
+                    break;
+                }
+
+                if (!firstQuestionFound && cellValue.matches("[0-9]+\\|.+")) {
+                    firstQuestionFound = true;
+                    int idx = cell.getColumnIndex();
+                    // idx == 6, monitoring, old format
+                    // idx == 7, new format
+                    // idx == 8, new format, with repeat column
+                    if (!(idx == 6 || idx == 7 || idx == 8)) {
+                        errorMap.put(idx, "Found the first question at the wrong column index");
+                        break;
                     }
+                    if (idx == 8) {
+                        hasIterationColumn = true;
+                    }
+
                 }
             }
 
@@ -756,6 +765,31 @@ public class RawDataSpreadsheetImporter implements DataImporter {
         }
 
         return errorMap;
+    }
+
+    /**
+     * Verify that the cell is the last cell in a row, i.e. there are no more cells in the given row
+     * that contain a header for data to be imported. It also takes into account the possibility of
+     * multiple empty "phantom" cells at the end of the valid data headers and ignores them
+     *
+     * @param cell
+     * @return
+     */
+    private boolean isLastCell(Cell cell) {
+        Row row = cell.getRow();
+        boolean isLastCell = cell.getColumnIndex() == row.getLastCellNum() - 1;
+        System.out.println(" - lst" + CellReference.convertNumToColString(1));
+        if (!isLastCell) {
+            for (int i = cell.getColumnIndex() + 1; i < row.getLastCellNum(); i++) {
+                if (!row.getCell(i).getStringCellValue().trim().isEmpty()) {
+                    System.out.println(CellReference.convertNumToColString(i) + " - cell loop");
+                    isLastCell = false;
+                    break;
+                }
+            }
+            isLastCell = true;
+        }
+        return isLastCell;
     }
 
     public static void main(String[] args) throws Exception {
