@@ -204,7 +204,7 @@ public class SurveyInstanceDAO extends BaseDAO<SurveyInstance> {
                         .retrieveSurveyGroup(survey.getSurveyGroupId());
                 sl.setLocaleType(surveyGroup.getPrivacyLevel().toString());
                 sl.setSurveyGroupId(survey.getSurveyGroupId());
-                sl.setCreationSurveyId(survey.getKey().getId());
+                sl.setCreationSurveyId(surveyGroup.getNewLocaleSurveyId());
             }
         }
         
