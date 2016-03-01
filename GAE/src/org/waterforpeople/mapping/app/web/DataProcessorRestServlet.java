@@ -1557,11 +1557,13 @@ public class DataProcessorRestServlet extends AbstractRestApiServlet {
         log.info("Scheduling name assembly for survey id, locale id - " + surveyId+", " + surveyedLocaleId);
         final TaskOptions options = TaskOptions.Builder
                 .withUrl("/app_worker/dataprocessor")
-                .countdownMillis(delay ? NAME_ASSEMBLY_TASK_DELAY : 0)
                 .header("Host", BackendServiceFactory.getBackendService().getBackendAddress("dataprocessor"))
                 .param(DataProcessorRequest.ACTION_PARAM, DataProcessorRequest.ASSEMBLE_DATAPOINT_NAME)
                 .param(DataProcessorRequest.SURVEY_ID_PARAM, String.valueOf(surveyId));
         
+        if (delay) {
+            options.countdownMillis(NAME_ASSEMBLY_TASK_DELAY);
+        }
         if (surveyedLocaleId != null) {
             options.param(DataProcessorRequest.LOCALE_ID_PARAM, String.valueOf(surveyedLocaleId));
         }
