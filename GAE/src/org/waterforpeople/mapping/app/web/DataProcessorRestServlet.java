@@ -105,6 +105,7 @@ public class DataProcessorRestServlet extends AbstractRestApiServlet {
     private static final Integer T_PAGE_SIZE = 300;
     private static final Integer SVAL_PAGE_SIZE = 600;
     private static final String QAS_TO_REMOVE = "QAStoRemove";
+    private static final long NAME_ASSEMBLY_TASK_DELAY = 3 * 1000;// 3 seconds
 
     private SurveyInstanceDAO siDao;
 
@@ -1549,9 +1550,14 @@ public class DataProcessorRestServlet extends AbstractRestApiServlet {
     }
     
     public static void scheduleDatapointNameAssembly(Long surveyId, Long surveyedLocaleId) {
+        scheduleDatapointNameAssembly(surveyId, surveyedLocaleId, false);
+    }
+    
+    public static void scheduleDatapointNameAssembly(Long surveyId, Long surveyedLocaleId, boolean delay) {
         log.info("Scheduling name assembly for survey id, locale id - " + surveyId+", " + surveyedLocaleId);
         final TaskOptions options = TaskOptions.Builder
                 .withUrl("/app_worker/dataprocessor")
+                .countdownMillis(delay ? NAME_ASSEMBLY_TASK_DELAY : 0)
                 .header("Host", BackendServiceFactory.getBackendService().getBackendAddress("dataprocessor"))
                 .param(DataProcessorRequest.ACTION_PARAM, DataProcessorRequest.ASSEMBLE_DATAPOINT_NAME)
                 .param(DataProcessorRequest.SURVEY_ID_PARAM, String.valueOf(surveyId));
