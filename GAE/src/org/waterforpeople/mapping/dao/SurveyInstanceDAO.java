@@ -727,11 +727,9 @@ public class SurveyInstanceDAO extends BaseDAO<SurveyInstance> {
 
         appendNonNullParam("surveyedLocaleId", filterString, paramString,
                 "Long", locale.getKey().getId(), paramMap);
-        appendNonNullParam("surveyId", filterString, paramString,
-                "Long", locale.getCreationSurveyId(), paramMap);
         query.setFilter(filterString.toString());
         query.declareParameters(paramString.toString());
-        query.setOrdering("collectionDate desc");
+        query.setOrdering("collectionDate ascending");
         
         List<SurveyInstance> res = (List<SurveyInstance>)query.executeWithMap(paramMap);
         if (res != null && !res.isEmpty()) {
