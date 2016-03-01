@@ -1,5 +1,5 @@
 /*
- *  Copyright (C) 2012-2015 Stichting Akvo (Akvo Foundation)
+ *  Copyright (C) 2012-2016 Stichting Akvo (Akvo Foundation)
  *
  *  This file is part of Akvo FLOW.
  *
@@ -239,7 +239,8 @@ public class QuestionAnswerRestService {
                     
                     // Update datapoint names for this survey, if applies
                     if (q.getLocaleNameFlag() && surveyedLocaleId != null) {
-                        DataProcessorRestServlet.scheduleDatapointNameAssembly(q.getSurveyId(), surveyedLocaleId);
+                        DataProcessorRestServlet.scheduleDatapointNameAssembly(
+                                q.getSurveyId(), surveyedLocaleId, true);
                     }
                     
                     // return result to the Dashboard
