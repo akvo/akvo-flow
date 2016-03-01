@@ -731,10 +731,14 @@ public class SurveyInstanceDAO extends BaseDAO<SurveyInstance> {
                 "Long", locale.getCreationSurveyId(), paramMap);
         query.setFilter(filterString.toString());
         query.declareParameters(paramString.toString());
-        query.setUnique(true);
         query.setOrdering("collectionDate desc");
         
-        return (SurveyInstance)query.executeWithMap(paramMap);
+        List<SurveyInstance> res = (List<SurveyInstance>)query.executeWithMap(paramMap);
+        if (res != null && !res.isEmpty()) {
+            return res.get(0);
+        }
+        
+        return null;
     }
 
 }
