@@ -1,5 +1,5 @@
 /*
- *  Copyright (C) 2014-2015 Stichting Akvo (Akvo Foundation)
+ *  Copyright (C) 2014-2016 Stichting Akvo (Akvo Foundation)
  *
  *  This file is part of Akvo FLOW.
  *
@@ -16,6 +16,7 @@
 
 package org.waterforpeople.mapping.app.web;
 
+import java.util.Date;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -62,15 +63,17 @@ public class DeviceNotificationRestServlet extends AbstractRestApiServlet {
         Device d = getDevice(dnReq);
         if (d != null) {
             DeviceFileJobQueueDAO jobDao = new DeviceFileJobQueueDAO();
-    
+
             List<DeviceFileJobQueue> missingByDevice = jobDao.listByDeviceId(d
                     .getKey().getId());
             List<DeviceFileJobQueue> missingUnknown = jobDao.listByUnknownDevice();
-    
+
             resp.setMissingFiles(missingByDevice);
             resp.setMissingUnknown(missingUnknown);
+            d.setLastLocationBeaconTime(new Date());
+            new DeviceDAO().save(d);
         }
-        
+
         resp.setDeletedSurvey(getDeletedSurveys(dnReq));
 
         return resp;
@@ -122,7 +125,6 @@ public class DeviceNotificationRestServlet extends AbstractRestApiServlet {
 
         return surveyIds;
     }
-    
 
     private Device getDevice(DeviceNotificationRequest req) {
         DeviceDAO deviceDao = new DeviceDAO();
