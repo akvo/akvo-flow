@@ -1540,8 +1540,8 @@ public class DataProcessorRestServlet extends AbstractRestApiServlet {
         }
         
         SurveyGroup sg = sgDao.getByKey(surveyGroupId);
-        if (sg == null) {
-            log.log(Level.WARNING, "SurveyGroup not found: " + surveyGroupId);
+        if (sg == null || sg.getNewLocaleSurveyId() != null) {
+            log.log(Level.WARNING, "SurveyGroup or registration form not found: " + surveyGroupId);
             return;
         }
 
