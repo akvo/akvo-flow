@@ -1515,6 +1515,11 @@ public class DataProcessorRestServlet extends AbstractRestApiServlet {
     }
     
     private void assembleDatapointName(Long surveyGroupId, Long surveyedLocaleId) {
+        if (surveyedLocaleId == null && surveyGroupId == null) {
+            log.log(Level.WARNING, "Either surveyGroupId or surveyedLocaleId must be defined");
+            return;
+        }
+        
         final SurveyGroupDAO sgDao = new SurveyGroupDAO();
         final SurveyedLocaleDao slDao = new SurveyedLocaleDao();
         final SurveyInstanceDAO siDao = new SurveyInstanceDAO();
@@ -1532,11 +1537,9 @@ public class DataProcessorRestServlet extends AbstractRestApiServlet {
             surveyGroupId = sl.getSurveyGroupId();
             locales = new ArrayList<>();
             locales.add(slDao.getById(surveyedLocaleId));
-        } else if (surveyGroupId != null) {
+        } else {
             // Fetch all locales for this survey group
             locales = slDao.listLocalesBySurveyGroupId(surveyGroupId);
-        } else {
-            return;
         }
         
         SurveyGroup sg = sgDao.getByKey(surveyGroupId);
