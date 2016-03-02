@@ -23,6 +23,9 @@ import javax.jdo.annotations.IdentityType;
 import javax.jdo.annotations.PersistenceCapable;
 import javax.jdo.annotations.Persistent;
 
+import org.akvo.flow.domain.DataUtils;
+import org.apache.commons.lang.StringUtils;
+
 import com.gallatinsystems.common.Constants;
 import com.gallatinsystems.framework.domain.BaseDomain;
 import com.google.appengine.api.datastore.Text;
@@ -130,6 +133,14 @@ public class QuestionAnswerStore extends BaseDomain {
         }
     }
 
+    public Long getQuestionIDLong() {
+        try {
+            return Long.valueOf(questionID);
+        } catch (NumberFormatException e) {
+            return null;
+        }
+    }
+
     public String getQuestionID() {
         return questionID;
     }
@@ -175,5 +186,30 @@ public class QuestionAnswerStore extends BaseDomain {
         result.append("}");
 
         return result.toString();
+    }
+    
+    public String getDatapointNameValue() {
+        if (type == null || value == null) {
+            return "";
+        }
+
+        String name;
+        switch (type) {
+            case "CASCADE":
+                name = StringUtils.join(DataUtils.cascadeResponseValues(value), " - ");
+                break;
+            case "OPTION":
+            case "OTHER":
+                name = StringUtils.join(DataUtils.optionResponsesTextArray(value), " - ");
+                break;
+            default:
+                name = value;
+                break;
+        }
+        
+        name = name.replaceAll("\\s+", " ");// Trim line breaks, multiple spaces, etc
+        name = name.replaceAll("\\s*\\|\\s*", " - ");// Replace pipes with hyphens
+
+        return name.trim();
     }
 }

@@ -1,5 +1,5 @@
 /*
- *  Copyright (C) 2010-2012 Stichting Akvo (Akvo Foundation)
+ *  Copyright (C) 2010-2016 Stichting Akvo (Akvo Foundation)
  *
  *  This file is part of Akvo FLOW.
  *
@@ -49,6 +49,7 @@ import org.waterforpeople.mapping.app.gwt.client.survey.SurveyGroupDto;
 import org.waterforpeople.mapping.app.gwt.client.survey.SurveyService;
 import org.waterforpeople.mapping.app.gwt.client.survey.TranslationDto;
 import org.waterforpeople.mapping.app.util.DtoMarshaller;
+import org.waterforpeople.mapping.app.web.DataProcessorRestServlet;
 import org.waterforpeople.mapping.app.web.dto.BootstrapGeneratorRequest;
 import org.waterforpeople.mapping.app.web.dto.SurveyAssemblyRequest;
 import org.waterforpeople.mapping.app.web.dto.SurveyTaskRequest;
@@ -811,6 +812,17 @@ public class SurveyServiceImpl extends RemoteServiceServlet implements
         com.google.appengine.api.taskqueue.Queue queue = com.google.appengine.api.taskqueue.QueueFactory
                 .getQueue("surveyAssembly");
         queue.add(options);
+        
+        Survey s = new SurveyDAO().getById(surveyId);
+        if (s != null) {
+            Long surveyGroupId = s.getSurveyGroupId();
+            SurveyGroup sg = new SurveyGroupDAO().getByKey(surveyGroupId);
+            if (sg != null && sg.getNewLocaleSurveyId().longValue() == surveyId.longValue()) {
+                // This is the registration form. Schedule datapoint name re-assembly
+                DataProcessorRestServlet.scheduleDatapointNameAssembly(surveyGroupId, null);
+            }
+        }
+        
     }
 
     @Override

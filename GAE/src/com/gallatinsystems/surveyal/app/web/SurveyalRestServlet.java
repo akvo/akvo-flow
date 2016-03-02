@@ -1,5 +1,5 @@
 /*
- *  Copyright (C) 2010-2015 Stichting Akvo (Akvo Foundation)
+ *  Copyright (C) 2010-2016 Stichting Akvo (Akvo Foundation)
  *
  *  This file is part of Akvo FLOW.
  *
@@ -29,7 +29,6 @@ import javax.servlet.http.HttpServletRequest;
 
 import net.sf.jsr107cache.Cache;
 
-import org.apache.commons.lang.StringUtils;
 import org.waterforpeople.mapping.dao.SurveyInstanceDAO;
 import org.waterforpeople.mapping.domain.QuestionAnswerStore;
 import org.waterforpeople.mapping.domain.SurveyInstance;
@@ -299,11 +298,6 @@ public class SurveyalRestServlet extends AbstractRestApiServlet {
             surveyInstance.setSublevel4(geoPlace.getSub4());
             surveyInstance.setSublevel5(geoPlace.getSub5());
             surveyInstance.setSublevel6(geoPlace.getSub6());
-        }
-
-        if (StringUtils.isNotBlank(surveyInstance
-                .getSurveyedLocaleDisplayName())) {
-            locale.setDisplayName(surveyInstance.getSurveyedLocaleDisplayName());
         }
 
         // add surveyInstanceId to list of contributed surveyInstances
