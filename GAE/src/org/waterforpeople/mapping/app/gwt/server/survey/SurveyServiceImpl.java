@@ -813,9 +813,16 @@ public class SurveyServiceImpl extends RemoteServiceServlet implements
                 .getQueue("surveyAssembly");
         queue.add(options);
         
-        // Schedule datapoint name assembly. The corresponding task will determine
-        // whether this form was used to create any datapoint
-        DataProcessorRestServlet.scheduleDatapointNameAssembly(surveyId, null);
+        Survey s = new SurveyDAO().getById(surveyId);
+        if (s != null) {
+            Long surveyGroupId = s.getSurveyGroupId();
+            SurveyGroup sg = new SurveyGroupDAO().getByKey(surveyGroupId);
+            if (sg != null && sg.getNewLocaleSurveyId().longValue() == surveyId.longValue()) {
+                // This is the registration form. Schedule datapoint name re-assembly
+                DataProcessorRestServlet.scheduleDatapointNameAssembly(surveyGroupId, null);
+            }
+        }
+        
     }
 
     @Override
