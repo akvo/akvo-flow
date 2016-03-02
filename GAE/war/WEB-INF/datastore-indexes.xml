@@ -555,6 +555,7 @@
     </datastore-index>
     <datastore-index kind="SurveyInstance" ancestor="false" source="manual">
         <property name="surveyedLocaleId" direction="asc"/>
+        <property name="surveyId" direction="asc"/>
         <property name="collectionDate" direction="asc"/>
     </datastore-index>
 
