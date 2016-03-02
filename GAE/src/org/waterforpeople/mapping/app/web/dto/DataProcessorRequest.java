@@ -50,6 +50,7 @@ public class DataProcessorRequest extends RestRequest {
     public static final String RESCORE_AP_ACTION = "rescoreAp";
     public static final String SOURCE_PARAM = "source";
     public static final String COUNTRY_PARAM = "country";
+    public static final String SURVEY_GROUP_PARAM = "surveyGroupId";
     public static final String SURVEY_ID_PARAM = "surveyId";
     public static final String QUESTION_GROUP_ID_PARAM = "questionGroupId";
     public static final String COUNTER_ID_PARAM = "summaryCounterId";
@@ -77,6 +78,7 @@ public class DataProcessorRequest extends RestRequest {
 
     private String country;
     private String source;
+    private Long surveyGroupId;
     private Long surveyId;
     private Long surveyInstanceId;
     private Long questionGroupId;
@@ -203,6 +205,14 @@ public class DataProcessorRequest extends RestRequest {
         if (req.getParameter(LOCALE_ID_PARAM) != null) {
             try {
                 setSurveyedLocaleId(Long.valueOf(req.getParameter(LOCALE_ID_PARAM)));
+            } catch (NumberFormatException e) {
+                // no-op
+            }
+        }
+        
+        if (req.getParameter(SURVEY_GROUP_PARAM) != null) {
+            try {
+                setSurveyGroupId(Long.valueOf(req.getParameter(SURVEY_GROUP_PARAM)));
             } catch (NumberFormatException e) {
                 // no-op
             }
@@ -335,6 +345,14 @@ public class DataProcessorRequest extends RestRequest {
 
     public void setSurveyedLocaleId(Long surveyedLocaleId) {
         this.surveyedLocaleId = surveyedLocaleId;
+    }
+    
+    public Long getSurveyGroupId() {
+        return surveyGroupId;
+    }
+
+    public void setSurveyGroupId(Long surveyGroupId) {
+        this.surveyGroupId = surveyGroupId;
     }
     
 }

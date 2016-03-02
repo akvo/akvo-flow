@@ -204,7 +204,7 @@ public class SurveyInstanceDAO extends BaseDAO<SurveyInstance> {
                         .retrieveSurveyGroup(survey.getSurveyGroupId());
                 sl.setLocaleType(surveyGroup.getPrivacyLevel().toString());
                 sl.setSurveyGroupId(survey.getSurveyGroupId());
-                sl.setCreationSurveyId(survey.getKey().getId());
+                sl.setCreationSurveyId(surveyGroup.getNewLocaleSurveyId());
             }
         }
         
@@ -715,7 +715,7 @@ public class SurveyInstanceDAO extends BaseDAO<SurveyInstance> {
         return findByProperty("uuid", uuid, "String");
     }
     
-    public SurveyInstance getRegistrationSurveyInstance(SurveyedLocale locale) {
+    public SurveyInstance getRegistrationSurveyInstance(SurveyedLocale locale, Long registrationSurveyId) {
         PersistenceManager pm = PersistenceFilter.getManager();
         Query query = pm.newQuery(SurveyInstance.class);
 
@@ -725,16 +725,20 @@ public class SurveyInstanceDAO extends BaseDAO<SurveyInstance> {
         StringBuilder paramString = new StringBuilder();
         paramMap = new HashMap<String, Object>();
 
+        appendNonNullParam("surveyId", filterString, paramString,
+                "Long", registrationSurveyId, paramMap);
         appendNonNullParam("surveyedLocaleId", filterString, paramString,
                 "Long", locale.getKey().getId(), paramMap);
-        appendNonNullParam("surveyId", filterString, paramString,
-                "Long", locale.getCreationSurveyId(), paramMap);
         query.setFilter(filterString.toString());
         query.declareParameters(paramString.toString());
-        query.setUnique(true);
-        query.setOrdering("collectionDate desc");
+        query.setOrdering("collectionDate ascending");
         
-        return (SurveyInstance)query.executeWithMap(paramMap);
+        List<SurveyInstance> res = (List<SurveyInstance>)query.executeWithMap(paramMap);
+        if (res != null && !res.isEmpty()) {
+            return res.get(0);
+        }
+        
+        return null;
     }
 
 }
