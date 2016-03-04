@@ -240,7 +240,7 @@ FLOW.QuestionView = FLOW.View.extend({
   loadQuestionOptions: function () {
     var c = this.content;
     FLOW.questionOptionsControl.set('content', []);
-    FLOW.questionOptionsControl.set('questionId', null);
+    FLOW.questionOptionsControl.set('questionId', c.get('keyId'));
 
     options = FLOW.store.filter(FLOW.QuestionOption, function (optionItem) {
         return optionItem.get('questionId') === c.get('keyId');
@@ -249,7 +249,6 @@ FLOW.QuestionView = FLOW.View.extend({
     if (options.get('length')) {
       optionArray = Ember.A(options.toArray().sort(sortByOrder));
       FLOW.questionOptionsControl.set('content', optionArray);
-      FLOW.questionOptionsControl.set('questionId', c.get('keyId'));
     } else {
       FLOW.questionOptionsControl.loadDefaultOptions();
     }

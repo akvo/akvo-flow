@@ -512,6 +512,22 @@
 	</filter-mapping>
 	<security-constraint>
 		<web-resource-collection>
+			<url-pattern>/devicetimerest</url-pattern>
+		</web-resource-collection>
+		<user-data-constraint>
+			<transport-guarantee>NONE</transport-guarantee>
+		</user-data-constraint>
+	</security-constraint>
+	<security-constraint>
+		<web-resource-collection>
+			<url-pattern>/*</url-pattern>
+		</web-resource-collection>
+		<user-data-constraint>
+			<transport-guarantee>CONFIDENTIAL</transport-guarantee>
+		</user-data-constraint>
+	</security-constraint>
+	<security-constraint>
+		<web-resource-collection>
 			<url-pattern>/SecureSurveyEntry.html</url-pattern>
 		</web-resource-collection>
 		<auth-constraint>

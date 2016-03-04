@@ -1,5 +1,5 @@
 /*
- *  Copyright (C) 2012-2015 Stichting Akvo (Akvo Foundation)
+ *  Copyright (C) 2012-2016 Stichting Akvo (Akvo Foundation)
  *
  *  This file is part of Akvo FLOW.
  *
@@ -37,6 +37,7 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import org.waterforpeople.mapping.analytics.dao.SurveyQuestionSummaryDao;
 import org.waterforpeople.mapping.app.gwt.client.surveyinstance.QuestionAnswerStoreDto;
 import org.waterforpeople.mapping.app.util.DtoMarshaller;
+import org.waterforpeople.mapping.app.web.DataProcessorRestServlet;
 import org.waterforpeople.mapping.app.web.rest.dto.QuestionAnswerStorePayload;
 import org.waterforpeople.mapping.app.web.rest.dto.RestStatusDto;
 import org.waterforpeople.mapping.dao.QuestionAnswerStoreDao;
@@ -172,17 +173,17 @@ public class QuestionAnswerRestService {
         // server will respond with 400 Bad Request
         if (requestDto != null) {
             Long keyId = requestDto.getKeyId();
+            Question q = questionDao.getByKey(Long.parseLong(requestDto.getQuestionID()));
             QuestionAnswerStore qa;
             // if the questionAnswerStoreDto has a key, try to get the
             // questionAnswerStore.
-            if (keyId != null) {
+            if (keyId != null && q != null) {
                 qa = questionAnswerStoreDao.getByKey(keyId);
                 // if we find the questionAnswerStore, update it's properties
                 if (qa != null) {
                     // Before updating the properties, fix the questionAnswerSummary counts if it is
                     // an OPTION question
-                    Question q = questionDao.getByKey(Long.parseLong(qa.getQuestionID()));
-                    if (q != null && Question.Type.OPTION.equals(q.getType())) {
+                    if (Question.Type.OPTION.equals(q.getType())) {
                         // decrease count of current item
                         SurveyQuestionSummaryDao.incrementCount(qa, -1);
 
@@ -192,7 +193,7 @@ public class QuestionAnswerRestService {
                             SurveyQuestionSummaryDao.incrementCount(
                                     constructQAS(qa.getQuestionID(), newVal), 1);
                         }
-                    } else if (q != null && Question.Type.CASCADE.equals(q.getType())) {
+                    } else if (Question.Type.CASCADE.equals(q.getType())) {
                         JSONArray cascadeResponse = null;
                         boolean isValidJson = true;
                         boolean isValidResponse = true;
@@ -227,12 +228,21 @@ public class QuestionAnswerRestService {
                     SurveyedLocaleDao slDao = new SurveyedLocaleDao();
                     List<SurveyalValue> svals = slDao.listSVByQuestionAndSurveyInstance(
                             surveyInstanceId, Long.parseLong(questionId));
+                    Long surveyedLocaleId = null;
                     if (svals != null && svals.size() > 0) {
                         SurveyalValue sval = svals.get(0);
                         sval.setStringValue(qa.getValue());
                         slDao.save(sval);
+                        // Populate locale id from the only entity containing this attribute
+                        surveyedLocaleId = sval.getSurveyedLocaleId();
                     }
-
+                    
+                    // Update datapoint names for this survey, if applies
+                    if (q.getLocaleNameFlag() && surveyedLocaleId != null) {
+                        DataProcessorRestServlet.scheduleDatapointNameAssembly(
+                                null, surveyedLocaleId, true);
+                    }
+                    
                     // return result to the Dashboard
                     DtoMarshaller.copyToDto(qa, responseDto);
                     // give back the question text as we received it

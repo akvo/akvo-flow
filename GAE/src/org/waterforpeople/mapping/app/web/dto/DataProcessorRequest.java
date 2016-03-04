@@ -41,6 +41,7 @@ public class DataProcessorRequest extends RestRequest {
     public static final String FIX_OPTIONS2VALUES_ACTION = "fixOptions2Values";
     public static final String FIX_DUPLICATE_OTHER_TEXT_ACTION = "fixDuplicateOtherText";
     public static final String FIX_QUESTIONGROUP_DEPENDENCIES_ACTION = "fixQuestionGroupDepencencies";
+    public static final String ASSEMBLE_DATAPOINT_NAME = "assembleDatapointName";
     public static final String DELETE_DUPLICATE_QAS = "deleteDuplicatedQAS";
     public static final String RECOMPUTE_LOCALE_CLUSTERS = "recomputeLocaleClusters";
     public static final String SURVEY_INSTANCE_SUMMARIZER = "surveyInstanceSummarizer";
@@ -49,10 +50,12 @@ public class DataProcessorRequest extends RestRequest {
     public static final String RESCORE_AP_ACTION = "rescoreAp";
     public static final String SOURCE_PARAM = "source";
     public static final String COUNTRY_PARAM = "country";
+    public static final String SURVEY_GROUP_PARAM = "surveyGroupId";
     public static final String SURVEY_ID_PARAM = "surveyId";
     public static final String QUESTION_GROUP_ID_PARAM = "questionGroupId";
     public static final String COUNTER_ID_PARAM = "summaryCounterId";
     public static final String SURVEY_INSTANCE_PARAM = "surveyInstanceId";
+    public static final String LOCALE_ID_PARAM = "surveyedLocaleId";
     public static final String QAS_ID_PARAM = "qasId";
     public static final String DELTA_PARAM = "delta";
     public static final String API_KEY_PARAM = "apiKey";
@@ -75,10 +78,12 @@ public class DataProcessorRequest extends RestRequest {
 
     private String country;
     private String source;
+    private Long surveyGroupId;
     private Long surveyId;
     private Long surveyInstanceId;
     private Long questionGroupId;
     private Long qasId;
+    private Long surveyedLocaleId;
     private Integer delta;
     private String apiKey;
     private Long offset = 0L;
@@ -192,6 +197,22 @@ public class DataProcessorRequest extends RestRequest {
         if (req.getParameter(PARENT_NODE_ID) != null) {
             try {
                 setParentNodeId(Long.valueOf(req.getParameter(PARENT_NODE_ID)));
+            } catch (NumberFormatException e) {
+                // no-op
+            }
+        }
+        
+        if (req.getParameter(LOCALE_ID_PARAM) != null) {
+            try {
+                setSurveyedLocaleId(Long.valueOf(req.getParameter(LOCALE_ID_PARAM)));
+            } catch (NumberFormatException e) {
+                // no-op
+            }
+        }
+        
+        if (req.getParameter(SURVEY_GROUP_PARAM) != null) {
+            try {
+                setSurveyGroupId(Long.valueOf(req.getParameter(SURVEY_GROUP_PARAM)));
             } catch (NumberFormatException e) {
                 // no-op
             }
@@ -317,4 +338,21 @@ public class DataProcessorRequest extends RestRequest {
     public void setRetry(int retry) {
         this.retry = retry;
     }
+    
+    public Long getSurveyedLocaleId() {
+        return surveyedLocaleId;
+    }
+
+    public void setSurveyedLocaleId(Long surveyedLocaleId) {
+        this.surveyedLocaleId = surveyedLocaleId;
+    }
+    
+    public Long getSurveyGroupId() {
+        return surveyGroupId;
+    }
+
+    public void setSurveyGroupId(Long surveyGroupId) {
+        this.surveyGroupId = surveyGroupId;
+    }
+    
 }

@@ -138,23 +138,29 @@ FLOW.NavMapsView = FLOW.View.extend({
     map.options.maxZoom = 18;
     map.options.minZoom = 2;
 
-    var mbAttr = 'Map &copy; 1987-2014 <a href="http://developer.here.com">HERE</a>',
-			mbUrl = 'https://{s}.{base}.maps.cit.api.here.com/maptile/2.1/maptile/{mapID}/{scheme}/{z}/{x}/{y}/256/{format}?app_id={app_id}&app_code={app_code}';
+    var hereAttr = 'Map &copy; 1987-2014 <a href="http://developer.here.com">HERE</a>',
+			hereUrl = 'https://{s}.{base}.maps.cit.api.here.com/maptile/2.1/maptile/{mapID}/{scheme}/{z}/{x}/{y}/256/{format}?app_id={app_id}&app_code={app_code}',
+      mbAttr = 'Map &copy; <a href="http://openstreetmap.org">OSM</a>',
+      mbUrl = 'http://{s}.tiles.mapbox.com/v3/akvo.he30g8mm/{z}/{x}/{y}.png';
 
-    var normal = L.tileLayer(mbUrl, {
+    var normal = L.tileLayer(hereUrl, {
       scheme: 'normal.day.transit',
       format: 'png8',
-      attribution: mbAttr,
+      attribution: hereAttr,
       subdomains: '1234',
       mapID: 'newest',
       app_id: FLOW.Env.hereMapsAppId,
       app_code: FLOW.Env.hereMapsAppCode,
       base: 'base'
     }).addTo(map),
-    satellite  = L.tileLayer(mbUrl, {
+    terrain  = L.tileLayer(mbUrl, {
+      attribution: mbAttr,
+      subdomains: 'abc'
+    }),
+    satellite  = L.tileLayer(hereUrl, {
       scheme: 'hybrid.day',
       format: 'jpg',
-      attribution: mbAttr,
+      attribution: hereAttr,
       subdomains: '1234',
       mapID: 'newest',
       app_id: FLOW.Env.hereMapsAppId,
@@ -164,6 +170,7 @@ FLOW.NavMapsView = FLOW.View.extend({
 
     var baseLayers = {
 			"Normal": normal,
+      "Terrain": terrain,
 			"Satellite": satellite
 		};
 
@@ -650,6 +657,13 @@ FLOW.NavMapsView = FLOW.View.extend({
                         case "DATE":
                           var dateQuestion = new Date((isNaN(questionAnswer) === false) ? parseInt(questionAnswer) : questionAnswer);
                           clickedPointContent += dateQuestion.toUTCString().slice(0, -13); //remove last 13 x-ters so only date displays
+                          break;
+                        case "SIGNATURE":
+                          clickedPointContent += '<img src="';
+                          var srcAttr = 'data:image/png;base64,', signatureJson;
+                          signatureJson = JSON.parse(questionAnswer);
+                          clickedPointContent += srcAttr + signatureJson.image +'"/>';
+                          clickedPointContent += Ember.String.loc('_signed_by') +': '+signatureJson.name;
                           break;
                         case "CASCADE":
                         case "OPTION":
