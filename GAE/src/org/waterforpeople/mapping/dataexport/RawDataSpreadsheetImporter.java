@@ -709,9 +709,10 @@ public class RawDataSpreadsheetImporter implements DataImporter {
 
             for (Cell cell : headerRow) {
                 String cellValue = cell.getStringCellValue();
-                System.out.println(CellReference.convertNumToColString(cell.getColumnIndex())
-                        + " - cell");
-                if ((cellValue == null || cellValue.trim().isEmpty()) && !isLastCell(cell)) {
+                // if encountering a null cell make sure its only due to phantom cells at the end of
+                // the row. If null or empty cell occurs in middle of header row report an error
+                if ((cellValue == null || cellValue.trim().isEmpty())
+                        && !isLastQuestionCell(headerRow.getCell(cell.getColumnIndex() - 1))) {
                     errorMap.put(
                             cell.getColumnIndex(),
                             String.format(
