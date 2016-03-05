@@ -768,28 +768,29 @@ public class RawDataSpreadsheetImporter implements DataImporter {
     }
 
     /**
-     * Verify that the cell is the last cell in a row, i.e. there are no more cells in the given row
-     * that contain a header for data to be imported. It also takes into account the possibility of
-     * multiple empty "phantom" cells at the end of the valid data headers and ignores them
+     * Verify that the cell is the last question cell in the header row, i.e. there are no more
+     * cells in the given row that contain a header for data to be imported. It also takes into
+     * account the possibility of multiple empty "phantom" cells at the end of the valid data
+     * headers and ignores them
      *
      * @param cell
      * @return
      */
-    private boolean isLastCell(Cell cell) {
+    private boolean isLastQuestionCell(Cell cell) {
         Row row = cell.getRow();
-        boolean isLastCell = cell.getColumnIndex() == row.getLastCellNum() - 1;
-        System.out.println(" - lst" + CellReference.convertNumToColString(1));
-        if (!isLastCell) {
-            for (int i = cell.getColumnIndex() + 1; i < row.getLastCellNum(); i++) {
-                if (!row.getCell(i).getStringCellValue().trim().isEmpty()) {
-                    System.out.println(CellReference.convertNumToColString(i) + " - cell loop");
-                    isLastCell = false;
-                    break;
-                }
-            }
-            isLastCell = true;
+        if (cell.getColumnIndex() == row.getLastCellNum() - 1) {
+            return true;
         }
-        return isLastCell;
+
+        Cell lastCell = null;
+        for (int i = row.getLastCellNum() - 1;; i--) {
+            if (row.getCell(i) == null || row.getCell(i).getStringCellValue().trim().isEmpty()) {
+                continue;
+            }
+            lastCell = row.getCell(i);
+            break;
+        }
+        return lastCell.getColumnIndex() == cell.getColumnIndex();
     }
 
     public static void main(String[] args) throws Exception {
