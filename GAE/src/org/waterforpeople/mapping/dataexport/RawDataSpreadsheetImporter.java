@@ -711,8 +711,7 @@ public class RawDataSpreadsheetImporter implements DataImporter {
                 String cellValue = cell.getStringCellValue();
                 // if encountering a null cell make sure its only due to phantom cells at the end of
                 // the row. If null or empty cell occurs in middle of header row report an error
-                if ((cellValue == null || cellValue.trim().isEmpty())
-                        && !isLastQuestionCell(headerRow.getCell(cell.getColumnIndex() - 1))) {
+                if ((cellValue == null || cellValue.trim().isEmpty()) && isMissingHeaderCell(cell)) {
                     errorMap.put(
                             cell.getColumnIndex(),
                             String.format(
@@ -769,29 +768,23 @@ public class RawDataSpreadsheetImporter implements DataImporter {
     }
 
     /**
-     * Verify that the cell is the last question cell in the header row, i.e. there are no more
-     * cells in the given row that contain a header for data to be imported. It also takes into
-     * account the possibility of multiple empty "phantom" cells at the end of the valid data
-     * headers and ignores them
+     * When a blank or null cell is incurred while processing, make sure that this is the last cell
+     * in the row and ignore any other "phantom cells" that may occur. We only allow this for the
+     * header row. If the blank cell occurs in between valid header cells we return true.
      *
      * @param cell
      * @return
      */
-    private boolean isLastQuestionCell(Cell cell) {
-        Row row = cell.getRow();
-        if (cell.getColumnIndex() == row.getLastCellNum() - 1) {
-            return true;
-        }
+    private boolean isMissingHeaderCell(Cell cell) {
+        assert cell.getRow().getRowNum() == 0; // only process header rows
 
-        Cell lastCell = null;
-        for (int i = row.getLastCellNum() - 1;; i--) {
-            if (row.getCell(i) == null || row.getCell(i).getStringCellValue().trim().isEmpty()) {
-                continue;
+        Row row = cell.getRow();
+        for (int i = cell.getColumnIndex(); i < row.getLastCellNum(); i++) {
+            if (row.getCell(i) != null && !row.getCell(i).getStringCellValue().trim().isEmpty()) {
+                return true;
             }
-            lastCell = row.getCell(i);
-            break;
         }
-        return lastCell.getColumnIndex() == cell.getColumnIndex();
+        return false;
     }
 
     public static void main(String[] args) throws Exception {
