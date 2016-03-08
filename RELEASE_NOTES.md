@@ -5,7 +5,13 @@ Read more about the [Akvo Platform](http://www.akvo.org/blog/?p=4822).
 
 Akvo FLOW Dashboard release notes
 ----
+#1.9.5.1
+Date: 4 March 2016
+# Resolved issues
+* Fix an equality check that prevented the automated building of datapoint names[#1576]
+
 #1.9.5 - Decubitus Dingo
+Date: 3 March 2016
 # New and noteworthy
 * Enforce the use of SSL via configuration.  Access to all dashboard URLs will now be encrypted. [#1564]
 
