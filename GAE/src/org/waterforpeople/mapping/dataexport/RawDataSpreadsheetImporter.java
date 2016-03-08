@@ -1,5 +1,5 @@
 /*
- *  Copyright (C) 2010-2015 Stichting Akvo (Akvo Foundation)
+ *  Copyright (C) 2010-2016 Stichting Akvo (Akvo Foundation)
  *
  *  This file is part of Akvo FLOW.
  *
@@ -44,6 +44,7 @@ import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.ss.usermodel.Sheet;
 import org.apache.poi.ss.usermodel.Workbook;
 import org.apache.poi.ss.usermodel.WorkbookFactory;
+import org.apache.poi.ss.util.CellReference;
 import org.codehaus.jackson.map.ObjectMapper;
 import org.waterforpeople.mapping.app.gwt.client.survey.QuestionDto;
 import org.waterforpeople.mapping.app.gwt.client.survey.QuestionDto.QuestionType;
@@ -101,6 +102,7 @@ public class RawDataSpreadsheetImporter implements DataImporter {
         }
     }
 
+    @Override
     public void executeImport(File file, String serverBase, Map<String, String> criteria) {
         try {
             log.info(String.format("Importing %s to %s using criteria %s", file, serverBase,
@@ -473,7 +475,7 @@ public class RawDataSpreadsheetImporter implements DataImporter {
         surveyInstanceDto.setSurveyalTime((long) durationToSeconds(surveyalTime));
 
         InstanceData instanceData = new InstanceData(surveyInstanceDto, responseMap);
-        instanceData.maxIterationsCount = (long) iterations;
+        instanceData.maxIterationsCount = iterations;
         return instanceData;
     }
 
@@ -707,26 +709,33 @@ public class RawDataSpreadsheetImporter implements DataImporter {
 
             for (Cell cell : headerRow) {
                 String cellValue = cell.getStringCellValue();
-                if (firstQuestionFound && !cellValue.matches(".+\\|.+")) {
-                    errorMap.put(cell.getColumnIndex(),
-                            String.format("The header \"%s\" can not be imported", cellValue));
-                    break;
-                } else {
-                    if (!firstQuestionFound && cellValue.matches("[0-9]+\\|.+")) {
-                        firstQuestionFound = true;
-                        int idx = cell.getColumnIndex();
-                        // idx == 6, monitoring, old format
-                        // idx == 7, new format
-                        // idx == 8, new format, with repeat column
-                        if (!(idx == 6 || idx == 7 || idx == 8)) {
-                            errorMap.put(idx, "Found the first question at the wrong column index");
-                            break;
-                        }
-                        if (idx == 8) {
-                            hasIterationColumn = true;
-                        }
+                // if encountering a null cell make sure its only due to phantom cells at the end of
+                // the row. If null or empty cell occurs in middle of header row report an error
+                if ((cellValue == null || cellValue.trim().isEmpty()) && isMissingHeaderCell(cell)) {
+                    errorMap.put(
+                            cell.getColumnIndex(),
+                            String.format(
+                                    "Cannot import data from Column %s - \"%s\". Please check and/or fix the header cell",
+                                    CellReference.convertNumToColString(cell.getColumnIndex()),
+                                    cellValue));
 
+                    break;
+                }
+
+                if (!firstQuestionFound && cellValue.matches("[0-9]+\\|.+")) {
+                    firstQuestionFound = true;
+                    int idx = cell.getColumnIndex();
+                    // idx == 6, monitoring, old format
+                    // idx == 7, new format
+                    // idx == 8, new format, with repeat column
+                    if (!(idx == 6 || idx == 7 || idx == 8)) {
+                        errorMap.put(idx, "Found the first question at the wrong column index");
+                        break;
                     }
+                    if (idx == 8) {
+                        hasIterationColumn = true;
+                    }
+
                 }
             }
 
@@ -756,6 +765,26 @@ public class RawDataSpreadsheetImporter implements DataImporter {
         }
 
         return errorMap;
+    }
+
+    /**
+     * When a blank or null cell is incurred while processing, make sure that this is the last cell
+     * in the row and ignore any other "phantom cells" that may occur. We only allow this for the
+     * header row. If the blank cell occurs in between valid header cells we return true.
+     *
+     * @param cell
+     * @return
+     */
+    private boolean isMissingHeaderCell(Cell cell) {
+        assert cell.getRow().getRowNum() == 0; // only process header rows
+
+        Row row = cell.getRow();
+        for (int i = cell.getColumnIndex(); i < row.getLastCellNum(); i++) {
+            if (row.getCell(i) != null && !row.getCell(i).getStringCellValue().trim().isEmpty()) {
+                return true;
+            }
+        }
+        return false;
     }
 
     public static void main(String[] args) throws Exception {
