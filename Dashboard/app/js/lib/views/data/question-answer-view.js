@@ -2,7 +2,9 @@
 
 function formatDate(date) {
   if (date && !isNaN(date.getTime())) {
-    return date.getFullYear() + "/" + (date.getMonth() + 1) + "/" + date.getDate();
+    var str = date.getFullYear() + "-" + (date.getMonth() + 1) + "-" + date.getDate();
+    console.log(str);
+    return str;
   } else return null;
 }
 
