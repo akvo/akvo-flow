@@ -40,7 +40,14 @@ public class ExportImportUtils {
         }
     };
 
-    private static final ThreadLocal<DateFormat> DATE_FORMAT = new ThreadLocal<DateFormat>() {
+    private static final ThreadLocal<DateFormat> DATE_RESPONSE_FORMAT = new ThreadLocal<DateFormat>() {
+        @Override
+        protected DateFormat initialValue() {
+            return new SimpleDateFormat("yyyy-MM-dd");
+        };
+    };
+
+    private static final ThreadLocal<DateFormat> DATE_TIME_FORMAT = new ThreadLocal<DateFormat>() {
         @Override
         protected DateFormat initialValue() {
             return new SimpleDateFormat("dd-MM-yyyy HH:mm:ss z");
@@ -86,27 +93,62 @@ public class ExportImportUtils {
         return StringUtil.toHexString(digest.digest());
     }
 
-    public static String formatDate(Date date) {
+    /*
+     * Format date into a date-time string.
+     */
+    public static String formatDateTime(Date date) {
         if (date != null) {
-            return DATE_FORMAT.get().format(date);
+            return DATE_TIME_FORMAT.get().format(date);
         } else {
             return "";
         }
     }
 
-    public static Date parseDate(String dateString) {
+    /*
+     * Parse date-time string
+     */
+    public static Date parseDateTime(String dateString) {
         if (dateString == null || dateString.equals("")) {
             return null;
         }
         try {
-            return new Date(Long.parseLong(dateString));
-        } catch (NumberFormatException nfe) {
-            try {
-                return DATE_FORMAT.get().parse(dateString);
-            } catch (ParseException pe) {
-                log.error("bad date format: " + dateString + "\n" + pe.getMessage(), pe);
-                return null;
-            }
+            return DATE_TIME_FORMAT.get().parse(dateString);
+        } catch (ParseException pe) {
+            log.error("bad date format: " + dateString + "\n" + pe.getMessage(), pe);
+        }
+        return null;
+    }
+
+    /*
+     * Format DateQuestion response in a human-readable way.
+     * This date will not contain time details (yyyy-MM-dd)
+     */
+    public static String formatDateResponse(String value) {
+        try {
+            Date date = new Date(Long.valueOf(value));
+            return DATE_RESPONSE_FORMAT.get().format(date);
+        } catch (NumberFormatException e) {
+            log.error("Invalid date response: " + value);
+        }
+        return "";
+    }
+
+    /*
+     * Parse a DateQuestion response from the spreadsheet. New responses 
+     * will contain DATE_RESPONSE_FORMAT, but we'll also contemplate 
+     * the former DATE_TIME_FORMAT as a fallback.
+     */
+    public static Date parseDateResponse(String dateString) {
+        if (dateString == null || dateString.equals("")) {
+            return null;
+        }
+        try {
+            return DATE_RESPONSE_FORMAT.get().parse(dateString);
+        } catch (ParseException pe) {
+            log.error("Invalid date response: " + dateString + "\n" + pe.getMessage(), pe);
+            // Fall back to previous format
+            return parseDateTime(dateString);
         }
     }
+    
 }
