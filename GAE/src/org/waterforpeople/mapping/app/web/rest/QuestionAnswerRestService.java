@@ -23,7 +23,9 @@ import java.util.List;
 import java.util.Map;
 
 import javax.inject.Inject;
+import javax.servlet.http.HttpServletRequest;
 
+import org.akvo.flow.domain.DataUtils;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.springframework.beans.BeanUtils;
@@ -44,6 +46,7 @@ import org.waterforpeople.mapping.dao.QuestionAnswerStoreDao;
 import org.waterforpeople.mapping.dao.SurveyInstanceDAO;
 import org.waterforpeople.mapping.domain.QuestionAnswerStore;
 
+import com.gallatinsystems.common.Constants;
 import com.gallatinsystems.survey.dao.CascadeNodeDao;
 import com.gallatinsystems.survey.dao.QuestionDao;
 import com.gallatinsystems.survey.dao.SurveyUtils;
@@ -69,6 +72,7 @@ public class QuestionAnswerRestService {
     @RequestMapping(method = RequestMethod.GET, value = "")
     @ResponseBody
     public Map<String, List<QuestionAnswerStoreDto>> listQABySurveyInstanceId(
+            HttpServletRequest httpRequest,
             @RequestParam(value = "surveyInstanceId", defaultValue = "") Long surveyInstanceId) {
         final Map<String, List<QuestionAnswerStoreDto>> response = new HashMap<String, List<QuestionAnswerStoreDto>>();
         List<QuestionAnswerStoreDto> results = new ArrayList<QuestionAnswerStoreDto>();
@@ -129,8 +133,32 @@ public class QuestionAnswerRestService {
         while (results.remove(null))
             ;
 
+        processApiV1Responses(results, httpRequest);
         response.put("question_answers", results);
         return response;
+    }
+
+    /**
+     * Process the set of responses returned to take into account formats for the API versions
+     *
+     * @param responses
+     */
+    private void processApiV1Responses(List<QuestionAnswerStoreDto> responses,
+            HttpServletRequest httpRequest) {
+        if (!httpRequest.getRequestURI().startsWith(Constants.API_V1_PREFIX)) {
+            return;
+        }
+
+        for (QuestionAnswerStoreDto qDto : responses) {
+            String optionResponseValue = qDto.getValue();
+            String type = qDto.getType();
+            if (optionResponseValue == null || !"OTHER".equalsIgnoreCase(type)
+                    || !"OPTION".equalsIgnoreCase(type) || !optionResponseValue.startsWith("[")) {
+                continue;
+            }
+
+            qDto.setValue(DataUtils.jsonResponsesToPipeSeparated(optionResponseValue));
+        }
     }
 
     // find a single questionAnswerStore by the questionAnswerStoreId
