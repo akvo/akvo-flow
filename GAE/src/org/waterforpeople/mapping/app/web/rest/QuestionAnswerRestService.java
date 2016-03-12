@@ -152,12 +152,14 @@ public class QuestionAnswerRestService {
         for (QuestionAnswerStoreDto qDto : responses) {
             String optionResponseValue = qDto.getValue();
             String type = qDto.getType();
-            if (optionResponseValue == null || !"OTHER".equalsIgnoreCase(type)
-                    || !"OPTION".equalsIgnoreCase(type) || !optionResponseValue.startsWith("[")) {
+            if (optionResponseValue == null
+                    || (!"OTHER".equalsIgnoreCase(type) && !"OPTION".equalsIgnoreCase(type))) {
                 continue;
             }
 
-            qDto.setValue(DataUtils.jsonResponsesToPipeSeparated(optionResponseValue));
+            if (optionResponseValue.startsWith("[")) {
+                qDto.setValue(DataUtils.jsonResponsesToPipeSeparated(optionResponseValue));
+            }
         }
     }
 
