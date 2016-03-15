@@ -5,6 +5,11 @@ Read more about the [Akvo Platform](http://www.akvo.org/blog/?p=4822).
 
 Akvo FLOW Dashboard release notes
 ----
+#1.9.5.2
+Date: 15 March 2016
+# Resolved issues
+* API returning JSON encoded response for options whereas the API version is expected to return pipe separated strings [#1589]
+
 #1.9.5.1
 Date: 4 March 2016
 # Resolved issues
