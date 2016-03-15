@@ -72,6 +72,12 @@ public class DeviceNotificationRestServlet extends AbstractRestApiServlet {
             resp.setMissingUnknown(missingUnknown);
             d.setLastLocationBeaconTime(new Date());
             new DeviceDAO().save(d);
+        } else {
+            // newly connecting devices update their information
+            DeviceDAO dao = new DeviceDAO();
+            dao.updateDeviceLocation(dnReq.getPhoneNumber(), dnReq.getLat(), dnReq.getLon(),
+                    dnReq.getAccuracy(), null, dnReq.getDeviceIdentifier(), dnReq.getImei(),
+                    dnReq.getOsVersion());
         }
 
         resp.setDeletedSurvey(getDeletedSurveys(dnReq));
