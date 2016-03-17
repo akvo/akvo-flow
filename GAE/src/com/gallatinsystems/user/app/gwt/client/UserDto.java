@@ -40,6 +40,7 @@ public class UserDto extends BaseDto {
     private boolean superAdmin = false;
     private String permissionList;
     private String accessKey;
+    private String language;
 
     public String getPermissionList() {
         return permissionList;
@@ -126,5 +127,13 @@ public class UserDto extends BaseDto {
 
     public void setAccessKey(String accessKey) {
         this.accessKey = accessKey;
+    }
+
+    public String getLanguage() {
+        return language;
+    }
+
+    public void setLanguage(String language) {
+        this.language = language;
     }
 }

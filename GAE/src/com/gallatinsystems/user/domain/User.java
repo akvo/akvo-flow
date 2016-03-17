@@ -43,6 +43,12 @@ public class User extends BaseDomain {
     private String accessKey;
     private String secret;
 
+    private enum Lang {
+        BAHASA, ENGLISH, FRENCH, PORTUGESE, SPANISH
+    }
+
+    private Lang language;
+
     public String getPermissionList() {
         return permissionList;
     }
@@ -97,5 +103,13 @@ public class User extends BaseDomain {
 
     public void setSecret(String secret) {
         this.secret = secret;
+    }
+
+    public Lang getLanguage() {
+        return language;
+    }
+
+    public void setLanguage(Lang lang) {
+        this.language = lang;
     }
 }
