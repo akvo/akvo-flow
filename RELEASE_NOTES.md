@@ -5,7 +5,30 @@ Read more about the [Akvo Platform](http://www.akvo.org/blog/?p=4822).
 
 Akvo FLOW Dashboard release notes
 ----
-#1.9.4 - Clamarous Capybara
+#1.9.5.2
+Date: 15 March 2016
+# Resolved issues
+* API returning JSON encoded response for options whereas the API version is expected to return pipe separated strings [#1589]
+
+#1.9.5.1
+Date: 4 March 2016
+# Resolved issues
+* Fix an equality check that prevented the automated building of datapoint names[#1576]
+
+#1.9.5 - Decubitus Dingo
+Date: 3 March 2016
+# New and noteworthy
+* Enforce the use of SSL via configuration.  Access to all dashboard URLs will now be encrypted. [#1564]
+
+# Resolved issues
+* Update device last contact time to the dashboard [#1585]
+* Improved French translations for both the dashboard and app [#1579]
+* Dynamically build datapoint names[#1576]
+* Add 'terrain' baselayer to cartodb maps [#1573]
+* Displaying signature responses on cartodb point overlays [#1560]
+* Caching of requests causes malfunction with user roles and permissions and reading surveys [#1182]
+
+#1.9.4 - Clamorous Capybara
 Date: 6 January 2016
 
 # New and noteworthy
