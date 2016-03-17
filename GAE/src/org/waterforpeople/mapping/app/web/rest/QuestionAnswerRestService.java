@@ -26,6 +26,7 @@ import javax.inject.Inject;
 import javax.servlet.http.HttpServletRequest;
 
 import org.akvo.flow.domain.DataUtils;
+import org.apache.commons.lang.StringUtils;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.springframework.beans.BeanUtils;
@@ -45,6 +46,7 @@ import org.waterforpeople.mapping.app.web.rest.dto.RestStatusDto;
 import org.waterforpeople.mapping.dao.QuestionAnswerStoreDao;
 import org.waterforpeople.mapping.dao.SurveyInstanceDAO;
 import org.waterforpeople.mapping.domain.QuestionAnswerStore;
+import org.waterforpeople.mapping.serialization.response.MediaResponse;
 
 import com.gallatinsystems.common.Constants;
 import com.gallatinsystems.survey.dao.CascadeNodeDao;
@@ -152,13 +154,24 @@ public class QuestionAnswerRestService {
         for (QuestionAnswerStoreDto qDto : responses) {
             String optionResponseValue = qDto.getValue();
             String type = qDto.getType();
-            if (optionResponseValue == null
-                    || (!"OTHER".equalsIgnoreCase(type) && !"OPTION".equalsIgnoreCase(type))) {
+            
+            if (StringUtils.isEmpty(optionResponseValue)) {
                 continue;
             }
-
-            if (optionResponseValue.startsWith("[")) {
-                qDto.setValue(DataUtils.jsonResponsesToPipeSeparated(optionResponseValue));
+            
+            switch (type) {
+                case "OPTION":
+                case "OTHER":
+                    if (optionResponseValue.startsWith("[")) {
+                        qDto.setValue(DataUtils.jsonResponsesToPipeSeparated(optionResponseValue));
+                    }
+                    break;
+                case "IMAGE":
+                case "VIDEO":
+                    MediaResponse.format(optionResponseValue, MediaResponse.VERSION_INITIAL);
+                    break;
+                default:
+                    break;
             }
         }
     }
