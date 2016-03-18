@@ -42,12 +42,7 @@ public class User extends BaseDomain {
     private List<UserConfig> config;
     private String accessKey;
     private String secret;
-
-    private enum Lang {
-        BAHASA, ENGLISH, FRENCH, PORTUGESE, SPANISH
-    }
-
-    private Lang language;
+    private String language;
 
     public String getPermissionList() {
         return permissionList;
@@ -105,11 +100,11 @@ public class User extends BaseDomain {
         this.secret = secret;
     }
 
-    public Lang getLanguage() {
+    public String getLanguage() {
         return language;
     }
 
-    public void setLanguage(Lang lang) {
+    public void setLanguage(String lang) {
         this.language = lang;
     }
 }
