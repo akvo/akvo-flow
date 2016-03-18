@@ -125,6 +125,7 @@ public class QuestionAnswerRestService {
                             // Make sure we have enough room for the item
                             results.add(null);
                         }
+                        processApiResponse(qasDto, httpRequest);
                         results.add(idx, qasDto);
                     }
                 }
@@ -132,47 +133,68 @@ public class QuestionAnswerRestService {
         }
 
         // FIXME: use a better solution for removing null items...
-        while (results.remove(null))
-            ;
+        while (results.remove(null));
 
-        processApiV1Responses(results, httpRequest);
         response.put("question_answers", results);
         return response;
     }
 
     /**
-     * Process the set of responses returned to take into account formats for the API versions
-     *
-     * @param responses
+     * Process the response returned to take into account formats for the API versions
      */
-    private void processApiV1Responses(List<QuestionAnswerStoreDto> responses,
+    private void processApiResponse(QuestionAnswerStoreDto response,
             HttpServletRequest httpRequest) {
-        if (!httpRequest.getRequestURI().startsWith(Constants.API_V1_PREFIX)) {
+        if (httpRequest.getRequestURI().startsWith(Constants.API_V1_PREFIX)) {
+            // V1 API
+            formatResponseAPIV1(response);
+        } else {
+            // Latest API
+            formatResponseLatestAPI(response);
+        }
+    }
+    
+    /**
+     * Format Question response according to API v1
+     */
+    private void formatResponseAPIV1(QuestionAnswerStoreDto response) {
+        String optionResponseValue = response.getValue();
+        String type = response.getType();
+            
+        if (StringUtils.isEmpty(optionResponseValue)) {
             return;
         }
-
-        for (QuestionAnswerStoreDto qDto : responses) {
-            String optionResponseValue = qDto.getValue();
-            String type = qDto.getType();
             
-            if (StringUtils.isEmpty(optionResponseValue)) {
-                continue;
-            }
+        switch (type) {
+            case "OPTION":
+            case "OTHER":
+                if (optionResponseValue.startsWith("[")) {
+                    response.setValue(DataUtils.jsonResponsesToPipeSeparated(optionResponseValue));
+                }
+                break;
+            default:
+                break;
+        }
+    }
+    
+    /**
+     * Format Question response according to the most up-to-date API format
+     */
+    private void formatResponseLatestAPI(QuestionAnswerStoreDto response) {
+        String optionResponseValue = response.getValue();
+        String type = response.getType();
             
-            switch (type) {
-                case "OPTION":
-                case "OTHER":
-                    if (optionResponseValue.startsWith("[")) {
-                        qDto.setValue(DataUtils.jsonResponsesToPipeSeparated(optionResponseValue));
-                    }
-                    break;
-                case "IMAGE":
-                case "VIDEO":
-                    MediaResponse.format(optionResponseValue, MediaResponse.VERSION_INITIAL);
-                    break;
-                default:
-                    break;
-            }
+        if (StringUtils.isEmpty(optionResponseValue)) {
+            return;
+        }
+            
+        switch (type) {
+            case "IMAGE":
+            case "VIDEO":
+                String value = MediaResponse.format(optionResponseValue, MediaResponse.VERSION_INITIAL);
+                response.setValue(value);
+                break;
+            default:
+                break;
         }
     }
 
@@ -189,10 +211,14 @@ public class QuestionAnswerRestService {
         if (s != null) {
             dto = new QuestionAnswerStoreDto();
             DtoMarshaller.copyToDto(s, dto);
+            
+            // This endpoint is only used in the FLOW dashboard. 
+            // Latest API format can be safely used.
+            formatResponseLatestAPI(dto);
         }
+        
         response.put("question_answer", dto);
         return response;
-
     }
 
     // update existing questionAnswerStore
