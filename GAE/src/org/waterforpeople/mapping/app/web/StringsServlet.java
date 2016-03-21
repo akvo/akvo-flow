@@ -56,16 +56,20 @@ public class StringsServlet extends HttpServlet {
                 "/locale/fr.properties");
         final InputStream is_es = this.getClass().getResourceAsStream(
                 "/locale/es.properties");
+        final InputStream is_pt = this.getClass().getResourceAsStream(
+                "/locale/pt.properties");
 
         final Properties strings = new Properties();
         final Properties en = new Properties();
         final Properties fr = new Properties();
         final Properties es = new Properties();
+        final Properties pt = new Properties();
 
         strings.load(is_strings);
         en.load(is_en);
         es.load(is_es);
         fr.load(is_fr);
+        pt.load(is_pt);
 
         final VelocityEngine engine = new VelocityEngine();
         engine.setProperty("runtime.log.logsystem.class",
@@ -89,6 +93,7 @@ public class StringsServlet extends HttpServlet {
         context.put("en", new JSONObject(strings).toString());
         context.put("es", new JSONObject(translateKeys(strings, es)).toString());
         context.put("fr", new JSONObject(translateKeys(strings, fr)).toString());
+        context.put("pt", new JSONObject(translateKeys(strings, pt)).toString());
 
         final StringWriter writer = new StringWriter();
         t.merge(context, writer);
