@@ -171,6 +171,11 @@ public class QuestionAnswerRestService {
                     response.setValue(DataUtils.jsonResponsesToPipeSeparated(optionResponseValue));
                 }
                 break;
+            case "IMAGE":
+            case "VIDEO":
+                String value = MediaResponse.format(optionResponseValue, MediaResponse.VERSION_INITIAL);
+                response.setValue(value);
+                break;
             default:
                 break;
         }
@@ -190,7 +195,7 @@ public class QuestionAnswerRestService {
         switch (type) {
             case "IMAGE":
             case "VIDEO":
-                String value = MediaResponse.format(optionResponseValue, MediaResponse.VERSION_INITIAL);
+                String value = MediaResponse.format(optionResponseValue, MediaResponse.VERSION_GEOTAGGING);
                 response.setValue(value);
                 break;
             default:
