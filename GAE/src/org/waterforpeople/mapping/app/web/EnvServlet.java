@@ -42,6 +42,9 @@ import com.gallatinsystems.common.Constants;
 import com.gallatinsystems.common.util.PropertyUtil;
 import com.gallatinsystems.framework.dao.BaseDAO;
 import com.gallatinsystems.gis.geography.domain.Country;
+import com.gallatinsystems.user.dao.UserDao;
+import com.gallatinsystems.user.domain.User;
+import com.google.appengine.api.users.UserServiceFactory;
 import com.google.appengine.api.utils.SystemProperty;
 
 public class EnvServlet extends HttpServlet {
@@ -132,6 +135,9 @@ public class EnvServlet extends HttpServlet {
         }
         props.put("countries", jsonArray.toString());
 
+        // load language configuration
+        addLocale(props);
+
         context.put("env", props);
 
         final List<Map<String, String>> roles = new ArrayList<Map<String, String>>();
@@ -154,5 +160,21 @@ public class EnvServlet extends HttpServlet {
         final PrintWriter pw = resp.getWriter();
         pw.println(writer.toString());
         pw.close();
+    }
+
+    /**
+     * Check for the current user locale configuration and set it
+     *
+     * @param props
+     */
+    private void addLocale(Map<String, String> props) {
+        final com.google.appengine.api.users.User currentGoogleUser = UserServiceFactory
+                .getUserService().getCurrentUser();
+        if (currentGoogleUser != null && currentGoogleUser.getEmail() != null) {
+            final User currentUser = new UserDao().findUserByEmail(currentGoogleUser.getEmail()
+                    .trim());
+            final String locale = currentUser.getLanguage();
+            props.put("locale", locale);
+        }
     }
 }
