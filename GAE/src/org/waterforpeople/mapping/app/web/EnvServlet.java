@@ -17,6 +17,7 @@
 package org.waterforpeople.mapping.app.web;
 
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.PrintWriter;
 import java.io.StringWriter;
 import java.util.ArrayList;
@@ -31,6 +32,7 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.akvo.flow.locale.UIStrings;
 import org.apache.velocity.Template;
 import org.apache.velocity.VelocityContext;
 import org.apache.velocity.app.VelocityEngine;
@@ -135,8 +137,18 @@ public class EnvServlet extends HttpServlet {
         }
         props.put("countries", jsonArray.toString());
 
-        // load language configuration
+        // load language configuration and strings if present
         addLocale(props);
+
+        if (props.containsKey("locale") && props.get("locale") != null) {
+            final InputStream uiStringsFileStream = this.getClass().getResourceAsStream(
+                    "/locale/ui-strings.properties");
+            final InputStream localeStringsFileStream = this.getClass().getResourceAsStream(
+                    "/locale/" + props.get("locale") + ".properties");
+
+            context.put("localeStrings",
+                    UIStrings.getStrings(uiStringsFileStream, localeStringsFileStream));
+        }
 
         context.put("env", props);
 
