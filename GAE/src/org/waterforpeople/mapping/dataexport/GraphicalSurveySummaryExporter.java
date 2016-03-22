@@ -66,6 +66,7 @@ import org.waterforpeople.mapping.app.gwt.client.survey.TranslationDto;
 import org.waterforpeople.mapping.app.gwt.client.surveyinstance.SurveyInstanceDto;
 import org.waterforpeople.mapping.app.web.dto.SurveyRestRequest;
 import org.waterforpeople.mapping.dataexport.service.BulkDataServiceClient;
+import org.waterforpeople.mapping.serialization.response.MediaResponse;
 
 import com.gallatinsystems.common.util.JFreechartChartUtil;
 
@@ -700,10 +701,11 @@ public class GraphicalSurveySummaryExporter extends SurveySummaryExporter {
     }
 
     private static String photoCellValue(String value, String imagePrefix) {
-        final int filenameIndex = value.lastIndexOf("/") + 1;
+        String filename = ExportImportUtils.formatImage(value);
+        final int filenameIndex = filename.lastIndexOf("/") + 1;
         String cell = "";
-        if (filenameIndex > 0 && filenameIndex < value.length()) {
-            cell = imagePrefix + value.substring(filenameIndex);
+        if (filenameIndex > 0 && filenameIndex < filename.length()) {
+            cell = imagePrefix + filename.substring(filenameIndex);
         }
         return cell;
     }
