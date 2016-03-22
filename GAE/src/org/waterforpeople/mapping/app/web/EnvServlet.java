@@ -140,15 +140,16 @@ public class EnvServlet extends HttpServlet {
         // load language configuration and strings if present
         addLocale(props);
 
-        if (props.containsKey("locale") && props.get("locale") != null) {
-            final InputStream uiStringsFileStream = this.getClass().getResourceAsStream(
-                    "/locale/ui-strings.properties");
-            final InputStream localeStringsFileStream = this.getClass().getResourceAsStream(
-                    "/locale/" + props.get("locale") + ".properties");
+        final InputStream uiStringsFileStream = this.getClass().getResourceAsStream(
+                "/locale/ui-strings.properties");
+        InputStream localeStringsFileStream = null;
 
-            context.put("localeStrings",
-                    UIStrings.getStrings(uiStringsFileStream, localeStringsFileStream));
+        if (props.get("locale") != null && !"en".equalsIgnoreCase(props.get("locale"))) {
+            localeStringsFileStream = this.getClass().getResourceAsStream(
+                    "/locale/" + props.get("locale") + ".properties");
         }
+        context.put("localeStrings",
+                UIStrings.getStrings(uiStringsFileStream, localeStringsFileStream));
 
         context.put("env", props);
 
