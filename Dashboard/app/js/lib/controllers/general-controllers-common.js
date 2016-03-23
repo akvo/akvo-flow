@@ -1,10 +1,5 @@
 FLOW.dashboardLanguageControl = Ember.Object.create({
-  dashboardLanguage: null,
-
-  init: function () {
-    var locale = localStorage.locale || (localStorage.locale = 'en');
-    this.set('dashboardLanguage', this.get('content').findProperty('value', locale));
-  },
+  dashboardLanguage: FLOW.Env.locale,
 
   content: [{ label: "English (Default)", value: "en"},
             { label: "Español", value: "es" },

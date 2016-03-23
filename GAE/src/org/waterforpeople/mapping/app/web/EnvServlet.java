@@ -187,7 +187,11 @@ public class EnvServlet extends HttpServlet {
             final User currentUser = new UserDao().findUserByEmail(currentGoogleUser.getEmail()
                     .trim());
             final String locale = currentUser.getLanguage();
-            props.put("locale", locale);
+            if (locale != null) {
+                props.put("locale", locale);
+            } else {
+                props.put("locale", "en");
+            }
         }
     }
 }
