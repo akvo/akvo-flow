@@ -29,12 +29,6 @@ require('akvo-flow/views/users/user-view');
 
 FLOW.ApplicationView = Ember.View.extend({
   templateName: 'application/application',
-
-  init: function () {
-    var locale = localStorage.locale || 'en';
-    this._super();
-    Ember.STRINGS = Ember['STRINGS_' + locale.toUpperCase()];
-  }
 });
 
 
