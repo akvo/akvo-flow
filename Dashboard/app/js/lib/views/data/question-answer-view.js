@@ -2,10 +2,9 @@
 
 function formatDate(date) {
   if (date && !isNaN(date.getTime())) {
-    var str = date.getFullYear() + "-" + (date.getMonth() + 1) + "-" + date.getDate();
-    console.log(str);
-    return str;
-  } else return null;
+    return date.getFullYear() + "-" + (date.getMonth() + 1) + "-" + date.getDate();
+  } 
+  return null;
 }
 
 function sortByOrder(a , b) {
