@@ -505,7 +505,7 @@ FLOW.DateField = Ember.TextField.extend({
     if (this.get('minDate')) {
       // datepickers with only future dates
       $("#from_date").datepicker({
-        dateFormat: 'yy/mm/dd',
+        dateFormat: 'yy-mm-dd',
         defaultDate: new Date(),
         numberOfMonths: 1,
         minDate: new Date(),
@@ -516,7 +516,7 @@ FLOW.DateField = Ember.TextField.extend({
       });
 
       $("#to_date").datepicker({
-        dateFormat: 'yy/mm/dd',
+        dateFormat: 'yy-mm-dd',
         defaultDate: new Date(),
         numberOfMonths: 1,
         minDate: new Date(),
@@ -528,7 +528,7 @@ FLOW.DateField = Ember.TextField.extend({
     } else {
       // datepickers with all dates
       $("#from_date").datepicker({
-        dateFormat: 'yy/mm/dd',
+        dateFormat: 'yy-mm-dd',
         defaultDate: new Date(),
         numberOfMonths: 1,
         onSelect: function (selectedDate) {
@@ -538,7 +538,7 @@ FLOW.DateField = Ember.TextField.extend({
       });
 
       $("#to_date").datepicker({
-        dateFormat: 'yy/mm/dd',
+        dateFormat: 'yy-mm-dd',
         defaultDate: new Date(),
         numberOfMonths: 1,
         onSelect: function (selectedDate) {
