@@ -157,24 +157,23 @@ public class QuestionAnswerRestService {
      * Format Question response according to API v1
      */
     private void formatResponseAPIV1(QuestionAnswerStoreDto response) {
-        String optionResponseValue = response.getValue();
+        String value = response.getValue();
         String type = response.getType();
             
-        if (StringUtils.isEmpty(optionResponseValue)) {
+        if (StringUtils.isEmpty(value)) {
             return;
         }
             
         switch (type) {
             case "OPTION":
             case "OTHER":
-                if (optionResponseValue.startsWith("[")) {
-                    response.setValue(DataUtils.jsonResponsesToPipeSeparated(optionResponseValue));
+                if (value.startsWith("[")) {
+                    response.setValue(DataUtils.jsonResponsesToPipeSeparated(value));
                 }
                 break;
             case "IMAGE":
             case "VIDEO":
-                String value = MediaResponse.format(optionResponseValue, MediaResponse.VERSION_INITIAL);
-                response.setValue(value);
+                response.setValue(MediaResponse.format(value, MediaResponse.VERSION_INITIAL));
                 break;
             default:
                 break;
