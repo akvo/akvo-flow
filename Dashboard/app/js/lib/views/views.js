@@ -559,7 +559,6 @@ FLOW.DateField2 = Ember.TextField.extend({
       defaultDate: new Date(),
       numberOfMonths: 1
     });
-    this.$().datepicker("option", "minDate", new Date());
   }
 });
 
