@@ -4,6 +4,5 @@ loader.register('akvo-flow/currentuser', function(require) {
     permissionList: $user.permissionList,
     showUserTab: #if ( $user.permissionList == 0 || $user.permissionList == 10 ) true #else false #end,
     pathPermissions: $permissions,
-    language: #if( $user.Language ) '$user.Language' #else undefined #end
   });
 });
