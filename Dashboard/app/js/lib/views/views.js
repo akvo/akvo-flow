@@ -438,10 +438,6 @@ FLOW.NavigationView = Em.View.extend({
   templateName: 'application/navigation',
   selectedBinding: 'controller.selected',
 
-  onLanguageChange: function () {
-    this.rerender();
-  }.observes('FLOW.dashboardLanguageControl.dashboardLanguage'),
-
   NavItemView: Ember.View.extend({
     tagName: 'li',
     classNameBindings: 'isActive:current navItem'.w(),
