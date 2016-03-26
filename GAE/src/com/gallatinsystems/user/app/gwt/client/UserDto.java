@@ -1,5 +1,5 @@
 /*
- *  Copyright (C) 2010-2014 Stichting Akvo (Akvo Foundation)
+ *  Copyright (C) 2010-2016 Stichting Akvo (Akvo Foundation)
  *
  *  This file is part of Akvo FLOW.
  *
@@ -40,6 +40,7 @@ public class UserDto extends BaseDto {
     private boolean superAdmin = false;
     private String permissionList;
     private String accessKey;
+    private String language;
 
     public String getPermissionList() {
         return permissionList;
@@ -126,5 +127,13 @@ public class UserDto extends BaseDto {
 
     public void setAccessKey(String accessKey) {
         this.accessKey = accessKey;
+    }
+
+    public String getLanguage() {
+        return language;
+    }
+
+    public void setLanguage(String language) {
+        this.language = language;
     }
 }

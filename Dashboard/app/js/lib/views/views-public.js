@@ -9,24 +9,6 @@ require('akvo-flow/views/maps/map-views-common-public');
 
 FLOW.ApplicationView = Ember.View.extend({
   templateName: 'application/application-public',
-
-  init: function () {
-    var locale = localStorage.locale || 'en';
-
-    this._super();
-
-    switch (locale) {
-    case 'fr':
-      Ember.STRINGS = Ember.STRINGS_FR;
-      break;
-    case 'es':
-      Ember.STRINGS = Ember.STRINGS_ES;
-      break;
-    default:
-      Ember.STRINGS = Ember.STRINGS_EN;
-      break;
-    }
-  }
 });
 
 
