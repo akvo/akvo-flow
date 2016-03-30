@@ -184,17 +184,17 @@ public class QuestionAnswerRestService {
      * Format Question response according to the most up-to-date API format
      */
     private void formatResponseLatestAPI(QuestionAnswerStoreDto response) {
-        String optionResponseValue = response.getValue();
+        String value = response.getValue();
         String type = response.getType();
             
-        if (StringUtils.isEmpty(optionResponseValue)) {
+        if (StringUtils.isEmpty(value)) {
             return;
         }
             
         switch (type) {
             case "IMAGE":
             case "VIDEO":
-                String value = MediaResponse.format(optionResponseValue, MediaResponse.VERSION_GEOTAGGING);
+                value = MediaResponse.format(value, MediaResponse.VERSION_GEOTAGGING);
                 response.setValue(value);
                 break;
             default:
