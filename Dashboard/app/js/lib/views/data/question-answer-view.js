@@ -350,7 +350,9 @@ FLOW.QuestionAnswerView = Ember.View.extend({
     var c = this.content;
     if (!Ember.empty(c.get('value'))) {
       jImage = JSON.parse(c.get('value'));
-      return FLOW.Env.photo_url_root + jImage.filename.split('/').pop();
+      if (jImage && jImage.filename) {
+          return FLOW.Env.photo_url_root + jImage.filename.split('/').pop();
+      }
     }
   }.property('this.content,this.isPhotoType,this.isVideoType'),
 
