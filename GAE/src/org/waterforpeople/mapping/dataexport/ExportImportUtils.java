@@ -1,4 +1,4 @@
-/*  Copyright (C) 2015 Stichting Akvo (Akvo Foundation)
+/*  Copyright (C) 2015-2016 Stichting Akvo (Akvo Foundation)
  *
  *  This file is part of Akvo FLOW.
  *
@@ -27,6 +27,7 @@ import org.apache.log4j.Logger;
 import org.apache.poi.ss.usermodel.Cell;
 import org.apache.poi.ss.usermodel.DataFormatter;
 import org.apache.poi.ss.usermodel.Row;
+import org.waterforpeople.mapping.serialization.response.MediaResponse;
 
 import com.gallatinsystems.common.util.StringUtil;
 
@@ -108,5 +109,10 @@ public class ExportImportUtils {
                 return null;
             }
         }
+    }
+    
+    public static String formatImage(String value) {
+        // Fetch plain image filename
+        return MediaResponse.format(value, MediaResponse.VERSION_STRING);
     }
 }
