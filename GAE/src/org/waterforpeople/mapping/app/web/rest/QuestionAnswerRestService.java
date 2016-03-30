@@ -173,7 +173,7 @@ public class QuestionAnswerRestService {
                 break;
             case "IMAGE":
             case "VIDEO":
-                response.setValue(MediaResponse.format(value, MediaResponse.VERSION_INITIAL));
+                response.setValue(MediaResponse.format(value, MediaResponse.VERSION_STRING));
                 break;
             default:
                 break;

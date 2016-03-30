@@ -25,7 +25,7 @@ public class MediaResponse {
     private static final Logger log = Logger.getLogger(MediaResponse.class.getName());
     private static final ObjectMapper JSON_OBJECT_MAPPER = new ObjectMapper();
     
-    public static final int VERSION_INITIAL    = 0;
+    public static final int VERSION_STRING     = 0;
     public static final int VERSION_GEOTAGGING = 1;
     
     /** 
@@ -42,7 +42,7 @@ public class MediaResponse {
             // Value is not JSON-formatted
             media = new Media();
             media.setFilename(value);
-            savedVersion = VERSION_INITIAL;
+            savedVersion = VERSION_STRING;
         }
         
         if (version == savedVersion) {

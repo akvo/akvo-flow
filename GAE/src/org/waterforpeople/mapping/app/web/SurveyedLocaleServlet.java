@@ -199,7 +199,7 @@ public class SurveyedLocaleServlet extends AbstractRestApiServlet {
                             break;
                         case "IMAGE":
                         case "VIDEO":
-                            value = MediaResponse.format(value, MediaResponse.VERSION_INITIAL);
+                            value = MediaResponse.format(value, MediaResponse.VERSION_STRING);
                             break;
                         default:
                             break;

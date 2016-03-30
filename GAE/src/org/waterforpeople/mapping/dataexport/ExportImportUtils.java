@@ -113,6 +113,6 @@ public class ExportImportUtils {
     
     public static String formatImage(String value) {
         // Fetch plain image filename
-        return MediaResponse.format(value, MediaResponse.VERSION_INITIAL);
+        return MediaResponse.format(value, MediaResponse.VERSION_STRING);
     }
 }
