@@ -24,7 +24,7 @@ import java.util.List;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import org.apache.commons.lang.StringUtils;
+import org.akvo.flow.domain.DataUtils;
 import org.codehaus.jackson.map.ObjectMapper;
 import org.waterforpeople.mapping.app.web.dto.SurveyInstanceDto;
 import org.waterforpeople.mapping.app.web.dto.SurveyedLocaleDto;
@@ -32,6 +32,7 @@ import org.waterforpeople.mapping.app.web.dto.SurveyedLocaleRequest;
 import org.waterforpeople.mapping.app.web.dto.SurveyedLocaleResponse;
 import org.waterforpeople.mapping.dao.SurveyInstanceDAO;
 import org.waterforpeople.mapping.domain.SurveyInstance;
+import org.waterforpeople.mapping.serialization.response.MediaResponse;
 
 import com.gallatinsystems.device.domain.DeviceSurveyJobQueue;
 import com.gallatinsystems.framework.rest.AbstractRestApiServlet;
@@ -45,7 +46,6 @@ import com.gallatinsystems.survey.domain.Survey;
 import com.gallatinsystems.surveyal.dao.SurveyedLocaleDao;
 import com.gallatinsystems.surveyal.domain.SurveyalValue;
 import com.gallatinsystems.surveyal.domain.SurveyedLocale;
-import static org.akvo.flow.domain.DataUtils.*;
 
 /**
  * JSON service for returning the list of records for a specific surveyId
@@ -187,17 +187,24 @@ public class SurveyedLocaleServlet extends AbstractRestApiServlet {
                             }
                         }
                     }
-                    if (StringUtils.isNotBlank(sv.getStringValue())
-                            && ("OTHER".equals(type) || "OPTION".equals(type))
-                            && sv.getStringValue().startsWith("[")) {
-                        String stringValue = jsonResponsesToPipeSeparated(sv.getStringValue());
-                        siDto.addProperty(sv.getSurveyQuestionId(), stringValue, type);
-                    } else {
-                        siDto.addProperty(sv.getSurveyQuestionId(),
-                                sv.getStringValue() != null ? sv.getStringValue() : "",
-                                type);
+                    
+                    // Make all responses backwards compatible
+                    String value = sv.getStringValue() != null ? sv.getStringValue() : "";
+                    switch (type) {
+                        case "OPTION":
+                        case "OTHER":
+                            if (value.startsWith("[")) {
+                                value = DataUtils.jsonResponsesToPipeSeparated(value);
+                            }
+                            break;
+                        case "IMAGE":
+                        case "VIDEO":
+                            value = MediaResponse.format(value, MediaResponse.VERSION_STRING);
+                            break;
+                        default:
+                            break;
                     }
-
+                    siDto.addProperty(sv.getSurveyQuestionId(), value, type);
                 }
                 dto.getSurveyInstances().add(siDto);
             }
