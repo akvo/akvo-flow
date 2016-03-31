@@ -1,5 +1,5 @@
 /*
- *  Copyright (C) 2010-2014 Stichting Akvo (Akvo Foundation)
+ *  Copyright (C) 2010-2016 Stichting Akvo (Akvo Foundation)
  *
  *  This file is part of Akvo FLOW.
  *
@@ -42,6 +42,7 @@ public class User extends BaseDomain {
     private List<UserConfig> config;
     private String accessKey;
     private String secret;
+    private String language;
 
     public String getPermissionList() {
         return permissionList;
@@ -97,5 +98,13 @@ public class User extends BaseDomain {
 
     public void setSecret(String secret) {
         this.secret = secret;
+    }
+
+    public String getLanguage() {
+        return language;
+    }
+
+    public void setLanguage(String lang) {
+        this.language = lang;
     }
 }

@@ -1,5 +1,5 @@
 /*
- *  Copyright (C) 2010-2015 Stichting Akvo (Akvo Foundation)
+ *  Copyright (C) 2010-2016 Stichting Akvo (Akvo Foundation)
  *
  *  This file is part of Akvo FLOW.
  *
@@ -700,10 +700,11 @@ public class GraphicalSurveySummaryExporter extends SurveySummaryExporter {
     }
 
     private static String photoCellValue(String value, String imagePrefix) {
-        final int filenameIndex = value.lastIndexOf("/") + 1;
+        String filename = ExportImportUtils.formatImage(value);
+        final int filenameIndex = filename.lastIndexOf("/") + 1;
         String cell = "";
-        if (filenameIndex > 0 && filenameIndex < value.length()) {
-            cell = imagePrefix + value.substring(filenameIndex);
+        if (filenameIndex > 0 && filenameIndex < filename.length()) {
+            cell = imagePrefix + filename.substring(filenameIndex);
         }
         return cell;
     }
