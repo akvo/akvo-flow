@@ -135,27 +135,26 @@ public class ExportImportUtils {
     }
 
     /*
-     * Parse a DateQuestion response from the spreadsheet. New responses 
-     * will contain DATE_RESPONSE_FORMAT, but we'll also contemplate 
-     * the former DATE_TIME_FORMAT as a fallback.
+     * Parse a date from the spreadsheet. This includes collection dates (date-time)
+     * and DateQuestion responses (ISO8601 or date-time).
      */
     public static Date parseSpreadsheetDate(String dateString) {
         if (dateString == null || dateString.equals("")) {
             return null;
         }
         
-        // Use ISO 8601 by default
-        try {
-            return DATE_RESPONSE_FORMAT.get().parse(dateString);
-        } catch (ParseException e) {
-            // Date is not ISO 8601
-        }
-        
-        // Fall back to previous date-time format
+        // Parse date-time format by default (collection dates and old responses)
         try {
             return DATE_TIME_FORMAT.get().parse(dateString);
         } catch (ParseException e) {
             // Date is not date-time formatted
+        }
+        
+        // Use ISO 8601 otherwise
+        try {
+            return DATE_RESPONSE_FORMAT.get().parse(dateString);
+        } catch (ParseException e) {
+            // Date is not ISO 8601
         }
         
         log.warn("Response doesn't contain a valid format: " + dateString);
