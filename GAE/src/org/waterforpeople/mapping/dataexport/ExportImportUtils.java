@@ -125,13 +125,28 @@ public class ExportImportUtils {
      * This date will not contain time details (yyyy-MM-dd)
      */
     public static String formatDateResponse(String value) {
-        try {
-            Date date = new Date(Long.valueOf(value));
+        Date date = parseDateValue(value);
+        if (date != null) {
             return DATE_RESPONSE_FORMAT.get().format(date);
-        } catch (NumberFormatException e) {
-            log.error("Invalid date response: " + value);
         }
         return "";
+    }
+
+    /*
+     * Convert a DateQuestion response value into a Date.
+     * 
+     * Note: Values may be presented in an inconsistent manner,
+     * possibly containing ISO-8601 dates.
+     */
+    public static Date parseDateValue(String value) {
+        try {
+            return new Date(Long.valueOf(value));
+        } catch (NumberFormatException e) {
+            log.error("Value is not a valid timestamp: " + value);
+        }
+        
+        // Value is not a timestamp. Try to parse as ISO 8601
+        return parseDateResponse(value);
     }
 
     /*
