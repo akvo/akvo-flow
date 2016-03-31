@@ -106,26 +106,11 @@ public class ExportImportUtils {
     }
 
     /*
-     * Parse date-time string
-     */
-    public static Date parseDateTime(String dateString) {
-        if (dateString == null || dateString.equals("")) {
-            return null;
-        }
-        try {
-            return DATE_TIME_FORMAT.get().parse(dateString);
-        } catch (ParseException pe) {
-            log.error("bad date format: " + dateString + "\n" + pe.getMessage(), pe);
-        }
-        return null;
-    }
-
-    /*
      * Format DateQuestion response in a human-readable way.
      * This date will not contain time details (yyyy-MM-dd)
      */
     public static String formatDateResponse(String value) {
-        Date date = parseDateValue(value);
+        Date date = parseDatastoreDate(value);
         if (date != null) {
             return DATE_RESPONSE_FORMAT.get().format(date);
         }
@@ -138,15 +123,15 @@ public class ExportImportUtils {
      * Note: Values may be presented in an inconsistent manner,
      * possibly containing ISO-8601 dates.
      */
-    public static Date parseDateValue(String value) {
+    public static Date parseDatastoreDate(String value) {
         try {
             return new Date(Long.valueOf(value));
         } catch (NumberFormatException e) {
             log.error("Value is not a valid timestamp: " + value);
         }
         
-        // Value is not a timestamp. Try to parse as ISO 8601
-        return parseDateResponse(value);
+        // Value is not a timestamp. Try to parse as a spreadsheet value
+        return parseSpreadsheetDate(value);
     }
 
     /*
@@ -154,17 +139,27 @@ public class ExportImportUtils {
      * will contain DATE_RESPONSE_FORMAT, but we'll also contemplate 
      * the former DATE_TIME_FORMAT as a fallback.
      */
-    public static Date parseDateResponse(String dateString) {
+    public static Date parseSpreadsheetDate(String dateString) {
         if (dateString == null || dateString.equals("")) {
             return null;
         }
+        
+        // Use ISO 8601 by default
         try {
             return DATE_RESPONSE_FORMAT.get().parse(dateString);
-        } catch (ParseException pe) {
-            log.error("Invalid date response: " + dateString + "\n" + pe.getMessage(), pe);
-            // Fall back to previous format
-            return parseDateTime(dateString);
+        } catch (ParseException e) {
+            // Date is not ISO 8601
         }
+        
+        // Fall back to previous date-time format
+        try {
+            return DATE_TIME_FORMAT.get().parse(dateString);
+        } catch (ParseException e) {
+            // Date is not date-time formatted
+        }
+        
+        log.warn("Response doesn't contain a valid format: " + dateString);
+        return null;
     }
     
     public static String formatImage(String value) {

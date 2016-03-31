@@ -284,7 +284,7 @@ public class RawDataSpreadsheetImporter implements DataImporter {
         }
         String surveyInstanceId = ExportImportUtils.parseCellAsString(baseRow
                 .getCell(firstQuestionColumnIndex - 4));
-        Date collectionDate = ExportImportUtils.parseDateTime(ExportImportUtils
+        Date collectionDate = ExportImportUtils.parseSpreadsheetDate(ExportImportUtils
                 .parseCellAsString(baseRow.getCell(firstQuestionColumnIndex - 3)));
         String submitterName = ExportImportUtils.parseCellAsString(baseRow
                 .getCell(firstQuestionColumnIndex - 2));
@@ -428,7 +428,7 @@ public class RawDataSpreadsheetImporter implements DataImporter {
 
                         case DATE:
                             String dateString = ExportImportUtils.parseCellAsString(cell);
-                            Date date = ExportImportUtils.parseDateResponse(dateString);
+                            Date date = ExportImportUtils.parseSpreadsheetDate(dateString);
                             if (date != null) {
                                 val = String.valueOf(date.getTime());
                             } else {
