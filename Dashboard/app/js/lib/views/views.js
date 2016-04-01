@@ -129,7 +129,7 @@ Ember.Handlebars.registerHelper('placemarkDetail', function () {
 });
 
 /*  Take a timestamp and render it as a date in format
-    YYYY/mm/dd */
+    YYYY-mm-dd */
 function renderTimeStamp(timestamp) {
   var d, t, date, month, year;
   t = parseInt(timestamp, 10);
@@ -155,7 +155,7 @@ function renderTimeStamp(timestamp) {
       dateString = date.toString();
     }
 
-    return year + "/" + monthString + "/" + dateString;
+    return year + "-" + monthString + "-" + dateString;
   } else {
     return "";
   }
@@ -495,7 +495,7 @@ FLOW.DateField = Ember.TextField.extend({
     if (this.get('minDate')) {
       // datepickers with only future dates
       $("#from_date").datepicker({
-        dateFormat: 'yy/mm/dd',
+        dateFormat: 'yy-mm-dd',
         defaultDate: new Date(),
         numberOfMonths: 1,
         minDate: new Date(),
@@ -506,7 +506,7 @@ FLOW.DateField = Ember.TextField.extend({
       });
 
       $("#to_date").datepicker({
-        dateFormat: 'yy/mm/dd',
+        dateFormat: 'yy-mm-dd',
         defaultDate: new Date(),
         numberOfMonths: 1,
         minDate: new Date(),
@@ -518,7 +518,7 @@ FLOW.DateField = Ember.TextField.extend({
     } else {
       // datepickers with all dates
       $("#from_date").datepicker({
-        dateFormat: 'yy/mm/dd',
+        dateFormat: 'yy-mm-dd',
         defaultDate: new Date(),
         numberOfMonths: 1,
         onSelect: function (selectedDate) {
@@ -528,7 +528,7 @@ FLOW.DateField = Ember.TextField.extend({
       });
 
       $("#to_date").datepicker({
-        dateFormat: 'yy/mm/dd',
+        dateFormat: 'yy-mm-dd',
         defaultDate: new Date(),
         numberOfMonths: 1,
         onSelect: function (selectedDate) {
@@ -545,11 +545,10 @@ FLOW.DateField2 = Ember.TextField.extend({
     this._super();
 
     this.$().datepicker({
-      dateFormat: 'yy/mm/dd',
+      dateFormat: 'yy-mm-dd',
       defaultDate: new Date(),
       numberOfMonths: 1
     });
-    this.$().datepicker("option", "minDate", new Date());
   }
 });
 

@@ -284,7 +284,7 @@ public class RawDataSpreadsheetImporter implements DataImporter {
         }
         String surveyInstanceId = ExportImportUtils.parseCellAsString(baseRow
                 .getCell(firstQuestionColumnIndex - 4));
-        Date collectionDate = ExportImportUtils.parseDate(ExportImportUtils
+        Date collectionDate = ExportImportUtils.parseSpreadsheetDate(ExportImportUtils
                 .parseCellAsString(baseRow.getCell(firstQuestionColumnIndex - 3)));
         String submitterName = ExportImportUtils.parseCellAsString(baseRow
                 .getCell(firstQuestionColumnIndex - 2));
@@ -428,7 +428,7 @@ public class RawDataSpreadsheetImporter implements DataImporter {
 
                         case DATE:
                             String dateString = ExportImportUtils.parseCellAsString(cell);
-                            Date date = ExportImportUtils.parseDate(dateString);
+                            Date date = ExportImportUtils.parseSpreadsheetDate(dateString);
                             if (date != null) {
                                 val = String.valueOf(date.getTime());
                             } else {
@@ -570,7 +570,7 @@ public class RawDataSpreadsheetImporter implements DataImporter {
         }
 
         // Collection date
-        String dateString = ExportImportUtils.formatDate(dto.getCollectionDate());
+        String dateString = ExportImportUtils.formatDateTime(dto.getCollectionDate());
 
         sb.append(
                 RawDataImportRequest.COLLECTION_DATE_PARAM + "="

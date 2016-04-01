@@ -41,7 +41,14 @@ public class ExportImportUtils {
         }
     };
 
-    private static final ThreadLocal<DateFormat> DATE_FORMAT = new ThreadLocal<DateFormat>() {
+    private static final ThreadLocal<DateFormat> DATE_RESPONSE_FORMAT = new ThreadLocal<DateFormat>() {
+        @Override
+        protected DateFormat initialValue() {
+            return new SimpleDateFormat("yyyy-MM-dd");
+        };
+    };
+
+    private static final ThreadLocal<DateFormat> DATE_TIME_FORMAT = new ThreadLocal<DateFormat>() {
         @Override
         protected DateFormat initialValue() {
             return new SimpleDateFormat("dd-MM-yyyy HH:mm:ss z");
@@ -87,32 +94,76 @@ public class ExportImportUtils {
         return StringUtil.toHexString(digest.digest());
     }
 
-    public static String formatDate(Date date) {
+    /*
+     * Format date into a date-time string.
+     */
+    public static String formatDateTime(Date date) {
         if (date != null) {
-            return DATE_FORMAT.get().format(date);
+            return DATE_TIME_FORMAT.get().format(date);
         } else {
             return "";
         }
     }
 
-    public static Date parseDate(String dateString) {
+    /*
+     * Format DateQuestion response in a human-readable way.
+     * This date will not contain time details (yyyy-MM-dd)
+     */
+    public static String formatDateResponse(String value) {
+        Date date = parseDatastoreDate(value);
+        if (date != null) {
+            return DATE_RESPONSE_FORMAT.get().format(date);
+        }
+        return "";
+    }
+
+    /*
+     * Convert a DateQuestion response value into a Date.
+     * 
+     * Note: Values may be presented in an inconsistent manner,
+     * possibly containing ISO-8601 dates.
+     */
+    public static Date parseDatastoreDate(String value) {
+        try {
+            return new Date(Long.valueOf(value));
+        } catch (NumberFormatException e) {
+            log.error("Value is not a valid timestamp: " + value);
+        }
+        
+        // Value is not a timestamp. Try to parse as a spreadsheet value
+        return parseSpreadsheetDate(value);
+    }
+
+    /*
+     * Parse a date from the spreadsheet. This includes collection dates (date-time)
+     * and DateQuestion responses (ISO8601 or date-time).
+     */
+    public static Date parseSpreadsheetDate(String dateString) {
         if (dateString == null || dateString.equals("")) {
             return null;
         }
+        
+        // Parse date-time format by default (collection dates and old responses)
         try {
-            return new Date(Long.parseLong(dateString));
-        } catch (NumberFormatException nfe) {
-            try {
-                return DATE_FORMAT.get().parse(dateString);
-            } catch (ParseException pe) {
-                log.error("bad date format: " + dateString + "\n" + pe.getMessage(), pe);
-                return null;
-            }
+            return DATE_TIME_FORMAT.get().parse(dateString);
+        } catch (ParseException e) {
+            // Date is not date-time formatted
         }
+        
+        // Use ISO 8601 otherwise
+        try {
+            return DATE_RESPONSE_FORMAT.get().parse(dateString);
+        } catch (ParseException e) {
+            // Date is not ISO 8601
+        }
+        
+        log.warn("Response doesn't contain a valid format: " + dateString);
+        return null;
     }
     
     public static String formatImage(String value) {
         // Fetch plain image filename
         return MediaResponse.format(value, MediaResponse.VERSION_STRING);
     }
+    
 }

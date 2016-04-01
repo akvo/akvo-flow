@@ -2,8 +2,9 @@
 
 function formatDate(date) {
   if (date && !isNaN(date.getTime())) {
-    return date.getFullYear() + "/" + (date.getMonth() + 1) + "/" + date.getDate();
-  } else return null;
+    return date.getFullYear() + "-" + (date.getMonth() + 1) + "-" + date.getDate();
+  } 
+  return null;
 }
 
 function sortByOrder(a , b) {
