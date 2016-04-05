@@ -15,6 +15,7 @@ FLOW.NavMapsView = FLOW.View.extend({
   geomodel: null,
   cartodbLayer: null,
   layerExistsCheck: false,
+  questions: [],
 
   init: function () {
     this._super();
@@ -231,12 +232,15 @@ FLOW.NavMapsView = FLOW.View.extend({
               var form_selector = $("<select></select>").attr("data-survey-id", keyId).attr("class", "form_selector");
               form_selector.append('<option value="">--' + Ember.String.loc('_choose_a_form') + '--</option>');
 
+              var formIds = [];
               for(var i=0; i<rows.length; i++) {
                 //append returned forms list to the firm selector element
                 form_selector.append(
                   $('<option></option>').val(rows[i]["id"]).html(rows[i]["name"]));
+                formIds.push(rows[i]["id"]);
               }
               $("#survey_hierarchy").append(form_selector);
+              self.loadQuestions(formIds);
             }
           });
 
@@ -425,7 +429,6 @@ FLOW.NavMapsView = FLOW.View.extend({
     }
   }.observes('FLOW.placemarkDetailController.content.isLoaded'),
 
-
   /**
     Populates the details pane with data from a placemark
   */
@@ -595,7 +598,8 @@ FLOW.NavMapsView = FLOW.View.extend({
 
         //get request for questions
         $.get(
-          '/rest/question_groups?surveyId='+pointData['formId'],
+          'http://localhost:8080/akvo_flow_api/index.php/question_groups/akvoflow-uat1/'+pointData['formId'],
+          //'/rest/question_groups?surveyId='+pointData['formId'],
           function(questionGroupsData, status){
             if(questionGroupsData.question_groups){
               for(var g=0; g<questionGroupsData.question_groups.length; g++){
@@ -613,12 +617,53 @@ FLOW.NavMapsView = FLOW.View.extend({
     });
   },
 
+  loadQuestions: function(formIds){
+    var self = this;
+    self.questions = [];
+    
+    for(var i=0; i<formIds.length; i++){
+      var formId = formIds[i];
+
+      //first get the question groups for this formId
+      var questionGroupsAjaxObject = {};
+      questionGroupsAjaxObject['call'] = 'GET';
+      questionGroupsAjaxObject['url'] = 'http://localhost:8080/akvo_flow_api/index.php/question_groups/akvoflow-uat1/'+formId;
+      //questionGroupsAjaxObject['url'] = '/rest/question_groups?surveyId='+formIds[i];
+      questionGroupsAjaxObject['data'] = '';
+
+      FLOW.ajaxCall(function(questionGroupsResponse){
+        if(questionGroupsResponse.question_groups){
+          //for every question group pull a list of associated questions
+          for(var g=0; g<questionGroupsResponse.question_groups.length; g++){
+            //questionGroupsData.question_groups[g]
+            var questionsAjaxObject = {};
+            questionsAjaxObject['call'] = 'GET';
+            questionsAjaxObject['url'] = 'http://localhost:8080/akvo_flow_api/index.php/questions/akvoflow-uat1/'+formId+'/'+questionGroupsResponse.question_groups[g].keyId;
+            //questionsAjaxObject['url'] = '/rest/questions?surveyId='+formIds[i]+'&questionGroupId='+questionGroupsResponse.question_groups[g];
+            questionsAjaxObject['data'] = '';
+
+            FLOW.ajaxCall(function(questionsResponse){
+              if(questionsResponse.questions){
+                for(var j=0; j<questionsResponse.questions.length; j++){
+                  self.questions.push(questionsResponse.questions[j]);
+                }
+              }
+            }, questionsAjaxObject);
+          }
+        }
+      }, questionGroupsAjaxObject);
+    }
+  },
+
   populateDetailsPanel: function(pointData, questionGroup, index){
     var self = this;
 
+    console.log(self.questions);
+
     //get request for questions
     $.get(
-      '/rest/questions?surveyId='+pointData['formId']+'&questionGroupId='+questionGroup.keyId,
+      'http://localhost:8080/akvo_flow_api/index.php/questions/akvoflow-uat1/'+pointData['formId']+'/'+questionGroup.keyId,
+      //'/rest/questions?surveyId='+pointData['formId']+'&questionGroupId='+questionGroup.keyId,
       function(questionsData, status){
         var clickedPointContent = "";
         //create a questions array with the correct order of questions as in the survey
@@ -774,7 +819,8 @@ FLOW.NavMapsView = FLOW.View.extend({
       self.manageHierarchy(parentFolderId);
     }else{
       $.get(
-        '/rest/survey_groups'/*place survey_groups endpoint here*/
+        'http://localhost:8080/akvo_flow_api/index.php/survey_groups/akvoflow-uat1'/*place survey_groups endpoint here*/
+        //'/rest/survey_groups'/*place survey_groups endpoint here*/
         , function(data, status){
           if(data['survey_groups'].length > 0){
             self.hierarchyObject = data['survey_groups'];
@@ -825,6 +871,17 @@ FLOW.NavMapsView = FLOW.View.extend({
   }
 });
 
+FLOW.ajaxCall = function(callback, ajaxObject){
+  $.ajax({
+    type: ajaxObject.call,
+    url: ajaxObject.url,
+    data: ajaxObject.data, //turns out you need to stringify the payload before sending it
+    dataType: 'json',
+    success: function(responseData){
+      callback(responseData);
+    }
+  });
+};
 
 FLOW.countryView = FLOW.View.extend({});
 FLOW.PlacemarkDetailView = Ember.View.extend({});
