@@ -15,6 +15,8 @@ FLOW.NavMapsView = FLOW.View.extend({
   geomodel: null,
   cartodbLayer: null,
   layerExistsCheck: false,
+  questions: [],
+  refreshIntervalId: null,
 
   init: function () {
     this._super();
@@ -231,12 +233,19 @@ FLOW.NavMapsView = FLOW.View.extend({
               var form_selector = $("<select></select>").attr("data-survey-id", keyId).attr("class", "form_selector");
               form_selector.append('<option value="">--' + Ember.String.loc('_choose_a_form') + '--</option>');
 
+              var formIds = [];
               for(var i=0; i<rows.length; i++) {
                 //append returned forms list to the firm selector element
                 form_selector.append(
                   $('<option></option>').val(rows[i]["id"]).html(rows[i]["name"]));
+                formIds.push(rows[i]["id"]);
               }
               $("#survey_hierarchy").append(form_selector);
+
+              self.questions = [];
+              for(var i=0; i<formIds.length; i++){
+                self.loadQuestions(formIds[i]);
+              }
             }
           });
 
@@ -270,6 +279,7 @@ FLOW.NavMapsView = FLOW.View.extend({
     $(document).off('change', '.form_selector').on('change', '.form_selector',function(e) {
       //remove all 'folder_survey_selector's after current
       self.cleanHierarchy($(this));
+      self.questions = [];
 
       if ($(this).val() !== "") {
         var formId = $(this).val();
@@ -289,9 +299,20 @@ FLOW.NavMapsView = FLOW.View.extend({
           }
 
           self.namedMapCheck(namedMapObject);
+
+          self.loadQuestions(formId);
         });
       } else {
         self.createLayer(map, "data_point_"+$(this).data('survey-id'), "");
+
+        $.get('/rest/cartodb/forms?surveyId='+$(this).data('survey-id'), function(data, status) {
+          if(data['forms'] && data['forms'].length > 0) {
+            self.questions = [];
+            for(var i=0; i<data['forms'].length; i++) {
+              self.loadQuestions(data['forms'][i]["id"]);
+            }
+          }
+        });
       }
     });
 
@@ -425,7 +446,6 @@ FLOW.NavMapsView = FLOW.View.extend({
     }
   }.observes('FLOW.placemarkDetailController.content.isLoaded'),
 
-
   /**
     Populates the details pane with data from a placemark
   */
@@ -536,15 +556,37 @@ FLOW.NavMapsView = FLOW.View.extend({
         self.placeMarker([data.lat, data.lon]);
 
         self.showDetailsPane();
-        if($('.form_selector').length && $('.form_selector').val() !== ""){
-          pointDataUrl = '/rest/cartodb/raw_data?dataPointId='+data.data_point_id+'&formId='+$('.form_selector').val();
-          $.get('/rest/cartodb/data_point?id='+data.data_point_id, function(pointData, status){
-            self.getCartodbPointData(pointDataUrl, pointData['row']['name'], pointData['row']['identifier']);
-          });
-        }else{
-          pointDataUrl = '/rest/cartodb/answers?dataPointId='+data.id+'&surveyId='+data.survey_id;
-          self.getCartodbPointData(pointDataUrl, data.name, data.identifier);
-        }
+
+        if($.active > 0){
+    			self.refreshIntervalId = setInterval(function () {
+    				//keep checking if there are any pending ajax requests
+    				if($.active > 0){
+    					//keep displaying loading icon
+    				}else{ //if no pending ajax requests
+    					//call function to load the clicked point details
+              if($('.form_selector').length && $('.form_selector').val() !== ""){
+                pointDataUrl = '/rest/cartodb/raw_data?dataPointId='+data.data_point_id+'&formId='+$('.form_selector').val();
+                $.get('/rest/cartodb/data_point?id='+data.data_point_id, function(pointData, status){
+                  self.getCartodbPointData(pointDataUrl, pointData['row']['name'], pointData['row']['identifier']);
+                });
+              }else{
+                pointDataUrl = '/rest/cartodb/answers?dataPointId='+data.id+'&surveyId='+data.survey_id;
+                self.getCartodbPointData(pointDataUrl, data.name, data.identifier);
+              }
+    				}
+    		  },500);
+    		}else{
+    			//call function to load the clicked point details
+          if($('.form_selector').length && $('.form_selector').val() !== ""){
+            pointDataUrl = '/rest/cartodb/raw_data?dataPointId='+data.data_point_id+'&formId='+$('.form_selector').val();
+            $.get('/rest/cartodb/data_point?id='+data.data_point_id, function(pointData, status){
+              self.getCartodbPointData(pointDataUrl, pointData['row']['name'], pointData['row']['identifier']);
+            });
+          }else{
+            pointDataUrl = '/rest/cartodb/answers?dataPointId='+data.id+'&surveyId='+data.survey_id;
+            self.getCartodbPointData(pointDataUrl, data.name, data.identifier);
+          }
+    		}
       });
     });
   },
@@ -570,142 +612,174 @@ FLOW.NavMapsView = FLOW.View.extend({
 
   getCartodbPointData: function(url, dataPointName, dataPointIdentifier){
     var self = this;
+    clearInterval(self.refreshIntervalId); //stop the interval if running
+
     $("#pointDetails").html("");
+
     $.get(url, function(pointData, status){
-      var clickedPointContent = "";
-
       if (pointData['answers'] != null) {
-        //get request for questions
-        $.get(
-            "/rest/cartodb/questions?form_id="+pointData['formId'],
-            function(questionsData, status){
-              var geoshapeObject, geoshapeCheck = false;
-              self.geoshapeCoordinates = null;
+        var dataCollectionDate = pointData['answers']['created_at'];
+        var date = new Date(dataCollectionDate);
 
-              var dataCollectionDate = pointData['answers']['created_at'];
-              var date = new Date(dataCollectionDate);
+        var pointDetailsHeader = '<ul class="placeMarkBasicInfo floats-in">'
+        +'<h3>'
+        +((dataPointName != "" && dataPointName != "null" && dataPointName != null) ? dataPointName : "")
+        +'</h3>'
+        +'<li>'
+        +'<span>'+Ember.String.loc('_data_point_id') +':</span>'
+        +'<div style="display: inline; margin: 0 0 0 5px;">'+dataPointIdentifier+'</div>'
+        +'</li>'
+        +'<li>'
+        +'<span>'+Ember.String.loc('_collected_on') +':</span>'
+        +'<div class="placeMarkCollectionDate">'
+        +date.toUTCString()
+        +'</div></li><li></li></ul>';
 
-              clickedPointContent += '<ul class="placeMarkBasicInfo floats-in">'
-              +'<h3>'
-              +((dataPointName != "" && dataPointName != "null" && dataPointName != null) ? dataPointName : "")
-              +'</h3>'
-              +'<li>'
-              +'<span>'+Ember.String.loc('_data_point_id') +':</span>'
-              +'<div style="display: inline; margin: 0 0 0 5px;">'+dataPointIdentifier+'</div>'
-              +'</li>'
-              +'<li>'
-              +'<span>'+Ember.String.loc('_collected_on') +':</span>'
-              +'<div class="placeMarkCollectionDate">'
-              +date.toUTCString()
-              +'</div></li><li></li></ul>';
+        $("#pointDetails").append(pointDetailsHeader);
 
-              clickedPointContent += '<div class="mapInfoDetail" style="opacity: 1; display: inherit;">';
-              for (column in pointData['answers']){
-                var questionAnswer = pointData['answers'][column];
-                for(var i=0; i<questionsData['questions'].length; i++){
-                  if (column.match(questionsData['questions'][i].id)) {
-                    if(questionsData['questions'][i].type === "GEOSHAPE" && questionAnswer !== null){
-                      var geoshapeObject = FLOW.parseGeoshape(questionAnswer);
+        var clickedPointContent = "";
+        //create a questions array with the correct order of questions as in the survey
+        if(self.questions.length > 0){
+          var geoshapeObject, geoshapeCheck = false;
+          self.geoshapeCoordinates = null;
+
+          clickedPointContent += '<div class="mapInfoDetail" style="opacity: 1; display: inherit;">';
+          for (column in pointData['answers']){
+            var questionAnswer = pointData['answers'][column];
+            for(var i=0; i<self.questions.length; i++){
+              if (column.match(self.questions[i].keyId)) {
+                if(self.questions[i].type === "GEOSHAPE" && questionAnswer !== null){
+                  var geoshapeObject = FLOW.parseGeoshape(questionAnswer);
+                  if(geoshapeObject !== null){
+                    clickedPointContent += '<h4><div style="float: left">'
+                    +self.questions[i].text
+                    +'</div>&nbsp;<a style="float: right" id="projectGeoshape">'+Ember.String.loc('_project_geoshape_onto_main_map') +'</a></h4>';
+                  }
+                } else {
+                  clickedPointContent += '<h4>'+self.questions[i].text+'&nbsp;</h4>';
+                }
+
+                clickedPointContent += '<div style="float: left; width: 100%">';
+
+                if(questionAnswer !== "" && questionAnswer !== null && questionAnswer !== "null"){
+                  switch (self.questions[i].questionType) {
+                    case "PHOTO":
+                      var imageString = "", imageJson;
+                      if (questionAnswer.charAt(0) === '{') {
+                        imageJson = JSON.parse(questionAnswer);
+                        imageString = imageJson.filename
+                      } else {
+                        imageString = questionAnswer;
+                      }
+
+                      var image = '<div class=":imgContainer photoUrl:shown:hidden">';
+                      var imageFilename = FLOW.Env.photo_url_root+imageString.substring(imageString.lastIndexOf("/")+1);
+                      image += '<a href="'+imageFilename+'" target="_blank">'
+                      +'<img src="'+imageFilename+'" alt=""/></a>';
+
+                      image += '</div>';
+                      clickedPointContent += image;
+                      break;
+                    case "GEOSHAPE":
+                      geoshapeObject = FLOW.parseGeoshape(questionAnswer);
+                      self.geoshapeCoordinates = geoshapeObject;
+
                       if(geoshapeObject !== null){
-                        clickedPointContent += '<h4><div style="float: left">'
-                        +questionsData['questions'][i].display_text
-                        +'</div>&nbsp;<a style="float: right" id="projectGeoshape">'+Ember.String.loc('_project_geoshape_onto_main_map') +'</a></h4>';
+                        geoshapeCheck = true;
+                        clickedPointContent += '<div id="geoShapeMap" style="width:100%; height: 100px; float: left"></div>';
+
+                        if(geoshapeObject['features'][0]['geometry']['type'] === "Polygon"
+                         || geoshapeObject['features'][0]['geometry']['type'] === "LineString"
+                          || geoshapeObject['features'][0]['geometry']['type'] === "MultiPoint"){
+                          clickedPointContent += '<div style="float: left; width: 100%">'+ Ember.String.loc('_points') +': '+geoshapeObject['features'][0]['properties']['pointCount']+'</div>';
+                        }
+
+                        if(geoshapeObject['features'][0]['geometry']['type'] === "Polygon"
+                         || geoshapeObject['features'][0]['geometry']['type'] === "LineString"){
+                          clickedPointContent += '<div style="float: left; width: 100%">'+ Ember.String.loc('_length') +': '+geoshapeObject['features'][0]['properties']['length']+'m</div>';
+                        }
+
+                        if(geoshapeObject['features'][0]['geometry']['type'] === "Polygon"){
+                          clickedPointContent += '<div style="float: left; width: 100%">'+ Ember.String.loc('_area') +': '+geoshapeObject['features'][0]['properties']['area']+'m&sup2;</div>';
+                        }
                       }
-                    } else {
-                      clickedPointContent += '<h4>'+questionsData['questions'][i].display_text+'&nbsp;</h4>';
-                    }
-
-                    clickedPointContent += '<div style="float: left; width: 100%">';
-
-                    if(questionAnswer !== "" && questionAnswer !== null && questionAnswer !== "null"){
-                      switch (questionsData['questions'][i].type) {
-                        case "PHOTO":
-                          var imageString = "", imageJson;
-                          if (questionAnswer.charAt(0) === '{') {
-                            imageJson = JSON.parse(questionAnswer);
-                            imageString = imageJson.filename
-                          } else {
-                            imageString = questionAnswer;
-                          }
-
-                          var image = '<div class=":imgContainer photoUrl:shown:hidden">';
-                          var imageFilename = FLOW.Env.photo_url_root+imageString.substring(imageString.lastIndexOf("/")+1);
-                          image += '<a href="'+imageFilename+'" target="_blank">'
-                          +'<img src="'+imageFilename+'" alt=""/></a>';
-
-                          image += '</div>';
-                          clickedPointContent += image;
-                          break;
-                        case "GEOSHAPE":
-                          geoshapeObject = FLOW.parseGeoshape(questionAnswer);
-                          self.geoshapeCoordinates = geoshapeObject;
-
-                          if(geoshapeObject !== null){
-                            geoshapeCheck = true;
-                            clickedPointContent += '<div id="geoShapeMap" style="width:100%; height: 100px; float: left"></div>';
-
-                            if(geoshapeObject['features'][0]['geometry']['type'] === "Polygon"
-                             || geoshapeObject['features'][0]['geometry']['type'] === "LineString"
-                              || geoshapeObject['features'][0]['geometry']['type'] === "MultiPoint"){
-                              clickedPointContent += '<div style="float: left; width: 100%">'+ Ember.String.loc('_points') +': '+geoshapeObject['features'][0]['properties']['pointCount']+'</div>';
-                            }
-
-                            if(geoshapeObject['features'][0]['geometry']['type'] === "Polygon"
-                             || geoshapeObject['features'][0]['geometry']['type'] === "LineString"){
-                              clickedPointContent += '<div style="float: left; width: 100%">'+ Ember.String.loc('_length') +': '+geoshapeObject['features'][0]['properties']['length']+'m</div>';
-                            }
-
-                            if(geoshapeObject['features'][0]['geometry']['type'] === "Polygon"){
-                              clickedPointContent += '<div style="float: left; width: 100%">'+ Ember.String.loc('_area') +': '+geoshapeObject['features'][0]['properties']['area']+'m&sup2;</div>';
-                            }
-                          }
-                          break;
-                        case "DATE":
-                          var dateQuestion = new Date((isNaN(questionAnswer) === false) ? parseInt(questionAnswer) : questionAnswer);
-                          clickedPointContent += dateQuestion.toUTCString().slice(0, -13); //remove last 13 x-ters so only date displays
-                          break;
-                        case "SIGNATURE":
-                          clickedPointContent += '<img src="';
-                          var srcAttr = 'data:image/png;base64,', signatureJson;
-                          signatureJson = JSON.parse(questionAnswer);
-                          clickedPointContent += srcAttr + signatureJson.image +'"/>';
-                          clickedPointContent += Ember.String.loc('_signed_by') +': '+signatureJson.name;
-                          break;
-                        case "CASCADE":
-                        case "OPTION":
-                          var cascadeString = "", cascadeJson;
-                          if (questionAnswer.charAt(0) === '[') {
-                            cascadeJson = JSON.parse(questionAnswer);
-                            cascadeString = cascadeJson.map(function(item){
-                              return (questionsData['questions'][i].type == "CASCADE") ? item.name : item.text;
-                            }).join("|");
-                          } else {
-                            cascadeString = questionAnswer;
-                          }
-                          clickedPointContent += cascadeString;
-                          break;
-                        default:
-                          clickedPointContent += questionAnswer
+                      break;
+                    case "DATE":
+                      var dateQuestion = new Date((isNaN(questionAnswer) === false) ? parseInt(questionAnswer) : questionAnswer);
+                      clickedPointContent += dateQuestion.toUTCString().slice(0, -13); //remove last 13 x-ters so only date displays
+                      break;
+                    case "SIGNATURE":
+                      clickedPointContent += '<img src="';
+                      var srcAttr = 'data:image/png;base64,', signatureJson;
+                      signatureJson = JSON.parse(questionAnswer);
+                      clickedPointContent += srcAttr + signatureJson.image +'"/>';
+                      clickedPointContent += Ember.String.loc('_signed_by') +': '+signatureJson.name;
+                      break;
+                    case "CASCADE":
+                    case "OPTION":
+                      var cascadeString = "", cascadeJson;
+                      if (questionAnswer.charAt(0) === '[') {
+                        cascadeJson = JSON.parse(questionAnswer);
+                        cascadeString = cascadeJson.map(function(item){
+                          return (self.questions[i].questionType == "CASCADE") ? item.name : item.text;
+                        }).join("|");
+                      } else {
+                        cascadeString = questionAnswer;
                       }
-                    }
-                    clickedPointContent += "&nbsp;</div><hr>";
+                      clickedPointContent += cascadeString;
+                      break;
+                    default:
+                      clickedPointContent += questionAnswer
                   }
                 }
+                clickedPointContent += "&nbsp;</div><hr>";
               }
-              clickedPointContent += '</div>';
-              $('#pointDetails').html(clickedPointContent);
-              $('hr').show();
+            }
+          }
+          clickedPointContent += '</div>';
 
-              //if there's geoshape, draw it
-              if(geoshapeCheck){
-                FLOW.drawGeoShape($("#geoShapeMap")[0], geoshapeObject);
-              }
-            });
+          $("#pointDetails").append(clickedPointContent);
+
+          //if there's geoshape, draw it
+          if(geoshapeCheck){
+            FLOW.drawGeoShape($("#geoShapeMap")[0], geoshapeObject);
+          }
+        }
       } else {
-        clickedPointContent += '<p class="noDetails">'+Ember.String.loc('_no_details') +'</p>';
-        $('#pointDetails').html(clickedPointContent);
+        $('#pointDetails').html('<p class="noDetails">'+Ember.String.loc('_no_details') +'</p>');
       }
     });
+  },
+
+  loadQuestions: function(formId){
+    var self = this;
+
+    //first get the question groups for this formId
+    var questionGroupsAjaxObject = {};
+    questionGroupsAjaxObject['call'] = 'GET';
+    questionGroupsAjaxObject['url'] = '/rest/question_groups?surveyId='+formId;
+    questionGroupsAjaxObject['data'] = '';
+
+    FLOW.ajaxCall(function(questionGroupsResponse){
+      if(questionGroupsResponse.question_groups){
+        //for every question group pull a list of associated questions
+        for(var g=0; g<questionGroupsResponse.question_groups.length; g++){
+          //questionGroupsData.question_groups[g]
+          var questionsAjaxObject = {};
+          questionsAjaxObject['call'] = 'GET';
+          questionsAjaxObject['url'] = '/rest/questions?surveyId='+formId+'&questionGroupId='+questionGroupsResponse.question_groups[g];
+          questionsAjaxObject['data'] = '';
+
+          FLOW.ajaxCall(function(questionsResponse){
+            if(questionsResponse.questions){
+              for(var j=0; j<questionsResponse.questions.length; j++){
+                self.questions.push(questionsResponse.questions[j]);
+              }
+            }
+          }, questionsAjaxObject);
+        }
+      }
+    }, questionGroupsAjaxObject);
   },
 
   //function to project geoshape from details panel to main map canvas
@@ -750,12 +824,13 @@ FLOW.NavMapsView = FLOW.View.extend({
     if(self.hierarchyObject.length > 0){
       self.manageHierarchy(parentFolderId);
     }else{
-      $.get('/rest/survey_groups'/*place survey_groups endpoint here*/
-      , function(data, status){
-        if(data['survey_groups'].length > 0){
-          self.hierarchyObject = data['survey_groups'];
-          self.manageHierarchy(parentFolderId);
-        }
+      $.get(
+        '/rest/survey_groups'/*place survey_groups endpoint here*/
+        , function(data, status){
+          if(data['survey_groups'].length > 0){
+            self.hierarchyObject = data['survey_groups'];
+            self.manageHierarchy(parentFolderId);
+          }
       });
     }
   },
@@ -801,6 +876,17 @@ FLOW.NavMapsView = FLOW.View.extend({
   }
 });
 
+FLOW.ajaxCall = function(callback, ajaxObject){
+  $.ajax({
+    type: ajaxObject.call,
+    url: ajaxObject.url,
+    data: ajaxObject.data, //turns out you need to stringify the payload before sending it
+    dataType: 'json',
+    success: function(responseData){
+      callback(responseData);
+    }
+  });
+};
 
 FLOW.countryView = FLOW.View.extend({});
 FLOW.PlacemarkDetailView = Ember.View.extend({});
