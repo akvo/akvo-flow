@@ -16,6 +16,7 @@ FLOW.NavMapsView = FLOW.View.extend({
   cartodbLayer: null,
   layerExistsCheck: false,
   questions: [],
+  refreshIntervalId: null,
 
   init: function () {
     this._super();
@@ -240,7 +241,11 @@ FLOW.NavMapsView = FLOW.View.extend({
                 formIds.push(rows[i]["id"]);
               }
               $("#survey_hierarchy").append(form_selector);
-              self.loadQuestions(formIds);
+
+              self.questions = [];
+              for(var i=0; i<formIds.length; i++){
+                self.loadQuestions(formIds[i]);
+              }
             }
           });
 
@@ -274,6 +279,7 @@ FLOW.NavMapsView = FLOW.View.extend({
     $(document).off('change', '.form_selector').on('change', '.form_selector',function(e) {
       //remove all 'folder_survey_selector's after current
       self.cleanHierarchy($(this));
+      self.questions = [];
 
       if ($(this).val() !== "") {
         var formId = $(this).val();
@@ -293,9 +299,20 @@ FLOW.NavMapsView = FLOW.View.extend({
           }
 
           self.namedMapCheck(namedMapObject);
+
+          self.loadQuestions(formId);
         });
       } else {
         self.createLayer(map, "data_point_"+$(this).data('survey-id'), "");
+
+        $.get('/rest/cartodb/forms?surveyId='+$(this).data('survey-id'), function(data, status) {
+          if(data['forms'] && data['forms'].length > 0) {
+            self.questions = [];
+            for(var i=0; i<data['forms'].length; i++) {
+              self.loadQuestions(data['forms'][i]["id"]);
+            }
+          }
+        });
       }
     });
 
@@ -539,15 +556,37 @@ FLOW.NavMapsView = FLOW.View.extend({
         self.placeMarker([data.lat, data.lon]);
 
         self.showDetailsPane();
-        if($('.form_selector').length && $('.form_selector').val() !== ""){
-          pointDataUrl = '/rest/cartodb/raw_data?dataPointId='+data.data_point_id+'&formId='+$('.form_selector').val();
-          $.get('/rest/cartodb/data_point?id='+data.data_point_id, function(pointData, status){
-            self.getCartodbPointData(pointDataUrl, pointData['row']['name'], pointData['row']['identifier']);
-          });
-        }else{
-          pointDataUrl = '/rest/cartodb/answers?dataPointId='+data.id+'&surveyId='+data.survey_id;
-          self.getCartodbPointData(pointDataUrl, data.name, data.identifier);
-        }
+
+        if($.active > 0){
+    			self.refreshIntervalId = setInterval(function () {
+    				//keep checking if there are any pending ajax requests
+    				if($.active > 0){
+    					//keep displaying loading icon
+    				}else{ //if no pending ajax requests
+    					//call function to load the clicked point details
+              if($('.form_selector').length && $('.form_selector').val() !== ""){
+                pointDataUrl = '/rest/cartodb/raw_data?dataPointId='+data.data_point_id+'&formId='+$('.form_selector').val();
+                $.get('/rest/cartodb/data_point?id='+data.data_point_id, function(pointData, status){
+                  self.getCartodbPointData(pointDataUrl, pointData['row']['name'], pointData['row']['identifier']);
+                });
+              }else{
+                pointDataUrl = '/rest/cartodb/answers?dataPointId='+data.id+'&surveyId='+data.survey_id;
+                self.getCartodbPointData(pointDataUrl, data.name, data.identifier);
+              }
+    				}
+    		  },500);
+    		}else{
+    			//call function to load the clicked point details
+          if($('.form_selector').length && $('.form_selector').val() !== ""){
+            pointDataUrl = '/rest/cartodb/raw_data?dataPointId='+data.data_point_id+'&formId='+$('.form_selector').val();
+            $.get('/rest/cartodb/data_point?id='+data.data_point_id, function(pointData, status){
+              self.getCartodbPointData(pointDataUrl, pointData['row']['name'], pointData['row']['identifier']);
+            });
+          }else{
+            pointDataUrl = '/rest/cartodb/answers?dataPointId='+data.id+'&surveyId='+data.survey_id;
+            self.getCartodbPointData(pointDataUrl, data.name, data.identifier);
+          }
+    		}
       });
     });
   },
@@ -573,6 +612,8 @@ FLOW.NavMapsView = FLOW.View.extend({
 
   getCartodbPointData: function(url, dataPointName, dataPointIdentifier){
     var self = this;
+    clearInterval(self.refreshIntervalId); //stop the interval if running
+
     $("#pointDetails").html("");
 
     $.get(url, function(pointData, status){
@@ -596,101 +637,32 @@ FLOW.NavMapsView = FLOW.View.extend({
 
         $("#pointDetails").append(pointDetailsHeader);
 
-        //get request for questions
-        $.get(
-          'http://localhost:8080/akvo_flow_api/index.php/question_groups/akvoflow-uat1/'+pointData['formId'],
-          //'/rest/question_groups?surveyId='+pointData['formId'],
-          function(questionGroupsData, status){
-            if(questionGroupsData.question_groups){
-              for(var g=0; g<questionGroupsData.question_groups.length; g++){
-                //Create container for this question group
-                var currentQuestionsGroup = $('<div id="questions_group_'+g+'"></div>');
-                $("#pointDetails").append(currentQuestionsGroup);
-
-                self.populateDetailsPanel(pointData, questionGroupsData.question_groups[g], g);
-              }
-            }
-        });
-      } else {
-        $('#pointDetails').html('<p class="noDetails">'+Ember.String.loc('_no_details') +'</p>');
-      }
-    });
-  },
-
-  loadQuestions: function(formIds){
-    var self = this;
-    self.questions = [];
-    
-    for(var i=0; i<formIds.length; i++){
-      var formId = formIds[i];
-
-      //first get the question groups for this formId
-      var questionGroupsAjaxObject = {};
-      questionGroupsAjaxObject['call'] = 'GET';
-      questionGroupsAjaxObject['url'] = 'http://localhost:8080/akvo_flow_api/index.php/question_groups/akvoflow-uat1/'+formId;
-      //questionGroupsAjaxObject['url'] = '/rest/question_groups?surveyId='+formIds[i];
-      questionGroupsAjaxObject['data'] = '';
-
-      FLOW.ajaxCall(function(questionGroupsResponse){
-        if(questionGroupsResponse.question_groups){
-          //for every question group pull a list of associated questions
-          for(var g=0; g<questionGroupsResponse.question_groups.length; g++){
-            //questionGroupsData.question_groups[g]
-            var questionsAjaxObject = {};
-            questionsAjaxObject['call'] = 'GET';
-            questionsAjaxObject['url'] = 'http://localhost:8080/akvo_flow_api/index.php/questions/akvoflow-uat1/'+formId+'/'+questionGroupsResponse.question_groups[g].keyId;
-            //questionsAjaxObject['url'] = '/rest/questions?surveyId='+formIds[i]+'&questionGroupId='+questionGroupsResponse.question_groups[g];
-            questionsAjaxObject['data'] = '';
-
-            FLOW.ajaxCall(function(questionsResponse){
-              if(questionsResponse.questions){
-                for(var j=0; j<questionsResponse.questions.length; j++){
-                  self.questions.push(questionsResponse.questions[j]);
-                }
-              }
-            }, questionsAjaxObject);
-          }
-        }
-      }, questionGroupsAjaxObject);
-    }
-  },
-
-  populateDetailsPanel: function(pointData, questionGroup, index){
-    var self = this;
-
-    console.log(self.questions);
-
-    //get request for questions
-    $.get(
-      'http://localhost:8080/akvo_flow_api/index.php/questions/akvoflow-uat1/'+pointData['formId']+'/'+questionGroup.keyId,
-      //'/rest/questions?surveyId='+pointData['formId']+'&questionGroupId='+questionGroup.keyId,
-      function(questionsData, status){
         var clickedPointContent = "";
         //create a questions array with the correct order of questions as in the survey
-        if(questionsData.questions){
+        if(self.questions.length > 0){
           var geoshapeObject, geoshapeCheck = false;
           self.geoshapeCoordinates = null;
 
           clickedPointContent += '<div class="mapInfoDetail" style="opacity: 1; display: inherit;">';
           for (column in pointData['answers']){
             var questionAnswer = pointData['answers'][column];
-            for(var i=0; i<questionsData.questions.length; i++){
-              if (column.match(questionsData.questions[i].keyId)) {
-                if(questionsData.questions[i].type === "GEOSHAPE" && questionAnswer !== null){
+            for(var i=0; i<self.questions.length; i++){
+              if (column.match(self.questions[i].keyId)) {
+                if(self.questions[i].type === "GEOSHAPE" && questionAnswer !== null){
                   var geoshapeObject = FLOW.parseGeoshape(questionAnswer);
                   if(geoshapeObject !== null){
                     clickedPointContent += '<h4><div style="float: left">'
-                    +questionsData.questions[i].text
+                    +self.questions[i].text
                     +'</div>&nbsp;<a style="float: right" id="projectGeoshape">'+Ember.String.loc('_project_geoshape_onto_main_map') +'</a></h4>';
                   }
                 } else {
-                  clickedPointContent += '<h4>'+questionsData.questions[i].text+'&nbsp;</h4>';
+                  clickedPointContent += '<h4>'+self.questions[i].text+'&nbsp;</h4>';
                 }
 
                 clickedPointContent += '<div style="float: left; width: 100%">';
 
                 if(questionAnswer !== "" && questionAnswer !== null && questionAnswer !== "null"){
-                  switch (questionsData.questions[i].questionType) {
+                  switch (self.questions[i].questionType) {
                     case "PHOTO":
                       var imageString = "", imageJson;
                       if (questionAnswer.charAt(0) === '{') {
@@ -749,7 +721,7 @@ FLOW.NavMapsView = FLOW.View.extend({
                       if (questionAnswer.charAt(0) === '[') {
                         cascadeJson = JSON.parse(questionAnswer);
                         cascadeString = cascadeJson.map(function(item){
-                          return (questionsData.questions[i].questionType == "CASCADE") ? item.name : item.text;
+                          return (self.questions[i].questionType == "CASCADE") ? item.name : item.text;
                         }).join("|");
                       } else {
                         cascadeString = questionAnswer;
@@ -766,14 +738,48 @@ FLOW.NavMapsView = FLOW.View.extend({
           }
           clickedPointContent += '</div>';
 
-          $('#questions_group_'+index).html(clickedPointContent);
+          $("#pointDetails").append(clickedPointContent);
 
           //if there's geoshape, draw it
           if(geoshapeCheck){
             FLOW.drawGeoShape($("#geoShapeMap")[0], geoshapeObject);
           }
         }
-      });
+      } else {
+        $('#pointDetails').html('<p class="noDetails">'+Ember.String.loc('_no_details') +'</p>');
+      }
+    });
+  },
+
+  loadQuestions: function(formId){
+    var self = this;
+
+    //first get the question groups for this formId
+    var questionGroupsAjaxObject = {};
+    questionGroupsAjaxObject['call'] = 'GET';
+    questionGroupsAjaxObject['url'] = '/rest/question_groups?surveyId='+formId;
+    questionGroupsAjaxObject['data'] = '';
+
+    FLOW.ajaxCall(function(questionGroupsResponse){
+      if(questionGroupsResponse.question_groups){
+        //for every question group pull a list of associated questions
+        for(var g=0; g<questionGroupsResponse.question_groups.length; g++){
+          //questionGroupsData.question_groups[g]
+          var questionsAjaxObject = {};
+          questionsAjaxObject['call'] = 'GET';
+          questionsAjaxObject['url'] = '/rest/questions?surveyId='+formId+'&questionGroupId='+questionGroupsResponse.question_groups[g];
+          questionsAjaxObject['data'] = '';
+
+          FLOW.ajaxCall(function(questionsResponse){
+            if(questionsResponse.questions){
+              for(var j=0; j<questionsResponse.questions.length; j++){
+                self.questions.push(questionsResponse.questions[j]);
+              }
+            }
+          }, questionsAjaxObject);
+        }
+      }
+    }, questionGroupsAjaxObject);
   },
 
   //function to project geoshape from details panel to main map canvas
@@ -819,8 +825,7 @@ FLOW.NavMapsView = FLOW.View.extend({
       self.manageHierarchy(parentFolderId);
     }else{
       $.get(
-        'http://localhost:8080/akvo_flow_api/index.php/survey_groups/akvoflow-uat1'/*place survey_groups endpoint here*/
-        //'/rest/survey_groups'/*place survey_groups endpoint here*/
+        '/rest/survey_groups'/*place survey_groups endpoint here*/
         , function(data, status){
           if(data['survey_groups'].length > 0){
             self.hierarchyObject = data['survey_groups'];
