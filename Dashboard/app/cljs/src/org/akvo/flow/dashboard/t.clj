@@ -15,16 +15,11 @@
 (ns org.akvo.flow.dashboard.t)
 
 (defmacro t> [key]
-  `(let [locale# (-> js/window
-                     (aget "parent")
-                     (aget "localStorage")
-                     (aget "locale")
-                     .toUpperCase)
-         k# ~(name key)
+  `(let [k# ~(name key)
          s# (-> js/window
                 (aget "parent")
                 (aget "Ember")
-                (aget (cljs.core/str "STRINGS" "_" locale#))
+                (aget (cljs.core/str "STRINGS"))
                 (aget k#))]
      (if s#
        s#
