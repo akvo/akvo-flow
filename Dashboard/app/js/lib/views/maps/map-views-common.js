@@ -279,7 +279,6 @@ FLOW.NavMapsView = FLOW.View.extend({
     $(document).off('change', '.form_selector').on('change', '.form_selector',function(e) {
       //remove all 'folder_survey_selector's after current
       self.cleanHierarchy($(this));
-      self.questions = [];
 
       if ($(this).val() !== "") {
         var formId = $(this).val();
@@ -299,20 +298,9 @@ FLOW.NavMapsView = FLOW.View.extend({
           }
 
           self.namedMapCheck(namedMapObject);
-
-          self.loadQuestions(formId);
         });
       } else {
         self.createLayer(map, "data_point_"+$(this).data('survey-id'), "");
-
-        $.get('/rest/cartodb/forms?surveyId='+$(this).data('survey-id'), function(data, status) {
-          if(data['forms'] && data['forms'].length > 0) {
-            self.questions = [];
-            for(var i=0; i<data['forms'].length; i++) {
-              self.loadQuestions(data['forms'][i]["id"]);
-            }
-          }
-        });
       }
     });
 
@@ -775,6 +763,10 @@ FLOW.NavMapsView = FLOW.View.extend({
               for(var j=0; j<questionsResponse.questions.length; j++){
                 self.questions.push(questionsResponse.questions[j]);
               }
+              //sort questions by order
+              self.questions.sort(function(a, b) {
+                return parseFloat(a.order) - parseFloat(b.order);
+              });
             }
           }, questionsAjaxObject);
         }
