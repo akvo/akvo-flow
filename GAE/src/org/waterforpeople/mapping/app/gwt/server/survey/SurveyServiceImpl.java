@@ -815,19 +815,10 @@ public class SurveyServiceImpl extends RemoteServiceServlet implements
         
         Survey s = new SurveyDAO().getById(surveyId);
         SurveyGroup sg = s != null ? new SurveyGroupDAO().getByKey(s.getSurveyGroupId()) : null;
-        if (sg != null) {
-            boolean assembleDatapointNames = false;
-            if (!sg.getMonitoringGroup()) {
-                // For non-monitoring surveys, assume this is the registration form
-                assembleDatapointNames = true;
-            } else if (sg.getNewLocaleSurveyId() != null) {
-                assembleDatapointNames = sg.getNewLocaleSurveyId().longValue() == surveyId.longValue();
-            }
-            
-            if (assembleDatapointNames) {
-                // This is the registration form. Schedule datapoint name re-assembly
-                DataProcessorRestServlet.scheduleDatapointNameAssembly(sg.getKey().getId(), null);
-            }
+        if (sg != null && sg.getNewLocaleSurveyId() != null &&
+                sg.getNewLocaleSurveyId().longValue() == surveyId.longValue()) {
+            // This is the registration form. Schedule datapoint name re-assembly
+            DataProcessorRestServlet.scheduleDatapointNameAssembly(sg.getKey().getId(), null);
         }
     }
 
