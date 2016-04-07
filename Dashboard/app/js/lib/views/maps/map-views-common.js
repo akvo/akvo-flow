@@ -871,6 +871,7 @@ FLOW.NavMapsView = FLOW.View.extend({
 FLOW.ajaxCall = function(callback, ajaxObject){
   $.ajax({
     type: ajaxObject.call,
+    contentType: "application/json",
     url: ajaxObject.url,
     data: ajaxObject.data, //turns out you need to stringify the payload before sending it
     dataType: 'json',
