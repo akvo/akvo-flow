@@ -370,13 +370,20 @@ public class RawDataRestServlet extends AbstractRestApiServlet {
             }
         } else if (RawDataImportRequest.UPDATE_SUMMARIES_ACTION
                 .equalsIgnoreCase(importReq.getAction())) {
+            if (importReq.getSurveyId() == null
+                    || new SurveyDAO().getById(importReq.getSurveyId()) == null) {
+                // ensure survey id present for summary update
+                return null;
+            }
             // first rebuild the summaries
             log.log(Level.INFO, "Rebuilding summaries for surveyId "
                     + importReq.getSurveyId().toString());
-            TaskOptions options = TaskOptions.Builder.withUrl(
-                    "/app_worker/dataprocessor").param(
-                    DataProcessorRequest.ACTION_PARAM,
-                    DataProcessorRequest.REBUILD_QUESTION_SUMMARY_ACTION);
+            TaskOptions options = TaskOptions.Builder
+                    .withUrl("/app_worker/dataprocessor")
+                    .param(DataProcessorRequest.ACTION_PARAM,
+                            DataProcessorRequest.REBUILD_QUESTION_SUMMARY_ACTION)
+                    .param(DataProcessorRequest.SURVEY_ID_PARAM, importReq.getSurveyId().toString());
+
             String backendPub = PropertyUtil.getProperty("backendpublish");
             if (backendPub != null && "true".equals(backendPub)) {
                 // change the host so the queue invokes the backend
@@ -384,11 +391,6 @@ public class RawDataRestServlet extends AbstractRestApiServlet {
                         .header("Host",
                                 BackendServiceFactory.getBackendService()
                                         .getBackendAddress("dataprocessor"));
-            }
-            Long surveyId = importReq.getSurveyId();
-            if (surveyId != null && surveyId > 0) {
-                options.param(DataProcessorRequest.SURVEY_ID_PARAM,
-                        surveyId.toString());
             }
 
             com.google.appengine.api.taskqueue.Queue queue = com.google.appengine.api.taskqueue.QueueFactory
