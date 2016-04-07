@@ -755,7 +755,7 @@ FLOW.NavMapsView = FLOW.View.extend({
           //questionGroupsData.question_groups[g]
           var questionsAjaxObject = {};
           questionsAjaxObject['call'] = 'GET';
-          questionsAjaxObject['url'] = '/rest/questions?surveyId='+formId+'&questionGroupId='+questionGroupsResponse.question_groups[g];
+          questionsAjaxObject['url'] = '/rest/questions?surveyId='+formId+'&questionGroupId='+questionGroupsResponse.question_groups[g].keyId;
           questionsAjaxObject['data'] = '';
 
           FLOW.ajaxCall(function(questionsResponse){
