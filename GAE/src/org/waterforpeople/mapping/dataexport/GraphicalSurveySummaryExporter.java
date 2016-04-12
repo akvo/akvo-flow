@@ -654,6 +654,7 @@ public class GraphicalSurveySummaryExporter extends SurveySummaryExporter {
                 break;
 
             case PHOTO:
+            case VIDEO:
                 cells.add(photoCellValue(value, imagePrefix));
                 break;
 
