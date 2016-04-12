@@ -36,7 +36,7 @@
                 {{#if view.isPhotoType}}
                     {{view.photoUrl}} <a {{bindAttr href="view.photoUrl" }} target="_blank">{{t _open_photo}}</a>
                 {{else}} {{#if view.isVideoType}}
-                    {{value}} <a {{bindAttr href="view.photoUrl" }} target="_blank">{{t _open_video}}</a>
+                    {{view.photoUrl}} <a {{bindAttr href="view.photoUrl" }} target="_blank">{{t _open_video}}</a>
                 {{else}} {{#if view.isDateType}}
                     {{date3 value}}
                 {{else}} {{#if view.isCascadeType}}
