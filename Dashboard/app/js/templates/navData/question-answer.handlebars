@@ -34,7 +34,7 @@
         {{else}}
             {{#if view.isNotEditable}}
                 {{#if view.isPhotoType}}
-                    {{view.photoUrl}} <a {{bindAttr href="view.photoUrl" }} target="_blank">{{t _open_photo}}</a>
+                    {{view.photoUrl}} {{view.photoLocation}} <a {{bindAttr href="view.photoUrl" }} target="_blank">{{t _open_photo}}</a>
                 {{else}} {{#if view.isVideoType}}
                     {{view.photoUrl}} <a {{bindAttr href="view.photoUrl" }} target="_blank">{{t _open_video}}</a>
                 {{else}} {{#if view.isDateType}}
