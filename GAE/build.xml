@@ -151,13 +151,6 @@
 	</target>
 
 	<target name="update" depends="compile,datanucleusenhance" description="Uploads the application to App Engine.">
-		<fail message="[pwd] property is not present, e.g.: ant update -Dpwd=/path/to/password.txt">
-			<condition>
-				<not>
-					<isset property="pwd" />
-				</not>
-			</condition>
-		</fail>
 
 		<delete failonerror="false">
 			<fileset dir="${app_dir}/deploy" includes="**/*.symbolMap"/>
