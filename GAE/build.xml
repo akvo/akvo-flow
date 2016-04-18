@@ -151,13 +151,6 @@
 	</target>
 
 	<target name="update" depends="compile,datanucleusenhance" description="Uploads the application to App Engine.">
-		<fail message="[pwd] property is not present, e.g.: ant update -Dpwd=/path/to/password.txt">
-			<condition>
-				<not>
-					<isset property="pwd" />
-				</not>
-			</condition>
-		</fail>
 
 		<delete failonerror="false">
 			<fileset dir="${app_dir}/deploy" includes="**/*.symbolMap"/>
@@ -183,10 +176,12 @@
 
 		<replace file="./war/admin/js/app.js" token="__VERSION__" value="${app.version}" />
 
-		<exec dir="." executable="sh" failonerror="true">
-		    <arg value="-c" />
-		    <arg value="${sdk.dir}/bin/appcfg.sh --enable_jar_splitting --email=${email.address} --passin &lt; ${pwd} update war" />
-		</exec>
+        <appcfg action="update" war="war">
+            <options>
+                <arg value="--enable_jar_splitting"/>
+                <arg value="--email=${email.address}"/>
+            </options>
+        </appcfg>
 
 		<exec dir="." executable="sh" failonerror="true">
 		    <arg value="-c" />
