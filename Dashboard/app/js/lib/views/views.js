@@ -89,7 +89,7 @@ Ember.Handlebars.registerHelper('tooltip', function (i18nKey) {
 
 Ember.Handlebars.registerHelper('placemarkDetail', function () {
   var answer, markup, question, cascadeJson, optionJson, cascadeString = "",
-  questionType, imageSrcAttr, signatureJson, phtoJson;
+  questionType, imageSrcAttr, signatureJson, photoJson;
 
   question = Ember.get(this, 'questionText');
   answer = Ember.get(this, 'stringValue') || '';
