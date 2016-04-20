@@ -22,6 +22,7 @@ import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.List;
+import java.util.TimeZone;
 
 import org.apache.log4j.Logger;
 import org.apache.poi.ss.usermodel.Cell;
@@ -44,7 +45,9 @@ public class ExportImportUtils {
     private static final ThreadLocal<DateFormat> DATE_RESPONSE_FORMAT = new ThreadLocal<DateFormat>() {
         @Override
         protected DateFormat initialValue() {
-            return new SimpleDateFormat("yyyy-MM-dd");
+            DateFormat df = new SimpleDateFormat("yyyy-MM-dd");
+            df.setTimeZone(TimeZone.getTimeZone("GMT"));
+            return df;
         };
     };
 
