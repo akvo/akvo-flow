@@ -194,7 +194,7 @@ public class DataBackoutRequest extends RestRequest {
 
     private static Date parseDate(String s) {
         try {
-            SimpleDateFormat sdf = new SimpleDateFormat("yyyy/MM/dd");
+            SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
             ParsePosition pp = new ParsePosition(0);
             sdf.setTimeZone(TimeZone.getTimeZone("UTC"));
             return sdf.parse(s, pp);
