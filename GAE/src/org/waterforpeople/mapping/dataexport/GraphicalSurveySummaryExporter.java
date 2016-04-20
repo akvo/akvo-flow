@@ -692,13 +692,7 @@ public class GraphicalSurveySummaryExporter extends SurveySummaryExporter {
     }
 
     private static String photoCellValue(String value, String imagePrefix) {
-        String filename = ExportImportUtils.formatImage(value);
-        final int filenameIndex = filename.lastIndexOf("/") + 1;
-        String cell = "";
-        if (filenameIndex > 0 && filenameIndex < filename.length()) {
-            cell = imagePrefix + filename.substring(filenameIndex);
-        }
-        return cell;
+        return ExportImportUtils.formatImage(imagePrefix, value);
     }
 
     private static List<String> geoCellValues(String value) {
