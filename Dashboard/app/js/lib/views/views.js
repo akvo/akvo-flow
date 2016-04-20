@@ -88,7 +88,8 @@ Ember.Handlebars.registerHelper('tooltip', function (i18nKey) {
 
 
 Ember.Handlebars.registerHelper('placemarkDetail', function () {
-  var answer, markup, question, cascadeJson, optionJson, cascadeString = "", questionType, imageSrcAttr, signatureJson;
+  var answer, markup, question, cascadeJson, optionJson, cascadeString = "",
+  questionType, imageSrcAttr, signatureJson, photoJson;
 
   question = Ember.get(this, 'questionText');
   answer = Ember.get(this, 'stringValue') || '';
@@ -106,6 +107,9 @@ Ember.Handlebars.registerHelper('placemarkDetail', function () {
           return item.name;
         }).join("|");
       }
+  } else if ((questionType === 'VIDEO' || questionType === 'PHOTO') && answer.charAt(0) === '{') {
+    photoJson = JSON.parse(answer)
+    answer = photoJson.filename;
   } else if (questionType === 'OPTION' && answer.charAt(0) === '[') {
     optionJson = JSON.parse(answer);
     answer = optionJson.map(function(item){
@@ -462,7 +466,7 @@ FLOW.NavigationView = Em.View.extend({
         html.className = '';
         html.classList.add(FLOW.router.navigationController.selected);
       }
-    }),    
+    }),
   }),
 
 });

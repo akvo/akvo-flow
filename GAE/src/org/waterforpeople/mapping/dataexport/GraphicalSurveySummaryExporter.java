@@ -612,8 +612,8 @@ public class GraphicalSurveySummaryExporter extends SurveySummaryExporter {
                     synchronized (model) {
                         for (int i = 0; i < vals.length; i++) {
                             if (vals[i] != null && vals[i].trim().length() > 0) {
-                                model.tallyResponse(effectiveId, rollups,
-                                        vals[i]);
+                                QuestionDto q = questionsById.get(Long.valueOf(effectiveId));
+                                model.tallyResponse(effectiveId, rollups, vals[i], q);
                             }
                         }
                     }
@@ -654,6 +654,7 @@ public class GraphicalSurveySummaryExporter extends SurveySummaryExporter {
                 break;
 
             case PHOTO:
+            case VIDEO:
                 cells.add(photoCellValue(value, imagePrefix));
                 break;
 
