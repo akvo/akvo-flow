@@ -6,6 +6,11 @@ Read more about the [Akvo Platform](http://www.akvo.org/blog/?p=4822).
 Akvo FLOW Dashboard release notes
 ----
 
+#1.9.6.1
+Date: 22 April 2016
+# Resolved issues
+* Update Portuguese translations in FLOW dashboard [#1578]
+
 #1.9.6
 Date: 20 April 2016
 # New and noteworthy
