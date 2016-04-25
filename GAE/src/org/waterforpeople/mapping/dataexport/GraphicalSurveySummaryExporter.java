@@ -47,6 +47,7 @@ import org.apache.poi.ss.usermodel.Cell;
 import org.apache.poi.ss.usermodel.CellStyle;
 import org.apache.poi.ss.usermodel.ClientAnchor;
 import org.apache.poi.ss.usermodel.CreationHelper;
+import org.apache.poi.ss.usermodel.DataFormat;
 import org.apache.poi.ss.usermodel.Drawing;
 import org.apache.poi.ss.usermodel.Font;
 import org.apache.poi.ss.usermodel.Row;
@@ -278,7 +279,9 @@ public class GraphicalSurveySummaryExporter extends SurveySummaryExporter {
         DEVICE_IDENTIFIER_LABEL.put("es", "Identificador de dispositivo");
     }
 
+    private short textFormat;
     private CellStyle headerStyle;
+    private CellStyle textStyle;
     private String locale;
     private String imagePrefix;
     private String serverBase;
@@ -328,6 +331,10 @@ public class GraphicalSurveySummaryExporter extends SurveySummaryExporter {
                 Font headerFont = wb.createFont();
                 headerFont.setBoldweight(Font.BOLDWEIGHT_BOLD);
                 headerStyle.setFont(headerFont);
+                
+                textFormat = wb.createDataFormat().getFormat("@"); //built-in text format
+                textStyle = wb.createCellStyle();
+                textStyle.setDataFormat(textFormat);
 
                 SummaryModel model = fetchAndWriteRawData(
                         criteria.get(SurveyRestRequest.SURVEY_ID_PARAM),
@@ -681,7 +688,7 @@ public class GraphicalSurveySummaryExporter extends SurveySummaryExporter {
             if (questionType == QuestionType.NUMBER) {
                 createCell(row, col, cellValue, null, Cell.CELL_TYPE_NUMERIC);
             } else {
-                createCell(row, col, cellValue);
+                createCell(row, col, cellValue, textStyle);
             }
             col++; // also takes care of padding in case no cell content added
         }
