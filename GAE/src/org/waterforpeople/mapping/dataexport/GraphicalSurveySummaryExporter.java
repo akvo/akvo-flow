@@ -279,9 +279,9 @@ public class GraphicalSurveySummaryExporter extends SurveySummaryExporter {
         DEVICE_IDENTIFIER_LABEL.put("es", "Identificador de dispositivo");
     }
 
-    private short textFormat;
+    private short mTextFormat;
     private CellStyle headerStyle;
-    private CellStyle textStyle;
+    private CellStyle mTextStyle;
     private String locale;
     private String imagePrefix;
     private String serverBase;
@@ -332,9 +332,9 @@ public class GraphicalSurveySummaryExporter extends SurveySummaryExporter {
                 headerFont.setBoldweight(Font.BOLDWEIGHT_BOLD);
                 headerStyle.setFont(headerFont);
                 
-                textFormat = wb.createDataFormat().getFormat("@"); //built-in text format
-                textStyle = wb.createCellStyle();
-                textStyle.setDataFormat(textFormat);
+                mTextFormat = wb.createDataFormat().getFormat("@"); //built-in text format
+                mTextStyle = wb.createCellStyle();
+                mTextStyle.setDataFormat(mTextFormat);
 
                 SummaryModel model = fetchAndWriteRawData(
                         criteria.get(SurveyRestRequest.SURVEY_ID_PARAM),
@@ -688,7 +688,7 @@ public class GraphicalSurveySummaryExporter extends SurveySummaryExporter {
             if (questionType == QuestionType.NUMBER) {
                 createCell(row, col, cellValue, null, Cell.CELL_TYPE_NUMERIC);
             } else {
-                createCell(row, col, cellValue, textStyle);
+                createCell(row, col, cellValue, mTextStyle);
             }
             col++; // also takes care of padding in case no cell content added
         }
