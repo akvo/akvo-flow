@@ -60,7 +60,7 @@ public class StringsServlet extends HttpServlet {
         }
 
         final UserDao uDao = new UserDao();
-        final User currentUser = uDao.findUserByEmail(currentGoogleUser.getEmail().trim());
+        final User currentUser = uDao.findUserByEmail(currentGoogleUser.getEmail());
         currentUser.setLanguage(locale);
         uDao.save(currentUser);
         log.info("Changed locale setting for user to '" + locale.toUpperCase() + "'");

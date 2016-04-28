@@ -44,7 +44,10 @@ public class UserDao extends BaseDAO<User> {
      * @return
      */
     public User findUserByEmail(String email) {
-        return findByProperty("emailAddress", email, STRING_TYPE);
+        if (email == null || email.trim().isEmpty()) {
+            return null;
+        }
+        return findByProperty("emailAddress", email.trim().toLowerCase(), STRING_TYPE);
     }
 
     /**
