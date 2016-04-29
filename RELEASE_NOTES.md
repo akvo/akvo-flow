@@ -5,6 +5,10 @@ Read more about the [Akvo Platform](http://www.akvo.org/blog/?p=4822).
 
 Akvo FLOW Dashboard release notes
 ----
+#1.9.6.2
+Date: 29 April 2016
+# Resolved issues
+* Dashboard doesn't load for users with uppercase letters in email [#1602]
 
 #1.9.6.1
 Date: 22 April 2016
