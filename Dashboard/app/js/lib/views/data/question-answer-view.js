@@ -161,7 +161,13 @@ FLOW.QuestionAnswerView = Ember.View.extend({
   }.property('this.content'),
 
   /*
-  * parse the caddisfly test JSON result
+  * Parse the caddisfly test JSON result
+  * Extracts the 'result' key from a json string, and parses the array of results.
+  * Creates an array with name, value, unit for each result
+  * Example JSON format: {"result":[{"name":"Total Chlorine (ppm)","value":10,
+  * "unit":"ppm","id":0},{"name":"Free Chlorine (ppm)","value":0.5,"unit":"ppm",
+  * "id":1}],"type":"caddisfly","name":"Chlorine and Free Chlorine",
+  * "uuid":"bf1c19c0-9788-4e26-999e-1b5c6ca28111","image":"b3893f16-6a02-4e92-a13e-fce25223a0c5.png"}
   */
   parseTestJson: function(){
 	  var c = this.content, testJson, newResult, image;
@@ -170,7 +176,8 @@ FLOW.QuestionAnswerView = Ember.View.extend({
   	  testJson = JSON.parse(c.get('value'));
   	  if (testJson.result && !Ember.empty(testJson.result)){
  		    testJson.result.forEach(function(item){
-  			  newResult = {"name":item.name,
+  			  newResult = {
+  			    "name":item.name,
   				  "value":item.value,
   				  "unit":item.unit,
   	  		};
@@ -183,7 +190,14 @@ FLOW.QuestionAnswerView = Ember.View.extend({
 
   /*
    * Get out the caddisfly test name
-  */
+   *
+   * Example JSON format: {"result":[{"name":"Total Chlorine (ppm)","value":10,
+   * "unit":"ppm","id":0},{"name":"Free Chlorine (ppm)","value":0.5,"unit":"ppm",
+   * "id":1}],"type":"caddisfly","name":"Chlorine and Free Chlorine",
+   * "uuid":"bf1c19c0-9788-4e26-999e-1b5c6ca28111","image":"b3893f16-6a02-4e92-a13e-fce25223a0c5.png"}
+   * 
+   * Extracts the 'name' attribute from a Caddisfly JSON result string 
+   */
   testName: function(){
   	var c = this.content, testJson;
   	if (c && c.get('value')) {
@@ -199,6 +213,28 @@ FLOW.QuestionAnswerView = Ember.View.extend({
     return null;
   }.property('this.content'),
 
+  /*
+   * Get out the caddisfly image URL
+   *
+   * Example JSON format: {"result":[{"name":"Total Chlorine (ppm)","value":10,
+   * "unit":"ppm","id":0},{"name":"Free Chlorine (ppm)","value":0.5,"unit":"ppm",
+   * "id":1}],"type":"caddisfly","name":"Chlorine and Free Chlorine",
+   * "uuid":"bf1c19c0-9788-4e26-999e-1b5c6ca28111","image":"b3893f16-6a02-4e92-a13e-fce25223a0c5.png"}
+   * 
+   * Extracts the 'image' attribute from a Caddisfly JSON result string, and returns a full URL
+   */
+  caddisflyImageURL: function(){
+    var c = this.content, testJson;
+    if (c && c.get('value')) {
+      testJson = JSON.parse(c.get('value'));
+      if (!Ember.empty(testJson.image)){
+        return FLOW.Env.photo_url_root + testJson.image.trim();
+      }
+    }
+    return null;
+  }.property('this.content'),
+
+  
   numberValue: null,
 
   cascadeValue: function(key, value, previousValue){

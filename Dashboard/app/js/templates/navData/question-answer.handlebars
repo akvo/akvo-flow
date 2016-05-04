@@ -53,11 +53,11 @@
                         {{t _no_signature_found}}
                     {{/if}}
                 {{else}} {{#if view.isCaddisflyType}}
-	                	<div class=""><strong>{{t _test_type}}: {{view.testName}}</strong></div>
-	                	{{#each result in view.testResult}}<br>
-	                	<div>{{result.name}} : {{result.value}} {{result.unit}}</div>
-	                	<div class=""><img {{bindAttr src="result.image"}} /></div>
-	                	{{/each}}
+	                	<div class=""><strong>{{view.testName}}</strong></div>
+	                	{{#each result in view.testResult}}
+	                	  <br><div>{{result.name}} : {{result.value}} {{result.unit}}</div>
+	                	{{/each}}<br>
+	                	<div class="signatureImage"><img {{bindAttr src="view.caddisflyImageURL"}} /></div>
 	            {{else}}
                     {{value}}
                 {{/if}} {{/if}} {{/if}} {{/if}} {{/if}} {{/if}} {{/if}}{{/if}}
