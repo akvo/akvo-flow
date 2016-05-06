@@ -279,9 +279,9 @@ public class GraphicalSurveySummaryExporter extends SurveySummaryExporter {
         DEVICE_IDENTIFIER_LABEL.put("es", "Identificador de dispositivo");
     }
 
-    private short mTextFormat;
     private CellStyle headerStyle;
     private CellStyle mTextStyle;
+    private CellStyle mNumberStyle;
     private String locale;
     private String imagePrefix;
     private String serverBase;
@@ -332,10 +332,13 @@ public class GraphicalSurveySummaryExporter extends SurveySummaryExporter {
                 headerFont.setBoldweight(Font.BOLDWEIGHT_BOLD);
                 headerStyle.setFont(headerFont);
                 
-                mTextFormat = wb.createDataFormat().getFormat("@"); //built-in text format
+                short textFormat = wb.createDataFormat().getFormat("@"); //built-in text format
                 mTextStyle = wb.createCellStyle();
-                mTextStyle.setDataFormat(mTextFormat);
-
+                mTextStyle.setDataFormat(textFormat);
+                short numberFormat = wb.createDataFormat().getFormat("0.###");//Show 0-3 decimals, never scientific
+                mNumberStyle = wb.createCellStyle();
+                mNumberStyle.setDataFormat(numberFormat);
+                
                 SummaryModel model = fetchAndWriteRawData(
                         criteria.get(SurveyRestRequest.SURVEY_ID_PARAM),
                         serverBase, questionMap, wb, isFullReport, fileName,
@@ -686,7 +689,7 @@ public class GraphicalSurveySummaryExporter extends SurveySummaryExporter {
         int col = startColumn;
         for (String cellValue : cells) {
             if (questionType == QuestionType.NUMBER) {
-                createCell(row, col, cellValue, null, Cell.CELL_TYPE_NUMERIC);
+                createCell(row, col, cellValue, mNumberStyle, Cell.CELL_TYPE_NUMERIC);
             } else {
                 createCell(row, col, cellValue, mTextStyle);
             }
