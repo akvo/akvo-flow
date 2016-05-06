@@ -357,6 +357,16 @@ FLOW.QuestionAnswerView = Ember.View.extend({
     }
   }.property('this.content,this.isPhotoType,this.isVideoType'),
 
+  photoLocation: function(){
+    var c = this.content;
+    if (!Ember.empty(c.get('value'))) {
+      jImage = JSON.parse(c.get('value'));
+      if (jImage && jImage.location) {
+          return "lat:" + jImage.location.latitude + "/lon:" + jImage.location.longitude;
+      }
+    }
+  }.property('this.content,this.isPhotoType,this.isVideoType'),
+
   geoShapeObject: function(){
     var c = this.content;
     if (!Ember.empty(c.get('value'))) {
