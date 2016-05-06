@@ -671,6 +671,16 @@ FLOW.NavMapsView = FLOW.View.extend({
                           clickedPointContent += srcAttr + signatureJson.image +'"/></div>';
                           clickedPointContent += '<div class="signedBySection">'+Ember.String.loc('_signed_by') +': '+signatureJson.name+'</div>';
                           break;
+                        case "VIDEO":
+                          var videoString = "", videoJson;
+                          if (questionAnswer.charAt(0) === '{') {
+                            videoJson = JSON.parse(questionAnswer);
+                            videoString = videoJson.filename
+                          } else {
+                            videoString = questionAnswer;
+                          }
+                          clickedPointContent += videoString;
+                          break;
                         case "CASCADE":
                         case "OPTION":
                           var cascadeString = "", cascadeJson;

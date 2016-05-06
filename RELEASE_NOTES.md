@@ -5,6 +5,32 @@ Read more about the [Akvo Platform](http://www.akvo.org/blog/?p=4822).
 
 Akvo FLOW Dashboard release notes
 ----
+#1.9.6.2
+Date: 29 April 2016
+# Resolved issues
+* Dashboard doesn't load for users with uppercase letters in email [#1602]
+
+#1.9.6.1
+Date: 22 April 2016
+# Resolved issues
+* Update Portuguese translations in FLOW dashboard [#1578]
+
+#1.9.6
+Date: 20 April 2016
+# New and noteworthy
+* Better timezone handling in export raw data reports. Consistently display dates using ISO 8601 [#257]
+* Geotagging in photos: include location information, if available, in media responses [#1527]
+* Portuguese translations in FLOW dashboard [#1578]
+* Improve performance by dynamically loading languages in dashboard [#1602]
+* Switch to Oauth2-based authentication in GAE deployments [#1625]
+
+# Resolved issues
+* Ignore blank last cell in raw data reports [#1553]
+* Graphical survey summary report gives a decimal in the summary sheet [#1580]
+* Update device last contact time to the dashboard [#1585]
+* Tasks are unnecessarily rerun for every form response submitted [#1594]
+* NPE on non-monitored survey publishing [#1611]
+
 #1.9.5.2
 Date: 15 March 2016
 # Resolved issues
