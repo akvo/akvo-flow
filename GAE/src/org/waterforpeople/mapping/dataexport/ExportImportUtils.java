@@ -170,10 +170,6 @@ public class ExportImportUtils {
         if (filenameIndex > 0 && filenameIndex < filename.length()) {
             cell = prefix + filename.substring(filenameIndex);
         }
-        // Add location, if available
-        if (media.getLocation() != null) {
-            cell += String.format(", lat:%f/lon:%f", media.getLocation().getLatitude(), media.getLocation().getLongitude());
-        }
         
         return cell;
     }
