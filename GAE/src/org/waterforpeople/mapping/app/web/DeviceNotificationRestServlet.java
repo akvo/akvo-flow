@@ -16,7 +16,6 @@
 
 package org.waterforpeople.mapping.app.web;
 
-import java.util.Date;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -70,12 +69,7 @@ public class DeviceNotificationRestServlet extends AbstractRestApiServlet {
 
             resp.setMissingFiles(missingByDevice);
             resp.setMissingUnknown(missingUnknown);
-            d.setLastLocationBeaconTime(new Date());
-            new DeviceDAO().save(d);
-        } else {
-            // newly connecting devices update their information
-            DeviceDAO dao = new DeviceDAO();
-            dao.updateDeviceLocation(dnReq.getPhoneNumber(), dnReq.getLat(), dnReq.getLon(),
+            new DeviceDAO().updateDevice(dnReq.getPhoneNumber(), dnReq.getLat(), dnReq.getLon(),
                     dnReq.getAccuracy(), null, dnReq.getDeviceIdentifier(), dnReq.getImei(),
                     dnReq.getOsVersion());
         }
