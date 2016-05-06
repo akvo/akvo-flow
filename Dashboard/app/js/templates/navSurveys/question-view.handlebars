@@ -82,6 +82,7 @@
     {{#if view.amBarcodeType}}
     <h1 class="answerNbr">{{t _settings}}: </h1>
       <label class="labelcheckbox"> {{view Ember.Checkbox checkedBinding="view.allowMultipleFlag"}}{{t _enable_bulk_barcode_scan}} </label>
+      <label class="labelcheckbox"> {{view Ember.Checkbox checkedBinding="view.geoLocked"}}{{t _disable_manual_geo_edit}} </label>
     {{/if}}
     {{#if view.amNumberType}}
     <h1 class="answerNbr">{{t _settings}}: </h1>
