@@ -814,15 +814,12 @@ public class SurveyServiceImpl extends RemoteServiceServlet implements
         queue.add(options);
         
         Survey s = new SurveyDAO().getById(surveyId);
-        if (s != null) {
-            Long surveyGroupId = s.getSurveyGroupId();
-            SurveyGroup sg = new SurveyGroupDAO().getByKey(surveyGroupId);
-            if (sg != null && sg.getNewLocaleSurveyId().longValue() == surveyId.longValue()) {
-                // This is the registration form. Schedule datapoint name re-assembly
-                DataProcessorRestServlet.scheduleDatapointNameAssembly(surveyGroupId, null);
-            }
+        SurveyGroup sg = s != null ? new SurveyGroupDAO().getByKey(s.getSurveyGroupId()) : null;
+        if (sg != null && sg.getNewLocaleSurveyId() != null &&
+                sg.getNewLocaleSurveyId().longValue() == surveyId.longValue()) {
+            // This is the registration form. Schedule datapoint name re-assembly
+            DataProcessorRestServlet.scheduleDatapointNameAssembly(sg.getKey().getId(), null);
         }
-        
     }
 
     @Override

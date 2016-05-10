@@ -1,5 +1,5 @@
 /*
- *  Copyright (C) 2010-2015 Stichting Akvo (Akvo Foundation)
+ *  Copyright (C) 2010-2016 Stichting Akvo (Akvo Foundation)
  *
  *  This file is part of Akvo FLOW.
  *
@@ -44,6 +44,7 @@ import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.ss.usermodel.Sheet;
 import org.apache.poi.ss.usermodel.Workbook;
 import org.apache.poi.ss.usermodel.WorkbookFactory;
+import org.apache.poi.ss.util.CellReference;
 import org.codehaus.jackson.map.ObjectMapper;
 import org.waterforpeople.mapping.app.gwt.client.survey.QuestionDto;
 import org.waterforpeople.mapping.app.gwt.client.survey.QuestionDto.QuestionType;
@@ -66,8 +67,6 @@ public class RawDataSpreadsheetImporter implements DataImporter {
     private BlockingQueue<Runnable> jobQueue;
     private List<String> errorIds;
     private static final ObjectMapper OBJECT_MAPPER = new ObjectMapper();
-
-    private static final int SIZE_THRESHOLD = 2000 * 400;
 
     /**
      * opens a file input stream using the file passed in and tries to return the first worksheet in
@@ -101,6 +100,7 @@ public class RawDataSpreadsheetImporter implements DataImporter {
         }
     }
 
+    @Override
     public void executeImport(File file, String serverBase, Map<String, String> criteria) {
         try {
             log.info(String.format("Importing %s to %s using criteria %s", file, serverBase,
@@ -143,20 +143,12 @@ public class RawDataSpreadsheetImporter implements DataImporter {
                     log.error(line);
                 }
             }
-            // Count the number of rows in the sheet
-            Iterator<Row> rowIterator = sheet.rowIterator();
-            int rowCount = 0;
-            while (rowIterator.hasNext()) {
-                rowIterator.next();
-                rowCount++;
-            }
+
             Thread.sleep(5000);
             log.debug("Updating summaries");
-            if (rowCount * questionIdToQuestionDto.size() < SIZE_THRESHOLD) {
-                invokeUrl(serverBase, "action=" + RawDataImportRequest.UPDATE_SUMMARIES_ACTION
-                        + "&" + RawDataImportRequest.SURVEY_ID_PARAM + "=" + surveyId, true,
-                        criteria.get(KEY_PARAM));
-            }
+            invokeUrl(serverBase, "action=" + RawDataImportRequest.UPDATE_SUMMARIES_ACTION
+                    + "&" + RawDataImportRequest.SURVEY_ID_PARAM + "=" + surveyId, true,
+                    criteria.get(KEY_PARAM));
             invokeUrl(serverBase, "action=" + RawDataImportRequest.SAVE_MESSAGE_ACTION + "&"
                     + RawDataImportRequest.SURVEY_ID_PARAM + "=" + surveyId, true,
                     criteria.get(KEY_PARAM));
@@ -282,7 +274,7 @@ public class RawDataSpreadsheetImporter implements DataImporter {
         }
         String surveyInstanceId = ExportImportUtils.parseCellAsString(baseRow
                 .getCell(firstQuestionColumnIndex - 4));
-        Date collectionDate = ExportImportUtils.parseDate(ExportImportUtils
+        Date collectionDate = ExportImportUtils.parseSpreadsheetDate(ExportImportUtils
                 .parseCellAsString(baseRow.getCell(firstQuestionColumnIndex - 3)));
         String submitterName = ExportImportUtils.parseCellAsString(baseRow
                 .getCell(firstQuestionColumnIndex - 2));
@@ -426,7 +418,7 @@ public class RawDataSpreadsheetImporter implements DataImporter {
 
                         case DATE:
                             String dateString = ExportImportUtils.parseCellAsString(cell);
-                            Date date = ExportImportUtils.parseDate(dateString);
+                            Date date = ExportImportUtils.parseSpreadsheetDate(dateString);
                             if (date != null) {
                                 val = String.valueOf(date.getTime());
                             } else {
@@ -434,8 +426,10 @@ public class RawDataSpreadsheetImporter implements DataImporter {
                             }
                             break;
 
+                        case PHOTO:
+                        case VIDEO:
                         case SIGNATURE:
-                            // we do not allow importing / overwriting signature question responses
+                            // we do not allow importing / overwriting signature and media question responses
                             val = null;
                             break;
 
@@ -473,7 +467,7 @@ public class RawDataSpreadsheetImporter implements DataImporter {
         surveyInstanceDto.setSurveyalTime((long) durationToSeconds(surveyalTime));
 
         InstanceData instanceData = new InstanceData(surveyInstanceDto, responseMap);
-        instanceData.maxIterationsCount = (long) iterations;
+        instanceData.maxIterationsCount = iterations;
         return instanceData;
     }
 
@@ -566,7 +560,7 @@ public class RawDataSpreadsheetImporter implements DataImporter {
         }
 
         // Collection date
-        String dateString = ExportImportUtils.formatDate(dto.getCollectionDate());
+        String dateString = ExportImportUtils.formatDateTime(dto.getCollectionDate());
 
         sb.append(
                 RawDataImportRequest.COLLECTION_DATE_PARAM + "="
@@ -707,26 +701,33 @@ public class RawDataSpreadsheetImporter implements DataImporter {
 
             for (Cell cell : headerRow) {
                 String cellValue = cell.getStringCellValue();
-                if (firstQuestionFound && !cellValue.matches(".+\\|.+")) {
-                    errorMap.put(cell.getColumnIndex(),
-                            String.format("The header \"%s\" can not be imported", cellValue));
-                    break;
-                } else {
-                    if (!firstQuestionFound && cellValue.matches("[0-9]+\\|.+")) {
-                        firstQuestionFound = true;
-                        int idx = cell.getColumnIndex();
-                        // idx == 6, monitoring, old format
-                        // idx == 7, new format
-                        // idx == 8, new format, with repeat column
-                        if (!(idx == 6 || idx == 7 || idx == 8)) {
-                            errorMap.put(idx, "Found the first question at the wrong column index");
-                            break;
-                        }
-                        if (idx == 8) {
-                            hasIterationColumn = true;
-                        }
+                // if encountering a null cell make sure its only due to phantom cells at the end of
+                // the row. If null or empty cell occurs in middle of header row report an error
+                if ((cellValue == null || cellValue.trim().isEmpty()) && isMissingHeaderCell(cell)) {
+                    errorMap.put(
+                            cell.getColumnIndex(),
+                            String.format(
+                                    "Cannot import data from Column %s - \"%s\". Please check and/or fix the header cell",
+                                    CellReference.convertNumToColString(cell.getColumnIndex()),
+                                    cellValue));
 
+                    break;
+                }
+
+                if (!firstQuestionFound && cellValue.matches("[0-9]+\\|.+")) {
+                    firstQuestionFound = true;
+                    int idx = cell.getColumnIndex();
+                    // idx == 6, monitoring, old format
+                    // idx == 7, new format
+                    // idx == 8, new format, with repeat column
+                    if (!(idx == 6 || idx == 7 || idx == 8)) {
+                        errorMap.put(idx, "Found the first question at the wrong column index");
+                        break;
                     }
+                    if (idx == 8) {
+                        hasIterationColumn = true;
+                    }
+
                 }
             }
 
@@ -756,6 +757,26 @@ public class RawDataSpreadsheetImporter implements DataImporter {
         }
 
         return errorMap;
+    }
+
+    /**
+     * When a blank or null cell is incurred while processing, make sure that this is the last cell
+     * in the row and ignore any other "phantom cells" that may occur. We only allow this for the
+     * header row. If the blank cell occurs in between valid header cells we return true.
+     *
+     * @param cell
+     * @return
+     */
+    private boolean isMissingHeaderCell(Cell cell) {
+        assert cell.getRow().getRowNum() == 0; // only process header rows
+
+        Row row = cell.getRow();
+        for (int i = cell.getColumnIndex(); i < row.getLastCellNum(); i++) {
+            if (row.getCell(i) != null && !row.getCell(i).getStringCellValue().trim().isEmpty()) {
+                return true;
+            }
+        }
+        return false;
     }
 
     public static void main(String[] args) throws Exception {

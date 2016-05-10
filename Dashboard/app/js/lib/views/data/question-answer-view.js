@@ -2,8 +2,9 @@
 
 function formatDate(date) {
   if (date && !isNaN(date.getTime())) {
-    return date.getFullYear() + "/" + (date.getMonth() + 1) + "/" + date.getDate();
-  } else return null;
+    return date.getFullYear() + "-" + (date.getMonth() + 1) + "-" + date.getDate();
+  }
+  return null;
 }
 
 function sortByOrder(a , b) {
@@ -349,7 +350,10 @@ FLOW.QuestionAnswerView = Ember.View.extend({
   photoUrl: function(){
     var c = this.content;
     if (!Ember.empty(c.get('value'))) {
-      return FLOW.Env.photo_url_root + c.get('value').split('/').pop();
+      jImage = JSON.parse(c.get('value'));
+      if (jImage && jImage.filename) {
+          return FLOW.Env.photo_url_root + jImage.filename.split('/').pop();
+      }
     }
   }.property('this.content,this.isPhotoType,this.isVideoType'),
 

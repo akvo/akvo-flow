@@ -622,10 +622,18 @@ FLOW.NavMapsView = FLOW.View.extend({
                     if(questionAnswer !== "" && questionAnswer !== null && questionAnswer !== "null"){
                       switch (questionsData['questions'][i].type) {
                         case "PHOTO":
+                          var imageString = "", imageJson;
+                          if (questionAnswer.charAt(0) === '{') {
+                            imageJson = JSON.parse(questionAnswer);
+                            imageString = imageJson.filename
+                          } else {
+                            imageString = questionAnswer;
+                          }
+
                           var image = '<div class=":imgContainer photoUrl:shown:hidden">';
-                          var image_filename = FLOW.Env.photo_url_root+questionAnswer.substring(questionAnswer.lastIndexOf("/")+1);
-                          image += '<a href="'+image_filename+'" target="_blank">'
-                          +'<img src="'+image_filename+'" alt=""/></a>';
+                          var imageFilename = FLOW.Env.photo_url_root+imageString.substring(imageString.lastIndexOf("/")+1);
+                          image += '<a href="'+imageFilename+'" target="_blank">'
+                          +'<img src="'+imageFilename+'" alt=""/></a>';
 
                           image += '</div>';
                           clickedPointContent += image;
@@ -664,6 +672,16 @@ FLOW.NavMapsView = FLOW.View.extend({
                           signatureJson = JSON.parse(questionAnswer);
                           clickedPointContent += srcAttr + signatureJson.image +'"/>';
                           clickedPointContent += Ember.String.loc('_signed_by') +': '+signatureJson.name;
+                          break;
+                        case "VIDEO":
+                          var videoString = "", videoJson;
+                          if (questionAnswer.charAt(0) === '{') {
+                            videoJson = JSON.parse(questionAnswer);
+                            videoString = videoJson.filename
+                          } else {
+                            videoString = questionAnswer;
+                          }
+                          clickedPointContent += videoString;
                           break;
                         case "CASCADE":
                         case "OPTION":

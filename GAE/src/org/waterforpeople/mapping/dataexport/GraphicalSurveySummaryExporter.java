@@ -1,5 +1,5 @@
 /*
- *  Copyright (C) 2010-2015 Stichting Akvo (Akvo Foundation)
+ *  Copyright (C) 2010-2016 Stichting Akvo (Akvo Foundation)
  *
  *  This file is part of Akvo FLOW.
  *
@@ -519,7 +519,7 @@ public class GraphicalSurveySummaryExporter extends SurveySummaryExporter {
                 dto.getDeviceIdentifier());
         createCell(row, columnIndexMap.get(INSTANCE_LABEL.get(locale)), dto.getKeyId().toString());
         createCell(row, columnIndexMap.get(SUB_DATE_LABEL.get(locale)),
-                ExportImportUtils.formatDate(dto.getCollectionDate()));
+                ExportImportUtils.formatDateTime(dto.getCollectionDate()));
         createCell(row, columnIndexMap.get(SUBMITTER_LABEL.get(locale)),
                 sanitize(dto.getSubmitterName()));
         String duration = getDurationText(dto.getSurveyalTime());
@@ -612,8 +612,8 @@ public class GraphicalSurveySummaryExporter extends SurveySummaryExporter {
                     synchronized (model) {
                         for (int i = 0; i < vals.length; i++) {
                             if (vals[i] != null && vals[i].trim().length() > 0) {
-                                model.tallyResponse(effectiveId, rollups,
-                                        vals[i]);
+                                QuestionDto q = questionsById.get(Long.valueOf(effectiveId));
+                                model.tallyResponse(effectiveId, rollups, vals[i], q);
                             }
                         }
                     }
@@ -647,14 +647,14 @@ public class GraphicalSurveySummaryExporter extends SurveySummaryExporter {
         List<String> cells = new ArrayList<>();
 
         QuestionType questionType = questionDto.getQuestionType();
-        Long questionId = questionDto.getKeyId();
 
         switch (questionType) {
             case DATE:
-                cells.add(dateCellValue(value, questionId));
+                cells.add(dateCellValue(value));
                 break;
 
             case PHOTO:
+            case VIDEO:
                 cells.add(photoCellValue(value, imagePrefix));
                 break;
 
@@ -687,23 +687,16 @@ public class GraphicalSurveySummaryExporter extends SurveySummaryExporter {
         }
     }
 
-    private static String dateCellValue(String value, Long questionId) {
-        try {
-            return ExportImportUtils.formatDate(ExportImportUtils.parseDate(value));
-
-        } catch (Exception e) {
-            log.error(
-                    "Couldn't format value for question id: " + questionId + " -  "
-                            + e.getMessage(), e);
-            return "";
-        }
+    private static String dateCellValue(String value) {
+        return ExportImportUtils.formatDateResponse(value);
     }
 
     private static String photoCellValue(String value, String imagePrefix) {
-        final int filenameIndex = value.lastIndexOf("/") + 1;
+        String filename = ExportImportUtils.formatImage(value);
+        final int filenameIndex = filename.lastIndexOf("/") + 1;
         String cell = "";
-        if (filenameIndex > 0 && filenameIndex < value.length()) {
-            cell = imagePrefix + value.substring(filenameIndex);
+        if (filenameIndex > 0 && filenameIndex < filename.length()) {
+            cell = imagePrefix + filename.substring(filenameIndex);
         }
         return cell;
     }

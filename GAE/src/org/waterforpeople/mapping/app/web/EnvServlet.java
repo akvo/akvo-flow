@@ -1,5 +1,5 @@
 /*
- *  Copyright (C) 2013-2015 Stichting Akvo (Akvo Foundation)
+ *  Copyright (C) 2013-2016 Stichting Akvo (Akvo Foundation)
  *
  *  This file is part of Akvo FLOW.
  *
@@ -17,6 +17,7 @@
 package org.waterforpeople.mapping.app.web;
 
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.PrintWriter;
 import java.io.StringWriter;
 import java.util.ArrayList;
@@ -31,6 +32,7 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.akvo.flow.locale.UIStrings;
 import org.apache.velocity.Template;
 import org.apache.velocity.VelocityContext;
 import org.apache.velocity.app.VelocityEngine;
@@ -42,6 +44,9 @@ import com.gallatinsystems.common.Constants;
 import com.gallatinsystems.common.util.PropertyUtil;
 import com.gallatinsystems.framework.dao.BaseDAO;
 import com.gallatinsystems.gis.geography.domain.Country;
+import com.gallatinsystems.user.dao.UserDao;
+import com.gallatinsystems.user.domain.User;
+import com.google.appengine.api.users.UserServiceFactory;
 import com.google.appengine.api.utils.SystemProperty;
 
 public class EnvServlet extends HttpServlet {
@@ -147,6 +152,20 @@ public class EnvServlet extends HttpServlet {
         }
         props.put("countries", jsonArray.toString());
 
+        // load language configuration and strings if present
+        addLocale(props);
+
+        final InputStream uiStringsFileStream = this.getClass().getResourceAsStream(
+                "/locale/ui-strings.properties");
+        InputStream localeStringsFileStream = null;
+
+        if (props.get("locale") != null && !"en".equalsIgnoreCase(props.get("locale"))) {
+            localeStringsFileStream = this.getClass().getResourceAsStream(
+                    "/locale/" + props.get("locale") + ".properties");
+        }
+        context.put("localeStrings",
+                UIStrings.getStrings(uiStringsFileStream, localeStringsFileStream));
+
         context.put("env", props);
 
         final List<Map<String, String>> roles = new ArrayList<Map<String, String>>();
@@ -169,5 +188,24 @@ public class EnvServlet extends HttpServlet {
         final PrintWriter pw = resp.getWriter();
         pw.println(writer.toString());
         pw.close();
+    }
+
+    /**
+     * Check for the current user locale configuration and set it
+     *
+     * @param props
+     */
+    private void addLocale(Map<String, String> props) {
+        final com.google.appengine.api.users.User currentGoogleUser = UserServiceFactory
+                .getUserService().getCurrentUser();
+        if (currentGoogleUser != null && currentGoogleUser.getEmail() != null) {
+            final User currentUser = new UserDao().findUserByEmail(currentGoogleUser.getEmail());
+            final String locale = currentUser.getLanguage();
+            if (locale != null) {
+                props.put("locale", locale);
+            } else {
+                props.put("locale", "en");
+            }
+        }
     }
 }

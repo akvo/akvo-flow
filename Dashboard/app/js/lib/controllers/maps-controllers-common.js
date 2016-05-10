@@ -65,7 +65,7 @@ FLOW.placemarkController = Ember.ArrayController.create({
     // TODO this is not optimal at high zoom levels, as we will already have loaded the same points on a level before
     for (var i = 0; i < bestBB.length; i++){
       if (this.get('geocellCache').indexOf(bestBB[i]+"-"+gcLevel) < 0 ) {
-        // if we don't have it in the cache add it to the list of items to be loaded 
+        // if we don't have it in the cache add it to the list of items to be loaded
     	listToRetrieve.push(bestBB[i]);
 
     	// now add this key to cache
@@ -130,7 +130,7 @@ FLOW.placemarkController = Ember.ArrayController.create({
     	if (!Ember.none(FLOW.placemarkController.get('selectedMarker'))){
     		if (FLOW.placemarkController.selectedMarker.target.options.placemarkId != marker.target.options.placemarkId){
     			FLOW.placemarkController.selectedMarker.target.options.selected = false;
-    			FLOW.placemarkController.selectedMarker.target.setStyle({color:'#d46f12', 
+                FLOW.placemarkController.selectedMarker.target.setStyle({color:'#d46f12',
     	    		fillColor:'#edb660'});
     			FLOW.placemarkController.set('selectedMarker',null);
     		}
@@ -164,7 +164,7 @@ FLOW.countryController = Ember.ArrayController.create({
 		  this.set('content', this.getContent(FLOW.Env.countries));
 	  }
   },
-  
+
   /**
     Helper function to parse backend countries to countryList
   */
@@ -215,7 +215,7 @@ FLOW.placemarkDetailController = Ember.ArrayController.create({
 		  this.set('content', Ember.A());
 	  }
   },
- 
+
   handlePlacemarkSelection: function () {
     var selectedPlacemarkId = null;
     if (!Ember.none(FLOW.placemarkController.get('selectedMarker'))) {
@@ -227,7 +227,7 @@ FLOW.placemarkDetailController = Ember.ArrayController.create({
 
   photoUrl: function () {
     var photoDetails, photoUrls = [],
-      rawPhotoUrl;
+      rawPhotoUrl, photoJson;
 
     if (!this.get('content').get('isLoaded')) {
       return null;
@@ -244,6 +244,10 @@ FLOW.placemarkDetailController = Ember.ArrayController.create({
 
     photoDetails.forEach(function (photo) {
       rawPhotoUrl = photo.get('stringValue') || '';
+      if (rawPhotoUrl.charAt(0) === '{') {
+        photoJson = JSON.parse(rawPhotoUrl);
+        rawPhotoUrl = photoJson.filename;
+      }
       // Since photos have a leading path from devices that we need to trim
       photoUrls.push(FLOW.Env.photo_url_root + rawPhotoUrl.split('/').pop());
     });

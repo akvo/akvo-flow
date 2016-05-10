@@ -18,12 +18,7 @@ require('akvo-flow/controllers/messages-controllers');
 require('akvo-flow/controllers/user-controllers');
 require('akvo-flow/controllers/survey-selection');
 
-FLOW.ApplicationController = Ember.Controller.extend({
-  init: function () {
-    this._super();
-    Ember.STRINGS = Ember.STRINGS_EN;
-  }
-});
+FLOW.ApplicationController = Ember.Controller.extend({});
 
 FLOW.role = Ember.Object.create({
 	SUPER_ADMIN: function () {

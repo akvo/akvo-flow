@@ -29,12 +29,6 @@ require('akvo-flow/views/users/user-view');
 
 FLOW.ApplicationView = Ember.View.extend({
   templateName: 'application/application',
-
-  init: function () {
-    var locale = localStorage.locale || 'en';
-    this._super();
-    Ember.STRINGS = Ember['STRINGS_' + locale.toUpperCase()];
-  }
 });
 
 
@@ -94,7 +88,8 @@ Ember.Handlebars.registerHelper('tooltip', function (i18nKey) {
 
 
 Ember.Handlebars.registerHelper('placemarkDetail', function () {
-  var answer, markup, question, cascadeJson, optionJson, cascadeString = "", questionType, imageSrcAttr, signatureJson;
+  var answer, markup, question, cascadeJson, optionJson, cascadeString = "",
+  questionType, imageSrcAttr, signatureJson, photoJson;
 
   question = Ember.get(this, 'questionText');
   answer = Ember.get(this, 'stringValue') || '';
@@ -112,6 +107,9 @@ Ember.Handlebars.registerHelper('placemarkDetail', function () {
           return item.name;
         }).join("|");
       }
+  } else if ((questionType === 'VIDEO' || questionType === 'PHOTO') && answer.charAt(0) === '{') {
+    photoJson = JSON.parse(answer)
+    answer = photoJson.filename;
   } else if (questionType === 'OPTION' && answer.charAt(0) === '[') {
     optionJson = JSON.parse(answer);
     answer = optionJson.map(function(item){
@@ -135,7 +133,7 @@ Ember.Handlebars.registerHelper('placemarkDetail', function () {
 });
 
 /*  Take a timestamp and render it as a date in format
-    YYYY/mm/dd */
+    YYYY-mm-dd */
 function renderTimeStamp(timestamp) {
   var d, t, date, month, year;
   t = parseInt(timestamp, 10);
@@ -161,7 +159,7 @@ function renderTimeStamp(timestamp) {
       dateString = date.toString();
     }
 
-    return year + "/" + monthString + "/" + dateString;
+    return year + "-" + monthString + "-" + dateString;
   } else {
     return "";
   }
@@ -462,10 +460,6 @@ FLOW.NavigationView = Em.View.extend({
   templateName: 'application/navigation',
   selectedBinding: 'controller.selected',
 
-  onLanguageChange: function () {
-    this.rerender();
-  }.observes('FLOW.dashboardLanguageControl.dashboardLanguage'),
-
   NavItemView: Ember.View.extend({
     tagName: 'li',
     classNameBindings: 'isActive:current navItem'.w(),
@@ -523,7 +517,7 @@ FLOW.DateField = Ember.TextField.extend({
     if (this.get('minDate')) {
       // datepickers with only future dates
       $("#from_date").datepicker({
-        dateFormat: 'yy/mm/dd',
+        dateFormat: 'yy-mm-dd',
         defaultDate: new Date(),
         numberOfMonths: 1,
         minDate: new Date(),
@@ -534,7 +528,7 @@ FLOW.DateField = Ember.TextField.extend({
       });
 
       $("#to_date").datepicker({
-        dateFormat: 'yy/mm/dd',
+        dateFormat: 'yy-mm-dd',
         defaultDate: new Date(),
         numberOfMonths: 1,
         minDate: new Date(),
@@ -546,7 +540,7 @@ FLOW.DateField = Ember.TextField.extend({
     } else {
       // datepickers with all dates
       $("#from_date").datepicker({
-        dateFormat: 'yy/mm/dd',
+        dateFormat: 'yy-mm-dd',
         defaultDate: new Date(),
         numberOfMonths: 1,
         onSelect: function (selectedDate) {
@@ -556,7 +550,7 @@ FLOW.DateField = Ember.TextField.extend({
       });
 
       $("#to_date").datepicker({
-        dateFormat: 'yy/mm/dd',
+        dateFormat: 'yy-mm-dd',
         defaultDate: new Date(),
         numberOfMonths: 1,
         onSelect: function (selectedDate) {
@@ -573,11 +567,10 @@ FLOW.DateField2 = Ember.TextField.extend({
     this._super();
 
     this.$().datepicker({
-      dateFormat: 'yy/mm/dd',
+      dateFormat: 'yy-mm-dd',
       defaultDate: new Date(),
       numberOfMonths: 1
     });
-    this.$().datepicker("option", "minDate", new Date());
   }
 });
 
