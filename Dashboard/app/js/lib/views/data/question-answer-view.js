@@ -3,7 +3,7 @@
 function formatDate(date) {
   if (date && !isNaN(date.getTime())) {
     return date.getFullYear() + "-" + (date.getMonth() + 1) + "-" + date.getDate();
-  } 
+  }
   return null;
 }
 
@@ -38,7 +38,7 @@ FLOW.QuestionAnswerView = Ember.View.extend({
   }.property('this.questionType'),
 
   isPhotoType: function(){
-    return this.get('questionType') === 'PHOTO';
+    return (this.get('questionType') === 'PHOTO' || (this.content && this.content.get('type') === 'IMAGE'));
   }.property('this.questionType'),
 
   isVideoType: function(){
