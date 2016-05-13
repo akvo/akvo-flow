@@ -689,7 +689,9 @@ public class GraphicalSurveySummaryExporter extends SurveySummaryExporter {
         int col = startColumn;
         for (String cellValue : cells) {
             if (questionType == QuestionType.NUMBER) {
-                createCell(row, col, cellValue, mNumberStyle, Cell.CELL_TYPE_NUMERIC);
+                //0.### looked good in Calc but bad in Excel: "3" showed as "3."
+                //createCell(row, col, cellValue, mNumberStyle, Cell.CELL_TYPE_NUMERIC);
+                createCell(row, col, cellValue, null, Cell.CELL_TYPE_NUMERIC);
             } else {
                 createCell(row, col, cellValue, mTextStyle);
             }
