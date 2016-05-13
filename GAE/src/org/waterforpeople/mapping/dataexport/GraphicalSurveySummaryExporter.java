@@ -281,7 +281,7 @@ public class GraphicalSurveySummaryExporter extends SurveySummaryExporter {
 
     private CellStyle headerStyle;
     private CellStyle mTextStyle;
-    private CellStyle mNumberStyle;
+//    private CellStyle mNumberStyle;
     private String locale;
     private String imagePrefix;
     private String serverBase;
@@ -335,9 +335,11 @@ public class GraphicalSurveySummaryExporter extends SurveySummaryExporter {
                 short textFormat = wb.createDataFormat().getFormat("@"); //built-in text format
                 mTextStyle = wb.createCellStyle();
                 mTextStyle.setDataFormat(textFormat);
-                short numberFormat = wb.createDataFormat().getFormat("0.###");//Show 0-3 decimals, never scientific
-                mNumberStyle = wb.createCellStyle();
-                mNumberStyle.setDataFormat(numberFormat);
+                //This was intended to suppress scientific notation in number answer cells,
+                // but it looked bad in Excel - "3" was shown as "3."
+                //short numberFormat = wb.createDataFormat().getFormat("0.###");//Show 0-3 decimals, never scientific
+                //mNumberStyle = wb.createCellStyle();
+                //mNumberStyle.setDataFormat(numberFormat);
                 
                 SummaryModel model = fetchAndWriteRawData(
                         criteria.get(SurveyRestRequest.SURVEY_ID_PARAM),
@@ -689,8 +691,6 @@ public class GraphicalSurveySummaryExporter extends SurveySummaryExporter {
         int col = startColumn;
         for (String cellValue : cells) {
             if (questionType == QuestionType.NUMBER) {
-                //0.### looked good in Calc but bad in Excel: "3" showed as "3."
-                //createCell(row, col, cellValue, mNumberStyle, Cell.CELL_TYPE_NUMERIC);
                 createCell(row, col, cellValue, null, Cell.CELL_TYPE_NUMERIC);
             } else {
                 createCell(row, col, cellValue, mTextStyle);
