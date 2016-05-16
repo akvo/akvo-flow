@@ -1,6 +1,6 @@
 <img src="https://raw.githubusercontent.com/akvo/akvo-web/develop/code/wp-content/themes/Akvo-responsive/images/flow60px.png" />
 
-[Akvo FLOW](http://akvo.org/products/akvoflow/) is a tool for collecting, evaluating and displaying of geographically referenced data. It is composed of an [android mobile app](https://github.com/akvo/akvo-flow-mobile/) and an online dashboard. This repository contains code for the online dashboard that comprises a [dashboard backend](https://github.com/akvo/akvo-flow/tree/master/GAE) and a [dashboard user interface](https://github.com/akvo/akvo-flow/tree/master/Dashboard) components.  Alongside the dashboard and mobile apps, is a [data import and export component](https://github.com/akvo/akvo-flow-services).
+[Akvo Flow](http://akvo.org/products/akvoflow/) is a tool for collecting, evaluating and displaying of geographically referenced data. It is composed of an [android mobile app](https://github.com/akvo/akvo-flow-mobile/) and an online dashboard. This repository contains code for the online dashboard that comprises a [dashboard backend](https://github.com/akvo/akvo-flow/tree/master/GAE) and a [dashboard user interface](https://github.com/akvo/akvo-flow/tree/master/Dashboard) components.  Alongside the dashboard and mobile apps, is a [data import and export component](https://github.com/akvo/akvo-flow-services).
 
 <p>&nbsp;</p>
 
