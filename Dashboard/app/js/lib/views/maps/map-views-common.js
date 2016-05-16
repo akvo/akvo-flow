@@ -697,11 +697,21 @@ FLOW.NavMapsView = FLOW.View.extend({
                       clickedPointContent += dateQuestion.toUTCString().slice(0, -13); //remove last 13 x-ters so only date displays
                       break;
                     case "SIGNATURE":
-                      clickedPointContent += '<img src="';
+                      clickedPointContent += '<div class="signatureImage"><img src="';
                       var srcAttr = 'data:image/png;base64,', signatureJson;
                       signatureJson = JSON.parse(questionAnswer);
-                      clickedPointContent += srcAttr + signatureJson.image +'"/>';
-                      clickedPointContent += Ember.String.loc('_signed_by') +': '+signatureJson.name;
+                      clickedPointContent += srcAttr + signatureJson.image +'"/></div>';
+                      clickedPointContent += '<div class="signedBySection">'+Ember.String.loc('_signed_by') +': '+signatureJson.name+'</div>';
+                      break;
+                    case "VIDEO":
+                      var videoString = "", videoJson;
+                      if (questionAnswer.charAt(0) === '{') {
+                        videoJson = JSON.parse(questionAnswer);
+                        videoString = videoJson.filename
+                      } else {
+                        videoString = questionAnswer;
+                      }
+                      clickedPointContent += videoString;
                       break;
                     case "CASCADE":
                     case "OPTION":
@@ -752,7 +762,6 @@ FLOW.NavMapsView = FLOW.View.extend({
       if(questionGroupsResponse.question_groups){
         //for every question group pull a list of associated questions
         for(var g=0; g<questionGroupsResponse.question_groups.length; g++){
-          //questionGroupsData.question_groups[g]
           var questionsAjaxObject = {};
           questionsAjaxObject['call'] = 'GET';
           questionsAjaxObject['url'] = '/rest/questions?surveyId='+formId+'&questionGroupId='+questionGroupsResponse.question_groups[g].keyId;

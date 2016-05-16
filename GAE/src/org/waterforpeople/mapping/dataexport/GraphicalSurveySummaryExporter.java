@@ -47,6 +47,7 @@ import org.apache.poi.ss.usermodel.Cell;
 import org.apache.poi.ss.usermodel.CellStyle;
 import org.apache.poi.ss.usermodel.ClientAnchor;
 import org.apache.poi.ss.usermodel.CreationHelper;
+import org.apache.poi.ss.usermodel.DataFormat;
 import org.apache.poi.ss.usermodel.Drawing;
 import org.apache.poi.ss.usermodel.Font;
 import org.apache.poi.ss.usermodel.Row;
@@ -279,6 +280,8 @@ public class GraphicalSurveySummaryExporter extends SurveySummaryExporter {
     }
 
     private CellStyle headerStyle;
+    private CellStyle mTextStyle;
+    private CellStyle mNumberStyle;
     private String locale;
     private String imagePrefix;
     private String serverBase;
@@ -328,7 +331,14 @@ public class GraphicalSurveySummaryExporter extends SurveySummaryExporter {
                 Font headerFont = wb.createFont();
                 headerFont.setBoldweight(Font.BOLDWEIGHT_BOLD);
                 headerStyle.setFont(headerFont);
-
+                
+                short textFormat = wb.createDataFormat().getFormat("@"); //built-in text format
+                mTextStyle = wb.createCellStyle();
+                mTextStyle.setDataFormat(textFormat);
+                short numberFormat = wb.createDataFormat().getFormat("0.###");//Show 0-3 decimals, never scientific
+                mNumberStyle = wb.createCellStyle();
+                mNumberStyle.setDataFormat(numberFormat);
+                
                 SummaryModel model = fetchAndWriteRawData(
                         criteria.get(SurveyRestRequest.SURVEY_ID_PARAM),
                         serverBase, questionMap, wb, isFullReport, fileName,
@@ -519,7 +529,7 @@ public class GraphicalSurveySummaryExporter extends SurveySummaryExporter {
                 dto.getDeviceIdentifier());
         createCell(row, columnIndexMap.get(INSTANCE_LABEL.get(locale)), dto.getKeyId().toString());
         createCell(row, columnIndexMap.get(SUB_DATE_LABEL.get(locale)),
-                ExportImportUtils.formatDate(dto.getCollectionDate()));
+                ExportImportUtils.formatDateTime(dto.getCollectionDate()));
         createCell(row, columnIndexMap.get(SUBMITTER_LABEL.get(locale)),
                 sanitize(dto.getSubmitterName()));
         String duration = getDurationText(dto.getSurveyalTime());
@@ -612,8 +622,8 @@ public class GraphicalSurveySummaryExporter extends SurveySummaryExporter {
                     synchronized (model) {
                         for (int i = 0; i < vals.length; i++) {
                             if (vals[i] != null && vals[i].trim().length() > 0) {
-                                model.tallyResponse(effectiveId, rollups,
-                                        vals[i]);
+                                QuestionDto q = questionsById.get(Long.valueOf(effectiveId));
+                                model.tallyResponse(effectiveId, rollups, vals[i], q);
                             }
                         }
                     }
@@ -647,14 +657,14 @@ public class GraphicalSurveySummaryExporter extends SurveySummaryExporter {
         List<String> cells = new ArrayList<>();
 
         QuestionType questionType = questionDto.getQuestionType();
-        Long questionId = questionDto.getKeyId();
 
         switch (questionType) {
             case DATE:
-                cells.add(dateCellValue(value, questionId));
+                cells.add(dateCellValue(value));
                 break;
 
             case PHOTO:
+            case VIDEO:
                 cells.add(photoCellValue(value, imagePrefix));
                 break;
 
@@ -679,34 +689,20 @@ public class GraphicalSurveySummaryExporter extends SurveySummaryExporter {
         int col = startColumn;
         for (String cellValue : cells) {
             if (questionType == QuestionType.NUMBER) {
-                createCell(row, col, cellValue, null, Cell.CELL_TYPE_NUMERIC);
+                createCell(row, col, cellValue, mNumberStyle, Cell.CELL_TYPE_NUMERIC);
             } else {
-                createCell(row, col, cellValue);
+                createCell(row, col, cellValue, mTextStyle);
             }
             col++; // also takes care of padding in case no cell content added
         }
     }
 
-    private static String dateCellValue(String value, Long questionId) {
-        try {
-            return ExportImportUtils.formatDate(ExportImportUtils.parseDate(value));
-
-        } catch (Exception e) {
-            log.error(
-                    "Couldn't format value for question id: " + questionId + " -  "
-                            + e.getMessage(), e);
-            return "";
-        }
+    private static String dateCellValue(String value) {
+        return ExportImportUtils.formatDateResponse(value);
     }
 
     private static String photoCellValue(String value, String imagePrefix) {
-        String filename = ExportImportUtils.formatImage(value);
-        final int filenameIndex = filename.lastIndexOf("/") + 1;
-        String cell = "";
-        if (filenameIndex > 0 && filenameIndex < filename.length()) {
-            cell = imagePrefix + filename.substring(filenameIndex);
-        }
-        return cell;
+        return ExportImportUtils.formatImage(imagePrefix, value);
     }
 
     private static List<String> geoCellValues(String value) {

@@ -68,8 +68,6 @@ public class RawDataSpreadsheetImporter implements DataImporter {
     private List<String> errorIds;
     private static final ObjectMapper OBJECT_MAPPER = new ObjectMapper();
 
-    private static final int SIZE_THRESHOLD = 2000 * 400;
-
     /**
      * opens a file input stream using the file passed in and tries to return the first worksheet in
      * that file
@@ -145,20 +143,12 @@ public class RawDataSpreadsheetImporter implements DataImporter {
                     log.error(line);
                 }
             }
-            // Count the number of rows in the sheet
-            Iterator<Row> rowIterator = sheet.rowIterator();
-            int rowCount = 0;
-            while (rowIterator.hasNext()) {
-                rowIterator.next();
-                rowCount++;
-            }
+
             Thread.sleep(5000);
             log.debug("Updating summaries");
-            if (rowCount * questionIdToQuestionDto.size() < SIZE_THRESHOLD) {
-                invokeUrl(serverBase, "action=" + RawDataImportRequest.UPDATE_SUMMARIES_ACTION
-                        + "&" + RawDataImportRequest.SURVEY_ID_PARAM + "=" + surveyId, true,
-                        criteria.get(KEY_PARAM));
-            }
+            invokeUrl(serverBase, "action=" + RawDataImportRequest.UPDATE_SUMMARIES_ACTION
+                    + "&" + RawDataImportRequest.SURVEY_ID_PARAM + "=" + surveyId, true,
+                    criteria.get(KEY_PARAM));
             invokeUrl(serverBase, "action=" + RawDataImportRequest.SAVE_MESSAGE_ACTION + "&"
                     + RawDataImportRequest.SURVEY_ID_PARAM + "=" + surveyId, true,
                     criteria.get(KEY_PARAM));
@@ -284,7 +274,7 @@ public class RawDataSpreadsheetImporter implements DataImporter {
         }
         String surveyInstanceId = ExportImportUtils.parseCellAsString(baseRow
                 .getCell(firstQuestionColumnIndex - 4));
-        Date collectionDate = ExportImportUtils.parseDate(ExportImportUtils
+        Date collectionDate = ExportImportUtils.parseSpreadsheetDate(ExportImportUtils
                 .parseCellAsString(baseRow.getCell(firstQuestionColumnIndex - 3)));
         String submitterName = ExportImportUtils.parseCellAsString(baseRow
                 .getCell(firstQuestionColumnIndex - 2));
@@ -428,7 +418,7 @@ public class RawDataSpreadsheetImporter implements DataImporter {
 
                         case DATE:
                             String dateString = ExportImportUtils.parseCellAsString(cell);
-                            Date date = ExportImportUtils.parseDate(dateString);
+                            Date date = ExportImportUtils.parseSpreadsheetDate(dateString);
                             if (date != null) {
                                 val = String.valueOf(date.getTime());
                             } else {
@@ -570,7 +560,7 @@ public class RawDataSpreadsheetImporter implements DataImporter {
         }
 
         // Collection date
-        String dateString = ExportImportUtils.formatDate(dto.getCollectionDate());
+        String dateString = ExportImportUtils.formatDateTime(dto.getCollectionDate());
 
         sb.append(
                 RawDataImportRequest.COLLECTION_DATE_PARAM + "="

@@ -1,5 +1,5 @@
 /*
- *  Copyright (C) 2010-2014 Stichting Akvo (Akvo Foundation)
+ *  Copyright (C) 2010-2016 Stichting Akvo (Akvo Foundation)
  *
  *  This file is part of Akvo FLOW.
  *
@@ -44,7 +44,10 @@ public class UserDao extends BaseDAO<User> {
      * @return
      */
     public User findUserByEmail(String email) {
-        return findByProperty("emailAddress", email, STRING_TYPE);
+        if (email == null || email.trim().isEmpty()) {
+            return null;
+        }
+        return findByProperty("emailAddress", email.trim().toLowerCase(), STRING_TYPE);
     }
 
     /**

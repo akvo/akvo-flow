@@ -40,7 +40,7 @@ public class StringsServlet extends HttpServlet {
     private static final Logger log = Logger.getLogger(StringsServlet.class
             .getClass().getName());
     final Set<String> enabledLocales = new HashSet<String>(
-            Arrays.asList("en", "es", "fr", "pt"));
+            Arrays.asList("en", "es", "fr", "pt", "id"));
 
     @Override
     protected void doGet(HttpServletRequest req, HttpServletResponse resp)
@@ -60,7 +60,7 @@ public class StringsServlet extends HttpServlet {
         }
 
         final UserDao uDao = new UserDao();
-        final User currentUser = uDao.findUserByEmail(currentGoogleUser.getEmail().trim());
+        final User currentUser = uDao.findUserByEmail(currentGoogleUser.getEmail());
         currentUser.setLanguage(locale);
         uDao.save(currentUser);
         log.info("Changed locale setting for user to '" + locale.toUpperCase() + "'");

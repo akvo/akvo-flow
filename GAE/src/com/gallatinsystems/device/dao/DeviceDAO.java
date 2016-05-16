@@ -1,5 +1,5 @@
 /*
- *  Copyright (C) 2010-2012 Stichting Akvo (Akvo Foundation)
+ *  Copyright (C) 2010-2016 Stichting Akvo (Akvo Foundation)
  *
  *  This file is part of Akvo FLOW.
  *
@@ -18,6 +18,8 @@ package com.gallatinsystems.device.dao;
 
 import java.util.Date;
 import java.util.logging.Logger;
+
+import org.apache.commons.lang.StringUtils;
 
 import com.gallatinsystems.device.domain.Device;
 import com.gallatinsystems.device.domain.Device.DeviceType;
@@ -66,7 +68,7 @@ public class DeviceDAO extends BaseDAO<Device> {
     }
 
     /**
-     * updates the device's last known position
+     * Create or update device
      * 
      * @param phoneNumber
      * @param lat
@@ -76,9 +78,13 @@ public class DeviceDAO extends BaseDAO<Device> {
      * @param deviceIdentifier
      * @param imei
      */
-    public void updateDeviceLocation(String phoneNumber, Double lat,
+    public void updateDevice(String phoneNumber, Double lat,
             Double lon, Double accuracy, String version,
             String deviceIdentifier, String imei, String osVersion) {
+        if (StringUtils.isEmpty(imei) && StringUtils.isEmpty(phoneNumber)) {
+            return;
+        }
+        
         Device d = null;
         if (imei != null) { // New Apps from 1.10.0 and on provide IMEI/ESN
             d = getByImei(imei);
