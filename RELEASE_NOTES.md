@@ -5,7 +5,7 @@ Read more about the [Akvo Platform](http://www.akvo.org/blog/?p=4822).
 
 Akvo FLOW Dashboard release notes
 ----
-#1.9.7
+#1.9.7 - Fashionable Flamingo
 Date: 16 May 2016
 # New and noteworthy
 * Order cascade resources in drop-downs alphabetically to enable easier finding of a cascade resource in the list [#1615]
@@ -29,7 +29,7 @@ Date: 22 April 2016
 # Resolved issues
 * Update Portuguese translations in FLOW dashboard [#1578]
 
-#1.9.6
+#1.9.6 - Easygoing Elephant
 Date: 20 April 2016
 # New and noteworthy
 * Better timezone handling in export raw data reports. Consistently display dates using ISO 8601 [#257]
