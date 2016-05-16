@@ -5,6 +5,20 @@ Read more about the [Akvo Platform](http://www.akvo.org/blog/?p=4822).
 
 Akvo FLOW Dashboard release notes
 ----
+#1.9.7
+Date: 16 May 2016
+# New and noteworthy
+* Order cascade resources in drop-downs alphabetically to enable easier finding of a cascade resource in the list [#1615]
+* Add Bahasa/Indonesian language to dashboard [#1566]
+* Geotagging in photos in the dashboard.  We now show the latitude/longitude data for photos that have been geotagged when previewing responses [#1527]
+
+# Resolved issues
+* Device identification [#1644]
+* Signature in CartoDB maps display incorrect [#1622]
+* Update RemoteAPI datascripts to use service accounts [#1620]
+* Disable manual input of bacode [#1522]
+* Spreadsheet Import converts data to numbers regardless of the type of data expected by the associated question [#923]
+
 #1.9.6.2
 Date: 29 April 2016
 # Resolved issues
