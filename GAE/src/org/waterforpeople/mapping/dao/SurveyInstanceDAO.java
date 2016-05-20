@@ -139,13 +139,8 @@ public class SurveyInstanceDAO extends BaseDAO<SurveyInstance> {
             String filename = qas.getValue().substring(
                     qas.getValue().lastIndexOf("/") + 1);
 
-            Device d = null;
-            if (deviceFile.getImei() != null) {
-                d = deviceDao.getByImei(deviceFile.getImei());
-            }
-            if (d == null && deviceFile.getPhoneNumber() != null) {
-                d = deviceDao.get(deviceFile.getPhoneNumber());
-            }
+            Device d = deviceDao.getDevice(deviceFile.getAndroidId(), 
+                    deviceFile.getImei(), deviceFile.getPhoneNumber());
             String deviceId = d == null ? "null" : String.valueOf(d
                     .getKey().getId());
 

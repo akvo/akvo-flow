@@ -84,7 +84,7 @@ public class SurveyedLocaleServlet extends AbstractRestApiServlet {
                 DeviceSurveyJobQueueDAO dsjqDAO = new DeviceSurveyJobQueueDAO();
                 SurveyDAO surveyDao = new SurveyDAO();
                 for (DeviceSurveyJobQueue dsjq : dsjqDAO.get(slReq.getPhoneNumber(),
-                        slReq.getImei())) {
+                        slReq.getImei(), slReq.getAndroidId())) {
                     Survey s = surveyDao.getById(dsjq.getSurveyID());
                     if (s != null
                             && s.getSurveyGroupId().longValue() == slReq.getSurveyGroupId()

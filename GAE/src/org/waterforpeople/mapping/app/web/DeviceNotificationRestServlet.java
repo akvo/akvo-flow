@@ -71,7 +71,7 @@ public class DeviceNotificationRestServlet extends AbstractRestApiServlet {
             resp.setMissingUnknown(missingUnknown);
             new DeviceDAO().updateDevice(dnReq.getPhoneNumber(), dnReq.getLat(), dnReq.getLon(),
                     dnReq.getAccuracy(), null, dnReq.getDeviceIdentifier(), dnReq.getImei(),
-                    dnReq.getOsVersion());
+                    dnReq.getOsVersion(), dnReq.getAndroidId());
         }
 
         resp.setDeletedSurvey(getDeletedSurveys(dnReq));
@@ -128,19 +128,7 @@ public class DeviceNotificationRestServlet extends AbstractRestApiServlet {
 
     private Device getDevice(DeviceNotificationRequest req) {
         DeviceDAO deviceDao = new DeviceDAO();
-
-        if (req.getImei() != null) {
-            Device d = deviceDao.getByImei(req.getImei().trim());
-            if (d != null) {
-                return d;
-            }
-        }
-
-        if (req.getPhoneNumber() != null) {
-            return deviceDao.get(req.getPhoneNumber().trim());
-        }
-
-        return null;
+        return deviceDao.getDevice(req.getAndroidId(), req.getImei(), req.getPhoneNumber());
     }
 
 }

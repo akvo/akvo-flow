@@ -33,6 +33,7 @@ public class Device extends BaseDomain {
     public static final String NO_IMEI = "NO_IMEI";
 
     private DeviceType deviceType;
+    private String androidId;
     private String phoneNumber;
     private String esn;
     private String deviceIdentifier;
@@ -46,6 +47,14 @@ public class Device extends BaseDomain {
     private Double lastKnownAccuracy;
     private Date lastLocationBeaconTime;
     private String deviceGroup;
+    
+    public String getAndroidId() {
+        return androidId;
+    }
+    
+    public void setAndroidId(String androidId) {
+        this.androidId = androidId;
+    }
 
     public String getDeviceIdentifier() {
         return deviceIdentifier;

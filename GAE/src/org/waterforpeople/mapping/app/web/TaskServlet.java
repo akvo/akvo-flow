@@ -104,6 +104,7 @@ public class TaskServlet extends AbstractRestApiServlet {
      */
     private List<SurveyInstance> processFile(TaskRequest fileProcessTaskRequest) {
         String fileName = fileProcessTaskRequest.getFileName();
+        String androidId = fileProcessTaskRequest.getAndroidId();
         String phoneNumber = fileProcessTaskRequest.getPhoneNumber();
         String imei = fileProcessTaskRequest.getImei();
         String checksum = fileProcessTaskRequest.getChecksum();
@@ -164,6 +165,7 @@ public class TaskServlet extends AbstractRestApiServlet {
         deviceFile.setProcessDate(getNowDateTimeFormatted());
         deviceFile.setProcessedStatus(StatusCode.IN_PROGRESS);
         deviceFile.setURI(url);
+        deviceFile.setPhoneNumber(androidId);
         deviceFile.setPhoneNumber(phoneNumber);
         deviceFile.setImei(imei);
         deviceFile.setChecksum(checksum);

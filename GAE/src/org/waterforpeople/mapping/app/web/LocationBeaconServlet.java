@@ -56,7 +56,8 @@ public class LocationBeaconServlet extends AbstractRestApiServlet {
                 lbReq.getAppVersion(),
                 lbReq.getDeviceIdentifier(),
                 lbReq.getImei(),
-                lbReq.getOsVersion());
+                lbReq.getOsVersion(),
+                lbReq.getAndroidId());
         return resp;
     }
 

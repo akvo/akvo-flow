@@ -46,6 +46,7 @@ public class SurveyManagerRequest extends RestRequest {
     private static final String PHONE_NUM_ALT_PARAM = "phoneNumber";
     private static final String FILE_START_DATE_PARAM = "startDate";
     private static final String DEVICE_ID_PARAM = "devId";
+    private static final String ANDROID_ID = "androidId";
 
     public static final String GET_AVAIL_DEVICE_SURVEYGROUP_ACTION = "getAvailableSurveyGroupsDevice";
 
@@ -57,6 +58,7 @@ public class SurveyManagerRequest extends RestRequest {
     private Date startDate;
     private String deviceId;
     private String version;
+    private String androidId;
 
     public String getImei() {
         return imei;
@@ -126,6 +128,7 @@ public class SurveyManagerRequest extends RestRequest {
         }
         imei = req.getParameter(IMEI_PARAM);
         version = req.getParameter(VERSION_PARAM);
+        androidId = req.getParameter(ANDROID_ID);
         deviceId = req.getParameter(DEVICE_ID_PARAM).trim();
         surveyId = parseLong(req.getParameter(SURVEY_ID_PARAM), SURVEY_ID_PARAM);
         surveyDoc = req.getParameter(SURVEY_DOC_PARAM);
@@ -152,6 +155,14 @@ public class SurveyManagerRequest extends RestRequest {
 
     public void setVersion(String version) {
         this.version = version;
+    }
+
+    public String getAndroidId() {
+        return androidId;
+    }
+
+    public void setAndroidId(String androidId) {
+        this.androidId = androidId;
     }
 
 }
