@@ -39,6 +39,7 @@ import org.waterforpeople.mapping.app.util.DtoMarshaller;
 import org.waterforpeople.mapping.app.web.rest.dto.RestStatusDto;
 import org.waterforpeople.mapping.app.web.rest.dto.SurveyGroupPayload;
 
+import com.gallatinsystems.common.Constants;
 import com.gallatinsystems.survey.dao.SurveyDAO;
 import com.gallatinsystems.survey.dao.SurveyGroupDAO;
 import com.gallatinsystems.survey.dao.SurveyUtils;
@@ -86,7 +87,12 @@ public class SurveyGroupRestService {
 
         // if we are here, it is a regular request
         List<SurveyGroup> surveyGroups = surveyGroupDao.listAllFilteredByUserAuthorization();
-        List<Survey> surveys = surveyDao.listAllFilteredByUserAuthorization();
+
+        // we do not need to filter the list of Survey entities (forms) i.e. we list *all* results
+        // as the list will be filtered later when processing the list of SurveyGroup entities
+        // (surveys) to include
+        List<Survey> surveys = surveyDao.list(Constants.ALL_RESULTS);
+
         Map<Long, Survey> surveyGroupIdToSomeSurvey = new HashMap<>();
 
         if (surveys != null) {
