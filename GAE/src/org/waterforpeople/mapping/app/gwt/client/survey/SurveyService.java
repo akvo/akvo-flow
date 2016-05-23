@@ -22,7 +22,6 @@ import java.util.Map;
 
 import org.waterforpeople.mapping.app.gwt.client.survey.QuestionDto.QuestionType;
 
-import com.gallatinsystems.framework.gwt.dto.client.ResponseDto;
 import com.google.gwt.user.client.rpc.RemoteService;
 import com.google.gwt.user.client.rpc.RemoteServiceRelativePath;
 
@@ -38,10 +37,6 @@ public interface SurveyService extends RemoteService {
     public QuestionDto[] listSurveyQuestionByType(Long surveyId,
             QuestionType type, boolean loadTranslations);
 
-    public ResponseDto<ArrayList<SurveyGroupDto>> listSurveyGroups(
-            String cursorString, Boolean loadSurveyFlag,
-            Boolean loadQuestionGroupFlag, Boolean loadQuestionFlag);
-
     /**
      * lists all surveys for a group
      */
@@ -53,11 +48,9 @@ public interface SurveyService extends RemoteService {
     public ArrayList<QuestionDto> listQuestionsByQuestionGroup(
             String questionGroupId, boolean needDetails);
 
-    public SurveyGroupDto save(SurveyGroupDto value);
-
     /**
      * fully hydrates a survey object
-     * 
+     *
      * @param surveyId
      * @return
      */
@@ -117,7 +110,7 @@ public interface SurveyService extends RemoteService {
      * returns a surveyDto populated from the published xml. This domain graph lacks many keyIds so
      * it is not suitable for updating the survey structure. It is, however, suitable for rendering
      * the survey and collecting responses.
-     * 
+     *
      * @param surveyId
      * @return
      */
@@ -125,7 +118,7 @@ public interface SurveyService extends RemoteService {
 
     /**
      * fires an async request to generate a bootstrap xml file
-     * 
+     *
      * @param surveyIdList
      * @param dbInstructions
      * @param notificationEmail
@@ -135,7 +128,7 @@ public interface SurveyService extends RemoteService {
 
     /**
      * returns a survey (core info only, not fully populated) based on its id
-     * 
+     *
      * @param id
      * @return
      */
@@ -143,14 +136,14 @@ public interface SurveyService extends RemoteService {
 
     /**
      * marks that a set of changes to a survey are done so we can publish a notification
-     * 
+     *
      * @param id
      */
     public void markSurveyChangesComplete(Long id);
 
     /**
      * lists the base question info for all questions that depend on the questionId passed in
-     * 
+     *
      * @param questionId
      * @return
      */

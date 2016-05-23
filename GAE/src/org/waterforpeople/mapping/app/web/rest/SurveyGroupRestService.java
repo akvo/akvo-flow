@@ -33,7 +33,6 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
-import org.waterforpeople.mapping.app.gwt.client.survey.SurveyDto;
 import org.waterforpeople.mapping.app.gwt.client.survey.SurveyGroupDto;
 import org.waterforpeople.mapping.app.util.DtoMarshaller;
 import org.waterforpeople.mapping.app.web.rest.dto.RestStatusDto;
@@ -110,10 +109,8 @@ public class SurveyGroupRestService {
                 DtoMarshaller.copyToDto(sg, dto);
                 Survey survey = surveyGroupIdToSomeSurvey.get(sg.getKey().getId());
                 if (survey != null) {
-                    SurveyDto sDto = new SurveyDto();
                     // we don't want/need the full object
-                    sDto.setKeyId(survey.getKey().getId());
-                    dto.addSurvey(sDto);
+                    dto.addSurvey(survey.getKey().getId());
                 }
                 results.add(dto);
             }

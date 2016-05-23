@@ -44,7 +44,7 @@ public class SurveyGroupDto extends BaseDto implements NamedObject {
     private Boolean published;
     private List<Long> ancestorIds;
 
-    private ArrayList<SurveyDto> surveyList = null;
+    private ArrayList<Long> surveyList = null;
 
     public String getDescription() {
         return description;
@@ -86,19 +86,19 @@ public class SurveyGroupDto extends BaseDto implements NamedObject {
         this.lastUpdateDateTime = lastUpdateDateTime;
     }
 
-    public void setSurveyList(ArrayList<SurveyDto> surveyList) {
+    public void setSurveyList(ArrayList<Long> surveyList) {
         this.surveyList = surveyList;
     }
 
-    public ArrayList<SurveyDto> getSurveyList() {
+    public ArrayList<Long> getSurveyList() {
         return surveyList;
     }
 
-    public void addSurvey(SurveyDto item) {
+    public void addSurvey(Long surveyId) {
         if (surveyList == null) {
-            surveyList = new ArrayList<SurveyDto>();
+            surveyList = new ArrayList<Long>();
         }
-        surveyList.add(item);
+        surveyList.add(surveyId);
     }
 
     @Override
