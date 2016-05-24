@@ -217,28 +217,30 @@ FLOW.NavMapsView = FLOW.View.extend({
         var keyId = $(this).val();
         //if a survey is selected, load forms to form selector element.
         if($(this).find("option:selected").data('type') === 'PROJECT'){
-          $.get('/rest/cartodb/forms?surveyId='+keyId, function(data, status) {
-            var rows = [];
-            if(data['forms'] && data['forms'].length > 0) {
-              rows = data['forms'];
-              rows.sort(function(el1, el2) {
-                return self.compare(el1, el2, 'name')
-              });
+          $.get(
+            '/rest/surveys?surveyGroupId='+keyId,
+            function(data, status) {
+              var rows = [];
+              if(data['surveys'] && data['surveys'].length > 0) {
+                rows = data['surveys'];
+                rows.sort(function(el1, el2) {
+                  return self.compare(el1, el2, 'name')
+                });
 
-              var hierarchyObject = self.hierarchyObject;
+                var hierarchyObject = self.hierarchyObject;
 
-              //create folder and/or survey select element
-              var form_selector = $("<select></select>").attr("data-survey-id", keyId).attr("class", "form_selector");
-              form_selector.append('<option value="">--' + Ember.String.loc('_choose_a_form') + '--</option>');
+                //create folder and/or survey select element
+                var form_selector = $("<select></select>").attr("data-survey-id", keyId).attr("class", "form_selector");
+                form_selector.append('<option value="">--' + Ember.String.loc('_choose_a_form') + '--</option>');
 
-              for(var i=0; i<rows.length; i++) {
-                //append returned forms list to the firm selector element
-                form_selector.append(
-                  $('<option></option>').val(rows[i]["id"]).html(rows[i]["name"]));
+                for(var i=0; i<rows.length; i++) {
+                  //append returned forms list to the firm selector element
+                  form_selector.append(
+                    $('<option></option>').val(rows[i]["keyId"]).html(rows[i]["name"]));
+                }
+                $("#survey_hierarchy").append(form_selector);
               }
-              $("#survey_hierarchy").append(form_selector);
-            }
-          });
+            });
 
           var namedMapObject = {};
           namedMapObject['mapObject'] = map;
@@ -760,13 +762,14 @@ FLOW.NavMapsView = FLOW.View.extend({
     if(self.hierarchyObject.length > 0){
       self.manageHierarchy(parentFolderId);
     }else{
-      $.get('/rest/survey_groups'/*place survey_groups endpoint here*/
-      , function(data, status){
-        if(data['survey_groups'].length > 0){
-          self.hierarchyObject = data['survey_groups'];
-          self.manageHierarchy(parentFolderId);
-        }
-      });
+      $.get(
+        '/rest/survey_groups', /*place survey_groups endpoint here*/
+        function(data, status){
+          if(data['survey_groups'].length > 0){
+            self.hierarchyObject = data['survey_groups'];
+            self.manageHierarchy(parentFolderId);
+          }
+        });
     }
   },
 
