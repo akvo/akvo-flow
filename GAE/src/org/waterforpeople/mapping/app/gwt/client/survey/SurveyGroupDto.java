@@ -231,4 +231,11 @@ public class SurveyGroupDto extends BaseDto implements NamedObject {
         this.ancestorIds = ancestorIds;
     }
 
+    @Override
+    public Long getKeyId() {
+        if (surveyGroup != null && surveyGroup.getKey() != null) {
+            return surveyGroup.getKey().getId();
+        }
+        return super.getKeyId();
+    }
 }
