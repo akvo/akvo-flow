@@ -105,8 +105,7 @@ public class SurveyGroupRestService {
 
         if (surveyGroups != null) {
             for (SurveyGroup sg : surveyGroups) {
-                SurveyGroupDto dto = new SurveyGroupDto();
-                DtoMarshaller.copyToDto(sg, dto);
+                SurveyGroupDto dto = new SurveyGroupDto(sg);
                 Survey survey = surveyGroupIdToSomeSurvey.get(sg.getKey().getId());
                 if (survey != null) {
                     // we don't want/need the full object

@@ -22,6 +22,7 @@ import java.util.List;
 
 import com.gallatinsystems.framework.gwt.dto.client.BaseDto;
 import com.gallatinsystems.framework.gwt.dto.client.NamedObject;
+import com.gallatinsystems.survey.domain.SurveyGroup;
 import com.gallatinsystems.survey.domain.SurveyGroup.PrivacyLevel;
 import com.gallatinsystems.survey.domain.SurveyGroup.ProjectType;
 
@@ -46,7 +47,19 @@ public class SurveyGroupDto extends BaseDto implements NamedObject {
 
     private ArrayList<Long> surveyList = null;
 
+    private SurveyGroup surveyGroup;
+
+    public SurveyGroupDto() {
+    }
+
+    public SurveyGroupDto(SurveyGroup sg) {
+        this.surveyGroup = sg;
+    }
+
     public String getDescription() {
+        if (surveyGroup != null) {
+            return surveyGroup.getDescription();
+        }
         return description;
     }
 
@@ -55,6 +68,9 @@ public class SurveyGroupDto extends BaseDto implements NamedObject {
     }
 
     public String getCode() {
+        if (surveyGroup != null) {
+            return surveyGroup.getCode();
+        }
         return code;
     }
 
@@ -63,6 +79,10 @@ public class SurveyGroupDto extends BaseDto implements NamedObject {
     }
 
     public String getPath() {
+        if (surveyGroup != null) {
+            return surveyGroup.getPath();
+        }
+
         return path;
     }
 
@@ -71,6 +91,9 @@ public class SurveyGroupDto extends BaseDto implements NamedObject {
     }
 
     public Date getCreatedDateTime() {
+        if (surveyGroup != null) {
+            return surveyGroup.getCreatedDateTime();
+        }
         return createdDateTime;
     }
 
@@ -79,6 +102,9 @@ public class SurveyGroupDto extends BaseDto implements NamedObject {
     }
 
     public Date getLastUpdateDateTime() {
+        if (surveyGroup != null) {
+            return surveyGroup.getLastUpdateDateTime();
+        }
         return lastUpdateDateTime;
     }
 
@@ -111,10 +137,16 @@ public class SurveyGroupDto extends BaseDto implements NamedObject {
     }
 
     public String getName() {
+        if (surveyGroup != null) {
+            return surveyGroup.getName();
+        }
         return name;
     }
 
     public Boolean getMonitoringGroup() {
+        if (surveyGroup != null) {
+            return surveyGroup.getMonitoringGroup();
+        }
         return monitoringGroup;
     }
 
@@ -123,6 +155,9 @@ public class SurveyGroupDto extends BaseDto implements NamedObject {
     }
 
     public Long getNewLocaleSurveyId() {
+        if (surveyGroup != null) {
+            return surveyGroup.getNewLocaleSurveyId();
+        }
         return newLocaleSurveyId;
     }
 
@@ -131,6 +166,9 @@ public class SurveyGroupDto extends BaseDto implements NamedObject {
     }
 
     public ProjectType getProjectType() {
+        if (surveyGroup != null) {
+            return surveyGroup.getProjectType();
+        }
         return projectType;
     }
 
@@ -139,6 +177,9 @@ public class SurveyGroupDto extends BaseDto implements NamedObject {
     }
 
     public Long getParentId() {
+        if (surveyGroup != null) {
+            return surveyGroup.getParentId();
+        }
         return parentId;
     }
 
@@ -147,6 +188,9 @@ public class SurveyGroupDto extends BaseDto implements NamedObject {
     }
 
     public String getDefaultLanguageCode() {
+        if (surveyGroup != null) {
+            return surveyGroup.getDefaultLanguageCode();
+        }
         return defaultLanguageCode;
     }
 
@@ -155,6 +199,9 @@ public class SurveyGroupDto extends BaseDto implements NamedObject {
     }
 
     public PrivacyLevel getPrivacyLevel() {
+        if (surveyGroup != null) {
+            return surveyGroup.getPrivacyLevel();
+        }
         return privacyLevel;
     }
 
@@ -163,6 +210,9 @@ public class SurveyGroupDto extends BaseDto implements NamedObject {
     }
 
     public Boolean getPublished() {
+        if (surveyGroup != null) {
+            return surveyGroup.getPublished();
+        }
         return published;
     }
 
@@ -171,6 +221,9 @@ public class SurveyGroupDto extends BaseDto implements NamedObject {
     }
 
     public List<Long> getAncestorIds() {
+        if (surveyGroup != null) {
+            return surveyGroup.getAncestorIds();
+        }
         return ancestorIds;
     }
 
