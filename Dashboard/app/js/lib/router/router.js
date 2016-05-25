@@ -104,8 +104,6 @@ FLOW.Router = Ember.Router.extend({
           FLOW.selectedControl.set('selectedSurvey', null);
           FLOW.selectedControl.set('selectedQuestion', null);
           FLOW.questionControl.set('OPTIONcontent', null);
-          FLOW.attributeControl.populate();
-
         }
       }),
 
@@ -136,7 +134,6 @@ FLOW.Router = Ember.Router.extend({
           });
           // all questions should be closed when we enter
           FLOW.selectedControl.set('selectedQuestion', null);
-          FLOW.attributeControl.populate();
         },
 
         doEditQuestions: function (router, event) {
