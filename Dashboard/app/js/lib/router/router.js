@@ -104,6 +104,7 @@ FLOW.Router = Ember.Router.extend({
           FLOW.selectedControl.set('selectedSurvey', null);
           FLOW.selectedControl.set('selectedQuestion', null);
           FLOW.questionControl.set('OPTIONcontent', null);
+          FLOW.cascadeResourceControl.populate();
         }
       }),
 
