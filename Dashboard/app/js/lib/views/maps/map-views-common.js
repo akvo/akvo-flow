@@ -679,7 +679,11 @@ FLOW.NavMapsView = FLOW.View.extend({
                           } else {
                             videoString = questionAnswer;
                           }
-                          clickedPointContent += videoString;
+
+                          var videoFileUrl = FLOW.Env.photo_url_root+videoString.substring(videoString.lastIndexOf("/")+1);
+                          var videoContent = videoFileUrl+' <a href="'+videoFileUrl+'" target="_blank">'+Ember.String.loc('_open_video')+'</a>';
+
+                          clickedPointContent += videoContent;
                           break;
                         case "CASCADE":
                         case "OPTION":
