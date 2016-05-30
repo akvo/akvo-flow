@@ -41,13 +41,16 @@ public class DeviceSurveyJobQueueDAO {
         PersistenceManager pm = PersistenceFilter.getManager();
         
         Set<DeviceSurveyJobQueue> set = new HashSet<>();
+        javax.jdo.Query query;
         
         // Query entities based on Android ID. This is the most reliable ID
         // and should be used whenever possible
-        javax.jdo.Query query = pm.newQuery(DeviceSurveyJobQueue.class);
-        query.setFilter("androidId == androidIdParam");
-        query.declareParameters("String androidIdParam");
-        set.addAll((List<DeviceSurveyJobQueue>) query.execute(androidId));
+        if (androidId != null) {
+            query = pm.newQuery(DeviceSurveyJobQueue.class);
+            query.setFilter("androidId == androidIdParam");
+            query.declareParameters("String androidIdParam");
+            set.addAll((List<DeviceSurveyJobQueue>) query.execute(androidId));
+        }
         
         // For legacy reasons, some assignments may only be identified by 
         // IMEI or phone number
