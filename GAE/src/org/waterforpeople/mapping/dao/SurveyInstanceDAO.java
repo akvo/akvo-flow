@@ -135,23 +135,24 @@ public class SurveyInstanceDAO extends BaseDAO<SurveyInstance> {
         
         // Now that QAS IDs are set, enqueue imagecheck tasks,
         // whereby the presence of an image in S3 will be checked.
-        for (QuestionAnswerStore qas : images) {
-            String filename = qas.getValue().substring(
-                    qas.getValue().lastIndexOf("/") + 1);
-
+        if (!images.isEmpty()) {
             Device d = deviceDao.getDevice(deviceFile.getAndroidId(), 
                     deviceFile.getImei(), deviceFile.getPhoneNumber());
-            String deviceId = d == null ? "null" : String.valueOf(d
-                    .getKey().getId());
-
-            Queue queue = QueueFactory.getQueue("background-processing");
-            TaskOptions to = TaskOptions.Builder
-                    .withUrl("/app_worker/imagecheck")
-                    .param(ImageCheckRequest.FILENAME_PARAM, filename)
-                    .param(ImageCheckRequest.DEVICE_ID_PARAM, deviceId)
-                    .param(ImageCheckRequest.QAS_ID_PARAM, String.valueOf(qas.getKey().getId()))
-                    .param(ImageCheckRequest.ATTEMPT_PARAM, "1");
-            queue.add(to);
+            String deviceId = d == null ? "null" : String.valueOf(d.getKey().getId());
+            
+            for (QuestionAnswerStore qas : images) {
+                String filename = qas.getValue().substring(
+                        qas.getValue().lastIndexOf("/") + 1);
+    
+                Queue queue = QueueFactory.getQueue("background-processing");
+                TaskOptions to = TaskOptions.Builder
+                        .withUrl("/app_worker/imagecheck")
+                        .param(ImageCheckRequest.FILENAME_PARAM, filename)
+                        .param(ImageCheckRequest.DEVICE_ID_PARAM, deviceId)
+                        .param(ImageCheckRequest.QAS_ID_PARAM, String.valueOf(qas.getKey().getId()))
+                        .param(ImageCheckRequest.ATTEMPT_PARAM, "1");
+                queue.add(to);
+            }
         }
         
         deviceFile.setSurveyInstanceId(si.getKey().getId());
