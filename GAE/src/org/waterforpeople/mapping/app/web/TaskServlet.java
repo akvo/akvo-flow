@@ -165,7 +165,7 @@ public class TaskServlet extends AbstractRestApiServlet {
         deviceFile.setProcessDate(getNowDateTimeFormatted());
         deviceFile.setProcessedStatus(StatusCode.IN_PROGRESS);
         deviceFile.setURI(url);
-        deviceFile.setPhoneNumber(androidId);
+        deviceFile.setAndroidId(androidId);
         deviceFile.setPhoneNumber(phoneNumber);
         deviceFile.setImei(imei);
         deviceFile.setChecksum(checksum);
