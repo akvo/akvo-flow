@@ -283,6 +283,10 @@ public class TaskServlet extends AbstractRestApiServlet {
                 .param(TaskRequest.FILE_NAME_PARAM, fileProcessingRequest.getFileName())
                 .countdownMillis(Constants.TASK_RETRY_INTERVAL);
 
+        if (fileProcessingRequest.getAndroidId() != null) {
+            options.param(TaskRequest.ANDROID_ID, fileProcessingRequest.getAndroidId());
+        }
+
         if (fileProcessingRequest.getPhoneNumber() != null) {
             options.param(TaskRequest.PHONE_NUM_PARAM, fileProcessingRequest.getPhoneNumber());
         }
