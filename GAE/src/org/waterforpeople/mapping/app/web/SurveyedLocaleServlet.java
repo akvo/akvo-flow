@@ -1,5 +1,5 @@
 /*
- *  Copyright (C) 2010-2015 Stichting Akvo (Akvo Foundation)
+ *  Copyright (C) 2010-2016 Stichting Akvo (Akvo Foundation)
  *
  *  This file is part of Akvo FLOW.
  *
@@ -80,20 +80,18 @@ public class SurveyedLocaleServlet extends AbstractRestApiServlet {
         SurveyedLocaleRequest slReq = (SurveyedLocaleRequest) req;
         List<SurveyedLocale> slList = null;
         if (slReq.getSurveyGroupId() != null) {
-            if (slReq.getPhoneNumber() != null || slReq.getImei() != null) {
-                DeviceSurveyJobQueueDAO dsjqDAO = new DeviceSurveyJobQueueDAO();
-                SurveyDAO surveyDao = new SurveyDAO();
-                for (DeviceSurveyJobQueue dsjq : dsjqDAO.get(slReq.getPhoneNumber(),
-                        slReq.getImei(), slReq.getAndroidId())) {
-                    Survey s = surveyDao.getById(dsjq.getSurveyID());
-                    if (s != null
-                            && s.getSurveyGroupId().longValue() == slReq.getSurveyGroupId()
-                                    .longValue()) {
-                        slList = surveyedLocaleDao.listLocalesBySurveyGroupAndDate(
-                                slReq.getSurveyGroupId(), slReq.getLastUpdateTime(), SL_PAGE_SIZE);
-                        return convertToResponse(slList, slReq.getSurveyGroupId(),
-                                slReq.getLastUpdateTime());
-                    }
+            DeviceSurveyJobQueueDAO dsjqDAO = new DeviceSurveyJobQueueDAO();
+            SurveyDAO surveyDao = new SurveyDAO();
+            for (DeviceSurveyJobQueue dsjq : dsjqDAO.get(slReq.getPhoneNumber(),
+                    slReq.getImei(), slReq.getAndroidId())) {
+                Survey s = surveyDao.getById(dsjq.getSurveyID());
+                if (s != null
+                        && s.getSurveyGroupId().longValue() == slReq.getSurveyGroupId()
+                                .longValue()) {
+                    slList = surveyedLocaleDao.listLocalesBySurveyGroupAndDate(
+                            slReq.getSurveyGroupId(), slReq.getLastUpdateTime(), SL_PAGE_SIZE);
+                    return convertToResponse(slList, slReq.getSurveyGroupId(),
+                            slReq.getLastUpdateTime());
                 }
             }
         }
