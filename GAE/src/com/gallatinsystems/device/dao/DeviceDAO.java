@@ -1,5 +1,5 @@
 /*
- *  Copyright (C) 2010-2012 Stichting Akvo (Akvo Foundation)
+ *  Copyright (C) 2010-2016 Stichting Akvo (Akvo Foundation)
  *
  *  This file is part of Akvo FLOW.
  *
@@ -19,6 +19,8 @@ package com.gallatinsystems.device.dao;
 import java.util.Date;
 import java.util.logging.Logger;
 
+import org.apache.commons.lang.StringUtils;
+
 import com.gallatinsystems.device.domain.Device;
 import com.gallatinsystems.device.domain.Device.DeviceType;
 import com.gallatinsystems.framework.dao.BaseDAO;
@@ -37,36 +39,41 @@ public class DeviceDAO extends BaseDAO<Device> {
     public DeviceDAO() {
         super(Device.class);
     }
-
+    
     /**
-     * gets a single device by phoneNumber. If phone number is not unique (this shouldn't happen),
-     * it returns the first instance found.
+     * Get a single device based on available attributes. The priority
+     * given to these fields is: androidId, imei, phoneNumber.
+     * If the device is not found using the most reliable fields, we'll
+     * fall back to the next attr.
      * 
-     * @param phoneNumber
-     * @return
+     * @param androidId unique identifier. Reported from app v2.1.2 onwards
+     * @param imei ESN number. Devices without a SIM card may not have this attr.
+     * @param phoneNumber phone number or device MAC address
+     * @return device matching this criteria, if found
      */
-    public Device get(String phoneNumber) {
-        return super.findByProperty("phoneNumber", phoneNumber, STRING_TYPE);
-    }
-
-    /**
-     * gets a single device by imei/esn. If phone number is not unique (this shouldn't happen), it
-     * returns the first instance found.
-     * 
-     * @param imei
-     * @return
-     */
-    public Device getByImei(String imei) {
-        if (Device.NO_IMEI.equals(imei)) {
+    public Device getDevice(String androidId, String imei, String phoneNumber) {
+        Device device = null;
+        
+        if (StringUtils.isNotEmpty(androidId)) {
+            // Devices registered with Flow app version > 2.1.2 will have reported
+            // this attribute, which is the most reliable for identifying a device
+            device = super.findByProperty("androidId", androidId, STRING_TYPE);
+        }
+        if (device == null && StringUtils.isNotEmpty(imei) && !"NO_IMEI".equals(imei)) {
             // WiFi only devices could have "NO_IMEI" as value
             // We want to fall back to search by `phoneNumber` (MAC address)
-            return null;
+            device = super.findByProperty("esn", imei, STRING_TYPE);
         }
-        return super.findByProperty("esn", imei, STRING_TYPE);
+        
+        if (device == null && StringUtils.isNotEmpty(phoneNumber)) {
+            device = super.findByProperty("phoneNumber", phoneNumber, STRING_TYPE);
+        }
+        return device;
     }
 
+
     /**
-     * updates the device's last known position
+     * Create or update device
      * 
      * @param phoneNumber
      * @param lat
@@ -76,23 +83,21 @@ public class DeviceDAO extends BaseDAO<Device> {
      * @param deviceIdentifier
      * @param imei
      */
-    public void updateDeviceLocation(String phoneNumber, Double lat,
-            Double lon, Double accuracy, String version,
-            String deviceIdentifier, String imei, String osVersion) {
-        Device d = null;
-        if (imei != null) { // New Apps from 1.10.0 and on provide IMEI/ESN
-            d = getByImei(imei);
+    public void updateDevice(String phoneNumber, Double lat, Double lon, 
+            Double accuracy, String version, String deviceIdentifier, 
+            String imei, String osVersion, String androidId) {
+        if (StringUtils.isEmpty(imei) && StringUtils.isEmpty(phoneNumber)) {
+            return;
         }
-
-        if (d == null) {
-            d = get(phoneNumber); // Fall back to less-stable ID
-        }
+        
+        Device d = getDevice(androidId, imei, phoneNumber);
         if (d == null) {
             // if device is null, we have to create it
             d = new Device();
             d.setCreatedDateTime(new Date());
             d.setDeviceType(DeviceType.CELL_PHONE_ANDROID);
             d.setPhoneNumber(phoneNumber);
+            d.setAndroidId(androidId);
         }
         if (lat != null && lon != null) {
             d.setLastKnownLat(lat);

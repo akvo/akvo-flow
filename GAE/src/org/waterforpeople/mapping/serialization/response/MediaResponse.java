@@ -62,4 +62,15 @@ public class MediaResponse {
         return media.getFilename();
     }
     
+    public static Media parse(String value) {
+        try {
+            return JSON_OBJECT_MAPPER.readValue(value, Media.class);
+        } catch(IOException e) {}
+        
+        // Value is not JSON-formatted
+        Media media = new Media();
+        media.setFilename(value);
+        return media;
+    }
+    
 }

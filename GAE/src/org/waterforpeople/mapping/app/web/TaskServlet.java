@@ -104,6 +104,7 @@ public class TaskServlet extends AbstractRestApiServlet {
      */
     private List<SurveyInstance> processFile(TaskRequest fileProcessTaskRequest) {
         String fileName = fileProcessTaskRequest.getFileName();
+        String androidId = fileProcessTaskRequest.getAndroidId();
         String phoneNumber = fileProcessTaskRequest.getPhoneNumber();
         String imei = fileProcessTaskRequest.getImei();
         String checksum = fileProcessTaskRequest.getChecksum();
@@ -164,6 +165,7 @@ public class TaskServlet extends AbstractRestApiServlet {
         deviceFile.setProcessDate(getNowDateTimeFormatted());
         deviceFile.setProcessedStatus(StatusCode.IN_PROGRESS);
         deviceFile.setURI(url);
+        deviceFile.setAndroidId(androidId);
         deviceFile.setPhoneNumber(phoneNumber);
         deviceFile.setImei(imei);
         deviceFile.setChecksum(checksum);
@@ -280,6 +282,10 @@ public class TaskServlet extends AbstractRestApiServlet {
                 .param(TaskRequest.TASK_RETRY_PARAM, fileProcessingRequest.getRetry().toString())
                 .param(TaskRequest.FILE_NAME_PARAM, fileProcessingRequest.getFileName())
                 .countdownMillis(Constants.TASK_RETRY_INTERVAL);
+
+        if (fileProcessingRequest.getAndroidId() != null) {
+            options.param(TaskRequest.ANDROID_ID, fileProcessingRequest.getAndroidId());
+        }
 
         if (fileProcessingRequest.getPhoneNumber() != null) {
             options.param(TaskRequest.PHONE_NUM_PARAM, fileProcessingRequest.getPhoneNumber());

@@ -1,5 +1,5 @@
 /*
- *  Copyright (C) 2010-2012 Stichting Akvo (Akvo Foundation)
+ *  Copyright (C) 2010-2016 Stichting Akvo (Akvo Foundation)
  *
  *  This file is part of Akvo FLOW.
  *
@@ -49,14 +49,15 @@ public class LocationBeaconServlet extends AbstractRestApiServlet {
         RestResponse resp = new RestResponse();
         LocationBeaconRequest lbReq = (LocationBeaconRequest) req;
         DeviceDAO deviceDao = new DeviceDAO();
-        deviceDao.updateDeviceLocation(lbReq.getPhoneNumber(),
+        deviceDao.updateDevice(lbReq.getPhoneNumber(),
                 lbReq.getLat(),
                 lbReq.getLon(),
                 lbReq.getAccuracy(),
                 lbReq.getAppVersion(),
                 lbReq.getDeviceIdentifier(),
                 lbReq.getImei(),
-                lbReq.getOsVersion());
+                lbReq.getOsVersion(),
+                lbReq.getAndroidId());
         return resp;
     }
 

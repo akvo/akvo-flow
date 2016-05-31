@@ -184,8 +184,7 @@ public class EnvServlet extends HttpServlet {
         final com.google.appengine.api.users.User currentGoogleUser = UserServiceFactory
                 .getUserService().getCurrentUser();
         if (currentGoogleUser != null && currentGoogleUser.getEmail() != null) {
-            final User currentUser = new UserDao().findUserByEmail(currentGoogleUser.getEmail()
-                    .trim());
+            final User currentUser = new UserDao().findUserByEmail(currentGoogleUser.getEmail());
             final String locale = currentUser.getLanguage();
             if (locale != null) {
                 props.put("locale", locale);

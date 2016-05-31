@@ -62,6 +62,7 @@ public class ProcessorServlet extends HttpServlet {
         String action = StringUtils.trim(req.getParameter("action"));
         String fileName = StringUtils.trim(req.getParameter("fileName"));
         String phoneNumber = StringUtils.trim(req.getParameter("phoneNumber"));
+        String androidId = StringUtils.trim(req.getParameter("androidId"));
         String imei = StringUtils.trim(req.getParameter("imei"));
         String checksum = StringUtils.trim(req.getParameter("checksum"));
 
@@ -94,6 +95,10 @@ public class ProcessorServlet extends HttpServlet {
                     .param(TaskRequest.ACTION_PARAM, TaskRequest.PROCESS_FILE_ACTION)
                     .param(TaskRequest.FILE_NAME_PARAM, fileName);
 
+            if (androidId != null) {
+                options.param(TaskRequest.ANDROID_ID, androidId);
+            }
+
             if (phoneNumber != null) {
                 options.param(TaskRequest.PHONE_NUM_PARAM, phoneNumber);
             }
@@ -114,14 +119,7 @@ public class ProcessorServlet extends HttpServlet {
             Device d = null;
             DeviceDAO dao = new DeviceDAO();
 
-            if (imei != null) {
-                d = dao.getByImei(imei.trim());
-            }
-
-            if (d == null && phoneNumber != null) {
-                d = dao.get(phoneNumber.trim());
-            }
-
+            d = dao.getDevice(androidId, imei, phoneNumber);
             if (d == null) {
                 log.severe(String.format(
                         "No device found with imei %s or phoneNumber %s",

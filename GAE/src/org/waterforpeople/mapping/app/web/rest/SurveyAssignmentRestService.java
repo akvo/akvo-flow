@@ -315,6 +315,7 @@ public class SurveyAssignmentRestService {
         queueItem
                 .setSurveyDistributionStatus(DeviceSurveyJobQueue.DistributionStatus.UNSENT);
         queueItem.setImei(d.getEsn());
+        queueItem.setAndroidId(d.getAndroidId());
         return queueItem;
     }
 
