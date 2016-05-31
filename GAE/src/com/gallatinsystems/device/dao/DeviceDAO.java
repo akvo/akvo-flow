@@ -39,33 +39,38 @@ public class DeviceDAO extends BaseDAO<Device> {
     public DeviceDAO() {
         super(Device.class);
     }
-
+    
     /**
-     * gets a single device by phoneNumber. If phone number is not unique (this shouldn't happen),
-     * it returns the first instance found.
+     * Get a single device based on available attributes. The priority
+     * given to these fields is: androidId, imei, phoneNumber.
+     * If the device is not found using the most reliable fields, we'll
+     * fall back to the next attr.
      * 
-     * @param phoneNumber
-     * @return
+     * @param androidId unique identifier. Reported from app v2.1.2 onwards
+     * @param imei ESN number. Devices without a SIM card may not have this attr.
+     * @param phoneNumber phone number or device MAC address
+     * @return device matching this criteria, if found
      */
-    public Device get(String phoneNumber) {
-        return super.findByProperty("phoneNumber", phoneNumber, STRING_TYPE);
-    }
-
-    /**
-     * gets a single device by imei/esn. If phone number is not unique (this shouldn't happen), it
-     * returns the first instance found.
-     * 
-     * @param imei
-     * @return
-     */
-    public Device getByImei(String imei) {
-        if (Device.NO_IMEI.equals(imei)) {
+    public Device getDevice(String androidId, String imei, String phoneNumber) {
+        Device device = null;
+        
+        if (StringUtils.isNotEmpty(androidId)) {
+            // Devices registered with Flow app version > 2.1.2 will have reported
+            // this attribute, which is the most reliable for identifying a device
+            device = super.findByProperty("androidId", androidId, STRING_TYPE);
+        }
+        if (device == null && StringUtils.isNotEmpty(imei) && !"NO_IMEI".equals(imei)) {
             // WiFi only devices could have "NO_IMEI" as value
             // We want to fall back to search by `phoneNumber` (MAC address)
-            return null;
+            device = super.findByProperty("esn", imei, STRING_TYPE);
         }
-        return super.findByProperty("esn", imei, STRING_TYPE);
+        
+        if (device == null && StringUtils.isNotEmpty(phoneNumber)) {
+            device = super.findByProperty("phoneNumber", phoneNumber, STRING_TYPE);
+        }
+        return device;
     }
+
 
     /**
      * Create or update device
@@ -78,27 +83,21 @@ public class DeviceDAO extends BaseDAO<Device> {
      * @param deviceIdentifier
      * @param imei
      */
-    public void updateDevice(String phoneNumber, Double lat,
-            Double lon, Double accuracy, String version,
-            String deviceIdentifier, String imei, String osVersion) {
+    public void updateDevice(String phoneNumber, Double lat, Double lon, 
+            Double accuracy, String version, String deviceIdentifier, 
+            String imei, String osVersion, String androidId) {
         if (StringUtils.isEmpty(imei) && StringUtils.isEmpty(phoneNumber)) {
             return;
         }
         
-        Device d = null;
-        if (imei != null) { // New Apps from 1.10.0 and on provide IMEI/ESN
-            d = getByImei(imei);
-        }
-
-        if (d == null) {
-            d = get(phoneNumber); // Fall back to less-stable ID
-        }
+        Device d = getDevice(androidId, imei, phoneNumber);
         if (d == null) {
             // if device is null, we have to create it
             d = new Device();
             d.setCreatedDateTime(new Date());
             d.setDeviceType(DeviceType.CELL_PHONE_ANDROID);
             d.setPhoneNumber(phoneNumber);
+            d.setAndroidId(androidId);
         }
         if (lat != null && lon != null) {
             d.setLastKnownLat(lat);
