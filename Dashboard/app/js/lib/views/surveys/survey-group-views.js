@@ -82,7 +82,7 @@ FLOW.Project = FLOW.View.extend({
 
   isPublished: function() {
     var form = FLOW.selectedControl.get('selectedSurvey');
-    return form.get('status') === 'PUBLISHED'
+    return form && form.get('status') === 'PUBLISHED'
   }.property('FLOW.selectedControl.selectedSurvey.status'),
 
   disableFolderSurveyInputField: function() {
