@@ -33,6 +33,7 @@ public class SurveyedLocaleRequest extends RestRequest {
     private static final String SURVEY_GROUP_ID_PARAM = "surveyGroupId";
     private static final String IMEI_PARAM = "imei";
     private static final String PHONE_NUMBER_PARAM = "phoneNumber";
+    private static final String ANDROID_ID_PARAM = "androidId";
     private static final String DEVICE_ID_PARAM = "deviceId";
     private static final String LAST_UPDATE_TIME_PARAM = "lastUpdateTime";
     private static final String CURSOR_PARAM = "cursor";
@@ -40,6 +41,7 @@ public class SurveyedLocaleRequest extends RestRequest {
     private Long surveyGroupId;
     private String imei;
     private String phoneNumber;
+    private String androidId;
     private String deviceId;
     private Date lastUpdateTime;
     private String cursor;
@@ -58,6 +60,7 @@ public class SurveyedLocaleRequest extends RestRequest {
         surveyGroupId = Long.parseLong(req.getParameter(SURVEY_GROUP_ID_PARAM));
         imei = req.getParameter(IMEI_PARAM);
         phoneNumber = req.getParameter(PHONE_NUMBER_PARAM);
+        androidId = req.getParameter(ANDROID_ID_PARAM);
         deviceId = req.getParameter(DEVICE_ID_PARAM);
         cursor = req.getParameter(CURSOR_PARAM);
         if (req.getParameter(LAST_UPDATE_TIME_PARAM) != null) {
@@ -94,6 +97,14 @@ public class SurveyedLocaleRequest extends RestRequest {
 
     public void setPhoneNumber(String phoneNumber) {
         this.phoneNumber = phoneNumber;
+    }
+
+    public String getAndroidId() {
+        return androidId;
+    }
+
+    public void setAndroidId(String androidId) {
+        this.androidId = androidId;
     }
 
     public String getDeviceId() {

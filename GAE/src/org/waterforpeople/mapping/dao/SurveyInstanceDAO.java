@@ -135,28 +135,24 @@ public class SurveyInstanceDAO extends BaseDAO<SurveyInstance> {
         
         // Now that QAS IDs are set, enqueue imagecheck tasks,
         // whereby the presence of an image in S3 will be checked.
-        for (QuestionAnswerStore qas : images) {
-            String filename = qas.getValue().substring(
-                    qas.getValue().lastIndexOf("/") + 1);
-
-            Device d = null;
-            if (deviceFile.getImei() != null) {
-                d = deviceDao.getByImei(deviceFile.getImei());
+        if (!images.isEmpty()) {
+            Device d = deviceDao.getDevice(deviceFile.getAndroidId(), 
+                    deviceFile.getImei(), deviceFile.getPhoneNumber());
+            String deviceId = d == null ? "null" : String.valueOf(d.getKey().getId());
+            
+            for (QuestionAnswerStore qas : images) {
+                String filename = qas.getValue().substring(
+                        qas.getValue().lastIndexOf("/") + 1);
+    
+                Queue queue = QueueFactory.getQueue("background-processing");
+                TaskOptions to = TaskOptions.Builder
+                        .withUrl("/app_worker/imagecheck")
+                        .param(ImageCheckRequest.FILENAME_PARAM, filename)
+                        .param(ImageCheckRequest.DEVICE_ID_PARAM, deviceId)
+                        .param(ImageCheckRequest.QAS_ID_PARAM, String.valueOf(qas.getKey().getId()))
+                        .param(ImageCheckRequest.ATTEMPT_PARAM, "1");
+                queue.add(to);
             }
-            if (d == null && deviceFile.getPhoneNumber() != null) {
-                d = deviceDao.get(deviceFile.getPhoneNumber());
-            }
-            String deviceId = d == null ? "null" : String.valueOf(d
-                    .getKey().getId());
-
-            Queue queue = QueueFactory.getQueue("background-processing");
-            TaskOptions to = TaskOptions.Builder
-                    .withUrl("/app_worker/imagecheck")
-                    .param(ImageCheckRequest.FILENAME_PARAM, filename)
-                    .param(ImageCheckRequest.DEVICE_ID_PARAM, deviceId)
-                    .param(ImageCheckRequest.QAS_ID_PARAM, String.valueOf(qas.getKey().getId()))
-                    .param(ImageCheckRequest.ATTEMPT_PARAM, "1");
-            queue.add(to);
         }
         
         deviceFile.setSurveyInstanceId(si.getKey().getId());
