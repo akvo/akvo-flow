@@ -5,6 +5,16 @@ Read more about the [Akvo Platform](http://www.akvo.org/blog/?p=4822).
 
 Akvo FLOW Dashboard release notes
 ----
+#1.9.8 Grappling Garanuug
+Date: 8 June 2016
+# New and noteworthy
+* Start using android Id for identification of devices internally in the dashboard.  This should improve on the stability of data transfers to and from the devices [#998]
+
+# Resolved issues
+* Video responses url on cartodb maps point to the collecting device's internal storage [#1674]
+* Change forms endpoint on CartoDB maps from cartodb storage to dashboard storage [#1655]
+* Improve speed of dashboard loading [#987]
+
 #1.9.7 - Fashionable Flamingo
 Date: 16 May 2016
 # New and noteworthy

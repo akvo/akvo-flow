@@ -96,9 +96,12 @@ public class DeviceDAO extends BaseDAO<Device> {
             d = new Device();
             d.setCreatedDateTime(new Date());
             d.setDeviceType(DeviceType.CELL_PHONE_ANDROID);
-            d.setPhoneNumber(phoneNumber);
-            d.setAndroidId(androidId);
         }
+        // Update device properties
+        d.setPhoneNumber(phoneNumber);
+        d.setAndroidId(androidId);
+        d.setLastLocationBeaconTime(new Date());
+        d.setGallatinSoftwareManifest(version);
         if (lat != null && lon != null) {
             d.setLastKnownLat(lat);
             d.setLastKnownLon(lon);
@@ -113,8 +116,6 @@ public class DeviceDAO extends BaseDAO<Device> {
         if (osVersion != null) {
             d.setOsVersion(osVersion);
         }
-        d.setLastLocationBeaconTime(new Date());
-        d.setGallatinSoftwareManifest(version);
         save(d);
     }
 }
