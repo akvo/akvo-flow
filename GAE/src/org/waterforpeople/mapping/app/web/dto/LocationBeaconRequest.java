@@ -24,7 +24,7 @@ import com.gallatinsystems.framework.rest.exception.RestValidationException;
 
 /**
  * data structure to capture location beacon calls
- * 
+ *
  * @author Christopher Fagiani
  */
 public class LocationBeaconRequest extends RestRequest {
@@ -37,6 +37,7 @@ public class LocationBeaconRequest extends RestRequest {
     private static final String VER_PARAM = "ver";
     private static final String DEV_ID_PARAM = "devId";
     private static final String OSVERSION_PARAM = "osVersion";
+    private static final String ANDROID_ID = "androidId";
     private static final long serialVersionUID = 4549010911554976717L;
     private String phoneNumber;
     private String imei;
@@ -46,6 +47,7 @@ public class LocationBeaconRequest extends RestRequest {
     private String appVersion;
     private String deviceIdentifier;
     private String osVersion;
+    private String androidId;
 
     public String getDeviceIdentifier() {
         return deviceIdentifier;
@@ -111,6 +113,14 @@ public class LocationBeaconRequest extends RestRequest {
         this.accuracy = accuracy;
     }
 
+    public String getAndroidId() {
+        return androidId;
+    }
+
+    public void setAndroidId(String androidId) {
+        this.androidId = androidId;
+    }
+
     @Override
     protected void populateErrors() {
         if (lon != null && lat == null) {
@@ -137,6 +147,7 @@ public class LocationBeaconRequest extends RestRequest {
         deviceIdentifier = req.getParameter(DEV_ID_PARAM);
         imei = req.getParameter(IMEI_PARAM);
         osVersion = req.getParameter(OSVERSION_PARAM);
+        androidId = req.getParameter(ANDROID_ID);
         try {
             if (req.getParameter(LAT_PARAM) != null) {
                 lat = Double.parseDouble(req.getParameter(LAT_PARAM));

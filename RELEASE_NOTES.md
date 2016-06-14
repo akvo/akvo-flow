@@ -5,6 +5,30 @@ Read more about the [Akvo Platform](http://www.akvo.org/blog/?p=4822).
 
 Akvo FLOW Dashboard release notes
 ----
+#1.9.8 Grappling Garanuug
+Date: 8 June 2016
+# New and noteworthy
+* Start using android Id for identification of devices internally in the dashboard.  This should improve on the stability of data transfers to and from the devices [#998]
+
+# Resolved issues
+* Video responses url on cartodb maps point to the collecting device's internal storage [#1674]
+* Change forms endpoint on CartoDB maps from cartodb storage to dashboard storage [#1655]
+* Improve speed of dashboard loading [#987]
+
+#1.9.7 - Fashionable Flamingo
+Date: 16 May 2016
+# New and noteworthy
+* Order cascade resources in drop-downs alphabetically to enable easier finding of a cascade resource in the list [#1615]
+* Add Bahasa/Indonesian language to dashboard [#1566]
+* Geotagging in photos in the dashboard.  We now show the latitude/longitude data for photos that have been geotagged when previewing responses [#1527]
+
+# Resolved issues
+* Device identification [#1644]
+* Signature in CartoDB maps display incorrect [#1622]
+* Update RemoteAPI datascripts to use service accounts [#1620]
+* Disable manual input of bacode [#1522]
+* Spreadsheet Import converts data to numbers regardless of the type of data expected by the associated question [#923]
+
 #1.9.6.2
 Date: 29 April 2016
 # Resolved issues
@@ -15,7 +39,7 @@ Date: 22 April 2016
 # Resolved issues
 * Update Portuguese translations in FLOW dashboard [#1578]
 
-#1.9.6
+#1.9.6 - Easygoing Elephant
 Date: 20 April 2016
 # New and noteworthy
 * Better timezone handling in export raw data reports. Consistently display dates using ISO 8601 [#257]

@@ -28,6 +28,7 @@ import org.apache.log4j.Logger;
 import org.apache.poi.ss.usermodel.Cell;
 import org.apache.poi.ss.usermodel.DataFormatter;
 import org.apache.poi.ss.usermodel.Row;
+import org.waterforpeople.mapping.domain.response.value.Media;
 import org.waterforpeople.mapping.serialization.response.MediaResponse;
 
 import com.gallatinsystems.common.util.StringUtil;
@@ -162,9 +163,16 @@ public class ExportImportUtils {
         return null;
     }
 
-    public static String formatImage(String value) {
-        // Fetch plain image filename
-        return MediaResponse.format(value, MediaResponse.VERSION_STRING);
+    public static String formatImage(String prefix, String value) {
+        String cell = "";
+        Media media = MediaResponse.parse(value);
+        String filename = media.getFilename();
+        final int filenameIndex = filename != null ? filename.lastIndexOf("/") + 1 : -1;
+        if (filenameIndex > 0 && filenameIndex < filename.length()) {
+            cell = prefix + filename.substring(filenameIndex);
+        }
+
+        return cell;
     }
 
 }

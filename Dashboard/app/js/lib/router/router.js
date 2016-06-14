@@ -70,7 +70,6 @@ FLOW.Router = Ember.Router.extend({
       connectOutlets: function (router, event) {
         router.get('applicationController').connectOutlet('navSurveys');
         router.set('navigationController.selected', 'navSurveys');
-        FLOW.cascadeResourceControl.populate();
       },
 
       doNewSurvey: function (router, event) {
@@ -105,8 +104,8 @@ FLOW.Router = Ember.Router.extend({
           FLOW.selectedControl.set('selectedSurvey', null);
           FLOW.selectedControl.set('selectedQuestion', null);
           FLOW.questionControl.set('OPTIONcontent', null);
+          FLOW.cascadeResourceControl.populate();
           FLOW.attributeControl.populate();
-
         }
       }),
 
@@ -137,7 +136,6 @@ FLOW.Router = Ember.Router.extend({
           });
           // all questions should be closed when we enter
           FLOW.selectedControl.set('selectedQuestion', null);
-          FLOW.attributeControl.populate();
         },
 
         doEditQuestions: function (router, event) {

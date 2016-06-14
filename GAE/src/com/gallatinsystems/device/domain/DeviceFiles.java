@@ -50,6 +50,7 @@ public class DeviceFiles extends BaseDomain {
     private Text processingMessageText = null;
     private Long surveyInstanceId = null;
 
+    private String androidId;
     private String phoneNumber;
     private String checksum;
     private String imei;
@@ -118,6 +119,15 @@ public class DeviceFiles extends BaseDomain {
         this.status = status;
     }
 
+    public String getAndroidId() {
+        return androidId;
+    }
+
+    public void setAndroidId(String androidId) {
+        this.androidId = androidId;
+    }
+
+    @Override
     public String toString() {
         StringBuilder sb = new StringBuilder();
         sb.append("DeviceFiles: ");
