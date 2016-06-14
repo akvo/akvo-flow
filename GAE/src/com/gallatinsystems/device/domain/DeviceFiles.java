@@ -118,15 +118,16 @@ public class DeviceFiles extends BaseDomain {
     public void setStatus(Status status) {
         this.status = status;
     }
-    
+
     public String getAndroidId() {
         return androidId;
     }
-    
+
     public void setAndroidId(String androidId) {
         this.androidId = androidId;
     }
 
+    @Override
     public String toString() {
         StringBuilder sb = new StringBuilder();
         sb.append("DeviceFiles: ");

@@ -108,11 +108,11 @@ public class TaskRequest extends RestRequest {
     public void setSurveyId(Long surveyId) {
         this.surveyId = surveyId;
     }
-    
+
     public String getAndroidId() {
         return androidId;
     }
-    
+
     public void setAndroidId(String androidId) {
         this.androidId = androidId;
     }

@@ -47,11 +47,11 @@ public class Device extends BaseDomain {
     private Double lastKnownAccuracy;
     private Date lastLocationBeaconTime;
     private String deviceGroup;
-    
+
     public String getAndroidId() {
         return androidId;
     }
-    
+
     public void setAndroidId(String androidId) {
         this.androidId = androidId;
     }

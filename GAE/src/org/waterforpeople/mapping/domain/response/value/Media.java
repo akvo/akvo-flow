@@ -13,6 +13,7 @@
  *
  *  The full license text can also be seen at <http://www.gnu.org/licenses/agpl.html>.
  */
+
 package org.waterforpeople.mapping.domain.response.value;
 
 public class Media {
@@ -35,4 +36,3 @@ public class Media {
         this.location = location;
     }
 }
-
