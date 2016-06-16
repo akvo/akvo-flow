@@ -373,6 +373,11 @@ public class GraphicalSurveySummaryExporter extends SurveySummaryExporter {
     }
 
     @SuppressWarnings("unchecked")
+    /*
+     * Fetches data from FLOW instance, and writes it to a file row by row
+     *
+     * Called from export method
+     */
     protected SummaryModel fetchAndWriteRawData(String surveyId,
             final String serverBase,
             Map<QuestionGroupDto, List<QuestionDto>> questionMap, Workbook wb,
@@ -479,6 +484,9 @@ public class GraphicalSurveySummaryExporter extends SurveySummaryExporter {
     }
 
     /**
+     * Writes the data for a single row (form instance) to a file
+     * Called from fetchAndWriteRawData
+     *
      * @param sheet
      * @param startRow The start row for this instance
      * @param instanceData
@@ -625,6 +633,10 @@ public class GraphicalSurveySummaryExporter extends SurveySummaryExporter {
     }
 
     /**
+     * Write the cells for a single answer. Some answers are split into multiple cells.
+     *
+     * Called from writeInstanceData method
+     *
      * @param sheet
      * @param row
      * @param startColumn
@@ -687,6 +699,9 @@ public class GraphicalSurveySummaryExporter extends SurveySummaryExporter {
         }
     }
 
+    /*
+     * Creates the cell value for a date value
+     */
     private static String dateCellValue(String value, Long questionId) {
         try {
             return ExportImportUtils.formatDate(ExportImportUtils.parseDate(value));
@@ -699,6 +714,11 @@ public class GraphicalSurveySummaryExporter extends SurveySummaryExporter {
         }
     }
 
+    /*
+     * Creates the cell value for an Image question. It creates a URL by first getting
+     * the filename from the answer, and adding the imagePrefix, which contains the full
+     * path to S3
+     */
     private static String photoCellValue(String value, String imagePrefix) {
         final int filenameIndex = value.lastIndexOf("/") + 1;
         String cell = "";
@@ -708,6 +728,9 @@ public class GraphicalSurveySummaryExporter extends SurveySummaryExporter {
         return cell;
     }
 
+    /*
+     * Creates the cell values for a geolocation question.
+     */
     private static List<String> geoCellValues(String value) {
 
         String[] geoParts = value.split("\\|");
@@ -724,6 +747,10 @@ public class GraphicalSurveySummaryExporter extends SurveySummaryExporter {
         return cells;
     }
 
+	/*
+     * Creates the cell values for a cascade question. The different levels are
+     * split into multiple cells.
+     */
     private static List<String> cascadeCellValues(String value, boolean useQuestionId, int levels) {
         List<String> cells = new ArrayList<>();
         List<Map<String, String>> cascadeNodes = new ArrayList<>();
@@ -806,6 +833,9 @@ public class GraphicalSurveySummaryExporter extends SurveySummaryExporter {
         return cells;
     }
 
+    /*
+     * Creates the cell value for an option question.
+     */
     private String optionCellValue(String value) {
         // The response can be either:
         // old format: text1|text2|text3
@@ -858,7 +888,8 @@ public class GraphicalSurveySummaryExporter extends SurveySummaryExporter {
     }
 
     /**
-     * creates the header for the raw data tab
+     * creates the column header for the raw data in the file for all questions.
+     * Some questions lead to multiple column headers.
      *
      * @param row
      * @param questionMap
