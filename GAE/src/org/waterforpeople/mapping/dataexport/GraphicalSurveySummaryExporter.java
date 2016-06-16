@@ -66,8 +66,11 @@ import org.waterforpeople.mapping.app.gwt.client.survey.TranslationDto;
 import org.waterforpeople.mapping.app.gwt.client.surveyinstance.SurveyInstanceDto;
 import org.waterforpeople.mapping.app.web.dto.SurveyRestRequest;
 import org.waterforpeople.mapping.dataexport.service.BulkDataServiceClient;
+import org.waterforpeople.mapping.domain.CaddisflyResource;
+import org.waterforpeople.mapping.domain.CaddisflyResult;
 
 import com.gallatinsystems.common.util.JFreechartChartUtil;
+import com.gallatinsystems.survey.dao.CaddisflyResourceDao;
 
 /**
  * Enhancement of the SurveySummaryExporter to support writing to Excel and including chart images.
@@ -120,6 +123,7 @@ public class GraphicalSurveySummaryExporter extends SurveySummaryExporter {
     private static final Map<String, String> COMPLETE;
     private static final Map<String, String> LAT_LABEL;
     private static final Map<String, String> LON_LABEL;
+    private static final Map<String, String> IMAGE_LABEL;
     private static final Map<String, String> ELEV_LABEL;
     private static final Map<String, String> CODE_LABEL;
     private static final Map<String, String> IDENTIFIER_LABEL;
@@ -257,6 +261,10 @@ public class GraphicalSurveySummaryExporter extends SurveySummaryExporter {
         LON_LABEL.put("en", "Longitude");
         LON_LABEL.put("es", "Longitud");
 
+        IMAGE_LABEL = new HashMap<String, String>();
+        IMAGE_LABEL.put("en", "Image");
+        IMAGE_LABEL.put("es", "Imagen");
+
         ELEV_LABEL = new HashMap<String, String>();
         ELEV_LABEL.put("en", "Elevation");
         ELEV_LABEL.put("es", "Elevación");
@@ -288,6 +296,12 @@ public class GraphicalSurveySummaryExporter extends SurveySummaryExporter {
     private Map<Long, QuestionDto> questionsById;
     private boolean lastCollection = false;
     private static final ObjectMapper OBJECT_MAPPER = new ObjectMapper();
+    private CaddisflyResourceDao caddisflyResourceDao = new CaddisflyResourceDao();
+
+    // for caddisfly-specific metadata
+    private Map<Long, Integer> numResultsMap = new HashMap<Long, Integer>();
+    private Map<Long,Boolean> hasImageMap = new HashMap<Long, Boolean>();
+    private Map<Long,List<Integer>> resultIdMap = new HashMap<Long,List<Integer>>();
 
     // store indices of file columns for lookup when generating responses
     private Map<String, Integer> columnIndexMap = new HashMap<String, Integer>();
@@ -683,6 +697,11 @@ public class GraphicalSurveySummaryExporter extends SurveySummaryExporter {
                 cells.add(optionCellValue(value));
                 break;
 
+            case CADDISFLY:
+            	Long qId = questionDto.getKeyId();
+                cells.addAll(caddisflyCellValues(questionId,value,numResultsMap.get(qId),hasImageMap.get(qId),imagePrefix));
+                break;
+
             default:
                 cells.add(sanitize(value));
                 break;
@@ -745,6 +764,123 @@ public class GraphicalSurveySummaryExporter extends SurveySummaryExporter {
         }
 
         return cells;
+    }
+
+    /*
+     * Validates the structure of a caddisfly value
+     * Returns true if the structure is correct, false if not.
+     */
+    @SuppressWarnings("unchecked")
+	private static Boolean validateCaddisflyValue(String value,
+			Integer numResults, Boolean hasImage) {
+    	try {
+			Map<String,Object> rootAsMap = OBJECT_MAPPER.readValue(value,Map.class);
+			// check presence of name, result and image properties
+			if (!rootAsMap.containsKey("name") || !rootAsMap.containsKey("result")) return false;
+			if (hasImage && ! rootAsMap.containsKey("image")) return false;
+
+			// check presence of name, value, unit and id properties on results
+			List<Map<String, Object>> results = (List<Map<String, Object>>) rootAsMap.get("result");
+			for (Map<String,Object> result : results){
+				 if (!result.containsKey("name") || !result.containsKey("value") ||
+						 !result.containsKey("unit") || !result.containsKey("id")) return false;
+				 // check if id is an integer
+				 try {
+					 Integer.parseInt(result.get("id").toString());
+				 } catch (Exception e){
+					 return false;
+				 }
+			}
+		} catch (IOException e) {
+			log.error("Error interpreting caddisfly data: " + e.getMessage(), e);
+			return false;
+		}
+
+		return true;
+	}
+
+    /*
+     * Creates the cell values for a caddisfly question.
+     */
+    @SuppressWarnings("unchecked")
+	private List<String> caddisflyCellValues(Long questionId, String value, Integer numResults, Boolean hasImage, String imagePrefix){
+    	List<String> cells = new ArrayList<>();
+    	int num = 0;
+    	// the total number of cells we need to create is the number of results plus the name column,
+    	// plus the image column if it is there
+    	int numTotal = 1 + numResults + (hasImage?1:0);
+    	String imageName = null;
+
+    	if (validateCaddisflyValue(value,numResults,hasImage)) {
+	    	try {
+				Map<String,Object> rootAsMap = OBJECT_MAPPER.readValue(value,Map.class);
+				String name = rootAsMap.get("name").toString();
+				if (hasImage){
+					imageName = rootAsMap.get("image").toString();
+				}
+				List<Map<String, Object>> results = (List<Map<String, Object>>) rootAsMap.get("result");
+				int numResultsPresent = results.size();
+
+				// create name cell
+				cells.add(name);
+				num++;
+
+				// order results by id
+				 Collections.sort(results,
+	                     new Comparator<Map<String,?>>() {
+	                         @Override
+	                         public int compare(Map<String,?> o1, Map<String,?> o2) {
+	                             if (o1 != null && o2 != null) {
+	                                 return Integer.parseInt(o1.get("id").toString()) - Integer.parseInt(o2.get("id").toString());
+	                             } else {
+	                                 return 0;
+	                             }
+	                         }
+	                     });
+
+				// get valid result ids for this question. The ids are already in order.
+				List<Integer> resultIds = resultIdMap.get(questionId);
+				Integer expectedResultsNum = resultIds.size();
+
+				// create result cells
+				// we have to guard against two possibilities: we could have more expected results than real results,
+				// and we could have more real results than expected results.
+				int index = 0;
+				for (int i = 0; i < Math.min(expectedResultsNum,numResultsPresent); i++){
+					Map<String,Object> result = results.get(i);
+					if (result.get("id").toString().equals(resultIds.get(index).toString())){
+						cells.add(result.get("value").toString());
+						num++;
+						index++;
+					}
+
+					// don't generate too many cells
+					if (num == numTotal) break;
+				}
+
+				// pad to fill any missing results
+				while (num < 1 + numResults){
+		    		cells.add("");
+		    		num++;
+		    	}
+
+				// add image URL if available
+				if (hasImage){
+					cells.add(imagePrefix + imageName);
+					num++;
+				}
+			} catch (IOException e) {
+				log.error("Error interpreting caddisfly data: " + e.getMessage(), e);
+			}
+    	}
+
+    	// pad cells so we always have enough
+    	while (num < numTotal){
+    		cells.add("");
+    		num++;
+    	}
+
+		return cells;
     }
 
 	/*
@@ -898,7 +1034,8 @@ public class GraphicalSurveySummaryExporter extends SurveySummaryExporter {
      *         representing all the non-summarizable question Ids (i.e. those that aren't OPTION or
      *         NUMBER questions)
      */
-    protected Object[] createRawDataHeader(Workbook wb, Sheet sheet,
+    @SuppressWarnings("unchecked")
+	protected Object[] createRawDataHeader(Workbook wb, Sheet sheet,
             Map<QuestionGroupDto, List<QuestionDto>> questionMap,
             boolean useQuestionId) {
         Row row = null;
@@ -933,6 +1070,7 @@ public class GraphicalSurveySummaryExporter extends SurveySummaryExporter {
 
         List<String> questionIdList = new ArrayList<String>();
         List<String> nonSummarizableList = new ArrayList<String>();
+        List<CaddisflyResource> caddisList = null;
 
         if (questionMap != null) {
             int offset = columnIdx;
@@ -983,6 +1121,43 @@ public class GraphicalSurveySummaryExporter extends SurveySummaryExporter {
                                         + " - " + level;
                                 createCell(row, offset++, levelName, headerStyle);
                             }
+                        } else if(QuestionType.CADDISFLY == q.getType()) {
+                        	// get caddisfly resources, if we haven't already got it
+                        	if (caddisList == null) {
+                        		caddisList = caddisflyResourceDao.listResources();
+                        	}
+
+                        	CaddisflyResource cr = getCaddisflyResourceByUuid(caddisList,q.getCaddisflyResourceUuid());
+
+                        	// create column for test type
+                        	createCell(row, offset++, useQID ? questionId +"|" +q.getText() + "|TEST_TYPE" : q.getText() + "|TEST_TYPE",headerStyle);
+
+                        	// get expected results for this test
+                        	List<CaddisflyResult> crResults = cr.getResults();
+
+                        	// sort results on id value
+                        	Collections.sort(crResults);
+
+                        	List<Integer> resultIds = new ArrayList<Integer>();
+
+                        	// create column headers
+                        	for (CaddisflyResult result : crResults){
+                        		// put result ids in map, so we can use if for validation later
+                        		resultIds.add(result.getId());
+
+                        		// create column for result
+                        		createCell(row, offset++,"--CADDISFLY--" + result.getName() + "(" + result.getUnit() + ")",headerStyle);
+                        	}
+
+                        	if (cr.getHasImage()){
+                        		createCell(row, offset++, q.getText() + " - " + IMAGE_LABEL.get(columnLocale), headerStyle);
+                        	}
+
+                        	// store number of results and hasImage in hashmap, for later use.
+                        	// during the report building, we need access to these numbers.
+                        	numResultsMap.put(q.getKeyId(), cr.getNumResults());
+                        	resultIdMap.put(q.getKeyId(),resultIds);
+                        	hasImageMap.put(q.getKeyId(),cr.getHasImage());
                         } else {
                             String header = "";
                             if (useQID) {
@@ -1023,7 +1198,20 @@ public class GraphicalSurveySummaryExporter extends SurveySummaryExporter {
         return temp;
     }
 
-    /**
+    /*
+     * Extracts the caddisfly resource with the right Uuid
+     */
+    private CaddisflyResource getCaddisflyResourceByUuid(
+			List<CaddisflyResource> caddisList, String caddisflyResourceUuid) {
+		for (int i = 0; i < caddisList.size(); i++){
+			if (caddisList.get(i) != null && caddisList.get(i).getUuid().equals(caddisflyResourceUuid)){
+				return caddisList.get(i);
+			}
+		}
+		return null;
+	}
+
+	/**
      * Writes the report as an XLS document
      */
     private void writeSummaryReport(
