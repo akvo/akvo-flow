@@ -18,13 +18,13 @@ package org.waterforpeople.mapping.domain;
 import java.io.Serializable;
 import java.util.List;
 
-public class CaddisflyResult implements Serializable {
+public class CaddisflyResult implements Serializable,Comparable {
 	private static final long serialVersionUID = 1L;
 		private String name;
 		private String unit;
-		private String id;
+		private int id;
 
-		public CaddisflyResult(String name, String unit, String id){
+		public CaddisflyResult(String name, String unit, int id){
 			this.setName(name);
 			this.setUnit(unit);
 			this.setId(id);
@@ -50,11 +50,15 @@ public class CaddisflyResult implements Serializable {
 			this.unit = unit;
 		}
 
-		public String getId() {
+		public int getId() {
 			return id;
 		}
 
-		public void setId(String id) {
+		public void setId(int id) {
 			this.id = id;
+		}
+
+		public int compareTo(Object o) {
+			return (id - ((CaddisflyResult) o).getId());
 		}
 }

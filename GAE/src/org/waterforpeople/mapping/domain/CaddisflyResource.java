@@ -29,9 +29,10 @@ public class CaddisflyResource implements Serializable {
 	private String[] tags;
 	private String description;
 	private int numResults;
+	private Boolean hasImage;
 	private List<CaddisflyResult> results;
 
-	public CaddisflyResource(String name, String uuid, String subtype, String brand, String[] tags, String description, int numResults){
+	public CaddisflyResource(String name, String uuid, String subtype, String brand, String[] tags, String description, int numResults, Boolean hasImage){
 		this.setName(name);
 		this.setUuid(uuid);
 		this.setSubtype(subtype);
@@ -39,6 +40,7 @@ public class CaddisflyResource implements Serializable {
 		this.setTags(tags);
 		this.setDescription(description);
 		this.setNumResults(numResults);
+		this.setHasImage(hasImage);
 	}
 
 	public CaddisflyResource(){
@@ -115,5 +117,13 @@ public class CaddisflyResource implements Serializable {
 
 	public void setKeyId(Long keyId) {
 		this.keyId = keyId;
+	}
+
+	public Boolean getHasImage() {
+		return hasImage;
+	}
+
+	public void setHasImage(Boolean hasImage) {
+		this.hasImage = hasImage;
 	}
 }
