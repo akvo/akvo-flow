@@ -29,16 +29,18 @@ public class ApprovalStep extends BaseDomain {
 
     private static final long serialVersionUID = -5473782085204354921L;
 
-    private String title;
+    private long approvalGroupId;
 
     private int order;
 
-    public String getTitle() {
-        return title;
+    private String title;
+
+    public long getApprovalGroupId() {
+        return approvalGroupId;
     }
 
-    public void setTitle(String title) {
-        this.title = title;
+    public void setApprovalGroupId(long approvalGroupId) {
+        this.approvalGroupId = approvalGroupId;
     }
 
     public int getOrder() {
@@ -49,4 +51,11 @@ public class ApprovalStep extends BaseDomain {
         this.order = order;
     }
 
+    public String getTitle() {
+        return title;
+    }
+
+    public void setTitle(String title) {
+        this.title = title;
+    }
 }
