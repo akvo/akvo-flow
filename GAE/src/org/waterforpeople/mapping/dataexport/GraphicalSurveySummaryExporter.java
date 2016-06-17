@@ -298,6 +298,7 @@ public class GraphicalSurveySummaryExporter extends SurveySummaryExporter {
 
     private Map<Long,List<QuestionOptionDto>> optionMap = new HashMap<Long,List<QuestionOptionDto>>();
     private Map<Long,Boolean> allowOtherMap = new HashMap<Long,Boolean>();
+    private Map<String,Integer> optionCache = new HashMap<String,Integer>();
 
     // store indices of file columns for lookup when generating responses
     private Map<String, Integer> columnIndexMap = new HashMap<String, Integer>();
@@ -690,7 +691,7 @@ public class GraphicalSurveySummaryExporter extends SurveySummaryExporter {
 
             case OPTION:
             	Long qId = questionDto.getKeyId();
-                cells.addAll(optionCellValues(value,useQuestionId,optionMap.get(qId),allowOtherMap.get(qId)));
+                cells.addAll(optionCellValues(questionDto.getKeyId(),value,useQuestionId,optionMap.get(qId),allowOtherMap.get(qId)));
                 break;
 
             default:
@@ -883,7 +884,7 @@ public class GraphicalSurveySummaryExporter extends SurveySummaryExporter {
      * We first try to match on text, and if that fails, we try to match on code. This
      * guards against texts that are slightly changed during the evolution of a survey
      */
-    private List<String> optionCellValues(String value, boolean useQuestionId, List<QuestionOptionDto> options, Boolean allowOther) {
+    private List<String> optionCellValues(Long questionId, String value, boolean useQuestionId, List<QuestionOptionDto> options, Boolean allowOther) {
     	List<String> cells = new ArrayList<>();
 
     	// get optionNodes from packed string value
@@ -897,32 +898,46 @@ public class GraphicalSurveySummaryExporter extends SurveySummaryExporter {
         if (useQuestionId){
         	String text;
         	String code;
+        	String cacheId;
         	String other = null;
         	boolean found;
         	int numOptions = options.size();
         	boolean[] optionFound = new boolean[numOptions];
+        	String qId = questionId.toString();
 
-        	// TODO needs to be optimised
         	for (Map<String,String> optAnswer : optionNodes){
-        		text = optAnswer.get("text");
-        		code = optAnswer.get("code");
+        		text = optAnswer.get("text") != null ? optAnswer.get("text") : "";
+        		code = optAnswer.get("code") != null ? optAnswer.get("code") : "";
         		found = false;
 
-        		// try to match on text
-        		for (int i = 0; i < numOptions; i++){
-            		if (text != null && text.equals(options.get(i).getText()) && text.length() > 0){
-            			optionFound[i] = true;
-            			found = true;
-            			break;
-            		}
-            	}
+        		// try cache first
+        		cacheId = qId + text + code;
+        		if (optionCache.containsKey(cacheId)){
+        			optionFound[optionCache.get(cacheId)] = true;
+        			found = true;
+        		}
 
-        		// try to match on code
+        		// If it is not in the cache, try to match on text
+        		if (!found){
+	        		for (int i = 0; i < numOptions; i++){
+	            		if (text != null && text.equalsIgnoreCase(options.get(i).getText()) && text.length() > 0){
+	            			optionFound[i] = true;
+	            			found = true;
+	            			// put in cache
+	            			optionCache.put(cacheId, i);
+	            			break;
+	            		}
+	            	}
+        		}
+
+        		// finally, try to match on code
         		if (!found){
         			for (int i = 0; i < numOptions; i++){
-                		if (code != null && code.equals(options.get(i).getCode())  && code.length() > 0){
+                		if (code != null && code.equalsIgnoreCase(options.get(i).getCode())  && code.length() > 0){
                 			optionFound[i] = true;
                 			found = true;
+                			// put in cache
+	            			optionCache.put(cacheId, i);
                 			break;
                 		}
                 	}
