@@ -972,8 +972,10 @@ public class GraphicalSurveySummaryExporter extends SurveySummaryExporter {
                                     useQID ? questionId + "_" + codeLabel.replaceAll("\\s", "")
                                             : "--GEOCODE--|" + codeLabel,
                                     headerStyle);
-                        } else if (QuestionType.PHOTO == q.getType()) {
-                        	//Photos get 4 columns: URL, Longitude, Latitude and Accuracy
+                        } else if (QuestionType.PHOTO == q.getType()
+                        		|| QuestionType.VIDEO == q.getType()) {
+                        	//Media gets 4 columns: URL, Latitude, Longitude and Accuracy
+                        	String prefix = (QuestionType.PHOTO == q.getType()) ? "--PHOTO--|" : "--VIDEO--|";
                             String header = "";
                             if (useQID) {
                                 header = questionId;
@@ -992,11 +994,11 @@ public class GraphicalSurveySummaryExporter extends SurveySummaryExporter {
                             }
                             createCell(row, offset++, header, headerStyle);
                             createCell(row, offset++,
-                                    "--PHOTO--|" + LAT_LABEL.get(columnLocale), headerStyle);
+                                    prefix + LAT_LABEL.get(columnLocale), headerStyle);
                             createCell(row, offset++,
-                                    "--PHOTO--|" + LON_LABEL.get(columnLocale), headerStyle);
+                                    prefix + LON_LABEL.get(columnLocale), headerStyle);
                             createCell(row, offset++,
-                                    "--PHOTO--|" + ACC_LABEL.get(columnLocale), headerStyle);
+                                    prefix + ACC_LABEL.get(columnLocale), headerStyle);
                         } else if (QuestionType.CASCADE == q.getType() && q.getLevelNames() != null
                                 && useQuestionId) {
                             for (String level : q.getLevelNames()) {
