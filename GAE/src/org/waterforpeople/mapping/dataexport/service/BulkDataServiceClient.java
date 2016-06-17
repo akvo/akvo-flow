@@ -991,6 +991,8 @@ public class BulkDataServiceClient {
                                                     .getLong("keyId"));
                                             opt.setText(optJson
                                                     .getString("text"));
+                                            opt.setCode(optJson
+                                                    .getString("code"));
                                             opt.setOrder(optJson
                                                     .getInt("order"));
                                             if (optJson.has("translationMap")

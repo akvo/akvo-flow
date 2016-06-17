@@ -58,8 +58,10 @@ import org.apache.poi.xssf.streaming.SXSSFSheet;
 import org.apache.poi.xssf.streaming.SXSSFWorkbook;
 import org.codehaus.jackson.map.ObjectMapper;
 import org.codehaus.jackson.type.TypeReference;
+import org.springframework.beans.BeanUtils;
 import org.waterforpeople.mapping.app.gwt.client.survey.QuestionDto;
 import org.waterforpeople.mapping.app.gwt.client.survey.QuestionDto.QuestionType;
+import org.waterforpeople.mapping.app.gwt.client.survey.OptionContainerDto;
 import org.waterforpeople.mapping.app.gwt.client.survey.QuestionGroupDto;
 import org.waterforpeople.mapping.app.gwt.client.survey.QuestionOptionDto;
 import org.waterforpeople.mapping.app.gwt.client.survey.TranslationDto;
@@ -68,6 +70,8 @@ import org.waterforpeople.mapping.app.web.dto.SurveyRestRequest;
 import org.waterforpeople.mapping.dataexport.service.BulkDataServiceClient;
 
 import com.gallatinsystems.common.util.JFreechartChartUtil;
+import com.gallatinsystems.survey.dao.QuestionOptionDao;
+import com.gallatinsystems.survey.domain.QuestionOption;
 
 /**
  * Enhancement of the SurveySummaryExporter to support writing to Excel and including chart images.
@@ -290,6 +294,10 @@ public class GraphicalSurveySummaryExporter extends SurveySummaryExporter {
     private Map<Long, QuestionDto> questionsById;
     private boolean lastCollection = false;
     private static final ObjectMapper OBJECT_MAPPER = new ObjectMapper();
+    private QuestionOptionDao qoDao = new QuestionOptionDao();
+
+    private Map<Long,List<QuestionOptionDto>> optionMap = new HashMap<Long,List<QuestionOptionDto>>();
+    private Map<Long,Boolean> allowOtherMap = new HashMap<Long,Boolean>();
 
     // store indices of file columns for lookup when generating responses
     private Map<String, Integer> columnIndexMap = new HashMap<String, Integer>();
@@ -317,11 +325,12 @@ public class GraphicalSurveySummaryExporter extends SurveySummaryExporter {
                 }
             }
 
-            if (!DEFAULT_LOCALE.equals(locale) && questionMap.size() > 0) {
-                // if we are using some other locale, we need to check for
-                // translations
+            if ((!DEFAULT_LOCALE.equals(locale) || useQuestionId) && questionMap.size() > 0) {
+                // if we are using some other locale, or if need to expand question options,
+                // we need to check for translations and options
                 loadFullQuestions(questionMap, criteria.get("apiKey"));
             }
+
             Workbook wb = new SXSSFWorkbook(100);
             if (questionMap != null && questionMap.size() > 0) {
 
@@ -680,7 +689,8 @@ public class GraphicalSurveySummaryExporter extends SurveySummaryExporter {
                 break;
 
             case OPTION:
-                cells.add(optionCellValue(value));
+            	Long qId = questionDto.getKeyId();
+                cells.addAll(optionCellValues(value,useQuestionId,optionMap.get(qId),allowOtherMap.get(qId)));
                 break;
 
             default:
@@ -692,6 +702,14 @@ public class GraphicalSurveySummaryExporter extends SurveySummaryExporter {
         for (String cellValue : cells) {
             if (questionType == QuestionType.NUMBER) {
                 createCell(row, col, cellValue, null, Cell.CELL_TYPE_NUMERIC);
+            } else if (questionType == QuestionType.OPTION){
+            	// the type of an option column depends on the contents - if it is 0 or 1, we
+            	// assume it to be numerical, because it will part of the expanded columns.
+            	if (cellValue.equals("0") || cellValue.equals("1")){
+            		createCell(row, col, cellValue, null, Cell.CELL_TYPE_NUMERIC);
+            	} else {
+                    createCell(row, col, cellValue, mTextStyle);
+                }
             } else {
                 createCell(row, col, cellValue, mTextStyle);
             }
@@ -805,11 +823,13 @@ public class GraphicalSurveySummaryExporter extends SurveySummaryExporter {
         return cells;
     }
 
-    private String optionCellValue(String value) {
-        // The response can be either:
-        // old format: text1|text2|text3
-        // new format: [{"code": "code1", "text": "text1"},
-        // {"code": "code2", "text": "text2"}]
+    /* Takes a option question value in either the old or new format, and
+     * returns a list of option maps.
+     * The response can be either:
+     * old format: text1|text2|text3
+     * new format: [{"code": "code1", "text": "text1"},{"code": "code2", "text": "text2"}]
+     */
+    private List<Map<String,String>> getNodes(String value){
         boolean isNewFormat = value.startsWith("[");
         List<Map<String, String>> optionNodes = new ArrayList<>();
         if (isNewFormat) {
@@ -828,9 +848,15 @@ public class GraphicalSurveySummaryExporter extends SurveySummaryExporter {
                 optionNodes.add(node);
             }
         }
+        return optionNodes;
+    }
 
-        StringBuilder optionString = new StringBuilder();
-
+    /*
+     * Build pipe-separated value from option nodes
+     * To be included in reports
+     */
+    private String buildOptionString(List<Map<String,String>> optionNodes){
+    	StringBuilder optionString = new StringBuilder();
         for (Map<String, String> node : optionNodes) {
             String code = node.get("code");
             String text = node.get("text");
@@ -846,6 +872,78 @@ public class GraphicalSurveySummaryExporter extends SurveySummaryExporter {
             optionString.deleteCharAt(0);
         }
         return optionString.toString();
+    }
+
+    /*
+     * Creates list of option values. The first value is always the pipe-separated format
+     * Depending on the useQuestionId parameter, each option is given its own column
+     * A 0 or 1 denotes if that option was selected or not
+     * if the AllowOther flag is true, a column is created for the Other option.
+     *
+     * We first try to match on text, and if that fails, we try to match on code. This
+     * guards against texts that are slightly changed during the evolution of a survey
+     */
+    private List<String> optionCellValues(String value, boolean useQuestionId, List<QuestionOptionDto> options, Boolean allowOther) {
+    	List<String> cells = new ArrayList<>();
+
+    	// get optionNodes from packed string value
+    	List<Map<String,String>> optionNodes = getNodes(value);
+
+    	// build pipe-separated format and add this to cell list
+    	String optionString = buildOptionString(optionNodes);
+        cells.add(optionString);
+
+        // if needed, build cells for options
+        if (useQuestionId){
+        	String text;
+        	String code;
+        	String other = null;
+        	boolean found;
+        	int numOptions = options.size();
+        	boolean[] optionFound = new boolean[numOptions];
+
+        	// TODO needs to be optimised
+        	for (Map<String,String> optAnswer : optionNodes){
+        		text = optAnswer.get("text");
+        		code = optAnswer.get("code");
+        		found = false;
+
+        		// try to match on text
+        		for (int i = 0; i < numOptions; i++){
+            		if (text != null && text.equals(options.get(i).getText()) && text.length() > 0){
+            			optionFound[i] = true;
+            			found = true;
+            			break;
+            		}
+            	}
+
+        		// try to match on code
+        		if (!found){
+        			for (int i = 0; i < numOptions; i++){
+                		if (code != null && code.equals(options.get(i).getCode())  && code.length() > 0){
+                			optionFound[i] = true;
+                			found = true;
+                			break;
+                		}
+                	}
+        		}
+
+        		// if still not found, keep this value as other
+        		if (!found){
+        			other = text;
+        		}
+        	}
+
+        	// create cells with 0 or 1
+        	for (int i = 0; i < numOptions; i++){
+        		cells.add(optionFound[i] ? "1" : "0");
+        	}
+
+        	if (allowOther){
+        		cells.add(other != null ? other : "");
+        	}
+        }
+        return cells;
     }
 
     private String sanitize(String s) {
@@ -951,7 +1049,8 @@ public class GraphicalSurveySummaryExporter extends SurveySummaryExporter {
                                         + " - " + level;
                                 createCell(row, offset++, levelName, headerStyle);
                             }
-                        } else {
+                        }
+                        else {
                             String header = "";
                             if (useQID) {
                                 header = questionId;
@@ -968,11 +1067,35 @@ public class GraphicalSurveySummaryExporter extends SurveySummaryExporter {
                                                 .replaceAll("\n", "")
                                                 .trim();
                             }
+
                             createCell(
                                     row,
                                     offset++,
                                     header,
                                     headerStyle);
+
+                            // check if we need to create columns for all options
+                            if (QuestionType.OPTION == q.getType()  && useQuestionId) {
+
+                            	// get options for question and create columns
+                            	OptionContainerDto ocDto = q.getOptionContainerDto();
+                            	List<QuestionOptionDto> qoList = ocDto.getOptionsList();
+                            	List<String> optionValueList = new ArrayList<String>();
+
+                            	for (QuestionOptionDto qo : qoList){
+                                    // create header column
+                            		header = (qo.getCode() != null && !qo.getCode().equals("null") && qo.getCode().length() > 0) ? qo.getCode() + ":" : "";
+                                    createCell(row, offset++,"--OPTION--|" + header + qo.getText(),headerStyle);
+                            	}
+
+                                // add 'other' column if needed
+                                if (q.getAllowOtherFlag()){
+                                	createCell(row, offset++,"--OTHER--",headerStyle);
+                                }
+
+                                optionMap.put(q.getKeyId(), qoList);
+                                allowOtherMap.put(q.getKeyId(),q.getAllowOtherFlag());
+                            }
                         }
                         if (!(QuestionType.NUMBER == q.getType() || QuestionType.OPTION == q
                                 .getType())) {
@@ -1449,7 +1572,7 @@ public class GraphicalSurveySummaryExporter extends SurveySummaryExporter {
         options.put(LOCALE_OPT, "en");
         // options.put(TYPE_OPT, RAW_ONLY_TYPE);
         options.put(LAST_COLLECTION_OPT, "false");
-        options.put("useQuestionId", "false");
+        options.put("useQuestionId", "true");
         options.put("email", "email@example.com");
         options.put("from", null);
         options.put("to", null);
