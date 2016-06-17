@@ -58,7 +58,6 @@ import org.apache.poi.xssf.streaming.SXSSFSheet;
 import org.apache.poi.xssf.streaming.SXSSFWorkbook;
 import org.codehaus.jackson.map.ObjectMapper;
 import org.codehaus.jackson.type.TypeReference;
-import org.springframework.beans.BeanUtils;
 import org.waterforpeople.mapping.app.gwt.client.survey.QuestionDto;
 import org.waterforpeople.mapping.app.gwt.client.survey.QuestionDto.QuestionType;
 import org.waterforpeople.mapping.app.gwt.client.survey.OptionContainerDto;
@@ -70,8 +69,6 @@ import org.waterforpeople.mapping.app.web.dto.SurveyRestRequest;
 import org.waterforpeople.mapping.dataexport.service.BulkDataServiceClient;
 
 import com.gallatinsystems.common.util.JFreechartChartUtil;
-import com.gallatinsystems.survey.dao.QuestionOptionDao;
-import com.gallatinsystems.survey.domain.QuestionOption;
 
 /**
  * Enhancement of the SurveySummaryExporter to support writing to Excel and including chart images.
@@ -294,7 +291,6 @@ public class GraphicalSurveySummaryExporter extends SurveySummaryExporter {
     private Map<Long, QuestionDto> questionsById;
     private boolean lastCollection = false;
     private static final ObjectMapper OBJECT_MAPPER = new ObjectMapper();
-    private QuestionOptionDao qoDao = new QuestionOptionDao();
 
     private Map<Long,List<QuestionOptionDto>> optionMap = new HashMap<Long,List<QuestionOptionDto>>();
     private Map<Long,Boolean> allowOtherMap = new HashMap<Long,Boolean>();
@@ -1095,7 +1091,6 @@ public class GraphicalSurveySummaryExporter extends SurveySummaryExporter {
                             	// get options for question and create columns
                             	OptionContainerDto ocDto = q.getOptionContainerDto();
                             	List<QuestionOptionDto> qoList = ocDto.getOptionsList();
-                            	List<String> optionValueList = new ArrayList<String>();
 
                             	for (QuestionOptionDto qo : qoList){
                                     // create header column
