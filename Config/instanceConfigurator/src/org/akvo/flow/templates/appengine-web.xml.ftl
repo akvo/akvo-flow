@@ -16,6 +16,7 @@
         <property name="java.util.logging.config.file" value="WEB-INF/logging.properties" />
         <property name="aws_secret_key" value="${awsSecretAccessKey}" />
         <property name="aws_identifier" value="${awsAccessKeyId}" />
+        <property name="serviceAccountId" value="sa-${instanceId}@${instanceId}.iam.gserviceaccount.com" />
         <property name="photo_url_root" value="${s3url}/images/" />
         <property name="alias" value="${alias}" />
         <property name="flowServices" value="${flowServices}" />
