@@ -195,7 +195,7 @@ public class InstanceConfigurator {
         StringWriter gaePolicy = new StringWriter();
         t2.process(data, gaePolicy);
 
-        s3Client.setBucketPolicy(bucketName, t0.toString());
+        s3Client.setBucketPolicy(bucketName, bucketPolicy.toString());
 
         iamClient.putUserPolicy(new PutUserPolicyRequest(apkUser, apkUser,
                 Policy.fromJson(apkPolicy.toString()).toJson()));
