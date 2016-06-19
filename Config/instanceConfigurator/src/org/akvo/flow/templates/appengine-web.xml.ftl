@@ -55,5 +55,7 @@
         <property name="mandatoryQuestionID" value="false"/>
         <property name="enableChangeEvents" value="${enableChangeEvents}" />
         <property name="eventNotification" value="${eventNotification}" />
+        <property name="hereMapsAppId" value="${hereMapsAppId}" />
+        <property name="hereMapsAppCode" value="${hereMapsAppCode}" />
     </system-properties>
 </appengine-web-app>
