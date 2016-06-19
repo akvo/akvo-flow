@@ -28,31 +28,31 @@
         <property name="recipientListString" value="${emailTo};FLOW Errors recipient" />
         <property name="defaultPhotoCaption" value="${organization}" />
         <property name="attachreport" value="true" />
-        <property name="bootstrapdir" value="bootstrap"/>
-        <property name="imageroot" value="https://${instanceId}.appspot.com"/>
-        <property name="mapiconimageroot" value="${s3url}/images/mapicons"/>
-        <property name="scoreAPFlag" value="true"/>
-        <property name="organization" value="${organization}"/>
+        <property name="bootstrapdir" value="bootstrap" />
+        <property name="imageroot" value="https://${instanceId}.appspot.com" />
+        <property name="mapiconimageroot" value="${s3url}/images/mapicons" />
+        <property name="scoreAPFlag" value="true" />
+        <property name="organization" value="${organization}" />
         <property name="signingKey" value="${signingKey}" />
         <property name="allowUnsignedData" value="true" />
         <property name="defaultOrg" value="${organization}" />
         <property name="domainType" value="locale" />
         <property name="exportedProperties" value="defaultOrg,domainType,pointTypes" />
-        <property name="pointTypes" value="WaterPoint,SanitationPoint,PublicInstitution"/>
-        <property name="optionRenderMode" value="radio"/>
-        <property name="backendpublish" value="false"/>
-        <property name="cacheExpirySeconds" value="3600"/>
-        <property name="useLongDates" value="true"/>
-        <property name="statusQuestionText" value="water available on the day;Yes=FUNCTIONING_HIGH;No=BROKEN_DOWN;DEFAULT=BROKEN_DOWN"/>
-        <property name="mergeNearbyLocales" value="false"/>
-        <property name="scoreAPDynamicFlag" value="false"/>
-        <property name="asyncTaskTimeout" value="16384"/>
-        <property name="enableRestSecurity" value="true"/>
-        <property name="restPrivateKey" value="${apiKey}"/>
-        <property name="useTabRDRFlag" value="false"/>
-        <property name="showStatisticsFeature" value="false"/>
-        <property name="showMonitoringFeature" value="false"/>
-        <property name="mandatoryQuestionID" value="false"/>
+        <property name="pointTypes" value="WaterPoint,SanitationPoint,PublicInstitution" />
+        <property name="optionRenderMode" value="radio" />
+        <property name="backendpublish" value="false" />
+        <property name="cacheExpirySeconds" value="3600" />
+        <property name="useLongDates" value="true" />
+        <property name="statusQuestionText" value="water available on the day;Yes=FUNCTIONING_HIGH;No=BROKEN_DOWN;DEFAULT=BROKEN_DOWN" />
+        <property name="mergeNearbyLocales" value="false" />
+        <property name="scoreAPDynamicFlag" value="false" />
+        <property name="asyncTaskTimeout" value="16384" />
+        <property name="enableRestSecurity" value="true" />
+        <property name="restPrivateKey" value="${apiKey}" />
+        <property name="useTabRDRFlag" value="false" />
+        <property name="showStatisticsFeature" value="false" />
+        <property name="showMonitoringFeature" value="false" />
+        <property name="mandatoryQuestionID" value="false" />
         <property name="enableChangeEvents" value="${enableChangeEvents}" />
         <property name="eventNotification" value="${eventNotification}" />
         <property name="hereMapsAppId" value="${hereMapsAppId}" />
