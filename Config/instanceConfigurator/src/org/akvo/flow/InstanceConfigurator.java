@@ -25,9 +25,9 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
 
-import org.apache.commons.cli.BasicParser;
 import org.apache.commons.cli.CommandLine;
 import org.apache.commons.cli.CommandLineParser;
+import org.apache.commons.cli.DefaultParser;
 import org.apache.commons.cli.HelpFormatter;
 import org.apache.commons.cli.Option;
 import org.apache.commons.cli.Options;
@@ -58,7 +58,7 @@ public class InstanceConfigurator {
     public static void main(String[] args) throws Exception {
 
         Options opts = getOptions();
-        CommandLineParser parser = new BasicParser();
+        CommandLineParser parser = new DefaultParser();
         CommandLine cli = null;
 
         try {
@@ -101,8 +101,7 @@ public class InstanceConfigurator {
         String apiKey = UUID.randomUUID().toString().replaceAll("-", "");
 
         AWSCredentials creds = new BasicAWSCredentials(awsAccessKey, awsSecret);
-        AmazonIdentityManagementClient iamClient = new AmazonIdentityManagementClient(
-                creds);
+        AmazonIdentityManagementClient iamClient = new AmazonIdentityManagementClient(creds);
         AmazonS3Client s3Client = new AmazonS3Client(creds);
 
         // Creating bucket
@@ -146,8 +145,7 @@ public class InstanceConfigurator {
         CreateAccessKeyRequest gaeAccessRequest = new CreateAccessKeyRequest();
         gaeAccessRequest.setUserName(gaeUser);
 
-        CreateAccessKeyResult gaeAccessResult = iamClient
-                .createAccessKey(gaeAccessRequest);
+        CreateAccessKeyResult gaeAccessResult = iamClient.createAccessKey(gaeAccessRequest);
         accessKeys.put(gaeUser, gaeAccessResult.getAccessKey());
 
         // APK
@@ -176,15 +174,13 @@ public class InstanceConfigurator {
         System.out.println("Configuring security policies...");
 
         Configuration cfg = new Configuration();
-        cfg.setClassForTemplateLoading(InstanceConfigurator.class,
-                "/org/akvo/flow/templates");
+        cfg.setClassForTemplateLoading(InstanceConfigurator.class, "/org/akvo/flow/templates");
         cfg.setObjectWrapper(new DefaultObjectWrapper());
         cfg.setDefaultEncoding("UTF-8");
 
         Map<String, Object> data = new HashMap<String, Object>();
         data.put("bucketName", bucketName);
-        data.put("version",
-                new SimpleDateFormat("yyyy-MM-dd").format(new Date()));
+        data.put("version", new SimpleDateFormat("yyyy-MM-dd").format(new Date()));
         data.put("accessKey", accessKeys);
 
         Template t0 = cfg.getTemplate("bucket-policy.ftl");
