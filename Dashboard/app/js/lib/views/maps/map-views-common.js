@@ -665,7 +665,6 @@ FLOW.NavMapsView = FLOW.View.extend({
                           break;
                         case "DATE":
                           var dateQuestion = new Date((!isNaN(questionAnswer)) ? parseInt(questionAnswer) : questionAnswer);
-                          //clickedPointContent += dateQuestion.toUTCString().slice(0, -13); //remove last 13 x-ters so only date displays
                           clickedPointContent += self.formatDate(dateQuestion);
                           break;
                         case "SIGNATURE":
