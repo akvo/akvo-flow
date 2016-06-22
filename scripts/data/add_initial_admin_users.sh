@@ -75,7 +75,7 @@ if [[ ! -r "$SERVICE_ACCOUNT_KEY_FILE_PATH" ]]; then
     exit -1
 fi
 
-CSV_USER_ACCOUNT_FILE_PATH="$CONFIG_REPO_PATH/0_instanceCreation/firstUser/User.csv"
+CSV_USER_ACCOUNT_FILE_PATH="$CONFIG_REPO_PATH/0_instanceCreation/firstUser/super_admins.csv"
 
 printf ">> Adding initial admin users for:  $INSTANCE_ID\n"
 printf ">> Using service account key file:  $SERVICE_ACCOUNT_KEY_FILE_PATH\n"
