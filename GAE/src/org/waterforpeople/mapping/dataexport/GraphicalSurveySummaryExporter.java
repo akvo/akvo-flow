@@ -699,14 +699,10 @@ public class GraphicalSurveySummaryExporter extends SurveySummaryExporter {
         for (String cellValue : cells) {
             if (questionType == QuestionType.NUMBER) {
                 createCell(row, col, cellValue, null, Cell.CELL_TYPE_NUMERIC);
-            } else if (questionType == QuestionType.OPTION){
+            } else if (questionType == QuestionType.OPTION && (cellValue.equals("0") || cellValue.equals("1"))){
             	// the type of an option column depends on the contents - if it is 0 or 1, we
             	// assume it to be numerical, because it will part of the expanded columns.
-            	if (cellValue.equals("0") || cellValue.equals("1")){
-            		createCell(row, col, cellValue, null, Cell.CELL_TYPE_NUMERIC);
-            	} else {
-                    createCell(row, col, cellValue, mTextStyle);
-                }
+            	createCell(row, col, cellValue, null, Cell.CELL_TYPE_NUMERIC);
             } else {
                 createCell(row, col, cellValue, mTextStyle);
             }
@@ -1060,8 +1056,7 @@ public class GraphicalSurveySummaryExporter extends SurveySummaryExporter {
                                         + " - " + level;
                                 createCell(row, offset++, levelName, headerStyle);
                             }
-                        }
-                        else {
+                        } else {
                             String header = "";
                             if (useQID) {
                                 header = questionId;
