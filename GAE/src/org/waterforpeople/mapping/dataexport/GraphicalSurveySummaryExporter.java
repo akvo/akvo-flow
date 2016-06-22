@@ -294,7 +294,7 @@ public class GraphicalSurveySummaryExporter extends SurveySummaryExporter {
 
     private Map<Long,List<QuestionOptionDto>> optionMap = new HashMap<Long,List<QuestionOptionDto>>();
     private Map<Long,Boolean> allowOtherMap = new HashMap<Long,Boolean>();
-    private Map<String,Integer> optionCache = new HashMap<String,Integer>();
+    private Map<String,Integer> optionsPositionCache = new HashMap<String,Integer>();
 
     // store indices of file columns for lookup when generating responses
     private Map<String, Integer> columnIndexMap = new HashMap<String, Integer>();
@@ -908,19 +908,19 @@ public class GraphicalSurveySummaryExporter extends SurveySummaryExporter {
 
         		// try cache first
         		cacheId = qId + text + code;
-        		if (optionCache.containsKey(cacheId)){
-        			optionFound[optionCache.get(cacheId)] = true;
+        		if (optionsPositionCache.containsKey(cacheId)){
+        			optionFound[optionsPositionCache.get(cacheId)] = true;
         			found = true;
         		}
 
         		// If it is not in the cache, try to match on text
         		if (!found){
 	        		for (int i = 0; i < numOptions; i++){
-	            		if (text != null && text.equalsIgnoreCase(options.get(i).getText()) && text.length() > 0){
+	            		if (text != null && text.length() > 0 && text.equalsIgnoreCase(options.get(i).getText())){
 	            			optionFound[i] = true;
 	            			found = true;
 	            			// put in cache
-	            			optionCache.put(cacheId, i);
+	            			optionsPositionCache.put(cacheId, i);
 	            			break;
 	            		}
 	            	}
@@ -929,11 +929,11 @@ public class GraphicalSurveySummaryExporter extends SurveySummaryExporter {
         		// finally, try to match on code
         		if (!found){
         			for (int i = 0; i < numOptions; i++){
-                		if (code != null && code.equalsIgnoreCase(options.get(i).getCode())  && code.length() > 0){
+                		if (code != null && code.length() > 0 && code.equalsIgnoreCase(options.get(i).getCode())){
                 			optionFound[i] = true;
                 			found = true;
                 			// put in cache
-	            			optionCache.put(cacheId, i);
+	            			optionsPositionCache.put(cacheId, i);
                 			break;
                 		}
                 	}
