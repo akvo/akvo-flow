@@ -674,7 +674,7 @@ public class GraphicalSurveySummaryExporter extends SurveySummaryExporter {
 
             case PHOTO:
             case VIDEO:
-                cells.addAll(mediaCellValues(value, imagePrefix));
+                cells.addAll(mediaCellValues(value, useQuestionId, imagePrefix));
                 break;
 
             case GEO:
@@ -699,10 +699,10 @@ public class GraphicalSurveySummaryExporter extends SurveySummaryExporter {
         for (String cellValue : cells) {
         	if (questionType == QuestionType.NUMBER) {
                 createCell(row, col, cellValue, null, Cell.CELL_TYPE_NUMERIC);
-            } else if (questionType == QuestionType.NUMBER) {
-            	if (col==startColumn) {
+            } else if (questionType == QuestionType.PHOTO) {
+            	if (col == startColumn) { //URL is text
             		createCell(row, col, cellValue, mTextStyle);
-            	} else {
+            	} else { //Coordinates numerical
             		createCell(row, col, cellValue, null, Cell.CELL_TYPE_NUMERIC);
             	}
             } else {
@@ -716,7 +716,7 @@ public class GraphicalSurveySummaryExporter extends SurveySummaryExporter {
         return ExportImportUtils.formatDateResponse(value);
     }
 
-    private static List<String> mediaCellValues(String value, String imagePrefix) {
+    private static List<String> mediaCellValues(String value, boolean useQuestionId, String imagePrefix) {
         List<String> cells = new ArrayList<>();
         if (value.startsWith("{")) { //JSON, possibly geotagged
             Media media = MediaResponse.parse(value);
@@ -724,7 +724,7 @@ public class GraphicalSurveySummaryExporter extends SurveySummaryExporter {
             final int filenameIndex = filename != null ? filename.lastIndexOf("/") + 1 : -1;
             if (filenameIndex > 0 && filenameIndex < filename.length()) {
             	cells.add(imagePrefix + filename.substring(filenameIndex));
-            	if (media.getLocation() != null) {
+            	if (useQuestionId && media.getLocation() != null) {
 	            	cells.add(Double.toString(media.getLocation().getLatitude()));
 	            	cells.add(Double.toString(media.getLocation().getLongitude()));
 	            	cells.add(Double.toString(media.getLocation().getAccuracy()));
@@ -972,10 +972,8 @@ public class GraphicalSurveySummaryExporter extends SurveySummaryExporter {
                                     useQID ? questionId + "_" + codeLabel.replaceAll("\\s", "")
                                             : "--GEOCODE--|" + codeLabel,
                                     headerStyle);
-                        } else if (QuestionType.PHOTO == q.getType()
-                        		|| QuestionType.VIDEO == q.getType()) {
-                        	//Media gets 4 columns: URL, Latitude, Longitude and Accuracy
-                        	String prefix = (QuestionType.PHOTO == q.getType()) ? "--PHOTO--|" : "--VIDEO--|";
+                        } else if (QuestionType.PHOTO == q.getType()) {
+                        	//Always a URL column 
                             String header = "";
                             if (useQID) {
                                 header = questionId;
@@ -993,12 +991,16 @@ public class GraphicalSurveySummaryExporter extends SurveySummaryExporter {
                                                 .trim();
                             }
                             createCell(row, offset++, header, headerStyle);
-                            createCell(row, offset++,
-                                    prefix + LAT_LABEL.get(columnLocale), headerStyle);
-                            createCell(row, offset++,
-                                    prefix + LON_LABEL.get(columnLocale), headerStyle);
-                            createCell(row, offset++,
-                                    prefix + ACC_LABEL.get(columnLocale), headerStyle);
+                            if (useQuestionId) { 
+                            	//Media gets 3 extra columns: Latitude, Longitude and Accuracy
+                            	String prefix = "--PHOTO--|";
+	                            createCell(row, offset++,
+	                                    prefix + LAT_LABEL.get(columnLocale), headerStyle);
+	                            createCell(row, offset++,
+	                                    prefix + LON_LABEL.get(columnLocale), headerStyle);
+	                            createCell(row, offset++,
+	                                    prefix + ACC_LABEL.get(columnLocale), headerStyle);
+                            }
                         } else if (QuestionType.CASCADE == q.getType() && q.getLevelNames() != null
                                 && useQuestionId) {
                             for (String level : q.getLevelNames()) {
