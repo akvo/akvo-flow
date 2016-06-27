@@ -374,10 +374,10 @@ public class ActionRestService {
             surveyCopy.setSurveyGroupId(savedProjectCopy.getKey().getId());
             survey.setAncestorIds(surveysAncestorIds);
             long copyId = surveyDao.save(surveyCopy).getKey().getId();
-            if (survey.getKey().getId() == projectCopy.getNewLocaleSurveyId()) {
+            if (survey.getKey().getId() == savedProjectCopy.getNewLocaleSurveyId()) {
                 //original was the registration survey for its survey group
-                projectCopy.setNewLocaleSurveyId(copyId); //fix it
-                surveyGroupDao.save(projectCopy);
+                savedProjectCopy.setNewLocaleSurveyId(copyId); //fix it
+                surveyGroupDao.save(savedProjectCopy);
             }
         }
         return "success";
