@@ -1231,32 +1231,33 @@ public class GraphicalSurveySummaryExporter extends SurveySummaryExporter {
                         	// create column for test type
                         	createCell(row, offset++, useQID ? questionId +"|" +q.getText() + "|TEST_TYPE" : q.getText() + "|TEST_TYPE",headerStyle);
 
-                        	// get expected results for this test
-                        	List<CaddisflyResult> crResults = cr.getResults();
+                        	// get expected results for this test, if it exists
+                        	if (cr != null) {
+                        		List<CaddisflyResult> crResults = cr.getResults();
+                        		// sort results on id value
+                            	Collections.sort(crResults);
 
-                        	// sort results on id value
-                        	Collections.sort(crResults);
+                            	List<Integer> resultIds = new ArrayList<Integer>();
 
-                        	List<Integer> resultIds = new ArrayList<Integer>();
+                            	// create column headers
+                            	for (CaddisflyResult result : crResults){
+                            		// put result ids in map, so we can use if for validation later
+                            		resultIds.add(result.getId());
 
-                        	// create column headers
-                        	for (CaddisflyResult result : crResults){
-                        		// put result ids in map, so we can use if for validation later
-                        		resultIds.add(result.getId());
+                            		// create column for result
+                            		createCell(row, offset++,"--CADDISFLY--" + result.getName() + "(" + result.getUnit() + ")",headerStyle);
+                            	}
 
-                        		// create column for result
-                        		createCell(row, offset++,"--CADDISFLY--" + result.getName() + "(" + result.getUnit() + ")",headerStyle);
+                            	if (cr.getHasImage()){
+                            		createCell(row, offset++, q.getText() + " - " + IMAGE_LABEL.get(columnLocale), headerStyle);
+                            	}
+
+                            	// store number of results and hasImage in hashmap, for later use.
+                            	// during the report building, we need access to these numbers.
+                            	numResultsMap.put(q.getKeyId(), cr.getNumResults());
+                            	resultIdMap.put(q.getKeyId(),resultIds);
+                            	hasImageMap.put(q.getKeyId(),cr.getHasImage());
                         	}
-
-                        	if (cr.getHasImage()){
-                        		createCell(row, offset++, q.getText() + " - " + IMAGE_LABEL.get(columnLocale), headerStyle);
-                        	}
-
-                        	// store number of results and hasImage in hashmap, for later use.
-                        	// during the report building, we need access to these numbers.
-                        	numResultsMap.put(q.getKeyId(), cr.getNumResults());
-                        	resultIdMap.put(q.getKeyId(),resultIds);
-                        	hasImageMap.put(q.getKeyId(),cr.getHasImage());
                         } else {
                             String header = "";
                             if (useQID) {
