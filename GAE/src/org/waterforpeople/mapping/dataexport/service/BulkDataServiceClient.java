@@ -902,6 +902,10 @@ public class BulkDataServiceClient {
                                     && !"null".equalsIgnoreCase(json.getString("geoLocked"))) {
                                 dto.setGeoLocked(json.getBoolean("geoLocked"));
                             }
+                            if (json.has("caddisflyResourceUuid")
+                                    && json.getString("caddisflyResourceUuid") != null) {
+                                dto.setCaddisflyResourceUuid(json.getString("caddisflyResourceUuid"));
+                            }
                             if (json.has("immutable")
                                     && !"null".equalsIgnoreCase(json.getString("immutable"))) {
                                 dto.setImmutable(json.getBoolean("immutable"));
