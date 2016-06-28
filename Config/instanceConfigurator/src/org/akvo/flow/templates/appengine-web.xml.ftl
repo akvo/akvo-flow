@@ -51,7 +51,7 @@
         <property name="restPrivateKey" value="${apiKey}" />
         <property name="useTabRDRFlag" value="false" />
         <property name="showStatisticsFeature" value="false" />
-        <property name="showMonitoringFeature" value="false" />
+        <property name="showMonitoringFeature" value="true" />
         <property name="mandatoryQuestionID" value="false" />
         <property name="enableChangeEvents" value="${enableChangeEvents}" />
         <property name="eventNotification" value="${eventNotification}" />
