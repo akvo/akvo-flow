@@ -1,33 +1,21 @@
 FLOW.dashboardLanguageControl = Ember.Object.create({
-  dashboardLanguage: null,
+  dashboardLanguage: FLOW.Env.locale,
 
-  init: function () {
-    var locale = localStorage.locale || (localStorage.locale = 'en');
-    this.set('dashboardLanguage', this.get('content').findProperty('value', locale));
-  },
-
-  content: [
-    Ember.Object.create({
-      label: "English (Default)",
-      value: "en"
-    }), Ember.Object.create({
-      label: "Español",
-      value: "es"
-    }), Ember.Object.create({
-      label: "Français",
-      value: "fr"
-    })
-  ],
+  content: [{ label: "English (Default)", value: "en"},
+            { label: "Español", value: "es" },
+            { label: "Français", value: "fr" },
+            { label: "Português", value: "pt" },
+            { label: "Bahasa Indonesia", value: "id"}],
 
   languageChanged: function () {
-	var current = localStorage.locale,
-        changed = this.get('dashboardLanguage').value;
-
-    if (current !== changed) {
-      localStorage.locale = changed;
-      window.location = window.location;
-    }
-  }.observes('dashboardLanguage')
+    var localeUrl = '/ui-strings.js?locale=' + this.dashboardLanguage;
+    $.ajax({
+      url: localeUrl,
+      complete: function () {
+        location.reload(false);
+      },
+    });
+  }.observes('dashboardLanguage'),
 });
 
 FLOW.reportLanguageControl = Ember.ArrayController.create({

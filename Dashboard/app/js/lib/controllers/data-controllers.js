@@ -56,11 +56,17 @@ FLOW.cascadeResourceControl = Ember.ArrayController.create({
   levelNames:null,
   displayLevelName1: null, displayLevelName2: null, displayLevelName3: null,
   displayLevelNum1: null, displayLevelNum2: null, displayLevelNum3: null,
+  sortProperties: ['name'],
+  sortAscending: true,
 
   populate: function() {
     this.set('content', FLOW.store.find(FLOW.CascadeResource));
-    this.set('published',FLOW.store.filter(FLOW.CascadeResource,function(item){
-      return item.get('status') === 'PUBLISHED';
+    this.set('published', Ember.ArrayController.create({
+      sortProperties: ['name'],
+      sortAscending: true,
+      content: FLOW.store.filter(FLOW.CascadeResource,function(item){
+        return item.get('status') === 'PUBLISHED';
+      })
     }));
   },
 

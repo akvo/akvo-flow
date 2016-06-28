@@ -28,7 +28,6 @@ import java.util.logging.Logger;
 import javax.servlet.http.HttpServletRequest;
 
 import org.waterforpeople.mapping.app.gwt.client.survey.QuestionDto.QuestionType;
-import org.waterforpeople.mapping.app.gwt.server.survey.SurveyServiceImpl;
 import org.waterforpeople.mapping.app.gwt.server.surveyinstance.SurveyInstanceServiceImpl;
 import org.waterforpeople.mapping.app.web.dto.DataProcessorRequest;
 import org.waterforpeople.mapping.app.web.dto.RawDataImportRequest;
@@ -213,7 +212,7 @@ public class RawDataRestServlet extends AbstractRestApiServlet {
             }
             log.log(Level.INFO, "Deleting " + deletedAnswers.size() + " question answers");
             qasDao.delete(deletedAnswers);
-            
+
             if (!isMonitoringForm && !isNewInstance) {
                 // Update datapoint name for this locale
                 SurveyedLocale sl = slDao.getById(instance.getSurveyedLocaleId());
@@ -221,7 +220,7 @@ public class RawDataRestServlet extends AbstractRestApiServlet {
                         qDao.listDisplayNameQuestionsBySurveyId(s.getKey().getId()), updatedAnswers);
                 slDao.save(sl);
             }
-            
+
             if (isNewInstance) {
                 // create new surveyed locale and launch task to complete processing
                 SurveyedLocale locale = new SurveyedLocale();
@@ -371,13 +370,20 @@ public class RawDataRestServlet extends AbstractRestApiServlet {
             }
         } else if (RawDataImportRequest.UPDATE_SUMMARIES_ACTION
                 .equalsIgnoreCase(importReq.getAction())) {
+            if (importReq.getSurveyId() == null
+                    || new SurveyDAO().getById(importReq.getSurveyId()) == null) {
+                // ensure survey id present for summary update
+                return null;
+            }
             // first rebuild the summaries
             log.log(Level.INFO, "Rebuilding summaries for surveyId "
                     + importReq.getSurveyId().toString());
-            TaskOptions options = TaskOptions.Builder.withUrl(
-                    "/app_worker/dataprocessor").param(
-                    DataProcessorRequest.ACTION_PARAM,
-                    DataProcessorRequest.REBUILD_QUESTION_SUMMARY_ACTION);
+            TaskOptions options = TaskOptions.Builder
+                    .withUrl("/app_worker/dataprocessor")
+                    .param(DataProcessorRequest.ACTION_PARAM,
+                            DataProcessorRequest.REBUILD_QUESTION_SUMMARY_ACTION)
+                    .param(DataProcessorRequest.SURVEY_ID_PARAM, importReq.getSurveyId().toString());
+
             String backendPub = PropertyUtil.getProperty("backendpublish");
             if (backendPub != null && "true".equals(backendPub)) {
                 // change the host so the queue invokes the backend
@@ -386,21 +392,10 @@ public class RawDataRestServlet extends AbstractRestApiServlet {
                                 BackendServiceFactory.getBackendService()
                                         .getBackendAddress("dataprocessor"));
             }
-            Long surveyId = importReq.getSurveyId();
-            if (surveyId != null && surveyId > 0) {
-                options.param(DataProcessorRequest.SURVEY_ID_PARAM,
-                        surveyId.toString());
-            }
 
             com.google.appengine.api.taskqueue.Queue queue = com.google.appengine.api.taskqueue.QueueFactory
                     .getDefaultQueue();
             queue.add(options);
-
-            // now remap to access point
-            if (surveyId != null) {
-                SurveyServiceImpl ssi = new SurveyServiceImpl();
-                ssi.rerunAPMappings(surveyId);
-            }
         } else if (RawDataImportRequest.SAVE_MESSAGE_ACTION
                 .equalsIgnoreCase(importReq.getAction())) {
 

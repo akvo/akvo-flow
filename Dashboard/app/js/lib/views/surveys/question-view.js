@@ -347,7 +347,7 @@ FLOW.QuestionView = FLOW.View.extend({
       this.set('allowSign', false);
       this.set('allowDecimal', false);
     }
-    if (this.type.get('value') !== 'GEO' && this.type.get('value') !== 'GEOSHAPE') {
+    if (this.type.get('value') !== 'GEO' && this.type.get('value') !== 'GEOSHAPE' && this.type.get('value') !== 'SCAN') {
       this.set('geoLocked', false);
     }
 

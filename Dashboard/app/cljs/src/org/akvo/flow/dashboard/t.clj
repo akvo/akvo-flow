@@ -1,4 +1,4 @@
-;; Copyright (C) 2014 Stichting Akvo (Akvo Foundation)
+;; Copyright (C) 2014-2016 Stichting Akvo (Akvo Foundation)
 ;;
 ;; This file is part of Akvo FLOW.
 ;;
@@ -15,16 +15,11 @@
 (ns org.akvo.flow.dashboard.t)
 
 (defmacro t> [key]
-  `(let [locale# (-> js/window
-                     (aget "parent")
-                     (aget "localStorage")
-                     (aget "locale")
-                     .toUpperCase)
-         k# ~(name key)
+  `(let [k# ~(name key)
          s# (-> js/window
                 (aget "parent")
                 (aget "Ember")
-                (aget (cljs.core/str "STRINGS" "_" locale#))
+                (aget (cljs.core/str "STRINGS"))
                 (aget k#))]
      (if s#
        s#

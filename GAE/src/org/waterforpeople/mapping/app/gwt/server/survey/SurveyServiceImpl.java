@@ -184,58 +184,6 @@ public class SurveyServiceImpl extends RemoteServiceServlet implements
         return surveyDtos;
     }
 
-    @Override
-    public ResponseDto<ArrayList<SurveyGroupDto>> listSurveyGroups(
-            String cursorString, Boolean loadSurveyFlag,
-            Boolean loadQuestionGroupFlag, Boolean loadQuestionFlag) {
-        ResponseDto<ArrayList<SurveyGroupDto>> response = new ResponseDto<ArrayList<SurveyGroupDto>>();
-        ArrayList<SurveyGroupDto> surveyGroupDtoList = new ArrayList<SurveyGroupDto>();
-        SurveyGroupDAO surveyGroupDao = new SurveyGroupDAO();
-        List<SurveyGroup> groupList = surveyGroupDao.list(cursorString);
-        for (SurveyGroup canonical : groupList) {
-            SurveyGroupDto dto = new SurveyGroupDto();
-            DtoMarshaller.copyToDto(canonical, dto);
-            dto.setSurveyList(null);
-            if (canonical.getSurveyList() != null
-                    && canonical.getSurveyList().size() > 0) {
-                for (Survey survey : canonical.getSurveyList()) {
-                    SurveyDto surveyDto = new SurveyDto();
-                    DtoMarshaller.copyToDto(survey, surveyDto);
-                    surveyDto.setQuestionGroupList(null);
-                    if (survey.getQuestionGroupMap() != null
-                            && survey.getQuestionGroupMap().size() > 0) {
-                        for (QuestionGroup questionGroup : survey
-                                .getQuestionGroupMap().values()) {
-                            QuestionGroupDto questionGroupDto = new QuestionGroupDto();
-                            DtoMarshaller.copyToDto(questionGroup,
-                                    questionGroupDto);
-                            if (questionGroup.getQuestionMap() != null
-                                    && questionGroup.getQuestionMap().size() > 0) {
-                                for (Entry<Integer, Question> questionEntry : questionGroup
-                                        .getQuestionMap().entrySet()) {
-                                    Question question = questionEntry
-                                            .getValue();
-                                    Integer order = questionEntry.getKey();
-                                    QuestionDto questionDto = new QuestionDto();
-                                    DtoMarshaller.copyToDto(question,
-                                            questionDto);
-                                    questionGroupDto.addQuestion(questionDto,
-                                            order);
-                                }
-                            }
-                            surveyDto.addQuestionGroup(questionGroupDto);
-                        }
-                    }
-                    dto.addSurvey(surveyDto);
-                }
-            }
-            surveyGroupDtoList.add(dto);
-        }
-        response.setPayload(surveyGroupDtoList);
-        response.setCursorString(SurveyGroupDAO.getCursor(groupList));
-        return response;
-    }
-
     /**
      * This method will return a list of all the questions that have a specific type code
      */
@@ -290,36 +238,6 @@ public class SurveyServiceImpl extends RemoteServiceServlet implements
             }
         }
         return surveyDtos;
-    }
-
-    @Override
-    public SurveyGroupDto save(SurveyGroupDto value) {
-        SurveyGroupDAO sgDao = new SurveyGroupDAO();
-        SurveyGroup surveyGroup = new SurveyGroup();
-        DtoMarshaller.copyToCanonical(surveyGroup, value);
-        surveyGroup.setSurveyList(null);
-        for (SurveyDto item : value.getSurveyList()) {
-            // SurveyDto item = value.getSurveyList().get(0);
-            Survey survey = new Survey();
-            DtoMarshaller.copyToCanonical(survey, item);
-            survey.setQuestionGroupMap(null);
-            int order = 1;
-            for (QuestionGroupDto qgDto : item.getQuestionGroupList()) {
-                QuestionGroup qg = new QuestionGroup();
-                DtoMarshaller.copyToCanonical(qg, qgDto);
-                survey.addQuestionGroup(order++, qg);
-                int qOrder = 1;
-                for (Entry<Integer, QuestionDto> qDto : qgDto.getQuestionMap()
-                        .entrySet()) {
-                    Question q = marshalQuestion(qDto.getValue());
-                    qg.addQuestion(qOrder++, q);
-                }
-            }
-            surveyGroup.addSurvey(survey);
-        }
-
-        DtoMarshaller.copyToDto(sgDao.save(surveyGroup), value);
-        return value;
     }
 
     public static QuestionDto marshalQuestionDto(Question q) {
@@ -812,10 +730,14 @@ public class SurveyServiceImpl extends RemoteServiceServlet implements
         com.google.appengine.api.taskqueue.Queue queue = com.google.appengine.api.taskqueue.QueueFactory
                 .getQueue("surveyAssembly");
         queue.add(options);
-        
-        // Schedule datapoint name assembly. The corresponding task will determine
-        // whether this form was used to create any datapoint
-        DataProcessorRestServlet.scheduleDatapointNameAssembly(surveyId, null);
+
+        Survey s = new SurveyDAO().getById(surveyId);
+        SurveyGroup sg = s != null ? new SurveyGroupDAO().getByKey(s.getSurveyGroupId()) : null;
+        if (sg != null && sg.getNewLocaleSurveyId() != null &&
+                sg.getNewLocaleSurveyId().longValue() == surveyId.longValue()) {
+            // This is the registration form. Schedule datapoint name re-assembly
+            DataProcessorRestServlet.scheduleDatapointNameAssembly(sg.getKey().getId(), null);
+        }
     }
 
     @Override

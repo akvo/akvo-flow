@@ -1,5 +1,5 @@
 /*
- *  Copyright (C) 2012-2015 Stichting Akvo (Akvo Foundation)
+ *  Copyright (C) 2012-2016 Stichting Akvo (Akvo Foundation)
  *
  *  This file is part of Akvo FLOW.
  *
@@ -33,12 +33,12 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
-import org.waterforpeople.mapping.app.gwt.client.survey.SurveyDto;
 import org.waterforpeople.mapping.app.gwt.client.survey.SurveyGroupDto;
 import org.waterforpeople.mapping.app.util.DtoMarshaller;
 import org.waterforpeople.mapping.app.web.rest.dto.RestStatusDto;
 import org.waterforpeople.mapping.app.web.rest.dto.SurveyGroupPayload;
 
+import com.gallatinsystems.common.Constants;
 import com.gallatinsystems.survey.dao.SurveyDAO;
 import com.gallatinsystems.survey.dao.SurveyGroupDAO;
 import com.gallatinsystems.survey.dao.SurveyUtils;
@@ -86,7 +86,12 @@ public class SurveyGroupRestService {
 
         // if we are here, it is a regular request
         List<SurveyGroup> surveyGroups = surveyGroupDao.listAllFilteredByUserAuthorization();
-        List<Survey> surveys = surveyDao.listAllFilteredByUserAuthorization();
+
+        // we do not need to filter the list of Survey entities (forms) i.e. we list *all* results
+        // as the list will be filtered later when processing the list of SurveyGroup entities
+        // (surveys) to include
+        List<Survey> surveys = surveyDao.list(Constants.ALL_RESULTS);
+
         Map<Long, Survey> surveyGroupIdToSomeSurvey = new HashMap<>();
 
         if (surveys != null) {
@@ -100,14 +105,11 @@ public class SurveyGroupRestService {
 
         if (surveyGroups != null) {
             for (SurveyGroup sg : surveyGroups) {
-                SurveyGroupDto dto = new SurveyGroupDto();
-                DtoMarshaller.copyToDto(sg, dto);
+                SurveyGroupDto dto = new SurveyGroupDto(sg);
                 Survey survey = surveyGroupIdToSomeSurvey.get(sg.getKey().getId());
                 if (survey != null) {
-                    SurveyDto sDto = new SurveyDto();
                     // we don't want/need the full object
-                    sDto.setKeyId(survey.getKey().getId());
-                    dto.addSurvey(sDto);
+                    dto.addSurvey(survey.getKey().getId());
                 }
                 results.add(dto);
             }

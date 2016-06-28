@@ -35,6 +35,7 @@ public class TaskRequest extends RestRequest {
 
     public static final String FILE_NAME_PARAM = "fileName";
     public static final String SURVEY_ID_PARAM = "surveyId";
+    public static final String ANDROID_ID = "androidId";
     public static final String PHONE_NUM_PARAM = "phoneNumber";
     public static final String IMEI_PARAM = "imei";
     public static final String CHECKSUM_PARAM = "checksum";
@@ -44,6 +45,7 @@ public class TaskRequest extends RestRequest {
 
     private String fileName;
     private Long surveyId;
+    private String androidId;
     private String phoneNumber;
     private String imei;
     private String checksum;
@@ -107,10 +109,19 @@ public class TaskRequest extends RestRequest {
         this.surveyId = surveyId;
     }
 
+    public String getAndroidId() {
+        return androidId;
+    }
+
+    public void setAndroidId(String androidId) {
+        this.androidId = androidId;
+    }
+
     @Override
     protected void populateFields(HttpServletRequest req) throws Exception {
         fileName = req.getParameter(FILE_NAME_PARAM);
         phoneNumber = req.getParameter(PHONE_NUM_PARAM);
+        androidId = req.getParameter(ANDROID_ID);
         imei = req.getParameter(IMEI_PARAM);
         checksum = req.getParameter(CHECKSUM_PARAM);
         if (req.getParameter(ACCESS_POINT_ID_PARAM) != null) {

@@ -1,5 +1,5 @@
 /*
- *  Copyright (C) 2010-2012 Stichting Akvo (Akvo Foundation)
+ *  Copyright (C) 2010-2016 Stichting Akvo (Akvo Foundation)
  *
  *  This file is part of Akvo FLOW.
  *
@@ -172,7 +172,7 @@ public class SurveySummaryExporter extends AbstractDataExporter {
                 rollups = formRollupStrings(responseMap);
             }
             for (Entry<String, String> entry : responseMap.entrySet()) {
-                model.tallyResponse(entry.getKey(), rollups, entry.getValue());
+                model.tallyResponse(entry.getKey(), rollups, entry.getValue(), null);
             }
         }
         return model;
@@ -465,7 +465,15 @@ public class SurveySummaryExporter extends AbstractDataExporter {
         }
 
         public void tallyResponse(String questionId, Set<String> rollups,
-                String response) {
+                String response, QuestionDto qDto) {
+
+            if (qDto != null && QuestionType.NUMBER == qDto.getQuestionType()) {
+                // for NUMBER questions, if decimals-allowed changes
+                // during survey, "1" and "1.0" should be tallied together
+                if (response.endsWith(".0")) {
+                    response = response.substring(0, response.length() - 2);
+                }
+            }
             addResponse(questionId, response);
             addRollup(rollups);
             incrementCount(questionId, rollups, response);

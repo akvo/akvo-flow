@@ -33,6 +33,7 @@ public class DeviceSurveyJobQueue {
 
     private String devicePhoneNumber;
     private String imei;
+    private String androidId;
     private Long surveyID;
     private Date effectiveStartDate;
     private Date effectiveEndDate;
@@ -69,6 +70,14 @@ public class DeviceSurveyJobQueue {
 
     public void setAssignmentId(Long assignmentId) {
         this.assignmentId = assignmentId;
+    }
+
+    public String getAndroidId() {
+        return androidId;
+    }
+
+    public void setAndroidId(String androidId) {
+        this.androidId = androidId;
     }
 
     public String getDevicePhoneNumber() {

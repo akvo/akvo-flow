@@ -5,7 +5,80 @@ Read more about the [Akvo Platform](http://www.akvo.org/blog/?p=4822).
 
 Akvo FLOW Dashboard release notes
 ----
-#1.9.4 - Clamarous Capybara
+#1.9.8 Grappling Garanuug
+Date: 8 June 2016
+# New and noteworthy
+* Start using android Id for identification of devices internally in the dashboard.  This should improve on the stability of data transfers to and from the devices [#998]
+
+# Resolved issues
+* Video responses url on cartodb maps point to the collecting device's internal storage [#1674]
+* Change forms endpoint on CartoDB maps from cartodb storage to dashboard storage [#1655]
+* Improve speed of dashboard loading [#987]
+
+#1.9.7 - Fashionable Flamingo
+Date: 16 May 2016
+# New and noteworthy
+* Order cascade resources in drop-downs alphabetically to enable easier finding of a cascade resource in the list [#1615]
+* Add Bahasa/Indonesian language to dashboard [#1566]
+* Geotagging in photos in the dashboard.  We now show the latitude/longitude data for photos that have been geotagged when previewing responses [#1527]
+
+# Resolved issues
+* Device identification [#1644]
+* Signature in CartoDB maps display incorrect [#1622]
+* Update RemoteAPI datascripts to use service accounts [#1620]
+* Disable manual input of bacode [#1522]
+* Spreadsheet Import converts data to numbers regardless of the type of data expected by the associated question [#923]
+
+#1.9.6.2
+Date: 29 April 2016
+# Resolved issues
+* Dashboard doesn't load for users with uppercase letters in email [#1602]
+
+#1.9.6.1
+Date: 22 April 2016
+# Resolved issues
+* Update Portuguese translations in FLOW dashboard [#1578]
+
+#1.9.6 - Easygoing Elephant
+Date: 20 April 2016
+# New and noteworthy
+* Better timezone handling in export raw data reports. Consistently display dates using ISO 8601 [#257]
+* Geotagging in photos: include location information, if available, in media responses [#1527]
+* Portuguese translations in FLOW dashboard [#1578]
+* Improve performance by dynamically loading languages in dashboard [#1602]
+* Switch to Oauth2-based authentication in GAE deployments [#1625]
+
+# Resolved issues
+* Ignore blank last cell in raw data reports [#1553]
+* Graphical survey summary report gives a decimal in the summary sheet [#1580]
+* Update device last contact time to the dashboard [#1585]
+* Tasks are unnecessarily rerun for every form response submitted [#1594]
+* NPE on non-monitored survey publishing [#1611]
+
+#1.9.5.2
+Date: 15 March 2016
+# Resolved issues
+* API returning JSON encoded response for options whereas the API version is expected to return pipe separated strings [#1589]
+
+#1.9.5.1
+Date: 4 March 2016
+# Resolved issues
+* Fix an equality check that prevented the automated building of datapoint names[#1576]
+
+#1.9.5 - Decubitus Dingo
+Date: 3 March 2016
+# New and noteworthy
+* Enforce the use of SSL via configuration.  Access to all dashboard URLs will now be encrypted. [#1564]
+
+# Resolved issues
+* Update device last contact time to the dashboard [#1585]
+* Improved French translations for both the dashboard and app [#1579]
+* Dynamically build datapoint names[#1576]
+* Add 'terrain' baselayer to cartodb maps [#1573]
+* Displaying signature responses on cartodb point overlays [#1560]
+* Caching of requests causes malfunction with user roles and permissions and reading surveys [#1182]
+
+#1.9.4 - Clamorous Capybara
 Date: 6 January 2016
 
 # New and noteworthy

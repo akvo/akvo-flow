@@ -1,5 +1,5 @@
 /*
- *  Copyright (C) 2010-2012 Stichting Akvo (Akvo Foundation)
+ *  Copyright (C) 2010-2016 Stichting Akvo (Akvo Foundation)
  *
  *  This file is part of Akvo FLOW.
  *
@@ -17,7 +17,6 @@
 package org.waterforpeople.mapping.app.web;
 
 import java.io.IOException;
-import java.util.Date;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -37,8 +36,6 @@ import org.waterforpeople.mapping.domain.SurveyInstance;
 
 import com.gallatinsystems.common.Constants;
 import com.gallatinsystems.device.dao.DeviceDAO;
-import com.gallatinsystems.device.domain.Device;
-import com.gallatinsystems.device.domain.Device.DeviceType;
 import com.gallatinsystems.device.domain.DeviceFiles;
 import com.gallatinsystems.device.domain.DeviceSurveyJobQueue;
 import com.gallatinsystems.framework.rest.AbstractRestApiServlet;
@@ -106,41 +103,21 @@ public class SurveyManagerServlet extends AbstractRestApiServlet {
         } else if (SurveyManagerRequest.GET_AVAIL_DEVICE_SURVEY_ACTION
                 .equalsIgnoreCase(req.getAction())) {
             // Report which surveys the device should have
-            Device dev = null;
             if (mgrReq.getPhoneNumber() != null || mgrReq.getImei() != null) {
-                resp.setMessage(getSurveyForPhone(mgrReq.getPhoneNumber(), mgrReq.getImei()));
-                // now check to see if we need to update the device
-                if (mgrReq.getImei() != null) {
-                    dev = deviceDao.getByImei(mgrReq.getImei());
-                }
-                if (dev == null) {
-                    dev = deviceDao.get(mgrReq.getPhoneNumber());
-                }
-                if (dev != null) {
-                    if (mgrReq.getDeviceId() != null
-                            && mgrReq.getDeviceId().trim().length() > 0) {
-                        dev.setDeviceIdentifier(mgrReq.getDeviceId());
-                    }
-                } else {
-                    // we need to create the device since we haven't seen it
-                    // before
-                    dev = new Device();
-                    if (mgrReq.getImei() != null && !Device.NO_IMEI.equals(mgrReq.getImei())) {
-                        dev.setEsn(mgrReq.getImei());
-                    }
-                    dev.setPhoneNumber(mgrReq.getPhoneNumber());
-                    dev.setDeviceType(DeviceType.CELL_PHONE_ANDROID);
-                    dev.setDeviceIdentifier(mgrReq.getDeviceId());
-                    dev.setLastLocationBeaconTime(new Date());
-                    dev.setGallatinSoftwareManifest(mgrReq.getVersion());
-                    deviceDao.save(dev);
-                }
+                resp.setMessage(getSurveyForPhone(mgrReq.getPhoneNumber(), mgrReq.getImei(),
+                        mgrReq.getAndroidId()));
+
+                // Update last connection time, or register device if needed
+                deviceDao.updateDevice(mgrReq.getPhoneNumber(), null, null, null,
+                        mgrReq.getVersion(), mgrReq.getDeviceId(), mgrReq.getImei(), null,
+                        mgrReq.getAndroidId());
             }
         } else if (SurveyManagerRequest.GET_AVAIL_DEVICE_SURVEYGROUP_ACTION
                 .equalsIgnoreCase(req.getAction())) {
             // Report which survey groups the device should have
             if (mgrReq.getPhoneNumber() != null || mgrReq.getImei() != null) {
-                resp.setMessage(getSurveyGroupsForPhone(mgrReq.getPhoneNumber(), mgrReq.getImei()));
+                resp.setMessage(getSurveyGroupsForPhone(mgrReq.getPhoneNumber(), mgrReq.getImei(),
+                        mgrReq.getAndroidId()));
             }
         } else if (SurveyManagerRequest.GET_SURVEY_HEADER_ACTION
                 .equalsIgnoreCase(req.getAction())) {
@@ -181,21 +158,10 @@ public class SurveyManagerServlet extends AbstractRestApiServlet {
                     resp.setMessage(sb.toString());
                 }
             }
-            if (mgrReq.getPhoneNumber() != null
-                    && mgrReq.getPhoneNumber().trim().length() > 0) {
-                // check for a device
-                Device device = deviceDao.get(mgrReq.getPhoneNumber());
-                if (device == null) {
-                    // create a device if missing
-                    device = new Device();
-                    device.setDeviceType(DeviceType.CELL_PHONE_ANDROID);
-                    device.setDeviceIdentifier(mgrReq.getDeviceId());
-                    device.setPhoneNumber(mgrReq.getPhoneNumber());
-                    device.setLastLocationBeaconTime(new Date());
-                    device.setGallatinSoftwareManifest(mgrReq.getVersion());
-                    deviceDao.save(device);
-                }
-            }
+            // Update last connection time, or register device if needed
+            deviceDao.updateDevice(mgrReq.getPhoneNumber(), null, null, null,
+                    mgrReq.getVersion(), mgrReq.getDeviceId(), mgrReq.getImei(), null,
+                    mgrReq.getAndroidId());
         } else if (SurveyManagerRequest.GET_ZIP_FILE_URL_ACTION
                 .equalsIgnoreCase(req.getAction())) {
             DeviceFilesDao dfDao = new DeviceFilesDao();
@@ -219,7 +185,7 @@ public class SurveyManagerServlet extends AbstractRestApiServlet {
 
     // Return a list all the surveys the device needs
     // use imei or phone number for lookup
-    private String getSurveyForPhone(String devicePhoneNumber, String imei) {
+    private String getSurveyForPhone(String devicePhoneNumber, String imei, String androidId) {
         DeviceSurveyJobQueueDAO dsjqDAO = new DeviceSurveyJobQueueDAO();
         SurveyDAO surveyDao = new SurveyDAO();
         SurveyGroupDAO sgDao = new SurveyGroupDAO();
@@ -229,7 +195,7 @@ public class SurveyManagerServlet extends AbstractRestApiServlet {
         Double ver;
         Boolean isInMonitoringGroup;
         String newLocaleSurveyId;
-        for (DeviceSurveyJobQueue dsjq : dsjqDAO.get(devicePhoneNumber, imei)) {
+        for (DeviceSurveyJobQueue dsjq : dsjqDAO.get(devicePhoneNumber, imei, androidId)) {
             Survey s = surveyDao.getById(dsjq.getSurveyID());
             SurveyGroup sg = s != null && s.getSurveyGroupId() != null ?
                     sgDao.getByKey(s.getSurveyGroupId())
@@ -259,14 +225,14 @@ public class SurveyManagerServlet extends AbstractRestApiServlet {
 
     // Return a list all the survey groups the device needs
     // use imei or phone number for lookup
-    private String getSurveyGroupsForPhone(String devicePhoneNumber, String imei) {
+    private String getSurveyGroupsForPhone(String devicePhoneNumber, String imei, String androidId) {
         DeviceSurveyJobQueueDAO dsjqDAO = new DeviceSurveyJobQueueDAO();
         SurveyDAO surveyDao = new SurveyDAO();
         SurveyGroupDAO sgDao = new SurveyGroupDAO();
 
         // build map of which surveyGroups to include
         Map<Long, Boolean> includeGroupMap = new HashMap<Long, Boolean>();
-        for (DeviceSurveyJobQueue dsjq : dsjqDAO.get(devicePhoneNumber, imei)) {
+        for (DeviceSurveyJobQueue dsjq : dsjqDAO.get(devicePhoneNumber, imei, androidId)) {
             Survey s = surveyDao.getById(dsjq.getSurveyID());
             if (s != null) {
                 includeGroupMap.put(s.getSurveyGroupId(), true);

@@ -33,13 +33,13 @@
      <a {{action "showAddAttributeDialog" target="this"}} class="addAttribute"><span>+</span>{{t _create_new_tag}} </a> </label>
       {{#if view.attribute}}<label class="labelcheckbox">{{view Ember.Checkbox checkedBinding="view.includeInMap"}}{{t _include_in_map}}</label>{{/if}}
   {{/if}}
-  
+
   <label class="selectinLabel">
     <span>
       {{t _question_type}}:
       {{#if view.amDateType}}
         {{tooltip _question_type_date_tooltip}}
-      {{/if}}          
+      {{/if}}
       {{#if view.amGeoshapeType}}
         {{tooltip _question_type_geoshape_tooltip}}
       {{/if}}
@@ -82,6 +82,7 @@
     {{#if view.amBarcodeType}}
     <h1 class="answerNbr">{{t _settings}}: </h1>
       <label class="labelcheckbox"> {{view Ember.Checkbox checkedBinding="view.allowMultipleFlag"}}{{t _enable_bulk_barcode_scan}} </label>
+      <label class="labelcheckbox"> {{view Ember.Checkbox checkedBinding="view.geoLocked"}}{{t _disable_manual_geo_edit}} </label>
     {{/if}}
     {{#if view.amNumberType}}
     <h1 class="answerNbr">{{t _settings}}: </h1>
@@ -107,7 +108,7 @@
   	    <h1 class="answerNbr">{{t _settings}}: </h1>
          <label class="selectinLabel dependencySelect"> {{t _choose_cascade_question_resource}}: {{tooltip _choose_cascade_question_resource_tooltip}}
         {{view Ember.Select
-        contentBinding="FLOW.cascadeResourceControl.published"
+        contentBinding="FLOW.cascadeResourceControl.published.arrangedContent"
         selectionBinding="FLOW.selectedControl.selectedCascadeResource"
         optionLabelPath="content.name"
         optionValuePath="content.keyId"

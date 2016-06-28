@@ -174,6 +174,8 @@ FLOW.NavMapsView = FLOW.View.extend({
 			"Satellite": satellite
 		};
 
+    FLOW.addExtraMapBoxTileLayer(baseLayers);
+
     L.control.layers(baseLayers).addTo(map);
 
     this.map = map;
@@ -217,28 +219,30 @@ FLOW.NavMapsView = FLOW.View.extend({
         var keyId = $(this).val();
         //if a survey is selected, load forms to form selector element.
         if($(this).find("option:selected").data('type') === 'PROJECT'){
-          $.get('/rest/cartodb/forms?surveyId='+keyId, function(data, status) {
-            var rows = [];
-            if(data['forms'] && data['forms'].length > 0) {
-              rows = data['forms'];
-              rows.sort(function(el1, el2) {
-                return self.compare(el1, el2, 'name')
-              });
+          $.get(
+            '/rest/surveys?surveyGroupId='+keyId,
+            function(data, status) {
+              var rows = [];
+              if(data['surveys'] && data['surveys'].length > 0) {
+                rows = data['surveys'];
+                rows.sort(function(el1, el2) {
+                  return self.compare(el1, el2, 'name')
+                });
 
-              var hierarchyObject = self.hierarchyObject;
+                var hierarchyObject = self.hierarchyObject;
 
-              //create folder and/or survey select element
-              var form_selector = $("<select></select>").attr("data-survey-id", keyId).attr("class", "form_selector");
-              form_selector.append('<option value="">--' + Ember.String.loc('_choose_a_form') + '--</option>');
+                //create folder and/or survey select element
+                var form_selector = $("<select></select>").attr("data-survey-id", keyId).attr("class", "form_selector");
+                form_selector.append('<option value="">--' + Ember.String.loc('_choose_a_form') + '--</option>');
 
-              for(var i=0; i<rows.length; i++) {
-                //append returned forms list to the firm selector element
-                form_selector.append(
-                  $('<option></option>').val(rows[i]["id"]).html(rows[i]["name"]));
+                for(var i=0; i<rows.length; i++) {
+                  //append returned forms list to the firm selector element
+                  form_selector.append(
+                    $('<option></option>').val(rows[i]["keyId"]).html(rows[i]["name"]));
+                }
+                $("#survey_hierarchy").append(form_selector);
               }
-              $("#survey_hierarchy").append(form_selector);
-            }
-          });
+            });
 
           var namedMapObject = {};
           namedMapObject['mapObject'] = map;
@@ -295,9 +299,9 @@ FLOW.NavMapsView = FLOW.View.extend({
       }
     });
 
-    $(document.body).on('click', '#projectGeoshape', function(){
+    $(document.body).on('click', '.project-geoshape', function(){
       if(self.polygons.length > 0){
-        $('#projectGeoshape').html(Ember.String.loc('_project_geoshape_onto_main_map'));
+        $(this).html(Ember.String.loc('_project_geoshape_onto_main_map'));
         for(var i=0; i<self.polygons.length; i++){
           self.map.removeLayer(self.polygons[i]);
         }
@@ -306,8 +310,8 @@ FLOW.NavMapsView = FLOW.View.extend({
         self.map.panTo(self.mapCenter);
         self.polygons = [];
       }else{
-        $('#projectGeoshape').html(Ember.String.loc('_clear_geoshape_from_main_map'));
-        self.projectGeoshape(self.geoshapeCoordinates);
+        $(this).html(Ember.String.loc('_clear_geoshape_from_main_map'));
+        self.projectGeoshape($(this).data('geoshape-object'));
       }
     });
   },
@@ -579,8 +583,7 @@ FLOW.NavMapsView = FLOW.View.extend({
         $.get(
             "/rest/cartodb/questions?form_id="+pointData['formId'],
             function(questionsData, status){
-              var geoshapeObject, geoshapeCheck = false;
-              self.geoshapeCoordinates = null;
+              var geoshapeObject, geoshapeQuestionsCount = 0;
 
               var dataCollectionDate = pointData['answers']['created_at'];
               var date = new Date(dataCollectionDate);
@@ -607,9 +610,11 @@ FLOW.NavMapsView = FLOW.View.extend({
                     if(questionsData['questions'][i].type === "GEOSHAPE" && questionAnswer !== null){
                       var geoshapeObject = FLOW.parseGeoshape(questionAnswer);
                       if(geoshapeObject !== null){
+                        geoshapeQuestionsCount++;
                         clickedPointContent += '<h4><div style="float: left">'
                         +questionsData['questions'][i].display_text
-                        +'</div>&nbsp;<a style="float: right" id="projectGeoshape">'+Ember.String.loc('_project_geoshape_onto_main_map') +'</a></h4>';
+                        +'</div>&nbsp;<a style="float: right" class="project-geoshape" data-geoshape-object=\''+questionAnswer+'\'">'
+                        +Ember.String.loc('_project_geoshape_onto_main_map')+'</a></h4>';
                       }
                     } else {
                       clickedPointContent += '<h4>'+questionsData['questions'][i].display_text+'&nbsp;</h4>';
@@ -620,21 +625,27 @@ FLOW.NavMapsView = FLOW.View.extend({
                     if(questionAnswer !== "" && questionAnswer !== null && questionAnswer !== "null"){
                       switch (questionsData['questions'][i].type) {
                         case "PHOTO":
+                          var imageString = "", imageJson;
+                          if (questionAnswer.charAt(0) === '{') {
+                            imageJson = JSON.parse(questionAnswer);
+                            imageString = imageJson.filename
+                          } else {
+                            imageString = questionAnswer;
+                          }
+
                           var image = '<div class=":imgContainer photoUrl:shown:hidden">';
-                          var image_filename = FLOW.Env.photo_url_root+questionAnswer.substring(questionAnswer.lastIndexOf("/")+1);
-                          image += '<a href="'+image_filename+'" target="_blank">'
-                          +'<img src="'+image_filename+'" alt=""/></a>';
+                          var imageFilename = FLOW.Env.photo_url_root+imageString.substring(imageString.lastIndexOf("/")+1);
+                          image += '<a href="'+imageFilename+'" target="_blank">'
+                          +'<img src="'+imageFilename+'" alt=""/></a>';
 
                           image += '</div>';
                           clickedPointContent += image;
                           break;
                         case "GEOSHAPE":
                           geoshapeObject = FLOW.parseGeoshape(questionAnswer);
-                          self.geoshapeCoordinates = geoshapeObject;
 
                           if(geoshapeObject !== null){
-                            geoshapeCheck = true;
-                            clickedPointContent += '<div id="geoShapeMap" style="width:100%; height: 100px; float: left"></div>';
+                            clickedPointContent += '<div class="geoshape-map" data-geoshape-object=\''+questionAnswer+'\' style="width:100%; height: 100px; float: left"></div>';
 
                             if(geoshapeObject['features'][0]['geometry']['type'] === "Polygon"
                              || geoshapeObject['features'][0]['geometry']['type'] === "LineString"
@@ -657,11 +668,25 @@ FLOW.NavMapsView = FLOW.View.extend({
                           clickedPointContent += dateQuestion.toUTCString().slice(0, -13); //remove last 13 x-ters so only date displays
                           break;
                         case "SIGNATURE":
-                          clickedPointContent += '<img src="';
+                          clickedPointContent += '<div class="signatureImage"><img src="';
                           var srcAttr = 'data:image/png;base64,', signatureJson;
                           signatureJson = JSON.parse(questionAnswer);
-                          clickedPointContent += srcAttr + signatureJson.image +'"/>';
-                          clickedPointContent += Ember.String.loc('_signed_by') +': '+signatureJson.name;
+                          clickedPointContent += srcAttr + signatureJson.image +'"/></div>';
+                          clickedPointContent += '<div class="signedBySection">'+Ember.String.loc('_signed_by') +': '+signatureJson.name+'</div>';
+                          break;
+                        case "VIDEO":
+                          var videoString = "", videoJson;
+                          if (questionAnswer.charAt(0) === '{') {
+                            videoJson = JSON.parse(questionAnswer);
+                            videoString = videoJson.filename
+                          } else {
+                            videoString = questionAnswer;
+                          }
+
+                          var videoFileUrl = FLOW.Env.photo_url_root+videoString.substring(videoString.lastIndexOf("/")+1);
+                          var videoContent = videoFileUrl+' <a href="'+videoFileUrl+'" target="_blank">'+Ember.String.loc('_open_video')+'</a>';
+
+                          clickedPointContent += videoContent;
                           break;
                         case "CASCADE":
                         case "OPTION":
@@ -689,8 +714,10 @@ FLOW.NavMapsView = FLOW.View.extend({
               $('hr').show();
 
               //if there's geoshape, draw it
-              if(geoshapeCheck){
-                FLOW.drawGeoShape($("#geoShapeMap")[0], geoshapeObject);
+              if(geoshapeQuestionsCount > 0){
+                $('.geoshape-map').each(function(index){
+                  FLOW.drawGeoShape($('.geoshape-map')[index], $(this).data('geoshape-object'));
+                });
               }
             });
       } else {
@@ -742,13 +769,14 @@ FLOW.NavMapsView = FLOW.View.extend({
     if(self.hierarchyObject.length > 0){
       self.manageHierarchy(parentFolderId);
     }else{
-      $.get('/rest/survey_groups'/*place survey_groups endpoint here*/
-      , function(data, status){
-        if(data['survey_groups'].length > 0){
-          self.hierarchyObject = data['survey_groups'];
-          self.manageHierarchy(parentFolderId);
-        }
-      });
+      $.get(
+        '/rest/survey_groups', /*place survey_groups endpoint here*/
+        function(data, status){
+          if(data['survey_groups'].length > 0){
+            self.hierarchyObject = data['survey_groups'];
+            self.manageHierarchy(parentFolderId);
+          }
+        });
     }
   },
 

@@ -1,5 +1,5 @@
 /*
- *  Copyright (C) 2014-2015 Stichting Akvo (Akvo Foundation)
+ *  Copyright (C) 2014-2016 Stichting Akvo (Akvo Foundation)
  *
  *  This file is part of Akvo FLOW.
  *
@@ -62,15 +62,18 @@ public class DeviceNotificationRestServlet extends AbstractRestApiServlet {
         Device d = getDevice(dnReq);
         if (d != null) {
             DeviceFileJobQueueDAO jobDao = new DeviceFileJobQueueDAO();
-    
+
             List<DeviceFileJobQueue> missingByDevice = jobDao.listByDeviceId(d
                     .getKey().getId());
             List<DeviceFileJobQueue> missingUnknown = jobDao.listByUnknownDevice();
-    
+
             resp.setMissingFiles(missingByDevice);
             resp.setMissingUnknown(missingUnknown);
+            new DeviceDAO().updateDevice(dnReq.getPhoneNumber(), dnReq.getLat(), dnReq.getLon(),
+                    dnReq.getAccuracy(), null, dnReq.getDeviceIdentifier(), dnReq.getImei(),
+                    dnReq.getOsVersion(), dnReq.getAndroidId());
         }
-        
+
         resp.setDeletedSurvey(getDeletedSurveys(dnReq));
 
         return resp;
@@ -122,23 +125,10 @@ public class DeviceNotificationRestServlet extends AbstractRestApiServlet {
 
         return surveyIds;
     }
-    
 
     private Device getDevice(DeviceNotificationRequest req) {
         DeviceDAO deviceDao = new DeviceDAO();
-
-        if (req.getImei() != null) {
-            Device d = deviceDao.getByImei(req.getImei().trim());
-            if (d != null) {
-                return d;
-            }
-        }
-
-        if (req.getPhoneNumber() != null) {
-            return deviceDao.get(req.getPhoneNumber().trim());
-        }
-
-        return null;
+        return deviceDao.getDevice(req.getAndroidId(), req.getImei(), req.getPhoneNumber());
     }
 
 }
