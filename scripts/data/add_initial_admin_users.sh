@@ -22,7 +22,7 @@ CONFIG_REPO_PATH="$2"
 function display_usage_and_exit
 {
     printf "Usage: $SCRIPT_NAME <instance_id> /full/path/to/server-config/repo \n"
-    exit -1
+    exit 1
 }
 
 # ensure expected parameters have been specified
@@ -53,7 +53,7 @@ SERVICE_ACCOUNT_KEY_FILE_PATH="$INSTANCE_CONFIG_HOME/$INSTANCE_ID.p12"
 function display_generate_key_file_message_and_exit
 {
     printf ">> Please generate a GAE service account private key file and store this in: $INSTANCE_CONFIG_HOME\n"
-    exit -1
+    exit 1
 }
 
 # ensure service account key file exists
@@ -72,7 +72,7 @@ fi
 if [[ ! -r "$SERVICE_ACCOUNT_KEY_FILE_PATH" ]]; then
     printf "## Service account key file is not readable: $SERVICE_ACCOUNT_KEY_FILE_PATH\n"
     printf ">> Please ensure the key file can be read by user [$USER]\n"
-    exit -1
+    exit 1
 fi
 
 CSV_USER_ACCOUNT_FILE_PATH="$CONFIG_REPO_PATH/0_instanceCreation/firstUser/super_admins.csv"
