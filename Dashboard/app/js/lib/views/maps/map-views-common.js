@@ -365,7 +365,7 @@ FLOW.NavMapsView = FLOW.View.extend({
     var button;
 
     button = this.$('#mapDetailsHideShow');
-    button.html('Hide &rsaquo;');
+    button.html(Ember.String.loc('_hide') + ' &rsaquo;');
     this.set('detailsPaneVisible', true);
 
     this.$('#flowMap').animate({
@@ -395,7 +395,7 @@ FLOW.NavMapsView = FLOW.View.extend({
     button = this.$('#mapDetailsHideShow');
 
     this.set('detailsPaneVisible', false);
-    button.html('&lsaquo; Show');
+    button.html('&lsaquo; ' + Ember.String.loc('_show') );
 
     this.$('#flowMap').delay(delay).animate({
       width: '99.25%'
