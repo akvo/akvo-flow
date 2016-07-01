@@ -16,7 +16,9 @@
 
 package org.waterforpeople.mapping.app.web.rest;
 
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import javax.inject.Inject;
@@ -29,6 +31,7 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.waterforpeople.mapping.app.web.dto.ApprovalGroupDTO;
 
+import com.gallatinsystems.common.Constants;
 import com.gallatinsystems.survey.dao.ApprovalGroupDAO;
 import com.gallatinsystems.survey.domain.ApprovalGroup;
 
@@ -97,5 +100,24 @@ public class ApprovalGroupRestService {
         if (approvalGroup != null) {
             approvalGroupDao.delete(approvalGroup);
         }
+    }
+
+    /**
+     * List all the available ApprovalGroups
+     *
+     * @return
+     */
+    @RequestMapping(method = RequestMethod.GET)
+    @ResponseBody
+    public Map<String, List<ApprovalGroupDTO>> listApprovalGroups() {
+        Map<String, List<ApprovalGroupDTO>> response = new HashMap<String, List<ApprovalGroupDTO>>();
+
+        List<ApprovalGroupDTO> approvalGroupsResponseList = new ArrayList<ApprovalGroupDTO>();
+        for (ApprovalGroup group : approvalGroupDao.list(Constants.ALL_RESULTS)) {
+            approvalGroupsResponseList.add(new ApprovalGroupDTO(group));
+        }
+
+        response.put("approval_groups", approvalGroupsResponseList);
+        return response;
     }
 }
