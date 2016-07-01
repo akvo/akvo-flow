@@ -83,4 +83,16 @@ public class ApprovalGroupRestService {
         response.put("approval_group", new ApprovalGroupDTO(approvalGroupDao.save(updatedGroup)));
         return response;
     }
+
+    /**
+     * Delete existing approval groups
+     */
+    @RequestMapping(method = RequestMethod.DELETE, value = "/{approvalGroupId}")
+    @ResponseBody
+    public void deleteApprovalGroup(@PathVariable Long approvalGroupId) {
+        final ApprovalGroup approvalGroup = approvalGroupDao.getByKey(approvalGroupId);
+        if (approvalGroup != null) {
+            approvalGroupDao.delete(approvalGroup);
+        }
+    }
 }
