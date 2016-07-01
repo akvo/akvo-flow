@@ -78,9 +78,12 @@ public class ApprovalGroupRestService {
         }
 
         final ApprovalGroup storedGroup = approvalGroupDao.getByKey(approvalGroupId);
-        updatedGroup.setKey(storedGroup.getKey());
+        if (storedGroup != null) {
+            updatedGroup.setKey(storedGroup.getKey());
+            response.put("approval_group",
+                    new ApprovalGroupDTO(approvalGroupDao.save(updatedGroup)));
+        }
 
-        response.put("approval_group", new ApprovalGroupDTO(approvalGroupDao.save(updatedGroup)));
         return response;
     }
 
