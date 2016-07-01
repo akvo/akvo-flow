@@ -35,6 +35,9 @@ public class ApprovalGroupDTO extends BaseDto {
 
     public ApprovalGroupDTO(ApprovalGroup group) {
         this.approvalGroup = group;
+        if (group.getKey() != null) {
+            this.setKeyId(approvalGroup.getKey().getId());
+        }
     }
 
     public String getName() {
