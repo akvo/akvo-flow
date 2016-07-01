@@ -22,6 +22,7 @@ import java.util.Map;
 import javax.inject.Inject;
 
 import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
@@ -56,6 +57,30 @@ public class ApprovalGroupRestService {
         }
 
         response.put("approval_group", new ApprovalGroupDTO(approvalGroupDao.save(group)));
+        return response;
+    }
+
+    /**
+     * Update an existing approval group
+     *
+     * @param approvalGroupPayload
+     * @return
+     */
+    @RequestMapping(method = RequestMethod.PUT, value = "/{approvalGroupId}")
+    @ResponseBody
+    public Map<String, ApprovalGroupDTO> updateApprovalGroup(
+            @RequestBody ApprovalGroupDTO approvalGroupPayload, @PathVariable Long approvalGroupId) {
+        final Map<String, ApprovalGroupDTO> response = new HashMap<String, ApprovalGroupDTO>();
+        final ApprovalGroup updatedGroup = approvalGroupPayload.getApprovalGroup();
+
+        if (updatedGroup.getName() == null || updatedGroup.getName().trim().isEmpty()) {
+            return null;
+        }
+
+        final ApprovalGroup storedGroup = approvalGroupDao.getByKey(approvalGroupId);
+        updatedGroup.setKey(storedGroup.getKey());
+
+        response.put("approval_group", new ApprovalGroupDTO(approvalGroupDao.save(updatedGroup)));
         return response;
     }
 }
