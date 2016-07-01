@@ -120,4 +120,21 @@ public class ApprovalGroupRestService {
         response.put("approval_groups", approvalGroupsResponseList);
         return response;
     }
+
+    /**
+     * List a specific ApprovalGroup
+     *
+     * @return
+     */
+    @RequestMapping(method = RequestMethod.GET, value = "/{approvalGroupId}")
+    @ResponseBody
+    public Map<String, ApprovalGroupDTO> findApprovalGroup(@PathVariable Long approvalGroupId) {
+        Map<String, ApprovalGroupDTO> response = new HashMap<String, ApprovalGroupDTO>();
+
+        ApprovalGroup approvalGroup = approvalGroupDao.getByKey(approvalGroupId);
+        if (approvalGroup != null) {
+            response.put("approval_group", new ApprovalGroupDTO(approvalGroup));
+        }
+        return response;
+    }
 }
