@@ -16,6 +16,8 @@
 
 package org.waterforpeople.mapping.app.web.dto;
 
+import org.codehaus.jackson.annotate.JsonIgnore;
+
 import com.gallatinsystems.framework.gwt.dto.client.BaseDto;
 import com.gallatinsystems.survey.domain.ApprovalGroup;
 
@@ -49,5 +51,10 @@ public class ApprovalGroupDTO extends BaseDto {
 
     public void setOrdered(Boolean ordered) {
         approvalGroup.setOrdered(ordered);
+    }
+
+    @JsonIgnore
+    public ApprovalGroup getApprovalGroup() {
+        return this.approvalGroup;
     }
 }
