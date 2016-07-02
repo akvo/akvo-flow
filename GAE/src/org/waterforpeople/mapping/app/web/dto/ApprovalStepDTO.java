@@ -16,6 +16,8 @@
 
 package org.waterforpeople.mapping.app.web.dto;
 
+import org.codehaus.jackson.annotate.JsonIgnore;
+
 import com.gallatinsystems.framework.gwt.dto.client.BaseDto;
 import com.gallatinsystems.survey.domain.ApprovalStep;
 
@@ -34,6 +36,9 @@ public class ApprovalStepDTO extends BaseDto {
 
     public ApprovalStepDTO(ApprovalStep step) {
         this.approvalStep = step;
+        if (step.getKey() != null) {
+            this.setKeyId(step.getKey().getId());
+        }
     }
 
     public long getApprovalGroupId() {
@@ -60,4 +65,8 @@ public class ApprovalStepDTO extends BaseDto {
         approvalStep.setTitle(title);
     }
 
+    @JsonIgnore
+    public ApprovalStep getApprovalStep() {
+        return approvalStep;
+    }
 }
