@@ -87,4 +87,17 @@ public class ApprovalStepRestService {
 
         return response;
     }
+
+    /**
+     * Delete existing approval step
+     */
+    @RequestMapping(method = RequestMethod.DELETE, value = "/{approvalStepId}")
+    @ResponseBody
+    public void deleteApprovalGroup(@PathVariable Long approvalStepId) {
+        final ApprovalStep approvalStep = approvalStepDao.getByKey(approvalStepId);
+        if (approvalStep != null) {
+            approvalStepDao.delete(approvalStep);
+        }
+    }
+
 }
