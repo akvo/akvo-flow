@@ -22,6 +22,7 @@ import java.util.Map;
 import javax.inject.Inject;
 
 import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
@@ -59,4 +60,30 @@ public class ApprovalStepRestService {
         return response;
     }
 
+    /**
+     * Update an existing approval step
+     *
+     * @return
+     */
+    @RequestMapping(method = RequestMethod.PUT, value = "/{approvalStepId}")
+    @ResponseBody
+    public Map<String, ApprovalStepDTO> updateApprovalStep(
+            @RequestBody ApprovalStepDTO approvalStepPayload, @PathVariable Long approvalStepId) {
+        final Map<String, ApprovalStepDTO> response = new HashMap<String, ApprovalStepDTO>();
+        final ApprovalStep updatedStep = approvalStepPayload.getApprovalStep();
+
+        if (updatedStep.getApprovalGroupId() == 0L || updatedStep.getTitle() == null
+                || updatedStep.getTitle().trim().isEmpty()) {
+            return null;
+        }
+
+        final ApprovalStep storedStep = approvalStepDao.getByKey(approvalStepId);
+        if (storedStep != null) {
+            updatedStep.setKey(storedStep.getKey());
+            response.put("approval_step",
+                    new ApprovalStepDTO(approvalStepDao.save(updatedStep)));
+        }
+
+        return response;
+    }
 }
