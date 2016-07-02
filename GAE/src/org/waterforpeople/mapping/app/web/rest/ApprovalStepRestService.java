@@ -52,7 +52,8 @@ public class ApprovalStepRestService {
         final Map<String, ApprovalStepDTO> response = new HashMap<String, ApprovalStepDTO>();
         final ApprovalStep step = approvalStepPayload.getApprovalStep();
 
-        if (step.getTitle() == null || step.getTitle().trim().isEmpty()) {
+        if (step.getApprovalGroupId() == 0L || step.getTitle() == null
+                || step.getTitle().trim().isEmpty()) {
             return null;
         }
 
