@@ -93,7 +93,7 @@ public class ApprovalStepRestService {
      */
     @RequestMapping(method = RequestMethod.DELETE, value = "/{approvalStepId}")
     @ResponseBody
-    public void deleteApprovalGroup(@PathVariable Long approvalStepId) {
+    public void deleteApprovalStep(@PathVariable Long approvalStepId) {
         final ApprovalStep approvalStep = approvalStepDao.getByKey(approvalStepId);
         if (approvalStep != null) {
             approvalStepDao.delete(approvalStep);
