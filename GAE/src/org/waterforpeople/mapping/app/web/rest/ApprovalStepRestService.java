@@ -100,4 +100,21 @@ public class ApprovalStepRestService {
         }
     }
 
+    /**
+     * List a specific ApprovalStep
+     *
+     * @return
+     */
+    @RequestMapping(method = RequestMethod.GET, value = "/{approvalStepId}")
+    @ResponseBody
+    public Map<String, ApprovalStepDTO> findApprovalStep(@PathVariable Long approvalStepId) {
+        Map<String, ApprovalStepDTO> response = new HashMap<String, ApprovalStepDTO>();
+
+        ApprovalStep approvalStep = approvalStepDao.getByKey(approvalStepId);
+        if (approvalStep != null) {
+            response.put("approval_step", new ApprovalStepDTO(approvalStep));
+        }
+        return response;
+    }
+
 }
