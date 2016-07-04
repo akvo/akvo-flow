@@ -16,7 +16,9 @@
 
 package org.waterforpeople.mapping.app.web.rest;
 
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import javax.inject.Inject;
@@ -26,9 +28,11 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.waterforpeople.mapping.app.web.dto.ApprovalStepDTO;
 
+import com.gallatinsystems.common.Constants;
 import com.gallatinsystems.survey.dao.ApprovalStepDAO;
 import com.gallatinsystems.survey.domain.ApprovalStep;
 
@@ -117,4 +121,27 @@ public class ApprovalStepRestService {
         return response;
     }
 
+    /**
+     * List all the approval steps or filter them by a specific approval group
+     *
+     * @return
+     */
+    @RequestMapping(method = RequestMethod.GET)
+    @ResponseBody
+    public Map<String, List<ApprovalStepDTO>> listApprovalSteps(
+            @RequestParam(value = "approvalGroupId", required = false) Long approvalGroupId) {
+        Map<String, List<ApprovalStepDTO>> response = new HashMap<String, List<ApprovalStepDTO>>();
+        List<ApprovalStep> stepsList = new ArrayList<ApprovalStep>();
+        if (approvalGroupId != null) {
+        } else {
+            stepsList.addAll(approvalStepDao.list(Constants.ALL_RESULTS));
+        }
+
+        List<ApprovalStepDTO> stepsDtoList = new ArrayList<ApprovalStepDTO>();
+        for (ApprovalStep step : stepsList) {
+            stepsDtoList.add(new ApprovalStepDTO(step));
+        }
+        response.put("approval_steps", stepsDtoList);
+        return response;
+    }
 }
