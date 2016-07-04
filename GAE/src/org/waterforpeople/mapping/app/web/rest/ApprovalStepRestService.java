@@ -133,6 +133,7 @@ public class ApprovalStepRestService {
         Map<String, List<ApprovalStepDTO>> response = new HashMap<String, List<ApprovalStepDTO>>();
         List<ApprovalStep> stepsList = new ArrayList<ApprovalStep>();
         if (approvalGroupId != null) {
+            stepsList.addAll(approvalStepDao.listByApprovalGroup(approvalGroupId));
         } else {
             stepsList.addAll(approvalStepDao.list(Constants.ALL_RESULTS));
         }

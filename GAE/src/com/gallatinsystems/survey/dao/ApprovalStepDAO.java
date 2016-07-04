@@ -16,6 +16,9 @@
 
 package com.gallatinsystems.survey.dao;
 
+import java.util.Collections;
+import java.util.List;
+
 import com.gallatinsystems.framework.dao.BaseDAO;
 import com.gallatinsystems.survey.domain.ApprovalStep;
 
@@ -23,5 +26,13 @@ public class ApprovalStepDAO extends BaseDAO<ApprovalStep> {
 
     public ApprovalStepDAO() {
         super(ApprovalStep.class);
+    }
+
+    public List<ApprovalStep> listByApprovalGroup(Long approvalGroupId) {
+        List<ApprovalStep> stepsList = listByProperty("approvalGroupId", approvalGroupId, "Long");
+        if (stepsList == null) {
+            return Collections.emptyList();
+        }
+        return stepsList;
     }
 }
