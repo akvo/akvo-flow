@@ -176,6 +176,8 @@ FLOW.NavMapsView = FLOW.View.extend({
 			"Satellite": satellite
 		};
 
+    FLOW.addExtraMapBoxTileLayer(baseLayers);
+
     L.control.layers(baseLayers).addTo(map);
 
     this.map = map;
@@ -306,9 +308,9 @@ FLOW.NavMapsView = FLOW.View.extend({
       }
     });
 
-    $(document.body).on('click', '#projectGeoshape', function(){
+    $(document.body).on('click', '.project-geoshape', function(){
       if(self.polygons.length > 0){
-        $('#projectGeoshape').html(Ember.String.loc('_project_geoshape_onto_main_map'));
+        $(this).html(Ember.String.loc('_project_geoshape_onto_main_map'));
         for(var i=0; i<self.polygons.length; i++){
           self.map.removeLayer(self.polygons[i]);
         }
@@ -317,8 +319,8 @@ FLOW.NavMapsView = FLOW.View.extend({
         self.map.panTo(self.mapCenter);
         self.polygons = [];
       }else{
-        $('#projectGeoshape').html(Ember.String.loc('_clear_geoshape_from_main_map'));
-        self.projectGeoshape(self.geoshapeCoordinates);
+        $(this).html(Ember.String.loc('_clear_geoshape_from_main_map'));
+        self.projectGeoshape($(this).data('geoshape-object'));
       }
     });
   },
@@ -372,7 +374,7 @@ FLOW.NavMapsView = FLOW.View.extend({
     var button;
 
     button = this.$('#mapDetailsHideShow');
-    button.html('Hide &rsaquo;');
+    button.html(Ember.String.loc('_hide') + ' &rsaquo;');
     this.set('detailsPaneVisible', true);
 
     this.$('#flowMap').animate({
@@ -402,7 +404,7 @@ FLOW.NavMapsView = FLOW.View.extend({
     button = this.$('#mapDetailsHideShow');
 
     this.set('detailsPaneVisible', false);
-    button.html('&lsaquo; Show');
+    button.html('&lsaquo; ' + Ember.String.loc('_show') );
 
     this.$('#flowMap').delay(delay).animate({
       width: '99.25%'
@@ -608,6 +610,8 @@ FLOW.NavMapsView = FLOW.View.extend({
 
     $.get(url, function(pointData, status){
       if (pointData['answers'] != null) {
+        var geoshapeObject, geoshapeQuestionsCount = 0;
+
         var dataCollectionDate = pointData['answers']['created_at'];
         var date = new Date(dataCollectionDate);
 
@@ -622,7 +626,7 @@ FLOW.NavMapsView = FLOW.View.extend({
         +'<li>'
         +'<span>'+Ember.String.loc('_collected_on') +':</span>'
         +'<div class="placeMarkCollectionDate">'
-        +date.toUTCString()
+        +date.toISOString().slice(0,-8).replace("T", " ")
         +'</div></li><li></li></ul>';
 
         $("#pointDetails").append(pointDetailsHeader);
@@ -641,9 +645,11 @@ FLOW.NavMapsView = FLOW.View.extend({
                 if(self.questions[i].type === "GEOSHAPE" && questionAnswer !== null){
                   var geoshapeObject = FLOW.parseGeoshape(questionAnswer);
                   if(geoshapeObject !== null){
+                    geoshapeQuestionsCount++;
                     clickedPointContent += '<h4><div style="float: left">'
                     +self.questions[i].text
-                    +'</div>&nbsp;<a style="float: right" id="projectGeoshape">'+Ember.String.loc('_project_geoshape_onto_main_map') +'</a></h4>';
+                    +'</div>&nbsp;<a style="float: right" class="project-geoshape" data-geoshape-object=\''+questionAnswer+'\'>'
+                    +Ember.String.loc('_project_geoshape_onto_main_map')+'</a></h4>';
                   }
                 } else {
                   clickedPointContent += '<h4>'+self.questions[i].text+'&nbsp;</h4>';
@@ -676,7 +682,7 @@ FLOW.NavMapsView = FLOW.View.extend({
 
                       if(geoshapeObject !== null){
                         geoshapeCheck = true;
-                        clickedPointContent += '<div id="geoShapeMap" style="width:100%; height: 100px; float: left"></div>';
+                        clickedPointContent += '<div class="geoshape-map" data-geoshape-object=\''+questionAnswer+'\' style="width:100%; height: 100px; float: left"></div>';
 
                         if(geoshapeObject['features'][0]['geometry']['type'] === "Polygon"
                          || geoshapeObject['features'][0]['geometry']['type'] === "LineString"
@@ -695,8 +701,8 @@ FLOW.NavMapsView = FLOW.View.extend({
                       }
                       break;
                     case "DATE":
-                      var dateQuestion = new Date((isNaN(questionAnswer) === false) ? parseInt(questionAnswer) : questionAnswer);
-                      clickedPointContent += dateQuestion.toUTCString().slice(0, -13); //remove last 13 x-ters so only date displays
+                      var dateQuestion = new Date((!isNaN(questionAnswer)) ? parseInt(questionAnswer) : questionAnswer);
+                      clickedPointContent += self.formatDate(dateQuestion);
                       break;
                     case "SIGNATURE":
                       clickedPointContent += '<div class="signatureImage"><img src="';
@@ -745,8 +751,10 @@ FLOW.NavMapsView = FLOW.View.extend({
           $("#pointDetails").append(clickedPointContent);
 
           //if there's geoshape, draw it
-          if(geoshapeCheck){
-            FLOW.drawGeoShape($("#geoShapeMap")[0], geoshapeObject);
+          if(geoshapeQuestionsCount > 0){
+            $('.geoshape-map').each(function(index){
+              FLOW.drawGeoShape($('.geoshape-map')[index], $(this).data('geoshape-object'));
+            });
           }
         }
       } else {
@@ -880,6 +888,13 @@ FLOW.NavMapsView = FLOW.View.extend({
       this.map.removeLayer(this.cartodbLayer);
       this.layerExistsCheck = false;
     }
+  },
+
+  formatDate: function(date) {
+    if (date && !isNaN(date.getTime())) {
+      return date.getFullYear() + "-" + (date.getMonth() + 1) + "-" + date.getDate();
+    }
+    return null;
   }
 });
 

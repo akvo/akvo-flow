@@ -1358,7 +1358,7 @@ tfoot tr {
     .editOtherContainer {
         margin-bottom: 1em;
         .otherLabel {
-            display: inline-block; 
+            display: inline-block;
             margin-right: 0.5em;
             &:after {
                 content: ':';
@@ -4086,6 +4086,12 @@ div.chooseSurveyData {
     margin: 0 1% 2em 0.5em;
     width: 48%;
     height: 20px;
+}
+
+#monitoringData {
+    div.chooseSurveyData {
+        width: 98%;
+    }
 }
 
 div.chooseLocationData {

@@ -72,6 +72,9 @@ public class EnvServlet extends HttpServlet {
         properties.add("cartodbHost");
         properties.add("hereMapsAppId");
         properties.add("hereMapsAppCode");
+        properties.add("extraMapboxTileLayerMapId");
+        properties.add("extraMapboxTileLayerAccessToken");
+        properties.add("extraMapboxTileLayerLabel");
     }
 
     @Override
@@ -114,6 +117,18 @@ public class EnvServlet extends HttpServlet {
 
         if (props.get("showExternalSourcesFeature") == null) {
             props.put("showExternalSourcesFeature", "false");
+        }
+
+        if (props.get("extraMapboxTileLayerMapId") == null) {
+            props.put("extraMapboxTileLayerMapId", "");
+        }
+
+        if (props.get("extraMapboxTileLayerAccessToken") == null) {
+            props.put("extraMapboxTileLayerAccessToken", "");
+        }
+
+        if (props.get("extraMapboxTileLayerLabel") == null) {
+            props.put("extraMapboxTileLayerLabel", "");
         }
 
         props.put("appId", SystemProperty.applicationId.get());

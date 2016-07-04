@@ -76,7 +76,7 @@ public class SurveyInstanceDAO extends BaseDAO<SurveyInstance> {
     public SurveyInstanceDAO() {
         super(SurveyInstance.class);
     }
-    
+
     public SurveyInstance save(SurveyInstance si, DeviceFiles deviceFile) {
         // Check whether the instance is already stored in the database.
         boolean isNew = true;
@@ -86,22 +86,22 @@ public class SurveyInstanceDAO extends BaseDAO<SurveyInstance> {
             si.setCreatedDateTime(existing.getCreatedDateTime());
             isNew = false;
         }
-        
+
         SurveyedLocale sl = saveSurveyedLocale(si);
         si.setSurveyedLocaleId(sl.getKey().getId());
         si.setDeviceFile(deviceFile);
         si = save(si);// Save the SurveyInstance just once, ensuring the Key is set.
-        
+
         final long surveyInstanceId = si.getKey().getId();
         qasDao.listBySurveyInstance(surveyInstanceId);// Cache existing qas????
-        
+
         final Set<QuestionAnswerStore> images = new HashSet<>();
         final Set<QuestionAnswerStore> locations = new HashSet<>();
         final List<QuestionAnswerStore> responses = new ArrayList<>();
         for (QuestionAnswerStore qas : si.getQuestionAnswersStore()) {
             if (isProcessable(qas, si)) {
                 qas.setSurveyInstanceId(surveyInstanceId);
-                
+
                 if (Question.Type.GEO.toString().equals(qas.getType()) && isNew) {
                     locations.add(qas);
                 } else if ("IMAGE".equals(qas.getType())) {
@@ -111,7 +111,7 @@ public class SurveyInstanceDAO extends BaseDAO<SurveyInstance> {
                 responses.add(qas);
             }
         }
-        
+
         // batch save all responses
         try {
             qasDao.save(responses);
@@ -119,7 +119,7 @@ public class SurveyInstanceDAO extends BaseDAO<SurveyInstance> {
             sleep();
             qasDao.save(responses);
         }
-        
+
         // Recompute data summarization for new locations.
         for (QuestionAnswerStore qas : locations) {
             long geoQasId = qas.getKey().getId();
@@ -127,23 +127,23 @@ public class SurveyInstanceDAO extends BaseDAO<SurveyInstance> {
             summQueue.add(TaskOptions.Builder
                     .withUrl("/app_worker/dataprocessor")
                     .param(DataProcessorRequest.ACTION_PARAM,
-                           DataProcessorRequest.SURVEY_INSTANCE_SUMMARIZER)
+                            DataProcessorRequest.SURVEY_INSTANCE_SUMMARIZER)
                     .param("surveyInstanceId", si.getKey().getId() + "")
                     .param("qasId", geoQasId + "")
                     .param("delta", 1 + ""));
         }
-        
+
         // Now that QAS IDs are set, enqueue imagecheck tasks,
         // whereby the presence of an image in S3 will be checked.
         if (!images.isEmpty()) {
-            Device d = deviceDao.getDevice(deviceFile.getAndroidId(), 
+            Device d = deviceDao.getDevice(deviceFile.getAndroidId(),
                     deviceFile.getImei(), deviceFile.getPhoneNumber());
             String deviceId = d == null ? "null" : String.valueOf(d.getKey().getId());
-            
+
             for (QuestionAnswerStore qas : images) {
                 String filename = qas.getValue().substring(
                         qas.getValue().lastIndexOf("/") + 1);
-    
+
                 Queue queue = QueueFactory.getQueue("background-processing");
                 TaskOptions to = TaskOptions.Builder
                         .withUrl("/app_worker/imagecheck")
@@ -154,28 +154,29 @@ public class SurveyInstanceDAO extends BaseDAO<SurveyInstance> {
                 queue.add(to);
             }
         }
-        
+
         deviceFile.setSurveyInstanceId(si.getKey().getId());
         si.updateSummaryCounts(true);
-        
+
         return si;
     }
-    
+
     private boolean isProcessable(QuestionAnswerStore qas, SurveyInstance si) {
         Long qid = Long.valueOf(qas.getQuestionID());
         if (qasDao.isCached(qid, si.getKey().getId())) {
             log.log(Level.INFO,
                     "Skipping QAS already present in datasore [SurveyInstance, Survey, Question]: "
-                            + qas.getSurveyInstanceId() + ", " + si.getSurveyId() + ", " + qas.getQuestionID());
+                            + qas.getSurveyInstanceId() + ", " + si.getSurveyId() + ", "
+                            + qas.getQuestionID());
             return false;
         } else if (questionDao.getByKey(qid) == null) {
             log.log(Level.WARNING, String.format("Question %d not found in the datastore", qid));
             return false;
         }
-            
+
         return true;
     }
-    
+
     private SurveyedLocale saveSurveyedLocale(SurveyInstance si) {
         final SurveyedLocaleDao slDao = new SurveyedLocaleDao();
         // Fetch or create the corresponding locale for this instance.
@@ -184,7 +185,7 @@ public class SurveyInstanceDAO extends BaseDAO<SurveyInstance> {
                 : null;
         if (sl == null) {
             sl = new SurveyedLocale();
-            
+
             sl.setOrganization(PropertyUtil.getProperty(DEFAULT_ORG_PROP));
 
             if (StringUtils.isNotBlank(si.getSurveyedLocaleIdentifier())) {
@@ -203,7 +204,7 @@ public class SurveyInstanceDAO extends BaseDAO<SurveyInstance> {
                 sl.setCreationSurveyId(surveyGroup.getNewLocaleSurveyId());
             }
         }
-        
+
         // Update the display name and location, if applies.
         if (si.getSurveyedLocaleDisplayName() != null) {
             sl.setDisplayName(si.getSurveyedLocaleDisplayName());
@@ -221,7 +222,7 @@ public class SurveyInstanceDAO extends BaseDAO<SurveyInstance> {
             }
         }
         sl = slDao.save(sl);
-        
+
         return sl;
     }
 
@@ -411,10 +412,8 @@ public class SurveyInstanceDAO extends BaseDAO<SurveyInstance> {
      * lists all questionAnswerStore objects for a single surveyInstance, optionally filtered by
      * type
      *
-     * @param surveyInstanceId
-     *            - mandatory
-     * @param type
-     *            - optional
+     * @param surveyInstanceId - mandatory
+     * @param type - optional
      * @return
      */
     @SuppressWarnings("unchecked")
@@ -485,8 +484,7 @@ public class SurveyInstanceDAO extends BaseDAO<SurveyInstance> {
     /**
      * Deletes a surveyInstance and all its related objects
      *
-     * @param surveyInstance
-     *            survey instance to be deleted
+     * @param surveyInstance survey instance to be deleted
      */
     // TODO update lastSurveyalInstanceId in surveydLocale objects
     @SuppressWarnings({
@@ -710,8 +708,9 @@ public class SurveyInstanceDAO extends BaseDAO<SurveyInstance> {
     public SurveyInstance findByUUID(String uuid) {
         return findByProperty("uuid", uuid, "String");
     }
-    
-    public SurveyInstance getRegistrationSurveyInstance(SurveyedLocale locale, Long registrationSurveyId) {
+
+    public SurveyInstance getRegistrationSurveyInstance(SurveyedLocale locale,
+            Long registrationSurveyId) {
         PersistenceManager pm = PersistenceFilter.getManager();
         Query query = pm.newQuery(SurveyInstance.class);
 
@@ -728,12 +727,12 @@ public class SurveyInstanceDAO extends BaseDAO<SurveyInstance> {
         query.setFilter(filterString.toString());
         query.declareParameters(paramString.toString());
         query.setOrdering("collectionDate ascending");
-        
-        List<SurveyInstance> res = (List<SurveyInstance>)query.executeWithMap(paramMap);
+
+        List<SurveyInstance> res = (List<SurveyInstance>) query.executeWithMap(paramMap);
         if (res != null && !res.isEmpty()) {
             return res.get(0);
         }
-        
+
         return null;
     }
 

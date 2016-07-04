@@ -27,7 +27,7 @@ import com.gallatinsystems.framework.dao.BaseDAO;
 
 /**
  * data access object for devices.
- * 
+ *
  * @author Christopher Fagiani
  */
 public class DeviceDAO extends BaseDAO<Device> {
@@ -39,13 +39,12 @@ public class DeviceDAO extends BaseDAO<Device> {
     public DeviceDAO() {
         super(Device.class);
     }
-    
+
     /**
-     * Get a single device based on available attributes. The priority
-     * given to these fields is: androidId, imei, phoneNumber.
-     * If the device is not found using the most reliable fields, we'll
-     * fall back to the next attr.
-     * 
+     * Get a single device based on available attributes. The priority given to these fields is:
+     * androidId, imei, phoneNumber. If the device is not found using the most reliable fields,
+     * we'll fall back to the next attr.
+     *
      * @param androidId unique identifier. Reported from app v2.1.2 onwards
      * @param imei ESN number. Devices without a SIM card may not have this attr.
      * @param phoneNumber phone number or device MAC address
@@ -53,7 +52,7 @@ public class DeviceDAO extends BaseDAO<Device> {
      */
     public Device getDevice(String androidId, String imei, String phoneNumber) {
         Device device = null;
-        
+
         if (StringUtils.isNotEmpty(androidId)) {
             // Devices registered with Flow app version > 2.1.2 will have reported
             // this attribute, which is the most reliable for identifying a device
@@ -64,17 +63,16 @@ public class DeviceDAO extends BaseDAO<Device> {
             // We want to fall back to search by `phoneNumber` (MAC address)
             device = super.findByProperty("esn", imei, STRING_TYPE);
         }
-        
+
         if (device == null && StringUtils.isNotEmpty(phoneNumber)) {
             device = super.findByProperty("phoneNumber", phoneNumber, STRING_TYPE);
         }
         return device;
     }
 
-
     /**
      * Create or update device
-     * 
+     *
      * @param phoneNumber
      * @param lat
      * @param lon
@@ -83,22 +81,25 @@ public class DeviceDAO extends BaseDAO<Device> {
      * @param deviceIdentifier
      * @param imei
      */
-    public void updateDevice(String phoneNumber, Double lat, Double lon, 
-            Double accuracy, String version, String deviceIdentifier, 
+    public void updateDevice(String phoneNumber, Double lat, Double lon,
+            Double accuracy, String version, String deviceIdentifier,
             String imei, String osVersion, String androidId) {
         if (StringUtils.isEmpty(imei) && StringUtils.isEmpty(phoneNumber)) {
             return;
         }
-        
+
         Device d = getDevice(androidId, imei, phoneNumber);
         if (d == null) {
             // if device is null, we have to create it
             d = new Device();
             d.setCreatedDateTime(new Date());
             d.setDeviceType(DeviceType.CELL_PHONE_ANDROID);
-            d.setPhoneNumber(phoneNumber);
-            d.setAndroidId(androidId);
         }
+        // Update device properties
+        d.setPhoneNumber(phoneNumber);
+        d.setAndroidId(androidId);
+        d.setLastLocationBeaconTime(new Date());
+        d.setGallatinSoftwareManifest(version);
         if (lat != null && lon != null) {
             d.setLastKnownLat(lat);
             d.setLastKnownLon(lon);
@@ -113,8 +114,6 @@ public class DeviceDAO extends BaseDAO<Device> {
         if (osVersion != null) {
             d.setOsVersion(osVersion);
         }
-        d.setLastLocationBeaconTime(new Date());
-        d.setGallatinSoftwareManifest(version);
         save(d);
     }
 }

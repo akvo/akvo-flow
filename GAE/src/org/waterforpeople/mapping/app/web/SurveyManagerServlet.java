@@ -106,9 +106,9 @@ public class SurveyManagerServlet extends AbstractRestApiServlet {
             if (mgrReq.getPhoneNumber() != null || mgrReq.getImei() != null) {
                 resp.setMessage(getSurveyForPhone(mgrReq.getPhoneNumber(), mgrReq.getImei(),
                         mgrReq.getAndroidId()));
-                
+
                 // Update last connection time, or register device if needed
-                deviceDao.updateDevice(mgrReq.getPhoneNumber(), null, null, null, 
+                deviceDao.updateDevice(mgrReq.getPhoneNumber(), null, null, null,
                         mgrReq.getVersion(), mgrReq.getDeviceId(), mgrReq.getImei(), null,
                         mgrReq.getAndroidId());
             }
@@ -159,7 +159,7 @@ public class SurveyManagerServlet extends AbstractRestApiServlet {
                 }
             }
             // Update last connection time, or register device if needed
-            deviceDao.updateDevice(mgrReq.getPhoneNumber(), null, null, null, 
+            deviceDao.updateDevice(mgrReq.getPhoneNumber(), null, null, null,
                     mgrReq.getVersion(), mgrReq.getDeviceId(), mgrReq.getImei(), null,
                     mgrReq.getAndroidId());
         } else if (SurveyManagerRequest.GET_ZIP_FILE_URL_ACTION
