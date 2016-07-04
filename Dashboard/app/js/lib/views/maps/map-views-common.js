@@ -599,7 +599,7 @@ FLOW.NavMapsView = FLOW.View.extend({
               +'<li>'
               +'<span>'+Ember.String.loc('_collected_on') +':</span>'
               +'<div class="placeMarkCollectionDate">'
-              +date.toUTCString()
+              +date.toISOString().slice(0,-8).replace("T", " ")
               +'</div></li><li></li></ul>';
 
               clickedPointContent += '<div class="mapInfoDetail" style="opacity: 1; display: inherit;">';
@@ -664,8 +664,8 @@ FLOW.NavMapsView = FLOW.View.extend({
                           }
                           break;
                         case "DATE":
-                          var dateQuestion = new Date((isNaN(questionAnswer) === false) ? parseInt(questionAnswer) : questionAnswer);
-                          clickedPointContent += dateQuestion.toUTCString().slice(0, -13); //remove last 13 x-ters so only date displays
+                          var dateQuestion = new Date((!isNaN(questionAnswer)) ? parseInt(questionAnswer) : questionAnswer);
+                          clickedPointContent += self.formatDate(dateQuestion);
                           break;
                         case "SIGNATURE":
                           clickedPointContent += '<div class="signatureImage"><img src="';
@@ -818,6 +818,13 @@ FLOW.NavMapsView = FLOW.View.extend({
       this.map.removeLayer(this.cartodbLayer);
       this.layerExistsCheck = false;
     }
+  },
+
+  formatDate: function(date) {
+    if (date && !isNaN(date.getTime())) {
+      return date.getFullYear() + "-" + (date.getMonth() + 1) + "-" + date.getDate();
+    }
+    return null;
   }
 });
 
