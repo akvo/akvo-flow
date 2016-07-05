@@ -271,7 +271,7 @@ public class GraphicalSurveySummaryExporter extends SurveySummaryExporter {
 
         ACC_LABEL = new HashMap<String, String>();
         ACC_LABEL.put("en", "Accuracy (m)");
-        ACC_LABEL.put("es", "Precisión (m)");
+        ACC_LABEL.put("es", "PrecisiÃ³n (m)");
 
         IDENTIFIER_LABEL = new HashMap<String, String>();
         IDENTIFIER_LABEL.put("en", "Identifier");
@@ -705,14 +705,14 @@ public class GraphicalSurveySummaryExporter extends SurveySummaryExporter {
 
         int col = startColumn;
         for (String cellValue : cells) {
-        	if (questionType == QuestionType.NUMBER) {
+            if (questionType == QuestionType.NUMBER) {
                 createCell(row, col, cellValue, null, Cell.CELL_TYPE_NUMERIC);
             } else if (questionType == QuestionType.PHOTO) {
-            	if (col == startColumn) { //URL is text
-            		createCell(row, col, cellValue, mTextStyle);
-            	} else { //Coordinates numerical
-            		createCell(row, col, cellValue, null, Cell.CELL_TYPE_NUMERIC);
-            	}
+                if (col == startColumn) { //URL is text
+                    createCell(row, col, cellValue, mTextStyle);
+                } else { //Coordinates numerical
+                    createCell(row, col, cellValue, null, Cell.CELL_TYPE_NUMERIC);
+                }
             } else if (questionType == QuestionType.OPTION
                     && (cellValue.equals("0") || cellValue.equals("1"))) {
                 // the type of an option column depends on the contents - if it is 0 or 1, we
@@ -736,16 +736,13 @@ public class GraphicalSurveySummaryExporter extends SurveySummaryExporter {
             String filename = media.getFilename();
             final int filenameIndex = filename != null ? filename.lastIndexOf("/") + 1 : -1;
             if (filenameIndex > 0 && filenameIndex < filename.length()) {
-            	cells.add(imagePrefix + filename.substring(filenameIndex));
-            	if (useQuestionId && media.getLocation() != null) {
-	            	cells.add(Double.toString(media.getLocation().getLatitude()));
-	            	cells.add(Double.toString(media.getLocation().getLongitude()));
-	            	cells.add(Double.toString(media.getLocation().getAccuracy()));
-            	}
+                cells.add(imagePrefix + filename.substring(filenameIndex));
+                if (useQuestionId && media.getLocation() != null) {
+                    cells.add(Double.toString(media.getLocation().getLatitude()));
+                    cells.add(Double.toString(media.getLocation().getLongitude()));
+                    cells.add(Double.toString(media.getLocation().getAccuracy()));
+                }
             }
-
-        } else if (!value.isEmpty()) { //legacy
-        	cells.add(ExportImportUtils.formatImage(imagePrefix, value));
         }
         return cells;
     }	
