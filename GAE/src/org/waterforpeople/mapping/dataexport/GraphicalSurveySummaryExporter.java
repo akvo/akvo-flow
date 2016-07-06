@@ -731,17 +731,15 @@ public class GraphicalSurveySummaryExporter extends SurveySummaryExporter {
 
     private static List<String> mediaCellValues(String value, boolean useQuestionId, String imagePrefix) {
         List<String> cells = new ArrayList<>();
-        if (value.startsWith("{")) { //JSON, possibly geotagged
-            Media media = MediaResponse.parse(value);
-            String filename = media.getFilename();
-            final int filenameIndex = filename != null ? filename.lastIndexOf("/") + 1 : -1;
-            if (filenameIndex > 0 && filenameIndex < filename.length()) {
-                cells.add(imagePrefix + filename.substring(filenameIndex));
-                if (useQuestionId && media.getLocation() != null) {
-                    cells.add(Double.toString(media.getLocation().getLatitude()));
-                    cells.add(Double.toString(media.getLocation().getLongitude()));
-                    cells.add(Double.toString(media.getLocation().getAccuracy()));
-                }
+        Media media = MediaResponse.parse(value);
+        String filename = media.getFilename();
+        final int filenameIndex = filename != null ? filename.lastIndexOf("/") + 1 : -1;
+        if (filenameIndex > 0 && filenameIndex < filename.length()) {
+            cells.add(imagePrefix + filename.substring(filenameIndex));
+            if (useQuestionId && media.getLocation() != null) {
+                cells.add(Double.toString(media.getLocation().getLatitude()));
+                cells.add(Double.toString(media.getLocation().getLongitude()));
+                cells.add(Double.toString(media.getLocation().getAccuracy()));
             }
         }
         return cells;
