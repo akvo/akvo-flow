@@ -327,7 +327,7 @@ public class BulkDataServiceClient {
     /**
      * Parse a survey instance response into a map of answers keyed first by question id and then by
      * iteration
-     * 
+     *
      * @param responseData
      * @return
      */
@@ -870,6 +870,10 @@ public class BulkDataServiceClient {
                                     && !"null".equalsIgnoreCase(json.getString("tip"))) {
                                 dto.setTip(json.optString("tip"));
                             }
+                            if (json.has("questionId")
+                                    && !"null".equalsIgnoreCase(json.getString("questionId"))) {
+                                dto.setQuestionId(json.optString("questionId"));
+                            }
                             if (json.has("path")) {
                                 dto.setPath(json.getString("path"));
                             }
@@ -991,6 +995,8 @@ public class BulkDataServiceClient {
                                                     .getLong("keyId"));
                                             opt.setText(optJson
                                                     .getString("text"));
+                                            opt.setCode(optJson
+                                                    .getString("code"));
                                             opt.setOrder(optJson
                                                     .getInt("order"));
                                             if (optJson.has("translationMap")
