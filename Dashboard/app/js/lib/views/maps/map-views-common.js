@@ -10,6 +10,9 @@ FLOW.NavMapsView = FLOW.View.extend({
   polygons: [],
   mapZoomLevel: 0,
   mapCenter: null,
+  clickedPointCoordinates: [],
+  mediaMarkers: null,
+  selectedMediaMarker: null,
   hierarchyObject: [],
   lastSelectedElement: 0,
   geomodel: null,
@@ -181,21 +184,7 @@ FLOW.NavMapsView = FLOW.View.extend({
     this.map = map;
 
     map.on('click', function(e) {
-      if(self.marker != null){
-        self.map.removeLayer(self.marker);
-        self.hideDetailsPane();
-        $('#pointDetails').html('<p class="noDetails">'+Ember.String.loc('_no_details') +'</p>');
-      }
-
-      if(self.polygons.length > 0){
-        for(var i=0; i<self.polygons.length; i++){
-          self.map.removeLayer(self.polygons[i]);
-        }
-        //restore the previous zoom level and map center
-        self.map.setZoom(self.mapZoomLevel);
-        self.map.panTo(self.mapCenter);
-        self.polygons = [];
-      }
+      self.clearMap(); //remove any previously loaded point data
     });
 
     map.on('zoomend', function() {
@@ -206,11 +195,10 @@ FLOW.NavMapsView = FLOW.View.extend({
     self.checkHierarchy(0);
 
     $(document).off('change', '.folder_survey_selector').on('change', '.folder_survey_selector',function(e) {
-
+      self.clearMap(); //remove any previously loaded point data
       $('#form_selector option[value!=""]').remove();
 
-      //remove all 'folder_survey_selector's after current
-      self.cleanHierarchy($(this));
+      self.cleanHierarchy($(this)); //remove all 'folder_survey_selector's after current
 
       //first remove previously created form selector elements
       $(".form_selector").remove();
@@ -272,8 +260,8 @@ FLOW.NavMapsView = FLOW.View.extend({
     });
 
     $(document).off('change', '.form_selector').on('change', '.form_selector',function(e) {
-      //remove all 'folder_survey_selector's after current
-      self.cleanHierarchy($(this));
+      self.clearMap(); //remove any previously loaded point data
+      self.cleanHierarchy($(this)); //remove all 'folder_survey_selector's after current
 
       if ($(this).val() !== "") {
         var formId = $(this).val();
@@ -537,6 +525,7 @@ FLOW.NavMapsView = FLOW.View.extend({
         if(self.marker != null){
           self.map.removeLayer(self.marker);
         }
+        self.clickedPointCoordinates = [data.lat, data.lon];
         self.placeMarker([data.lat, data.lon]);
 
         self.showDetailsPane();
@@ -581,145 +570,170 @@ FLOW.NavMapsView = FLOW.View.extend({
       if (pointData['answers'] != null) {
         //get request for questions
         $.get(
-            "/rest/cartodb/questions?form_id="+pointData['formId'],
-            function(questionsData, status){
-              var geoshapeObject, geoshapeQuestionsCount = 0;
+          "/rest/cartodb/questions?form_id="+pointData['formId'],
+          function(questionsData, status){
+            var geoshapeObject, geoshapeQuestionsCount = 0, mediaResponses = [];;
 
-              var dataCollectionDate = pointData['answers']['created_at'];
-              var date = new Date(dataCollectionDate);
+            var dataCollectionDate = pointData['answers']['created_at'];
+            var date = new Date(dataCollectionDate);
 
-              clickedPointContent += '<ul class="placeMarkBasicInfo floats-in">'
-              +'<h3>'
-              +((dataPointName != "" && dataPointName != "null" && dataPointName != null) ? dataPointName : "")
-              +'</h3>'
-              +'<li>'
-              +'<span>'+Ember.String.loc('_data_point_id') +':</span>'
-              +'<div style="display: inline; margin: 0 0 0 5px;">'+dataPointIdentifier+'</div>'
-              +'</li>'
-              +'<li>'
-              +'<span>'+Ember.String.loc('_collected_on') +':</span>'
-              +'<div class="placeMarkCollectionDate">'
-              +date.toUTCString()
-              +'</div></li><li></li></ul>';
+            clickedPointContent += '<ul class="placeMarkBasicInfo floats-in">'
+            +'<h3>'
+            +((dataPointName != "" && dataPointName != "null" && dataPointName != null) ? dataPointName : "")
+            +'</h3>'
+            +'<li>'
+            +'<span>'+Ember.String.loc('_data_point_id') +':</span>'
+            +'<div style="display: inline; margin: 0 0 0 5px;">'+dataPointIdentifier+'</div>'
+            +'</li>'
+            +'<li>'
+            +'<span>'+Ember.String.loc('_collected_on') +':</span>'
+            +'<div class="placeMarkCollectionDate">'
+            +date.toUTCString()
+            +'</div></li><li></li></ul>';
 
-              clickedPointContent += '<div class="mapInfoDetail" style="opacity: 1; display: inherit;">';
-              for (column in pointData['answers']){
-                var questionAnswer = pointData['answers'][column];
-                for(var i=0; i<questionsData['questions'].length; i++){
-                  if (column.match(questionsData['questions'][i].id)) {
-                    if(questionsData['questions'][i].type === "GEOSHAPE" && questionAnswer !== null){
-                      var geoshapeObject = FLOW.parseGeoshape(questionAnswer);
-                      if(geoshapeObject !== null){
-                        geoshapeQuestionsCount++;
-                        clickedPointContent += '<h4><div style="float: left">'
-                        +questionsData['questions'][i].display_text
-                        +'</div>&nbsp;<a style="float: right" class="project-geoshape" data-geoshape-object=\''+questionAnswer+'\'">'
-                        +Ember.String.loc('_project_geoshape_onto_main_map')+'</a></h4>';
-                      }
-                    } else {
-                      clickedPointContent += '<h4>'+questionsData['questions'][i].display_text+'&nbsp;</h4>';
+            clickedPointContent += '<div class="mapInfoDetail" style="opacity: 1; display: inherit;">';
+            for (column in pointData['answers']){
+              var questionAnswer = pointData['answers'][column];
+              for(var i=0; i<questionsData['questions'].length; i++){
+                if (column.match(questionsData['questions'][i].id)) {
+                  if(questionsData['questions'][i].type === "GEOSHAPE" && questionAnswer !== null){
+                    var geoshapeObject = FLOW.parseGeoshape(questionAnswer);
+                    if(geoshapeObject !== null){
+                      geoshapeQuestionsCount++;
+                      clickedPointContent += '<h4><div style="float: left">'
+                      +questionsData['questions'][i].display_text
+                      +'</div>&nbsp;<a style="float: right" class="project-geoshape" data-geoshape-object=\''+questionAnswer+'\'">'
+                      +Ember.String.loc('_project_geoshape_onto_main_map')+'</a></h4>';
                     }
-
-                    clickedPointContent += '<div style="float: left; width: 100%">';
-
-                    if(questionAnswer !== "" && questionAnswer !== null && questionAnswer !== "null"){
-                      switch (questionsData['questions'][i].type) {
-                        case "PHOTO":
-                          var imageString = "", imageJson;
-                          if (questionAnswer.charAt(0) === '{') {
-                            imageJson = JSON.parse(questionAnswer);
-                            imageString = imageJson.filename
-                          } else {
-                            imageString = questionAnswer;
-                          }
-
-                          var image = '<div class=":imgContainer photoUrl:shown:hidden">';
-                          var imageFilename = FLOW.Env.photo_url_root+imageString.substring(imageString.lastIndexOf("/")+1);
-                          image += '<a href="'+imageFilename+'" target="_blank">'
-                          +'<img src="'+imageFilename+'" alt=""/></a>';
-
-                          image += '</div>';
-                          clickedPointContent += image;
-                          break;
-                        case "GEOSHAPE":
-                          geoshapeObject = FLOW.parseGeoshape(questionAnswer);
-
-                          if(geoshapeObject !== null){
-                            clickedPointContent += '<div class="geoshape-map" data-geoshape-object=\''+questionAnswer+'\' style="width:100%; height: 100px; float: left"></div>';
-
-                            if(geoshapeObject['features'][0]['geometry']['type'] === "Polygon"
-                             || geoshapeObject['features'][0]['geometry']['type'] === "LineString"
-                              || geoshapeObject['features'][0]['geometry']['type'] === "MultiPoint"){
-                              clickedPointContent += '<div style="float: left; width: 100%">'+ Ember.String.loc('_points') +': '+geoshapeObject['features'][0]['properties']['pointCount']+'</div>';
-                            }
-
-                            if(geoshapeObject['features'][0]['geometry']['type'] === "Polygon"
-                             || geoshapeObject['features'][0]['geometry']['type'] === "LineString"){
-                              clickedPointContent += '<div style="float: left; width: 100%">'+ Ember.String.loc('_length') +': '+geoshapeObject['features'][0]['properties']['length']+'m</div>';
-                            }
-
-                            if(geoshapeObject['features'][0]['geometry']['type'] === "Polygon"){
-                              clickedPointContent += '<div style="float: left; width: 100%">'+ Ember.String.loc('_area') +': '+geoshapeObject['features'][0]['properties']['area']+'m&sup2;</div>';
-                            }
-                          }
-                          break;
-                        case "DATE":
-                          var dateQuestion = new Date((isNaN(questionAnswer) === false) ? parseInt(questionAnswer) : questionAnswer);
-                          clickedPointContent += dateQuestion.toUTCString().slice(0, -13); //remove last 13 x-ters so only date displays
-                          break;
-                        case "SIGNATURE":
-                          clickedPointContent += '<div class="signatureImage"><img src="';
-                          var srcAttr = 'data:image/png;base64,', signatureJson;
-                          signatureJson = JSON.parse(questionAnswer);
-                          clickedPointContent += srcAttr + signatureJson.image +'"/></div>';
-                          clickedPointContent += '<div class="signedBySection">'+Ember.String.loc('_signed_by') +': '+signatureJson.name+'</div>';
-                          break;
-                        case "VIDEO":
-                          var videoString = "", videoJson;
-                          if (questionAnswer.charAt(0) === '{') {
-                            videoJson = JSON.parse(questionAnswer);
-                            videoString = videoJson.filename
-                          } else {
-                            videoString = questionAnswer;
-                          }
-
-                          var videoFileUrl = FLOW.Env.photo_url_root+videoString.substring(videoString.lastIndexOf("/")+1);
-                          var videoContent = videoFileUrl+' <a href="'+videoFileUrl+'" target="_blank">'+Ember.String.loc('_open_video')+'</a>';
-
-                          clickedPointContent += videoContent;
-                          break;
-                        case "CASCADE":
-                        case "OPTION":
-                          var cascadeString = "", cascadeJson;
-                          if (questionAnswer.charAt(0) === '[') {
-                            cascadeJson = JSON.parse(questionAnswer);
-                            cascadeString = cascadeJson.map(function(item){
-                              return (questionsData['questions'][i].type == "CASCADE") ? item.name : item.text;
-                            }).join("|");
-                          } else {
-                            cascadeString = questionAnswer;
-                          }
-                          clickedPointContent += cascadeString;
-                          break;
-                        default:
-                          clickedPointContent += questionAnswer
-                      }
-                    }
-                    clickedPointContent += "&nbsp;</div><hr>";
+                  } else {
+                    clickedPointContent += '<h4>'+questionsData['questions'][i].display_text+'&nbsp;</h4>';
                   }
+
+                  clickedPointContent += '<div style="float: left; width: 100%">';
+
+                  if(questionAnswer !== "" && questionAnswer !== null && questionAnswer !== "null"){
+                    switch (questionsData['questions'][i].type) {
+                      case "PHOTO":
+                      case "VIDEO":
+                        var mediaString = "", mediaJson, mediaObject = {};
+                        if (questionAnswer.charAt(0) === '{') {
+                          mediaJson = JSON.parse(questionAnswer);
+                          mediaString = mediaJson.filename;
+
+                          if(mediaJson.location != null) {
+                            mediaObject['filename'] = mediaString.substring(mediaString.lastIndexOf("/")+1);
+                            mediaObject['lat'] = mediaJson['location']['latitude'];
+                            mediaObject['lng'] = mediaJson['location']['longitude'];
+                            mediaResponses.push(mediaObject);
+                          }
+                        } else {
+                          mediaString = questionAnswer;
+                        }
+
+                        var mediaFileURL = FLOW.Env.photo_url_root+mediaString.substring(mediaString.lastIndexOf("/")+1);
+                        if(questionsData['questions'][i].type == "PHOTO") {
+                          mediaOutput = '<div class=":imgContainer photoUrl:shown:hidden">'
+                          +'<a href="'+mediaFileURL+'" target="_blank">'
+                          +'<img src="'+mediaFileURL+'" alt=""/></a>'
+                          +'</div>';
+                        } else if (questionsData['questions'][i].type == "VIDEO") {
+                          mediaOutput = mediaFileURL+' <a href="'+mediaFileURL+'" target="_blank">'+Ember.String.loc('_open_video')+'</a>';
+                        }
+                        clickedPointContent += mediaOutput;
+                        break;
+                      case "GEOSHAPE":
+                        geoshapeObject = FLOW.parseGeoshape(questionAnswer);
+
+                        if(geoshapeObject !== null){
+                          clickedPointContent += '<div class="geoshape-map" data-geoshape-object=\''+questionAnswer+'\' style="width:100%; height: 100px; float: left"></div>';
+
+                          if(geoshapeObject['features'][0]['geometry']['type'] === "Polygon"
+                           || geoshapeObject['features'][0]['geometry']['type'] === "LineString"
+                            || geoshapeObject['features'][0]['geometry']['type'] === "MultiPoint"){
+                            clickedPointContent += '<div style="float: left; width: 100%">'+ Ember.String.loc('_points') +': '+geoshapeObject['features'][0]['properties']['pointCount']+'</div>';
+                          }
+
+                          if(geoshapeObject['features'][0]['geometry']['type'] === "Polygon"
+                           || geoshapeObject['features'][0]['geometry']['type'] === "LineString"){
+                            clickedPointContent += '<div style="float: left; width: 100%">'+ Ember.String.loc('_length') +': '+geoshapeObject['features'][0]['properties']['length']+'m</div>';
+                          }
+
+                          if(geoshapeObject['features'][0]['geometry']['type'] === "Polygon"){
+                            clickedPointContent += '<div style="float: left; width: 100%">'+ Ember.String.loc('_area') +': '+geoshapeObject['features'][0]['properties']['area']+'m&sup2;</div>';
+                          }
+                        }
+                        break;
+                      case "DATE":
+                        var dateQuestion = new Date((isNaN(questionAnswer) === false) ? parseInt(questionAnswer) : questionAnswer);
+                        clickedPointContent += dateQuestion.toUTCString().slice(0, -13); //remove last 13 x-ters so only date displays
+                        break;
+                      case "SIGNATURE":
+                        clickedPointContent += '<div class="signatureImage"><img src="';
+                        var srcAttr = 'data:image/png;base64,', signatureJson;
+                        signatureJson = JSON.parse(questionAnswer);
+                        clickedPointContent += srcAttr + signatureJson.image +'"/></div>';
+                        clickedPointContent += '<div class="signedBySection">'+Ember.String.loc('_signed_by') +': '+signatureJson.name+'</div>';
+                        break;
+                      case "CASCADE":
+                      case "OPTION":
+                        var cascadeString = "", cascadeJson;
+                        if (questionAnswer.charAt(0) === '[') {
+                          cascadeJson = JSON.parse(questionAnswer);
+                          cascadeString = cascadeJson.map(function(item){
+                            return (questionsData['questions'][i].type == "CASCADE") ? item.name : item.text;
+                          }).join("|");
+                        } else {
+                          cascadeString = questionAnswer;
+                        }
+                        clickedPointContent += cascadeString;
+                        break;
+                      default:
+                        clickedPointContent += questionAnswer
+                    }
+                  }
+                  clickedPointContent += "&nbsp;</div><hr>";
                 }
               }
-              clickedPointContent += '</div>';
-              $('#pointDetails').html(clickedPointContent);
-              $('hr').show();
+            }
+            clickedPointContent += '</div>';
+            $('#pointDetails').html(clickedPointContent);
+            $('hr').show();
 
-              //if there's geoshape, draw it
-              if(geoshapeQuestionsCount > 0){
-                $('.geoshape-map').each(function(index){
-                  FLOW.drawGeoShape($('.geoshape-map')[index], $(this).data('geoshape-object'));
-                });
-              }
+            //if there's geoshape, draw it
+            if(geoshapeQuestionsCount > 0){
+              $('.geoshape-map').each(function(index){
+                FLOW.drawGeoShape($('.geoshape-map')[index], $(this).data('geoshape-object'));
+              });
+            }
+
+            //overlay image coordinates on map
+            var mediaCoordinates = [self.clickedPointCoordinates], mediaMarkersArray = [];
+            var mediaMarkerIcon = new L.Icon({
+              iconUrl: 'images/media-marker.png',
+              iconSize: [11, 11]
+            }), selectedMediaMarkerIcon = new L.Icon({
+              iconUrl: 'images/media-marker-selected.png',
+              iconSize: [11, 11]
             });
+            for(var m=0; m<mediaResponses.length; m++) {
+              var currentMediaCoordinates = [mediaResponses[m].lat, mediaResponses[m].lng];
+              var currentMediaFileName = mediaResponses[m].filename;
+              var currentMediaMarker = new L.marker(currentMediaCoordinates, {icon: mediaMarkerIcon});
+              currentMediaMarker.on('click', function() {
+                if(self.selectedMediaMarker != null) {
+                  self.map.removeLayer(self.selectedMediaMarker);
+                  $('#selected-media').remove();
+                }
+                self.selectedMediaMarker = new L.marker(currentMediaCoordinates, {icon: selectedMediaMarkerIcon}).addTo(self.map);
+
+                $('#flowMap').after('<div id="selected-media"><img src="'+FLOW.Env.photo_url_root+currentMediaFileName+'"><label>'+currentMediaFileName+'</label></div>');
+              });
+              mediaMarkersArray.push(currentMediaMarker);
+              mediaCoordinates.push(currentMediaCoordinates);
+            }
+            self.mediaMarkers = L.featureGroup(mediaMarkersArray).addTo(self.map)
+            self.map.fitBounds(mediaCoordinates);
+          });
       } else {
         clickedPointContent += '<p class="noDetails">'+Ember.String.loc('_no_details') +'</p>';
         $('#pointDetails').html(clickedPointContent);
@@ -817,6 +831,33 @@ FLOW.NavMapsView = FLOW.View.extend({
     if(this.layerExistsCheck){
       this.map.removeLayer(this.cartodbLayer);
       this.layerExistsCheck = false;
+    }
+  },
+
+  clearMap: function() {
+    var self = this;
+    if(self.marker != null){
+      self.map.removeLayer(self.marker);
+      self.hideDetailsPane();
+      $('#pointDetails').html('<p class="noDetails">'+Ember.String.loc('_no_details') +'</p>');
+    }
+
+    if(self.selectedMediaMarker != null) {
+      self.map.removeLayer(self.selectedMediaMarker);
+      $('#selected-media').remove();
+    }
+
+    if(self.mediaMarkers != null) {
+      self.map.removeLayer(self.mediaMarkers);
+    }
+
+    if(self.polygons.length > 0){
+      for(var i=0; i<self.polygons.length; i++){
+        self.map.removeLayer(self.polygons[i])
+      }
+      //restore the previous zoom level and map center
+      self.map.setView(self.mapCenter, self.mapZoomLevel);
+      self.polygons = [];
     }
   }
 });
