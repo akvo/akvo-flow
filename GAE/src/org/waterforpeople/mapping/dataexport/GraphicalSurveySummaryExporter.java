@@ -67,6 +67,8 @@ import org.waterforpeople.mapping.app.gwt.client.survey.TranslationDto;
 import org.waterforpeople.mapping.app.gwt.client.surveyinstance.SurveyInstanceDto;
 import org.waterforpeople.mapping.app.web.dto.SurveyRestRequest;
 import org.waterforpeople.mapping.dataexport.service.BulkDataServiceClient;
+import org.waterforpeople.mapping.domain.response.value.Media;
+import org.waterforpeople.mapping.serialization.response.MediaResponse;
 
 import com.gallatinsystems.common.util.JFreechartChartUtil;
 
@@ -122,6 +124,7 @@ public class GraphicalSurveySummaryExporter extends SurveySummaryExporter {
     private static final Map<String, String> LAT_LABEL;
     private static final Map<String, String> LON_LABEL;
     private static final Map<String, String> ELEV_LABEL;
+    private static final Map<String, String> ACC_LABEL;
     private static final Map<String, String> CODE_LABEL;
     private static final Map<String, String> IDENTIFIER_LABEL;
     private static final Map<String, String> DISPLAY_NAME_LABEL;
@@ -265,6 +268,10 @@ public class GraphicalSurveySummaryExporter extends SurveySummaryExporter {
         CODE_LABEL = new HashMap<String, String>();
         CODE_LABEL.put("en", "Geo Code");
         CODE_LABEL.put("es", "Código Geo");
+
+        ACC_LABEL = new HashMap<String, String>();
+        ACC_LABEL.put("en", "Accuracy (m)");
+        ACC_LABEL.put("es", "Precisión (m)");
 
         IDENTIFIER_LABEL = new HashMap<String, String>();
         IDENTIFIER_LABEL.put("en", "Identifier");
@@ -673,7 +680,7 @@ public class GraphicalSurveySummaryExporter extends SurveySummaryExporter {
 
             case PHOTO:
             case VIDEO:
-                cells.add(photoCellValue(value, imagePrefix));
+                cells.addAll(mediaCellValues(value, useQuestionId, imagePrefix));
                 break;
 
             case GEO:
@@ -700,6 +707,12 @@ public class GraphicalSurveySummaryExporter extends SurveySummaryExporter {
         for (String cellValue : cells) {
             if (questionType == QuestionType.NUMBER) {
                 createCell(row, col, cellValue, null, Cell.CELL_TYPE_NUMERIC);
+            } else if (questionType == QuestionType.PHOTO) {
+                if (col == startColumn) { //URL is text
+                    createCell(row, col, cellValue, mTextStyle);
+                } else { //Coordinates numerical
+                    createCell(row, col, cellValue, null, Cell.CELL_TYPE_NUMERIC);
+                }
             } else if (questionType == QuestionType.OPTION
                     && (cellValue.equals("0") || cellValue.equals("1"))) {
                 // the type of an option column depends on the contents - if it is 0 or 1, we
@@ -716,9 +729,21 @@ public class GraphicalSurveySummaryExporter extends SurveySummaryExporter {
         return ExportImportUtils.formatDateResponse(value);
     }
 
-    private static String photoCellValue(String value, String imagePrefix) {
-        return ExportImportUtils.formatImage(imagePrefix, value);
-    }
+    private static List<String> mediaCellValues(String value, boolean useQuestionId, String imagePrefix) {
+        List<String> cells = new ArrayList<>();
+        Media media = MediaResponse.parse(value);
+        String filename = media.getFilename();
+        final int filenameIndex = filename != null ? filename.lastIndexOf("/") + 1 : -1;
+        if (filenameIndex > 0 && filenameIndex < filename.length()) {
+            cells.add(imagePrefix + filename.substring(filenameIndex));
+            if (useQuestionId && media.getLocation() != null) {
+                cells.add(Double.toString(media.getLocation().getLatitude()));
+                cells.add(Double.toString(media.getLocation().getLongitude()));
+                cells.add(Double.toString(media.getLocation().getAccuracy()));
+            }
+        }
+        return cells;
+    }	
 
     private static List<String> geoCellValues(String value) {
 
@@ -1048,6 +1073,35 @@ public class GraphicalSurveySummaryExporter extends SurveySummaryExporter {
                                     useQID ? questionId + "_" + codeLabel.replaceAll("\\s", "")
                                             : "--GEOCODE--|" + codeLabel,
                                     headerStyle);
+                        } else if (QuestionType.PHOTO == q.getType()) {
+                        	//Always a URL column 
+                            String header = "";
+                            if (useQID) {
+                                header = questionId;
+                            } else if (useQuestionId) {
+                                header = getLocalizedText(q.getText(),
+                                        q.getTranslationMap())
+                                        .replaceAll("\n", "")
+                                        .trim();
+                            } else {
+                                header = q.getKeyId().toString()
+                                        + "|"
+                                        + getLocalizedText(q.getText(),
+                                                q.getTranslationMap())
+                                                .replaceAll("\n", "")
+                                                .trim();
+                            }
+                            createCell(row, offset++, header, headerStyle);
+                            if (useQuestionId) { 
+                            	//Media gets 3 extra columns: Latitude, Longitude and Accuracy
+                            	String prefix = "--PHOTO--|";
+	                            createCell(row, offset++,
+	                                    prefix + LAT_LABEL.get(columnLocale), headerStyle);
+	                            createCell(row, offset++,
+	                                    prefix + LON_LABEL.get(columnLocale), headerStyle);
+	                            createCell(row, offset++,
+	                                    prefix + ACC_LABEL.get(columnLocale), headerStyle);
+                            }
                         } else if (QuestionType.CASCADE == q.getType() && q.getLevelNames() != null
                                 && useQuestionId) {
                             for (String level : q.getLevelNames()) {
@@ -1057,7 +1111,7 @@ public class GraphicalSurveySummaryExporter extends SurveySummaryExporter {
                                         + " - " + level;
                                 createCell(row, offset++, levelName, headerStyle);
                             }
-                        } else {
+                        } else { //All other types
                             String header = "";
                             if (useQID) {
                                 header = questionId;
