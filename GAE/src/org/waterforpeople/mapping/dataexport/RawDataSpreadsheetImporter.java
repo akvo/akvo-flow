@@ -156,7 +156,8 @@ public class RawDataSpreadsheetImporter implements DataImporter {
         } catch (Exception e) {
             log.error("Failed to import raw data report", e);
         } finally {
-            threadPool.shutdown();
+            if (threadPool != null)
+                threadPool.shutdown();
             cleanup();
         }
 
