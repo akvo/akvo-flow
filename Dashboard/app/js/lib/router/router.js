@@ -273,6 +273,10 @@ FLOW.Router = Ember.Router.extend({
         router.transitionTo('navData.monitoringData');
       },
 
+      doDataApproval: function (router, event) {
+          router.transitionTo('navData.dataApproval');
+      },
+
       index: Ember.Route.extend({
         route: '/',
         redirectsTo: 'inspectData'
@@ -329,6 +333,15 @@ FLOW.Router = Ember.Router.extend({
           router.set('datasubnavController.selected', 'monitoringData');
           router.resetState();
         }
+      }),
+
+      dataApproval: Ember.Route.extend({
+          route: '/dataapproval',
+          connectOutlets: function (router, context) {
+              router.get('navDataController').connectOutlet('dataApproval');
+              router.set('datasubnavController.selected', 'dataApproval');
+              router.resetState();
+          }
       }),
     }),
 
