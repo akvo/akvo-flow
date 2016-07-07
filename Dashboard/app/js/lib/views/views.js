@@ -727,6 +727,10 @@ FLOW.DatasubnavView = FLOW.View.extend({
     showCascadeResourcesButton: function () {
       return FLOW.permControl.get('canManageCascadeResources');
     }.property(),
+
+    showDataApprovalButton: function () {
+        return FLOW.Env.enableDataApproval;
+    }.property(),
   })
 });
 

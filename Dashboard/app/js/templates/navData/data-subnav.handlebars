@@ -23,5 +23,10 @@
         <a {{action doCascadeResources}}>{{t _cascade_resources}}</a>
         {{/if}}
     {{/view}}
+    {{#view view.NavItemView item="dataApproval" }}
+        {{#if view.showDataApprovalButton}}
+        <a {{action doDataApproval}}>{{t _data_approval}}</a>
+        {{/if}}
+    {{/view}}
 </ul> 
   
