@@ -72,6 +72,7 @@ public class EnvServlet extends HttpServlet {
         properties.add("cartodbHost");
         properties.add("hereMapsAppId");
         properties.add("hereMapsAppCode");
+        properties.add("enableDataApproval");
     }
 
     @Override
@@ -114,6 +115,10 @@ public class EnvServlet extends HttpServlet {
 
         if (props.get("showExternalSourcesFeature") == null) {
             props.put("showExternalSourcesFeature", "false");
+        }
+
+        if (props.get("enableDataApproval") == null) {
+            props.put("enableDataApproval", "false");
         }
 
         props.put("appId", SystemProperty.applicationId.get());
