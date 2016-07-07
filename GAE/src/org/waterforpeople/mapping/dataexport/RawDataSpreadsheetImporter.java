@@ -259,7 +259,8 @@ public class RawDataSpreadsheetImporter implements DataImporter {
         // N + 1. Digest
 
         Row baseRow = sheet.getRow(startRow);
-        if (baseRow == null) {
+        if (baseRow == null //no such row
+                || baseRow.getFirstCellNum() == -1) { //a row without any cells
             return null;
         }
 
@@ -287,8 +288,10 @@ public class RawDataSpreadsheetImporter implements DataImporter {
         if (hasIterationColumn) {
             while (true) {
                 Row row = sheet.getRow(startRow + iterations);
-                if (row == null
-                        || ExportImportUtils.parseCellAsString(row.getCell(1)).equals("1")) {
+                if (row == null //no row
+                        || row.getCell(1) == null //row but no cell (likely no cells at all)
+                        || ExportImportUtils.parseCellAsString(row.getCell(1)).equals("1") //next q
+                        ) {
                     break;
                 }
                 iterations++;
