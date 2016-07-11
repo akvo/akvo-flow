@@ -376,6 +376,17 @@ FLOW.QuestionAnswer = FLOW.BaseModel.extend({
   questionText: DS.attr('string')
 });
 
+FLOW.ApprovalGroup = FLOW.BaseModel.extend({
+    name: DS.attr('string'),
+    ordered: DS.attr('boolean'),
+});
+
+FLOW.ApprovalStep = FLOW.BaseModel.extend({
+    approvalGroupId: DS.attr('number'),
+    order: DS.attr('number'),
+    title: DS.attr('string'),
+});
+
 FLOW.SurveyQuestionSummary = FLOW.BaseModel.extend({
   response: DS.attr('string'),
   count: DS.attr('number'),
