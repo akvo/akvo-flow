@@ -1,0 +1,29 @@
+<section class="fullWidth" id="dataApproval">
+    <header></header>
+    <table class="dataTable" id="dataApprovalTable">
+        <thead>
+            <tr>
+                <th class="noArrows">{{t _name}}</th>
+                <th class="noArrows">{{t _type}}</th>
+                <th class="noArrows">{{t _used_in}}</th>
+                <th class="noArrows"></th>
+            </tr>
+        </thead>
+        <tbody>
+            {{#each item in controller}}
+            <tr>
+                <td class="name">{{item.name}}</td>
+                <td class="approval-type"></td>
+                <td class="approval-used-in"></td>
+                <td class="action"></td>
+            </tr>
+            {{/each}}
+        </tbody>
+        <tfoot>
+            <tr>
+                <td colspan="7"><small></small>
+                </td>
+            </tr>
+        </tfoot>
+    </table>
+</section>

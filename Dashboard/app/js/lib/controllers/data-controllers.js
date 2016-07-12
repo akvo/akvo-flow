@@ -422,3 +422,9 @@ FLOW.locationControl = Ember.ArrayController.create({
   }.observes('this.selectedLevel1')
 
 });
+
+FLOW.DataApprovalGroupController = Ember.ArrayController.extend({
+    init: function () {
+        this._super();
+    },
+});
