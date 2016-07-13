@@ -427,7 +427,7 @@ public class RawDataSpreadsheetImporter implements DataImporter {
                             break;
 
                         case SIGNATURE:
-                            // we do not allow importing / overwriting signature question responses
+                            // we do not allow importing / overwriting of signature question responses
                             val = null;
                             break;
 
