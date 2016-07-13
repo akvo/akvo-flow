@@ -426,10 +426,8 @@ public class RawDataSpreadsheetImporter implements DataImporter {
                             }
                             break;
 
-                        case PHOTO:
-                        case VIDEO:
                         case SIGNATURE:
-                            // we do not allow importing / overwriting signature and media question responses
+                            // we do not allow importing / overwriting signature question responses
                             val = null;
                             break;
 
