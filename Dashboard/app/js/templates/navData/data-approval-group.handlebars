@@ -5,7 +5,6 @@
             <tr>
                 <th class="noArrows">{{t _name}}</th>
                 <th class="noArrows">{{t _type}}</th>
-                <th class="noArrows">{{t _used_in}}</th>
                 <th class="noArrows"></th>
             </tr>
         </thead>
@@ -13,9 +12,13 @@
             {{#each item in controller}}
             <tr>
                 <td class="name">{{item.name}}</td>
-                <td class="approval-type"></td>
-                <td class="approval-used-in"></td>
-                <td class="action"></td>
+                <td class="approval-type">{{#if item.ordered}}{{t _ordered}}{{else}}{{t _unordered}}{{/if}}</td>
+                <td class="action">
+                    <ul>
+                        <li class="editIconSmall"><a>{{t _edit}}</a></li>
+                        <li class="deleteIconSmall"><a>{{t _delete}}</a></li>
+                    </ul>
+                </td>
             </tr>
             {{/each}}
         </tbody>
