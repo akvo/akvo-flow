@@ -36,7 +36,7 @@ import com.gallatinsystems.survey.dao.ApprovalGroupDAO;
 import com.gallatinsystems.survey.domain.ApprovalGroup;
 
 @Controller
-@RequestMapping("/approval_group")
+@RequestMapping("/approval_groups")
 public class ApprovalGroupRestService {
 
     @Inject
