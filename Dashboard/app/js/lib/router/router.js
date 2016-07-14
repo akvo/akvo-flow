@@ -340,6 +340,11 @@ FLOW.Router = Ember.Router.extend({
           connectOutlets: function (router, context) {
               router.get('navDataController').connectOutlet('dataApprovalGroup');
               router.set('datasubnavController.selected', 'dataApproval');
+              var approvalController = router.get('dataApprovalGroupController');
+              if (approvalController) {
+                  approvalController.set('content', FLOW.ApprovalGroup.find());
+              }
+
               router.resetState();
           }
       }),
