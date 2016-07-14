@@ -733,7 +733,7 @@ FLOW.NavMapsView = FLOW.View.extend({
             }
           }
           clickedPointContent += '</div>';
-          $('#pointDetails').html(clickedPointContent);
+          $('#pointDetails').append(clickedPointContent);
           $('hr').show();
 
           //if there's geoshape, draw it
