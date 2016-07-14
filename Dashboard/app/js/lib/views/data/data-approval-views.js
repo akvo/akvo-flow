@@ -1,3 +1,3 @@
-FLOW.DataApprovalGroupView = Ember.View.extend({
+FLOW.ApprovalGroupView = Ember.View.extend({
     templateName: 'navData/data-approval-group'
 });
