@@ -346,7 +346,20 @@ FLOW.Router = Ember.Router.extend({
               }
 
               router.resetState();
-          }
+          },
+
+          doNewApprovalGroup: function (router, context) {
+              router.transitionTo('navData.dataApproval.newApprovalGroup');
+          },
+
+          newApprovalGroup: Ember.Route.extend({
+              route: '/newapproval',
+              connectOutlets: function (router, context) {
+                  router.get('navDataController').connectOutlet('approvalSteps');
+                  router.set('datasubnavController.selected', 'approvalGroup');
+                  router.resetState();
+              },
+          }),
       }),
     }),
 
