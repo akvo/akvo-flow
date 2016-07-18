@@ -870,6 +870,10 @@ public class BulkDataServiceClient {
                                     && !"null".equalsIgnoreCase(json.getString("tip"))) {
                                 dto.setTip(json.optString("tip"));
                             }
+                            if (json.has("questionId")
+                                    && !"null".equalsIgnoreCase(json.getString("questionId"))) {
+                                dto.setQuestionId(json.optString("questionId"));
+                            }
                             if (json.has("path")) {
                                 dto.setPath(json.getString("path"));
                             }
