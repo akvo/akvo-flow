@@ -1,4 +1,4 @@
-Akvo FLOW (Field Level Operations Watch) is a system to collect, manage, analyse and display geographically-referenced monitoring and evaluation data.
+Akvo Flow is a system to collect, manage, analyse and display geographically-referenced monitoring and evaluation data.
 
 Read more about [Akvo FLOW](http://www.akvo.org/blog/?p=4836).
 Read more about the [Akvo Platform](http://www.akvo.org/blog/?p=4822).
