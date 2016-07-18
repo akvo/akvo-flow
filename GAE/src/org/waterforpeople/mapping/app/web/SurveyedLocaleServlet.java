@@ -185,7 +185,7 @@ public class SurveyedLocaleServlet extends AbstractRestApiServlet {
                             }
                         }
                     }
-                    
+
                     // Make all responses backwards compatible
                     String value = sv.getStringValue() != null ? sv.getStringValue() : "";
                     switch (type) {
