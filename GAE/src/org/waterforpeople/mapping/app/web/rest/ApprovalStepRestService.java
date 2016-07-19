@@ -37,7 +37,7 @@ import com.gallatinsystems.survey.dao.ApprovalStepDAO;
 import com.gallatinsystems.survey.domain.ApprovalStep;
 
 @Controller
-@RequestMapping("/approval_step")
+@RequestMapping("/approval_steps")
 public class ApprovalStepRestService {
 
     @Inject
