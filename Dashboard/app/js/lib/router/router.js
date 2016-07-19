@@ -348,12 +348,17 @@ FLOW.Router = Ember.Router.extend({
               router.resetState();
           },
 
-          doNewApprovalGroup: function (router, context) {
-              router.transitionTo('navData.dataApproval.newApprovalGroup');
+          doEditApprovalSteps: function (router, event) {
+              var approvalGroupId = event.context.get('keyId');
+              var approvalStepsController = router.get('approvalStepsController')
+              if (approvalStepsController) {
+                  approvalStepsController.loadApprovalSteps(approvalGroupId);
+              }
+              router.transitionTo('navData.dataApproval.editApprovalSteps');
           },
 
-          newApprovalGroup: Ember.Route.extend({
-              route: '/newapproval',
+          editApprovalSteps: Ember.Route.extend({
+              route: '/approvalsteps',
               connectOutlets: function (router, context) {
                   router.get('navDataController').connectOutlet('approvalSteps');
                   router.set('datasubnavController.selected', 'approvalGroup');

@@ -2,6 +2,17 @@
     <header></header>
     <form>
         <fieldset>
+            <label>{{t _name}}: &nbsp;{{view Ember.TextField valueBinding="view.approvalGroup.name" size=30}}</label>
+            <label>{{t _approval_type}}: {{view Ember.Select contentBinding="view.approvalTypeOptions"
+                                                                optionLabelPath="content.label"
+                                                                optionValuePath="content.value"
+                                                                selectionBinding="view.approvalGroup.ordered"}}
+            {{t _steps}}:
+            <ul id="approvalSteps">
+            {{#each step in controller}}
+                <li>{{view Ember.TextField valueBinding="step.code" size=15}} &nbsp; {{view Ember.TextField valueBinding="step.title" size=80}}</li>
+            {{/each}}
+            </ul>
         </fieldset>
     </form>
 </section>
