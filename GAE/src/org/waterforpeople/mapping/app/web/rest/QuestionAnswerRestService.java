@@ -133,7 +133,8 @@ public class QuestionAnswerRestService {
         }
 
         // FIXME: use a better solution for removing null items...
-        while (results.remove(null));
+        while (results.remove(null))
+            ;
 
         response.put("question_answers", results);
         return response;
@@ -152,18 +153,18 @@ public class QuestionAnswerRestService {
             formatResponseLatestAPI(response);
         }
     }
-    
+
     /**
      * Format Question response according to API v1
      */
     private void formatResponseAPIV1(QuestionAnswerStoreDto response) {
         String value = response.getValue();
         String type = response.getType();
-            
+
         if (StringUtils.isEmpty(value)) {
             return;
         }
-            
+
         switch (type) {
             case "OPTION":
             case "OTHER":
@@ -179,18 +180,18 @@ public class QuestionAnswerRestService {
                 break;
         }
     }
-    
+
     /**
      * Format Question response according to the most up-to-date API format
      */
     private void formatResponseLatestAPI(QuestionAnswerStoreDto response) {
         String value = response.getValue();
         String type = response.getType();
-            
+
         if (StringUtils.isEmpty(value)) {
             return;
         }
-            
+
         switch (type) {
             case "IMAGE":
             case "VIDEO":
@@ -215,12 +216,12 @@ public class QuestionAnswerRestService {
         if (s != null) {
             dto = new QuestionAnswerStoreDto();
             DtoMarshaller.copyToDto(s, dto);
-            
-            // This endpoint is only used in the FLOW dashboard. 
+
+            // This endpoint is only used in the FLOW dashboard.
             // Latest API format can be safely used.
             formatResponseLatestAPI(dto);
         }
-        
+
         response.put("question_answer", dto);
         return response;
     }
@@ -309,13 +310,13 @@ public class QuestionAnswerRestService {
                         // Populate locale id from the only entity containing this attribute
                         surveyedLocaleId = sval.getSurveyedLocaleId();
                     }
-                    
+
                     // Update datapoint names for this survey, if applies
                     if (q.getLocaleNameFlag() && surveyedLocaleId != null) {
                         DataProcessorRestServlet.scheduleDatapointNameAssembly(
                                 null, surveyedLocaleId, true);
                     }
-                    
+
                     // return result to the Dashboard
                     DtoMarshaller.copyToDto(qa, responseDto);
                     // give back the question text as we received it

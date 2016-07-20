@@ -287,6 +287,21 @@ FLOW.parseGeoshape = function(geoshapeString) {
   }
 };
 
+FLOW.addExtraMapBoxTileLayer = function(baseLayers) {
+  if (FLOW.Env.extraMapboxTileLayerMapId
+      && FLOW.Env.extraMapboxTileLayerAccessToken
+      && FLOW.Env.extraMapboxTileLayerLabel) {
+    var templateURL = 'https://{s}.tiles.mapbox.com/v4/' +
+      FLOW.Env.extraMapboxTileLayerMapId +
+      '/{z}/{x}/{y}.jpg?access_token=' +
+      FLOW.Env.extraMapboxTileLayerAccessToken;
+    var attribution = '<a href="http://www.mapbox.com/about/maps/" target="_blank">Terms &amp; Feedback</a>'
+    baseLayers[FLOW.Env.extraMapboxTileLayerLabel] = L.tileLayer(templateURL, {
+      attribution: attribution
+    })
+  }
+}
+
 FLOW.drawGeoShape = function(containerNode, geoShapeObject){
   containerNode.style.height = "150px";
 
@@ -334,6 +349,9 @@ FLOW.drawGeoShape = function(containerNode, geoShapeObject){
     "Normal": normal,
     "Satellite": satellite
   };
+
+  FLOW.addExtraMapBoxTileLayer(baseLayers);
+
   L.control.layers(baseLayers).addTo(geoshapeMap);
 
   //Draw geoshape based on its type

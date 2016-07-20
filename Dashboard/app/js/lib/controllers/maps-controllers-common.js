@@ -130,7 +130,7 @@ FLOW.placemarkController = Ember.ArrayController.create({
     	if (!Ember.none(FLOW.placemarkController.get('selectedMarker'))){
     		if (FLOW.placemarkController.selectedMarker.target.options.placemarkId != marker.target.options.placemarkId){
     			FLOW.placemarkController.selectedMarker.target.options.selected = false;
-    			FLOW.placemarkController.selectedMarker.target.setStyle({color:'#d46f12',
+                FLOW.placemarkController.selectedMarker.target.setStyle({color:'#d46f12',
     	    		fillColor:'#edb660'});
     			FLOW.placemarkController.set('selectedMarker',null);
     		}

@@ -61,7 +61,7 @@ public class ExportImportUtils {
 
     /**
      * Parse cell as string independent of cell type
-     * 
+     *
      * @param cell
      * @return
      */
@@ -71,7 +71,7 @@ public class ExportImportUtils {
 
     /**
      * Calculate the md5 digest of each row up to (and including) the lastColumnIndex
-     * 
+     *
      * @param rows
      * @param lastColumnIndex
      * @return
@@ -110,8 +110,8 @@ public class ExportImportUtils {
     }
 
     /*
-     * Format DateQuestion response in a human-readable way.
-     * This date will not contain time details (yyyy-MM-dd)
+     * Format DateQuestion response in a human-readable way. This date will not contain time details
+     * (yyyy-MM-dd)
      */
     public static String formatDateResponse(String value) {
         Date date = parseDatastoreDate(value);
@@ -122,10 +122,8 @@ public class ExportImportUtils {
     }
 
     /*
-     * Convert a DateQuestion response value into a Date.
-     * 
-     * Note: Values may be presented in an inconsistent manner,
-     * possibly containing ISO-8601 dates.
+     * Convert a DateQuestion response value into a Date. Note: Values may be presented in an
+     * inconsistent manner, possibly containing ISO-8601 dates.
      */
     public static Date parseDatastoreDate(String value) {
         try {
@@ -133,38 +131,38 @@ public class ExportImportUtils {
         } catch (NumberFormatException e) {
             log.error("Value is not a valid timestamp: " + value);
         }
-        
+
         // Value is not a timestamp. Try to parse as a spreadsheet value
         return parseSpreadsheetDate(value);
     }
 
     /*
-     * Parse a date from the spreadsheet. This includes collection dates (date-time)
-     * and DateQuestion responses (ISO8601 or date-time).
+     * Parse a date from the spreadsheet. This includes collection dates (date-time) and
+     * DateQuestion responses (ISO8601 or date-time).
      */
     public static Date parseSpreadsheetDate(String dateString) {
         if (dateString == null || dateString.equals("")) {
             return null;
         }
-        
+
         // Parse date-time format by default (collection dates and old responses)
         try {
             return DATE_TIME_FORMAT.get().parse(dateString);
         } catch (ParseException e) {
             // Date is not date-time formatted
         }
-        
+
         // Use ISO 8601 otherwise
         try {
             return DATE_RESPONSE_FORMAT.get().parse(dateString);
         } catch (ParseException e) {
             // Date is not ISO 8601
         }
-        
+
         log.warn("Response doesn't contain a valid format: " + dateString);
         return null;
     }
-    
+
     public static String formatImage(String prefix, String value) {
         String cell = "";
         Media media = MediaResponse.parse(value);
@@ -173,8 +171,8 @@ public class ExportImportUtils {
         if (filenameIndex > 0 && filenameIndex < filename.length()) {
             cell = prefix + filename.substring(filenameIndex);
         }
-        
+
         return cell;
     }
-    
+
 }

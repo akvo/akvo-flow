@@ -1,5 +1,5 @@
 /*
- *  Copyright (C) 2012-2014 Stichting Akvo (Akvo Foundation)
+ *  Copyright (C) 2012-2016 Stichting Akvo (Akvo Foundation)
  *
  *  This file is part of Akvo FLOW.
  *
@@ -336,6 +336,7 @@ public class ActionRestService {
         SurveyGroup projectCopy = new SurveyGroup();
 
         BeanUtils.copyProperties(projectSource, projectCopy, Constants.EXCLUDED_PROPERTIES);
+        // if set, projectCopy.newLocaleSurveyId is now wrong
 
         projectCopy.setCode(projectSource.getCode() + " copy");
         projectCopy.setName(projectSource.getName() + " copy");
@@ -356,7 +357,7 @@ public class ActionRestService {
         }
         projectCopy.setPublished(false);
 
-        SurveyGroup savedProjectCopy = surveyGroupDao.save(projectCopy);
+        SurveyGroup savedProjectCopy = surveyGroupDao.save(projectCopy); // saves
 
         List<Survey> surveys = surveyDao.listSurveysByGroup(targetId);
 
@@ -372,7 +373,12 @@ public class ActionRestService {
             Survey surveyCopy = SurveyUtils.copySurvey(survey, surveyDto);
             surveyCopy.setSurveyGroupId(savedProjectCopy.getKey().getId());
             survey.setAncestorIds(surveysAncestorIds);
-            surveyDao.save(surveyCopy);
+            long copyId = surveyDao.save(surveyCopy).getKey().getId();
+            if (survey.getKey().getId() == savedProjectCopy.getNewLocaleSurveyId()) {
+                // original was the registration survey for its survey group
+                savedProjectCopy.setNewLocaleSurveyId(copyId); // fix it
+                surveyGroupDao.save(savedProjectCopy);
+            }
         }
         return "success";
 

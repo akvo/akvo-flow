@@ -24,7 +24,7 @@ import com.gallatinsystems.framework.rest.exception.RestValidationException;
 
 /**
  * data structure to capture location beacon calls
- * 
+ *
  * @author Christopher Fagiani
  */
 public class LocationBeaconRequest extends RestRequest {
@@ -112,15 +112,14 @@ public class LocationBeaconRequest extends RestRequest {
     public void setAccuracy(Double accuracy) {
         this.accuracy = accuracy;
     }
-    
+
     public String getAndroidId() {
         return androidId;
     }
-    
+
     public void setAndroidId(String androidId) {
         this.androidId = androidId;
     }
-    
 
     @Override
     protected void populateErrors() {
