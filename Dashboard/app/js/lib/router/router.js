@@ -349,10 +349,10 @@ FLOW.Router = Ember.Router.extend({
           },
 
           doEditApprovalSteps: function (router, event) {
-              var approvalGroupId = event.context.get('keyId');
-              var approvalStepsController = router.get('approvalStepsController')
+              var approvalGroup = event.context;
+              var approvalStepsController = router.get('approvalStepsController');
               if (approvalStepsController) {
-                  approvalStepsController.loadApprovalSteps(approvalGroupId);
+                  approvalStepsController.loadApprovalSteps(approvalGroup);
               }
               router.transitionTo('navData.dataApproval.editApprovalSteps');
           },

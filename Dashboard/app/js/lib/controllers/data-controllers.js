@@ -426,7 +426,10 @@ FLOW.locationControl = Ember.ArrayController.create({
 FLOW.ApprovalGroupController = Ember.ArrayController.extend({});
 
 FLOW.ApprovalStepsController = Ember.ArrayController.extend({
-    loadApprovalSteps: function (approvalGroupId) {
-        this.set('content', FLOW.store.find(FLOW.ApprovalStep, { approvalGroupId: approvalGroupId }));
+    currentApprovalGroup: null,
+
+    loadApprovalSteps: function (approvalGroup) {
+        this.set('currentApprovalGroup', approvalGroup);
+        this.set('content', FLOW.store.find(FLOW.ApprovalStep, { approvalGroupId: approvalGroup.get('keyId') }));
     },
 });
