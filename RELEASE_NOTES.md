@@ -10,7 +10,7 @@ Date: 18 July 2016
 # New and noteworthy
 * **Output multiple choice, option question responses into separate columns** [#1605] - We now enable the possibility to generate raw data reports with the responses to multiple choice, option questions split into separate columns, i.e., one column for each response.  This is facilitates the analysis of this data by external systems.
 
-* **Include geolocation data from geotagged media in raw data reports** [#1652] - For photos and videos that have been tagged with geolocation data, this data will now be included as extra columns in the raw data reports.  Note that these columns will only be visible in raw data reports that are *exported* for use in external systems, that is, the data cannot be geolocation data cannot be reimported or edited.
+* **Include geolocation data from geotagged media in raw data reports** [#1652] - For photos and videos that have been tagged with geolocation data, this data will now be included as extra columns in the raw data reports.  Note that these columns will only be visible in raw data reports that are *exported* for use in external systems, that is, the geolocation data cannot be reimported or edited.
 
 * **Displaying drone imagery in Flow** [#1562] - Besides the already existing Terrain, Street and Satellite layers, Flow maps now introduce an extra layer, the drone imagery layer. This enables partners who have gathered aerial images through drones or similar equipment to render these images on a Flow map.
 
