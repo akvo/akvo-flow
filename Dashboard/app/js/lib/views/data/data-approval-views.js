@@ -11,6 +11,10 @@ FLOW.DataApprovalView = Ember.View.extend({
     template: Ember.Handlebars.compile('{{outlet approvalMain}}'),
 });
 
+FLOW.ApprovalGroupListView = Ember.View.extend({
+    templateName: 'navData/data-approval-group-list'
+});
+
 FLOW.ApprovalGroupView = Ember.View.extend({
     templateName: 'navData/data-approval-group'
 });

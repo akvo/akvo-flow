@@ -425,7 +425,9 @@ FLOW.locationControl = Ember.ArrayController.create({
 
 FLOW.DataApprovalController = Ember.Controller.extend({});
 
-FLOW.ApprovalGroupController = Ember.ArrayController.extend({});
+FLOW.ApprovalGroupListController = Ember.ArrayController.extend({});
+
+FLOW.ApprovalGroupController = Ember.ObjectController.extend({});
 
 FLOW.ApprovalStepsController = Ember.ArrayController.extend({
     currentApprovalGroup: null,
