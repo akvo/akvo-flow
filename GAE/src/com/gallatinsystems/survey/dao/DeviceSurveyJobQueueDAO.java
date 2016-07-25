@@ -61,7 +61,8 @@ public class DeviceSurveyJobQueueDAO {
             query.declareParameters("String imeiParam");
             legacy = (List<DeviceSurveyJobQueue>) query.execute(imei);
         }
-        if ((legacy == null || legacy.isEmpty()) && devicePhoneNumber != null && !devicePhoneNumber.isEmpty()) {
+        if ((legacy == null || legacy.isEmpty())
+                && devicePhoneNumber != null && !devicePhoneNumber.isEmpty()) {
             // Fall back to phone number
             query = pm.newQuery(DeviceSurveyJobQueue.class);
             query.setFilter("devicePhoneNumber == devicePhoneNumberParam");
