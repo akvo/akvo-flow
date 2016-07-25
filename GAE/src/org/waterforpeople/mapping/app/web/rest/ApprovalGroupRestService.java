@@ -30,6 +30,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.waterforpeople.mapping.app.web.dto.ApprovalGroupDTO;
+import org.waterforpeople.mapping.app.web.rest.dto.ApprovalGroupPayload;
 
 import com.gallatinsystems.common.Constants;
 import com.gallatinsystems.survey.dao.ApprovalGroupDAO;
@@ -72,9 +73,11 @@ public class ApprovalGroupRestService {
     @RequestMapping(method = RequestMethod.PUT, value = "/{approvalGroupId}")
     @ResponseBody
     public Map<String, ApprovalGroupDTO> updateApprovalGroup(
-            @RequestBody ApprovalGroupDTO approvalGroupPayload, @PathVariable Long approvalGroupId) {
+            @RequestBody ApprovalGroupPayload approvalGroupPayload,
+            @PathVariable Long approvalGroupId) {
         final Map<String, ApprovalGroupDTO> response = new HashMap<String, ApprovalGroupDTO>();
-        final ApprovalGroup updatedGroup = approvalGroupPayload.getApprovalGroup();
+        final ApprovalGroup updatedGroup = approvalGroupPayload.getApproval_group()
+                .getApprovalGroup();
 
         if (updatedGroup.getName() == null || updatedGroup.getName().trim().isEmpty()) {
             return null;
