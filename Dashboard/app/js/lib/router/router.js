@@ -357,7 +357,7 @@ FLOW.Router = Ember.Router.extend({
               route: '/list',
 
               connectOutlets: function (router, context) {
-                  router.get('dataApprovalController').connectOutlet('approvalMain', 'approvalGroup', FLOW.ApprovalGroup.find());
+                  router.get('dataApprovalController').connectOutlet('approvalMain', 'approvalGroupList', FLOW.ApprovalGroup.find());
               },
           }),
 
