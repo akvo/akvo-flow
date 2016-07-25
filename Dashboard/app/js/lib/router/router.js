@@ -274,7 +274,7 @@ FLOW.Router = Ember.Router.extend({
       },
 
       doDataApproval: function (router, event) {
-          router.transitionTo('navData.dataApproval');
+          router.transitionTo('navData.dataApproval.listApprovalGroups');
       },
 
       index: Ember.Route.extend({
@@ -369,6 +369,10 @@ FLOW.Router = Ember.Router.extend({
                   router.set('datasubnavController.selected', 'approvalGroup');
               },
           }),
+
+          doSaveDataApproval: function (router, event) {
+              router.transitionTo('navData.dataApproval.listApprovalGroups');
+          },
       }),
     }),
 

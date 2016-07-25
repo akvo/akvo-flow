@@ -13,7 +13,7 @@
                 <li>{{view Ember.TextField valueBinding="step.code" size=15}} &nbsp; {{view Ember.TextField valueBinding="step.title" size=80}}</li>
             {{/each}}
             </ul>
-            <a {{action "cancelEditDataApproval"}}>{{t _cancel}}</a> &nbsp;&nbsp; <a {{action "saveDataApproval"}} class="smallBtn">{{t _save}}</a>
+            <a {{action "cancelEditDataApproval"}}>{{t _cancel}}</a> &nbsp;&nbsp; <a {{action "doSaveDataApproval"}} class="smallBtn">{{t _save}}</a>
         </fieldset>
     </form>
 </section>
