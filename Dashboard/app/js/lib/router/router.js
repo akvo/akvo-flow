@@ -343,13 +343,15 @@ FLOW.Router = Ember.Router.extend({
               router.set('datasubnavController.selected', 'approvalGroup');
           },
 
-          doEditApprovalSteps: function (router, event) {
-              var approvalGroup = event.context;
-              var approvalStepsController = router.get('approvalStepsController');
-              if (approvalStepsController) {
-                  approvalStepsController.loadApprovalSteps(approvalGroup);
-              }
-              router.transitionTo('navData.dataApproval.editApprovalSteps');
+          doEditApprovalGroup: function (router, event) {
+              var groupId = event.context.get('keyId');
+              router.get('approvalGroupController').set ('content', FLOW.ApprovalGroup.find(groupId));
+              router.transitionTo('navData.dataApproval.editApprovalGroup');
+          },
+
+          doSaveDataApproval: function (router, event) {
+              FLOW.store.commit();
+              router.transitionTo('navData.dataApproval.listApprovalGroups');
           },
 
           // default route for dataApproval tab
@@ -361,18 +363,13 @@ FLOW.Router = Ember.Router.extend({
               },
           }),
 
-          editApprovalSteps: Ember.Route.extend({
+          editApprovalGroup: Ember.Route.extend({
               route: '/approvalsteps',
 
-              connectOutlets: function (router, context) {
-                  router.get('dataApprovalController').connectOutlet('approvalMain', 'approvalSteps');
-                  router.set('datasubnavController.selected', 'approvalGroup');
+              connectOutlets: function (router, event) {
+                  router.get('dataApprovalController').connectOutlet('approvalMain', 'approvalGroup');
               },
           }),
-
-          doSaveDataApproval: function (router, event) {
-              router.transitionTo('navData.dataApproval.listApprovalGroups');
-          },
       }),
     }),
 
