@@ -612,7 +612,7 @@ FLOW.NavMapsView = FLOW.View.extend({
         +'<span>'+Ember.String.loc('_data_point_id') +':</span>'
         +'<div style="display: inline; margin: 0 0 0 5px;">'+dataPointIdentifier+'</div>'
         +'</li>'
-        +'<li>'
+        +'<br><li>'
         +'<span>'+Ember.String.loc('_collected_on') +':</span>'
         +'<div class="placeMarkCollectionDate">'
         +date.toISOString().slice(0,-8).replace("T", " ")
