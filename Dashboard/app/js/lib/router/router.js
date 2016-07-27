@@ -359,7 +359,11 @@ FLOW.Router = Ember.Router.extend({
               route: '/list',
 
               connectOutlets: function (router, context) {
-                  router.get('dataApprovalController').connectOutlet('approvalMain', 'approvalGroupList', FLOW.ApprovalGroup.find());
+                  router.get('dataApprovalController').connectOutlet('approvalMain', 'approvalGroupList');
+                  var approvalList = router.get('approvalGroupListController');
+                  if (!approvalList.get('content')) {
+                      router.get('approvalGroupListController').set('content', FLOW.ApprovalGroup.find())
+                  }
               },
           }),
 
