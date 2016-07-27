@@ -5,8 +5,8 @@
             <label>{{t _name}}: &nbsp;{{view Ember.TextField valueBinding="name" size=30}}</label>
             <label>{{t _approval_type}}: {{view Ember.Select contentBinding="view.approvalTypeOptions"
                                                                 optionLabelPath="content.label"
-                                                                optionValuePath="content.value"
-                                                                valueBinding="ordered"}}
+                                                                optionValuePath="content.optionValue"
+                                                                valueBinding="isOrderedApprovalGroup"}}
             {{t _steps}}:
             <ul id="approvalSteps">
             </ul>

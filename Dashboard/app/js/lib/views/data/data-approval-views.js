@@ -18,8 +18,8 @@ FLOW.ApprovalGroupListView = Ember.View.extend({
 FLOW.ApprovalGroupView = Ember.View.extend({
     templateName: 'navData/data-approval-group',
 
-    approvalTypeOptions: [{label: Ember.String.loc('_ordered'), value: true},
-                          {label: Ember.String.loc('_unordered'), value: false}],
+    approvalTypeOptions: [{label: Ember.String.loc('_ordered'), optionValue: "ordered"},
+                          {label: Ember.String.loc('_unordered'), optionValue: "unordered"}],
 });
 
 

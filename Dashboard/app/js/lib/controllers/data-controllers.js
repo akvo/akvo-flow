@@ -427,7 +427,28 @@ FLOW.DataApprovalController = Ember.Controller.extend({});
 
 FLOW.ApprovalGroupListController = Ember.ArrayController.extend({});
 
-FLOW.ApprovalGroupController = Ember.ObjectController.extend({});
+FLOW.ApprovalGroupController = Ember.ObjectController.extend({
+    /*
+     * Transform the `ordered` property on the ApprovalGroup model
+     * to a string representation in order to bind successfully to
+     * value attribute of the generated <option> entities
+     */
+    isOrderedApprovalGroup: function (key, value, previousValue) {
+        var c = this.content;
+
+        // setter
+        if (c && arguments.length > 1) {
+            c.set('ordered', value.trim() === "ordered")
+        }
+
+        // getter
+        if(c && c.get('ordered')) {
+            return "ordered";
+        } else {
+            return "unordered"
+        }
+    }.property('this.content'),
+});
 
 FLOW.ApprovalStepsController = Ember.ArrayController.extend({
     currentApprovalGroup: null,
