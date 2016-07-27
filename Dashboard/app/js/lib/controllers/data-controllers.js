@@ -434,15 +434,15 @@ FLOW.ApprovalGroupController = Ember.ObjectController.extend({
      * value attribute of the generated <option> entities
      */
     isOrderedApprovalGroup: function (key, value, previousValue) {
-        var c = this.content;
+        var group = this.content;
 
         // setter
-        if (c && arguments.length > 1) {
-            c.set('ordered', value.trim() === "ordered")
+        if (group && arguments.length > 1) {
+            group.set('ordered', value.trim() === "ordered")
         }
 
         // getter
-        if(c && c.get('ordered')) {
+        if(group && group.get('ordered')) {
             return "ordered";
         } else {
             return "unordered"
