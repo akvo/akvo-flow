@@ -808,34 +808,6 @@ FLOW.NavMapsView = FLOW.View.extend({
               FLOW.drawGeoShape($('.geoshape-map')[index], $(this).data('geoshape-object'));
             });
           }
-
-          /*//overlay image coordinates on map
-          var mediaCoordinates = [self.clickedPointCoordinates], mediaMarkersArray = [];
-          var mediaMarkerIcon = new L.Icon({
-            iconUrl: 'images/media-marker.png',
-            iconSize: [11, 11]
-          }), selectedMediaMarkerIcon = new L.Icon({
-            iconUrl: 'images/media-marker-selected.png',
-            iconSize: [11, 11]
-          });
-          for(var m=0; m<mediaResponses.length; m++) {
-            var currentMediaCoordinates = [mediaResponses[m].lat, mediaResponses[m].lng];
-            var currentMediaFileName = mediaResponses[m].filename;
-            var currentMediaMarker = new L.marker(currentMediaCoordinates, {icon: mediaMarkerIcon});
-            currentMediaMarker.on('click', function() {
-              if(self.selectedMediaMarker != null) {
-                self.map.removeLayer(self.selectedMediaMarker);
-                $('#selected-media').remove();
-              }
-              self.selectedMediaMarker = new L.marker(currentMediaCoordinates, {icon: selectedMediaMarkerIcon}).addTo(self.map);
-
-              $('#flowMap').after('<div id="selected-media"><img src="'+FLOW.Env.photo_url_root+currentMediaFileName+'"><label>'+currentMediaFileName+'</label></div>');
-            });
-            mediaMarkersArray.push(currentMediaMarker);
-            mediaCoordinates.push(currentMediaCoordinates);
-          }
-          self.mediaMarkers = L.featureGroup(mediaMarkersArray).addTo(self.map)
-          self.map.fitBounds(mediaCoordinates);*/
         }
       } else {
         $('#pointDetails').html('<p class="noDetails">'+Ember.String.loc('_no_details') +'</p>');
