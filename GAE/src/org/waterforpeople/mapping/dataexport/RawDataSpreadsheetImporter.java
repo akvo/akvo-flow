@@ -291,6 +291,7 @@ public class RawDataSpreadsheetImporter implements DataImporter {
                 Row row = sheet.getRow(startRow + iterations);
                 if (row == null //no row
                         || row.getCell(1) == null //row but no cell (likely no cells at all)
+                        || row.getCell(1).getStringCellValue().trim().isEmpty() //empty cell
                         || ExportImportUtils.parseCellAsString(row.getCell(1)).equals("1") //next q
                         ) {
                     break;
