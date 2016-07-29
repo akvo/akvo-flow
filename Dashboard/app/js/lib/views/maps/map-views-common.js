@@ -12,7 +12,9 @@ FLOW.NavMapsView = FLOW.View.extend({
   mapCenter: null,
   clickedPointCoordinates: [],
   mediaMarkers: null,
-  selectedMediaMarker: null,
+  mediaMarker: {},
+  selectedMediaMarker: {},
+  mediaMarkerSelected: {},
   hierarchyObject: [],
   lastSelectedElement: 0,
   geomodel: null,
@@ -298,7 +300,7 @@ FLOW.NavMapsView = FLOW.View.extend({
 
     $(document.body).on('click', '.project-geoshape', function(){
       if(self.polygons.length > 0){
-        $(this).html(Ember.String.loc('_project_geoshape_onto_main_map'));
+        $(this).html(Ember.String.loc('_project_onto_main_map'));
         for(var i=0; i<self.polygons.length; i++){
           self.map.removeLayer(self.polygons[i]);
         }
@@ -309,6 +311,63 @@ FLOW.NavMapsView = FLOW.View.extend({
       }else{
         $(this).html(Ember.String.loc('_clear_geoshape_from_main_map'));
         self.projectGeoshape($(this).data('geoshape-object'));
+      }
+    });
+
+    $(document.body).on('mouseover', '.media', function(){
+      var mediaObject = $(this).data('coordinates');
+      var mediaMarkerIcon = new L.Icon({
+        iconUrl: 'images/media-marker.png',
+        iconSize: [11, 11]
+      }), selectedMediaMarkerIcon = new L.Icon({
+        iconUrl: 'images/media-marker-selected.png',
+        iconSize: [11, 11]
+      });
+      if(mediaObject !== '') {
+        var filename = mediaObject.filename.split(".")[0];
+        var mediaCoordinates = [mediaObject.lat, mediaObject.lng];
+        if(!(filename in self.mediaMarker)) {
+          self.mediaMarker[filename] = new L.marker(mediaCoordinates, {icon: mediaMarkerIcon}).addTo(self.map);
+        } else {
+          self.selectedMediaMarker[filename] = new L.marker(mediaCoordinates, {icon: selectedMediaMarkerIcon}).addTo(self.map);
+        }
+        //TODO add listener for image marker hover
+      }
+    });
+
+    $(document.body).on('mouseout', '.media', function(){
+      var mediaObject = $(this).data('coordinates');
+      if(mediaObject !== '') {
+        var filename = mediaObject.filename.split(".")[0];
+        if(filename in self.mediaMarker && !(filename in self.mediaMarkerSelected)) {
+          self.map.removeLayer(self.mediaMarker[filename]);
+          delete self.mediaMarker[filename];
+        } else {
+          self.map.removeLayer(self.selectedMediaMarker[filename]);
+          delete self.selectedMediaMarker[filename];
+        }
+      }
+    });
+
+    $(document.body).on('click', '.media-location', function(){
+      var mediaObject = $(this).data('coordinates');
+      var mediaMarkerIcon = new L.Icon({
+        iconUrl: 'images/media-marker.png',
+        iconSize: [11, 11]
+      });
+      if(mediaObject !== '') {
+        var filename = mediaObject.filename.split(".")[0];
+        var mediaCoordinates = [mediaObject.lat, mediaObject.lng];
+        if(!(filename in self.mediaMarkerSelected)) {
+          $(this).html(Ember.String.loc('_hide_photo_on_map'));
+          self.mediaMarker[filename] = new L.marker(mediaCoordinates, {icon: mediaMarkerIcon}).addTo(self.map);
+          self.mediaMarkerSelected[filename] = true;
+        } else {
+          $(this).html(Ember.String.loc('_show_photo_on_map'));
+          self.map.removeLayer(self.mediaMarker[filename]);
+          delete self.mediaMarker[filename];
+          delete self.mediaMarkerSelected[filename];
+        }
       }
     });
   },
@@ -638,7 +697,7 @@ FLOW.NavMapsView = FLOW.View.extend({
                     clickedPointContent += '<h4><div style="float: left">'
                     +self.questions[i].text
                     +'</div>&nbsp;<a style="float: right" class="project-geoshape" data-geoshape-object=\''+questionAnswer+'\'>'
-                    +Ember.String.loc('_project_geoshape_onto_main_map')+'</a></h4>';
+                    +Ember.String.loc('_project_onto_main_map')+'</a></h4>';
                   }
                 } else {
                   clickedPointContent += '<h4>'+self.questions[i].text+'&nbsp;</h4>';
@@ -650,7 +709,7 @@ FLOW.NavMapsView = FLOW.View.extend({
                   switch (self.questions[i].questionType) {
                     case "PHOTO":
                     case "VIDEO":
-                      var mediaString = "", mediaJson, mediaObject = {};
+                      var mediaString = "", mediaJson, mediaFilename = "", mediaObject = {};
                       if (questionAnswer.charAt(0) === '{') {
                         mediaJson = JSON.parse(questionAnswer);
                         mediaString = mediaJson.filename;
@@ -660,6 +719,7 @@ FLOW.NavMapsView = FLOW.View.extend({
                           mediaObject['lat'] = mediaJson['location']['latitude'];
                           mediaObject['lng'] = mediaJson['location']['longitude'];
                           mediaResponses.push(mediaObject);
+                          mediaFilename = mediaObject['filename'].split(".")[0];
                         }
                       } else {
                         mediaString = questionAnswer;
@@ -668,11 +728,17 @@ FLOW.NavMapsView = FLOW.View.extend({
                       var mediaFileURL = FLOW.Env.photo_url_root+mediaString.substring(mediaString.lastIndexOf("/")+1);
                       if(self.questions[i].questionType == "PHOTO") {
                         mediaOutput = '<div class=":imgContainer photoUrl:shown:hidden">'
-                        +'<a href="'+mediaFileURL+'" target="_blank">'
-                        +'<img src="'+mediaFileURL+'" alt=""/></a>'
+                        +'<a class="media" data-coordinates=\''
+                        +((typeof mediaObject.lat !== 'undefined') ? JSON.stringify(mediaObject) : '' )+'\' href="'
+                        +mediaFileURL+'" target="_blank"><img src="'+mediaFileURL+'" alt=""/></a><br>'
+                        +((typeof mediaObject.lat !== 'undefined') ? '<a class="media-location" data-coordinates=\''+JSON.stringify(mediaObject)+'\'>'+Ember.String.loc('_show_photo_on_map')+'</a>' : '')
                         +'</div>';
                       } else if (self.questions[i].questionType == "VIDEO") {
-                        mediaOutput = mediaFileURL+' <a href="'+mediaFileURL+'" target="_blank">'+Ember.String.loc('_open_video')+'</a>';
+                        mediaOutput = '<div><div class="media" data-coordinates=\''
+                        +((typeof mediaObject.lat !== 'undefined') ? JSON.stringify(mediaObject) : '' )+'\'>'+mediaFileURL+'</div><br>'
+                        +'<a href="'+mediaFileURL+'" target="_blank">'+Ember.String.loc('_open_video')+'</a>'
+                        +((typeof mediaObject.lat !== 'undefined') ? '&nbsp;|&nbsp;<a class="media-location" data-coordinates=\''+JSON.stringify(mediaObject)+'\'>'+Ember.String.loc('_show_photo_on_map')+'</a>' : '')
+                        +'</div>';
                       }
                       clickedPointContent += mediaOutput;
                       break;
@@ -743,7 +809,7 @@ FLOW.NavMapsView = FLOW.View.extend({
             });
           }
 
-          //overlay image coordinates on map
+          /*//overlay image coordinates on map
           var mediaCoordinates = [self.clickedPointCoordinates], mediaMarkersArray = [];
           var mediaMarkerIcon = new L.Icon({
             iconUrl: 'images/media-marker.png',
@@ -769,7 +835,7 @@ FLOW.NavMapsView = FLOW.View.extend({
             mediaCoordinates.push(currentMediaCoordinates);
           }
           self.mediaMarkers = L.featureGroup(mediaMarkersArray).addTo(self.map)
-          self.map.fitBounds(mediaCoordinates);
+          self.map.fitBounds(mediaCoordinates);*/
         }
       } else {
         $('#pointDetails').html('<p class="noDetails">'+Ember.String.loc('_no_details') +'</p>');
@@ -912,9 +978,11 @@ FLOW.NavMapsView = FLOW.View.extend({
       $('#pointDetails').html('<p class="noDetails">'+Ember.String.loc('_no_details') +'</p>');
     }
 
-    if(self.selectedMediaMarker != null) {
-      self.map.removeLayer(self.selectedMediaMarker);
-      $('#selected-media').remove();
+    if(!$.isEmptyObject(self.selectedMediaMarker)) {
+      for(mediaMarker in self.selectedMediaMarker) {
+        self.map.removeLayer(self.selectedMediaMarker[mediaMarker]);
+      }
+      //$('#selected-media').remove();
     }
 
     if(self.mediaMarkers != null) {
