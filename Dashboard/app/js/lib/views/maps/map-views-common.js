@@ -11,8 +11,7 @@ FLOW.NavMapsView = FLOW.View.extend({
   mapZoomLevel: 0,
   mapCenter: null,
   clickedPointCoordinates: [],
-  mediaMarkers: null,
-  mediaMarker: {},
+  mediaMarkers: {},
   selectedMediaMarker: {},
   mediaMarkerSelected: {},
   hierarchyObject: [],
@@ -326,8 +325,8 @@ FLOW.NavMapsView = FLOW.View.extend({
       if(mediaObject !== '') {
         var filename = mediaObject.filename.split(".")[0];
         var mediaCoordinates = [mediaObject.lat, mediaObject.lng];
-        if(!(filename in self.mediaMarker)) {
-          self.mediaMarker[filename] = new L.marker(mediaCoordinates, {icon: mediaMarkerIcon}).addTo(self.map);
+        if(!(filename in self.mediaMarkers)) {
+          self.mediaMarkers[filename] = new L.marker(mediaCoordinates, {icon: mediaMarkerIcon}).addTo(self.map);
         } else {
           self.selectedMediaMarker[filename] = new L.marker(mediaCoordinates, {icon: selectedMediaMarkerIcon}).addTo(self.map);
         }
@@ -339,9 +338,9 @@ FLOW.NavMapsView = FLOW.View.extend({
       var mediaObject = $(this).data('coordinates');
       if(mediaObject !== '') {
         var filename = mediaObject.filename.split(".")[0];
-        if(filename in self.mediaMarker && !(filename in self.mediaMarkerSelected)) {
-          self.map.removeLayer(self.mediaMarker[filename]);
-          delete self.mediaMarker[filename];
+        if(filename in self.mediaMarkers && !(filename in self.mediaMarkerSelected)) {
+          self.map.removeLayer(self.mediaMarkers[filename]);
+          delete self.mediaMarkers[filename];
         } else {
           self.map.removeLayer(self.selectedMediaMarker[filename]);
           delete self.selectedMediaMarker[filename];
@@ -360,12 +359,12 @@ FLOW.NavMapsView = FLOW.View.extend({
         var mediaCoordinates = [mediaObject.lat, mediaObject.lng];
         if(!(filename in self.mediaMarkerSelected)) {
           $(this).html(Ember.String.loc('_hide_photo_on_map'));
-          self.mediaMarker[filename] = new L.marker(mediaCoordinates, {icon: mediaMarkerIcon}).addTo(self.map);
+          self.mediaMarkers[filename] = new L.marker(mediaCoordinates, {icon: mediaMarkerIcon}).addTo(self.map);
           self.mediaMarkerSelected[filename] = true;
         } else {
           $(this).html(Ember.String.loc('_show_photo_on_map'));
-          self.map.removeLayer(self.mediaMarker[filename]);
-          delete self.mediaMarker[filename];
+          self.map.removeLayer(self.mediaMarkers[filename]);
+          delete self.mediaMarkers[filename];
           delete self.mediaMarkerSelected[filename];
         }
       }
@@ -950,15 +949,10 @@ FLOW.NavMapsView = FLOW.View.extend({
       $('#pointDetails').html('<p class="noDetails">'+Ember.String.loc('_no_details') +'</p>');
     }
 
-    if(!$.isEmptyObject(self.selectedMediaMarker)) {
-      for(mediaMarker in self.selectedMediaMarker) {
-        self.map.removeLayer(self.selectedMediaMarker[mediaMarker]);
+    if(!$.isEmptyObject(self.mediaMarkers)) {
+      for(mediaMarker in self.mediaMarkers) {
+        self.map.removeLayer(self.mediaMarkers[mediaMarker]);
       }
-      //$('#selected-media').remove();
-    }
-
-    if(self.mediaMarkers != null) {
-      self.map.removeLayer(self.mediaMarkers);
     }
 
     if(self.polygons.length > 0){
