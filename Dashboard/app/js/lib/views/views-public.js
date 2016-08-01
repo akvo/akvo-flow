@@ -173,7 +173,7 @@ Ember.Select.reopen({
 
 
 FLOW.HeaderView = FLOW.View.extend({
-  templateName: 'application/header-common'
+  templateName: 'application/header-common-public'
 });
 
 FLOW.FooterView = FLOW.View.extend({
