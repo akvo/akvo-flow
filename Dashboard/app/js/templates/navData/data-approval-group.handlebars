@@ -7,9 +7,7 @@
                                                                 optionLabelPath="content.label"
                                                                 optionValuePath="content.optionValue"
                                                                 valueBinding="isOrderedApprovalGroup"}}
-            {{t _steps}}:
-            <ul id="approvalSteps">
-            </ul>
+            {{t _steps}}: {{outlet approvalStepsOutlet}}
             <a {{action "cancelEditDataApproval"}}>{{t _cancel}}</a> &nbsp;&nbsp; <a {{action "doSaveDataApproval"}} class="smallBtn">{{t _save}}</a>
         </fieldset>
     </form>

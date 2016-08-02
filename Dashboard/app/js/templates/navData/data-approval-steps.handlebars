@@ -1,0 +1,6 @@
+<ul id="approvalSteps">
+{{#each step in controller}}
+    <li>{{view Ember.TextField valueBinding="step.code" size=15}} &nbsp; {{view Ember.TextField valueBinding="step.title" size=80}}</li>
+{{/each}}
+<a {{action addApprovalStep target="controller"}}>{{t _add_step}}</a>
+</ul>
