@@ -476,6 +476,11 @@ FLOW.ApprovalGroupController = Ember.ObjectController.extend({
      * Save an approval group and associated steps
      */
     save: function () {
+        var validationError = this.validate();
+        if(validationError) {
+            return;
+        }
+
         var group = this.content;
         if(group.get('name') !==  group.get('name').trim()) {
             group.set('name', group.get('name').trim());
@@ -498,7 +503,31 @@ FLOW.ApprovalGroupController = Ember.ObjectController.extend({
                 FLOW.store.createRecord(FLOW.ApprovalStep, step);
             }
         });
+
         FLOW.store.commit();
+    },
+
+    /*
+     * Validate approval group and associated steps
+     */
+    validate: function () {
+        var stepsController = FLOW.router.get('approvalStepsController');
+        var error = stepsController.validate();
+
+        var group = this.content;
+        if (!group.get('name') || !group.get('name').trim()) {
+            error = Ember.String.loc('_blank_approval_group_name');
+        }
+
+        if(error) {
+            FLOW.dialogControl.set('activeAction', 'ignore');
+            FLOW.dialogControl.set('header', Ember.String.loc('_cannot_save'));
+            FLOW.dialogControl.set('message', error);
+            FLOW.dialogControl.set('showCANCEL', false);
+            FLOW.dialogControl.set('showDialog', true);
+        }
+
+        return error;
     },
 });
 
@@ -532,5 +561,28 @@ FLOW.ApprovalStepsController = Ember.ArrayController.extend({
             title: null,
         });
         steps.addObject(newStep);
+    },
+
+    /*
+     * Validate steps for erroneous input
+     */
+    validate: function () {
+        var steps = this.content;
+        var valid = true;
+
+        steps.forEach(function (step) {
+            var hasTitle = step.get('title') && step.get('title').trim();
+            if(!hasTitle) {
+                valid = false;
+            }
+        });
+
+        var error;
+        if (valid) {
+            error = '';
+        } else {
+            error = Ember.String.loc('_blank_approval_step_title');
+        }
+        return error;
     },
 });
