@@ -451,10 +451,15 @@ FLOW.ApprovalGroupController = Ember.ObjectController.extend({
 });
 
 FLOW.ApprovalStepsController = Ember.ArrayController.extend({
-    currentApprovalGroup: null,
 
-    loadApprovalSteps: function (approvalGroup) {
-        this.set('currentApprovalGroup', approvalGroup);
-        this.set('content', FLOW.store.find(FLOW.ApprovalStep, { approvalGroupId: approvalGroup.get('keyId') }));
+    addApprovalStep: function () {
+        var groupId = FLOW.router.get('approvalGroupController').get('content').get('keyId');
+        var steps = this.content;
+        var newStep = FLOW.store.createRecord(FLOW.ApprovalStep, {
+            approvalGroupId: groupId,
+            order: steps.get('length'),
+            title: null,
+        });
+        steps.addObject(newStep);
     },
 });
