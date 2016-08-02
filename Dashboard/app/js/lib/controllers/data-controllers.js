@@ -497,7 +497,7 @@ FLOW.ApprovalStepsController = Ember.ArrayController.extend({
     addApprovalStep: function () {
         var groupId = FLOW.router.get('approvalGroupController').get('content').get('keyId');
         var steps = this.content;
-        var newStep = FLOW.store.createRecord(FLOW.ApprovalStep, {
+        var newStep = Ember.Object.create({
             approvalGroupId: groupId,
             order: steps.get('length'),
             title: null,
