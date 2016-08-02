@@ -471,6 +471,35 @@ FLOW.ApprovalGroupController = Ember.ObjectController.extend({
             this.set('content', FLOW.ApprovalGroup.find(groupId));
         }
     },
+
+    /*
+     * Save an approval group and associated steps
+     */
+    save: function () {
+        var group = this.content;
+        if(group.get('name') !==  group.get('name').trim()) {
+            group.set('name', group.get('name').trim());
+        }
+
+        var steps = FLOW.router.get('approvalStepsController').get('content');
+        steps.forEach(function (step, index) {
+            if(step.get('code') && step.get('code').trim()) {
+                step.set('code', step.get('code').trim());
+            } else {
+                step.set('code', null);
+            }
+            step.set('title', step.get('title').trim());
+
+            if (step.get('order') !== index) {
+                step.set('order', index);
+            }
+
+            if(!step.get('keyId')) {
+                FLOW.store.createRecord(FLOW.ApprovalStep, step);
+            }
+        });
+        FLOW.store.commit();
+    },
 });
 
 FLOW.ApprovalStepsController = Ember.ArrayController.extend({

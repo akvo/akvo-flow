@@ -351,7 +351,7 @@ FLOW.Router = Ember.Router.extend({
           },
 
           doSaveDataApproval: function (router, event) {
-              FLOW.store.commit();
+              router.get('approvalGroupController').save();
               router.transitionTo('navData.dataApproval.listApprovalGroups');
           },
 
