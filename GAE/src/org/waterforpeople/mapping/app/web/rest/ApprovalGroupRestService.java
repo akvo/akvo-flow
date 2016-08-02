@@ -31,6 +31,7 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.waterforpeople.mapping.app.web.dto.ApprovalGroupDTO;
 import org.waterforpeople.mapping.app.web.rest.dto.ApprovalGroupPayload;
+import org.waterforpeople.mapping.app.web.rest.dto.RestStatusDto;
 
 import com.gallatinsystems.common.Constants;
 import com.gallatinsystems.survey.dao.ApprovalGroupDAO;
@@ -51,9 +52,11 @@ public class ApprovalGroupRestService {
      */
     @RequestMapping(method = RequestMethod.POST, value = "")
     @ResponseBody
-    public Map<String, ApprovalGroupDTO> createApprovalGroup(
+    public Map<String, Object> createApprovalGroup(
             @RequestBody ApprovalGroupDTO approvalGroupPayload) {
-        final Map<String, ApprovalGroupDTO> response = new HashMap<String, ApprovalGroupDTO>();
+        final Map<String, Object> response = new HashMap<String, Object>();
+        final RestStatusDto status = new RestStatusDto();
+
         ApprovalGroup group = approvalGroupPayload.getApprovalGroup();
 
         if (group.getName() == null || group.getName().trim().isEmpty()) {
@@ -61,6 +64,7 @@ public class ApprovalGroupRestService {
         }
 
         response.put("approval_group", new ApprovalGroupDTO(approvalGroupDao.save(group)));
+        response.put("meta", status);
         return response;
     }
 
@@ -72,10 +76,12 @@ public class ApprovalGroupRestService {
      */
     @RequestMapping(method = RequestMethod.PUT, value = "/{approvalGroupId}")
     @ResponseBody
-    public Map<String, ApprovalGroupDTO> updateApprovalGroup(
+    public Map<String, Object> updateApprovalGroup(
             @RequestBody ApprovalGroupPayload approvalGroupPayload,
             @PathVariable Long approvalGroupId) {
-        final Map<String, ApprovalGroupDTO> response = new HashMap<String, ApprovalGroupDTO>();
+        final Map<String, Object> response = new HashMap<String, Object>();
+        final RestStatusDto status = new RestStatusDto();
+
         final ApprovalGroup updatedGroup = approvalGroupPayload.getApproval_group()
                 .getApprovalGroup();
 
@@ -89,6 +95,7 @@ public class ApprovalGroupRestService {
             response.put("approval_group",
                     new ApprovalGroupDTO(approvalGroupDao.save(updatedGroup)));
         }
+        response.put("meta", status);
 
         return response;
     }

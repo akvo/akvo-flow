@@ -32,6 +32,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.waterforpeople.mapping.app.web.dto.ApprovalStepDTO;
 import org.waterforpeople.mapping.app.web.rest.dto.ApprovalStepPayload;
+import org.waterforpeople.mapping.app.web.rest.dto.RestStatusDto;
 
 import com.gallatinsystems.common.Constants;
 import com.gallatinsystems.survey.dao.ApprovalStepDAO;
@@ -52,10 +53,11 @@ public class ApprovalStepRestService {
      */
     @RequestMapping(method = RequestMethod.POST, value = "")
     @ResponseBody
-    public Map<String, ApprovalStepDTO> createApprovalStep(
+    public Map<String, Object> createApprovalStep(
             @RequestBody ApprovalStepPayload approvalStepPayload) {
-        final Map<String, ApprovalStepDTO> response = new HashMap<String, ApprovalStepDTO>();
+        final Map<String, Object> response = new HashMap<String, Object>();
         final ApprovalStep step = approvalStepPayload.getApproval_step().getApprovalStep();
+        final RestStatusDto status = new RestStatusDto();
 
         if (step.getApprovalGroupId() == 0L || step.getTitle() == null
                 || step.getTitle().trim().isEmpty()) {
@@ -63,6 +65,7 @@ public class ApprovalStepRestService {
         }
 
         response.put("approval_step", new ApprovalStepDTO(approvalStepDao.save(step)));
+        response.put("meta", status);
         return response;
     }
 
@@ -73,9 +76,10 @@ public class ApprovalStepRestService {
      */
     @RequestMapping(method = RequestMethod.PUT, value = "/{approvalStepId}")
     @ResponseBody
-    public Map<String, ApprovalStepDTO> updateApprovalStep(
+    public Map<String, Object> updateApprovalStep(
             @RequestBody ApprovalStepPayload approvalStepPayload, @PathVariable Long approvalStepId) {
-        final Map<String, ApprovalStepDTO> response = new HashMap<String, ApprovalStepDTO>();
+        final Map<String, Object> response = new HashMap<String, Object>();
+        final RestStatusDto status = new RestStatusDto();
         final ApprovalStep updatedStep = approvalStepPayload.getApproval_step().getApprovalStep();
 
         if (updatedStep.getApprovalGroupId() == 0L || updatedStep.getTitle() == null
@@ -89,6 +93,7 @@ public class ApprovalStepRestService {
             response.put("approval_step",
                     new ApprovalStepDTO(approvalStepDao.save(updatedStep)));
         }
+        response.put("meta", status);
 
         return response;
     }
