@@ -462,6 +462,15 @@ FLOW.ApprovalGroupController = Ember.ObjectController.extend({
      * Controller Functions
      * ---------------------
      */
+
+    /*
+     * Load the approval group by groupId
+     */
+    load: function (groupId) {
+        if (groupId) {
+            this.set('content', FLOW.ApprovalGroup.find(groupId));
+        }
+    },
 });
 
 FLOW.ApprovalStepsController = Ember.ArrayController.extend({
