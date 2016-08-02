@@ -428,6 +428,12 @@ FLOW.DataApprovalController = Ember.Controller.extend({});
 FLOW.ApprovalGroupListController = Ember.ArrayController.extend({});
 
 FLOW.ApprovalGroupController = Ember.ObjectController.extend({
+
+    /* ---------------------
+     * Controller Properties
+     * ---------------------
+     */
+
     /*
      * Transform the `ordered` property on the ApprovalGroup model
      * to a string representation in order to bind successfully to
@@ -448,6 +454,14 @@ FLOW.ApprovalGroupController = Ember.ObjectController.extend({
             return "unordered"
         }
     }.property('this.content'),
+
+
+
+
+    /* ---------------------
+     * Controller Functions
+     * ---------------------
+     */
 });
 
 FLOW.ApprovalStepsController = Ember.ArrayController.extend({
