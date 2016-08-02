@@ -346,13 +346,7 @@ FLOW.Router = Ember.Router.extend({
           doEditApprovalGroup: function (router, event) {
               var groupId = event.context.get('keyId');
               router.get('approvalGroupController').load(groupId);
-
-              var steps = Ember.A();
-              FLOW.ApprovalStep.find({approvalGroupId: groupId}).on('didLoad', function () {
-                  steps.addObjects(this);
-              });
-              router.get('approvalStepsController').set('content',steps);
-
+              router.get('approvalStepsController').loadByGroupId(groupId);
               router.transitionTo('navData.dataApproval.editApprovalGroup');
           },
 

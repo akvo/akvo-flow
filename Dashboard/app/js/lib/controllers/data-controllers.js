@@ -479,6 +479,18 @@ FLOW.ApprovalStepsController = Ember.ArrayController.extend({
      * Controller Functions
      * ---------------------
      */
+
+    /*
+     * Load approval steps for a given approval group
+     */
+    loadByGroupId: function (groupId) {
+        var steps = Ember.A();
+        FLOW.ApprovalStep.find({approvalGroupId: groupId}).on('didLoad', function () {
+            steps.addObjects(this);
+        });
+        this.set('content',steps);
+    },
+
     /*
      * Add an approval step for a given approval group
      */
