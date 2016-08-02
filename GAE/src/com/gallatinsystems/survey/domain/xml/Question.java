@@ -356,7 +356,7 @@ public class Question {
     }
     
     /**
-     * Gets the value of the cascadeResource property.
+     * Gets the value of the caddisflyResourceUuid property.
      *
      * @return possible object is {@link String }
      */
