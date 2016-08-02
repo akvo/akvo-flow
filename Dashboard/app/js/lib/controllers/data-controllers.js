@@ -475,6 +475,13 @@ FLOW.ApprovalGroupController = Ember.ObjectController.extend({
 
 FLOW.ApprovalStepsController = Ember.ArrayController.extend({
 
+    /* ---------------------
+     * Controller Functions
+     * ---------------------
+     */
+    /*
+     * Add an approval step for a given approval group
+     */
     addApprovalStep: function () {
         var groupId = FLOW.router.get('approvalGroupController').get('content').get('keyId');
         var steps = this.content;
