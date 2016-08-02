@@ -14,11 +14,21 @@ The PRIMARY AUTHORS are (and/or have been):
 - Iván Perdomo
 - Loïc Sans
 - Mark Tiele Westra
+- Charles Kimani
+- Iñigo Lopez de Heredia
+- Gabriel Martin
+- Ruarcc McAloon
+- Jana Gombitova
+- Emmanuel Mulo
 
 Translation support by:
 
 - Iván Perdomo
 - Loïc Sans
+- Iñigo Lopez de Heredia
+- Emeline Bereziat
+- Joy Ghosh
+- Ger Pannenkoek
 
 Contributors, here is an inevitably incomplete list of MUCH APPRECIATED
 CONTRIBUTORS whom without, Akvo FLOW would not have been the same:
