@@ -1,10 +1,35 @@
-Akvo FLOW (Field Level Operations Watch) is a system to collect, manage, analyse and display geographically-referenced monitoring and evaluation data.
+Akvo Flow is a system to collect, manage, analyse and display geographically-referenced monitoring and evaluation data.
 
 Read more about [Akvo FLOW](http://www.akvo.org/blog/?p=4836).
 Read more about the [Akvo Platform](http://www.akvo.org/blog/?p=4822).
 
 Akvo FLOW Dashboard release notes
 ----
+#1.9.9 Hazardous Hedgehog
+Date: 18 July 2016
+# New and noteworthy
+* **Output multiple choice, option question responses into separate columns** [#1605] - We now enable the possibility to generate raw data reports with the responses to multiple choice, option questions split into separate columns, i.e., one column for each response.  This is facilitates the analysis of this data by external systems.
+
+* **Include geolocation data from geotagged media in raw data reports** [#1652] - For photos and videos that have been tagged with geolocation data, this data will now be included as extra columns in the raw data reports.  Note that these columns will only be visible in raw data reports that are *exported* for use in external systems, that is, the geolocation data cannot be reimported or edited.
+
+* **Displaying drone imagery in Flow** [#1562] - Besides the already existing Terrain, Street and Satellite layers, Flow maps now introduce an extra layer, the drone imagery layer. This enables partners who have gathered aerial images through drones or similar equipment to render these images on a Flow map.
+
+# Resolved issues
+
+* **Standardizing the date format** [#1637] - correctly format the date and time stamp displayed when browsing data points under the CartoDB maps.  This is part of a larger effort to standardize the date and time display on the entire Flow dashboard (#257)
+
+* **Rendering multiple geoshapes when previewing data points under the (CartoDB) map tab** [#1694] -  correctly render all geoshapes for forms that may contain more than one geoshape question.  Prior to this fix only the first geoshape response was rendered correctly.
+
+* **Re-enable modification of media links using data cleaning** [#1733] - This reintroduces the possibility to import links for photos and videos in new form responses or to update such links in existing form responses.
+
+* **Fixing an un-clickable dropdown menu** [#1703] - resolves an issue on the *Inspect Data tab* where it was not possible to select (click on) forms for certain surveys, that happened to be in folders where the folder hierarchy was very deep.
+
+* **Set up registration form correctly when copying monitored surveys** [#1279] - resolves an issue where the registration form of a copied survey was not configured correctly and resulted in all forms being greyed out on the mobile app with no possibility to gather data against them.
+
+* **Question responses shown out of order (CartoDB maps)** [#1593] - resolves the issue where question responses were displayed out of order, i.e. the same order as the questions, when browsing these responses under CartoDB maps
+
+* **Enable multi-lingual support for the 'Show' and 'Hide'** links under the maps tab [#1695]
+
 #1.9.8 Grappling Garanuug
 Date: 8 June 2016
 # New and noteworthy
