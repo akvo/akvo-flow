@@ -31,6 +31,7 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.waterforpeople.mapping.app.web.dto.ApprovalStepDTO;
+import org.waterforpeople.mapping.app.web.rest.dto.ApprovalStepPayload;
 
 import com.gallatinsystems.common.Constants;
 import com.gallatinsystems.survey.dao.ApprovalStepDAO;
@@ -52,9 +53,9 @@ public class ApprovalStepRestService {
     @RequestMapping(method = RequestMethod.POST, value = "")
     @ResponseBody
     public Map<String, ApprovalStepDTO> createApprovalStep(
-            @RequestBody ApprovalStepDTO approvalStepPayload) {
+            @RequestBody ApprovalStepPayload approvalStepPayload) {
         final Map<String, ApprovalStepDTO> response = new HashMap<String, ApprovalStepDTO>();
-        final ApprovalStep step = approvalStepPayload.getApprovalStep();
+        final ApprovalStep step = approvalStepPayload.getApproval_step().getApprovalStep();
 
         if (step.getApprovalGroupId() == 0L || step.getTitle() == null
                 || step.getTitle().trim().isEmpty()) {
@@ -73,9 +74,9 @@ public class ApprovalStepRestService {
     @RequestMapping(method = RequestMethod.PUT, value = "/{approvalStepId}")
     @ResponseBody
     public Map<String, ApprovalStepDTO> updateApprovalStep(
-            @RequestBody ApprovalStepDTO approvalStepPayload, @PathVariable Long approvalStepId) {
+            @RequestBody ApprovalStepPayload approvalStepPayload, @PathVariable Long approvalStepId) {
         final Map<String, ApprovalStepDTO> response = new HashMap<String, ApprovalStepDTO>();
-        final ApprovalStep updatedStep = approvalStepPayload.getApprovalStep();
+        final ApprovalStep updatedStep = approvalStepPayload.getApproval_step().getApprovalStep();
 
         if (updatedStep.getApprovalGroupId() == 0L || updatedStep.getTitle() == null
                 || updatedStep.getTitle().trim().isEmpty()) {
