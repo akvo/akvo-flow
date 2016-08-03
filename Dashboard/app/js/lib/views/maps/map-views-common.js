@@ -330,7 +330,6 @@ FLOW.NavMapsView = FLOW.View.extend({
         } else {
           self.selectedMediaMarker[filename] = new L.marker(mediaCoordinates, {icon: selectedMediaMarkerIcon}).addTo(self.map);
         }
-        //TODO add listener for image marker hover
       }
     });
 
