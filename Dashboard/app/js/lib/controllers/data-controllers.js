@@ -585,4 +585,23 @@ FLOW.ApprovalStepsController = Ember.ArrayController.extend({
         }
         return error;
     },
+
+    /*
+     * Delete an approval step
+     *
+     * NOTE:  This method *needs* to return false according to ember documentation
+     * in order to prevent propagation of the delete event to the rest of the elements
+     * of the controller.
+     * See: https://github.com/emberjs/ember.js/blob/b8515672a02b43a9b5800f840e9a209aef5d6297/packages/ember-handlebars/lib/helpers/action.js#L109
+     */
+    deleteApprovalStep: function (event) {
+        var step = event.context;
+        var steps = this.content;
+        steps.removeObject(step);
+
+        if(step.get('keyId')) {
+            step.deleteRecord();
+        }
+        return false;
+    },
 });
