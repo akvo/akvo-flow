@@ -464,6 +464,19 @@ FLOW.ApprovalGroupController = Ember.ObjectController.extend({
      */
 
     /*
+     * Create a new approval group
+     */
+    add: function () {
+        this.set('content', Ember.Object.create({
+            name: null,
+            ordered: false,
+        }));
+
+        // add empty list of steps
+        FLOW.router.get('approvalStepsController').set('content', Ember.A());
+    },
+
+    /*
      * Load the approval group by groupId
      */
     load: function (groupId) {
