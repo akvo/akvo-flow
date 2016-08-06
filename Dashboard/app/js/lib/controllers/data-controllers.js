@@ -499,6 +499,10 @@ FLOW.ApprovalGroupController = Ember.ObjectController.extend({
             group.set('name', group.get('name').trim());
         }
 
+        if (!group.get('keyId')) {
+            FLOW.store.createRecord(FLOW.ApprovalGroup, group);
+        }
+
         var steps = FLOW.router.get('approvalStepsController').get('content');
         steps.forEach(function (step, index) {
             if(step.get('code') && step.get('code').trim()) {
