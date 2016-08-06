@@ -350,7 +350,7 @@ FLOW.Router = Ember.Router.extend({
               router.transitionTo('navData.dataApproval.editApprovalGroup');
           },
 
-          doSaveDataApproval: function (router, event) {
+          doSaveApprovalGroup: function (router, event) {
               router.get('approvalGroupController').save();
               router.transitionTo('navData.dataApproval.listApprovalGroups');
           },
