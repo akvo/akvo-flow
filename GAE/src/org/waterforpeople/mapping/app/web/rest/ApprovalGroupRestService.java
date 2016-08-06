@@ -53,11 +53,11 @@ public class ApprovalGroupRestService {
     @RequestMapping(method = RequestMethod.POST, value = "")
     @ResponseBody
     public Map<String, Object> createApprovalGroup(
-            @RequestBody ApprovalGroupDTO approvalGroupPayload) {
+            @RequestBody ApprovalGroupPayload approvalGroupPayload) {
         final Map<String, Object> response = new HashMap<String, Object>();
         final RestStatusDto status = new RestStatusDto();
 
-        ApprovalGroup group = approvalGroupPayload.getApprovalGroup();
+        ApprovalGroup group = approvalGroupPayload.getApproval_group().getApprovalGroup();
 
         if (group.getName() == null || group.getName().trim().isEmpty()) {
             return null;
