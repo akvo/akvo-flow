@@ -529,6 +529,14 @@ FLOW.ApprovalGroupController = Ember.ObjectController.extend({
 
         return error;
     },
+
+    /*
+     * Cancel the editing of an approval group and its related
+     * steps
+     */
+    cancel: function () {
+        FLOW.store.get('defaultTransaction').rollback();
+    },
 });
 
 FLOW.ApprovalStepsController = Ember.ArrayController.extend({

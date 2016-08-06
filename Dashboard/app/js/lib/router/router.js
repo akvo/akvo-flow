@@ -355,6 +355,11 @@ FLOW.Router = Ember.Router.extend({
               router.transitionTo('navData.dataApproval.listApprovalGroups');
           },
 
+          doCancelEditApprovalGroup: function (router, event) {
+              router.get('approvalGroupController').cancel();
+              router.transitionTo('navData.dataApproval.listApprovalGroups');
+          },
+
           // default route for dataApproval tab
           listApprovalGroups: Ember.Route.extend({
               route: '/list',
