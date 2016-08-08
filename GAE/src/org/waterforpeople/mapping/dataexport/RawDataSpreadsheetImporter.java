@@ -180,13 +180,13 @@ public class RawDataSpreadsheetImporter implements DataImporter {
 
         List<InstanceData> result = new ArrayList<>();
 
-        // Find the last empty/null cell in the header row. This is the position of the md5 hashes
+        // Find the first empty/null cell in the header row. This is the position of the md5 hashes
         int md5Column = 0;
-        for (Cell cell : sheet.getRow(0)) {
-            md5Column++;
-            if (cell == null || cell.getStringCellValue().equals("")) {
+        while (true) {
+            if (isEmptyCell(sheet.getRow(0).getCell(md5Column))) {
                 break;
             }
+            md5Column++;
         }
 
         // TODO Consider removing this when old (pre repeat question groups) reports no longer need
@@ -200,7 +200,7 @@ public class RawDataSpreadsheetImporter implements DataImporter {
         while (true) {
             InstanceData instanceData = parseInstance(sheet, row, questionIdToQuestionDto,
                     columnIndexToQuestionId, optionNodes, hasIterationColumn,
-                    hasDeviceIdentifierColumn);
+                    hasDeviceIdentifierColumn, md5Column);
 
             if (instanceData == null) {
                 break;
@@ -244,7 +244,7 @@ public class RawDataSpreadsheetImporter implements DataImporter {
             Map<Long, QuestionDto> questionIdToQuestionDto,
             Map<Integer, Long> columnIndexToQuestionId,
             Map<Long, List<QuestionOptionDto>> optionNodes, boolean hasIterationColumn,
-            boolean hasDeviceIdentifierColumn) {
+            boolean hasDeviceIdentifierColumn, int md5column) {
 
         // File layout
         // 0. SurveyedLocaleIdentifier
@@ -259,12 +259,24 @@ public class RawDataSpreadsheetImporter implements DataImporter {
         // 8 - N. Questions
         // N + 1. Digest
 
+        //First check if we are done with the sheet
         Row baseRow = sheet.getRow(startRow);
         if (baseRow == null //no such row
-                || baseRow.getFirstCellNum() == -1) { //a row without any cells
+                || baseRow.getFirstCellNum() == -1) { //a row without any cells defined
             return null;
         }
-
+        //maybe they are all blank/contain only spaces?
+        boolean blank = true;
+        for (int ix = baseRow.getFirstCellNum(); ix < baseRow.getLastCellNum(); ix++) {
+            if (!isEmptyCell(baseRow.getCell(ix))) {
+                blank = false;
+                break;
+            }
+        }
+        if (blank) {
+            return null;
+        }
+        
         int firstQuestionColumnIndex = Collections.min(columnIndexToQuestionId.keySet());
         String surveyedLocaleIdentifier = ExportImportUtils.parseCellAsString(baseRow.getCell(0));
         String surveyedLocaleDisplayName = ExportImportUtils.parseCellAsString(baseRow
@@ -290,8 +302,7 @@ public class RawDataSpreadsheetImporter implements DataImporter {
             while (true) {
                 Row row = sheet.getRow(startRow + iterations);
                 if (row == null //no row
-                        || row.getCell(1) == null //row but no cell (likely no cells at all)
-                        || row.getCell(1).getStringCellValue().trim().isEmpty() //empty cell
+                        || isEmptyCell(row.getCell(1))
                         || ExportImportUtils.parseCellAsString(row.getCell(1)).equals("1") //next q
                         ) {
                     break;
@@ -762,6 +773,19 @@ public class RawDataSpreadsheetImporter implements DataImporter {
         }
 
         return errorMap;
+    }
+
+    /**
+     * Check if a cell is any kind of empty
+     * 
+     * @param cell
+     * @return
+     */
+    private boolean isEmptyCell(Cell cell) {
+        return cell == null
+            || cell.getCellType() == Cell.CELL_TYPE_BLANK
+            || (cell.getCellType() == Cell.CELL_TYPE_STRING
+                && cell.getStringCellValue().trim() == "");
     }
 
     /**
