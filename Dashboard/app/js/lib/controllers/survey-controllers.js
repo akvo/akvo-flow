@@ -507,7 +507,28 @@ FLOW.projectControl = Ember.ArrayController.create({
       return project.get('parentId') === id;
     });
     return children.get('length') === 0;
-  }
+  },
+
+  /*
+   * Property to dynamically load the data approval controller
+   * content when needed, and otherwise return the boolean
+   * value corresponding to whether the current survey has
+   * data approval enabled or not
+   */
+  requireDataApproval: function (key, value, previousValue) {
+      var approvalGroupListController= FLOW.router.get('approvalGroupListController');
+      if(!approvalGroupListController.content && (value || this.currentProject.get('requireDataApproval'))) {
+          approvalGroupListController.set('content', FLOW.ApprovalGroup.find());
+      }
+
+      // setter
+      if (arguments.length > 1) {
+          this.currentProject.set('requireDataApproval', value);
+      }
+
+      // getter
+      return this.currentProject.get('requireDataApproval');
+  }.property('this.currentProject'),
 });
 
 
