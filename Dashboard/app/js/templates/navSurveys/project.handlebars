@@ -81,6 +81,11 @@
                         optionValuePath="content.keyId"
                         disabledBinding="view.disableFolderSurveyInputField"}}
                     {{/if}}
+
+                    <label for="enableDataApproval" class="labelcheckbox">
+                        {{view Ember.Checkbox checkedBinding="FLOW.projectControl.currentProject.requireDataApproval" id="enableDataApproval" disabledBinding="view.disableFolderSurveyInputField"}} {{t _enable_data_approval}} {{tooltip _enable_data_approval_tooltip}}
+                    </label>
+
                   {{/if}}
                 {{/if}}
               </form>
