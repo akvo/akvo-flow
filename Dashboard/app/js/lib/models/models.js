@@ -101,6 +101,10 @@ FLOW.SurveyGroup = FLOW.BaseModel.extend({
     defaultValue: false
   }),
 
+  requireDataApproval: DS.attr('boolean', {
+      defaultValue: false
+  }),
+
   surveyList: DS.attr('array', {
     defaultValue: null
   })
