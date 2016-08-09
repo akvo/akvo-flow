@@ -200,7 +200,7 @@ public class RawDataSpreadsheetImporter implements DataImporter {
         while (true) {
             InstanceData instanceData = parseInstance(sheet, row, questionIdToQuestionDto,
                     columnIndexToQuestionId, optionNodes, hasIterationColumn,
-                    hasDeviceIdentifierColumn, md5Column);
+                    hasDeviceIdentifierColumn);
 
             if (instanceData == null) {
                 break;
@@ -244,7 +244,7 @@ public class RawDataSpreadsheetImporter implements DataImporter {
             Map<Long, QuestionDto> questionIdToQuestionDto,
             Map<Integer, Long> columnIndexToQuestionId,
             Map<Long, List<QuestionOptionDto>> optionNodes, boolean hasIterationColumn,
-            boolean hasDeviceIdentifierColumn, int md5column) {
+            boolean hasDeviceIdentifierColumn) {
 
         // File layout
         // 0. SurveyedLocaleIdentifier
