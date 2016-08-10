@@ -171,11 +171,6 @@ Ember.Select.reopen({
   attributeBindings: ['size']
 });
 
-
-FLOW.HeaderView = FLOW.View.extend({
-  templateName: 'application/header-common-public'
-});
-
 FLOW.FooterView = FLOW.View.extend({
   templateName: 'application/footer-public'
 });
