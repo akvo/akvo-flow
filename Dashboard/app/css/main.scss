@@ -6297,6 +6297,22 @@ html.navMaps, .public {
     header {
         position: initial;
     }
+    #selected-media {
+      z-index: 999;
+      position: absolute;
+      padding: 5px;
+      bottom: 130px;
+      left: 20%;
+      background-color: white;
+      img {
+        float: left;
+        height: 70px;
+      }
+      label {
+        float: left;
+        margin-left: 10px
+      }
+    }
     .mapFlow.middleSection {
         padding: 0;
     }
@@ -6322,5 +6338,3 @@ html.navMaps, .public {
         height: calc(100vh - (3px + 83px + 53px + 60px + 5px));
     }
 }
-
-

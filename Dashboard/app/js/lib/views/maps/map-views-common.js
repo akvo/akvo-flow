@@ -10,6 +10,10 @@ FLOW.NavMapsView = FLOW.View.extend({
   polygons: [],
   mapZoomLevel: 0,
   mapCenter: null,
+  clickedPointCoordinates: [],
+  mediaMarkers: {},
+  selectedMediaMarker: {},
+  mediaMarkerSelected: {},
   hierarchyObject: [],
   lastSelectedElement: 0,
   geomodel: null,
@@ -183,21 +187,7 @@ FLOW.NavMapsView = FLOW.View.extend({
     this.map = map;
 
     map.on('click', function(e) {
-      if(self.marker != null){
-        self.map.removeLayer(self.marker);
-        self.hideDetailsPane();
-        $('#pointDetails').html('<p class="noDetails">'+Ember.String.loc('_no_details') +'</p>');
-      }
-
-      if(self.polygons.length > 0){
-        for(var i=0; i<self.polygons.length; i++){
-          self.map.removeLayer(self.polygons[i]);
-        }
-        //restore the previous zoom level and map center
-        self.map.setZoom(self.mapZoomLevel);
-        self.map.panTo(self.mapCenter);
-        self.polygons = [];
-      }
+      self.clearMap(); //remove any previously loaded point data
     });
 
     map.on('zoomend', function() {
@@ -208,11 +198,10 @@ FLOW.NavMapsView = FLOW.View.extend({
     self.checkHierarchy(0);
 
     $(document).off('change', '.folder_survey_selector').on('change', '.folder_survey_selector',function(e) {
-
+      self.clearMap(); //remove any previously loaded point data
       $('#form_selector option[value!=""]').remove();
 
-      //remove all 'folder_survey_selector's after current
-      self.cleanHierarchy($(this));
+      self.cleanHierarchy($(this)); //remove all 'folder_survey_selector's after current
 
       //first remove previously created form selector elements
       $(".form_selector").remove();
@@ -281,8 +270,8 @@ FLOW.NavMapsView = FLOW.View.extend({
     });
 
     $(document).off('change', '.form_selector').on('change', '.form_selector',function(e) {
-      //remove all 'folder_survey_selector's after current
-      self.cleanHierarchy($(this));
+      self.clearMap(); //remove any previously loaded point data
+      self.cleanHierarchy($(this)); //remove all 'folder_survey_selector's after current
 
       if ($(this).val() !== "") {
         var formId = $(this).val();
@@ -310,7 +299,7 @@ FLOW.NavMapsView = FLOW.View.extend({
 
     $(document.body).on('click', '.project-geoshape', function(){
       if(self.polygons.length > 0){
-        $(this).html(Ember.String.loc('_project_geoshape_onto_main_map'));
+        $(this).html(Ember.String.loc('_project_onto_main_map'));
         for(var i=0; i<self.polygons.length; i++){
           self.map.removeLayer(self.polygons[i]);
         }
@@ -321,6 +310,62 @@ FLOW.NavMapsView = FLOW.View.extend({
       }else{
         $(this).html(Ember.String.loc('_clear_geoshape_from_main_map'));
         self.projectGeoshape($(this).data('geoshape-object'));
+      }
+    });
+
+    $(document.body).on('mouseover', '.media', function(){
+      var mediaObject = $(this).data('coordinates');
+      var mediaMarkerIcon = new L.Icon({
+        iconUrl: 'images/media-marker.png',
+        iconSize: [11, 11]
+      }), selectedMediaMarkerIcon = new L.Icon({
+        iconUrl: 'images/media-marker-selected.png',
+        iconSize: [11, 11]
+      });
+      if(mediaObject !== '') {
+        var filename = mediaObject.filename.substring(mediaObject.filename.lastIndexOf("/")+1).split(".")[0];
+        var mediaCoordinates = [mediaObject['location']['latitude'], mediaObject['location']['longitude']];
+        if(!(filename in self.mediaMarkers)) {
+          self.mediaMarkers[filename] = new L.marker(mediaCoordinates, {icon: mediaMarkerIcon}).addTo(self.map);
+        } else {
+          self.selectedMediaMarker[filename] = new L.marker(mediaCoordinates, {icon: selectedMediaMarkerIcon}).addTo(self.map);
+        }
+      }
+    });
+
+    $(document.body).on('mouseout', '.media', function(){
+      var mediaObject = $(this).data('coordinates');
+      if(mediaObject !== '') {
+        var filename = mediaObject.filename.substring(mediaObject.filename.lastIndexOf("/")+1).split(".")[0];
+        if(filename in self.mediaMarkers && !(filename in self.mediaMarkerSelected)) {
+          self.map.removeLayer(self.mediaMarkers[filename]);
+          delete self.mediaMarkers[filename];
+        } else {
+          self.map.removeLayer(self.selectedMediaMarker[filename]);
+          delete self.selectedMediaMarker[filename];
+        }
+      }
+    });
+
+    $(document.body).on('click', '.media-location', function(){
+      var mediaObject = $(this).data('coordinates');
+      var mediaMarkerIcon = new L.Icon({
+        iconUrl: 'images/media-marker.png',
+        iconSize: [11, 11]
+      });
+      if(mediaObject !== '') {
+        var filename = mediaObject.filename.substring(mediaObject.filename.lastIndexOf("/")+1).split(".")[0];
+        var mediaCoordinates = [mediaObject['location']['latitude'], mediaObject['location']['longitude']];
+        if(!(filename in self.mediaMarkerSelected)) {
+          $(this).html(Ember.String.loc('_hide_photo_on_map'));
+          self.mediaMarkers[filename] = new L.marker(mediaCoordinates, {icon: mediaMarkerIcon}).addTo(self.map);
+          self.mediaMarkerSelected[filename] = true;
+        } else {
+          $(this).html(Ember.String.loc('_show_photo_on_map'));
+          self.map.removeLayer(self.mediaMarkers[filename]);
+          delete self.mediaMarkers[filename];
+          delete self.mediaMarkerSelected[filename];
+        }
       }
     });
   },
@@ -545,6 +590,7 @@ FLOW.NavMapsView = FLOW.View.extend({
         if(self.marker != null){
           self.map.removeLayer(self.marker);
         }
+        self.clickedPointCoordinates = [data.lat, data.lon];
         self.placeMarker([data.lat, data.lon]);
 
         self.showDetailsPane();
@@ -610,7 +656,7 @@ FLOW.NavMapsView = FLOW.View.extend({
 
     $.get(url, function(pointData, status){
       if (pointData['answers'] != null) {
-        var geoshapeObject, geoshapeQuestionsCount = 0;
+        var geoshapeObject, geoshapeQuestionsCount = 0, mediaResponses = [];
 
         var dataCollectionDate = pointData['answers']['created_at'];
         var date = new Date(dataCollectionDate);
@@ -649,7 +695,7 @@ FLOW.NavMapsView = FLOW.View.extend({
                     clickedPointContent += '<h4><div style="float: left">'
                     +self.questions[i].text
                     +'</div>&nbsp;<a style="float: right" class="project-geoshape" data-geoshape-object=\''+questionAnswer+'\'>'
-                    +Ember.String.loc('_project_geoshape_onto_main_map')+'</a></h4>';
+                    +Ember.String.loc('_project_onto_main_map')+'</a></h4>';
                   }
                 } else {
                   clickedPointContent += '<h4>'+self.questions[i].text+'&nbsp;</h4>';
@@ -660,21 +706,31 @@ FLOW.NavMapsView = FLOW.View.extend({
                 if(questionAnswer !== "" && questionAnswer !== null && questionAnswer !== "null"){
                   switch (self.questions[i].questionType) {
                     case "PHOTO":
-                      var imageString = "", imageJson;
+                    case "VIDEO":
+                      var mediaString = "", mediaJson, mediaFilename = "", mediaObject = {};
                       if (questionAnswer.charAt(0) === '{') {
-                        imageJson = JSON.parse(questionAnswer);
-                        imageString = imageJson.filename
+                        mediaJson = JSON.parse(questionAnswer);
+                        mediaString = mediaJson.filename;
                       } else {
-                        imageString = questionAnswer;
+                        mediaString = questionAnswer;
                       }
 
-                      var image = '<div class=":imgContainer photoUrl:shown:hidden">';
-                      var imageFilename = FLOW.Env.photo_url_root+imageString.substring(imageString.lastIndexOf("/")+1);
-                      image += '<a href="'+imageFilename+'" target="_blank">'
-                      +'<img src="'+imageFilename+'" alt=""/></a>';
-
-                      image += '</div>';
-                      clickedPointContent += image;
+                      var mediaFileURL = FLOW.Env.photo_url_root+mediaString.substring(mediaString.lastIndexOf("/")+1);
+                      if(self.questions[i].questionType == "PHOTO") {
+                        mediaOutput = '<div class=":imgContainer photoUrl:shown:hidden">'
+                        +'<a class="media" data-coordinates=\''
+                        +((mediaJson.location) ? questionAnswer : '' )+'\' href="'
+                        +mediaFileURL+'" target="_blank"><img src="'+mediaFileURL+'" alt=""/></a><br>'
+                        +((mediaJson.location) ? '<a class="media-location" data-coordinates=\''+questionAnswer+'\'>'+Ember.String.loc('_show_photo_on_map')+'</a>' : '')
+                        +'</div>';
+                      } else if (self.questions[i].questionType == "VIDEO") {
+                        mediaOutput = '<div><div class="media" data-coordinates=\''
+                        +((mediaJson.location) ? questionAnswer : '' )+'\'>'+mediaFileURL+'</div><br>'
+                        +'<a href="'+mediaFileURL+'" target="_blank">'+Ember.String.loc('_open_video')+'</a>'
+                        +((mediaJson.location) ? '&nbsp;|&nbsp;<a class="media-location" data-coordinates=\''+questionAnswer+'\'>'+Ember.String.loc('_show_photo_on_map')+'</a>' : '')
+                        +'</div>';
+                      }
+                      clickedPointContent += mediaOutput;
                       break;
                     case "GEOSHAPE":
                       geoshapeObject = FLOW.parseGeoshape(questionAnswer);
@@ -711,20 +767,6 @@ FLOW.NavMapsView = FLOW.View.extend({
                       clickedPointContent += srcAttr + signatureJson.image +'"/></div>';
                       clickedPointContent += '<div class="signedBySection">'+Ember.String.loc('_signed_by') +': '+signatureJson.name+'</div>';
                       break;
-                    case "VIDEO":
-                      var videoString = "", videoJson;
-                      if (questionAnswer.charAt(0) === '{') {
-                        videoJson = JSON.parse(questionAnswer);
-                        videoString = videoJson.filename
-                      } else {
-                        videoString = questionAnswer;
-                      }
-
-                      var videoFileUrl = FLOW.Env.photo_url_root+videoString.substring(videoString.lastIndexOf("/")+1);
-                      var videoContent = videoFileUrl+' <a href="'+videoFileUrl+'" target="_blank">'+Ember.String.loc('_open_video')+'</a>';
-
-                      clickedPointContent += videoContent;
-                      break;
                     case "CASCADE":
                     case "OPTION":
                       var cascadeString = "", cascadeJson;
@@ -741,14 +783,14 @@ FLOW.NavMapsView = FLOW.View.extend({
                     default:
                       clickedPointContent += questionAnswer
                   }
+                  clickedPointContent += "&nbsp;</div><hr>";
                 }
-                clickedPointContent += "&nbsp;</div><hr>";
               }
             }
           }
           clickedPointContent += '</div>';
-
-          $("#pointDetails").append(clickedPointContent);
+          $('#pointDetails').append(clickedPointContent);
+          $('hr').show();
 
           //if there's geoshape, draw it
           if(geoshapeQuestionsCount > 0){
@@ -887,6 +929,30 @@ FLOW.NavMapsView = FLOW.View.extend({
     if(this.layerExistsCheck){
       this.map.removeLayer(this.cartodbLayer);
       this.layerExistsCheck = false;
+    }
+  },
+
+  clearMap: function() {
+    var self = this;
+    if(self.marker != null){
+      self.map.removeLayer(self.marker);
+      self.hideDetailsPane();
+      $('#pointDetails').html('<p class="noDetails">'+Ember.String.loc('_no_details') +'</p>');
+    }
+
+    if(!$.isEmptyObject(self.mediaMarkers)) {
+      for(mediaMarker in self.mediaMarkers) {
+        self.map.removeLayer(self.mediaMarkers[mediaMarker]);
+      }
+    }
+
+    if(self.polygons.length > 0){
+      for(var i=0; i<self.polygons.length; i++){
+        self.map.removeLayer(self.polygons[i])
+      }
+      //restore the previous zoom level and map center
+      self.map.setView(self.mapCenter, self.mapZoomLevel);
+      self.polygons = [];
     }
   },
 
