@@ -1,4 +1,4 @@
-<project basedir=".">
+<project default="compile">
 	<property name="lib" value="lib" />
 	<property name="build" value="bin" />
 	<property name="gae" value="../../GAE" />
