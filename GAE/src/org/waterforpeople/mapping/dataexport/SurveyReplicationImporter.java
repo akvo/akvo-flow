@@ -41,6 +41,8 @@ import com.gallatinsystems.survey.domain.SurveyGroup;
 
 public class SurveyReplicationImporter {
 
+    //TODO: remap ids to make merging two instances safe?
+    // surveyId == null copies all surveys, all forms
     public void executeImport(String sourceBase, Long surveyId, String apiKey) {
         SurveyGroupDAO sgDao = new SurveyGroupDAO();
         SurveyDAO sDao = new SurveyDAO();

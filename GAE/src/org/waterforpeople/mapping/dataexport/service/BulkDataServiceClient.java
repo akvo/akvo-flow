@@ -62,6 +62,7 @@ import org.waterforpeople.mapping.app.web.dto.SurveyRestRequest;
 
 import com.gallatinsystems.common.util.MD5Util;
 import com.gallatinsystems.framework.rest.RestRequest;
+import com.gallatinsystems.survey.domain.SurveyGroup.ProjectType;
 
 /**
  * client code for calling the apis for data processing on the server
@@ -690,6 +691,17 @@ public class BulkDataServiceClient {
                         if (json.has("description")) {
                             dto.setDescription(json.getString("description"));
                         }
+                        if (json.has("projectType")) {
+                            dto.setProjectType(ProjectType.valueOf(json.getString("projectType")));
+                        }
+                        if (json.has("ancestorIds")) {
+                            JSONArray idArr = json.getJSONArray("ancestorIds");
+                            List<Long> ancestorIds = new ArrayList<Long>();
+                            for (int ix = 0; ix < idArr.length(); ix++) {
+                                ancestorIds.add(idArr.getLong(ix));
+                            }
+                            dto.setAncestorIds(ancestorIds);
+                        }
                         dtoList.add(dto);
                     } catch (Exception e) {
                         log.error("Error in json parsing: " + e.getMessage(), e);
@@ -755,6 +767,14 @@ public class BulkDataServiceClient {
                         }
                         if (!json.isNull("version")) {
                             dto.setVersion(json.getString("version"));
+                        }
+                        if (json.has("ancestorIds")) {
+                            JSONArray idArr = json.getJSONArray("ancestorIds");
+                            List<Long> ancestorIds = new ArrayList<Long>();
+                            for (int ix = 0; ix < idArr.length(); ix++) {
+                                ancestorIds.add(idArr.getLong(ix));
+                            }
+                            dto.setAncestorIds(ancestorIds);
                         }
                         dtoList.add(dto);
                     } catch (Exception e) {
@@ -822,7 +842,7 @@ public class BulkDataServiceClient {
     }
 
     /**
-     * parses question responses into QuesitonDto objects
+     * parses question responses into QuestionDto objects
      *
      * @param response
      * @return
