@@ -33,6 +33,7 @@ FLOW.QuestionView = FLOW.View.extend({
   allowPolygon: true,
   questionValidationFailure: false,
   questionTooltipValidationFailure: false,
+  caddisflyResourceUuid: null,
 
   showMetaConfig: function () {
     return FLOW.Env.showMonitoringFeature;
@@ -205,6 +206,8 @@ FLOW.QuestionView = FLOW.View.extend({
     	FLOW.selectedControl.set('selectedCascadeResource', cascadeResource);
     }
 
+    // reset selected caddisfly resource
+    FLOW.selectedControl.set('selectedCaddisflyResource', null);
     // if the caddisflyResourceUuid is not null, get the resource
     if (!Ember.empty(FLOW.selectedControl.selectedQuestion.get('caddisflyResourceUuid'))) {
       FLOW.caddisflyResourceControl.get('content').forEach(function (item) {
