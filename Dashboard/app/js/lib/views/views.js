@@ -87,6 +87,46 @@ Ember.Handlebars.registerHelper('tooltip', function (i18nKey) {
 });
 
 
+function renderCaddisflyAnswer(json){
+  name = ""
+  imageUrl = ""
+  result = Ember.A();
+  if (!Ember.empty(json)){
+    jsonParsed = JSON.parse(json);
+
+    // get out test name
+    if (!Ember.empty(jsonParsed.name)){
+      testName =  jsonParsed.name.trim();
+    }
+
+    // get out results
+    if (jsonParsed.result && !Ember.empty(jsonParsed.result)){
+        jsonParsed.result.forEach(function(item){
+        newResult = {
+          "name":item.name,
+          "value":item.value,
+          "unit":item.unit,
+        };
+        result.push(newResult);
+      });
+    }
+    // get out image url
+    if (!Ember.empty(jsonParsed.image)){
+      imageUrl = FLOW.Env.photo_url_root + jsonParsed.image.trim();
+    }
+
+    // contruct html
+    html = "<div><strong>" + name + "</strong></div>"
+    result.forEach(function(item){
+      html +=  "<br><div>" + item.name + " : " + item.value + " " + item.unit + "</div>";})
+    html += "<br>"
+    html += "<div class=\"signatureImage\"><img src=\"" + imageUrl +"\"}} /></div>"
+    return html;
+  } else {
+    return "Wrong JSON format";
+  }
+}
+
 Ember.Handlebars.registerHelper('placemarkDetail', function () {
   var answer, markup, question, cascadeJson, optionJson, cascadeString = "",
   questionType, imageSrcAttr, signatureJson, photoJson;
@@ -123,6 +163,8 @@ Ember.Handlebars.registerHelper('placemarkDetail', function () {
     answer = answer && answer + '<div>' + Ember.String.loc('_signed_by') + ':' + signatureJson.name + '</div>' || '';
   } else if (questionType === 'DATE') {
     answer = renderTimeStamp(answer);
+  } else if (questionType === 'CADDISFLY'){
+    answer = renderCaddisflyAnswer(answer)
   }
 
   markup = '<div class="defListWrap"><dt>' +
