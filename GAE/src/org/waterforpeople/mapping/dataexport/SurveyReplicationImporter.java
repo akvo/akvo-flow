@@ -41,7 +41,7 @@ import com.gallatinsystems.survey.domain.SurveyGroup;
 
 public class SurveyReplicationImporter {
 
-    //TODO: remap ids to make merging two instances safe?
+    //TODO: remap ids to make merging two instances safe
     // surveyId == null copies all surveys, all forms
     public void executeImport(String sourceBase, Long surveyId, String apiKey) {
         SurveyGroupDAO sgDao = new SurveyGroupDAO();
@@ -50,23 +50,35 @@ public class SurveyReplicationImporter {
         QuestionDao qDao = new QuestionDao();
         boolean hasFoundSurvey = false;
         try {
-            for (SurveyGroup sg : fetchSurveyGroups(sourceBase, apiKey)) {
+            List<SurveyGroup> allGroups = fetchSurveyGroups(sourceBase, apiKey); 
+            for (SurveyGroup sg : allGroups) {
                 System.out.println("surveygroup: " + sg.getName() + ":"
                         + sg.getCode());
-                if (surveyId == null) {
+                if (surveyId == null) {//All surveys, so copy all groups, too
                     sgDao.save(sg);
                 }
                 for (Survey s : fetchSurveys(sg.getKey().getId(), sourceBase, apiKey)) {
                     System.out.println("  survey:" + s.getCode());
                     if (surveyId != null && surveyId.equals(s.getKey().getId())) {
-                        sgDao.save(sg);
+                        //walk the ancestor id array to save all the ancestral groups
+                        for (Long ancestor : s.listAncestorIds()) {
+                            if (ancestor != 0 && ancestor != sg.getKey().getId()) {//Not root, not parent 
+                                //Unsaved intermediate ancestor
+                                for (SurveyGroup potentialAncestor : allGroups) {
+                                    if (potentialAncestor.getKey().getId() == ancestor) {
+                                        sgDao.save(potentialAncestor);
+                                    }
+                                }
+                            }
+                        }
+                        sgDao.save(sg);//Immediate ancestor
                         sDao.save(s);
                         hasFoundSurvey = true;
                     } else if (surveyId != null) {
                         // if survey ID is not null but isn't matching, skip to
                         // next survey
                         continue;
-                    } else {
+                    } else {//All surveys
                         sDao.save(s);
                     }
 
