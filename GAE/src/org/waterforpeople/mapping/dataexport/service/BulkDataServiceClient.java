@@ -62,6 +62,7 @@ import org.waterforpeople.mapping.app.web.dto.SurveyRestRequest;
 
 import com.gallatinsystems.common.util.MD5Util;
 import com.gallatinsystems.framework.rest.RestRequest;
+import com.gallatinsystems.survey.domain.SurveyGroup.PrivacyLevel;
 import com.gallatinsystems.survey.domain.SurveyGroup.ProjectType;
 
 /**
@@ -694,6 +695,12 @@ public class BulkDataServiceClient {
                         if (json.has("projectType")) {
                             dto.setProjectType(ProjectType.valueOf(json.getString("projectType")));
                         }
+                        if (json.has("parentId")) {
+                            dto.setParentId(json.getLong("parentId"));
+                        }
+                        if (json.has("path")) {
+                            dto.setPath(json.getString("path"));
+                        }
                         if (json.has("ancestorIds")) {
                             JSONArray idArr = json.getJSONArray("ancestorIds");
                             List<Long> ancestorIds = new ArrayList<Long>();
@@ -701,6 +708,12 @@ public class BulkDataServiceClient {
                                 ancestorIds.add(idArr.getLong(ix));
                             }
                             dto.setAncestorIds(ancestorIds);
+                        }
+                        if (json.has("defaultLanguageCode")) {
+                            dto.setDefaultLanguageCode(json.getString("defaultLanguageCode"));
+                        }
+                        if (json.has("privacyLevel")) {
+                            dto.setPrivacyLevel(PrivacyLevel.valueOf(json.getString("privacyLevel")));
                         }
                         dtoList.add(dto);
                     } catch (Exception e) {
