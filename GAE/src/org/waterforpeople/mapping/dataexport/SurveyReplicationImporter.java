@@ -107,7 +107,9 @@ public class SurveyReplicationImporter {
                         }
 
                         // The question groups
-                        for (QuestionGroup qg : fetchQuestionGroups(oldSurveyId, sourceBase, apiKey)) {
+                        HashMap<Long,Long> qMap = new HashMap<Long,Long>(); //used to fix up dependency references
+                        List<QuestionGroup> allQgs = fetchQuestionGroups(oldSurveyId, sourceBase, apiKey);
+                        for (QuestionGroup qg : allQgs) {
                             System.out.println("     qg:" + qg.getCode());
                             long oldQgId = qg.getKey().getId();
                             qg.setKey(null); //want a new key
@@ -115,10 +117,8 @@ public class SurveyReplicationImporter {
                             qg.setPath("");
                             qgDao.save(qg);
                             long newQgId = qg.getKey().getId();
-                            // Now the questions. Have to make two passes.
-                            List<Question> allQs = fetchQuestions(oldQgId, sourceBase, apiKey);
-                            HashMap<Long,Long> qMap = new HashMap<Long,Long>(allQs.size()); //used to fix up dependency references
-                            for (Question q : allQs) {
+                            // Now the questions
+                            for (Question q : fetchQuestions(oldQgId, sourceBase, apiKey)) {
                                 System.out.println("       q" + q.getText());
                                 q.setKey(null); //want a new key
                                 q.setPath("");
@@ -127,13 +127,15 @@ public class SurveyReplicationImporter {
                                 long newQId = q.getKey().getId();
                                 qMap.put(oldQId, newQId);
                             }
-                            // Now we know all question ids, so we can fix up dependencies
-                            for (Question q : allQs) {
+                        }
+                        // Now we know all question ids, so we can fix up dependencies
+                        for (QuestionGroup qg : s.getQuestionGroupMap().values()) {
+                            for (Question q : qg.getQuestionMap().values()) {
                                 if (q.getDependentFlag() && q.getDependentQuestionId() != null) {
                                     Long updatedId = qMap.get(q.getDependentQuestionId());
                                     if (updatedId != null) {
                                         q.setDependentQuestionId(updatedId);
-                                        qDao.save(q, newQgId);
+                                        qDao.save(q, qg.getKey().getId());
                                     }
                                 }
                             }
