@@ -37,7 +37,9 @@ import com.gallatinsystems.survey.dao.SurveyDAO;
 import com.gallatinsystems.survey.dao.SurveyGroupDAO;
 import com.gallatinsystems.survey.domain.Question;
 import com.gallatinsystems.survey.domain.QuestionGroup;
+import com.gallatinsystems.survey.domain.QuestionOption;
 import com.gallatinsystems.survey.domain.Survey;
+import com.gallatinsystems.survey.domain.Survey.Status;
 import com.gallatinsystems.survey.domain.SurveyGroup;
 
 public class SurveyReplicationImporter {
@@ -72,8 +74,8 @@ public class SurveyReplicationImporter {
                 if (thisIsTheGroup) {
                     long oldId = sg.getKey().getId();
                     sg.setKey(null); //want new key
-                    sg.setParentId(0L);//go in root folder
-                    sg.setPath("/"+sg.getName());//ditto
+                    sg.setParentId(0L); //go in root folder
+                    sg.setPath(""); //not used anymore
                     List<Long> nai = new ArrayList<Long>(1);
                     nai.add(0L);
                     sg.setAncestorIds(nai);
@@ -92,7 +94,8 @@ public class SurveyReplicationImporter {
                         nai2.add(newId);
                         s.setAncestorIds(nai2);
                         s.setSurveyGroupId(newId);
-                        s.setPath(sg.getPath() + "/" + s.getName());
+                        s.setPath("");
+                        s.setStatus(Status.NOT_PUBLISHED); //not downloadable yet
                         sDao.save(s);
                         long newSurveyId = s.getKey().getId();
 
@@ -100,20 +103,21 @@ public class SurveyReplicationImporter {
                         for (QuestionGroup qg : fetchQuestionGroups(oldSurveyId, sourceBase, apiKey)) {
                             System.out.println("     qg:" + qg.getCode());
                             long oldQgId = qg.getKey().getId();
-                            qg.setKey(null);//want a new key
+                            qg.setKey(null); //want a new key
                             qg.setSurveyId(newSurveyId);
-                            qg.setPath(s.getPath());// like this??
+                            qg.setPath("");
                             qgDao.save(qg);
                             long newQgId = qg.getKey().getId();
-                            // And, finally, the questions
+                            // Now the questions
                             for (Question q : fetchQuestions(oldQgId, sourceBase, apiKey)) {
                                 System.out.println("       q" + q.getText());
-                                q.setPath(s.getPath() + "/" + qg.getName());// like this??
-                                qDao.save(q, newQgId);
+                                q.setKey(null); //want a new key
+                                q.setPath("");
+                                qDao.save(q, newQgId); //options and other details are saved w the new question id
                             }
                         }
                     }
-                    break; //we can stop looking for the group 
+                    break; //we can stop looking for the survey group 
                 }
             }
         } catch (Exception e) {
