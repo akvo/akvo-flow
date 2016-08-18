@@ -1,5 +1,5 @@
 /*
- *  Copyright (C) 2010-2012 Stichting Akvo (Akvo Foundation)
+ *  Copyright (C) 2010-2016 Stichting Akvo (Akvo Foundation)
  *
  *  This file is part of Akvo FLOW.
  *
@@ -18,6 +18,7 @@ package org.waterforpeople.mapping.dataexport;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 
 import org.waterforpeople.mapping.app.gwt.client.survey.QuestionDto;
@@ -41,13 +42,101 @@ import com.gallatinsystems.survey.domain.SurveyGroup;
 
 public class SurveyReplicationImporter {
 
-    //TODO: remap ids to make merging two instances safe
-    // surveyId == null copies all surveys, all forms
-    public void executeImport(String sourceBase, Long surveyId, String apiKey) {
+    /**
+     * copies one surveyGroup "Survey"
+     * remaps all ids to make merging two instances safe
+     * 
+     * @param sourceBase
+     * @param groupId
+     * @param apiKey
+     */
+    public void importOneGroup(String sourceBase, long surveyId, String apiKey) {
         SurveyGroupDAO sgDao = new SurveyGroupDAO();
         SurveyDAO sDao = new SurveyDAO();
         QuestionGroupDao qgDao = new QuestionGroupDao();
         QuestionDao qDao = new QuestionDao();
+
+        try {
+            //First, find which group the survey is in
+            List<SurveyGroup> allGroups = fetchSurveyGroups(sourceBase, apiKey); 
+            for (SurveyGroup sg : allGroups) {
+                System.out.println("surveygroup: " + sg.getName() + ":" + sg.getCode());
+                boolean thisIsTheGroup = false;
+                List<Survey> allSurveys = fetchSurveys(sg.getKey().getId(), sourceBase, apiKey); 
+                for (Survey s : allSurveys) {
+                    if ( s.getKey().getId() == surveyId) {
+                        thisIstheGroup = true;  //Found it!
+                        break;
+                    }
+                }                
+                if (thisIsTheGroup) {
+                    long oldId = sg.getKey().getId();
+                    sg.setKey(null); //want new key
+                    sg.setParentId(0L);//go in root folder
+                    sg.setPath("/"+sg.getName());//ditto
+                    List<Long> nai = new ArrayList<Long>(1);
+                    nai.add(0L);
+                    sg.setAncestorIds(nai);
+                    sgDao.save(sg);
+                    long newId = sg.getKey().getId();
+
+                    //Now copy everything inside it
+                    //First, surveys (may be more than one for a monitored survey)
+                    for (Survey s : allSurveys) {
+                        System.out.println("  survey:" + s.getCode());
+
+                        long oldSurveyId = s.getKey().getId();
+                        s.setKey(null);//want a new key
+                        List<Long> nai2 = new ArrayList<Long>(2);
+                        nai2.add(0L);
+                        nai2.add(newId);
+                        s.setAncestorIds(nai2);
+                        s.setSurveyGroupId(newId);
+                        s.setPath(sg.getPath() + "/" + s.getName());
+                        sDao.save(s);
+                        long newSurveyId = s.getKey().getId();
+
+                        // The question groups
+                        for (QuestionGroup qg : fetchQuestionGroups(oldSurveyId, sourceBase, apiKey)) {
+                            System.out.println("     qg:" + qg.getCode());
+                            long oldQgId = qg.getKey().getId();
+                            qg.setKey(null);//want a new key
+                            qg.setSurveyId(newSurveyId);
+                            qg.setPath(s.getPath());// like this??
+                            qgDao.save(qg);
+                            long newQgId = qg.getKey().getId();
+                            // And, finally, the questions
+                            for (Question q : fetchQuestions(oldQgId, sourceBase, apiKey)) {
+                                System.out.println("       q" + q.getText());
+                                q.setPath(s.getPath() + "/" + qg.getName());// like this??
+                                qDao.save(q, newQgId);
+                            }
+                        }
+                    }
+                    break; //we can stop looking for the group 
+                }
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        
+    }
+    
+    
+    
+    // surveyId == null copies all surveys, all forms
+    public void executeImport(String sourceBase, Long surveyId, String apiKey) {
+        if (surveyId != null) {
+            importOneGroup(sourceBase, surveyId, apiKey);
+            return;
+        }
+            
+        SurveyGroupDAO sgDao = new SurveyGroupDAO();
+        SurveyDAO sDao = new SurveyDAO();
+//        HashMap<Long,Long> NewSurveyGroupIds = new HashMap<Long,Long>();
+        QuestionGroupDao qgDao = new QuestionGroupDao();
+        QuestionDao qDao = new QuestionDao();
+//        HashMap<Long,Long> NewSurveyIds = new HashMap<Long,Long>();
         boolean hasFoundSurvey = false;
         try {
             List<SurveyGroup> allGroups = fetchSurveyGroups(sourceBase, apiKey); 
