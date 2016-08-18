@@ -130,7 +130,8 @@ public class SurveyReplicationImporter {
                             }
                         }
                         // Now we know all question ids, so we can fix up dependencies
-                        for (QuestionGroup qg : s.getQuestionGroupMap().values()) {
+                        Survey s2 = sDao.loadFullSurvey(newSurveyId);
+                        for (QuestionGroup qg : s2.getQuestionGroupMap().values()) {
                             System.out.println("     qg fixup:" + qg.getCode());
                             for (Question q : qg.getQuestionMap().values()) {
                                 System.out.println("       q fixup:" + q.getText());
