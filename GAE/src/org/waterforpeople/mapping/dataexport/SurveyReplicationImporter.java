@@ -115,12 +115,27 @@ public class SurveyReplicationImporter {
                             qg.setPath("");
                             qgDao.save(qg);
                             long newQgId = qg.getKey().getId();
-                            // Now the questions
-                            for (Question q : fetchQuestions(oldQgId, sourceBase, apiKey)) {
+                            // Now the questions. Have to make two passes.
+                            List<Question> allQs = fetchQuestions(oldQgId, sourceBase, apiKey);
+                            HashMap<Long,Long> qMap = new HashMap<Long,Long>(allQs.size()); //used to fix up dependency references
+                            for (Question q : allQs) {
                                 System.out.println("       q" + q.getText());
                                 q.setKey(null); //want a new key
                                 q.setPath("");
+                                long oldQId = q.getKey().getId();
                                 qDao.save(q, newQgId); //options and other details are saved w the new question id
+                                long newQId = q.getKey().getId();
+                                qMap.put(oldQId, newQId);
+                            }
+                            // Now we know all question ids, so we can fix up dependencies
+                            for (Question q : allQs) {
+                                if (q.getDependentFlag() && q.getDependentQuestionId() != null) {
+                                    Long updatedId = qMap.get(q.getDependentQuestionId());
+                                    if (updatedId != null) {
+                                        q.setDependentQuestionId(updatedId);
+                                        qDao.save(q, newQgId);
+                                    }
+                                }
                             }
                         }
                     }
