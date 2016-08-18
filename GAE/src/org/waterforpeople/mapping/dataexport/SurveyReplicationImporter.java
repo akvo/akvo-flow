@@ -65,7 +65,7 @@ public class SurveyReplicationImporter {
                 List<Survey> allSurveys = fetchSurveys(sg.getKey().getId(), sourceBase, apiKey); 
                 for (Survey s : allSurveys) {
                     if ( s.getKey().getId() == surveyId) {
-                        thisIstheGroup = true;  //Found it!
+                        thisIsTheGroup = true;  //Found it!
                         break;
                     }
                 }                
