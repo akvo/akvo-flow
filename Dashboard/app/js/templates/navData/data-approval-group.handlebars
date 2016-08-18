@@ -1,14 +1,17 @@
 <section class="fullWidth" id="dataApproval">
-    <header></header>
-    <form>
-        <fieldset>
-            <label>{{t _name}}: &nbsp;{{view Ember.TextField valueBinding="name" size=30}}</label>
-            <label>{{t _approval_type}}: {{view Ember.Select contentBinding="view.approvalTypeOptions"
-                                                                optionLabelPath="content.label"
-                                                                optionValuePath="content.optionValue"
-                                                                valueBinding="isOrderedApprovalGroup"}}
-            {{t _steps}}: {{outlet approvalStepsOutlet}}
-            <a {{action "doCancelEditApprovalGroup"}}>{{t _cancel}}</a> &nbsp;&nbsp; <a {{action "doSaveApprovalGroup"}} class="smallBtn">{{t _save}}</a>
-        </fieldset>
-    </form>
+    <div class="addWorkflow">
+        <h4>Add a new approval flow:</h4>
+        <form>
+                <label>{{t _name}}: &nbsp;{{view Ember.TextField valueBinding="name" size=30}}</label>
+                <label>{{t _approval_type}}: {{view Ember.Select contentBinding="view.approvalTypeOptions"
+                                                                    optionLabelPath="content.label"
+                                                                    optionValuePath="content.optionValue"
+                                                                    valueBinding="isOrderedApprovalGroup"}}
+                </label>
+                <label>{{t _steps}}: {{outlet approvalStepsOutlet}}</label>
+                <div class="confirmWorkflow">
+                     <a {{action "doCancelEditApprovalGroup"}}>{{t _cancel}}</a> &nbsp;&nbsp; <a {{action "doSaveApprovalGroup"}} class="smallBtn">{{t _save}}</a>
+                </div>
+        </form>
+    </div>
 </section>
