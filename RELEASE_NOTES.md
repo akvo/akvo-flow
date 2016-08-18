@@ -5,17 +5,33 @@ Read more about the [Akvo Platform](http://www.akvo.org/blog/?p=4822).
 
 Akvo FLOW Dashboard release notes
 ----
+#1.9.10 Intriguing Iguana
+Date: 18 August 2016
+
+# New and noteworthy
+* **Handle geotagged media on maps** [#1653] - Photos and videos having geolocation information associated with them during data collection, are now shown on (CartoDB) maps, when previewing the gathered data.
+
+* **Add Vietnamese language to dashboard** [#1728]
+
+# Resolved issues
+* **Empty repeat-question-group row error** [#1684] - A fix for a bug where importing of raw data reports, that contain an empty row, would result in the entire import failing.
+
+* **Devices without phone numbers are matched with wrong assignments** [#1741] - In a number of cases, some devices have been spontaneously downloading surveys that were not explicitly assigned to them.  This is as a result of the internal phone number not being set correctly.  This fix resolves this issue.
+
+* **Remove language dropdown from 'public' page** [#1657] - The public page on the dashboard had a language dropdown that was not functioning because the langauges are now associated with the users and not with the browser in which the dashboard is being viewed.  We have therefore eliminated language selection from the publicly visible part of the dashboard.
+
+
 #1.9.9 Hazardous Hedgehog
+
 Date: 18 July 2016
 # New and noteworthy
 * **Output multiple choice, option question responses into separate columns** [#1605] - We now enable the possibility to generate raw data reports with the responses to multiple choice, option questions split into separate columns, i.e., one column for each response.  This is facilitates the analysis of this data by external systems.
 
-* **Include geolocation data from geotagged media in raw data reports** [#1652] - For photos and videos that have been tagged with geolocation data, this data will now be included as extra columns in the raw data reports.  Note that these columns will only be visible in raw data reports that are *exported* for use in external systems, that is, the data cannot be geolocation data cannot be reimported or edited.
+* **Include geolocation data from geotagged media in raw data reports** [#1652] - For photos and videos that have been tagged with geolocation data, this data will now be included as extra columns in the raw data reports.  Note that these columns will only be visible in raw data reports that are *exported* for use in external systems, that is, the geolocation data cannot be reimported or edited.
 
 * **Displaying drone imagery in Flow** [#1562] - Besides the already existing Terrain, Street and Satellite layers, Flow maps now introduce an extra layer, the drone imagery layer. This enables partners who have gathered aerial images through drones or similar equipment to render these images on a Flow map.
 
 # Resolved issues
-
 * **Standardizing the date format** [#1637] - correctly format the date and time stamp displayed when browsing data points under the CartoDB maps.  This is part of a larger effort to standardize the date and time display on the entire Flow dashboard (#257)
 
 * **Rendering multiple geoshapes when previewing data points under the (CartoDB) map tab** [#1694] -  correctly render all geoshapes for forms that may contain more than one geoshape question.  Prior to this fix only the first geoshape response was rendered correctly.
