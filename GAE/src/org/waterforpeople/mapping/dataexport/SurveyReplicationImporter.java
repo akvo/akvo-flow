@@ -134,6 +134,7 @@ public class SurveyReplicationImporter {
                                 if (q.getDependentFlag() && q.getDependentQuestionId() != null) {
                                     Long updatedId = qMap.get(q.getDependentQuestionId());
                                     if (updatedId != null) {
+                                        System.out.println("        dependency fixup for " + q.getText());
                                         q.setDependentQuestionId(updatedId);
                                         qDao.save(q, qg.getKey().getId());
                                     }
