@@ -81,7 +81,8 @@ public class SurveyReplicationImporter {
                     sg.setAncestorIds(nai);
                     sgDao.save(sg);
                     long newId = sg.getKey().getId();
-
+                    //if set, sg.newLocaleSurveyId is now wrong
+                    
                     //Now copy everything inside it
                     //First, surveys (may be more than one for a monitored survey)
                     for (Survey s : allSurveys) {
@@ -96,8 +97,14 @@ public class SurveyReplicationImporter {
                         s.setSurveyGroupId(newId);
                         s.setPath("");
                         s.setStatus(Status.NOT_PUBLISHED); //not downloadable yet
+                        s.setVersion(1.0);
                         sDao.save(s);
                         long newSurveyId = s.getKey().getId();
+                        //Fix up newLocaleSurveyId
+                        if (sg.getNewLocaleSurveyId() !=null && sg.getNewLocaleSurveyId() == oldSurveyId) {
+                            sg.setNewLocaleSurveyId(newSurveyId);
+                            sgDao.save(sg);
+                        }
 
                         // The question groups
                         for (QuestionGroup qg : fetchQuestionGroups(oldSurveyId, sourceBase, apiKey)) {
