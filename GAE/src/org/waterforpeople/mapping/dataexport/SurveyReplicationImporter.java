@@ -66,13 +66,14 @@ public class SurveyReplicationImporter {
                 System.out.println("surveygroup: " + sg.getName() + ":" + sg.getCode());
                 boolean thisIsTheGroup = false;
                 List<Survey> allSurveys = fetchSurveys(sg.getKey().getId(), sourceBase, apiKey); 
-                for (Survey s : allSurveys) {
-                    if ( s.getKey().getId() == surveyId) {
+                for (Survey s0 : allSurveys) {
+                    if ( s0.getKey().getId() == surveyId) {
                         thisIsTheGroup = true;  //Found it!
                         break;
                     }
                 }                
                 if (thisIsTheGroup) {
+                    System.out.println(" copying group with " + allSurveys.size() + " surveys");
                     long oldId = sg.getKey().getId();
                     sg.setKey(null); //want new key
                     sg.setParentId(0L); //go in root folder
