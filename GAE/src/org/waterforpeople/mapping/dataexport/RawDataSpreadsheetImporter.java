@@ -156,7 +156,8 @@ public class RawDataSpreadsheetImporter implements DataImporter {
         } catch (Exception e) {
             log.error("Failed to import raw data report", e);
         } finally {
-            threadPool.shutdown();
+            if (threadPool != null)
+                threadPool.shutdown();
             cleanup();
         }
 
@@ -179,13 +180,13 @@ public class RawDataSpreadsheetImporter implements DataImporter {
 
         List<InstanceData> result = new ArrayList<>();
 
-        // Find the last empty/null cell in the header row. This is the position of the md5 hashes
+        // Find the first empty/null cell in the header row. This is the position of the md5 hashes
         int md5Column = 0;
-        for (Cell cell : sheet.getRow(0)) {
-            md5Column++;
-            if (cell == null || cell.getStringCellValue().equals("")) {
+        while (true) {
+            if (isEmptyCell(sheet.getRow(0).getCell(md5Column))) {
                 break;
             }
+            md5Column++;
         }
 
         // TODO Consider removing this when old (pre repeat question groups) reports no longer need
@@ -258,11 +259,24 @@ public class RawDataSpreadsheetImporter implements DataImporter {
         // 8 - N. Questions
         // N + 1. Digest
 
+        //First check if we are done with the sheet
         Row baseRow = sheet.getRow(startRow);
-        if (baseRow == null) {
+        if (baseRow == null //no such row
+                || baseRow.getFirstCellNum() == -1) { //a row without any cells defined
             return null;
         }
-
+        //maybe they are all blank/contain only spaces?
+        boolean blank = true;
+        for (int ix = baseRow.getFirstCellNum(); ix < baseRow.getLastCellNum(); ix++) {
+            if (!isEmptyCell(baseRow.getCell(ix))) {
+                blank = false;
+                break;
+            }
+        }
+        if (blank) {
+            return null;
+        }
+        
         int firstQuestionColumnIndex = Collections.min(columnIndexToQuestionId.keySet());
         String surveyedLocaleIdentifier = ExportImportUtils.parseCellAsString(baseRow.getCell(0));
         String surveyedLocaleDisplayName = ExportImportUtils.parseCellAsString(baseRow
@@ -287,8 +301,10 @@ public class RawDataSpreadsheetImporter implements DataImporter {
         if (hasIterationColumn) {
             while (true) {
                 Row row = sheet.getRow(startRow + iterations);
-                if (row == null
-                        || ExportImportUtils.parseCellAsString(row.getCell(1)).equals("1")) {
+                if (row == null //no row
+                        || isEmptyCell(row.getCell(1))
+                        || ExportImportUtils.parseCellAsString(row.getCell(1)).equals("1") //next q
+                        ) {
                     break;
                 }
                 iterations++;
@@ -755,6 +771,19 @@ public class RawDataSpreadsheetImporter implements DataImporter {
         }
 
         return errorMap;
+    }
+
+    /**
+     * Check if a cell is any kind of empty
+     * 
+     * @param cell
+     * @return
+     */
+    private boolean isEmptyCell(Cell cell) {
+        return cell == null
+            || cell.getCellType() == Cell.CELL_TYPE_BLANK
+            || (cell.getCellType() == Cell.CELL_TYPE_STRING
+                && cell.getStringCellValue().trim() == "");
     }
 
     /**
