@@ -120,7 +120,7 @@ public class SurveyReplicationImporter {
                             long newQgId = qg.getKey().getId();
                             // Now the questions
                             for (Question q : fetchQuestions(oldQgId, sourceBase, apiKey)) {
-                                System.out.println("       q" + q.getText());
+                                System.out.println("       q:" + q.getText());
                                 q.setKey(null); //want a new key
                                 q.setPath("");
                                 long oldQId = q.getKey().getId();
@@ -131,7 +131,9 @@ public class SurveyReplicationImporter {
                         }
                         // Now we know all question ids, so we can fix up dependencies
                         for (QuestionGroup qg : s.getQuestionGroupMap().values()) {
+                            System.out.println("     qg fixup:" + qg.getCode());
                             for (Question q : qg.getQuestionMap().values()) {
+                                System.out.println("       q fixup:" + q.getText());
                                 if (q.getDependentFlag() && q.getDependentQuestionId() != null) {
                                     Long updatedId = qMap.get(q.getDependentQuestionId());
                                     if (updatedId != null) {
