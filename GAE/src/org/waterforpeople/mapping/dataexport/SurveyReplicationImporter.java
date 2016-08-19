@@ -58,7 +58,7 @@ public class SurveyReplicationImporter {
         SurveyDAO sDao = new SurveyDAO();
         QuestionGroupDao qgDao = new QuestionGroupDao();
         QuestionDao qDao = new QuestionDao();
-        System.out.println("Importing one survey with id remapping from " + sourcebase);
+        System.out.println("Importing one survey with id remapping from " + sourceBase);
 
         try {
             //First, find which group the survey is in
