@@ -41,6 +41,7 @@ import com.gallatinsystems.survey.domain.QuestionOption;
 import com.gallatinsystems.survey.domain.Survey;
 import com.gallatinsystems.survey.domain.Survey.Status;
 import com.gallatinsystems.survey.domain.SurveyGroup;
+import com.gallatinsystems.survey.domain.SurveyGroup.ProjectType;
 
 public class SurveyReplicationImporter {
 
@@ -57,13 +58,16 @@ public class SurveyReplicationImporter {
         SurveyDAO sDao = new SurveyDAO();
         QuestionGroupDao qgDao = new QuestionGroupDao();
         QuestionDao qDao = new QuestionDao();
-        System.out.println("Importing one survey with id remapping");
+        System.out.println("Importing one survey with id remapping from " + sourcebase);
 
         try {
             //First, find which group the survey is in
             List<SurveyGroup> allGroups = fetchSurveyGroups(sourceBase, apiKey); 
             for (SurveyGroup sg : allGroups) {
                 System.out.println("surveygroup: " + sg.getName() + ":" + sg.getCode());
+                if (sg.getProjectType() != ProjectType.PROJECT) {
+                    continue; //skip looking in folders
+                }
                 boolean thisIsTheGroup = false;
                 List<Survey> allSurveys = fetchSurveys(sg.getKey().getId(), sourceBase, apiKey); 
                 for (Survey s0 : allSurveys) {
@@ -131,8 +135,8 @@ public class SurveyReplicationImporter {
                             }
                         }
                         // Now we know all question ids, so we can fix up dependencies
-                        //Survey s2 = sDao.loadFullSurvey(newSurveyId);
-                        for (QuestionGroup qg : s.getQuestionGroupMap().values()) {
+                        Survey s2 = sDao.loadFullSurvey(newSurveyId);
+                        for (QuestionGroup qg : s2.getQuestionGroupMap().values()) {
                             System.out.println("     qg fixup:" + qg.getCode());
                             for (Question q : qg.getQuestionMap().values()) {
                                 System.out.println("       q fixup:" + q.getText());
