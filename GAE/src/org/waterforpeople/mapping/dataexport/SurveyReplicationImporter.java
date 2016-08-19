@@ -134,27 +134,18 @@ public class SurveyReplicationImporter {
                                 qMap.put(oldQId, newQId);
                             }
                         }
-                        // Now we know all question ids, so we can fix up dependencies
-                        Survey s2 = sDao.loadFullSurvey(newSurveyId);
-                        for (QuestionGroup qg : s2.getQuestionGroupMap().values()) {
-                            if (qg == null) {
-                                System.out.println("     qg fixup is null");
-                                return;
-                            }
-                            if (qg.getQuestionMap() == null) {
-                                System.out.println("     q fixup map is null");
-                                return;
-                            }
-                            System.out.println("     qg fixup:" + qg.getCode());
-                            for (Question q : qg.getQuestionMap().values()) {
-                                System.out.println("       q fixup:" + q.getText());
-                                if (q.getDependentFlag() && q.getDependentQuestionId() != null) {
-                                    Long updatedId = qMap.get(q.getDependentQuestionId());
-                                    if (updatedId != null) {
-                                        System.out.println("        dependency fixup for " + q.getText());
-                                        q.setDependentQuestionId(updatedId);
-                                        qDao.save(q, qg.getKey().getId());
-                                    }
+                        // Now we know all question ids, so we can fix up their dependencies
+                        System.out.println("     q dep fixup");
+                        for (long qid : qMap.values()) {
+                            Question q = qDao.getByKey(qid, true); //need all details
+                            if (q == null) {System.out.println("     q not found:" + qid);continue;}
+                            System.out.println("       q fixup:" + q.getText());
+                            if (q.getDependentFlag() && q.getDependentQuestionId() != null) {
+                                Long updatedId = qMap.get(q.getDependentQuestionId());
+                                if (updatedId != null) {
+                                    System.out.println("        dependency fixed up");
+                                    q.setDependentQuestionId(updatedId);
+                                    qDao.save(q, q.getQuestionGroupId());
                                 }
                             }
                         }
