@@ -652,6 +652,9 @@ public class BulkDataServiceClient {
                         if (json.has("surveyId")) {
                             dto.setSurveyId(json.getLong("surveyId"));
                         }
+                        if (json.has("repeatable")) {
+                            dto.setRepeatable(json.getBoolean("repeatable"));
+                        }
 
                         dtoList.add(dto);
                     } catch (Exception e) {
@@ -1006,6 +1009,18 @@ public class BulkDataServiceClient {
                                     && json.getString("questionTypeString") != null) {
                                 dto.setType(QuestionDto.QuestionType.valueOf(json
                                         .getString("questionTypeString")));
+                            }
+                            if (json.has("allowPoints")
+                                    && !"null".equalsIgnoreCase(json.getString("allowPoints"))) {
+                                dto.setAllowPoints(json.getBoolean("allowPoints"));
+                            }
+                            if (json.has("allowLine")
+                                    && !"null".equalsIgnoreCase(json.getString("allowLine"))) {
+                                dto.setAllowPoints(json.getBoolean("allowLine"));
+                            }
+                            if (json.has("allowPolygon")
+                                    && !"null".equalsIgnoreCase(json.getString("allowPolygon"))) {
+                                dto.setAllowPoints(json.getBoolean("allowPolygon"));
                             }
 
                             if (json.has("optionContainerDto")
