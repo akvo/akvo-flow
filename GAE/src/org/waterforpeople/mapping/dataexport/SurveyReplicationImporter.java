@@ -74,13 +74,13 @@ public class SurveyReplicationImporter {
                 }                
                 if (thisIsTheGroup) {
                     System.out.println(" copying group with " + allSurveys.size() + " surveys");
-                    long oldId = sg.getKey().getId();
-                    sg.setKey(null); //want new key
                     sg.setParentId(0L); //go in root folder
                     sg.setPath(""); //not used anymore
                     List<Long> nai = new ArrayList<Long>(1);
                     nai.add(0L);
                     sg.setAncestorIds(nai);
+                    long oldId = sg.getKey().getId();
+                    sg.setKey(null); //want new key
                     sgDao.save(sg);
                     long newId = sg.getKey().getId();
                     //if set, sg.newLocaleSurveyId is now wrong
@@ -122,17 +122,17 @@ public class SurveyReplicationImporter {
                             // Now the questions
                             for (Question q : fetchQuestions(oldQgId, sourceBase, apiKey)) {
                                 System.out.println("       q:" + q.getText());
-                                q.setKey(null); //want a new key
                                 q.setPath("");
                                 long oldQId = q.getKey().getId();
+                                q.setKey(null); //want a new key
                                 qDao.save(q, newQgId); //options and other details are saved w the new question id
                                 long newQId = q.getKey().getId();
                                 qMap.put(oldQId, newQId);
                             }
                         }
                         // Now we know all question ids, so we can fix up dependencies
-                        Survey s2 = sDao.loadFullSurvey(newSurveyId);
-                        for (QuestionGroup qg : s2.getQuestionGroupMap().values()) {
+                        //Survey s2 = sDao.loadFullSurvey(newSurveyId);
+                        for (QuestionGroup qg : s.getQuestionGroupMap().values()) {
                             System.out.println("     qg fixup:" + qg.getCode());
                             for (Question q : qg.getQuestionMap().values()) {
                                 System.out.println("       q fixup:" + q.getText());
