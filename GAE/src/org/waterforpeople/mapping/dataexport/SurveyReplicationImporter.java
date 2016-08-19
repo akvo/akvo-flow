@@ -135,11 +135,11 @@ public class SurveyReplicationImporter {
                             }
                         }
                         // Now we know all question ids, so we can fix up their dependencies
-                        System.out.println("     q dep fixup");
+                        System.out.println("     q dep fixup pass");
                         for (long qid : qMap.values()) {
-                            Question q = qDao.getByKey(qid, true); //need all details
+                            Question q = qDao.getByKey(qid); //need no details
                             if (q == null) {System.out.println("     q not found:" + qid);continue;}
-                            System.out.println("       q fixup:" + q.getText());
+                            System.out.println("       q:" + q.getText());
                             if (q.getDependentFlag() && q.getDependentQuestionId() != null) {
                                 Long updatedId = qMap.get(q.getDependentQuestionId());
                                 if (updatedId != null) {
