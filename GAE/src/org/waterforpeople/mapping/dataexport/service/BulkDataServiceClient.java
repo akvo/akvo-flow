@@ -927,7 +927,7 @@ public class BulkDataServiceClient {
                                     && !"null".equalsIgnoreCase(json.getString("dependentFlag"))) {
                                 dto.setDependentFlag(json.getBoolean("dependentFlag"));
                             }
-                            if (json.has("dependentQuestionAnswer")) {
+                            if (!json.isNull("dependentQuestionAnswer")) { //can be null
                                 dto.setDependentQuestionAnswer(json
                                         .optString("dependentQuestionAnswer"));
                             }
@@ -1027,26 +1027,21 @@ public class BulkDataServiceClient {
                                     && !JSONObject.NULL.equals(json
                                             .get("optionContainerDto"))) {
                                 OptionContainerDto container = new OptionContainerDto();
-                                JSONObject contJson = json
-                                        .getJSONObject("optionContainerDto");
+                                JSONObject contJson = json.getJSONObject("optionContainerDto");
                                 if (contJson.has("optionsList")
-                                        && !JSONObject.NULL.equals(contJson
-                                                .get("optionsList"))) {
-                                    JSONArray optArray = contJson
-                                            .getJSONArray("optionsList");
+                                        && !JSONObject.NULL.equals(contJson.get("optionsList"))) {
+                                    JSONArray optArray = contJson.getJSONArray("optionsList");
                                     if (optArray != null) {
                                         for (int j = 0; j < optArray.length(); j++) {
-                                            JSONObject optJson = optArray
-                                                    .getJSONObject(j);
+                                            JSONObject optJson = optArray.getJSONObject(j);
                                             QuestionOptionDto opt = new QuestionOptionDto();
-                                            opt.setKeyId(optJson
-                                                    .getLong("keyId"));
-                                            opt.setText(optJson
-                                                    .getString("text"));
-                                            opt.setCode(optJson
-                                                    .getString("code"));
-                                            opt.setOrder(optJson
-                                                    .getInt("order"));
+                                            opt.setKeyId(optJson.getLong("keyId"));
+                                            opt.setText(optJson.getString("text"));
+                                            if (!optJson.isNull("code")) {
+                                                //getString on null gives String "null"
+                                                opt.setCode(optJson.getString("code"));
+                                            }
+                                            opt.setOrder(optJson.getInt("order"));
                                             if (optJson.has("translationMap")
                                                     && !JSONObject.NULL
                                                             .equals(optJson
@@ -1066,15 +1061,11 @@ public class BulkDataServiceClient {
                             // dependentQuestionAnswer i.e. checks whether question is
                             // dependent on another
                             if (json.has("questionDependency")
-                                    && !JSONObject.NULL.equals(json
-                                            .get("questionDependency"))) {
+                                    && !JSONObject.NULL.equals(json.get("questionDependency"))) {
                                 QuestionDependencyDto dep = new QuestionDependencyDto();
-                                JSONObject depJson = json
-                                        .getJSONObject("questionDependency");
-                                dep.setQuestionId(depJson
-                                        .getLong("questionId"));
-                                dep.setAnswerValue(depJson
-                                        .getString("answerValue"));
+                                JSONObject depJson = json.getJSONObject("questionDependency");
+                                dep.setQuestionId(depJson.getLong("questionId"));
+                                dep.setAnswerValue(depJson.getString("answerValue"));
                                 dto.setQuestionDependency(dep);
                             }
 
