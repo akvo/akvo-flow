@@ -1016,11 +1016,11 @@ public class BulkDataServiceClient {
                             }
                             if (json.has("allowLine")
                                     && !"null".equalsIgnoreCase(json.getString("allowLine"))) {
-                                dto.setAllowPoints(json.getBoolean("allowLine"));
+                                dto.setAllowLine(json.getBoolean("allowLine"));
                             }
                             if (json.has("allowPolygon")
                                     && !"null".equalsIgnoreCase(json.getString("allowPolygon"))) {
-                                dto.setAllowPoints(json.getBoolean("allowPolygon"));
+                                dto.setAllowPolygon(json.getBoolean("allowPolygon"));
                             }
 
                             if (json.has("optionContainerDto")
