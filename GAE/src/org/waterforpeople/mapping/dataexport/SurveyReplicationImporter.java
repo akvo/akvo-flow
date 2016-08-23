@@ -140,10 +140,10 @@ public class SurveyReplicationImporter {
                         for (long qid : qMap.values()) {
                             Question q = qDao.getByKey(qid); //need no details
                             if (q == null) {System.out.println("     q not found:" + qid);continue;}
-                            //System.out.println("       q:" + q.getText());
                             if (q.getDependentFlag() && q.getDependentQuestionId() != null) {
                                 Long updatedId = qMap.get(q.getDependentQuestionId());
                                 if (updatedId != null) {
+                                    System.out.println("       q:" + q.getText());
                                     System.out.println("        dep fixup :" + q.getDependentQuestionId() + " -> " + updatedId);
                                     q.setDependentQuestionId(updatedId);
                                     qDao.save(q, q.getQuestionGroupId());
@@ -154,6 +154,7 @@ public class SurveyReplicationImporter {
                     break; //we can stop looking for the survey group 
                 }
             }
+            System.out.println("Survey import complete");
         } catch (Exception e) {
             e.printStackTrace();
         }
