@@ -710,7 +710,7 @@ FLOW.NavMapsView = FLOW.View.extend({
 
                   clickedPointContent += '<div style="float: left; width: 100%">';
 
-                  if(questionAnswer !== "" && questionAnswer !== null && questionAnswer !== "null"){
+                  if(questionAnswer){
                     switch (self.questionGroups[qg]['questions'][i].questionType) {
                       case "PHOTO":
                       case "VIDEO":
@@ -822,7 +822,7 @@ FLOW.NavMapsView = FLOW.View.extend({
     questionGroupsAjaxObject['url'] = '/rest/question_groups?surveyId='+formId;
     questionGroupsAjaxObject['data'] = '';
 
-    FLOW.ajaxCall(function(questionGroupsResponse, qgObj){
+    FLOW.ajaxCall(function(questionGroupsResponse){
       if(questionGroupsResponse.question_groups){
         //for every question group pull a list of associated questions
         for(var g=0; g<questionGroupsResponse.question_groups.length; g++){
