@@ -58,13 +58,16 @@ public class SurveyReplicationImporter {
         SurveyDAO sDao = new SurveyDAO();
         QuestionGroupDao qgDao = new QuestionGroupDao();
         QuestionDao qDao = new QuestionDao();
-        System.out.println("Importing one survey with id remapping from " + sourceBase);
+        System.out.println("Importing survey " + surveyId + " with id remapping from " + sourceBase);
 
+        int count_sg = 0, count_s = 0, count_qg = 0, count_q = 0;
         try {
             //First, find which group the survey is in
             List<SurveyGroup> allGroups = fetchSurveyGroups(sourceBase, apiKey); 
+            System.out.println(" scanning " + allGroups.size() + " survey groups");
             for (SurveyGroup sg : allGroups) {
-                System.out.println("surveygroup: " + sg.getName() + ":" + sg.getCode());
+                System.out.println(" surveygroup: " + sg.getName() + ":" + sg.getCode());
+                count_sg++;
                 if (sg.getProjectType() != ProjectType.PROJECT) {
                     continue; //skip looking in folders
                 }
@@ -133,7 +136,9 @@ public class SurveyReplicationImporter {
                                 qDao.save(q, newQgId); //options and other details are saved w the new question id
                                 long newQId = q.getKey().getId();
                                 qMap.put(oldQId, newQId);
+                                count_q++;
                             }
+                            count_qg++;
                         }
                         // Now we know all question ids, so we can fix up their dependencies
                         System.out.println("     q depependency fixup pass");
@@ -154,7 +159,7 @@ public class SurveyReplicationImporter {
                     break; //we can stop looking for the survey group 
                 }
             }
-            System.out.println("Survey import complete");
+            System.out.println("Survey import complete with " + count_sg + " groups scanned, " + count_s + " surveys, "+ count_qg + " question groups, "+ count_q + " questions copied. ");
         } catch (Exception e) {
             e.printStackTrace();
         }
