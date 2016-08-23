@@ -115,6 +115,7 @@ public class SurveyReplicationImporter {
                             sg.setNewLocaleSurveyId(newSurveyId);
                             sgDao.save(sg);
                         }
+                        count_s++;
 
                         // The question groups
                         HashMap<Long,Long> qMap = new HashMap<Long,Long>(); //used to fix up dependency references
