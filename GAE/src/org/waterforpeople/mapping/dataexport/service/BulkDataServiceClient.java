@@ -718,6 +718,12 @@ public class BulkDataServiceClient {
                         if (json.has("privacyLevel")) {
                             dto.setPrivacyLevel(PrivacyLevel.valueOf(json.getString("privacyLevel")));
                         }
+                        if (json.has("monitoringGroup")) {
+                            dto.setMonitoringGroup(json.getBoolean("monitoringGroup"));
+                        }
+                        if (json.has("newLocaleSurveyId")) {
+                            dto.setNewLocaleSurveyId(json.getLong("newLocaleSurveyId"));
+                        }
                         dtoList.add(dto);
                     } catch (Exception e) {
                         log.error("Error in json parsing: " + e.getMessage(), e);
