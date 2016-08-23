@@ -108,6 +108,7 @@ public class SurveyReplicationImporter {
                         long newSurveyId = s.getKey().getId();
                         //Fix up newLocaleSurveyId
                         if (sg.getNewLocaleSurveyId() !=null && sg.getNewLocaleSurveyId() == oldSurveyId) {
+                            System.out.println("   registration form id fixup :" + oldSurveyId + " -> " + newSurveyId);
                             sg.setNewLocaleSurveyId(newSurveyId);
                             sgDao.save(sg);
                         }
@@ -135,15 +136,15 @@ public class SurveyReplicationImporter {
                             }
                         }
                         // Now we know all question ids, so we can fix up their dependencies
-                        System.out.println("     q dep fixup pass");
+                        System.out.println("     q depependency fixup pass");
                         for (long qid : qMap.values()) {
                             Question q = qDao.getByKey(qid); //need no details
                             if (q == null) {System.out.println("     q not found:" + qid);continue;}
-                            System.out.println("       q:" + q.getText());
+                            //System.out.println("       q:" + q.getText());
                             if (q.getDependentFlag() && q.getDependentQuestionId() != null) {
                                 Long updatedId = qMap.get(q.getDependentQuestionId());
                                 if (updatedId != null) {
-                                    System.out.println("        dependency fixed up");
+                                    System.out.println("        dep fixup :" + q.getDependentQuestionId() + " -> " + updatedId);
                                     q.setDependentQuestionId(updatedId);
                                     qDao.save(q, q.getQuestionGroupId());
                                 }
