@@ -66,7 +66,7 @@ public class SurveyReplicationImporter {
             List<SurveyGroup> allGroups = fetchSurveyGroups(sourceBase, apiKey); 
             System.out.println(" scanning " + allGroups.size() + " survey groups");
             for (SurveyGroup sg : allGroups) {
-                System.out.println(" surveygroup: " + sg.getName() + ":" + sg.getCode());
+                System.out.println(" surveygroup: " + sg.getKey().getId() + " " + sg.getName() + ":" + sg.getCode());
                 count_sg++;
                 if (sg.getProjectType() != ProjectType.PROJECT) {
                     continue; //skip looking in folders
@@ -95,7 +95,7 @@ public class SurveyReplicationImporter {
                     //Now copy everything inside it
                     //First, surveys (may be more than one for a monitored survey)
                     for (Survey s : allSurveys) {
-                        System.out.println("  survey:" + s.getCode());
+                        System.out.println("  survey:" + s.getKey().getId() + " " + s.getCode());
 
                         long oldSurveyId = s.getKey().getId();
                         s.setKey(null);//want a new key
@@ -121,7 +121,7 @@ public class SurveyReplicationImporter {
                         HashMap<Long,Long> qMap = new HashMap<Long,Long>(); //used to fix up dependency references
                         List<QuestionGroup> allQgs = fetchQuestionGroups(oldSurveyId, sourceBase, apiKey);
                         for (QuestionGroup qg : allQgs) {
-                            System.out.println("     qg:" + qg.getCode());
+                            System.out.println("     qg:" + qg.getKey().getId() + " " + qg.getCode());
                             long oldQgId = qg.getKey().getId();
                             qg.setKey(null); //want a new key
                             qg.setSurveyId(newSurveyId);
@@ -130,7 +130,7 @@ public class SurveyReplicationImporter {
                             long newQgId = qg.getKey().getId();
                             // Now the questions
                             for (Question q : fetchQuestions(oldQgId, sourceBase, apiKey)) {
-                                System.out.println("       q:" + q.getText());
+                                System.out.println("       q:" + q.getKey().getId() + " " + q.getText());
                                 q.setPath("");
                                 long oldQId = q.getKey().getId();
                                 q.setKey(null); //want a new key
@@ -160,7 +160,7 @@ public class SurveyReplicationImporter {
                     break; //we can stop looking for the survey group 
                 }
             }
-            System.out.println("Survey import complete with " + count_sg + " groups scanned, " + count_s + " surveys, "+ count_qg + " question groups, "+ count_q + " questions copied. ");
+            System.out.println("Survey import complete after " + count_sg + " groups scanned; " + count_s + " surveys, "+ count_qg + " question groups, "+ count_q + " questions copied. ");
         } catch (Exception e) {
             e.printStackTrace();
         }
