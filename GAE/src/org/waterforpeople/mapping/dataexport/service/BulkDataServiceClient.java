@@ -631,28 +631,28 @@ public class BulkDataServiceClient {
                 if (json != null) {
                     QuestionGroupDto dto = new QuestionGroupDto();
                     try {
-                        if (json.has("code")) {
+                        if (!json.isNull("code")) {
                             dto.setCode(json.getString("code"));
                         }
-                        if (json.has("keyId")) {
+                        if (!json.isNull("keyId")) {
                             dto.setKeyId(json.getLong("keyId"));
                         }
-                        if (json.has("displayName")) {
+                        if (!json.isNull("displayName")) {
                             dto.setName(json.getString("displayName"));
                         }
-                        if (json.has("description")) {
+                        if (!json.isNull("description")) {
                             dto.setDescription(json.getString("description"));
                         }
-                        if (json.has("order")) {
+                        if (!json.isNull("order")) {
                             dto.setOrder(json.getInt("order"));
                         }
-                        if (json.has("path")) {
+                        if (!json.isNull("path")) {
                             dto.setPath(json.getString("path"));
                         }
-                        if (json.has("surveyId")) {
+                        if (!json.isNull("surveyId")) {
                             dto.setSurveyId(json.getLong("surveyId"));
                         }
-                        if (json.has("repeatable")) {
+                        if (!json.isNull("repeatable")) {
                             dto.setRepeatable(json.getBoolean("repeatable"));
                         }
 
@@ -683,28 +683,28 @@ public class BulkDataServiceClient {
                 if (json != null) {
                     SurveyGroupDto dto = new SurveyGroupDto();
                     try {
-                        if (json.has("code")) {
+                        if (!json.isNull("code")) {
                             dto.setCode(json.getString("code"));
                         }
-                        if (json.has("keyId")) {
+                        if (!json.isNull("keyId")) {
                             dto.setKeyId(json.getLong("keyId"));
                         }
-                        if (json.has("displayName")) {
+                        if (!json.isNull("displayName")) {
                             dto.setName(json.getString("displayName"));
                         }
-                        if (json.has("description")) {
+                        if (!json.isNull("description")) {
                             dto.setDescription(json.getString("description"));
                         }
-                        if (json.has("projectType")) {
+                        if (!json.isNull("projectType")) {
                             dto.setProjectType(ProjectType.valueOf(json.getString("projectType")));
                         }
-                        if (json.has("parentId")) {
+                        if (!json.isNull("parentId")) {
                             dto.setParentId(json.getLong("parentId"));
                         }
-                        if (json.has("path")) {
+                        if (!json.isNull("path")) {
                             dto.setPath(json.getString("path"));
                         }
-                        if (json.has("ancestorIds")) {
+                        if (!json.isNull("ancestorIds")) {
                             JSONArray idArr = json.getJSONArray("ancestorIds");
                             List<Long> ancestorIds = new ArrayList<Long>();
                             for (int ix = 0; ix < idArr.length(); ix++) {
@@ -712,10 +712,10 @@ public class BulkDataServiceClient {
                             }
                             dto.setAncestorIds(ancestorIds);
                         }
-                        if (json.has("defaultLanguageCode")) {
+                        if (!json.isNull("defaultLanguageCode")) {
                             dto.setDefaultLanguageCode(json.getString("defaultLanguageCode"));
                         }
-                        if (json.has("privacyLevel")) {
+                        if (!json.isNull("privacyLevel")) {
                             dto.setPrivacyLevel(PrivacyLevel.valueOf(json.getString("privacyLevel")));
                         }
                         if (!json.isNull("monitoringGroup")) {
@@ -790,7 +790,7 @@ public class BulkDataServiceClient {
                         if (!json.isNull("version")) {
                             dto.setVersion(json.getString("version"));
                         }
-                        if (json.has("ancestorIds")) {
+                        if (!json.isNull("ancestorIds")) {
                             JSONArray idArr = json.getJSONArray("ancestorIds");
                             List<Long> ancestorIds = new ArrayList<Long>();
                             for (int ix = 0; ix < idArr.length(); ix++) {
@@ -892,48 +892,40 @@ public class BulkDataServiceClient {
                                 }
                             }
 
-                            if (json.has("allowMultipleFlag")
-                                    && !"null"
-                                            .equalsIgnoreCase(json.getString("allowMultipleFlag"))) {
+                            if (!json.isNull("allowMultipleFlag")) {
                                 dto.setAllowMultipleFlag(json.getBoolean("allowMultipleFlag"));
                             }
-                            if (json.has("allowOtherFlag")
-                                    && !"null".equalsIgnoreCase(json.getString("allowOtherFlag"))) {
+                            if (!json.isNull("allowOtherFlag")) {
                                 dto.setAllowOtherFlag(json.getBoolean("allowOtherFlag"));
                             }
-                            if (json.has("order")) {
+                            if (!json.isNull("order")) {
                                 dto.setOrder(json.getInt("order"));
                             }
-                            if (json.has("questionGroupId")) {
-                                dto.setQuestionGroupId(json
-                                        .getLong("questionGroupId"));
+                            if (!json.isNull("questionGroupId")) {
+                                dto.setQuestionGroupId(json.getLong("questionGroupId"));
                             }
-                            if (json.has("tip")
-                                    && !"null".equalsIgnoreCase(json.getString("tip"))) {
+                            if (!json.isNull("tip")) {
                                 dto.setTip(json.optString("tip"));
                             }
-                            if (json.has("questionId")
-                                    && !"null".equalsIgnoreCase(json.getString("questionId"))) {
+                            if (!json.isNull("questionId")) {
                                 dto.setQuestionId(json.optString("questionId"));
                             }
-                            if (json.has("path")) {
+                            if (!json.isNull("path")) {
                                 dto.setPath(json.getString("path"));
                             }
-                            if (json.has("text")) {
+                            if (!json.isNull("text")) {
                                 dto.setText(json.getString("text"));
                             }
-                            if (json.has("keyId")) {
+                            if (!json.isNull("keyId")) {
                                 dto.setKeyId(json.getLong("keyId"));
                             }
-                            if (json.has("collapseable")
-                                    && !"null".equalsIgnoreCase(json.getString("collapseable"))) {
+                            if (!json.isNull("collapseable")) {
                                 dto.setCollapseable(json.getBoolean("collapseable"));
                             }
-                            if (json.has("dependentFlag")
-                                    && !"null".equalsIgnoreCase(json.getString("dependentFlag"))) {
+                            if (!json.isNull("dependentFlag")) {
                                 dto.setDependentFlag(json.getBoolean("dependentFlag"));
                             }
-                            if (!json.isNull("dependentQuestionAnswer")) { //can be null
+                            if (!json.isNull("dependentQuestionAnswer")) {
                                 dto.setDependentQuestionAnswer(json
                                         .optString("dependentQuestionAnswer"));
                             }
@@ -944,23 +936,19 @@ public class BulkDataServiceClient {
                                     dto.setDependentQuestionId(null);
                                 }
                             }
-                            if (json.has("geoLocked")
-                                    && !"null".equalsIgnoreCase(json.getString("geoLocked"))) {
+                            if (!json.isNull("geoLocked")) {
                                 dto.setGeoLocked(json.getBoolean("geoLocked"));
                             }
-                            if (json.has("immutable")
-                                    && !"null".equalsIgnoreCase(json.getString("immutable"))) {
+                            if (!json.isNull("immutable")) {
                                 dto.setImmutable(json.getBoolean("immutable"));
                             }
-                            if (json.has("isName")
-                                    && !"null".equalsIgnoreCase(json.getString("isName"))) {
+                            if (!json.isNull("isName")) {
                                 dto.setIsName(json.getBoolean("isName"));
                             }
                             if (!json.isNull("localeNameFlag")) {
                                 dto.setLocaleNameFlag(json.getBoolean("localeNameFlag"));
                             }
-                            if (json.has("mandatoryFlag")
-                                    && !"null".equalsIgnoreCase(json.getString("mandatoryFlag"))) {
+                            if (!json.isNull("mandatoryFlag")) {
                                 dto.setMandatoryFlag(json.getBoolean("mandatoryFlag"));
                             }
                             if (json.has("metricId")) {
@@ -970,9 +958,7 @@ public class BulkDataServiceClient {
                                     dto.setMetricId(null);
                                 }
                             }
-                            if (json.has("requireDoubleEntry")
-                                    && !"null".equalsIgnoreCase(json
-                                            .getString("requireDoubleEntry"))) {
+                            if (!json.isNull("requireDoubleEntry")) {
                                 dto.setRequireDoubleEntry(json.getBoolean("requireDoubleEntry"));
                             }
                             if (json.has("sourceId")) {
@@ -982,12 +968,10 @@ public class BulkDataServiceClient {
                                     dto.setSourceId(null);
                                 }
                             }
-                            if (json.has("allowDecimal")
-                                    && !"null".equalsIgnoreCase(json.getString("allowDecimal"))) {
+                            if (!json.isNull("allowDecimal")) {
                                 dto.setAllowDecimal(json.getBoolean("allowDecimal"));
                             }
-                            if (json.has("allowSign")
-                                    && !"null".equalsIgnoreCase(json.getString("allowSign"))) {
+                            if (!json.isNull("allowSign")) {
                                 dto.setAllowSign(json.getBoolean("allowSign"));
                             }
                             if (json.has("minVal")) {
@@ -1005,33 +989,24 @@ public class BulkDataServiceClient {
                                 }
                             }
 
-                            if (json.has("translationMap")
-                                    && !JSONObject.NULL.equals(json
-                                            .get("translationMap"))) {
+                            if (!json.isNull("translationMap")) {
                                 dto.setTranslationMap(parseTranslations(json
                                         .getJSONObject("translationMap")));
                             }
-                            if (json.has("questionTypeString")
-                                    && json.getString("questionTypeString") != null) {
+                            if (!json.isNull("questionTypeString")) {
                                 dto.setType(QuestionDto.QuestionType.valueOf(json
                                         .getString("questionTypeString")));
                             }
-                            if (json.has("allowPoints")
-                                    && !"null".equalsIgnoreCase(json.getString("allowPoints"))) {
+                            if (!json.isNull("allowPoints")) {
                                 dto.setAllowPoints(json.getBoolean("allowPoints"));
                             }
-                            if (json.has("allowLine")
-                                    && !"null".equalsIgnoreCase(json.getString("allowLine"))) {
+                            if (!json.isNull("allowLine")) {
                                 dto.setAllowLine(json.getBoolean("allowLine"));
                             }
-                            if (json.has("allowPolygon")
-                                    && !"null".equalsIgnoreCase(json.getString("allowPolygon"))) {
+                            if (!json.isNull("allowPolygon")) {
                                 dto.setAllowPolygon(json.getBoolean("allowPolygon"));
                             }
-
-                            if (json.has("optionContainerDto")
-                                    && !JSONObject.NULL.equals(json
-                                            .get("optionContainerDto"))) {
+                            if (!json.isNull("optionContainerDto")) {
                                 OptionContainerDto container = new OptionContainerDto();
                                 JSONObject contJson = json.getJSONObject("optionContainerDto");
                                 if (contJson.has("optionsList")
@@ -1066,8 +1041,7 @@ public class BulkDataServiceClient {
                             // previous if statements dependentFlag, dependentQuestionId,
                             // dependentQuestionAnswer i.e. checks whether question is
                             // dependent on another
-                            if (json.has("questionDependency")
-                                    && !JSONObject.NULL.equals(json.get("questionDependency"))) {
+                            if (!json.isNull("questionDependency")) {
                                 QuestionDependencyDto dep = new QuestionDependencyDto();
                                 JSONObject depJson = json.getJSONObject("questionDependency");
                                 dep.setQuestionId(depJson.getLong("questionId"));
