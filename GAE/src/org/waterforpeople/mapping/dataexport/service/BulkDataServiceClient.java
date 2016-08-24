@@ -1009,8 +1009,7 @@ public class BulkDataServiceClient {
                             if (!json.isNull("optionContainerDto")) {
                                 OptionContainerDto container = new OptionContainerDto();
                                 JSONObject contJson = json.getJSONObject("optionContainerDto");
-                                if (contJson.has("optionsList")
-                                        && !JSONObject.NULL.equals(contJson.get("optionsList"))) {
+                                if (!contJson.isNull("optionsList")) {
                                     JSONArray optArray = contJson.getJSONArray("optionsList");
                                     if (optArray != null) {
                                         for (int j = 0; j < optArray.length(); j++) {
@@ -1023,10 +1022,7 @@ public class BulkDataServiceClient {
                                                 opt.setCode(optJson.getString("code"));
                                             }
                                             opt.setOrder(optJson.getInt("order"));
-                                            if (optJson.has("translationMap")
-                                                    && !JSONObject.NULL
-                                                            .equals(optJson
-                                                                    .get("translationMap"))) {
+                                            if (!optJson.isNull("translationMap")) {
                                                 opt.setTranslationMap(parseTranslations(optJson
                                                         .getJSONObject("translationMap")));
                                             }
