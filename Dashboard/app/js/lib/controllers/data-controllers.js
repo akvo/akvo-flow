@@ -467,8 +467,8 @@ FLOW.ApprovalGroupController = Ember.ObjectController.extend({
      * Create a new approval group
      */
     add: function () {
-        this.set('content', Ember.Object.create({
-            name: null,
+        this.set('content', FLOW.store.createRecord(FLOW.ApprovalGroup, {
+            name: Ember.String.loc('_new_approval_group'),
             ordered: false,
         }));
 
@@ -500,29 +500,24 @@ FLOW.ApprovalGroupController = Ember.ObjectController.extend({
         }
 
         if (!group.get('keyId')) {
-            FLOW.store.createRecord(FLOW.ApprovalGroup, group);
+            FLOW.store.commit();
+        } else {
+            FLOW.router.get('approvalStepsCOntroller').save();
         }
-
-        var steps = FLOW.router.get('approvalStepsController').get('content');
-        steps.forEach(function (step, index) {
-            if(step.get('code') && step.get('code').trim()) {
-                step.set('code', step.get('code').trim());
-            } else {
-                step.set('code', null);
-            }
-            step.set('title', step.get('title').trim());
-
-            if (step.get('order') !== index) {
-                step.set('order', index);
-            }
-
-            if(!step.get('keyId')) {
-                FLOW.store.createRecord(FLOW.ApprovalStep, step);
-            }
-        });
-
-        FLOW.store.commit();
     },
+
+    /*
+     * Observer of the keyId property on the current content of this controller.
+     * This enables propagation of the `keyId` to the steps associated with the
+     * approval group in order for them to be associated.
+     *
+     */
+    approvalGroupKeyIdObserver: function () {
+        var group = this.content;
+        if (group && group.get('keyId')) {
+            FLOW.router.get('approvalStepsController').save(group);
+        }
+    }.observes('this.keyId'),
 
     /*
      * Validate approval group and associated steps
@@ -609,6 +604,35 @@ FLOW.ApprovalStepsController = Ember.ArrayController.extend({
             error = Ember.String.loc('_blank_approval_step_title');
         }
         return error;
+    },
+
+    /*
+     * Save approval steps
+     */
+    save: function(group) {
+        var steps = this.content;
+        steps.forEach(function (step, index) {
+            if(step.get('code') && step.get('code').trim()) {
+                step.set('code', step.get('code').trim());
+            } else {
+                step.set('code', null);
+            }
+            step.set('title', step.get('title').trim());
+
+            if (step.get('order') !== index) {
+                step.set('order', index);
+            }
+
+            if (!step.get('approvalGroupId') && group && group.get('keyId')) {
+                step.set('approvalGroupId', group.get('keyId'));
+            }
+
+            if(!step.get('keyId')) {
+                FLOW.store.createRecord(FLOW.ApprovalStep, step);
+            }
+        });
+
+        FLOW.store.commit();
     },
 
     /*
