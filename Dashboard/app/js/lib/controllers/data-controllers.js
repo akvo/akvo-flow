@@ -610,7 +610,7 @@ FLOW.ApprovalStepsController = Ember.ArrayController.extend({
      * Save approval steps
      */
     save: function(group) {
-        var steps = this.content;
+        var steps = this.content || [];
         steps.forEach(function (step, index) {
             if(step.get('code') && step.get('code').trim()) {
                 step.set('code', step.get('code').trim());
@@ -627,12 +627,14 @@ FLOW.ApprovalStepsController = Ember.ArrayController.extend({
                 step.set('approvalGroupId', group.get('keyId'));
             }
 
-            if(!step.get('keyId')) {
+            if (!step.get('keyId')) {
                 FLOW.store.createRecord(FLOW.ApprovalStep, step);
             }
         });
 
-        FLOW.store.commit();
+        if (steps) {
+            FLOW.store.commit();
+        }
     },
 
     /*
