@@ -502,7 +502,7 @@ FLOW.ApprovalGroupController = Ember.ObjectController.extend({
         if (!group.get('keyId')) {
             FLOW.store.commit();
         } else {
-            FLOW.router.get('approvalStepsCOntroller').save();
+            FLOW.router.get('approvalStepsController').save();
         }
     },
 
