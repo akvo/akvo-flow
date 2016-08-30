@@ -261,22 +261,9 @@ public class RawDataSpreadsheetImporter implements DataImporter {
 
         //First check if we are done with the sheet
         Row baseRow = sheet.getRow(startRow);
-        if (baseRow == null //no such row
-                || baseRow.getFirstCellNum() == -1) { //a row without any cells defined
+        if (isEmptyRow(baseRow)) { //a row without any cells defined
             return null;
         }
-        //maybe they are all blank/contain only spaces?
-        boolean blank = true;
-        for (int ix = baseRow.getFirstCellNum(); ix < baseRow.getLastCellNum(); ix++) {
-            if (!isEmptyCell(baseRow.getCell(ix))) {
-                blank = false;
-                break;
-            }
-        }
-        if (blank) {
-            return null;
-        }
-        
         int firstQuestionColumnIndex = Collections.min(columnIndexToQuestionId.keySet());
         String surveyedLocaleIdentifier = ExportImportUtils.parseCellAsString(baseRow.getCell(0));
         String surveyedLocaleDisplayName = ExportImportUtils.parseCellAsString(baseRow
@@ -754,8 +741,11 @@ public class RawDataSpreadsheetImporter implements DataImporter {
             if (hasIterationColumn) {
                 Iterator<Row> iter = sheet.iterator();
                 iter.next(); // Skip the header row.
-                while (iter.hasNext()) {
+                while (iter.hasNext()) { //gets "phantom" rows, too
                     Row row = iter.next();
+                    if (isEmptyRow(row)) {
+                        break; //phantom row - just stop 
+                    }
                     Cell cell = row.getCell(1);
                     if (cell == null) {
                         errorMap.put(-1, "Repeat column is empty");
@@ -786,6 +776,30 @@ public class RawDataSpreadsheetImporter implements DataImporter {
             || cell.getCellType() == Cell.CELL_TYPE_BLANK
             || (cell.getCellType() == Cell.CELL_TYPE_STRING
                 && cell.getStringCellValue().trim() == "");
+    }
+
+    /**
+     * Check if a row is any kind of empty
+     * 
+     * @param row
+     * @return
+     */
+    
+    private boolean isEmptyRow(Row row) {
+        if (row == null) return true;
+        if (row.getFirstCellNum() == -1) { //a row without any cells defined
+                return true; //phantom row 
+            }
+        //maybe cells are all blank/contain only spaces?
+        boolean blank = true;
+        for (int ix = row.getFirstCellNum(); ix < row.getLastCellNum(); ix++) {
+            if (!isEmptyCell(row.getCell(ix))) {
+                blank = false;
+                break;
+            }
+        }
+        if (blank) return true;
+        return false;
     }
 
     /**
