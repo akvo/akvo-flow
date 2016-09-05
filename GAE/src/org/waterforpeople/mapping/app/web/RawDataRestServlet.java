@@ -122,11 +122,13 @@ public class RawDataRestServlet extends AbstractRestApiServlet {
 
             SurveyInstance instance = null;
             if (isNewInstance) {
+                /*
                 if (isMonitoringForm) {
                     updateMessageBoard(s.getKey().getId(),
                             "Importing new data into a monitoring form is not supported at the moment");
                     return null;
                 }
+                */
                 instance = createInstance(importReq);
             } else {
                 instance = instanceDao.getByKey(importReq.getSurveyInstanceId());
@@ -213,7 +215,7 @@ public class RawDataRestServlet extends AbstractRestApiServlet {
             log.log(Level.INFO, "Deleting " + deletedAnswers.size() + " question answers");
             qasDao.delete(deletedAnswers);
 
-            if (!isMonitoringForm && !isNewInstance) {
+            if (/*!isMonitoringForm && */ !isNewInstance) {
                 // Update datapoint name for this locale
                 SurveyedLocale sl = slDao.getById(instance.getSurveyedLocaleId());
                 sl.assembleDisplayName(
@@ -221,10 +223,20 @@ public class RawDataRestServlet extends AbstractRestApiServlet {
                 slDao.save(sl);
             }
 
+            if (isMonitoringForm && isNewInstance) {
+                // Find the datapoint by identifier
+                SurveyedLocale sl = slDao.getByIdentifier(instance.getSurveyedLocaleIdentifier());
+                //TODO: what if not found?
+                instance.setSurveyedLocaleId(sl.getKey().getId());
+                instance.setSurveyedLocaleDisplayName(sl.getDisplayName());
+                instanceDao.save(instance);
+            } 
+            else
             if (isNewInstance) {
                 // create new surveyed locale and launch task to complete processing
                 SurveyedLocale locale = new SurveyedLocale();
-                locale.setIdentifier(SurveyedLocale.generateBase32Uuid());
+//                locale.setIdentifier(SurveyedLocale.generateBase32Uuid());
+                locale.setIdentifier(instance.getSurveyedLocaleIdentifier()); //keep old id, it's supposed to be unique.
                 instance.setSurveyedLocaleIdentifier(locale.getIdentifier());
 
                 String privacyLevel = sg.getPrivacyLevel() != null ? sg.getPrivacyLevel()
@@ -234,6 +246,11 @@ public class RawDataRestServlet extends AbstractRestApiServlet {
                 locale.setCreationSurveyId(s.getKey().getId());
                 locale.assembleDisplayName(
                         qDao.listDisplayNameQuestionsBySurveyId(s.getKey().getId()), updatedAnswers);
+                //TODO Non-dummy new data
+                locale.setLocaleType("Point");
+                locale.setLatitude(17.0);
+                locale.setLongitude(47.11);
+                locale.setOrganization("Foo");
 
                 locale = slDao.save(locale);
                 instance.setSurveyedLocaleId(locale.getKey().getId());

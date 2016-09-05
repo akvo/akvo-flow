@@ -60,12 +60,18 @@ public class RawDataImportRequest extends RestRequest {
 
     public static final String FIELD_VAL_DELIMITER = ";;";
 
+    private String type;
     private Long surveyId;
     private Long surveyedLocaleId;
     private Long surveyInstanceId = null;
     private Long duration = null;
     private Date collectionDate = null;
     private String submitter = null;
+    //new for monitoring form:
+    private Double latitude = null;
+    private Double longitude = null;
+    private String organisation = null;
+    private String localeType = null;
 
     // questionId -> iteration -> [response, type]
     private Map<Long, Map<Integer, String[]>> responseMap = new HashMap<>();
@@ -79,8 +85,6 @@ public class RawDataImportRequest extends RestRequest {
     public void setFixedFieldValues(List<String> fixedFieldValues) {
         this.fixedFieldValues = fixedFieldValues;
     }
-
-    private String type;
 
     public String getType() {
         return type;
@@ -263,5 +267,30 @@ public class RawDataImportRequest extends RestRequest {
     public Long getSurveyDuration() {
         return duration;
     }
+
+    public String getLocaleType() {
+        return localeType;
+    }
+
+    public void setLocaleType(String type) {
+        this.localeType = type;
+    }
+
+    public String getOrganisation() {
+        return organisation;
+    }
+
+    public void setOrganisationType(String loc) {
+        this.organisation = loc;
+    }
+
+    public Double getLatitude() {
+        return latitude;
+    }
+
+    public void setLatitude(Double lat) {
+        this.latitude = lat;
+    }
+
 
 }

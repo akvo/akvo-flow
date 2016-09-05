@@ -55,6 +55,7 @@ public class SurveyedLocale extends BaseDomain {
     private String organization;
     private String systemIdentifier;
     private String identifier;
+    private String sourceIdentifier;
     private String displayName;
     private String countryCode;
     private String sublevel1;
@@ -129,50 +130,62 @@ public class SurveyedLocale extends BaseDomain {
         this.countryCode = countryCode;
     }
 
+    @Deprecated
     public String getSublevel1() {
         return sublevel1;
     }
 
+    @Deprecated
     public void setSublevel1(String sublevel1) {
         this.sublevel1 = sublevel1;
     }
 
+    @Deprecated
     public String getSublevel2() {
         return sublevel2;
     }
 
+    @Deprecated
     public void setSublevel2(String sublevel2) {
         this.sublevel2 = sublevel2;
     }
 
+    @Deprecated
     public String getSublevel3() {
         return sublevel3;
     }
 
+    @Deprecated
     public void setSublevel3(String sublevel3) {
         this.sublevel3 = sublevel3;
     }
 
+    @Deprecated
     public String getSublevel4() {
         return sublevel4;
     }
 
+    @Deprecated
     public void setSublevel4(String sublevel4) {
         this.sublevel4 = sublevel4;
     }
 
+    @Deprecated
     public String getSublevel5() {
         return sublevel5;
     }
 
+    @Deprecated
     public void setSublevel5(String sublevel5) {
         this.sublevel5 = sublevel5;
     }
 
+    @Deprecated
     public String getSublevel6() {
         return sublevel6;
     }
 
+    @Deprecated
     public void setSublevel6(String sublevel6) {
         this.sublevel6 = sublevel6;
     }
@@ -207,6 +220,14 @@ public class SurveyedLocale extends BaseDomain {
 
     public void setSystemIdentifier(String systemIdentifier) {
         this.systemIdentifier = systemIdentifier;
+    }
+
+    public String getSourceIdentifier() {
+        return sourceIdentifier;
+    }
+
+    public void setSourceIdentifier(String sourceIdentifier) {
+        this.sourceIdentifier = sourceIdentifier;
     }
 
     public List<SurveyalValue> getSurveyalValues() {

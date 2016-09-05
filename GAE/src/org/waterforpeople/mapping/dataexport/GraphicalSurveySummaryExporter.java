@@ -71,6 +71,7 @@ import org.waterforpeople.mapping.domain.response.value.Media;
 import org.waterforpeople.mapping.serialization.response.MediaResponse;
 
 import com.gallatinsystems.common.util.JFreechartChartUtil;
+import com.gallatinsystems.surveyal.domain.SurveyedLocale;
 
 /**
  * Enhancement of the SurveySummaryExporter to support writing to Excel and including chart images.
@@ -86,6 +87,7 @@ public class GraphicalSurveySummaryExporter extends SurveySummaryExporter {
     private static final String LOCALE_OPT = "locale";
     private static final String TYPE_OPT = "exportMode";
     private static final String RAW_ONLY_TYPE = "RAW_DATA";
+    private static final String SAVE_FULL_DP = "SAVE_FULL_DP";
     private static final String NO_CHART_OPT = "nocharts";
     private static final String LAST_COLLECTION_OPT = "lastCollection";
 
@@ -127,6 +129,8 @@ public class GraphicalSurveySummaryExporter extends SurveySummaryExporter {
     private static final Map<String, String> ACC_LABEL;
     private static final Map<String, String> CODE_LABEL;
     private static final Map<String, String> IDENTIFIER_LABEL;
+    private static final Map<String, String> ORGANISATION_LABEL;
+    private static final Map<String, String> DP_TYPE_LABEL;
     private static final Map<String, String> DISPLAY_NAME_LABEL;
     private static final Map<String, String> DEVICE_IDENTIFIER_LABEL;
 
@@ -281,6 +285,14 @@ public class GraphicalSurveySummaryExporter extends SurveySummaryExporter {
         DISPLAY_NAME_LABEL.put("en", "Display Name");
         DISPLAY_NAME_LABEL.put("es", "Nombre");
 
+        ORGANISATION_LABEL = new HashMap<String, String>();
+        ORGANISATION_LABEL.put("en", "Organisation");
+        ORGANISATION_LABEL.put("es", "Organisation");
+
+        DP_TYPE_LABEL = new HashMap<String, String>();
+        DP_TYPE_LABEL.put("en", "Datapoint Type");
+        DP_TYPE_LABEL.put("es", "Datapoint Type");
+
         DEVICE_IDENTIFIER_LABEL = new HashMap<String, String>();
         DEVICE_IDENTIFIER_LABEL.put("en", "Device identifier");
         DEVICE_IDENTIFIER_LABEL.put("es", "Identificador de dispositivo");
@@ -293,6 +305,7 @@ public class GraphicalSurveySummaryExporter extends SurveySummaryExporter {
     private String imagePrefix;
     private String serverBase;
     private boolean isFullReport;
+    private boolean saveFullDataPoint;
     private boolean performGeoRollup;
     private boolean generateCharts;
     private Map<Long, QuestionDto> questionsById;
@@ -419,8 +432,7 @@ public class GraphicalSurveySummaryExporter extends SurveySummaryExporter {
 
         final Map<String, String> collapseIdMap = new HashMap<String, String>();
         final Map<String, String> nameToIdMap = new HashMap<String, String>();
-        for (Entry<QuestionGroupDto, List<QuestionDto>> groupEntry : questionMap
-                .entrySet()) {
+        for (Entry<QuestionGroupDto, List<QuestionDto>> groupEntry : questionMap.entrySet()) {
             for (QuestionDto q : groupEntry.getValue()) {
                 if (q.getCollapseable() != null && q.getCollapseable()) {
                     if (collapseIdMap.get(q.getText()) == null) {
@@ -538,8 +550,18 @@ public class GraphicalSurveySummaryExporter extends SurveySummaryExporter {
             createCell(r, columnIndexMap.get(REPEAT_LABEL.get(locale)), String.valueOf(i + 1),
                     null, Cell.CELL_TYPE_NUMERIC);
         }
-        createCell(row, columnIndexMap.get(DISPLAY_NAME_LABEL.get(locale)),
-                dto.getSurveyedLocaleDisplayName());
+        if (saveFullDataPoint) {
+            //TODO zzz dig up the SL data somehow
+            //SurveyedLocale sl = (dto.getSurveyedLocaleId())
+            //SurveyedLocaleDto = 
+            createCell(row, columnIndexMap.get(ORGANISATION_LABEL.get(locale)), "Foo");
+            createCell(row, columnIndexMap.get(LAT_LABEL.get(locale)), "17.0");
+            createCell(row, columnIndexMap.get(LON_LABEL.get(locale)), "47.11");
+            createCell(row, columnIndexMap.get(DP_TYPE_LABEL.get(locale)), "Point");
+        } else {
+            createCell(row, columnIndexMap.get(DISPLAY_NAME_LABEL.get(locale)),
+                    dto.getSurveyedLocaleDisplayName());
+        }
         createCell(row, columnIndexMap.get(DEVICE_IDENTIFIER_LABEL.get(locale)),
                 dto.getDeviceIdentifier());
         createCell(row, columnIndexMap.get(INSTANCE_LABEL.get(locale)), dto.getKeyId().toString());
@@ -1012,9 +1034,23 @@ public class GraphicalSurveySummaryExporter extends SurveySummaryExporter {
         columnIndexMap.put(REPEAT_LABEL.get(locale), columnIdx);
         createCell(row, columnIdx++, REPEAT_LABEL.get(locale), headerStyle);
 
-        columnIndexMap.put(DISPLAY_NAME_LABEL.get(locale), columnIdx);
-        createCell(row, columnIdx++, DISPLAY_NAME_LABEL.get(locale), headerStyle);
-
+        if (saveFullDataPoint) {
+            //Data Point needs Org, Lat, Lon, and type
+            columnIndexMap.put(ORGANISATION_LABEL.get(locale), columnIdx);
+            createCell(row, columnIdx++, ORGANISATION_LABEL.get(locale), headerStyle);
+            
+            columnIndexMap.put(LAT_LABEL.get(locale), columnIdx);
+            createCell(row, columnIdx++, LAT_LABEL.get(locale), headerStyle);
+            
+            columnIndexMap.put(LON_LABEL.get(locale), columnIdx);
+            createCell(row, columnIdx++, LON_LABEL.get(locale), headerStyle);
+            
+            columnIndexMap.put(DP_TYPE_LABEL.get(locale), columnIdx);
+            createCell(row, columnIdx++, DP_TYPE_LABEL.get(locale), headerStyle);
+        } else { //Just display name, for legacy consumers
+            columnIndexMap.put(DISPLAY_NAME_LABEL.get(locale), columnIdx);
+            createCell(row, columnIdx++, DISPLAY_NAME_LABEL.get(locale), headerStyle);
+        }
         columnIndexMap.put(DEVICE_IDENTIFIER_LABEL.get(locale), columnIdx);
         createCell(row, columnIdx++, DEVICE_IDENTIFIER_LABEL.get(locale), headerStyle);
 
@@ -1519,6 +1555,9 @@ public class GraphicalSurveySummaryExporter extends SurveySummaryExporter {
             if (RAW_ONLY_TYPE.equalsIgnoreCase(options.get(TYPE_OPT))) {
                 isFullReport = false;
             }
+//            if (SAVE_FULL_DP.equalsIgnoreCase(options.get(???))) {
+                saveFullDataPoint = true;
+//            }
             if (options.get(DO_ROLLUP_OPT) != null) {
                 if ("false".equalsIgnoreCase(options.get(DO_ROLLUP_OPT))) {
                     performGeoRollup = false;
@@ -1632,7 +1671,7 @@ public class GraphicalSurveySummaryExporter extends SurveySummaryExporter {
         Map<String, String> criteria = new HashMap<String, String>();
         Map<String, String> options = new HashMap<String, String>();
         options.put(LOCALE_OPT, "en");
-        // options.put(TYPE_OPT, RAW_ONLY_TYPE);
+        options.put(TYPE_OPT, RAW_ONLY_TYPE); //For monitored-transfer test
         options.put(LAST_COLLECTION_OPT, "false");
         options.put("useQuestionId", "true");
         options.put("email", "email@example.com");
