@@ -55,7 +55,6 @@ public class SurveyedLocale extends BaseDomain {
     private String organization;
     private String systemIdentifier;
     private String identifier;
-    private String sourceIdentifier;
     private String displayName;
     private String countryCode;
     private String sublevel1;
@@ -220,14 +219,6 @@ public class SurveyedLocale extends BaseDomain {
 
     public void setSystemIdentifier(String systemIdentifier) {
         this.systemIdentifier = systemIdentifier;
-    }
-
-    public String getSourceIdentifier() {
-        return sourceIdentifier;
-    }
-
-    public void setSourceIdentifier(String sourceIdentifier) {
-        this.sourceIdentifier = sourceIdentifier;
     }
 
     public List<SurveyalValue> getSurveyalValues() {
