@@ -116,14 +116,6 @@ public class RawDataImportRequest extends RestRequest {
         this.collectionDate = collectionDate;
     }
 
-    public String getSurveyedLocaleIdentifier() {
-        return surveyedLocaleIdentifier;
-    }
-
-    public void setSurveyedLocaleIdentifier(String i) {
-        this.surveyedLocaleIdentifier = i;
-    }
-
     public Map<Long, Map<Integer, String[]>> getResponseMap() {
         return responseMap;
     }
@@ -277,28 +269,12 @@ public class RawDataImportRequest extends RestRequest {
         return duration;
     }
 
-    public String getLocaleType() {
-        return localeType;
+    public String getSurveyedLocaleIdentifier() {
+        return surveyedLocaleIdentifier;
     }
 
-    public void setLocaleType(String type) {
-        this.localeType = type;
-    }
-
-    public String getOrganisation() {
-        return organisation;
-    }
-
-    public void setOrganisationType(String loc) {
-        this.organisation = loc;
-    }
-
-    public Double getLatitude() {
-        return latitude;
-    }
-
-    public void setLatitude(Double lat) {
-        this.latitude = lat;
+    public void setSurveyedLocaleIdentifier(String i) {
+        this.surveyedLocaleIdentifier = i;
     }
 
 
