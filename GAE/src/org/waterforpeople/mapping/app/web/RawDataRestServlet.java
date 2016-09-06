@@ -236,7 +236,7 @@ public class RawDataRestServlet extends AbstractRestApiServlet {
                 // create new surveyed locale and launch task to complete processing
                 SurveyedLocale locale = new SurveyedLocale();
 //                locale.setIdentifier(SurveyedLocale.generateBase32Uuid());
-                locale.setIdentifier(instance.getSurveyedLocaleIdentifier()); //keep old id, it's supposed to be unique.
+                locale.setIdentifier(importReq.getSurveyedLocaleIdentifier()); //keep old id, it's supposed to be unique.
                 instance.setSurveyedLocaleIdentifier(locale.getIdentifier());
 
                 String privacyLevel = sg.getPrivacyLevel() != null ? sg.getPrivacyLevel()
