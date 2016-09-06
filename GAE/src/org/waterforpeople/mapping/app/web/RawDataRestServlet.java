@@ -226,7 +226,13 @@ public class RawDataRestServlet extends AbstractRestApiServlet {
             if (isMonitoringForm && isNewInstance) {
                 // Find the datapoint by identifier
                 SurveyedLocale sl = slDao.getByIdentifier(instance.getSurveyedLocaleIdentifier());
-                //TODO: what if not found?
+                if (sl == null) {
+                    //quit if not found
+                    //log.log(Level.WARNING, "SurveyedLocaleIdentifier " + instance.getSurveyedLocaleIdentifier() + " not found!");
+                    updateMessageBoard(importReq.getSurveyInstanceId(), "SurveyedLocaleIdentifier "
+                            + instance.getSurveyedLocaleIdentifier() + " doesn't exist");
+                    return null;
+                }
                 instance.setSurveyedLocaleId(sl.getKey().getId());
                 instance.setSurveyedLocaleDisplayName(sl.getDisplayName());
                 instanceDao.save(instance);
@@ -246,12 +252,6 @@ public class RawDataRestServlet extends AbstractRestApiServlet {
                 locale.setCreationSurveyId(s.getKey().getId());
                 locale.assembleDisplayName(
                         qDao.listDisplayNameQuestionsBySurveyId(s.getKey().getId()), updatedAnswers);
-                //TODO Non-dummy new data
-                locale.setLocaleType("Point");
-                locale.setLatitude(17.0);
-                locale.setLongitude(47.11);
-                locale.setOrganization("Foo");
-
                 locale = slDao.save(locale);
                 instance.setSurveyedLocaleId(locale.getKey().getId());
                 instanceDao.save(instance);
