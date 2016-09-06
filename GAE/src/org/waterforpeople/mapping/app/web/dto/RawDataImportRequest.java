@@ -160,11 +160,7 @@ public class RawDataImportRequest extends RestRequest {
             }
         }
         if (req.getParameter(LOCALE_IDENTIFIER_PARAM) != null) {
-            try {
-                setSurveyedLocaleIdentifier(new Long(req.getParameter(LOCALE_IDENTIFIER_PARAM)));
-            } catch (Exception e) {
-                log.info(LOCALE_IDENTIFIER_PARAM + " is missing");
-            }
+            setSurveyedLocaleIdentifier(req.getParameter(LOCALE_IDENTIFIER_PARAM));
         }
         if (req.getParameter(SURVEY_INSTANCE_ID_PARAM) != null) {
             try {
