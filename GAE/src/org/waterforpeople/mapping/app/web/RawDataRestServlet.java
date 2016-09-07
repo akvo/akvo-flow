@@ -208,7 +208,7 @@ public class RawDataRestServlet extends AbstractRestApiServlet {
             log.log(Level.INFO, "Deleting " + deletedAnswers.size() + " question answers");
             qasDao.delete(deletedAnswers);
 
-            if (/*!isMonitoringForm && */ !isNewInstance) {
+            if (!isNewInstance) {
                 // Update datapoint name for this locale
                 SurveyedLocale sl = slDao.getById(instance.getSurveyedLocaleId());
                 sl.assembleDisplayName(
