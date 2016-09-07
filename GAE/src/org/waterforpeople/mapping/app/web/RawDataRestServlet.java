@@ -220,7 +220,13 @@ public class RawDataRestServlet extends AbstractRestApiServlet {
             if (isNewInstance) {
                 if (isMonitoringForm) { //Must relate to a registration form
                     // Find existing surveyedLocale by identifier
-                    SurveyedLocale sl = slDao.getByIdentifier(instance.getSurveyedLocaleIdentifier());
+                    String sli = instance.getSurveyedLocaleIdentifier();
+                    if (sli == null) {
+                        //quit if not specified
+                        updateMessageBoard(importReq.getSurveyInstanceId(), "Identifier must be specified");
+                        return null;
+                    }
+                    SurveyedLocale sl = slDao.getByIdentifier(sli);
                     if (sl == null) {
                         //quit if not found
                         updateMessageBoard(importReq.getSurveyInstanceId(), "SurveyedLocaleIdentifier "
@@ -445,7 +451,7 @@ public class RawDataRestServlet extends AbstractRestApiServlet {
         inst.setDeviceIdentifier("IMPORTER");
         inst.setUuid(UUID.randomUUID().toString());
         inst.setSurveyedLocaleId(importReq.getSurveyedLocaleId());
-        inst.setUuid(UUID.randomUUID().toString());
+        inst.setSurveyedLocaleIdentifier(importReq.getSurveyedLocaleIdentifier());
         inst.setSubmitterName(importReq.getSubmitter());
         inst.setSurveyalTime(importReq.getSurveyDuration());
 
