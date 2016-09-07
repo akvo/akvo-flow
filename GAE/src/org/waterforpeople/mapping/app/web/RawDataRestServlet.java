@@ -122,13 +122,6 @@ public class RawDataRestServlet extends AbstractRestApiServlet {
 
             SurveyInstance instance = null;
             if (isNewInstance) {
-                /*
-                if (isMonitoringForm) {
-                    updateMessageBoard(s.getKey().getId(),
-                            "Importing new data into a monitoring form is not supported at the moment");
-                    return null;
-                }
-                */
                 instance = createInstance(importReq);
             } else {
                 instance = instanceDao.getByKey(importReq.getSurveyInstanceId());
@@ -228,7 +221,6 @@ public class RawDataRestServlet extends AbstractRestApiServlet {
                 SurveyedLocale sl = slDao.getByIdentifier(instance.getSurveyedLocaleIdentifier());
                 if (sl == null) {
                     //quit if not found
-                    //log.log(Level.WARNING, "SurveyedLocaleIdentifier " + instance.getSurveyedLocaleIdentifier() + " not found!");
                     updateMessageBoard(importReq.getSurveyInstanceId(), "SurveyedLocaleIdentifier "
                             + instance.getSurveyedLocaleIdentifier() + " doesn't exist");
                     return null;
@@ -241,7 +233,6 @@ public class RawDataRestServlet extends AbstractRestApiServlet {
             if (isNewInstance) {
                 // create new surveyed locale and launch task to complete processing
                 SurveyedLocale locale = new SurveyedLocale();
-//                locale.setIdentifier(SurveyedLocale.generateBase32Uuid());
                 locale.setIdentifier(importReq.getSurveyedLocaleIdentifier()); //keep old id, it's supposed to be unique.
                 instance.setSurveyedLocaleIdentifier(locale.getIdentifier());
 
