@@ -27,6 +27,7 @@ import java.util.logging.Logger;
 
 import javax.servlet.http.HttpServletRequest;
 
+import org.datanucleus.util.StringUtils;
 import org.waterforpeople.mapping.app.gwt.client.survey.QuestionDto.QuestionType;
 import org.waterforpeople.mapping.app.gwt.server.surveyinstance.SurveyInstanceServiceImpl;
 import org.waterforpeople.mapping.app.web.dto.DataProcessorRequest;
@@ -122,7 +123,15 @@ public class RawDataRestServlet extends AbstractRestApiServlet {
 
             SurveyInstance instance = null;
             if (isNewInstance) {
-                instance = createInstance(importReq);
+                if (sg.getMonitoringGroup()) { //Monitoring forms must relate to a registration form
+                    String sli = importReq.getSurveyedLocaleIdentifier();
+                    if (StringUtils.isEmpty(sli)) {
+                        //quit if not specified
+                        updateMessageBoard(importReq.getSurveyInstanceId(), "Identifier must be specified for new monitored data");
+                        return null;
+                    }
+                }
+                instance = createInstance(importReq); //Saves to get an id, which creates or looks up the surveyedLocale
             } else {
                 instance = instanceDao.getByKey(importReq.getSurveyInstanceId());
                 if (instance == null) {
@@ -208,52 +217,22 @@ public class RawDataRestServlet extends AbstractRestApiServlet {
             log.log(Level.INFO, "Deleting " + deletedAnswers.size() + " question answers");
             qasDao.delete(deletedAnswers);
 
+            SurveyedLocale locale = slDao.getById(instance.getSurveyedLocaleId());
+
             if (!isNewInstance) {
                 // Update datapoint name for this locale
-                SurveyedLocale sl = slDao.getById(instance.getSurveyedLocaleId());
-                sl.assembleDisplayName(
+                locale.assembleDisplayName(
                         qDao.listDisplayNameQuestionsBySurveyId(s.getKey().getId()), updatedAnswers);
-                slDao.save(sl);
+                slDao.save(locale);
             }
-
-
-            if (isNewInstance) {
-                if (isMonitoringForm) { //Must relate to a registration form
-                    // Find existing surveyedLocale by identifier
-                    String sli = instance.getSurveyedLocaleIdentifier();
-                    if (sli == null) {
-                        //quit if not specified
-                        updateMessageBoard(importReq.getSurveyInstanceId(), "Identifier must be specified");
-                        return null;
-                    }
-                    SurveyedLocale sl = slDao.getByIdentifier(sli);
-                    if (sl == null) {
-                        //quit if not found
-                        updateMessageBoard(importReq.getSurveyInstanceId(), "SurveyedLocaleIdentifier "
-                                + instance.getSurveyedLocaleIdentifier() + " doesn't exist");
-                        return null;
-                    }
-                    instance.setSurveyedLocaleId(sl.getKey().getId());
-                    instance.setSurveyedLocaleDisplayName(sl.getDisplayName());
-                }
-                else
-                { //Registration form
-                    // create new surveyed locale
-                    SurveyedLocale locale = new SurveyedLocale();
-                    locale.setIdentifier(importReq.getSurveyedLocaleIdentifier()); //keep old id, it's supposed to be unique.
-                    instance.setSurveyedLocaleIdentifier(locale.getIdentifier());
-    
-                    String privacyLevel = sg.getPrivacyLevel() != null ? sg.getPrivacyLevel()
-                            .toString() : SurveyGroup.PrivacyLevel.PRIVATE.toString();
-                    locale.setLocaleType(privacyLevel);
-                    locale.setSurveyGroupId(sg.getKey().getId());
-                    locale.setCreationSurveyId(s.getKey().getId());
+            else
+            {
+                if (!isMonitoringForm) { //Standalone or Registration form
+                    // locale was just created, displayname was taken from importReq
                     locale.assembleDisplayName(
                             qDao.listDisplayNameQuestionsBySurveyId(s.getKey().getId()), updatedAnswers);
                     locale = slDao.save(locale);
-                    instance.setSurveyedLocaleId(locale.getKey().getId());
                 }
-                instanceDao.save(instance);
 
                 // launch task to complete processing
                 Queue defaultQueue = QueueFactory.getDefaultQueue();
@@ -457,7 +436,7 @@ public class RawDataRestServlet extends AbstractRestApiServlet {
 
         // set the key so the subsequent logic can populate it in the
         // QuestionAnswerStore objects
-        inst = instanceDao.save(inst);
+        inst = instanceDao.save(inst); //creates or looks up surveyedLocale
 
         importReq.setSurveyInstanceId(inst.getKey().getId());
         if (importReq.getCollectionDate() == null) {

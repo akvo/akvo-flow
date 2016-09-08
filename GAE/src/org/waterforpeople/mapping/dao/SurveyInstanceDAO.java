@@ -180,10 +180,10 @@ public class SurveyInstanceDAO extends BaseDAO<SurveyInstance> {
     private SurveyedLocale saveSurveyedLocale(SurveyInstance si) {
         final SurveyedLocaleDao slDao = new SurveyedLocaleDao();
         // Fetch or create the corresponding locale for this instance.
-        SurveyedLocale sl = si.getSurveyedLocaleIdentifier() != null ?
+        SurveyedLocale sl = StringUtils.isNotBlank(si.getSurveyedLocaleIdentifier()) ?
                 slDao.getByIdentifier(si.getSurveyedLocaleIdentifier())
                 : null;
-        if (sl == null) {
+        if (sl == null) { //create it
             sl = new SurveyedLocale();
 
             sl.setOrganization(PropertyUtil.getProperty(DEFAULT_ORG_PROP));
