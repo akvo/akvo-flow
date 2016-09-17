@@ -71,6 +71,7 @@ import org.waterforpeople.mapping.domain.response.value.Media;
 import org.waterforpeople.mapping.serialization.response.MediaResponse;
 
 import com.gallatinsystems.common.util.JFreechartChartUtil;
+import com.gallatinsystems.surveyal.domain.SurveyedLocale;
 
 /**
  * Enhancement of the SurveySummaryExporter to support writing to Excel and including chart images.
@@ -419,8 +420,7 @@ public class GraphicalSurveySummaryExporter extends SurveySummaryExporter {
 
         final Map<String, String> collapseIdMap = new HashMap<String, String>();
         final Map<String, String> nameToIdMap = new HashMap<String, String>();
-        for (Entry<QuestionGroupDto, List<QuestionDto>> groupEntry : questionMap
-                .entrySet()) {
+        for (Entry<QuestionGroupDto, List<QuestionDto>> groupEntry : questionMap.entrySet()) {
             for (QuestionDto q : groupEntry.getValue()) {
                 if (q.getCollapseable() != null && q.getCollapseable()) {
                     if (collapseIdMap.get(q.getText()) == null) {
@@ -1014,7 +1014,7 @@ public class GraphicalSurveySummaryExporter extends SurveySummaryExporter {
 
         columnIndexMap.put(DISPLAY_NAME_LABEL.get(locale), columnIdx);
         createCell(row, columnIdx++, DISPLAY_NAME_LABEL.get(locale), headerStyle);
-
+        
         columnIndexMap.put(DEVICE_IDENTIFIER_LABEL.get(locale), columnIdx);
         createCell(row, columnIdx++, DEVICE_IDENTIFIER_LABEL.get(locale), headerStyle);
 
@@ -1632,7 +1632,7 @@ public class GraphicalSurveySummaryExporter extends SurveySummaryExporter {
         Map<String, String> criteria = new HashMap<String, String>();
         Map<String, String> options = new HashMap<String, String>();
         options.put(LOCALE_OPT, "en");
-        // options.put(TYPE_OPT, RAW_ONLY_TYPE);
+        options.put(TYPE_OPT, RAW_ONLY_TYPE); //For monitored-transfer test
         options.put(LAST_COLLECTION_OPT, "false");
         options.put("useQuestionId", "true");
         options.put("email", "email@example.com");

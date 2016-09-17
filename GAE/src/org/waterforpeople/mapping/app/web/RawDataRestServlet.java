@@ -27,6 +27,7 @@ import java.util.logging.Logger;
 
 import javax.servlet.http.HttpServletRequest;
 
+import org.datanucleus.util.StringUtils;
 import org.waterforpeople.mapping.app.gwt.client.survey.QuestionDto.QuestionType;
 import org.waterforpeople.mapping.app.gwt.server.surveyinstance.SurveyInstanceServiceImpl;
 import org.waterforpeople.mapping.app.web.dto.DataProcessorRequest;
@@ -122,12 +123,14 @@ public class RawDataRestServlet extends AbstractRestApiServlet {
 
             SurveyInstance instance = null;
             if (isNewInstance) {
-                if (isMonitoringForm) {
-                    updateMessageBoard(s.getKey().getId(),
-                            "Importing new data into a monitoring form is not supported at the moment");
-                    return null;
+                if (isMonitoringForm) { //Monitoring forms must relate to a registration form
+                    if (StringUtils.isEmpty(importReq.getSurveyedLocaleIdentifier())) {
+                        //quit if not specified
+                        updateMessageBoard(importReq.getSurveyInstanceId(), "Identifier must be specified for new monitored data");
+                        return null;
+                    }
                 }
-                instance = createInstance(importReq);
+                instance = createInstance(importReq); //Saves to get an id, which creates or looks up the surveyedLocale
             } else {
                 instance = instanceDao.getByKey(importReq.getSurveyInstanceId());
                 if (instance == null) {
@@ -222,23 +225,45 @@ public class RawDataRestServlet extends AbstractRestApiServlet {
             }
 
             if (isNewInstance) {
-                // create new surveyed locale and launch task to complete processing
-                SurveyedLocale locale = new SurveyedLocale();
-                locale.setIdentifier(SurveyedLocale.generateBase32Uuid());
-                instance.setSurveyedLocaleIdentifier(locale.getIdentifier());
-
-                String privacyLevel = sg.getPrivacyLevel() != null ? sg.getPrivacyLevel()
-                        .toString() : SurveyGroup.PrivacyLevel.PRIVATE.toString();
-                locale.setLocaleType(privacyLevel);
-                locale.setSurveyGroupId(sg.getKey().getId());
-                locale.setCreationSurveyId(s.getKey().getId());
-                locale.assembleDisplayName(
-                        qDao.listDisplayNameQuestionsBySurveyId(s.getKey().getId()), updatedAnswers);
-
-                locale = slDao.save(locale);
-                instance.setSurveyedLocaleId(locale.getKey().getId());
+                if (isMonitoringForm) { //Must relate to a registration form
+                    // Find existing surveyedLocale by identifier 
+                    // (it has been checked to be non-empty)
+                    SurveyedLocale sl = slDao.getByIdentifier(importReq.getSurveyedLocaleIdentifier());
+                    if (sl == null) {
+                        //quit if not found
+                        updateMessageBoard(importReq.getSurveyInstanceId(), "SurveyedLocaleIdentifier "
+                                + instance.getSurveyedLocaleIdentifier() + " doesn't exist");
+                        return null;
+                    }
+                    instance.setSurveyedLocaleId(sl.getKey().getId());
+                    instance.setSurveyedLocaleDisplayName(sl.getDisplayName());
+                }
+                else
+                { //Standalone or Registration form
+                    // create new surveyed locale
+                    SurveyedLocale locale = new SurveyedLocale();
+                    if (StringUtils.isEmpty(importReq.getSurveyedLocaleIdentifier())) {
+                        locale.setIdentifier(SurveyedLocale.generateBase32Uuid());
+                    } else {
+                        //Probably exported from other instance
+                        //keep old id, so exported monitoring form can relate.
+                        locale.setIdentifier(importReq.getSurveyedLocaleIdentifier());
+                    }
+                    instance.setSurveyedLocaleIdentifier(locale.getIdentifier());
+    
+                    String privacyLevel = sg.getPrivacyLevel() != null ? sg.getPrivacyLevel()
+                            .toString() : SurveyGroup.PrivacyLevel.PRIVATE.toString();
+                    locale.setLocaleType(privacyLevel);
+                    locale.setSurveyGroupId(sg.getKey().getId());
+                    locale.setCreationSurveyId(s.getKey().getId());
+                    locale.assembleDisplayName(
+                            qDao.listDisplayNameQuestionsBySurveyId(s.getKey().getId()), updatedAnswers);
+                    locale = slDao.save(locale);
+                    instance.setSurveyedLocaleId(locale.getKey().getId());
+                }
                 instanceDao.save(instance);
-
+                
+                // launch task to complete processing
                 Queue defaultQueue = QueueFactory.getDefaultQueue();
                 TaskOptions processSurveyedLocaleOptions = TaskOptions.Builder
                         .withUrl("/app_worker/surveyalservlet")
@@ -433,15 +458,14 @@ public class RawDataRestServlet extends AbstractRestApiServlet {
         inst.setApproximateLocationFlag("False");
         inst.setDeviceIdentifier("IMPORTER");
         inst.setUuid(UUID.randomUUID().toString());
-        inst.setSurveyedLocaleId(importReq.getSurveyedLocaleId());
-        inst.setUuid(UUID.randomUUID().toString());
+        inst.setSurveyedLocaleIdentifier(importReq.getSurveyedLocaleIdentifier());
         inst.setSubmitterName(importReq.getSubmitter());
         inst.setSurveyalTime(importReq.getSurveyDuration());
 
         // set the key so the subsequent logic can populate it in the
         // QuestionAnswerStore objects
-        inst = instanceDao.save(inst);
-
+        inst = instanceDao.save(inst); //Plain BaseDAO save
+        
         importReq.setSurveyInstanceId(inst.getKey().getId());
         if (importReq.getCollectionDate() == null) {
             importReq.setCollectionDate(inst.getCollectionDate());

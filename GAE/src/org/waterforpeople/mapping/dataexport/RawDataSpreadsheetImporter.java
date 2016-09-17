@@ -585,7 +585,10 @@ public class RawDataSpreadsheetImporter implements DataImporter {
         sb.append("submitter=" + URLEncoder.encode(dto.getSubmitterName(), "UTF-8") + "&");
 
         // Duration
-        sb.append("duration=" + dto.getSurveyalTime());
+        sb.append("duration=" + dto.getSurveyalTime() + "&");
+
+        // surveyedLocale identifier
+        sb.append("sli=" + dto.getSurveyedLocaleIdentifier());
 
         // questionId=123|0=sfijd|2=fjsoi|type=GEO&questionId=...
         for (Entry<Long, SortedMap<Long, String>> entry : instanceData.responseMap
@@ -808,7 +811,7 @@ public class RawDataSpreadsheetImporter implements DataImporter {
 
     public static void main(String[] args) throws Exception {
         if (args.length != 4) {
-            log.error("Error.\nUsage:\n\tjava org.waterforpeople.mapping.dataexport.RawDataSpreadsheetImporter <file> <serverBase> <surveyId>");
+            log.error("Error.\nUsage:\n\tjava org.waterforpeople.mapping.dataexport.RawDataSpreadsheetImporter <file> <serverBase> <surveyId> <apiKey>");
             System.exit(1);
         }
         File file = new File(args[0].trim());

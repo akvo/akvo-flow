@@ -50,6 +50,7 @@ public class RawDataImportRequest extends RestRequest {
     public static final String SUBMITTER_PARAM = "submitter";
     public static final String FIXED_FIELD_VALUE_PARAM = "values";
     public static final String LOCALE_ID_PARAM = "surveyedLocale";
+    public static final String LOCALE_IDENTIFIER_PARAM = "sli";
     public static final String DURATION_PARAM = "duration";
 
     public static final String SAVE_SURVEY_INSTANCE_ACTION = "saveSurveyInstance";
@@ -60,12 +61,15 @@ public class RawDataImportRequest extends RestRequest {
 
     public static final String FIELD_VAL_DELIMITER = ";;";
 
+    private String type;
     private Long surveyId;
     private Long surveyedLocaleId;
     private Long surveyInstanceId = null;
     private Long duration = null;
     private Date collectionDate = null;
     private String submitter = null;
+    //new for monitoring form:
+    private String surveyedLocaleIdentifier = null;
 
     // questionId -> iteration -> [response, type]
     private Map<Long, Map<Integer, String[]>> responseMap = new HashMap<>();
@@ -79,8 +83,6 @@ public class RawDataImportRequest extends RestRequest {
     public void setFixedFieldValues(List<String> fixedFieldValues) {
         this.fixedFieldValues = fixedFieldValues;
     }
-
-    private String type;
 
     public String getType() {
         return type;
@@ -148,6 +150,9 @@ public class RawDataImportRequest extends RestRequest {
             } catch (Exception e) {
                 log.info(LOCALE_ID_PARAM + " is missing");
             }
+        }
+        if (req.getParameter(LOCALE_IDENTIFIER_PARAM) != null) {
+            setSurveyedLocaleIdentifier(req.getParameter(LOCALE_IDENTIFIER_PARAM));
         }
         if (req.getParameter(SURVEY_INSTANCE_ID_PARAM) != null) {
             try {
@@ -263,5 +268,14 @@ public class RawDataImportRequest extends RestRequest {
     public Long getSurveyDuration() {
         return duration;
     }
+
+    public String getSurveyedLocaleIdentifier() {
+        return surveyedLocaleIdentifier;
+    }
+
+    public void setSurveyedLocaleIdentifier(String i) {
+        this.surveyedLocaleIdentifier = i;
+    }
+
 
 }
