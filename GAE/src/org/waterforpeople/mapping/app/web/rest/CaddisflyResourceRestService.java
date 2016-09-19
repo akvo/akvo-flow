@@ -34,20 +34,22 @@ import com.gallatinsystems.survey.dao.CaddisflyResourceDao;
 @RequestMapping("/caddisfly_resources")
 public class CaddisflyResourceRestService {
 
-    @Inject
-    private CaddisflyResourceDao caddisflyResourceDao;
-
-    @RequestMapping(method = RequestMethod.GET, value = "")
-    @ResponseBody
-    public Map<String, List<CaddisflyResource>> listCaddisflyResources() {
-        final Map<String, List<CaddisflyResource>> response = new HashMap<String, List<CaddisflyResource>>();
-        List<CaddisflyResource> caddisList = caddisflyResourceDao.listResources();
         // TODO create a keyId for each, because it is needed in the dashboard.
-        for (CaddisflyResource cr : caddisList){
-        	Long id = UUID.fromString(cr.getUuid()).getLeastSignificantBits();
-        	cr.setKeyId(id);
-        }
-        response.put("caddisfly_resources", caddisList);
-        return response;
-    }
+	@Inject
+	private CaddisflyResourceDao caddisflyResourceDao;
+
+	@RequestMapping(method = RequestMethod.GET, value = "")
+	@ResponseBody
+	public Map<String, List<CaddisflyResource>> listCaddisflyResources() {
+		final Map<String, List<CaddisflyResource>> response = new HashMap<String, List<CaddisflyResource>>();
+		List<CaddisflyResource> caddisList = caddisflyResourceDao
+				.listResources();
+
+		for (CaddisflyResource cr : caddisList) {
+			Long id = UUID.fromString(cr.getUuid()).getLeastSignificantBits();
+			cr.setKeyId(id);
+		}
+		response.put("caddisfly_resources", caddisList);
+		return response;
+	}
 }

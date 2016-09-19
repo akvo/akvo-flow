@@ -16,49 +16,48 @@
 package org.waterforpeople.mapping.domain;
 
 import java.io.Serializable;
-import java.util.List;
 
-public class CaddisflyResult implements Serializable,Comparable {
+public class CaddisflyResult implements Serializable, Comparable {
 	private static final long serialVersionUID = 1L;
-		private String name;
-		private String unit;
-		private int id;
-
-		public CaddisflyResult(String name, String unit, int id){
-			this.setName(name);
-			this.setUnit(unit);
-			this.setId(id);
-		}
-
 		public CaddisflyResult(){
 			
 		}
 
-		public String getName() {
-			return name;
-		}
+	private String name;
+	private String unit;
+	private int id;
 
-		public void setName(String name) {
-			this.name = name;
-		}
+	public CaddisflyResult(String name, String unit, int id) {
+		this.setName(name);
+		this.setUnit(unit);
+		this.setId(id);
+	}
 
-		public String getUnit() {
-			return unit;
-		}
+	public String getName() {
+		return name;
+	}
 
-		public void setUnit(String unit) {
-			this.unit = unit;
-		}
+	public void setName(String name) {
+		this.name = name;
+	}
 
-		public int getId() {
-			return id;
-		}
+	public String getUnit() {
+		return unit;
+	}
 
-		public void setId(int id) {
-			this.id = id;
-		}
+	public void setUnit(String unit) {
+		this.unit = unit;
+	}
 
-		public int compareTo(Object o) {
-			return (id - ((CaddisflyResult) o).getId());
-		}
+	public int getId() {
+		return id;
+	}
+
+	public void setId(int id) {
+		this.id = id;
+	}
+
+	public int compareTo(Object o) {
+		return (id - ((CaddisflyResult) o).getId());
+	}
 }

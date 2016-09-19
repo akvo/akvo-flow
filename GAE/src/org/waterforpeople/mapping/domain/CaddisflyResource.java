@@ -17,10 +17,9 @@ package org.waterforpeople.mapping.domain;
 
 import java.io.Serializable;
 import java.util.List;
-import org.waterforpeople.mapping.domain.CaddisflyResult;
 
 public class CaddisflyResource implements Serializable {
-	private static final long serialVersionUID = 1L;	
+	private static final long serialVersionUID = 1L;
 	private String name;
 	private String uuid;
 	private Long keyId;
@@ -32,7 +31,9 @@ public class CaddisflyResource implements Serializable {
 	private Boolean hasImage;
 	private List<CaddisflyResult> results;
 
-	public CaddisflyResource(String name, String uuid, String subtype, String brand, String[] tags, String description, int numResults, Boolean hasImage){
+	public CaddisflyResource(String name, String uuid, String subtype,
+			String brand, String[] tags, String description, int numResults,
+			Boolean hasImage) {
 		this.setName(name);
 		this.setUuid(uuid);
 		this.setSubtype(subtype);
