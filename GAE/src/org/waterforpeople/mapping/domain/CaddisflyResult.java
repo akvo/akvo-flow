@@ -19,10 +19,6 @@ import java.io.Serializable;
 
 public class CaddisflyResult implements Serializable, Comparable {
 	private static final long serialVersionUID = 1L;
-		public CaddisflyResult(){
-			
-		}
-
 	private String name;
 	private String unit;
 	private int id;

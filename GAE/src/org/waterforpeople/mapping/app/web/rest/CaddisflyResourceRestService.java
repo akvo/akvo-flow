@@ -34,7 +34,6 @@ import com.gallatinsystems.survey.dao.CaddisflyResourceDao;
 @RequestMapping("/caddisfly_resources")
 public class CaddisflyResourceRestService {
 
-        // TODO create a keyId for each, because it is needed in the dashboard.
 	@Inject
 	private CaddisflyResourceDao caddisflyResourceDao;
 

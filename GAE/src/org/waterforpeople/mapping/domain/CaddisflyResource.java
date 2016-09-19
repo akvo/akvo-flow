@@ -44,10 +44,6 @@ public class CaddisflyResource implements Serializable {
 		this.setHasImage(hasImage);
 	}
 
-	public CaddisflyResource(){
-		
-	}
-	
 	public String getName() {
 		return name;
 	}
