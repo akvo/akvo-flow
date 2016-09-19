@@ -1,5 +1,5 @@
 /*
- *  Copyright (C) 2014 Stichting Akvo (Akvo Foundation)
+ *  Copyright (C) 2016 Stichting Akvo (Akvo Foundation)
  *
  *  This file is part of Akvo FLOW.
  *
@@ -34,6 +34,7 @@ import org.waterforpeople.mapping.domain.CaddisflyResource;
  * implement baseDAO as it consists of only a single method.
  */
 public class CaddisflyResourceDao {
+	private static ObjectMapper mapper = new ObjectMapper();
 
 	private static final Logger log = Logger.getLogger(CascadeResourceDao.class
 			.getName());
@@ -53,7 +54,6 @@ public class CaddisflyResourceDao {
 							"resources/caddisfly/caddisfly-tests.json");
 			String jsonTxt = IOUtils.toString(stream);
 
-        	ObjectMapper mapper = new ObjectMapper();
 			// create a list of caddisflyResource objects
 			JsonNode rootNode = mapper.readValue(jsonTxt, JsonNode.class);
 			ArrayNode testsNode = (ArrayNode) rootNode.get("tests");
@@ -70,7 +70,6 @@ public class CaddisflyResourceDao {
 	}
 
 	private CaddisflyResource JsonToCaddisflyResource(JsonNode rootNode) {
-		ObjectMapper mapper = new ObjectMapper();
 		CaddisflyResource cr = null;
 		try {
 			cr = mapper.readValue(rootNode, CaddisflyResource.class);
