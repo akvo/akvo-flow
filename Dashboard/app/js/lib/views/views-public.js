@@ -150,29 +150,27 @@ function renderTimeStamp(timestamp) {
   }
 
   d = new Date(t);
-  if (d) {
-    date = d.getDate();
-    month = d.getMonth() + 1;
-    year = d.getFullYear();
-
-    if (month < 10) {
-      monthString = "0" + month.toString();
-    } else {
-      monthString = month.toString();
-    }
-
-    if (date < 10) {
-      dateString = "0" + date.toString();
-    } else {
-      dateString = date.toString();
-    }
-
-    return year + "-" + monthString + "-" + dateString;
-  } else {
-    return "";
+  if (!d){
+	  return "";
   }
-}
+  date = d.getDate();
+  month = d.getMonth() + 1;
+  year = d.getFullYear();
 
+  if (month < 10) {
+    monthString = "0" + month.toString();
+  } else {
+    monthString = month.toString();
+  }
+
+  if (date < 10) {
+    dateString = "0" + date.toString();
+  } else {
+    dateString = date.toString();
+  }
+
+  return year + "-" + monthString + "-" + dateString;
+}
 
 // translates values to labels for languages
 Ember.Handlebars.registerHelper('toLanguage', function (value) {
