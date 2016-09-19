@@ -87,10 +87,10 @@ Ember.Handlebars.registerHelper('tooltip', function (i18nKey) {
 });
 
 
-function renderCaddisflyAnswer(json){
-  name = ""
-  imageUrl = ""
-  result = Ember.A();
+FLOW.renderCaddisflyAnswer = function(json){
+  var name = ""
+  var imageUrl = ""
+  var result = Ember.A();
   if (!Ember.empty(json)){
     jsonParsed = JSON.parse(json);
 
@@ -164,7 +164,7 @@ Ember.Handlebars.registerHelper('placemarkDetail', function () {
   } else if (questionType === 'DATE') {
     answer = renderTimeStamp(answer);
   } else if (questionType === 'CADDISFLY'){
-    answer = renderCaddisflyAnswer(answer)
+    answer = FLOW.renderCaddisflyAnswer(answer)
   }
 
   markup = '<div class="defListWrap"><dt>' +
