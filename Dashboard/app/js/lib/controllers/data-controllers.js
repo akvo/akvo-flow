@@ -425,7 +425,32 @@ FLOW.locationControl = Ember.ArrayController.create({
 
 FLOW.DataApprovalController = Ember.Controller.extend({});
 
-FLOW.ApprovalGroupListController = Ember.ArrayController.extend({});
+FLOW.ApprovalGroupListController = Ember.ArrayController.extend({
+
+    /* ---------------------
+     * Controller Functions
+     * ---------------------
+     */
+    /*
+     * Delete an approval group from the list
+     */
+    delete: function (group) {
+        if(!group || !group.get('keyId')) {
+            return;
+        }
+
+        var groups = this.content;
+        var steps = FLOW.ApprovalStep.find({approvalGroupId: group.get('keyId')});
+        var stepsController = FLOW.router.get('approvalStepsController');
+        steps.on('didLoad', function () {
+            steps.forEach(function (step) {
+                step.deleteRecord();
+            })
+            group.deleteRecord();
+            FLOW.store.commit();
+        })
+    },
+});
 
 FLOW.ApprovalGroupController = Ember.ObjectController.extend({
 
