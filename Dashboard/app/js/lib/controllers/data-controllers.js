@@ -426,6 +426,11 @@ FLOW.locationControl = Ember.ArrayController.create({
 FLOW.DataApprovalController = Ember.Controller.extend({});
 
 FLOW.ApprovalGroupListController = Ember.ArrayController.extend({
+    /* ---------------------
+     * Controller Properties
+     * ---------------------
+     */
+    sortProperties: ['name'],
 
     /* ---------------------
      * Controller Functions
@@ -577,6 +582,13 @@ FLOW.ApprovalGroupController = Ember.ObjectController.extend({
 });
 
 FLOW.ApprovalStepsController = Ember.ArrayController.extend({
+
+    /* ---------------------
+     * Controller Properties
+     * ---------------------
+     */
+    sortProperties: ['order'],
+
 
     /* ---------------------
      * Controller Functions
