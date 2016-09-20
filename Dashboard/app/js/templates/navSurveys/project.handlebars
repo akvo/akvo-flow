@@ -87,7 +87,7 @@
                     </label>
                     {{#if view.showDataApprovalList}}
                       {{view Ember.Select
-                        contentBinding="FLOW.router.approvalGroupListController.content"
+                        contentBinding="FLOW.router.approvalGroupListController.arrangedContent"
                         optionLabelPath="content.name"
                         optionValuePath="content.keyId"
                         disabledBinding="view.disableFolderSurveyInputField"}}
