@@ -176,14 +176,7 @@ FLOW.QuestionAnswerView = Ember.View.extend({
   	if (c && c.get('value')) {
   	  testJson = JSON.parse(c.get('value'));
   	  if (testJson.result && !Ember.empty(testJson.result)){
- 		    testJson.result.forEach(function(item){
-  			  newResult = {
-  			    "name":item.name,
-  				  "value":item.value,
-  				  "unit":item.unit,
-  	  		};
-  		  	result.push(newResult);
-  		  });
+ 		  result = Ember.A(testJson.result);  
   	  }
     }
     this.set('testResult',result);
