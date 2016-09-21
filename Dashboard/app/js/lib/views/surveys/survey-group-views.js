@@ -23,6 +23,7 @@ FLOW.Project = FLOW.View.extend({
   selectedLanguage: null,
   monitoringGroupEnabled: false,
   currentRegistrationForm: null,
+  showDataApprovalDetails: false,
 
   /* computer property for setting / getting the value of the current
   registration form */
@@ -98,6 +99,10 @@ FLOW.Project = FLOW.View.extend({
   showDataApprovalList: function () {
       return FLOW.projectControl.get('requireDataApproval');
   }.property('FLOW.projectControl.currentProject.requireDataApproval'),
+
+  toggleShowDataApprovalDetails: function () {
+      this.set('showDataApprovalDetails', !this.get('showDataApprovalDetails'));
+  },
 });
 
 FLOW.SurveyApprovalView = FLOW.View.extend({});

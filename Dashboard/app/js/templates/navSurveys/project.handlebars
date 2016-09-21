@@ -94,12 +94,16 @@
                         selectionBinding="FLOW.router.approvalGroupController.content"
                         disabledBinding="view.disableFolderSurveyInputField"}}
 
-                        {{#view FLOW.SurveyApprovalView controllerBinding="FLOW.router.approvalGroupController"}}
-                            <h2>{{name}}</h2>
-                            {{#if ordered}} {{t _ordered_approval}} {{else}} {{t _unordered_approval}} {{/if}}
+                        {{#if view.showDataApprovalDetails}}
+                            <a {{action toggleShowDataApprovalDetails target="view"}}>{{t _hide_approval}}</a>
 
-                        {{/view}}
-
+                            {{#view FLOW.SurveyApprovalView controllerBinding="FLOW.router.approvalGroupController"}}
+                                <h2>{{name}}</h2>
+                                {{#if ordered}} {{t _ordered_approval}} {{else}} {{t _unordered_approval}} {{/if}}
+                            {{/view}}
+                        {{else}}
+                            <a {{action toggleShowDataApprovalDetails target="view"}}>{{t _show_approval}}</a>
+                        {{/if}}
                     {{/if}}
 
                   {{/if}}
