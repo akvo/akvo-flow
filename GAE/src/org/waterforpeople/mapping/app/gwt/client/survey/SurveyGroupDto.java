@@ -44,6 +44,7 @@ public class SurveyGroupDto extends BaseDto implements NamedObject {
     private PrivacyLevel privacyLevel;
     private Boolean published;
     private Boolean requireDataApproval;
+    private Long dataApprovalGroupId;
     private List<Long> ancestorIds;
 
     private ArrayList<Long> surveyList = null;
@@ -230,6 +231,17 @@ public class SurveyGroupDto extends BaseDto implements NamedObject {
 
     public void setRequireDataApproval(Boolean requireDataApproval) {
         this.requireDataApproval = requireDataApproval;
+    }
+
+    public Long getDataApprovalGroupId() {
+        if (surveyGroup != null) {
+            return surveyGroup.getDataApprovalGroupId();
+        }
+        return dataApprovalGroupId;
+    }
+
+    public void setDataApprovalGroupId(Long dataApprovalGroupId) {
+        this.dataApprovalGroupId = dataApprovalGroupId;
     }
 
     public List<Long> getAncestorIds() {
