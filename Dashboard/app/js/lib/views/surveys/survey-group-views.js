@@ -100,6 +100,7 @@ FLOW.Project = FLOW.View.extend({
   }.property('FLOW.projectControl.currentProject.requireDataApproval'),
 });
 
+FLOW.SurveyApprovalView = FLOW.View.extend({});
 
 FLOW.ProjectMainView = FLOW.View.extend({
 

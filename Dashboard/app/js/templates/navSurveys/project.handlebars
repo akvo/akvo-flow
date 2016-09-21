@@ -91,7 +91,15 @@
                         optionLabelPath="content.name"
                         optionValuePath="content.keyId"
                         valueBinding="FLOW.projectControl.currentProject.dataApprovalGroupId"
+                        selectionBinding="FLOW.router.approvalGroupController.content"
                         disabledBinding="view.disableFolderSurveyInputField"}}
+
+                        {{#view FLOW.SurveyApprovalView controllerBinding="FLOW.router.approvalGroupController"}}
+                            <h2>{{name}}</h2>
+                            {{#if ordered}} {{t _ordered_approval}} {{else}} {{t _unordered_approval}} {{/if}}
+
+                        {{/view}}
+
                     {{/if}}
 
                   {{/if}}
