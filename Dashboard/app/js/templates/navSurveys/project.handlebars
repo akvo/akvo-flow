@@ -82,35 +82,36 @@
                         disabledBinding="view.disableFolderSurveyInputField"}}
                     {{/if}}
 
-                    <label for="enableDataApproval" class="labelcheckbox">
-                        {{view Ember.Checkbox checkedBinding="FLOW.projectControl.requireDataApproval" id="enableDataApproval" disabledBinding="view.disableFolderSurveyInputField"}} {{t _enable_data_approval}} {{tooltip _enable_data_approval_tooltip}}
-                    </label>
-                    {{#if view.showDataApprovalList}}
-                      {{view Ember.Select
-                        contentBinding="FLOW.router.approvalGroupListController.arrangedContent"
-                        optionLabelPath="content.name"
-                        optionValuePath="content.keyId"
-                        valueBinding="FLOW.projectControl.currentProject.dataApprovalGroupId"
-                        selectionBinding="FLOW.router.approvalGroupController.content"
-                        disabledBinding="view.disableFolderSurveyInputField"}}
+                    {{#if view.showDataApproval}}
+                        <label for="enableDataApproval" class="labelcheckbox">
+                            {{view Ember.Checkbox checkedBinding="FLOW.projectControl.requireDataApproval" id="enableDataApproval" disabledBinding="view.disableFolderSurveyInputField"}} {{t _enable_data_approval}} {{tooltip _enable_data_approval_tooltip}}
+                        </label>
+                        {{#if view.showDataApprovalList}}
+                          {{view Ember.Select
+                            contentBinding="FLOW.router.approvalGroupListController.arrangedContent"
+                            optionLabelPath="content.name"
+                            optionValuePath="content.keyId"
+                            valueBinding="FLOW.projectControl.currentProject.dataApprovalGroupId"
+                            selectionBinding="FLOW.router.approvalGroupController.content"
+                            disabledBinding="view.disableFolderSurveyInputField"}}
 
-                        {{#if view.showDataApprovalDetails}}
-                            <a {{action toggleShowDataApprovalDetails target="view"}}>{{t _hide_approval}}</a>
+                            {{#if view.showDataApprovalDetails}}
+                                <a {{action toggleShowDataApprovalDetails target="view"}}>{{t _hide_approval}}</a>
 
-                            {{#view FLOW.SurveyApprovalView controllerBinding="FLOW.router.approvalGroupController"}}
-                                <h2>{{name}}</h2>
-                                <p>{{#if ordered}} {{t _ordered_approval}} {{else}} {{t _unordered_approval}} {{/if}}</p>
-                                <ul>
-                                {{#each step in FLOW.router.approvalStepsController}}
-                                    <li>{{step.title}}</li>
-                                {{/each}}
-                                </ul>
-                            {{/view}}
-                        {{else}}
-                            <a {{action toggleShowDataApprovalDetails target="view"}}>{{t _show_approval}}</a>
+                                {{#view FLOW.SurveyApprovalView controllerBinding="FLOW.router.approvalGroupController"}}
+                                    <h2>{{name}}</h2>
+                                    <p>{{#if ordered}} {{t _ordered_approval}} {{else}} {{t _unordered_approval}} {{/if}}</p>
+                                    <ul>
+                                    {{#each step in FLOW.router.approvalStepsController}}
+                                        <li>{{step.title}}</li>
+                                    {{/each}}
+                                    </ul>
+                                {{/view}}
+                            {{else}}
+                                <a {{action toggleShowDataApprovalDetails target="view"}}>{{t _show_approval}}</a>
+                            {{/if}}
                         {{/if}}
                     {{/if}}
-
                   {{/if}}
                 {{/if}}
               </form>

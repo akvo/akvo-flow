@@ -96,6 +96,10 @@ FLOW.Project = FLOW.View.extend({
     return FLOW.permControl.canEditSurvey(survey);
   }.property(),
 
+  showDataApproval: function () {
+      return FLOW.Env.enableDataApproval;
+  }.property(),
+
   showDataApprovalList: function () {
       return FLOW.projectControl.get('requireDataApproval');
   }.property('FLOW.projectControl.currentProject.requireDataApproval'),
