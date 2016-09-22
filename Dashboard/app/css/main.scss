@@ -6869,6 +6869,7 @@ html.navMaps {
 
     & > p {
         color: rgb(212, 212, 212);
+        margin-bottom: 10px;
     }
 
     h2 {
@@ -6883,11 +6884,12 @@ html.navMaps {
         min-height: 15px;
         margin-bottom:2px;
         clear: both;
-        background: rgba(255,255,255,0.1);
+        background: rgba(255,255,255,0.05);
         @include border-radius(2px);
         h4 {
             display: inline;
             float: left;
+            color: white;
         }
 
         a {
