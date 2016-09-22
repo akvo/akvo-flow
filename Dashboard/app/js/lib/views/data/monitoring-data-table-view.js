@@ -13,6 +13,10 @@ FLOW.MonitoringDataTableView = FLOW.View.extend({
     this.toggleProperty('showingDetailsDialog');
   },
 
+  showApprovalStatusColumn: function () {
+      return FLOW.Env.enableDataApproval;
+  }.property(),
+
   closeDetailsDialog: function () {
     this.toggleProperty('showingDetailsDialog');
   },

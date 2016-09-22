@@ -28,10 +28,12 @@
         <thead>
           <tr>
               <th class="noArrows"></th>
-              <th class="noArrows">{{t _survey}}</th>
-              <th class="noArrows">{{t _identifier}}</th>
               <th class="noArrows">{{t _data_point_name}}</th>
+              <th class="noArrows">{{t _identifier}}</th>
               <th class="noArrows">{{t _last_update}}</th>
+              {{#if view.showApprovalStatusColumn}}
+              <th class="noArrows">{{t _approval_status}}</th>
+              {{/if}}
               <th class="noArrows">{{t _action}}</th>
           </tr>
         </thead>
@@ -39,10 +41,12 @@
           {{#each sl in FLOW.surveyedLocaleControl.currentContents}}
             <tr>
               <td class="device">{{#view FLOW.DataNumView contentBinding="this" pageNumberBinding="view.pageNumber"}}{{view.rownum}}{{/view}}</td>
-              <td class="surveyGroup" style="text-align:left;">{{#with sl}}{{sgName surveyGroupId}}{{/with}}</td>
-              <td class="identifier" style="text-align:left;">{{sl.identifier}}</td>
               <td class="displayName" style="text-align:left;">{{sl.displayName}}</td>
+              <td class="identifier" style="text-align:left;">{{sl.identifier}}</td>
               <td class="collected">{{#with sl}}{{date1 lastUpdateDateTime}}{{/with}}</td>
+              {{#if view.showApprovalStatusColumn}}
+              <td class="approvalStatus"></td>
+              {{/if}}
               <td class="action">
                 <a {{action showDetailsDialog sl target="this" }}>
                   {{t _view_details}}
