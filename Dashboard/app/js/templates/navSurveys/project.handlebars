@@ -96,15 +96,16 @@
 
                         {{#if view.showDataApprovalDetails}}
                             <a {{action toggleShowDataApprovalDetails target="view"}}>{{t _hide_approval}}</a>
-
                             {{#view FLOW.SurveyApprovalView controllerBinding="FLOW.router.approvalGroupController"}}
+                              <div class="approvalDetail">
                                 <h2>{{name}}</h2>
                                 <p>{{#if ordered}} {{t _ordered_approval}} {{else}} {{t _unordered_approval}} {{/if}}</p>
-                                <ul>
+                                <ul class="approvalSteps">
                                 {{#each step in FLOW.router.approvalStepsController}}
-                                    <li>{{step.title}}</li>
+                                    <li><h4>{{step.title}}</h4> <a href="">Responsible persons</a></li>
                                 {{/each}}
                                 </ul>
+                              </div>
                             {{/view}}
                         {{else}}
                             <a {{action toggleShowDataApprovalDetails target="view"}}>{{t _show_approval}}</a>
