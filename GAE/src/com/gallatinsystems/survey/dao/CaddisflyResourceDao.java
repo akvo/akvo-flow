@@ -42,8 +42,6 @@ public class CaddisflyResourceDao {
 	/**
 	 * lists caddisfly resources. Source is the json file caddisfly-tests.json
 	 * stored in WEB-INF/resources
-	 * 
-	 * @param item
 	 */
 	public List<CaddisflyResource> listResources() {
 		List<CaddisflyResource> result = new ArrayList<CaddisflyResource>();

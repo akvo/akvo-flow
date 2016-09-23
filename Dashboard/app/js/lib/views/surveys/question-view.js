@@ -102,12 +102,12 @@ FLOW.QuestionView = FLOW.View.extend({
   }.property('this.type').cacheable(),
 
   amCascadeType: function () {
-	    if (this.type) {
-	      return this.type.get('value') == 'CASCADE';
-	    } else {
-	      return false;
-	    }
-	  }.property('this.type').cacheable(),
+    if (this.type) {
+	  return this.type.get('value') == 'CASCADE';
+	} else {
+	  return false;
+	}
+  }.property('this.type').cacheable(),
 
   amNoOptionsType: function () {
     var val;
@@ -118,20 +118,20 @@ FLOW.QuestionView = FLOW.View.extend({
   }.property('this.type').cacheable(),
 
   amGeoshapeType: function () {
-	    if (this.type) {
-	      return this.type.get('value') == 'GEOSHAPE';
-	    } else {
-	      return false;
-	    }
-	  }.property('this.type').cacheable(),
+    if (this.type) {
+	  return this.type.get('value') == 'GEOSHAPE';
+	} else {
+	  return false;
+	}
+  }.property('this.type').cacheable(),
 
   amDateType: function () {
-      if (this.type) {
-        return this.type.get('value') == 'DATE';
-      } else {
-        return false;
-      }
-    }.property('this.type').cacheable(),    
+    if (this.type) {
+      return this.type.get('value') == 'DATE';
+    } else {
+      return false;
+    }
+  }.property('this.type').cacheable(),
 
   amSignatureType: function () {
     return (this.content && this.content.get('type') === 'SIGNATURE')
@@ -139,18 +139,18 @@ FLOW.QuestionView = FLOW.View.extend({
   }.property('this.type'),
 
   amCaddisflyType: function () {
-	    return (this.content && this.content.get('type') === 'CADDISFLY')
-	            || (this.type && this.type.get('value') === 'CADDISFLY');
-	  }.property('this.type').cacheable(),
+	return (this.content && this.content.get('type') === 'CADDISFLY'
+		|| (this.type && this.type.get('value') === 'CADDISFLY'));
+	}.property('this.type').cacheable(),
 
   showLocaleName: function () {
-      if (!this.type) {
-          return false;
-      }
-      return this.type.get('value') == 'FREE_TEXT'
-          || this.type.get('value') == 'NUMBER'
-          || this.type.get('value') == 'OPTION'
-          || this.type.get('value') == 'CASCADE';
+    if (!this.type) {
+      return false;
+    }
+    return this.type.get('value') == 'FREE_TEXT'
+    	|| this.type.get('value') == 'NUMBER'
+        || this.type.get('value') == 'OPTION'
+        || this.type.get('value') == 'CASCADE';
   }.property('this.type').cacheable(),
 
   // when we change the question type to GEO, we turn on the

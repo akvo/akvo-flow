@@ -171,8 +171,8 @@ FLOW.QuestionAnswerView = Ember.View.extend({
   * "uuid":"bf1c19c0-9788-4e26-999e-1b5c6ca28111","image":"b3893f16-6a02-4e92-a13e-fce25223a0c5.png"}
   */
   parseTestJson: function(){
-	  var c = this.content, testJson, newResult, image;
-  	result=Ember.A();
+	var c = this.content, testJson, newResult, image, result;
+  	result = Ember.A();
   	if (c && c.get('value')) {
   	  testJson = JSON.parse(c.get('value'));
   	  if (testJson.result && !Ember.empty(testJson.result)){
@@ -196,8 +196,7 @@ FLOW.QuestionAnswerView = Ember.View.extend({
   	var c = this.content, testJson;
   	if (c && c.get('value')) {
   	  testJson = JSON.parse(c.get('value'));
-  	  if (!Ember.empty(testJson.result))
-  	  {
+  	  if (!Ember.empty(testJson.result)){
   		  this.parseTestJson();
   	  }
   	  if (!Ember.empty(testJson.name)){
