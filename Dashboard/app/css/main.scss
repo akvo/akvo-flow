@@ -6880,7 +6880,7 @@ html.navMaps {
     li {
         display: block;
         padding: 10px 5px !important;
-        width: calc(100% - 20px);
+        width: calc(100% - 40px);
         min-height: 15px;
         margin-bottom:2px;
         clear: both;
@@ -6893,9 +6893,9 @@ html.navMaps {
         }
 
         a {
-            display: inline;
-            float: right;
+            display: inline-block;
             text-indent: -9999px;
+            margin: -2px 0 0 10px;
             width: 5px;
             height: 5px;
             padding: 5px 0 10px 25px;
@@ -6907,4 +6907,7 @@ html.navMaps {
             }
         }
     }
+}
+.hideShow {
+    margin:5px 0 0 30px;
 }

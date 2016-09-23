@@ -96,7 +96,9 @@
                             disabledBinding="view.disableFolderSurveyInputField"}}
 
                             {{#if view.showDataApprovalDetails}}
+                              <div class="hideShow">
                                 <a {{action toggleShowDataApprovalDetails target="view"}}>{{t _hide_approval}}</a>
+                              </div>
                                 {{#view FLOW.SurveyApprovalView controllerBinding="FLOW.router.approvalGroupController"}}
                                   <div class="approvalDetail">
                                     <h2>{{name}}</h2>
@@ -108,8 +110,10 @@
                                     </ul>
                                   </div>
                                 {{/view}}
-                            {{else}}
+                              {{else}}
+                              <div class="hideShow">
                                 <a {{action toggleShowDataApprovalDetails target="view"}}>{{t _show_approval}}</a>
+                              </div>
                             {{/if}}
                         {{/if}}
                     {{/if}}
