@@ -92,24 +92,13 @@ FLOW.renderCaddisflyAnswer = function(json){
   var imageUrl = ""
   var result = Ember.A();
   if (!Ember.empty(json)){
-    jsonParsed = JSON.parse(json);
+    var jsonParsed = JSON.parse(json);
 
     // get out test name
     if (!Ember.empty(jsonParsed.name)){
       testName =  jsonParsed.name.trim();
     }
 
-    // get out results
-    if (jsonParsed.result && !Ember.empty(jsonParsed.result)){
-        jsonParsed.result.forEach(function(item){
-        newResult = {
-          "name":item.name,
-          "value":item.value,
-          "unit":item.unit,
-        };
-        result.push(newResult);
-      });
-    }
     // get out image url
     if (!Ember.empty(jsonParsed.image)){
       imageUrl = FLOW.Env.photo_url_root + jsonParsed.image.trim();
@@ -117,7 +106,7 @@ FLOW.renderCaddisflyAnswer = function(json){
 
     // contruct html
     html = "<div><strong>" + name + "</strong></div>"
-    html += result.map(function(item){
+    html += jsonParsed.result.map(function(item){
     		return "<br><div>" + item.name + " : " + item.value + " " + item.unit + "</div>";
     	}).join("\n");
     html += "<br>"
