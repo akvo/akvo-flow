@@ -210,12 +210,12 @@ FLOW.QuestionView = FLOW.View.extend({
     FLOW.selectedControl.set('selectedCaddisflyResource', null);
     // if the caddisflyResourceUuid is not null, get the resource
     if (!Ember.empty(FLOW.selectedControl.selectedQuestion.get('caddisflyResourceUuid'))) {
-      FLOW.caddisflyResourceControl.get('content').forEach(function (item) {
-        if (item.get('uuid') == FLOW.selectedControl.selectedQuestion.get('caddisflyResourceUuid')) {
-          FLOW.selectedControl.set('selectedCaddisflyResource', item);
-        }
-      });
+      var caddResource = FLOW.caddisflyResourceControl.get('content').findProperty('uuid', FLOW.selectedControl.selectedQuestion.get('caddisflyResourceUuid'));
+      if (!Ember.empty(caddResource)) {
+        FLOW.selectedControl.set('selectedCaddisflyResource',caddResource);
+      }
     }
+
     // if the dependentQuestionId is not null, get the question
     if (!Ember.empty(FLOW.selectedControl.selectedQuestion.get('dependentQuestionId'))) {
       dependentQuestion = FLOW.store.find(FLOW.Question, FLOW.selectedControl.selectedQuestion.get('dependentQuestionId'));
