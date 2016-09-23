@@ -83,3 +83,14 @@ FLOW.MonitoringDataTableView = FLOW.View.extend({
     return FLOW.surveyedLocaleControl.get('pageNumber');
   }.property('FLOW.surveyedLocaleControl.pageNumber'),
 });
+
+FLOW.DataPointApprovalStatusView = FLOW.View.extend({
+    content: null,
+
+    latestApprovalStepTitle: function () {
+        var stepsController = FLOW.router.get('approvalStepsController');
+        if(stepsController.get('firstObject')) {
+            return stepsController.get('firstObject').get('title');
+        }
+    }.property(),
+});

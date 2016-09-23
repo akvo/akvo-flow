@@ -45,7 +45,7 @@
               <td class="identifier" style="text-align:left;">{{sl.identifier}}</td>
               <td class="collected">{{#with sl}}{{date1 lastUpdateDateTime}}{{/with}}</td>
               {{#if view.showApprovalStatusColumn}}
-              <td class="approvalStatus"></td>
+              <td class="approvalStatus"><a>{{#view FLOW.DataPointApprovalStatusView}}{{view.latestApprovalStepTitle}}{{/view}}</a></td>
               {{/if}}
               <td class="action">
                 <a {{action showDetailsDialog sl target="this" }}>
