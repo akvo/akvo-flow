@@ -283,7 +283,9 @@ pre {
     -webkit-box-shadow: 0 0 2px rgb(0, 0, 0);
     -o-box-shadow: 0 0 2px rgb(0, 0, 0);
     box-shadow: 0 0 2px rgb(0, 0, 0);
+
     @include border-radius(5px);
+
     z-index: 12999;
 }
 
@@ -352,12 +354,15 @@ a, a:link, a:visited {
     cursor: pointer;
     -webkit-transition: color 0.2s linear;
     transition: color 0.2s linear;
+
     &:link {
         -webkit-tap-highlight-color: #fcd700;
     }
+
     &:hover {
         color: $anchorLinkHover;
     }
+
     &.standardBtn {
         display: inline-block;
         padding: 0.25em 0.5em;
@@ -368,11 +373,13 @@ a, a:link, a:visited {
         font-size: 1.1em;
         -o-border-radius: 0.3em;
         border-radius: 0.3em;
+
         &:hover {
             background: $anchorLinkHover;
             color: white;
         }
     }
+
     &.smallBtn {
         display: inline-block;
         padding: 6px 7px 5px 7px;
@@ -383,11 +390,13 @@ a, a:link, a:visited {
         text-transform: uppercase;
         font-size: 1em;
         -o-border-radius: 3px;
+
         &:hover {
             background: $anchorLinkHover;
             color: white;
         }
     }
+
     &.helpIcon {
         display: inline-block;
         font-size: 1em;
@@ -398,13 +407,16 @@ a, a:link, a:visited {
         background: $anchorLink;
         color: white;
         text-align: center;
+
         &:hover {
             background: $anchorLinkHover;
         }
+
         .selectinLabel & {
             line-height: 1.5em;
         }
     }
+
     &.AddBtn {
         display: inline-block !important;
         padding: 1em 1% 0.8em 1.5em;
@@ -413,8 +425,10 @@ a, a:link, a:visited {
         text-align: left;
         text-transform: uppercase;
         font-size: 1.1em;
+
         &:hover {}
     }
+
     &.clodeDialog {
         position: absolute;
         top: 10px;
@@ -426,6 +440,7 @@ a, a:link, a:visited {
         background: url(../images/closeDialog.png) center top no-repeat;
         text-indent: -9999px;
         -o-border-radius: 6px;
+
         &:hover {
             background: url(../images/closeDialog.png) center bottom no-repeat;
         }
@@ -494,6 +509,7 @@ input[type="submit"] {
 
 .btnAboveTable {
     margin: 7px 0 7px 5px;
+
     .usersList & {
         margin: 0;
         position: absolute;
@@ -502,37 +518,42 @@ input[type="submit"] {
     }
 }
 
-
 .editAnswerMenu {
     position: relative;
     margin: 10px auto;
     width: 100%;
     background: rgb(205, 205, 205);
+
     ul {
         @include flexbox;
+
         -webkit-align-items: center;
         align-items: center;
         -webkit-align-content: center;
         align-content: center;
         -webkit-justify-content: space-around;
         justify-content: space-around;
-        padding:15px 0;
+        padding: 15px 0;
+
         li {
-            flex-grow:1;
-            text-align:center;
+            flex-grow: 1;
+            text-align: center;
+
             &.deleteBtn {
                 position: initial;
                 display: relative;
-                top:10px;
-                left:45%;
+                top: 10px;
+                left: 45%;
             }
+
             &:first-child {
                 margin-left: 0.5%;
                 text-align: left;
             }
+
             &:last-child {
                 margin-right: 0.5%;
-                text-align:right;
+                text-align: right;
             }
         }
     }
@@ -543,6 +564,7 @@ input[type="submit"] {
     padding: 1em 2% 1.5em 2%;
     width: 96%;
     background: $darkGrey;
+
     a {
         font-weight: bold;
         font-size: 1.2em;
@@ -580,6 +602,7 @@ input[type="submit"] {
     opacity: 0.0;
     -webkit-transition: opacity 2s;
     transition: opacity 2s;
+
     &.display {
         display: block;
         opacity: 1.0;
@@ -652,12 +675,14 @@ input[type="submit"] {
     .menuCentre {
         margin: 30px auto 10px auto;
     }
+
     p {
         margin: 1em auto;
         padding: 1em 1.3em;
         background: rgb(242, 242, 242);
         font-size: 1.2em;
     }
+
     select,
     input {
         display: block;
@@ -695,6 +720,7 @@ label[for=newDeviceGroupName] {
 
 .middleSection {
     overflow: hidden;
+
     /*margin: 0 0 20px 0;*/
     padding: 90px 0 40px 0;
 }
@@ -754,12 +780,14 @@ header.top {
     height: 41px;
     background: rgb(255, 255, 255);
     z-index: 9999;
+
     /*-webkit-box-shadow: 0 0 1px rgba(32, 32, 36, 0.1);
     box-shadow: 0 0 1px rgba(32, 32, 36, 0.5);
     border-bottom: 1px solid rgb(240, 240, 240);*/
     border-top: 2px solid rgb(44, 42, 116);
     -webkit-transition: all 0.2s ease-in;
     transition: all 0.2s ease-in;
+
     & > div {
         position: relative;
         margin: 0 auto 0 auto;
@@ -767,10 +795,12 @@ header.top {
         width: 100%;
         min-width: 768px;
     }
+
     &.top-nav-collapse {
         padding: 0;
         border-bottom: 1px solid rgb(232, 232, 245);
         border-top: none;
+
         h1 {
             width: 169px;
             top: 2px;
@@ -779,17 +809,20 @@ header.top {
             -webkit-background-size: 85% auto;
             background-size: 85% auto;
         }
+
         & + .belowHeader {
             padding-top: 110px;
             padding-bottom: 110px;
             background: white;
         }
+
         & > div > .belowHeader {
             padding-top: 50px;
             padding-bottom: 110px;
             background: white;
         }
     }
+
     h1 {
         position: absolute;
         top: 2px;
@@ -799,6 +832,7 @@ header.top {
         background: url(../images/akvoFlowLogo.svg) no-repeat 5px top;
         text-indent: -9999px;
         background-size: 95% auto;
+
         a {
             display: block;
             width: 169px;
@@ -813,6 +847,7 @@ header.top {
     position: absolute;
     top: 0;
     right: 0;
+
     ul {
         li {
             display: inline;
@@ -828,21 +863,26 @@ header.top {
     position: absolute;
     top: 0;
     right: 0.25%;
+
     .labelText {
         display: block;
         margin: 0 0 0.25em 0em;
     }
+
     select {
         display: block;
         font-size: 0.9em;
         padding: 5px;
     }
+
     header.top.top-nav-collapse & {
         top: 8px;
+
         .labelText {
             display: inline;
             margin: 0 0.25em 0 0em;
         }
+
         select {
             display: inline;
             font-size: 0.9em;
@@ -858,20 +898,24 @@ nav.appNav {
     position: absolute;
     top: 0px;
     left: 180px;
+
     ul {
         position: relative;
         width: 100%;
+
         li {
             display: inline;
             float: left;
             margin: 0 0 0 0;
             padding: 5px 2px 0 0;
+
             &.current a {
                 /*  -webkit-box-shadow: 0 0 2px rgba(20, 20, 20, 0.1);
                   -o-box-shadow: 0 0 2px rgba(20, 20, 20, 0.1);
                   box-shadow: 0 0 2px rgba(20, 20, 20, 0.1);*/
                 color: $anchorLinkHover;
             }
+
             &:hover,
             &:last-child,
             &:last-child:hover,
@@ -879,6 +923,7 @@ nav.appNav {
             &.current:hover {
                 background-image: none;
             }
+
             a {
                 font-size: 1em;
                 margin-top: -20px;
@@ -888,12 +933,14 @@ nav.appNav {
                 vertical-align: middle;
                 text-transform: uppercase;
                 cursor: pointer;
+
                 header.top.top-nav-collapse & {
                     margin-top: 0;
                     padding: 18px 4px 5px 8px;
                     background-position: center 2px;
                     -webkit-background-size: 18px auto;
                     background-size: 18px auto;
+
                     &:hover {
                         margin-top: 0;
                         padding: 18px 4px 4px 8px;
@@ -920,159 +967,218 @@ nav.appNav {
             &.navHome {
                 a {
                     background: url(../images/topnavDashboards.svg);
+
                     @include bgDetails;
+
                     &:hover {
                         background: url(../images/topnavDashboardsOrange.svg);
+
                         @include bgDetails;
                     }
                 }
+
                 &.current {
                     a {
                         background: url(../images/topnavDashboardsOrange.svg);
+
                         @include bgDetails;
                     }
                 }
             }
+
             &.navMessages {
                 a {
                     background: url(../images/topnavMessages.svg);
+
                     @include bgDetails;
+
                     &:hover {
                         background: url(../images/topnavMessagesOrange.svg);
+
                         @include bgDetails;
                     }
                 }
+
                 &.current {
                     a {
                         background: url(../images/topnavMessagesOrange.svg);
+
                         @include bgDetails;
                     }
                 }
             }
+
             &.navData {
                 a {
                     background: url(../images/topnavData.svg);
+
                     @include bgDetails;
+
                     &:hover {
                         background: url(../images/topnavDataOrange.svg);
+
                         @include bgDetails;
                     }
                 }
+
                 &.current {
                     a {
                         background: url(../images/topnavDataOrange.svg);
+
                         @include bgDetails;
                     }
                 }
             }
+
             &.navDashboards {
                 a {
                     background: url(../images/topnavDashboards.svg);
+
                     @include bgDetails;
+
                     &:hover {
                         background: url(../images/topnavDashboardsOrange.svg);
+
                         @include bgDetails;
                     }
                 }
+
                 &.current {
                     a {
                         background: url(../images/topnavDashboardsOrange.svg);
+
                         @include bgDetails;
                     }
                 }
             }
+
             &.navMaps {
                 a {
                     background: url(../images/topnavMaps.svg);
+
                     @include bgDetails;
+
                     &:hover {
                         background: url(../images/topnavMapsOrange.svg);
+
                         @include bgDetails;
                     }
                 }
+
                 &.current {
                     a {
                         background: url(../images/topnavMapsOrange.svg);
+
                         @include bgDetails;
                     }
                 }
             }
+
             &.navDevices {
                 a {
                     background: url(../images/topnavDevices.svg);
+
                     @include bgDetails;
+
                     &:hover {
                         background: url(../images/topnavDevicesOrange.svg);
+
                         @include bgDetails;
                     }
                 }
+
                 &.current {
                     a {
                         background: url(../images/topnavDevicesOrange.svg);
+
                         @include bgDetails;
                     }
                 }
             }
+
             &.navUsers {
                 a {
                     background: url(../images/topnavUsers.svg);
+
                     @include bgDetails;
+
                     &:hover {
                         background: url(../images/topnavUsersOrange.svg);
+
                         @include bgDetails;
                     }
                 }
+
                 &.current {
                     a {
                         background: url(../images/topnavUsersOrange.svg);
+
                         @include bgDetails;
                     }
                 }
             }
+
             &.navReports {
                 a {
                     background: url(../images/topnavReports.svg);
+
                     @include bgDetails;
+
                     &:hover {
                         background: url(../images/topnavReportsOrange.svg);
+
                         @include bgDetails;
                     }
                 }
+
                 &.current {
                     a {
                         background: url(../images/topnavReportsOrange.svg);
+
                         @include bgDetails;
                     }
                 }
             }
+
             &.navAdmin {
                 a {
                     background: url(../images/topnavAdmin.svg);
+
                     @include bgDetails;
+
                     &:hover {
                         background: url(../images/topnavAdminOrange.svg);
+
                         @include bgDetails;
                     }
                 }
+
                 &.current {
                     a {
                         background: url(../images/topnavAdminOrange.svg);
+
                         @include bgDetails;
                     }
                 }
             }
+
             &.navSurveys {
                 a {
                     background: url(../images/topnavSurveys.svg);
+
                     @include bgDetails;
+
                     &:hover {
                         background: url(../images/topnavSurveysOrange.svg);
+
                         @include bgDetails;
                     }
                 }
+
                 &.current {
                     a {
                         background: url(../images/topnavSurveysOrange.svg);
+
                         @include bgDetails;
                     }
                 }
@@ -1092,9 +1198,11 @@ table.dataTable {
     border-collapse: collapse;
     color: #606060;
     text-align: left;
+
     thead tr {
         border-bottom: none;
         background: $darkGrey;
+
         th {
             position: relative;
             padding: 9px 1em 9px 1em;
@@ -1104,19 +1212,23 @@ table.dataTable {
             text-align: center;
             text-transform: uppercase;
             font-weight: normal;
+
             &.noArrows {
                 background: #3A3A3A;
             }
+
             input[type="checkbox"] {
                 margin: 0;
             }
         }
     }
+
     td {
         overflow: hidden;
         padding: 1.1em 0 1.1em 0.5em;
         vertical-align: middle;
         text-align: center;
+
         &:hover {
             font-weight: normal;
         }
@@ -1191,21 +1303,27 @@ tfoot tr {
         width: 14%;
         text-transform: uppercase;
     }
+
     .action {
         width: 10%;
     }
+
     .deviceName {
         width: 17%;
     }
+
     .extraName {
         width: 17%;
     }
+
     .joinDate {
         width: 10%;
     }
+
     .latitude {
         width: 16%;
     }
+
     .longitude {
         width: 16%;
     }
@@ -1215,21 +1333,27 @@ tfoot tr {
     .userName {
         width: 35%;
     }
+
     .emailAdr {
         width: 35%;
     }
+
     .permLevel {
         width: 20%;
     }
+
     .action {
         width: 10%;
     }
+
     .notFound {
         color: rgb(227, 27, 35);
     }
+
     .Admin {
         color: rgb(219, 135, 201);
     }
+
     .User {
         color: rgb(119, 97, 0);
     }
@@ -1261,27 +1385,34 @@ tfoot tr {
     top: 30px;
     right: 5px;
     text-transform: uppercase;
+
     ul {
         li {
             display: inline;
             float: left;
             margin: 0 0.5em 0 0;
+
             a {
                 display: block;
                 padding: 0.4em 0.8em;
                 background: transparent;
                 color: rgb(0, 123, 182);
                 font-size: 1em;
+
                 @include transition(all 0.2s ease);
+
                 @include border-radius(0.3em);
+
                 &.disabled {
                     @include disabledMix;
                 }
+
                 &:hover {
                     border-radius: 2px;
                     background: $anchorLink;
                     color: white;
                     -o-border-radius: 2px;
+
                     &.disabled {
                         @include disabledMix;
                     }
@@ -1303,6 +1434,7 @@ tfoot tr {
             }
         }
     }
+
     div {
         &.noResults {
             color: red;
@@ -1310,6 +1442,7 @@ tfoot tr {
             text-align: center;
         }
     }
+
     tr {
         td {
             &.survey,
@@ -1326,8 +1459,8 @@ tfoot tr {
             display: inline-block;
             text-align: left;
             width: 49%;
-
         }
+
         .nextBtn {
             display: inline-block;
             text-align: right;
@@ -1343,6 +1476,7 @@ tfoot tr {
         * {
             box-sizing: border-box;
         }
+
         > ul {
             padding: 1em;
             background: whitesmoke;
@@ -1351,19 +1485,24 @@ tfoot tr {
             margin-right: 1em;
             margin-bottom: 1em;
         }
+
         input[type="checkbox"] {
             width: initial;
         }
     }
+
     .editOtherContainer {
         margin-bottom: 1em;
+
         .otherLabel {
             display: inline-block;
             margin-right: 0.5em;
+
             &:after {
                 content: ':';
             }
         }
+
         .editOtherText {
             width: 60%;
             margin-left: auto;
@@ -1377,6 +1516,7 @@ tfoot tr {
 p.optionTitle strong {
     margin-left: 1em;
 }
+
 .optionListView {
     li {
         padding: 0 1em;
@@ -1388,6 +1528,7 @@ p.optionTitle strong {
                 width: 10em;
                 margin-right: 1em;
             }
+
             &:nth-child(2) {
                 width: 35em;
             }
@@ -1397,6 +1538,7 @@ p.optionTitle strong {
             margin-left: 1em;
         }
     }
+
     .optionAdd {
         display: block;
         width: 10em;
@@ -1681,6 +1823,7 @@ th.action {
     display: block;
     width: 100%;
     margin-top: 30px;
+
     select {
         width: 97.5%;
     }
@@ -1705,6 +1848,7 @@ th.action {
 ----------------------------------------------------------------------*/
 #tabs {
     position: relative;
+
     /*overflow-y: scroll;*/
     height: 100%;
     width: 100%;
@@ -1713,6 +1857,7 @@ th.action {
 #tabs div > section {
     border-top: thin solid white;
     background: white;
+
     &.cascadeSection {
         background: $projectBackground;
         box-sizing: border-box;
@@ -1751,16 +1896,21 @@ th.action {
         position: fixed;
         margin-top: -10px;
         z-index: 9999;
+
         & + div, & + section {
             margin-top: 40px;
         }
+
         ul {
             padding: 0;
+
             li {
                 display: inline;
                 float: left;
                 margin: 0 1px 0 0;
+
                 @include border-radius(2px 2px 0 0);
+
                 background: rgba($akvoBlack, 0.5);
                 -webkit-background-clip: padding-box;
                 background-clip: padding-box;
@@ -1768,19 +1918,24 @@ th.action {
                 transition: none;
                 -moz-background-clip: padding;
                 -webkit-background-clip: padding-box;
+
                 &:hover {
                     background: rgb(174, 174, 174);
                 }
+
                 &.active {
                     background: rgb(0, 0, 0);
+
                     &:hover {
                         background: rgb(0, 0, 0);
                     }
+
                     a {
                         color: white;
                         text-shadow: none;
                         -webkit-text-shadow: none;
                         -moz-text-shadow: none;
+
                         &:hover {
                             color: white;
                             text-shadow: none;
@@ -1789,6 +1944,7 @@ th.action {
                         }
                     }
                 }
+
                 a {
                     display: block;
                     padding: 0.75em 1em;
@@ -1797,6 +1953,7 @@ th.action {
                     -webkit-transition: none;
                     transition: none;
                     font-weight: bold;
+
                     &:hover {
                         color: white;
                     }
@@ -1821,6 +1978,7 @@ th.action {
     margin: 8px 0 0 10px;
     width: calc(100% - 32px);
     z-index: 9999;
+
     &.text_edit {
         display: none;
     }
@@ -1848,6 +2006,7 @@ a.text_label {}
         margin: 16px 0 0 10px;
         width: 20%;
     }
+
     .addCascade {
         input[type="text"] {
             width: 50%;
@@ -1865,16 +2024,19 @@ a.text_label {}
 nav.menuGroupWrap {
     overflow-y: hidden;
     height: 370px;
+
     &.topMenuGroupWrap {
         height: initial;
         background: rgba(white, 0.98);
         padding: 3px 0 2px 0;
+
         ul.menuGroup {
             li {
                 border-bottom: none;
             }
         }
     }
+
     ul.menuGroup {
         li {
             position: relative;
@@ -1884,6 +2046,7 @@ nav.menuGroupWrap {
             background: rgb(70, 70, 70);
             background: rgba(255, 255, 255, 0.05) url(../images/selectFolder.svg) 2px center no-repeat;
             background-size: 20px 20px;
+
             div.edit {
                 position: absolute;
                 background: url(../images/IconEditGrey.svg) center center no-repeat;
@@ -1895,6 +2058,7 @@ nav.menuGroupWrap {
                 top: 7px;
                 right: 5px;
             }
+
             div.trashFolder {
                 position: absolute;
                 background: url(../images/IconTrashGrey.svg) center center no-repeat;
@@ -1906,6 +2070,7 @@ nav.menuGroupWrap {
                 top: 7px;
                 right: 30px;
             }
+
             div.copyFolder {
                 position: absolute;
                 background: url(../images/IconCopyGrey.svg) center center no-repeat;
@@ -1917,37 +2082,44 @@ nav.menuGroupWrap {
                 top: 7px;
                 right: 55px;
             }
+
             &.folderUp {
                 background: rgb(70, 70, 70);
                 background: url(../images/folderUp.svg) 2px center no-repeat;
                 background-size: 35px 35px;
+
                 &:hover {
                     background: rgb(70, 70, 70);
                     background: rgba(255, 255, 255, 0.05) url(../images/folderUpHover.svg) 2px center no-repeat;
                     background-size: 35px 35px;
                 }
+
                 a {
                     color: $anchorLink;
                     background-image: none;
                     padding: 10px 1% 10px 45px;
                     width: calc(99% - 40px);
+
                     &:hover {
                         color: $anchorLinkHover;
                         background-image: none;
                     }
                 }
             }
+
             &.current {
                 border-bottom: thin solid rgb(55, 55, 55);
                 background: rgb(90, 90, 90) url(../images/selectFolder.svg) left center no-repeat;
                 background: rgba(255, 255, 255, 0.15) url(../images/selectFolder.svg) 2px center no-repeat;
                 background-size: 20px 20px;
+
                 a, a:hover {
                     background: url(../images/carretFolderSelected.svg) right center no-repeat;
                     color: $anchorLinkHover;
                     background-size: 15px 25px;
                 }
             }
+
             a {
                 display: block;
                 text-transform: uppercase;
@@ -1958,15 +2130,19 @@ nav.menuGroupWrap {
                 background-size: 15px 25px;
                 color: rgb(153, 153, 153);
                 color: rgba(255, 255, 255, 0.6);
+
                 @include noWrapTxt;
+
                 font-size: 1.2em;
                 cursor: pointer;
+
                 &:hover {
                     background: rgb(80, 80, 80) url(../images/carretFolder.svg) right center no-repeat;
                     background: rgba(255, 255, 255, 0.05) url(../images/carretFolder.svg) right center no-repeat;
                     color: rgb(114, 205, 255);
                     background-size: 15px 25px;
                 }
+
                 span.monitorIcn {
                     font-weight: bold;
                     font-size: 0.8em;
@@ -1989,6 +2165,7 @@ nav.menuGroupWrap {
     margin: 4px auto;
     width: 100%;
     height: 15px;
+
     a {
         display: block;
         margin: 0 auto 0 auto;
@@ -1998,16 +2175,20 @@ nav.menuGroupWrap {
         text-indent: -9999px;
         -webkit-transition: background 0.4s ease-in;
         transition: background 0.4s ease-in;
+
         &.scrollUp {
             border-radius: 5px 5px 0 0;
             background: rgb(31, 31, 31) url(../images/scrollUp.png) center center no-repeat;
+
             &:hover {
                 background: rgb(107, 134, 141) url(../images/scrollUp.png) center center no-repeat;
             }
         }
+
         &.scrollDown {
             border-radius: 0 0 5px 5px;
             background: rgb(31, 31, 31) url(../images/scrollDown.png) center center no-repeat;
+
             &:hover {
                 background: rgb(107, 134, 141) url(../images/scrollDown.png) center center no-repeat;
             }
@@ -2022,6 +2203,7 @@ a.FadeIt {
 .projectDetail {
     li {
         margin: 10px auto;
+
         h2 {
             font-size: 1.5em;
             display: block;
@@ -2037,15 +2219,19 @@ a.FadeIt {
 .noFormsContainer {
     background: white;
     padding: 2em 0;
+
     li.formList {
         padding: 10px 0;
+
         &.populated {
             background: rgba(white, 0);
         }
+
         h4 {
             margin: 5px 0 10px 5px;
             color: rgba($anchorLink, 0.5);
         }
+
         .noForms {
             padding-top: 45px;
             background: url(../images/IconFormsBlack.png) center top no-repeat;
@@ -2055,6 +2241,7 @@ a.FadeIt {
             width: 90%;
             margin: 0 auto 20px auto;
         }
+
         ul.menuForm {
             li {
                 position: relative;
@@ -2064,10 +2251,12 @@ a.FadeIt {
                 background: rgb(70, 70, 70);
                 background: rgba(255, 255, 255, 0.05) url(../images/IconForms.svg) 2px 11px no-repeat;
                 background-size: 20px 17px;
+
                 &.current {
                     border-bottom: thin solid rgb(55, 55, 55);
                     background: rgba($anchorLink, 0.25) url(../images/IconFormsWhite.svg) 2px 11px no-repeat;
                     background-size: 20px 17px;
+
                     a, a:hover {
                         background: url(../images/carretFolderSelectedWhite.svg) right center no-repeat;
                         color: white;
@@ -2088,10 +2277,12 @@ section.topBar {
     z-index: 9998;
     width: 100%;
     background: white;
+
     #tabs & {
         margin-top: 0px;
         padding-top: 10px;
     }
+
     &.activeMenu {
         border: 1px solid rgb(212, 212, 212);
     }
@@ -2099,6 +2290,7 @@ section.topBar {
 
 section.topBar ~ * {
     margin-top: 90px;
+
     #tabs & {
         margin-top: 90px;
     }
@@ -2118,7 +2310,9 @@ section.topBar h2 {
     display: inline-table;
     max-width: 45%;
     color: rgb(44, 42, 116);
+
     @include noWrapTxt;
+
     margin: 5px 0 0 15px;
 }
 
@@ -2135,10 +2329,12 @@ section.topBar > a.smallBtn {
     margin: 0 10px;
     color: rgb(235, 235, 235);
 }
+
 nav.menuTopbar {
     margin: 0 auto 0;
     padding: 0 0 10px 0;
 }
+
 section.topBar {
     display: -webkit-box;
     display: -moz-box;
@@ -2151,19 +2347,21 @@ section.topBar {
     justify-content: flex-start;
     padding: 0 0 10px 0;
     width: 100%;
+
     nav {
         &:first-child {
             margin-left: 0.5%;
             padding: 10px 0;
             align-self: flex-start;
         }
+
         &:last-child {
             margin-right: 0.5%;
             padding: 10px 0;
             align-self: flex-end;
-
         }
     }
+
     nav.breadCrumb {
         ul li {
             display: inline-block;
@@ -2174,6 +2372,7 @@ section.topBar {
             text-indent: 19px;
             position: relative;
         }
+
         ul li:before {
             content: " ";
             height: 0;
@@ -2185,9 +2384,11 @@ section.topBar {
             border-color: transparent transparent transparent #fff;
             z-index: 0;
         }
+
         ul li:first-child:before {
             border-color: transparent;
         }
+
         ul li a:after {
             content: " ";
             height: 0;
@@ -2199,15 +2400,19 @@ section.topBar {
             border-color: transparent transparent transparent $akvoLightBlue;
             z-index: 10;
         }
+
         ul li a {
             display: block;
             background: $akvoLightBlue;
             color: white;
             font-size: 1.1em;
+
             @include noWrapTxt;
+
             &:hover {
                 background: $anchorLinkHover;
             }
+
             &.homeRoot {
                 border-radius: 3px 0 0 3px;
                 width: 40px;
@@ -2215,20 +2420,25 @@ section.topBar {
                 text-indent: -9999px;
                 z-index: 9999;
                 margin-left: 0;
+
                 &:hover {
                     background: url(../images/breadCrumb-Root.png) center center no-repeat $anchorLinkHover;
                 }
             }
         }
+
         ul li a:hover:after {
             border-color: transparent transparent transparent $anchorLinkHover;
         }
+
         ul li:last-of-type {
             opacity: 0.8;
+
             a {
                 border-radius: 0 3px 3px 0;
                 padding-right: 15px;
                 background: $anchorLinkHover;
+
                 &.homeRoot {
                     padding-right: 0;
                     border-radius: 3px 0 0 3px;
@@ -2237,6 +2447,7 @@ section.topBar {
                     text-indent: -9999px;
                     z-index: 9999;
                     margin-left: 0;
+
                     &:after {
                         content: " ";
                         height: 0;
@@ -2248,12 +2459,15 @@ section.topBar {
                         border-color: transparent transparent transparent $akvoLightBlue;
                         z-index: 10;
                     }
+
                     &:hover {
                         background: url(../images/breadCrumb-Root.png) center center no-repeat $akvoLightBlue;
                     }
                 }
+
                 &:after {
                     border-width: 0;
+
                     &:hover {
                         background: $akvoLightBlue;
                     }
@@ -2261,21 +2475,25 @@ section.topBar {
             }
         }
     }
+
     nav.menuTopbar {
         margin: 0 auto 0;
         padding: 10px 0;
+
         h3 {
             text-transform: uppercase;
             font-size: 1em;
             color: rgb(198, 198, 198);
             margin: 0;
             padding: 0;
+
             &.actionTitleEdit {
                 padding: 5px 5px 5px 15px;
                 background: url(../images/IconEditGreyLight.svg) left center no-repeat;
                 background-size: 15px;
             }
         }
+
         ul {
             display: -webkit-flex;
             display: flex;
@@ -2286,13 +2504,17 @@ section.topBar {
             -webkit-align-items: center;
             align-items: center;
             text-align: right;
+
             li {
                 margin-left: 10px;
+
                 &:first-child {
                     margin-left: 0px;
                 }
+
                 p {
                     color: $midGrey;
+
                     .itemMoved {
                         color: $akvoDarkBlue;
                         font-weight: bold;
@@ -2302,6 +2524,7 @@ section.topBar {
                 }
             }
         }
+
         &.actionHighLighted {
             border: 1px solid rgb(241, 242, 242);
         }
@@ -2315,6 +2538,7 @@ section.topBar {
 ul.folderMenu {
     display: block;
     margin: 0px auto 45px;
+
     li {
         width: 48%;
         padding: 10px 1%;
@@ -2327,6 +2551,7 @@ ul.folderMenu {
 ul.cancelMenu {
     display: none;
     margin: 10px auto 0;
+
     li {
         width: 98%;
         padding: 10px 1%;
@@ -2346,6 +2571,7 @@ a.deleteGroup, a.addFolder, a.editFolder, a.cancelFolder, a.saveMenuAction {
     padding: 1px 0 7px 21px;
     height: 10px;
     text-transform: uppercase;
+
     &:hover {
         color: $anchorLinkHover;
     }
@@ -2379,6 +2605,7 @@ a.addFolder {
         background: left center no-repeat;
         color: rgba(32, 32, 36, 0.1);
         cursor: default;
+
         &:hover {
             background: left center no-repeat;
             color: rgba(32, 32, 36, 0.1);
@@ -2395,11 +2622,13 @@ a.addSurvey {
     background-size: 25px 45px;
     -webkit-transition: color 0.2s ease-in, background-color 0.2s ease-in;
     transition: color 0.2s ease-in, background-color 0.2s ease-in;
+
     &.noChanges {
         background: rgba(32, 32, 36, 0.05) url(../images/IconPlusWhite.svg) 2px center no-repeat;
         cursor: default;
         background-size: 25px 45px;
         color: rgba(32, 32, 36, 0.1);
+
         &:hover {
             background: rgba(32, 32, 36, 0.05) url(../images/IconPlusWhite.svg) 2px center no-repeat;
             background-size: 25px 45px;
@@ -2465,6 +2694,7 @@ a.editGroupName:hover, a.editFolder:hover {
 
 a.deleteGroup {
     background: transparent url(../images/IconDelete.svg) left center no-repeat;
+
     &:hover {
         background: url(../images/IconDeleteOrange.svg) left center no-repeat;
     }
@@ -2472,18 +2702,22 @@ a.deleteGroup {
 
 a.addMenuAction {
     background: url(../images/IconPlus.svg) left center no-repeat;
+
     &.aBtn {
         background: $anchorLink url(../images/IconPlusWhite.svg) left center no-repeat;
         background-size: 35px auto;
         color: white;
         padding: 5px 5px 11px 31px;
         height: 10px;
+
         @include border-radius(5px);
+
         &:hover {
             background: $anchorLinkHover url(../images/IconPlusWhite.svg) left center no-repeat;
             background-size: 35px auto;
         }
     }
+
     &:hover {
         background: url(../images/IconPlusOrange.svg) left center no-repeat;
     }
@@ -2495,12 +2729,15 @@ a.saveMenuAction {
         background-size: 35px auto;
         color: white;
         padding: 5px 15px 12px;
+
         @include border-radius(5px);
+
         &:hover {
             background: $anchorLinkHover;
             background-size: 35px auto;
         }
     }
+
     &:hover {
         background: url(../images/IconPlusOrange.svg) left center no-repeat;
     }
@@ -2511,6 +2748,7 @@ a.redCancel {
     padding: 5px 10px 5px 15px;
     background: rgba(white, 0.5) url(../images/IconCancelFolder.svg) left center no-repeat;
     background-size: 15px;
+
     &:hover {
         color: rgba($akvoRed, 0.5);
     }
@@ -2541,6 +2779,7 @@ ul.actionProcess {
             opacity: 0.2;
         }
     }
+
     .aSurvey {
         nav {
             opacity: 0.2;
@@ -2564,14 +2803,18 @@ li.aSurvey {
     border-radius: 0.3em;
     -webkit-transition: all 0.4s linear;
     transition: all 0.4s linear;
+
     &:hover {
         cursor: default;
     }
+
     a {
         display: block;
+
         h2 {
             display: inline;
             color: $anchorLink;
+
             &:hover {
                 color: $anchorLinkHover;
             }
@@ -2583,12 +2826,15 @@ li.aFolder, li.aSurvey {
     &.highLighted {
         background: #E7EEE0;
         border: 1px solid rgba(141, 198, 63, 0.5);
+
         h2 {
             color: rgba(141, 198, 63, 1);
         }
+
         &:hover {
             background: #E7EEE0;
             border: 1px solid rgba(141, 198, 63, 0.5);
+
             h2 {
                 color: rgba(141, 198, 63, 1);
             }
@@ -2598,6 +2844,7 @@ li.aFolder, li.aSurvey {
 
 li.aFolder {
     @extend li.aSurvey;
+
     display: -webkit-box;
     display: -moz-box;
     display: -ms-flexbox;
@@ -2618,11 +2865,13 @@ li.aFolder {
     background-position: right center;
     background-repeat: no-repeat;
     border: 1px solid rgba(200, 200, 200, 0);
+
     input {
         width: 50%;
         font-family: $bodyFont;
         font-size: 1.8em;
     }
+
     a.editFolderName {
         display: inline-block;
         width: 40px;
@@ -2632,27 +2881,33 @@ li.aFolder {
         text-indent: -9999px;
         margin-right: 15px;
         opacity: 0.5;
+
         &:hover {
             background: url(../images/IconEditOrange.svg) center center no-repeat;
             background-size: 30px 30px;
             opacity: 1;
         }
     }
+
     a.editingFolderName {
         @extend .editFolderName;
+
         background: url(../images/IconSave.svg) center center no-repeat;
         background-size: 70px 70px;
+
         &:hover {
             background: url(../images/IconSaveOrange.svg) center center no-repeat;
             background-size: 70px 70px;
             opacity: 1;
         }
     }
+
     a {
         display: block;
         width: calc(100% - 30% );
         padding-top: 10px;
         padding-bottom: 10px;
+
         h2 {
             color: rgb(183, 183, 183);
             background: url(../images/folderIcn.svg) right center no-repeat;
@@ -2661,13 +2916,16 @@ li.aFolder {
             padding-right: 45px;
         }
     }
+
     &:hover {
         background-color: rgb(222, 222, 222);
         border: 1px solid rgba(200, 200, 200, 1);
+
         h2 {
             color: $anchorLinkHover;
         }
     }
+
     &.folderEmpty {
         h2 {
             background: url(../images/folderIcnEmpty.svg) right center no-repeat;
@@ -2696,6 +2954,7 @@ ul.surveyInfo li span {
     display: block;
     color: rgb(128, 130, 133);
     text-transform: uppercase;
+
     @include noWrapTxt;
 }
 
@@ -2719,6 +2978,7 @@ ul.surveyInfo li.surveyType p {
 
 ul.surveyInfo li.responseNumber {
     display: none;
+
     p {
         color: rgb(225, 237, 195);
     }
@@ -2740,11 +3000,13 @@ ul.surveyInfo li.responseNumber {
     .deleteSurvey {
         display: none;
     }
+
     &.folderEmpty {
         .deleteSurvey {
             display: inline;
         }
     }
+
     nav {
         -webkit-box-sizing: border-box;
         -moz-box-sizing: border-box;
@@ -2753,6 +3015,7 @@ ul.surveyInfo li.responseNumber {
         right: 0;
         padding-right: 30px;
     }
+
     body:not(:-moz-handler-blocked) nav {
         margin-top: -30px;
     }
@@ -2866,16 +3129,19 @@ ul.surveyInfo li.responseNumber {
         box-shadow: 0 0 2px rgba(200, 200, 200, 0);
         background-color: rgba($akvoOrange, 0);
     }
+
     30% {
         opacity: 0.2;
         box-shadow: 0 0 10px rgba(200, 200, 200, 1);
         background-color: rgba($akvoOrange, 0.5);
     }
+
     40% {
         background-color: rgba(white, 1);
         opacity: 1;
         box-shadow: 0 0 15px rgba($akvoOrange, 0.6);
     }
+
     100% {
         background-color: rgba($akvoOrange, 0.1);
         opacity: 1;
@@ -2883,7 +3149,6 @@ ul.surveyInfo li.responseNumber {
         border: 2px solid rgba($akvoOrange, 0.3);
     }
 }
-
 
 @-moz-keyframes appearFx {
     0% {
@@ -2891,16 +3156,19 @@ ul.surveyInfo li.responseNumber {
         box-shadow: 0 0 2px rgba(200, 200, 200, 0);
         background-color: rgba($akvoOrange, 0);
     }
+
     30% {
         opacity: 0.2;
         box-shadow: 0 0 10px rgba(200, 200, 200, 1);
         background-color: rgba($akvoOrange, 0.5);
     }
+
     40% {
         background-color: rgba(white, 1);
         opacity: 1;
         box-shadow: 0 0 15px rgba($akvoOrange, 0.6);
     }
+
     100% {
         background-color: rgba($akvoOrange, 0.1);
         opacity: 1;
@@ -2908,7 +3176,6 @@ ul.surveyInfo li.responseNumber {
         border: 2px solid rgba($akvoOrange, 0.3);
     }
 }
-
 
 @-o-keyframes appearFx {
     0% {
@@ -2916,16 +3183,19 @@ ul.surveyInfo li.responseNumber {
         box-shadow: 0 0 2px rgba(200, 200, 200, 0);
         background-color: rgba($akvoOrange, 0);
     }
+
     30% {
         opacity: 0.2;
         box-shadow: 0 0 10px rgba(200, 200, 200, 1);
         background-color: rgba($akvoOrange, 0.5);
     }
+
     40% {
         background-color: rgba(white, 1);
         opacity: 1;
         box-shadow: 0 0 15px rgba($akvoOrange, 0.6);
     }
+
     100% {
         background-color: rgba($akvoOrange, 0.1);
         opacity: 1;
@@ -2933,7 +3203,6 @@ ul.surveyInfo li.responseNumber {
         border: 2px solid rgba($akvoOrange, 0.3);
     }
 }
-
 
 @keyframes appearFx {
     0% {
@@ -2941,16 +3210,19 @@ ul.surveyInfo li.responseNumber {
         box-shadow: 0 0 2px rgba(200, 200, 200, 0);
         background-repeat: no-repeat;
     }
+
     30% {
         opacity: 0.2;
         box-shadow: 0 0 10px rgba(200, 200, 200, 1);
         background-repeat: no-repeat;
     }
+
     40% {
         background-color: rgba(white, 1);
         opacity: 1;
         box-shadow: 0 0 15px rgba($akvoOrange, 0.6);
     }
+
     100% {
         background-color: rgba($akvoOrange, 0.1);
         opacity: 1;
@@ -2958,7 +3230,6 @@ ul.surveyInfo li.responseNumber {
         border: 2px solid rgba($akvoOrange, 0.3);
     }
 }
-
 
 /*----------------------------------------------------------------------------------------------------------------
                                          Survey Creation & Editing
@@ -2971,7 +3242,9 @@ ul.surveyInfo li.responseNumber {
 
 .leftSidebar h2 {
     display: block;
+
     @include noWrapTxt;
+
     color: $anchorLinkHover;
     margin: 10px 0 0 5px;
 }
@@ -3074,9 +3347,11 @@ label[for="surveyLanguage"] a.helpIcon {
         margin: 0 auto 20px auto;
         padding: 0;
         right: 0;
+
         &.manageStuff {
             margin-top: 10px;
         }
+
         ul {
             display: -webkit-box;
             display: -moz-box;
@@ -3087,10 +3362,12 @@ label[for="surveyLanguage"] a.helpIcon {
             padding: 0;
             width: 100%;
         }
+
         ul li {
             padding: 0;
             margin-right: 2px;
         }
+
         ul li a {
             font-size: 1.2em;
             text-transform: uppercase;
@@ -3099,50 +3376,62 @@ label[for="surveyLanguage"] a.helpIcon {
             height: 9px;
             border-radius: 3px;
             overflow: hidden;
+
             &.saveNewSurvey {
                 background: rgba(32, 32, 36, 0.5) url(../images/IconSave.svg) left top no-repeat;
                 background-size: 40px 40px;
             }
+
             &.previewNewSurvey {
                 background: rgba(32, 32, 36, 0.5) url(../images/IconPreview.svg) left top no-repeat;
                 background-size: 40px 40px;
             }
+
             &.publishNewSurvey {
                 background: rgba(32, 32, 36, 0.5) url(../images/IconPublish.svg) left top no-repeat;
                 background-size: 40px 40px;
             }
+
             &.deleteSurvey {
                 background: rgba(32, 32, 36, 0.5) url(../images/IconDelete.svg) left top no-repeat;
                 background-size: 40px 40px;
             }
+
             &.saveNewSurvey:hover {
                 background: rgba(32, 32, 36, 1) url(../images/IconSaveOrange.svg) left top no-repeat;
                 background-size: 40px 40px;
             }
+
             &.previewNewSurvey:hover {
                 background: rgba(32, 32, 36, 1) url(../images/IconPreviewOrange.svg) left top no-repeat;
                 background-size: 40px 40px;
             }
+
             &.publishNewSurvey:hover {
                 background: rgba(32, 32, 36, 1) url(../images/IconPublishOrange.svg) left top no-repeat;
                 background-size: 40px 40px;
             }
+
             &.deleteSurvey:hover {
                 background: rgba(32, 32, 36, 1) url(../images/IconDeleteOrange.svg) left top no-repeat;
                 background-size: 40px 40px;
             }
+
             &.manageNotifications {
                 background: rgba(32, 32, 36, 0.5) url(../images/IconNotif.svg) left top no-repeat;
                 background-size: 40px 40px;
             }
+
             &.manageNotifications:hover {
                 background: rgba(32, 32, 36, 1) url(../images/IconNotifOrange.svg) left top no-repeat;
                 background-size: 40px 40px;
             }
+
             &.manageTranslations {
                 background: rgba(32, 32, 36, 0.5) url(../images/IconTranslate.svg) left top no-repeat;
                 background-size: 40px 40px;
             }
+
             &.manageTranslations:hover {
                 background: rgba(32, 32, 36, 1) url(../images/IconTranslateOrange.svg) left top no-repeat;
                 background-size: 40px 40px;
@@ -3165,17 +3454,20 @@ a.publishProjectBtn {
     padding: 10px 15px 10px 45px;
     color: white;
     border-radius: 3px;
+
     &.noChanges {
         background: rgba(32, 32, 36, 0.1) url(../images/IconPublishWhite.svg) left center no-repeat;
         background-size: 55px 55px;
         padding: 10px 15px 10px 45px;
         color: white;
         cursor: text;
+
         &:hover {
             background: rgba(32, 32, 36, 0.1) url(../images/IconPublishWhite.svg) left center no-repeat;
             background-size: 55px 55px;
         }
     }
+
     &:hover {
         background: $anchorLinkHover url(../images/IconPublishWhite.svg) left center no-repeat;
         background-size: 55px 55px;
@@ -3190,17 +3482,20 @@ a.saveProject {
     padding: 10px 15px 10px 45px;
     color: white;
     border-radius: 3px;
+
     &:hover {
         background: $anchorLinkHover url(../images/IconSaveWhite.svg) left center no-repeat;
         background-size: 55px 55px;
         color: white;
     }
+
     &.noChanges {
         background: rgba(32, 32, 36, 0.1) url(../images/IconSaveWhite.svg) left center no-repeat;
         background-size: 55px 55px;
         padding: 10px 15px 10px 45px;
         color: white;
         cursor: text;
+
         &:hover {
             background: rgba(32, 32, 36, 0.1) url(../images/IconSaveWhite.svg) left center no-repeat;
             background-size: 55px 55px;
@@ -3215,17 +3510,20 @@ a.saveProject {
     padding: 10px 15px 10px 45px;
     color: white;
     border-radius: 3px;
+
     &:hover {
         background: $anchorLinkHover url(../images/IconSaveWhite.svg) left center no-repeat;
         background-size: 55px 55px;
         color: white;
     }
+
     &.noChanges {
         background: rgba(32, 32, 36, 0.1) url(../images/IconSaveWhite.svg) left center no-repeat;
         background-size: 55px 55px;
         padding: 10px 15px 10px 45px;
         color: white;
         cursor: text;
+
         &:hover {
             background: rgba(32, 32, 36, 0.1) url(../images/IconSaveWhite.svg) left center no-repeat;
             background-size: 55px 55px;
@@ -3315,9 +3613,11 @@ span.qtnGroupHead {
 
 .qtnGroupTitle {
     margin: 3px 0 0.5em;
+
     h1 {
         color: rgba(141, 198, 63, 1);
     }
+
     input {
         font-family: $bodyFont;
         font-size: 1.8em;
@@ -3326,6 +3626,7 @@ span.qtnGroupHead {
 
 .aQuestionSet header h1.qtnGroupTitle {
     display: inline-block;
+
     @include noWrapTxt;
 }
 
@@ -3372,6 +3673,7 @@ span.qtnGroupHead {
     background: rgb(235, 235, 235) url(../images/addSet.png) left center no-repeat;
     color: rgb(227, 27, 35);
     text-transform: uppercase;
+
     @include noWrapTxt;
 }
 
@@ -3504,6 +3806,7 @@ nav.questionActionMenu a:hover {
     background: url(../images/IconShow.svg) left center no-repeat;
     text-align: left;
     padding-left: 17px;
+
     &.disabled {
         background: none;
     }
@@ -4043,6 +4346,7 @@ table.dataTable.notificationTable thead tr th a:visited {
     text-align: left;
     -webkit-align-items: flex-start;
     align-items: flex-start;
+
     select:first-child {
         margin-left: 1%;
     }
@@ -4054,6 +4358,7 @@ table.dataTable.notificationTable thead tr th a:visited {
         color: #666;
         font-weight: bold;
     }
+
     a.findData {
         display: block;
         margin: 0 auto 15px;
@@ -4122,9 +4427,11 @@ div.dataCollectedDate {
     width: 50%;
     height: 20px;
     text-align: left;
+
     @include responsive(small-max-screens) {
         width: 100%;
     }
+
 
     .rawDataReport & {
         float: none;
@@ -4136,6 +4443,7 @@ div.dataCollectedDate {
     .exportAdvancedOpt {
         display: block;
         margin: 15px 0 35px 5px;
+
         .showCollapse {
             background: $anchorLink;
             color: white;
@@ -4146,9 +4454,10 @@ div.dataCollectedDate {
             margin: -2px 0 0 0;
             border-radius: 3px;
         }
+
         label {
-            color:rgba($akvoBlack, 0.5);
-            margin-top:5px;
+            color: rgba($akvoBlack, 0.5);
+            margin-top: 5px;
             text-transform: none;
         }
     }
@@ -4158,6 +4467,7 @@ div.dataCollectedDate label {
     width: 48%;
     float: left;
     margin-top: -25px;
+
     &:last-child {
         margin-left: 1%;
     }
@@ -4318,8 +4628,9 @@ div.dataCollectedDate label input {
     letter-spacing: 0em;
     font-family: Verdana, Geneva, sans-serif;
     line-height: 1.2em;
+
     h4 {
-        margin:5px 0 10px 0;
+        margin: 5px 0 10px 0;
         color: $akvoOrange;
     }
 }
@@ -4338,8 +4649,8 @@ div.dataCollectedDate label input {
 #pointDetails div.mapInfoDetail div.defListWrap dt {
     padding: 5px 0 5px 0.75%;
     width: 44.25%;
-    margin:2px 0 15px 0;
-    color: rgba($akvoBlack,0.4);
+    margin: 2px 0 15px 0;
+    color: rgba($akvoBlack, 0.4);
 }
 
 #pointDetails div.mapInfoDetail div.defListWrap dd {
@@ -4649,6 +4960,7 @@ footer.bottomPage a[rel="self"]:hover {}
     float: left;
     margin: 0 0 1em 1%;
 }
+
 #reportBlocks.reportTools {
     .geoshapeExport {
         .geoshapeSelect {
@@ -4776,6 +5088,7 @@ footer.bottomPage a[rel="self"]:hover {}
         z-index: 2;
         border-bottom: thin solid #c6c6c6;
     }
+
     .rawDataReport {
         &.dataExport {
             margin-top: 135px;
@@ -5020,30 +5333,37 @@ table.surveyTranslate .qHelpTooltip label.qTooltip + input {
 
 .fullWidth {
     width: 100%;
+
     .addWorkflow {
-        padding:15px;
+        padding: 15px;
+
         label {
             margin-bottom: 10px;
         }
+
         h3 {
             margin: 0px 0 10px 0;
         }
+
         .confirmWorkflow {
             margin-top: 25px;
         }
+
         #approvalSteps {
             margin: 10px 0;
+
             .eachStep {
-                margin-bottom:5px;
+                margin-bottom: 5px;
+
                 li {
                     display: inline;
                 }
             }
+
             .addStep {
-                margin-top:10px;
+                margin-top: 10px;
             }
         }
-
     }
 }
 
@@ -5116,13 +5436,17 @@ table.surveyTranslate .qHelpTooltip label.qTooltip + input {
     left: -1px;
     bottom: 0;
     background: rgb(191, 210, 85);
+
     /* Old browsers */
     /* IE9 SVG, needs conditional override of 'filter' to 'none' */
     background: url(data:image/svg+xml;base64,PD94bWwgdmVyc2lvbj0iMS4wIiA/Pgo8c3ZnIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyIgd2lkdGg9IjEwMCUiIGhlaWdodD0iMTAwJSIgdmlld0JveD0iMCAwIDEgMSIgcHJlc2VydmVBc3BlY3RSYXRpbz0ibm9uZSI+CiAgPGxpbmVhckdyYWRpZW50IGlkPSJncmFkLXVjZ2ctZ2VuZXJhdGVkIiBncmFkaWVudFVuaXRzPSJ1c2VyU3BhY2VPblVzZSIgeDE9IjAlIiB5MT0iMCUiIHgyPSIwJSIgeTI9IjEwMCUiPgogICAgPHN0b3Agb2Zmc2V0PSIwJSIgc3RvcC1jb2xvcj0iI2JmZDI1NSIgc3RvcC1vcGFjaXR5PSIxIi8+CiAgICA8c3RvcCBvZmZzZXQ9IjUwJSIgc3RvcC1jb2xvcj0iIzhlYjkyYSIgc3RvcC1vcGFjaXR5PSIxIi8+CiAgICA8c3RvcCBvZmZzZXQ9IjUxJSIgc3RvcC1jb2xvcj0iIzcyYWEwMCIgc3RvcC1vcGFjaXR5PSIxIi8+CiAgICA8c3RvcCBvZmZzZXQ9IjEwMCUiIHN0b3AtY29sb3I9IiM5ZWNiMmQiIHN0b3Atb3BhY2l0eT0iMSIvPgogIDwvbGluZWFyR3JhZGllbnQ+CiAgPHJlY3QgeD0iMCIgeT0iMCIgd2lkdGg9IjEiIGhlaWdodD0iMSIgZmlsbD0idXJsKCNncmFkLXVjZ2ctZ2VuZXJhdGVkKSIgLz4KPC9zdmc+);
+
     /* FF3.6+ */
     background: -webkit-gradient(linear, left top, left bottom, color-stop(0%, rgba(191, 210, 85, 1)), color-stop(50%, rgba(142, 185, 42, 1)), color-stop(51%, rgba(114, 170, 0, 1)), color-stop(100%, rgba(158, 203, 45, 1)));
+
     /* Chrome,Safari4+ */
     background: -webkit-linear-gradient(top, rgba(191, 210, 85, 1) 0%, rgba(142, 185, 42, 1) 50%, rgba(114, 170, 0, 1) 51%, rgba(158, 203, 45, 1) 100%);
+
     /* Chrome10+,Safari5.1+ */
     /* Opera 11.10+ */
     /* IE10+ */
@@ -5295,25 +5619,30 @@ table.surveyTranslate .qHelpTooltip label.qTooltip + input {
     width: 100%;
     padding: 1em 0 0 0;
     margin: 0 auto;
+
     .publishProject {
         padding: 30px 5px;
         display: table;
         text-align: center;
         width: calc(100% - 10px);
+
         .publishProjectBtn {
             text-align: center;
             margin: 0 auto;
         }
     }
+
     .projectDetailsPanel {
         .addMenuAction {
             display: inline-block;
             margin: 0 auto;
+
             &.addNewForm {
                 display: table;
                 padding: 8px 8px 8px 31px;
             }
         }
+
         .projectSummary, .formSummary {
             display: -webkit-box;
             display: -moz-box;
@@ -5331,6 +5660,7 @@ table.surveyTranslate .qHelpTooltip label.qTooltip + input {
             align-items: center;
             align-content: center;
             margin-top: 10px;
+
             li {
                 width: 49.75%;
                 text-align: center;
@@ -5340,39 +5670,48 @@ table.surveyTranslate .qHelpTooltip label.qTooltip + input {
                 text-transform: uppercase;
                 font-size: 1.5em;
                 flex-grow: 2;
+
                 @include noWrapTxt;
+
                 span {
                     display: block;
                     font-size: 1.8em;
                     margin-top: -5px;
                     font-weight: 600;
+
                     &.projectForm, &.projectMonitoring, &.projectStatus {
                         color: white;
                     }
+
                     &.projectStatus.redColor {
                         color: $akvoRed2;
                     }
                 }
             }
         }
+
         span.fontInfo {
             font-family: $scriptFont;
             font-size: 1.8em;
             color: rgb(212, 212, 212);
             margin: 0 0.5em;
         }
+
         h2 {
             color: $akvoOrange;
             display: inline;
         }
+
         .forms {
             padding: 2em 0 0 0;
             background: white;
+
             #tabs {
                 h2 {
                     margin: 0 0 15px 5px;
                 }
             }
+
             .formSummary {
                 display: -webkit-flex;
                 display: flex;
@@ -5385,6 +5724,7 @@ table.surveyTranslate .qHelpTooltip label.qTooltip + input {
                 align-items: center;
                 align-content: center;
                 margin: 30px auto;
+
                 li {
                     width: 33.33333%;
                     text-align: center;
@@ -5393,6 +5733,7 @@ table.surveyTranslate .qHelpTooltip label.qTooltip + input {
                     color: rgb(128, 130, 133);
                     text-transform: uppercase;
                     font-size: 1.5em;
+
                     span {
                         display: block;
                         font-size: 1.8em;
@@ -5402,14 +5743,17 @@ table.surveyTranslate .qHelpTooltip label.qTooltip + input {
                     }
                 }
             }
+
             #tabs div > section {
                 border-top: thin solid white;
                 background: white;
                 margin-top: 15px;
+
                 &.surveyForm, &#questionSet {
                     margin-top: 5px;
                     padding: 0 0 5px 0;
                 }
+
                 &.formDetails {
                     border: inherit;
                     background: inherit;
@@ -5420,6 +5764,7 @@ table.surveyTranslate .qHelpTooltip label.qTooltip + input {
                     width: inherit;
                     width: 99.5%;
                     margin: 0 auto;
+
                     .showCollapse {
                         text-transform: uppercase;
                         display: inline-block;
@@ -5427,9 +5772,11 @@ table.surveyTranslate .qHelpTooltip label.qTooltip + input {
                     }
                 }
             }
+
             #tabs div > section h3 {
                 text-shadow: none;
             }
+
             #tabs nav.tabNav {
                 position: relative;
                 display: block;
@@ -5437,10 +5784,12 @@ table.surveyTranslate .qHelpTooltip label.qTooltip + input {
                 width: 100%;
                 margin-top: 10px;
                 z-index: inherit;
+
                 & + section, & + div {
                     margin-top: 0;
                 }
             }
+
             #tabs nav.tabNav ul {
                 padding: 0;
                 display: -webkit-flex;
@@ -5452,47 +5801,59 @@ table.surveyTranslate .qHelpTooltip label.qTooltip + input {
                 -webkit-align-items: center;
                 align-items: center;
             }
+
             #tabs nav.tabNav ul li {
                 border-right: 1px solid rgba(32, 32, 36, 0.2);
                 margin: 0;
                 font-size: 1.2em;
+
                 @include border-radius(2px 2px 0 0);
+
                 -webkit-background-clip: padding-box;
                 background-clip: padding-box;
                 -webkit-transition: none;
                 transition: none;
                 -moz-background-clip: padding;
                 -webkit-background-clip: padding-box;
+
                 @include noWrapTxt;
+
                 &.aFormTab {
                     padding-left: 25px;
                     background: rgba(32, 32, 36, 0.5) url(../images/IconForms.png) no-repeat 10px center;
                     background-size: 20px auto;
+
                     &:hover {
                         background: rgba(32, 32, 36, 1) url(../images/IconForms.png) no-repeat 10px center;
                         background-size: 20px auto;
                     }
+
                     &.current {
                         background: rgba(32, 32, 36, 0.9) url(../images/IconFormsOrange.png) no-repeat 10px center;
                         background-size: 20px auto;
+
                         a {
                             color: $anchorLinkHover;
                         }
                     }
+
                     &.registrationForm {
                         box-sizing: border-box;
                         -webkit-box-shadow: inset 0px 5px 0px 0px rgba($monitorGreen, 0.5);
                         -moz-box-shadow: inset 0px 5px 0px 0px rgba($monitorGreen, 0.5);
                         box-shadow: inset 0px 5px 0px 0px rgba($monitorGreen, 0.5);
+
                         &:hover {
                             -webkit-box-shadow: inset 0px 5px 0px 0px rgba($monitorGreen, 1);
                             -moz-box-shadow: inset 0px 5px 0px 0px rgba($monitorGreen, 1);
                             box-shadow: inset 0px 5px 0px 0px rgba($monitorGreen, 1);
                         }
+
                         &.current {
                             -webkit-box-shadow: inset 0px 5px 0px 0px rgba($monitorGreen, 1);
                             -moz-box-shadow: inset 0px 5px 0px 0px rgba($monitorGreen, 1);
                             box-shadow: inset 0px 5px 0px 0px rgba($monitorGreen, 1);
+
                             &:hover {
                                 -webkit-box-shadow: inset 0px 5px 0px 0px rgba($monitorGreen, 1);
                                 -moz-box-shadow: inset 0px 5px 0px 0px rgba($monitorGreen, 1);
@@ -5500,44 +5861,55 @@ table.surveyTranslate .qHelpTooltip label.qTooltip + input {
                             }
                         }
                     }
+
                     &.published {
                         background: rgba(32, 32, 36, 0.5) url(../images/IconFormPub.png) no-repeat 10px center;
                         padding-left: 25px;
                         background-size: 20px auto;
+
                         &.current {
                             background: rgba(32, 32, 36, 0.9) url(../images/IconFormPubOrange.png) no-repeat 10px center;
                             background-size: 20px auto;
+
                             a {
                                 color: $anchorLinkHover;
                             }
                         }
                     }
                 }
+
                 &.newFormTab {
                     background: transparent;
                     border-right: none;
+
                     a {
                         color: $anchorLink;
+
                         &:hover {
                             color: $anchorLinkHover;
                         }
                     }
+
                     span {
                         font-weight: bold;
                         margin-right: 5px;
                     }
+
                     &:hover {
                         background: transparent;
                     }
                 }
             }
+
             #tabs nav.tabNav ul li:hover {
                 background: rgb(174, 174, 174);
             }
+
             #tabs nav.tabNav ul li.active,
             #tabs nav.tabNav ul li.active:hover {
                 background: rgb(0, 0, 0);
             }
+
             #tabs nav.tabNav ul li a {
                 display: block;
                 padding: 0.75em 1em;
@@ -5549,6 +5921,7 @@ table.surveyTranslate .qHelpTooltip label.qTooltip + input {
                 min-width: 1px;
                 min-height: 12px;
             }
+
             #tabs nav.tabNav ul li.active a,
             #tabs nav.tabNav ul li.active a:hover {
                 color: white;
@@ -5556,12 +5929,14 @@ table.surveyTranslate .qHelpTooltip label.qTooltip + input {
                 -webkit-text-shadow: none;
                 -moz-text-shadow: none;
             }
+
             #tabs nav.tabNav ul li a:hover {
                 color: white;
                 text-shadow: none;
                 -webkit-text-shadow: none;
                 -moz-text-shadow: none;
             }
+
             .tabNav {
                 .aFormTab {
                     padding-left: 25px;
@@ -5569,23 +5944,28 @@ table.surveyTranslate .qHelpTooltip label.qTooltip + input {
                 }
             }
         }
+
         .formsContainer {
             background: rgba(32, 32, 36, 0.9);
             margin: 0px auto;
         }
+
         .projectDetails {
             background: rgb(54, 79, 90);
             margin: 10px auto;
         }
+
         .projectDetails, .formsContainer {
             width: 99.5%;
             position: relative;
             padding: 2em 0.25% 2em 0.25%;
+
             h3 {
                 color: $akvoGolden;
                 margin-bottom: 20px;
                 display: inline-block;
             }
+
             .showCollapse {
                 background: $anchorLink;
                 color: white;
@@ -5595,44 +5975,70 @@ table.surveyTranslate .qHelpTooltip label.qTooltip + input {
                 display: inline-block;
                 margin: -2px 0 0 10px;
                 border-radius: 3px;
+
                 span.monitoringAndvanced & {
                     display: block;
                     margin-top: 10px;
                 }
             }
+
+            label[for=enableMonitoring], label[for=enableDataApproval] {
+                input {
+                    margin-bottom: 15px;
+                }
+            }
+
+            label[for=enableDataApproval] {
+                clear: left;
+                margin: 0px 0 0 5px;
+            }
+
             label[for=enableMonitoring] {
                 margin: 10px 0 0 5px;
             }
+
             .projectDetailForm, .surveyDetailForm {
                 display: block;
                 margin-top: 0 !important;
+
                 .monitoringHint {
                     margin: 10px 0 0 10px;
                     color: #c49a6c;
+
+                    & + select {
+                        margin: 0 0 20px 30px;
+                    }
                 }
+
                 form {
                     width: 100%;
                 }
+
                 input {
                     width: 99%;
                     margin-bottom: 35px;
                     background: rgb(248, 248, 248);
                     color: rgb(158, 158, 158);
+
                     &:focus {
                         border: 1px solid rgb(205, 205, 205);
                         background: rgb(245, 255, 216);
                     }
+
                     &[type=checkbox] {
                         width: 20px;
                         float: left;
                     }
                 }
+
                 .projectSelect {
                     margin-bottom: 50px;
+
                     li {
                         display: block;
                         width: 100%;
                         margin-bottom: 20px;
+
                         select {
                             width: 99.5%;
                         }
@@ -5648,15 +6054,19 @@ table.surveyTranslate .qHelpTooltip label.qTooltip + input {
     color: white;
     background: rgba(white, 0);
     padding: 2em 0;
+
     li.formList {
         padding: 10px 0;
+
         &.populated {
             background: rgba(white, 0);
         }
+
         h4 {
             margin: 5px 0 10px 5px;
             color: rgba($anchorLink, 0.5);
         }
+
         .noCascade {
             padding-top: 45px;
             background: url(../images/IconCascadeWhite.png) center top no-repeat;
@@ -5672,6 +6082,7 @@ table.surveyTranslate .qHelpTooltip label.qTooltip + input {
 .addMenuAction {
     display: inline-block;
     margin: 0 auto;
+
     &.addNewForm {
         display: table;
         padding: 8px 8px 8px 31px;
@@ -5689,16 +6100,20 @@ table.surveyTranslate .qHelpTooltip label.qTooltip + input {
     margin: 0 auto;
     overflow-y: hidden;
     overflow-x: hidden;
+
     .cascadeDetailsPanel {
         padding-top: 15px;
         padding-bottom: 15px;
+
         .offSet {
             @include offSet(60px, 0);
         }
+
         h2 {
             margin-right: 15px;
         }
     }
+
     .cascadeInfo {
         display: -webkit-box;
         display: -moz-box;
@@ -5714,6 +6129,7 @@ table.surveyTranslate .qHelpTooltip label.qTooltip + input {
         align-items: center;
         align-content: center;
         margin-top: 20px;
+
         li {
             width: 50%;
             text-align: center;
@@ -5722,39 +6138,48 @@ table.surveyTranslate .qHelpTooltip label.qTooltip + input {
             color: rgb(128, 130, 133);
             text-transform: uppercase;
             font-size: 1.5em;
+
             span {
                 display: block;
                 font-size: 1.8em;
                 margin-top: -5px;
                 font-weight: 600;
+
                 &.projectForm, &.projectMonitoring, &.cascadeStatus {
                     color: white;
                 }
+
                 &.cascadeStatus.redColor {
                     color: $akvoRed2;
                 }
+
                 &.cascadeStatus.published {
                     color: $green;
                 }
             }
         }
     }
+
     span.fontInfo {
         font-family: $scriptFont;
         font-size: 1.8em;
         color: rgb(212, 212, 212);
         margin: 0 0.5em;
     }
+
     h2 {
         color: $akvoOrange;
         display: inline;
+
         a {
             display: inline-block;
             width: 20px;
             text-indent: -9999px;
+
             &.editSurvey {
                 background: url(../images/IconEdit.svg) center center no-repeat;
                 background-size: 18px 18px;
+
                 &:hover {
                     background: url(../images/IconEditOrange.svg) center center no-repeat;
                     background-size: 18px 18px;
@@ -5766,6 +6191,7 @@ table.surveyTranslate .qHelpTooltip label.qTooltip + input {
 
 nav.cascadeBreadCrumb {
     position: relative;
+
     ul li {
         display: inline-block;
         height: 54px;
@@ -5776,6 +6202,7 @@ nav.cascadeBreadCrumb {
         position: relative;
         transition: all 0.4s ease-in;
     }
+
     ul li:before {
         content: " ";
         height: 0;
@@ -5788,9 +6215,11 @@ nav.cascadeBreadCrumb {
         z-index: 0;
         transition: all 0.4s ease-in;
     }
+
     ul li:first-of-type:before {
         border-color: transparent;
     }
+
     ul li a:after {
         content: " ";
         height: 0;
@@ -5803,6 +6232,7 @@ nav.cascadeBreadCrumb {
         z-index: 10;
         transition: all 0.4s ease-in;
     }
+
     ul li {
         a {
             display: block;
@@ -5810,6 +6240,7 @@ nav.cascadeBreadCrumb {
             color: white;
             font-size: 1.1em;
             transition: all 0.4s ease-in;
+
             span {
                 display: inline-block;
                 margin-left: -20px;
@@ -5820,26 +6251,33 @@ nav.cascadeBreadCrumb {
                 color: $akvoGolden;
                 text-shadow: 1px 2px 0 rgba(black, 0.4);
             }
+
             @include noWrapTxt;
+
             &:hover {
                 background: $akvoDarkBlue;
+
                 &:after {
                     border-color: transparent transparent transparent $akvoDarkBlue;
                 }
             }
         }
+
         &.offScreen {
             a {
                 background: rgba(32, 32, 36, 0.7);
                 color: rgba(white, 0.3);
                 border-color: transparent transparent transparent rgba(32, 32, 36, 0.7);
                 transition: all 0.4s ease-in;
+
                 &:after {
                     border-color: transparent transparent transparent rgba(32, 32, 36, 0.7);
                     transition: all 0.4s ease-in;
                 }
+
                 &:hover {
                     background: rgba($anchorLinkHover, 0.5);
+
                     &:after {
                         border-color: transparent transparent transparent rgba($anchorLinkHover, 0.5);
                     }
@@ -5847,18 +6285,22 @@ nav.cascadeBreadCrumb {
             }
         }
     }
+
     div.addLevelBtn {
         position: absolute;
         top: 15px;
         right: 5px;
+
         @include responsive(medium-max-screens) {
             position: relative;
             display: table;
             margin: 10px auto;
         }
 
+
         &.addLevel {
             display: table;
+
             &:hover {
                 background: $anchorLinkHover;
             }
@@ -5873,9 +6315,12 @@ nav.cascadeBreadCrumb {
     -ms-overflow-style: -ms-autohiding-scrollbar;
     margin-top: 15px;
     background: rgba(32, 32, 36, 0.7);
+
     .levelCol {
         position: relative;
+
         @include border-radius(3px);
+
         padding: 10px 5px;
         vertical-align: top;
         display: inline-block;
@@ -5884,44 +6329,57 @@ nav.cascadeBreadCrumb {
         height: calc(100% - 20px);
         overflow: auto;
         transition: all 0.4s ease-in;
+
         .levelNbr {
             color: $akvoGolden;
             padding-left: 5px;
             font-weight: bold;
             font-size: 1.2em;
         }
+
         .cascadeEntryName {
             width: 55%;
         }
+
         .cascadeEntryCode {
             width: 15%;
         }
+
         button {
             width: 15%;
+
             @include border-radius(3px);
+
             background: $anchorLink;
             color: white;
             border: none;
+
             &.squeezeR {
                 width: 10%;
             }
+
             &:hover {
                 background: $anchorLinkHover;
             }
         }
+
         .levelHead {
             padding-left: 5px;
             width: calc(100% - 10px);
+
             label {
                 margin-bottom: 10px;
+
                 a {
                     display: inline-block;
                     width: 20px;
                     margin-left: 10px;
                     text-indent: -9999px;
+
                     &.editSurvey {
                         background: url(../images/IconEdit.svg) center center no-repeat;
                         background-size: 18px 18px;
+
                         &:hover {
                             background: url(../images/IconEditOrange.svg) center center no-repeat;
                             background-size: 18px 18px;
@@ -5930,8 +6388,10 @@ nav.cascadeBreadCrumb {
                 }
             }
         }
+
         ul {
             margin-top: 15px;
+
             li {
                 position: relative;
                 color: white;
@@ -5940,22 +6400,27 @@ nav.cascadeBreadCrumb {
                 background: rgb(53, 76, 84) url(../images/carret.svg) right center no-repeat;
                 margin: 0px auto 5px auto;
                 background-size: 15px 15px;
+
                 &:hover {
                     background: rgba(255, 255, 255, 0.2) url(../images/carret.svg) right center no-repeat;
                     background-size: 15px 15px;
                     cursor: pointer;
                 }
+
                 &.selected {
                     background: rgb(41, 119, 152) url(../images/carret.svg) right center no-repeat;
                     background-size: 15px 15px;
                     cursor: text;
                 }
             }
+
             a {
                 display: block;
                 width: 100%;
                 padding: 15px 0;
+
                 @include noWrapTxt;
+
                 &.deleteLevel {
                     position: absolute;
                     display: inline-block;
@@ -5964,16 +6429,20 @@ nav.cascadeBreadCrumb {
                     padding: 0px 7px 14px 7px;
                     text-indent: -9999px;
                     margin-top: -7px;
+
                     @include border-radius(4px);
+
                     background: rgba(32, 32, 36, 0.2) url(../images/IconDelete.svg) center center no-repeat;
                     background-size: 40px 40px;
                     top: 15px;
                     right: 15px;
+
                     &:hover {
                         background: rgba(32, 32, 36, 0.2) url(../images/IconDeleteOrange.svg) center center no-repeat;
                         background-size: 40px 40px;
                     }
                 }
+
                 &.editLevel {
                     position: absolute;
                     display: inline-block;
@@ -5982,11 +6451,14 @@ nav.cascadeBreadCrumb {
                     padding: 0px 7px 14px 7px;
                     text-indent: -9999px;
                     margin-top: -7px;
+
                     @include border-radius(4px);
+
                     background: rgba(32, 32, 36, 0.2) url(../images/IconEdit.svg) center center no-repeat;
                     background-size: 18px 18px;
                     top: 15px;
                     right: 50px;
+
                     &:hover {
                         background: rgba(32, 32, 36, 0.2) url(../images/IconEditOrange.svg) center center no-repeat;
                         background-size: 18px 18px;
@@ -5999,12 +6471,15 @@ nav.cascadeBreadCrumb {
 
 ul.cascadeAction {
     display: inline-block;
+
     @include responsive(medium-max-screens) {
         margin: 10px 0 10px 0;
     }
 
+
     li {
         display: inline-block;
+
         a {
             font-size: 1em;
             text-transform: uppercase;
@@ -6013,50 +6488,62 @@ ul.cascadeAction {
             border-radius: 3px;
             overflow: hidden;
             white-space: nowrap;
+
             &.saveNewSurvey {
                 background: rgba(32, 32, 36, 0.5) url(../images/IconSave.svg) left center no-repeat;
                 background-size: 40px 40px;
             }
+
             &.previewNewSurvey {
                 background: rgba(32, 32, 36, 0.5) url(../images/IconPreview.svg) left center no-repeat;
                 background-size: 40px 40px;
             }
+
             &.publishNewSurvey {
                 background: rgba(32, 32, 36, 0.5) url(../images/IconPublish.svg) left center no-repeat;
                 background-size: 40px 40px;
             }
+
             &.deleteSurvey {
                 background: rgba(32, 32, 36, 0.5) url(../images/IconDelete.svg) left center no-repeat;
                 background-size: 40px 40px;
             }
+
             &.saveNewSurvey:hover {
                 background: rgba(32, 32, 36, 1) url(../images/IconSaveOrange.svg) left center no-repeat;
                 background-size: 40px 40px;
             }
+
             &.previewNewSurvey:hover {
                 background: rgba(32, 32, 36, 1) url(../images/IconPreviewOrange.svg) left center no-repeat;
                 background-size: 40px 40px;
             }
+
             &.publishNewSurvey:hover {
                 background: rgba(32, 32, 36, 1) url(../images/IconPublishOrange.svg) left center no-repeat;
                 background-size: 40px 40px;
             }
+
             &.deleteSurvey:hover {
                 background: rgba(32, 32, 36, 1) url(../images/IconDeleteOrange.svg) left center no-repeat;
                 background-size: 40px 40px;
             }
+
             &.manageNotifications {
                 background: rgba(32, 32, 36, 0.5) url(../images/IconNotif.svg) left center no-repeat;
                 background-size: 40px 40px;
             }
+
             &.manageNotifications:hover {
                 background: rgba(32, 32, 36, 1) url(../images/IconNotifOrange.svg) left center no-repeat;
                 background-size: 40px 40px;
             }
+
             &.manageTranslations {
                 background: rgba(32, 32, 36, 0.5) url(../images/IconTranslate.svg) left center no-repeat;
                 background-size: 40px 40px;
             }
+
             &.manageTranslations:hover {
                 background: rgba(32, 32, 36, 1) url(../images/IconTranslateOrange.svg) left center no-repeat;
                 background-size: 40px 40px;
@@ -6070,16 +6557,18 @@ a.btn {
     padding: 1px 0 7px 21px;
     height: 10px;
     text-transform: uppercase;
+
     &.smallBtn {
         display: inline-block;
     }
+
     &:hover {
         color: $anchorLinkHover;
     }
 }
 
 a.addBtn {
-    display:inline-block;
+    display: inline-block;
     color: white;
     background: rgba($anchorLink, 1) url(../images/IconPlusWhite.svg) 2px center no-repeat;
     padding: 8px 7px 13px 25px;
@@ -6106,6 +6595,7 @@ a.importBtn {
     background-size: 25px 45px;
     -webkit-transition: color 0.2s ease-in, background-color 0.2s ease-in;
     transition: color 0.2s ease-in, background-color 0.2s ease-in;
+
     &:hover {
         background: rgba($anchorLinkHover, 1) url(../images/IconImportWhite.svg) 2px center no-repeat;
         -webkit-background-size: 25px 45px;
@@ -6116,6 +6606,7 @@ a.importBtn {
 .disabled {
     cursor: default;
     color: rgba(128, 128, 128, 0.1);
+
     &:hover {
         cursor: default;
         color: rgba(128, 128, 128, 0.1);
@@ -6131,6 +6622,7 @@ a.levelUp {
     transition: color 0.2s ease-in, background-color 0.2s ease-in;
     -webkit-background-size: 25px 25px;
     background-size: 25px 25px;
+
     &:hover {
         background: rgba($anchorLink, 0.1) url(../images/IconRightOrange.svg) right center no-repeat;
         -webkit-background-size: 25px 25px;
@@ -6147,6 +6639,7 @@ a.levelDown {
     transition: color 0.2s ease-in, background-color 0.2s ease-in;
     -webkit-background-size: 25px 25px;
     background-size: 25px 25px;
+
     &:hover {
         background: rgba($anchorLink, 0.1) url(../images/IconLeftOrange.svg) left center no-repeat;
         -webkit-background-size: 25px 25px;
@@ -6157,28 +6650,35 @@ a.levelDown {
 li.disable {
     a.levelUp {
         pointer-events: none;
+
         /* Disables the button completely. Better than just cursor: default; */
         @include opacity(0.2);
+
         color: white;
         padding: 15px 35px 15px 15px;
         background: rgba($anchorLink, 0) url(../images/IconRightWhite.svg) right center no-repeat;
         -webkit-background-size: 25px 25px;
         background-size: 25px 25px;
+
         &:hover {
             -webkit-background-size: 25px 25px;
             background-size: 25px 25px;
             background: rgba($anchorLink, 0) url(../images/IconRightWhite.svg) right center no-repeat;
         }
     }
+
     a.levelDown {
         pointer-events: none;
+
         /* Disables the button completely. Better than just cursor: default; */
         @include opacity(0.2);
+
         color: white;
         padding: 15px 15px 15px 35px;
         background: rgba($anchorLink, 0) url(../images/IconLeftWhite.svg) left center no-repeat;
         -webkit-background-size: 25px 25px;
         background-size: 25px 25px;
+
         &:hover {
             background: rgba($anchorLink, 0) url(../images/IconLeftWhite.svg) left center no-repeat;
             -webkit-background-size: 25px 25px;
@@ -6197,6 +6697,7 @@ li.disable {
             display: flex;
             -webkit-align-items: center;
             align-items: center;
+
             li {
                 text-align: center;
                 width: 50%;
@@ -6212,35 +6713,44 @@ li.disable {
     margin: 5px auto;
     background: rgba($anchorLink, 0.1);
     padding: 10px 0.5%;
+
     a {
         & + a {
             margin-left: 10px;
         }
     }
+
     h4 {
         font-size: 1.2em;
         color: $akvoOrange;
         margin: 5px 0 10px 0;
     }
+
     @include border-radius(5px);
+
     fieldset {
         padding: 10px;
         background-color: rgba(white, 0.1);
         color: white;
+
         input {
             @include placeholder-color(rgb(32, 32, 36));
+
             background: rgba(white, 0.4);
             border: none;
+
             &:first-of-type {
                 width: 25%;
             }
         }
     }
+
     p {
         width: 35%;
         margin-top: 5px;
         color: rgba(white, 0.6);
     }
+
     .resumable-progress {
         margin-top: 15px;
     }
@@ -6269,18 +6779,23 @@ li.disable {
     z-index: 1;
     background-color: white;
     border-bottom: 1px solid $akvoBlack;
+
     .dataTabMenu {
         top: 8px;
         background: white;
     }
+
     + .dataTable {
         margin-top: 40px;
     }
+
     @media only screen and (max-width: 600px) {
         height: 80px;
+
         .dataTabMenu {
             top: 48px;
         }
+
         + .dataTable {
             margin-top: 80px;
         }
@@ -6302,12 +6817,14 @@ li.disable {
         }
     }
 }
+
 #inspectData {
     h3 {
         &.questionGroupName {
             margin: 10px 0;
         }
     }
+
     h5 {
         &.iterationNumber {
             margin: 16px 0px 5px 8px;
@@ -6326,16 +6843,20 @@ li.disable {
 
 html.navMaps {
     border-top: 0px;
+
     header {
         position: initial;
     }
+
     #flowMap, #pointDetails {
         height: 600px;
         height: 75vh;
     }
+
     .mapFlow.middleSection {
         padding: 0;
     }
+
     footer {
         padding-bottom: 15px;
     }
@@ -6343,4 +6864,47 @@ html.navMaps {
 
 /* Approval Process */
 
+.approvalDetail {
+    padding-left: 30px;
 
+    & > p {
+        color: rgb(212, 212, 212);
+        margin-bottom: 10px;
+    }
+
+    h2 {
+        display: inline-block !important;
+        margin-top: 15px;
+    }
+
+    li {
+        display: block;
+        padding: 10px 5px !important;
+        width: calc(100% - 20px);
+        min-height: 15px;
+        margin-bottom:2px;
+        clear: both;
+        background: rgba(255,255,255,0.05);
+        @include border-radius(2px);
+        h4 {
+            display: inline;
+            float: left;
+            color: white;
+        }
+
+        a {
+            display: inline;
+            float: right;
+            text-indent: -9999px;
+            width: 5px;
+            height: 5px;
+            padding: 5px 0 10px 25px;
+            -webkit-background-size: 15px auto;
+            background-size: 15px auto;
+            background: url(../images/topnavUsers.svg) left center no-repeat;
+            &:hover {
+                background: url(../images/topnavUsersOrange.svg) left center no-repeat;
+            }
+        }
+    }
+}
