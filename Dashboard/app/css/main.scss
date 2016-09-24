@@ -91,7 +91,10 @@ body {
     line-height: 1;
 }
 
-ol,
+ol {
+    list-style: decimal;
+}
+
 ul {
     list-style: none;
 }

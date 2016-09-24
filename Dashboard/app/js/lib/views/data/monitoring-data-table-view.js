@@ -94,3 +94,7 @@ FLOW.DataPointApprovalStatusView = FLOW.View.extend({
         }
     }.property(),
 });
+
+FLOW.DataPointApprovalView = FLOW.View.extend({
+    approvalStatus: Ember.A([{ label: Ember.String.loc('_approved') },{ label: Ember.String.loc('_rejected')}])
+});

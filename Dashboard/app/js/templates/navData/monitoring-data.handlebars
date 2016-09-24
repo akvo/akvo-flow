@@ -56,6 +56,23 @@
                   </a>{{/view}} {{/if}}
               </td>
             </tr>
+            <tr>
+                <td></td>
+                <td class="dataApprovalBlock"  colspan="5">
+                {{#view FLOW.DataPointApprovalView}}
+                    <ol class="dataPointApproval">
+                    {{#each step in FLOW.router.approvalStepsController}}
+                        <li>
+                        {{step.title}}
+                        {{view Ember.Select contentBinding="view.approvalStatus" optionLabelPath="content.label" optionValuePath=""}}
+                        {{view Ember.TextField size="80"}}
+                        <a>{{t _submit}}</a>
+                        </li>
+                    {{/each}}
+                    </ol>
+                {{/view}}
+                </td>
+            </tr>
             {{/each}}
         </tbody>
         <tfoot>
