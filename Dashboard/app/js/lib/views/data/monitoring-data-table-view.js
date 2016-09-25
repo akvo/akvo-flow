@@ -3,8 +3,8 @@ FLOW.MonitoringDataTableView = FLOW.View.extend({
   cursorStart: null,
 
   pageNumber: function(){
-	return FLOW.surveyedLocaleControl.get('pageNumber');
-  }.property('FLOW.surveyedLocaleControl.pageNumber'),
+	return FLOW.router.surveyedLocaleController.get('pageNumber');
+  }.property('FLOW.router.surveyedLocaleController.pageNumber'),
 
   showDetailsDialog: function (evt) {
 	FLOW.surveyInstanceControl.set('content', FLOW.store.findQuery(FLOW.SurveyInstance, {
@@ -54,25 +54,25 @@ FLOW.MonitoringDataTableView = FLOW.View.extend({
 		criteria.since = this.get('cursorStart');
 	  }
 
-	  FLOW.surveyedLocaleControl.set('content', FLOW.store.findQuery(FLOW.SurveyedLocale, criteria));
+	  FLOW.router.surveyedLocaleController.set('content', FLOW.store.find(FLOW.SurveyedLocale, criteria));
   },
 
   doNextPage: function () {
 	var cursorArray, cursorStart;
-	cursorArray = FLOW.surveyedLocaleControl.get('sinceArray');
+	cursorArray = FLOW.router.surveyedLocaleController.get('sinceArray');
 	cursorStart = cursorArray.length > 0 ? cursorArray[cursorArray.length - 1] : null;
 	this.set('cursorStart', cursorStart);
     this.findSurveyedLocale();
-    FLOW.surveyedLocaleControl.set('pageNumber', FLOW.surveyedLocaleControl.get('pageNumber') + 1);
+    FLOW.router.surveyedLocaleController.set('pageNumber', FLOW.router.surveyedLocaleController.get('pageNumber') + 1);
   },
 
   doPrevPage: function () {
 	var cursorArray, cursorStart;
-	cursorArray = FLOW.surveyedLocaleControl.get('sinceArray');
+	cursorArray = FLOW.router.surveyedLocaleController.get('sinceArray');
 	cursorStart = cursorArray.length - 3 > -1 ? cursorArray[cursorArray.length - 3] : null;
 	this.set('cursorStart', cursorStart);
     this.findSurveyedLocale();
-    FLOW.surveyedLocaleControl.set('pageNumber', FLOW.surveyedLocaleControl.get('pageNumber') - 1);
+    FLOW.router.surveyedLocaleController.set('pageNumber', FLOW.router.surveyedLocaleController.get('pageNumber') - 1);
   },
 
   hasNextPage: function () {
@@ -80,8 +80,8 @@ FLOW.MonitoringDataTableView = FLOW.View.extend({
   }.property('FLOW.metaControl.numSLLoaded'),
 
   hasPrevPage: function () {
-    return FLOW.surveyedLocaleControl.get('pageNumber');
-  }.property('FLOW.surveyedLocaleControl.pageNumber'),
+    return FLOW.router.surveyedLocaleController.get('pageNumber');
+  }.property('FLOW.router.surveyedLocaleController.pageNumber'),
 });
 
 FLOW.DataPointApprovalStatusView = FLOW.View.extend({

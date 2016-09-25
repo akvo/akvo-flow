@@ -269,7 +269,7 @@ FLOW.surveyInstanceControl = Ember.ArrayController.create({
   }
 });
 
-FLOW.surveyedLocaleControl = Ember.ArrayController.create({
+FLOW.SurveyedLocaleController = Ember.ArrayController.extend({
   sortProperties: ['collectionDate'],
   sortAscending: false,
   selectedSurvey: null,
