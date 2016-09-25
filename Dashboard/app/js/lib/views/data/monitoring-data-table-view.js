@@ -27,10 +27,6 @@ FLOW.MonitoringDataTableView = FLOW.View.extend({
     $('tr[data-flow-id="si_details_' + evt.context.get('keyId') + '"]').show();
   },
 
-  showSurveyedLocaleDeleteButton: function() {
-    return FLOW.surveyedLocaleControl.get('userCanDelete');
-  }.property(),
-
   findSurveyedLocale: function (evt) {
 	  var ident = this.get('identifier'),
 	      displayName = this.get('displayName'),
@@ -83,6 +79,31 @@ FLOW.MonitoringDataTableView = FLOW.View.extend({
   }.property('FLOW.router.surveyedLocaleController.pageNumber'),
 });
 
+/**
+ * View of each row/data point in the monitoring data tab
+ */
+FLOW.DataPointView = FLOW.View.extend({
+    templateName: 'navData/monitoring-data-row',
+
+    showDataApprovalBlock: false,
+
+    showSurveyedLocaleDeleteButton: function() {
+        return FLOW.router.surveyedLocaleController.get('userCanDelete');
+    }.property(),
+
+    showApprovalStatusColumn: function () {
+        return this.get('parentView').get('showApprovalStatusColumn');
+    }.property(),
+
+    toggleShowDataApprovalBlock: function () {
+        this.toggleProperty('showDataApprovalBlock');
+    },
+});
+
+/**
+ * View to render the status of a data point in the approval
+ * status cell of each data point / row
+ */
 FLOW.DataPointApprovalStatusView = FLOW.View.extend({
     content: null,
 
@@ -94,6 +115,9 @@ FLOW.DataPointApprovalStatusView = FLOW.View.extend({
     }.property(),
 });
 
+/**
+ * The data approval block for each data point
+ */
 FLOW.DataPointApprovalView = FLOW.View.extend({
     approvalStatus: Ember.A([{ label: Ember.String.loc('_approved') },{ label: Ember.String.loc('_rejected')}])
 });

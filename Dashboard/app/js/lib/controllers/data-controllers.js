@@ -288,7 +288,7 @@ FLOW.SurveyedLocaleController = Ember.ArrayController.extend({
     });
 
     this.set('currentContents', mutableContents);
-  }.observes('content', 'content.isLoaded'),
+  },
 
   removeLocale: function(locale) {
     this.get('currentContents').forEach(function(item, i, currentContents) {
