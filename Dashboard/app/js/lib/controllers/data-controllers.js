@@ -273,12 +273,11 @@ FLOW.SurveyedLocaleController = Ember.ArrayController.extend({
   sortProperties: ['collectionDate'],
   sortAscending: false,
   selectedSurvey: null,
-  content: null,
   sinceArray: [],
   pageNumber: 0,
 
-  populate: function () {
-    this.set('content', FLOW.store.findQuery(FLOW.SurveyedLocale, {}));
+  populate: function (criteria) {
+    this.set('content', FLOW.store.find(FLOW.SurveyedLocale, criteria));
   },
 
   contentChanged: function() {

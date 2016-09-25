@@ -53,8 +53,7 @@ FLOW.MonitoringDataTableView = FLOW.View.extend({
 	  if (this.get('cursorStart')) {
 		criteria.since = this.get('cursorStart');
 	  }
-
-	  FLOW.router.surveyedLocaleController.set('content', FLOW.store.find(FLOW.SurveyedLocale, criteria));
+      FLOW.router.surveyedLocaleController.populate(criteria);
   },
 
   doNextPage: function () {
