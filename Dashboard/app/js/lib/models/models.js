@@ -395,6 +395,16 @@ FLOW.ApprovalStep = FLOW.BaseModel.extend({
     title: DS.attr('string'),
 });
 
+FLOW.DataPointApproval = FLOW.BaseModel.extend({
+    surveyedLocaleId: DS.attr('number'),
+
+    approvalStepId: DS.attr('number'),
+
+    approved: DS.attr('boolean'),
+
+    comment: DS.attr('string'),
+});
+
 FLOW.SurveyQuestionSummary = FLOW.BaseModel.extend({
   response: DS.attr('string'),
   count: DS.attr('number'),
