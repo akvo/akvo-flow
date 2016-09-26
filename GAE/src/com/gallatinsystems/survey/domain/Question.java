@@ -22,9 +22,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
 
-import javax.jdo.annotations.NotPersistent;
-import javax.jdo.annotations.PersistenceCapable;
-
 import com.gallatinsystems.framework.domain.BaseDomain;
 
 /**
@@ -424,7 +421,7 @@ public class Question extends BaseDomain {
     public void setAllowPoints(Boolean allowPoints) {
         this.allowPoints = allowPoints;
     }
-    
+
     public Boolean getAllowPoints() {
         return allowPoints;
     }
@@ -432,7 +429,7 @@ public class Question extends BaseDomain {
     public void setAllowLine(Boolean allowLine) {
         this.allowLine = allowLine;
     }
-    
+
     public Boolean getAllowLine() {
         return allowLine;
     }
@@ -453,11 +450,11 @@ public class Question extends BaseDomain {
         this.sourceQuestionId = originalQuestionId;
     }
 
-	public String getCaddisflyResourceUuid() {
-		return caddisflyResourceUuid;
-	}
+    public String getCaddisflyResourceUuid() {
+        return caddisflyResourceUuid;
+    }
 
-	public void setCaddisflyResourceUuid(String caddisflyResourceUuid) {
-		this.caddisflyResourceUuid = caddisflyResourceUuid;
-	}
+    public void setCaddisflyResourceUuid(String caddisflyResourceUuid) {
+        this.caddisflyResourceUuid = caddisflyResourceUuid;
+    }
 }

@@ -34,47 +34,47 @@ import org.waterforpeople.mapping.domain.CaddisflyResource;
  * implement baseDAO as it consists of only a single method.
  */
 public class CaddisflyResourceDao {
-	private static ObjectMapper mapper = new ObjectMapper();
+    private static ObjectMapper mapper = new ObjectMapper();
 
-	private static final Logger log = Logger.getLogger(CascadeResourceDao.class
-			.getName());
+    private static final Logger log = Logger.getLogger(CascadeResourceDao.class
+            .getName());
 
-	/**
-	 * lists caddisfly resources. Source is the json file caddisfly-tests.json
-	 * stored in WEB-INF/resources
-	 */
-	public List<CaddisflyResource> listResources() {
-		List<CaddisflyResource> result = new ArrayList<CaddisflyResource>();
+    /**
+     * lists caddisfly resources. Source is the json file caddisfly-tests.json
+     * stored in WEB-INF/resources
+     */
+    public List<CaddisflyResource> listResources() {
+        List<CaddisflyResource> result = new ArrayList<CaddisflyResource>();
 
-		try {
-			InputStream stream = getClass().getClassLoader()
-					.getResourceAsStream(
-							"resources/caddisfly/caddisfly-tests.json");
-			String jsonTxt = IOUtils.toString(stream);
+        try {
+            InputStream stream = getClass().getClassLoader()
+                    .getResourceAsStream(
+                            "resources/caddisfly/caddisfly-tests.json");
+            String jsonTxt = IOUtils.toString(stream);
 
-			// create a list of caddisflyResource objects
-			JsonNode rootNode = mapper.readValue(jsonTxt, JsonNode.class);
-			ArrayNode testsNode = (ArrayNode) rootNode.get("tests");
+            // create a list of caddisflyResource objects
+            JsonNode rootNode = mapper.readValue(jsonTxt, JsonNode.class);
+            ArrayNode testsNode = (ArrayNode) rootNode.get("tests");
 
-			for (int i = 0; i < testsNode.size(); i++) {
-				CaddisflyResource cr = JsonToCaddisflyResource(testsNode.get(i));
-				result.add(cr);
-			}
-		} catch (Exception e) {
-			log.log(Level.SEVERE,
-					"Error parsing Caddisfly resource: " + e.getMessage(), e);
-		}
-		return result;
-	}
+            for (int i = 0; i < testsNode.size(); i++) {
+                CaddisflyResource cr = JsonToCaddisflyResource(testsNode.get(i));
+                result.add(cr);
+            }
+        } catch (Exception e) {
+            log.log(Level.SEVERE,
+                    "Error parsing Caddisfly resource: " + e.getMessage(), e);
+        }
+        return result;
+    }
 
-	private CaddisflyResource JsonToCaddisflyResource(JsonNode rootNode) {
-		CaddisflyResource cr = null;
-		try {
-			cr = mapper.readValue(rootNode, CaddisflyResource.class);
-		} catch (IOException e) {
-			log.log(Level.SEVERE,
-					"Error parsing Caddisfly resource: " + e.getMessage(), e);
-		}
-		return cr;
-	}
+    private CaddisflyResource JsonToCaddisflyResource(JsonNode rootNode) {
+        CaddisflyResource cr = null;
+        try {
+            cr = mapper.readValue(rootNode, CaddisflyResource.class);
+        } catch (IOException e) {
+            log.log(Level.SEVERE,
+                    "Error parsing Caddisfly resource: " + e.getMessage(), e);
+        }
+        return cr;
+    }
 }
