@@ -31,7 +31,7 @@ FLOW.MonitoringDataTableView = FLOW.View.extend({
 	  var ident = this.get('identifier'),
 	      displayName = this.get('displayName'),
 	      sgId = FLOW.selectedControl.get('selectedSurveyGroup'),
-	      cursorType = FLOW.metaControl.get('cursorType');
+	      cursorType = FLOW.metaControl.get('cursorType'),
         criteria = {};
 
 	  if (ident) {
