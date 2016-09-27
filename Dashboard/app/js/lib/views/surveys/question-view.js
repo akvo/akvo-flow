@@ -33,6 +33,7 @@ FLOW.QuestionView = FLOW.View.extend({
   allowPolygon: true,
   questionValidationFailure: false,
   questionTooltipValidationFailure: false,
+  caddisflyResourceUuid: null,
 
   showMetaConfig: function () {
     return FLOW.Env.showMonitoringFeature;
@@ -101,12 +102,12 @@ FLOW.QuestionView = FLOW.View.extend({
   }.property('this.type').cacheable(),
 
   amCascadeType: function () {
-	    if (this.type) {
-	      return this.type.get('value') == 'CASCADE';
-	    } else {
-	      return false;
-	    }
-	  }.property('this.type').cacheable(),
+    if (this.type) {
+	  return this.type.get('value') == 'CASCADE';
+	} else {
+	  return false;
+	}
+  }.property('this.type').cacheable(),
 
   amNoOptionsType: function () {
     var val;
@@ -117,34 +118,39 @@ FLOW.QuestionView = FLOW.View.extend({
   }.property('this.type').cacheable(),
 
   amGeoshapeType: function () {
-	    if (this.type) {
-	      return this.type.get('value') == 'GEOSHAPE';
-	    } else {
-	      return false;
-	    }
-	  }.property('this.type').cacheable(),
+    if (this.type) {
+	  return this.type.get('value') == 'GEOSHAPE';
+	} else {
+	  return false;
+	}
+  }.property('this.type').cacheable(),
 
   amDateType: function () {
-      if (this.type) {
-        return this.type.get('value') == 'DATE';
-      } else {
-        return false;
-      }
-    }.property('this.type').cacheable(),    
+    if (this.type) {
+      return this.type.get('value') == 'DATE';
+    } else {
+      return false;
+    }
+  }.property('this.type').cacheable(),
 
   amSignatureType: function () {
     return (this.content && this.content.get('type') === 'SIGNATURE')
             || (this.type && this.type.get('value') === 'SIGNATURE');
   }.property('this.type'),
 
+  amCaddisflyType: function () {
+	return (this.content && this.content.get('type') === 'CADDISFLY'
+		|| (this.type && this.type.get('value') === 'CADDISFLY'));
+	}.property('this.type').cacheable(),
+
   showLocaleName: function () {
-      if (!this.type) {
-          return false;
-      }
-      return this.type.get('value') == 'FREE_TEXT'
-          || this.type.get('value') == 'NUMBER'
-          || this.type.get('value') == 'OPTION'
-          || this.type.get('value') == 'CASCADE';
+    if (!this.type) {
+      return false;
+    }
+    return this.type.get('value') == 'FREE_TEXT'
+    	|| this.type.get('value') == 'NUMBER'
+        || this.type.get('value') == 'OPTION'
+        || this.type.get('value') == 'CASCADE';
   }.property('this.type').cacheable(),
 
   // when we change the question type to GEO, we turn on the
@@ -189,12 +195,25 @@ FLOW.QuestionView = FLOW.View.extend({
     this.set('allowPoints', FLOW.selectedControl.selectedQuestion.get('allowPoints'));
     this.set('allowLine', FLOW.selectedControl.selectedQuestion.get('allowLine'));
     this.set('allowPolygon', FLOW.selectedControl.selectedQuestion.get('allowPolygon'));
+    this.set('cascadeResourceId', FLOW.selectedControl.selectedQuestion.get('cascadeResourceId'));
+    this.set('caddisflyResourceUuid', FLOW.selectedControl.selectedQuestion.get('caddisflyResourceUuid'));
+
     FLOW.optionListControl.set('content', []);
 
     // if the cascadeResourceId is not null, get the resource
     if (!Ember.empty(FLOW.selectedControl.selectedQuestion.get('cascadeResourceId'))) {
     	cascadeResource = FLOW.store.find(FLOW.CascadeResource,FLOW.selectedControl.selectedQuestion.get('cascadeResourceId'));
     	FLOW.selectedControl.set('selectedCascadeResource', cascadeResource);
+    }
+
+    // reset selected caddisfly resource
+    FLOW.selectedControl.set('selectedCaddisflyResource', null);
+    // if the caddisflyResourceUuid is not null, get the resource
+    if (!Ember.empty(FLOW.selectedControl.selectedQuestion.get('caddisflyResourceUuid'))) {
+      var caddResource = FLOW.caddisflyResourceControl.get('content').findProperty('uuid', FLOW.selectedControl.selectedQuestion.get('caddisflyResourceUuid'));
+      if (!Ember.empty(caddResource)) {
+        FLOW.selectedControl.set('selectedCaddisflyResource',caddResource);
+      }
     }
 
     // if the dependentQuestionId is not null, get the question
@@ -338,6 +357,15 @@ FLOW.QuestionView = FLOW.View.extend({
     if (!(this.type.get('value') == 'NUMBER' || this.type.get('value') == 'FREE_TEXT')) {
       this.set('requireDoubleEntry', false);
     }
+    
+    if (!(this.type.get('value') == 'CASCADE')) {
+      this.set('cascadeResourceId', null);
+    }
+    
+    if (!(this.type.get('value') == 'CADDISFLY')) {
+      this.set('caddisflyResourceUuid', null);
+    }
+    
     path = FLOW.selectedControl.selectedSurveyGroup.get('code') + "/" + FLOW.selectedControl.selectedSurvey.get('name') + "/" + FLOW.selectedControl.selectedQuestionGroup.get('code');
     FLOW.selectedControl.selectedQuestion.set('questionId', this.get('questionId'));
     FLOW.selectedControl.selectedQuestion.set('text', this.get('text'));
@@ -403,6 +431,14 @@ FLOW.QuestionView = FLOW.View.extend({
     		FLOW.selectedControl.selectedQuestion.set('cascadeResourceId',
     				FLOW.selectedControl.selectedCascadeResource.get('keyId'));
     	}
+    }
+    
+    // deal with caddisflyResource
+    if (this.type.get('value') == 'CADDISFLY') {
+      if (!Ember.empty(FLOW.selectedControl.get('selectedCaddisflyResource'))){
+        FLOW.selectedControl.selectedQuestion.set('caddisflyResourceUuid',
+            FLOW.selectedControl.selectedCaddisflyResource.get('uuid'));
+      }
     }
 
     FLOW.selectedControl.selectedSurvey.set('status', 'NOT_PUBLISHED');

@@ -70,6 +70,8 @@ FLOW.Router = Ember.Router.extend({
       connectOutlets: function (router, event) {
         router.get('applicationController').connectOutlet('navSurveys');
         router.set('navigationController.selected', 'navSurveys');
+        FLOW.cascadeResourceControl.populate();
+        FLOW.caddisflyResourceControl.populate();
       },
 
       doNewSurvey: function (router, event) {

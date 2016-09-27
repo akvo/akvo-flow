@@ -1,0 +1,154 @@
+{
+	"tests": [
+
+		{
+			"subtype": "colour",
+			"uuid": "f0f3c1dd-89af-49f1-83e7-bcc31c3006cf",
+			"tags": ["water quality"],
+			"name": "Fluoride",
+			"brand": "Akvo Caddisfly",
+			"description": "Measures Fluoride in water. x - xxx ppm",
+			"numResults": 1,
+			"hasImage":false,
+			"results": [{
+				"name": "Fluoride",
+				"id": 1,
+				"unit": "ppm"
+			}]
+		}, {
+			"subtype": "sensor",
+			"uuid": "f88237b7-be3d-4fac-bbee-ab328eefcd14",
+			"tags": ["water quality"],
+			"name": "Electrical Conductivity",
+			"brand": "Akvo Caddisfly",
+			"description": "Electrical Conductivity of water. 0 - 20.000 μS/cm",
+			"numResults": 1,
+			"hasImage":false,
+			"results": [{
+				"name": "Electrical Conductivity",
+				"id": 1,
+				"unit": "μS/cm"
+			}]
+		}, {
+			"subtype": "striptest",
+			"uuid": "bf1c19c0-9788-4e26-999e-1b5c6ca28111",
+			"tags": ["water quality"],
+			"name": "Chlorine and Free Chlorine",
+			"brand": "HACH 27450, 50pcs",
+			"description": "Measures chlorine and free chlorine in water. 0 - 10 ppm",
+			"numResults": 2,
+			"hasImage":true,
+			"results": [{
+				"name": "Total Chlorine",
+				"id": 1,
+				"unit": "ppm"
+			}, {
+				"name": "Free Chlorine",
+				"id": 2,
+				"unit": "ppm"
+			}]
+		}, {
+			"subtype": "striptest",
+			"uuid": "c801b70c-39e4-493a-b20e-6843158b47b4",
+			"tags": ["water quality"],
+			"name": "Nitrate and Nitrite",
+			"brand": "HACH 27454, 25 pcs",
+			"description": "Measures nitrate and nitrite in water. Nitrate 0 - 50 ppm, Nitrite 0 - 3.0 ppm",
+			"numResults": 2,
+			"hasImage":true,
+			"results": [{
+				"name": "60-second Nitrate Nitrogen",
+				"id": 1,
+				"unit": "ppm"
+			}, {
+				"name": "30-second Nitrite Nitrogen",
+				"id": 2,
+				"unit": "ppm"
+			}]
+		}, {
+			"subtype": "striptest",
+			"uuid": "459a42d9-0834-4656-9e5a-e3bde46bdcff",
+			"tags": ["water quality"],
+			"name": "Total Iron",
+			"brand": "HACH 2745348, 25 pcs. 0 - 5 ppm",
+			"description": "Total dissolved iron",
+			"numResults": 1,
+			"hasImage":true,
+			"results": [{
+				"name": "Total iron",
+				"id": 1,
+				"unit": "ppm"
+			}]
+		}, {
+			"subtype": "striptest",
+			"uuid": "debbbf5e-fe0c-4b9c-be1f-6ed8142b6b07",
+			"tags": ["water quality"],
+			"name": "pH 4-9",
+			"brand": "HACH 27456, 50 pcs. Range 4 - 9.",
+			"description": "pH mid range",
+			"numResults": 1,
+			"hasImage":true,
+			"results": [{
+				"name": "pH",
+				"id": 1,
+				"unit": ""
+			}]
+		}, {
+			"subtype": "striptest",
+			"uuid": "f4c57d34-dd17-4750-9fcd-fe26af2621a7",
+			"tags": ["water quality"],
+			"name": "Phosphorus",
+			"brand": "HACH 27571, 50 pcs",
+			"description": "Phosphorus, orthophosphate (reactive). 0 - 50 ppm.",
+			"numResults": 1,
+			"hasImage":true,
+			"results": [{
+				"name": "Phosphorus",
+				"id": 1,
+				"unit": "ppm"
+			}]
+		}, {
+			"subtype": "striptest",
+			"uuid": "c2669bb7-ad63-4a69-a16a-798b81d2b019",
+			"tags": ["water quality"],
+			"name": "pH MColorpHast range 0 - 14",
+			"brand": "Merck Millipore 1095350001, 100 pcs",
+			"description": "pH, range 0 - 14",
+			"numResults": 1,
+			"hasImage":true,
+			"results": [{
+				"name": "pH",
+				"id": 1,
+				"unit": ""
+			}]
+		}, {
+			"subtype": "striptest",
+			"uuid": "32b6d11b-c7f3-475f-adf9-32d9b8f4aecf",
+			"tags": ["water quality"],
+			"name": "EZ Arsenic High Range Test Kit (0-500 range)",
+			"brand": "HACH 2822800, 50 pcs",
+			"description": "Measures arsenic levels. This is a dual range test kit - choose this test when the 0-500 ppm range is used.",
+			"numResults": 1,
+			"hasImage":true,
+			"results": [{
+				"name": "Arsenic",
+				"id": 1,
+				"unit": "ppm"
+			}]
+		}, {
+			"subtype": "striptest",
+			"uuid": "beca9731-63f4-434f-a3c2-ac33b44f9992",
+			"tags": ["water quality"],
+			"name": "EZ Arsenic High Range Test Kit (0-4000 range)",
+			"brand": "HACH 2822800, 50 pcs",
+			"description": "Measures arsenic levels. This is a dual range test kit - choose this test when the 0-4000 ppm range is used.",
+			"numResults": 1,
+			"hasImage":true,
+			"results": [{
+				"name": "Arsenic",
+				"id": 1,
+				"unit": "ppm"
+			}]
+		}
+	]
+}
