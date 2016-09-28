@@ -31,8 +31,8 @@
         {{#each step in FLOW.router.approvalStepsController}}
             <li>
             {{step.title}}
-            {{#view FLOW.DataPointApprovalView}}
-                {{view Ember.Select contentBinding="view.approvalStatus" optionLabelPath="content.label" optionValuePath=""}}
+            {{#view FLOW.DataPointApprovalView stepBinding="step"}}
+                {{view Ember.Select contentBinding="view.parentView.approvalStatus" optionLabelPath="content.label" optionValuePath="content.value"}}
                 {{view Ember.TextField size="80"}}
                 <a>{{t _submit}}</a>
             {{/view}}

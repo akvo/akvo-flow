@@ -85,6 +85,8 @@ FLOW.MonitoringDataTableView = FLOW.View.extend({
 FLOW.DataPointView = FLOW.View.extend({
     templateName: 'navData/monitoring-data-row',
 
+    approvalStatus: [{label: Ember.String.loc('_pending'), value: 'pending'}, { label: Ember.String.loc('_approved'), value: 'approved' },{ label: Ember.String.loc('_rejected'), value: 'rejected'}],
+
     showDataApprovalBlock: false,
 
     showSurveyedLocaleDeleteButton: function() {
@@ -119,5 +121,4 @@ FLOW.DataPointApprovalStatusView = FLOW.View.extend({
  * The data approval block for each data point
  */
 FLOW.DataPointApprovalView = FLOW.View.extend({
-    approvalStatus: Ember.A([{label: Ember.String.loc('_pending')}, { label: Ember.String.loc('_approved') },{ label: Ember.String.loc('_rejected')}])
 });
