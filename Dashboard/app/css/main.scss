@@ -6311,7 +6311,7 @@ li.disable {
             margin: 10px 0;
         }
     }
-    h5 {
+    h5 {background
         &.iterationNumber {
             margin: 16px 0px 5px 8px;
         }
@@ -6341,9 +6341,24 @@ html.navMaps {
     }
     footer {
         padding-bottom: 15px;
-    }
+    } 
 }
 
 /* Approval Process */
 
-
+.dataApprovalBlock {
+    tr & {
+        background: rgba(232, 230, 220, 0.2);
+        &:hover {background: rgba(232, 230, 220, 0.2);}
+    }
+    ol {
+        &.dataPointApproval {
+            list-style-type: none;
+            list-style: none;
+            li {
+                text-align: left;
+                margin-bottom: 10px;
+            }
+        }
+    }
+}
