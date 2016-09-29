@@ -31,10 +31,10 @@
         {{#each step in FLOW.router.approvalStepsController}}
             <li>
             <h4>{{step.title}}<h4>
-            {{#view FLOW.DataPointApprovalView stepBinding="step"}}
-                {{view Ember.Select contentBinding="view.parentView.approvalStatus" optionLabelPath="content.label" optionValuePath="content.value"}}
-                {{view Ember.TextField size="80"}}
-                <a class="btn">{{t _submit}}</a>
+            {{#view FLOW.DataPointApprovalView stepBinding="step" dataPointBinding="view.content" target="view"}}
+                {{view Ember.Select contentBinding="view.parentView.approvalStatus" optionLabelPath="content.label" optionValuePath="content.value" valueBinding="view.status"}}
+                {{view Ember.TextField size="80" valueBinding="view.comment"}}
+                <a class="btn" {{action submitDataPointApproval target="view"}}>{{t _submit}}</a>
             {{/view}}
             </li>
         {{/each}}

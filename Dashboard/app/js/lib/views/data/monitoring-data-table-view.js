@@ -118,7 +118,30 @@ FLOW.DataPointApprovalStatusView = FLOW.View.extend({
 });
 
 /**
- * The data approval block for each data point
+ * The data approval view for each approval step of a data point
  */
 FLOW.DataPointApprovalView = FLOW.View.extend({
+    step: null,
+
+    dataPoint: null,
+
+    status: null,
+
+    comment: null,
+
+    /*
+     *  Submit data approval properties to controller
+     */
+    submitDataPointApproval: function (event) {
+
+        var dataPointApproval = Ember.Object.create({
+            surveyedLocaleId: this.get('dataPoint').get('keyId'),
+            approvalStepId: this.get('step').get('keyId'),
+            approvalUserId: null, // explicitly left empty to set on server-side. avoid spoofing approvals
+            approved: this.get('approvalStatus'),
+            comment: this.get('comment'),
+        });
+
+        FLOW.router.dataPointApprovalController.add(dataPointApproval);
+    },
 });
