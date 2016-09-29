@@ -24,17 +24,17 @@
 </tr>
 
 {{#if view.showDataApprovalBlock}}
-<tr>
+<tr class="dataApprovalRow">
     <td></td>
     <td class="dataApprovalBlock"  colspan="5">
         <ol class="dataPointApproval">
         {{#each step in FLOW.router.approvalStepsController}}
             <li>
-            {{step.title}}
+            <h4>{{step.title}}<h4>
             {{#view FLOW.DataPointApprovalView stepBinding="step"}}
                 {{view Ember.Select contentBinding="view.parentView.approvalStatus" optionLabelPath="content.label" optionValuePath="content.value"}}
                 {{view Ember.TextField size="80"}}
-                <a>{{t _submit}}</a>
+                <a class="btn">{{t _submit}}</a>
             {{/view}}
             </li>
         {{/each}}
