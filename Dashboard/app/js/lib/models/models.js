@@ -402,7 +402,7 @@ FLOW.DataPointApproval = FLOW.BaseModel.extend({
 
     approvalUserId: DS.attr('number'),
 
-    approved: DS.attr('boolean'),
+    status: DS.attr('string'),
 
     comment: DS.attr('string'),
 });
