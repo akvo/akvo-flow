@@ -400,7 +400,7 @@ FLOW.DataPointApproval = FLOW.BaseModel.extend({
 
     approvalStepId: DS.attr('number'),
 
-    approvalUserId: DS.attr('number'),
+    approverUserName: DS.attr('string'),
 
     status: DS.attr('string'),
 

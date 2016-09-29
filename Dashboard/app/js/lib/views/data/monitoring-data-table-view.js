@@ -137,7 +137,7 @@ FLOW.DataPointApprovalView = FLOW.View.extend({
         var dataPointApproval = Ember.Object.create({
             surveyedLocaleId: this.get('dataPoint').get('keyId'),
             approvalStepId: this.get('step').get('keyId'),
-            approvalUserId: null, // explicitly left empty to set on server-side. avoid spoofing approvals
+            approverUserName: null, // explicitly left empty to be set on server-side.
             status: this.get('status').toUpperCase(),
             comment: this.get('comment'),
         });
