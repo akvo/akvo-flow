@@ -6,6 +6,7 @@
 
     <bean id="approvalGroupDao" class="com.gallatinsystems.survey.dao.ApprovalGroupDAO" />
     <bean id="approvalStepDao" class="com.gallatinsystems.survey.dao.ApprovalStepDAO" />
+    <bean id="dataPointApprovalDao" class="com.gallatinsystems.survey.dao.DataPointApprovalDAO" />
     <bean id="deviceDao" class="com.gallatinsystems.device.dao.DeviceDAO" />
     <bean id="deviceGroupDao" class="com.gallatinsystems.device.dao.DeviceGroupDAO " />
     <bean id="localeDao" class="com.gallatinsystems.surveyal.dao.SurveyedLocaleDao " />
