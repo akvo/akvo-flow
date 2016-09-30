@@ -16,6 +16,7 @@
 
 package org.waterforpeople.mapping.app.web.rest;
 
+import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -55,6 +56,8 @@ public class DataPointApprovalRestService {
 
         DataPointApproval approval = dataPointApprovalPayload.getData_point_approval()
                 .getDataPointApproval();
+
+        approval.setApprovalDate(new Date());
 
         response.put("data_point_approval",
                 new DataPointApprovalDTO(dataPointApprovalDao.save(approval)));

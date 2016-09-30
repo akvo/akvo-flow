@@ -402,6 +402,8 @@ FLOW.DataPointApproval = FLOW.BaseModel.extend({
 
     approverUserName: DS.attr('string'),
 
+    approvalDate: DS.attr('number'),
+
     status: DS.attr('string'),
 
     comment: DS.attr('string'),

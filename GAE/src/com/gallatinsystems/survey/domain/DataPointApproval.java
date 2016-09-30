@@ -16,6 +16,8 @@
 
 package com.gallatinsystems.survey.domain;
 
+import java.util.Date;
+
 import javax.jdo.annotations.PersistenceCapable;
 
 import com.gallatinsystems.framework.domain.BaseDomain;
@@ -36,6 +38,8 @@ public class DataPointApproval extends BaseDomain {
     private Long approverUserId;
 
     private String approverUserName;
+
+    private Date approvalDate;
 
     private String comment;
 
@@ -75,6 +79,14 @@ public class DataPointApproval extends BaseDomain {
 
     public void setApproverUserName(String approverUserName) {
         this.approverUserName = approverUserName;
+    }
+
+    public Date getApprovalDate() {
+        return approvalDate;
+    }
+
+    public void setApprovalDate(Date approvalDate) {
+        this.approvalDate = approvalDate;
     }
 
     public String getComment() {

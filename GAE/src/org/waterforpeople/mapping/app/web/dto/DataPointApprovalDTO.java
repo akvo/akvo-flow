@@ -16,6 +16,8 @@
 
 package org.waterforpeople.mapping.app.web.dto;
 
+import java.util.Date;
+
 import org.codehaus.jackson.annotate.JsonIgnore;
 
 import com.gallatinsystems.framework.gwt.dto.client.BaseDto;
@@ -64,6 +66,14 @@ public class DataPointApprovalDTO extends BaseDto {
 
     public void setApproverUserName(String approverUserName) {
         dataPointApproval.setApproverUserName(approverUserName);
+    }
+
+    public Date getApprovalDate() {
+        return dataPointApproval.getApprovalDate();
+    }
+
+    public void setApprovalDate(Date approvalDate) {
+        // do nothing. will be set internally
     }
 
     public String getComment() {
