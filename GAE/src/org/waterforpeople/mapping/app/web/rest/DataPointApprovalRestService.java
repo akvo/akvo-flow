@@ -27,12 +27,14 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
+import org.waterforpeople.mapping.app.web.CurrentUserServlet;
 import org.waterforpeople.mapping.app.web.dto.DataPointApprovalDTO;
 import org.waterforpeople.mapping.app.web.rest.dto.DataPointApprovalPayload;
 import org.waterforpeople.mapping.app.web.rest.dto.RestStatusDto;
 
 import com.gallatinsystems.survey.dao.DataPointApprovalDAO;
 import com.gallatinsystems.survey.domain.DataPointApproval;
+import com.gallatinsystems.user.domain.User;
 
 @Controller
 @RequestMapping("/data_point_approvals")
@@ -58,6 +60,10 @@ public class DataPointApprovalRestService {
                 .getDataPointApproval();
 
         approval.setApprovalDate(new Date());
+
+        User currentUser = CurrentUserServlet.getCurrentUser();
+        approval.setApproverUserId(currentUser.getKey().getId());
+        approval.setApproverUserName(currentUser.getEmailUserName());
 
         response.put("data_point_approval",
                 new DataPointApprovalDTO(dataPointApprovalDao.save(approval)));
