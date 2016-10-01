@@ -97,6 +97,17 @@ FLOW.DataPointView = FLOW.View.extend({
         return this.get('parentView').get('showApprovalStatusColumn');
     }.property(),
 
+    loadDataPointApprovalObserver: function () {
+        if(!this.get('showDataApprovalBlock')) {
+            return; // do nothing when hiding approval block
+        }
+
+        var dataPoint = this.get('content');
+        if (dataPoint) {
+            FLOW.router.dataPointApprovalController.loadBySurveyedLocaleId(dataPoint.get('keyId'));
+        }
+    }.observes('this.showDataApprovalBlock'),
+
     toggleShowDataApprovalBlock: function () {
         this.toggleProperty('showDataApprovalBlock');
     },

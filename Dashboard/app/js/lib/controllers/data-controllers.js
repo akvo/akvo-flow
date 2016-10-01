@@ -697,17 +697,26 @@ FLOW.ApprovalStepsController = Ember.ArrayController.extend({
 });
 
 FLOW.DataPointApprovalController = Ember.ArrayController.extend({
+
+    content: Ember.A(),
+
     /**
      * add an approval element
      */
     add: function (dataPointApproval) {
-        if(!this.content) {
-            this.set('content', Ember.A());
-        }
         var dataPointApprovalList = this.content;
         dataPointApprovalList.addObject(
                 FLOW.store.createRecord(FLOW.DataPointApproval, dataPointApproval));
 
         FLOW.store.commit();
+    },
+
+    /**
+     * Load approval elements based on the surveyedLocaleId (data point id)
+     */
+    loadBySurveyedLocaleId: function (surveyedLocaleId) {
+        var dataPointApprovalList = this.content;
+        dataPointApprovalList.addObjects(
+                FLOW.DataPointApproval.find({ surveyedLocaleId: surveyedLocaleId}));
     },
 });
