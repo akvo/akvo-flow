@@ -16,8 +16,10 @@
 
 package org.waterforpeople.mapping.app.web.rest;
 
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import javax.inject.Inject;
@@ -26,6 +28,7 @@ import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.waterforpeople.mapping.app.web.CurrentUserServlet;
 import org.waterforpeople.mapping.app.web.dto.DataPointApprovalDTO;
@@ -68,6 +71,27 @@ public class DataPointApprovalRestService {
         response.put("data_point_approval",
                 new DataPointApprovalDTO(dataPointApprovalDao.save(approval)));
         response.put("meta", status);
+        return response;
+    }
+
+    /**
+     * List available DataPointApprovals
+     *
+     * @return
+     */
+    @RequestMapping(method = RequestMethod.GET)
+    @ResponseBody
+    public Map<String, List<DataPointApprovalDTO>> listDataPointApprovals(
+            @RequestParam(value = "surveyedLocaleId", required = false) Long surveyedLocaleId) {
+        Map<String, List<DataPointApprovalDTO>> response = new HashMap<String, List<DataPointApprovalDTO>>();
+
+        List<DataPointApprovalDTO> approvalsResponseList = new ArrayList<DataPointApprovalDTO>();
+        for (DataPointApproval approval : dataPointApprovalDao
+                .listBySurveyedLocaleId(surveyedLocaleId)) {
+            approvalsResponseList.add(new DataPointApprovalDTO(approval));
+        }
+
+        response.put("data_point_approvals", approvalsResponseList);
         return response;
     }
 }
