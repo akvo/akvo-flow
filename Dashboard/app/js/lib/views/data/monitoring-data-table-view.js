@@ -129,6 +129,10 @@ FLOW.DataPointApprovalView = FLOW.View.extend({
 
     comment: null,
 
+    dataPointApproval: null,
+
+    isApprovedStep: false,
+
     /*
      *  Submit data approval properties to controller
      */

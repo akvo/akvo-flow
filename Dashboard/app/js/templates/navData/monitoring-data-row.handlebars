@@ -32,9 +32,17 @@
             <li>
             <h4>{{step.title}}<h4>
             {{#view FLOW.DataPointApprovalView stepBinding="step" dataPointBinding="view.content" target="view"}}
-                {{view Ember.Select contentBinding="view.parentView.approvalStatus" optionLabelPath="content.label" optionValuePath="content.value" valueBinding="view.status"}}
-                {{view Ember.TextField size="80" valueBinding="view.comment"}}
-                <a class="btn" {{action submitDataPointApproval target="view"}}>{{t _submit}}</a>
+                {{#if view.isApprovedStep}}
+                    {{#with view.dataPointApproval}}
+                        <div class="approvalStatus">{{status}}</div>
+                        <div class="approvalDate">{{approvalDate}} | {{approverUserName}}</div>
+                        <div class="approvalComment">{{comment}}</div>
+                    {{/with}}
+                {{else}}
+                    {{view Ember.Select contentBinding="view.parentView.approvalStatus" optionLabelPath="content.label" optionValuePath="content.value" valueBinding="view.status"}}
+                    {{view Ember.TextField size="80" valueBinding="view.comment"}}
+                    <a class="btn" {{action submitDataPointApproval target="view"}}>{{t _submit}}</a>
+                {{/if}}
             {{/view}}
             </li>
         {{/each}}
