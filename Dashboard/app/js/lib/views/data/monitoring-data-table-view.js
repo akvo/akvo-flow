@@ -104,9 +104,7 @@ FLOW.DataPointView = FLOW.View.extend({
         }
 
         var surveyedLocaleId = this.content && this.content.get('keyId');
-        return approvals.filter(function (item){
-            return item.get('surveyedLocaleId') === surveyedLocaleId;
-        })
+        return approvals.filterProperty('surveyedLocaleId', surveyedLocaleId);
     }.property('FLOW.router.dataPointApprovalController.content.@each'),
 
     /*
@@ -169,19 +167,14 @@ FLOW.DataPointApprovalView = FLOW.View.extend({
     comment: null,
 
     dataPointApproval: function () {
-        var approvals = FLOW.router.dataPointApprovalController.get('content');
+        var approvals = this.get('parentView').get('dataPointApprovals');
         if(!approvals) {
             return;
         }
 
         var stepId = this.step && this.step.get('keyId');
-        var surveyedLocaleId = this.dataPoint && this.dataPoint.get('keyId');
-        var filteredApprovalList = approvals.filter(function (item){
-            return (item.get('surveyedLocaleId') === surveyedLocaleId &&
-                    item.get('approvalStepId') === stepId);
-        })
-        return filteredApprovalList.get('firstObject');
-    }.property('FLOW.router.dataPointApprovalController.content.@each'),
+        return approvals.filterProperty('approvalStepId', stepId).get('firstObject');
+    }.property('this.parentView.dataPointApprovals'),
 
     isApprovedStep: function () {
         var dataPointApproval = this.get('dataPointApproval');
