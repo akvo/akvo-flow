@@ -878,6 +878,7 @@ FLOW.SelectFolder = Ember.Select.extend({
     if (this.get('controller').isSurvey(keyId)) {
       FLOW.selectedControl.set('selectedSurveyGroup', survey);
       if (FLOW.Env.enableDataApproval && survey.get('dataApprovalGroupId')) {
+          FLOW.router.approvalGroupController.load(survey.get('dataApprovalGroupId'));
           FLOW.router.approvalStepsController.loadByGroupId(survey.get('dataApprovalGroupId'));
       }
     } else {

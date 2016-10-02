@@ -97,6 +97,34 @@ FLOW.DataPointView = FLOW.View.extend({
         return this.get('parentView').get('showApprovalStatusColumn');
     }.property(),
 
+    dataPointApprovals: function () {
+        var approvals = FLOW.router.dataPointApprovalController.get('content');
+        if(!approvals) {
+            return;
+        }
+
+        var surveyedLocaleId = this.content && this.content.get('keyId');
+        return approvals.filter(function (item){
+            return item.get('surveyedLocaleId') === surveyedLocaleId;
+        })
+    }.property('FLOW.router.dataPointApprovalController.content.@each'),
+
+    /*
+     * Derive the approvalStepId for the next approval (in ordered approvals)
+     */
+    nextApprovalStepId: function () {
+        var approvals = this.get('dataPointApprovals');
+        var steps = FLOW.router.approvalStepsController.get('content');
+        var nextStepId;
+        steps.forEach(function (step) {
+            var stepApprovals = approvals.filterProperty('approvalStepId', step.get('keyId'));
+            if(!nextStepId && Ember.empty(stepApprovals)) {
+                nextStepId = step.get('keyId');
+            }
+        });
+        return nextStepId;
+    }.property('this.dataPointApprovals'),
+
     loadDataPointApprovalObserver: function () {
         if(!this.get('showDataApprovalBlock')) {
             return; // do nothing when hiding approval block
@@ -159,6 +187,21 @@ FLOW.DataPointApprovalView = FLOW.View.extend({
         var dataPointApproval = this.get('dataPointApproval');
         return dataPointApproval;
     }.property('this.dataPointApproval'),
+
+    /*
+     * Enable the approval fields based on whether or not approval steps
+     * should be executed in order
+     */
+    showApprovalFields: function () {
+        var approvalGroup = FLOW.router.approvalGroupController.get('content');
+        if(approvalGroup && approvalGroup.get('ordered')) {
+            return this.step.get('keyId') === this.get('parentView').get('nextApprovalStepId');
+        } else {
+            // this is for unordered approval steps. show fields for
+            // all steps so that its possible to approve any step
+            return true;
+        }
+    }.property('this.parentView.nextApprovalStepId'),
 
     /*
      *  Submit data approval properties to controller

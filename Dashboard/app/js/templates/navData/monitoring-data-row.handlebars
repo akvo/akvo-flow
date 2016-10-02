@@ -41,12 +41,16 @@
                         <div class="approvalComment">{{comment}}</div>
                     {{/with}}
                 {{else}}
-                    {{view Ember.Select contentBinding="view.parentView.approvalStatus"
-                                        optionLabelPath="content.label"
-                                        optionValuePath="content.value"
-                                        valueBinding="view.status"}}
-                    {{view Ember.TextField size="80" valueBinding="view.comment"}}
-                    <a class="btn" {{action submitDataPointApproval target="view"}}>{{t _submit}}</a>
+                    {{#if view.showApprovalFields}}
+                        {{view Ember.Select contentBinding="view.parentView.approvalStatus"
+                                            optionLabelPath="content.label"
+                                            optionValuePath="content.value"
+                                            valueBinding="view.status"}}
+                        {{view Ember.TextField size="80" valueBinding="view.comment"}}
+                        <a class="btn" {{action submitDataPointApproval target="view"}}>{{t _submit}}</a>
+                    {{else}}
+                        {{Ember.STRINGS._pending}}
+                    {{/if}}
                 {{/if}}
             {{/view}}
             </li>
