@@ -140,9 +140,25 @@ FLOW.DataPointApprovalView = FLOW.View.extend({
 
     comment: null,
 
-    dataPointApproval: null,
+    dataPointApproval: function () {
+        var approvals = FLOW.router.dataPointApprovalController.get('content');
+        if(!approvals) {
+            return;
+        }
 
-    isApprovedStep: false,
+        var stepId = this.step && this.step.get('keyId');
+        var surveyedLocaleId = this.dataPoint && this.dataPoint.get('keyId');
+        var filteredApprovalList = approvals.filter(function (item){
+            return (item.get('surveyedLocaleId') === surveyedLocaleId &&
+                    item.get('approvalStepId') === stepId);
+        })
+        return filteredApprovalList.get('firstObject');
+    }.property('FLOW.router.dataPointApprovalController.content'),
+
+    isApprovedStep: function () {
+        var dataPointApproval = this.get('dataPointApproval');
+        return dataPointApproval;
+    }.property('this.dataPointApproval'),
 
     /*
      *  Submit data approval properties to controller
