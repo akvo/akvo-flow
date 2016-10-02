@@ -605,7 +605,7 @@ FLOW.ApprovalStepsController = Ember.ArrayController.extend({
             order: steps.get('length'),
             title: null,
         });
-        steps.addObject(newStep);
+        steps.addObject(FLOW.store.createRecord(FLOW.ApprovalStep, newStep));
     },
 
     /*
@@ -650,10 +650,6 @@ FLOW.ApprovalStepsController = Ember.ArrayController.extend({
 
             if (!step.get('approvalGroupId') && group && group.get('keyId')) {
                 step.set('approvalGroupId', group.get('keyId'));
-            }
-
-            if (!step.get('keyId')) {
-                FLOW.store.createRecord(FLOW.ApprovalStep, step);
             }
         });
 
