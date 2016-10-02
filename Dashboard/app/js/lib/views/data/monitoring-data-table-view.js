@@ -153,7 +153,7 @@ FLOW.DataPointApprovalView = FLOW.View.extend({
                     item.get('approvalStepId') === stepId);
         })
         return filteredApprovalList.get('firstObject');
-    }.property('FLOW.router.dataPointApprovalController.content'),
+    }.property('FLOW.router.dataPointApprovalController.content.@each'),
 
     isApprovedStep: function () {
         var dataPointApproval = this.get('dataPointApproval');
