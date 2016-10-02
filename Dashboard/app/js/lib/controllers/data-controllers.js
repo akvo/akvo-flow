@@ -644,10 +644,6 @@ FLOW.ApprovalStepsController = Ember.ArrayController.extend({
             }
             step.set('title', step.get('title').trim());
 
-            if (step.get('order') !== index) {
-                step.set('order', index);
-            }
-
             if (!step.get('approvalGroupId') && group && group.get('keyId')) {
                 step.set('approvalGroupId', group.get('keyId'));
             }
