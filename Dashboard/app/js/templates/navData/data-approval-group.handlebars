@@ -1,6 +1,10 @@
 <section class="fullWidth" id="dataApproval">
     <div class="addWorkflow">
-        <h3>Add a new approval flow:</h3>
+        {{#if keyId}}
+        <h3>{{t _edit_approval_group}}</h3>
+        {{else}}
+        <h3>{{t _add_approval_group}}</h3>
+        {{/if}}
         <form>
                 <label>{{t _name}}: &nbsp;{{view Ember.TextField valueBinding="name" size=30}}</label>
                 <label>{{t _approval_type}}: {{view Ember.Select contentBinding="view.approvalTypeOptions"
