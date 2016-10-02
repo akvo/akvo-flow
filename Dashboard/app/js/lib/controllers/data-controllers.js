@@ -705,8 +705,10 @@ FLOW.DataPointApprovalController = Ember.ArrayController.extend({
      */
     add: function (dataPointApproval) {
         var dataPointApprovalList = this.content;
-        dataPointApprovalList.addObject(
-                FLOW.store.createRecord(FLOW.DataPointApproval, dataPointApproval));
+        var approval = FLOW.store.createRecord(FLOW.DataPointApproval, dataPointApproval);
+        approval.on('didCreate', function () {
+            dataPointApprovalList.addObject(approval);
+        });
 
         FLOW.store.commit();
     },
