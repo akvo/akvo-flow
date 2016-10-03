@@ -85,7 +85,7 @@ FLOW.MonitoringDataTableView = FLOW.View.extend({
 FLOW.DataPointView = FLOW.View.extend({
     templateName: 'navData/monitoring-data-row',
 
-    approvalStatus: [{label: Ember.String.loc('_pending'), value: 'pending'}, { label: Ember.String.loc('_approved'), value: 'approved' },{ label: Ember.String.loc('_rejected'), value: 'rejected'}],
+    approvalStatus: [{label: Ember.String.loc('_pending'), value: 'PENDING'}, { label: Ember.String.loc('_approved'), value: 'APPROVED' },{ label: Ember.String.loc('_rejected'), value: 'REJECTED'}],
 
     showDataApprovalBlock: false,
 
@@ -170,18 +170,18 @@ FLOW.DataPointApprovalView = FLOW.View.extend({
 
     dataPoint: null,
 
-    status: null,
-
-    comment: null,
-
     dataPointApproval: function () {
         var approvals = this.get('parentView').get('dataPointApprovals');
-        if(!approvals) {
-            return;
+        var defaultApproval = Ember.Object.create({ status: 'PENDING', comment: null});
+
+        if(Ember.empty(approvals)) {
+            return defaultApproval;
         }
 
         var stepId = this.step && this.step.get('keyId');
-        return approvals.filterProperty('approvalStepId', stepId).get('firstObject');
+        var approval = approvals.filterProperty('approvalStepId', stepId).get('firstObject');
+
+        return approval || defaultApproval;
     }.property('this.parentView.dataPointApprovals'),
 
     isApprovedStep: function () {
@@ -213,14 +213,15 @@ FLOW.DataPointApprovalView = FLOW.View.extend({
      */
     submitDataPointApproval: function (event) {
 
-        var dataPointApproval = Ember.Object.create({
-            surveyedLocaleId: this.get('dataPoint').get('keyId'),
-            approvalStepId: this.get('step').get('keyId'),
-            approverUserName: null, // explicitly left empty to be set on server-side.
-            status: this.get('status').toUpperCase(),
-            comment: this.get('comment'),
-        });
+        var dataPointApproval = this.get('dataPointApproval');
+        if(dataPointApproval.get('keyId')) {
 
-        FLOW.router.dataPointApprovalController.add(dataPointApproval);
+        } else {
+            dataPointApproval.surveyedLocaleId = this.get('dataPoint').get('keyId');
+            dataPointApproval.approvalStepId = this.get('step').get('keyId');
+            dataPointApproval.approverUserName = null;
+
+            FLOW.router.dataPointApprovalController.add(dataPointApproval);
+        }
     },
 });
