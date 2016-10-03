@@ -116,7 +116,7 @@ FLOW.DataPointView = FLOW.View.extend({
         var nextStepId;
         steps.forEach(function (step) {
             var stepApprovals = approvals.filterProperty('approvalStepId', step.get('keyId'));
-            if(!nextStepId && Ember.empty(stepApprovals)) {
+            if(!nextStepId && (Ember.empty(stepApprovals) || stepApprovals[0].get('status') === 'PENDING')) {
                 nextStepId = step.get('keyId');
             }
         });
@@ -178,7 +178,7 @@ FLOW.DataPointApprovalView = FLOW.View.extend({
 
     isApprovedStep: function () {
         var dataPointApproval = this.get('dataPointApproval');
-        return dataPointApproval;
+        return dataPointApproval && dataPointApproval.get('status') !== 'PENDING';
     }.property('this.dataPointApproval'),
 
     /*
