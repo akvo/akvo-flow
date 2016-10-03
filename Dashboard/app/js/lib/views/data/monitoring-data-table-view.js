@@ -123,6 +123,14 @@ FLOW.DataPointView = FLOW.View.extend({
         return nextStepId;
     }.property('this.dataPointApprovals'),
 
+    /*
+     * return true if there are any of the approvals rejected in this set
+     */
+    hasRejectedApproval: function () {
+        var approvals = this.get('dataPointApprovals');
+        return !Ember.empty(approvals.filterProperty('status', 'REJECTED'));
+    }.property('this.dataPointApprovals'),
+
     loadDataPointApprovalObserver: function () {
         if(!this.get('showDataApprovalBlock')) {
             return; // do nothing when hiding approval block
@@ -186,6 +194,10 @@ FLOW.DataPointApprovalView = FLOW.View.extend({
      * should be executed in order
      */
     showApprovalFields: function () {
+        if(this.get('parentView').get('hasRejectedApproval')) {
+            return false;
+        }
+
         var approvalGroup = FLOW.router.approvalGroupController.get('content');
         if(approvalGroup && approvalGroup.get('ordered')) {
             return this.step.get('keyId') === this.get('parentView').get('nextApprovalStepId');

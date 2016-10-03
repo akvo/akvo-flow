@@ -48,8 +48,6 @@
                                             valueBinding="view.status"}}
                         {{view Ember.TextField size="80" valueBinding="view.comment"}}
                         <a class="btn" {{action submitDataPointApproval target="view"}}>{{t _submit}}</a>
-                    {{else}}
-                        {{Ember.STRINGS._pending}}
                     {{/if}}
                 {{/if}}
             {{/view}}
