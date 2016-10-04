@@ -160,11 +160,11 @@ FLOW.DataPointApprovalStatusView = FLOW.View.extend({
     content: null,
 
     latestApprovalStepTitle: function () {
+        var nextStepId = this.get('parentView').get('nextApprovalStepId');
         var stepsController = FLOW.router.get('approvalStepsController');
-        if(stepsController.get('firstObject')) {
-            return stepsController.get('firstObject').get('title');
-        }
-    }.property(),
+        var step = stepsController.filterProperty('keyId', nextStepId).get('firstObject');
+        return step && step.get('title');
+    }.property('this.parentView.nextApprovalStepId'),
 });
 
 /**
