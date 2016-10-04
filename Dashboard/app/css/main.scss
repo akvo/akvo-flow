@@ -6360,6 +6360,9 @@ html.navMaps {
                     select {
                         margin-right: 20px;
                     }
+                    input {
+                        text-overflow: ellipsis;
+                    }
                     .btn {
                         display: inline-block;
                     }
