@@ -126,7 +126,11 @@ FLOW.DataPointView = FLOW.View.extend({
 
         var nextStep = steps.filterProperty('order', ++lastApprovedStepOrder).get('firstObject');
         return nextStep && nextStep.get('keyId');
-    }.property('this.dataPointApprovals'),
+
+    // NOTE: below we observe the '@each.approvalDate' in order to be
+    // sure that we only recalculate the next step whenever the approval
+    //  has been correctly updated on the server side
+    }.property('this.dataPointApprovals.@each.approvalDate'),
 
     /*
      * return true if there are any of the approvals rejected in this set
