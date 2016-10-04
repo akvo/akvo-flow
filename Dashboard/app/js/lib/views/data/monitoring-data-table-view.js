@@ -112,15 +112,20 @@ FLOW.DataPointView = FLOW.View.extend({
      */
     nextApprovalStepId: function () {
         var approvals = this.get('dataPointApprovals');
-        var steps = FLOW.router.approvalStepsController.get('content');
-        var nextStepId;
-        steps.forEach(function (step) {
-            var stepApprovals = approvals.filterProperty('approvalStepId', step.get('keyId'));
-            if(!nextStepId && (Ember.empty(stepApprovals) || stepApprovals[0].get('status') === 'PENDING')) {
-                nextStepId = step.get('keyId');
+        var steps = FLOW.router.approvalStepsController.get('arrangedContent');
+        var lastApprovedStepOrder = -1;
+
+        approvals.forEach(function (approval) {
+            var step = steps.filterProperty('keyId',
+                                approval.get('approvalStepId')).get('firstObject');
+            if (approval.get('status') === 'APPROVED' &&
+                    step && (step.get('order') > lastApprovedStepOrder)) {
+                lastApprovedStepOrder = step.get('order');
             }
         });
-        return nextStepId;
+
+        var nextStep = steps.filterProperty('order', ++lastApprovedStepOrder).get('firstObject');
+        return nextStep && nextStep.get('keyId');
     }.property('this.dataPointApprovals'),
 
     /*
@@ -172,7 +177,7 @@ FLOW.DataPointApprovalView = FLOW.View.extend({
 
     dataPointApproval: function () {
         var approvals = this.get('parentView').get('dataPointApprovals');
-        var defaultApproval = Ember.Object.create({ status: 'PENDING', comment: null});
+        var defaultApproval = Ember.Object.create({ status: null, comment: null});
 
         if(Ember.empty(approvals)) {
             return defaultApproval;
@@ -200,7 +205,12 @@ FLOW.DataPointApprovalView = FLOW.View.extend({
 
         var approvalGroup = FLOW.router.approvalGroupController.get('content');
         if(approvalGroup && approvalGroup.get('ordered')) {
-            return this.step.get('keyId') === this.get('parentView').get('nextApprovalStepId');
+            var nextStepId = this.get('parentView').get('nextApprovalStepId');
+            if (nextStepId) {
+                return this.step.get('keyId') === nextStepId;
+            } else {
+                return false;
+            }
         } else {
             // this is for unordered approval steps. show fields for
             // all steps so that its possible to approve any step
