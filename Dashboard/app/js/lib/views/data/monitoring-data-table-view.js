@@ -186,7 +186,7 @@ FLOW.DataPointApprovalView = FLOW.View.extend({
 
     isApprovedStep: function () {
         var dataPointApproval = this.get('dataPointApproval');
-        return dataPointApproval && dataPointApproval.get('status') !== 'PENDING';
+        return dataPointApproval && dataPointApproval.get('keyId');
     }.property('this.dataPointApproval'),
 
     /*

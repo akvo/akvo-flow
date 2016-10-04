@@ -40,15 +40,14 @@
                         <div class="approvalDate">{{date3 approvalDate}} | {{approverUserName}}</div>
                         <div class="approvalComment">{{comment}}</div>
                     {{/with}}
-                {{else}}
-                    {{#if view.showApprovalFields}}
-                        {{view Ember.Select contentBinding="view.parentView.approvalStatus"
-                                            optionLabelPath="content.label"
-                                            optionValuePath="content.value"
-                                            valueBinding="view.dataPointApproval.status"}}
-                        {{view Ember.TextField size="80" valueBinding="view.dataPointApproval.comment"}}
-                        <a class="btn" {{action submitDataPointApproval target="view"}}>{{t _submit}}</a>
-                    {{/if}}
+                {{/if}}
+                {{#if view.showApprovalFields}}
+                    {{view Ember.Select contentBinding="view.parentView.approvalStatus"
+                                        optionLabelPath="content.label"
+                                        optionValuePath="content.value"
+                                        valueBinding="view.dataPointApproval.status"}}
+                    {{view Ember.TextField size="80" valueBinding="view.dataPointApproval.comment"}}
+                    <a class="btn" {{action submitDataPointApproval target="view"}}>{{t _submit}}</a>
                 {{/if}}
             {{/view}}
             </li>
