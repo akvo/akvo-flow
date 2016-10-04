@@ -25,6 +25,7 @@ import java.util.Map;
 import javax.inject.Inject;
 
 import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
@@ -92,6 +93,31 @@ public class DataPointApprovalRestService {
         }
 
         response.put("data_point_approvals", approvalsResponseList);
+        return response;
+    }
+
+    @RequestMapping(method = RequestMethod.PUT, value = "/{dataPointApprovalId}")
+    @ResponseBody
+    public Map<String, Object> updateDataPointApproval(
+            @RequestBody DataPointApprovalPayload dataPointApprovalPayload,
+            @PathVariable Long dataPointApprovalId) {
+        final Map<String, Object> response = new HashMap<String, Object>();
+        final RestStatusDto status = new RestStatusDto();
+
+        DataPointApproval updatedApproval = dataPointApprovalPayload.getData_point_approval()
+                .getDataPointApproval();
+
+        final DataPointApproval storedApproval = dataPointApprovalDao.getByKey(dataPointApprovalId);
+        if (storedApproval != null) {
+            storedApproval.setApprovalDate(new Date());
+            storedApproval.setStatus(updatedApproval.getStatus());
+            storedApproval.setComment(updatedApproval.getComment());
+
+            response.put("data_point_approval",
+                    new DataPointApprovalDTO(dataPointApprovalDao.save(storedApproval)));
+        }
+
+        response.put("meta", status);
         return response;
     }
 }

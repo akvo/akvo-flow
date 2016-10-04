@@ -215,7 +215,7 @@ FLOW.DataPointApprovalView = FLOW.View.extend({
 
         var dataPointApproval = this.get('dataPointApproval');
         if(dataPointApproval.get('keyId')) {
-
+            FLOW.router.dataPointApprovalController.update(dataPointApproval);
         } else {
             dataPointApproval.surveyedLocaleId = this.get('dataPoint').get('keyId');
             dataPointApproval.approvalStepId = this.get('step').get('keyId');

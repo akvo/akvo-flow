@@ -706,6 +706,17 @@ FLOW.DataPointApprovalController = Ember.ArrayController.extend({
     },
 
     /**
+     * Update an existing approval element
+     */
+    update: function (dataPointApproval) {
+        var dataPointApprovalList = this.content;
+        dataPointApproval.on('didUpdate', function () {
+            dataPointApprovalList.addObject(dataPointApproval);
+        });
+        FLOW.store.commit();
+    },
+
+    /**
      * Load approval elements based on the surveyedLocaleId (data point id)
      */
     loadBySurveyedLocaleId: function (surveyedLocaleId) {
