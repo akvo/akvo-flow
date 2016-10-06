@@ -531,19 +531,6 @@ FLOW.ApprovalGroupController = Ember.ObjectController.extend({
     },
 
     /*
-     * Observer of the keyId property on the current content of this controller.
-     * This enables propagation of the `keyId` to the steps associated with the
-     * approval group in order for them to be associated.
-     *
-     */
-    approvalGroupKeyIdObserver: function () {
-        var group = this.content;
-        if (group && group.get('keyId')) {
-            FLOW.router.get('approvalStepsController').save(group);
-        }
-    }.observes('this.keyId'),
-
-    /*
      * Validate approval group and associated steps
      */
     validate: function () {
