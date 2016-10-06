@@ -528,11 +528,7 @@ FLOW.ApprovalGroupController = Ember.ObjectController.extend({
             group.set('name', group.get('name').trim());
         }
 
-        if (!group.get('keyId')) {
-            FLOW.store.commit();
-        } else {
-            FLOW.router.get('approvalStepsController').save();
-        }
+        FLOW.router.get('approvalStepsController').save(group);
     },
 
     /*
@@ -619,6 +615,9 @@ FLOW.ApprovalStepsController = Ember.ArrayController.extend({
      */
     addApprovalStep: function () {
         var groupId = FLOW.router.get('approvalGroupController').get('content').get('keyId');
+        if(!groupId) {
+            FLOW.store.commit();
+        }
         var steps = this.content;
         var newStep = Ember.Object.create({
             approvalGroupId: groupId,
