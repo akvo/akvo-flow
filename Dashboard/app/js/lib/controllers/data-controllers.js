@@ -496,13 +496,12 @@ FLOW.ApprovalGroupController = Ember.ObjectController.extend({
      * Create a new approval group
      */
     add: function () {
-        this.set('content', FLOW.store.createRecord(FLOW.ApprovalGroup, {
+        var group = FLOW.ApprovalGroup.createRecord({
             name: Ember.String.loc('_new_approval_group'),
             ordered: false,
-        }));
+        });
 
-        // add empty list of steps
-        FLOW.router.get('approvalStepsController').set('content', Ember.A());
+        this.set('content', group);
     },
 
     /*
@@ -604,9 +603,11 @@ FLOW.ApprovalStepsController = Ember.ArrayController.extend({
      */
     loadByGroupId: function (groupId) {
         var steps = Ember.A();
-        FLOW.ApprovalStep.find({approvalGroupId: groupId}).on('didLoad', function () {
-            steps.addObjects(this);
-        });
+        if (groupId) {
+            FLOW.ApprovalStep.find({approvalGroupId: groupId}).on('didLoad', function () {
+                steps.addObjects(this);
+            });
+        }
         this.set('content',steps);
     },
 
@@ -668,9 +669,7 @@ FLOW.ApprovalStepsController = Ember.ArrayController.extend({
             }
         });
 
-        if (steps) {
-            FLOW.store.commit();
-        }
+        FLOW.store.commit();
     },
 
     /*
