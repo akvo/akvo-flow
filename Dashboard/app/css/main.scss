@@ -147,6 +147,7 @@ html {
     height: 100%;
     overflow-y: scroll;
     border-top: 3px solid rgb(38, 8, 89);
+    box-sizing: border-box;
     background: white;
 }
 
@@ -6322,16 +6323,27 @@ li.disable {
     }
 }
 
-/* Custom styling for navMaps tab */
+/* Non-scrollable map views */
 
-html.navMaps {
-    border-top: 0px;
+html.navMaps, .public {
     header {
         position: initial;
     }
-    #flowMap, #pointDetails {
-        height: 600px;
-        height: 75vh;
+    #selected-media {
+      z-index: 999;
+      position: absolute;
+      padding: 5px;
+      bottom: 130px;
+      left: 20%;
+      background-color: white;
+      img {
+        float: left;
+        height: 70px;
+      }
+      label {
+        float: left;
+        margin-left: 10px
+      }
     }
     .mapFlow.middleSection {
         padding: 0;
@@ -6344,3 +6356,20 @@ html.navMaps {
 /* Approval Process */
 
 
+.public {
+    #dropdown-holder {
+        margin-top: 30px;
+        z-index:9999;
+    }
+    footer {
+        height: 60px;
+    }
+
+    #flowMap {
+        height: calc(100vh - (3px + 83px + 53px + 60px));
+    }
+
+    #pointDetails {
+        height: calc(100vh - (3px + 83px + 53px + 60px + 5px));
+    }
+}

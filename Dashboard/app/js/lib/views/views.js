@@ -88,6 +88,36 @@ Ember.Handlebars.registerHelper('tooltip', function (i18nKey) {
 });
 
 
+FLOW.renderCaddisflyAnswer = function(json){
+  var name = ""
+  var imageUrl = ""
+  var result = Ember.A();
+  if (!Ember.empty(json)){
+    var jsonParsed = JSON.parse(json);
+
+    // get out test name
+    if (!Ember.empty(jsonParsed.name)){
+      testName =  jsonParsed.name.trim();
+    }
+
+    // get out image url
+    if (!Ember.empty(jsonParsed.image)){
+      imageUrl = FLOW.Env.photo_url_root + jsonParsed.image.trim();
+    }
+
+    // contruct html
+    html = "<div><strong>" + name + "</strong></div>"
+    html += jsonParsed.result.map(function(item){
+            return "<br><div>" + item.name + " : " + item.value + " " + item.unit + "</div>";
+        }).join("\n");
+    html += "<br>"
+    html += "<div class=\"signatureImage\"><img src=\"" + imageUrl +"\"}} /></div>"
+    return html;
+  } else {
+    return "Wrong JSON format";
+  }
+}
+
 Ember.Handlebars.registerHelper('placemarkDetail', function () {
   var answer, markup, question, cascadeJson, optionJson, cascadeString = "",
   questionType, imageSrcAttr, signatureJson, photoJson;
@@ -124,6 +154,8 @@ Ember.Handlebars.registerHelper('placemarkDetail', function () {
     answer = answer && answer + '<div>' + Ember.String.loc('_signed_by') + ':' + signatureJson.name + '</div>' || '';
   } else if (questionType === 'DATE') {
     answer = renderTimeStamp(answer);
+  } else if (questionType === 'CADDISFLY'){
+    answer = FLOW.renderCaddisflyAnswer(answer)
   }
 
   markup = '<div class="defListWrap"><dt>' +
@@ -139,31 +171,31 @@ function renderTimeStamp(timestamp) {
   var d, t, date, month, year;
   t = parseInt(timestamp, 10);
   if (isNaN(t)) {
-    return "";
+  return "";
   }
 
   d = new Date(t);
-  if (d) {
-    date = d.getDate();
-    month = d.getMonth() + 1;
-    year = d.getFullYear();
-
-    if (month < 10) {
-      monthString = "0" + month.toString();
-    } else {
-      monthString = month.toString();
-    }
-
-    if (date < 10) {
-      dateString = "0" + date.toString();
-    } else {
-      dateString = date.toString();
-    }
-
-    return year + "-" + monthString + "-" + dateString;
-  } else {
+  if (!d){
     return "";
   }
+
+  date = d.getDate();
+  month = d.getMonth() + 1;
+  year = d.getFullYear();
+
+  if (month < 10) {
+    monthString = "0" + month.toString();
+  } else {
+    monthString = month.toString();
+  }
+
+  if (date < 10) {
+    dateString = "0" + date.toString();
+  } else {
+    dateString = date.toString();
+  }
+
+  return year + "-" + monthString + "-" + dateString;
 }
 
 // translates values to labels for languages

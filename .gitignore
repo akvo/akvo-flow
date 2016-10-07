@@ -26,8 +26,13 @@ gwt-unitcache
 GAE/env
 
 # Dashboard paths
+Dashboard/.bundle
+Dashboard/app/cljs/out/
+Dashboard/app/cljs/target
+Dashboard/app/cljs/users.js
 Dashboard/app/test.html
 Dashboard/assets
+Dashboard/bin
 Dashboard/node_modules
 Dashboard/test_assets
 Dashboard/tmp
@@ -62,6 +67,7 @@ GAE/war/WEB-INF/lib/datanucleus*.jar
 GAE/war/WEB-INF/lib/geronimo*.jar
 GAE/war/WEB-INF/lib/jdo2-api*.jar
 GAE/war/WEB-INF/lib/jsr107*.jar
+GAE/war/WEB-INF/lib/libservice.jar
 
 # APK paths
 WFPMapping/device/debugcert
@@ -84,8 +90,3 @@ tests/clojure/akvo-tests/target
 *.codekit
 *.scssc
 dwsync.xml
-
-Dashboard/app/cljs/out/
-Dashboard/app/cljs/users.js
-
-GAE/war/WEB-INF/lib/libservice.jar
