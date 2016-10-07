@@ -22,9 +22,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
 
-import javax.jdo.annotations.NotPersistent;
-import javax.jdo.annotations.PersistenceCapable;
-
 import com.gallatinsystems.framework.domain.BaseDomain;
 
 /**
@@ -37,7 +34,7 @@ public class Question extends BaseDomain {
 
     public enum Type {
         FREE_TEXT, OPTION, NUMBER, GEO, PHOTO, VIDEO, SCAN, TRACK, NAME, STRENGTH, DATE, CASCADE,
-        GEOSHAPE, SIGNATURE
+        GEOSHAPE, SIGNATURE, CADDISFLY
     };
 
     private Type type = null;
@@ -55,6 +52,7 @@ public class Question extends BaseDomain {
     private Long dependentQuestionId;
     private String dependentQuestionAnswer;
     private Long cascadeResourceId;
+    private String caddisflyResourceUuid;
     private Long metricId;
     @NotPersistent
     private TreeMap<Integer, QuestionOption> questionOptionMap = null;
@@ -423,7 +421,7 @@ public class Question extends BaseDomain {
     public void setAllowPoints(Boolean allowPoints) {
         this.allowPoints = allowPoints;
     }
-    
+
     public Boolean getAllowPoints() {
         return allowPoints;
     }
@@ -431,7 +429,7 @@ public class Question extends BaseDomain {
     public void setAllowLine(Boolean allowLine) {
         this.allowLine = allowLine;
     }
-    
+
     public Boolean getAllowLine() {
         return allowLine;
     }
@@ -450,5 +448,13 @@ public class Question extends BaseDomain {
 
     public void setSourceQuestionId(Long originalQuestionId) {
         this.sourceQuestionId = originalQuestionId;
+    }
+
+    public String getCaddisflyResourceUuid() {
+        return caddisflyResourceUuid;
+    }
+
+    public void setCaddisflyResourceUuid(String caddisflyResourceUuid) {
+        this.caddisflyResourceUuid = caddisflyResourceUuid;
     }
 }
