@@ -187,7 +187,7 @@ public class SurveyAssemblyServlet extends AbstractRestApiServlet {
 
     /**
      * uploads full survey XML to S3
-     * 
+     *
      * @param surveyId
      */
     private void uploadSurvey(Long surveyId, Long transactionId) {
@@ -255,7 +255,7 @@ public class SurveyAssemblyServlet extends AbstractRestApiServlet {
 
     /**
      * deletes fragments for the survey
-     * 
+     *
      * @param surveyId
      */
     private void cleanupFragments(Long surveyId, Long transactionId) {
@@ -411,7 +411,7 @@ public class SurveyAssemblyServlet extends AbstractRestApiServlet {
 
     /**
      * sends a message to the task queue for survey assembly
-     * 
+     *
      * @param action
      * @param surveyId
      * @param questionGroups
@@ -639,7 +639,7 @@ public class SurveyAssemblyServlet extends AbstractRestApiServlet {
         }
 
         if (q.getType().equals(Question.Type.CADDISFLY) && q.getCaddisflyResourceUuid() != null) {
-        	qXML.setCaddisflyResourceUuid(q.getCaddisflyResourceUuid());
+            qXML.setCaddisflyResourceUuid(q.getCaddisflyResourceUuid());
         }
 
         if (q.getType().equals(Question.Type.CASCADE) && q.getCascadeResourceId() != null) {

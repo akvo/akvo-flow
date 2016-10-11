@@ -596,35 +596,35 @@ FLOW.NavMapsView = FLOW.View.extend({
         self.showDetailsPane();
 
         if($.active > 0){
-    			self.refreshIntervalId = setInterval(function () {
-    				//keep checking if there are any pending ajax requests
-    				if($.active > 0){
-    					//keep displaying loading icon
-    				}else{ //if no pending ajax requests
-    					//call function to load the clicked point details
-              if($('.form_selector').length && $('.form_selector').val() !== ""){
+            self.refreshIntervalId = setInterval(function () {
+                //keep checking if there are any pending ajax requests
+                if($.active > 0){
+                    //keep displaying loading icon
+                } else { //if no pending ajax requests
+                    // call function to load the clicked point details
+                  if ($('.form_selector').length && $('.form_selector').val() !== ""){
+                    pointDataUrl = '/rest/cartodb/raw_data?dataPointId='+data.data_point_id+'&formId='+$('.form_selector').val();
+                    $.get('/rest/cartodb/data_point?id='+data.data_point_id, function(pointData, status){
+                      self.getCartodbPointData(pointDataUrl, pointData['row']['name'], pointData['row']['identifier']);
+                    });
+                  } else {
+                    pointDataUrl = '/rest/cartodb/answers?dataPointId='+data.id+'&surveyId='+data.survey_id;
+                    self.getCartodbPointData(pointDataUrl, data.name, data.identifier);
+                  }
+                }
+            }, 500);
+        } else {
+            // call function to load the clicked point details
+            if($('.form_selector').length && $('.form_selector').val() !== ""){
                 pointDataUrl = '/rest/cartodb/raw_data?dataPointId='+data.data_point_id+'&formId='+$('.form_selector').val();
                 $.get('/rest/cartodb/data_point?id='+data.data_point_id, function(pointData, status){
-                  self.getCartodbPointData(pointDataUrl, pointData['row']['name'], pointData['row']['identifier']);
+                    self.getCartodbPointData(pointDataUrl, pointData['row']['name'], pointData['row']['identifier']);
                 });
-              }else{
+            } else {
                 pointDataUrl = '/rest/cartodb/answers?dataPointId='+data.id+'&surveyId='+data.survey_id;
                 self.getCartodbPointData(pointDataUrl, data.name, data.identifier);
-              }
-    				}
-    		  },500);
-    		}else{
-    			//call function to load the clicked point details
-          if($('.form_selector').length && $('.form_selector').val() !== ""){
-            pointDataUrl = '/rest/cartodb/raw_data?dataPointId='+data.data_point_id+'&formId='+$('.form_selector').val();
-            $.get('/rest/cartodb/data_point?id='+data.data_point_id, function(pointData, status){
-              self.getCartodbPointData(pointDataUrl, pointData['row']['name'], pointData['row']['identifier']);
-            });
-          }else{
-            pointDataUrl = '/rest/cartodb/answers?dataPointId='+data.id+'&surveyId='+data.survey_id;
-            self.getCartodbPointData(pointDataUrl, data.name, data.identifier);
-          }
-    		}
+            }
+        }
       });
     });
   },

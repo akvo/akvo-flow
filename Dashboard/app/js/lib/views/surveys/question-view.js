@@ -148,7 +148,7 @@ FLOW.QuestionView = FLOW.View.extend({
       return false;
     }
     return this.type.get('value') == 'FREE_TEXT'
-    	|| this.type.get('value') == 'NUMBER'
+        || this.type.get('value') == 'NUMBER'
         || this.type.get('value') == 'OPTION'
         || this.type.get('value') == 'CASCADE';
   }.property('this.type').cacheable(),
@@ -357,15 +357,15 @@ FLOW.QuestionView = FLOW.View.extend({
     if (!(this.type.get('value') == 'NUMBER' || this.type.get('value') == 'FREE_TEXT')) {
       this.set('requireDoubleEntry', false);
     }
-    
+
     if (!(this.type.get('value') == 'CASCADE')) {
       this.set('cascadeResourceId', null);
     }
-    
+
     if (!(this.type.get('value') == 'CADDISFLY')) {
       this.set('caddisflyResourceUuid', null);
     }
-    
+
     path = FLOW.selectedControl.selectedSurveyGroup.get('code') + "/" + FLOW.selectedControl.selectedSurvey.get('name') + "/" + FLOW.selectedControl.selectedQuestionGroup.get('code');
     FLOW.selectedControl.selectedQuestion.set('questionId', this.get('questionId'));
     FLOW.selectedControl.selectedQuestion.set('text', this.get('text'));
@@ -427,12 +427,12 @@ FLOW.QuestionView = FLOW.View.extend({
 
     // deal with cascadeResource
     if (this.type.get('value') == 'CASCADE') {
-    	if (!Ember.empty(FLOW.selectedControl.get('selectedCascadeResource'))){
-    		FLOW.selectedControl.selectedQuestion.set('cascadeResourceId',
-    				FLOW.selectedControl.selectedCascadeResource.get('keyId'));
-    	}
+        if (!Ember.empty(FLOW.selectedControl.get('selectedCascadeResource'))){
+            FLOW.selectedControl.selectedQuestion.set('cascadeResourceId',
+                FLOW.selectedControl.selectedCascadeResource.get('keyId'));
+        }
     }
-    
+
     // deal with caddisflyResource
     if (this.type.get('value') == 'CADDISFLY') {
       if (!Ember.empty(FLOW.selectedControl.get('selectedCaddisflyResource'))){

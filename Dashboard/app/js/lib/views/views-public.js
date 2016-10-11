@@ -83,8 +83,8 @@ FLOW.renderCaddisflyAnswer = function(json){
     // contruct html
     html = "<div><strong>" + name + "</strong></div>"
     html += result.map(function(item){
-    		return "<br><div>" + item.name + " : " + item.value + " " + item.unit + "</div>";
-    	}).join("\n");
+        return "<br><div>" + item.name + " : " + item.value + " " + item.unit + "</div>";
+    }).join("\n");
     html += "<br>"
     html += "<div class=\"signatureImage\"><img src=\"" + imageUrl +"\"}} /></div>"
     return html;

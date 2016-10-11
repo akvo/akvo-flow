@@ -158,12 +158,12 @@
                                 {{t _no_signature_found}}
                             {{/if}}
                         {{else}} {{#if view.isCaddisflyType}}
-	                		<div class=""><strong>{{view.testName}}</strong></div>
-	                		{{#each result in view.testResult}}
-	                	  		<br><div>{{result.name}} : {{result.value}} {{result.unit}}</div>
-	                		{{/each}}<br>
-	                		<div class="signatureImage"><img {{bindAttr src="view.caddisflyImageURL"}} /></div>
-	                	{{else}}
+                            <div class=""><strong>{{view.testName}}</strong></div>
+                            {{#each result in view.testResult}}
+                                <br><div>{{result.name}} : {{result.value}} {{result.unit}}</div>
+                            {{/each}}<br>
+                            <div class="signatureImage"><img {{bindAttr src="view.caddisflyImageURL"}} /></div>
+                        {{else}}
                           <span>{{QA.value}} {{#with QA}}{{if_blank value}}{{/with}}</span>
                         {{/if}} {{/if}} {{/if}} {{/if}} {{/if}} {{/if}} {{/if}} {{/if}}
                     </td>

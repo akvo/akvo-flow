@@ -322,8 +322,8 @@ public class SurveySummaryExporter extends AbstractDataExporter {
                         if (!json.isNull("localeNameFlag")) {
                             dto.setLocaleNameFlag(json.getBoolean("localeNameFlag"));
                         }
-                        if (!json.isNull("caddisflyResourceUuid")){
-                        	dto.setCaddisflyResourceUuid(json.getString("caddisflyResourceUuid"));
+                        if (!json.isNull("caddisflyResourceUuid")) {
+                            dto.setCaddisflyResourceUuid(json.getString("caddisflyResourceUuid"));
                         }
                         if (!json.isNull("levelNames")) {
                             final List<String> levelNames = new ArrayList<String>();

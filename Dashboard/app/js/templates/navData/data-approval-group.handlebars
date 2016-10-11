@@ -1,0 +1,17 @@
+<section class="fullWidth" id="dataApproval">
+    <div class="addWorkflow">
+        <h3>Add a new approval flow:</h3>
+        <form>
+                <label>{{t _name}}: &nbsp;{{view Ember.TextField valueBinding="name" size=30}}</label>
+                <label>{{t _approval_type}}: {{view Ember.Select contentBinding="view.approvalTypeOptions"
+                                                                    optionLabelPath="content.label"
+                                                                    optionValuePath="content.optionValue"
+                                                                    valueBinding="isOrderedApprovalGroup"}}
+                </label>
+                <label>{{t _steps}}: {{outlet approvalStepsOutlet}}</label>
+                <div class="confirmWorkflow">
+                     <a {{action "doCancelEditApprovalGroup"}}>{{t _cancel}}</a> &nbsp;&nbsp; <a {{action "doSaveApprovalGroup"}} class="smallBtn">{{t _save}}</a>
+                </div>
+        </form>
+    </div>
+</section>

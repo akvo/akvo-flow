@@ -76,8 +76,7 @@ import com.gallatinsystems.common.util.JFreechartChartUtil;
 import com.gallatinsystems.survey.dao.CaddisflyResourceDao;
 
 /**
- * Enhancement of the SurveySummaryExporter to support writing to Excel and
- * including chart images.
+ * Enhancement of the SurveySummaryExporter to support writing to Excel and including chart images.
  *
  * @author Christopher Fagiani
  */
@@ -421,9 +420,7 @@ public class GraphicalSurveySummaryExporter extends SurveySummaryExporter {
 
     @SuppressWarnings("unchecked")
     /*
-     * Fetches data from FLOW instance, and writes it to a file row by row
-     * 
-     * Called from export method
+     * Fetches data from FLOW instance, and writes it to a file row by row Called from export method
      */
     protected SummaryModel fetchAndWriteRawData(String surveyId,
             final String serverBase,
@@ -533,12 +530,10 @@ public class GraphicalSurveySummaryExporter extends SurveySummaryExporter {
     }
 
     /**
-     * Writes the data for a single row (form instance) to a file Called from
-     * fetchAndWriteRawData
+     * Writes the data for a single row (form instance) to a file Called from fetchAndWriteRawData
      *
      * @param sheet
-     * @param startRow
-     *            The start row for this instance
+     * @param startRow The start row for this instance
      * @param instanceData
      * @param generateSummary
      * @param questionIdList
@@ -694,10 +689,8 @@ public class GraphicalSurveySummaryExporter extends SurveySummaryExporter {
     }
 
     /**
-     * Write the cells for a single answer. Some answers are split into multiple
-     * cells.
-     *
-     * Called from writeInstanceData method
+     * Write the cells for a single answer. Some answers are split into multiple cells. Called from
+     * writeInstanceData method
      *
      * @param sheet
      * @param row
@@ -718,39 +711,39 @@ public class GraphicalSurveySummaryExporter extends SurveySummaryExporter {
         QuestionType questionType = questionDto.getQuestionType();
         Long qId;
         switch (questionType) {
-        case DATE:
-            cells.add(dateCellValue(value));
-            break;
+            case DATE:
+                cells.add(dateCellValue(value));
+                break;
 
-        case PHOTO:
-        case VIDEO:
-            cells.addAll(mediaCellValues(value, useQuestionId, imagePrefix));
-            break;
+            case PHOTO:
+            case VIDEO:
+                cells.addAll(mediaCellValues(value, useQuestionId, imagePrefix));
+                break;
 
-        case GEO:
-            cells.addAll(geoCellValues(value));
-            break;
+            case GEO:
+                cells.addAll(geoCellValues(value));
+                break;
 
-        case CASCADE:
-            cells.addAll(cascadeCellValues(value, useQuestionId, questionDto
-                    .getLevelNames().size()));
-            break;
+            case CASCADE:
+                cells.addAll(cascadeCellValues(value, useQuestionId, questionDto
+                        .getLevelNames().size()));
+                break;
 
-        case OPTION:
-            qId = questionDto.getKeyId();
-            cells.addAll(optionCellValues(questionDto.getKeyId(), value,
-                    useQuestionId, optionMap.get(qId), allowOtherMap.get(qId)));
-            break;
+            case OPTION:
+                qId = questionDto.getKeyId();
+                cells.addAll(optionCellValues(questionDto.getKeyId(), value,
+                        useQuestionId, optionMap.get(qId), allowOtherMap.get(qId)));
+                break;
 
-        case CADDISFLY:
-            qId = questionDto.getKeyId();
-            cells.addAll(caddisflyCellValues(qId, value,
-                    numResultsMap.get(qId), hasImageMap.get(qId), imagePrefix));
-            break;
+            case CADDISFLY:
+                qId = questionDto.getKeyId();
+                cells.addAll(caddisflyCellValues(qId, value,
+                        numResultsMap.get(qId), hasImageMap.get(qId), imagePrefix));
+                break;
 
-        default:
-            cells.add(sanitize(value));
-            break;
+            default:
+                cells.add(sanitize(value));
+                break;
         }
 
         int col = startColumn;
@@ -761,8 +754,7 @@ public class GraphicalSurveySummaryExporter extends SurveySummaryExporter {
                 if (col == startColumn) { // URL is text
                     createCell(row, col, cellValue, mTextStyle);
                 } else { // Coordinates numerical
-                    createCell(row, col, cellValue, null,
-                            Cell.CELL_TYPE_NUMERIC);
+                    createCell(row, col, cellValue, null, Cell.CELL_TYPE_NUMERIC);
                 }
             } else if (questionType == QuestionType.OPTION
                     && (cellValue.equals("0") || cellValue.equals("1"))) {
@@ -780,15 +772,6 @@ public class GraphicalSurveySummaryExporter extends SurveySummaryExporter {
 
     private static String dateCellValue(String value) {
         return ExportImportUtils.formatDateResponse(value);
-    }
-
-    /*
-     * Creates the cell value for an Image question. It creates a URL by first
-     * getting the filename from the answer, and adding the imagePrefix, which
-     * contains the full path to S3
-     */
-    private static String photoCellValue(String value, String imagePrefix) {
-        return ExportImportUtils.formatImage(imagePrefix, value);
     }
 
     private static List<String> mediaCellValues(String value,
@@ -829,8 +812,8 @@ public class GraphicalSurveySummaryExporter extends SurveySummaryExporter {
     }
 
     /*
-     * Validates the structure of a caddisfly value Returns true if the
-     * structure is correct, false if not.
+     * Validates the structure of a caddisfly value Returns true if the structure is correct, false
+     * if not.
      */
     @SuppressWarnings("unchecked")
     private static Boolean validateCaddisflyValue(String value,
@@ -964,8 +947,8 @@ public class GraphicalSurveySummaryExporter extends SurveySummaryExporter {
     }
 
     /*
-     * Creates the cell values for a cascade question. The different levels are
-     * split into multiple cells.
+     * Creates the cell values for a cascade question. The different levels are split into multiple
+     * cells.
      */
     private static List<String> cascadeCellValues(String value,
             boolean useQuestionId, int levels) {
@@ -1051,10 +1034,9 @@ public class GraphicalSurveySummaryExporter extends SurveySummaryExporter {
     }
 
     /*
-     * Takes a option question value in either the old or new format, and
-     * returns a list of option maps. The response can be either: old format:
-     * text1|text2|text3 new format: [{"code": "code1", "text":
-     * "text1"},{"code": "code2", "text": "text2"}]
+     * Takes a option question value in either the old or new format, and returns a list of option
+     * maps. The response can be either: old format: text1|text2|text3 new format: [{"code":
+     * "code1", "text": "text1"},{"code": "code2", "text": "text2"}]
      */
     private List<Map<String, String>> getNodes(String value) {
         boolean isNewFormat = value.startsWith("[");
@@ -1101,13 +1083,11 @@ public class GraphicalSurveySummaryExporter extends SurveySummaryExporter {
     }
 
     /*
-     * Creates list of option values. The first value is always the
-     * pipe-separated format Depending on the useQuestionId parameter, each
-     * option is given its own column A 0 or 1 denotes if that option was
-     * selected or not if the AllowOther flag is true, a column is created for
-     * the Other option. We first try to match on text, and if that fails, we
-     * try to match on code. This guards against texts that are slightly changed
-     * during the evolution of a survey
+     * Creates list of option values. The first value is always the pipe-separated format Depending
+     * on the useQuestionId parameter, each option is given its own column A 0 or 1 denotes if that
+     * option was selected or not if the AllowOther flag is true, a column is created for the Other
+     * option. We first try to match on text, and if that fails, we try to match on code. This
+     * guards against texts that are slightly changed during the evolution of a survey
      */
     private List<String> optionCellValues(Long questionId, String value,
             boolean useQuestionId, List<QuestionOptionDto> options,
@@ -1205,15 +1185,14 @@ public class GraphicalSurveySummaryExporter extends SurveySummaryExporter {
     }
 
     /**
-     * creates the column header for the raw data in the file for all questions.
-     * Some questions lead to multiple column headers.
+     * creates the column header for the raw data in the file for all questions. Some questions lead
+     * to multiple column headers.
      *
      * @param row
      * @param questionMap
-     * @return - returns a 2 element array. The first element is a List of
-     *         String objects representing all the question Ids. The second
-     *         element is a List of Strings representing all the
-     *         non-summarizable question Ids (i.e. those that aren't OPTION or
+     * @return - returns a 2 element array. The first element is a List of String objects
+     *         representing all the question Ids. The second element is a List of Strings
+     *         representing all the non-summarizable question Ids (i.e. those that aren't OPTION or
      *         NUMBER questions)
      */
     @SuppressWarnings("unchecked")
@@ -1314,18 +1293,14 @@ public class GraphicalSurveySummaryExporter extends SurveySummaryExporter {
                             }
                             createCell(row, offset++, header, headerStyle);
                             if (useQuestionId) {
-                                // Media gets 3 extra columns: Latitude,
-                                // Longitude and Accuracy
+                                // Media gets 3 extra columns: Latitude, Longitude and Accuracy
                                 String prefix = "--PHOTO--|";
                                 createCell(row, offset++,
-                                        prefix + LAT_LABEL.get(columnLocale),
-                                        headerStyle);
+                                        prefix + LAT_LABEL.get(columnLocale), headerStyle);
                                 createCell(row, offset++,
-                                        prefix + LON_LABEL.get(columnLocale),
-                                        headerStyle);
+                                        prefix + LON_LABEL.get(columnLocale), headerStyle);
                                 createCell(row, offset++,
-                                        prefix + ACC_LABEL.get(columnLocale),
-                                        headerStyle);
+                                        prefix + ACC_LABEL.get(columnLocale), headerStyle);
                             }
                         } else if (QuestionType.CASCADE == q.getType()
                                 && q.getLevelNames() != null && useQuestionId) {
@@ -1750,8 +1725,7 @@ public class GraphicalSurveySummaryExporter extends SurveySummaryExporter {
     }
 
     /**
-     * creates a cell in the row passed in and sets the style and value (if
-     * non-null)
+     * creates a cell in the row passed in and sets the style and value (if non-null)
      */
     protected Cell createCell(Row row, int col, String value) {
         return createCell(row, col, value, null, -1);
@@ -1808,8 +1782,8 @@ public class GraphicalSurveySummaryExporter extends SurveySummaryExporter {
     }
 
     /**
-     * sets instance variables to the values passed in in the Option map. If the
-     * option is not set, the default values are used.
+     * sets instance variables to the values passed in in the Option map. If the option is not set,
+     * the default values are used.
      *
      * @param options
      */
@@ -1860,8 +1834,7 @@ public class GraphicalSurveySummaryExporter extends SurveySummaryExporter {
     }
 
     /**
-     * call the server to augment the data already loaded in each QuestionDto in
-     * the map passed in.
+     * call the server to augment the data already loaded in each QuestionDto in the map passed in.
      *
      * @param questionMap
      */
@@ -1885,8 +1858,8 @@ public class GraphicalSurveySummaryExporter extends SurveySummaryExporter {
     }
 
     /**
-     * uses the locale and the translation map passed in to determine what value
-     * to use for the string
+     * uses the locale and the translation map passed in to determine what value to use for the
+     * string
      *
      * @param text
      * @param translationMap

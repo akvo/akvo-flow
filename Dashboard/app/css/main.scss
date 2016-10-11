@@ -407,7 +407,7 @@ a, a:link, a:visited {
         }
     }
     &.AddBtn {
-        display: inline-block;
+        display: inline-block !important;
         padding: 1em 1% 0.8em 1.5em;
         background: url(../images/addbtn.png) left center no-repeat;
         color: rgb(0, 123, 182);
@@ -2136,7 +2136,10 @@ section.topBar > a.smallBtn {
     margin: 0 10px;
     color: rgb(235, 235, 235);
 }
-
+nav.menuTopbar {
+    margin: 0 auto 0;
+    padding: 0 0 10px 0;
+}
 section.topBar {
     display: -webkit-box;
     display: -moz-box;
@@ -2145,18 +2148,21 @@ section.topBar {
     display: flex;
     -webkit-align-items: center;
     align-items: center;
+    flex-wrap: nowrap;
+    justify-content: flex-start;
     padding: 0 0 10px 0;
+    width: 100%;
     nav {
-        width: 49.5%;
         &:first-child {
             margin-left: 0.5%;
-            -webkit-justify-content: flex-start;
-            justify-content: flex-start;
+            padding: 10px 0;
+            align-self: flex-start;
         }
-        &:last-child, &.menutopBar {
+        &:last-child {
             margin-right: 0.5%;
-            -webkit-justify-content: flex-end;
-            justify-content: flex-end;
+            padding: 10px 0;
+            align-self: flex-end;
+
         }
     }
     nav.breadCrumb {
@@ -5015,11 +5021,36 @@ table.surveyTranslate .qHelpTooltip label.qTooltip + input {
 
 .fullWidth {
     width: 100%;
+    .addWorkflow {
+        padding:15px;
+        label {
+            margin-bottom: 10px;
+        }
+        h3 {
+            margin: 0px 0 10px 0;
+        }
+        .confirmWorkflow {
+            margin-top: 25px;
+        }
+        #approvalSteps {
+            margin: 10px 0;
+            .eachStep {
+                margin-bottom:5px;
+                li {
+                    display: inline;
+                }
+            }
+            .addStep {
+                margin-top:10px;
+            }
+        }
+
+    }
 }
 
 #tabs {
     .fullWidth {
-        padding-top: 25px;
+        padding-top: 35px;
     }
 }
 
@@ -6049,6 +6080,7 @@ a.btn {
 }
 
 a.addBtn {
+    display:inline-block;
     color: white;
     background: rgba($anchorLink, 1) url(../images/IconPlusWhite.svg) 2px center no-repeat;
     padding: 8px 7px 13px 25px;
@@ -6320,6 +6352,9 @@ html.navMaps, .public {
         padding-bottom: 15px;
     }
 }
+
+/* Approval Process */
+
 
 .public {
     #dropdown-holder {

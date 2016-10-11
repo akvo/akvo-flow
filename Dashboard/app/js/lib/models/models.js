@@ -119,6 +119,10 @@ FLOW.SurveyGroup = FLOW.BaseModel.extend({
     defaultValue: false
   }),
 
+  requireDataApproval: DS.attr('boolean', {
+      defaultValue: false
+  }),
+
   surveyList: DS.attr('array', {
     defaultValue: null
   })
@@ -393,6 +397,17 @@ FLOW.QuestionAnswer = FLOW.BaseModel.extend({
   iteration: DS.attr('number'),
   questionID: DS.attr('string'),
   questionText: DS.attr('string')
+});
+
+FLOW.ApprovalGroup = FLOW.BaseModel.extend({
+    name: DS.attr('string'),
+    ordered: DS.attr('boolean'),
+});
+
+FLOW.ApprovalStep = FLOW.BaseModel.extend({
+    approvalGroupId: DS.attr('number'),
+    order: DS.attr('number'),
+    title: DS.attr('string'),
 });
 
 FLOW.SurveyQuestionSummary = FLOW.BaseModel.extend({

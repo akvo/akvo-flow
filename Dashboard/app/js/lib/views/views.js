@@ -15,6 +15,7 @@ require('akvo-flow/views/data/data-attribute-views');
 require('akvo-flow/views/data/bulk-upload-view');
 require('akvo-flow/views/data/monitoring-data-table-view');
 require('akvo-flow/views/data/cascade-resources-view');
+require('akvo-flow/views/data/data-approval-views');
 require('akvo-flow/views/surveys/question-view');
 require('akvo-flow/views/data/question-answer-view');
 require('akvo-flow/views/reports/report-views');
@@ -107,8 +108,8 @@ FLOW.renderCaddisflyAnswer = function(json){
     // contruct html
     html = "<div><strong>" + name + "</strong></div>"
     html += jsonParsed.result.map(function(item){
-    		return "<br><div>" + item.name + " : " + item.value + " " + item.unit + "</div>";
-    	}).join("\n");
+            return "<br><div>" + item.name + " : " + item.value + " " + item.unit + "</div>";
+        }).join("\n");
     html += "<br>"
     html += "<div class=\"signatureImage\"><img src=\"" + imageUrl +"\"}} /></div>"
     return html;
@@ -689,7 +690,6 @@ FLOW.MonitoringDataView = Ember.View.extend({
   templateName: 'navData/monitoring-data'
 });
 
-
 // reports views
 FLOW.NavReportsView = Ember.View.extend({
   templateName: 'navReports/nav-reports'
@@ -776,6 +776,10 @@ FLOW.DatasubnavView = FLOW.View.extend({
 
     showCascadeResourcesButton: function () {
       return FLOW.permControl.get('canManageCascadeResources');
+    }.property(),
+
+    showDataApprovalButton: function () {
+        return FLOW.Env.enableDataApproval;
     }.property(),
   })
 });

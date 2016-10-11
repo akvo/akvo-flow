@@ -35,7 +35,7 @@ import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
  *         &lt;element ref="{}dependency"/>
  *         &lt;element ref="{}help"/>
  *         &lt;element ref="{}options"/>
-*		   &lt;element ref="{}levels"/>
+ * 	   &lt;element ref="{}levels"/>
  *         &lt;element ref="{}text"/>
  *         &lt;element ref="{}validationRule"/>
  *       &lt;/choice>
@@ -62,7 +62,7 @@ import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
  */
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlType(name = "", propOrder = {
-        "altText", "dependency", "help", "options","levels",
+        "altText", "dependency", "help", "options", "levels",
         "text", "validationRule", "scoring"
 })
 @XmlRootElement(name = "question")
@@ -133,15 +133,15 @@ public class Question {
     @XmlJavaTypeAdapter(CollapsedStringAdapter.class)
     @XmlSchemaType(name = "NMTOKEN")
     protected String id;
-    
+
     @XmlAttribute(required = false)
     @XmlJavaTypeAdapter(CollapsedStringAdapter.class)
     protected String allowPoints;
-    
+
     @XmlAttribute(required = false)
     @XmlJavaTypeAdapter(CollapsedStringAdapter.class)
     protected String allowLine;
-    
+
     @XmlAttribute(required = false)
     @XmlJavaTypeAdapter(CollapsedStringAdapter.class)
     protected String allowPolygon;
@@ -318,7 +318,7 @@ public class Question {
     public void setLocked(String value) {
         this.locked = value;
     }
-    
+
     /**
      * Sets the value of the requireDoubleEntry property.
      *
@@ -354,7 +354,7 @@ public class Question {
     public void setCascadeResource(String value) {
         this.cascadeResource = value;
     }
-    
+
     /**
      * Gets the value of the caddisflyResourceUuid property.
      *

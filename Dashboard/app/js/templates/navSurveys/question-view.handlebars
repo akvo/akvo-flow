@@ -104,8 +104,8 @@
       {{/if}}
     {{/if}}
 
-  	{{#if view.amCascadeType}}
-  	    <h1 class="answerNbr">{{t _settings}}: </h1>
+    {{#if view.amCascadeType}}
+        <h1 class="answerNbr">{{t _settings}}: </h1>
          <label class="selectinLabel dependencySelect"> {{t _choose_cascade_question_resource}}: {{tooltip _choose_cascade_question_resource_tooltip}}
         {{view Ember.Select
         contentBinding="FLOW.cascadeResourceControl.published.arrangedContent"
