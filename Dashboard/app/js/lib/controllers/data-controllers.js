@@ -434,6 +434,11 @@ FLOW.locationControl = Ember.ArrayController.create({
 FLOW.DataApprovalController = Ember.Controller.extend({});
 
 FLOW.ApprovalGroupListController = Ember.ArrayController.extend({
+    /* ---------------------
+     * Controller Properties
+     * ---------------------
+     */
+    sortProperties: ['name'],
 
     /* ---------------------
      * Controller Functions
@@ -585,6 +590,22 @@ FLOW.ApprovalGroupController = Ember.ObjectController.extend({
 });
 
 FLOW.ApprovalStepsController = Ember.ArrayController.extend({
+
+    /* ---------------------
+     * Controller Properties
+     * ---------------------
+     */
+    sortProperties: ['order'],
+
+    /*
+     * Observe the survey approval group id and load the necessary approval steps
+     */
+    surveyDataApprovalGroupIdObserver: function () {
+        var approvalGroupId = FLOW.projectControl.currentProject.get('dataApprovalGroupId');
+        if (approvalGroupId) {
+            this.loadByGroupId(approvalGroupId);
+        }
+    }.observes('FLOW.projectControl.currentProject.dataApprovalGroupId'),
 
     /* ---------------------
      * Controller Functions
