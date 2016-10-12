@@ -393,7 +393,7 @@ public class SurveyInstance extends BaseDomain implements SecuredObject {
                 }
 
                 // update and save or delete
-                long count = questionSummary.getCount();
+                long count = questionSummary.getCount() == null ? 0 : questionSummary.getCount();
                 count = increment ? ++count : --count;
                 questionSummary.setCount(count);
 

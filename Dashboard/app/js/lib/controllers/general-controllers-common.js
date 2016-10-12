@@ -4,8 +4,9 @@ FLOW.dashboardLanguageControl = Ember.Object.create({
   content: [{ label: "English (Default)", value: "en"},
             { label: "Español", value: "es" },
             { label: "Français", value: "fr" },
+            { label: "Bahasa Indonesia", value: "id"},
             { label: "Português", value: "pt" },
-            { label: "Bahasa Indonesia", value: "id"}],
+            { label: "Tiếng Việt", value: "vi"}],
 
   languageChanged: function () {
     var localeUrl = '/ui-strings.js?locale=' + this.dashboardLanguage;
@@ -52,6 +53,7 @@ FLOW.selectedControl = Ember.Controller.create({
   selectedCreateNewGroup: false,
   selectedSurveyOPTIONQuestions: null,
   selectedCascadeResource:null,
+  selectedCaddisflyResource:null,
   radioOptions: "",
   cascadeImportNumLevels: null,
   cascadeImportIncludeCodes: null,

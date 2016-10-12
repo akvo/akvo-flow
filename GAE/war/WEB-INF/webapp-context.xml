@@ -34,5 +34,6 @@
     <bean id="userRoleDao" class="com.gallatinsystems.user.dao.UserRoleDao" />
     <bean id="cascadeResourceDao" class="com.gallatinsystems.survey.dao.CascadeResourceDao" />
     <bean id="cascadeNodeDao" class="com.gallatinsystems.survey.dao.CascadeNodeDao" />
+    <bean id="caddisflyResourceDao" class="com.gallatinsystems.survey.dao.CaddisflyResourceDao" />
     <context:annotation-config/>
 </beans>

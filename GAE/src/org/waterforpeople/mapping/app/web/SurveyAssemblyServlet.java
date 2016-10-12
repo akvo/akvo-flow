@@ -101,6 +101,7 @@ public class SurveyAssemblyServlet extends AbstractRestApiServlet {
     public static final String CASCADE_QUESTION_TYPE = "cascade";
     public static final String GEOSHAPE_QUESTION_TYPE = "geoshape";
     public static final String SIGNATURE_QUESTION_TYPE = "signature";
+    public static final String CADDISFLY_QUESTION_TYPE = "caddisfly";
 
     private static final String SURVEY_UPLOAD_URL = "surveyuploadurl";
     private static final String SURVEY_UPLOAD_DIR = "surveyuploaddir";
@@ -186,7 +187,7 @@ public class SurveyAssemblyServlet extends AbstractRestApiServlet {
 
     /**
      * uploads full survey XML to S3
-     * 
+     *
      * @param surveyId
      */
     private void uploadSurvey(Long surveyId, Long transactionId) {
@@ -254,7 +255,7 @@ public class SurveyAssemblyServlet extends AbstractRestApiServlet {
 
     /**
      * deletes fragments for the survey
-     * 
+     *
      * @param surveyId
      */
     private void cleanupFragments(Long surveyId, Long transactionId) {
@@ -410,7 +411,7 @@ public class SurveyAssemblyServlet extends AbstractRestApiServlet {
 
     /**
      * sends a message to the task queue for survey assembly
-     * 
+     *
      * @param action
      * @param surveyId
      * @param questionGroups
@@ -633,6 +634,12 @@ public class SurveyAssemblyServlet extends AbstractRestApiServlet {
             qXML.setAllowPolygon(Boolean.toString(q.getAllowPolygon()));
         } else if (q.getType().equals(Question.Type.SIGNATURE)) {
             qXML.setType(SIGNATURE_QUESTION_TYPE);
+        } else if (q.getType().equals(Question.Type.CADDISFLY)) {
+            qXML.setType(CADDISFLY_QUESTION_TYPE);
+        }
+
+        if (q.getType().equals(Question.Type.CADDISFLY) && q.getCaddisflyResourceUuid() != null) {
+            qXML.setCaddisflyResourceUuid(q.getCaddisflyResourceUuid());
         }
 
         if (q.getType().equals(Question.Type.CASCADE) && q.getCascadeResourceId() != null) {

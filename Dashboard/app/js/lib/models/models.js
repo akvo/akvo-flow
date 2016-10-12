@@ -21,6 +21,24 @@ FLOW.BaseModel = DS.Model.extend({
   }.observes('isSaving', 'isDirty')
 });
 
+FLOW.CaddisflyResource = FLOW.BaseModel.extend({
+  didLoad: function () {
+    // combine the name and brand in a single value for display
+      this.set('displayName', this.get('name') + " (" + this.get('brand') +")");
+  },
+  name: DS.attr('string', {
+    defaultValue: ''
+  }),
+  brand: DS.attr('string', {
+    defaultValue: ''
+  }),
+  uuid: DS.attr('string', {
+    defaultValue: ''
+  }),
+  //used in the assignment edit page, not saved to backend
+  displayName: null,
+});
+
 FLOW.CascadeResource = FLOW.BaseModel.extend({
 	name: DS.attr('string', {
 	   defaultValue: ''
@@ -226,6 +244,7 @@ FLOW.Question = FLOW.BaseModel.extend({
   }),
   order: DS.attr('number'),
   cascadeResourceId: DS.attr('number'),
+  caddisflyResourceUuid:DS.attr('string'),
   path: DS.attr('string'),
   questionGroupId: DS.attr('number'),
   surveyId: DS.attr('number'),

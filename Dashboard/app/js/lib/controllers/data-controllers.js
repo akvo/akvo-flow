@@ -41,6 +41,14 @@ FLOW.attributeControl = Ember.ArrayController.create({
   }
 });
 
+FLOW.caddisflyResourceControl = Ember.ArrayController.create({
+  content:null,
+
+  populate: function() {
+    this.set('content', FLOW.store.find(FLOW.CaddisflyResource));
+  }
+});
+
 FLOW.cascadeResourceControl = Ember.ArrayController.create({
   content:null,
   published:null,
@@ -664,10 +672,6 @@ FLOW.ApprovalStepsController = Ember.ArrayController.extend({
                 step.set('code', null);
             }
             step.set('title', step.get('title').trim());
-
-            if (step.get('order') !== index) {
-                step.set('order', index);
-            }
 
             if (!step.get('approvalGroupId') && group && group.get('keyId')) {
                 step.set('approvalGroupId', group.get('keyId'));
