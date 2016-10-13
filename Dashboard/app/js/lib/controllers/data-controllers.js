@@ -41,6 +41,14 @@ FLOW.attributeControl = Ember.ArrayController.create({
   }
 });
 
+FLOW.caddisflyResourceControl = Ember.ArrayController.create({
+  content:null,
+
+  populate: function() {
+    this.set('content', FLOW.store.find(FLOW.CaddisflyResource));
+  }
+});
+
 FLOW.cascadeResourceControl = Ember.ArrayController.create({
   content:null,
   published:null,

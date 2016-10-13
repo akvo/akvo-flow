@@ -34,7 +34,10 @@ FLOW.questionTypeControl = Ember.Object.create({
     }), Ember.Object.create({
       label: Ember.String.loc('_signature'),
       value: 'SIGNATURE'
-    })
+    }), Ember.Object.create({
+        label: Ember.String.loc('_caddisfly'),
+        value: 'CADDISFLY'
+      })
   ]
 });
 
