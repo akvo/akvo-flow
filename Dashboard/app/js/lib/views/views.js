@@ -775,6 +775,7 @@ FLOW.DatasubnavView = FLOW.View.extend({
     }.property('item', 'parentView.selected').cacheable(),
 
     showDataCleaningButton: function () {
+        return FLOW.permControl.get('canCleanData');
     }.property(),
 
     showCascadeResourcesButton: function () {
