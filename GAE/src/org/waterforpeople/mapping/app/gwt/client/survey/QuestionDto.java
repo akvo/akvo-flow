@@ -47,6 +47,7 @@ public class QuestionDto extends BaseDto implements NamedObject {
     private Long dependentQuestionId;
     private String dependentQuestionAnswer;
     private Long cascadeResourceId;
+    private String caddisflyResourceUuid;
     private Long metricId;
     private QuestionDependencyDto questionDependency = null;
     private Long surveyId;
@@ -156,8 +157,8 @@ public class QuestionDto extends BaseDto implements NamedObject {
     }
 
     /**
-     * adds the translation to the translation map. If a translation already exists (based on
-     * language code), it will be replaced
+     * adds the translation to the translation map. If a translation already
+     * exists (based on language code), it will be replaced
      * 
      * @param trans
      */
@@ -196,8 +197,8 @@ public class QuestionDto extends BaseDto implements NamedObject {
     }
 
     /**
-     * returns the translated version of the text for the locale specified (if present). If no
-     * translation exists, it will return the default text.
+     * returns the translated version of the text for the locale specified (if
+     * present). If no translation exists, it will return the default text.
      * 
      * @param locale
      * @return
@@ -304,8 +305,7 @@ public class QuestionDto extends BaseDto implements NamedObject {
     }
 
     public enum QuestionType {
-        FREE_TEXT, OPTION, NUMBER, GEO, PHOTO, VIDEO, SCAN, TRACK, NAME, STRENGTH, DATE, CASCADE,
-        GEOSHAPE, SIGNATURE
+        FREE_TEXT, OPTION, NUMBER, GEO, PHOTO, VIDEO, SCAN, TRACK, NAME, STRENGTH, DATE, CASCADE, GEOSHAPE, SIGNATURE, CADDISFLY
     }
 
     @Override
@@ -479,5 +479,13 @@ public class QuestionDto extends BaseDto implements NamedObject {
 
     public Boolean getAllowPolygon() {
         return allowPolygon;
+    }
+
+    public String getCaddisflyResourceUuid() {
+        return caddisflyResourceUuid;
+    }
+
+    public void setCaddisflyResourceUuid(String caddisflyResourceUuid) {
+        this.caddisflyResourceUuid = caddisflyResourceUuid;
     }
 }

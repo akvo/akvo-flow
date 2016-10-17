@@ -21,6 +21,24 @@ FLOW.BaseModel = DS.Model.extend({
   }.observes('isSaving', 'isDirty')
 });
 
+FLOW.CaddisflyResource = FLOW.BaseModel.extend({
+  didLoad: function () {
+    // combine the name and brand in a single value for display
+      this.set('displayName', this.get('name') + " (" + this.get('brand') +")");
+  },
+  name: DS.attr('string', {
+    defaultValue: ''
+  }),
+  brand: DS.attr('string', {
+    defaultValue: ''
+  }),
+  uuid: DS.attr('string', {
+    defaultValue: ''
+  }),
+  //used in the assignment edit page, not saved to backend
+  displayName: null,
+});
+
 FLOW.CascadeResource = FLOW.BaseModel.extend({
 	name: DS.attr('string', {
 	   defaultValue: ''
@@ -99,6 +117,14 @@ FLOW.SurveyGroup = FLOW.BaseModel.extend({
 
   published: DS.attr('boolean', {
     defaultValue: false
+  }),
+
+  requireDataApproval: DS.attr('boolean', {
+      defaultValue: false
+  }),
+
+  dataApprovalGroupId: DS.attr('number', {
+      defaultValue: null
   }),
 
   surveyList: DS.attr('array', {
@@ -218,6 +244,7 @@ FLOW.Question = FLOW.BaseModel.extend({
   }),
   order: DS.attr('number'),
   cascadeResourceId: DS.attr('number'),
+  caddisflyResourceUuid:DS.attr('string'),
   path: DS.attr('string'),
   questionGroupId: DS.attr('number'),
   surveyId: DS.attr('number'),
@@ -374,6 +401,17 @@ FLOW.QuestionAnswer = FLOW.BaseModel.extend({
   iteration: DS.attr('number'),
   questionID: DS.attr('string'),
   questionText: DS.attr('string')
+});
+
+FLOW.ApprovalGroup = FLOW.BaseModel.extend({
+    name: DS.attr('string'),
+    ordered: DS.attr('boolean'),
+});
+
+FLOW.ApprovalStep = FLOW.BaseModel.extend({
+    approvalGroupId: DS.attr('number'),
+    order: DS.attr('number'),
+    title: DS.attr('string'),
 });
 
 FLOW.SurveyQuestionSummary = FLOW.BaseModel.extend({

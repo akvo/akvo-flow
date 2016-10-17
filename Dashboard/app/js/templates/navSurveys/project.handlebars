@@ -81,6 +81,42 @@
                         optionValuePath="content.keyId"
                         disabledBinding="view.disableFolderSurveyInputField"}}
                     {{/if}}
+
+                    {{#if view.showDataApproval}}
+                        <label for="enableDataApproval" class="labelcheckbox">
+                            {{view Ember.Checkbox checkedBinding="FLOW.projectControl.requireDataApproval" id="enableDataApproval" disabledBinding="view.disableFolderSurveyInputField"}} {{t _enable_data_approval}} {{tooltip _enable_data_approval_tooltip}}
+                        </label>
+                        {{#if view.showDataApprovalList}}
+                          {{view Ember.Select
+                            contentBinding="FLOW.router.approvalGroupListController.arrangedContent"
+                            optionLabelPath="content.name"
+                            optionValuePath="content.keyId"
+                            valueBinding="FLOW.projectControl.currentProject.dataApprovalGroupId"
+                            selectionBinding="FLOW.router.approvalGroupController.content"
+                            disabledBinding="view.disableFolderSurveyInputField"}}
+
+                            {{#if view.showDataApprovalDetails}}
+                              <div class="hideShow">
+                                <a {{action toggleShowDataApprovalDetails target="view"}}>{{t _hide_approval}}</a>
+                              </div>
+                                {{#view FLOW.SurveyApprovalView controllerBinding="FLOW.router.approvalGroupController"}}
+                                  <div class="approvalDetail">
+                                    <h2>{{name}}</h2>
+                                    <p>{{#if ordered}} {{t _ordered_approval}} {{else}} {{t _unordered_approval}} {{/if}}</p>
+                                    <ul class="approvalSteps">
+                                    {{#each step in FLOW.router.approvalStepsController}}
+                                        <li><h4>{{step.title}}</h4> <a href="">Responsible persons</a></li>
+                                    {{/each}}
+                                    </ul>
+                                  </div>
+                                {{/view}}
+                              {{else}}
+                              <div class="hideShow">
+                                <a {{action toggleShowDataApprovalDetails target="view"}}>{{t _show_approval}}</a>
+                              </div>
+                            {{/if}}
+                        {{/if}}
+                    {{/if}}
                   {{/if}}
                 {{/if}}
               </form>

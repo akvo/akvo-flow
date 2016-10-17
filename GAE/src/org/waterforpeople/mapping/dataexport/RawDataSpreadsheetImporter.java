@@ -165,7 +165,7 @@ public class RawDataSpreadsheetImporter implements DataImporter {
 
     /**
      * Parse a raw data report file into a list of InstanceData
-     * 
+     *
      * @param sheet
      * @param columnIndexToQuestionId
      * @param questionIdToQuestionDto
@@ -259,11 +259,12 @@ public class RawDataSpreadsheetImporter implements DataImporter {
         // 8 - N. Questions
         // N + 1. Digest
 
-        //First check if we are done with the sheet
+        // First check if we are done with the sheet
         Row baseRow = sheet.getRow(startRow);
         if (isEmptyRow(baseRow)) { //a row without any cells defined
             return null;
         }
+
         int firstQuestionColumnIndex = Collections.min(columnIndexToQuestionId.keySet());
         String surveyedLocaleIdentifier = ExportImportUtils.parseCellAsString(baseRow.getCell(0));
         String surveyedLocaleDisplayName = ExportImportUtils.parseCellAsString(baseRow
@@ -288,10 +289,10 @@ public class RawDataSpreadsheetImporter implements DataImporter {
         if (hasIterationColumn) {
             while (true) {
                 Row row = sheet.getRow(startRow + iterations);
-                if (row == null //no row
+                if (row == null // no row
                         || isEmptyCell(row.getCell(1))
-                        || ExportImportUtils.parseCellAsString(row.getCell(1)).equals("1") //next q
-                        ) {
+                        || ExportImportUtils.parseCellAsString(row.getCell(1)).equals("1") // next q
+                ) {
                     break;
                 }
                 iterations++;
@@ -429,10 +430,14 @@ public class RawDataSpreadsheetImporter implements DataImporter {
                             }
                             break;
 
-                        case PHOTO:
-                        case VIDEO:
                         case SIGNATURE:
-                            // we do not allow importing / overwriting signature and media question responses
+                            // we do not allow importing / overwriting of signature question
+                            // responses
+                            val = null;
+                            break;
+
+                        case CADDISFLY:
+                            // we do not allow importing / overwriting Caddisfly question responses
                             val = null;
                             break;
 
@@ -767,14 +772,14 @@ public class RawDataSpreadsheetImporter implements DataImporter {
 
     /**
      * Check if a cell is any kind of empty
-     * 
+     *
      * @param cell
      * @return
      */
     private boolean isEmptyCell(Cell cell) {
         return cell == null
-            || cell.getCellType() == Cell.CELL_TYPE_BLANK
-            || (cell.getCellType() == Cell.CELL_TYPE_STRING
+                || cell.getCellType() == Cell.CELL_TYPE_BLANK
+                || (cell.getCellType() == Cell.CELL_TYPE_STRING
                 && cell.getStringCellValue().trim() == "");
     }
 
@@ -824,7 +829,7 @@ public class RawDataSpreadsheetImporter implements DataImporter {
 
     public static void main(String[] args) throws Exception {
         if (args.length != 4) {
-            log.error("Error.\nUsage:\n\tjava org.waterforpeople.mapping.dataexport.RawDataSpreadsheetImporter <file> <serverBase> <surveyId>");
+            log.error("Error.\nUsage:\n\tjava org.waterforpeople.mapping.dataexport.RawDataSpreadsheetImporter <file> <serverBase> <surveyId> <apiKey>");
             System.exit(1);
         }
         File file = new File(args[0].trim());
