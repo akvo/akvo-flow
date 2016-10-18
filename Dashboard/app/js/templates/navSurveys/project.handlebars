@@ -105,7 +105,7 @@
                                     <p>{{#if ordered}} {{t _ordered_approval}} {{else}} {{t _unordered_approval}} {{/if}}</p>
                                     <ul class="approvalSteps">
                                     {{#each step in FLOW.router.approvalStepsController}}
-                                        <li><h4>{{step.title}}</h4> <a href="">Responsible persons</a></li>
+                                        <li><h4>{{step.title}}</h4> <a href="">{{t _responsible_users}}</a></li>
                                     {{/each}}
                                     </ul>
                                   </div>
