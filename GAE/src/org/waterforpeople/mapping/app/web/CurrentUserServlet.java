@@ -63,9 +63,8 @@ public class CurrentUserServlet extends HttpServlet {
     @Override
     protected void doGet(HttpServletRequest req, HttpServletResponse resp)
             throws ServletException, IOException {
-        final com.google.appengine.api.users.User currentGoogleUser = UserServiceFactory
-                .getUserService().getCurrentUser();
-        if (currentGoogleUser == null) {
+
+        if (getCurrentUser() == null) {
             return;
         }
 
@@ -87,9 +86,7 @@ public class CurrentUserServlet extends HttpServlet {
         }
 
         final VelocityContext context = new VelocityContext();
-        final UserDao uDao = new UserDao();
-        final String currentUserEmail = currentGoogleUser.getEmail().toLowerCase();
-        final User currentUser = uDao.findUserByEmail(currentUserEmail);
+        final User currentUser = getCurrentUser();
 
         context.put("user", currentUser);
         context.put("permissions", getPermissionsMap(currentUser));
@@ -102,6 +99,18 @@ public class CurrentUserServlet extends HttpServlet {
         final PrintWriter pw = resp.getWriter();
         pw.println(writer.toString());
         pw.close();
+    }
+
+    public static User getCurrentUser() {
+        final com.google.appengine.api.users.User currentGoogleUser = UserServiceFactory
+                .getUserService().getCurrentUser();
+        if (currentGoogleUser == null) {
+            return null;
+        }
+
+        final String currentUserEmail = currentGoogleUser.getEmail().toLowerCase();
+        final UserDao uDao = new UserDao();
+        return uDao.findUserByEmail(currentUserEmail);
     }
 
     /**

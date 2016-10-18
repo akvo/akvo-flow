@@ -277,16 +277,15 @@ FLOW.surveyInstanceControl = Ember.ArrayController.create({
   }
 });
 
-FLOW.surveyedLocaleControl = Ember.ArrayController.create({
+FLOW.SurveyedLocaleController = Ember.ArrayController.extend({
   sortProperties: ['collectionDate'],
   sortAscending: false,
   selectedSurvey: null,
-  content: null,
   sinceArray: [],
   pageNumber: 0,
 
-  populate: function () {
-    this.set('content', FLOW.store.findQuery(FLOW.SurveyedLocale, {}));
+  populate: function (criteria) {
+    this.set('content', FLOW.store.find(FLOW.SurveyedLocale, criteria));
   },
 
   contentChanged: function() {
@@ -297,7 +296,7 @@ FLOW.surveyedLocaleControl = Ember.ArrayController.create({
     });
 
     this.set('currentContents', mutableContents);
-  }.observes('content', 'content.isLoaded'),
+  },
 
   removeLocale: function(locale) {
     this.get('currentContents').forEach(function(item, i, currentContents) {
@@ -505,13 +504,12 @@ FLOW.ApprovalGroupController = Ember.ObjectController.extend({
      * Create a new approval group
      */
     add: function () {
-        this.set('content', FLOW.store.createRecord(FLOW.ApprovalGroup, {
+        var group = FLOW.ApprovalGroup.createRecord({
             name: Ember.String.loc('_new_approval_group'),
             ordered: false,
-        }));
+        });
 
-        // add empty list of steps
-        FLOW.router.get('approvalStepsController').set('content', Ember.A());
+        this.set('content', group);
     },
 
     /*
@@ -537,25 +535,8 @@ FLOW.ApprovalGroupController = Ember.ObjectController.extend({
             group.set('name', group.get('name').trim());
         }
 
-        if (!group.get('keyId')) {
-            FLOW.store.commit();
-        } else {
-            FLOW.router.get('approvalStepsController').save();
-        }
+        FLOW.router.get('approvalStepsController').save(group);
     },
-
-    /*
-     * Observer of the keyId property on the current content of this controller.
-     * This enables propagation of the `keyId` to the steps associated with the
-     * approval group in order for them to be associated.
-     *
-     */
-    approvalGroupKeyIdObserver: function () {
-        var group = this.content;
-        if (group && group.get('keyId')) {
-            FLOW.router.get('approvalStepsController').save(group);
-        }
-    }.observes('this.keyId'),
 
     /*
      * Validate approval group and associated steps
@@ -617,9 +598,11 @@ FLOW.ApprovalStepsController = Ember.ArrayController.extend({
      */
     loadByGroupId: function (groupId) {
         var steps = Ember.A();
-        FLOW.ApprovalStep.find({approvalGroupId: groupId}).on('didLoad', function () {
-            steps.addObjects(this);
-        });
+        if (groupId) {
+            FLOW.ApprovalStep.find({approvalGroupId: groupId}).on('didLoad', function () {
+                steps.addObjects(this);
+            });
+        }
         this.set('content',steps);
     },
 
@@ -628,6 +611,9 @@ FLOW.ApprovalStepsController = Ember.ArrayController.extend({
      */
     addApprovalStep: function () {
         var groupId = FLOW.router.get('approvalGroupController').get('content').get('keyId');
+        if(!groupId) {
+            FLOW.store.commit();
+        }
         var steps = this.content;
         var newStep = Ember.Object.create({
             approvalGroupId: groupId,
@@ -678,9 +664,7 @@ FLOW.ApprovalStepsController = Ember.ArrayController.extend({
             }
         });
 
-        if (steps) {
-            FLOW.store.commit();
-        }
+        FLOW.store.commit();
     },
 
     /*
@@ -694,5 +678,45 @@ FLOW.ApprovalStepsController = Ember.ArrayController.extend({
         if(step.get('keyId')) {
             step.deleteRecord();
         }
+    },
+});
+
+FLOW.DataPointApprovalController = Ember.ArrayController.extend({
+
+    content: Ember.A(),
+
+    /**
+     * add an approval element
+     */
+    add: function (dataPointApproval) {
+        var dataPointApprovalList = this.content;
+        var approval = FLOW.store.createRecord(FLOW.DataPointApproval, dataPointApproval);
+        approval.on('didCreate', function () {
+            dataPointApprovalList.addObject(approval);
+        });
+
+        FLOW.store.commit();
+    },
+
+    /**
+     * Update an existing approval element
+     */
+    update: function (dataPointApproval) {
+        var dataPointApprovalList = this.content;
+        dataPointApproval.on('didUpdate', function () {
+            dataPointApprovalList.addObject(dataPointApproval);
+        });
+        FLOW.store.commit();
+    },
+
+    /**
+     * Load approval elements based on the surveyedLocaleId (data point id)
+     */
+    loadBySurveyedLocaleId: function (surveyedLocaleId) {
+        var dataPointApprovalList = this.content;
+        var approvals = FLOW.DataPointApproval.find({ surveyedLocaleId: surveyedLocaleId });
+        approvals.on('didLoad', function () {
+            dataPointApprovalList.addObjects(this);
+        });
     },
 });

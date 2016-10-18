@@ -107,4 +107,12 @@ public class User extends BaseDomain {
     public void setLanguage(String lang) {
         this.language = lang;
     }
+
+    public String getEmailUserName() {
+        if (emailAddress == null || emailAddress.trim().equals("")) {
+            return null;
+        }
+
+        return emailAddress.substring(0, emailAddress.indexOf('@'));
+    }
 }

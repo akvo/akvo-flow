@@ -28,31 +28,19 @@
         <thead>
           <tr>
               <th class="noArrows"></th>
-              <th class="noArrows">{{t _survey}}</th>
-              <th class="noArrows">{{t _identifier}}</th>
               <th class="noArrows">{{t _data_point_name}}</th>
+              <th class="noArrows">{{t _identifier}}</th>
               <th class="noArrows">{{t _last_update}}</th>
+              {{#if view.showApprovalStatusColumn}}
+              <th class="noArrows">{{t _approval_status}}</th>
+              {{/if}}
               <th class="noArrows">{{t _action}}</th>
           </tr>
         </thead>
         <tbody>
-          {{#each sl in FLOW.surveyedLocaleControl.currentContents}}
-            <tr>
-              <td class="device">{{#view FLOW.DataNumView contentBinding="this" pageNumberBinding="view.pageNumber"}}{{view.rownum}}{{/view}}</td>
-              <td class="surveyGroup" style="text-align:left;">{{#with sl}}{{sgName surveyGroupId}}{{/with}}</td>
-              <td class="identifier" style="text-align:left;">{{sl.identifier}}</td>
-              <td class="displayName" style="text-align:left;">{{sl.displayName}}</td>
-              <td class="collected">{{#with sl}}{{date1 lastUpdateDateTime}}{{/with}}</td>
-              <td class="action">
-                <a {{action showDetailsDialog sl target="this" }}>
-                  {{t _view_details}}
-                </a>
-                {{#if view.showSurveyedLocaleDeleteButton }} {{#view FLOW.DataLocaleItemView contentBinding="sl"}}<a {{action confirm FLOW.dialogControl.delSL target="FLOW.dialogControl" }}>
-                  {{t _delete}}
-                  </a>{{/view}} {{/if}}
-              </td>
-            </tr>
-            {{/each}}
+          {{#each FLOW.router.surveyedLocaleController}}
+           {{view FLOW.DataPointView contentBinding="this"}}
+          {{/each}}
         </tbody>
         <tfoot>
           <tr>

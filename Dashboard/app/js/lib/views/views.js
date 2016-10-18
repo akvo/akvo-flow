@@ -902,6 +902,7 @@ FLOW.SelectFolder = Ember.Select.extend({
   onChange: function() {
     var childViews = this.get('parentView').get('childViews');
     var keyId = this.get('value');
+    var survey = this.get('controller').getSurvey(keyId);
     var nextIdx = this.get('idx') + 1;
     var monitoringOnly = this.get('showMonitoringSurveysOnly');
     var filter = this.get('selectionFilter');
@@ -911,7 +912,11 @@ FLOW.SelectFolder = Ember.Select.extend({
     }
 
     if (this.get('controller').isSurvey(keyId)) {
-      FLOW.selectedControl.set('selectedSurveyGroup', this.get('controller').getSurvey(keyId));
+      FLOW.selectedControl.set('selectedSurveyGroup', survey);
+      if (FLOW.Env.enableDataApproval && survey.get('dataApprovalGroupId')) {
+          FLOW.router.approvalGroupController.load(survey.get('dataApprovalGroupId'));
+          FLOW.router.approvalStepsController.loadByGroupId(survey.get('dataApprovalGroupId'));
+      }
     } else {
       FLOW.selectedControl.set('selectedSurveyGroup', null);
       childViews.pushObject(FLOW.SelectFolder.create({
