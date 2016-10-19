@@ -23,10 +23,7 @@ public class CaddisflyResult implements Serializable, Comparable {
     private String unit;
     private int id;
 
-    public CaddisflyResult(String name, String unit, int id) {
-        this.setName(name);
-        this.setUnit(unit);
-        this.setId(id);
+    public CaddisflyResult() {
     }
 
     public String getName() {
