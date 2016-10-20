@@ -111,6 +111,16 @@ FLOW.Project = FLOW.View.extend({
 
 FLOW.SurveyApprovalView = FLOW.View.extend({});
 
+FLOW.SurveyApprovalStepView = FLOW.View.extend({
+    step: null,
+
+    showResponsibleUsers: false,
+
+    toggleShowResponsibleUsers: function () {
+        this.toggleProperty('showResponsibleUsers');
+    },
+});
+
 FLOW.ProjectMainView = FLOW.View.extend({
 
   doSave: function() {
