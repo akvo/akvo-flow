@@ -142,7 +142,7 @@ FLOW.permControl = Ember.Controller.create({
   /* Given an entity, process the permissions settings for the current user
     and return the permissions associated with that entity.  Entity is an Ember object*/
   permissions: function(entity) {
-    var keyId, ancestorIds, permissions = [], currentUserPermissions = FLOW.userControl.currentUserPathPermissions();
+    var keyId, ancestorIds, permissions = [], currentUserPermissions = FLOW.currentUser.get('pathPermissions');
 
     if (!currentUserPermissions || !entity) { return []; }
 
@@ -179,6 +179,19 @@ FLOW.permControl = Ember.Controller.create({
     return permissions;
   },
 
+  /* query based on survey (group) ancestorIds whether a user has
+  permissions for data deletion */
+  canDeleteData: function(ancestorIds) {
+      var pathPermissions = this.currentUserPathPermissions();
+      var canDelete = false;
+      ancestorIds.forEach(function(id){
+          if(id in pathPermissions && pathPermissions[id].indexOf("DATA_DELETE") > -1) {
+              canDelete = true;
+          }
+      });
+      return canDelete;
+    },
+
   /* takes a survey (ember object) and checks whether the current user
     has edit permissions for the survey */
   canEditSurvey: function(survey) {
@@ -208,7 +221,7 @@ FLOW.permControl = Ember.Controller.create({
   },
 
   canManageDevices: function () {
-    var currentUserPermissions = FLOW.userControl.currentUserPathPermissions();
+    var currentUserPermissions = FLOW.currentUser.get('pathPermissions');
     for (var perms in currentUserPermissions) {
       if (currentUserPermissions[perms].indexOf("DEVICE_MANAGE") > -1) {
         return true;
@@ -218,7 +231,7 @@ FLOW.permControl = Ember.Controller.create({
   }.property(),
 
   canManageCascadeResources: function () {
-    var currentUserPermissions = FLOW.userControl.currentUserPathPermissions();
+    var currentUserPermissions = FLOW.currentUser.get('pathPermissions');
     for (var perms in currentUserPermissions) {
       if (currentUserPermissions[perms].indexOf("CASCADE_MANAGE") > -1) {
         return true;
