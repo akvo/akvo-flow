@@ -119,6 +119,17 @@ FLOW.SurveyApprovalStepView = FLOW.View.extend({
 
     toggleShowResponsibleUsers: function () {
         this.toggleProperty('showResponsibleUsers');
+        this.loadUsers();
+    },
+
+    /*
+     * load the users list if not present
+     */
+    loadUsers: function() {
+        var users = FLOW.router.userListController.get('content');
+        if(Ember.empty(users)) {
+            FLOW.router.userListController.set('content', FLOW.User.find());
+        }
     },
 });
 
