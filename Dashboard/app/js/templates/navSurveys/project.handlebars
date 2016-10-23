@@ -110,6 +110,9 @@
                                             {{#if view.showResponsibleUsers}}
                                             <div>
                                                 <ul class="responsibleUsers">
+                                                    {{#each user in FLOW.router.userListController}}
+                                                        <li>{{user.userName}}</li>
+                                                    {{/each}}
                                                 </ul>
                                             </div>
                                             {{/if}}
