@@ -116,9 +116,43 @@ FLOW.SurveyApprovalStepView = FLOW.View.extend({
 
     showResponsibleUsers: false,
 
+
     toggleShowResponsibleUsers: function () {
         this.toggleProperty('showResponsibleUsers');
     },
+});
+
+FLOW.ApprovalResponsibleUserView = FLOW.View.extend({
+    user: null,
+
+    step: null,
+
+    isResponsibleUser: function (key, isCheckedValue, previousCheckedValue) {
+        var step = this.get('step');
+        var user = this.get('user');
+
+        if (!step || !user) {
+            return false;
+        }
+
+        var approverUserList = step.get('approverUserList');
+        if(Ember.empty(approverUserList)) {
+            approverUserList = Ember.A();
+        }
+
+        // setter
+        if(arguments.length > 1) {
+            if (isCheckedValue) {
+                approverUserList.addObject(user.get('keyId'));
+            } else {
+                approverUserList.removeObject(user.get('keyId'));
+            }
+            step.set('approverUserList', approverUserList);
+        }
+
+        // getter
+        return approverUserList.contains(user.get('keyId'));
+    }.property(),
 });
 
 FLOW.ProjectMainView = FLOW.View.extend({

@@ -111,7 +111,15 @@
                                             <div>
                                                 <ul class="responsibleUsers">
                                                     {{#each user in FLOW.router.userListController}}
-                                                        <li>{{user.userName}}</li>
+                                                        {{#view FLOW.ApprovalResponsibleUserView
+                                                                    userBinding="user"
+                                                                    stepBinding="view.step"}}
+                                                            <li>
+                                                            {{view Ember.Checkbox
+                                                                    checkedBinding="view.isResponsibleUser"}}
+                                                            {{view.user.userName}}
+                                                            </li>
+                                                        {{/view}}
                                                     {{/each}}
                                                 </ul>
                                             </div>
