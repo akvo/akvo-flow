@@ -50,6 +50,9 @@ FLOW.MonitoringDataTableView = FLOW.View.extend({
 		criteria.since = this.get('cursorStart');
 	  }
       FLOW.router.surveyedLocaleController.populate(criteria);
+      if(Ember.empty(FLOW.router.userListController.get('content'))) {
+          FLOW.router.userListController.set('content', FLOW.User.find());
+      }
   },
 
   doNextPage: function () {
