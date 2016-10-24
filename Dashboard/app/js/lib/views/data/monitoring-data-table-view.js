@@ -134,7 +134,7 @@ FLOW.DataPointView = FLOW.View.extend({
             }
         });
 
-        var nextStep = steps.filterProperty('order', ++lastApprovedStepOrder).get('firstObject');
+        var nextStep = steps && steps.filterProperty('order', ++lastApprovedStepOrder).get('firstObject');
         return nextStep;
 
     // NOTE: below we observe the '@each.approvalDate' in order to be
