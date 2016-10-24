@@ -118,9 +118,16 @@ FLOW.DataPointView = FLOW.View.extend({
     }.property('FLOW.router.dataPointApprovalController.content.@each'),
 
     /*
-     * Derive the approvalStepId for the next approval (in ordered approvals)
+     * get the next approval step id
      */
     nextApprovalStepId: function () {
+        return this.get('nextApprovalStep') && this.get('nextApprovalStep').get('keyId');
+    }.property('this.nextApprovalStep'),
+
+    /*
+     * Derive the next approval step (in ordered approvals)
+     */
+    nextApprovalStep: function () {
         var approvals = this.get('dataPointApprovals');
         var steps = FLOW.router.approvalStepsController.get('arrangedContent');
         var lastApprovedStepOrder = -1;
@@ -134,8 +141,8 @@ FLOW.DataPointView = FLOW.View.extend({
             }
         });
 
-        var nextStep = steps && steps.filterProperty('order', ++lastApprovedStepOrder).get('firstObject');
-        return nextStep && nextStep.get('keyId');
+        var nextStep = steps.filterProperty('order', ++lastApprovedStepOrder).get('firstObject');
+        return nextStep;
 
     // NOTE: below we observe the '@each.approvalDate' in order to be
     // sure that we only recalculate the next step whenever the approval
@@ -230,7 +237,7 @@ FLOW.DataPointApprovalView = FLOW.View.extend({
             // all steps so that its possible to approve any step
             return true;
         }
-    }.property('this.parentView.nextApprovalStepId'),
+    }.property('this.parentView.nextApprovalStep'),
 
     /*
      *  Submit data approval properties to controller
