@@ -513,17 +513,9 @@ FLOW.projectControl = Ember.ArrayController.create({
   },
 
   /*
-   * Property to dynamically load the data approval controller
-   * content when needed, and otherwise return the boolean
-   * value corresponding to whether the current survey has
-   * data approval enabled or not
+   * Property to indicate whether or not current project requires data approval
    */
   requireDataApproval: function (key, value, previousValue) {
-      var approvalGroupListController= FLOW.router.get('approvalGroupListController');
-      if(!approvalGroupListController.content && (value || this.currentProject.get('requireDataApproval'))) {
-          approvalGroupListController.set('content', FLOW.ApprovalGroup.find());
-      }
-
       // setter
       if (arguments.length > 1) {
           this.currentProject.set('requireDataApproval', value);

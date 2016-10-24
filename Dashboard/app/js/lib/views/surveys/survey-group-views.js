@@ -53,8 +53,25 @@ FLOW.Project = FLOW.View.extend({
     this.set('showProjectDetails', !this.get('showProjectDetails'));
   },
 
+  /*
+   * Toggle advanced settings and load data approval
+   * groups if data approval is enabled on the instance
+   */
   toggleShowAdvancedSettings: function() {
-    this.set('showAdvancedSettings', !this.get('showAdvancedSettings'));
+      if(FLOW.Env.enableDataApproval && !approvalGroupListController.content) {
+          var self = this;
+          var approvalGroupListController = FLOW.router.get('approvalGroupListController');
+
+          var groups = FLOW.ApprovalGroup.find({});
+          approvalGroupListController.set('content', groups);
+
+          // only toggle the property after approval groups are retrieved
+          groups.on('didLoad', function () {
+              self.toggleProperty('showAdvancedSettings');
+          });
+      } else {
+          this.toggleProperty('showAdvancedSettings');
+      }
   },
 
   isNewProject: function() {
