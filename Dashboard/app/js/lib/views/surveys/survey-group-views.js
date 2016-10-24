@@ -174,9 +174,11 @@ FLOW.ApprovalResponsibleUserView = FLOW.View.extend({
             return false;
         }
 
-        var approverUserList = step.get('approverUserList');
-        if(Ember.empty(approverUserList)) {
-            approverUserList = Ember.A();
+        // create a new list to force enabling of 'Save' button for surveys
+        // when a user is added or removed from approver list
+        var approverUserList = Ember.A();
+        if(!Ember.empty(step.get('approverUserList'))) {
+            approverUserList.pushObjects(step.get('approverUserList'));
         }
 
         // setter
@@ -191,7 +193,7 @@ FLOW.ApprovalResponsibleUserView = FLOW.View.extend({
 
         // getter
         return approverUserList.contains(user.get('keyId'));
-    }.property(),
+    }.property('this.step.approverUserList'),
 });
 
 FLOW.ProjectMainView = FLOW.View.extend({
@@ -225,10 +227,22 @@ FLOW.ProjectMainView = FLOW.View.extend({
     var selectedForm = FLOW.selectedControl.get('selectedSurvey');
     var isFormDirty = selectedForm ? selectedForm.get('isDirty') : false;
 
-    return isProjectDirty || isFormDirty;
+    var approvalSteps = FLOW.router.approvalStepsController.get('content');
+    var isApprovalStepDirty = false;
+
+    if (approvalSteps) {
+        approvalSteps.forEach(function (step) {
+            if (!isApprovalStepDirty && step.get('isDirty')) {
+                isApprovalStepDirty = true;
+            }
+        });
+    }
+
+    return isProjectDirty || isFormDirty || isApprovalStepDirty;
 
   }.property('FLOW.projectControl.currentProject.isDirty',
-              'FLOW.selectedControl.selectedSurvey.isDirty'),
+              'FLOW.selectedControl.selectedSurvey.isDirty',
+              'FLOW.router.approvalStepsController.content.@each.approverUserList'),
 
   projectView: function() {
     return FLOW.projectControl.isProject(FLOW.projectControl.get('currentProject'));
