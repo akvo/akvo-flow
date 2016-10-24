@@ -69,9 +69,9 @@ FLOW.Project = FLOW.View.extend({
    * groups if data approval is enabled on the instance
    */
   toggleShowAdvancedSettings: function() {
+      var approvalGroupListController = FLOW.router.get('approvalGroupListController');
       if(FLOW.Env.enableDataApproval && !approvalGroupListController.content) {
           var self = this;
-          var approvalGroupListController = FLOW.router.get('approvalGroupListController');
 
           var groups = FLOW.ApprovalGroup.find({});
           approvalGroupListController.set('content', groups);
