@@ -297,6 +297,7 @@ public class GraphicalSurveySummaryExporter extends SurveySummaryExporter {
 
     private CellStyle headerStyle;
     private CellStyle mTextStyle;
+    private CellStyle mErrorStyle; //for cells with problems
     // private CellStyle mNumberStyle;
     private String locale;
     private String imagePrefix;
@@ -361,9 +362,7 @@ public class GraphicalSurveySummaryExporter extends SurveySummaryExporter {
                 headerFont.setBoldweight(Font.BOLDWEIGHT_BOLD);
                 headerStyle.setFont(headerFont);
 
-                short textFormat = wb.createDataFormat().getFormat("@"); // built-in
-                                                                         // text
-                                                                         // format
+                short textFormat = wb.createDataFormat().getFormat("@"); // built-in text format
                 mTextStyle = wb.createCellStyle();
                 mTextStyle.setDataFormat(textFormat);
                 // This was intended to suppress scientific notation in number
@@ -420,7 +419,8 @@ public class GraphicalSurveySummaryExporter extends SurveySummaryExporter {
 
     @SuppressWarnings("unchecked")
     /*
-     * Fetches data from FLOW instance, and writes it to a file row by row Called from export method
+     * Fetches data from FLOW instance, and writes it to a file row by row.
+     * Called from export method.
      */
     protected SummaryModel fetchAndWriteRawData(String surveyId,
             final String serverBase,
@@ -725,8 +725,13 @@ public class GraphicalSurveySummaryExporter extends SurveySummaryExporter {
                 break;
 
             case CASCADE:
-                cells.addAll(cascadeCellValues(value, useQuestionId, questionDto
-                        .getLevelNames().size()));
+                if (questionDto.getLevelNames() != null) {
+                    cells.addAll(cascadeCellValues(value, useQuestionId,
+                            questionDto.getLevelNames().size()));
+                } else {
+                    log.warn("No CASCADE resource for question '" + questionDto.getText() + "'");
+                }
+
                 break;
 
             case OPTION:
@@ -1304,6 +1309,7 @@ public class GraphicalSurveySummaryExporter extends SurveySummaryExporter {
                             }
                         } else if (QuestionType.CASCADE == q.getType()
                                 && q.getLevelNames() != null && useQuestionId) {
+                            //if no cascade assigned, column is not shown
                             for (String level : q.getLevelNames()) {
                                 String levelName = useQID ? questionId + "_"
                                         + level.replaceAll(" ", "_")
