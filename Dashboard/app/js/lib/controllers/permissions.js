@@ -182,7 +182,7 @@ FLOW.permControl = Ember.Controller.create({
   /* query based on survey (group) ancestorIds whether a user has
   permissions for data deletion */
   canDeleteData: function(ancestorIds) {
-      var pathPermissions = this.currentUserPathPermissions();
+      var pathPermissions = FLOW.currentUser.get('pathPermissions');
       var canDelete = false;
       ancestorIds.forEach(function(id){
           if(id in pathPermissions && pathPermissions[id].indexOf("DATA_DELETE") > -1) {
