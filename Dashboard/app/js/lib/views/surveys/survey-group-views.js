@@ -45,6 +45,17 @@ FLOW.Project = FLOW.View.extend({
     return registrationForm;
   }.property('FLOW.projectControl.currentProject'),
 
+  /*
+   * property for setting the currently selected approval group
+   */
+  selectedApprovalGroup: function () {
+      var approvalGroupId = FLOW.projectControl.currentProject.get('dataApprovalGroupId');
+      var approvalGroupList = FLOW.router.approvalGroupListController.get('content');
+      var approvalGroup = approvalGroupList &&
+                              approvalGroupList.filterProperty('keyId', approvalGroupId).get('firstObject');
+      return approvalGroup;
+  }.property('FLOW.projectControl.currentProject'),
+
   project: function() {
     return FLOW.projectControl.get('currentProject');
   }.property(),
