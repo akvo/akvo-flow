@@ -209,6 +209,18 @@ FLOW.DataPointApprovalView = FLOW.View.extend({
     }.property('this.dataPointApproval'),
 
     /*
+     * return the current user's id
+     */
+    currentUserId: function () {
+        var step = this.get('step');
+        var currentUserEmail = FLOW.currentUser.get('email');
+        var userList = FLOW.router.userListController.get('content');
+        var currentUser = userList &&
+                            userList.filterProperty('emailAddress', currentUserEmail).get('firstObject');
+        return currentUser && currentUser.get('keyId');
+    }.property(),
+
+    /*
      * Enable the approval fields based on whether or not approval steps
      * should be executed in order
      */
@@ -218,10 +230,12 @@ FLOW.DataPointApprovalView = FLOW.View.extend({
         }
 
         var approvalGroup = FLOW.router.approvalGroupController.get('content');
+        var currentUserId = this.get('currentUserId');
         if(approvalGroup && approvalGroup.get('ordered')) {
-            var nextStepId = this.get('parentView').get('nextApprovalStepId');
-            if (nextStepId) {
-                return this.step.get('keyId') === nextStepId;
+            var nextStep = this.get('parentView').get('nextApprovalStep');
+            if (nextStep) {
+                return this.step.get('keyId') === nextStep.get('keyId') &&
+                        nextStep.get('approverUserList').contains(currentUserId);
             } else {
                 return false;
             }
