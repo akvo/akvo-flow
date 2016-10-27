@@ -661,13 +661,13 @@ input[type="submit"] {
 
 .dialogWide {
     position: absolute;
-    top: 15%;
+    top: 5%;
     left: 20%;
     display: block;
     overflow-y: scroll;
     padding: 1em;
     min-width: 500px;
-    max-height: 500px;
+    max-height: 80%;
     width: 60%;
     border: thin solid rgb(153, 153, 153);
     border-radius: 4px;
@@ -1452,6 +1452,11 @@ tfoot tr {
             &.survey,
             &.submitter {
                 text-align: left;
+                .signatureImage {
+                    &.caddisflyImg {
+                        max-width: 40% !important;
+                    }
+                }
             }
         }
     }
