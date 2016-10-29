@@ -395,6 +395,9 @@ FLOW.projectControl = Ember.ArrayController.create({
     var project = evt.context;
     this.setCurrentProject(evt.context);
 
+    // load caddisfly resources if they are not loaded
+    this.loadCaddisflyResources();
+
     // User is using the breadcrumb to navigate, we could have unsaved changes
     FLOW.store.commit();
 
@@ -407,6 +410,16 @@ FLOW.projectControl = Ember.ArrayController.create({
 
   selectRootProject: function() {
     this.setCurrentProject(null);
+  },
+
+  /*
+   * Load caddisfly resources if they are not already loaded
+   */
+  loadCaddisflyResources: function () {
+      var caddisflyResources = FLOW.caddisflyResourceControl.get('content');
+      if (FLOW.Env.showExternalSourcesFeature && Ember.empty(caddisflyResources)) {
+          FLOW.caddisflyResourceControl.populate();
+      }
   },
 
   /* Create a new project folder. The current project must be root or a project folder */

@@ -99,7 +99,6 @@ FLOW.Router = Ember.Router.extend({
           });
           FLOW.projectControl.populate();
           FLOW.cascadeResourceControl.populate();
-          FLOW.caddisflyResourceControl.populate();
           FLOW.projectControl.set('currentProject', null);
           FLOW.projectControl.set('newlyCreated', null);
           FLOW.selectedControl.set('selectedQuestionGroup', null);
