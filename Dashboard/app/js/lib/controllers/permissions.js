@@ -228,13 +228,13 @@ FLOW.permControl = Ember.Controller.create({
   }.property(),
 
   canCleanData: function () {
-	  var currentUserPermissions = FLOW.userControl.currentUserPathPermissions();
-	  for (var perms in currentUserPermissions) {
-		  if (currentUserPermissions[perms].indexOf("DATA_CLEANING") > -1) {
-			  return true;
-		  }
-	  }
-	  return false;
+      var currentUserPermissions = FLOW.currentUser.get('pathPermissions');
+      for (var perms in currentUserPermissions) {
+          if (currentUserPermissions[perms].indexOf("DATA_CLEANING") > -1) {
+              return true;
+          }
+      }
+      return false;
   }.property(),
 });
 
