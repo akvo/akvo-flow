@@ -261,7 +261,7 @@ public class RawDataSpreadsheetImporter implements DataImporter {
 
         // First check if we are done with the sheet
         Row baseRow = sheet.getRow(startRow);
-        if (isEmptyRow(baseRow)) { //a row without any cells defined
+        if (isEmptyRow(baseRow)) { // a row without any cells defined
             return null;
         }
 
@@ -746,10 +746,10 @@ public class RawDataSpreadsheetImporter implements DataImporter {
             if (hasIterationColumn) {
                 Iterator<Row> iter = sheet.iterator();
                 iter.next(); // Skip the header row.
-                while (iter.hasNext()) { //gets "phantom" rows, too
+                while (iter.hasNext()) { // gets "phantom" rows, too
                     Row row = iter.next();
                     if (isEmptyRow(row)) {
-                        break; //phantom row - just stop 
+                        break; // phantom row - just stop
                     }
                     Cell cell = row.getCell(1);
                     if (cell == null) {
@@ -787,17 +787,19 @@ public class RawDataSpreadsheetImporter implements DataImporter {
 
     /**
      * Check if a row is any kind of empty
-     * 
+     *
      * @param row
      * @return
      */
-    
+
     private boolean isEmptyRow(Row row) {
-        if (row == null) return true;
-        if (row.getFirstCellNum() == -1) { //a row without any cells defined
-                return true; //phantom row 
-            }
-        //maybe cells are all blank/contain only spaces?
+        if (row == null) {
+            return true;
+        }
+        if (row.getFirstCellNum() == -1) { // a row without any cells defined
+            return true; // phantom row
+        }
+        // maybe cells are all blank/contain only spaces?
         boolean blank = true;
         for (int ix = row.getFirstCellNum(); ix < row.getLastCellNum(); ix++) {
             if (!isEmptyCell(row.getCell(ix))) {
@@ -805,7 +807,9 @@ public class RawDataSpreadsheetImporter implements DataImporter {
                 break;
             }
         }
-        if (blank) return true;
+        if (blank) {
+            return true;
+        }
         return false;
     }
 
