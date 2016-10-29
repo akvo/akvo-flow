@@ -11,7 +11,9 @@
     <a {{action doBulkUpload}}>{{t _bulk_upload_data}}</a>
     {{/view}} 
     {{#view view.NavItemView item="dataCleaning" }}
-    <a {{action doDataCleaning}}>{{t _data_cleaning}}</a>
+        {{#if view.showDataCleaningButton}}
+        <a {{action doDataCleaning}}>{{t _data_cleaning}}</a>
+        {{/if}}
     {{/view}}
     {{#if FLOW.Env.showMonitoringFeature}}
       {{#view view.NavItemView item="monitoringData" }}
