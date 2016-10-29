@@ -91,7 +91,10 @@ body {
     line-height: 1;
 }
 
-ol,
+ol {
+    list-style: decimal;
+}
+
 ul {
     list-style: none;
 }
@@ -6825,8 +6828,7 @@ li.disable {
             margin: 10px 0;
         }
     }
-
-    h5 {
+    h5 {background
         &.iterationNumber {
             margin: 16px 0px 5px 8px;
         }
@@ -6886,6 +6888,36 @@ html.navMaps, .public {
 }
 
 /* Approval Process */
+
+.dataApprovalRow {
+    background: rgba(232, 230, 220, 0.2) !important;
+    &:hover {background: rgba(232, 230, 220, 0.2) !important;}
+    box-shadow: inset 0 -2px 8px rgba(0, 0, 0, 0.1);
+    .dataApprovalBlock {
+        ol {
+            &.dataPointApproval {
+                list-style-type: none;
+                list-style: none;
+                li {
+                    text-align: left;
+                    margin-bottom: 20px;
+                    select {
+                        margin-right: 20px;
+                    }
+                    input {
+                        text-overflow: ellipsis;
+                    }
+                    .btn {
+                        display: inline-block;
+                    }
+                    h4 {
+                        margin-bottom: 5px;
+                    }
+                }
+            }
+        }
+    }
+}
 
 .approvalDetail {
     padding-left: 30px;
@@ -6952,4 +6984,3 @@ html.navMaps, .public {
         height: calc(100vh - (3px + 83px + 53px + 60px + 5px));
     }
 }
-

@@ -22,6 +22,9 @@ import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
 
+import javax.jdo.annotations.NotPersistent;
+import javax.jdo.annotations.PersistenceCapable;
+
 import com.gallatinsystems.framework.domain.BaseDomain;
 
 /**
@@ -92,7 +95,7 @@ public class Question extends BaseDomain {
     /**
      * Return true of a question can be visualised on a chart. This is limited to option questions
      * that do not allow the possibility for multiple selection in the responses
-     * 
+     *
      * @return true if can be charted else false.
      */
     public boolean canBeCharted() {
@@ -298,7 +301,7 @@ public class Question extends BaseDomain {
 
     /**
      * use helpMedia instead
-     * 
+     *
      * @return
      */
     @Deprecated
@@ -394,7 +397,7 @@ public class Question extends BaseDomain {
 
     /**
      * Compare question entities based on Key
-     * 
+     *
      * @param q
      * @return true if the Key of the two entities is the same
      */
