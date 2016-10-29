@@ -753,11 +753,13 @@ public class RawDataSpreadsheetImporter implements DataImporter {
                     }
                     Cell cell = row.getCell(1);
                     if (cell == null) {
-                        errorMap.put(-1, "Repeat column is empty");
+                        // include 1-based row number in error log
+                        errorMap.put(-1, "Repeat column is empty in row: " + row.getRowNum() + 1);
                         break;
                     }
                     if (cell.getCellType() != Cell.CELL_TYPE_NUMERIC) {
-                        errorMap.put(-1, "Repeat column must contain a numeric value");
+                        errorMap.put(-1, "Repeat column must contain a numeric value in row: "
+                                + row.getRowNum() + 1);
                         break;
                     }
                 }
