@@ -782,7 +782,7 @@ public class RawDataSpreadsheetImporter implements DataImporter {
         return cell == null
                 || cell.getCellType() == Cell.CELL_TYPE_BLANK
                 || (cell.getCellType() == Cell.CELL_TYPE_STRING
-                && cell.getStringCellValue().trim() == "");
+                && cell.getStringCellValue().trim().equals(""));
     }
 
     /**
