@@ -55,8 +55,7 @@ public class DeviceRestService {
     @RequestMapping(method = RequestMethod.GET, value = "")
     @ResponseBody
     public Map<String, List<DeviceDto>> listDevices(
-            @RequestParam(value = "ids[]", defaultValue = "")
-            Long[] ids) {
+            @RequestParam(value = "ids[]", defaultValue = "") Long[] ids) {
         final Map<String, List<DeviceDto>> response = new HashMap<String, List<DeviceDto>>();
         final List<DeviceDto> deviceList = new ArrayList<DeviceDto>();
         List<Device> devices = null;
@@ -71,15 +70,15 @@ public class DeviceRestService {
             // get the device group names
             List<DeviceGroup> deviceGroups = deviceGroupDao
                     .list(Constants.ALL_RESULTS);
-            final Map<Long, String> dgNames = new HashMap<Long, String>();
+            final Map<String, String> dgNames = new HashMap<String, String>();
             for (DeviceGroup dg : deviceGroups) {
-                dgNames.put(dg.getKey().getId(), dg.getCode());
+                dgNames.put(Long.toString(dg.getKey().getId()), dg.getCode());
             }
             for (Device d : devices) {
                 DeviceDto deviceDto = new DeviceDto(d);
                 String deviceGroupName = "";
-                if (d.getDeviceGroup() != null && d.getDeviceGroup() != "") {
-                    deviceGroupName = dgNames.get(Long.parseLong(d.getDeviceGroup()));
+                if (d.getDeviceGroup() != null) {
+                    deviceGroupName = dgNames.get(d.getDeviceGroup().trim());
                 }
                 deviceDto.setDeviceGroupName(deviceGroupName);
                 deviceDto.setLastPositionDate(d.getLastLocationBeaconTime());
@@ -92,8 +91,7 @@ public class DeviceRestService {
 
     @RequestMapping(method = RequestMethod.GET, value = "/{id}")
     @ResponseBody
-    public Map<String, DeviceDto> findDevice(@PathVariable("id")
-    Long id) {
+    public Map<String, DeviceDto> findDevice(@PathVariable("id") Long id) {
         final Map<String, DeviceDto> response = new HashMap<String, DeviceDto>();
         final Device d = deviceDao.getByKey(id);
         DeviceDto deviceDto = null;
@@ -118,8 +116,7 @@ public class DeviceRestService {
     @RequestMapping(method = RequestMethod.PUT, value = "/{id}")
     @ResponseBody
     public Map<String, Object> saveExistingDevice(
-            @RequestBody
-            DevicePayload payLoad) {
+            @RequestBody DevicePayload payLoad) {
         final DeviceDto deviceDto = payLoad.getDevice();
         final Map<String, Object> response = new HashMap<String, Object>();
         DeviceDto dto = null;
