@@ -76,8 +76,7 @@ public class DeviceRestService {
                 dgNames.put(dg.getKey().getId(), dg.getCode());
             }
             for (Device d : devices) {
-                DeviceDto deviceDto = new DeviceDto();
-                DtoMarshaller.copyToDto(d, deviceDto);
+                DeviceDto deviceDto = new DeviceDto(d);
                 String deviceGroupName = "";
                 if (d.getDeviceGroup() != null && d.getDeviceGroup() != "") {
                     deviceGroupName = dgNames.get(Long.parseLong(d.getDeviceGroup()));

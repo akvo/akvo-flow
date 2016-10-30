@@ -18,6 +18,7 @@ package org.waterforpeople.mapping.app.gwt.client.device;
 
 import java.util.Date;
 
+import com.gallatinsystems.device.domain.Device;
 import com.gallatinsystems.framework.gwt.dto.client.BaseDto;
 
 public class DeviceDto extends BaseDto {
@@ -33,8 +34,20 @@ public class DeviceDto extends BaseDto {
     private String deviceGroup;
     private String deviceGroupName;
     private String deviceIdentifier;
+    private Device device;
+
+    public DeviceDto() {
+
+    }
+
+    public DeviceDto(Device device) {
+        this.device = device;
+    }
 
     public String getGallatinSoftwareManifest() {
+        if (this.device != null) {
+            return device.getGallatinSoftwareManifest();
+        }
         return gallatinSoftwareManifest;
     }
 
@@ -43,6 +56,9 @@ public class DeviceDto extends BaseDto {
     }
 
     public String getDeviceIdentifier() {
+        if (this.device != null) {
+            return device.getDeviceIdentifier();
+        }
         return deviceIdentifier;
     }
 
@@ -51,6 +67,9 @@ public class DeviceDto extends BaseDto {
     }
 
     public String getDeviceGroup() {
+        if (this.device != null) {
+            return device.getDeviceGroup();
+        }
         return deviceGroup;
     }
 
@@ -59,6 +78,9 @@ public class DeviceDto extends BaseDto {
     }
 
     public Double getLastKnownLat() {
+        if (this.device != null) {
+            return device.getLastKnownLat();
+        }
         return lastKnownLat;
     }
 
@@ -67,6 +89,9 @@ public class DeviceDto extends BaseDto {
     }
 
     public Double getLastKnownLon() {
+        if (this.device != null) {
+            return device.getLastKnownLon();
+        }
         return lastKnownLon;
     }
 
@@ -75,6 +100,9 @@ public class DeviceDto extends BaseDto {
     }
 
     public Double getLastKnownAccuracy() {
+        if (this.device != null) {
+            return device.getLastKnownAccuracy();
+        }
         return lastKnownAccuracy;
     }
 
@@ -83,6 +111,9 @@ public class DeviceDto extends BaseDto {
     }
 
     public Date getLastPositionDate() {
+        if (this.device != null) {
+            return device.getLastLocationBeaconTime();
+        }
         return lastPositionDate;
     }
 
@@ -91,6 +122,9 @@ public class DeviceDto extends BaseDto {
     }
 
     public String getEsn() {
+        if (this.device != null) {
+            return device.getEsn();
+        }
         return esn;
     }
 
@@ -99,6 +133,9 @@ public class DeviceDto extends BaseDto {
     }
 
     public String getPhoneNumber() {
+        if (this.device != null) {
+            return device.getPhoneNumber();
+        }
         return phoneNumber;
     }
 
