@@ -395,14 +395,15 @@ FLOW.projectControl = Ember.ArrayController.create({
     var project = evt.context;
     this.setCurrentProject(evt.context);
 
-    // load caddisfly resources if they are not loaded
-    this.loadCaddisflyResources();
-
     // User is using the breadcrumb to navigate, we could have unsaved changes
     FLOW.store.commit();
 
     if (this.isProject(project)) {
-      FLOW.selectedControl.set('selectedSurveyGroup', project);
+        // load caddisfly resources if they are not loaded
+        // and only when surveys are selected
+        this.loadCaddisflyResources();
+
+        FLOW.selectedControl.set('selectedSurveyGroup', project);
     }
 
     this.set('newlyCreated', null);
@@ -417,7 +418,7 @@ FLOW.projectControl = Ember.ArrayController.create({
    */
   loadCaddisflyResources: function () {
       var caddisflyResources = FLOW.caddisflyResourceControl.get('content');
-      if (FLOW.Env.showExternalSourcesFeature && Ember.empty(caddisflyResources)) {
+      if (Ember.empty(caddisflyResources)) {
           FLOW.caddisflyResourceControl.populate();
       }
   },
