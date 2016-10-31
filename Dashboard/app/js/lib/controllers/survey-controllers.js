@@ -418,7 +418,7 @@ FLOW.projectControl = Ember.ArrayController.create({
    */
   loadCaddisflyResources: function () {
       var caddisflyResources = FLOW.caddisflyResourceControl.get('content');
-      if (FLOW.Env.showExternalSourcesFeature && Ember.empty(caddisflyResources)) {
+      if (Ember.empty(caddisflyResources)) {
           FLOW.caddisflyResourceControl.populate();
       }
   },
