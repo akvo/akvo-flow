@@ -150,4 +150,12 @@ public class DeviceDto extends BaseDto {
     public String getDeviceGroupName() {
         return deviceGroupName;
     }
+
+    @Override
+    public Long getKeyId() {
+        if (this.device != null) {
+            return device.getKey().getId();
+        }
+        return super.getKeyId();
+    }
 }
