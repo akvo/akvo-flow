@@ -63,15 +63,14 @@ public class DeviceNotificationRestServlet extends AbstractRestApiServlet {
         if (d != null) {
             DeviceFileJobQueueDAO jobDao = new DeviceFileJobQueueDAO();
 
-            List<DeviceFileJobQueue> missingByDevice = jobDao.listByDeviceId(d
-                    .getKey().getId());
+            List<DeviceFileJobQueue> missingByDevice = jobDao.listByDeviceId(d.getKey().getId());
             List<DeviceFileJobQueue> missingUnknown = jobDao.listByUnknownDevice();
 
             resp.setMissingFiles(missingByDevice);
             resp.setMissingUnknown(missingUnknown);
             new DeviceDAO().updateDevice(dnReq.getPhoneNumber(), dnReq.getLat(), dnReq.getLon(),
-                    dnReq.getAccuracy(), null, dnReq.getDeviceIdentifier(), dnReq.getImei(),
-                    dnReq.getOsVersion(), dnReq.getAndroidId());
+                    dnReq.getAccuracy(), dnReq.getAppVersion(), dnReq.getDeviceIdentifier(),
+                    dnReq.getImei(), dnReq.getOsVersion(), dnReq.getAndroidId());
         }
 
         resp.setDeletedSurvey(getDeletedSurveys(dnReq));
