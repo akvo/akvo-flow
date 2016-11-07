@@ -1320,21 +1320,23 @@ public class GraphicalSurveySummaryExporter extends SurveySummaryExporter {
                                         headerStyle);
                             }
                         } else if (QuestionType.CADDISFLY == q.getType()) {
-                            // get caddisfly resources, if we haven't already
-                            // got it
-                            if (caddisList == null) {
-                                caddisList = caddisflyResourceDao
-                                        .listResources();
+                            StringBuilder caddisflyColumnHeader = new StringBuilder();
+                            if (useQID) {
+                                caddisflyColumnHeader.append(questionId);
+                            } else {
+                                caddisflyColumnHeader.append(q.getKeyId());
                             }
-
-                            CaddisflyResource cr = getCaddisflyResourceByUuid(
-                                    caddisList, q.getCaddisflyResourceUuid());
+                            caddisflyColumnHeader.append("|").append(q.getText())
+                                    .append("|TEST_TYPE");
 
                             // create column for test type
-                            createCell(row, offset++, useQID ? questionId + "|"
-                                    + q.getText() + "|TEST_TYPE" : q.getText()
-                                    + "|TEST_TYPE", headerStyle);
+                            createCell(row, offset++, caddisflyColumnHeader.toString(), headerStyle);
 
+                            if (caddisList == null) {
+                                caddisList = caddisflyResourceDao.listResources();
+                            }
+                            CaddisflyResource cr = getCaddisflyResourceByUuid(caddisList,
+                                    q.getCaddisflyResourceUuid());
                             // get expected results for this test, if it exists
                             if (cr != null) {
                                 List<CaddisflyResult> crResults = cr
