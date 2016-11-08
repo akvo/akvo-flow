@@ -297,7 +297,6 @@ public class GraphicalSurveySummaryExporter extends SurveySummaryExporter {
 
     private CellStyle headerStyle;
     private CellStyle mTextStyle;
-    private CellStyle mErrorStyle; //for cells with problems
     // private CellStyle mNumberStyle;
     private String locale;
     private String imagePrefix;
@@ -419,8 +418,8 @@ public class GraphicalSurveySummaryExporter extends SurveySummaryExporter {
 
     @SuppressWarnings("unchecked")
     /*
-     * Fetches data from FLOW instance, and writes it to a file row by row.
-     * Called from export method.
+     * Fetches data from FLOW instance, and writes it to a file row by row. Called from export
+     * method.
      */
     protected SummaryModel fetchAndWriteRawData(String surveyId,
             final String serverBase,
@@ -1238,7 +1237,7 @@ public class GraphicalSurveySummaryExporter extends SurveySummaryExporter {
 
         List<String> questionIdList = new ArrayList<String>();
         List<String> nonSummarizableList = new ArrayList<String>();
-        List<CaddisflyResource> caddisList = null;
+        Map<String, CaddisflyResource> caddisflyResourceMap = null;
 
         if (questionMap != null) {
             int offset = columnIdx;
@@ -1248,7 +1247,7 @@ public class GraphicalSurveySummaryExporter extends SurveySummaryExporter {
                         questionIdList.add(q.getKeyId().toString());
 
                         String questionId = q.getQuestionId();
-                        boolean useQID = useQuestionId && questionId != null
+                        final boolean useQID = useQuestionId && questionId != null
                                 && !questionId.equals("");
 
                         String columnLocale = useQID ? "en" : locale;
@@ -1309,7 +1308,7 @@ public class GraphicalSurveySummaryExporter extends SurveySummaryExporter {
                             }
                         } else if (QuestionType.CASCADE == q.getType()
                                 && q.getLevelNames() != null && useQuestionId) {
-                            //if no cascade assigned, column is not shown
+                            // if no cascade assigned, column is not shown
                             for (String level : q.getLevelNames()) {
                                 String levelName = useQID ? questionId + "_"
                                         + level.replaceAll(" ", "_")
@@ -1332,11 +1331,14 @@ public class GraphicalSurveySummaryExporter extends SurveySummaryExporter {
                             // create column for test type
                             createCell(row, offset++, caddisflyColumnHeader.toString(), headerStyle);
 
-                            if (caddisList == null) {
-                                caddisList = caddisflyResourceDao.listResources();
+                            if (caddisflyResourceMap == null) {
+                                caddisflyResourceMap = new HashMap<String, CaddisflyResource>();
+                                for (CaddisflyResource r : caddisflyResourceDao.listResources()) {
+                                    caddisflyResourceMap.put(r.getUuid().trim(), r);
+                                }
                             }
-                            CaddisflyResource cr = getCaddisflyResourceByUuid(caddisList,
-                                    q.getCaddisflyResourceUuid());
+                            CaddisflyResource cr = caddisflyResourceMap.get(q
+                                    .getCaddisflyResourceUuid().trim());
                             // get expected results for this test, if it exists
                             if (cr != null) {
                                 List<CaddisflyResult> crResults = cr
@@ -1445,21 +1447,6 @@ public class GraphicalSurveySummaryExporter extends SurveySummaryExporter {
         temp[0] = questionIdList;
         temp[1] = nonSummarizableList;
         return temp;
-    }
-
-    /*
-     * Extracts the caddisfly resource with the right Uuid
-     */
-    private CaddisflyResource getCaddisflyResourceByUuid(
-            List<CaddisflyResource> caddisList, String caddisflyResourceUuid) {
-        for (int i = 0; i < caddisList.size(); i++) {
-            if (caddisList.get(i) != null
-                    && caddisList.get(i).getUuid()
-                            .equals(caddisflyResourceUuid)) {
-                return caddisList.get(i);
-            }
-        }
-        return null;
     }
 
     /**
@@ -1922,7 +1909,7 @@ public class GraphicalSurveySummaryExporter extends SurveySummaryExporter {
         options.put(LOCALE_OPT, "en");
         // options.put(TYPE_OPT, RAW_ONLY_TYPE);
         options.put(LAST_COLLECTION_OPT, "false");
-        options.put("useQuestionId", "true");
+        options.put("useQuestionId", "false");
         options.put("email", "email@example.com");
         options.put("from", null);
         options.put("to", null);
