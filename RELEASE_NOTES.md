@@ -23,8 +23,6 @@ Date: 7 November 2016
 
 * **In public map responses for option questions, cascades, photos, and videos are rendered as a string** [#1635] - This ensures that responses to option questions and cascade questions are shown in a human-readable format, when viewed by selecting data points on the publicly visible Flow map.
 
-* **Invalid empty-repeat-question-group error** [#1684] - For cases where a phantom row was present at the end of a raw data report spreadsheet, a misleading error was thrown that suggested the problem was caused by a missing repeat question group parameter.  We have fixed the system such that we do not show the misleading error message, and we ignore any phantom rows that may appear at the end of a sheet.
-
 * **Fix an internal error when stored counts are null** [#1772] - We fix the system error that occurred in cases where no data had previously been gathered against a specific question.  This was caused by the system attempting to check for the current total of responses to that question, and yet no such total existed.
 
 * **Timeout while retrieving the devices list** [#1803] - This fixes the issue where the list of devices on the dashboard sometimes doesn't load due to a very large number of devices.
