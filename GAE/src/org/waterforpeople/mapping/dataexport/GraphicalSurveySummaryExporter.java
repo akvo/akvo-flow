@@ -1365,8 +1365,8 @@ public class GraphicalSurveySummaryExporter extends SurveySummaryExporter {
                                     createCell(
                                             row,
                                             offset++,
-                                            q.getText()
-                                                    + " - "
+                                            "--CADDISFLY--" + q.getText()
+                                                    + "--"
                                                     + IMAGE_LABEL
                                                             .get(columnLocale),
                                             headerStyle);
