@@ -582,7 +582,8 @@ FLOW.ApprovalStepsController = Ember.ArrayController.extend({
      * Observe the survey approval group id and load the necessary approval steps
      */
     surveyDataApprovalGroupIdObserver: function () {
-        var approvalGroupId = FLOW.projectControl.currentProject.get('dataApprovalGroupId');
+        var currentProject = FLOW.projectControl.get('currentProject');
+        var approvalGroupId = currentProject && currentProject.get('dataApprovalGroupId');
         if (approvalGroupId) {
             this.loadByGroupId(approvalGroupId);
         }
