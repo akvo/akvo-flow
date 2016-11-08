@@ -52,13 +52,86 @@ Ember.Handlebars.registerHelper('tooltip', function (i18nKey) {
   );
 });
 
+FLOW.renderCaddisflyAnswer = function(json){
+  var name = ""
+  var imageUrl = ""
+  var result = Ember.A();
+  if (!Ember.empty(json)){
+    jsonParsed = JSON.parse(json);
+
+    // get out test name
+    if (!Ember.empty(jsonParsed.name)){
+      testName =  jsonParsed.name.trim();
+    }
+
+    // get out results
+    if (jsonParsed.result && !Ember.empty(jsonParsed.result)){
+        jsonParsed.result.forEach(function(item){
+        newResult = {
+          "name":item.name,
+          "value":item.value,
+          "unit":item.unit,
+        };
+        result.push(newResult);
+      });
+    }
+    // get out image url
+    if (!Ember.empty(jsonParsed.image)){
+      imageUrl = FLOW.Env.photo_url_root + jsonParsed.image.trim();
+    }
+
+    // contruct html
+    html = "<div><strong>" + name + "</strong></div>"
+    html += result.map(function(item){
+        return "<br><div>" + item.name + " : " + item.value + " " + item.unit + "</div>";
+    }).join("\n");
+    html += "<br>"
+    html += "<div class=\"signatureImage\"><img src=\"" + imageUrl +"\"}} /></div>"
+    return html;
+  } else {
+    return "Wrong JSON format";
+  }
+}
 
 Ember.Handlebars.registerHelper('placemarkDetail', function () {
-  var answer, markup, question;
+  var answer, markup, question, cascadeJson, optionJson, cascadeString = "",
+  questionType, imageSrcAttr, signatureJson, photoJson;
 
   question = Ember.get(this, 'questionText');
   answer = Ember.get(this, 'stringValue') || '';
-  answer = answer.replace(/\|/g, ' | ');
+  answer = answer.replace(/\|/g, ' | '); // geo, option and cascade data
+  answer = answer.replace(/\//g, ' / '); // also split folder paths
+  questionType = Ember.get(this, 'questionType');
+
+  if (questionType === 'CASCADE') {
+
+      if (answer.indexOf("|") > -1) {
+        // ignore
+      } else {
+        cascadeJson = JSON.parse(answer);
+        answer = cascadeJson.map(function(item){
+          return item.name;
+        }).join("|");
+      }
+  } else if ((questionType === 'VIDEO' || questionType === 'PHOTO') && answer.charAt(0) === '{') {
+    photoJson = JSON.parse(answer)
+    answer = photoJson.filename;
+  } else if (questionType === 'OPTION' && answer.charAt(0) === '[') {
+    optionJson = JSON.parse(answer);
+    answer = optionJson.map(function(item){
+      return item.text;
+    }).join("|");
+  } else if (questionType === 'SIGNATURE') {
+    imageSrcAttr = 'data:image/png;base64,';
+    signatureJson = JSON.parse(answer);
+    answer = signatureJson && imageSrcAttr + signatureJson.image || '';
+    answer = answer && '<img src="' + answer + '" />';
+    answer = answer && answer + '<div>' + Ember.String.loc('_signed_by') + ':' + signatureJson.name + '</div>' || '';
+  } else if (questionType === 'DATE') {
+    answer = renderTimeStamp(answer);
+  } else if (questionType === 'CADDISFLY'){
+    answer = FLOW.renderCaddisflyAnswer(answer)
+  }
 
   markup = '<div class="defListWrap"><dt>' +
     question + ':</dt><dd>' +
@@ -67,6 +140,37 @@ Ember.Handlebars.registerHelper('placemarkDetail', function () {
   return new Handlebars.SafeString(markup);
 });
 
+/*  Take a timestamp and render it as a date in format
+    YYYY-mm-dd */
+function renderTimeStamp(timestamp) {
+  var d, t, date, month, year;
+  t = parseInt(timestamp, 10);
+  if (isNaN(t)) {
+    return "";
+  }
+
+  d = new Date(t);
+  if (!d){
+	  return "";
+  }
+  date = d.getDate();
+  month = d.getMonth() + 1;
+  year = d.getFullYear();
+
+  if (month < 10) {
+    monthString = "0" + month.toString();
+  } else {
+    monthString = month.toString();
+  }
+
+  if (date < 10) {
+    dateString = "0" + date.toString();
+  } else {
+    dateString = date.toString();
+  }
+
+  return year + "-" + monthString + "-" + dateString;
+}
 
 // translates values to labels for languages
 Ember.Handlebars.registerHelper('toLanguage', function (value) {

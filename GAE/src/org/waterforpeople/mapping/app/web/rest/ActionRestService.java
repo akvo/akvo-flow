@@ -336,7 +336,7 @@ public class ActionRestService {
         SurveyGroup projectCopy = new SurveyGroup();
 
         BeanUtils.copyProperties(projectSource, projectCopy, Constants.EXCLUDED_PROPERTIES);
-        //if set, projectCopy.newLocaleSurveyId is now wrong
+        // if set, projectCopy.newLocaleSurveyId is now wrong
 
         projectCopy.setCode(projectSource.getCode() + " copy");
         projectCopy.setName(projectSource.getName() + " copy");
@@ -357,7 +357,7 @@ public class ActionRestService {
         }
         projectCopy.setPublished(false);
 
-        SurveyGroup savedProjectCopy = surveyGroupDao.save(projectCopy); //saves 
+        SurveyGroup savedProjectCopy = surveyGroupDao.save(projectCopy); // saves
 
         List<Survey> surveys = surveyDao.listSurveysByGroup(targetId);
 
@@ -375,8 +375,8 @@ public class ActionRestService {
             survey.setAncestorIds(surveysAncestorIds);
             long copyId = surveyDao.save(surveyCopy).getKey().getId();
             if (survey.getKey().getId() == savedProjectCopy.getNewLocaleSurveyId()) {
-                //original was the registration survey for its survey group
-                savedProjectCopy.setNewLocaleSurveyId(copyId); //fix it
+                // original was the registration survey for its survey group
+                savedProjectCopy.setNewLocaleSurveyId(copyId); // fix it
                 surveyGroupDao.save(savedProjectCopy);
             }
         }

@@ -15,6 +15,7 @@ require('akvo-flow/views/data/data-attribute-views');
 require('akvo-flow/views/data/bulk-upload-view');
 require('akvo-flow/views/data/monitoring-data-table-view');
 require('akvo-flow/views/data/cascade-resources-view');
+require('akvo-flow/views/data/data-approval-views');
 require('akvo-flow/views/surveys/question-view');
 require('akvo-flow/views/data/question-answer-view');
 require('akvo-flow/views/reports/report-views');
@@ -87,6 +88,36 @@ Ember.Handlebars.registerHelper('tooltip', function (i18nKey) {
 });
 
 
+FLOW.renderCaddisflyAnswer = function(json){
+  var name = ""
+  var imageUrl = ""
+  var result = Ember.A();
+  if (!Ember.empty(json)){
+    var jsonParsed = JSON.parse(json);
+
+    // get out test name
+    if (!Ember.empty(jsonParsed.name)){
+      testName =  jsonParsed.name.trim();
+    }
+
+    // get out image url
+    if (!Ember.empty(jsonParsed.image)){
+      imageUrl = FLOW.Env.photo_url_root + jsonParsed.image.trim();
+    }
+
+    // contruct html
+    html = "<div><strong>" + name + "</strong></div>"
+    html += jsonParsed.result.map(function(item){
+            return "<br><div>" + item.name + " : " + item.value + " " + item.unit + "</div>";
+        }).join("\n");
+    html += "<br>"
+    html += "<div class=\"signatureImage\"><img src=\"" + imageUrl +"\"}} /></div>"
+    return html;
+  } else {
+    return "Wrong JSON format";
+  }
+}
+
 Ember.Handlebars.registerHelper('placemarkDetail', function () {
   var answer, markup, question, cascadeJson, optionJson, cascadeString = "",
   questionType, imageSrcAttr, signatureJson, photoJson;
@@ -123,6 +154,8 @@ Ember.Handlebars.registerHelper('placemarkDetail', function () {
     answer = answer && answer + '<div>' + Ember.String.loc('_signed_by') + ':' + signatureJson.name + '</div>' || '';
   } else if (questionType === 'DATE') {
     answer = renderTimeStamp(answer);
+  } else if (questionType === 'CADDISFLY'){
+    answer = FLOW.renderCaddisflyAnswer(answer)
   }
 
   markup = '<div class="defListWrap"><dt>' +
@@ -138,31 +171,31 @@ function renderTimeStamp(timestamp) {
   var d, t, date, month, year;
   t = parseInt(timestamp, 10);
   if (isNaN(t)) {
-    return "";
+  return "";
   }
 
   d = new Date(t);
-  if (d) {
-    date = d.getDate();
-    month = d.getMonth() + 1;
-    year = d.getFullYear();
-
-    if (month < 10) {
-      monthString = "0" + month.toString();
-    } else {
-      monthString = month.toString();
-    }
-
-    if (date < 10) {
-      dateString = "0" + date.toString();
-    } else {
-      dateString = date.toString();
-    }
-
-    return year + "-" + monthString + "-" + dateString;
-  } else {
+  if (!d){
     return "";
   }
+
+  date = d.getDate();
+  month = d.getMonth() + 1;
+  year = d.getFullYear();
+
+  if (month < 10) {
+    monthString = "0" + month.toString();
+  } else {
+    monthString = month.toString();
+  }
+
+  if (date < 10) {
+    dateString = "0" + date.toString();
+  } else {
+    dateString = date.toString();
+  }
+
+  return year + "-" + monthString + "-" + dateString;
 }
 
 // translates values to labels for languages
@@ -657,7 +690,6 @@ FLOW.MonitoringDataView = Ember.View.extend({
   templateName: 'navData/monitoring-data'
 });
 
-
 // reports views
 FLOW.NavReportsView = Ember.View.extend({
   templateName: 'navReports/nav-reports'
@@ -742,8 +774,16 @@ FLOW.DatasubnavView = FLOW.View.extend({
       return this.get('item') === this.get('parentView.selected');
     }.property('item', 'parentView.selected').cacheable(),
 
+    showDataCleaningButton: function () {
+        return FLOW.permControl.get('canCleanData');
+    }.property(),
+
     showCascadeResourcesButton: function () {
       return FLOW.permControl.get('canManageCascadeResources');
+    }.property(),
+
+    showDataApprovalButton: function () {
+        return FLOW.Env.enableDataApproval;
     }.property(),
   })
 });
@@ -862,6 +902,7 @@ FLOW.SelectFolder = Ember.Select.extend({
   onChange: function() {
     var childViews = this.get('parentView').get('childViews');
     var keyId = this.get('value');
+    var survey = this.get('controller').getSurvey(keyId);
     var nextIdx = this.get('idx') + 1;
     var monitoringOnly = this.get('showMonitoringSurveysOnly');
     var filter = this.get('selectionFilter');
@@ -871,7 +912,11 @@ FLOW.SelectFolder = Ember.Select.extend({
     }
 
     if (this.get('controller').isSurvey(keyId)) {
-      FLOW.selectedControl.set('selectedSurveyGroup', this.get('controller').getSurvey(keyId));
+      FLOW.selectedControl.set('selectedSurveyGroup', survey);
+      if (FLOW.Env.enableDataApproval && survey.get('dataApprovalGroupId')) {
+          FLOW.router.approvalGroupController.load(survey.get('dataApprovalGroupId'));
+          FLOW.router.approvalStepsController.loadByGroupId(survey.get('dataApprovalGroupId'));
+      }
     } else {
       FLOW.selectedControl.set('selectedSurveyGroup', null);
       childViews.pushObject(FLOW.SelectFolder.create({

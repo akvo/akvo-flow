@@ -282,7 +282,7 @@ FLOW.DataItemView = FLOW.View.extend({
                 // this is the only formInstance, so the surveyedLocale
                 // will be deleted by the backend, and we need to remove
                 // it from the UI
-                FLOW.surveyedLocaleControl.removeLocale(SL.objectAt(0));
+                FLOW.router.surveyedLocaleController.removeLocale(SL.objectAt(0));
             }
         }
 
@@ -299,7 +299,7 @@ FLOW.DataLocaleItemView = FLOW.View.extend({
         var SL;
         SL = FLOW.store.find(FLOW.SurveyedLocale, this.content.get('keyId'));
         if (SL !== null){
-            FLOW.surveyedLocaleControl.removeLocale(SL);
+            FLOW.router.surveyedLocaleController.removeLocale(SL);
             // the filled forms inside this data point will be deleted by the backend
             SL.deleteRecord();
             FLOW.store.commit();

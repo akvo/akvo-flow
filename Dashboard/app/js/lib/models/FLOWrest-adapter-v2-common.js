@@ -115,7 +115,7 @@ DS.FLOWRESTAdapter = DS.RESTAdapter.extend({
   setQueryCursor: function(type, json) {
     var cursorArray, cursorStart, cursorIndex;
     if (type === FLOW.SurveyedLocale) {
-      cursorArray = FLOW.surveyedLocaleControl.get('sinceArray');
+      cursorArray = FLOW.router.surveyedLocaleController.get('sinceArray');
     } else if (type === FLOW.SurveyInstance) {
       cursorArray = FLOW.surveyInstanceControl.get('sinceArray');
     } else {
@@ -136,7 +136,7 @@ DS.FLOWRESTAdapter = DS.RESTAdapter.extend({
     }
 
     if (type === FLOW.SurveyedLocale) {
-      FLOW.surveyedLocaleControl.set('sinceArray', cursorArray);
+      FLOW.router.surveyedLocaleController.set('sinceArray', cursorArray);
     } else if (type === FLOW.SurveyInstance) {
       FLOW.surveyInstanceControl.set('sinceArray', cursorArray);
     }

@@ -41,6 +41,14 @@ FLOW.attributeControl = Ember.ArrayController.create({
   }
 });
 
+FLOW.caddisflyResourceControl = Ember.ArrayController.create({
+  content:null,
+
+  populate: function() {
+    this.set('content', FLOW.store.find(FLOW.CaddisflyResource));
+  }
+});
+
 FLOW.cascadeResourceControl = Ember.ArrayController.create({
   content:null,
   published:null,
@@ -269,16 +277,15 @@ FLOW.surveyInstanceControl = Ember.ArrayController.create({
   }
 });
 
-FLOW.surveyedLocaleControl = Ember.ArrayController.create({
+FLOW.SurveyedLocaleController = Ember.ArrayController.extend({
   sortProperties: ['collectionDate'],
   sortAscending: false,
   selectedSurvey: null,
-  content: null,
   sinceArray: [],
   pageNumber: 0,
 
-  populate: function () {
-    this.set('content', FLOW.store.findQuery(FLOW.SurveyedLocale, {}));
+  populate: function (criteria) {
+    this.set('content', FLOW.store.find(FLOW.SurveyedLocale, criteria));
   },
 
   contentChanged: function() {
@@ -289,7 +296,7 @@ FLOW.surveyedLocaleControl = Ember.ArrayController.create({
     });
 
     this.set('currentContents', mutableContents);
-  }.observes('content', 'content.isLoaded'),
+  },
 
   removeLocale: function(locale) {
     this.get('currentContents').forEach(function(item, i, currentContents) {
@@ -421,4 +428,296 @@ FLOW.locationControl = Ember.ArrayController.create({
     }
   }.observes('this.selectedLevel1')
 
+});
+
+FLOW.DataApprovalController = Ember.Controller.extend({});
+
+FLOW.ApprovalGroupListController = Ember.ArrayController.extend({
+    /* ---------------------
+     * Controller Properties
+     * ---------------------
+     */
+    sortProperties: ['name'],
+
+    /* ---------------------
+     * Controller Functions
+     * ---------------------
+     */
+    /*
+     * Delete an approval group from the list
+     */
+    delete: function (group) {
+        if(!group || !group.get('keyId')) {
+            return;
+        }
+
+        var groups = this.content;
+        var steps = FLOW.ApprovalStep.find({approvalGroupId: group.get('keyId')});
+        var stepsController = FLOW.router.get('approvalStepsController');
+        steps.on('didLoad', function () {
+            steps.forEach(function (step) {
+                step.deleteRecord();
+            })
+            group.deleteRecord();
+            FLOW.store.commit();
+        })
+    },
+});
+
+FLOW.ApprovalGroupController = Ember.ObjectController.extend({
+
+    /* ---------------------
+     * Controller Properties
+     * ---------------------
+     */
+
+    /*
+     * Transform the `ordered` property on the ApprovalGroup model
+     * to a string representation in order to bind successfully to
+     * value attribute of the generated <option> entities
+     */
+    isOrderedApprovalGroup: function (key, value, previousValue) {
+        var group = this.content;
+
+        // setter
+        if (group && arguments.length > 1) {
+            group.set('ordered', value.trim() === "ordered")
+        }
+
+        // getter
+        if(group && group.get('ordered')) {
+            return "ordered";
+        } else {
+            return "unordered"
+        }
+    }.property('this.content'),
+
+
+
+
+    /* ---------------------
+     * Controller Functions
+     * ---------------------
+     */
+
+    /*
+     * Create a new approval group
+     */
+    add: function () {
+        var group = FLOW.ApprovalGroup.createRecord({
+            name: Ember.String.loc('_new_approval_group'),
+            ordered: false,
+        });
+
+        this.set('content', group);
+    },
+
+    /*
+     * Load the approval group by groupId
+     */
+    load: function (groupId) {
+        if (groupId) {
+            this.set('content', FLOW.ApprovalGroup.find(groupId));
+        }
+    },
+
+    /*
+     * Save an approval group and associated steps
+     */
+    save: function () {
+        var validationError = this.validate();
+        if(validationError) {
+            return;
+        }
+
+        var group = this.content;
+        if(group.get('name') !==  group.get('name').trim()) {
+            group.set('name', group.get('name').trim());
+        }
+
+        FLOW.router.get('approvalStepsController').save(group);
+    },
+
+    /*
+     * Validate approval group and associated steps
+     */
+    validate: function () {
+        var stepsController = FLOW.router.get('approvalStepsController');
+        var error = stepsController.validate();
+
+        var group = this.content;
+        if (!group.get('name') || !group.get('name').trim()) {
+            error = Ember.String.loc('_blank_approval_group_name');
+        }
+
+        if(error) {
+            FLOW.dialogControl.set('activeAction', 'ignore');
+            FLOW.dialogControl.set('header', Ember.String.loc('_cannot_save'));
+            FLOW.dialogControl.set('message', error);
+            FLOW.dialogControl.set('showCANCEL', false);
+            FLOW.dialogControl.set('showDialog', true);
+        }
+
+        return error;
+    },
+
+    /*
+     * Cancel the editing of an approval group and its related
+     * steps
+     */
+    cancel: function () {
+        FLOW.store.get('defaultTransaction').rollback();
+    },
+});
+
+FLOW.ApprovalStepsController = Ember.ArrayController.extend({
+
+    /* ---------------------
+     * Controller Properties
+     * ---------------------
+     */
+    sortProperties: ['order'],
+
+    /*
+     * Observe the survey approval group id and load the necessary approval steps
+     */
+    surveyDataApprovalGroupIdObserver: function () {
+        var currentProject = FLOW.projectControl.get('currentProject');
+        var approvalGroupId = currentProject && currentProject.get('dataApprovalGroupId');
+        if (approvalGroupId) {
+            this.loadByGroupId(approvalGroupId);
+        }
+    }.observes('FLOW.projectControl.currentProject.dataApprovalGroupId'),
+
+    /* ---------------------
+     * Controller Functions
+     * ---------------------
+     */
+
+    /*
+     * Load approval steps for a given approval group
+     */
+    loadByGroupId: function (groupId) {
+        var steps = Ember.A();
+        if (groupId) {
+            FLOW.ApprovalStep.find({approvalGroupId: groupId}).on('didLoad', function () {
+                steps.addObjects(this);
+            });
+        }
+        this.set('content',steps);
+    },
+
+    /*
+     * Add an approval step for a given approval group
+     */
+    addApprovalStep: function () {
+        var groupId = FLOW.router.get('approvalGroupController').get('content').get('keyId');
+        if(!groupId) {
+            FLOW.store.commit();
+        }
+        var steps = this.content;
+        var newStep = Ember.Object.create({
+            approvalGroupId: groupId,
+            order: steps.get('length'),
+            title: null,
+        });
+        steps.addObject(FLOW.store.createRecord(FLOW.ApprovalStep, newStep));
+    },
+
+    /*
+     * Validate steps for erroneous input
+     */
+    validate: function () {
+        var steps = this.content;
+        var valid = true;
+
+        steps.forEach(function (step) {
+            var hasTitle = step.get('title') && step.get('title').trim();
+            if(!hasTitle) {
+                valid = false;
+            }
+        });
+
+        var error;
+        if (valid) {
+            error = '';
+        } else {
+            error = Ember.String.loc('_blank_approval_step_title');
+        }
+        return error;
+    },
+
+    /*
+     * Save approval steps
+     */
+    save: function(group) {
+        var steps = this.content || [];
+        steps.forEach(function (step, index) {
+            if(step.get('code') && step.get('code').trim()) {
+                step.set('code', step.get('code').trim());
+            } else {
+                step.set('code', null);
+            }
+            step.set('title', step.get('title').trim());
+
+            if (!step.get('approvalGroupId') && group && group.get('keyId')) {
+                step.set('approvalGroupId', group.get('keyId'));
+            }
+        });
+
+        FLOW.store.commit();
+    },
+
+    /*
+     * Delete an approval step
+     */
+    deleteApprovalStep: function (event) {
+        var step = event.context;
+        var steps = this.content;
+        steps.removeObject(step);
+
+        if(step.get('keyId')) {
+            step.deleteRecord();
+        }
+    },
+});
+
+FLOW.DataPointApprovalController = Ember.ArrayController.extend({
+
+    content: Ember.A(),
+
+    /**
+     * add an approval element
+     */
+    add: function (dataPointApproval) {
+        var dataPointApprovalList = this.content;
+        var approval = FLOW.store.createRecord(FLOW.DataPointApproval, dataPointApproval);
+        approval.on('didCreate', function () {
+            dataPointApprovalList.addObject(approval);
+        });
+
+        FLOW.store.commit();
+    },
+
+    /**
+     * Update an existing approval element
+     */
+    update: function (dataPointApproval) {
+        var dataPointApprovalList = this.content;
+        dataPointApproval.on('didUpdate', function () {
+            dataPointApprovalList.addObject(dataPointApproval);
+        });
+        FLOW.store.commit();
+    },
+
+    /**
+     * Load approval elements based on the surveyedLocaleId (data point id)
+     */
+    loadBySurveyedLocaleId: function (surveyedLocaleId) {
+        var dataPointApprovalList = this.content;
+        var approvals = FLOW.DataPointApproval.find({ surveyedLocaleId: surveyedLocaleId });
+        approvals.on('didLoad', function () {
+            dataPointApprovalList.addObjects(this);
+        });
+    },
 });

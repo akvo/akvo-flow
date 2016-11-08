@@ -221,10 +221,20 @@ FLOW.permControl = Ember.Controller.create({
     var currentUserPermissions = FLOW.userControl.currentUserPathPermissions();
     for (var perms in currentUserPermissions) {
       if (currentUserPermissions[perms].indexOf("CASCADE_MANAGE") > -1) {
-        return true;
+          return true;
       }
     }
     return false;
+  }.property(),
+
+  canCleanData: function () {
+      var currentUserPermissions = FLOW.currentUser.get('pathPermissions');
+      for (var perms in currentUserPermissions) {
+          if (currentUserPermissions[perms].indexOf("DATA_CLEANING") > -1) {
+              return true;
+          }
+      }
+      return false;
   }.property(),
 });
 

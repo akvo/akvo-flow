@@ -11,13 +11,12 @@
     </static-files>
     <!-- Configure java.util.logging -->
     <system-properties>
-        <property name="enableChangeEvents" value="$enableChangeEvents" />
-        <property name="eventNotification" value="$eventNotification" />
         <property name="apkS3Path" value="https://akvoflow.s3.amazonaws.com/apk/" />
         <property name="autoUpdateApk" value="true" />
         <property name="java.util.logging.config.file" value="WEB-INF/logging.properties" />
         <property name="aws_secret_key" value="${awsSecretAccessKey}" />
         <property name="aws_identifier" value="${awsAccessKeyId}" />
+        <property name="serviceAccountId" value="sa-${instanceId}@${instanceId}.iam.gserviceaccount.com" />
         <property name="photo_url_root" value="${s3url}/images/" />
         <property name="alias" value="${alias}" />
         <property name="flowServices" value="${flowServices}" />
@@ -29,30 +28,34 @@
         <property name="recipientListString" value="${emailTo};FLOW Errors recipient" />
         <property name="defaultPhotoCaption" value="${organization}" />
         <property name="attachreport" value="true" />
-        <property name="bootstrapdir" value="bootstrap"/>
-        <property name="imageroot" value="https://${instanceId}.appspot.com"/>
-        <property name="mapiconimageroot" value="${s3url}/images/mapicons"/>
-        <property name="scoreAPFlag" value="true"/>
-        <property name="organization" value="${organization}"/>
+        <property name="bootstrapdir" value="bootstrap" />
+        <property name="imageroot" value="https://${instanceId}.appspot.com" />
+        <property name="mapiconimageroot" value="${s3url}/images/mapicons" />
+        <property name="scoreAPFlag" value="true" />
+        <property name="organization" value="${organization}" />
         <property name="signingKey" value="${signingKey}" />
         <property name="allowUnsignedData" value="true" />
         <property name="defaultOrg" value="${organization}" />
         <property name="domainType" value="locale" />
         <property name="exportedProperties" value="defaultOrg,domainType,pointTypes" />
-        <property name="pointTypes" value="WaterPoint,SanitationPoint,PublicInstitution"/>
-        <property name="optionRenderMode" value="radio"/>
-        <property name="backendpublish" value="false"/>
-        <property name="cacheExpirySeconds" value="3600"/>
-        <property name="useLongDates" value="true"/>
-        <property name="statusQuestionText" value="water available on the day;Yes=FUNCTIONING_HIGH;No=BROKEN_DOWN;DEFAULT=BROKEN_DOWN"/>
-        <property name="mergeNearbyLocales" value="false"/>
-        <property name="scoreAPDynamicFlag" value="false"/>
-        <property name="asyncTaskTimeout" value="16384"/>
-        <property name="enableRestSecurity" value="true"/>
-        <property name="restPrivateKey" value="${apiKey}"/>
-        <property name="useTabRDRFlag" value="false"/>
-        <property name="showStatisticsFeature" value="false"/>
-        <property name="showMonitoringFeature" value="false"/>
-        <property name="mandatoryQuestionID" value="false"/>
+        <property name="pointTypes" value="WaterPoint,SanitationPoint,PublicInstitution" />
+        <property name="optionRenderMode" value="radio" />
+        <property name="backendpublish" value="false" />
+        <property name="cacheExpirySeconds" value="3600" />
+        <property name="useLongDates" value="true" />
+        <property name="statusQuestionText" value="water available on the day;Yes=FUNCTIONING_HIGH;No=BROKEN_DOWN;DEFAULT=BROKEN_DOWN" />
+        <property name="mergeNearbyLocales" value="false" />
+        <property name="scoreAPDynamicFlag" value="false" />
+        <property name="asyncTaskTimeout" value="16384" />
+        <property name="enableRestSecurity" value="true" />
+        <property name="restPrivateKey" value="${apiKey}" />
+        <property name="useTabRDRFlag" value="false" />
+        <property name="showStatisticsFeature" value="false" />
+        <property name="showMonitoringFeature" value="true" />
+        <property name="mandatoryQuestionID" value="false" />
+        <property name="enableChangeEvents" value="${enableChangeEvents}" />
+        <property name="eventNotification" value="${eventNotification}" />
+        <property name="hereMapsAppId" value="${hereMapsAppId}" />
+        <property name="hereMapsAppCode" value="${hereMapsAppCode}" />
     </system-properties>
 </appengine-web-app>
