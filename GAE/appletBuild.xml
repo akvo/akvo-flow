@@ -65,6 +65,7 @@
                 <include name="*.vm" />
             </fileset>
         </copy>
+        <copy file="src/resources/caddisfly/caddisfly-tests.json" tofile="${build}/resources/caddisfly/caddisfly-tests.json" />
         <jar destfile="${dist}/exporterapplet.jar" basedir="${build}" />
     </target>
 
