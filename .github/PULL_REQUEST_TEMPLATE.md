@@ -2,4 +2,9 @@
 #### The solution
 #### Screenshots (if appropriate)
 
-Remember to connect the issue #
+## Checklist
+* [ ] Connect the issue
+* [ ] Test plan
+* [ ] Copyright header
+* [ ] Code formatting
+* [ ] Documentation
