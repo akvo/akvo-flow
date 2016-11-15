@@ -65,6 +65,7 @@ public class RemoteExceptionRestServlet extends AbstractRestApiServlet {
             trace.setDeviceIdentifier(exReq.getDeviceIdent());
             trace.setPhoneNumber(exReq.getPhoneNumber());
             trace.setStackTrace(new Text(exReq.getStackTrace()));
+            trace.setAndroidId(exReq.getAndroidId());
             stacktraceDao.save(trace);
         } else {
             throw new RestException(new RestError(RestError.BAD_DATATYPE_CODE,

@@ -19,6 +19,7 @@ package com.gallatinsystems.diagnostics.app.web.dto;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.Locale;
 
 import javax.servlet.http.HttpServletRequest;
 
@@ -37,7 +38,7 @@ public class RemoteExceptionRequest extends RestRequest {
     private static final ThreadLocal<DateFormat> DATE_FMT = new ThreadLocal<DateFormat>() {
         @Override
         protected DateFormat initialValue() {
-            return new SimpleDateFormat(FORMAT_STRING);
+            return new SimpleDateFormat(FORMAT_STRING, Locale.US); // Always specify a locale for M2M formatting
         };
     };
 
@@ -48,12 +49,14 @@ public class RemoteExceptionRequest extends RestRequest {
     public static final String VERSION_PARAM = "version";
     public static final String DATE_PARAM = "date";
     public static final String TRACE_PARAM = "trace";
+    public static final String ANDROID_ID_PARAM = "androidId";
 
     private String phoneNumber;
     private String deviceIdent;
     private String version;
     private Date date;
     private String stackTrace;
+    private String androidId;
 
     public String getStackTrace() {
         return stackTrace;
@@ -95,13 +98,16 @@ public class RemoteExceptionRequest extends RestRequest {
         this.date = date;
     }
 
-    @Override
+    public String getAndroidId() {
+		return androidId;
+	}
+
+	public void setAndroidId(String androidId) {
+		this.androidId = androidId;
+	}
+
+	@Override
     protected void populateErrors() {
-        if (phoneNumber == null || phoneNumber.trim().length() == 0) {
-            addError(new RestError(RestError.MISSING_PARAM_ERROR_CODE,
-                    RestError.MISSING_PARAM_ERROR_MESSAGE, PHONE_PARAM
-                            + " is required"));
-        }
         if (date == null) {
             addError(new RestError(RestError.MISSING_PARAM_ERROR_CODE,
                     RestError.MISSING_PARAM_ERROR_MESSAGE, DATE_PARAM
@@ -115,6 +121,7 @@ public class RemoteExceptionRequest extends RestRequest {
         deviceIdent = req.getParameter(DEV_ID_PARAM);
         version = req.getParameter(VERSION_PARAM);
         stackTrace = req.getParameter(TRACE_PARAM);
+        androidId = req.getParameter(ANDROID_ID_PARAM);
         if (req.getParameter(DATE_PARAM) != null
                 && req.getParameter(DATE_PARAM).trim().length() > 0) {
             try {
