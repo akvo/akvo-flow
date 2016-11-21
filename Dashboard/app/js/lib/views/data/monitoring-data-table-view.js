@@ -49,7 +49,17 @@ FLOW.MonitoringDataTableView = FLOW.View.extend({
 	  if (this.get('cursorStart')) {
 		criteria.since = this.get('cursorStart');
 	  }
-      FLOW.router.surveyedLocaleController.populate(criteria);
+      var surveyedLocaleController = FLOW.router.get('surveyedLocaleController');
+      surveyedLocaleController.populate(criteria);
+
+      surveyedLocaleController.get('content').on('didLoad', function () {
+          var surveyedLocales = this;
+          var surveyedLocaleIds = Ember.A();
+          surveyedLocales.forEach(function (item) {
+              surveyedLocaleIds.addObject(item.get('keyId'));
+          })
+          FLOW.router.dataPointApprovalController.loadBySurveyedLocaleId(surveyedLocaleIds);
+      })
   },
 
   doNextPage: function () {
