@@ -126,7 +126,7 @@ FLOW.DataPointView = FLOW.View.extend({
         var lastApprovedStepOrder = -1;
 
         approvals.forEach(function (approval) {
-            var step = steps.filterProperty('keyId',
+            var step = steps && steps.filterProperty('keyId',
                                 approval.get('approvalStepId')).get('firstObject');
             if (approval.get('status') === 'APPROVED' &&
                     step && (step.get('order') > lastApprovedStepOrder)) {
@@ -135,7 +135,7 @@ FLOW.DataPointView = FLOW.View.extend({
         });
 
         var nextStep = steps && steps.filterProperty('order', ++lastApprovedStepOrder).get('firstObject');
-        return nextStep;
+        return nextStep && nextStep.get('keyId');
 
     // NOTE: below we observe the '@each.approvalDate' in order to be
     // sure that we only recalculate the next step whenever the approval

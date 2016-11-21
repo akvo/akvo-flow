@@ -399,7 +399,11 @@ FLOW.projectControl = Ember.ArrayController.create({
     FLOW.store.commit();
 
     if (this.isProject(project)) {
-      FLOW.selectedControl.set('selectedSurveyGroup', project);
+        // load caddisfly resources if they are not loaded
+        // and only when surveys are selected
+        this.loadCaddisflyResources();
+
+        FLOW.selectedControl.set('selectedSurveyGroup', project);
     }
 
     this.set('newlyCreated', null);
@@ -407,6 +411,16 @@ FLOW.projectControl = Ember.ArrayController.create({
 
   selectRootProject: function() {
     this.setCurrentProject(null);
+  },
+
+  /*
+   * Load caddisfly resources if they are not already loaded
+   */
+  loadCaddisflyResources: function () {
+      var caddisflyResources = FLOW.caddisflyResourceControl.get('content');
+      if (Ember.empty(caddisflyResources)) {
+          FLOW.caddisflyResourceControl.populate();
+      }
   },
 
   /* Create a new project folder. The current project must be root or a project folder */

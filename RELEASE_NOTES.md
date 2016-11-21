@@ -5,6 +5,31 @@ Read more about the [Akvo Platform](http://www.akvo.org/blog/?p=4822).
 
 Akvo FLOW Dashboard release notes
 ----
+#1.9.11 Jubilant Jaguar
+Date: 7 November 2016
+
+#New and noteworthy
+* **Integration of the Akvo Caddisfly mobile app with the Flow dashboard** - As part of the [integration of the Akvo Caddisfly app with the Flow dashboard](https://github.com/akvo/akvo-product-design/issues/5), we introduce changes to; create a new question that is of type `Akvo Caddisfly` [#1577], and enable correctly transforming and displaying data gathered by the caddisfly app [#1570]. With this you can now add an Akvo Caddisfly water quality test to your Akvo Flow survey.
+
+* **Implement data approval workflow management** - As part of the larger [data approval feature](https://github.com/akvo/akvo-product-design/issues/82), we have a number of changes introduced in this release that include; introducing a new tab in under the `Data > Data Approval`, where one is able to handle the creation and management of data approval groups along with their associated steps [#1803], enabling a user to activate data approval for a particular survey and associate a set of approval steps with a survey [#1660, #1771], and approving data points gathered in a survey, based on approval steps from the associated approval group [#1664]. This feature is currently under testing and is not available to all our partners yet.
+
+
+# Resolved issues
+* **Improve copying of surveys between instances** [#873] - While copying surveys across different dashboards, a number of manual steps were required to complate the process.  We have now resolved these actions and copying the surveys across instances requires almost no manual intervention. The task is done by our Flow support team.
+
+* **Hide Data Cleaning tab if permission is not given** [#1528] - Even for users who did not have any data cleaning permissions, we were showing the data cleaning tab with an empty list of surveys in the drop down box to select for data cleaning.  We now completely hide this tab if the user has no data cleaning permissions on any survey whatsoever.
+
+* **CartoDB maps - question order in side bar not the same as in survey definition** [#1593] - The order of display of questions under the CartoDB maps was out of sync with the order in the survey definition.  We fix it with these changes
+
+* **In public map responses for option questions, cascades, photos, and videos are rendered as a string** [#1635] - This ensures that responses to option questions and cascade questions are shown in a human-readable format, when viewed by selecting data points on the publicly visible Flow map.
+
+* **Fix an internal error when stored counts are null** [#1772] - We fix the system error that occurred in cases where no data had previously been gathered against a specific question.  This was caused by the system attempting to check for the current total of responses to that question, and yet no such total existed.
+
+* **Timeout while retrieving the devices list** [#1803] - This fixes the issue where the list of devices on the dashboard sometimes doesn't load due to a very large number of devices.
+
+* **Update the copyright year in the application footer to 2016** [#1815]
+
+
 #1.9.10 Intriguing Iguana
 Date: 18 August 2016
 
