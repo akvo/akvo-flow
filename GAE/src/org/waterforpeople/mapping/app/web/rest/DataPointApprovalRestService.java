@@ -83,12 +83,19 @@ public class DataPointApprovalRestService {
     @RequestMapping(method = RequestMethod.GET)
     @ResponseBody
     public Map<String, List<DataPointApprovalDTO>> listDataPointApprovals(
+            @RequestParam(value = "surveyedLocaleId[]", required = false) List<Long> surveyedLocaleIds,
             @RequestParam(value = "surveyedLocaleId", required = false) Long surveyedLocaleId) {
         Map<String, List<DataPointApprovalDTO>> response = new HashMap<String, List<DataPointApprovalDTO>>();
 
+        List<DataPointApproval> approvals = new ArrayList<DataPointApproval>();
+        if (surveyedLocaleIds != null) {
+            approvals.addAll(dataPointApprovalDao.listBySurveyedLocaleIds(surveyedLocaleIds));
+        } else if (surveyedLocaleId != null) {
+            approvals.addAll(dataPointApprovalDao.listBySurveyedLocaleId(surveyedLocaleId));
+        }
+
         List<DataPointApprovalDTO> approvalsResponseList = new ArrayList<DataPointApprovalDTO>();
-        for (DataPointApproval approval : dataPointApprovalDao
-                .listBySurveyedLocaleId(surveyedLocaleId)) {
+        for (DataPointApproval approval : approvals) {
             approvalsResponseList.add(new DataPointApprovalDTO(approval));
         }
 
