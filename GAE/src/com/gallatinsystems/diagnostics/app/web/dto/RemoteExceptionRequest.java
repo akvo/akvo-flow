@@ -99,14 +99,14 @@ public class RemoteExceptionRequest extends RestRequest {
     }
 
     public String getAndroidId() {
-		return androidId;
-	}
+        return androidId;
+    }
 
-	public void setAndroidId(String androidId) {
-		this.androidId = androidId;
-	}
+    public void setAndroidId(String androidId) {
+        this.androidId = androidId;
+    }
 
-	@Override
+    @Override
     protected void populateErrors() {
         if (date == null) {
             addError(new RestError(RestError.MISSING_PARAM_ERROR_CODE,
