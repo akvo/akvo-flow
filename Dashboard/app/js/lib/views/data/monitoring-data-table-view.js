@@ -146,7 +146,7 @@ FLOW.DataPointView = FLOW.View.extend({
         });
 
         var nextStep = steps && steps.filterProperty('order', ++lastApprovedStepOrder).get('firstObject');
-        return nextStep && nextStep.get('keyId');
+        return nextStep;
 
     // NOTE: below we observe the '@each.approvalDate' in order to be
     // sure that we only recalculate the next step whenever the approval
@@ -246,7 +246,8 @@ FLOW.DataPointApprovalView = FLOW.View.extend({
             var nextStep = this.get('parentView').get('nextApprovalStep');
             if (nextStep) {
                 return this.step.get('keyId') === nextStep.get('keyId') &&
-                        nextStep.get('approverUserList').contains(currentUserId);
+                    nextStep.get('approverUserList') &&
+                    nextStep.get('approverUserList').contains(currentUserId);
             } else {
                 return false;
             }
