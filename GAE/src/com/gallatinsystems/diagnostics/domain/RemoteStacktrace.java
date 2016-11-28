@@ -39,6 +39,15 @@ public class RemoteStacktrace extends BaseDomain {
     private Boolean acknowleged = new Boolean(false);
     private Date errorDate;
     private String androidId;
+    private String ood;
+
+    public String getOod() {
+        return ood;
+    }
+
+    public void setOod(String ood) {
+        this.ood = ood;
+    }
 
     public Boolean getAcknowleged() {
         return acknowleged;
@@ -89,11 +98,11 @@ public class RemoteStacktrace extends BaseDomain {
     }
 
     public String getAndroidId() {
-		return androidId;
-	}
+        return androidId;
+    }
 
-	public void setAndroidId(String androidId) {
-		this.androidId = androidId;
-	}
+    public void setAndroidId(String androidId) {
+        this.androidId = androidId;
+    }
 
 }
