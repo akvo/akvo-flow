@@ -99,7 +99,9 @@ public class DeviceDAO extends BaseDAO<Device> {
         d.setPhoneNumber(phoneNumber);
         d.setAndroidId(androidId);
         d.setLastLocationBeaconTime(new Date());
-        d.setGallatinSoftwareManifest(version);
+        if (version != null && !version.trim().isEmpty()) {
+            d.setGallatinSoftwareManifest(version);
+        }
         if (lat != null && lon != null) {
             d.setLastKnownLat(lat);
             d.setLastKnownLon(lon);
