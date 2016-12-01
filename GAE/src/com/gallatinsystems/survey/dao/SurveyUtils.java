@@ -173,8 +173,9 @@ public class SurveyUtils {
         tmp.setSourceQuestionId(sourceQuestionId);
 
         if (source.getQuestionId() != null) {
-            tmp.setQuestionId(source.getQuestionId() + "_copy");
+            tmp.setQuestionId(source.getQuestionId());
         }
+
         log.log(Level.INFO, "Copying `Question` " + sourceQuestionId);
 
         final Question newQuestion = qDao.save(tmp, newQuestionGroupId);
