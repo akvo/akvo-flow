@@ -186,6 +186,22 @@ FLOW.DataPointApprovalStatusView = FLOW.View.extend({
         var step = stepsController.filterProperty('keyId', nextStepId).get('firstObject');
         return step && step.get('title');
     }.property('this.parentView.nextApprovalStepId'),
+
+    /*
+     * Derive the latest approval step for a particular data point
+     */
+    latestApprovalStep: function () {
+        var lastStep, steps;
+        var nextStep = this.get('parentView').get('nextApprovalStep');
+
+        if (nextStep) {
+            return nextStep;
+        } else {
+            steps = FLOW.router.approvalStepsController.get('arrangedContent');
+            lastStep = steps && steps.get('lastObject');
+            return lastStep;
+        }
+    }.property('this.parentView.nextApprovalStep'),
 });
 
 /**
