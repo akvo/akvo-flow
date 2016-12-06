@@ -696,7 +696,7 @@ FLOW.NavMapsView = FLOW.View.extend({
                 var questionAnswer = pointData['answers'][column];
                 if (column.match(self.questionGroups[qg]['questions'][i].keyId)) {
                   if(self.questionGroups[qg]['questions'][i].type === "GEOSHAPE" && questionAnswer !== null){
-                    var geoshapeObject = FLOW.parseGeoshape(questionAnswer);
+                    var geoshapeObject = FLOW.parseJSON(questionAnswer, "features");
                     if(geoshapeObject !== null){
                       geoshapeQuestionsCount++;
                       clickedPointContent += '<h4><div style="float: left">'
@@ -740,7 +740,7 @@ FLOW.NavMapsView = FLOW.View.extend({
                         clickedPointContent += mediaOutput;
                         break;
                       case "GEOSHAPE":
-                        geoshapeObject = FLOW.parseGeoshape(questionAnswer);
+                        geoshapeObject = FLOW.parseJSON(questionAnswer, "features");
                         self.geoshapeCoordinates = geoshapeObject;
 
                         if(geoshapeObject !== null){
@@ -773,6 +773,15 @@ FLOW.NavMapsView = FLOW.View.extend({
                         signatureJson = JSON.parse(questionAnswer);
                         clickedPointContent += srcAttr + signatureJson.image +'"/></div>';
                         clickedPointContent += '<div class="signedBySection">'+Ember.String.loc('_signed_by') +': '+signatureJson.name+'</div>';
+                        break;
+                      case "CADDISFLY":
+                        caddisflyObject = FLOW.parseJSON(questionAnswer, "result");
+                        if (caddisflyObject) {
+                          for (var r=0; r<caddisflyObject['result'].length; r++) {
+                            clickedPointContent += '<div style="float: left; width: 100%">'+ caddisflyObject['result'][r]['name'] +': '+caddisflyObject['result'][r]['value']+caddisflyObject['result'][r]['unit']+'</div>';
+                          }
+                          clickedPointContent += '<div class="signatureImage"><img src="'+FLOW.Env.photo_url_root+caddisflyObject.image+'"/></div>';
+                        }
                         break;
                       case "CASCADE":
                       case "OPTION":
