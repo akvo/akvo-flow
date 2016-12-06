@@ -775,13 +775,7 @@ FLOW.NavMapsView = FLOW.View.extend({
                         clickedPointContent += '<div class="signedBySection">'+Ember.String.loc('_signed_by') +': '+signatureJson.name+'</div>';
                         break;
                       case "CADDISFLY":
-                        caddisflyObject = FLOW.parseJSON(questionAnswer, "result");
-                        if (caddisflyObject) {
-                          for (var r=0; r<caddisflyObject['result'].length; r++) {
-                            clickedPointContent += '<div style="float: left; width: 100%">'+ caddisflyObject['result'][r]['name'] +': '+caddisflyObject['result'][r]['value']+caddisflyObject['result'][r]['unit']+'</div>';
-                          }
-                          clickedPointContent += '<div class="signatureImage"><img src="'+FLOW.Env.photo_url_root+caddisflyObject.image+'"/></div>';
-                        }
+                        clickedPointContent += FLOW.renderCaddisflyAnswer(questionAnswer);
                         break;
                       case "CASCADE":
                       case "OPTION":
