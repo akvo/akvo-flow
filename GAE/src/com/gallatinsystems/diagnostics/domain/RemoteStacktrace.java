@@ -1,5 +1,5 @@
 /*
- *  Copyright (C) 2010-2012 Stichting Akvo (Akvo Foundation)
+ *  Copyright (C) 2010-2016 Stichting Akvo (Akvo Foundation)
  *
  *  This file is part of Akvo FLOW.
  *
@@ -38,6 +38,16 @@ public class RemoteStacktrace extends BaseDomain {
     private String softwareVersion;
     private Boolean acknowleged = new Boolean(false);
     private Date errorDate;
+    private String androidId;
+    private String ood;
+
+    public String getOod() {
+        return ood;
+    }
+
+    public void setOod(String ood) {
+        this.ood = ood;
+    }
 
     public Boolean getAcknowleged() {
         return acknowleged;
@@ -85,6 +95,14 @@ public class RemoteStacktrace extends BaseDomain {
 
     public void setErrorDate(Date errorDate) {
         this.errorDate = errorDate;
+    }
+
+    public String getAndroidId() {
+        return androidId;
+    }
+
+    public void setAndroidId(String androidId) {
+        this.androidId = androidId;
     }
 
 }
