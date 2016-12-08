@@ -675,10 +675,7 @@ FLOW.ApprovalStepsController = Ember.ArrayController.extend({
         var step = event.context;
         var steps = this.content;
         steps.removeObject(step);
-
-        if(step.get('keyId')) {
-            step.deleteRecord();
-        }
+        step.deleteRecord();
     },
 });
 
