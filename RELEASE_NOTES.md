@@ -5,6 +5,12 @@ Read more about the [Akvo Platform](http://www.akvo.org/blog/?p=4822).
 
 Akvo FLOW Dashboard release notes
 ----
+#1.9.11.1 Jubilant Jaguar Hotfix
+Date: 7 December 2016
+
+# Resolved issues
+* **RemoteException calls failing** [#1823] - The backend has been failing to process error messages from devices with more recent versions of Android because their `phoneNumber` attribute was missing.  The consequence is that devices have been constantly resubmitting these error messages, and using up unnecessary resources on the backend
+
 #1.9.11 Jubilant Jaguar
 Date: 7 November 2016
 
