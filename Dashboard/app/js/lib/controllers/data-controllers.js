@@ -616,9 +616,17 @@ FLOW.ApprovalStepsController = Ember.ArrayController.extend({
             FLOW.store.commit();
         }
         var steps = this.content;
+        var lastStep = steps && steps.get('lastObject');
+
+        // For cases where intermediate steps have been deleted during
+        // the creation of an approval group, we do not update the order
+        // of subsequent steps but rather ensure that the order of the
+        // next step is based on the last step in the approval list. e.g
+        // the order property for an approval list could be 0,2,4,6, where
+        // steps with order 1,3 and 5 were deleted during group creation
         var newStep = Ember.Object.create({
             approvalGroupId: groupId,
-            order: steps.get('length'),
+            order: lastStep && lastStep.get('order') + 1 || 0,
             title: null,
         });
         steps.addObject(FLOW.store.createRecord(FLOW.ApprovalStep, newStep));
