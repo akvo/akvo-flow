@@ -1,4 +1,4 @@
- <div class="loadSave">
+<div class="loadSave">
       {{#if FLOW.savingMessageControl.areSavingBool}}<div class="isSaving">{{t _saving}}</div>
       {{else}}
         {{#if FLOW.savingMessageControl.areLoadingBool}}<div class="isLoading">{{t _loading}}</div>
@@ -6,13 +6,12 @@
       {{/if}}
   </div>
   <header class="floats-in top" id="header" role="banner">
-        <div class="widthConstraint">
-                <h1>Akvo
-                    <abbr title="field level operations watch">Flow</abbr></h1>
+      <div class="widthConstraint">
+          <h1>Akvo <abbr title="field level operations watch">Flow</abbr></h1>
       </div>
-    </header>
+  </header>
     <div id="pageWrap" class="widthConstraint belowHeader public">
         {{outlet}}
-    </div>
+</div>
 
    {{view FLOW.FooterView}}
