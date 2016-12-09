@@ -543,6 +543,24 @@ FLOW.projectControl = Ember.ArrayController.create({
   },
 
   /*
+   * A computed property to enable editing and displaying
+   * the selected approval group for a survey
+   */
+  dataApprovalGroup: function (key, value, previousValue) {
+      var survey = this.get('currentProject');
+
+      // setter
+      if (arguments.length > 1 && survey) {
+          survey.set('dataApprovalGroupId', value && value.get('keyId'));
+      }
+
+      // getter
+      var approvalGroupId = survey && survey.get('dataApprovalGroupId');
+      var groups = FLOW.router.approvalGroupListController.get('content');
+      return groups && groups.filterProperty('keyId', approvalGroupId).get('firstObject');
+  }.property('this.currentProject.dataApprovalGroupId'),
+
+  /*
    * Property to dynamically load the data approval controller
    * content when needed, and otherwise return the boolean
    * value corresponding to whether the current survey has
