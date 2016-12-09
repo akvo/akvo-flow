@@ -695,20 +695,8 @@ FLOW.NavMapsView = FLOW.View.extend({
               for (column in pointData['answers']) {
                 var questionAnswer = pointData['answers'][column];
                 if (column.match(self.questionGroups[qg]['questions'][i].keyId)) {
-                  if(self.questionGroups[qg]['questions'][i].type === "GEOSHAPE" && questionAnswer !== null){
-                    var geoshapeObject = FLOW.parseGeoshape(questionAnswer);
-                    if(geoshapeObject !== null){
-                      geoshapeQuestionsCount++;
-                      clickedPointContent += '<h4><div style="float: left">'
-                      +self.questionGroups[qg]['questions'][i].text
-                      +'</div>&nbsp;<a style="float: right" class="project-geoshape" data-geoshape-object=\''+questionAnswer+'\'>'
-                      +Ember.String.loc('_project_onto_main_map')+'</a></h4>';
-                    }
-                  } else {
-                    clickedPointContent += '<h4>'+self.questionGroups[qg]['questions'][i].text+'&nbsp;</h4>';
-                  }
-
-                  clickedPointContent += '<div style="float: left; width: 100%">';
+                  clickedPointContent += '<h4>'+self.questionGroups[qg]['questions'][i].text+'&nbsp;</h4>'
+                    +'<div style="float: left; width: 100%">';
 
                   if(questionAnswer){
                     switch (self.questionGroups[qg]['questions'][i].questionType) {
@@ -743,9 +731,11 @@ FLOW.NavMapsView = FLOW.View.extend({
                         geoshapeObject = FLOW.parseGeoshape(questionAnswer);
                         self.geoshapeCoordinates = geoshapeObject;
 
-                        if(geoshapeObject !== null){
+                        if(geoshapeObject){
                           geoshapeCheck = true;
-                          clickedPointContent += '<div class="geoshape-map" data-geoshape-object=\''+questionAnswer+'\' style="width:100%; height: 100px; float: left"></div>';
+                          geoshapeQuestionsCount++;
+                          clickedPointContent += '<div class="geoshape-map" data-geoshape-object=\''+questionAnswer+'\' style="width:100%; height: 100px; float: left"></div>'
+                            +'<a style="float: left" class="project-geoshape" data-geoshape-object=\''+questionAnswer+'\'>'+Ember.String.loc('_project_onto_main_map')+'</a>'
 
                           if(geoshapeObject['features'][0]['geometry']['type'] === "Polygon"
                            || geoshapeObject['features'][0]['geometry']['type'] === "LineString"
