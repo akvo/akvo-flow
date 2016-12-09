@@ -728,7 +728,7 @@ FLOW.NavMapsView = FLOW.View.extend({
                         clickedPointContent += mediaOutput;
                         break;
                       case "GEOSHAPE":
-                        geoshapeObject = FLOW.parseGeoshape(questionAnswer);
+                        geoshapeObject = FLOW.parseJSON(questionAnswer, "features");
                         self.geoshapeCoordinates = geoshapeObject;
 
                         if(geoshapeObject){
@@ -763,6 +763,9 @@ FLOW.NavMapsView = FLOW.View.extend({
                         signatureJson = JSON.parse(questionAnswer);
                         clickedPointContent += srcAttr + signatureJson.image +'"/></div>';
                         clickedPointContent += '<div class="signedBySection">'+Ember.String.loc('_signed_by') +': '+signatureJson.name+'</div>';
+                        break;
+                      case "CADDISFLY":
+                        clickedPointContent += FLOW.renderCaddisflyAnswer(questionAnswer);
                         break;
                       case "CASCADE":
                       case "OPTION":
