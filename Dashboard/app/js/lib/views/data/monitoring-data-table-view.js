@@ -128,20 +128,23 @@ FLOW.DataPointView = FLOW.View.extend({
      * Derive the next approval step (in ordered approvals)
      */
     nextApprovalStep: function () {
+        var nextStep;
         var approvals = this.get('dataPointApprovals');
         var steps = FLOW.router.approvalStepsController.get('arrangedContent');
-        var lastApprovedStepOrder = -1;
 
-        approvals.forEach(function (approval) {
-            var step = steps && steps.filterProperty('keyId',
-                                approval.get('approvalStepId')).get('firstObject');
-            if (approval.get('status') === 'APPROVED' &&
-                    step && (step.get('order') > lastApprovedStepOrder)) {
-                lastApprovedStepOrder = step.get('order');
+        if (Ember.empty(approvals)) {
+            return steps && steps.get('firstObject').get('keyId');
+        }
+
+        steps.forEach(function (step) {
+            var approval = approvals.filterProperty('approvalStepId',
+                                        step.get('keyId')).get('firstObject');
+            var isPendingStep = !approval || approval.get('status') === 'PENDING';
+            if (!nextStep && isPendingStep) {
+                nextStep = step;
             }
         });
 
-        var nextStep = steps.filterProperty('order', ++lastApprovedStepOrder).get('firstObject');
         return nextStep;
 
     // NOTE: below we observe the '@each.approvalDate' in order to be
