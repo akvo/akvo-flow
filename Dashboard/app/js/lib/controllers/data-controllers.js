@@ -443,6 +443,14 @@ FLOW.ApprovalGroupListController = Ember.ArrayController.extend({
      * Controller Functions
      * ---------------------
      */
+
+    /*
+     * Load the list of approval groups
+     */
+    load: function () {
+        this.set('content', FLOW.ApprovalGroup.find());
+    },
+
     /*
      * Delete an approval group from the list
      */

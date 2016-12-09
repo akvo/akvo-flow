@@ -403,6 +403,12 @@ FLOW.projectControl = Ember.ArrayController.create({
         // and only when surveys are selected
         this.loadCaddisflyResources();
 
+        // applies to project where data approval has
+        // been previously set
+        if (project.get('requireDataApproval')) {
+            this.loadDataApprovalGroups();
+        }
+
         FLOW.selectedControl.set('selectedSurveyGroup', project);
     }
 
@@ -420,6 +426,16 @@ FLOW.projectControl = Ember.ArrayController.create({
       var caddisflyResources = FLOW.caddisflyResourceControl.get('content');
       if (Ember.empty(caddisflyResources)) {
           FLOW.caddisflyResourceControl.populate();
+      }
+  },
+
+  /*
+   * Load the data approval resources for this survey
+   */
+  loadDataApprovalGroups: function (survey) {
+      var approvalGroups = FLOW.router.approvalGroupListController.get('content');
+      if (Ember.empty(approvalGroups)) {
+          FLOW.router.approvalGroupListController.load();
       }
   },
 
