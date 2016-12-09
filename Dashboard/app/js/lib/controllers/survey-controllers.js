@@ -544,7 +544,9 @@ FLOW.projectControl = Ember.ArrayController.create({
 
   /*
    * A computed property to enable editing and displaying
-   * the selected approval group for a survey
+   * the selected approval group for a survey, as well as
+   * loading the appropriate approval steps depending on
+   * the selected approval group
    */
   dataApprovalGroup: function (key, value, previousValue) {
       var survey = this.get('currentProject');
@@ -556,6 +558,8 @@ FLOW.projectControl = Ember.ArrayController.create({
 
       // getter
       var approvalGroupId = survey && survey.get('dataApprovalGroupId');
+      FLOW.router.approvalStepsController.loadByGroupId(approvalGroupId);
+
       var groups = FLOW.router.approvalGroupListController.get('content');
       return groups && groups.filterProperty('keyId', approvalGroupId).get('firstObject');
   }.property('this.currentProject.dataApprovalGroupId'),
