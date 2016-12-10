@@ -45,6 +45,17 @@ FLOW.Project = FLOW.View.extend({
     return registrationForm;
   }.property('FLOW.projectControl.currentProject'),
 
+  /*
+   * property for setting the currently selected approval group
+   */
+  selectedApprovalGroup: function () {
+      var approvalGroupId = FLOW.projectControl.currentProject.get('dataApprovalGroupId');
+      var approvalGroupList = FLOW.router.approvalGroupListController.get('content');
+      var approvalGroup = approvalGroupList &&
+                              approvalGroupList.filterProperty('keyId', approvalGroupId).get('firstObject');
+      return approvalGroup;
+  }.property('FLOW.projectControl.currentProject'),
+
   project: function() {
     return FLOW.projectControl.get('currentProject');
   }.property(),
@@ -53,8 +64,25 @@ FLOW.Project = FLOW.View.extend({
     this.set('showProjectDetails', !this.get('showProjectDetails'));
   },
 
+  /*
+   * Toggle advanced settings and load data approval
+   * groups if data approval is enabled on the instance
+   */
   toggleShowAdvancedSettings: function() {
-    this.set('showAdvancedSettings', !this.get('showAdvancedSettings'));
+      var approvalGroupListController = FLOW.router.get('approvalGroupListController');
+      if(FLOW.Env.enableDataApproval && !approvalGroupListController.content) {
+          var self = this;
+
+          var groups = FLOW.ApprovalGroup.find({});
+          approvalGroupListController.set('content', groups);
+
+          // only toggle the property after approval groups are retrieved
+          groups.on('didLoad', function () {
+              self.toggleProperty('showAdvancedSettings');
+          });
+      } else {
+          this.toggleProperty('showAdvancedSettings');
+      }
   },
 
   isNewProject: function() {
@@ -111,6 +139,63 @@ FLOW.Project = FLOW.View.extend({
 
 FLOW.SurveyApprovalView = FLOW.View.extend({});
 
+FLOW.SurveyApprovalStepView = FLOW.View.extend({
+    step: null,
+
+    showResponsibleUsers: false,
+
+
+    toggleShowResponsibleUsers: function () {
+        this.toggleProperty('showResponsibleUsers');
+        this.loadUsers();
+    },
+
+    /*
+     * load the users list if not present
+     */
+    loadUsers: function() {
+        var users = FLOW.router.userListController.get('content');
+        if(Ember.empty(users)) {
+            FLOW.router.userListController.set('content', FLOW.User.find());
+        }
+    },
+});
+
+FLOW.ApprovalResponsibleUserView = FLOW.View.extend({
+    user: null,
+
+    step: null,
+
+    isResponsibleUser: function (key, isCheckedValue, previousCheckedValue) {
+        var step = this.get('step');
+        var user = this.get('user');
+
+        if (!step || !user) {
+            return false;
+        }
+
+        // create a new list to force enabling of 'Save' button for surveys
+        // when a user is added or removed from approver list
+        var approverUserList = Ember.A();
+        if(!Ember.empty(step.get('approverUserList'))) {
+            approverUserList.pushObjects(step.get('approverUserList'));
+        }
+
+        // setter
+        if(arguments.length > 1) {
+            if (isCheckedValue) {
+                approverUserList.addObject(user.get('keyId'));
+            } else {
+                approverUserList.removeObject(user.get('keyId'));
+            }
+            step.set('approverUserList', approverUserList);
+        }
+
+        // getter
+        return approverUserList.contains(user.get('keyId'));
+    }.property('this.step.approverUserList'),
+});
+
 FLOW.ProjectMainView = FLOW.View.extend({
 
   doSave: function() {
@@ -142,10 +227,22 @@ FLOW.ProjectMainView = FLOW.View.extend({
     var selectedForm = FLOW.selectedControl.get('selectedSurvey');
     var isFormDirty = selectedForm ? selectedForm.get('isDirty') : false;
 
-    return isProjectDirty || isFormDirty;
+    var approvalSteps = FLOW.router.approvalStepsController.get('content');
+    var isApprovalStepDirty = false;
+
+    if (approvalSteps) {
+        approvalSteps.forEach(function (step) {
+            if (!isApprovalStepDirty && step.get('isDirty')) {
+                isApprovalStepDirty = true;
+            }
+        });
+    }
+
+    return isProjectDirty || isFormDirty || isApprovalStepDirty;
 
   }.property('FLOW.projectControl.currentProject.isDirty',
-              'FLOW.selectedControl.selectedSurvey.isDirty'),
+              'FLOW.selectedControl.selectedSurvey.isDirty',
+              'FLOW.router.approvalStepsController.content.@each.approverUserList'),
 
   projectView: function() {
     return FLOW.projectControl.isProject(FLOW.projectControl.get('currentProject'));
