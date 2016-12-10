@@ -33,6 +33,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
+import org.waterforpeople.mapping.app.web.CurrentUserServlet;
 import org.waterforpeople.mapping.app.web.rest.dto.RestStatusDto;
 import org.waterforpeople.mapping.app.web.rest.dto.UserPayload;
 import org.waterforpeople.mapping.app.web.rest.security.AppRole;
@@ -41,7 +42,6 @@ import com.gallatinsystems.common.Constants;
 import com.gallatinsystems.user.app.gwt.client.UserDto;
 import com.gallatinsystems.user.dao.UserDao;
 import com.gallatinsystems.user.domain.User;
-import com.google.appengine.api.users.UserServiceFactory;
 
 @Controller
 @RequestMapping("/users")
@@ -54,46 +54,65 @@ public class UserRestService {
     // list all users
     @RequestMapping(method = RequestMethod.GET, value = "")
     @ResponseBody
-    public Map<String, List<UserDto>> listUsers(
-            @RequestParam(value = "currUser", defaultValue = "") String currUser) {
-        final Map<String, List<UserDto>> response = new HashMap<String, List<UserDto>>();
-        List<UserDto> results = new ArrayList<UserDto>();
-
-        // TODO check if this part works
-        if ("true".equals(currUser)) {
-            com.google.appengine.api.users.UserService userService = UserServiceFactory
-                    .getUserService();
-            com.google.appengine.api.users.User currentUser = userService
-                    .getCurrentUser();
-            if (currentUser != null) {
-                UserDto dto = new UserDto();
-                dto.setEmailAddress(currentUser.getEmail());
-                dto.setUserName(currentUser.getFederatedIdentity());
-                results.add(dto);
-            }
-
-        } else {
-            List<User> users = userDao.list(Constants.ALL_RESULTS);
-            if (users != null) {
-                for (User u : users) {
-                    if ("0".equals(u.getPermissionList())
-                            || Boolean.TRUE.equals(u.isSuperAdmin())) {
-                        continue;
-                    }
-                    UserDto dto = new UserDto();
-                    BeanUtils.copyProperties(u, dto, new String[] {
-                            "config"
-                    });
-                    if (u.getKey() != null) {
-                        dto.setKeyId(u.getKey().getId());
-                    }
-                    results.add(dto);
-                }
-            }
-        }
+    public Map<String, Object> listUsers(
+            @RequestParam(value = "currUser", defaultValue = "false") String returnOnlyCurrentUser) {
+        final Map<String, Object> response = new HashMap<String, Object>();
+        final List<UserDto> results = new ArrayList<UserDto>();
+        final RestStatusDto statusDto = new RestStatusDto();
+        statusDto.setStatus("");
+        statusDto.setMessage("");
 
         response.put("users", results);
+        response.put("meta", statusDto);
+
+        User currentUser = CurrentUserServlet.getCurrentUser();
+        if (!isSuperAdminRole(currentUser)) {
+            UserDto currentUserDto = new UserDto();
+            BeanUtils.copyProperties(currentUser, currentUserDto, new String[] {
+                    "config"
+            });
+            if (currentUser.getKey() != null) {
+                currentUserDto.setKeyId(currentUser.getKey().getId());
+            }
+            results.add(currentUserDto);
+        }
+
+        if ("true".equals(returnOnlyCurrentUser) || !isUserAdminRole(currentUser)) {
+            return response;
+        }
+
+        // rest of the users
+        List<User> users = userDao.list(Constants.ALL_RESULTS);
+        if (users != null) {
+            for (User u : users) {
+                // skip super users + current user is already in list
+                if (u.getKey().equals(currentUser.getKey()) || isSuperAdminRole(u)) {
+                    continue;
+                }
+
+                UserDto dto = new UserDto();
+                BeanUtils.copyProperties(u, dto, new String[] {
+                        "config"
+                });
+                if (u.getKey() != null) {
+                    dto.setKeyId(u.getKey().getId());
+                }
+                results.add(dto);
+            }
+        }
         return response;
+    }
+
+    private boolean isUserAdminRole(User user) {
+        return user.getPermissionList().equals(Integer.toString(AppRole.ADMIN.getLevel()))
+                || user.getPermissionList()
+                        .equals(Integer.toString(AppRole.SUPER_ADMIN.getLevel()));
+    }
+
+    private boolean isSuperAdminRole(User user) {
+        return user.isSuperAdmin()
+                || user.getPermissionList()
+                        .equals(Integer.toString(AppRole.SUPER_ADMIN.getLevel()));
     }
 
     // find a single user by the userId
