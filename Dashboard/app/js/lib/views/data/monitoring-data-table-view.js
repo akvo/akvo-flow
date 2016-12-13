@@ -144,7 +144,8 @@ FLOW.DataPointView = FLOW.View.extend({
             var approval = approvals.filterProperty('approvalStepId',
                                         step.get('keyId')).get('firstObject');
             var isPendingStep = !approval || approval.get('status') === 'PENDING';
-            if (!nextStep && isPendingStep) {
+            var isRejectedStep = approval && approval.get('status') === 'REJECTED';
+            if (!nextStep && (isPendingStep || isRejectedStep)) {
                 nextStep = step;
             }
         });
