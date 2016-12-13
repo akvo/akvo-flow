@@ -197,6 +197,18 @@ $width-large: 1200px;
         background: darken($btnColor, 10%);
         color: white;
     }
+
+    &.disabled {
+        cursor: not-allowed;
+        background-color: rgba(128, 128, 128, 0.1);
+        color: rgba(128, 128, 128, 0.4);
+
+        &:hover {
+            cursor: not-allowed;
+            background-color: rgba(128, 128, 128, 0.1);
+            color: rgba(128, 128, 128, 0.4);
+        }
+    }
 }
 
 @mixin smallButton($btnColor) {

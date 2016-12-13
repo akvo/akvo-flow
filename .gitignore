@@ -91,4 +91,3 @@ tests/clojure/akvo-tests/target
 *.scssc
 dwsync.xml
 
-GAE/war/WEB-INF/web.xml

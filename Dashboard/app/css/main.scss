@@ -6036,7 +6036,7 @@ li.disable {
 /* Set device buttons on device tab to position: fixed */
 .deviceControls {
     position: fixed;
-    top: 120px;
+    top: 100px;
     left: 0px;
     right: 0px;
     height: 40px;
@@ -6047,8 +6047,13 @@ li.disable {
     margin: 0 0.25%;
     padding: 5px 0.25%;
 
+    > a {
+        margin-top: 10px;
+    }
+
     .dataTabMenu {
         top: 0px;
+        padding-top: 15px;
         background: white;
     }
 
