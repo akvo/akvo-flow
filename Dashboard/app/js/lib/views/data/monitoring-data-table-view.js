@@ -137,14 +137,15 @@ FLOW.DataPointView = FLOW.View.extend({
         var steps = FLOW.router.approvalStepsController.get('arrangedContent');
 
         if (Ember.empty(approvals)) {
-            return steps && steps.get('firstObject').get('keyId');
+            return steps && steps.get('firstObject');
         }
 
         steps.forEach(function (step) {
             var approval = approvals.filterProperty('approvalStepId',
                                         step.get('keyId')).get('firstObject');
             var isPendingStep = !approval || approval.get('status') === 'PENDING';
-            if (!nextStep && isPendingStep) {
+            var isRejectedStep = approval && approval.get('status') === 'REJECTED';
+            if (!nextStep && (isPendingStep || isRejectedStep)) {
                 nextStep = step;
             }
         });
