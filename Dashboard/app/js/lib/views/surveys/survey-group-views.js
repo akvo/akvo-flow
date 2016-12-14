@@ -129,7 +129,7 @@ FLOW.Project = FLOW.View.extend({
   }.property(),
 
   showDataApprovalList: function () {
-      return FLOW.projectControl.get('requireDataApproval');
+      return FLOW.projectControl.currentProject.get('requireDataApproval');
   }.property('FLOW.projectControl.currentProject.requireDataApproval'),
 
   toggleShowDataApprovalDetails: function () {
