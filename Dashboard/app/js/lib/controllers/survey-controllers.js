@@ -403,6 +403,12 @@ FLOW.projectControl = Ember.ArrayController.create({
         // and only when surveys are selected
         this.loadCaddisflyResources();
 
+        // applies to project where data approval has
+        // been previously set
+        if (project.get('requireDataApproval')) {
+            this.loadDataApprovalGroups();
+        }
+
         FLOW.selectedControl.set('selectedSurveyGroup', project);
     }
 
@@ -420,6 +426,16 @@ FLOW.projectControl = Ember.ArrayController.create({
       var caddisflyResources = FLOW.caddisflyResourceControl.get('content');
       if (Ember.empty(caddisflyResources)) {
           FLOW.caddisflyResourceControl.populate();
+      }
+  },
+
+  /*
+   * Load the data approval resources for this survey
+   */
+  loadDataApprovalGroups: function (survey) {
+      var approvalGroups = FLOW.router.approvalGroupListController.get('content');
+      if (Ember.empty(approvalGroups)) {
+          FLOW.router.approvalGroupListController.load();
       }
   },
 
@@ -527,17 +543,26 @@ FLOW.projectControl = Ember.ArrayController.create({
   },
 
   /*
-   * Property to indicate whether or not current project requires data approval
+   * A computed property to enable editing and displaying
+   * the selected approval group for a survey, as well as
+   * loading the appropriate approval steps depending on
+   * the selected approval group
    */
-  requireDataApproval: function (key, value, previousValue) {
+  dataApprovalGroup: function (key, value, previousValue) {
+      var survey = this.get('currentProject');
+
       // setter
-      if (arguments.length > 1) {
-          this.currentProject.set('requireDataApproval', value);
+      if (arguments.length > 1 && survey) {
+          survey.set('dataApprovalGroupId', value && value.get('keyId'));
       }
 
       // getter
-      return this.currentProject.get('requireDataApproval');
-  }.property('this.currentProject'),
+      var approvalGroupId = survey && survey.get('dataApprovalGroupId');
+      FLOW.router.approvalStepsController.loadByGroupId(approvalGroupId);
+
+      var groups = FLOW.router.approvalGroupListController.get('content');
+      return groups && groups.filterProperty('keyId', approvalGroupId).get('firstObject');
+  }.property('this.currentProject.dataApprovalGroupId'),
 });
 
 

@@ -84,15 +84,14 @@
 
                     {{#if view.showDataApproval}}
                         <label for="enableDataApproval" class="labelcheckbox">
-                            {{view Ember.Checkbox checkedBinding="FLOW.projectControl.requireDataApproval" id="enableDataApproval" disabledBinding="view.disableFolderSurveyInputField"}} {{t _enable_data_approval}} {{tooltip _enable_data_approval_tooltip}}
+                            {{view Ember.Checkbox checkedBinding="FLOW.projectControl.currentProject.requireDataApproval" id="enableDataApproval" disabledBinding="view.disableFolderSurveyInputField"}} {{t _enable_data_approval}} {{tooltip _enable_data_approval_tooltip}}
                         </label>
                         {{#if view.showDataApprovalList}}
                           {{view Ember.Select
                             contentBinding="FLOW.router.approvalGroupListController.arrangedContent"
                             optionLabelPath="content.name"
                             optionValuePath="content.keyId"
-                            valueBinding="FLOW.projectControl.currentProject.dataApprovalGroupId"
-                            selectionBinding="view.selectedApprovalGroup"
+                            selectionBinding="FLOW.projectControl.dataApprovalGroup"
                             disabledBinding="view.disableFolderSurveyInputField"}}
 
                             {{#if view.showDataApprovalDetails}}
