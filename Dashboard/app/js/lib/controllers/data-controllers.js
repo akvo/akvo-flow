@@ -514,7 +514,7 @@ FLOW.ApprovalGroupController = Ember.ObjectController.extend({
     add: function () {
         var group = FLOW.ApprovalGroup.createRecord({
             name: Ember.String.loc('_new_approval_group'),
-            ordered: false,
+            ordered: true,
         });
 
         this.set('content', group);
