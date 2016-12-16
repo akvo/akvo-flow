@@ -1,6 +1,6 @@
 LICENSE.md, v1.0, 24 May 2012 [co, ogl]
 
-Copyright (C) 2010-2012 Stichting Akvo (Akvo Foundation)
+Copyright (C) 2010-2016 Stichting Akvo (Akvo Foundation)
 
 This file is part of Akvo Flow.
 
