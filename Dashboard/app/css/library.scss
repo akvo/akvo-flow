@@ -11,6 +11,12 @@
 $bodyFont: "Helvetica Neue", Helvetica, Arial, sans-serif;
 $titleFont: "Helvetica Neue", Helvetica, Arial, sans-serif;
 
+$akvoFlow: rgb(226, 124, 0);
+$akvoRsr: rgb(39, 170, 225);
+$akvoLumen: rgb(39, 170, 225);
+
+$primaryColor: $akvoFlow;
+
 $akvoPurple: rgb(44, 42, 116);
 $akvoBlack: rgb(32, 32, 36);
 $akvoFlowOrange: rgb(226, 124, 0);
@@ -229,5 +235,17 @@ $width-large: 1200px;
         color: white !important;
         border: none;
         border: 1px solid $flowAnchorLink;
+    }
+
+    &.disabled {
+        cursor: not-allowed;
+        color: rgba(128, 128, 128, 0.4) !important;
+        border: 1px solid rgba(128, 128, 128, 0.4);
+
+        &:hover {
+            cursor: not-allowed;
+            color: rgba(128, 128, 128, 0.4) !important;
+            border: 1px solid rgba(128, 128, 128, 0.4);
+        }
     }
 }

@@ -20,7 +20,7 @@
 		<h3>{{t _form_basics}}</h3>
 		{{#if view.visibleFormBasics}}
 			{{#unless view.isNewForm}}
-				<a {{action "toggleShowFormBasics" target="this"}} class="showCollapse">{{t _collapse}}</a>
+				<a {{action "toggleShowFormBasics" target="this"}} class="button">{{t _collapse}}</a>
 			{{/unless}}
 			<form class="surveyDetailForm">
 				<label>{{t _form_title}}</label>
@@ -31,14 +31,14 @@
 				<nav class="newSurveyNav">
 					<ul class="manageStuff">
 					{{#if view.showFormTranslationsButton}}
-						<li><a class="manageTranslations" {{action "doManageTranslations" target="this"}}>{{t _manage_translations}}</a></li>
-						<li><a class="manageNotifications" {{action "doManageNotifications" target="this"}}>{{t _manage_notifications}}</a></li>
+						<li><a class="btnOutline" {{action "doManageTranslations" target="this"}}>{{t _manage_translations}}</a></li>
+						<li><a class="btnOutline" {{action "doManageNotifications" target="this"}}>{{t _manage_notifications}}</a></li>
 					{{/if}}
 					</ul>
 				</nav>
 			</form>
 		{{else}}
-			<a {{action "toggleShowFormBasics" target="this"}} class="showCollapse">{{t _show}}</a>
+			<a {{action "toggleShowFormBasics" target="this"}} class="button">{{t _show}}</a>
 		{{/if}}
 	</section>
 	<section class="surveyForm">

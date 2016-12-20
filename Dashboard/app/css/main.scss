@@ -214,16 +214,6 @@ pre {
     @include btnOutline($flowAnchorLink);
 }
 
-.disabled {
-    cursor: not-allowed;
-    color: rgba(128, 128, 128, 0.1);
-
-    &:hover {
-        cursor: not-allowed;
-        color: rgba(128, 128, 128, 0.1);
-    }
-}
-
 a.btn {
     display: block;
     padding: 1px 0 7px 21px;
@@ -288,8 +278,7 @@ a, a:link, a:visited {
 
     &.helpIcon {
         display: inline-block;
-        font-size: 1em;
-        font-family: baskerville;
+        font-size: 0.8em;
         width: 18px;
         height: 18px;
         border-radius: 9px;
@@ -1483,7 +1472,7 @@ th.action {
                 margin: 0 0px -2px 0;
                 font-size: 90%;
 
-                @include border-radius(4px 4px 0 0);
+                @include border-radius(0 0 0 0);
 
                 background: rgba($akvoBlack, 0);
                 -webkit-background-clip: padding-box;
@@ -1502,7 +1491,9 @@ th.action {
                 &.active {
                     position: relative;
                     background: rgba($akvoBlack, 0);
-                    border: thin solid rgba($akvoBlack, 0.2);
+                    border-top: 2px solid rgba($akvoBlack, 1);
+                    border-left: thin solid rgba($akvoBlack, 0.2);
+                    border-right: thin solid rgba($akvoBlack, 0.2);
                     border-bottom: thin solid white;
                     cursor: not-allowed;
 
@@ -2233,17 +2224,16 @@ li.aFolder {
 
     a.editFolderName {
         display: inline-block;
-        width: 40px;
-        height: 40px;
+        width: 30px;
+        height: 30px;
         background: url(../images/IconEditGreyLight.svg) center center no-repeat;
-        background-size: 30px 30px;
+        background-size: 25px;
         text-indent: -9999px;
-        margin-right: 15px;
         opacity: 0.5;
 
         &:hover {
             background: url(../images/IconEditOrange.svg) center center no-repeat;
-            background-size: 30px 30px;
+            background-size: 25px;
             opacity: 1;
         }
     }
@@ -2344,6 +2334,7 @@ ul.surveyInfo li time {
 ul.surveyInfo li p {
     display: block;
     font-weight: bold;
+    margin-top: 8px;
 }
 
 ul.surveyInfo li.surveyLanguage p {
@@ -2747,71 +2738,7 @@ label[for="surveyLanguage"] a.helpIcon {
         }
 
         ul li a {
-            display: block;
-            padding: 11px 15px 20px 35px;
-            height: 9px;
-            border-radius: 3px;
-            overflow: hidden;
-
-            &.saveNewSurvey {
-                background: rgba(32, 32, 36, 0.5) url(../images/IconSave.svg) left top no-repeat;
-                background-size: 40px 40px;
-            }
-
-            &.previewNewSurvey {
-                background: rgba(32, 32, 36, 0.5) url(../images/IconPreview.svg) left top no-repeat;
-                background-size: 40px 40px;
-            }
-
-            &.publishNewSurvey {
-                background: rgba(32, 32, 36, 0.5) url(../images/IconPublish.svg) left top no-repeat;
-                background-size: 40px 40px;
-            }
-
-            &.deleteSurvey {
-                background: rgba(32, 32, 36, 0.5) url(../images/IconDelete.svg) left top no-repeat;
-                background-size: 40px 40px;
-            }
-
-            &.saveNewSurvey:hover {
-                background: rgba(32, 32, 36, 1) url(../images/IconSaveOrange.svg) left top no-repeat;
-                background-size: 40px 40px;
-            }
-
-            &.previewNewSurvey:hover {
-                background: rgba(32, 32, 36, 1) url(../images/IconPreviewOrange.svg) left top no-repeat;
-                background-size: 40px 40px;
-            }
-
-            &.publishNewSurvey:hover {
-                background: rgba(32, 32, 36, 1) url(../images/IconPublishOrange.svg) left top no-repeat;
-                background-size: 40px 40px;
-            }
-
-            &.deleteSurvey:hover {
-                background: rgba(32, 32, 36, 1) url(../images/IconDeleteOrange.svg) left top no-repeat;
-                background-size: 40px 40px;
-            }
-
-            &.manageNotifications {
-                background: rgba(32, 32, 36, 0.5) url(../images/IconNotif.svg) left top no-repeat;
-                background-size: 40px 40px;
-            }
-
-            &.manageNotifications:hover {
-                background: rgba(32, 32, 36, 1) url(../images/IconNotifOrange.svg) left top no-repeat;
-                background-size: 40px 40px;
-            }
-
-            &.manageTranslations {
-                background: rgba(32, 32, 36, 0.5) url(../images/IconTranslate.svg) left top no-repeat;
-                background-size: 40px 40px;
-            }
-
-            &.manageTranslations:hover {
-                background: rgba(32, 32, 36, 1) url(../images/IconTranslateOrange.svg) left top no-repeat;
-                background-size: 40px 40px;
-            }
+            @include btnOutline($flowAnchorLink);
         }
     }
 }
@@ -3808,16 +3735,6 @@ div.dataCollectedDate {
     .exportAdvancedOpt {
         display: block;
         margin: 15px 0 35px 5px;
-
-        .showCollapse {
-            background: $flowAnchorLink;
-            color: white;
-            display: inline-block;
-            padding: 2px 7px 0px 7px;
-            display: inline-block;
-            margin: -2px 0 0 0;
-            border-radius: 3px;
-        }
 
         label {
             color: rgba($akvoBlack, 0.5);
@@ -5025,7 +4942,7 @@ table.surveyTranslate .qHelpTooltip label.qTooltip + input {
 
                 span {
                     display: block;
-                    margin-top: -5px;
+                    margin-top: 5px;
                     font-weight: 600;
 
                     &.projectForm, &.projectMonitoring, &.projectStatus {
@@ -5081,7 +4998,7 @@ table.surveyTranslate .qHelpTooltip label.qTooltip + input {
 
                     span {
                         display: block;
-                        margin-top: -5px;
+                        margin-top: 5px;
                         font-weight: 600;
                         color: white;
                     }
@@ -5108,11 +5025,6 @@ table.surveyTranslate .qHelpTooltip label.qTooltip + input {
                     width: inherit;
                     width: 99.5%;
                     margin: 0 auto;
-
-                    .showCollapse {
-                        display: inline-block;
-                        margin-left: 10px;
-                    }
                 }
             }
 
@@ -5305,21 +5217,6 @@ table.surveyTranslate .qHelpTooltip label.qTooltip + input {
                 color: $akvoGolden;
                 margin-bottom: 20px;
                 display: inline-block;
-            }
-
-            .showCollapse {
-                background: $flowAnchorLink;
-                color: white;
-                display: inline-block;
-                padding: 2px 7px 0px 7px;
-                display: inline-block;
-                margin: -2px 0 0 10px;
-                border-radius: 3px;
-
-                span.monitoringAndvanced & {
-                    display: block;
-                    margin-top: 10px;
-                }
             }
 
             label[for=enableMonitoring], label[for=enableDataApproval] {
@@ -5810,11 +5707,7 @@ ul.cascadeAction {
         display: inline-block;
 
         a {
-            padding: 8px 15px 8px 35px;
-            height: 9px;
-            border-radius: 3px;
-            overflow: hidden;
-            white-space: nowrap;
+            @include btnOutline($flowAnchorLink);
 
             &.saveNewSurvey {
                 background: rgba(32, 32, 36, 0.5) url(../images/IconSave.svg) left center no-repeat;
