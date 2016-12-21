@@ -1,5 +1,5 @@
 /*
- *  Copyright (C) 2010-2012 Stichting Akvo (Akvo Foundation)
+ *  Copyright (C) 2010-2016 Stichting Akvo (Akvo Foundation)
  *
  *  This file is part of Akvo FLOW.
  *
@@ -65,6 +65,7 @@ public class RemoteExceptionRestServlet extends AbstractRestApiServlet {
             trace.setDeviceIdentifier(exReq.getDeviceIdent());
             trace.setPhoneNumber(exReq.getPhoneNumber());
             trace.setStackTrace(new Text(exReq.getStackTrace()));
+            trace.setAndroidId(exReq.getAndroidId());
             stacktraceDao.save(trace);
         } else {
             throw new RestException(new RestError(RestError.BAD_DATATYPE_CODE,

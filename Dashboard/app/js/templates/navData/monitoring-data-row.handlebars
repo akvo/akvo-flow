@@ -7,7 +7,7 @@
     {{#if view.parentView.showApprovalStatusColumn}}
     <td class="approvalStatus">
         <a {{action toggleShowDataApprovalBlock target="view"}}>
-            {{#view FLOW.DataPointApprovalStatusView}}{{view.latestApprovalStepTitle}}{{/view}}
+            {{#view FLOW.DataPointApprovalStatusView}}{{view.dataPointApprovalStatus}}{{/view}}
         </a>
     </td>
     {{/if}}

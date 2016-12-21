@@ -306,11 +306,11 @@ Ember.Handlebars.registerHelper("date3", function (property) {
   }
 });
 
-FLOW.parseGeoshape = function(geoshapeString) {
+FLOW.parseJSON = function(jsonString, property) {
   try {
-    var geoshapeObject = JSON.parse(geoshapeString);
-    if (geoshapeObject['features'].length > 0) {
-        return geoshapeObject;
+    var jsonObject = JSON.parse(jsonString);
+    if (jsonObject[property].length > 0) {
+        return jsonObject;
     } else {
       return null;
     }

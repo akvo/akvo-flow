@@ -60,6 +60,10 @@ FLOW.MonitoringDataTableView = FLOW.View.extend({
           })
           FLOW.router.dataPointApprovalController.loadBySurveyedLocaleId(surveyedLocaleIds);
       })
+
+      if(Ember.empty(FLOW.router.userListController.get('content'))) {
+          FLOW.router.userListController.set('content', FLOW.User.find());
+      }
   },
 
   doNextPage: function () {
@@ -118,24 +122,35 @@ FLOW.DataPointView = FLOW.View.extend({
     }.property('FLOW.router.dataPointApprovalController.content.@each'),
 
     /*
-     * Derive the approvalStepId for the next approval (in ordered approvals)
+     * get the next approval step id
      */
     nextApprovalStepId: function () {
+        return this.get('nextApprovalStep') && this.get('nextApprovalStep').get('keyId');
+    }.property('this.nextApprovalStep'),
+
+    /*
+     * Derive the next approval step (in ordered approvals)
+     */
+    nextApprovalStep: function () {
+        var nextStep;
         var approvals = this.get('dataPointApprovals');
         var steps = FLOW.router.approvalStepsController.get('arrangedContent');
-        var lastApprovedStepOrder = -1;
 
-        approvals.forEach(function (approval) {
-            var step = steps && steps.filterProperty('keyId',
-                                approval.get('approvalStepId')).get('firstObject');
-            if (approval.get('status') === 'APPROVED' &&
-                    step && (step.get('order') > lastApprovedStepOrder)) {
-                lastApprovedStepOrder = step.get('order');
+        if (Ember.empty(approvals)) {
+            return steps && steps.get('firstObject');
+        }
+
+        steps.forEach(function (step) {
+            var approval = approvals.filterProperty('approvalStepId',
+                                        step.get('keyId')).get('firstObject');
+            var isPendingStep = !approval || approval.get('status') === 'PENDING';
+            var isRejectedStep = approval && approval.get('status') === 'REJECTED';
+            if (!nextStep && (isPendingStep || isRejectedStep)) {
+                nextStep = step;
             }
         });
 
-        var nextStep = steps && steps.filterProperty('order', ++lastApprovedStepOrder).get('firstObject');
-        return nextStep && nextStep.get('keyId');
+        return nextStep;
 
     // NOTE: below we observe the '@each.approvalDate' in order to be
     // sure that we only recalculate the next step whenever the approval
@@ -173,12 +188,38 @@ FLOW.DataPointView = FLOW.View.extend({
 FLOW.DataPointApprovalStatusView = FLOW.View.extend({
     content: null,
 
-    latestApprovalStepTitle: function () {
-        var nextStepId = this.get('parentView').get('nextApprovalStepId');
-        var stepsController = FLOW.router.get('approvalStepsController');
-        var step = stepsController.filterProperty('keyId', nextStepId).get('firstObject');
-        return step && step.get('title');
-    }.property('this.parentView.nextApprovalStepId'),
+    dataPointApprovalStatus: function () {
+        var approvalStepStatus;
+        var latestApprovalStep = this.get('latestApprovalStep');
+        if (!latestApprovalStep) {
+            return;
+        }
+
+        var dataPointApprovals = this.get('parentView').get('dataPointApprovals');
+        var dataPointApproval = dataPointApprovals &&
+                                    dataPointApprovals.filterProperty('approvalStepId',
+                                            latestApprovalStep.get('keyId')).get('firstObject');
+        approvalStepStatus = dataPointApproval && dataPointApproval.get('status') ||
+                                Ember.String.loc('_pending');
+
+        return latestApprovalStep.get('title') + ' - ' + approvalStepStatus.toUpperCase();
+    }.property('this.parentView.nextApprovalStep'),
+
+    /*
+     * Derive the latest approval step for a particular data point
+     */
+    latestApprovalStep: function () {
+        var lastStep, steps;
+        var nextStep = this.get('parentView').get('nextApprovalStep');
+
+        if (nextStep) {
+            return nextStep;
+        } else {
+            steps = FLOW.router.approvalStepsController.get('arrangedContent');
+            lastStep = steps && steps.get('lastObject');
+            return lastStep;
+        }
+    }.property('this.parentView.nextApprovalStep'),
 });
 
 /**
@@ -209,6 +250,18 @@ FLOW.DataPointApprovalView = FLOW.View.extend({
     }.property('this.dataPointApproval'),
 
     /*
+     * return the current user's id
+     */
+    currentUserId: function () {
+        var step = this.get('step');
+        var currentUserEmail = FLOW.currentUser.get('email');
+        var userList = FLOW.router.userListController.get('content');
+        var currentUser = userList &&
+                            userList.filterProperty('emailAddress', currentUserEmail).get('firstObject');
+        return currentUser && currentUser.get('keyId');
+    }.property(),
+
+    /*
      * Enable the approval fields based on whether or not approval steps
      * should be executed in order
      */
@@ -218,10 +271,13 @@ FLOW.DataPointApprovalView = FLOW.View.extend({
         }
 
         var approvalGroup = FLOW.router.approvalGroupController.get('content');
+        var currentUserId = this.get('currentUserId');
         if(approvalGroup && approvalGroup.get('ordered')) {
-            var nextStepId = this.get('parentView').get('nextApprovalStepId');
-            if (nextStepId) {
-                return this.step.get('keyId') === nextStepId;
+            var nextStep = this.get('parentView').get('nextApprovalStep');
+            if (nextStep) {
+                return this.step.get('keyId') === nextStep.get('keyId') &&
+                    nextStep.get('approverUserList') &&
+                    nextStep.get('approverUserList').contains(currentUserId);
             } else {
                 return false;
             }
@@ -230,7 +286,7 @@ FLOW.DataPointApprovalView = FLOW.View.extend({
             // all steps so that its possible to approve any step
             return true;
         }
-    }.property('this.parentView.nextApprovalStepId'),
+    }.property('this.parentView.nextApprovalStep'),
 
     /*
      *  Submit data approval properties to controller

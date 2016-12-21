@@ -94,7 +94,7 @@ public class DtoMarshaller {
         ConvertUtils.register(enumConverter, Survey.Sector.class);
         ConvertUtils.register(enumConverter, SurveyGroup.ProjectType.class);
         ConvertUtils.register(enumConverter, SurveyGroup.PrivacyLevel.class);
-        
+
         // Resetting default values from zero to null
         ConvertUtils.register(new DoubleConverter(null), Double.class);
         ConvertUtils.register(new LongConverter(null), Long.class);
