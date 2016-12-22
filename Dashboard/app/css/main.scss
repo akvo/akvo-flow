@@ -1491,7 +1491,7 @@ th.action {
                 &.active {
                     position: relative;
                     background: rgba($akvoBlack, 0);
-                    border-top: 2px solid rgba($akvoBlack, 1);
+                    border-top: 2px solid rgba($akvoFlow, 1);
                     border-left: thin solid rgba($akvoBlack, 0.2);
                     border-right: thin solid rgba($akvoBlack, 0.2);
                     border-bottom: thin solid white;
@@ -1899,29 +1899,22 @@ nav.menuTopbar {
 }
 
 section.topBar {
-    display: -webkit-box;
-    display: -moz-box;
-    display: -ms-flexbox;
-    display: -webkit-flex;
-    display: flex;
-    -webkit-align-items: center;
-    align-items: center;
-    flex-wrap: nowrap;
-    justify-content: flex-start;
     padding: 0 0 10px 0;
     width: 100%;
 
     nav {
-        &:first-child {
+        &.breadCrumb {
             margin-left: 0.5%;
             padding: 10px 0;
-            align-self: flex-start;
+            width: 65.5%;
+            float: left;
         }
 
-        &:last-child {
+        &.menuTopbar {
             margin-right: 0.5%;
             padding: 10px 0;
-            align-self: flex-end;
+            width: 33.5%;
+            float: right;
         }
     }
 
@@ -2055,21 +2048,14 @@ section.topBar {
         }
 
         ul {
-            display: -webkit-flex;
-            display: flex;
-            -webkit-flex-direction: row;
-            flex-direction: row;
-            -webkit-justify-content: flex-end;
-            justify-content: flex-end;
-            -webkit-align-items: center;
-            align-items: center;
-            text-align: right;
+            width: 100%;
 
             li {
-                margin-left: 10px;
+                margin: 10px 10px 0 0;
+                float: right;
 
                 &:first-child {
-                    margin-left: 0px;
+                    margin: 10px 0 0 0;
                 }
 
                 p {
@@ -2087,6 +2073,13 @@ section.topBar {
 
         &.actionHighLighted {
             border: 1px solid rgb(241, 242, 242);
+
+            li {
+                &:first-child {
+                    float: left;
+                    margin: 10px 0 0 10px;
+                }
+            }
         }
     }
 }
@@ -2122,7 +2115,7 @@ ul.cancelMenu {
 }
 
 a.addGroup,
-a.addSurvey, .moveAction,
+a.addSurvey,
 a.stepBack,
 a.editGroupName, a.addMenuAction,
 a.makeMonitorGroup, a.manageNotifications,
@@ -2194,38 +2187,20 @@ li.aSurvey {
 li.aFolder {
     @extend .aSurvey;
 
-    /* position: relative;
-    display: inline;
-    width: 32.33%;
-    float: left; */
-    min-height: 85px;
-    padding: 0 0 0 15px;
+    min-height: 6px;
     background-color: rgb(232, 232, 232);
-
-    /*background-image: url(../images/carret.svg);
-    background-position: right center;
-    background-repeat: no-repeat;*/
     border: 1px solid rgba(200, 200, 200, 0);
     clear: none !important;
 
-    /*    
-        &:nth-of-type(3n) {
-            margin: 5px 0.5% 15px 0%;
-        }
-    
-        &:nth-of-type(3n+1) {
-            margin: 5px 0% 15px 0.5%;
-        }
-    */
     input {
         width: 50%;
-        font-family: $bodyFont;
+        font-size: 1.2em;
+        padding: 7px inherit;
     }
 
     a.editFolderName {
         display: inline-block;
         width: 30px;
-        height: 30px;
         background: url(../images/IconEditGreyLight.svg) center center no-repeat;
         background-size: 25px;
         text-indent: -9999px;
@@ -2333,7 +2308,6 @@ ul.surveyInfo li time {
 
 ul.surveyInfo li p {
     display: block;
-    font-weight: bold;
     margin-top: 8px;
 }
 
@@ -2391,14 +2365,6 @@ ul.surveyInfo li.responseNumber {
 }
 
 .aSurvey nav ul {
-    display: -webkit-inline-box;
-    display: -webkit-inline-flex;
-    display: -moz-inline-box;
-    display: -moz-inline-flex;
-    display: -ms-inline-flexbox;
-    display: inline-flex;
-    align-items: center;
-    align-content: flex-start;
     float: right;
 }
 
@@ -2421,6 +2387,15 @@ ul.surveyInfo li.responseNumber {
     width: 60px;
     height: 20px;
     padding-top: 40px;
+    text-align: center;
+    text-indent: -9999px;
+}
+
+.aSurvey.aFolder nav ul li a {
+    display: block;
+    width: 60px;
+    height: 15px;
+    padding-top: 33px;
     text-align: center;
     text-indent: -9999px;
 }
