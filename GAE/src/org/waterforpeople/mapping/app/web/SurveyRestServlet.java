@@ -271,13 +271,11 @@ public class SurveyRestServlet extends AbstractRestApiServlet {
 
     private SurveyGroupDto getSurveyGroup(Long surveyGroupId) {
         SurveyGroupDAO surveyGroupDao = new SurveyGroupDAO();
-        SurveyGroupDto dto = new SurveyGroupDto();
         SurveyGroup sg = surveyGroupDao.getByKey(surveyGroupId);
         if (sg == null) {
             return null;
         }
-        DtoMarshaller.copyToDto(sg, dto);
-        return dto;
+        return new SurveyGroupDto(sg);
     }
 
     private SurveyDto getSurvey(Long surveyId) {
