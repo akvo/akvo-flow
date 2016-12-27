@@ -510,6 +510,8 @@ public class BulkDataServiceClient {
                             + SurveyRestRequest.SURVEY_ID_PARAM + "="
                             + surveyId, true, apiKey);
 
+            log.debug("response: " + surveyGroupResponse);
+
             final JsonNode surveyGroupListNode = JSON_RESPONSE_PARSER.readTree(surveyGroupResponse)
                     .get("dtoList");
             final List<SurveyGroupDto> surveyGroupList = JSON_RESPONSE_PARSER.readValue(
