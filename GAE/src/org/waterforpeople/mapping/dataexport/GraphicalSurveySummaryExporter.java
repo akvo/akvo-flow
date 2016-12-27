@@ -140,6 +140,7 @@ public class GraphicalSurveySummaryExporter extends SurveySummaryExporter {
     private static final Map<String, String> IDENTIFIER_LABEL;
     private static final Map<String, String> DISPLAY_NAME_LABEL;
     private static final Map<String, String> DEVICE_IDENTIFIER_LABEL;
+    private static final Map<String, String> DATA_APPROVAL_STATUS_LABEL;
 
     private static final int CHART_WIDTH = 600;
     private static final int CHART_HEIGHT = 400;
@@ -299,6 +300,10 @@ public class GraphicalSurveySummaryExporter extends SurveySummaryExporter {
         DEVICE_IDENTIFIER_LABEL = new HashMap<String, String>();
         DEVICE_IDENTIFIER_LABEL.put("en", "Device identifier");
         DEVICE_IDENTIFIER_LABEL.put("es", "Identificador de dispositivo");
+
+        DATA_APPROVAL_STATUS_LABEL = new HashMap<String, String>();
+        DATA_APPROVAL_STATUS_LABEL.put("en", "Approval status");
+        DATA_APPROVAL_STATUS_LABEL.put("es", "Estado de aprobación");
     }
 
     private CellStyle headerStyle;
@@ -1190,6 +1195,12 @@ public class GraphicalSurveySummaryExporter extends SurveySummaryExporter {
 
         columnIndexMap.put(IDENTIFIER_LABEL.get(locale), columnIdx);
         createCell(row, columnIdx++, IDENTIFIER_LABEL.get(locale), headerStyle);
+
+        if (surveyGroupDto.getRequireDataApproval()
+                && surveyGroupDto.getDataApprovalGroupId() != null) {
+            columnIndexMap.put(DATA_APPROVAL_STATUS_LABEL.get(locale), columnIdx);
+            createCell(row, columnIdx++, DATA_APPROVAL_STATUS_LABEL.get(locale), headerStyle);
+        }
 
         columnIndexMap.put(REPEAT_LABEL.get(locale), columnIdx);
         createCell(row, columnIdx++, REPEAT_LABEL.get(locale), headerStyle);
