@@ -279,11 +279,13 @@ a, a:link, a:visited {
     &.helpIcon {
         display: inline-block;
         font-size: 0.8em;
+        font-weight: bold;
+        padding-top: 3px;
         width: 18px;
-        height: 18px;
+        height: 16px;
         border-radius: 9px;
         background: $flowAnchorLink;
-        color: white;
+        color: white !important;
         text-align: center;
 
         &:hover {
@@ -834,7 +836,7 @@ table.dataTable thead tr th a:visited {
 
 table.dataTable thead tr th a.helpIcon {
     position: relative;
-    top: -3px;
+    top: -1 px;
     margin: 0 0 0 7px;
 }
 
@@ -1455,6 +1457,7 @@ th.action {
         ul {
             padding: 0;
             overflow: auto;
+            background: rgb(252, 252, 255);
 
             &:after {
                 content: "";
@@ -1490,7 +1493,7 @@ th.action {
 
                 &.active {
                     position: relative;
-                    background: rgba($akvoBlack, 0);
+                    background: rgba(white, 1);
                     border-top: 2px solid rgba($akvoFlow, 1);
                     border-left: thin solid rgba($akvoBlack, 0.2);
                     border-right: thin solid rgba($akvoBlack, 0.2);
@@ -5259,6 +5262,10 @@ table.surveyTranslate .qHelpTooltip label.qTooltip + input {
             }
         }
     }
+}
+
+.forms #tabs nav.tabNav ul:after {
+    border: none;
 }
 
 /************************************** CASCADING QUESTIONS ************************************/
