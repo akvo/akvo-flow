@@ -30,6 +30,40 @@
 				"unit": "μS/cm"
 			}]
 		}, {
+			"subtype": "sensor",
+			"uuid": "80697cd1-acc9-4a15-8358-f32b4257dfaf",
+			"tags": ["soil quality"],
+			"name": "Soil Electrical Conductivity",
+			"brand": "Akvo Caddisfly",
+			"description": "Electrical conductivity of soil",
+			"numResults": 2,
+			"hasImage": false,
+			"results": [{
+				"name": "Soil Electrical Conductivity",
+				"id": 1,
+				"unit": "μS/cm"
+			},
+				{
+					"name": "Temperature",
+					"id": 2,
+					"unit": "°Celsius"
+				}
+			]
+		}, {
+			"subtype": "sensor",
+			"uuid": "0b4a0aaa-f556-4c11-a539-c4626582cca6",
+			"tags": ["soil quality"],
+			"name": "Soil Moisture",
+			"brand": "Akvo Caddisfly",
+			"description": "Moisture content of soil",
+			"numResults": 1,
+			"hasImage": false,
+			"results": [{
+				"name": "Soil Moisture",
+				"id": 1,
+				"unit": "% VWC"
+			}]
+		}, {
 			"subtype": "striptest",
 			"uuid": "bf1c19c0-9788-4e26-999e-1b5c6ca28111",
 			"tags": ["water quality"],
