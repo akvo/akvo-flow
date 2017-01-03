@@ -42,13 +42,11 @@
 				"name": "Soil Electrical Conductivity",
 				"id": 1,
 				"unit": "μS/cm"
-			},
-				{
-					"name": "Temperature",
-					"id": 2,
-					"unit": "°Celsius"
-				}
-			]
+			}, {
+				"name": "Temperature",
+				"id": 2,
+				"unit": "°Celsius"
+			}]
 		}, {
 			"subtype": "sensor",
 			"uuid": "0b4a0aaa-f556-4c11-a539-c4626582cca6",
