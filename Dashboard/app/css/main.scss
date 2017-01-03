@@ -656,14 +656,19 @@ header.top {
     }
 }
 
+.logIn, .logOut {
+    position: absolute;
+    top: 7px;
+    right: 0.25%;
+    list-style-type: none;
+}
+
 .userRegister {
     margin: 5px 0 0 10px;
 }
 
 .languageSelector {
-    position: absolute;
-    top: 7px;
-    right: 0.25%;
+    margin-top: 5px;
 
     .labelText {
         display: block;
