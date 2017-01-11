@@ -34,7 +34,6 @@
             {{#if view.visibleProjectBasics}}
               <form class="projectDetailForm">
                 <label>{{t _survey_title}}</label>{{view Ember.TextField id="projectTitle" valueBinding="FLOW.projectControl.currentProject.name" disabledBinding="view.disableFolderSurveyInputField"}}
-                <label>{{t _survey_description}}</label>{{view Ember.TextField id="projectDescription" valueBinding="FLOW.projectControl.currentProject.description" disabledBinding="view.disableFolderSurveyInputField"}}
 
                 <ul class="projectSelect floats-in">
                   <li>
