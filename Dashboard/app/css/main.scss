@@ -74,6 +74,10 @@ em {
     font-size: 0.8em;
 }
 
+.upCase {
+    text-transform: uppercase;
+}
+
 /*--------------------------------------------------------------
 
                     * End Default Typography.
@@ -135,7 +139,6 @@ pre {
     display: none;
     padding: 0.5em 1em;
     max-width: 15%;
-    font-weight: bold;
     background: lighten(rgb(255, 255, 165), 10%);
     -webkit-box-shadow: 0 0 2px rgb(0, 0, 0);
     -o-box-shadow: 0 0 2px rgb(0, 0, 0);
@@ -157,8 +160,6 @@ pre {
         padding: 5px 3px 5px 25px;
         background: rgb(248, 248, 248) url(../images/loader.gif) 5px center no-repeat;
         color: rgb(252, 159, 0);
-        font-weight: bold;
-        font-size: 1.2em;
     }
 }
 
@@ -190,6 +191,7 @@ pre {
 }
 
 .infoText {
+    font-size: 0.8em;
     display: block;
     margin: 0.5em 0 0 0;
     padding: 0.2em;
@@ -617,7 +619,7 @@ label[for=newDeviceGroupName] {
     width: 99%;
 }
 
-/* .header
+ /* .header
 --------------------------------------------- */
 
 header.top {
@@ -694,7 +696,250 @@ header.top {
 
 /* Top navigation styles
 --------------------------------------------- */
+@mixin bgDetails {
+    background-repeat: no-repeat;
+    background-position: center 5px;
+    -webkit-background-size: 22px auto;
+    background-size: 22px auto;
+}
 
+nav.appNav {
+    ul {
+        margin-left: 155px;
+
+        li {
+            float: left;
+            margin-right: 10px;
+            margin-top: 15px;
+
+            a {
+                padding: 25px 5px 5px 5px;
+            }
+
+            &.navHome {
+                a {
+                    background: url(../images/topnavDashboards.svg);
+
+                    @include bgDetails;
+
+                    &:hover {
+                        background: url(../images/topnavDashboardsOrange.svg);
+
+                        @include bgDetails;
+                    }
+                }
+
+                &.current {
+                    a {
+                        background: url(../images/topnavDashboardsOrange.svg);
+
+                        @include bgDetails;
+                    }
+                }
+            }
+
+            &.navMessages {
+                a {
+                    background: url(../images/topnavMessages.svg);
+
+                    @include bgDetails;
+
+                    &:hover {
+                        background: url(../images/topnavMessagesOrange.svg);
+
+                        @include bgDetails;
+                    }
+                }
+
+                &.current {
+                    a {
+                        background: url(../images/topnavMessagesOrange.svg);
+
+                        @include bgDetails;
+                    }
+                }
+            }
+
+            &.navData {
+                a {
+                    background: url(../images/topnavData.svg);
+
+                    @include bgDetails;
+
+                    &:hover {
+                        background: url(../images/topnavDataOrange.svg);
+
+                        @include bgDetails;
+                    }
+                }
+
+                &.current {
+                    a {
+                        background: url(../images/topnavDataOrange.svg);
+
+                        @include bgDetails;
+                    }
+                }
+            }
+
+            &.navDashboards {
+                a {
+                    background: url(../images/topnavDashboards.svg);
+
+                    @include bgDetails;
+
+                    &:hover {
+                        background: url(../images/topnavDashboardsOrange.svg);
+
+                        @include bgDetails;
+                    }
+                }
+
+                &.current {
+                    a {
+                        background: url(../images/topnavDashboardsOrange.svg);
+
+                        @include bgDetails;
+                    }
+                }
+            }
+
+            &.navMaps {
+                a {
+                    background: url(../images/topnavMaps.svg);
+
+                    @include bgDetails;
+
+                    &:hover {
+                        background: url(../images/topnavMapsOrange.svg);
+
+                        @include bgDetails;
+                    }
+                }
+
+                &.current {
+                    a {
+                        background: url(../images/topnavMapsOrange.svg);
+
+                        @include bgDetails;
+                    }
+                }
+            }
+
+            &.navDevices {
+                a {
+                    background: url(../images/topnavDevices.svg);
+
+                    @include bgDetails;
+
+                    &:hover {
+                        background: url(../images/topnavDevicesOrange.svg);
+
+                        @include bgDetails;
+                    }
+                }
+
+                &.current {
+                    a {
+                        background: url(../images/topnavDevicesOrange.svg);
+
+                        @include bgDetails;
+                    }
+                }
+            }
+
+            &.navUsers {
+                a {
+                    background: url(../images/topnavUsers.svg);
+
+                    @include bgDetails;
+
+                    &:hover {
+                        background: url(../images/topnavUsersOrange.svg);
+
+                        @include bgDetails;
+                    }
+                }
+
+                &.current {
+                    a {
+                        background: url(../images/topnavUsersOrange.svg);
+
+                        @include bgDetails;
+                    }
+                }
+            }
+
+            &.navReports {
+                a {
+                    background: url(../images/topnavReports.svg);
+
+                    @include bgDetails;
+
+                    &:hover {
+                        background: url(../images/topnavReportsOrange.svg);
+
+                        @include bgDetails;
+                    }
+                }
+
+                &.current {
+                    a {
+                        background: url(../images/topnavReportsOrange.svg);
+
+                        @include bgDetails;
+                    }
+                }
+            }
+
+            &.navAdmin {
+                a {
+                    background: url(../images/topnavAdmin.svg);
+
+                    @include bgDetails;
+
+                    &:hover {
+                        background: url(../images/topnavAdminOrange.svg);
+
+                        @include bgDetails;
+                    }
+                }
+
+                &.current {
+                    a {
+                        background: url(../images/topnavAdminOrange.svg);
+
+                        @include bgDetails;
+                    }
+                }
+            }
+
+            &.navSurveys {
+                a {
+                    background: url(../images/topnavSurveys.svg);
+
+                    @include bgDetails;
+
+                    &:hover {
+                        background: url(../images/topnavSurveysOrange.svg);
+
+                        @include bgDetails;
+                    }
+                }
+
+                &.current {
+                    a {
+                        background: url(../images/topnavSurveysOrange.svg);
+
+                        @include bgDetails;
+                    }
+                }
+            }
+        }
+    }
+}
+
+/* 
 nav.appNav {
     position: absolute;
     top: 0px;
@@ -738,7 +983,7 @@ nav.appNav {
             }
         }
     }
-}
+} */
 
 @mixin bgDetails {
     background-repeat: no-repeat;
@@ -2286,7 +2531,7 @@ ul.surveyInfo {
     float: left;
     padding: 0;
     width: calc(100% - 50% - 30px);
-    margin-top: 20px;
+    margin-top: 10px;
 }
 
 ul.surveyInfo li {
@@ -2901,6 +3146,7 @@ span.qtnGroupHead {
 
 .aQuestionSet header h1.qtnGroupTitle {
     display: inline-block;
+    font-size: 1.1em;
 
     @include noWrapTxt;
 }
@@ -3320,6 +3566,10 @@ nav.smallMenu ul li a.showQuestion:hover {
 .innerContent h1 {
     display: block;
     margin: 1em 0 1em 0.5em;
+
+    &.questionNbr {
+        font-size: 1.1em;
+    }
 }
 
 .innerContent h1:after {
@@ -3576,7 +3826,6 @@ table.dataTable.notificationTable thead tr th {
     color: rgb(39, 94, 110);
     text-align: left;
     text-transform: inherit;
-    font-weight: bold;
 }
 
 .dataSection table.dataTable.notificationTable thead tr th {
@@ -4267,6 +4516,7 @@ footer.bottomPage a[rel="self"]:hover {}
 .reportTools div.block p {
     display: block;
     width: 100%;
+    font-size: 0.8em;
     margin: 0.5em auto 1em auto;
     color: rgb(153, 153, 153);
 }
@@ -4278,6 +4528,11 @@ footer.bottomPage a[rel="self"]:hover {}
     margin: 0 auto 1em auto;
     background: rgb(249, 249, 249);
     padding: 1em 0;
+
+    text {
+        font-weight: normal;
+        font-size: inherit;
+    }
 }
 
 .reportTools .chartPie p {
@@ -4478,7 +4733,6 @@ table.surveyTranslate th h3 {
 }
 
 table.surveyTranslate label {
-    font-weight: bold;
     margin: 1em 0 0.75em 0;
 }
 
@@ -4503,7 +4757,6 @@ table.surveyTranslate .questionNbr span {
     box-shadow: none;
     color: inherit;
     display: inline;
-    font-weight: bold;
     height: inherit;
     margin: 0 10px 0 0;
     padding: inherit;
@@ -4622,7 +4875,7 @@ table.surveyTranslate .qHelpTooltip label.qTooltip + input {
 
 #tabs {
     .fullWidth {
-        padding-top: 5px;
+        padding-top: 15px;
     }
 }
 
@@ -4925,6 +5178,7 @@ table.surveyTranslate .qHelpTooltip label.qTooltip + input {
 
                     &.projectForm, &.projectMonitoring, &.projectStatus {
                         color: white;
+                        font-size: 1.8em;
                     }
 
                     &.projectStatus.redColor {
@@ -5233,7 +5487,7 @@ table.surveyTranslate .qHelpTooltip label.qTooltip + input {
                     width: 99%;
                     margin-bottom: 35px;
                     background: rgb(248, 248, 248);
-                    color: rgb(158, 158, 158);
+                    color: rgb(88, 88, 88);
 
                     &:focus {
                         border: 1px solid rgb(205, 205, 205);
@@ -6152,4 +6406,8 @@ html.navMaps, .public {
     #pointDetails {
         height: calc(100vh - (3px + 83px + 53px + 60px + 5px));
     }
+}
+
+iframe {
+    min-height: calc(100% - 225px);
 }
