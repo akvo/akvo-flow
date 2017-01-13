@@ -22,6 +22,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.apache.log4j.Logger;
 import org.codehaus.jackson.map.ObjectMapper;
 import org.codehaus.jackson.type.TypeReference;
 
@@ -29,6 +30,8 @@ import org.codehaus.jackson.type.TypeReference;
  * Utilities class for performing transformations on survey data, i.e. response values
  */
 public class DataUtils {
+
+    private static final Logger log = Logger.getLogger(DataUtils.class);
 
     public static final ObjectMapper JSON_OBJECT_MAPPER = new ObjectMapper();
 
@@ -150,7 +153,7 @@ public class DataUtils {
         try {
             caddisflyResponseMap = JSON_OBJECT_MAPPER.readValue(caddisflyValue, Map.class);
         } catch (IOException e) {
-            // ignore
+            log.error("Failed to parse the caddisfly response");
         }
         if (caddisflyResponseMap != null) {
             return caddisflyResponseMap;
