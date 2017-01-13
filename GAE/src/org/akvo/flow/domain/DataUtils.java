@@ -35,7 +35,7 @@ public class DataUtils {
     public static String[] optionResponsesTextArray(String optionResponse) {
         String[] responseArray = null;
 
-        if (optionResponse == null || optionResponse.trim() == "") {
+        if (optionResponse == null || optionResponse.trim().equals("")) {
             return new String[0];
         }
 
@@ -58,7 +58,7 @@ public class DataUtils {
     public static String[] cascadeResponseValues(String data) {
         String[] values = null;
 
-        if (data == null || data.trim() == "") {
+        if (data == null || data.trim().equals("")) {
             return new String[0];
         }
 
