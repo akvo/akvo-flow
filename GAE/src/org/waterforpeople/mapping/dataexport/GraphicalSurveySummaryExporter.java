@@ -851,7 +851,7 @@ public class GraphicalSurveySummaryExporter extends SurveySummaryExporter {
     }
 
     /*
-     * Creates the cell values for a caddisfly question.
+     * Creates the cells containing responses to caddisfly questions
      */
     @SuppressWarnings("unchecked")
     private List<String> caddisflyCellValues(Long questionId, String value,
@@ -862,76 +862,67 @@ public class GraphicalSurveySummaryExporter extends SurveySummaryExporter {
         // plus the name column,
         // plus the image column if it is there
         int numTotal = 1 + numResults + (hasImage ? 1 : 0);
-        String imageName = null;
 
-        Map<String, Object> rootAsMap = DataUtils.parseCaddisflyResponseValue(value);
-        if (validateCaddisflyValue(rootAsMap, hasImage)) {
-            try {
-                String name = rootAsMap.get("name").toString();
-                if (hasImage) {
-                    imageName = rootAsMap.get("image").toString();
+        Map<String, Object> caddisflyResponseMap = DataUtils.parseCaddisflyResponseValue(value);
+        if (validateCaddisflyValue(caddisflyResponseMap, hasImage)) {
+            final String name = (String) caddisflyResponseMap.get("name");
+            List<Map<String, Object>> results = (List<Map<String, Object>>) caddisflyResponseMap
+                    .get("result");
+            int numResultsPresent = results.size();
+
+            // create name cell
+            cells.add(name);
+            num++;
+
+            // order results by id
+            Collections.sort(results, new Comparator<Map<String, ?>>() {
+                @Override
+                public int compare(Map<String, ?> o1, Map<String, ?> o2) {
+                    if (o1 != null && o2 != null) {
+                        return Integer.parseInt((String) o1.get("id"))
+                                - Integer.parseInt((String) o2.get("id"));
+                    } else {
+                        return 0;
+                    }
                 }
-                List<Map<String, Object>> results = (List<Map<String, Object>>) rootAsMap
-                        .get("result");
-                int numResultsPresent = results.size();
+            });
 
-                // create name cell
-                cells.add(name);
+            // get valid result ids for this question. The ids are already
+            // in order.
+            List<Integer> resultIds = resultIdMap.get(questionId);
+            Integer expectedResultsNum = resultIds.size();
+
+            // create result cells
+            // we have to guard against two possibilities: we could have
+            // more expected results than real results,
+            // and we could have more real results than expected results.
+            int index = 0;
+            for (int i = 0; i < Math.min(expectedResultsNum,
+                    numResultsPresent); i++) {
+                Map<String, Object> result = results.get(i);
+                if (result.get("id").toString()
+                        .equals(resultIds.get(index).toString())) {
+                    cells.add(result.get("value").toString());
+                    num++;
+                    index++;
+                }
+
+                // don't generate too many cells
+                if (num == numTotal)
+                    break;
+            }
+
+            // pad to fill any missing results
+            while (num < 1 + numResults) {
+                cells.add("");
                 num++;
+            }
 
-                // order results by id
-                Collections.sort(results, new Comparator<Map<String, ?>>() {
-                    @Override
-                    public int compare(Map<String, ?> o1, Map<String, ?> o2) {
-                        if (o1 != null && o2 != null) {
-                            return Integer.parseInt(o1.get("id").toString())
-                                    - Integer.parseInt(o2.get("id").toString());
-                        } else {
-                            return 0;
-                        }
-                    }
-                });
-
-                // get valid result ids for this question. The ids are already
-                // in order.
-                List<Integer> resultIds = resultIdMap.get(questionId);
-                Integer expectedResultsNum = resultIds.size();
-
-                // create result cells
-                // we have to guard against two possibilities: we could have
-                // more expected results than real results,
-                // and we could have more real results than expected results.
-                int index = 0;
-                for (int i = 0; i < Math.min(expectedResultsNum,
-                        numResultsPresent); i++) {
-                    Map<String, Object> result = results.get(i);
-                    if (result.get("id").toString()
-                            .equals(resultIds.get(index).toString())) {
-                        cells.add(result.get("value").toString());
-                        num++;
-                        index++;
-                    }
-
-                    // don't generate too many cells
-                    if (num == numTotal)
-                        break;
-                }
-
-                // pad to fill any missing results
-                while (num < 1 + numResults) {
-                    cells.add("");
-                    num++;
-                }
-
-                // add image URL if available
-                if (hasImage) {
-                    cells.add(imagePrefix + imageName);
-                    num++;
-                }
-            } catch (IOException e) {
-                log.error(
-                        "Error interpreting caddisfly data: " + e.getMessage(),
-                        e);
+            // add image URL if available
+            if (hasImage) {
+                final String imageName = (String) caddisflyResponseMap.get("image");
+                cells.add(imagePrefix + imageName);
+                num++;
             }
         }
 
