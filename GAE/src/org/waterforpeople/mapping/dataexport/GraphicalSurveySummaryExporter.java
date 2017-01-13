@@ -39,6 +39,7 @@ import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicLong;
 
+import org.akvo.flow.domain.DataUtils;
 import org.apache.log4j.ConsoleAppender;
 import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
@@ -816,40 +817,34 @@ public class GraphicalSurveySummaryExporter extends SurveySummaryExporter {
     }
 
     /*
-     * Validates the structure of a caddisfly value Returns true if the structure is correct, false
-     * if not.
+     * Validates the map containing values from the parsed caddisfly response string
      */
     @SuppressWarnings("unchecked")
-    private static Boolean validateCaddisflyValue(String value,
-            Integer numResults, Boolean hasImage) {
-        try {
-            Map<String, Object> rootAsMap = OBJECT_MAPPER.readValue(value,
-                    Map.class);
-            // check presence of name, result and image properties
-            if (!rootAsMap.containsKey("name")
-                    || !rootAsMap.containsKey("result"))
-                return false;
-            if (hasImage && !rootAsMap.containsKey("image"))
-                return false;
-
-            // check presence of name, value, unit and id properties on results
-            List<Map<String, Object>> results = (List<Map<String, Object>>) rootAsMap
-                    .get("result");
-            for (Map<String, Object> result : results) {
-                if (!result.containsKey("name") || !result.containsKey("value")
-                        || !result.containsKey("unit")
-                        || !result.containsKey("id"))
-                    return false;
-                // check if id is an integer
-                try {
-                    Integer.parseInt(result.get("id").toString());
-                } catch (Exception e) {
-                    return false;
-                }
-            }
-        } catch (IOException e) {
-            log.error("Error interpreting caddisfly data: " + e.getMessage(), e);
+    private static Boolean validateCaddisflyValue(Map<String, Object> caddisflyResponseMap,
+            boolean hasImage) {
+        // check presence of uuid, result and image properties
+        if (!caddisflyResponseMap.containsKey("uuid")
+                || !caddisflyResponseMap.containsKey("result")) {
             return false;
+        }
+
+        if (hasImage && !caddisflyResponseMap.containsKey("image")) {
+            return false;
+        }
+
+        // check presence of name, value, unit and id properties on results
+        List<Map<String, Object>> results = (List<Map<String, Object>>) caddisflyResponseMap
+                .get("result");
+        for (Map<String, Object> result : results) {
+            if (!result.containsKey("value") || !result.containsKey("id")) {
+                return false;
+            }
+
+            // check if id is an integer
+            String resultId = (String) result.get("id");
+            if (resultId.length() != 1 || !Character.isDigit(resultId.charAt(0))) {
+                return false;
+            }
         }
 
         return true;
@@ -869,10 +864,9 @@ public class GraphicalSurveySummaryExporter extends SurveySummaryExporter {
         int numTotal = 1 + numResults + (hasImage ? 1 : 0);
         String imageName = null;
 
-        if (validateCaddisflyValue(value, numResults, hasImage)) {
+        Map<String, Object> rootAsMap = DataUtils.parseCaddisflyResponseValue(value);
+        if (validateCaddisflyValue(rootAsMap, hasImage)) {
             try {
-                Map<String, Object> rootAsMap = OBJECT_MAPPER.readValue(value,
-                        Map.class);
                 String name = rootAsMap.get("name").toString();
                 if (hasImage) {
                     imageName = rootAsMap.get("image").toString();
