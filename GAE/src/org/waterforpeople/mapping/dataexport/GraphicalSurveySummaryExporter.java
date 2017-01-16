@@ -76,6 +76,8 @@ import org.waterforpeople.mapping.serialization.response.MediaResponse;
 import com.gallatinsystems.common.util.JFreechartChartUtil;
 import com.gallatinsystems.survey.dao.CaddisflyResourceDao;
 
+import static com.gallatinsystems.common.Constants.*;
+
 /**
  * Enhancement of the SurveySummaryExporter to support writing to Excel and including chart images.
  *
@@ -822,21 +824,22 @@ public class GraphicalSurveySummaryExporter extends SurveySummaryExporter {
     @SuppressWarnings("unchecked")
     private static Boolean validateCaddisflyValue(Map<String, Object> caddisflyResponseMap,
             boolean hasImage) {
-        // check presence of uuid, result and image properties
-        if (caddisflyResponseMap.get("uuid") == null
-                || caddisflyResponseMap.get("result") == null) {
+        // check presence of uuid and result
+        if (caddisflyResponseMap.get(CADDISFLY_UUID) == null
+                || caddisflyResponseMap.get(CADDISFLY_RESULT) == null) {
             return false;
         }
 
-        if (hasImage && caddisflyResponseMap.get("image") == null) {
+        if (hasImage && caddisflyResponseMap.get(CADDISFLY_IMAGE) == null) {
             return false;
         }
 
         // check presence of name, value, unit and id properties on results
         List<Map<String, Object>> results = (List<Map<String, Object>>) caddisflyResponseMap
-                .get("result");
+                .get(CADDISFLY_RESULT);
         for (Map<String, Object> result : results) {
-            if (result.get("id") == null || result.get("value") == null) {
+            if (result.get(CADDISFLY_RESULT_ID) == null
+                    || result.get(CADDISFLY_RESULT_VALUE) == null) {
                 return false;
             }
         }
@@ -850,79 +853,62 @@ public class GraphicalSurveySummaryExporter extends SurveySummaryExporter {
     @SuppressWarnings("unchecked")
     private List<String> caddisflyCellValues(Long questionId, String value,
             Integer numResults, Boolean hasImage, String imagePrefix) {
-        List<String> cells = new ArrayList<>();
-        int num = 0;
-        // the total number of cells we need to create is the number of results
-        // plus the name column,
-        // plus the image column if it is there
-        int numTotal = 1 + numResults + (hasImage ? 1 : 0);
+
+        List<String> caddisflyCellValues = new ArrayList<>();
+
+        List<Integer> resultIds = resultIdMap.get(questionId);
 
         Map<String, Object> caddisflyResponseMap = DataUtils.parseCaddisflyResponseValue(value);
-        if (validateCaddisflyValue(caddisflyResponseMap, hasImage)) {
-            List<Map<String, Object>> results = (List<Map<String, Object>>) caddisflyResponseMap
-                    .get("result");
-            int numResultsPresent = results.size();
 
-            num++;
-
-            // order results by id
-            Collections.sort(results, new Comparator<Map<String, ?>>() {
-                @Override
-                public int compare(Map<String, ?> o1, Map<String, ?> o2) {
-                    if (o1 != null && o2 != null) {
-                        return ((Integer) o1.get("id")) - ((Integer) o2.get("id"));
-                    } else {
-                        return 0;
-                    }
-                }
-            });
-
-            // get valid result ids for this question. The ids are already
-            // in order.
-            List<Integer> resultIds = resultIdMap.get(questionId);
-            Integer expectedResultsNum = resultIds.size();
-
-            // create result cells
-            // we have to guard against two possibilities: we could have
-            // more expected results than real results,
-            // and we could have more real results than expected results.
-            int index = 0;
-            for (int i = 0; i < Math.min(expectedResultsNum,
-                    numResultsPresent); i++) {
-                Map<String, Object> result = results.get(i);
-                if (result.get("id").toString()
-                        .equals(resultIds.get(index).toString())) {
-                    cells.add(result.get("value").toString());
-                    num++;
-                    index++;
-                }
-
-                // don't generate too many cells
-                if (num == numTotal)
-                    break;
+        if (!validateCaddisflyValue(caddisflyResponseMap, hasImage)) {
+            // fill empty cells and return in case of failure to validate caddisfly response
+            for (int i = 0; i < resultIds.size(); i++) {
+                caddisflyCellValues.add("");
             }
 
-            // pad to fill any missing results
-            while (num < 1 + numResults) {
-                cells.add("");
-                num++;
-            }
-
-            // add image URL if available
             if (hasImage) {
-                final String imageName = (String) caddisflyResponseMap.get("image");
-                cells.add(imagePrefix + imageName);
-                num++;
+                caddisflyCellValues.add("");
+            }
+            return caddisflyCellValues;
+        }
+
+        List<Map<String, Object>> caddisflyTestResultsList = (List<Map<String, Object>>) caddisflyResponseMap
+                .get(CADDISFLY_RESULT);
+
+        Map<Integer, Map<String, Object>> caddisflyTestResultsMap = mapCaddisflyResultsById(caddisflyTestResultsList);
+
+        // get valid result ids for this question. The ids are already
+        // in order.
+        for (Integer resultId : resultIds) {
+            Map<String, Object> caddisflyTestResult = caddisflyTestResultsMap.get(resultId);
+            if (caddisflyTestResult != null) {
+                String testValue = "" + caddisflyTestResult.get(CADDISFLY_RESULT_VALUE);
+                caddisflyCellValues.add(testValue);
+            } else {
+                caddisflyCellValues.add("");
             }
         }
 
-        // pad cells so we always have enough
-        while (num < numTotal) {
-            cells.add("");
-            num++;
+        // add image URL if available
+        if (hasImage) {
+            final String imageName = (String) caddisflyResponseMap.get(CADDISFLY_IMAGE);
+            if (imageName == null) {
+                caddisflyCellValues.add("");
+            } else {
+                caddisflyCellValues.add(imagePrefix + imageName);
+            }
         }
 
-        return cells;
+        return caddisflyCellValues;
+    }
+
+    private Map<Integer, Map<String, Object>> mapCaddisflyResultsById(
+            List<Map<String, Object>> caddisflyTestResults) {
+        Map<Integer, Map<String, Object>> resultsMap = new HashMap<>();
+        for (Map<String, Object> result : caddisflyTestResults) {
+            resultsMap.put((Integer) result.get(CADDISFLY_RESULT_ID), result);
+        }
+        return resultsMap;
     }
 
     /*
