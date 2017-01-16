@@ -859,13 +859,10 @@ public class GraphicalSurveySummaryExporter extends SurveySummaryExporter {
 
         Map<String, Object> caddisflyResponseMap = DataUtils.parseCaddisflyResponseValue(value);
         if (validateCaddisflyValue(caddisflyResponseMap, hasImage)) {
-            final String name = (String) caddisflyResponseMap.get("name");
             List<Map<String, Object>> results = (List<Map<String, Object>>) caddisflyResponseMap
                     .get("result");
             int numResultsPresent = results.size();
 
-            // create name cell
-            cells.add(name);
             num++;
 
             // order results by id
@@ -1297,17 +1294,14 @@ public class GraphicalSurveySummaryExporter extends SurveySummaryExporter {
                                         headerStyle);
                             }
                         } else if (QuestionType.CADDISFLY == q.getType()) {
-                            StringBuilder caddisflyColumnHeader = new StringBuilder();
+                            StringBuilder caddisflyFirstResultColumnHeaderPrefix = new StringBuilder();
                             if (useQID) {
-                                caddisflyColumnHeader.append(questionId);
+                                caddisflyFirstResultColumnHeaderPrefix.append(questionId);
                             } else {
-                                caddisflyColumnHeader.append(q.getKeyId());
+                                caddisflyFirstResultColumnHeaderPrefix.append(q.getKeyId());
                             }
-                            caddisflyColumnHeader.append("|").append(q.getText())
-                                    .append("|TEST_TYPE");
-
-                            // create column for test type
-                            createCell(row, offset++, caddisflyColumnHeader.toString(), headerStyle);
+                            caddisflyFirstResultColumnHeaderPrefix.append("|").append(q.getText())
+                                    .append("|");
 
                             if (caddisflyResourceMap == null) {
                                 caddisflyResourceMap = new HashMap<String, CaddisflyResource>();
@@ -1327,16 +1321,27 @@ public class GraphicalSurveySummaryExporter extends SurveySummaryExporter {
                                 List<Integer> resultIds = new ArrayList<Integer>();
 
                                 // create column headers
-                                for (CaddisflyResult result : crResults) {
+                                for (int i = 0; i < crResults.size(); i++) {
                                     // put result ids in map, so we can use if
                                     // for validation later
+                                    CaddisflyResult result = crResults.get(i);
                                     resultIds.add(result.getId());
 
-                                    // create column for result
-                                    createCell(row, offset++,
-                                            "--CADDISFLY--" + result.getName()
-                                                    + "(" + result.getUnit()
-                                                    + ")", headerStyle);
+                                    StringBuilder columnHeaderSuffix = new StringBuilder(
+                                            result.getName());
+                                    if (result.getUnit() != null && !result.getUnit().isEmpty()) {
+                                        columnHeaderSuffix.append("(").append(result.getUnit())
+                                                .append(")");
+                                    }
+
+                                    String columnHeader;
+                                    if (i == 0) {
+                                        columnHeader = caddisflyFirstResultColumnHeaderPrefix
+                                                .toString() + columnHeaderSuffix;
+                                    } else {
+                                        columnHeader = "--CADDISFLY--" + columnHeaderSuffix;
+                                    }
+                                    createCell(row, offset++, columnHeader, headerStyle);
                                 }
 
                                 if (cr.getHasImage()) {
