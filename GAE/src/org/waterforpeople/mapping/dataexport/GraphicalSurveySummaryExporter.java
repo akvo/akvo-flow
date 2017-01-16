@@ -823,12 +823,12 @@ public class GraphicalSurveySummaryExporter extends SurveySummaryExporter {
     private static Boolean validateCaddisflyValue(Map<String, Object> caddisflyResponseMap,
             boolean hasImage) {
         // check presence of uuid, result and image properties
-        if (!caddisflyResponseMap.containsKey("uuid")
-                || !caddisflyResponseMap.containsKey("result")) {
+        if (caddisflyResponseMap.get("uuid") == null
+                || caddisflyResponseMap.get("result") == null) {
             return false;
         }
 
-        if (hasImage && !caddisflyResponseMap.containsKey("image")) {
+        if (hasImage && caddisflyResponseMap.get("image") == null) {
             return false;
         }
 
@@ -836,13 +836,7 @@ public class GraphicalSurveySummaryExporter extends SurveySummaryExporter {
         List<Map<String, Object>> results = (List<Map<String, Object>>) caddisflyResponseMap
                 .get("result");
         for (Map<String, Object> result : results) {
-            if (!result.containsKey("value") || !result.containsKey("id")) {
-                return false;
-            }
-
-            // check if id is an integer
-            String resultId = (String) result.get("id");
-            if (resultId.length() != 1 || !Character.isDigit(resultId.charAt(0))) {
+            if (result.get("id") == null || result.get("value") == null) {
                 return false;
             }
         }
