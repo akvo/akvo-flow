@@ -873,8 +873,7 @@ public class GraphicalSurveySummaryExporter extends SurveySummaryExporter {
                 @Override
                 public int compare(Map<String, ?> o1, Map<String, ?> o2) {
                     if (o1 != null && o2 != null) {
-                        return Integer.parseInt((String) o1.get("id"))
-                                - Integer.parseInt((String) o2.get("id"));
+                        return ((Integer) o1.get("id")) - ((Integer) o2.get("id"));
                     } else {
                         return 0;
                     }
