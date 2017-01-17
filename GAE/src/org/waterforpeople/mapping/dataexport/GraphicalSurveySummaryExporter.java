@@ -1325,7 +1325,7 @@ public class GraphicalSurveySummaryExporter extends SurveySummaryExporter {
                                         columnHeader = caddisflyFirstResultColumnHeaderPrefix
                                                 .toString() + columnHeaderSuffix;
                                     } else {
-                                        columnHeader = "--CADDISFLY--" + columnHeaderSuffix;
+                                        columnHeader = "--CADDISFLY--|" + columnHeaderSuffix;
                                     }
                                     createCell(row, offset++, columnHeader, headerStyle);
                                 }
@@ -1334,7 +1334,7 @@ public class GraphicalSurveySummaryExporter extends SurveySummaryExporter {
                                     createCell(
                                             row,
                                             offset++,
-                                            "--CADDISFLY--" + q.getText()
+                                            "--CADDISFLY--|" + q.getText()
                                                     + "--"
                                                     + IMAGE_LABEL
                                                             .get(columnLocale),
