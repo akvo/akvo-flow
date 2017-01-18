@@ -149,7 +149,7 @@ public class DataUtils {
      */
     @SuppressWarnings("unchecked")
     public static Map<String, Object> parseCaddisflyResponseValue(String caddisflyValue) {
-        Map<String, Object> caddisflyResponseMap = new HashMap<String, Object>();
+        Map<String, Object> caddisflyResponseMap = new HashMap<>();
         try {
             caddisflyResponseMap = JSON_OBJECT_MAPPER.readValue(caddisflyValue, Map.class);
         } catch (IOException e) {
