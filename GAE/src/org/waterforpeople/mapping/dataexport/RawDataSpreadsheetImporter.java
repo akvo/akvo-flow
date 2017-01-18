@@ -491,7 +491,8 @@ public class RawDataSpreadsheetImporter implements DataImporter {
 
         for (Cell cell : headerRow) {
             String cellValue = cell.getStringCellValue();
-            if (cell.getStringCellValue().indexOf("|") > -1 && !cellValue.startsWith("--GEO")) {
+            if (cell.getStringCellValue().indexOf("|") > -1 && !cellValue.startsWith("--GEO")
+                    && !cellValue.startsWith("--CADDISFLY")) {
                 String[] parts = cell.getStringCellValue().split("\\|");
                 if (parts[0].trim().length() > 0) {
                     columnIndexToQuestionId.put(cell.getColumnIndex(),
