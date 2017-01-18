@@ -16,6 +16,8 @@
 
 package com.gallatinsystems.survey.domain;
 
+import java.util.List;
+
 import javax.jdo.annotations.PersistenceCapable;
 
 import com.gallatinsystems.framework.domain.BaseDomain;
@@ -34,6 +36,8 @@ public class ApprovalStep extends BaseDomain {
     private int order;
 
     private String title;
+
+    private List<Long> approverUserList;
 
     public long getApprovalGroupId() {
         return approvalGroupId;
@@ -57,5 +61,13 @@ public class ApprovalStep extends BaseDomain {
 
     public void setTitle(String title) {
         this.title = title;
+    }
+
+    public List<Long> getApproverUserList() {
+        return approverUserList;
+    }
+
+    public void setApproverUserList(List<Long> approverUserList) {
+        this.approverUserList = approverUserList;
     }
 }

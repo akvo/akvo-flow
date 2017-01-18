@@ -37,7 +37,6 @@ import com.gallatinsystems.survey.dao.SurveyDAO;
 import com.gallatinsystems.survey.dao.SurveyGroupDAO;
 import com.gallatinsystems.survey.domain.Question;
 import com.gallatinsystems.survey.domain.QuestionGroup;
-import com.gallatinsystems.survey.domain.QuestionOption;
 import com.gallatinsystems.survey.domain.Survey;
 import com.gallatinsystems.survey.domain.Survey.Status;
 import com.gallatinsystems.survey.domain.SurveyGroup;
@@ -46,9 +45,8 @@ import com.gallatinsystems.survey.domain.SurveyGroup.ProjectType;
 public class SurveyReplicationImporter {
 
     /**
-     * copies one surveyGroup "Survey"
-     * remaps all ids to make merging two instances safe
-     * 
+     * copies one surveyGroup "Survey" remaps all ids to make merging two instances safe
+     *
      * @param sourceBase
      * @param groupId
      * @param apiKey
@@ -58,83 +56,93 @@ public class SurveyReplicationImporter {
         SurveyDAO sDao = new SurveyDAO();
         QuestionGroupDao qgDao = new QuestionGroupDao();
         QuestionDao qDao = new QuestionDao();
-        System.out.println("Importing survey " + surveyId + " with id remapping from " + sourceBase);
+        System.out
+                .println("Importing survey " + surveyId + " with id remapping from " + sourceBase);
 
         int count_sg = 0, count_s = 0, count_qg = 0, count_q = 0;
         try {
-            //First, find which group the survey is in
-            List<SurveyGroup> allGroups = fetchSurveyGroups(sourceBase, apiKey); 
+            // First, find which group the survey is in
+            List<SurveyGroup> allGroups = fetchSurveyGroups(sourceBase, apiKey);
             System.out.println(" scanning " + allGroups.size() + " survey groups");
             for (SurveyGroup sg : allGroups) {
-                System.out.println(" surveygroup: " + sg.getKey().getId() + " " + sg.getName() + ":" + sg.getCode());
+                System.out.println(" surveygroup: " + sg.getKey().getId() + " " + sg.getName()
+                        + ":" + sg.getCode());
                 count_sg++;
                 if (sg.getProjectType() != ProjectType.PROJECT) {
-                    continue; //skip looking in folders
+                    continue; // skip looking in folders
                 }
                 boolean thisIsTheGroup = false;
-                List<Survey> allSurveys = fetchSurveys(sg.getKey().getId(), sourceBase, apiKey); 
+                List<Survey> allSurveys = fetchSurveys(sg.getKey().getId(), sourceBase, apiKey);
                 for (Survey s0 : allSurveys) {
-                    if ( s0.getKey().getId() == surveyId) {
-                        thisIsTheGroup = true;  //Found it!
+                    if (s0.getKey().getId() == surveyId) {
+                        thisIsTheGroup = true; // Found it!
                         break;
                     }
-                }                
+                }
                 if (thisIsTheGroup) {
                     System.out.println(" copying group with " + allSurveys.size() + " surveys");
-                    sg.setParentId(0L); //go in root folder
-                    sg.setPath(""); //not used anymore
+                    sg.setParentId(0L); // go in root folder
+                    sg.setPath(""); // not used anymore
                     List<Long> nai = new ArrayList<Long>(1);
                     nai.add(0L);
                     sg.setAncestorIds(nai);
-                    long oldId = sg.getKey().getId();
-                    sg.setKey(null); //want new key
+                    sg.getKey().getId();
+                    sg.setKey(null); // want new key
                     sgDao.save(sg);
                     long newId = sg.getKey().getId();
-                    //if set, sg.newLocaleSurveyId is now wrong
-                    
-                    //Now copy everything inside it
-                    //First, surveys (may be more than one for a monitored survey)
+                    // if set, sg.newLocaleSurveyId is now wrong
+
+                    // Now copy everything inside it
+                    // First, surveys (may be more than one for a monitored survey)
                     for (Survey s : allSurveys) {
                         System.out.println("  survey:" + s.getKey().getId() + " " + s.getCode());
 
                         long oldSurveyId = s.getKey().getId();
-                        s.setKey(null);//want a new key
+                        s.setKey(null);// want a new key
                         List<Long> nai2 = new ArrayList<Long>(2);
                         nai2.add(0L);
                         nai2.add(newId);
                         s.setAncestorIds(nai2);
                         s.setSurveyGroupId(newId);
                         s.setPath("");
-                        s.setStatus(Status.NOT_PUBLISHED); //not downloadable yet
+                        s.setStatus(Status.NOT_PUBLISHED); // not downloadable yet
                         s.setVersion(1.0);
                         sDao.save(s);
                         long newSurveyId = s.getKey().getId();
-                        //Fix up newLocaleSurveyId
-                        if (sg.getNewLocaleSurveyId() !=null && sg.getNewLocaleSurveyId() == oldSurveyId) {
-                            System.out.println("   registration form id fixup :" + oldSurveyId + " -> " + newSurveyId);
+                        // Fix up newLocaleSurveyId
+                        if (sg.getNewLocaleSurveyId() != null
+                                && sg.getNewLocaleSurveyId() == oldSurveyId) {
+                            System.out.println("   registration form id fixup :" + oldSurveyId
+                                    + " -> " + newSurveyId);
                             sg.setNewLocaleSurveyId(newSurveyId);
                             sgDao.save(sg);
                         }
                         count_s++;
 
                         // The question groups
-                        HashMap<Long,Long> qMap = new HashMap<Long,Long>(); //used to fix up dependency references
-                        List<QuestionGroup> allQgs = fetchQuestionGroups(oldSurveyId, sourceBase, apiKey);
+                        HashMap<Long, Long> qMap = new HashMap<Long, Long>(); // used to fix up
+                                                                              // dependency
+                                                                              // references
+                        List<QuestionGroup> allQgs = fetchQuestionGroups(oldSurveyId, sourceBase,
+                                apiKey);
                         for (QuestionGroup qg : allQgs) {
-                            System.out.println("     qg:" + qg.getKey().getId() + " " + qg.getCode());
+                            System.out.println("     qg:" + qg.getKey().getId() + " "
+                                    + qg.getCode());
                             long oldQgId = qg.getKey().getId();
-                            qg.setKey(null); //want a new key
+                            qg.setKey(null); // want a new key
                             qg.setSurveyId(newSurveyId);
                             qg.setPath("");
                             qgDao.save(qg);
                             long newQgId = qg.getKey().getId();
                             // Now the questions
                             for (Question q : fetchQuestions(oldQgId, sourceBase, apiKey)) {
-                                System.out.println("       q:" + q.getKey().getId() + " " + q.getText());
+                                System.out.println("       q:" + q.getKey().getId() + " "
+                                        + q.getText());
                                 q.setPath("");
                                 long oldQId = q.getKey().getId();
-                                q.setKey(null); //want a new key
-                                qDao.save(q, newQgId); //options and other details are saved w the new question id
+                                q.setKey(null); // want a new key
+                                qDao.save(q, newQgId); // options and other details are saved w the
+                                                       // new question id
                                 long newQId = q.getKey().getId();
                                 qMap.put(oldQId, newQId);
                                 count_q++;
@@ -144,60 +152,65 @@ public class SurveyReplicationImporter {
                         // Now we know all question ids, so we can fix up their dependencies
                         System.out.println("     q depependency fixup pass");
                         for (long qid : qMap.values()) {
-                            Question q = qDao.getByKey(qid); //need no details
-                            if (q == null) {System.out.println("     q not found:" + qid);continue;}
+                            Question q = qDao.getByKey(qid); // need no details
+                            if (q == null) {
+                                System.out.println("     q not found:" + qid);
+                                continue;
+                            }
                             if (q.getDependentFlag() && q.getDependentQuestionId() != null) {
                                 Long updatedId = qMap.get(q.getDependentQuestionId());
                                 if (updatedId != null) {
                                     System.out.println("       q:" + q.getText());
-                                    System.out.println("        dep fixup :" + q.getDependentQuestionId() + " -> " + updatedId);
+                                    System.out.println("        dep fixup :"
+                                            + q.getDependentQuestionId() + " -> " + updatedId);
                                     q.setDependentQuestionId(updatedId);
                                     qDao.save(q, q.getQuestionGroupId());
                                 }
                             }
                         }
                     }
-                    break; //we can stop looking for the survey group 
+                    break; // we can stop looking for the survey group
                 }
             }
-            System.out.println("Survey import complete after " + count_sg + " groups scanned; " + count_s + " surveys, "+ count_qg + " question groups, "+ count_q + " questions copied. ");
+            System.out.println("Survey import complete after " + count_sg + " groups scanned; "
+                    + count_s + " surveys, " + count_qg + " question groups, " + count_q
+                    + " questions copied. ");
         } catch (Exception e) {
             e.printStackTrace();
         }
-        
+
     }
-    
-    
-    
+
     // surveyId == null copies all surveys, all forms
     public void executeImport(String sourceBase, Long surveyId, String apiKey) {
         if (surveyId != null) {
             importOneGroup(sourceBase, surveyId, apiKey);
             return;
         }
-            
+
         SurveyGroupDAO sgDao = new SurveyGroupDAO();
         SurveyDAO sDao = new SurveyDAO();
-//        HashMap<Long,Long> NewSurveyGroupIds = new HashMap<Long,Long>();
+        // HashMap<Long,Long> NewSurveyGroupIds = new HashMap<Long,Long>();
         QuestionGroupDao qgDao = new QuestionGroupDao();
         QuestionDao qDao = new QuestionDao();
-//        HashMap<Long,Long> NewSurveyIds = new HashMap<Long,Long>();
+        // HashMap<Long,Long> NewSurveyIds = new HashMap<Long,Long>();
         boolean hasFoundSurvey = false;
         try {
-            List<SurveyGroup> allGroups = fetchSurveyGroups(sourceBase, apiKey); 
+            List<SurveyGroup> allGroups = fetchSurveyGroups(sourceBase, apiKey);
             for (SurveyGroup sg : allGroups) {
                 System.out.println("surveygroup: " + sg.getName() + ":"
                         + sg.getCode());
-                if (surveyId == null) {//All surveys, so copy all groups, too
+                if (surveyId == null) {// All surveys, so copy all groups, too
                     sgDao.save(sg);
                 }
                 for (Survey s : fetchSurveys(sg.getKey().getId(), sourceBase, apiKey)) {
                     System.out.println("  survey:" + s.getCode());
                     if (surveyId != null && surveyId.equals(s.getKey().getId())) {
-                        //walk the ancestor id array to save all the ancestral groups
+                        // walk the ancestor id array to save all the ancestral groups
                         for (Long ancestor : s.listAncestorIds()) {
-                            if (ancestor != 0 && ancestor != sg.getKey().getId()) {//Not root, not parent 
-                                //Unsaved intermediate ancestor
+                            if (ancestor != 0 && ancestor != sg.getKey().getId()) {// Not root, not
+                                                                                   // parent
+                                // Unsaved intermediate ancestor
                                 for (SurveyGroup potentialAncestor : allGroups) {
                                     if (potentialAncestor.getKey().getId() == ancestor) {
                                         sgDao.save(potentialAncestor);
@@ -205,14 +218,14 @@ public class SurveyReplicationImporter {
                                 }
                             }
                         }
-                        sgDao.save(sg);//Immediate ancestor
+                        sgDao.save(sg);// Immediate ancestor
                         sDao.save(s);
                         hasFoundSurvey = true;
                     } else if (surveyId != null) {
                         // if survey ID is not null but isn't matching, skip to
                         // next survey
                         continue;
-                    } else {//All surveys
+                    } else {// All surveys
                         sDao.save(s);
                     }
 

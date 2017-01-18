@@ -16,6 +16,8 @@
 
 package org.waterforpeople.mapping.app.web.dto;
 
+import java.util.List;
+
 import org.codehaus.jackson.annotate.JsonIgnore;
 
 import com.gallatinsystems.framework.gwt.dto.client.BaseDto;
@@ -63,6 +65,14 @@ public class ApprovalStepDTO extends BaseDto {
 
     public void setTitle(String title) {
         approvalStep.setTitle(title);
+    }
+
+    public List<Long> getApproverUserList() {
+        return approvalStep.getApproverUserList();
+    }
+
+    public void setApproverUserList(List<Long> approverUserList) {
+        approvalStep.setApproverUserList(approverUserList);
     }
 
     @JsonIgnore

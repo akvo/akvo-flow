@@ -412,6 +412,9 @@ FLOW.ApprovalStep = FLOW.BaseModel.extend({
     approvalGroupId: DS.attr('number'),
     order: DS.attr('number'),
     title: DS.attr('string'),
+    approverUserList: DS.attr('array', {
+        defaultValue: null
+    }),
 });
 
 FLOW.DataPointApproval = FLOW.BaseModel.extend({
