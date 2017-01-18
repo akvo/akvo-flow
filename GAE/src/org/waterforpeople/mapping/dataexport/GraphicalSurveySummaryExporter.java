@@ -744,8 +744,7 @@ public class GraphicalSurveySummaryExporter extends SurveySummaryExporter {
 
             case CADDISFLY:
                 qId = questionDto.getKeyId();
-                cells.addAll(caddisflyCellValues(qId, value,
-                        numResultsMap.get(qId), hasImageMap.get(qId), imagePrefix));
+                cells.addAll(caddisflyCellValues(qId, value, hasImageMap.get(qId), imagePrefix));
                 break;
 
             default:
@@ -851,8 +850,8 @@ public class GraphicalSurveySummaryExporter extends SurveySummaryExporter {
      * Creates the cells containing responses to caddisfly questions
      */
     @SuppressWarnings("unchecked")
-    private List<String> caddisflyCellValues(Long questionId, String value,
-            Integer numResults, Boolean hasImage, String imagePrefix) {
+    private List<String> caddisflyCellValues(Long questionId, String value, Boolean hasImage,
+            String imagePrefix) {
 
         List<String> caddisflyCellValues = new ArrayList<>();
 
@@ -1341,12 +1340,7 @@ public class GraphicalSurveySummaryExporter extends SurveySummaryExporter {
                                             headerStyle);
                                 }
 
-                                // store number of results and hasImage in
-                                // hashmap, for later use.
-                                // during the report building, we need access to
-                                // these numbers.
-                                numResultsMap.put(q.getKeyId(),
-                                        cr.getNumResults());
+                                // store hasImage in hashmap
                                 resultIdMap.put(q.getKeyId(), resultIds);
                                 hasImageMap.put(q.getKeyId(), cr.getHasImage());
                             }
