@@ -443,6 +443,14 @@ FLOW.ApprovalGroupListController = Ember.ArrayController.extend({
      * Controller Functions
      * ---------------------
      */
+
+    /*
+     * Load the list of approval groups
+     */
+    load: function () {
+        this.set('content', FLOW.ApprovalGroup.find());
+    },
+
     /*
      * Delete an approval group from the list
      */
@@ -506,7 +514,7 @@ FLOW.ApprovalGroupController = Ember.ObjectController.extend({
     add: function () {
         var group = FLOW.ApprovalGroup.createRecord({
             name: Ember.String.loc('_new_approval_group'),
-            ordered: false,
+            ordered: true,
         });
 
         this.set('content', group);
@@ -578,17 +586,6 @@ FLOW.ApprovalStepsController = Ember.ArrayController.extend({
      */
     sortProperties: ['order'],
 
-    /*
-     * Observe the survey approval group id and load the necessary approval steps
-     */
-    surveyDataApprovalGroupIdObserver: function () {
-        var currentProject = FLOW.projectControl.get('currentProject');
-        var approvalGroupId = currentProject && currentProject.get('dataApprovalGroupId');
-        if (approvalGroupId) {
-            this.loadByGroupId(approvalGroupId);
-        }
-    }.observes('FLOW.projectControl.currentProject.dataApprovalGroupId'),
-
     /* ---------------------
      * Controller Functions
      * ---------------------
@@ -616,9 +613,17 @@ FLOW.ApprovalStepsController = Ember.ArrayController.extend({
             FLOW.store.commit();
         }
         var steps = this.content;
+        var lastStep = steps && steps.get('lastObject');
+
+        // For cases where intermediate steps have been deleted during
+        // the creation of an approval group, we do not update the order
+        // of subsequent steps but rather ensure that the order of the
+        // next step is based on the last step in the approval list. e.g
+        // the order property for an approval list could be 0,2,4,6, where
+        // steps with order 1,3 and 5 were deleted during group creation
         var newStep = Ember.Object.create({
             approvalGroupId: groupId,
-            order: steps.get('length'),
+            order: lastStep && lastStep.get('order') + 1 || 0,
             title: null,
         });
         steps.addObject(FLOW.store.createRecord(FLOW.ApprovalStep, newStep));
@@ -675,10 +680,7 @@ FLOW.ApprovalStepsController = Ember.ArrayController.extend({
         var step = event.context;
         var steps = this.content;
         steps.removeObject(step);
-
-        if(step.get('keyId')) {
-            step.deleteRecord();
-        }
+        step.deleteRecord();
     },
 });
 

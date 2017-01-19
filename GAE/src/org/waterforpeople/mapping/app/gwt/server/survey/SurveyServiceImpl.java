@@ -49,7 +49,6 @@ import org.waterforpeople.mapping.app.gwt.client.survey.SurveyGroupDto;
 import org.waterforpeople.mapping.app.gwt.client.survey.SurveyService;
 import org.waterforpeople.mapping.app.gwt.client.survey.TranslationDto;
 import org.waterforpeople.mapping.app.util.DtoMarshaller;
-import org.waterforpeople.mapping.app.web.DataProcessorRestServlet;
 import org.waterforpeople.mapping.app.web.dto.BootstrapGeneratorRequest;
 import org.waterforpeople.mapping.app.web.dto.SurveyAssemblyRequest;
 import org.waterforpeople.mapping.app.web.dto.SurveyTaskRequest;
@@ -59,7 +58,6 @@ import org.waterforpeople.mapping.dao.SurveyInstanceDAO;
 import com.gallatinsystems.common.Constants;
 import com.gallatinsystems.common.util.PropertyUtil;
 import com.gallatinsystems.framework.exceptions.IllegalDeletionException;
-import com.gallatinsystems.framework.gwt.dto.client.ResponseDto;
 import com.gallatinsystems.messaging.dao.MessageDao;
 import com.gallatinsystems.messaging.domain.Message;
 import com.gallatinsystems.metric.dao.SurveyMetricMappingDao;
@@ -736,7 +734,7 @@ public class SurveyServiceImpl extends RemoteServiceServlet implements
         if (sg != null && sg.getNewLocaleSurveyId() != null &&
                 sg.getNewLocaleSurveyId().longValue() == surveyId.longValue()) {
             // This is the registration form. Schedule datapoint name re-assembly
-            DataProcessorRestServlet.scheduleDatapointNameAssembly(sg.getKey().getId(), null);
+            // DataProcessorRestServlet.scheduleDatapointNameAssembly(sg.getKey().getId(), null);
         }
     }
 

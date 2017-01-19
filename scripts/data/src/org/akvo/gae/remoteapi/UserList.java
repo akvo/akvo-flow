@@ -32,12 +32,15 @@ public class UserList {
 
     public static void main(String[] args) throws Exception {
 
-        if (args.length != 2) {
+        if (args.length != 1) {
             throw new IllegalArgumentException("Missing params");
         }
 
-        final String usr = args[0];
-        final String pwd = args[1];
+        StringBuilder configFolder = new StringBuilder(args[0].trim());
+        if (!configFolder.toString().endsWith("/")) {
+            configFolder.append("/");
+        }
+
         final List<String> instances = FileUtils
                 .readLines(new File("/tmp/instances.txt"));
         final File f = new File("/tmp/device-list.csv");
@@ -45,9 +48,10 @@ public class UserList {
         FileUtils.write(f, "Instance,Device,Version\n");
 
         for (String i : instances) {
-
+            final String serviceAccount = "sa-" + i + "@" + i + ".iam.gserviceaccount.com";
+            final String serviceAccountKey = configFolder + i + "/" + i + ".p12";
             final RemoteApiOptions options = new RemoteApiOptions().server(i + ".appspot.com", 443)
-                    .credentials(usr, pwd);
+                    .useServiceAccountCredential(serviceAccount, serviceAccountKey);
             final RemoteApiInstaller installer = new RemoteApiInstaller();
             final StringBuffer sb = new StringBuffer();
             installer.install(options);
