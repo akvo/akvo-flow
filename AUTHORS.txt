@@ -1,6 +1,6 @@
 AUTHORS.txt v1.0, 1 February 2013, tbp 
 
-AUTHORS of Akvo FLOW
+AUTHORS of Akvo Flow
 
 The PRIMARY AUTHORS are (and/or have been):
 
@@ -31,7 +31,7 @@ Translation support by:
 - Ger Pannenkoek
 
 Contributors, here is an inevitably incomplete list of MUCH APPRECIATED
-CONTRIBUTORS whom without, Akvo FLOW would not have been the same:
+CONTRIBUTORS whom without, Akvo Flow would not have been the same:
 
 - Thomas Bjelkeman-Pettersson
 - Ned Breslin
@@ -44,12 +44,12 @@ CONTRIBUTORS whom without, Akvo FLOW would not have been the same:
 
 Further team members can be found at < http://www.akvo.org/web/team >
 
-Funding partners, without them Akvo FLOW could not have happened
+Funding partners, without them Akvo Flow could not have happened
 
 - Water for People
 - Cisco Foundation
 - Conrad F. Hilton Foundation
 - Dutch Ministry of Foreign Affairs
 
-Many more partners, who all have greatly contributed to Akvo FLOW in
+Many more partners, who all have greatly contributed to Akvo Flow in
 many ways can be found at: < http://www.akvo.org/web/partners >.
