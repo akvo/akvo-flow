@@ -38,4 +38,11 @@ public class Constants {
     public static final String API_V1_PREFIX = "/api/v1";
     public static final Long ROOT_FOLDER_ID = 0L;
 
+    // caddisfly constants
+    public static final String CADDISFLY_UUID = "uuid";
+    public static final String CADDISFLY_IMAGE = "image";
+    public static final String CADDISFLY_RESULT = "result";
+    public static final String CADDISFLY_RESULT_VALUE = "value";
+    public static final String CADDISFLY_RESULT_ID = "id";
+
 }

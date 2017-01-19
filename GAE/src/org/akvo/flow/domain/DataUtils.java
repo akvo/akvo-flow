@@ -17,9 +17,12 @@
 package org.akvo.flow.domain;
 
 import java.io.IOException;
+import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.apache.log4j.Logger;
 import org.codehaus.jackson.map.ObjectMapper;
 import org.codehaus.jackson.type.TypeReference;
 
@@ -28,15 +31,17 @@ import org.codehaus.jackson.type.TypeReference;
  */
 public class DataUtils {
 
+    private static final Logger log = Logger.getLogger(DataUtils.class);
+
     public static final ObjectMapper JSON_OBJECT_MAPPER = new ObjectMapper();
 
     public static String[] optionResponsesTextArray(String optionResponse) {
         String[] responseArray = null;
 
-        if (optionResponse == null || optionResponse.trim() == "") {
+        if (optionResponse == null || optionResponse.trim().equals("")) {
             return new String[0];
         }
-        
+
         List<Map<String, String>> optionNodes = jsonStringToList(optionResponse);
         if (optionNodes != null) {
             responseArray = new String[optionNodes.size()];
@@ -52,14 +57,14 @@ public class DataUtils {
 
         return responseArray;
     }
-    
+
     public static String[] cascadeResponseValues(String data) {
         String[] values = null;
 
-        if (data == null || data.trim() == "") {
+        if (data == null || data.trim().equals("")) {
             return new String[0];
         }
-        
+
         List<Map<String, String>> nodes = jsonStringToList(data);
         if (nodes != null) {
             values = new String[nodes.size()];
@@ -134,5 +139,26 @@ public class DataUtils {
             // ignore
         }
         return signatory;
+    }
+
+    /**
+     * Parse a caddisfly response string and return a corresponding map
+     *
+     * @param caddisflyValue
+     * @return
+     */
+    @SuppressWarnings("unchecked")
+    public static Map<String, Object> parseCaddisflyResponseValue(String caddisflyValue) {
+        Map<String, Object> caddisflyResponseMap = new HashMap<>();
+        try {
+            caddisflyResponseMap = JSON_OBJECT_MAPPER.readValue(caddisflyValue, Map.class);
+        } catch (IOException e) {
+            log.error("Failed to parse the caddisfly response");
+        }
+        if (caddisflyResponseMap != null) {
+            return caddisflyResponseMap;
+        } else {
+            return Collections.emptyMap();
+        }
     }
 }
