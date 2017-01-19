@@ -20,6 +20,7 @@ The PRIMARY AUTHORS are (and/or have been):
 - Ruarcc McAloon
 - Jana Gombitova
 - Emmanuel Mulo
+- Valeria Rogatchevskikh
 
 Translation support by:
 
