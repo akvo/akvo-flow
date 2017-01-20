@@ -5,6 +5,44 @@ Read more about the [Akvo Platform](http://www.akvo.org/blog/?p=4822).
 
 Akvo FLOW Dashboard release notes
 ----
+#1.9.12 Kinky Kookaburra
+Date: 19 January 2017
+
+# New and noteworthy
+* **Add 2 new Caddisfly sensors to Flow Caddisfly** [#1863] - We add two items to the list of available caddisfly tests; new soil EC (SEC) sensor and soil moisture (SOM) sensor
+
+* **Export Caddisfly data to reports** [#1643] - We implement the generation of caddisfly results as a new column(s) in raw data reports
+
+* **Assign responsible users to an approval group in a survey** [#1774] - We introduce the possibility to assign responsible users to steps of a data approval group in a survey
+
+# Resolved issues
+* **Refactor `UserList` data script to use service accounts** [#1888] - We fix the data script to use service accounts based authorization
+
+* **Approval status incorrect for rejected points** [#1882] - We fix an issue where the approval status of a data point was not correctly displayed in the case that one of the steps was rejected
+
+* **Cannot load data for Monitoring tab** [#1880] - Fix the loading of the data points under the monitoring tab caused by a bug in the data approval implementation
+
+* **Approval group not saved after page refresh** [#1866] - We fix an issue where data approval groups assigned to a survey were not correctly saved and disappeared after reloading Flow in the browser
+
+* **Missing app version number in Device list** [#1819] - In a number of cases, we were not storing the version of the app depending on which request the app made to the dashboard.  We now update the app version for every request that is made to the dashboard
+
+* **Remove obstructive dependency from appletBuild.xml class path deployment & infrastructure** [#1812] - We removed a disruptive dependency that was causing some files to be excluded while building the exporterapplet.jar
+
+* **Caddisfly results render as string in Carto maps** [#1800] - Fix the rendering of responses to show actual results and images and not only JSON strings
+
+* **Deleting a step not reflected** [#1797] - In cases where an approval step was deleted while followed by adding other steps, the deleted step was not cleared from memory and reappeared later on when saving the approval group.
+
+* **Export crashes with NPE if cascade question has no cascade** [#1795] - Fix an internal technical error in report generation for cascade questions that have no associated cascade
+
+* **Approval status after full page refresh** [#1786] - We fixed an issue where the latest approval status of a data point would disappear when the dashboard was reloaded.
+
+* **Approval status gone after all steps approved** [#1785] - We fix the error where no approval status was shown once all approval steps had been successfully approved
+
+* **Minor improvement to data approval dropdown in survey settings** [#1770] - We added a prompt in the data approval dropdown that prevents the first approval in the list from being selected by default
+
+* **Invalid empty repeat question group error** [#1684] - We fix an error that was caused by the existence of empty (phantom) rows when importing a raw data spreadsheet
+
+
 #1.9.11.1 Jubilant Jaguar Hotfix
 Date: 7 December 2016
 
@@ -14,11 +52,10 @@ Date: 7 December 2016
 #1.9.11 Jubilant Jaguar
 Date: 7 November 2016
 
-#New and noteworthy
+# New and noteworthy
 * **Integration of the Akvo Caddisfly mobile app with the Flow dashboard** - As part of the [integration of the Akvo Caddisfly app with the Flow dashboard](https://github.com/akvo/akvo-product-design/issues/5), we introduce changes to; create a new question that is of type `Akvo Caddisfly` [#1577], and enable correctly transforming and displaying data gathered by the caddisfly app [#1570]. With this you can now add an Akvo Caddisfly water quality test to your Akvo Flow survey.
 
 * **Implement data approval workflow management** - As part of the larger [data approval feature](https://github.com/akvo/akvo-product-design/issues/82), we have a number of changes introduced in this release that include; introducing a new tab in under the `Data > Data Approval`, where one is able to handle the creation and management of data approval groups along with their associated steps [#1803], enabling a user to activate data approval for a particular survey and associate a set of approval steps with a survey [#1660, #1771], and approving data points gathered in a survey, based on approval steps from the associated approval group [#1664]. This feature is currently under testing and is not available to all our partners yet.
-
 
 # Resolved issues
 * **Improve copying of surveys between instances** [#873] - While copying surveys across different dashboards, a number of manual steps were required to complate the process.  We have now resolved these actions and copying the surveys across instances requires almost no manual intervention. The task is done by our Flow support team.

@@ -143,7 +143,7 @@ FLOW.NavMapsView = FLOW.View.extend({
     button = this.$('#mapDetailsHideShow');
 
     this.set('detailsPaneVisible', false);
-    button.html('&lsaquo; Show');
+    button.html('');
 
     this.$('#flowMap').delay(delay).animate({
       width: '99.25%'
