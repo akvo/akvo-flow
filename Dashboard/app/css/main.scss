@@ -714,6 +714,7 @@ nav.appNav {
 
             a {
                 padding: 25px 5px 5px 5px;
+                font-size: 0.85em;
             }
 
             &.navHome {
@@ -5176,7 +5177,7 @@ table.surveyTranslate .qHelpTooltip label.qTooltip + input {
                     margin-top: 5px;
                     font-weight: 600;
 
-                    &.projectForm, &.projectMonitoring, &.projectStatus {
+                    &.projectForm, &.projectMonitoring, &.projectStatus, &.formVersion, &.formID, &.formQuestionCount {
                         color: white;
                         font-size: 1.8em;
                     }
@@ -6410,4 +6411,13 @@ html.navMaps, .public {
 
 iframe {
     min-height: calc(100% - 225px);
+}
+
+svg {
+    g {
+        text {
+            font-weight: normal !important;
+            font-size: 1em !important;
+        }
+    }
 }
