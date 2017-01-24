@@ -6016,12 +6016,17 @@ table.surveyDetails {
                     color: #c49a6c;
 
                     & + select {
-                        margin: 0 0 20px 30px;
+                        margin: 0 0 20px 10px;
+                        display: block;
                     }
                 }
 
                 form {
                     width: 100%;
+                }
+
+                label.labelcheckbox {
+                    display: inline-block;
                 }
 
                 input {
@@ -6042,8 +6047,6 @@ table.surveyDetails {
                 }
 
                 .projectSelect {
-                    margin-bottom: 50px;
-
                     li {
                         display: block;
                         width: 100%;
@@ -6836,7 +6839,6 @@ li.disable {
     }
 
     h5 {
-        background
         &.iterationNumber {
             margin: 16px 0px 5px 8px;
         }
