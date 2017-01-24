@@ -1,5 +1,5 @@
-@import 'library.scss';
-@import 'forms.scss';
+@import "library.scss";
+@import "forms.scss";
 
 /*--------------------------------------------------------------
 
@@ -8,142 +8,153 @@
 -------------------------------------------------------------- */
 
 html {
-    padding-top:20px;
-    width: 100%;
-    overflow-y: scroll;
-    background: white;
-}
-body {
     width: 100%;
     height: 100%;
+    overflow-y: scroll;
+    border-top: 3px solid rgb(38, 8, 89);
+    box-sizing: border-box;
     color: rgb(36, 48, 50);
-    font-size: 12px;
+    font-size: 16px;
     line-height: 1.42857;
     text-rendering: optimizelegibility;
     font-family: $bodyFont;
+    -webkit-font-smoothing: antialiased;
+}
+
+body {
+    width: 100%;
+    height: 100%;
+    -ms-overflow-style: -ms-autohiding-scrollbar;
+    overflow-x: hidden;
+}
+
+h1 {
+    font-size: 1.5em;
+}
+
+h2 {
+    color: rgb(44, 42, 116);
+    font-size: 1.3em;
+}
+
+h3 {
+    font-size: 1.2em;
+    line-height: 1;
+}
+
+h4 {
+    font-size: 1.1em;
+    line-height: 1.25em;
+}
+
+h5 {
+    margin-bottom: 0.5em;
+    font-size: 1em;
+}
+
+h6 {
+    font-size: 1em;
+}
+
+h1 img,
+h2 img,
+h3 img,
+h4 img,
+h5 img,
+h6 img {
+    margin: 0;
+}
+
+em {
+    padding-bottom: 1em;
+}
+
+.smaller {
+    font-size: 0.8em;
 }
 
 /*--------------------------------------------------------------
-                            Headings
+
+                    * End Default Typography.
+
 -------------------------------------------------------------- */
-
-h1,
-h2,
-h3,
-h4,
-h5,
-h6 {
-    font-family: $titleFont;
-    font-weight: normal;
-}
-h1 {
-    font-size: 1.8em;
-}
-h2 {
-    color: rgb(44, 42, 116);
-    font-size: 1.7em;
-}
-h3 {
-    font-size: 1.6em;
-    line-height: 1;
-}
-h4 {
-    font-size: 1em;
-    line-height: 1.25em;
-}
-h5 {
-    margin-bottom: 0.5em;
-    font-size: 1.2em;
-}
-h6 {
-    font-size: 1em;
-}
-
-
-.marginLeft {
-    margin-left:15px;
-}
-/* links
----------------------------------------------------------------*/
-
-button, a{
-    &.cancelAction, &.goBack {
-        text-transform: uppercase;
-    }
-    &.cancelAction {
-        color:$akvoRed;
-    }
-}
-
-a {
-    cursor: pointer;
-}
 
 /* Sliding panels
 --------------------------------------------- */
 section[role=main] {
-    padding-top:20px;
-    padding-bottom:20px;
-    overflow:hidden;
+    padding-top: 20px;
+    padding-bottom: 20px;
+    overflow: hidden;
+
     .nav-tabs {
         li {
             &:hover {
-                cursor:pointer;
+                cursor: pointer;
             }
         }
     }
-.panels {
+
+    .panels {
         height: 100%;
-        background:white;
-        width:calc(100% * 2);
-        overflow:hidden;
+        background: white;
+        width: calc(100% * 2);
+        overflow: hidden;
+
         .mypanel {
-                width:calc(100% / 2);
-                float: left;
-                -webkit-transition: transform .6s ease-out;
-                -moz-transition: transform .6s ease-out;
-                -o-transition: transform .6s ease-out;
-                transition: transform .6s ease-out;
-                background:white;
-                &.opened {
+            width: calc(100% / 2);
+            float: left;
+            -webkit-transition: transform .6s ease-out;
+            -moz-transition: transform .6s ease-out;
+            -o-transition: transform .6s ease-out;
+            transition: transform .6s ease-out;
+            background: white;
+
+            &.opened {
                 /* visible */
                 -webkit-transform: translate(-100%, 0);
                 -moz-transform: translate(-100%, 0);
-                    -ms-transform: translate(-100%, 0);
-                        transform: translate(-100%, 0);
-                }
-                &.closed {
+                -ms-transform: translate(-100%, 0);
+                transform: translate(-100%, 0);
+            }
+
+            &.closed {
                 /* completely offscreen */
                 -webkit-transform: translate(0%, 0);
-                   -moz-transform: translate(0%, 0);
-                    -ms-transform: translate(0%, 0);
-                        transform: translate(0%, 0);
+                -moz-transform: translate(0%, 0);
+                -ms-transform: translate(0%, 0);
+                transform: translate(0%, 0);
             }
-            .panelHeader{
-                padding:20px 0 20px 0;
-                margin-left:0;
-                background:rgba(212,212,212,0.2);
-                h4{
-                    span{
+
+            .panelHeader {
+                padding: 20px 0 20px 0;
+                margin-left: 0;
+                background: rgba(212, 212, 212, 0.2);
+
+                h4 {
+                    span {
                         &.usrNm {
                             font-weight: bold;
-                            color: rgba(32,32,36,0.8);
-                            margin-left:5px;
+                            color: rgba(32, 32, 36, 0.8);
+                            margin-left: 5px;
                         }
                     }
                 }
+
                 .panelTitle {
-                    color:rgb(182,182,182);
-                    }
+                    color: rgb(182, 182, 182);
                 }
+            }
+
             .roleEditSelect {
-                border-bottom:1px solid rgb(212,212,212);
+                border-bottom: 1px solid rgb(212, 212, 212);
+
                 select:first-child {
-                    margin-right:10px;
+                    margin-right: 10px;
+
                     &:after {
-                        content:" > ";
+                        content: " > ";
                         display: inline;
-                        margin-right:10px;
+                        margin-right: 10px;
                     }
                 }
             }
@@ -154,79 +165,96 @@ section[role=main] {
 .permissionList {
     div {
         &.checkbox {
-            padding:10px 0;
+            padding: 10px 0;
+
             @include border-radius(3px);
-            &:nth-child(2n){
-                background-color: rgb(248,248,248);
+
+            &:nth-child(2n) {
+                background-color: rgb(248, 248, 248);
             }
         }
     }
-    label{
-        font-size:130%;
+
+    label {
+        font-size: 130%;
     }
 }
+
 .btn {
     text-transform: uppercase;
 }
+
 /********************************* Tables ********************************/
 table {
     &.userRoleList {
-        thead{
-                border-bottom:none;
-            tr{
-                border-bottom:none;
-            th{
-                color:grey;
+        thead {
+            border-bottom: none;
+
+            tr {
+                border-bottom: none;
+
+                th {
+                    color: grey;
                 }
             }
         }
     }
+
     &.dataTable {
-        margin:15px auto;
+        margin: 15px auto;
     }
+
     tr {
         &.tabHeader {
-            background:$tableHeaderGrey;
-            color:$yellowTableHead;
-            padding:15px 0;
-            text-transform:uppercase;
+            background: $tableHeaderGrey;
+            color: $yellowTableHead;
+            padding: 15px 0;
+            text-transform: uppercase;
+
             a {
-               color:$yellowTableHead;
+                color: $yellowTableHead;
             }
-            td {
-            }
+
+            td {}
         }
     }
 }
-.table-striped>tbody>tr:nth-child(odd) {
-    background-color:rgb(222,222,222);
+
+.table-striped > tbody > tr:nth-child(odd) {
+    background-color: rgb(222, 222, 222);
 }
+
 /********************************* Structure ********************************/
 .topMargin {
-    margin-top:15px;
+    margin-top: 15px;
 }
+
 .paddingTop {
-    padding:20px 0;
+    padding: 20px 0;
+
     &.dropdown {
-        padding:7px 0 10px 0;
+        padding: 7px 0 10px 0;
     }
 }
 
 .userEditSection, .userRolesPerm, .apiKeySection {
-    padding:10px 5px;
+    padding: 10px 5px;
+
     h2 {
-        margin:10px 5px;
+        margin: 10px 5px;
         text-align: left;
     }
 }
+
 .userRolesPerm {
     ul.dropdown-menu {
-        max-height:220px;
+        max-height: 220px;
         overflow-y: scroll;
     }
 }
+
 div.folderStructure {
     &:first-child {
-        margin-left:15px;
+        margin-left: 15px;
     }
 }

@@ -1,13 +1,14 @@
-<section class="fullWidth assignmentsListed" id="assignmentsList"> 
-  <!-- assignments TABLE--> 
+<section class="fullWidth assignmentsListed" id="assignmentsList">
+  <!-- assignments TABLE-->
   
   {{#view FLOW.AssignmentsListTabView}}
-  <a {{action "createNewAssignment" target="this"}} class="standardBtn btnAboveTable">{{t _create_new_assignment}}</a>
-  <div id="devicesListTable_length" class="dataTables_length"> </div>
-  <table class="dataTable" id="deviceDataTable">
-    <!-- TABLE HEADER-->
-    <thead>
-      <tr> {{#view FLOW.ColumnView item="name" type="assignment"}} <a {{action "sort" target="this"}}>{{t _name}}</a> {{/view}}
+  <div class="deviceControls">
+    <a {{action "createNewAssignment" target="this"}} class="btnOutline">{{t _create_new_assignment}}</a></div>
+    <div id="devicesListTable_length" class="dataTables_length"> </div>
+    <table class="dataTable" id="deviceDataTable">
+      <!-- TABLE HEADER-->
+      <thead>
+        <tr> {{#view FLOW.ColumnView item="name" type="assignment"}} <a {{action "sort" target="this"}}>{{t _name}}</a> {{/view}}
         {{#view FLOW.ColumnView item="startDate" type="assignment"}} <a {{action "sort" target="this"}}>{{t _start_date}}</a> {{/view}}
         {{#view FLOW.ColumnView item="endDate" type="assignment"}} <a {{action "sort" target="this"}}>{{t _end_date}}</a> {{/view}}
         <th class="action noArrows"> <a>{{t _action}}</a></th>
@@ -15,22 +16,22 @@
     </thead>
     <!-- TABLE BODY: MAIN CONTENT-->
     <tbody>
-    
-    {{#each assignment in FLOW.surveyAssignmentControl}}
-    <tr>
-      <td class="name" style="text-align:left; padding:0 0 0 5px;">{{assignment.name}}</td>
-      <td class="startDate" >{{#with assignment}} {{date3 startDate}} {{/with}}</td>
-      <td class="endDate" >{{#with assignment}} {{date3 endDate}} {{/with}}</td>
-      <td class="action"><a {{action "editSurveyAssignment" assignment target="this"}} class="edit">{{t _edit}}</a> {{#view FLOW.AssignmentView contentBinding="assignment"}}<a {{action confirm FLOW.dialogControl.delAssignment target="FLOW.dialogControl"}} class="remove">{{t _remove}}</a>{{/view}} 
-    </tr>
-    {{/each}}
-      </tbody>
+      
+      {{#each assignment in FLOW.surveyAssignmentControl}}
+      <tr>
+        <td class="name" style="text-align:left; padding:0 0 0 5px;">{{assignment.name}}</td>
+        <td class="startDate" >{{#with assignment}} {{date3 startDate}} {{/with}}</td>
+        <td class="endDate" >{{#with assignment}} {{date3 endDate}} {{/with}}</td>
+        <td class="action"><a {{action "editSurveyAssignment" assignment target="this"}} class="edit">{{t _edit}}</a> {{#view FLOW.AssignmentView contentBinding="assignment"}}<a {{action confirm FLOW.dialogControl.delAssignment target="FLOW.dialogControl"}} class="remove">{{t _remove}}</a>{{/view}}
+      </tr>
+      {{/each}}
+    </tbody>
     
     <!-- TABLE FOOTER-->
     <tfoot>
-      <tr>
-        <td colspan="7"><small>This is the footer.</small></td>
-      </tr>
+    <tr>
+      <td colspan="7"><small>This is the footer.</small></td>
+    </tr>
     </tfoot>
   </table>
-  {{/view}} </section>
+{{/view}} </section>

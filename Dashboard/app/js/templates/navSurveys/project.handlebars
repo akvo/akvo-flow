@@ -23,7 +23,7 @@
           <section class="projectDetails">
             <h3>{{t _survey_basics}}</h3>
             {{#unless view.isNewProject}}
-              <a {{action "toggleShowProjectDetails" target="this"}} class="showCollapse">
+              <a {{action "toggleShowProjectDetails" target="this"}} class="button">
                 {{#if view.visibleProjectBasics}}
                   {{t _collapse}}
                 {{else}}
@@ -55,7 +55,7 @@
                 </ul>
                 {{#if FLOW.projectControl.hasForms}}
                   <span class="monitoringAndvanced">
-                    <a {{action "toggleShowAdvancedSettings" target="this"}} class="showCollapse">
+                    <a {{action "toggleShowAdvancedSettings" target="this"}} class="button">
                       {{#if view.showAdvancedSettings}}
                         {{t _collapse}}
                       {{else}}
