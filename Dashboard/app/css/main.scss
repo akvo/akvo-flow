@@ -6018,6 +6018,10 @@ table.surveyTranslate .qHelpTooltip label.qTooltip + input {
                     width: 100%;
                 }
 
+                label.labelcheckbox {
+                    display: inline-block;
+                }
+
                 input {
                     width: 99%;
                     margin-bottom: 35px;
