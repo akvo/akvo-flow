@@ -4668,8 +4668,7 @@ div.dataCollectedDate label input {
     border-top: none;
 }
 
-.publicPage {
-}
+.publicPage {}
 
 div#drawHandleWrap {
     position: relative;
@@ -5328,6 +5327,10 @@ table.surveyTranslate .qHelpTooltip label.qTooltip + input {
 
 .surveyDetails {
     min-height: 200px;
+}
+
+table.surveyDetails {
+    min-height: inherit;
 }
 
 .surveyDetails ul textarea {
