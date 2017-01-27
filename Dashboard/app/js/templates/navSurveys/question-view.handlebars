@@ -119,7 +119,7 @@
         <h1 class="answerNbr">{{t _settings}}: </h1>
          <label class="selectinLabel dependencySelect"> {{t _choose_caddisfly_question_resource}}: {{tooltip _choose_caddisfly_question_resource_tooltip}}
         {{view Ember.Select
-        contentBinding="FLOW.caddisflyResourceControl.content"
+        contentBinding="FLOW.router.caddisflyResourceController"
         selectionBinding="FLOW.selectedControl.selectedCaddisflyResource"
         optionLabelPath="content.displayName"
         optionValuePath="content.keyId"
