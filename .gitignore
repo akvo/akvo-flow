@@ -30,6 +30,7 @@ Dashboard/.bundle
 Dashboard/app/cljs/out/
 Dashboard/app/cljs/target
 Dashboard/app/cljs/users.js
+Dashboard/app/css/main.css.map
 Dashboard/app/test.html
 Dashboard/assets
 Dashboard/bin
