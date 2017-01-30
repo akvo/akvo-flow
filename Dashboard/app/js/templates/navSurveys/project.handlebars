@@ -23,7 +23,7 @@
           <section class="projectDetails">
             <h3>{{t _survey_basics}}</h3>
             {{#unless view.isNewProject}}
-              <a {{action "toggleShowProjectDetails" target="this"}} class="showCollapse">
+              <a {{action "toggleShowProjectDetails" target="this"}} class="button">
                 {{#if view.visibleProjectBasics}}
                   {{t _collapse}}
                 {{else}}
@@ -54,23 +54,10 @@
                   </li>
                 </ul>
                 {{#if FLOW.projectControl.hasForms}}
-                  <span class="monitoringAndvanced">
-                    <a {{action "toggleShowAdvancedSettings" target="this"}} class="showCollapse">
-                      {{#if view.showAdvancedSettings}}
-                        {{t _collapse}}
-                      {{else}}
-                        {{t _show_advanced_settings}}
-                      {{/if}}
-                    </a>
-                  </span>
-
-                  {{#if view.showAdvancedSettings}}
-                    {{#if view.showMonitoringGroupCheckbox}}
                       <label for="enableMonitoring" class="labelcheckbox">
                         {{view Ember.Checkbox checkedBinding="FLOW.projectControl.currentProject.monitoringGroup" id="enableMonitoring" disabledBinding="view.disableFolderSurveyInputField"}}{{t _enable_monitoring_features}}
                       </label>
-                    {{/if}}
-                    {{#if FLOW.projectControl.currentProject.monitoringGroup}}
+                      {{#if FLOW.projectControl.currentProject.monitoringGroup}}
 
                       <p class="monitoringHint">{{t _choose_the_registration_form}}: {{tooltip _choose_the_registration_form_tooltip}}</p>
                       {{view Ember.Select
@@ -79,7 +66,9 @@
                         optionLabelPath="content.code"
                         optionValuePath="content.keyId"
                         disabledBinding="view.disableFolderSurveyInputField"}}
-                    {{/if}}
+
+
+
 
                     {{#if view.showDataApproval}}
                         <label for="enableDataApproval" class="labelcheckbox">
@@ -140,6 +129,12 @@
               </form>
             {{/if}}
           </section>
+
+
+
+
+
+
           <section class="noFormsContainer">
             {{#unless FLOW.projectControl.hasForms}}
               <ul>

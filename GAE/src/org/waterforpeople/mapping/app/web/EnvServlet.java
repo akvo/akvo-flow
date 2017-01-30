@@ -124,6 +124,10 @@ public class EnvServlet extends HttpServlet {
             props.put("enableDataApproval", "false");
         }
 
+        if (props.get("googleMapsRegionBias") == null) {
+            props.put("googleMapsRegionBias", "");
+        }
+
         if (props.get("extraMapboxTileLayerMapId") == null) {
             props.put("extraMapboxTileLayerMapId", "");
         }
