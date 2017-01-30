@@ -6,10 +6,19 @@
 			<li class="footLink"><a href="https://github.com/akvo/akvo-flow/releases" title="Go to Software Updates" target="_blank" > {{t _software_updates}}</a></li>
 			<li class="footLink"><a href="http://flowsupport.akvo.org/" title="Help and Support" target="_blank" > {{t _help_support}}</a></li>
 			<li class="footLink"><a href="http://akvo.org/help/akvo-policies-and-terms-2/akvo-flow-terms-of-use/" title="Terms of Service" target="_blank" >{{t _terms_of_service}}</a></li>
-			<li class="footLink"><a href="http://www.akvo.org" title="akvo.org" target="_blank" class="akvoDotOrg">akvo.org</a></li>
-      		<li><a href="/admin/logout.html" class="btnOutline">{{t _log_out}}</a></li>
+			<li>
+				<form>
+				   <label class="languageSelector">
+				   {{view Ember.Select
+				      contentBinding="FLOW.dashboardLanguageControl.content"
+				      optionLabelPath="content.label"
+				      optionValuePath="content.value"
+				      valueBinding="FLOW.dashboardLanguageControl.dashboardLanguage" }}
+				   </label>
+				</form>
+			</li>
 		</ul>
 	</nav>
   </div>
-  <div><small>__VERSION__ - {{t _copyright}} &copy; 2012-2017 akvo.org</small></div>
-</footer>
+  <div><small>__VERSION__ - {{t _copyright}} &copy; 2012-2017 <a href="http://www.akvo.org" title="akvo.org" target="_blank">akvo.org</a></small></div>
+ <footer>

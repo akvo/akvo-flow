@@ -91,4 +91,3 @@ tests/clojure/akvo-tests/target
 *.codekit
 *.scssc
 dwsync.xml
-

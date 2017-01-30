@@ -494,7 +494,7 @@ input[type="submit"] {
 .dialogWrap {
     position: relative;
     width: 100%;
-    Height: 100%;
+    height: 100%;
 }
 
 .dialog {
@@ -656,6 +656,13 @@ header.top {
         text-indent: -9999px;
         background-size: 90% auto;
     }
+}
+
+.logIn, .logOut {
+    position: absolute;
+    top: 7px;
+    right: 0.25%;
+    list-style-type: none;
 }
 
 .userRegister {
@@ -940,7 +947,7 @@ nav.appNav {
     }
 }
 
-/* 
+/*
 nav.appNav {
     position: absolute;
     top: 0px;
