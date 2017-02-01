@@ -204,11 +204,11 @@ pre {
 }
 
 /************************* links *************************/
-.button {
+.button, .standardBtn {
     @include button($flowAnchorLink);
 }
 
-.smallButton {
+.smallButton, .smallBtn {
     @include smallButton($flowAnchorLink);
 }
 
@@ -2109,7 +2109,7 @@ section.topBar {
 }
 
 section.topBar ~ * {
-    margin-top: 70px;
+    margin-top: 80px;
 
     #tabs & {
         margin-top: 90px;
@@ -2176,11 +2176,12 @@ section.topBar {
 
     nav.breadCrumb {
         ul li {
+            white-space: nowrap;
             display: inline-block;
             height: 34px;
             line-height: 34px;
             width: auto;
-            margin: 5px 3px 0 0;
+            margin: 5px 3px 0 -1px;
             text-indent: 19px;
             position: relative;
         }
@@ -2421,6 +2422,7 @@ li.aSurvey {
     -o-border-radius: 0.3em;
     border-radius: 0.3em;
     clear: both;
+    overflow: auto;
 
     &:hover {
         cursor: default;
@@ -3413,7 +3415,7 @@ nav.questionActionMenu a:hover {
     display: inline;
 }
 
-.innerContent nav ul li a.standardBtn {
+.innerContent nav ul li a.button {
     margin: 2em 1.5em auto auto;
     width: 15%;
 }
@@ -4128,6 +4130,7 @@ div.dataCollectedDate label input {
     background: rgb(241, 241, 241);
     overflow-style: marquee-line;
     border-bottom: 2px solid rgb(158, 158, 158);
+    font-size: 80%;
 }
 
 #pointDetails h2 {
@@ -5962,6 +5965,8 @@ ul.cascadeAction {
         a {
             @include btnOutline($flowAnchorLink);
 
+            padding-left: 30px;
+
             &.saveNewSurvey {
                 background: rgba(32, 32, 36, 0.5) url(../images/IconSave.svg) left center no-repeat;
                 background-size: 40px 40px;
@@ -6426,6 +6431,7 @@ html.navMaps, .public {
 }
 
 iframe {
+    height: 100vh;
     min-height: calc(100% - 225px);
 }
 
