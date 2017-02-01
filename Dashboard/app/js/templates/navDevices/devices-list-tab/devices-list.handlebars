@@ -36,7 +36,6 @@
           </thead>
           <!-- TABLE BODY: MAIN CONTENT-->
           <tbody>
-            
             {{#each FLOW.deviceControl}}
             <tr>
               <td class="selection"> {{view Ember.Checkbox checkedBinding="isSelected"}}</td>
@@ -49,7 +48,6 @@
             </tr>
             {{/each}}
           </tbody>
-          
           <!-- TABLE FOOTER-->
           <tfoot>
           <tr>
@@ -87,7 +85,7 @@
             </div>
           </div>
         </div>
-        
+
         <!-- Remove from group dialog-->
         <div {{bindAttr class="view.showRemoveFromGroupDialogBool:display :overlay"}}>
           <div class="blanket"></div>
@@ -104,7 +102,7 @@
             </div>
           </div>
         </div>
-        
+
         <!-- manage device groups dialog-->
         <div {{bindAttr class="view.showManageDeviceGroupsDialogBool:display :overlay"}}>
           <div class="blanket"></div>
@@ -121,7 +119,7 @@
               optionValuePath="content.keyId"
               prompt=""
               promptBinding="Ember.STRINGS._select_device_group"}}
-              
+
               {{view Ember.TextField valueBinding="view.changedDeviceGroupName" size=40}}
               <p class="dialogMsg">{{t _to_create_a_new_device_group_}}</p>
               <label for="newDeviceGroupName">{{t _new_group}}:</label>
