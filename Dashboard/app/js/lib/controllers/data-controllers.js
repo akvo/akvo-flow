@@ -42,9 +42,12 @@ FLOW.attributeControl = Ember.ArrayController.create({
 });
 
 FLOW.CaddisflyResourceController = Ember.ArrayController.extend({
-  populate: function() {
-    this.set('content', FLOW.store.find(FLOW.CaddisflyResource));
-  }
+    sortProperties: ['name'],
+    sortAscending: true,
+
+    populate: function() {
+        this.set('content', FLOW.store.find(FLOW.CaddisflyResource));
+    },
 });
 
 FLOW.cascadeResourceControl = Ember.ArrayController.create({
