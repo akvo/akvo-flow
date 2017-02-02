@@ -670,9 +670,7 @@ header.top {
 }
 
 .languageSelector {
-    position: absolute;
-    top: 7px;
-    right: 0.25%;
+    margin-top: 4px;
 
     .labelText {
         display: block;
@@ -4183,7 +4181,11 @@ div.dataCollectedDate label input {
     border-top: none;
 }
 
-.publicPage {}
+.publicPage {
+    .languageSelector {
+        display: none;
+    }
+}
 
 div#drawHandleWrap {
     position: relative;
