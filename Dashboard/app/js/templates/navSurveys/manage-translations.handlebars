@@ -81,7 +81,7 @@
     <header style="heigh:40px; padding: 10px 0 10px 0">
       <nav class="qtnGroupMenu">
         <ul>
-          <li style="text-align:center;margin:0 10px 0 0;"><a  {{action "saveTranslations" target="FLOW.translationControl"}} class="standardBtn">{{t _save_translations}}</a> </li>
+          <li style="text-align:center;margin:0 10px 0 0;"><a  {{action "saveTranslations" target="FLOW.translationControl"}} class="button">{{t _save_translations}}</a> </li>
         </ul>
       </nav>
     </header>
@@ -96,7 +96,7 @@
                 <ul>
                   {{#if view.amVisible}}
                     <li><a {{action "toggleVisibility" target="this"}} class="showQuestionGroup shown" id="">{{t _hide_questions}} </a></li>
-                    <li><a  {{action "saveTranslations" target="FLOW.translationControl"}} class="standardBtn">{{t _save_translations}}</a> </li>
+                    <li><a  {{action "saveTranslations" target="FLOW.translationControl"}} class="button smallButton">{{t _save_translations}}</a> </li>
                   {{else}}
                     <li><a {{action "toggleVisibility" target="this"}} class="showQuestionGroup" id="">{{t _show_questions}} </a></li>
                   {{/if}}
@@ -174,7 +174,7 @@
 
     <nav class="bottomPg">
       <ul>
-         <li><a  {{action "saveTranslationsAndClose" target="this"}} class="standardBtn">{{t _save_and_close}}</a> </li>
+         <li><a  {{action "saveTranslationsAndClose" target="this"}} class="button">{{t _save_and_close}}</a> </li>
         <li><a {{action "closeTranslations" target="this"}}>{{t _close_without_saving}}</a> </li>
       </ul>
     </nav>
