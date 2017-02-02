@@ -29,7 +29,7 @@ FLOW.attributeControl = Ember.ArrayController.create({
 
   // load all Survey Groups
   populate: function () {
-    if(FLOW.Env.showStatisticsFeature){
+    if (FLOW.Env.showStatisticsFeature) {
         FLOW.store.find(FLOW.Metric);
     }
     this.setFilteredContent();
