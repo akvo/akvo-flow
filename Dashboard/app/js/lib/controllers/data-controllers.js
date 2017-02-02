@@ -29,7 +29,9 @@ FLOW.attributeControl = Ember.ArrayController.create({
 
   // load all Survey Groups
   populate: function () {
-    FLOW.store.find(FLOW.Metric);
+    if (FLOW.Env.showStatisticsFeature) {
+        FLOW.store.find(FLOW.Metric);
+    }
     this.setFilteredContent();
     this.set('sortProperties', ['name']);
     this.set('sortAscending', true);
