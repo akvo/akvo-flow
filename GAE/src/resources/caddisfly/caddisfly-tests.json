@@ -20,7 +20,7 @@
           "id":1,
           "name":"Available Nitrogen",
           "unit": "kg/ha",
-          "formula": "((%1$f + %2$f) * 5) / 2.24"
+          "formula": "((%1$f + %2$f) * 5) * 2.24"
         },
         {
           "id":2,
@@ -115,10 +115,10 @@
           "id":1,
           "name":"Available Phosphorous",
           "unit": "kg/ha",
-          "formula": "((%1$f * 0.326138) * 5) / 2.24",
+          "formula": "((%1$f * 0.326138) * 5) * 2.24",
           "patchPos":5,
           "patchWidth":6,
-          "timeLapse":0,
+          "timeLapse":60,
           "colors":[
             {
               "value": 0,
@@ -167,7 +167,7 @@
           "id": 1,
           "name": "Available Potassium",
           "unit": "kg/ha",
-          "formula": "(%1$f * 5) / 2.24",
+          "formula": "(%1$f * 5) * 2.24",
           "patchPos": 4.5,
           "patchWidth": 7,
           "timeLapse": 0,
@@ -215,6 +215,7 @@
           "id":1,
           "name":"pH",
           "unit": "",
+          "formula": "(%1$f * 115) / 100",
           "patchPos":3.6,
           "patchWidth":6,
           "timeLapse":15,
@@ -1347,7 +1348,7 @@
           "unit": "ppm",
           "patchPos":5,
           "patchWidth":6,
-          "timeLapse":0,
+          "timeLapse":60,
           "colors":[
             {
               "value": 0,
@@ -1372,6 +1373,54 @@
             {
               "value": 100,
               "lab":[47.95,-26.89,-11.32]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Water - Phosphate",
+      "description": "Phosphorus, orthophosphate (reactive). 0 - 50 ppm.",
+      "subtype": "striptest",
+      "tags": ["water quality"],
+      "uuid": "f4c57d34-dd17-4750-9fcd-fe26af2621a7",
+      "calibration": "23-08-2016 using X-Rite i1Pro 2",
+      "brand": "HACH 27571",
+      "numPatch": 1,
+      "groupingType":"INDIVIDUAL",
+      "illuminant":"D65-2deg",
+      "length": 82.6,
+      "height": 5.2,
+      "unit": "mm",
+      "hasImage": true,
+      "results": [
+        {
+          "id":1,
+          "name":"Phosphate",
+          "unit": "ppm",
+          "patchPos":3.3,
+          "patchWidth":6,
+          "timeLapse":45,
+          "colors":[
+            {
+              "value": 0,
+              "lab":[67.72,7.05,-2.12]
+            },
+            {
+              "value": 5,
+              "lab":[66.11,3.91,-2.43]
+            },
+            {
+              "value": 15,
+              "lab":[65.48,0.48,-2.47]
+            },
+            {
+              "value": 30,
+              "lab":[64.47,-2.77,-1.95]
+            },
+            {
+              "value": 50,
+              "lab":[63.19,-5.04,-1.12]
             }
           ]
         }
