@@ -1,9 +1,4 @@
-Akvo Flow is a system to collect, manage, analyse and display geographically-referenced monitoring and evaluation data.
-
-Read more about [Akvo FLOW](http://www.akvo.org/blog/?p=4836).
-Read more about the [Akvo Platform](http://www.akvo.org/blog/?p=4822).
-
-Akvo FLOW Dashboard release notes
+# Akvo Flow Release Notes
 ----
 #1.9.13 Laughing Liger
 Date: 9 February 2017
