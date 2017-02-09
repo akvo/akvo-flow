@@ -1,186 +1,1686 @@
 {
-	"tests": [
-
-		{
-			"subtype": "colour",
-			"uuid": "f0f3c1dd-89af-49f1-83e7-bcc31c3006cf",
-			"tags": ["water quality"],
-			"name": "Fluoride",
-			"brand": "Akvo Caddisfly",
-			"description": "Measures Fluoride in water. x - xxx ppm",
-			"numResults": 1,
-			"hasImage":false,
-			"results": [{
-				"name": "Fluoride",
-				"id": 1,
-				"unit": "ppm"
-			}]
-		}, {
-			"subtype": "sensor",
-			"uuid": "f88237b7-be3d-4fac-bbee-ab328eefcd14",
-			"tags": ["water quality"],
-			"name": "Electrical Conductivity",
-			"brand": "Akvo Caddisfly",
-			"description": "Electrical Conductivity of water. 0 - 20.000 μS/cm",
-			"numResults": 1,
-			"hasImage":false,
-			"results": [{
-				"name": "Electrical Conductivity",
-				"id": 1,
-				"unit": "μS/cm"
-			}]
-		}, {
-			"subtype": "sensor",
-			"uuid": "80697cd1-acc9-4a15-8358-f32b4257dfaf",
-			"tags": ["soil quality"],
-			"name": "Soil Electrical Conductivity",
-			"brand": "Akvo Caddisfly",
-			"description": "Electrical conductivity of soil",
-			"numResults": 2,
-			"hasImage": false,
-			"results": [{
-				"name": "Soil Electrical Conductivity",
-				"id": 1,
-				"unit": "μS/cm"
-			}, {
-				"name": "Temperature",
-				"id": 2,
-				"unit": "°Celsius"
-			}]
-		}, {
-			"subtype": "sensor",
-			"uuid": "0b4a0aaa-f556-4c11-a539-c4626582cca6",
-			"tags": ["soil quality"],
-			"name": "Soil Moisture",
-			"brand": "Akvo Caddisfly",
-			"description": "Moisture content of soil",
-			"numResults": 1,
-			"hasImage": false,
-			"results": [{
-				"name": "Soil Moisture",
-				"id": 1,
-				"unit": "% VWC"
-			}]
-		}, {
-			"subtype": "striptest",
-			"uuid": "bf1c19c0-9788-4e26-999e-1b5c6ca28111",
-			"tags": ["water quality"],
-			"name": "Chlorine and Free Chlorine",
-			"brand": "HACH 27450, 50pcs",
-			"description": "Measures chlorine and free chlorine in water. 0 - 10 ppm",
-			"numResults": 2,
-			"hasImage":true,
-			"results": [{
-				"name": "Total Chlorine",
-				"id": 1,
-				"unit": "ppm"
-			}, {
-				"name": "Free Chlorine",
-				"id": 2,
-				"unit": "ppm"
-			}]
-		}, {
-			"subtype": "striptest",
-			"uuid": "c801b70c-39e4-493a-b20e-6843158b47b4",
-			"tags": ["water quality"],
-			"name": "Nitrate and Nitrite",
-			"brand": "HACH 27454, 25 pcs",
-			"description": "Measures nitrate and nitrite in water. Nitrate 0 - 50 ppm, Nitrite 0 - 3.0 ppm",
-			"numResults": 2,
-			"hasImage":true,
-			"results": [{
-				"name": "60-second Nitrate Nitrogen",
-				"id": 1,
-				"unit": "ppm"
-			}, {
-				"name": "30-second Nitrite Nitrogen",
-				"id": 2,
-				"unit": "ppm"
-			}]
-		}, {
-			"subtype": "striptest",
-			"uuid": "459a42d9-0834-4656-9e5a-e3bde46bdcff",
-			"tags": ["water quality"],
-			"name": "Total Iron",
-			"brand": "HACH 2745348, 25 pcs. 0 - 5 ppm",
-			"description": "Total dissolved iron",
-			"numResults": 1,
-			"hasImage":true,
-			"results": [{
-				"name": "Total iron",
-				"id": 1,
-				"unit": "ppm"
-			}]
-		}, {
-			"subtype": "striptest",
-			"uuid": "debbbf5e-fe0c-4b9c-be1f-6ed8142b6b07",
-			"tags": ["water quality"],
-			"name": "pH 4-9",
-			"brand": "HACH 27456, 50 pcs. Range 4 - 9.",
-			"description": "pH mid range",
-			"numResults": 1,
-			"hasImage":true,
-			"results": [{
-				"name": "pH",
-				"id": 1,
-				"unit": ""
-			}]
-		}, {
-			"subtype": "striptest",
-			"uuid": "f4c57d34-dd17-4750-9fcd-fe26af2621a7",
-			"tags": ["water quality"],
-			"name": "Phosphorus",
-			"brand": "HACH 27571, 50 pcs",
-			"description": "Phosphorus, orthophosphate (reactive). 0 - 50 ppm.",
-			"numResults": 1,
-			"hasImage":true,
-			"results": [{
-				"name": "Phosphorus",
-				"id": 1,
-				"unit": "ppm"
-			}]
-		}, {
-			"subtype": "striptest",
-			"uuid": "c2669bb7-ad63-4a69-a16a-798b81d2b019",
-			"tags": ["water quality"],
-			"name": "pH MColorpHast range 0 - 14",
-			"brand": "Merck Millipore 1095350001, 100 pcs",
-			"description": "pH, range 0 - 14",
-			"numResults": 1,
-			"hasImage":true,
-			"results": [{
-				"name": "pH",
-				"id": 1,
-				"unit": ""
-			}]
-		}, {
-			"subtype": "striptest",
-			"uuid": "32b6d11b-c7f3-475f-adf9-32d9b8f4aecf",
-			"tags": ["water quality"],
-			"name": "EZ Arsenic High Range Test Kit (0-500 range)",
-			"brand": "HACH 2822800, 50 pcs",
-			"description": "Measures arsenic levels. This is a dual range test kit - choose this test when the 0-500 ppm range is used.",
-			"numResults": 1,
-			"hasImage":true,
-			"results": [{
-				"name": "Arsenic",
-				"id": 1,
-				"unit": "ppm"
-			}]
-		}, {
-			"subtype": "striptest",
-			"uuid": "beca9731-63f4-434f-a3c2-ac33b44f9992",
-			"tags": ["water quality"],
-			"name": "EZ Arsenic High Range Test Kit (0-4000 range)",
-			"brand": "HACH 2822800, 50 pcs",
-			"description": "Measures arsenic levels. This is a dual range test kit - choose this test when the 0-4000 ppm range is used.",
-			"numResults": 1,
-			"hasImage":true,
-			"results": [{
-				"name": "Arsenic",
-				"id": 1,
-				"unit": "ppm"
-			}]
-		}
-	]
+  "comment": "This file contains the metadata for tests. IMPORTANT: *DO NOT* change the uuid values",
+  "tests":[
+    {
+      "name": "Soil - Available Nitrogen",
+      "description": "Measures nitrate and nitrite in water. Nitrate 0 - 50 ppm, Nitrite 0 - 3.0 ppm",
+      "subtype": "striptest",
+      "tags": ["soil quality"],
+      "uuid": "53a1649a-be67-4a13-8cba-1b7db640037c",
+      "calibration": "23 Aug 2016 using X-Rite i1Pro 2",
+      "brand": "HACH 27454",
+      "groupingType": "INDIVIDUAL",
+      "illuminant": "D65-2deg",
+      "length": 82.6,
+      "height": 5.2,
+      "unit": "mm",
+      "hasImage": true,
+      "results": [
+        {
+          "id":1,
+          "name":"Available Nitrogen",
+          "unit": "kg/ha",
+          "formula": "((%1$f + %2$f) * 5) * 2.24"
+        },
+        {
+          "id":2,
+          "name":"Nitrate Nitrogen",
+          "unit": "ppm",
+          "patchPos":3.3,
+          "patchWidth":6,
+          "timeLapse":60,
+          "colors":[
+            {
+              "value": 0,
+              "lab":[81.57,-1.10,10.30]
+            },
+            {
+              "value": 1,
+              "lab":[79.41,3.80,8.74]
+            },
+            {
+              "value": 2,
+              "lab":[77.44,8.25,5.98]
+            },
+            {
+              "value": 5,
+              "lab":[71.57,20.89,-0.05]
+            },
+            {
+              "value": 10,
+              "lab":[65.16,32.56,-5.13]
+            },
+            {
+              "value": 20,
+              "lab":[57.42,50.66,-11.23]
+            },
+            {
+              "value": 50,
+              "lab":[43.66,66.87,-14.09]
+            }
+          ]
+        },
+        {
+          "id":3,
+          "name":"Nitrite Nitrogen",
+          "unit": "ppm",
+          "patchPos": 16.8,
+          "patchWidth":6,
+          "timeLapse":30,
+          "colors":[
+            {
+              "value": 0,
+              "lab":[86.23,-1.15,2.84]
+            },
+            {
+              "value": 0.15,
+              "lab":[82.55,5.69,-0.57]
+            },
+            {
+              "value": 0.3,
+              "lab":[80.29,11.74,-2.93]
+            },
+            {
+              "value": 1.0,
+              "lab":[72.66,28.62,-9.70]
+            },
+            {
+              "value": 1.5,
+              "lab":[69.52,36.77,-12.47]
+            },
+            {
+              "value": 3.0,
+              "lab":[61.65,49.53,-15.35]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name":  "Soil - Available Phosphorous",
+      "description": "Phosphorous, 0 - 100 kg/ha.",
+      "subtype": "striptest",
+      "tags": ["soil quality"],
+      "uuid": "7cb666ea-7913-4511-9ae4-18f78e67aa09",
+      "calibration": "07-12-2016 using X-Rite i1Pro 2",
+      "brand": "Quantofix 91320",
+      "groupingType": "INDIVIDUAL",
+      "illuminant": "D65-2deg",
+      "length": 95.2,
+      "height": 5.5,
+      "unit": "mm",
+      "hasImage": true,
+      "results": [
+        {
+          "id":1,
+          "name":"Available Phosphorous",
+          "unit": "kg/ha",
+          "formula": "((%1$f * 0.326138) * 5) * 2.24",
+          "patchPos":5,
+          "patchWidth":6,
+          "timeLapse":60,
+          "colors":[
+            {
+              "value": 0,
+              "lab":[89.28,-4.67,1.61]
+            },
+            {
+              "value": 3,
+              "lab":[84.82,-11.54,-0.02]
+            },
+            {
+              "value": 10,
+              "lab":[79.03,-18.32,-4.59]
+            },
+            {
+              "value": 25,
+              "lab":[68.00,-25.37,-8.72]
+            },
+            {
+              "value": 50,
+              "lab":[59.41,-26.55,-10.43]
+            },
+            {
+              "value": 100,
+              "lab":[47.95,-26.89,-11.32]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Soil - Available Potassium",
+      "description": "Potassium, 0 - 1000 ppm.",
+      "subtype": "striptest",
+      "tags": ["soil quality"],
+      "uuid": "ac533acc-8ffc-48e1-a66e-2394f9a54050",
+      "calibration": "18-11-2016 using X-Rite i1Pro 2",
+      "brand": "MERCK 117985",
+      "groupingType": "INDIVIDUAL",
+      "illuminant": "D65-2deg",
+      "length": 74,
+      "height": 6,
+      "unit": "mm",
+      "hasImage": true,
+      "results": [
+        {
+          "id": 1,
+          "name": "Available Potassium",
+          "unit": "kg/ha",
+          "formula": "(%1$f * 5) * 2.24",
+          "patchPos": 4.5,
+          "patchWidth": 7,
+          "timeLapse": 0,
+          "colors":[
+            {
+              "value": 0,
+              "lab": [78.90,12.62,47.41]
+            },
+            {
+              "value": 250,
+              "lab": [73.59,24.18,53.73]
+            },
+            {
+              "value": 450,
+              "lab": [65.05,41.19,55.50]
+            },
+            {
+              "value": 700,
+              "lab": [59.62,50.94,54.60]
+            },
+            {
+              "value": 1000,
+              "lab": [53.77,58.94,52.64]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Soil - pH",
+      "description": "pH mid range",
+      "subtype": "striptest",
+      "tags": ["water quality"],
+      "uuid": "895845dd-9990-49f3-b611-420551851acd",
+      "calibration": "16 Dec 2016 using X-Rite i1Pro 2, Reagecon Buffer solutions Exp. Date: 28-06-2016",
+      "brand": "HACH 27456",
+      "groupingType": "INDIVIDUAL",
+      "illuminant": "D65-2deg",
+      "length": 82.7,
+      "height": 5,
+      "unit": "mm",
+      "hasImage": true,
+      "results": [
+        {
+          "id":1,
+          "name":"pH",
+          "unit": "",
+          "formula": "(%1$f * 115) / 100",
+          "patchPos":3.6,
+          "patchWidth":6,
+          "timeLapse":15,
+          "colors":[
+            {
+              "value": 4,
+              "lab":[65.86,-6.20,38.88]
+            },
+            {
+              "value": 5,
+              "lab":[58.43,-16.68,20.57]
+            },
+            {
+              "value": 6,
+              "lab":[51.42,-18.74,1.80]
+            },
+            {
+              "value": 7,
+              "lab":[45.94,-13.70,-8.27]
+            },
+            {
+              "value": 8,
+              "lab":[42.09,4.38,-23.57]
+            },
+            {
+              "value": 9,
+              "lab":[39.86,14.81,-32.57]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Water - Ammonium",
+      "subtype": "striptest",
+      "tags": ["water quality", "soil quality"],
+      "uuid": "99abf0cd-4697-4880-bde0-933d32d3972c",
+      "calibration": "30 Jan 2017 using X-Rite i1Pro 2",
+      "brand": "Quantofix 91315",
+      "groupingType": "INDIVIDUAL",
+      "illuminant": "D65-2deg",
+      "length": 95,
+      "height": 5.5,
+      "unit": "mm",
+      "hasImage": true,
+      "results": [
+        {
+          "id": 1,
+          "name": "Ammonium",
+          "unit": "ppm",
+          "patchPos": 4.5,
+          "patchWidth": 6,
+          "timeLapse": 0,
+          "colors":[
+            {
+              "value": 0,
+              "lab": [76.04,-2.35,3.91]
+            },
+            {
+              "value": 10,
+              "lab": [77.62,-4.37,24.42]
+            },
+            {
+              "value": 25,
+              "lab": [73.09,-0.74,39.61]
+            },
+            {
+              "value": 50,
+              "lab": [64.74,9.63,49.54]
+            },
+            {
+              "value": 100,
+              "lab": [57.22,21.18,52.84]
+            },
+            {
+              "value": 200,
+              "lab": [51.09,30.29,48.77]
+            },
+            {
+              "value": 400,
+              "lab": [45.58,32.22,41.81]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Water - Arsenic",
+      "subtype": "striptest",
+      "tags": ["water quality"],
+      "uuid": "7c1a377f-4156-4f4c-ad72-89433a291ca0",
+      "calibration": "16 Nov 2016",
+      "brand": "Econo-Quick 481298",
+      "groupingType": "INDIVIDUAL",
+      "illuminant": "D65-2deg",
+      "length": 72.30,
+      "height": 5.10,
+      "unit": "mm",
+      "hasImage": true,
+      "results": [
+        {
+          "id": 1,
+          "name": "Arsenic",
+          "unit": "ppb",
+          "patchPos": 6.0,
+          "patchWidth": 6,
+          "timeLapse": 0,
+          "colors":[
+            {
+              "value": 0,
+              "lab": [91.96,0.44,4.62]
+            },
+            {
+              "value": 10,
+              "lab": [90.95,-1.02,8.50]
+            },
+            {
+              "value": 25,
+              "lab": [91.93,-3.16,14.18]
+            },
+            {
+              "value": 50,
+              "lab": [91.16,-5.31,26.41]
+            },
+            {
+              "value": 100,
+              "lab": [85.60,1.93,40.78]
+            },
+            {
+              "value": 200,
+              "lab": [76.25,12.30,40.53]
+            },
+            {
+              "value": 300,
+              "lab": [68.95,15.15,35.70]
+            },
+            {
+              "value": 500,
+              "lab": [61.89,14.79,30.24]
+            },
+            {
+              "value": 1000,
+              "lab": [54.23,11.06,22.64]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Water - Arsenic (0 - 4000)",
+      "description": "Measures arsenic levels. This is a dual range test kit - choose this test when the 0-4000 ppm range is used.",
+      "subtype": "striptest",
+      "tags": ["water quality"],
+      "uuid": "beca9731-63f4-434f-a3c2-ac33b44f9992",
+      "calibration": "12 Jan 2016",
+      "brand": "EZ Arsenic High Range, HACH 2822800",
+      "image": "HACH-2822800-4000",
+      "imageScale": "centerCrop",
+      "groupingType": "INDIVIDUAL",
+      "illuminant": "D65-2deg",
+      "length": 82.3,
+      "height": 12.8,
+      "unit": "mm",
+      "hasImage": true,
+      "results": [
+        {
+          "id": 1,
+          "name": "Arsenic",
+          "unit": "ppb",
+          "patchPos": 5.5,
+          "patchWidth": 3,
+          "timeLapse": 0,
+          "colors":[
+            {
+              "value": 0,
+              "lab": [95.22,-0.43,3.03]
+            },
+            {
+              "value": 75,
+              "lab": [92.32,-9.65,47.36]
+            },
+            {
+              "value": 175,
+              "lab": [90.24,-7.83,49.23]
+            },
+            {
+              "value": 500,
+              "lab": [72.07,15.98,61.50]
+            },
+            {
+              "value": 1500,
+              "lab": [67.78,23.69,54.87]
+            },
+            {
+              "value": 4000,
+              "lab": [49.37,26.81,42.77]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Water - Arsenic (0 - 500)",
+      "description": "Measures arsenic levels. This is a dual range test kit - choose this test when the 0-500 ppm range is used.",
+      "subtype": "striptest",
+      "tags": ["water quality"],
+      "uuid": "32b6d11b-c7f3-475f-adf9-32d9b8f4aecf",
+      "calibration": "29 Sep 2016 using X-Rite i1Pro 2",
+      "brand": "EZ Arsenic High Range, HACH 2822800",
+      "image": "HACH-2822800-500",
+      "imageScale": "centerCrop",
+      "groupingType": "INDIVIDUAL",
+      "illuminant": "D65-2deg",
+      "length": 82.3,
+      "height": 12.8,
+      "unit": "mm",
+      "hasImage": true,
+      "results": [
+        {
+          "id": 1,
+          "name": "Arsenic",
+          "unit": "ppb",
+          "patchPos": 6.2,
+          "patchWidth": 3,
+          "timeLapse": 0,
+          "colors":[
+            {
+              "value": 0,
+              "lab": [94.123,-0.922,2.181]
+            },
+            {
+              "value": 10,
+              "lab": [93.914,-4.498,10.313]
+            },
+            {
+              "value": 25,
+              "lab": [93.016,-8.063,28.930]
+            },
+            {
+              "value": 50,
+              "lab": [88.457,-2.156,39.327]
+            },
+            {
+              "value": 100,
+              "lab": [82.350,8.176,44.959]
+            },
+            {
+              "value": 250,
+              "lab": [74.212,15.276,41.299]
+            },
+            {
+              "value": 500,
+              "lab": [69.650,15.524,36.894]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name":  "Water - Chloride",
+      "description": "Chloride, 0 - ≥3000 ppm.",
+      "subtype": "striptest",
+      "tags": ["water quality"],
+      "uuid": "4c3a4192-c484-4329-8240-71e4c7cd2280",
+      "calibration": "30 Jan 2017 using X-Rite i1Pro 2",
+      "brand": "Quantofix 91321",
+      "groupingType": "GROUP",
+      "illuminant": "D65-2deg",
+      "length": 95,
+      "height": 5.5,
+      "unit": "mm",
+      "hasImage": true,
+      "results": [
+        {
+          "id":1,
+          "name":"Chloride",
+          "unit": "ppm",
+          "patchPos":4.25,
+          "patchWidth":6,
+          "timeLapse":60,
+          "colors":[
+            {
+              "value": 0,
+              "lab":[49.56,30.55,56.80]
+            },
+            {
+              "value": 500,
+              "lab":[75.94,-3.57,47.13]
+            },
+            {
+              "value": 1000,
+              "lab":[75.72,-4.92,49.98]
+            },
+            {
+              "value": 1500,
+              "lab":[77.59,-5.66,49.63]
+            },
+            {
+              "value": 2000,
+              "lab":[77.15,-6.21,51.16]
+            },
+            {
+              "value": 3000,
+              "lab":[77.40,-6.52,50.05]
+            }
+          ]
+        },
+        {
+          "id":2,
+          "name":"Chloride",
+          "unit": "ppm",
+          "patchPos":11.5,
+          "patchWidth":6,
+          "timeLapse":60,
+          "colors":[
+            {
+              "value": 0,
+              "lab":[33.97,37.85,35.66]
+            },
+            {
+              "value": 500,
+              "lab":[58.22,17.89,37.92]
+            },
+            {
+              "value": 1000,
+              "lab":[69.10,1.64,49.31]
+            },
+            {
+              "value": 1500,
+              "lab":[70.84,1.49,49.61]
+            },
+            {
+              "value": 2000,
+              "lab":[70.15,0.74,51.88]
+            },
+            {
+              "value": 3000,
+              "lab":[73.03,-1.24,51.90]
+            }
+          ]
+        },
+        {
+          "id":3,
+          "name":"Chloride",
+          "unit": "ppm",
+          "patchPos":19,
+          "patchWidth":6,
+          "timeLapse":60,
+          "colors":[
+            {
+              "value": 0,
+              "lab":[31.36,34.71,29.79]
+            },
+            {
+              "value": 500,
+              "lab":[41.90,29.28,28.11]
+            },
+            {
+              "value": 1000,
+              "lab":[56.07,17.32,40.48]
+            },
+            {
+              "value": 1500,
+              "lab":[67.90,3.85,49.75]
+            },
+            {
+              "value": 2000,
+              "lab":[69.83,2.15,51.85]
+            },
+            {
+              "value": 3000,
+              "lab":[72.11,0.68,51.63]
+            }
+          ]
+        },
+        {
+          "id":4,
+          "name":"Chloride",
+          "unit": "ppm",
+          "patchPos":26,
+          "patchWidth":6,
+          "timeLapse":60,
+          "colors":[
+            {
+              "value": 0,
+              "lab":[29.91,28.06,24.05]
+            },
+            {
+              "value": 500,
+              "lab":[37.30,28.45,19.64]
+            },
+            {
+              "value": 1000,
+              "lab":[45.81,21.48,25.65]
+            },
+            {
+              "value": 1500,
+              "lab":[57.85,15.33,36.69]
+            },
+            {
+              "value": 2000,
+              "lab":[68.05,3.92,49.28]
+            },
+            {
+              "value": 3000,
+              "lab":[70.14,2.50,51.16]
+            }
+          ]
+        },
+        {
+          "id":5,
+          "name":"Chloride",
+          "unit": "ppm",
+          "patchPos":33.25,
+          "patchWidth":6,
+          "timeLapse":60,
+          "colors":[
+            {
+              "value": 0,
+              "lab":[32.20,21.72,21.82]
+            },
+            {
+              "value": 500,
+              "lab":[34.82,24.93,13.78]
+            },
+            {
+              "value": 1000,
+              "lab":[41.76,21.65,15.91]
+            },
+            {
+              "value": 1500,
+              "lab":[52.61,13.96,23.11]
+            },
+            {
+              "value": 2000,
+              "lab":[61.85,8.60,36.88]
+            },
+            {
+              "value": 3000,
+              "lab":[66.12,3.70,44.71]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Water - Fluoride",
+      "description": "Measures Fluoride in water. 0 - 2 ppm",
+      "subtype": "liquid-chamber",
+      "tags": ["water quality"],
+      "uuid": "f0f3c1dd-89af-49f1-83e7-bcc31c3006cf",
+      "brand": "Akvo Caddisfly",
+      "shortCode": "fluor",
+      "calibrate": true,
+      "ranges": "0,0.5,1,1.5,2",
+      "defaultColors": "FD13AB,FE217C,F53A48,E75D28,D36B0B",
+      "hueTrend": 1,
+      "dilutions": "0,50,20",
+      "monthsValid": 12,
+      "hasImage": true,
+      "results": [
+        {
+          "name": "Fluoride",
+          "id": 1,
+          "unit": "ppm"
+        }
+      ]
+    },
+    {
+      "name": "Water - Free Chlorine",
+      "description": "Measures Free chlorine in water. 0 - 1 ppm",
+      "subtype": "liquid-chamber",
+      "tags": ["water quality"],
+      "uuid": "c3535e72-ff77-4225-9f4a-41d3288780c6",
+      "brand": "Akvo Caddisfly",
+      "shortCode": "chlor",
+      "calibrate": true,
+      "ranges": "0,0.25,0.5,0.75,1.0",
+      "monthsValid": 24,
+      "hasImage": true,
+      "results": [
+        {
+          "name": "Free Chlorine",
+          "id": 1,
+          "unit": "ppm"
+        }
+      ]
+    },
+    {
+      "name": "Water - Chlorine, Hardness, Alkalinity, pH",
+      "description": "5 in 1 test",
+      "subtype": "striptest",
+      "tags": ["water quality"],
+      "uuid": "2456d482-dbec-466c-8387-411a4093f6b6",
+      "calibration": "30 Jan 2017 using X-Rite i1Pro 2",
+      "brand": "HACH 2755250",
+      "groupingType": "INDIVIDUAL",
+      "illuminant": "D65-2deg",
+      "length": 82.5,
+      "height": 5.1,
+      "unit": "mm",
+      "hasImage": true,
+      "results": [
+        {
+          "id":1,
+          "name":"Total Chlorine",
+          "unit": "ppm",
+          "patchPos":3,
+          "patchWidth":6,
+          "timeLapse":35,
+          "phase": 2,
+          "colors":[
+            {
+              "value": 0,
+              "lab":[90.78,-1.35,3.08]
+            },
+            {
+              "value": 0.5,
+              "lab":[77.43,15.25,-11.69]
+            },
+            {
+              "value": 1,
+              "lab":[68.24,22.01,-12.95]
+            },
+            {
+              "value": 2,
+              "lab":[61.25,26.89,-14.37]
+            },
+            {
+              "value": 4,
+              "lab":[50.52,37.97,-21.77]
+            },
+            {
+              "value": 10,
+              "lab":[41.11,28.77,-17.75]
+            }
+          ]
+        },
+        {
+          "id":2,
+          "name":"Free Chlorine",
+          "unit": "ppm",
+          "patchPos":17,
+          "patchWidth":6,
+          "timeLapse":35,
+          "phase": 2,
+          "colors":[
+            {
+              "value": 0,
+              "lab":[88.26,-0.29,13.39]
+            },
+            {
+              "value": 0.5,
+              "lab":[75.27,4.32,-1.40]
+            },
+            {
+              "value": 1,
+              "lab":[77.15,11.64,-13.44]
+            },
+            {
+              "value": 2,
+              "lab":[60.75,22.79,-19.70]
+            },
+            {
+              "value": 4,
+              "lab":[53.77,28.81,-22.55]
+            },
+            {
+              "value": 10,
+              "lab":[43.46,28.72,-22.35]
+            }
+          ]
+        },
+        {
+          "id":3,
+          "name":"Total Hardness",
+          "unit": "gpg",
+          "patchPos":30.5,
+          "patchWidth":6,
+          "timeLapse":30,
+          "colors":[
+            {
+              "value": 0,
+              "lab":[38.22,-22.93,18.39]
+            },
+            {
+              "value": 25,
+              "lab":[36.76,-11.90,16.70]
+            },
+            {
+              "value": 50,
+              "lab":[37.91,0.69,16.93]
+            },
+            {
+              "value": 120,
+              "lab":[35.60,13.82,31.07]
+            },
+            {
+              "value": 250,
+              "lab":[42.37,30.31,28.56]
+            },
+            {
+              "value": 425,
+              "lab":[46.97,36.84,34.49]
+            }
+          ]
+        },
+        {
+          "id":4,
+          "name":"Total Alkalinity",
+          "unit": "ppm",
+          "patchPos":44,
+          "patchWidth":6,
+          "timeLapse":30,
+          "colors":[
+            {
+              "value": 0,
+              "lab":[69.47,8.04,51.69]
+            },
+            {
+              "value": 40,
+              "lab":[64.32,-7.08,43.56]
+            },
+            {
+              "value": 80,
+              "lab":[54.10,-14.35,34.82]
+            },
+            {
+              "value": 120,
+              "lab":[54.40,-11.77,10.01]
+            },
+            {
+              "value": 180,
+              "lab":[40.79,-18.18,2.59]
+            },
+            {
+              "value": 240,
+              "lab":[45.40,-12.01,-6.89]
+            }
+          ]
+        },
+        {
+          "id":5,
+          "name":"pH",
+          "unit": "",
+          "patchPos":57,
+          "patchWidth":6,
+          "timeLapse":30,
+          "colors":[
+            {
+              "value": 6.2,
+              "lab":[68.01,17.84,51.43]
+            },
+            {
+              "value": 6.8,
+              "lab":[62.54,35.28,51.50]
+            },
+            {
+              "value": 7.2,
+              "lab":[53.10,43.10,49.53]
+            },
+            {
+              "value": 7.8,
+              "lab":[48.94,42.75,27.80]
+            },
+            {
+              "value": 8.4,
+              "lab":[48.03,62.81,25.06]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Water - Nitrate - N & Nitrite - N",
+      "description": "Measures nitrate and nitrite in water. Nitrate 0 - 50 ppm, Nitrite 0 - 3.0 ppm",
+      "subtype": "striptest",
+      "tags": ["water quality"],
+      "uuid": "c801b70c-39e4-493a-b20e-6843158b47b4",
+      "calibration": "23 Aug 2016 using X-Rite i1Pro 2",
+      "brand": "HACH 27454",
+      "groupingType": "INDIVIDUAL",
+      "illuminant": "D65-2deg",
+      "length": 82.6,
+      "height": 5.2,
+      "unit": "mm",
+      "hasImage": true,
+      "results": [
+        {
+          "id":1,
+          "name":"Nitrate Nitrogen",
+          "unit": "ppm",
+          "patchPos":3.3,
+          "patchWidth":6,
+          "timeLapse":60,
+          "colors":[
+            {
+              "value": 0,
+              "lab":[81.57,-1.10,10.30]
+            },
+            {
+              "value": 1,
+              "lab":[79.41,3.80,8.74]
+            },
+            {
+              "value": 2,
+              "lab":[77.44,8.25,5.98]
+            },
+            {
+              "value": 5,
+              "lab":[71.57,20.89,-0.05]
+            },
+            {
+              "value": 10,
+              "lab":[65.16,32.56,-5.13]
+            },
+            {
+              "value": 20,
+              "lab":[57.42,50.66,-11.23]
+            },
+            {
+              "value": 50,
+              "lab":[43.66,66.87,-14.09]
+            }
+          ]
+        },
+        {
+          "id":2,
+          "name":"Nitrite Nitrogen",
+          "unit": "ppm",
+          "patchPos": 16.8,
+          "patchWidth":6,
+          "timeLapse":30,
+          "colors":[
+            {
+              "value": 0,
+              "lab":[86.23,-1.15,2.84]
+            },
+            {
+              "value": 0.15,
+              "lab":[82.55,5.69,-0.57]
+            },
+            {
+              "value": 0.3,
+              "lab":[80.29,11.74,-2.93]
+            },
+            {
+              "value": 1.0,
+              "lab":[72.66,28.62,-9.70]
+            },
+            {
+              "value": 1.5,
+              "lab":[69.52,36.77,-12.47]
+            },
+            {
+              "value": 3.0,
+              "lab":[61.65,49.53,-15.35]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Water - pH",
+      "description": "pH mid range",
+      "subtype": "striptest",
+      "tags": ["water quality"],
+      "uuid": "debbbf5e-fe0c-4b9c-be1f-6ed8142b6b07",
+      "calibration": "16 Dec 2016 using X-Rite i1Pro 2, Reagecon Buffer solutions Exp. Date: 28-06-2016",
+      "brand": "HACH 27456",
+      "groupingType": "INDIVIDUAL",
+      "illuminant": "D65-2deg",
+      "length": 82.7,
+      "height": 5,
+      "unit": "mm",
+      "hasImage": true,
+      "results": [
+        {
+          "id":1,
+          "name":"pH",
+          "unit": "",
+          "patchPos":3.6,
+          "patchWidth":6,
+          "timeLapse":15,
+          "colors":[
+            {
+              "value": 4,
+              "lab":[65.86,-6.20,38.88]
+            },
+            {
+              "value": 5,
+              "lab":[58.43,-16.68,20.57]
+            },
+            {
+              "value": 6,
+              "lab":[51.42,-18.74,1.80]
+            },
+            {
+              "value": 7,
+              "lab":[45.94,-13.70,-8.27]
+            },
+            {
+              "value": 8,
+              "lab":[42.09,4.38,-23.57]
+            },
+            {
+              "value": 9,
+              "lab":[39.86,14.81,-32.57]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Water - pH (0 - 14)",
+      "description": "pH, range 0 - 14",
+      "subtype": "striptest",
+      "tags": ["water quality"],
+      "uuid": "c2669bb7-ad63-4a69-a16a-798b81d2b019",
+      "calibration": "21 Jan 2016",
+      "brand": "MERCK 1095350001 colorpHast",
+      "image": "MERCK-1095350001",
+      "groupingType": "GROUP",
+      "illuminant": "D65-2deg",
+      "length": 74.3,
+      "height": 5.8,
+      "unit": "mm",
+      "hasImage": true,
+      "results": [
+        {
+          "id": 1,
+          "name": "pH",
+          "unit": "pH",
+          "patchPos": 4.5,
+          "patchWidth": 6.05,
+          "timeLapse": 0,
+          "colors":[
+            {
+              "value": 0,
+              "lab":[37.71,46.88,-15.68]
+            },
+            {
+              "value": 1,
+              "lab":[44.79,57.48,-10.01]
+            },
+            {
+              "value": 2,
+              "lab":[47.58,49.34,8.82]
+            },
+            {
+              "value": 3,
+              "lab":[58.74,38.68,31.78]
+            },
+            {
+              "value": 4,
+              "lab":[70.28,32.25,51.89]
+            },
+            {
+              "value": 5,
+              "lab":[80.15,17.24,77.05]
+            },
+            {
+              "value": 6,
+              "lab":[82.52,13.04,78.04]
+            },
+            {
+              "value": 7,
+              "lab":[82.57,12.99,77.97]
+            },
+            {
+              "value": 8,
+              "lab":[82.74,12.88,77.64]
+            },
+            {
+              "value": 9,
+              "lab":[82.5,12.87,77.86]
+            },
+            {
+              "value": 10,
+              "lab":[82.46,12.93,78.06]
+            },
+            {
+              "value": 11,
+              "lab":[82.54,12.8,77.18]
+            },
+            {
+              "value": 12,
+              "lab":[82.43,12.89,77.87]
+            },
+            {
+              "value": 13,
+              "lab":[82.58,13.04,78.02]
+            },
+            {
+              "value": 14,
+              "lab":[82.39,12.87,77.51]
+            }
+          ]
+        },
+        {
+          "id": 2,
+          "name": "pH",
+          "unit": "pH",
+          "patchPos": 10.55,
+          "patchWidth": 6.05,
+          "timeLapse": 0,
+          "colors":[
+            {
+              "value": 0,
+              "lab":[78.96,18.64,79.55]
+            },
+            {
+              "value": 1,
+              "lab":[78.94,18.67,79.66]
+            },
+            {
+              "value": 2,
+              "lab":[78.66,18.6,79.54]
+            },
+            {
+              "value": 3,
+              "lab":[78.77,18.66,79.74]
+            },
+            {
+              "value": 4,
+              "lab":[78.78,18.66,79.73]
+            },
+            {
+              "value": 5,
+              "lab":[72.57,10.99,63.05]
+            },
+            {
+              "value": 6,
+              "lab":[ 59.56,0.84,43.72]
+            },
+            {
+              "value": 7,
+              "lab":[50.49,-1.32,31.4]
+            },
+            {
+              "value": 8,
+              "lab":[41.09,-4.59,14.41]
+            },
+            {
+              "value": 9,
+              "lab":[27.42,-4.1,-12.25]
+            },
+            {
+              "value": 10,
+              "lab":[28.63,6.96,-25.78]
+            },
+            {
+              "value": 11,
+              "lab":[28.57,6.97,-25.73]
+            },
+            {
+              "value": 12,
+              "lab":[28.6,7.01,-25.84]
+            },
+            {
+              "value": 13,
+              "lab":[28.69,6.98,-25.77]
+            },
+            {
+              "value": 14,
+              "lab":[29.04,6.8,-25.52]
+            }
+          ]
+        },
+        {
+          "id": 3,
+          "unit": "pH",
+          "name": "pH",
+          "patchPos": 16.6,
+          "patchWidth": 6.05,
+          "timeLapse": 0,
+          "colors":[
+            {
+              "value": 0,
+              "lab":[78.46,24.42,66.53]
+            },
+            {
+              "value": 1,
+              "lab":[78.55,24.5,67.2]
+            },
+            {
+              "value": 2,
+              "lab":[78.51,24.3,66.85]
+            },
+            {
+              "value": 3,
+              "lab":[78.36,24.43,66.76]
+            },
+            {
+              "value": 4,
+              "lab":[78.3,24.48,66.88]
+            },
+            {
+              "value": 5,
+              "lab":[78.4,24.47,66.88]
+            },
+            {
+              "value": 6,
+              "lab":[78.24,24.29,66.7]
+            },
+            {
+              "value": 7,
+              "lab":[78.54,24.45,67.22]
+            },
+            {
+              "value": 8,
+              "lab":[78.44,24.56,67.05]
+            },
+            {
+              "value": 9,
+              "lab":[77.37,28.87,66.03]
+            },
+            {
+              "value": 10,
+              "lab":[72.52,41.79,53.83]
+            },
+            {
+              "value": 11,
+              "lab":[63.59,50.87,41.8]
+            },
+            {
+              "value": 12,
+              "lab":[53.73,58.13,19.57]
+            },
+            {
+              "value": 13,
+              "lab":[54.01,57.46,19.18]
+            },
+            {
+              "value": 14,
+              "lab":[53.8,57.82,19.39]
+            }
+          ]
+        },
+        {
+          "id": 4,
+          "name": "pH",
+          "unit": "pH",
+          "patchPos": 22.65,
+          "patchWidth": 6.05,
+          "timeLapse": 0,
+          "colors":[
+            {
+              "value": 0,
+              "lab":[84.8,11.46,51.89]
+            },
+            {
+              "value": 1,
+              "lab":[84.83,11.64,52.2]
+            },
+            {
+              "value": 2,
+              "lab":[84.83,11.61,51.94]
+            },
+            {
+              "value": 3,
+              "lab":[84.49,11.45,51.98]
+            },
+            {
+              "value": 4,
+              "lab":[84.59,11.34,51.24]
+            },
+            {
+              "value": 5,
+              "lab":[84.62,11.62,52.34]
+            },
+            {
+              "value": 6,
+              "lab":[84.68,11.69,52.34]
+            },
+            {
+              "value": 7,
+              "lab":[84.68,11.55,52.19]
+            },
+            {
+              "value": 8,
+              "lab":[84.86,11.52,52.21]
+            },
+            {
+              "value": 9,
+              "lab":[84.74,11.32,52.21]
+            },
+            {
+              "value": 10,
+              "lab":[84.54,11.48,52.05]
+            },
+            {
+              "value": 11,
+              "lab":[79.58,15.52,42.81]
+            },
+            {
+              "value": 12,
+              "lab":[71.11,28.85,26.85]
+            },
+            {
+              "value": 13,
+              "lab":[58.72,33.03,-8.29]
+            },
+            {
+              "value": 14,
+              "lab":[51.04,37.94,-25.23]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name":  "Water - Phosphate",
+      "description": "Phosphate, 0 - 100 ppm.",
+      "subtype": "striptest",
+      "tags": ["water quality"],
+      "uuid": "39e7ea7e-9884-407d-a99a-ac3b4d9c9599",
+      "calibration": "07-12-2016 using X-Rite i1Pro 2",
+      "brand": "Quantofix 91320",
+      "groupingType": "INDIVIDUAL",
+      "illuminant": "D65-2deg",
+      "length": 95.2,
+      "height": 5.5,
+      "unit": "mm",
+      "hasImage": true,
+      "results": [
+        {
+          "id":1,
+          "name":"Phosphate",
+          "unit": "ppm",
+          "patchPos":5,
+          "patchWidth":6,
+          "timeLapse":60,
+          "colors":[
+            {
+              "value": 0,
+              "lab":[89.28,-4.67,1.61]
+            },
+            {
+              "value": 3,
+              "lab":[84.82,-11.54,-0.02]
+            },
+            {
+              "value": 10,
+              "lab":[79.03,-18.32,-4.59]
+            },
+            {
+              "value": 25,
+              "lab":[68.00,-25.37,-8.72]
+            },
+            {
+              "value": 50,
+              "lab":[59.41,-26.55,-10.43]
+            },
+            {
+              "value": 100,
+              "lab":[47.95,-26.89,-11.32]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Water - Phosphate",
+      "description": "Phosphorus, orthophosphate (reactive). 0 - 50 ppm.",
+      "subtype": "striptest",
+      "tags": ["water quality"],
+      "uuid": "f4c57d34-dd17-4750-9fcd-fe26af2621a7",
+      "calibration": "23-08-2016 using X-Rite i1Pro 2",
+      "brand": "HACH 27571",
+      "numPatch": 1,
+      "groupingType":"INDIVIDUAL",
+      "illuminant":"D65-2deg",
+      "length": 82.6,
+      "height": 5.2,
+      "unit": "mm",
+      "hasImage": true,
+      "results": [
+        {
+          "id":1,
+          "name":"Phosphate",
+          "unit": "ppm",
+          "patchPos":3.3,
+          "patchWidth":6,
+          "timeLapse":45,
+          "colors":[
+            {
+              "value": 0,
+              "lab":[67.72,7.05,-2.12]
+            },
+            {
+              "value": 5,
+              "lab":[66.11,3.91,-2.43]
+            },
+            {
+              "value": 15,
+              "lab":[65.48,0.48,-2.47]
+            },
+            {
+              "value": 30,
+              "lab":[64.47,-2.77,-1.95]
+            },
+            {
+              "value": 50,
+              "lab":[63.19,-5.04,-1.12]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Water - Potassium",
+      "description": "Potassium, 0 - 1000 ppm.",
+      "subtype": "striptest",
+      "tags": ["water quality", "soil quality"],
+      "uuid": "a18118e7-6382-4d16-b5fb-55f97cd99083",
+      "calibration": "18-11-2016 using X-Rite i1Pro 2",
+      "brand": "MERCK 117985",
+      "groupingType": "INDIVIDUAL",
+      "illuminant": "D65-2deg",
+      "length": 74,
+      "height": 6,
+      "unit": "mm",
+      "hasImage": true,
+      "results": [
+        {
+          "id": 1,
+          "name": "Potassium",
+          "unit": "ppm",
+          "patchPos": 4.5,
+          "patchWidth": 7,
+          "timeLapse": 0,
+          "colors":[
+            {
+              "value": 0,
+              "lab": [78.90,12.62,47.41]
+            },
+            {
+              "value": 250,
+              "lab": [73.59,24.18,53.73]
+            },
+            {
+              "value": 450,
+              "lab": [65.05,41.19,55.50]
+            },
+            {
+              "value": 700,
+              "lab": [59.62,50.94,54.60]
+            },
+            {
+              "value": 1000,
+              "lab": [53.77,58.94,52.64]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Soil - Electrical Conductivity",
+      "description": "Electrical conductivity of soil",
+      "subtype": "sensor",
+      "tags": ["soil quality"],
+      "deviceId": "SoilEC",
+      "uuid": "80697cd1-acc9-4a15-8358-f32b4257dfaf",
+      "brand": "Akvo Caddisfly",
+      "calibrate": true,
+      "ranges": "141, 235, 470, 1413, 3000, 12880",
+      "hasImage": false,
+      "responseFormat": "$2,$1",
+      "results": [
+        {
+          "name": "Soil Electrical Conductivity",
+          "id": 1,
+          "unit": "μS/cm"
+        },
+        {
+          "name": "Temperature",
+          "id": 2,
+          "unit": "°Celsius"
+        }
+      ]
+    },
+    {
+      "name": "Soil - Moisture",
+      "description": "Moisture content of soil",
+      "subtype": "sensor",
+      "tags": ["soil quality"],
+      "deviceId": "Soil Moisture",
+      "uuid": "0b4a0aaa-f556-4c11-a539-c4626582cca6",
+      "brand": "Akvo Caddisfly",
+      "hasImage": false,
+      "responseFormat": "$1",
+      "results": [
+        {
+          "name": "Soil Moisture",
+          "id": 1,
+          "unit": "% VWC"
+        }
+      ]
+    },
+    {
+      "name": "Water - Total & Free Chlorine",
+      "description": "Measures chlorine and free chlorine in water. 0 - 10 ppm",
+      "subtype": "striptest",
+      "tags": ["water quality"],
+      "uuid": "bf1c19c0-9788-4e26-999e-1b5c6ca28111",
+      "calibration": "23 Dec 2015 using X-Rite i1Pro 2",
+      "brand": "HACH 27450",
+      "groupingType": "INDIVIDUAL",
+      "illuminant": "D65-2deg",
+      "length": 82.6,
+      "height": 5.2,
+      "unit": "mm",
+      "hasImage": true,
+      "results": [
+        {
+          "id": 1,
+          "name": "Total Chlorine",
+          "unit": "ppm",
+          "patchPos": 3.3,
+          "patchWidth": 6,
+          "timeLapse": 0,
+          "colors":[
+            {
+              "value": 0,
+              "lab":[90.88,-1.43,3.15]
+            },
+            {
+              "value": 0.5,
+              "lab":[77.77,15.16,-11.06]
+            },
+            {
+              "value": 1,
+              "lab":[67.31,22.85,-14.05]
+            },
+            {
+              "value": 2,
+              "lab":[60.89,27.14,-15.51]
+            },
+            {
+              "value": 4,
+              "lab":[50.52,37.38,-22.00]
+            },
+            {
+              "value": 10,
+              "lab":[42.70,28.64,-17.98]
+            }
+          ]
+        },
+        {
+          "id": 2,
+          "name": "Free Chlorine",
+          "unit": "ppm",
+          "patchPos":17.2,
+          "patchWidth":6,
+          "timeLapse":0,
+          "colors":[
+            {
+              "value": 0,
+              "lab":[88.78,-2.13,13.46]
+            },
+            {
+              "value": 0.5,
+              "lab":[75.21,2.90,-1.56]
+            },
+            {
+              "value": 1,
+              "lab":[76.81,11.31,-12.80]
+            },
+            {
+              "value": 2,
+              "lab":[59.99,22.95,-19.86]
+            },
+            {
+              "value": 4,
+              "lab":[53.03,28.31,-23.03]
+            },
+            {
+              "value": 10,
+              "lab":[43.52,28.51,-22.59]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Water - Total Iron",
+      "description": "Total dissolved iron",
+      "subtype": "striptest",
+      "tags": ["water quality"],
+      "uuid": "459a42d9-0834-4656-9e5a-e3bde46bdcff",
+      "calibration": "23 Aug 2016 using X-Rite i1Pro 2",
+      "brand": "HACH 2745348",
+      "groupingType": "INDIVIDUAL",
+      "illuminant": "D65-2deg",
+      "length": 82.6,
+      "height": 5.2,
+      "unit": "mm",
+      "hasImage": true,
+      "results": [
+        {
+          "id":1,
+          "name":"Total iron",
+          "unit": "ppm",
+          "patchPos":3.3,
+          "patchWidth":6,
+          "timeLapse":0,
+          "colors":[
+            {
+              "value": 0,
+              "lab":[73.89,-1.19,9.09]
+            },
+            {
+              "value": 0.15,
+              "lab":[71.23,1.41,6.56]
+            },
+            {
+              "value":0.3,
+              "lab":[67.31,3.87,4.05]
+            },
+            {
+              "value": 0.6,
+              "lab":[63.80,8.42,0.01]
+            },
+            {
+              "value": 1,
+              "lab":[60.00,12.82,-3.63]
+            },
+            {
+              "value": 2,
+              "lab":[53.44,19.08,-7.76]
+            },
+            {
+              "value": 5,
+              "lab":[41.20,27.43,-12.94]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Water - Electrical Conductivity",
+      "description": "Electrical Conductivity of water. 0 - 20.000 μS/cm",
+      "subtype": "sensor",
+      "tags": ["water quality"],
+      "uuid": "f88237b7-be3d-4fac-bbee-ab328eefcd14",
+      "brand": "Akvo Caddisfly",
+      "deviceId": "WaterEC",
+      "shortCode": "econd",
+      "calibrate": true,
+      "ranges": "141, 235, 470, 1413, 3000, 12880",
+      "hasImage": false,
+      "responseFormat": "$2,$1",
+      "results": [
+        {
+          "name": "Electrical Conductivity",
+          "id": 1,
+          "unit": "μS/cm"
+        },
+        {
+          "name": "Temperature",
+          "id": 2,
+          "unit": "°Celsius"
+        }
+      ]
+    }
+  ]
 }

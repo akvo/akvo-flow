@@ -210,7 +210,7 @@ FLOW.QuestionView = FLOW.View.extend({
     FLOW.selectedControl.set('selectedCaddisflyResource', null);
     // if the caddisflyResourceUuid is not null, get the resource
     if (!Ember.empty(FLOW.selectedControl.selectedQuestion.get('caddisflyResourceUuid'))) {
-      var caddResource = FLOW.caddisflyResourceControl.get('content').findProperty('uuid', FLOW.selectedControl.selectedQuestion.get('caddisflyResourceUuid'));
+      var caddResource = FLOW.router.caddisflyResourceController.content.findProperty('uuid', FLOW.selectedControl.selectedQuestion.get('caddisflyResourceUuid'));
       if (!Ember.empty(caddResource)) {
         FLOW.selectedControl.set('selectedCaddisflyResource',caddResource);
       }

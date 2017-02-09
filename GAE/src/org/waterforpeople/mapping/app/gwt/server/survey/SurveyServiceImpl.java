@@ -49,6 +49,7 @@ import org.waterforpeople.mapping.app.gwt.client.survey.SurveyGroupDto;
 import org.waterforpeople.mapping.app.gwt.client.survey.SurveyService;
 import org.waterforpeople.mapping.app.gwt.client.survey.TranslationDto;
 import org.waterforpeople.mapping.app.util.DtoMarshaller;
+import org.waterforpeople.mapping.app.web.DataProcessorRestServlet;
 import org.waterforpeople.mapping.app.web.dto.BootstrapGeneratorRequest;
 import org.waterforpeople.mapping.app.web.dto.SurveyAssemblyRequest;
 import org.waterforpeople.mapping.app.web.dto.SurveyTaskRequest;
@@ -734,7 +735,7 @@ public class SurveyServiceImpl extends RemoteServiceServlet implements
         if (sg != null && sg.getNewLocaleSurveyId() != null &&
                 sg.getNewLocaleSurveyId().longValue() == surveyId.longValue()) {
             // This is the registration form. Schedule datapoint name re-assembly
-            // DataProcessorRestServlet.scheduleDatapointNameAssembly(sg.getKey().getId(), null);
+            DataProcessorRestServlet.scheduleDatapointNameAssembly(sg.getKey().getId(), null);
         }
     }
 

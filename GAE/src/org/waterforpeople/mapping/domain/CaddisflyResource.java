@@ -1,4 +1,4 @@
-/*  Copyright (C) 2016 Stichting Akvo (Akvo Foundation)
+/*  Copyright (C) 2016-2017 Stichting Akvo (Akvo Foundation)
  *
  *  This file is part of Akvo FLOW.
  *
@@ -15,9 +15,12 @@
 
 package org.waterforpeople.mapping.domain;
 
+import org.codehaus.jackson.annotate.JsonIgnoreProperties;
+
 import java.io.Serializable;
 import java.util.List;
 
+@JsonIgnoreProperties(ignoreUnknown = true)
 public class CaddisflyResource implements Serializable {
     private static final long serialVersionUID = 1L;
     private String name;
