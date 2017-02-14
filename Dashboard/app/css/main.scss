@@ -4282,8 +4282,7 @@ footer.bottomPage {
     margin: 20px 0 0 0;
     padding: 10px 0 0 0;
     width: 100%;
-    background: white;
-    border-top: thin solid rgba($akvoBlack, 0.1);
+    background: rgb(252, 252, 255);
     z-index: 1001;
 }
 
@@ -4291,7 +4290,7 @@ footer.bottomPage div:nth-child(1n) {
     position: relative;
     margin: 0 auto;
     padding: 0;
-    width: 90%;
+    width: 100%;
     min-width: 768px;
 }
 
@@ -4316,29 +4315,46 @@ footer.bottomPage nav.footItems {
     text-align: center;
 }
 
-footer.bottomPage nav.footItems ul {
-    display: -webkit-box;
-    display: -webkit-flex;
-    display: -ms-flexbox;
-    display: flex;
-    -webkit-box-orient: horizontal;
-    -webkit-box-direction: normal;
-    -webkit-flex-direction: row;
-    -ms-flex-direction: row;
-    flex-direction: row;
-    -webkit-flex-wrap: wrap;
-    -ms-flex-wrap: wrap;
-    flex-wrap: wrap;
-    -webkit-box-pack: center;
-    -webkit-justify-content: center;
-    -ms-flex-pack: center;
-    justify-content: center;
-    margin: 0 auto;
-    text-align: center;
+footer.bottomPage nav.footItems {
+    clear: both;
+    background: rgba($akvoBlack, 0.05);
+    border-top: thin solid rgba($akvoBlack, 0.05);
+
+                                          /*     
+border-bottom: thin solid rgba($akvoBlack, 0.05); */
+    padding: 5px 0 7px 0;
+
+    ul {
+        width: 69%;
+        float: left;
+        display: -webkit-box;
+        display: -webkit-flex;
+        display: -ms-flexbox;
+        display: flex;
+        -webkit-box-orient: horizontal;
+        -webkit-box-direction: normal;
+        -webkit-flex-direction: row;
+        -ms-flex-direction: row;
+        flex-direction: row;
+        -webkit-flex-wrap: wrap;
+        -ms-flex-wrap: wrap;
+        flex-wrap: wrap;
+        -webkit-box-pack: center;
+        -webkit-justify-content: flex-start;
+        -ms-flex-pack: center;
+        justify-content: flex-start;
+
+        &:last-child {
+            justify-content: flex-end;
+            width: 29%;
+            float: right;
+        }
+    }
 }
 
 footer.bottomPage nav.footItems ul li.footLink {
     text-align: center;
+    margin-top: 10px;
 }
 
 footer.bottomPage nav ul li a {
@@ -4357,6 +4373,86 @@ footer.bottomPage nav ul li a.akvoDotOrg {
 footer.bottomPage a[rel="self"] {}
 
 footer.bottomPage a[rel="self"]:hover {}
+
+label.languageSelector select {
+    padding: 10px 42px 10px 10px;
+    background: #f8f8f8;
+    color: #444;
+    border: 1px solid rgba($akvoBlack, 0.1);
+    border-radius: 0;
+    display: inline-block;
+    -webkit-appearance: none;
+    -moz-appearance: none;
+    appearance: none;
+    cursor: pointer;
+    outline: none;
+}
+
+label.languageSelector select:-moz-focusring {
+    color: transparent;
+    text-shadow: 0 0 0 #444;
+}
+
+label.languageSelector select::-ms-expand {
+    display: none;
+}
+
+label.languageSelector:before {
+    content: '';
+    right: 5px;
+    top: -7px;
+    width: 30px;
+    height: 33px;
+    position: absolute;
+    pointer-events: none;
+    display: block;
+}
+
+label.languageSelector {
+    position: relative;
+}
+
+label.languageSelector:after {
+    content: '>';
+    font: 16px Consolas, monospace;
+    color: #444;
+    -webkit-transform: rotate(90deg);
+    -moz-transform: rotate(90deg);
+    -ms-transform: rotate(90deg);
+    transform: rotate(90deg);
+    right: 2px;
+    top: 2px;
+    position: absolute;
+    pointer-events: none;
+    width: 35px;
+    padding: 0 0 5px 0;
+    text-indent: 14px;
+}
+
+@media screen\0  {
+    label.languageSelector:after {
+        width: 38px;
+        text-indent: 15px;
+        right: 0;
+    }
+}
+
+@media screen and (min--moz-device-pixel-ratio: 0) {
+    label.languageSelector select {
+        padding-right: 40px;
+    }
+
+    label.languageSelector:before {
+        right: 6px;
+    }
+
+    label.languageSelector:after {
+        text-indent: 14px;
+        right: 6px;
+        top: -5px;
+        width: 36px;
+    }
+}
 
 /******************************************************************************************************
                                             Survey Preview
