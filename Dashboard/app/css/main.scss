@@ -4344,12 +4344,18 @@ border-bottom: thin solid rgba($akvoBlack, 0.05); */
         -ms-flex-pack: center;
         justify-content: flex-start;
 
-        &:last-child {
+        &:nth-child(2) {
             justify-content: flex-end;
             width: 29%;
             float: right;
         }
     }
+}
+
+.publicPage footer.bottomPage nav.footItems ul {
+    width: 100%;
+    float: none;
+    justify-content: center;
 }
 
 footer.bottomPage nav.footItems ul li.footLink {
