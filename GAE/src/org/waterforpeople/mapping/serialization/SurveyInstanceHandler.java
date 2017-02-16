@@ -111,7 +111,7 @@ public class SurveyInstanceHandler {
         }
 
         for (Response response : formInstance.getResponses()) {
-            Long formId = retriveFormIdByQuestionId(response.getQuestionId());
+            Long formId = retrieveFormIdByQuestionId(response.getQuestionId());
             if (formId != null) {
                 return formId;
             }
@@ -123,8 +123,16 @@ public class SurveyInstanceHandler {
     /*
      * Retrieve the formId from the corresponding Question entity in the datastore
      */
-    private static Long retriveFormIdByQuestionId(String questionId) {
+    private static Long retrieveFormIdByQuestionId(String questionId) {
+        if (questionId == null || questionId.trim().isEmpty()) {
+            return null;
+        }
+
         Question question = new QuestionDao().getByKey(Long.parseLong(questionId));
+
+        if (question == null) {
+            return null;
+        }
         return question.getSurveyId();
     }
 
@@ -199,7 +207,7 @@ public class SurveyInstanceHandler {
         if (StringUtils.isNumeric(parts[SURVEY_ID].trim())) {
             return Long.parseLong(parts[SURVEY_ID].trim());
         } else {
-            return retriveFormIdByQuestionId(parts[QUESTION_ID].trim());
+            return retrieveFormIdByQuestionId(parts[QUESTION_ID].trim());
         }
     }
 }
