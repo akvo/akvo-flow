@@ -63,7 +63,7 @@ public class BootstrapGeneratorServlet extends AbstractRestApiServlet {
     private static final String EMAIL_SUB = "FLOW Bootstrap File";
     private static final String EMAIL_BODY = "Click the link to download the bootstrap file";
     private static final String ERROR_BODY = "There were errors while attempting to generate the bootstrap file:";
-    private static final String FILENAME_REGEX = "[^a-zA-Z0-9-_\\.]";
+    private static final String FILENAME_REGEX = "[^a-zA-Z0-9_]";
     private static final String FILENAME_REPLACEMENT = "_";
     private static final int FILENAME_MAX_SIZE = 127;
 
