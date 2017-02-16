@@ -175,7 +175,7 @@ public class BootstrapGeneratorServlet extends AbstractRestApiServlet {
             int maxLength = Math.min(FILENAME_MAX_SIZE, filename.length());
             filename = filename.substring(0, maxLength);
             //make sure we do not have multiple underscores
-            filename.replaceAll(EXCESS_UNDERSCORE, FILENAME_REPLACEMENT);
+            filename = filename.replaceAll(EXCESS_UNDERSCORE, FILENAME_REPLACEMENT);
         }
         return filename;
     }
