@@ -138,7 +138,7 @@ public class SurveyInstanceHandler {
 
             if (first) {
                 try {
-                    si.setSurveyId(Long.parseLong(parts[SURVEY_ID].trim()));
+                    si.setSurveyId(retrieveFormId(parts));
                     si.setCollectionDate(new Date(new Long(parts[COLLECTION_DATE].trim())));
                 } catch (NumberFormatException e) {
                     log.log(Level.SEVERE, "Could not parse line: " + line, e);
@@ -182,5 +182,16 @@ public class SurveyInstanceHandler {
         }
 
         return si;
+    }
+
+    /*
+     * Parse formId for form data coming in via data.txt files
+     */
+    private static Long retrieveFormId(String[] parts) {
+        if (StringUtils.isNumeric(parts[SURVEY_ID].trim())) {
+            return Long.parseLong(parts[SURVEY_ID].trim());
+        } else {
+            return retriveFormIdByQuestionId(parts[QUESTION_ID].trim());
+        }
     }
 }
