@@ -1,5 +1,5 @@
 /*
- *  Copyright (C) 2010-2015 Stichting Akvo (Akvo Foundation)
+ *  Copyright (C) 2010-2017 Stichting Akvo (Akvo Foundation)
  *
  *  This file is part of Akvo FLOW.
  *
@@ -44,5 +44,7 @@ public class Constants {
     public static final String CADDISFLY_RESULT = "result";
     public static final String CADDISFLY_RESULT_VALUE = "value";
     public static final String CADDISFLY_RESULT_ID = "id";
+
+    public static final String DEFAULT_SURVEY_FILE_NAME = "survey";
 
 }
