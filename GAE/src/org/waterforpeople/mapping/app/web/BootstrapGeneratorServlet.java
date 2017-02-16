@@ -66,6 +66,7 @@ public class BootstrapGeneratorServlet extends AbstractRestApiServlet {
     private static final String FILENAME_REGEX = "[^a-zA-Z0-9_]";
     private static final String FILENAME_REPLACEMENT = "_";
     private static final int FILENAME_MAX_SIZE = 127;
+    public static final String EXCESS_UNDERSCORE = "__";
 
     private SurveyDAO surveyDao;
     private CascadeResourceDao cascadeDao;
@@ -170,9 +171,11 @@ public class BootstrapGeneratorServlet extends AbstractRestApiServlet {
         if (StringUtil.isEmpty(name)) {
             filename = DEFAULT_SURVEY_FILE_NAME;
         } else {
-            filename = name.replaceAll(FILENAME_REGEX, FILENAME_REPLACEMENT);
+            filename = name.trim().replaceAll(FILENAME_REGEX, FILENAME_REPLACEMENT);
             int maxLength = Math.min(FILENAME_MAX_SIZE, filename.length());
             filename = filename.substring(0, maxLength);
+            //make sure we do not have multiple underscores
+            filename.replaceAll(EXCESS_UNDERSCORE, FILENAME_REPLACEMENT);
         }
         return filename;
     }
