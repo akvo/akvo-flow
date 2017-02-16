@@ -13,12 +13,13 @@
  *
  *  The full license text can also be seen at <http://www.gnu.org/licenses/agpl.html>.
  */
+
 package org.waterforpeople.mapping.domain.response;
 
 import java.util.List;
 
 public class FormInstance {
-    private long formId;
+    private String formId;
     private long submissionDate;
     private long duration;
     private String uuid;
@@ -44,11 +45,11 @@ public class FormInstance {
         this.username = username;
     }
 
-    public long getFormId() {
+    public String getFormId() {
         return formId;
     }
 
-    public void setFormId(long formId) {
+    public void setFormId(String formId) {
         this.formId = formId;
     }
 
@@ -99,5 +100,5 @@ public class FormInstance {
     public void setDuration(long duration) {
         this.duration = duration;
     }
-    
+
 }
