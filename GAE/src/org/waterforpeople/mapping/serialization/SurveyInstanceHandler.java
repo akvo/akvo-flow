@@ -98,7 +98,11 @@ public class SurveyInstanceHandler {
     }
 
     /*
-     * Retrieve the formId for form data coming in via data.json files
+     * Retrieve the formId for form data coming in via data.json files. This extra check for the
+     * formId has been created in order to handle a bug where the formId was returned as an
+     * arbitrary string. We ensure that the formId is strictly a long otherwise we try to retrieve
+     * it through the questionId values that come with each individual question response. See
+     * https://github.com/akvo/akvo-flow-mobile/issues/614
      */
     private static Long retrieveFormId(FormInstance formInstance) {
         if (StringUtils.isNotBlank(formInstance.getFormId())
@@ -185,7 +189,11 @@ public class SurveyInstanceHandler {
     }
 
     /*
-     * Parse formId for form data coming in via data.txt files
+     * Parse formId for form data coming in via data.txt files. This extra check for the formId has
+     * been created in order to handle a bug where the formId was returned as an arbitrary string.
+     * We ensure that the formId is strictly a long otherwise we try to retrieve it through the
+     * questionId values that come with each individual question response. See
+     * https://github.com/akvo/akvo-flow-mobile/issues/614
      */
     private static Long retrieveFormId(String[] parts) {
         if (StringUtils.isNumeric(parts[SURVEY_ID].trim())) {
