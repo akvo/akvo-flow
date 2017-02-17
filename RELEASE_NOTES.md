@@ -1,5 +1,14 @@
 # Akvo Flow Release Notes
 ----
+#1.9.13.1 Laughing Liger hotfix
+Date: 17 February 2017
+
+# Resolved issues
+* **Change `FormInstance.formId` to parse both String and Long data types** [#1942] - We enable the dashboard to process data files that may erroneously contain a string instead of a long value for the formId
+
+* **Bootstrap file generation: add surveyId to the xml file** [#1927] - We add the `surveyId` to the survey xml definition that is exported to the device.  This will simplify processing of the file to identify the `surveyId` during manual survey assignments.
+
+
 #1.9.13 Laughing Liger
 Date: 9 February 2017
 

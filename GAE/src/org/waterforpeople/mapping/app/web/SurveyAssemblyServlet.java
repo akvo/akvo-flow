@@ -1,5 +1,5 @@
 /*
- *  Copyright (C) 2010-2015 Stichting Akvo (Akvo Foundation)
+ *  Copyright (C) 2010-2017 Stichting Akvo (Akvo Foundation)
  *
  *  This file is part of Akvo FLOW.
  *
@@ -16,24 +16,6 @@
 
 package org.waterforpeople.mapping.app.web;
 
-import java.io.ByteArrayOutputStream;
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
-import java.util.Properties;
-import java.util.Random;
-import java.util.TreeMap;
-
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-import javax.xml.bind.JAXBException;
-
-import org.apache.commons.lang.StringEscapeUtils;
-import org.apache.log4j.Logger;
-import org.waterforpeople.mapping.app.web.dto.SurveyAssemblyRequest;
-import org.waterforpeople.mapping.dao.SurveyContainerDao;
-
 import com.gallatinsystems.common.domain.UploadStatusContainer;
 import com.gallatinsystems.common.util.PropertyUtil;
 import com.gallatinsystems.common.util.S3Util;
@@ -43,37 +25,13 @@ import com.gallatinsystems.framework.rest.RestRequest;
 import com.gallatinsystems.framework.rest.RestResponse;
 import com.gallatinsystems.messaging.dao.MessageDao;
 import com.gallatinsystems.messaging.domain.Message;
-import com.gallatinsystems.survey.dao.CascadeResourceDao;
-import com.gallatinsystems.survey.dao.QuestionDao;
-import com.gallatinsystems.survey.dao.QuestionGroupDao;
-import com.gallatinsystems.survey.dao.SurveyDAO;
-import com.gallatinsystems.survey.dao.SurveyGroupDAO;
-import com.gallatinsystems.survey.dao.SurveyUtils;
-import com.gallatinsystems.survey.dao.SurveyXMLFragmentDao;
-import com.gallatinsystems.survey.dao.TranslationDao;
-import com.gallatinsystems.survey.domain.CascadeResource;
+import com.gallatinsystems.survey.dao.*;
+import com.gallatinsystems.survey.domain.*;
 import com.gallatinsystems.survey.domain.Question;
 import com.gallatinsystems.survey.domain.QuestionGroup;
-import com.gallatinsystems.survey.domain.QuestionHelpMedia;
-import com.gallatinsystems.survey.domain.QuestionOption;
-import com.gallatinsystems.survey.domain.ScoringRule;
 import com.gallatinsystems.survey.domain.Survey;
-import com.gallatinsystems.survey.domain.SurveyContainer;
-import com.gallatinsystems.survey.domain.SurveyGroup;
-import com.gallatinsystems.survey.domain.SurveyXMLFragment;
 import com.gallatinsystems.survey.domain.SurveyXMLFragment.FRAGMENT_TYPE;
-import com.gallatinsystems.survey.domain.Translation;
-import com.gallatinsystems.survey.domain.xml.AltText;
-import com.gallatinsystems.survey.domain.xml.Dependency;
-import com.gallatinsystems.survey.domain.xml.Help;
-import com.gallatinsystems.survey.domain.xml.Level;
-import com.gallatinsystems.survey.domain.xml.Levels;
-import com.gallatinsystems.survey.domain.xml.ObjectFactory;
-import com.gallatinsystems.survey.domain.xml.Option;
-import com.gallatinsystems.survey.domain.xml.Options;
-import com.gallatinsystems.survey.domain.xml.Score;
-import com.gallatinsystems.survey.domain.xml.Scoring;
-import com.gallatinsystems.survey.domain.xml.ValidationRule;
+import com.gallatinsystems.survey.domain.xml.*;
 import com.gallatinsystems.survey.xml.SurveyXMLAdapter;
 import com.google.appengine.api.backends.BackendServiceFactory;
 import com.google.appengine.api.datastore.Text;
@@ -81,6 +39,17 @@ import com.google.appengine.api.taskqueue.Queue;
 import com.google.appengine.api.taskqueue.QueueFactory;
 import com.google.appengine.api.taskqueue.TaskOptions;
 import com.google.appengine.api.utils.SystemProperty;
+import org.apache.commons.lang.StringEscapeUtils;
+import org.apache.log4j.Logger;
+import org.waterforpeople.mapping.app.web.dto.SurveyAssemblyRequest;
+import org.waterforpeople.mapping.dao.SurveyContainerDao;
+
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import javax.xml.bind.JAXBException;
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
+import java.util.*;
 
 public class SurveyAssemblyServlet extends AbstractRestApiServlet {
     private static final Logger log = Logger
@@ -156,7 +125,6 @@ public class SurveyAssemblyServlet extends AbstractRestApiServlet {
                         .getQueue("surveyAssembly");
                 queue.add(options);
             } else {
-                // assembleSurvey(importReq.getSurveyId());
                 assembleSurveyOnePass(importReq.getSurveyId());
             }
 
@@ -295,6 +263,7 @@ public class SurveyAssemblyServlet extends AbstractRestApiServlet {
         String surveyGroupId = "";
         String surveyGroupName = "";
         String registrationForm = "";
+        String surveyIdKeyValue = "surveyId=\""+surveyId+"\"";
         if (sg != null) {
             surveyGroupId = "surveyGroupId=\"" + sg.getKey().getId() + "\"";
             surveyGroupName = "surveyGroupName=\"" + StringEscapeUtils.escapeXml(sg.getCode())
@@ -307,7 +276,8 @@ public class SurveyAssemblyServlet extends AbstractRestApiServlet {
         String surveyHeader = "<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?><survey"
                 + " name=\"" + StringEscapeUtils.escapeXml(name)
                 + "\"" + " defaultLanguageCode=\"" + lang + "\" " + versionAttribute + " " + app
-                + registrationForm + " " + surveyGroupId + " " + surveyGroupName + ">";
+                + registrationForm + " " + surveyGroupId + " " + surveyGroupName + " "
+                + surveyIdKeyValue + ">";
         String surveyFooter = "</survey>";
         QuestionGroupDao qgDao = new QuestionGroupDao();
         TreeMap<Integer, QuestionGroup> qgList = qgDao
