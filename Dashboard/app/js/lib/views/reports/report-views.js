@@ -31,7 +31,7 @@ FLOW.chartView = FLOW.View.extend({
   chartType: null,
   compactSmaller: true,
   selectedSurvey: null,
-  
+
   downloadOptionQuestions: function () {
 	  if (!Ember.none(this.get('selectedSurvey'))) {
 		  FLOW.questionControl.downloadOptionQuestions(this.selectedSurvey.get('keyId'));
