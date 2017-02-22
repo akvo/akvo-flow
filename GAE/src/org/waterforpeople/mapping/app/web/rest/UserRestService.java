@@ -110,7 +110,7 @@ public class UserRestService {
     }
 
     private boolean isSuperAdminRole(User user) {
-        return (user.isSuperAdmin()
+        return user.isSuperAdmin()
                 || user.getPermissionList()
                         .equals(Integer.toString(AppRole.SUPER_ADMIN.getLevel()));
     }
