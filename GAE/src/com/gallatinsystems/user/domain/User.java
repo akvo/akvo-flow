@@ -77,7 +77,7 @@ public class User extends BaseDomain {
     }
 
     public Boolean isSuperAdmin() {
-        return superAdmin;
+        return Boolean.TRUE.equals(superAdmin);
     }
 
     public void setSuperAdmin(Boolean superAdmin) {
