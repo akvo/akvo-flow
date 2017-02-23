@@ -1,5 +1,14 @@
 # Akvo Flow Release Notes
 ----
+#1.9.14 Masterful Mouse
+Date: 23 February 2017
+
+# Resolved issues
+* **Dashboard footer design improvements** [#1920] - Slight design improvements to the layout of the footer on the dashboard
+
+* **Fix bug that prevents users tab from loading** [#1959] - The users tab was not loading because of an error while retrieving the list of dashboard users
+
+
 #1.9.13.1 Laughing Liger hotfix
 Date: 17 February 2017
 
