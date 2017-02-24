@@ -206,13 +206,15 @@ $width-large: 1200px;
 
     &.disabled {
         cursor: not-allowed;
-        background-color: rgba(128, 128, 128, 0.1);
-        color: rgba(128, 128, 128, 0.4);
+        background-color: rgba(128, 128, 128, 0.1) !important;
+        color: rgba(128, 128, 128, 0.4) !important;
+        border: 1px solid transparent;
 
         &:hover {
             cursor: not-allowed;
-            background-color: rgba(128, 128, 128, 0.1);
-            color: rgba(128, 128, 128, 0.4);
+            background-color: rgba(128, 128, 128, 0.1) !important;
+            color: rgba(128, 128, 128, 0.4) !important;
+            border: 1px solid transparent;
         }
     }
 }

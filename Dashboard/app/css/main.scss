@@ -206,6 +206,20 @@ pre {
 /************************* links *************************/
 .button, .standardBtn {
     @include button($flowAnchorLink);
+
+    &.noChanges, &.disabled {
+        cursor: not-allowed;
+        background-color: rgba(128, 128, 128, 0.1) !important;
+        color: rgba(128, 128, 128, 0.4) !important;
+        border: 1px solid transparent;
+
+        &:hover {
+            cursor: not-allowed;
+            background-color: rgba(128, 128, 128, 0.1) !important;
+            color: rgba(128, 128, 128, 0.4) !important;
+            border: 1px solid transparent;
+        }
+    }
 }
 
 .smallButton, .smallBtn {
@@ -2376,6 +2390,20 @@ a.editGroupName, a.addMenuAction,
 a.makeMonitorGroup, a.manageNotifications,
 a.deleteGroup, a.addFolder, a.editFolder, a.cancelFolder, a.saveMenuAction {
     @include btnOutline($flowAnchorLink);
+
+    &.noChanges, &.disabled {
+        cursor: not-allowed;
+        background-color: rgba(128, 128, 128, 0.1) !important;
+        color: rgba(128, 128, 128, 0.4) !important;
+        border: 1px solid transparent;
+
+        &:hover {
+            cursor: not-allowed;
+            background-color: rgba(128, 128, 128, 0.1) !important;
+            color: rgba(128, 128, 128, 0.4) !important;
+            border: 1px solid transparent;
+        }
+    }
 }
 
 /* Survey Asset
