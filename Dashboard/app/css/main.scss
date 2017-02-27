@@ -435,13 +435,24 @@ input[type="submit"] {
     margin: 0 auto;
     padding: 1em 2% 1.5em 2%;
     width: 96%;
-    background: $darkGrey;
 
     a {
         font-weight: bold;
         font-size: 1.2em;
         display: inline-block;
         padding: 0.5em 1em 1em 1em;
+
+        .prevBtn {
+            display: inline-block;
+            text-align: left;
+            width: 49%;
+        }
+
+        .nextBtn {
+            display: inline-block;
+            text-align: right;
+            width: 49%;
+        }
     }
 }
 
@@ -736,6 +747,12 @@ nav.appNav {
                 font-size: 0.85em;
             }
 
+            &.current {
+                a {
+                    color: $akvoFlowOrange;
+                }
+            }
+
             &.navHome {
                 a {
                     background: url(../images/topnavDashboards.svg);
@@ -1021,25 +1038,22 @@ table.dataTable {
     margin: 0 auto;
     width: 100%;
     border-collapse: collapse;
-    color: #606060;
     text-align: left;
+    color: rgba($tableHeaderGrey, 0.8);
+    font-size: 0.9em;
 
     thead tr {
-        border-bottom: none;
-        background: $darkGrey;
+        background: rgba($linkColor, 0.2);
+        border-top: thin solid rgba(32, 32, 36, 0.05);
 
         th {
             position: relative;
             padding: 9px 1em 9px 1em;
-            border-right: thin solid rgb(12, 12, 12);
+            border-right: thin solid white;
             background: url(../images/sortTableArrows.png) right center no-repeat;
-            color: rgb(255, 210, 0);
             text-align: center;
             font-weight: normal;
-
-            &.noArrows {
-                background: #3A3A3A;
-            }
+            color: $linkColor;
 
             input[type="checkbox"] {
                 margin: 0;
@@ -1070,7 +1084,6 @@ table.dataTable tbody tr.odd {
 
 table.dataTable tbody tr:nth-child(2n),
 table.dataTable tbody tr.even {
-    background: rgb(232, 230, 220);
     -webkit-transition: background-color .4s linear;
     transition: background-color .4s linear;
 }
@@ -1078,8 +1091,8 @@ table.dataTable tbody tr.even {
 table.dataTable tbody tr:hover,
 table.dataTable tbody tr:nth-child(2n):hover,
 table.dataTable tbody tr.even:hover {
-    background: rgb(177, 214, 224);
-    color: rgb(16, 28, 30);
+    background: rgba($flowAnchorLink, 0.1);
+    color: rgba($tableHeaderGrey, 0.5);
 }
 
 #usersListTable thead tr th {
@@ -1089,8 +1102,8 @@ table.dataTable tbody tr.even:hover {
 table.dataTable thead tr th a,
 table.dataTable thead tr th a:link,
 table.dataTable thead tr th a:visited {
-    color: #FFD200;
     cursor: pointer;
+    display: block;
 }
 
 #statisticsDataTable {
@@ -1100,17 +1113,16 @@ table.dataTable thead tr th a:visited {
 /* end addition MTW */
 
 table.dataTable thead tr th a.helpIcon {
-    position: relative;
-    top: -1 px;
-    margin: 0 0 0 7px;
+    position: absolute;
+    top: 9px;
 }
 
 table.dataTable thead tr th.sorting_desc {
-    background: rgb(23, 23, 23) url(../images/sortTableDown.png) right center no-repeat;
+    background: url(../images/sortTableDown.png) right center no-repeat;
 }
 
 table.dataTable thead tr th.sorting_asc {
-    background: rgb(23, 23, 23) url(../images/sortTableUp.png) right center no-repeat;
+    background: url(../images/sortTableUp.png) right center no-repeat;
 }
 
 table.dataTable thead tr th:last-child {
@@ -1269,22 +1281,6 @@ tfoot tr {
             &.submitter {
                 text-align: left;
             }
-        }
-    }
-}
-
-#inspectData, #monitoringData, .messagesList {
-    .prevNext {
-        .prevBtn {
-            display: inline-block;
-            text-align: left;
-            width: 49%;
-        }
-
-        .nextBtn {
-            display: inline-block;
-            text-align: right;
-            width: 49%;
         }
     }
 }
@@ -3939,6 +3935,7 @@ div.dataCollectedDate input {
 
 .filterData label {
     display: inline-block;
+    font-size: 0.9em;
 }
 
 label.collectedTo {
@@ -4025,7 +4022,9 @@ div.dataCollectedDate label input {
     display: block;
     margin: 60px 0 10px 0;
     padding: 0.5em 1em 8px 1em;
-    background: rgb(234, 234, 234);
+    background: rgba(234, 234, 234, 0.3);
+    border-top: 1px solid rgb(234, 234, 234);
+    border-bottom: 1px solid rgb(234, 234, 234);
 }
 
 .filterData div.dataLocation {
@@ -6313,10 +6312,10 @@ li.disable {
 /* Set device buttons on device tab to position: fixed */
 .deviceControls {
     position: fixed;
-    top: 100px;
+    top: 110px;
     left: 0px;
     right: 0px;
-    height: 40px;
+    height: 50px;
     z-index: 1;
     background-color: white;
     box-shadow: 0 1px 3px rgba(32, 32, 36, 0.1);
@@ -6339,7 +6338,7 @@ li.disable {
     }
 
     + .dataTable {
-        margin-top: 80px;
+        margin-top: 90px;
     }
 
     @media only screen and (max-width: 600px) {
