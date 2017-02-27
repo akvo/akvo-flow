@@ -2,7 +2,7 @@
 <section class="fullWidth" id="monitoringData">
     <div class="floats-in filterData" id="dataFilter">
       <label>{{t _choose_survey_data_to_display}}:</label>
-      <div class="chooseSurveyData">      
+      <div class="chooseSurveyData">
       {{#unless FLOW.projectControl.isLoading}}
         {{view FLOW.SurveySelectionView showMonitoringSurveysOnly=true}}
       {{/unless}}
