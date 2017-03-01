@@ -3875,7 +3875,7 @@ table.dataTable.notificationTable thead tr th a:visited {
     align-items: flex-start;
 
     select:first-child {
-        margin-left: 1%;
+        margin-left: 0.5%;
     }
 }
 
@@ -3921,8 +3921,8 @@ div.chooseSurveyData {
     position: relative;
     display: block;
     float: left;
-    margin: 0 1% 2em 0.5em;
-    width: 48%;
+    margin: 10px 0;
+    width: 100%;
     height: 20px;
 }
 
@@ -4990,7 +4990,7 @@ table.surveyDetails {
 
 #tabs {
     .fullWidth {
-        padding-top: 25px;
+        padding-top: 35px;
     }
 }
 
