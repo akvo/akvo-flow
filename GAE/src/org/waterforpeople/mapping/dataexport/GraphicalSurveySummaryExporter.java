@@ -1426,11 +1426,10 @@ public class GraphicalSurveySummaryExporter extends SurveySummaryExporter {
         while (sheet == null) {
             sheet = wb.getSheet(curTitle);
             if (sheet == null) {
-                sheet = wb.createSheet(WorkbookUtil
-                        .createSafeSheetName(curTitle));
+                sheet = wb.createSheet(curTitle);
             } else {
                 sheet = null;
-                curTitle = title + " " + sheetCount;
+                curTitle = WorkbookUtil.createSafeSheetName(title + " " + sheetCount);
                 sheetCount++;
             }
         }
