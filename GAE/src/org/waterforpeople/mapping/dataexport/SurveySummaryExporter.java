@@ -1,5 +1,5 @@
 /*
- *  Copyright (C) 2010-2016 Stichting Akvo (Akvo Foundation)
+ *  Copyright (C) 2010-2017 Stichting Akvo (Akvo Foundation)
  *
  *  This file is part of Akvo FLOW.
  *
@@ -102,7 +102,7 @@ public class SurveySummaryExporter extends AbstractDataExporter {
         });
         ROLLUP_MAP.put("MW", new String[] {
                 "District",
-                "Tradtional Authoriaty (TA)",
+                "Traditional Authority (TA)",
                 "Sub-Traditional Authority (Sub-TA)"
         });
         ROLLUP_MAP.put("RW", new String[] {
