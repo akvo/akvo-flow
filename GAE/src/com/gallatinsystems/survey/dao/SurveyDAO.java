@@ -134,7 +134,6 @@ public class SurveyDAO extends BaseDAO<Survey> {
      *
      * @return
      */
-    @SuppressWarnings("unchecked")
     public List<Survey> listAllFilteredByUserAuthorization() {
         List<Survey> allSurveys = list(Constants.ALL_RESULTS);
         return filterByUserAuthorizationObjectId(allSurveys);
@@ -224,8 +223,7 @@ public class SurveyDAO extends BaseDAO<Survey> {
      * Deletes a survey
      *
      * @param survey
-     * @throws IllegalDeletionException
-     *             - if the system contains responses for this survey
+     * @throws IllegalDeletionException - if the system contains responses for this survey
      */
     public void delete(Survey survey) throws IllegalDeletionException {
         QuestionGroupDao qgDao = new QuestionGroupDao();

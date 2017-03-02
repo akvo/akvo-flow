@@ -98,7 +98,6 @@ public class SurveyGroupDAO extends BaseDAO<SurveyGroup> {
      *
      * @return
      */
-    @SuppressWarnings("unchecked")
     public List<SurveyGroup> listAllFilteredByUserAuthorization() {
         List<SurveyGroup> allSurveyGroups = list(Constants.ALL_RESULTS);
         return filterByUserAuthorizationObjectId(allSurveyGroups);
