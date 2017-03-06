@@ -5443,8 +5443,7 @@ table.surveyDetails {
                 transition: none;
                 -moz-background-clip: padding;
                 -webkit-background-clip: padding-box;
-
-                @include noWrapTxt;
+                white-space: nowrap;
 
                 &.aFormTab {
                     padding-left: 25px;
