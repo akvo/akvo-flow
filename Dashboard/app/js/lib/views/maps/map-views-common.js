@@ -231,7 +231,7 @@ FLOW.NavMapsView = FLOW.View.extend({
                 form_selector.append('<option value="">--' + Ember.String.loc('_choose_a_form') + '--</option>');
 
                 var formIds = [];
-                for {var i=0; i<rows.length; i++) {
+                for (var i=0; i<rows.length; i++) {
                   //append returned forms list to the firm selector element
                   form_selector.append(
                     $('<option></option>').val(rows[i]["keyId"]).html(rows[i]["name"]));
@@ -262,7 +262,7 @@ FLOW.NavMapsView = FLOW.View.extend({
                 });
 
                 self.questionGroups = [];
-                for {var i=0; i<formIds.length; i++) {
+                for (var i=0; i<formIds.length; i++) {
                   self.loadQuestions(formIds[i]);
                 }
               }
@@ -273,7 +273,7 @@ FLOW.NavMapsView = FLOW.View.extend({
 
           var hierarchyObject = self.hierarchyObject;
 
-          for {var i=0; i<hierarchyObject.length; i++) {
+          for (var i=0; i<hierarchyObject.length; i++) {
             if (hierarchyObject[i].keyId === parseInt(keyId) && self.lastSelectedElement !== parseInt(keyId)) {
               self.checkHierarchy(keyId);
               self.lastSelectedElement = parseInt(keyId);
@@ -316,7 +316,7 @@ FLOW.NavMapsView = FLOW.View.extend({
     $(document.body).on('click', '.project-geoshape', function(){
       if (self.polygons.length > 0) {
         $(this).html(Ember.String.loc('_project_onto_main_map'));
-        for {var i=0; i<self.polygons.length; i++) {
+        for (var i=0; i<self.polygons.length; i++) {
           self.map.removeLayer(self.polygons[i]);
         }
         //restore the previous zoom level and map center
@@ -693,8 +693,8 @@ FLOW.NavMapsView = FLOW.View.extend({
 
           clickedPointContent += '<div class="mapInfoDetail" style="opacity: 1; display: inherit;">';
 
-          for {var qg=0; qg<self.questionGroups.length; qg++) {
-            for {var i=0; i<self.questionGroups[qg]['questions'].length; i++) {
+          for (var qg=0; qg<self.questionGroups.length; qg++) {
+            for (var i=0; i<self.questionGroups[qg]['questions'].length; i++) {
               for (column in pointData['answers']) {
                 var questionAnswer = pointData['answers'][column];
                 if (column.match(self.questionGroups[qg]['questions'][i].keyId)) {
@@ -821,7 +821,7 @@ FLOW.NavMapsView = FLOW.View.extend({
     FLOW.ajaxCall(function(questionGroupsResponse){
       if (questionGroupsResponse.question_groups) {
         //for every question group pull a list of associated questions
-        for {var g=0; g<questionGroupsResponse.question_groups.length; g++) {
+        for (var g=0; g<questionGroupsResponse.question_groups.length; g++) {
           var questionGroup = {};
           questionGroup['id'] = questionGroupsResponse.question_groups[g].keyId;
           questionGroup['order'] = questionGroupsResponse.question_groups[g].order;
@@ -836,7 +836,7 @@ FLOW.NavMapsView = FLOW.View.extend({
 
           FLOW.ajaxCall(function(questionsResponse, qObj){
             if (questionsResponse.questions) {
-              for {var j=0; j<questionsResponse.questions.length; j++) {
+              for (var j=0; j<questionsResponse.questions.length; j++) {
                 self.questionGroups[qObj.index]['questions'].push(questionsResponse.questions[j]);
               }
 
@@ -867,7 +867,7 @@ FLOW.NavMapsView = FLOW.View.extend({
       geoshapeCoordinatesArray = geoShapeObject['features'][0]['geometry']['coordinates'];
     }
 
-    for {var j=0; j<geoshapeCoordinatesArray.length; j++) {
+    for (var j=0; j<geoshapeCoordinatesArray.length; j++) {
       points.push([geoshapeCoordinatesArray[j][1], geoshapeCoordinatesArray[j][0]]);
     }
 
@@ -954,13 +954,13 @@ FLOW.NavMapsView = FLOW.View.extend({
     }
 
     if (!$.isEmptyObject(self.mediaMarkers)) {
-      for {mediaMarker in self.mediaMarkers) {
+      for (mediaMarker in self.mediaMarkers) {
         self.map.removeLayer(self.mediaMarkers[mediaMarker]);
       }
     }
 
     if (self.polygons.length > 0) {
-      for {var i=0; i<self.polygons.length; i++) {
+      for (var i=0; i<self.polygons.length; i++) {
         self.map.removeLayer(self.polygons[i])
       }
       //restore the previous zoom level and map center
