@@ -1563,11 +1563,6 @@ table.previewList {
     @include button($flowAnchorLink);
 }
 
-#assignSurveys .fieldSetWrap fieldset table tfoot td a:hover {
-    background: rgb(107, 134, 141);
-    color: white;
-}
-
 .groupPreview {
     width: 37.5%;
 }
