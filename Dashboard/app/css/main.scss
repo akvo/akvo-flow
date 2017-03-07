@@ -19,6 +19,7 @@ html {
     text-rendering: optimizelegibility;
     font-family: $bodyFont;
     -webkit-font-smoothing: antialiased;
+    overflow-x: hidden;
 }
 
 body {
@@ -943,13 +944,13 @@ nav.appNav {
 
 .belowHeader {
     padding-top: 110px;
+    padding-bottom: 60px;
+    box-sizing: border-box;
 }
 
 .middleSection {
-    overflow: hidden;
-
     /*margin: 0 0 20px 0;*/
-    padding: 90px 0 40px 0;
+    padding: 50px 0 60px 0;
 }
 
 .fullWidth {
@@ -4045,19 +4046,19 @@ div.dataCollectedDate label input {
     position: relative;
     clear: both;
     margin: 0 auto;
-    padding: 4px 1.25% 0 1.25%;
+    padding: 4px 1.25% 2px 1.25%;
     width: 97.5%;
     height: 23px;
     background: $darkGrey;
-}
 
-#dropdown-holder label {
-    color: white;
-}
+    label {
+        color: white;
+    }
 
-#dropdown-holder select {
-    display: inline;
-    margin: 0 0 0 0.5em;
+    select {
+        display: inline;
+        margin: 0 0 0 0.5em;
+    }
 }
 
 #pointDetails {
@@ -4225,8 +4226,7 @@ div.drawHandle {
 footer.bottomPage {
     position: absolute;
     bottom: 0;
-    margin: 20px 0 0 0;
-    padding: 10px 0 0 0;
+    padding: 10px 0 10px 0;
     width: 100%;
     background: white;
     border-top: thin solid rgba($akvoBlack, 0.1);
@@ -6153,7 +6153,7 @@ li.disable {
     }
 
     + .dataTable {
-        margin-top: 80px;
+        margin-top: 60px;
     }
 
     @media only screen and (max-width: 600px) {
@@ -6164,7 +6164,7 @@ li.disable {
         }
 
         + .dataTable {
-            margin-top: 80px;
+            margin-top: 60px;
         }
     }
 }

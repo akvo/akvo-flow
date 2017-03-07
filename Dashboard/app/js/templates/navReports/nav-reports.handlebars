@@ -1,8 +1,10 @@
-<section class="reportsSection floats-in middleSection" id="main" role="main">
-    <div id="tabs">
-        <nav class="tabNav floats-in">
-            {{view FLOW.ReportsSubnavView controllerBinding="controller.controllers.reportsSubnavController"}}
-        </nav>
+    <section class="topBar">
+	    <div id="tabs">
+	        <nav class="tabNav floats-in">
+            	{{view FLOW.ReportsSubnavView controllerBinding="controller.controllers.reportsSubnavController"}}
+	        </nav>    
+	    </div>
+	</section>    
+	<section class="reportsSection floats-in belowHeader" id="main" role="main">
         {{outlet}}
-    </div>
-</section>
+	</section>
