@@ -27,6 +27,7 @@ body {
     height: 100%;
     -ms-overflow-style: -ms-autohiding-scrollbar;
     overflow-x: hidden;
+    padding-top: 110px;
 }
 
 h1 {
@@ -204,11 +205,11 @@ pre {
 }
 
 /************************* links *************************/
-.button {
+.button, .standardBtn {
     @include button($flowAnchorLink);
 }
 
-.smallButton {
+.smallButton, .smallBtn {
     @include smallButton($flowAnchorLink);
 }
 
@@ -559,66 +560,6 @@ label[for=newDeviceGroupName] {
     width: 70%;
 }
 
-/* page structure
---------------------------------------------- */
-
-.widthConstraint {
-    position: relative;
-    margin: 0 auto 0 auto;
-    padding: 0;
-    width: 100%;
-    min-width: 768px;
-}
-
-.belowHeader {
-    padding-top: 55px;
-    padding-bottom: 0px;
-    background: white;
-}
-
-.middleSection {
-    overflow: hidden;
-
-    /*margin: 0 0 20px 0;*/
-    padding: 90px 0 40px 0;
-}
-
-.leftSidebar {
-    box-sizing: border-box;
-    left: 0;
-    top: 112px;
-    bottom: 56px;
-    position: fixed;
-    float: left;
-    width: 20em;
-    overflow-y: scroll;
-    overflow-x: hidden;
-}
-
-.mainRight {
-    float: left;
-    width: calc(100% - 20em);
-    margin-left: 20em;
-    overflow-y: auto;
-}
-
-.mainLeft {
-    position: relative;
-    float: left;
-    width: 78%;
-}
-
-.fullWidth {
-    position: relative;
-    width: 100%;
-}
-
-.mainContent {
-    margin: 0 auto;
-    padding: 0 0 0 0;
-    width: 99%;
-}
-
  /* .header
 --------------------------------------------- */
 
@@ -670,9 +611,7 @@ header.top {
 }
 
 .languageSelector {
-    position: absolute;
-    top: 7px;
-    right: 0.25%;
+    margin-top: 4px;
 
     .labelText {
         display: block;
@@ -992,6 +931,35 @@ nav.appNav {
         }
     }
 } */
+
+/* page structure
+--------------------------------------------- */
+
+.widthConstraint {
+    position: relative;
+    margin: 0 auto 0 auto;
+    padding: 0;
+    width: 100%;
+    min-width: 768px;
+}
+
+.middleSection {
+    overflow: hidden;
+
+    /*margin: 0 0 20px 0;*/
+    padding: 90px 0 40px 0;
+}
+
+.fullWidth {
+    position: relative;
+    width: 100%;
+}
+
+.mainContent {
+    margin: 0 auto;
+    padding: 0 0 0 0;
+    width: 99%;
+}
 
 @mixin bgDetails {
     background-repeat: no-repeat;
@@ -1651,143 +1619,6 @@ th.action {
     display: inline-block;
 }
 
-/*--------------------------------------------------------------------
-                            Tabs Styling
-----------------------------------------------------------------------*/
-#tabs {
-    position: relative;
-
-    /*overflow-y: scroll;*/
-    height: 100%;
-    width: 99.5%;
-    margin: 0 auto;
-}
-
-#tabs div > section {
-    border-top: thin solid white;
-    background: white;
-
-    &.cascadeSection {
-        background: $projectBackground;
-        box-sizing: border-box;
-        width: 100%;
-        padding: 15px 0;
-        margin: 0 auto;
-        -ms-overflow-style: none;
-        overflow-y: scroll;
-    }
-}
-
-#tabs section h1,
-.messagesList h1,
-.usersList h1,
-.surveyTranslation > h1 {
-    display: block;
-    margin: 0.5em 0 0.5em 0.5em;
-    color: $flowAnchorLinkHover;
-    font-weight: 400;
-}
-
-#tabs div > section h3 {
-    -moz-text-shadow: 0 -1px 0 rgb(185, 185, 185), 0 2px 0 white;
-    -webkit-text-shadow: 0 -1px 0 rgb(185, 185, 185), 0 2px 0 white;
-    -o-text-shadow: 0 -1px 0 rgb(185, 185, 185), 0 2px 0 white;
-    text-shadow: 0 -1px 0 rgb(185, 185, 185), 0 2px 0 white;
-}
-
-#tabs {
-    position: relative;
-
-    nav.tabNav {
-        display: block;
-        padding: 15px 0 1px 0;
-        width: 100%;
-        background-color: white;
-        position: fixed;
-        margin-top: -40px;
-        z-index: 9999;
-
-        ul {
-            padding: 0;
-            overflow: auto;
-            background: rgb(252, 252, 255);
-
-            &:after {
-                content: "";
-                display: block;
-                overflow: auto;
-                margin-top: -1px;
-                width: 100%;
-                height: 1px;
-                border-bottom: thin solid rgba($akvoBlack, 0.2);
-            }
-
-            li {
-                display: inline;
-                float: left;
-                margin: 0 0px -2px 0;
-                font-size: 90%;
-
-                @include border-radius(0 0 0 0);
-
-                background: rgba($akvoBlack, 0);
-                -webkit-background-clip: padding-box;
-                background-clip: padding-box;
-                -webkit-transition: none;
-                transition: none;
-                -moz-background-clip: padding;
-                -webkit-background-clip: padding-box;
-                border: thin solid transparent;
-
-                &:hover {
-                    border: thin solid rgba($akvoBlack, 0.2);
-                    border-bottom: thin solid white;
-                }
-
-                &.active {
-                    position: relative;
-                    background: rgba(white, 1);
-                    border-top: 2px solid rgba($akvoFlow, 1);
-                    border-left: thin solid rgba($akvoBlack, 0.2);
-                    border-right: thin solid rgba($akvoBlack, 0.2);
-                    border-bottom: thin solid white;
-                    cursor: not-allowed;
-
-                    &:hover {
-                        background: rgba($akvoBlack, 0);
-                    }
-
-                    a {
-                        color: rgba($akvoBlack, 1);
-                        text-shadow: none;
-                        -webkit-text-shadow: none;
-                        -moz-text-shadow: none;
-
-                        &:hover {
-                            color: rgba($akvoBlack, 1);
-                            text-shadow: none;
-                            -webkit-text-shadow: none;
-                            -moz-text-shadow: none;
-                        }
-                    }
-                }
-
-                a {
-                    display: block;
-                    padding: 10px 15px;
-                    color: rgba($akvoBlack, 0.5);
-                    -webkit-transition: none;
-                    transition: none;
-
-                    &:hover {
-                        color: rgba($akvoBlack, 1);
-                    }
-                }
-            }
-        }
-    }
-}
-
 /* Survey styles
 --------------------------------------------- */
 
@@ -1823,23 +1654,6 @@ a.text_label {}
     display: block;
     margin: 8px auto 10px auto;
     width: 77%;
-}
-
-.topBar {
-    input[type="text"] {
-        padding: 5px;
-        margin: 16px 0 0 10px;
-        width: 20%;
-    }
-
-    .addCascade {
-        input[type="text"] {
-            width: 50%;
-            margin: 0 10px 0 0;
-            padding: 9px 10px;
-            background: lighten($akvoDarkBlue, 50%);
-        }
-    }
 }
 
 .no-textshadow .leftSidebar h2 {
@@ -2092,27 +1906,341 @@ a.FadeIt {
 
 section.topBar {
     position: fixed;
-    margin: -20px auto 0 auto;
+    top: 53px;
+    margin: 0px auto 0 auto;
     z-index: 9998;
     width: 100%;
-    background: white;
     box-shadow: 0 1px 3px rgba($akvoBlack, 0.1);
-
-    #tabs & {
-        margin-top: 0px;
-        padding-top: 10px;
-    }
+    padding: 0 0 0px 0;
+    background: white;
 
     &.activeMenu {
         border: 1px solid rgb(212, 212, 212);
     }
-}
 
-section.topBar ~ * {
-    margin-top: 70px;
+    /*--------------------------------------------------------------------
+                                Tabs Styling
+    ----------------------------------------------------------------------*/
+    #tabs {
+        position: relative;
 
-    #tabs & {
-        margin-top: 90px;
+        /*overflow-y: scroll;*/
+        height: 100%;
+        width: 100%;
+        margin: 0 auto;
+    }
+
+    #tabs div > section {
+        border-top: thin solid white;
+
+        &.cascadeSection {
+            background: $projectBackground;
+            box-sizing: border-box;
+            width: 100%;
+            padding: 15px 0;
+            margin: 0 auto;
+            -ms-overflow-style: none;
+            overflow-y: scroll;
+        }
+    }
+
+    #tabs section h1,
+    .messagesList h1,
+    .usersList h1,
+    .surveyTranslation > h1 {
+        display: block;
+        margin: 0.5em 0 0.5em 0.5em;
+        color: $flowAnchorLinkHover;
+        font-weight: 400;
+    }
+
+    #tabs div > section h3 {
+        -moz-text-shadow: 0 -1px 0 rgb(185, 185, 185), 0 2px 0 white;
+        -webkit-text-shadow: 0 -1px 0 rgb(185, 185, 185), 0 2px 0 white;
+        -o-text-shadow: 0 -1px 0 rgb(185, 185, 185), 0 2px 0 white;
+        text-shadow: 0 -1px 0 rgb(185, 185, 185), 0 2px 0 white;
+    }
+
+    #tabs {
+        position: relative;
+
+        nav.tabNav {
+            display: block;
+            padding: 0px 0 0px 0;
+            width: 100%;
+            background-color: white;
+            position: fixed;
+            z-index: 9999;
+            margin-bottom: 0px;
+
+            ul {
+                padding: 0;
+                overflow: auto;
+                background: rgb(252, 252, 255);
+
+                &:after {
+                    content: "";
+                    display: block;
+                    overflow: auto;
+                    margin-top: -1px;
+                    width: 100%;
+                    height: 1px;
+                    border-bottom: thin solid rgba($akvoBlack, 0.2);
+                }
+
+                li {
+                    display: inline;
+                    float: left;
+                    margin: 0 0px -2px 0;
+                    font-size: 90%;
+
+                    @include border-radius(0 0 0 0);
+
+                    background: rgba($akvoBlack, 0);
+                    -webkit-background-clip: padding-box;
+                    background-clip: padding-box;
+                    -webkit-transition: none;
+                    transition: none;
+                    -moz-background-clip: padding;
+                    -webkit-background-clip: padding-box;
+                    border: thin solid transparent;
+
+                    &:hover {
+                        border: thin solid rgba($akvoBlack, 0.2);
+                        border-bottom: thin solid white;
+                    }
+
+                    &.active {
+                        position: relative;
+                        background: rgba(white, 1);
+                        border-top: 2px solid rgba($akvoFlow, 1);
+                        border-left: thin solid rgba($akvoBlack, 0.2);
+                        border-right: thin solid rgba($akvoBlack, 0.2);
+                        border-bottom: thin solid white;
+                        cursor: not-allowed;
+
+                        &:hover {
+                            background: rgba($akvoBlack, 0);
+                        }
+
+                        a {
+                            color: rgba($akvoBlack, 1);
+                            text-shadow: none;
+                            -webkit-text-shadow: none;
+                            -moz-text-shadow: none;
+
+                            &:hover {
+                                color: rgba($akvoBlack, 1);
+                                text-shadow: none;
+                                -webkit-text-shadow: none;
+                                -moz-text-shadow: none;
+                            }
+                        }
+                    }
+
+                    a {
+                        display: block;
+                        padding: 10px 15px;
+                        color: rgba($akvoBlack, 0.5);
+                        -webkit-transition: none;
+                        transition: none;
+
+                        &:hover {
+                            color: rgba($akvoBlack, 1);
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+    nav {
+        &.breadCrumb {
+            margin-left: 0.5%;
+            width: 65.5%;
+            float: left;
+
+            ul li {
+                white-space: nowrap;
+                display: inline-block;
+                height: 34px;
+                line-height: 34px;
+                width: auto;
+                margin: 5px 3px 0 -1px;
+                text-indent: 19px;
+                position: relative;
+                max-width: 175px;
+            }
+
+            ul li:before {
+                content: " ";
+                height: 0;
+                width: 0;
+                position: absolute;
+                left: -2px;
+                border-style: solid;
+                border-width: 17px 0 17px 17px;
+                border-color: transparent transparent transparent #fff;
+                z-index: 0;
+            }
+
+            ul li:first-child:before {
+                border-color: transparent;
+            }
+
+            ul li a:after {
+                content: " ";
+                height: 0;
+                width: 0;
+                position: absolute;
+                right: -17px;
+                border-style: solid;
+                border-width: 17px 0 17px 17px;
+                border-color: transparent transparent transparent $akvoLightBlue;
+                z-index: 10;
+            }
+
+            ul li a {
+                display: block;
+                background: $akvoLightBlue;
+                color: white;
+
+                @include noWrapTxt;
+
+                &:hover {
+                    background: $flowAnchorLinkHover;
+                }
+
+                &.homeRoot {
+                    border-radius: 3px 0 0 3px;
+                    width: 40px;
+                    background: url(../images/breadCrumb-Root.png) center center no-repeat $akvoLightBlue;
+                    text-indent: -9999px;
+                    z-index: 9999;
+                    margin-left: 0;
+
+                    &:hover {
+                        background: url(../images/breadCrumb-Root.png) center center no-repeat $flowAnchorLinkHover;
+                    }
+                }
+            }
+
+            ul li a:hover:after {
+                border-color: transparent transparent transparent $flowAnchorLinkHover;
+            }
+
+            ul li:last-of-type {
+                opacity: 0.8;
+
+                a {
+                    border-radius: 0 3px 3px 0;
+                    padding-right: 15px;
+                    background: $flowAnchorLinkHover;
+
+                    &.homeRoot {
+                        padding-right: 0;
+                        border-radius: 3px 0 0 3px;
+                        width: 40px;
+                        background: url(../images/breadCrumb-Root.png) center center no-repeat $akvoLightBlue;
+                        text-indent: -9999px;
+                        z-index: 9999;
+                        margin-left: 0;
+
+                        &:after {
+                            content: " ";
+                            height: 0;
+                            width: 0;
+                            position: absolute;
+                            right: -17px;
+                            border-style: solid;
+                            border-width: 17px 0 17px 17px;
+                            border-color: transparent transparent transparent $akvoLightBlue;
+                            z-index: 10;
+                        }
+
+                        &:hover {
+                            background: url(../images/breadCrumb-Root.png) center center no-repeat $akvoLightBlue;
+                        }
+                    }
+
+                    &:after {
+                        border-width: 0;
+
+                        &:hover {
+                            background: $akvoLightBlue;
+                        }
+                    }
+                }
+            }
+        }
+
+        &.menuTopbar {
+            margin-right: 0.5%;
+            width: 33.5%;
+            float: right;
+
+            h3 {
+                color: rgb(198, 198, 198);
+                margin: 0;
+                padding: 0;
+
+                &.actionTitleEdit {
+                    padding: 5px 5px 5px 15px;
+                    background: url(../images/IconEditGreyLight.svg) left center no-repeat;
+                    background-size: 15px;
+                }
+            }
+
+            ul {
+                width: 100%;
+
+                li {
+                    margin: 10px 10px 0 0;
+                    float: right;
+
+                    &:first-child {
+                        margin: 10px 0 0 0;
+                    }
+
+                    p {
+                        color: $midGrey;
+
+                        .itemMoved {
+                            color: $akvoDarkBlue;
+                            font-weight: bold;
+                            margin-right: 5px;
+                            margin-left: 5px;
+                        }
+                    }
+                }
+            }
+
+            &.actionHighLighted {
+                border: 1px solid rgb(241, 242, 242);
+
+                li {
+                    &:first-child {
+                        float: left;
+                        margin: 10px 0 0 10px;
+                    }
+                }
+            }
+        }
+    }
+
+    input[type="text"] {
+        padding: 5px;
+        margin: 16px 0 0 10px;
+        width: 20%;
+    }
+
+    .addCascade {
+        input[type="text"] {
+            width: 50%;
+            margin: 0 10px 0 0;
+            padding: 9px 10px;
+            background: lighten($akvoDarkBlue, 50%);
+        }
     }
 }
 
@@ -2152,192 +2280,6 @@ section.topBar > a.smallBtn {
 nav.menuTopbar {
     margin: 0 auto 0;
     padding: 0 0 10px 0;
-}
-
-section.topBar {
-    padding: 0 0 10px 0;
-    width: 100%;
-
-    nav {
-        &.breadCrumb {
-            margin-left: 0.5%;
-            padding: 10px 0;
-            width: 65.5%;
-            float: left;
-        }
-
-        &.menuTopbar {
-            margin-right: 0.5%;
-            padding: 10px 0;
-            width: 33.5%;
-            float: right;
-        }
-    }
-
-    nav.breadCrumb {
-        ul li {
-            display: inline-block;
-            height: 34px;
-            line-height: 34px;
-            width: auto;
-            margin: 5px 3px 0 0;
-            text-indent: 19px;
-            position: relative;
-        }
-
-        ul li:before {
-            content: " ";
-            height: 0;
-            width: 0;
-            position: absolute;
-            left: -2px;
-            border-style: solid;
-            border-width: 17px 0 17px 17px;
-            border-color: transparent transparent transparent #fff;
-            z-index: 0;
-        }
-
-        ul li:first-child:before {
-            border-color: transparent;
-        }
-
-        ul li a:after {
-            content: " ";
-            height: 0;
-            width: 0;
-            position: absolute;
-            right: -17px;
-            border-style: solid;
-            border-width: 17px 0 17px 17px;
-            border-color: transparent transparent transparent $akvoLightBlue;
-            z-index: 10;
-        }
-
-        ul li a {
-            display: block;
-            background: $akvoLightBlue;
-            color: white;
-
-            @include noWrapTxt;
-
-            &:hover {
-                background: $flowAnchorLinkHover;
-            }
-
-            &.homeRoot {
-                border-radius: 3px 0 0 3px;
-                width: 40px;
-                background: url(../images/breadCrumb-Root.png) center center no-repeat $akvoLightBlue;
-                text-indent: -9999px;
-                z-index: 9999;
-                margin-left: 0;
-
-                &:hover {
-                    background: url(../images/breadCrumb-Root.png) center center no-repeat $flowAnchorLinkHover;
-                }
-            }
-        }
-
-        ul li a:hover:after {
-            border-color: transparent transparent transparent $flowAnchorLinkHover;
-        }
-
-        ul li:last-of-type {
-            opacity: 0.8;
-
-            a {
-                border-radius: 0 3px 3px 0;
-                padding-right: 15px;
-                background: $flowAnchorLinkHover;
-
-                &.homeRoot {
-                    padding-right: 0;
-                    border-radius: 3px 0 0 3px;
-                    width: 40px;
-                    background: url(../images/breadCrumb-Root.png) center center no-repeat $akvoLightBlue;
-                    text-indent: -9999px;
-                    z-index: 9999;
-                    margin-left: 0;
-
-                    &:after {
-                        content: " ";
-                        height: 0;
-                        width: 0;
-                        position: absolute;
-                        right: -17px;
-                        border-style: solid;
-                        border-width: 17px 0 17px 17px;
-                        border-color: transparent transparent transparent $akvoLightBlue;
-                        z-index: 10;
-                    }
-
-                    &:hover {
-                        background: url(../images/breadCrumb-Root.png) center center no-repeat $akvoLightBlue;
-                    }
-                }
-
-                &:after {
-                    border-width: 0;
-
-                    &:hover {
-                        background: $akvoLightBlue;
-                    }
-                }
-            }
-        }
-    }
-
-    nav.menuTopbar {
-        margin: 0 auto 0;
-        padding: 10px 0;
-
-        h3 {
-            color: rgb(198, 198, 198);
-            margin: 0;
-            padding: 0;
-
-            &.actionTitleEdit {
-                padding: 5px 5px 5px 15px;
-                background: url(../images/IconEditGreyLight.svg) left center no-repeat;
-                background-size: 15px;
-            }
-        }
-
-        ul {
-            width: 100%;
-
-            li {
-                margin: 10px 10px 0 0;
-                float: right;
-
-                &:first-child {
-                    margin: 10px 0 0 0;
-                }
-
-                p {
-                    color: $midGrey;
-
-                    .itemMoved {
-                        color: $akvoDarkBlue;
-                        font-weight: bold;
-                        margin-right: 5px;
-                        margin-left: 5px;
-                    }
-                }
-            }
-        }
-
-        &.actionHighLighted {
-            border: 1px solid rgb(241, 242, 242);
-
-            li {
-                &:first-child {
-                    float: left;
-                    margin: 10px 0 0 10px;
-                }
-            }
-        }
-    }
 }
 
 #surveyCreator nav.menuTopbar ul {
@@ -2421,6 +2363,7 @@ li.aSurvey {
     -o-border-radius: 0.3em;
     border-radius: 0.3em;
     clear: both;
+    overflow: auto;
 
     &:hover {
         cursor: default;
@@ -3413,7 +3356,7 @@ nav.questionActionMenu a:hover {
     display: inline;
 }
 
-.innerContent nav ul li a.standardBtn {
+.innerContent nav ul li a.button {
     margin: 2em 1.5em auto auto;
     width: 15%;
 }
@@ -4128,6 +4071,7 @@ div.dataCollectedDate label input {
     background: rgb(241, 241, 241);
     overflow-style: marquee-line;
     border-bottom: 2px solid rgb(158, 158, 158);
+    font-size: 80%;
 }
 
 #pointDetails h2 {
@@ -4179,8 +4123,6 @@ div.dataCollectedDate label input {
 #pointDetails div.mapInfoDetail dd:nth-of-type(1) {
     border-top: none;
 }
-
-.publicPage {}
 
 div#drawHandleWrap {
     position: relative;
@@ -4279,6 +4221,7 @@ div.drawHandle {
 -----------------------------------------------*/
 
 footer.bottomPage {
+    position: absolute;
     bottom: 0;
     margin: 20px 0 0 0;
     padding: 10px 0 0 0;
@@ -5962,6 +5905,8 @@ ul.cascadeAction {
         a {
             @include btnOutline($flowAnchorLink);
 
+            padding-left: 30px;
+
             &.saveNewSurvey {
                 background: rgba(32, 32, 36, 0.5) url(../images/IconSave.svg) left center no-repeat;
                 background-size: 40px 40px;
@@ -6182,16 +6127,14 @@ li.disable {
 /* Set device buttons on device tab to position: fixed */
 .deviceControls {
     position: fixed;
-    top: 100px;
+    top: 96px;
     left: 0px;
     right: 0px;
-    height: 40px;
     z-index: 1;
     background-color: white;
     box-shadow: 0 1px 3px rgba(32, 32, 36, 0.1);
     width: 99.5%;
-    margin: 0 0.25%;
-    padding: 5px 0.25%;
+    padding: 5px 0.25% 10px 0.25%;
 
     > a {
         margin-top: 10px;
@@ -6204,7 +6147,7 @@ li.disable {
     }
 
     + div + .dataTable {
-        margin-top: 80px;
+        margin-top: 40px;
     }
 
     + .dataTable {
@@ -6426,6 +6369,7 @@ html.navMaps, .public {
 }
 
 iframe {
+    height: 100vh;
     min-height: calc(100% - 225px);
 }
 
