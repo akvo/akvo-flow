@@ -37,6 +37,7 @@ import javax.swing.JDialog;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 
+import org.akvo.flow.domain.DataUtils;
 import org.apache.log4j.Logger;
 import org.json.JSONArray;
 import org.json.JSONObject;
@@ -195,21 +196,9 @@ public class SurveySummaryExporter extends AbstractDataExporter {
                 String val = responseMap.get(rollupOrder.get(i).getKeyId().toString());
                 if (val != null && val.trim().length() > 0) {
                     //Extract from JSON, if any
-                    if (val.startsWith("[{")) {
-                        try {
-                            JSONArray arr = new JSONArray(val);
-                            if (arr != null) {
-                                JSONObject json = arr.getJSONObject(0);
-                                if (json != null) {
-                                    QuestionGroupDto dto = new QuestionGroupDto();
-                                    if (json.has("text")) {
-                                        val = json.getString("text");
-                                    }
-                                }
-                            }
-                        } catch (Exception e) {
-                            log.error("Error in json parsing: " + e.getMessage(), e);
-                        }
+                    String jsonval = DataUtils.jsonResponsesToPipeSeparated(val);
+                    if (jsonval.length() > 0) {
+                        val = jsonval;
                     }
 
                     if (count > 0) {
