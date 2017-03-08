@@ -19,8 +19,10 @@ package com.gallatinsystems.survey.dao;
 import java.net.URLEncoder;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.TreeMap;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -51,6 +53,10 @@ import com.google.appengine.api.taskqueue.Queue;
 import com.google.appengine.api.taskqueue.QueueFactory;
 import com.google.appengine.api.taskqueue.TaskOptions;
 
+/**
+ * @author stellan
+ *
+ */
 public class SurveyUtils {
 
     private static final Logger log = Logger.getLogger(SurveyUtils.class
@@ -101,6 +107,16 @@ public class SurveyUtils {
         return newSurvey;
     }
 
+    
+    /**
+     * @param sourceGroup
+     * @param copyGroup
+     * @param newSurveyId
+     * @param qDependencyResolutionMap
+     * @return
+     * 
+     * copies a question group to another survey or within the same survey (which risks creating duplicated question ids).
+     */
     public static QuestionGroup copyQuestionGroup(QuestionGroup sourceGroup,
             QuestionGroup copyGroup, Long newSurveyId, Map<Long, Long> qDependencyResolutionMap) {
 
@@ -108,6 +124,21 @@ public class SurveyUtils {
         final Long sourceGroupId = sourceGroup.getKey().getId();
         final Long copyGroupId = copyGroup.getKey().getId();
         final boolean sameSurvey = sourceGroup.getSurveyId() == newSurveyId;
+        Set<String> idsInUse = null;
+        
+        if (sameSurvey) {
+            //collect all ids already in use in this survey. (And in the survey group?)
+            idsInUse = new HashSet<>();
+            
+            final QuestionGroupDao qgDao = new QuestionGroupDao();            
+            List<QuestionGroup>qgList = qgDao.listQuestionGroupBySurvey(newSurveyId);
+            for (QuestionGroup qg : qgList) {
+                List<Question> qList = qDao.listQuestionsInOrderForGroup(qg.getKey().getId());
+                for (Question q : qList) {
+                    idsInUse.add(q.getQuestionId());
+                }                
+            }
+        }
 
         SurveyUtils.copyTranslation(sourceGroupId, copyGroupId, newSurveyId, copyGroupId,
                 ParentType.QUESTION_GROUP_NAME, ParentType.QUESTION_GROUP_DESC);
@@ -124,7 +155,7 @@ public class SurveyUtils {
         List<Question> qCopyList = new ArrayList<Question>();
         for (Question question : qList) {
             final Question questionCopy = SurveyUtils.copyQuestion(question, copyGroupId, qCount++,
-                    newSurveyId, sameSurvey);
+                    newSurveyId, idsInUse);
             qCopyList.add(questionCopy);
         }
 
@@ -153,7 +184,7 @@ public class SurveyUtils {
     }
 
     public static Question copyQuestion(Question source,
-            Long newQuestionGroupId, Integer order, Long newSurveyId, boolean sameSurvey) {
+            Long newQuestionGroupId, Integer order, Long newSurveyId, Set<String> idsInUse) {
 
         final QuestionDao qDao = new QuestionDao();
         final QuestionOptionDao qoDao = new QuestionOptionDao();
@@ -174,8 +205,15 @@ public class SurveyUtils {
         tmp.setSourceQuestionId(sourceQuestionId);
 
         if (source.getQuestionId() != null) {
-            if (sameSurvey) {
-                tmp.setQuestionId(source.getQuestionId() + "_copy");
+            if (idsInUse != null) { //must avoid these
+                String newId = source.getQuestionId() + "_1";
+                int index = 2;
+                while  (idsInUse.contains(newId)) {
+                    newId = source.getQuestionId() + "_" + index++;
+                }
+                tmp.setQuestionId(newId);
+                //one more to avoid
+                idsInUse.add(newId);
             } else {
                 tmp.setQuestionId(source.getQuestionId());
             }
