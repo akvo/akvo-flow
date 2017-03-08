@@ -1558,21 +1558,9 @@ table.previewList {
 }
 
 #assignSurveys .fieldSetWrap fieldset table tfoot td a {
-    display: block;
     float: right;
-    padding: 5px 3px;
-    width: 10%;
-    background: rgb(0, 123, 182);
-    color: white;
-    -webkit-transition: background 0.5s ease-in;
-    transition: background 0.5s ease-in;
-    -o-border-radius: 0 0 5px 5px;
-    border-radius: 0 0 5px 5px;
-}
 
-#assignSurveys .fieldSetWrap fieldset table tfoot td a:hover {
-    background: rgb(107, 134, 141);
-    color: white;
+    @include button($flowAnchorLink);
 }
 
 .groupPreview {
