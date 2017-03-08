@@ -107,6 +107,7 @@ public class SurveyUtils {
         final QuestionDao qDao = new QuestionDao();
         final Long sourceGroupId = sourceGroup.getKey().getId();
         final Long copyGroupId = copyGroup.getKey().getId();
+        final boolean sameSurvey = sourceGroup.getSurveyId() == newSurveyId;
 
         SurveyUtils.copyTranslation(sourceGroupId, copyGroupId, newSurveyId, copyGroupId,
                 ParentType.QUESTION_GROUP_NAME, ParentType.QUESTION_GROUP_DESC);
@@ -123,7 +124,7 @@ public class SurveyUtils {
         List<Question> qCopyList = new ArrayList<Question>();
         for (Question question : qList) {
             final Question questionCopy = SurveyUtils.copyQuestion(question, copyGroupId, qCount++,
-                    newSurveyId);
+                    newSurveyId, sameSurvey);
             qCopyList.add(questionCopy);
         }
 
@@ -152,7 +153,7 @@ public class SurveyUtils {
     }
 
     public static Question copyQuestion(Question source,
-            Long newQuestionGroupId, Integer order, Long newSurveyId) {
+            Long newQuestionGroupId, Integer order, Long newSurveyId, boolean sameSurvey) {
 
         final QuestionDao qDao = new QuestionDao();
         final QuestionOptionDao qoDao = new QuestionOptionDao();
@@ -173,7 +174,11 @@ public class SurveyUtils {
         tmp.setSourceQuestionId(sourceQuestionId);
 
         if (source.getQuestionId() != null) {
-            tmp.setQuestionId(source.getQuestionId());
+            if (sameSurvey) {
+                tmp.setQuestionId(source.getQuestionId() + "_copy");
+            } else {
+                tmp.setQuestionId(source.getQuestionId());
+            }
         }
 
         log.log(Level.INFO, "Copying `Question` " + sourceQuestionId);
