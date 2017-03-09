@@ -1,5 +1,5 @@
 /*
- *  Copyright (C) 2013-2015 Stichting Akvo (Akvo Foundation)
+ *  Copyright (C) 2013-2017 Stichting Akvo (Akvo Foundation)
  *
  *  This file is part of Akvo FLOW.
  *
@@ -59,8 +59,7 @@ import com.google.appengine.api.taskqueue.TaskOptions;
  */
 public class SurveyUtils {
 
-    private static final Logger log = Logger.getLogger(SurveyUtils.class
-            .getName());
+    private static final Logger log = Logger.getLogger(SurveyUtils.class.getName());
 
     public static Survey copySurvey(Survey source, SurveyDto dto) {
 
@@ -144,7 +143,6 @@ public class SurveyUtils {
                     }                
                 }
             }
-            log.log(Level.INFO, "User questionId list length: " + idsInUse.size());
         }
 
         SurveyUtils.copyTranslation(sourceGroupId, copyGroupId, newSurveyId, copyGroupId,
@@ -190,6 +188,16 @@ public class SurveyUtils {
         return copyGroup;
     }
 
+    /**
+     * @param source
+     * @param newQuestionGroupId
+     * @param order
+     * @param newSurveyId
+     * @param idsInUse the set of all questionIds in use anywhere in the survey group
+     * @return the new question
+     * 
+     * copies one question, ensuring that it has a unique questionId
+     */
     public static Question copyQuestion(Question source,
             Long newQuestionGroupId, Integer order, Long newSurveyId, Set<String> idsInUse) {
 
