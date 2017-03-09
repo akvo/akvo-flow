@@ -36,14 +36,9 @@ import org.akvo.flow.locale.UIStrings;
 import org.apache.velocity.Template;
 import org.apache.velocity.VelocityContext;
 import org.apache.velocity.app.VelocityEngine;
-import org.json.JSONArray;
-import org.json.JSONObject;
 import org.waterforpeople.mapping.app.web.rest.security.AppRole;
 
-import com.gallatinsystems.common.Constants;
 import com.gallatinsystems.common.util.PropertyUtil;
-import com.gallatinsystems.framework.dao.BaseDAO;
-import com.gallatinsystems.gis.geography.domain.Country;
 import com.gallatinsystems.user.dao.UserDao;
 import com.gallatinsystems.user.domain.User;
 import com.google.appengine.api.users.UserServiceFactory;
@@ -141,25 +136,6 @@ public class EnvServlet extends HttpServlet {
         }
 
         props.put("appId", SystemProperty.applicationId.get());
-
-        final BaseDAO<Country> countryDAO = new BaseDAO<Country>(Country.class);
-        final JSONArray jsonArray = new JSONArray();
-        for (Country c : countryDAO.list(Constants.ALL_RESULTS)) {
-            if (c.getIncludeInExternal() != null
-                    && c.getIncludeInExternal()
-                    && (c.getCentroidLat().equals(0d) || c.getCentroidLon()
-                            .equals(0d))) {
-                log.log(Level.SEVERE,
-                        "Country "
-                                + c.getIsoAlpha2Code()
-                                + " was configured to show in the map, but doesn't have proper centroids");
-                continue;
-            }
-            if (c.getIncludeInExternal() != null && c.getIncludeInExternal()) {
-                jsonArray.put(new JSONObject(c));
-            }
-        }
-        props.put("countries", jsonArray.toString());
 
         // load language configuration and strings if present
         addLocale(props);
