@@ -127,17 +127,24 @@ public class SurveyUtils {
         Set<String> idsInUse = null;
         
         if (sameSurvey) {
-            //collect all ids already in use in this survey. (And in the survey group?)
+            //collect all ids already in use in this survey group
             idsInUse = new HashSet<>();
-            
-            final QuestionGroupDao qgDao = new QuestionGroupDao();            
-            List<QuestionGroup>qgList = qgDao.listQuestionGroupBySurvey(newSurveyId);
-            for (QuestionGroup qg : qgList) {
-                List<Question> qList = qDao.listQuestionsInOrderForGroup(qg.getKey().getId());
-                for (Question q : qList) {
-                    idsInUse.add(q.getQuestionId());
-                }                
+            final SurveyDAO sDao = new SurveyDAO();
+            final QuestionGroupDao qgDao = new QuestionGroupDao();
+
+            Survey s0 = sDao.getById(newSurveyId);
+            final Long surveyGroupId = s0.getSurveyGroupId();
+            List<Survey>sList = sDao.listSurveysByGroup(surveyGroupId);
+            for (Survey s : sList) {
+                List<QuestionGroup>qgList = qgDao.listQuestionGroupBySurvey(s.getKey().getId());
+                for (QuestionGroup qg : qgList) {
+                    List<Question> qList = qDao.listQuestionsInOrderForGroup(qg.getKey().getId());
+                    for (Question q : qList) {
+                        idsInUse.add(q.getQuestionId());
+                    }                
+                }
             }
+            log.log(Level.INFO, "User questionId list length: " + idsInUse.size());
         }
 
         SurveyUtils.copyTranslation(sourceGroupId, copyGroupId, newSurveyId, copyGroupId,
