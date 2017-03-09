@@ -1,4 +1,4 @@
-FLOW.userControl = Ember.ArrayController.create({
+FLOW.UserListController = Ember.ArrayController.extend({
   sortProperties: null,
   sortAscending: true,
   content: null,
@@ -22,10 +22,6 @@ FLOW.userControl = Ember.ArrayController.create({
     this.set('selected', FLOW.tableColumnControl.get('selected'));
   },
 
-  currentUserPathPermissions: function() {
-    return FLOW.currentUser.get('pathPermissions');
-  },
-
   /* return all the ancestor paths for a given path */
   ancestorPaths: function(pathString) {
     if(!pathString) {
@@ -39,19 +35,5 @@ FLOW.userControl = Ember.ArrayController.create({
     }
     ancestors.push("/"); // add the root level folder to ancestors list
     return ancestors;
-  },
-
-  /* query based on survey (group) ancestorIds whether a user has
-  permissions for data deletion */
-
-  canDeleteData: function(ancestorIds) {
-    var pathPermissions = this.currentUserPathPermissions();
-    var canDelete = false;
-    ancestorIds.forEach(function(id){
-        if(id in pathPermissions && pathPermissions[id].indexOf("DATA_DELETE") > -1) {
-            canDelete = true;
-        }
-    });
-    return canDelete;
   },
 });

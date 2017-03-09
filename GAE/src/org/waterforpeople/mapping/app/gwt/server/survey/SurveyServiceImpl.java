@@ -59,7 +59,6 @@ import org.waterforpeople.mapping.dao.SurveyInstanceDAO;
 import com.gallatinsystems.common.Constants;
 import com.gallatinsystems.common.util.PropertyUtil;
 import com.gallatinsystems.framework.exceptions.IllegalDeletionException;
-import com.gallatinsystems.framework.gwt.dto.client.ResponseDto;
 import com.gallatinsystems.messaging.dao.MessageDao;
 import com.gallatinsystems.messaging.domain.Message;
 import com.gallatinsystems.metric.dao.SurveyMetricMappingDao;

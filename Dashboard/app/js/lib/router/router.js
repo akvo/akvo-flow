@@ -467,7 +467,6 @@ FLOW.Router = Ember.Router.extend({
       connectOutlets: function (router, context) {
         router.get('applicationController').connectOutlet('navUsers');
         router.set('navigationController.selected', 'navUsers');
-        FLOW.userControl.populate();
       }
     }),
 

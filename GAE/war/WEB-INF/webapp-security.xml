@@ -31,7 +31,7 @@
         <intercept-url pattern="/_ah/**" access="permitAll"/>
         <intercept-url pattern="/webapp/testharness**" access="hasRole('SUPER_ADMIN')"/>
         <intercept-url pattern="/dashboard.html" access="hasRole('SUPER_ADMIN')"/>
-        <intercept-url pattern="/rest/users" access="hasRole('ADMIN')"/>
+        <intercept-url pattern="/rest/users" access="hasRole('USER')"/>
         <intercept-url pattern="/rest/user_roles" access="hasRole('ADMIN')"/>
         <intercept-url pattern="/rest/user_auth" access="hasRole('ADMIN')"/>
         <intercept-url pattern="/rest/**" access="hasRole('USER')"/>

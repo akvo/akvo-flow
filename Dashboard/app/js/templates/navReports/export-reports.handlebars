@@ -2,7 +2,6 @@
 <section class="fullWidth reportTools" id="reportBlocks">
 {{#view FLOW.ExportReportsAppletView}}
   <div class="fixedTop">
-    <h1>{{t _export_data}}</h1>
     {{#unless FLOW.projectControl.isLoading}}
       {{view FLOW.SurveySelectionView}}
     {{/unless}}
@@ -34,7 +33,7 @@
     {{/if}}
 
       <div class="exportAdvancedOpt">
-        <a {{action "toggleShowAdvancedSettings" target="this"}} class="showCollapse">
+        <a {{action "toggleShowAdvancedSettings" target="this"}} class="button">
           {{#if view.showAdvancedSettings}}
             {{t _collapse}}
           {{else}}

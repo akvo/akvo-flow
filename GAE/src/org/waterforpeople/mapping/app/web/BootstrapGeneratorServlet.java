@@ -1,5 +1,5 @@
 /*
- *  Copyright (C) 2010-2014 Stichting Akvo (Akvo Foundation)
+ *  Copyright (C) 2010-2017 Stichting Akvo (Akvo Foundation)
  *
  *  This file is part of Akvo FLOW.
  *
@@ -16,24 +16,6 @@
 
 package org.waterforpeople.mapping.app.web;
 
-import java.io.BufferedReader;
-import java.io.ByteArrayOutputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.net.URLConnection;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Map;
-import java.util.Set;
-import java.util.logging.Level;
-import java.util.logging.Logger;
-
-import javax.servlet.http.HttpServletRequest;
-
-import org.apache.commons.io.IOUtils;
-import org.waterforpeople.mapping.app.web.dto.BootstrapGeneratorRequest;
-
 import com.gallatinsystems.common.util.MailUtil;
 import com.gallatinsystems.common.util.PropertyUtil;
 import com.gallatinsystems.common.util.S3Util;
@@ -47,6 +29,22 @@ import com.gallatinsystems.survey.dao.SurveyDAO;
 import com.gallatinsystems.survey.domain.CascadeResource;
 import com.gallatinsystems.survey.domain.Question;
 import com.gallatinsystems.survey.domain.Survey;
+import com.google.gdata.util.common.base.Nullable;
+import com.google.gdata.util.common.base.StringUtil;
+import org.apache.commons.io.IOUtils;
+import org.waterforpeople.mapping.app.web.dto.BootstrapGeneratorRequest;
+
+import javax.servlet.http.HttpServletRequest;
+import java.io.*;
+import java.net.URLConnection;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Map;
+import java.util.Set;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+
+import static com.gallatinsystems.common.Constants.DEFAULT_SURVEY_FILE_NAME;
 
 /**
  * downloads publishes survey xml files and forms a zip that conforms to the structure of the
@@ -65,6 +63,10 @@ public class BootstrapGeneratorServlet extends AbstractRestApiServlet {
     private static final String EMAIL_SUB = "FLOW Bootstrap File";
     private static final String EMAIL_BODY = "Click the link to download the bootstrap file";
     private static final String ERROR_BODY = "There were errors while attempting to generate the bootstrap file:";
+    private static final String FILENAME_REGEX = "[^a-zA-Z0-9_]";
+    private static final String FILENAME_REPLACEMENT = "_";
+    private static final int FILENAME_MAX_SIZE = 127;
+    public static final String EXCESS_UNDERSCORE = "__";
 
     private SurveyDAO surveyDao;
     private CascadeResourceDao cascadeDao;
@@ -111,7 +113,7 @@ public class BootstrapGeneratorServlet extends AbstractRestApiServlet {
             for (Long id : req.getSurveyIds()) {
                 try {
                     Survey s = surveyDao.getById(id);
-                    String name = s.getName().replaceAll(" ", "_");
+                    String surveyFilename = generateSanitizedFilename(s.getName());
                     StringBuilder buf = new StringBuilder();
                     URLConnection conn = S3Util.getConnection(bucketName, keyPrefix + "/"
                             + s.getKey().getId() + ".xml");
@@ -122,7 +124,7 @@ public class BootstrapGeneratorServlet extends AbstractRestApiServlet {
                         buf.append(line).append("\n");
                     }
                     reader.close();
-                    contentMap.put(s.getKey().getId() + "/" + name + ".xml",
+                    contentMap.put(s.getKey().getId() + "/" + surveyFilename + ".xml",
                             buf.toString());
                     
                     resourcesSet.addAll(getSurveyResources(id));// Add survey resources
@@ -158,7 +160,26 @@ public class BootstrapGeneratorServlet extends AbstractRestApiServlet {
         MailUtil.sendMail(PropertyUtil.getProperty(EMAIL_FROM_ADDRESS_KEY),
                 "FLOW", req.getEmail(), EMAIL_SUB, body);
     }
-    
+
+    /**
+     * Uses name to generate a safe string to use as filename, removing any unsafe chars
+     * @param name
+     * @return
+     */
+    private String generateSanitizedFilename(@Nullable String name) {
+        String filename;
+        if (StringUtil.isEmpty(name)) {
+            filename = DEFAULT_SURVEY_FILE_NAME;
+        } else {
+            filename = name.trim().replaceAll(FILENAME_REGEX, FILENAME_REPLACEMENT);
+            int maxLength = Math.min(FILENAME_MAX_SIZE, filename.length());
+            filename = filename.substring(0, maxLength);
+            //make sure we do not have multiple underscores
+            filename = filename.replaceAll(EXCESS_UNDERSCORE, FILENAME_REPLACEMENT);
+        }
+        return filename;
+    }
+
     private Set<String> getSurveyResources(Long surveyId) {
         Set<String> resources = new HashSet<String>();
         for (Question q : new QuestionDao().listQuestionByType(surveyId, Question.Type.CASCADE)) {
