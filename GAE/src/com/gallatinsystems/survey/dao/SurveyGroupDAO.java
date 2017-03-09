@@ -1,5 +1,5 @@
 /*
- *  Copyright (C) 2010-2012 Stichting Akvo (Akvo Foundation)
+ *  Copyright (C) 2010-2017 Stichting Akvo (Akvo Foundation)
  *
  *  This file is part of Akvo FLOW.
  *
@@ -98,7 +98,6 @@ public class SurveyGroupDAO extends BaseDAO<SurveyGroup> {
      *
      * @return
      */
-    @SuppressWarnings("unchecked")
     public List<SurveyGroup> listAllFilteredByUserAuthorization() {
         List<SurveyGroup> allSurveyGroups = list(Constants.ALL_RESULTS);
         return filterByUserAuthorizationObjectId(allSurveyGroups);
