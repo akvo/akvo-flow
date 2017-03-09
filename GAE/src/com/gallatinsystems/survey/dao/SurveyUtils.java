@@ -200,6 +200,8 @@ public class SurveyUtils {
         final String[] allExcludedProps = (String[]) ArrayUtils.addAll(
                 questionExcludedProps, Constants.EXCLUDED_PROPERTIES);
 
+        log.log(Level.INFO, "Copying `Question` " + sourceQuestionId);
+
         BeanUtils.copyProperties(source, tmp, allExcludedProps);
         tmp.setOrder(order);
         tmp.setSourceQuestionId(sourceQuestionId);
@@ -214,12 +216,12 @@ public class SurveyUtils {
                 tmp.setQuestionId(newId);
                 //one more to avoid
                 idsInUse.add(newId);
+                log.log(Level.INFO, "Changing QuestionId from " + source.getQuestionId() + " to " + newId);
             } else {
                 tmp.setQuestionId(source.getQuestionId());
+                log.log(Level.INFO, "Keeping QuestionId " + source.getQuestionId());
             }
         }
-
-        log.log(Level.INFO, "Copying `Question` " + sourceQuestionId);
 
         final Question newQuestion = qDao.save(tmp, newQuestionGroupId);
 
