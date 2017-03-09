@@ -131,9 +131,6 @@ FLOW.NavMapsView = FLOW.View.extend({
     $('#dropdown-holder').prepend(filterContent);
     $('#dropdown-holder').append('<div style="clear: both"></div>');
 
-    //Define the data layer
-    var data_layer;
-
     // create leaflet map
     var map = L.map('flowMap', {scrollWheelZoom: true}).setView([26.11598592533351, 1.9335937499999998], 2);
 
@@ -175,10 +172,10 @@ FLOW.NavMapsView = FLOW.View.extend({
     });
 
     var baseLayers = {
-			"Normal": normal,
-      "Terrain": terrain,
-			"Satellite": satellite
-		};
+        "Normal": normal,
+        "Terrain": terrain,
+        "Satellite": satellite
+    };
 
     FLOW.addExtraMapBoxTileLayer(baseLayers);
 
@@ -194,196 +191,203 @@ FLOW.NavMapsView = FLOW.View.extend({
       $('body, html, #flowMap').scrollTop(0);
     });
 
-    //manage folder and/or survey selection hierarchy
-    self.checkHierarchy(0);
+    self.checkHierarchy(0); //manage folder and/or survey selection hierarchy
+    self.surveySelectorListeners();
+    self.detailsPanelListeners();
+  },
 
-    $(document).off('change', '.folder_survey_selector').on('change', '.folder_survey_selector',function(e) {
-      self.clearMap(); //remove any previously loaded point data
-      $('#form_selector option[value!=""]').remove();
+  surveySelectorListeners: function(){
+      var self = this;
+      $(document).off('change', '.folder_survey_selector').on('change', '.folder_survey_selector',function(e) {
+        self.clearMap(); //remove any previously loaded point data
+        $('#form_selector option[value!=""]').remove();
 
-      self.cleanHierarchy($(this)); //remove all 'folder_survey_selector's after current
+        self.cleanHierarchy($(this)); //remove all 'folder_survey_selector's after current
 
-      //first remove previously created form selector elements
-      $(".form_selector").remove();
+        $(".form_selector").remove(); //first remove previously created form selector elements
 
-      if ($(this).val() !== "") {
-        var keyId = $(this).val();
-        //if a survey is selected, load forms to form selector element.
-        if ($(this).find("option:selected").data('type') === 'PROJECT') {
-          var baseline = $(this).find("option:selected").data('baseline');
-          $.get(
-            '/rest/surveys?surveyGroupId='+keyId,
-            function(data, status) {
-              var rows = [];
-              if (data['surveys'] && data['surveys'].length > 0) {
-                rows = data['surveys'];
-                rows.sort(function(el1, el2) {
-                  return self.compare(el1, el2, 'name')
-                });
+        if ($(this).val() !== "") {
+          var keyId = $(this).val();
+          //if a survey is selected, load forms to form selector element.
+          if ($(this).find("option:selected").data('type') === 'PROJECT') {
+            var baseline = $(this).find("option:selected").data('baseline');
+            self.manageSurveys(keyId, baseline);
+          } else { //if a folder is selected, load the folder's children on a new 'folder_survey_selector'
+            self.clearCartodbLayer(); //clear any currently overlayed cartodb layer (if any)
 
-                var hierarchyObject = self.hierarchyObject;
+            var hierarchyObject = self.hierarchyObject;
 
-                //create folder and/or survey select element
-                var form_selector = $("<select></select>")
-                .attr("data-survey-id", keyId)
-                .attr("data-baseline", (baseline) ? baseline : rows[0]["keyId"])
-                .attr("class", "form_selector");
-                form_selector.append('<option value="">--' + Ember.String.loc('_choose_a_form') + '--</option>');
-
-                var formIds = [];
-                for (var i=0; i<rows.length; i++) {
-                  //append returned forms list to the firm selector element
-                  form_selector.append(
-                    $('<option></option>').val(rows[i]["keyId"]).html(rows[i]["name"]));
-                  formIds.push(rows[i]["keyId"]);
-                }
-                $("#survey_hierarchy").append(form_selector);
-
-                //if no baseline survey is specified, pick first form
-                var registration = baseline;
-                if (!baseline) {
-                    registration = rows[0]["keyId"];
-                }
-                //get list of columns to be added to new named map's interactivity
-                $.get("/rest/cartodb/columns?form_id="+registration, function(columnsData) {
-                    var namedMapObject = {};
-                    namedMapObject['mapName'] = 'raw_data_'+registration;
-                    namedMapObject['tableName'] = 'raw_data_'+registration;
-                    namedMapObject['interactivity'] = [];
-                    namedMapObject['query'] = 'SELECT * FROM raw_data_'+registration;
-
-                    if (columnsData.column_names) {
-                      for (var j=0; j<columnsData['column_names'].length; j++) {
-                        namedMapObject['interactivity'].push(columnsData['column_names'][j]['column_name']);
-                      }
-                    }
-
-                    self.namedMapCheck(namedMapObject, registration);
-                });
-
-                self.questionGroups = [];
-                for (var i=0; i<formIds.length; i++) {
-                  self.loadQuestions(formIds[i]);
-                }
+            for (var i=0; i<hierarchyObject.length; i++) {
+              if (hierarchyObject[i].keyId === parseInt(keyId) && self.lastSelectedElement !== parseInt(keyId)) {
+                self.checkHierarchy(keyId);
+                self.lastSelectedElement = parseInt(keyId);
               }
-            });
-        } else { //if a folder is selected, load the folder's children on a new 'folder_survey_selector'
-          //first clear any currently overlayed cartodb layer (if any)
+            }
+          }
+        } else { //if nothing is selected, delete all children 'folder_survey_selector's and clear form selector
           self.clearCartodbLayer();
-
-          var hierarchyObject = self.hierarchyObject;
-
-          for (var i=0; i<hierarchyObject.length; i++) {
-            if (hierarchyObject[i].keyId === parseInt(keyId) && self.lastSelectedElement !== parseInt(keyId)) {
-              self.checkHierarchy(keyId);
-              self.lastSelectedElement = parseInt(keyId);
-            }
-          }
         }
-      } else { //if nothing is selected, delete all children 'folder_survey_selector's and clear form selector
-        self.clearCartodbLayer();
-      }
 
-    });
+      });
 
-    $(document).off('change', '.form_selector').on('change', '.form_selector',function(e) {
-      self.clearMap(); //remove any previously loaded point data
-      self.cleanHierarchy($(this)); //remove all 'folder_survey_selector's after current
+      $(document).off('change', '.form_selector').on('change', '.form_selector',function(e) {
+        self.clearMap(); //remove any previously loaded point data
+        self.cleanHierarchy($(this)); //remove all 'folder_survey_selector's after current
 
-      if ($(this).val() !== "") {
-        var formId = $(this).val();
-        //get list of columns to be added to new named map's interactivity
-        $.get("/rest/cartodb/columns?form_id="+formId, function(columnsData) {
-          var namedMapObject = {};
-          namedMapObject['mapName'] = "raw_data_"+formId;
-          namedMapObject['tableName'] = "raw_data_"+formId;
-          namedMapObject['interactivity'] = [];
-          namedMapObject['query'] = "SELECT * FROM raw_data_" + formId;
+        if ($(this).val() !== "") {
+          var formId = $(this).val();
+          //get list of columns to be added to new named map's interactivity
+          $.get("/rest/cartodb/columns?form_id="+formId, function(columnsData) {
+            var namedMapObject = {};
+            namedMapObject['mapName'] = "raw_data_"+formId;
+            namedMapObject['tableName'] = "raw_data_"+formId;
+            namedMapObject['interactivity'] = [];
+            namedMapObject['query'] = "SELECT * FROM raw_data_" + formId;
 
-          if (columnsData.column_names) {
-            for (var j=0; j<columnsData['column_names'].length; j++) {
-              namedMapObject['interactivity'].push(columnsData['column_names'][j]['column_name']);
+            if (columnsData.column_names) {
+              for (var j=0; j<columnsData['column_names'].length; j++) {
+                namedMapObject['interactivity'].push(columnsData['column_names'][j]['column_name']);
+              }
             }
-          }
 
-          self.namedMapCheck(namedMapObject, formId);
+            self.namedMapCheck(namedMapObject, formId);
+          });
+        } else {
+          self.createLayer("", $(this).data('baseline'));
+        }
+      });
+  },
+
+  detailsPanelListeners: function(){
+      var self = this;
+      $(document.body).on('click', '.project-geoshape', function(){
+        if (self.polygons.length > 0) {
+          $(this).html(Ember.String.loc('_project_onto_main_map'));
+          for (var i=0; i<self.polygons.length; i++) {
+            self.map.removeLayer(self.polygons[i]);
+          }
+          //restore the previous zoom level and map center
+          self.map.setZoom(self.mapZoomLevel);
+          self.map.panTo(self.mapCenter);
+          self.polygons = [];
+        } else {
+          $(this).html(Ember.String.loc('_clear_geoshape_from_main_map'));
+          self.projectGeoshape($(this).data('geoshape-object'));
+        }
+      });
+
+      $(document.body).on('mouseover', '.media', function(){
+        var mediaObject = $(this).data('coordinates');
+        var mediaMarkerIcon = new L.Icon({
+          iconUrl: 'images/media-marker.png',
+          iconSize: [11, 11]
+        }), selectedMediaMarkerIcon = new L.Icon({
+          iconUrl: 'images/media-marker-selected.png',
+          iconSize: [11, 11]
         });
-      } else {
-        self.createLayer("", $(this).data('baseline'));
-      }
-    });
-
-    $(document.body).on('click', '.project-geoshape', function(){
-      if (self.polygons.length > 0) {
-        $(this).html(Ember.String.loc('_project_onto_main_map'));
-        for (var i=0; i<self.polygons.length; i++) {
-          self.map.removeLayer(self.polygons[i]);
+        if (mediaObject !== '') {
+          var filename = mediaObject.filename.substring(mediaObject.filename.lastIndexOf("/")+1).split(".")[0];
+          var mediaCoordinates = [mediaObject['location']['latitude'], mediaObject['location']['longitude']];
+          if (!(filename in self.mediaMarkers)) {
+            self.mediaMarkers[filename] = new L.marker(mediaCoordinates, {icon: mediaMarkerIcon}).addTo(self.map);
+          } else {
+            self.selectedMediaMarker[filename] = new L.marker(mediaCoordinates, {icon: selectedMediaMarkerIcon}).addTo(self.map);
+          }
         }
-        //restore the previous zoom level and map center
-        self.map.setZoom(self.mapZoomLevel);
-        self.map.panTo(self.mapCenter);
-        self.polygons = [];
-      } else {
-        $(this).html(Ember.String.loc('_clear_geoshape_from_main_map'));
-        self.projectGeoshape($(this).data('geoshape-object'));
-      }
-    });
-
-    $(document.body).on('mouseover', '.media', function(){
-      var mediaObject = $(this).data('coordinates');
-      var mediaMarkerIcon = new L.Icon({
-        iconUrl: 'images/media-marker.png',
-        iconSize: [11, 11]
-      }), selectedMediaMarkerIcon = new L.Icon({
-        iconUrl: 'images/media-marker-selected.png',
-        iconSize: [11, 11]
       });
-      if (mediaObject !== '') {
-        var filename = mediaObject.filename.substring(mediaObject.filename.lastIndexOf("/")+1).split(".")[0];
-        var mediaCoordinates = [mediaObject['location']['latitude'], mediaObject['location']['longitude']];
-        if (!(filename in self.mediaMarkers)) {
-          self.mediaMarkers[filename] = new L.marker(mediaCoordinates, {icon: mediaMarkerIcon}).addTo(self.map);
-        } else {
-          self.selectedMediaMarker[filename] = new L.marker(mediaCoordinates, {icon: selectedMediaMarkerIcon}).addTo(self.map);
-        }
-      }
-    });
 
-    $(document.body).on('mouseout', '.media', function(){
-      var mediaObject = $(this).data('coordinates');
-      if (mediaObject !== '') {
-        var filename = mediaObject.filename.substring(mediaObject.filename.lastIndexOf("/")+1).split(".")[0];
-        if (filename in self.mediaMarkers && !(filename in self.mediaMarkerSelected)) {
-          self.map.removeLayer(self.mediaMarkers[filename]);
-          delete self.mediaMarkers[filename];
-        } else {
-          self.map.removeLayer(self.selectedMediaMarker[filename]);
-          delete self.selectedMediaMarker[filename];
+      $(document.body).on('mouseout', '.media', function(){
+        var mediaObject = $(this).data('coordinates');
+        if (mediaObject !== '') {
+          var filename = mediaObject.filename.substring(mediaObject.filename.lastIndexOf("/")+1).split(".")[0];
+          if (filename in self.mediaMarkers && !(filename in self.mediaMarkerSelected)) {
+            self.map.removeLayer(self.mediaMarkers[filename]);
+            delete self.mediaMarkers[filename];
+          } else {
+            self.map.removeLayer(self.selectedMediaMarker[filename]);
+            delete self.selectedMediaMarker[filename];
+          }
         }
-      }
-    });
-
-    $(document.body).on('click', '.media-location', function(){
-      var mediaObject = $(this).data('coordinates');
-      var mediaMarkerIcon = new L.Icon({
-        iconUrl: 'images/media-marker.png',
-        iconSize: [11, 11]
       });
-      if (mediaObject !== '') {
-        var filename = mediaObject.filename.substring(mediaObject.filename.lastIndexOf("/")+1).split(".")[0];
-        var mediaCoordinates = [mediaObject['location']['latitude'], mediaObject['location']['longitude']];
-        if (!(filename in self.mediaMarkerSelected)) {
-          $(this).html(Ember.String.loc('_hide_photo_on_map'));
-          self.mediaMarkers[filename] = new L.marker(mediaCoordinates, {icon: mediaMarkerIcon}).addTo(self.map);
-          self.mediaMarkerSelected[filename] = true;
-        } else {
-          $(this).html(Ember.String.loc('_show_photo_on_map'));
-          self.map.removeLayer(self.mediaMarkers[filename]);
-          delete self.mediaMarkers[filename];
-          delete self.mediaMarkerSelected[filename];
+
+      $(document.body).on('click', '.media-location', function(){
+        var mediaObject = $(this).data('coordinates');
+        var mediaMarkerIcon = new L.Icon({
+          iconUrl: 'images/media-marker.png',
+          iconSize: [11, 11]
+        });
+        if (mediaObject !== '') {
+          var filename = mediaObject.filename.substring(mediaObject.filename.lastIndexOf("/")+1).split(".")[0];
+          var mediaCoordinates = [mediaObject['location']['latitude'], mediaObject['location']['longitude']];
+          if (!(filename in self.mediaMarkerSelected)) {
+            $(this).html(Ember.String.loc('_hide_photo_on_map'));
+            self.mediaMarkers[filename] = new L.marker(mediaCoordinates, {icon: mediaMarkerIcon}).addTo(self.map);
+            self.mediaMarkerSelected[filename] = true;
+          } else {
+            $(this).html(Ember.String.loc('_show_photo_on_map'));
+            self.map.removeLayer(self.mediaMarkers[filename]);
+            delete self.mediaMarkers[filename];
+            delete self.mediaMarkerSelected[filename];
+          }
         }
-      }
-    });
+      });
+  },
+
+  manageSurveys: function(keyId, baseline){
+      var self = this;
+      $.get(
+        '/rest/surveys?surveyGroupId='+keyId,
+        function(data, status) {
+          var rows = [];
+          if (data['surveys'] && data['surveys'].length > 0) {
+            rows = data['surveys'];
+            rows.sort(function(el1, el2) {
+              return self.compare(el1, el2, 'name')
+            });
+
+            var hierarchyObject = self.hierarchyObject;
+
+            //create folder and/or survey select element
+            var formSelector = $("<select></select>")
+            .attr("data-survey-id", keyId)
+            .attr("data-baseline", (baseline) ? baseline : rows[0]["keyId"])
+            .attr("class", "form_selector");
+            formSelector.append('<option value="">--' + Ember.String.loc('_choose_a_form') + '--</option>');
+
+            var formIds = [];
+            for (var i=0; i<rows.length; i++) {
+              //append returned forms list to the firm selector element
+              formSelector.append(
+                $('<option></option>').val(rows[i]["keyId"]).html(rows[i]["name"]));
+              formIds.push(rows[i]["keyId"]);
+            }
+            $("#survey_hierarchy").append(formSelector);
+
+            //if no baseline survey is specified, pick first form
+            var registration = baseline;
+            if (!baseline) {
+                registration = rows[0]["keyId"];
+            }
+            //get list of columns to be added to new named map's interactivity
+            $.get("/rest/cartodb/columns?form_id="+registration, function(columnsData) {
+                var namedMapObject = {};
+                namedMapObject['mapName'] = 'raw_data_'+registration;
+                namedMapObject['tableName'] = 'raw_data_'+registration;
+                namedMapObject['interactivity'] = [];
+                namedMapObject['query'] = 'SELECT * FROM raw_data_'+registration;
+                if (columnsData.column_names) {
+                  for (var j=0; j<columnsData['column_names'].length; j++) {
+                    namedMapObject['interactivity'].push(columnsData['column_names'][j]['column_name']);
+                  }
+                }
+                self.namedMapCheck(namedMapObject, registration);
+            });
+            self.questionGroups = [];
+            for (var i=0; i<formIds.length; i++) {
+              self.loadQuestions(formIds[i]);
+            }
+          }
+      });
   },
 
   /*Check if a named map exists. If one exists, call function to overlay it
@@ -406,9 +410,7 @@ FLOW.NavMapsView = FLOW.View.extend({
           self.createLayer("", formId);
         } else {
           //create new named map
-          self.namedMaps(
-            namedMapObject,
-            formId);
+          self.namedMaps(namedMapObject, formId);
         }
       }
     });
@@ -659,8 +661,6 @@ FLOW.NavMapsView = FLOW.View.extend({
 
     $.get(url, function(pointData, status){
       if (pointData['answers'] != null) {
-        var geoshapeObject, geoshapeQuestionsCount = 0, mediaResponses = [];
-
         var dataCollectionDate = pointData['answers']['created_at'];
         var date = new Date(dataCollectionDate);
 
@@ -683,7 +683,6 @@ FLOW.NavMapsView = FLOW.View.extend({
         var clickedPointContent = "";
         //create a questions array with the correct order of questions as in the survey
         if (self.questionGroups.length > 0) {
-          var geoshapeObject, geoshapeCheck = false;
           self.geoshapeCoordinates = null;
 
           //sort question groups by their order
@@ -702,90 +701,7 @@ FLOW.NavMapsView = FLOW.View.extend({
                     +'<div style="float: left; width: 100%">';
 
                   if (questionAnswer) {
-                    switch (self.questionGroups[qg]['questions'][i].questionType) {
-                      case "PHOTO":
-                      case "VIDEO":
-                        var mediaString = "", mediaJson = "", mediaFilename = "", mediaObject = {};
-                        if (questionAnswer.charAt(0) === '{') {
-                          mediaJson = JSON.parse(questionAnswer);
-                          mediaString = mediaJson.filename;
-                        } else {
-                          mediaString = questionAnswer;
-                        }
-
-                        var mediaFileURL = FLOW.Env.photo_url_root+mediaString.substring(mediaString.lastIndexOf("/")+1);
-                        if (self.questionGroups[qg]['questions'][i].questionType == "PHOTO") {
-                          mediaOutput = '<div class=":imgContainer photoUrl:shown:hidden">'
-                          +'<a class="media" data-coordinates=\''
-                          +((mediaJson.location) ? questionAnswer : '' )+'\' href="'
-                          +mediaFileURL+'" target="_blank"><img src="'+mediaFileURL+'" alt=""/></a><br>'
-                          +((mediaJson.location) ? '<a class="media-location" data-coordinates=\''+questionAnswer+'\'>'+Ember.String.loc('_show_photo_on_map')+'</a>' : '')
-                          +'</div>';
-                        } else if (self.questionGroups[qg]['questions'][i].questionType == "VIDEO") {
-                          mediaOutput = '<div><div class="media" data-coordinates=\''
-                          +((mediaJson.location) ? questionAnswer : '' )+'\'>'+mediaFileURL+'</div><br>'
-                          +'<a href="'+mediaFileURL+'" target="_blank">'+Ember.String.loc('_open_video')+'</a>'
-                          +((mediaJson.location) ? '&nbsp;|&nbsp;<a class="media-location" data-coordinates=\''+questionAnswer+'\'>'+Ember.String.loc('_show_photo_on_map')+'</a>' : '')
-                          +'</div>';
-                        }
-                        clickedPointContent += mediaOutput;
-                        break;
-                      case "GEOSHAPE":
-                        geoshapeObject = FLOW.parseJSON(questionAnswer, "features");
-                        self.geoshapeCoordinates = geoshapeObject;
-
-                        if (geoshapeObject) {
-                          geoshapeCheck = true;
-                          geoshapeQuestionsCount++;
-                          clickedPointContent += '<div class="geoshape-map" data-geoshape-object=\''+questionAnswer+'\' style="width:100%; height: 100px; float: left"></div>'
-                            +'<a style="float: left" class="project-geoshape" data-geoshape-object=\''+questionAnswer+'\'>'+Ember.String.loc('_project_onto_main_map')+'</a>'
-
-                          if (geoshapeObject['features'][0]['geometry']['type'] === "Polygon"
-                           || geoshapeObject['features'][0]['geometry']['type'] === "LineString"
-                            || geoshapeObject['features'][0]['geometry']['type'] === "MultiPoint") {
-                            clickedPointContent += '<div style="float: left; width: 100%">'+ Ember.String.loc('_points') +': '+geoshapeObject['features'][0]['properties']['pointCount']+'</div>';
-                          }
-
-                          if (geoshapeObject['features'][0]['geometry']['type'] === "Polygon"
-                           || geoshapeObject['features'][0]['geometry']['type'] === "LineString") {
-                            clickedPointContent += '<div style="float: left; width: 100%">'+ Ember.String.loc('_length') +': '+geoshapeObject['features'][0]['properties']['length']+'m</div>';
-                          }
-
-                          if (geoshapeObject['features'][0]['geometry']['type'] === "Polygon") {
-                            clickedPointContent += '<div style="float: left; width: 100%">'+ Ember.String.loc('_area') +': '+geoshapeObject['features'][0]['properties']['area']+'m&sup2;</div>';
-                          }
-                        }
-                        break;
-                      case "DATE":
-                        var dateQuestion = new Date((!isNaN(questionAnswer)) ? parseInt(questionAnswer) : questionAnswer);
-                        clickedPointContent += self.formatDate(dateQuestion);
-                        break;
-                      case "SIGNATURE":
-                        clickedPointContent += '<div class="signatureImage"><img src="';
-                        var srcAttr = 'data:image/png;base64,', signatureJson;
-                        signatureJson = JSON.parse(questionAnswer);
-                        clickedPointContent += srcAttr + signatureJson.image +'"/></div>';
-                        clickedPointContent += '<div class="signedBySection">'+Ember.String.loc('_signed_by') +': '+signatureJson.name+'</div>';
-                        break;
-                      case "CADDISFLY":
-                        clickedPointContent += FLOW.renderCaddisflyAnswer(questionAnswer);
-                        break;
-                      case "CASCADE":
-                      case "OPTION":
-                        var cascadeString = "", cascadeJson;
-                        if (questionAnswer.charAt(0) === '[') {
-                          cascadeJson = JSON.parse(questionAnswer);
-                          cascadeString = cascadeJson.map(function(item){
-                            return (self.questionGroups[qg]['questions'][i].questionType == "CASCADE") ? item.name : item.text;
-                          }).join("|");
-                        } else {
-                          cascadeString = questionAnswer;
-                        }
-                        clickedPointContent += cascadeString;
-                        break;
-                      default:
-                        clickedPointContent += questionAnswer
-                    }
+                      clickedPointContent += self.loadQuestionAnswer(self.questionGroups[qg]['questions'][i].questionType, questionAnswer);
                   }
                   clickedPointContent += "&nbsp;</div><hr>";
                 }
@@ -797,16 +713,101 @@ FLOW.NavMapsView = FLOW.View.extend({
           $('hr').show();
 
           //if there's geoshape, draw it
-          if (geoshapeQuestionsCount > 0) {
-            $('.geoshape-map').each(function(index){
+          $('.geoshape-map').each(function(index){
               FLOW.drawGeoShape($('.geoshape-map')[index], $(this).data('geoshape-object'));
-            });
-          }
+          });
         }
       } else {
         $('#pointDetails').html('<p class="noDetails">'+Ember.String.loc('_no_details') +'</p>');
       }
     });
+  },
+
+  loadQuestionAnswer: function(questionType, questionAnswer){
+      var clickedPointContent = "", self = this;
+      switch (questionType) {
+        case "PHOTO":
+        case "VIDEO":
+          var mediaString = "", mediaJson = "", mediaFilename = "", mediaObject = {}, mediaOutput = "";
+          if (questionAnswer.charAt(0) === '{') {
+            mediaJson = JSON.parse(questionAnswer);
+            mediaString = mediaJson.filename;
+          } else {
+            mediaString = questionAnswer;
+          }
+
+          var mediaFileURL = FLOW.Env.photo_url_root+mediaString.substring(mediaString.lastIndexOf("/")+1);
+          if (questionType == "PHOTO") {
+            mediaOutput = '<div class=":imgContainer photoUrl:shown:hidden">'
+            +'<a class="media" data-coordinates=\''
+            +((mediaJson.location) ? questionAnswer : '' )+'\' href="'
+            +mediaFileURL+'" target="_blank"><img src="'+mediaFileURL+'" alt=""/></a><br>'
+            +((mediaJson.location) ? '<a class="media-location" data-coordinates=\''+questionAnswer+'\'>'+Ember.String.loc('_show_photo_on_map')+'</a>' : '')
+            +'</div>';
+          } else if (questionType == "VIDEO") {
+            mediaOutput = '<div><div class="media" data-coordinates=\''
+            +((mediaJson.location) ? questionAnswer : '' )+'\'>'+mediaFileURL+'</div><br>'
+            +'<a href="'+mediaFileURL+'" target="_blank">'+Ember.String.loc('_open_video')+'</a>'
+            +((mediaJson.location) ? '&nbsp;|&nbsp;<a class="media-location" data-coordinates=\''+questionAnswer+'\'>'+Ember.String.loc('_show_photo_on_map')+'</a>' : '')
+            +'</div>';
+          }
+          clickedPointContent += mediaOutput;
+          break;
+        case "GEOSHAPE":
+          var geoshapeObject = FLOW.parseJSON(questionAnswer, "features");
+          self.geoshapeCoordinates = geoshapeObject;
+
+          if (geoshapeObject) {
+            clickedPointContent += '<div class="geoshape-map" data-geoshape-object=\''+questionAnswer+'\' style="width:100%; height: 100px; float: left"></div>'
+              +'<a style="float: left" class="project-geoshape" data-geoshape-object=\''+questionAnswer+'\'>'+Ember.String.loc('_project_onto_main_map')+'</a>'
+
+            if (geoshapeObject['features'][0]['geometry']['type'] === "Polygon"
+             || geoshapeObject['features'][0]['geometry']['type'] === "LineString"
+              || geoshapeObject['features'][0]['geometry']['type'] === "MultiPoint") {
+              clickedPointContent += '<div style="float: left; width: 100%">'+ Ember.String.loc('_points') +': '+geoshapeObject['features'][0]['properties']['pointCount']+'</div>';
+            }
+
+            if (geoshapeObject['features'][0]['geometry']['type'] === "Polygon"
+             || geoshapeObject['features'][0]['geometry']['type'] === "LineString") {
+              clickedPointContent += '<div style="float: left; width: 100%">'+ Ember.String.loc('_length') +': '+geoshapeObject['features'][0]['properties']['length']+'m</div>';
+            }
+
+            if (geoshapeObject['features'][0]['geometry']['type'] === "Polygon") {
+              clickedPointContent += '<div style="float: left; width: 100%">'+ Ember.String.loc('_area') +': '+geoshapeObject['features'][0]['properties']['area']+'m&sup2;</div>';
+            }
+          }
+          break;
+        case "DATE":
+          var dateQuestion = new Date((!isNaN(questionAnswer)) ? parseInt(questionAnswer) : questionAnswer);
+          clickedPointContent += self.formatDate(dateQuestion);
+          break;
+        case "SIGNATURE":
+          clickedPointContent += '<div class="signatureImage"><img src="';
+          var srcAttr = 'data:image/png;base64,', signatureJson;
+          signatureJson = JSON.parse(questionAnswer);
+          clickedPointContent += srcAttr + signatureJson.image +'"/></div>';
+          clickedPointContent += '<div class="signedBySection">'+Ember.String.loc('_signed_by') +': '+signatureJson.name+'</div>';
+          break;
+        case "CADDISFLY":
+          clickedPointContent += FLOW.renderCaddisflyAnswer(questionAnswer);
+          break;
+        case "CASCADE":
+        case "OPTION":
+          var cascadeString = "", cascadeJson;
+          if (questionAnswer.charAt(0) === '[') {
+            cascadeJson = JSON.parse(questionAnswer);
+            cascadeString = cascadeJson.map(function(item){
+              return (questionType == "CASCADE") ? item.name : item.text;
+            }).join("|");
+          } else {
+            cascadeString = questionAnswer;
+          }
+          clickedPointContent += cascadeString;
+          break;
+        default:
+          clickedPointContent += questionAnswer
+      }
+      return clickedPointContent;
   },
 
   loadQuestions: function(formId){
