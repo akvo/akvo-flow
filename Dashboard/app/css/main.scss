@@ -975,13 +975,13 @@ nav.appNav {
 
 .belowHeader {
     padding-top: 110px;
-    padding-bottom: 90px;
+    padding-bottom: 25px;
     box-sizing: border-box;
 }
 
 .middleSection {
     /*margin: 0 0 20px 0;*/
-    padding: 50px 0 60px 0;
+    padding: 50px 0 25px 0;
 }
 
 .fullWidth {
@@ -3803,6 +3803,10 @@ table.dataTable.notificationTable thead tr th a:visited {
     }
 }
 
+.modularSelection + select {
+    margin-left: 0.5%;
+}
+
 .filterData {
     border: thin solid rgb(224, 224, 224);
     border-top: 1px solid white;
@@ -4206,7 +4210,6 @@ div.drawHandle {
 -----------------------------------------------*/
 
 footer.bottomPage {
-    position: absolute;
     bottom: 0;
     padding: 10px 0 10px 0;
     width: 100%;
