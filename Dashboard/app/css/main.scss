@@ -975,7 +975,7 @@ nav.appNav {
 
 .belowHeader {
     padding-top: 110px;
-    padding-bottom: 60px;
+    padding-bottom: 90px;
     box-sizing: border-box;
 }
 
@@ -1430,6 +1430,7 @@ input.hasDatepicker {
     padding: 1em 0.5% 1.5em 0.5%;
     min-height: 200px;
     width: 49%;
+    max-width: 49%;
 }
 
 .manualTransfer .fieldSetWrap fieldset.fullWidth {
@@ -1585,13 +1586,11 @@ th.action {
     color: rgb(0, 123, 182);
 }
 
-#assignSurveys .fieldSetWrap fieldset.formLeftPanel div.SelectLayout {
-    display: block;
-    width: 100%;
-}
+#assignSurveys .fieldSetWrap fieldset.formLeftPanel div.SelectLayout {}
 
 #assignSurveys .fieldSetWrap fieldset.formLeftPanel div.formSelectorList {
-    display: block;
+    position: relative;
+    display: inline-block;
     width: 100%;
     margin-top: 30px;
 
@@ -1845,7 +1844,7 @@ a.FadeIt {
 
 .noFormsContainer {
     background: white;
-    padding: 2em 0;
+    padding: 10px 0;
 
     li.formList {
         padding: 10px 0;
@@ -2159,7 +2158,7 @@ section.topBar {
         }
 
         &.menuTopbar {
-            margin-right: 0.5%;
+            margin-right: 0.25%;
             width: 33.5%;
             float: right;
 
@@ -2182,8 +2181,8 @@ section.topBar {
                     margin: 10px 10px 0 0;
                     float: right;
 
-                    &:first-child {
-                        margin: 10px 0 0 0;
+                    &:first-of-type {
+                        margin: 10px 0px 0 0;
                     }
 
                     p {
@@ -3795,32 +3794,12 @@ table.dataTable.notificationTable thead tr th a:visited {
 /****** Data Page
 ****************************************************************************/
 .modularSelection {
-    display: -webkit-box;
-    display: -webkit-flex;
-    display: -ms-flexbox;
-    display: flex;
-    -webkit-box-orient: horizontal;
-    -webkit-box-direction: normal;
-    -webkit-flex-direction: row;
-    -ms-flex-direction: row;
-    flex-direction: row;
-    -webkit-flex-wrap: nowrap;
-    -ms-flex-wrap: nowrap;
-    flex-wrap: nowrap;
-    -webkit-box-pack: justify;
-    -webkit-justify-content: flex-start;
-    -ms-flex-pack: center;
-    justify-content: flex-start;
-    text-align: left;
-    -webkit-align-items: flex-start;
-    align-items: flex-start;
+    padding: 0 0 22px 0.5%;
 
     select {
         max-width: 20%;
-    }
-
-    select:first-child {
-        margin-left: 0.5%;
+        float: left;
+        display: inline;
     }
 }
 
@@ -4519,12 +4498,7 @@ label.languageSelector:after {
 ********************************************************************************************************************************/
 
 .reportsSection > div > div > section.reportTools select,
-.reportTools > div > select {
-    display: inline;
-    width: 32%;
-    float: left;
-    margin: 0 0 1em 1%;
-}
+.reportTools > div > select {}
 
 #reportBlocks.reportTools {
     .geoshapeExport {
@@ -4540,14 +4514,11 @@ label.languageSelector:after {
 
 .reportTools select:last-child {
     display: inline;
-    width: 30%;
     float: left;
-    margin: 0 1% 1em 1%;
 }
 
 .reportTools a.standardBtn {
     clear: both;
-    margin: 0.1em 0 1em 1%;
 }
 
 .reportTools div.block a.standardBtn {
@@ -4565,7 +4536,7 @@ label.languageSelector:after {
 .reportTools div.block {
     display: block;
     clear: both;
-    width: 96%;
+    width: 97%;
     margin: 0.5em auto 1.5em auto;
     background: rgb(240, 240, 240);
     padding: 1em 1%;
@@ -4621,13 +4592,7 @@ label.languageSelector:after {
 .chartSetting {
     display: block;
     clear: both;
-    padding: 0.5em 0;
-    margin: 1em auto;
-    border-bottom: thin solid rgb(198, 198, 198);
-}
-
-.chartSetting h4 {
-    margin-left: 1%;
+    padding: 0.5em 0 0 10px;
 }
 
 .reportTools .chartSetting select {
@@ -4640,7 +4605,7 @@ label.languageSelector:after {
 
 .groupChartSelect {
     display: inline-block;
-    margin: 0.1em 0.5em 0 1.5em;
+    margin: 0 5px 0 10px;
 }
 
 .chartSetting .groupChartSelect input {
@@ -4655,15 +4620,8 @@ label.languageSelector:after {
         top: 120px;
         width: 100%;
         background-color: white;
-        height: 120px;
         z-index: 2;
         border-bottom: thin solid #c6c6c6;
-    }
-
-    .rawDataReport {
-        &.dataExport {
-            margin-top: 135px;
-        }
     }
 }
 
@@ -5263,7 +5221,7 @@ table.surveyDetails {
         }
 
         .forms {
-            padding: 2em 0 0 0;
+            padding: 5px 0 0 0;
             background: white;
 
             #tabs {
@@ -5635,7 +5593,7 @@ table.surveyDetails {
     box-sizing: border-box;
     width: 100%;
     padding: 15px 0;
-    margin: 0 auto;
+    margin: 50px auto 0 auto;
     overflow-y: hidden;
     overflow-x: hidden;
 
@@ -6245,16 +6203,17 @@ li.disable {
 
     nav {
         &.doubleMenu {
-            padding-top: 5px;
             width: 49%;
 
             &:first-child {
                 float: left;
+                margin-top: 7px;
             }
 
             &:last-child {
                 float: right;
                 text-align: right;
+                margin-top: 3px;
             }
         }
     }
