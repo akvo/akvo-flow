@@ -1,7 +1,6 @@
 {{#view FLOW.MessagesListView}}
 <div class="middleSection">
   <section id="" class="fullWidth messagesList"> 
-<h1>{{t _messages}}</h1>
     <!-- Messages TABLE-->
     <table id="messageListTable" class="dataTable" >
       <!-- TABLE HEADER-->
@@ -40,13 +39,6 @@
           </tr>
         {{/each}}
       </tbody>
-      
-      <!-- TABLE FOOTER-->
-      <tfoot>
-        <tr>
-          <td colspan="7"><small>This is the footer.</small></td>
-        </tr>
-      </tfoot>
     </table>
      <ul class="prevNext">
             <li class="prevBtn">{{#if view.hasPrevPage}}<a {{action doPrevPage target='this'}}> &lsaquo; {{t _previous}}</a> {{/if}}</li>

@@ -1,5 +1,5 @@
 /*
- *  Copyright (C) 2010-2015 Stichting Akvo (Akvo Foundation)
+ *  Copyright (C) 2010-2017 Stichting Akvo (Akvo Foundation)
  *
  *  This file is part of Akvo FLOW.
  *
@@ -284,16 +284,64 @@ public class BaseDAO<T extends BaseDomain> {
      *
      * @return
      */
-    @SuppressWarnings({
-            "rawtypes", "unchecked"
-    })
-    public List filterByUserAuthorizationObjectId(List allObjectsList) {
+    public <E extends BaseDomain> List<E> filterByUserAuthorizationObjectId(List<E> allObjectsList,
+            Long userId) {
         if (!concreteClass.isAssignableFrom(SurveyGroup.class)
                 && !concreteClass.isAssignableFrom(Survey.class)) {
             throw new UnsupportedOperationException("Cannot filter "
                     + concreteClass.getSimpleName());
         }
 
+        UserAuthorizationDAO userAuthorizationDAO = new UserAuthorizationDAO();
+        List<UserAuthorization> userAuthorizationList = userAuthorizationDAO.listByUser(userId);
+        if (userAuthorizationList.isEmpty()) {
+            return Collections.emptyList();
+        }
+
+        Set<Long> securedObjectIds = new HashSet<>();
+        for (UserAuthorization auth : userAuthorizationList) {
+            if (auth.getSecuredObjectId() != null) {
+                securedObjectIds.add(auth.getSecuredObjectId());
+            }
+        }
+
+        // Set of all ancestor ids of secured objects
+        Set<Long> securedAncestorIds = new HashSet<>();
+        for (Object obj : allObjectsList) {
+            SecuredObject securedObject = (SecuredObject) obj;
+            if (securedObjectIds.contains(securedObject.getObjectId())) {
+                securedAncestorIds.addAll(securedObject.listAncestorIds());
+            }
+        }
+
+        Set<E> authorizedSet = new HashSet<>();
+        if (concreteClass.isAssignableFrom(SurveyGroup.class)) {
+            for (E obj : allObjectsList) {
+                SurveyGroup sg = (SurveyGroup) obj;
+                Long sgId = sg.getKey().getId();
+                if (hasAuthorizedAncestors(sg.getAncestorIds(), securedObjectIds)
+                        || securedObjectIds.contains(sgId)
+                        || securedAncestorIds.contains(sgId)) {
+                    authorizedSet.add(obj);
+                }
+            }
+        } else {
+            for (E obj : allObjectsList) {
+                Survey s = (Survey) obj;
+                List<Long> ancestorIds = s.getAncestorIds();
+                if (hasAuthorizedAncestors(ancestorIds, securedObjectIds)) {
+                    authorizedSet.add(obj);
+                }
+            }
+        }
+
+        List<E> authorizedList = new ArrayList<>();
+        authorizedList.addAll(authorizedSet);
+
+        return authorizedList;
+    }
+
+    public <E extends BaseDomain> List<E> filterByUserAuthorizationObjectId(List<E> allObjectsList) {
         final Authentication authentication = SecurityContextHolder.getContext()
                 .getAuthentication();
         final Long userId = (Long) authentication.getCredentials();
@@ -303,53 +351,7 @@ public class BaseDAO<T extends BaseDomain> {
             return allObjectsList;
         }
 
-        UserAuthorizationDAO userAuthorizationDAO = new UserAuthorizationDAO();
-        List<UserAuthorization> userAuthorizationList = userAuthorizationDAO.listByUser(userId);
-        if (userAuthorizationList.isEmpty()) {
-            return Collections.emptyList();
-        }
-
-        Set<Long> securedObjectIds = new HashSet<Long>();
-        for (UserAuthorization auth : userAuthorizationList) {
-            if (auth.getSecuredObjectId() != null) {
-                securedObjectIds.add(auth.getSecuredObjectId());
-            }
-        }
-
-        // Set of all ancestor ids of secured objects
-        Set<Long> securedAncestorIds = new HashSet<Long>();
-        for (Object obj : allObjectsList) {
-            SecuredObject securedObject = (SecuredObject) obj;
-            if (securedObjectIds.contains(securedObject.getObjectId())) {
-                securedAncestorIds.addAll(securedObject.listAncestorIds());
-            }
-        }
-
-        Set authorizedSet = new HashSet();
-        if (concreteClass.isAssignableFrom(SurveyGroup.class)) {
-            for (Object obj : allObjectsList) {
-                SurveyGroup sg = (SurveyGroup) obj;
-                Long sgId = sg.getKey().getId();
-                if (hasAuthorizedAncestors(sg.getAncestorIds(), securedObjectIds)
-                        || securedObjectIds.contains(sgId)
-                        || securedAncestorIds.contains(sgId)) {
-                    authorizedSet.add(sg);
-                }
-            }
-        } else {
-            for (Object obj : allObjectsList) {
-                Survey s = (Survey) obj;
-                List<Long> ancestorIds = s.getAncestorIds();
-                if (hasAuthorizedAncestors(ancestorIds, securedObjectIds)) {
-                    authorizedSet.add(s);
-                }
-            }
-        }
-
-        List authorizedList = new ArrayList();
-        authorizedList.addAll(authorizedSet);
-
-        return authorizedList;
+        return filterByUserAuthorizationObjectId(allObjectsList, userId);
     }
 
     /**

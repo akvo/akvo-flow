@@ -2,7 +2,6 @@
 <section class="fullWidth reportTools" id="reportBlocks">
 {{#view FLOW.ExportReportsAppletView}}
   <div class="fixedTop">
-    <h1>{{t _export_data}}</h1>
     {{#unless FLOW.projectControl.isLoading}}
       {{view FLOW.SurveySelectionView}}
     {{/unless}}

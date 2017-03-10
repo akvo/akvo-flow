@@ -1,5 +1,5 @@
 /*
- *  Copyright (C) 2010-2016 Stichting Akvo (Akvo Foundation)
+ *  Copyright (C) 2010-2017 Stichting Akvo (Akvo Foundation)
  *
  *  This file is part of Akvo FLOW.
  *
@@ -37,6 +37,7 @@ import javax.swing.JDialog;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 
+import org.akvo.flow.domain.DataUtils;
 import org.apache.log4j.Logger;
 import org.json.JSONArray;
 import org.json.JSONObject;
@@ -102,7 +103,7 @@ public class SurveySummaryExporter extends AbstractDataExporter {
         });
         ROLLUP_MAP.put("MW", new String[] {
                 "District",
-                "Tradtional Authoriaty (TA)",
+                "Traditional Authority (TA)",
                 "Sub-Traditional Authority (Sub-TA)"
         });
         ROLLUP_MAP.put("RW", new String[] {
@@ -192,9 +193,14 @@ public class SurveySummaryExporter extends AbstractDataExporter {
             String rollup = "";
             int count = 0;
             for (int i = 0; i < rollupOrder.size() - j; i++) {
-                String val = responseMap.get(rollupOrder.get(i).getKeyId()
-                        .toString());
+                String val = responseMap.get(rollupOrder.get(i).getKeyId().toString());
                 if (val != null && val.trim().length() > 0) {
+                    //Extract from JSON, if any
+                    String jsonval = DataUtils.jsonResponsesToPipeSeparated(val);
+                    if (jsonval.length() > 0) {
+                        val = jsonval;
+                    }
+
                     if (count > 0) {
                         rollup += "|";
                     }

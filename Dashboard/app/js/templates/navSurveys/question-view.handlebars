@@ -196,8 +196,8 @@
     <!-- End question specific material -->
     <nav>
       <ul>
-        <li><a class="standardBtn" id="standardBtn_01" {{action "doSaveEditQuestion" target="this"}}>{{t _save_question}}</a> </li>
-        <li><a class="" id="standardBtn_01" {{action "doCancelEditQuestion" target="this"}}>{{t _cancel}}</a> </li>
+        <li><a class="button" id="standardBtn_01" {{action "doSaveEditQuestion" target="this"}}>{{t _save_question}}</a> </li>
+        <li><a class="cancel" id="standardBtn_01" {{action "doCancelEditQuestion" target="this"}}>{{t _cancel}}</a> </li>
       </ul>
     </nav>
   {{else}}
@@ -223,7 +223,7 @@
 	  {{#if view.oneSelectedForMove}}
 		<nav class="moveQMenu questionActionMenu">
 		  <ul>
-			<li><a {{action "doQuestionMoveHere" target="this"}} class="smallBtn">{{t _move_question_here}}</a></li>
+			<li><a {{action "doQuestionMoveHere" target="this"}} class="button smallButton">{{t _move_question_here}}</a></li>
 			<li><a {{action "doQuestionMoveCancel" target="this"}} class="">{{t _cancel}}</a></li>
 		  </ul>
 		</nav>
@@ -231,7 +231,7 @@
 		{{#if view.oneSelectedForCopy}}
 		  <nav class="copyQMenu questionActionMenu">
 			<ul>
-			  <li><a {{action "doQuestionCopyHere" target="this"}} class="smallBtn">{{t _paste_question_here}}</a></li>
+			  <li><a {{action "doQuestionCopyHere" target="this"}} class="button smallButton">{{t _paste_question_here}}</a></li>
 			  <li><a {{action "doQuestionCopyCancel" target="this"}} class="">{{t _cancel}}</a></li>
 			</ul>
 		  </nav>

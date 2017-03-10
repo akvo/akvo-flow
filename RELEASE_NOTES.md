@@ -1,10 +1,41 @@
-Akvo Flow is a system to collect, manage, analyse and display geographically-referenced monitoring and evaluation data.
-
-Read more about [Akvo FLOW](http://www.akvo.org/blog/?p=4836).
-Read more about the [Akvo Platform](http://www.akvo.org/blog/?p=4822).
-
-Akvo FLOW Dashboard release notes
+# Akvo Flow Release Notes
 ----
+#1.9.14 Masterful Mouse
+Date: 23 February 2017
+
+# Resolved issues
+* **Dashboard footer design improvements** [#1920] - Slight design improvements to the layout of the footer on the dashboard
+
+* **Fix bug that prevents users tab from loading** [#1959] - The users tab was not loading because of an error while retrieving the list of dashboard users
+
+
+#1.9.13.1 Laughing Liger hotfix
+Date: 17 February 2017
+
+# Resolved issues
+* **Change `FormInstance.formId` to parse both String and Long data types** [#1942] - We enable the dashboard to process data files that may erroneously contain a string instead of a long value for the formId
+
+* **Bootstrap file generation: add surveyId to the xml file** [#1927] - We add the `surveyId` to the survey xml definition that is exported to the device.  This will simplify processing of the file to identify the `surveyId` during manual survey assignments.
+
+
+#1.9.13 Laughing Liger
+Date: 9 February 2017
+
+# New and noteworthy
+* **New Akvo caddisfly tests** [#1915] - We introduce a number of new caddisfly tests as part of caddisfly questions e.g. ammonium strip test, chloride strip test, total alkalinity, total hardness, residual chlorine
+
+* **Dashboard User Interface refactoring** We have implemented a number of changes to clean up and simplify the user interface of the dashboard including: changing the typography, buttons and layout elements [#1869], removing redundant elements like survey and form descriptions [#1861] [#1860], fixing the text of links in the page footer [#1847][#1920], swapping positions of the user login/logout button and the language selector dropdown [#1846]
+
+# Resolved issues
+* **Fix regression for datapoint name creation** [#1934] - We resolved an issue where the datapoint names for existing data points were not correctly refreshed when a survey was edited and published
+
+* **Refactor loading of caddisfly test definitions** [#1918] - We refactor the caddisfly test definitions to load them more optimally
+
+* **Disable request to `/rest/metrics` endpoint** [#1855] - We eliminate the loading of the `/rest/metrics` endpoint if this feature is not enabled
+
+* **Only include google maps library when needed** [#1732] - We introduce this change to improve on the performance of the dashboard only loading libraries when they are required
+
+
 #1.9.12 Kinky Kookaburra
 Date: 19 January 2017
 
