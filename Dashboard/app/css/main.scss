@@ -5344,6 +5344,10 @@ table.surveyDetails {
             padding: 2em 0 0 0;
             background: white;
 
+            .menuTopbar {
+                display: inline-block;
+            }
+
             #tabs {
                 h2 {
                     margin: 0 0 15px 5px;
@@ -5443,7 +5447,10 @@ table.surveyDetails {
                 transition: none;
                 -moz-background-clip: padding;
                 -webkit-background-clip: padding-box;
-                white-space: nowrap;
+
+                @include noWrapTxt;
+
+                min-width: 110px;
 
                 &.aFormTab {
                     padding-left: 25px;
