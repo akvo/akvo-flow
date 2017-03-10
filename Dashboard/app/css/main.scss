@@ -3794,7 +3794,8 @@ table.dataTable.notificationTable thead tr th a:visited {
 /****** Data Page
 ****************************************************************************/
 .modularSelection {
-    padding: 0 0 22px 0.5%;
+    padding: 0 0 22px 0%;
+    display: block;
 
     select {
         max-width: 20%;
@@ -3803,8 +3804,22 @@ table.dataTable.notificationTable thead tr th a:visited {
     }
 }
 
-.modularSelection + select {
-    margin-left: 0.5%;
+.reportTools {
+    padding-left: 0.5%;
+}
+
+div.chooseSurveyData {
+    position: relative;
+    display: block;
+    margin: 0px 0 10px 0;
+    width: 100%;
+    overflow: auto;
+
+    > select {
+        max-width: 20%;
+        float: left;
+        display: inline;
+    }
 }
 
 .filterData {
@@ -3856,13 +3871,6 @@ div.dataCollectedDate input {
 
 label.collectedTo {
     margin: 0;
-}
-
-div.chooseSurveyData {
-    position: relative;
-    display: block;
-    margin: 0px 0 10px 0;
-    width: 100%;
 }
 
 #monitoringData {
