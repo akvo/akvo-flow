@@ -6138,6 +6138,21 @@ li.disable {
     width: 99.5%;
     padding: 5px 0.25% 10px 0.25%;
 
+    nav {
+        &.doubleMenu {
+            width: 49%;
+
+            &:first-child {
+                float: left;
+            }
+
+            &:last-child {
+                float: right;
+                text-align: right;
+            }
+        }
+    }
+
     > a {
         margin-top: 10px;
     }
