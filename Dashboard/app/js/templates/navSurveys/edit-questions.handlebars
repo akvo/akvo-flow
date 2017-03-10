@@ -36,7 +36,7 @@
     {{#each questionGroup in FLOW.questionGroupControl.arrangedContent}}
       {{#view FLOW.QuestionGroupItemView contentBinding="questionGroup"}}
         <div class="questionGroupBlock">
-          <header><span class="qtnGroupHead">{{t _group}} {{view.content.order}}</span>
+          <header><span class="qtnGroupHead"><a {{action "toggleVisibility" target="this"}} class="textLink">{{t _group}} {{view.content.order}}</a></span>
 
           {{#if view.amCopying}} <div class="copyingSpinner">{{t _copying}} </div>
           {{/if}}
@@ -45,7 +45,7 @@
             {{#if view.showQGroupNameEditField}}
               {{view Ember.TextField valueBinding="view.content.code" size=45}}
             {{else}}
-              <h1 class="qtnGroupTitle"><a {{action "toggleVisibility" target="this"}}>{{view.content.code}}</a></h1>
+              <h1 class="qtnGroupTitle"><a {{action "doQGroupNameEdit" target="this"}}>{{view.content.code}}</a></h1>
             {{/if}}
             </div>
             {{#if view.amVisible}}
