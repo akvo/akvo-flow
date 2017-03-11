@@ -482,7 +482,7 @@
 	</servlet-mapping>
 		<servlet>
 		<servlet-name>TracedRemoteApi</servlet-name>
-		<servlet-class>org.akvo.flow.api.TracedRemoteApiServlet</servlet-class>
+		<servlet-class>com.google.apphosting.utils.remoteapi.RemoteApiServlet</servlet-class>
 	</servlet>
 	<servlet-mapping>
 		<servlet-name>RemoteApi</servlet-name>
