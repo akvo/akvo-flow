@@ -479,8 +479,8 @@
 	<servlet-mapping>
 		<servlet-name>RemoteApi</servlet-name>
 		<url-pattern>/remote_api</url-pattern>
+		<url-pattern>/traced_remote_api/*</url-pattern>
 	</servlet-mapping>
-
 	<filter>
 		<filter-name>persistenceFilter</filter-name>
 		<filter-class>com.gallatinsystems.framework.servlet.PersistenceFilter</filter-class>
