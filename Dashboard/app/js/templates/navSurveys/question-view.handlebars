@@ -104,7 +104,8 @@
       {{/if}}
     {{/if}}
 
-  	{{#if view.amCascadeType}}
+    {{#if view.amCascadeType}}
+        <h1 class="answerNbr">{{t _settings}}: </h1>
          <label class="selectinLabel dependencySelect"> {{t _choose_cascade_question_resource}}: {{tooltip _choose_cascade_question_resource_tooltip}}
         {{view Ember.Select
         contentBinding="FLOW.cascadeResourceControl.published.arrangedContent"
@@ -113,6 +114,17 @@
         optionValuePath="content.keyId"
         prompt=""
         promptBinding="Ember.STRINGS._select_cascade"}}</label>
+    {{/if}}
+    {{#if view.amCaddisflyType}}
+        <h1 class="answerNbr">{{t _settings}}: </h1>
+         <label class="selectinLabel dependencySelect"> {{t _choose_caddisfly_question_resource}}: {{tooltip _choose_caddisfly_question_resource_tooltip}}
+        {{view Ember.Select
+        contentBinding="FLOW.router.caddisflyResourceController"
+        selectionBinding="FLOW.selectedControl.selectedCaddisflyResource"
+        optionLabelPath="content.displayName"
+        optionValuePath="content.keyId"
+        prompt=""
+        promptBinding="Ember.STRINGS._select_caddisfly_test"}}</label>
     {{/if}}
     {{#if view.amGeoshapeType}}
     <h1 class="answerNbr">{{t _settings}}: </h1>
@@ -184,8 +196,8 @@
     <!-- End question specific material -->
     <nav>
       <ul>
-        <li><a class="standardBtn" id="standardBtn_01" {{action "doSaveEditQuestion" target="this"}}>{{t _save_question}}</a> </li>
-        <li><a class="" id="standardBtn_01" {{action "doCancelEditQuestion" target="this"}}>{{t _cancel}}</a> </li>
+        <li><a class="button" id="standardBtn_01" {{action "doSaveEditQuestion" target="this"}}>{{t _save_question}}</a> </li>
+        <li><a class="cancel" id="standardBtn_01" {{action "doCancelEditQuestion" target="this"}}>{{t _cancel}}</a> </li>
       </ul>
     </nav>
   {{else}}
@@ -211,7 +223,7 @@
 	  {{#if view.oneSelectedForMove}}
 		<nav class="moveQMenu questionActionMenu">
 		  <ul>
-			<li><a {{action "doQuestionMoveHere" target="this"}} class="smallBtn">{{t _move_question_here}}</a></li>
+			<li><a {{action "doQuestionMoveHere" target="this"}} class="button smallButton">{{t _move_question_here}}</a></li>
 			<li><a {{action "doQuestionMoveCancel" target="this"}} class="">{{t _cancel}}</a></li>
 		  </ul>
 		</nav>
@@ -219,7 +231,7 @@
 		{{#if view.oneSelectedForCopy}}
 		  <nav class="copyQMenu questionActionMenu">
 			<ul>
-			  <li><a {{action "doQuestionCopyHere" target="this"}} class="smallBtn">{{t _paste_question_here}}</a></li>
+			  <li><a {{action "doQuestionCopyHere" target="this"}} class="button smallButton">{{t _paste_question_here}}</a></li>
 			  <li><a {{action "doQuestionCopyCancel" target="this"}} class="">{{t _cancel}}</a></li>
 			</ul>
 		  </nav>

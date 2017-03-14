@@ -34,7 +34,10 @@ FLOW.questionTypeControl = Ember.Object.create({
     }), Ember.Object.create({
       label: Ember.String.loc('_signature'),
       value: 'SIGNATURE'
-    })
+    }), Ember.Object.create({
+        label: Ember.String.loc('_caddisfly'),
+        value: 'CADDISFLY'
+      })
   ]
 });
 
@@ -203,7 +206,7 @@ FLOW.surveyGroupControl = Ember.ArrayController.create({
 
     if(surveyGroups && surveyGroups.get('firstObject')) {
         ancestorIds = surveyGroups.get('firstObject').get('ancestorIds');
-        return FLOW.userControl.canDeleteData(ancestorIds);
+        return FLOW.permControl.canDeleteData(ancestorIds);
     } else {
         return false; // need survey group and ancestorIds, otherwise prevent delete
     }
@@ -237,7 +240,7 @@ FLOW.projectControl = Ember.ArrayController.create({
    * has data cleaning permission associated with it.  In the case of descendants we
    * return true in order to be able to browse to the descendant */
   dataCleaningEnabled: function(surveyGroup) {
-    var permissions = FLOW.userControl.currentUserPathPermissions();
+    var permissions = FLOW.currentUser.get('pathPermissions');
     var keyedSurvey;
 
     for (var key in permissions) {
@@ -346,7 +349,7 @@ FLOW.projectControl = Ember.ArrayController.create({
 
   currentFolderPermissions: function() {
       var currentFolder = this.get('currentProject');
-      var currentUserPermissions = FLOW.userControl.currentUserPathPermissions();
+      var currentUserPermissions = FLOW.currentUser.get('pathPermissions');
       var folderPermissions = [];
 
       if (!currentUserPermissions) {
@@ -396,7 +399,17 @@ FLOW.projectControl = Ember.ArrayController.create({
     FLOW.store.commit();
 
     if (this.isProject(project)) {
-      FLOW.selectedControl.set('selectedSurveyGroup', project);
+        // load caddisfly resources if they are not loaded
+        // and only when surveys are selected
+        this.loadCaddisflyResources();
+
+        // applies to project where data approval has
+        // been previously set
+        if (project.get('requireDataApproval')) {
+            this.loadDataApprovalGroups();
+        }
+
+        FLOW.selectedControl.set('selectedSurveyGroup', project);
     }
 
     this.set('newlyCreated', null);
@@ -404,6 +417,26 @@ FLOW.projectControl = Ember.ArrayController.create({
 
   selectRootProject: function() {
     this.setCurrentProject(null);
+  },
+
+  /*
+   * Load caddisfly resources if they are not already loaded
+   */
+  loadCaddisflyResources: function () {
+      var caddisflyResourceController = FLOW.router.get('caddisflyResourceController');
+      if (Ember.empty(caddisflyResourceController.get('content'))) {
+          caddisflyResourceController.populate();
+      }
+  },
+
+  /*
+   * Load the data approval resources for this survey
+   */
+  loadDataApprovalGroups: function (survey) {
+      var approvalGroups = FLOW.router.approvalGroupListController.get('content');
+      if (Ember.empty(approvalGroups)) {
+          FLOW.router.approvalGroupListController.load();
+      }
   },
 
   /* Create a new project folder. The current project must be root or a project folder */
@@ -507,7 +540,29 @@ FLOW.projectControl = Ember.ArrayController.create({
       return project.get('parentId') === id;
     });
     return children.get('length') === 0;
-  }
+  },
+
+  /*
+   * A computed property to enable editing and displaying
+   * the selected approval group for a survey, as well as
+   * loading the appropriate approval steps depending on
+   * the selected approval group
+   */
+  dataApprovalGroup: function (key, value, previousValue) {
+      var survey = this.get('currentProject');
+
+      // setter
+      if (arguments.length > 1 && survey) {
+          survey.set('dataApprovalGroupId', value && value.get('keyId'));
+      }
+
+      // getter
+      var approvalGroupId = survey && survey.get('dataApprovalGroupId');
+      FLOW.router.approvalStepsController.loadByGroupId(approvalGroupId);
+
+      var groups = FLOW.router.approvalGroupListController.get('content');
+      return groups && groups.filterProperty('keyId', approvalGroupId).get('firstObject');
+  }.property('this.currentProject.dataApprovalGroupId'),
 });
 
 
@@ -641,7 +696,7 @@ FLOW.surveyControl = Ember.ArrayController.create({
     });
 
     if(survey && survey.get('path')) {
-        return FLOW.userControl.canDeleteData(survey.get('path'));
+        return FLOW.permControl.canDeleteData(survey.get('path'));
     } else {
         return false; // need survey and survey path, otherwise prevent delete
     }
@@ -651,7 +706,7 @@ FLOW.surveyControl = Ember.ArrayController.create({
     active form */
   currentFormPermissions: function() {
     var currentForm = FLOW.selectedControl.get('selectedSurvey');
-    var currentUserPermissions = FLOW.userControl.currentUserPathPermissions();
+    var currentUserPermissions = FLOW.currentUser.get('pathPermissions');
     var formPermissions = [];
 
     if (!currentForm || !currentUserPermissions) {

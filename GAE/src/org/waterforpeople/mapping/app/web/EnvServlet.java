@@ -72,6 +72,7 @@ public class EnvServlet extends HttpServlet {
         properties.add("cartodbHost");
         properties.add("hereMapsAppId");
         properties.add("hereMapsAppCode");
+        properties.add("enableDataApproval");
         properties.add("extraMapboxTileLayerMapId");
         properties.add("extraMapboxTileLayerAccessToken");
         properties.add("extraMapboxTileLayerLabel");
@@ -117,6 +118,14 @@ public class EnvServlet extends HttpServlet {
 
         if (props.get("showExternalSourcesFeature") == null) {
             props.put("showExternalSourcesFeature", "false");
+        }
+
+        if (props.get("enableDataApproval") == null) {
+            props.put("enableDataApproval", "false");
+        }
+
+        if (props.get("googleMapsRegionBias") == null) {
+            props.put("googleMapsRegionBias", "");
         }
 
         if (props.get("extraMapboxTileLayerMapId") == null) {

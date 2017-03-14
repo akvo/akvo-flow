@@ -50,6 +50,8 @@ public class SurveyGroup extends BaseDomain implements SecuredObject {
     private String defaultLanguageCode;
     private PrivacyLevel privacyLevel;
     private Boolean published;
+    private Boolean requireDataApproval = false;
+    private Long dataApprovalGroupId;
 
     @NotPersistent
     private HashMap<String, Translation> altTextMap;
@@ -178,6 +180,22 @@ public class SurveyGroup extends BaseDomain implements SecuredObject {
 
     public void setPublished(Boolean published) {
         this.published = published;
+    }
+
+    public Boolean getRequireDataApproval() {
+        return requireDataApproval;
+    }
+
+    public void setRequireDataApproval(Boolean requireDataApproval) {
+        this.requireDataApproval = requireDataApproval;
+    }
+
+    public Long getDataApprovalGroupId() {
+        return dataApprovalGroupId;
+    }
+
+    public void setDataApprovalGroupId(Long dataApprovalGroupId) {
+        this.dataApprovalGroupId = dataApprovalGroupId;
     }
 
     @Override

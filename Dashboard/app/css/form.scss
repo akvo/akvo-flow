@@ -3,18 +3,20 @@ form {
     margin: 0;
     padding: 0;
 }
+
 input,
 textarea,
-button
- {
+button {
     font-weight: normal;
-    padding:8px 5px;
+    padding: 8px 5px;
 }
+
 input,
 textarea {
     border: thin solid rgb(232, 232, 232);
     background: rgb(250, 244, 230);
     border-radius: 2px;
+
     &:hover {
         border: 1px solid rgb(114, 205, 255);
         background: rgb(224, 224, 224);
@@ -22,48 +24,55 @@ textarea {
         background: -webkit-gradient(linear, left top, left bottom, from(rgb(245, 245, 245)), to(rgb(234, 234, 234)));
         background: linear-gradient(rgb(245, 245, 245), rgb(234, 234, 234));
     }
+
     &:focus {
         border: 1px solid rgb(205, 205, 205);
         background: rgb(245, 255, 216);
     }
 }
+
 input[disabled="disabled"],
 textarea[disabled="disabled"] {
     border: thin solid rgb(235, 235, 235);
     background: rgb(235, 235, 235);
 }
+
 textarea {
     overflow: auto;
     resize: vertical;
     font-family: Open Sans, sans-serif;
 }
+
 input[disabled="disabled"]:hover,
 textarea[disabled="disabled"]:hover {
     border: 1px solid rgb(235, 235, 235);
     background: rgb(235, 235, 235);
 }
+
 fieldset {
     border: 0;
     margin: 0;
     padding: 0;
 }
+
 label {
-    text-transform: uppercase;
     cursor: pointer;
     display: block;
     color: rgb(107, 134, 141);
-    color:rgb(212,212,212);
 }
+
 legend {
     border: 0;
     margin-left: -7px;
     padding: 0;
     white-space: normal;
 }
+
 button,
 input {
     line-height: normal;
 }
+
 button,
 input[type="button"],
 input[type="reset"],
@@ -72,10 +81,12 @@ input[type="submit"] {
     -webkit-appearance: button;
     overflow: visible;
 }
+
 button[disabled],
 input[disabled] {
     cursor: default;
 }
+
 input[type="checkbox"],
 input[type="radio"] {
     -webkit-box-sizing: border-box;
@@ -86,10 +97,12 @@ input[type="radio"] {
     width: 13px;
     height: 13px;
     display: block;
+
     & + label {
         display: inline;
     }
 }
+
 input[type="search"] {
     -webkit-appearance: textfield;
     -moz-box-sizing: content-box;
@@ -98,27 +111,33 @@ input[type="search"] {
     padding: 5px 25px 3px 4px;
     border: 1px solid rgb(218, 218, 218);
     background: rgb(255, 255, 255) url(../images/search-icon.png) no-repeat 3px right;
+
     &:hover {
         border: 1px solid rgb(114, 205, 255);
         background: rgb(224, 224, 224) url(../images/search-icon.png) no-repeat top right;
     }
+
     &:focus {
         border: 1px solid rgb(123, 123, 123);
         background: rgb(244, 244, 244) url(../images/search-icon.png) no-repeat top right;
     }
 }
+
 input[type="search"]::-webkit-search-decoration,
 input[type="search"]::-webkit-search-cancel-button {
     -webkit-appearance: none;
 }
+
 button::-moz-focus-inner,
 input::-moz-focus-inner {
     border: 0;
     padding: 0;
 }
+
 input[type="submit"] {
     padding: 5px 10px;
     border: none;
+
     &:hover {
         padding: 5px 10px;
         border: none;
