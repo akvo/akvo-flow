@@ -212,7 +212,7 @@
 		{{/if}}
       </ul>
     </nav>
-    <h1 class="questionNbr"><span>{{view.content.order}}} </span>{{view.content.text}}</h1>
+    <h1 class="questionNbr"><a {{action "doQuestionEdit" target="this"}} class="textLink"><span>{{view.content.order}}} </span>{{view.content.text}}</a></h1>
 
   {{/if}}
   </div>

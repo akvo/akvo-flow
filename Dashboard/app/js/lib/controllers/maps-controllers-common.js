@@ -153,53 +153,6 @@ FLOW.placemarkController = Ember.ArrayController.create({
 
 });
 
-FLOW.countryController = Ember.ArrayController.create({
-  content: [],
-  country: null,
-  countryCode: null,
-
-  init: function () {
-	  this._super();
-	  if (!Ember.none(FLOW.Env) && !Ember.none(FLOW.Env.countries)) {
-		  this.set('content', this.getContent(FLOW.Env.countries));
-	  }
-  },
-
-  /**
-    Helper function to parse backend countries to countryList
-  */
-  getContent: function (countries) {
-    var countryList = [];
-
-    countries.sort(function (a, b) {
-      if (a.name < b.name) return -1;
-      if (a.name > b.name) return 1;
-      return 0;
-    });
-
-    for (var i = 0; i < countries.length; i++) {
-      if (!Ember.none(countries[i].centroidLat) && !Ember.none(countries[i].centroidLon)) {
-        var zoom = 7; // default zoom level
-        if (!Ember.none(countries[i].zoomLevel)) {
-          zoom = countries[i].zoomLevel;
-        }
-
-        countryList.push(
-          Ember.Object.create({
-            label: countries[i].name,
-            iso: countries[i].isoAlpha2Code,
-            lat: countries[i].centroidLat,
-            lon: countries[i].centroidLon,
-            zoom: zoom
-          })
-        );
-      }
-    }
-    return countryList;
-  }
-});
-
-
 FLOW.placemarkDetailController = Ember.ArrayController.create({
   content: Ember.A(),
   sortProperties: ['order'],
