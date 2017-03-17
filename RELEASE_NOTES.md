@@ -1,5 +1,18 @@
 # Akvo Flow Release Notes
 ----
+#1.9.15 Nifty Nuthatch
+Date: 20 March 2017
+
+# New and noteworthy
+* **Easier question text editing** - The question text can now be edited by clicking on the text itself as well as using the Edit button [#1831].
+* **Messages tab improvements** - We renamed the Survey ID column to Form ID and removed the unused User column [#1976].
+* **Dashboard styling and layout improvements** - We corrected the colour of certain page elements for consistency [#1974] [#1848], improved page layout to remove excess space [#1955] [#1852], fixed table alignments [#1848], tidied up page element labelling [#1850] and improved the distinction between enabled and disabled buttons [#1948].
+
+# Resolved issues
+* **Code clean-up** - We removed unused and obsolete code related to the maps functionality [#498] and refactored some user ID related code [#1970].
+* **Fixed exports with roll-up sheets** - These exports can now handle JSON responses without failing [#1968].
+
+
 #1.9.14 Masterful Mouse
 Date: 23 February 2017
 
