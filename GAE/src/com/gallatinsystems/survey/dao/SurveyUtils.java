@@ -117,33 +117,11 @@ public class SurveyUtils {
      * copies a question group to another survey or within the same survey (which risks creating duplicated question ids).
      */
     public static QuestionGroup copyQuestionGroup(QuestionGroup sourceGroup,
-            QuestionGroup copyGroup, Long newSurveyId, Map<Long, Long> qDependencyResolutionMap) {
+            QuestionGroup copyGroup, Long newSurveyId, Map<Long, Long> qDependencyResolutionMap, Set<String> idsInUse) {
 
         final QuestionDao qDao = new QuestionDao();
         final Long sourceGroupId = sourceGroup.getKey().getId();
         final Long copyGroupId = copyGroup.getKey().getId();
-        final boolean sameSurvey = sourceGroup.getSurveyId() == newSurveyId;
-        Set<String> idsInUse = null;
-        
-        if (sameSurvey) {
-            //collect all ids already in use in this survey group
-            idsInUse = new HashSet<>();
-            final SurveyDAO sDao = new SurveyDAO();
-            final QuestionGroupDao qgDao = new QuestionGroupDao();
-
-            Survey s0 = sDao.getById(newSurveyId);
-            final Long surveyGroupId = s0.getSurveyGroupId();
-            List<Survey>sList = sDao.listSurveysByGroup(surveyGroupId);
-            for (Survey s : sList) {
-                List<QuestionGroup>qgList = qgDao.listQuestionGroupBySurvey(s.getKey().getId());
-                for (QuestionGroup qg : qgList) {
-                    List<Question> qList = qDao.listQuestionsInOrderForGroup(qg.getKey().getId());
-                    for (Question q : qList) {
-                        idsInUse.add(q.getQuestionId());
-                    }                
-                }
-            }
-        }
 
         SurveyUtils.copyTranslation(sourceGroupId, copyGroupId, newSurveyId, copyGroupId,
                 ParentType.QUESTION_GROUP_NAME, ParentType.QUESTION_GROUP_DESC);
@@ -231,19 +209,19 @@ public class SurveyUtils {
                 tmp.setQuestionId(newId);
                 //one more to avoid
                 idsInUse.add(newId);
-                log.log(Level.INFO, "Changing QuestionId from " + source.getQuestionId() + " to " + newId);
+                log.log(Level.FINE, "Changing QuestionId from " + source.getQuestionId() + " to " + newId);
             } else {
                 tmp.setQuestionId(source.getQuestionId());
-                log.log(Level.INFO, "Keeping QuestionId " + source.getQuestionId());
+                log.log(Level.FINE, "Keeping QuestionId " + source.getQuestionId());
             }
         }
 
         final Question newQuestion = qDao.save(tmp, newQuestionGroupId);
 
-        log.log(Level.INFO, "New `Question` ID: "
+        log.log(Level.FINE, "New `Question` ID: "
                 + newQuestion.getKey().getId());
 
-        log.log(Level.INFO, "Copying question translations");
+        log.log(Level.FINE, "Copying question translations");
 
         SurveyUtils.copyTranslation(sourceQuestionId, newQuestion
                 .getKey().getId(), newSurveyId, newQuestionGroupId, ParentType.QUESTION_NAME,
@@ -262,7 +240,7 @@ public class SurveyUtils {
             return newQuestion;
         }
 
-        log.log(Level.INFO, "Copying " + options.values().size()
+        log.log(Level.FINE, "Copying " + options.values().size()
                 + " `QuestionOption`");
 
         // Copying Question Options
