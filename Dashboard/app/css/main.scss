@@ -2161,6 +2161,7 @@ section.topBar {
             margin-right: 0.25%;
             width: 33.5%;
             float: right;
+            margin-top: -5px;
 
             h3 {
                 color: rgb(198, 198, 198);
@@ -6476,5 +6477,5 @@ svg {
 }
 
 .textLink {
-    color: inherit !important
+    color: inherit !important;
 }
