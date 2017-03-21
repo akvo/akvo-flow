@@ -392,7 +392,7 @@ public class QuestionRestService {
             return null;
         }
         return SurveyUtils.copyQuestion(source, dto.getQuestionGroupId(), dto.getOrder(),
-                source.getSurveyId());
+                source.getSurveyId(), null);
     }
 
     private Question newQuestion(QuestionDto dto) {
