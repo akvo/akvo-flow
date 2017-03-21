@@ -5448,18 +5448,23 @@ table.surveyDetails {
                 -moz-background-clip: padding;
                 -webkit-background-clip: padding-box;
 
-                @include noWrapTxt;
-
-                min-width: 110px;
-
                 &.aFormTab {
                     padding-left: 25px;
                     background: rgba(32, 32, 36, 0.5) url(../images/IconForms.png) no-repeat 10px center;
                     background-size: 20px auto;
+                    max-width: 200px;
+
+                    @include noWrapTxt;
 
                     &:hover {
                         background: rgba(32, 32, 36, 1) url(../images/IconForms.png) no-repeat 10px center;
                         background-size: 20px auto;
+                    }
+
+                    a {
+                        min-width: 110px;
+
+                        @include noWrapTxt;
                     }
 
                     &.current {
