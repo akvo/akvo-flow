@@ -531,7 +531,7 @@ public class SurveyUtils {
 
         Survey s0 = sDao.getById(surveyId);
         final Long surveyGroupId = s0.getSurveyGroupId();
-        List<Survey>sList = sDao.listSurveysByGroup(surveyGroupId);
+        List<Survey> sList = sDao.listSurveysByGroup(surveyGroupId);
         for (Survey s : sList) {
             List<Question> qList = qDao.listQuestionsBySurvey(s.getKey().getId());
             for (Question q : qList) {
