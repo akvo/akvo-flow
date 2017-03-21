@@ -4032,7 +4032,7 @@ div.dataCollectedDate label input {
     float: left;
     margin: 0 0 0 0;
     width: 99.25%;
-    height: 600px;
+    height: calc(100vh - 180px) !important;
     border-bottom: 2px solid rgb(158, 158, 158);
 }
 
@@ -4063,7 +4063,7 @@ div.dataCollectedDate label input {
     margin: 0 0 0 -2px;
     padding: 5px 0.25% 0px 0.25%;
     width: 24.5%;
-    height: 595px;
+    height: calc(100vh - 185px) !important;
     border-left: 2px solid rgb(214, 214, 214);
     background: rgb(241, 241, 241);
     overflow-style: marquee-line;
