@@ -145,12 +145,11 @@
 
             {{#if FLOW.projectControl.hasForms}}
               <div id="tabs">
-                <h2>{{t _forms}}:</h2>            
                 {{#if FLOW.projectControl.currentProject.monitoringGroup}}
                 {{#if view.showAddNewFormButton}}
                   <nav class="menuTopbar">
                     <ul>
-                      <li>  <a {{action "createForm" target="FLOW.surveyControl"}} class="button" >{{t _add_new_form}}</a></li>
+                      <li>  <a {{action "createForm" target="FLOW.surveyControl"}} class="button addFormBtn" >{{t _add_new_form}}</a></li>
                     </ul>
                   </nav>                      
                 {{/if}}

@@ -5285,6 +5285,12 @@ table.surveyDetails {
             }
         }
 
+        .addFormBtn {
+            position: absolute;
+            top: 35px;
+            right: 0px;
+        }
+
         .projectSummary, .formSummary {
             display: -webkit-box;
             display: -moz-box;
@@ -5341,7 +5347,6 @@ table.surveyDetails {
         }
 
         .forms {
-            padding: 2em 0 0 0;
             background: white;
 
             .menuTopbar {
@@ -5414,7 +5419,7 @@ table.surveyDetails {
                 position: relative;
                 display: block;
                 padding: 0;
-                width: 100%;
+                width: calc(100% - 120px);
                 margin-top: 10px;
                 z-index: inherit;
 
@@ -5452,9 +5457,6 @@ table.surveyDetails {
                     padding-left: 25px;
                     background: rgba(32, 32, 36, 0.5) url(../images/IconForms.png) no-repeat 10px center;
                     background-size: 20px auto;
-                    max-width: 200px;
-
-                    @include noWrapTxt;
 
                     &:hover {
                         background: rgba(32, 32, 36, 1) url(../images/IconForms.png) no-repeat 10px center;
@@ -5462,7 +5464,7 @@ table.surveyDetails {
                     }
 
                     a {
-                        min-width: 110px;
+                        max-width: 150px;
 
                         @include noWrapTxt;
                     }
