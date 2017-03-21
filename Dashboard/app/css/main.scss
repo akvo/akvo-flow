@@ -1014,6 +1014,36 @@ table.dataTable {
     text-align: left;
     color: rgba($tableHeaderGrey, 0.8);
     font-size: 0.9em;
+    table-layout: fixed;
+    white-space: nowrap;
+
+    &.headerFixed {
+        thead {
+            width: 100%;
+
+            tr {
+                display: flex;
+                position: relative;
+
+                th {
+                    padding: 9px 1em 9px 1em;
+                    text-align: center;
+                    font-weight: normal;
+                }
+            }
+        }
+
+        tbody {
+            width: 100%;
+            display: block;
+            overflow: auto;
+            height: calc(100vh - 220px);
+
+            tr {
+                width: 100%;
+            }
+        }
+    }
 
     thead tr {
         background: rgba($linkColor, 0.2);
@@ -6476,5 +6506,5 @@ svg {
 }
 
 .textLink {
-    color: inherit !important
+    color: inherit !important;
 }
