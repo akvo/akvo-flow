@@ -6201,7 +6201,7 @@ li.disable {
 }
 
 /* Set device buttons on device tab to position: fixed */
-.deviceControls {
+.deviceControls, .cascadeControls {
     position: fixed;
     top: 96px;
     left: 0px;
