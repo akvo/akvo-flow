@@ -140,7 +140,7 @@ public class DataProcessorRestServlet extends AbstractRestApiServlet {
             QuestionGroup originalQuestionGroup = qgDao.getByKey(Long.valueOf(dpReq.getSource()));
             if (originalQuestionGroup != null && newQuestionGroup != null) {
                 
-                //To avoid collisions, collect all ids already in use in this survey group
+                //To prevent collisions, collect all ids already in use in this survey group
                 Set<String> idsInUse = new HashSet<>();
                 final SurveyDAO sDao = new SurveyDAO();
                 final QuestionDao qDao = new QuestionDao();
@@ -150,12 +150,9 @@ public class DataProcessorRestServlet extends AbstractRestApiServlet {
                 final Long surveyGroupId = s0.getSurveyGroupId();
                 List<Survey>sList = sDao.listSurveysByGroup(surveyGroupId);
                 for (Survey s : sList) {
-                    List<QuestionGroup>qgList = qgDao.listQuestionGroupBySurvey(s.getKey().getId());
-                    for (QuestionGroup qg : qgList) {
-                        List<Question> qList = qDao.listQuestionsInOrderForGroup(qg.getKey().getId());
-                        for (Question q : qList) {
-                            idsInUse.add(q.getQuestionId());
-                        }                
+                    List<Question> qList = qDao.listQuestionsBySurvey(s.getKey().getId());
+                    for (Question q : qList) {
+                        idsInUse.add(q.getQuestionId());
                     }
                 }
                 
