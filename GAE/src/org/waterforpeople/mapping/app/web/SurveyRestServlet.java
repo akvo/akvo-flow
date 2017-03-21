@@ -135,23 +135,21 @@ public class SurveyRestServlet extends AbstractRestApiServlet {
         } else if (SurveyRestRequest.GET_SURVEY_GROUP_ACTION.equals(surveyReq
                 .getAction())) {
             List<SurveyGroupDto> sgList = new ArrayList<SurveyGroupDto>();
-            Long sgId = surveyReq.getSurveyGroupId();
-            if (sgId != null) {
-                SurveyGroupDto dto = getSurveyGroup(sgId);
-                if (dto != null) {
-                    sgList.add(dto);
+            Long surveyGroupId = null;
+
+            if (surveyReq.getSurveyGroupId() != null) {
+                surveyGroupId = surveyReq.getSurveyGroupId();
+            } else if (surveyReq.getSurveyId() != null) {
+                Survey s = surveyDao.getById(surveyReq.getSurveyId());
+                if (s != null) {
+                    surveyGroupId = s.getSurveyGroupId();
                 }
-            } else {
-                // Trying to get it using Survey ID
-                Long sId = surveyReq.getSurveyId();
-                if (sId != null) {
-                    Survey s = surveyDao.getById(sId);
-                    if (s != null) {
-                        SurveyGroupDto dto = getSurveyGroup(s.getSurveyGroupId());
-                        if (dto != null) {
-                            sgList.add(dto);
-                        }
-                    }
+            }
+
+            if (surveyGroupId != null) {
+                SurveyGroup sg = sgDao.getByKey(surveyGroupId);
+                if (sg != null) {
+                    sgList.add(new SurveyGroupDto(sg));
                 }
             }
             response.setDtoList(sgList);
@@ -267,15 +265,6 @@ public class SurveyRestServlet extends AbstractRestApiServlet {
         response.setDtoList(dtoList);
         response.setCursor(cursorString);
         return response;
-    }
-
-    private SurveyGroupDto getSurveyGroup(Long surveyGroupId) {
-        SurveyGroupDAO surveyGroupDao = new SurveyGroupDAO();
-        SurveyGroup sg = surveyGroupDao.getByKey(surveyGroupId);
-        if (sg == null) {
-            return null;
-        }
-        return new SurveyGroupDto(sg);
     }
 
     private SurveyDto getSurvey(Long surveyId) {
