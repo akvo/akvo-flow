@@ -518,4 +518,27 @@ public class SurveyUtils {
         List<Survey> childForms = new SurveyDAO().listSurveysByGroup(surveyGroupId);
         surveyGroup.setChildForms(childForms);
     }
+    
+    /**
+     * to prevent collisions, it is useful to collect all ids already in use in a survey group
+     * @param surveyId
+     * @return
+     */
+    public static Set<String> listQuestionIdsUsedInSurveyGroup(Long surveyId) {
+        final SurveyDAO sDao = new SurveyDAO();
+        final QuestionDao qDao = new QuestionDao();
+        Set<String> idsInUse = new HashSet<>();        
+
+        Survey s0 = sDao.getById(surveyId);
+        final Long surveyGroupId = s0.getSurveyGroupId();
+        List<Survey>sList = sDao.listSurveysByGroup(surveyGroupId);
+        for (Survey s : sList) {
+            List<Question> qList = qDao.listQuestionsBySurvey(s.getKey().getId());
+            for (Question q : qList) {
+                idsInUse.add(q.getQuestionId());
+            }
+        }
+
+        return idsInUse;
+    }
 }
