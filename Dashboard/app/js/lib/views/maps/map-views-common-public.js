@@ -63,8 +63,11 @@ FLOW.NavMapsView = FLOW.View.extend({
       }, {}));
     } else {
       // insert the map
-      this.map = L.mapbox.map('flowMap', 'akvo.he30g8mm')
-        .setView([-0.703107, 36.765], 2);
+      var options = {
+          minZoom: 2,
+          maxZoom: 18
+      };
+      this.map = L.mapbox.map('flowMap', 'akvo.he30g8mm', options).setView([-0.703107, 36.765], 2);
 
       L.control.layers({
         'Terrain': L.mapbox.tileLayer('akvo.he30g8mm').addTo(this.map),
