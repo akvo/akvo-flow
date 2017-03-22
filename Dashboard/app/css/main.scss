@@ -12,7 +12,6 @@ html {
     width: 100%;
     height: 100%;
     overflow-y: scroll;
-    border-top: 3px solid rgb(38, 8, 89);
     box-sizing: border-box;
     color: rgb(36, 48, 50);
     font-size: 16px;
@@ -20,6 +19,7 @@ html {
     text-rendering: optimizelegibility;
     font-family: $bodyFont;
     -webkit-font-smoothing: antialiased;
+    overflow-x: hidden;
 }
 
 body {
@@ -584,66 +584,6 @@ label[for=newDeviceGroupName] {
     width: 70%;
 }
 
-/* page structure
---------------------------------------------- */
-
-.widthConstraint {
-    position: relative;
-    margin: 0 auto 0 auto;
-    padding: 0;
-    width: 100%;
-    min-width: 768px;
-}
-
-.belowHeader {
-    padding-top: 55px;
-    padding-bottom: 0px;
-    background: white;
-}
-
-.middleSection {
-    overflow: hidden;
-
-    /*margin: 0 0 20px 0;*/
-    padding: 90px 0 40px 0;
-}
-
-.leftSidebar {
-    box-sizing: border-box;
-    left: 0;
-    top: 112px;
-    bottom: 56px;
-    position: fixed;
-    float: left;
-    width: 20em;
-    overflow-y: scroll;
-    overflow-x: hidden;
-}
-
-.mainRight {
-    float: left;
-    width: calc(100% - 20em);
-    margin-left: 20em;
-    overflow-y: auto;
-}
-
-.mainLeft {
-    position: relative;
-    float: left;
-    width: 78%;
-}
-
-.fullWidth {
-    position: relative;
-    width: 100%;
-}
-
-.mainContent {
-    margin: 0 auto;
-    padding: 0 0 0 0;
-    width: 99%;
-}
-
  /* .header
 --------------------------------------------- */
 
@@ -1022,6 +962,39 @@ nav.appNav {
     }
 } */
 
+/* page structure
+--------------------------------------------- */
+
+.widthConstraint {
+    position: relative;
+    margin: 0 auto 0 auto;
+    padding: 0;
+    width: 100%;
+    min-width: 768px;
+}
+
+.belowHeader {
+    padding-top: 110px;
+    padding-bottom: 25px;
+    box-sizing: border-box;
+}
+
+.middleSection {
+    /*margin: 0 0 20px 0;*/
+    padding: 50px 0 25px 0;
+}
+
+.fullWidth {
+    position: relative;
+    width: 100%;
+}
+
+.mainContent {
+    margin: 0 auto;
+    padding: 0 0 0 0;
+    width: 99%;
+}
+
 @mixin bgDetails {
     background-repeat: no-repeat;
     background-position: center 12px;
@@ -1192,12 +1165,6 @@ tfoot tr {
     .User {
         color: rgb(119, 97, 0);
     }
-}
-
-#inspectData {
-    border: thin solid rgb(224, 224, 224);
-    border-top: 1px solid white;
-    background: rgb(224, 224, 224);
 }
 
 .greyBg a.standardBtn {
@@ -1461,8 +1428,8 @@ input.hasDatepicker {
     display: inline;
     margin: 0;
     padding: 1em 0.5% 1.5em 0.5%;
-    min-height: 200px;
     width: 49%;
+    max-width: 49%;
 }
 
 .manualTransfer .fieldSetWrap fieldset.fullWidth {
@@ -1558,21 +1525,9 @@ table.previewList {
 }
 
 #assignSurveys .fieldSetWrap fieldset table tfoot td a {
-    display: block;
     float: right;
-    padding: 5px 3px;
-    width: 10%;
-    background: rgb(0, 123, 182);
-    color: white;
-    -webkit-transition: background 0.5s ease-in;
-    transition: background 0.5s ease-in;
-    -o-border-radius: 0 0 5px 5px;
-    border-radius: 0 0 5px 5px;
-}
 
-#assignSurveys .fieldSetWrap fieldset table tfoot td a:hover {
-    background: rgb(107, 134, 141);
-    color: white;
+    @include button($flowAnchorLink);
 }
 
 .groupPreview {
@@ -1630,13 +1585,11 @@ th.action {
     color: rgb(0, 123, 182);
 }
 
-#assignSurveys .fieldSetWrap fieldset.formLeftPanel div.SelectLayout {
-    display: block;
-    width: 100%;
-}
+#assignSurveys .fieldSetWrap fieldset.formLeftPanel div.SelectLayout {}
 
 #assignSurveys .fieldSetWrap fieldset.formLeftPanel div.formSelectorList {
-    display: block;
+    position: relative;
+    display: inline-block;
     width: 100%;
     margin-top: 30px;
 
@@ -1658,146 +1611,6 @@ th.action {
 .menuConfirm ul li a {
     display: inline-block;
 }
-
-/*--------------------------------------------------------------------
-                            Tabs Styling
-----------------------------------------------------------------------*/
-#tabs {
-    position: relative;
-
-    /*overflow-y: scroll;*/
-    height: 100%;
-    width: 99.5%;
-    margin: 0 auto;
-}
-
-#tabs div > section {
-    border-top: thin solid white;
-    background: white;
-
-    &.cascadeSection {
-        background: $projectBackground;
-        box-sizing: border-box;
-        width: 100%;
-        padding: 15px 0;
-        margin: 0 auto;
-        -ms-overflow-style: none;
-        overflow-y: scroll;
-    }
-}
-
-#tabs section h1,
-.messagesList h1,
-.usersList h1,
-.surveyTranslation > h1 {
-    display: block;
-    margin: 0.5em 0 0.5em 0.5em;
-    color: $flowAnchorLinkHover;
-    font-weight: 400;
-}
-
-#tabs div > section h3 {
-    -moz-text-shadow: 0 -1px 0 rgb(185, 185, 185), 0 2px 0 white;
-    -webkit-text-shadow: 0 -1px 0 rgb(185, 185, 185), 0 2px 0 white;
-    -o-text-shadow: 0 -1px 0 rgb(185, 185, 185), 0 2px 0 white;
-    text-shadow: 0 -1px 0 rgb(185, 185, 185), 0 2px 0 white;
-}
-
-#tabs {
-    position: relative;
-
-    nav.tabNav {
-        display: block;
-        padding: 0px 0 1px 0;
-        width: 100%;
-        background-color: white;
-        position: fixed;
-        margin-top: -40px;
-        z-index: 9999;
-
-        ul {
-            padding: 0;
-            overflow: auto;
-            background: rgb(252, 252, 255);
-
-            &:after {
-                content: "";
-                display: block;
-                overflow: auto;
-                margin-top: -1px;
-                width: 100%;
-                height: 1px;
-                border-bottom: thin solid rgba($akvoBlack, 0.2);
-            }
-
-            li {
-                display: inline;
-                float: left;
-                margin: 0 0px -2px 0;
-                font-size: 90%;
-
-                @include border-radius(0 0 0 0);
-
-                background: rgba($akvoBlack, 0);
-                -webkit-background-clip: padding-box;
-                background-clip: padding-box;
-                -webkit-transition: none;
-                transition: none;
-                -moz-background-clip: padding;
-                -webkit-background-clip: padding-box;
-                border: thin solid transparent;
-
-                &:hover {
-                    border: thin solid rgba($akvoBlack, 0.2);
-                    border-bottom: thin solid white;
-                }
-
-                &.active {
-                    position: relative;
-                    background: rgba(white, 1);
-                    border-top: 2px solid rgba($akvoFlow, 1);
-                    border-left: thin solid rgba($akvoBlack, 0.2);
-                    border-right: thin solid rgba($akvoBlack, 0.2);
-                    border-bottom: thin solid white;
-                    cursor: not-allowed;
-
-                    &:hover {
-                        background: rgba($akvoBlack, 0);
-                    }
-
-                    a {
-                        color: rgba($akvoBlack, 1);
-                        text-shadow: none;
-                        -webkit-text-shadow: none;
-                        -moz-text-shadow: none;
-
-                        &:hover {
-                            color: rgba($akvoBlack, 1);
-                            text-shadow: none;
-                            -webkit-text-shadow: none;
-                            -moz-text-shadow: none;
-                        }
-                    }
-                }
-
-                a {
-                    display: block;
-                    padding: 10px 15px;
-                    color: rgba($akvoBlack, 0.5);
-                    -webkit-transition: none;
-                    transition: none;
-
-                    &:hover {
-                        color: rgba($akvoBlack, 1);
-                    }
-                }
-            }
-        }
-    }
-}
-
-/* Survey styles
---------------------------------------------- */
 
 .surveysList {
     position: relative;
@@ -1831,23 +1644,6 @@ a.text_label {}
     display: block;
     margin: 8px auto 10px auto;
     width: 77%;
-}
-
-.topBar {
-    input[type="text"] {
-        padding: 5px;
-        margin: 16px 0 0 10px;
-        width: 20%;
-    }
-
-    .addCascade {
-        input[type="text"] {
-            width: 50%;
-            margin: 0 10px 0 0;
-            padding: 9px 10px;
-            background: lighten($akvoDarkBlue, 50%);
-        }
-    }
 }
 
 .no-textshadow .leftSidebar h2 {
@@ -2047,7 +1843,7 @@ a.FadeIt {
 
 .noFormsContainer {
     background: white;
-    padding: 2em 0;
+    padding: 10px 0;
 
     li.formList {
         padding: 10px 0;
@@ -2100,27 +1896,334 @@ a.FadeIt {
 
 section.topBar {
     position: fixed;
-    margin: -35px auto 0 auto;
+    top: 53px;
+    margin: 0px auto 0 auto;
     z-index: 9998;
     width: 100%;
-    background: white;
     box-shadow: 0 1px 3px rgba($akvoBlack, 0.1);
-
-    #tabs & {
-        margin-top: 0px;
-        padding-top: 10px;
-    }
+    padding: 0 0 0px 0;
+    background: white;
 
     &.activeMenu {
         border: 1px solid rgb(212, 212, 212);
     }
-}
 
-section.topBar ~ * {
-    margin-top: 80px;
+    /*--------------------------------------------------------------------
+                                Tabs Styling
+    ----------------------------------------------------------------------*/
 
-    #tabs & {
-        margin-top: 90px;
+    #tabs div > section {
+        border-top: thin solid white;
+
+        &.cascadeSection {
+            background: $projectBackground;
+            box-sizing: border-box;
+            width: 100%;
+            padding: 15px 0;
+            margin: 0 auto;
+            -ms-overflow-style: none;
+            overflow-y: scroll;
+        }
+    }
+
+    #tabs section h1,
+    .messagesList h1,
+    .usersList h1,
+    .surveyTranslation > h1 {
+        display: block;
+        margin: 0.5em 0 0.5em 0.5em;
+        color: $flowAnchorLinkHover;
+        font-weight: 400;
+    }
+
+    #tabs div > section h3 {
+        -moz-text-shadow: 0 -1px 0 rgb(185, 185, 185), 0 2px 0 white;
+        -webkit-text-shadow: 0 -1px 0 rgb(185, 185, 185), 0 2px 0 white;
+        -o-text-shadow: 0 -1px 0 rgb(185, 185, 185), 0 2px 0 white;
+        text-shadow: 0 -1px 0 rgb(185, 185, 185), 0 2px 0 white;
+    }
+
+    #tabs {
+        position: relative;
+
+        nav.tabNav {
+            display: block;
+            padding: 0px 0 0px 0;
+            width: 100%;
+            background-color: white;
+            position: fixed;
+            z-index: 9999;
+            margin-bottom: 0px;
+
+            ul {
+                padding: 0;
+                overflow: auto;
+                background: rgb(252, 252, 255);
+
+                &:after {
+                    content: "";
+                    display: block;
+                    overflow: auto;
+                    margin-top: -1px;
+                    width: 100%;
+                    height: 1px;
+                    border-bottom: thin solid rgba($akvoBlack, 0.2);
+                }
+
+                li {
+                    display: inline;
+                    float: left;
+                    margin: 0 0px -2px 0;
+                    font-size: 90%;
+
+                    @include border-radius(0 0 0 0);
+
+                    background: rgba($akvoBlack, 0);
+                    -webkit-background-clip: padding-box;
+                    background-clip: padding-box;
+                    -webkit-transition: none;
+                    transition: none;
+                    -moz-background-clip: padding;
+                    -webkit-background-clip: padding-box;
+                    border: thin solid transparent;
+
+                    &:hover {
+                        border: thin solid rgba($akvoBlack, 0.2);
+                        border-bottom: thin solid white;
+                    }
+
+                    &.active {
+                        position: relative;
+                        background: rgba(white, 1);
+                        border-top: 2px solid rgba($akvoFlow, 1);
+                        border-left: thin solid rgba($akvoBlack, 0.2);
+                        border-right: thin solid rgba($akvoBlack, 0.2);
+                        border-bottom: thin solid white;
+                        cursor: not-allowed;
+
+                        &:hover {
+                            background: rgba($akvoBlack, 0);
+                        }
+
+                        a {
+                            color: rgba($akvoBlack, 1);
+                            text-shadow: none;
+                            -webkit-text-shadow: none;
+                            -moz-text-shadow: none;
+
+                            &:hover {
+                                color: rgba($akvoBlack, 1);
+                                text-shadow: none;
+                                -webkit-text-shadow: none;
+                                -moz-text-shadow: none;
+                            }
+                        }
+                    }
+
+                    a {
+                        display: block;
+                        padding: 10px 15px;
+                        color: rgba($akvoBlack, 0.5);
+                        -webkit-transition: none;
+                        transition: none;
+
+                        &:hover {
+                            color: rgba($akvoBlack, 1);
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+    nav {
+        &.breadCrumb {
+            margin-left: 0.5%;
+            width: 65.5%;
+            float: left;
+
+            ul li {
+                white-space: nowrap;
+                display: inline-block;
+                height: 34px;
+                line-height: 34px;
+                width: auto;
+                margin: 5px 3px 0 -1px;
+                text-indent: 19px;
+                position: relative;
+                max-width: 175px;
+            }
+
+            ul li:before {
+                content: " ";
+                height: 0;
+                width: 0;
+                position: absolute;
+                left: -2px;
+                border-style: solid;
+                border-width: 17px 0 17px 17px;
+                border-color: transparent transparent transparent #fff;
+                z-index: 0;
+            }
+
+            ul li:first-child:before {
+                border-color: transparent;
+            }
+
+            ul li a:after {
+                content: " ";
+                height: 0;
+                width: 0;
+                position: absolute;
+                right: -17px;
+                border-style: solid;
+                border-width: 17px 0 17px 17px;
+                border-color: transparent transparent transparent $akvoLightBlue;
+                z-index: 10;
+            }
+
+            ul li a {
+                display: block;
+                background: $akvoLightBlue;
+                color: white;
+
+                @include noWrapTxt;
+
+                &:hover {
+                    background: $flowAnchorLinkHover;
+                }
+
+                &.homeRoot {
+                    border-radius: 3px 0 0 3px;
+                    width: 40px;
+                    background: url(../images/breadCrumb-Root.png) center center no-repeat $akvoLightBlue;
+                    text-indent: -9999px;
+                    z-index: 9999;
+                    margin-left: 0;
+
+                    &:hover {
+                        background: url(../images/breadCrumb-Root.png) center center no-repeat $flowAnchorLinkHover;
+                    }
+                }
+            }
+
+            ul li a:hover:after {
+                border-color: transparent transparent transparent $flowAnchorLinkHover;
+            }
+
+            ul li:last-of-type {
+                opacity: 0.8;
+
+                a {
+                    border-radius: 0 3px 3px 0;
+                    padding-right: 15px;
+                    background: $flowAnchorLinkHover;
+
+                    &.homeRoot {
+                        padding-right: 0;
+                        border-radius: 3px 0 0 3px;
+                        width: 40px;
+                        background: url(../images/breadCrumb-Root.png) center center no-repeat $akvoLightBlue;
+                        text-indent: -9999px;
+                        z-index: 9999;
+                        margin-left: 0;
+
+                        &:after {
+                            content: " ";
+                            height: 0;
+                            width: 0;
+                            position: absolute;
+                            right: -17px;
+                            border-style: solid;
+                            border-width: 17px 0 17px 17px;
+                            border-color: transparent transparent transparent $akvoLightBlue;
+                            z-index: 10;
+                        }
+
+                        &:hover {
+                            background: url(../images/breadCrumb-Root.png) center center no-repeat $akvoLightBlue;
+                        }
+                    }
+
+                    &:after {
+                        border-width: 0;
+
+                        &:hover {
+                            background: $akvoLightBlue;
+                        }
+                    }
+                }
+            }
+        }
+
+        &.menuTopbar {
+            margin-right: 0.25%;
+            width: 33.5%;
+            float: right;
+            margin-top: -5px;
+
+            h3 {
+                color: rgb(198, 198, 198);
+                margin: 0;
+                padding: 0;
+
+                &.actionTitleEdit {
+                    padding: 5px 5px 5px 15px;
+                    background: url(../images/IconEditGreyLight.svg) left center no-repeat;
+                    background-size: 15px;
+                }
+            }
+
+            ul {
+                width: 100%;
+
+                li {
+                    margin: 10px 10px 0 0;
+                    float: right;
+
+                    &:first-of-type {
+                        margin: 10px 0px 0 0;
+                    }
+
+                    p {
+                        color: $midGrey;
+
+                        .itemMoved {
+                            color: $akvoDarkBlue;
+                            font-weight: bold;
+                            margin-right: 5px;
+                            margin-left: 5px;
+                        }
+                    }
+                }
+            }
+
+            &.actionHighLighted {
+                border: 1px solid rgb(241, 242, 242);
+
+                li {
+                    &:first-child {
+                        float: left;
+                        margin: 10px 0 0 10px;
+                    }
+                }
+            }
+        }
+    }
+
+    input[type="text"] {
+        padding: 5px;
+        margin: 16px 0 0 10px;
+        width: 20%;
+    }
+
+    .addCascade {
+        input[type="text"] {
+            width: 50%;
+            margin: 0 10px 0 0;
+            padding: 9px 10px;
+            background: lighten($akvoDarkBlue, 50%);
+        }
     }
 }
 
@@ -2160,193 +2263,6 @@ section.topBar > a.smallBtn {
 nav.menuTopbar {
     margin: 0 auto 0;
     padding: 0 0 10px 0;
-}
-
-section.topBar {
-    padding: 0 0 10px 0;
-    width: 100%;
-
-    nav {
-        &.breadCrumb {
-            margin-left: 0.5%;
-            padding: 10px 0;
-            width: 65.5%;
-            float: left;
-        }
-
-        &.menuTopbar {
-            margin-right: 0.5%;
-            padding: 10px 0;
-            width: 33.5%;
-            float: right;
-        }
-    }
-
-    nav.breadCrumb {
-        ul li {
-            white-space: nowrap;
-            display: inline-block;
-            height: 34px;
-            line-height: 34px;
-            width: auto;
-            margin: 5px 3px 0 -1px;
-            text-indent: 19px;
-            position: relative;
-        }
-
-        ul li:before {
-            content: " ";
-            height: 0;
-            width: 0;
-            position: absolute;
-            left: -2px;
-            border-style: solid;
-            border-width: 17px 0 17px 17px;
-            border-color: transparent transparent transparent #fff;
-            z-index: 0;
-        }
-
-        ul li:first-child:before {
-            border-color: transparent;
-        }
-
-        ul li a:after {
-            content: " ";
-            height: 0;
-            width: 0;
-            position: absolute;
-            right: -17px;
-            border-style: solid;
-            border-width: 17px 0 17px 17px;
-            border-color: transparent transparent transparent $akvoLightBlue;
-            z-index: 10;
-        }
-
-        ul li a {
-            display: block;
-            background: $akvoLightBlue;
-            color: white;
-
-            @include noWrapTxt;
-
-            &:hover {
-                background: $flowAnchorLinkHover;
-            }
-
-            &.homeRoot {
-                border-radius: 3px 0 0 3px;
-                width: 40px;
-                background: url(../images/breadCrumb-Root.png) center center no-repeat $akvoLightBlue;
-                text-indent: -9999px;
-                z-index: 9999;
-                margin-left: 0;
-
-                &:hover {
-                    background: url(../images/breadCrumb-Root.png) center center no-repeat $flowAnchorLinkHover;
-                }
-            }
-        }
-
-        ul li a:hover:after {
-            border-color: transparent transparent transparent $flowAnchorLinkHover;
-        }
-
-        ul li:last-of-type {
-            opacity: 0.8;
-
-            a {
-                border-radius: 0 3px 3px 0;
-                padding-right: 15px;
-                background: $flowAnchorLinkHover;
-
-                &.homeRoot {
-                    padding-right: 0;
-                    border-radius: 3px 0 0 3px;
-                    width: 40px;
-                    background: url(../images/breadCrumb-Root.png) center center no-repeat $akvoLightBlue;
-                    text-indent: -9999px;
-                    z-index: 9999;
-                    margin-left: 0;
-
-                    &:after {
-                        content: " ";
-                        height: 0;
-                        width: 0;
-                        position: absolute;
-                        right: -17px;
-                        border-style: solid;
-                        border-width: 17px 0 17px 17px;
-                        border-color: transparent transparent transparent $akvoLightBlue;
-                        z-index: 10;
-                    }
-
-                    &:hover {
-                        background: url(../images/breadCrumb-Root.png) center center no-repeat $akvoLightBlue;
-                    }
-                }
-
-                &:after {
-                    border-width: 0;
-
-                    &:hover {
-                        background: $akvoLightBlue;
-                    }
-                }
-            }
-        }
-    }
-
-    nav.menuTopbar {
-        margin: 0 auto 0;
-        padding: 10px 0;
-
-        h3 {
-            color: rgb(198, 198, 198);
-            margin: 0;
-            padding: 0;
-
-            &.actionTitleEdit {
-                padding: 5px 5px 5px 15px;
-                background: url(../images/IconEditGreyLight.svg) left center no-repeat;
-                background-size: 15px;
-            }
-        }
-
-        ul {
-            width: 100%;
-
-            li {
-                margin: 10px 10px 0 0;
-                float: right;
-
-                &:first-child {
-                    margin: 10px 0 0 0;
-                }
-
-                p {
-                    color: $midGrey;
-
-                    .itemMoved {
-                        color: $akvoDarkBlue;
-                        font-weight: bold;
-                        margin-right: 5px;
-                        margin-left: 5px;
-                    }
-                }
-            }
-        }
-
-        &.actionHighLighted {
-            border: 1px solid rgb(241, 242, 242);
-
-            li {
-                &:first-child {
-                    float: left;
-                    margin: 10px 0 0 10px;
-                }
-            }
-        }
-    }
 }
 
 #surveyCreator nav.menuTopbar ul {
@@ -3878,32 +3794,47 @@ table.dataTable.notificationTable thead tr th a:visited {
 /****** Data Page
 ****************************************************************************/
 .modularSelection {
-    display: -webkit-box;
-    display: -webkit-flex;
-    display: -ms-flexbox;
-    display: flex;
-    -webkit-box-orient: horizontal;
-    -webkit-box-direction: normal;
-    -webkit-flex-direction: row;
-    -ms-flex-direction: row;
-    flex-direction: row;
-    -webkit-flex-wrap: nowrap;
-    -ms-flex-wrap: nowrap;
-    flex-wrap: nowrap;
-    -webkit-box-pack: justify;
-    -webkit-justify-content: flex-start;
-    -ms-flex-pack: center;
-    justify-content: flex-start;
-    text-align: left;
-    -webkit-align-items: flex-start;
-    align-items: flex-start;
+    padding: 0 0 22px 0%;
+    display: block;
 
-    select:first-child {
-        margin-left: 0.5%;
+    select {
+        max-width: 20%;
+        float: left;
+        display: inline;
+    }
+}
+
+.reportTools {
+    padding-left: 0.5%;
+}
+
+div.chooseSurveyData {
+    position: relative;
+    display: block;
+    margin: 0px 0 10px 0;
+    width: 100%;
+    overflow: auto;
+
+    > select {
+        max-width: 20%;
+        float: left;
+        display: inline;
     }
 }
 
 .filterData {
+    border: thin solid rgb(224, 224, 224);
+    border-top: 1px solid white;
+
+    .dataDeviceId {
+        display: block;
+        padding: 0.5em 1em 8px 1em;
+        background: rgba(234, 234, 234, 0.3);
+        border-top: 1px solid rgb(234, 234, 234);
+        border-bottom: 1px solid rgb(234, 234, 234);
+        margin: 0px 0 5px 0;
+    }
+
     h3 {
         margin: 0 0 5px 5px;
         color: #666;
@@ -3940,15 +3871,6 @@ div.dataCollectedDate input {
 
 label.collectedTo {
     margin: 0;
-}
-
-div.chooseSurveyData {
-    position: relative;
-    display: block;
-    float: left;
-    margin: -30px 0 10px 0;
-    width: 100%;
-    height: 20px;
 }
 
 #monitoringData {
@@ -4016,15 +3938,6 @@ div.dataCollectedDate label {
 
 div.dataCollectedDate label input {
     width: 97%;
-}
-
-.filterData div.dataDeviceId {
-    display: block;
-    margin: 60px 0 10px 0;
-    padding: 0.5em 1em 8px 1em;
-    background: rgba(234, 234, 234, 0.3);
-    border-top: 1px solid rgb(234, 234, 234);
-    border-bottom: 1px solid rgb(234, 234, 234);
 }
 
 .filterData div.dataLocation {
@@ -4119,7 +4032,7 @@ div.dataCollectedDate label input {
     float: left;
     margin: 0 0 0 0;
     width: 99.25%;
-    height: 600px;
+    height: calc(100vh - 180px) !important;
     border-bottom: 2px solid rgb(158, 158, 158);
 }
 
@@ -4127,19 +4040,19 @@ div.dataCollectedDate label input {
     position: relative;
     clear: both;
     margin: 0 auto;
-    padding: 4px 1.25% 0 1.25%;
+    padding: 4px 1.25% 2px 1.25%;
     width: 97.5%;
     height: 23px;
     background: $darkGrey;
-}
 
-#dropdown-holder label {
-    color: white;
-}
+    label {
+        color: white;
+    }
 
-#dropdown-holder select {
-    display: inline;
-    margin: 0 0 0 0.5em;
+    select {
+        display: inline;
+        margin: 0 0 0 0.5em;
+    }
 }
 
 #pointDetails {
@@ -4150,7 +4063,7 @@ div.dataCollectedDate label input {
     margin: 0 0 0 -2px;
     padding: 5px 0.25% 0px 0.25%;
     width: 24.5%;
-    height: 595px;
+    height: calc(100vh - 185px) !important;
     border-left: 2px solid rgb(214, 214, 214);
     background: rgb(241, 241, 241);
     overflow-style: marquee-line;
@@ -4306,8 +4219,7 @@ div.drawHandle {
 
 footer.bottomPage {
     bottom: 0;
-    margin: 20px 0 0 0;
-    padding: 10px 0 0 0;
+    padding: 10px 0 10px 0;
     width: 100%;
     background: rgb(252, 252, 255);
     z-index: 1001;
@@ -4597,12 +4509,7 @@ label.languageSelector:after {
 ********************************************************************************************************************************/
 
 .reportsSection > div > div > section.reportTools select,
-.reportTools > div > select {
-    display: inline;
-    width: 32%;
-    float: left;
-    margin: 0 0 1em 1%;
-}
+.reportTools > div > select {}
 
 #reportBlocks.reportTools {
     .geoshapeExport {
@@ -4618,14 +4525,11 @@ label.languageSelector:after {
 
 .reportTools select:last-child {
     display: inline;
-    width: 30%;
     float: left;
-    margin: 0 1% 1em 1%;
 }
 
 .reportTools a.standardBtn {
     clear: both;
-    margin: 0.1em 0 1em 1%;
 }
 
 .reportTools div.block a.standardBtn {
@@ -4643,7 +4547,7 @@ label.languageSelector:after {
 .reportTools div.block {
     display: block;
     clear: both;
-    width: 96%;
+    width: 97%;
     margin: 0.5em auto 1.5em auto;
     background: rgb(240, 240, 240);
     padding: 1em 1%;
@@ -4699,13 +4603,7 @@ label.languageSelector:after {
 .chartSetting {
     display: block;
     clear: both;
-    padding: 0.5em 0;
-    margin: 1em auto;
-    border-bottom: thin solid rgb(198, 198, 198);
-}
-
-.chartSetting h4 {
-    margin-left: 1%;
+    padding: 0.5em 0 0 10px;
 }
 
 .reportTools .chartSetting select {
@@ -4718,7 +4616,7 @@ label.languageSelector:after {
 
 .groupChartSelect {
     display: inline-block;
-    margin: 0.1em 0.5em 0 1.5em;
+    margin: 0 5px 0 10px;
 }
 
 .chartSetting .groupChartSelect input {
@@ -4733,15 +4631,8 @@ label.languageSelector:after {
         top: 120px;
         width: 100%;
         background-color: white;
-        height: 120px;
         z-index: 2;
         border-bottom: thin solid #c6c6c6;
-    }
-
-    .rawDataReport {
-        &.dataExport {
-            margin-top: 135px;
-        }
     }
 }
 
@@ -5726,7 +5617,7 @@ table.surveyDetails {
     box-sizing: border-box;
     width: 100%;
     padding: 15px 0;
-    margin: 0 auto;
+    margin: 50px auto 0 auto;
     overflow-y: hidden;
     overflow-x: hidden;
 
@@ -6323,18 +6214,33 @@ li.disable {
 }
 
 /* Set device buttons on device tab to position: fixed */
-.deviceControls {
+.deviceControls, .cascadeControls {
     position: fixed;
-    top: 110px;
+    top: 96px;
     left: 0px;
     right: 0px;
-    height: 50px;
     z-index: 1;
     background-color: white;
     box-shadow: 0 1px 3px rgba(32, 32, 36, 0.1);
     width: 99.5%;
-    margin: 0 0.25%;
-    padding: 5px 0.25%;
+    padding: 5px 0.25% 10px 0.25%;
+
+    nav {
+        &.doubleMenu {
+            width: 49%;
+
+            &:first-child {
+                float: left;
+                margin-top: 7px;
+            }
+
+            &:last-child {
+                float: right;
+                text-align: right;
+                margin-top: 3px;
+            }
+        }
+    }
 
     > a {
         margin-top: 10px;
@@ -6347,11 +6253,11 @@ li.disable {
     }
 
     + div + .dataTable {
-        margin-top: 80px;
+        margin-top: 40px;
     }
 
     + .dataTable {
-        margin-top: 90px;
+        margin-top: 60px;
     }
 
     @media only screen and (max-width: 600px) {
@@ -6362,7 +6268,7 @@ li.disable {
         }
 
         + .dataTable {
-            margin-top: 80px;
+            margin-top: 60px;
         }
     }
 }
@@ -6580,4 +6486,8 @@ svg {
             font-size: 1em !important;
         }
     }
+}
+
+.textLink {
+    color: inherit !important;
 }
