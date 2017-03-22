@@ -21,12 +21,11 @@ import java.util.Date;
 import java.util.List;
 
 import com.gallatinsystems.framework.gwt.dto.client.BaseDto;
-import com.gallatinsystems.framework.gwt.dto.client.NamedObject;
 import com.gallatinsystems.survey.domain.SurveyGroup;
 import com.gallatinsystems.survey.domain.SurveyGroup.PrivacyLevel;
 import com.gallatinsystems.survey.domain.SurveyGroup.ProjectType;
 
-public class SurveyGroupDto extends BaseDto implements NamedObject {
+public class SurveyGroupDto extends BaseDto {
 
     private static final long serialVersionUID = -2235565143615667202L;
 
@@ -127,11 +126,6 @@ public class SurveyGroupDto extends BaseDto implements NamedObject {
             surveyList = new ArrayList<Long>();
         }
         surveyList.add(surveyId);
-    }
-
-    @Override
-    public String getDisplayName() {
-        return getCode();
     }
 
     public void setName(String name) {
