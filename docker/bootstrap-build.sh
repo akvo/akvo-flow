@@ -44,5 +44,5 @@ docker run \
        --env HOST_USER="$USER" \
        --volume "$MAVEN_REPO":"/home/$USER/.m2" \
        --volume "$LOCAL_CACHE":"/home/$USER/.cache" \
-       --volume `pwd`:/akvo-flow \
+       --volume `pwd`:/app/src \
        akvo/flow-build "$@"

@@ -18,19 +18,20 @@
 
 set -eu
 
+SRC_DIR="/app/src"
 APP_ENGINE_SDK_FILE="appengine-java-sdk-1.9.50.zip"
 
 unzip "$HOME/.cache/$APP_ENGINE_SDK_FILE" -d /tmp
 
-cd /akvo-flow/Dashboard
+cd "$SRC_DIR/Dashboard"
 
 RAKEP_MODE=production bundle exec rake build --trace
 
-cd /akvo-flow/Dashboard/app/cljs
+cd "$SRC_DIR/Dashboard/app/cljs"
 
 lein build
 
-cd /akvo-flow/GAE
+cd "$SRC_DIR/GAE"
 
 cp -f build.properties.template build.properties
 
