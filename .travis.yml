@@ -11,8 +11,7 @@ cache:
     - $HOME/.cache
 
 before_install:
-  - docker -v
   - docker pull akvo/flow-build
 
 script:
-  - ./docker/bootstrap-build.sh
+  - ./docker/bootstrap-build.sh whoami && ls /akvo-flow
