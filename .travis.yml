@@ -16,3 +16,4 @@ before_install:
 
 script:
   - docker inspect -f '{{json .Mounts}}' flow-build
+  - docker exec -u `id -g` flow-build ls /app/src
