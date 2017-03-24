@@ -37,11 +37,12 @@ if [[ ! -f "$LOCAL_CACHE/$APP_ENGINE_SDK_FILE" ]]; then
     cd ..
 fi
 
-docker run --rm \
-  --env HOST_GID=`id -g` \
-  --env HOST_UID=`id -u` \
-  --env HOST_USER="$USER" \
-  --volume "$MAVEN_REPO":"/home/$USER/.m2" \
-  --volume "$LOCAL_CACHE":"/home/$USER/.cache" \
-  --volume `pwd`:/akvo-flow \
-  akvo/flow-build
+docker run \
+       --rm \
+       --env HOST_GID=`id -g` \
+       --env HOST_UID=`id -u` \
+       --env HOST_USER="$USER" \
+       --volume "$MAVEN_REPO":"/home/$USER/.m2" \
+       --volume "$LOCAL_CACHE":"/home/$USER/.cache" \
+       --volume `pwd`:/akvo-flow \
+       akvo/flow-build "$@"

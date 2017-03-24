@@ -31,4 +31,6 @@ COPY docker/startup.sh docker/build.sh /usr/local/bin/
 
 RUN chmod a+x /usr/local/bin/*.sh
 
-CMD ["/usr/local/bin/startup.sh"]
+ENTRYPOINT ["/usr/local/bin/startup.sh"]
+
+CMD ["/usr/local/bin/build.sh"]
