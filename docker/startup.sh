@@ -16,13 +16,15 @@
 # limitations under the License.
 #
 
-groupadd --gid $HOST_GID $HOST_USER
+set -eu
 
-useradd $HOST_USER --home /home/$HOST_USER --gid $HOST_GID --uid $HOST_UID --shell /bin/bash
+groupadd --gid "$HOST_GID" "$HOST_USER"
+
+useradd "$HOST_USER" --home "/home/$HOST_USER" --gid "$HOST_GID" --uid "$HOST_UID" --shell /bin/bash
 echo "$HOST_USER:pw" | chpasswd
 
-cp -r /root/.lein /home/$HOST_USER/
+cp -r /root/.lein "/home/$HOST_USER/"
 
-chown -R $HOST_USER:$HOST_USER /home/$HOST_USER
+chown -R "$HOST_USER":"$HOST_USER" "/home/$HOST_USER"
 
-su $HOST_USER -c "$@"
+su "$HOST_USER" -c "$@"

@@ -12,8 +12,6 @@ cache:
 
 before_install:
   - docker pull akvo/flow-build
-  - ./docker/bootstrap-debug.sh
 
 script:
-  - docker inspect -f '{{json .Mounts}}' flow-build
-  - docker exec -u `id -g` flow-build ls /app/src
+  - ./docker/bootstrap-build.sh
