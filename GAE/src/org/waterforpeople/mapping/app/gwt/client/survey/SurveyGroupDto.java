@@ -20,11 +20,14 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
+import org.codehaus.jackson.annotate.JsonIgnoreProperties;
+
 import com.gallatinsystems.framework.gwt.dto.client.BaseDto;
 import com.gallatinsystems.survey.domain.SurveyGroup;
 import com.gallatinsystems.survey.domain.SurveyGroup.PrivacyLevel;
 import com.gallatinsystems.survey.domain.SurveyGroup.ProjectType;
 
+@JsonIgnoreProperties(ignoreUnknown = true)
 public class SurveyGroupDto extends BaseDto {
 
     private static final long serialVersionUID = -2235565143615667202L;
