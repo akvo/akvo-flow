@@ -1177,46 +1177,29 @@ public class GraphicalSurveySummaryExporter extends SurveySummaryExporter {
 
         row = getRow(0, sheet);
 
-        int columnIdx = 0;
+        int columnIdx = -1;
 
-        columnIndexMap.put(IDENTIFIER_LABEL.get(locale), columnIdx);
-        createCell(row, columnIdx++, IDENTIFIER_LABEL.get(locale), headerStyle);
+        addMetaDataColumnHeader(IDENTIFIER_LABEL.get(locale), ++columnIdx, row);
 
         if (surveyGroupDto.getRequireDataApproval()
                 && surveyGroupDto.getDataApprovalGroupId() != null) {
-            columnIndexMap.put(DATA_APPROVAL_STATUS_LABEL.get(locale), columnIdx);
-            createCell(row, columnIdx++, DATA_APPROVAL_STATUS_LABEL.get(locale), headerStyle);
+            addMetaDataColumnHeader(DATA_APPROVAL_STATUS_LABEL.get(locale), ++columnIdx, row);
         }
 
-        columnIndexMap.put(REPEAT_LABEL.get(locale), columnIdx);
-        createCell(row, columnIdx++, REPEAT_LABEL.get(locale), headerStyle);
-
-        columnIndexMap.put(DISPLAY_NAME_LABEL.get(locale), columnIdx);
-        createCell(row, columnIdx++, DISPLAY_NAME_LABEL.get(locale),
-                headerStyle);
-
-        columnIndexMap.put(DEVICE_IDENTIFIER_LABEL.get(locale), columnIdx);
-        createCell(row, columnIdx++, DEVICE_IDENTIFIER_LABEL.get(locale),
-                headerStyle);
-
-        columnIndexMap.put(INSTANCE_LABEL.get(locale), columnIdx);
-        createCell(row, columnIdx++, INSTANCE_LABEL.get(locale), headerStyle);
-
-        columnIndexMap.put(SUB_DATE_LABEL.get(locale), columnIdx);
-        createCell(row, columnIdx++, SUB_DATE_LABEL.get(locale), headerStyle);
-
-        columnIndexMap.put(SUBMITTER_LABEL.get(locale), columnIdx);
-        createCell(row, columnIdx++, SUBMITTER_LABEL.get(locale), headerStyle);
-
-        columnIndexMap.put(DURATION_LABEL.get(locale), columnIdx);
-        createCell(row, columnIdx++, DURATION_LABEL.get(locale), headerStyle);
+        addMetaDataColumnHeader(REPEAT_LABEL.get(locale), ++columnIdx, row);
+        addMetaDataColumnHeader(DISPLAY_NAME_LABEL.get(locale), ++columnIdx, row);
+        addMetaDataColumnHeader(DEVICE_IDENTIFIER_LABEL.get(locale), ++columnIdx, row);
+        addMetaDataColumnHeader(INSTANCE_LABEL.get(locale), ++columnIdx, row);
+        addMetaDataColumnHeader(SUB_DATE_LABEL.get(locale), ++columnIdx, row);
+        addMetaDataColumnHeader(SUBMITTER_LABEL.get(locale), ++columnIdx, row);
+        addMetaDataColumnHeader(DURATION_LABEL.get(locale), ++columnIdx, row);
 
         List<String> questionIdList = new ArrayList<String>();
         List<String> nonSummarizableList = new ArrayList<String>();
         Map<String, CaddisflyResource> caddisflyResourceMap = null;
 
         if (questionMap != null) {
-            int offset = columnIdx;
+            int offset = ++columnIdx;
             for (QuestionGroupDto group : orderedGroupList) {
                 if (questionMap.get(group) != null) {
                     for (QuestionDto q : questionMap.get(group)) {
@@ -1426,6 +1409,14 @@ public class GraphicalSurveySummaryExporter extends SurveySummaryExporter {
         temp[0] = questionIdList;
         temp[1] = nonSummarizableList;
         return temp;
+    }
+
+    /*
+     * Add a meta data column header to the report. The row should be == 0
+     */
+    private void addMetaDataColumnHeader(String columnHeaderName, int columnIdx, Row row) {
+        columnIndexMap.put(columnHeaderName, columnIdx);
+        createCell(row, columnIdx, columnHeaderName, headerStyle);
     }
 
     /**
