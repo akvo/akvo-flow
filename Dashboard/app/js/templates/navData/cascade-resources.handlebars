@@ -1,8 +1,8 @@
 {{#view FLOW.CascadeResourceView}}
 <section class="fullWidth cascadeWrap">
 
-<section class="topBar">
-    <nav class="">
+<section class="deviceControls">
+    <nav class="doubleMenu">
         <ul class="">
             <li>
              <label class="selectinLabel dependencySelect"> {{t _choose_existing_cascade}}
@@ -24,7 +24,7 @@
           			<a {{action "saveNewCascadeResource" target="this"}} class="smallBtn">{{t _save}}</a>
           			<a {{action "cancelNewCascadeResource" target="this"}}>{{t _cancel}}</a>
       			{{else}}
-      				<a {{action "newCascade" target="this"}} class="addBtn btn noChanges">{{t _add_new_cascade}}</a>
+      				<a {{action "newCascade" target="this"}} class="button">{{t _add_new_cascade}}</a>
       			{{/if}}
             </li>
         </ul>
@@ -34,7 +34,7 @@
   <section id="main" class="cascadeSection middleSection floats-in" role="main">
         	{{#if view.oneSelected}}
             <section id="" class="cascadeDetailsPanel">
-                <span class="fontInfo">{{t _cascade_resource}}</span><h2>{{FLOW.selectedControl.selectedCascadeResource.name}}</h2>
+                <h2>{{FLOW.selectedControl.selectedCascadeResource.name}}</h2>
                 <ul class="cascadeAction">
                   <li><a {{action "publishResource" target="this"}} class="saveNewSurvey">{{t _publish}}</a></li>
                   <li><a {{action confirm FLOW.dialogControl.delCR target="FLOW.dialogControl"}} class="deleteSurvey">{{t _delete}}</a></li>

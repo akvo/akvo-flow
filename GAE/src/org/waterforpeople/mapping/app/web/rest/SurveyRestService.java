@@ -1,5 +1,5 @@
 /*
- *  Copyright (C) 2012-2015 Stichting Akvo (Akvo Foundation)
+ *  Copyright (C) 2012-2017 Stichting Akvo (Akvo Foundation)
  *
  *  This file is part of Akvo FLOW.
  *
@@ -15,6 +15,8 @@
  */
 
 package org.waterforpeople.mapping.app.web.rest;
+
+import static com.gallatinsystems.common.Constants.ANCESTOR_IDS_FIELD;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -42,7 +44,6 @@ import org.waterforpeople.mapping.app.web.rest.dto.RestStatusDto;
 import org.waterforpeople.mapping.app.web.rest.dto.SurveyPayload;
 import org.waterforpeople.mapping.dao.QuestionAnswerStoreDao;
 
-import static com.gallatinsystems.common.Constants.ANCESTOR_IDS_FIELD;
 import com.gallatinsystems.survey.dao.SurveyDAO;
 import com.gallatinsystems.survey.dao.SurveyUtils;
 import com.gallatinsystems.survey.domain.Survey;
@@ -143,9 +144,8 @@ public class SurveyRestService {
         }
 
         if (surveys != null) {
-            for (Object obj : surveyDao.filterByUserAuthorizationObjectId(surveys)) {
+            for (Survey s : surveyDao.filterByUserAuthorizationObjectId(surveys)) {
                 SurveyDto dto = new SurveyDto();
-                Survey s = (Survey) obj;
                 DtoMarshaller.copyToDto(s, dto);
 
                 // add surveyInstance Count
