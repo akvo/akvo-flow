@@ -131,14 +131,14 @@ public abstract class AbstractRestApiServlet extends HttpServlet {
     /**
      * sets the content type of the response based on the value in web.xml. If no value is
      * specified, we assume plaintext
-     * 
+     *
      * @param resp
      */
     private void setContentType(HttpServletResponse resp) {
         if (XML_MODE.equalsIgnoreCase(mode)) {
             resp.setContentType("text/xml;charset=utf-8");
         } else if (JSON_MODE.equalsIgnoreCase(mode)) {
-            resp.setContentType("application/javascript;charset=utf-8");
+            resp.setContentType("application/json;charset=utf-8");
         } else if (XHTML_MODE.equalsIgnoreCase(mode)) {
             resp.setContentType("application/xhtml+xml");
         } else {
