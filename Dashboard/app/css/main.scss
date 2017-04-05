@@ -5166,6 +5166,8 @@ table.surveyDetails {
     }
 
     .projectDetailsPanel {
+        position: relative;
+
         .addMenuAction {
             display: inline-block;
             margin: 0 auto;
@@ -5178,8 +5180,9 @@ table.surveyDetails {
 
         .addFormBtn {
             position: absolute;
-            top: 35px;
+            top: -13px;
             right: 0px;
+            z-index: 9999;
         }
 
         .projectSummary, .formSummary {
@@ -5311,7 +5314,6 @@ table.surveyDetails {
                 display: block;
                 padding: 0;
                 width: calc(100% - 120px);
-                margin-top: 10px;
                 z-index: inherit;
 
                 & + section, & + div {
@@ -5329,6 +5331,7 @@ table.surveyDetails {
                 justify-content: flex-start;
                 -webkit-align-items: center;
                 align-items: center;
+                box-shadow: 2px 0 2px rgba($akvoBlack, 0.2);
             }
 
             #tabs nav.tabNav ul li {
