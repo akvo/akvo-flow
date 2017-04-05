@@ -342,22 +342,27 @@ public class GraphicalSurveySummaryExporter extends SurveySummaryExporter {
         String to = options.get("to");
         String limit = options.get("maxDataReportRows");
         try {
-            Map<QuestionGroupDto, List<QuestionDto>> questionMap = loadAllQuestions(surveyId,
-                    performGeoRollup, serverBase, criteria.get("apiKey"));
+            Map<QuestionGroupDto, List<QuestionDto>> questionMap = 
+                    loadAllQuestions(surveyId, performGeoRollup, serverBase, criteria.get("apiKey"));
             if (questionMap != null) {
                 for (List<QuestionDto> qList : questionMap.values()) {
                     for (QuestionDto q : qList) {
                         questionsById.put(q.getKeyId(), q);
                     }
-                }
-            }
 
-            if ((!DEFAULT_LOCALE.equals(locale) || useQuestionId)
-                    && questionMap.size() > 0) {
-                // if we are using some other locale, or if need to expand
-                // question options,
-                // we need to check for translations and options
-                loadFullQuestions(questionMap, criteria.get("apiKey"));
+                    if (questionMap.size() > 0) {
+                        if (!DEFAULT_LOCALE.equals(locale)) {
+                            // we are using some other locale;
+                            // need to check for translations.also get options
+                            loadFullQuestions(questionMap, criteria.get("apiKey"));
+                        }
+                        else if (useQuestionId) {
+                            //optimised case: get minimal option info, no translations
+                            loadQuestionOptions(
+                                    surveyId, serverBase, questionMap, criteria.get("apiKey") );
+                        }
+                    }
+                }
             }
 
             Workbook wb = new SXSSFWorkbook(100);
@@ -1814,6 +1819,40 @@ public class GraphicalSurveySummaryExporter extends SurveySummaryExporter {
                 } catch (Exception e) {
                     System.err.println("Could not fetch question details");
                     e.printStackTrace(System.err);
+                }
+            }
+        }
+    }
+
+    /**
+     * call the server to augment the data already loaded in each QuestionDto in the map passed in.
+     *
+     * @param questionMap
+     * @param apiKey
+     */
+    private void loadQuestionOptions(String surveyId, String serverBase, Map<QuestionGroupDto, List<QuestionDto>> questionMap, String apiKey) {
+        for (List<QuestionDto> questionList : questionMap.values()) {
+            for (QuestionDto q : questionList) {
+                if (q.getQuestionType() == QuestionType.OPTION) {
+                    try {
+                        //Make an OptionContainer
+                        OptionContainerDto container = new OptionContainerDto();
+                        q.setOptionContainerDto(container);
+                        //make a (trivial)list of questions
+                        List<Long> qList = new ArrayList<>(1);
+                        qList.add(q.getKeyId());
+                        //fetch the options for it
+                        Map<Long, List<QuestionOptionDto>> optMap = BulkDataServiceClient.fetchOptionNodes(surveyId, serverBase, apiKey, qList);
+                        //add them to their container
+                        for (List<QuestionOptionDto> oList : optMap.values()) { 
+                            for (QuestionOptionDto opt : oList) {
+                                container.addQuestionOption(opt);
+                            }
+                        }
+                    } catch (Exception e) {
+                        System.err.println("Could not fetch question options");
+                        e.printStackTrace(System.err);
+                    }
                 }
             }
         }

@@ -220,8 +220,7 @@ public class SurveySummaryExporter extends AbstractDataExporter {
         orderedGroupList = fetchQuestionGroups(serverBase, surveyId, apiKey);
         rollupOrder = new ArrayList<QuestionDto>();
         for (QuestionGroupDto group : orderedGroupList) {
-            List<QuestionDto> questions = fetchQuestions(serverBase,
-                    group.getKeyId(), apiKey);
+            List<QuestionDto> questions = fetchQuestions(serverBase, group.getKeyId(), apiKey);
             if (performRollups && questions != null) {
                 for (QuestionDto q : questions) {
 
@@ -290,8 +289,8 @@ public class SurveySummaryExporter extends AbstractDataExporter {
         return dtoList;
     }
 
-    protected List<QuestionDto> parseQuestions(String response)
-            throws Exception {
+    
+    protected List<QuestionDto> parseQuestions(String response) throws Exception {
         List<QuestionDto> dtoList = new ArrayList<QuestionDto>();
         JSONArray arr = getJsonArray(response);
         if (arr != null) {
@@ -316,6 +315,9 @@ public class SurveySummaryExporter extends AbstractDataExporter {
                         }
                         if (!json.isNull("localeNameFlag")) {
                             dto.setLocaleNameFlag(json.getBoolean("localeNameFlag"));
+                        }
+                        if (!json.isNull("allowOtherFlag")) {
+                            dto.setAllowOtherFlag(json.getBoolean("allowOtherFlag"));
                         }
                         if (!json.isNull("caddisflyResourceUuid")) {
                             dto.setCaddisflyResourceUuid(json.getString("caddisflyResourceUuid"));
