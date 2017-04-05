@@ -27,6 +27,7 @@ import org.waterforpeople.mapping.app.web.dto.ApprovalStepDTO;
 import org.waterforpeople.mapping.app.web.dto.DataApprovalRequest;
 import org.waterforpeople.mapping.app.web.dto.DataApprovalRestResponse;
 
+import com.gallatinsystems.framework.gwt.dto.client.BaseDto;
 import com.gallatinsystems.framework.rest.AbstractRestApiServlet;
 import com.gallatinsystems.framework.rest.RestRequest;
 import com.gallatinsystems.framework.rest.RestResponse;
@@ -60,17 +61,19 @@ public class DataApprovalServlet extends AbstractRestApiServlet {
         DataApprovalRestResponse approvalServletResponse = new DataApprovalRestResponse();
 
         if (RETRIEVE_APPROVAL_STEPS_ACTION.equals(approvalServletRequest.getAction())) {
-            List<ApprovalStep> steps = approvalstepsDAO
-                    .listByApprovalGroup(approvalServletRequest.approvalGroupId);
-            List<ApprovalStepDTO> stepsDTO = new ArrayList<ApprovalStepDTO>();
-            for (ApprovalStep step : steps) {
-                stepsDTO.add(new ApprovalStepDTO(step));
-            }
-            approvalServletResponse.dataApprovalList = stepsDTO;
-
+            approvalServletResponse.dataApprovalList = retrieveApprovalSteps(approvalServletRequest.approvalGroupId);
             return approvalServletResponse;
         }
         return null;
+    }
+
+    private List<? extends BaseDto> retrieveApprovalSteps(Long approvalGroupId) {
+        List<ApprovalStep> steps = approvalstepsDAO.listByApprovalGroup(approvalGroupId);
+        List<ApprovalStepDTO> stepsDTO = new ArrayList<ApprovalStepDTO>();
+        for (ApprovalStep step : steps) {
+            stepsDTO.add(new ApprovalStepDTO(step));
+        }
+        return stepsDTO;
     }
 
     @Override
