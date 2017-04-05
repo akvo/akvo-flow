@@ -26,9 +26,19 @@ public class DataApprovalRequest extends RestRequest {
 
     private static final long serialVersionUID = -4113676890201652313L;
     private static final Logger log = Logger.getLogger(DataApprovalRequest.class.getSimpleName());
+    public static final String RETRIEVE_APPROVAL_STEPS_ACTION = "retrieveApprovalSteps";
+    public static final String APPROVAL_GROUP_ID_PARAM = "approvalGroupId";
+    public Long approvalGroupId;
 
     @Override
     protected void populateFields(HttpServletRequest req) throws Exception {
+        if (req.getParameter(APPROVAL_GROUP_ID_PARAM) != null) {
+            try {
+                approvalGroupId = Long.parseLong(req.getParameter(APPROVAL_GROUP_ID_PARAM).trim());
+            } catch (NumberFormatException e) {
+                log.warning(APPROVAL_GROUP_ID_PARAM + " param is missing");
+            }
+        }
     }
 
     @Override

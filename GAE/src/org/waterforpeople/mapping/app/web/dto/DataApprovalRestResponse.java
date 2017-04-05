@@ -16,10 +16,15 @@
 
 package org.waterforpeople.mapping.app.web.dto;
 
+import java.util.List;
+
+import com.gallatinsystems.framework.gwt.dto.client.BaseDto;
 import com.gallatinsystems.framework.rest.RestResponse;
 
 public class DataApprovalRestResponse extends RestResponse {
 
     private static final long serialVersionUID = -951447661576733210L;
+
+    public List<? extends BaseDto> dataApprovalList;
 
 }

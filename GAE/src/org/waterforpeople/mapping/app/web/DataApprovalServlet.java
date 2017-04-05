@@ -16,23 +16,34 @@
 
 package org.waterforpeople.mapping.app.web;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.logging.Logger;
 
 import javax.servlet.http.HttpServletRequest;
 
+import org.codehaus.jackson.map.ObjectMapper;
+import org.waterforpeople.mapping.app.web.dto.ApprovalStepDTO;
 import org.waterforpeople.mapping.app.web.dto.DataApprovalRequest;
+import org.waterforpeople.mapping.app.web.dto.DataApprovalRestResponse;
 
 import com.gallatinsystems.framework.rest.AbstractRestApiServlet;
 import com.gallatinsystems.framework.rest.RestRequest;
 import com.gallatinsystems.framework.rest.RestResponse;
+import com.gallatinsystems.survey.dao.ApprovalStepDAO;
+import com.gallatinsystems.survey.domain.ApprovalStep;
+
+import static org.waterforpeople.mapping.app.web.dto.DataApprovalRequest.*;
 
 public class DataApprovalServlet extends AbstractRestApiServlet {
 
     private static final long serialVersionUID = 1706847643104220714L;
     private static final Logger log = Logger.getLogger(DataApprovalServlet.class.getSimpleName());
+    private ApprovalStepDAO approvalstepsDAO;
 
     public DataApprovalServlet() {
         setMode(JSON_MODE);
+        approvalstepsDAO = new ApprovalStepDAO();
     }
 
     @Override
@@ -45,11 +56,26 @@ public class DataApprovalServlet extends AbstractRestApiServlet {
 
     @Override
     protected RestResponse handleRequest(RestRequest req) throws Exception {
+        DataApprovalRequest approvalServletRequest = (DataApprovalRequest) req;
+        DataApprovalRestResponse approvalServletResponse = new DataApprovalRestResponse();
+
+        if (RETRIEVE_APPROVAL_STEPS_ACTION.equals(approvalServletRequest.getAction())) {
+            List<ApprovalStep> steps = approvalstepsDAO
+                    .listByApprovalGroup(approvalServletRequest.approvalGroupId);
+            List<ApprovalStepDTO> stepsDTO = new ArrayList<ApprovalStepDTO>();
+            for (ApprovalStep step : steps) {
+                stepsDTO.add(new ApprovalStepDTO(step));
+            }
+            approvalServletResponse.dataApprovalList = stepsDTO;
+
+            return approvalServletResponse;
+        }
         return null;
     }
 
     @Override
     protected void writeOkResponse(RestResponse resp) throws Exception {
+        new ObjectMapper().writeValue(getResponse().getWriter(), resp);
     }
 
 }
