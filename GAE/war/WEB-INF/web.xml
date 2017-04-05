@@ -191,6 +191,14 @@
         <servlet-name>SurveyedLocaleServlet</servlet-name>
         <url-pattern>/surveyedlocale</url-pattern>
     </servlet-mapping>
+    <servlet>
+        <servlet-name>DataApprovalServlet</servlet-name>
+        <servlet-class>org.waterforpeople.mapping.app.web.DataApprovalServlet</servlet-class>
+    </servlet>
+    <servlet-mapping>
+        <servlet-name>DataApprovalServlet</servlet-name>
+        <url-pattern>/dataapproval</url-pattern>
+    </servlet-mapping>
 
 	<servlet>
 		<servlet-name>Task</servlet-name>
