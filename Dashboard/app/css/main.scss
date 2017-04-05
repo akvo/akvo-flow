@@ -1428,7 +1428,6 @@ input.hasDatepicker {
     display: inline;
     margin: 0;
     padding: 1em 0.5% 1.5em 0.5%;
-    min-height: 200px;
     width: 49%;
     max-width: 49%;
 }
@@ -2161,6 +2160,7 @@ section.topBar {
             margin-right: 0.25%;
             width: 33.5%;
             float: right;
+            margin-top: -5px;
 
             h3 {
                 color: rgb(198, 198, 198);
@@ -4032,7 +4032,7 @@ div.dataCollectedDate label input {
     float: left;
     margin: 0 0 0 0;
     width: 99.25%;
-    height: 600px;
+    height: calc(100vh - 180px) !important;
     border-bottom: 2px solid rgb(158, 158, 158);
 }
 
@@ -4063,7 +4063,7 @@ div.dataCollectedDate label input {
     margin: 0 0 0 -2px;
     padding: 5px 0.25% 0px 0.25%;
     width: 24.5%;
-    height: 595px;
+    height: calc(100vh - 185px) !important;
     border-left: 2px solid rgb(214, 214, 214);
     background: rgb(241, 241, 241);
     overflow-style: marquee-line;
@@ -6201,7 +6201,7 @@ li.disable {
 }
 
 /* Set device buttons on device tab to position: fixed */
-.deviceControls {
+.deviceControls, .cascadeControls {
     position: fixed;
     top: 96px;
     left: 0px;
@@ -6476,5 +6476,5 @@ svg {
 }
 
 .textLink {
-    color: inherit !important
+    color: inherit !important;
 }

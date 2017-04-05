@@ -64,6 +64,7 @@ import org.waterforpeople.mapping.app.gwt.client.survey.QuestionDto;
 import org.waterforpeople.mapping.app.gwt.client.survey.QuestionDto.QuestionType;
 import org.waterforpeople.mapping.app.gwt.client.survey.QuestionGroupDto;
 import org.waterforpeople.mapping.app.gwt.client.survey.QuestionOptionDto;
+import org.waterforpeople.mapping.app.gwt.client.survey.SurveyGroupDto;
 import org.waterforpeople.mapping.app.gwt.client.survey.TranslationDto;
 import org.waterforpeople.mapping.app.gwt.client.surveyinstance.SurveyInstanceDto;
 import org.waterforpeople.mapping.app.web.dto.SurveyRestRequest;
@@ -308,6 +309,7 @@ public class GraphicalSurveySummaryExporter extends SurveySummaryExporter {
     private boolean performGeoRollup;
     private boolean generateCharts;
     private Map<Long, QuestionDto> questionsById;
+    private SurveyGroupDto surveyGroupDto;
     private boolean lastCollection = false;
     private static final ObjectMapper OBJECT_MAPPER = new ObjectMapper();
     private CaddisflyResourceDao caddisflyResourceDao = new CaddisflyResourceDao();
@@ -327,17 +329,20 @@ public class GraphicalSurveySummaryExporter extends SurveySummaryExporter {
     @Override
     public void export(Map<String, String> criteria, File fileName,
             String serverBase, Map<String, String> options) {
+        final String surveyId = criteria.get(SurveyRestRequest.SURVEY_ID_PARAM).trim();
+
         processOptions(options);
 
         questionsById = new HashMap<Long, QuestionDto>();
+        surveyGroupDto = BulkDataServiceClient.fetchSurveyGroup(surveyId, serverBase,
+                criteria.get("apiKey").trim());
         this.serverBase = serverBase;
         boolean useQuestionId = "true".equals(options.get("useQuestionId"));
         String from = options.get("from");
         String to = options.get("to");
         String limit = options.get("maxDataReportRows");
         try {
-            Map<QuestionGroupDto, List<QuestionDto>> questionMap = loadAllQuestions(
-                    criteria.get(SurveyRestRequest.SURVEY_ID_PARAM),
+            Map<QuestionGroupDto, List<QuestionDto>> questionMap = loadAllQuestions(surveyId,
                     performGeoRollup, serverBase, criteria.get("apiKey"));
             if (questionMap != null) {
                 for (List<QuestionDto> qList : questionMap.values()) {

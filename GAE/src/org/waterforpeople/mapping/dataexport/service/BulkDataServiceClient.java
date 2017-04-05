@@ -41,6 +41,9 @@ import java.util.zip.GZIPInputStream;
 
 import org.apache.commons.codec.binary.Base64;
 import org.apache.log4j.Logger;
+import org.codehaus.jackson.JsonNode;
+import org.codehaus.jackson.map.ObjectMapper;
+import org.codehaus.jackson.type.TypeReference;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -78,6 +81,7 @@ public class BulkDataServiceClient {
     public static final String RESPONSE_KEY = "dtoList";
     private static final String SURVEY_SERVLET_PATH = "/surveyrestapi";
     private static final String DEVICE_FILES_SERVLET_PATH = "/devicefilesrestapi?action=";
+    private static final ObjectMapper JSON_RESPONSE_PARSER = new ObjectMapper();
 
     /**
      * lists all responses from the server for a surveyInstance submission as a map of values keyed
@@ -485,6 +489,42 @@ public class BulkDataServiceClient {
                 + SurveyRestRequest.LIST_GROUP_ACTION + "&"
                 + SurveyRestRequest.SURVEY_ID_PARAM + "=" + surveyId, true,
                 apiKey));
+    }
+
+    /**
+     * Fetch a single SurveyGroup based for the surveyId provided
+     *
+     * @param surveyId
+     * @param serverBase
+     * @param apiKey
+     * @return
+     * @throws Exception
+     */
+    public static SurveyGroupDto fetchSurveyGroup(String surveyId, String serverBase,
+            String apiKey) {
+        SurveyGroupDto surveyGroupDto = null;
+        try {
+            final String surveyGroupResponse = fetchDataFromServer(
+                    serverBase + SURVEY_SERVLET_PATH, "action="
+                            + SurveyRestRequest.GET_SURVEY_GROUP_ACTION + "&"
+                            + SurveyRestRequest.SURVEY_ID_PARAM + "="
+                            + surveyId, true, apiKey);
+
+            log.debug("response: " + surveyGroupResponse);
+
+            final JsonNode surveyGroupListNode = JSON_RESPONSE_PARSER.readTree(surveyGroupResponse)
+                    .get("dtoList");
+            final List<SurveyGroupDto> surveyGroupList = JSON_RESPONSE_PARSER.readValue(
+                    surveyGroupListNode, new TypeReference<List<SurveyGroupDto>>() {
+                    });
+            if (surveyGroupList != null && !surveyGroupList.isEmpty()) {
+                surveyGroupDto = surveyGroupList.get(0);
+            }
+        } catch (Exception e) {
+            log.error(e);
+        }
+
+        return surveyGroupDto;
     }
 
     /**
