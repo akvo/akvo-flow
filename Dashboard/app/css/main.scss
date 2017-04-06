@@ -1029,6 +1029,11 @@ table.dataTable {
                     padding: 9px 1em 9px 1em;
                     text-align: center;
                     font-weight: normal;
+                    width: 15%;
+
+                    &:last-of-type {
+                        width: 40%;
+                    }
                 }
             }
         }
@@ -1041,6 +1046,14 @@ table.dataTable {
 
             tr {
                 width: 100%;
+
+                td {
+                    width: 15%;
+
+                    &:last-of-type {
+                        width: 40%;
+                    }
+                }
             }
         }
     }
