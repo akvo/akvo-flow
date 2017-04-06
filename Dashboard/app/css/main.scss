@@ -244,42 +244,6 @@ a.btn {
     }
 }
 
-a.addBtn {
-    display: inline-block;
-    color: white;
-    background: rgba($flowAnchorLink, 1) url(../images/IconPlusWhite.svg) 2px center no-repeat;
-    padding: 8px 7px 13px 25px;
-    border-radius: 3px;
-    -webkit-background-size: 25px 45px;
-    background-size: 25px 45px;
-    -webkit-transition: color 0.2s ease-in, background-color 0.2s ease-in;
-    transition: color 0.2s ease-in, background-color 0.2s ease-in;
-}
-
-a.addBtn:hover {
-    color: white;
-    background: rgba($flowAnchorLinkHover, 1) url(../images/IconPlusWhite.svg) 2px center no-repeat;
-    -webkit-background-size: 25px 45px;
-    background-size: 25px 45px;
-}
-
-a.importBtn {
-    color: white;
-    padding: 8px 7px 13px 25px;
-    border-radius: 3px;
-    background: rgba($flowAnchorLink, 1) url(../images/IconImportWhite.svg) 2px center no-repeat;
-    -webkit-background-size: 25px 45px;
-    background-size: 25px 45px;
-    -webkit-transition: color 0.2s ease-in, background-color 0.2s ease-in;
-    transition: color 0.2s ease-in, background-color 0.2s ease-in;
-
-    &:hover {
-        background: rgba($flowAnchorLinkHover, 1) url(../images/IconImportWhite.svg) 2px center no-repeat;
-        -webkit-background-size: 25px 45px;
-        background-size: 25px 45px;
-    }
-}
-
 a, a:link, a:visited {
     outline: none;
     color: $flowAnchorLink;
@@ -666,25 +630,18 @@ header.top {
 
 /* Top navigation styles
 --------------------------------------------- */
-@mixin bgDetails {
-    background-repeat: no-repeat;
-    background-position: center 5px;
-    -webkit-background-size: 22px auto;
-    background-size: 22px auto;
-}
 
-nav.appNav {
+/* nav.appNav {
     ul {
         margin-left: 155px;
 
         li {
             float: left;
-            margin-right: 10px;
-            margin-top: 15px;
+            margin: 0px 10px 0 0;
 
             a {
-                padding: 25px 5px 5px 5px;
-                font-size: 0.85em;
+                padding: 7px 5px;
+                display: block;
             }
 
             &.current {
@@ -692,231 +649,10 @@ nav.appNav {
                     color: $akvoFlowOrange;
                 }
             }
-
-            &.navHome {
-                a {
-                    background: url(../images/topnavDashboards.svg);
-
-                    @include bgDetails;
-
-                    &:hover {
-                        background: url(../images/topnavDashboardsOrange.svg);
-
-                        @include bgDetails;
-                    }
-                }
-
-                &.current {
-                    a {
-                        background: url(../images/topnavDashboardsOrange.svg);
-
-                        @include bgDetails;
-                    }
-                }
-            }
-
-            &.navMessages {
-                a {
-                    background: url(../images/topnavMessages.svg);
-
-                    @include bgDetails;
-
-                    &:hover {
-                        background: url(../images/topnavMessagesOrange.svg);
-
-                        @include bgDetails;
-                    }
-                }
-
-                &.current {
-                    a {
-                        background: url(../images/topnavMessagesOrange.svg);
-
-                        @include bgDetails;
-                    }
-                }
-            }
-
-            &.navData {
-                a {
-                    background: url(../images/topnavData.svg);
-
-                    @include bgDetails;
-
-                    &:hover {
-                        background: url(../images/topnavDataOrange.svg);
-
-                        @include bgDetails;
-                    }
-                }
-
-                &.current {
-                    a {
-                        background: url(../images/topnavDataOrange.svg);
-
-                        @include bgDetails;
-                    }
-                }
-            }
-
-            &.navDashboards {
-                a {
-                    background: url(../images/topnavDashboards.svg);
-
-                    @include bgDetails;
-
-                    &:hover {
-                        background: url(../images/topnavDashboardsOrange.svg);
-
-                        @include bgDetails;
-                    }
-                }
-
-                &.current {
-                    a {
-                        background: url(../images/topnavDashboardsOrange.svg);
-
-                        @include bgDetails;
-                    }
-                }
-            }
-
-            &.navMaps {
-                a {
-                    background: url(../images/topnavMaps.svg);
-
-                    @include bgDetails;
-
-                    &:hover {
-                        background: url(../images/topnavMapsOrange.svg);
-
-                        @include bgDetails;
-                    }
-                }
-
-                &.current {
-                    a {
-                        background: url(../images/topnavMapsOrange.svg);
-
-                        @include bgDetails;
-                    }
-                }
-            }
-
-            &.navDevices {
-                a {
-                    background: url(../images/topnavDevices.svg);
-
-                    @include bgDetails;
-
-                    &:hover {
-                        background: url(../images/topnavDevicesOrange.svg);
-
-                        @include bgDetails;
-                    }
-                }
-
-                &.current {
-                    a {
-                        background: url(../images/topnavDevicesOrange.svg);
-
-                        @include bgDetails;
-                    }
-                }
-            }
-
-            &.navUsers {
-                a {
-                    background: url(../images/topnavUsers.svg);
-
-                    @include bgDetails;
-
-                    &:hover {
-                        background: url(../images/topnavUsersOrange.svg);
-
-                        @include bgDetails;
-                    }
-                }
-
-                &.current {
-                    a {
-                        background: url(../images/topnavUsersOrange.svg);
-
-                        @include bgDetails;
-                    }
-                }
-            }
-
-            &.navReports {
-                a {
-                    background: url(../images/topnavReports.svg);
-
-                    @include bgDetails;
-
-                    &:hover {
-                        background: url(../images/topnavReportsOrange.svg);
-
-                        @include bgDetails;
-                    }
-                }
-
-                &.current {
-                    a {
-                        background: url(../images/topnavReportsOrange.svg);
-
-                        @include bgDetails;
-                    }
-                }
-            }
-
-            &.navAdmin {
-                a {
-                    background: url(../images/topnavAdmin.svg);
-
-                    @include bgDetails;
-
-                    &:hover {
-                        background: url(../images/topnavAdminOrange.svg);
-
-                        @include bgDetails;
-                    }
-                }
-
-                &.current {
-                    a {
-                        background: url(../images/topnavAdminOrange.svg);
-
-                        @include bgDetails;
-                    }
-                }
-            }
-
-            &.navSurveys {
-                a {
-                    background: url(../images/topnavSurveys.svg);
-
-                    @include bgDetails;
-
-                    &:hover {
-                        background: url(../images/topnavSurveysOrange.svg);
-
-                        @include bgDetails;
-                    }
-                }
-
-                &.current {
-                    a {
-                        background: url(../images/topnavSurveysOrange.svg);
-
-                        @include bgDetails;
-                    }
-                }
-            }
         }
     }
-}
+} */
 
-/*
 nav.appNav {
     position: absolute;
     top: 0px;
@@ -960,7 +696,7 @@ nav.appNav {
             }
         }
     }
-} */
+}
 
 /* page structure
 --------------------------------------------- */
@@ -5577,8 +5313,6 @@ table.surveyDetails {
         }
 
         .noCascade {
-            padding-top: 45px;
-            background: url(../images/IconCascadeWhite.png) center top no-repeat;
             text-align: center;
             width: 90%;
             margin: 0 auto 20px auto;
@@ -5980,68 +5714,6 @@ ul.cascadeAction {
 
         a {
             @include btnOutline($flowAnchorLink);
-
-            padding-left: 30px;
-
-            &.saveNewSurvey {
-                background: rgba(32, 32, 36, 0.5) url(../images/IconSave.svg) left center no-repeat;
-                background-size: 40px 40px;
-            }
-
-            &.previewNewSurvey {
-                background: rgba(32, 32, 36, 0.5) url(../images/IconPreview.svg) left center no-repeat;
-                background-size: 40px 40px;
-            }
-
-            &.publishNewSurvey {
-                background: rgba(32, 32, 36, 0.5) url(../images/IconPublish.svg) left center no-repeat;
-                background-size: 40px 40px;
-            }
-
-            &.deleteSurvey {
-                background: rgba(32, 32, 36, 0.5) url(../images/IconDelete.svg) left center no-repeat;
-                background-size: 40px 40px;
-            }
-
-            &.saveNewSurvey:hover {
-                background: rgba(32, 32, 36, 1) url(../images/IconSaveOrange.svg) left center no-repeat;
-                background-size: 40px 40px;
-            }
-
-            &.previewNewSurvey:hover {
-                background: rgba(32, 32, 36, 1) url(../images/IconPreviewOrange.svg) left center no-repeat;
-                background-size: 40px 40px;
-            }
-
-            &.publishNewSurvey:hover {
-                background: rgba(32, 32, 36, 1) url(../images/IconPublishOrange.svg) left center no-repeat;
-                background-size: 40px 40px;
-            }
-
-            &.deleteSurvey:hover {
-                background: rgba(32, 32, 36, 1) url(../images/IconDeleteOrange.svg) left center no-repeat;
-                background-size: 40px 40px;
-            }
-
-            &.manageNotifications {
-                background: rgba(32, 32, 36, 0.5) url(../images/IconNotif.svg) left center no-repeat;
-                background-size: 40px 40px;
-            }
-
-            &.manageNotifications:hover {
-                background: rgba(32, 32, 36, 1) url(../images/IconNotifOrange.svg) left center no-repeat;
-                background-size: 40px 40px;
-            }
-
-            &.manageTranslations {
-                background: rgba(32, 32, 36, 0.5) url(../images/IconTranslate.svg) left center no-repeat;
-                background-size: 40px 40px;
-            }
-
-            &.manageTranslations:hover {
-                background: rgba(32, 32, 36, 1) url(../images/IconTranslateOrange.svg) left center no-repeat;
-                background-size: 40px 40px;
-            }
         }
     }
 }
