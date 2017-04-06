@@ -1014,10 +1014,11 @@ table.dataTable {
     text-align: left;
     color: rgba($tableHeaderGrey, 0.8);
     font-size: 0.9em;
-    table-layout: fixed;
-    white-space: nowrap;
 
     &.headerFixed {
+        table-layout: fixed;
+        white-space: wrap !important;
+
         thead {
             width: 100%;
 
@@ -1025,14 +1026,23 @@ table.dataTable {
                 display: flex;
                 position: relative;
 
+                &:after {
+                    content: '';
+                    overflow-y: scroll;
+                    visibility: hidden;
+                    height: 0;
+                }
+
                 th {
+                    display: block;
                     padding: 9px 1em 9px 1em;
                     text-align: center;
                     font-weight: normal;
-                    width: 15%;
+                    flex: 1 auto;
+                    width: 1px;
 
                     &:last-of-type {
-                        width: 40%;
+                        min-width: 30%;
                     }
                 }
             }
@@ -1041,17 +1051,20 @@ table.dataTable {
         tbody {
             width: 100%;
             display: block;
-            overflow: auto;
+            overflow-y: auto;
             height: calc(100vh - 220px);
 
             tr {
                 width: 100%;
+                display: flex;
 
                 td {
-                    width: 15%;
+                    flex: 1 auto;
+                    width: 1px;
+                    word-wrap: break-word;
 
                     &:last-of-type {
-                        width: 40%;
+                        min-width: 30%;
                     }
                 }
             }
