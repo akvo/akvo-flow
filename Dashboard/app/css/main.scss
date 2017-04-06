@@ -2190,9 +2190,15 @@ section.topBar {
 
                         .itemMoved {
                             color: $akvoDarkBlue;
-                            font-weight: bold;
                             margin-right: 5px;
                             margin-left: 5px;
+                            display: inline-block;
+                            max-width: 200px;
+                            line-height: initial;
+                            top: 3px;
+                            position: relative;
+
+                            @include noWrapTxt;
                         }
                     }
                 }
@@ -2200,11 +2206,16 @@ section.topBar {
 
             &.actionHighLighted {
                 border: 1px solid rgb(241, 242, 242);
+                margin-top: 0;
 
                 li {
                     &:first-child {
                         float: left;
-                        margin: 10px 0 0 10px;
+                        margin: 14px 0 0 10px;
+                    }
+
+                    p {
+                        span {}
                     }
                 }
             }
