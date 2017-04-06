@@ -1041,6 +1041,10 @@ table.dataTable {
                     flex: 1 auto;
                     width: 1px;
 
+                    &:first-of-type, &:nth-of-type(2) {
+                        max-width: 12%;
+                    }
+
                     &:last-of-type {
                         min-width: 30%;
                     }
@@ -1062,6 +1066,11 @@ table.dataTable {
                     flex: 1 auto;
                     width: 1px;
                     word-wrap: break-word;
+                    vertical-align: middle;
+
+                    &:first-of-type, &:nth-of-type(2) {
+                        max-width: 12%;
+                    }
 
                     &:last-of-type {
                         min-width: 30%;
