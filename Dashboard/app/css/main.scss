@@ -436,19 +436,21 @@ input[type="submit"] {
     padding: 1em 2% 1.5em 2%;
     width: 96%;
 
-    a {
-        font-weight: bold;
-        font-size: 1.2em;
-        display: inline-block;
-        padding: 0.5em 1em 1em 1em;
+    li {
+        a {
+            font-weight: bold;
+            font-size: 1.2em;
+            display: inline-block;
+            padding: 0.5em 1em 1em 1em;
+        }
 
-        .prevBtn {
+        &.prevBtn {
             display: inline-block;
             text-align: left;
             width: 49%;
         }
 
-        .nextBtn {
+        &.nextBtn {
             display: inline-block;
             text-align: right;
             width: 49%;
