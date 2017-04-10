@@ -76,6 +76,7 @@ import org.waterforpeople.mapping.serialization.response.MediaResponse;
 
 import com.gallatinsystems.common.util.JFreechartChartUtil;
 import com.gallatinsystems.survey.dao.CaddisflyResourceDao;
+import com.gallatinsystems.survey.domain.Question.Type;
 
 import static com.gallatinsystems.common.Constants.*;
 
@@ -309,7 +310,6 @@ public class GraphicalSurveySummaryExporter extends SurveySummaryExporter {
     private boolean performGeoRollup;
     private boolean generateCharts;
     private Map<Long, QuestionDto> questionsById;
-    private SurveyGroupDto surveyGroupDto;
     private boolean lastCollection = false;
     private static final ObjectMapper OBJECT_MAPPER = new ObjectMapper();
     private CaddisflyResourceDao caddisflyResourceDao = new CaddisflyResourceDao();
@@ -332,10 +332,9 @@ public class GraphicalSurveySummaryExporter extends SurveySummaryExporter {
         final String surveyId = criteria.get(SurveyRestRequest.SURVEY_ID_PARAM).trim();
 
         processOptions(options);
+        String apiKey = criteria.get("apiKey").trim();
 
         questionsById = new HashMap<Long, QuestionDto>();
-        surveyGroupDto = BulkDataServiceClient.fetchSurveyGroup(surveyId, serverBase,
-                criteria.get("apiKey").trim());
         this.serverBase = serverBase;
         boolean useQuestionId = "true".equals(options.get("useQuestionId"));
         String from = options.get("from");
@@ -343,30 +342,27 @@ public class GraphicalSurveySummaryExporter extends SurveySummaryExporter {
         String limit = options.get("maxDataReportRows");
         try {
             Map<QuestionGroupDto, List<QuestionDto>> questionMap = 
-                    loadAllQuestions(surveyId, performGeoRollup, serverBase, criteria.get("apiKey"));
-            if (questionMap != null) {
+                    loadAllQuestions(surveyId, performGeoRollup, serverBase, apiKey);
+            if (questionMap != null && questionMap.size() > 0) {
+                if (!DEFAULT_LOCALE.equals(locale)) {
+                    // we are using some other locale; need to check for translations.
+                    // also gets option and cascade names for columns
+                    loadFullQuestions(questionMap, apiKey); //modifies questionMap
+                }
+                else if (useQuestionId) {
+                    //optimised case: get minimal option and cascade info, no translations
+                    loadQuestionOptions(
+                            surveyId, serverBase, questionMap, apiKey);
+                    loadCascadeQuestionDetails(questionMap, apiKey); //modifies questionMap
+                }
+                //questionMap is now stable; make the id-to-dto map
                 for (List<QuestionDto> qList : questionMap.values()) {
                     for (QuestionDto q : qList) {
                         questionsById.put(q.getKeyId(), q);
                     }
-
-                    if (questionMap.size() > 0) {
-                        if (!DEFAULT_LOCALE.equals(locale)) {
-                            // we are using some other locale;
-                            // need to check for translations.also get options
-                            loadFullQuestions(questionMap, criteria.get("apiKey"));
-                        }
-                        else if (useQuestionId) {
-                            //optimised case: get minimal option info, no translations
-                            loadQuestionOptions(
-                                    surveyId, serverBase, questionMap, criteria.get("apiKey") );
-                        }
-                    }
                 }
-            }
 
-            Workbook wb = new SXSSFWorkbook(100);
-            if (questionMap != null && questionMap.size() > 0) {
+                Workbook wb = new SXSSFWorkbook(100);
 
                 headerStyle = wb.createCellStyle();
                 headerStyle.setAlignment(CellStyle.ALIGN_CENTER);
@@ -1804,15 +1800,15 @@ public class GraphicalSurveySummaryExporter extends SurveySummaryExporter {
      * call the server to augment the data already loaded in each QuestionDto in the map passed in.
      *
      * @param questionMap
+     * @param apiKey
      */
     private void loadFullQuestions(
             Map<QuestionGroupDto, List<QuestionDto>> questionMap, String apiKey) {
         for (List<QuestionDto> questionList : questionMap.values()) {
             for (int i = 0; i < questionList.size(); i++) {
                 try {
-                    QuestionDto newQ = BulkDataServiceClient
-                            .loadQuestionDetails(serverBase, questionList
-                                    .get(i).getKeyId(), apiKey);
+                    QuestionDto newQ = BulkDataServiceClient.loadQuestionDetails(
+                            serverBase, questionList.get(i).getKeyId(), apiKey);
                     if (newQ != null) {
                         questionList.set(i, newQ);
                     }
@@ -1827,38 +1823,63 @@ public class GraphicalSurveySummaryExporter extends SurveySummaryExporter {
     /**
      * call the server to augment the data already loaded in each QuestionDto in the map passed in.
      *
-     * @param questionMap
+     * @param questionMap questionDtos keyed by id
      * @param apiKey
      */
     private void loadQuestionOptions(String surveyId, String serverBase, Map<QuestionGroupDto, List<QuestionDto>> questionMap, String apiKey) {
-        for (List<QuestionDto> questionList : questionMap.values()) {
-            for (QuestionDto q : questionList) {
-                if (q.getQuestionType() == QuestionType.OPTION) {
-                    try {
-                        //Make an OptionContainer
-                        OptionContainerDto container = new OptionContainerDto();
+        try {
+            Map<Long, QuestionDto> questionsById = new HashMap<Long, QuestionDto>();;
+            for (List<QuestionDto> qList : questionMap.values()) {
+                for (QuestionDto q : qList) {
+                    questionsById.put(q.getKeyId(), q);
+                }
+            }
+
+            List<QuestionOptionDto> optList =
+                    BulkDataServiceClient.fetchSurveyQuestionOptions(surveyId, serverBase, apiKey);
+            //add them to the container of their question
+            for (QuestionOptionDto o:optList) {
+                QuestionDto q = questionsById.get(o.getQuestionId());
+                if (q != null) {
+                    //May need to create an OptionContainer to hold them
+                    OptionContainerDto container = q.getOptionContainerDto();
+                    if (container == null) {
+                        container = new OptionContainerDto();
                         q.setOptionContainerDto(container);
-                        //make a (trivial)list of questions
-                        List<Long> qList = new ArrayList<>(1);
-                        qList.add(q.getKeyId());
-                        //fetch the options for it
-                        Map<Long, List<QuestionOptionDto>> optMap = BulkDataServiceClient.fetchOptionNodes(surveyId, serverBase, apiKey, qList);
-                        //add them to their container
-                        for (List<QuestionOptionDto> oList : optMap.values()) { 
-                            for (QuestionOptionDto opt : oList) {
-                                container.addQuestionOption(opt);
-                            }
+                    }
+                    container.addQuestionOption(o);
+                }
+            }
+        } catch (Exception e) {
+            System.err.println("Could not fetch question options");
+            e.printStackTrace(System.err);
+        }
+    }
+
+    /**
+     * call the server to augment the data already loaded in each QuestionDto in the map passed in.
+     *
+     * @param questionMap
+     */
+    private void loadCascadeQuestionDetails(
+            Map<QuestionGroupDto, List<QuestionDto>> questionMap, String apiKey) {
+        for (List<QuestionDto> questionList : questionMap.values()) {
+            for (int i = 0; i < questionList.size(); i++) {
+                if (questionList.get(i).getType() == QuestionType.CASCADE) {
+                    try {
+                        QuestionDto newQ = BulkDataServiceClient.loadQuestionDetails(
+                                serverBase, questionList.get(i).getKeyId(), apiKey);
+                        if (newQ != null) {
+                            questionList.set(i, newQ);
                         }
                     } catch (Exception e) {
-                        System.err.println("Could not fetch question options");
+                        System.err.println("Could not fetch question details");
                         e.printStackTrace(System.err);
                     }
                 }
             }
         }
-    }
-
-    /**
+    }    /**
      * uses the locale and the translation map passed in to determine what value to use for the
      * string
      *
@@ -1915,7 +1936,7 @@ public class GraphicalSurveySummaryExporter extends SurveySummaryExporter {
         options.put(LOCALE_OPT, "en");
         // options.put(TYPE_OPT, RAW_ONLY_TYPE);
         options.put(LAST_COLLECTION_OPT, "false");
-        options.put("useQuestionId", "false");
+        options.put("useQuestionId", "true");//STELLAN
         options.put("email", "email@example.com");
         options.put("from", null);
         options.put("to", null);

@@ -443,9 +443,20 @@ public class BulkDataServiceClient {
                 true, apiKey));
     }
 
+    /**
+     * gets question options for a list of questions
+     * @param surveyId
+     * @param serverBase
+     * @param apiKey
+     * @param questionIds
+     * @return
+     * @throws Exception
+     */
     public static Map<Long, List<QuestionOptionDto>> fetchOptionNodes(String surveyId, String
             serverBase, String apiKey, List<Long> questionIds) throws Exception {
         Map<Long, List<QuestionOptionDto>> result = new HashMap<>();
+        //this loop is inefficient when there are many option questions (possibly hundreds)
+        //if all options for a survey are needed, use fetchSurveyQuestionOptions()
         for (Long questionId : questionIds) {
             List<QuestionOptionDto> questionOptions =
                     parseQuestionOptions(fetchDataFromServer(serverBase + SURVEY_SERVLET_PATH,
@@ -455,6 +466,25 @@ public class BulkDataServiceClient {
             result.put(questionId, questionOptions);
         }
         return result;
+    }
+
+    /**
+     * gets all question options for an entire survey
+     * @param surveyId
+     * @param serverBase
+     * @param apiKey
+     * @return list of option nodes
+     * @throws Exception
+     */
+    public static List<QuestionOptionDto> fetchSurveyQuestionOptions(
+            String surveyId, String serverBase, String apiKey) throws Exception {
+        return parseQuestionOptions(
+                fetchDataFromServer(serverBase + SURVEY_SERVLET_PATH,
+                                            "?action="
+                                            + SurveyRestRequest.LIST_SURVEY_QUESTION_OPTIONS_ACTION + "&"
+                                            + SurveyRestRequest.SURVEY_ID_PARAM + "=" + surveyId,
+                                    true,
+                                    apiKey));
     }
 
     /**
@@ -1124,6 +1154,7 @@ public class BulkDataServiceClient {
                     JSONObject json = jsonArray.getJSONObject(i);
                     if (json != null) {
                         QuestionOptionDto dto = new QuestionOptionDto();
+                        dto.setQuestionId(json.getLong("questionId"));
                         dto.setText(json.optString("text", null));
                         dto.setCode(json.optString("code", null));
                         dtoList.add(dto);

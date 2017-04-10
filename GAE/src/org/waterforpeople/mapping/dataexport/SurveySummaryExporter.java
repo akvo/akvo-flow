@@ -213,17 +213,27 @@ public class SurveySummaryExporter extends AbstractDataExporter {
 
     }
 
+    /**
+     * loads just enough question data to generate the simplest report
+     * @param surveyId
+     * @param performRollups
+     * @param serverBase
+     * @param apiKey
+     * @return
+     * @throws Exception
+     */
     protected Map<QuestionGroupDto, List<QuestionDto>> loadAllQuestions(
             String surveyId, boolean performRollups, String serverBase, String apiKey)
             throws Exception {
         Map<QuestionGroupDto, List<QuestionDto>> questionMap = new HashMap<QuestionGroupDto, List<QuestionDto>>();
+        //TODO: fetching in nested loops is inefficient, but we need the ordering of groups and questions in them 
         orderedGroupList = fetchQuestionGroups(serverBase, surveyId, apiKey);
         rollupOrder = new ArrayList<QuestionDto>();
         for (QuestionGroupDto group : orderedGroupList) {
             List<QuestionDto> questions = fetchQuestions(serverBase, group.getKeyId(), apiKey);
+
             if (performRollups && questions != null) {
                 for (QuestionDto q : questions) {
-
                     for (int i = 0; i < ROLLUP_QUESTIONS.length; i++) {
                         if (ROLLUP_QUESTIONS[i].equalsIgnoreCase(q.getText())) {
                             rollupOrder.add(q);

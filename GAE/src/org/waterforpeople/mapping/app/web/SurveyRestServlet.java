@@ -174,6 +174,8 @@ public class SurveyRestServlet extends AbstractRestApiServlet {
                     .getQuestionGroupId())));
         } else if (SurveyRestRequest.LIST_QUESTION_OPTIONS_ACTION.equals(surveyReq.getAction())) {
             response.setDtoList(listQuestionOptions(surveyReq.getQuestionId()));
+        } else if (SurveyRestRequest.LIST_SURVEY_QUESTION_OPTIONS_ACTION.equals(surveyReq.getAction())) {
+            response.setDtoList(listSurveyQuestionOptions(surveyReq.getSurveyId()));
         } else if (SurveyRestRequest.GET_SUMMARY_ACTION.equals(surveyReq
                 .getAction())) {
             response.setDtoList(listSummaries(new Long(surveyReq
@@ -405,6 +407,28 @@ public class SurveyRestServlet extends AbstractRestApiServlet {
             }
         }
 
+        return dtoList;
+    }
+
+    /**
+     * lists all question options in the entire survey
+     * @param surveyId
+     * @return
+     */
+    private List<QuestionOptionDto> listSurveyQuestionOptions(Long surveyId) {
+
+        List<QuestionOptionDto> dtoList = new ArrayList<>();
+        List<Question> questions = qDao.listQuestionByType(surveyId, Type.OPTION);
+        for (Question question : questions) {
+            List<QuestionOption> options = qoDao.listByQuestionId(question.getKey().getId());
+            if (options != null) {
+                for (QuestionOption option : options) {
+                    QuestionOptionDto dto = new QuestionOptionDto();
+                    DtoMarshaller.copyToDto(option, dto);
+                    dtoList.add(dto);
+                }
+            }
+        }
         return dtoList;
     }
 
