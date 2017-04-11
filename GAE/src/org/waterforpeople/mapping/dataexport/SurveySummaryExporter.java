@@ -124,38 +124,6 @@ public class SurveySummaryExporter extends AbstractDataExporter {
     @Override
     public void export(Map<String, String> criteria, File fileName,
             String serverBase, Map<String, String> options) {
-        InputDialog dia = new InputDialog();
-        PrintWriter pw = null;
-        try {
-            pw = new PrintWriter(fileName);
-            writeHeader(pw, dia.getDoRollup());
-            Map<QuestionGroupDto, List<QuestionDto>> questionMap = loadAllQuestions(
-                    criteria.get(SurveyRestRequest.SURVEY_ID_PARAM), true,
-                    serverBase, criteria.get("apiKey"));
-            if (questionMap.size() > 0) {
-                SummaryModel model = buildDataModel(
-                        criteria.get(SurveyRestRequest.SURVEY_ID_PARAM),
-                        serverBase, criteria.get("apiKey"));
-                for (QuestionGroupDto group : orderedGroupList) {
-                    for (QuestionDto question : questionMap.get(group)) {
-                        pw.print(model.outputQuestion(group.getDisplayName()
-                                .trim(), question.getText().trim(), question
-                                .getKeyId().toString(), dia.getDoRollup()));
-                    }
-                }
-            } else {
-                log.info("No questions for survey: "
-                        + criteria.get(SurveyRestRequest.SURVEY_ID_PARAM) + " - instance: "
-                        + serverBase);
-            }
-
-        } catch (Exception e) {
-            e.printStackTrace();
-        } finally {
-            if (pw != null) {
-                pw.close();
-            }
-        }
     }
 
     protected SummaryModel buildDataModel(String surveyId, String serverBase, String apiKey)
@@ -268,14 +236,6 @@ public class SurveySummaryExporter extends AbstractDataExporter {
         return questionMap;
     }
 
-    private void writeHeader(PrintWriter pw, boolean isRolledUp) {
-        if (isRolledUp) {
-            pw.println("Question Group\tQuestion\tSector\tResponse\tFrequency\tPercent\tMean\tMedian\tMode\tStd Dev\tStd Err\tRange");
-        } else {
-            pw.println("Question Group\tQuestion\tResponse\tFrequency\tPercent\tMean\tMedian\tMode\tStd Dev\tStd Err\tRange");
-        }
-    }
-
     protected List<QuestionDto> fetchQuestions(String serverBase, Long groupId, String apiKey)
             throws Exception {
 
@@ -355,6 +315,12 @@ public class SurveySummaryExporter extends AbstractDataExporter {
                                 && !"null".equals(json.getString("questionId"))) {
                             dto.setQuestionId(json.getString("questionId"));
                         }
+                        if (!json.isNull("questionGroupId")) {
+                            dto.setQuestionGroupId(json.getLong("questionGroupId"));
+                        }
+                        if (!json.isNull("order")) {
+                            dto.setOrder(json.getInt("order"));
+                        }
                         if (!json.isNull("localeNameFlag")) {
                             dto.setLocaleNameFlag(json.getBoolean("localeNameFlag"));
                         }
@@ -396,50 +362,6 @@ public class SurveySummaryExporter extends AbstractDataExporter {
         return null;
     }
 
-    protected class InputDialog extends JDialog implements ActionListener {
-
-        private static final long serialVersionUID = -2875321125734363515L;
-
-        private JButton yesButton;
-        private JButton noButton;
-        private JLabel label;
-        private boolean doRollup;
-
-        public InputDialog() {
-            super();
-            yesButton = new JButton("Yes");
-            noButton = new JButton("No");
-            label = new JLabel("Roll-up by Sector/Cell?");
-
-            JPanel contentPane = new JPanel();
-            contentPane.add(label);
-            JPanel buttonPane = new JPanel(new GridLayout(1, 2));
-            buttonPane.add(yesButton);
-            buttonPane.add(noButton);
-            contentPane.add(buttonPane);
-            yesButton.addActionListener(this);
-            noButton.addActionListener(this);
-            setContentPane(contentPane);
-            setSize(300, 200);
-            setTitle("Select Export Options");
-            setModal(true);
-            setVisible(true);
-        }
-
-        @Override
-        public void actionPerformed(ActionEvent e) {
-            if (e.getSource() == noButton) {
-                doRollup = false;
-            } else {
-                doRollup = true;
-            }
-            setVisible(false);
-        }
-
-        public boolean getDoRollup() {
-            return doRollup;
-        }
-    }
 
     protected class SummaryModel {
         // contains the map of questionIds to all valid responses

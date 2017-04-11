@@ -1,5 +1,5 @@
 /*
- *  Copyright (C) 2010-2015 Stichting Akvo (Akvo Foundation)
+ *  Copyright (C) 2010-2017 Stichting Akvo (Akvo Foundation)
  *
  *  This file is part of Akvo FLOW.
  *
@@ -487,5 +487,10 @@ public class QuestionDto extends BaseDto implements NamedObject {
 
     public void setCaddisflyResourceUuid(String caddisflyResourceUuid) {
         this.caddisflyResourceUuid = caddisflyResourceUuid;
+    }
+    
+    @Override
+    public String toString() {
+      return text + "(" + type + ")"; 
     }
 }
