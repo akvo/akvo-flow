@@ -16,13 +16,15 @@
 
 package org.waterforpeople.mapping.app.web.dto;
 
+import org.waterforpeople.mapping.domain.SurveyInstance;
+
 import com.gallatinsystems.framework.rest.RestResponse;
 
 public class InstanceDataDto extends RestResponse {
 
     private static final long serialVersionUID = -1944714927631560507L;
 
-    public SurveyInstanceDto surveyInstanceData;
+    public SurveyInstance surveyInstanceData;
 
     public String latestApprovalStatus;
 }

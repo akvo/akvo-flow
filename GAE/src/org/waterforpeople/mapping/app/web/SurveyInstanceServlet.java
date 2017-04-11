@@ -1,5 +1,5 @@
 /*
- *  Copyright (C) 2010-2012 Stichting Akvo (Akvo Foundation)
+ *  Copyright (C) 2010-2017 Stichting Akvo (Akvo Foundation)
  *
  *  This file is part of Akvo FLOW.
  *
@@ -20,7 +20,8 @@ import java.util.List;
 
 import javax.servlet.http.HttpServletRequest;
 
-import org.json.JSONObject;
+import org.codehaus.jackson.map.ObjectMapper;
+import org.waterforpeople.mapping.app.web.dto.InstanceDataDto;
 import org.waterforpeople.mapping.app.web.dto.SurveyInstanceRequest;
 import org.waterforpeople.mapping.app.web.dto.SurveyInstanceResponse;
 import org.waterforpeople.mapping.dao.QuestionAnswerStoreDao;
@@ -32,14 +33,19 @@ import com.gallatinsystems.framework.rest.AbstractRestApiServlet;
 import com.gallatinsystems.framework.rest.RestRequest;
 import com.gallatinsystems.framework.rest.RestResponse;
 
+import static org.waterforpeople.mapping.app.web.dto.SurveyInstanceRequest.*;
+
 public class SurveyInstanceServlet extends AbstractRestApiServlet {
 
     private static final String UUID = "UUID";
     private static final String GEO = "GEO";
-    /**
-	 * 
-	 */
     private static final long serialVersionUID = -7690514561766005021L;
+    private SurveyInstanceDAO surveyInstanceDao;
+
+    public SurveyInstanceServlet() {
+        setMode(JSON_MODE);
+        surveyInstanceDao = new SurveyInstanceDAO();
+    }
 
     @Override
     protected RestRequest convertRequest() throws Exception {
@@ -53,37 +59,45 @@ public class SurveyInstanceServlet extends AbstractRestApiServlet {
     protected RestResponse handleRequest(RestRequest req) throws Exception {
         SurveyInstanceRequest siReq = (SurveyInstanceRequest) req;
         SurveyInstanceDAO siDao = new SurveyInstanceDAO();
-        QuestionAnswerStoreDao qasDao = new QuestionAnswerStoreDao();
-        if (siReq.getFieldName().equalsIgnoreCase(GEO)) {
-            List<QuestionAnswerStore> qasList = qasDao.listByTypeValue(siReq.getFieldName(),
-                    siReq.getValue());
-            if (qasList != null && qasList.size() > 0) {
-                SurveyInstanceResponse sir = new SurveyInstanceResponse();
-                sir.setSurveyInstanceId(qasList.get(0).getSurveyInstanceId());
-                sir.setCreatedDateTime(qasList.get(0).getCreatedDateTime());
-                return sir;
+
+        if (GET_INSTANCE_DATA_ACTION.equals(siReq.getAction())) {
+            return retrieveInstanceData(siReq.surveyInstanceId);
+        } else {
+            QuestionAnswerStoreDao qasDao = new QuestionAnswerStoreDao();
+            SurveyInstanceResponse sir = new SurveyInstanceResponse();
+            if (GEO.equalsIgnoreCase(siReq.getFieldName())) {
+                List<QuestionAnswerStore> qasList = qasDao.listByTypeValue(siReq.getFieldName(),
+                        siReq.getValue());
+                if (qasList != null && qasList.size() > 0) {
+                    sir.setSurveyInstanceId(qasList.get(0).getSurveyInstanceId());
+                    sir.setCreatedDateTime(qasList.get(0).getCreatedDateTime());
+                }
+            } else if (UUID.equalsIgnoreCase(siReq.getFieldName())) {
+                SurveyInstance si = siDao.findByUUID(siReq.getValue());
+                if (si != null) {
+                    sir.setSurveyInstanceId(si.getKey().getId());
+                    sir.setCreatedDateTime(si.getCreatedDateTime());
+                }
             }
-        } else if (siReq.getFieldName().equalsIgnoreCase(UUID)) {
-            SurveyInstance si = siDao.findByUUID(siReq.getValue());
-            if (si != null) {
-                SurveyInstanceResponse sir = new SurveyInstanceResponse();
-                sir.setSurveyInstanceId(si.getKey().getId());
-                sir.setCreatedDateTime(si.getCreatedDateTime());
-                return sir;
-            }
+            return sir;
         }
-        SurveyInstanceResponse sir = new SurveyInstanceResponse();
-        sir.setSurveyInstanceId(null);
-        sir.setCreatedDateTime(null);
-        return sir;
+    }
+
+    private RestResponse retrieveInstanceData(Long surveyInstanceId) {
+        InstanceDataDto instanceData = new InstanceDataDto();
+        instanceData.surveyInstanceData = surveyInstanceDao.getByKey(surveyInstanceId);
+        instanceData.latestApprovalStatus = retrieveSurveyInstanceApprovalStatus(surveyInstanceId);
+        return instanceData;
+    }
+
+    private String retrieveSurveyInstanceApprovalStatus(Long surveyInstanceId) {
+        return "";
     }
 
     @Override
-    protected void writeOkResponse(RestResponse resp) throws Exception {
+    protected void writeOkResponse(RestResponse response) throws Exception {
         getResponse().setStatus(200);
-        SurveyInstanceResponse sir = (SurveyInstanceResponse) resp;
-        JSONObject result = new JSONObject(sir);
-        getResponse().getWriter().println(result.toString());
+        ObjectMapper jsonMapper = new ObjectMapper();
+        jsonMapper.writeValue(getResponse().getWriter(), response);
     }
-
 }
