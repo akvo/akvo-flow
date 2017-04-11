@@ -1261,12 +1261,12 @@ table.previewList {
 }
 
 th.action {
-    width: 7%;
+    width: 15%;
 }
 
 #assignSurveys .fieldSetWrap fieldset table td.action {
     padding: 0.6em 0 0.6em 3%;
-    width: 7%;
+    width: 15%;
 }
 
 #assignSurveys .fieldSetWrap fieldset.formLeftPanel {
@@ -1580,8 +1580,6 @@ a.FadeIt {
         }
 
         .noForms {
-            padding-top: 45px;
-            background: url(../images/IconFormsBlack.png) center top no-repeat;
             text-align: center;
             width: 90%;
             margin: 0 auto 20px auto;
@@ -1594,18 +1592,13 @@ a.FadeIt {
                 width: calc(98%-30px);
                 border-bottom: thin solid rgb(55, 55, 55);
                 background: rgb(70, 70, 70);
-                background: rgba(255, 255, 255, 0.05) url(../images/IconForms.svg) 2px 11px no-repeat;
-                background-size: 20px 17px;
 
                 &.current {
                     border-bottom: thin solid rgb(55, 55, 55);
-                    background: rgba($flowAnchorLink, 0.25) url(../images/IconFormsWhite.svg) 2px 11px no-repeat;
-                    background-size: 20px 17px;
+                    background: rgba($flowAnchorLink, 0.25);
 
                     a, a:hover {
-                        background: url(../images/carretFolderSelectedWhite.svg) right center no-repeat;
                         color: white;
-                        background-size: 15px 25px;
                     }
                 }
             }
@@ -2098,12 +2091,17 @@ li.aSurvey {
     a {
         display: block;
 
-        h2 {
-            display: inline;
-            color: $flowAnchorLink;
+        &:first-of-type {
+            width: calc(100% - 320px);
 
-            &:hover {
-                color: $flowAnchorLinkHover;
+            h2 {
+                display: inline;
+
+                // color: $flowAnchorLink;
+
+                &:hover {
+                    color: $flowAnchorLinkHover;
+                }
             }
         }
     }
@@ -4856,7 +4854,7 @@ table.surveyDetails {
 
             &.addNewForm {
                 display: table;
-                padding: 8px 8px 8px 31px;
+                padding: 8px 8px;
             }
         }
 
@@ -5597,13 +5595,9 @@ nav.cascadeBreadCrumb {
                     height: inherit;
                     padding: 7px 7px;
                     margin-top: -7px;
-                    background: rgba(32, 32, 36, 0.2);
                     top: 15px;
                     right: 15px;
-
-                    &:hover {
-                        background: rgba(32, 32, 36, 0.2);
-                    }
+                    font-size: 90%;
                 }
 
                 &.editLevel {
@@ -5613,16 +5607,9 @@ nav.cascadeBreadCrumb {
                     height: inherit;
                     padding: 7px 7px;
                     margin-top: -7px;
-
-                    @include border-radius(4px);
-
-                    background: rgba(32, 32, 36, 0.2);
+                    font-size: 90%;
                     top: 15px;
                     right: 80px;
-
-                    &:hover {
-                        background: rgba(32, 32, 36, 0.2);
-                    }
                 }
             }
         }
