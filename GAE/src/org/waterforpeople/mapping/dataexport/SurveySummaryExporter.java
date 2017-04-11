@@ -244,13 +244,13 @@ public class SurveySummaryExporter extends AbstractDataExporter {
         rollupOrder = new ArrayList<QuestionDto>();
         for (QuestionGroupDto group : orderedGroupList) {
             List<QuestionDto> questions = idMap.get(group.getKeyId());
-            questions.sort(new Comparator<QuestionDto>() {
+            Collections.sort(questions, new Comparator<QuestionDto>() {
                 @Override
                 public int compare(QuestionDto o1, QuestionDto o2) {
                     //order should never be null, but accidents happen...
                     int v1 = o1.getOrder() != null ? o1.getOrder() : 0;
                     int v2 = o2.getOrder() != null ? o2.getOrder() : 0;
-                    return v2-v1;
+                    return v1-v2;
                 }
             });
 
