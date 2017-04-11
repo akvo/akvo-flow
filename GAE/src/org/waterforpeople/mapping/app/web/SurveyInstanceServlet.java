@@ -99,13 +99,13 @@ public class SurveyInstanceServlet extends AbstractRestApiServlet {
         instanceData.surveyInstanceData = si;
 
         if (si.getSurveyedLocaleId() != null) {
-            instanceData.latestApprovalStatus = retrieveSurveyInstanceApprovalStatus(si
+            instanceData.latestApprovalStatus = retrieveDataPointApprovalStatus(si
                     .getSurveyedLocaleId());
         }
         return instanceData;
     }
 
-    private String retrieveSurveyInstanceApprovalStatus(Long surveyedLocaleId) {
+    private String retrieveDataPointApprovalStatus(Long surveyedLocaleId) {
         List<DataPointApproval> approvals = approvalDao.listBySurveyedLocaleId(surveyedLocaleId);
         List<Long> approvalStepIds = extractApprovalStepIds(approvals);
         ApprovalStep latestApprovalStep = retrieveLatestApprovalStep(approvalStepIds);
