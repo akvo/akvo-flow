@@ -1,5 +1,5 @@
 /*
- *  Copyright (C) 2016 Stichting Akvo (Akvo Foundation)
+ *  Copyright (C) 2017 Stichting Akvo (Akvo Foundation)
  *
  *  This file is part of Akvo Flow.
  *
@@ -32,7 +32,12 @@ public class DataPointApprovalDAO extends BaseDAO<DataPointApproval> {
     }
 
     public List<DataPointApproval> listBySurveyedLocaleId(Long surveyedLocaleId) {
-        return this.listByProperty("surveyedLocaleId", surveyedLocaleId, "Long");
+        List<DataPointApproval> approvals = this.listByProperty("surveyedLocaleId",
+                surveyedLocaleId, "Long");
+        if (approvals == null) {
+            return Collections.emptyList();
+        }
+        return approvals;
     }
 
     public List<DataPointApproval> listBySurveyedLocaleIds(List<Long> surveyedLocaleIds) {
