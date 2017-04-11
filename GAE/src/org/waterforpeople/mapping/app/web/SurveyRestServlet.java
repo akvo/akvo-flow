@@ -1,5 +1,5 @@
 /*
- *  Copyright (C) 2010-2015 Stichting Akvo (Akvo Foundation)
+ *  Copyright (C) 2010-2017 Stichting Akvo (Akvo Foundation)
  *
  *  This file is part of Akvo FLOW.
  *
@@ -448,7 +448,7 @@ public class SurveyRestServlet extends AbstractRestApiServlet {
     }
 
     /**
-     * lsits all the SurveyQuestionSummary objects associated with a given questionDI
+     * lists all the SurveyQuestionSummary objects associated with a given questionId
      *
      * @param questionId
      * @return
