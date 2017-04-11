@@ -16,6 +16,7 @@
 
 package org.waterforpeople.mapping.app.web;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import javax.servlet.http.HttpServletRequest;
@@ -32,6 +33,10 @@ import org.waterforpeople.mapping.domain.SurveyInstance;
 import com.gallatinsystems.framework.rest.AbstractRestApiServlet;
 import com.gallatinsystems.framework.rest.RestRequest;
 import com.gallatinsystems.framework.rest.RestResponse;
+import com.gallatinsystems.survey.dao.ApprovalStepDAO;
+import com.gallatinsystems.survey.dao.DataPointApprovalDAO;
+import com.gallatinsystems.survey.domain.ApprovalStep;
+import com.gallatinsystems.survey.domain.DataPointApproval;
 
 import static org.waterforpeople.mapping.app.web.dto.SurveyInstanceRequest.*;
 
@@ -41,10 +46,14 @@ public class SurveyInstanceServlet extends AbstractRestApiServlet {
     private static final String GEO = "GEO";
     private static final long serialVersionUID = -7690514561766005021L;
     private SurveyInstanceDAO surveyInstanceDao;
+    private DataPointApprovalDAO approvalDao;
+    private ApprovalStepDAO approvalStepDao;
 
     public SurveyInstanceServlet() {
         setMode(JSON_MODE);
         surveyInstanceDao = new SurveyInstanceDAO();
+        approvalDao = new DataPointApprovalDAO();
+        approvalStepDao = new ApprovalStepDAO();
     }
 
     @Override
@@ -85,13 +94,59 @@ public class SurveyInstanceServlet extends AbstractRestApiServlet {
 
     private RestResponse retrieveInstanceData(Long surveyInstanceId) {
         InstanceDataDto instanceData = new InstanceDataDto();
-        instanceData.surveyInstanceData = surveyInstanceDao.getByKey(surveyInstanceId);
-        instanceData.latestApprovalStatus = retrieveSurveyInstanceApprovalStatus(surveyInstanceId);
+
+        SurveyInstance si = surveyInstanceDao.getByKey(surveyInstanceId);
+        instanceData.surveyInstanceData = si;
+
+        if (si.getSurveyedLocaleId() != null) {
+            instanceData.latestApprovalStatus = retrieveSurveyInstanceApprovalStatus(si
+                    .getSurveyedLocaleId());
+        }
         return instanceData;
     }
 
-    private String retrieveSurveyInstanceApprovalStatus(Long surveyInstanceId) {
-        return "";
+    private String retrieveSurveyInstanceApprovalStatus(Long surveyedLocaleId) {
+        List<DataPointApproval> approvals = approvalDao.listBySurveyedLocaleId(surveyedLocaleId);
+        List<Long> approvalStepIds = extractApprovalStepIds(approvals);
+        ApprovalStep latestApprovalStep = retrieveLatestApprovalStep(approvalStepIds);
+
+        return buildLatestApprovalStatus(latestApprovalStep, approvals);
+    }
+
+    private List<Long> extractApprovalStepIds(List<DataPointApproval> approvals) {
+        List<Long> stepIds = new ArrayList<>();
+        for (DataPointApproval approval : approvals) {
+            stepIds.add(approval.getApprovalStepId());
+        }
+        return stepIds;
+    }
+
+    private ApprovalStep retrieveLatestApprovalStep(List<Long> approvalStepIds) {
+        ApprovalStep latestApprovalStep = null;
+
+        for (ApprovalStep step : approvalStepDao.listByKeys(approvalStepIds)) {
+            if (latestApprovalStep == null || latestApprovalStep.getOrder() < step.getOrder()) {
+                latestApprovalStep = step;
+            }
+        }
+
+        return latestApprovalStep;
+    }
+
+    private String buildLatestApprovalStatus(ApprovalStep latestApprovalStep,
+            List<DataPointApproval> approvals) {
+        StringBuilder latestApprovalStatus = new StringBuilder();
+
+        if (latestApprovalStep != null || !approvals.isEmpty()) {
+            for (DataPointApproval approval : approvals) {
+                if (approval.getApprovalStepId().equals(latestApprovalStep.getKey().getId())) {
+                    latestApprovalStatus.append(latestApprovalStep.getTitle()).append(" - ")
+                            .append(approval.getStatus());
+                }
+            }
+        }
+
+        return latestApprovalStatus.toString();
     }
 
     @Override
