@@ -2306,70 +2306,11 @@ ul.surveyInfo li.responseNumber {
     transition: background 0.2s ease-in;
 }
 
-.aSurvey nav ul li:hover {
-    background: rgba(205, 205, 205, 0.3);
-}
-
 .aSurvey nav ul li a {
     display: block;
     text-align: center;
     padding: 5px 7px;
 }
-
-/* 
-.aSurvey nav ul li a:hover {
-    color: $flowAnchorLinkHover;
-}
-
-.aSurvey nav ul li.editSurvey a {
-    background: url(../images/IconEdit.svg) center 14px no-repeat;
-    background-size: 35px 35px;
-}
-
-.aSurvey nav ul li.previewSurvey a {
-    background: url(../images/IconPreview_big.svg) center 14px no-repeat;
-    background-size: 35px 35px;
-}
-
-.aSurvey nav ul li.deleteSurvey a {
-    background: url(../images/IconDelete.svg) center 11px no-repeat;
-    background-size: 65px 40px;
-}
-
-.aSurvey nav ul li.moveSurvey a {
-    background: url(../images/IconMove.svg) center 14px no-repeat;
-    background-size: 35px 35px;
-}
-
-.aSurvey nav ul li.copySurvey a {
-    background: url(../images/IconCopy.svg) center 14px no-repeat;
-    background-size: 35px 35px;
-}
-
-.aSurvey nav ul li.editSurvey a:hover {
-    background: url(../images/IconEditOrange.svg) center 14px no-repeat;
-    background-size: 35px 35px;
-}
-
-.aSurvey nav ul li.previewSurvey a:hover {
-    background: url(../images/IconPreviewOrange_big.svg) center 14px no-repeat;
-    background-size: 35px 35px;
-}
-
-.aSurvey nav ul li.deleteSurvey a:hover {
-    background: url(../images/IconDeleteOrange.svg) center 11px no-repeat;
-    background-size: 65px 40px;
-}
-
-.aSurvey nav ul li.moveSurvey a:hover {
-    background: url(../images/IconMoveOrange.svg) center 14px no-repeat;
-    background-size: 35px 35px;
-}
-
-.aSurvey nav ul li.copySurvey a:hover {
-    background: url(../images/IconCopyOrange.svg) center 14px no-repeat;
-    background-size: 35px 35px;
-} */
 
 .newlyCreated, .newlycreated:hover {
     -webkit-box-sizing: border-box;
