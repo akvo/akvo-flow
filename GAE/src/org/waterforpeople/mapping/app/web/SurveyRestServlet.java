@@ -168,10 +168,10 @@ public class SurveyRestServlet extends AbstractRestApiServlet {
                         .equals(surveyReq.getAction())) {
             response.setDtoList(listQuestionGroups(new Long(surveyReq
                     .getSurveyId())));
-        } else if (SurveyRestRequest.LIST_QUESTION_ACTION.equals(surveyReq
-                .getAction())) {
-            response.setDtoList(listQuestions(new Long(surveyReq
-                    .getQuestionGroupId())));
+        } else if (SurveyRestRequest.LIST_QUESTION_ACTION.equals(surveyReq.getAction())) {
+            response.setDtoList(listQuestions(new Long(surveyReq.getQuestionGroupId())));
+        } else if (SurveyRestRequest.LIST_SURVEY_QUESTIONS_ACTION.equals(surveyReq.getAction())) {
+            response.setDtoList(listSurveyQuestions(new Long(surveyReq.getSurveyId())));
         } else if (SurveyRestRequest.LIST_QUESTION_OPTIONS_ACTION.equals(surveyReq.getAction())) {
             response.setDtoList(listQuestionOptions(surveyReq.getQuestionId()));
         } else if (SurveyRestRequest.LIST_SURVEY_QUESTION_OPTIONS_ACTION.equals(surveyReq.getAction())) {
@@ -380,6 +380,32 @@ public class SurveyRestServlet extends AbstractRestApiServlet {
         List<QuestionDto> dtoList = new ArrayList<QuestionDto>();
         if (questions != null) {
             for (Question q : questions.values()) {
+                QuestionDto dto = new QuestionDto();
+                DtoMarshaller.copyToDto(q, dto);
+                if (q.getType().equals(Question.Type.CASCADE) && q.getCascadeResourceId() != null) {
+                    CascadeResource cr = new CascadeResourceDao()
+                            .getByKey(q.getCascadeResourceId());
+                    if (cr != null) {
+                        dto.setLevelNames(cr.getLevelNames());
+                    }
+                }
+                dtoList.add(dto);
+            }
+        }
+        return dtoList;
+    }
+
+    /**
+     * lists all questions for a given survey
+     *
+     * @param surveyId
+     * @return
+     */
+    private List<QuestionDto> listSurveyQuestions(Long surveyId) {
+        List<Question> questions = qDao.listQuestionsBySurvey(surveyId); //useless ordering
+        List<QuestionDto> dtoList = new ArrayList<QuestionDto>();
+        if (questions != null) {
+            for (Question q : questions) {
                 QuestionDto dto = new QuestionDto();
                 DtoMarshaller.copyToDto(q, dto);
                 if (q.getType().equals(Question.Type.CASCADE) && q.getCascadeResourceId() != null) {

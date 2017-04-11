@@ -330,9 +330,9 @@ public class GraphicalSurveySummaryExporter extends SurveySummaryExporter {
     public void export(Map<String, String> criteria, File fileName,
             String serverBase, Map<String, String> options) {
         final String surveyId = criteria.get(SurveyRestRequest.SURVEY_ID_PARAM).trim();
+        final String apiKey = criteria.get("apiKey").trim();
 
         processOptions(options);
-        String apiKey = criteria.get("apiKey").trim();
 
         questionsById = new HashMap<Long, QuestionDto>();
         this.serverBase = serverBase;
@@ -343,6 +343,7 @@ public class GraphicalSurveySummaryExporter extends SurveySummaryExporter {
         try {
             Map<QuestionGroupDto, List<QuestionDto>> questionMap = 
                     loadAllQuestions(surveyId, performGeoRollup, serverBase, apiKey);
+                //minimal data plus cascade level names
             if (questionMap != null && questionMap.size() > 0) {
                 if (!DEFAULT_LOCALE.equals(locale)) {
                     // we are using some other locale; need to check for translations.
@@ -353,7 +354,7 @@ public class GraphicalSurveySummaryExporter extends SurveySummaryExporter {
                     //optimised case: get minimal option and cascade info, no translations
                     loadQuestionOptions(
                             surveyId, serverBase, questionMap, apiKey);
-                    loadCascadeQuestionDetails(questionMap, apiKey); //modifies questionMap
+//                    loadCascadeQuestionDetails(questionMap, apiKey); //already in list
                 }
                 //questionMap is now stable; make the id-to-dto map
                 for (List<QuestionDto> qList : questionMap.values()) {

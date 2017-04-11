@@ -35,6 +35,7 @@ public class SurveyRestRequest extends RestRequest {
     public static final String LIST_GROUP_ACTION = "listGroups";
     public static final String LIST_QUESTION_GROUP_ACTION = "listQuestionGroups";
     public static final String LIST_QUESTION_ACTION = "listQuestions";
+    public static final String LIST_SURVEY_QUESTIONS_ACTION = "listSurveyQuestions";
     public static final String LIST_QUESTION_OPTIONS_ACTION = "listQuestionOptions";
     public static final String LIST_SURVEY_QUESTION_OPTIONS_ACTION = "listSurveyQuestionOptions";
     public static final String GET_SUMMARY_ACTION = "getSummary";

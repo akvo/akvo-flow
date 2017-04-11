@@ -25,6 +25,7 @@ import java.text.DecimalFormat;
 import java.text.NumberFormat;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.Comparator;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -226,11 +227,32 @@ public class SurveySummaryExporter extends AbstractDataExporter {
             String surveyId, boolean performRollups, String serverBase, String apiKey)
             throws Exception {
         Map<QuestionGroupDto, List<QuestionDto>> questionMap = new HashMap<QuestionGroupDto, List<QuestionDto>>();
-        //TODO: fetching in nested loops is inefficient, but we need the ordering of groups and questions in them 
+        //fetching in nested loops is inefficient; we need the ordering of groups and questions in them 
         orderedGroupList = fetchQuestionGroups(serverBase, surveyId, apiKey);
+        List<QuestionDto> allQuestions = fetchQuestionsOfSurvey(serverBase, surveyId, apiKey); //unordered
+        Map<Long, List<QuestionDto>> idMap = new HashMap<>();
+        for (QuestionGroupDto group : orderedGroupList) {
+            List<QuestionDto> questions = new ArrayList<>();
+            idMap.put(group.getKeyId(), questions);
+        }
+        // Sort them into the right lists
+        for (QuestionDto q:allQuestions) {
+            List<QuestionDto> myList = idMap.get(q.getQuestionGroupId());
+            myList.add(q);
+        }
+        // Lists complete, now we can sort and visit each in order
         rollupOrder = new ArrayList<QuestionDto>();
         for (QuestionGroupDto group : orderedGroupList) {
-            List<QuestionDto> questions = fetchQuestions(serverBase, group.getKeyId(), apiKey);
+            List<QuestionDto> questions = idMap.get(group.getKeyId());
+            questions.sort(new Comparator<QuestionDto>() {
+                @Override
+                public int compare(QuestionDto o1, QuestionDto o2) {
+                    //order should never be null, but accidents happen...
+                    int v1 = o1.getOrder() != null ? o1.getOrder() : 0;
+                    int v2 = o2.getOrder() != null ? o2.getOrder() : 0;
+                    return v2-v1;
+                }
+            });
 
             if (performRollups && questions != null) {
                 for (QuestionDto q : questions) {
@@ -262,6 +284,16 @@ public class SurveySummaryExporter extends AbstractDataExporter {
                         + SurveyRestRequest.LIST_QUESTION_ACTION + "&"
                         + SurveyRestRequest.QUESTION_GROUP_ID_PARAM + "="
                         + groupId, true, apiKey));
+    }
+
+    protected List<QuestionDto> fetchQuestionsOfSurvey(String serverBase, String surveyId, String apiKey)
+            throws Exception {
+
+        return parseQuestions(BulkDataServiceClient.fetchDataFromServer(
+                serverBase + SERVLET_URL, "action="
+                        + SurveyRestRequest.LIST_SURVEY_QUESTIONS_ACTION + "&"
+                        + SurveyRestRequest.SURVEY_ID_PARAM + "="
+                        + surveyId, true, apiKey));
     }
 
     protected List<QuestionGroupDto> fetchQuestionGroups(String serverBase,
