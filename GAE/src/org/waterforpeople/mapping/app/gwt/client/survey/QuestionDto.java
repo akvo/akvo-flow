@@ -16,19 +16,17 @@
 
 package org.waterforpeople.mapping.app.gwt.client.survey;
 
+import com.gallatinsystems.framework.gwt.dto.client.BaseDto;
+import com.gallatinsystems.framework.gwt.dto.client.NamedObject;
+
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
 
-import com.gallatinsystems.framework.gwt.dto.client.BaseDto;
-import com.gallatinsystems.framework.gwt.dto.client.NamedObject;
-
 public class QuestionDto extends BaseDto implements NamedObject {
 
     private static final long serialVersionUID = -4708385830894435407L;
-    public static final String ANS_DELIM = "|";
-    public static final String ANS_DELIM_REGEX = "\\|";
 
     private String text;
 
@@ -487,5 +485,52 @@ public class QuestionDto extends BaseDto implements NamedObject {
 
     public void setCaddisflyResourceUuid(String caddisflyResourceUuid) {
         this.caddisflyResourceUuid = caddisflyResourceUuid;
+    }
+
+    @Override
+    public String toString() {
+        return "QuestionDto{" +
+                "keyId=" + getKeyId()+
+                ", text='" + text + '\'' +
+                ", type=" + type +
+                ", optionContainerDto=" + optionContainerDto +
+                ", questionHelpList=" + questionHelpList +
+                ", tip='" + tip + '\'' +
+                ", optionList='" + optionList + '\'' +
+                ", questionOptions=" + questionOptions +
+                ", mandatoryFlag=" + mandatoryFlag +
+                ", dependentFlag=" + dependentFlag +
+                ", localeNameFlag=" + localeNameFlag +
+                ", localeLocationFlag=" + localeLocationFlag +
+                ", geoLocked=" + geoLocked +
+                ", requireDoubleEntry=" + requireDoubleEntry +
+                ", dependentQuestionId=" + dependentQuestionId +
+                ", dependentQuestionAnswer='" + dependentQuestionAnswer + '\'' +
+                ", cascadeResourceId=" + cascadeResourceId +
+                ", caddisflyResourceUuid='" + caddisflyResourceUuid + '\'' +
+                ", metricId=" + metricId +
+                ", questionDependency=" + questionDependency +
+                ", surveyId=" + surveyId +
+                ", questionId='" + questionId + '\'' +
+                ", questionGroupId=" + questionGroupId +
+                ", collapseable=" + collapseable +
+                ", immutable=" + immutable +
+                ", translationMap=" + translationMap +
+                ", path='" + path + '\'' +
+                ", order=" + order +
+                ", allowMultipleFlag=" + allowMultipleFlag +
+                ", allowOtherFlag=" + allowOtherFlag +
+                ", allowDecimal=" + allowDecimal +
+                ", allowSign=" + allowSign +
+                ", allowExternalSources=" + allowExternalSources +
+                ", minVal=" + minVal +
+                ", maxVal=" + maxVal +
+                ", isName=" + isName +
+                ", sourceId=" + sourceId +
+                ", levelNames=" + levelNames +
+                ", allowPoints=" + allowPoints +
+                ", allowLine=" + allowLine +
+                ", allowPolygon=" + allowPolygon +
+                '}';
     }
 }

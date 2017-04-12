@@ -16,16 +16,11 @@
 
 package com.gallatinsystems.survey.domain;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.TreeMap;
+import com.gallatinsystems.framework.domain.BaseDomain;
 
 import javax.jdo.annotations.NotPersistent;
 import javax.jdo.annotations.PersistenceCapable;
-
-import com.gallatinsystems.framework.domain.BaseDomain;
+import java.util.*;
 
 /**
  * Represents a Question on a survey. A question belongs to exactly 1 questionGroup.
@@ -459,5 +454,9 @@ public class Question extends BaseDomain {
 
     public void setCaddisflyResourceUuid(String caddisflyResourceUuid) {
         this.caddisflyResourceUuid = caddisflyResourceUuid;
+    }
+
+    public boolean isOptionQuestion() {
+        return type == Type.OPTION;
     }
 }
