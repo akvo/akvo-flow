@@ -161,6 +161,7 @@ public class SurveyInstanceServlet extends AbstractRestApiServlet {
     protected void writeOkResponse(RestResponse response) throws Exception {
         getResponse().setStatus(200);
         ObjectMapper jsonMapper = new ObjectMapper();
+        jsonMapper.getSerializationConfig().setSerializationInclusion(Inclusion.NON_NULL);
         jsonMapper.writeValue(getResponse().getWriter(), response);
     }
 }
