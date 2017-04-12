@@ -488,13 +488,15 @@ public class BulkDataServiceClient {
     public static InstanceDataDto fetchInstanceData(Long surveyInstanceId, String serverBase,
             String apiKey) throws Exception {
 
-        final String urlQueryString = new StringBuilder().append(INSTANCE_DATA_SERVLET_PATH)
+        final String baseUrl = serverBase + INSTANCE_DATA_SERVLET_PATH;
+
+        final String urlQueryString = new StringBuilder()
                 .append("?action=").append(GET_INSTANCE_DATA_ACTION)
                 .append("&")
                 .append(SURVEY_INSTANCE_ID_PARAM).append("=").append(surveyInstanceId)
                 .toString();
 
-        final String instanceDataResponse = fetchDataFromServer(serverBase, urlQueryString, true,
+        final String instanceDataResponse = fetchDataFromServer(baseUrl, urlQueryString, true,
                 apiKey);
 
         return parseInstanceData(instanceDataResponse);
