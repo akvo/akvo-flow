@@ -68,6 +68,7 @@ import org.waterforpeople.mapping.app.gwt.client.survey.SurveyGroupDto;
 import org.waterforpeople.mapping.app.gwt.client.survey.TranslationDto;
 import org.waterforpeople.mapping.app.gwt.client.surveyinstance.SurveyInstanceDto;
 import org.waterforpeople.mapping.app.web.dto.ApprovalStepDTO;
+import org.waterforpeople.mapping.app.web.dto.InstanceDataDto;
 import org.waterforpeople.mapping.app.web.dto.SurveyRestRequest;
 import org.waterforpeople.mapping.dataexport.service.BulkDataServiceClient;
 import org.waterforpeople.mapping.domain.CaddisflyResource;
@@ -503,16 +504,17 @@ public class GraphicalSurveySummaryExporter extends SurveySummaryExporter {
                                     .fetchQuestionResponses(instanceId,
                                             serverBase, key);
 
-                            SurveyInstanceDto dto = BulkDataServiceClient
-                                    .findSurveyInstance(
-                                            Long.parseLong(instanceId.trim()),
+                            InstanceDataDto instanceDataDto = BulkDataServiceClient
+                                    .fetchInstanceData(Long.parseLong(instanceId.trim()),
                                             serverBase, key);
 
-                            if (dto != null) {
+                            if (instanceDataDto.surveyInstanceData != null) {
                                 done = true;
                             }
+
                             synchronized (allData) {
-                                allData.add(new InstanceData(dto, responseMap));
+                                allData.add(new InstanceData(instanceDataDto.surveyInstanceData,
+                                        responseMap));
                             }
 
                         } catch (Exception e) {
