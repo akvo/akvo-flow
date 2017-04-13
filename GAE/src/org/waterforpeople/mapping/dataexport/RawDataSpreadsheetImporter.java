@@ -288,7 +288,7 @@ public class RawDataSpreadsheetImporter implements DataImporter {
      *
      * @param sheet
      * @param startRow
-     * @param firstQuestionColumnIndex TODO
+     * @param firstQuestionColumnIndex
      * @param questionIdToQuestionDto
      * @param columnIndexToQuestionId
      * @param optionNodes
@@ -311,7 +311,7 @@ public class RawDataSpreadsheetImporter implements DataImporter {
         // 6. SubmitterName
         // 7. SurveyalTime
 
-        // 8 - N. Questions
+        // 9 - N. Questions
         // N + 1. Digest
 
         // First check if we are done with the sheet
