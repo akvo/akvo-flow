@@ -302,7 +302,7 @@ public class GraphicalSurveySummaryExporter extends SurveySummaryExporter {
         DEVICE_IDENTIFIER_LABEL.put("es", "Identificador de dispositivo");
 
         DATA_APPROVAL_STATUS_LABEL = new HashMap<String, String>();
-        DATA_APPROVAL_STATUS_LABEL.put("en", "Approval status");
+        DATA_APPROVAL_STATUS_LABEL.put("en", "Data approval status");
         DATA_APPROVAL_STATUS_LABEL.put("es", "Estado de aprobación");
     }
 
