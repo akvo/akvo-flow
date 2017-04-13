@@ -21,6 +21,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
 
+import org.codehaus.jackson.annotate.JsonIgnore;
+
 import com.gallatinsystems.framework.gwt.dto.client.BaseDto;
 import com.gallatinsystems.framework.gwt.dto.client.NamedObject;
 
@@ -308,6 +310,7 @@ public class QuestionDto extends BaseDto implements NamedObject {
         FREE_TEXT, OPTION, NUMBER, GEO, PHOTO, VIDEO, SCAN, TRACK, NAME, STRENGTH, DATE, CASCADE, GEOSHAPE, SIGNATURE, CADDISFLY
     }
 
+    @JsonIgnore
     @Override
     public String getDisplayName() {
         return getText();

@@ -342,19 +342,14 @@ public class GraphicalSurveySummaryExporter extends SurveySummaryExporter {
         String limit = options.get("maxDataReportRows");
         try {
             Map<QuestionGroupDto, List<QuestionDto>> questionMap = 
-                    loadAllQuestions(surveyId, performGeoRollup, serverBase, apiKey);
+                    loadAllQuestions(surveyId, performGeoRollup, serverBase, apiKey,
+                            useQuestionId && DEFAULT_LOCALE.equals(locale));
                 //minimal data plus cascade level names
             if (questionMap != null && questionMap.size() > 0) {
                 if (!DEFAULT_LOCALE.equals(locale)) {
                     // we are using some other locale; need to check for translations.
                     // also gets option and cascade names for columns
                     loadFullQuestions(questionMap, apiKey); //modifies questionMap
-                }
-                else if (useQuestionId) {
-                    //optimised case: get minimal option and cascade info, no translations
-                    loadQuestionOptions(
-                            surveyId, serverBase, questionMap, apiKey);
-//                    loadCascadeQuestionDetails(questionMap, apiKey); //already in list
                 }
                 //questionMap is now stable; make the id-to-dto map
                 for (List<QuestionDto> qList : questionMap.values()) {
@@ -1821,66 +1816,8 @@ public class GraphicalSurveySummaryExporter extends SurveySummaryExporter {
         }
     }
 
-    /**
-     * call the server to augment the data already loaded in each QuestionDto in the map passed in.
-     *
-     * @param questionMap questionDtos keyed by id
-     * @param apiKey
-     */
-    private void loadQuestionOptions(String surveyId, String serverBase, Map<QuestionGroupDto, List<QuestionDto>> questionMap, String apiKey) {
-        try {
-            Map<Long, QuestionDto> questionsById = new HashMap<Long, QuestionDto>();;
-            for (List<QuestionDto> qList : questionMap.values()) {
-                for (QuestionDto q : qList) {
-                    questionsById.put(q.getKeyId(), q);
-                }
-            }
-
-            List<QuestionOptionDto> optList =
-                    BulkDataServiceClient.fetchSurveyQuestionOptions(surveyId, serverBase, apiKey);
-            //add them to the container of their question
-            for (QuestionOptionDto o:optList) {
-                QuestionDto q = questionsById.get(o.getQuestionId());
-                if (q != null) {
-                    //May need to create an OptionContainer to hold them
-                    OptionContainerDto container = q.getOptionContainerDto();
-                    if (container == null) {
-                        container = new OptionContainerDto();
-                        q.setOptionContainerDto(container);
-                    }
-                    container.addQuestionOption(o);
-                }
-            }
-        } catch (Exception e) {
-            System.err.println("Could not fetch question options");
-            e.printStackTrace(System.err);
-        }
-    }
 
     /**
-     * call the server to augment the data already loaded in each QuestionDto in the map passed in.
-     *
-     * @param questionMap
-     */
-    private void loadCascadeQuestionDetails(
-            Map<QuestionGroupDto, List<QuestionDto>> questionMap, String apiKey) {
-        for (List<QuestionDto> questionList : questionMap.values()) {
-            for (int i = 0; i < questionList.size(); i++) {
-                if (questionList.get(i).getType() == QuestionType.CASCADE) {
-                    try {
-                        QuestionDto newQ = BulkDataServiceClient.loadQuestionDetails(
-                                serverBase, questionList.get(i).getKeyId(), apiKey);
-                        if (newQ != null) {
-                            questionList.set(i, newQ);
-                        }
-                    } catch (Exception e) {
-                        System.err.println("Could not fetch question details");
-                        e.printStackTrace(System.err);
-                    }
-                }
-            }
-        }
-    }    /**
      * uses the locale and the translation map passed in to determine what value to use for the
      * string
      *

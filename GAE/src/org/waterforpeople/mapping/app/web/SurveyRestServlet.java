@@ -18,6 +18,7 @@ package org.waterforpeople.mapping.app.web;
 
 import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -369,40 +370,11 @@ public class SurveyRestServlet extends AbstractRestApiServlet {
     }
 
     /**
-     * lists all questions for a given questionGroup
-     *
-     * @param groupId
+     * lists questions, with cascade level names
+     * @param questions
      * @return
      */
-    private List<QuestionDto> listQuestions(Long groupId) {
-        TreeMap<Integer, Question> questions = qDao
-                .listQuestionsByQuestionGroup(groupId, false);
-        List<QuestionDto> dtoList = new ArrayList<QuestionDto>();
-        if (questions != null) {
-            for (Question q : questions.values()) {
-                QuestionDto dto = new QuestionDto();
-                DtoMarshaller.copyToDto(q, dto);
-                if (q.getType().equals(Question.Type.CASCADE) && q.getCascadeResourceId() != null) {
-                    CascadeResource cr = new CascadeResourceDao()
-                            .getByKey(q.getCascadeResourceId());
-                    if (cr != null) {
-                        dto.setLevelNames(cr.getLevelNames());
-                    }
-                }
-                dtoList.add(dto);
-            }
-        }
-        return dtoList;
-    }
-
-    /**
-     * lists all questions for a given survey
-     *
-     * @param surveyId
-     * @return
-     */
-    private List<QuestionDto> listSurveyQuestions(Long surveyId) {
-        List<Question> questions = qDao.listQuestionsBySurvey(surveyId); //useless ordering
+    private List<QuestionDto> listQuestionsWithLevelNames(Collection<Question> questions) {
         List<QuestionDto> dtoList = new ArrayList<QuestionDto>();
         if (questions != null) {
             for (Question q : questions) {
@@ -419,6 +391,27 @@ public class SurveyRestServlet extends AbstractRestApiServlet {
             }
         }
         return dtoList;
+        
+    }
+    
+    /**
+     * lists all questions for a given questionGroup
+     *
+     * @param groupId
+     * @return
+     */
+    private List<QuestionDto> listQuestions(Long groupId) {
+        return listQuestionsWithLevelNames(qDao.listQuestionsByQuestionGroup(groupId, false).values());
+    }
+
+    /**
+     * lists all questions for a given survey
+     *
+     * @param surveyId
+     * @return
+     */
+    private List<QuestionDto> listSurveyQuestions(Long surveyId) {
+        return listQuestionsWithLevelNames(qDao.listQuestionsBySurvey(surveyId)); //useless ordering
     }
 
     private List<QuestionOptionDto> listQuestionOptions(Long questionId) {

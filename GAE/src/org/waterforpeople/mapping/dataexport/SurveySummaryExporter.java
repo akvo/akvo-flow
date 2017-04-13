@@ -40,9 +40,14 @@ import javax.swing.JPanel;
 
 import org.akvo.flow.domain.DataUtils;
 import org.apache.log4j.Logger;
+import org.codehaus.jackson.JsonNode;
+import org.codehaus.jackson.map.ObjectMapper;
+import org.codehaus.jackson.type.TypeReference;
 import org.json.JSONArray;
 import org.json.JSONObject;
+import org.waterforpeople.mapping.app.gwt.client.survey.OptionContainerDto;
 import org.waterforpeople.mapping.app.gwt.client.survey.QuestionDto;
+import org.waterforpeople.mapping.app.gwt.client.survey.QuestionOptionDto;
 import org.waterforpeople.mapping.app.gwt.client.survey.QuestionDto.QuestionType;
 import org.waterforpeople.mapping.app.gwt.client.survey.QuestionGroupDto;
 import org.waterforpeople.mapping.app.web.dto.SurveyRestRequest;
@@ -192,10 +197,11 @@ public class SurveySummaryExporter extends AbstractDataExporter {
      * @throws Exception
      */
     protected Map<QuestionGroupDto, List<QuestionDto>> loadAllQuestions(
-            String surveyId, boolean performRollups, String serverBase, String apiKey)
+            String surveyId, boolean performRollups, String serverBase, String apiKey, boolean loadOptionNames)
             throws Exception {
-        Map<QuestionGroupDto, List<QuestionDto>> questionMap = new HashMap<QuestionGroupDto, List<QuestionDto>>();
-        //fetching in nested loops is inefficient; we need the ordering of groups and questions in them 
+        Map<QuestionGroupDto, List<QuestionDto>> questionMap = new HashMap<>();
+        //we need the ordering of groups and questions in them; fetching in nested loops is inefficient so
+        //we fetch them all at once and sort them ourself
         orderedGroupList = fetchQuestionGroups(serverBase, surveyId, apiKey);
         List<QuestionDto> allQuestions = fetchQuestionsOfSurvey(serverBase, surveyId, apiKey); //unordered
         Map<Long, List<QuestionDto>> idMap = new HashMap<>();
@@ -233,8 +239,57 @@ public class SurveySummaryExporter extends AbstractDataExporter {
             }
             questionMap.put(group, questions);
         }
+        
+        if (loadOptionNames) {
+            //get minimal option info, no translations
+            loadQuestionOptions(surveyId, serverBase, questionMap, apiKey);
+        }
+        
         return questionMap;
     }
+
+    
+    /**
+     * calls the server to augment the data already loaded in each QuestionDto in the map.
+     *
+     * @param questionMap questionDtos keyed by id
+     * @param apiKey
+     */
+    private void loadQuestionOptions(
+            String surveyId,
+            String serverBase,
+            Map<QuestionGroupDto, List<QuestionDto>> questionMap,
+            String apiKey) {
+
+        try {
+            Map<Long, QuestionDto> questionsById = new HashMap<>();
+            for (List<QuestionDto> qList : questionMap.values()) {
+                for (QuestionDto q : qList) {
+                    questionsById.put(q.getKeyId(), q);
+                }
+            }
+            
+            List<QuestionOptionDto> optList =
+                    BulkDataServiceClient.fetchSurveyQuestionOptions(surveyId, serverBase, apiKey);
+            //add them to the container of their question
+            for (QuestionOptionDto o:optList) {
+                QuestionDto q = questionsById.get(o.getQuestionId());
+                if (q != null) {
+                    //May need to create an OptionContainer to hold them
+                    OptionContainerDto container = q.getOptionContainerDto();
+                    if (container == null) {
+                        container = new OptionContainerDto();
+                        q.setOptionContainerDto(container);
+                    }
+                    container.addQuestionOption(o);
+                }
+            }
+        } catch (Exception e) {
+            System.err.println("Could not fetch question options");
+            e.printStackTrace(System.err);
+        }
+    }
+
 
     protected List<QuestionDto> fetchQuestions(String serverBase, Long groupId, String apiKey)
             throws Exception {
@@ -249,7 +304,7 @@ public class SurveySummaryExporter extends AbstractDataExporter {
     protected List<QuestionDto> fetchQuestionsOfSurvey(String serverBase, String surveyId, String apiKey)
             throws Exception {
 
-        return parseQuestions(BulkDataServiceClient.fetchDataFromServer(
+        return parseQuestions2(BulkDataServiceClient.fetchDataFromServer(
                 serverBase + SERVLET_URL, "action="
                         + SurveyRestRequest.LIST_SURVEY_QUESTIONS_ACTION + "&"
                         + SurveyRestRequest.SURVEY_ID_PARAM + "="
@@ -348,6 +403,26 @@ public class SurveySummaryExporter extends AbstractDataExporter {
         return dtoList;
     }
 
+    /**
+     * parses questions using an object mapper
+     * @param response
+     * @return
+     * @throws Exception
+     */
+    protected List<QuestionDto> parseQuestions2(String response) throws Exception {
+        final ObjectMapper JSON_RESPONSE_PARSER = new ObjectMapper();
+        List<QuestionDto> dtoList = new ArrayList<QuestionDto>();
+
+        final JsonNode questionListNode =
+                JSON_RESPONSE_PARSER.readTree(response).get("dtoList");
+        final List<QuestionDto> qList = JSON_RESPONSE_PARSER.readValue(
+                questionListNode, new TypeReference<List<QuestionDto>>() {
+                });
+        dtoList.addAll(qList); //Why?
+        
+        return dtoList;
+    }
+    
     /**
      * converts the string into a JSON array object.
      */
