@@ -78,8 +78,7 @@ import com.gallatinsystems.surveyal.domain.SurveyedLocale;
 import com.google.appengine.api.datastore.KeyFactory;
 
 public class SurveyRestServlet extends AbstractRestApiServlet {
-    private static final Logger log = Logger.getLogger(TaskServlet.class
-            .getName());
+    private static final Logger log = Logger.getLogger(SurveyRestServlet.class.getName());
 
     private static final String CHART_API_URL = "http://chart.apis.google.com/chart?chs=300x225&cht=p&chtt=";
     private static final String CHART_API_DATA_PARAM = "&chd=t:";

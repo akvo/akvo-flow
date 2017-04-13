@@ -59,6 +59,8 @@ import org.waterforpeople.mapping.app.gwt.client.survey.SurveyDto;
 import org.waterforpeople.mapping.app.gwt.client.survey.SurveyGroupDto;
 import org.waterforpeople.mapping.app.gwt.client.survey.TranslationDto;
 import org.waterforpeople.mapping.app.gwt.client.surveyinstance.SurveyInstanceDto;
+import org.waterforpeople.mapping.app.web.dto.ApprovalStepDTO;
+import org.waterforpeople.mapping.app.web.dto.DataApprovalRequest;
 import org.waterforpeople.mapping.app.web.dto.DataBackoutRequest;
 import org.waterforpeople.mapping.app.web.dto.DeviceFileRestRequest;
 import org.waterforpeople.mapping.app.web.dto.SurveyRestRequest;
@@ -81,6 +83,8 @@ public class BulkDataServiceClient {
     public static final String RESPONSE_KEY = "dtoList";
     private static final String SURVEY_SERVLET_PATH = "/surveyrestapi";
     private static final String DEVICE_FILES_SERVLET_PATH = "/devicefilesrestapi?action=";
+    private static final String DATA_APPROVAL_SERVLET_PATH = "/dataapproval";
+
     private static final ObjectMapper JSON_RESPONSE_PARSER = new ObjectMapper();
 
     /**
@@ -1406,6 +1410,41 @@ public class BulkDataServiceClient {
             }
         }
         return null;
+    }
+
+    public static List<ApprovalStepDTO> fetchApprovalSteps(Long dataApprovalGroupId,
+            String serverBase, String apiKey) {
+        List<ApprovalStepDTO> approvalStepsList = new ArrayList<>();
+        try {
+            final String approvalStepsResponse = fetchDataFromServer(serverBase
+                    + DATA_APPROVAL_SERVLET_PATH, "?action="
+                    + DataApprovalRequest.RETRIEVE_APPROVAL_STEPS_ACTION + "&"
+                    + DataApprovalRequest.APPROVAL_GROUP_ID_PARAM + "=" + dataApprovalGroupId,
+                    true, apiKey);
+
+            log.debug("response: " + approvalStepsResponse);
+
+            final JsonNode approvalStepsListNode = JSON_RESPONSE_PARSER.readTree(
+                    approvalStepsResponse).get("dataApprovalList");
+            final List<ApprovalStepDTO> stepsList = JSON_RESPONSE_PARSER.readValue(
+                    approvalStepsListNode, new TypeReference<List<ApprovalStepDTO>>() {
+                    });
+            approvalStepsList.addAll(stepsList);
+        } catch (Exception e) {
+            log.error(e);
+        }
+
+        return approvalStepsList;
+    }
+
+    public static Map<Long, ApprovalStepDTO> fetchMappedApprovalSteps(Long dataApprovalGroupId,
+            String serverBase,
+            String apiKey) {
+        Map<Long, ApprovalStepDTO> mappedSteps = new HashMap<>();
+        for (ApprovalStepDTO s : fetchApprovalSteps(dataApprovalGroupId, serverBase, apiKey)) {
+            mappedSteps.put(s.getKeyId(), s);
+        }
+        return mappedSteps;
     }
 
 }

@@ -67,6 +67,7 @@ import org.waterforpeople.mapping.app.gwt.client.survey.QuestionOptionDto;
 import org.waterforpeople.mapping.app.gwt.client.survey.SurveyGroupDto;
 import org.waterforpeople.mapping.app.gwt.client.survey.TranslationDto;
 import org.waterforpeople.mapping.app.gwt.client.surveyinstance.SurveyInstanceDto;
+import org.waterforpeople.mapping.app.web.dto.ApprovalStepDTO;
 import org.waterforpeople.mapping.app.web.dto.SurveyRestRequest;
 import org.waterforpeople.mapping.dataexport.service.BulkDataServiceClient;
 import org.waterforpeople.mapping.domain.CaddisflyResource;
@@ -326,6 +327,8 @@ public class GraphicalSurveySummaryExporter extends SurveySummaryExporter {
     // store indices of file columns for lookup when generating responses
     private Map<String, Integer> columnIndexMap = new HashMap<String, Integer>();
 
+    private Map<Long, ApprovalStepDTO> approvalSteps;
+
     @Override
     public void export(Map<String, String> criteria, File fileName,
             String serverBase, Map<String, String> options) {
@@ -335,6 +338,14 @@ public class GraphicalSurveySummaryExporter extends SurveySummaryExporter {
         processOptions(options);
 
         questionsById = new HashMap<Long, QuestionDto>();
+
+        SurveyGroupDto surveyGroupDto =
+                BulkDataServiceClient.fetchSurveyGroup(surveyId, serverBase, apiKey);
+        if (hasDataApproval(surveyGroupDto)) {
+            approvalSteps = BulkDataServiceClient.fetchMappedApprovalSteps(
+                    surveyGroupDto.getDataApprovalGroupId(), serverBase, apiKey);
+        }
+
         this.serverBase = serverBase;
         boolean useQuestionId = "true".equals(options.get("useQuestionId"));
         String from = options.get("from");
@@ -419,6 +430,11 @@ public class GraphicalSurveySummaryExporter extends SurveySummaryExporter {
         } catch (Exception e) {
             log.error("Error generating report: " + e.getMessage(), e);
         }
+    }
+
+    private boolean hasDataApproval(SurveyGroupDto surveyGroupDto) {
+        return surveyGroupDto.getRequireDataApproval()
+                && surveyGroupDto.getDataApprovalGroupId() != null;
     }
 
     @SuppressWarnings("unchecked")

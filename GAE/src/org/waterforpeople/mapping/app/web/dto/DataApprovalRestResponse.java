@@ -1,5 +1,5 @@
 /*
- *  Copyright (C) 2010-2012 Stichting Akvo (Akvo Foundation)
+ *  Copyright (C) 2017 Stichting Akvo (Akvo Foundation)
  *
  *  This file is part of Akvo FLOW.
  *
@@ -14,16 +14,17 @@
  *  The full license text can also be seen at <http://www.gnu.org/licenses/agpl.html>.
  */
 
-package org.waterforpeople.mapping.app.gwt.client.surveyinstance;
+package org.waterforpeople.mapping.app.web.dto;
 
-import com.google.gwt.user.client.rpc.RemoteService;
-import com.google.gwt.user.client.rpc.RemoteServiceRelativePath;
+import java.util.List;
 
-@RemoteServiceRelativePath("surveyinstance")
-@Deprecated
-// to be removed eventually
-public interface SurveyInstanceService extends RemoteService {
+import com.gallatinsystems.framework.gwt.dto.client.BaseDto;
+import com.gallatinsystems.framework.rest.RestResponse;
 
-    public void deleteSurveyInstance(Long instanceId);
+public class DataApprovalRestResponse extends RestResponse {
+
+    private static final long serialVersionUID = -951447661576733210L;
+
+    public List<? extends BaseDto> dataApprovalList;
 
 }
