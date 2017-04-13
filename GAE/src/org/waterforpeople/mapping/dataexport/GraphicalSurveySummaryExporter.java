@@ -345,7 +345,7 @@ public class GraphicalSurveySummaryExporter extends SurveySummaryExporter {
 
         questionsById = new HashMap<Long, QuestionDto>();
         surveyGroupDto = BulkDataServiceClient.fetchSurveyGroup(surveyId, serverBase, apiKey);
-        if (hasDataApproval(surveyGroupDto)) {
+        if (hasDataApproval()) {
             approvalSteps = BulkDataServiceClient.fetchMappedApprovalSteps(
                     surveyGroupDto.getDataApprovalGroupId(), serverBase, apiKey);
         }
@@ -437,7 +437,7 @@ public class GraphicalSurveySummaryExporter extends SurveySummaryExporter {
         }
     }
 
-    private boolean hasDataApproval(SurveyGroupDto surveyGroupDto) {
+    private boolean hasDataApproval() {
         return surveyGroupDto.getRequireDataApproval()
                 && surveyGroupDto.getDataApprovalGroupId() != null;
     }
@@ -586,6 +586,12 @@ public class GraphicalSurveySummaryExporter extends SurveySummaryExporter {
 
         createCell(row, columnIndexMap.get(IDENTIFIER_LABEL.get(locale)),
                 dto.getSurveyedLocaleIdentifier());
+
+        if (hasDataApproval()) {
+            createCell(row, columnIndexMap.get(DATA_APPROVAL_STATUS_LABEL.get(locale)),
+                    instanceData.latestApprovalStatus);
+        }
+
         // Write the "Repeat" column
         for (int i = 0; i <= instanceData.maxIterationsCount; i++) {
             Row r = getRow(row.getRowNum() + i, sheet);
@@ -1194,8 +1200,7 @@ public class GraphicalSurveySummaryExporter extends SurveySummaryExporter {
 
         addMetaDataColumnHeader(IDENTIFIER_LABEL.get(locale), ++columnIdx, row);
 
-        if (surveyGroupDto.getRequireDataApproval()
-                && surveyGroupDto.getDataApprovalGroupId() != null) {
+        if (hasDataApproval()) {
             addMetaDataColumnHeader(DATA_APPROVAL_STATUS_LABEL.get(locale), ++columnIdx, row);
         }
 
