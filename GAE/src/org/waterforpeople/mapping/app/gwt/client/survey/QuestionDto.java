@@ -139,6 +139,7 @@ public class QuestionDto extends BaseDto implements NamedObject {
         return type;
     }
 
+    @JsonIgnore
     public String getQuestionTypeString() {
         return type.toString();
     }
