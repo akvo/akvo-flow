@@ -68,6 +68,11 @@ public class RawDataSpreadsheetImporter implements DataImporter {
     private List<String> errorIds;
     private static final ObjectMapper OBJECT_MAPPER = new ObjectMapper();
 
+    private static final int LEGACY_MONITORING_FORMAT = 6;
+    private static final int MONITORING_FORMAT_WITH_DEVICE_ID_COLUMN = 7;
+    private static final int MONITORING_FORMAT_WITH_REPEAT_COLUMN = 8;
+    private static final int MONITORING_FORMAT_WITH_APPROVAL_COLUMN = 9;
+
     /**
      * opens a file input stream using the file passed in and tries to return the first worksheet in
      * that file
@@ -192,9 +197,9 @@ public class RawDataSpreadsheetImporter implements DataImporter {
         // TODO Consider removing this when old (pre repeat question groups) reports no longer need
         // to be supported
         int firstQuestionColumnIndex = Collections.min(columnIndexToQuestionId.keySet());
-        boolean hasIterationColumn = firstQuestionColumnIndex == 8;
-        boolean hasDeviceIdentifierColumn = firstQuestionColumnIndex == 8
-                || firstQuestionColumnIndex == 7;
+        boolean hasIterationColumn = firstQuestionColumnIndex == MONITORING_FORMAT_WITH_REPEAT_COLUMN;
+        boolean hasDeviceIdentifierColumn = hasIterationColumn
+                || firstQuestionColumnIndex == MONITORING_FORMAT_WITH_DEVICE_ID_COLUMN;
 
         int row = 1;
         while (true) {
@@ -725,18 +730,17 @@ public class RawDataSpreadsheetImporter implements DataImporter {
 
                 if (!firstQuestionFound && cellValue.matches("[0-9]+\\|.+")) {
                     firstQuestionFound = true;
-                    int idx = cell.getColumnIndex();
-                    // idx == 6, monitoring, old format
-                    // idx == 7, new format
-                    // idx == 8, new format, with repeat column
-                    if (!(idx == 6 || idx == 7 || idx == 8)) {
-                        errorMap.put(idx, "Found the first question at the wrong column index");
+                    int firstQuestionColumnIndex = cell.getColumnIndex();
+                    if (!isSupportedReportFormat(firstQuestionColumnIndex)) {
+                        errorMap.put(firstQuestionColumnIndex,
+                                "Found the first question at the wrong column index");
                         break;
                     }
-                    if (idx == 8) {
+                    if (firstQuestionColumnIndex == MONITORING_FORMAT_WITH_REPEAT_COLUMN) {
                         hasIterationColumn = true;
                     }
-
+                    log.info("Importing report with first question column index: "
+                            + firstQuestionColumnIndex);
                 }
             }
 
@@ -771,6 +775,13 @@ public class RawDataSpreadsheetImporter implements DataImporter {
         }
 
         return errorMap;
+    }
+
+    private boolean isSupportedReportFormat(int firstQuestionColumnIndex) {
+        return firstQuestionColumnIndex == LEGACY_MONITORING_FORMAT
+                || firstQuestionColumnIndex == MONITORING_FORMAT_WITH_DEVICE_ID_COLUMN
+                || firstQuestionColumnIndex == MONITORING_FORMAT_WITH_REPEAT_COLUMN
+                || firstQuestionColumnIndex == MONITORING_FORMAT_WITH_APPROVAL_COLUMN;
     }
 
     /**
