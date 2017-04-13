@@ -772,7 +772,7 @@ public class RawDataSpreadsheetImporter implements DataImporter {
             Sheet sheet = getDataSheet(file);
             Row headerRow = sheet.getRow(0);
             boolean firstQuestionFound = false;
-            boolean hasIterationColumn = false;
+            int firstQuestionColumnIndex = 0;
 
             for (Cell cell : headerRow) {
                 String cellValue = cell.getStringCellValue();
@@ -791,14 +791,11 @@ public class RawDataSpreadsheetImporter implements DataImporter {
 
                 if (!firstQuestionFound && cellValue.matches("[0-9]+\\|.+")) {
                     firstQuestionFound = true;
-                    int firstQuestionColumnIndex = cell.getColumnIndex();
+                    firstQuestionColumnIndex = cell.getColumnIndex();
                     if (!isSupportedReportFormat(firstQuestionColumnIndex)) {
                         errorMap.put(firstQuestionColumnIndex,
                                 "Found the first question at the wrong column index");
                         break;
-                    }
-                    if (firstQuestionColumnIndex == MONITORING_FORMAT_WITH_REPEAT_COLUMN) {
-                        hasIterationColumn = true;
                     }
                     log.info("Importing report with first question column index: "
                             + firstQuestionColumnIndex);
@@ -809,15 +806,23 @@ public class RawDataSpreadsheetImporter implements DataImporter {
                 errorMap.put(-1, "A question could not be found");
             }
 
-            if (hasIterationColumn) {
+            if (firstQuestionFound && hasRepeatIterationColumn(firstQuestionColumnIndex)) {
                 Iterator<Row> iter = sheet.iterator();
                 iter.next(); // Skip the header row.
+
+                int repeatIterationColumnIndex = -1;
+                if (hasApprovalColumn(firstQuestionColumnIndex)) {
+                    repeatIterationColumnIndex = 2;
+                } else {
+                    repeatIterationColumnIndex = 1;
+                }
+
                 while (iter.hasNext()) { // gets "phantom" rows, too
                     Row row = iter.next();
                     if (isEmptyRow(row)) {
                         break; // phantom row - just stop
                     }
-                    Cell cell = row.getCell(1);
+                    Cell cell = row.getCell(repeatIterationColumnIndex);
                     if (cell == null) {
                         // include 1-based row number in error log
                         errorMap.put(-1, "Repeat column is empty in row: " + row.getRowNum() + 1);
