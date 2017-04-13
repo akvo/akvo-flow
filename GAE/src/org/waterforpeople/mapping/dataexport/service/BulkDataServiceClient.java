@@ -1,5 +1,5 @@
 /*
- *  Copyright (C) 2010-2015 Stichting Akvo (Akvo Foundation)
+ *  Copyright (C) 2010-2017 Stichting Akvo (Akvo Foundation)
  *
  *  This file is part of Akvo FLOW.
  *
@@ -31,18 +31,42 @@ import org.json.JSONObject;
 import org.waterforpeople.mapping.app.gwt.client.devicefiles.DeviceFilesDto;
 import org.waterforpeople.mapping.app.gwt.client.location.PlacemarkDto;
 import org.waterforpeople.mapping.app.gwt.client.location.PlacemarkDtoResponse;
-import org.waterforpeople.mapping.app.gwt.client.survey.*;
+import org.waterforpeople.mapping.app.gwt.client.survey.OptionContainerDto;
+import org.waterforpeople.mapping.app.gwt.client.survey.QuestionDependencyDto;
+import org.waterforpeople.mapping.app.gwt.client.survey.QuestionDto;
+import org.waterforpeople.mapping.app.gwt.client.survey.QuestionGroupDto;
+import org.waterforpeople.mapping.app.gwt.client.survey.QuestionOptionDto;
+import org.waterforpeople.mapping.app.gwt.client.survey.SurveyDto;
+import org.waterforpeople.mapping.app.gwt.client.survey.SurveyGroupDto;
+import org.waterforpeople.mapping.app.gwt.client.survey.TranslationDto;
 import org.waterforpeople.mapping.app.gwt.client.surveyinstance.SurveyInstanceDto;
-import org.waterforpeople.mapping.app.web.dto.*;
+import org.waterforpeople.mapping.app.web.dto.ApprovalStepDTO;
+import org.waterforpeople.mapping.app.web.dto.DataApprovalRequest;
+import org.waterforpeople.mapping.app.web.dto.DataBackoutRequest;
+import org.waterforpeople.mapping.app.web.dto.DeviceFileRestRequest;
+import org.waterforpeople.mapping.app.web.dto.SurveyRestRequest;
 
-import java.io.*;
+import java.io.BufferedReader;
+import java.io.DataOutputStream;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.io.UnsupportedEncodingException;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
+import java.util.StringTokenizer;
+import java.util.TimeZone;
+import java.util.TreeMap;
 import java.util.zip.GZIPInputStream;
 
 /**
