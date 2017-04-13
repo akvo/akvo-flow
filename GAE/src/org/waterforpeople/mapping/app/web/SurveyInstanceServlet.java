@@ -75,7 +75,6 @@ public class SurveyInstanceServlet extends AbstractRestApiServlet {
         if (GET_INSTANCE_DATA_ACTION.equals(siReq.getAction())) {
             return retrieveInstanceData(siReq.surveyInstanceId);
         } else {
-            log.warn("No action specified");
             QuestionAnswerStoreDao qasDao = new QuestionAnswerStoreDao();
             SurveyInstanceResponse sir = new SurveyInstanceResponse();
             if (GEO.equalsIgnoreCase(siReq.getFieldName())) {
