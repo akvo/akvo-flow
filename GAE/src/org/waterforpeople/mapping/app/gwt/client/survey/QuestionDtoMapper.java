@@ -19,8 +19,7 @@ import com.gallatinsystems.survey.domain.Question;
 import org.springframework.beans.BeanUtils;
 
 import javax.annotation.Nullable;
-import java.util.ArrayList;
-import java.util.List;
+import java.util.*;
 
 public class QuestionDtoMapper {
 
@@ -31,14 +30,29 @@ public class QuestionDtoMapper {
     public QuestionDto transform(Question question) {
         if (question != null) {
             QuestionDto questionDto = new QuestionDto();
-            BeanUtils.copyProperties(question, questionDto, new String[] {
-                    "createdDateTime", "type", "optionList", "translationMap",
-                    "questionHelpMediaMap"
-            });
+
+            String[] questionPropertiesNonExistingInQuestionDto = {
+                    "key",
+                    "type",
+                    "createdDateTime",
+                    "lastUpdateDateTime",
+                    "lastUpdateUserId",
+                    "createUserId",
+                    "ancestorIds",
+                    "translationMap",
+                    "questionOptionMap",
+                    "questionHelpMediaMap",
+                    "scoringRules",
+                    "sourceQuestionId",
+                    "referenceId"
+            };
+            BeanUtils.copyProperties(question, questionDto,
+                    questionPropertiesNonExistingInQuestionDto);
             if (question.getType() != null) {
                 questionDto.setType(QuestionDto.QuestionType.valueOf(question.getType()
                         .toString()));
             }
+            questionDto.setKeyId(question.getKey().getId());
             return questionDto;
         } else {
             return null;

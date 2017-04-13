@@ -94,12 +94,6 @@ public class QuestionRestService {
         statusDto.setStatus("");
         statusDto.setMessage("");
 
-        System.out.println(
-                "listQuestions: questionGroupId " + questionGroupId + ", surveyId: " + surveyId
-                        + ", optionQuestionsOnly: " + optionQuestionsOnly + ", preflight: "
-                        + preflight + ", questionId: " + questionId + ", cascadeResourceId: "
-                        + cascadeResourceId);
-
         boolean optionQuestionOnly = optionQuestionsOnly.equals("true");
 
         // if this is a pre-flight delete check, handle that
@@ -133,7 +127,7 @@ public class QuestionRestService {
             for (Question question : questions) {
                 QuestionDto qDto = questionDtoMapper.transform(question);
                 if (qDto != null) {
-                    if (question.isOptionQuestion() && !optionQuestionOnly) {
+                    if (question.getType() == Question.Type.OPTION && !optionQuestionOnly) {
                         Map<Integer, QuestionOption> qoMap = questionOptionDao
                                 .listOptionByQuestion(qDto.getKeyId());
                         List<Long> qoList = new ArrayList<>();
@@ -144,7 +138,6 @@ public class QuestionRestService {
                         }
                         qDto.setQuestionOptions(qoList);
                     }
-                    System.out.println(qDto.toString());
                     results.add(qDto);
                 }
             }
@@ -317,7 +310,7 @@ public class QuestionRestService {
             statusDto.setStatus("ok");
             statusDto.setMessage("");
 
-            if (q.isOptionQuestion()) {
+            if (q.getType() == Question.Type.OPTION) {
                 Map<Integer, QuestionOption> qoMap = questionOptionDao.listOptionByQuestion(dto
                         .getKeyId());
                 List<Long> qoList = new ArrayList<Long>();

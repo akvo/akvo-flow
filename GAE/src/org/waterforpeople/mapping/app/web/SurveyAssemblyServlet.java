@@ -532,7 +532,7 @@ public class SurveyAssemblyServlet extends AbstractRestApiServlet {
         }
 
         boolean hasValidation = false;
-        if (q.getIsName() != null && q.getIsName()) {
+        if (q.getName() != null && q.getName()) {
             ValidationRule validationRule = objFactory.createValidationRule();
             validationRule.setValidationType("name");
             qXML.setValidationRule(validationRule);
