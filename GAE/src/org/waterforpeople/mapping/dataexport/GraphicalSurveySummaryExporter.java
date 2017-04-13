@@ -518,8 +518,7 @@ public class GraphicalSurveySummaryExporter extends SurveySummaryExporter {
                             }
 
                             synchronized (allData) {
-                                allData.add(new InstanceData(instanceDataDto.surveyInstanceData,
-                                        responseMap));
+                                allData.add(new InstanceData(instanceDataDto, responseMap));
                             }
 
                         } catch (Exception e) {
