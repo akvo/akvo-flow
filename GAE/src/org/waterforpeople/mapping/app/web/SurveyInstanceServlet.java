@@ -22,6 +22,9 @@ import java.util.List;
 import javax.servlet.http.HttpServletRequest;
 
 import org.codehaus.jackson.map.ObjectMapper;
+import org.codehaus.jackson.map.annotate.JsonSerialize.Inclusion;
+import org.springframework.beans.BeanUtils;
+import org.waterforpeople.mapping.app.gwt.client.surveyinstance.SurveyInstanceDto;
 import org.waterforpeople.mapping.app.web.dto.InstanceDataDto;
 import org.waterforpeople.mapping.app.web.dto.SurveyInstanceRequest;
 import org.waterforpeople.mapping.app.web.dto.SurveyInstanceResponse;
@@ -93,10 +96,15 @@ public class SurveyInstanceServlet extends AbstractRestApiServlet {
     }
 
     private RestResponse retrieveInstanceData(Long surveyInstanceId) {
-        InstanceDataDto instanceData = new InstanceDataDto();
 
         SurveyInstance si = surveyInstanceDao.getByKey(surveyInstanceId);
-        instanceData.surveyInstanceData = si;
+
+        SurveyInstanceDto siDto = new SurveyInstanceDto();
+        BeanUtils.copyProperties(si, siDto);
+        siDto.setKeyId(si.getKey().getId());
+
+        InstanceDataDto instanceData = new InstanceDataDto();
+        instanceData.surveyInstanceData = siDto;
 
         if (si.getSurveyedLocaleId() != null) {
             instanceData.latestApprovalStatus = retrieveDataPointApprovalStatus(si
@@ -153,6 +161,7 @@ public class SurveyInstanceServlet extends AbstractRestApiServlet {
     protected void writeOkResponse(RestResponse response) throws Exception {
         getResponse().setStatus(200);
         ObjectMapper jsonMapper = new ObjectMapper();
+        jsonMapper.getSerializationConfig().setSerializationInclusion(Inclusion.NON_NULL);
         jsonMapper.writeValue(getResponse().getWriter(), response);
     }
 }

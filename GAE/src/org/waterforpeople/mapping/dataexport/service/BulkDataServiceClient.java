@@ -1,5 +1,5 @@
 /*
- *  Copyright (C) 2010-2015 Stichting Akvo (Akvo Foundation)
+ *  Copyright (C) 2010-2017 Stichting Akvo (Akvo Foundation)
  *
  *  This file is part of Akvo FLOW.
  *
@@ -18,6 +18,7 @@ package org.waterforpeople.mapping.dataexport.service;
 
 import java.io.BufferedReader;
 import java.io.DataOutputStream;
+import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.UnsupportedEncodingException;
@@ -42,6 +43,8 @@ import java.util.zip.GZIPInputStream;
 import org.apache.commons.codec.binary.Base64;
 import org.apache.log4j.Logger;
 import org.codehaus.jackson.JsonNode;
+import org.codehaus.jackson.JsonParseException;
+import org.codehaus.jackson.map.JsonMappingException;
 import org.codehaus.jackson.map.ObjectMapper;
 import org.codehaus.jackson.type.TypeReference;
 import org.json.JSONArray;
@@ -63,12 +66,15 @@ import org.waterforpeople.mapping.app.web.dto.ApprovalStepDTO;
 import org.waterforpeople.mapping.app.web.dto.DataApprovalRequest;
 import org.waterforpeople.mapping.app.web.dto.DataBackoutRequest;
 import org.waterforpeople.mapping.app.web.dto.DeviceFileRestRequest;
+import org.waterforpeople.mapping.app.web.dto.InstanceDataDto;
 import org.waterforpeople.mapping.app.web.dto.SurveyRestRequest;
 
 import com.gallatinsystems.common.util.MD5Util;
 import com.gallatinsystems.framework.rest.RestRequest;
 import com.gallatinsystems.survey.domain.SurveyGroup.PrivacyLevel;
 import com.gallatinsystems.survey.domain.SurveyGroup.ProjectType;
+
+import static org.waterforpeople.mapping.app.web.dto.SurveyInstanceRequest.*;
 
 /**
  * client code for calling the apis for data processing on the server
@@ -82,6 +88,7 @@ public class BulkDataServiceClient {
     private static final String DATA_SERVLET_PATH = "/databackout";
     public static final String RESPONSE_KEY = "dtoList";
     private static final String SURVEY_SERVLET_PATH = "/surveyrestapi";
+    private static final String INSTANCE_DATA_SERVLET_PATH = "/instancedata";
     private static final String DEVICE_FILES_SERVLET_PATH = "/devicefilesrestapi?action=";
     private static final String DATA_APPROVAL_SERVLET_PATH = "/dataapproval";
 
@@ -476,6 +483,37 @@ public class BulkDataServiceClient {
                 + SurveyRestRequest.GET_SURVEY_INSTANCE_ACTION + "&"
                 + SurveyRestRequest.INSTANCE_PARAM + "=" + id, true,
                 apiKey));
+    }
+
+    public static InstanceDataDto fetchInstanceData(Long surveyInstanceId, String serverBase,
+            String apiKey) throws Exception {
+
+        final String baseUrl = serverBase + INSTANCE_DATA_SERVLET_PATH;
+
+        final String urlQueryString = new StringBuilder()
+                .append("?action=").append(GET_INSTANCE_DATA_ACTION)
+                .append("&")
+                .append(SURVEY_INSTANCE_ID_PARAM).append("=").append(surveyInstanceId)
+                .toString();
+
+        final String instanceDataResponse = fetchDataFromServer(baseUrl, urlQueryString, true,
+                apiKey);
+
+        return parseInstanceData(instanceDataResponse);
+    }
+
+    private static InstanceDataDto parseInstanceData(String instanceDataResponse) {
+        try {
+            InstanceDataDto instanceData = JSON_RESPONSE_PARSER.readValue(instanceDataResponse,
+                    InstanceDataDto.class);
+            return instanceData;
+        } catch (JsonParseException | JsonMappingException e) {
+            log.warn("Failed to parse the InstanceDataDto string: " + e);
+        } catch (IOException e) {
+            log.equals(e);
+        }
+
+        return new InstanceDataDto();
     }
 
     /**
