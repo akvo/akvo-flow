@@ -67,7 +67,6 @@ import org.waterforpeople.mapping.app.gwt.client.survey.QuestionOptionDto;
 import org.waterforpeople.mapping.app.gwt.client.survey.SurveyGroupDto;
 import org.waterforpeople.mapping.app.gwt.client.survey.TranslationDto;
 import org.waterforpeople.mapping.app.gwt.client.surveyinstance.SurveyInstanceDto;
-import org.waterforpeople.mapping.app.web.dto.ApprovalStepDTO;
 import org.waterforpeople.mapping.app.web.dto.InstanceDataDto;
 import org.waterforpeople.mapping.app.web.dto.SurveyRestRequest;
 import org.waterforpeople.mapping.dataexport.service.BulkDataServiceClient;
@@ -333,8 +332,6 @@ public class GraphicalSurveySummaryExporter extends SurveySummaryExporter {
     // store indices of file columns for lookup when generating responses
     private Map<String, Integer> columnIndexMap = new HashMap<String, Integer>();
 
-    private Map<Long, ApprovalStepDTO> approvalSteps;
-
     @Override
     public void export(Map<String, String> criteria, File fileName,
             String serverBase, Map<String, String> options) {
@@ -345,10 +342,6 @@ public class GraphicalSurveySummaryExporter extends SurveySummaryExporter {
 
         questionsById = new HashMap<Long, QuestionDto>();
         surveyGroupDto = BulkDataServiceClient.fetchSurveyGroup(surveyId, serverBase, apiKey);
-        if (hasDataApproval()) {
-            approvalSteps = BulkDataServiceClient.fetchMappedApprovalSteps(
-                    surveyGroupDto.getDataApprovalGroupId(), serverBase, apiKey);
-        }
         this.serverBase = serverBase;
         boolean useQuestionId = "true".equals(options.get("useQuestionId"));
         String from = options.get("from");
