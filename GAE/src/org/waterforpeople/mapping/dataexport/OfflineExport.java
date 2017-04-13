@@ -69,7 +69,7 @@ public class OfflineExport extends GraphicalSurveySummaryExporter {
             if (inputFiles != null && inputFiles.size() > 0) {
                 Map<QuestionGroupDto, List<QuestionDto>> questionMap = loadAllQuestions(
                         criteria.get(SurveyRestRequest.SURVEY_ID_PARAM), false,
-                        serverBase, criteria.get("apiKey"));
+                        serverBase, criteria.get("apiKey"), false);
 
                 Workbook wb = new XSSFWorkbook();
 
