@@ -134,6 +134,7 @@ public class QuestionDto extends BaseDto implements NamedObject {
         this.path = path;
     }
 
+    @JsonIgnore
     public QuestionType getQuestionType() {
         return type;
     }
