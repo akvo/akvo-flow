@@ -16,11 +16,7 @@
 
 package org.waterforpeople.mapping.dataexport;
 
-import java.awt.GridLayout;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 import java.io.File;
-import java.io.PrintWriter;
 import java.text.DecimalFormat;
 import java.text.NumberFormat;
 import java.util.ArrayList;
@@ -32,11 +28,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
-
-import javax.swing.JButton;
-import javax.swing.JDialog;
-import javax.swing.JLabel;
-import javax.swing.JPanel;
 
 import org.akvo.flow.domain.DataUtils;
 import org.apache.log4j.Logger;
@@ -304,7 +295,7 @@ public class SurveySummaryExporter extends AbstractDataExporter {
     protected List<QuestionDto> fetchQuestionsOfSurvey(String serverBase, String surveyId, String apiKey)
             throws Exception {
 
-        return parseQuestions2(BulkDataServiceClient.fetchDataFromServer(
+        return parseQuestions(BulkDataServiceClient.fetchDataFromServer(
                 serverBase + SERVLET_URL, "action="
                         + SurveyRestRequest.LIST_SURVEY_QUESTIONS_ACTION + "&"
                         + SurveyRestRequest.SURVEY_ID_PARAM + "="
@@ -346,62 +337,6 @@ public class SurveySummaryExporter extends AbstractDataExporter {
         return dtoList;
     }
 
-    
-    protected List<QuestionDto> parseQuestions(String response) throws Exception {
-        List<QuestionDto> dtoList = new ArrayList<QuestionDto>();
-        JSONArray arr = getJsonArray(response);
-        if (arr != null) {
-            for (int i = 0; i < arr.length(); i++) {
-                JSONObject json = arr.getJSONObject(i);
-                if (json != null) {
-                    QuestionDto dto = new QuestionDto();
-                    try {
-                        if (json.has("text")) {
-                            dto.setText(json.getString("text"));
-                        }
-                        if (json.has("keyId")) {
-                            dto.setKeyId(json.getLong("keyId"));
-                        }
-                        if (json.has("questionTypeString")) {
-                            dto.setType(QuestionType.valueOf(json
-                                    .getString("questionTypeString")));
-                        }
-                        if (!json.isNull("questionId")
-                                && !"null".equals(json.getString("questionId"))) {
-                            dto.setQuestionId(json.getString("questionId"));
-                        }
-                        if (!json.isNull("questionGroupId")) {
-                            dto.setQuestionGroupId(json.getLong("questionGroupId"));
-                        }
-                        if (!json.isNull("order")) {
-                            dto.setOrder(json.getInt("order"));
-                        }
-                        if (!json.isNull("localeNameFlag")) {
-                            dto.setLocaleNameFlag(json.getBoolean("localeNameFlag"));
-                        }
-                        if (!json.isNull("allowOtherFlag")) {
-                            dto.setAllowOtherFlag(json.getBoolean("allowOtherFlag"));
-                        }
-                        if (!json.isNull("caddisflyResourceUuid")) {
-                            dto.setCaddisflyResourceUuid(json.getString("caddisflyResourceUuid"));
-                        }
-                        if (!json.isNull("levelNames")) {
-                            final List<String> levelNames = new ArrayList<String>();
-                            final JSONArray array = json.getJSONArray("levelNames");
-                            for (int c = 0; c < array.length(); c++) {
-                                levelNames.add(array.getString(c));
-                            }
-                            dto.setLevelNames(levelNames);
-                        }
-                        dtoList.add(dto);
-                    } catch (Exception e) {
-                        log.error("Error in json parsing: " + e.getMessage(), e);
-                    }
-                }
-            }
-        }
-        return dtoList;
-    }
 
     /**
      * parses questions using an object mapper
@@ -409,7 +344,7 @@ public class SurveySummaryExporter extends AbstractDataExporter {
      * @return
      * @throws Exception
      */
-    protected List<QuestionDto> parseQuestions2(String response) throws Exception {
+    protected List<QuestionDto> parseQuestions(String response) throws Exception {
         final ObjectMapper JSON_RESPONSE_PARSER = new ObjectMapper();
         List<QuestionDto> dtoList = new ArrayList<QuestionDto>();
 
