@@ -23,9 +23,6 @@ import java.util.*;
 
 public class QuestionDtoMapper {
 
-    public QuestionDtoMapper() {
-    }
-
     @Nullable
     public QuestionDto transform(Question question) {
         if (question != null) {

@@ -103,7 +103,7 @@ public class QuestionRestService {
         statusDto.setStatus("");
         statusDto.setMessage("");
 
-        boolean optionQuestionOnly = optionQuestionsOnly.equals("true");
+        boolean optionQuestionOnly = "true".equals(optionQuestionsOnly);
 
         // if this is a pre-flight delete check, handle that
         if (preflight != null && preflight.equals("delete")

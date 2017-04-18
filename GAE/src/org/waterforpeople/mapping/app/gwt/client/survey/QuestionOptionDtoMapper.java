@@ -22,9 +22,6 @@ import javax.annotation.Nullable;
 
 public class QuestionOptionDtoMapper {
 
-    public QuestionOptionDtoMapper() {
-    }
-
     @Nullable
     public QuestionOptionDto transform(QuestionOption questionOption) {
         QuestionOptionDto qoDto = new QuestionOptionDto();
