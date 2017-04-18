@@ -40,6 +40,10 @@ import java.util.TimeZone;
 import java.util.TreeMap;
 import java.util.zip.GZIPInputStream;
 
+import com.gallatinsystems.common.util.MD5Util;
+import com.gallatinsystems.framework.rest.RestRequest;
+import com.gallatinsystems.survey.domain.SurveyGroup.PrivacyLevel;
+import com.gallatinsystems.survey.domain.SurveyGroup.ProjectType;
 import org.apache.commons.codec.binary.Base64;
 import org.apache.log4j.Logger;
 import org.codehaus.jackson.JsonNode;
@@ -67,10 +71,28 @@ import org.waterforpeople.mapping.app.web.dto.DeviceFileRestRequest;
 import org.waterforpeople.mapping.app.web.dto.InstanceDataDto;
 import org.waterforpeople.mapping.app.web.dto.SurveyRestRequest;
 
-import com.gallatinsystems.common.util.MD5Util;
-import com.gallatinsystems.framework.rest.RestRequest;
-import com.gallatinsystems.survey.domain.SurveyGroup.PrivacyLevel;
-import com.gallatinsystems.survey.domain.SurveyGroup.ProjectType;
+import java.io.BufferedReader;
+import java.io.DataOutputStream;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.io.UnsupportedEncodingException;
+import java.net.HttpURLConnection;
+import java.net.URL;
+import java.net.URLEncoder;
+import java.nio.charset.StandardCharsets;
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
+import java.util.StringTokenizer;
+import java.util.TimeZone;
+import java.util.TreeMap;
+import java.util.zip.GZIPInputStream;
 
 import static org.waterforpeople.mapping.app.web.dto.SurveyInstanceRequest.*;
 
@@ -1026,7 +1048,7 @@ public class BulkDataServiceClient {
                                 dto.setImmutable(json.getBoolean("immutable"));
                             }
                             if (!json.isNull("isName")) {
-                                dto.setIsName(json.getBoolean("isName"));
+                                dto.setName(json.getBoolean("isName"));
                             }
                             if (!json.isNull("localeNameFlag")) {
                                 dto.setLocaleNameFlag(json.getBoolean("localeNameFlag"));

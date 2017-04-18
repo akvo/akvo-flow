@@ -825,7 +825,7 @@ public class SurveyServiceImpl extends RemoteServiceServlet implements
                         }
 
                         boolean hasValidation = false;
-                        if (q.getIsName() != null && q.getIsName()) {
+                        if (q.getName() != null && q.getName()) {
                             ValidationRule validationRule = objFactory
                                     .createValidationRule();
                             validationRule.setValidationType("name");
