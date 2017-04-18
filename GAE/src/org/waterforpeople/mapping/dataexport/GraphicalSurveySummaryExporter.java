@@ -431,7 +431,7 @@ public class GraphicalSurveySummaryExporter extends SurveySummaryExporter {
     }
 
     private boolean hasDataApproval() {
-        return surveyGroupDto.getRequireDataApproval()
+        return surveyGroupDto != null && surveyGroupDto.getRequireDataApproval()
                 && surveyGroupDto.getDataApprovalGroupId() != null;
     }
 
