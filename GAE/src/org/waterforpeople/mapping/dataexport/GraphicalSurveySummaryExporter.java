@@ -64,8 +64,10 @@ import org.waterforpeople.mapping.app.gwt.client.survey.QuestionDto;
 import org.waterforpeople.mapping.app.gwt.client.survey.QuestionDto.QuestionType;
 import org.waterforpeople.mapping.app.gwt.client.survey.QuestionGroupDto;
 import org.waterforpeople.mapping.app.gwt.client.survey.QuestionOptionDto;
+import org.waterforpeople.mapping.app.gwt.client.survey.SurveyGroupDto;
 import org.waterforpeople.mapping.app.gwt.client.survey.TranslationDto;
 import org.waterforpeople.mapping.app.gwt.client.surveyinstance.SurveyInstanceDto;
+import org.waterforpeople.mapping.app.web.dto.InstanceDataDto;
 import org.waterforpeople.mapping.app.web.dto.SurveyRestRequest;
 import org.waterforpeople.mapping.dataexport.service.BulkDataServiceClient;
 import org.waterforpeople.mapping.domain.CaddisflyResource;
@@ -137,6 +139,7 @@ public class GraphicalSurveySummaryExporter extends SurveySummaryExporter {
     private static final Map<String, String> IDENTIFIER_LABEL;
     private static final Map<String, String> DISPLAY_NAME_LABEL;
     private static final Map<String, String> DEVICE_IDENTIFIER_LABEL;
+    private static final Map<String, String> DATA_APPROVAL_STATUS_LABEL;
 
     private static final int CHART_WIDTH = 600;
     private static final int CHART_HEIGHT = 400;
@@ -296,6 +299,10 @@ public class GraphicalSurveySummaryExporter extends SurveySummaryExporter {
         DEVICE_IDENTIFIER_LABEL = new HashMap<String, String>();
         DEVICE_IDENTIFIER_LABEL.put("en", "Device identifier");
         DEVICE_IDENTIFIER_LABEL.put("es", "Identificador de dispositivo");
+
+        DATA_APPROVAL_STATUS_LABEL = new HashMap<String, String>();
+        DATA_APPROVAL_STATUS_LABEL.put("en", "Data approval status");
+        DATA_APPROVAL_STATUS_LABEL.put("es", "Estado de aprobación");
     }
 
     private CellStyle headerStyle;
@@ -308,6 +315,7 @@ public class GraphicalSurveySummaryExporter extends SurveySummaryExporter {
     private boolean performGeoRollup;
     private boolean generateCharts;
     private Map<Long, QuestionDto> questionsById;
+    private SurveyGroupDto surveyGroupDto;
     private boolean lastCollection = false;
     private static final ObjectMapper OBJECT_MAPPER = new ObjectMapper();
     private CaddisflyResourceDao caddisflyResourceDao = new CaddisflyResourceDao();
@@ -327,17 +335,20 @@ public class GraphicalSurveySummaryExporter extends SurveySummaryExporter {
     @Override
     public void export(Map<String, String> criteria, File fileName,
             String serverBase, Map<String, String> options) {
+        final String surveyId = criteria.get(SurveyRestRequest.SURVEY_ID_PARAM).trim();
+        final String apiKey = criteria.get("apiKey").trim();
+
         processOptions(options);
 
         questionsById = new HashMap<Long, QuestionDto>();
+        surveyGroupDto = BulkDataServiceClient.fetchSurveyGroup(surveyId, serverBase, apiKey);
         this.serverBase = serverBase;
         boolean useQuestionId = "true".equals(options.get("useQuestionId"));
         String from = options.get("from");
         String to = options.get("to");
         String limit = options.get("maxDataReportRows");
         try {
-            Map<QuestionGroupDto, List<QuestionDto>> questionMap = loadAllQuestions(
-                    criteria.get(SurveyRestRequest.SURVEY_ID_PARAM),
+            Map<QuestionGroupDto, List<QuestionDto>> questionMap = loadAllQuestions(surveyId,
                     performGeoRollup, serverBase, criteria.get("apiKey"));
             if (questionMap != null) {
                 for (List<QuestionDto> qList : questionMap.values()) {
@@ -419,6 +430,11 @@ public class GraphicalSurveySummaryExporter extends SurveySummaryExporter {
         }
     }
 
+    private boolean hasDataApproval() {
+        return surveyGroupDto.getRequireDataApproval()
+                && surveyGroupDto.getDataApprovalGroupId() != null;
+    }
+
     @SuppressWarnings("unchecked")
     /*
      * Fetches data from FLOW instance, and writes it to a file row by row. Called from export
@@ -486,16 +502,16 @@ public class GraphicalSurveySummaryExporter extends SurveySummaryExporter {
                                     .fetchQuestionResponses(instanceId,
                                             serverBase, key);
 
-                            SurveyInstanceDto dto = BulkDataServiceClient
-                                    .findSurveyInstance(
-                                            Long.parseLong(instanceId.trim()),
+                            InstanceDataDto instanceDataDto = BulkDataServiceClient
+                                    .fetchInstanceData(Long.parseLong(instanceId.trim()),
                                             serverBase, key);
 
-                            if (dto != null) {
+                            if (instanceDataDto.surveyInstanceData != null) {
                                 done = true;
                             }
+
                             synchronized (allData) {
-                                allData.add(new InstanceData(dto, responseMap));
+                                allData.add(new InstanceData(instanceDataDto, responseMap));
                             }
 
                         } catch (Exception e) {
@@ -563,6 +579,12 @@ public class GraphicalSurveySummaryExporter extends SurveySummaryExporter {
 
         createCell(row, columnIndexMap.get(IDENTIFIER_LABEL.get(locale)),
                 dto.getSurveyedLocaleIdentifier());
+
+        if (hasDataApproval()) {
+            createCell(row, columnIndexMap.get(DATA_APPROVAL_STATUS_LABEL.get(locale)),
+                    instanceData.latestApprovalStatus);
+        }
+
         // Write the "Repeat" column
         for (int i = 0; i <= instanceData.maxIterationsCount; i++) {
             Row r = getRow(row.getRowNum() + i, sheet);
@@ -1167,40 +1189,28 @@ public class GraphicalSurveySummaryExporter extends SurveySummaryExporter {
 
         row = getRow(0, sheet);
 
-        int columnIdx = 0;
+        int columnIdx = -1;
 
-        columnIndexMap.put(IDENTIFIER_LABEL.get(locale), columnIdx);
-        createCell(row, columnIdx++, IDENTIFIER_LABEL.get(locale), headerStyle);
+        addMetaDataColumnHeader(IDENTIFIER_LABEL.get(locale), ++columnIdx, row);
 
-        columnIndexMap.put(REPEAT_LABEL.get(locale), columnIdx);
-        createCell(row, columnIdx++, REPEAT_LABEL.get(locale), headerStyle);
+        if (hasDataApproval()) {
+            addMetaDataColumnHeader(DATA_APPROVAL_STATUS_LABEL.get(locale), ++columnIdx, row);
+        }
 
-        columnIndexMap.put(DISPLAY_NAME_LABEL.get(locale), columnIdx);
-        createCell(row, columnIdx++, DISPLAY_NAME_LABEL.get(locale),
-                headerStyle);
-
-        columnIndexMap.put(DEVICE_IDENTIFIER_LABEL.get(locale), columnIdx);
-        createCell(row, columnIdx++, DEVICE_IDENTIFIER_LABEL.get(locale),
-                headerStyle);
-
-        columnIndexMap.put(INSTANCE_LABEL.get(locale), columnIdx);
-        createCell(row, columnIdx++, INSTANCE_LABEL.get(locale), headerStyle);
-
-        columnIndexMap.put(SUB_DATE_LABEL.get(locale), columnIdx);
-        createCell(row, columnIdx++, SUB_DATE_LABEL.get(locale), headerStyle);
-
-        columnIndexMap.put(SUBMITTER_LABEL.get(locale), columnIdx);
-        createCell(row, columnIdx++, SUBMITTER_LABEL.get(locale), headerStyle);
-
-        columnIndexMap.put(DURATION_LABEL.get(locale), columnIdx);
-        createCell(row, columnIdx++, DURATION_LABEL.get(locale), headerStyle);
+        addMetaDataColumnHeader(REPEAT_LABEL.get(locale), ++columnIdx, row);
+        addMetaDataColumnHeader(DISPLAY_NAME_LABEL.get(locale), ++columnIdx, row);
+        addMetaDataColumnHeader(DEVICE_IDENTIFIER_LABEL.get(locale), ++columnIdx, row);
+        addMetaDataColumnHeader(INSTANCE_LABEL.get(locale), ++columnIdx, row);
+        addMetaDataColumnHeader(SUB_DATE_LABEL.get(locale), ++columnIdx, row);
+        addMetaDataColumnHeader(SUBMITTER_LABEL.get(locale), ++columnIdx, row);
+        addMetaDataColumnHeader(DURATION_LABEL.get(locale), ++columnIdx, row);
 
         List<String> questionIdList = new ArrayList<String>();
         List<String> nonSummarizableList = new ArrayList<String>();
         Map<String, CaddisflyResource> caddisflyResourceMap = null;
 
         if (questionMap != null) {
-            int offset = columnIdx;
+            int offset = ++columnIdx;
             for (QuestionGroupDto group : orderedGroupList) {
                 if (questionMap.get(group) != null) {
                     for (QuestionDto q : questionMap.get(group)) {
@@ -1410,6 +1420,14 @@ public class GraphicalSurveySummaryExporter extends SurveySummaryExporter {
         temp[0] = questionIdList;
         temp[1] = nonSummarizableList;
         return temp;
+    }
+
+    /*
+     * Add a meta data column header to the report. The row should be == 0
+     */
+    private void addMetaDataColumnHeader(String columnHeaderName, int columnIdx, Row row) {
+        columnIndexMap.put(columnHeaderName, columnIdx);
+        createCell(row, columnIdx, columnHeaderName, headerStyle);
     }
 
     /**

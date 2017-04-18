@@ -130,11 +130,6 @@
             {{/if}}
           </section>
 
-
-
-
-
-
           <section class="noFormsContainer">
             {{#unless FLOW.projectControl.hasForms}}
               <ul>
@@ -147,9 +142,18 @@
           </section>
 
           <section class="forms">
+
             {{#if FLOW.projectControl.hasForms}}
               <div id="tabs">
-                <h2>{{t _forms}}:</h2>
+                {{#if FLOW.projectControl.currentProject.monitoringGroup}}
+                {{#if view.showAddNewFormButton}}
+                  <nav class="menuTopbar">
+                    <ul>
+                      <li>  <a {{action "createForm" target="FLOW.surveyControl"}} class="button addFormBtn" >{{t _add_new_form}}</a></li>
+                    </ul>
+                  </nav>                      
+                {{/if}}
+            {{/if}}
                 <nav class="tabNav floats-in">
                   <ul>
                     {{#each form in FLOW.surveyControl}}
@@ -157,11 +161,7 @@
                         <a {{action "selectForm" form target="FLOW.surveyControl"}}>{{form.name}}</a></li>
                       {{/view}}
                     {{/each}}
-                    {{#if FLOW.projectControl.currentProject.monitoringGroup}}
-                      {{#if view.showAddNewFormButton}}
-                      <li class="newFormTab"><a {{action "createForm" target="FLOW.surveyControl"}}><span>+</span>{{t _add_new_form}}</a></li>
-                      {{/if}}
-                    {{/if}}
+
                   </ul>
                 </nav>
                 <section class="formsContainer">

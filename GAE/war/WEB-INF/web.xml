@@ -174,6 +174,7 @@
 	<servlet-mapping>
 		<servlet-name>SurveyInstanceServlet</servlet-name>
 		<url-pattern>/surveyinstance</url-pattern>
+        <url-pattern>/instancedata</url-pattern>
 	</servlet-mapping>
 	<servlet>
 		<servlet-name>SurveyalServlet</servlet-name>

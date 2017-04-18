@@ -1,5 +1,5 @@
 /*
- *  Copyright (C) 2013-2015 Stichting Akvo (Akvo Foundation)
+ *  Copyright (C) 2013-2017 Stichting Akvo (Akvo Foundation)
  *
  *  This file is part of Akvo FLOW.
  *
@@ -19,8 +19,10 @@ package com.gallatinsystems.survey.dao;
 import java.net.URLEncoder;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.TreeMap;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -51,10 +53,13 @@ import com.google.appengine.api.taskqueue.Queue;
 import com.google.appengine.api.taskqueue.QueueFactory;
 import com.google.appengine.api.taskqueue.TaskOptions;
 
+/**
+ * @author stellan
+ *
+ */
 public class SurveyUtils {
 
-    private static final Logger log = Logger.getLogger(SurveyUtils.class
-            .getName());
+    private static final Logger log = Logger.getLogger(SurveyUtils.class.getName());
 
     public static Survey copySurvey(Survey source, SurveyDto dto) {
 
@@ -101,8 +106,18 @@ public class SurveyUtils {
         return newSurvey;
     }
 
+    
+    /**
+     * @param sourceGroup
+     * @param copyGroup
+     * @param newSurveyId
+     * @param qDependencyResolutionMap
+     * @return
+     * 
+     * copies a question group to another survey or within the same survey (which risks creating duplicated question ids).
+     */
     public static QuestionGroup copyQuestionGroup(QuestionGroup sourceGroup,
-            QuestionGroup copyGroup, Long newSurveyId, Map<Long, Long> qDependencyResolutionMap) {
+            QuestionGroup copyGroup, Long newSurveyId, Map<Long, Long> qDependencyResolutionMap, Set<String> idsInUse) {
 
         final QuestionDao qDao = new QuestionDao();
         final Long sourceGroupId = sourceGroup.getKey().getId();
@@ -123,7 +138,7 @@ public class SurveyUtils {
         List<Question> qCopyList = new ArrayList<Question>();
         for (Question question : qList) {
             final Question questionCopy = SurveyUtils.copyQuestion(question, copyGroupId, qCount++,
-                    newSurveyId);
+                    newSurveyId, idsInUse);
             qCopyList.add(questionCopy);
         }
 
@@ -151,8 +166,18 @@ public class SurveyUtils {
         return copyGroup;
     }
 
+    /**
+     * @param source
+     * @param newQuestionGroupId
+     * @param order
+     * @param newSurveyId
+     * @param idsInUse the set of all questionIds in use anywhere in the survey group
+     * @return the new question
+     * 
+     * copies one question, ensuring that it has a unique questionId
+     */
     public static Question copyQuestion(Question source,
-            Long newQuestionGroupId, Integer order, Long newSurveyId) {
+            Long newQuestionGroupId, Integer order, Long newSurveyId, Set<String> idsInUse) {
 
         final QuestionDao qDao = new QuestionDao();
         final QuestionOptionDao qoDao = new QuestionOptionDao();
@@ -168,21 +193,35 @@ public class SurveyUtils {
         final String[] allExcludedProps = (String[]) ArrayUtils.addAll(
                 questionExcludedProps, Constants.EXCLUDED_PROPERTIES);
 
+        log.log(Level.INFO, "Copying `Question` " + sourceQuestionId);
+
         BeanUtils.copyProperties(source, tmp, allExcludedProps);
         tmp.setOrder(order);
         tmp.setSourceQuestionId(sourceQuestionId);
 
         if (source.getQuestionId() != null) {
-            tmp.setQuestionId(source.getQuestionId() + "_copy");
+            if (idsInUse != null) { //must avoid these
+                String newId = source.getQuestionId() + "_1";
+                int index = 2;
+                while  (idsInUse.contains(newId)) {
+                    newId = source.getQuestionId() + "_" + index++;
+                }
+                tmp.setQuestionId(newId);
+                //one more to avoid
+                idsInUse.add(newId);
+                log.log(Level.FINE, "Changing QuestionId from " + source.getQuestionId() + " to " + newId);
+            } else {
+                tmp.setQuestionId(source.getQuestionId());
+                log.log(Level.FINE, "Keeping QuestionId " + source.getQuestionId());
+            }
         }
-        log.log(Level.INFO, "Copying `Question` " + sourceQuestionId);
 
         final Question newQuestion = qDao.save(tmp, newQuestionGroupId);
 
-        log.log(Level.INFO, "New `Question` ID: "
+        log.log(Level.FINE, "New `Question` ID: "
                 + newQuestion.getKey().getId());
 
-        log.log(Level.INFO, "Copying question translations");
+        log.log(Level.FINE, "Copying question translations");
 
         SurveyUtils.copyTranslation(sourceQuestionId, newQuestion
                 .getKey().getId(), newSurveyId, newQuestionGroupId, ParentType.QUESTION_NAME,
@@ -201,7 +240,7 @@ public class SurveyUtils {
             return newQuestion;
         }
 
-        log.log(Level.INFO, "Copying " + options.values().size()
+        log.log(Level.FINE, "Copying " + options.values().size()
                 + " `QuestionOption`");
 
         // Copying Question Options
@@ -478,5 +517,28 @@ public class SurveyUtils {
 
         List<Survey> childForms = new SurveyDAO().listSurveysByGroup(surveyGroupId);
         surveyGroup.setChildForms(childForms);
+    }
+    
+    /**
+     * to prevent collisions, it is useful to collect all ids already in use in a survey group
+     * @param surveyId
+     * @return
+     */
+    public static Set<String> listQuestionIdsUsedInSurveyGroup(Long surveyId) {
+        final SurveyDAO sDao = new SurveyDAO();
+        final QuestionDao qDao = new QuestionDao();
+        Set<String> idsInUse = new HashSet<>();        
+
+        Survey s0 = sDao.getById(surveyId);
+        final Long surveyGroupId = s0.getSurveyGroupId();
+        List<Survey> sList = sDao.listSurveysByGroup(surveyGroupId);
+        for (Survey s : sList) {
+            List<Question> qList = qDao.listQuestionsBySurvey(s.getKey().getId());
+            for (Question q : qList) {
+                idsInUse.add(q.getQuestionId());
+            }
+        }
+
+        return idsInUse;
     }
 }
