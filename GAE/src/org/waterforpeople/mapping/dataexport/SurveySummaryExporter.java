@@ -306,9 +306,9 @@ public class SurveySummaryExporter extends AbstractDataExporter {
                         if (json.has("keyId")) {
                             dto.setKeyId(json.getLong("keyId"));
                         }
-                        if (json.has("questionTypeString")) {
+                        if (json.has("type")) {
                             dto.setType(QuestionType.valueOf(json
-                                    .getString("questionTypeString")));
+                                    .getString("type")));
                         }
                         if (!json.isNull("questionId")
                                 && !"null".equals(json.getString("questionId"))) {
