@@ -23,6 +23,7 @@ import java.util.SortedMap;
 import java.util.TreeMap;
 
 import org.waterforpeople.mapping.app.gwt.client.surveyinstance.SurveyInstanceDto;
+import org.waterforpeople.mapping.app.web.dto.InstanceDataDto;
 
 public class InstanceData {
 
@@ -30,6 +31,12 @@ public class InstanceData {
     public final Map<Long, SortedMap<Long, String>> responseMap;
     public final SurveyInstanceDto surveyInstanceDto;
     public long maxIterationsCount;
+    public String latestApprovalStatus;
+
+    public InstanceData(InstanceDataDto instanceDataDto, Map<Long, Map<Long, String>> responseMap) {
+        this(instanceDataDto.surveyInstanceData, responseMap);
+        this.latestApprovalStatus = instanceDataDto.latestApprovalStatus;
+    }
 
     public InstanceData(SurveyInstanceDto surveyInstanceDto,
             Map<Long, Map<Long, String>> responseMap) {

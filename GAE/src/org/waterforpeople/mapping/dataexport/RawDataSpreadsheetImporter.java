@@ -68,6 +68,21 @@ public class RawDataSpreadsheetImporter implements DataImporter {
     private List<String> errorIds;
     private static final ObjectMapper OBJECT_MAPPER = new ObjectMapper();
 
+    private static final int LEGACY_MONITORING_FORMAT = 6;
+    private static final int MONITORING_FORMAT_WITH_DEVICE_ID_COLUMN = 7;
+    private static final int MONITORING_FORMAT_WITH_REPEAT_COLUMN = 8;
+    private static final int MONITORING_FORMAT_WITH_APPROVAL_COLUMN = 9;
+
+    public static final String DATAPOINT_IDENTIFIER_COLUMN_KEY = "dataPointIdentifier";
+    private static final String DATAPOINT_APPROVAL_COLUMN_KEY = "dataPointApproval";
+    public static final String REPEAT_COLUMN_KEY = "repeat";
+    public static final String DATAPOINT_NAME_COLUMN_KEY = "dataPointDisplayName";
+    public static final String DEVICE_IDENTIFIER_COLUMN_KEY = "deviceIdentifier";
+    public static final String SURVEY_INSTANCE_COLUMN_KEY = "surveyInstanceId";
+    public static final String COLLECTION_DATE_COLUMN_KEY = "collectionDate";
+    public static final String SUBMITTER_COLUMN_KEY = "submitterName";
+    public static final String DURATION_COLUMN_KEY = "surveyalTime";
+
     /**
      * opens a file input stream using the file passed in and tries to return the first worksheet in
      * that file
@@ -189,18 +204,14 @@ public class RawDataSpreadsheetImporter implements DataImporter {
             md5Column++;
         }
 
-        // TODO Consider removing this when old (pre repeat question groups) reports no longer need
-        // to be supported
         int firstQuestionColumnIndex = Collections.min(columnIndexToQuestionId.keySet());
-        boolean hasIterationColumn = firstQuestionColumnIndex == 8;
-        boolean hasDeviceIdentifierColumn = firstQuestionColumnIndex == 8
-                || firstQuestionColumnIndex == 7;
+        Map<String, Integer> metadataColumnHeaderIndex = calculateMetadataColumnIndex(firstQuestionColumnIndex);
 
         int row = 1;
         while (true) {
-            InstanceData instanceData = parseInstance(sheet, row, questionIdToQuestionDto,
-                    columnIndexToQuestionId, optionNodes, hasIterationColumn,
-                    hasDeviceIdentifierColumn);
+            InstanceData instanceData = parseInstance(sheet, row, metadataColumnHeaderIndex,
+                    firstQuestionColumnIndex, questionIdToQuestionDto, columnIndexToQuestionId,
+                    optionNodes);
 
             if (instanceData == null) {
                 break;
@@ -230,21 +241,65 @@ public class RawDataSpreadsheetImporter implements DataImporter {
         return result;
     }
 
+    private static Map<String, Integer> calculateMetadataColumnIndex(int firstQuestionColumnIndex) {
+        Map<String, Integer> metadataColumnIndex = new HashMap<>();
+
+        int currentColumnIndex = -1;
+
+        metadataColumnIndex.put(DATAPOINT_IDENTIFIER_COLUMN_KEY, ++currentColumnIndex);
+
+        if (hasApprovalColumn(firstQuestionColumnIndex)) {
+            metadataColumnIndex.put(DATAPOINT_APPROVAL_COLUMN_KEY, ++currentColumnIndex);
+        }
+
+        if (hasRepeatIterationColumn(firstQuestionColumnIndex)) {
+            metadataColumnIndex.put(REPEAT_COLUMN_KEY, ++currentColumnIndex);
+        }
+
+        metadataColumnIndex.put(DATAPOINT_NAME_COLUMN_KEY, ++currentColumnIndex);
+
+        if (hasDeviceIdentifierColumn(firstQuestionColumnIndex)) {
+            metadataColumnIndex.put(DEVICE_IDENTIFIER_COLUMN_KEY, ++currentColumnIndex);
+        }
+        metadataColumnIndex.put(SURVEY_INSTANCE_COLUMN_KEY, ++currentColumnIndex);
+        metadataColumnIndex.put(COLLECTION_DATE_COLUMN_KEY, ++currentColumnIndex);
+        metadataColumnIndex.put(SUBMITTER_COLUMN_KEY, ++currentColumnIndex);
+        metadataColumnIndex.put(DURATION_COLUMN_KEY, ++currentColumnIndex);
+
+        return metadataColumnIndex;
+    }
+
+    private static boolean hasApprovalColumn(int firstQuestionColumnIndex) {
+        return firstQuestionColumnIndex == MONITORING_FORMAT_WITH_APPROVAL_COLUMN;
+    }
+
+    private static boolean hasRepeatIterationColumn(int firstQuestionColumnIndex) {
+        return hasApprovalColumn(firstQuestionColumnIndex)
+                || firstQuestionColumnIndex == MONITORING_FORMAT_WITH_REPEAT_COLUMN;
+    }
+
+    private static boolean hasDeviceIdentifierColumn(int firstQuestionColumnIndex) {
+        return hasRepeatIterationColumn(firstQuestionColumnIndex)
+                || firstQuestionColumnIndex == MONITORING_FORMAT_WITH_DEVICE_ID_COLUMN;
+    }
+
     /**
      * Parse an instance starting from startRow
      *
      * @param sheet
      * @param startRow
-     * @param columnIndexToQuestionId
+     * @param firstQuestionColumnIndex
      * @param questionIdToQuestionDto
+     * @param columnIndexToQuestionId
      * @param optionNodes
      * @return InstanceData
      */
     public InstanceData parseInstance(Sheet sheet, int startRow,
+            Map<String, Integer> metadataColumnHeaderIndex,
+            int firstQuestionColumnIndex,
             Map<Long, QuestionDto> questionIdToQuestionDto,
             Map<Integer, Long> columnIndexToQuestionId,
-            Map<Long, List<QuestionOptionDto>> optionNodes, boolean hasIterationColumn,
-            boolean hasDeviceIdentifierColumn) {
+            Map<Long, List<QuestionOptionDto>> optionNodes) {
 
         // File layout
         // 0. SurveyedLocaleIdentifier
@@ -256,7 +311,7 @@ public class RawDataSpreadsheetImporter implements DataImporter {
         // 6. SubmitterName
         // 7. SurveyalTime
 
-        // 8 - N. Questions
+        // 9 - N. Questions
         // N + 1. Digest
 
         // First check if we are done with the sheet
@@ -265,33 +320,37 @@ public class RawDataSpreadsheetImporter implements DataImporter {
             return null;
         }
 
-        int firstQuestionColumnIndex = Collections.min(columnIndexToQuestionId.keySet());
-        String surveyedLocaleIdentifier = ExportImportUtils.parseCellAsString(baseRow.getCell(0));
-        String surveyedLocaleDisplayName = ExportImportUtils.parseCellAsString(baseRow
-                .getCell(hasIterationColumn ? 2 : 1));
+        String surveyedLocaleIdentifier = getMetadataCellContent(baseRow,
+                metadataColumnHeaderIndex, DATAPOINT_IDENTIFIER_COLUMN_KEY);
+        String surveyedLocaleDisplayName = getMetadataCellContent(baseRow,
+                metadataColumnHeaderIndex, DATAPOINT_NAME_COLUMN_KEY);
+
         String deviceIdentifier = "";
-        if (hasDeviceIdentifierColumn) {
-            deviceIdentifier = ExportImportUtils.parseCellAsString(baseRow
-                    .getCell(hasIterationColumn ? 3 : 2));
+        if (hasDeviceIdentifierColumn(firstQuestionColumnIndex)) {
+            deviceIdentifier = getMetadataCellContent(baseRow, metadataColumnHeaderIndex,
+                    DEVICE_IDENTIFIER_COLUMN_KEY);
         }
-        String surveyInstanceId = ExportImportUtils.parseCellAsString(baseRow
-                .getCell(firstQuestionColumnIndex - 4));
-        Date collectionDate = ExportImportUtils.parseSpreadsheetDate(ExportImportUtils
-                .parseCellAsString(baseRow.getCell(firstQuestionColumnIndex - 3)));
-        String submitterName = ExportImportUtils.parseCellAsString(baseRow
-                .getCell(firstQuestionColumnIndex - 2));
-        String surveyalTime = ExportImportUtils.parseCellAsString(baseRow
-                .getCell(firstQuestionColumnIndex - 1));
+
+        String surveyInstanceId = getMetadataCellContent(baseRow, metadataColumnHeaderIndex,
+                SURVEY_INSTANCE_COLUMN_KEY);
+        Date collectionDate = ExportImportUtils.parseSpreadsheetDate(getMetadataCellContent(
+                baseRow, metadataColumnHeaderIndex, COLLECTION_DATE_COLUMN_KEY));
+        String submitterName = getMetadataCellContent(baseRow, metadataColumnHeaderIndex,
+                SUBMITTER_COLUMN_KEY);
+        String surveyalTime = getMetadataCellContent(baseRow, metadataColumnHeaderIndex,
+                DURATION_COLUMN_KEY);
 
         int iterations = 1;
+        int repeatIterationColumnIndex = metadataColumnHeaderIndex.get(REPEAT_COLUMN_KEY);
 
         // Count the maximum number of iterations for this instance
-        if (hasIterationColumn) {
+        if (hasRepeatIterationColumn(firstQuestionColumnIndex)) {
             while (true) {
                 Row row = sheet.getRow(startRow + iterations);
                 if (row == null // no row
-                        || isEmptyCell(row.getCell(1))
-                        || ExportImportUtils.parseCellAsString(row.getCell(1)).equals("1") // next q
+                        || isEmptyCell(row.getCell(repeatIterationColumnIndex))
+                        || ExportImportUtils.parseCellAsString(
+                                row.getCell(repeatIterationColumnIndex)).equals("1") // next q
                 ) {
                     break;
                 }
@@ -307,17 +366,18 @@ public class RawDataSpreadsheetImporter implements DataImporter {
             long questionId = m.getValue();
 
             QuestionDto questionDto = questionIdToQuestionDto.get(questionId);
-            QuestionType questionType = questionDto.getQuestionType();
+            QuestionType questionType = questionDto.getType();
 
             for (int iter = 0; iter < iterations; iter++) {
 
                 Row iterationRow = sheet.getRow(startRow + iter);
 
                 long iteration = 1;
-                if (hasIterationColumn) {
-                    Cell cell = iterationRow.getCell(1);
+                if (hasRepeatIterationColumn(firstQuestionColumnIndex)) {
+                    Cell cell = iterationRow.getCell(repeatIterationColumnIndex);
                     if (cell != null) {
-                        iteration = (long) iterationRow.getCell(1).getNumericCellValue();
+                        iteration = (long) iterationRow.getCell(repeatIterationColumnIndex)
+                                .getNumericCellValue();
                     }
                 }
                 String val = "";
@@ -479,6 +539,12 @@ public class RawDataSpreadsheetImporter implements DataImporter {
         return instanceData;
     }
 
+    private static String getMetadataCellContent(Row baseRow,
+            Map<String, Integer> metadataColumnHeaderIndex, String metadataCellColumnKey) {
+        Cell metadataCell = baseRow.getCell(metadataColumnHeaderIndex.get(metadataCellColumnKey));
+        return ExportImportUtils.parseCellAsString(metadataCell);
+    }
+
     /**
      * Return a map of column index -> question id
      *
@@ -542,7 +608,7 @@ public class RawDataSpreadsheetImporter implements DataImporter {
         String apiKey = criteria.get("apiKey");
         List<Long> optionQuestionIds = new ArrayList<>();
         for (QuestionDto question : questions) {
-            if (QuestionType.OPTION.equals(question.getQuestionType())) {
+            if (QuestionType.OPTION.equals(question.getType())) {
                 optionQuestionIds.add(question.getKeyId());
             }
         }
@@ -604,7 +670,7 @@ public class RawDataSpreadsheetImporter implements DataImporter {
             String typeString = "VALUE";
             QuestionDto questionDto = questionIdToQuestionDto.get(questionId);
             if (questionDto != null) {
-                switch (questionDto.getQuestionType()) {
+                switch (questionDto.getType()) {
                     case GEO:
                         typeString = "GEO";
                         break;
@@ -706,7 +772,7 @@ public class RawDataSpreadsheetImporter implements DataImporter {
             Sheet sheet = getDataSheet(file);
             Row headerRow = sheet.getRow(0);
             boolean firstQuestionFound = false;
-            boolean hasIterationColumn = false;
+            int firstQuestionColumnIndex = 0;
 
             for (Cell cell : headerRow) {
                 String cellValue = cell.getStringCellValue();
@@ -725,18 +791,14 @@ public class RawDataSpreadsheetImporter implements DataImporter {
 
                 if (!firstQuestionFound && cellValue.matches("[0-9]+\\|.+")) {
                     firstQuestionFound = true;
-                    int idx = cell.getColumnIndex();
-                    // idx == 6, monitoring, old format
-                    // idx == 7, new format
-                    // idx == 8, new format, with repeat column
-                    if (!(idx == 6 || idx == 7 || idx == 8)) {
-                        errorMap.put(idx, "Found the first question at the wrong column index");
+                    firstQuestionColumnIndex = cell.getColumnIndex();
+                    if (!isSupportedReportFormat(firstQuestionColumnIndex)) {
+                        errorMap.put(firstQuestionColumnIndex,
+                                "Found the first question at the wrong column index");
                         break;
                     }
-                    if (idx == 8) {
-                        hasIterationColumn = true;
-                    }
-
+                    log.info("Importing report with first question column index: "
+                            + firstQuestionColumnIndex);
                 }
             }
 
@@ -744,15 +806,23 @@ public class RawDataSpreadsheetImporter implements DataImporter {
                 errorMap.put(-1, "A question could not be found");
             }
 
-            if (hasIterationColumn) {
+            if (firstQuestionFound && hasRepeatIterationColumn(firstQuestionColumnIndex)) {
                 Iterator<Row> iter = sheet.iterator();
                 iter.next(); // Skip the header row.
+
+                int repeatIterationColumnIndex = -1;
+                if (hasApprovalColumn(firstQuestionColumnIndex)) {
+                    repeatIterationColumnIndex = 2;
+                } else {
+                    repeatIterationColumnIndex = 1;
+                }
+
                 while (iter.hasNext()) { // gets "phantom" rows, too
                     Row row = iter.next();
                     if (isEmptyRow(row)) {
                         break; // phantom row - just stop
                     }
-                    Cell cell = row.getCell(1);
+                    Cell cell = row.getCell(repeatIterationColumnIndex);
                     if (cell == null) {
                         // include 1-based row number in error log
                         errorMap.put(-1, "Repeat column is empty in row: " + row.getRowNum() + 1);
@@ -771,6 +841,13 @@ public class RawDataSpreadsheetImporter implements DataImporter {
         }
 
         return errorMap;
+    }
+
+    private boolean isSupportedReportFormat(int firstQuestionColumnIndex) {
+        return firstQuestionColumnIndex == LEGACY_MONITORING_FORMAT
+                || firstQuestionColumnIndex == MONITORING_FORMAT_WITH_DEVICE_ID_COLUMN
+                || firstQuestionColumnIndex == MONITORING_FORMAT_WITH_REPEAT_COLUMN
+                || firstQuestionColumnIndex == MONITORING_FORMAT_WITH_APPROVAL_COLUMN;
     }
 
     /**

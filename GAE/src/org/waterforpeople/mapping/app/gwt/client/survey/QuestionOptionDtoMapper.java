@@ -13,18 +13,22 @@
  *
  *  The full license text can also be seen at <http://www.gnu.org/licenses/agpl.html>.
  */
+package org.waterforpeople.mapping.app.gwt.client.survey;
 
-package org.waterforpeople.mapping.app.web.dto;
+import com.gallatinsystems.survey.domain.QuestionOption;
+import org.springframework.beans.BeanUtils;
 
-import java.util.List;
+import javax.annotation.Nullable;
 
-import com.gallatinsystems.framework.gwt.dto.client.BaseDto;
-import com.gallatinsystems.framework.rest.RestResponse;
+public class QuestionOptionDtoMapper {
 
-public class DataApprovalRestResponse extends RestResponse {
-
-    private static final long serialVersionUID = -951447661576733210L;
-
-    public List<? extends BaseDto> dataApprovalList;
-
+    @Nullable
+    public QuestionOptionDto transform(QuestionOption questionOption) {
+        QuestionOptionDto qoDto = new QuestionOptionDto();
+        BeanUtils.copyProperties(questionOption, qoDto, new String[] {
+                "translationMap"
+        });
+        qoDto.setKeyId(questionOption.getKeyId());
+        return qoDto;
+    }
 }
