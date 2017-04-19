@@ -1098,9 +1098,9 @@ public class BulkDataServiceClient {
                                 dto.setTranslationMap(parseTranslations(json
                                         .getJSONObject("translationMap")));
                             }
-                            if (!json.isNull("questionTypeString")) {
+                            if (!json.isNull("type")) {
                                 dto.setType(QuestionDto.QuestionType.valueOf(json
-                                        .getString("questionTypeString")));
+                                        .getString("type")));
                             }
                             if (!json.isNull("allowPoints")) {
                                 dto.setAllowPoints(json.getBoolean("allowPoints"));
