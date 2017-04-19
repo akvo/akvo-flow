@@ -199,6 +199,10 @@ public class QuestionDto extends BaseDto {
         this.type = type;
     }
 
+    public QuestionType getQuestionType() {
+        return type;
+    }
+
     public List<QuestionHelpDto> getQuestionHelpList() {
         return questionHelpList;
     }
