@@ -144,7 +144,7 @@
                             {{#each result in view.testResult}}
                                 <br><div>{{result.name}} : {{result.value}} {{result.unit}}</div>
                             {{/each}}<br>
-                            <div class="signatureImage"><img {{bindAttr src="view.caddisflyImageURL"}} /></div>
+                            <div class="signatureImage caddisflyImg"><img {{bindAttr src="view.caddisflyImageURL"}} /></div>
                         {{else}}
                           <span>{{QA.value}} {{#with QA}}{{if_blank value}}{{/with}}</span>
                         {{/if}} {{/if}} {{/if}} {{/if}} {{/if}} {{/if}} {{/if}} {{/if}}
