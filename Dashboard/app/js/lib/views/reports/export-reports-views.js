@@ -17,11 +17,6 @@ FLOW.ReportLoader = Ember.Object.create({
         useQuestionId: 'false'
       }
     },
-    RAW_DATA_TEXT: {
-        surveyId: '75201',
-        exportType: 'RAW_DATA_TEXT',
-        opts: {}
-    },
     GEOSHAPE: {
       surveyId: '75201',
       exportType: 'GEOSHAPE',
@@ -220,15 +215,6 @@ FLOW.ExportReportsAppletView = FLOW.View.extend({
 
   toggleShowAdvancedSettings: function() {
     this.set('showAdvancedSettings', !this.get('showAdvancedSettings'));
-  },
-
-  showRawTextFileExport: function () {
-	var sId = this.get('selectedSurvey');
-    if (!sId) {
-	  this.showWarning();
-    return;
-	}
-	FLOW.ReportLoader.load('RAW_DATA_TEXT', sId);
   },
 
   showComprehensiveReport: function () {
