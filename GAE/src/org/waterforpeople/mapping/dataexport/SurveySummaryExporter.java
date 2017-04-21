@@ -188,7 +188,7 @@ public class SurveySummaryExporter extends AbstractDataExporter {
      * @throws Exception
      */
     protected Map<QuestionGroupDto, List<QuestionDto>> loadAllQuestions(
-            String surveyId, boolean performRollups, String serverBase, String apiKey, boolean loadOptionNames)
+            String surveyId, boolean performRollups, String serverBase, String apiKey)
             throws Exception {
         Map<QuestionGroupDto, List<QuestionDto>> questionMap = new HashMap<>();
         //we need the ordering of groups and questions in them; fetching in nested loops is inefficient so
@@ -231,22 +231,18 @@ public class SurveySummaryExporter extends AbstractDataExporter {
             questionMap.put(group, questions);
         }
         
-        if (loadOptionNames) {
-            //get minimal option info, no translations
-            loadQuestionOptions(surveyId, serverBase, questionMap, apiKey);
-        }
-        
         return questionMap;
     }
 
     
     /**
-     * calls the server to augment the data already loaded in each QuestionDto in the map.
+     * calls the server to augment the data already loaded in each QuestionDto in the map
+     * with minimal option info, no translations
      *
      * @param questionMap questionDtos keyed by id
      * @param apiKey
      */
-    private void loadQuestionOptions(
+    protected void loadQuestionOptions(
             String surveyId,
             String serverBase,
             Map<QuestionGroupDto, List<QuestionDto>> questionMap,
