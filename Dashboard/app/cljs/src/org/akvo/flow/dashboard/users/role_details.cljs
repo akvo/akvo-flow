@@ -32,6 +32,7 @@
    "FORM_READ" (t> _access_forms)
    "FORM_UPDATE" (t> _edit_forms)
    "FORM_DELETE" (t> _delete_forms)
+   "DATA_APPROVE_MANAGE" (t> _data_approval_manage)
    "DATA_CLEANING" (t> _data_cleaning)
    "DATA_READ" (t> _read_data)
    "DATA_UPDATE" (t> _edit_data)
