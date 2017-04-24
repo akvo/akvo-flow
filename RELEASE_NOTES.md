@@ -1,5 +1,24 @@
 # Akvo Flow Release Notes
 ----
+# 1.9.16 Optimised Octopus
+Date: 20 April 2017
+
+## New and noteworthy
+* **Data approval** - Reports will include data approval status [#1666].
+
+## Resolved issues
+* **Remove _copy from question IDs** - Question IDs will no longer get _copy appended to them when a survey is copied. When you copy a question group, any IDs that would collide will get _1, _2 etc. appended to them [#1203].
+* **Code clean-up** - We removed unused and obsolete code [#555].
+* **Form tabs got an overhaul** - The add form button should always be visble, and long names are handled better [#1975].
+* **Survey and folder names** - Improved handling while moving/copying should make them no longer overlap the guide text [#1954].
+* **`Next` and `Previous` links** - we improved the alignment [#2017].
+* **Limit zoom-out on mapbox** - We set it to max 5000 km, so that the world is not drawn more than once [#2001].
+* **Performance improvements** - We improved loading of questions and question options [#1442].
+* **Naming of CSS elements** - These were improved [#1994].
+* **Exposed /remote_api on a different endpoint** - to enable tracing [#1985].
+* **Layout improvements** -  We gave maps more space [#2003], aligned survey breadcrumb and buttons [#2000] and decreased white space in Manual survey transfer [#1997].
+
+
 # 1.9.15 Nifty Nuthatch
 Date: 20 March 2017
 
