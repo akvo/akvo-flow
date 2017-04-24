@@ -16,15 +16,12 @@
 
 package org.waterforpeople.mapping.dataexport;
 
-import java.awt.GridLayout;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 import java.io.File;
-import java.io.PrintWriter;
 import java.text.DecimalFormat;
 import java.text.NumberFormat;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.Comparator;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -32,16 +29,16 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
 
-import javax.swing.JButton;
-import javax.swing.JDialog;
-import javax.swing.JLabel;
-import javax.swing.JPanel;
-
 import org.akvo.flow.domain.DataUtils;
 import org.apache.log4j.Logger;
+import org.codehaus.jackson.JsonNode;
+import org.codehaus.jackson.map.ObjectMapper;
+import org.codehaus.jackson.type.TypeReference;
 import org.json.JSONArray;
 import org.json.JSONObject;
+import org.waterforpeople.mapping.app.gwt.client.survey.OptionContainerDto;
 import org.waterforpeople.mapping.app.gwt.client.survey.QuestionDto;
+import org.waterforpeople.mapping.app.gwt.client.survey.QuestionOptionDto;
 import org.waterforpeople.mapping.app.gwt.client.survey.QuestionDto.QuestionType;
 import org.waterforpeople.mapping.app.gwt.client.survey.QuestionGroupDto;
 import org.waterforpeople.mapping.app.web.dto.SurveyRestRequest;
@@ -123,38 +120,6 @@ public class SurveySummaryExporter extends AbstractDataExporter {
     @Override
     public void export(Map<String, String> criteria, File fileName,
             String serverBase, Map<String, String> options) {
-        InputDialog dia = new InputDialog();
-        PrintWriter pw = null;
-        try {
-            pw = new PrintWriter(fileName);
-            writeHeader(pw, dia.getDoRollup());
-            Map<QuestionGroupDto, List<QuestionDto>> questionMap = loadAllQuestions(
-                    criteria.get(SurveyRestRequest.SURVEY_ID_PARAM), true,
-                    serverBase, criteria.get("apiKey"));
-            if (questionMap.size() > 0) {
-                SummaryModel model = buildDataModel(
-                        criteria.get(SurveyRestRequest.SURVEY_ID_PARAM),
-                        serverBase, criteria.get("apiKey"));
-                for (QuestionGroupDto group : orderedGroupList) {
-                    for (QuestionDto question : questionMap.get(group)) {
-                        pw.print(model.outputQuestion(group.getDisplayName()
-                                .trim(), question.getText().trim(), question
-                                .getKeyId().toString(), dia.getDoRollup()));
-                    }
-                }
-            } else {
-                log.info("No questions for survey: "
-                        + criteria.get(SurveyRestRequest.SURVEY_ID_PARAM) + " - instance: "
-                        + serverBase);
-            }
-
-        } catch (Exception e) {
-            e.printStackTrace();
-        } finally {
-            if (pw != null) {
-                pw.close();
-            }
-        }
     }
 
     protected SummaryModel buildDataModel(String surveyId, String serverBase, String apiKey)
@@ -213,18 +178,49 @@ public class SurveySummaryExporter extends AbstractDataExporter {
 
     }
 
+    /**
+     * loads just enough question data to generate the simplest report
+     * @param surveyId
+     * @param performRollups
+     * @param serverBase
+     * @param apiKey
+     * @return
+     * @throws Exception
+     */
     protected Map<QuestionGroupDto, List<QuestionDto>> loadAllQuestions(
             String surveyId, boolean performRollups, String serverBase, String apiKey)
             throws Exception {
-        Map<QuestionGroupDto, List<QuestionDto>> questionMap = new HashMap<QuestionGroupDto, List<QuestionDto>>();
+        Map<QuestionGroupDto, List<QuestionDto>> questionMap = new HashMap<>();
+        //we need the ordering of groups and questions in them; fetching in nested loops is inefficient so
+        //we fetch them all at once and sort them ourself
         orderedGroupList = fetchQuestionGroups(serverBase, surveyId, apiKey);
+        List<QuestionDto> allQuestions = fetchQuestionsOfSurvey(serverBase, surveyId, apiKey); //unordered
+        Map<Long, List<QuestionDto>> idMap = new HashMap<>();
+        for (QuestionGroupDto group : orderedGroupList) {
+            List<QuestionDto> questions = new ArrayList<>();
+            idMap.put(group.getKeyId(), questions);
+        }
+        // Sort them into the right lists
+        for (QuestionDto q:allQuestions) {
+            List<QuestionDto> myList = idMap.get(q.getQuestionGroupId());
+            myList.add(q);
+        }
+        // Lists complete, now we can sort and visit each in order
         rollupOrder = new ArrayList<QuestionDto>();
         for (QuestionGroupDto group : orderedGroupList) {
-            List<QuestionDto> questions = fetchQuestions(serverBase,
-                    group.getKeyId(), apiKey);
+            List<QuestionDto> questions = idMap.get(group.getKeyId());
+            Collections.sort(questions, new Comparator<QuestionDto>() {
+                @Override
+                public int compare(QuestionDto o1, QuestionDto o2) {
+                    //order should never be null, but accidents happen...
+                    int v1 = o1.getOrder() != null ? o1.getOrder() : 0;
+                    int v2 = o2.getOrder() != null ? o2.getOrder() : 0;
+                    return v1-v2;
+                }
+            });
+
             if (performRollups && questions != null) {
                 for (QuestionDto q : questions) {
-
                     for (int i = 0; i < ROLLUP_QUESTIONS.length; i++) {
                         if (ROLLUP_QUESTIONS[i].equalsIgnoreCase(q.getText())) {
                             rollupOrder.add(q);
@@ -234,16 +230,53 @@ public class SurveySummaryExporter extends AbstractDataExporter {
             }
             questionMap.put(group, questions);
         }
+        
         return questionMap;
     }
 
-    private void writeHeader(PrintWriter pw, boolean isRolledUp) {
-        if (isRolledUp) {
-            pw.println("Question Group\tQuestion\tSector\tResponse\tFrequency\tPercent\tMean\tMedian\tMode\tStd Dev\tStd Err\tRange");
-        } else {
-            pw.println("Question Group\tQuestion\tResponse\tFrequency\tPercent\tMean\tMedian\tMode\tStd Dev\tStd Err\tRange");
+    
+    /**
+     * calls the server to augment the data already loaded in each QuestionDto in the map
+     * with minimal option info, no translations
+     *
+     * @param questionMap questionDtos keyed by id
+     * @param apiKey
+     */
+    protected void loadQuestionOptions(
+            String surveyId,
+            String serverBase,
+            Map<QuestionGroupDto, List<QuestionDto>> questionMap,
+            String apiKey) {
+
+        try {
+            Map<Long, QuestionDto> questionsById = new HashMap<>();
+            for (List<QuestionDto> qList : questionMap.values()) {
+                for (QuestionDto q : qList) {
+                    questionsById.put(q.getKeyId(), q);
+                }
+            }
+            
+            List<QuestionOptionDto> optList =
+                    BulkDataServiceClient.fetchSurveyQuestionOptions(surveyId, serverBase, apiKey);
+            //add them to the container of their question
+            for (QuestionOptionDto o:optList) {
+                QuestionDto q = questionsById.get(o.getQuestionId());
+                if (q != null) {
+                    //May need to create an OptionContainer to hold them
+                    OptionContainerDto container = q.getOptionContainerDto();
+                    if (container == null) {
+                        container = new OptionContainerDto();
+                        q.setOptionContainerDto(container);
+                    }
+                    container.addQuestionOption(o);
+                }
+            }
+        } catch (Exception e) {
+            System.err.println("Could not fetch question options");
+            e.printStackTrace(System.err);
         }
     }
+
 
     protected List<QuestionDto> fetchQuestions(String serverBase, Long groupId, String apiKey)
             throws Exception {
@@ -253,6 +286,16 @@ public class SurveySummaryExporter extends AbstractDataExporter {
                         + SurveyRestRequest.LIST_QUESTION_ACTION + "&"
                         + SurveyRestRequest.QUESTION_GROUP_ID_PARAM + "="
                         + groupId, true, apiKey));
+    }
+
+    protected List<QuestionDto> fetchQuestionsOfSurvey(String serverBase, String surveyId, String apiKey)
+            throws Exception {
+
+        return parseQuestions(BulkDataServiceClient.fetchDataFromServer(
+                serverBase + SERVLET_URL, "action="
+                        + SurveyRestRequest.LIST_SURVEY_QUESTIONS_ACTION + "&"
+                        + SurveyRestRequest.SURVEY_ID_PARAM + "="
+                        + surveyId, true, apiKey));
     }
 
     protected List<QuestionGroupDto> fetchQuestionGroups(String serverBase,
@@ -290,54 +333,24 @@ public class SurveySummaryExporter extends AbstractDataExporter {
         return dtoList;
     }
 
-    protected List<QuestionDto> parseQuestions(String response)
-            throws Exception {
-        List<QuestionDto> dtoList = new ArrayList<QuestionDto>();
-        JSONArray arr = getJsonArray(response);
-        if (arr != null) {
-            for (int i = 0; i < arr.length(); i++) {
-                JSONObject json = arr.getJSONObject(i);
-                if (json != null) {
-                    QuestionDto dto = new QuestionDto();
-                    try {
-                        if (json.has("text")) {
-                            dto.setText(json.getString("text"));
-                        }
-                        if (json.has("keyId")) {
-                            dto.setKeyId(json.getLong("keyId"));
-                        }
-                        if (json.has("questionTypeString")) {
-                            dto.setType(QuestionType.valueOf(json
-                                    .getString("questionTypeString")));
-                        }
-                        if (!json.isNull("questionId")
-                                && !"null".equals(json.getString("questionId"))) {
-                            dto.setQuestionId(json.getString("questionId"));
-                        }
-                        if (!json.isNull("localeNameFlag")) {
-                            dto.setLocaleNameFlag(json.getBoolean("localeNameFlag"));
-                        }
-                        if (!json.isNull("caddisflyResourceUuid")) {
-                            dto.setCaddisflyResourceUuid(json.getString("caddisflyResourceUuid"));
-                        }
-                        if (!json.isNull("levelNames")) {
-                            final List<String> levelNames = new ArrayList<String>();
-                            final JSONArray array = json.getJSONArray("levelNames");
-                            for (int c = 0; c < array.length(); c++) {
-                                levelNames.add(array.getString(c));
-                            }
-                            dto.setLevelNames(levelNames);
-                        }
-                        dtoList.add(dto);
-                    } catch (Exception e) {
-                        log.error("Error in json parsing: " + e.getMessage(), e);
-                    }
-                }
-            }
-        }
-        return dtoList;
-    }
 
+    /**
+     * parses questions using an object mapper
+     * @param response
+     * @return
+     * @throws Exception
+     */
+    protected List<QuestionDto> parseQuestions(String response) throws Exception {
+        final ObjectMapper JSON_RESPONSE_PARSER = new ObjectMapper();
+
+        final JsonNode questionListNode =
+                JSON_RESPONSE_PARSER.readTree(response).get("dtoList");
+        final List<QuestionDto> qList = JSON_RESPONSE_PARSER.readValue(
+                questionListNode, new TypeReference<List<QuestionDto>>() {
+                });
+        return qList;
+    }
+    
     /**
      * converts the string into a JSON array object.
      */
@@ -352,50 +365,6 @@ public class SurveySummaryExporter extends AbstractDataExporter {
         return null;
     }
 
-    protected class InputDialog extends JDialog implements ActionListener {
-
-        private static final long serialVersionUID = -2875321125734363515L;
-
-        private JButton yesButton;
-        private JButton noButton;
-        private JLabel label;
-        private boolean doRollup;
-
-        public InputDialog() {
-            super();
-            yesButton = new JButton("Yes");
-            noButton = new JButton("No");
-            label = new JLabel("Roll-up by Sector/Cell?");
-
-            JPanel contentPane = new JPanel();
-            contentPane.add(label);
-            JPanel buttonPane = new JPanel(new GridLayout(1, 2));
-            buttonPane.add(yesButton);
-            buttonPane.add(noButton);
-            contentPane.add(buttonPane);
-            yesButton.addActionListener(this);
-            noButton.addActionListener(this);
-            setContentPane(contentPane);
-            setSize(300, 200);
-            setTitle("Select Export Options");
-            setModal(true);
-            setVisible(true);
-        }
-
-        @Override
-        public void actionPerformed(ActionEvent e) {
-            if (e.getSource() == noButton) {
-                doRollup = false;
-            } else {
-                doRollup = true;
-            }
-            setVisible(false);
-        }
-
-        public boolean getDoRollup() {
-            return doRollup;
-        }
-    }
 
     protected class SummaryModel {
         // contains the map of questionIds to all valid responses
@@ -427,7 +396,7 @@ public class SurveySummaryExporter extends AbstractDataExporter {
         public void tallyResponse(String questionId, Set<String> rollups,
                 String response, QuestionDto qDto) {
 
-            if (qDto != null && QuestionType.NUMBER == qDto.getQuestionType()) {
+            if (qDto != null && QuestionType.NUMBER == qDto.getType()) {
                 // for NUMBER questions, if decimals-allowed changes
                 // during survey, "1" and "1.0" should be tallied together
                 if (response.endsWith(".0")) {

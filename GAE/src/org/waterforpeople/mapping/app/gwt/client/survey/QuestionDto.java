@@ -1,5 +1,5 @@
 /*
- *  Copyright (C) 2010-2015 Stichting Akvo (Akvo Foundation)
+ *  Copyright (C) 2010-2017 Stichting Akvo (Akvo Foundation)
  *
  *  This file is part of Akvo FLOW.
  *
@@ -22,6 +22,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
+
 
 public class QuestionDto extends BaseDto {
 
@@ -129,10 +130,6 @@ public class QuestionDto extends BaseDto {
 
     public void setPath(String path) {
         this.path = path;
-    }
-
-    public QuestionType getQuestionType() {
-        return type;
     }
 
     public Integer getOrder() {
@@ -274,7 +271,6 @@ public class QuestionDto extends BaseDto {
     public void setDependentFlag(Boolean dependentFlag) {
         this.dependentFlag = dependentFlag;
     }
-
 
     public void setAllowMultipleFlag(Boolean allowMultipleFlag) {
         this.allowMultipleFlag = allowMultipleFlag;
@@ -450,5 +446,10 @@ public class QuestionDto extends BaseDto {
 
     public void setCaddisflyResourceUuid(String caddisflyResourceUuid) {
         this.caddisflyResourceUuid = caddisflyResourceUuid;
+    }
+    
+    @Override
+    public String toString() {
+      return text + "(" + type + ")"; 
     }
 }

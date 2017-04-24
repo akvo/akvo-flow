@@ -703,7 +703,7 @@ FLOW.NavMapsView = FLOW.View.extend({
                     +'<div style="float: left; width: 100%">';
 
                   if(questionAnswer){
-                    switch (self.questionGroups[qg]['questions'][i].questionType) {
+                    switch (self.questionGroups[qg]['questions'][i].type) {
                       case "PHOTO":
                       case "VIDEO":
                         var mediaString = "", mediaJson = "", mediaFilename = "", mediaObject = {};
@@ -715,14 +715,14 @@ FLOW.NavMapsView = FLOW.View.extend({
                         }
 
                         var mediaFileURL = FLOW.Env.photo_url_root+mediaString.substring(mediaString.lastIndexOf("/")+1);
-                        if(self.questionGroups[qg]['questions'][i].questionType == "PHOTO") {
+                        if(self.questionGroups[qg]['questions'][i].type == "PHOTO") {
                           mediaOutput = '<div class=":imgContainer photoUrl:shown:hidden">'
                           +'<a class="media" data-coordinates=\''
                           +((mediaJson.location) ? questionAnswer : '' )+'\' href="'
                           +mediaFileURL+'" target="_blank"><img src="'+mediaFileURL+'" alt=""/></a><br>'
                           +((mediaJson.location) ? '<a class="media-location" data-coordinates=\''+questionAnswer+'\'>'+Ember.String.loc('_show_photo_on_map')+'</a>' : '')
                           +'</div>';
-                        } else if (self.questionGroups[qg]['questions'][i].questionType == "VIDEO") {
+                        } else if (self.questionGroups[qg]['questions'][i].type == "VIDEO") {
                           mediaOutput = '<div><div class="media" data-coordinates=\''
                           +((mediaJson.location) ? questionAnswer : '' )+'\'>'+mediaFileURL+'</div><br>'
                           +'<a href="'+mediaFileURL+'" target="_blank">'+Ember.String.loc('_open_video')+'</a>'
@@ -777,7 +777,7 @@ FLOW.NavMapsView = FLOW.View.extend({
                         if (questionAnswer.charAt(0) === '[') {
                           cascadeJson = JSON.parse(questionAnswer);
                           cascadeString = cascadeJson.map(function(item){
-                            return (self.questionGroups[qg]['questions'][i].questionType == "CASCADE") ? item.name : item.text;
+                            return (self.questionGroups[qg]['questions'][i].type == "CASCADE") ? item.name : item.text;
                           }).join("|");
                         } else {
                           cascadeString = questionAnswer;
