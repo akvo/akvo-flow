@@ -16,7 +16,7 @@ Date: 20 April 2017
 * **Performance improvements** - We improved loading of questions and question options [#1442].
 * **Naming of CSS elements** - These were improved [#1994].
 * **Exposed /remote_api on a different endpoint** - to enable tracing [#1985].
-* **Layout improvements** -  We gave maps more space [#2003] and aligned survey breadcrumb and buttons [#2000] and decreased white space in Manual survey transfer [#1997].
+* **Layout improvements** -  We gave maps more space [#2003], aligned survey breadcrumb and buttons [#2000] and decreased white space in Manual survey transfer [#1997].
 
 
 # 1.9.15 Nifty Nuthatch
