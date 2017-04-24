@@ -71,29 +71,6 @@ import org.waterforpeople.mapping.app.web.dto.DeviceFileRestRequest;
 import org.waterforpeople.mapping.app.web.dto.InstanceDataDto;
 import org.waterforpeople.mapping.app.web.dto.SurveyRestRequest;
 
-import java.io.BufferedReader;
-import java.io.DataOutputStream;
-import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.io.UnsupportedEncodingException;
-import java.net.HttpURLConnection;
-import java.net.URL;
-import java.net.URLEncoder;
-import java.nio.charset.StandardCharsets;
-import java.text.DateFormat;
-import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
-import java.util.StringTokenizer;
-import java.util.TimeZone;
-import java.util.TreeMap;
-import java.util.zip.GZIPInputStream;
-
 import static org.waterforpeople.mapping.app.web.dto.SurveyInstanceRequest.*;
 
 /**
@@ -1098,9 +1075,9 @@ public class BulkDataServiceClient {
                                 dto.setTranslationMap(parseTranslations(json
                                         .getJSONObject("translationMap")));
                             }
-                            if (!json.isNull("questionTypeString")) {
+                            if (!json.isNull("type")) {
                                 dto.setType(QuestionDto.QuestionType.valueOf(json
-                                        .getString("questionTypeString")));
+                                        .getString("type")));
                             }
                             if (!json.isNull("allowPoints")) {
                                 dto.setAllowPoints(json.getBoolean("allowPoints"));
