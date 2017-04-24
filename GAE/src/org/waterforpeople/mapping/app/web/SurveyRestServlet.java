@@ -32,8 +32,10 @@ import org.codehaus.jackson.map.ObjectMapper;
 import org.waterforpeople.mapping.analytics.dao.SurveyQuestionSummaryDao;
 import org.waterforpeople.mapping.analytics.domain.SurveyQuestionSummary;
 import org.waterforpeople.mapping.app.gwt.client.survey.QuestionDto;
+import org.waterforpeople.mapping.app.gwt.client.survey.QuestionDtoMapper;
 import org.waterforpeople.mapping.app.gwt.client.survey.QuestionGroupDto;
 import org.waterforpeople.mapping.app.gwt.client.survey.QuestionOptionDto;
+import org.waterforpeople.mapping.app.gwt.client.survey.QuestionOptionDtoMapper;
 import org.waterforpeople.mapping.app.gwt.client.survey.SurveyDto;
 import org.waterforpeople.mapping.app.gwt.client.survey.SurveyGroupDto;
 import org.waterforpeople.mapping.app.gwt.client.survey.SurveySummaryDto;
@@ -169,9 +171,9 @@ public class SurveyRestServlet extends AbstractRestApiServlet {
             response.setDtoList(listQuestionGroups(new Long(surveyReq
                     .getSurveyId())));
         } else if (SurveyRestRequest.LIST_QUESTION_ACTION.equals(surveyReq.getAction())) {
-            response.setDtoList(listQuestions(new Long(surveyReq.getQuestionGroupId())));
+            response.setDtoList(listGroupQuestionsWithLevelNames(new Long(surveyReq.getQuestionGroupId())));
         } else if (SurveyRestRequest.LIST_SURVEY_QUESTIONS_ACTION.equals(surveyReq.getAction())) {
-            response.setDtoList(listSurveyQuestions(new Long(surveyReq.getSurveyId())));
+            response.setDtoList(listSurveyQuestionsWithLevelNames(new Long(surveyReq.getSurveyId())));
         } else if (SurveyRestRequest.LIST_QUESTION_OPTIONS_ACTION.equals(surveyReq.getAction())) {
             response.setDtoList(listQuestionOptions(surveyReq.getQuestionId()));
         } else if (SurveyRestRequest.LIST_SURVEY_QUESTION_OPTIONS_ACTION.equals(surveyReq.getAction())) {
@@ -375,13 +377,13 @@ public class SurveyRestServlet extends AbstractRestApiServlet {
      */
     private List<QuestionDto> listQuestionsWithLevelNames(Collection<Question> questions) {
         List<QuestionDto> dtoList = new ArrayList<QuestionDto>();
+        QuestionDtoMapper mapper = new QuestionDtoMapper();
         if (questions != null) {
             for (Question q : questions) {
-                QuestionDto dto = new QuestionDto();
-                DtoMarshaller.copyToDto(q, dto);
+                QuestionDto dto = mapper.transform(q);
                 if (q.getType().equals(Question.Type.CASCADE) && q.getCascadeResourceId() != null) {
-                    CascadeResource cr = new CascadeResourceDao()
-                            .getByKey(q.getCascadeResourceId());
+                    CascadeResource cr =
+                            new CascadeResourceDao().getByKey(q.getCascadeResourceId());
                     if (cr != null) {
                         dto.setLevelNames(cr.getLevelNames());
                     }
@@ -399,7 +401,7 @@ public class SurveyRestServlet extends AbstractRestApiServlet {
      * @param groupId
      * @return
      */
-    private List<QuestionDto> listQuestions(Long groupId) {
+    private List<QuestionDto> listGroupQuestionsWithLevelNames(Long groupId) {
         return listQuestionsWithLevelNames(qDao.listQuestionsByQuestionGroup(groupId, false).values());
     }
 
@@ -409,19 +411,24 @@ public class SurveyRestServlet extends AbstractRestApiServlet {
      * @param surveyId
      * @return
      */
-    private List<QuestionDto> listSurveyQuestions(Long surveyId) {
+    private List<QuestionDto> listSurveyQuestionsWithLevelNames(Long surveyId) {
         return listQuestionsWithLevelNames(qDao.listQuestionsBySurvey(surveyId)); //useless ordering
     }
 
+    /**
+     * lists all options for a given question
+     *
+     * @param questionId
+     * @return
+     */
     private List<QuestionOptionDto> listQuestionOptions(Long questionId) {
 
         List<QuestionOption> options = qoDao.listByQuestionId(questionId);
         List<QuestionOptionDto> dtoList = new ArrayList<>();
+        QuestionOptionDtoMapper mapper = new QuestionOptionDtoMapper();
         if (options != null) {
             for (QuestionOption option : options) {
-                QuestionOptionDto dto = new QuestionOptionDto();
-                DtoMarshaller.copyToDto(option, dto);
-                dtoList.add(dto);
+                dtoList.add(mapper.transform(option));
             }
         }
 
@@ -437,13 +444,12 @@ public class SurveyRestServlet extends AbstractRestApiServlet {
 
         List<QuestionOptionDto> dtoList = new ArrayList<>();
         List<Question> questions = qDao.listQuestionByType(surveyId, Type.OPTION);
+        QuestionOptionDtoMapper mapper = new QuestionOptionDtoMapper();
         for (Question question : questions) {
             List<QuestionOption> options = qoDao.listByQuestionId(question.getKey().getId());
             if (options != null) {
                 for (QuestionOption option : options) {
-                    QuestionOptionDto dto = new QuestionOptionDto();
-                    DtoMarshaller.copyToDto(option, dto);
-                    dtoList.add(dto);
+                    dtoList.add(mapper.transform(option));
                 }
             }
         }

@@ -342,16 +342,13 @@ public class SurveySummaryExporter extends AbstractDataExporter {
      */
     protected List<QuestionDto> parseQuestions(String response) throws Exception {
         final ObjectMapper JSON_RESPONSE_PARSER = new ObjectMapper();
-        List<QuestionDto> dtoList = new ArrayList<QuestionDto>();
 
         final JsonNode questionListNode =
                 JSON_RESPONSE_PARSER.readTree(response).get("dtoList");
         final List<QuestionDto> qList = JSON_RESPONSE_PARSER.readValue(
                 questionListNode, new TypeReference<List<QuestionDto>>() {
                 });
-        dtoList.addAll(qList); //Why?
-        
-        return dtoList;
+        return qList;
     }
     
     /**

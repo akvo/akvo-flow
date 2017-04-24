@@ -352,10 +352,14 @@ public class GraphicalSurveySummaryExporter extends SurveySummaryExporter {
         String limit = options.get("maxDataReportRows");
         try {
             Map<QuestionGroupDto, List<QuestionDto>> questionMap = 
-                    loadAllQuestions(surveyId, performGeoRollup, serverBase, apiKey,
-                            useQuestionId && DEFAULT_LOCALE.equals(locale));
-                //minimal data plus cascade level names
-            if (questionMap != null && questionMap.size() > 0) {
+                    loadAllQuestions(surveyId, performGeoRollup, serverBase, apiKey);
+            //minimal data plus cascade level names
+            if (useQuestionId && DEFAULT_LOCALE.equals(locale)) {
+                loadQuestionOptions(surveyId, serverBase, questionMap, apiKey);
+            }
+            
+
+            if (questionMap.size() > 0) {
                 if (!DEFAULT_LOCALE.equals(locale)) {
                     // we are using some other locale; need to check for translations.
                     // also gets option and cascade names for columns
