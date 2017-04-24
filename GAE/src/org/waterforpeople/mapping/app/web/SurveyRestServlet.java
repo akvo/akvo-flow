@@ -371,28 +371,37 @@ public class SurveyRestServlet extends AbstractRestApiServlet {
     }
 
     /**
-     * lists questions, with cascade level names
+     * lists questions
      * @param questions
      * @return
      */
-    private List<QuestionDto> listQuestionsWithLevelNames(Collection<Question> questions) {
+    private List<QuestionDto> listQuestions(Collection<Question> questions) {
         List<QuestionDto> dtoList = new ArrayList<QuestionDto>();
         QuestionDtoMapper mapper = new QuestionDtoMapper();
         if (questions != null) {
             for (Question q : questions) {
-                QuestionDto dto = mapper.transform(q);
-                if (q.getType().equals(Question.Type.CASCADE) && q.getCascadeResourceId() != null) {
-                    CascadeResource cr =
-                            new CascadeResourceDao().getByKey(q.getCascadeResourceId());
-                    if (cr != null) {
-                        dto.setLevelNames(cr.getLevelNames());
-                    }
-                }
-                dtoList.add(dto);
+                dtoList.add(mapper.transform(q));
             }
         }
         return dtoList;
         
+    }
+    
+    /**
+     * add cascade level names to a list
+     * @param questions
+     * @return
+     */
+    private void addLevelNames(List<QuestionDto> qlList) {
+        for (QuestionDto q : qlList) {
+            if (q.getType().equals(QuestionDto.QuestionType.CASCADE) && q.getCascadeResourceId() != null) {
+                CascadeResource cr =
+                        new CascadeResourceDao().getByKey(q.getCascadeResourceId());
+                if (cr != null) {
+                    q.setLevelNames(cr.getLevelNames());
+                }
+            }
+        }
     }
     
     /**
@@ -402,7 +411,9 @@ public class SurveyRestServlet extends AbstractRestApiServlet {
      * @return
      */
     private List<QuestionDto> listGroupQuestionsWithLevelNames(Long groupId) {
-        return listQuestionsWithLevelNames(qDao.listQuestionsByQuestionGroup(groupId, false).values());
+        List<QuestionDto> qlList = listQuestions(qDao.listQuestionsByQuestionGroup(groupId, false).values());
+        addLevelNames(qlList);
+        return qlList;
     }
 
     /**
@@ -412,7 +423,9 @@ public class SurveyRestServlet extends AbstractRestApiServlet {
      * @return
      */
     private List<QuestionDto> listSurveyQuestionsWithLevelNames(Long surveyId) {
-        return listQuestionsWithLevelNames(qDao.listQuestionsBySurvey(surveyId)); //useless ordering
+        List<QuestionDto> qlList =  listQuestions(qDao.listQuestionsBySurvey(surveyId)); //useless ordering
+        addLevelNames(qlList);
+        return qlList;
     }
 
     /**
