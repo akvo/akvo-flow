@@ -23,8 +23,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
 
-import org.codehaus.jackson.annotate.JsonIgnore;
-import org.codehaus.jackson.annotate.JsonProperty;
 
 public class QuestionDto extends BaseDto {
 
@@ -34,7 +32,6 @@ public class QuestionDto extends BaseDto {
         FREE_TEXT, OPTION, NUMBER, GEO, PHOTO, VIDEO, SCAN, TRACK, NAME, STRENGTH, DATE, CASCADE, GEOSHAPE, SIGNATURE, CADDISFLY
     }
 
-    @JsonIgnore
     private QuestionType type;
     private String tip = null;
     private String text;
@@ -195,21 +192,12 @@ public class QuestionDto extends BaseDto {
         this.text = text;
     }
 
-    @JsonProperty
     public QuestionType getType() {
         return type;
     }
 
-    @JsonProperty
     public void setType(QuestionType type) {
         this.type = type;
-    }
-
-    //TODO: eliminate this getter and thus the generated JSON 
-    //when UI starts referring to type instead of questionType
-    @JsonProperty
-    public QuestionType getQuestionType() {
-        return type;
     }
 
     public List<QuestionHelpDto> getQuestionHelpList() {
