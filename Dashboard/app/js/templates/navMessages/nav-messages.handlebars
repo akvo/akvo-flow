@@ -1,7 +1,6 @@
 {{#view FLOW.MessagesListView}}
 <div class="middleSection">
   <section id="" class="fullWidth messagesList"> 
-<h1>{{t _messages}}</h1>
     <!-- Messages TABLE-->
     <table id="messageListTable" class="dataTable" >
       <!-- TABLE HEADER-->
@@ -11,7 +10,7 @@
                   <a {{action "sort" target="this"}} class="date">{{t _date}}</a>
            {{/view}}
            {{#view FLOW.ColumnView item="objectId" type="message"}}
-                  <a {{action "sort" target="this"}} class="objectId">{{t _survey_id}}</a>
+                  <a {{action "sort" target="this"}} class="objectId">{{t _form_id}}</a>
            {{/view}}
             {{#view FLOW.ColumnView item="objectTitle" type="message"}}
                   <a {{action "sort" target="this"}} class="survey">{{t _survey}}</a>
@@ -21,9 +20,6 @@
            {{/view}}
            {{#view FLOW.ColumnView item="shortMessage" type="message"}}
                   <a {{action "sort" target="this"}} class="message">{{t _message}}</a>
-           {{/view}}
-            {{#view FLOW.ColumnView item="userName" type="message"}}
-                  <a {{action "sort" target="this"}} class="user">{{t _user}}</a>
            {{/view}}
         </tr>
       </thead>
@@ -36,17 +32,9 @@
             <td class="objectTitle">{{unbound mess.objectTitle}}</td>
             <td class="actionAbout">{{unbound mess.actionAbout}}</td>
             <td class="message" style="text-align:left; padding:0 0 0 20px;">{{unbound mess.shortMessage}}</td>
-              <td class="userName">{{unbound mess.userName}}</td>
           </tr>
         {{/each}}
       </tbody>
-      
-      <!-- TABLE FOOTER-->
-      <tfoot>
-        <tr>
-          <td colspan="7"><small>This is the footer.</small></td>
-        </tr>
-      </tfoot>
     </table>
      <ul class="prevNext">
             <li class="prevBtn">{{#if view.hasPrevPage}}<a {{action doPrevPage target='this'}}> &lsaquo; {{t _previous}}</a> {{/if}}</li>

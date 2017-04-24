@@ -1,0 +1,17 @@
+language: java
+
+sudo: required
+
+services:
+  - docker
+
+cache:
+  directories:
+    - $HOME/.m2
+    - $HOME/.cache
+
+before_install:
+  - docker pull akvo/flow-build
+
+script:
+  - ./docker/bootstrap-build.sh

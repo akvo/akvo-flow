@@ -1,6 +1,5 @@
  <section class="fullWidth reportTools" id="reportBlocks">
     {{#view FLOW.chartView}}
-      <h1>{{t _chart_builder}}</h1>
       {{#unless FLOW.projectControl.isLoading}}
         {{view FLOW.SurveySelectionView}}
       {{/unless}}
@@ -37,7 +36,7 @@
 {{#if view.isDoughnut}}
   <label class="groupChartSelect"> {{t _put_smaller_items_together}} {{view Ember.Checkbox checkedBinding="view.compactSmaller"}}</label>
 {{/if}}
-        <a {{action getChartData target="this"}} class="standardBtn"> {{t _build_chart}} </a>
+        <a {{action getChartData target="this"}} class="smallBtn"> {{t _build_chart}} </a>
 </div>
     {{#if view.noChoiceBool}}
       <p class="errorMsg">{{t _please_select_survey_group_survey_and_question}}</p>

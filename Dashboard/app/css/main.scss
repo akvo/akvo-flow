@@ -1,142 +1,5 @@
 @import "library.scss";
-
-html,
-body,
-div,
-span,
-applet,
-object,
-iframe,
-h1,
-h2,
-h3,
-h4,
-h5,
-h6,
-p,
-blockquote,
-pre,
-a,
-abbr,
-acronym,
-address,
-big,
-cite,
-code,
-del,
-dfn,
-em,
-font,
-img,
-ins,
-kbd,
-q,
-s,
-samp,
-small,
-strike,
-strong,
-sub,
-sup,
-tt,
-var,
-b,
-u,
-i,
-center,
-dl,
-dt,
-dd,
-ol,
-ul,
-li,
-fieldset,
-form,
-label,
-legend,
-table,
-caption,
-tbody,
-tfoot,
-thead,
-tr,
-th,
-td,
-hgroup,
-header,
-footer,
-nav,
-aside,
-article,
-section {
-    margin: 0;
-    padding: 0;
-    border: 0;
-    outline: 0;
-    font-size: 100%;
-    vertical-align: baseline;
-    background: transparent;
-}
-
-header,
-footer,
-nav,
-aside,
-article,
-section {
-    display: block;
-}
-
-body {
-    line-height: 1;
-}
-
-ol {
-    list-style: decimal;
-}
-
-ul {
-    list-style: none;
-}
-
-blockquote,
-q {
-    quotes: none;
-}
-
-:focus {
-    outline: 0;
-}
-
-table {
-    border-collapse: collapse;
-    border-spacing: 0;
-}
-
-img,
-object,
-embed,
-video {
-    max-width: 100%;
-}
-
-/* IE 6 does not support max-width so default to width 100% */
-
-.ie6 img {
-    width: 100%;
-}
-
-input,
-select,
-textarea,
-button {
-    padding: 0;
-}
-
-iframe {
-    border: none;
-}
-
+@import "reset.scss";
 @import "form.scss";
 
 /*--------------------------------------------------------------
@@ -149,58 +12,45 @@ html {
     width: 100%;
     height: 100%;
     overflow-y: scroll;
-    border-top: 3px solid rgb(38, 8, 89);
     box-sizing: border-box;
-    background: white;
+    color: rgb(36, 48, 50);
+    font-size: 16px;
+    line-height: 1.42857;
+    text-rendering: optimizelegibility;
+    font-family: $bodyFont;
+    -webkit-font-smoothing: antialiased;
+    overflow-x: hidden;
 }
 
 body {
     width: 100%;
     height: 100%;
-    color: rgb(36, 48, 50);
-    font-size: 12px;
-    line-height: 1.42857;
-    text-rendering: optimizelegibility;
-    font-family: $bodyFont;
     -ms-overflow-style: -ms-autohiding-scrollbar;
-}
-
-/*--------------------------------------------------------------
-                            Headings
--------------------------------------------------------------- */
-
-h1,
-h2,
-h3,
-h4,
-h5,
-h6 {
-    font-family: $titleFont;
-    font-weight: normal;
+    overflow-x: hidden;
 }
 
 h1 {
-    font-size: 1.8em;
+    font-size: 1.5em;
 }
 
 h2 {
     color: rgb(44, 42, 116);
-    font-size: 1.7em;
+    font-size: 1.3em;
 }
 
 h3 {
-    font-size: 1.6em;
+    font-size: 1.2em;
     line-height: 1;
 }
 
 h4 {
-    font-size: 1em;
+    font-size: 1.1em;
     line-height: 1.25em;
 }
 
 h5 {
     margin-bottom: 0.5em;
-    font-size: 1.2em;
+    font-size: 1em;
 }
 
 h6 {
@@ -216,14 +66,23 @@ h6 img {
     margin: 0;
 }
 
-.amp {
-    font-style: italic;
-    font-family: $scriptFont;
-}
-
 em {
     padding-bottom: 1em;
 }
+
+.smaller {
+    font-size: 0.8em;
+}
+
+.upCase {
+    text-transform: uppercase;
+}
+
+/*--------------------------------------------------------------
+
+                    * End Default Typography.
+
+-------------------------------------------------------------- */
 
 /* misc.
 --------------------------------------------- */
@@ -233,12 +92,10 @@ object,
 video,
 embed {
     max-width: 100%;
-}
 
-/* Sine the map pin need no max-width */
-
-#flowMap img {
-    max-width: none;
+    #flowMap & {
+        max-width: none;
+    }
 }
 
 .hidden {
@@ -282,7 +139,6 @@ pre {
     display: none;
     padding: 0.5em 1em;
     max-width: 15%;
-    font-weight: bold;
     background: lighten(rgb(255, 255, 165), 10%);
     -webkit-box-shadow: 0 0 2px rgb(0, 0, 0);
     -o-box-shadow: 0 0 2px rgb(0, 0, 0);
@@ -304,8 +160,6 @@ pre {
         padding: 5px 3px 5px 25px;
         background: rgb(248, 248, 248) url(../images/loader.gif) 5px center no-repeat;
         color: rgb(252, 159, 0);
-        font-weight: bold;
-        font-size: 1.2em;
     }
 }
 
@@ -337,6 +191,7 @@ pre {
 }
 
 .infoText {
+    font-size: 0.8em;
     display: block;
     margin: 0.5em 0 0 0;
     padding: 0.2em;
@@ -348,72 +203,109 @@ pre {
     background-image: none !important;
 }
 
-/* links
----------------------------------------------------------------*/
+/************************* links *************************/
+.button, .standardBtn {
+    @include button($flowAnchorLink);
 
-a, a:link, a:visited {
-    outline: none;
-    color: $anchorLink;
-    text-decoration: none;
-    cursor: pointer;
-    -webkit-transition: color 0.2s linear;
-    transition: color 0.2s linear;
-
-    &:link {
-        -webkit-tap-highlight-color: #fcd700;
-    }
-
-    &:hover {
-        color: $anchorLinkHover;
-    }
-
-    &.standardBtn {
-        display: inline-block;
-        padding: 0.25em 0.5em;
-        background-color: rgb(0, 123, 182);
-        color: rgb(235, 235, 235);
-        text-align: center;
-        text-transform: uppercase;
-        font-size: 1.1em;
-        -o-border-radius: 0.3em;
-        border-radius: 0.3em;
+    &.noChanges, &.disabled {
+        cursor: not-allowed;
+        background-color: rgba(128, 128, 128, 0.1) !important;
+        color: rgba(128, 128, 128, 0.4) !important;
+        border: 1px solid transparent;
 
         &:hover {
-            background: $anchorLinkHover;
-            color: white;
+            cursor: not-allowed;
+            background-color: rgba(128, 128, 128, 0.1) !important;
+            color: rgba(128, 128, 128, 0.4) !important;
+            border: 1px solid transparent;
         }
     }
+}
+
+.smallButton, .smallBtn {
+    @include smallButton($flowAnchorLink);
+}
+
+.btnOutline {
+    @include btnOutline($flowAnchorLink);
+}
+
+a.btn {
+    display: block;
+    padding: 1px 0 7px 21px;
+    height: 10px;
 
     &.smallBtn {
         display: inline-block;
-        padding: 6px 7px 5px 7px;
-        border-radius: 3px;
-        background: rgb(0, 123, 182);
-        color: white;
-        text-align: center;
-        text-transform: uppercase;
-        font-size: 1em;
-        -o-border-radius: 3px;
-
-        &:hover {
-            background: $anchorLinkHover;
-            color: white;
-        }
     }
+
+    &:hover {
+        color: $flowAnchorLinkHover;
+    }
+}
+
+a.addBtn {
+    display: inline-block;
+    color: white;
+    background: rgba($flowAnchorLink, 1) url(../images/IconPlusWhite.svg) 2px center no-repeat;
+    padding: 8px 7px 13px 25px;
+    border-radius: 3px;
+    -webkit-background-size: 25px 45px;
+    background-size: 25px 45px;
+    -webkit-transition: color 0.2s ease-in, background-color 0.2s ease-in;
+    transition: color 0.2s ease-in, background-color 0.2s ease-in;
+}
+
+a.addBtn:hover {
+    color: white;
+    background: rgba($flowAnchorLinkHover, 1) url(../images/IconPlusWhite.svg) 2px center no-repeat;
+    -webkit-background-size: 25px 45px;
+    background-size: 25px 45px;
+}
+
+a.importBtn {
+    color: white;
+    padding: 8px 7px 13px 25px;
+    border-radius: 3px;
+    background: rgba($flowAnchorLink, 1) url(../images/IconImportWhite.svg) 2px center no-repeat;
+    -webkit-background-size: 25px 45px;
+    background-size: 25px 45px;
+    -webkit-transition: color 0.2s ease-in, background-color 0.2s ease-in;
+    transition: color 0.2s ease-in, background-color 0.2s ease-in;
+
+    &:hover {
+        background: rgba($flowAnchorLinkHover, 1) url(../images/IconImportWhite.svg) 2px center no-repeat;
+        -webkit-background-size: 25px 45px;
+        background-size: 25px 45px;
+    }
+}
+
+a, a:link, a:visited {
+    outline: none;
+    color: $flowAnchorLink;
+    text-decoration: none;
+    cursor: pointer;
+
+    &:hover {
+        color: $flowAnchorLinkHover;
+    }
+
+    /* buttons must be <a> tags (use the appropriate class) */
 
     &.helpIcon {
         display: inline-block;
-        font-size: 1em;
-        font-family: baskerville;
+        font-size: 0.8em;
+        font-weight: bold;
+        padding-top: 3px;
         width: 18px;
-        height: 18px;
+        height: 16px;
         border-radius: 9px;
-        background: $anchorLink;
-        color: white;
+        background: $flowAnchorLink;
+        color: white !important;
         text-align: center;
 
         &:hover {
-            background: $anchorLinkHover;
+            background: $flowAnchorLinkHover;
         }
 
         .selectinLabel & {
@@ -424,10 +316,9 @@ a, a:link, a:visited {
     &.AddBtn {
         display: inline-block !important;
         padding: 1em 1% 0.8em 1.5em;
-        background: url(../images/addbtn.png) left center no-repeat;
+        background: url(../images/addbtfullWidthn.png) left center no-repeat;
         color: rgb(0, 123, 182);
         text-align: left;
-        text-transform: uppercase;
         font-size: 1.1em;
 
         &:hover {}
@@ -451,30 +342,7 @@ a, a:link, a:visited {
     }
 }
 
-::-moz-selection {
-    background: #930;
-    color: #fff;
-    text-shadow: none;
-}
-
-::selection {
-    background: #930;
-    color: #fff;
-    text-shadow: none;
-}
-
-ins {
-    background-color: #930;
-    color: #000;
-    text-decoration: none;
-}
-
-mark {
-    background-color: #930;
-    color: #000;
-    font-weight: bold;
-    font-style: italic;
-}
+/********************  end links ********************/
 
 .fadedText {
     color: rgb(153, 153, 153);
@@ -567,13 +435,26 @@ input[type="submit"] {
     margin: 0 auto;
     padding: 1em 2% 1.5em 2%;
     width: 96%;
-    background: $darkGrey;
 
-    a {
-        font-weight: bold;
-        font-size: 1.2em;
-        display: inline-block;
-        padding: 0.5em 1em 1em 1em;
+    li {
+        a {
+            font-weight: bold;
+            font-size: 1.2em;
+            display: inline-block;
+            padding: 0.5em 1em 1em 1em;
+        }
+
+        &.prevBtn {
+            display: inline-block;
+            text-align: left;
+            width: 49%;
+        }
+
+        &.nextBtn {
+            display: inline-block;
+            text-align: right;
+            width: 49%;
+        }
     }
 }
 
@@ -640,7 +521,7 @@ input[type="submit"] {
 .dialogWrap {
     position: relative;
     width: 100%;
-    Height: 100%;
+    height: 100%;
 }
 
 .dialog {
@@ -705,84 +586,16 @@ label[for=newDeviceGroupName] {
     width: 70%;
 }
 
-/* page structure
---------------------------------------------- */
-
-.widthConstraint {
-    position: relative;
-    margin: 0 auto 0 auto;
-    padding: 0;
-    width: 100%;
-    min-width: 768px;
-}
-
-.belowHeader {
-    padding-top: 55px;
-    padding-bottom: 0px;
-    background: white;
-}
-
-.middleSection {
-    overflow: hidden;
-
-    /*margin: 0 0 20px 0;*/
-    padding: 90px 0 40px 0;
-}
-
-.leftSidebar {
-    -webkit-box-sizing: border-box;
-    -moz-box-sizing: border-box;
-    box-sizing: border-box;
-    left: 0;
-    top: 112px;
-    bottom: 56px;
-    position: fixed;
-    float: left;
-    width: 20em;
-    overflow-y: scroll;
-    overflow-x: hidden;
-}
-
-.rightSidebar {
-    position: relative;
-    float: right;
-    width: 22%;
-}
-
-.mainRight {
-    float: left;
-    width: calc(100% - 20em);
-    margin-left: 20em;
-    overflow-y: auto;
-}
-
-.mainLeft {
-    position: relative;
-    float: left;
-    width: 78%;
-}
-
-.fullWidth {
-    position: relative;
-    width: 100%;
-}
-
-.mainContent {
-    margin: 0 auto;
-    padding: 0 0 0 0;
-    width: 99%;
-}
-
-/* .header
+ /* .header
 --------------------------------------------- */
 
 header.top {
     position: fixed;
-    padding: 20px 0;
+    padding: 5px 0;
     top: 0;
     width: 100%;
     height: 41px;
-    background: rgb(255, 255, 255);
+    background: rgb(252, 252, 255);
     z-index: 9999;
 
     /*-webkit-box-shadow: 0 0 1px rgba(32, 32, 36, 0.1);
@@ -800,63 +613,23 @@ header.top {
         min-width: 768px;
     }
 
-    &.top-nav-collapse {
-        padding: 0;
-        border-bottom: 1px solid rgb(232, 232, 245);
-        border-top: none;
-
-        h1 {
-            width: 169px;
-            top: 2px;
-            height: inherit;
-            background: url(../images/akvoFlowLogo.svg) no-repeat 10px center;
-            -webkit-background-size: 85% auto;
-            background-size: 85% auto;
-        }
-
-        & + .belowHeader {
-            padding-top: 110px;
-            padding-bottom: 110px;
-            background: white;
-        }
-
-        & > div > .belowHeader {
-            padding-top: 50px;
-            padding-bottom: 110px;
-            background: white;
-        }
-    }
-
     h1 {
         position: absolute;
         top: 2px;
         left: 0px;
-        height: 60px;
-        width: 169px;
+        height: 40px;
+        width: 145px;
         background: url(../images/akvoFlowLogo.svg) no-repeat 5px top;
         text-indent: -9999px;
-        background-size: 95% auto;
-
-        a {
-            display: block;
-            width: 169px;
-            height: 60px;
-            text-indent: -9999px;
-        }
+        background-size: 90% auto;
     }
 }
 
-.loginSection {
-    display: none;
+.logIn, .logOut {
     position: absolute;
-    top: 0;
-    right: 0;
-
-    ul {
-        li {
-            display: inline;
-        }
-    }
+    top: 7px;
+    right: 0.25%;
+    list-style-type: none;
 }
 
 .userRegister {
@@ -864,9 +637,7 @@ header.top {
 }
 
 .languageSelector {
-    position: absolute;
-    top: 0;
-    right: 0.25%;
+    margin-top: 4px;
 
     .labelText {
         display: block;
@@ -897,77 +668,33 @@ header.top {
 
 /* Top navigation styles
 --------------------------------------------- */
-
-nav.appNav {
-    position: absolute;
-    top: 0px;
-    left: 180px;
-
-    ul {
-        position: relative;
-        width: 100%;
-
-        li {
-            display: inline;
-            float: left;
-            margin: 0 0 0 0;
-            padding: 5px 2px 0 0;
-
-            &.current a {
-                /*  -webkit-box-shadow: 0 0 2px rgba(20, 20, 20, 0.1);
-                  -o-box-shadow: 0 0 2px rgba(20, 20, 20, 0.1);
-                  box-shadow: 0 0 2px rgba(20, 20, 20, 0.1);*/
-                color: $anchorLinkHover;
-            }
-
-            &:hover,
-            &:last-child,
-            &:last-child:hover,
-            &.current,
-            &.current:hover {
-                background-image: none;
-            }
-
-            a {
-                font-size: 1em;
-                margin-top: -20px;
-                display: block;
-                padding: 41px 10px 23px 8px;
-                vertical-align: bottom;
-                vertical-align: middle;
-                text-transform: uppercase;
-                cursor: pointer;
-
-                header.top.top-nav-collapse & {
-                    margin-top: 0;
-                    padding: 18px 4px 5px 8px;
-                    background-position: center 2px;
-                    -webkit-background-size: 18px auto;
-                    background-size: 18px auto;
-
-                    &:hover {
-                        margin-top: 0;
-                        padding: 18px 4px 4px 8px;
-                        background-position: center 2px;
-                        -webkit-background-size: 18px auto;
-                        background-size: 18px auto;
-                    }
-                }
-            }
-        }
-    }
-}
-
 @mixin bgDetails {
     background-repeat: no-repeat;
-    background-position: center 12px;
-    -webkit-background-size: 28px auto;
-    background-size: 28px auto;
+    background-position: center 5px;
+    -webkit-background-size: 22px auto;
+    background-size: 22px auto;
 }
 
 nav.appNav {
     ul {
+        margin-left: 155px;
+
         li {
+            float: left;
+            margin-right: 10px;
+            margin-top: 15px;
+
+            a {
+                padding: 25px 5px 5px 5px;
+                font-size: 0.85em;
+            }
+
+            &.current {
+                a {
+                    color: $akvoFlowOrange;
+                }
+            }
+
             &.navHome {
                 a {
                     background: url(../images/topnavDashboards.svg);
@@ -1191,6 +918,92 @@ nav.appNav {
     }
 }
 
+/*
+nav.appNav {
+    position: absolute;
+    top: 0px;
+    left: 180px;
+
+    ul {
+        position: relative;
+        width: 100%;
+
+        li {
+            display: inline;
+            float: left;
+            margin: 0 0 0 0;
+            padding: 10px 20px 10px 0px;
+
+            &:last-child {
+                padding-right: 0;
+            }
+
+            &.current a {
+                color: $flowAnchorLinkHover;
+            }
+
+            &:hover,
+            &:last-child,
+            &:last-child:hover,
+            &.current,
+            &.current:hover {
+                background-image: none;
+            }
+
+            a {
+                display: block;
+                vertical-align: middle;
+                cursor: pointer;
+                color: $akvoDarkBlue;
+
+                &:hover {
+                    color: $flowAnchorLinkHover;
+                }
+            }
+        }
+    }
+} */
+
+/* page structure
+--------------------------------------------- */
+
+.widthConstraint {
+    position: relative;
+    margin: 0 auto 0 auto;
+    padding: 0;
+    width: 100%;
+    min-width: 768px;
+}
+
+.belowHeader {
+    padding-top: 110px;
+    padding-bottom: 25px;
+    box-sizing: border-box;
+}
+
+.middleSection {
+    /*margin: 0 0 20px 0;*/
+    padding: 50px 0 25px 0;
+}
+
+.fullWidth {
+    position: relative;
+    width: 100%;
+}
+
+.mainContent {
+    margin: 0 auto;
+    padding: 0 0 0 0;
+    width: 99%;
+}
+
+@mixin bgDetails {
+    background-repeat: no-repeat;
+    background-position: center 12px;
+    -webkit-background-size: 28px auto;
+    background-size: 28px auto;
+}
+
 /*---------------------------------------------
                     Data Table
 -----------------------------------------------*/
@@ -1200,26 +1013,22 @@ table.dataTable {
     margin: 0 auto;
     width: 100%;
     border-collapse: collapse;
-    color: #606060;
     text-align: left;
+    color: rgba($tableHeaderGrey, 0.8);
+    font-size: 0.9em;
 
     thead tr {
-        border-bottom: none;
-        background: $darkGrey;
+        background: rgba($linkColor, 0.2);
+        border-top: thin solid rgba(32, 32, 36, 0.05);
 
         th {
             position: relative;
             padding: 9px 1em 9px 1em;
-            border-right: thin solid rgb(12, 12, 12);
+            border-right: thin solid white;
             background: url(../images/sortTableArrows.png) right center no-repeat;
-            color: rgb(255, 210, 0);
             text-align: center;
-            text-transform: uppercase;
             font-weight: normal;
-
-            &.noArrows {
-                background: #3A3A3A;
-            }
+            color: $linkColor;
 
             input[type="checkbox"] {
                 margin: 0;
@@ -1250,7 +1059,6 @@ table.dataTable tbody tr.odd {
 
 table.dataTable tbody tr:nth-child(2n),
 table.dataTable tbody tr.even {
-    background: rgb(232, 230, 220);
     -webkit-transition: background-color .4s linear;
     transition: background-color .4s linear;
 }
@@ -1258,8 +1066,8 @@ table.dataTable tbody tr.even {
 table.dataTable tbody tr:hover,
 table.dataTable tbody tr:nth-child(2n):hover,
 table.dataTable tbody tr.even:hover {
-    background: rgb(177, 214, 224);
-    color: rgb(16, 28, 30);
+    background: rgba($flowAnchorLink, 0.1);
+    color: rgba($tableHeaderGrey, 0.5);
 }
 
 #usersListTable thead tr th {
@@ -1269,8 +1077,8 @@ table.dataTable tbody tr.even:hover {
 table.dataTable thead tr th a,
 table.dataTable thead tr th a:link,
 table.dataTable thead tr th a:visited {
-    color: #FFD200;
     cursor: pointer;
+    display: block;
 }
 
 #statisticsDataTable {
@@ -1280,17 +1088,16 @@ table.dataTable thead tr th a:visited {
 /* end addition MTW */
 
 table.dataTable thead tr th a.helpIcon {
-    position: relative;
-    top: -3px;
-    margin: 0 0 0 7px;
+    position: absolute;
+    top: 9px;
 }
 
 table.dataTable thead tr th.sorting_desc {
-    background: rgb(23, 23, 23) url(../images/sortTableDown.png) right center no-repeat;
+    background: url(../images/sortTableDown.png) right center no-repeat;
 }
 
 table.dataTable thead tr th.sorting_asc {
-    background: rgb(23, 23, 23) url(../images/sortTableUp.png) right center no-repeat;
+    background: url(../images/sortTableUp.png) right center no-repeat;
 }
 
 table.dataTable thead tr th:last-child {
@@ -1305,7 +1112,6 @@ tfoot tr {
 #devicesListTable {
     .macAddress {
         width: 14%;
-        text-transform: uppercase;
     }
 
     .action {
@@ -1363,12 +1169,6 @@ tfoot tr {
     }
 }
 
-#inspectData {
-    border: thin solid rgb(224, 224, 224);
-    border-top: 1px solid white;
-    background: rgb(224, 224, 224);
-}
-
 .greyBg a.standardBtn {
     background-image: url("../images/addPlus.png") left center no-repeat;
 }
@@ -1388,7 +1188,6 @@ tfoot tr {
     position: absolute;
     top: 30px;
     right: 5px;
-    text-transform: uppercase;
 
     ul {
         li {
@@ -1401,7 +1200,6 @@ tfoot tr {
                 padding: 0.4em 0.8em;
                 background: transparent;
                 color: rgb(0, 123, 182);
-                font-size: 1em;
 
                 @include transition(all 0.2s ease);
 
@@ -1413,7 +1211,7 @@ tfoot tr {
 
                 &:hover {
                     border-radius: 2px;
-                    background: $anchorLink;
+                    background: $flowAnchorLink;
                     color: white;
                     -o-border-radius: 2px;
 
@@ -1442,7 +1240,6 @@ tfoot tr {
     div {
         &.noResults {
             color: red;
-            font-size: 1.3em;
             text-align: center;
         }
     }
@@ -1453,22 +1250,6 @@ tfoot tr {
             &.submitter {
                 text-align: left;
             }
-        }
-    }
-}
-
-#inspectData, #monitoringData, .messagesList {
-    .prevNext {
-        .prevBtn {
-            display: inline-block;
-            text-align: left;
-            width: 49%;
-        }
-
-        .nextBtn {
-            display: inline-block;
-            text-align: right;
-            width: 49%;
         }
     }
 }
@@ -1649,8 +1430,8 @@ input.hasDatepicker {
     display: inline;
     margin: 0;
     padding: 1em 0.5% 1.5em 0.5%;
-    min-height: 200px;
     width: 49%;
+    max-width: 49%;
 }
 
 .manualTransfer .fieldSetWrap fieldset.fullWidth {
@@ -1746,21 +1527,9 @@ table.previewList {
 }
 
 #assignSurveys .fieldSetWrap fieldset table tfoot td a {
-    display: block;
     float: right;
-    padding: 5px 3px;
-    width: 10%;
-    background: rgb(0, 123, 182);
-    color: white;
-    -webkit-transition: background 0.5s ease-in;
-    transition: background 0.5s ease-in;
-    -o-border-radius: 0 0 5px 5px;
-    border-radius: 0 0 5px 5px;
-}
 
-#assignSurveys .fieldSetWrap fieldset table tfoot td a:hover {
-    background: rgb(107, 134, 141);
-    color: white;
+    @include button($flowAnchorLink);
 }
 
 .groupPreview {
@@ -1818,13 +1587,11 @@ th.action {
     color: rgb(0, 123, 182);
 }
 
-#assignSurveys .fieldSetWrap fieldset.formLeftPanel div.SelectLayout {
-    display: block;
-    width: 100%;
-}
+#assignSurveys .fieldSetWrap fieldset.formLeftPanel div.SelectLayout {}
 
 #assignSurveys .fieldSetWrap fieldset.formLeftPanel div.formSelectorList {
-    display: block;
+    position: relative;
+    display: inline-block;
     width: 100%;
     margin-top: 30px;
 
@@ -1846,129 +1613,6 @@ th.action {
 .menuConfirm ul li a {
     display: inline-block;
 }
-
-/*--------------------------------------------------------------------
-                            Tabs Styling
-----------------------------------------------------------------------*/
-#tabs {
-    position: relative;
-
-    /*overflow-y: scroll;*/
-    height: 100%;
-    width: 100%;
-}
-
-#tabs div > section {
-    border-top: thin solid white;
-    background: white;
-
-    &.cascadeSection {
-        background: $projectBackground;
-        box-sizing: border-box;
-        width: 100%;
-        padding: 15px 0;
-        margin: 0 auto;
-        -ms-overflow-style: none;
-        overflow-y: scroll;
-    }
-}
-
-#tabs section h1,
-.messagesList h1,
-.usersList h1,
-.surveyTranslation > h1 {
-    display: block;
-    margin: 0.5em 0 0.5em 0.5em;
-    color: $anchorLinkHover;
-    font-size: 1.8em;
-    font-weight: 400;
-}
-
-#tabs div > section h3 {
-    -moz-text-shadow: 0 -1px 0 rgb(185, 185, 185), 0 2px 0 white;
-    -webkit-text-shadow: 0 -1px 0 rgb(185, 185, 185), 0 2px 0 white;
-    -o-text-shadow: 0 -1px 0 rgb(185, 185, 185), 0 2px 0 white;
-    text-shadow: 0 -1px 0 rgb(185, 185, 185), 0 2px 0 white;
-}
-
-#tabs {
-    nav.tabNav {
-        display: block;
-        padding: 1px 0;
-        width: 100%;
-        background-color: white;
-        position: fixed;
-        margin-top: -10px;
-        z-index: 9999;
-
-        & + div, & + section {
-            margin-top: 40px;
-        }
-
-        ul {
-            padding: 0;
-
-            li {
-                display: inline;
-                float: left;
-                margin: 0 1px 0 0;
-
-                @include border-radius(2px 2px 0 0);
-
-                background: rgba($akvoBlack, 0.5);
-                -webkit-background-clip: padding-box;
-                background-clip: padding-box;
-                -webkit-transition: none;
-                transition: none;
-                -moz-background-clip: padding;
-                -webkit-background-clip: padding-box;
-
-                &:hover {
-                    background: rgb(174, 174, 174);
-                }
-
-                &.active {
-                    background: rgb(0, 0, 0);
-
-                    &:hover {
-                        background: rgb(0, 0, 0);
-                    }
-
-                    a {
-                        color: white;
-                        text-shadow: none;
-                        -webkit-text-shadow: none;
-                        -moz-text-shadow: none;
-
-                        &:hover {
-                            color: white;
-                            text-shadow: none;
-                            -webkit-text-shadow: none;
-                            -moz-text-shadow: none;
-                        }
-                    }
-                }
-
-                a {
-                    display: block;
-                    padding: 0.75em 1em;
-                    color: white;
-                    text-transform: uppercase;
-                    -webkit-transition: none;
-                    transition: none;
-                    font-weight: bold;
-
-                    &:hover {
-                        color: white;
-                    }
-                }
-            }
-        }
-    }
-}
-
-/* Survey styles
---------------------------------------------- */
 
 .surveysList {
     position: relative;
@@ -2002,23 +1646,6 @@ a.text_label {}
     display: block;
     margin: 8px auto 10px auto;
     width: 77%;
-}
-
-.topBar {
-    input[type="text"] {
-        padding: 5px;
-        margin: 16px 0 0 10px;
-        width: 20%;
-    }
-
-    .addCascade {
-        input[type="text"] {
-            width: 50%;
-            margin: 0 10px 0 0;
-            padding: 9px 10px;
-            background: lighten($akvoDarkBlue, 50%);
-        }
-    }
 }
 
 .no-textshadow .leftSidebar h2 {
@@ -2099,13 +1726,13 @@ nav.menuGroupWrap {
                 }
 
                 a {
-                    color: $anchorLink;
+                    color: $flowAnchorLink;
                     background-image: none;
                     padding: 10px 1% 10px 45px;
                     width: calc(99% - 40px);
 
                     &:hover {
-                        color: $anchorLinkHover;
+                        color: $flowAnchorLinkHover;
                         background-image: none;
                     }
                 }
@@ -2119,14 +1746,13 @@ nav.menuGroupWrap {
 
                 a, a:hover {
                     background: url(../images/carretFolderSelected.svg) right center no-repeat;
-                    color: $anchorLinkHover;
+                    color: $flowAnchorLinkHover;
                     background-size: 15px 25px;
                 }
             }
 
             a {
                 display: block;
-                text-transform: uppercase;
                 padding: 10px 10% 10px 2%;
                 width: 93%;
                 height: 23px;
@@ -2137,7 +1763,6 @@ nav.menuGroupWrap {
 
                 @include noWrapTxt;
 
-                font-size: 1.2em;
                 cursor: pointer;
 
                 &:hover {
@@ -2149,7 +1774,6 @@ nav.menuGroupWrap {
 
                 span.monitorIcn {
                     font-weight: bold;
-                    font-size: 0.8em;
                     line-height: 21px;
                     color: white;
                     background-color: $monitorGreen;
@@ -2209,20 +1833,19 @@ a.FadeIt {
         margin: 10px auto;
 
         h2 {
-            font-size: 1.5em;
             display: block;
             overflow: inherit;
             text-overflow: inherit;
             white-space: inherit;
             margin: 10px 0 0 5px;
-            color: $anchorLink;
+            color: $flowAnchorLink;
         }
     }
 }
 
 .noFormsContainer {
     background: white;
-    padding: 2em 0;
+    padding: 10px 0;
 
     li.formList {
         padding: 10px 0;
@@ -2233,15 +1856,13 @@ a.FadeIt {
 
         h4 {
             margin: 5px 0 10px 5px;
-            color: rgba($anchorLink, 0.5);
+            color: rgba($flowAnchorLink, 0.5);
         }
 
         .noForms {
             padding-top: 45px;
             background: url(../images/IconFormsBlack.png) center top no-repeat;
             text-align: center;
-            text-transform: uppercase;
-            font-size: 1.1em;
             width: 90%;
             margin: 0 auto 20px auto;
         }
@@ -2258,7 +1879,7 @@ a.FadeIt {
 
                 &.current {
                     border-bottom: thin solid rgb(55, 55, 55);
-                    background: rgba($anchorLink, 0.25) url(../images/IconFormsWhite.svg) 2px 11px no-repeat;
+                    background: rgba($flowAnchorLink, 0.25) url(../images/IconFormsWhite.svg) 2px 11px no-repeat;
                     background-size: 20px 17px;
 
                     a, a:hover {
@@ -2277,32 +1898,350 @@ a.FadeIt {
 
 section.topBar {
     position: fixed;
-    margin: -10px auto 0 auto;
+    top: 53px;
+    margin: 0px auto 0 auto;
     z-index: 9998;
     width: 100%;
+    box-shadow: 0 1px 3px rgba($akvoBlack, 0.1);
+    padding: 0 0 0px 0;
     background: white;
-
-    #tabs & {
-        margin-top: 0px;
-        padding-top: 10px;
-    }
 
     &.activeMenu {
         border: 1px solid rgb(212, 212, 212);
     }
-}
 
-section.topBar ~ * {
-    margin-top: 90px;
+    /*--------------------------------------------------------------------
+                                Tabs Styling
+    ----------------------------------------------------------------------*/
 
-    #tabs & {
-        margin-top: 90px;
+    #tabs div > section {
+        border-top: thin solid white;
+
+        &.cascadeSection {
+            background: $projectBackground;
+            box-sizing: border-box;
+            width: 100%;
+            padding: 15px 0;
+            margin: 0 auto;
+            -ms-overflow-style: none;
+            overflow-y: scroll;
+        }
+    }
+
+    #tabs section h1,
+    .messagesList h1,
+    .usersList h1,
+    .surveyTranslation > h1 {
+        display: block;
+        margin: 0.5em 0 0.5em 0.5em;
+        color: $flowAnchorLinkHover;
+        font-weight: 400;
+    }
+
+    #tabs div > section h3 {
+        -moz-text-shadow: 0 -1px 0 rgb(185, 185, 185), 0 2px 0 white;
+        -webkit-text-shadow: 0 -1px 0 rgb(185, 185, 185), 0 2px 0 white;
+        -o-text-shadow: 0 -1px 0 rgb(185, 185, 185), 0 2px 0 white;
+        text-shadow: 0 -1px 0 rgb(185, 185, 185), 0 2px 0 white;
+    }
+
+    #tabs {
+        position: relative;
+
+        nav.tabNav {
+            display: block;
+            padding: 0px 0 0px 0;
+            width: 100%;
+            background-color: white;
+            position: fixed;
+            z-index: 9999;
+            margin-bottom: 0px;
+
+            ul {
+                padding: 0;
+                overflow: auto;
+                background: rgb(252, 252, 255);
+
+                &:after {
+                    content: "";
+                    display: block;
+                    overflow: auto;
+                    margin-top: -1px;
+                    width: 100%;
+                    height: 1px;
+                    border-bottom: thin solid rgba($akvoBlack, 0.2);
+                }
+
+                li {
+                    display: inline;
+                    float: left;
+                    margin: 0 0px -2px 0;
+                    font-size: 90%;
+
+                    @include border-radius(0 0 0 0);
+
+                    background: rgba($akvoBlack, 0);
+                    -webkit-background-clip: padding-box;
+                    background-clip: padding-box;
+                    -webkit-transition: none;
+                    transition: none;
+                    -moz-background-clip: padding;
+                    -webkit-background-clip: padding-box;
+                    border: thin solid transparent;
+
+                    &:hover {
+                        border: thin solid rgba($akvoBlack, 0.2);
+                        border-bottom: thin solid white;
+                    }
+
+                    &.active {
+                        position: relative;
+                        background: rgba(white, 1);
+                        border-top: 2px solid rgba($akvoFlow, 1);
+                        border-left: thin solid rgba($akvoBlack, 0.2);
+                        border-right: thin solid rgba($akvoBlack, 0.2);
+                        border-bottom: thin solid white;
+                        cursor: not-allowed;
+
+                        &:hover {
+                            background: rgba($akvoBlack, 0);
+                        }
+
+                        a {
+                            color: rgba($akvoBlack, 1);
+                            text-shadow: none;
+                            -webkit-text-shadow: none;
+                            -moz-text-shadow: none;
+
+                            &:hover {
+                                color: rgba($akvoBlack, 1);
+                                text-shadow: none;
+                                -webkit-text-shadow: none;
+                                -moz-text-shadow: none;
+                            }
+                        }
+                    }
+
+                    a {
+                        display: block;
+                        padding: 10px 15px;
+                        color: rgba($akvoBlack, 0.5);
+                        -webkit-transition: none;
+                        transition: none;
+
+                        &:hover {
+                            color: rgba($akvoBlack, 1);
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+    nav {
+        &.breadCrumb {
+            margin-left: 0.5%;
+            width: 65.5%;
+            float: left;
+
+            ul li {
+                white-space: nowrap;
+                display: inline-block;
+                height: 34px;
+                line-height: 34px;
+                width: auto;
+                margin: 5px 3px 0 -1px;
+                text-indent: 19px;
+                position: relative;
+                max-width: 175px;
+            }
+
+            ul li:before {
+                content: " ";
+                height: 0;
+                width: 0;
+                position: absolute;
+                left: -2px;
+                border-style: solid;
+                border-width: 17px 0 17px 17px;
+                border-color: transparent transparent transparent #fff;
+                z-index: 0;
+            }
+
+            ul li:first-child:before {
+                border-color: transparent;
+            }
+
+            ul li a:after {
+                content: " ";
+                height: 0;
+                width: 0;
+                position: absolute;
+                right: -17px;
+                border-style: solid;
+                border-width: 17px 0 17px 17px;
+                border-color: transparent transparent transparent $akvoLightBlue;
+                z-index: 10;
+            }
+
+            ul li a {
+                display: block;
+                background: $akvoLightBlue;
+                color: white;
+
+                @include noWrapTxt;
+
+                &:hover {
+                    background: $flowAnchorLinkHover;
+                }
+
+                &.homeRoot {
+                    border-radius: 3px 0 0 3px;
+                    width: 40px;
+                    background: url(../images/breadCrumb-Root.png) center center no-repeat $akvoLightBlue;
+                    text-indent: -9999px;
+                    z-index: 9999;
+                    margin-left: 0;
+
+                    &:hover {
+                        background: url(../images/breadCrumb-Root.png) center center no-repeat $flowAnchorLinkHover;
+                    }
+                }
+            }
+
+            ul li a:hover:after {
+                border-color: transparent transparent transparent $flowAnchorLinkHover;
+            }
+
+            ul li:last-of-type {
+                opacity: 0.8;
+
+                a {
+                    border-radius: 0 3px 3px 0;
+                    padding-right: 15px;
+                    background: $flowAnchorLinkHover;
+
+                    &.homeRoot {
+                        padding-right: 0;
+                        border-radius: 3px 0 0 3px;
+                        width: 40px;
+                        background: url(../images/breadCrumb-Root.png) center center no-repeat $akvoLightBlue;
+                        text-indent: -9999px;
+                        z-index: 9999;
+                        margin-left: 0;
+
+                        &:after {
+                            content: " ";
+                            height: 0;
+                            width: 0;
+                            position: absolute;
+                            right: -17px;
+                            border-style: solid;
+                            border-width: 17px 0 17px 17px;
+                            border-color: transparent transparent transparent $akvoLightBlue;
+                            z-index: 10;
+                        }
+
+                        &:hover {
+                            background: url(../images/breadCrumb-Root.png) center center no-repeat $akvoLightBlue;
+                        }
+                    }
+
+                    &:after {
+                        border-width: 0;
+
+                        &:hover {
+                            background: $akvoLightBlue;
+                        }
+                    }
+                }
+            }
+        }
+
+        &.menuTopbar {
+            margin-right: 0.25%;
+            width: 33.5%;
+            float: right;
+            margin-top: -5px;
+
+            h3 {
+                color: rgb(198, 198, 198);
+                margin: 0;
+                padding: 0;
+
+                &.actionTitleEdit {
+                    padding: 5px 5px 5px 15px;
+                    background: url(../images/IconEditGreyLight.svg) left center no-repeat;
+                    background-size: 15px;
+                }
+            }
+
+            ul {
+                width: 100%;
+
+                li {
+                    margin: 10px 10px 0 0;
+                    float: right;
+
+                    &:first-of-type {
+                        margin: 10px 0px 0 0;
+                    }
+
+                    p {
+                        color: $midGrey;
+
+                        .itemMoved {
+                            color: $akvoDarkBlue;
+                            margin-right: 5px;
+                            margin-left: 5px;
+                            display: inline-block;
+                            max-width: 200px;
+                            line-height: initial;
+                            top: 3px;
+                            position: relative;
+
+                            @include noWrapTxt;
+                        }
+                    }
+                }
+            }
+
+            &.actionHighLighted {
+                border: 1px solid rgb(241, 242, 242);
+                margin-top: 0;
+
+                li {
+                    &:first-child {
+                        float: left;
+                        margin: 14px 0 0 10px;
+                    }
+
+                    p {
+                        span {}
+                    }
+                }
+            }
+        }
+    }
+
+    input[type="text"] {
+        padding: 5px;
+        margin: 16px 0 0 10px;
+        width: 20%;
+    }
+
+    .addCascade {
+        input[type="text"] {
+            width: 50%;
+            margin: 0 10px 0 0;
+            padding: 9px 10px;
+            background: lighten($akvoDarkBlue, 50%);
+        }
     }
 }
 
 .surveyLandingText {
     display: inherit;
-    font-size: 2em;
     vertical-align: middle;
     text-align: center;
     color: rgb(204, 204, 204);
@@ -2326,7 +2265,7 @@ section.topBar > a {
 }
 
 section.topBar > a:hover {
-    color: $anchorLinkHover;
+    color: $flowAnchorLinkHover;
 }
 
 section.topBar > a.smallBtn {
@@ -2337,202 +2276,6 @@ section.topBar > a.smallBtn {
 nav.menuTopbar {
     margin: 0 auto 0;
     padding: 0 0 10px 0;
-}
-
-section.topBar {
-    display: -webkit-box;
-    display: -moz-box;
-    display: -ms-flexbox;
-    display: -webkit-flex;
-    display: flex;
-    -webkit-align-items: center;
-    align-items: center;
-    flex-wrap: nowrap;
-    justify-content: flex-start;
-    padding: 0 0 10px 0;
-    width: 100%;
-
-    nav {
-        &:first-child {
-            margin-left: 0.5%;
-            padding: 10px 0;
-            align-self: flex-start;
-        }
-
-        &:last-child {
-            margin-right: 0.5%;
-            padding: 10px 0;
-            align-self: flex-end;
-        }
-    }
-
-    nav.breadCrumb {
-        ul li {
-            display: inline-block;
-            height: 34px;
-            line-height: 34px;
-            width: auto;
-            margin: 5px 3px 0 0;
-            text-indent: 19px;
-            position: relative;
-        }
-
-        ul li:before {
-            content: " ";
-            height: 0;
-            width: 0;
-            position: absolute;
-            left: -2px;
-            border-style: solid;
-            border-width: 17px 0 17px 17px;
-            border-color: transparent transparent transparent #fff;
-            z-index: 0;
-        }
-
-        ul li:first-child:before {
-            border-color: transparent;
-        }
-
-        ul li a:after {
-            content: " ";
-            height: 0;
-            width: 0;
-            position: absolute;
-            right: -17px;
-            border-style: solid;
-            border-width: 17px 0 17px 17px;
-            border-color: transparent transparent transparent $akvoLightBlue;
-            z-index: 10;
-        }
-
-        ul li a {
-            display: block;
-            background: $akvoLightBlue;
-            color: white;
-            font-size: 1.1em;
-
-            @include noWrapTxt;
-
-            &:hover {
-                background: $anchorLinkHover;
-            }
-
-            &.homeRoot {
-                border-radius: 3px 0 0 3px;
-                width: 40px;
-                background: url(../images/breadCrumb-Root.png) center center no-repeat $akvoLightBlue;
-                text-indent: -9999px;
-                z-index: 9999;
-                margin-left: 0;
-
-                &:hover {
-                    background: url(../images/breadCrumb-Root.png) center center no-repeat $anchorLinkHover;
-                }
-            }
-        }
-
-        ul li a:hover:after {
-            border-color: transparent transparent transparent $anchorLinkHover;
-        }
-
-        ul li:last-of-type {
-            opacity: 0.8;
-
-            a {
-                border-radius: 0 3px 3px 0;
-                padding-right: 15px;
-                background: $anchorLinkHover;
-
-                &.homeRoot {
-                    padding-right: 0;
-                    border-radius: 3px 0 0 3px;
-                    width: 40px;
-                    background: url(../images/breadCrumb-Root.png) center center no-repeat $akvoLightBlue;
-                    text-indent: -9999px;
-                    z-index: 9999;
-                    margin-left: 0;
-
-                    &:after {
-                        content: " ";
-                        height: 0;
-                        width: 0;
-                        position: absolute;
-                        right: -17px;
-                        border-style: solid;
-                        border-width: 17px 0 17px 17px;
-                        border-color: transparent transparent transparent $akvoLightBlue;
-                        z-index: 10;
-                    }
-
-                    &:hover {
-                        background: url(../images/breadCrumb-Root.png) center center no-repeat $akvoLightBlue;
-                    }
-                }
-
-                &:after {
-                    border-width: 0;
-
-                    &:hover {
-                        background: $akvoLightBlue;
-                    }
-                }
-            }
-        }
-    }
-
-    nav.menuTopbar {
-        margin: 0 auto 0;
-        padding: 10px 0;
-
-        h3 {
-            text-transform: uppercase;
-            font-size: 1em;
-            color: rgb(198, 198, 198);
-            margin: 0;
-            padding: 0;
-
-            &.actionTitleEdit {
-                padding: 5px 5px 5px 15px;
-                background: url(../images/IconEditGreyLight.svg) left center no-repeat;
-                background-size: 15px;
-            }
-        }
-
-        ul {
-            display: -webkit-flex;
-            display: flex;
-            -webkit-flex-direction: row;
-            flex-direction: row;
-            -webkit-justify-content: flex-end;
-            justify-content: flex-end;
-            -webkit-align-items: center;
-            align-items: center;
-            text-align: right;
-
-            li {
-                margin-left: 10px;
-
-                &:first-child {
-                    margin-left: 0px;
-                }
-
-                p {
-                    color: $midGrey;
-
-                    .itemMoved {
-                        color: $akvoDarkBlue;
-                        font-weight: bold;
-                        margin-right: 5px;
-                        margin-left: 5px;
-                    }
-                }
-            }
-        }
-
-        &.actionHighLighted {
-            border: 1px solid rgb(241, 242, 242);
-        }
-    }
 }
 
 #surveyCreator nav.menuTopbar ul {
@@ -2566,202 +2309,26 @@ ul.cancelMenu {
 }
 
 a.addGroup,
-a.addSurvey, .moveAction,
+a.addSurvey,
 a.stepBack,
 a.editGroupName, a.addMenuAction,
 a.makeMonitorGroup, a.manageNotifications,
 a.deleteGroup, a.addFolder, a.editFolder, a.cancelFolder, a.saveMenuAction {
-    display: block;
-    padding: 1px 0 7px 21px;
-    height: 10px;
-    text-transform: uppercase;
+    @include btnOutline($flowAnchorLink);
 
-    &:hover {
-        color: $anchorLinkHover;
-    }
-}
-
-a.addGroup {
-    margin: 0 0 5px 5px;
-    padding: 1px 0 7px 19px;
-}
-
-a.cancelFolder {
-    color: $akvoRed;
-    background: url(../images/IconCancelFolder.svg) left center no-repeat;
-}
-
-a.cancelFolder:hover {
-    color: $anchorLinkHover;
-    background: url(../images/IconCancelFolderHover.svg) left center no-repeat;
-}
-
-a.addGroup, a.addFolder {
-    background: url(../images/IconPlus.svg) left center no-repeat;
-}
-
-a.addGroup:hover, a.addFolder:hover {
-    background: url(../images/IconPlusOrange.svg) left center no-repeat;
-}
-
-a.addFolder {
-    &.noChanges {
-        background: left center no-repeat;
-        color: rgba(32, 32, 36, 0.1);
-        cursor: default;
+    &.noChanges, &.disabled {
+        cursor: not-allowed;
+        background-color: rgba(128, 128, 128, 0.1) !important;
+        color: rgba(128, 128, 128, 0.4) !important;
+        border: 1px solid transparent;
 
         &:hover {
-            background: left center no-repeat;
-            color: rgba(32, 32, 36, 0.1);
+            cursor: not-allowed;
+            background-color: rgba(128, 128, 128, 0.1) !important;
+            color: rgba(128, 128, 128, 0.4) !important;
+            border: 1px solid transparent;
         }
     }
-}
-
-a.addSurvey {
-    color: white;
-    background: rgba($anchorLink, 1) url(../images/IconPlusWhite.svg) 2px center no-repeat;
-    padding: 8px 7px 13px 25px;
-    border-radius: 3px;
-    -webkit-background-size: 25px 45px;
-    background-size: 25px 45px;
-    -webkit-transition: color 0.2s ease-in, background-color 0.2s ease-in;
-    transition: color 0.2s ease-in, background-color 0.2s ease-in;
-
-    &.noChanges {
-        background: rgba(32, 32, 36, 0.05) url(../images/IconPlusWhite.svg) 2px center no-repeat;
-        cursor: default;
-        background-size: 25px 45px;
-        color: rgba(32, 32, 36, 0.1);
-
-        &:hover {
-            background: rgba(32, 32, 36, 0.05) url(../images/IconPlusWhite.svg) 2px center no-repeat;
-            background-size: 25px 45px;
-            color: rgba(32, 32, 36, 0.1);
-        }
-    }
-}
-
-a.addSurvey:hover {
-    color: white;
-    background: rgba($anchorLinkHover, 1) url(../images/IconPlusWhite.svg) 2px center no-repeat;
-    -webkit-background-size: 25px 45px;
-    background-size: 25px 45px;
-}
-
-a.moveAction {
-    color: white;
-    background: rgba($anchorLink, 1) url(../images/IconMoveWhite.svg) 2px center no-repeat;
-    background-size: 35px 35px;
-    padding: 7px 7px 14px 35px;
-    border-radius: 3px;
-    -webkit-transition: color 0.2s ease-in, background-color 0.2s ease-in;
-    transition: color 0.2s ease-in, background-color 0.2s ease-in;
-}
-
-a.moveAction:hover {
-    color: white;
-    background: rgba($anchorLinkHover, 1) url(../images/IconMoveWhite.svg) 2px center no-repeat !important;
-    background-size: 35px 35px !important;
-}
-
-a.stepBack {
-    background: transparent url(../images/IconBack.svg) left center no-repeat;
-}
-
-a.stepBack:hover {
-    background: url(../images/IconBackOrange.svg) left center no-repeat;
-}
-
-a.makeMonitorGroup[data-ember-action] {
-    background: transparent url(../images/IconCopy.svg) left center no-repeat;
-}
-
-a.makeMonitorGroup[data-ember-action]:hover {
-    background: transparent url(../images/IconCopyOrange.svg) left center no-repeat;
-}
-
-a.makeMonitorGroup {
-    background: transparent url(../images/IconMonitorEnable.svg) left center no-repeat;
-}
-
-a.makeMonitorGroup:hover {
-    background: transparent url(../images/IconMonitorEnable.svg) left center no-repeat;
-}
-
-a.editGroupName, a.editFolder {
-    background: transparent url(../images/IconEdit.svg) left center no-repeat;
-}
-
-a.editGroupName:hover, a.editFolder:hover {
-    background: url(../images/IconEditOrange.svg) left center no-repeat;
-}
-
-a.deleteGroup {
-    background: transparent url(../images/IconDelete.svg) left center no-repeat;
-
-    &:hover {
-        background: url(../images/IconDeleteOrange.svg) left center no-repeat;
-    }
-}
-
-a.addMenuAction {
-    background: url(../images/IconPlus.svg) left center no-repeat;
-
-    &.aBtn {
-        background: $anchorLink url(../images/IconPlusWhite.svg) left center no-repeat;
-        background-size: 35px auto;
-        color: white;
-        padding: 5px 5px 11px 31px;
-        height: 10px;
-
-        @include border-radius(5px);
-
-        &:hover {
-            background: $anchorLinkHover url(../images/IconPlusWhite.svg) left center no-repeat;
-            background-size: 35px auto;
-        }
-    }
-
-    &:hover {
-        background: url(../images/IconPlusOrange.svg) left center no-repeat;
-    }
-}
-
-a.saveMenuAction {
-    &.aBtn {
-        background: $anchorLink;
-        background-size: 35px auto;
-        color: white;
-        padding: 5px 15px 12px;
-
-        @include border-radius(5px);
-
-        &:hover {
-            background: $anchorLinkHover;
-            background-size: 35px auto;
-        }
-    }
-
-    &:hover {
-        background: url(../images/IconPlusOrange.svg) left center no-repeat;
-    }
-}
-
-a.redCancel {
-    color: $akvoRed;
-    padding: 5px 10px 5px 15px;
-    background: rgba(white, 0.5) url(../images/IconCancelFolder.svg) left center no-repeat;
-    background-size: 15px;
-
-    &:hover {
-        color: rgba($akvoRed, 0.5);
-    }
-}
-
-#assignSurveys a.stepBack {
-    position: absolute;
-    top: 40px;
-    right: 20px;
 }
 
 /* Survey Asset
@@ -2805,8 +2372,8 @@ li.aSurvey {
     cursor: pointer;
     -o-border-radius: 0.3em;
     border-radius: 0.3em;
-    -webkit-transition: all 0.4s linear;
-    transition: all 0.4s linear;
+    clear: both;
+    overflow: auto;
 
     &:hover {
         cursor: default;
@@ -2817,11 +2384,84 @@ li.aSurvey {
 
         h2 {
             display: inline;
-            color: $anchorLink;
+            color: $flowAnchorLink;
 
             &:hover {
-                color: $anchorLinkHover;
+                color: $flowAnchorLinkHover;
             }
+        }
+    }
+}
+
+li.aFolder {
+    @extend .aSurvey;
+
+    min-height: 6px;
+    background-color: rgb(232, 232, 232);
+    border: 1px solid rgba(200, 200, 200, 0);
+    clear: none !important;
+
+    input {
+        width: 50%;
+        font-size: 1.2em;
+        padding: 7px inherit;
+    }
+
+    a.editFolderName {
+        display: inline-block;
+        width: 30px;
+        background: url(../images/IconEditGreyLight.svg) center center no-repeat;
+        background-size: 25px;
+        text-indent: -9999px;
+        opacity: 0.5;
+
+        &:hover {
+            background: url(../images/IconEditOrange.svg) center center no-repeat;
+            background-size: 25px;
+            opacity: 1;
+        }
+    }
+
+    a.editingFolderName {
+        @extend .editFolderName;
+
+        background: url(../images/IconSave.svg) center center no-repeat;
+        background-size: 70px 70px;
+
+        &:hover {
+            background: url(../images/IconSaveOrange.svg) center center no-repeat;
+            background-size: 70px 70px;
+            opacity: 1;
+        }
+    }
+
+    a {
+        display: inline-block;
+        width: calc(100% - 30% );
+        padding-top: 10px;
+        padding-bottom: 10px;
+
+        h2 {
+            color: rgb(183, 183, 183);
+            background: url(../images/folderIcn.svg) right center no-repeat;
+            display: inline;
+            width: initial;
+            padding-right: 45px;
+        }
+    }
+
+    &:hover {
+        background-color: rgb(222, 222, 222);
+        border: 1px solid rgba(200, 200, 200, 1);
+
+        h2 {
+            color: $flowAnchorLinkHover;
+        }
+    }
+
+    &.folderEmpty {
+        h2 {
+            background: url(../images/folderIcnEmpty.svg) right center no-repeat;
         }
     }
 }
@@ -2846,104 +2486,13 @@ li.aFolder, li.aSurvey {
     }
 }
 
-li.aFolder {
-    @extend li.aSurvey;
-
-    display: -webkit-box;
-    display: -moz-box;
-    display: -ms-flexbox;
-    display: -webkit-flex;
-    display: flex;
-    -webkit-flex-direction: row;
-    -moz-flex-direction: row;
-    flex-direction: row;
-    -moz-box-sizing: border-box;
-    box-sizing: border-box;
-    -webkit-align-items: center;
-    -moz-align-items: center;
-    align-items: center;
-    min-height: 70px;
-    padding: 0 0 0 15px;
-    background-color: rgb(232, 232, 232);
-    background-image: url(../images/carret.svg);
-    background-position: right center;
-    background-repeat: no-repeat;
-    border: 1px solid rgba(200, 200, 200, 0);
-
-    input {
-        width: 50%;
-        font-family: $bodyFont;
-        font-size: 1.8em;
-    }
-
-    a.editFolderName {
-        display: inline-block;
-        width: 40px;
-        height: 40px;
-        background: url(../images/IconEditGreyLight.svg) center center no-repeat;
-        background-size: 30px 30px;
-        text-indent: -9999px;
-        margin-right: 15px;
-        opacity: 0.5;
-
-        &:hover {
-            background: url(../images/IconEditOrange.svg) center center no-repeat;
-            background-size: 30px 30px;
-            opacity: 1;
-        }
-    }
-
-    a.editingFolderName {
-        @extend .editFolderName;
-
-        background: url(../images/IconSave.svg) center center no-repeat;
-        background-size: 70px 70px;
-
-        &:hover {
-            background: url(../images/IconSaveOrange.svg) center center no-repeat;
-            background-size: 70px 70px;
-            opacity: 1;
-        }
-    }
-
-    a {
-        display: block;
-        width: calc(100% - 30% );
-        padding-top: 10px;
-        padding-bottom: 10px;
-
-        h2 {
-            color: rgb(183, 183, 183);
-            background: url(../images/folderIcn.svg) right center no-repeat;
-            display: inline;
-            width: initial;
-            padding-right: 45px;
-        }
-    }
-
-    &:hover {
-        background-color: rgb(222, 222, 222);
-        border: 1px solid rgba(200, 200, 200, 1);
-
-        h2 {
-            color: $anchorLinkHover;
-        }
-    }
-
-    &.folderEmpty {
-        h2 {
-            background: url(../images/folderIcnEmpty.svg) right center no-repeat;
-        }
-    }
-}
-
 ul.surveyInfo {
     position: relative;
     display: inline;
     float: left;
     padding: 0;
     width: calc(100% - 50% - 30px);
-    margin-top: 20px;
+    margin-top: 10px;
 }
 
 ul.surveyInfo li {
@@ -2957,7 +2506,6 @@ ul.surveyInfo li {
 ul.surveyInfo li span {
     display: block;
     color: rgb(128, 130, 133);
-    text-transform: uppercase;
 
     @include noWrapTxt;
 }
@@ -2969,7 +2517,7 @@ ul.surveyInfo li time {
 
 ul.surveyInfo li p {
     display: block;
-    font-weight: bold;
+    margin-top: 8px;
 }
 
 ul.surveyInfo li.surveyLanguage p {
@@ -3026,14 +2574,6 @@ ul.surveyInfo li.responseNumber {
 }
 
 .aSurvey nav ul {
-    display: -webkit-inline-box;
-    display: -webkit-inline-flex;
-    display: -moz-inline-box;
-    display: -moz-inline-flex;
-    display: -ms-inline-flexbox;
-    display: inline-flex;
-    align-items: center;
-    align-content: flex-start;
     float: right;
 }
 
@@ -3060,8 +2600,17 @@ ul.surveyInfo li.responseNumber {
     text-indent: -9999px;
 }
 
+.aSurvey.aFolder nav ul li a {
+    display: block;
+    width: 60px;
+    height: 15px;
+    padding-top: 33px;
+    text-align: center;
+    text-indent: -9999px;
+}
+
 .aSurvey nav ul li a:hover {
-    color: $anchorLinkHover;
+    color: $flowAnchorLinkHover;
 }
 
 .aSurvey nav ul li.editSurvey a {
@@ -3131,26 +2680,26 @@ ul.surveyInfo li.responseNumber {
     0% {
         opacity: 0;
         box-shadow: 0 0 2px rgba(200, 200, 200, 0);
-        background-color: rgba($akvoOrange, 0);
+        background-color: rgba($akvoFlowOrange, 0);
     }
 
     30% {
         opacity: 0.2;
         box-shadow: 0 0 10px rgba(200, 200, 200, 1);
-        background-color: rgba($akvoOrange, 0.5);
+        background-color: rgba($akvoFlowOrange, 0.5);
     }
 
     40% {
         background-color: rgba(white, 1);
         opacity: 1;
-        box-shadow: 0 0 15px rgba($akvoOrange, 0.6);
+        box-shadow: 0 0 15px rgba($akvoFlowOrange, 0.6);
     }
 
     100% {
-        background-color: rgba($akvoOrange, 0.1);
+        background-color: rgba($akvoFlowOrange, 0.1);
         opacity: 1;
-        box-shadow: 0 0 5px rgba($akvoOrange, 0.5);
-        border: 2px solid rgba($akvoOrange, 0.3);
+        box-shadow: 0 0 5px rgba($akvoFlowOrange, 0.5);
+        border: 2px solid rgba($akvoFlowOrange, 0.3);
     }
 }
 
@@ -3158,26 +2707,26 @@ ul.surveyInfo li.responseNumber {
     0% {
         opacity: 0;
         box-shadow: 0 0 2px rgba(200, 200, 200, 0);
-        background-color: rgba($akvoOrange, 0);
+        background-color: rgba($akvoFlowOrange, 0);
     }
 
     30% {
         opacity: 0.2;
         box-shadow: 0 0 10px rgba(200, 200, 200, 1);
-        background-color: rgba($akvoOrange, 0.5);
+        background-color: rgba($akvoFlowOrange, 0.5);
     }
 
     40% {
         background-color: rgba(white, 1);
         opacity: 1;
-        box-shadow: 0 0 15px rgba($akvoOrange, 0.6);
+        box-shadow: 0 0 15px rgba($akvoFlowOrange, 0.6);
     }
 
     100% {
-        background-color: rgba($akvoOrange, 0.1);
+        background-color: rgba($akvoFlowOrange, 0.1);
         opacity: 1;
-        box-shadow: 0 0 5px rgba($akvoOrange, 0.5);
-        border: 2px solid rgba($akvoOrange, 0.3);
+        box-shadow: 0 0 5px rgba($akvoFlowOrange, 0.5);
+        border: 2px solid rgba($akvoFlowOrange, 0.3);
     }
 }
 
@@ -3185,26 +2734,26 @@ ul.surveyInfo li.responseNumber {
     0% {
         opacity: 0;
         box-shadow: 0 0 2px rgba(200, 200, 200, 0);
-        background-color: rgba($akvoOrange, 0);
+        background-color: rgba($akvoFlowOrange, 0);
     }
 
     30% {
         opacity: 0.2;
         box-shadow: 0 0 10px rgba(200, 200, 200, 1);
-        background-color: rgba($akvoOrange, 0.5);
+        background-color: rgba($akvoFlowOrange, 0.5);
     }
 
     40% {
         background-color: rgba(white, 1);
         opacity: 1;
-        box-shadow: 0 0 15px rgba($akvoOrange, 0.6);
+        box-shadow: 0 0 15px rgba($akvoFlowOrange, 0.6);
     }
 
     100% {
-        background-color: rgba($akvoOrange, 0.1);
+        background-color: rgba($akvoFlowOrange, 0.1);
         opacity: 1;
-        box-shadow: 0 0 5px rgba($akvoOrange, 0.5);
-        border: 2px solid rgba($akvoOrange, 0.3);
+        box-shadow: 0 0 5px rgba($akvoFlowOrange, 0.5);
+        border: 2px solid rgba($akvoFlowOrange, 0.3);
     }
 }
 
@@ -3224,14 +2773,14 @@ ul.surveyInfo li.responseNumber {
     40% {
         background-color: rgba(white, 1);
         opacity: 1;
-        box-shadow: 0 0 15px rgba($akvoOrange, 0.6);
+        box-shadow: 0 0 15px rgba($akvoFlowOrange, 0.6);
     }
 
     100% {
-        background-color: rgba($akvoOrange, 0.1);
+        background-color: rgba($akvoFlowOrange, 0.1);
         opacity: 1;
-        box-shadow: 0 0 5px rgba($akvoOrange, 0.5);
-        border: 2px solid rgba($akvoOrange, 0.3);
+        box-shadow: 0 0 5px rgba($akvoFlowOrange, 0.5);
+        border: 2px solid rgba($akvoFlowOrange, 0.3);
     }
 }
 
@@ -3249,7 +2798,7 @@ ul.surveyInfo li.responseNumber {
 
     @include noWrapTxt;
 
-    color: $anchorLinkHover;
+    color: $flowAnchorLinkHover;
     margin: 10px 0 0 5px;
 }
 
@@ -3373,73 +2922,7 @@ label[for="surveyLanguage"] a.helpIcon {
         }
 
         ul li a {
-            font-size: 1.2em;
-            text-transform: uppercase;
-            display: block;
-            padding: 11px 15px 20px 35px;
-            height: 9px;
-            border-radius: 3px;
-            overflow: hidden;
-
-            &.saveNewSurvey {
-                background: rgba(32, 32, 36, 0.5) url(../images/IconSave.svg) left top no-repeat;
-                background-size: 40px 40px;
-            }
-
-            &.previewNewSurvey {
-                background: rgba(32, 32, 36, 0.5) url(../images/IconPreview.svg) left top no-repeat;
-                background-size: 40px 40px;
-            }
-
-            &.publishNewSurvey {
-                background: rgba(32, 32, 36, 0.5) url(../images/IconPublish.svg) left top no-repeat;
-                background-size: 40px 40px;
-            }
-
-            &.deleteSurvey {
-                background: rgba(32, 32, 36, 0.5) url(../images/IconDelete.svg) left top no-repeat;
-                background-size: 40px 40px;
-            }
-
-            &.saveNewSurvey:hover {
-                background: rgba(32, 32, 36, 1) url(../images/IconSaveOrange.svg) left top no-repeat;
-                background-size: 40px 40px;
-            }
-
-            &.previewNewSurvey:hover {
-                background: rgba(32, 32, 36, 1) url(../images/IconPreviewOrange.svg) left top no-repeat;
-                background-size: 40px 40px;
-            }
-
-            &.publishNewSurvey:hover {
-                background: rgba(32, 32, 36, 1) url(../images/IconPublishOrange.svg) left top no-repeat;
-                background-size: 40px 40px;
-            }
-
-            &.deleteSurvey:hover {
-                background: rgba(32, 32, 36, 1) url(../images/IconDeleteOrange.svg) left top no-repeat;
-                background-size: 40px 40px;
-            }
-
-            &.manageNotifications {
-                background: rgba(32, 32, 36, 0.5) url(../images/IconNotif.svg) left top no-repeat;
-                background-size: 40px 40px;
-            }
-
-            &.manageNotifications:hover {
-                background: rgba(32, 32, 36, 1) url(../images/IconNotifOrange.svg) left top no-repeat;
-                background-size: 40px 40px;
-            }
-
-            &.manageTranslations {
-                background: rgba(32, 32, 36, 0.5) url(../images/IconTranslate.svg) left top no-repeat;
-                background-size: 40px 40px;
-            }
-
-            &.manageTranslations:hover {
-                background: rgba(32, 32, 36, 1) url(../images/IconTranslateOrange.svg) left top no-repeat;
-                background-size: 40px 40px;
-            }
+            @include btnOutline($flowAnchorLink);
         }
     }
 }
@@ -3452,8 +2935,7 @@ div.published {
 }
 
 a.publishProjectBtn {
-    text-transform: uppercase;
-    background: $anchorLink url(../images/IconPublishWhite.svg) left center no-repeat;
+    background: $flowAnchorLink url(../images/IconPublishWhite.svg) left center no-repeat;
     background-size: 55px 55px;
     padding: 10px 15px 10px 45px;
     color: white;
@@ -3473,22 +2955,21 @@ a.publishProjectBtn {
     }
 
     &:hover {
-        background: $anchorLinkHover url(../images/IconPublishWhite.svg) left center no-repeat;
+        background: $flowAnchorLinkHover url(../images/IconPublishWhite.svg) left center no-repeat;
         background-size: 55px 55px;
         color: white;
     }
 }
 
 a.saveProject {
-    text-transform: uppercase;
-    background: $anchorLink url(../images/IconSaveWhite.svg) left center no-repeat;
+    background: $flowAnchorLink url(../images/IconSaveWhite.svg) left center no-repeat;
     background-size: 55px 55px;
     padding: 10px 15px 10px 45px;
     color: white;
     border-radius: 3px;
 
     &:hover {
-        background: $anchorLinkHover url(../images/IconSaveWhite.svg) left center no-repeat;
+        background: $flowAnchorLinkHover url(../images/IconSaveWhite.svg) left center no-repeat;
         background-size: 55px 55px;
         color: white;
     }
@@ -3508,15 +2989,14 @@ a.saveProject {
 }
 
 a.saveProject {
-    text-transform: uppercase;
-    background: $anchorLink url(../images/IconSaveWhite.svg) left center no-repeat;
+    background: $flowAnchorLink url(../images/IconSaveWhite.svg) left center no-repeat;
     background-size: 55px 55px;
     padding: 10px 15px 10px 45px;
     color: white;
     border-radius: 3px;
 
     &:hover {
-        background: $anchorLinkHover url(../images/IconSaveWhite.svg) left center no-repeat;
+        background: $flowAnchorLinkHover url(../images/IconSaveWhite.svg) left center no-repeat;
         background-size: 55px 55px;
         color: white;
     }
@@ -3564,11 +3044,10 @@ a.saveProject {
     background: url(../images/IconInsert.svg) left center no-repeat;
     -webkit-background-size: 25px 25px;
     background-size: 25px 25px;
-    text-transform: uppercase;
 }
 
 .aQuestionSet .questionSetContent a.addQuestion:hover {
-    color: $anchorLinkHover;
+    color: $flowAnchorLinkHover;
     background: url(../images/IconInsertOrange.svg) left center no-repeat;
     -webkit-background-size: 25px 25px;
     background-size: 25px 25px;
@@ -3611,8 +3090,7 @@ span.qtnGroupHead {
     display: block;
     margin: 0.75em 0 0.25em 0;
     width: 100%;
-    color: $anchorLinkHover;
-    font-size: 1.2em;
+    color: $flowAnchorLinkHover;
 }
 
 .qtnGroupTitle {
@@ -3624,12 +3102,12 @@ span.qtnGroupHead {
 
     input {
         font-family: $bodyFont;
-        font-size: 1.8em;
     }
 }
 
 .aQuestionSet header h1.qtnGroupTitle {
     display: inline-block;
+    font-size: 1.1em;
 
     @include noWrapTxt;
 }
@@ -3676,7 +3154,6 @@ span.qtnGroupHead {
     border-radius: 3px;
     background: rgb(235, 235, 235) url(../images/addSet.png) left center no-repeat;
     color: rgb(227, 27, 35);
-    text-transform: uppercase;
 
     @include noWrapTxt;
 }
@@ -3691,7 +3168,7 @@ nav.groupActionMenu {
     margin: 5px auto;
     padding: 1.5em 0;
     width: 100%;
-    background: rgba($akvoOrange, 0.1);
+    background: rgba($akvoFlowOrange, 0.1);
 }
 
 nav.groupActionMenu ul {
@@ -3719,7 +3196,6 @@ nav.groupActionMenu.insertMenu a {
     padding: 1px 5px 9px 19px;
     height: 8px;
     background: transparent url(../images/IconPlus.svg) left top no-repeat;
-    text-transform: uppercase;
 }
 
 nav.groupActionMenu.insertMenu a:hover {
@@ -3803,7 +3279,6 @@ nav.questionActionMenu a:hover {
 
 .aQuestionSet header nav.qtnGroupMenu ul li a {
     display: block;
-    text-transform: uppercase;
 }
 
 .aQuestionSet header nav.qtnGroupMenu ul li a.showQuestionGroup {
@@ -3823,7 +3298,7 @@ nav.questionActionMenu a:hover {
 }
 
 .aQuestionSet header nav.qtnGroupMenu ul li a.showQuestionGroup.shown {
-    color: $anchorLinkHover;
+    color: $flowAnchorLinkHover;
     background: url(../images/IconShowOrange.svg) left center no-repeat;
     padding-left: 17px;
 }
@@ -3833,7 +3308,7 @@ nav.questionActionMenu a:hover {
 }
 
 .aQuestionSet header nav.qtnGroupMenu ul li a:hover {
-    color: $anchorLinkHover;
+    color: $flowAnchorLinkHover;
 }
 
 .menuCentre {
@@ -3891,7 +3366,7 @@ nav.questionActionMenu a:hover {
     display: inline;
 }
 
-.innerContent nav ul li a.standardBtn {
+.innerContent nav ul li a.button {
     margin: 2em 1.5em auto auto;
     width: 15%;
 }
@@ -4052,7 +3527,10 @@ nav.smallMenu ul li a.showQuestion:hover {
 .innerContent h1 {
     display: block;
     margin: 1em 0 1em 0.5em;
-    font-size: 1.5em;
+
+    &.questionNbr {
+        font-size: 1.1em;
+    }
 }
 
 .innerContent h1:after {
@@ -4253,7 +3731,6 @@ a.addNotification {
 a.addNotification span {
     margin: 0 0.2em 0 0;
     font-weight: bold;
-    font-size: 1.5em;
 }
 
 table.dataTable.notificationTable {
@@ -4310,7 +3787,6 @@ table.dataTable.notificationTable thead tr th {
     color: rgb(39, 94, 110);
     text-align: left;
     text-transform: inherit;
-    font-weight: bold;
 }
 
 .dataSection table.dataTable.notificationTable thead tr th {
@@ -4331,32 +3807,47 @@ table.dataTable.notificationTable thead tr th a:visited {
 /****** Data Page
 ****************************************************************************/
 .modularSelection {
-    display: -webkit-box;
-    display: -webkit-flex;
-    display: -ms-flexbox;
-    display: flex;
-    -webkit-box-orient: horizontal;
-    -webkit-box-direction: normal;
-    -webkit-flex-direction: row;
-    -ms-flex-direction: row;
-    flex-direction: row;
-    -webkit-flex-wrap: nowrap;
-    -ms-flex-wrap: nowrap;
-    flex-wrap: nowrap;
-    -webkit-box-pack: justify;
-    -webkit-justify-content: flex-start;
-    -ms-flex-pack: center;
-    justify-content: flex-start;
-    text-align: left;
-    -webkit-align-items: flex-start;
-    align-items: flex-start;
+    padding: 0 0 22px 0%;
+    display: block;
 
-    select:first-child {
-        margin-left: 1%;
+    select {
+        max-width: 20%;
+        float: left;
+        display: inline;
+    }
+}
+
+.reportTools {
+    padding-left: 0.5%;
+}
+
+div.chooseSurveyData {
+    position: relative;
+    display: block;
+    margin: 0px 0 10px 0;
+    width: 100%;
+    overflow: auto;
+
+    > select {
+        max-width: 20%;
+        float: left;
+        display: inline;
     }
 }
 
 .filterData {
+    border: thin solid rgb(224, 224, 224);
+    border-top: 1px solid white;
+
+    .dataDeviceId {
+        display: block;
+        padding: 0.5em 1em 8px 1em;
+        background: rgba(234, 234, 234, 0.3);
+        border-top: 1px solid rgb(234, 234, 234);
+        border-bottom: 1px solid rgb(234, 234, 234);
+        margin: 0px 0 5px 0;
+    }
+
     h3 {
         margin: 0 0 5px 5px;
         color: #666;
@@ -4388,19 +3879,11 @@ div.dataCollectedDate input {
 
 .filterData label {
     display: inline-block;
+    font-size: 0.9em;
 }
 
 label.collectedTo {
     margin: 0;
-}
-
-div.chooseSurveyData {
-    position: relative;
-    display: block;
-    float: left;
-    margin: 0 1% 2em 0.5em;
-    width: 48%;
-    height: 20px;
 }
 
 #monitoringData {
@@ -4448,17 +3931,6 @@ div.dataCollectedDate {
         display: block;
         margin: 15px 0 35px 5px;
 
-        .showCollapse {
-            background: $anchorLink;
-            color: white;
-            text-transform: uppercase;
-            display: inline-block;
-            padding: 2px 7px 0px 7px;
-            display: inline-block;
-            margin: -2px 0 0 0;
-            border-radius: 3px;
-        }
-
         label {
             color: rgba($akvoBlack, 0.5);
             margin-top: 5px;
@@ -4479,13 +3951,6 @@ div.dataCollectedDate label {
 
 div.dataCollectedDate label input {
     width: 97%;
-}
-
-.filterData div.dataDeviceId {
-    display: block;
-    margin: 60px 0 10px 0;
-    padding: 0.5em 1em 8px 1em;
-    background: rgb(234, 234, 234);
 }
 
 .filterData div.dataLocation {
@@ -4580,7 +4045,7 @@ div.dataCollectedDate label input {
     float: left;
     margin: 0 0 0 0;
     width: 99.25%;
-    height: 600px;
+    height: calc(100vh - 180px) !important;
     border-bottom: 2px solid rgb(158, 158, 158);
 }
 
@@ -4588,19 +4053,19 @@ div.dataCollectedDate label input {
     position: relative;
     clear: both;
     margin: 0 auto;
-    padding: 4px 1.25% 0 1.25%;
+    padding: 4px 1.25% 2px 1.25%;
     width: 97.5%;
     height: 23px;
     background: $darkGrey;
-}
 
-#dropdown-holder label {
-    color: white;
-}
+    label {
+        color: white;
+    }
 
-#dropdown-holder select {
-    display: inline;
-    margin: 0 0 0 0.5em;
+    select {
+        display: inline;
+        margin: 0 0 0 0.5em;
+    }
 }
 
 #pointDetails {
@@ -4611,11 +4076,12 @@ div.dataCollectedDate label input {
     margin: 0 0 0 -2px;
     padding: 5px 0.25% 0px 0.25%;
     width: 24.5%;
-    height: 595px;
+    height: calc(100vh - 185px) !important;
     border-left: 2px solid rgb(214, 214, 214);
     background: rgb(241, 241, 241);
     overflow-style: marquee-line;
     border-bottom: 2px solid rgb(158, 158, 158);
+    font-size: 80%;
 }
 
 #pointDetails h2 {
@@ -4635,7 +4101,7 @@ div.dataCollectedDate label input {
 
     h4 {
         margin: 5px 0 10px 0;
-        color: $akvoOrange;
+        color: $akvoFlowOrange;
     }
 }
 
@@ -4684,8 +4150,7 @@ div.drawHandle {
     display: block;
     padding: 4px 7px 15px 7px;
     height: 3px;
-    color: $anchorLinkHover;
-    text-transform: uppercase;
+    color: $flowAnchorLinkHover;
     font-weight: bold;
     cursor: pointer;
 }
@@ -4758,7 +4223,6 @@ div.drawHandle {
 .placeMarkPointCode {
     margin: 0 0 0 5px;
     color: $darkGrey;
-    text-transform: uppercase;
     font-weight: bold;
 }
 
@@ -4768,12 +4232,9 @@ div.drawHandle {
 
 footer.bottomPage {
     bottom: 0;
-    margin: 0px 0 0 0;
-    padding: 0;
+    padding: 10px 0 10px 0;
     width: 100%;
-    background: rgb(248, 248, 248);
-    -webkit-box-shadow: 0 0 1px rgba(32, 32, 36, 0.5);
-    box-shadow: 0 0 -1px rgba(32, 32, 36, 0.5);
+    background: rgb(252, 252, 255);
     z-index: 1001;
 }
 
@@ -4781,7 +4242,7 @@ footer.bottomPage div:nth-child(1n) {
     position: relative;
     margin: 0 auto;
     padding: 0;
-    width: 90%;
+    width: 100%;
     min-width: 768px;
 }
 
@@ -4806,39 +4267,62 @@ footer.bottomPage nav.footItems {
     text-align: center;
 }
 
-footer.bottomPage nav.footItems ul {
-    display: -webkit-box;
-    display: -webkit-flex;
-    display: -ms-flexbox;
-    display: flex;
-    -webkit-box-orient: horizontal;
-    -webkit-box-direction: normal;
-    -webkit-flex-direction: row;
-    -ms-flex-direction: row;
-    flex-direction: row;
-    -webkit-flex-wrap: wrap;
-    -ms-flex-wrap: wrap;
-    flex-wrap: wrap;
-    -webkit-box-pack: center;
-    -webkit-justify-content: center;
-    -ms-flex-pack: center;
+footer.bottomPage nav.footItems {
+    clear: both;
+    background: rgba($akvoBlack, 0.05);
+    border-top: thin solid rgba($akvoBlack, 0.05);
+
+                                          /*     
+border-bottom: thin solid rgba($akvoBlack, 0.05); */
+    padding: 5px 0 7px 0;
+
+    ul {
+        width: 69%;
+        float: left;
+        display: -webkit-box;
+        display: -webkit-flex;
+        display: -ms-flexbox;
+        display: flex;
+        -webkit-box-orient: horizontal;
+        -webkit-box-direction: normal;
+        -webkit-flex-direction: row;
+        -ms-flex-direction: row;
+        flex-direction: row;
+        -webkit-flex-wrap: wrap;
+        -ms-flex-wrap: wrap;
+        flex-wrap: wrap;
+        -webkit-box-pack: center;
+        -webkit-justify-content: flex-start;
+        -ms-flex-pack: center;
+        justify-content: flex-start;
+
+        &:nth-child(2) {
+            justify-content: flex-end;
+            width: 29%;
+            float: right;
+        }
+    }
+}
+
+.publicPage footer.bottomPage nav.footItems ul {
+    width: 100%;
+    float: none;
     justify-content: center;
-    margin: 0 auto;
-    text-align: center;
 }
 
 footer.bottomPage nav.footItems ul li.footLink {
     text-align: center;
+    margin-top: 10px;
 }
 
 footer.bottomPage nav ul li a {
+    color: $akvoDarkBlue;
     display: block;
     padding: 5px 7px;
-    text-transform: uppercase;
 }
 
 footer.bottomPage nav ul li a.akvoDotOrg {
-    margin: 0;
+    margin: 0 10px 0 0;
     width: 42px;
     background: url(../images/akvo.orgLogo.svg) center center no-repeat;
     text-indent: -9999px;
@@ -4847,6 +4331,86 @@ footer.bottomPage nav ul li a.akvoDotOrg {
 footer.bottomPage a[rel="self"] {}
 
 footer.bottomPage a[rel="self"]:hover {}
+
+label.languageSelector select {
+    padding: 10px 42px 10px 10px;
+    background: #f8f8f8;
+    color: #444;
+    border: 1px solid rgba($akvoBlack, 0.1);
+    border-radius: 0;
+    display: inline-block;
+    -webkit-appearance: none;
+    -moz-appearance: none;
+    appearance: none;
+    cursor: pointer;
+    outline: none;
+}
+
+label.languageSelector select:-moz-focusring {
+    color: transparent;
+    text-shadow: 0 0 0 #444;
+}
+
+label.languageSelector select::-ms-expand {
+    display: none;
+}
+
+label.languageSelector:before {
+    content: '';
+    right: 5px;
+    top: -7px;
+    width: 30px;
+    height: 33px;
+    position: absolute;
+    pointer-events: none;
+    display: block;
+}
+
+label.languageSelector {
+    position: relative;
+}
+
+label.languageSelector:after {
+    content: '>';
+    font: 16px Consolas, monospace;
+    color: #444;
+    -webkit-transform: rotate(90deg);
+    -moz-transform: rotate(90deg);
+    -ms-transform: rotate(90deg);
+    transform: rotate(90deg);
+    right: 2px;
+    top: 2px;
+    position: absolute;
+    pointer-events: none;
+    width: 35px;
+    padding: 0 0 5px 0;
+    text-indent: 14px;
+}
+
+@media screen\0  {
+    label.languageSelector:after {
+        width: 38px;
+        text-indent: 15px;
+        right: 0;
+    }
+}
+
+@media screen and (min--moz-device-pixel-ratio: 0) {
+    label.languageSelector select {
+        padding-right: 40px;
+    }
+
+    label.languageSelector:before {
+        right: 6px;
+    }
+
+    label.languageSelector:after {
+        text-indent: 14px;
+        right: 6px;
+        top: -5px;
+        width: 36px;
+    }
+}
 
 /******************************************************************************************************
                                             Survey Preview
@@ -4860,7 +4424,7 @@ footer.bottomPage a[rel="self"]:hover {}
     display: block;
     margin: 1em 0 0.5em 0.1em;
     width: 100%;
-    color: $anchorLinkHover;
+    color: $flowAnchorLinkHover;
     font-style: italic;
     font-family: Georgia, "Times New Roman", Times, serif;
 }
@@ -4958,12 +4522,7 @@ footer.bottomPage a[rel="self"]:hover {}
 ********************************************************************************************************************************/
 
 .reportsSection > div > div > section.reportTools select,
-.reportTools > div > select {
-    display: inline;
-    width: 32%;
-    float: left;
-    margin: 0 0 1em 1%;
-}
+.reportTools > div > select {}
 
 #reportBlocks.reportTools {
     .geoshapeExport {
@@ -4979,14 +4538,11 @@ footer.bottomPage a[rel="self"]:hover {}
 
 .reportTools select:last-child {
     display: inline;
-    width: 30%;
     float: left;
-    margin: 0 1% 1em 1%;
 }
 
 .reportTools a.standardBtn {
     clear: both;
-    margin: 0.1em 0 1em 1%;
 }
 
 .reportTools div.block a.standardBtn {
@@ -4998,13 +4554,13 @@ footer.bottomPage a[rel="self"]:hover {}
     margin: 0.5em auto 0 auto;
     padding: 0.5em 0 0.3em 0;
     width: 97.5%;
-    color: $anchorLinkHover;
+    color: $flowAnchorLinkHover;
 }
 
 .reportTools div.block {
     display: block;
     clear: both;
-    width: 96%;
+    width: 97%;
     margin: 0.5em auto 1.5em auto;
     background: rgb(240, 240, 240);
     padding: 1em 1%;
@@ -5015,6 +4571,7 @@ footer.bottomPage a[rel="self"]:hover {}
 .reportTools div.block p {
     display: block;
     width: 100%;
+    font-size: 0.8em;
     margin: 0.5em auto 1em auto;
     color: rgb(153, 153, 153);
 }
@@ -5026,6 +4583,11 @@ footer.bottomPage a[rel="self"]:hover {}
     margin: 0 auto 1em auto;
     background: rgb(249, 249, 249);
     padding: 1em 0;
+
+    text {
+        font-weight: normal;
+        font-size: inherit;
+    }
 }
 
 .reportTools .chartPie p {
@@ -5054,13 +4616,7 @@ footer.bottomPage a[rel="self"]:hover {}
 .chartSetting {
     display: block;
     clear: both;
-    padding: 0.5em 0;
-    margin: 1em auto;
-    border-bottom: thin solid rgb(198, 198, 198);
-}
-
-.chartSetting h4 {
-    margin-left: 1%;
+    padding: 0.5em 0 0 10px;
 }
 
 .reportTools .chartSetting select {
@@ -5073,7 +4629,7 @@ footer.bottomPage a[rel="self"]:hover {}
 
 .groupChartSelect {
     display: inline-block;
-    margin: 0.1em 0.5em 0 1.5em;
+    margin: 0 5px 0 10px;
 }
 
 .chartSetting .groupChartSelect input {
@@ -5088,15 +4644,8 @@ footer.bottomPage a[rel="self"]:hover {}
         top: 120px;
         width: 100%;
         background-color: white;
-        height: 120px;
         z-index: 2;
         border-bottom: thin solid #c6c6c6;
-    }
-
-    .rawDataReport {
-        &.dataExport {
-            margin-top: 135px;
-        }
     }
 }
 
@@ -5163,7 +4712,6 @@ table#languageOption {
 }
 
 table#languageOption th {
-    text-transform: uppercase;
     color: rgb(39, 94, 110);
     padding: 1em 0.75% 0.5em 0.75%;
 }
@@ -5227,7 +4775,6 @@ table.surveyTranslate th h3 {
 }
 
 table.surveyTranslate label {
-    font-weight: bold;
     margin: 1em 0 0.75em 0;
 }
 
@@ -5252,13 +4799,11 @@ table.surveyTranslate .questionNbr span {
     box-shadow: none;
     color: inherit;
     display: inline;
-    font-weight: bold;
     height: inherit;
     margin: 0 10px 0 0;
     padding: inherit;
     text-align: center;
     width: inherit;
-    font-size: 14px;
     width: 20px;
 }
 
@@ -5276,7 +4821,6 @@ table.surveyTranslate tr.indented .questionNbr span {
     padding: inherit;
     text-align: center;
     width: inherit;
-    font-size: 11px;
     width: 20px;
 }
 
@@ -5325,6 +4869,10 @@ table.surveyTranslate .qHelpTooltip label.qTooltip + input {
 
 .surveyDetails {
     min-height: 200px;
+}
+
+table.surveyDetails {
+    min-height: inherit;
 }
 
 .surveyDetails ul textarea {
@@ -5380,13 +4928,11 @@ table.surveyTranslate .qHelpTooltip label.qTooltip + input {
 /* Uploader: Drag & Drop */
 
 .resumable-error {
-    font-size: 14px;
     font-style: italic;
 }
 
 .resumable-drop {
     padding: 3em;
-    font-size: 1.6em;
     text-align: center;
     color: rgb(32, 32, 36);
     background-color: white;
@@ -5463,7 +5009,6 @@ table.surveyTranslate .qHelpTooltip label.qTooltip + input {
 }
 
 .progress-text {
-    font-size: 11px;
     line-height: 9px;
     padding-left: 10px;
 }
@@ -5491,7 +5036,6 @@ table.surveyTranslate .qHelpTooltip label.qTooltip + input {
 /* Uploader: List of items being uploaded */
 
 .resumable-list {
-    font-size: 1.2em;
     display: table;
     text-align: center;
     overflow: auto;
@@ -5542,13 +5086,11 @@ table.surveyTranslate .qHelpTooltip label.qTooltip + input {
 
 .uploader-item-creating-thumbnail {
     padding: 0 5px;
-    font-size: 9px;
     color: white;
 }
 
 .uploader-item-title {
     position: absolute;
-    font-size: 9px;
     line-height: 11px;
     padding: 3px 50px 3px 5px;
     bottom: 0;
@@ -5637,6 +5179,8 @@ table.surveyTranslate .qHelpTooltip label.qTooltip + input {
     }
 
     .projectDetailsPanel {
+        position: relative;
+
         .addMenuAction {
             display: inline-block;
             margin: 0 auto;
@@ -5645,6 +5189,13 @@ table.surveyTranslate .qHelpTooltip label.qTooltip + input {
                 display: table;
                 padding: 8px 8px 8px 31px;
             }
+        }
+
+        .addFormBtn {
+            position: absolute;
+            right: 0px;
+            z-index: 9997;
+            margin-top: 20px;
         }
 
         .projectSummary, .formSummary {
@@ -5671,20 +5222,18 @@ table.surveyTranslate .qHelpTooltip label.qTooltip + input {
                 padding: 10px 0;
                 background: rgba(32, 32, 36, 0.2);
                 color: rgb(128, 130, 133);
-                text-transform: uppercase;
-                font-size: 1.5em;
                 flex-grow: 2;
 
                 @include noWrapTxt;
 
                 span {
                     display: block;
-                    font-size: 1.8em;
-                    margin-top: -5px;
+                    margin-top: 5px;
                     font-weight: 600;
 
-                    &.projectForm, &.projectMonitoring, &.projectStatus {
+                    &.projectForm, &.projectMonitoring, &.projectStatus, &.formVersion, &.formID, &.formQuestionCount {
                         color: white;
+                        font-size: 1.8em;
                     }
 
                     &.projectStatus.redColor {
@@ -5695,20 +5244,21 @@ table.surveyTranslate .qHelpTooltip label.qTooltip + input {
         }
 
         span.fontInfo {
-            font-family: $scriptFont;
-            font-size: 1.8em;
             color: rgb(212, 212, 212);
             margin: 0 0.5em;
         }
 
         h2 {
-            color: $akvoOrange;
+            color: $akvoFlowOrange;
             display: inline;
         }
 
         .forms {
-            padding: 2em 0 0 0;
             background: white;
+
+            .menuTopbar {
+                display: inline-block;
+            }
 
             #tabs {
                 h2 {
@@ -5735,13 +5285,10 @@ table.surveyTranslate .qHelpTooltip label.qTooltip + input {
                     padding: 10px 0;
                     background: rgba(32, 32, 36, 0.2);
                     color: rgb(128, 130, 133);
-                    text-transform: uppercase;
-                    font-size: 1.5em;
 
                     span {
                         display: block;
-                        font-size: 1.8em;
-                        margin-top: -5px;
+                        margin-top: 5px;
                         font-weight: 600;
                         color: white;
                     }
@@ -5768,12 +5315,6 @@ table.surveyTranslate .qHelpTooltip label.qTooltip + input {
                     width: inherit;
                     width: 99.5%;
                     margin: 0 auto;
-
-                    .showCollapse {
-                        text-transform: uppercase;
-                        display: inline-block;
-                        margin-left: 10px;
-                    }
                 }
             }
 
@@ -5785,9 +5326,10 @@ table.surveyTranslate .qHelpTooltip label.qTooltip + input {
                 position: relative;
                 display: block;
                 padding: 0;
-                width: 100%;
-                margin-top: 10px;
+                max-width: calc(100% - 120px);
                 z-index: inherit;
+                overflow-y: hidden;
+                overflow-x: scroll;
 
                 & + section, & + div {
                     margin-top: 0;
@@ -5809,7 +5351,6 @@ table.surveyTranslate .qHelpTooltip label.qTooltip + input {
             #tabs nav.tabNav ul li {
                 border-right: 1px solid rgba(32, 32, 36, 0.2);
                 margin: 0;
-                font-size: 1.2em;
 
                 @include border-radius(2px 2px 0 0);
 
@@ -5819,8 +5360,6 @@ table.surveyTranslate .qHelpTooltip label.qTooltip + input {
                 transition: none;
                 -moz-background-clip: padding;
                 -webkit-background-clip: padding-box;
-
-                @include noWrapTxt;
 
                 &.aFormTab {
                     padding-left: 25px;
@@ -5832,12 +5371,18 @@ table.surveyTranslate .qHelpTooltip label.qTooltip + input {
                         background-size: 20px auto;
                     }
 
+                    a {
+                        max-width: 150px;
+
+                        @include noWrapTxt;
+                    }
+
                     &.current {
                         background: rgba(32, 32, 36, 0.9) url(../images/IconFormsOrange.png) no-repeat 10px center;
                         background-size: 20px auto;
 
                         a {
-                            color: $anchorLinkHover;
+                            color: $flowAnchorLinkHover;
                         }
                     }
 
@@ -5876,7 +5421,7 @@ table.surveyTranslate .qHelpTooltip label.qTooltip + input {
                             background-size: 20px auto;
 
                             a {
-                                color: $anchorLinkHover;
+                                color: $flowAnchorLinkHover;
                             }
                         }
                     }
@@ -5887,10 +5432,10 @@ table.surveyTranslate .qHelpTooltip label.qTooltip + input {
                     border-right: none;
 
                     a {
-                        color: $anchorLink;
+                        color: $flowAnchorLink;
 
                         &:hover {
-                            color: $anchorLinkHover;
+                            color: $flowAnchorLinkHover;
                         }
                     }
 
@@ -5918,7 +5463,6 @@ table.surveyTranslate .qHelpTooltip label.qTooltip + input {
                 display: block;
                 padding: 0.75em 1em;
                 color: white;
-                text-transform: uppercase;
                 -webkit-transition: none;
                 transition: none;
                 text-shadow: none;
@@ -5970,22 +5514,6 @@ table.surveyTranslate .qHelpTooltip label.qTooltip + input {
                 display: inline-block;
             }
 
-            .showCollapse {
-                background: $anchorLink;
-                color: white;
-                text-transform: uppercase;
-                display: inline-block;
-                padding: 2px 7px 0px 7px;
-                display: inline-block;
-                margin: -2px 0 0 10px;
-                border-radius: 3px;
-
-                span.monitoringAndvanced & {
-                    display: block;
-                    margin-top: 10px;
-                }
-            }
-
             label[for=enableMonitoring], label[for=enableDataApproval] {
                 input {
                     margin-bottom: 15px;
@@ -6010,7 +5538,8 @@ table.surveyTranslate .qHelpTooltip label.qTooltip + input {
                     color: #c49a6c;
 
                     & + select {
-                        margin: 0 0 20px 30px;
+                        margin: 0 0 20px 10px;
+                        display: block;
                     }
                 }
 
@@ -6018,11 +5547,15 @@ table.surveyTranslate .qHelpTooltip label.qTooltip + input {
                     width: 100%;
                 }
 
+                label.labelcheckbox {
+                    display: inline-block;
+                }
+
                 input {
                     width: 99%;
                     margin-bottom: 35px;
                     background: rgb(248, 248, 248);
-                    color: rgb(158, 158, 158);
+                    color: rgb(88, 88, 88);
 
                     &:focus {
                         border: 1px solid rgb(205, 205, 205);
@@ -6036,8 +5569,6 @@ table.surveyTranslate .qHelpTooltip label.qTooltip + input {
                 }
 
                 .projectSelect {
-                    margin-bottom: 50px;
-
                     li {
                         display: block;
                         width: 100%;
@@ -6051,6 +5582,10 @@ table.surveyTranslate .qHelpTooltip label.qTooltip + input {
             }
         }
     }
+}
+
+.forms #tabs nav.tabNav ul:after {
+    border: none;
 }
 
 /************************************** CASCADING QUESTIONS ************************************/
@@ -6068,15 +5603,13 @@ table.surveyTranslate .qHelpTooltip label.qTooltip + input {
 
         h4 {
             margin: 5px 0 10px 5px;
-            color: rgba($anchorLink, 0.5);
+            color: rgba($flowAnchorLink, 0.5);
         }
 
         .noCascade {
             padding-top: 45px;
             background: url(../images/IconCascadeWhite.png) center top no-repeat;
             text-align: center;
-            text-transform: uppercase;
-            font-size: 1.1em;
             width: 90%;
             margin: 0 auto 20px auto;
         }
@@ -6101,7 +5634,7 @@ table.surveyTranslate .qHelpTooltip label.qTooltip + input {
     box-sizing: border-box;
     width: 100%;
     padding: 15px 0;
-    margin: 0 auto;
+    margin: 50px auto 0 auto;
     overflow-y: hidden;
     overflow-x: hidden;
 
@@ -6140,12 +5673,9 @@ table.surveyTranslate .qHelpTooltip label.qTooltip + input {
             padding: 10px 0;
             background: rgba(32, 32, 36, 0.2);
             color: rgb(128, 130, 133);
-            text-transform: uppercase;
-            font-size: 1.5em;
 
             span {
                 display: block;
-                font-size: 1.8em;
                 margin-top: -5px;
                 font-weight: 600;
 
@@ -6165,14 +5695,12 @@ table.surveyTranslate .qHelpTooltip label.qTooltip + input {
     }
 
     span.fontInfo {
-        font-family: $scriptFont;
-        font-size: 1.8em;
         color: rgb(212, 212, 212);
         margin: 0 0.5em;
     }
 
     h2 {
-        color: $akvoOrange;
+        color: $akvoFlowOrange;
         display: inline;
 
         a {
@@ -6242,7 +5770,6 @@ nav.cascadeBreadCrumb {
             display: block;
             background: $akvoDarkBlue;
             color: white;
-            font-size: 1.1em;
             transition: all 0.4s ease-in;
 
             span {
@@ -6250,8 +5777,6 @@ nav.cascadeBreadCrumb {
                 margin-left: -20px;
                 margin-right: 15px;
                 font-weight: bold;
-                font-size: 1.2em;
-                font-family: $titleFont;
                 color: $akvoGolden;
                 text-shadow: 1px 2px 0 rgba(black, 0.4);
             }
@@ -6280,10 +5805,10 @@ nav.cascadeBreadCrumb {
                 }
 
                 &:hover {
-                    background: rgba($anchorLinkHover, 0.5);
+                    background: rgba($flowAnchorLinkHover, 0.5);
 
                     &:after {
-                        border-color: transparent transparent transparent rgba($anchorLinkHover, 0.5);
+                        border-color: transparent transparent transparent rgba($flowAnchorLinkHover, 0.5);
                     }
                 }
             }
@@ -6306,7 +5831,7 @@ nav.cascadeBreadCrumb {
             display: table;
 
             &:hover {
-                background: $anchorLinkHover;
+                background: $flowAnchorLinkHover;
             }
         }
     }
@@ -6338,7 +5863,6 @@ nav.cascadeBreadCrumb {
             color: $akvoGolden;
             padding-left: 5px;
             font-weight: bold;
-            font-size: 1.2em;
         }
 
         .cascadeEntryName {
@@ -6354,7 +5878,7 @@ nav.cascadeBreadCrumb {
 
             @include border-radius(3px);
 
-            background: $anchorLink;
+            background: $flowAnchorLink;
             color: white;
             border: none;
 
@@ -6363,7 +5887,7 @@ nav.cascadeBreadCrumb {
             }
 
             &:hover {
-                background: $anchorLinkHover;
+                background: $flowAnchorLinkHover;
             }
         }
 
@@ -6485,13 +6009,9 @@ ul.cascadeAction {
         display: inline-block;
 
         a {
-            font-size: 1em;
-            text-transform: uppercase;
-            padding: 8px 15px 8px 35px;
-            height: 9px;
-            border-radius: 3px;
-            overflow: hidden;
-            white-space: nowrap;
+            @include btnOutline($flowAnchorLink);
+
+            padding-left: 30px;
 
             &.saveNewSurvey {
                 background: rgba(32, 32, 36, 0.5) url(../images/IconSave.svg) left center no-repeat;
@@ -6556,79 +6076,18 @@ ul.cascadeAction {
     }
 }
 
-a.btn {
-    display: block;
-    padding: 1px 0 7px 21px;
-    height: 10px;
-    text-transform: uppercase;
-
-    &.smallBtn {
-        display: inline-block;
-    }
-
-    &:hover {
-        color: $anchorLinkHover;
-    }
-}
-
-a.addBtn {
-    display: inline-block;
-    color: white;
-    background: rgba($anchorLink, 1) url(../images/IconPlusWhite.svg) 2px center no-repeat;
-    padding: 8px 7px 13px 25px;
-    border-radius: 3px;
-    -webkit-background-size: 25px 45px;
-    background-size: 25px 45px;
-    -webkit-transition: color 0.2s ease-in, background-color 0.2s ease-in;
-    transition: color 0.2s ease-in, background-color 0.2s ease-in;
-}
-
-a.addBtn:hover {
-    color: white;
-    background: rgba($anchorLinkHover, 1) url(../images/IconPlusWhite.svg) 2px center no-repeat;
-    -webkit-background-size: 25px 45px;
-    background-size: 25px 45px;
-}
-
-a.importBtn {
-    color: white;
-    padding: 8px 7px 13px 25px;
-    border-radius: 3px;
-    background: rgba($anchorLink, 1) url(../images/IconImportWhite.svg) 2px center no-repeat;
-    -webkit-background-size: 25px 45px;
-    background-size: 25px 45px;
-    -webkit-transition: color 0.2s ease-in, background-color 0.2s ease-in;
-    transition: color 0.2s ease-in, background-color 0.2s ease-in;
-
-    &:hover {
-        background: rgba($anchorLinkHover, 1) url(../images/IconImportWhite.svg) 2px center no-repeat;
-        -webkit-background-size: 25px 45px;
-        background-size: 25px 45px;
-    }
-}
-
-.disabled {
-    cursor: default;
-    color: rgba(128, 128, 128, 0.1);
-
-    &:hover {
-        cursor: default;
-        color: rgba(128, 128, 128, 0.1);
-    }
-}
-
 a.levelUp {
     display: table;
     margin: 20px auto 0;
     padding: 15px 35px 15px 15px;
-    background: rgba($anchorLink, 0) url(../images/IconRightBlue.svg) right center no-repeat;
+    background: rgba($flowAnchorLink, 0) url(../images/IconRightBlue.svg) right center no-repeat;
     -webkit-transition: color 0.2s ease-in, background-color 0.2s ease-in;
     transition: color 0.2s ease-in, background-color 0.2s ease-in;
     -webkit-background-size: 25px 25px;
     background-size: 25px 25px;
 
     &:hover {
-        background: rgba($anchorLink, 0.1) url(../images/IconRightOrange.svg) right center no-repeat;
+        background: rgba($flowAnchorLink, 0.1) url(../images/IconRightOrange.svg) right center no-repeat;
         -webkit-background-size: 25px 25px;
         background-size: 25px 25px;
     }
@@ -6638,14 +6097,14 @@ a.levelDown {
     display: table;
     margin: 20px auto 0;
     padding: 15px 15px 15px 35px;
-    background: rgba($anchorLink, 0) url(../images/IconLeftBlue.svg) left center no-repeat;
+    background: rgba($flowAnchorLink, 0) url(../images/IconLeftBlue.svg) left center no-repeat;
     -webkit-transition: color 0.2s ease-in, background-color 0.2s ease-in;
     transition: color 0.2s ease-in, background-color 0.2s ease-in;
     -webkit-background-size: 25px 25px;
     background-size: 25px 25px;
 
     &:hover {
-        background: rgba($anchorLink, 0.1) url(../images/IconLeftOrange.svg) left center no-repeat;
+        background: rgba($flowAnchorLink, 0.1) url(../images/IconLeftOrange.svg) left center no-repeat;
         -webkit-background-size: 25px 25px;
         background-size: 25px 25px;
     }
@@ -6660,14 +6119,14 @@ li.disable {
 
         color: white;
         padding: 15px 35px 15px 15px;
-        background: rgba($anchorLink, 0) url(../images/IconRightWhite.svg) right center no-repeat;
+        background: rgba($flowAnchorLink, 0) url(../images/IconRightWhite.svg) right center no-repeat;
         -webkit-background-size: 25px 25px;
         background-size: 25px 25px;
 
         &:hover {
             -webkit-background-size: 25px 25px;
             background-size: 25px 25px;
-            background: rgba($anchorLink, 0) url(../images/IconRightWhite.svg) right center no-repeat;
+            background: rgba($flowAnchorLink, 0) url(../images/IconRightWhite.svg) right center no-repeat;
         }
     }
 
@@ -6679,12 +6138,12 @@ li.disable {
 
         color: white;
         padding: 15px 15px 15px 35px;
-        background: rgba($anchorLink, 0) url(../images/IconLeftWhite.svg) left center no-repeat;
+        background: rgba($flowAnchorLink, 0) url(../images/IconLeftWhite.svg) left center no-repeat;
         -webkit-background-size: 25px 25px;
         background-size: 25px 25px;
 
         &:hover {
-            background: rgba($anchorLink, 0) url(../images/IconLeftWhite.svg) left center no-repeat;
+            background: rgba($flowAnchorLink, 0) url(../images/IconLeftWhite.svg) left center no-repeat;
             -webkit-background-size: 25px 25px;
             background-size: 25px 25px;
         }
@@ -6715,7 +6174,7 @@ li.disable {
 .importBlock {
     width: 98%;
     margin: 5px auto;
-    background: rgba($anchorLink, 0.1);
+    background: rgba($flowAnchorLink, 0.1);
     padding: 10px 0.5%;
 
     a {
@@ -6725,8 +6184,7 @@ li.disable {
     }
 
     h4 {
-        font-size: 1.2em;
-        color: $akvoOrange;
+        color: $akvoFlowOrange;
         margin: 5px 0 10px 0;
     }
 
@@ -6770,27 +6228,53 @@ li.disable {
     background: rgb(248, 248, 248) url(../images/loader.gif) 5px center no-repeat;
     color: rgb(252, 159, 0);
     font-weight: bold;
-    font-size: 1.2em;
 }
 
 /* Set device buttons on device tab to position: fixed */
-.deviceControls {
+.deviceControls, .cascadeControls {
     position: fixed;
-    top: 120px;
+    top: 96px;
     left: 0px;
     right: 0px;
-    height: 40px;
     z-index: 1;
     background-color: white;
-    border-bottom: 1px solid $akvoBlack;
+    box-shadow: 0 1px 3px rgba(32, 32, 36, 0.1);
+    width: 99.5%;
+    padding: 5px 0.25% 10px 0.25%;
+
+    nav {
+        &.doubleMenu {
+            width: 49%;
+
+            &:first-child {
+                float: left;
+                margin-top: 7px;
+            }
+
+            &:last-child {
+                float: right;
+                text-align: right;
+                margin-top: 3px;
+            }
+        }
+    }
+
+    > a {
+        margin-top: 10px;
+    }
 
     .dataTabMenu {
-        top: 8px;
+        top: 0px;
+        padding-top: 15px;
         background: white;
     }
 
-    + .dataTable {
+    + div + .dataTable {
         margin-top: 40px;
+    }
+
+    + .dataTable {
+        margin-top: 60px;
     }
 
     @media only screen and (max-width: 600px) {
@@ -6801,7 +6285,7 @@ li.disable {
         }
 
         + .dataTable {
-            margin-top: 80px;
+            margin-top: 60px;
         }
     }
 }
@@ -6828,7 +6312,9 @@ li.disable {
             margin: 10px 0;
         }
     }
-    h5 {background
+
+    h5 {
+        background
         &.iterationNumber {
             margin: 16px 0px 5px 8px;
         }
@@ -6846,28 +6332,33 @@ li.disable {
 
 html.navMaps, .public {
     border-top: 0px;
+
     header {
         position: initial;
     }
+
     #flowMap, #pointDetails {
         height: 600px;
         height: 75vh;
     }
+
     #selected-media {
-      z-index: 999;
-      position: absolute;
-      padding: 5px;
-      bottom: 130px;
-      left: 20%;
-      background-color: white;
-      img {
-        float: left;
-        height: 70px;
-      }
-      label {
-        float: left;
-        margin-left: 10px
-      }
+        z-index: 999;
+        position: absolute;
+        padding: 5px;
+        bottom: 130px;
+        left: 20%;
+        background-color: white;
+
+        img {
+            float: left;
+            height: 70px;
+        }
+
+        label {
+            float: left;
+            margin-left: 10px;
+        }
     }
 
     .mapFlow.middleSection {
@@ -6891,25 +6382,35 @@ html.navMaps, .public {
 
 .dataApprovalRow {
     background: rgba(232, 230, 220, 0.2) !important;
-    &:hover {background: rgba(232, 230, 220, 0.2) !important;}
+
+    &:hover {
+        background: rgba(232, 230, 220, 0.2) !important;
+    }
+
     box-shadow: inset 0 -2px 8px rgba(0, 0, 0, 0.1);
+
     .dataApprovalBlock {
         ol {
             &.dataPointApproval {
                 list-style-type: none;
                 list-style: none;
+
                 li {
                     text-align: left;
                     margin-bottom: 20px;
+
                     select {
                         margin-right: 20px;
                     }
+
                     input {
                         text-overflow: ellipsis;
                     }
+
                     .btn {
                         display: inline-block;
                     }
+
                     h4 {
                         margin-bottom: 5px;
                     }
@@ -6937,15 +6438,18 @@ html.navMaps, .public {
         padding: 10px 5px !important;
         width: calc(100% - 40px);
         min-height: 15px;
-        margin-bottom:2px;
+        margin-bottom: 2px;
         clear: both;
-        background: rgba(255,255,255,0.05);
+        background: rgba(255, 255, 255, 0.05);
+
         @include border-radius(2px);
+
         h4 {
             display: inline;
             float: left;
             color: white;
         }
+
         a {
             display: inline-block;
             text-indent: -9999px;
@@ -6956,6 +6460,7 @@ html.navMaps, .public {
             -webkit-background-size: 15px auto;
             background-size: 15px auto;
             background: url(../images/topnavUsers.svg) left center no-repeat;
+
             &:hover {
                 background: url(../images/topnavUsersOrange.svg) left center no-repeat;
             }
@@ -6964,14 +6469,15 @@ html.navMaps, .public {
 }
 
 .hideShow {
-    margin:5px 0 0 30px;
+    margin: 5px 0 0 30px;
 }
 
 .public {
     #dropdown-holder {
         margin-top: 30px;
-        z-index:9999;
+        z-index: 9999;
     }
+
     footer {
         height: 60px;
     }
@@ -6983,4 +6489,22 @@ html.navMaps, .public {
     #pointDetails {
         height: calc(100vh - (3px + 83px + 53px + 60px + 5px));
     }
+}
+
+iframe {
+    height: 100vh;
+    min-height: calc(100% - 225px);
+}
+
+svg {
+    g {
+        text {
+            font-weight: normal !important;
+            font-size: 1em !important;
+        }
+    }
+}
+
+.textLink {
+    color: inherit !important;
 }

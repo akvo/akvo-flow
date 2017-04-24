@@ -93,26 +93,25 @@ FLOW.renderCaddisflyAnswer = function(json){
   var imageUrl = ""
   var result = Ember.A();
   if (!Ember.empty(json)){
-    var jsonParsed = JSON.parse(json);
+    try {
+        var jsonParsed = JSON.parse(json);
 
-    // get out test name
-    if (!Ember.empty(jsonParsed.name)){
-      testName =  jsonParsed.name.trim();
+        // get out image url
+        if (!Ember.empty(jsonParsed.image)){
+          imageUrl = FLOW.Env.photo_url_root + jsonParsed.image.trim();
+        }
+
+        // contruct html
+        html = "<div><strong>" + name + "</strong></div>"
+        html += jsonParsed.result.map(function(item){
+                return "<br><div>" + item.name + " : " + item.value + " " + item.unit + "</div>";
+            }).join("\n");
+        html += "<br>"
+        html += "<div class=\"signatureImage\"><img src=\"" + imageUrl +"\"}} /></div>"
+        return html;
+    } catch (e) {
+        return json;
     }
-
-    // get out image url
-    if (!Ember.empty(jsonParsed.image)){
-      imageUrl = FLOW.Env.photo_url_root + jsonParsed.image.trim();
-    }
-
-    // contruct html
-    html = "<div><strong>" + name + "</strong></div>"
-    html += jsonParsed.result.map(function(item){
-            return "<br><div>" + item.name + " : " + item.value + " " + item.unit + "</div>";
-        }).join("\n");
-    html += "<br>"
-    html += "<div class=\"signatureImage\"><img src=\"" + imageUrl +"\"}} /></div>"
-    return html;
   } else {
     return "Wrong JSON format";
   }
@@ -306,11 +305,11 @@ Ember.Handlebars.registerHelper("date3", function (property) {
   }
 });
 
-FLOW.parseGeoshape = function(geoshapeString) {
+FLOW.parseJSON = function(jsonString, property) {
   try {
-    var geoshapeObject = JSON.parse(geoshapeString);
-    if (geoshapeObject['features'].length > 0) {
-        return geoshapeObject;
+    var jsonObject = JSON.parse(jsonString);
+    if (jsonObject[property].length > 0) {
+        return jsonObject;
     } else {
       return null;
     }
@@ -773,6 +772,10 @@ FLOW.DatasubnavView = FLOW.View.extend({
     isActive: function () {
       return this.get('item') === this.get('parentView.selected');
     }.property('item', 'parentView.selected').cacheable(),
+
+    showDataCleaningButton: function () {
+        return FLOW.permControl.get('canCleanData');
+    }.property(),
 
     showCascadeResourcesButton: function () {
       return FLOW.permControl.get('canManageCascadeResources');

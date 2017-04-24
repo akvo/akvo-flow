@@ -1,4 +1,4 @@
-/*  Copyright (C) 2016 Stichting Akvo (Akvo Foundation)
+/*  Copyright (C) 2016-2017 Stichting Akvo (Akvo Foundation)
  *
  *  This file is part of Akvo FLOW.
  *
@@ -15,45 +15,45 @@
 
 package org.waterforpeople.mapping.domain;
 
+import org.codehaus.jackson.annotate.JsonIgnoreProperties;
+
 import java.io.Serializable;
 
+@JsonIgnoreProperties(ignoreUnknown = true)
 public class CaddisflyResult implements Serializable, Comparable {
-	private static final long serialVersionUID = 1L;
-	private String name;
-	private String unit;
-	private int id;
+    private static final long serialVersionUID = 1L;
+    private String name;
+    private String unit;
+    private int id;
 
-	public CaddisflyResult(String name, String unit, int id) {
-		this.setName(name);
-		this.setUnit(unit);
-		this.setId(id);
-	}
+    public CaddisflyResult() {
+    }
 
-	public String getName() {
-		return name;
-	}
+    public String getName() {
+        return name;
+    }
 
-	public void setName(String name) {
-		this.name = name;
-	}
+    public void setName(String name) {
+        this.name = name;
+    }
 
-	public String getUnit() {
-		return unit;
-	}
+    public String getUnit() {
+        return unit;
+    }
 
-	public void setUnit(String unit) {
-		this.unit = unit;
-	}
+    public void setUnit(String unit) {
+        this.unit = unit;
+    }
 
-	public int getId() {
-		return id;
-	}
+    public int getId() {
+        return id;
+    }
 
-	public void setId(int id) {
-		this.id = id;
-	}
+    public void setId(int id) {
+        this.id = id;
+    }
 
-	public int compareTo(Object o) {
-		return (id - ((CaddisflyResult) o).getId());
-	}
+    public int compareTo(Object o) {
+        return (id - ((CaddisflyResult) o).getId());
+    }
 }

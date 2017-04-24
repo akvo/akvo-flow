@@ -106,7 +106,11 @@ FLOW.NavMapsView = FLOW.View.extend({
   },
 
   insertMapboxMap: function() {
-    this.map = L.mapbox.map('flowMap', 'akvo.he30g8mm').setView([-0.703107, 36.765], 2);
+      var options = {
+          minZoom: 2,
+          maxZoom: 18
+      };
+    this.map = L.mapbox.map('flowMap', 'akvo.he30g8mm', options).setView([-0.703107, 36.765], 2);
     L.control.layers({
       'Terrain': L.mapbox.tileLayer('akvo.he30g8mm').addTo(this.map),
       'Streets': L.mapbox.tileLayer('akvo.he2pdjhk'),
@@ -695,20 +699,8 @@ FLOW.NavMapsView = FLOW.View.extend({
               for (column in pointData['answers']) {
                 var questionAnswer = pointData['answers'][column];
                 if (column.match(self.questionGroups[qg]['questions'][i].keyId)) {
-                  if(self.questionGroups[qg]['questions'][i].type === "GEOSHAPE" && questionAnswer !== null){
-                    var geoshapeObject = FLOW.parseGeoshape(questionAnswer);
-                    if(geoshapeObject !== null){
-                      geoshapeQuestionsCount++;
-                      clickedPointContent += '<h4><div style="float: left">'
-                      +self.questionGroups[qg]['questions'][i].text
-                      +'</div>&nbsp;<a style="float: right" class="project-geoshape" data-geoshape-object=\''+questionAnswer+'\'>'
-                      +Ember.String.loc('_project_onto_main_map')+'</a></h4>';
-                    }
-                  } else {
-                    clickedPointContent += '<h4>'+self.questionGroups[qg]['questions'][i].text+'&nbsp;</h4>';
-                  }
-
-                  clickedPointContent += '<div style="float: left; width: 100%">';
+                  clickedPointContent += '<h4>'+self.questionGroups[qg]['questions'][i].text+'&nbsp;</h4>'
+                    +'<div style="float: left; width: 100%">';
 
                   if(questionAnswer){
                     switch (self.questionGroups[qg]['questions'][i].questionType) {
@@ -740,12 +732,14 @@ FLOW.NavMapsView = FLOW.View.extend({
                         clickedPointContent += mediaOutput;
                         break;
                       case "GEOSHAPE":
-                        geoshapeObject = FLOW.parseGeoshape(questionAnswer);
+                        geoshapeObject = FLOW.parseJSON(questionAnswer, "features");
                         self.geoshapeCoordinates = geoshapeObject;
 
-                        if(geoshapeObject !== null){
+                        if(geoshapeObject){
                           geoshapeCheck = true;
-                          clickedPointContent += '<div class="geoshape-map" data-geoshape-object=\''+questionAnswer+'\' style="width:100%; height: 100px; float: left"></div>';
+                          geoshapeQuestionsCount++;
+                          clickedPointContent += '<div class="geoshape-map" data-geoshape-object=\''+questionAnswer+'\' style="width:100%; height: 100px; float: left"></div>'
+                            +'<a style="float: left" class="project-geoshape" data-geoshape-object=\''+questionAnswer+'\'>'+Ember.String.loc('_project_onto_main_map')+'</a>'
 
                           if(geoshapeObject['features'][0]['geometry']['type'] === "Polygon"
                            || geoshapeObject['features'][0]['geometry']['type'] === "LineString"
@@ -773,6 +767,9 @@ FLOW.NavMapsView = FLOW.View.extend({
                         signatureJson = JSON.parse(questionAnswer);
                         clickedPointContent += srcAttr + signatureJson.image +'"/></div>';
                         clickedPointContent += '<div class="signedBySection">'+Ember.String.loc('_signed_by') +': '+signatureJson.name+'</div>';
+                        break;
+                      case "CADDISFLY":
+                        clickedPointContent += FLOW.renderCaddisflyAnswer(questionAnswer);
                         break;
                       case "CASCADE":
                       case "OPTION":

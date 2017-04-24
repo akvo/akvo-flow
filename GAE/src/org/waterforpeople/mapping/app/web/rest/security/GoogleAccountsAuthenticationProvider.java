@@ -88,7 +88,7 @@ public class GoogleAccountsAuthenticationProvider implements AuthenticationProvi
     }
 
     private int getAuthorityLevel(com.gallatinsystems.user.domain.User user) {
-        if (user.isSuperAdmin() != null && user.isSuperAdmin()) {
+        if (user.isSuperAdmin()) {
             return AppRole.SUPER_ADMIN.getLevel();
         }
         try {

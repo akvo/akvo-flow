@@ -1,5 +1,5 @@
 /*
- *  Copyright (C) 2016 Stichting Akvo (Akvo Foundation)
+ *  Copyright (C) 2017 Stichting Akvo (Akvo Foundation)
  *
  *  This file is part of Akvo Flow.
  *
@@ -16,9 +16,13 @@
 
 package com.gallatinsystems.survey.dao;
 
+import java.util.Collections;
 import java.util.List;
 
+import javax.jdo.PersistenceManager;
+
 import com.gallatinsystems.framework.dao.BaseDAO;
+import com.gallatinsystems.framework.servlet.PersistenceFilter;
 import com.gallatinsystems.survey.domain.DataPointApproval;
 
 public class DataPointApprovalDAO extends BaseDAO<DataPointApproval> {
@@ -28,7 +32,21 @@ public class DataPointApprovalDAO extends BaseDAO<DataPointApproval> {
     }
 
     public List<DataPointApproval> listBySurveyedLocaleId(Long surveyedLocaleId) {
-        return this.listByProperty("surveyedLocaleId", surveyedLocaleId, "Long");
+        List<DataPointApproval> approvals = this.listByProperty("surveyedLocaleId",
+                surveyedLocaleId, "Long");
+        if (approvals == null) {
+            return Collections.emptyList();
+        }
+        return approvals;
     }
 
+    public List<DataPointApproval> listBySurveyedLocaleIds(List<Long> surveyedLocaleIds) {
+        if (surveyedLocaleIds == null || surveyedLocaleIds.isEmpty()) {
+            return Collections.emptyList();
+        }
+        PersistenceManager pm = PersistenceFilter.getManager();
+        String queryString = ":p2.contains(surveyedLocaleId)";
+        javax.jdo.Query query = pm.newQuery(DataPointApproval.class, queryString);
+        return (List<DataPointApproval>) query.execute(surveyedLocaleIds);
+    }
 }

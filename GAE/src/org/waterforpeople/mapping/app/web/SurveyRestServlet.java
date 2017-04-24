@@ -1,5 +1,5 @@
 /*
- *  Copyright (C) 2010-2015 Stichting Akvo (Akvo Foundation)
+ *  Copyright (C) 2010-2017 Stichting Akvo (Akvo Foundation)
  *
  *  This file is part of Akvo FLOW.
  *
@@ -77,8 +77,7 @@ import com.gallatinsystems.surveyal.domain.SurveyedLocale;
 import com.google.appengine.api.datastore.KeyFactory;
 
 public class SurveyRestServlet extends AbstractRestApiServlet {
-    private static final Logger log = Logger.getLogger(TaskServlet.class
-            .getName());
+    private static final Logger log = Logger.getLogger(SurveyRestServlet.class.getName());
 
     private static final String CHART_API_URL = "http://chart.apis.google.com/chart?chs=300x225&cht=p&chtt=";
     private static final String CHART_API_DATA_PARAM = "&chd=t:";
@@ -135,23 +134,21 @@ public class SurveyRestServlet extends AbstractRestApiServlet {
         } else if (SurveyRestRequest.GET_SURVEY_GROUP_ACTION.equals(surveyReq
                 .getAction())) {
             List<SurveyGroupDto> sgList = new ArrayList<SurveyGroupDto>();
-            Long sgId = surveyReq.getSurveyGroupId();
-            if (sgId != null) {
-                SurveyGroupDto dto = getSurveyGroup(sgId);
-                if (dto != null) {
-                    sgList.add(dto);
+            Long surveyGroupId = null;
+
+            if (surveyReq.getSurveyGroupId() != null) {
+                surveyGroupId = surveyReq.getSurveyGroupId();
+            } else if (surveyReq.getSurveyId() != null) {
+                Survey s = surveyDao.getById(surveyReq.getSurveyId());
+                if (s != null) {
+                    surveyGroupId = s.getSurveyGroupId();
                 }
-            } else {
-                // Trying to get it using Survey ID
-                Long sId = surveyReq.getSurveyId();
-                if (sId != null) {
-                    Survey s = surveyDao.getById(sId);
-                    if (s != null) {
-                        SurveyGroupDto dto = getSurveyGroup(s.getSurveyGroupId());
-                        if (dto != null) {
-                            sgList.add(dto);
-                        }
-                    }
+            }
+
+            if (surveyGroupId != null) {
+                SurveyGroup sg = sgDao.getByKey(surveyGroupId);
+                if (sg != null) {
+                    sgList.add(new SurveyGroupDto(sg));
                 }
             }
             response.setDtoList(sgList);
@@ -267,17 +264,6 @@ public class SurveyRestServlet extends AbstractRestApiServlet {
         response.setDtoList(dtoList);
         response.setCursor(cursorString);
         return response;
-    }
-
-    private SurveyGroupDto getSurveyGroup(Long surveyGroupId) {
-        SurveyGroupDAO surveyGroupDao = new SurveyGroupDAO();
-        SurveyGroupDto dto = new SurveyGroupDto();
-        SurveyGroup sg = surveyGroupDao.getByKey(surveyGroupId);
-        if (sg == null) {
-            return null;
-        }
-        DtoMarshaller.copyToDto(sg, dto);
-        return dto;
     }
 
     private SurveyDto getSurvey(Long surveyId) {
@@ -556,7 +542,7 @@ public class SurveyRestServlet extends AbstractRestApiServlet {
             q.setType(Question.Type.GEO);
         } else if (questionType.equals("FREE_TEXT")) {
             q.setType(Question.Type.FREE_TEXT);
-            q.setIsName(req.getIsName());
+            q.setName(req.getIsName());
         } else if (questionType.equals("OPTION")
                 || questionType.equals("STRENGTH")) {
             q.setAllowMultipleFlag(req.getAllowMultipleFlag());

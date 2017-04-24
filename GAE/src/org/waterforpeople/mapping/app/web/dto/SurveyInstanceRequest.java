@@ -1,5 +1,5 @@
 /*
- *  Copyright (C) 2010-2012 Stichting Akvo (Akvo Foundation)
+ *  Copyright (C) 2010-2017 Stichting Akvo (Akvo Foundation)
  *
  *  This file is part of Akvo FLOW.
  *
@@ -16,20 +16,23 @@
 
 package org.waterforpeople.mapping.app.web.dto;
 
+import java.util.logging.Logger;
+
 import javax.servlet.http.HttpServletRequest;
 
 import com.gallatinsystems.framework.rest.RestRequest;
 
 public class SurveyInstanceRequest extends RestRequest {
 
-    /**
-	 * 
-	 */
+    private static final Logger log = Logger.getLogger(SurveyInstanceRequest.class.getName());
     private static final long serialVersionUID = 6642806619258697157L;
     private static final String FIELD_NAME_PARAM = "fieldName";
     private static final String VALUE_NAME_PARAM = "value";
+    public static final String GET_INSTANCE_DATA_ACTION = "getInstanceData";
+    public static final String SURVEY_INSTANCE_ID_PARAM = "surveyInstanceId";
 
     private String fieldName = null;
+    public Long surveyInstanceId;
 
     public String getFieldName() {
         return fieldName;
@@ -56,6 +59,13 @@ public class SurveyInstanceRequest extends RestRequest {
         }
         if (req.getParameter(VALUE_NAME_PARAM) != null) {
             setValue(req.getParameter(VALUE_NAME_PARAM));
+        }
+        if (req.getParameter(SURVEY_INSTANCE_ID_PARAM) != null) {
+            try {
+                this.surveyInstanceId = Long.parseLong(req.getParameter(SURVEY_INSTANCE_ID_PARAM));
+            } catch (NumberFormatException e) {
+                log.warning("Could not convert survey instance id: " + surveyInstanceId);
+            }
         }
     }
 

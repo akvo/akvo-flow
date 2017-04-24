@@ -4,7 +4,7 @@
     <div id="pageWrap" class="widthConstraint belowHeader">
       <section id="main" class="projectSection floats-in middleSection" role="main">
         <section id="" class="projectDetailsPanel">
-          <span class="fontInfo">{{t _survey}}:</span><h2>{{FLOW.projectControl.currentProject.name}}</h2>
+          <h2>{{FLOW.projectControl.currentProject.name}}</h2>
           <ul class="projectSummary">
             <li>{{t _forms}}<span class="projectForm">{{FLOW.projectControl.formCount}}</span>
             </li>
@@ -23,7 +23,7 @@
           <section class="projectDetails">
             <h3>{{t _survey_basics}}</h3>
             {{#unless view.isNewProject}}
-              <a {{action "toggleShowProjectDetails" target="this"}} class="showCollapse">
+              <a {{action "toggleShowProjectDetails" target="this"}} class="button">
                 {{#if view.visibleProjectBasics}}
                   {{t _collapse}}
                 {{else}}
@@ -34,7 +34,6 @@
             {{#if view.visibleProjectBasics}}
               <form class="projectDetailForm">
                 <label>{{t _survey_title}}</label>{{view Ember.TextField id="projectTitle" valueBinding="FLOW.projectControl.currentProject.name" disabledBinding="view.disableFolderSurveyInputField"}}
-                <label>{{t _survey_description}}</label>{{view Ember.TextField id="projectDescription" valueBinding="FLOW.projectControl.currentProject.description" disabledBinding="view.disableFolderSurveyInputField"}}
 
                 <ul class="projectSelect floats-in">
                   <li>
@@ -55,23 +54,10 @@
                   </li>
                 </ul>
                 {{#if FLOW.projectControl.hasForms}}
-                  <span class="monitoringAndvanced">
-                    <a {{action "toggleShowAdvancedSettings" target="this"}} class="showCollapse">
-                      {{#if view.showAdvancedSettings}}
-                        {{t _collapse}}
-                      {{else}}
-                        {{t _show_advanced_settings}}
-                      {{/if}}
-                    </a>
-                  </span>
-
-                  {{#if view.showAdvancedSettings}}
-                    {{#if view.showMonitoringGroupCheckbox}}
                       <label for="enableMonitoring" class="labelcheckbox">
                         {{view Ember.Checkbox checkedBinding="FLOW.projectControl.currentProject.monitoringGroup" id="enableMonitoring" disabledBinding="view.disableFolderSurveyInputField"}}{{t _enable_monitoring_features}}
                       </label>
-                    {{/if}}
-                    {{#if FLOW.projectControl.currentProject.monitoringGroup}}
+                      {{#if FLOW.projectControl.currentProject.monitoringGroup}}
 
                       <p class="monitoringHint">{{t _choose_the_registration_form}}: {{tooltip _choose_the_registration_form_tooltip}}</p>
                       {{view Ember.Select
@@ -80,20 +66,22 @@
                         optionLabelPath="content.code"
                         optionValuePath="content.keyId"
                         disabledBinding="view.disableFolderSurveyInputField"}}
-                    {{/if}}
+
+
+
 
                     {{#if view.showDataApproval}}
                         <label for="enableDataApproval" class="labelcheckbox">
-                            {{view Ember.Checkbox checkedBinding="FLOW.projectControl.requireDataApproval" id="enableDataApproval" disabledBinding="view.disableFolderSurveyInputField"}} {{t _enable_data_approval}} {{tooltip _enable_data_approval_tooltip}}
+                            {{view Ember.Checkbox checkedBinding="FLOW.projectControl.currentProject.requireDataApproval" id="enableDataApproval" disabledBinding="view.disableFolderSurveyInputField"}} {{t _enable_data_approval}} {{tooltip _enable_data_approval_tooltip}}
                         </label>
                         {{#if view.showDataApprovalList}}
                           {{view Ember.Select
                             contentBinding="FLOW.router.approvalGroupListController.arrangedContent"
                             optionLabelPath="content.name"
                             optionValuePath="content.keyId"
-                            valueBinding="FLOW.projectControl.currentProject.dataApprovalGroupId"
-                            selectionBinding="FLOW.router.approvalGroupController.content"
-                            disabledBinding="view.disableFolderSurveyInputField"}}
+                            selectionBinding="FLOW.projectControl.dataApprovalGroup"
+                            disabledBinding="view.disableFolderSurveyInputField"
+                            promptBinding="Ember.STRINGS._choose_data_approval_group"}}
 
                             {{#if view.showDataApprovalDetails}}
                               <div class="hideShow">
@@ -105,7 +93,26 @@
                                     <p>{{#if ordered}} {{t _ordered_approval}} {{else}} {{t _unordered_approval}} {{/if}}</p>
                                     <ul class="approvalSteps">
                                     {{#each step in FLOW.router.approvalStepsController}}
-                                        <li><h4>{{step.title}}</h4> <a href="">{{t _responsible_users}}</a></li>
+                                        {{#view FLOW.SurveyApprovalStepView stepBinding="step"}}
+                                            <li><h4>{{view.step.title}}</h4> <a {{action toggleShowResponsibleUsers target="view"}}>{{t _responsible_users}}</a></li>
+                                            {{#if view.showResponsibleUsers}}
+                                            <div>
+                                                <ul class="responsibleUsers">
+                                                    {{#each user in FLOW.router.userListController}}
+                                                        {{#view FLOW.ApprovalResponsibleUserView
+                                                                    userBinding="user"
+                                                                    stepBinding="view.step"}}
+                                                            <li>
+                                                            {{view Ember.Checkbox
+                                                                    checkedBinding="view.isResponsibleUser"}}
+                                                            {{view.user.userName}}
+                                                            </li>
+                                                        {{/view}}
+                                                    {{/each}}
+                                                </ul>
+                                            </div>
+                                            {{/if}}
+                                        {{/view}}
                                     {{/each}}
                                     </ul>
                                   </div>
@@ -122,6 +129,7 @@
               </form>
             {{/if}}
           </section>
+
           <section class="noFormsContainer">
             {{#unless FLOW.projectControl.hasForms}}
               <ul>
@@ -134,9 +142,18 @@
           </section>
 
           <section class="forms">
+
             {{#if FLOW.projectControl.hasForms}}
               <div id="tabs">
-                <h2>{{t _forms}}:</h2>
+                {{#if FLOW.projectControl.currentProject.monitoringGroup}}
+                {{#if view.showAddNewFormButton}}
+                  <nav class="menuTopbar">
+                    <ul>
+                      <li>  <a {{action "createForm" target="FLOW.surveyControl"}} class="button addFormBtn" >{{t _add_new_form}}</a></li>
+                    </ul>
+                  </nav>                      
+                {{/if}}
+            {{/if}}
                 <nav class="tabNav floats-in">
                   <ul>
                     {{#each form in FLOW.surveyControl}}
@@ -144,11 +161,7 @@
                         <a {{action "selectForm" form target="FLOW.surveyControl"}}>{{form.name}}</a></li>
                       {{/view}}
                     {{/each}}
-                    {{#if FLOW.projectControl.currentProject.monitoringGroup}}
-                      {{#if view.showAddNewFormButton}}
-                      <li class="newFormTab"><a {{action "createForm" target="FLOW.surveyControl"}}><span>+</span>{{t _add_new_form}}</a></li>
-                      {{/if}}
-                    {{/if}}
+
                   </ul>
                 </nav>
                 <section class="formsContainer">

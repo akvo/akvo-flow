@@ -70,8 +70,6 @@ FLOW.Router = Ember.Router.extend({
       connectOutlets: function (router, event) {
         router.get('applicationController').connectOutlet('navSurveys');
         router.set('navigationController.selected', 'navSurveys');
-        FLOW.cascadeResourceControl.populate();
-        FLOW.caddisflyResourceControl.populate();
       },
 
       doNewSurvey: function (router, event) {
@@ -100,13 +98,13 @@ FLOW.Router = Ember.Router.extend({
             name: 'navSurveysMain'
           });
           FLOW.projectControl.populate();
+          FLOW.cascadeResourceControl.populate();
           FLOW.projectControl.set('currentProject', null);
           FLOW.projectControl.set('newlyCreated', null);
           FLOW.selectedControl.set('selectedQuestionGroup', null);
           FLOW.selectedControl.set('selectedSurvey', null);
           FLOW.selectedControl.set('selectedQuestion', null);
           FLOW.questionControl.set('OPTIONcontent', null);
-          FLOW.cascadeResourceControl.populate();
           FLOW.attributeControl.populate();
         }
       }),
@@ -469,7 +467,6 @@ FLOW.Router = Ember.Router.extend({
       connectOutlets: function (router, context) {
         router.get('applicationController').connectOutlet('navUsers');
         router.set('navigationController.selected', 'navUsers');
-        FLOW.userControl.populate();
       }
     }),
 

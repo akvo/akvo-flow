@@ -1,150 +1,140 @@
-<section class="fullWidth " id="devicesList"> 
-  <!-- DEVICES TABLE--> 
+<section id="devicesList">
+  <!-- DEVICES TABLE-->
   
   {{#view FLOW.CurrentDevicesTabView}}
   <div class="deviceControls">
-    <a {{action "showManageDeviceGroupsDialog" target="this"}} class="standardBtn btnAboveTable">{{t _manage_device_groups}}</a>
-    {{#if FLOW.deviceControl.atLeastOneSelected}}
-    <nav class="dataTabMenu">
-      <ul>
-        <li><a {{action "showAddToGroupDialog" target="this"}}>{{t _add_to_device_group}}</a></li>
-        <li><a {{action "showRemoveFromGroupDialog" target="this"}}>{{t _remove_from_device_group}}</a></li>
-      </ul>
-    </nav>
-    {{else}}
-    <nav class="dataTabMenu">
-      <ul>
-        <!-- <li><a href="#" class="disabled">{{t _disable_devices}}</a></li> -->
-        <li><a href="#" class="disabled">{{t _add_to_device_group}}</a></li>
-        <li><a href="#" class="disabled">{{t _remove_from_device_group}}</a></li>
-      </ul>
-    </nav>
-    {{/if}}
-  </div>
-  <table class="dataTable" id="surveyDataTable">
-    <!-- TABLE HEADER-->
-    <thead>
-      <tr> {{#view FLOW.ColumnView item="select" }}
-        {{view Ember.Checkbox checkedBinding="FLOW.deviceControl.allAreSelected"}}
-        {{/view}}
-        {{#view FLOW.ColumnView item="IMEI" type="device"}} <a {{action "sort" target="this"}}>{{t _imei}} {{tooltip _imei_tooltip}}</a> {{/view}}
-        {{#view FLOW.ColumnView item="phoneNumber" type="device"}} <a {{action "sort" target="this"}}>{{t _phone_number}}</a> {{/view}}
-        {{#view FLOW.ColumnView item="deviceIdentifier" type="device"}} <a {{action "sort" target="this"}}>{{t _device_id}}</a> {{/view}}
-        {{#view FLOW.ColumnView item="deviceGroup" type="device"}} <a {{action "sort" target="this"}}>{{t _device_group}}</a> {{/view}}
-        {{#view FLOW.ColumnView item="lastPositionDate" type="device"}} <a {{action "sort" target="this"}}>{{t _last_contact}}</a> {{/view}}
-        {{#view FLOW.ColumnView item="lastPositionDate" type="device"}} <a {{action "sort" target="this"}}>{{t _version}}</a> {{/view}} </tr>
-    </thead>
-    <!-- TABLE BODY: MAIN CONTENT-->
-    <tbody>
-    
-    {{#each FLOW.deviceControl}}
-    <tr>
-      <td class="selection"> {{view Ember.Checkbox checkedBinding="isSelected"}}</td>
-      <td class="EMEI">{{esn}}</td>
-      <td class="phoneNumber" >{{phoneNumber}}</td>
-      <td class="deviceId" >{{deviceIdentifier}}</td>
-      <td class="deviceGroup">{{deviceGroupName}}</td>
-      <td class="lastBeacon">{{date1 lastPositionDate}}</td>
-      <td class="version">{{gallatinSoftwareManifest}}</td>
-    </tr>
-    {{/each}}
-      </tbody>
-    
-    <!-- TABLE FOOTER-->
-    <tfoot>
-      <tr>
-        <td colspan="7"><small>This is the footer.</small></td>
-      </tr>
-    </tfoot>
-  </table>
-  <!--     {{#if view.showConfirmDeletedialog}}
-            <a {{action "doDelete" target="this"}}>{{t _ok}}</a>
-            <a {{action "cancelDelete" target="this"}}>{{t _cancel}}</a>
-        {{/if}}     --> 
-  
-  <!-- add to group dialog-->
-  <div {{bindAttr class="view.showAddToGroupDialogBool:display :overlay"}}>
-    <div class="blanket"></div>
-    <div class="dialogWrap"> 
-      <!-- the dialog contents -->
-      <div class="confirmDialog dialog">
-        <h2>{{t _add_devices_to_device_group}}</h2>
-        <p class="dialogMsg">{{t _choose_an_existing_device_group_from_the_list}}</p>
-        <br/>
-        {{view Ember.Select 
-        contentBinding="FLOW.deviceGroupControl.contentNoUnassigned" 
-        selectionBinding="view.selectedDeviceGroup" 
-        optionLabelPath="content.code" 
-        optionValuePath="content.keyId"
-        prompt=""
-        promptBinding="Ember.STRINGS._select_existing_device_group"}}
-        <div class="buttons menuCentre">
+        <a {{action "showManageDeviceGroupsDialog" target="this"}} class="btnOutline">{{t _manage_device_groups}}</a>
+        {{#if FLOW.deviceControl.atLeastOneSelected}}
+        <nav class="dataTabMenu">
           <ul>
-            <li><a {{action "doAddToGroup" target="this"}} class="ok smallBtn">{{t _ok}}</a></li>
-            <li><a {{action "cancelAddToGroup" target="this"}}} class="cancel">{{t _cancel}}</a></li>
+            <li><a {{action "showAddToGroupDialog" target="this"}}>{{t _add_to_device_group}}</a></li>
+            <li><a {{action "showRemoveFromGroupDialog" target="this"}}>{{t _remove_from_device_group}}</a></li>
           </ul>
-        </div>
-      </div>
-    </div>
-  </div>
-  
-  <!-- Remove from group dialog-->
-  <div {{bindAttr class="view.showRemoveFromGroupDialogBool:display :overlay"}}>
-    <div class="blanket"></div>
-    <div class="dialogWrap"> 
-      <!-- the dialog contents -->
-      <div class="confirmDialog dialog">
-        <h2>{{t _remove_devices_from_device_group}}?</h2>
-        <div class="buttons menuCentre">
+        </nav>
+        {{else}}
+        <nav class="dataTabMenu">
           <ul>
-            <li><a {{action "doRemoveFromGroup" target="this"}} class="ok smallBtn">{{t _ok}}</a></li>
-            <li><a {{action "cancelRemoveFromGroup" target="this"}}} class="cancel">{{t _cancel}}</a></li>
+            <!-- <li><a href="#" class="disabled">{{t _disable_devices}}</a></li> -->
+            <li><a href="#" class="disabled">{{t _add_to_device_group}}</a></li>
+            <li><a href="#" class="disabled">{{t _remove_from_device_group}}</a></li>
           </ul>
-        </div>
+        </nav>
+        {{/if}}
       </div>
-    </div>
-  </div>
-  
-  <!-- manage device groups dialog-->
-  <div {{bindAttr class="view.showManageDeviceGroupsDialogBool:display :overlay"}}>
-    <div class="blanket"></div>
-    <div class="dialogWrap"> 
-      <!-- the dialog contents -->
-      <div class="confirmDialog dialog">
-        <h2>{{t _manage_device_groups}}</h2>
-        <p class="dialogMsg">{{t _to_change_the_name_of_an_existing_group_}}</p>
-        <br/>
-        {{view Ember.Select 
-        contentBinding="FLOW.deviceGroupControl.contentNoUnassigned" 
-        selectionBinding="view.selectedDeviceGroup" 
-        optionLabelPath="content.code" 
-        optionValuePath="content.keyId"
-        prompt=""
-        promptBinding="Ember.STRINGS._select_device_group"}}
+      <table class="dataTable" id="surveyDataTable">
+        <!-- TABLE HEADER-->
+        <thead>
+          <tr> {{#view FLOW.ColumnView item="select" }}
+            {{view Ember.Checkbox checkedBinding="FLOW.deviceControl.allAreSelected"}}
+            {{/view}}
+            {{#view FLOW.ColumnView item="IMEI" type="device"}} <a {{action "sort" target="this"}}>{{t _imei}} {{tooltip _imei_tooltip}}</a> {{/view}}
+            {{#view FLOW.ColumnView item="phoneNumber" type="device"}} <a {{action "sort" target="this"}}>{{t _phone_number}}</a> {{/view}}
+            {{#view FLOW.ColumnView item="deviceIdentifier" type="device"}} <a {{action "sort" target="this"}}>{{t _device_id}}</a> {{/view}}
+            {{#view FLOW.ColumnView item="deviceGroup" type="device"}} <a {{action "sort" target="this"}}>{{t _device_group}}</a> {{/view}}
+            {{#view FLOW.ColumnView item="lastPositionDate" type="device"}} <a {{action "sort" target="this"}}>{{t _last_contact}}</a> {{/view}}
+            {{#view FLOW.ColumnView item="lastPositionDate" type="device"}} <a {{action "sort" target="this"}}>{{t _version}}</a> {{/view}} </tr>
+          </thead>
+          <!-- TABLE BODY: MAIN CONTENT-->
+          <tbody>
+            {{#each FLOW.deviceControl}}
+            <tr>
+              <td class="selection"> {{view Ember.Checkbox checkedBinding="isSelected"}}</td>
+              <td class="EMEI">{{esn}}</td>
+              <td class="phoneNumber" >{{phoneNumber}}</td>
+              <td class="deviceId" >{{deviceIdentifier}}</td>
+              <td class="deviceGroup">{{deviceGroupName}}</td>
+              <td class="lastBeacon">{{date1 lastPositionDate}}</td>
+              <td class="version">{{gallatinSoftwareManifest}}</td>
+            </tr>
+            {{/each}}
+          </tbody>
+        </table>
+        <!--     {{#if view.showConfirmDeletedialog}}
+        <a {{action "doDelete" target="this"}}>{{t _ok}}</a>
+        <a {{action "cancelDelete" target="this"}}>{{t _cancel}}</a>
+        {{/if}}     -->
         
-        {{view Ember.TextField valueBinding="view.changedDeviceGroupName" size=40}}
-        <p class="dialogMsg">{{t _to_create_a_new_device_group_}}</p>
-        <label for="newDeviceGroupName">{{t _new_group}}:</label>
-        {{view Ember.TextField valueBinding="view.newDeviceGroupName" id="newDeviceGroupName" size=40}}
-
-         <p class="dialogMsg">{{t _to_delete_an_existing_group_}}</p>
-        {{view Ember.Select 
-        contentBinding="FLOW.deviceGroupControl.contentNoUnassigned" 
-        selectionBinding="view.selectedDeviceGroupForDelete" 
-        optionLabelPath="content.code" 
-        optionValuePath="content.keyId" 
-        prompt=""
-        promptBinding="Ember.STRINGS._select_device_group"}}
-        <a {{action confirm FLOW.dialogControl.delDeviceGroup target="FLOW.dialogControl"}} class="remove">{{t _remove}}</a>
-
-        <div class="buttons menuCentre">
-          <ul>
-            <li><a {{action "doManageDeviceGroups" target="this"}} class="ok smallBtn">{{t _save}}</a></li>
-            <li><a {{action "cancelManageDeviceGroups" target="this"}}} class="cancel">{{t _cancel}}</a></li>
-          </ul>
+        <!-- add to group dialog-->
+        <div {{bindAttr class="view.showAddToGroupDialogBool:display :overlay"}}>
+          <div class="blanket"></div>
+          <div class="dialogWrap">
+            <!-- the dialog contents -->
+            <div class="confirmDialog dialog">
+              <h2>{{t _add_devices_to_device_group}}</h2>
+              <p class="dialogMsg">{{t _choose_an_existing_device_group_from_the_list}}</p>
+              <br/>
+              {{view Ember.Select
+              contentBinding="FLOW.deviceGroupControl.contentNoUnassigned"
+              selectionBinding="view.selectedDeviceGroup"
+              optionLabelPath="content.code"
+              optionValuePath="content.keyId"
+              prompt=""
+              promptBinding="Ember.STRINGS._select_existing_device_group"}}
+              <div class="buttons menuCentre">
+                <ul>
+                  <li><a {{action "doAddToGroup" target="this"}} class="ok smallBtn">{{t _ok}}</a></li>
+                  <li><a {{action "cancelAddToGroup" target="this"}}} class="cancel">{{t _cancel}}</a></li>
+                </ul>
+              </div>
+            </div>
+          </div>
         </div>
-      </div>
-    </div>
-  </div>
-  {{/view}} 
- </section>
+
+        <!-- Remove from group dialog-->
+        <div {{bindAttr class="view.showRemoveFromGroupDialogBool:display :overlay"}}>
+          <div class="blanket"></div>
+          <div class="dialogWrap">
+            <!-- the dialog contents -->
+            <div class="confirmDialog dialog">
+              <h2>{{t _remove_devices_from_device_group}}?</h2>
+              <div class="buttons menuCentre">
+                <ul>
+                  <li><a {{action "doRemoveFromGroup" target="this"}} class="ok smallBtn">{{t _ok}}</a></li>
+                  <li><a {{action "cancelRemoveFromGroup" target="this"}}} class="cancel">{{t _cancel}}</a></li>
+                </ul>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- manage device groups dialog-->
+        <div {{bindAttr class="view.showManageDeviceGroupsDialogBool:display :overlay"}}>
+          <div class="blanket"></div>
+          <div class="dialogWrap">
+            <!-- the dialog contents -->
+            <div class="confirmDialog dialog">
+              <h2>{{t _manage_device_groups}}</h2>
+              <p class="dialogMsg">{{t _to_change_the_name_of_an_existing_group_}}</p>
+              <br/>
+              {{view Ember.Select
+              contentBinding="FLOW.deviceGroupControl.contentNoUnassigned"
+              selectionBinding="view.selectedDeviceGroup"
+              optionLabelPath="content.code"
+              optionValuePath="content.keyId"
+              prompt=""
+              promptBinding="Ember.STRINGS._select_device_group"}}
+
+              {{view Ember.TextField valueBinding="view.changedDeviceGroupName" size=40}}
+              <p class="dialogMsg">{{t _to_create_a_new_device_group_}}</p>
+              <label for="newDeviceGroupName">{{t _new_group}}:</label>
+              {{view Ember.TextField valueBinding="view.newDeviceGroupName" id="newDeviceGroupName" size=40}}
+              <p class="dialogMsg">{{t _to_delete_an_existing_group_}}</p>
+              {{view Ember.Select
+              contentBinding="FLOW.deviceGroupControl.contentNoUnassigned"
+              selectionBinding="view.selectedDeviceGroupForDelete"
+              optionLabelPath="content.code"
+              optionValuePath="content.keyId"
+              prompt=""
+              promptBinding="Ember.STRINGS._select_device_group"}}
+              <a {{action confirm FLOW.dialogControl.delDeviceGroup target="FLOW.dialogControl"}} class="remove">{{t _remove}}</a>
+              <div class="buttons menuCentre">
+                <ul>
+                  <li><a {{action "doManageDeviceGroups" target="this"}} class="ok smallBtn">{{t _save}}</a></li>
+                  <li><a {{action "cancelManageDeviceGroups" target="this"}}} class="cancel">{{t _cancel}}</a></li>
+                </ul>
+              </div>
+            </div>
+          </div>
+        </div>
+        {{/view}}
+      </section>

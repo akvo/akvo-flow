@@ -1,5 +1,5 @@
 /*
- *  Copyright (C) 2010-2015 Stichting Akvo (Akvo Foundation)
+ *  Copyright (C) 2010-2017 Stichting Akvo (Akvo Foundation)
  *
  *  This file is part of Akvo FLOW.
  *
@@ -15,6 +15,61 @@
  */
 
 package org.waterforpeople.mapping.dataexport.service;
+
+import java.io.BufferedReader;
+import java.io.DataOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.io.UnsupportedEncodingException;
+import java.net.HttpURLConnection;
+import java.net.URL;
+import java.net.URLEncoder;
+import java.nio.charset.StandardCharsets;
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
+import java.util.StringTokenizer;
+import java.util.TimeZone;
+import java.util.TreeMap;
+import java.util.zip.GZIPInputStream;
+
+import com.gallatinsystems.common.util.MD5Util;
+import com.gallatinsystems.framework.rest.RestRequest;
+import com.gallatinsystems.survey.domain.SurveyGroup.PrivacyLevel;
+import com.gallatinsystems.survey.domain.SurveyGroup.ProjectType;
+import org.apache.commons.codec.binary.Base64;
+import org.apache.log4j.Logger;
+import org.codehaus.jackson.JsonNode;
+import org.codehaus.jackson.JsonParseException;
+import org.codehaus.jackson.map.JsonMappingException;
+import org.codehaus.jackson.map.ObjectMapper;
+import org.codehaus.jackson.type.TypeReference;
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
+import org.waterforpeople.mapping.app.gwt.client.devicefiles.DeviceFilesDto;
+import org.waterforpeople.mapping.app.gwt.client.location.PlacemarkDto;
+import org.waterforpeople.mapping.app.gwt.client.location.PlacemarkDtoResponse;
+import org.waterforpeople.mapping.app.gwt.client.survey.OptionContainerDto;
+import org.waterforpeople.mapping.app.gwt.client.survey.QuestionDependencyDto;
+import org.waterforpeople.mapping.app.gwt.client.survey.QuestionDto;
+import org.waterforpeople.mapping.app.gwt.client.survey.QuestionGroupDto;
+import org.waterforpeople.mapping.app.gwt.client.survey.QuestionOptionDto;
+import org.waterforpeople.mapping.app.gwt.client.survey.SurveyDto;
+import org.waterforpeople.mapping.app.gwt.client.survey.SurveyGroupDto;
+import org.waterforpeople.mapping.app.gwt.client.survey.TranslationDto;
+import org.waterforpeople.mapping.app.gwt.client.surveyinstance.SurveyInstanceDto;
+import org.waterforpeople.mapping.app.web.dto.DataBackoutRequest;
+import org.waterforpeople.mapping.app.web.dto.DeviceFileRestRequest;
+import org.waterforpeople.mapping.app.web.dto.InstanceDataDto;
+import org.waterforpeople.mapping.app.web.dto.SurveyRestRequest;
 
 import java.io.BufferedReader;
 import java.io.DataOutputStream;
@@ -39,29 +94,7 @@ import java.util.TimeZone;
 import java.util.TreeMap;
 import java.util.zip.GZIPInputStream;
 
-import org.apache.commons.codec.binary.Base64;
-import org.apache.log4j.Logger;
-import org.json.JSONArray;
-import org.json.JSONException;
-import org.json.JSONObject;
-import org.waterforpeople.mapping.app.gwt.client.devicefiles.DeviceFilesDto;
-import org.waterforpeople.mapping.app.gwt.client.location.PlacemarkDto;
-import org.waterforpeople.mapping.app.gwt.client.location.PlacemarkDtoResponse;
-import org.waterforpeople.mapping.app.gwt.client.survey.OptionContainerDto;
-import org.waterforpeople.mapping.app.gwt.client.survey.QuestionDependencyDto;
-import org.waterforpeople.mapping.app.gwt.client.survey.QuestionDto;
-import org.waterforpeople.mapping.app.gwt.client.survey.QuestionGroupDto;
-import org.waterforpeople.mapping.app.gwt.client.survey.QuestionOptionDto;
-import org.waterforpeople.mapping.app.gwt.client.survey.SurveyDto;
-import org.waterforpeople.mapping.app.gwt.client.survey.SurveyGroupDto;
-import org.waterforpeople.mapping.app.gwt.client.survey.TranslationDto;
-import org.waterforpeople.mapping.app.gwt.client.surveyinstance.SurveyInstanceDto;
-import org.waterforpeople.mapping.app.web.dto.DataBackoutRequest;
-import org.waterforpeople.mapping.app.web.dto.DeviceFileRestRequest;
-import org.waterforpeople.mapping.app.web.dto.SurveyRestRequest;
-
-import com.gallatinsystems.common.util.MD5Util;
-import com.gallatinsystems.framework.rest.RestRequest;
+import static org.waterforpeople.mapping.app.web.dto.SurveyInstanceRequest.*;
 
 /**
  * client code for calling the apis for data processing on the server
@@ -75,7 +108,9 @@ public class BulkDataServiceClient {
     private static final String DATA_SERVLET_PATH = "/databackout";
     public static final String RESPONSE_KEY = "dtoList";
     private static final String SURVEY_SERVLET_PATH = "/surveyrestapi";
+    private static final String INSTANCE_DATA_SERVLET_PATH = "/instancedata";
     private static final String DEVICE_FILES_SERVLET_PATH = "/devicefilesrestapi?action=";
+    private static final ObjectMapper JSON_RESPONSE_PARSER = new ObjectMapper();
 
     /**
      * lists all responses from the server for a surveyInstance submission as a map of values keyed
@@ -468,6 +503,37 @@ public class BulkDataServiceClient {
                 apiKey));
     }
 
+    public static InstanceDataDto fetchInstanceData(Long surveyInstanceId, String serverBase,
+            String apiKey) throws Exception {
+
+        final String baseUrl = serverBase + INSTANCE_DATA_SERVLET_PATH;
+
+        final String urlQueryString = new StringBuilder()
+                .append("?action=").append(GET_INSTANCE_DATA_ACTION)
+                .append("&")
+                .append(SURVEY_INSTANCE_ID_PARAM).append("=").append(surveyInstanceId)
+                .toString();
+
+        final String instanceDataResponse = fetchDataFromServer(baseUrl, urlQueryString, true,
+                apiKey);
+
+        return parseInstanceData(instanceDataResponse);
+    }
+
+    private static InstanceDataDto parseInstanceData(String instanceDataResponse) {
+        try {
+            InstanceDataDto instanceData = JSON_RESPONSE_PARSER.readValue(instanceDataResponse,
+                    InstanceDataDto.class);
+            return instanceData;
+        } catch (JsonParseException | JsonMappingException e) {
+            log.warn("Failed to parse the InstanceDataDto string: " + e);
+        } catch (IOException e) {
+            log.equals(e);
+        }
+
+        return new InstanceDataDto();
+    }
+
     /**
      * gets question groups from the server for a specific survey
      *
@@ -483,6 +549,42 @@ public class BulkDataServiceClient {
                 + SurveyRestRequest.LIST_GROUP_ACTION + "&"
                 + SurveyRestRequest.SURVEY_ID_PARAM + "=" + surveyId, true,
                 apiKey));
+    }
+
+    /**
+     * Fetch a single SurveyGroup based for the surveyId provided
+     *
+     * @param surveyId
+     * @param serverBase
+     * @param apiKey
+     * @return
+     * @throws Exception
+     */
+    public static SurveyGroupDto fetchSurveyGroup(String surveyId, String serverBase,
+            String apiKey) {
+        SurveyGroupDto surveyGroupDto = null;
+        try {
+            final String surveyGroupResponse = fetchDataFromServer(
+                    serverBase + SURVEY_SERVLET_PATH, "action="
+                            + SurveyRestRequest.GET_SURVEY_GROUP_ACTION + "&"
+                            + SurveyRestRequest.SURVEY_ID_PARAM + "="
+                            + surveyId, true, apiKey);
+
+            log.debug("response: " + surveyGroupResponse);
+
+            final JsonNode surveyGroupListNode = JSON_RESPONSE_PARSER.readTree(surveyGroupResponse)
+                    .get("dtoList");
+            final List<SurveyGroupDto> surveyGroupList = JSON_RESPONSE_PARSER.readValue(
+                    surveyGroupListNode, new TypeReference<List<SurveyGroupDto>>() {
+                    });
+            if (surveyGroupList != null && !surveyGroupList.isEmpty()) {
+                surveyGroupDto = surveyGroupList.get(0);
+            }
+        } catch (Exception e) {
+            log.error(e);
+        }
+
+        return surveyGroupDto;
     }
 
     /**
@@ -629,26 +731,29 @@ public class BulkDataServiceClient {
                 if (json != null) {
                     QuestionGroupDto dto = new QuestionGroupDto();
                     try {
-                        if (json.has("code")) {
+                        if (!json.isNull("code")) {
                             dto.setCode(json.getString("code"));
                         }
-                        if (json.has("keyId")) {
+                        if (!json.isNull("keyId")) {
                             dto.setKeyId(json.getLong("keyId"));
                         }
-                        if (json.has("displayName")) {
+                        if (!json.isNull("displayName")) {
                             dto.setName(json.getString("displayName"));
                         }
-                        if (json.has("description")) {
+                        if (!json.isNull("description")) {
                             dto.setDescription(json.getString("description"));
                         }
-                        if (json.has("order")) {
+                        if (!json.isNull("order")) {
                             dto.setOrder(json.getInt("order"));
                         }
-                        if (json.has("path")) {
+                        if (!json.isNull("path")) {
                             dto.setPath(json.getString("path"));
                         }
-                        if (json.has("surveyId")) {
+                        if (!json.isNull("surveyId")) {
                             dto.setSurveyId(json.getLong("surveyId"));
+                        }
+                        if (!json.isNull("repeatable")) {
+                            dto.setRepeatable(json.getBoolean("repeatable"));
                         }
 
                         dtoList.add(dto);
@@ -678,17 +783,46 @@ public class BulkDataServiceClient {
                 if (json != null) {
                     SurveyGroupDto dto = new SurveyGroupDto();
                     try {
-                        if (json.has("code")) {
+                        if (!json.isNull("code")) {
                             dto.setCode(json.getString("code"));
                         }
-                        if (json.has("keyId")) {
+                        if (!json.isNull("keyId")) {
                             dto.setKeyId(json.getLong("keyId"));
                         }
-                        if (json.has("displayName")) {
+                        if (!json.isNull("displayName")) {
                             dto.setName(json.getString("displayName"));
                         }
-                        if (json.has("description")) {
+                        if (!json.isNull("description")) {
                             dto.setDescription(json.getString("description"));
+                        }
+                        if (!json.isNull("projectType")) {
+                            dto.setProjectType(ProjectType.valueOf(json.getString("projectType")));
+                        }
+                        if (!json.isNull("parentId")) {
+                            dto.setParentId(json.getLong("parentId"));
+                        }
+                        if (!json.isNull("path")) {
+                            dto.setPath(json.getString("path"));
+                        }
+                        if (!json.isNull("ancestorIds")) {
+                            JSONArray idArr = json.getJSONArray("ancestorIds");
+                            List<Long> ancestorIds = new ArrayList<Long>();
+                            for (int ix = 0; ix < idArr.length(); ix++) {
+                                ancestorIds.add(idArr.getLong(ix));
+                            }
+                            dto.setAncestorIds(ancestorIds);
+                        }
+                        if (!json.isNull("defaultLanguageCode")) {
+                            dto.setDefaultLanguageCode(json.getString("defaultLanguageCode"));
+                        }
+                        if (!json.isNull("privacyLevel")) {
+                            dto.setPrivacyLevel(PrivacyLevel.valueOf(json.getString("privacyLevel")));
+                        }
+                        if (!json.isNull("monitoringGroup")) {
+                            dto.setMonitoringGroup(json.getBoolean("monitoringGroup"));
+                        }
+                        if (!json.isNull("newLocaleSurveyId")) {
+                            dto.setNewLocaleSurveyId(json.getLong("newLocaleSurveyId"));
                         }
                         dtoList.add(dto);
                     } catch (Exception e) {
@@ -756,6 +890,14 @@ public class BulkDataServiceClient {
                         if (!json.isNull("version")) {
                             dto.setVersion(json.getString("version"));
                         }
+                        if (!json.isNull("ancestorIds")) {
+                            JSONArray idArr = json.getJSONArray("ancestorIds");
+                            List<Long> ancestorIds = new ArrayList<Long>();
+                            for (int ix = 0; ix < idArr.length(); ix++) {
+                                ancestorIds.add(idArr.getLong(ix));
+                            }
+                            dto.setAncestorIds(ancestorIds);
+                        }
                         dtoList.add(dto);
                     } catch (Exception e) {
                         log.error("Error in json parsing: " + e.getMessage(), e);
@@ -822,7 +964,7 @@ public class BulkDataServiceClient {
     }
 
     /**
-     * parses question responses into QuesitonDto objects
+     * parses question responses into QuestionDto objects
      *
      * @param response
      * @return
@@ -850,48 +992,40 @@ public class BulkDataServiceClient {
                                 }
                             }
 
-                            if (json.has("allowMultipleFlag")
-                                    && !"null"
-                                            .equalsIgnoreCase(json.getString("allowMultipleFlag"))) {
+                            if (!json.isNull("allowMultipleFlag")) {
                                 dto.setAllowMultipleFlag(json.getBoolean("allowMultipleFlag"));
                             }
-                            if (json.has("allowOtherFlag")
-                                    && !"null".equalsIgnoreCase(json.getString("allowOtherFlag"))) {
+                            if (!json.isNull("allowOtherFlag")) {
                                 dto.setAllowOtherFlag(json.getBoolean("allowOtherFlag"));
                             }
-                            if (json.has("order")) {
+                            if (!json.isNull("order")) {
                                 dto.setOrder(json.getInt("order"));
                             }
-                            if (json.has("questionGroupId")) {
-                                dto.setQuestionGroupId(json
-                                        .getLong("questionGroupId"));
+                            if (!json.isNull("questionGroupId")) {
+                                dto.setQuestionGroupId(json.getLong("questionGroupId"));
                             }
-                            if (json.has("tip")
-                                    && !"null".equalsIgnoreCase(json.getString("tip"))) {
+                            if (!json.isNull("tip")) {
                                 dto.setTip(json.optString("tip"));
                             }
-                            if (json.has("questionId")
-                                    && !"null".equalsIgnoreCase(json.getString("questionId"))) {
+                            if (!json.isNull("questionId")) {
                                 dto.setQuestionId(json.optString("questionId"));
                             }
-                            if (json.has("path")) {
+                            if (!json.isNull("path")) {
                                 dto.setPath(json.getString("path"));
                             }
-                            if (json.has("text")) {
+                            if (!json.isNull("text")) {
                                 dto.setText(json.getString("text"));
                             }
-                            if (json.has("keyId")) {
+                            if (!json.isNull("keyId")) {
                                 dto.setKeyId(json.getLong("keyId"));
                             }
-                            if (json.has("collapseable")
-                                    && !"null".equalsIgnoreCase(json.getString("collapseable"))) {
+                            if (!json.isNull("collapseable")) {
                                 dto.setCollapseable(json.getBoolean("collapseable"));
                             }
-                            if (json.has("dependentFlag")
-                                    && !"null".equalsIgnoreCase(json.getString("dependentFlag"))) {
+                            if (!json.isNull("dependentFlag")) {
                                 dto.setDependentFlag(json.getBoolean("dependentFlag"));
                             }
-                            if (json.has("dependentQuestionAnswer")) {
+                            if (!json.isNull("dependentQuestionAnswer")) {
                                 dto.setDependentQuestionAnswer(json
                                         .optString("dependentQuestionAnswer"));
                             }
@@ -902,27 +1036,24 @@ public class BulkDataServiceClient {
                                     dto.setDependentQuestionId(null);
                                 }
                             }
-                            if (json.has("geoLocked")
-                                    && !"null".equalsIgnoreCase(json.getString("geoLocked"))) {
+                            if (!json.isNull("geoLocked")) {
                                 dto.setGeoLocked(json.getBoolean("geoLocked"));
                             }
                             if (json.has("caddisflyResourceUuid")
                                     && json.getString("caddisflyResourceUuid") != null) {
-                                dto.setCaddisflyResourceUuid(json.getString("caddisflyResourceUuid"));
+                                dto.setCaddisflyResourceUuid(json
+                                        .getString("caddisflyResourceUuid"));
                             }
-                            if (json.has("immutable")
-                                    && !"null".equalsIgnoreCase(json.getString("immutable"))) {
+                            if (!json.isNull("immutable")) {
                                 dto.setImmutable(json.getBoolean("immutable"));
                             }
-                            if (json.has("isName")
-                                    && !"null".equalsIgnoreCase(json.getString("isName"))) {
-                                dto.setIsName(json.getBoolean("isName"));
+                            if (!json.isNull("isName")) {
+                                dto.setName(json.getBoolean("isName"));
                             }
                             if (!json.isNull("localeNameFlag")) {
                                 dto.setLocaleNameFlag(json.getBoolean("localeNameFlag"));
                             }
-                            if (json.has("mandatoryFlag")
-                                    && !"null".equalsIgnoreCase(json.getString("mandatoryFlag"))) {
+                            if (!json.isNull("mandatoryFlag")) {
                                 dto.setMandatoryFlag(json.getBoolean("mandatoryFlag"));
                             }
                             if (json.has("metricId")) {
@@ -932,9 +1063,7 @@ public class BulkDataServiceClient {
                                     dto.setMetricId(null);
                                 }
                             }
-                            if (json.has("requireDoubleEntry")
-                                    && !"null".equalsIgnoreCase(json
-                                            .getString("requireDoubleEntry"))) {
+                            if (!json.isNull("requireDoubleEntry")) {
                                 dto.setRequireDoubleEntry(json.getBoolean("requireDoubleEntry"));
                             }
                             if (json.has("sourceId")) {
@@ -944,12 +1073,10 @@ public class BulkDataServiceClient {
                                     dto.setSourceId(null);
                                 }
                             }
-                            if (json.has("allowDecimal")
-                                    && !"null".equalsIgnoreCase(json.getString("allowDecimal"))) {
+                            if (!json.isNull("allowDecimal")) {
                                 dto.setAllowDecimal(json.getBoolean("allowDecimal"));
                             }
-                            if (json.has("allowSign")
-                                    && !"null".equalsIgnoreCase(json.getString("allowSign"))) {
+                            if (!json.isNull("allowSign")) {
                                 dto.setAllowSign(json.getBoolean("allowSign"));
                             }
                             if (json.has("minVal")) {
@@ -967,46 +1094,40 @@ public class BulkDataServiceClient {
                                 }
                             }
 
-                            if (json.has("translationMap")
-                                    && !JSONObject.NULL.equals(json
-                                            .get("translationMap"))) {
+                            if (!json.isNull("translationMap")) {
                                 dto.setTranslationMap(parseTranslations(json
                                         .getJSONObject("translationMap")));
                             }
-                            if (json.has("questionTypeString")
-                                    && json.getString("questionTypeString") != null) {
+                            if (!json.isNull("questionTypeString")) {
                                 dto.setType(QuestionDto.QuestionType.valueOf(json
                                         .getString("questionTypeString")));
                             }
-
-                            if (json.has("optionContainerDto")
-                                    && !JSONObject.NULL.equals(json
-                                            .get("optionContainerDto"))) {
+                            if (!json.isNull("allowPoints")) {
+                                dto.setAllowPoints(json.getBoolean("allowPoints"));
+                            }
+                            if (!json.isNull("allowLine")) {
+                                dto.setAllowLine(json.getBoolean("allowLine"));
+                            }
+                            if (!json.isNull("allowPolygon")) {
+                                dto.setAllowPolygon(json.getBoolean("allowPolygon"));
+                            }
+                            if (!json.isNull("optionContainerDto")) {
                                 OptionContainerDto container = new OptionContainerDto();
-                                JSONObject contJson = json
-                                        .getJSONObject("optionContainerDto");
-                                if (contJson.has("optionsList")
-                                        && !JSONObject.NULL.equals(contJson
-                                                .get("optionsList"))) {
-                                    JSONArray optArray = contJson
-                                            .getJSONArray("optionsList");
+                                JSONObject contJson = json.getJSONObject("optionContainerDto");
+                                if (!contJson.isNull("optionsList")) {
+                                    JSONArray optArray = contJson.getJSONArray("optionsList");
                                     if (optArray != null) {
                                         for (int j = 0; j < optArray.length(); j++) {
-                                            JSONObject optJson = optArray
-                                                    .getJSONObject(j);
+                                            JSONObject optJson = optArray.getJSONObject(j);
                                             QuestionOptionDto opt = new QuestionOptionDto();
-                                            opt.setKeyId(optJson
-                                                    .getLong("keyId"));
-                                            opt.setText(optJson
-                                                    .getString("text"));
-                                            opt.setCode(optJson
-                                                    .getString("code"));
-                                            opt.setOrder(optJson
-                                                    .getInt("order"));
-                                            if (optJson.has("translationMap")
-                                                    && !JSONObject.NULL
-                                                            .equals(optJson
-                                                                    .get("translationMap"))) {
+                                            opt.setKeyId(optJson.getLong("keyId"));
+                                            opt.setText(optJson.getString("text"));
+                                            if (!optJson.isNull("code")) {
+                                                // getString on null gives String "null"
+                                                opt.setCode(optJson.getString("code"));
+                                            }
+                                            opt.setOrder(optJson.getInt("order"));
+                                            if (!optJson.isNull("translationMap")) {
                                                 opt.setTranslationMap(parseTranslations(optJson
                                                         .getJSONObject("translationMap")));
                                             }
@@ -1021,16 +1142,11 @@ public class BulkDataServiceClient {
                             // previous if statements dependentFlag, dependentQuestionId,
                             // dependentQuestionAnswer i.e. checks whether question is
                             // dependent on another
-                            if (json.has("questionDependency")
-                                    && !JSONObject.NULL.equals(json
-                                            .get("questionDependency"))) {
+                            if (!json.isNull("questionDependency")) {
                                 QuestionDependencyDto dep = new QuestionDependencyDto();
-                                JSONObject depJson = json
-                                        .getJSONObject("questionDependency");
-                                dep.setQuestionId(depJson
-                                        .getLong("questionId"));
-                                dep.setAnswerValue(depJson
-                                        .getString("answerValue"));
+                                JSONObject depJson = json.getJSONObject("questionDependency");
+                                dep.setQuestionId(depJson.getLong("questionId"));
+                                dep.setAnswerValue(depJson.getString("answerValue"));
                                 dto.setQuestionDependency(dep);
                             }
 
@@ -1321,5 +1437,4 @@ public class BulkDataServiceClient {
         }
         return null;
     }
-
 }

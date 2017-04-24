@@ -1,5 +1,5 @@
 /*
- *  Copyright (C) 2010-2016 Stichting Akvo (Akvo Foundation)
+ *  Copyright (C) 2010-2017 Stichting Akvo (Akvo Foundation)
  *
  *  This file is part of Akvo FLOW.
  *
@@ -37,13 +37,13 @@ import javax.swing.JDialog;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 
+import org.akvo.flow.domain.DataUtils;
 import org.apache.log4j.Logger;
 import org.json.JSONArray;
 import org.json.JSONObject;
 import org.waterforpeople.mapping.app.gwt.client.survey.QuestionDto;
 import org.waterforpeople.mapping.app.gwt.client.survey.QuestionDto.QuestionType;
 import org.waterforpeople.mapping.app.gwt.client.survey.QuestionGroupDto;
-import org.waterforpeople.mapping.app.gwt.client.survey.SurveyGroupDto;
 import org.waterforpeople.mapping.app.web.dto.SurveyRestRequest;
 import org.waterforpeople.mapping.dataexport.service.BulkDataServiceClient;
 
@@ -102,7 +102,7 @@ public class SurveySummaryExporter extends AbstractDataExporter {
         });
         ROLLUP_MAP.put("MW", new String[] {
                 "District",
-                "Tradtional Authoriaty (TA)",
+                "Traditional Authority (TA)",
                 "Sub-Traditional Authority (Sub-TA)"
         });
         ROLLUP_MAP.put("RW", new String[] {
@@ -192,9 +192,14 @@ public class SurveySummaryExporter extends AbstractDataExporter {
             String rollup = "";
             int count = 0;
             for (int i = 0; i < rollupOrder.size() - j; i++) {
-                String val = responseMap.get(rollupOrder.get(i).getKeyId()
-                        .toString());
+                String val = responseMap.get(rollupOrder.get(i).getKeyId().toString());
                 if (val != null && val.trim().length() > 0) {
+                    //Extract from JSON, if any
+                    String jsonval = DataUtils.jsonResponsesToPipeSeparated(val);
+                    if (jsonval.length() > 0) {
+                        val = jsonval;
+                    }
+
                     if (count > 0) {
                         rollup += "|";
                     }
@@ -206,16 +211,6 @@ public class SurveySummaryExporter extends AbstractDataExporter {
         }
         return rollups;
 
-    }
-
-    protected List<SurveyGroupDto> fetchSurveyGroup(String surveyId, String serverBase,
-            String apiKey) throws Exception {
-
-        return parseSurveyGroups(BulkDataServiceClient.fetchDataFromServer(
-                serverBase + SERVLET_URL, "action="
-                        + SurveyRestRequest.GET_SURVEY_GROUP_ACTION + "&"
-                        + SurveyRestRequest.SURVEY_ID_PARAM + "="
-                        + surveyId, true, apiKey));
     }
 
     protected Map<QuestionGroupDto, List<QuestionDto>> loadAllQuestions(
@@ -340,41 +335,6 @@ public class SurveySummaryExporter extends AbstractDataExporter {
                 }
             }
         }
-        return dtoList;
-    }
-
-    protected List<SurveyGroupDto> parseSurveyGroups(String response) throws Exception {
-        List<SurveyGroupDto> dtoList = new ArrayList<SurveyGroupDto>();
-        JSONArray jsonArray = getJsonArray(response);
-
-        if (jsonArray == null) {
-            return dtoList;
-        }
-
-        for (int i = 0; i < jsonArray.length(); i++) {
-            JSONObject o = jsonArray.getJSONObject(i);
-            if (o != null) {
-                try {
-
-                    SurveyGroupDto dto = new SurveyGroupDto();
-
-                    if (!o.isNull("name")) {
-                        dto.setName(o.getString("name"));
-                    }
-
-                    if (o.isNull("monitoringGroup")) {
-                        dto.setMonitoringGroup(false);
-                    } else {
-                        dto.setMonitoringGroup(o.getBoolean("monitoringGroup"));
-                    }
-
-                    dtoList.add(dto);
-                } catch (Exception e) {
-                    log.error("Error in json parsing: " + e.getMessage(), e);
-                }
-            }
-        }
-
         return dtoList;
     }
 

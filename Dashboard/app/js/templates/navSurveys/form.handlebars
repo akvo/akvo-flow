@@ -13,32 +13,29 @@
 	</nav>
 	<ul class="formSummary">
 		<li>{{t _version}}<span class="formVersion">{{form.version}}</span></li>
-		<li>{{t _id}}<span class="formID">{{form.keyId}}</span></li>
+		<li><span class="upCase">{{t _id}}</span><span class="formID">{{form.keyId}}</span></li>
 		<li>{{t _questions}}<span class="formQuestionCount">{{FLOW.projectControl.questionCount}}</span></li>
 	</ul>
 	<section class="formDetails">
 		<h3>{{t _form_basics}}</h3>
 		{{#if view.visibleFormBasics}}
 			{{#unless view.isNewForm}}
-				<a {{action "toggleShowFormBasics" target="this"}} class="showCollapse">{{t _collapse}}</a>
+				<a {{action "toggleShowFormBasics" target="this"}} class="button">{{t _collapse}}</a>
 			{{/unless}}
 			<form class="surveyDetailForm">
 				<label>{{t _form_title}}</label>
 				{{view Ember.TextField valueBinding="form.name" disabledBinding="view.disableFormFields"}}
-				<label>{{t _form_description}}</label>
-				{{view Ember.TextField valueBinding="form.description" disabledBinding="view.disableFormFields"}}
-				<label>{{t _manage}}</label>
 				<nav class="newSurveyNav">
 					<ul class="manageStuff">
 					{{#if view.showFormTranslationsButton}}
-						<li><a class="manageTranslations" {{action "doManageTranslations" target="this"}}>{{t _manage_translations}}</a></li>
-						<li><a class="manageNotifications" {{action "doManageNotifications" target="this"}}>{{t _manage_notifications}}</a></li>
+						<li><a class="btnOutline" {{action "doManageTranslations" target="this"}}>{{t _manage_translations}}</a></li>
+						<li><a class="btnOutline" {{action "doManageNotifications" target="this"}}>{{t _manage_notifications}}</a></li>
 					{{/if}}
 					</ul>
 				</nav>
 			</form>
 		{{else}}
-			<a {{action "toggleShowFormBasics" target="this"}} class="showCollapse">{{t _show}}</a>
+			<a {{action "toggleShowFormBasics" target="this"}} class="button">{{t _show}}</a>
 		{{/if}}
 	</section>
 	<section class="surveyForm">

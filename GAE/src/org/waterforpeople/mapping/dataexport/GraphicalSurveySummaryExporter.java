@@ -1,5 +1,5 @@
 /*
- *  Copyright (C) 2010-2016 Stichting Akvo (Akvo Foundation)
+ *  Copyright (C) 2010-2017 Stichting Akvo (Akvo Foundation)
  *
  *  This file is part of Akvo FLOW.
  *
@@ -39,6 +39,7 @@ import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicLong;
 
+import org.akvo.flow.domain.DataUtils;
 import org.apache.log4j.ConsoleAppender;
 import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
@@ -63,8 +64,10 @@ import org.waterforpeople.mapping.app.gwt.client.survey.QuestionDto;
 import org.waterforpeople.mapping.app.gwt.client.survey.QuestionDto.QuestionType;
 import org.waterforpeople.mapping.app.gwt.client.survey.QuestionGroupDto;
 import org.waterforpeople.mapping.app.gwt.client.survey.QuestionOptionDto;
+import org.waterforpeople.mapping.app.gwt.client.survey.SurveyGroupDto;
 import org.waterforpeople.mapping.app.gwt.client.survey.TranslationDto;
 import org.waterforpeople.mapping.app.gwt.client.surveyinstance.SurveyInstanceDto;
+import org.waterforpeople.mapping.app.web.dto.InstanceDataDto;
 import org.waterforpeople.mapping.app.web.dto.SurveyRestRequest;
 import org.waterforpeople.mapping.dataexport.service.BulkDataServiceClient;
 import org.waterforpeople.mapping.domain.CaddisflyResource;
@@ -74,6 +77,8 @@ import org.waterforpeople.mapping.serialization.response.MediaResponse;
 
 import com.gallatinsystems.common.util.JFreechartChartUtil;
 import com.gallatinsystems.survey.dao.CaddisflyResourceDao;
+
+import static com.gallatinsystems.common.Constants.*;
 
 /**
  * Enhancement of the SurveySummaryExporter to support writing to Excel and including chart images.
@@ -134,6 +139,7 @@ public class GraphicalSurveySummaryExporter extends SurveySummaryExporter {
     private static final Map<String, String> IDENTIFIER_LABEL;
     private static final Map<String, String> DISPLAY_NAME_LABEL;
     private static final Map<String, String> DEVICE_IDENTIFIER_LABEL;
+    private static final Map<String, String> DATA_APPROVAL_STATUS_LABEL;
 
     private static final int CHART_WIDTH = 600;
     private static final int CHART_HEIGHT = 400;
@@ -293,6 +299,10 @@ public class GraphicalSurveySummaryExporter extends SurveySummaryExporter {
         DEVICE_IDENTIFIER_LABEL = new HashMap<String, String>();
         DEVICE_IDENTIFIER_LABEL.put("en", "Device identifier");
         DEVICE_IDENTIFIER_LABEL.put("es", "Identificador de dispositivo");
+
+        DATA_APPROVAL_STATUS_LABEL = new HashMap<String, String>();
+        DATA_APPROVAL_STATUS_LABEL.put("en", "Data approval status");
+        DATA_APPROVAL_STATUS_LABEL.put("es", "Estado de aprobación");
     }
 
     private CellStyle headerStyle;
@@ -305,6 +315,7 @@ public class GraphicalSurveySummaryExporter extends SurveySummaryExporter {
     private boolean performGeoRollup;
     private boolean generateCharts;
     private Map<Long, QuestionDto> questionsById;
+    private SurveyGroupDto surveyGroupDto;
     private boolean lastCollection = false;
     private static final ObjectMapper OBJECT_MAPPER = new ObjectMapper();
     private CaddisflyResourceDao caddisflyResourceDao = new CaddisflyResourceDao();
@@ -324,17 +335,20 @@ public class GraphicalSurveySummaryExporter extends SurveySummaryExporter {
     @Override
     public void export(Map<String, String> criteria, File fileName,
             String serverBase, Map<String, String> options) {
+        final String surveyId = criteria.get(SurveyRestRequest.SURVEY_ID_PARAM).trim();
+        final String apiKey = criteria.get("apiKey").trim();
+
         processOptions(options);
 
         questionsById = new HashMap<Long, QuestionDto>();
+        surveyGroupDto = BulkDataServiceClient.fetchSurveyGroup(surveyId, serverBase, apiKey);
         this.serverBase = serverBase;
         boolean useQuestionId = "true".equals(options.get("useQuestionId"));
         String from = options.get("from");
         String to = options.get("to");
         String limit = options.get("maxDataReportRows");
         try {
-            Map<QuestionGroupDto, List<QuestionDto>> questionMap = loadAllQuestions(
-                    criteria.get(SurveyRestRequest.SURVEY_ID_PARAM),
+            Map<QuestionGroupDto, List<QuestionDto>> questionMap = loadAllQuestions(surveyId,
                     performGeoRollup, serverBase, criteria.get("apiKey"));
             if (questionMap != null) {
                 for (List<QuestionDto> qList : questionMap.values()) {
@@ -361,9 +375,7 @@ public class GraphicalSurveySummaryExporter extends SurveySummaryExporter {
                 headerFont.setBoldweight(Font.BOLDWEIGHT_BOLD);
                 headerStyle.setFont(headerFont);
 
-                short textFormat = wb.createDataFormat().getFormat("@"); // built-in
-                                                                         // text
-                                                                         // format
+                short textFormat = wb.createDataFormat().getFormat("@"); // built-in text format
                 mTextStyle = wb.createCellStyle();
                 mTextStyle.setDataFormat(textFormat);
                 // This was intended to suppress scientific notation in number
@@ -418,9 +430,15 @@ public class GraphicalSurveySummaryExporter extends SurveySummaryExporter {
         }
     }
 
+    private boolean hasDataApproval() {
+        return surveyGroupDto.getRequireDataApproval()
+                && surveyGroupDto.getDataApprovalGroupId() != null;
+    }
+
     @SuppressWarnings("unchecked")
     /*
-     * Fetches data from FLOW instance, and writes it to a file row by row Called from export method
+     * Fetches data from FLOW instance, and writes it to a file row by row. Called from export
+     * method.
      */
     protected SummaryModel fetchAndWriteRawData(String surveyId,
             final String serverBase,
@@ -484,16 +502,16 @@ public class GraphicalSurveySummaryExporter extends SurveySummaryExporter {
                                     .fetchQuestionResponses(instanceId,
                                             serverBase, key);
 
-                            SurveyInstanceDto dto = BulkDataServiceClient
-                                    .findSurveyInstance(
-                                            Long.parseLong(instanceId.trim()),
+                            InstanceDataDto instanceDataDto = BulkDataServiceClient
+                                    .fetchInstanceData(Long.parseLong(instanceId.trim()),
                                             serverBase, key);
 
-                            if (dto != null) {
+                            if (instanceDataDto.surveyInstanceData != null) {
                                 done = true;
                             }
+
                             synchronized (allData) {
-                                allData.add(new InstanceData(dto, responseMap));
+                                allData.add(new InstanceData(instanceDataDto, responseMap));
                             }
 
                         } catch (Exception e) {
@@ -561,6 +579,12 @@ public class GraphicalSurveySummaryExporter extends SurveySummaryExporter {
 
         createCell(row, columnIndexMap.get(IDENTIFIER_LABEL.get(locale)),
                 dto.getSurveyedLocaleIdentifier());
+
+        if (hasDataApproval()) {
+            createCell(row, columnIndexMap.get(DATA_APPROVAL_STATUS_LABEL.get(locale)),
+                    instanceData.latestApprovalStatus);
+        }
+
         // Write the "Repeat" column
         for (int i = 0; i <= instanceData.maxIterationsCount; i++) {
             Row r = getRow(row.getRowNum() + i, sheet);
@@ -725,8 +749,13 @@ public class GraphicalSurveySummaryExporter extends SurveySummaryExporter {
                 break;
 
             case CASCADE:
-                cells.addAll(cascadeCellValues(value, useQuestionId, questionDto
-                        .getLevelNames().size()));
+                if (questionDto.getLevelNames() != null) {
+                    cells.addAll(cascadeCellValues(value, useQuestionId,
+                            questionDto.getLevelNames().size()));
+                } else {
+                    log.warn("No CASCADE resource for question '" + questionDto.getText() + "'");
+                }
+
                 break;
 
             case OPTION:
@@ -737,8 +766,7 @@ public class GraphicalSurveySummaryExporter extends SurveySummaryExporter {
 
             case CADDISFLY:
                 qId = questionDto.getKeyId();
-                cells.addAll(caddisflyCellValues(qId, value,
-                        numResultsMap.get(qId), hasImageMap.get(qId), imagePrefix));
+                cells.addAll(caddisflyCellValues(qId, value, hasImageMap.get(qId), imagePrefix));
                 break;
 
             default:
@@ -812,138 +840,96 @@ public class GraphicalSurveySummaryExporter extends SurveySummaryExporter {
     }
 
     /*
-     * Validates the structure of a caddisfly value Returns true if the structure is correct, false
-     * if not.
+     * Validates the map containing values from the parsed caddisfly response string
      */
     @SuppressWarnings("unchecked")
-    private static Boolean validateCaddisflyValue(String value,
-            Integer numResults, Boolean hasImage) {
-        try {
-            Map<String, Object> rootAsMap = OBJECT_MAPPER.readValue(value,
-                    Map.class);
-            // check presence of name, result and image properties
-            if (!rootAsMap.containsKey("name")
-                    || !rootAsMap.containsKey("result"))
-                return false;
-            if (hasImage && !rootAsMap.containsKey("image"))
-                return false;
-
-            // check presence of name, value, unit and id properties on results
-            List<Map<String, Object>> results = (List<Map<String, Object>>) rootAsMap
-                    .get("result");
-            for (Map<String, Object> result : results) {
-                if (!result.containsKey("name") || !result.containsKey("value")
-                        || !result.containsKey("unit")
-                        || !result.containsKey("id"))
-                    return false;
-                // check if id is an integer
-                try {
-                    Integer.parseInt(result.get("id").toString());
-                } catch (Exception e) {
-                    return false;
-                }
-            }
-        } catch (IOException e) {
-            log.error("Error interpreting caddisfly data: " + e.getMessage(), e);
+    private static Boolean validateCaddisflyValue(Map<String, Object> caddisflyResponseMap,
+            boolean hasImage) {
+        // check presence of uuid and result
+        if (caddisflyResponseMap.get(CADDISFLY_UUID) == null
+                || caddisflyResponseMap.get(CADDISFLY_RESULT) == null) {
             return false;
+        }
+
+        if (hasImage && caddisflyResponseMap.get(CADDISFLY_IMAGE) == null) {
+            return false;
+        }
+
+        // check presence of name, value, unit and id properties on results
+        List<Map<String, Object>> results = (List<Map<String, Object>>) caddisflyResponseMap
+                .get(CADDISFLY_RESULT);
+        for (Map<String, Object> result : results) {
+            if (result.get(CADDISFLY_RESULT_ID) == null
+                    || result.get(CADDISFLY_RESULT_VALUE) == null) {
+                return false;
+            }
         }
 
         return true;
     }
 
     /*
-     * Creates the cell values for a caddisfly question.
+     * Creates the cells containing responses to caddisfly questions
      */
     @SuppressWarnings("unchecked")
-    private List<String> caddisflyCellValues(Long questionId, String value,
-            Integer numResults, Boolean hasImage, String imagePrefix) {
-        List<String> cells = new ArrayList<>();
-        int num = 0;
-        // the total number of cells we need to create is the number of results
-        // plus the name column,
-        // plus the image column if it is there
-        int numTotal = 1 + numResults + (hasImage ? 1 : 0);
-        String imageName = null;
+    private List<String> caddisflyCellValues(Long questionId, String value, Boolean hasImage,
+            String imagePrefix) {
 
-        if (validateCaddisflyValue(value, numResults, hasImage)) {
-            try {
-                Map<String, Object> rootAsMap = OBJECT_MAPPER.readValue(value,
-                        Map.class);
-                String name = rootAsMap.get("name").toString();
-                if (hasImage) {
-                    imageName = rootAsMap.get("image").toString();
-                }
-                List<Map<String, Object>> results = (List<Map<String, Object>>) rootAsMap
-                        .get("result");
-                int numResultsPresent = results.size();
+        List<String> caddisflyCellValues = new ArrayList<>();
 
-                // create name cell
-                cells.add(name);
-                num++;
+        List<Integer> resultIds = resultIdMap.get(questionId);
 
-                // order results by id
-                Collections.sort(results, new Comparator<Map<String, ?>>() {
-                    @Override
-                    public int compare(Map<String, ?> o1, Map<String, ?> o2) {
-                        if (o1 != null && o2 != null) {
-                            return Integer.parseInt(o1.get("id").toString())
-                                    - Integer.parseInt(o2.get("id").toString());
-                        } else {
-                            return 0;
-                        }
-                    }
-                });
+        Map<String, Object> caddisflyResponseMap = DataUtils.parseCaddisflyResponseValue(value);
 
-                // get valid result ids for this question. The ids are already
-                // in order.
-                List<Integer> resultIds = resultIdMap.get(questionId);
-                Integer expectedResultsNum = resultIds.size();
+        if (!validateCaddisflyValue(caddisflyResponseMap, hasImage)) {
+            // fill empty cells and return in case of failure to validate caddisfly response
+            for (int i = 0; i < resultIds.size(); i++) {
+                caddisflyCellValues.add("");
+            }
 
-                // create result cells
-                // we have to guard against two possibilities: we could have
-                // more expected results than real results,
-                // and we could have more real results than expected results.
-                int index = 0;
-                for (int i = 0; i < Math.min(expectedResultsNum,
-                        numResultsPresent); i++) {
-                    Map<String, Object> result = results.get(i);
-                    if (result.get("id").toString()
-                            .equals(resultIds.get(index).toString())) {
-                        cells.add(result.get("value").toString());
-                        num++;
-                        index++;
-                    }
+            if (hasImage) {
+                caddisflyCellValues.add("");
+            }
+            return caddisflyCellValues;
+        }
 
-                    // don't generate too many cells
-                    if (num == numTotal)
-                        break;
-                }
+        List<Map<String, Object>> caddisflyTestResultsList = (List<Map<String, Object>>) caddisflyResponseMap
+                .get(CADDISFLY_RESULT);
 
-                // pad to fill any missing results
-                while (num < 1 + numResults) {
-                    cells.add("");
-                    num++;
-                }
+        Map<Integer, Map<String, Object>> caddisflyTestResultsMap = mapCaddisflyResultsById(caddisflyTestResultsList);
 
-                // add image URL if available
-                if (hasImage) {
-                    cells.add(imagePrefix + imageName);
-                    num++;
-                }
-            } catch (IOException e) {
-                log.error(
-                        "Error interpreting caddisfly data: " + e.getMessage(),
-                        e);
+        // get valid result ids for this question. The ids are already
+        // in order.
+        for (Integer resultId : resultIds) {
+            Map<String, Object> caddisflyTestResult = caddisflyTestResultsMap.get(resultId);
+            if (caddisflyTestResult != null) {
+                String testValue = "" + caddisflyTestResult.get(CADDISFLY_RESULT_VALUE);
+                caddisflyCellValues.add(testValue);
+            } else {
+                caddisflyCellValues.add("");
             }
         }
 
-        // pad cells so we always have enough
-        while (num < numTotal) {
-            cells.add("");
-            num++;
+        // add image URL if available
+        if (hasImage) {
+            final String imageName = (String) caddisflyResponseMap.get(CADDISFLY_IMAGE);
+            if (imageName == null) {
+                caddisflyCellValues.add("");
+            } else {
+                caddisflyCellValues.add(imagePrefix + imageName);
+            }
         }
 
-        return cells;
+        return caddisflyCellValues;
+    }
+
+    private Map<Integer, Map<String, Object>> mapCaddisflyResultsById(
+            List<Map<String, Object>> caddisflyTestResults) {
+        Map<Integer, Map<String, Object>> resultsMap = new HashMap<>();
+        for (Map<String, Object> result : caddisflyTestResults) {
+            resultsMap.put((Integer) result.get(CADDISFLY_RESULT_ID), result);
+        }
+        return resultsMap;
     }
 
     /*
@@ -1203,47 +1189,35 @@ public class GraphicalSurveySummaryExporter extends SurveySummaryExporter {
 
         row = getRow(0, sheet);
 
-        int columnIdx = 0;
+        int columnIdx = -1;
 
-        columnIndexMap.put(IDENTIFIER_LABEL.get(locale), columnIdx);
-        createCell(row, columnIdx++, IDENTIFIER_LABEL.get(locale), headerStyle);
+        addMetaDataColumnHeader(IDENTIFIER_LABEL.get(locale), ++columnIdx, row);
 
-        columnIndexMap.put(REPEAT_LABEL.get(locale), columnIdx);
-        createCell(row, columnIdx++, REPEAT_LABEL.get(locale), headerStyle);
+        if (hasDataApproval()) {
+            addMetaDataColumnHeader(DATA_APPROVAL_STATUS_LABEL.get(locale), ++columnIdx, row);
+        }
 
-        columnIndexMap.put(DISPLAY_NAME_LABEL.get(locale), columnIdx);
-        createCell(row, columnIdx++, DISPLAY_NAME_LABEL.get(locale),
-                headerStyle);
-
-        columnIndexMap.put(DEVICE_IDENTIFIER_LABEL.get(locale), columnIdx);
-        createCell(row, columnIdx++, DEVICE_IDENTIFIER_LABEL.get(locale),
-                headerStyle);
-
-        columnIndexMap.put(INSTANCE_LABEL.get(locale), columnIdx);
-        createCell(row, columnIdx++, INSTANCE_LABEL.get(locale), headerStyle);
-
-        columnIndexMap.put(SUB_DATE_LABEL.get(locale), columnIdx);
-        createCell(row, columnIdx++, SUB_DATE_LABEL.get(locale), headerStyle);
-
-        columnIndexMap.put(SUBMITTER_LABEL.get(locale), columnIdx);
-        createCell(row, columnIdx++, SUBMITTER_LABEL.get(locale), headerStyle);
-
-        columnIndexMap.put(DURATION_LABEL.get(locale), columnIdx);
-        createCell(row, columnIdx++, DURATION_LABEL.get(locale), headerStyle);
+        addMetaDataColumnHeader(REPEAT_LABEL.get(locale), ++columnIdx, row);
+        addMetaDataColumnHeader(DISPLAY_NAME_LABEL.get(locale), ++columnIdx, row);
+        addMetaDataColumnHeader(DEVICE_IDENTIFIER_LABEL.get(locale), ++columnIdx, row);
+        addMetaDataColumnHeader(INSTANCE_LABEL.get(locale), ++columnIdx, row);
+        addMetaDataColumnHeader(SUB_DATE_LABEL.get(locale), ++columnIdx, row);
+        addMetaDataColumnHeader(SUBMITTER_LABEL.get(locale), ++columnIdx, row);
+        addMetaDataColumnHeader(DURATION_LABEL.get(locale), ++columnIdx, row);
 
         List<String> questionIdList = new ArrayList<String>();
         List<String> nonSummarizableList = new ArrayList<String>();
-        List<CaddisflyResource> caddisList = null;
+        Map<String, CaddisflyResource> caddisflyResourceMap = null;
 
         if (questionMap != null) {
-            int offset = columnIdx;
+            int offset = ++columnIdx;
             for (QuestionGroupDto group : orderedGroupList) {
                 if (questionMap.get(group) != null) {
                     for (QuestionDto q : questionMap.get(group)) {
                         questionIdList.add(q.getKeyId().toString());
 
                         String questionId = q.getQuestionId();
-                        boolean useQID = useQuestionId && questionId != null
+                        final boolean useQID = useQuestionId && questionId != null
                                 && !questionId.equals("");
 
                         String columnLocale = useQID ? "en" : locale;
@@ -1304,6 +1278,7 @@ public class GraphicalSurveySummaryExporter extends SurveySummaryExporter {
                             }
                         } else if (QuestionType.CASCADE == q.getType()
                                 && q.getLevelNames() != null && useQuestionId) {
+                            // if no cascade assigned, column is not shown
                             for (String level : q.getLevelNames()) {
                                 String levelName = useQID ? questionId + "_"
                                         + level.replaceAll(" ", "_")
@@ -1314,21 +1289,23 @@ public class GraphicalSurveySummaryExporter extends SurveySummaryExporter {
                                         headerStyle);
                             }
                         } else if (QuestionType.CADDISFLY == q.getType()) {
-                            // get caddisfly resources, if we haven't already
-                            // got it
-                            if (caddisList == null) {
-                                caddisList = caddisflyResourceDao
-                                        .listResources();
+                            StringBuilder caddisflyFirstResultColumnHeaderPrefix = new StringBuilder();
+                            if (useQID) {
+                                caddisflyFirstResultColumnHeaderPrefix.append(questionId);
+                            } else {
+                                caddisflyFirstResultColumnHeaderPrefix.append(q.getKeyId());
                             }
+                            caddisflyFirstResultColumnHeaderPrefix.append("|").append(q.getText())
+                                    .append("|");
 
-                            CaddisflyResource cr = getCaddisflyResourceByUuid(
-                                    caddisList, q.getCaddisflyResourceUuid());
-
-                            // create column for test type
-                            createCell(row, offset++, useQID ? questionId + "|"
-                                    + q.getText() + "|TEST_TYPE" : q.getText()
-                                    + "|TEST_TYPE", headerStyle);
-
+                            if (caddisflyResourceMap == null) {
+                                caddisflyResourceMap = new HashMap<String, CaddisflyResource>();
+                                for (CaddisflyResource r : caddisflyResourceDao.listResources()) {
+                                    caddisflyResourceMap.put(r.getUuid().trim(), r);
+                                }
+                            }
+                            CaddisflyResource cr = caddisflyResourceMap.get(q
+                                    .getCaddisflyResourceUuid().trim());
                             // get expected results for this test, if it exists
                             if (cr != null) {
                                 List<CaddisflyResult> crResults = cr
@@ -1339,35 +1316,41 @@ public class GraphicalSurveySummaryExporter extends SurveySummaryExporter {
                                 List<Integer> resultIds = new ArrayList<Integer>();
 
                                 // create column headers
-                                for (CaddisflyResult result : crResults) {
+                                for (int i = 0; i < crResults.size(); i++) {
                                     // put result ids in map, so we can use if
                                     // for validation later
+                                    CaddisflyResult result = crResults.get(i);
                                     resultIds.add(result.getId());
 
-                                    // create column for result
-                                    createCell(row, offset++,
-                                            "--CADDISFLY--" + result.getName()
-                                                    + "(" + result.getUnit()
-                                                    + ")", headerStyle);
+                                    StringBuilder columnHeaderSuffix = new StringBuilder(
+                                            result.getName());
+                                    if (result.getUnit() != null && !result.getUnit().isEmpty()) {
+                                        columnHeaderSuffix.append("(").append(result.getUnit())
+                                                .append(")");
+                                    }
+
+                                    String columnHeader;
+                                    if (i == 0) {
+                                        columnHeader = caddisflyFirstResultColumnHeaderPrefix
+                                                .toString() + columnHeaderSuffix;
+                                    } else {
+                                        columnHeader = "--CADDISFLY--|" + columnHeaderSuffix;
+                                    }
+                                    createCell(row, offset++, columnHeader, headerStyle);
                                 }
 
                                 if (cr.getHasImage()) {
                                     createCell(
                                             row,
                                             offset++,
-                                            q.getText()
-                                                    + " - "
+                                            "--CADDISFLY--|" + q.getText()
+                                                    + "--"
                                                     + IMAGE_LABEL
                                                             .get(columnLocale),
                                             headerStyle);
                                 }
 
-                                // store number of results and hasImage in
-                                // hashmap, for later use.
-                                // during the report building, we need access to
-                                // these numbers.
-                                numResultsMap.put(q.getKeyId(),
-                                        cr.getNumResults());
+                                // store hasImage in hashmap
                                 resultIdMap.put(q.getKeyId(), resultIds);
                                 hasImageMap.put(q.getKeyId(), cr.getHasImage());
                             }
@@ -1440,18 +1423,11 @@ public class GraphicalSurveySummaryExporter extends SurveySummaryExporter {
     }
 
     /*
-     * Extracts the caddisfly resource with the right Uuid
+     * Add a meta data column header to the report. The row should be == 0
      */
-    private CaddisflyResource getCaddisflyResourceByUuid(
-            List<CaddisflyResource> caddisList, String caddisflyResourceUuid) {
-        for (int i = 0; i < caddisList.size(); i++) {
-            if (caddisList.get(i) != null
-                    && caddisList.get(i).getUuid()
-                            .equals(caddisflyResourceUuid)) {
-                return caddisList.get(i);
-            }
-        }
-        return null;
+    private void addMetaDataColumnHeader(String columnHeaderName, int columnIdx, Row row) {
+        columnIndexMap.put(columnHeaderName, columnIdx);
+        createCell(row, columnIdx, columnHeaderName, headerStyle);
     }
 
     /**
@@ -1468,11 +1444,10 @@ public class GraphicalSurveySummaryExporter extends SurveySummaryExporter {
         while (sheet == null) {
             sheet = wb.getSheet(curTitle);
             if (sheet == null) {
-                sheet = wb.createSheet(WorkbookUtil
-                        .createSafeSheetName(curTitle));
+                sheet = wb.createSheet(curTitle);
             } else {
                 sheet = null;
-                curTitle = title + " " + sheetCount;
+                curTitle = WorkbookUtil.createSafeSheetName(title + " " + sheetCount);
                 sheetCount++;
             }
         }
@@ -1914,7 +1889,7 @@ public class GraphicalSurveySummaryExporter extends SurveySummaryExporter {
         options.put(LOCALE_OPT, "en");
         // options.put(TYPE_OPT, RAW_ONLY_TYPE);
         options.put(LAST_COLLECTION_OPT, "false");
-        options.put("useQuestionId", "true");
+        options.put("useQuestionId", "false");
         options.put("email", "email@example.com");
         options.put("from", null);
         options.put("to", null);

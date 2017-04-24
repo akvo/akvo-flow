@@ -1,7 +1,6 @@
 {{#view FLOW.inspectDataTableView}}
-<section class="fullWidth" id="inspectData">
+<section class="" id="inspectData">
     <div class="floats-in filterData" id="dataFilter">
-        <h1>{{t _choose_survey_data_to_display}}:</h1>
         <div class="chooseSurveyData">
           {{#unless FLOW.projectControl.isLoading}}
             {{view FLOW.SurveySelectionView}}
@@ -76,12 +75,6 @@
                 </tr>
                 {{/each}}
             </tbody>
-            <tfoot>
-                <tr>
-                    <td colspan="7"><small></small>
-                    </td>
-                </tr>
-            </tfoot>
         </table>
         <ul class="prevNext">
             <li class="prevBtn">{{#if view.hasPrevPage}}

@@ -1,5 +1,5 @@
 /*
- *  Copyright (C) 2015 Stichting Akvo (Akvo Foundation)
+ *  Copyright (C) 2015-2017 Stichting Akvo (Akvo Foundation)
  *
  *  This file is part of Akvo FLOW.
  *
@@ -13,6 +13,7 @@
  *
  *  The full license text can also be seen at <http://www.gnu.org/licenses/agpl.html>.
  */
+
 package org.waterforpeople.mapping.serialization;
 
 import java.io.IOException;
@@ -22,18 +23,21 @@ import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+import org.apache.commons.lang.StringUtils;
 import org.codehaus.jackson.map.ObjectMapper;
 import org.waterforpeople.mapping.domain.QuestionAnswerStore;
 import org.waterforpeople.mapping.domain.SurveyInstance;
 import org.waterforpeople.mapping.domain.response.FormInstance;
 import org.waterforpeople.mapping.domain.response.Response;
 
+import com.gallatinsystems.survey.dao.QuestionDao;
+import com.gallatinsystems.survey.domain.Question;
+
 public class SurveyInstanceHandler {
     private static final Logger log = Logger.getLogger(SurveyInstanceHandler.class.getName());
-    
+
     /**
-     * TSV token indexes. For historical/legacy reasons,
-     * many indexes are empty or skipped.
+     * TSV token indexes. For historical/legacy reasons, many indexes are empty or skipped.
      */
     private static final int SURVEY_ID = 0;
     private static final int QUESTION_ID = 2;
@@ -45,7 +49,7 @@ public class SurveyInstanceHandler {
     private static final int UUID = 11;
     private static final int DURATION = 12;
     private static final int DATAPOINT_ID = 13;
-    
+
     public static SurveyInstance fromJSON(String data) {
         FormInstance formInstance = null;
         ObjectMapper mapper = new ObjectMapper();
@@ -55,18 +59,19 @@ public class SurveyInstanceHandler {
             log.log(Level.SEVERE, "Error mapping JSON data: " + e.getMessage(), e);
             return null;
         }
-        
+
         SurveyInstance si = new SurveyInstance();
+
         si.setUserID(1L);
         si.setCollectionDate(new Date(formInstance.getSubmissionDate()));
         si.setSubmitterName(formInstance.getUsername());
         si.setDeviceIdentifier(formInstance.getDeviceId());
         si.setSurveyalTime(formInstance.getDuration());
+        si.setSurveyId(retrieveFormId(formInstance));
         si.setSurveyedLocaleIdentifier(formInstance.getDataPointId());
-        si.setSurveyId(formInstance.getFormId());
         si.setUuid(formInstance.getUUID());
         si.setQuestionAnswersStore(new ArrayList<QuestionAnswerStore>());
-        
+
         // Process form responses
         for (Response response : formInstance.getResponses()) {
             QuestionAnswerStore qas = new QuestionAnswerStore();
@@ -76,7 +81,7 @@ public class SurveyInstanceHandler {
             qas.setType(response.getAnswerType());
             qas.setValue(response.getValue());
             qas.setIteration(response.getIteration());
-            
+
             // If one of the answer types is META_GEO or META_NAME, set up
             // the surveyedLocale corresponding attribute, and skip QAS
             if ("META_NAME".equals(qas.getType())) {
@@ -86,27 +91,66 @@ public class SurveyInstanceHandler {
             } else {
                 si.getQuestionAnswersStore().add(qas);
             }
-            
+
         }
-        
+
         return si;
     }
-    
+
+    /*
+     * Retrieve the formId for form data coming in via data.json files. This extra check for the
+     * formId has been created in order to handle a bug where the formId was returned as an
+     * arbitrary string. We ensure that the formId is strictly a long otherwise we try to retrieve
+     * it through the questionId values that come with each individual question response. See
+     * https://github.com/akvo/akvo-flow-mobile/issues/614
+     */
+    private static Long retrieveFormId(FormInstance formInstance) {
+        if (StringUtils.isNotBlank(formInstance.getFormId())
+                && StringUtils.isNumeric(formInstance.getFormId())) {
+            return Long.parseLong(formInstance.getFormId());
+        }
+
+        for (Response response : formInstance.getResponses()) {
+            Long formId = retrieveFormIdByQuestionId(response.getQuestionId());
+            if (formId != null) {
+                return formId;
+            }
+        }
+
+        return null;
+    }
+
+    /*
+     * Retrieve the formId from the corresponding Question entity in the datastore
+     */
+    private static Long retrieveFormIdByQuestionId(String questionId) {
+        if (questionId == null || questionId.trim().isEmpty()) {
+            return null;
+        }
+
+        Question question = new QuestionDao().getByKey(Long.parseLong(questionId));
+
+        if (question == null) {
+            return null;
+        }
+        return question.getSurveyId();
+    }
+
     public static SurveyInstance fromTSV(List<String> data) {
         final SurveyInstance si = new SurveyInstance();
         si.setUserID(1L);
         si.setQuestionAnswersStore(new ArrayList<QuestionAnswerStore>());
-        
+
         boolean first = true;
         for (String line : data) {
             final String[] parts = line.split("\t");
             if (parts.length < UUID + 1) {
                 return null;
             }
-            
+
             if (first) {
                 try {
-                    si.setSurveyId(Long.parseLong(parts[SURVEY_ID].trim()));
+                    si.setSurveyId(retrieveFormId(parts));
                     si.setCollectionDate(new Date(new Long(parts[COLLECTION_DATE].trim())));
                 } catch (NumberFormatException e) {
                     log.log(Level.SEVERE, "Could not parse line: " + line, e);
@@ -115,7 +159,7 @@ public class SurveyInstanceHandler {
                 si.setSubmitterName(parts[USERNAME].trim());
                 si.setDeviceIdentifier(parts[DEVICE_ID].trim());
                 si.setUuid(parts[UUID].trim());
-                
+
                 // Time and LocaleID. Old app versions might not include these columns.
                 if (parts.length > DURATION) {
                     try {
@@ -127,7 +171,7 @@ public class SurveyInstanceHandler {
                 if (parts.length > DATAPOINT_ID) {
                     si.setSurveyedLocaleIdentifier(parts[DATAPOINT_ID].trim());
                 }
-                
+
                 first = false;
             }
 
@@ -137,7 +181,7 @@ public class SurveyInstanceHandler {
             qas.setType(parts[ANSWER_TYPE].trim());
             qas.setCollectionDate(si.getCollectionDate());
             qas.setValue(parts[ANSWER_VALUE].trim());
-            
+
             // If one of the answer types is META_GEO or META_NAME, set up
             // the surveyedLocale corresponding attribute, and skip QAS
             if ("META_NAME".equals(qas.getType())) {
@@ -150,5 +194,20 @@ public class SurveyInstanceHandler {
         }
 
         return si;
+    }
+
+    /*
+     * Parse formId for form data coming in via data.txt files. This extra check for the formId has
+     * been created in order to handle a bug where the formId was returned as an arbitrary string.
+     * We ensure that the formId is strictly a long otherwise we try to retrieve it through the
+     * questionId values that come with each individual question response. See
+     * https://github.com/akvo/akvo-flow-mobile/issues/614
+     */
+    private static Long retrieveFormId(String[] parts) {
+        if (StringUtils.isNumeric(parts[SURVEY_ID].trim())) {
+            return Long.parseLong(parts[SURVEY_ID].trim());
+        } else {
+            return retrieveFormIdByQuestionId(parts[QUESTION_ID].trim());
+        }
     }
 }

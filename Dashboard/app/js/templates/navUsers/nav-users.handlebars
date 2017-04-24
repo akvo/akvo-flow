@@ -1,11 +1,9 @@
-{{#view FLOW.UserListView}}
-  <iframe src="frames/users.html"
-          id="users-iframe"
-          width="100%"  scrolling="no" style="padding:60px 0 50px 0;">
-  </iframe>
-{{/view}}
+<iframe src="frames/users.html"
+        id="users-iframe"
+        width="100%"  scrolling="no" style="padding:60px 0 50px 0;">
+</iframe>
 <script>
-	$(document).ready(function(){
-		$('#users-iframe').iFrameResize();
-	})
+    $(document).ready(function(){
+        $('#users-iframe').iFrameResize();
+    })
 </script>

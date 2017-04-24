@@ -77,8 +77,6 @@ public interface SurveyService extends RemoteService {
 
     public SurveyGroupDto saveSurveyGroup(SurveyGroupDto dto);
 
-    public String publishSurvey(Long surveyId);
-
     public void publishSurveyAsync(Long surveyId);
 
     public List<TranslationDto> saveTranslations(

@@ -16,16 +16,15 @@
 
 package com.gallatinsystems.survey.domain;
 
+import com.gallatinsystems.framework.domain.BaseDomain;
+
+import javax.jdo.annotations.NotPersistent;
+import javax.jdo.annotations.PersistenceCapable;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
-
-import javax.jdo.annotations.NotPersistent;
-import javax.jdo.annotations.PersistenceCapable;
-
-import com.gallatinsystems.framework.domain.BaseDomain;
 
 /**
  * Represents a Question on a survey. A question belongs to exactly 1 questionGroup.
@@ -59,7 +58,6 @@ public class Question extends BaseDomain {
     private Long metricId;
     @NotPersistent
     private TreeMap<Integer, QuestionOption> questionOptionMap = null;
-
     @NotPersistent
     private TreeMap<Integer, QuestionHelpMedia> questionHelpMediaMap = null;
     private Long questionGroupId;
@@ -68,9 +66,6 @@ public class Question extends BaseDomain {
     private Integer order = null;
     private Boolean mandatoryFlag = null;
     private String path = null;
-    private String referenceId;
-    @NotPersistent
-    private List<ScoringRule> scoringRules = null;
     private Boolean allowDecimal;
     private Boolean allowSign;
     private Double minVal;
@@ -79,18 +74,20 @@ public class Question extends BaseDomain {
     private Boolean isName;
     private Boolean localeNameFlag;
     private Boolean localeLocationFlag;
-
-    /*
-     * ID of the question from which this question was originally copied.
-     */
-    private Long sourceQuestionId;
-
     /**
      * Geoshape question options
      */
     private Boolean allowPoints;
     private Boolean allowLine;
     private Boolean allowPolygon;
+    private String referenceId;
+    @NotPersistent
+    private List<ScoringRule> scoringRules = null;
+    /*
+     * ID of the question from which this question was originally copied.
+     * cannot be mapped or is it sourceId?
+     */
+    private Long sourceQuestionId;
 
     /**
      * Return true of a question can be visualised on a chart. This is limited to option questions
@@ -137,12 +134,12 @@ public class Question extends BaseDomain {
         this.maxVal = maxVal;
     }
 
-    public Boolean getIsName() {
+    public Boolean getName() {
         return isName;
     }
 
-    public void setIsName(Boolean isName) {
-        this.isName = isName;
+    public void setName(Boolean name) {
+        this.isName = name;
     }
 
     public Long getSurveyId() {
