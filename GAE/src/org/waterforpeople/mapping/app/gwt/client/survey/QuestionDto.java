@@ -23,6 +23,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
 
+import org.codehaus.jackson.annotate.JsonIgnore;
+
 public class QuestionDto extends BaseDto {
 
     private static final long serialVersionUID = -4708385830894435407L;
@@ -199,6 +201,7 @@ public class QuestionDto extends BaseDto {
         this.type = type;
     }
 
+    @JsonIgnore
     public QuestionType getQuestionType() {
         return type;
     }
