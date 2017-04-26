@@ -71,7 +71,6 @@ public class Question extends BaseDomain {
     private Double minVal;
     private Double maxVal;
     private Boolean allowExternalSources;
-    private Boolean isName;
     private Boolean localeNameFlag;
     private Boolean localeLocationFlag;
     /**
@@ -132,14 +131,6 @@ public class Question extends BaseDomain {
 
     public void setMaxVal(Double maxVal) {
         this.maxVal = maxVal;
-    }
-
-    public Boolean getName() {
-        return isName;
-    }
-
-    public void setName(Boolean name) {
-        this.isName = name;
     }
 
     public Long getSurveyId() {

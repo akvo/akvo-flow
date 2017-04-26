@@ -532,12 +532,7 @@ public class SurveyAssemblyServlet extends AbstractRestApiServlet {
         }
 
         boolean hasValidation = false;
-        if (q.getName() != null && q.getName()) {
-            ValidationRule validationRule = objFactory.createValidationRule();
-            validationRule.setValidationType("name");
-            qXML.setValidationRule(validationRule);
-            hasValidation = true;
-        } else if (q.getType() == Question.Type.NUMBER
+       if (q.getType() == Question.Type.NUMBER
                 && (q.getAllowDecimal() != null || q.getAllowSign() != null
                         || q.getMinVal() != null || q.getMaxVal() != null)) {
             ValidationRule validationRule = objFactory.createValidationRule();
