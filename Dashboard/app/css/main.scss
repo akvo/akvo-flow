@@ -1041,12 +1041,24 @@ table.dataTable {
                     flex: 1 auto;
                     width: 1px;
 
-                    &:first-of-type, &:nth-of-type(2) {
-                        max-width: 12%;
+                    &:first-of-type {
+                        width: 10%;
+                    }
+
+                    &:nth-of-type(2) {
+                        width: 10%;
+                    }
+
+                    &:nth-of-type(3) {
+                        width: 35%;
+                    }
+
+                    &:nth-of-type(4) {
+                        width: 10%;
                     }
 
                     &:last-of-type {
-                        min-width: 30%;
+                        width: 35%;
                     }
                 }
             }
@@ -1068,12 +1080,24 @@ table.dataTable {
                     word-wrap: break-word;
                     vertical-align: middle;
 
-                    &:first-of-type, &:nth-of-type(2) {
-                        max-width: 12%;
+                    &:first-of-type {
+                        width: 10%;
+                    }
+
+                    &:nth-of-type(2) {
+                        width: 10%;
+                    }
+
+                    &:nth-of-type(3) {
+                        width: 35%;
+                    }
+
+                    &:nth-of-type(4) {
+                        width: 10%;
                     }
 
                     &:last-of-type {
-                        min-width: 30%;
+                        width: 35%;
                     }
                 }
             }
