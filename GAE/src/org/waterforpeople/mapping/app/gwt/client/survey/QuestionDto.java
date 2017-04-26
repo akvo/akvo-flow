@@ -23,13 +23,12 @@ import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
 
-
 public class QuestionDto extends BaseDto {
 
     private static final long serialVersionUID = -4708385830894435407L;
 
     public enum QuestionType {
-        FREE_TEXT, OPTION, NUMBER, GEO, PHOTO, VIDEO, SCAN, TRACK, NAME, STRENGTH, DATE, CASCADE, GEOSHAPE, SIGNATURE, CADDISFLY
+        FREE_TEXT, OPTION, NUMBER, GEO, PHOTO, VIDEO, SCAN, TRACK, STRENGTH, DATE, CASCADE, GEOSHAPE, SIGNATURE, CADDISFLY
     }
 
     private QuestionType type;

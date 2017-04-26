@@ -225,9 +225,6 @@ FLOW.Question = FLOW.BaseModel.extend({
   immutable: DS.attr('boolean', {
     defaultValue: false
   }),
-  isName: DS.attr('boolean', {
-    defaultValue: false
-  }),
   mandatoryFlag: DS.attr('boolean', {
     defaultValue: true
   }),

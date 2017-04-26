@@ -604,7 +604,6 @@ public class SurveyRestServlet extends AbstractRestApiServlet {
             q.setType(Question.Type.GEO);
         } else if (questionType.equals("FREE_TEXT")) {
             q.setType(Question.Type.FREE_TEXT);
-            q.setName(req.getIsName());
         } else if (questionType.equals("OPTION")
                 || questionType.equals("STRENGTH")) {
             q.setAllowMultipleFlag(req.getAllowMultipleFlag());
@@ -640,8 +639,6 @@ public class SurveyRestServlet extends AbstractRestApiServlet {
             q.setAllowSign(req.getAllowSign());
             q.setMinVal(req.getMinVal());
             q.setMaxVal(req.getMaxVal());
-        } else if (questionType.equals("NAME")) {
-            q.setType(Question.Type.NAME);
         } else if (questionType.equals("VIDEO")) {
             q.setType(Question.Type.VIDEO);
         }
