@@ -53,6 +53,9 @@
 {{/view}}
 
  <script type="text/javascript">
+if (typeof d3 == 'undefined') {
+    $.getScript("/vendorjs/js/vendor/d3.v2.min.js");
+}
 
 function deleteChart(){
   $('#piechart').empty();
@@ -143,7 +146,7 @@ function createDoughnutChart(){
       })
       .style("fill", "rgb(58,58,58)")
       .style("font", "bold 1.1em helvetica")
-      .html(function(d, i) { 
+      .html(function(d, i) {
         var label = dataSet[i].legendLabel;
 
         // If this label is on the left, wrap the text to keep it inside the SVG
@@ -152,7 +155,7 @@ function createDoughnutChart(){
           // The maximum number of characters per line
           var wrapLength = 28;
           var labelArray = [];
-          var tspanArray = [];          
+          var tspanArray = [];
           var tspanIndex = 0;
           var addSpace;
 
@@ -194,7 +197,7 @@ function createDoughnutChart(){
           }
         }
 
-        return label; 
+        return label;
       }); //get the label from our original data array
 
        // Add a legendLabel to each arc slice...
@@ -310,7 +313,7 @@ var svg = d3.select("#piechart")
         var output = "<tspan>" + num.toFixed(1).toString() + "%" + "</tspan>";
         output += "<tspan x='0' dy='15'>(" + d.itemCount + ")</tspan>";
 
-        return output; 
+        return output;
       })
       .attr("transform",function(d,i){
         return "translate(" + (20+i*40) + "," + (y(d.percentage/100)-20) + ")";
@@ -322,7 +325,7 @@ var svg = d3.select("#piechart")
       .style("fill", "rgb(58,58,58)")
       .style("font", "bold 1.1em helvetica")
       .text("Total: " + total.toString() + " " + Ember.String.loc('_answers'))
-      .attr("transform","translate(140,340)"); 
+      .attr("transform","translate(140,340)");
   }
 
 
@@ -334,7 +337,7 @@ var margin = {top: 20, right: 20, bottom: 30, left: -10},
 
  var dataSet = FLOW.chartDataControl.get('chartData');
  var maxPer = FLOW.chartDataControl.get('maxPer');
- var total = FLOW.chartDataControl.get('total'); 
+ var total = FLOW.chartDataControl.get('total');
 
 var formatPercent = d3.format(".0%");
 
@@ -363,13 +366,13 @@ var svg = d3.select("#piechart")
       .text("Percentage")
       .attr("transform","translate(300,0)");
 
-  // "Total answers" label  
+  // "Total answers" label
   svg.append("svg:text")
     .attr("text-anchor", "left")
     .style("fill", "rgb(58,58,58)")
     .style("font", "bold 1.1em helvetica")
     .text("Total: " + total.toString() + " " + Ember.String.loc('_answers'))
-    .attr("transform","translate(300, " + tLabelY + ")"); 
+    .attr("transform","translate(300, " + tLabelY + ")");
 
   // add bars
   svg.selectAll(".bar")
