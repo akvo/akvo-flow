@@ -182,7 +182,7 @@ public class BootstrapGeneratorServlet extends AbstractRestApiServlet {
 
     private Set<String> getSurveyResources(Long surveyId) {
         Set<String> resources = new HashSet<String>();
-        for (Question q : new QuestionDao().listQuestionByType(surveyId, Question.Type.CASCADE)) {
+        for (Question q : new QuestionDao().listQuestionsInOrder(surveyId, Question.Type.CASCADE)) {
             Long cascadeResourceId = q.getCascadeResourceId();
             if (cascadeResourceId != null) {
                 CascadeResource cr = cascadeDao.getByKey(cascadeResourceId);
