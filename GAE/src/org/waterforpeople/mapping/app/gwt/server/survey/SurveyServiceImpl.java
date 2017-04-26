@@ -1,5 +1,5 @@
 /*
- *  Copyright (C) 2010-2016 Stichting Akvo (Akvo Foundation)
+ *  Copyright (C) 2010-2017 Stichting Akvo (Akvo Foundation)
  *
  *  This file is part of Akvo FLOW.
  *
@@ -191,7 +191,7 @@ public class SurveyServiceImpl extends RemoteServiceServlet implements
             QuestionType type, boolean loadTranslations) {
 
         QuestionDao questionDao = new QuestionDao();
-        List<Question> qList = questionDao.listQuestionByType(surveyId,
+        List<Question> qList = questionDao.listQuestionsInOrder(surveyId,
                 Question.Type.valueOf(type.toString()));
         QuestionDto[] dtoArr = new QuestionDto[qList.size()];
         int i = 0;

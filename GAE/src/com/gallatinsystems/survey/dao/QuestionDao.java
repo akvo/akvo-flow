@@ -1,5 +1,5 @@
 /*
- *  Copyright (C) 2010-2015 Stichting Akvo (Akvo Foundation)
+ *  Copyright (C) 2010-2017 Stichting Akvo (Akvo Foundation)
  *
  *  This file is part of Akvo FLOW.
  *
@@ -24,6 +24,7 @@ import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
+import java.util.Comparator;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
@@ -76,33 +77,6 @@ public class QuestionDao extends BaseDAO<Question> {
         cache = initCache(4 * 60 * 60); // cache questions list for 4 hours
     }
 
-    /**
-     * lists all questions filtered by type optionally filtered by surveyId as well.
-     *
-     * @param surveyId
-     * @param type
-     * @return
-     */
-    public List<Question> listQuestionByType(Long surveyId, Question.Type type) {
-        if (surveyId == null) {
-            return listByProperty("type", type.toString(), "String", "order",
-                    "asc");
-        } else {
-            List<Question> allQuestionsInOrder = listQuestionInOrder(surveyId);
-            List<Question> typeQuestions = new ArrayList<Question>();
-            if (type != null) {
-                if (allQuestionsInOrder != null) {
-                    for (Question q : allQuestionsInOrder) {
-                        if (type.equals(q.getType())) {
-                            typeQuestions.add(q);
-                        }
-                    }
-                    return typeQuestions;
-                }
-            }
-            return allQuestionsInOrder;
-        }
-    }
 
     /**
      * loads the Question object but NOT any associated options
@@ -227,58 +201,51 @@ public class QuestionDao extends BaseDAO<Question> {
                 "asc");
     }
 
-    /**
-     * lists all questions for a survey and orders them by sort order. THIS METHOD SHOULD NOT BE
-     * USED AS SORT ORDERS MAY BE DUPLICATED ACROSS QUESTIONGROUPS SO THE ORDERING IS UNDEFINED
-     *
-     * @param surveyId
-     * @return
-     * @deprecated
-     */
-    @Deprecated
-    public List<Question> listQuestionInOrder(Long surveyId) {
-        List<Question> orderedQuestionList = new ArrayList<Question>();
-        List<Question> unknownOrder = listByProperty("surveyId", surveyId,
-                "Long", "order", "asc");
-        QuestionGroupDao qgDao = new QuestionGroupDao();
-
-        List<QuestionGroup> qgList = qgDao.listQuestionGroupBySurvey(surveyId);
-        for (QuestionGroup qg : qgList) {
-            for (Question q : unknownOrder) {
-                if (qg.getKey().getId() == q.getQuestionGroupId()) {
-                    orderedQuestionList.add(q);
-                }
-            }
-        }
-        return orderedQuestionList;
-    }
 
     /**
-     * list questions in order, by using question groups. Optionally filtered by type author: Mark
-     * Tiele Westra
+     * list questions in order, doing our own sorting to avoid many datastore calls. Optionally filtered by type
      *
      * @param surveyId
      * @return
      */
     public List<Question> listQuestionsInOrder(Long surveyId, Question.Type type) {
         List<Question> orderedQuestionList = new ArrayList<Question>();
+        //We must know the order of the question groups
         QuestionGroupDao qgDao = new QuestionGroupDao();
-        List<QuestionGroup> qgList = qgDao.listQuestionGroupBySurvey(surveyId);
-        // for each question group, get the questions in the right order and put them in the list
-        List<Question> qList;
-        for (QuestionGroup qg : qgList) {
-            if (type == null) {
-                qList = listByProperty("questionGroupId", qg
-                        .getKey().getId(), "Long", "order", "asc");
-            } else {
-                qList = getByQuestiongroupAndType(qg.getKey().getId(), type);
-            }
-            if (qList != null && qList.size() > 0) {
-                for (Question q : qList) {
-                    orderedQuestionList.add(q);
-                }
-            }
+        List<QuestionGroup> orderedGroupList = qgDao.listQuestionGroupBySurvey(surveyId);
+        
+        Map<Long, List<Question>> idMap = new HashMap<>();
+        for (QuestionGroup group : orderedGroupList) {
+            List<Question> questions = new ArrayList<>();
+            idMap.put(group.getKey().getId(), questions);
         }
+        List<Question> unorderedQuestions;
+        if (type == null) {
+            unorderedQuestions = listByProperty("surveyId", surveyId, "Long");
+        } else {
+            unorderedQuestions = getBySurveyAndType(surveyId, type);
+        }
+        
+        // Sort them into their respective lists
+        for (Question q:unorderedQuestions) {
+            List<Question> myList = idMap.get(q.getQuestionGroupId());
+            myList.add(q);
+        }
+        // Lists complete, now we can sort them and copy each in order
+        for (QuestionGroup group : orderedGroupList) {
+            List<Question> questions = idMap.get(group.getKey().getId());
+            Collections.sort(questions, new Comparator<Question>() {
+                @Override
+                public int compare(Question o1, Question o2) {
+                    //order should never be null, but accidents happen...
+                    int v1 = o1.getOrder() != null ? o1.getOrder() : 0;
+                    int v2 = o2.getOrder() != null ? o2.getOrder() : 0;
+                    return v1-v2;
+                }
+            });
+            orderedQuestionList.addAll(questions);
+        }
+        
         return orderedQuestionList;
     }
 
@@ -304,6 +271,26 @@ public class QuestionDao extends BaseDAO<Question> {
         }
     }
 
+    /**
+     * Lists questions by surveyId and type
+     *
+     * @param surveyId
+     * @param type
+     * @return
+     */
+    @SuppressWarnings("unchecked")
+    private List<Question> getBySurveyAndType(long surveyId, Question.Type type) {
+        PersistenceManager pm = PersistenceFilter.getManager();
+        javax.jdo.Query query = pm.newQuery(Question.class);
+        query.setFilter(" surveyId == surveyIdParam && type == questionTypeParam");
+        query.declareParameters("Long surveyIdParam, String questionTypeParam");
+        List<Question> results = (List<Question>) query.execute(surveyId, type.toString());
+        if (results != null && results.size() > 0) {
+            return results;
+        } else {
+            return null;
+        }
+    }
     /**
      * saves a question object in a transaction
      *
