@@ -1898,7 +1898,7 @@ section.topBar {
     position: fixed;
     top: 53px;
     margin: 0px auto 0 auto;
-    z-index: 9998;
+    z-index: 10001;
     width: 100%;
     box-shadow: 0 1px 3px rgba($akvoBlack, 0.1);
     padding: 0 0 0px 0;
@@ -2193,7 +2193,7 @@ section.topBar {
                             margin-right: 5px;
                             margin-left: 5px;
                             display: inline-block;
-                            max-width: 200px;
+                            max-width: 350px;
                             line-height: initial;
                             top: 3px;
                             position: relative;
@@ -2205,8 +2205,14 @@ section.topBar {
             }
 
             &.actionHighLighted {
+                width: 80%;
+                float: none;
+                position: absolute;
+                top: -47px;
+                background: white;
+                box-shadow: 0 0 5px #8dc63f;
                 border: 1px solid rgb(241, 242, 242);
-                margin-top: 0;
+                margin: 0 0 0 10%;
 
                 li {
                     &:first-child {
