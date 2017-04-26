@@ -430,8 +430,6 @@ public class SurveySpreadsheetImporter implements DataImporter {
                                                         .toString())
                                                 || type.equals(QuestionDto.QuestionType.TRACK
                                                         .toString())
-                                                || type.equals(QuestionDto.QuestionType.NAME
-                                                        .toString())
                                                 || type.equals(QuestionDto.QuestionType.NUMBER
                                                         .toString()) || type
                                                     .equals(QuestionDto.QuestionType.OPTION

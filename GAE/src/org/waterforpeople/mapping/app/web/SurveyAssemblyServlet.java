@@ -581,11 +581,6 @@ public class SurveyAssemblyServlet extends AbstractRestApiServlet {
             qXML.setType(VIDEO_QUESTION_TYPE);
         } else if (q.getType().equals(Question.Type.SCAN)) {
             qXML.setType(SCAN_QUESTION_TYPE);
-        } else if (q.getType().equals(Question.Type.NAME)) {
-            qXML.setType(FREE_QUESTION_TYPE);
-            ValidationRule vrule = new ValidationRule();
-            vrule.setValidationType("name");
-            qXML.setValidationRule(vrule);
         } else if (q.getType().equals(Question.Type.STRENGTH)) {
             qXML.setType(STRENGTH_QUESTION_TYPE);
         } else if (q.getType().equals(Question.Type.DATE)) {
