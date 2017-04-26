@@ -456,7 +456,7 @@ public class SurveyRestServlet extends AbstractRestApiServlet {
     private List<QuestionOptionDto> listSurveyQuestionOptions(Long surveyId) {
 
         List<QuestionOptionDto> dtoList = new ArrayList<>();
-        List<Question> questions = qDao.listQuestionByType(surveyId, Type.OPTION);
+        List<Question> questions = qDao.listQuestionsInOrder(surveyId, Type.OPTION);
         QuestionOptionDtoMapper mapper = new QuestionOptionDtoMapper();
         for (Question question : questions) {
             List<QuestionOption> options = qoDao.listByQuestionId(question.getKey().getId());

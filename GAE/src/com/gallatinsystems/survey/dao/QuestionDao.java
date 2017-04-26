@@ -1,5 +1,5 @@
 /*
- *  Copyright (C) 2010-2015 Stichting Akvo (Akvo Foundation)
+ *  Copyright (C) 2010-2017 Stichting Akvo (Akvo Foundation)
  *
  *  This file is part of Akvo FLOW.
  *
@@ -39,8 +39,6 @@ import javax.jdo.annotations.NotPersistent;
 import net.sf.jsr107cache.Cache;
 import net.sf.jsr107cache.CacheException;
 
-import org.waterforpeople.mapping.app.gwt.client.survey.QuestionDto;
-import org.waterforpeople.mapping.app.gwt.client.survey.QuestionGroupDto;
 import org.waterforpeople.mapping.dao.QuestionAnswerStoreDao;
 
 import com.gallatinsystems.framework.dao.BaseDAO;
@@ -79,33 +77,6 @@ public class QuestionDao extends BaseDAO<Question> {
         cache = initCache(4 * 60 * 60); // cache questions list for 4 hours
     }
 
-    /**
-     * lists all questions filtered by type optionally filtered by surveyId as well.
-     *
-     * @param surveyId
-     * @param type
-     * @return
-     */
-    public List<Question> listQuestionByType(Long surveyId, Question.Type type) {
-        if (surveyId == null) {
-            return listByProperty("type", type.toString(), "String", "order",
-                    "asc");
-        } else {
-            List<Question> allQuestionsInOrder = listQuestionInOrder(surveyId);
-            List<Question> typeQuestions = new ArrayList<Question>();
-            if (type != null) {
-                if (allQuestionsInOrder != null) {
-                    for (Question q : allQuestionsInOrder) {
-                        if (type.equals(q.getType())) {
-                            typeQuestions.add(q);
-                        }
-                    }
-                    return typeQuestions;
-                }
-            }
-            return allQuestionsInOrder;
-        }
-    }
 
     /**
      * loads the Question object but NOT any associated options
@@ -230,31 +201,6 @@ public class QuestionDao extends BaseDAO<Question> {
                 "asc");
     }
 
-    /**
-     * lists all questions for a survey and orders them by sort order. THIS METHOD SHOULD NOT BE
-     * USED AS SORT ORDERS MAY BE DUPLICATED ACROSS QUESTIONGROUPS SO THE ORDERING IS UNDEFINED
-     *
-     * @param surveyId
-     * @return
-     * @deprecated
-     */
-    @Deprecated
-    public List<Question> listQuestionInOrder(Long surveyId) {
-        List<Question> orderedQuestionList = new ArrayList<Question>();
-        List<Question> unknownOrder = listByProperty("surveyId", surveyId,
-                "Long", "order", "asc");
-        QuestionGroupDao qgDao = new QuestionGroupDao();
-
-        List<QuestionGroup> qgList = qgDao.listQuestionGroupBySurvey(surveyId);
-        for (QuestionGroup qg : qgList) {
-            for (Question q : unknownOrder) {
-                if (qg.getKey().getId() == q.getQuestionGroupId()) {
-                    orderedQuestionList.add(q);
-                }
-            }
-        }
-        return orderedQuestionList;
-    }
 
     /**
      * list questions in order, by using question groups. Optionally filtered by type
