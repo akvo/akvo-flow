@@ -1,5 +1,18 @@
 # Akvo Flow Release Notes
 ----
+# 1.9.17 Performant Panther
+Date: 27 April 2017
+
+## New and noteworthy
+* **Data approval** - Data approval manangement now needs a special permission [#1665].
+* **Removed raw text reports** - This report type was practially never used [#2002].
+
+## Resolved issues
+* **Optimisations** - We fetch survey questions in a less expensive way [#1736] and [#1442].
+* **Code cleanup** - We removed the unused NAME question type [#2053] and some unused code [#555].
+* **Messages page** - We improved the table header [#1972].
+* **Dashboard cleanup** - We removed many icons [#1871].
+
 # 1.9.16 Optimised Octopus
 Date: 20 April 2017
 
@@ -7,7 +20,7 @@ Date: 20 April 2017
 * **Data approval** - Reports will include data approval status [#1666].
 
 ## Resolved issues
-* **Remove _copy from question IDs** - Question IDs will no longer get _copy appended to them when a survey is copied. When you copy a question group, any IDs that would collide will get _1, _2 etc. appended to them [#1203].
+* **Remove _copy from question IDs** - Question IDs will no longer get _copy appended to them when a survey is copied. When you copy a question group, any IDs that would collide will get _1, _2 etc. appended to them .
 * **Code clean-up** - We removed unused and obsolete code [#555].
 * **Form tabs got an overhaul** - The add form button should always be visble, and long names are handled better [#1975].
 * **Survey and folder names** - Improved handling while moving/copying should make them no longer overlap the guide text [#1954].
