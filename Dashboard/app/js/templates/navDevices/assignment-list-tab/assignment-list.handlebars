@@ -21,7 +21,7 @@
         <td class="name" style="text-align:left; padding:0 0 0 5px;">{{assignment.name}}</td>
         <td class="startDate" >{{#with assignment}} {{date3 startDate}} {{/with}}</td>
         <td class="endDate" >{{#with assignment}} {{date3 endDate}} {{/with}}</td>
-        <td class="action"><a {{action "editSurveyAssignment" assignment target="this"}} class="edit">{{t _edit}}</a> {{#view FLOW.AssignmentView contentBinding="assignment"}}<a {{action confirm FLOW.dialogControl.delAssignment target="FLOW.dialogControl"}} class="remove">{{t _remove}}</a>{{/view}}
+        <td class="action"><a {{action "editSurveyAssignment" assignment target="this"}} class="edit">{{t _edit}}</a> {{#view FLOW.AssignmentView contentBinding="assignment"}}<a {{action confirm FLOW.dialogControl.delAssignment target="FLOW.dialogControl"}} class="remove">{{t _delete}}</a>{{/view}}
       </tr>
       {{/each}}
     </tbody>
