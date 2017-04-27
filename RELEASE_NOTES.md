@@ -20,7 +20,7 @@ Date: 20 April 2017
 * **Data approval** - Reports will include data approval status [#1666].
 
 ## Resolved issues
-* **Remove _copy from question IDs** - Question IDs will no longer get _copy appended to them when a survey is copied. When you copy a question group, any IDs that would collide will get _1, _2 etc. appended to them .
+* **Remove _copy from question IDs** - Question IDs will no longer get _copy appended to them when a survey is copied. When you copy a question group, any IDs that would collide will get _1, _2 etc. appended to them [#1203].
 * **Code clean-up** - We removed unused and obsolete code [#555].
 * **Form tabs got an overhaul** - The add form button should always be visble, and long names are handled better [#1975].
 * **Survey and folder names** - Improved handling while moving/copying should make them no longer overlap the guide text [#1954].
