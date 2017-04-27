@@ -30,6 +30,7 @@ import com.gallatinsystems.survey.domain.SurveyGroup;
 import com.gallatinsystems.surveyal.dao.SurveyalValueDao;
 import com.google.appengine.api.taskqueue.QueueFactory;
 import com.google.appengine.api.taskqueue.TaskOptions;
+
 import org.springframework.beans.BeanUtils;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -49,7 +50,9 @@ import org.waterforpeople.mapping.app.web.rest.dto.RestStatusDto;
 import org.waterforpeople.mapping.dao.QuestionAnswerStoreDao;
 
 import javax.inject.Inject;
+
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -85,25 +88,19 @@ public class QuestionRestService {
     @RequestMapping(method = RequestMethod.GET, value = "")
     @ResponseBody
     public Map<String, Object> listQuestions(
-            @RequestParam(value = "questionGroupId", defaultValue = "")
-            Long questionGroupId,
-            @RequestParam(value = "surveyId", defaultValue = "")
-            Long surveyId,
-            @RequestParam(value = "optionQuestionsOnly", defaultValue = "")
-            String optionQuestionsOnly,
-            @RequestParam(value = "preflight", defaultValue = "")
-            String preflight,
+            @RequestParam(value = "questionGroupId", defaultValue = "") Long questionGroupId,
+            @RequestParam(value = "surveyId", defaultValue = "") Long surveyId,
+            @RequestParam(value = "optionQuestionsOnly", defaultValue = "") String optionQuestionsOnlyParam,
+            @RequestParam(value = "preflight", defaultValue = "") String preflight,
             @RequestParam(value = "questionId", defaultValue = "") Long questionId,
             @RequestParam(value = "cascadeResourceId", defaultValue = "") Long cascadeResourceId) {
         final Map<String, Object> response = new HashMap<>();
-        List<QuestionDto> results = new ArrayList<>();
-        List<QuestionOptionDto> qoResults = new ArrayList<>();
         List<Question> questions = new ArrayList<>();
         RestStatusDto statusDto = new RestStatusDto();
         statusDto.setStatus("");
         statusDto.setMessage("");
 
-        boolean optionQuestionOnly = "true".equals(optionQuestionsOnly);
+        boolean listOptionQuestionOnly = "true".equals(optionQuestionsOnlyParam);
 
         // if this is a pre-flight delete check, handle that
         if (preflight != null && preflight.equals("delete")
@@ -123,7 +120,7 @@ public class QuestionRestService {
         } else if (questionGroupId != null) {
             questions = questionDao.listQuestionsInOrderForGroup(questionGroupId);
         } else if (surveyId != null) {
-            if (optionQuestionOnly) {
+            if (listOptionQuestionOnly) {
                 questions = questionDao.listQuestionsInOrder(surveyId, Question.Type.OPTION);
             } else {
                 questions = questionDao.listQuestionsInOrder(surveyId, null);
@@ -132,30 +129,69 @@ public class QuestionRestService {
             questions = questionDao.listByCascadeResourceId(cascadeResourceId);
         }
 
+        List<QuestionDto> questionDtoList = new ArrayList<>();
+        List<QuestionOptionDto> questionOptionDtoList = new ArrayList<>();
+
         if (questions != null && questions.size() > 0) {
             for (Question question : questions) {
                 QuestionDto qDto = questionDtoMapper.transform(question);
                 if (qDto != null) {
-                    if (question.getType() == Question.Type.OPTION && !optionQuestionOnly) {
-                        Map<Integer, QuestionOption> qoMap = questionOptionDao
-                                .listOptionByQuestion(qDto.getKeyId());
-                        List<Long> qoList = new ArrayList<>();
-                        for (QuestionOption qo : qoMap.values()) {
-                            QuestionOptionDto qoDto = questionOptionDtoMapper.transform(qo);
-                            qoList.add(qo.getKeyId());
-                            qoResults.add(qoDto);
-                        }
-                        qDto.setQuestionOptions(qoList);
-                    }
-                    results.add(qDto);
+                    questionDtoList.add(qDto);
                 }
+            }
+
+            if (!listOptionQuestionOnly) {
+                questionOptionDtoList.addAll(retrieveQuestionOptionList(questionDtoList));
+                setQuestionOptionsIdList(questionDtoList, questionOptionDtoList);
             }
         }
 
-        response.put("questionOptions", qoResults);
-        response.put("questions", results);
+        response.put("questionOptions", questionOptionDtoList);
+        response.put("questions", questionDtoList);
         response.put("meta", statusDto);
         return response;
+    }
+
+    private List<QuestionOptionDto> retrieveQuestionOptionList(List<QuestionDto> questionDtoList) {
+        if (questionDtoList == null || questionDtoList.isEmpty()) {
+            return Collections.emptyList();
+        }
+
+        List<Long> optionTypeQuestionIds = new ArrayList<>();
+        for (QuestionDto question : questionDtoList) {
+            if (QuestionDto.QuestionType.OPTION.equals(question.getType())) {
+                optionTypeQuestionIds.add(question.getKeyId());
+            }
+        }
+
+        List<QuestionOptionDto> questionOptionDtoList = new ArrayList<>();
+
+        for (QuestionOption qo : questionOptionDao.listByQuestionId(optionTypeQuestionIds)) {
+            QuestionOptionDto qoDto = questionOptionDtoMapper.transform(qo);
+            questionOptionDtoList.add(qoDto);
+        }
+
+        return questionOptionDtoList;
+    }
+
+    private static void setQuestionOptionsIdList(List<QuestionDto> questionDtoList,
+            List<QuestionOptionDto> questionOptionDtoList) {
+
+        Map<Long, QuestionDto> questionDtoMap = new HashMap<>();
+        for (QuestionDto questionDto : questionDtoList) {
+            if (!QuestionDto.QuestionType.OPTION.equals(questionDto.getType())) {
+                continue;
+            }
+            questionDtoMap.put(questionDto.getKeyId(), questionDto);
+        }
+
+        for (QuestionOptionDto qoDto : questionOptionDtoList) {
+            QuestionDto questionDto = questionDtoMap.get(qoDto.getQuestionId());
+            if (questionDto.getQuestionOptions() == null) {
+                questionDto.setQuestionOptions(new ArrayList<Long>());
+            }
+            questionDto.getQuestionOptions().add(qoDto.getKeyId());
+        }
     }
 
     // find a single question by the questionId
