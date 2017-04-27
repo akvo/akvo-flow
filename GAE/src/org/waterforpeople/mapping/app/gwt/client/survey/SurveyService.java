@@ -58,8 +58,6 @@ public interface SurveyService extends RemoteService {
 
     public List<SurveyDto> listSurveysForSurveyGroup(String surveyGroupCode);
 
-    public QuestionDto loadQuestionDetails(Long questionId);
-
     public QuestionDto saveQuestion(QuestionDto value, Long questionGroupId, boolean forceReorder);
 
     public String deleteSurveyGroup(SurveyGroupDto value);
@@ -100,9 +98,6 @@ public interface SurveyService extends RemoteService {
     public void updateQuestionOrder(List<QuestionDto> questions);
 
     public void updateQuestionGroupOrder(List<QuestionGroupDto> groups);
-
-    public void updateQuestionDependency(Long questionId,
-            QuestionDependencyDto dep);
 
     /**
      * returns a surveyDto populated from the published xml. This domain graph lacks many keyIds so
