@@ -88,14 +88,10 @@ public class QuestionRestService {
     @RequestMapping(method = RequestMethod.GET, value = "")
     @ResponseBody
     public Map<String, Object> listQuestions(
-            @RequestParam(value = "questionGroupId", defaultValue = "")
-            Long questionGroupId,
-            @RequestParam(value = "surveyId", defaultValue = "")
-            Long surveyId,
-            @RequestParam(value = "optionQuestionsOnly", defaultValue = "")
-            String optionQuestionsOnly,
-            @RequestParam(value = "preflight", defaultValue = "")
-            String preflight,
+            @RequestParam(value = "questionGroupId", defaultValue = "") Long questionGroupId,
+            @RequestParam(value = "surveyId", defaultValue = "") Long surveyId,
+            @RequestParam(value = "optionQuestionsOnly", defaultValue = "") String optionQuestionsOnlyParam,
+            @RequestParam(value = "preflight", defaultValue = "") String preflight,
             @RequestParam(value = "questionId", defaultValue = "") Long questionId,
             @RequestParam(value = "cascadeResourceId", defaultValue = "") Long cascadeResourceId) {
         final Map<String, Object> response = new HashMap<>();
@@ -104,7 +100,7 @@ public class QuestionRestService {
         statusDto.setStatus("");
         statusDto.setMessage("");
 
-        boolean optionQuestionOnly = "true".equals(optionQuestionsOnly);
+        boolean listOptionQuestionOnly = "true".equals(optionQuestionsOnlyParam);
 
         // if this is a pre-flight delete check, handle that
         if (preflight != null && preflight.equals("delete")
@@ -124,7 +120,7 @@ public class QuestionRestService {
         } else if (questionGroupId != null) {
             questions = questionDao.listQuestionsInOrderForGroup(questionGroupId);
         } else if (surveyId != null) {
-            if (optionQuestionOnly) {
+            if (listOptionQuestionOnly) {
                 questions = questionDao.listQuestionsInOrder(surveyId, Question.Type.OPTION);
             } else {
                 questions = questionDao.listQuestionsInOrder(surveyId, null);
@@ -144,7 +140,7 @@ public class QuestionRestService {
                 }
             }
 
-            if (!optionQuestionOnly) {
+            if (!listOptionQuestionOnly) {
                 questionOptionDtoList.addAll(retrieveQuestionOptionList(questionDtoList));
                 setQuestionOptionsIdList(questionDtoList, questionOptionDtoList);
             }
