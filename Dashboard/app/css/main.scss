@@ -1017,6 +1017,95 @@ table.dataTable {
     color: rgba($tableHeaderGrey, 0.8);
     font-size: 0.9em;
 
+    &.headerFixed {
+        table-layout: fixed;
+        white-space: wrap !important;
+
+        thead {
+            width: 100%;
+
+            tr {
+                display: flex;
+                position: relative;
+
+                &:after {
+                    content: '';
+                    overflow-y: scroll;
+                    visibility: hidden;
+                    height: 0;
+                }
+
+                th {
+                    display: block;
+                    padding: 9px 1em 9px 1em;
+                    text-align: center;
+                    font-weight: normal;
+                    flex: 1 auto;
+                    width: 1px;
+
+                    &:first-of-type {
+                        width: 10%;
+                    }
+
+                    &:nth-of-type(2) {
+                        width: 10%;
+                    }
+
+                    &:nth-of-type(3) {
+                        width: 35%;
+                    }
+
+                    &:nth-of-type(4) {
+                        width: 10%;
+                    }
+
+                    &:last-of-type {
+                        width: 35%;
+                    }
+                }
+            }
+        }
+
+        tbody {
+            width: 100%;
+            display: block;
+            overflow-y: auto;
+            height: calc(100vh - 220px);
+
+            tr {
+                width: 100%;
+                display: flex;
+
+                td {
+                    flex: 1 auto;
+                    width: 1px;
+                    word-wrap: break-word;
+                    vertical-align: middle;
+
+                    &:first-of-type {
+                        width: 10%;
+                    }
+
+                    &:nth-of-type(2) {
+                        width: 10%;
+                    }
+
+                    &:nth-of-type(3) {
+                        width: 35%;
+                    }
+
+                    &:nth-of-type(4) {
+                        width: 10%;
+                    }
+
+                    &:last-of-type {
+                        width: 35%;
+                    }
+                }
+            }
+        }
+    }
+
     thead tr {
         background: rgba($linkColor, 0.2);
         border-top: thin solid rgba(32, 32, 36, 0.05);
