@@ -5124,20 +5124,6 @@ table.surveyDetails {
                             }
                         }
                     }
-
-                    &.published {
-                        background: rgba(32, 32, 36, 0.5) url(../images/IconFormPub.png) no-repeat 10px center;
-                        background-size: 20px auto;
-
-                        &.current {
-                            background: rgba(32, 32, 36, 0.9) url(../images/IconFormPubOrange.png) no-repeat 10px center;
-                            background-size: 20px auto;
-
-                            a {
-                                color: $flowAnchorLinkHover;
-                            }
-                        }
-                    }
                 }
 
                 &.newFormTab {
