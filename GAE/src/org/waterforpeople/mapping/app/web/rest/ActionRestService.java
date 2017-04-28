@@ -359,22 +359,23 @@ public class ActionRestService {
 
         SurveyGroup savedProjectCopy = surveyGroupDao.save(projectCopy); // saves
 
-        List<Survey> surveys = surveyDao.listSurveysByGroup(targetId);
+        List<Survey> sourceSurveys = surveyDao.listSurveysByGroup(targetId);
 
         List<Long> surveysAncestorIds = new ArrayList<Long>(savedProjectCopy.getAncestorIds());
         surveysAncestorIds.add(savedProjectCopy.getKey().getId());
 
-        for (Survey survey : surveys) {
+        for (Survey sourceSurvey : sourceSurveys) {
             SurveyDto surveyDto = new SurveyDto();
-            surveyDto.setCode(survey.getCode());
-            surveyDto.setName(survey.getName());
-            surveyDto.setPath(projectCopy.getPath() + "/" + survey.getName());
+            surveyDto.setCode(sourceSurvey.getCode());
+            surveyDto.setName(sourceSurvey.getName());
+            surveyDto.setPath(projectCopy.getPath() + "/" + sourceSurvey.getName());
             surveyDto.setSurveyGroupId(savedProjectCopy.getKey().getId());
-            Survey surveyCopy = SurveyUtils.copySurvey(survey, surveyDto);
+            Survey surveyCopy = SurveyUtils.copySurvey(sourceSurvey, surveyDto);
             surveyCopy.setSurveyGroupId(savedProjectCopy.getKey().getId());
-            survey.setAncestorIds(surveysAncestorIds);
+            sourceSurvey.setAncestorIds(surveysAncestorIds);
             long copyId = surveyDao.save(surveyCopy).getKey().getId();
-            if (survey.getKey().getId() == savedProjectCopy.getNewLocaleSurveyId()) {
+            if (isRegistrationFormId(sourceSurvey.getKey().getId(),
+                    projectSource.getNewLocaleSurveyId())) {
                 // original was the registration survey for its survey group
                 savedProjectCopy.setNewLocaleSurveyId(copyId); // fix it
                 surveyGroupDao.save(savedProjectCopy);
@@ -382,5 +383,11 @@ public class ActionRestService {
         }
         return "success";
 
+    }
+
+    private static boolean isRegistrationFormId(Long sourceFormId,
+            Long sourceProjectRegistrationFormId) {
+        return sourceFormId != null && sourceProjectRegistrationFormId != null
+                && sourceFormId.equals(sourceProjectRegistrationFormId);
     }
 }
