@@ -288,9 +288,10 @@ public class QuestionDao extends BaseDAO<Question> {
         if (results != null && results.size() > 0) {
             return results;
         } else {
-            return null;
+            return Collections.emptyList();
         }
     }
+
     /**
      * saves a question object in a transaction
      *
