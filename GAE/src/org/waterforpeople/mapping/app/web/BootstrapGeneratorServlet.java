@@ -126,9 +126,10 @@ public class BootstrapGeneratorServlet extends AbstractRestApiServlet {
                     reader.close();
                     contentMap.put(s.getKey().getId() + "/" + surveyFilename + ".xml",
                             buf.toString());
-                    
+
                     resourcesSet.addAll(getSurveyResources(id));// Add survey resources
                 } catch (Exception e) {
+                    log.log(Level.SEVERE, "Could not include survey id " + id + "\n", e);
                     errors.append("Could not include survey id " + id + "\n");
                 }
             }
