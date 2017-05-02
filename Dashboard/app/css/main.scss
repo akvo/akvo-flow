@@ -2023,15 +2023,22 @@ section.topBar {
                 position: absolute;
                 top: -47px;
                 right: 0;
+                padding: 0;
                 background: white;
                 box-shadow: 0 0 5px #8dc63f;
                 border: 1px solid rgb(241, 242, 242);
                 margin: 0 0 0 10%;
 
                 li {
+                    margin: 7px 0 0 10px;
+
                     &:first-child {
                         float: left;
-                        margin: 14px 0 0 10px;
+                        margin: 7px 0 0 10px;
+                    }
+
+                    &:nth-of-type(2), &:nth-of-type(3) {
+                        margin: 2px 0 0 0;
                     }
 
                     p {
