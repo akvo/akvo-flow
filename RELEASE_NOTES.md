@@ -1,17 +1,29 @@
 # Akvo Flow Release Notes
 ----
 # 1.9.17 Performant Panther
-Date: 27 April 2017
+Date: 03 May 2017
 
 ## New and noteworthy
 * **Data approval** - Data approval manangement now needs a special permission [#1665].
+
 * **Removed raw text reports** - This report type was practially never used [#2002].
 
+* **Cleanup of the dashboard user interface** - The dashboard UI has been visually cleaned including removing unnecessary icons [#1871] [#2065]
+
 ## Resolved issues
-* **Optimisations** - We fetch survey questions in a less expensive way [#1736] and [#1442].
+* **Performance optimisations** - We fetch survey questions in a less expensive way [#1736] and [#1442].
+
+* **Bootstrap files for forms without cascading questions** - we fixed a bug that was preventing the correct generation of bootstrap files for forms that did not contains any cascading questions [#2078]
+
+* **Fixed the loading spinner when publishing forms for non-monitoring surveys** - we fixed a bug that was causing the loading spinner to never stop when publishing forms in non-monitoring surveys [#2074]
+
 * **Code cleanup** - We removed the unused NAME question type [#2053] and some unused code [#555].
+
+* **Improvements in move/copy popup** - We have improved the popup when copying/moving folders and surveys in order to support folders and surveys with longer names [#2066]
+
 * **Messages page** - We improved the table header [#1972].
-* **Dashboard cleanup** - We removed many icons [#1871].
+
+* **Dashboard cleanup** - We removed extra whitespace at the bottom of the messages tab [#2062] and fixed some faulty stylesheets [#2069].
 
 # 1.9.16 Optimised Octopus
 Date: 20 April 2017
