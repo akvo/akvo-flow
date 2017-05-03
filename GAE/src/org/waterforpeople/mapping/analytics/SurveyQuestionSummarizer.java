@@ -1,5 +1,5 @@
 /*
- *  Copyright (C) 2010-2012 Stichting Akvo (Akvo Foundation)
+ *  Copyright (C) 2010-2017 Stichting Akvo (Akvo Foundation)
  *
  *  This file is part of Akvo FLOW.
  *
@@ -43,8 +43,9 @@ public class SurveyQuestionSummarizer implements DataSummarizer {
                     .listQuestionAnswerStoreByType(new Long(key), "VALUE");
             if (answers != null && answers.size() > 0) {
                 QuestionDao questionDao = new QuestionDao();
-                List<Question> qList = questionDao.listQuestionByType(answers
-                        .get(0).getSurveyId(), Question.Type.OPTION);
+                List<Question> qList = questionDao.listQuestionsInOrder(
+                        answers.get(0).getSurveyId(),
+                        Question.Type.OPTION);
                 int i = 0;
                 if (offset != null) {
                     i = offset;
@@ -54,8 +55,7 @@ public class SurveyQuestionSummarizer implements DataSummarizer {
                 // process BATCH_SIZE items
                 while (i < answers.size() && i < offset + BATCH_SIZE) {
                     if (isSummarizable(answers.get(i), qList)) {
-                        SurveyQuestionSummaryDao.incrementCount(answers.get(i),
-                                1);
+                        SurveyQuestionSummaryDao.incrementCount(answers.get(i), 1);
                     }
                     i++;
                 }

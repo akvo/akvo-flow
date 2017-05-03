@@ -77,6 +77,7 @@ import org.waterforpeople.mapping.serialization.response.MediaResponse;
 
 import com.gallatinsystems.common.util.JFreechartChartUtil;
 import com.gallatinsystems.survey.dao.CaddisflyResourceDao;
+import com.gallatinsystems.survey.domain.Question.Type;
 
 import static com.gallatinsystems.common.Constants.*;
 
@@ -341,33 +342,37 @@ public class GraphicalSurveySummaryExporter extends SurveySummaryExporter {
         processOptions(options);
 
         questionsById = new HashMap<Long, QuestionDto>();
+
         surveyGroupDto = BulkDataServiceClient.fetchSurveyGroup(surveyId, serverBase, apiKey);
+
         this.serverBase = serverBase;
         boolean useQuestionId = "true".equals(options.get("useQuestionId"));
         String from = options.get("from");
         String to = options.get("to");
         String limit = options.get("maxDataReportRows");
         try {
-            Map<QuestionGroupDto, List<QuestionDto>> questionMap = loadAllQuestions(surveyId,
-                    performGeoRollup, serverBase, criteria.get("apiKey"));
-            if (questionMap != null) {
+            Map<QuestionGroupDto, List<QuestionDto>> questionMap = 
+                    loadAllQuestions(surveyId, performGeoRollup, serverBase, apiKey);
+            //minimal data plus cascade level names
+            if (useQuestionId && DEFAULT_LOCALE.equals(locale)) {
+                loadQuestionOptions(surveyId, serverBase, questionMap, apiKey);
+            }
+            
+
+            if (questionMap.size() > 0) {
+                if (!DEFAULT_LOCALE.equals(locale)) {
+                    // we are using some other locale; need to check for translations.
+                    // also gets option and cascade names for columns
+                    loadFullQuestions(questionMap, apiKey); //modifies questionMap
+                }
+                //questionMap is now stable; make the id-to-dto map
                 for (List<QuestionDto> qList : questionMap.values()) {
                     for (QuestionDto q : qList) {
                         questionsById.put(q.getKeyId(), q);
                     }
                 }
-            }
 
-            if ((!DEFAULT_LOCALE.equals(locale) || useQuestionId)
-                    && questionMap.size() > 0) {
-                // if we are using some other locale, or if need to expand
-                // question options,
-                // we need to check for translations and options
-                loadFullQuestions(questionMap, criteria.get("apiKey"));
-            }
-
-            Workbook wb = new SXSSFWorkbook(100);
-            if (questionMap != null && questionMap.size() > 0) {
+                Workbook wb = new SXSSFWorkbook(100);
 
                 headerStyle = wb.createCellStyle();
                 headerStyle.setAlignment(CellStyle.ALIGN_CENTER);
@@ -732,7 +737,7 @@ public class GraphicalSurveySummaryExporter extends SurveySummaryExporter {
         // Some question types splits the value into several columns.
         List<String> cells = new ArrayList<>();
 
-        QuestionType questionType = questionDto.getQuestionType();
+        QuestionType questionType = questionDto.getType();
         Long qId;
         switch (questionType) {
             case DATE:
@@ -1812,15 +1817,15 @@ public class GraphicalSurveySummaryExporter extends SurveySummaryExporter {
      * call the server to augment the data already loaded in each QuestionDto in the map passed in.
      *
      * @param questionMap
+     * @param apiKey
      */
     private void loadFullQuestions(
             Map<QuestionGroupDto, List<QuestionDto>> questionMap, String apiKey) {
         for (List<QuestionDto> questionList : questionMap.values()) {
             for (int i = 0; i < questionList.size(); i++) {
                 try {
-                    QuestionDto newQ = BulkDataServiceClient
-                            .loadQuestionDetails(serverBase, questionList
-                                    .get(i).getKeyId(), apiKey);
+                    QuestionDto newQ = BulkDataServiceClient.loadQuestionDetails(
+                            serverBase, questionList.get(i).getKeyId(), apiKey);
                     if (newQ != null) {
                         questionList.set(i, newQ);
                     }
@@ -1831,6 +1836,7 @@ public class GraphicalSurveySummaryExporter extends SurveySummaryExporter {
             }
         }
     }
+
 
     /**
      * uses the locale and the translation map passed in to determine what value to use for the

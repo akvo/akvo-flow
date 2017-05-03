@@ -1,5 +1,5 @@
 /*
- *  Copyright (C) 2010-2015 Stichting Akvo (Akvo Foundation)
+ *  Copyright (C) 2010-2017 Stichting Akvo (Akvo Foundation)
  *
  *  This file is part of Akvo FLOW.
  *
@@ -28,7 +28,7 @@ public class QuestionDto extends BaseDto {
     private static final long serialVersionUID = -4708385830894435407L;
 
     public enum QuestionType {
-        FREE_TEXT, OPTION, NUMBER, GEO, PHOTO, VIDEO, SCAN, TRACK, NAME, STRENGTH, DATE, CASCADE, GEOSHAPE, SIGNATURE, CADDISFLY
+        FREE_TEXT, OPTION, NUMBER, GEO, PHOTO, VIDEO, SCAN, TRACK, STRENGTH, DATE, CASCADE, GEOSHAPE, SIGNATURE, CADDISFLY
     }
 
     private QuestionType type;
@@ -129,10 +129,6 @@ public class QuestionDto extends BaseDto {
 
     public void setPath(String path) {
         this.path = path;
-    }
-
-    public QuestionType getQuestionType() {
-        return type;
     }
 
     public Integer getOrder() {
@@ -274,7 +270,6 @@ public class QuestionDto extends BaseDto {
     public void setDependentFlag(Boolean dependentFlag) {
         this.dependentFlag = dependentFlag;
     }
-
 
     public void setAllowMultipleFlag(Boolean allowMultipleFlag) {
         this.allowMultipleFlag = allowMultipleFlag;
@@ -450,5 +445,10 @@ public class QuestionDto extends BaseDto {
 
     public void setCaddisflyResourceUuid(String caddisflyResourceUuid) {
         this.caddisflyResourceUuid = caddisflyResourceUuid;
+    }
+    
+    @Override
+    public String toString() {
+      return text + "(" + type + ")"; 
     }
 }

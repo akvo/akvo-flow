@@ -1,5 +1,5 @@
 /*
- *  Copyright (C) 2010-2015 Stichting Akvo (Akvo Foundation)
+ *  Copyright (C) 2010-2017 Stichting Akvo (Akvo Foundation)
  *
  *  This file is part of Akvo FLOW.
  *
@@ -35,7 +35,7 @@ public class Question extends BaseDomain {
     private static final long serialVersionUID = -9123426646238761996L;
 
     public enum Type {
-        FREE_TEXT, OPTION, NUMBER, GEO, PHOTO, VIDEO, SCAN, TRACK, NAME, STRENGTH, DATE, CASCADE,
+        FREE_TEXT, OPTION, NUMBER, GEO, PHOTO, VIDEO, SCAN, TRACK, STRENGTH, DATE, CASCADE,
         GEOSHAPE, SIGNATURE, CADDISFLY
     };
 
@@ -71,7 +71,6 @@ public class Question extends BaseDomain {
     private Double minVal;
     private Double maxVal;
     private Boolean allowExternalSources;
-    private Boolean isName;
     private Boolean localeNameFlag;
     private Boolean localeLocationFlag;
     /**
@@ -132,14 +131,6 @@ public class Question extends BaseDomain {
 
     public void setMaxVal(Double maxVal) {
         this.maxVal = maxVal;
-    }
-
-    public Boolean getName() {
-        return isName;
-    }
-
-    public void setName(Boolean name) {
-        this.isName = name;
     }
 
     public Long getSurveyId() {

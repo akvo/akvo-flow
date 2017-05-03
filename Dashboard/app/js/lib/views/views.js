@@ -782,7 +782,7 @@ FLOW.DatasubnavView = FLOW.View.extend({
     }.property(),
 
     showDataApprovalButton: function () {
-        return FLOW.Env.enableDataApproval;
+        return FLOW.Env.enableDataApproval && FLOW.permControl.get('canManageDataAppoval');
     }.property(),
   })
 });

@@ -366,7 +366,7 @@ public class RawDataSpreadsheetImporter implements DataImporter {
             long questionId = m.getValue();
 
             QuestionDto questionDto = questionIdToQuestionDto.get(questionId);
-            QuestionType questionType = questionDto.getQuestionType();
+            QuestionType questionType = questionDto.getType();
 
             for (int iter = 0; iter < iterations; iter++) {
 
@@ -608,7 +608,7 @@ public class RawDataSpreadsheetImporter implements DataImporter {
         String apiKey = criteria.get("apiKey");
         List<Long> optionQuestionIds = new ArrayList<>();
         for (QuestionDto question : questions) {
-            if (QuestionType.OPTION.equals(question.getQuestionType())) {
+            if (QuestionType.OPTION.equals(question.getType())) {
                 optionQuestionIds.add(question.getKeyId());
             }
         }
@@ -670,7 +670,7 @@ public class RawDataSpreadsheetImporter implements DataImporter {
             String typeString = "VALUE";
             QuestionDto questionDto = questionIdToQuestionDto.get(questionId);
             if (questionDto != null) {
-                switch (questionDto.getQuestionType()) {
+                switch (questionDto.getType()) {
                     case GEO:
                         typeString = "GEO";
                         break;
