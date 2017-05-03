@@ -1,5 +1,5 @@
 /*
- *  Copyright (C) 2010-2016 Stichting Akvo (Akvo Foundation)
+ *  Copyright (C) 2010-2017 Stichting Akvo (Akvo Foundation)
  *
  *  This file is part of Akvo FLOW.
  *
@@ -768,7 +768,7 @@ public class DataProcessorRestServlet extends AbstractRestApiServlet {
 
         final QuestionAnswerStoreDao qasDao = new QuestionAnswerStoreDao();
         final QuestionDao questionDao = new QuestionDao();
-        final List<Question> qList = questionDao.listQuestionByType(surveyId,
+        final List<Question> qList = questionDao.listQuestionsInOrder(surveyId,
                 Question.Type.OPTION);
 
         Cache cache = null;
