@@ -16,12 +16,11 @@
 
 package com.gallatinsystems.survey.domain;
 
-import java.util.HashMap;
+import com.gallatinsystems.framework.domain.BaseDomain;
 
 import javax.jdo.annotations.NotPersistent;
 import javax.jdo.annotations.PersistenceCapable;
-
-import com.gallatinsystems.framework.domain.BaseDomain;
+import java.util.HashMap;
 
 /**
  * Option for multiple choice questions.
@@ -84,4 +83,7 @@ public class QuestionOption extends BaseDomain {
         translationMap.put(t.getLanguageCode(), t);
     }
 
+    public long getKeyId() {
+        return getKey().getId();
+    }
 }

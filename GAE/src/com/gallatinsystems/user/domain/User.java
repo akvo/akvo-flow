@@ -1,5 +1,5 @@
 /*
- *  Copyright (C) 2010-2016 Stichting Akvo (Akvo Foundation)
+ *  Copyright (C) 2010-2017 Stichting Akvo (Akvo Foundation)
  *
  *  This file is part of Akvo FLOW.
  *
@@ -77,7 +77,7 @@ public class User extends BaseDomain {
     }
 
     public Boolean isSuperAdmin() {
-        return superAdmin;
+        return Boolean.TRUE.equals(superAdmin);
     }
 
     public void setSuperAdmin(Boolean superAdmin) {

@@ -1,5 +1,5 @@
 /*
- *  Copyright (C) 2012 Stichting Akvo (Akvo Foundation)
+ *  Copyright (C) 2012-2017 Stichting Akvo (Akvo Foundation)
  *
  *  This file is part of Akvo FLOW.
  *
@@ -16,29 +16,6 @@
 
 package org.waterforpeople.mapping.app.web.rest;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-
-import javax.inject.Inject;
-
-import org.springframework.beans.BeanUtils;
-import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.ResponseBody;
-import org.waterforpeople.mapping.app.gwt.client.survey.QuestionDto;
-import org.waterforpeople.mapping.app.gwt.client.survey.QuestionOptionDto;
-import org.waterforpeople.mapping.app.util.DtoMarshaller;
-import org.waterforpeople.mapping.app.web.dto.SurveyTaskRequest;
-import org.waterforpeople.mapping.app.web.rest.dto.QuestionPayload;
-import org.waterforpeople.mapping.app.web.rest.dto.RestStatusDto;
-import org.waterforpeople.mapping.dao.QuestionAnswerStoreDao;
-
 import com.gallatinsystems.metric.dao.SurveyMetricMappingDao;
 import com.gallatinsystems.metric.domain.SurveyMetricMapping;
 import com.gallatinsystems.survey.dao.QuestionDao;
@@ -54,8 +31,35 @@ import com.gallatinsystems.surveyal.dao.SurveyalValueDao;
 import com.google.appengine.api.taskqueue.QueueFactory;
 import com.google.appengine.api.taskqueue.TaskOptions;
 
+import org.springframework.beans.BeanUtils;
+import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.ResponseBody;
+import org.waterforpeople.mapping.app.gwt.client.survey.QuestionDto;
+import org.waterforpeople.mapping.app.gwt.client.survey.QuestionDtoMapper;
+import org.waterforpeople.mapping.app.gwt.client.survey.QuestionOptionDto;
+import org.waterforpeople.mapping.app.gwt.client.survey.QuestionOptionDtoMapper;
+import org.waterforpeople.mapping.app.util.DtoMarshaller;
+import org.waterforpeople.mapping.app.web.dto.SurveyTaskRequest;
+import org.waterforpeople.mapping.app.web.rest.dto.QuestionPayload;
+import org.waterforpeople.mapping.app.web.rest.dto.RestStatusDto;
+import org.waterforpeople.mapping.dao.QuestionAnswerStoreDao;
+
+import javax.inject.Inject;
+
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
 @Controller
 @RequestMapping("/questions")
+@SuppressWarnings("unused")
 public class QuestionRestService {
 
     @Inject
@@ -73,6 +77,10 @@ public class QuestionRestService {
     @Inject
     private SurveyGroupDAO surveyGroupDao;
 
+    private QuestionDtoMapper questionDtoMapper = new QuestionDtoMapper();
+
+    private QuestionOptionDtoMapper questionOptionDtoMapper = new QuestionOptionDtoMapper();
+
     // list questions by questionGroup or by survey.
     // if optionQuestionHeadersOnly is true, only the option questions are returned
     // and without any of the actual options loaded. In the dashboard, this is used
@@ -80,23 +88,19 @@ public class QuestionRestService {
     @RequestMapping(method = RequestMethod.GET, value = "")
     @ResponseBody
     public Map<String, Object> listQuestions(
-            @RequestParam(value = "questionGroupId", defaultValue = "")
-            Long questionGroupId,
-            @RequestParam(value = "surveyId", defaultValue = "")
-            Long surveyId,
-            @RequestParam(value = "optionQuestionsOnly", defaultValue = "")
-            String optionQuestionsOnly,
-            @RequestParam(value = "preflight", defaultValue = "")
-            String preflight,
+            @RequestParam(value = "questionGroupId", defaultValue = "") Long questionGroupId,
+            @RequestParam(value = "surveyId", defaultValue = "") Long surveyId,
+            @RequestParam(value = "optionQuestionsOnly", defaultValue = "") String optionQuestionsOnlyParam,
+            @RequestParam(value = "preflight", defaultValue = "") String preflight,
             @RequestParam(value = "questionId", defaultValue = "") Long questionId,
             @RequestParam(value = "cascadeResourceId", defaultValue = "") Long cascadeResourceId) {
-        final Map<String, Object> response = new HashMap<String, Object>();
-        List<QuestionDto> results = new ArrayList<QuestionDto>();
-        List<QuestionOptionDto> qoResults = new ArrayList<QuestionOptionDto>();
-        List<Question> questions = new ArrayList<Question>();
+        final Map<String, Object> response = new HashMap<>();
+        List<Question> questions = new ArrayList<>();
         RestStatusDto statusDto = new RestStatusDto();
         statusDto.setStatus("");
         statusDto.setMessage("");
+
+        boolean listOptionQuestionOnly = "true".equals(optionQuestionsOnlyParam);
 
         // if this is a pre-flight delete check, handle that
         if (preflight != null && preflight.equals("delete")
@@ -116,7 +120,7 @@ public class QuestionRestService {
         } else if (questionGroupId != null) {
             questions = questionDao.listQuestionsInOrderForGroup(questionGroupId);
         } else if (surveyId != null) {
-            if (optionQuestionsOnly.equals("true")) {
+            if (listOptionQuestionOnly) {
                 questions = questionDao.listQuestionsInOrder(surveyId, Question.Type.OPTION);
             } else {
                 questions = questionDao.listQuestionsInOrder(surveyId, null);
@@ -125,34 +129,69 @@ public class QuestionRestService {
             questions = questionDao.listByCascadeResourceId(cascadeResourceId);
         }
 
+        List<QuestionDto> questionDtoList = new ArrayList<>();
+        List<QuestionOptionDto> questionOptionDtoList = new ArrayList<>();
+
         if (questions != null && questions.size() > 0) {
             for (Question question : questions) {
-                QuestionDto qDto = new QuestionDto();
-                DtoMarshaller.copyToDto(question, qDto);
-                if (question.getType() == Question.Type.OPTION
-                        && !optionQuestionsOnly.equals("true")) {
-                    Map<Integer, QuestionOption> qoMap = questionOptionDao
-                            .listOptionByQuestion(qDto.getKeyId());
-                    List<Long> qoList = new ArrayList<Long>();
-                    for (QuestionOption qo : qoMap.values()) {
-                        QuestionOptionDto qoDto = new QuestionOptionDto();
-                        BeanUtils.copyProperties(qo, qoDto, new String[] {
-                                "translationMap"
-                        });
-                        qoDto.setKeyId(qo.getKey().getId());
-                        qoList.add(qo.getKey().getId());
-                        qoResults.add(qoDto);
-                    }
-                    qDto.setQuestionOptions(qoList);
+                QuestionDto qDto = questionDtoMapper.transform(question);
+                if (qDto != null) {
+                    questionDtoList.add(qDto);
                 }
-                results.add(qDto);
+            }
+
+            if (!listOptionQuestionOnly) {
+                questionOptionDtoList.addAll(retrieveQuestionOptionList(questionDtoList));
+                setQuestionOptionsIdList(questionDtoList, questionOptionDtoList);
             }
         }
 
-        response.put("questionOptions", qoResults);
-        response.put("questions", results);
+        response.put("questionOptions", questionOptionDtoList);
+        response.put("questions", questionDtoList);
         response.put("meta", statusDto);
         return response;
+    }
+
+    private List<QuestionOptionDto> retrieveQuestionOptionList(List<QuestionDto> questionDtoList) {
+        if (questionDtoList == null || questionDtoList.isEmpty()) {
+            return Collections.emptyList();
+        }
+
+        List<Long> optionTypeQuestionIds = new ArrayList<>();
+        for (QuestionDto question : questionDtoList) {
+            if (QuestionDto.QuestionType.OPTION.equals(question.getType())) {
+                optionTypeQuestionIds.add(question.getKeyId());
+            }
+        }
+
+        List<QuestionOptionDto> questionOptionDtoList = new ArrayList<>();
+
+        for (QuestionOption qo : questionOptionDao.listByQuestionId(optionTypeQuestionIds)) {
+            QuestionOptionDto qoDto = questionOptionDtoMapper.transform(qo);
+            questionOptionDtoList.add(qoDto);
+        }
+
+        return questionOptionDtoList;
+    }
+
+    private static void setQuestionOptionsIdList(List<QuestionDto> questionDtoList,
+            List<QuestionOptionDto> questionOptionDtoList) {
+
+        Map<Long, QuestionDto> questionDtoMap = new HashMap<>();
+        for (QuestionDto questionDto : questionDtoList) {
+            if (!QuestionDto.QuestionType.OPTION.equals(questionDto.getType())) {
+                continue;
+            }
+            questionDtoMap.put(questionDto.getKeyId(), questionDto);
+        }
+
+        for (QuestionOptionDto qoDto : questionOptionDtoList) {
+            QuestionDto questionDto = questionDtoMap.get(qoDto.getQuestionId());
+            if (questionDto.getQuestionOptions() == null) {
+                questionDto.setQuestionOptions(new ArrayList<Long>());
+            }
+            questionDto.getQuestionOptions().add(qoDto.getKeyId());
+        }
     }
 
     // find a single question by the questionId
@@ -392,7 +431,7 @@ public class QuestionRestService {
             return null;
         }
         return SurveyUtils.copyQuestion(source, dto.getQuestionGroupId(), dto.getOrder(),
-                source.getSurveyId());
+                source.getSurveyId(), SurveyUtils.listQuestionIdsUsedInSurveyGroup(source.getSurveyId()));
     }
 
     private Question newQuestion(QuestionDto dto) {

@@ -1,5 +1,5 @@
 /*
- *  Copyright (C) 2010-2015 Stichting Akvo (Akvo Foundation)
+ *  Copyright (C) 2010-2017 Stichting Akvo (Akvo Foundation)
  *
  *  This file is part of Akvo FLOW.
  *
@@ -16,16 +16,20 @@
 
 package com.gallatinsystems.survey.dao;
 
+import java.util.Collections;
 import java.util.List;
 import java.util.TreeMap;
 
+import javax.jdo.PersistenceManager;
+
 import com.gallatinsystems.framework.dao.BaseDAO;
+import com.gallatinsystems.framework.servlet.PersistenceFilter;
 import com.gallatinsystems.survey.domain.QuestionOption;
 import com.gallatinsystems.survey.domain.Translation;
 
 /**
  * Dao for manipulating questionOptions
- * 
+ *
  * @author Christopher Fagiani
  */
 public class QuestionOptionDao extends BaseDAO<QuestionOption> {
@@ -70,9 +74,20 @@ public class QuestionOptionDao extends BaseDAO<QuestionOption> {
         return listByProperty("questionId", questionId, "Long", "order", "asc");
     }
 
+    public List<QuestionOption> listByQuestionId(List<Long> questionIds) {
+        if (questionIds == null || questionIds.isEmpty()) {
+            return Collections.emptyList();
+        }
+        PersistenceManager pm = PersistenceFilter.getManager();
+        String queryString = ":p1.contains(questionId)";
+        javax.jdo.Query query = pm.newQuery(QuestionOption.class, queryString);
+        List<QuestionOption> results = (List<QuestionOption>) query.execute(questionIds);
+        return results;
+    }
+
     /**
      * Deletes all options associated with a given question
-     * 
+     *
      * @param questionId
      */
     public void deleteOptionsForQuestion(Long questionId) {

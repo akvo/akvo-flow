@@ -1,5 +1,5 @@
 /*
- *  Copyright (C) 2010-2012 Stichting Akvo (Akvo Foundation)
+ *  Copyright (C) 2017 Stichting Akvo (Akvo Foundation)
  *
  *  This file is part of Akvo FLOW.
  *
@@ -13,17 +13,22 @@
  *
  *  The full license text can also be seen at <http://www.gnu.org/licenses/agpl.html>.
  */
+package org.waterforpeople.mapping.app.gwt.client.survey;
 
-package org.waterforpeople.mapping.app.gwt.client.surveyinstance;
+import com.gallatinsystems.survey.domain.QuestionOption;
+import org.springframework.beans.BeanUtils;
 
-import com.google.gwt.user.client.rpc.RemoteService;
-import com.google.gwt.user.client.rpc.RemoteServiceRelativePath;
+import javax.annotation.Nullable;
 
-@RemoteServiceRelativePath("surveyinstance")
-@Deprecated
-// to be removed eventually
-public interface SurveyInstanceService extends RemoteService {
+public class QuestionOptionDtoMapper {
 
-    public void deleteSurveyInstance(Long instanceId);
-
+    @Nullable
+    public QuestionOptionDto transform(QuestionOption questionOption) {
+        QuestionOptionDto qoDto = new QuestionOptionDto();
+        BeanUtils.copyProperties(questionOption, qoDto, new String[] {
+                "translationMap"
+        });
+        qoDto.setKeyId(questionOption.getKeyId());
+        return qoDto;
+    }
 }

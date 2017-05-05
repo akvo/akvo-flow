@@ -1,5 +1,5 @@
 /*
- *  Copyright (C) 2010-2015 Stichting Akvo (Akvo Foundation)
+ *  Copyright (C) 2010-2017 Stichting Akvo (Akvo Foundation)
  *
  *  This file is part of Akvo FLOW.
  *
@@ -16,65 +16,64 @@
 
 package org.waterforpeople.mapping.app.gwt.client.survey;
 
+import com.gallatinsystems.framework.gwt.dto.client.BaseDto;
+
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
 
-import com.gallatinsystems.framework.gwt.dto.client.BaseDto;
-import com.gallatinsystems.framework.gwt.dto.client.NamedObject;
-
-public class QuestionDto extends BaseDto implements NamedObject {
+public class QuestionDto extends BaseDto {
 
     private static final long serialVersionUID = -4708385830894435407L;
-    public static final String ANS_DELIM = "|";
-    public static final String ANS_DELIM_REGEX = "\\|";
 
-    private String text;
+    public enum QuestionType {
+        FREE_TEXT, OPTION, NUMBER, GEO, PHOTO, VIDEO, SCAN, TRACK, STRENGTH, DATE, CASCADE, GEOSHAPE, SIGNATURE, CADDISFLY
+    }
 
     private QuestionType type;
-    private OptionContainerDto optionContainerDto = null;
-    private List<QuestionHelpDto> questionHelpList;
     private String tip = null;
-    private String optionList = null;
-    private List<Long> questionOptions = null;
-    private Boolean mandatoryFlag = null;
+    private String text;
+    private Map<String, TranslationDto> translationMap;
     private Boolean dependentFlag = null;
-    private Boolean localeNameFlag;
-    private Boolean localeLocationFlag;
+    private Boolean allowMultipleFlag = null;
+    private Boolean allowOtherFlag = null;
+    private Boolean collapseable;
     private Boolean geoLocked = null;
     private Boolean requireDoubleEntry = null;
+    private Boolean immutable;
     private Long dependentQuestionId;
     private String dependentQuestionAnswer;
     private Long cascadeResourceId;
     private String caddisflyResourceUuid;
     private Long metricId;
-    private QuestionDependencyDto questionDependency = null;
+    private OptionContainerDto optionContainerDto = null;
+    private List<QuestionHelpDto> questionHelpList;
+    private Long questionGroupId;
     private Long surveyId;
     private String questionId;
-    private Long questionGroupId;
-    private Boolean collapseable;
-    private Boolean immutable;
-    private Map<String, TranslationDto> translationMap;
-    private String path;
     private Integer order;
-    private Boolean allowMultipleFlag = null;
-    private Boolean allowOtherFlag = null;
+    private Boolean mandatoryFlag = null;
+    private String path;
     private Boolean allowDecimal;
     private Boolean allowSign;
-    private Boolean allowExternalSources;
     private Double minVal;
     private Double maxVal;
+    private Boolean allowExternalSources;
     private Boolean isName;
-    private Long sourceId = null;
-    private List<String> levelNames = null;
-
+    private Boolean localeNameFlag;
+    private Boolean localeLocationFlag;
     /**
      * Geoshape question options
      */
     private Boolean allowPoints;
     private Boolean allowLine;
     private Boolean allowPolygon;
+    private String optionList = null;
+    private List<Long> questionOptions = null;
+    private QuestionDependencyDto questionDependency = null;
+    private Long sourceId = null;
+    private List<String> levelNames = null;
 
     public Boolean getAllowDecimal() {
         return allowDecimal;
@@ -116,12 +115,12 @@ public class QuestionDto extends BaseDto implements NamedObject {
         this.optionList = optionList;
     }
 
-    public Boolean getIsName() {
+    public Boolean getName() {
         return isName;
     }
 
-    public void setIsName(Boolean isName) {
-        this.isName = isName;
+    public void setName(Boolean name) {
+        isName = name;
     }
 
     public String getPath() {
@@ -130,14 +129,6 @@ public class QuestionDto extends BaseDto implements NamedObject {
 
     public void setPath(String path) {
         this.path = path;
-    }
-
-    public QuestionType getQuestionType() {
-        return type;
-    }
-
-    public String getQuestionTypeString() {
-        return type.toString();
     }
 
     public Integer getOrder() {
@@ -194,30 +185,6 @@ public class QuestionDto extends BaseDto implements NamedObject {
 
     public String getText() {
         return text;
-    }
-
-    /**
-     * returns the translated version of the text for the locale specified (if
-     * present). If no translation exists, it will return the default text.
-     * 
-     * @param locale
-     * @return
-     */
-    public String getLocalizedText(String locale) {
-        if (locale != null && translationMap != null) {
-            TranslationDto trans = translationMap.get(locale);
-            String txt = null;
-            if (trans != null) {
-                txt = trans.getText();
-            }
-            if (txt != null && txt.trim().length() > 0) {
-                return txt;
-            } else {
-                return this.text;
-            }
-        } else {
-            return this.text;
-        }
     }
 
     public void setText(String text) {
@@ -302,15 +269,6 @@ public class QuestionDto extends BaseDto implements NamedObject {
 
     public void setDependentFlag(Boolean dependentFlag) {
         this.dependentFlag = dependentFlag;
-    }
-
-    public enum QuestionType {
-        FREE_TEXT, OPTION, NUMBER, GEO, PHOTO, VIDEO, SCAN, TRACK, NAME, STRENGTH, DATE, CASCADE, GEOSHAPE, SIGNATURE, CADDISFLY
-    }
-
-    @Override
-    public String getDisplayName() {
-        return getText();
     }
 
     public void setAllowMultipleFlag(Boolean allowMultipleFlag) {
@@ -487,5 +445,10 @@ public class QuestionDto extends BaseDto implements NamedObject {
 
     public void setCaddisflyResourceUuid(String caddisflyResourceUuid) {
         this.caddisflyResourceUuid = caddisflyResourceUuid;
+    }
+    
+    @Override
+    public String toString() {
+      return text + "(" + type + ")"; 
     }
 }

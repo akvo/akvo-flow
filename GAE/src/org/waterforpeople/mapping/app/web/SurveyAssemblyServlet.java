@@ -532,12 +532,7 @@ public class SurveyAssemblyServlet extends AbstractRestApiServlet {
         }
 
         boolean hasValidation = false;
-        if (q.getIsName() != null && q.getIsName()) {
-            ValidationRule validationRule = objFactory.createValidationRule();
-            validationRule.setValidationType("name");
-            qXML.setValidationRule(validationRule);
-            hasValidation = true;
-        } else if (q.getType() == Question.Type.NUMBER
+       if (q.getType() == Question.Type.NUMBER
                 && (q.getAllowDecimal() != null || q.getAllowSign() != null
                         || q.getMinVal() != null || q.getMaxVal() != null)) {
             ValidationRule validationRule = objFactory.createValidationRule();
@@ -586,11 +581,6 @@ public class SurveyAssemblyServlet extends AbstractRestApiServlet {
             qXML.setType(VIDEO_QUESTION_TYPE);
         } else if (q.getType().equals(Question.Type.SCAN)) {
             qXML.setType(SCAN_QUESTION_TYPE);
-        } else if (q.getType().equals(Question.Type.NAME)) {
-            qXML.setType(FREE_QUESTION_TYPE);
-            ValidationRule vrule = new ValidationRule();
-            vrule.setValidationType("name");
-            qXML.setValidationRule(vrule);
         } else if (q.getType().equals(Question.Type.STRENGTH)) {
             qXML.setType(STRENGTH_QUESTION_TYPE);
         } else if (q.getType().equals(Question.Type.DATE)) {

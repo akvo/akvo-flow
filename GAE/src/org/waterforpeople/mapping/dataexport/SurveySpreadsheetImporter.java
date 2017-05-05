@@ -1,5 +1,5 @@
 /*
- *  Copyright (C) 2010-2012 Stichting Akvo (Akvo Foundation)
+ *  Copyright (C) 2010-2017 Stichting Akvo (Akvo Foundation)
  *
  *  This file is part of Akvo FLOW.
  *
@@ -429,8 +429,6 @@ public class SurveySpreadsheetImporter implements DataImporter {
                                                 || type.equals(QuestionDto.QuestionType.SCAN
                                                         .toString())
                                                 || type.equals(QuestionDto.QuestionType.TRACK
-                                                        .toString())
-                                                || type.equals(QuestionDto.QuestionType.NAME
                                                         .toString())
                                                 || type.equals(QuestionDto.QuestionType.NUMBER
                                                         .toString()) || type

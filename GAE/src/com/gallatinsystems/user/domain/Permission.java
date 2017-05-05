@@ -1,5 +1,5 @@
 /*
- *  Copyright (C) 2010-2015 Stichting Akvo (Akvo Foundation)
+ *  Copyright (C) 2010-2017 Stichting Akvo (Akvo Foundation)
  *
  *  This file is part of Akvo FLOW.
  *
@@ -36,6 +36,9 @@ public enum Permission {
     FORM_READ("GET", "/rest/surveys"),
     FORM_UPDATE("PUT", "/rest/surveys"),
     FORM_DELETE("DELETE", "/rest/surveys"),
+
+    // manage data approvals i.e. define and assign to surveys
+    DATA_APPROVE_MANAGE("GET", "/rest/approval_groups"),
 
     // there is no GAE URI for data export / import as this is handled by FLOW services so we use
     // empty strings as placeholders

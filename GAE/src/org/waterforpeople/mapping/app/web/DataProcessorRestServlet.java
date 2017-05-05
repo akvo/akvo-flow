@@ -1,5 +1,5 @@
 /*
- *  Copyright (C) 2010-2016 Stichting Akvo (Akvo Foundation)
+ *  Copyright (C) 2010-2017 Stichting Akvo (Akvo Foundation)
  *
  *  This file is part of Akvo FLOW.
  *
@@ -23,8 +23,10 @@ import static com.gallatinsystems.common.util.MemCacheUtils.putObject;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.Map.Entry;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -137,8 +139,10 @@ public class DataProcessorRestServlet extends AbstractRestApiServlet {
             QuestionGroup newQuestionGroup = qgDao.getByKey(dpReq.getQuestionGroupId());
             QuestionGroup originalQuestionGroup = qgDao.getByKey(Long.valueOf(dpReq.getSource()));
             if (originalQuestionGroup != null && newQuestionGroup != null) {
+                
+                Long surveyId = originalQuestionGroup.getSurveyId();
                 SurveyUtils.copyQuestionGroup(originalQuestionGroup, newQuestionGroup,
-                        originalQuestionGroup.getSurveyId(), null);
+                        surveyId, null, SurveyUtils.listQuestionIdsUsedInSurveyGroup(surveyId));
 
                 newQuestionGroup.setStatus(QuestionGroup.Status.READY); // copied
                 qgDao.save(newQuestionGroup);
@@ -565,7 +569,7 @@ public class DataProcessorRestServlet extends AbstractRestApiServlet {
 
             final QuestionGroup copyGroup = qgDao.save(tmpGroup);
             SurveyUtils.copyQuestionGroup(sourceGroup, copyGroup, copiedSurveyId,
-                    qDependencyResolutionMap);
+                    qDependencyResolutionMap, null); //new survey, so id re-use is OK
         }
 
         final SurveyDAO sDao = new SurveyDAO();
@@ -764,7 +768,7 @@ public class DataProcessorRestServlet extends AbstractRestApiServlet {
 
         final QuestionAnswerStoreDao qasDao = new QuestionAnswerStoreDao();
         final QuestionDao questionDao = new QuestionDao();
-        final List<Question> qList = questionDao.listQuestionByType(surveyId,
+        final List<Question> qList = questionDao.listQuestionsInOrder(surveyId,
                 Question.Type.OPTION);
 
         Cache cache = null;

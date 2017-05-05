@@ -249,6 +249,16 @@ FLOW.permControl = Ember.Controller.create({
       }
       return false;
   }.property(),
+
+  canManageDataAppoval: function () {
+      var currentUserPermissions = FLOW.currentUser.get('pathPermissions');
+      for (var perms in currentUserPermissions) {
+          if (currentUserPermissions[perms].indexOf("DATA_APPROVE_MANAGE") > -1) {
+              return true;
+          }
+      }
+      return false;
+  }.property(),
 });
 
 

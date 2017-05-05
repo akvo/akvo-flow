@@ -1,5 +1,5 @@
 /*
- *  Copyright (C) 2010-2015 Stichting Akvo (Akvo Foundation)
+ *  Copyright (C) 2010-2017 Stichting Akvo (Akvo Foundation)
  *
  *  This file is part of Akvo FLOW.
  *
@@ -18,6 +18,7 @@ package org.waterforpeople.mapping.app.web;
 
 import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -31,8 +32,10 @@ import org.codehaus.jackson.map.ObjectMapper;
 import org.waterforpeople.mapping.analytics.dao.SurveyQuestionSummaryDao;
 import org.waterforpeople.mapping.analytics.domain.SurveyQuestionSummary;
 import org.waterforpeople.mapping.app.gwt.client.survey.QuestionDto;
+import org.waterforpeople.mapping.app.gwt.client.survey.QuestionDtoMapper;
 import org.waterforpeople.mapping.app.gwt.client.survey.QuestionGroupDto;
 import org.waterforpeople.mapping.app.gwt.client.survey.QuestionOptionDto;
+import org.waterforpeople.mapping.app.gwt.client.survey.QuestionOptionDtoMapper;
 import org.waterforpeople.mapping.app.gwt.client.survey.SurveyDto;
 import org.waterforpeople.mapping.app.gwt.client.survey.SurveyGroupDto;
 import org.waterforpeople.mapping.app.gwt.client.survey.SurveySummaryDto;
@@ -77,8 +80,7 @@ import com.gallatinsystems.surveyal.domain.SurveyedLocale;
 import com.google.appengine.api.datastore.KeyFactory;
 
 public class SurveyRestServlet extends AbstractRestApiServlet {
-    private static final Logger log = Logger.getLogger(TaskServlet.class
-            .getName());
+    private static final Logger log = Logger.getLogger(SurveyRestServlet.class.getName());
 
     private static final String CHART_API_URL = "http://chart.apis.google.com/chart?chs=300x225&cht=p&chtt=";
     private static final String CHART_API_DATA_PARAM = "&chd=t:";
@@ -135,23 +137,21 @@ public class SurveyRestServlet extends AbstractRestApiServlet {
         } else if (SurveyRestRequest.GET_SURVEY_GROUP_ACTION.equals(surveyReq
                 .getAction())) {
             List<SurveyGroupDto> sgList = new ArrayList<SurveyGroupDto>();
-            Long sgId = surveyReq.getSurveyGroupId();
-            if (sgId != null) {
-                SurveyGroupDto dto = getSurveyGroup(sgId);
-                if (dto != null) {
-                    sgList.add(dto);
+            Long surveyGroupId = null;
+
+            if (surveyReq.getSurveyGroupId() != null) {
+                surveyGroupId = surveyReq.getSurveyGroupId();
+            } else if (surveyReq.getSurveyId() != null) {
+                Survey s = surveyDao.getById(surveyReq.getSurveyId());
+                if (s != null) {
+                    surveyGroupId = s.getSurveyGroupId();
                 }
-            } else {
-                // Trying to get it using Survey ID
-                Long sId = surveyReq.getSurveyId();
-                if (sId != null) {
-                    Survey s = surveyDao.getById(sId);
-                    if (s != null) {
-                        SurveyGroupDto dto = getSurveyGroup(s.getSurveyGroupId());
-                        if (dto != null) {
-                            sgList.add(dto);
-                        }
-                    }
+            }
+
+            if (surveyGroupId != null) {
+                SurveyGroup sg = sgDao.getByKey(surveyGroupId);
+                if (sg != null) {
+                    sgList.add(new SurveyGroupDto(sg));
                 }
             }
             response.setDtoList(sgList);
@@ -170,12 +170,14 @@ public class SurveyRestServlet extends AbstractRestApiServlet {
                         .equals(surveyReq.getAction())) {
             response.setDtoList(listQuestionGroups(new Long(surveyReq
                     .getSurveyId())));
-        } else if (SurveyRestRequest.LIST_QUESTION_ACTION.equals(surveyReq
-                .getAction())) {
-            response.setDtoList(listQuestions(new Long(surveyReq
-                    .getQuestionGroupId())));
+        } else if (SurveyRestRequest.LIST_QUESTION_ACTION.equals(surveyReq.getAction())) {
+            response.setDtoList(listGroupQuestionsWithLevelNames(new Long(surveyReq.getQuestionGroupId())));
+        } else if (SurveyRestRequest.LIST_SURVEY_QUESTIONS_ACTION.equals(surveyReq.getAction())) {
+            response.setDtoList(listSurveyQuestionsWithLevelNames(new Long(surveyReq.getSurveyId())));
         } else if (SurveyRestRequest.LIST_QUESTION_OPTIONS_ACTION.equals(surveyReq.getAction())) {
             response.setDtoList(listQuestionOptions(surveyReq.getQuestionId()));
+        } else if (SurveyRestRequest.LIST_SURVEY_QUESTION_OPTIONS_ACTION.equals(surveyReq.getAction())) {
+            response.setDtoList(listSurveyQuestionOptions(surveyReq.getSurveyId()));
         } else if (SurveyRestRequest.GET_SUMMARY_ACTION.equals(surveyReq
                 .getAction())) {
             response.setDtoList(listSummaries(new Long(surveyReq
@@ -267,17 +269,6 @@ public class SurveyRestServlet extends AbstractRestApiServlet {
         response.setDtoList(dtoList);
         response.setCursor(cursorString);
         return response;
-    }
-
-    private SurveyGroupDto getSurveyGroup(Long surveyGroupId) {
-        SurveyGroupDAO surveyGroupDao = new SurveyGroupDAO();
-        SurveyGroupDto dto = new SurveyGroupDto();
-        SurveyGroup sg = surveyGroupDao.getByKey(surveyGroupId);
-        if (sg == null) {
-            return null;
-        }
-        DtoMarshaller.copyToDto(sg, dto);
-        return dto;
     }
 
     private SurveyDto getSurvey(Long surveyId) {
@@ -380,44 +371,101 @@ public class SurveyRestServlet extends AbstractRestApiServlet {
     }
 
     /**
+     * lists questions
+     * @param questions
+     * @return
+     */
+    private List<QuestionDto> listQuestions(Collection<Question> questions) {
+        List<QuestionDto> dtoList = new ArrayList<QuestionDto>();
+        QuestionDtoMapper mapper = new QuestionDtoMapper();
+        if (questions != null) {
+            for (Question q : questions) {
+                dtoList.add(mapper.transform(q));
+            }
+        }
+        return dtoList;
+        
+    }
+    
+    /**
+     * add cascade level names to a list
+     * @param questions
+     * @return
+     */
+    private void addLevelNames(List<QuestionDto> qlList) {
+        for (QuestionDto q : qlList) {
+            if (q.getType().equals(QuestionDto.QuestionType.CASCADE) && q.getCascadeResourceId() != null) {
+                CascadeResource cr =
+                        new CascadeResourceDao().getByKey(q.getCascadeResourceId());
+                if (cr != null) {
+                    q.setLevelNames(cr.getLevelNames());
+                }
+            }
+        }
+    }
+    
+    /**
      * lists all questions for a given questionGroup
      *
      * @param groupId
      * @return
      */
-    private List<QuestionDto> listQuestions(Long groupId) {
-        TreeMap<Integer, Question> questions = qDao
-                .listQuestionsByQuestionGroup(groupId, false);
-        List<QuestionDto> dtoList = new ArrayList<QuestionDto>();
-        if (questions != null) {
-            for (Question q : questions.values()) {
-                QuestionDto dto = new QuestionDto();
-                DtoMarshaller.copyToDto(q, dto);
-                if (q.getType().equals(Question.Type.CASCADE) && q.getCascadeResourceId() != null) {
-                    CascadeResource cr = new CascadeResourceDao()
-                            .getByKey(q.getCascadeResourceId());
-                    if (cr != null) {
-                        dto.setLevelNames(cr.getLevelNames());
-                    }
-                }
-                dtoList.add(dto);
-            }
-        }
-        return dtoList;
+    private List<QuestionDto> listGroupQuestionsWithLevelNames(Long groupId) {
+        List<QuestionDto> qlList = listQuestions(qDao.listQuestionsByQuestionGroup(groupId, false).values());
+        addLevelNames(qlList);
+        return qlList;
     }
 
+    /**
+     * lists all questions for a given survey
+     *
+     * @param surveyId
+     * @return
+     */
+    private List<QuestionDto> listSurveyQuestionsWithLevelNames(Long surveyId) {
+        List<QuestionDto> qlList =  listQuestions(qDao.listQuestionsBySurvey(surveyId)); //useless ordering
+        addLevelNames(qlList);
+        return qlList;
+    }
+
+    /**
+     * lists all options for a given question
+     *
+     * @param questionId
+     * @return
+     */
     private List<QuestionOptionDto> listQuestionOptions(Long questionId) {
 
         List<QuestionOption> options = qoDao.listByQuestionId(questionId);
         List<QuestionOptionDto> dtoList = new ArrayList<>();
+        QuestionOptionDtoMapper mapper = new QuestionOptionDtoMapper();
         if (options != null) {
             for (QuestionOption option : options) {
-                QuestionOptionDto dto = new QuestionOptionDto();
-                DtoMarshaller.copyToDto(option, dto);
-                dtoList.add(dto);
+                dtoList.add(mapper.transform(option));
             }
         }
 
+        return dtoList;
+    }
+
+    /**
+     * lists all question options in the entire survey
+     * @param surveyId
+     * @return
+     */
+    private List<QuestionOptionDto> listSurveyQuestionOptions(Long surveyId) {
+
+        List<QuestionOptionDto> dtoList = new ArrayList<>();
+        List<Question> questions = qDao.listQuestionsInOrder(surveyId, Type.OPTION);
+        QuestionOptionDtoMapper mapper = new QuestionOptionDtoMapper();
+        for (Question question : questions) {
+            List<QuestionOption> options = qoDao.listByQuestionId(question.getKey().getId());
+            if (options != null) {
+                for (QuestionOption option : options) {
+                    dtoList.add(mapper.transform(option));
+                }
+            }
+        }
         return dtoList;
     }
 
@@ -437,7 +485,7 @@ public class SurveyRestServlet extends AbstractRestApiServlet {
     }
 
     /**
-     * lsits all the SurveyQuestionSummary objects associated with a given questionDI
+     * lists all the SurveyQuestionSummary objects associated with a given questionId
      *
      * @param questionId
      * @return
@@ -556,7 +604,6 @@ public class SurveyRestServlet extends AbstractRestApiServlet {
             q.setType(Question.Type.GEO);
         } else if (questionType.equals("FREE_TEXT")) {
             q.setType(Question.Type.FREE_TEXT);
-            q.setIsName(req.getIsName());
         } else if (questionType.equals("OPTION")
                 || questionType.equals("STRENGTH")) {
             q.setAllowMultipleFlag(req.getAllowMultipleFlag());
@@ -592,8 +639,6 @@ public class SurveyRestServlet extends AbstractRestApiServlet {
             q.setAllowSign(req.getAllowSign());
             q.setMinVal(req.getMinVal());
             q.setMaxVal(req.getMaxVal());
-        } else if (questionType.equals("NAME")) {
-            q.setType(Question.Type.NAME);
         } else if (questionType.equals("VIDEO")) {
             q.setType(Question.Type.VIDEO);
         }
