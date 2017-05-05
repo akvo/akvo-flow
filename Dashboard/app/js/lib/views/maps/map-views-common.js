@@ -20,7 +20,6 @@ FLOW.NavMapsView = FLOW.View.extend({
   cartodbLayer: null,
   layerExistsCheck: false,
   questionGroups: [],
-  refreshIntervalId: null,
 
   init: function () {
     this._super();
@@ -126,9 +125,6 @@ FLOW.NavMapsView = FLOW.View.extend({
         }
     });
 
-    var filterContent = '<div id="survey_hierarchy" style="float: left"></div>&nbsp;';
-
-    $('#dropdown-holder').prepend(filterContent);
     $('#dropdown-holder').append('<div style="clear: both"></div>');
 
     // create leaflet map
@@ -191,70 +187,17 @@ FLOW.NavMapsView = FLOW.View.extend({
       $('body, html, #flowMap').scrollTop(0);
     });
 
-    self.checkHierarchy(0); //manage folder and/or survey selection hierarchy
     self.surveySelectorListeners();
     self.detailsPanelListeners();
   },
 
   surveySelectorListeners: function(){
       var self = this;
-      $(document).off('change', '.folder_survey_selector').on('change', '.folder_survey_selector',function(e) {
-        self.clearMap(); //remove any previously loaded point data
-        $('#form_selector option[value!=""]').remove();
 
-        self.cleanHierarchy($(this)); //remove all 'folder_survey_selector's after current
-
-        $(".form_selector").remove(); //first remove previously created form selector elements
-
-        if ($(this).val() !== "") {
-          var keyId = $(this).val();
-          //if a survey is selected, load forms to form selector element.
-          if ($(this).find("option:selected").data('type') === 'PROJECT') {
-            var baseline = $(this).find("option:selected").data('baseline');
-            self.manageSurveys(keyId, baseline);
-          } else { //if a folder is selected, load the folder's children on a new 'folder_survey_selector'
-            self.clearCartodbLayer(); //clear any currently overlayed cartodb layer (if any)
-
-            var hierarchyObject = self.hierarchyObject;
-
-            for (var i=0; i<hierarchyObject.length; i++) {
-              if (hierarchyObject[i].keyId === parseInt(keyId) && self.lastSelectedElement !== parseInt(keyId)) {
-                self.checkHierarchy(keyId);
-                self.lastSelectedElement = parseInt(keyId);
-              }
-            }
+      $(document).off('change', '.form-selector').on('change', '.form-selector',function(e) {
+          if ($(this).val() !== "") {
+              self.loadNamedMap($(this).val());
           }
-        } else { //if nothing is selected, delete all children 'folder_survey_selector's and clear form selector
-          self.clearCartodbLayer();
-        }
-
-      });
-
-      $(document).off('change', '.form_selector').on('change', '.form_selector',function(e) {
-        self.clearMap(); //remove any previously loaded point data
-        self.cleanHierarchy($(this)); //remove all 'folder_survey_selector's after current
-
-        if ($(this).val() !== "") {
-          var formId = $(this).val();
-          //get list of columns to be added to new named map's interactivity
-          $.get("/rest/cartodb/columns?form_id="+formId, function(columnsData) {
-            var namedMapObject = {};
-            namedMapObject['mapName'] = "raw_data_"+formId;
-            namedMapObject['tableName'] = "raw_data_"+formId;
-            namedMapObject['interactivity'] = [];
-            namedMapObject['query'] = "SELECT * FROM raw_data_" + formId;
-
-            if (columnsData.column_names) {
-              for (var j=0; j<columnsData['column_names'].length; j++) {
-                namedMapObject['interactivity'].push(columnsData['column_names'][j]['column_name']);
-              }
-            }
-
-            self.namedMapCheck(namedMapObject, formId);
-          });
-        } else {
-          self.createLayer("", $(this).data('baseline'));
-        }
       });
   },
 
@@ -333,60 +276,25 @@ FLOW.NavMapsView = FLOW.View.extend({
       });
   },
 
-  manageSurveys: function(keyId, baseline){
+  loadNamedMap: function(formId){
       var self = this;
-      $.get(
-        '/rest/surveys?surveyGroupId='+keyId,
-        function(data, status) {
-          var rows = [];
-          if (data['surveys'] && data['surveys'].length > 0) {
-            rows = data['surveys'];
-            rows.sort(function(el1, el2) {
-              return self.compare(el1, el2, 'name')
-            });
 
-            var hierarchyObject = self.hierarchyObject;
+      self.loadQuestions(formId); //load all questions for selected form
+      self.clearMap(); //remove any previously loaded point data
 
-            //create folder and/or survey select element
-            var formSelector = $("<select></select>")
-            .attr("data-survey-id", keyId)
-            .attr("data-baseline", (baseline) ? baseline : rows[0]["keyId"])
-            .attr("class", "form_selector");
-            formSelector.append('<option value="">--' + Ember.String.loc('_choose_a_form') + '--</option>');
-
-            var formIds = [];
-            for (var i=0; i<rows.length; i++) {
-              //append returned forms list to the firm selector element
-              formSelector.append(
-                $('<option></option>').val(rows[i]["keyId"]).html(rows[i]["name"]));
-              formIds.push(rows[i]["keyId"]);
-            }
-            $("#survey_hierarchy").append(formSelector);
-
-            //if no baseline survey is specified, pick first form
-            var registration = baseline;
-            if (!baseline) {
-                registration = rows[0]["keyId"];
-            }
-            //get list of columns to be added to new named map's interactivity
-            $.get("/rest/cartodb/columns?form_id="+registration, function(columnsData) {
-                var namedMapObject = {};
-                namedMapObject['mapName'] = 'raw_data_'+registration;
-                namedMapObject['tableName'] = 'raw_data_'+registration;
-                namedMapObject['interactivity'] = [];
-                namedMapObject['query'] = 'SELECT * FROM raw_data_'+registration;
-                if (columnsData.column_names) {
-                  for (var j=0; j<columnsData['column_names'].length; j++) {
-                    namedMapObject['interactivity'].push(columnsData['column_names'][j]['column_name']);
-                  }
-                }
-                self.namedMapCheck(namedMapObject, registration);
-            });
-            self.questionGroups = [];
-            for (var i=0; i<formIds.length; i++) {
-              self.loadQuestions(formIds[i]);
+      //get list of columns to be added to new named map's interactivity
+      $.get("/rest/cartodb/columns?form_id="+formId, function(columnsData) {
+          var namedMapObject = {};
+          namedMapObject['mapName'] = 'raw_data_'+formId;
+          namedMapObject['tableName'] = 'raw_data_'+formId;
+          namedMapObject['interactivity'] = [];
+          namedMapObject['query'] = 'SELECT * FROM raw_data_'+formId;
+          if (columnsData.column_names) {
+            for (var j=0; j<columnsData['column_names'].length; j++) {
+              namedMapObject['interactivity'].push(columnsData['column_names'][j]['column_name']);
             }
           }
+          self.namedMapCheck(namedMapObject, formId);
       });
   },
 
@@ -611,7 +519,7 @@ FLOW.NavMapsView = FLOW.View.extend({
         self.showDetailsPane();
 
         if ($.active > 0) {
-            self.refreshIntervalId = setInterval(function () {
+            var refreshIntervalId = setInterval(function () {
                 //keep checking if there are any pending ajax requests
                 if ($.active > 0) {
                     //keep displaying loading icon
@@ -621,6 +529,7 @@ FLOW.NavMapsView = FLOW.View.extend({
                     $.get('/rest/cartodb/data_point?id='+data.data_point_id, function(pointData, status){
                       self.getCartodbPointData(pointDataUrl, pointData['row']['name'], pointData['row']['identifier']);
                     });
+                    clearInterval(refreshIntervalId);
                 }
             }, 500);
         } else {
@@ -655,7 +564,6 @@ FLOW.NavMapsView = FLOW.View.extend({
 
   getCartodbPointData: function(url, dataPointName, dataPointIdentifier){
     var self = this;
-    clearInterval(self.refreshIntervalId); //stop the interval if running
 
     $("#pointDetails").html("");
 
@@ -813,43 +721,31 @@ FLOW.NavMapsView = FLOW.View.extend({
   loadQuestions: function(formId){
     var self = this;
 
-    //first get the question groups for this formId
-    var questionGroupsAjaxObject = {};
-    questionGroupsAjaxObject['call'] = 'GET';
-    questionGroupsAjaxObject['url'] = '/rest/question_groups?surveyId='+formId;
-    questionGroupsAjaxObject['data'] = '';
+    var qGroups = FLOW.store.filter(FLOW.QuestionGroup, function (qgItem) {
+        return qgItem.get('surveyId') == formId;
+    });
+    qGroups.forEach(function (qgItem) {
+        var questionGroup = {};
+        questionGroup['id'] = qgItem.get('keyId');
+        questionGroup['order'] = qgItem.get('order');
+        questionGroup['questions'] = [];
 
-    FLOW.ajaxCall(function(questionGroupsResponse){
-      if (questionGroupsResponse.question_groups) {
-        //for every question group pull a list of associated questions
-        for (var g=0; g<questionGroupsResponse.question_groups.length; g++) {
-          var questionGroup = {};
-          questionGroup['id'] = questionGroupsResponse.question_groups[g].keyId;
-          questionGroup['order'] = questionGroupsResponse.question_groups[g].order;
-          questionGroup['questions'] = [];
-          self.questionGroups.push(questionGroup);
-
-          var questionsAjaxObject = {};
-          questionsAjaxObject['call'] = 'GET';
-          questionsAjaxObject['url'] = '/rest/questions?surveyId='+formId+'&questionGroupId='+questionGroupsResponse.question_groups[g].keyId;
-          questionsAjaxObject['data'] = '';
-          questionsAjaxObject['index'] = g;
-
-          FLOW.ajaxCall(function(questionsResponse, qObj){
-            if (questionsResponse.questions) {
-              for (var j=0; j<questionsResponse.questions.length; j++) {
-                self.questionGroups[qObj.index]['questions'].push(questionsResponse.questions[j]);
-              }
-
-              //sort questions by order
-              self.questionGroups[questionsAjaxObject['index']]['questions'].sort(function(a, b) {
-                return parseFloat(a.order) - parseFloat(b.order);
-              });
-            }
-          }, questionsAjaxObject);
-        }
-      }
-    }, questionGroupsAjaxObject);
+        var questions = FLOW.store.filter(FLOW.Question, function (qItem) {
+            return qItem.get('questionGroupId') == qgItem.get('keyId');
+        });
+        questions.forEach(function (qItem) {
+            var question = {};
+            question['keyId'] = qItem.get('keyId');
+            question['order'] = qItem.get('order');
+            question['questionType'] = qItem.get('type');
+            question['text'] = qItem.get('text');
+            questionGroup['questions'].push(question);
+        });
+        questionGroup['questions'].sort(function(a, b) {
+            return parseFloat(a.order) - parseFloat(b.order);
+        });
+        self.questionGroups.push(questionGroup);
+    });
   },
 
   //function to project geoshape from details panel to main map canvas
@@ -885,57 +781,6 @@ FLOW.NavMapsView = FLOW.View.extend({
     }
     this.map.fitBounds(geoShape.getBounds());
     this.polygons.push(geoShape);
-  },
-
-  checkHierarchy: function(parentFolderId){
-    var self = this;
-
-    //if survey hierarchy object has previously been retrieved, no need to pull it anew
-    if (self.hierarchyObject.length > 0) {
-      self.manageHierarchy(parentFolderId);
-    } else {
-      $.get(
-        '/rest/survey_groups', /*place survey_groups endpoint here*/
-        function(data, status){
-          if (data['survey_groups'].length > 0) {
-            self.hierarchyObject = data['survey_groups'];
-            self.manageHierarchy(parentFolderId);
-          }
-        });
-    }
-  },
-
-  manageHierarchy: function(parentFolderId){
-    var self = this;
-
-    rows = self.hierarchyObject;
-    rows.sort(function(el1, el2) {
-      return self.compare(el1, el2, 'name');
-    });
-
-    //create folder and/or survey select element
-    var folder_survey_selector = $("<select></select>").attr("class", "folder_survey_selector");
-    folder_survey_selector.append('<option value="">--' + Ember.String.loc('_choose_folder_or_survey') + '--</option>');
-
-    for (var i=0; i<rows.length; i++) {
-      //append return survey list to the survey selector element
-      var surveyGroup = rows[i];
-
-      //if a subfolder, only load folders and surveys from parent folder
-      if (surveyGroup.parentId == parentFolderId) {
-        folder_survey_selector.append('<option value="'
-          + surveyGroup.keyId + '"'
-          +'data-type="'+surveyGroup.projectType+'" '
-          +'data-baseline="'+surveyGroup.newLocaleSurveyId+'">'
-          + surveyGroup.name
-          + '</option>');
-      }
-    }
-    $("#survey_hierarchy").append(folder_survey_selector);
-  },
-
-  cleanHierarchy: function(element){
-    $(element).nextAll().remove();
   },
 
   clearCartodbLayer: function(){
