@@ -43,7 +43,6 @@ import org.waterforpeople.mapping.app.gwt.client.survey.QuestionDto;
 import org.waterforpeople.mapping.app.gwt.client.survey.QuestionDtoMapper;
 import org.waterforpeople.mapping.app.gwt.client.survey.QuestionOptionDto;
 import org.waterforpeople.mapping.app.gwt.client.survey.QuestionOptionDtoMapper;
-import org.waterforpeople.mapping.app.util.DtoMarshaller;
 import org.waterforpeople.mapping.app.web.dto.SurveyTaskRequest;
 import org.waterforpeople.mapping.app.web.rest.dto.QuestionPayload;
 import org.waterforpeople.mapping.app.web.rest.dto.RestStatusDto;
@@ -204,8 +203,8 @@ public class QuestionRestService {
         Question q = questionDao.getByKey(id);
         QuestionDto dto = null;
         if (q != null) {
-            dto = new QuestionDto();
-            DtoMarshaller.copyToDto(q, dto);
+            QuestionDtoMapper qdm = new QuestionDtoMapper();
+            dto = qdm.transform(q);
             if (q.getType() == Question.Type.OPTION) {
                 Map<Integer, QuestionOption> qoMap = questionOptionDao.listOptionByQuestion(dto
                         .getKeyId());
@@ -312,8 +311,8 @@ public class QuestionRestService {
                     }
                     q = questionDao.save(q);
 
-                    dto = new QuestionDto();
-                    DtoMarshaller.copyToDto(q, dto);
+                    QuestionDtoMapper qdm = new QuestionDtoMapper();
+                    dto = qdm.transform(q);
                     statusDto.setStatus("ok");
                     statusDto.setMessage("");
                 }
@@ -350,8 +349,8 @@ public class QuestionRestService {
             } else {
                 q = copyQuestion(questionDto);
             }
-            dto = new QuestionDto();
-            DtoMarshaller.copyToDto(q, dto);
+            QuestionDtoMapper qdm = new QuestionDtoMapper();
+            dto = qdm.transform(q);
             statusDto.setStatus("ok");
             statusDto.setMessage("");
 
