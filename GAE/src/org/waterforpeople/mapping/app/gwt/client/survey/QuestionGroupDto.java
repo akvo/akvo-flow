@@ -68,14 +68,6 @@ public class QuestionGroupDto extends BaseDto implements NamedObject {
         this.code = code;
     }
 
-    public String getDescription() {
-        return description;
-    }
-
-    public void setDescription(String description) {
-        this.description = description;
-    }
-
     public void setQuestionMap(TreeMap<Integer, QuestionDto> questionMap) {
         this.questionMap = questionMap;
     }
