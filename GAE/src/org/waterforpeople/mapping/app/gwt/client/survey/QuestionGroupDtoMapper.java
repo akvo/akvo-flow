@@ -36,13 +36,13 @@ public class QuestionGroupDtoMapper {
         QuestionGroupDto qgDto = new QuestionGroupDto();
         BeanUtils.copyProperties(questionGroup, qgDto, new String[] {
                 "questionMap",
-                "translationMap"//,
-                //"status"
+                "translationMap",
+                "status"
         });
         qgDto.setKeyId(questionGroup.getKey().getId());
-//        if (questionGroup.getStatus() != null) {
-//            qgDto.setStatus(questionGroup.getStatus().toString());
-//        }
+        if (questionGroup.getStatus() != null) {
+            qgDto.setStatus(questionGroup.getStatus().toString());
+        }
 
         return qgDto;
     }
