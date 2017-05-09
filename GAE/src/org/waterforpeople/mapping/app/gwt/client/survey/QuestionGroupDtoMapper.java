@@ -26,6 +26,7 @@ public class QuestionGroupDtoMapper {
     public QuestionGroupDto transform(QuestionGroup questionGroup) {
         QuestionGroupDto qgDto = new QuestionGroupDto();
         BeanUtils.copyProperties(questionGroup, qgDto, new String[] {
+                "questionMap",
                 "translationMap"
         });
         qgDto.setKeyId(questionGroup.getKey().getId());
