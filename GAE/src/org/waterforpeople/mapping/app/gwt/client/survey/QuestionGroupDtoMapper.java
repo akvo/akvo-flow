@@ -23,7 +23,6 @@ import javax.annotation.Nullable;
 
 /**
  * @author stellan
- * TODO: should this be static?
  */
 public class QuestionGroupDtoMapper {
 
@@ -33,12 +32,12 @@ public class QuestionGroupDtoMapper {
      * @return
      */
     @Nullable
-    public QuestionGroupDto transform(QuestionGroup questionGroup) {
+    public static QuestionGroupDto transform(QuestionGroup questionGroup) {
         QuestionGroupDto qgDto = new QuestionGroupDto();
         BeanUtils.copyProperties(questionGroup, qgDto, new String[] {
                 "questionMap",
-                "translationMap",
-                "status"
+                "translationMap"//,
+                //"status"
         });
         qgDto.setKeyId(questionGroup.getKey().getId());
 //        if (questionGroup.getStatus() != null) {

@@ -76,15 +76,13 @@ public class QuestionGroupRestService {
     @RequestMapping(method = RequestMethod.GET, value = "/all")
     @ResponseBody
     public Map<String, List<QuestionGroupDto>> listQuestionGroups() {
-        final Map<String, List<QuestionGroupDto>> response = new HashMap<String, List<QuestionGroupDto>>();
+        final Map<String, List<QuestionGroupDto>> response =
+                new HashMap<String, List<QuestionGroupDto>>();
         List<QuestionGroupDto> results = new ArrayList<QuestionGroupDto>();
-        List<QuestionGroup> questionGroups = questionGroupDao
-                .list(Constants.ALL_RESULTS);
+        List<QuestionGroup> questionGroups = questionGroupDao.list(Constants.ALL_RESULTS);
         if (questionGroups != null) {
-            QuestionGroupDtoMapper qgm = new QuestionGroupDtoMapper();
             for (QuestionGroup s : questionGroups) {
-                QuestionGroupDto dto = qgm.transform(s);
-                results.add(dto);
+                results.add(QuestionGroupDtoMapper.transform(s));
             }
         }
         response.put("question_groups", results);
@@ -131,10 +129,8 @@ public class QuestionGroupRestService {
             final List<QuestionGroup> questionGroups = questionGroupDao
                     .listQuestionGroupBySurvey(surveyId);
             if (questionGroups != null) {
-                QuestionGroupDtoMapper qgm = new QuestionGroupDtoMapper();
                 for (QuestionGroup s : questionGroups) {
-                    QuestionGroupDto dto = qgm.transform(s);
-                    results.add(dto);
+                    results.add(QuestionGroupDtoMapper.transform(s));
                 }
             }
         }
@@ -143,9 +139,7 @@ public class QuestionGroupRestService {
         if (questionGroupId != null && preflight.isEmpty()) {
             QuestionGroup qg = questionGroupDao.getByKey(questionGroupId);
             if (qg != null) {
-                QuestionGroupDtoMapper qgm = new QuestionGroupDtoMapper();
-                QuestionGroupDto dto = qgm.transform(qg);
-                results.add(dto);
+                results.add(QuestionGroupDtoMapper.transform(qg));
             }
         }
         response.put("question_groups", results);
@@ -162,8 +156,7 @@ public class QuestionGroupRestService {
         QuestionGroup s = questionGroupDao.getByKey(id);
         QuestionGroupDto dto = null;
         if (s != null) {
-            QuestionGroupDtoMapper qgm = new QuestionGroupDtoMapper();
-            dto = qgm.transform(s);
+            dto = QuestionGroupDtoMapper.transform(s);
         }
         response.put("question_group", dto);
         return response;
@@ -233,8 +226,7 @@ public class QuestionGroupRestService {
                             });
                     qg = questionGroupDao.save(qg);
 
-                    QuestionGroupDtoMapper qgm = new QuestionGroupDtoMapper();
-                    dto = qgm.transform(qg);
+                    dto = QuestionGroupDtoMapper.transform(qg);
                     statusDto.setStatus("ok");
                     statusDto.setMessage("");
                 }
@@ -286,8 +278,7 @@ public class QuestionGroupRestService {
             return response;
         }
 
-        QuestionGroupDtoMapper qgm = new QuestionGroupDtoMapper();
-        QuestionGroupDto dto = qgm.transform(questionGroup);
+        QuestionGroupDto dto = QuestionGroupDtoMapper.transform(questionGroup);
         statusDto.setStatus("ok");
         statusDto.setMessage("");
 
