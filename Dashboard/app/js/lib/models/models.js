@@ -177,7 +177,6 @@ FLOW.Survey = FLOW.BaseModel.extend({
 
 FLOW.QuestionGroup = FLOW.BaseModel.extend({
   order: DS.attr('number'),
-  description: DS.attr('string'),
   name: DS.attr('string'),
   path: DS.attr('string'),
   code: DS.attr('string'),

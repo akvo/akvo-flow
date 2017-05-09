@@ -21,8 +21,17 @@ import org.springframework.beans.BeanUtils;
 
 import javax.annotation.Nullable;
 
+/**
+ * @author stellan
+ * TODO: should this be static?
+ */
 public class QuestionGroupDtoMapper {
 
+    /**
+     * transforms a QuestionGroup to a QuestionGroupDto
+     * @param questionGroup
+     * @return
+     */
     @Nullable
     public QuestionGroupDto transform(QuestionGroup questionGroup) {
         QuestionGroupDto qgDto = new QuestionGroupDto();
