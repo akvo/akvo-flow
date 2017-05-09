@@ -33,7 +33,8 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.waterforpeople.mapping.app.gwt.client.survey.QuestionGroupDto;
-import org.waterforpeople.mapping.app.util.DtoMarshaller;
+import org.waterforpeople.mapping.app.gwt.client.survey.QuestionGroupDtoMapper;
+//import org.waterforpeople.mapping.app.util.DtoMarshaller;
 import org.waterforpeople.mapping.app.web.dto.DataProcessorRequest;
 import org.waterforpeople.mapping.app.web.dto.SurveyTaskRequest;
 import org.waterforpeople.mapping.app.web.rest.dto.QuestionGroupPayload;
@@ -82,8 +83,8 @@ public class QuestionGroupRestService {
                 .list(Constants.ALL_RESULTS);
         if (questionGroups != null) {
             for (QuestionGroup s : questionGroups) {
-                QuestionGroupDto dto = new QuestionGroupDto();
-                DtoMarshaller.copyToDto(s, dto);
+                QuestionGroupDtoMapper qgm = new QuestionGroupDtoMapper();
+                QuestionGroupDto dto = qgm.transform(s);
 
                 // needed because of different names for description in
                 // questionGroup
@@ -137,8 +138,8 @@ public class QuestionGroupRestService {
                     .listQuestionGroupBySurvey(surveyId);
             if (questionGroups != null) {
                 for (QuestionGroup s : questionGroups) {
-                    QuestionGroupDto dto = new QuestionGroupDto();
-                    DtoMarshaller.copyToDto(s, dto);
+                    QuestionGroupDtoMapper qgm = new QuestionGroupDtoMapper();
+                    QuestionGroupDto dto = qgm.transform(s);
 
                     // needed because of different names for description in
                     // questionGroup
@@ -153,8 +154,8 @@ public class QuestionGroupRestService {
         if (questionGroupId != null && preflight.isEmpty()) {
             QuestionGroup qg = questionGroupDao.getByKey(questionGroupId);
             if (qg != null) {
-                QuestionGroupDto dto = new QuestionGroupDto();
-                DtoMarshaller.copyToDto(qg, dto);
+                QuestionGroupDtoMapper qgm = new QuestionGroupDtoMapper();
+                QuestionGroupDto dto = qgm.transform(qg);
                 dto.setDescription(qg.getDesc());
                 results.add(dto);
             }
@@ -173,8 +174,8 @@ public class QuestionGroupRestService {
         QuestionGroup s = questionGroupDao.getByKey(id);
         QuestionGroupDto dto = null;
         if (s != null) {
-            dto = new QuestionGroupDto();
-            DtoMarshaller.copyToDto(s, dto);
+            QuestionGroupDtoMapper qgm = new QuestionGroupDtoMapper();
+            dto = qgm.transform(s);
             // needed because of different names for description in
             // questionGroup and questionGroupDto
             dto.setDescription(s.getDesc());
@@ -247,8 +248,8 @@ public class QuestionGroupRestService {
                             });
                     qg = questionGroupDao.save(qg);
 
-                    dto = new QuestionGroupDto();
-                    DtoMarshaller.copyToDto(qg, dto);
+                    QuestionGroupDtoMapper qgm = new QuestionGroupDtoMapper();
+                    dto = qgm.transform(qg);
                     statusDto.setStatus("ok");
                     statusDto.setMessage("");
                 }
@@ -300,8 +301,8 @@ public class QuestionGroupRestService {
             return response;
         }
 
-        QuestionGroupDto dto = new QuestionGroupDto();
-        DtoMarshaller.copyToDto(questionGroup, dto);
+        QuestionGroupDtoMapper qgm = new QuestionGroupDtoMapper();
+        QuestionGroupDto dto = qgm.transform(questionGroup);
         statusDto.setStatus("ok");
         statusDto.setMessage("");
 
