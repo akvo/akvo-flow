@@ -16,6 +16,7 @@
 package org.waterforpeople.mapping.app.gwt.client.survey;
 
 import com.gallatinsystems.survey.domain.QuestionGroup;
+
 import org.springframework.beans.BeanUtils;
 
 import javax.annotation.Nullable;
@@ -27,9 +28,14 @@ public class QuestionGroupDtoMapper {
         QuestionGroupDto qgDto = new QuestionGroupDto();
         BeanUtils.copyProperties(questionGroup, qgDto, new String[] {
                 "questionMap",
-                "translationMap"
+                "translationMap",
+                "status"
         });
         qgDto.setKeyId(questionGroup.getKey().getId());
+//        if (questionGroup.getStatus() != null) {
+//            qgDto.setStatus(questionGroup.getStatus().toString());
+//        }
+
         return qgDto;
     }
 }

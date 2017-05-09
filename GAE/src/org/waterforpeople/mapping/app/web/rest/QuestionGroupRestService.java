@@ -81,14 +81,9 @@ public class QuestionGroupRestService {
         List<QuestionGroup> questionGroups = questionGroupDao
                 .list(Constants.ALL_RESULTS);
         if (questionGroups != null) {
+            QuestionGroupDtoMapper qgm = new QuestionGroupDtoMapper();
             for (QuestionGroup s : questionGroups) {
-                QuestionGroupDtoMapper qgm = new QuestionGroupDtoMapper();
                 QuestionGroupDto dto = qgm.transform(s);
-
-                // needed because of different names for description in
-                // questionGroup
-                // and questionGroupDto
-                dto.setDescription(s.getDesc());
                 results.add(dto);
             }
         }
@@ -136,14 +131,9 @@ public class QuestionGroupRestService {
             final List<QuestionGroup> questionGroups = questionGroupDao
                     .listQuestionGroupBySurvey(surveyId);
             if (questionGroups != null) {
+                QuestionGroupDtoMapper qgm = new QuestionGroupDtoMapper();
                 for (QuestionGroup s : questionGroups) {
-                    QuestionGroupDtoMapper qgm = new QuestionGroupDtoMapper();
                     QuestionGroupDto dto = qgm.transform(s);
-
-                    // needed because of different names for description in
-                    // questionGroup
-                    // and questionGroupDto
-                    dto.setDescription(s.getDesc());
                     results.add(dto);
                 }
             }
@@ -155,7 +145,6 @@ public class QuestionGroupRestService {
             if (qg != null) {
                 QuestionGroupDtoMapper qgm = new QuestionGroupDtoMapper();
                 QuestionGroupDto dto = qgm.transform(qg);
-                dto.setDescription(qg.getDesc());
                 results.add(dto);
             }
         }
@@ -175,9 +164,6 @@ public class QuestionGroupRestService {
         if (s != null) {
             QuestionGroupDtoMapper qgm = new QuestionGroupDtoMapper();
             dto = qgm.transform(s);
-            // needed because of different names for description in
-            // questionGroup and questionGroupDto
-            dto.setDescription(s.getDesc());
         }
         response.put("question_group", dto);
         return response;
