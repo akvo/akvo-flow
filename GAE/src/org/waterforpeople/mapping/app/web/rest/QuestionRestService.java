@@ -205,21 +205,7 @@ public class QuestionRestService {
         if (q != null) {
             QuestionDtoMapper qdm = new QuestionDtoMapper();
             dto = qdm.transform(q);
-            if (q.getType() == Question.Type.OPTION) {
-                Map<Integer, QuestionOption> qoMap = questionOptionDao.listOptionByQuestion(dto
-                        .getKeyId());
-                List<Long> qoList = new ArrayList<Long>();
-                for (QuestionOption qo : qoMap.values()) {
-                    QuestionOptionDto qoDto = new QuestionOptionDto();
-                    BeanUtils.copyProperties(qo, qoDto, new String[] {
-                            "translationMap"
-                    });
-                    qoDto.setKeyId(qo.getKey().getId());
-                    qoList.add(qo.getKey().getId());
-                    qoResults.add(qoDto);
-                }
-                dto.setQuestionOptions(qoList);
-            }
+            attachAnyOptions(dto, qoResults);
         }
         response.put("questionOptions", qoResults);
         response.put("question", dto);
@@ -354,21 +340,7 @@ public class QuestionRestService {
             statusDto.setStatus("ok");
             statusDto.setMessage("");
 
-            if (q.getType() == Question.Type.OPTION) {
-                Map<Integer, QuestionOption> qoMap = questionOptionDao.listOptionByQuestion(dto
-                        .getKeyId());
-                List<Long> qoList = new ArrayList<Long>();
-                for (QuestionOption qo : qoMap.values()) {
-                    QuestionOptionDto qoDto = new QuestionOptionDto();
-                    BeanUtils.copyProperties(qo, qoDto, new String[] {
-                            "translationMap"
-                    });
-                    qoDto.setKeyId(qo.getKey().getId());
-                    qoList.add(qo.getKey().getId());
-                    qoResults.add(qoDto);
-                }
-                dto.setQuestionOptions(qoList);
-            }
+            attachAnyOptions(dto, qoResults);
         }
         response.put("meta", statusDto);
         response.put("questionOptions", qoResults);
@@ -430,7 +402,8 @@ public class QuestionRestService {
             return null;
         }
         return SurveyUtils.copyQuestion(source, dto.getQuestionGroupId(), dto.getOrder(),
-                source.getSurveyId(), SurveyUtils.listQuestionIdsUsedInSurveyGroup(source.getSurveyId()));
+                source.getSurveyId(),
+                SurveyUtils.listQuestionIdsUsedInSurveyGroup(source.getSurveyId()));
     }
 
     private Question newQuestion(QuestionDto dto) {
@@ -447,4 +420,21 @@ public class QuestionRestService {
         final Question result = questionDao.save(q);
         return result;
     }
+
+    private void attachAnyOptions(QuestionDto dto, List<QuestionOptionDto> qoResults) {
+        if (dto.getType() == QuestionDto.QuestionType.OPTION) {
+            // since we do not need translations:
+            List<QuestionOption> qoList = questionOptionDao.listByQuestionId(dto.getKeyId());
+            List<Long> qoIdList = new ArrayList<Long>();
+            QuestionOptionDtoMapper m = new QuestionOptionDtoMapper();
+            for (QuestionOption qo : qoList) {
+                qoIdList.add(qo.getKey().getId());
+                QuestionOptionDto qoDto = m.transform(qo);
+                qoResults.add(qoDto);
+            }
+            dto.setQuestionOptions(qoIdList);
+        }
+    }
+
 }
+
