@@ -51,6 +51,7 @@ import org.waterforpeople.mapping.dao.QuestionAnswerStoreDao;
 import javax.inject.Inject;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
@@ -422,8 +423,8 @@ public class QuestionRestService {
     }
 
     private List<QuestionOptionDto> attachAnyOptions(QuestionDto dto) {
-        ArrayList<QuestionOptionDto> qoResults = new ArrayList<QuestionOptionDto>();
         if (dto.getType() == QuestionDto.QuestionType.OPTION) {
+            ArrayList<QuestionOptionDto> qoResults = new ArrayList<QuestionOptionDto>();
             // since we do not need translations:
             List<QuestionOption> qoList = questionOptionDao.listByQuestionId(dto.getKeyId());
             List<Long> qoIdList = new ArrayList<Long>();
@@ -434,8 +435,9 @@ public class QuestionRestService {
                 qoResults.add(qoDto);
             }
             dto.setQuestionOptions(qoIdList);
+            return qoResults;
         }
-        return qoResults;
+        return Collections.emptyList();
     }
 
 }
