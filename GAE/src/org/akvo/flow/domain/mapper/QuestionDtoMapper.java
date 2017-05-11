@@ -13,18 +13,21 @@
  *
  *  The full license text can also be seen at <http://www.gnu.org/licenses/agpl.html>.
  */
-package org.waterforpeople.mapping.app.gwt.client.survey;
+package org.akvo.flow.domain.mapper;
 
 import com.gallatinsystems.survey.domain.Question;
+
 import org.springframework.beans.BeanUtils;
+import org.waterforpeople.mapping.app.gwt.client.survey.QuestionDto;
 
 import javax.annotation.Nullable;
+
 import java.util.*;
 
 public class QuestionDtoMapper {
 
     @Nullable
-    public QuestionDto transform(Question question) {
+    public static QuestionDto transform(Question question) {
         if (question != null) {
             QuestionDto questionDto = new QuestionDto();
 

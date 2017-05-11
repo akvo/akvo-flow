@@ -13,11 +13,12 @@
  *
  *  The full license text can also be seen at <http://www.gnu.org/licenses/agpl.html>.
  */
-package org.waterforpeople.mapping.app.gwt.client.survey;
+package org.akvo.flow.domain.mapper;
 
 import com.gallatinsystems.survey.domain.QuestionGroup;
 
 import org.springframework.beans.BeanUtils;
+import org.waterforpeople.mapping.app.gwt.client.survey.QuestionGroupDto;
 
 import javax.annotation.Nullable;
 

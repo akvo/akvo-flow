@@ -31,6 +31,8 @@ import com.gallatinsystems.surveyal.dao.SurveyalValueDao;
 import com.google.appengine.api.taskqueue.QueueFactory;
 import com.google.appengine.api.taskqueue.TaskOptions;
 
+import org.akvo.flow.domain.mapper.QuestionDtoMapper;
+import org.akvo.flow.domain.mapper.QuestionOptionDtoMapper;
 import org.springframework.beans.BeanUtils;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -40,9 +42,7 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.waterforpeople.mapping.app.gwt.client.survey.QuestionDto;
-import org.waterforpeople.mapping.app.gwt.client.survey.QuestionDtoMapper;
 import org.waterforpeople.mapping.app.gwt.client.survey.QuestionOptionDto;
-import org.waterforpeople.mapping.app.gwt.client.survey.QuestionOptionDtoMapper;
 import org.waterforpeople.mapping.app.util.DtoMarshaller;
 import org.waterforpeople.mapping.app.web.dto.SurveyTaskRequest;
 import org.waterforpeople.mapping.app.web.rest.dto.QuestionPayload;
@@ -76,10 +76,6 @@ public class QuestionRestService {
 
     @Inject
     private SurveyGroupDAO surveyGroupDao;
-
-    private QuestionDtoMapper questionDtoMapper = new QuestionDtoMapper();
-
-    private QuestionOptionDtoMapper questionOptionDtoMapper = new QuestionOptionDtoMapper();
 
     // list questions by questionGroup or by survey.
     // if optionQuestionHeadersOnly is true, only the option questions are returned
@@ -134,7 +130,7 @@ public class QuestionRestService {
 
         if (questions != null && questions.size() > 0) {
             for (Question question : questions) {
-                QuestionDto qDto = questionDtoMapper.transform(question);
+                QuestionDto qDto = QuestionDtoMapper.transform(question);
                 if (qDto != null) {
                     questionDtoList.add(qDto);
                 }
@@ -167,7 +163,7 @@ public class QuestionRestService {
         List<QuestionOptionDto> questionOptionDtoList = new ArrayList<>();
 
         for (QuestionOption qo : questionOptionDao.listByQuestionId(optionTypeQuestionIds)) {
-            QuestionOptionDto qoDto = questionOptionDtoMapper.transform(qo);
+            QuestionOptionDto qoDto = QuestionOptionDtoMapper.transform(qo);
             questionOptionDtoList.add(qoDto);
         }
 

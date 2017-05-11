@@ -14,12 +14,17 @@
  *  The full license text can also be seen at <http://www.gnu.org/licenses/agpl.html>.
  */
 
-package org.waterforpeople.mapping.app.gwt.client.survey;
+package org.akvo.flow.domain.mapper;
 
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+
+import org.waterforpeople.mapping.app.gwt.client.survey.OptionContainerDto;
+import org.waterforpeople.mapping.app.gwt.client.survey.QuestionDto;
+import org.waterforpeople.mapping.app.gwt.client.survey.QuestionHelpDto;
+import org.waterforpeople.mapping.app.gwt.client.survey.TranslationDto;
 
 public interface QuestionDtoMappableFields {
 

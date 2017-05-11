@@ -23,6 +23,7 @@ import java.util.Map;
 
 import javax.inject.Inject;
 
+import org.akvo.flow.domain.mapper.QuestionGroupDtoMapper;
 import org.apache.commons.lang.ArrayUtils;
 import org.springframework.beans.BeanUtils;
 import org.springframework.stereotype.Controller;
@@ -33,7 +34,6 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.waterforpeople.mapping.app.gwt.client.survey.QuestionGroupDto;
-import org.waterforpeople.mapping.app.gwt.client.survey.QuestionGroupDtoMapper;
 import org.waterforpeople.mapping.app.web.dto.DataProcessorRequest;
 import org.waterforpeople.mapping.app.web.dto.SurveyTaskRequest;
 import org.waterforpeople.mapping.app.web.rest.dto.QuestionGroupPayload;
@@ -81,8 +81,8 @@ public class QuestionGroupRestService {
         List<QuestionGroupDto> results = new ArrayList<QuestionGroupDto>();
         List<QuestionGroup> questionGroups = questionGroupDao.list(Constants.ALL_RESULTS);
         if (questionGroups != null) {
-            for (QuestionGroup s : questionGroups) {
-                results.add(QuestionGroupDtoMapper.transform(s));
+            for (QuestionGroup qg : questionGroups) {
+                results.add(QuestionGroupDtoMapper.transform(qg));
             }
         }
         response.put("question_groups", results);
@@ -129,8 +129,8 @@ public class QuestionGroupRestService {
             final List<QuestionGroup> questionGroups = questionGroupDao
                     .listQuestionGroupBySurvey(surveyId);
             if (questionGroups != null) {
-                for (QuestionGroup s : questionGroups) {
-                    results.add(QuestionGroupDtoMapper.transform(s));
+                for (QuestionGroup qg : questionGroups) {
+                    results.add(QuestionGroupDtoMapper.transform(qg));
                 }
             }
         }
@@ -153,10 +153,10 @@ public class QuestionGroupRestService {
     public Map<String, QuestionGroupDto> findQuestionGroup(
             @PathVariable("id") Long id) {
         final Map<String, QuestionGroupDto> response = new HashMap<String, QuestionGroupDto>();
-        QuestionGroup s = questionGroupDao.getByKey(id);
+        QuestionGroup qg = questionGroupDao.getByKey(id);
         QuestionGroupDto dto = null;
-        if (s != null) {
-            dto = QuestionGroupDtoMapper.transform(s);
+        if (qg != null) {
+            dto = QuestionGroupDtoMapper.transform(qg);
         }
         response.put("question_group", dto);
         return response;
@@ -259,26 +259,26 @@ public class QuestionGroupRestService {
             return response;
         }
 
-        QuestionGroup questionGroup = null;
+        QuestionGroup qg = null;
         // deal with copying a question group
         if (questionGroupDto.getSourceId() != null) {
             // copy question group
-            questionGroup = copyGroup(questionGroupDto);
+            qg = copyGroup(questionGroupDto);
         } else {
             // new question group
-            questionGroup = new QuestionGroup();
-            BeanUtils.copyProperties(questionGroupDto, questionGroup, new String[] {
+            qg = new QuestionGroup();
+            BeanUtils.copyProperties(questionGroupDto, qg, new String[] {
                     "createdDateTime", "status"
             });
-            questionGroup.setStatus(QuestionGroup.Status.valueOf(questionGroupDto.getStatus()));
-            questionGroup = questionGroupDao.save(questionGroup);
+            qg.setStatus(QuestionGroup.Status.valueOf(questionGroupDto.getStatus()));
+            qg = questionGroupDao.save(qg);
         }
 
-        if (questionGroup == null) {
+        if (qg == null) {
             return response;
         }
 
-        QuestionGroupDto dto = QuestionGroupDtoMapper.transform(questionGroup);
+        QuestionGroupDto dto = QuestionGroupDtoMapper.transform(qg);
         statusDto.setStatus("ok");
         statusDto.setMessage("");
 
