@@ -205,7 +205,7 @@ public class QuestionRestService {
         if (q != null) {
             QuestionDtoMapper qdm = new QuestionDtoMapper();
             dto = qdm.transform(q);
-            attachAnyOptions(dto, qoResults);
+            qoResults = attachAnyOptions(dto);
         }
         response.put("questionOptions", qoResults);
         response.put("question", dto);
@@ -340,7 +340,7 @@ public class QuestionRestService {
             statusDto.setStatus("ok");
             statusDto.setMessage("");
 
-            attachAnyOptions(dto, qoResults);
+            qoResults = attachAnyOptions(dto);
         }
         response.put("meta", statusDto);
         response.put("questionOptions", qoResults);
@@ -421,7 +421,8 @@ public class QuestionRestService {
         return result;
     }
 
-    private void attachAnyOptions(QuestionDto dto, List<QuestionOptionDto> qoResults) {
+    private List<QuestionOptionDto> attachAnyOptions(QuestionDto dto) {
+        ArrayList<QuestionOptionDto> qoResults = new ArrayList<QuestionOptionDto>();
         if (dto.getType() == QuestionDto.QuestionType.OPTION) {
             // since we do not need translations:
             List<QuestionOption> qoList = questionOptionDao.listByQuestionId(dto.getKeyId());
@@ -434,6 +435,7 @@ public class QuestionRestService {
             }
             dto.setQuestionOptions(qoIdList);
         }
+        return qoResults;
     }
 
 }
