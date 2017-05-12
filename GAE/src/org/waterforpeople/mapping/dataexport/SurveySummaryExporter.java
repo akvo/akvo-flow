@@ -203,7 +203,9 @@ public class SurveySummaryExporter extends AbstractDataExporter {
         // Sort them into the right lists
         for (QuestionDto q:allQuestions) {
             List<QuestionDto> myList = idMap.get(q.getQuestionGroupId());
-            myList.add(q);
+            if (myList != null) {
+                myList.add(q);                
+            }
         }
         // Lists complete, now we can sort and visit each in order
         rollupOrder = new ArrayList<QuestionDto>();
