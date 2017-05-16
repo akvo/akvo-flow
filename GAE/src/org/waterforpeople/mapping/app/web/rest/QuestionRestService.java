@@ -49,8 +49,6 @@ import org.waterforpeople.mapping.app.web.rest.dto.QuestionPayload;
 import org.waterforpeople.mapping.app.web.rest.dto.RestStatusDto;
 import org.waterforpeople.mapping.dao.QuestionAnswerStoreDao;
 
-import javax.inject.Inject;
-
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
@@ -62,20 +60,15 @@ import java.util.Map;
 @SuppressWarnings("unused")
 public class QuestionRestService {
 
-    @Inject
-    private QuestionDao questionDao;
+    private QuestionDao questionDao = new QuestionDao();
 
-    @Inject
-    private QuestionOptionDao questionOptionDao;
+    private QuestionOptionDao questionOptionDao = new QuestionOptionDao();
 
-    @Inject
-    private SurveyMetricMappingDao surveyMetricMappingDao;
+    private SurveyMetricMappingDao surveyMetricMappingDao = new SurveyMetricMappingDao();
 
-    @Inject
-    private SurveyDAO surveyDao;
+    private SurveyDAO surveyDao = new SurveyDAO();
 
-    @Inject
-    private SurveyGroupDAO surveyGroupDao;
+    private SurveyGroupDAO surveyGroupDao = new SurveyGroupDAO();
 
     private QuestionDtoMapper questionDtoMapper = new QuestionDtoMapper();
 
@@ -197,8 +190,7 @@ public class QuestionRestService {
     // find a single question by the questionId
     @RequestMapping(method = RequestMethod.GET, value = "/{id}")
     @ResponseBody
-    public Map<String, Object> findQuestion(@PathVariable("id")
-    Long id) {
+    public Map<String, Object> findQuestion(@PathVariable("id") Long id) {
         final Map<String, Object> response = new HashMap<String, Object>();
         List<QuestionOptionDto> qoResults = new ArrayList<QuestionOptionDto>();
         Question q = questionDao.getByKey(id);
@@ -232,8 +224,7 @@ public class QuestionRestService {
     @RequestMapping(method = RequestMethod.DELETE, value = "/{id}")
     @ResponseBody
     public Map<String, RestStatusDto> deleteQuestionById(
-            @PathVariable("id")
-            Long questionId) {
+            @PathVariable("id") Long questionId) {
         final Map<String, RestStatusDto> response = new HashMap<String, RestStatusDto>();
         Question q = questionDao.getByKey(questionId);
         RestStatusDto statusDto = null;
@@ -267,8 +258,7 @@ public class QuestionRestService {
     @RequestMapping(method = RequestMethod.PUT, value = "/{id}")
     @ResponseBody
     public Map<String, Object> saveExistingQuestion(
-            @RequestBody
-            QuestionPayload payLoad) {
+            @RequestBody QuestionPayload payLoad) {
         final QuestionDto questionDto = payLoad.getQuestion();
         final Map<String, Object> response = new HashMap<String, Object>();
         QuestionDto dto = null;
@@ -329,8 +319,7 @@ public class QuestionRestService {
     @RequestMapping(method = RequestMethod.POST, value = "")
     @ResponseBody
     public Map<String, Object> saveNewQuestion(
-            @RequestBody
-            QuestionPayload payLoad) {
+            @RequestBody QuestionPayload payLoad) {
         final QuestionDto questionDto = payLoad.getQuestion();
         final Map<String, Object> response = new HashMap<String, Object>();
         List<QuestionOptionDto> qoResults = new ArrayList<QuestionOptionDto>();
@@ -381,46 +370,46 @@ public class QuestionRestService {
     @RequestMapping(method = RequestMethod.POST, value = "/{id}/validate")
     @ResponseBody
     public Map<String, Object> validateQuestionId(
-	    @PathVariable("id") Long id,
-	    @RequestParam(value = "questionId") String questionId) {
+            @PathVariable("id") Long id,
+            @RequestParam(value = "questionId") String questionId) {
 
-	Question question = questionDao.getByKey(id);
+        Question question = questionDao.getByKey(id);
 
-	Long surveyId = question.getSurveyId();
-	Survey survey = surveyDao.getById(surveyId);
+        Long surveyId = question.getSurveyId();
+        Survey survey = surveyDao.getById(surveyId);
 
-	Long surveyGroupId = survey.getSurveyGroupId();
-	SurveyGroup surveyGroup = surveyGroupDao.getByKey(surveyGroupId);
+        Long surveyGroupId = survey.getSurveyGroupId();
+        SurveyGroup surveyGroup = surveyGroupDao.getByKey(surveyGroupId);
 
-	boolean isMonitoringGroup = surveyGroup.getMonitoringGroup();
+        boolean isMonitoringGroup = surveyGroup.getMonitoringGroup();
 
-	List<Survey> surveys = new ArrayList<Survey>();
+        List<Survey> surveys = new ArrayList<Survey>();
 
-	if (isMonitoringGroup) {
-	    surveys = surveyDao.listSurveysByGroup(surveyGroupId);
-	} else {
-	    surveys.add(survey);
-	}
+        if (isMonitoringGroup) {
+            surveys = surveyDao.listSurveysByGroup(surveyGroupId);
+        } else {
+            surveys.add(survey);
+        }
 
-	List<Question> questions = new ArrayList<Question>();
+        List<Question> questions = new ArrayList<Question>();
 
-	for (Survey s : surveys) {
-	    questions.addAll(questionDao.listQuestionsBySurvey(s.getKey().getId()));
-	}
+        for (Survey s : surveys) {
+            questions.addAll(questionDao.listQuestionsBySurvey(s.getKey().getId()));
+        }
 
-	Map<String, Object> result = new HashMap<String, Object>();
+        Map<String, Object> result = new HashMap<String, Object>();
 
-	for (Question q : questions) {
-	    if (questionId.equals(q.getQuestionId())
-		    && !question.getKey().equals(q.getKey())) {
-		result.put("success", false);
-		result.put("reason", "Question id not unique");
-		return result;
-	    }
-	}
+        for (Question q : questions) {
+            if (questionId.equals(q.getQuestionId())
+                    && !question.getKey().equals(q.getKey())) {
+                result.put("success", false);
+                result.put("reason", "Question id not unique");
+                return result;
+            }
+        }
 
-	result.put("success", true);
-	return result;
+        result.put("success", true);
+        return result;
     }
 
     private Question copyQuestion(QuestionDto dto) {
@@ -431,7 +420,8 @@ public class QuestionRestService {
             return null;
         }
         return SurveyUtils.copyQuestion(source, dto.getQuestionGroupId(), dto.getOrder(),
-                source.getSurveyId(), SurveyUtils.listQuestionIdsUsedInSurveyGroup(source.getSurveyId()));
+                source.getSurveyId(),
+                SurveyUtils.listQuestionIdsUsedInSurveyGroup(source.getSurveyId()));
     }
 
     private Question newQuestion(QuestionDto dto) {

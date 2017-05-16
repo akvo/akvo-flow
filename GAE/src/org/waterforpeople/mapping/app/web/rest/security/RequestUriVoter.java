@@ -1,5 +1,5 @@
 /*
- *  Copyright (C) 2014-2015 Stichting Akvo (Akvo Foundation)
+ *  Copyright (C) 2014-2015,2017 Stichting Akvo (Akvo Foundation)
  *
  *  This file is part of Akvo FLOW.
  *
@@ -24,7 +24,6 @@ import java.util.logging.Logger;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import javax.inject.Inject;
 import javax.servlet.http.HttpServletRequest;
 
 import org.akvo.flow.domain.RootFolder;
@@ -72,20 +71,15 @@ public class RequestUriVoter implements AccessDecisionVoter<FilterInvocation> {
 
     private static final int OBJECT_ID_GROUP = 3;
 
-    @Inject
-    private UserRoleDao userRoleDao;
+    private UserRoleDao userRoleDao = new UserRoleDao();
 
-    @Inject
-    private UserAuthorizationDAO userAuthorizationDao;
+    private UserAuthorizationDAO userAuthorizationDao = new UserAuthorizationDAO();
 
-    @Inject
-    private SurveyGroupDAO surveyGroupDao;
+    private SurveyGroupDAO surveyGroupDao = new SurveyGroupDAO();
 
-    @Inject
-    private SurveyDAO surveyDao;
+    private SurveyDAO surveyDao = new SurveyDAO();
 
-    @Inject
-    private SurveyInstanceDAO surveyInstanceDao;
+    private SurveyInstanceDAO surveyInstanceDao = new SurveyInstanceDAO();
 
     @Override
     public boolean supports(ConfigAttribute attribute) {

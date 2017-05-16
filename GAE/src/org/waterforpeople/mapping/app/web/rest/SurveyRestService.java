@@ -25,8 +25,6 @@ import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-import javax.inject.Inject;
-
 import org.springframework.beans.BeanUtils;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -57,17 +55,13 @@ public class SurveyRestService {
 
     private static final Logger log = Logger.getLogger(SurveyRestService.class.getName());
 
-    @Inject
-    private SurveyDAO surveyDao;
+    private SurveyDAO surveyDao = new SurveyDAO();
 
-    @Inject
-    private SurveyInstanceSummaryDao sisDao;
+    private SurveyInstanceSummaryDao sisDao = new SurveyInstanceSummaryDao();
 
-    @Inject
-    private SurveyalValueDao svDao;
+    private SurveyalValueDao svDao = new SurveyalValueDao();
 
-    @Inject
-    private QuestionAnswerStoreDao qasDao;
+    private QuestionAnswerStoreDao qasDao = new QuestionAnswerStoreDao();
 
     // TODO put in meta information?
     // list all surveys

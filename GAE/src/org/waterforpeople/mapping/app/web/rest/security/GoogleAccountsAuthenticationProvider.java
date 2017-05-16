@@ -6,8 +6,6 @@ import java.util.Set;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-import javax.inject.Inject;
-
 import org.springframework.context.MessageSource;
 import org.springframework.context.MessageSourceAware;
 import org.springframework.context.support.MessageSourceAccessor;
@@ -41,8 +39,7 @@ public class GoogleAccountsAuthenticationProvider implements AuthenticationProvi
     private static final Logger log = Logger.getLogger(GoogleAccountsAuthenticationProvider.class
             .getName());
 
-    @Inject
-    UserDao userDao;
+    private UserDao userDao = new UserDao();
 
     @Override
     public Authentication authenticate(Authentication authentication)

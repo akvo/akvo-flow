@@ -1,5 +1,5 @@
 /*
- *  Copyright (C) 2012-2016 Stichting Akvo (Akvo Foundation)
+ *  Copyright (C) 2012-2017 Stichting Akvo (Akvo Foundation)
  *
  *  This file is part of Akvo FLOW.
  *
@@ -22,7 +22,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import javax.inject.Inject;
 import javax.servlet.http.HttpServletRequest;
 
 import org.akvo.flow.domain.DataUtils;
@@ -61,14 +60,11 @@ import com.gallatinsystems.surveyal.domain.SurveyalValue;
 @RequestMapping("/question_answers")
 public class QuestionAnswerRestService {
 
-    @Inject
-    private QuestionAnswerStoreDao questionAnswerStoreDao;
+    private QuestionAnswerStoreDao questionAnswerStoreDao = new QuestionAnswerStoreDao();
 
-    @Inject
-    private QuestionDao questionDao;
+    private QuestionDao questionDao = new QuestionDao();
 
-    @Inject
-    private CascadeNodeDao cascadeNodeDao;
+    private CascadeNodeDao cascadeNodeDao = new CascadeNodeDao();
 
     // list questionAnswerStores by id
     @RequestMapping(method = RequestMethod.GET, value = "")

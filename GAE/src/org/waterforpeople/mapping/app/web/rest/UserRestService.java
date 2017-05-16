@@ -1,5 +1,5 @@
 /*
- *  Copyright (C) 2012-2014 Stichting Akvo (Akvo Foundation)
+ *  Copyright (C) 2012-2014,2017 Stichting Akvo (Akvo Foundation)
  *
  *  This file is part of Akvo FLOW.
  *
@@ -21,8 +21,6 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-
-import javax.inject.Inject;
 
 import org.apache.commons.codec.binary.Base64;
 import org.springframework.beans.BeanUtils;
@@ -47,8 +45,7 @@ import com.gallatinsystems.user.domain.User;
 @RequestMapping("/users")
 public class UserRestService {
 
-    @Inject
-    private UserDao userDao;
+    private UserDao userDao = new UserDao();
 
     // TODO put in meta information?
     // list all users
