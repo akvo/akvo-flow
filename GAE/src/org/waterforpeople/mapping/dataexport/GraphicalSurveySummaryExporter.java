@@ -77,8 +77,6 @@ import org.waterforpeople.mapping.serialization.response.MediaResponse;
 
 import com.gallatinsystems.common.util.JFreechartChartUtil;
 import com.gallatinsystems.survey.dao.CaddisflyResourceDao;
-import com.gallatinsystems.survey.domain.Question.Type;
-
 import static com.gallatinsystems.common.Constants.*;
 
 /**
@@ -436,7 +434,9 @@ public class GraphicalSurveySummaryExporter extends SurveySummaryExporter {
     }
 
     private boolean hasDataApproval() {
-        return surveyGroupDto != null && surveyGroupDto.getRequireDataApproval()
+        return surveyGroupDto != null
+                && surveyGroupDto.getRequireDataApproval() != null
+                && surveyGroupDto.getRequireDataApproval()
                 && surveyGroupDto.getDataApprovalGroupId() != null;
     }
 
