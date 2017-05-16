@@ -16,7 +16,8 @@
 
 package org.akvo.gae.remoteapi;
 
-import java.util.ArrayList;
+import java.util.Map;
+import java.util.HashMap;
 import java.util.Date;
 import java.util.List;
 
@@ -44,7 +45,7 @@ public class HideSurveyedLocale implements Process {
 
         System.out.println("Processing Question Groups");
 
-	Map<Long,Long>qgToSurvey = new Hasmap<>();
+	Map<Long,Long>qgToSurvey = new Hashmap<>();
 	
         final Query group_q = new Query("QuestionGroup");
         final PreparedQuery group_pq = ds.prepare(group_q);
@@ -66,7 +67,7 @@ public class HideSurveyedLocale implements Process {
 
             Long questionGroup = (Long) sl.getProperty("questionGroup");
 
-	    if (questionGroup = null) { //check for no qg
+	    if (questionGroup == null) { //check for no qg
 		String id = (String) sl.getProperty("id");
 		System.out.println("ERR: Question not in a group: " + id);
 	    } else { //TODO: check for wrong survey/qg
