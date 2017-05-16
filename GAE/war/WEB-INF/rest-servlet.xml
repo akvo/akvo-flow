@@ -18,7 +18,38 @@
         <property name="supportedMediaTypes" value="application/json"/>
     </bean>
 
-    <context:component-scan base-package="org.waterforpeople.mapping.app.web.rest"/>
+    <bean id="handlerMapping" class="org.springframework.web.servlet.mvc.annotation.DefaultAnnotationHandlerMapping"/>
 
-
+    <bean name="/actions" class="org.waterforpeople.mapping.app.web.rest.ActionRestService" />
+    <bean name="/approval_groups" class="org.waterforpeople.mapping.app.web.rest.ApprovalGroupRestService" />
+    <bean name="/approval_steps" class="org.waterforpeople.mapping.app.web.rest.ApprovalStepRestService" />
+    <bean name="/approver_users" class="org.waterforpeople.mapping.app.web.rest.ApproverUserRestService" />
+    <bean name="/caddisfly_resources" class="org.waterforpeople.mapping.app.web.rest.CaddisflyResourceRestService" />
+    <bean name="/cartodb" class="org.waterforpeople.mapping.app.web.rest.CartodbRestService" />
+    <bean name="/cascade_nodes" class="org.waterforpeople.mapping.app.web.rest.CascadeNodeRestService" />
+    <bean name="/cascade_resources" class="org.waterforpeople.mapping.app.web.rest.CascadeResourceRestService" />
+    <bean name="/data_point_approvals" class="org.waterforpeople.mapping.app.web.rest.DataPointApprovalRestService" />
+    <bean name="/device_groups" class="org.waterforpeople.mapping.app.web.rest.DeviceGroupRestService" />
+    <bean name="/devices" class="org.waterforpeople.mapping.app.web.rest.DeviceRestService" />
+    <bean name="/messages" class="org.waterforpeople.mapping.app.web.rest.MessageRestService" />
+    <bean name="/metrics" class="org.waterforpeople.mapping.app.web.rest.MetricRestService" />
+    <bean name="/notification_subscriptions" class="org.waterforpeople.mapping.app.web.rest.NotificationSubscriptionRestService" />
+    <bean name="/placemark_details" class="org.waterforpeople.mapping.app.web.rest.PlacemarkDetailsRestService" />
+    <bean name="/placemarks" class="org.waterforpeople.mapping.app.web.rest.PlacemarkRestService" />
+    <bean name="/question_answers" class="org.waterforpeople.mapping.app.web.rest.QuestionAnswerRestService" />
+    <bean name="/question_groups" class="org.waterforpeople.mapping.app.web.rest.QuestionGroupRestService" />
+    <bean name="/question_options" class="org.waterforpeople.mapping.app.web.rest.QuestionOptionRestService" />
+    <bean name="/questions" class="org.waterforpeople.mapping.app.web.rest.QuestionRestService" />
+    <bean name="/sub_countrys" class="org.waterforpeople.mapping.app.web.rest.SubCountryRestService" />
+    <bean name="/survey_assignments" class="org.waterforpeople.mapping.app.web.rest.SurveyAssignmentRestService" />
+    <bean name="/survey_groups" class="org.waterforpeople.mapping.app.web.rest.SurveyGroupRestService" />
+    <bean name="/survey_instances" class="org.waterforpeople.mapping.app.web.rest.SurveyInstanceRestService" />
+    <bean name="/survey_question_summarys" class="org.waterforpeople.mapping.app.web.rest.SurveyQuestionSummaryRestService" />
+    <bean name="/surveys" class="org.waterforpeople.mapping.app.web.rest.SurveyRestService" />
+    <bean name="/surveyed_locales" class="org.waterforpeople.mapping.app.web.rest.SurveyedLocaleRestService" />
+    <bean name="/translations" class="org.waterforpeople.mapping.app.web.rest.TranslationRestService" />
+    <bean name="/user_auth" class="org.waterforpeople.mapping.app.web.rest.UserAuthorizationRestService" />
+    <bean name="/user_configs" class="org.waterforpeople.mapping.app.web.rest.UserConfigRestService" />
+    <bean name="/users" class="org.waterforpeople.mapping.app.web.rest.UserRestService" />
+    <bean name="/user_roles" class="org.waterforpeople.mapping.app.web.rest.UserRolesRestService" />
 </beans>
