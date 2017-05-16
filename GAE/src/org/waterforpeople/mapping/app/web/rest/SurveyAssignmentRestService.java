@@ -21,8 +21,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import javax.inject.Inject;
-
 import org.springframework.beans.BeanUtils;
 import org.springframework.http.converter.HttpMessageNotReadableException;
 import org.springframework.stereotype.Controller;
@@ -56,8 +54,7 @@ import com.google.appengine.api.taskqueue.TaskOptions;
 @RequestMapping("/survey_assignments")
 public class SurveyAssignmentRestService {
 
-    @Inject
-    SurveyAssignmentDAO surveyAssignmentDao;
+    private SurveyAssignmentDAO surveyAssignmentDao = new SurveyAssignmentDAO();
 
     private DeviceDAO deviceDao;
     private SurveyDAO surveyDao;

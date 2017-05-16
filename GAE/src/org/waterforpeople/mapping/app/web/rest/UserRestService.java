@@ -22,8 +22,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import javax.inject.Inject;
-
 import org.apache.commons.codec.binary.Base64;
 import org.springframework.beans.BeanUtils;
 import org.springframework.stereotype.Controller;
@@ -47,8 +45,7 @@ import com.gallatinsystems.user.domain.User;
 @RequestMapping("/users")
 public class UserRestService {
 
-    @Inject
-    private UserDao userDao;
+    private UserDao userDao = new UserDao();
 
     // TODO put in meta information?
     // list all users

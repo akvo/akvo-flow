@@ -23,8 +23,6 @@ import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-import javax.inject.Inject;
-
 import org.apache.commons.lang.StringUtils;
 import org.springframework.http.converter.HttpMessageNotReadableException;
 import org.springframework.stereotype.Controller;
@@ -50,8 +48,7 @@ public class PlacemarkDetailsRestService {
     private static final Logger log = Logger
             .getLogger(PlacemarkDetailsRestService.class.getName());
 
-    @Inject
-    SurveyedLocaleDao localeDao;
+    private SurveyedLocaleDao localeDao = new SurveyedLocaleDao();
 
     @RequestMapping(method = RequestMethod.GET, value = "")
     @ResponseBody

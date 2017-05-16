@@ -26,8 +26,6 @@ import java.util.Random;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-import javax.inject.Inject;
-
 import org.springframework.beans.BeanUtils;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -68,14 +66,11 @@ public class ActionRestService {
 
     private static final Logger logger = Logger.getLogger(ActionRestService.class.getName());
 
-    @Inject
-    private SurveyDAO surveyDao;
+    private SurveyDAO surveyDao = new SurveyDAO();
 
-    @Inject
-    private SurveyGroupDAO surveyGroupDao;
+    private SurveyGroupDAO surveyGroupDao = new SurveyGroupDAO();
 
-    @Inject
-    private QuestionDao questionDao;
+    private QuestionDao questionDao = new QuestionDao();
 
     @RequestMapping(method = RequestMethod.GET, value = "")
     @ResponseBody

@@ -19,8 +19,6 @@ package org.waterforpeople.mapping.app.web.rest;
 import java.util.HashMap;
 import java.util.Map;
 
-import javax.inject.Inject;
-
 import org.springframework.beans.BeanUtils;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -40,8 +38,7 @@ import com.gallatinsystems.survey.domain.QuestionOption;
 @RequestMapping("/question_options")
 public class QuestionOptionRestService {
 
-    @Inject
-    private QuestionOptionDao questionOptionDao;
+    private QuestionOptionDao questionOptionDao = new QuestionOptionDao();
 
     // find a single questionOption by the questionOptionId
     @RequestMapping(method = RequestMethod.GET, value = "/{id}")

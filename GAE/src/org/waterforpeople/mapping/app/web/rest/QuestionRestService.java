@@ -48,7 +48,6 @@ import org.waterforpeople.mapping.app.web.rest.dto.QuestionPayload;
 import org.waterforpeople.mapping.app.web.rest.dto.RestStatusDto;
 import org.waterforpeople.mapping.dao.QuestionAnswerStoreDao;
 
-import javax.inject.Inject;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -59,20 +58,15 @@ import java.util.Map;
 @SuppressWarnings("unused")
 public class QuestionRestService {
 
-    @Inject
-    private QuestionDao questionDao;
+    private QuestionDao questionDao = new QuestionDao();
 
-    @Inject
-    private QuestionOptionDao questionOptionDao;
+    private QuestionOptionDao questionOptionDao = new QuestionOptionDao();
 
-    @Inject
-    private SurveyMetricMappingDao surveyMetricMappingDao;
+    private SurveyMetricMappingDao surveyMetricMappingDao = new SurveyMetricMappingDao();
 
-    @Inject
-    private SurveyDAO surveyDao;
+    private SurveyDAO surveyDao = new SurveyDAO();
 
-    @Inject
-    private SurveyGroupDAO surveyGroupDao;
+    private SurveyGroupDAO surveyGroupDao = new SurveyGroupDAO();
 
     private QuestionDtoMapper questionDtoMapper = new QuestionDtoMapper();
 

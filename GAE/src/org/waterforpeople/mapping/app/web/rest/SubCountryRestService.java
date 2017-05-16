@@ -21,8 +21,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import javax.inject.Inject;
-
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
@@ -39,8 +37,7 @@ import com.gallatinsystems.gis.geography.domain.SubCountry;
 @RequestMapping("/sub_countrys")
 public class SubCountryRestService {
 
-    @Inject
-    SubCountryDao subCountryDao;
+    private SubCountryDao subCountryDao = new SubCountryDao();
 
     @RequestMapping(method = RequestMethod.GET)
     @ResponseBody

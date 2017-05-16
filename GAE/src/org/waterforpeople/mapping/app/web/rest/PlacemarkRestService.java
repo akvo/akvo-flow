@@ -25,8 +25,6 @@ import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-import javax.inject.Inject;
-
 import org.springframework.http.converter.HttpMessageNotReadableException;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.GrantedAuthority;
@@ -52,11 +50,9 @@ public class PlacemarkRestService {
     private static final Logger log = Logger
             .getLogger(PlacemarkRestService.class.getName());
 
-    @Inject
-    SurveyedLocaleDao localeDao;
+    private SurveyedLocaleDao localeDao = new SurveyedLocaleDao();
 
-    @Inject
-    SurveyedLocaleClusterDao slcDao;
+    private SurveyedLocaleClusterDao slcDao = new SurveyedLocaleClusterDao();
 
     @RequestMapping(method = RequestMethod.GET, value = "")
     @ResponseBody

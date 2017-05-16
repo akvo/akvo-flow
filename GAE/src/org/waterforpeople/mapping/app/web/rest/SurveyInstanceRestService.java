@@ -26,8 +26,6 @@ import java.util.Map;
 import java.util.Set;
 import java.util.logging.Logger;
 
-import javax.inject.Inject;
-
 import org.springframework.beans.BeanUtils;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -57,17 +55,13 @@ public class SurveyInstanceRestService {
 
     private static final Logger log = Logger.getLogger(SurveyInstanceRestService.class.getName());
 
-    @Inject
-    private SurveyInstanceDAO surveyInstanceDao;
+    private SurveyInstanceDAO surveyInstanceDao = new SurveyInstanceDAO();
 
-    @Inject
-    private SurveyDAO surveyDao;
+    private SurveyDAO surveyDao = new SurveyDAO();
 
-    @Inject
-    private SurveyGroupDAO surveyGroupDao;
+    private SurveyGroupDAO surveyGroupDao = new SurveyGroupDAO();
 
-    @Inject
-    private SurveyedLocaleDao surveyedLocaleDao;
+    private SurveyedLocaleDao surveyedLocaleDao = new SurveyedLocaleDao();
 
     // list survey instances
     @RequestMapping(method = RequestMethod.GET, value = "")

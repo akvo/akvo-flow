@@ -21,8 +21,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import javax.inject.Inject;
-
 import org.springframework.beans.BeanUtils;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -47,14 +45,11 @@ import com.gallatinsystems.survey.domain.Question;
 @RequestMapping("/metrics")
 public class MetricRestService {
 
-    @Inject
-    private MetricDao metricDao;
+    private MetricDao metricDao = new MetricDao();
 
-    @Inject
-    private QuestionDao questionDao;
+    private QuestionDao questionDao = new QuestionDao();
 
-    @Inject
-    private SurveyMetricMappingDao surveyMetricMappingDao;
+    private SurveyMetricMappingDao surveyMetricMappingDao = new SurveyMetricMappingDao();
 
     // list all metrics, or the metrics for a single surveyId.
     @RequestMapping(method = RequestMethod.GET, value = "")

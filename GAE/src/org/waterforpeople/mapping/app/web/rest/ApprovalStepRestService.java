@@ -21,8 +21,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import javax.inject.Inject;
-
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -42,8 +40,7 @@ import com.gallatinsystems.survey.domain.ApprovalStep;
 @RequestMapping("/approval_steps")
 public class ApprovalStepRestService {
 
-    @Inject
-    private ApprovalStepDAO approvalStepDao;
+    private ApprovalStepDAO approvalStepDao = new ApprovalStepDAO();
 
     /**
      * Create a new ApprovalStep from posted payload.

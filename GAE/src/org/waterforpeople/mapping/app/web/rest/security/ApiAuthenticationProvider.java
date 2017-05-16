@@ -19,8 +19,6 @@ package org.waterforpeople.mapping.app.web.rest.security;
 import java.util.Date;
 import java.util.Map;
 
-import javax.inject.Inject;
-
 import org.springframework.security.authentication.AuthenticationProvider;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.core.Authentication;
@@ -33,8 +31,7 @@ import com.gallatinsystems.user.domain.User;
 
 public class ApiAuthenticationProvider implements AuthenticationProvider {
 
-    @Inject
-    UserDao userDao;
+    private UserDao userDao = new UserDao();
 
     @Override
     public Authentication authenticate(Authentication authentication)

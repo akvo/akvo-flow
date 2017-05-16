@@ -21,8 +21,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import javax.inject.Inject;
-
 import org.springframework.beans.BeanUtils;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -48,11 +46,9 @@ import com.gallatinsystems.survey.domain.Translation.ParentType;
 @RequestMapping("/translations")
 public class TranslationRestService {
 
-    @Inject
-    private TranslationDao tDao;
+    private TranslationDao tDao = new TranslationDao();
 
-    @Inject
-    private SurveyDAO sDao;
+    private SurveyDAO sDao = new SurveyDAO();
 
     Map<String, Translation> translations = new HashMap<String, Translation>();
 

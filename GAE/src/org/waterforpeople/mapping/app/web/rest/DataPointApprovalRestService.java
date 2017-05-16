@@ -22,8 +22,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import javax.inject.Inject;
-
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -44,8 +42,7 @@ import com.gallatinsystems.user.domain.User;
 @RequestMapping("/data_point_approvals")
 public class DataPointApprovalRestService {
 
-    @Inject
-    private DataPointApprovalDAO dataPointApprovalDao;
+    private DataPointApprovalDAO dataPointApprovalDao = new DataPointApprovalDAO();
 
     /**
      * Create a new DataPointApproval
