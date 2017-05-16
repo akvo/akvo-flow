@@ -42,6 +42,7 @@ public class CheckSurveyStructure implements Process {
     @Override
     public void execute(DatastoreService ds, String[] args) throws Exception {
 
+	int e1 = 0, e2 = 0, e3 = 0, q = 0;
 
         System.out.println("Processing Question Groups");
 
@@ -56,12 +57,12 @@ public class CheckSurveyStructure implements Process {
             Long questionGroupSurvey = (Long) g.getProperty("surveyId");
 	    if (questionGroupId == null) {
 		System.out.printf("ERR group %d not in a survey!\n",questionGroupId);
+		e1++;
 	    } else {
 		qgToSurvey.put(questionGroupId, questionGroupSurvey);
 		//System.out.printf(" group %d -> survey %d\n",questionGroupId, questionGroupSurvey);
 	    }
         }
-        System.out.printf("Found %d good Question Groups\n",qgToSurvey.size());
 
         System.out.println("Processing Questions");
 
@@ -72,17 +73,23 @@ public class CheckSurveyStructure implements Process {
 
             Long questionId = sl.getKey().getId();
             Long questionSurvey = (Long) sl.getProperty("surveyId");
-            Long questionGroup = (Long) sl.getProperty("questionGroup");
+            Long questionGroup = (Long) sl.getProperty("questionGroupId");
 
 	    if (questionGroup == null) { //check for no qg
 		System.out.printf("ERR: Question %d not in a group!\n", questionId);
+		e2++;
 	    } else { //TODO: check for wrong survey/qg
 		Long questionGroupSurvey = (Long) qgToSurvey.get(questionGroup);
 		if (! questionSurvey.equals(questionGroupSurvey)) {
 		    System.out.printf("ERR: Question %d not in same survey as group!\n", questionId);
+		    e3++;
+		} else {
+		    q++;
 		}
-	    }
+	    } 
 	}
+        System.out.printf("Found %d good, %d orphaned Question Groups\n",qgToSurvey.size(),e1);
+        System.out.printf("Found %d good, %d orphaned, %d kidnapped Questions\n",q,e2,e3);
 
 
     }
