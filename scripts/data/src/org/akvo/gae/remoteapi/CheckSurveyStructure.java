@@ -35,7 +35,7 @@ import com.google.appengine.api.datastore.Query.FilterPredicate;
 /*
  * - Checks that all questions are in the questiongroup of their survey
  */
-public class HideSurveyedLocale implements Process {
+public class CheckSurveyStructure implements Process {
 
     //    private static String ERR_MSG = "Unable to hide SurveyedLocale [%s], reason: %s";
 
@@ -45,7 +45,7 @@ public class HideSurveyedLocale implements Process {
 
         System.out.println("Processing Question Groups");
 
-	Map<Long,Long>qgToSurvey = new Hashmap<>();
+	Map<Long,Long>qgToSurvey = new HashMap<>();
 	
         final Query group_q = new Query("QuestionGroup");
         final PreparedQuery group_pq = ds.prepare(group_q);
@@ -54,7 +54,7 @@ public class HideSurveyedLocale implements Process {
 
             Long questionGroupId = (Long) g.getProperty("id");
             Long questionGroupSurvey = (Long) g.getProperty("surveyId");
-	    qgToSurvey.add(questionGroupId, questionGroupSurvey);
+	    qgToSurvey.put(questionGroupId, questionGroupSurvey);
 
         }
 
