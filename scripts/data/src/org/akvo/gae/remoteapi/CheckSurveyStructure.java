@@ -52,11 +52,16 @@ public class CheckSurveyStructure implements Process {
 
         for (Entity g : group_pq.asIterable(FetchOptions.Builder.withChunkSize(500))) {
 
-            Long questionGroupId = (Long) g.getProperty("id");
+            Long questionGroupId = g.getKey().getId();
             Long questionGroupSurvey = (Long) g.getProperty("surveyId");
-	    qgToSurvey.put(questionGroupId, questionGroupSurvey);
-
+	    if (questionGroupId == null) {
+		System.out.printf("ERR group %d not in a survey!\n",questionGroupId);
+	    } else {
+		qgToSurvey.put(questionGroupId, questionGroupSurvey);
+		//System.out.printf(" group %d -> survey %d\n",questionGroupId, questionGroupSurvey);
+	    }
         }
+        System.out.printf("Found %d good Question Groups\n",qgToSurvey.size());
 
         System.out.println("Processing Questions");
 
@@ -65,15 +70,17 @@ public class CheckSurveyStructure implements Process {
 
         for (Entity sl : qpq.asIterable(FetchOptions.Builder.withChunkSize(500))) {
 
+            Long questionId = sl.getKey().getId();
+            Long questionSurvey = (Long) sl.getProperty("surveyId");
             Long questionGroup = (Long) sl.getProperty("questionGroup");
 
 	    if (questionGroup == null) { //check for no qg
-		String id = (String) sl.getProperty("id");
-		System.out.println("ERR: Question not in a group: " + id);
+		System.out.printf("ERR: Question %d not in a group!\n", questionId);
 	    } else { //TODO: check for wrong survey/qg
-		
-		//		if (! questionGroup.equals())
-		//    {}
+		Long questionGroupSurvey = (Long) qgToSurvey.get(questionGroup);
+		if (! questionSurvey.equals(questionGroupSurvey)) {
+		    System.out.printf("ERR: Question %d not in same survey as group!\n", questionId);
+		}
 	    }
 	}
 
