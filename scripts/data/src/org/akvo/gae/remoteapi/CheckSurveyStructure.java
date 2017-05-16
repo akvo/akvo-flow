@@ -42,7 +42,7 @@ public class CheckSurveyStructure implements Process {
     @Override
     public void execute(DatastoreService ds, String[] args) throws Exception {
 
-	int e1 = 0, e2 = 0, e3 = 0, q = 0;
+	int e1 = 0, e2 = 0, e3 = 0, e4 = 0, q = 0;
 
         System.out.println("Processing Question Groups");
 
@@ -55,8 +55,9 @@ public class CheckSurveyStructure implements Process {
 
             Long questionGroupId = g.getKey().getId();
             Long questionGroupSurvey = (Long) g.getProperty("surveyId");
+            String questionGroupName = (String) g.getProperty("name");
 	    if (questionGroupId == null) {
-		System.out.printf("ERR group %d not in a survey!\n",questionGroupId);
+		System.out.printf("ERR group %d '%s'not in a survey!\n",questionGroupId,questionGroupName);
 		e1++;
 	    } else {
 		qgToSurvey.put(questionGroupId, questionGroupSurvey);
@@ -74,22 +75,25 @@ public class CheckSurveyStructure implements Process {
             Long questionId = sl.getKey().getId();
             Long questionSurvey = (Long) sl.getProperty("surveyId");
             Long questionGroup = (Long) sl.getProperty("questionGroupId");
+            String questionText = (String) sl.getProperty("text");
 
-	    if (questionGroup == null) { //check for no qg
-		System.out.printf("ERR: Question %d not in a group!\n", questionId);
+	    if (questionGroup == null || questionSurvey == null) { //check for no qg or survey
+		if (questionGroup == null) { //check for no qg
+		    System.out.printf("ERR: Question %d '%s',survey %d, group %d!\n", questionId, questionText, questionSurvey, questionGroup);
+		}
 		e2++;
 	    } else { //TODO: check for wrong survey/qg
 		Long questionGroupSurvey = (Long) qgToSurvey.get(questionGroup);
 		if (! questionSurvey.equals(questionGroupSurvey)) {
-		    System.out.printf("ERR: Question %d not in same survey as group!\n", questionId);
+		    System.out.printf("ERR: Question %d '%s' not in same survey as group!\n", questionId, questionText);
 		    e3++;
 		} else {
 		    q++;
 		}
 	    } 
 	}
-        System.out.printf("Found %d good, %d orphaned Question Groups\n",qgToSurvey.size(),e1);
-        System.out.printf("Found %d good, %d orphaned, %d kidnapped Questions\n",q,e2,e3);
+        System.out.printf("Found %d good, %d surveyless Question Groups\n",qgToSurvey.size(),e1);
+        System.out.printf("Found %d good, %d survey/groupless, %d kidnapped Questions\n",q,e2,e3);
 
 
     }
