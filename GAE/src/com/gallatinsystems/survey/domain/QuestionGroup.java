@@ -1,5 +1,5 @@
 /*
- *  Copyright (C) 2010-2015 Stichting Akvo (Akvo Foundation)
+ *  Copyright (C) 2010-2017 Stichting Akvo (Akvo Foundation)
  *
  *  This file is part of Akvo FLOW.
  *
@@ -35,7 +35,6 @@ public class QuestionGroup extends BaseDomain {
 	 */
     private static final long serialVersionUID = -6831602386813027856L;
     private String name = null;
-    private String desc = null;
 
     @NotPersistent
     private TreeMap<Integer, Question> questionMap;
@@ -112,14 +111,6 @@ public class QuestionGroup extends BaseDomain {
 
     public String getName() {
         return name;
-    }
-
-    public void setDesc(String desc) {
-        this.desc = desc;
-    }
-
-    public String getDesc() {
-        return desc;
     }
 
     public void addTranslation(Translation t) {
