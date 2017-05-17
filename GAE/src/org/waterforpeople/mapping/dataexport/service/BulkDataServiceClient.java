@@ -747,9 +747,6 @@ public class BulkDataServiceClient {
                         if (!json.isNull("displayName")) {
                             dto.setName(json.getString("displayName"));
                         }
-                        if (!json.isNull("description")) {
-                            dto.setDescription(json.getString("description"));
-                        }
                         if (!json.isNull("order")) {
                             dto.setOrder(json.getInt("order"));
                         }

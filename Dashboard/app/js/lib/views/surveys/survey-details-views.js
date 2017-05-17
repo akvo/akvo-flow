@@ -570,7 +570,6 @@ FLOW.QuestionGroupItemView = FLOW.View.extend({
     });
 
     FLOW.store.createRecord(FLOW.QuestionGroup, {
-      "description": FLOW.selectedControl.selectedForCopyQuestionGroup.get('description'),
       "order": insertAfterOrder + 1,
       "code": FLOW.selectedControl.selectedForCopyQuestionGroup.get('code'),
       "name": FLOW.selectedControl.selectedForCopyQuestionGroup.get('code'),
