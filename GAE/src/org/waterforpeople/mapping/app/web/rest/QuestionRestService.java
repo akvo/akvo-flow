@@ -43,7 +43,6 @@ import org.waterforpeople.mapping.app.gwt.client.survey.QuestionDto;
 import org.waterforpeople.mapping.app.gwt.client.survey.QuestionDtoMapper;
 import org.waterforpeople.mapping.app.gwt.client.survey.QuestionOptionDto;
 import org.waterforpeople.mapping.app.gwt.client.survey.QuestionOptionDtoMapper;
-import org.waterforpeople.mapping.app.util.DtoMarshaller;
 import org.waterforpeople.mapping.app.web.dto.SurveyTaskRequest;
 import org.waterforpeople.mapping.app.web.rest.dto.QuestionPayload;
 import org.waterforpeople.mapping.app.web.rest.dto.RestStatusDto;
@@ -57,7 +56,6 @@ import java.util.Map;
 
 @Controller
 @RequestMapping("/questions")
-@SuppressWarnings("unused")
 public class QuestionRestService {
 
     private QuestionDao questionDao = new QuestionDao();
@@ -196,23 +194,9 @@ public class QuestionRestService {
         Question q = questionDao.getByKey(id);
         QuestionDto dto = null;
         if (q != null) {
-            dto = new QuestionDto();
-            DtoMarshaller.copyToDto(q, dto);
-            if (q.getType() == Question.Type.OPTION) {
-                Map<Integer, QuestionOption> qoMap = questionOptionDao.listOptionByQuestion(dto
-                        .getKeyId());
-                List<Long> qoList = new ArrayList<Long>();
-                for (QuestionOption qo : qoMap.values()) {
-                    QuestionOptionDto qoDto = new QuestionOptionDto();
-                    BeanUtils.copyProperties(qo, qoDto, new String[] {
-                            "translationMap"
-                    });
-                    qoDto.setKeyId(qo.getKey().getId());
-                    qoList.add(qo.getKey().getId());
-                    qoResults.add(qoDto);
-                }
-                dto.setQuestionOptions(qoList);
-            }
+            QuestionDtoMapper qdm = new QuestionDtoMapper();
+            dto = qdm.transform(q);
+            qoResults = attachAnyOptions(dto);
         }
         response.put("questionOptions", qoResults);
         response.put("question", dto);
@@ -302,8 +286,8 @@ public class QuestionRestService {
                     }
                     q = questionDao.save(q);
 
-                    dto = new QuestionDto();
-                    DtoMarshaller.copyToDto(q, dto);
+                    QuestionDtoMapper qdm = new QuestionDtoMapper();
+                    dto = qdm.transform(q);
                     statusDto.setStatus("ok");
                     statusDto.setMessage("");
                 }
@@ -339,26 +323,12 @@ public class QuestionRestService {
             } else {
                 q = copyQuestion(questionDto);
             }
-            dto = new QuestionDto();
-            DtoMarshaller.copyToDto(q, dto);
+            QuestionDtoMapper qdm = new QuestionDtoMapper();
+            dto = qdm.transform(q);
             statusDto.setStatus("ok");
             statusDto.setMessage("");
 
-            if (q.getType() == Question.Type.OPTION) {
-                Map<Integer, QuestionOption> qoMap = questionOptionDao.listOptionByQuestion(dto
-                        .getKeyId());
-                List<Long> qoList = new ArrayList<Long>();
-                for (QuestionOption qo : qoMap.values()) {
-                    QuestionOptionDto qoDto = new QuestionOptionDto();
-                    BeanUtils.copyProperties(qo, qoDto, new String[] {
-                            "translationMap"
-                    });
-                    qoDto.setKeyId(qo.getKey().getId());
-                    qoList.add(qo.getKey().getId());
-                    qoResults.add(qoDto);
-                }
-                dto.setQuestionOptions(qoList);
-            }
+            qoResults = attachAnyOptions(dto);
         }
         response.put("meta", statusDto);
         response.put("questionOptions", qoResults);
@@ -438,4 +408,24 @@ public class QuestionRestService {
         final Question result = questionDao.save(q);
         return result;
     }
+
+    private List<QuestionOptionDto> attachAnyOptions(QuestionDto dto) {
+        if (dto.getType() == QuestionDto.QuestionType.OPTION) {
+            ArrayList<QuestionOptionDto> qoResults = new ArrayList<QuestionOptionDto>();
+            // since we do not need translations:
+            List<QuestionOption> qoList = questionOptionDao.listByQuestionId(dto.getKeyId());
+            List<Long> qoIdList = new ArrayList<Long>();
+            QuestionOptionDtoMapper m = new QuestionOptionDtoMapper();
+            for (QuestionOption qo : qoList) {
+                qoIdList.add(qo.getKey().getId());
+                QuestionOptionDto qoDto = m.transform(qo);
+                qoResults.add(qoDto);
+            }
+            dto.setQuestionOptions(qoIdList);
+            return qoResults;
+        }
+        return Collections.emptyList();
+    }
+
 }
+
