@@ -203,8 +203,8 @@ public class SurveySummaryExporter extends AbstractDataExporter {
         // Sort them into the right lists
         for (QuestionDto q:allQuestions) {
             List<QuestionDto> myList = idMap.get(q.getQuestionGroupId());
-            if (myList != null) {
-                myList.add(q);                
+            if (myList != null) { //in case db is inconsistent
+                myList.add(q);
             }
         }
         // Lists complete, now we can sort and visit each in order

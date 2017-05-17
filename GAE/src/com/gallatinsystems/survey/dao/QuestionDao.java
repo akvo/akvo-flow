@@ -230,7 +230,7 @@ public class QuestionDao extends BaseDAO<Question> {
         for (Question q:unorderedQuestions) {
             List<Question> myList = idMap.get(q.getQuestionGroupId());
             if (myList != null) { //in case db is inconsistent
-                myList.add(q);                
+                myList.add(q);
             }
         }
         // Lists complete, now we can sort them and copy each in order
