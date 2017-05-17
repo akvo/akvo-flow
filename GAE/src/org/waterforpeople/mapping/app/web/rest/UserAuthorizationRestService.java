@@ -1,5 +1,5 @@
 /*
- *  Copyright (C) 2014 Stichting Akvo (Akvo Foundation)
+ *  Copyright (C) 2014,2017 Stichting Akvo (Akvo Foundation)
  *
  *  This file is part of Akvo FLOW.
  *
@@ -21,8 +21,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import javax.inject.Inject;
-
 import org.springframework.beans.BeanUtils;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -40,8 +38,7 @@ import com.gallatinsystems.user.domain.UserAuthorization;
 @RequestMapping("/user_auth")
 public class UserAuthorizationRestService {
 
-    @Inject
-    private UserAuthorizationDAO userAuthorizationDAO;
+    private UserAuthorizationDAO userAuthorizationDAO = new UserAuthorizationDAO();
 
     /**
      * List the authorization parameters for all users

@@ -21,8 +21,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import javax.inject.Inject;
-
 import org.akvo.flow.domain.mapper.QuestionGroupDtoMapper;
 import org.apache.commons.lang.ArrayUtils;
 import org.springframework.beans.BeanUtils;
@@ -55,17 +53,13 @@ import com.google.appengine.api.taskqueue.TaskOptions;
 @RequestMapping("/question_groups")
 public class QuestionGroupRestService {
 
-    @Inject
-    private QuestionGroupDao questionGroupDao;
+    private QuestionGroupDao questionGroupDao = new QuestionGroupDao();
 
-    @Inject
-    private QuestionDao questionDao;
+    private QuestionDao questionDao = new QuestionDao();
 
-    @Inject
-    private SurveyalValueDao svDao;
+    private SurveyalValueDao svDao = new SurveyalValueDao();
 
-    @Inject
-    private QuestionAnswerStoreDao qasDao;
+    private QuestionAnswerStoreDao qasDao = new QuestionAnswerStoreDao();
 
     // Properties to exclude when copying question groups
     private static final String[] QUESTION_GROUP_COPY_EXCLUDED_PROPS = (String[]) ArrayUtils.add(

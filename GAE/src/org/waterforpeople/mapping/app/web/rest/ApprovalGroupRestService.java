@@ -1,5 +1,5 @@
 /*
- *  Copyright (C) 2016 Stichting Akvo (Akvo Foundation)
+ *  Copyright (C) 2016-2017 Stichting Akvo (Akvo Foundation)
  *
  *  This file is part of Akvo FLOW.
  *
@@ -21,8 +21,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import javax.inject.Inject;
-
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -41,8 +39,7 @@ import com.gallatinsystems.survey.domain.ApprovalGroup;
 @RequestMapping("/approval_groups")
 public class ApprovalGroupRestService {
 
-    @Inject
-    private ApprovalGroupDAO approvalGroupDao;
+    private ApprovalGroupDAO approvalGroupDao = new ApprovalGroupDAO();
 
     /**
      * Create a new ApprovalGroup from posted payload.

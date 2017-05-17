@@ -1,5 +1,5 @@
 /*
- *  Copyright (C) 2014-2015 Stichting Akvo (Akvo Foundation)
+ *  Copyright (C) 2014-2015,2017 Stichting Akvo (Akvo Foundation)
  *
  *  This file is part of Akvo FLOW.
  *
@@ -21,8 +21,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import javax.inject.Inject;
-
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -39,8 +37,7 @@ import com.gallatinsystems.surveyal.domain.SurveyedLocale;
 @RequestMapping("/surveyed_locales")
 public class SurveyedLocaleRestService {
 
-    @Inject
-    SurveyedLocaleDao surveyedLocaleDao;
+    private SurveyedLocaleDao surveyedLocaleDao = new SurveyedLocaleDao();
 
     @RequestMapping(method = RequestMethod.GET)
     @ResponseBody

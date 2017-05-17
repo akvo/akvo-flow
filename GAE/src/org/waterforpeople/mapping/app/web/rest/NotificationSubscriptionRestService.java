@@ -1,5 +1,5 @@
 /*
- *  Copyright (C) 2012 Stichting Akvo (Akvo Foundation)
+ *  Copyright (C) 2012,2017 Stichting Akvo (Akvo Foundation)
  *
  *  This file is part of Akvo FLOW.
  *
@@ -20,8 +20,6 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-
-import javax.inject.Inject;
 
 import org.springframework.beans.BeanUtils;
 import org.springframework.stereotype.Controller;
@@ -45,8 +43,7 @@ import com.gallatinsystems.notification.domain.NotificationSubscription;
 @RequestMapping("/notification_subscriptions")
 public class NotificationSubscriptionRestService {
 
-    @Inject
-    private NotificationSubscriptionDao notificationSubscriptionDao;
+    private NotificationSubscriptionDao notificationSubscriptionDao = new NotificationSubscriptionDao();
 
     // TODO put in meta information?
     // list all notificationSubscriptions

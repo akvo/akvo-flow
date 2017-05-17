@@ -1,5 +1,5 @@
 /*
- *  Copyright (C) 2013 Stichting Akvo (Akvo Foundation)
+ *  Copyright (C) 2013,2017 Stichting Akvo (Akvo Foundation)
  *
  *  This file is part of Akvo FLOW.
  *
@@ -21,8 +21,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import javax.inject.Inject;
-
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -40,8 +38,7 @@ import com.gallatinsystems.messaging.domain.Message;
 @RequestMapping("/messages")
 public class MessageRestService {
 
-    @Inject
-    MessageDao messageDao;
+    private MessageDao messageDao = new MessageDao();
 
     @RequestMapping(method = RequestMethod.GET)
     @ResponseBody

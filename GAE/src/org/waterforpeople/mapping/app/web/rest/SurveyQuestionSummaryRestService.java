@@ -1,5 +1,5 @@
 /*
- *  Copyright (C) 2012 Stichting Akvo (Akvo Foundation)
+ *  Copyright (C) 2012,2017 Stichting Akvo (Akvo Foundation)
  *
  *  This file is part of Akvo FLOW.
  *
@@ -21,8 +21,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import javax.inject.Inject;
-
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
@@ -40,11 +38,9 @@ import com.gallatinsystems.survey.domain.Question;
 @RequestMapping("/survey_question_summarys")
 public class SurveyQuestionSummaryRestService {
 
-    @Inject
-    private SurveyQuestionSummaryDao surveyQuestionSummaryDao;
+    private SurveyQuestionSummaryDao surveyQuestionSummaryDao = new SurveyQuestionSummaryDao();
 
-    @Inject
-    private QuestionDao questionDao;
+    private QuestionDao questionDao = new QuestionDao();
 
     // list questionSummaries by question id (if the questionId parameter is
     // passed)

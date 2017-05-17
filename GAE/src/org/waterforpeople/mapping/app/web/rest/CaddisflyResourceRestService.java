@@ -1,4 +1,4 @@
-/*  Copyright (C) 2016 Stichting Akvo (Akvo Foundation)
+/*  Copyright (C) 2016-2017 Stichting Akvo (Akvo Foundation)
  *
  *  This file is part of Akvo FLOW.
  *
@@ -20,8 +20,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 
-import javax.inject.Inject;
-
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
@@ -34,21 +32,20 @@ import com.gallatinsystems.survey.dao.CaddisflyResourceDao;
 @RequestMapping("/caddisfly_resources")
 public class CaddisflyResourceRestService {
 
-	@Inject
-	private CaddisflyResourceDao caddisflyResourceDao;
+    private CaddisflyResourceDao caddisflyResourceDao = new CaddisflyResourceDao();
 
-	@RequestMapping(method = RequestMethod.GET, value = "")
-	@ResponseBody
-	public Map<String, List<CaddisflyResource>> listCaddisflyResources() {
-		final Map<String, List<CaddisflyResource>> response = new HashMap<String, List<CaddisflyResource>>();
-		List<CaddisflyResource> caddisList = caddisflyResourceDao
-				.listResources();
+    @RequestMapping(method = RequestMethod.GET, value = "")
+    @ResponseBody
+    public Map<String, List<CaddisflyResource>> listCaddisflyResources() {
+        final Map<String, List<CaddisflyResource>> response = new HashMap<String, List<CaddisflyResource>>();
+        List<CaddisflyResource> caddisList = caddisflyResourceDao
+                .listResources();
 
-		for (CaddisflyResource cr : caddisList) {
-			Long id = UUID.fromString(cr.getUuid()).getLeastSignificantBits();
-			cr.setKeyId(id);
-		}
-		response.put("caddisfly_resources", caddisList);
-		return response;
-	}
+        for (CaddisflyResource cr : caddisList) {
+            Long id = UUID.fromString(cr.getUuid()).getLeastSignificantBits();
+            cr.setKeyId(id);
+        }
+        response.put("caddisfly_resources", caddisList);
+        return response;
+    }
 }

@@ -1,4 +1,4 @@
-/*  Copyright (C) 2014 Stichting Akvo (Akvo Foundation)
+/*  Copyright (C) 2014,2017 Stichting Akvo (Akvo Foundation)
  *
  *  This file is part of Akvo FLOW.
  *
@@ -19,8 +19,6 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-
-import javax.inject.Inject;
 
 import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.BeanUtils;
@@ -44,8 +42,7 @@ import com.gallatinsystems.survey.domain.CascadeNode;
 @RequestMapping("/cascade_nodes")
 public class CascadeNodeRestService {
 
-	@Inject
-    private CascadeNodeDao cascadeNodeDao;
+    private CascadeNodeDao cascadeNodeDao = new CascadeNodeDao();
 
 	@RequestMapping(method = RequestMethod.GET, value = "")
     @ResponseBody
