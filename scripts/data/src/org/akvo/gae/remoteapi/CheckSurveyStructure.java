@@ -17,6 +17,7 @@
 package org.akvo.gae.remoteapi;
 
 import static org.akvo.gae.remoteapi.DataUtils.batchSaveEntities;
+import static org.akvo.gae.remoteapi.DataUtils.batchDelete;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -26,6 +27,7 @@ import java.util.HashMap;
 import com.google.appengine.api.datastore.DatastoreService;
 import com.google.appengine.api.datastore.Entity;
 import com.google.appengine.api.datastore.FetchOptions;
+import com.google.appengine.api.datastore.Key;
 import com.google.appengine.api.datastore.PreparedQuery;
 import com.google.appengine.api.datastore.Query;
 
@@ -41,8 +43,7 @@ public class CheckSurveyStructure implements Process {
     Map<Long, Long> qgToSurvey = new HashMap<>();
 
     boolean fixSurveyPointers = false; // Make question survey pointer match the group's
-    boolean deleteHomelessQuestions = false;
-    boolean deleteHomelessOptions = false;
+    boolean deleteOrphans = false;
 
     @Override
     public void execute(DatastoreService ds, String[] args) throws Exception {
@@ -53,8 +54,7 @@ public class CheckSurveyStructure implements Process {
                 fixSurveyPointers = true;
             }
             if (args[i].equalsIgnoreCase("GC")) {
-                deleteHomelessOptions = true;
-                deleteHomelessQuestions = true;
+                deleteOrphans = true;
             }
         }
 
@@ -99,30 +99,34 @@ public class CheckSurveyStructure implements Process {
         final Query qq = new Query("Question");
         final PreparedQuery qpq = ds.prepare(qq);
         List<Entity> questionsToFix = new ArrayList<Entity>();
+        List<Key> questionsToKill = new ArrayList<Key>();
         
-        for (Entity sl : qpq.asIterable(FetchOptions.Builder.withChunkSize(500))) {
+        for (Entity q : qpq.asIterable(FetchOptions.Builder.withChunkSize(500))) {
 
-            Long questionId = sl.getKey().getId();
-            Long questionSurvey = (Long) sl.getProperty("surveyId");
-            Long questionGroup = (Long) sl.getProperty("questionGroupId");
-            String questionText = (String) sl.getProperty("text");
+            Long questionId = q.getKey().getId();
+            Long questionSurvey = (Long) q.getProperty("surveyId");
+            Long questionGroup = (Long) q.getProperty("questionGroupId");
+            String questionText = (String) q.getProperty("text");
+            Long questionGroupSurvey = (Long) qgToSurvey.get(questionGroup);
 
-            qToSurvey.put(questionId, questionSurvey);
 
-            if (questionGroup == null || questionSurvey == null) { // check for no qg or no survey
-                if (questionGroup == null) { // check for no qg
-                    System.out.printf("ERR: Question %d '%s',survey %d, group %d!\n", questionId,
-                            questionText, questionSurvey, questionGroup);
-                }
+            if (questionGroup == null || questionGroupSurvey == null) { // in no or a nonexistent group; hopelessly lost
+                System.out.printf("ERR: Question %d '%s',survey %d, group %d!\n",
+                        questionId, questionText, questionSurvey, questionGroup);
+                System.out.println(q.toString());//for posterity
                 e2++;
+                if (deleteOrphans){
+                    q.setProperty("surveyId", questionGroupSurvey);
+                    questionsToKill.add(q.getKey());
+                }
             } else { // check for wrong survey/qg
-                Long questionGroupSurvey = (Long) qgToSurvey.get(questionGroup);
+                qToSurvey.put(questionId, questionSurvey); //ok parent for options
                 if (!questionSurvey.equals(questionGroupSurvey)) {
                     System.out.printf("ERR: Question %d '%s' in survey %d, but group %d is in %d!\n",
                             questionId, questionText, questionSurvey, questionGroup, questionGroupSurvey);
                     if (fixSurveyPointers){
-                        sl.setProperty("surveyId", questionGroupSurvey);
-                        questionsToFix.add(sl);
+                        q.setProperty("surveyId", questionGroupSurvey);
+                        questionsToFix.add(q);
                     }
                     e3++;
                 } else {
@@ -134,6 +138,10 @@ public class CheckSurveyStructure implements Process {
             System.out.printf("Fixing %d Questions\n",questionsToFix.size());
             batchSaveEntities(ds, questionsToFix);
         }
+        if (questionsToKill.size() > 0) {
+            System.out.printf("Deleting %d Questions\n",questionsToKill.size());
+            batchDelete(ds, questionsToKill);
+        }
     }
 
     private void processOptions(DatastoreService ds) {
@@ -141,26 +149,32 @@ public class CheckSurveyStructure implements Process {
 
         final Query oq = new Query("QuestionOption");
         final PreparedQuery opq = ds.prepare(oq);
+        List<Key> optionsToKill = new ArrayList<Key>();
 
-        for (Entity sl : opq.asIterable(FetchOptions.Builder.withChunkSize(500))) {
+        for (Entity option : opq.asIterable(FetchOptions.Builder.withChunkSize(500))) {
 
-            Long optionId = sl.getKey().getId();
-            Long questionId = (Long) sl.getProperty("questionId");
-            String optionText = (String) sl.getProperty("text");
+            Long optionId = option.getKey().getId();
+            Long questionId = (Long) option.getProperty("questionId");
+            String optionText = (String) option.getProperty("text");
 
             if (questionId == null) { // check for no question
                 System.out.printf("ERR: Option %d '%s', not in a question!\n", optionId, optionText);
                 e4++;
+                optionsToKill.add(option.getKey());
             } else { // check for bad question
                 if (!qToSurvey.containsKey(questionId)) {
                     System.out.printf(
-                            "ERR: Option %d '%s' is in unreachable/nonexistent question %d!\n",
+                            "ERR: Option %d '%s' is in a nonexistent question %d!\n",
                             optionId, optionText, questionId);
                     e5++;
                 } else {
                     goodOptions++;
                 }
             }
+        }
+        if (optionsToKill.size() > 0) {
+            System.out.printf("Deleting %d Options\n",optionsToKill.size());
+            batchDelete(ds, optionsToKill);
         }
 
     }
