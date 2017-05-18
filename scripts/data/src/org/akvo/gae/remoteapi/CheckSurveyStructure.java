@@ -36,13 +36,13 @@ import com.google.appengine.api.datastore.Query;
  */
 public class CheckSurveyStructure implements Process {
 
-    int orphanGroups = 0, orphanQuestions = 0, unreachableQuestions = 0, orphanOptions = 0;
-    int goodQuestions = 0, goodOptions = 0;
-    Map<Long, Long> qToSurvey = new HashMap<>();
-    Map<Long, Long> qgToSurvey = new HashMap<>();
+    private int orphanGroups = 0, orphanQuestions = 0, unreachableQuestions = 0, orphanOptions = 0;
+    private int goodQuestions = 0, goodOptions = 0;
+    private Map<Long, Long> qToSurvey = new HashMap<>();
+    private Map<Long, Long> qgToSurvey = new HashMap<>();
 
-    boolean fixSurveyPointers = false; // Make question survey pointer match the group's
-    boolean deleteOrphans = false;
+    private boolean fixSurveyPointers = false; // Make question survey pointer match the group's
+    private boolean deleteOrphans = false;
 
     @Override
     public void execute(DatastoreService ds, String[] args) throws Exception {
