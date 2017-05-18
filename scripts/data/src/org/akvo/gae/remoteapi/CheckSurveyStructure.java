@@ -36,8 +36,7 @@ import com.google.appengine.api.datastore.Query;
  */
 public class CheckSurveyStructure implements Process {
 
-    // private static String ERR_MSG = "Unable to hide SurveyedLocale [%s], reason: %s";
-    int e1 = 0, e2 = 0, e3 = 0, e4 = 0, e5 = 0;
+    int orphanGroups = 0, orphanQuestions = 0, unreachableQuestions = 0, orphanOptions = 0;
     int goodQuestions = 0, goodOptions = 0;
     Map<Long, Long> qToSurvey = new HashMap<>();
     Map<Long, Long> qgToSurvey = new HashMap<>();
@@ -63,9 +62,9 @@ public class CheckSurveyStructure implements Process {
         processQuestions(ds);
         processOptions(ds);
 
-        System.out.printf("#QuestionGroups: %5d good, %4d surveyless\n", qgToSurvey.size(), e1);
-        System.out.printf("#Questions:      %5d good, %4d groupless,    %4d unreachable\n", goodQuestions, e2, e3);
-        System.out.printf("#OptionOptions:  %5d good, %4d questionless, %4d unreachable\n", goodOptions, e4, e5);
+        System.out.printf("#QuestionGroups: %5d good, %4d surveyless\n", qgToSurvey.size(), orphanGroups);
+        System.out.printf("#Questions:      %5d good, %4d groupless,    %4d unreachable\n", goodQuestions, orphanQuestions, unreachableQuestions);
+        System.out.printf("#OptionOptions:  %5d good, %4d questionless, %4d unreachable\n", goodOptions, orphanOptions++);
 
     }
 
@@ -84,14 +83,11 @@ public class CheckSurveyStructure implements Process {
             if (questionGroupId == null) {
                 System.out.printf("#ERR group %d '%s'not in a survey!\n", questionGroupId,
                         questionGroupName);
-                e1++;
+                orphanGroups++;
             } else {
-                qgToSurvey.put(questionGroupId, questionGroupSurvey);
-                // System.out.printf(" group %d -> survey %d\n",questionGroupId,
-                // questionGroupSurvey);
+                qgToSurvey.put(questionGroupId, questionGroupSurvey); //ok to have questions in
             }
         }
-
     }
 
     private void processQuestions(DatastoreService ds) {
@@ -110,11 +106,10 @@ public class CheckSurveyStructure implements Process {
             String questionText = (String) q.getProperty("text");
             Long questionGroupSurvey = (Long) qgToSurvey.get(questionGroup);
 
-
-            if (questionGroup == null || questionGroupSurvey == null) { // in no or a nonexistent group; hopelessly lost
+            if (questionGroup == null || questionGroupSurvey == null) { // in no group or a nonexistent group; hopelessly lost
                 System.out.printf("#ERR: Question %d '%s',survey %d, group %d\n",
                         questionId, questionText, questionSurvey, questionGroup);
-                e2++;
+                orphanQuestions++;
                 if (deleteOrphans){
                     System.out.println(q.toString());//for posterity
                     q.setProperty("surveyId", questionGroupSurvey);
@@ -130,7 +125,7 @@ public class CheckSurveyStructure implements Process {
                         q.setProperty("surveyId", questionGroupSurvey);
                         questionsToFix.add(q);
                     }
-                    e3++;
+                    unreachableQuestions++;
                 } else {
                     goodQuestions++;
                 }
@@ -161,7 +156,7 @@ public class CheckSurveyStructure implements Process {
 
             if (questionId == null) { // check for no question
                 System.out.printf("#ERR: Option %d '%s', not in a question\n", optionId, optionText);
-                e4++;
+                orphanOptions++;
                 if (deleteOrphans) {
                     optionsToKill.add(option.getKey());
                     System.out.println(option.toString());//for posterity
@@ -171,7 +166,7 @@ public class CheckSurveyStructure implements Process {
                     System.out.printf(
                             "#ERR: Option %d '%s' is in nonexistent question %d\n",
                             optionId, optionText, questionId);
-                    e5++;
+                    orphanOptions++;
                     if (deleteOrphans) {
                         optionsToKill.add(option.getKey());
                         System.out.println(option.toString());//for posterity
@@ -185,6 +180,5 @@ public class CheckSurveyStructure implements Process {
             System.out.printf("#Deleting %d Options\n",optionsToKill.size());
             batchDelete(ds, optionsToKill);
         }
-
     }
 }
