@@ -62,9 +62,9 @@ public class CheckSurveyStructure implements Process {
         processQuestions(ds);
         processOptions(ds);
 
-        System.out.printf("#QuestionGroups: %5d good, %4d surveyless\n", qgToSurvey.size(), orphanGroups);
-        System.out.printf("#Questions:      %5d good, %4d groupless,    %4d unreachable\n", goodQuestions, orphanQuestions, unreachableQuestions);
-        System.out.printf("#OptionOptions:  %5d good, %4d questionless, %4d unreachable\n", goodOptions, orphanOptions++);
+        System.out.printf("#QuestionGroups:  %5d good, %4d surveyless\n", qgToSurvey.size(), orphanGroups);
+        System.out.printf("#Questions:       %5d good, %4d groupless, %4d unreachable\n", goodQuestions, orphanQuestions, unreachableQuestions);
+        System.out.printf("#QuestionOptions: %5d good, %4d questionless\n", goodOptions, orphanOptions++);
 
     }
 
