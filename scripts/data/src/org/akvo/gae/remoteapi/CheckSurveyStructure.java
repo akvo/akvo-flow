@@ -108,8 +108,8 @@ public class CheckSurveyStructure implements Process {
 
             Long surveyId = s.getKey().getId();
             String surveyName = (String) s.getProperty("name");
-            Long surveyGroup = (Long) g.getProperty("surveyGroupId");
-            if (questionGroupSurvey == null) {
+            Long surveyGroup = (Long) s.getProperty("surveyGroupId");
+            if (surveyGroup == null) {
                 System.out.printf("#ERR survey %d '%s' is not in a survey group\n",
                         surveyId, surveyName);
                 orphanSurveys++;
