@@ -1,5 +1,16 @@
 # Akvo Flow Release Notes
 ----
+# 1.9.18 Quizzical Quokka
+Date: 25 May 2017
+
+## New and noteworthy
+* **Data approval** - Data approval permission UI is now only visible if enable for the instance [#2085].
+
+## Resolved issues
+* **Performance optimisations** - We improved the backend startup time [#2022] and loading of questions with translations [#1442]. We also sped up the creation of questions [#2088] and question groups [#2089].
+
+* **Data visibility improvement** - Super Admin users can now consistently see all data [#2092].
+
 # 1.9.17 Performant Panther
 Date: 03 May 2017
 
@@ -13,9 +24,9 @@ Date: 03 May 2017
 ## Resolved issues
 * **Performance optimisations** - We fetch survey questions in a less expensive way [#1736] and [#1442].
 
-* **Bootstrap files for forms without cascading questions** - we fixed a bug that was preventing the correct generation of bootstrap files for forms that did not contains any cascading questions [#2078]
+* **Bootstrap files for forms without cascading questions** - we fixed a bug that was preventing the correct generation of bootstrap files for forms that did not contains any cascading questions [#2078].
 
-* **Fixed the loading spinner when publishing forms for non-monitoring surveys** - we fixed a bug that was causing the loading spinner to never stop when publishing forms in non-monitoring surveys [#2074]
+* **Fixed the loading spinner when publishing forms for non-monitoring surveys** - we fixed a bug that was causing the loading spinner to never stop when publishing forms in non-monitoring surveys [#2074].
 
 * **Code cleanup** - We removed the unused NAME question type [#2053] and some unused code [#555].
 
