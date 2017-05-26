@@ -71,32 +71,6 @@ public class CheckSurveyStructure implements Process {
 
     }
 
-    private void processGroups(DatastoreService ds) {
-
-        System.out.println("#Processing Question Groups");
-
-        final Query group_q = new Query("QuestionGroup");
-        final PreparedQuery group_pq = ds.prepare(group_q);
-
-        for (Entity g : group_pq.asIterable(FetchOptions.Builder.withChunkSize(500))) {
-
-            Long questionGroupId = g.getKey().getId();
-            Long questionGroupSurvey = (Long) g.getProperty("surveyId");
-            String questionGroupName = (String) g.getProperty("name");
-            if (questionGroupSurvey == null) {
-                System.out.printf("#ERR group %d '%s' is not in a survey\n",
-                        questionGroupId, questionGroupName);
-                orphanGroups++;
-            } else if (!surveys.containsKey(questionGroupSurvey)) {
-                System.out.printf("#ERR group %d '%s' in nonexistent survey %d\n",
-                        questionGroupId, questionGroupName, questionGroupSurvey);
-                orphanGroups++;
-            } else {
-                qgToSurvey.put(questionGroupId, questionGroupSurvey); //ok to have questions in
-            }
-        }
-    }
-
     private void processSurveys(DatastoreService ds) {
 
         System.out.println("#Processing Surveys");
@@ -113,11 +87,51 @@ public class CheckSurveyStructure implements Process {
                 System.out.printf("#ERR survey %d '%s' is not in a survey group\n",
                         surveyId, surveyName);
                 orphanSurveys++;
-	    } else {
-		surveys.put(surveyId,surveyName); //ok to have questions in
-	    }
+            } else {
+                surveys.put(surveyId,surveyName); //ok to have questions in
+            }
         }
     }
+
+    private void processGroups(DatastoreService ds) {
+
+        System.out.println("#Processing Question Groups");
+
+        final Query group_q = new Query("QuestionGroup");
+        final PreparedQuery group_pq = ds.prepare(group_q);
+        List<Key> groupsToKill = new ArrayList<Key>();
+
+        for (Entity g : group_pq.asIterable(FetchOptions.Builder.withChunkSize(500))) {
+
+            Long questionGroupId = g.getKey().getId();
+            Long questionGroupSurvey = (Long) g.getProperty("surveyId");
+            String questionGroupName = (String) g.getProperty("name");
+            if (questionGroupSurvey == null) {
+                System.out.printf("#ERR group %d '%s' is not in a survey\n",
+                        questionGroupId, questionGroupName);
+                orphanGroups++;
+                if (deleteOrphans){
+                    System.out.println(g.toString());//for posterity
+                    groupsToKill.add(g.getKey());
+                }
+            } else if (!surveys.containsKey(questionGroupSurvey)) {
+                System.out.printf("#ERR group %d '%s' in nonexistent survey %d\n",
+                        questionGroupId, questionGroupName, questionGroupSurvey);
+                orphanGroups++;
+                if (deleteOrphans){
+                    System.out.println(g.toString());//for posterity
+                    groupsToKill.add(g.getKey());
+                }
+            } else {
+                qgToSurvey.put(questionGroupId, questionGroupSurvey); //ok to have questions in
+            }
+        }
+        if (deleteOrphans) {
+            System.out.printf("#Deleting %d Groups\n",groupsToKill.size());
+            batchDelete(ds, groupsToKill);
+        }
+    }
+
 
     private void processQuestions(DatastoreService ds) {
         System.out.println("#Processing Questions");
@@ -141,7 +155,6 @@ public class CheckSurveyStructure implements Process {
                 orphanQuestions++;
                 if (deleteOrphans){
                     System.out.println(q.toString());//for posterity
-                    q.setProperty("surveyId", questionGroupSurvey);
                     questionsToKill.add(q.getKey());
                 }
             } else { // check for wrong survey/qg
