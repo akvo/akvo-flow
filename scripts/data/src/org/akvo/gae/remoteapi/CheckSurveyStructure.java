@@ -28,8 +28,12 @@ import com.google.appengine.api.datastore.DatastoreService;
 import com.google.appengine.api.datastore.Entity;
 import com.google.appengine.api.datastore.FetchOptions;
 import com.google.appengine.api.datastore.Key;
+import com.google.appengine.api.datastore.KeyFactory;
 import com.google.appengine.api.datastore.PreparedQuery;
 import com.google.appengine.api.datastore.Query;
+import com.google.appengine.api.datastore.Query.Filter;
+import com.google.appengine.api.datastore.Query.FilterOperator;
+import com.google.appengine.api.datastore.Query.FilterPredicate;
 
 /*
  * - Checks that all surveys, groups, questions and options are consistent
@@ -48,7 +52,7 @@ public class CheckSurveyStructure implements Process {
     @Override
     public void execute(DatastoreService ds, String[] args) throws Exception {
 
-        System.out.printf("#Arguments: FIX to correct survey pointers, GC to delete orphaned entites.\n");
+        System.out.printf("#Arguments: FIX to correct survey pointers, GC to delete orphaned entities.\n");
         for (int i = 0; i < args.length; i++) {
             //System.out.printf("#Argument %d: %s\n", i, args[i]);
             if (args[i].equalsIgnoreCase("FIX")) {
@@ -84,8 +88,8 @@ public class CheckSurveyStructure implements Process {
             String surveyName = (String) s.getProperty("name");
             Long surveyGroup = (Long) s.getProperty("surveyGroupId");
             if (surveyGroup == null) {
-                System.out.printf("#ERR survey %d '%s' is not in a survey group\n",
-                        surveyId, surveyName);
+                System.out.printf("#ERR survey %d '%s' (%d instances) is not in a survey group\n",
+                        surveyId, surveyName, surveyInstanceCount(ds, surveyId));
                 orphanSurveys++;
             } else {
                 surveys.put(surveyId,surveyName); //ok to have questions in
@@ -93,6 +97,19 @@ public class CheckSurveyStructure implements Process {
         }
     }
 
+    private long surveyInstanceCount(DatastoreService ds,Long surveyId) {
+        long i = 0;
+        Filter f = new FilterPredicate(Entity.KEY_RESERVED_PROPERTY, FilterOperator.EQUAL,
+                        KeyFactory.createKey("SurveyInstance", surveyId));
+        Query qsg = new Query("SurveyInstance").setFilter(f);
+        final PreparedQuery survey_pq = ds.prepare(qsg);
+        
+        for (Entity s : survey_pq.asIterable(FetchOptions.Builder.withChunkSize(500))) {
+            i++;
+        }
+        return i;
+    }
+    
     private void processGroups(DatastoreService ds) {
 
         System.out.println("#Processing Question Groups");
