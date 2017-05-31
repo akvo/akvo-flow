@@ -1,5 +1,5 @@
 /*
- *  Copyright (C) 2012 Stichting Akvo (Akvo Foundation)
+ *  Copyright (C) 2012,2017 Stichting Akvo (Akvo Foundation)
  *
  *  This file is part of Akvo FLOW.
  *
@@ -20,8 +20,6 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-
-import javax.inject.Inject;
 
 import org.springframework.beans.BeanUtils;
 import org.springframework.stereotype.Controller;
@@ -46,11 +44,9 @@ import com.gallatinsystems.device.domain.DeviceGroup;
 @RequestMapping("/devices")
 public class DeviceRestService {
 
-    @Inject
-    private DeviceDAO deviceDao;
+    private DeviceDAO deviceDao = new DeviceDAO();
 
-    @Inject
-    private DeviceGroupDAO deviceGroupDao;
+    private DeviceGroupDAO deviceGroupDao = new DeviceGroupDAO();
 
     @RequestMapping(method = RequestMethod.GET, value = "")
     @ResponseBody

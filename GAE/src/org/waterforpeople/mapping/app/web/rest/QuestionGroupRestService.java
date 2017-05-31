@@ -1,5 +1,5 @@
 /*
- *  Copyright (C) 2012-2015 Stichting Akvo (Akvo Foundation)
+ *  Copyright (C) 2012-2017 Stichting Akvo (Akvo Foundation)
  *
  *  This file is part of Akvo FLOW.
  *
@@ -21,8 +21,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import javax.inject.Inject;
-
+import org.akvo.flow.domain.mapper.QuestionGroupDtoMapper;
 import org.apache.commons.lang.ArrayUtils;
 import org.springframework.beans.BeanUtils;
 import org.springframework.stereotype.Controller;
@@ -33,7 +32,6 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.waterforpeople.mapping.app.gwt.client.survey.QuestionGroupDto;
-import org.waterforpeople.mapping.app.util.DtoMarshaller;
 import org.waterforpeople.mapping.app.web.dto.DataProcessorRequest;
 import org.waterforpeople.mapping.app.web.dto.SurveyTaskRequest;
 import org.waterforpeople.mapping.app.web.rest.dto.QuestionGroupPayload;
@@ -55,17 +53,13 @@ import com.google.appengine.api.taskqueue.TaskOptions;
 @RequestMapping("/question_groups")
 public class QuestionGroupRestService {
 
-    @Inject
-    private QuestionGroupDao questionGroupDao;
+    private QuestionGroupDao questionGroupDao = new QuestionGroupDao();
 
-    @Inject
-    private QuestionDao questionDao;
+    private QuestionDao questionDao = new QuestionDao();
 
-    @Inject
-    private SurveyalValueDao svDao;
+    private SurveyalValueDao svDao = new SurveyalValueDao();
 
-    @Inject
-    private QuestionAnswerStoreDao qasDao;
+    private QuestionAnswerStoreDao qasDao = new QuestionAnswerStoreDao();
 
     // Properties to exclude when copying question groups
     private static final String[] QUESTION_GROUP_COPY_EXCLUDED_PROPS = (String[]) ArrayUtils.add(
@@ -76,20 +70,13 @@ public class QuestionGroupRestService {
     @RequestMapping(method = RequestMethod.GET, value = "/all")
     @ResponseBody
     public Map<String, List<QuestionGroupDto>> listQuestionGroups() {
-        final Map<String, List<QuestionGroupDto>> response = new HashMap<String, List<QuestionGroupDto>>();
+        final Map<String, List<QuestionGroupDto>> response =
+                new HashMap<String, List<QuestionGroupDto>>();
         List<QuestionGroupDto> results = new ArrayList<QuestionGroupDto>();
-        List<QuestionGroup> questionGroups = questionGroupDao
-                .list(Constants.ALL_RESULTS);
+        List<QuestionGroup> questionGroups = questionGroupDao.list(Constants.ALL_RESULTS);
         if (questionGroups != null) {
-            for (QuestionGroup s : questionGroups) {
-                QuestionGroupDto dto = new QuestionGroupDto();
-                DtoMarshaller.copyToDto(s, dto);
-
-                // needed because of different names for description in
-                // questionGroup
-                // and questionGroupDto
-                dto.setDescription(s.getDesc());
-                results.add(dto);
+            for (QuestionGroup qg : questionGroups) {
+                results.add(QuestionGroupDtoMapper.transform(qg));
             }
         }
         response.put("question_groups", results);
@@ -136,15 +123,8 @@ public class QuestionGroupRestService {
             final List<QuestionGroup> questionGroups = questionGroupDao
                     .listQuestionGroupBySurvey(surveyId);
             if (questionGroups != null) {
-                for (QuestionGroup s : questionGroups) {
-                    QuestionGroupDto dto = new QuestionGroupDto();
-                    DtoMarshaller.copyToDto(s, dto);
-
-                    // needed because of different names for description in
-                    // questionGroup
-                    // and questionGroupDto
-                    dto.setDescription(s.getDesc());
-                    results.add(dto);
+                for (QuestionGroup qg : questionGroups) {
+                    results.add(QuestionGroupDtoMapper.transform(qg));
                 }
             }
         }
@@ -153,10 +133,7 @@ public class QuestionGroupRestService {
         if (questionGroupId != null && preflight.isEmpty()) {
             QuestionGroup qg = questionGroupDao.getByKey(questionGroupId);
             if (qg != null) {
-                QuestionGroupDto dto = new QuestionGroupDto();
-                DtoMarshaller.copyToDto(qg, dto);
-                dto.setDescription(qg.getDesc());
-                results.add(dto);
+                results.add(QuestionGroupDtoMapper.transform(qg));
             }
         }
         response.put("question_groups", results);
@@ -170,14 +147,10 @@ public class QuestionGroupRestService {
     public Map<String, QuestionGroupDto> findQuestionGroup(
             @PathVariable("id") Long id) {
         final Map<String, QuestionGroupDto> response = new HashMap<String, QuestionGroupDto>();
-        QuestionGroup s = questionGroupDao.getByKey(id);
+        QuestionGroup qg = questionGroupDao.getByKey(id);
         QuestionGroupDto dto = null;
-        if (s != null) {
-            dto = new QuestionGroupDto();
-            DtoMarshaller.copyToDto(s, dto);
-            // needed because of different names for description in
-            // questionGroup and questionGroupDto
-            dto.setDescription(s.getDesc());
+        if (qg != null) {
+            dto = QuestionGroupDtoMapper.transform(qg);
         }
         response.put("question_group", dto);
         return response;
@@ -247,8 +220,7 @@ public class QuestionGroupRestService {
                             });
                     qg = questionGroupDao.save(qg);
 
-                    dto = new QuestionGroupDto();
-                    DtoMarshaller.copyToDto(qg, dto);
+                    dto = QuestionGroupDtoMapper.transform(qg);
                     statusDto.setStatus("ok");
                     statusDto.setMessage("");
                 }
@@ -281,27 +253,26 @@ public class QuestionGroupRestService {
             return response;
         }
 
-        QuestionGroup questionGroup = null;
+        QuestionGroup qg = null;
         // deal with copying a question group
         if (questionGroupDto.getSourceId() != null) {
             // copy question group
-            questionGroup = copyGroup(questionGroupDto);
+            qg = copyGroup(questionGroupDto);
         } else {
             // new question group
-            questionGroup = new QuestionGroup();
-            BeanUtils.copyProperties(questionGroupDto, questionGroup, new String[] {
+            qg = new QuestionGroup();
+            BeanUtils.copyProperties(questionGroupDto, qg, new String[] {
                     "createdDateTime", "status"
             });
-            questionGroup.setStatus(QuestionGroup.Status.valueOf(questionGroupDto.getStatus()));
-            questionGroup = questionGroupDao.save(questionGroup);
+            qg.setStatus(QuestionGroup.Status.valueOf(questionGroupDto.getStatus()));
+            qg = questionGroupDao.save(qg);
         }
 
-        if (questionGroup == null) {
+        if (qg == null) {
             return response;
         }
 
-        QuestionGroupDto dto = new QuestionGroupDto();
-        DtoMarshaller.copyToDto(questionGroup, dto);
+        QuestionGroupDto dto = QuestionGroupDtoMapper.transform(qg);
         statusDto.setStatus("ok");
         statusDto.setMessage("");
 

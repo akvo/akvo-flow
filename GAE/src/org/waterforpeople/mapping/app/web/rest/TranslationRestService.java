@@ -1,5 +1,5 @@
 /*
- *  Copyright (C) 2012-2013 Stichting Akvo (Akvo Foundation)
+ *  Copyright (C) 2012-2013,2017 Stichting Akvo (Akvo Foundation)
  *
  *  This file is part of Akvo FLOW.
  *
@@ -20,8 +20,6 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-
-import javax.inject.Inject;
 
 import org.springframework.beans.BeanUtils;
 import org.springframework.stereotype.Controller;
@@ -48,11 +46,9 @@ import com.gallatinsystems.survey.domain.Translation.ParentType;
 @RequestMapping("/translations")
 public class TranslationRestService {
 
-    @Inject
-    private TranslationDao tDao;
+    private TranslationDao tDao = new TranslationDao();
 
-    @Inject
-    private SurveyDAO sDao;
+    private SurveyDAO sDao = new SurveyDAO();
 
     Map<String, Translation> translations = new HashMap<String, Translation>();
 

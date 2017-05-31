@@ -36,7 +36,6 @@ import org.akvo.flow.domain.SecuredObject;
 import org.datanucleus.store.appengine.query.JDOCursorHelper;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
-import org.waterforpeople.mapping.app.web.rest.security.AppRole;
 
 import com.gallatinsystems.common.Constants;
 import com.gallatinsystems.framework.domain.BaseDomain;
@@ -44,6 +43,8 @@ import com.gallatinsystems.framework.servlet.PersistenceFilter;
 import com.gallatinsystems.survey.domain.Survey;
 import com.gallatinsystems.survey.domain.SurveyGroup;
 import com.gallatinsystems.user.dao.UserAuthorizationDAO;
+import com.gallatinsystems.user.dao.UserDao;
+import com.gallatinsystems.user.domain.User;
 import com.gallatinsystems.user.domain.UserAuthorization;
 import com.google.appengine.api.datastore.Cursor;
 import com.google.appengine.api.datastore.Key;
@@ -292,6 +293,12 @@ public class BaseDAO<T extends BaseDomain> {
                     + concreteClass.getSimpleName());
         }
 
+        UserDao userDAO = new UserDao();
+        User user = userDAO.getByKey(userId);
+        if (user.isSuperAdmin()) {
+            return allObjectsList;
+        }
+
         UserAuthorizationDAO userAuthorizationDAO = new UserAuthorizationDAO();
         List<UserAuthorization> userAuthorizationList = userAuthorizationDAO.listByUser(userId);
         if (userAuthorizationList.isEmpty()) {
@@ -345,12 +352,6 @@ public class BaseDAO<T extends BaseDomain> {
         final Authentication authentication = SecurityContextHolder.getContext()
                 .getAuthentication();
         final Long userId = (Long) authentication.getCredentials();
-
-        // super admin list all
-        if (authentication.getAuthorities().contains(AppRole.SUPER_ADMIN)) {
-            return allObjectsList;
-        }
-
         return filterByUserAuthorizationObjectId(allObjectsList, userId);
     }
 

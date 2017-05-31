@@ -1,5 +1,5 @@
 /*
- *  Copyright (C) 2012 Stichting Akvo (Akvo Foundation)
+ *  Copyright (C) 2012,2017 Stichting Akvo (Akvo Foundation)
  *
  *  This file is part of Akvo FLOW.
  *
@@ -22,8 +22,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-
-import javax.inject.Inject;
 
 import org.apache.commons.lang.StringUtils;
 import org.springframework.http.converter.HttpMessageNotReadableException;
@@ -50,8 +48,7 @@ public class PlacemarkDetailsRestService {
     private static final Logger log = Logger
             .getLogger(PlacemarkDetailsRestService.class.getName());
 
-    @Inject
-    SurveyedLocaleDao localeDao;
+    private SurveyedLocaleDao localeDao = new SurveyedLocaleDao();
 
     @RequestMapping(method = RequestMethod.GET, value = "")
     @ResponseBody

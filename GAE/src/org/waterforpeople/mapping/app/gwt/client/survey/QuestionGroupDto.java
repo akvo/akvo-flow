@@ -28,7 +28,6 @@ public class QuestionGroupDto extends BaseDto implements NamedObject {
     private TreeMap<Integer, QuestionDto> questionMap = null;
 
     private String code;
-    private String description;
     private Long surveyId;
     private Integer order;
     private String path;
@@ -67,14 +66,6 @@ public class QuestionGroupDto extends BaseDto implements NamedObject {
 
     public void setCode(String code) {
         this.code = code;
-    }
-
-    public String getDescription() {
-        return description;
-    }
-
-    public void setDescription(String description) {
-        this.description = description;
     }
 
     public void setQuestionMap(TreeMap<Integer, QuestionDto> questionMap) {

@@ -1,5 +1,5 @@
 /*
- *  Copyright (C) 2012 Stichting Akvo (Akvo Foundation)
+ *  Copyright (C) 2012,2017 Stichting Akvo (Akvo Foundation)
  *
  *  This file is part of Akvo FLOW.
  *
@@ -20,8 +20,6 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-
-import javax.inject.Inject;
 
 import org.springframework.beans.BeanUtils;
 import org.springframework.http.converter.HttpMessageNotReadableException;
@@ -56,8 +54,7 @@ import com.google.appengine.api.taskqueue.TaskOptions;
 @RequestMapping("/survey_assignments")
 public class SurveyAssignmentRestService {
 
-    @Inject
-    SurveyAssignmentDAO surveyAssignmentDao;
+    private SurveyAssignmentDAO surveyAssignmentDao = new SurveyAssignmentDAO();
 
     private DeviceDAO deviceDao;
     private SurveyDAO surveyDao;

@@ -1,5 +1,5 @@
 /*
- *  Copyright (C) 2012 Stichting Akvo (Akvo Foundation)
+ *  Copyright (C) 2012,2017 Stichting Akvo (Akvo Foundation)
  *
  *  This file is part of Akvo FLOW.
  *
@@ -18,8 +18,6 @@ package org.waterforpeople.mapping.app.web.rest;
 
 import java.util.HashMap;
 import java.util.Map;
-
-import javax.inject.Inject;
 
 import org.springframework.beans.BeanUtils;
 import org.springframework.stereotype.Controller;
@@ -40,8 +38,7 @@ import com.gallatinsystems.survey.domain.QuestionOption;
 @RequestMapping("/question_options")
 public class QuestionOptionRestService {
 
-    @Inject
-    private QuestionOptionDao questionOptionDao;
+    private QuestionOptionDao questionOptionDao = new QuestionOptionDao();
 
     // find a single questionOption by the questionOptionId
     @RequestMapping(method = RequestMethod.GET, value = "/{id}")

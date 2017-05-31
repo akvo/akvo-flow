@@ -1,5 +1,5 @@
 /*
- *  Copyright (C) 2014 Stichting Akvo (Akvo Foundation)
+ *  Copyright (C) 2014,2017 Stichting Akvo (Akvo Foundation)
  *
  *  This file is part of Akvo FLOW.
  *
@@ -24,8 +24,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import javax.inject.Inject;
-
 import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.BeanUtils;
 import org.springframework.stereotype.Controller;
@@ -46,11 +44,9 @@ import com.gallatinsystems.user.domain.UserRole;
 @RequestMapping("/user_roles")
 public class UserRolesRestService {
 
-    @Inject
-    private UserRoleDao userRoleDao;
+    private UserRoleDao userRoleDao = new UserRoleDao();
 
-    @Inject
-    private UserAuthorizationDAO userAuthorizationDAO;
+    private UserAuthorizationDAO userAuthorizationDAO = new UserAuthorizationDAO();
 
     @RequestMapping(method = RequestMethod.POST, value = "")
     @ResponseBody

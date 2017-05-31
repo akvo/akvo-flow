@@ -1,4 +1,4 @@
-;; Copyright (C) 2014 Stichting Akvo (Akvo Foundation)
+;; Copyright (C) 2014, 2017 Stichting Akvo (Akvo Foundation)
 ;;
 ;; This file is part of Akvo FLOW.
 ;;
@@ -23,22 +23,29 @@
             [sablono.core :as html :refer-macros (html)])
   (:require-macros [org.akvo.flow.dashboard.t :refer (t>)]))
 
+(def required-permissions
+   {"PROJECT_FOLDER_CREATE" (t> _create_folders)
+    "PROJECT_FOLDER_READ" (t> _access_folders)
+    "PROJECT_FOLDER_UPDATE" (t> _edit_folders)
+    "PROJECT_FOLDER_DELETE" (t> _delete_folders)
+    "FORM_CREATE" (t> _create_forms)
+    "FORM_READ" (t> _access_forms)
+    "FORM_UPDATE" (t> _edit_forms)
+    "FORM_DELETE" (t> _delete_forms)
+    "DATA_CLEANING" (t> _data_cleaning)
+    "DATA_READ" (t> _read_data)
+    "DATA_UPDATE" (t> _edit_data)
+    "DATA_DELETE" (t> _delete_data)
+    "DEVICE_MANAGE" (t> _device_assignment_manage)
+    "CASCADE_MANAGE" (t> _cascade_manage)})
+
+(def data-approval-enabled
+  (aget js/window "parent" "FLOW" "Env" "enableDataApproval"))
+
 (def all-permissions
-  {"PROJECT_FOLDER_CREATE" (t> _create_folders)
-   "PROJECT_FOLDER_READ" (t> _access_folders)
-   "PROJECT_FOLDER_UPDATE" (t> _edit_folders)
-   "PROJECT_FOLDER_DELETE" (t> _delete_folders)
-   "FORM_CREATE" (t> _create_forms)
-   "FORM_READ" (t> _access_forms)
-   "FORM_UPDATE" (t> _edit_forms)
-   "FORM_DELETE" (t> _delete_forms)
-   "DATA_APPROVE_MANAGE" (t> _data_approval_manage)
-   "DATA_CLEANING" (t> _data_cleaning)
-   "DATA_READ" (t> _read_data)
-   "DATA_UPDATE" (t> _edit_data)
-   "DATA_DELETE" (t> _delete_data)
-   "DEVICE_MANAGE" (t> _device_assignment_manage)
-   "CASCADE_MANAGE" (t> _cascade_manage)})
+  (if data-approval-enabled
+    (assoc required-permissions "DATA_APPROVE_MANAGE" (t> _data_approval_manage))
+    required-permissions))
 
 (defn header-section [{:keys [role on-close]} owner]
   (om/component
