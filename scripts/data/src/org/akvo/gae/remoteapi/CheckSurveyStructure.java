@@ -40,8 +40,11 @@ import com.google.appengine.api.datastore.Query.FilterPredicate;
  */
 public class CheckSurveyStructure implements Process {
 
-    private int orphanSurveys = 0, orphanGroups = 0, orphanQuestions = 0, unreachableQuestions = 0, orphanOptions = 0;
-    private int goodQuestions = 0, goodOptions = 0;
+    private int orphanSurveyGroups = 0, orphanSurveys = 0, orphanGroups = 0, orphanQuestions = 0, orphanOptions = 0;
+    private int unreachableQuestions = 0, leafInRoot = 0;
+    private int goodQuestions = 0, goodOptions = 0, goodSurveyGroups = 0;
+
+    private Map<Long, String> surveyGroupLeaves = new HashMap<>(); //groups ok to have surveys in, indexed by id
     private Map<Long, String> surveys = new HashMap<>();
     private Map<Long, Long> qToSurvey = new HashMap<>();
     private Map<Long, Long> qgToSurvey = new HashMap<>();
@@ -63,16 +66,61 @@ public class CheckSurveyStructure implements Process {
             }
         }
 
+        processSurveyGroups(ds);
         processSurveys(ds);
         processGroups(ds);
         processQuestions(ds);
         processOptions(ds);
 
-        System.out.printf("#Surveys:         %5d good, %4d groupless\n", surveys.size(), orphanSurveys);
-        System.out.printf("#QuestionGroups:  %5d good, %4d surveyless\n", qgToSurvey.size(), orphanGroups);
-        System.out.printf("#Questions:       %5d good, %4d groupless, %4d unreachable\n", goodQuestions, orphanQuestions, unreachableQuestions);
-        System.out.printf("#QuestionOptions: %5d good, %4d questionless\n", goodOptions, orphanOptions++);
+        System.out.printf("#SurveyGroups:    %5d good, %4d orphan, (%4d leaves in root)\n", goodSurveyGroups, orphanSurveyGroups, leafInRoot);
+        System.out.printf("#Surveys:         %5d good, %4d orphan\n", surveys.size(), orphanSurveys);
+        System.out.printf("#QuestionGroups:  %5d good, %4d orphan\n", qgToSurvey.size(), orphanGroups);
+        System.out.printf("#Questions:       %5d good, %4d orphan, %4d unreachable\n", goodQuestions, orphanQuestions, unreachableQuestions);
+        System.out.printf("#QuestionOptions: %5d good, %4d orphan\n", goodOptions, orphanOptions++);
 
+    }
+
+    private void processSurveyGroups(DatastoreService ds) {
+
+        System.out.println("#Processing SurveyGroups");
+
+        Map<Long, Long> surveyGroupParents = new HashMap<>(); //groups indexed by id
+        Map<Long, String> surveyGroupNames = new HashMap<>();
+        Map<Long, String> surveyGroupTypes = new HashMap<>();
+
+        final Query survey_q = new Query("SurveyGroup");
+        final PreparedQuery survey_pq = ds.prepare(survey_q);
+
+        for (Entity sg : survey_pq.asIterable(FetchOptions.Builder.withChunkSize(500))) {
+            Long surveyId = sg.getKey().getId();
+            Long parentId = (Long) sg.getProperty("parentId");
+            String surveyGroupName = (String) sg.getProperty("name");
+            String type = (String) sg.getProperty("projectType");
+            surveyGroupParents.put(surveyId,parentId);
+            surveyGroupNames.put(surveyId,surveyGroupName);
+            surveyGroupTypes.put(surveyId,type);
+            }
+        //now verify the tree
+        //TODO: detect loops and indirectly orphaned groups
+        for (Long sgi : surveyGroupParents.keySet()) {
+            Long parent = surveyGroupParents.get(sgi);
+            String name = surveyGroupNames.get(sgi);
+            String type = surveyGroupTypes.get(sgi); //PROJECT_FOLDER or PROJECT ("survey")
+            if (parent == null) {
+                System.out.printf("#ERR survey group %d '%s' is not in a survey group\n",
+                        sgi, name);
+                orphanSurveyGroups++;
+            } else {
+                goodSurveyGroups++;
+                if (type.equalsIgnoreCase("PROJECT")) {
+                    surveyGroupLeaves.put(sgi,name); //ok to have surveys ("forms") in
+                    //System.out.printf("#INF survey group %d '%s' type %s\n", sgi, n, t);
+                    if (parent == 0) { //in root folder
+                        leafInRoot++; //ok if old, not to create
+                    }
+                }
+            }
+        }
     }
 
     private void processSurveys(DatastoreService ds) {
@@ -91,6 +139,10 @@ public class CheckSurveyStructure implements Process {
                 System.out.printf("#ERR survey %d '%s' (%d instances) is not in a survey group\n",
                         surveyId, surveyName, surveyInstanceCount(ds, surveyId));
                 orphanSurveys++;
+            } else if (!surveyGroupLeaves.containsKey(surveyGroup)) {
+                System.out.printf("#ERR survey %d '%s' (%d instances) is in bad survey group %d\n",
+                        surveyId, surveyName, surveyInstanceCount(ds, surveyId), surveyGroup);
+                orphanSurveys++;
             } else {
                 surveys.put(surveyId,surveyName); //ok to have questions in
             }
@@ -99,8 +151,7 @@ public class CheckSurveyStructure implements Process {
 
     private long surveyInstanceCount(DatastoreService ds,Long surveyId) {
         long i = 0;
-        Filter f = new FilterPredicate(Entity.KEY_RESERVED_PROPERTY, FilterOperator.EQUAL,
-                        KeyFactory.createKey("SurveyInstance", surveyId));
+        Filter f = new FilterPredicate("surveyId", FilterOperator.EQUAL, surveyId);
         Query qsg = new Query("SurveyInstance").setFilter(f);
         final PreparedQuery survey_pq = ds.prepare(qsg);
         
