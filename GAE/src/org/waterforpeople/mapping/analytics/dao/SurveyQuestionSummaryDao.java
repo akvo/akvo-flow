@@ -1,5 +1,5 @@
 /*
- *  Copyright (C) 2010-2012 Stichting Akvo (Akvo Foundation)
+ *  Copyright (C) 2010-2012, 2017 Stichting Akvo (Akvo Foundation)
  *
  *  This file is part of Akvo FLOW.
  *
@@ -127,10 +127,13 @@ public class SurveyQuestionSummaryDao extends BaseDAO<SurveyQuestionSummary> {
         String cacheKey = null;
         try {
             cacheKey = getCacheKey(questionId + "-" + questionResponse);
-            if (MemCacheUtils.containsKey(cache, cacheKey)) {
-                result = new ArrayList<SurveyQuestionSummary>();
-                result.add((SurveyQuestionSummary) cache.get(cacheKey));
-                return result;
+            if (MemCacheUtils.containsKey(cache, cacheKey)) { //let's try to get it
+                SurveyQuestionSummary sqs = (SurveyQuestionSummary)cache.get(cacheKey);
+                if (sqs != null) {
+                    result = new ArrayList<SurveyQuestionSummary>();
+                    result.add(sqs);
+                    return result;
+                }
             }
         } catch (CacheException e) {
             log.log(Level.WARNING, e.getMessage());
