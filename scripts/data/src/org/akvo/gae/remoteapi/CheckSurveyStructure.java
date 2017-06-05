@@ -40,9 +40,10 @@ import com.google.appengine.api.datastore.Query.FilterPredicate;
  */
 public class CheckSurveyStructure implements Process {
 
-    private int orphanSurveyGroups = 0, orphanSurveys = 0, orphanGroups = 0, orphanQuestions = 0, orphanOptions = 0;
+    private int orphanSurveyGroups = 0, orphanSurveys = 0, orphanGroups = 0;
+    private int orphanQuestions = 0, orphanOptions = 0, orphanInstances = 0, orphanLocales = 0;
     private int unreachableQuestions = 0, leafInRoot = 0;
-    private int goodQuestions = 0, goodOptions = 0, goodSurveyGroups = 0;
+    private int goodQuestions = 0, goodOptions = 0, goodSurveyGroups = 0, goodInstances = 0, goodLocales = 0;
 
     private Map<Long, String> surveyGroupLeaves = new HashMap<>(); //groups ok to have surveys in, indexed by id
     private Map<Long, String> surveys = new HashMap<>();
@@ -51,6 +52,7 @@ public class CheckSurveyStructure implements Process {
 
     private boolean fixSurveyPointers = false; // Make question survey pointer match the group's
     private boolean deleteOrphans = false;
+    private boolean checkInstances = false; //check if any instances are orphaned
 
     @Override
     public void execute(DatastoreService ds, String[] args) throws Exception {
@@ -64,6 +66,9 @@ public class CheckSurveyStructure implements Process {
             if (args[i].equalsIgnoreCase("GC")) {
                 deleteOrphans = true;
             }
+            if (args[i].equalsIgnoreCase("INSTANCES")) {
+                checkInstances = true;
+            }
         }
 
         processSurveyGroups(ds);
@@ -71,12 +76,23 @@ public class CheckSurveyStructure implements Process {
         processGroups(ds);
         processQuestions(ds);
         processOptions(ds);
+        processInstances(ds);
+        processSurveyedLocales(ds);
 
         System.out.printf("#SurveyGroups:    %5d good, %4d orphan, (%4d leaves in root)\n", goodSurveyGroups, orphanSurveyGroups, leafInRoot);
         System.out.printf("#Surveys:         %5d good, %4d orphan\n", surveys.size(), orphanSurveys);
         System.out.printf("#QuestionGroups:  %5d good, %4d orphan\n", qgToSurvey.size(), orphanGroups);
         System.out.printf("#Questions:       %5d good, %4d orphan, %4d unreachable\n", goodQuestions, orphanQuestions, unreachableQuestions);
-        System.out.printf("#QuestionOptions: %5d good, %4d orphan\n", goodOptions, orphanOptions++);
+        System.out.printf("#QuestionOptions: %5d good, %4d orphan\n", goodOptions, orphanOptions);
+        System.out.printf("#Summary:         %d+%d+%d (fixable questions + deletable orphans + others - that this script cannot fix).\n",
+                unreachableQuestions,
+                orphanGroups+ orphanQuestions + orphanOptions, 
+                orphanSurveyGroups + orphanSurveys);
+        if (checkInstances) {
+            System.out.printf("#Instances: %5d good, %4d orphan\n", goodInstances, orphanInstances);
+            System.out.printf("#Locales:   %5d good, %4d orphan\n", goodLocales, orphanLocales);
+            
+        }
 
     }
 
@@ -226,7 +242,7 @@ public class CheckSurveyStructure implements Process {
                     questionsToKill.add(q.getKey());
                 }
             } else { // check for wrong survey/qg
-                qToSurvey.put(questionId, questionSurvey); //ok parent for options
+                qToSurvey.put(questionId, questionSurvey); //ok parent for options, but may be in wrong survey
                 if (!questionSurvey.equals(questionGroupSurvey)) {
                     System.out.printf("#ERR: Question %d '%s' in survey %d, but group %d is in survey %d\n",
                             questionId, questionText, questionSurvey, questionGroup, questionGroupSurvey);
@@ -289,6 +305,68 @@ public class CheckSurveyStructure implements Process {
         if (deleteOrphans) {
             System.out.printf("#Deleting %d Options\n",optionsToKill.size());
             batchDelete(ds, optionsToKill);
+        }
+    }
+    
+    private void processInstances(DatastoreService ds) {
+        if (!checkInstances) {
+            return;
+        }
+        System.out.println("#Processing Instances");
+
+        Map<Long,Long>instanceCounts = new HashMap<>();
+        final PreparedQuery survey_pq = ds.prepare(new Query("SurveyInstance"));
+        
+        for (Entity s : survey_pq.asIterable(FetchOptions.Builder.withChunkSize(500))) {
+
+            Long instanceId = s.getKey().getId();
+            Long surveyId = (Long) s.getProperty("surveyId");
+            String name = (String) s.getProperty("uuid");
+
+            if (surveyId == null) { // check for no question
+                System.out.printf("#ERR: Instance %d '%s', not in a survey\n", instanceId, name);
+                orphanInstances++;
+            } else { // check for bad survey
+                if (!surveys.containsKey(surveyId)) {
+                    System.out.printf(
+                            "#ERR: Instance %d '%s' is in nonexistent survey %d\n",
+                            instanceId, name, surveyId);
+                    orphanInstances++;
+                } else {
+                    goodInstances++;
+                }
+            }
+        }
+    }
+
+    private void processSurveyedLocales(DatastoreService ds) {
+        if (!checkInstances) {
+            return;
+        }
+        System.out.println("#Processing SurveyedLocales");
+
+        Map<Long,Long>instanceCounts = new HashMap<>();
+        final PreparedQuery survey_pq = ds.prepare(new Query("SurveyedLocale"));
+        
+        for (Entity s : survey_pq.asIterable(FetchOptions.Builder.withChunkSize(500))) {
+
+            Long instanceId = s.getKey().getId();
+            Long surveyGroupId = (Long) s.getProperty("surveyGroupId");
+            String name = (String) s.getProperty("identifier");
+
+            if (surveyGroupId == null) { // check for no question
+                System.out.printf("#ERR: Instance %d '%s', not in a survey\n", instanceId, name);
+                orphanLocales++;
+            } else { // check for bad surveyGroup
+                if (!surveyGroupLeaves.containsKey(surveyGroupId)) {
+                    System.out.printf(
+                            "#ERR: Instance %d '%s' is in bad survey group %d\n",
+                            instanceId, name, surveyGroupId);
+                    orphanLocales++;
+                } else {
+                    goodLocales++;
+                }
+            }
         }
     }
 }
