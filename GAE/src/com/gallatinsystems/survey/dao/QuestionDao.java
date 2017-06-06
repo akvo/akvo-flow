@@ -162,7 +162,11 @@ public class QuestionDao extends BaseDAO<Question> {
         uncache(Arrays.asList(question)); // clear from cached first
 
         // only delete after extracting group ID and order
-        super.delete(question);
+        //cached Entity has no connection to datastore, so bypass cache
+        Question persistedQuestion = super.getByKey(question.getKey());
+        if (persistedQuestion != null) { //assume nothing
+            super.delete(persistedQuestion);
+        }
 
         if (adjustQuestionOrder != null && adjustQuestionOrder) {
             // update question order
