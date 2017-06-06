@@ -159,26 +159,26 @@ public class QuestionDao extends BaseDAO<Question> {
         Long deletedQuestionGroupId = question.getQuestionGroupId();
         Integer deletedQuestionOrder = question.getOrder();
 
-        uncache(Arrays.asList(question)); // clear from cached first
-
-        // only delete after extracting group ID and order
-        //cached Entity has no connection to datastore, so bypass cache
-        Question persistedQuestion = super.getByKey(question.getKey());
-        if (persistedQuestion != null) { //assume nothing
-            super.delete(persistedQuestion);
-        }
+        uncache(Arrays.asList(question)); // clear from cache first
 
         if (adjustQuestionOrder != null && adjustQuestionOrder) {
             // update question order
-            TreeMap<Integer, Question> groupQs = listQuestionsByQuestionGroup(
+            TreeMap<Integer, Question> groupQs = listQuestionsByQuestionGroup( //fetches question, too
                     deletedQuestionGroupId, false);
             if (groupQs != null) {
                 for (Question gq : groupQs.values()) {
-                    if (gq.getOrder() >= deletedQuestionOrder) {
+                    if (gq.getOrder() > deletedQuestionOrder) {
                         gq.setOrder(gq.getOrder() - 1);
                     }
                 }
             }
+        }
+        
+        // only delete after all other ds work is done
+        //cached Entity has no connection to data store, so bypass cache
+        Question persistedQuestion = super.getByKey(question.getKey());
+        if (persistedQuestion != null) { //assume nothing
+            super.delete(persistedQuestion);
         }
     }
 
@@ -589,6 +589,7 @@ public class QuestionDao extends BaseDAO<Question> {
      * @param questionGroupId
      * @return
      */
+    @Deprecated
     public List<Question> listQuestionsByQuestionGroupOrderByCreatedDateTime(
             Long questionGroupId) {
         return listByProperty("questionGroupId", questionGroupId, "Long",
@@ -613,6 +614,7 @@ public class QuestionDao extends BaseDAO<Question> {
      * lists all the questions in a group, optionally loading details. If allowSideEffects is true,
      * it will attempt to reorder any duplicated question orderings on retrieval. New users of this
      * method should ALWAY call this with allowSideEffects = false
+     * Bypasses cache
      *
      * @param questionGroupId
      * @param needDetails
