@@ -27,8 +27,10 @@ import java.util.Map;
 import java.util.Set;
 import java.util.logging.Logger;
 
+import javax.jdo.JDOHelper;
 import javax.jdo.JDOObjectNotFoundException;
 import javax.jdo.PersistenceManager;
+import javax.jdo.ObjectState;
 
 import net.sf.jsr107cache.CacheException;
 
@@ -564,7 +566,15 @@ public class BaseDAO<T extends BaseDomain> {
      */
     public <E extends BaseDomain> void delete(E obj) {
         PersistenceManager pm = PersistenceFilter.getManager();
-        pm.deletePersistent(obj);
+        ObjectState state = JDOHelper.getObjectState(obj);
+        if (state == ObjectState.TRANSIENT ||
+            state == ObjectState.TRANSIENT_CLEAN ||
+            state == ObjectState.TRANSIENT_DIRTY
+           ) {
+            log.warning("Trying to deletePersistent() object '" + obj.toString() + "' in state " + state);
+        } else {
+            pm.deletePersistent(obj);
+        }
     }
 
     /**
