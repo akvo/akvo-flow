@@ -1,5 +1,12 @@
 # Akvo Flow Release Notes
 ----
+# 1.9.19 Recursive Rabbit
+Date: 08 June 2017
+
+## Resolved issues
+* **Bug fix** - Fix NPE in summary counts [#2107]
+* **Bug fix** - Disable clickable question text in surveys for users without edit rights [#2146]
+
 # 1.9.18 Quizzical Quokka
 Date: 25 May 2017
 
