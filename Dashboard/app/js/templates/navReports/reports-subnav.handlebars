@@ -1,9 +1,9 @@
 <ul>
-    {{#view view.NavItemView item="chartReports" }}
-      <a {{action doChartReports}}>{{t _charts}}</a>
-    {{/view}} 
     {{#view view.NavItemView item="exportReports" }}
     	<a {{action doExportReports}}>{{t _export_reports}}</a>
+    {{/view}} 
+    {{#view view.NavItemView item="chartReports" }}
+      <a {{action doChartReports}}>{{t _charts}}</a>
     {{/view}} 
     {{#if FLOW.Env.showStatisticsFeature}}
      {{#view view.NavItemView item="statistics" }}
