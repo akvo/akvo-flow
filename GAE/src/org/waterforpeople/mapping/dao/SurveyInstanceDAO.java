@@ -89,6 +89,10 @@ public class SurveyInstanceDAO extends BaseDAO<SurveyInstance> {
 
         SurveyedLocale sl = saveSurveyedLocale(si);
         si.setSurveyedLocaleId(sl.getKey().getId());
+        if (si.getSurveyedLocaleDisplayName() == null) {
+            //in case app did not send SL name, we may get it from an old SL 
+            si.setSurveyedLocaleDisplayName(sl.getDisplayName());
+        }
         si.setDeviceFile(deviceFile);
         si = save(si);// Save the SurveyInstance just once, ensuring the Key is set.
 
