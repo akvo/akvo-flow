@@ -311,8 +311,9 @@ public class SurveyInstance extends BaseDomain implements SecuredObject {
     }
 
     public void setSurveyedLocaleDisplayName(String surveyedLocaleDisplayName) {
-        this.surveyedLocaleDisplayName = surveyedLocaleDisplayName.length() > MAX_LENGTH ? surveyedLocaleDisplayName
-                .substring(0, MAX_LENGTH).trim()
+        this.surveyedLocaleDisplayName = surveyedLocaleDisplayName != null
+                && surveyedLocaleDisplayName.length() > MAX_LENGTH
+                ? surveyedLocaleDisplayName.substring(0, MAX_LENGTH).trim()
                 : surveyedLocaleDisplayName;
     }
 
