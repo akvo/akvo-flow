@@ -1556,17 +1556,26 @@ public class DataProcessorRestServlet extends AbstractRestApiServlet {
         
         for (SurveyedLocale sl : locales) {
             try {
-                SurveyInstance si = siDao.getRegistrationSurveyInstance(sl, sg.getNewLocaleSurveyId());
-                if (si == null) {
-                    log.log(Level.WARNING, "Null registartion SurveyInstance for locale: " + sl.getKey().getId());
+                SurveyInstance rsi = siDao.getRegistrationSurveyInstance(sl, sg.getNewLocaleSurveyId());
+                if (rsi == null) {
+                    log.log(Level.WARNING, "Null registration SurveyInstance for locale: " + sl.getKey().getId());
                     continue;
                 }
                 
-                List<QuestionAnswerStore> responses = qasDao.listBySurveyInstance(si.getKey().getId());
+                List<QuestionAnswerStore> responses = qasDao.listBySurveyInstance(rsi.getKey().getId());
                 sl.assembleDisplayName(nameQuestions, responses);
                 log.info("Reassembled display name for SurveyedLocale : " + 
                             sl.getKey().getId() + ": " + sl.getDisplayName());
                 slDao.save(sl);
+                //also save this name to any linked SurveyInstance entities
+                List<SurveyInstance> surveyInstances =
+                        siDao.listInstancesByLocale(sl.getKey().getId(), null, null, null);
+                if (surveyInstances != null) {
+                    for (SurveyInstance si : surveyInstances) {
+                        si.setSurveyedLocaleDisplayName(sl.getDisplayName());
+                        siDao.save(si);
+                    }
+                }
             } catch (Exception e) {
                 log.log(Level.SEVERE, "Problem while assembling datapoint name: " + e.getMessage(), e);
             }
