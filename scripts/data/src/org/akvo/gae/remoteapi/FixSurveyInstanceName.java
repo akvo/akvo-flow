@@ -16,7 +16,9 @@
 
 package org.akvo.gae.remoteapi;
 
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import com.google.appengine.api.datastore.DatastoreService;
@@ -58,7 +60,8 @@ public class FixSurveyInstanceName implements Process {
 
         final Query q2 = new Query("SurveyInstance");
         final PreparedQuery pq2 = ds.prepare(q2);
-
+        final List<Entity> instancesToSave = new ArrayList<>();
+        
         System.out.println("Processing SurveyInstances");
 
         for (Entity si : pq2.asIterable(FetchOptions.Builder.withChunkSize(500))) {
@@ -77,7 +80,7 @@ public class FixSurveyInstanceName implements Process {
                 System.out.printf("Missing displayname for: [%d]\n", si.getKey().getId());
                 if (slName != null) {
                     si.setProperty("surveyedLocaleDisplayName", slName);
-                    ds.put(si);
+                    instancesToSave.add(si);
                     siFixCount++;
                 }      
             } else { //check if same
@@ -86,13 +89,17 @@ public class FixSurveyInstanceName implements Process {
                     System.out.printf("Wrong displayname for [%d]: '%s' <> '%s'\n", si.getKey().getId(), siName, slName);
                     if (slName != null) {
                         si.setProperty("surveyedLocaleDisplayName", slName);
-                        ds.put(si);
+                        instancesToSave.add(si);
                         siFixCount++;
                     }      
                 }       
                 
             }
         }
+        System.out.println("Saving result");
+        ds.put(instancesToSave);
+        
+        
         System.out.printf("#SurveyedLocales:                     %5d\n", slCount);
         System.out.printf("#SurveyedInstances:                   %5d\n", siCount);
         System.out.printf("#SurveyedInstances no name:           %5d\n", siNonameCount);
