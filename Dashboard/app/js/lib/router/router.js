@@ -421,7 +421,7 @@ FLOW.Router = Ember.Router.extend({
 
       index: Ember.Route.extend({
         route: '/',
-        redirectsTo: 'chartReports'
+        redirectsTo: 'exportReports'
       }),
 
       exportReports: Ember.Route.extend({
