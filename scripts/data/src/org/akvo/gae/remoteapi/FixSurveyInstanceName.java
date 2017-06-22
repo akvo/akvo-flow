@@ -96,15 +96,19 @@ public class FixSurveyInstanceName implements Process {
                 
             }
         }
-        System.out.println("Saving result");
-        ds.put(instancesToSave);
+        if (args.length == 1 && args[0].equals("--dry-run")) {
+            System.out.println("This was a dry run. No changes saved to datastore");
+        } else {
+            System.out.println("Saving result");
+            ds.put(instancesToSave);
+        }
         
         
-        System.out.printf("#SurveyedLocales:                     %5d\n", slCount);
-        System.out.printf("#SurveyedInstances:                   %5d\n", siCount);
-        System.out.printf("#SurveyedInstances no name:           %5d\n", siNonameCount);
-        System.out.printf("#SurveyedInstances wrong name:        %5d\n", siWrongnameCount);
-        System.out.printf("#SurveyedInstances no SurveyedLocale: %5d\n", siPtrErrCount);
-        System.out.printf("#SurveyedInstances fixed:             %5d\n", siFixCount);
+        System.out.printf("#SurveyedLocales:                      %5d\n", slCount);
+        System.out.printf("#SurveyedInstances:                    %5d\n", siCount);
+        System.out.printf("#SurveyedInstances, no name:           %5d\n", siNonameCount);
+        System.out.printf("#SurveyedInstances, wrong name:        %5d\n", siWrongnameCount);
+        System.out.printf("#SurveyedInstances, no SurveyedLocale: %5d\n", siPtrErrCount);
+        System.out.printf("#SurveyedInstances, fixable:           %5d\n", siFixCount);
     }
 }
