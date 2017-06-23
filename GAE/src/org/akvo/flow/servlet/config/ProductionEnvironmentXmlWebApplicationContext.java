@@ -6,7 +6,7 @@ import org.springframework.web.context.support.XmlWebApplicationContext;
 
 import com.google.appengine.api.utils.SystemProperty;
 
-public class AkvoFlowXmlWebApplicationContext extends XmlWebApplicationContext {
+public class ProductionEnvironmentXmlWebApplicationContext extends XmlWebApplicationContext {
 
     @Override
     protected void initBeanDefinitionReader(XmlBeanDefinitionReader beanDefinitionReader) {
