@@ -5,7 +5,7 @@
     </context-param>
     <context-param>
         <param-name>contextClass</param-name>
-        <param-value>org.akvo.flow.servlet.config.AkvoFlowXmlWebApplicationContext</param-value>
+        <param-value>org.akvo.flow.servlet.config.ProductionEnvironmentXmlWebApplicationContext</param-value>
     </context-param>
     <listener>
         <listener-class>org.springframework.web.context.ContextLoaderListener</listener-class>
