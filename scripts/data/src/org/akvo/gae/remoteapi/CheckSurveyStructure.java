@@ -160,11 +160,11 @@ public class CheckSurveyStructure implements Process {
                 }
             }
         }
-        if (deleteOrphans) {
+        if (fixSurveyPointers) {
             System.out.printf("#Fixing %d Questions\n",questionsToFix.size());
             batchSaveEntities(ds, questionsToFix);
         }
-        if (fixSurveyPointers) {
+        if (deleteOrphans) {
             System.out.printf("#Deleting %d Questions\n",questionsToKill.size());
             batchDelete(ds, questionsToKill);
         }
