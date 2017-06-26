@@ -50,6 +50,8 @@ public class EnvServlet extends HttpServlet {
     private static final Logger log = Logger.getLogger(EnvServlet.class
             .getName());
 
+    public static final String SHOW_MAPS_PROPERTY_KEY = "showMapsTab";
+
     private static final ArrayList<String> properties = new ArrayList<String>();
 
     static {
@@ -63,6 +65,7 @@ public class EnvServlet extends HttpServlet {
         properties.add("showExternalSourcesFeature");
         properties.add("appId");
         properties.add("mapsProvider");
+        properties.add(SHOW_MAPS_PROPERTY_KEY);
         properties.add("googleMapsRegionBias");
         properties.add("cartodbHost");
         properties.add("hereMapsAppId");
@@ -135,7 +138,9 @@ public class EnvServlet extends HttpServlet {
             props.put("extraMapboxTileLayerLabel", "");
         }
 
-        props.put("appId", SystemProperty.applicationId.get());
+        if (!"false".equalsIgnoreCase(props.get(SHOW_MAPS_PROPERTY_KEY))) {
+            props.put(SHOW_MAPS_PROPERTY_KEY, "true");
+        }
 
         // load language configuration and strings if present
         addLocale(props);
