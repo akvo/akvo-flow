@@ -53,7 +53,6 @@ import org.waterforpeople.mapping.app.web.DataProcessorRestServlet;
 import org.waterforpeople.mapping.app.web.dto.BootstrapGeneratorRequest;
 import org.waterforpeople.mapping.app.web.dto.SurveyAssemblyRequest;
 import org.waterforpeople.mapping.app.web.dto.SurveyTaskRequest;
-import org.waterforpeople.mapping.dao.SurveyContainerDao;
 import org.waterforpeople.mapping.dao.SurveyInstanceDAO;
 
 import com.gallatinsystems.common.Constants;
@@ -76,20 +75,9 @@ import com.gallatinsystems.survey.domain.QuestionGroup;
 import com.gallatinsystems.survey.domain.QuestionHelpMedia;
 import com.gallatinsystems.survey.domain.QuestionOption;
 import com.gallatinsystems.survey.domain.Survey;
-import com.gallatinsystems.survey.domain.SurveyContainer;
 import com.gallatinsystems.survey.domain.SurveyGroup;
 import com.gallatinsystems.survey.domain.Translation;
 import com.gallatinsystems.survey.domain.Translation.ParentType;
-import com.gallatinsystems.survey.domain.xml.AltText;
-import com.gallatinsystems.survey.domain.xml.Dependency;
-import com.gallatinsystems.survey.domain.xml.Heading;
-import com.gallatinsystems.survey.domain.xml.Help;
-import com.gallatinsystems.survey.domain.xml.ObjectFactory;
-import com.gallatinsystems.survey.domain.xml.Option;
-import com.gallatinsystems.survey.domain.xml.Options;
-import com.gallatinsystems.survey.domain.xml.Text;
-import com.gallatinsystems.survey.domain.xml.ValidationRule;
-import com.gallatinsystems.survey.xml.SurveyXMLAdapter;
 import com.gallatinsystems.surveyal.app.web.SurveyalRestRequest;
 import com.google.appengine.api.datastore.Entity;
 import com.google.appengine.api.datastore.KeyFactory;
@@ -740,17 +728,6 @@ public class SurveyServiceImpl extends RemoteServiceServlet implements
     }
 
     @Override
-    public QuestionDto loadQuestionDetails(Long questionId) {
-        QuestionDao questionDao = new QuestionDao();
-        Question canonical = questionDao.getByKey(questionId, true);
-        if (canonical != null) {
-            return marshalQuestionDto(canonical);
-        } else {
-            return null;
-        }
-    }
-
-    @Override
     public String deleteQuestionGroup(QuestionGroupDto value, Long surveyId) {
         if (value != null) {
             QuestionGroupDao qgDao = new QuestionGroupDao();
@@ -1013,28 +990,6 @@ public class SurveyServiceImpl extends RemoteServiceServlet implements
             QuestionDao dao = new QuestionDao();
             dao.updateQuestionGroupOrder(groupList);
 
-        }
-    }
-
-    /**
-     * updates a question with new dependency information.
-     *
-     * @param questionId
-     * @param dep
-     */
-    @Override
-    public void updateQuestionDependency(Long questionId,
-            QuestionDependencyDto dep) {
-        QuestionDao qDao = new QuestionDao();
-        Question q = qDao.getByKey(questionId, false);
-        if (q != null) {
-            if (dep != null) {
-                q.setDependentFlag(true);
-                q.setDependentQuestionId(dep.getQuestionId());
-                q.setDependentQuestionAnswer(dep.getAnswerValue());
-            } else {
-                q.setDependentFlag(false);
-            }
         }
     }
 
