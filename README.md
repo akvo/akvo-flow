@@ -17,3 +17,7 @@ and <a href="http://www.yourkit.com/.net/profiler/index.jsp">YourKit .NET Profil
 innovative and intelligent tools for profiling Java and .NET applications.
 
 YourKit has offered an open source license to the Akvo FLOW team for the profiling of backend to improve its performance.
+
+<img src="http://www.browserstack.com/images/layout/browserstack-logo-600x315.png" width="280"/>
+
+[BrowserStack](http://www.browserstack.com) is supporting Akvo, allowing us to use their service and infrastructure to test the code in this repository. Thank you for supporting the open source community!
