@@ -644,7 +644,7 @@ FLOW.surveyControl = Ember.ArrayController.create({
   createForm: function() {
     var code = Ember.String.loc('_new_form').trim();
     var path = FLOW.projectControl.get('currentProjectPath') + "/" + code;
-    FLOW.store.createRecord(FLOW.Survey, {
+    var newForm = FLOW.store.createRecord(FLOW.Survey, {
       "name": code,
       "code": code,
       "path": path,
@@ -656,6 +656,14 @@ FLOW.surveyControl = Ember.ArrayController.create({
     });
     FLOW.projectControl.get('currentProject').set('deleteDisabled', true);
     FLOW.store.commit();
+
+    //Wait for new form to be saved then set selected
+    var refreshIntervalId = setInterval(function () {
+        if (!newForm.get('isSaving')) {
+            FLOW.selectedControl.set('selectedSurvey', newForm);
+            clearInterval(refreshIntervalId);
+        }
+    }, 10);
     this.refresh();
   },
 
