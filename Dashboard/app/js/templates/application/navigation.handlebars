@@ -13,9 +13,11 @@
 	{{#view view.NavItemView item="navReports" }}
     <a {{action doNavReports}}>{{t _reports}}</a>
   {{/view}}
- 	{{#view view.NavItemView item="navMaps" }}
+  {{#if view.showMapsButton}}
+  {{#view view.NavItemView item="navMaps" }}
     <a {{action doNavMaps}}>{{t _maps}}</a>
   {{/view}}
+  {{/if}}
   {{#if FLOW.currentUser.showUserTab }}
 	  {{#view view.NavItemView item="navUsers" }}
       <a {{action doNavUsers}}>{{t _users}}</a>
