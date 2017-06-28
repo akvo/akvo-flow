@@ -1384,29 +1384,31 @@ public class GraphicalSurveySummaryExporter extends SurveySummaryExporter {
                                 OptionContainerDto ocDto = q.getOptionContainerDto();
                                 if (ocDto != null) { //used to be legal
                                     List<QuestionOptionDto> qoList = ocDto.getOptionsList();
-    
-                                    for (QuestionOptionDto qo : qoList) {
-                                        // create header column
-                                        header = (qo.getCode() != null
-                                                && !qo.getCode().equals("null") && qo
-                                                .getCode().length() > 0) ? qo
-                                                .getCode() + ":" : "";
-                                        createCell(row,
-                                                offset++,
-                                                "--OPTION--|" + header + qo.getText(),
-                                                headerStyle);
+                                    if (qoList != null) {
+                                        for (QuestionOptionDto qo : qoList) {
+                                            // create header column
+                                            header = (qo.getCode() != null
+                                                    && !qo.getCode().equals("null")
+                                                    && qo.getCode().length() > 0)
+                                                    ? qo.getCode() + ":"
+                                                    : "";
+                                            createCell(row,
+                                                    offset++,
+                                                    "--OPTION--|" + header + qo.getText(),
+                                                    headerStyle);
+                                        }
+        
+                                        // add 'other' column if needed
+                                        if (q.getAllowOtherFlag()) {
+                                            createCell(row,
+                                                    offset++,
+                                                    "--OTHER--",
+                                                    headerStyle);
+                                        }
+        
+                                        optionMap.put(q.getKeyId(), qoList);
+                                        allowOtherMap.put(q.getKeyId(), q.getAllowOtherFlag());
                                     }
-    
-                                    // add 'other' column if needed
-                                    if (q.getAllowOtherFlag()) {
-                                        createCell(row,
-                                                offset++,
-                                                "--OTHER--",
-                                                headerStyle);
-                                    }
-    
-                                    optionMap.put(q.getKeyId(), qoList);
-                                    allowOtherMap.put(q.getKeyId(), q.getAllowOtherFlag());
                                 }
                             }
                         }
