@@ -42,6 +42,7 @@ import com.gallatinsystems.common.util.PropertyUtil;
 import com.gallatinsystems.user.dao.UserDao;
 import com.gallatinsystems.user.domain.User;
 import com.google.appengine.api.users.UserServiceFactory;
+import com.google.appengine.api.utils.SystemProperty;
 
 public class EnvServlet extends HttpServlet {
 
@@ -136,6 +137,8 @@ public class EnvServlet extends HttpServlet {
         if (props.get("extraMapboxTileLayerLabel") == null) {
             props.put("extraMapboxTileLayerLabel", "");
         }
+
+        props.put("appId", SystemProperty.applicationId.get());
 
         if (!"false".equalsIgnoreCase(props.get(SHOW_MAPS_PROPERTY_KEY))) {
             props.put(SHOW_MAPS_PROPERTY_KEY, "true");
