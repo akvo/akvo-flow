@@ -1,5 +1,16 @@
 # Akvo Flow Release Notes
 ----
+# 1.9.20 Sagacious Salamander
+Date: 29 June 2017
+
+## Noteworthy
+* **UI improvement** - Reordered reports tabs [#2151] and implemented show/hide maps tab feature flag [#2153]
+* **Performance optimisations** - Serve js library files from CDNs [#1688]
+
+## Resolved issues
+* **Bug fix** - Prevent NPE when setting missing display names on forms [#1762]
+* **Code cleanup** - remove unused methods [#555]
+
 # 1.9.19 Recursive Rabbit
 Date: 08 June 2017
 
