@@ -1,5 +1,5 @@
 /*
- *  Copyright (C) 2010-2015 Stichting Akvo (Akvo Foundation)
+ *  Copyright (C) 2010-2015, 2017 Stichting Akvo (Akvo Foundation)
  *
  *  This file is part of Akvo FLOW.
  *
@@ -89,6 +89,10 @@ public class SurveyInstanceDAO extends BaseDAO<SurveyInstance> {
 
         SurveyedLocale sl = saveSurveyedLocale(si);
         si.setSurveyedLocaleId(sl.getKey().getId());
+        if (si.getSurveyedLocaleDisplayName() == null && sl != null) {
+            //in case app did not send SL name, we may get it from an old SL 
+            si.setSurveyedLocaleDisplayName(sl.getDisplayName());
+        }
         si.setDeviceFile(deviceFile);
         si = save(si);// Save the SurveyInstance just once, ensuring the Key is set.
 

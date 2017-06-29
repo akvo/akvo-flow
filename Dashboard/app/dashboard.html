@@ -19,18 +19,14 @@
 
 <body class="appPage">
 
-    <!-- Grab Google CDN's jQuery. fall back to local if necessary -->
-    <script src="//ajax.googleapis.com/ajax/libs/jquery/1.8.2/jquery.min.js"></script>
-    <script>
-        window.jQuery || document.write("<script src='/vendorjs/js/vendor/jquery-1.8.2.min.js'><\/script>")
-    </script>
-    <script src="/vendorjs/js/vendor/handlebars-1.0.rc.1.js"></script>
-    <script src="/vendorjs/js/vendor/ember-1.0.0.pre-2-36.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/1.8.2/jquery.min.js" integrity="sha384-TlirNbKpD2RIgh6I9thXvaNiNhPn2e4sI0Adwq4SwWXvDMdol60LTz9m/24VynHW" crossorigin="anonymous"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/handlebars.js/1.0.rc.1/handlebars.min.js" integrity="sha384-1cdj3p3bIpU9pC5rwhdr9KuOyIAzATeDl8CzvgeeEAX2+04CDEMTCKHzURcqkLU6" crossorigin="anonymous"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/ember.js/1.0.0-pre.2/ember-1.0.0-pre.2.min.js" integrity="sha384-8D2qnfMv14eNLoq1IIP/00cY2ZXj16DPhGJdnwNMHSwXM7HqMGljfDUavTzDJ5dY" crossorigin="anonymous"></script>
     <script src="/vendorjs/js/vendor/ember-data-rev10.min.js"></script>
-    <script src="/vendorjs/js/vendor/jquery-ui-1.8.21.custom.js"></script>
-    <script src="/vendorjs/js/vendor/jquery.dataTables.js"></script>
-    <script src="/vendorjs/js/vendor/d3.v2.min.js"></script>
-    <script src="/vendorjs/js/vendor/resumable.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jqueryui/1.8.21/jquery-ui.min.js" integrity="sha384-TRmDLt6CvOQBqWp02sWDp/VVYxlkm9lvqzMt7OwAoSHqmGtELVfE/pfkH3zcea8j" crossorigin="anonymous"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/datatables/1.9.2/jquery.dataTables.min.js" integrity="sha384-l4ztyMkjOikIXT8yH7aYF35ElUqxfPgSf9d+fUgST1ZgUFJ8/PD4ZNc8tk49GQxx" crossorigin="anonymous"></script>
+    <script src="https://d3js.org/d3.v2.min.js" integrity="sha384-gx6v00JjfKi4ORqjqvNMGihiXcXyB12C+0TucXBJiJsSG5n6e3fBGqMJXUwcSrG+" crossorigin="anonymous"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/resumable.js/1.0.3/resumable.min.js" integrity="sha384-iybtPyEliVnE9VSRDxi4RtPJDCth3R0Gj90w5Puf1cT/R8GYnPiXu10MMWITqiit" crossorigin="anonymous"></script>
     <script src="/vendorjs/js/vendor/Math.uuid.js"></script>
 
     <script src="js/loader.js"></script>
@@ -44,26 +40,30 @@
 
     <script>
       //default leaflet library
-      var css_src = "//api.tiles.mapbox.com/mapbox.js/v1.6.1/mapbox.css";
-      var js_src = "//api.tiles.mapbox.com/mapbox.js/v1.6.1/mapbox.js";
+      var jsSrc = "https://api.tiles.mapbox.com/mapbox.js/v1.6.1/mapbox.js";
+      var cssSrc = "https://api.tiles.mapbox.com/mapbox.js/v1.6.1/mapbox.css";
+      var jsIntegrity = 'integrity="sha384-DmQhW9kLmOXK0xubm8w+Bd34nJq7Plt9clKmd2XxjgUNuoHcWdxV3GCeO7YSFc74" crossorigin="anonymous"';
+      var cssIntegrity = 'integrity="sha384-codniTXEGsozlodYdGbtcNHSm0452RDVJyCJ3eEw+jagZXmaz9RIFHaBD+g/wrvS" crossorigin="anonymous"';
       switch (FLOW.Env.mapsProvider) {
           case 'cartodb':
               //replace leaflet library
-              css_src = "//cartodb-libs.global.ssl.fastly.net/cartodb.js/v3/3.15/themes/css/cartodb.css";
-              js_src = "//cartodb-libs.global.ssl.fastly.net/cartodb.js/v3/3.15/cartodb.js";
+              jsSrc = "https://cartodb-libs.global.ssl.fastly.net/cartodb.js/v3/3.15/cartodb.js";
+              cssSrc = "https://cartodb-libs.global.ssl.fastly.net/cartodb.js/v3/3.15/themes/css/cartodb.css";
+              jsIntegrity = 'integrity="sha384-186Za72/5qVX6enL5hiqq/J50rF6cjyD8swQIHLmLumlwqxV5u0mtPzSZk3VzwQy" crossorigin="anonymous"';
+              cssIntegrity = 'integrity="sha384-2jZemTFA+0G69HaecoRuv5/hO9AA84owVqReLcXX5cb/Dm+9kjKIBKD1oPTZ+Qhm" crossorigin="anonymous"';
               break;
           case 'google':
               var regionBias = FLOW.Env.googleMapsRegionBias;
               var region = regionBias ? '&region=' + regionBias : '';
-              document.write('<script src="//maps.google.com/maps/api/js?key=AIzaSyBZU7kLJ75VlTlC5Qrfi1n1N-5hJYProuQ' + region + '"><\/script>');
+              document.write('<script src="https://maps.google.com/maps/api/js?key=AIzaSyBZU7kLJ75VlTlC5Qrfi1n1N-5hJYProuQ' + region + '"><\/script>');
               break;
       }
-      document.write("<link rel=\"stylesheet\" href=\""+css_src+"\" />");
-      document.write("<script type=\"text/javascript\" src=\""+js_src+"\"><\/script>");
+      document.write("<link rel=\"stylesheet\" href=\""+cssSrc+"\" "+cssIntegrity+"/>");
+      document.write("<script type=\"text/javascript\" src=\""+jsSrc+"\" "+jsIntegrity+"><\/script>");
     </script>
     <script src="/vendorjs/js/vendor/Google.js"></script>
 
-    <script src="/vendorjs/js/vendor/iframeResizer.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/iframe-resizer/2.6.3/iframeResizer.min.js" integrity="sha384-igiKnCW1DXdmgq8oZzcdRos1LdPeHVAjU2xu1GOJ9aTxgmsB5NRTrOWQqn26MERR" crossorigin="anonymous"></script>
     <script src="js/flowDashboard.js"></script>
 
     <script type="text/javascript">
