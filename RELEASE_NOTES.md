@@ -1,5 +1,17 @@
 # Akvo Flow Release Notes
 ----
+# 1.9.20 Sagacious Salamander
+Date: 29 June 2017
+
+## Noteworthy
+* **User interface improvement** - Reordered reports tab [#2151] such that the "Export reports" tab appear first and is loaded by default.
+* **User interface improvement** - Implemented show/hide maps tab feature flag [#2153] which allows optionally hiding the maps tab on an instance
+* **Performance optimisations** - Serve external JavaScript libraries used in Flow from CDNs [#1688]
+
+## Resolved issues
+* **Bug fix** - Fix Null Pointer Exception errors that prevented correct setting of display names [#1762]
+* **Code cleanup** - Remove unused methods [#555]
+
 # 1.9.19 Recursive Rabbit
 Date: 08 June 2017
 
