@@ -4,12 +4,13 @@
 Date: 29 June 2017
 
 ## Noteworthy
-* **UI improvement** - Reordered reports tabs [#2151] and implemented show/hide maps tab feature flag [#2153]
-* **Performance optimisations** - Serve js library files from CDNs [#1688]
+* **User interface improvement** - Reordered reports tab [#2151] such that the "Export reports" tab appear first and is loaded by default.
+* **User interface improvement** - Implemented show/hide maps tab feature flag [#2153] which allows optionally hiding the maps tab on an instance
+* **Performance optimisations** - Serve external JavaScript libraries used in Flow from CDNs [#1688]
 
 ## Resolved issues
-* **Bug fix** - Prevent NPE when setting missing display names on forms [#1762]
-* **Code cleanup** - remove unused methods [#555]
+* **Bug fix** - Fix Null Pointer Exception errors that prevented correct setting of display names [#1762]
+* **Code cleanup** - Remove unused methods [#555]
 
 # 1.9.19 Recursive Rabbit
 Date: 08 June 2017
