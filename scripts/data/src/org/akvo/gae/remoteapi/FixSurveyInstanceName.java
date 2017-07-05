@@ -99,8 +99,8 @@ public class FixSurveyInstanceName implements Process {
         if (args.length == 1 && args[0].equals("--dry-run")) {
             System.out.println("This was a dry run. No changes saved to datastore");
         } else {
-            System.out.println("Saving result");
-            ds.put(instancesToSave);
+            System.out.printf("Saving %d instances\n", instancesToSave.size());
+            DataUtils.batchSaveEntities(ds,instancesToSave);
         }
         
         
