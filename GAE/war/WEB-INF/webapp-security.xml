@@ -7,6 +7,14 @@
     http://www.springframework.org/schema/security http://www.springframework.org/schema/security/spring-security-3.1.xsd">
 
 
+    <http pattern="/admin/js/**" security="none" />
+    <http pattern="/admin/images/**" security="none" />
+    <http pattern="/admin/css/**" security="none" />
+    <http pattern="/vendorjs/js/**" security="none" />
+    <http pattern="/publicmap/images/**" security="none" />
+    <http pattern="/publicmap/css/**" security="none" />
+    <http pattern="/publicmap/js/**" security="none" />
+
 	<http pattern="/api/v1/**" use-expressions="true" entry-point-ref="apiEntryPoint" authentication-manager-ref="apiAuthenticationManager" >
 
 		<intercept-url pattern="/api/v1/survey_groups/**" method="GET" access="hasRole('USER')"/>
