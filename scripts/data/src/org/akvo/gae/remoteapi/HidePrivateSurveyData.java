@@ -30,6 +30,9 @@ import com.google.appengine.api.datastore.Query.CompositeFilterOperator;
 import com.google.appengine.api.datastore.Query.Filter;
 import com.google.appengine.api.datastore.Query.FilterOperator;
 
+import static org.akvo.gae.remoteapi.DataUtils.batchSaveEntities;
+
+
 /**
  * Check for survey data that is publicly visible and correct its privacyLevel
  */
@@ -62,6 +65,7 @@ public class HidePrivateSurveyData implements Process {
         for (Entity surveyGroup : ds.prepare(privateSurveyGroupQuery).asIterable()) {
             privateSurveyGroupIds.add(surveyGroup.getKey().getId());
         }
+        System.out.printf("Found %d private leaf SurveyGroups\n", privateSurveyGroupIds.size());
 
         // retrieve survey ids for private groups
         Query surveyQuery = new Query("Survey").setFilter(new Query.FilterPredicate(
@@ -76,7 +80,8 @@ public class HidePrivateSurveyData implements Process {
                 privateSurveyIds.add(survey.getKey().getId());
             }
         }
-
+        System.out.printf("Found %d private Surveys\n", privateSurveyIds.size());
+        
         // retrieve survey instances for private surveys
         Query surveyResponses = new Query("SurveyInstance").setFilter(
                 new Query.FilterPredicate("surveyId", FilterOperator.IN, privateSurveyIds))
@@ -86,7 +91,9 @@ public class HidePrivateSurveyData implements Process {
                 FetchOptions.Builder.withChunkSize(1000))) {
             surveyInstanceIds.add(surveyInstance.getKey().getId());
         }
-
+        System.out.printf("Found %d instances\n", surveyInstanceIds.size());
+        
+        
         // identify publicly visible surveyed locales for private surveys
         List<Entity> publiclyVisibleLocalesList = new ArrayList<Entity>();
         int startIdx = 0;
@@ -128,13 +135,13 @@ public class HidePrivateSurveyData implements Process {
 
         // update locales
         if (publiclyVisibleLocalesList.size() > 0) {
+            System.out.println("Setting " + publiclyVisibleLocalesList.size()
+                    + " surveyedLocales to PRIVATE");
             for (Entity locale : publiclyVisibleLocalesList) {
                 locale.setProperty("localeType", "PRIVATE");
             }
-
-            System.out.println("Setting " + publiclyVisibleLocalesList.size()
-                    + " surveyedLocales to PRIVATE");
-            ds.put(publiclyVisibleLocalesList);
+            System.out.printf("Updating %d instances\n", publiclyVisibleLocalesList.size());
+            batchSaveEntities(ds,publiclyVisibleLocalesList);
         }
 
     }
