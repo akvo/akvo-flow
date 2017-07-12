@@ -67,6 +67,14 @@ function ensure_build_tools_are_installed
     brew list --versions
 }
 
+function switch_to_ruby_version
+{
+    _EXPECTED_RUBY_VERSION="$1"
+
+    rbenv shell $_EXPECTED_RUBY_VERSION
+    rbenv rehash
+}
+
 function ensure_ruby_version_installed_is
 {
     _EXPECTED_RUBY_VERSION="$1"
@@ -77,10 +85,13 @@ function ensure_ruby_version_installed_is
     if [[ -z $(rbenv versions | grep $_EXPECTED_RUBY_VERSION) ]]; then
         printf ">> Installing Ruby version: $_EXPECTED_RUBY_VERSION\n"
         rbenv install $_EXPECTED_RUBY_VERSION
-        rbenv rehash
     fi
 
-    echo '>> Expected Ruby version installed at:'
+    printf ">> Expected Ruby version [$_EXPECTED_RUBY_VERSION] is installed:\n"
+    rbenv versions
+    switch_to_ruby_version $_EXPECTED_RUBY_VERSION
+
+    printf ">> Expected Ruby version installed at:\n"
     rbenv which ruby
 }
 
@@ -101,14 +112,14 @@ function use_local_ruby_version
 
         printf ">> Setting local Ruby version for Flow builds to: $_EXPECTED_RUBY_VERSION\n"
         rbenv local $_EXPECTED_RUBY_VERSION
-        rbenv rehash
 
     else
         printf ">> Local Ruby version for Flow builds is: "
         rbenv local
     fi
 
-    printf ">> Global Ruby version is: "
+    printf ">> Current Ruby version is: "
+    switch_to_ruby_version $_EXPECTED_RUBY_VERSION
     ruby --version
 }
 
