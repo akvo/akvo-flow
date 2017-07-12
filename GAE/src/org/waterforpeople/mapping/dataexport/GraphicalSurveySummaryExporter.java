@@ -72,11 +72,13 @@ import org.waterforpeople.mapping.app.web.dto.SurveyRestRequest;
 import org.waterforpeople.mapping.dataexport.service.BulkDataServiceClient;
 import org.waterforpeople.mapping.domain.CaddisflyResource;
 import org.waterforpeople.mapping.domain.CaddisflyResult;
+import org.waterforpeople.mapping.domain.QuestionAnswerStore;
 import org.waterforpeople.mapping.domain.response.value.Media;
 import org.waterforpeople.mapping.serialization.response.MediaResponse;
 
 import com.gallatinsystems.common.util.JFreechartChartUtil;
 import com.gallatinsystems.survey.dao.CaddisflyResourceDao;
+
 import static com.gallatinsystems.common.Constants.*;
 
 /**
@@ -466,6 +468,7 @@ public class GraphicalSurveySummaryExporter extends SurveySummaryExporter {
 
         final Map<String, String> collapseIdMap = new HashMap<String, String>();
         final Map<String, String> nameToIdMap = new HashMap<String, String>();
+        final List<QuestionDto> displayNamePartList = new ArrayList<>(); //ordered questionIds
         for (Entry<QuestionGroupDto, List<QuestionDto>> groupEntry : questionMap
                 .entrySet()) {
             for (QuestionDto q : groupEntry.getValue()) {
@@ -475,11 +478,13 @@ public class GraphicalSurveySummaryExporter extends SurveySummaryExporter {
                     }
                     nameToIdMap.put(q.getKeyId().toString(), q.getText());
                 }
+                if (q.getLocaleNameFlag()) {
+                    displayNamePartList.add(q);
+                }
             }
         }
 
-        Object[] results = createRawDataHeader(wb, sheet, questionMap,
-                useQuestionId);
+        Object[] results = createRawDataHeader(wb, sheet, questionMap, useQuestionId);
         final List<String> questionIdList = (List<String>) results[0];
         final List<String> unsummarizable = (List<String>) results[1];
 
@@ -545,7 +550,8 @@ public class GraphicalSurveySummaryExporter extends SurveySummaryExporter {
         for (InstanceData instanceData : allData) {
             currentRow = writeInstanceData(sheet, currentRow, instanceData,
                     generateSummary, questionIdList, unsummarizable,
-                    nameToIdMap, collapseIdMap, model, useQuestionId);
+                    nameToIdMap, collapseIdMap, model, useQuestionId,
+                    constructDisplayName(displayNamePartList, instanceData));
         }
 
         threadPool.shutdown();
@@ -572,7 +578,8 @@ public class GraphicalSurveySummaryExporter extends SurveySummaryExporter {
             InstanceData instanceData, boolean generateSummary,
             List<String> questionIdList, List<String> unsummarizable,
             Map<String, String> nameToIdMap, Map<String, String> collapseIdMap,
-            SummaryModel model, boolean useQuestionId)
+            SummaryModel model, boolean useQuestionId, 
+            String displayName)
             throws NoSuchAlgorithmException {
 
         // maxRow will increase when we write repeatable question groups
@@ -597,7 +604,7 @@ public class GraphicalSurveySummaryExporter extends SurveySummaryExporter {
                     String.valueOf(i + 1), null, Cell.CELL_TYPE_NUMERIC);
         }
         createCell(row, columnIndexMap.get(DISPLAY_NAME_LABEL.get(locale)),
-                dto.getSurveyedLocaleDisplayName());
+                displayName);
         createCell(row,
                 columnIndexMap.get(DEVICE_IDENTIFIER_LABEL.get(locale)),
                 dto.getDeviceIdentifier());
@@ -715,6 +722,32 @@ public class GraphicalSurveySummaryExporter extends SurveySummaryExporter {
         }
 
         return maxRow + 1;
+    }
+    
+    private String constructDisplayName(
+            List<QuestionDto> questionList,
+            InstanceData instanceData
+            ) {
+        StringBuilder dname = new StringBuilder();
+        
+        for (QuestionDto q : questionList) {
+            if (q.getKeyId() != null && q.getType() != null) {
+                Map<Long, String> allAnswersForQuestion = instanceData.responseMap.get(q.getKeyId());
+                if (allAnswersForQuestion != null && allAnswersForQuestion.size() > 0) {
+                    String qtype = q.getType().toString();
+                    String answer = allAnswersForQuestion.get(Long.valueOf(0));
+                    if (answer != null) {
+                        if (dname.length() > 0) {
+                            dname.append(" - ");
+                        }
+                        dname.append(QuestionAnswerStore.getDatapointNameValue(qtype,answer));
+                    }
+                }
+                
+            }
+        }
+        
+        return dname.toString();
     }
 
     /**
