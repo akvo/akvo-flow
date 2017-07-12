@@ -77,6 +77,7 @@ function ensure_ruby_version_installed_is
     if [[ -z $(rbenv versions | grep $_EXPECTED_RUBY_VERSION) ]]; then
         printf ">> Installing Ruby version: $_EXPECTED_RUBY_VERSION\n"
         rbenv install $_EXPECTED_RUBY_VERSION
+        rbenv rehash
     fi
 
     echo '>> Expected Ruby version installed at:'
@@ -100,13 +101,12 @@ function use_local_ruby_version
 
         printf ">> Setting local Ruby version for Flow builds to: $_EXPECTED_RUBY_VERSION\n"
         rbenv local $_EXPECTED_RUBY_VERSION
+        rbenv rehash
 
     else
         printf ">> Local Ruby version for Flow builds is: "
         rbenv local
     fi
-
-    rbenv rehash
 
     printf ">> Global Ruby version is: "
     ruby --version
