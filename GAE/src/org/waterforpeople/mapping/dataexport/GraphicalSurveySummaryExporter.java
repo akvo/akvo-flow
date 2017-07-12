@@ -731,7 +731,7 @@ public class GraphicalSurveySummaryExporter extends SurveySummaryExporter {
         StringBuilder dname = new StringBuilder();
         
         for (QuestionDto q : questionList) {
-            if (q.getKeyId() != null && q.getType() != null) {
+            if (q != null && q.getKeyId() != null && q.getType() != null) {
                 Map<Long, String> allAnswersForQuestion = instanceData.responseMap.get(q.getKeyId());
                 if (allAnswersForQuestion != null && allAnswersForQuestion.size() > 0) {
                     String qtype = q.getType().toString();
