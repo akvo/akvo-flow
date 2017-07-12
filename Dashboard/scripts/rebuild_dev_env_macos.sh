@@ -55,11 +55,11 @@ function ensure_build_tools_are_installed
 {
     echo '>> Updating homebrew...'
     brew update
-    echo '>> Installing build tools...'
+    printf "\n>> Installing build tools...\n"
     ensure_homebrew_package_installed leiningen
     ensure_homebrew_package_installed ruby-build
     ensure_homebrew_package_installed rbenv
-    echo '>> Checking for outdated packages...'
+    printf "\n>> Checking for outdated packages...\n"
     brew outdated
     echo '>> Cleaning up...'
     brew cleanup
@@ -107,6 +107,8 @@ function use_local_ruby_version
     fi
 
     rbenv rehash
+
+    printf ">> Global Ruby version is: "
     ruby --version
 }
 
