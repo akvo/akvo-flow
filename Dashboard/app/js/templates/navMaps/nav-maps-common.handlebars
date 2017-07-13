@@ -1,5 +1,19 @@
 <section id="main" class="mapFlow floats-in middleSection" role="main">
   {{! <div id="drawHandleWrap"></div>}}
+  {{#unless FLOW.projectControl.isLoading}}
+    {{view FLOW.SurveySelectionView}}
+  {{/unless}}
+  {{#if FLOW.selectedControl.selectedSurveyGroup}}
+    {{view Ember.Select
+        contentBinding="FLOW.surveyControl.arrangedContent"
+        selectionBinding="view.selectedSurvey"
+        optionLabelPath="content.code"
+        optionValuePath="content.keyId"
+        prompt=""
+        promptBinding="Ember.STRINGS._select_form"
+        classNames="form-selector"
+    }}
+  {{/if}}
   <div id="dropdown-holder">
     <div id="mapDetailsHideShow" class="drawHandle hideMapD"></div>
   </div>
@@ -48,7 +62,7 @@
 </style>
 <script type="text/javascript">
 (function(){
-  
+
   var dropDown = document.querySelector('#dropdown-holder');
   var header = document.querySelector('header');
   var footer = document.querySelector('footer');
@@ -70,7 +84,7 @@
     newHeight = newHeight * 0.95;
 
     document.querySelector('#flowMap').style.height = newHeight + 'px';
-    document.querySelector('#pointDetails').style.height = newHeight + 'px'; 
+    document.querySelector('#pointDetails').style.height = newHeight + 'px';
   }
 
   window.addEventListener('resize', resizeMap);
