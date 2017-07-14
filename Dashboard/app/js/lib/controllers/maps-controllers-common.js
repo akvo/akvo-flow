@@ -157,10 +157,11 @@ FLOW.cartoController = Ember.ArrayController.create({
     content: null,
     map: null,
     marker: null,
+    markerCoordinates: null,
     cartodbLayer: null,
     layerExistsCheck: false,
     questions: [],
-    markerCoordinates: [],
+    detailsPaneVisible: null,
     loadNamedMap: function(formId){
         var self = this;
         //TODO Clear map
@@ -278,12 +279,12 @@ FLOW.cartoController = Ember.ArrayController.create({
             dataLayer.setInteraction(true);
 
             dataLayer.on('featureClick', function(e, latlng, pos, data) {
-                if (self.marker != null) {
+                if (self.marker) {
                     self.map.removeLayer(self.marker);
                 }
-                self.placeMarker([data.lat, data.lon]);
 
-                //self.showDetailsPane();
+                FLOW.cartoController.set('markerCoordinates', [data.lat, data.lon]);
+                FLOW.cartoController.set('detailsPaneVisible', true);
 
                 //TODO: Replace with logic that pulls point data from Flow instead of CartoDB
                 if ($.active > 0) {
@@ -521,16 +522,6 @@ FLOW.cartoController = Ember.ArrayController.create({
         this.map.removeLayer(this.cartodbLayer);
         this.layerExistsCheck = false;
       }
-    },
-
-    /*Place a marker to highlight clicked point of layer on cartodb map*/
-    placeMarker: function(latlng){
-        var markerIcon = new L.Icon({
-            iconUrl: 'images/marker.svg',
-            iconSize: [10, 10]
-        });
-        this.marker = new L.marker(latlng, {icon: markerIcon});
-        this.map.addLayer(this.marker);
     },
 
     formatDate: function(date) {

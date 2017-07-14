@@ -22,7 +22,8 @@ FLOW.NavMapsView = FLOW.View.extend({
       ", #pointDetails .imgContainer" +
       ", .placeMarkBasicInfo" +
       ", .noDetails";
-    this.detailsPaneVisible = false;
+    //this.detailsPaneVisible = false;
+    //FLOW.cartoController.set('detailsPaneVisible', false);
   },
 
   redoMap: function() {
@@ -80,8 +81,7 @@ FLOW.NavMapsView = FLOW.View.extend({
       self.handleShowHideDetails();
     });
 
-    // Slide in detailspane after 1 sec
-    this.hideDetailsPane(1000);
+    FLOW.cartoController.set('detailsPaneVisible', false);
   },
 
   insertGoogleMap: function () {
@@ -274,65 +274,11 @@ FLOW.NavMapsView = FLOW.View.extend({
     Helper function to dispatch to either hide or show details pane
   */
   handleShowHideDetails: function () {
-    if (this.detailsPaneVisible) {
-      this.hideDetailsPane();
+    if (FLOW.cartoController.get('detailsPaneVisible')) {
+      FLOW.cartoController.set('detailsPaneVisible', false);
     } else {
-      this.showDetailsPane();
+      FLOW.cartoController.set('detailsPaneVisible', true);
     }
-  },
-
-  /**
-    Slide in the details pane
-  */
-  showDetailsPane: function () {
-    var button;
-
-    button = this.$('#mapDetailsHideShow');
-    button.html(Ember.String.loc('_hide') + ' &rsaquo;');
-    this.set('detailsPaneVisible', true);
-
-    this.$('#flowMap').animate({
-      width: '75%'
-    }, 200);
-    this.$('#pointDetails').animate({
-      width: '24.5%'
-    }, 200).css({
-      overflow: 'auto',
-      marginLeft: '-2px'
-    });
-    this.$(this.detailsPaneElements, '#pointDetails').animate({
-      opacity: '1'
-    }, 200).css({
-      display: 'inherit'
-    });
-  },
-
-
-  /**
-    Slide out details pane
-  */
-  hideDetailsPane: function (delay) {
-    var button;
-
-    delay = typeof delay !== 'undefined' ? delay : 0;
-    button = this.$('#mapDetailsHideShow');
-
-    this.set('detailsPaneVisible', false);
-    button.html('&lsaquo; ' + Ember.String.loc('_show') );
-
-    this.$('#flowMap').delay(delay).animate({
-      width: '99.25%'
-    }, 200);
-    this.$('#pointDetails').delay(delay).animate({
-      width: '0.25%'
-    }, 200).css({
-      overflow: 'scroll-y',
-      marginLeft: '-2px'
-    });
-    this.$(this.detailsPaneElements, '#pointDetails').delay(delay).animate({
-      opacity: '0',
-      display: 'none'
-    });
   },
 
   /**
@@ -340,12 +286,10 @@ FLOW.NavMapsView = FLOW.View.extend({
     slide out
   */
   handlePlacemarkDetails: function () {
-    var details;
+    var details = FLOW.placemarkDetailController.get('content');
 
-    details = FLOW.placemarkDetailController.get('content');
-
-    if (!this.detailsPaneVisible) {
-      this.showDetailsPane();
+    if (!FLOW.cartoController.get('detailsPaneVisible')) {
+      FLOW.cartoController.set('detailsPaneVisible', true);
     }
     if (!Ember.empty(details) && details.get('isLoaded')) {
       this.populateDetailsPane(details);
@@ -406,27 +350,58 @@ FLOW.NavMapsView = FLOW.View.extend({
 
   clearMap: function() {
     var self = this;
-    if(self.marker != null){
+    if (self.marker) {
       self.map.removeLayer(self.marker);
-      self.hideDetailsPane();
+      FLOW.cartoController.set('detailsPaneVisible', false);
       $('#pointDetails').html('<p class="noDetails">'+Ember.String.loc('_no_details') +'</p>');
     }
 
-    if(!$.isEmptyObject(self.mediaMarkers)) {
-      for(mediaMarker in self.mediaMarkers) {
+    if (!$.isEmptyObject(self.mediaMarkers)) {
+      for (mediaMarker in self.mediaMarkers) {
         self.map.removeLayer(self.mediaMarkers[mediaMarker]);
       }
     }
 
-    if(self.polygons.length > 0){
-      for(var i=0; i<self.polygons.length; i++){
+    if (self.polygons.length > 0) {
+      for (var i=0; i<self.polygons.length; i++) {
         self.map.removeLayer(self.polygons[i])
       }
       //restore the previous zoom level and map center
       self.map.setView(self.mapCenter, self.mapZoomLevel);
       self.polygons = [];
     }
-  }
+  },
+
+  /*Place a marker to highlight clicked point of layer on cartodb map*/
+  placeMarker: function(latlng){
+      var markerIcon = new L.Icon({
+          iconUrl: 'images/marker.svg',
+          iconSize: [10, 10]
+      });
+      this.marker = new L.marker(FLOW.cartoController.get('markerCoordinates'), {icon: markerIcon});
+      this.map.addLayer(this.marker);
+  }.observes('FLOW.cartoController.markerCoordinates'),
+
+  detailsPaneShowHide: function(){
+      var button = this.$('#mapDetailsHideShow');
+      var display = FLOW.cartoController.get('detailsPaneVisible');
+
+      button.html('&lsaquo; ' + Ember.String.loc((display) ? '_hide' : '_show'));
+
+      this.$('#flowMap').animate({
+        width: (display) ? '75%' : '99.25%'
+      }, 200);
+      this.$('#pointDetails').animate({
+        width: (display) ? '24.5%' : '0.25%'
+      }, 200).css({
+        overflow: (display) ? 'auto' : 'scroll-y',
+        marginLeft: '-2px'
+      });
+      this.$(this.detailsPaneElements, '#pointDetails').animate({
+        opacity: (display) ? '1' : '0',
+        display: (display) ? 'inherit' : 'none'
+      });
+  }.observes('FLOW.cartoController.detailsPaneVisible')
 });
 
 FLOW.countryView = FLOW.View.extend({});
