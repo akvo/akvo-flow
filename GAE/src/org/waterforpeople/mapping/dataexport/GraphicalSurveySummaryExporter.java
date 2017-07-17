@@ -332,6 +332,8 @@ public class GraphicalSurveySummaryExporter extends SurveySummaryExporter {
 
     // store indices of file columns for lookup when generating responses
     private Map<String, Integer> columnIndexMap = new HashMap<String, Integer>();
+    // stores the questions whose answers will make up the display name, in order
+    private List<QuestionDto> displayNamePartList = new ArrayList<>();
 
     @Override
     public void export(Map<String, String> criteria, File fileName,
@@ -468,9 +470,7 @@ public class GraphicalSurveySummaryExporter extends SurveySummaryExporter {
 
         final Map<String, String> collapseIdMap = new HashMap<String, String>();
         final Map<String, String> nameToIdMap = new HashMap<String, String>();
-        final List<QuestionDto> displayNamePartList = new ArrayList<>(); //ordered questionIds
-        for (Entry<QuestionGroupDto, List<QuestionDto>> groupEntry : questionMap
-                .entrySet()) {
+        for (Entry<QuestionGroupDto, List<QuestionDto>> groupEntry : questionMap.entrySet()) {
             for (QuestionDto q : groupEntry.getValue()) {
                 if (q.getCollapseable() != null && q.getCollapseable()) {
                     if (collapseIdMap.get(q.getText()) == null) {
@@ -478,7 +478,7 @@ public class GraphicalSurveySummaryExporter extends SurveySummaryExporter {
                     }
                     nameToIdMap.put(q.getKeyId().toString(), q.getText());
                 }
-                if (q.getLocaleNameFlag()) {
+                if (q.getLocaleNameFlag() && q.getKeyId() != null && q.getType() != null) {
                     displayNamePartList.add(q);
                 }
             }
@@ -550,8 +550,7 @@ public class GraphicalSurveySummaryExporter extends SurveySummaryExporter {
         for (InstanceData instanceData : allData) {
             currentRow = writeInstanceData(sheet, currentRow, instanceData,
                     generateSummary, questionIdList, unsummarizable,
-                    nameToIdMap, collapseIdMap, model, useQuestionId,
-                    constructDisplayName(displayNamePartList, instanceData));
+                    nameToIdMap, collapseIdMap, model, useQuestionId);
         }
 
         threadPool.shutdown();
@@ -578,8 +577,7 @@ public class GraphicalSurveySummaryExporter extends SurveySummaryExporter {
             InstanceData instanceData, boolean generateSummary,
             List<String> questionIdList, List<String> unsummarizable,
             Map<String, String> nameToIdMap, Map<String, String> collapseIdMap,
-            SummaryModel model, boolean useQuestionId, 
-            String displayName)
+            SummaryModel model, boolean useQuestionId)
             throws NoSuchAlgorithmException {
 
         // maxRow will increase when we write repeatable question groups
@@ -604,7 +602,7 @@ public class GraphicalSurveySummaryExporter extends SurveySummaryExporter {
                     String.valueOf(i + 1), null, Cell.CELL_TYPE_NUMERIC);
         }
         createCell(row, columnIndexMap.get(DISPLAY_NAME_LABEL.get(locale)),
-                displayName);
+                constructDisplayName(instanceData));
         createCell(row,
                 columnIndexMap.get(DEVICE_IDENTIFIER_LABEL.get(locale)),
                 dto.getDeviceIdentifier());
@@ -724,29 +722,22 @@ public class GraphicalSurveySummaryExporter extends SurveySummaryExporter {
         return maxRow + 1;
     }
     
-    private String constructDisplayName(
-            List<QuestionDto> questionList,
-            InstanceData instanceData
-            ) {
+    private String constructDisplayName(InstanceData instanceData) {
         StringBuilder dname = new StringBuilder();
         
-        for (QuestionDto q : questionList) {
-            if (q != null && q.getKeyId() != null && q.getType() != null) {
-                Map<Long, String> allAnswersForQuestion = instanceData.responseMap.get(q.getKeyId());
-                if (allAnswersForQuestion != null && allAnswersForQuestion.size() > 0) {
-                    String qtype = q.getType().toString();
-                    String answer = allAnswersForQuestion.get(Long.valueOf(0));
-                    if (answer != null) {
-                        if (dname.length() > 0) {
-                            dname.append(" - ");
-                        }
-                        dname.append(QuestionAnswerStore.getDatapointNameValue(qtype,answer));
+        for (QuestionDto q : displayNamePartList) {
+            Map<Long, String> allAnswersForQuestion = instanceData.responseMap.get(q.getKeyId());
+            if (allAnswersForQuestion != null && allAnswersForQuestion.size() > 0) {
+                String qtype = q.getType().toString();
+                String answer = allAnswersForQuestion.get(Long.valueOf(0));
+                if (answer != null) {
+                    if (dname.length() > 0) {
+                        dname.append(" - ");
                     }
+                    dname.append(QuestionAnswerStore.getDatapointNameValue(qtype,answer));
                 }
-                
             }
-        }
-        
+        }            
         return dname.toString();
     }
 
