@@ -1401,37 +1401,39 @@ public class GraphicalSurveySummaryExporter extends SurveySummaryExporter {
 
                             createCell(row, offset++, header, headerStyle);
 
-                            // check if we need to create columns for all
-                            // options
-                            if (QuestionType.OPTION == q.getType()
-                                    && useQuestionId) {
+                            // check if we need to create columns for all options
+                            if (QuestionType.OPTION == q.getType() && useQuestionId) {
 
                                 // get options for question and create columns
-                                OptionContainerDto ocDto = q
-                                        .getOptionContainerDto();
-                                List<QuestionOptionDto> qoList = ocDto
-                                        .getOptionsList();
-
-                                for (QuestionOptionDto qo : qoList) {
-                                    // create header column
-                                    header = (qo.getCode() != null
-                                            && !qo.getCode().equals("null") && qo
-                                            .getCode().length() > 0) ? qo
-                                            .getCode() + ":" : "";
-                                    createCell(row, offset++, "--OPTION--|"
-                                            + header + qo.getText(),
-                                            headerStyle);
+                                OptionContainerDto ocDto = q.getOptionContainerDto();
+                                if (ocDto != null) { //used to be legal
+                                    List<QuestionOptionDto> qoList = ocDto.getOptionsList();
+                                    if (qoList != null) {
+                                        for (QuestionOptionDto qo : qoList) {
+                                            // create header column
+                                            header = (qo.getCode() != null
+                                                    && !qo.getCode().equals("null")
+                                                    && qo.getCode().length() > 0)
+                                                    ? qo.getCode() + ":"
+                                                    : "";
+                                            createCell(row,
+                                                    offset++,
+                                                    "--OPTION--|" + header + qo.getText(),
+                                                    headerStyle);
+                                        }
+        
+                                        // add 'other' column if needed
+                                        if (q.getAllowOtherFlag()) {
+                                            createCell(row,
+                                                    offset++,
+                                                    "--OTHER--",
+                                                    headerStyle);
+                                        }
+        
+                                        optionMap.put(q.getKeyId(), qoList);
+                                        allowOtherMap.put(q.getKeyId(), q.getAllowOtherFlag());
+                                    }
                                 }
-
-                                // add 'other' column if needed
-                                if (q.getAllowOtherFlag()) {
-                                    createCell(row, offset++, "--OTHER--",
-                                            headerStyle);
-                                }
-
-                                optionMap.put(q.getKeyId(), qoList);
-                                allowOtherMap.put(q.getKeyId(),
-                                        q.getAllowOtherFlag());
                             }
                         }
                         if (!(QuestionType.NUMBER == q.getType() || QuestionType.OPTION == q
