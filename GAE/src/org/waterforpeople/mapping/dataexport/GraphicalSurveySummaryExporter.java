@@ -320,16 +320,16 @@ public class GraphicalSurveySummaryExporter extends SurveySummaryExporter {
     private CaddisflyResourceDao caddisflyResourceDao = new CaddisflyResourceDao();
 
     // for caddisfly-specific metadata
-    private Map<Long, Integer> numResultsMap = new HashMap<Long, Integer>();
+    private Map<Long, Integer> numResultsMap = new HashMap<>();
     private Map<Long, Boolean> hasImageMap = new HashMap<Long, Boolean>();
     private Map<Long, List<Integer>> resultIdMap = new HashMap<Long, List<Integer>>();
 
-    private Map<Long, List<QuestionOptionDto>> optionMap = new HashMap<Long, List<QuestionOptionDto>>();
-    private Map<Long, Boolean> allowOtherMap = new HashMap<Long, Boolean>();
-    private Map<String, Integer> optionsPositionCache = new HashMap<String, Integer>();
+    private Map<Long, List<QuestionOptionDto>> optionMap = new HashMap<>();
+    private Map<Long, Boolean> allowOtherMap = new HashMap<>();
+    private Map<String, Integer> optionsPositionCache = new HashMap<>();
 
     // store indices of file columns for lookup when generating responses
-    private Map<String, Integer> columnIndexMap = new HashMap<String, Integer>();
+    private Map<String, Integer> columnIndexMap = new HashMap<>();
 
     @Override
     public void export(Map<String, String> criteria, File fileName,
