@@ -729,7 +729,7 @@ public class GraphicalSurveySummaryExporter extends SurveySummaryExporter {
             Map<Long, String> allAnswersForQuestion = instanceData.responseMap.get(q.getKeyId());
             if (allAnswersForQuestion != null && allAnswersForQuestion.size() > 0) {
                 String qtype = q.getType().toString();
-                String answer = allAnswersForQuestion.get(Long.valueOf(0));
+                String answer = allAnswersForQuestion.get(0L);
                 if (answer != null) {
                     if (dname.length() > 0) {
                         dname.append(" - ");
