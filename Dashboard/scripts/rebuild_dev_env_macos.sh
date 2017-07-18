@@ -16,11 +16,11 @@
 
 
 THIS_SCRIPT="$0"
-DASHBOARD_HOME="$(cd `dirname "$THIS_SCRIPT"`/.. && pwd)"
+DASHBOARD_HOME="$(cd $(dirname "$THIS_SCRIPT")/.. && pwd)"
 
 function exit_if_homebrew_not_installed
 {
-    if [[ -z `command -v brew` ]]; then
+    if [[ -z $(command -v brew) ]]; then
         echo '## Homebrew not installed -- see http://brew.sh'
         exit 1
     else
@@ -34,7 +34,7 @@ function ensure_homebrew_package_installed
     _PACKAGE_NAME="$1"
     _PACKAGE_VERSION="$2"
 
-    INSTALLED_PACKAGE="`brew list --versions $_PACKAGE_NAME`"
+    INSTALLED_PACKAGE=$(brew list --versions $_PACKAGE_NAME)
 
     if [[ -z "$INSTALLED_PACKAGE" ]]; then
         printf ">> Installing $_PACKAGE_NAME...\n"
@@ -145,10 +145,10 @@ function ensure_gem_is_installed
 
 function ensure_build_dependencies_are_installed
 {
-    printf "\n>> Current gem system version: `gem --version`\n"
+    printf "\n>> Current gem system version: $(gem --version)\n"
     echo '>> Updating gem system...'
     gem update --system
-    printf ">> Current gem system version: `gem --version`\n"
+    printf ">> Current gem system version: $(gem --version)\n"
     printf "\n>> Installing gems for building the Dashboard\n"
     ensure_gem_is_installed bundler 1.15.2
     ensure_gem_is_installed json 2.1.0
