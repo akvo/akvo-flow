@@ -44,6 +44,7 @@ import com.gallatinsystems.survey.dao.DeviceSurveyJobQueueDAO;
 import com.gallatinsystems.survey.dao.SurveyAssignmentDAO;
 import com.gallatinsystems.survey.dao.SurveyDAO;
 import com.gallatinsystems.survey.domain.Survey;
+import com.google.appengine.api.datastore.KeyFactory;
 import com.google.appengine.api.taskqueue.Queue;
 import com.google.appengine.api.taskqueue.QueueFactory;
 import com.google.appengine.api.taskqueue.TaskOptions;
@@ -170,10 +171,11 @@ public class SurveyAssignmentRestService {
     }
 
     private SurveyAssignment marshallToDomain(SurveyAssignmentDto dto) {
-        String[] handsOff = {"keyId"};
+        //String[] handsOff = {"keyId", "key"};
         final SurveyAssignment sa = new SurveyAssignment();
 
-        BeanUtils.copyProperties(dto, sa, handsOff);
+        BeanUtils.copyProperties(dto, sa);
+        sa.setKey(KeyFactory.createKey("SurveyAssignment", dto.getKeyId()));
         sa.setDeviceIds(dto.getDevices());
         sa.setSurveyIds(dto.getSurveys());
 
