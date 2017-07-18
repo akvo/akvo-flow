@@ -29,8 +29,6 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
-
-import org.waterforpeople.mapping.app.util.DtoMarshaller;
 import org.waterforpeople.mapping.app.web.rest.dto.RestStatusDto;
 import org.waterforpeople.mapping.app.web.rest.dto.SurveyAssignmentDto;
 import org.waterforpeople.mapping.app.web.rest.dto.SurveyAssignmentPayload;
@@ -66,8 +64,7 @@ public class SurveyAssignmentRestService {
         final HashMap<String, List<SurveyAssignmentDto>> response = new HashMap<String, List<SurveyAssignmentDto>>();
         final List<SurveyAssignmentDto> results = new ArrayList<SurveyAssignmentDto>();
 
-        for (SurveyAssignment sa : surveyAssignmentDao
-                .list(Constants.ALL_RESULTS)) {
+        for (SurveyAssignment sa : surveyAssignmentDao.list(Constants.ALL_RESULTS)) {
             results.add(marshallToDto(sa));
         }
 
@@ -164,7 +161,8 @@ public class SurveyAssignmentRestService {
     private SurveyAssignmentDto marshallToDto(SurveyAssignment sa) {
         final SurveyAssignmentDto dto = new SurveyAssignmentDto();
 
-        DtoMarshaller.copyToDto(sa, dto);
+        BeanUtils.copyProperties(sa, dto);
+        dto.setKeyId(sa.getKey().getId());
         dto.setDevices(sa.getDeviceIds());
         dto.setSurveys(sa.getSurveyIds());
 
@@ -172,9 +170,10 @@ public class SurveyAssignmentRestService {
     }
 
     private SurveyAssignment marshallToDomain(SurveyAssignmentDto dto) {
+        String[] handsOff = {"keyId"};
         final SurveyAssignment sa = new SurveyAssignment();
 
-        DtoMarshaller.copyToCanonical(sa, dto);
+        BeanUtils.copyProperties(dto, sa, handsOff);
         sa.setDeviceIds(dto.getDevices());
         sa.setSurveyIds(dto.getSurveys());
 
@@ -189,10 +188,8 @@ public class SurveyAssignmentRestService {
      */
     private void generateDeviceJobQueueItems(SurveyAssignment assignment,
             SurveyAssignment oldAssignment) {
-        List<Long> surveyIdsToSave = new ArrayList<Long>(
-                assignment.getSurveyIds());
-        List<Long> deviceIdsToSave = new ArrayList<Long>(
-                assignment.getDeviceIds());
+        List<Long> surveyIdsToSave = new ArrayList<Long>(assignment.getSurveyIds());
+        List<Long> deviceIdsToSave = new ArrayList<Long>(assignment.getDeviceIds());
         List<Long> surveyIdsToDelete = new ArrayList<Long>();
         List<Long> deviceIdsToDelete = new ArrayList<Long>();
         surveyAssignmentDao = new SurveyAssignmentDAO();
@@ -203,14 +200,12 @@ public class SurveyAssignmentRestService {
         if (oldAssignment != null) {
             if (oldAssignment.getSurveyIds() != null) {
                 surveyIdsToSave.removeAll(oldAssignment.getSurveyIds());
-                surveyIdsToDelete = new ArrayList<Long>(
-                        oldAssignment.getSurveyIds());
+                surveyIdsToDelete = new ArrayList<Long>(oldAssignment.getSurveyIds());
                 surveyIdsToDelete.removeAll(assignment.getSurveyIds());
             }
             if (oldAssignment.getDeviceIds() != null) {
                 deviceIdsToSave.removeAll(oldAssignment.getDeviceIds());
-                deviceIdsToDelete = new ArrayList<Long>(
-                        oldAssignment.getDeviceIds());
+                deviceIdsToDelete = new ArrayList<Long>(oldAssignment.getDeviceIds());
                 deviceIdsToDelete.removeAll(assignment.getDeviceIds());
             }
         }
@@ -253,8 +248,7 @@ public class SurveyAssignmentRestService {
                             d = deviceDao.getByKey(id);
                             deviceMap.put(d.getKey().getId(), d);
                         }
-                        queueList.add(constructQueueObject(d, survey,
-                                assignment));
+                        queueList.add(constructQueueObject(d, survey, assignment));
                     }
                 }
             }
@@ -309,8 +303,7 @@ public class SurveyAssignmentRestService {
         queueItem.setName(survey.getName());
         queueItem.setLanguage(assignment.getLanguage());
         queueItem.setAssignmentId(assignment.getKey().getId());
-        queueItem
-                .setSurveyDistributionStatus(DeviceSurveyJobQueue.DistributionStatus.UNSENT);
+        queueItem.setSurveyDistributionStatus(DeviceSurveyJobQueue.DistributionStatus.UNSENT);
         queueItem.setImei(d.getEsn());
         queueItem.setAndroidId(d.getAndroidId());
         return queueItem;
