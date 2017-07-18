@@ -32,10 +32,13 @@ import org.waterforpeople.mapping.app.gwt.client.device.DeviceGroupDto;
 import org.waterforpeople.mapping.app.util.DtoMarshaller;
 import org.waterforpeople.mapping.app.web.rest.dto.DeviceGroupPayload;
 import org.waterforpeople.mapping.app.web.rest.dto.RestStatusDto;
+import org.waterforpeople.mapping.app.web.rest.dto.SurveyAssignmentDto;
+import org.waterforpeople.mapping.domain.SurveyAssignment;
 
 import com.gallatinsystems.common.Constants;
 import com.gallatinsystems.device.dao.DeviceGroupDAO;
 import com.gallatinsystems.device.domain.DeviceGroup;
+import com.google.appengine.api.datastore.KeyFactory;
 
 @Controller
 @RequestMapping("/device_groups")
@@ -50,13 +53,10 @@ public class DeviceGroupRestService {
     public Map<String, List<DeviceGroupDto>> listDeviceGroups() {
         final Map<String, List<DeviceGroupDto>> response = new HashMap<String, List<DeviceGroupDto>>();
         List<DeviceGroupDto> results = new ArrayList<DeviceGroupDto>();
-        List<DeviceGroup> deviceGroups = deviceGroupDao
-                .list(Constants.ALL_RESULTS);
+        List<DeviceGroup> deviceGroups = deviceGroupDao.list(Constants.ALL_RESULTS);
         if (deviceGroups != null) {
             for (DeviceGroup s : deviceGroups) {
-                DeviceGroupDto dto = new DeviceGroupDto();
-                DtoMarshaller.copyToDto(s, dto);
-
+                DeviceGroupDto dto = marshallToDto(s);
                 results.add(dto);
             }
         }
@@ -74,8 +74,7 @@ public class DeviceGroupRestService {
         DeviceGroup s = deviceGroupDao.getByKey(id);
         DeviceGroupDto dto = null;
         if (s != null) {
-            dto = new DeviceGroupDto();
-            DtoMarshaller.copyToDto(s, dto);
+            dto = marshallToDto(s);
         }
         response.put("device_group", dto);
         return response;
@@ -136,8 +135,7 @@ public class DeviceGroupRestService {
                                 "createdDateTime"
                             });
                     s = deviceGroupDao.save(s);
-                    dto = new DeviceGroupDto();
-                    DtoMarshaller.copyToDto(s, dto);
+                    dto = marshallToDto(s);
                     statusDto.setStatus("ok");
                 }
             }
@@ -174,8 +172,7 @@ public class DeviceGroupRestService {
                     });
             s = deviceGroupDao.save(s);
 
-            dto = new DeviceGroupDto();
-            DtoMarshaller.copyToDto(s, dto);
+            dto = marshallToDto(s);
             statusDto.setStatus("ok");
         }
 
@@ -183,4 +180,16 @@ public class DeviceGroupRestService {
         response.put("device_group", dto);
         return response;
     }
+    
+    private DeviceGroupDto marshallToDto(DeviceGroup sa) {
+        final DeviceGroupDto dto = new DeviceGroupDto();
+
+        BeanUtils.copyProperties(sa, dto);
+        if (sa.getKey() != null) {
+            dto.setKeyId(sa.getKey().getId());
+        }
+
+        return dto;
+    }
+
 }
