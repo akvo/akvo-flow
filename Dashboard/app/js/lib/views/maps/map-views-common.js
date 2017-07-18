@@ -2,7 +2,6 @@ FLOW.NavMapsView = FLOW.View.extend({
   templateName: 'navMaps/nav-maps-common',
   showDetailsBool: false,
   detailsPaneElements: null,
-  detailsPaneVisible: null,
   map: null,
   marker: null,
   polygons: [],
@@ -11,8 +10,9 @@ FLOW.NavMapsView = FLOW.View.extend({
   mediaMarkers: {},
   selectedMediaMarker: {},
   mediaMarkerSelected: {},
-  geomodel: null,
+  geoModel: null,
   selectedSurvey: null,
+  allowFilters: FLOW.Env.mapsProvider === 'cartodb' ? true : false,
 
   init: function () {
     this._super();
@@ -23,7 +23,7 @@ FLOW.NavMapsView = FLOW.View.extend({
       ", .placeMarkBasicInfo" +
       ", .noDetails";
     //this.detailsPaneVisible = false;
-    //FLOW.cartoController.set('detailsPaneVisible', false);
+    //FLOW.mapsController.set('detailsPaneVisible', false);
   },
 
   redoMap: function() {
@@ -47,7 +47,7 @@ FLOW.NavMapsView = FLOW.View.extend({
       var bestBB = this.geoModel.best_bbox_search_cells(bb);
 
       // adapt the points shown on the map
-      FLOW.placemarkController.adaptMap(bestBB, this.map.getZoom());
+      FLOW.mapsController.adaptMap(bestBB, this.map.getZoom());
     },
 
   /**
@@ -68,7 +68,7 @@ FLOW.NavMapsView = FLOW.View.extend({
       this.map.on('moveend', function (e) {
         self.redoMap();
       });
-      FLOW.placemarkController.set('map', this.map);
+      FLOW.mapsController.set('map', this.map);
       this.geoModel = create_geomodel();
       //load points for the visible map
       this.redoMap();
@@ -81,7 +81,7 @@ FLOW.NavMapsView = FLOW.View.extend({
       self.handleShowHideDetails();
     });
 
-    FLOW.cartoController.set('detailsPaneVisible', false);
+    FLOW.mapsController.set('detailsPaneVisible', false);
   },
 
   insertGoogleMap: function () {
@@ -176,7 +176,7 @@ FLOW.NavMapsView = FLOW.View.extend({
 
     L.control.layers(baseLayers).addTo(this.map);
 
-    FLOW.cartoController.set('map', this.map);
+    FLOW.mapsController.set('map', this.map);
 
     this.map.on('click', function(e) {
       self.clearMap(); //remove any previously loaded point data
@@ -266,7 +266,7 @@ FLOW.NavMapsView = FLOW.View.extend({
 
   surveySelection: function () {
       if (!Ember.none(this.get('selectedSurvey'))) {
-          FLOW.cartoController.loadNamedMap(this.selectedSurvey.get('keyId'));
+          FLOW.mapsController.loadNamedMap(this.selectedSurvey.get('keyId'));
       }
   }.observes('this.selectedSurvey'),
 
@@ -274,10 +274,10 @@ FLOW.NavMapsView = FLOW.View.extend({
     Helper function to dispatch to either hide or show details pane
   */
   handleShowHideDetails: function () {
-    if (FLOW.cartoController.get('detailsPaneVisible')) {
-      FLOW.cartoController.set('detailsPaneVisible', false);
+    if (FLOW.mapsController.get('detailsPaneVisible')) {
+      FLOW.mapsController.set('detailsPaneVisible', false);
     } else {
-      FLOW.cartoController.set('detailsPaneVisible', true);
+      FLOW.mapsController.set('detailsPaneVisible', true);
     }
   },
 
@@ -288,8 +288,8 @@ FLOW.NavMapsView = FLOW.View.extend({
   handlePlacemarkDetails: function () {
     var details = FLOW.placemarkDetailController.get('content');
 
-    if (!FLOW.cartoController.get('detailsPaneVisible')) {
-      FLOW.cartoController.set('detailsPaneVisible', true);
+    if (!FLOW.mapsController.get('detailsPaneVisible')) {
+      FLOW.mapsController.set('detailsPaneVisible', true);
     }
     if (!Ember.empty(details) && details.get('isLoaded')) {
       this.populateDetailsPane(details);
@@ -352,7 +352,7 @@ FLOW.NavMapsView = FLOW.View.extend({
     var self = this;
     if (self.marker) {
       self.map.removeLayer(self.marker);
-      FLOW.cartoController.set('detailsPaneVisible', false);
+      FLOW.mapsController.set('detailsPaneVisible', false);
       $('#pointDetails').html('<p class="noDetails">'+Ember.String.loc('_no_details') +'</p>');
     }
 
@@ -378,13 +378,13 @@ FLOW.NavMapsView = FLOW.View.extend({
           iconUrl: 'images/marker.svg',
           iconSize: [10, 10]
       });
-      this.marker = new L.marker(FLOW.cartoController.get('markerCoordinates'), {icon: markerIcon});
+      this.marker = new L.marker(FLOW.mapsController.get('markerCoordinates'), {icon: markerIcon});
       this.map.addLayer(this.marker);
-  }.observes('FLOW.cartoController.markerCoordinates'),
+  }.observes('FLOW.mapsController.markerCoordinates'),
 
   detailsPaneShowHide: function(){
       var button = this.$('#mapDetailsHideShow');
-      var display = FLOW.cartoController.get('detailsPaneVisible');
+      var display = FLOW.mapsController.get('detailsPaneVisible');
 
       button.html('&lsaquo; ' + Ember.String.loc((display) ? '_hide' : '_show'));
 
@@ -401,7 +401,7 @@ FLOW.NavMapsView = FLOW.View.extend({
         opacity: (display) ? '1' : '0',
         display: (display) ? 'inherit' : 'none'
       });
-  }.observes('FLOW.cartoController.detailsPaneVisible')
+  }.observes('FLOW.mapsController.detailsPaneVisible')
 });
 
 FLOW.countryView = FLOW.View.extend({});

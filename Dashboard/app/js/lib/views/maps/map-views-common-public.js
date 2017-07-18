@@ -4,9 +4,8 @@ FLOW.NavMapsView = FLOW.View.extend({
   detailsPaneElements: null,
   detailsPaneVisible: null,
   map: null,
-  geomodel: null,
-  cartodb_layer: null,
-  layer_exists_check: 0,
+  geoModel: null,
+  allowFilters: false,
 
   init: function () {
     this._super();
@@ -40,7 +39,7 @@ FLOW.NavMapsView = FLOW.View.extend({
       var bestBB = this.geoModel.best_bbox_search_cells(bb);
 
       // adapt the points shown on the map
-      FLOW.placemarkController.adaptMap(bestBB, this.map.getZoom());
+      FLOW.mapsController.adaptMap(bestBB, this.map.getZoom());
     },
 
   /**
@@ -84,7 +83,7 @@ FLOW.NavMapsView = FLOW.View.extend({
       self.redoMap();
     });
 
-    FLOW.placemarkController.set('map', this.map);
+    FLOW.mapsController.set('map', this.map);
     this.geoModel = create_geomodel();
 
     //load points for the visible map
