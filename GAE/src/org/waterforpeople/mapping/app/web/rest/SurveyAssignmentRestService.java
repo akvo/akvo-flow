@@ -122,18 +122,13 @@ public class SurveyAssignmentRestService {
             throw new HttpMessageNotReadableException("Ids don't match: " + id
                     + " <> " + dto.getKeyId());
         }
-        final SurveyAssignment sa = surveyAssignmentDao
-                .getByKey(dto.getKeyId());
+        final SurveyAssignment oldAssignment = surveyAssignmentDao.getByKey(dto.getKeyId());
         final HashMap<String, SurveyAssignmentDto> response = new HashMap<String, SurveyAssignmentDto>();
-        if (sa == null) {
+        if (oldAssignment == null) {
             throw new HttpMessageNotReadableException(
-                    "Survey Assignment with id: " + dto.getKeyId()
-                            + " not found");
+                    "Survey Assignment with id: " + dto.getKeyId() + " not found");
         }
-        final SurveyAssignment oldAssignment = new SurveyAssignment();
-        BeanUtils.copyProperties(sa, oldAssignment);
-
-        BeanUtils.copyProperties(marshallToDomain(dto), sa);
+        final SurveyAssignment sa = marshallToDomain(dto);
         surveyAssignmentDao.save(sa);
         generateDeviceJobQueueItems(sa, oldAssignment);
         response.put("survey_assignment", marshallToDto(sa));
@@ -147,15 +142,12 @@ public class SurveyAssignmentRestService {
             @RequestBody
             SurveyAssignmentPayload payload) {
         final SurveyAssignmentDto dto = payload.getSurvey_assignment();
-        final SurveyAssignment sa = new SurveyAssignment();
-        final HashMap<String, SurveyAssignmentDto> response = new HashMap<String, SurveyAssignmentDto>();
-
-        BeanUtils.copyProperties(marshallToDomain(dto), sa);
-        surveyAssignmentDao.save(sa);
-
+        final SurveyAssignment sa  = marshallToDomain(dto);
+        surveyAssignmentDao.save(sa); //fills in new key
         generateDeviceJobQueueItems(sa, null);
-        response.put("survey_assignment", marshallToDto(sa));
 
+        final HashMap<String, SurveyAssignmentDto> response = new HashMap<String, SurveyAssignmentDto>();
+        response.put("survey_assignment", marshallToDto(sa));
         return response;
     }
 
@@ -163,7 +155,9 @@ public class SurveyAssignmentRestService {
         final SurveyAssignmentDto dto = new SurveyAssignmentDto();
 
         BeanUtils.copyProperties(sa, dto);
-        dto.setKeyId(sa.getKey().getId());
+        if (sa.getKey() != null) {
+            dto.setKeyId(sa.getKey().getId());
+        }
         dto.setDevices(sa.getDeviceIds());
         dto.setSurveys(sa.getSurveyIds());
 
@@ -171,11 +165,12 @@ public class SurveyAssignmentRestService {
     }
 
     private SurveyAssignment marshallToDomain(SurveyAssignmentDto dto) {
-        //String[] handsOff = {"keyId", "key"};
         final SurveyAssignment sa = new SurveyAssignment();
 
         BeanUtils.copyProperties(dto, sa);
-        sa.setKey(KeyFactory.createKey("SurveyAssignment", dto.getKeyId()));
+        if (dto.getKeyId() != null) {
+            sa.setKey(KeyFactory.createKey("SurveyAssignment", dto.getKeyId()));
+        }
         sa.setDeviceIds(dto.getDevices());
         sa.setSurveyIds(dto.getSurveys());
 
