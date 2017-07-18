@@ -123,6 +123,46 @@ function use_local_ruby_version
     ruby --version
 }
 
+function ensure_gem_is_installed
+{
+    _GEM_NAME="$1"
+    _GEM_VERSION="$2"
+
+    EXPECTED_GEM_IS_INSTALLED=$(gem list -i $_GEM_NAME -v $_GEM_VERSION)
+
+    if [[ "$EXPECTED_GEM_IS_INSTALLED" = "false" ]]; then
+        printf ">> Gem $_GEM_NAME $_GEM_VERSION not installed\n"
+        gem install $_GEM_NAME -v $_GEM_VERSION
+    fi
+
+    if [[ "$EXPECTED_GEM_IS_INSTALLED" = "false" ]]; then
+        printf "## Error: Unable to install gem $_GEM_NAME version $_GEM_VERSION\n"
+        exit 1
+    else
+        printf ">> Expect gem is installed: $_GEM_NAME $_GEM_VERSION\n"
+    fi
+}
+
+function ensure_build_dependencies_are_installed
+{
+    printf "\n>> Current gem system version: `gem --version`\n"
+    echo '>> Updating gem system...'
+    gem update --system
+    printf ">> Current gem system version: `gem --version`\n"
+    printf "\n>> Installing gems for building the Dashboard\n"
+    ensure_gem_is_installed bundler 1.15.2
+    ensure_gem_is_installed json 2.1.0
+    printf "\n>> Checking for outdated gems...\n"
+    gem outdated
+    echo '>> Upgrading gems...'
+    gem update
+    echo '>> Cleaning up'
+    gem cleanup
+    printf "\n>> Installed gems"
+    gem list
+}
+
 exit_if_homebrew_not_installed
 ensure_build_tools_are_installed
 use_local_ruby_version "2.4.1"
+ensure_build_dependencies_are_installed
