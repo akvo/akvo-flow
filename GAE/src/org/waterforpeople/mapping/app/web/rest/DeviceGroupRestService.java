@@ -29,16 +29,11 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.waterforpeople.mapping.app.gwt.client.device.DeviceGroupDto;
-import org.waterforpeople.mapping.app.util.DtoMarshaller;
 import org.waterforpeople.mapping.app.web.rest.dto.DeviceGroupPayload;
 import org.waterforpeople.mapping.app.web.rest.dto.RestStatusDto;
-import org.waterforpeople.mapping.app.web.rest.dto.SurveyAssignmentDto;
-import org.waterforpeople.mapping.domain.SurveyAssignment;
-
 import com.gallatinsystems.common.Constants;
 import com.gallatinsystems.device.dao.DeviceGroupDAO;
 import com.gallatinsystems.device.domain.DeviceGroup;
-import com.google.appengine.api.datastore.KeyFactory;
 
 @Controller
 @RequestMapping("/device_groups")
@@ -55,8 +50,8 @@ public class DeviceGroupRestService {
         List<DeviceGroupDto> results = new ArrayList<DeviceGroupDto>();
         List<DeviceGroup> deviceGroups = deviceGroupDao.list(Constants.ALL_RESULTS);
         if (deviceGroups != null) {
-            for (DeviceGroup s : deviceGroups) {
-                DeviceGroupDto dto = marshallToDto(s);
+            for (DeviceGroup dg : deviceGroups) {
+                DeviceGroupDto dto = marshallToDto(dg);
                 results.add(dto);
             }
         }
@@ -71,10 +66,10 @@ public class DeviceGroupRestService {
             @PathVariable("id")
             Long id) {
         final Map<String, DeviceGroupDto> response = new HashMap<String, DeviceGroupDto>();
-        DeviceGroup s = deviceGroupDao.getByKey(id);
+        DeviceGroup dg = deviceGroupDao.getByKey(id);
         DeviceGroupDto dto = null;
-        if (s != null) {
-            dto = marshallToDto(s);
+        if (dg != null) {
+            dto = marshallToDto(dg);
         }
         response.put("device_group", dto);
         return response;
@@ -88,15 +83,15 @@ public class DeviceGroupRestService {
             @PathVariable("id")
             Long id) {
         final Map<String, RestStatusDto> response = new HashMap<String, RestStatusDto>();
-        DeviceGroup s = deviceGroupDao.getByKey(id);
+        DeviceGroup dg = deviceGroupDao.getByKey(id);
         RestStatusDto statusDto = null;
         statusDto = new RestStatusDto();
         statusDto.setStatus("failed");
 
         // check if deviceGroup exists in the datastore
-        if (s != null) {
+        if (dg != null) {
             // delete deviceGroup group
-            deviceGroupDao.delete(s);
+            deviceGroupDao.delete(dg);
             statusDto.setStatus("ok");
         }
         response.put("meta", statusDto);
@@ -121,21 +116,21 @@ public class DeviceGroupRestService {
         // server will respond with 400 Bad Request
         if (deviceGroupDto != null) {
             Long keyId = deviceGroupDto.getKeyId();
-            DeviceGroup s;
+            DeviceGroup dg;
 
             // if the deviceGroupDto has a key, try to get the deviceGroup.
             if (keyId != null) {
-                s = deviceGroupDao.getByKey(keyId);
+                dg = deviceGroupDao.getByKey(keyId);
                 // if we find the deviceGroup, update it's properties
-                if (s != null) {
+                if (dg != null) {
                     // copy the properties, except the createdDateTime property,
                     // because it is set in the Dao.
-                    BeanUtils.copyProperties(deviceGroupDto, s,
+                    BeanUtils.copyProperties(deviceGroupDto, dg,
                             new String[] {
                                 "createdDateTime"
                             });
-                    s = deviceGroupDao.save(s);
-                    dto = marshallToDto(s);
+                    dg = deviceGroupDao.save(dg);
+                    dto = marshallToDto(dg);
                     statusDto.setStatus("ok");
                 }
             }
@@ -162,17 +157,17 @@ public class DeviceGroupRestService {
         // Otherwise,
         // server will respond with 400 Bad Request
         if (deviceGroupDto != null) {
-            DeviceGroup s = new DeviceGroup();
+            DeviceGroup dg = new DeviceGroup();
 
             // copy the properties, except the createdDateTime property, because
             // it is set in the Dao.
-            BeanUtils.copyProperties(deviceGroupDto, s,
+            BeanUtils.copyProperties(deviceGroupDto, dg,
                     new String[] {
                         "createdDateTime"
                     });
-            s = deviceGroupDao.save(s);
+            dg = deviceGroupDao.save(dg);
 
-            dto = marshallToDto(s);
+            dto = marshallToDto(dg);
             statusDto.setStatus("ok");
         }
 
