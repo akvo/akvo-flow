@@ -721,26 +721,7 @@ public class GraphicalSurveySummaryExporter extends SurveySummaryExporter {
 
         return maxRow + 1;
     }
-/*    
-    private String constructDisplayName(InstanceData instanceData) {
-        StringBuilder dname = new StringBuilder();
-        
-        for (QuestionDto q : displayNamePartList) {
-            Map<Long, String> allAnswersForQuestion = instanceData.responseMap.get(q.getKeyId());
-            if (allAnswersForQuestion != null && allAnswersForQuestion.size() > 0) {
-                String qtype = q.getType().toString();
-                String answer = allAnswersForQuestion.get(0L);
-                if (answer != null) {
-                    if (dname.length() > 0) {
-                        dname.append(" - ");
-                    }
-                    dname.append(QuestionAnswerStore.getDatapointNameValue(qtype,answer));
-                }
-            }
-        }            
-        return dname.toString();
-    }
-*/
+
     /**
      * Write the cells for a single answer. Some answers are split into multiple cells. Called from
      * writeInstanceData method
