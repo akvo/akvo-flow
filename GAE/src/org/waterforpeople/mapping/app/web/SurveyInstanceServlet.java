@@ -18,7 +18,6 @@ package org.waterforpeople.mapping.app.web;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.logging.Level;
 
 import javax.servlet.http.HttpServletRequest;
 
@@ -106,7 +105,7 @@ public class SurveyInstanceServlet extends AbstractRestApiServlet {
         
         //reassemble the displayname in case it has changed
         //TODO never store it at all
-        si.setSurveyedLocaleDisplayName(makeDatapointName(si.getSurveyedLocaleId()));
+        si.setSurveyedLocaleDisplayName(makeDatapointName(si));
 
         SurveyInstanceDto siDto = new SurveyInstanceDto();
         BeanUtils.copyProperties(si, siDto);
@@ -122,27 +121,31 @@ public class SurveyInstanceServlet extends AbstractRestApiServlet {
         return instanceData;
     }
     
-    private String makeDatapointName(Long surveyedLocaleId) {
+    private String makeDatapointName(SurveyInstance si) {
         SurveyedLocaleDao slDao = new SurveyedLocaleDao();
         final QuestionDao qDao = new QuestionDao();
+        final SurveyInstanceDAO siDao = new SurveyInstanceDAO();
         final QuestionAnswerStoreDao qasDao = new QuestionAnswerStoreDao();
+
+        Long surveyedLocaleId = si.getSurveyedLocaleId();
         SurveyedLocale sl = slDao.getById(surveyedLocaleId);
+        if (sl == null || sl.getCreationSurveyId() == null) {
+            return "";
+        }
         
-        //use creationSurveyId to pick which survey's questions and answers to build from
-        Long rsid = sl.getCreationSurveyId();
-        if (rsid == null) {
-            return "";
-        }
-        SurveyInstance si = surveyInstanceDao.getByKey(rsid);
-        if (si == null) {
-            return "";
-        }
-        List<Question> nameQuestions = qDao.listDisplayNameQuestionsBySurveyId(rsid);
+        //Get the questions of the registration survey
+        Long regSurveyId = sl.getCreationSurveyId();
+        List<Question> nameQuestions = qDao.listDisplayNameQuestionsBySurveyId(regSurveyId);
         if (nameQuestions == null) {
             return "";
         }
-        
-        List<QuestionAnswerStore> responses = qasDao.listBySurveyInstance(rsid);
+        //Now get the answers for the instance that made the SL
+        SurveyInstance regSurveyInstance = siDao.getRegistrationSurveyInstance(sl, regSurveyId);
+        if (regSurveyInstance == null) {
+            return "";
+        }
+        List<QuestionAnswerStore> responses = qasDao.listBySurveyInstance(regSurveyInstance.getKey().getId());
+        //Put it all together
         sl.assembleDisplayName(nameQuestions, responses); //reuse existing method
         return sl.getDisplayName();        
     }
