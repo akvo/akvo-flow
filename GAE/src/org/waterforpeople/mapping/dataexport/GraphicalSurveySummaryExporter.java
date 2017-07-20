@@ -322,16 +322,16 @@ public class GraphicalSurveySummaryExporter extends SurveySummaryExporter {
     private CaddisflyResourceDao caddisflyResourceDao = new CaddisflyResourceDao();
 
     // for caddisfly-specific metadata
-    private Map<Long, Integer> numResultsMap = new HashMap<Long, Integer>();
-    private Map<Long, Boolean> hasImageMap = new HashMap<Long, Boolean>();
-    private Map<Long, List<Integer>> resultIdMap = new HashMap<Long, List<Integer>>();
+    private Map<Long, Integer> numResultsMap = new HashMap<>();
+    private Map<Long, Boolean> hasImageMap = new HashMap<>();
+    private Map<Long, List<Integer>> resultIdMap = new HashMap<>();
 
-    private Map<Long, List<QuestionOptionDto>> optionMap = new HashMap<Long, List<QuestionOptionDto>>();
-    private Map<Long, Boolean> allowOtherMap = new HashMap<Long, Boolean>();
-    private Map<String, Integer> optionsPositionCache = new HashMap<String, Integer>();
+    private Map<Long, List<QuestionOptionDto>> optionMap = new HashMap<>();
+    private Map<Long, Boolean> allowOtherMap = new HashMap<>();
+    private Map<String, Integer> optionsPositionCache = new HashMap<>();
 
     // store indices of file columns for lookup when generating responses
-    private Map<String, Integer> columnIndexMap = new HashMap<String, Integer>();
+    private Map<String, Integer> columnIndexMap = new HashMap<>();
     // stores the questions whose answers will make up the display name, in order
     private List<QuestionDto> displayNamePartList = new ArrayList<>();
 
@@ -602,7 +602,7 @@ public class GraphicalSurveySummaryExporter extends SurveySummaryExporter {
                     String.valueOf(i + 1), null, Cell.CELL_TYPE_NUMERIC);
         }
         createCell(row, columnIndexMap.get(DISPLAY_NAME_LABEL.get(locale)),
-                constructDisplayName(instanceData));
+                dto.getSurveyedLocaleDisplayName());
         createCell(row,
                 columnIndexMap.get(DEVICE_IDENTIFIER_LABEL.get(locale)),
                 dto.getDeviceIdentifier());
@@ -720,25 +720,6 @@ public class GraphicalSurveySummaryExporter extends SurveySummaryExporter {
         }
 
         return maxRow + 1;
-    }
-    
-    private String constructDisplayName(InstanceData instanceData) {
-        StringBuilder dname = new StringBuilder();
-        
-        for (QuestionDto q : displayNamePartList) {
-            Map<Long, String> allAnswersForQuestion = instanceData.responseMap.get(q.getKeyId());
-            if (allAnswersForQuestion != null && allAnswersForQuestion.size() > 0) {
-                String qtype = q.getType().toString();
-                String answer = allAnswersForQuestion.get(0L);
-                if (answer != null) {
-                    if (dname.length() > 0) {
-                        dname.append(" - ");
-                    }
-                    dname.append(QuestionAnswerStore.getDatapointNameValue(qtype,answer));
-                }
-            }
-        }            
-        return dname.toString();
     }
 
     /**

@@ -38,8 +38,12 @@ import com.gallatinsystems.framework.rest.RestRequest;
 import com.gallatinsystems.framework.rest.RestResponse;
 import com.gallatinsystems.survey.dao.ApprovalStepDAO;
 import com.gallatinsystems.survey.dao.DataPointApprovalDAO;
+import com.gallatinsystems.survey.dao.QuestionDao;
 import com.gallatinsystems.survey.domain.ApprovalStep;
 import com.gallatinsystems.survey.domain.DataPointApproval;
+import com.gallatinsystems.survey.domain.Question;
+import com.gallatinsystems.surveyal.dao.SurveyedLocaleDao;
+import com.gallatinsystems.surveyal.domain.SurveyedLocale;
 
 import static org.waterforpeople.mapping.app.web.dto.SurveyInstanceRequest.*;
 
@@ -98,6 +102,10 @@ public class SurveyInstanceServlet extends AbstractRestApiServlet {
     private RestResponse retrieveInstanceData(Long surveyInstanceId) {
 
         SurveyInstance si = surveyInstanceDao.getByKey(surveyInstanceId);
+        
+        //reassemble the displayname in case it has changed
+        //TODO never store it at all
+        si.setSurveyedLocaleDisplayName(makeDatapointName(si));
 
         SurveyInstanceDto siDto = new SurveyInstanceDto();
         BeanUtils.copyProperties(si, siDto);
@@ -111,6 +119,35 @@ public class SurveyInstanceServlet extends AbstractRestApiServlet {
                     .getSurveyedLocaleId());
         }
         return instanceData;
+    }
+    
+    private String makeDatapointName(SurveyInstance si) {
+        SurveyedLocaleDao slDao = new SurveyedLocaleDao();
+        final QuestionDao qDao = new QuestionDao();
+        final SurveyInstanceDAO siDao = new SurveyInstanceDAO();
+        final QuestionAnswerStoreDao qasDao = new QuestionAnswerStoreDao();
+
+        Long surveyedLocaleId = si.getSurveyedLocaleId();
+        SurveyedLocale sl = slDao.getById(surveyedLocaleId);
+        if (sl == null || sl.getCreationSurveyId() == null) {
+            return "";
+        }
+        
+        //Get the questions of the registration survey
+        Long regSurveyId = sl.getCreationSurveyId();
+        List<Question> nameQuestions = qDao.listDisplayNameQuestionsBySurveyId(regSurveyId);
+        if (nameQuestions == null) {
+            return "";
+        }
+        //Now get the answers for the instance that made the SL
+        SurveyInstance regSurveyInstance = siDao.getRegistrationSurveyInstance(sl, regSurveyId);
+        if (regSurveyInstance == null) {
+            return "";
+        }
+        List<QuestionAnswerStore> responses = qasDao.listBySurveyInstance(regSurveyInstance.getKey().getId());
+        //Put it all together
+        sl.assembleDisplayName(nameQuestions, responses); //reuse existing method
+        return sl.getDisplayName();        
     }
 
     private String retrieveDataPointApprovalStatus(Long surveyedLocaleId) {
