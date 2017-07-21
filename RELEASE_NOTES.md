@@ -3,9 +3,8 @@
 # 1.9.21 Thoroughbred Tamandua
 Date: 20 July 2017
 
-## Noteworthy
-* **Performance optimisation** - Load survey assignments list only when tab is selected [#2035], exclude static files from security filter chain [#2183], and speed up device group list fetch [#2199]
-* **Spring framework** - Configure spring to initialize beans lazily [#2179]
+## New and noteworthy
+* **Performance optimisation** - Load survey assignments list only when tab is selected [#2035], exclude static files from security filter chain [#2183], speed up device group list fetch [#2199], and configure spring to initialize beans lazily [#2179]
 * **Data deletion** - Added data deletion script [#2190]
 
 # 1.9.20 Sagacious Salamander
