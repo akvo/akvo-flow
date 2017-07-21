@@ -72,11 +72,13 @@ import org.waterforpeople.mapping.app.web.dto.SurveyRestRequest;
 import org.waterforpeople.mapping.dataexport.service.BulkDataServiceClient;
 import org.waterforpeople.mapping.domain.CaddisflyResource;
 import org.waterforpeople.mapping.domain.CaddisflyResult;
+import org.waterforpeople.mapping.domain.QuestionAnswerStore;
 import org.waterforpeople.mapping.domain.response.value.Media;
 import org.waterforpeople.mapping.serialization.response.MediaResponse;
 
 import com.gallatinsystems.common.util.JFreechartChartUtil;
 import com.gallatinsystems.survey.dao.CaddisflyResourceDao;
+
 import static com.gallatinsystems.common.Constants.*;
 
 /**
@@ -320,16 +322,18 @@ public class GraphicalSurveySummaryExporter extends SurveySummaryExporter {
     private CaddisflyResourceDao caddisflyResourceDao = new CaddisflyResourceDao();
 
     // for caddisfly-specific metadata
-    private Map<Long, Integer> numResultsMap = new HashMap<Long, Integer>();
-    private Map<Long, Boolean> hasImageMap = new HashMap<Long, Boolean>();
-    private Map<Long, List<Integer>> resultIdMap = new HashMap<Long, List<Integer>>();
+    private Map<Long, Integer> numResultsMap = new HashMap<>();
+    private Map<Long, Boolean> hasImageMap = new HashMap<>();
+    private Map<Long, List<Integer>> resultIdMap = new HashMap<>();
 
-    private Map<Long, List<QuestionOptionDto>> optionMap = new HashMap<Long, List<QuestionOptionDto>>();
-    private Map<Long, Boolean> allowOtherMap = new HashMap<Long, Boolean>();
-    private Map<String, Integer> optionsPositionCache = new HashMap<String, Integer>();
+    private Map<Long, List<QuestionOptionDto>> optionMap = new HashMap<>();
+    private Map<Long, Boolean> allowOtherMap = new HashMap<>();
+    private Map<String, Integer> optionsPositionCache = new HashMap<>();
 
     // store indices of file columns for lookup when generating responses
-    private Map<String, Integer> columnIndexMap = new HashMap<String, Integer>();
+    private Map<String, Integer> columnIndexMap = new HashMap<>();
+    // stores the questions whose answers will make up the display name, in order
+    private List<QuestionDto> displayNamePartList = new ArrayList<>();
 
     @Override
     public void export(Map<String, String> criteria, File fileName,
@@ -466,8 +470,7 @@ public class GraphicalSurveySummaryExporter extends SurveySummaryExporter {
 
         final Map<String, String> collapseIdMap = new HashMap<String, String>();
         final Map<String, String> nameToIdMap = new HashMap<String, String>();
-        for (Entry<QuestionGroupDto, List<QuestionDto>> groupEntry : questionMap
-                .entrySet()) {
+        for (Entry<QuestionGroupDto, List<QuestionDto>> groupEntry : questionMap.entrySet()) {
             for (QuestionDto q : groupEntry.getValue()) {
                 if (q.getCollapseable() != null && q.getCollapseable()) {
                     if (collapseIdMap.get(q.getText()) == null) {
@@ -475,11 +478,13 @@ public class GraphicalSurveySummaryExporter extends SurveySummaryExporter {
                     }
                     nameToIdMap.put(q.getKeyId().toString(), q.getText());
                 }
+                if (q.getLocaleNameFlag() && q.getKeyId() != null && q.getType() != null) {
+                    displayNamePartList.add(q);
+                }
             }
         }
 
-        Object[] results = createRawDataHeader(wb, sheet, questionMap,
-                useQuestionId);
+        Object[] results = createRawDataHeader(wb, sheet, questionMap, useQuestionId);
         final List<String> questionIdList = (List<String>) results[0];
         final List<String> unsummarizable = (List<String>) results[1];
 
@@ -1377,37 +1382,39 @@ public class GraphicalSurveySummaryExporter extends SurveySummaryExporter {
 
                             createCell(row, offset++, header, headerStyle);
 
-                            // check if we need to create columns for all
-                            // options
-                            if (QuestionType.OPTION == q.getType()
-                                    && useQuestionId) {
+                            // check if we need to create columns for all options
+                            if (QuestionType.OPTION == q.getType() && useQuestionId) {
 
                                 // get options for question and create columns
-                                OptionContainerDto ocDto = q
-                                        .getOptionContainerDto();
-                                List<QuestionOptionDto> qoList = ocDto
-                                        .getOptionsList();
-
-                                for (QuestionOptionDto qo : qoList) {
-                                    // create header column
-                                    header = (qo.getCode() != null
-                                            && !qo.getCode().equals("null") && qo
-                                            .getCode().length() > 0) ? qo
-                                            .getCode() + ":" : "";
-                                    createCell(row, offset++, "--OPTION--|"
-                                            + header + qo.getText(),
-                                            headerStyle);
+                                OptionContainerDto ocDto = q.getOptionContainerDto();
+                                if (ocDto != null) { //used to be legal
+                                    List<QuestionOptionDto> qoList = ocDto.getOptionsList();
+                                    if (qoList != null) {
+                                        for (QuestionOptionDto qo : qoList) {
+                                            // create header column
+                                            header = (qo.getCode() != null
+                                                    && !qo.getCode().equals("null")
+                                                    && qo.getCode().length() > 0)
+                                                    ? qo.getCode() + ":"
+                                                    : "";
+                                            createCell(row,
+                                                    offset++,
+                                                    "--OPTION--|" + header + qo.getText(),
+                                                    headerStyle);
+                                        }
+        
+                                        // add 'other' column if needed
+                                        if (q.getAllowOtherFlag()) {
+                                            createCell(row,
+                                                    offset++,
+                                                    "--OTHER--",
+                                                    headerStyle);
+                                        }
+        
+                                        optionMap.put(q.getKeyId(), qoList);
+                                        allowOtherMap.put(q.getKeyId(), q.getAllowOtherFlag());
+                                    }
                                 }
-
-                                // add 'other' column if needed
-                                if (q.getAllowOtherFlag()) {
-                                    createCell(row, offset++, "--OTHER--",
-                                            headerStyle);
-                                }
-
-                                optionMap.put(q.getKeyId(), qoList);
-                                allowOtherMap.put(q.getKeyId(),
-                                        q.getAllowOtherFlag());
                             }
                         }
                         if (!(QuestionType.NUMBER == q.getType() || QuestionType.OPTION == q

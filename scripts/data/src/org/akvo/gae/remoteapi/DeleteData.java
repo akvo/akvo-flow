@@ -1,5 +1,5 @@
 /*
- *  Copyright (C) 2014-2015 Stichting Akvo (Akvo Foundation)
+ *  Copyright (C) 2014-2015,2017 Stichting Akvo (Akvo Foundation)
  *
  *  This file is part of Akvo FLOW.
  *
@@ -18,13 +18,13 @@ package org.akvo.gae.remoteapi;
 
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Collection;
 import java.util.List;
 
 import com.google.appengine.api.datastore.DatastoreService;
 import com.google.appengine.api.datastore.Entity;
 import com.google.appengine.api.datastore.FetchOptions;
 import com.google.appengine.api.datastore.Key;
+import com.google.appengine.api.datastore.KeyFactory;
 import com.google.appengine.api.datastore.PreparedQuery;
 import com.google.appengine.api.datastore.Query;
 import com.google.appengine.api.datastore.Query.Filter;
@@ -45,7 +45,11 @@ public class DeleteData implements Process {
             deleteEntities(ds, kind, surveyId);
         }
 
-        deleteSurveyedLocale(ds, surveyId);
+        Entity survey = ds.get(KeyFactory.createKey("Survey", surveyId));
+        Long surveyGroupId = (Long) survey.getProperty("surveyGroupId");
+        if (surveyGroupId != null) {
+            deleteSurveyedLocale(ds, surveyGroupId);
+        }
     }
 
     private static void deleteEntities(DatastoreService ds, String kind, Long surveyId) {
@@ -62,20 +66,18 @@ public class DeleteData implements Process {
     }
 
     @SuppressWarnings("unchecked")
-    private static void deleteSurveyedLocale(DatastoreService ds, Long surveyId) {
-        // NOTE: It's not possible to query by the `surveyInstanceContrib` property
-        final Query q = new Query("SurveyedLocale");
+    private static void deleteSurveyedLocale(DatastoreService ds, Long surveyGroupId) {
+        final Filter f = new FilterPredicate("surveyGroupId", FilterOperator.EQUAL, surveyGroupId);
+        final Query q = new Query("SurveyedLocale").setFilter(f).setKeysOnly();
         final PreparedQuery pq = ds.prepare(q);
         final List<Key> keys = new ArrayList<Key>();
 
-        for (Entity e : pq.asList(FetchOptions.Builder.withChunkSize(500))) {
-            Collection<Long> contrib = (Collection<Long>) e.getProperty("surveyInstanceContrib");
-            if (contrib != null && contrib.size() == 1 && contrib.contains(surveyId)) {
-                keys.add(e.getKey());
-            }
+        for (Entity e : pq.asIterable(FetchOptions.Builder.withChunkSize(500))) {
+            keys.add(e.getKey());
         }
-        System.out.println(String.format("SurveyedLocale - deleting %s enties - surveyId = %s",
-                keys.size(), surveyId));
+        System.out.println(String.format(
+                "SurveyedLocale - deleting %s enties - surveyGroupId = %s",
+                keys.size(), surveyGroupId));
         ds.delete(keys);
     }
 

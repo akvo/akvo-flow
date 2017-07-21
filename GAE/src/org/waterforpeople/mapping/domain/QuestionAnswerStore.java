@@ -189,21 +189,25 @@ public class QuestionAnswerStore extends BaseDomain {
     }
     
     public String getDatapointNameValue() {
-        if (type == null || value == null) {
+        return getDatapointNameValue(type, value);
+    }
+    
+    public static String getDatapointNameValue(String theType, String theValue) {
+        if (theType == null || theValue == null) {
             return "";
         }
 
         String name;
-        switch (type) {
+        switch (theType) {
             case "CASCADE":
-                name = StringUtils.join(DataUtils.cascadeResponseValues(value), " - ");
+                name = StringUtils.join(DataUtils.cascadeResponseValues(theValue), " - ");
                 break;
             case "OPTION":
             case "OTHER":
-                name = StringUtils.join(DataUtils.optionResponsesTextArray(value), " - ");
+                name = StringUtils.join(DataUtils.optionResponsesTextArray(theValue), " - ");
                 break;
             default:
-                name = value;
+                name = theValue;
                 break;
         }
         
