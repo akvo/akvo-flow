@@ -620,8 +620,7 @@ public class GraphicalSurveySummaryExporter extends SurveySummaryExporter {
             final Long questionId = Long.valueOf(q);
             final QuestionDto questionDto = questionsById.get(questionId);
 
-            SortedMap<Long, String> iterationsMap = instanceData.responseMap
-                    .get(questionId);
+            SortedMap<Long, String> iterationsMap = instanceData.responseMap.get(questionId);
 
             if (iterationsMap == null) {
                 continue;
@@ -657,13 +656,11 @@ public class GraphicalSurveySummaryExporter extends SurveySummaryExporter {
         // Question id -> response
         Map<String, String> responseMap = new HashMap<>();
 
-        for (Entry<Long, SortedMap<Long, String>> entry : instanceData.responseMap
-                .entrySet()) {
+        for (Entry<Long, SortedMap<Long, String>> entry : instanceData.responseMap.entrySet()) {
             String questionId = entry.getKey().toString();
 
             // Pick the first iteration response since we currently don't
-            // support Repeatable
-            // Question Groups
+            // support Repeatable Question Groups
             Collection<String> iterations = entry.getValue().values();
             if (!iterations.isEmpty()) {
                 String response = iterations.iterator().next();
@@ -677,27 +674,25 @@ public class GraphicalSurveySummaryExporter extends SurveySummaryExporter {
                 rollups = formRollupStrings(responseMap);
             }
             for (Entry<String, String> entry : responseMap.entrySet()) {
+                //TODO: only OPTION and NUMBER summarizable now. Simple to add CASCADE.
                 if (!unsummarizable.contains(entry.getKey())) {
                     String effectiveId = entry.getKey();
                     if (nameToIdMap.get(effectiveId) != null) {
-                        effectiveId = collapseIdMap.get(nameToIdMap
-                                .get(effectiveId));
+                        effectiveId = collapseIdMap.get(nameToIdMap.get(effectiveId));
                     }
 
                     String[] vals;
-                    if (entry.getValue().startsWith("[")) {
+                    if (entry.getValue().startsWith("[")) { //JSON
                         try {
-                            List<Map<String, String>> optionNodes = OBJECT_MAPPER
-                                    .readValue(
-                                            entry.getValue(),
-                                            new TypeReference<List<Map<String, String>>>() {
-                                            });
+                            List<Map<String, String>> optionNodes = OBJECT_MAPPER.readValue(
+                                    entry.getValue(),
+                                    new TypeReference<List<Map<String, String>>>() {}
+                                    );
                             List<String> valsList = new ArrayList<>();
                             for (Map<String, String> optionNode : optionNodes) {
-                                valsList.add(optionNode.get("text"));
+                                valsList.add(optionNode.get("text")); //get "name" for CASCADE
                             }
-                            vals = valsList
-                                    .toArray(new String[valsList.size()]);
+                            vals = valsList.toArray(new String[valsList.size()]);
                         } catch (IOException e) {
                             vals = entry.getValue().split("\\|");
                         }
@@ -708,10 +703,8 @@ public class GraphicalSurveySummaryExporter extends SurveySummaryExporter {
                     synchronized (model) {
                         for (int i = 0; i < vals.length; i++) {
                             if (vals[i] != null && vals[i].trim().length() > 0) {
-                                QuestionDto q = questionsById.get(Long
-                                        .valueOf(effectiveId));
-                                model.tallyResponse(effectiveId, rollups,
-                                        vals[i], q);
+                                QuestionDto q = questionsById.get(Long.valueOf(effectiveId));
+                                model.tallyResponse(effectiveId, rollups, vals[i], q);
                             }
                         }
                     }
