@@ -333,7 +333,6 @@ public class GraphicalSurveySummaryExporter extends SurveySummaryExporter {
     // store indices of file columns for lookup when generating responses
     private Map<String, Integer> columnIndexMap = new HashMap<>();
     // stores the questions whose answers will make up the display name, in order
-    private List<QuestionDto> displayNamePartList = new ArrayList<>();
 
     @Override
     public void export(Map<String, String> criteria, File fileName,
@@ -477,9 +476,6 @@ public class GraphicalSurveySummaryExporter extends SurveySummaryExporter {
                         collapseIdMap.put(q.getText(), q.getKeyId().toString());
                     }
                     nameToIdMap.put(q.getKeyId().toString(), q.getText());
-                }
-                if (q.getLocaleNameFlag() && q.getKeyId() != null && q.getType() != null) {
-                    displayNamePartList.add(q);
                 }
             }
         }
