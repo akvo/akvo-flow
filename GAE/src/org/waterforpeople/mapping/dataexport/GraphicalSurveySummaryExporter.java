@@ -1288,8 +1288,7 @@ public class GraphicalSurveySummaryExporter extends SurveySummaryExporter {
                                         : getLocalizedText(q.getText(),
                                                 q.getTranslationMap())
                                                 + " - " + level;
-                                createCell(row, offset++, levelName,
-                                        headerStyle);
+                                createCell(row, offset++, levelName, headerStyle);
                             }
                         } else if (QuestionType.CADDISFLY == q.getType()) {
                             StringBuilder caddisflyFirstResultColumnHeaderPrefix = new StringBuilder();
@@ -1311,8 +1310,7 @@ public class GraphicalSurveySummaryExporter extends SurveySummaryExporter {
                                     .getCaddisflyResourceUuid().trim());
                             // get expected results for this test, if it exists
                             if (cr != null) {
-                                List<CaddisflyResult> crResults = cr
-                                        .getResults();
+                                List<CaddisflyResult> crResults = cr.getResults();
                                 // sort results on id value
                                 Collections.sort(crResults);
 
@@ -1348,8 +1346,7 @@ public class GraphicalSurveySummaryExporter extends SurveySummaryExporter {
                                             offset++,
                                             "--CADDISFLY--|" + q.getText()
                                                     + "--"
-                                                    + IMAGE_LABEL
-                                                            .get(columnLocale),
+                                                    + IMAGE_LABEL.get(columnLocale),
                                             headerStyle);
                                 }
 
@@ -1410,8 +1407,9 @@ public class GraphicalSurveySummaryExporter extends SurveySummaryExporter {
                                 }
                             }
                         }
-                        if (!(QuestionType.NUMBER == q.getType() || QuestionType.OPTION == q
-                                .getType())) {
+                        //TODO: add cascade
+                        if (!(QuestionType.NUMBER == q.getType() 
+                                || QuestionType.OPTION == q.getType())) {
                             nonSummarizableList.add(q.getKeyId().toString());
                         }
                     }
@@ -1445,15 +1443,19 @@ public class GraphicalSurveySummaryExporter extends SurveySummaryExporter {
         String title = sector == null ? SUMMARY_LABEL.get(locale) : sector;
         Sheet sheet = null;
         int sheetCount = 2;
-        String curTitle = WorkbookUtil.createSafeSheetName(title);
+        String curTitle = WorkbookUtil.createSafeSheetName(title); //first try the whole sector name
         while (sheet == null) {
             sheet = wb.getSheet(curTitle);
-            if (sheet == null) {
+            if (sheet == null) { //Name free - use it
                 sheet = wb.createSheet(curTitle);
-            } else {
+            } else { //Name in use, try another. Max is 31 chars.
                 sheet = null;
-                curTitle = WorkbookUtil.createSafeSheetName(title + " " + sheetCount);
-                sheetCount++;
+                curTitle = WorkbookUtil.createSafeSheetName(
+                        title.substring(0,Math.min(title.length(),27)) + " " + sheetCount
+                        );
+                if (++sheetCount >= 1000) {
+                    throw new Exception("Could not create unique sheet name after 1000 tries.");
+                };
             }
         }
         CreationHelper creationHelper = wb.getCreationHelper();
@@ -1463,14 +1465,13 @@ public class GraphicalSurveySummaryExporter extends SurveySummaryExporter {
         if (sector == null) {
             createCell(row, 0, REPORT_HEADER.get(locale), headerStyle);
         } else {
-            createCell(row, 0, sector + " " + REPORT_HEADER.get(locale),
-                    headerStyle);
+            createCell(row, 0, sector + " " + REPORT_HEADER.get(locale), headerStyle);
         }
         for (QuestionGroupDto group : orderedGroupList) {
             if (questionMap.get(group) != null) {
                 for (QuestionDto question : questionMap.get(group)) {
-                    if (!(QuestionType.OPTION == question.getType() || QuestionType.NUMBER == question
-                            .getType())) {
+                    if (!(QuestionType.OPTION == question.getType() //TODO: add cascade
+                            || QuestionType.NUMBER == question.getType())) {
                         continue;
                     } else {
                         if (summaryModel.getResponseCountsForQuestion(
@@ -1480,8 +1481,8 @@ public class GraphicalSurveySummaryExporter extends SurveySummaryExporter {
                         }
                     }
                     // for both options and numeric, we want a pie chart and
-                    // data table for numeric, we also want descriptive
-                    // statistics
+                    // data table. for numeric, we also want descriptive
+                    // statistics.
                     int tableTopRow = curRow++;
                     int tableBottomRow = curRow;
                     row = getRow(tableTopRow, sheet);
@@ -1491,8 +1492,8 @@ public class GraphicalSurveySummaryExporter extends SurveySummaryExporter {
                     createCell(
                             row,
                             0,
-                            getLocalizedText(question.getText(),
-                                    question.getTranslationMap()), headerStyle);
+                            getLocalizedText(question.getText(),question.getTranslationMap()),
+                            headerStyle);
                     DescriptiveStats stats = summaryModel
                             .getDescriptiveStatsForQuestion(
                                     question.getKeyId(), sector);
@@ -1536,8 +1537,7 @@ public class GraphicalSurveySummaryExporter extends SurveySummaryExporter {
 
                                     for (Map<String, String> optionNode : optionNodes) {
                                         labelTextBuilder.append("|");
-                                        labelTextBuilder.append(optionNode
-                                                .get("text"));
+                                        labelTextBuilder.append(optionNode.get("text"));
                                     }
                                     if (labelTextBuilder.length() > 0) {
                                         labelTextBuilder.deleteCharAt(0);
@@ -1649,8 +1649,7 @@ public class GraphicalSurveySummaryExporter extends SurveySummaryExporter {
                         if (values != null) {
                             for (String val : values) {
                                 try {
-                                    if (val != null
-                                            && new Double(val.trim()) > 0D) {
+                                    if (val != null && new Double(val.trim()) > 0D) {
                                         hasVals = true;
                                         break;
                                     }
@@ -1663,20 +1662,17 @@ public class GraphicalSurveySummaryExporter extends SurveySummaryExporter {
                         // value
                         if (hasVals && generateCharts) {
                             // now insert the graph
-                            int indx = wb
-                                    .addPicture(
-                                            JFreechartChartUtil
-                                                    .getPieChart(
-                                                            labels,
-                                                            values,
-                                                            getLocalizedText(
-                                                                    question.getText(),
-                                                                    question.getTranslationMap()),
-                                                            CHART_WIDTH,
-                                                            CHART_HEIGHT),
+                            int indx = wb.addPicture(
+                                    JFreechartChartUtil.getPieChart(
+                                            labels,
+                                            values,
+                                            getLocalizedText(
+                                                    question.getText(),
+                                                    question.getTranslationMap()),
+                                                    CHART_WIDTH,
+                                                    CHART_HEIGHT),
                                             Workbook.PICTURE_TYPE_PNG);
-                            ClientAnchor anchor = creationHelper
-                                    .createClientAnchor();
+                            ClientAnchor anchor = creationHelper.createClientAnchor();
                             anchor.setDx1(0);
                             anchor.setDy1(0);
                             anchor.setDx2(0);
