@@ -1455,7 +1455,7 @@ public class GraphicalSurveySummaryExporter extends SurveySummaryExporter {
                         );
                 if (++sheetCount >= 1000) {
                     throw new Exception("Could not create unique sheet name after 1000 tries.");
-                };
+                }
             }
         }
         CreationHelper creationHelper = wb.getCreationHelper();
@@ -1487,19 +1487,17 @@ public class GraphicalSurveySummaryExporter extends SurveySummaryExporter {
                     int tableBottomRow = curRow;
                     row = getRow(tableTopRow, sheet);
                     // span the question heading over the data table
-                    sheet.addMergedRegion(new CellRangeAddress(curRow - 1,
-                            curRow - 1, 0, 2));
+                    sheet.addMergedRegion(new CellRangeAddress(curRow - 1, curRow - 1, 0, 2));
                     createCell(
                             row,
                             0,
-                            getLocalizedText(question.getText(),question.getTranslationMap()),
+                            getLocalizedText(question.getText(), question.getTranslationMap()),
                             headerStyle);
                     DescriptiveStats stats = summaryModel
                             .getDescriptiveStatsForQuestion(
                                     question.getKeyId(), sector);
                     if (stats != null && stats.getSampleCount() > 0) {
-                        sheet.addMergedRegion(new CellRangeAddress(curRow - 1,
-                                curRow - 1, 4, 5));
+                        sheet.addMergedRegion(new CellRangeAddress(curRow - 1, curRow - 1, 4, 5));
                         createCell(
                                 row,
                                 4,
@@ -1513,8 +1511,7 @@ public class GraphicalSurveySummaryExporter extends SurveySummaryExporter {
 
                     // now create the data table for the option count
                     Map<String, Long> counts = summaryModel
-                            .getResponseCountsForQuestion(question.getKeyId(),
-                                    sector);
+                            .getResponseCountsForQuestion(question.getKeyId(), sector);
                     int sampleTotal = 0;
                     List<String> labels = new ArrayList<String>();
                     List<String> values = new ArrayList<String>();
