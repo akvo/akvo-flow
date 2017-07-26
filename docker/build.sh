@@ -19,8 +19,8 @@
 set -eu
 
 SRC_DIR="/app/src"
-APP_ENGINE_SDK_VERSION="1.9.50"
-APP_ENGINE_SDK_FILE="appengine-java-sdk-1.9.50.zip"
+APP_ENGINE_SDK_VERSION="1.9.54"
+APP_ENGINE_SDK_FILE="appengine-java-sdk-1.9.54.zip"
 
 if [[ ! -d "$HOME/.cache/appengine-java-sdk-$APP_ENGINE_SDK_VERSION" ]]; then
     unzip "$HOME/.cache/$APP_ENGINE_SDK_FILE" -d "$HOME/.cache"

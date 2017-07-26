@@ -1,0 +1,17 @@
+# Bundler output
+.bundle
+
+# Dashboard UI build output
+app/cljs/out/
+app/cljs/target
+app/cljs/users.js
+app/css/main.css.map
+app/test.html
+assets
+bin
+node_modules
+test_assets
+tmp
+
+# Ruby env build output
+vendor

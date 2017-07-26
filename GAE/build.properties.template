@@ -1,4 +1,4 @@
-sdk.dir=/usr/local/sdk/gae/java-sdk-1.9.7
+sdk.dir=/usr/local/sdk/gae/java-sdk-1.9.54
 gwtlibs.dir=/usr/local/sdk/gwt/2.5.1
 email.address=some_user@gmail.com
 keystore.password=[some_password]

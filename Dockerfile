@@ -1,4 +1,4 @@
-FROM ruby:2.1.10
+FROM ruby:2.4.1
 
 RUN echo "deb http://ftp.debian.org/debian jessie-backports main" >> /etc/apt/sources.list && \
     apt-get update && \
@@ -6,7 +6,7 @@ RUN echo "deb http://ftp.debian.org/debian jessie-backports main" >> /etc/apt/so
     apt-get clean && \
     rm -rf /var/lib/apt/lists/* && \
     update-java-alternatives -s java-1.8.0-openjdk-amd64 && \
-    curl -L https://nodejs.org/dist/v6.10.1/node-v6.10.1-linux-x64.tar.xz | tar -xJf - --strip-components=1 -C /usr
+    curl -L https://nodejs.org/dist/v8.2.1/node-v8.2.1-linux-x64.tar.xz | tar -xJf - --strip-components=1 -C /usr
 
 RUN mkdir /akvo-flow
 
