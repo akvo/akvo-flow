@@ -128,6 +128,9 @@ public class SurveyInstanceServlet extends AbstractRestApiServlet {
         final QuestionAnswerStoreDao qasDao = new QuestionAnswerStoreDao();
 
         Long surveyedLocaleId = si.getSurveyedLocaleId();
+        if (surveyedLocaleId == null) {
+            return "";
+        }
         SurveyedLocale sl = slDao.getById(surveyedLocaleId);
         if (sl == null || sl.getCreationSurveyId() == null) {
             return "";
