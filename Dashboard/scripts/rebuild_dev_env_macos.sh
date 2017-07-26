@@ -139,7 +139,7 @@ function ensure_gem_is_installed
         printf "## Error: Unable to install gem $_GEM_NAME version $_GEM_VERSION\n"
         exit 1
     else
-        printf ">> Expect gem is installed: $_GEM_NAME $_GEM_VERSION\n"
+        printf ">> Expected gem is installed: $_GEM_NAME $_GEM_VERSION\n"
     fi
 }
 
@@ -150,7 +150,7 @@ function ensure_build_dependencies_are_installed
     gem update --system
     printf ">> Current gem system version: $(gem --version)\n"
     printf "\n>> Installing gems for building the Dashboard\n"
-    ensure_gem_is_installed bundler 1.15.2
+    ensure_gem_is_installed bundler 1.15.3
     ensure_gem_is_installed json 2.1.0
     printf "\n>> Checking for outdated gems...\n"
     gem outdated
