@@ -1,5 +1,11 @@
 # Akvo Flow Release Notes
 ----
+# 1.9.21.1 Thoroughbred Tamandua hotfix
+Date: 26 July 2017
+
+## Resolved issues
+* **Reporting fixes: Comprehensive reports should now work when the regional summary sheets get their names from a cascade question [#2206], and also work for questions that have very long names. 
+
 # 1.9.21 Thoroughbred Tamandua
 Date: 21 July 2017
 
