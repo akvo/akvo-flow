@@ -16,7 +16,7 @@
 
 
 THIS_SCRIPT="$0"
-SCRIPT_NAME="`basename $THIS_SCRIPT`"
+SCRIPT_NAME="$(basename $THIS_SCRIPT)"
 PASSWORD_FILE_PATH="$1"
 INSTANCE_NAME="$2"
 
@@ -35,7 +35,8 @@ if [[ -z "$PASSWORD_FILE_PATH" ]]; then
 fi
 
 
-PROJECT_HOME="$(cd `dirname "$THIS_SCRIPT"`/../.. && pwd)"
+REPOS_HOME="$(cd $(dirname "$THIS_SCRIPT")/../../.. && pwd)"
+PROJECT_HOME="$REPOS_HOME/akvo-flow"
 CODE_DIR="$PROJECT_HOME/GAE"
 DASHBOARD_DIR="$PROJECT_HOME/Dashboard"
 
@@ -54,9 +55,7 @@ function prebuild_cleanup
     printf "\n>> Clearing SDK libs...\n"
     cd "$CODE_DIR/war/WEB-INF/lib"
     rm appengine*.jar datanucleus*.jar geronimo*.jar jdo2*.jar jsr107cache*.jar
-    #printf "\n>> Resetting repo state...\n"
     cd "$CODE_DIR"
-    #git reset --hard HEAD
     printf "\n"
 }
 
@@ -79,12 +78,12 @@ function run_build_task
 
     # exit if build errors occur
     if [ $? -ne 0 ]; then
-        echo "## Exiting due to failed build as above"
+        printf "## Exiting due to failed build for [$INSTANCE_NAME] as above\n"
         exit 1
     fi
 }
 
-CONFIG_DIR="/akvo-flow-server-config"
+CONFIG_DIR="$REPOS_HOME/akvo-flow-server-config"
 
 printf ">> Starting build for [$INSTANCE_NAME]\n"
 prebuild_cleanup
