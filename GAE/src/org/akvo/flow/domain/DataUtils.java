@@ -92,8 +92,10 @@ public class DataUtils {
         List<Map<String, String>> options = jsonStringToList(optionResponses);
         if (options != null) {
             for (Map<String, String> option : options) {
-                if (option.get("text") != null) {
+                if (option.get("text") != null) { //try OPTION answer
                     pipeSeparated.append("|").append(option.get("text"));
+                } else if (option.get("name") != null) { //try CASCADE answer
+                    pipeSeparated.append("|").append(option.get("name"));
                 }
             }
         }
