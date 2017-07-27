@@ -15,7 +15,7 @@
 #   The full license text can also be seen at <http://www.gnu.org/licenses/agpl.html>.
 
 THIS_SCRIPT="$0"
-SCRIPT_NAME="`basename $THIS_SCRIPT`"
+SCRIPT_NAME=$(basename $THIS_SCRIPT)
 INSTANCE_ID="$1"
 
 function display_usage_and_exit
@@ -28,7 +28,7 @@ if [[ -z "$INSTANCE_ID" ]]; then
     display_usage_and_exit
 fi
 
-REPOS_HOME="$(cd `dirname "$THIS_SCRIPT"`/../../.. && pwd)"
+REPOS_HOME="$(cd $(dirname "$THIS_SCRIPT")/../../.. && pwd)"
 CONFIG_REPO_PATH="$REPOS_HOME/akvo-flow-server-config"
 
 # ensure config repo path exists
@@ -38,7 +38,7 @@ if [[ ! -r "$CONFIG_REPO_PATH" ]]; then
     display_usage_and_exit
 fi
 
-SCRIPT_HOME="$(cd `dirname "$THIS_SCRIPT"` && pwd)"
+SCRIPT_HOME="$(cd $(dirname "$THIS_SCRIPT") && pwd)"
 
 cd "$SCRIPT_HOME"
 
