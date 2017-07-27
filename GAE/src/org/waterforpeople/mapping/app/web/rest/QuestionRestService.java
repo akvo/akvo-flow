@@ -211,8 +211,8 @@ public class QuestionRestService {
         statusDto.setStatus("failed");
         statusDto.setMessage("_cannot_delete");
 
-        // check if question exists in the datastore
-        if (q != null) {
+        if (q != null) { // if question exists in the cache/datastore
+
             try {
                 TaskOptions deleteQuestionTask = TaskOptions.Builder
                         .withUrl("/app_worker/surveytask")
