@@ -84,7 +84,7 @@ function run_build_task
     fi
 }
 
-CONFIG_DIR="/akvo-flow-server-config"
+CONFIG_DIR="../../akvo-flow-server-config"
 
 printf ">> Starting build for [$INSTANCE_NAME]\n"
 prebuild_cleanup
