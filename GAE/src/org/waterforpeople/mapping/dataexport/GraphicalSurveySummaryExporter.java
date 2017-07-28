@@ -72,7 +72,6 @@ import org.waterforpeople.mapping.app.web.dto.SurveyRestRequest;
 import org.waterforpeople.mapping.dataexport.service.BulkDataServiceClient;
 import org.waterforpeople.mapping.domain.CaddisflyResource;
 import org.waterforpeople.mapping.domain.CaddisflyResult;
-import org.waterforpeople.mapping.domain.QuestionAnswerStore;
 import org.waterforpeople.mapping.domain.response.value.Media;
 import org.waterforpeople.mapping.serialization.response.MediaResponse;
 
@@ -322,7 +321,7 @@ public class GraphicalSurveySummaryExporter extends SurveySummaryExporter {
     private CaddisflyResourceDao caddisflyResourceDao = new CaddisflyResourceDao();
 
     // for caddisfly-specific metadata
-    private Map<Long, Integer> numResultsMap = new HashMap<>();
+    //TODO private Map<Long, Integer> numResultsMap = new HashMap<>();
     private Map<Long, Boolean> hasImageMap = new HashMap<>();
     private Map<Long, List<Integer>> resultIdMap = new HashMap<>();
 
