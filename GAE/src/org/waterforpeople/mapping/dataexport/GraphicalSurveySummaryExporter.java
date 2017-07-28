@@ -764,7 +764,8 @@ public class GraphicalSurveySummaryExporter extends SurveySummaryExporter {
 
             case CADDISFLY:
                 qId = questionDto.getKeyId();
-                cells.addAll(caddisflyCellValues(qId, value, hasImageMap.get(qId), imagePrefix));
+                boolean hasMap = hasImageMap.get(qId) != null && hasImageMap.get(qId);
+                cells.addAll(caddisflyCellValues(qId, value, hasMap, imagePrefix));
                 break;
 
             default:
@@ -841,7 +842,7 @@ public class GraphicalSurveySummaryExporter extends SurveySummaryExporter {
      * Validates the map containing values from the parsed caddisfly response string
      */
     @SuppressWarnings("unchecked")
-    private static Boolean validateCaddisflyValue(Map<String, Object> caddisflyResponseMap,
+    private static boolean validateCaddisflyValue(Map<String, Object> caddisflyResponseMap,
             boolean hasImage) {
         // check presence of uuid and result
         if (caddisflyResponseMap.get(CADDISFLY_UUID) == null
@@ -870,7 +871,7 @@ public class GraphicalSurveySummaryExporter extends SurveySummaryExporter {
      * Creates the cells containing responses to caddisfly questions
      */
     @SuppressWarnings("unchecked")
-    private List<String> caddisflyCellValues(Long questionId, String value, Boolean hasImage,
+    private List<String> caddisflyCellValues(Long questionId, String value, boolean hasImage,
             String imagePrefix) {
 
         List<String> caddisflyCellValues = new ArrayList<>();
@@ -891,23 +892,25 @@ public class GraphicalSurveySummaryExporter extends SurveySummaryExporter {
             return caddisflyCellValues;
         }
 
-        List<Map<String, Object>> caddisflyTestResultsList = (List<Map<String, Object>>) caddisflyResponseMap
-                .get(CADDISFLY_RESULT);
+        List<Map<String, Object>> caddisflyTestResultsList = 
+                (List<Map<String, Object>>) caddisflyResponseMap.get(CADDISFLY_RESULT);
 
         Map<Integer, Map<String, Object>> caddisflyTestResultsMap = mapCaddisflyResultsById(caddisflyTestResultsList);
 
         // get valid result ids for this question. The ids are already
         // in order.
-        for (Integer resultId : resultIds) {
-            Map<String, Object> caddisflyTestResult = caddisflyTestResultsMap.get(resultId);
-            if (caddisflyTestResult != null) {
-                String testValue = "" + caddisflyTestResult.get(CADDISFLY_RESULT_VALUE);
-                caddisflyCellValues.add(testValue);
-            } else {
-                caddisflyCellValues.add("");
+        if (resultIds != null) {
+            for (Integer resultId : resultIds) {
+                Map<String, Object> caddisflyTestResult = caddisflyTestResultsMap.get(resultId);
+                if (caddisflyTestResult != null) {
+                    String testValue = "" + caddisflyTestResult.get(CADDISFLY_RESULT_VALUE);
+                    caddisflyCellValues.add(testValue);
+                } else {
+                    caddisflyCellValues.add("");
+                }
             }
         }
-
+        
         // add image URL if available
         if (hasImage) {
             final String imageName = (String) caddisflyResponseMap.get(CADDISFLY_IMAGE);
