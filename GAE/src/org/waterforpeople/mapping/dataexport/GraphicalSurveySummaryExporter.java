@@ -1180,7 +1180,6 @@ public class GraphicalSurveySummaryExporter extends SurveySummaryExporter {
      *         representing all the non-summarizable question Ids (i.e. those that aren't OPTION or
      *         NUMBER questions)
      */
-    @SuppressWarnings("unchecked")
     protected Object[] createRawDataHeader(Workbook wb, Sheet sheet,
             Map<QuestionGroupDto, List<QuestionDto>> questionMap,
             boolean useQuestionId) {
@@ -1313,6 +1312,7 @@ public class GraphicalSurveySummaryExporter extends SurveySummaryExporter {
         return temp;
     }
 
+    @SuppressWarnings("unchecked")
     private int addCaddisflyDataHeaderColumns(QuestionDto q, Row row, int offset,
             String questionId, final boolean useQID, String columnLocale) {
         Map<String, CaddisflyResource> caddisflyResourceMap = null;
