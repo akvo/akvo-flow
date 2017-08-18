@@ -16,24 +16,6 @@
 
 package org.waterforpeople.mapping.app.web;
 
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.List;
-
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-
-import org.akvo.flow.domain.DataUtils;
-import org.codehaus.jackson.map.ObjectMapper;
-import org.waterforpeople.mapping.app.web.dto.SurveyInstanceDto;
-import org.waterforpeople.mapping.app.web.dto.SurveyedLocaleDto;
-import org.waterforpeople.mapping.app.web.dto.SurveyedLocaleRequest;
-import org.waterforpeople.mapping.app.web.dto.SurveyedLocaleResponse;
-import org.waterforpeople.mapping.dao.SurveyInstanceDAO;
-import org.waterforpeople.mapping.domain.SurveyInstance;
-import org.waterforpeople.mapping.serialization.response.MediaResponse;
-
 import com.gallatinsystems.device.domain.DeviceSurveyJobQueue;
 import com.gallatinsystems.framework.rest.AbstractRestApiServlet;
 import com.gallatinsystems.framework.rest.RestRequest;
@@ -46,6 +28,23 @@ import com.gallatinsystems.survey.domain.Survey;
 import com.gallatinsystems.surveyal.dao.SurveyedLocaleDao;
 import com.gallatinsystems.surveyal.domain.SurveyalValue;
 import com.gallatinsystems.surveyal.domain.SurveyedLocale;
+import org.akvo.flow.domain.DataUtils;
+import org.codehaus.jackson.map.ObjectMapper;
+import org.waterforpeople.mapping.app.web.dto.SurveyInstanceDto;
+import org.waterforpeople.mapping.app.web.dto.SurveyedLocaleDto;
+import org.waterforpeople.mapping.app.web.dto.SurveyedLocaleRequest;
+import org.waterforpeople.mapping.app.web.dto.SurveyedLocaleResponse;
+import org.waterforpeople.mapping.dao.SurveyInstanceDAO;
+import org.waterforpeople.mapping.domain.SurveyInstance;
+import org.waterforpeople.mapping.serialization.response.MediaResponse;
+
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 /**
  * JSON service for returning the list of records for a specific surveyId
@@ -90,8 +89,8 @@ public class SurveyedLocaleServlet extends AbstractRestApiServlet {
                                 .longValue()) {
                     slList = surveyedLocaleDao.listLocalesBySurveyGroupAndDate(
                             slReq.getSurveyGroupId(), slReq.getLastUpdateTime(), SL_PAGE_SIZE);
-                    return convertToResponse(slList, slReq.getSurveyGroupId(),
-                            slReq.getLastUpdateTime());
+                    return convertToResponse(slList, slReq.getSurveyGroupId()
+                    );
                 }
             }
         }
@@ -105,13 +104,11 @@ public class SurveyedLocaleServlet extends AbstractRestApiServlet {
     /**
      * converts the domain objects to dtos and then installs them in a RecordDataResponse object
      *
-     * @param lastUpdateTime
      */
     protected SurveyedLocaleResponse convertToResponse(List<SurveyedLocale> slList,
-            Long surveyGroupId, Date lastUpdateTime) {
+            Long surveyGroupId) {
         SurveyedLocaleResponse resp = new SurveyedLocaleResponse();
-        SurveyedLocaleDao slDao = new SurveyedLocaleDao();
-        QuestionDao qDao = new QuestionDao();
+
         if (slList == null) {
             resp.setCode(String.valueOf(HttpServletResponse.SC_INTERNAL_SERVER_ERROR));
             resp.setMessage("Internal Server Error");
@@ -121,95 +118,169 @@ public class SurveyedLocaleServlet extends AbstractRestApiServlet {
         resp.setCode(String.valueOf(HttpServletResponse.SC_OK));
         resp.setResultCount(slList.size());
 
-        // set Locale data
-        List<SurveyedLocaleDto> dtoList = new ArrayList<SurveyedLocaleDto>();
-        HashMap<Long, String> questionTypeMap = new HashMap<Long, String>();
-        // for each surveyedLocale, get the surveyalValues and store them in a map
-        for (SurveyedLocale sl : slList) {
-            List<SurveyalValue> svList = slDao.listValuesByLocale(sl.getKey().getId());
-            HashMap<Long, List<SurveyalValue>> instanceMap = new HashMap<Long, List<SurveyalValue>>();
-            if (svList != null && svList.size() > 0) {
-                for (SurveyalValue sv : svList) {
-                    // put them in a map with the surveyInstance as key
-                    if (instanceMap.containsKey(sv.getSurveyInstanceId())) {
-                        instanceMap.get(sv.getSurveyInstanceId()).add(sv);
-                    } else {
-                        instanceMap.put(sv.getSurveyInstanceId(),
-                                new ArrayList<SurveyalValue>());
-                        instanceMap.get(sv.getSurveyInstanceId()).add(sv);
-                    }
-                }
-            }
-            // put them in the dto
-            SurveyedLocaleDto dto = new SurveyedLocaleDto();
-            dto.setId(sl.getIdentifier());
-            dto.setSurveyGroupId(surveyGroupId);
-            dto.setDisplayName(sl.getDisplayName());
-            dto.setLat(sl.getLatitude());
-            dto.setLon(sl.getLongitude());
-            dto.setLastUpdateDateTime(sl.getLastUpdateDateTime());
-            SurveyInstanceDAO sDao = new SurveyInstanceDAO();
-            for (Long instanceId : instanceMap.keySet()) {
-                SurveyInstanceDto siDto = new SurveyInstanceDto();
-                SurveyInstance si = sDao.getByKey(instanceId);
-                if (si != null) {
-                    siDto.setUuid(si.getUuid());
-                    siDto.setSubmitter(si.getSubmitterName());
-                    siDto.setSurveyId(si.getSurveyId());
-                    siDto.setCollectionDate(si.getCollectionDate().getTime());
-                }
-                for (SurveyalValue sv : instanceMap.get(instanceId)) {
-                    if (sv.getSurveyQuestionId() == null) {
-                        continue;// The question was deleted before storing the response.
-                    }
+        SurveyedLocaleDao slDao = new SurveyedLocaleDao();
+        SurveyInstanceDAO sDao = new SurveyInstanceDAO();
+        QuestionDao qDao = new QuestionDao();
 
-                    String type = sv.getQuestionType();
-                    if (type == null || "".equals(type)) {
-                        type = "VALUE";
-                    } else if ("PHOTO".equals(type)) {
-                        type = "IMAGE";
-                    } else if ("OPTION".equals(type)) {
-                        // first see if we have the question in the map already
-                        if (questionTypeMap.containsKey(sv.getSurveyQuestionId())) {
-                            type = questionTypeMap.get(sv.getSurveyQuestionId());
-                        } else {
-                            // find question by id
-                            Question q = qDao.getByKey(sv.getSurveyQuestionId());
-                            if (q != null) {
-                                // if the question has the allowOtherFlag set,
-                                // use OTHER as the device question type
-                                if (q.getAllowOtherFlag()) {
-                                    type = "OTHER";
-                                }
-                                questionTypeMap.put(sv.getSurveyQuestionId(), type);
-                            }
-                        }
-                    }
+        List<SurveyedLocaleDto> dtoList = getSurveyedLocaleDtosList(slList, surveyGroupId, slDao,
+                sDao, qDao);
 
-                    // Make all responses backwards compatible
-                    String value = sv.getStringValue() != null ? sv.getStringValue() : "";
-                    switch (type) {
-                        case "OPTION":
-                        case "OTHER":
-                            if (value.startsWith("[")) {
-                                value = DataUtils.jsonResponsesToPipeSeparated(value);
-                            }
-                            break;
-                        case "IMAGE":
-                        case "VIDEO":
-                            value = MediaResponse.format(value, MediaResponse.VERSION_STRING);
-                            break;
-                        default:
-                            break;
-                    }
-                    siDto.addProperty(sv.getSurveyQuestionId(), value, type);
-                }
-                dto.getSurveyInstances().add(siDto);
-            }
-            dtoList.add(dto);
-        }
         resp.setSurveyedLocaleData(dtoList);
         return resp;
+    }
+
+    private List<SurveyedLocaleDto> getSurveyedLocaleDtosList(List<SurveyedLocale> slList,
+            Long surveyGroupId, SurveyedLocaleDao slDao, SurveyInstanceDAO sDao, QuestionDao qDao) {
+        // set Locale data
+        List<SurveyedLocaleDto> dtoList = new ArrayList<>();
+        HashMap<Long, String> questionTypeMap = new HashMap<>();
+        Map<Long, List<SurveyalValue>> surveyalValuesMap = getSurveyalValues(slList, slDao);
+        // for each surveyedLocale, get the surveyalValues and store them in a map
+        for (SurveyedLocale sl : slList) {
+            long surveyedLocaleId = sl.getKey().getId();
+            List<SurveyalValue> svList =  surveyalValuesMap.get(surveyedLocaleId);
+            Map<Long, List<SurveyalValue>> instanceMap = getSurveyalListMap(svList);
+            SurveyedLocaleDto dto = createSurveyedLocaleDto(surveyGroupId, qDao, questionTypeMap,
+                    sl, instanceMap, sDao);
+            dtoList.add(dto);
+        }
+        return dtoList;
+    }
+
+    private SurveyedLocaleDto createSurveyedLocaleDto(Long surveyGroupId, QuestionDao qDao,
+            HashMap<Long, String> questionTypeMap, SurveyedLocale sl,
+            Map<Long, List<SurveyalValue>> instanceMap, SurveyInstanceDAO sDao) {
+        // put them in the dto
+        SurveyedLocaleDto dto = new SurveyedLocaleDto();
+        dto.setId(sl.getIdentifier());
+        dto.setSurveyGroupId(surveyGroupId);
+        dto.setDisplayName(sl.getDisplayName());
+        dto.setLat(sl.getLatitude());
+        dto.setLon(sl.getLongitude());
+        dto.setLastUpdateDateTime(sl.getLastUpdateDateTime());
+
+        for (Long instanceId : instanceMap.keySet()) {
+            SurveyInstanceDto siDto = createSurveyInstanceDto(qDao, questionTypeMap,
+                    sDao, instanceId, instanceMap.get(instanceId));
+            dto.getSurveyInstances().add(siDto);
+        }
+        return dto;
+    }
+
+    private Map<Long, List<SurveyalValue>> getSurveyalListMap(List<SurveyalValue> svList) {
+        Map<Long, List<SurveyalValue>> instanceMap = new HashMap<>();
+        if (svList != null && svList.size() > 0) {
+            for (SurveyalValue surveyalValue : svList) {
+                // put them in a map with the surveyInstance as key
+                Long surveyInstanceId = surveyalValue.getSurveyInstanceId();
+                if (instanceMap.containsKey(surveyInstanceId)) {
+                    instanceMap.get(surveyInstanceId).add(surveyalValue);
+                } else {
+                    ArrayList<SurveyalValue> surveyalValues = new ArrayList<>();
+                    surveyalValues.add(surveyalValue);
+                    instanceMap.put(surveyInstanceId, surveyalValues);
+                }
+            }
+        }
+        return instanceMap;
+    }
+
+    private Map<Long, List<SurveyalValue>> getSurveyalValues(List<SurveyedLocale> slList,
+            SurveyedLocaleDao slDao) {
+        List<Long> surveyedLocalesIds = getSurveyedLocalesIds(slList);
+        List<SurveyalValue> values = slDao.listValuesByLocalesIdList(surveyedLocalesIds);
+        Map<Long, List<SurveyalValue>> surveyalValuesMap = new HashMap<>();
+        for (SurveyalValue surveyalValue : values) {
+            Long surveyedLocaleId = surveyalValue.getSurveyedLocaleId();
+            if (surveyalValuesMap.containsKey(surveyedLocaleId)) {
+                surveyalValuesMap.get(surveyedLocaleId).add(surveyalValue);
+            } else {
+                List<SurveyalValue> valuesList = new ArrayList<>();
+                valuesList.add(surveyalValue);
+                surveyalValuesMap.put(surveyedLocaleId, valuesList);
+            }
+        }
+        return surveyalValuesMap;
+    }
+
+    private List<Long> getSurveyedLocalesIds(List<SurveyedLocale> slList) {
+        if (slList == null) {
+            return Collections.emptyList();
+        }
+        List<Long> surveyedLocaleIds = new ArrayList<>(slList.size());
+        for (SurveyedLocale surveyedLocale : slList) {
+            surveyedLocaleIds.add(surveyedLocale.getKey().getId());
+        }
+        return surveyedLocaleIds;
+    }
+
+    private SurveyInstanceDto createSurveyInstanceDto(QuestionDao qDao,
+            HashMap<Long, String> questionTypeMap, SurveyInstanceDAO sDao, Long instanceId,
+            List<SurveyalValue> surveyalValues) {
+        SurveyInstanceDto siDto = new SurveyInstanceDto();
+        SurveyInstance si = sDao.getByKey(instanceId);
+        if (si != null) {
+            siDto.setUuid(si.getUuid());
+            siDto.setSubmitter(si.getSubmitterName());
+            siDto.setSurveyId(si.getSurveyId());
+            siDto.setCollectionDate(si.getCollectionDate().getTime());
+        }
+        for (SurveyalValue sv : surveyalValues) {
+            if (sv.getSurveyQuestionId() == null) {
+                continue;// The question was deleted before storing the response.
+            }
+            String type = getQuestionType(qDao, questionTypeMap, sv);
+            String value = getAnswerValue(sv, type);
+            siDto.addProperty(sv.getSurveyQuestionId(), value, type);
+        }
+        return siDto;
+    }
+
+    private String getAnswerValue(SurveyalValue sv, String type) {
+        // Make all responses backwards compatible
+        String value = sv.getStringValue() != null ? sv.getStringValue() : "";
+        switch (type) {
+            case "OPTION":
+            case "OTHER":
+                if (value.startsWith("[")) {
+                    value = DataUtils.jsonResponsesToPipeSeparated(value);
+                }
+                break;
+            case "IMAGE":
+            case "VIDEO":
+                value = MediaResponse.format(value, MediaResponse.VERSION_STRING);
+                break;
+            default:
+                break;
+        }
+        return value;
+    }
+
+    private String getQuestionType(QuestionDao qDao, HashMap<Long, String> questionTypeMap,
+            SurveyalValue sv) {
+        String type = sv.getQuestionType();
+        if (type == null || "".equals(type)) {
+            type = "VALUE";
+        } else if ("PHOTO".equals(type)) {
+            type = "IMAGE";
+        } else if ("OPTION".equals(type)) {
+            // first see if we have the question in the map already
+            if (questionTypeMap.containsKey(sv.getSurveyQuestionId())) {
+                type = questionTypeMap.get(sv.getSurveyQuestionId());
+            } else {
+                // find question by id
+                Question q = qDao.getByKey(sv.getSurveyQuestionId());
+                if (q != null) {
+                    // if the question has the allowOtherFlag set,
+                    // use OTHER as the device question type
+                    if (q.getAllowOtherFlag()) {
+                        type = "OTHER";
+                    }
+                    questionTypeMap.put(sv.getSurveyQuestionId(), type);
+                }
+            }
+        }
+        return type;
     }
 
     /**
