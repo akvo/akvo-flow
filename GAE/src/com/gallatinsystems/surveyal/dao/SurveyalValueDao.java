@@ -15,15 +15,14 @@
 
 package com.gallatinsystems.surveyal.dao;
 
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-
-import javax.jdo.PersistenceManager;
-
 import com.gallatinsystems.framework.dao.BaseDAO;
 import com.gallatinsystems.framework.servlet.PersistenceFilter;
 import com.gallatinsystems.surveyal.domain.SurveyalValue;
+
+import javax.jdo.PersistenceManager;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 /**
  * Data access object for manipulating SurveyalValues
@@ -38,7 +37,7 @@ public class SurveyalValueDao extends BaseDAO<SurveyalValue> {
      * lists all surveyalValues for a certain surveyId
      *
      * @param cursor
-     * @param pagesize
+     * @param pageSize
      * @param surveyId
      * @return
      */
@@ -68,5 +67,19 @@ public class SurveyalValueDao extends BaseDAO<SurveyalValue> {
      */
     public List<SurveyalValue> listByQuestion(Long questionId) {
         return listByProperty("surveyQuestionId", questionId, "Long");
+    }
+
+    /**
+     * lists all SurveyalValues for a single Locale
+     *
+     * @param surveyedLocaleId
+     * @return
+     */
+    public List<SurveyalValue> listValuesByLocalesIdList(List<Long> surveyedLocaleId) {
+        PersistenceManager pm = PersistenceFilter.getManager();
+        String queryString = ":p1.contains(surveyedLocaleId)";
+        javax.jdo.Query query = pm.newQuery(SurveyalValue.class, queryString);
+        List<SurveyalValue> results = (List<SurveyalValue>) query.execute(surveyedLocaleId);
+        return results;
     }
 }

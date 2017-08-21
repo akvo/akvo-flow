@@ -25,6 +25,7 @@ import com.gallatinsystems.survey.dao.QuestionDao;
 import com.gallatinsystems.survey.dao.SurveyDAO;
 import com.gallatinsystems.survey.domain.Question;
 import com.gallatinsystems.survey.domain.Survey;
+import com.gallatinsystems.surveyal.dao.SurveyalValueDao;
 import com.gallatinsystems.surveyal.dao.SurveyedLocaleDao;
 import com.gallatinsystems.surveyal.domain.SurveyalValue;
 import com.gallatinsystems.surveyal.domain.SurveyedLocale;
@@ -77,20 +78,19 @@ public class SurveyedLocaleServlet extends AbstractRestApiServlet {
     @Override
     protected RestResponse handleRequest(RestRequest req) throws Exception {
         SurveyedLocaleRequest slReq = (SurveyedLocaleRequest) req;
-        List<SurveyedLocale> slList = null;
+        List<SurveyedLocale> slList;
         if (slReq.getSurveyGroupId() != null) {
             DeviceSurveyJobQueueDAO dsjqDAO = new DeviceSurveyJobQueueDAO();
             SurveyDAO surveyDao = new SurveyDAO();
-            for (DeviceSurveyJobQueue dsjq : dsjqDAO.get(slReq.getPhoneNumber(),
-                    slReq.getImei(), slReq.getAndroidId())) {
+            List<DeviceSurveyJobQueue> deviceSurveyJobQueues = dsjqDAO
+                    .get(slReq.getPhoneNumber(), slReq.getImei(), slReq.getAndroidId());
+            for (DeviceSurveyJobQueue dsjq : deviceSurveyJobQueues) {
                 Survey s = surveyDao.getById(dsjq.getSurveyID());
-                if (s != null
-                        && s.getSurveyGroupId().longValue() == slReq.getSurveyGroupId()
-                                .longValue()) {
+                if (s != null && s.getSurveyGroupId().longValue() == slReq.getSurveyGroupId()
+                        .longValue()) {
                     slList = surveyedLocaleDao.listLocalesBySurveyGroupAndDate(
                             slReq.getSurveyGroupId(), slReq.getLastUpdateTime(), SL_PAGE_SIZE);
-                    return convertToResponse(slList, slReq.getSurveyGroupId()
-                    );
+                    return convertToResponse(slList, slReq.getSurveyGroupId());
                 }
             }
         }
@@ -105,7 +105,7 @@ public class SurveyedLocaleServlet extends AbstractRestApiServlet {
      * converts the domain objects to dtos and then installs them in a RecordDataResponse object
      *
      */
-    protected SurveyedLocaleResponse convertToResponse(List<SurveyedLocale> slList,
+    private SurveyedLocaleResponse convertToResponse(List<SurveyedLocale> slList,
             Long surveyGroupId) {
         SurveyedLocaleResponse resp = new SurveyedLocaleResponse();
 
@@ -118,30 +118,31 @@ public class SurveyedLocaleServlet extends AbstractRestApiServlet {
         resp.setCode(String.valueOf(HttpServletResponse.SC_OK));
         resp.setResultCount(slList.size());
 
-        SurveyedLocaleDao slDao = new SurveyedLocaleDao();
-        SurveyInstanceDAO sDao = new SurveyInstanceDAO();
-        QuestionDao qDao = new QuestionDao();
+        SurveyalValueDao surveyalValueDao = new SurveyalValueDao();
+        SurveyInstanceDAO surveyInstanceDAO = new SurveyInstanceDAO();
+        QuestionDao questionDao = new QuestionDao();
 
-        List<SurveyedLocaleDto> dtoList = getSurveyedLocaleDtosList(slList, surveyGroupId, slDao,
-                sDao, qDao);
+        List<SurveyedLocaleDto> dtoList = getSurveyedLocaleDtosList(slList, surveyGroupId,
+                surveyInstanceDAO, questionDao, surveyalValueDao);
 
         resp.setSurveyedLocaleData(dtoList);
         return resp;
     }
 
     private List<SurveyedLocaleDto> getSurveyedLocaleDtosList(List<SurveyedLocale> slList,
-            Long surveyGroupId, SurveyedLocaleDao slDao, SurveyInstanceDAO sDao, QuestionDao qDao) {
+            Long surveyGroupId, SurveyInstanceDAO surveyInstanceDAO, QuestionDao questionDao,
+            SurveyalValueDao surveyalValueDao) {
         // set Locale data
         List<SurveyedLocaleDto> dtoList = new ArrayList<>();
         HashMap<Long, String> questionTypeMap = new HashMap<>();
-        Map<Long, List<SurveyalValue>> surveyalValuesMap = getSurveyalValues(slList, slDao);
+        Map<Long, List<SurveyalValue>> surveyalValuesMap = getSurveyalValues(slList, surveyalValueDao);
         // for each surveyedLocale, get the surveyalValues and store them in a map
         for (SurveyedLocale sl : slList) {
             long surveyedLocaleId = sl.getKey().getId();
             List<SurveyalValue> svList =  surveyalValuesMap.get(surveyedLocaleId);
             Map<Long, List<SurveyalValue>> instanceMap = getSurveyalListMap(svList);
-            SurveyedLocaleDto dto = createSurveyedLocaleDto(surveyGroupId, qDao, questionTypeMap,
-                    sl, instanceMap, sDao);
+            SurveyedLocaleDto dto = createSurveyedLocaleDto(surveyGroupId, questionDao,
+                    questionTypeMap, sl, instanceMap, surveyInstanceDAO);
             dtoList.add(dto);
         }
         return dtoList;
@@ -149,7 +150,7 @@ public class SurveyedLocaleServlet extends AbstractRestApiServlet {
 
     private SurveyedLocaleDto createSurveyedLocaleDto(Long surveyGroupId, QuestionDao qDao,
             HashMap<Long, String> questionTypeMap, SurveyedLocale sl,
-            Map<Long, List<SurveyalValue>> instanceMap, SurveyInstanceDAO sDao) {
+            Map<Long, List<SurveyalValue>> instanceMap, SurveyInstanceDAO surveyInstanceDAO) {
         // put them in the dto
         SurveyedLocaleDto dto = new SurveyedLocaleDto();
         dto.setId(sl.getIdentifier());
@@ -161,7 +162,7 @@ public class SurveyedLocaleServlet extends AbstractRestApiServlet {
 
         for (Long instanceId : instanceMap.keySet()) {
             SurveyInstanceDto siDto = createSurveyInstanceDto(qDao, questionTypeMap,
-                    sDao, instanceId, instanceMap.get(instanceId));
+                    surveyInstanceDAO, instanceId, instanceMap.get(instanceId));
             dto.getSurveyInstances().add(siDto);
         }
         return dto;
@@ -186,9 +187,9 @@ public class SurveyedLocaleServlet extends AbstractRestApiServlet {
     }
 
     private Map<Long, List<SurveyalValue>> getSurveyalValues(List<SurveyedLocale> slList,
-            SurveyedLocaleDao slDao) {
+            SurveyalValueDao surveyalValueDao) {
         List<Long> surveyedLocalesIds = getSurveyedLocalesIds(slList);
-        List<SurveyalValue> values = slDao.listValuesByLocalesIdList(surveyedLocalesIds);
+        List<SurveyalValue> values = surveyalValueDao.listValuesByLocalesIdList(surveyedLocalesIds);
         Map<Long, List<SurveyalValue>> surveyalValuesMap = new HashMap<>();
         for (SurveyalValue surveyalValue : values) {
             Long surveyedLocaleId = surveyalValue.getSurveyedLocaleId();
