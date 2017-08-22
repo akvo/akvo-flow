@@ -1248,8 +1248,7 @@ public class GraphicalSurveySummaryExporter extends SurveySummaryExporter {
                                 header = questionId;
                             } else if (useQuestionId) {
                                 header = getLocalizedText(q.getText(),
-                                        q.getTranslationMap()).replaceAll("\n",
-                                        "").trim();
+                                        q.getTranslationMap()).replaceAll("\n", "").trim();
                             } else {
                                 header = q.getKeyId().toString()
                                         + "|"
@@ -1315,8 +1314,9 @@ public class GraphicalSurveySummaryExporter extends SurveySummaryExporter {
     }
 
     @SuppressWarnings("unchecked")
-    private int addCaddisflyDataHeaderColumns(QuestionDto q, Row row, int offset,
+    private int addCaddisflyDataHeaderColumns(QuestionDto q, Row row, int originalOffset,
             String questionId, final boolean useQID, String columnLocale) {
+        int offset = originalOffset;
         Map<String, CaddisflyResource> caddisflyResourceMap = null;
         StringBuilder caddisflyFirstResultColumnHeaderPrefix = new StringBuilder();
         if (useQID) {
@@ -1324,8 +1324,7 @@ public class GraphicalSurveySummaryExporter extends SurveySummaryExporter {
         } else {
             caddisflyFirstResultColumnHeaderPrefix.append(q.getKeyId());
         }
-        caddisflyFirstResultColumnHeaderPrefix.append("|").append(q.getText())
-                .append("|");
+        caddisflyFirstResultColumnHeaderPrefix.append("|").append(q.getText()).append("|");
 
         if (caddisflyResourceMap == null) {
             caddisflyResourceMap = new HashMap<String, CaddisflyResource>();
@@ -1390,8 +1389,9 @@ public class GraphicalSurveySummaryExporter extends SurveySummaryExporter {
         return offset;
     }
 
-    private int addPhotoDataColumnHeader(QuestionDto q, Row row, int offset, String questionId,
+    private int addPhotoDataColumnHeader(QuestionDto q, Row row, int originalOffset, String questionId,
             boolean useQuestionId, final boolean useQID, String columnLocale) {
+        int offset = originalOffset;
         // Always a URL column
         String header = "";
         if (useQID) {
@@ -1419,8 +1419,9 @@ public class GraphicalSurveySummaryExporter extends SurveySummaryExporter {
         return offset;
     }
 
-    private int addGeoDataColumnHeader(QuestionDto q, Row row, int offset, String questionId,
+    private int addGeoDataColumnHeader(QuestionDto q, Row row, int originalOffset, String questionId,
             boolean useQuestionId, final boolean useQID, String columnLocale) {
+        int offset = originalOffset;
         if (useQuestionId) {
             createCell(
                     row,
