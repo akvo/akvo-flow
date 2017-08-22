@@ -56,6 +56,7 @@ public class SurveyedLocaleServlet extends AbstractRestApiServlet {
     private static final long serialVersionUID = 8748650927754433019L;
     private SurveyedLocaleDao surveyedLocaleDao;
     private static final Integer SL_PAGE_SIZE = 300;
+    private static final int MAX_CONTAIN_FILTER_SIZE = 30;
 
     public SurveyedLocaleServlet() {
         setMode(JSON_MODE);
@@ -188,8 +189,7 @@ public class SurveyedLocaleServlet extends AbstractRestApiServlet {
 
     private Map<Long, List<SurveyalValue>> getSurveyalValues(List<SurveyedLocale> slList,
             SurveyalValueDao surveyalValueDao) {
-        List<Long> surveyedLocalesIds = getSurveyedLocalesIds(slList);
-        List<SurveyalValue> values = surveyalValueDao.listValuesByLocalesIdList(surveyedLocalesIds);
+        List<SurveyalValue> values = fetchSurveyalValuesByBatches(slList, surveyalValueDao);
         Map<Long, List<SurveyalValue>> surveyalValuesMap = new HashMap<>();
         for (SurveyalValue surveyalValue : values) {
             Long surveyedLocaleId = surveyalValue.getSurveyedLocaleId();
@@ -202,6 +202,27 @@ public class SurveyedLocaleServlet extends AbstractRestApiServlet {
             }
         }
         return surveyalValuesMap;
+    }
+
+    private List<SurveyalValue> fetchSurveyalValuesByBatches(List<SurveyedLocale> slList,
+            SurveyalValueDao surveyalValueDao) {
+        if (slList == null || slList.isEmpty()) {
+            return Collections.emptyList();
+        }
+
+        List<Long> surveyedLocalesIds = getSurveyedLocalesIds(slList);
+        List<SurveyalValue> surveyalValues = new ArrayList<>();
+        int start = 0;
+        int listSize = slList.size();
+        int end = Math.min(MAX_CONTAIN_FILTER_SIZE, listSize);
+        int maxRound = (int) Math.round((double)listSize / MAX_CONTAIN_FILTER_SIZE);
+        for (int i = 0; i < maxRound; i++) {
+            surveyalValues.addAll(surveyalValueDao
+                    .listValuesByLocalesIdList(surveyedLocalesIds.subList(start, end)));
+            start = Math.min(start + MAX_CONTAIN_FILTER_SIZE, listSize - 1);
+            end = Math.min(end + MAX_CONTAIN_FILTER_SIZE, listSize);
+        }
+        return surveyalValues;
     }
 
     private List<Long> getSurveyedLocalesIds(List<SurveyedLocale> slList) {
