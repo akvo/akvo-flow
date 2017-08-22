@@ -57,17 +57,12 @@ import org.waterforpeople.mapping.domain.SurveyInstance;
 import javax.jdo.PersistenceManager;
 import javax.jdo.Query;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
-import java.util.Map;
-import java.util.Set;
-import java.util.logging.Level;
 
 public class SurveyInstanceDAO extends BaseDAO<SurveyInstance> {
     private static final String DEFAULT_ORG_PROP = "defaultOrg";
-
     private final QuestionAnswerStoreDao qasDao = new QuestionAnswerStoreDao();
     private final DeviceDAO deviceDao = new DeviceDAO();
     private final QuestionDao questionDao = new QuestionDao();
@@ -738,6 +733,5 @@ public class SurveyInstanceDAO extends BaseDAO<SurveyInstance> {
 
         return null;
     }
-
 
 }

@@ -1,4 +1,4 @@
-/*  Copyright (C) 2014, 2017 Stichting Akvo (Akvo Foundation)
+/*  Copyright (C) 2014 Stichting Akvo (Akvo Foundation)
  *
  *  This file is part of Akvo FLOW.
  *
@@ -15,14 +15,15 @@
 
 package com.gallatinsystems.surveyal.dao;
 
-import com.gallatinsystems.framework.dao.BaseDAO;
-import com.gallatinsystems.framework.servlet.PersistenceFilter;
-import com.gallatinsystems.surveyal.domain.SurveyalValue;
-
-import javax.jdo.PersistenceManager;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+
+import javax.jdo.PersistenceManager;
+
+import com.gallatinsystems.framework.dao.BaseDAO;
+import com.gallatinsystems.framework.servlet.PersistenceFilter;
+import com.gallatinsystems.surveyal.domain.SurveyalValue;
 
 /**
  * Data access object for manipulating SurveyalValues
@@ -37,7 +38,7 @@ public class SurveyalValueDao extends BaseDAO<SurveyalValue> {
      * lists all surveyalValues for a certain surveyId
      *
      * @param cursor
-     * @param pageSize
+     * @param pagesize
      * @param surveyId
      * @return
      */

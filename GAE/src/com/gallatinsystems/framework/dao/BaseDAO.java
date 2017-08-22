@@ -62,7 +62,7 @@ public class BaseDAO<T extends BaseDomain> {
     protected static final String EQ_OP = " == ";
     protected static final String GTE_OP = " >= ";
     protected static final String LTE_OP = " <= ";
-    private static final int MAX_CONTAIN_FILTER_SIZE = 30;
+    private static final int MAX_ALLOWED_FILTERED_ITEMS = 30;
 
     private Class<T> concreteClass;
     protected Logger log;
@@ -733,12 +733,12 @@ public class BaseDAO<T extends BaseDomain> {
         List<T> items = new ArrayList<>();
         int start = 0;
         int listSize = idsList.size();
-        int end = Math.min(MAX_CONTAIN_FILTER_SIZE, listSize);
-        int maxRound = Math.max(1, (int) Math.round((double)listSize / MAX_CONTAIN_FILTER_SIZE));
+        int end = Math.min(MAX_ALLOWED_FILTERED_ITEMS, listSize);
+        int maxRound = Math.max(1, (int) Math.round((double)listSize / MAX_ALLOWED_FILTERED_ITEMS));
         for (int i = 0; i < maxRound; i++) {
             items.addAll(listValuesByIdsList(idsList.subList(start, end), fieldName));
-            start = Math.min(start + MAX_CONTAIN_FILTER_SIZE, listSize - 1);
-            end = Math.min(end + MAX_CONTAIN_FILTER_SIZE, listSize);
+            start = Math.min(start + MAX_ALLOWED_FILTERED_ITEMS, listSize - 1);
+            end = Math.min(end + MAX_ALLOWED_FILTERED_ITEMS, listSize);
         }
         return items;
     }

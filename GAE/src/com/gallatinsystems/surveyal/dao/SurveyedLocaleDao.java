@@ -16,21 +16,23 @@
 
 package com.gallatinsystems.surveyal.dao;
 
-import com.gallatinsystems.framework.dao.BaseDAO;
-import com.gallatinsystems.framework.servlet.PersistenceFilter;
-import com.gallatinsystems.survey.dao.SurveyUtils;
-import com.gallatinsystems.surveyal.domain.SurveyalValue;
-import com.gallatinsystems.surveyal.domain.SurveyedLocale;
-import org.waterforpeople.mapping.dao.SurveyInstanceDAO;
-import org.waterforpeople.mapping.domain.SurveyInstance;
-
-import javax.jdo.PersistenceManager;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+
+import javax.jdo.PersistenceManager;
+
+import org.waterforpeople.mapping.dao.SurveyInstanceDAO;
+import org.waterforpeople.mapping.domain.SurveyInstance;
+
+import com.gallatinsystems.framework.dao.BaseDAO;
+import com.gallatinsystems.framework.servlet.PersistenceFilter;
+import com.gallatinsystems.survey.dao.SurveyUtils;
+import com.gallatinsystems.surveyal.domain.SurveyalValue;
+import com.gallatinsystems.surveyal.domain.SurveyedLocale;
 
 /**
  * Data access object for manipulating SurveyedLocales
@@ -94,7 +96,7 @@ public class SurveyedLocaleDao extends BaseDAO<SurveyedLocale> {
      * lists all locales
      *
      * @param cursor
-     * @param pageSize
+     * @param pagesize
      * @return
      */
     @SuppressWarnings("unchecked")
@@ -215,6 +217,8 @@ public class SurveyedLocaleDao extends BaseDAO<SurveyedLocale> {
      * @param collDateFrom
      * @param collDateTo
      * @param type
+     * @param metricId
+     * @param metricValue
      * @param orderByField
      * @param orderByDir
      * @param pageSize
@@ -267,12 +271,39 @@ public class SurveyedLocaleDao extends BaseDAO<SurveyedLocale> {
     }
 
     /**
+     * returns all the SurveyalValues corresponding to the metric id/value pair passed in
+     *
+     * @param metricId
+     * @param metricValue
+     * @return
+     */
+    @SuppressWarnings("unchecked")
+    public List<SurveyalValue> listSurveyalValueByMetric(Long metricId,
+            String metricValue, Integer pageSize, String cursor) {
+        PersistenceManager pm = PersistenceFilter.getManager();
+        javax.jdo.Query query = pm.newQuery(SurveyalValue.class);
+        StringBuilder filterString = new StringBuilder();
+        StringBuilder paramString = new StringBuilder();
+        Map<String, Object> paramMap = new HashMap<String, Object>();
+
+        appendNonNullParam("metricId", filterString, paramString, "Long",
+                metricId, paramMap);
+
+        appendNonNullParam("stringValue", filterString, paramString, "String",
+                metricValue, paramMap);
+        query.setFilter(filterString.toString());
+        query.declareParameters(paramString.toString());
+        prepareCursor(cursor, pageSize, query);
+        return (List<SurveyalValue>) query.executeWithMap(paramMap);
+    }
+
+    /**
      * returns all the SurveyalValues corresponding to the surveyInstanceId and questionId passed
      * in. This uniquely identifies the surveyalValue corresponding to a single questionAnswerStore
      * object
      *
      * @param surveyInstanceId
-     * @param surveyQuestionId
+     * @param questionId
      * @return
      */
     @SuppressWarnings("unchecked")
