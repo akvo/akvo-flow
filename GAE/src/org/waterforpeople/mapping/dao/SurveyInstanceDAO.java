@@ -16,6 +16,26 @@
 
 package org.waterforpeople.mapping.dao;
 
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+import java.util.logging.Level;
+
+import javax.jdo.PersistenceManager;
+import javax.jdo.Query;
+
+import org.apache.commons.lang.StringUtils;
+import org.waterforpeople.mapping.analytics.dao.SurveyQuestionSummaryDao;
+import org.waterforpeople.mapping.analytics.domain.SurveyQuestionSummary;
+import org.waterforpeople.mapping.app.web.dto.DataProcessorRequest;
+import org.waterforpeople.mapping.app.web.dto.ImageCheckRequest;
+import org.waterforpeople.mapping.domain.QuestionAnswerStore;
+import org.waterforpeople.mapping.domain.SurveyInstance;
+
 import com.gallatinsystems.common.util.PropertyUtil;
 import com.gallatinsystems.device.dao.DeviceDAO;
 import com.gallatinsystems.device.domain.Device;
@@ -46,20 +66,6 @@ import com.google.appengine.api.datastore.Query.SortDirection;
 import com.google.appengine.api.taskqueue.Queue;
 import com.google.appengine.api.taskqueue.QueueFactory;
 import com.google.appengine.api.taskqueue.TaskOptions;
-import org.apache.commons.lang.StringUtils;
-import org.waterforpeople.mapping.analytics.dao.SurveyQuestionSummaryDao;
-import org.waterforpeople.mapping.analytics.domain.SurveyQuestionSummary;
-import org.waterforpeople.mapping.app.web.dto.DataProcessorRequest;
-import org.waterforpeople.mapping.app.web.dto.ImageCheckRequest;
-import org.waterforpeople.mapping.domain.QuestionAnswerStore;
-import org.waterforpeople.mapping.domain.SurveyInstance;
-
-import javax.jdo.PersistenceManager;
-import javax.jdo.Query;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.List;
 
 public class SurveyInstanceDAO extends BaseDAO<SurveyInstance> {
     private static final String DEFAULT_ORG_PROP = "defaultOrg";
