@@ -57,7 +57,6 @@ import org.waterforpeople.mapping.domain.SurveyInstance;
 import javax.jdo.PersistenceManager;
 import javax.jdo.Query;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -68,6 +67,7 @@ import java.util.logging.Level;
 
 public class SurveyInstanceDAO extends BaseDAO<SurveyInstance> {
     private static final String DEFAULT_ORG_PROP = "defaultOrg";
+
     private final QuestionAnswerStoreDao qasDao = new QuestionAnswerStoreDao();
     private final DeviceDAO deviceDao = new DeviceDAO();
     private final QuestionDao questionDao = new QuestionDao();
@@ -739,14 +739,5 @@ public class SurveyInstanceDAO extends BaseDAO<SurveyInstance> {
         return null;
     }
 
-    public List<SurveyInstance> listValuesByLocalesIdList(List<Long> surveyInstancesIds) {
-        if (surveyInstancesIds == null || surveyInstancesIds.isEmpty()) {
-            return Collections.emptyList();
-        }
-        PersistenceManager pm = PersistenceFilter.getManager();
-        String queryString = ":p1.contains(surveyedLocaleId)";
-        javax.jdo.Query query = pm.newQuery(SurveyInstance.class, queryString);
-        List<SurveyInstance> results = (List<SurveyInstance>) query.execute(surveyInstancesIds);
-        return results;
-    }
+
 }

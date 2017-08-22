@@ -1,4 +1,4 @@
-/*  Copyright (C) 2014 Stichting Akvo (Akvo Foundation)
+/*  Copyright (C) 2014, 2017 Stichting Akvo (Akvo Foundation)
  *
  *  This file is part of Akvo FLOW.
  *
@@ -20,7 +20,6 @@ import com.gallatinsystems.framework.servlet.PersistenceFilter;
 import com.gallatinsystems.surveyal.domain.SurveyalValue;
 
 import javax.jdo.PersistenceManager;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -68,22 +67,5 @@ public class SurveyalValueDao extends BaseDAO<SurveyalValue> {
      */
     public List<SurveyalValue> listByQuestion(Long questionId) {
         return listByProperty("surveyQuestionId", questionId, "Long");
-    }
-
-    /**
-     * lists all SurveyalValues for a single Locale
-     *
-     * @param surveyedLocaleIds
-     * @return
-     */
-    public List<SurveyalValue> listValuesByLocalesIdList(List<Long> surveyedLocaleIds) {
-        if (surveyedLocaleIds == null || surveyedLocaleIds.isEmpty()) {
-            return Collections.emptyList();
-        }
-        PersistenceManager pm = PersistenceFilter.getManager();
-        String queryString = ":p1.contains(surveyedLocaleId)";
-        javax.jdo.Query query = pm.newQuery(SurveyalValue.class, queryString);
-        List<SurveyalValue> results = (List<SurveyalValue>) query.execute(surveyedLocaleIds);
-        return results;
     }
 }
