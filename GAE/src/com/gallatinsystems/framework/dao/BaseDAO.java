@@ -734,7 +734,8 @@ public class BaseDAO<T extends BaseDomain> {
         int start = 0;
         int listSize = idsList.size();
         int end = Math.min(MAX_ALLOWED_FILTERED_ITEMS, listSize);
-        int maxRound = Math.max(1, (int) Math.round((double)listSize / MAX_ALLOWED_FILTERED_ITEMS));
+        int maxRound = Math
+                .max(1, (int) Math.round((double) listSize / MAX_ALLOWED_FILTERED_ITEMS));
         for (int i = 0; i < maxRound; i++) {
             items.addAll(listValuesByIdsList(idsList.subList(start, end), fieldName));
             start = Math.min(start + MAX_ALLOWED_FILTERED_ITEMS, listSize - 1);
