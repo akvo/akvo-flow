@@ -1817,3 +1817,12 @@ FLOW.translationControl = Ember.ArrayController.create({
     this.set('toBeDeletedTranslations', []);
   }
 });
+
+FLOW.CaddisflyResourceController = Ember.ArrayController.extend({
+    sortProperties: ['name'],
+    sortAscending: true,
+
+    populate: function() {
+        this.set('content', FLOW.store.find(FLOW.CaddisflyResource));
+    },
+});
