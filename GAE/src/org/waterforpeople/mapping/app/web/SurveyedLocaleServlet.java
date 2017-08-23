@@ -118,32 +118,27 @@ public class SurveyedLocaleServlet extends AbstractRestApiServlet {
         resp.setCode(String.valueOf(HttpServletResponse.SC_OK));
         resp.setResultCount(slList.size());
 
-        SurveyalValueDao surveyalValueDao = new SurveyalValueDao();
-        SurveyInstanceDAO surveyInstanceDAO = new SurveyInstanceDAO();
-        QuestionDao questionDao = new QuestionDao();
-
-        List<SurveyedLocaleDto> dtoList = getSurveyedLocaleDtosList(slList, surveyGroupId,
-                surveyInstanceDAO, questionDao, surveyalValueDao);
+        List<SurveyedLocaleDto> dtoList = getSurveyedLocaleDtosList(slList, surveyGroupId);
 
         resp.setSurveyedLocaleData(dtoList);
         return resp;
     }
 
     private List<SurveyedLocaleDto> getSurveyedLocaleDtosList(List<SurveyedLocale> slList,
-            Long surveyGroupId, SurveyInstanceDAO surveyInstanceDAO, QuestionDao questionDao,
-            SurveyalValueDao surveyalValueDao) {
+            Long surveyGroupId) {
         List<SurveyedLocaleDto> dtoList = new ArrayList<>();
         HashMap<Long, String> questionTypeMap = new HashMap<>();
+        QuestionDao questionDao = new QuestionDao();
+
         List<Long> surveyedLocalesIds = getSurveyedLocalesIds(slList);
-        Map<Long, List<SurveyalValue>> surveyalValuesMap = getSurveyalValues(
-                surveyalValueDao, surveyedLocalesIds);
-        Map<Long, SurveyInstance> surveyInstancesMap = getSurveyInstances(surveyInstanceDAO,
-                surveyedLocalesIds);
-        // for each surveyedLocale, get the surveyalValues and store them in a map
+        Map<Long, List<SurveyalValue>> surveyalValuesMap = getSurveyalValues(surveyedLocalesIds);
+        Map<Long, SurveyInstance> surveyInstancesMap = getSurveyInstances(surveyedLocalesIds);
+
+        // for each surveyedLocale, store the SurveyalValue in a map
         for (SurveyedLocale sl : slList) {
             long surveyedLocaleId = sl.getKey().getId();
             List<SurveyalValue> svList = surveyalValuesMap.get(surveyedLocaleId);
-            Map<Long, List<SurveyalValue>> instanceMap = getSurveyalListMap(svList);
+            Map<Long, List<SurveyalValue>> instanceMap = getSurveyalValuesMap(svList);
             SurveyedLocaleDto dto = createSurveyedLocaleDto(surveyGroupId, questionDao,
                     questionTypeMap, sl, instanceMap, surveyInstancesMap);
             dtoList.add(dto);
@@ -152,46 +147,54 @@ public class SurveyedLocaleServlet extends AbstractRestApiServlet {
     }
 
     private SurveyedLocaleDto createSurveyedLocaleDto(Long surveyGroupId, QuestionDao qDao,
-            HashMap<Long, String> questionTypeMap, SurveyedLocale sl,
-            Map<Long, List<SurveyalValue>> instanceMap,
+            HashMap<Long, String> questionTypeMap, SurveyedLocale surveyedLocale,
+            Map<Long, List<SurveyalValue>> surveyalValuesMap,
             Map<Long, SurveyInstance> surveyInstancesMap) {
-        // put them in the dto
         SurveyedLocaleDto dto = new SurveyedLocaleDto();
-        dto.setId(sl.getIdentifier());
+        dto.setId(surveyedLocale.getIdentifier());
         dto.setSurveyGroupId(surveyGroupId);
-        dto.setDisplayName(sl.getDisplayName());
-        dto.setLat(sl.getLatitude());
-        dto.setLon(sl.getLongitude());
-        dto.setLastUpdateDateTime(sl.getLastUpdateDateTime());
+        dto.setDisplayName(surveyedLocale.getDisplayName());
+        dto.setLat(surveyedLocale.getLatitude());
+        dto.setLon(surveyedLocale.getLongitude());
+        dto.setLastUpdateDateTime(surveyedLocale.getLastUpdateDateTime());
 
-        for (Long instanceId : instanceMap.keySet()) {
+        for (Long instanceId : surveyalValuesMap.keySet()) {
             SurveyInstanceDto siDto = createSurveyInstanceDto(qDao, questionTypeMap,
-                    instanceId, instanceMap.get(instanceId), surveyInstancesMap);
+                    instanceId, surveyalValuesMap.get(instanceId), surveyInstancesMap);
             dto.getSurveyInstances().add(siDto);
         }
         return dto;
     }
 
-    private Map<Long, List<SurveyalValue>> getSurveyalListMap(List<SurveyalValue> svList) {
-        Map<Long, List<SurveyalValue>> instanceMap = new HashMap<>();
-        if (svList != null && svList.size() > 0) {
-            for (SurveyalValue surveyalValue : svList) {
-                // put them in a map with the surveyInstance as key
+    /**
+     * Returns a map of SurveyalValues lists,
+     * keys: surveyInstanceId, value: list of SurveyalValues for that surveyInstance
+     */
+    private Map<Long, List<SurveyalValue>> getSurveyalValuesMap(
+            List<SurveyalValue> surveyalValueList) {
+        Map<Long, List<SurveyalValue>> surveyalValuesMap = new HashMap<>();
+        if (surveyalValueList != null && surveyalValueList.size() > 0) {
+            for (SurveyalValue surveyalValue : surveyalValueList) {
+                // put them in a map with the surveyInstanceId as key
                 Long surveyInstanceId = surveyalValue.getSurveyInstanceId();
-                if (instanceMap.containsKey(surveyInstanceId)) {
-                    instanceMap.get(surveyInstanceId).add(surveyalValue);
+                if (surveyalValuesMap.containsKey(surveyInstanceId)) {
+                    surveyalValuesMap.get(surveyInstanceId).add(surveyalValue);
                 } else {
                     ArrayList<SurveyalValue> surveyalValues = new ArrayList<>();
                     surveyalValues.add(surveyalValue);
-                    instanceMap.put(surveyInstanceId, surveyalValues);
+                    surveyalValuesMap.put(surveyInstanceId, surveyalValues);
                 }
             }
         }
-        return instanceMap;
+        return surveyalValuesMap;
     }
 
-    private Map<Long, List<SurveyalValue>> getSurveyalValues(SurveyalValueDao surveyalValueDao,
-            List<Long> surveyedLocalesIds) {
+    /**
+     * Fetches SurveyalValue using the surveyedLocalesIds and puts them in a map:
+     * key: surveyedLocaleId, value: list of surveyalValues for that surveyedLocaleId
+     */
+    private Map<Long, List<SurveyalValue>> getSurveyalValues(List<Long> surveyedLocalesIds) {
+        SurveyalValueDao surveyalValueDao = new SurveyalValueDao();
         List<SurveyalValue> values = surveyalValueDao.fetchItemsByIdBatches(surveyedLocalesIds,
                 "surveyedLocaleId");
         Map<Long, List<SurveyalValue>> surveyalValuesMap = new HashMap<>();
@@ -208,8 +211,12 @@ public class SurveyedLocaleServlet extends AbstractRestApiServlet {
         return surveyalValuesMap;
     }
 
-    private Map<Long, SurveyInstance> getSurveyInstances(SurveyInstanceDAO surveyInstanceDAO,
-            List<Long> surveyedLocalesIds) {
+    /**
+     * Fetches SurveyInstances using the surveyedLocalesIds and puts them in a map:
+     * key: SurveyInstance objectId, value: SurveyInstance
+     */
+    private Map<Long, SurveyInstance> getSurveyInstances(List<Long> surveyedLocalesIds) {
+        SurveyInstanceDAO surveyInstanceDAO = new SurveyInstanceDAO();
         List<SurveyInstance> values = surveyInstanceDAO.fetchItemsByIdBatches(surveyedLocalesIds,
                 "surveyedLocaleId");
         Map<Long, SurveyInstance> surveyInstancesMap = new HashMap<>();
