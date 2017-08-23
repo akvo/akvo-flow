@@ -41,6 +41,8 @@ import org.waterforpeople.mapping.app.web.dto.SurveyTaskRequest;
 import org.waterforpeople.mapping.app.web.rest.dto.RestStatusDto;
 import org.waterforpeople.mapping.app.web.rest.dto.SurveyPayload;
 import org.waterforpeople.mapping.dao.QuestionAnswerStoreDao;
+import org.waterforpeople.mapping.dao.SurveyInstanceDAO;
+import org.waterforpeople.mapping.domain.SurveyInstance;
 
 import com.gallatinsystems.survey.dao.SurveyDAO;
 import com.gallatinsystems.survey.dao.SurveyUtils;
@@ -56,6 +58,8 @@ public class SurveyRestService {
     private static final Logger log = Logger.getLogger(SurveyRestService.class.getName());
 
     private SurveyDAO surveyDao = new SurveyDAO();
+
+    private SurveyInstanceDAO siDao = new SurveyInstanceDAO();
 
     private SurveyInstanceSummaryDao sisDao = new SurveyInstanceSummaryDao();
 
@@ -205,6 +209,15 @@ public class SurveyRestService {
 
         // check if survey exists in the datastore
         if (survey != null) {
+            // check if there is ANY data collected for the survey
+            //todo: is a page size of 1 valid?
+            List<SurveyInstance> sil = siDao.listSurveyInstanceBySurvey(surveyId, 1);
+            if  (sil != null && !sil.isEmpty()) {
+                statusDto.setMessage(
+                        "Cannot delete form because there are already survey responses stored for it. " +
+                                     "Please delete all survey responses first. You can do this in the data tab.");
+            }
+            else 
             try {
                 TaskOptions deleteSurveyTask = TaskOptions.Builder
                         .withUrl("/app_worker/surveytask")
