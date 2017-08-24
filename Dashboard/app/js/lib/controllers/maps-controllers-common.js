@@ -19,6 +19,8 @@ FLOW.mapsController = Ember.ArrayController.create({
     currentGcLevel: null,
     allPlacemarks: null,
     selectedMarker:null,
+    selectedSI: null,
+    questionAnswers: null,
 
     populateMap: function () {
         var gcLevel, placemarks, placemarkArray=[];
@@ -284,100 +286,67 @@ FLOW.mapsController = Ember.ArrayController.create({
                 FLOW.mapsController.set('markerCoordinates', [data.lat, data.lon]);
                 FLOW.mapsController.set('detailsPaneVisible', true);
 
-                //TODO: Replace with logic that pulls point data from Flow instead of CartoDB
-                if ($.active > 0) {
-                    var refreshIntervalId = setInterval(function () {
-                        //keep checking if there are any pending ajax requests
-                        if ($.active > 0) {
-                            //keep displaying loading icon
-                        } else { //if no pending ajax requests
-                            // call function to load the clicked point details
-                            pointDataUrl = '/rest/cartodb/raw_data?dataPointId='+data.data_point_id+'&formId='+formId;
-                            $.get('/rest/cartodb/data_point?id='+data.data_point_id, function(pointData, status){
-                                self.getCartodbPointData(pointDataUrl, pointData['row']['name'], pointData['row']['identifier']);
-                            });
-                            clearInterval(refreshIntervalId);
-                        }
-                    }, 500);
-                } else {
-                    // call function to load the clicked point details
-                    pointDataUrl = '/rest/cartodb/raw_data?dataPointId='+data.data_point_id+'&formId='+formId;
-                    $.get('/rest/cartodb/data_point?id='+data.data_point_id, function(pointData, status){
-                        self.getCartodbPointData(pointDataUrl, pointData['row']['name'], pointData['row']['identifier']);
-                    });
-                }
+                //get survey instance
+                self.set( 'selectedSI', FLOW.store.find(FLOW.SurveyInstance, data.id));
+
+                //get questions answers for clicked survey instance
+                self.set('questionAnswers', FLOW.store.findQuery(FLOW.QuestionAnswer, {
+                    'surveyInstanceId' : data.id
+                }));
             });
         });
     },
 
-    getCartodbPointData: function(url, dataPointName, dataPointIdentifier){
+    loadQuestionAnswers: function(){
+        if (!this.questionAnswers.get('isLoaded')) {
+          return null;
+        }
+
         var self = this;
-
         $("#pointDetails").html("");
+        //populate survey instance basics
+        if (!Ember.none(this.selectedSI)) {
+            var date = new Date(this.selectedSI.get('collectionDate'));
 
-        $.get(url, function(pointData, status){
-            if (pointData['answers'] != null) {
-                var dataCollectionDate = pointData['answers']['created_at'];
-                var date = new Date(dataCollectionDate);
+            var pointDetailsHeader = '<ul class="placeMarkBasicInfo floats-in">'
+            +'<h3>'+self.selectedSI.get('surveyedLocaleDisplayName')+'</h3>'
+            +'<li>'
+            +'<span>'+Ember.String.loc('_data_point_id') +':</span>'
+            +'<div style="display: inline; margin: 0 0 0 5px;">'+self.selectedSI.get('surveyedLocaleIdentifier')+'</div>'
+            +'</li>'
+            +'<br><li>'
+            +'<span>'+Ember.String.loc('_collected_on') +':</span>'
+            +'<div class="placeMarkCollectionDate">'
+            +date.toISOString().slice(0,-8).replace("T", " ")
+            +'</div></li><li></li></ul>';
 
-                var pointDetailsHeader = '<ul class="placeMarkBasicInfo floats-in">'
-                +'<h3>'
-                +((dataPointName != "" && dataPointName != "null" && dataPointName != null) ? dataPointName : "")
-                +'</h3>'
-                +'<li>'
-                +'<span>'+Ember.String.loc('_data_point_id') +':</span>'
-                +'<div style="display: inline; margin: 0 0 0 5px;">'+dataPointIdentifier+'</div>'
-                +'</li>'
-                +'<br><li>'
-                +'<span>'+Ember.String.loc('_collected_on') +':</span>'
-                +'<div class="placeMarkCollectionDate">'
-                +date.toISOString().slice(0,-8).replace("T", " ")
-                +'</div></li><li></li></ul>';
+            $("#pointDetails").append(pointDetailsHeader);
+        }
 
-                $("#pointDetails").append(pointDetailsHeader);
+        //loading question answers
+        this.questionAnswers.forEach(function (answer) {
+            var clickedPointContent = "";
+            self.geoshapeCoordinates = null;
 
-                var clickedPointContent = "";
-                //create a questions array with the correct order of questions as in the survey
-                if (self.questions.length > 0) {
-                    self.geoshapeCoordinates = null;
-
-                    //sort question groups by their order
-                    self.questions.sort(function(a, b) {
-                        return parseFloat(a.order) - parseFloat(b.order);
-                    });
-
-                    clickedPointContent += '<div class="mapInfoDetail" style="opacity: 1; display: inherit;">';
-
-                    for (var qg=0; qg<self.questions.length; qg++) {
-                        for (var i=0; i<self.questions[qg]['questions'].length; i++) {
-                            for (column in pointData['answers']) {
-                                var questionAnswer = pointData['answers'][column];
-                                if (column.match(self.questions[qg]['questions'][i].keyId)) {
-                                    clickedPointContent += '<h4>'+self.questions[qg]['questions'][i].text+'&nbsp;</h4>'
-                                    +'<div style="float: left; width: 100%">';
-
-                                    if (questionAnswer) {
-                                        clickedPointContent += self.loadQuestionAnswer(self.questions[qg]['questions'][i].questionType, questionAnswer);
-                                    }
-                                    clickedPointContent += "&nbsp;</div><hr>";
-                                }
-                            }
-                        }
-                    }
-                    clickedPointContent += '</div>';
-                    $('#pointDetails').append(clickedPointContent);
-                    $('hr').show();
-
-                    //if there's geoshape, draw it
-                    $('.geoshape-map').each(function(index){
-                        FLOW.drawGeoShape($('.geoshape-map')[index], $(this).data('geoshape-object'));
-                    });
+            clickedPointContent += '<div class="mapInfoDetail" style="opacity: 1; display: inherit;">';
+            self.questions.forEach(function (qItem) {
+                if (answer.get('questionID') == qItem.get('keyId')) {
+                    clickedPointContent += '<h4>'+qItem.get('text')+'&nbsp;</h4>'
+                    +'<div style="float: left; width: 100%">';
+                    clickedPointContent += self.loadQuestionAnswer(qItem.get('type'), answer.get('value'));
+                    clickedPointContent += "&nbsp;</div><hr>";
                 }
-            } else {
-                $('#pointDetails').html('<p class="noDetails">'+Ember.String.loc('_no_details') +'</p>');
-            }
+            });
+            clickedPointContent += '</div>';
+            $('#pointDetails').append(clickedPointContent);
+            $('hr').show();
+
+            //if there's geoshape, draw it
+            $('.geoshape-map').each(function(index){
+                FLOW.drawGeoShape($('.geoshape-map')[index], $(this).data('geoshape-object'));
+            });
         });
-    },
+    }.observes('this.questionAnswers.isLoaded'),
 
     loadQuestionAnswer: function(questionType, questionAnswer){
         var clickedPointContent = "", self = this;
