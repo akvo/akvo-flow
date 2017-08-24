@@ -33,14 +33,19 @@
 <div class="floats-in ">
   <section id="main" class="cascadeSection middleSection floats-in" role="main">
         	{{#if view.oneSelected}}
-            <section id="" class="cascadeDetailsPanel">
+            <section id="" class="cascadeDetailsPanel floats-in">
                 <h2>{{FLOW.selectedControl.selectedCascadeResource.name}}</h2>
                 <ul class="cascadeAction">
                   <li><a {{action "publishResource" target="this"}} class="saveNewSurvey">{{t _publish}}</a></li>
                   <li><a {{action confirm FLOW.dialogControl.delCR target="FLOW.dialogControl"}} class="deleteSurvey">{{t _delete}}</a></li>
-                  <li class="offSet"><a {{action "showImportCascade" target="this"}} class="importBtn">{{t _import_cascade_data}}</a></li>
-                </ul>
-                </section>
+                  <li class="offSet"><a {{action "showImportCascade" target="this"}} class="importBtn">{{t _import_cascade_data}}</a></li>                    
+                  <li class="cascadeInfo">{{t _cascading_levels}}<span class="cascadesN">{{FLOW.selectedControl.selectedCascadeResource.numLevels}}</span>
+                    </li>
+                   <li class="cascadeInfo">{{t _status}}
+                    <span {{bindAttr class=":cascadeStatus FLOW.cascadeResourceControl.isPublished:published:unpublished"}}>{{FLOW.cascadeResourceControl.currentStatus}}</span>
+                    </li>
+                </ul>                
+             </section>
                 <section {{bindAttr class="view.showImportDialog:display:hidden  :importBlock"}}>
 					<div>
 						<h4>{{t _import_cascade_file}}</h4>
@@ -76,13 +81,7 @@
 					</div>
 				</section>
                 <section id="" {{bindAttr class="view.showImportDialog:hidden:display  :cascadeDetailsPanel"}}>
-                <ul class="cascadeInfo">
-                    <li>{{t _cascading_levels}}<span class="cascadesN">{{FLOW.selectedControl.selectedCascadeResource.numLevels}}</span>
-                    </li>
-                    <li>{{t _status}}
-                    <span {{bindAttr class=":cascadeStatus FLOW.cascadeResourceControl.isPublished:published:unpublished"}}>{{FLOW.cascadeResourceControl.currentStatus}}</span>
-                    </li>
-                </ul>
+
             </section>
             <section {{bindAttr class="view.showImportDialog:hidden:display  :cascadeItems"}}>
                 <nav class="cascadeBreadCrumb">
