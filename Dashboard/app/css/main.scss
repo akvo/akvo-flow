@@ -5666,8 +5666,12 @@ nav.cascadeBreadCrumb {
 
             a {
                 display: block;
-                width: 100%;
+                width: 80%;
                 padding: 15px 0;
+
+                &:first-of-type {
+                    color: rgba(32, 32, 36, 0.7);
+                }
 
                 @include noWrapTxt;
 
