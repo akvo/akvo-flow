@@ -39,6 +39,16 @@ FLOW.CaddisflyResource = FLOW.BaseModel.extend({
   displayName: null,
 });
 
+FLOW.CaddisflyTestDefinition = Ember.Object.extend({
+    name: null,
+    brand: null,
+    uuid: null,
+
+    displayName: function() {
+        return this.get('name') + " (" + this.get('brand') +")";
+    }.property(''),
+});
+
 FLOW.CascadeResource = FLOW.BaseModel.extend({
 	name: DS.attr('string', {
 	   defaultValue: ''
