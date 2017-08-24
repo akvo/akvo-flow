@@ -1825,4 +1825,26 @@ FLOW.CaddisflyResourceController = Ember.ArrayController.extend({
     populate: function() {
         this.set('content', FLOW.store.find(FLOW.CaddisflyResource));
     },
+
+    load: function () {
+        var caddisflyTestsFileContent = retrieveCaddisflyTestsFile();
+        this.set('content', parseCaddisflyTestsFile(caddisflyTestsFileContent));
+    },
+
+    retrieveCaddisflyTestsFile: function () {
+    },
+
+    parseCaddisflyTestsFile: function (caddisflyTestsFileContent) {
+        var caddisflyJson = JSON.parse(caddisflyTestsFileContent);
+        var caddisflyTests = Ember.A();
+        caddisflyJson.tests.forEach(function (test) {
+            caddisflyTests.push(FLOW.CaddisflyTestDefinition.create({
+                "name": test.name,
+                "brand": test.brand,
+                "uuid": test.uuid,
+            }));
+        });
+
+        return caddisflyTests;
+    },
 });
