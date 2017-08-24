@@ -13,7 +13,7 @@ FLOW.mapsController = Ember.ArrayController.create({
     markerCoordinates: null,
     cartodbLayer: null,
     layerExistsCheck: false,
-    questions: [],
+    questions: null,
     detailsPaneVisible: null,
     geocellCache: [],
     currentGcLevel: null,
@@ -170,12 +170,12 @@ FLOW.mapsController = Ember.ArrayController.create({
         namedMapObject['interactivity'] = ['lat','lon','data_point_id'];
         namedMapObject['query'] = 'SELECT * FROM raw_data_'+formId;
 
-        for (var i=0; i<self.questions.length; i++) {
-            for (var qg=0; qg<self.questions[i]['questions'].length; qg++) {
-                namedMapObject['interactivity'].push("q"+self.questions[i]['questions'][qg]['keyId']);
-            }
+        if (!Ember.none(this.questions)) {
+            this.questions.forEach(function (qItem) {
+                namedMapObject['interactivity'].push("q"+qItem.get('keyId'));
+            });
+            this.namedMapCheck(namedMapObject, formId);
         }
-        this.namedMapCheck(namedMapObject, formId);
     },
 
     /*Check if a named map exists. If one exists, call function to overlay it
@@ -467,32 +467,9 @@ FLOW.mapsController = Ember.ArrayController.create({
     },
 
     loadQuestions: function(formId){
-        var self = this;
-        var qGroups = FLOW.store.filter(FLOW.QuestionGroup, function (qgItem) {
-            return qgItem.get('surveyId') == formId;
-        });
-        qGroups.forEach(function (qgItem) {
-            var questionGroup = {};
-            questionGroup['id'] = qgItem.get('keyId');
-            questionGroup['order'] = qgItem.get('order');
-            questionGroup['questions'] = [];
-
-            var qs = FLOW.store.filter(FLOW.Question, function (qItem) {
-                return qItem.get('questionGroupId') == qgItem.get('keyId');
-            });
-            qs.forEach(function (qItem) {
-                var question = {};
-                question['keyId'] = qItem.get('keyId');
-                question['order'] = qItem.get('order');
-                question['questionType'] = qItem.get('type');
-                question['text'] = qItem.get('text');
-                questionGroup['questions'].push(question);
-            });
-            questionGroup['questions'].sort(function(a, b) {
-                return parseFloat(a.order) - parseFloat(b.order);
-            });
-            self.questions.push(questionGroup);
-        });
+        this.set('questions', FLOW.store.findQuery(FLOW.Question, {
+            'surveyId' : formId
+        }));
     },
 
     /*function is required to manage how the cursor appears on the cartodb map canvas*/
