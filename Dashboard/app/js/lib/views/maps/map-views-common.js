@@ -122,11 +122,6 @@ FLOW.NavMapsView = FLOW.View.extend({
         }
     });
 
-    var filterContent = '<div id="survey_hierarchy" style="float: left"></div>&nbsp;';
-
-    $('#dropdown-holder').prepend(filterContent);
-    $('#dropdown-holder').append('<div style="clear: both"></div>');
-
     this.map = L.map('flowMap', {scrollWheelZoom: true}).setView([26.11598592533351, 1.9335937499999998], 2);
 
     var bounds = new L.LatLngBounds(this.map.getBounds().getSouthWest(), this.map.getBounds().getNorthEast());
