@@ -67,11 +67,23 @@
     {{#if view.amOptionType}}
       <h1 class="answerNbr">{{t _settings}}: </h1>
       <label class="labelcheckbox"> {{view Ember.Checkbox checkedBinding="view.allowMultipleFlag"}}{{t _allow_multiple}} </label>
-      <label class="labelcheckbox"> {{view Ember.Checkbox checkedBinding="view.allowOtherFlag"}}{{t _allow_other}} </label>
+      <label class="labelcheckbox otherAllowing"> {{view Ember.Checkbox checkedBinding="view.allowOtherFlag" id="otherOption" }}{{t _allow_other}} </label>
+      <script type="text/javascript">
+        $(document).ready(function(){
+            $('.otherAllowing input[type="checkbox"]').click(function(){
+                var inputValue = $(this).attr("id");
+                $("." + inputValue).toggle();
+            });
+        });
+      </script>
       <br>
       <p class="optionTitle"><strong>{{t _options}}:&nbsp;</strong></p>
       <div class="optionListView">
     	  {{view FLOW.OptionListView contentBinding="FLOW.questionOptionsControl"}}
+        <li class="otherOption">
+          <input placeholder="Code" type="text" size="5">
+          <input placeholder="Other" type="text" size="15" value="Other">
+        </li>
     	  <a {{action addOption target="FLOW.questionOptionsControl"}} class="optionAdd">{{t _add_option}}</a>
       </div>
     {{/if}}

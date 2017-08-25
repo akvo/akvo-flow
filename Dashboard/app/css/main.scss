@@ -1147,6 +1147,11 @@ p.optionTitle strong {
         a {
             margin-left: 1em;
         }
+
+        &.otherOption {
+            display: none;
+            list-style-type: none;
+        }
     }
 
     .optionAdd {
