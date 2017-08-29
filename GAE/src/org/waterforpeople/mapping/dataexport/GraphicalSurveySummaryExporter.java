@@ -72,7 +72,6 @@ import org.waterforpeople.mapping.app.web.dto.SurveyRestRequest;
 import org.waterforpeople.mapping.dataexport.service.BulkDataServiceClient;
 import org.waterforpeople.mapping.domain.CaddisflyResource;
 import org.waterforpeople.mapping.domain.CaddisflyResult;
-import org.waterforpeople.mapping.domain.QuestionAnswerStore;
 import org.waterforpeople.mapping.domain.response.value.Media;
 import org.waterforpeople.mapping.serialization.response.MediaResponse;
 
@@ -322,7 +321,7 @@ public class GraphicalSurveySummaryExporter extends SurveySummaryExporter {
     private CaddisflyResourceDao caddisflyResourceDao = new CaddisflyResourceDao();
 
     // for caddisfly-specific metadata
-    private Map<Long, Integer> numResultsMap = new HashMap<>();
+    //TODO private Map<Long, Integer> numResultsMap = new HashMap<>();
     private Map<Long, Boolean> hasImageMap = new HashMap<>();
     private Map<Long, List<Integer>> resultIdMap = new HashMap<>();
 
@@ -765,7 +764,8 @@ public class GraphicalSurveySummaryExporter extends SurveySummaryExporter {
 
             case CADDISFLY:
                 qId = questionDto.getKeyId();
-                cells.addAll(caddisflyCellValues(qId, value, hasImageMap.get(qId), imagePrefix));
+                boolean hasMap = hasImageMap.get(qId) != null && hasImageMap.get(qId);
+                cells.addAll(caddisflyCellValues(qId, value, hasMap, imagePrefix));
                 break;
 
             default:
@@ -842,7 +842,7 @@ public class GraphicalSurveySummaryExporter extends SurveySummaryExporter {
      * Validates the map containing values from the parsed caddisfly response string
      */
     @SuppressWarnings("unchecked")
-    private static Boolean validateCaddisflyValue(Map<String, Object> caddisflyResponseMap,
+    private static boolean validateCaddisflyValue(Map<String, Object> caddisflyResponseMap,
             boolean hasImage) {
         // check presence of uuid and result
         if (caddisflyResponseMap.get(CADDISFLY_UUID) == null
@@ -871,7 +871,7 @@ public class GraphicalSurveySummaryExporter extends SurveySummaryExporter {
      * Creates the cells containing responses to caddisfly questions
      */
     @SuppressWarnings("unchecked")
-    private List<String> caddisflyCellValues(Long questionId, String value, Boolean hasImage,
+    private List<String> caddisflyCellValues(Long questionId, String value, boolean hasImage,
             String imagePrefix) {
 
         List<String> caddisflyCellValues = new ArrayList<>();
@@ -892,23 +892,25 @@ public class GraphicalSurveySummaryExporter extends SurveySummaryExporter {
             return caddisflyCellValues;
         }
 
-        List<Map<String, Object>> caddisflyTestResultsList = (List<Map<String, Object>>) caddisflyResponseMap
-                .get(CADDISFLY_RESULT);
+        List<Map<String, Object>> caddisflyTestResultsList = 
+                (List<Map<String, Object>>) caddisflyResponseMap.get(CADDISFLY_RESULT);
 
         Map<Integer, Map<String, Object>> caddisflyTestResultsMap = mapCaddisflyResultsById(caddisflyTestResultsList);
 
         // get valid result ids for this question. The ids are already
         // in order.
-        for (Integer resultId : resultIds) {
-            Map<String, Object> caddisflyTestResult = caddisflyTestResultsMap.get(resultId);
-            if (caddisflyTestResult != null) {
-                String testValue = "" + caddisflyTestResult.get(CADDISFLY_RESULT_VALUE);
-                caddisflyCellValues.add(testValue);
-            } else {
-                caddisflyCellValues.add("");
+        if (resultIds != null) {
+            for (Integer resultId : resultIds) {
+                Map<String, Object> caddisflyTestResult = caddisflyTestResultsMap.get(resultId);
+                if (caddisflyTestResult != null) {
+                    String testValue = "" + caddisflyTestResult.get(CADDISFLY_RESULT_VALUE);
+                    caddisflyCellValues.add(testValue);
+                } else {
+                    caddisflyCellValues.add("");
+                }
             }
         }
-
+        
         // add image URL if available
         if (hasImage) {
             final String imageName = (String) caddisflyResponseMap.get(CADDISFLY_IMAGE);
@@ -1180,7 +1182,6 @@ public class GraphicalSurveySummaryExporter extends SurveySummaryExporter {
      *         representing all the non-summarizable question Ids (i.e. those that aren't OPTION or
      *         NUMBER questions)
      */
-    @SuppressWarnings("unchecked")
     protected Object[] createRawDataHeader(Workbook wb, Sheet sheet,
             Map<QuestionGroupDto, List<QuestionDto>> questionMap,
             boolean useQuestionId) {
@@ -1206,7 +1207,6 @@ public class GraphicalSurveySummaryExporter extends SurveySummaryExporter {
 
         List<String> questionIdList = new ArrayList<String>();
         List<String> nonSummarizableList = new ArrayList<String>();
-        Map<String, CaddisflyResource> caddisflyResourceMap = null;
 
         if (questionMap != null) {
             int offset = ++columnIdx;
@@ -1223,58 +1223,11 @@ public class GraphicalSurveySummaryExporter extends SurveySummaryExporter {
                         columnIndexMap.put(q.getKeyId().toString(), offset);
 
                         if (QuestionType.GEO == q.getType()) {
-                            if (useQuestionId) {
-                                createCell(
-                                        row,
-                                        offset++,
-                                        (useQID ? questionId + "_"
-                                                : getLocalizedText(q.getText(),
-                                                        q.getTranslationMap())
-                                                        + " - ")
-                                                + LAT_LABEL.get(columnLocale),
-                                        headerStyle);
-                            } else {
-                                createCell(row, offset++, q.getKeyId() + "|"
-                                        + LAT_LABEL.get(columnLocale),
-                                        headerStyle);
-                            }
-                            createCell(row, offset++, (useQID ? questionId
-                                    + "_" : "--GEOLON--|")
-                                    + LON_LABEL.get(columnLocale), headerStyle);
-                            createCell(row, offset++, (useQID ? questionId
-                                    + "_" : "--GEOELE--|")
-                                    + ELEV_LABEL.get(columnLocale), headerStyle);
-                            String codeLabel = CODE_LABEL.get(columnLocale);
-                            createCell(row, offset++, useQID ? questionId + "_"
-                                    + codeLabel.replaceAll("\\s", "")
-                                    : "--GEOCODE--|" + codeLabel, headerStyle);
+                            offset = addGeoDataColumnHeader(q, row, offset, questionId, useQuestionId,
+                                    useQID, columnLocale);
                         } else if (QuestionType.PHOTO == q.getType()) {
-                            // Always a URL column
-                            String header = "";
-                            if (useQID) {
-                                header = questionId;
-                            } else if (useQuestionId) {
-                                header = getLocalizedText(q.getText(),
-                                        q.getTranslationMap()).replaceAll("\n",
-                                        "").trim();
-                            } else {
-                                header = q.getKeyId().toString()
-                                        + "|"
-                                        + getLocalizedText(q.getText(),
-                                                q.getTranslationMap())
-                                                .replaceAll("\n", "").trim();
-                            }
-                            createCell(row, offset++, header, headerStyle);
-                            if (useQuestionId) {
-                                // Media gets 3 extra columns: Latitude, Longitude and Accuracy
-                                String prefix = "--PHOTO--|";
-                                createCell(row, offset++,
-                                        prefix + LAT_LABEL.get(columnLocale), headerStyle);
-                                createCell(row, offset++,
-                                        prefix + LON_LABEL.get(columnLocale), headerStyle);
-                                createCell(row, offset++,
-                                        prefix + ACC_LABEL.get(columnLocale), headerStyle);
-                            }
+                            offset = addPhotoDataColumnHeader(q, row, offset, questionId,
+                                    useQuestionId, useQID, columnLocale);
                         } else if (QuestionType.CASCADE == q.getType()
                                 && q.getLevelNames() != null && useQuestionId) {
                             // if no cascade assigned, column is not shown
@@ -1287,77 +1240,15 @@ public class GraphicalSurveySummaryExporter extends SurveySummaryExporter {
                                 createCell(row, offset++, levelName, headerStyle);
                             }
                         } else if (QuestionType.CADDISFLY == q.getType()) {
-                            StringBuilder caddisflyFirstResultColumnHeaderPrefix = new StringBuilder();
-                            if (useQID) {
-                                caddisflyFirstResultColumnHeaderPrefix.append(questionId);
-                            } else {
-                                caddisflyFirstResultColumnHeaderPrefix.append(q.getKeyId());
-                            }
-                            caddisflyFirstResultColumnHeaderPrefix.append("|").append(q.getText())
-                                    .append("|");
-
-                            if (caddisflyResourceMap == null) {
-                                caddisflyResourceMap = new HashMap<String, CaddisflyResource>();
-                                for (CaddisflyResource r : caddisflyResourceDao.listResources()) {
-                                    caddisflyResourceMap.put(r.getUuid().trim(), r);
-                                }
-                            }
-                            CaddisflyResource cr = caddisflyResourceMap.get(q
-                                    .getCaddisflyResourceUuid().trim());
-                            // get expected results for this test, if it exists
-                            if (cr != null) {
-                                List<CaddisflyResult> crResults = cr.getResults();
-                                // sort results on id value
-                                Collections.sort(crResults);
-
-                                List<Integer> resultIds = new ArrayList<Integer>();
-
-                                // create column headers
-                                for (int i = 0; i < crResults.size(); i++) {
-                                    // put result ids in map, so we can use if
-                                    // for validation later
-                                    CaddisflyResult result = crResults.get(i);
-                                    resultIds.add(result.getId());
-
-                                    StringBuilder columnHeaderSuffix = new StringBuilder(
-                                            result.getName());
-                                    if (result.getUnit() != null && !result.getUnit().isEmpty()) {
-                                        columnHeaderSuffix.append("(").append(result.getUnit())
-                                                .append(")");
-                                    }
-
-                                    String columnHeader;
-                                    if (i == 0) {
-                                        columnHeader = caddisflyFirstResultColumnHeaderPrefix
-                                                .toString() + columnHeaderSuffix;
-                                    } else {
-                                        columnHeader = "--CADDISFLY--|" + columnHeaderSuffix;
-                                    }
-                                    createCell(row, offset++, columnHeader, headerStyle);
-                                }
-
-                                if (cr.getHasImage()) {
-                                    createCell(
-                                            row,
-                                            offset++,
-                                            "--CADDISFLY--|" + q.getText()
-                                                    + "--"
-                                                    + IMAGE_LABEL.get(columnLocale),
-                                            headerStyle);
-                                }
-
-                                // store hasImage in hashmap
-                                resultIdMap.put(q.getKeyId(), resultIds);
-                                hasImageMap.put(q.getKeyId(), cr.getHasImage());
-                            }
+                            offset = addCaddisflyDataHeaderColumns(q, row, offset, questionId,
+                                    useQID, columnLocale);
                         } else { // All other types
                             String header = "";
                             if (useQID) {
                                 header = questionId;
                             } else if (useQuestionId) {
                                 header = getLocalizedText(q.getText(),
-                                        q.getTranslationMap()).replaceAll("\n",
-                                        "").trim();
+                                        q.getTranslationMap()).replaceAll("\n", "").trim();
                             } else {
                                 header = q.getKeyId().toString()
                                         + "|"
@@ -1369,6 +1260,7 @@ public class GraphicalSurveySummaryExporter extends SurveySummaryExporter {
                             createCell(row, offset++, header, headerStyle);
 
                             // check if we need to create columns for all options
+                            //TODO cascade
                             if (QuestionType.OPTION == q.getType() && useQuestionId) {
 
                                 // get options for question and create columns
@@ -1419,6 +1311,143 @@ public class GraphicalSurveySummaryExporter extends SurveySummaryExporter {
         temp[0] = questionIdList;
         temp[1] = nonSummarizableList;
         return temp;
+    }
+
+    @SuppressWarnings("unchecked")
+    private int addCaddisflyDataHeaderColumns(QuestionDto q, Row row, int originalOffset,
+            String questionId, final boolean useQID, String columnLocale) {
+        int offset = originalOffset;
+        Map<String, CaddisflyResource> caddisflyResourceMap = null;
+        StringBuilder caddisflyFirstResultColumnHeaderPrefix = new StringBuilder();
+        if (useQID) {
+            caddisflyFirstResultColumnHeaderPrefix.append(questionId);
+        } else {
+            caddisflyFirstResultColumnHeaderPrefix.append(q.getKeyId());
+        }
+        caddisflyFirstResultColumnHeaderPrefix.append("|").append(q.getText()).append("|");
+
+        if (caddisflyResourceMap == null) {
+            caddisflyResourceMap = new HashMap<String, CaddisflyResource>();
+            for (CaddisflyResource r : caddisflyResourceDao.listResources()) {
+                caddisflyResourceMap.put(r.getUuid().trim(), r);
+            }
+        }
+        
+        CaddisflyResource cr = null;
+        String resId = q.getCaddisflyResourceUuid();
+        if (resId != null) {
+            cr =  caddisflyResourceMap.get(resId.trim());
+        }
+        // get expected results for this test, if it exists
+        if (cr != null) {
+            List<CaddisflyResult> crResults = cr.getResults();
+            // sort results on id value
+            Collections.sort(crResults);
+
+            List<Integer> resultIds = new ArrayList<Integer>();
+
+            // create column headers
+            for (int i = 0; i < crResults.size(); i++) {
+                // put result ids in map, so we can use it
+                // for validation later
+                CaddisflyResult result = crResults.get(i);
+                resultIds.add(result.getId());
+
+                StringBuilder columnHeaderSuffix = new StringBuilder(
+                        result.getName());
+                if (result.getUnit() != null && !result.getUnit().isEmpty()) {
+                    columnHeaderSuffix
+                        .append("(")
+                        .append(result.getUnit())
+                        .append(")");
+                }
+
+                String columnHeader;
+                if (i == 0) {
+                    columnHeader = caddisflyFirstResultColumnHeaderPrefix
+                            .toString() + columnHeaderSuffix;
+                } else {
+                    columnHeader = "--CADDISFLY--|" + columnHeaderSuffix;
+                }
+                createCell(row, offset++, columnHeader, headerStyle);
+            }
+
+            if (cr.getHasImage()) {
+                createCell(
+                        row,
+                        offset++,
+                        "--CADDISFLY--|" + q.getText()
+                                + "--"
+                                + IMAGE_LABEL.get(columnLocale),
+                        headerStyle);
+            }
+
+            // store hasImage in hashmap
+            resultIdMap.put(q.getKeyId(), resultIds);
+            hasImageMap.put(q.getKeyId(), cr.getHasImage());
+        }
+        return offset;
+    }
+
+    private int addPhotoDataColumnHeader(QuestionDto q, Row row, int originalOffset, String questionId,
+            boolean useQuestionId, final boolean useQID, String columnLocale) {
+        int offset = originalOffset;
+        // Always a URL column
+        String header = "";
+        if (useQID) {
+            header = questionId;
+        } else if (useQuestionId) {
+            header = getLocalizedText(q.getText(),
+                    q.getTranslationMap()).replaceAll("\n", "").trim();
+        } else {
+            header = q.getKeyId().toString()
+                    + "|"
+                    + getLocalizedText(q.getText(),
+                            q.getTranslationMap()).replaceAll("\n", "").trim();
+        }
+        createCell(row, offset++, header, headerStyle);
+        if (useQuestionId) {
+            // Media gets 3 extra columns: Latitude, Longitude and Accuracy
+            String prefix = "--PHOTO--|";
+            createCell(row, offset++,
+                    prefix + LAT_LABEL.get(columnLocale), headerStyle);
+            createCell(row, offset++,
+                    prefix + LON_LABEL.get(columnLocale), headerStyle);
+            createCell(row, offset++,
+                    prefix + ACC_LABEL.get(columnLocale), headerStyle);
+        }
+        return offset;
+    }
+
+    private int addGeoDataColumnHeader(QuestionDto q, Row row, int originalOffset, String questionId,
+            boolean useQuestionId, final boolean useQID, String columnLocale) {
+        int offset = originalOffset;
+        if (useQuestionId) {
+            createCell(
+                    row,
+                    offset++,
+                    (useQID ? questionId + "_"
+                            : getLocalizedText(q.getText(),
+                                    q.getTranslationMap())
+                                    + " - ")
+                            + LAT_LABEL.get(columnLocale),
+                    headerStyle);
+        } else {
+            createCell(row, offset++, q.getKeyId() + "|"
+                    + LAT_LABEL.get(columnLocale),
+                    headerStyle);
+        }
+        createCell(row, offset++, (useQID ? questionId
+                + "_" : "--GEOLON--|")
+                + LON_LABEL.get(columnLocale), headerStyle);
+        createCell(row, offset++, (useQID ? questionId
+                + "_" : "--GEOELE--|")
+                + ELEV_LABEL.get(columnLocale), headerStyle);
+        String codeLabel = CODE_LABEL.get(columnLocale);
+        createCell(row, offset++, useQID ? questionId + "_"
+                + codeLabel.replaceAll("\\s", "")
+                : "--GEOCODE--|" + codeLabel, headerStyle);
+        return offset;
     }
 
     /*
