@@ -16,27 +16,6 @@
 
 package com.gallatinsystems.framework.dao;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-import java.util.logging.Logger;
-
-import javax.jdo.JDOObjectNotFoundException;
-import javax.jdo.PersistenceManager;
-
-import net.sf.jsr107cache.CacheException;
-
-import org.akvo.flow.domain.SecuredObject;
-import org.datanucleus.store.appengine.query.JDOCursorHelper;
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.context.SecurityContextHolder;
-
 import com.gallatinsystems.common.Constants;
 import com.gallatinsystems.framework.domain.BaseDomain;
 import com.gallatinsystems.framework.servlet.PersistenceFilter;
@@ -49,6 +28,24 @@ import com.gallatinsystems.user.domain.UserAuthorization;
 import com.google.appengine.api.datastore.Cursor;
 import com.google.appengine.api.datastore.Key;
 import com.google.appengine.api.datastore.KeyFactory;
+import net.sf.jsr107cache.CacheException;
+import org.akvo.flow.domain.SecuredObject;
+import org.datanucleus.store.appengine.query.JDOCursorHelper;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
+
+import javax.jdo.JDOObjectNotFoundException;
+import javax.jdo.PersistenceManager;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+import java.util.logging.Logger;
 
 /**
  * This is a reusable data access object that supports basic operations (save, find by property,
@@ -65,6 +62,8 @@ public class BaseDAO<T extends BaseDomain> {
     protected static final String EQ_OP = " == ";
     protected static final String GTE_OP = " >= ";
     protected static final String LTE_OP = " <= ";
+    private static final int MAX_ALLOWED_FILTERED_ITEMS = 30;
+
     private Class<T> concreteClass;
     protected Logger log;
 
@@ -725,5 +724,34 @@ public class BaseDAO<T extends BaseDomain> {
             throw new CacheException("Trying to get cache key from an unsaved object");
         }
         return concreteClass.getSimpleName() + "-" + objectId;
+    }
+
+    public List<T> fetchItemsByIdBatches(List<Long> idsList, String fieldName) {
+        if (idsList == null || idsList.isEmpty()) {
+            return Collections.emptyList();
+        }
+        List<T> items = new ArrayList<>();
+        int start = 0;
+        int listSize = idsList.size();
+        int end = Math.min(MAX_ALLOWED_FILTERED_ITEMS, listSize);
+        int maxRound = Math
+                .max(1, (int) Math.round((double) listSize / MAX_ALLOWED_FILTERED_ITEMS));
+        for (int i = 0; i < maxRound; i++) {
+            items.addAll(listValuesByIdsList(idsList.subList(start, end), fieldName));
+            start = Math.min(start + MAX_ALLOWED_FILTERED_ITEMS, listSize - 1);
+            end = Math.min(end + MAX_ALLOWED_FILTERED_ITEMS, listSize);
+        }
+        return items;
+    }
+
+    private List<T> listValuesByIdsList(List<Long> idsList, final String fieldName) {
+        if (idsList == null || idsList.isEmpty()) {
+            return Collections.emptyList();
+        }
+        PersistenceManager pm = PersistenceFilter.getManager();
+        String queryString = ":p1.contains(" + fieldName + ")";
+        javax.jdo.Query query = pm.newQuery(concreteClass, queryString);
+        List<T> results = (List<T>) query.execute(idsList);
+        return results;
     }
 }
