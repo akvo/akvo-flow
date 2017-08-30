@@ -169,15 +169,10 @@ FLOW.mapsController = Ember.ArrayController.create({
         var namedMapObject = {};
         namedMapObject['mapName'] = 'raw_data_'+formId;
         namedMapObject['tableName'] = 'raw_data_'+formId;
-        namedMapObject['interactivity'] = ['lat','lon','data_point_id'];
+        namedMapObject['interactivity'] = ['lat','lon','id'];
         namedMapObject['query'] = 'SELECT * FROM raw_data_'+formId;
 
-        if (!Ember.none(this.questions)) {
-            this.questions.forEach(function (qItem) {
-                namedMapObject['interactivity'].push("q"+qItem.get('keyId'));
-            });
-            this.namedMapCheck(namedMapObject, formId);
-        }
+        this.namedMapCheck(namedMapObject, formId);
     },
 
     /*Check if a named map exists. If one exists, call function to overlay it
