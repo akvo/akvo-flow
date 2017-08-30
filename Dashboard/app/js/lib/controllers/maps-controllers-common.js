@@ -274,10 +274,6 @@ FLOW.mapsController = Ember.ArrayController.create({
             dataLayer.setInteraction(true);
 
             dataLayer.on('featureClick', function(e, latlng, pos, data) {
-                if (self.marker) {
-                    self.map.removeLayer(self.marker);
-                }
-
                 FLOW.mapsController.set('markerCoordinates', [data.lat, data.lon]);
                 FLOW.mapsController.set('detailsPaneVisible', true);
 
