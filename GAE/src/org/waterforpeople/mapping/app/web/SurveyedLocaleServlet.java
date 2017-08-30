@@ -25,9 +25,7 @@ import com.gallatinsystems.survey.dao.QuestionDao;
 import com.gallatinsystems.survey.dao.SurveyDAO;
 import com.gallatinsystems.survey.domain.Question;
 import com.gallatinsystems.survey.domain.Survey;
-import com.gallatinsystems.surveyal.dao.SurveyalValueDao;
 import com.gallatinsystems.surveyal.dao.SurveyedLocaleDao;
-import com.gallatinsystems.surveyal.domain.SurveyalValue;
 import com.gallatinsystems.surveyal.domain.SurveyedLocale;
 import org.akvo.flow.domain.DataUtils;
 import org.codehaus.jackson.map.ObjectMapper;
@@ -35,13 +33,16 @@ import org.waterforpeople.mapping.app.web.dto.SurveyInstanceDto;
 import org.waterforpeople.mapping.app.web.dto.SurveyedLocaleDto;
 import org.waterforpeople.mapping.app.web.dto.SurveyedLocaleRequest;
 import org.waterforpeople.mapping.app.web.dto.SurveyedLocaleResponse;
+import org.waterforpeople.mapping.dao.QuestionAnswerStoreDao;
 import org.waterforpeople.mapping.dao.SurveyInstanceDAO;
+import org.waterforpeople.mapping.domain.QuestionAnswerStore;
 import org.waterforpeople.mapping.domain.SurveyInstance;
 import org.waterforpeople.mapping.serialization.response.MediaResponse;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
@@ -132,13 +133,14 @@ public class SurveyedLocaleServlet extends AbstractRestApiServlet {
 
         List<Long> surveyedLocalesIds = getSurveyedLocalesIds(slList);
         Map<Long, List<SurveyInstance>> surveyInstancesMap = getSurveyInstances(surveyedLocalesIds);
-        Map<Long, List<SurveyalValue>> surveyalValuesMap = getSurveyalValuesMap(surveyedLocalesIds);
+        Map<Long, List<QuestionAnswerStore>> questionAnswerStore = getQuestionAnswerStoreMap(
+                surveyInstancesMap);
 
         // for each surveyedLocale, store the SurveyalValue in a map
         for (SurveyedLocale surveyedLocale : slList) {
             long surveyedLocaleId = surveyedLocale.getKey().getId();
             SurveyedLocaleDto dto = createSurveyedLocaleDto(surveyGroupId, questionDao,
-                    questionTypeMap, surveyedLocale, surveyalValuesMap,
+                    questionTypeMap, surveyedLocale, questionAnswerStore,
                     surveyInstancesMap.get(surveyedLocaleId));
             dtoList.add(dto);
         }
@@ -147,7 +149,7 @@ public class SurveyedLocaleServlet extends AbstractRestApiServlet {
 
     private SurveyedLocaleDto createSurveyedLocaleDto(Long surveyGroupId, QuestionDao questionDao,
             HashMap<Long, String> questionTypeMap, SurveyedLocale surveyedLocale,
-            Map<Long, List<SurveyalValue>> surveyalValuesMappedByInstanceId,
+            Map<Long, List<QuestionAnswerStore>> questionAnswerStoreMap,
             List<SurveyInstance> surveyInstances) {
         SurveyedLocaleDto dto = new SurveyedLocaleDto();
         dto.setId(surveyedLocale.getIdentifier());
@@ -159,32 +161,41 @@ public class SurveyedLocaleServlet extends AbstractRestApiServlet {
 
         for (SurveyInstance surveyInstance : surveyInstances) {
             Long surveyInstanceId = surveyInstance.getObjectId();
-            List<SurveyalValue> surveyalValues = surveyalValuesMappedByInstanceId
+            List<QuestionAnswerStore> answerStores = questionAnswerStoreMap
                     .get(surveyInstanceId);
             SurveyInstanceDto siDto = createSurveyInstanceDto(questionDao, questionTypeMap,
-                    surveyalValues, surveyInstance);
+                    answerStores, surveyInstance);
             dto.getSurveyInstances().add(siDto);
         }
         return dto;
     }
 
     /**
-     * Returns a map of SurveyalValues lists,
-     * keys: surveyInstanceId, value: list of SurveyalValues for that surveyInstance
+     * Returns a map of QuestionAnswerStore lists,
+     * keys: surveyInstanceId, value: list of QuestionAnswerStore for that surveyInstance
+     * @param surveyInstanceMap
      */
-    private Map<Long, List<SurveyalValue>> getSurveyalValuesMap(List<Long> surveyedLocalesIds) {
-        SurveyalValueDao surveyalValueDao = new SurveyalValueDao();
-        List<SurveyalValue> surveyalValueList = surveyalValueDao
-                .fetchItemsByIdBatches(surveyedLocalesIds,"surveyedLocaleId");
-        Map<Long, List<SurveyalValue>> surveyalValuesMap = new HashMap<>();
+    private Map<Long, List<QuestionAnswerStore>> getQuestionAnswerStoreMap(
+            Map<Long, List<SurveyInstance>> surveyInstanceMap) {
+        QuestionAnswerStoreDao surveyalValueDao = new QuestionAnswerStoreDao();
+        List<Long> surveyedLocalesIds = new ArrayList<>();
+        Collection<List<SurveyInstance>> values = surveyInstanceMap.values();
+        for (List<SurveyInstance> surveyalValueList : values) {
+            for (SurveyInstance surveyInstance: surveyalValueList) {
+                surveyedLocalesIds.add(surveyInstance.getObjectId());
+            }
+        }
+        List<QuestionAnswerStore> surveyalValueList = surveyalValueDao
+                .fetchItemsByIdBatches(surveyedLocalesIds, "surveyInstanceId");
+        Map<Long, List<QuestionAnswerStore>> surveyalValuesMap = new HashMap<>();
         if (surveyalValueList != null && surveyalValueList.size() > 0) {
-            for (SurveyalValue surveyalValue : surveyalValueList) {
+            for (QuestionAnswerStore surveyalValue : surveyalValueList) {
                 // put them in a map with the surveyInstanceId as key
                 Long surveyInstanceId = surveyalValue.getSurveyInstanceId();
                 if (surveyalValuesMap.containsKey(surveyInstanceId)) {
                     surveyalValuesMap.get(surveyInstanceId).add(surveyalValue);
                 } else {
-                    ArrayList<SurveyalValue> surveyalValues = new ArrayList<>();
+                    ArrayList<QuestionAnswerStore> surveyalValues = new ArrayList<>();
                     surveyalValues.add(surveyalValue);
                     surveyalValuesMap.put(surveyInstanceId, surveyalValues);
                 }
@@ -227,8 +238,8 @@ public class SurveyedLocaleServlet extends AbstractRestApiServlet {
     }
 
     private SurveyInstanceDto createSurveyInstanceDto(QuestionDao qDao,
-            HashMap<Long, String> questionTypeMap,
-            List<SurveyalValue> surveyalValues, SurveyInstance si) {
+            HashMap<Long, String> questionTypeMap, List<QuestionAnswerStore> questionAnswerStores,
+            SurveyInstance si) {
         SurveyInstanceDto siDto = new SurveyInstanceDto();
         if (si != null) {
             siDto.setUuid(si.getUuid());
@@ -236,22 +247,24 @@ public class SurveyedLocaleServlet extends AbstractRestApiServlet {
             siDto.setSurveyId(si.getSurveyId());
             siDto.setCollectionDate(si.getCollectionDate().getTime());
         }
-        if (surveyalValues != null) {
-            for (SurveyalValue sv : surveyalValues) {
-                if (sv.getSurveyQuestionId() == null) {
+        if (questionAnswerStores != null) {
+            for (QuestionAnswerStore sv : questionAnswerStores) {
+                Long questionId = sv.getQuestionIDLong();
+                if (questionId == null) {
                     continue;// The question was deleted before storing the response.
                 }
                 String type = getQuestionType(qDao, questionTypeMap, sv);
                 String value = getAnswerValue(sv, type);
-                siDto.addProperty(sv.getSurveyQuestionId(), value, type);
+                siDto.addProperty(questionId, value, type);
             }
         }
         return siDto;
     }
 
-    private String getAnswerValue(SurveyalValue sv, String type) {
+    private String getAnswerValue(QuestionAnswerStore sv, String type) {
         // Make all responses backwards compatible
-        String value = sv.getStringValue() != null ? sv.getStringValue() : "";
+        String answerValue = sv.getValue();
+        String value = answerValue != null ? answerValue : "";
         switch (type) {
             case "OPTION":
             case "OTHER":
@@ -270,26 +283,27 @@ public class SurveyedLocaleServlet extends AbstractRestApiServlet {
     }
 
     private String getQuestionType(QuestionDao qDao, HashMap<Long, String> questionTypeMap,
-            SurveyalValue sv) {
-        String type = sv.getQuestionType();
+            QuestionAnswerStore sv) {
+        String type = sv.getType();
         if (type == null || "".equals(type)) {
             type = "VALUE";
         } else if ("PHOTO".equals(type)) {
             type = "IMAGE";
         } else if ("OPTION".equals(type)) {
             // first see if we have the question in the map already
-            if (questionTypeMap.containsKey(sv.getSurveyQuestionId())) {
-                type = questionTypeMap.get(sv.getSurveyQuestionId());
+            Long questionId = sv.getQuestionIDLong();
+            if (questionTypeMap.containsKey(questionId)) {
+                type = questionTypeMap.get(questionId);
             } else {
                 // find question by id
-                Question q = qDao.getByKey(sv.getSurveyQuestionId());
+                Question q = qDao.getByKey(questionId);
                 if (q != null) {
                     // if the question has the allowOtherFlag set,
                     // use OTHER as the device question type
                     if (q.getAllowOtherFlag()) {
                         type = "OTHER";
                     }
-                    questionTypeMap.put(sv.getSurveyQuestionId(), type);
+                    questionTypeMap.put(questionId, type);
                 }
             }
         }
