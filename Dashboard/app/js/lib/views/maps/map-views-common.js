@@ -260,6 +260,7 @@ FLOW.NavMapsView = FLOW.View.extend({
   },
 
   surveySelection: function () {
+      this.clearMap();
       if (!Ember.none(this.get('selectedSurvey'))) {
           FLOW.mapsController.loadNamedMap(this.selectedSurvey.get('keyId'));
       }
@@ -345,9 +346,9 @@ FLOW.NavMapsView = FLOW.View.extend({
 
   clearMap: function() {
     var self = this;
+    FLOW.mapsController.set('detailsPaneVisible', false);
     if (self.marker) {
       self.map.removeLayer(self.marker);
-      FLOW.mapsController.set('detailsPaneVisible', false);
       $('#pointDetails').html('<p class="noDetails">'+Ember.String.loc('_no_details') +'</p>');
     }
 
