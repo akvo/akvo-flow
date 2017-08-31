@@ -3,11 +3,10 @@
 # 1.9.22 Uplifting Urraka
 Date: 31 August 2017
 ## New and noteworthy
-* **Development environment** - Added MacOS development environment script for dashboard builds[#2188]. Updated instance creation scripts[#2187]
-* **Performance improvement** - Batch query when synching data points to device[#2220]
+* **Performance improvement** - We have speeded up the syncing of datapoints to devices by improving on the query mechanism.  We use batch query for the data [#2220]
 
 ## Resolved issues
-* **Bug fixes** - Protect against errors when creating caddisfly column headers[#2216]. Protect agains errors when survey instance has no associated survey locales[#2211]
+* **Bug fixes** - Protect against errors when generating column headers for caddisfly questions [#2216]. We fix the errors that were causing missing data point names when generating reports. [#2211][#2232]
 
 # 1.9.21.1 Thoroughbred Tamandua hotfix
 Date: 26 July 2017
