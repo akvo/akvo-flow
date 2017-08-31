@@ -138,7 +138,7 @@ public class SurveyInstanceServlet extends AbstractRestApiServlet {
         
         Long regSurveyId;
         if (sl.getCreationSurveyId() == null) { // non-monitoring survey
-            regSurveyId = surveyedLocaleId; // implicitly the registering survey
+            regSurveyId = si.getKey().getId(); // implicitly the registering survey
         } else {
             regSurveyId = sl.getCreationSurveyId();
         }
