@@ -1,5 +1,14 @@
 # Akvo Flow Release Notes
 ----
+# 1.9.22 Uplifting Urraka
+Date: 31 August 2017
+## New and noteworthy
+* **Development environment** - Added MacOS development environment script for dashboard builds[#2188]. Updated instance creation scripts[#2187]
+* **Performance improvement** - Batch query when synching data points to device[#2220]
+
+## Resolved issues
+* **Bug fixes** - Protect against errors when creating caddisfly column headers[#2216]. Protect agains errors when survey instance has no associated survey locales[#2211]
+
 # 1.9.21.1 Thoroughbred Tamandua hotfix
 Date: 26 July 2017
 
