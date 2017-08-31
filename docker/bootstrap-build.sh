@@ -20,7 +20,7 @@ set -eu
 
 MAVEN_REPO="$HOME/.m2"
 LOCAL_CACHE="$HOME/.cache"
-APP_ENGINE_SDK_VERSION="1.9.50"
+APP_ENGINE_SDK_VERSION="1.9.54"
 APP_ENGINE_SDK_FILE="appengine-java-sdk-$APP_ENGINE_SDK_VERSION.zip"
 
 if [[ ! -d "$MAVEN_REPO" ]]; then

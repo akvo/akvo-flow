@@ -128,13 +128,25 @@ public class SurveyInstanceServlet extends AbstractRestApiServlet {
         final QuestionAnswerStoreDao qasDao = new QuestionAnswerStoreDao();
 
         Long surveyedLocaleId = si.getSurveyedLocaleId();
+        if (surveyedLocaleId == null) {
+            return "";
+        }
         SurveyedLocale sl = slDao.getById(surveyedLocaleId);
-        if (sl == null || sl.getCreationSurveyId() == null) {
+        if (sl == null) {
+            return "";
+        }
+        
+        Long regSurveyId;
+        if (sl.getCreationSurveyId() == null) { // non-monitoring survey
+            regSurveyId = si.getSurveyId(); // implicitly the registering survey
+        } else {
+            regSurveyId = sl.getCreationSurveyId();
+        }
+        if (regSurveyId == null) {
             return "";
         }
         
         //Get the questions of the registration survey
-        Long regSurveyId = sl.getCreationSurveyId();
         List<Question> nameQuestions = qDao.listDisplayNameQuestionsBySurveyId(regSurveyId);
         if (nameQuestions == null) {
             return "";

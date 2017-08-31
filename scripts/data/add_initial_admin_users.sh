@@ -1,39 +1,35 @@
 #!/bin/bash
 
-#   Copyright (C) 2010-2016 Stichting Akvo (Akvo Foundation)
+#   Copyright (C) 2010-2017 Stichting Akvo (Akvo Foundation)
 #
-#   This file is part of Akvo FLOW.
+#   This file is part of Akvo Flow.
 #
-#   Akvo FLOW is free software: you can redistribute it and modify it under the terms of
+#   Akvo Flow is free software: you can redistribute it and modify it under the terms of
 #   the GNU Affero General Public License (AGPL) as published by the Free Software Foundation,
 #   either version 3 of the License or any later version.
 #
-#   Akvo FLOW is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY;
+#   Akvo Flow is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY;
 #   without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
 #   See the GNU Affero General Public License included below for more details.
 #
 #   The full license text can also be seen at <http://www.gnu.org/licenses/agpl.html>.
 
 THIS_SCRIPT="$0"
-SCRIPT_NAME="`basename $THIS_SCRIPT`"
+SCRIPT_NAME=$(basename $THIS_SCRIPT)
 INSTANCE_ID="$1"
-CONFIG_REPO_PATH="$2"
 
 function display_usage_and_exit
 {
-    printf "Usage: $SCRIPT_NAME <instance_id> /full/path/to/server-config/repo \n"
+    printf "Usage: $SCRIPT_NAME <instance_name>\n"
     exit 1
 }
 
-# ensure expected parameters have been specified
-if [[ -z "$CONFIG_REPO_PATH" ]]; then
-    if [[ -z "$INSTANCE_ID" ]]; then
-        display_usage_and_exit
-    fi
-
-    echo ">> Missing parameter: /full/path/to/server-config/repo"
+if [[ -z "$INSTANCE_ID" ]]; then
     display_usage_and_exit
 fi
+
+REPOS_HOME="$(cd $(dirname "$THIS_SCRIPT")/../../.. && pwd)"
+CONFIG_REPO_PATH="$REPOS_HOME/akvo-flow-server-config"
 
 # ensure config repo path exists
 if [[ ! -r "$CONFIG_REPO_PATH" ]]; then
@@ -42,7 +38,7 @@ if [[ ! -r "$CONFIG_REPO_PATH" ]]; then
     display_usage_and_exit
 fi
 
-SCRIPT_HOME="$(cd `dirname "$THIS_SCRIPT"` && pwd)"
+SCRIPT_HOME="$(cd $(dirname "$THIS_SCRIPT") && pwd)"
 
 cd "$SCRIPT_HOME"
 
@@ -75,7 +71,7 @@ if [[ ! -r "$SERVICE_ACCOUNT_KEY_FILE_PATH" ]]; then
     exit 1
 fi
 
-CSV_USER_ACCOUNT_FILE_PATH="$CONFIG_REPO_PATH/0_instanceCreation/firstUser/super_admins.csv"
+CSV_USER_ACCOUNT_FILE_PATH="$CONFIG_REPO_PATH/0_instanceCreation/config/super_admins.csv"
 
 printf ">> Adding initial admin users for:  $INSTANCE_ID\n"
 printf ">> Using service account key file:  $SERVICE_ACCOUNT_KEY_FILE_PATH\n"

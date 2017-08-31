@@ -25,19 +25,6 @@ gwt-unitcache
 .vagrant
 GAE/env
 
-# Dashboard paths
-Dashboard/.bundle
-Dashboard/app/cljs/out/
-Dashboard/app/cljs/target
-Dashboard/app/cljs/users.js
-Dashboard/app/css/main.css.map
-Dashboard/app/test.html
-Dashboard/assets
-Dashboard/bin
-Dashboard/node_modules
-Dashboard/test_assets
-Dashboard/tmp
-
 # Server config files
 *.jks
 appengine-web.xml
