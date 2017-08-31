@@ -142,6 +142,9 @@ public class SurveyInstanceServlet extends AbstractRestApiServlet {
         } else {
             regSurveyId = sl.getCreationSurveyId();
         }
+        if (regSurveyId == null) {
+            return "";
+        }
         
         //Get the questions of the registration survey
         List<Question> nameQuestions = qDao.listDisplayNameQuestionsBySurveyId(regSurveyId);
