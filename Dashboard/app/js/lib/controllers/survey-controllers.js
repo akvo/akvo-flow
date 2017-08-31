@@ -425,7 +425,7 @@ FLOW.projectControl = Ember.ArrayController.create({
   loadCaddisflyResources: function () {
       var caddisflyResourceController = FLOW.router.get('caddisflyResourceController');
       if (Ember.empty(caddisflyResourceController.get('content'))) {
-          caddisflyResourceController.populate();
+          caddisflyResourceController.load();
       }
   },
 
@@ -1821,23 +1821,18 @@ FLOW.translationControl = Ember.ArrayController.create({
 FLOW.CaddisflyResourceController = Ember.ArrayController.extend({
     sortProperties: ['name'],
     sortAscending: true,
-
-    populate: function() {
-        this.set('content', FLOW.store.find(FLOW.CaddisflyResource));
-    },
+    caddisflyTestsFileUrl: 'https://raw.githubusercontent.com/akvo/akvo-flow/develop/GAE/src/resources/caddisfly/caddisfly-tests.json',
 
     load: function () {
-        var caddisflyTestsFileContent = retrieveCaddisflyTestsFile();
-        this.set('content', parseCaddisflyTestsFile(caddisflyTestsFileContent));
-    },
-
-    retrieveCaddisflyTestsFile: function () {
+        var self = this;
+        $.getJSON(this.get('caddisflyTestsFileUrl'), function (caddisflyTestsFileContent) {
+            self.set('content', self.parseCaddisflyTestsFile(caddisflyTestsFileContent));
+        });
     },
 
     parseCaddisflyTestsFile: function (caddisflyTestsFileContent) {
-        var caddisflyJson = JSON.parse(caddisflyTestsFileContent);
         var caddisflyTests = Ember.A();
-        caddisflyJson.tests.forEach(function (test) {
+        caddisflyTestsFileContent.tests.forEach(function (test) {
             caddisflyTests.push(FLOW.CaddisflyTestDefinition.create({
                 "name": test.name,
                 "brand": test.brand,
