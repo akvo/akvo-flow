@@ -103,6 +103,10 @@ input[type="radio"] {
     }
 }
 
+#reportBlocks > label,input[type="checkbox"] {
+    display: inline !important;
+}
+
 input[type="search"] {
     -webkit-appearance: textfield;
     -moz-box-sizing: content-box;

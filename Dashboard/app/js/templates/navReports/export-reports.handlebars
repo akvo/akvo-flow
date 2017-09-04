@@ -29,21 +29,10 @@
   <h3>{{t _export_raw_data_report}}</h3>
     <p>{{t _raw_data_report_applet_text_}}</p>
     {{#if view.showLastCollection}}
-    <p><label for="lastCollection">{{t _export_only_last_collection}}:</label> {{view Ember.Checkbox checkedBinding="FLOW.editControl.lastCollection" id="lastCollection"}}</p>
+    <p>{{view Ember.Checkbox checkedBinding="FLOW.editControl.lastCollection" id="lastCollection"}}<label for="lastCollection">{{t _export_only_last_collection}}:</label></p>
     {{/if}}
 
-      <div class="exportAdvancedOpt">
-        <a {{action "toggleShowAdvancedSettings" target="this"}} class="button">
-          {{#if view.showAdvancedSettings}}
-            {{t _collapse}}
-          {{else}}
-            {{t _show_advanced_settings}}
-          {{/if}}
-        </a>
-        {{#if view.showAdvancedSettings}}
-            <label for="useQuestionId">{{t _export_report_for_external_use_only}}</label> {{view Ember.Checkbox checkedBinding="FLOW.editControl.useQuestionId" id="useQuestionId"}}
-        {{/if}}
-      </div>
+    <p>{{view Ember.Checkbox checkedBinding="FLOW.editControl.useQuestionId" id="useQuestionId"}}<label for="useQuestionId">{{t _export_report_for_external_use_only}}</label></p>
 
     <div class="dataCollectedDate">
         <label class="collectedFrom">
@@ -74,14 +63,14 @@
   <p>{{t _export_geoshape_export_text}}</p>
   <div class="geoshapeSelect">
     {{#if FLOW.selectedControl.selectedSurvey}}
-      {{view Ember.Select
+      <p>{{view Ember.Select
           contentBinding="FLOW.questionControl.geoshapeContent"
           selectionBinding="FLOW.selectedControl.selectedQuestion"
           optionLabelPath="content.text"
           optionValuePath="content.keyId"
           prompt=""
           promptBinding="Ember.STRINGS._select_question"}}
-    {{/if}}
+    {{/if}}</p>
   </div>
   <a {{action showGeoshapeReport target="this"}} class="standardBtn"> {{t _export_geoshape_report}}</a>
 </div>
