@@ -122,7 +122,8 @@ public class SurveyRestService {
         if (preflight != null && preflight.equals("delete") && surveyId != null) {
             statusDto.setStatus("preflight-delete-survey");
             statusDto.setMessage("cannot_delete");
-
+            //TODO: check for surveyInstances, too?
+            //      siDao.listSurveyInstanceBySurvey(surveyId, 1);
             if (qasDao.listBySurvey(surveyId).size() == 0
                     && svDao.listBySurvey(surveyId, null, null).size() == 0) {
                 statusDto.setMessage("can_delete");
@@ -210,9 +211,8 @@ public class SurveyRestService {
         // check if survey exists in the datastore
         if (survey != null) {
             // check if there is ANY data collected for the survey
-            //todo: is a page size of 1 valid?
-            List<SurveyInstance> sil = siDao.listSurveyInstanceBySurvey(surveyId, 1);
-            if  (sil != null && !sil.isEmpty()) {
+            if (qasDao.listBySurvey(surveyId).size() > 0
+                    || svDao.listBySurvey(surveyId, null, null).size() > 0) {
                 statusDto.setMessage(
                         "Cannot delete form because there are already survey responses stored for it. " +
                                      "Please delete all survey responses first. You can do this in the data tab.");
