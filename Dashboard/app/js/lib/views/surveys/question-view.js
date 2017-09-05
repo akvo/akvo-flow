@@ -35,6 +35,10 @@ FLOW.QuestionView = FLOW.View.extend({
   questionTooltipValidationFailure: false,
   caddisflyResourceUuid: null,
 
+  showCaddisflyTests: function () {
+      return FLOW.router.caddisflyResourceController.get("testsFileLoaded");
+  }.property('FLOW.router.caddisflyResourceController.testsFileLoaded'),
+
   showMetaConfig: function () {
     return FLOW.Env.showMonitoringFeature;
   }.property('FLOW.Env.showMonitoringFeature'),

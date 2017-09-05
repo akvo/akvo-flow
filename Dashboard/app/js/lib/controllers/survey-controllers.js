@@ -1821,12 +1821,16 @@ FLOW.translationControl = Ember.ArrayController.create({
 FLOW.CaddisflyResourceController = Ember.ArrayController.extend({
     sortProperties: ['name'],
     sortAscending: true,
-    caddisflyTestsFileUrl: 'https://raw.githubusercontent.com/akvo/akvo-flow/develop/GAE/src/resources/caddisfly/caddisfly-tests.json',
+    caddisflyTestsFileUrl: 'http://akvoflow-public.s3.amazonaws.com/caddisfly-tests.json',
+    testsFileLoaded: false,
 
     load: function () {
         var self = this;
         $.getJSON(this.get('caddisflyTestsFileUrl'), function (caddisflyTestsFileContent) {
             self.set('content', self.parseCaddisflyTestsFile(caddisflyTestsFileContent));
+            self.set('testsFileLoaded', true);
+        }).fail(function () {
+            self.set('content', []);
         });
     },
 

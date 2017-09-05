@@ -118,13 +118,21 @@
     {{#if view.amCaddisflyType}}
         <h1 class="answerNbr">{{t _settings}}: </h1>
          <label class="selectinLabel dependencySelect"> {{t _choose_caddisfly_question_resource}}: {{tooltip _choose_caddisfly_question_resource_tooltip}}
-        {{view Ember.Select
-        contentBinding="FLOW.router.caddisflyResourceController"
-        selectionBinding="FLOW.selectedControl.selectedCaddisflyResource"
-        optionLabelPath="content.displayName"
-        optionValuePath="content.keyId"
-        prompt=""
-        promptBinding="Ember.STRINGS._select_caddisfly_test"}}</label>
+         {{#if view.showCaddisflyTests}}
+            {{view Ember.Select
+            contentBinding="FLOW.router.caddisflyResourceController"
+            selectionBinding="FLOW.selectedControl.selectedCaddisflyResource"
+            optionLabelPath="content.displayName"
+            optionValuePath="content.keyId"
+            prompt=""
+            promptBinding="Ember.STRINGS._select_caddisfly_test"}}</label>
+        {{else}}
+            {{view Ember.Select
+            contentBinding="FLOW.router.caddisflyResourceController"
+            selectionBinding="FLOW.selectedControl.selectedCaddisflyResource"
+            prompt=""
+            promptBinding="Ember.STRINGS._failed_load_caddisfly_tests"}}</label>
+        {{/if}}
     {{/if}}
     {{#if view.amGeoshapeType}}
     <h1 class="answerNbr">{{t _settings}}: </h1>
