@@ -3341,6 +3341,10 @@ nav.questionActionMenu a:hover {
     background: rgb(243, 243, 243);
 }
 
+.innerContent .questionOption .errorLoading {
+    color: red;
+}
+
 .innerContent .questionOption h1.answerNbr {
     margin: 0 0 0.5em 0.5em;
     padding: 0 0 0 0.5em;
