@@ -56,7 +56,7 @@ import java.util.Map;
 public class SurveyedLocaleServlet extends AbstractRestApiServlet {
     private static final long serialVersionUID = 8748650927754433019L;
     private SurveyedLocaleDao surveyedLocaleDao;
-    private static final Integer SL_PAGE_SIZE = 300;
+    private static final Integer SL_PAGE_SIZE = 30;
 
     public SurveyedLocaleServlet() {
         setMode(JSON_MODE);
