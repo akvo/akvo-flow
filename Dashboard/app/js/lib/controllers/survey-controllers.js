@@ -1821,7 +1821,7 @@ FLOW.translationControl = Ember.ArrayController.create({
 FLOW.CaddisflyResourceController = Ember.ArrayController.extend({
     sortProperties: ['name'],
     sortAscending: true,
-    caddisflyTestsFileUrl: 'http://akvoflow-public.s3.amazonaws.com/caddisfly-tests.json',
+    caddisflyTestsFileUrl: 'https://akvoflow-public.s3.amazonaws.com/caddisfly-tests.json',
     testsFileLoaded: false,
 
     load: function () {
