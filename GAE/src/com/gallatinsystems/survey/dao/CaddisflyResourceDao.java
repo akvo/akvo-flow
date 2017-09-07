@@ -17,6 +17,7 @@
 package com.gallatinsystems.survey.dao;
 
 import java.io.InputStream;
+import java.net.URL;
 import java.util.Collections;
 import java.util.List;
 import java.util.logging.Level;
@@ -45,9 +46,9 @@ public class CaddisflyResourceDao {
         List<CaddisflyResource> result = null;
 
         try {
-            InputStream stream = getClass().getClassLoader()
-                    .getResourceAsStream(
-                            "resources/caddisfly/caddisfly-tests.json");
+            URL caddisflyFileUrl = new URL(
+                    "https://akvoflow-public.s3.amazonaws.com/caddisfly-tests.json");
+            InputStream stream = caddisflyFileUrl.openStream();
 
             // create a list of caddisflyResource objects
             JsonNode rootNode = mapper.readTree(stream);

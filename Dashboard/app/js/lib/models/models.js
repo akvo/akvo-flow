@@ -21,22 +21,14 @@ FLOW.BaseModel = DS.Model.extend({
   }.observes('isSaving', 'isDirty')
 });
 
-FLOW.CaddisflyResource = FLOW.BaseModel.extend({
-  didLoad: function () {
-    // combine the name and brand in a single value for display
-      this.set('displayName', this.get('name') + " (" + this.get('brand') +")");
-  },
-  name: DS.attr('string', {
-    defaultValue: ''
-  }),
-  brand: DS.attr('string', {
-    defaultValue: ''
-  }),
-  uuid: DS.attr('string', {
-    defaultValue: ''
-  }),
-  //used in the assignment edit page, not saved to backend
-  displayName: null,
+FLOW.CaddisflyTestDefinition = Ember.Object.extend({
+    name: null,
+    brand: null,
+    uuid: null,
+
+    displayName: function() {
+        return this.get('name') + " (" + this.get('brand') +")";
+    }.property(''),
 });
 
 FLOW.CascadeResource = FLOW.BaseModel.extend({

@@ -425,7 +425,7 @@ FLOW.projectControl = Ember.ArrayController.create({
   loadCaddisflyResources: function () {
       var caddisflyResourceController = FLOW.router.get('caddisflyResourceController');
       if (Ember.empty(caddisflyResourceController.get('content'))) {
-          caddisflyResourceController.populate();
+          caddisflyResourceController.load();
       }
   },
 
@@ -1816,4 +1816,34 @@ FLOW.translationControl = Ember.ArrayController.create({
     FLOW.store.commit();
     this.set('toBeDeletedTranslations', []);
   }
+});
+
+FLOW.CaddisflyResourceController = Ember.ArrayController.extend({
+    sortProperties: ['name'],
+    sortAscending: true,
+    caddisflyTestsFileUrl: 'https://akvoflow-public.s3.amazonaws.com/caddisfly-tests.json',
+    testsFileLoaded: false,
+
+    load: function () {
+        var self = this;
+        $.getJSON(this.get('caddisflyTestsFileUrl'), function (caddisflyTestsFileContent) {
+            self.set('content', self.parseCaddisflyTestsFile(caddisflyTestsFileContent));
+            self.set('testsFileLoaded', true);
+        }).fail(function () {
+            self.set('content', []);
+        });
+    },
+
+    parseCaddisflyTestsFile: function (caddisflyTestsFileContent) {
+        var caddisflyTests = Ember.A();
+        caddisflyTestsFileContent.tests.forEach(function (test) {
+            caddisflyTests.push(FLOW.CaddisflyTestDefinition.create({
+                "name": test.name,
+                "brand": test.brand,
+                "uuid": test.uuid,
+            }));
+        });
+
+        return caddisflyTests;
+    },
 });

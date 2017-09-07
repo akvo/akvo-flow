@@ -1,5 +1,13 @@
 # Akvo Flow Release Notes
 ----
+# 1.9.22.1 Uplifting Urraka Hotfix
+Date: 07 September 2017
+
+## Resolved issues
+* **Synching of surveys with monitoring forms filled in** - We fixed an issue that was causing devices not to sync datapoints incase there were multiple monitoring forms responses in addition to the registration form responses. [#2229] [#2238]
+
+* **Caddisfly tests definitions** - Akvo caddisfly test definitions can now be added to Flow without having to redeploy all instances that are using caddisfly question types. [#1825]
+
 # 1.9.22 Uplifting Urraka
 Date: 31 August 2017
 ## New and noteworthy
