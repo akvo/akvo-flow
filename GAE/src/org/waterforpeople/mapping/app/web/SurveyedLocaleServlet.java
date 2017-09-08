@@ -27,6 +27,7 @@ import com.gallatinsystems.survey.domain.Question;
 import com.gallatinsystems.survey.domain.Survey;
 import com.gallatinsystems.surveyal.dao.SurveyedLocaleDao;
 import com.gallatinsystems.surveyal.domain.SurveyedLocale;
+import com.google.api.server.spi.config.Nullable;
 import org.akvo.flow.domain.DataUtils;
 import org.codehaus.jackson.map.ObjectMapper;
 import org.waterforpeople.mapping.app.web.dto.SurveyInstanceDto;
@@ -150,7 +151,7 @@ public class SurveyedLocaleServlet extends AbstractRestApiServlet {
     private SurveyedLocaleDto createSurveyedLocaleDto(Long surveyGroupId, QuestionDao questionDao,
             HashMap<Long, String> questionTypeMap, SurveyedLocale surveyedLocale,
             Map<Long, List<QuestionAnswerStore>> questionAnswerStoreMap,
-            List<SurveyInstance> surveyInstances) {
+            @Nullable List<SurveyInstance> surveyInstances) {
         SurveyedLocaleDto dto = new SurveyedLocaleDto();
         dto.setId(surveyedLocale.getIdentifier());
         dto.setSurveyGroupId(surveyGroupId);
@@ -159,13 +160,15 @@ public class SurveyedLocaleServlet extends AbstractRestApiServlet {
         dto.setLon(surveyedLocale.getLongitude());
         dto.setLastUpdateDateTime(surveyedLocale.getLastUpdateDateTime());
 
-        for (SurveyInstance surveyInstance : surveyInstances) {
-            Long surveyInstanceId = surveyInstance.getObjectId();
-            List<QuestionAnswerStore> answerStores = questionAnswerStoreMap
-                    .get(surveyInstanceId);
-            SurveyInstanceDto siDto = createSurveyInstanceDto(questionDao, questionTypeMap,
-                    answerStores, surveyInstance);
-            dto.getSurveyInstances().add(siDto);
+        if (surveyInstances != null) {
+            for (SurveyInstance surveyInstance : surveyInstances) {
+                Long surveyInstanceId = surveyInstance.getObjectId();
+                List<QuestionAnswerStore> answerStores = questionAnswerStoreMap
+                        .get(surveyInstanceId);
+                SurveyInstanceDto siDto = createSurveyInstanceDto(questionDao, questionTypeMap,
+                        answerStores, surveyInstance);
+                dto.getSurveyInstances().add(siDto);
+            }
         }
         return dto;
     }
@@ -173,7 +176,6 @@ public class SurveyedLocaleServlet extends AbstractRestApiServlet {
     /**
      * Returns a map of QuestionAnswerStore lists,
      * keys: surveyInstanceId, value: list of QuestionAnswerStore for that surveyInstance
-     * @param surveyInstanceMap
      */
     private Map<Long, List<QuestionAnswerStore>> getQuestionAnswerStoreMap(
             Map<Long, List<SurveyInstance>> surveyInstanceMap) {
@@ -243,8 +245,9 @@ public class SurveyedLocaleServlet extends AbstractRestApiServlet {
     }
 
     private SurveyInstanceDto createSurveyInstanceDto(QuestionDao qDao,
-            HashMap<Long, String> questionTypeMap, List<QuestionAnswerStore> questionAnswerStores,
-            SurveyInstance surveyInstance) {
+            HashMap<Long, String> questionTypeMap,
+            @Nullable List<QuestionAnswerStore> questionAnswerStores,
+            @Nullable SurveyInstance surveyInstance) {
         SurveyInstanceDto surveyInstanceDto = new SurveyInstanceDto();
         if (surveyInstance != null) {
             surveyInstanceDto.setUuid(surveyInstance.getUuid());
