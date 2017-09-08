@@ -1,5 +1,11 @@
 # Akvo Flow Release Notes
 ----
+# 1.9.22.2 Uplifting Urraka Hotfix 2
+Date: 08 September 2017
+
+## Resolved issues
+* **Fix a crash in datapoints sync** - We fixed a crash when some data was missing during datapoint sync. [#2244]
+
 # 1.9.22.1 Uplifting Urraka Hotfix
 Date: 07 September 2017
 
