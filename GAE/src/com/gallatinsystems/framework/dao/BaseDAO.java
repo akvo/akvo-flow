@@ -726,20 +726,23 @@ public class BaseDAO<T extends BaseDomain> {
         return concreteClass.getSimpleName() + "-" + objectId;
     }
 
-    public List<T> fetchItemsByIdBatches(List<Long> idsList, String fieldName) {
-        if (idsList == null || idsList.isEmpty()) {
+    public List<T> fetchItemsByIdBatches(List<Long> idsListOriginal, String fieldName) {
+        if (idsListOriginal == null || idsListOriginal.isEmpty()) {
             return Collections.emptyList();
         }
+        List<Long> idsList = new ArrayList<>(idsListOriginal);
         List<T> items = new ArrayList<>();
-        int start = 0;
         int listSize = idsList.size();
-        int end = Math.min(MAX_ALLOWED_FILTERED_ITEMS, listSize);
+        int end = Math.min(MAX_ALLOWED_FILTERED_ITEMS + 1, listSize);
         int maxRound = Math
                 .max(1, (int) Math.round((double) listSize / MAX_ALLOWED_FILTERED_ITEMS));
         for (int i = 0; i < maxRound; i++) {
-            items.addAll(listValuesByIdsList(idsList.subList(start, end), fieldName));
-            start = Math.min(start + MAX_ALLOWED_FILTERED_ITEMS, listSize - 1);
-            end = Math.min(end + MAX_ALLOWED_FILTERED_ITEMS, listSize);
+            List<Long> idsToRetrieve = idsList.subList(0, end);
+            items.addAll(listValuesByIdsList(idsToRetrieve, fieldName));
+            if(idsList != null && idsList.size() > 0) {
+                idsList.removeAll(idsToRetrieve);
+            }
+            end = Math.min(end + MAX_ALLOWED_FILTERED_ITEMS, idsList.size());
         }
         return items;
     }
