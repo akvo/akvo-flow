@@ -51,6 +51,7 @@ public class EnvServlet extends HttpServlet {
             .getName());
 
     public static final String SHOW_MAPS_PROPERTY_KEY = "showMapsTab";
+    public static final String CADDISFLY_TESTS_FILE_URL_KEY = "caddisflyTestsFileUrl";
 
     private static final ArrayList<String> properties = new ArrayList<String>();
 
@@ -74,6 +75,7 @@ public class EnvServlet extends HttpServlet {
         properties.add("extraMapboxTileLayerMapId");
         properties.add("extraMapboxTileLayerAccessToken");
         properties.add("extraMapboxTileLayerLabel");
+        properties.add(CADDISFLY_TESTS_FILE_URL_KEY);
     }
 
     @Override
@@ -142,6 +144,12 @@ public class EnvServlet extends HttpServlet {
 
         if (!"false".equalsIgnoreCase(props.get(SHOW_MAPS_PROPERTY_KEY))) {
             props.put(SHOW_MAPS_PROPERTY_KEY, "true");
+        }
+
+        if (props.get(CADDISFLY_TESTS_FILE_URL_KEY) == null
+                || props.get(CADDISFLY_TESTS_FILE_URL_KEY).isEmpty()) {
+            props.put("caddisflyTestsFileUrl",
+                    "https://akvoflow-public.s3.amazonaws.com/caddisfly-tests.json");
         }
 
         // load language configuration and strings if present
