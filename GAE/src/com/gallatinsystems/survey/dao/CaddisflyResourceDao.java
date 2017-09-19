@@ -35,6 +35,8 @@ import org.waterforpeople.mapping.domain.CaddisflyResource;
 public class CaddisflyResourceDao {
     private static ObjectMapper mapper = new ObjectMapper();
 
+    public static String DEFAULT_CADDISFLY_TESTS_FILE_URL = "https://akvoflow-public.s3.amazonaws.com/caddisfly-tests.json";
+
     private static final Logger log = Logger.getLogger(CascadeResourceDao.class
             .getName());
 
@@ -67,6 +69,6 @@ public class CaddisflyResourceDao {
      * lists caddisfly resources using default caddisfly tests definition file URL
      */
     public List<CaddisflyResource> listResources() {
-        return listResources("https://akvoflow-public.s3.amazonaws.com/caddisfly-tests.json");
+        return listResources(DEFAULT_CADDISFLY_TESTS_FILE_URL);
     }
 }
