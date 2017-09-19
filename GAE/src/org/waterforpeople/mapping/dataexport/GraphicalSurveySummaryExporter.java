@@ -97,6 +97,7 @@ public class GraphicalSurveySummaryExporter extends SurveySummaryExporter {
     private static final String RAW_ONLY_TYPE = "RAW_DATA";
     private static final String NO_CHART_OPT = "nocharts";
     private static final String LAST_COLLECTION_OPT = "lastCollection";
+    private static final String CADDISFLY_TESTS_FILE_URL_OPT = "caddisflyTestsFileUrl";
 
     private static final String DEFAULT_IMAGE_PREFIX = "http://waterforpeople.s3.amazonaws.com/images/";
 
@@ -319,6 +320,7 @@ public class GraphicalSurveySummaryExporter extends SurveySummaryExporter {
     private boolean lastCollection = false;
     private static final ObjectMapper OBJECT_MAPPER = new ObjectMapper();
     private CaddisflyResourceDao caddisflyResourceDao = new CaddisflyResourceDao();
+    private String caddisflyTestsFileUrl;
 
     // for caddisfly-specific metadata
     //TODO private Map<Long, Integer> numResultsMap = new HashMap<>();
@@ -331,6 +333,7 @@ public class GraphicalSurveySummaryExporter extends SurveySummaryExporter {
 
     // store indices of file columns for lookup when generating responses
     private Map<String, Integer> columnIndexMap = new HashMap<>();
+
     // stores the questions whose answers will make up the display name, in order
 
     @Override
@@ -1328,7 +1331,7 @@ public class GraphicalSurveySummaryExporter extends SurveySummaryExporter {
 
         if (caddisflyResourceMap == null) {
             caddisflyResourceMap = new HashMap<String, CaddisflyResource>();
-            for (CaddisflyResource r : caddisflyResourceDao.listResources()) {
+            for (CaddisflyResource r : retrieveCaddisflyTestsDefinitions()) {
                 caddisflyResourceMap.put(r.getUuid().trim(), r);
             }
         }
@@ -1387,6 +1390,14 @@ public class GraphicalSurveySummaryExporter extends SurveySummaryExporter {
             hasImageMap.put(q.getKeyId(), cr.getHasImage());
         }
         return offset;
+    }
+
+    private List<CaddisflyResource> retrieveCaddisflyTestsDefinitions() {
+        if (caddisflyTestsFileUrl == null || caddisflyTestsFileUrl.isEmpty()) {
+            return caddisflyResourceDao.listResources();
+        } else {
+            return caddisflyResourceDao.listResources(caddisflyTestsFileUrl);
+        }
     }
 
     private int addPhotoDataColumnHeader(QuestionDto q, Row row, int originalOffset, String questionId,
@@ -1810,6 +1821,11 @@ public class GraphicalSurveySummaryExporter extends SurveySummaryExporter {
             if (options.get(LAST_COLLECTION_OPT) != null
                     && "true".equals(options.get(LAST_COLLECTION_OPT))) {
                 lastCollection = true;
+            }
+
+            if (options.get(CADDISFLY_TESTS_FILE_URL_OPT) != null
+                    && !options.get(CADDISFLY_TESTS_FILE_URL_OPT).isEmpty()) {
+                caddisflyTestsFileUrl = options.get(CADDISFLY_TESTS_FILE_URL_OPT);
             }
         }
         if (locale != null) {
