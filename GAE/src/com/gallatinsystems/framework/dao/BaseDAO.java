@@ -730,18 +730,21 @@ public class BaseDAO<T extends BaseDomain> {
         if (idsList == null || idsList.isEmpty()) {
             return Collections.emptyList();
         }
-        List<T> items = new ArrayList<>();
+
+        List<T> fetchedItems = new ArrayList<>();
+        int idsListSize = idsList.size();
         int start = 0;
-        int listSize = idsList.size();
-        int end = Math.min(MAX_ALLOWED_FILTERED_ITEMS, listSize);
-        int maxRound = Math
-                .max(1, (int) Math.round((double) listSize / MAX_ALLOWED_FILTERED_ITEMS));
-        for (int i = 0; i < maxRound; i++) {
-            items.addAll(listValuesByIdsList(idsList.subList(start, end), fieldName));
-            start = Math.min(start + MAX_ALLOWED_FILTERED_ITEMS, listSize - 1);
-            end = Math.min(end + MAX_ALLOWED_FILTERED_ITEMS, listSize);
+        int end = Math.min(MAX_ALLOWED_FILTERED_ITEMS, idsListSize);
+        int numberOfQueryRounds = (int) Math
+                .ceil((double) idsListSize / MAX_ALLOWED_FILTERED_ITEMS);
+
+        for (int i = 0; i < numberOfQueryRounds; i++) {
+            List<Long> idsToRetrieve = idsList.subList(start, end);
+            fetchedItems.addAll(listValuesByIdsList(idsToRetrieve, fieldName));
+            start = end;
+            end = Math.min(end + MAX_ALLOWED_FILTERED_ITEMS, idsListSize);
         }
-        return items;
+        return fetchedItems;
     }
 
     private List<T> listValuesByIdsList(List<Long> idsList, final String fieldName) {
