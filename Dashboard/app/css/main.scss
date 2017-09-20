@@ -2212,11 +2212,10 @@ li.aSurvey {
 
             h2 {
                 display: inline;
-
-                // color: $flowAnchorLink;
+                color: rgba($akvoBlack, 0.7);
 
                 &:hover {
-                    color: $flowAnchorLinkHover;
+                    color: rgba($akvoBlack, 1);
                 }
             }
         }
@@ -2272,21 +2271,21 @@ li.aFolder {
         padding-bottom: 10px;
 
         h2 {
-            color: rgb(183, 183, 183);
+            color: rgba($akvoBlack, 0.7);
             background: url(../images/folderIcn.svg) right center no-repeat;
             display: inline;
             width: initial;
             padding-right: 45px;
+
+            &:hover {
+                color: rgba($akvoBlack, 1);
+            }
         }
     }
 
     &:hover {
         background-color: rgb(222, 222, 222);
         border: 1px solid rgba(200, 200, 200, 1);
-
-        h2 {
-            color: $flowAnchorLinkHover;
-        }
     }
 
     &.folderEmpty {
@@ -2825,7 +2824,11 @@ span.qtnGroupHead {
     margin: 3px 0 0.5em;
 
     h1 {
-        color: rgba(141, 198, 63, 1);
+        color: rgba($akvoBlack, 0.7);
+
+        &:hover {
+            color: rgba($akvoBlack, 1);
+        }
     }
 
     input {
@@ -2841,7 +2844,11 @@ span.qtnGroupHead {
 }
 
 .aQuestionSet header h1.qtnGroupTitle a {
-    color: rgb(38, 8, 89);
+    color: rgba($akvoBlack, 0.7);
+
+    &:hover {
+        color: rgba($akvoBlack, 1);
+    }
 }
 
 .aQuestionSet header h1 + a.editSetInfo {
@@ -3255,7 +3262,15 @@ nav.questionActionMenu a:hover {
     margin: 1em 0 1em 0.5em;
 
     &.questionNbr {
-        font-size: 1.1em;
+        font-size: 1em;
+
+        a {
+            color: rgba($akvoBlack, 0.7);
+
+            &:hover {
+                color: rgba($akvoBlack, 1);
+            }
+        }
     }
 }
 
@@ -6126,8 +6141,4 @@ svg {
             font-size: 1em !important;
         }
     }
-}
-
-.textLink {
-    color: inherit !important;
 }
