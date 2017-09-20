@@ -726,25 +726,25 @@ public class BaseDAO<T extends BaseDomain> {
         return concreteClass.getSimpleName() + "-" + objectId;
     }
 
-    public List<T> fetchItemsByIdBatches(List<Long> idsListOriginal, String fieldName) {
-        if (idsListOriginal == null || idsListOriginal.isEmpty()) {
+    public List<T> fetchItemsByIdBatches(List<Long> idsList, String fieldName) {
+        if (idsList == null || idsList.isEmpty()) {
             return Collections.emptyList();
         }
-        List<Long> idsList = new ArrayList<>(idsListOriginal);
-        List<T> items = new ArrayList<>();
-        int listSize = idsList.size();
-        int end = Math.min(MAX_ALLOWED_FILTERED_ITEMS + 1, listSize);
-        int maxRound = Math
-                .max(1, (int) Math.round((double) listSize / MAX_ALLOWED_FILTERED_ITEMS));
-        for (int i = 0; i < maxRound; i++) {
-            List<Long> idsToRetrieve = idsList.subList(0, end);
-            items.addAll(listValuesByIdsList(idsToRetrieve, fieldName));
-            if(idsList != null && idsList.size() > 0) {
-                idsList.removeAll(idsToRetrieve);
-            }
-            end = Math.min(end + MAX_ALLOWED_FILTERED_ITEMS, idsList.size());
+
+        List<T> fetchedItems = new ArrayList<>();
+        int idsListSize = idsList.size();
+        int start = 0;
+        int end = Math.min(MAX_ALLOWED_FILTERED_ITEMS, idsListSize);
+        int numberOfQueryRounds = (int) Math
+                .ceil((double) idsListSize / MAX_ALLOWED_FILTERED_ITEMS);
+
+        for (int i = 0; i < numberOfQueryRounds; i++) {
+            List<Long> idsToRetrieve = idsList.subList(start, end);
+            fetchedItems.addAll(listValuesByIdsList(idsToRetrieve, fieldName));
+            start = end;
+            end = Math.min(end + MAX_ALLOWED_FILTERED_ITEMS, idsListSize);
         }
-        return items;
+        return fetchedItems;
     }
 
     private List<T> listValuesByIdsList(List<Long> idsList, final String fieldName) {
