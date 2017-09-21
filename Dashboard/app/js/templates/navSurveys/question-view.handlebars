@@ -66,9 +66,11 @@
 
     {{#if view.amOptionType}}
       <h1 class="answerNbr">{{t _settings}}: </h1>
-      <label class="labelcheckbox"> {{view Ember.Checkbox checkedBinding="view.allowMultipleFlag"}}{{t _allow_multiple}} </label>
-      <label class="labelcheckbox"> {{view Ember.Checkbox checkedBinding="view.allowOtherFlag"}}{{t _allow_other}} </label>
-      <br>
+      <ul>
+        <li><label class="labelcheckbox"> {{view Ember.Checkbox checkedBinding="view.allowMultipleFlag"}}{{t _allow_multiple}} </label></li>
+        <li><label class="labelcheckbox"> {{view Ember.Checkbox checkedBinding="view.allowOtherFlag"}}{{t _allow_other}} </label>
+        </li>
+      </ul>
       <p class="optionTitle"><strong>{{t _options}}:&nbsp;</strong></p>
       <div class="optionListView">
     	  {{view FLOW.OptionListView contentBinding="FLOW.questionOptionsControl"}}
@@ -81,17 +83,23 @@
     {{/if}}
     {{#if view.amBarcodeType}}
     <h1 class="answerNbr">{{t _settings}}: </h1>
-      <label class="labelcheckbox"> {{view Ember.Checkbox checkedBinding="view.allowMultipleFlag"}}{{t _enable_bulk_barcode_scan}} </label>
-      <label class="labelcheckbox"> {{view Ember.Checkbox checkedBinding="view.geoLocked"}}{{t _disable_manual_geo_edit}} </label>
+      <ul>
+        <li><label class="labelcheckbox"> {{view Ember.Checkbox checkedBinding="view.allowMultipleFlag"}}{{t _enable_bulk_barcode_scan}} </label></li>
+        <li><label class="labelcheckbox"> {{view Ember.Checkbox checkedBinding="view.geoLocked"}}{{t _disable_manual_geo_edit}} </label></li>
+      </ul>
     {{/if}}
     {{#if view.amNumberType}}
     <h1 class="answerNbr">{{t _settings}}: </h1>
-      <label class="labelcheckbox"> {{view Ember.Checkbox checkedBinding="view.allowSign"}}{{t _allow_sign}} </label>
-      <label class="labelcheckbox"> {{view Ember.Checkbox checkedBinding="view.allowDecimal"}}{{t _allow_decimal_point}} </label>
-      <label class="labelcheckbox"> {{view Ember.Checkbox checkedBinding="view.requireDoubleEntry"}}{{t _require_double_entry}} {{tooltip _require_double_entry_tooltip}}</label>
+      <ul>
+        <li><label class="labelcheckbox"> {{view Ember.Checkbox checkedBinding="view.allowSign"}}{{t _allow_sign}} </label></li>
+        <li><label class="labelcheckbox"> {{view Ember.Checkbox checkedBinding="view.allowDecimal"}}{{t _allow_decimal_point}} </label></li>
+        <li><label class="labelcheckbox"> {{view Ember.Checkbox checkedBinding="view.requireDoubleEntry"}}{{t _require_double_entry}} {{tooltip _require_double_entry_tooltip}}</label></li>
+      </ul>
 
-      <label class="minValNumb">{{t _min_val}}: {{view Ember.TextField valueBinding="view.minVal" size=10 }}</label>
-      <label class="maxValNumb">{{t _max_val}}: {{view Ember.TextField valueBinding="view.maxVal" size=10 }}</label>
+      <ul className="twoColumns">
+        <li><label class="minValNumb">{{t _min_val}}: {{view Ember.TextField valueBinding="view.minVal" size=10 }}</label></li>
+        <li><label class="maxValNumb">{{t _max_val}}: {{view Ember.TextField valueBinding="view.maxVal" size=10 }}</label></li>
+      </ul>
     {{/if}}
      {{#if view.amGeoType}}
     <h1 class="answerNbr">{{t _settings}}: </h1>
@@ -134,10 +142,12 @@
     {{/if}}
     {{#if view.amGeoshapeType}}
     <h1 class="answerNbr">{{t _settings}}: </h1>
-      <label class="labelcheckbox"> {{view Ember.Checkbox checkedBinding="view.allowPoints"}}{{t _allow_points}} </label>
-      <label class="labelcheckbox"> {{view Ember.Checkbox checkedBinding="view.allowLine"}}{{t _allow_line}} </label>
-      <label class="labelcheckbox"> {{view Ember.Checkbox checkedBinding="view.allowPolygon"}}{{t _allow_polygon}} </label>
-      <label class="labelcheckbox"> {{view Ember.Checkbox checkedBinding="view.geoLocked"}}{{t _disable_manual_geo_edit}} </label>
+      <ul>
+        <li><label class="labelcheckbox"> {{view Ember.Checkbox checkedBinding="view.allowPoints"}}{{t _allow_points}} </label></li>
+        <li><label class="labelcheckbox"> {{view Ember.Checkbox checkedBinding="view.allowLine"}}{{t _allow_line}} </label></li>
+        <li><label class="labelcheckbox"> {{view Ember.Checkbox checkedBinding="view.allowPolygon"}}{{t _allow_polygon}} </label></li>
+        <li><label class="labelcheckbox"> {{view Ember.Checkbox checkedBinding="view.geoLocked"}}{{t _disable_manual_geo_edit}} </label></li>
+      </ul>
     {{/if}}
 
     {{#if view.amNoOptionsType}}
