@@ -53,5 +53,20 @@ FLOW.FormView = Ember.View.extend({
 	showFormPublishButton: function () {
 		var form = this.get('form');
 		return FLOW.permControl.canEditForm(form);
-	}.property('this.form')
+	}.property('this.form'),
+	
+	maybeDeleteForm: function () {
+		var form = this.get('form');
+		fDeleteId = FLOW.selectedControl.selectedSurvey.get('keyId'); //TODO: Works, but  this more like other levels
+
+		alert("Bravo:" + fDeleteId);
+		// check if deleting this form is allowed
+		// if successful, the deletion action will be called from DS.FLOWrestadaptor.sideload
+		//http://localhost:8888/rest/survey:ember1899>s?preflight=delete&surveyId=146532016
+		FLOW.store.findQuery(form, {
+			preflight: 'delete',
+			surveyId: fDeleteId
+		}
+		)
+	}
 });
