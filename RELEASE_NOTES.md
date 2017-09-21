@@ -1,5 +1,16 @@
 # Akvo Flow Release Notes
 ----
+# 1.9.23 Versatile Vicuña
+Date: 21 September 2017
+
+## Resolved issues
+* **Bug fixes** - Fix locale retrieval logic which was prone to skipping items [#2252]
+* **User experience improvement** - Disable clickable labels for checkboxes [#1922]. Visibly show clickable titles by changing colour when users hover over folders, surveys, groups, and questions [#1996]
+* **User interface** - Simplify bulk upload page [#2083] and convert case used for "Flow" [#2084]
+
+## New and noteworthy
+* **Caddisfly tests definitions** - Allow setting of caddisfly test file URL via an environment variable [#2250]
+
 # 1.9.22.2 Uplifting Urraka Hotfix 2
 Date: 08 September 2017
 
