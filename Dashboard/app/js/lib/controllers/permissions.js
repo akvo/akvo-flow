@@ -365,8 +365,8 @@ FLOW.dialogControl = Ember.Object.create({
       break;
 
     case "delForm":
-      this.set('header', "Delete form");
-      this.set('message', "Are you sure you want to delete this form?");
+      this.set('header', Ember.String.loc('_delete_form_header'));
+      this.set('message', Ember.String.loc('_delete_form_text'));
       this.set('showDialog', true);
       break;
 
@@ -446,8 +446,6 @@ FLOW.dialogControl = Ember.Object.create({
 
     case "delForm":
       this.set('showDialog', false);
-      //alert("Alpha");
-      //FLOW.surveyControl.deleteForm();//NOT YET
       view.maybeDeleteForm.apply(view, arguments);
       break;
       

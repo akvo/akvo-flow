@@ -57,48 +57,32 @@ FLOW.FormView = Ember.View.extend({
 	
 	maybeDeleteForm: function () {
 		var form = this.get('form');
-		fDeleteId = FLOW.selectedControl.selectedSurvey.get('keyId'); //TODO: Works, but  this more like other levels
+		fDeleteId = FLOW.selectedControl.selectedSurvey.get('keyId');
+		//TODO: This works, but it should be more like the other levels
 
-		alert("Bravo:" + fDeleteId);
-		// check if deleting this form is allowed
-		// if successful, the deletion action will be called from DS.FLOWrestadaptor.sideload
-		//http://localhost:8888/rest/survey:ember1899>s?preflight=delete&surveyId=146532016
-		//FLOW.store.findQuery(form, {
-		//	preflight: 'delete',
-		//	surveyId: fDeleteId
-		//}
-		//)
-		
 		$.ajax({
             url: '/rest/surveys/?preflight=delete&surveyId=' + fDeleteId,
             type: 'GET',
             success: function(json) {
-            	//surveys:[]
-            	//meta:	Object
-            	//since	
-            	//num	null
-            	//keyId	null
-            	//status	preflight-delete-survey
-            	//message	cannot_delete
             	if (json && json.meta && json.meta.status === 'preflight-delete-survey') {
                     if (json.meta.message === 'can_delete') {
                         // do the deletion
-                      	alert('Echo');
                         FLOW.surveyControl.deleteForm(fDeleteId);
-                      } else {
+                      } else { //'cannot_delete'
                         FLOW.dialogControl.set('activeAction', 'ignore');
-                        FLOW.dialogControl.set('header', 'Cannot delete form');
-                        FLOW.dialogControl.set('message', 'There is data collected for the form; you must delete it first from the Data tab.');
+                        FLOW.dialogControl.set('header', Ember.String.loc('_cannot_delete_form'));
+                        FLOW.dialogControl.set('message', Ember.String.loc('_cannot_delete_form_text'));
                         FLOW.dialogControl.set('showCANCEL', false);
                         FLOW.dialogControl.set('showDialog', true);
                       }
  
             	} else {
-            		alert('Foxtrot '+json);
+            		//TODO: tell user?
             	}
             },
             error: function() {
-              alert('Checking if form deletable failed... try again...');
+            	//TODO: tell user?
+            	//alert('Checking if form deletable failed; try again.');
             }
           });
 		
