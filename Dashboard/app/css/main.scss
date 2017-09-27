@@ -5843,8 +5843,17 @@ li.disable {
 
     fieldset {
         padding: 10px;
-        background-color: rgba(white, 0.1);
-        color: white;
+        background-color: rgba($akvoBlack, 0.1);
+
+        label {
+            display: inline-block;
+        }
+
+        &:first-of-type {
+            label {
+                display: inherit;
+            }
+        }
 
         input {
             @include placeholder-color(rgb(32, 32, 36));
@@ -5855,13 +5864,16 @@ li.disable {
             &:first-of-type {
                 width: 25%;
             }
+
+            &[type="checkbox"] {
+                display: inline-block;
+            }
         }
     }
 
     p {
         width: 35%;
-        margin-top: 5px;
-        color: rgba(white, 0.6);
+        margin-top: 15px;
     }
 
     .resumable-progress {

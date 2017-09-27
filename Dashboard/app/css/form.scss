@@ -59,6 +59,10 @@ label {
     cursor: pointer;
     display: block;
     color: rgb(107, 134, 141);
+
+    &.checkboxType {
+        display: inline-block !important;
+    }
 }
 
 legend {
