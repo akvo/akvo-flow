@@ -1252,7 +1252,7 @@ input.hasDatepicker {
 }
 
 #assignSurveys .fieldSetWrap fieldset {
-    display: inline;
+    display: inline-block;
     margin: 0;
     padding: 1em 0.5% 1.5em 0.5%;
     width: 49%;
@@ -3556,9 +3556,11 @@ table.dataTable.notificationTable thead tr th a:visited {
     display: block;
 
     select {
-        max-width: 20%;
+        max-width: 15%;
         float: left;
         display: inline;
+
+        @include noWrapTxt;
     }
 }
 
