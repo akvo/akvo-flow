@@ -5456,6 +5456,8 @@ nav.cascadeBreadCrumb {
         text-indent: 29px;
         position: relative;
         transition: all 0.4s ease-in;
+        white-space: nowrap;
+        max-width: 175px;
     }
 
     ul li:before {
@@ -5594,6 +5596,7 @@ nav.cascadeBreadCrumb {
 
         .cascadeEntryCode {
             width: 15%;
+            margin-top: 10px;
         }
 
         button {
@@ -5617,20 +5620,18 @@ nav.cascadeBreadCrumb {
         .levelHead {
             padding-left: 5px;
             width: calc(100% - 10px);
+            padding-bottom: 15px;
 
             label {
-                margin-bottom: 10px;
+                max-width: 80%;
+                display: inline-block !important;
 
-                a {
-                    display: inline-block;
-                    width: 20px;
+                @include noWrapTxt;
+
+                & + a {
                     margin-left: 10px;
-
-                    &.editSurvey {
-                        background-size: 18px 18px;
-
-                        &:hover {}
-                    }
+                    top: -5px;
+                    position: relative;
                 }
             }
         }

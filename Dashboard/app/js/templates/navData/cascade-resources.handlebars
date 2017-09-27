@@ -106,8 +106,8 @@
 	          							<a {{action "saveNewLevelName" target="this"}} class="smallBtn">{{t _save}}</a>
 	          							<a {{action "cancelNewLevelName" target="this"}}>{{t _cancel}}</a>
 								{{else}}
-									<label for="level01Name">{{FLOW.cascadeResourceControl.displayLevelName1}}
-									<a {{action "showEditField" target="this"}} class="editSurvey">{{t _edit}}</a></label>
+									<label for="level01Name">{{FLOW.cascadeResourceControl.displayLevelName1}}</label>
+									<a {{action "showEditField" target="this"}}>{{t _edit}}</a>
 								{{/if}}
                            	 	{{#view FLOW.CascadeNodeView col=1}}
 									{{#if view.showInputField}}
@@ -144,8 +144,8 @@
 	          							<a {{action "saveNewLevelName" target="this"}} class="smallBtn">{{t _save}}</a>
 	          							<a {{action "cancelNewLevelName" target="this"}}>{{t _cancel}}</a>
 								{{else}}
-									<label for="level02Name">{{FLOW.cascadeResourceControl.displayLevelName2}}
-									<a {{action "showEditField" target="this"}} class="editSurvey">{{t _edit}}</a></label>
+									<label for="level02Name">{{FLOW.cascadeResourceControl.displayLevelName2}}</label>
+									<a {{action "showEditField" target="this"}}>{{t _edit}}</a>
 								{{/if}}
                            		{{#view FLOW.CascadeNodeView col=2}}
 									{{#if view.showInputField}}
@@ -182,8 +182,9 @@
 	          						<a {{action "saveNewLevelName" target="this"}} class="smallBtn">{{t _save}}</a>
 	          						<a {{action "cancelNewLevelName" target="this"}}>{{t _cancel}}</a>
 							{{else}}
-								<label for="level02Name">{{FLOW.cascadeResourceControl.displayLevelName3}}
-								<a {{action "showEditField" target="this"}} class="editSurvey">{{t _edit}}</a></label>
+								
+								<label for="level02Name">{{FLOW.cascadeResourceControl.displayLevelName3}}</label>
+								<a {{action "showEditField" target="this"}}>{{t _edit}}</a>
 							{{/if}}
 							{{#view FLOW.CascadeNodeView col=3}}
 								{{#if view.showInputField}}
