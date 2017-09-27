@@ -75,16 +75,12 @@ DS.FLOWRESTAdapter = DS.RESTAdapter.extend({
       if (status === 'preflight-delete-survey') {
         if (msg === 'can_delete') {
           // do deletion
-            //FLOW.surveyControl.deleteSurvey(keyId);
-        	alert('Charlie');
-            FLOW.surveyControl.deleteForm(keyId); //Surveys now known as forms
+          //FLOW.surveyControl.deleteSurvey(keyId);
+          FLOW.surveyControl.deleteForm(keyId); //Surveys now known as forms
         } else {
-        	alert('Delta');
           FLOW.dialogControl.set('activeAction', 'ignore');
-          FLOW.dialogControl.set('header', 'Cannot delete form');
-          FLOW.dialogControl.set('message', 'There is data collected for the form; you must delete it first from the Data tab.');
-//          FLOW.dialogControl.set('header', Ember.String.loc('_cannot_delete_survey'));
-//          FLOW.dialogControl.set('message', Ember.String.loc('_cannot_delete_survey_text'));
+          FLOW.dialogControl.set('header', Ember.String.loc('_cannot_delete_form'));
+          FLOW.dialogControl.set('message', Ember.String.loc('_cannot_delete_form_text'));
           FLOW.dialogControl.set('showCANCEL', false);
           FLOW.dialogControl.set('showDialog', true);
         }
