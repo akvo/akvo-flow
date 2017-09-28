@@ -5619,11 +5619,13 @@ nav.cascadeBreadCrumb {
 
         .levelHead {
             padding-left: 5px;
-            width: calc(100% - 10px);
+            max-width: calc(100% - 10px);
             padding-bottom: 15px;
 
+            @include noWrapTxt;
+
             label {
-                max-width: 80%;
+                max-width: 60%;
                 display: inline-block !important;
 
                 @include noWrapTxt;
