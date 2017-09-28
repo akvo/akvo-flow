@@ -1180,7 +1180,6 @@ p.optionTitle strong {
     position: relative;
     margin: 3px auto;
     padding: 1em 0.5% 3em 0.5%;
-    width: 98%;
 }
 
 fieldset#assignmentDetails {
@@ -1249,19 +1248,6 @@ input.hasDatepicker {
 
 .fieldSetWrap.makeWhite {
     background: white url(../images/FieldSetSep.png) center center no-repeat;
-}
-
-#assignSurveys .fieldSetWrap fieldset {
-    display: inline;
-    margin: 0;
-    padding: 1em 0.5% 1.5em 0.5%;
-    width: 49%;
-    max-width: 49%;
-}
-
-.manualTransfer .fieldSetWrap fieldset.fullWidth {
-    min-height: inherit;
-    width: 100%;
 }
 
 #assignSurveys .fieldSetWrap fieldset table {
@@ -1355,55 +1341,80 @@ th.action {
     width: 15%;
 }
 
-#assignSurveys .fieldSetWrap fieldset table td.action {
+#assignSurveys .fieldSetWrap div fieldset table td.action {
     padding: 0.6em 0 0.6em 3%;
     width: 15%;
 }
 
-#assignSurveys .fieldSetWrap fieldset.formLeftPanel {
-    position: relative;
-    float: left;
+#assignSurveys .fieldSetWrap > div {
+    display: inline-block;
+    margin: 0;
+    padding: 1em 0.5% 1.5em 0.5%;
+    width: 48%;
 }
 
-#assignSurveys .fieldSetWrap fieldset.formRightPanel {
+.manualTransfer .fieldSetWrap fieldset.fullWidth {
+    min-height: inherit;
+    width: 100%;
+}
+
+#assignSurveys .fieldSetWrap .formLeftPanel {
+    position: relative;
+    float: left;
+    overflow: auto;
+}
+
+#assignSurveys .fieldSetWrap .formRightPanel {
     position: relative;
     float: right;
     padding: 1em 0.5% 1.5em 1.5%;
-    width: 48%;
     height: 98%;
+    overflow: auto;
 }
 
-#assignSurveys .fieldSetWrap fieldset.formLeftPanel div {
+#assignSurveys .fieldSetWrap .formLeftPanel div {
     position: relative;
-    display: inline;
 }
 
-#assignSurveys .fieldSetWrap fieldset.formLeftPanel div nav {
+#assignSurveys .fieldSetWrap .formLeftPanel div nav {
     position: absolute;
     top: 0.3em;
     right: 2.5%;
     display: inline;
 }
 
-#assignSurveys .fieldSetWrap fieldset.formLeftPanel div nav ul li {
+#assignSurveys .fieldSetWrap .formLeftPanel div nav ul li {
     display: inline;
     margin: 0 0 0 5px;
 }
 
-#assignSurveys .fieldSetWrap fieldset.formLeftPanel div nav ul li:first-child {
+#assignSurveys .fieldSetWrap .formLeftPanel div nav ul li:first-child {
     margin: 0 0 0 0;
 }
 
-#assignSurveys .fieldSetWrap fieldset.formLeftPanel div nav ul li a {
+#assignSurveys .fieldSetWrap .formLeftPanel div nav ul li a {
     color: rgb(0, 123, 182);
 }
 
-#assignSurveys .fieldSetWrap fieldset.formLeftPanel div.SelectLayout {}
-
-#assignSurveys .fieldSetWrap fieldset.formLeftPanel div.formSelectorList {
+#assignSurveys .fieldSetWrap .formLeftPanel div.SelectLayout {
+    max-width: 85%;
     position: relative;
-    display: inline-block;
-    width: 100%;
+
+    .modularSelection {
+        display: inline;
+
+        select {
+            max-width: 20%;
+            float: left;
+            display: inline;
+
+            @include noWrapTxt;
+        }
+    }
+}
+
+#assignSurveys .fieldSetWrap .formLeftPanel div.formSelectorList {
+    width: 85%;
     margin-top: 30px;
 
     select {
@@ -3559,6 +3570,8 @@ table.dataTable.notificationTable thead tr th a:visited {
         max-width: 20%;
         float: left;
         display: inline;
+
+        @include noWrapTxt;
     }
 }
 
