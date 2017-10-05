@@ -393,6 +393,11 @@ FLOW.projectControl = Ember.ArrayController.create({
   /* Actions */
   selectProject: function(evt) {
     var project = evt.context;
+    // the target should not be openable while being moved. Prevents moving it into itself.
+    if (this.moveTarget == project) {
+    	return;
+    }
+    
     this.setCurrentProject(evt.context);
 
     // User is using the breadcrumb to navigate, we could have unsaved changes
@@ -473,7 +478,8 @@ FLOW.projectControl = Ember.ArrayController.create({
     project.deleteRecord();
     FLOW.store.commit();
   },
-
+  
+  /* start moving a folder. Confusingly, the target is what will move */
   beginMoveProject: function(evt) {
     this.set('newlyCreated', null);
     this.set('moveTarget', evt.context);
