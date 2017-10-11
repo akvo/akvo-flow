@@ -585,35 +585,36 @@ public class GraphicalSurveySummaryExporter extends SurveySummaryExporter {
 
         Row row = getRow(startRow, sheet);
 
-        createCell(row, columnIndexMap.get(IDENTIFIER_LABEL.get(locale)),
-                dto.getSurveyedLocaleIdentifier());
-
-        if (hasDataApproval()) {
-            createCell(row, columnIndexMap.get(DATA_APPROVAL_STATUS_LABEL.get(locale)),
-                    instanceData.latestApprovalStatus);
-        }
-
-        // Write the "Repeat" column
         for (int i = 0; i <= instanceData.maxIterationsCount; i++) {
+
             Row r = getRow(row.getRowNum() + i, sheet);
+            // Write the identifier
+            createCell(r, columnIndexMap.get(IDENTIFIER_LABEL.get(locale)),
+                    dto.getSurveyedLocaleIdentifier());
+            // Write data approval status
+            if (hasDataApproval()) {
+                createCell(r, columnIndexMap.get(DATA_APPROVAL_STATUS_LABEL.get(locale)),
+                        instanceData.latestApprovalStatus);
+            }
+            // Write the "Repeat" column
             createCell(r, columnIndexMap.get(REPEAT_LABEL.get(locale)),
                     String.valueOf(i + 1), null, Cell.CELL_TYPE_NUMERIC);
+            // Write other metadata
+            createCell(r, columnIndexMap.get(DISPLAY_NAME_LABEL.get(locale)),
+                    dto.getSurveyedLocaleDisplayName());
+            createCell(r, columnIndexMap.get(DEVICE_IDENTIFIER_LABEL.get(locale)),
+                    dto.getDeviceIdentifier());
+            createCell(r, columnIndexMap.get(INSTANCE_LABEL.get(locale)),
+                    dto.getKeyId().toString());
+            createCell(r, columnIndexMap.get(SUB_DATE_LABEL.get(locale)),
+                    ExportImportUtils.formatDateTime(dto.getCollectionDate()));
+            createCell(r, columnIndexMap.get(SUBMITTER_LABEL.get(locale)),
+                    sanitize(dto.getSubmitterName()));
+            String duration = getDurationText(dto.getSurveyalTime());
+            createCell(r, columnIndexMap.get(DURATION_LABEL.get(locale)),
+                    duration);
         }
-        createCell(row, columnIndexMap.get(DISPLAY_NAME_LABEL.get(locale)),
-                dto.getSurveyedLocaleDisplayName());
-        createCell(row,
-                columnIndexMap.get(DEVICE_IDENTIFIER_LABEL.get(locale)),
-                dto.getDeviceIdentifier());
-        createCell(row, columnIndexMap.get(INSTANCE_LABEL.get(locale)), dto
-                .getKeyId().toString());
-        createCell(row, columnIndexMap.get(SUB_DATE_LABEL.get(locale)),
-                ExportImportUtils.formatDateTime(dto.getCollectionDate()));
-        createCell(row, columnIndexMap.get(SUBMITTER_LABEL.get(locale)),
-                sanitize(dto.getSubmitterName()));
-        String duration = getDurationText(dto.getSurveyalTime());
-        createCell(row, columnIndexMap.get(DURATION_LABEL.get(locale)),
-                duration);
-
+        
         for (String q : questionIdList) {
             final Long questionId = Long.valueOf(q);
             final QuestionDto questionDto = questionsById.get(questionId);
