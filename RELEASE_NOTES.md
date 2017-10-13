@@ -1,5 +1,15 @@
 # Akvo Flow Release Notes
 ----
+# 1.9.24 Wanted Wolverine
+Date: 13 October 2017
+
+## New and noteworthy
+* **Repeatable question groups** - Add metadata to all rows in data exports [#2247]
+
+## Resolved issues
+* **Bug fixes** - Do not open folder being moved [#1367]
+* **User interface improvement** - Layout no longer breaks in the survey assignment and manual survey transfer tabs [#1992]. Improved user interface in the cascade resources tab [#2033]
+
 # 1.9.23 Versatile Vicuña
 Date: 21 September 2017
 
