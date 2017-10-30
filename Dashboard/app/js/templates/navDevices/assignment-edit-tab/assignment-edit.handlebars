@@ -24,133 +24,141 @@
         </div>
       </fieldset>
       <div class="fieldSetWrap floats-in">
-        <fieldset id="surveySelect" class="formLeftPanel floats-in">
-          <h2>02. {{t _select_survey}}:</h2>
-          <span class="infoText">{{t _cant_find_your_survey_}}</span>
-          <div class="SelectLayout">
-            <label for="surveyGroup">{{t _select_survey}}:</label>
-            {{#unless FLOW.projectControl.isLoading}}
-              {{view FLOW.SurveySelectionView}}
-            {{/unless}}
-			    </div>
-          <div class="formSelectorList">
-                <nav>
-                  <ul>
-                    <li><a {{action selectAllSurveys target="this"}}>{{t _select_all}}</a></li>
-                    <li><a {{action deselectAllSurveys target="this"}}>{{t _deselect_all}}</a></li>
-                  </ul>
-                </nav>
-                <label for="surveys">{{t _select_forms}}:</label>
-               {{view Ember.Select
-               multiple=true
-               size=10
-            contentBinding="FLOW.surveyControl.publishedContent.arrangedContent"
-            selectionBinding="FLOW.selectedControl.selectedSurveys"
-            optionLabelPath="content.name"
-              id="surveys"
-            optionValuePath="content.keyId"}}
-          <a {{action addSelectedSurveys target="this"}}  class="AddBtn">{{t _add_selected_forms}}</a>
-          </div>
-        </fieldset>
-        <fieldset id="surveyPreview" class="formRightPanel">
-          <h2>{{t _preview_survey_selection}}:</h2>
-          <div class="">
-            <!-- DEVICES TABLE-->
-            <table id="surveyPreviewList" class="previewList" >
-              <!-- TABLE HEADER-->
-              <thead>
-                <tr>
-                  <th class="groupPreview">{{t _survey}}</th>
-                  <th class="surveyPreview">{{t _form}}</th>
-                  <th class="action"></th>
-                </tr>
-              </thead>
-              <!-- TABLE BODY: MAIN CONTENT-->
-              <tbody>
-                {{#each survey in view.surveysPreview}}
-                <tr>
-                  <td class="groupPreview">{{survey.surveyGroupName}}</td>
-                  <td class="surveyPreview"{{survey.name}}</td>
-                  <td class="action"><a {{action "removeSingleSurvey" survey target="this"}} class="remove">{{t _remove}}</a></td>
-                </tr>
-                {{/each}}
-              </tbody>
-              <!-- TABLE FOOTER-->
-              <tfoot>
-                <tr>
-                  <td colspan="7"><a {{action "removeAllSurveys" target="this"}}>{{t _clear_all}}</a></td>
-                </tr>
-              </tfoot>
-            </table>
-          </div>
-        </fieldset>
+        <div class="formLeftPanel">
+          <fieldset id="surveySelect" class="floats-in">
+            <h2>02. {{t _select_survey}}:</h2>
+            <p class="infoText">{{t _cant_find_your_survey_}}</p>
+            <div class="SelectLayout">
+              <label for="surveyGroup">{{t _select_survey}}:</label>
+              {{#unless FLOW.projectControl.isLoading}}
+                {{view FLOW.SurveySelectionView}}
+              {{/unless}}
+  			    </div>
+            <div class="formSelectorList">
+                  <nav>
+                    <ul>
+                      <li><a {{action selectAllSurveys target="this"}}>{{t _select_all}}</a></li>
+                      <li><a {{action deselectAllSurveys target="this"}}>{{t _deselect_all}}</a></li>
+                    </ul>
+                  </nav>
+                  <label for="surveys">{{t _select_forms}}:</label>
+                 {{view Ember.Select
+                 multiple=true
+                 size=10
+              contentBinding="FLOW.surveyControl.publishedContent.arrangedContent"
+              selectionBinding="FLOW.selectedControl.selectedSurveys"
+              optionLabelPath="content.name"
+                id="surveys"
+              optionValuePath="content.keyId"}}
+            <a {{action addSelectedSurveys target="this"}}  class="AddBtn">{{t _add_selected_forms}}</a>
+            </div>
+          </fieldset>
+        </div>
+        <div class="formRightPanel">
+          <fieldset id="surveyPreview" class="floats-in">
+            <h2>{{t _preview_survey_selection}}:</h2>
+            <div class="">
+              <!-- DEVICES TABLE-->
+              <table id="surveyPreviewList" class="previewList" >
+                <!-- TABLE HEADER-->
+                <thead>
+                  <tr>
+                    <th class="groupPreview">{{t _survey}}</th>
+                    <th class="surveyPreview">{{t _form}}</th>
+                    <th class="action"></th>
+                  </tr>
+                </thead>
+                <!-- TABLE BODY: MAIN CONTENT-->
+                <tbody>
+                  {{#each survey in view.surveysPreview}}
+                  <tr>
+                    <td class="groupPreview">{{survey.surveyGroupName}}</td>
+                    <td class="surveyPreview"{{survey.name}}</td>
+                    <td class="action"><a {{action "removeSingleSurvey" survey target="this"}} class="remove">{{t _remove}}</a></td>
+                  </tr>
+                  {{/each}}
+                </tbody>
+                <!-- TABLE FOOTER-->
+                <tfoot>
+                  <tr>
+                    <td colspan="7"><a {{action "removeAllSurveys" target="this"}}>{{t _clear_all}}</a></td>
+                  </tr>
+                </tfoot>
+              </table>
+            </div>
+          </fieldset>
+        </div>
       </div>
 
     <div class="fieldSetWrap makeWhite">
-        <fieldset id="devicesSelect" class="formLeftPanel">
-          <h2>03. {{t _select_devices}}:</h2>
-          <div class="">
-          <label for="deviceGroup">{{t _select_device_group}}:</label>
-          {{view Ember.Select
-      contentBinding="FLOW.deviceGroupControl.content"
-      selectionBinding="FLOW.selectedControl.selectedDeviceGroup"
-      optionLabelPath="content.code"
-      optionValuePath="content.keyId"
-      id="deviceGroup"
-      prompt=""
-      promptBinding="Ember.STRINGS._select_device_group"}}
-          </div>
-          <div class="formSelectorList">
-            <nav>
-              <ul>
-                <li><a {{action selectAllDevices target="this"}}>{{t _select_all}}</a></li>
-                <li><a {{action deselectAllDevices target="this"}}>{{t _deselect_all}}</a></li>
-              </ul>
-            </nav>
-          <label for="devices">{{t _select_devices}}:</label>
-          {{view Ember.Select
-           multiple=true
-           size=10
-        contentBinding="FLOW.devicesInGroupControl.arrangedContent"
-        selectionBinding="FLOW.selectedControl.selectedDevices"
-        optionLabelPath="content.combinedName"
+        <div class="formLeftPanel">
+          <fieldset id="devicesSelect" class="floats-in">
+            <h2>03. {{t _select_devices}}:</h2>
+            <div class="">
+            <label for="deviceGroup">{{t _select_device_group}}:</label>
+            {{view Ember.Select
+        contentBinding="FLOW.deviceGroupControl.content"
+        selectionBinding="FLOW.selectedControl.selectedDeviceGroup"
+        optionLabelPath="content.code"
         optionValuePath="content.keyId"
-       id="devices"}}
-      <a {{action addSelectedDevices target="this"}} class="AddBtn">{{t _add_selected_devices}}</a>
-          </div>
-        </fieldset>
-        <fieldset id="devicesPreview" class="formRightPanel">
-          <h2>{{t _preview_device_selection}}:</h2>
-          <div class="">
-            <!-- DEVICES TABLE-->
-            <table id="devicePreviewList" class="previewList" >
-              <!-- TABLE HEADER-->
-              <thead>
-                <tr>
-                  <th class="groupPreview">{{t _device_group}}</th>
-                  <th class="surveyPreview">{{t _device}}</th>
-                  <th class="action"></th>
-                </tr>
-              </thead>
-              <!-- TABLE BODY: MAIN CONTENT-->
-              <tbody>
-                {{#each device in view.devicesPreview}}
-                <tr>
-                  <td class="deviceGroup">{{device.deviceGroupName}}</td>
-                  <td class="deviceId">{{device.combinedName}}</td>
-                  <td class="action"><a {{action "removeSingleDevice" device target="this"}} class="remove">{{t _remove}}</a></td>
-                </tr>
-                {{/each}}
-              </tbody>
-              <!-- TABLE FOOTER-->
-              <tfoot>
-                <tr>
-                  <td colspan="7"><a {{action "removeAllDevices" target="this"}}>{{t _clear_all}}</a></td>
-                </tr>
-              </tfoot>
-            </table>
-          </div>
-        </fieldset>
+        id="deviceGroup"
+        prompt=""
+        promptBinding="Ember.STRINGS._select_device_group"}}
+            </div>
+            <div class="formSelectorList">
+              <nav>
+                <ul>
+                  <li><a {{action selectAllDevices target="this"}}>{{t _select_all}}</a></li>
+                  <li><a {{action deselectAllDevices target="this"}}>{{t _deselect_all}}</a></li>
+                </ul>
+              </nav>
+            <label for="devices">{{t _select_devices}}:</label>
+            {{view Ember.Select
+             multiple=true
+             size=10
+          contentBinding="FLOW.devicesInGroupControl.arrangedContent"
+          selectionBinding="FLOW.selectedControl.selectedDevices"
+          optionLabelPath="content.combinedName"
+          optionValuePath="content.keyId"
+         id="devices"}}
+        <a {{action addSelectedDevices target="this"}} class="AddBtn">{{t _add_selected_devices}}</a>
+            </div>
+          </fieldset>
+        </div>
+        <div class="formRightPanel">
+          <fieldset id="devicesPreview" class="floats-in">
+            <h2>{{t _preview_device_selection}}:</h2>
+            <div class="">
+              <!-- DEVICES TABLE-->
+              <table id="devicePreviewList" class="previewList" >
+                <!-- TABLE HEADER-->
+                <thead>
+                  <tr>
+                    <th class="groupPreview">{{t _device_group}}</th>
+                    <th class="surveyPreview">{{t _device}}</th>
+                    <th class="action"></th>
+                  </tr>
+                </thead>
+                <!-- TABLE BODY: MAIN CONTENT-->
+                <tbody>
+                  {{#each device in view.devicesPreview}}
+                  <tr>
+                    <td class="deviceGroup">{{device.deviceGroupName}}</td>
+                    <td class="deviceId">{{device.combinedName}}</td>
+                    <td class="action"><a {{action "removeSingleDevice" device target="this"}} class="remove">{{t _remove}}</a></td>
+                  </tr>
+                  {{/each}}
+                </tbody>
+                <!-- TABLE FOOTER-->
+                <tfoot>
+                  <tr>
+                    <td colspan="7"><a {{action "removeAllDevices" target="this"}}>{{t _clear_all}}</a></td>
+                  </tr>
+                </tfoot>
+              </table>
+            </div>
+          </fieldset>
+        </div>
       </div>
       <div class="menuConfirm">
         <ul>
