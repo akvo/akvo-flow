@@ -266,6 +266,11 @@ FLOW.NavMapsView = FLOW.View.extend({
       }
   }.observes('this.selectedSurvey'),
 
+  surveyGroupSelection: function () {
+      this.clearMap();
+      FLOW.mapsController.clearCartodbLayer();
+  }.observes('FLOW.selectedControl.selectedSurveyGroup'),
+
   /**
     Helper function to dispatch to either hide or show details pane
   */
