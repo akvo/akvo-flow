@@ -370,7 +370,10 @@ FLOW.NavMapsView = FLOW.View.extend({
 
   /*Place a marker to highlight clicked point of layer on cartodb map*/
   placeMarker: function(latlng){
-      this.clearMap();
+      //if there's a previously loaded marker, first remove it
+      if (this.marker) {
+          this.map.removeLayer(this.marker);
+      }
 
       var markerIcon = new L.Icon({
           iconUrl: 'images/marker.svg',
@@ -379,7 +382,9 @@ FLOW.NavMapsView = FLOW.View.extend({
       this.marker = new L.marker(FLOW.mapsController.get('markerCoordinates'), {icon: markerIcon});
       this.map.addLayer(this.marker);
 
-      FLOW.mapsController.set('detailsPaneVisible', true);
+      if (!FLOW.mapsController.get('detailsPaneVisible')) {
+          FLOW.mapsController.set('detailsPaneVisible', true);
+      }
   }.observes('FLOW.mapsController.markerCoordinates'),
 
   detailsPaneShowHide: function(){
