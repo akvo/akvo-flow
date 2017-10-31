@@ -275,8 +275,7 @@ FLOW.mapsController = Ember.ArrayController.create({
 
             dataLayer.on('featureClick', function(e, latlng, pos, data) {
                 FLOW.mapsController.set('markerCoordinates', [data.lat, data.lon]);
-                FLOW.mapsController.set('detailsPaneVisible', true);
-
+                
                 //get survey instance
                 self.set( 'selectedSI', FLOW.store.find(FLOW.SurveyInstance, data.id));
 

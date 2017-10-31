@@ -370,12 +370,16 @@ FLOW.NavMapsView = FLOW.View.extend({
 
   /*Place a marker to highlight clicked point of layer on cartodb map*/
   placeMarker: function(latlng){
+      this.clearMap();
+
       var markerIcon = new L.Icon({
           iconUrl: 'images/marker.svg',
           iconSize: [10, 10]
       });
       this.marker = new L.marker(FLOW.mapsController.get('markerCoordinates'), {icon: markerIcon});
       this.map.addLayer(this.marker);
+
+      FLOW.mapsController.set('detailsPaneVisible', true);
   }.observes('FLOW.mapsController.markerCoordinates'),
 
   detailsPaneShowHide: function(){
