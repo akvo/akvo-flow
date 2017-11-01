@@ -297,8 +297,12 @@ FLOW.mapsController = Ember.ArrayController.create({
         //populate survey instance basics
         if (!Ember.none(this.selectedSI)) {
             var date = new Date(this.selectedSI.get('collectionDate'));
-
-            var pointDetailsHeader = '<ul class="placeMarkBasicInfo floats-in"><li>'
+            var pointDetailsHeader = '<ul class="placeMarkBasicInfo floats-in">'
+            +(this.selectedSI.get('surveyedLocaleDisplayName') ? '<h3>'+this.selectedSI.get('surveyedLocaleDisplayName')+'</h3>' : '')
+            +(this.selectedSI.get('surveyedLocaleIdentifier') ? '<li><span>'+Ember.String.loc('_data_point_id')
+            +':</span><div style="display: inline; margin: 0 0 0 5px;">'
+            +this.selectedSI.get('surveyedLocaleIdentifier')+'</div></li>' : '')
+            +'<li>'
             +'<span>'+Ember.String.loc('_collected_on') +':</span>'
             +'<div class="placeMarkCollectionDate">'
             +date.toISOString().slice(0,-8).replace("T", " ")
