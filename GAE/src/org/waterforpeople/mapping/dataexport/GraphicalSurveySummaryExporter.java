@@ -105,7 +105,7 @@ public class GraphicalSurveySummaryExporter extends SurveySummaryExporter {
     private static final String RQG_SHEETS_OPT = "doRqgSheets";
     private static final String GROUP_HEADERS_OPT = "doGroupHeaders";
     private static final String USE_QIDS_OPT = "useQuestionId";
-    private static final String METADATA_LABEL = "Metadata";
+    private static final String METADATA_LABEL = "Metadata"; //Constant. Localization is going away.
     
 
     private static final String DEFAULT_IMAGE_PREFIX = "http://waterforpeople.s3.amazonaws.com/images/";
@@ -157,8 +157,7 @@ public class GraphicalSurveySummaryExporter extends SurveySummaryExporter {
     private static final int CHART_CELL_HEIGHT = 22;
     private static final String DEFAULT_LOCALE = "en";
     private static final String DEFAULT = "default";
-    private static final NumberFormat PCT_FMT = DecimalFormat
-            .getPercentInstance();
+    private static final NumberFormat PCT_FMT = DecimalFormat.getPercentInstance();
 
     static {
         // populate all translations
@@ -239,8 +238,8 @@ public class GraphicalSurveySummaryExporter extends SurveySummaryExporter {
         DURATION_LABEL.put("es", "Duración");
 
         REPEAT_LABEL = new HashMap<String, String>();
-        REPEAT_LABEL.put("en", "Repeat no.");
-        REPEAT_LABEL.put("es", "No. repetición");
+        REPEAT_LABEL.put("en", "Repeat no"); //Periods in headers were annoying to some consumers
+        REPEAT_LABEL.put("es", "No repetición");
 
         LOADING_QUESTIONS = new HashMap<String, String>();
         LOADING_QUESTIONS.put("en", "Loading Questions");
@@ -325,7 +324,7 @@ public class GraphicalSurveySummaryExporter extends SurveySummaryExporter {
     private boolean isFullReport;
     private boolean performGeoRollup;
     private boolean generateCharts; //Pie charts
-    private boolean useQuestionId; //Also turns on splitting of answers into separate columns (options, geo, etc.)
+    private boolean useQuestionId; //=Variable names. Also turns on splitting of answers into separate columns (options, geo, etc.) and turns off digests
     private boolean makeRepGroupSheets;
     private boolean doGroupHeaders; //First header line is group names spanned over the group columns
     private Map<Long, QuestionDto> questionsById;
@@ -501,7 +500,7 @@ public class GraphicalSurveySummaryExporter extends SurveySummaryExporter {
         final String key = apiKey;
 
         //make base sheet (for non-repeated data)
-        final Sheet sheet = wb.createSheet(RAW_DATA_LABEL.get(locale));
+        final Sheet baseSheet = wb.createSheet(RAW_DATA_LABEL.get(locale));
 
         final Map<String, String> collapseIdMap = new HashMap<String, String>();
         final Map<String, String> nameToIdMap = new HashMap<String, String>();
@@ -522,7 +521,7 @@ public class GraphicalSurveySummaryExporter extends SurveySummaryExporter {
             }
         }
 
-        createRawDataHeader(wb, sheet, questionMap);
+        createRawDataHeader(wb, baseSheet, questionMap);
 
         Map<String, String> instanceMap = BulkDataServiceClient.fetchInstanceIds(
                 surveyId, serverBase, key, lastCollection, from, to, limit
@@ -604,27 +603,43 @@ public class GraphicalSurveySummaryExporter extends SurveySummaryExporter {
         for (InstanceData instanceData : allData) {
             if (makeRepGroupSheets) {
                 List<QuestionDto> baseSheetQuestions = new ArrayList<>();
+                List<Row> digestRows = new ArrayList<>();
+
                 //For each group, write the repeats from top to bottom            
                 for (Entry<QuestionGroupDto, List<QuestionDto>> groupEntry : questionMap.entrySet()) {
                     Long gid = groupEntry.getKey().getKeyId();
                     if (safeTrue(groupEntry.getKey().getRepeatable())) {
-                        int groupCurrentRow = writeInstanceDataSplit(qgSheetMap.get(gid), qgCurrentRow.get(gid),
+                        int groupCurrentRow = writeInstanceDataSplit(qgSheetMap.get(gid),
+                                qgCurrentRow.get(gid),
                                 instanceData,
                                 groupEntry.getValue(),
-                                generateSummary, nameToIdMap, collapseIdMap, model, true); 
+                                digestRows,
+                                true); 
                         qgCurrentRow.put(gid, Integer.valueOf(groupCurrentRow));
                     } else {
                         baseSheetQuestions.addAll(groupEntry.getValue());                   
                     }
                 }
                 // Now do the rest on the base sheet
-                baseCurrentRow = writeInstanceDataSplit(sheet, baseCurrentRow,
+                baseCurrentRow = writeInstanceDataSplit(baseSheet,
+                        baseCurrentRow,
                         instanceData,
                         baseSheetQuestions,
-                        generateSummary, nameToIdMap, collapseIdMap, model, false); 
+                        digestRows,
+                        false); 
+                
+                String digest = ExportImportUtils.md5Digest(digestRows,
+                        columnIndexMap.get(DIGEST_COLUMN));
+
+                if (!useQuestionId) {//??
+                    // now add 1 more col on the base sheet that contains the digest
+                    createCell(getRow(baseCurrentRow - 1, baseSheet), columnIndexMap.get(DIGEST_COLUMN), digest, null);
+                }
+
+
                 
             } else { //just one sheet - do all at once with a global repeat column
-                baseCurrentRow = writeInstanceData(sheet, baseCurrentRow, instanceData,
+                baseCurrentRow = writeInstanceData(baseSheet, baseCurrentRow, instanceData,
                         generateSummary, nameToIdMap, collapseIdMap, model);
             }
         }
@@ -638,10 +653,7 @@ public class GraphicalSurveySummaryExporter extends SurveySummaryExporter {
             final int startRow,
             InstanceData instanceData,
             List<QuestionDto> whichQuestions,
-            boolean generateSummary,
-            Map<String, String> nameToIdMap,
-            Map<String, String> collapseIdMap,
-            SummaryModel model, 
+            List<Row> digestRows,
             boolean showRepeatColumn)
             throws NoSuchAlgorithmException {
         
@@ -660,8 +672,9 @@ public class GraphicalSurveySummaryExporter extends SurveySummaryExporter {
             for (Map.Entry<Long, String> iteration : iterationsMap.entrySet()) {
                 String val = iteration.getValue();
                 Row iterationRow = getRow(++currentRow, sheet);
-                writeAnswer(sheet, iterationRow, columnIndexMap.get(questionId.toString()), //TODO: is index map really ok on all sheets??
+                writeAnswer(sheet, iterationRow, columnIndexMap.get(questionId.toString()),
                         questionDto, val);
+                digestRows.add(iterationRow);
             }
             maxRow = Math.max(maxRow, currentRow);
         }
@@ -1505,8 +1518,9 @@ public class GraphicalSurveySummaryExporter extends SurveySummaryExporter {
         }
         if (doGroupHeaders) {
             //Now we know the width; write the group name spanned over entire group
-            createCell(getRow(0, sheet), startOffset, group.getCode(), headerStyle);
-            sheet.addMergedRegion(new CellRangeAddress(0, 0, startOffset, offset - 1)); //TODO multi-column answers
+            createCell(getRow(0, sheet), startOffset,
+                    "Group " + group.getOrder() + " - " + group.getCode(), headerStyle);
+            sheet.addMergedRegion(new CellRangeAddress(0, 0, startOffset, offset - 1));
         }
         return offset;
     }
@@ -2118,6 +2132,7 @@ public class GraphicalSurveySummaryExporter extends SurveySummaryExporter {
         return this.imagePrefix;
     }
 
+    // For debugging; on server export() is called from Clojure code
     public static void main(String[] args) {
 
         // Log4j stuff - http://stackoverflow.com/a/9003191
@@ -2133,7 +2148,7 @@ public class GraphicalSurveySummaryExporter extends SurveySummaryExporter {
         options.put(LOCALE_OPT, "en");
         // options.put(TYPE_OPT, RAW_ONLY_TYPE);
         options.put(LAST_COLLECTION_OPT, "false");
-        options.put("useQuestionId", "false");
+        options.put(USE_QIDS_OPT, "false");
         options.put("email", "email@example.com");
         options.put("from", null);
         options.put("to", null);

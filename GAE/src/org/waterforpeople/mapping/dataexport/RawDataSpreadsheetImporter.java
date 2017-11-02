@@ -72,6 +72,7 @@ public class RawDataSpreadsheetImporter implements DataImporter {
     private static final int MONITORING_FORMAT_WITH_DEVICE_ID_COLUMN = 7;
     private static final int MONITORING_FORMAT_WITH_REPEAT_COLUMN = 8;
     private static final int MONITORING_FORMAT_WITH_APPROVAL_COLUMN = 9;
+    private static boolean splitSheets = false; //also has Group Headers
 
     public static final String DATAPOINT_IDENTIFIER_COLUMN_KEY = "dataPointIdentifier";
     private static final String DATAPOINT_APPROVAL_COLUMN_KEY = "dataPointApproval";
@@ -82,6 +83,9 @@ public class RawDataSpreadsheetImporter implements DataImporter {
     public static final String COLLECTION_DATE_COLUMN_KEY = "collectionDate";
     public static final String SUBMITTER_COLUMN_KEY = "submitterName";
     public static final String DURATION_COLUMN_KEY = "surveyalTime";
+    
+    public static final String METADATA_HEADER = "Metadata";
+    
 
     /**
      * opens a file input stream using the file passed in and tries to return the first worksheet in
@@ -91,14 +95,14 @@ public class RawDataSpreadsheetImporter implements DataImporter {
      * @return
      * @throws Exception
      */
-    public Sheet getDataSheet(File file) throws Exception {
+    public Workbook getWorkbook(File file) throws Exception {
         stream = new PushbackInputStream(new FileInputStream(file));
         Workbook wb = null;
         try {
             wb = WorkbookFactory.create(stream);
         } catch (Exception e) {
         }
-        return wb.getSheetAt(0);
+        return wb;
     }
 
     /**
@@ -120,19 +124,40 @@ public class RawDataSpreadsheetImporter implements DataImporter {
         try {
             log.info(String.format("Importing %s to %s using criteria %s", file, serverBase,
                     criteria));
-            Sheet sheet = getDataSheet(file);
-            String surveyId = criteria.get("surveyId");
-            Map<Integer, Long> columnIndexToQuestionId = processHeader(sheet);
+            Workbook wb = getWorkbook(file);
+            
+            //Find out if this is a 2017-style report w group headers and rqg's on separate sheets
+            splitSheets = safeCellCompare(wb.getSheetAt(0), 0, 0, METADATA_HEADER);
+            int headerRowIndex = splitSheets ? 1 : 0;
+     
+            Map<Sheet, Map<Integer, Long>> sheetMap = new HashMap<>();
+            // Find all data sheets
+            for (int i = 0; i < wb.getNumberOfSheets(); i++) {
+                Sheet sheet = wb.getSheetAt(i); 
+                String sn = sheet.getSheetName();
+                if (i == 0 || sn.startsWith("Group ")) {
+                    sheetMap.put(sheet, processHeader(sheet, headerRowIndex));
+                }
+            }
+            
             Map<Long, QuestionDto> questionIdToQuestionDto = fetchQuestions(serverBase, criteria);
 
             Map<Long, List<QuestionOptionDto>> optionNodes = fetchOptionNodes(serverBase,
                     criteria, questionIdToQuestionDto.values());
 
-            List<InstanceData> instanceDataList = parseSheet(sheet, questionIdToQuestionDto,
-                    columnIndexToQuestionId, optionNodes);
-
+            List<InstanceData> instanceDataList = new ArrayList<>();
+            if (splitSheets) {
+                //TODO
+                parseSplitSheets(wb.getSheetAt(0), sheetMap, questionIdToQuestionDto,
+                optionNodes, headerRowIndex);
+                
+            } else { //Legacy
+                instanceDataList = parseSingleSheet(wb.getSheetAt(0), questionIdToQuestionDto,
+                        optionNodes, sheetMap.get(wb.getSheetAt(0)));
+            }
             List<String> importUrls = new ArrayList<>();
 
+            String surveyId = criteria.get("surveyId");
             for (InstanceData instanceData : instanceDataList) {
                 String importUrl = buildImportURL(instanceData, surveyId,
                         questionIdToQuestionDto);
@@ -181,20 +206,103 @@ public class RawDataSpreadsheetImporter implements DataImporter {
     /**
      * Parse a raw data report file into a list of InstanceData
      *
+     * @param baseSheet
+     * @param columnIndexToQuestionId
+     * @param questionIdToQuestionDto
+     * @param optionNodes
+     * @return
+     */
+    public List<InstanceData> parseSplitSheets(Sheet baseSheet,
+            Map<Sheet, Map<Integer, Long>> sheetMap,
+            Map<Long, QuestionDto> questionIdToQuestionDto,
+            Map<Long, List<QuestionOptionDto>> optionNodes,
+            int headerRowIndex)
+            throws Exception {
+
+        List<InstanceData> result = new ArrayList<>();
+        Map<Sheet, Integer> sheetPosition = new HashMap<>();
+        
+        // Find the first empty/null cell in the base sheet header row. This is the position of the md5 hashes
+        int md5Column = 0;
+        while (true) {
+            if (isEmptyCell(baseSheet.getRow(headerRowIndex).getCell(md5Column))) {
+                break;
+            }
+            md5Column++;
+        }
+
+        //these are all for the base sheet
+        Map<Integer, Long> columnIndexToQuestionId = sheetMap.get(baseSheet);
+        int firstQuestionColumnIndex = Collections.min(columnIndexToQuestionId.keySet());
+        Map<String, Integer> metadataColumnHeaderIndex = calculateMetadataColumnIndex(firstQuestionColumnIndex); //Need one per sheet
+
+        int row = headerRowIndex + 1; //where the data starts
+        while (true) {
+            //TODO: make sure this works for no rpt column
+            InstanceData instanceData = parseInstance(baseSheet, row, metadataColumnHeaderIndex,
+                    firstQuestionColumnIndex, questionIdToQuestionDto, columnIndexToQuestionId,
+                    optionNodes);
+
+            if (instanceData == null) {
+                break; //End of sheet
+            }
+
+            // Have to collect all the parsed rows for md5 calculation
+            List<Row> allRows = new ArrayList<>();
+            allRows.add(baseSheet.getRow(row));
+            
+            //Now add in the answers on any rqg sheets
+            for (Sheet extraSheet : sheetMap.keySet()) {
+                if (extraSheet != baseSheet) {
+                    int firstQuestionColumnIndex2 = Collections.min(columnIndexToQuestionId.keySet());
+                    Map<String, Integer> metadataIndex2 = calculateMetadataColumnIndex(firstQuestionColumnIndex2); //TODO: do this only once per sheet!
+                    Integer pos = sheetPosition.get(extraSheet);
+                    if (pos == null) { //never scanned this one before; start at top
+                        pos = Integer.valueOf(headerRowIndex + 1);
+                    }
+                    //May add data to instanceData and rows to allRows
+                    pos = parseRepeatsForInstance(instanceData, extraSheet,
+                            pos, metadataIndex2, firstQuestionColumnIndex2,
+                            questionIdToQuestionDto, sheetMap.get(extraSheet),
+                            optionNodes, allRows);
+                    sheetPosition.put(extraSheet, pos); //replace with new pos; might be any value
+                }
+            }
+            String existingMd5Hash = "";
+            Cell md5Cell = baseSheet.getRow(row).getCell(md5Column);
+            // For new data the md5 hash column could be empty
+            if (md5Cell != null) {
+                existingMd5Hash = md5Cell.getStringCellValue();
+            }
+            String newMd5Hash = ExportImportUtils.md5Digest(allRows, md5Column - 1);
+
+            if (!newMd5Hash.equals(existingMd5Hash)) {
+                result.add(instanceData);
+            }
+
+            row++;
+        }
+
+        return result;
+    }
+
+    /**
+     * Parse a raw data report file into a list of InstanceData
+     *
      * @param sheet
      * @param columnIndexToQuestionId
      * @param questionIdToQuestionDto
      * @param optionNodes
      * @return
      */
-    public List<InstanceData> parseSheet(Sheet sheet,
+    public List<InstanceData> parseSingleSheet(Sheet sheet,
             Map<Long, QuestionDto> questionIdToQuestionDto,
-            Map<Integer, Long> columnIndexToQuestionId,
-            Map<Long, List<QuestionOptionDto>> optionNodes)
+            Map<Long, List<QuestionOptionDto>> optionNodes,
+            Map<Integer, Long> columnIndexToQuestionId)
             throws Exception {
 
         List<InstanceData> result = new ArrayList<>();
-
+        
         // Find the first empty/null cell in the header row. This is the position of the md5 hashes
         int md5Column = 0;
         while (true) {
@@ -283,6 +391,23 @@ public class RawDataSpreadsheetImporter implements DataImporter {
                 || firstQuestionColumnIndex == MONITORING_FORMAT_WITH_DEVICE_ID_COLUMN;
     }
 
+    
+    /**
+     * @return
+     */
+    private Integer parseRepeatsForInstance(InstanceData instanceData,
+            Sheet extraSheet,
+            int extraRow,
+            Map<String, Integer> metadataColumnHeaderIndex2,
+            int firstQuestionColumnIndex2,
+            Map<Long, QuestionDto> questionIdToQuestionDto,
+            Map<Integer, Long> columnIndexToQuestionId,
+            Map<Long, List<QuestionOptionDto>> optionNodes,
+            List<Row> rows) {
+                return extraRow;
+        
+    }
+
     /**
      * Parse an instance starting from startRow
      *
@@ -301,15 +426,21 @@ public class RawDataSpreadsheetImporter implements DataImporter {
             Map<Integer, Long> columnIndexToQuestionId,
             Map<Long, List<QuestionOptionDto>> optionNodes) {
 
-        // File layout
+        // Data sheet layout
+        // If cell [0,0] is "Metadata"
+        //  then the rest of row 0 is group headers and question headers are on row 1
+        //  and RQGs are on separate sheets.
+        // Otherwise question headers are on row 0.
+        
         // 0. SurveyedLocaleIdentifier
-        // 1. Repeat (if hasIterationColumn)
-        // 2. SurveyedLocaleDisplayName
-        // 3. DeviceIdentifier (if hasDeviceIdentifierColumn)
-        // 4. SurveyInstanceId
-        // 5. CollectionDate
-        // 6. SubmitterName
-        // 7. SurveyalTime
+        // 1. Approval (if hasIterationColumn)
+        // 2. Repeat (if hasIterationColumn)
+        // 3. SurveyedLocaleDisplayName
+        // 4. DeviceIdentifier (if hasDeviceIdentifierColumn)
+        // 5. SurveyInstanceId
+        // 6. CollectionDate
+        // 7. SubmitterName
+        // 8. SurveyalTime
 
         // 9 - N. Questions
         // N + 1. Digest
@@ -546,18 +677,20 @@ public class RawDataSpreadsheetImporter implements DataImporter {
     }
 
     /**
-     * Return a map of column index -> question id
-     *
-     * @param sheet
+     * Return a map of column index -> question id on a sheet.
+     * Metadata headers are assumed to never contain a "|".
+     * @param baseSheet
      * @return A map from column index to question id.
      */
-    private static Map<Integer, Long> processHeader(Sheet sheet) {
+    private static Map<Integer, Long> processHeader(Sheet sheet, int headerRowIndex) {
         Map<Integer, Long> columnIndexToQuestionId = new HashMap<>();
-        Row headerRow = sheet.getRow(0);
+        
+        Row headerRow = sheet.getRow(headerRowIndex);
 
         for (Cell cell : headerRow) {
             String cellValue = cell.getStringCellValue();
-            if (cell.getStringCellValue().indexOf("|") > -1 && !cellValue.startsWith("--GEO")
+            if (cell.getStringCellValue().indexOf("|") > -1
+                    && !cellValue.startsWith("--GEO")
                     && !cellValue.startsWith("--CADDISFLY")) {
                 String[] parts = cell.getStringCellValue().split("\\|");
                 if (parts[0].trim().length() > 0) {
@@ -572,6 +705,7 @@ public class RawDataSpreadsheetImporter implements DataImporter {
 
     /**
      * @return map from question id to QuestionDto
+     * TODO: fetch from latest published survey and not current data store.
      */
     @SuppressWarnings("unchecked")
     private static Map<Long, QuestionDto> fetchQuestions(String serverBase,
@@ -637,10 +771,8 @@ public class RawDataSpreadsheetImporter implements DataImporter {
         // Collection date
         String dateString = ExportImportUtils.formatDateTime(dto.getCollectionDate());
 
-        sb.append(
-                RawDataImportRequest.COLLECTION_DATE_PARAM + "="
-                        + URLEncoder.encode(dateString,
-                                "UTF-8") + "&");
+        sb.append(RawDataImportRequest.COLLECTION_DATE_PARAM + "="
+                        + URLEncoder.encode(dateString, "UTF-8") + "&");
 
         // Submitter
         sb.append("submitter=" + URLEncoder.encode(dto.getSubmitterName(), "UTF-8") + "&");
@@ -769,7 +901,7 @@ public class RawDataSpreadsheetImporter implements DataImporter {
         Map<Integer, String> errorMap = new HashMap<Integer, String>();
 
         try {
-            Sheet sheet = getDataSheet(file);
+            Sheet sheet = getWorkbook(file).getSheetAt(0);
             Row headerRow = sheet.getRow(0);
             boolean firstQuestionFound = false;
             int firstQuestionColumnIndex = 0;
@@ -851,6 +983,17 @@ public class RawDataSpreadsheetImporter implements DataImporter {
     }
 
     /**
+     * Check if a cell has a certain string value
+     */
+    private static boolean safeCellCompare(Sheet sheet, int row, int col, String value) {
+        return (   sheet.getRow(row) != null
+                && sheet.getRow(row).getCell(col) != null 
+                && sheet.getRow(row).getCell(col).getCellType() == Cell.CELL_TYPE_STRING 
+                && sheet.getRow(row).getCell(col).getStringCellValue().trim().equals(value)        
+                );
+    }
+
+    /**
      * Check if a cell is any kind of empty
      *
      * @param cell
@@ -911,6 +1054,8 @@ public class RawDataSpreadsheetImporter implements DataImporter {
         return false;
     }
 
+    //For testing and debugging
+    //executeImport() is called from Clojure code in live deployment
     public static void main(String[] args) throws Exception {
         if (args.length != 4) {
             log.error("Error.\nUsage:\n\tjava org.waterforpeople.mapping.dataexport.RawDataSpreadsheetImporter <file> <serverBase> <surveyId> <apiKey>");
