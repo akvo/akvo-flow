@@ -119,13 +119,21 @@ FLOW.renderCaddisflyAnswer = function(json){
 
 Ember.Handlebars.registerHelper('placemarkDetail', function () {
   var answer, markup, question, cascadeJson, optionJson, cascadeString = "",
-  questionType, imageSrcAttr, signatureJson, photoJson;
+  questionType, imageSrcAttr, signatureJson, photoJson, cartoQuestionType, self=this;
+
+  if (FLOW.Env.mapsProvider === 'cartodb') {
+      FLOW.mapsController.questions.forEach(function(qItem){
+          if (qItem.get("keyId") == Ember.get(self, 'questionID')) {
+              cartoQuestionType = qItem.get("type");
+          }
+      });
+  }
 
   question = Ember.get(this, 'questionText');
-  answer = Ember.get(this, 'stringValue') || '';
+  answer = Ember.get(this, FLOW.Env.mapsProvider === 'cartodb' ? 'value': 'stringValue') || '';
   answer = answer.replace(/\|/g, ' | '); // geo, option and cascade data
   answer = answer.replace(/\//g, ' / '); // also split folder paths
-  questionType = Ember.get(this, 'questionType');
+  questionType = FLOW.Env.mapsProvider === 'cartodb' ? cartoQuestionType: Ember.get(this, 'questionType');
 
   if (questionType === 'CASCADE') {
 
@@ -139,7 +147,23 @@ Ember.Handlebars.registerHelper('placemarkDetail', function () {
       }
   } else if ((questionType === 'VIDEO' || questionType === 'PHOTO') && answer.charAt(0) === '{') {
     photoJson = JSON.parse(answer)
-    answer = photoJson.filename;
+    var mediaAnswer = photoJson.filename;
+
+    var mediaFileURL = FLOW.Env.photo_url_root + mediaAnswer.split('/').pop().replace(/\s/g, '');
+    if (questionType == "PHOTO") {
+        answer = '<div class=":imgContainer photoUrl:shown:hidden">'
+        +'<a class="media" data-coordinates=\''
+        +((photoJson.location) ? answer : '' )+'\' href="'
+        +mediaFileURL+'" target="_blank"><img src="'+mediaFileURL+'" alt=""/></a><br>'
+        +((photoJson.location) ? '<a class="media-location" data-coordinates=\''+answer+'\'>'+Ember.String.loc('_show_photo_on_map')+'</a>' : '')
+        +'</div>';
+    } else if (questionType == "VIDEO") {
+        answer = '<div><div class="media" data-coordinates=\''
+        +((photoJson.location) ? answer : '' )+'\'>'+mediaFileURL+'</div><br>'
+        +'<a href="'+mediaFileURL+'" target="_blank">'+Ember.String.loc('_open_video')+'</a>'
+        +((photoJson.location) ? '&nbsp;|&nbsp;<a class="media-location" data-coordinates=\''+answer+'\'>'+Ember.String.loc('_show_photo_on_map')+'</a>' : '')
+        +'</div>';
+    }
   } else if (questionType === 'OPTION' && answer.charAt(0) === '[') {
     optionJson = JSON.parse(answer);
     answer = optionJson.map(function(item){
@@ -155,6 +179,27 @@ Ember.Handlebars.registerHelper('placemarkDetail', function () {
     answer = renderTimeStamp(answer);
   } else if (questionType === 'CADDISFLY'){
     answer = FLOW.renderCaddisflyAnswer(answer)
+  } else if (questionType === 'GEOSHAPE') {
+    var geoshapeObject = FLOW.parseJSON(answer, "features");
+    if (geoshapeObject) {
+        answer = '<div class="geoshape-map" data-geoshape-object=\''+answer+'\' style="width:100%; height: 100px; float: left"></div>'
+        +'<a style="float: left" class="project-geoshape" data-geoshape-object=\''+answer+'\'>'+Ember.String.loc('_project_onto_main_map')+'</a>';
+
+        if (geoshapeObject['features'][0]['geometry']['type'] === "Polygon"
+            || geoshapeObject['features'][0]['geometry']['type'] === "LineString"
+                || geoshapeObject['features'][0]['geometry']['type'] === "MultiPoint") {
+            answer += '<div style="float: left; width: 100%">'+ Ember.String.loc('_points') +': '+geoshapeObject['features'][0]['properties']['pointCount']+'</div>';
+        }
+
+        if (geoshapeObject['features'][0]['geometry']['type'] === "Polygon"
+            || geoshapeObject['features'][0]['geometry']['type'] === "LineString") {
+            answer += '<div style="float: left; width: 100%">'+ Ember.String.loc('_length') +': '+geoshapeObject['features'][0]['properties']['length']+'m</div>';
+        }
+
+        if (geoshapeObject['features'][0]['geometry']['type'] === "Polygon") {
+            answer += '<div style="float: left; width: 100%">'+ Ember.String.loc('_area') +': '+geoshapeObject['features'][0]['properties']['area']+'m&sup2;</div>';
+        }
+    }
   }
 
   markup = '<div class="defListWrap"><dt>' +
@@ -162,6 +207,13 @@ Ember.Handlebars.registerHelper('placemarkDetail', function () {
     answer + '</dd></div>';
 
   return new Handlebars.SafeString(markup);
+});
+
+//if there's geoshape, draw it
+Ember.Handlebars.registerHelper('drawGeoshapes', function () {
+    $('.geoshape-map').each(function(index){
+        FLOW.drawGeoShape($('.geoshape-map')[index], $(this).data('geoshape-object'));
+    });
 });
 
 /*  Take a timestamp and render it as a date in format

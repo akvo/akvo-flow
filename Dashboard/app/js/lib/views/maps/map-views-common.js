@@ -354,7 +354,6 @@ FLOW.NavMapsView = FLOW.View.extend({
     FLOW.mapsController.set('detailsPaneVisible', false);
     if (self.marker) {
       self.map.removeLayer(self.marker);
-      $('#pointDetails').html('<p class="noDetails">'+Ember.String.loc('_no_details') +'</p>');
     }
 
     if (!$.isEmptyObject(self.mediaMarkers)) {

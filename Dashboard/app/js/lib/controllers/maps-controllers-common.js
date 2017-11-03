@@ -277,150 +277,14 @@ FLOW.mapsController = Ember.ArrayController.create({
                 FLOW.mapsController.set('markerCoordinates', [data.lat, data.lon]);
                 
                 //get survey instance
-                self.set( 'selectedSI', FLOW.store.find(FLOW.SurveyInstance, data.id));
+                FLOW.placemarkDetailController.set( 'si', FLOW.store.find(FLOW.SurveyInstance, data.id));
 
                 //get questions answers for clicked survey instance
-                self.set('questionAnswers', FLOW.store.findQuery(FLOW.QuestionAnswer, {
+                FLOW.placemarkDetailController.set('content', FLOW.store.findQuery(FLOW.QuestionAnswer, {
                     'surveyInstanceId' : data.id
                 }));
             });
         });
-    },
-
-    loadQuestionAnswers: function(){
-        if (!this.questionAnswers.get('isLoaded')) {
-          return null;
-        }
-
-        var self = this;
-        $("#pointDetails").html("");
-        //populate survey instance basics
-        if (!Ember.none(this.selectedSI)) {
-            var date = new Date(this.selectedSI.get('collectionDate'));
-            var pointDetailsHeader = '<ul class="placeMarkBasicInfo floats-in">'
-            +(this.selectedSI.get('surveyedLocaleDisplayName') ? '<h3>'+this.selectedSI.get('surveyedLocaleDisplayName')+'</h3>' : '')
-            +(this.selectedSI.get('surveyedLocaleIdentifier') ? '<li><span>'+Ember.String.loc('_data_point_id')
-            +':</span><div style="display: inline; margin: 0 0 0 5px;">'
-            +this.selectedSI.get('surveyedLocaleIdentifier')+'</div></li>' : '')
-            +'<li>'
-            +'<span>'+Ember.String.loc('_collected_on') +':</span>'
-            +'<div class="placeMarkCollectionDate">'
-            +date.toISOString().slice(0,-8).replace("T", " ")
-            +'</div></li><li></li></ul>';
-
-            $("#pointDetails").append(pointDetailsHeader);
-        }
-
-        //loading question answers
-        this.questionAnswers.forEach(function (answer) {
-            var clickedPointContent = "";
-            self.geoshapeCoordinates = null;
-
-            clickedPointContent += '<div class="mapInfoDetail" style="opacity: 1; display: inherit;">';
-            self.questions.forEach(function (qItem) {
-                if (answer.get('questionID') == qItem.get('keyId')) {
-                    clickedPointContent += '<h4>'+qItem.get('text')+'&nbsp;</h4>'
-                    +'<div style="float: left; width: 100%">';
-                    clickedPointContent += self.loadQuestionAnswer(qItem.get('type'), answer.get('value'));
-                    clickedPointContent += "&nbsp;</div><hr>";
-                }
-            });
-            clickedPointContent += '</div>';
-            $('#pointDetails').append(clickedPointContent);
-            $('hr').show();
-
-            //if there's geoshape, draw it
-            $('.geoshape-map').each(function(index){
-                FLOW.drawGeoShape($('.geoshape-map')[index], $(this).data('geoshape-object'));
-            });
-        });
-    }.observes('this.questionAnswers.isLoaded'),
-
-    loadQuestionAnswer: function(questionType, questionAnswer){
-        var clickedPointContent = "", self = this;
-        switch (questionType) {
-            case "PHOTO":
-            case "VIDEO":
-                var mediaString = "", mediaJson = "", mediaFilename = "", mediaObject = {}, mediaOutput = "";
-                if (questionAnswer.charAt(0) === '{') {
-                    mediaJson = JSON.parse(questionAnswer);
-                    mediaString = mediaJson.filename;
-                } else {
-                    mediaString = questionAnswer;
-                }
-
-                var mediaFileURL = FLOW.Env.photo_url_root+mediaString.substring(mediaString.lastIndexOf("/")+1);
-                if (questionType == "PHOTO") {
-                    mediaOutput = '<div class=":imgContainer photoUrl:shown:hidden">'
-                    +'<a class="media" data-coordinates=\''
-                    +((mediaJson.location) ? questionAnswer : '' )+'\' href="'
-                    +mediaFileURL+'" target="_blank"><img src="'+mediaFileURL+'" alt=""/></a><br>'
-                    +((mediaJson.location) ? '<a class="media-location" data-coordinates=\''+questionAnswer+'\'>'+Ember.String.loc('_show_photo_on_map')+'</a>' : '')
-                    +'</div>';
-                } else if (questionType == "VIDEO") {
-                    mediaOutput = '<div><div class="media" data-coordinates=\''
-                    +((mediaJson.location) ? questionAnswer : '' )+'\'>'+mediaFileURL+'</div><br>'
-                    +'<a href="'+mediaFileURL+'" target="_blank">'+Ember.String.loc('_open_video')+'</a>'
-                    +((mediaJson.location) ? '&nbsp;|&nbsp;<a class="media-location" data-coordinates=\''+questionAnswer+'\'>'+Ember.String.loc('_show_photo_on_map')+'</a>' : '')
-                    +'</div>';
-                }
-                clickedPointContent += mediaOutput;
-                break;
-            case "GEOSHAPE":
-                var geoshapeObject = FLOW.parseJSON(questionAnswer, "features");
-                self.geoshapeCoordinates = geoshapeObject;
-
-                if (geoshapeObject) {
-                    clickedPointContent += '<div class="geoshape-map" data-geoshape-object=\''+questionAnswer+'\' style="width:100%; height: 100px; float: left"></div>'
-                    +'<a style="float: left" class="project-geoshape" data-geoshape-object=\''+questionAnswer+'\'>'+Ember.String.loc('_project_onto_main_map')+'</a>'
-
-                    if (geoshapeObject['features'][0]['geometry']['type'] === "Polygon"
-                        || geoshapeObject['features'][0]['geometry']['type'] === "LineString"
-                            || geoshapeObject['features'][0]['geometry']['type'] === "MultiPoint") {
-                        clickedPointContent += '<div style="float: left; width: 100%">'+ Ember.String.loc('_points') +': '+geoshapeObject['features'][0]['properties']['pointCount']+'</div>';
-                    }
-
-                    if (geoshapeObject['features'][0]['geometry']['type'] === "Polygon"
-                        || geoshapeObject['features'][0]['geometry']['type'] === "LineString") {
-                        clickedPointContent += '<div style="float: left; width: 100%">'+ Ember.String.loc('_length') +': '+geoshapeObject['features'][0]['properties']['length']+'m</div>';
-                    }
-
-                    if (geoshapeObject['features'][0]['geometry']['type'] === "Polygon") {
-                        clickedPointContent += '<div style="float: left; width: 100%">'+ Ember.String.loc('_area') +': '+geoshapeObject['features'][0]['properties']['area']+'m&sup2;</div>';
-                    }
-                }
-                break;
-            case "DATE":
-                var dateQuestion = new Date((!isNaN(questionAnswer)) ? parseInt(questionAnswer) : questionAnswer);
-                clickedPointContent += self.formatDate(dateQuestion);
-                break;
-            case "SIGNATURE":
-                clickedPointContent += '<div class="signatureImage"><img src="';
-                var srcAttr = 'data:image/png;base64,', signatureJson;
-                signatureJson = JSON.parse(questionAnswer);
-                clickedPointContent += srcAttr + signatureJson.image +'"/></div>';
-                clickedPointContent += '<div class="signedBySection">'+Ember.String.loc('_signed_by') +': '+signatureJson.name+'</div>';
-                break;
-            case "CADDISFLY":
-                clickedPointContent += FLOW.renderCaddisflyAnswer(questionAnswer);
-                break;
-            case "CASCADE":
-            case "OPTION":
-                var cascadeString = "", cascadeJson;
-                if (questionAnswer.charAt(0) === '[') {
-                    cascadeJson = JSON.parse(questionAnswer);
-                    cascadeString = cascadeJson.map(function(item){
-                        return (questionType == "CASCADE") ? item.name : item.text;
-                    }).join("|");
-                } else {
-                    cascadeString = questionAnswer;
-                }
-                clickedPointContent += cascadeString;
-                break;
-            default:
-                clickedPointContent += questionAnswer
-        }
-        return clickedPointContent;
     },
 
     loadQuestions: function(formId){
@@ -469,6 +333,7 @@ FLOW.placemarkDetailController = Ember.ArrayController.create({
   sortProperties: ['order'],
   sortAscending: true,
   collectionDate: null,
+  si: null,
 
   populate: function (placemarkId) {
 	  if (placemarkId) {
@@ -479,6 +344,11 @@ FLOW.placemarkDetailController = Ember.ArrayController.create({
 		  this.set('content', Ember.A());
 	  }
   },
+
+  siDetails: function() {
+      //add display name and identifier here
+      this.set('collectionDate', this.si.get('collectionDate'));
+  }.observes('si.isLoaded'),
 
   handlePlacemarkSelection: function () {
     var selectedPlacemarkId = null;
@@ -499,7 +369,10 @@ FLOW.placemarkDetailController = Ember.ArrayController.create({
 
     // filter out details with images
     photoDetails = this.get('content').filter(function (detail) {
-      return detail.get('questionType') === 'PHOTO';
+        if (FLOW.Env.mapsProvider === 'cartodb') {
+            return detail.get('type') === 'IMAGE';
+        }
+        return detail.get('questionType') === 'PHOTO';
     });
 
     if (Ember.empty(photoDetails)) {
@@ -507,7 +380,7 @@ FLOW.placemarkDetailController = Ember.ArrayController.create({
     }
 
     photoDetails.forEach(function (photo) {
-      rawPhotoUrl = photo.get('stringValue') || '';
+      rawPhotoUrl = photo.get(FLOW.Env.mapsProvider === 'cartodb' ? 'value' : 'stringValue') || '';
       if (rawPhotoUrl.charAt(0) === '{') {
         photoJson = JSON.parse(rawPhotoUrl);
         rawPhotoUrl = photoJson.filename;
