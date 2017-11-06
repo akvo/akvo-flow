@@ -14,15 +14,15 @@
           optionValuePath="content.keyId"
           prompt=""
           promptBinding="Ember.STRINGS._select_form"}}
-      {{#if FLOW.selectedControl.selectedSurvey}}
-        {{view Ember.Select
+      {{!#if FLOW.selectedControl.selectedSurvey}}
+        {{!view Ember.Select
             contentBinding="FLOW.reportLanguageControl.arrangedContent"
             selectionBinding="FLOW.reportLanguageControl.selectedLanguage"
             optionLabelPath="content.label"
             optionValuePath="content.value"
             prompt=""
             promptBinding="Ember.STRINGS._select_language"}}
-      {{/if}}
+      {{!/if}}
     {{/if}}
   </div>
 <div class="rawDataReport block dataExport">
