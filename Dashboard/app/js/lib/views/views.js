@@ -211,9 +211,22 @@ Ember.Handlebars.registerHelper('placemarkDetail', function () {
 
 //if there's geoshape, draw it
 Ember.Handlebars.registerHelper('drawGeoshapes', function () {
-    $('.geoshape-map').each(function(index){
-        FLOW.drawGeoShape($('.geoshape-map')[index], $(this).data('geoshape-object'));
-    });
+    var cartoQuestionType, questionType;
+    if (FLOW.Env.mapsProvider === 'cartodb') {
+        FLOW.mapsController.questions.forEach(function(qItem){
+            if (qItem.get("keyId") == Ember.get(self, 'questionID')) {
+                cartoQuestionType = qItem.get("type");
+            }
+        });
+    }
+    questionType = FLOW.Env.mapsProvider === 'cartodb' ? cartoQuestionType: Ember.get(this, 'questionType');
+    if (questionType == "GEOSHAPE") {
+        setTimeout(function(){
+            $('.geoshape-map').each(function(index){
+                FLOW.drawGeoShape($('.geoshape-map')[index], $(this).data('geoshape-object'));
+            });
+        }, 500);
+    }
 });
 
 /*  Take a timestamp and render it as a date in format
