@@ -82,6 +82,8 @@ FLOW.NavMapsView = FLOW.View.extend({
     });
 
     FLOW.mapsController.set('detailsPaneVisible', false);
+
+    self.detailsPanelListeners();
   },
 
   insertGoogleMap: function () {
@@ -180,8 +182,6 @@ FLOW.NavMapsView = FLOW.View.extend({
     this.map.on('zoomend', function() {
       $('body, html, #flowMap').scrollTop(0);
     });
-
-    self.detailsPanelListeners();
   },
 
   detailsPanelListeners: function(){
