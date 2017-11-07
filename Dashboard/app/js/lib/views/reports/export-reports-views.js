@@ -63,10 +63,7 @@ FLOW.ReportLoader = Ember.Object.create({
         criteria.opts[k] = opts[k];
       });
     }
-
-    if (criteria.opts.locale && FLOW.reportLanguageControl.get('selectedLanguage')) {
-      criteria.opts.locale = FLOW.reportLanguageControl.get('selectedLanguage').get('value');
-    }
+    
 
     criteria.opts.lastCollection = '' + (exportType === 'RAW_DATA' && FLOW.selectedControl.get('selectedSurveyGroup').get('monitoringGroup') && !!FLOW.editControl.lastCollection);
     criteria.opts.useQuestionId = '' + !!FLOW.editControl.useQuestionId;
