@@ -333,6 +333,8 @@ FLOW.placemarkDetailController = Ember.ArrayController.create({
   sortProperties: ['order'],
   sortAscending: true,
   collectionDate: null,
+  surveyedLocaleDisplayName: null,
+  surveyedLocaleIdentifier: null,
   si: null,
 
   populate: function (placemarkId) {
@@ -346,7 +348,10 @@ FLOW.placemarkDetailController = Ember.ArrayController.create({
   },
 
   siDetails: function() {
-      //add display name and identifier here
+      if (FLOW.Env.mapsProvider === 'cartodb') {
+          this.set('surveyedLocaleDisplayName', this.si.get('surveyedLocaleDisplayName'));
+          this.set('surveyedLocaleIdentifier', this.si.get('surveyedLocaleIdentifier'));
+      }
       this.set('collectionDate', this.si.get('collectionDate'));
   }.observes('si.isLoaded'),
 

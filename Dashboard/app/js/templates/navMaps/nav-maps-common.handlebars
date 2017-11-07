@@ -24,6 +24,10 @@
     <div id="pointDetails">
       {{#if content}}
         <ul class="placeMarkBasicInfo floats-in">
+            <h3>{{surveyedLocaleDisplayName}}</h3>
+            <li>
+                <label style="display: inline; margin: 0 0 0 5px;" title="{{t _data_point_id}}">{{surveyedLocaleIdentifier}}</label>
+            </li>
           <li>
             <span>{{t _collected_on}}:</span>
             <div class="placeMarkCollectionDate">
