@@ -16,8 +16,8 @@
     {{/if}}
 
     <div class="rawDataReport block">
-      <h3>{{t _export_raw_data_report}}</h3>
-      <p>{{t _raw_data_report_applet_text_}}</p>
+      <h3>{{t _data_cleaning_export}}</h3>
+      <p>{{t _raw_data_report_applet_text_short}}</p>
       <div class="dataCollectedDate">
           <label class="collectedFrom">
             <span>{{t _collected_from}}:</span> {{view FLOW.DateField minDate=false valueBinding="FLOW.dateControl.fromDate" elementId="from_date" placeholder="" placeholderBinding="Ember.STRINGS._collected_from" size=30}}
@@ -26,15 +26,15 @@
             <span>{{t _to}}:</span> {{view FLOW.DateField minDate=false valueBinding="FLOW.dateControl.toDate" elementId="to_date" placeholder="" placeholderBinding="Ember.STRINGS._to" size=30}}
           </label>
       </div>
-      <a {{action showRawDataReport target="this"}} class="standardBtn"> {{t _raw_data_report}} </a>
+      <a {{action showRawDataReport target="this"}} class="standardBtn"> {{t _download}} </a>
     </div>
 
     <div class="rawDataReport block">
-      <h3>{{t _import_cleaned_survey_data}}</h3>
-      <p>{{t _import_raw_data_applet_text_}}</p>
+      <h3>{{t _import_data}}</h3>
+      <p>{{t _import_raw_data_applet_text_short_}}</p>
       {{#if FLOW.uploader.support}}
         <p><input id="raw-data-import-file" type="file"/></p>
-        <a {{action importFile target="this"}} class="standardBtn"> {{t _import_clean_data}}</a>
+        <a {{action importFile target="this"}} class="standardBtn"> {{t _import}}</a>
         <div class="resumable-progress">
           <h5>{{t _progress}}</h5>
           <div class="progress-container"><div class="progress-bar"></div></div>

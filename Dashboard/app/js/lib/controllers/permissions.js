@@ -322,7 +322,6 @@ FLOW.dialogControl = Ember.Object.create({
 
     case "delAssignment":
       this.set('header', Ember.String.loc('_assignment_delete_header'));
-      this.set('message', Ember.String.loc('_this_cant_be_undo'));
       this.set('showDialog', true);
       break;
 
