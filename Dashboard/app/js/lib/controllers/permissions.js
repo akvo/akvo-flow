@@ -340,7 +340,6 @@ FLOW.dialogControl = Ember.Object.create({
 
     case "delSI2":
       this.set('header', Ember.String.loc('_delete_record_header'));
-      this.set('message', Ember.String.loc('_are_you_sure_delete_this_data_record'));
       this.set('showDialog', true);
       break;
 
