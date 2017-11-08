@@ -60,7 +60,6 @@ import org.apache.poi.ss.util.CellRangeAddress;
 import org.apache.poi.ss.util.WorkbookUtil;
 import org.apache.poi.xssf.streaming.SXSSFSheet;
 import org.apache.poi.xssf.streaming.SXSSFWorkbook;
-import org.apache.poi.xssf.usermodel.XSSFComment;
 import org.codehaus.jackson.map.ObjectMapper;
 import org.codehaus.jackson.type.TypeReference;
 import org.waterforpeople.mapping.app.gwt.client.survey.OptionContainerDto;
@@ -325,7 +324,7 @@ public class GraphicalSurveySummaryExporter extends SurveySummaryExporter {
     private boolean performGeoRollup;
     private boolean generateCharts; //Pie charts
     private boolean useQuestionId; //=Variable names. Also turns on splitting of answers into separate columns (options, geo, etc.) and turns off digests
-    private boolean makeRepGroupSheets;
+    private boolean makeRepSheets;
     private boolean doGroupHeaders; //First header line is group names spanned over the group columns
     private Map<Long, QuestionDto> questionsById;
     private SurveyGroupDto surveyGroupDto;
@@ -423,7 +422,7 @@ public class GraphicalSurveySummaryExporter extends SurveySummaryExporter {
                 }
 
                 FileOutputStream fileOut = new FileOutputStream(fileName);
-                wb.setActiveSheet(isFullReport ? 1 : 0);//TODO
+                wb.setActiveSheet(isFullReport ? wb.getNumberOfSheets()-1 : 0);
                 wb.write(fileOut);
                 fileOut.close();
 
@@ -473,7 +472,6 @@ public class GraphicalSurveySummaryExporter extends SurveySummaryExporter {
         return b != null && b.booleanValue();
     }
     
-    @SuppressWarnings("unchecked")
     /*
      * Fetches data from FLOW instance, and writes it to a file row by row. Called from export
      * method.
@@ -505,7 +503,7 @@ public class GraphicalSurveySummaryExporter extends SurveySummaryExporter {
         final Map<String, String> collapseIdMap = new HashMap<String, String>();
         final Map<String, String> nameToIdMap = new HashMap<String, String>();
         for (Entry<QuestionGroupDto, List<QuestionDto>> groupEntry : questionMap.entrySet()) {
-            if (makeRepGroupSheets && safeTrue(groupEntry.getKey().getRepeatable())) {
+            if (makeRepSheets && safeTrue(groupEntry.getKey().getRepeatable())) {
                 // breaking this qg out, so create the sheet for it
                 Long gid = groupEntry.getKey().getKeyId();
                 qgSheetMap.put(gid, wb.createSheet("Group " + groupEntry.getKey().getOrder())); //TODO add name?
@@ -601,7 +599,7 @@ public class GraphicalSurveySummaryExporter extends SurveySummaryExporter {
         // write the data now, row by row
         int baseCurrentRow = doGroupHeaders ? 2 : 1;
         for (InstanceData instanceData : allData) {
-            if (makeRepGroupSheets) {
+            if (makeRepSheets) {
                 List<QuestionDto> baseSheetQuestions = new ArrayList<>();
                 List<Row> digestRows = new ArrayList<>();
 
@@ -743,8 +741,6 @@ public class GraphicalSurveySummaryExporter extends SurveySummaryExporter {
 
         // maxRow will increase when we write repeatable question groups
         int maxRow = startRow;
-
-        SurveyInstanceDto dto = instanceData.surveyInstanceDto;
 
         Row firstRow = getRow(startRow, sheet);
 
@@ -1314,7 +1310,7 @@ public class GraphicalSurveySummaryExporter extends SurveySummaryExporter {
             List<QuestionDto>> questionMap
             ) {
 
-        int columnIdx = addMetaDataHeaders(baseSheet, !makeRepGroupSheets);
+        int columnIdx = addMetaDataHeaders(baseSheet, !makeRepSheets);
         addComment(baseSheet);
 
         if (questionMap != null) {
@@ -1972,8 +1968,8 @@ public class GraphicalSurveySummaryExporter extends SurveySummaryExporter {
         isFullReport = true;
         performGeoRollup = true;
         generateCharts = true;
-        makeRepGroupSheets = true; //TODO: rename input parameter? default to false?
-        doGroupHeaders = true;
+        makeRepSheets = false; //TODO: rename input parameter?
+        doGroupHeaders = false;
         
         if (options != null) {
             log.debug(options);
@@ -2014,7 +2010,7 @@ public class GraphicalSurveySummaryExporter extends SurveySummaryExporter {
             }
             if (options.get(RQG_SHEETS_OPT) != null) {
                 if ("true".equalsIgnoreCase(options.get(RQG_SHEETS_OPT))) {
-                    makeRepGroupSheets = true;
+                    makeRepSheets = true;
                 }
             }
         }
@@ -2121,6 +2117,8 @@ public class GraphicalSurveySummaryExporter extends SurveySummaryExporter {
         // options.put(TYPE_OPT, RAW_ONLY_TYPE);
         options.put(LAST_COLLECTION_OPT, "false");
         options.put(USE_QIDS_OPT, "false");
+        options.put(RQG_SHEETS_OPT, "true");
+        options.put(GROUP_HEADERS_OPT, "true");
         options.put("email", "email@example.com");
         options.put("from", null);
         options.put("to", null);
