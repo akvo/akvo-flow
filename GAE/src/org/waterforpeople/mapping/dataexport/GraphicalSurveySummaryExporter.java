@@ -105,6 +105,7 @@ public class GraphicalSurveySummaryExporter extends SurveySummaryExporter {
     private static final String GROUP_HEADERS_OPT = "doGroupHeaders";
     private static final String USE_QIDS_OPT = "useQuestionId";
     private static final String METADATA_LABEL = "Metadata"; //Constant. Localization is going away.
+    private static final String REPORT_COMMENT = "Data Cleaning Report - Akvo Flow v1.9.25";
     
 
     private static final String DEFAULT_IMAGE_PREFIX = "http://waterforpeople.s3.amazonaws.com/images/";
@@ -1350,7 +1351,7 @@ public class GraphicalSurveySummaryExporter extends SurveySummaryExporter {
 
         Drawing drawing = sheet.createDrawingPatriarch();
         Comment comment = drawing.createCellComment(anchor);
-        RichTextString str = factory.createRichTextString("Data Cleaning Report - Akvo Flow v1.9.99");
+        RichTextString str = factory.createRichTextString(REPORT_COMMENT);
         comment.setString(str);
         //comment.setAuthor("Akvo Flow v1.9.99"); //Not visible in the spreadsheet applications.
         cell.setCellComment(comment);
