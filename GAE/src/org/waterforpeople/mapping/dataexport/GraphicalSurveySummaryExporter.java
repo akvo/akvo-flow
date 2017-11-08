@@ -629,7 +629,7 @@ public class GraphicalSurveySummaryExporter extends SurveySummaryExporter {
                         false); 
                 
                 String digest = ExportImportUtils.md5Digest(digestRows,
-                        columnIndexMap.get(DIGEST_COLUMN));
+                        columnIndexMap.get(DIGEST_COLUMN)); //TODO: wrong if any rep group is wider than the base sheet
 
                 if (!useQuestionId) {//??
                     // now add 1 more col on the base sheet that contains the digest
@@ -674,7 +674,9 @@ public class GraphicalSurveySummaryExporter extends SurveySummaryExporter {
                 Row iterationRow = getRow(++currentRow, sheet);
                 writeAnswer(sheet, iterationRow, columnIndexMap.get(questionId.toString()),
                         questionDto, val);
-                digestRows.add(iterationRow);
+                if (!digestRows.contains(iterationRow)) { //A Set would be neater
+                    digestRows.add(iterationRow);
+                }
             }
             maxRow = Math.max(maxRow, currentRow);
         }
