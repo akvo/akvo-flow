@@ -2100,7 +2100,7 @@ public class GraphicalSurveySummaryExporter extends SurveySummaryExporter {
         return this.imagePrefix;
     }
 
-    // For debugging; on server export() is called from Clojure code
+    // For debugging; when deployed on server, export() is called from Clojure code
     public static void main(String[] args) {
 
         // Log4j stuff - http://stackoverflow.com/a/9003191
