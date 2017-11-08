@@ -629,7 +629,7 @@ public class GraphicalSurveySummaryExporter extends SurveySummaryExporter {
                         false); 
                 
                 String digest = ExportImportUtils.md5Digest(digestRows,
-                        columnIndexMap.get(DIGEST_COLUMN)); //TODO: wrong if any rep group is wider than the base sheet
+                        columnIndexMap.get(DIGEST_COLUMN), baseSheet); //in case any rep group is wider than the base sheet
 
                 if (!useQuestionId) {//??
                     // now add 1 more col on the base sheet that contains the digest
@@ -749,37 +749,7 @@ public class GraphicalSurveySummaryExporter extends SurveySummaryExporter {
         Row firstRow = getRow(startRow, sheet);
 
         writeMetadata(sheet, instanceData, startRow, (int) instanceData.maxIterationsCount, true);
-/*
-        for (int i = 0; i <= instanceData.maxIterationsCount; i++) {
-
-            Row r = getRow(firstRow.getRowNum() + i, sheet);
-            // Write the identifier
-            createCell(r, columnIndexMap.get(IDENTIFIER_LABEL.get(locale)),
-                    dto.getSurveyedLocaleIdentifier());
-            // Write data approval status
-            if (hasDataApproval()) {
-                createCell(r, columnIndexMap.get(DATA_APPROVAL_STATUS_LABEL.get(locale)),
-                        instanceData.latestApprovalStatus);
-            }
-            // Write the "Repeat" column
-            createCell(r, columnIndexMap.get(REPEAT_LABEL.get(locale)),
-                    String.valueOf(i + 1), null, Cell.CELL_TYPE_NUMERIC);
-            // Write other metadata
-            createCell(r, columnIndexMap.get(DISPLAY_NAME_LABEL.get(locale)),
-                    dto.getSurveyedLocaleDisplayName());
-            createCell(r, columnIndexMap.get(DEVICE_IDENTIFIER_LABEL.get(locale)),
-                    dto.getDeviceIdentifier());
-            createCell(r, columnIndexMap.get(INSTANCE_LABEL.get(locale)),
-                    dto.getKeyId().toString());
-            createCell(r, columnIndexMap.get(SUB_DATE_LABEL.get(locale)),
-                    ExportImportUtils.formatDateTime(dto.getCollectionDate()));
-            createCell(r, columnIndexMap.get(SUBMITTER_LABEL.get(locale)),
-                    sanitize(dto.getSubmitterName()));
-            String duration = getDurationText(dto.getSurveyalTime());
-            createCell(r, columnIndexMap.get(DURATION_LABEL.get(locale)),
-                    duration);
-        }
-*/        
+        
         for (String q : questionIdList) {
             final Long questionId = Long.valueOf(q);
             final QuestionDto questionDto = questionsById.get(questionId);
@@ -808,7 +778,7 @@ public class GraphicalSurveySummaryExporter extends SurveySummaryExporter {
         }
 
         String digest = ExportImportUtils.md5Digest(rows,
-                columnIndexMap.get(DIGEST_COLUMN));
+                columnIndexMap.get(DIGEST_COLUMN), sheet);
 
         if (!useQuestionId) {
             // now add 1 more col that contains the digest

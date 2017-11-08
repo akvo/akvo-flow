@@ -28,6 +28,7 @@ import org.apache.log4j.Logger;
 import org.apache.poi.ss.usermodel.Cell;
 import org.apache.poi.ss.usermodel.DataFormatter;
 import org.apache.poi.ss.usermodel.Row;
+import org.apache.poi.ss.usermodel.Sheet;
 import org.waterforpeople.mapping.domain.response.value.Media;
 import org.waterforpeople.mapping.serialization.response.MediaResponse;
 
@@ -77,14 +78,14 @@ public class ExportImportUtils {
      * @return
      * @throws NoSuchAlgorithmException
      */
-    public static String md5Digest(List<Row> rows, int lastColumnIndex)
+    public static String md5Digest(List<Row> rows, int lastColumnIndex, Sheet limitedSheet)
             throws NoSuchAlgorithmException {
 
         MessageDigest digest = MessageDigest.getInstance("MD5");
 
         for (Row row : rows) {
             for (Cell cell : row) {
-                if (cell.getColumnIndex() > lastColumnIndex) {
+                if (row.getSheet() == limitedSheet && cell.getColumnIndex() > lastColumnIndex) {
                     break;
                 } else {
                     String val = parseCellAsString(cell);

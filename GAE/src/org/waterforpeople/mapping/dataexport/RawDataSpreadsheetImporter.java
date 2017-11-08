@@ -147,7 +147,7 @@ public class RawDataSpreadsheetImporter implements DataImporter {
 
             List<InstanceData> instanceDataList = new ArrayList<>();
             if (splitSheets) {
-                parseSplitSheets(wb.getSheetAt(0), sheetMap, questionIdToQuestionDto,
+                instanceDataList = parseSplitSheets(wb.getSheetAt(0), sheetMap, questionIdToQuestionDto,
                 optionNodes, headerRowIndex);                
             } else { //Legacy format
                 instanceDataList = parseSingleSheet(wb.getSheetAt(0), questionIdToQuestionDto,
@@ -248,8 +248,7 @@ public class RawDataSpreadsheetImporter implements DataImporter {
 
             // Have to collect all the parsed rows for md5 calculation
             List<Row> allRows = new ArrayList<>();
-            allRows.add(baseSheet.getRow(row));
-            
+
             //Now add in the answers on any rqg sheets
             for (Sheet repSheet : sheetMap.keySet()) {
                 if (repSheet != baseSheet) {
@@ -270,13 +269,17 @@ public class RawDataSpreadsheetImporter implements DataImporter {
                     sheetPosition.put(repSheet, pos); //replace with new pos; might be any value
                 }
             }
+            
+            //Put base row last, just like in exporter, so digest matches
+            allRows.add(baseSheet.getRow(row));
+
             String existingMd5Hash = "";
             Cell md5Cell = baseSheet.getRow(row).getCell(md5Column);
             // For new data the md5 hash column could be empty
             if (md5Cell != null) {
                 existingMd5Hash = md5Cell.getStringCellValue();
             }
-            String newMd5Hash = ExportImportUtils.md5Digest(allRows, md5Column - 1);
+            String newMd5Hash = ExportImportUtils.md5Digest(allRows, md5Column - 1, baseSheet);
 
             if (!newMd5Hash.equals(existingMd5Hash)) {
                 result.add(instanceData);
@@ -339,7 +342,7 @@ public class RawDataSpreadsheetImporter implements DataImporter {
             if (md5Cell != null) {
                 existingMd5Hash = md5Cell.getStringCellValue();
             }
-            String newMd5Hash = ExportImportUtils.md5Digest(rows, md5Column - 1);
+            String newMd5Hash = ExportImportUtils.md5Digest(rows, md5Column - 1, sheet);
 
             if (!newMd5Hash.equals(existingMd5Hash)) {
                 result.add(instanceData);
