@@ -350,5 +350,14 @@ public class SurveyedLocale extends BaseDomain {
                 oldStyleIdentifier.substring(4, 8),
                 base32Uuid.substring(10));
     }
-    
+
+    public void setGeoLocation(String geoLocationString) {
+        String[] geoParts = geoLocationString.split("\\|");
+        if (geoParts == null || geoParts.length < 2 || geoParts[0] == null || geoParts[1] == null)
+            return;
+
+        this.latitude = Double.parseDouble(geoParts[0]);
+        this.longitude = Double.parseDouble(geoParts[1]);
+    }
+
 }
