@@ -197,29 +197,6 @@ FLOW.ApprovalResponsibleUserView = FLOW.View.extend({
 });
 
 FLOW.ProjectMainView = FLOW.View.extend({
-
-  doSave: function() {
-    var currentProject = FLOW.projectControl.get('currentProject');
-    var currentForm = FLOW.selectedControl.get('selectedSurvey');
-
-    if (currentProject && currentProject.get('isDirty')) {
-      var name = currentProject.get('name').trim();
-      currentProject.set('name', name);
-      currentProject.set('code', name);
-      currentProject.set('path', FLOW.projectControl.get('currentProjectPath'));
-    }
-
-    if (currentForm && currentForm.get('isDirty')) {
-      var name = currentForm.get('name').trim();
-      currentForm.set('name', name);
-      currentForm.set('code', name);
-      var path = FLOW.projectControl.get('currentProjectPath') + "/" + name;
-      currentForm.set('path', path);
-    }
-
-    FLOW.store.commit();
-  },
-
   hasUnsavedChanges: function() {
     var selectedProject = FLOW.projectControl.get('currentProject');
     var isProjectDirty = selectedProject ? selectedProject.get('isDirty') : false;
