@@ -13,7 +13,7 @@ FLOW.NavMapsView = FLOW.View.extend({
   mediaMarkerSelected: {},
   geoModel: null,
   selectedSurvey: null,
-  allowFilters: FLOW.Env.mapsProvider === 'cartodb' ? true : false,
+  allowFilters: FLOW.Env.mapsProvider && FLOW.Env.mapsProvider === 'cartodb',
 
   init: function () {
     this._super();
