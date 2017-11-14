@@ -23,8 +23,6 @@ FLOW.NavMapsView = FLOW.View.extend({
       ", #pointDetails .imgContainer" +
       ", .placeMarkBasicInfo" +
       ", .noDetails";
-    //this.detailsPaneVisible = false;
-    //FLOW.mapsController.set('detailsPaneVisible', false);
   },
 
   redoMap: function() {
