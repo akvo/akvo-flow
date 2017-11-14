@@ -14,7 +14,6 @@ FLOW.mapsController = Ember.ArrayController.create({
     cartodbLayer: null,
     layerExistsCheck: false,
     questions: null,
-    detailsPaneVisible: null,
     geocellCache: [],
     currentGcLevel: null,
     allPlacemarks: null,
