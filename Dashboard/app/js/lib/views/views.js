@@ -211,7 +211,7 @@ Ember.Handlebars.registerHelper('placemarkDetail', function () {
 
 //if there's geoshape, draw it
 Ember.Handlebars.registerHelper('drawGeoshapes', function () {
-    var cartoQuestionType, questionType;
+    var cartoQuestionType, questionType, self=this;
     if (FLOW.Env.mapsProvider === 'cartodb') {
         FLOW.mapsController.questions.forEach(function(qItem){
             if (qItem.get("keyId") == Ember.get(self, 'questionID')) {
