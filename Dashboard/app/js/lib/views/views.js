@@ -140,10 +140,12 @@ Ember.Handlebars.registerHelper('placemarkDetail', function () {
       if (answer.indexOf("|") > -1) {
         // ignore
       } else {
-        cascadeJson = JSON.parse(answer);
-        answer = cascadeJson.map(function(item){
-          return item.name;
-        }).join("|");
+          if (answer.charAt(0) === '[') {
+              cascadeJson = JSON.parse(answer);
+              answer = cascadeJson.map(function(item){
+                return item.name;
+              }).join("|");
+          }
       }
   } else if ((questionType === 'VIDEO' || questionType === 'PHOTO') && answer.charAt(0) === '{') {
     photoJson = JSON.parse(answer)
