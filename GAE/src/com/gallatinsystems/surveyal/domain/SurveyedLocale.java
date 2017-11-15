@@ -352,9 +352,14 @@ public class SurveyedLocale extends BaseDomain {
     }
 
     public void setGeoLocation(String geoLocationString) {
-        String[] geoParts = geoLocationString.split("\\|");
-        if (geoParts == null || geoParts.length < 2 || geoParts[0] == null || geoParts[1] == null)
+        if (geoLocationString == null) {
             return;
+        }
+
+        String[] geoParts = geoLocationString.split("\\|");
+        if (geoParts == null || geoParts.length < 2 || geoParts[0] == null || geoParts[1] == null) {
+            return;
+        }
 
         this.latitude = Double.parseDouble(geoParts[0]);
         this.longitude = Double.parseDouble(geoParts[1]);
