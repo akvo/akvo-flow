@@ -435,6 +435,8 @@ public class GraphicalSurveySummaryExporter extends SurveySummaryExporter {
         } catch (Exception e) {
             log.error("Error generating report: " + e.getMessage(), e);
         }
+        //TODO: we could send result to server for the notification tab
+
     }
 
     private Workbook createWorkbookAndFormats(){

@@ -198,6 +198,8 @@ public class RawDataSpreadsheetImporter implements DataImporter {
                 threadPool.shutdown();
             cleanup();
         }
+        
+        //TODO: we could send result to server for the notification tab
 
     }
 
