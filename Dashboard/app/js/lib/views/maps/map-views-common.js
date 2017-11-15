@@ -277,9 +277,7 @@ FLOW.NavMapsView = FLOW.View.extend({
   handlePlacemarkDetails: function () {
     var details = FLOW.placemarkDetailController.get('content');
 
-    if (!this.detailsPaneVisible) {
-      this.set('detailsPaneVisible', true);
-    }
+    this.showDetailsPane();
     if (!Ember.empty(details) && details.get('isLoaded')) {
       this.populateDetailsPane(details);
     }
@@ -374,9 +372,7 @@ FLOW.NavMapsView = FLOW.View.extend({
       this.marker = new L.marker(FLOW.mapsController.get('markerCoordinates'), {icon: markerIcon});
       this.map.addLayer(this.marker);
 
-      if (!this.detailsPaneVisible) {
-          this.set('detailsPaneVisible', true);
-      }
+      this.showDetailsPane();
   }.observes('FLOW.mapsController.markerCoordinates'),
 
   detailsPaneShowHide: function(){
@@ -398,7 +394,13 @@ FLOW.NavMapsView = FLOW.View.extend({
         opacity: (display) ? '1' : '0',
         display: (display) ? 'inherit' : 'none'
       });
-  }.observes('this.detailsPaneVisible')
+  }.observes('this.detailsPaneVisible'),
+
+  showDetailsPane: function(){
+      if (!this.detailsPaneVisible) {
+        this.set('detailsPaneVisible', true);
+      }
+  }
 });
 
 FLOW.countryView = FLOW.View.extend({});
