@@ -23,10 +23,13 @@
     <div id="pointDetails">
       {{#if content}}
         <ul class="placeMarkBasicInfo floats-in">
+            {{#if view.cartoMaps}}
             <h3>{{surveyedLocaleDisplayName}}</h3>
             <li>
-                <label style="display: inline; margin: 0 0 0 5px;" title="{{t _data_point_id}}">{{surveyedLocaleIdentifier}}</label>
-            </li>
+                <span>{{t _data_point_id}}:</span>
+                <label style="display: inline; margin: 0 0 0 5px;">{{surveyedLocaleIdentifier}}</label>
+            </li><br>
+            {{/if}}
           <li>
             <span>{{t _collected_on}}:</span>
             <div class="placeMarkCollectionDate">

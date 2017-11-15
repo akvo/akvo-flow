@@ -404,7 +404,9 @@ FLOW.NavMapsView = FLOW.View.extend({
 });
 
 FLOW.countryView = FLOW.View.extend({});
-FLOW.PlacemarkDetailView = Ember.View.extend({});
+FLOW.PlacemarkDetailView = Ember.View.extend({
+    cartoMaps: FLOW.Env.mapsProvider && FLOW.Env.mapsProvider === 'cartodb'
+});
 FLOW.PlacemarkDetailPhotoView = Ember.View.extend({});
 
 FLOW.GeoshapeMapView = FLOW.View.extend({
