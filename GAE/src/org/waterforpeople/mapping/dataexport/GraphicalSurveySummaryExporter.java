@@ -29,6 +29,7 @@ import java.util.Collections;
 import java.util.Comparator;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
@@ -106,6 +107,8 @@ public class GraphicalSurveySummaryExporter extends SurveySummaryExporter {
     private static final String USE_QIDS_OPT = "useQuestionId";
     private static final String METADATA_LABEL = "Metadata"; //Constant. Localization is going away.
     private static final String REPORT_COMMENT = "Data Cleaning Report - Akvo Flow v1.9.25";
+//    private static final String UNROUNDING_COMMENT = "One or more cells in this column were saved as text to prevent rounding. Range functions like SUM may give unexpected results.";
+    private static final String UNROUNDING_COMMENT = "Don't panic!";
     
 
     private static final String DEFAULT_IMAGE_PREFIX = "http://waterforpeople.s3.amazonaws.com/images/";
@@ -351,8 +354,10 @@ public class GraphicalSurveySummaryExporter extends SurveySummaryExporter {
     // maps from a question group id to the last row written on the sheet
     private Map<Long, Integer> qgCurrentRow = new HashMap<>();
     // data about questions gathered while writing headers
-    private List<String> questionIdList = new ArrayList<String>();
-    private List<String> unsummarizable = new ArrayList<String>();
+    private List<String> questionIdList = new ArrayList<>();
+    private List<String> unsummarizable = new ArrayList<>();
+    // For each Sheet, a set of columns that had NUMBERs too large to put in number cells
+    private Map<Sheet, Set<Integer>> unroundedColumns = new HashMap<>();
 
 
     //@Override
@@ -399,6 +404,8 @@ public class GraphicalSurveySummaryExporter extends SurveySummaryExporter {
                         criteria.get(SurveyRestRequest.SURVEY_ID_PARAM),
                         serverBase, questionMap, wb, isFullReport, fileName,
                         criteria.get("apiKey"), lastCollection, from, to, limit);
+                addColumnWarnings(wb);
+                
                 if (isFullReport) {
                     writeSummaryReport(questionMap, model, null, wb);
                 }
@@ -434,6 +441,14 @@ public class GraphicalSurveySummaryExporter extends SurveySummaryExporter {
             }
         } catch (Exception e) {
             log.error("Error generating report: " + e.getMessage(), e);
+        }
+    }
+
+    private void addColumnWarnings(Workbook wb) {
+        for (Entry<Sheet, Set<Integer>> e : unroundedColumns.entrySet()) {
+            for (Integer colIndex: e.getValue()) {
+                addComment(e.getKey(), doGroupHeaders ? 1 : 0, colIndex, UNROUNDING_COMMENT);
+            }
         }
     }
 
@@ -500,6 +515,7 @@ public class GraphicalSurveySummaryExporter extends SurveySummaryExporter {
 
         //make base sheet (for non-repeated data)
         final Sheet baseSheet = wb.createSheet(RAW_DATA_LABEL.get(locale));
+        unroundedColumns.put(baseSheet, new HashSet<Integer>());
 
         final Map<String, String> collapseIdMap = new HashMap<String, String>();
         final Map<String, String> nameToIdMap = new HashMap<String, String>();
@@ -507,8 +523,10 @@ public class GraphicalSurveySummaryExporter extends SurveySummaryExporter {
             if (makeRepSheets && safeTrue(groupEntry.getKey().getRepeatable())) {
                 // breaking this qg out, so create the sheet for it
                 Long gid = groupEntry.getKey().getKeyId();
-                qgSheetMap.put(gid, wb.createSheet("Group " + groupEntry.getKey().getOrder())); //TODO add name?
+                Sheet repSheet = wb.createSheet("Group " + groupEntry.getKey().getOrder());
+                qgSheetMap.put(gid, repSheet); //TODO add name?
                 qgCurrentRow.put(gid, Integer.valueOf(doGroupHeaders ? 2 : 1));
+                unroundedColumns.put(repSheet, new HashSet<Integer>());
             }
             for (QuestionDto q : groupEntry.getValue()) {
                 if (safeTrue(q.getCollapseable())) {
@@ -671,7 +689,7 @@ public class GraphicalSurveySummaryExporter extends SurveySummaryExporter {
             for (Map.Entry<Long, String> iteration : iterationsMap.entrySet()) {
                 String val = iteration.getValue();
                 Row iterationRow = getRow(++currentRow, sheet);
-                writeAnswer(sheet, iterationRow, columnIndexMap.get(questionId.toString()),
+                writeAnswer(iterationRow, columnIndexMap.get(questionId.toString()),
                         questionDto, val);
                 if (!digestRows.contains(iterationRow)) { //A Set would be neater
                     digestRows.add(iterationRow);
@@ -763,7 +781,7 @@ public class GraphicalSurveySummaryExporter extends SurveySummaryExporter {
                 String val = iteration.getValue();
                 rowOffset++;
                 Row iterationRow = getRow(startRow + rowOffset, sheet);
-                writeAnswer(sheet, iterationRow, columnIndexMap.get(q), questionDto, val);
+                writeAnswer(iterationRow, columnIndexMap.get(q), questionDto, val);
             }
             maxRow = Math.max(maxRow, startRow + rowOffset);
         }
@@ -855,7 +873,7 @@ public class GraphicalSurveySummaryExporter extends SurveySummaryExporter {
      * @param questionDto
      * @param value
      */
-    private void writeAnswer(Sheet sheet, Row row, int startColumn,
+    private void writeAnswer(Row row, int startColumn,
             QuestionDto questionDto, String value) {
 
         assert value != null;
@@ -908,7 +926,14 @@ public class GraphicalSurveySummaryExporter extends SurveySummaryExporter {
         int col = startColumn;
         for (String cellValue : cells) {
             if (questionType == QuestionType.NUMBER) {
-                createCell(row, col, cellValue, null, Cell.CELL_TYPE_NUMERIC);
+                //Normally numeric, unless that would cause rounding
+                if (cellValue.length() < 16) {
+                    createCell(row, col, cellValue, null, Cell.CELL_TYPE_NUMERIC);
+                } else {
+                    createCell(row, col, cellValue, mTextStyle);
+                    //Prepare to warn user
+                    unroundedColumns.get(row.getSheet()).add(Integer.valueOf(col));
+                }
             } else if (questionType == QuestionType.PHOTO) {
                 if (col == startColumn) { // URL is text
                     createCell(row, col, cellValue, mTextStyle);
@@ -1312,7 +1337,7 @@ public class GraphicalSurveySummaryExporter extends SurveySummaryExporter {
             ) {
 
         int columnIdx = addMetaDataHeaders(baseSheet, !makeRepSheets);
-        addComment(baseSheet);
+        addComment(baseSheet, 0, 0, REPORT_COMMENT);
 
         if (questionMap != null) {
             int offset = ++columnIdx;
@@ -1322,7 +1347,7 @@ public class GraphicalSurveySummaryExporter extends SurveySummaryExporter {
                     if (qgSheetMap.containsKey(group.getKeyId()))   {
                         Sheet groupSheet = qgSheetMap.get(group.getKeyId());
                         int metaEnd = addMetaDataHeaders(groupSheet, true);
-                        addComment(groupSheet);
+                        addComment(groupSheet, 0, 0, REPORT_COMMENT);
                         writeRawDataGroupHeaders(groupSheet, group, questionMap.get(group), metaEnd + 1);
                     } else {
                     // if not, keep adding it on to base sheet and return new offset
@@ -1338,10 +1363,10 @@ public class GraphicalSurveySummaryExporter extends SurveySummaryExporter {
     }
 
 
-    private void addComment(Sheet sheet)
+    private void addComment(Sheet sheet, int r, int c, String s)
     {
-        Row row = getRow(0, sheet);
-        Cell cell = row.getCell(0); //Assuming it exists
+        Row row = getRow(r, sheet);
+        Cell cell = row.getCell(c); //Assuming it exists
         CreationHelper factory = sheet.getWorkbook().getCreationHelper();
         ClientAnchor anchor = factory.createClientAnchor();
         anchor.setCol1(cell.getColumnIndex());
@@ -1351,9 +1376,9 @@ public class GraphicalSurveySummaryExporter extends SurveySummaryExporter {
 
         Drawing drawing = sheet.createDrawingPatriarch();
         Comment comment = drawing.createCellComment(anchor);
-        RichTextString str = factory.createRichTextString(REPORT_COMMENT);
+        RichTextString str = factory.createRichTextString(s);
         comment.setString(str);
-        //comment.setAuthor("Akvo Flow v1.9.99"); //Not visible in the spreadsheet applications.
+        //comment.setAuthor("Akvo Flow v1.9.99"); //Not visible in some spreadsheet applications.
         cell.setCellComment(comment);
     } 
     
