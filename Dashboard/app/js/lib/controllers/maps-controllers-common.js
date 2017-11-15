@@ -11,8 +11,6 @@ FLOW.mapsController = Ember.ArrayController.create({
     map: null,
     marker: null,
     markerCoordinates: null,
-    cartodbLayer: null,
-    layerExistsCheck: false,
     questions: null,
     geocellCache: [],
     currentGcLevel: null,
@@ -20,6 +18,8 @@ FLOW.mapsController = Ember.ArrayController.create({
     selectedMarker:null,
     selectedSI: null,
     questionAnswers: null,
+    namedMap: null,
+    surveyDataLayer: null,
 
     populateMap: function () {
         var gcLevel, placemarks, placemarkArray=[];
@@ -185,14 +185,12 @@ FLOW.mapsController = Ember.ArrayController.create({
                     if (data['template_ids'][i] === namedMapObject.mapName) {
                         //named map already exists
                         mapExists = true;
+                        self.set('namedMap', namedMapObject.mapName);
                         break;
                     }
                 }
 
-                if (mapExists) {
-                    //overlay named map
-                    self.createLayer(formId);
-                } else {
+                if (!mapExists) {
                     //create new named map
                     self.createNamedMap(namedMapObject, formId);
                 }
@@ -231,7 +229,7 @@ FLOW.mapsController = Ember.ArrayController.create({
             dataType: 'json',
             success: function(namedMapData){
                 if (namedMapData.template_id) {
-                    self.createLayer(formId);
+                    self.set('namedMap', namedMapData.template_id);
                 }
             }
         });
@@ -239,52 +237,50 @@ FLOW.mapsController = Ember.ArrayController.create({
 
     /*this function overlays a named map on the cartodb map*/
     createLayer: function(formId){
-        var self = this, pointDataUrl;
+        if (this.namedMap) {
+            var self = this;
 
-        //first clear any currently overlayed cartodb layer
-        self.clearCartodbLayer();
+            // add cartodb layer with one sublayer
+            cartodb.createLayer(self.map, {
+                user_name: FLOW.Env.appId,
+                type: 'namedmap',
+                named_map: {
+                    name: this.namedMap,
+                    layers: [{
+                        layer_name: "t",
+                        interactivity: "id"
+                    }]
+                }
+            },{
+                tiler_domain: FLOW.Env.cartodbHost,
+                tiler_port: "", //set to empty string to stop cartodb js from appending default port
+                tiler_protocol: "https",
+                no_cdn: true
+            })
+            .addTo(self.map)
+            .done(function(layer) {
+                layer.setZIndex(1000); //required to ensure that the cartodb layer is not obscured by the here maps base layers
+                self.set('surveyDataLayer', layer);
 
-        // add cartodb layer with one sublayer
-        cartodb.createLayer(self.map, {
-            user_name: FLOW.Env.appId,
-            type: 'namedmap',
-            named_map: {
-                name: "raw_data_"+formId,
-                layers: [{
-                    layer_name: "t",
-                    interactivity: "id"
-                }]
-            }
-        },{
-            tiler_domain: FLOW.Env.cartodbHost,
-            tiler_port: "", //set to empty string to stop cartodb js from appending default port
-            tiler_protocol: "https",
-            no_cdn: true
-        })
-        .addTo(self.map)
-        .done(function(layer) {
-            layer.setZIndex(1000); //required to ensure that the cartodb layer is not obscured by the here maps base layers
-            self.layerExistsCheck = true;
-            self.cartodbLayer = layer;
+                self.addCursorInteraction(layer);
 
-            self.addCursorInteraction(layer);
+                var dataLayer = layer.getSubLayer(0);
+                dataLayer.setInteraction(true);
 
-            var dataLayer = layer.getSubLayer(0);
-            dataLayer.setInteraction(true);
+                dataLayer.on('featureClick', function(e, latlng, pos, data) {
+                    FLOW.mapsController.set('markerCoordinates', [data.lat, data.lon]);
 
-            dataLayer.on('featureClick', function(e, latlng, pos, data) {
-                FLOW.mapsController.set('markerCoordinates', [data.lat, data.lon]);
-                
-                //get survey instance
-                FLOW.placemarkDetailController.set( 'si', FLOW.store.find(FLOW.SurveyInstance, data.id));
+                    //get survey instance
+                    FLOW.placemarkDetailController.set( 'si', FLOW.store.find(FLOW.SurveyInstance, data.id));
 
-                //get questions answers for clicked survey instance
-                FLOW.placemarkDetailController.set('content', FLOW.store.findQuery(FLOW.QuestionAnswer, {
-                    'surveyInstanceId' : data.id
-                }));
+                    //get questions answers for clicked survey instance
+                    FLOW.placemarkDetailController.set('content', FLOW.store.findQuery(FLOW.QuestionAnswer, {
+                        'surveyInstanceId' : data.id
+                    }));
+                });
             });
-        });
-    },
+        }
+    }.observes('this.namedMap'),
 
     loadQuestions: function(formId){
         this.set('questions', FLOW.store.findQuery(FLOW.Question, {
@@ -311,12 +307,11 @@ FLOW.mapsController = Ember.ArrayController.create({
         });
     },
 
-    clearCartodbLayer: function(){
-      //check to confirm that there are no layers displayed on the map
-      if (this.layerExistsCheck) {
-        this.map.removeLayer(this.cartodbLayer);
-        this.layerExistsCheck = false;
-      }
+    clearSurveyDataLayer: function(){
+        if (this.surveyDataLayer) {
+            this.map.removeLayer(this.surveyDataLayer);
+            this.set('surveyDataLayer', null);
+        }
     },
 
     formatDate: function(date) {

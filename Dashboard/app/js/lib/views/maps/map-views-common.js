@@ -260,6 +260,7 @@ FLOW.NavMapsView = FLOW.View.extend({
 
   surveySelection: function () {
       this.clearMap();
+      FLOW.mapsController.clearSurveyDataLayer();
       if (!Ember.none(this.get('selectedSurvey'))) {
           FLOW.mapsController.loadNamedMap(this.selectedSurvey.get('keyId'));
       }
@@ -267,7 +268,7 @@ FLOW.NavMapsView = FLOW.View.extend({
 
   surveyGroupSelection: function () {
       this.clearMap();
-      FLOW.mapsController.clearCartodbLayer();
+      FLOW.mapsController.clearSurveyDataLayer();
   }.observes('FLOW.selectedControl.selectedSurveyGroup'),
 
   /**
