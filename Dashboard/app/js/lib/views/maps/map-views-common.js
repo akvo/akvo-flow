@@ -77,7 +77,7 @@ FLOW.NavMapsView = FLOW.View.extend({
     L.control.scale({position:'topleft', maxWidth:150}).addTo(this.map);
 
     this.$('#mapDetailsHideShow').click(function () {
-      self.handleShowHideDetails();
+      self.toggleProperty('detailsPaneVisible');
     });
 
     self.set('detailsPaneVisible', false);
@@ -269,17 +269,6 @@ FLOW.NavMapsView = FLOW.View.extend({
       this.clearMap();
       FLOW.mapsController.clearCartodbLayer();
   }.observes('FLOW.selectedControl.selectedSurveyGroup'),
-
-  /**
-    Helper function to dispatch to either hide or show details pane
-  */
-  handleShowHideDetails: function () {
-    if (this.detailsPaneVisible) {
-      this.set('detailsPaneVisible', false);
-    } else {
-      this.set('detailsPaneVisible', true);
-    }
-  },
 
   /**
     If a placemark is selected and the details pane is hidden make sure to
