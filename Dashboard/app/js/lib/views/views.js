@@ -204,9 +204,9 @@ Ember.Handlebars.registerHelper('placemarkDetail', function () {
     }
   }
 
-  markup = '<div class="defListWrap"><dt>' +
-    question + ':</dt><dd>' +
-    answer + '</dd></div>';
+  markup = '<div class="defListWrap"><h4>' +
+    question + ':</h4><div>' +
+    answer + '</div></div>';
 
   return new Handlebars.SafeString(markup);
 });
