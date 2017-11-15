@@ -2,34 +2,24 @@
 <section class="fullWidth reportTools" id="reportBlocks">
   {{#view FLOW.ExportReportsAppletView}}
 
-      <h1>Select survey</h1>
-      <div class="surveySelect">
-        <nav class="breadCrumb floats-in">
-          {{#unless FLOW.projectControl.isLoading}}
-            {{view FLOW.SurveySelectionView}}
-          {{/unless}}
+    <h1>Select survey</h1>
+    <div class="surveySelect">
+      <nav class="breadCrumb floats-in">
+        {{#unless FLOW.projectControl.isLoading}}
+          {{view FLOW.SurveySelectionView}}
+        {{/unless}}
 
-          {{#if FLOW.selectedControl.selectedSurvey}}
-            {{view Ember.Select
-                contentBinding="FLOW.surveyControl.arrangedContent"
-                selectionBinding="FLOW.selectedControl.selectedSurvey"
-                optionLabelPath="content.code"
-                optionValuePath="content.keyId"
-                prompt=""
-                promptBinding="Ember.STRINGS._select_form"}}
-            {{#if FLOW.selectedControl.selectedSurvey}}
-              {{view Ember.Select
-                  contentBinding="FLOW.reportLanguageControl.arrangedContent"
-                  selectionBinding="FLOW.reportLanguageControl.selectedLanguage"
-                  optionLabelPath="content.label"
-                  optionValuePath="content.value"
-                  prompt=""
-                  promptBinding="Ember.STRINGS._select_language"}}
-            {{/if}}
-          {{/if}}
-        </nav>
-      </div>
-
+        {{#if FLOW.selectedControl.selectedSurvey}}
+          {{view Ember.Select
+              contentBinding="FLOW.surveyControl.arrangedContent"
+              selectionBinding="FLOW.selectedControl.selectedSurvey"
+              optionLabelPath="content.code"
+              optionValuePath="content.keyId"
+              prompt=""
+              promptBinding="Ember.STRINGS._select_form" id="monitorSelection"}}
+        {{/if}}
+      </nav>
+    </div>
 
     <script>
       function openExportOptions(evt, exportName) {
@@ -47,113 +37,113 @@
        }
     </script> 
 
-      <section class="exportContainer">
-        <h1>Select export</h1>
-        <ul class="exportSelect">
-          <li class="dataCleanExp trigger" onclick="openExportOptions(event, 'dataCleanExp_options')">
-            <h2>Data cleaning export</h2>
-            <h6>* Importable back to Akvo flow</h6>
-            <p class="expDescr">Combines options and cascade level into a single column. Puts repeated groups into separate sheets.</p>
-            <div id="dataCleanExp_options" class="options">
-                <div class="dataCollectedDate">
-                  <p>Collection period</p>
-                  <label class="collectedFrom">
-                    <span>{{t _collected_from}}:</span> {{view FLOW.DateField minDate=false valueBinding="FLOW.dateControl.fromDate" elementId="from_date" placeholder="" placeholderBinding="Ember.STRINGS._collected_from" size=30}}
-                  </label>
-                  <label class="collectedTo">
-                    <span>{{t _to}}:</span> {{view FLOW.DateField minDate=false valueBinding="FLOW.dateControl.toDate" elementId="to_date" placeholder="" placeholderBinding="Ember.STRINGS._to" size=30}}
-                  </label>
-              </div>
-              <div class="latestOption">
-                <label for="lastCollection">Latest data only</label>{{view Ember.Checkbox checkedBinding="FLOW.editControl.lastCollection" id="lastCollection"}}
-              </div>
-              <a {{action showRawDataReport target="this"}} onclick="displayFeedbackTxt()" class="button trigger2">Download</a>
+    <section class="exportContainer">
+      <h1>Select export</h1>
+      <ul class="exportSelect">
+        <li class="dataCleanExp trigger" onclick="openExportOptions(event, 'dataCleanExp_options')">
+          <h2>Data cleaning export</h2>
+          <h6>* Importable back to Akvo flow</h6>
+          <p class="expDescr">Combines options and cascade level into a single column. Puts repeated groups into separate sheets.</p>
+          <div id="dataCleanExp_options" class="options">
+              <div class="dataCollectedDate">
+                <p>Collection period</p>
+                <label class="collectedFrom">
+                  <span>{{t _collected_from}}:</span> {{view FLOW.DateField minDate=false valueBinding="FLOW.dateControl.fromDate" elementId="from_date" placeholder="" placeholderBinding="Ember.STRINGS._collected_from" size=30}}
+                </label>
+                <label class="collectedTo">
+                  <span>{{t _to}}:</span> {{view FLOW.DateField minDate=false valueBinding="FLOW.dateControl.toDate" elementId="to_date" placeholder="" placeholderBinding="Ember.STRINGS._to" size=30}}
+                </label>
+            </div>
+            <div class="latestOption">
+              <label for="lastCollection">Latest data only</label>{{view Ember.Checkbox checkedBinding="FLOW.editControl.lastCollection" id="lastCollection"}}
+            </div>
+            <a {{action showRawDataReport target="this"}} onclick="displayFeedbackTxt()" class="button trigger2">Download</a>
 
-              <div class="downFeedback" style="display: none;">
+            <div class="downFeedback" style="display: none;">
+              <em>Preparing report</em>
+              <p>A link will be emailed to you shortly.</p>
+            </div>
+          </div>
+        </li>
+
+        <li class="dataAnalyseExp trigger" onclick="openExportOptions(event, 'dataAnalyseExp_options')">
+          <h2>Data analysis export</h2>
+          <h6>* Not importable back to Akvo flow</h6>
+          <p class="expDescr">Replaces questions with variable names. Splits cascade levels and options to columns. Puts repeated groups into rows. Contains location info for geotagged photos.</p>
+            <div id="dataAnalyseExp_options" class="options">
+              <div class="dataCollectedDate">
+                <p>Collection period</p>
+                <label class="collectedFrom">
+                  <span>from:</span>
+                  <input type="text" id="from_date" placeholder="DD-MM-YYYY">
+                </label>
+                <label class="collectedTo">
+                  <span>to:</span>
+                  <input type="text" id="to_date" placeholder="DD-MM-YYYY">
+                </label>
+              </div>
+              <input type="submit" value="Download" onclick="displayFeedbackTxt('downFeedback02')" class="trigger2">
+              <div class="downFeedback02" style="display: none;">
                 <em>Preparing report</em>
                 <p>A link will be emailed to you shortly.</p>
               </div>
             </div>
           </li>
 
-          <li class="dataAnalyseExp trigger" onclick="openExportOptions(event, 'dataAnalyseExp_options')">
-            <h2>Data analysis export</h2>
+
+          <li class="compReportExp trigger"  onclick="openExportOptions(event, 'compReportExp_options')">
+            <h2>{{t _comprehensive_report}}</h2>
             <h6>* Not importable back to Akvo flow</h6>
-            <p class="expDescr">Replaces questions with variable names. Splits cascade levels and options to columns. Puts repeated groups into rows. Contains location info for geotagged photos.</p>
-              <div id="dataAnalyseExp_options" class="options">
-                <div class="dataCollectedDate">
-                  <p>Collection period</p>
-                  <label class="collectedFrom">
-                    <span>from:</span>
-                    <input type="text" id="from_date" placeholder="DD-MM-YYYY">
-                  </label>
-                  <label class="collectedTo">
-                    <span>to:</span>
-                    <input type="text" id="to_date" placeholder="DD-MM-YYYY">
-                  </label>
-                </div>
-                <input type="submit" value="Download" onclick="displayFeedbackTxt('downFeedback02')" class="trigger2">
-                <div class="downFeedback02" style="display: none;">
-                  <em>Preparing report</em>
-                  <p>A link will be emailed to you shortly.</p>
-                </div>
+            <p class="expDescr">Summarizes responses with charts (Min, Max, Frequency, ..). Contains raw data</p>
+            <div id="compReportExp_options" class="options">
+              <a {{action showComprehensiveOptions target="this"}}  onclick="displayFeedbackTxt()" class="trigger2 button">Download</a>
+              <div class="downFeedback03" style="display: none;">
+                <em>Preparing report</em>    d
+                <p>A link will be emailed to you shortly.</p>
               </div>
-            </li>
-
-
-            <li class="compReportExp trigger"  onclick="openExportOptions(event, 'compReportExp_options')">
-              <h2>{{t _comprehensive_report}}</h2>
-              <h6>* Not importable back to Akvo flow</h6>
-              <p class="expDescr">Summarizes responses with charts (Min, Max, Frequency, ..). Contains raw data</p>
-              <div id="compReportExp_options" class="options">
-                <a {{action showComprehensiveOptions target="this"}}  onclick="displayFeedbackTxt()" class="trigger2 button">Download</a>
-                <div class="downFeedback03" style="display: none;">
-                  <em>Preparing report</em>    d
-                  <p>A link will be emailed to you shortly.</p>
-                </div>
-              </div>
-            </li>
-
-
-            <li class="geoShapeDataExp trigger"  onclick="openExportOptions(event, 'geoShapeDataExp_options')">
-              <h2>Geoshape data</h2>
-              <p class="expDescr">.geojson</p>
-                <div class="geoshapeSelect">
-                {{#if FLOW.selectedControl.selectedSurvey}}
-                  {{view Ember.Select
-                      contentBinding="FLOW.questionControl.geoshapeContent"
-                      selectionBinding="FLOW.selectedControl.selectedQuestion"
-                      optionLabelPath="content.text"
-                      optionValuePath="content.keyId"
-                      prompt=""
-                      promptBinding="Ember.STRINGS._select_question"}}
-                {{/if}}
-              </div>
-              <div id="geoShapeDataExp_options" class="options">
-                <a {{action showGeoshapeReport target="this"}} onclick="displayFeedbackTxt()" class="button trigger2">Donwload</a>
-                <div class="downFeedback04" style="display: none;">
-                  <em>Preparing report</em>
-                  <p>A link will be emailed to you shortly.</p>
-                 </div>
             </div>
           </li>
-          <li class="surveyFormExp trigger"  onclick="openExportOptions(event, 'surveyFormExp_options')">
-            <h2>Survey Form</h2>
-            <p class="expDescr">Printable</p>
-            <div id="surveyFormExp_options" class="options">
-              <a {{action showSurveyForm target="this"}}  onclick="displayFeedbackTxt()" class="button trigger2">Download</a>
-                {{#if view.showSurveyFormApplet }}
-                  {{view FLOW.surveyFormApplet}}
-                {{/if}}
-              <div class="downFeedback05" style="display: none;">
-              <em>Preparing report</em>
-              <p>A link will be emailed to you shortly.</p>
+
+
+          <li class="geoShapeDataExp trigger"  onclick="openExportOptions(event, 'geoShapeDataExp_options')">
+            <h2>Geoshape data</h2>
+            <p class="expDescr">.geojson</p>
+              <div class="geoshapeSelect">
+              {{#if FLOW.selectedControl.selectedSurvey}}
+                {{view Ember.Select
+                    contentBinding="FLOW.questionControl.geoshapeContent"
+                    selectionBinding="FLOW.selectedControl.selectedQuestion"
+                    optionLabelPath="content.text"
+                    optionValuePath="content.keyId"
+                    prompt=""
+                    promptBinding="Ember.STRINGS._select_question"}}
+              {{/if}}
             </div>
+            <div id="geoShapeDataExp_options" class="options">
+              <a {{action showGeoshapeReport target="this"}} onclick="displayFeedbackTxt()" class="button trigger2">Donwload</a>
+              <div class="downFeedback04" style="display: none;">
+                <em>Preparing report</em>
+                <p>A link will be emailed to you shortly.</p>
+               </div>
           </div>
         </li>
-      </ul>
-    </section>
-
+        <li class="surveyFormExp trigger"  onclick="openExportOptions(event, 'surveyFormExp_options')">
+          <h2>Survey Form</h2>
+          <p class="expDescr">Printable</p>
+          <div id="surveyFormExp_options" class="options">
+            <a {{action showSurveyForm target="this"}}  onclick="displayFeedbackTxt()" class="button trigger2">Download</a>
+              {{#if view.showSurveyFormApplet }}
+                {{view FLOW.surveyFormApplet}}
+              {{/if}}
+            <div class="downFeedback05" style="display: none;">
+            <em>Preparing report</em>
+            <p>A link will be emailed to you shortly.</p>
+          </div>
+        </div>
+      </li>
+    </ul>
+  </section>
+    
 <!-- Comprehensive report options -->
 <div {{bindAttr class="view.showComprehensiveDialog:display :overlay"}}>
   <div class="blanket"></div>

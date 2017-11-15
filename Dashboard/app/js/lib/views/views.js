@@ -959,6 +959,7 @@ FLOW.DataCleaningSurveySelectionView = Ember.ContainerView.extend({
     this.get('childViews').pushObject(FLOW.SelectFolder.create({
       parentId: 0, // start with the root folder
       idx: 0,
+      tagName: 'div',
       showMonitoringSurveysOnly: this.get('showMonitoringSurveysOnly') || false,
       selectionFilter : FLOW.projectControl.dataCleaningEnabled
     }));

@@ -5727,19 +5727,32 @@ svg {
 
 /****************************************** NEW EXPORT SECTION ***********************************************/
 .surveySelect {
-    display: flex;
     background: rgba($akvoBlack, 0.05);
-    padding: 5px;
+    padding: 10px 5px;
     margin-bottom: 25px;
     nav {
         &.monitorFormSelect {
             margin-left: 15px;
         }
         &.breadCrumb {
-            background: rgba($akvoBlack, 0.1);
-            padding-right: 5px;
+            background: rgba($akvoBlack, 0);
         }
         &.breadCrumb, &.monitorFormSelect {
+            select#monitorSelection {
+                display: inline-block;
+                top: -5px;
+                position: relative;
+                left: 25px;
+            }
+            .modularSelection {
+                padding: 0;
+                display: inline-block;
+                min-width: 200px;
+                select {
+                    max-width: 200px;
+                    @include noWrapTxt;
+                }
+            }
             ul li {
                 white-space: nowrap;
                 display: inline-block;
