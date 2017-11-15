@@ -38,13 +38,6 @@
           </li>
           <li></li>
         </ul>
-        <div {{bindAttr class=":imgContainer photoUrl:shown:hidden"}}>
-          {{#each photo in photoUrl}}
-            <a href="{{unbound photo}}" target="_blank">
-              <img src="{{unbound photo}}" alt=""/>
-            </a>
-          {{/each}}
-        </div>
         <div class="mapInfoDetail">
           {{#each arrangedContent}}
             <p>{{placemarkDetail}}</p>

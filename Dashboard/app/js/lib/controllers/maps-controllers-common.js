@@ -361,41 +361,6 @@ FLOW.placemarkDetailController = Ember.ArrayController.create({
     	this.set('collectionDate',FLOW.mapsController.selectedMarker.target.options.collectionDate);
     }
     this.populate(selectedPlacemarkId);
-  }.observes('FLOW.mapsController.selectedMarker'),
-
-  photoUrl: function () {
-    var photoDetails, photoUrls = [],
-      rawPhotoUrl, photoJson;
-
-    if (!this.get('content').get('isLoaded')) {
-      return null;
-    }
-
-    // filter out details with images
-    photoDetails = this.get('content').filter(function (detail) {
-        if (FLOW.Env.mapsProvider === 'cartodb') {
-            return detail.get('type') === 'IMAGE';
-        }
-        return detail.get('questionType') === 'PHOTO';
-    });
-
-    if (Ember.empty(photoDetails)) {
-      return null;
-    }
-
-    photoDetails.forEach(function (photo) {
-      rawPhotoUrl = photo.get(FLOW.Env.mapsProvider === 'cartodb' ? 'value' : 'stringValue') || '';
-      if (rawPhotoUrl.charAt(0) === '{') {
-        photoJson = JSON.parse(rawPhotoUrl);
-        rawPhotoUrl = photoJson.filename;
-      }
-      // Since photos have a leading path from devices that we need to trim
-      photoUrls.push(FLOW.Env.photo_url_root + rawPhotoUrl.split('/').pop());
-    });
-
-    return Ember.ArrayController.create({
-      content: photoUrls
-    });
-  }.property('content.isLoaded')
+  }.observes('FLOW.mapsController.selectedMarker')
 
 });
