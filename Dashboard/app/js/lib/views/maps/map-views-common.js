@@ -343,7 +343,7 @@ FLOW.NavMapsView = FLOW.View.extend({
       self.map.removeLayer(self.marker);
     }
 
-    if (!$.isEmptyObject(self.mediaMarkers)) {
+    if (!Ember.empty(self.mediaMarkers)) {
       for (mediaMarker in self.mediaMarkers) {
         self.map.removeLayer(self.mediaMarkers[mediaMarker]);
       }
