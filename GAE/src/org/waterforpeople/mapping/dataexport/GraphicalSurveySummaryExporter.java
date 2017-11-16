@@ -17,12 +17,15 @@
 package org.waterforpeople.mapping.dataexport;
 
 import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.security.NoSuchAlgorithmException;
 import java.text.DecimalFormat;
 import java.text.NumberFormat;
 import java.text.SimpleDateFormat;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
@@ -46,6 +49,7 @@ import org.apache.log4j.ConsoleAppender;
 import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
 import org.apache.log4j.PatternLayout;
+import org.apache.poi.POIXMLProperties;
 import org.apache.poi.ss.usermodel.Cell;
 import org.apache.poi.ss.usermodel.CellStyle;
 import org.apache.poi.ss.usermodel.ClientAnchor;
@@ -61,6 +65,8 @@ import org.apache.poi.ss.util.CellRangeAddress;
 import org.apache.poi.ss.util.WorkbookUtil;
 import org.apache.poi.xssf.streaming.SXSSFSheet;
 import org.apache.poi.xssf.streaming.SXSSFWorkbook;
+import org.apache.poi.xssf.usermodel.XSSFDrawing;
+import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import org.codehaus.jackson.map.ObjectMapper;
 import org.codehaus.jackson.type.TypeReference;
 import org.waterforpeople.mapping.app.gwt.client.survey.OptionContainerDto;
@@ -107,8 +113,8 @@ public class GraphicalSurveySummaryExporter extends SurveySummaryExporter {
     private static final String USE_QIDS_OPT = "useQuestionId";
     private static final String METADATA_LABEL = "Metadata"; //Constant. Localization is going away.
     private static final String REPORT_COMMENT = "Data Cleaning Report - Akvo Flow v1.9.25";
-//    private static final String UNROUNDING_COMMENT = "One or more cells in this column were saved as text to prevent rounding. Range functions like SUM may give unexpected results.";
-    private static final String UNROUNDING_COMMENT = "Don't panic!";
+    private static final String UNROUNDING_COMMENT = "One or more cells in this column were saved as text to prevent rounding. Range functions like SUM may give unexpected results.";
+//    private static final String UNROUNDING_COMMENT = "Don't panic!";
     
 
     private static final String DEFAULT_IMAGE_PREFIX = "http://waterforpeople.s3.amazonaws.com/images/";
@@ -433,7 +439,8 @@ public class GraphicalSurveySummaryExporter extends SurveySummaryExporter {
                 wb.setActiveSheet(isFullReport ? wb.getNumberOfSheets()-1 : 0);
                 wb.write(fileOut);
                 fileOut.close();
-
+                
+                setDocumentProperties(fileName, surveyId);
             } else {
                 log.info("No questions for survey: "
                         + criteria.get(SurveyRestRequest.SURVEY_ID_PARAM)
@@ -442,6 +449,31 @@ public class GraphicalSurveySummaryExporter extends SurveySummaryExporter {
         } catch (Exception e) {
             log.error("Error generating report: " + e.getMessage(), e);
         }
+    }
+
+    private void setDocumentProperties(File fileName, final String surveyId)
+            throws FileNotFoundException, IOException {
+        //Set properties on the Workbook. Need the non-streaming interface for this.
+        //TODO: will this increase memory usage? We could GC the big data structures first.
+        FileInputStream fis = new FileInputStream(fileName);
+        XSSFWorkbook workbook = new XSSFWorkbook(fis);
+        POIXMLProperties props = workbook.getProperties();
+
+        /* set some core properties */
+        POIXMLProperties.CoreProperties coreProp = props.getCoreProperties();
+        coreProp.setCreator("Akvo Flow v1.9.25"); //set document creator - not seen in LibreOffice
+        coreProp.setDescription("Form " + surveyId);
+        coreProp.setCategory("Data Cleaning Report"); //category (seen in custom properties in Calc)
+
+        /* some custom properties */
+        POIXMLProperties.CustomProperties custProp = props.getCustomProperties();
+        custProp.addProperty("Version", "Akvo Flow v1.9.25");
+        custProp.addProperty("Generated", new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ssZ").format(new Date()));
+        //custProp.addProperty("Published", true); //Yes No Property
+        
+        FileOutputStream fos = new FileOutputStream(fileName);
+        workbook.write(fos);
+        fos.close();
     }
 
     private void addColumnWarnings(Workbook wb) {
@@ -472,8 +504,6 @@ public class GraphicalSurveySummaryExporter extends SurveySummaryExporter {
         // decimals, never scientific
         // mNumberStyle = wb.createCellStyle();
         // mNumberStyle.setDataFormat(numberFormat);
-        
-        //TODO: can we set properties on the Workbook?
         
         return wb;
     };
@@ -1337,7 +1367,7 @@ public class GraphicalSurveySummaryExporter extends SurveySummaryExporter {
             ) {
 
         int columnIdx = addMetaDataHeaders(baseSheet, !makeRepSheets);
-        addComment(baseSheet, 0, 0, REPORT_COMMENT);
+//        addComment(baseSheet, 0, 0, REPORT_COMMENT);
 
         if (questionMap != null) {
             int offset = ++columnIdx;
@@ -1347,7 +1377,7 @@ public class GraphicalSurveySummaryExporter extends SurveySummaryExporter {
                     if (qgSheetMap.containsKey(group.getKeyId()))   {
                         Sheet groupSheet = qgSheetMap.get(group.getKeyId());
                         int metaEnd = addMetaDataHeaders(groupSheet, true);
-                        addComment(groupSheet, 0, 0, REPORT_COMMENT);
+//                        addComment(groupSheet, 0, 0, REPORT_COMMENT);
                         writeRawDataGroupHeaders(groupSheet, group, questionMap.get(group), metaEnd + 1);
                     } else {
                     // if not, keep adding it on to base sheet and return new offset
@@ -1370,15 +1400,14 @@ public class GraphicalSurveySummaryExporter extends SurveySummaryExporter {
         CreationHelper factory = sheet.getWorkbook().getCreationHelper();
         ClientAnchor anchor = factory.createClientAnchor();
         anchor.setCol1(cell.getColumnIndex());
-        anchor.setCol2(cell.getColumnIndex());
+        anchor.setCol2(cell.getColumnIndex()+3); //Room enough for an unrounding warning
         anchor.setRow1(row.getRowNum());
-        anchor.setRow2(row.getRowNum());
+        anchor.setRow2(row.getRowNum()+5);
 
-        Drawing drawing = sheet.createDrawingPatriarch();
+        Drawing drawing = sheet.createDrawingPatriarch(); // Creates or gets an existing patriarch
         Comment comment = drawing.createCellComment(anchor);
         RichTextString str = factory.createRichTextString(s);
         comment.setString(str);
-        //comment.setAuthor("Akvo Flow v1.9.99"); //Not visible in some spreadsheet applications.
         cell.setCellComment(comment);
     } 
     
