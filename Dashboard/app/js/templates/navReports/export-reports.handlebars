@@ -57,7 +57,7 @@
             <div class="latestOption">
               <label for="lastCollection">Latest data only</label>{{view Ember.Checkbox checkedBinding="FLOW.editControl.lastCollection" id="lastCollection"}}
             </div>
-            <a {{action showRawDataReport target="this"}} onclick="displayFeedbackTxt()" class="button trigger2">Download</a>
+            <a {{action showDataCleaningReport target="this"}} onclick="displayFeedbackTxt()" class="button trigger2">Download</a>
 
             <div class="downFeedback" style="display: none;">
               <em>Preparing report</em>
@@ -82,7 +82,7 @@
                   <input type="text" id="to_date" placeholder="DD-MM-YYYY">
                 </label>
               </div>
-              <input type="submit" value="Download" onclick="displayFeedbackTxt('downFeedback02')" class="trigger2">
+              <a {{action showDataAnalysisReport target="this"}} onclick="displayFeedbackTxt('downFeedback02')" class="button trigger2">Download</a>
               <div class="downFeedback02" style="display: none;">
                 <em>Preparing report</em>
                 <p>A link will be emailed to you shortly.</p>
@@ -94,11 +94,11 @@
           <li class="compReportExp trigger"  onclick="openExportOptions(event, 'compReportExp_options')">
             <h2>{{t _comprehensive_report}}</h2>
             <h6>* Not importable back to Akvo flow</h6>
-            <p class="expDescr">Summarizes responses with charts (Min, Max, Frequency, ..). Contains raw data</p>
+            <p class="expDescr">Summarizes responses with charts (Min, Max, Frequency, ...). Contains raw data</p>
             <div id="compReportExp_options" class="options">
-              <a {{action showComprehensiveOptions target="this"}}  onclick="displayFeedbackTxt()" class="trigger2 button">Download</a>
+              <a {{action showComprehensiveReport target="this"}} onclick="displayFeedbackTxt('downFeedback03')" class="button trigger2">Download</a>
               <div class="downFeedback03" style="display: none;">
-                <em>Preparing report</em>    d
+                <em>Preparing report</em>
                 <p>A link will be emailed to you shortly.</p>
               </div>
             </div>
@@ -144,25 +144,5 @@
     </ul>
   </section>
     
-<!-- Comprehensive report options -->
-<div {{bindAttr class="view.showComprehensiveDialog:display :overlay"}}>
-  <div class="blanket"></div>
-      <div class="dialogWrap">
-    <!-- the dialog contents -->
-    <div class="confirmDialog dialog">
-      <h2>{{t _options}}</h2>
-      <p class="dialogMsg"></p>
-
-       <label for="summaryPerGeoArea">{{t _generate_summary_per_geo_area}}:</label> {{view Ember.Checkbox checkedBinding="FLOW.editControl.summaryPerGeoArea" id="summaryPerGeoArea"}}<br/>
-       <label for="omitCharts">{{t _omit_charts}}:</label> {{view Ember.Checkbox checkedBinding="FLOW.editControl.omitCharts" id="omitCharts"}}<br/>
-
-      <div class="buttons menuCentre">
-        <ul>
-           <li><a {{action "showComprehensiveReport" target="this"}} class="ok smallBtn">{{t _ok}}</a></li>
-        </ul>
-      </div>
-    </div>
-  </div>
-</div>
 {{/view}}
 </section>
