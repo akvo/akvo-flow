@@ -38,15 +38,15 @@
     </script> 
 
     <section class="exportContainer">
-      <h1>Select export</h1>
+      <h1>{{t _select_export}}</h1>
       <ul class="exportSelect">
         <li class="dataCleanExp trigger" onclick="openExportOptions(event, 'dataCleanExp_options')">
-          <h2>Data cleaning export</h2>
-          <h6>* Importable back to Akvo flow</h6>
-          <p class="expDescr">Combines options and cascade level into a single column. Puts repeated groups into separate sheets.</p>
+          <h2>{{t _data_cleaning_export }}</h2>
+          <h6>{{t _importable_back_to_akvo_flow}}</h6>
+          <p class="expDescr">{{t _combines_options}}</p>
           <div id="dataCleanExp_options" class="options">
               <div class="dataCollectedDate">
-                <p>Collection period</p>
+                <p>{{t _collection_period}}</p>
                 <label class="collectedFrom">
                   <span>{{t _collected_from}}:</span> {{view FLOW.DateField minDate=false valueBinding="FLOW.dateControl.fromDate" elementId="from_date" placeholder="" placeholderBinding="Ember.STRINGS._collected_from" size=30}}
                 </label>
@@ -55,37 +55,37 @@
                 </label>
             </div>
             <div class="latestOption">
-              <label for="lastCollection">Latest data only</label>{{view Ember.Checkbox checkedBinding="FLOW.editControl.lastCollection" id="lastCollection"}}
+              <label for="lastCollection">{{t _latest_data}}</label>{{view Ember.Checkbox checkedBinding="FLOW.editControl.lastCollection" id="lastCollection"}}
             </div>
-            <a {{action showDataCleaningReport target="this"}} onclick="displayFeedbackTxt()" class="button trigger2">Download</a>
+            <a {{action showDataCleaningReport target="this"}} onclick="displayFeedbackTxt()" class="button trigger2">{{t _download}}</a>
 
             <div class="downFeedback" style="display: none;">
-              <em>Preparing report</em>
-              <p>A link will be emailed to you shortly.</p>
+              <em>{{t _preparing_report}}</em>
+              <p>{{t a_link_emailed}}</p>
             </div>
           </div>
         </li>
 
         <li class="dataAnalyseExp trigger" onclick="openExportOptions(event, 'dataAnalyseExp_options')">
-          <h2>Data analysis export</h2>
-          <h6>* Not importable back to Akvo flow</h6>
-          <p class="expDescr">Replaces questions with variable names. Splits cascade levels and options to columns. Puts repeated groups into rows. Contains location info for geotagged photos.</p>
+          <h2>{{t _data_analysis_export}}</h2>
+          <h6>{{t _not_importable_back}}</h6>
+          <p class="expDescr">{{t _replaces_question}}</p>
             <div id="dataAnalyseExp_options" class="options">
               <div class="dataCollectedDate">
-                <p>Collection period</p>
+                <p>{{t _collection_period}}</p>
                 <label class="collectedFrom">
-                  <span>from:</span>
+                  <span>{{t _from}}:</span>
                   <input type="text" id="from_date" placeholder="DD-MM-YYYY">
                 </label>
                 <label class="collectedTo">
-                  <span>to:</span>
+                  <span>{{t _to}}:</span>
                   <input type="text" id="to_date" placeholder="DD-MM-YYYY">
                 </label>
               </div>
-              <a {{action showDataAnalysisReport target="this"}} onclick="displayFeedbackTxt('downFeedback02')" class="button trigger2">Download</a>
+              <a {{action showDataAnalysisReport target="this"}} onclick="displayFeedbackTxt('downFeedback02')" class="button trigger2">{{t _download}}</a>
               <div class="downFeedback02" style="display: none;">
-                <em>Preparing report</em>
-                <p>A link will be emailed to you shortly.</p>
+            <em>{{t _preparing_report}}</em>
+            <p>{{t a_link_emailed}}</p>
               </div>
             </div>
           </li>
@@ -93,21 +93,21 @@
 
           <li class="compReportExp trigger"  onclick="openExportOptions(event, 'compReportExp_options')">
             <h2>{{t _comprehensive_report}}</h2>
-            <h6>* Not importable back to Akvo flow</h6>
-            <p class="expDescr">Summarizes responses with charts (Min, Max, Frequency, ...). Contains raw data</p>
+            <h6>{{t not_importable_back}}</h6>
+            <p class="expDescr">{{t _summarizes_responses}}</p>
             <div id="compReportExp_options" class="options">
-              <a {{action showComprehensiveReport target="this"}} onclick="displayFeedbackTxt('downFeedback03')" class="button trigger2">Download</a>
+              <a {{action showComprehensiveReport target="this"}} onclick="displayFeedbackTxt('downFeedback03')" class="button trigger2">{{t _download}}</a>
               <div class="downFeedback03" style="display: none;">
-                <em>Preparing report</em>
-                <p>A link will be emailed to you shortly.</p>
+                  <em>{{t _preparing_report}}</em>
+            <p>{{t a_link_emailed}}</p>
               </div>
             </div>
           </li>
 
 
           <li class="geoShapeDataExp trigger"  onclick="openExportOptions(event, 'geoShapeDataExp_options')">
-            <h2>Geoshape data</h2>
-            <p class="expDescr">.geojson</p>
+            <h2>{{t _geoshape_data}}</h2>
+            <p class="expDescr">{{t _geojson}}</p>
               <div class="geoshapeSelect">
               {{#if FLOW.selectedControl.selectedSurvey}}
                 {{view Ember.Select
@@ -120,24 +120,24 @@
               {{/if}}
             </div>
             <div id="geoShapeDataExp_options" class="options">
-              <a {{action showGeoshapeReport target="this"}} onclick="displayFeedbackTxt()" class="button trigger2">Donwload</a>
+              <a {{action showGeoshapeReport target="this"}} onclick="displayFeedbackTxt()" class="button trigger2">{{t _download}}</a>
               <div class="downFeedback04" style="display: none;">
-                <em>Preparing report</em>
-                <p>A link will be emailed to you shortly.</p>
+            <em>{{t _preparing_report}}</em>
+            <p>{{t a_link_emailed}}</p>
                </div>
           </div>
         </li>
         <li class="surveyFormExp trigger"  onclick="openExportOptions(event, 'surveyFormExp_options')">
-          <h2>Survey Form</h2>
-          <p class="expDescr">Printable</p>
+          <h2>{{t _survey_form }}</h2>
+          <p class="expDescr">{{t _printable}}</p>
           <div id="surveyFormExp_options" class="options">
-            <a {{action showSurveyForm target="this"}}  onclick="displayFeedbackTxt()" class="button trigger2">Download</a>
+            <a {{action showSurveyForm target="this"}}  onclick="displayFeedbackTxt()" class="button trigger2">{{t _download}}</a>
               {{#if view.showSurveyFormApplet }}
                 {{view FLOW.surveyFormApplet}}
               {{/if}}
             <div class="downFeedback05" style="display: none;">
-            <em>Preparing report</em>
-            <p>A link will be emailed to you shortly.</p>
+            <em>{{t _preparing_report}}</em>
+            <p>{{t a_link_emailed}}</p>
           </div>
         </div>
       </li>

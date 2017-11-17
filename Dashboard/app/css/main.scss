@@ -5874,12 +5874,25 @@ svg {
         }
         &.active {
             opacity: 1;
-            animation: fadePanel 1s;
-            animation-fill-mode: forwards;
+            -webkit-animation: fadeExportClick 1s  linear 1 normal forwards;
+            -moz-animation: fadeExportClick 1s  linear 1 normal forwards;
+            -o-animation: fadeExportClick 1s  linear 1 normal forwards;
+            animation: fadeExportClick 1s  linear 1 normal forwards;
             border: 1px solid rgba($akvoBlack, 0);
             background: rgba($akvoBlack, 0.05);
             box-shadow: 0 0 10px rgba($akvoBlack, 0.5);
-            @keyframes fadePanel {
+            @-webkit-keyframes fadeExportClick {
+                from {
+                    background: transparent;
+                    box-shadow: 0 0 4px rgba($akvoBlack, 0);
+                }
+                to {
+                    background: rgba($akvoBlack, 0.05);
+                    box-shadow: 0 0 10px rgba($akvoBlack, 0.5);
+                }
+            }
+
+            @keyframes fadeExportClick {
                 from {
                     background: transparent;
                     box-shadow: 0 0 4px rgba($akvoBlack, 0);
@@ -5894,8 +5907,8 @@ svg {
             margin: 10px auto;
         }
         .options {
-            animation: fadeEffect 2s;
-            @keyframes fadeEffect {
+            animation: fadeExport 2s;
+            @keyframes fadeExport {
                 from {
                     opacity: 0;
                 }
