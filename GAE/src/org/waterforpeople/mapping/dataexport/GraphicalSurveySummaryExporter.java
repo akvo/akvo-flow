@@ -326,7 +326,6 @@ public class GraphicalSurveySummaryExporter extends SurveySummaryExporter {
    
     private CellStyle headerStyle;
     private CellStyle textStyle;
-    // private CellStyle mNumberStyle;
     private String locale;
     private String imagePrefix;
     private String serverBase;
@@ -334,7 +333,7 @@ public class GraphicalSurveySummaryExporter extends SurveySummaryExporter {
     private boolean performGeoRollup;
     private boolean generateCharts; //Pie charts
     private boolean useQuestionId; //=Variable names. Also turns on splitting of answers into separate columns (options, geo, etc.) and turns off digests
-    private boolean makeRepSheets;
+    private boolean separateSheetsForRepeatableGroups;
     private boolean doGroupHeaders; //First header line is group names spanned over the group columns
     private Map<Long, QuestionDto> questionsById;
     private SurveyGroupDto surveyGroupDto;
@@ -360,8 +359,7 @@ public class GraphicalSurveySummaryExporter extends SurveySummaryExporter {
 
     // maps from a (repeatable) question group id to the sheet that contains the raw data for it (if split)
     private Map<Long, Sheet> qgSheetMap = new HashMap<>();
-    // maps from a question group id to the last row written on the sheet
-    private Map<Long, Integer> qgCurrentRow = new HashMap<>();
+
     // data about questions gathered while writing headers
     private List<String> questionIdList = new ArrayList<String>();
     private List<String> unsummarizable = new ArrayList<String>();
@@ -373,7 +371,9 @@ public class GraphicalSurveySummaryExporter extends SurveySummaryExporter {
         final String surveyId = criteria.get(SurveyRestRequest.SURVEY_ID_PARAM).trim();
         final String apiKey = criteria.get("apiKey").trim();
 
-        processOptions(options);
+        if (!processOptions(options)) {
+            return;
+        }
 
         questionsById = new HashMap<Long, QuestionDto>();
 
@@ -404,9 +404,13 @@ public class GraphicalSurveySummaryExporter extends SurveySummaryExporter {
 
                 Workbook wb = createWorkbookAndFormats();
                 
+                Sheet baseSheet = createDataSheets(wb, questionMap);
+                
                 SummaryModel model = fetchAndWriteRawData(
                         criteria.get(SurveyRestRequest.SURVEY_ID_PARAM),
-                        questionMap, wb, isFullReport, fileName,
+                        questionMap,
+                        wb, baseSheet,
+                        isFullReport, fileName,
                         criteria.get("apiKey"));
                 if (isFullReport) {
                     writeSummaryReport(questionMap, model, null, wb);
@@ -459,19 +463,28 @@ public class GraphicalSurveySummaryExporter extends SurveySummaryExporter {
         short textFormat = wb.createDataFormat().getFormat("@"); // built-in text format
         textStyle = wb.createCellStyle();
         textStyle.setDataFormat(textFormat);
-        // This was intended to suppress scientific notation in number
-        // answer cells,
-        // but it looked bad in Excel - "3" was shown as "3."
-        // short numberFormat =
-        // wb.createDataFormat().getFormat("0.###");//Show 0-3
-        // decimals, never scientific
-        // mNumberStyle = wb.createCellStyle();
-        // mNumberStyle.setDataFormat(numberFormat);
-        
+        // We tried a format like "0.###" to suppress scientific notation in number
+        // answer cells, but it looked bad in Excel - "3" was shown as "3."
         //TODO: can we set properties on the Workbook?
         
         return wb;
     };
+    
+    private Sheet createDataSheets(Workbook wb, Map<QuestionGroupDto, List<QuestionDto>> questionMap) {
+        //make base sheet (for non-repeated data)
+        Sheet baseSheet = wb.createSheet(RAW_DATA_LABEL.get(locale));
+
+        for (Entry<QuestionGroupDto, List<QuestionDto>> groupEntry : questionMap.entrySet()) {
+            if (separateSheetsForRepeatableGroups && safeTrue(groupEntry.getKey().getRepeatable())) {
+                // breaking this qg out, so create the sheet for it
+                Long gid = groupEntry.getKey().getKeyId();
+                qgSheetMap.put(gid, wb.createSheet("Group " + groupEntry.getKey().getOrder())); //TODO add name?
+            }
+        }
+
+        
+        return baseSheet;
+    }
     
     private boolean hasDataApproval() {
         return surveyGroupDto != null
@@ -490,6 +503,7 @@ public class GraphicalSurveySummaryExporter extends SurveySummaryExporter {
     protected SummaryModel fetchAndWriteRawData(String surveyId,
             Map<QuestionGroupDto, List<QuestionDto>> questionMap,
             Workbook wb,
+            Sheet baseSheet,
             final boolean generateSummary,
             File outputFile,
             String apiKey
@@ -504,18 +518,9 @@ public class GraphicalSurveySummaryExporter extends SurveySummaryExporter {
         final SummaryModel model = new SummaryModel();
         final String key = apiKey;
 
-        //make base sheet (for non-repeated data)
-        final Sheet baseSheet = wb.createSheet(RAW_DATA_LABEL.get(locale));
-
         final Map<String, String> collapseIdMap = new HashMap<String, String>();
         final Map<String, String> nameToIdMap = new HashMap<String, String>();
         for (Entry<QuestionGroupDto, List<QuestionDto>> groupEntry : questionMap.entrySet()) {
-            if (makeRepSheets && safeTrue(groupEntry.getKey().getRepeatable())) {
-                // breaking this qg out, so create the sheet for it
-                Long gid = groupEntry.getKey().getKeyId();
-                qgSheetMap.put(gid, wb.createSheet("Group " + groupEntry.getKey().getOrder())); //TODO add name?
-                qgCurrentRow.put(gid, Integer.valueOf(doGroupHeaders ? 2 : 1));
-            }
             for (QuestionDto q : groupEntry.getValue()) {
                 if (safeTrue(q.getCollapseable())) {
                     if (collapseIdMap.get(q.getText()) == null) {
@@ -597,14 +602,13 @@ public class GraphicalSurveySummaryExporter extends SurveySummaryExporter {
             }
             private int safeCompare(Date date1 , Date date2 ) {
                 if (date1 == null || date2 == null) return 0;
-                return date1.compareTo(date2 );
+                return date1.compareTo(date2);
             }
         });
         
         // write the data now, row by row
-        int baseCurrentRow = doGroupHeaders ? 2 : 1;
         for (InstanceData instanceData : allData) {
-            if (makeRepSheets) {
+            if (separateSheetsForRepeatableGroups) {
                 List<QuestionDto> baseSheetQuestions = new ArrayList<>();
                 List<Row> digestRows = new ArrayList<>();
 
@@ -612,20 +616,17 @@ public class GraphicalSurveySummaryExporter extends SurveySummaryExporter {
                 for (Entry<QuestionGroupDto, List<QuestionDto>> groupEntry : questionMap.entrySet()) {
                     Long gid = groupEntry.getKey().getKeyId();
                     if (safeTrue(groupEntry.getKey().getRepeatable())) {
-                        int groupCurrentRow = writeInstanceDataSplit(qgSheetMap.get(gid),
-                                qgCurrentRow.get(gid),
+                        writeInstanceDataSplit(qgSheetMap.get(gid),
                                 instanceData,
                                 groupEntry.getValue(),
                                 digestRows,
                                 true); 
-                        qgCurrentRow.put(gid, Integer.valueOf(groupCurrentRow));
                     } else {
                         baseSheetQuestions.addAll(groupEntry.getValue());                   
                     }
                 }
                 // Now do the rest on the base sheet
-                baseCurrentRow = writeInstanceDataSplit(baseSheet,
-                        baseCurrentRow,
+                writeInstanceDataSplit(baseSheet,
                         instanceData,
                         baseSheetQuestions,
                         digestRows,
@@ -634,14 +635,18 @@ public class GraphicalSurveySummaryExporter extends SurveySummaryExporter {
                 String digest = ExportImportUtils.md5Digest(digestRows,
                         columnIndexMap.get(DIGEST_COLUMN), baseSheet); //in case any rep group is wider than the base sheet
 
-                if (!useQuestionId) {//??
+                if (!useQuestionId) {
                     // now add 1 more col on the base sheet that contains the digest
-                    createCell(getRow(baseCurrentRow - 1, baseSheet), columnIndexMap.get(DIGEST_COLUMN), digest, null);
+                    createCell(getRow(baseSheet.getLastRowNum(), baseSheet),
+                            columnIndexMap.get(DIGEST_COLUMN),
+                            digest,
+                            null);
                 }
 
 
                 
             } else { //just one sheet - do all at once with a global repeat column
+                int baseCurrentRow = baseSheet.getLastRowNum();
                 baseCurrentRow = writeInstanceData(baseSheet, baseCurrentRow, instanceData,
                         generateSummary, nameToIdMap, collapseIdMap, model);
             }
@@ -651,16 +656,15 @@ public class GraphicalSurveySummaryExporter extends SurveySummaryExporter {
         return model;
     }
 
-    private synchronized int writeInstanceDataSplit(
+    private synchronized void writeInstanceDataSplit(
             Sheet sheet,
-            final int startRow,
             InstanceData instanceData,
             List<QuestionDto> whichQuestions,
             List<Row> digestRows,
             boolean showRepeatColumn)
             throws NoSuchAlgorithmException {
         
-        int maxRow = startRow - 1; //there might be NO answers for this instance
+        int startRow = sheet.getLastRowNum() + 1;
     
         for (QuestionDto questionDto : whichQuestions) {
             final Long questionId = questionDto.getKeyId();
@@ -681,12 +685,10 @@ public class GraphicalSurveySummaryExporter extends SurveySummaryExporter {
                     digestRows.add(iterationRow);
                 }
             }
-            maxRow = Math.max(maxRow, currentRow);
         }
         // all cells written; now we know how far down we went
-        writeMetadata(sheet, instanceData, startRow, maxRow - startRow + 1, showRepeatColumn);
-
-        return maxRow + 1;
+        writeMetadata(sheet, instanceData, startRow, sheet.getLastRowNum() - startRow + 1,
+                showRepeatColumn);
     }
 
     private void writeMetadata(Sheet sheet,
@@ -937,7 +939,7 @@ public class GraphicalSurveySummaryExporter extends SurveySummaryExporter {
         return ExportImportUtils.formatDateResponse(value);
     }
 
-    private /*static*/ List<String> mediaCellValues(String value, String imagePrefix) {
+    private List<String> mediaCellValues(String value, String imagePrefix) {
         List<String> cells = new ArrayList<>();
         Media media = MediaResponse.parse(value);
         String filename = media.getFilename();
@@ -1315,7 +1317,7 @@ public class GraphicalSurveySummaryExporter extends SurveySummaryExporter {
             List<QuestionDto>> questionMap
             ) {
 
-        int columnIdx = addMetaDataHeaders(baseSheet, !makeRepSheets);
+        int columnIdx = addMetaDataHeaders(baseSheet, !separateSheetsForRepeatableGroups);
         addComment(baseSheet);
 
         if (questionMap != null) {
@@ -1969,11 +1971,11 @@ public class GraphicalSurveySummaryExporter extends SurveySummaryExporter {
      *
      * @param options
      */
-    protected void processOptions(Map<String, String> options) {
+    protected boolean processOptions(Map<String, String> options) {
         isFullReport = true;
         performGeoRollup = true;
         generateCharts = true;
-        makeRepSheets = false;
+        separateSheetsForRepeatableGroups = false;
         doGroupHeaders = false;
         useQuestionId = false;
         
@@ -1981,28 +1983,29 @@ public class GraphicalSurveySummaryExporter extends SurveySummaryExporter {
             log.debug(options);
 
             //What kind of report?
-            //TODO: mandatory or not?
             String reportType = options.get(TYPE_OPT);
             if (reportType == null || reportType.isEmpty()) {
                 Log.error(TYPE_OPT + " was not set.");
+                return false;
             } else
             if (DATA_CLEANING_TYPE.equalsIgnoreCase(reportType)) {
                 isFullReport = false;
                 doGroupHeaders = true;
-                makeRepSheets = true;
+                separateSheetsForRepeatableGroups = true;
                 useQuestionId = false; //So we can import
             } else if (DATA_ANALYSIS_TYPE.equalsIgnoreCase(reportType)) {
                 isFullReport = false;
                 doGroupHeaders = true;
-                makeRepSheets = true;
+                separateSheetsForRepeatableGroups = true;
                 useQuestionId = true; //also splits options into columns, and prevents digests
             } else if (COMPREHENSIVE_TYPE.equalsIgnoreCase(reportType)) {
                 isFullReport = true;
                 doGroupHeaders = false;
-                makeRepSheets = false;
+                separateSheetsForRepeatableGroups = false;
                 useQuestionId = false; //is this correct?
-            } else {  //default to something?
+            } else {
                 Log.error("Unknown value " + reportType + " for " + TYPE_OPT);                
+                return false;
             }
             
             locale = options.get(LOCALE_OPT); 
@@ -2038,6 +2041,7 @@ public class GraphicalSurveySummaryExporter extends SurveySummaryExporter {
         } else {
             imagePrefix = DEFAULT_IMAGE_PREFIX;
         }
+        return true;
     }
 
     /**
