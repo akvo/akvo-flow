@@ -589,23 +589,6 @@ public class GraphicalSurveySummaryExporter extends SurveySummaryExporter {
             }
         }
         
-        //sort the data on collection date
-        allData.sort(new Comparator<InstanceData>() {
-
-            @Override
-            public int compare(InstanceData o1, InstanceData o2) {
-                // by submission date
-                return safeCompare(
-                        o1.surveyInstanceDto.getCollectionDate(),
-                        o2.surveyInstanceDto.getCollectionDate()
-                        );
-            }
-            private int safeCompare(Date date1 , Date date2 ) {
-                if (date1 == null || date2 == null) return 0;
-                return date1.compareTo(date2);
-            }
-        });
-        
         // write the data now, row by row
         for (InstanceData instanceData : allData) {
             if (separateSheetsForRepeatableGroups) {
