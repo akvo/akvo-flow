@@ -478,7 +478,7 @@ public class GraphicalSurveySummaryExporter extends SurveySummaryExporter {
             if (separateSheetsForRepeatableGroups && safeTrue(groupEntry.getKey().getRepeatable())) {
                 // breaking this qg out, so create the sheet for it
                 Long gid = groupEntry.getKey().getKeyId();
-                qgSheetMap.put(gid, wb.createSheet("Group " + groupEntry.getKey().getOrder())); //TODO add name?
+                qgSheetMap.put(gid, wb.createSheet("Group " + groupEntry.getKey().getOrder()));
             }
         }
 
