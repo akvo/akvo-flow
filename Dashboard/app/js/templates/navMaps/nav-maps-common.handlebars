@@ -1,5 +1,20 @@
 <section id="main" class="mapFlow floats-in middleSection" role="main">
-  {{! <div id="drawHandleWrap"></div>}}
+  {{#if view.allowFilters}}
+      {{#unless FLOW.projectControl.isLoading}}
+        {{view FLOW.SurveySelectionView}}
+      {{/unless}}
+      {{#if FLOW.selectedControl.selectedSurveyGroup}}
+        {{view Ember.Select
+            contentBinding="FLOW.surveyControl.arrangedContent"
+            selectionBinding="view.selectedSurvey"
+            optionLabelPath="content.code"
+            optionValuePath="content.keyId"
+            prompt=""
+            promptBinding="Ember.STRINGS._select_form"
+            classNames="form-selector"
+        }}
+      {{/if}}
+  {{/if}}
   <div id="dropdown-holder">
     <div id="mapDetailsHideShow" class="drawHandle hideMapD"></div>
   </div>
@@ -8,6 +23,13 @@
     <div id="pointDetails">
       {{#if content}}
         <ul class="placeMarkBasicInfo floats-in">
+            {{#if view.cartoMaps}}
+            <h3>{{surveyedLocaleDisplayName}}</h3>
+            <li>
+                <span>{{t _data_point_id}}:</span>
+                <label style="display: inline; margin: 0 0 0 5px;">{{surveyedLocaleIdentifier}}</label>
+            </li><br>
+            {{/if}}
           <li>
             <span>{{t _collected_on}}:</span>
             <div class="placeMarkCollectionDate">
@@ -16,16 +38,10 @@
           </li>
           <li></li>
         </ul>
-        <div {{bindAttr class=":imgContainer photoUrl:shown:hidden"}}>
-          {{#each photo in photoUrl}}
-            <a href="{{unbound photo}}" target="_blank">
-              <img src="{{unbound photo}}" alt=""/>
-            </a>
-          {{/each}}
-        </div>
         <div class="mapInfoDetail">
           {{#each arrangedContent}}
             <p>{{placemarkDetail}}</p>
+            {{drawGeoshapes}}
           {{else}}
             <p class="noDetails">{{t _no_details}}</p>
           {{/each}}
@@ -48,7 +64,7 @@
 </style>
 <script type="text/javascript">
 (function(){
-  
+
   var dropDown = document.querySelector('#dropdown-holder');
   var header = document.querySelector('header');
   var footer = document.querySelector('footer');
@@ -70,7 +86,7 @@
     newHeight = newHeight * 0.95;
 
     document.querySelector('#flowMap').style.height = newHeight + 'px';
-    document.querySelector('#pointDetails').style.height = newHeight + 'px'; 
+    document.querySelector('#pointDetails').style.height = newHeight + 'px';
   }
 
   window.addEventListener('resize', resizeMap);

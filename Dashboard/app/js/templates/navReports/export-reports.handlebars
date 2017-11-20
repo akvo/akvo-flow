@@ -1,14 +1,11 @@
-
 <section class="fullWidth reportTools" id="reportBlocks">
   {{#view FLOW.ExportReportsAppletView}}
-
     <h1>{{t _select_survey}}</h1>
     <div class="surveySelect">
       <nav class="breadCrumb floats-in">
         {{#unless FLOW.projectControl.isLoading}}
           {{view FLOW.SurveySelectionView}}
         {{/unless}}
-
         {{#if FLOW.selectedControl.selectedSurvey}}
           {{view Ember.Select
               contentBinding="FLOW.surveyControl.arrangedContent"
@@ -20,7 +17,6 @@
         {{/if}}
       </nav>
     </div>
-
     <script>
       function openExportOptions(evt, exportName) {
         var i, options, trigger;
@@ -36,7 +32,6 @@
         evt.currentTarget.className += " active";
        }
     </script> 
-
     <section class="exportContainer">
       <h1>{{t _select_export}}</h1>
       <ul class="exportSelect">
@@ -58,14 +53,12 @@
               <label for="lastCollection">{{t _latest_data}}</label>{{view Ember.Checkbox checkedBinding="FLOW.editControl.lastCollection" id="lastCollection"}}
             </div>
             <a {{action showDataCleaningReport target="this"}} onclick="displayFeedbackTxt()" class="button trigger2">{{t _download}}</a>
-
             <div class="downFeedback" style="display: none;">
               <em>{{t _preparing_report}}</em>
               <p>{{t a_link_emailed}}</p>
             </div>
           </div>
         </li>
-
         <li class="dataAnalyseExp trigger" onclick="openExportOptions(event, 'dataAnalyseExp_options')">
           <h2>{{t _data_analysis_export}}</h2>
           <h6>{{t _not_importable_back}}</h6>
@@ -89,8 +82,6 @@
               </div>
             </div>
           </li>
-
-
           <li class="compReportExp trigger"  onclick="openExportOptions(event, 'compReportExp_options')">
             <h2>{{t _comprehensive_report}}</h2>
             <h6>{{t not_importable_back}}</h6>
@@ -103,8 +94,6 @@
               </div>
             </div>
           </li>
-
-
           <li class="geoShapeDataExp trigger"  onclick="openExportOptions(event, 'geoShapeDataExp_options')">
             <h2>{{t _geoshape_data}}</h2>
             <p class="expDescr">{{t _geojson}}</p>
@@ -122,9 +111,9 @@
             <div id="geoShapeDataExp_options" class="options">
               <a {{action showGeoshapeReport target="this"}} onclick="displayFeedbackTxt()" class="button trigger2">{{t _download}}</a>
               <div class="downFeedback04" style="display: none;">
-            <em>{{t _preparing_report}}</em>
-            <p>{{t a_link_emailed}}</p>
-               </div>
+              <em>{{t _preparing_report}}</em>
+               <p>{{t a_link_emailed}}</p>
+            </div>
           </div>
         </li>
         <li class="surveyFormExp trigger"  onclick="openExportOptions(event, 'surveyFormExp_options')">
@@ -143,6 +132,5 @@
       </li>
     </ul>
   </section>
-    
 {{/view}}
 </section>

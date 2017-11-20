@@ -67,6 +67,7 @@ FLOW.ReportLoader = Ember.Object.create({
     }
 
     criteria.opts.lastCollection = '' + (exportType === 'DATA_CLEANING' && FLOW.selectedControl.get('selectedSurveyGroup').get('monitoringGroup') && !!FLOW.editControl.lastCollection);
+
     var fromDate = FLOW.dateControl.get('fromDate');
     if (fromDate == null) {
       delete criteria.opts.from;
