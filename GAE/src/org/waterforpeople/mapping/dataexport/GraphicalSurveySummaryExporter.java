@@ -27,6 +27,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Comparator;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -580,6 +581,8 @@ public class GraphicalSurveySummaryExporter extends SurveySummaryExporter {
             }
         }
         
+        sortDataOnCollectionDate(allData);
+
         // write the data now, row by row
         for (InstanceData instanceData : allData) {
             if (separateSheetsForRepeatableGroups) {
@@ -628,6 +631,25 @@ public class GraphicalSurveySummaryExporter extends SurveySummaryExporter {
 
         threadPool.shutdown();
         return model;
+    }
+
+    private void sortDataOnCollectionDate(final List<InstanceData> allData) {
+        log.debug("Starting data sort");
+        allData.sort(new Comparator<InstanceData>() {
+            @Override
+            public int compare(InstanceData o1, InstanceData o2) {
+                // by submission date
+                return safeCompare(
+                        o1.surveyInstanceDto.getCollectionDate(),
+                        o2.surveyInstanceDto.getCollectionDate()
+                        );
+            }
+            private int safeCompare(Date date1 , Date date2 ) {
+                if (date1 == null || date2 == null) return 0;
+                return date1.compareTo(date2);
+            }
+        });
+        log.debug("Finished data sort");
     }
 
     private synchronized void writeInstanceDataSplit(
