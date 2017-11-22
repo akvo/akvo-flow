@@ -376,7 +376,9 @@ FLOW.SurveyInstance = FLOW.BaseModel.extend({
   collectionDate: DS.attr('number'),
   surveyCode: DS.attr('string'),
   submitterName: DS.attr('string'),
-  deviceIdentifier: DS.attr('string')
+  deviceIdentifier: DS.attr('string'),
+  surveyedLocaleIdentifier: DS.attr('string'),
+  surveyedLocaleDisplayName: DS.attr('string')
 });
 
 FLOW.QuestionAnswer = FLOW.BaseModel.extend({

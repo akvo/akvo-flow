@@ -1,7 +1,6 @@
 {{#view FLOW.AssignmentEditView}}
 <section class="fullWidth assignmentsEdit" id="assignSurveys">
-  <h1>{{t _edit_assignment}}</h1>
-     <a {{action "cancelEditSurveyAssignment" target="this"}} class="stepBack">{{t _go_back_to_assignment_list}}</a>
+     <a {{action "cancelEditSurveyAssignment" target="this"}} class="stepBack" id="float-right">{{t _go_back_to_assignment_list}}</a>
     <form>
       <fieldset id="assignmentDetails">
         <h2>01. {{t _assignment_details}}</h2>

@@ -103,7 +103,18 @@ Ember.Handlebars.registerHelper('placemarkDetail', function () {
       }
   } else if ((questionType === 'VIDEO' || questionType === 'PHOTO') && answer.charAt(0) === '{') {
     photoJson = JSON.parse(answer)
-    answer = photoJson.filename;
+    var mediaAnswer = photoJson.filename;
+
+    var mediaFileURL = FLOW.Env.photo_url_root + mediaAnswer.split('/').pop().replace(/\s/g, '');
+    if (questionType == "PHOTO") {
+        answer = '<div class=":imgContainer photoUrl:shown:hidden">'
+        +'<a class="media" href="'+mediaFileURL+'" target="_blank"><img src="'+mediaFileURL+'" alt=""/></a>'
+        +'</div>';
+    } else if (questionType == "VIDEO") {
+        answer = '<div><div class="media">'+mediaFileURL+'</div><br>'
+        +'<a href="'+mediaFileURL+'" target="_blank">'+Ember.String.loc('_open_video')+'</a>'
+        +'</div>';
+    }
   } else if (questionType === 'OPTION' && answer.charAt(0) === '[') {
     optionJson = JSON.parse(answer);
     answer = optionJson.map(function(item){
