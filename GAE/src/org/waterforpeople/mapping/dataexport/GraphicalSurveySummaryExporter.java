@@ -95,14 +95,11 @@ public class GraphicalSurveySummaryExporter extends SurveySummaryExporter {
             .getLogger(GraphicalSurveySummaryExporter.class);
 
     private static final String IMAGE_PREFIX_OPT = "imgPrefix";
-//    private static final String DO_ROLLUP_OPT = "performRollup";
     private static final String LOCALE_OPT = "locale";
     private static final String TYPE_OPT = "exportMode";
-//    private static final String RAW_ONLY_TYPE = "RAW_DATA";
     private static final String DATA_CLEANING_TYPE = "DATA_CLEANING";
     private static final String DATA_ANALYSIS_TYPE = "DATA_ANALYSIS";
     private static final String COMPREHENSIVE_TYPE = "COMPREHENSIVE";
-//    private static final String NO_CHART_OPT = "nocharts";
     private static final String LAST_COLLECTION_OPT = "lastCollection";
     private static final String MAX_ROWS_OPT = "maxDataReportRows";
     private static final String FROM_OPT = "from";
@@ -110,9 +107,6 @@ public class GraphicalSurveySummaryExporter extends SurveySummaryExporter {
     private static final String EMAIL_OPT = "email";
     
     private static final String CADDISFLY_TESTS_FILE_URL_OPT = "caddisflyTestsFileUrl";
-//    private static final String RQG_SHEETS_OPT = "doRqgSheets";
-//    private static final String GROUP_HEADERS_OPT = "doGroupHeaders";
-//    private static final String USE_QIDS_OPT = "useQuestionId";
     private static final String METADATA_LABEL = "Metadata"; //Constant. Localization is going away.
     private static final String REPORT_COMMENT = "Data Cleaning Report - Akvo Flow v1.9.25";
     
@@ -331,7 +325,7 @@ public class GraphicalSurveySummaryExporter extends SurveySummaryExporter {
     private String serverBase;
     private boolean isFullReport;
     private boolean performGeoRollup;
-    private boolean generateCharts; //Pie charts
+    private boolean generateCharts;
     private boolean useQuestionId; //=Variable names. Also turns on splitting of answers into separate columns (options, geo, etc.) and turns off digests
     private boolean separateSheetsForRepeatableGroups;
     private boolean doGroupHeaders; //First header line is group names spanned over the group columns
@@ -448,7 +442,6 @@ public class GraphicalSurveySummaryExporter extends SurveySummaryExporter {
         } catch (Exception e) {
             log.error("Error generating report: " + e.getMessage(), e);
         }
-        //TODO: we could send success/fail status to server for the notification tab
     }
 
     private Workbook createWorkbookAndFormats(){
@@ -1968,7 +1961,7 @@ public class GraphicalSurveySummaryExporter extends SurveySummaryExporter {
             //What kind of report?
             String reportType = options.get(TYPE_OPT);
             if (reportType == null || reportType.isEmpty()) {
-                Log.error(TYPE_OPT + " was not set.");
+                log.error(TYPE_OPT + " was not set.");
                 return false;
             } else
             if (DATA_CLEANING_TYPE.equalsIgnoreCase(reportType)) {
@@ -1987,7 +1980,7 @@ public class GraphicalSurveySummaryExporter extends SurveySummaryExporter {
                 separateSheetsForRepeatableGroups = false;
                 useQuestionId = false; //is this correct?
             } else {
-                Log.error("Unknown value " + reportType + " for " + TYPE_OPT);                
+                log.error("Unknown value " + reportType + " for " + TYPE_OPT);                
                 return false;
             }
             
@@ -2094,7 +2087,8 @@ public class GraphicalSurveySummaryExporter extends SurveySummaryExporter {
         return this.imagePrefix;
     }
 
-    // For debugging; when deployed on server, export() is called from Clojure code
+    // This main() method is only used for debugging;
+    // when deployed on server, export() is called from Clojure code
     public static void main(String[] args) {
 
         // Log4j stuff - http://stackoverflow.com/a/9003191

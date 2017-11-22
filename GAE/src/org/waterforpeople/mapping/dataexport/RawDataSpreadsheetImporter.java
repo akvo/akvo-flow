@@ -199,8 +199,6 @@ public class RawDataSpreadsheetImporter implements DataImporter {
             cleanup();
         }
         
-        //TODO: we could send result to server for the notification tab
-
     }
 
     /**
