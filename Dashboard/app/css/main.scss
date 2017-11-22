@@ -5807,6 +5807,10 @@ svg {
     }
 }
 
+.exportContainer {
+    padding: 5px 20px 0 5px;
+}
+
 .exportSelect {
     * {
         box-sizing: border-box;
@@ -5835,31 +5839,31 @@ svg {
         &.dataCleanExp {
             h2 {
                 background: url(../images/Export01.svg) center top no-repeat;
-                background-size: 20%;
+                background-size: 60px;
             }
         }
         &.dataAnalyseExp {
             h2 {
                 background: url(../images/Export02.svg) center top no-repeat;
-                background-size: 20%;
+                background-size: 60px;
             }
         }
         &.compReportExp {
             h2 {
                 background: url(../images/Export03.svg) center top no-repeat;
-                background-size: 20%;
+                background-size: 60px;
             }
         }
         &.geoShapeDataExp {
             h2 {
                 background: url(../images/Export04.svg) center top no-repeat;
-                background-size: 20%;
+                background-size: 60px;
             }
         }
         &.surveyFormExp {
             h2 {
                 background: url(../images/Export05.svg) center top no-repeat;
-                background-size: 20%;
+                background-size: 60px;
             }
         }
         &:hover {

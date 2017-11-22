@@ -1,8 +1,6 @@
 
 <section class="fullWidth reportTools" id="reportBlocks">
   {{#view FLOW.ExportReportsAppletView}}
-
-    <h1>{{t _select_survey}}</h1>
     <div class="surveySelect">
       <nav class="breadCrumb floats-in">
         {{#unless FLOW.projectControl.isLoading}}
@@ -38,7 +36,6 @@
     </script> 
 
     <section class="exportContainer">
-      <h1>{{t _select_export}}</h1>
       <ul class="exportSelect">
         <li class="dataCleanExp trigger" onclick="openExportOptions(event, 'dataCleanExp_options')">
           <h2>{{t _data_cleaning_export }}</h2>
@@ -48,10 +45,10 @@
               <div class="dataCollectedDate">
                 <p>{{t _collection_period}}</p>
                 <label class="collectedFrom">
-                  <span>{{t _collected_from}}:</span> {{view FLOW.DateField minDate=false valueBinding="FLOW.dateControl.fromDate" elementId="from_date" placeholder="" placeholderBinding="Ember.STRINGS._collected_from" size=30}}
+                  {{view FLOW.DateField minDate=false valueBinding="FLOW.dateControl.fromDate" elementId="from_date" placeholder="" placeholderBinding="Ember.STRINGS._collected_from" size=30}}
                 </label>
                 <label class="collectedTo">
-                  <span>{{t _to}}:</span> {{view FLOW.DateField minDate=false valueBinding="FLOW.dateControl.toDate" elementId="to_date" placeholder="" placeholderBinding="Ember.STRINGS._to" size=30}}
+                  {{view FLOW.DateField minDate=false valueBinding="FLOW.dateControl.toDate" elementId="to_date" placeholder="" placeholderBinding="Ember.STRINGS._to" size=30}}
                 </label>
             </div>
             <div class="latestOption">
@@ -74,12 +71,10 @@
               <div class="dataCollectedDate">
                 <p>{{t _collection_period}}</p>
                 <label class="collectedFrom">
-                  <span>{{t _from}}:</span>
-                  <input type="text" id="from_date" placeholder="DD-MM-YYYY">
+                   {{view FLOW.DateField minDate=false valueBinding="FLOW.dateControl.fromDate" elementId="from_date" placeholder="" placeholderBinding="Ember.STRINGS._collected_from" size=30}}
                 </label>
                 <label class="collectedTo">
-                  <span>{{t _to}}:</span>
-                  <input type="text" id="to_date" placeholder="DD-MM-YYYY">
+                  {{view FLOW.DateField minDate=false valueBinding="FLOW.dateControl.toDate" elementId="to_date" placeholder="" placeholderBinding="Ember.STRINGS._to" size=30}}
                 </label>
               </div>
               <a {{action showDataAnalysisReport target="this"}} onclick="displayFeedbackTxt('downFeedback02')" class="button trigger2">{{t _download}}</a>
@@ -93,7 +88,7 @@
 
           <li class="compReportExp trigger"  onclick="openExportOptions(event, 'compReportExp_options')">
             <h2>{{t _comprehensive_report}}</h2>
-            <h6>{{t not_importable_back}}</h6>
+            <h6>{{t _not_importable_back}}</h6>
             <p class="expDescr">{{t _summarizes_responses}}</p>
             <div id="compReportExp_options" class="options">
               <a {{action showComprehensiveReport target="this"}} onclick="displayFeedbackTxt('downFeedback03')" class="button trigger2">{{t _download}}</a>
