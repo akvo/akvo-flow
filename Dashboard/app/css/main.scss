@@ -1574,7 +1574,7 @@ a.FadeIt {
 /* Survey Top Bar
 --------------------------------------------- */
 #float-right {
-    float:right
+    float: right;
 }
 
 section.topBar {
@@ -3366,7 +3366,6 @@ div.chooseSurveyData {
 
 div.dataCollectedDate input {
     display: inline;
-    height: 20px;
     background: white;
 }
 
