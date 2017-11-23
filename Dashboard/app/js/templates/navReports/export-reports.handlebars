@@ -47,9 +47,6 @@
                   {{view FLOW.DateField minDate=false valueBinding="FLOW.dateControl.toDate" elementId="to_date02" placeholder="" placeholderBinding="Ember.STRINGS._to" size=30}}
                 </label>
             </div>
-            <div class="latestOption">
-              <label for="lastCollection">{{t _latest_data}}</label>{{view Ember.Checkbox checkedBinding="FLOW.editControl.lastCollection" id="lastCollection"}}
-            </div>
             <a {{action showDataCleaningReport target="this"}} onclick="displayFeedbackTxt()" class="button trigger2">{{t _download}}</a>
             <div class="downFeedback" style="display: none;">
               <em>{{t _preparing_report}}</em>
