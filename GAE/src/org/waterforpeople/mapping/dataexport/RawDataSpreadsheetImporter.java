@@ -263,7 +263,7 @@ public class RawDataSpreadsheetImporter implements DataImporter {
                     }
                     //May add data to instanceData and rows to allRows
                     pos = parseRepeatsForInstance(instanceData, repSheet,
-                            pos, repMetadataIndex, repFirstQIdx,
+                            pos, repMetadataIndex,
                             questionIdToQuestionDto, repQMap,
                             optionNodes, allRows);
                     sheetPosition.put(repSheet, pos); //replace with new pos; might be any value
@@ -414,7 +414,6 @@ public class RawDataSpreadsheetImporter implements DataImporter {
             Sheet repSheet,
             int currentRowIndex,
             Map<String, Integer> metadataColumnHeaderIndex2,
-            int firstQuestionColumnIndex2,
             Map<Long, QuestionDto> questionIdToQuestionDto,
             Map<Integer, Long> columnIndexToQuestionId,
             Map<Long, List<QuestionOptionDto>> optionNodes,
