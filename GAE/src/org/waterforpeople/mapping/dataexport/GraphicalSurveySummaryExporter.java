@@ -116,8 +116,6 @@ public class GraphicalSurveySummaryExporter extends SurveySummaryExporter {
     private static final String METADATA_LABEL = "Metadata"; //Constant. Localization is going away.
     private static final String REPORT_COMMENT = "Data Cleaning Report - Akvo Flow v1.9.25";
     private static final String UNROUNDING_COMMENT = "One or more cells in this column were saved as text to prevent rounding. Range functions like SUM may give unexpected results.";
-//    private static final String UNROUNDING_COMMENT = "Don't panic!";
-    
 
     private static final String DEFAULT_IMAGE_PREFIX = "http://waterforpeople.s3.amazonaws.com/images/";
 
