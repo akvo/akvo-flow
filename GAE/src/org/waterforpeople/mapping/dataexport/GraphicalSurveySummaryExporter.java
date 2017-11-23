@@ -1340,23 +1340,23 @@ public class GraphicalSurveySummaryExporter extends SurveySummaryExporter {
     private int addMetaDataHeaders(Sheet sheet, boolean showRepeatColumn) {
         Row row = getRow(doGroupHeaders ? 1 : 0, sheet);
         int columnIdx = -1;
-        addMetaDataColumnHeader(IDENTIFIER_LABEL.get(locale), ++columnIdx, row, sheet);
+        addMetaDataColumnHeader(IDENTIFIER_LABEL.get(locale), ++columnIdx, row);
         if (hasDataApproval()) {
-            addMetaDataColumnHeader(DATA_APPROVAL_STATUS_LABEL.get(locale), ++columnIdx, row, sheet);
+            addMetaDataColumnHeader(DATA_APPROVAL_STATUS_LABEL.get(locale), ++columnIdx, row);
         }
         if (showRepeatColumn) {
-            addMetaDataColumnHeader(REPEAT_LABEL.get(locale), ++columnIdx, row, sheet);
+            addMetaDataColumnHeader(REPEAT_LABEL.get(locale), ++columnIdx, row);
         }
-        addMetaDataColumnHeader(DISPLAY_NAME_LABEL.get(locale), ++columnIdx, row, sheet);
-        addMetaDataColumnHeader(DEVICE_IDENTIFIER_LABEL.get(locale), ++columnIdx, row, sheet);
-        addMetaDataColumnHeader(INSTANCE_LABEL.get(locale), ++columnIdx, row, sheet);
-        addMetaDataColumnHeader(SUB_DATE_LABEL.get(locale), ++columnIdx, row, sheet);
-        addMetaDataColumnHeader(SUBMITTER_LABEL.get(locale), ++columnIdx, row, sheet);
-        addMetaDataColumnHeader(DURATION_LABEL.get(locale), ++columnIdx, row, sheet);
+        addMetaDataColumnHeader(DISPLAY_NAME_LABEL.get(locale), ++columnIdx, row);
+        addMetaDataColumnHeader(DEVICE_IDENTIFIER_LABEL.get(locale), ++columnIdx, row);
+        addMetaDataColumnHeader(INSTANCE_LABEL.get(locale), ++columnIdx, row);
+        addMetaDataColumnHeader(SUB_DATE_LABEL.get(locale), ++columnIdx, row);
+        addMetaDataColumnHeader(SUBMITTER_LABEL.get(locale), ++columnIdx, row);
+        addMetaDataColumnHeader(DURATION_LABEL.get(locale), ++columnIdx, row);
         //Always put something in the top-left corner for the comment
         if (doGroupHeaders) {
             row = getRow(0, sheet);
-            addMetaDataColumnHeader(METADATA_LABEL, 0, row, sheet); //constant (locale is going away)           
+            addMetaDataColumnHeader(METADATA_LABEL, 0, row); //constant (locale is going away)           
             sheet.addMergedRegion(new CellRangeAddress(0, 0, 0, columnIdx));
         }
         return columnIdx;
