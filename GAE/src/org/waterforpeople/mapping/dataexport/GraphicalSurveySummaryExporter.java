@@ -1365,7 +1365,7 @@ public class GraphicalSurveySummaryExporter extends SurveySummaryExporter {
     /*
      * Add a meta data column header to the report.
      */
-    private void addMetaDataColumnHeader(String columnHeaderName, int columnIdx, Row row, Sheet sheet) {
+    private void addMetaDataColumnHeader(String columnHeaderName, int columnIdx, Row row) {
         //columnIndexMap.put(columnHeaderName, columnIdx);
         //metadata no longer in map since it is different on different sheets
         createCell(row, columnIdx, columnHeaderName, headerStyle);
