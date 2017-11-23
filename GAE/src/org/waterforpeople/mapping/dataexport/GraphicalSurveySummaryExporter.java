@@ -1969,8 +1969,8 @@ public class GraphicalSurveySummaryExporter extends SurveySummaryExporter {
                 useQuestionId = false; //So we can import
             } else if (DATA_ANALYSIS_TYPE.equalsIgnoreCase(reportType)) {
                 isFullReport = false;
-                doGroupHeaders = true;
-                separateSheetsForRepeatableGroups = true;
+                doGroupHeaders = false;
+                separateSheetsForRepeatableGroups = false;
                 useQuestionId = true; //also splits options into columns, and prevents digests
             } else if (COMPREHENSIVE_TYPE.equalsIgnoreCase(reportType)) {
                 isFullReport = true;
