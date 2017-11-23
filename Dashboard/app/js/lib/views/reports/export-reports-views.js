@@ -24,8 +24,8 @@ FLOW.ReportLoader = Ember.Object.create({
     COMPREHENSIVE: {
       surveyId: '75201',
       exportType: 'COMPREHENSIVE',
-      exportMode: 'COMPREHENSIVE',
       opts: {
+        exportMode: 'COMPREHENSIVE',
       }
     },
     GEOSHAPE: {
