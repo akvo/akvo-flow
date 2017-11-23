@@ -31,7 +31,7 @@
             {:class "active"})
       [:a {:on-click #(dispatch :navigate {:name :users/users-list
                                            :params nil})}
-       (t> _dashboard_users)]]
+       (t> _users)]]
      [:li (if (= name :users/roles-and-permissions)
             {:class "active"})
       [:a {:on-click #(dispatch :navigate {:name :users/roles-and-permissions

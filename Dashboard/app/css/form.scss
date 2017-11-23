@@ -16,7 +16,6 @@ textarea {
     border: thin solid rgb(232, 232, 232);
     background: rgb(250, 244, 230);
     border-radius: 2px;
-
     &:hover {
         border: 1px solid rgb(114, 205, 255);
         background: rgb(224, 224, 224);
@@ -24,7 +23,6 @@ textarea {
         background: -webkit-gradient(linear, left top, left bottom, from(rgb(245, 245, 245)), to(rgb(234, 234, 234)));
         background: linear-gradient(rgb(245, 245, 245), rgb(234, 234, 234));
     }
-
     &:focus {
         border: 1px solid rgb(205, 205, 205);
         background: rgb(245, 255, 216);
@@ -59,7 +57,6 @@ label {
     cursor: pointer;
     display: block;
     color: rgb(107, 134, 141);
-
     &.checkboxType {
         display: inline-block !important;
     }
@@ -101,7 +98,6 @@ input[type="radio"] {
     width: 13px;
     height: 13px;
     display: block;
-
     & + label {
         display: inline;
     }
@@ -115,12 +111,10 @@ input[type="search"] {
     padding: 5px 25px 3px 4px;
     border: 1px solid rgb(218, 218, 218);
     background: rgb(255, 255, 255) url(../images/search-icon.png) no-repeat 3px right;
-
     &:hover {
         border: 1px solid rgb(114, 205, 255);
         background: rgb(224, 224, 224) url(../images/search-icon.png) no-repeat top right;
     }
-
     &:focus {
         border: 1px solid rgb(123, 123, 123);
         background: rgb(244, 244, 244) url(../images/search-icon.png) no-repeat top right;
@@ -139,11 +133,8 @@ input::-moz-focus-inner {
 }
 
 input[type="submit"] {
-    padding: 5px 10px;
     border: none;
-
     &:hover {
-        padding: 5px 10px;
         border: none;
     }
 }

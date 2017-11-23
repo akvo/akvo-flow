@@ -119,27 +119,53 @@ FLOW.renderCaddisflyAnswer = function(json){
 
 Ember.Handlebars.registerHelper('placemarkDetail', function () {
   var answer, markup, question, cascadeJson, optionJson, cascadeString = "",
-  questionType, imageSrcAttr, signatureJson, photoJson;
+  questionType, imageSrcAttr, signatureJson, photoJson, cartoQuestionType, self=this;
+
+  if (FLOW.Env.mapsProvider === 'cartodb') {
+      FLOW.mapsController.questions.forEach(function(qItem){
+          if (qItem.get("keyId") == Ember.get(self, 'questionID')) {
+              cartoQuestionType = qItem.get("type");
+          }
+      });
+  }
 
   question = Ember.get(this, 'questionText');
-  answer = Ember.get(this, 'stringValue') || '';
+  answer = Ember.get(this, FLOW.Env.mapsProvider === 'cartodb' ? 'value': 'stringValue') || '';
   answer = answer.replace(/\|/g, ' | '); // geo, option and cascade data
   answer = answer.replace(/\//g, ' / '); // also split folder paths
-  questionType = Ember.get(this, 'questionType');
+  questionType = FLOW.Env.mapsProvider === 'cartodb' ? cartoQuestionType: Ember.get(this, 'questionType');
 
   if (questionType === 'CASCADE') {
 
       if (answer.indexOf("|") > -1) {
         // ignore
       } else {
-        cascadeJson = JSON.parse(answer);
-        answer = cascadeJson.map(function(item){
-          return item.name;
-        }).join("|");
+          if (answer.charAt(0) === '[') {
+              cascadeJson = JSON.parse(answer);
+              answer = cascadeJson.map(function(item){
+                return item.name;
+              }).join("|");
+          }
       }
   } else if ((questionType === 'VIDEO' || questionType === 'PHOTO') && answer.charAt(0) === '{') {
     photoJson = JSON.parse(answer)
-    answer = photoJson.filename;
+    var mediaAnswer = photoJson.filename;
+
+    var mediaFileURL = FLOW.Env.photo_url_root + mediaAnswer.split('/').pop().replace(/\s/g, '');
+    if (questionType == "PHOTO") {
+        answer = '<div class=":imgContainer photoUrl:shown:hidden">'
+        +'<a class="media" data-coordinates=\''
+        +((photoJson.location) ? answer : '' )+'\' href="'
+        +mediaFileURL+'" target="_blank"><img src="'+mediaFileURL+'" alt=""/></a><br>'
+        +((photoJson.location) ? '<a class="media-location" data-coordinates=\''+answer+'\'>'+Ember.String.loc('_show_photo_on_map')+'</a>' : '')
+        +'</div>';
+    } else if (questionType == "VIDEO") {
+        answer = '<div><div class="media" data-coordinates=\''
+        +((photoJson.location) ? answer : '' )+'\'>'+mediaFileURL+'</div><br>'
+        +'<a href="'+mediaFileURL+'" target="_blank">'+Ember.String.loc('_open_video')+'</a>'
+        +((photoJson.location) ? '&nbsp;|&nbsp;<a class="media-location" data-coordinates=\''+answer+'\'>'+Ember.String.loc('_show_photo_on_map')+'</a>' : '')
+        +'</div>';
+    }
   } else if (questionType === 'OPTION' && answer.charAt(0) === '[') {
     optionJson = JSON.parse(answer);
     answer = optionJson.map(function(item){
@@ -155,13 +181,54 @@ Ember.Handlebars.registerHelper('placemarkDetail', function () {
     answer = renderTimeStamp(answer);
   } else if (questionType === 'CADDISFLY'){
     answer = FLOW.renderCaddisflyAnswer(answer)
+  } else if (questionType === 'GEOSHAPE') {
+    var geoshapeObject = FLOW.parseJSON(answer, "features");
+    if (geoshapeObject) {
+        answer = '<div class="geoshape-map" data-geoshape-object=\''+answer+'\' style="width:100%; height: 100px; float: left"></div>'
+        +'<a style="float: left" class="project-geoshape" data-geoshape-object=\''+answer+'\'>'+Ember.String.loc('_project_onto_main_map')+'</a>';
+
+        if (geoshapeObject['features'][0]['geometry']['type'] === "Polygon"
+            || geoshapeObject['features'][0]['geometry']['type'] === "LineString"
+                || geoshapeObject['features'][0]['geometry']['type'] === "MultiPoint") {
+            answer += '<div style="float: left; width: 100%">'+ Ember.String.loc('_points') +': '+geoshapeObject['features'][0]['properties']['pointCount']+'</div>';
+        }
+
+        if (geoshapeObject['features'][0]['geometry']['type'] === "Polygon"
+            || geoshapeObject['features'][0]['geometry']['type'] === "LineString") {
+            answer += '<div style="float: left; width: 100%">'+ Ember.String.loc('_length') +': '+geoshapeObject['features'][0]['properties']['length']+'m</div>';
+        }
+
+        if (geoshapeObject['features'][0]['geometry']['type'] === "Polygon") {
+            answer += '<div style="float: left; width: 100%">'+ Ember.String.loc('_area') +': '+geoshapeObject['features'][0]['properties']['area']+'m&sup2;</div>';
+        }
+    }
   }
 
-  markup = '<div class="defListWrap"><dt>' +
-    question + ':</dt><dd>' +
-    answer + '</dd></div>';
+  markup = '<div class="defListWrap"><h4>' +
+    question + ':</h4><div>' +
+    answer + '</div></div>';
 
   return new Handlebars.SafeString(markup);
+});
+
+//if there's geoshape, draw it
+Ember.Handlebars.registerHelper('drawGeoshapes', function () {
+    var cartoQuestionType, questionType, self=this;
+    if (FLOW.Env.mapsProvider === 'cartodb') {
+        FLOW.mapsController.questions.forEach(function(qItem){
+            if (qItem.get("keyId") == Ember.get(self, 'questionID')) {
+                cartoQuestionType = qItem.get("type");
+            }
+        });
+    }
+    questionType = FLOW.Env.mapsProvider === 'cartodb' ? cartoQuestionType: Ember.get(this, 'questionType');
+    if (questionType == "GEOSHAPE") {
+        setTimeout(function(){
+            $('.geoshape-map').each(function(index){
+                FLOW.drawGeoShape($('.geoshape-map')[index], $(this).data('geoshape-object'));
+            });
+        }, 500);
+    }
 });
 
 /*  Take a timestamp and render it as a date in format
@@ -552,45 +619,45 @@ FLOW.DateField = Ember.TextField.extend({
 
     if (this.get('minDate')) {
       // datepickers with only future dates
-      $("#from_date").datepicker({
+      $("#from_date, #from_date02").datepicker({
         dateFormat: 'yy-mm-dd',
         defaultDate: new Date(),
         numberOfMonths: 1,
         minDate: new Date(),
         onSelect: function (selectedDate) {
-          $("#to_date").datepicker("option", "minDate", selectedDate);
+          $("#to_date, #to_date02").datepicker("option", "minDate", selectedDate);
           FLOW.dateControl.set('fromDate', selectedDate);
         }
       });
 
-      $("#to_date").datepicker({
+      $("#to_date, #to_date02").datepicker({
         dateFormat: 'yy-mm-dd',
         defaultDate: new Date(),
         numberOfMonths: 1,
         minDate: new Date(),
         onSelect: function (selectedDate) {
-          $("#from_date").datepicker("option", "maxDate", selectedDate);
+          $("#from_date, #from_date02").datepicker("option", "maxDate", selectedDate);
           FLOW.dateControl.set('toDate', selectedDate);
         }
       });
     } else {
       // datepickers with all dates
-      $("#from_date").datepicker({
+      $("#from_date, #from_date02").datepicker({
         dateFormat: 'yy-mm-dd',
         defaultDate: new Date(),
         numberOfMonths: 1,
         onSelect: function (selectedDate) {
-          $("#to_date").datepicker("option", "minDate", selectedDate);
+          $("#to_date, #to_date02").datepicker("option", "minDate", selectedDate);
           FLOW.dateControl.set('fromDate', selectedDate);
         }
       });
 
-      $("#to_date").datepicker({
+      $("#to_date, #to_date02").datepicker({
         dateFormat: 'yy-mm-dd',
         defaultDate: new Date(),
         numberOfMonths: 1,
         onSelect: function (selectedDate) {
-          $("#from_date").datepicker("option", "maxDate", selectedDate);
+          $("#from_date, #from_date02").datepicker("option", "maxDate", selectedDate);
           FLOW.dateControl.set('toDate', selectedDate);
         }
       });
@@ -959,6 +1026,7 @@ FLOW.DataCleaningSurveySelectionView = Ember.ContainerView.extend({
     this.get('childViews').pushObject(FLOW.SelectFolder.create({
       parentId: 0, // start with the root folder
       idx: 0,
+      tagName: 'div',
       showMonitoringSurveysOnly: this.get('showMonitoringSurveysOnly') || false,
       selectionFilter : FLOW.projectControl.dataCleaningEnabled
     }));
