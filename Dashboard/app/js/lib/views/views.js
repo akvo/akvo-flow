@@ -619,45 +619,45 @@ FLOW.DateField = Ember.TextField.extend({
 
     if (this.get('minDate')) {
       // datepickers with only future dates
-      $("#from_date").datepicker({
+      $("#from_date, #from_date02").datepicker({
         dateFormat: 'yy-mm-dd',
         defaultDate: new Date(),
         numberOfMonths: 1,
         minDate: new Date(),
         onSelect: function (selectedDate) {
-          $("#to_date").datepicker("option", "minDate", selectedDate);
+          $("#to_date, #to_date02").datepicker("option", "minDate", selectedDate);
           FLOW.dateControl.set('fromDate', selectedDate);
         }
       });
 
-      $("#to_date").datepicker({
+      $("#to_date, #to_date02").datepicker({
         dateFormat: 'yy-mm-dd',
         defaultDate: new Date(),
         numberOfMonths: 1,
         minDate: new Date(),
         onSelect: function (selectedDate) {
-          $("#from_date").datepicker("option", "maxDate", selectedDate);
+          $("#from_date, #from_date02").datepicker("option", "maxDate", selectedDate);
           FLOW.dateControl.set('toDate', selectedDate);
         }
       });
     } else {
       // datepickers with all dates
-      $("#from_date").datepicker({
+      $("#from_date, #from_date02").datepicker({
         dateFormat: 'yy-mm-dd',
         defaultDate: new Date(),
         numberOfMonths: 1,
         onSelect: function (selectedDate) {
-          $("#to_date").datepicker("option", "minDate", selectedDate);
+          $("#to_date, #to_date02").datepicker("option", "minDate", selectedDate);
           FLOW.dateControl.set('fromDate', selectedDate);
         }
       });
 
-      $("#to_date").datepicker({
+      $("#to_date, #to_date02").datepicker({
         dateFormat: 'yy-mm-dd',
         defaultDate: new Date(),
         numberOfMonths: 1,
         onSelect: function (selectedDate) {
-          $("#from_date").datepicker("option", "maxDate", selectedDate);
+          $("#from_date, #from_date02").datepicker("option", "maxDate", selectedDate);
           FLOW.dateControl.set('toDate', selectedDate);
         }
       });
@@ -1026,6 +1026,7 @@ FLOW.DataCleaningSurveySelectionView = Ember.ContainerView.extend({
     this.get('childViews').pushObject(FLOW.SelectFolder.create({
       parentId: 0, // start with the root folder
       idx: 0,
+      tagName: 'div',
       showMonitoringSurveysOnly: this.get('showMonitoringSurveysOnly') || false,
       selectionFilter : FLOW.projectControl.dataCleaningEnabled
     }));
