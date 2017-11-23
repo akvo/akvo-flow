@@ -15,7 +15,6 @@
         <pathelement path="${gwtlibs.dir}/gwt-user.jar" />
         <pathelement path="${gwtlibs.dir}/gwt-dev.jar" />
         <fileset dir="war">
-            <include name="poi-3.5-signed.jar" />
             <include name="poi-3.8-20120326.jar" />
             <include name="poi-ooxml-3.8-20120326.jar" />
             <include name="poi-ooxml-schemas-3.8-20120326.jar" />
