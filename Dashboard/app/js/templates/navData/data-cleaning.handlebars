@@ -26,7 +26,7 @@
             <span>{{t _to}}:</span> {{view FLOW.DateField minDate=false valueBinding="FLOW.dateControl.toDate" elementId="to_date" placeholder="" placeholderBinding="Ember.STRINGS._to" size=30}}
           </label>
       </div>
-      <a {{action showRawDataReport target="this"}} class="standardBtn"> {{t _download}} </a>
+      <a {{action showDataCleaningReport target="this"}} class="standardBtn"> {{t _download}} </a>
     </div>
 
     <div class="rawDataReport block">
