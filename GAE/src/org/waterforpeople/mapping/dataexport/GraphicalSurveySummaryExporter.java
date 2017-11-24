@@ -623,8 +623,7 @@ public class GraphicalSurveySummaryExporter extends SurveySummaryExporter {
 
                 
             } else { //just one sheet - do all at once with a global repeat column
-                int baseCurrentRow = baseSheet.getLastRowNum();
-                baseCurrentRow = writeInstanceData(baseSheet, baseCurrentRow, instanceData,
+                writeInstanceData(baseSheet, instanceData,
                         generateSummary, nameToIdMap, collapseIdMap, model);
             }
         }
@@ -723,18 +722,15 @@ public class GraphicalSurveySummaryExporter extends SurveySummaryExporter {
      * Writes all the data for a single survey instance (form instance) to a sheet.
      *
      * @param sheet
-     * @param startRow The start row for this instance
      * @param instanceData
      * @param generateSummary
      * @param nameToIdMap
      * @param collapseIdMap
      * @param model
-     * @return The row where the next instance should be written
      * @throws NoSuchAlgorithmException
      */
-    private synchronized int writeInstanceData(
+    private synchronized void writeInstanceData(
             Sheet sheet,
-            final int startRow,
             InstanceData instanceData,
             boolean generateSummary,
             Map<String, String> nameToIdMap,
@@ -742,6 +738,8 @@ public class GraphicalSurveySummaryExporter extends SurveySummaryExporter {
             SummaryModel model)
             throws NoSuchAlgorithmException {
 
+        final int startRow = sheet.getLastRowNum() + 1;
+        
         // maxRow will increase when we write repeatable question groups
         int maxRow = startRow;
 
@@ -843,8 +841,6 @@ public class GraphicalSurveySummaryExporter extends SurveySummaryExporter {
                 }
             }
         }
-
-        return maxRow + 1;
     }
 
     /**
@@ -2122,9 +2118,9 @@ public class GraphicalSurveySummaryExporter extends SurveySummaryExporter {
         Map<String, String> criteria = new HashMap<String, String>();
         Map<String, String> options = new HashMap<String, String>();
         options.put(LOCALE_OPT, "en");
-        options.put(TYPE_OPT, DATA_CLEANING_TYPE);
+//        options.put(TYPE_OPT, DATA_CLEANING_TYPE);
 //        options.put(TYPE_OPT, DATA_ANALYSIS_TYPE);
-//        options.put(TYPE_OPT, COMPREHENSIVE_TYPE);
+        options.put(TYPE_OPT, COMPREHENSIVE_TYPE);
         options.put(LAST_COLLECTION_OPT, "false");
         options.put(EMAIL_OPT, "email@example.com");
         options.put(FROM_OPT, null);
