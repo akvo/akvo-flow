@@ -624,6 +624,8 @@ public class GraphicalSurveySummaryExporter extends SurveySummaryExporter {
             }
         }
         
+        sortDataOnCollectionDate(allData);
+
         // write the data now, row by row
         for (InstanceData instanceData : allData) {
             if (separateSheetsForRepeatableGroups) {
@@ -664,7 +666,7 @@ public class GraphicalSurveySummaryExporter extends SurveySummaryExporter {
 
                 
             } else { //just one sheet - do all at once with a global repeat column
-                int baseCurrentRow = baseSheet.getLastRowNum();
+                int baseCurrentRow = baseSheet.getLastRowNum() + 1;
                 baseCurrentRow = writeInstanceData(baseSheet, baseCurrentRow, instanceData,
                         generateSummary, nameToIdMap, collapseIdMap, model);
             }
@@ -672,6 +674,25 @@ public class GraphicalSurveySummaryExporter extends SurveySummaryExporter {
 
         threadPool.shutdown();
         return model;
+    }
+
+    private void sortDataOnCollectionDate(final List<InstanceData> allData) {
+        log.debug("Starting data sort");
+        allData.sort(new Comparator<InstanceData>() {
+            @Override
+            public int compare(InstanceData o1, InstanceData o2) {
+                // by submission date
+                return safeCompare(
+                        o1.surveyInstanceDto.getCollectionDate(),
+                        o2.surveyInstanceDto.getCollectionDate()
+                        );
+            }
+            private int safeCompare(Date date1 , Date date2 ) {
+                if (date1 == null || date2 == null) return 0;
+                return date1.compareTo(date2);
+            }
+        });
+        log.debug("Finished data sort");
     }
 
     private synchronized void writeInstanceDataSplit(
@@ -769,7 +790,8 @@ public class GraphicalSurveySummaryExporter extends SurveySummaryExporter {
 
         Row firstRow = getRow(startRow, sheet);
 
-        writeMetadata(sheet, instanceData, startRow, (int) instanceData.maxIterationsCount, true);
+        //maxIterationsCount is actually the max iteration index; 0 for 1 iteration...
+        writeMetadata(sheet, instanceData, startRow, (int) instanceData.maxIterationsCount + 1, true);
         
         for (String q : questionIdList) {
             final Long questionId = Long.valueOf(q);
@@ -2150,9 +2172,9 @@ public class GraphicalSurveySummaryExporter extends SurveySummaryExporter {
         Map<String, String> criteria = new HashMap<String, String>();
         Map<String, String> options = new HashMap<String, String>();
         options.put(LOCALE_OPT, "en");
-        options.put(TYPE_OPT, DATA_CLEANING_TYPE);
+//        options.put(TYPE_OPT, DATA_CLEANING_TYPE);
 //        options.put(TYPE_OPT, DATA_ANALYSIS_TYPE);
-//        options.put(TYPE_OPT, COMPREHENSIVE_TYPE);
+        options.put(TYPE_OPT, COMPREHENSIVE_TYPE);
         options.put(LAST_COLLECTION_OPT, "false");
         options.put(EMAIL_OPT, "email@example.com");
         options.put(FROM_OPT, null);
