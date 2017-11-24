@@ -25,7 +25,6 @@ import java.security.NoSuchAlgorithmException;
 import java.text.DecimalFormat;
 import java.text.NumberFormat;
 import java.text.SimpleDateFormat;
-import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
@@ -65,7 +64,6 @@ import org.apache.poi.ss.util.CellRangeAddress;
 import org.apache.poi.ss.util.WorkbookUtil;
 import org.apache.poi.xssf.streaming.SXSSFSheet;
 import org.apache.poi.xssf.streaming.SXSSFWorkbook;
-import org.apache.poi.xssf.usermodel.XSSFDrawing;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import org.codehaus.jackson.map.ObjectMapper;
 import org.codehaus.jackson.type.TypeReference;
@@ -114,7 +112,6 @@ public class GraphicalSurveySummaryExporter extends SurveySummaryExporter {
     
     private static final String CADDISFLY_TESTS_FILE_URL_OPT = "caddisflyTestsFileUrl";
     private static final String METADATA_LABEL = "Metadata"; //Constant. Localization is going away.
-    private static final String REPORT_COMMENT = "Data Cleaning Report - Akvo Flow v1.9.25";
     private static final String UNROUNDING_COMMENT = "One or more cells in this column were saved as text to prevent rounding. Range functions like SUM may give unexpected results.";
 
     private static final String DEFAULT_IMAGE_PREFIX = "http://waterforpeople.s3.amazonaws.com/images/";
@@ -414,7 +411,6 @@ public class GraphicalSurveySummaryExporter extends SurveySummaryExporter {
                         wb, baseSheet,
                         isFullReport, fileName,
                         criteria.get("apiKey"));
-                addColumnWarnings(wb);
 
                 if (isFullReport) {
                     writeSummaryReport(questionMap, model, null, wb);
@@ -473,7 +469,6 @@ public class GraphicalSurveySummaryExporter extends SurveySummaryExporter {
         POIXMLProperties.CustomProperties custProp = props.getCustomProperties();
         custProp.addProperty("Version", "Akvo Flow v1.9.25");
         custProp.addProperty("Generated", new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ssZ").format(new Date()));
-        //custProp.addProperty("Published", true); //Yes No Property
         
         FileOutputStream fos = new FileOutputStream(fileName);
         workbook.write(fos);
@@ -1408,7 +1403,7 @@ public class GraphicalSurveySummaryExporter extends SurveySummaryExporter {
         addMetaDataColumnHeader(SUB_DATE_LABEL.get(locale), ++columnIdx, row);
         addMetaDataColumnHeader(SUBMITTER_LABEL.get(locale), ++columnIdx, row);
         addMetaDataColumnHeader(DURATION_LABEL.get(locale), ++columnIdx, row);
-        //Always put something in the top-left corner for the comment
+        //Always put something in the top-left corner to identify the format
         if (doGroupHeaders) {
             row = getRow(0, sheet);
             addMetaDataColumnHeader(METADATA_LABEL, 0, row); //constant (locale is going away)           
