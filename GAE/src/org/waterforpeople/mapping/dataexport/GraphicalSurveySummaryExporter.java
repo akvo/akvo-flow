@@ -623,7 +623,8 @@ public class GraphicalSurveySummaryExporter extends SurveySummaryExporter {
 
                 
             } else { //just one sheet - do all at once with a global repeat column
-                writeInstanceData(baseSheet, instanceData,
+                int baseCurrentRow = baseSheet.getLastRowNum() + 1;
+                baseCurrentRow = writeInstanceData(baseSheet, baseCurrentRow, instanceData,
                         generateSummary, nameToIdMap, collapseIdMap, model);
             }
         }
@@ -722,15 +723,18 @@ public class GraphicalSurveySummaryExporter extends SurveySummaryExporter {
      * Writes all the data for a single survey instance (form instance) to a sheet.
      *
      * @param sheet
+     * @param startRow The start row for this instance
      * @param instanceData
      * @param generateSummary
      * @param nameToIdMap
      * @param collapseIdMap
      * @param model
+     * @return The row where the next instance should be written
      * @throws NoSuchAlgorithmException
      */
-    private synchronized void writeInstanceData(
+    private synchronized int writeInstanceData(
             Sheet sheet,
+            final int startRow,
             InstanceData instanceData,
             boolean generateSummary,
             Map<String, String> nameToIdMap,
@@ -738,14 +742,13 @@ public class GraphicalSurveySummaryExporter extends SurveySummaryExporter {
             SummaryModel model)
             throws NoSuchAlgorithmException {
 
-        final int startRow = sheet.getLastRowNum() + 1;
-        
         // maxRow will increase when we write repeatable question groups
         int maxRow = startRow;
 
         Row firstRow = getRow(startRow, sheet);
 
-        writeMetadata(sheet, instanceData, startRow, (int) instanceData.maxIterationsCount, true);
+        //maxIterationsCount is actually the max iteration index; 0 for 1 iteration...
+        writeMetadata(sheet, instanceData, startRow, (int) instanceData.maxIterationsCount + 1, true);
         
         for (String q : questionIdList) {
             final Long questionId = Long.valueOf(q);
@@ -841,6 +844,8 @@ public class GraphicalSurveySummaryExporter extends SurveySummaryExporter {
                 }
             }
         }
+
+        return maxRow + 1;
     }
 
     /**
