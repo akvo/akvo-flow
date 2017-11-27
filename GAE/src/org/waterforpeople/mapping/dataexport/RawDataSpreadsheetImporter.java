@@ -89,20 +89,21 @@ public class RawDataSpreadsheetImporter implements DataImporter {
 
     /**
      * opens a file input stream using the file passed in and tries to return the first worksheet in
-     * that file
+     * that file. 
+     * Also called from uploader.clj.
      *
      * @param file
      * @return
      * @throws Exception
      */
-    public Workbook getWorkbook(File file) throws Exception {
+    public Sheet getDataSheet(File file) throws Exception {
         stream = new PushbackInputStream(new FileInputStream(file));
         Workbook wb = null;
         try {
             wb = WorkbookFactory.create(stream);
         } catch (Exception e) {
         }
-        return wb;
+        return wb.getSheetAt(0);
     }
 
     /**
@@ -124,7 +125,7 @@ public class RawDataSpreadsheetImporter implements DataImporter {
         try {
             log.info(String.format("Importing %s to %s using criteria %s", file, serverBase,
                     criteria));
-            Workbook wb = getWorkbook(file);
+            Workbook wb = getDataSheet(file).getWorkbook();
             
             //Find out if this is a 2017-style report w group headers and rqg's on separate sheets
             splitSheets = safeCellCompare(wb.getSheetAt(0), 0, 0, METADATA_HEADER);
@@ -1015,7 +1016,7 @@ public class RawDataSpreadsheetImporter implements DataImporter {
         Map<Integer, String> errorMap = new HashMap<Integer, String>();
 
         try {
-            Sheet sheet = getWorkbook(file).getSheetAt(0);
+            Sheet sheet = getDataSheet(file);
             Row headerRow = sheet.getRow(0);
             boolean firstQuestionFound = false;
             int firstQuestionColumnIndex = 0;
@@ -1168,8 +1169,8 @@ public class RawDataSpreadsheetImporter implements DataImporter {
         return false;
     }
 
-    //For testing and debugging
-    //executeImport() is called from Clojure code in live deployment
+    //This main() method is only for testing and debugging.
+    //executeImport() is called from Clojure code in live deployment.
     public static void main(String[] args) throws Exception {
         if (args.length != 4) {
             log.error("Error.\nUsage:\n\tjava org.waterforpeople.mapping.dataexport.RawDataSpreadsheetImporter <file> <serverBase> <surveyId> <apiKey>");
