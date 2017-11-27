@@ -1011,13 +1011,22 @@ public class RawDataSpreadsheetImporter implements DataImporter {
                 urlString, shouldSign, key);
     }
 
+    /* 
+     * validate
+     * Called from Clojure code before executeImport()
+     */
     @Override
     public Map<Integer, String> validate(File file) {
         Map<Integer, String> errorMap = new HashMap<Integer, String>();
 
         try {
             Sheet sheet = getDataSheet(file);
-            Row headerRow = sheet.getRow(0);
+            
+            //Find out if this is a 2017-style report w group headers and rqg's on separate sheets
+            boolean splitSheets = safeCellCompare(sheet, 0, 0, METADATA_HEADER);
+            int headerRowIndex = splitSheets ? 1 : 0;
+
+            Row headerRow = sheet.getRow(headerRowIndex);
             boolean firstQuestionFound = false;
             int firstQuestionColumnIndex = 0;
 
