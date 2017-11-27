@@ -429,7 +429,8 @@ FLOW.projectControl = Ember.ArrayController.create({
    */
   loadCaddisflyResources: function () {
       var caddisflyResourceController = FLOW.router.get('caddisflyResourceController');
-      if (Ember.empty(caddisflyResourceController.get('content'))) {
+        if(Ember.empty(caddisflyResourceController.get('content'))){
+      //if (!Ember.empty(caddisflyResourceController.get('content'))) { //important for loading cadisfly
           caddisflyResourceController.load();
       }
   },
