@@ -623,7 +623,7 @@ public class GraphicalSurveySummaryExporter extends SurveySummaryExporter {
 
                 
             } else { //just one sheet - do all at once with a global repeat column
-                int baseCurrentRow = baseSheet.getLastRowNum();
+                int baseCurrentRow = baseSheet.getLastRowNum() + 1;
                 baseCurrentRow = writeInstanceData(baseSheet, baseCurrentRow, instanceData,
                         generateSummary, nameToIdMap, collapseIdMap, model);
             }
@@ -747,7 +747,8 @@ public class GraphicalSurveySummaryExporter extends SurveySummaryExporter {
 
         Row firstRow = getRow(startRow, sheet);
 
-        writeMetadata(sheet, instanceData, startRow, (int) instanceData.maxIterationsCount, true);
+        //maxIterationsCount is actually the max iteration index; 0 for 1 iteration...
+        writeMetadata(sheet, instanceData, startRow, (int) instanceData.maxIterationsCount + 1, true);
         
         for (String q : questionIdList) {
             final Long questionId = Long.valueOf(q);
@@ -2122,9 +2123,9 @@ public class GraphicalSurveySummaryExporter extends SurveySummaryExporter {
         Map<String, String> criteria = new HashMap<String, String>();
         Map<String, String> options = new HashMap<String, String>();
         options.put(LOCALE_OPT, "en");
-        options.put(TYPE_OPT, DATA_CLEANING_TYPE);
+//        options.put(TYPE_OPT, DATA_CLEANING_TYPE);
 //        options.put(TYPE_OPT, DATA_ANALYSIS_TYPE);
-//        options.put(TYPE_OPT, COMPREHENSIVE_TYPE);
+        options.put(TYPE_OPT, COMPREHENSIVE_TYPE);
         options.put(LAST_COLLECTION_OPT, "false");
         options.put(EMAIL_OPT, "email@example.com");
         options.put(FROM_OPT, null);
