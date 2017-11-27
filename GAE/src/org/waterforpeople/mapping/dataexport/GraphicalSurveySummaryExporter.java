@@ -48,11 +48,9 @@ import org.apache.log4j.PatternLayout;
 import org.apache.poi.ss.usermodel.Cell;
 import org.apache.poi.ss.usermodel.CellStyle;
 import org.apache.poi.ss.usermodel.ClientAnchor;
-import org.apache.poi.ss.usermodel.Comment;
 import org.apache.poi.ss.usermodel.CreationHelper;
 import org.apache.poi.ss.usermodel.Drawing;
 import org.apache.poi.ss.usermodel.Font;
-import org.apache.poi.ss.usermodel.RichTextString;
 import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.ss.usermodel.Sheet;
 import org.apache.poi.ss.usermodel.Workbook;
@@ -431,7 +429,7 @@ public class GraphicalSurveySummaryExporter extends SurveySummaryExporter {
                 wb.setActiveSheet(isFullReport ? wb.getNumberOfSheets()-1 : 0);
                 wb.write(fileOut);
                 fileOut.close();
-                
+
             } else {
                 log.info("No questions for survey: "
                         + criteria.get(SurveyRestRequest.SURVEY_ID_PARAM)
