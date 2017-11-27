@@ -238,10 +238,9 @@ public class RawDataSpreadsheetImporter implements DataImporter {
         
         int row = headerRowIndex + 1; //where the data starts
         while (true) {
-            //TODO: make sure this works with no rpt column as on the base sheet
             InstanceData instanceData = parseInstance(baseSheet, row, metadataColumnHeaderIndex,
                     firstQuestionColumnIndex, questionIdToQuestionDto, columnIndexToQuestionId,
-                    optionNodes);
+                    optionNodes, false);
 
             if (instanceData == null) {
                 break; //End of sheet
@@ -319,13 +318,13 @@ public class RawDataSpreadsheetImporter implements DataImporter {
         }
 
         int firstQuestionColumnIndex = Collections.min(columnIndexToQuestionId.keySet());
-        Map<String, Integer> metadataColumnHeaderIndex = calculateMetadataColumnIndex(firstQuestionColumnIndex, false);
+        Map<String, Integer> metadataColumnHeaderIndex = calculateMetadataColumnIndex(firstQuestionColumnIndex, true);
 
         int row = 1;
         while (true) {
             InstanceData instanceData = parseInstance(sheet, row, metadataColumnHeaderIndex,
                     firstQuestionColumnIndex, questionIdToQuestionDto, columnIndexToQuestionId,
-                    optionNodes);
+                    optionNodes, true);
 
             if (instanceData == null) {
                 break;
@@ -360,24 +359,24 @@ public class RawDataSpreadsheetImporter implements DataImporter {
      * @param firstQuestionColumnIndex
      * @return
      */
-    private static Map<String, Integer> calculateMetadataColumnIndex(int firstQuestionColumnIndex, boolean repSheet) {
+    private static Map<String, Integer> calculateMetadataColumnIndex(int firstQuestionColumnIndex, boolean singleOrRepSheet) {
         Map<String, Integer> metadataColumnIndex = new HashMap<>();
 
         int currentColumnIndex = -1;
 
         metadataColumnIndex.put(DATAPOINT_IDENTIFIER_COLUMN_KEY, ++currentColumnIndex);
 
-        if (hasApprovalColumn(firstQuestionColumnIndex, repSheet)) {
+        if (hasApprovalColumn(firstQuestionColumnIndex, singleOrRepSheet)) {
             metadataColumnIndex.put(DATAPOINT_APPROVAL_COLUMN_KEY, ++currentColumnIndex);
         }
 
-        if (hasRepeatIterationColumn(firstQuestionColumnIndex, repSheet)) {
+        if (hasRepeatIterationColumn(firstQuestionColumnIndex, singleOrRepSheet)) {
             metadataColumnIndex.put(REPEAT_COLUMN_KEY, ++currentColumnIndex);
         }
 
         metadataColumnIndex.put(DATAPOINT_NAME_COLUMN_KEY, ++currentColumnIndex);
 
-        if (hasDeviceIdentifierColumn(firstQuestionColumnIndex, repSheet)) {
+        if (hasDeviceIdentifierColumn(firstQuestionColumnIndex, singleOrRepSheet)) {
             metadataColumnIndex.put(DEVICE_IDENTIFIER_COLUMN_KEY, ++currentColumnIndex);
         }
         metadataColumnIndex.put(SURVEY_INSTANCE_COLUMN_KEY, ++currentColumnIndex);
@@ -514,7 +513,8 @@ public class RawDataSpreadsheetImporter implements DataImporter {
             int firstQuestionColumnIndex,
             Map<Long, QuestionDto> questionIdToQuestionDto,
             Map<Integer, Long> columnIndexToQuestionId,
-            Map<Long, List<QuestionOptionDto>> optionNodes) {
+            Map<Long, List<QuestionOptionDto>> optionNodes,
+            boolean singleOrRepSheet) {
 
         // Data sheet layout
         // If cell [0,0] is "Metadata"
@@ -547,7 +547,7 @@ public class RawDataSpreadsheetImporter implements DataImporter {
                 metadataColumnHeaderIndex, DATAPOINT_NAME_COLUMN_KEY);
 
         String deviceIdentifier = "";
-        if (hasDeviceIdentifierColumn(firstQuestionColumnIndex, false)) {
+        if (hasDeviceIdentifierColumn(firstQuestionColumnIndex, singleOrRepSheet)) {
             deviceIdentifier = getMetadataCellContent(baseRow, metadataColumnHeaderIndex,
                     DEVICE_IDENTIFIER_COLUMN_KEY);
         }
@@ -565,7 +565,7 @@ public class RawDataSpreadsheetImporter implements DataImporter {
         int repeatIterationColumnIndex = -1;
 
         // Count the maximum number of iterations for this instance
-        if (hasRepeatIterationColumn(firstQuestionColumnIndex, false)) {
+        if (hasRepeatIterationColumn(firstQuestionColumnIndex, singleOrRepSheet)) {
             repeatIterationColumnIndex = metadataColumnHeaderIndex.get(REPEAT_COLUMN_KEY);//unsafe assignment
             while (true) {
                 Row row = sheet.getRow(startRow + iterations);
@@ -595,7 +595,7 @@ public class RawDataSpreadsheetImporter implements DataImporter {
                 Row iterationRow = sheet.getRow(startRow + iter);
 
                 long iteration = 1;
-                if (hasRepeatIterationColumn(firstQuestionColumnIndex, false)) {
+                if (hasRepeatIterationColumn(firstQuestionColumnIndex, singleOrRepSheet)) {
                     Cell cell = iterationRow.getCell(repeatIterationColumnIndex);
                     if (cell != null) {
                         iteration = (long) iterationRow.getCell(repeatIterationColumnIndex)
@@ -1062,12 +1062,12 @@ public class RawDataSpreadsheetImporter implements DataImporter {
                 errorMap.put(-1, "A question could not be found");
             }
 
-            if (firstQuestionFound && hasRepeatIterationColumn(firstQuestionColumnIndex, false)) {
+            if (firstQuestionFound && hasRepeatIterationColumn(firstQuestionColumnIndex, true)) {
                 Iterator<Row> iter = sheet.iterator();
                 iter.next(); // Skip the header row.
 
                 int repeatIterationColumnIndex = -1;
-                if (hasApprovalColumn(firstQuestionColumnIndex, false)) {
+                if (hasApprovalColumn(firstQuestionColumnIndex, true)) {
                     repeatIterationColumnIndex = 2;
                 } else {
                     repeatIterationColumnIndex = 1;
@@ -1192,6 +1192,9 @@ public class RawDataSpreadsheetImporter implements DataImporter {
         configMap.put(SURVEY_CONFIG_KEY, args[2].trim());
         configMap.put("apiKey", args[3].trim());
 
-        r.executeImport(file, serverBaseArg, configMap);
+        Map<Integer, String> validationErrors = r.validate(file);
+        if (validationErrors.isEmpty()) {
+            r.executeImport(file, serverBaseArg, configMap);
+        }
     }
 }
