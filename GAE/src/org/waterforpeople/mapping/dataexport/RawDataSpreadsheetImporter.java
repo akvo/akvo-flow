@@ -1066,14 +1066,15 @@ public class RawDataSpreadsheetImporter implements DataImporter {
                 errorMap.put(-1, "A question could not be found");
             }
 
-            if (firstQuestionFound && hasRepeatIterationColumn(firstQuestionColumnIndex, true)) {
+            //verify that the repeat column is all number cells
+            if (firstQuestionFound && hasRepeatIterationColumn(firstQuestionColumnIndex, !splitSheets)) {
                 Iterator<Row> iter = sheet.iterator();
                 iter.next(); // Skip the header row.
-                if (splitSheets) {
+                if (splitSheets) { // just in case we change surrounding logic
                     iter.next(); // Skip the second header row.
                 }
                 int repeatIterationColumnIndex = -1;
-                if (hasApprovalColumn(firstQuestionColumnIndex, true)) {
+                if (hasApprovalColumn(firstQuestionColumnIndex, !splitSheets)) {
                     repeatIterationColumnIndex = 2;
                 } else {
                     repeatIterationColumnIndex = 1;
