@@ -661,9 +661,8 @@ public class RawDataSpreadsheetImporter implements DataImporter {
                             .getCell(columnIndex + 2));
                     String geoCode = ExportImportUtils.parseCellAsString(iterationRow
                             .getCell(columnIndex + 3));
-                    val = latitude + "|" + longitude + "|" + elevation + "|" + geoCode;
-                    if (val.equals("|||")) { //TODO: more degenerate cases, like lat but no lon?
-                        val = null;
+                    if (latitude != "" && longitude != "") { //We want both else ignore
+                        val = latitude + "|" + longitude + "|" + elevation + "|" + geoCode;
                     }
                     break;
                 case CASCADE:
