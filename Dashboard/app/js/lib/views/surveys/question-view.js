@@ -36,7 +36,7 @@ FLOW.QuestionView = FLOW.View.extend({
   caddisflyResourceUuid: null,
 
   showCaddisflyTests: function () {
-      return FLOW.router.caddisflyResourceController.get("testsFileLoaded");
+      return FLOW.router.caddisflyResourceController.get("testsFileLoaded");// if this.view === 'cadisfly'
   }.property('FLOW.router.caddisflyResourceController.testsFileLoaded'),
 
   showMetaConfig: function () {
@@ -115,7 +115,7 @@ FLOW.QuestionView = FLOW.View.extend({
 
   amNoOptionsType: function () {
     var val;
-    if (!Ember.none(this.type)) {
+    if (!Ember.none(this.type)) { //recall Ember.none(null|undefined) will be true. 
       val = this.type.get('value');
       return val === 'PHOTO' || val === 'VIDEO' || val === 'DATE' || val === 'SIGNATURE';
     }
@@ -142,10 +142,30 @@ FLOW.QuestionView = FLOW.View.extend({
             || (this.type && this.type.get('value') === 'SIGNATURE');
   }.property('this.type'),
 
-  amCaddisflyType: function () {
-	return (this.content && this.content.get('type') === 'CADDISFLY'
+  /*amCaddisflyType: function () {
+	return (this.content && this.content.get('type') === 'CADDISFLY' //suppose i dont consider this.content()
 		|| (this.type && this.type.get('value') === 'CADDISFLY'));
-	}.property('this.type').cacheable(),
+	}.property('this.type').cacheable(),*/
+   amCaddisflyType: function(){
+       if (this.type) {
+          return this.type.get('value') == 'CADDISFLY'; //if it refuses  add that part of  this.content
+       } else {
+         return false;
+       }
+   }.property('this.type').cacheable(),
+  
+  //just changing the order... of property..  u have not yet tested this hypotheis
+  //test this when teh code below fails to work..  test lowest hypothesis. then this
+  /*showCaddisflyTests: function () { //not really... it does not matter
+        if (this.type && this.type.get('value') === 'CADDISFLY'||
+              (this.content && this.content.get('type') === 'CADDISFLY'))) {
+            return FLOW.router.caddisflyResourceController.get("testsFileLoaded");// if this.view === 'cadisfly'  
+        } else {
+            //return 'hey goldsoft!1'; //U need to test this first.  it failed to load  the whole app
+             return false; //u need to test this first... then can think of cascade plan
+        }
+      
+  }.property('FLOW.router.caddisflyResourceController.testsFileLoaded'),*/
 
   showLocaleName: function () {
     if (!this.type) {
@@ -211,15 +231,17 @@ FLOW.QuestionView = FLOW.View.extend({
     }
 
     // reset selected caddisfly resource
-    FLOW.selectedControl.set('selectedCaddisflyResource', null);
+    FLOW.selectedControl.set('selectedCaddisflyResource', null);//do u need this like above
     // if the caddisflyResourceUuid is not null, get the resource
     if (!Ember.empty(FLOW.selectedControl.selectedQuestion.get('caddisflyResourceUuid'))) {
       var caddResource = FLOW.router.caddisflyResourceController.content.findProperty('uuid', FLOW.selectedControl.selectedQuestion.get('caddisflyResourceUuid'));
       if (!Ember.empty(caddResource)) {
-        FLOW.selectedControl.set('selectedCaddisflyResource',caddResource);
+        FLOW.selectedControl.set('selectedCaddisflyResource',caddResource);// u selected it here thus
+        //thus stays in memory already
+      }else {
+        console.log(' zero based cadissfly!!!')
       }
     }
-
     // if the dependentQuestionId is not null, get the question
     if (!Ember.empty(FLOW.selectedControl.selectedQuestion.get('dependentQuestionId'))) {
       dependentQuestion = FLOW.store.find(FLOW.Question, FLOW.selectedControl.selectedQuestion.get('dependentQuestionId'));
@@ -443,6 +465,11 @@ FLOW.QuestionView = FLOW.View.extend({
         FLOW.selectedControl.selectedQuestion.set('caddisflyResourceUuid',
             FLOW.selectedControl.selectedCaddisflyResource.get('uuid'));
       }
+    }else {
+        //FLOW.selectedControl.set()... but this only working for selected caddisflyResource
+        console.log('hey cadisfly tests not selected')
+        //this.set('caddisflyResourceUuid', null) //unfortunately it does not control change in dropdown
+        //FLOW.selectedControl.set('selectedCaddisflyResource', null) //hope it solves ur issue.. let see the effect.
     }
 
     FLOW.selectedControl.selectedSurvey.set('status', 'NOT_PUBLISHED');
@@ -450,6 +477,8 @@ FLOW.QuestionView = FLOW.View.extend({
     FLOW.selectedControl.set('selectedQuestion', null);
     FLOW.selectedControl.set('dependentQuestion', null);
     FLOW.selectedControl.set('selectedCascadeResource',null);
+    //u add ur hypothesis.. actually u test this part. cascade resource aint giving u same behaviour
+     //FLOW.selectedControl.set('selectedCaddisflyResource', null) //hope it solves ur issue 
   },
 
   isPartOfMonitoringGroup: function(questionKeyId) {
@@ -860,7 +889,7 @@ FLOW.QuestionView = FLOW.View.extend({
     this.set('showAddAttributeDialogBool', false);
   },
 
-  validateQuestionObserver: function(){
+  validateQuestionObserver: function(){ //this code makes questionValidationFailure true after observing text
       this.set('questionValidationFailure', (this.text != null && this.text.length > 500));
   }.observes('this.text'),
 
