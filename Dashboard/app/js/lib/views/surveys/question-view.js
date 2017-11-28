@@ -141,11 +141,7 @@ FLOW.QuestionView = FLOW.View.extend({
     return (this.content && this.content.get('type') === 'SIGNATURE')
             || (this.type && this.type.get('value') === 'SIGNATURE');
   }.property('this.type'),
-
-  /*amCaddisflyType: function () {
-	return (this.content && this.content.get('type') === 'CADDISFLY' //suppose i dont consider this.content()
-		|| (this.type && this.type.get('value') === 'CADDISFLY'));
-	}.property('this.type').cacheable(),*/
+  
    amCaddisflyType: function(){
        if (this.type) {
           return this.type.get('value') == 'CADDISFLY'; //if it refuses  add that part of  this.content
@@ -154,19 +150,6 @@ FLOW.QuestionView = FLOW.View.extend({
        }
    }.property('this.type').cacheable(),
   
-  //just changing the order... of property..  u have not yet tested this hypotheis
-  //test this when teh code below fails to work..  test lowest hypothesis. then this
-  /*showCaddisflyTests: function () { //not really... it does not matter
-        if (this.type && this.type.get('value') === 'CADDISFLY'||
-              (this.content && this.content.get('type') === 'CADDISFLY'))) {
-            return FLOW.router.caddisflyResourceController.get("testsFileLoaded");// if this.view === 'cadisfly'  
-        } else {
-            //return 'hey goldsoft!1'; //U need to test this first.  it failed to load  the whole app
-             return false; //u need to test this first... then can think of cascade plan
-        }
-      
-  }.property('FLOW.router.caddisflyResourceController.testsFileLoaded'),*/
-
   showLocaleName: function () {
     if (!this.type) {
       return false;
@@ -465,11 +448,6 @@ FLOW.QuestionView = FLOW.View.extend({
         FLOW.selectedControl.selectedQuestion.set('caddisflyResourceUuid',
             FLOW.selectedControl.selectedCaddisflyResource.get('uuid'));
       }
-    }else {
-        //FLOW.selectedControl.set()... but this only working for selected caddisflyResource
-        console.log('hey cadisfly tests not selected')
-        //this.set('caddisflyResourceUuid', null) //unfortunately it does not control change in dropdown
-        //FLOW.selectedControl.set('selectedCaddisflyResource', null) //hope it solves ur issue.. let see the effect.
     }
 
     FLOW.selectedControl.selectedSurvey.set('status', 'NOT_PUBLISHED');
@@ -477,8 +455,6 @@ FLOW.QuestionView = FLOW.View.extend({
     FLOW.selectedControl.set('selectedQuestion', null);
     FLOW.selectedControl.set('dependentQuestion', null);
     FLOW.selectedControl.set('selectedCascadeResource',null);
-    //u add ur hypothesis.. actually u test this part. cascade resource aint giving u same behaviour
-     //FLOW.selectedControl.set('selectedCaddisflyResource', null) //hope it solves ur issue 
   },
 
   isPartOfMonitoringGroup: function(questionKeyId) {
