@@ -635,6 +635,8 @@ public class RawDataSpreadsheetImporter implements DataImporter {
      * @param questionDto
      * @param iteration
      * @param optionNodes
+     * 
+     * TODO: nothing prevents getting >1 iteration for a question that is NOT in an a RQG
      */
     private void getIterationResponse(Row iterationRow,
             int columnIndex,
@@ -660,6 +662,9 @@ public class RawDataSpreadsheetImporter implements DataImporter {
                     String geoCode = ExportImportUtils.parseCellAsString(iterationRow
                             .getCell(columnIndex + 3));
                     val = latitude + "|" + longitude + "|" + elevation + "|" + geoCode;
+                    if (val.equals("|||")) { //TODO: more degenerate cases, like lat but no lon?
+                        val = null;
+                    }
                     break;
                 case CASCADE:
                     // Two different possible formats:
@@ -1065,7 +1070,9 @@ public class RawDataSpreadsheetImporter implements DataImporter {
             if (firstQuestionFound && hasRepeatIterationColumn(firstQuestionColumnIndex, true)) {
                 Iterator<Row> iter = sheet.iterator();
                 iter.next(); // Skip the header row.
-
+                if (splitSheets) {
+                    iter.next(); // Skip the second header row.
+                }
                 int repeatIterationColumnIndex = -1;
                 if (hasApprovalColumn(firstQuestionColumnIndex, true)) {
                     repeatIterationColumnIndex = 2;
