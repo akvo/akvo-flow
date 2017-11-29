@@ -85,6 +85,7 @@ public class RawDataSpreadsheetImporter implements DataImporter {
     public static final String DURATION_COLUMN_KEY = "surveyalTime";
     
     public static final String METADATA_HEADER = "Metadata";
+    public static final String NEW_DATA_PATTERN = "^new-\\d+"; // new- followed by one or more digits
     
 
     /**
@@ -413,7 +414,7 @@ public class RawDataSpreadsheetImporter implements DataImporter {
     private Integer parseRepeatsForInstance(InstanceData instanceData,
             Sheet repSheet,
             int currentRowIndex,
-            Map<String, Integer> metadataColumnHeaderIndex2,
+            Map<String, Integer> metadataColumnHeaderIdx,
             Map<Long, QuestionDto> questionIdToQuestionDto,
             Map<Integer, Long> columnIndexToQuestionId,
             Map<Long, List<QuestionOptionDto>> optionNodes,
@@ -434,18 +435,18 @@ public class RawDataSpreadsheetImporter implements DataImporter {
         // 8. SurveyalTime - ignored duplicate
         // 9 - N. Questions
 
-        int instanceIdColumnIndex = metadataColumnHeaderIndex2.get(SURVEY_INSTANCE_COLUMN_KEY);
-        int repeatIterationColumnIndex = metadataColumnHeaderIndex2.get(REPEAT_COLUMN_KEY);
+        int identifierColumnIndex = metadataColumnHeaderIdx.get(DATAPOINT_IDENTIFIER_COLUMN_KEY);
+        int repeatIterationColumnIndex = metadataColumnHeaderIdx.get(REPEAT_COLUMN_KEY);
 
-        String SurveyInstanceId = instanceData.surveyInstanceDto.getKeyId().toString();
+        String DataPointIdentifier = instanceData.surveyInstanceDto.getSurveyedLocaleIdentifier();
         //Find first row matching this, or give up
         int rowIx = currentRowIndex;
         Row row;
         while (true) {
             row = repSheet.getRow(rowIx);
             if (row != null
-                    && row.getCell(instanceIdColumnIndex) != null
-                    && row.getCell(instanceIdColumnIndex).getStringCellValue().equals(SurveyInstanceId)) { //found!
+                    && row.getCell(identifierColumnIndex) != null
+                    && row.getCell(identifierColumnIndex).getStringCellValue().equals(DataPointIdentifier)) { //found!
                 break;
             } else {
                 if (isEmptyRow(row)) { // a row without any cells defined
@@ -462,13 +463,13 @@ public class RawDataSpreadsheetImporter implements DataImporter {
         Map<Long, Map<Long, String>> responseMap = new HashMap<>();
 
         while (row != null
-                && row.getCell(instanceIdColumnIndex) != null
-                && row.getCell(instanceIdColumnIndex).getStringCellValue().equals(SurveyInstanceId) //TODO: use "identifier" as link instead to handle new data?
+                && row.getCell(identifierColumnIndex) != null
+                && row.getCell(identifierColumnIndex).getStringCellValue().equals(DataPointIdentifier)
                 && row.getCell(repeatIterationColumnIndex) != null
                 && row.getCell(repeatIterationColumnIndex).getCellType() == Cell.CELL_TYPE_NUMERIC) {
             Long rep = (long) row.getCell(repeatIterationColumnIndex).getNumericCellValue(); //might throw on huge number
-            //check rep for sanity
-            if (rep<1) { break;}
+            //check repeat no for sanity
+            if (rep < 1) { break;}
             checksumRows.add(row);
             
             //loop over the data columns
@@ -491,7 +492,6 @@ public class RawDataSpreadsheetImporter implements DataImporter {
             log.warn("Some questions have answers on more than one sheet!");
         }
 
-        
         return rowIx;
         
     }
