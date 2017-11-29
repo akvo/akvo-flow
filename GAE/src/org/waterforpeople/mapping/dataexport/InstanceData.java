@@ -89,4 +89,13 @@ public class InstanceData {
         }
         return true;  
     }
+    
+    @Override
+    public String toString() {
+        if (surveyInstanceDto != null) {
+            return surveyInstanceDto.getKeyId() + " '" + surveyInstanceDto.getSurveyedLocaleIdentifier() + "'";
+        } else {
+            return "InstanceData with max iteration index " + Long.toString(maxIterationsCount);
+        }
+    }
 }

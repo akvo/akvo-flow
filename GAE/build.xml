@@ -120,7 +120,11 @@
 			</fileset>
 		</copy>
 		<javac source="1.7" target="1.7" encoding="UTF8" srcdir="src" destdir="${app_classes_dir}"
-			   classpathref="project.classpath" debug="on" includeantruntime="false" />
+			   classpathref="project.classpath" debug="on" includeantruntime="false"
+ >
+		  <exclude name="org/waterforpeople/mapping/dataexport/*.java" />
+
+		</javac>
 	</target>
 
 	<target name="translate" depends="compile" description="Generates the en.properties file from handlebars template and JS files">

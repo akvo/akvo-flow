@@ -47,14 +47,7 @@
                   {{view FLOW.DateField minDate=false valueBinding="FLOW.dateControl.toDate" elementId="to_date02" placeholder="" placeholderBinding="Ember.STRINGS._to" size=30}}
                 </label>
             </div>
-            <div class="latestOption">
-              <label for="lastCollection">{{t _latest_data}}</label>{{view Ember.Checkbox checkedBinding="FLOW.editControl.lastCollection" id="lastCollection"}}
-            </div>
-            <a {{action showDataCleaningReport target="this"}} onclick="displayFeedbackTxt()" class="button trigger2">{{t _download}}</a>
-            <div class="downFeedback" style="display: none;">
-              <em>{{t _preparing_report}}</em>
-              <p>{{t a_link_emailed}}</p>
-            </div>
+            <a {{action showDataCleaningReport target="this"}} class="button trigger2">{{t _download}}</a>
           </div>
         </li>
         <li class="dataAnalyseExp trigger" onclick="openExportOptions(event, 'dataAnalyseExp_options')">
@@ -71,11 +64,7 @@
                   {{view FLOW.DateField minDate=false valueBinding="FLOW.dateControl.toDate" elementId="to_date" placeholder="" placeholderBinding="Ember.STRINGS._to" size=30}}
                 </label>
               </div>
-              <a {{action showDataAnalysisReport target="this"}} onclick="displayFeedbackTxt('downFeedback02')" class="button trigger2">{{t _download}}</a>
-              <div class="downFeedback02" style="display: none;">
-            <em>{{t _preparing_report}}</em>
-            <p>{{t a_link_emailed}}</p>
-              </div>
+              <a {{action showDataAnalysisReport target="this"}} class="button trigger2">{{t _download}}</a>
             </div>
           </li>
           <li class="compReportExp trigger"  onclick="openExportOptions(event, 'compReportExp_options')">
@@ -83,11 +72,7 @@
             <h6>{{t _not_importable_back}}</h6>
             <p class="expDescr">{{t _summarizes_responses}}</p>
             <div id="compReportExp_options" class="options">
-              <a {{action showComprehensiveReport target="this"}} onclick="displayFeedbackTxt('downFeedback03')" class="button trigger2">{{t _download}}</a>
-              <div class="downFeedback03" style="display: none;">
-                  <em>{{t _preparing_report}}</em>
-            <p>{{t a_link_emailed}}</p>
-              </div>
+              <a {{action showComprehensiveReport target="this"}} class="button trigger2">{{t _download}}</a>
             </div>
           </li>
           <li class="geoShapeDataExp trigger"  onclick="openExportOptions(event, 'geoShapeDataExp_options')">
@@ -105,25 +90,17 @@
               {{/if}}
             </div>
             <div id="geoShapeDataExp_options" class="options">
-              <a {{action showGeoshapeReport target="this"}} onclick="displayFeedbackTxt()" class="button trigger2">{{t _download}}</a>
-              <div class="downFeedback04" style="display: none;">
-              <em>{{t _preparing_report}}</em>
-               <p>{{t a_link_emailed}}</p>
-            </div>
+              <a {{action showGeoshapeReport target="this"}} class="button trigger2">{{t _download}}</a>
           </div>
         </li>
         <li class="surveyFormExp trigger"  onclick="openExportOptions(event, 'surveyFormExp_options')">
           <h2>{{t _survey_form }}</h2>
           <p class="expDescr">{{t _printable}}</p>
           <div id="surveyFormExp_options" class="options">
-            <a {{action showSurveyForm target="this"}}  onclick="displayFeedbackTxt()" class="button trigger2">{{t _download}}</a>
+            <a {{action showSurveyForm target="this"}} class="button trigger2">{{t _download}}</a>
               {{#if view.showSurveyFormApplet }}
                 {{view FLOW.surveyFormApplet}}
               {{/if}}
-            <div class="downFeedback05" style="display: none;">
-            <em>{{t _preparing_report}}</em>
-            <p>{{t a_link_emailed}}</p>
-          </div>
         </div>
       </li>
     </ul>

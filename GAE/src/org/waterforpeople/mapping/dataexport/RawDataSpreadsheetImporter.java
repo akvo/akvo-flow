@@ -89,20 +89,21 @@ public class RawDataSpreadsheetImporter implements DataImporter {
 
     /**
      * opens a file input stream using the file passed in and tries to return the first worksheet in
-     * that file
+     * that file. 
+     * Also called from uploader.clj.
      *
      * @param file
      * @return
      * @throws Exception
      */
-    public Workbook getWorkbook(File file) throws Exception {
+    public Sheet getDataSheet(File file) throws Exception {
         stream = new PushbackInputStream(new FileInputStream(file));
         Workbook wb = null;
         try {
             wb = WorkbookFactory.create(stream);
         } catch (Exception e) {
         }
-        return wb;
+        return wb.getSheetAt(0);
     }
 
     /**
@@ -124,7 +125,7 @@ public class RawDataSpreadsheetImporter implements DataImporter {
         try {
             log.info(String.format("Importing %s to %s using criteria %s", file, serverBase,
                     criteria));
-            Workbook wb = getWorkbook(file);
+            Workbook wb = getDataSheet(file).getWorkbook();
             
             //Find out if this is a 2017-style report w group headers and rqg's on separate sheets
             splitSheets = safeCellCompare(wb.getSheetAt(0), 0, 0, METADATA_HEADER);
@@ -237,10 +238,9 @@ public class RawDataSpreadsheetImporter implements DataImporter {
         
         int row = headerRowIndex + 1; //where the data starts
         while (true) {
-            //TODO: make sure this works with no rpt column as on the base sheet
             InstanceData instanceData = parseInstance(baseSheet, row, metadataColumnHeaderIndex,
                     firstQuestionColumnIndex, questionIdToQuestionDto, columnIndexToQuestionId,
-                    optionNodes);
+                    optionNodes, false);
 
             if (instanceData == null) {
                 break; //End of sheet
@@ -263,7 +263,7 @@ public class RawDataSpreadsheetImporter implements DataImporter {
                     }
                     //May add data to instanceData and rows to allRows
                     pos = parseRepeatsForInstance(instanceData, repSheet,
-                            pos, repMetadataIndex, repFirstQIdx,
+                            pos, repMetadataIndex,
                             questionIdToQuestionDto, repQMap,
                             optionNodes, allRows);
                     sheetPosition.put(repSheet, pos); //replace with new pos; might be any value
@@ -318,13 +318,13 @@ public class RawDataSpreadsheetImporter implements DataImporter {
         }
 
         int firstQuestionColumnIndex = Collections.min(columnIndexToQuestionId.keySet());
-        Map<String, Integer> metadataColumnHeaderIndex = calculateMetadataColumnIndex(firstQuestionColumnIndex, false);
+        Map<String, Integer> metadataColumnHeaderIndex = calculateMetadataColumnIndex(firstQuestionColumnIndex, true);
 
         int row = 1;
         while (true) {
             InstanceData instanceData = parseInstance(sheet, row, metadataColumnHeaderIndex,
                     firstQuestionColumnIndex, questionIdToQuestionDto, columnIndexToQuestionId,
-                    optionNodes);
+                    optionNodes, true);
 
             if (instanceData == null) {
                 break;
@@ -359,24 +359,24 @@ public class RawDataSpreadsheetImporter implements DataImporter {
      * @param firstQuestionColumnIndex
      * @return
      */
-    private static Map<String, Integer> calculateMetadataColumnIndex(int firstQuestionColumnIndex, boolean repSheet) {
+    private static Map<String, Integer> calculateMetadataColumnIndex(int firstQuestionColumnIndex, boolean singleOrRepSheet) {
         Map<String, Integer> metadataColumnIndex = new HashMap<>();
 
         int currentColumnIndex = -1;
 
         metadataColumnIndex.put(DATAPOINT_IDENTIFIER_COLUMN_KEY, ++currentColumnIndex);
 
-        if (hasApprovalColumn(firstQuestionColumnIndex, repSheet)) {
+        if (hasApprovalColumn(firstQuestionColumnIndex, singleOrRepSheet)) {
             metadataColumnIndex.put(DATAPOINT_APPROVAL_COLUMN_KEY, ++currentColumnIndex);
         }
 
-        if (hasRepeatIterationColumn(firstQuestionColumnIndex, repSheet)) {
+        if (hasRepeatIterationColumn(firstQuestionColumnIndex, singleOrRepSheet)) {
             metadataColumnIndex.put(REPEAT_COLUMN_KEY, ++currentColumnIndex);
         }
 
         metadataColumnIndex.put(DATAPOINT_NAME_COLUMN_KEY, ++currentColumnIndex);
 
-        if (hasDeviceIdentifierColumn(firstQuestionColumnIndex, repSheet)) {
+        if (hasDeviceIdentifierColumn(firstQuestionColumnIndex, singleOrRepSheet)) {
             metadataColumnIndex.put(DEVICE_IDENTIFIER_COLUMN_KEY, ++currentColumnIndex);
         }
         metadataColumnIndex.put(SURVEY_INSTANCE_COLUMN_KEY, ++currentColumnIndex);
@@ -414,7 +414,6 @@ public class RawDataSpreadsheetImporter implements DataImporter {
             Sheet repSheet,
             int currentRowIndex,
             Map<String, Integer> metadataColumnHeaderIndex2,
-            int firstQuestionColumnIndex2,
             Map<Long, QuestionDto> questionIdToQuestionDto,
             Map<Integer, Long> columnIndexToQuestionId,
             Map<Long, List<QuestionOptionDto>> optionNodes,
@@ -514,7 +513,8 @@ public class RawDataSpreadsheetImporter implements DataImporter {
             int firstQuestionColumnIndex,
             Map<Long, QuestionDto> questionIdToQuestionDto,
             Map<Integer, Long> columnIndexToQuestionId,
-            Map<Long, List<QuestionOptionDto>> optionNodes) {
+            Map<Long, List<QuestionOptionDto>> optionNodes,
+            boolean singleOrRepSheet) {
 
         // Data sheet layout
         // If cell [0,0] is "Metadata"
@@ -547,7 +547,7 @@ public class RawDataSpreadsheetImporter implements DataImporter {
                 metadataColumnHeaderIndex, DATAPOINT_NAME_COLUMN_KEY);
 
         String deviceIdentifier = "";
-        if (hasDeviceIdentifierColumn(firstQuestionColumnIndex, false)) {
+        if (hasDeviceIdentifierColumn(firstQuestionColumnIndex, singleOrRepSheet)) {
             deviceIdentifier = getMetadataCellContent(baseRow, metadataColumnHeaderIndex,
                     DEVICE_IDENTIFIER_COLUMN_KEY);
         }
@@ -565,7 +565,7 @@ public class RawDataSpreadsheetImporter implements DataImporter {
         int repeatIterationColumnIndex = -1;
 
         // Count the maximum number of iterations for this instance
-        if (hasRepeatIterationColumn(firstQuestionColumnIndex, false)) {
+        if (hasRepeatIterationColumn(firstQuestionColumnIndex, singleOrRepSheet)) {
             repeatIterationColumnIndex = metadataColumnHeaderIndex.get(REPEAT_COLUMN_KEY);//unsafe assignment
             while (true) {
                 Row row = sheet.getRow(startRow + iterations);
@@ -595,7 +595,7 @@ public class RawDataSpreadsheetImporter implements DataImporter {
                 Row iterationRow = sheet.getRow(startRow + iter);
 
                 long iteration = 1;
-                if (hasRepeatIterationColumn(firstQuestionColumnIndex, false)) {
+                if (hasRepeatIterationColumn(firstQuestionColumnIndex, singleOrRepSheet)) {
                     Cell cell = iterationRow.getCell(repeatIterationColumnIndex);
                     if (cell != null) {
                         iteration = (long) iterationRow.getCell(repeatIterationColumnIndex)
@@ -635,6 +635,8 @@ public class RawDataSpreadsheetImporter implements DataImporter {
      * @param questionDto
      * @param iteration
      * @param optionNodes
+     * 
+     * TODO: nothing prevents getting >1 iteration for a question that is NOT in an a RQG
      */
     private void getIterationResponse(Row iterationRow,
             int columnIndex,
@@ -659,7 +661,9 @@ public class RawDataSpreadsheetImporter implements DataImporter {
                             .getCell(columnIndex + 2));
                     String geoCode = ExportImportUtils.parseCellAsString(iterationRow
                             .getCell(columnIndex + 3));
-                    val = latitude + "|" + longitude + "|" + elevation + "|" + geoCode;
+                    if (latitude != "" && longitude != "") { //We want both else ignore
+                        val = latitude + "|" + longitude + "|" + elevation + "|" + geoCode;
+                    }
                     break;
                 case CASCADE:
                     // Two different possible formats:
@@ -1011,13 +1015,22 @@ public class RawDataSpreadsheetImporter implements DataImporter {
                 urlString, shouldSign, key);
     }
 
+    /* 
+     * validate
+     * Called from Clojure code before executeImport()
+     */
     @Override
     public Map<Integer, String> validate(File file) {
         Map<Integer, String> errorMap = new HashMap<Integer, String>();
 
         try {
-            Sheet sheet = getWorkbook(file).getSheetAt(0);
-            Row headerRow = sheet.getRow(0);
+            Sheet sheet = getDataSheet(file);
+            
+            //Find out if this is a 2017-style report w group headers and rqg's on separate sheets
+            boolean splitSheets = safeCellCompare(sheet, 0, 0, METADATA_HEADER);
+            int headerRowIndex = splitSheets ? 1 : 0;
+
+            Row headerRow = sheet.getRow(headerRowIndex);
             boolean firstQuestionFound = false;
             int firstQuestionColumnIndex = 0;
 
@@ -1053,12 +1066,15 @@ public class RawDataSpreadsheetImporter implements DataImporter {
                 errorMap.put(-1, "A question could not be found");
             }
 
-            if (firstQuestionFound && hasRepeatIterationColumn(firstQuestionColumnIndex, false)) {
+            //verify that the repeat column is all number cells
+            if (firstQuestionFound && hasRepeatIterationColumn(firstQuestionColumnIndex, !splitSheets)) {
                 Iterator<Row> iter = sheet.iterator();
                 iter.next(); // Skip the header row.
-
+                if (splitSheets) { // just in case we change surrounding logic
+                    iter.next(); // Skip the second header row.
+                }
                 int repeatIterationColumnIndex = -1;
-                if (hasApprovalColumn(firstQuestionColumnIndex, false)) {
+                if (hasApprovalColumn(firstQuestionColumnIndex, !splitSheets)) {
                     repeatIterationColumnIndex = 2;
                 } else {
                     repeatIterationColumnIndex = 1;
@@ -1169,8 +1185,8 @@ public class RawDataSpreadsheetImporter implements DataImporter {
         return false;
     }
 
-    //For testing and debugging
-    //executeImport() is called from Clojure code in live deployment
+    //This main() method is only for testing and debugging.
+    //executeImport() is called from Clojure code in live deployment.
     public static void main(String[] args) throws Exception {
         if (args.length != 4) {
             log.error("Error.\nUsage:\n\tjava org.waterforpeople.mapping.dataexport.RawDataSpreadsheetImporter <file> <serverBase> <surveyId> <apiKey>");
@@ -1183,6 +1199,9 @@ public class RawDataSpreadsheetImporter implements DataImporter {
         configMap.put(SURVEY_CONFIG_KEY, args[2].trim());
         configMap.put("apiKey", args[3].trim());
 
-        r.executeImport(file, serverBaseArg, configMap);
+        Map<Integer, String> validationErrors = r.validate(file);
+        if (validationErrors.isEmpty()) {
+            r.executeImport(file, serverBaseArg, configMap);
+        }
     }
 }
