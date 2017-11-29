@@ -1,17 +1,19 @@
 # Akvo Flow Release Notes
 ----
 # 1.9.25 Yetanother Yak
-Date: 23 November 2017
+Date: 29 November 2017
 
 ## New and noteworthy
 * **Reports export** - Improve the user interface for reports export [#2282]. Split repeatable question groups into separate sheets of exported reports [#2278]. Remove language selection when exporting reports [#2286]
 * **Code refactor** - Refactored the code that loads maps to be more generic regardless of the map type set [#2144]
+* **Data cleaning** - Simplified data cleaning user interface to match export changes[#2300]
 
 ## Resolved issues
 * **User interface improvement** - Remove link to old support documentation in form preview [#2258]
 * **Data privacy** - Removed phone number from devices list display [#2299]
 * **Legacy code cleanup** - Remove unused code associated with old survey group UI [#2303]
 * **Data cleaning** - Update the datapoint geolocation based on updated responses [#1842]
+* **Data import** - New data can be imported using the old raw data report files [#2295]
 
 # 1.9.24 Wanted Wolverine
 Date: 13 October 2017
