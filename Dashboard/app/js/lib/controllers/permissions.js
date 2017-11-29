@@ -263,7 +263,6 @@ FLOW.permControl = Ember.Controller.create({
 
 
 FLOW.dialogControl = Ember.Object.create({
-  delSG: "delSG",
   delS: "delS",
   delQG: "delQG",
   delQ: "delQ",
@@ -275,7 +274,6 @@ FLOW.dialogControl = Ember.Object.create({
   delSI2: "delSI2",
   delSL: "delSL",
   delCR: "delCR",
-  makeMonitor: "makeMonitor",
   delForm: "delForm",
   showDialog: false,
   message: null,
@@ -292,12 +290,6 @@ FLOW.dialogControl = Ember.Object.create({
     this.set('showCANCEL', true);
 
     switch (this.get('activeAction')) {
-    case "delSG":
-      this.set('header', Ember.String.loc('_sg_delete_header'));
-      this.set('message', Ember.String.loc('_this_cant_be_undo'));
-      this.set('showDialog', true);
-      break;
-
     case "delS":
       this.set('header', Ember.String.loc('_s_delete_header'));
       this.set('message', Ember.String.loc('_this_cant_be_undo'));
@@ -348,7 +340,6 @@ FLOW.dialogControl = Ember.Object.create({
 
     case "delSI2":
       this.set('header', Ember.String.loc('_delete_record_header'));
-      this.set('message', Ember.String.loc('_are_you_sure_delete_this_data_record'));
       this.set('showDialog', true);
       break;
 
@@ -357,12 +348,6 @@ FLOW.dialogControl = Ember.Object.create({
         this.set('message', Ember.String.loc('_are_you_sure_delete_this_data_point'));
         this.set('showDialog', true);
         break;
-
-    case "makeMonitor":
-    	this.set('header', Ember.String.loc('_make_monitor_group_header'));
-        this.set('message', Ember.String.loc('_make_monitor_group_text'));
-        this.set('showDialog', true);
-      break;
 
     case "delForm":
       this.set('header', "Delete form");
@@ -387,10 +372,6 @@ FLOW.dialogControl = Ember.Object.create({
     this.set('showDialog', false);
     var view = this.get('activeView');
     switch (this.get('activeAction')) {
-    case "delSG":
-      view.deleteSurveyGroup.apply(view, arguments);
-      break;
-
     case "delS":
       view.deleteSurvey.apply(view, arguments);
       break;
@@ -438,11 +419,6 @@ FLOW.dialogControl = Ember.Object.create({
         this.set('showDialog', false);
         view.deleteSL.apply(view, arguments);
         break;
-
-    case "makeMonitor":
-      this.set('showDialog', false);
-      view.makeMonitorGroup.apply(view, arguments);
-      break;
 
     case "delForm":
       this.set('showDialog', false);

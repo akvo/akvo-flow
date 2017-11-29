@@ -520,8 +520,6 @@ FLOW.projectControl = Ember.ArrayController.create({
 
     FLOW.store.commit();
 
-    this.set('showCopySurveyDialogBool', false);
-
     FLOW.dialogControl.set('activeAction', "ignore");
     FLOW.dialogControl.set('header', Ember.String.loc('_copying_survey'));
     FLOW.dialogControl.set('message', Ember.String.loc('_copying_published_text_'));

@@ -6,15 +6,26 @@ FLOW.ReportLoader = Ember.Object.create({
   requestInterval: 3000,
 
   payloads: {
-    RAW_DATA: {
+	DATA_CLEANING: {
+	  surveyId: '75201',
+	  exportType: 'DATA_CLEANING',
+	  opts: {
+		exportMode: 'DATA_CLEANING',
+		lastCollection: 'false',
+	  }
+	},
+	DATA_ANALYSIS: {
+	  surveyId: '75201',
+	  exportType: 'DATA_ANALYSIS',
+	  opts: {
+		exportMode: 'DATA_ANALYSIS',
+	  }
+	},
+    COMPREHENSIVE: {
       surveyId: '75201',
-      exportType: 'RAW_DATA',
+      exportType: 'COMPREHENSIVE',
       opts: {
-        locale: 'en',
-        exportMode: 'RAW_DATA',
-        generateTabFormat: 'false',
-        lastCollection: 'false',
-        useQuestionId: 'false'
+        exportMode: 'COMPREHENSIVE',
       }
     },
     GEOSHAPE: {
@@ -22,15 +33,6 @@ FLOW.ReportLoader = Ember.Object.create({
       exportType: 'GEOSHAPE',
       opts: {
         questionId: '12345'
-      }
-    },
-    GRAPHICAL_SURVEY_SUMMARY: {
-      surveyId: '75201',
-      exportType: 'GRAPHICAL_SURVEY_SUMMARY',
-      opts: {
-        locale: 'en',
-        performRollup: 'false',
-        nocharts: 'true'
       }
     },
     SURVEY_FORM: {
@@ -64,12 +66,8 @@ FLOW.ReportLoader = Ember.Object.create({
       });
     }
 
-    if (criteria.opts.locale && FLOW.reportLanguageControl.get('selectedLanguage')) {
-      criteria.opts.locale = FLOW.reportLanguageControl.get('selectedLanguage').get('value');
-    }
+    criteria.opts.lastCollection = '' + (exportType === 'DATA_CLEANING' && FLOW.selectedControl.get('selectedSurveyGroup').get('monitoringGroup') && !!FLOW.editControl.lastCollection);
 
-    criteria.opts.lastCollection = '' + (exportType === 'RAW_DATA' && FLOW.selectedControl.get('selectedSurveyGroup').get('monitoringGroup') && !!FLOW.editControl.lastCollection);
-    criteria.opts.useQuestionId = '' + !!FLOW.editControl.useQuestionId;
     var fromDate = FLOW.dateControl.get('fromDate');
     if (fromDate == null) {
       delete criteria.opts.from;
@@ -90,6 +88,21 @@ FLOW.ReportLoader = Ember.Object.create({
     this.requestReport();
   },
 
+  requestReport: function () {
+	this.set('processing', true);
+	$.ajax({
+	  url: FLOW.Env.flowServices + '/generate',
+	  data: {
+		criteria: JSON.stringify(this.get('criteria'))
+	  },
+	  jsonpCallback: 'FLOW.ReportLoader.handleResponse',
+	  dataType: 'jsonp',
+	  timeout: this.timeout
+	});
+
+	Ember.run.later(this, this.handleError, this.timeout);
+  },
+
   handleResponse: function (resp) {
     if (!resp || resp.status !== 'OK') {
       FLOW.savingMessageControl.numLoadingChange(-1);
@@ -105,21 +118,6 @@ FLOW.ReportLoader = Ember.Object.create({
       this.set('criteria', null);
       $('#downloader').attr('src', FLOW.Env.flowServices + '/report/' + resp.file);
     }
-  },
-
-  requestReport: function () {
-    this.set('processing', true);
-    $.ajax({
-      url: FLOW.Env.flowServices + '/generate',
-      data: {
-        criteria: JSON.stringify(this.get('criteria'))
-      },
-      jsonpCallback: 'FLOW.ReportLoader.handleResponse',
-      dataType: 'jsonp',
-      timeout: this.timeout
-    });
-
-    Ember.run.later(this, this.handleError, this.timeout);
   },
 
   handleError: function () {
@@ -191,13 +189,20 @@ FLOW.ExportReportsAppletView = FLOW.View.extend({
     return FLOW.Env.showMonitoringFeature && FLOW.selectedControl.selectedSurveyGroup && FLOW.selectedControl.selectedSurveyGroup.get('monitoringGroup');
   }.property('FLOW.selectedControl.selectedSurveyGroup'),
 
-  showRawDataReport: function () {
-	var sId = this.get('selectedSurvey');
-    if (!sId) {
-      this.showWarning();
-      return;
-    }
-    FLOW.ReportLoader.load('RAW_DATA', sId);
+  showDataCleaningReport: function () {
+	var opts = {}, sId = this.get('selectedSurvey');
+	FLOW.ReportLoader.load('DATA_CLEANING', sId, opts);
+  },
+
+  showDataAnalysisReport: function () {
+	var opts = {}, sId = this.get('selectedSurvey');
+    FLOW.ReportLoader.load('DATA_ANALYSIS', sId, opts);
+  },
+
+  showComprehensiveReport: function () {
+    var opts = {}, sId = this.get('selectedSurvey');
+
+    FLOW.ReportLoader.load('COMPREHENSIVE', sId, opts);
   },
 
   showGeoshapeReport: function () {
@@ -211,20 +216,6 @@ FLOW.ExportReportsAppletView = FLOW.View.extend({
       return;
     }
     FLOW.ReportLoader.load('GEOSHAPE', sId, {"questionId": qId});
-  },
-
-  toggleShowAdvancedSettings: function() {
-    this.set('showAdvancedSettings', !this.get('showAdvancedSettings'));
-  },
-
-  showComprehensiveReport: function () {
-    var opts = {}, sId = this.get('selectedSurvey');
-    this.set('showComprehensiveDialog', false);
-
-    opts.performRollup = '' + FLOW.editControl.summaryPerGeoArea;
-    opts.nocharts = '' + FLOW.editControl.omitCharts;
-
-    FLOW.ReportLoader.load('GRAPHICAL_SURVEY_SUMMARY', sId, opts);
   },
 
   showSurveyForm: function () {

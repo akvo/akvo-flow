@@ -325,6 +325,12 @@ public class SurveySummaryExporter extends AbstractDataExporter {
                         if (json.has("keyId")) {
                             dto.setKeyId(json.getLong("keyId"));
                         }
+                        if (json.has("repeatable")) {
+                            dto.setRepeatable(json.getBoolean("repeatable"));
+                        }
+                        if (json.has("order")) {
+                            dto.setOrder(json.getInt("order"));
+                        }
                         dtoList.add(dto);
                     } catch (Exception e) {
                         log.error("Error in json parsing: " + e.getMessage(), e);

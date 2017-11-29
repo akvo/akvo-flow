@@ -214,10 +214,13 @@ public class RawDataRestServlet extends AbstractRestApiServlet {
             qasDao.delete(deletedAnswers);
 
             if (!isMonitoringForm && !isNewInstance) {
-                // Update datapoint name for this locale
+                // Update datapoint name and location for this locale
                 SurveyedLocale sl = slDao.getById(instance.getSurveyedLocaleId());
                 sl.assembleDisplayName(
                         qDao.listDisplayNameQuestionsBySurveyId(s.getKey().getId()), updatedAnswers);
+
+                updateDataPointLocation(sl, updatedAnswers);
+
                 slDao.save(sl);
             }
 
@@ -416,6 +419,15 @@ public class RawDataRestServlet extends AbstractRestApiServlet {
 
         }
         return null;
+    }
+
+    private void updateDataPointLocation(SurveyedLocale dataPoint,
+            List<QuestionAnswerStore> updatedAnswers) {
+        for (QuestionAnswerStore answer : updatedAnswers) {
+            if (Type.GEO.toString().equals(answer.getType())) {
+                dataPoint.setGeoLocation(answer.getValue());
+            }
+        }
     }
 
     /**

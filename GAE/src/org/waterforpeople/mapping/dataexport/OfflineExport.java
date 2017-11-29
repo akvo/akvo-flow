@@ -58,7 +58,7 @@ public class OfflineExport extends GraphicalSurveySummaryExporter {
     @SuppressWarnings("unchecked")
     public void export(Map<String, String> criteria, File outputFile,
             String serverBase, Map<String, String> options) {
-        try {
+/*        try {
             boolean useQuestionId = "true".equals(criteria.get("useQuestionId"));
             SurveyBulkUploader up = new SurveyBulkUploader();
             criteria.put(SurveyBulkUploader.MODE_KEY,
@@ -129,7 +129,7 @@ public class OfflineExport extends GraphicalSurveySummaryExporter {
             }
         } catch (Exception e) {
             e.printStackTrace();
-        }
+        } */
     }
 
     private File getSelectedInputDir() {

@@ -1,4 +1,4 @@
-/*  Copyright (C) 2015 Stichting Akvo (Akvo Foundation)
+/*  Copyright (C) 2015, 2017 Stichting Akvo (Akvo Foundation)
  *
  *  This file is part of Akvo FLOW.
  *
@@ -63,5 +63,39 @@ public class InstanceData {
         this.responseMap = sortedResponseMap;
         this.surveyInstanceDto = surveyInstanceDto;
         this.maxIterationsCount = maxIter;
+    }
+    
+    /**
+     * Add responses for questions that don't yet have any.
+     * Intended for RQG sheets.
+     * @param additionalResponsesMap
+     * @return true if they were inserted, false if any responses overlap others
+     */
+    public boolean addResponses(Map<Long, Map<Long, String>> additionalResponsesMap) {
+        for (Entry<Long, Map<Long, String>> entry : additionalResponsesMap.entrySet()) {
+            Map<Long, String> iterationsMap = entry.getValue();
+            SortedMap<Long, String> sortedMap = new TreeMap<>();
+            Long maxIteration = Collections.max(iterationsMap.keySet());
+            maxIterationsCount = Math.max(maxIterationsCount, maxIteration);
+            for (long i = 0; i <= maxIteration; i++) {
+                String value = iterationsMap.get(i);
+                sortedMap.put(i, value == null ? "" : value);
+            }
+            //Responses for a question should only be on ONE sheet
+            if (responseMap.containsKey(entry.getKey())) {
+                return false;
+            }
+            responseMap.put(entry.getKey(), sortedMap);
+        }
+        return true;  
+    }
+    
+    @Override
+    public String toString() {
+        if (surveyInstanceDto != null) {
+            return surveyInstanceDto.getKeyId() + " '" + surveyInstanceDto.getSurveyedLocaleIdentifier() + "'";
+        } else {
+            return "InstanceData with max iteration index " + Long.toString(maxIterationsCount);
+        }
     }
 }
