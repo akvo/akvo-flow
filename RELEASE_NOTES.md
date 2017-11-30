@@ -1,5 +1,11 @@
 # Akvo Flow Release Notes
 ----
+# 1.9.25.1 Yetanother Yak Hotfix 1
+Date: 30 November 2017
+
+## Resolved issues
+* **Make exports run on live server** - Use Java 7 sorting. [#2370]
+
 # 1.9.25 Yetanother Yak
 Date: 29 November 2017
 
