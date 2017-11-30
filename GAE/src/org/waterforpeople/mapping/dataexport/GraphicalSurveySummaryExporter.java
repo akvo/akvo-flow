@@ -633,7 +633,7 @@ public class GraphicalSurveySummaryExporter extends SurveySummaryExporter {
 
     private void sortDataOnCollectionDate(final List<InstanceData> allData) {
         log.debug("Starting data sort");
-        allData.sort(new Comparator<InstanceData>() {
+        Collections.sort(allData, new Comparator<InstanceData>() {
             @Override
             public int compare(InstanceData o1, InstanceData o2) {
                 // by submission date
