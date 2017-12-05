@@ -292,12 +292,6 @@ public class SurveyalRestServlet extends AbstractRestApiServlet {
             // TODO: move this to survey instance processing logic
             // if we have a geoPlace, set it on the instance
             surveyInstance.setCountryCode(geoPlace.getCountryCode());
-            surveyInstance.setSublevel1(geoPlace.getSub1());
-            surveyInstance.setSublevel2(geoPlace.getSub2());
-            surveyInstance.setSublevel3(geoPlace.getSub3());
-            surveyInstance.setSublevel4(geoPlace.getSub4());
-            surveyInstance.setSublevel5(geoPlace.getSub5());
-            surveyInstance.setSublevel6(geoPlace.getSub6());
         }
 
         // add surveyInstanceId to list of contributed surveyInstances
@@ -416,12 +410,6 @@ public class SurveyalRestServlet extends AbstractRestApiServlet {
     private void setGeoData(GeoPlace geoPlace, SurveyedLocale l) {
         if (geoPlace != null) {
             l.setCountryCode(geoPlace.getCountryCode());
-            l.setSublevel1(geoPlace.getSub1());
-            l.setSublevel2(geoPlace.getSub2());
-            l.setSublevel3(geoPlace.getSub3());
-            l.setSublevel4(geoPlace.getSub4());
-            l.setSublevel5(geoPlace.getSub5());
-            l.setSublevel6(geoPlace.getSub6());
         }
     }
 
@@ -533,12 +521,6 @@ public class SurveyalRestServlet extends AbstractRestApiServlet {
                 }
                 // TODO: resolve score
                 val.setOrganization(l.getOrganization());
-                val.setSublevel1(l.getSublevel1());
-                val.setSublevel2(l.getSublevel2());
-                val.setSublevel3(l.getSublevel3());
-                val.setSublevel4(l.getSublevel4());
-                val.setSublevel5(l.getSublevel5());
-                val.setSublevel6(l.getSublevel6());
                 val.setSurveyInstanceId(ans.getSurveyInstanceId());
                 val.setSystemIdentifier(l.getSystemIdentifier());
 
