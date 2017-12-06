@@ -203,7 +203,10 @@ public class GraphicalSurveySummaryExporter extends SurveySummaryExporter {
         try {
             Map<QuestionGroupDto, List<QuestionDto>> questionMap = 
                     loadAllQuestions(surveyId, performGeoRollup, serverBaseUrl, apiKey);
-
+            //minimal data plus cascade level names
+            if (useQuestionId) { //splitting options into columns
+                loadQuestionOptions(surveyId, serverBaseUrl, questionMap, apiKey);
+            }
             if (questionMap.size() > 0) {
                 //questionMap is now stable; make the id-to-dto map
                 for (List<QuestionDto> qList : questionMap.values()) {
@@ -1843,8 +1846,8 @@ public class GraphicalSurveySummaryExporter extends SurveySummaryExporter {
         Map<String, String> criteria = new HashMap<String, String>();
         Map<String, String> options = new HashMap<String, String>();
 //        options.put(TYPE_OPT, DATA_CLEANING_TYPE);
-//        options.put(TYPE_OPT, DATA_ANALYSIS_TYPE);
-        options.put(TYPE_OPT, COMPREHENSIVE_TYPE);
+        options.put(TYPE_OPT, DATA_ANALYSIS_TYPE);
+//        options.put(TYPE_OPT, COMPREHENSIVE_TYPE);
         options.put(LAST_COLLECTION_OPT, "false");
         options.put(EMAIL_OPT, "email@example.com");
         options.put(FROM_OPT, null);
