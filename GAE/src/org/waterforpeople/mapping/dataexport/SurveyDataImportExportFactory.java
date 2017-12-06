@@ -59,7 +59,7 @@ public class SurveyDataImportExportFactory implements DataImportExportFactory {
             try {
                 return exporterClass.newInstance();
             } catch (Exception e) {
-                throw new RuntimeException("Could not initilaize constructor");
+                throw new RuntimeException("Could not initialize constructor");
             }
         } else {
             throw new RuntimeException("Unknown Exporter Type: " + type);
@@ -73,7 +73,7 @@ public class SurveyDataImportExportFactory implements DataImportExportFactory {
             try {
                 return importerClass.newInstance();
             } catch (Exception e) {
-                throw new RuntimeException("Could not initilaize constructor");
+                throw new RuntimeException("Could not initialize constructor");
             }
         } else {
             throw new RuntimeException("Unknown Importer Type: " + type);
