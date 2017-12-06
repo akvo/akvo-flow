@@ -32,6 +32,24 @@ FLOW.inspectDataTableView = FLOW.View.extend({
     FLOW.locationControl.set('selectedLevel1', null);
     FLOW.locationControl.set('selectedLevel2', null);
   },
+  
+  //what cleaning teh view after it z removed.. when someone navigates away.
+  //like ondestroy for th router.
+  willDestroyElement: function(){
+      console.log('hey my view is destroyed')
+      //iam going to reset all these values n see the response.
+      this.set('surveyInstanceId',null),
+      this.set('surveyId',null),
+      this.set('deviceId',null),
+      this.set('since',null),
+      this.set('beginDate',null),
+      this.set('endDate',null),
+      this.set('submitterName',null),
+      this.set('selectedCountryCode',null),
+      this.set('selectedLevel1',null),
+      this.set('selectedLevel2',null);
+        
+  },
 
   // do a new query
   doFindSurveyInstances: function () {
@@ -42,6 +60,7 @@ FLOW.inspectDataTableView = FLOW.View.extend({
   },
 
   doInstanceQuery: function () {
+    console.log('finding data records from inspect-data-table');
     this.set('beginDate', Date.parse(FLOW.dateControl.get('fromDate')));
     // we add 24 hours to the date, in order to make the date search inclusive.
     dayInMilliseconds = 24 * 60 * 60 * 1000;
@@ -86,6 +105,7 @@ FLOW.inspectDataTableView = FLOW.View.extend({
     }
 
     FLOW.surveyInstanceControl.doInstanceQuery(
+      //console.log('finding data records from inspect-data-table');
       this.get('surveyInstanceId'),
       this.get('surveyId'),
       this.get('deviceId'),

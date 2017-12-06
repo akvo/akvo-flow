@@ -219,6 +219,9 @@ FLOW.surveyInstanceControl = Ember.ArrayController.create({
   },
 
   doInstanceQuery: function (surveyInstanceId, surveyId, deviceId, since, beginDate, endDate, submitterName, countryCode, level1, level2) {
+    //i want to see how many times this function runs..
+    //if twice.. that might be the problem.
+    console.log('Finding data records happening from controller');
     this.set('content', FLOW.store.findQuery(FLOW.SurveyInstance, {
       'surveyInstanceId': surveyInstanceId,
       'surveyId': surveyId,
