@@ -38,7 +38,7 @@ FLOW.inspectDataTableView = FLOW.View.extend({
   willDestroyElement: function(){
       console.log('hey my view is destroyed')
       //iam going to reset all these values n see the response.
-      this.set('surveyInstanceId',null),
+      /*this.set('surveyInstanceId',null),
       this.set('surveyId',null),
       this.set('deviceId',null),
       this.set('since',null),
@@ -47,7 +47,10 @@ FLOW.inspectDataTableView = FLOW.View.extend({
       this.set('submitterName',null),
       this.set('selectedCountryCode',null),
       this.set('selectedLevel1',null),
-      this.set('selectedLevel2',null);
+      this.set('selectedLevel2',null);*/
+      //it is better to call this cleaningRecords function from data-controller.
+      FLOW.surveyInstanceControl.depopulateRecords();
+      
         
   },
 

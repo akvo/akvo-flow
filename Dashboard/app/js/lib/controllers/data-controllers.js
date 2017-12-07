@@ -271,7 +271,15 @@ FLOW.surveyInstanceControl = Ember.ArrayController.create({
   getSortInfo: function () {
     this.set('sortProperties', FLOW.tableColumnControl.get('sortProperties'));
     this.set('sortAscending', FLOW.tableColumnControl.get('sortAscending'));
-  }
+  },
+  //in charge of cleaning the data records when some navigates way.
+   depopulateRecords: function(){
+       console.log('clear the records here')
+        //this.set('content', null) //clears the memory stores for the data records 
+        //console.log(this.FLOW.store) //it z null.
+        //console.log(this.content) //some nice try... better 
+        console.log(this.get('currentContents'))
+   }
 });
 
 FLOW.SurveyedLocaleController = Ember.ArrayController.extend({
