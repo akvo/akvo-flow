@@ -149,8 +149,18 @@ public class RawDataSpreadsheetImporter implements DataImporter {
 
             List<InstanceData> instanceDataList = new ArrayList<>();
             if (splitSheets) {
-                instanceDataList = parseSplitSheets(wb.getSheetAt(0), sheetMap, questionIdToQuestionDto,
-                optionNodes, headerRowIndex);                
+                instanceDataList = parseSplitSheets(wb.getSheetAt(0),
+                        sheetMap,
+                        questionIdToQuestionDto,
+                        optionNodes,
+                        headerRowIndex);
+                //Strip link-identifiers from new data 
+                for (InstanceData instanceData : instanceDataList) {
+                    if (instanceData.surveyInstanceDto.getSurveyedLocaleIdentifier().matches(NEW_DATA_PATTERN)) {
+                        instanceData.surveyInstanceDto.setSurveyedLocaleIdentifier("");
+                        //TODO maybe clear out instance id too, just in case?
+                    }
+                }
             } else { //Legacy format
                 instanceDataList = parseSingleSheet(wb.getSheetAt(0), questionIdToQuestionDto,
                         optionNodes, sheetMap.get(wb.getSheetAt(0)));
@@ -424,7 +434,7 @@ public class RawDataSpreadsheetImporter implements DataImporter {
         //  the rest of row 0 is a group header. Question headers are on row 1
         //  and RQGs are on separate sheets.
         
-        // 0. SurveyedLocaleIdentifier - link to base sheet?
+        // 0. SurveyedLocaleIdentifier - link to base sheet
         // 1. Approval (if hasIterationColumn) - ignored duplicate
         // 2. Repeat
         // 3. SurveyedLocaleDisplayName - ignored duplicate
