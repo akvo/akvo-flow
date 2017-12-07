@@ -438,7 +438,7 @@ public class RawDataSpreadsheetImporter implements DataImporter {
         int identifierColumnIndex = metadataColumnHeaderIdx.get(DATAPOINT_IDENTIFIER_COLUMN_KEY);
         int repeatIterationColumnIndex = metadataColumnHeaderIdx.get(REPEAT_COLUMN_KEY);
 
-        String DataPointIdentifier = instanceData.surveyInstanceDto.getSurveyedLocaleIdentifier();
+        String dataPointIdentifier = instanceData.surveyInstanceDto.getSurveyedLocaleIdentifier();
         //Find first row matching this, or give up
         int rowIx = currentRowIndex;
         Row row;
@@ -446,7 +446,7 @@ public class RawDataSpreadsheetImporter implements DataImporter {
             row = repSheet.getRow(rowIx);
             if (row != null
                     && row.getCell(identifierColumnIndex) != null
-                    && row.getCell(identifierColumnIndex).getStringCellValue().equals(DataPointIdentifier)) { //found!
+                    && row.getCell(identifierColumnIndex).getStringCellValue().equals(dataPointIdentifier)) { //found!
                 break;
             } else {
                 if (isEmptyRow(row)) { // a row without any cells defined
@@ -464,7 +464,7 @@ public class RawDataSpreadsheetImporter implements DataImporter {
 
         while (row != null
                 && row.getCell(identifierColumnIndex) != null
-                && row.getCell(identifierColumnIndex).getStringCellValue().equals(DataPointIdentifier)
+                && row.getCell(identifierColumnIndex).getStringCellValue().equals(dataPointIdentifier)
                 && row.getCell(repeatIterationColumnIndex) != null
                 && row.getCell(repeatIterationColumnIndex).getCellType() == Cell.CELL_TYPE_NUMERIC) {
             Long rep = (long) row.getCell(repeatIterationColumnIndex).getNumericCellValue(); //might throw on huge number
