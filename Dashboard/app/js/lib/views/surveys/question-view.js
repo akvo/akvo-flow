@@ -143,11 +143,7 @@ FLOW.QuestionView = FLOW.View.extend({
   }.property('this.type'),
   
    amCaddisflyType: function(){
-       if (this.type) {
-          return this.type.get('value') == 'CADDISFLY'; //if it refuses  add that part of  this.content
-       } else {
-         return false;
-       }
+       return this.type && this.type.get('value') == 'CADDISFLY';
    }.property('this.type').cacheable(),
   
   showLocaleName: function () {
