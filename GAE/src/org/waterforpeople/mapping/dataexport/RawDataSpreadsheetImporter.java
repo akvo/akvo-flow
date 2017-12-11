@@ -85,7 +85,7 @@ public class RawDataSpreadsheetImporter implements DataImporter {
     public static final String DURATION_COLUMN_KEY = "surveyalTime";
     
     public static final String METADATA_HEADER = "Metadata";
-    public static final String NEW_DATA_PATTERN = "^new-\\d+"; // new- followed by one or more digits
+    public static final String NEW_DATA_PATTERN = "^[Nn]ew-\\d+"; // new- or New- followed by one or more digits
     
 
     /**
@@ -455,7 +455,7 @@ public class RawDataSpreadsheetImporter implements DataImporter {
         while (true) {
             row = repSheet.getRow(rowIx);
             if (row != null
-                    && row.getCell(identifierColumnIndex) != null
+                    && !isEmptyCell(row.getCell(identifierColumnIndex))
                     && row.getCell(identifierColumnIndex).getStringCellValue().equals(dataPointIdentifier)) { //found!
                 break;
             } else {
