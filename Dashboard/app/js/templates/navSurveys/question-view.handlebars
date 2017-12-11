@@ -62,7 +62,7 @@
   {{/if}}
 
     <!-- Question specific material -->
-{{#unless view.amNoOptionsType}}
+{{#if view.hasExtraSettings}}
 <div class="questionOption floats-in">
     {{#if view.amOptionType}}
       
@@ -151,7 +151,7 @@
       </ul>
     {{/if}}
 </div>
-{{/unless}}
+{{/if}}
 <!-- End of question specific material -->
 <div class="dependencyBlock">
     <label class="labelcheckbox">{{view Ember.Checkbox checkedBinding="view.dependentFlag"}}{{t _dependent}}

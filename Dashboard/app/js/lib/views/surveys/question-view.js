@@ -121,6 +121,18 @@ FLOW.QuestionView = FLOW.View.extend({
     }
   }.property('this.type').cacheable(),
 
+  hasExtraSettings: function(){
+    var val;
+    if (!Ember.none(this.type)) {
+      val = this.type.get('value');
+      if(val === 'PHOTO' || val === 'VIDEO' || val === 'DATE' || val === 'SIGNATURE'){
+        return false;
+      }else{
+        return true;
+      }
+    }
+  }.property('this.type').cacheable(),
+
   amGeoshapeType: function () {
     if (this.type) {
 	  return this.type.get('value') == 'GEOSHAPE';
