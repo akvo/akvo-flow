@@ -1202,6 +1202,14 @@ public class GraphicalSurveySummaryExporter extends SurveySummaryExporter {
     }
 
 
+    /**
+     * writes the raw data headers for one question group
+     * @param sheet
+     * @param group
+     * @param questions
+     * @param startOffset
+     * @return
+     */
     private int writeRawDataGroupHeaders(Sheet sheet, QuestionGroupDto group, List<QuestionDto> questions, final int startOffset) {
         int offset = startOffset;
         Row row = getRow(doGroupHeaders ? 1 : 0, sheet);
@@ -1210,6 +1218,7 @@ public class GraphicalSurveySummaryExporter extends SurveySummaryExporter {
             questionIdList.add(q.getKeyId().toString());
 
             String questionId = q.getQuestionId();
+            // Can we tag the column with the variable name?
             final boolean useQID = useQuestionId && questionId != null
                     && !questionId.equals("");
 
@@ -1381,13 +1390,13 @@ public class GraphicalSurveySummaryExporter extends SurveySummaryExporter {
     }
 
     private int addPhotoDataColumnHeader(QuestionDto q, Row row, int originalOffset, String questionId,
-            boolean useQuestionId, final boolean useQID) {
+            boolean analysisFormat, final boolean useVarName) {
         int offset = originalOffset;
         // Always a URL column
         String header = "";
-        if (useQID) {
+        if (useVarName) {
             header = questionId;
-        } else if (useQuestionId) {
+        } else if (analysisFormat) {
             header = q.getText().replaceAll("\n", "").trim();
         } else {
             header = q.getKeyId().toString()
@@ -1395,7 +1404,7 @@ public class GraphicalSurveySummaryExporter extends SurveySummaryExporter {
                     + q.getText().replaceAll("\n", "").trim();
         }
         createCell(row, offset++, header, headerStyle);
-        if (useQuestionId) {
+        if (analysisFormat) {
             // Media gets 3 extra columns: Latitude, Longitude and Accuracy
             String prefix = "--PHOTO--|";
             createCell(row, offset++,
@@ -1408,35 +1417,44 @@ public class GraphicalSurveySummaryExporter extends SurveySummaryExporter {
         return offset;
     }
 
-    private int addGeoDataColumnHeader(QuestionDto q, Row row, int originalOffset, String questionId,
-            boolean useQuestionId, final boolean useQID) {
+
+    
+    /**
+     * @param q
+     * @param row
+     * @param originalOffset
+     * @param varName
+     * @param analysisFormat
+     * @param useVarName
+     * @return the new offset
+     * 
+     */
+    private int addGeoDataColumnHeader(QuestionDto q, Row row, int originalOffset, String varName,
+            boolean analysisFormat, final boolean useVarName) {
         int offset = originalOffset;
-        if (useQuestionId) {
-            createCell(
-                    row,
-                    offset++,
-                    (useQID ? questionId + "_"
-                            : q.getText() + " - ")
-                            + LAT_LABEL,
-                    headerStyle);
+        if (analysisFormat) {
+            if (useVarName) {
+                createCell(row, offset++, varName + "_" + LAT_LABEL, headerStyle);
+                createCell(row, offset++, varName + "_" + LON_LABEL, headerStyle);
+                createCell(row, offset++, varName + "_" + ELEV_LABEL, headerStyle);
+                createCell(row, offset++, varName + "_" + CODE_LABEL.replaceAll("\\s", ""),
+                        headerStyle);
+            } else {
+                createCell(row, offset++, q.getText() + " - " + LAT_LABEL, headerStyle);
+                createCell(row, offset++, q.getText() + " - " + LON_LABEL, headerStyle);
+                createCell(row, offset++, q.getText() + " - " + ELEV_LABEL, headerStyle);
+                createCell(row, offset++, q.getText() + " - " + CODE_LABEL, headerStyle);
+            }
         } else {
-            createCell(row, offset++, q.getKeyId() + "|"
-                    + LAT_LABEL,
-                    headerStyle);
+            createCell(row, offset++, q.getKeyId() + "|" + LAT_LABEL, headerStyle);
+            createCell(row, offset++, "--GEOLON--|" + LON_LABEL, headerStyle);
+            createCell(row, offset++, "--GEOELE--|" + ELEV_LABEL, headerStyle);
+            createCell(row, offset++, "--GEOCODE--|" + CODE_LABEL, headerStyle);
         }
-        createCell(row, offset++, (useQID ? questionId
-                + "_" : "--GEOLON--|")
-                + LON_LABEL, headerStyle);
-        createCell(row, offset++, (useQID ? questionId
-                + "_" : "--GEOELE--|")
-                + ELEV_LABEL, headerStyle);
-        String codeLabel = CODE_LABEL;
-        createCell(row, offset++, useQID ? questionId + "_"
-                + codeLabel.replaceAll("\\s", "")
-                : "--GEOCODE--|" + codeLabel, headerStyle);
         return offset;
     }
 
+    
     /**
      * Writes the report as an XLS document
      */
