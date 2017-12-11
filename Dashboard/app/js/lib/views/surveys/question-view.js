@@ -36,7 +36,7 @@ FLOW.QuestionView = FLOW.View.extend({
   caddisflyResourceUuid: null,
 
   showCaddisflyTests: function () {
-      return FLOW.router.caddisflyResourceController.get("testsFileLoaded");// if this.view === 'cadisfly'
+      return FLOW.router.caddisflyResourceController.get("testsFileLoaded");
   }.property('FLOW.router.caddisflyResourceController.testsFileLoaded'),
 
   showMetaConfig: function () {
@@ -115,7 +115,7 @@ FLOW.QuestionView = FLOW.View.extend({
 
   amNoOptionsType: function () {
     var val;
-    if (!Ember.none(this.type)) { //recall Ember.none(null|undefined) will be true. 
+    if (!Ember.none(this.type)) { 
       val = this.type.get('value');
       return val === 'PHOTO' || val === 'VIDEO' || val === 'DATE' || val === 'SIGNATURE';
     }
