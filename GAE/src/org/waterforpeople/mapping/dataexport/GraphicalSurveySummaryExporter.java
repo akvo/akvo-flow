@@ -1236,7 +1236,7 @@ public class GraphicalSurveySummaryExporter extends SurveySummaryExporter {
                     String levelName = useQID ? questionId + "_"
                             + level.replaceAll(" ", "_")
                             : q.getText() + " - " + level;
-                    createCell(row, offset++, levelName, headerStyle);
+                    createHeaderCell(row, offset++, levelName);
                 }
             } else if (QuestionType.CADDISFLY == q.getType()) {
                 offset = addCaddisflyDataHeaderColumns(q, row, offset, questionId, useQID);
@@ -1252,7 +1252,7 @@ public class GraphicalSurveySummaryExporter extends SurveySummaryExporter {
                             + q.getText().replaceAll("\n", "").trim();
                 }
 
-                createCell(row, offset++, header, headerStyle);
+                createHeaderCell(row, offset++, header);
 
                 // check if we need to create columns for all options
                 //TODO cascade
@@ -1270,18 +1270,16 @@ public class GraphicalSurveySummaryExporter extends SurveySummaryExporter {
                                         && qo.getCode().length() > 0)
                                         ? qo.getCode() + ":"
                                         : "";
-                                createCell(row,
+                                createHeaderCell(row,
                                         offset++,
-                                        "--OPTION--|" + header + qo.getText(),
-                                        headerStyle);
+                                        "--OPTION--|" + header + qo.getText());
                             }
 
                             // add 'other' column if needed
                             if (q.getAllowOtherFlag()) {
-                                createCell(row,
+                                createHeaderCell(row,
                                         offset++,
-                                        "--OTHER--",
-                                        headerStyle);
+                                        "--OTHER--");
                             }
 
                             optionMap.put(q.getKeyId(), qoList);
@@ -1361,17 +1359,16 @@ public class GraphicalSurveySummaryExporter extends SurveySummaryExporter {
                 } else {
                     columnHeader = "--CADDISFLY--|" + columnHeaderSuffix;
                 }
-                createCell(row, offset++, columnHeader, headerStyle);
+                createHeaderCell(row, offset++, columnHeader);
             }
 
             if (cr.getHasImage()) {
-                createCell(
+                createHeaderCell(
                         row,
                         offset++,
                         "--CADDISFLY--|" + q.getText()
                                 + "--"
-                                + IMAGE_LABEL,
-                        headerStyle);
+                                + IMAGE_LABEL);
             }
 
             // store hasImage in hashmap
@@ -1403,16 +1400,13 @@ public class GraphicalSurveySummaryExporter extends SurveySummaryExporter {
                     + "|"
                     + q.getText().replaceAll("\n", "").trim();
         }
-        createCell(row, offset++, header, headerStyle);
+        createHeaderCell(row, offset++, header);
         if (analysisFormat) {
             // Media gets 3 extra columns: Latitude, Longitude and Accuracy
             String prefix = "--PHOTO--|";
-            createCell(row, offset++,
-                    prefix + LAT_LABEL, headerStyle);
-            createCell(row, offset++,
-                    prefix + LON_LABEL, headerStyle);
-            createCell(row, offset++,
-                    prefix + ACC_LABEL, headerStyle);
+            createHeaderCell(row, offset++, prefix + LAT_LABEL);
+            createHeaderCell(row, offset++, prefix + LON_LABEL);
+            createHeaderCell(row, offset++, prefix + ACC_LABEL);
         }
         return offset;
     }
@@ -1434,22 +1428,21 @@ public class GraphicalSurveySummaryExporter extends SurveySummaryExporter {
         int offset = originalOffset;
         if (analysisFormat) {
             if (useVarName) {
-                createCell(row, offset++, varName + "_" + LAT_LABEL, headerStyle);
-                createCell(row, offset++, varName + "_" + LON_LABEL, headerStyle);
-                createCell(row, offset++, varName + "_" + ELEV_LABEL, headerStyle);
-                createCell(row, offset++, varName + "_" + CODE_LABEL.replaceAll("\\s", ""),
-                        headerStyle);
+                createHeaderCell(row, offset++, varName + "_" + LAT_LABEL);
+                createHeaderCell(row, offset++, varName + "_" + LON_LABEL);
+                createHeaderCell(row, offset++, varName + "_" + ELEV_LABEL);
+                createHeaderCell(row, offset++, varName + "_" + CODE_LABEL.replaceAll("\\s", ""));
             } else {
-                createCell(row, offset++, q.getText() + " - " + LAT_LABEL, headerStyle);
-                createCell(row, offset++, q.getText() + " - " + LON_LABEL, headerStyle);
-                createCell(row, offset++, q.getText() + " - " + ELEV_LABEL, headerStyle);
-                createCell(row, offset++, q.getText() + " - " + CODE_LABEL, headerStyle);
+                createHeaderCell(row, offset++, q.getText() + " - " + LAT_LABEL);
+                createHeaderCell(row, offset++, q.getText() + " - " + LON_LABEL);
+                createHeaderCell(row, offset++, q.getText() + " - " + ELEV_LABEL);
+                createHeaderCell(row, offset++, q.getText() + " - " + CODE_LABEL);
             }
-        } else {
-            createCell(row, offset++, q.getKeyId() + "|" + LAT_LABEL, headerStyle);
-            createCell(row, offset++, "--GEOLON--|" + LON_LABEL, headerStyle);
-            createCell(row, offset++, "--GEOELE--|" + ELEV_LABEL, headerStyle);
-            createCell(row, offset++, "--GEOCODE--|" + CODE_LABEL, headerStyle);
+        } else { //Import currently relies on the --GEO headers
+            createHeaderCell(row, offset++, q.getKeyId() + "|" + LAT_LABEL);
+            createHeaderCell(row, offset++, "--GEOLON--|"      + LON_LABEL);
+            createHeaderCell(row, offset++, "--GEOELE--|"      + ELEV_LABEL);
+            createHeaderCell(row, offset++, "--GEOCODE--|"     + CODE_LABEL);
         }
         return offset;
     }
@@ -1686,6 +1679,10 @@ public class GraphicalSurveySummaryExporter extends SurveySummaryExporter {
      */
     protected Cell createCell(Row row, int col, String value) {
         return createCell(row, col, value, null, -1);
+    }
+
+    protected Cell createHeaderCell(Row row, int col, String value) {
+        return createCell(row, col, value, headerStyle, -1);
     }
 
     protected Cell createCell(Row row, int col, String value, CellStyle style) {
