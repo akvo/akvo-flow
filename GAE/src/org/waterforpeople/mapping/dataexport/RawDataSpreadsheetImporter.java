@@ -455,12 +455,12 @@ public class RawDataSpreadsheetImporter implements DataImporter {
         while (true) {
             row = repSheet.getRow(rowIx);
             if (row != null
-                    && !isEmptyCell(row.getCell(identifierColumnIndex))
+                    && row.getCell(identifierColumnIndex) != null
                     && row.getCell(identifierColumnIndex).getStringCellValue().equals(dataPointIdentifier)) { //found!
                 break;
             } else {
-                if (isEmptyRow(row)) { // a row without any cells defined
-                    rowIx = 1; //end of sheet; start over
+                if (rowIx > repSheet.getLastRowNum()) { //fell off the end
+                    rowIx = 1; //start over
                     }
                 rowIx++;
                 if (rowIx == currentRowIndex) { //back to where we started
