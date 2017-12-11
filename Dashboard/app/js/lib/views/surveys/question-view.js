@@ -113,14 +113,6 @@ FLOW.QuestionView = FLOW.View.extend({
 	}
   }.property('this.type').cacheable(),
 
-  amNoOptionsType: function () {
-    var val;
-    if (!Ember.none(this.type)) {
-      val = this.type.get('value');
-      return val === 'PHOTO' || val === 'VIDEO' || val === 'DATE' || val === 'SIGNATURE';
-    }
-  }.property('this.type').cacheable(),
-
   hasExtraSettings: function(){
     var val;
     if (!Ember.none(this.type)) {
