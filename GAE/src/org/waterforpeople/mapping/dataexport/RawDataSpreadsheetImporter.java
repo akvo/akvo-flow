@@ -461,11 +461,11 @@ public class RawDataSpreadsheetImporter implements DataImporter {
             } else {
                 if (rowIx > repSheet.getLastRowNum()) { //fell off the end
                     rowIx = 1; //start over
-                    }
-                rowIx++;
-                if (rowIx == currentRowIndex) { //back to where we started
-                    return rowIx; //not found; there were 0 iterations
                 }
+            }
+            rowIx++;
+            if (rowIx == currentRowIndex) { //back to where we started
+                return rowIx; //not found; there were 0 iterations
             }
         }
         //Found one row for the instance, read them all
