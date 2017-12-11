@@ -62,8 +62,10 @@
   {{/if}}
 
     <!-- Question specific material -->
+{{#unless view.amNoOptionsType}}
+<div class="questionOption floats-in">
     {{#if view.amOptionType}}
-      <div class="questionOption floats-in">
+      
       <h1 class="answerNbr">{{t _settings}}: </h1>
       <ul>
         <li><label class="labelcheckbox"> {{view Ember.Checkbox checkedBinding="view.allowMultipleFlag"}}{{t _allow_multiple}} </label></li>
@@ -75,25 +77,19 @@
     	  {{view FLOW.OptionListView contentBinding="FLOW.questionOptionsControl"}}
     	  <a {{action addOption target="FLOW.questionOptionsControl"}} class="optionAdd">{{t _add_option}}</a>
       </div>
-      </div>
     {{/if}}
     {{#if view.amFreeTextType}}
-    <div class="questionOption floats-in">
     <h1 class="answerNbr">{{t _settings}}:</h1>
     <label class="labelcheckbox"> {{view Ember.Checkbox checkedBinding="view.requireDoubleEntry"}}{{t _require_double_entry}} {{tooltip _require_double_entry_tooltip}}</label>
-    </div>
     {{/if}}
     {{#if view.amBarcodeType}}
-    <div class="questionOption floats-in">
     <h1 class="answerNbr">{{t _settings}}: </h1>
       <ul>
         <li><label class="labelcheckbox"> {{view Ember.Checkbox checkedBinding="view.allowMultipleFlag"}}{{t _enable_bulk_barcode_scan}} </label></li>
         <li><label class="labelcheckbox"> {{view Ember.Checkbox checkedBinding="view.geoLocked"}}{{t _disable_manual_geo_edit}} </label></li>
       </ul>
-    </div>
     {{/if}}
     {{#if view.amNumberType}}
-    <div class="questionOption floats-in">
     <h1 class="answerNbr">{{t _settings}}: </h1>
       <ul>
         <li><label class="labelcheckbox"> {{view Ember.Checkbox checkedBinding="view.allowSign"}}{{t _allow_sign}} </label></li>
@@ -105,13 +101,10 @@
         <li><label class="minValNumb">{{t _min_val}}: {{view Ember.TextField valueBinding="view.minVal" size=10 }}</label></li>
         <li><label class="maxValNumb">{{t _max_val}}: {{view Ember.TextField valueBinding="view.maxVal" size=10 }}</label></li>
       </ul>
-    </div>
     {{/if}}
      {{#if view.amGeoType}}
-     <div class="questionOption floats-in">
     <h1 class="answerNbr">{{t _settings}}: </h1>
       <label class="labelcheckbox"> {{view Ember.Checkbox checkedBinding="view.geoLocked"}}{{t _disable_manual_geo_edit}} </label>
-     </div>
     {{/if}}
 
     {{#if view.amTextType}}
@@ -121,7 +114,6 @@
     {{/if}}
 
     {{#if view.amCascadeType}}
-    <div class="questionOption floats-in">
         <h1 class="answerNbr">{{t _settings}}: </h1>
          <label class="selectinLabel dependencySelect"> {{t _choose_cascade_question_resource}}: {{tooltip _choose_cascade_question_resource_tooltip}}
         {{view Ember.Select
@@ -131,10 +123,8 @@
         optionValuePath="content.keyId"
         prompt=""
         promptBinding="Ember.STRINGS._select_cascade"}}</label>
-    </div>
     {{/if}}
     {{#if view.amCaddisflyType}}
-    <div class="questionOption floats-in">
         <h1 class="answerNbr">{{t _settings}}: </h1>
          <label class="selectinLabel dependencySelect">
          {{#if view.showCaddisflyTests}}
@@ -149,11 +139,9 @@
         {{else}}
         <div class="errorLoading">{{t _failed_load_caddisfly_tests}}</div>
         {{/if}}
-        </label>
-    </div>
+        </label
     {{/if}}
     {{#if view.amGeoshapeType}}
-    <div class="questionOption floats-in">
     <h1 class="answerNbr">{{t _settings}}: </h1>
       <ul>
         <li><label class="labelcheckbox"> {{view Ember.Checkbox checkedBinding="view.allowPoints"}}{{t _allow_points}} </label></li>
@@ -161,9 +149,9 @@
         <li><label class="labelcheckbox"> {{view Ember.Checkbox checkedBinding="view.allowPolygon"}}{{t _allow_polygon}} </label></li>
         <li><label class="labelcheckbox"> {{view Ember.Checkbox checkedBinding="view.geoLocked"}}{{t _disable_manual_geo_edit}} </label></li>
       </ul>
-    </div>
     {{/if}}
-
+</div>
+{{/unless}}
 <!-- End of question specific material -->
 <div class="dependencyBlock">
     <label class="labelcheckbox">{{view Ember.Checkbox checkedBinding="view.dependentFlag"}}{{t _dependent}}
