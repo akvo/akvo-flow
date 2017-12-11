@@ -66,7 +66,6 @@ import org.waterforpeople.mapping.app.gwt.client.survey.QuestionDto.QuestionType
 import org.waterforpeople.mapping.app.gwt.client.survey.QuestionGroupDto;
 import org.waterforpeople.mapping.app.gwt.client.survey.QuestionOptionDto;
 import org.waterforpeople.mapping.app.gwt.client.survey.SurveyGroupDto;
-import org.waterforpeople.mapping.app.gwt.client.survey.TranslationDto;
 import org.waterforpeople.mapping.app.gwt.client.surveyinstance.SurveyInstanceDto;
 import org.waterforpeople.mapping.app.web.dto.InstanceDataDto;
 import org.waterforpeople.mapping.app.web.dto.SurveyRestRequest;
@@ -92,7 +91,6 @@ public class GraphicalSurveySummaryExporter extends SurveySummaryExporter {
             .getLogger(GraphicalSurveySummaryExporter.class);
 
     private static final String IMAGE_PREFIX_OPT = "imgPrefix";
-    private static final String LOCALE_OPT = "locale";
     private static final String TYPE_OPT = "exportMode";
     private static final String DATA_CLEANING_TYPE = "DATA_CLEANING";
     private static final String DATA_ANALYSIS_TYPE = "DATA_ANALYSIS";
@@ -104,218 +102,51 @@ public class GraphicalSurveySummaryExporter extends SurveySummaryExporter {
     private static final String EMAIL_OPT = "email";
     
     private static final String CADDISFLY_TESTS_FILE_URL_OPT = "caddisflyTestsFileUrl";
-    private static final String METADATA_LABEL = "Metadata"; //Constant. Localization is going away.
 
     private static final String DEFAULT_IMAGE_PREFIX = "http://waterforpeople.s3.amazonaws.com/images/";
 
     private static final String DIGEST_COLUMN = "NO_TITLE_DIGEST_COLUMN";
 
-    private static final Map<String, String> REPORT_HEADER;
-    private static final Map<String, String> FREQ_LABEL;
-    private static final Map<String, String> PCT_LABEL;
-    private static final Map<String, String> SUMMARY_LABEL;
-    private static final Map<String, String> RAW_DATA_LABEL;
-    private static final Map<String, String> INSTANCE_LABEL;
-    private static final Map<String, String> SUB_DATE_LABEL;
-    private static final Map<String, String> SUBMITTER_LABEL;
-    private static final Map<String, String> DURATION_LABEL;
-    private static final Map<String, String> REPEAT_LABEL;
-    private static final Map<String, String> MEAN_LABEL;
-    private static final Map<String, String> MODE_LABEL;
-    private static final Map<String, String> MEDIAN_LABEL;
-    private static final Map<String, String> MIN_LABEL;
-    private static final Map<String, String> MAX_LABEL;
-    private static final Map<String, String> VAR_LABEL;
-    private static final Map<String, String> STD_E_LABEL;
-    private static final Map<String, String> STD_D_LABEL;
-    private static final Map<String, String> TOTAL_LABEL;
-    private static final Map<String, String> RANGE_LABEL;
-    private static final Map<String, String> LOADING_QUESTIONS;
-    private static final Map<String, String> LOADING_DETAILS;
-    private static final Map<String, String> LOADING_INSTANCES;
-    private static final Map<String, String> LOADING_INSTANCE_DETAILS;
-    private static final Map<String, String> WRITING_SUMMARY;
-    private static final Map<String, String> WRITING_RAW_DATA;
-    private static final Map<String, String> WRITING_ROLLUPS;
-    private static final Map<String, String> COMPLETE;
-    private static final Map<String, String> LAT_LABEL;
-    private static final Map<String, String> LON_LABEL;
-    private static final Map<String, String> IMAGE_LABEL;
-    private static final Map<String, String> ELEV_LABEL;
-    private static final Map<String, String> ACC_LABEL;
-    private static final Map<String, String> CODE_LABEL;
-    private static final Map<String, String> IDENTIFIER_LABEL;
-    private static final Map<String, String> DISPLAY_NAME_LABEL;
-    private static final Map<String, String> DEVICE_IDENTIFIER_LABEL;
-    private static final Map<String, String> DATA_APPROVAL_STATUS_LABEL;
-
+    private static final String METADATA_LABEL = "Metadata";
+    private static final String REPORT_HEADER = "Survey Summary Report";
+    private static final String FREQ_LABEL = "Frequency";
+    private static final String PCT_LABEL = "Percent";
+    private static final String SUMMARY_LABEL = "Summary";
+    private static final String RAW_DATA_LABEL = "Raw Data";
+    private static final String INSTANCE_LABEL = "Instance";
+    private static final String SUB_DATE_LABEL = "Submission Date";
+    private static final String SUBMITTER_LABEL = "Submitter";
+    private static final String DURATION_LABEL = "Duration";
+    private static final String REPEAT_LABEL = "Repeat no";
+    private static final String MEAN_LABEL = "Mean";
+    private static final String MODE_LABEL = "Mode";
+    private static final String MEDIAN_LABEL = "Median";
+    private static final String MIN_LABEL = "Min";
+    private static final String MAX_LABEL = "Max";
+    private static final String VAR_LABEL = "Variance";
+    private static final String STD_E_LABEL = "Std Error";
+    private static final String STD_D_LABEL = "Std Deviation";
+    private static final String TOTAL_LABEL = "Total";
+    private static final String RANGE_LABEL = "Range";
+    private static final String LAT_LABEL = "Latitude";
+    private static final String LON_LABEL = "Longitude";
+    private static final String IMAGE_LABEL = "Image";
+    private static final String ELEV_LABEL = "Elevation";
+    private static final String ACC_LABEL = "Accuracy (m)";
+    private static final String CODE_LABEL = "Geo Code";
+    private static final String IDENTIFIER_LABEL = "Identifier";
+    private static final String DISPLAY_NAME_LABEL = "Display Name";
+    private static final String DEVICE_IDENTIFIER_LABEL = "Device identifier";
+    private static final String DATA_APPROVAL_STATUS_LABEL = "Data approval status";
+    
     private static final int CHART_WIDTH = 600;
     private static final int CHART_HEIGHT = 400;
     private static final int CHART_CELL_WIDTH = 10;
     private static final int CHART_CELL_HEIGHT = 22;
-    private static final String DEFAULT_LOCALE = "en";
-    private static final String DEFAULT = "default";
     private static final NumberFormat PCT_FMT = DecimalFormat.getPercentInstance();
-
-    static {
-        // populate all translations
-        RANGE_LABEL = new HashMap<String, String>();
-        RANGE_LABEL.put("en", "Range");
-        RANGE_LABEL.put("es", "Distribución");
-
-        MEAN_LABEL = new HashMap<String, String>();
-        MEAN_LABEL.put("en", "Mean");
-        MEAN_LABEL.put("es", "Media");
-
-        MODE_LABEL = new HashMap<String, String>();
-        MODE_LABEL.put("en", "Mode");
-        MODE_LABEL.put("es", "Moda");
-
-        MEDIAN_LABEL = new HashMap<String, String>();
-        MEDIAN_LABEL.put("en", "Median");
-        MEDIAN_LABEL.put("es", "Número medio");
-
-        MIN_LABEL = new HashMap<String, String>();
-        MIN_LABEL.put("en", "Min");
-        MIN_LABEL.put("es", "Mínimo");
-
-        MAX_LABEL = new HashMap<String, String>();
-        MAX_LABEL.put("en", "Max");
-        MAX_LABEL.put("es", "Máximo");
-
-        VAR_LABEL = new HashMap<String, String>();
-        VAR_LABEL.put("en", "Variance");
-        VAR_LABEL.put("es", "Varianza");
-
-        STD_D_LABEL = new HashMap<String, String>();
-        STD_D_LABEL.put("en", "Std Deviation");
-        STD_D_LABEL.put("es", "Desviación Estándar");
-
-        STD_E_LABEL = new HashMap<String, String>();
-        STD_E_LABEL.put("en", "Std Error");
-        STD_E_LABEL.put("es", "Error Estándar");
-
-        TOTAL_LABEL = new HashMap<String, String>();
-        TOTAL_LABEL.put("en", "Total");
-        TOTAL_LABEL.put("es", "Suma");
-
-        REPORT_HEADER = new HashMap<String, String>();
-        REPORT_HEADER.put("en", "Survey Summary Report");
-        REPORT_HEADER.put("es", "Encuesta Informe Resumen");
-
-        FREQ_LABEL = new HashMap<String, String>();
-        FREQ_LABEL.put("en", "Frequency");
-        FREQ_LABEL.put("es", "Frecuencia");
-
-        PCT_LABEL = new HashMap<String, String>();
-        PCT_LABEL.put("en", "Percent");
-        PCT_LABEL.put("es", "Por ciento");
-
-        SUMMARY_LABEL = new HashMap<String, String>();
-        SUMMARY_LABEL.put("en", "Summary");
-        SUMMARY_LABEL.put("es", "Resumen");
-
-        RAW_DATA_LABEL = new HashMap<String, String>();
-        RAW_DATA_LABEL.put("en", "Raw Data");
-        RAW_DATA_LABEL.put("es", "Primas de Datos");
-
-        INSTANCE_LABEL = new HashMap<String, String>();
-        INSTANCE_LABEL.put("en", "Instance");
-        INSTANCE_LABEL.put("es", "Instancia");
-
-        SUB_DATE_LABEL = new HashMap<String, String>();
-        SUB_DATE_LABEL.put("en", "Submission Date");
-        SUB_DATE_LABEL.put("es", "Fecha de Presentación");
-
-        SUBMITTER_LABEL = new HashMap<String, String>();
-        SUBMITTER_LABEL.put("en", "Submitter");
-        SUBMITTER_LABEL.put("es", "Peticionario");
-
-        DURATION_LABEL = new HashMap<String, String>();
-        DURATION_LABEL.put("en", "Duration");
-        DURATION_LABEL.put("es", "Duración");
-
-        REPEAT_LABEL = new HashMap<String, String>();
-        REPEAT_LABEL.put("en", "Repeat no"); //Periods in headers were annoying to some consumers
-        REPEAT_LABEL.put("es", "No repetición");
-
-        LOADING_QUESTIONS = new HashMap<String, String>();
-        LOADING_QUESTIONS.put("en", "Loading Questions");
-        LOADING_QUESTIONS.put("es", "Cargando de preguntas");
-
-        LOADING_DETAILS = new HashMap<String, String>();
-        LOADING_DETAILS.put("en", "Loading Question Details");
-        LOADING_DETAILS.put("es", "Cargando Detalles Pregunta");
-
-        LOADING_INSTANCES = new HashMap<String, String>();
-        LOADING_INSTANCES.put("en", "Loading Instances");
-        LOADING_INSTANCES.put("es", "Cargando instancias");
-
-        LOADING_INSTANCE_DETAILS = new HashMap<String, String>();
-        LOADING_INSTANCE_DETAILS.put("en", "Loading Instance Details");
-        LOADING_INSTANCE_DETAILS.put("es", "Cargando Datos Instancia");
-
-        WRITING_SUMMARY = new HashMap<String, String>();
-        WRITING_SUMMARY.put("en", "Writing Summary");
-        WRITING_SUMMARY.put("es", "Escribiendo Resumen");
-
-        WRITING_RAW_DATA = new HashMap<String, String>();
-        WRITING_RAW_DATA.put("en", "Writing Raw Data");
-        WRITING_RAW_DATA.put("es", "Escribiendo Primas de Datos");
-
-        WRITING_ROLLUPS = new HashMap<String, String>();
-        WRITING_ROLLUPS.put("en", "Writing Rollups");
-        WRITING_ROLLUPS.put("es", "Escribiendo Resumen Municipales");
-
-        COMPLETE = new HashMap<String, String>();
-        COMPLETE.put("en", "Export Complete");
-        COMPLETE.put("es", "Exportación Completa");
-
-        LAT_LABEL = new HashMap<String, String>();
-        LAT_LABEL.put("en", "Latitude");
-        LAT_LABEL.put("es", "Latitud");
-
-        LON_LABEL = new HashMap<String, String>();
-        LON_LABEL.put("en", "Longitude");
-        LON_LABEL.put("es", "Longitud");
-
-        IMAGE_LABEL = new HashMap<String, String>();
-        IMAGE_LABEL.put("en", "Image");
-        IMAGE_LABEL.put("es", "Imagen");
-
-        ELEV_LABEL = new HashMap<String, String>();
-        ELEV_LABEL.put("en", "Elevation");
-        ELEV_LABEL.put("es", "Elevación");
-
-        CODE_LABEL = new HashMap<String, String>();
-        CODE_LABEL.put("en", "Geo Code");
-        CODE_LABEL.put("es", "Código Geo");
-
-        ACC_LABEL = new HashMap<String, String>();
-        ACC_LABEL.put("en", "Accuracy (m)");
-        ACC_LABEL.put("es", "Precisión (m)");
-
-        IDENTIFIER_LABEL = new HashMap<String, String>();
-        IDENTIFIER_LABEL.put("en", "Identifier");
-        IDENTIFIER_LABEL.put("es", "Identificador");
-
-        DISPLAY_NAME_LABEL = new HashMap<String, String>();
-        DISPLAY_NAME_LABEL.put("en", "Display Name");
-        DISPLAY_NAME_LABEL.put("es", "Nombre");
-
-        DEVICE_IDENTIFIER_LABEL = new HashMap<String, String>();
-        DEVICE_IDENTIFIER_LABEL.put("en", "Device identifier");
-        DEVICE_IDENTIFIER_LABEL.put("es", "Identificador de dispositivo");
-
-        DATA_APPROVAL_STATUS_LABEL = new HashMap<String, String>();
-        DATA_APPROVAL_STATUS_LABEL.put("en", "Data approval status");
-        DATA_APPROVAL_STATUS_LABEL.put("es", "Estado de aprobación");
-    }
-
    
     private CellStyle headerStyle;
     private CellStyle textStyle;
-    private String locale;
     private String imagePrefix;
     private String serverBase;
     private boolean isFullReport;
@@ -373,17 +204,10 @@ public class GraphicalSurveySummaryExporter extends SurveySummaryExporter {
             Map<QuestionGroupDto, List<QuestionDto>> questionMap = 
                     loadAllQuestions(surveyId, performGeoRollup, serverBaseUrl, apiKey);
             //minimal data plus cascade level names
-            if (useQuestionId && DEFAULT_LOCALE.equals(locale)) {
+            if (useQuestionId) { //splitting options into columns
                 loadQuestionOptions(surveyId, serverBaseUrl, questionMap, apiKey);
             }
-            
-
             if (questionMap.size() > 0) {
-                if (!DEFAULT_LOCALE.equals(locale)) {
-                    // we are using some other locale; need to check for translations.
-                    // also gets option and cascade names for columns
-                    loadFullQuestions(questionMap, apiKey); //modifies questionMap
-                }
                 //questionMap is now stable; make the id-to-dto map
                 for (List<QuestionDto> qList : questionMap.values()) {
                     for (QuestionDto q : qList) {
@@ -461,7 +285,7 @@ public class GraphicalSurveySummaryExporter extends SurveySummaryExporter {
     
     private Sheet createDataSheets(Workbook wb, Map<QuestionGroupDto, List<QuestionDto>> questionMap) {
         //make base sheet (for non-repeated data)
-        Sheet baseSheet = wb.createSheet(RAW_DATA_LABEL.get(locale));
+        Sheet baseSheet = wb.createSheet(RAW_DATA_LABEL);
 
         for (Entry<QuestionGroupDto, List<QuestionDto>> groupEntry : questionMap.entrySet()) {
             if (separateSheetsForRepeatableGroups && safeTrue(groupEntry.getKey().getRepeatable())) {
@@ -1346,19 +1170,19 @@ public class GraphicalSurveySummaryExporter extends SurveySummaryExporter {
     private int addMetaDataHeaders(Sheet sheet, boolean showRepeatColumn) {
         Row row = getRow(doGroupHeaders ? 1 : 0, sheet);
         int columnIdx = -1;
-        addMetaDataColumnHeader(IDENTIFIER_LABEL.get(locale), ++columnIdx, row);
+        addMetaDataColumnHeader(IDENTIFIER_LABEL, ++columnIdx, row);
         if (hasDataApproval()) {
-            addMetaDataColumnHeader(DATA_APPROVAL_STATUS_LABEL.get(locale), ++columnIdx, row);
+            addMetaDataColumnHeader(DATA_APPROVAL_STATUS_LABEL, ++columnIdx, row);
         }
         if (showRepeatColumn) {
-            addMetaDataColumnHeader(REPEAT_LABEL.get(locale), ++columnIdx, row);
+            addMetaDataColumnHeader(REPEAT_LABEL, ++columnIdx, row);
         }
-        addMetaDataColumnHeader(DISPLAY_NAME_LABEL.get(locale), ++columnIdx, row);
-        addMetaDataColumnHeader(DEVICE_IDENTIFIER_LABEL.get(locale), ++columnIdx, row);
-        addMetaDataColumnHeader(INSTANCE_LABEL.get(locale), ++columnIdx, row);
-        addMetaDataColumnHeader(SUB_DATE_LABEL.get(locale), ++columnIdx, row);
-        addMetaDataColumnHeader(SUBMITTER_LABEL.get(locale), ++columnIdx, row);
-        addMetaDataColumnHeader(DURATION_LABEL.get(locale), ++columnIdx, row);
+        addMetaDataColumnHeader(DISPLAY_NAME_LABEL, ++columnIdx, row);
+        addMetaDataColumnHeader(DEVICE_IDENTIFIER_LABEL, ++columnIdx, row);
+        addMetaDataColumnHeader(INSTANCE_LABEL, ++columnIdx, row);
+        addMetaDataColumnHeader(SUB_DATE_LABEL, ++columnIdx, row);
+        addMetaDataColumnHeader(SUBMITTER_LABEL, ++columnIdx, row);
+        addMetaDataColumnHeader(DURATION_LABEL, ++columnIdx, row);
         //Always put something in the top-left corner to identify the format
         if (doGroupHeaders) {
             row = getRow(0, sheet);
@@ -1389,42 +1213,34 @@ public class GraphicalSurveySummaryExporter extends SurveySummaryExporter {
             final boolean useQID = useQuestionId && questionId != null
                     && !questionId.equals("");
 
-            String columnLocale = useQID ? "en" : locale;
             columnIndexMap.put(q.getKeyId().toString(), offset);
 
             if (QuestionType.GEO == q.getType()) {
-                offset = addGeoDataColumnHeader(q, row, offset, questionId, useQuestionId,
-                        useQID, columnLocale);
+                offset = addGeoDataColumnHeader(q, row, offset, questionId, useQuestionId, useQID);
             } else if (QuestionType.PHOTO == q.getType()) {
                 offset = addPhotoDataColumnHeader(q, row, offset, questionId,
-                        useQuestionId, useQID, columnLocale);
+                        useQuestionId, useQID);
             } else if (QuestionType.CASCADE == q.getType()
                     && q.getLevelNames() != null && useQuestionId) {
                 // if no cascade assigned, column is not shown
                 for (String level : q.getLevelNames()) {
                     String levelName = useQID ? questionId + "_"
                             + level.replaceAll(" ", "_")
-                            : getLocalizedText(q.getText(),
-                                    q.getTranslationMap())
-                                    + " - " + level;
+                            : q.getText() + " - " + level;
                     createCell(row, offset++, levelName, headerStyle);
                 }
             } else if (QuestionType.CADDISFLY == q.getType()) {
-                offset = addCaddisflyDataHeaderColumns(q, row, offset, questionId,
-                        useQID, columnLocale);
+                offset = addCaddisflyDataHeaderColumns(q, row, offset, questionId, useQID);
             } else { // All other types
                 String header = "";
                 if (useQID) {
                     header = questionId;
                 } else if (useQuestionId) {
-                    header = getLocalizedText(q.getText(),
-                            q.getTranslationMap()).replaceAll("\n", "").trim();
+                    header = q.getText().replaceAll("\n", "").trim();
                 } else {
                     header = q.getKeyId().toString()
                             + "|"
-                            + getLocalizedText(q.getText(),
-                                    q.getTranslationMap())
-                                    .replaceAll("\n", "").trim();
+                            + q.getText().replaceAll("\n", "").trim();
                 }
 
                 createCell(row, offset++, header, headerStyle);
@@ -1482,7 +1298,7 @@ public class GraphicalSurveySummaryExporter extends SurveySummaryExporter {
     
     @SuppressWarnings("unchecked")
     private int addCaddisflyDataHeaderColumns(QuestionDto q, Row row, int originalOffset,
-            String questionId, final boolean useQID, String columnLocale) {
+            String questionId, final boolean useQID) {
         int offset = originalOffset;
         Map<String, CaddisflyResource> caddisflyResourceMap = null;
         StringBuilder caddisflyFirstResultColumnHeaderPrefix = new StringBuilder();
@@ -1545,7 +1361,7 @@ public class GraphicalSurveySummaryExporter extends SurveySummaryExporter {
                         offset++,
                         "--CADDISFLY--|" + q.getText()
                                 + "--"
-                                + IMAGE_LABEL.get(columnLocale),
+                                + IMAGE_LABEL,
                         headerStyle);
             }
 
@@ -1565,60 +1381,56 @@ public class GraphicalSurveySummaryExporter extends SurveySummaryExporter {
     }
 
     private int addPhotoDataColumnHeader(QuestionDto q, Row row, int originalOffset, String questionId,
-            boolean useQuestionId, final boolean useQID, String columnLocale) {
+            boolean useQuestionId, final boolean useQID) {
         int offset = originalOffset;
         // Always a URL column
         String header = "";
         if (useQID) {
             header = questionId;
         } else if (useQuestionId) {
-            header = getLocalizedText(q.getText(),
-                    q.getTranslationMap()).replaceAll("\n", "").trim();
+            header = q.getText().replaceAll("\n", "").trim();
         } else {
             header = q.getKeyId().toString()
                     + "|"
-                    + getLocalizedText(q.getText(),
-                            q.getTranslationMap()).replaceAll("\n", "").trim();
+                    + q.getText().replaceAll("\n", "").trim();
         }
         createCell(row, offset++, header, headerStyle);
         if (useQuestionId) {
             // Media gets 3 extra columns: Latitude, Longitude and Accuracy
             String prefix = "--PHOTO--|";
             createCell(row, offset++,
-                    prefix + LAT_LABEL.get(columnLocale), headerStyle);
+                    prefix + LAT_LABEL, headerStyle);
             createCell(row, offset++,
-                    prefix + LON_LABEL.get(columnLocale), headerStyle);
+                    prefix + LON_LABEL, headerStyle);
             createCell(row, offset++,
-                    prefix + ACC_LABEL.get(columnLocale), headerStyle);
+                    prefix + ACC_LABEL, headerStyle);
         }
         return offset;
     }
 
     private int addGeoDataColumnHeader(QuestionDto q, Row row, int originalOffset, String questionId,
-            boolean useQuestionId, final boolean useQID, String columnLocale) {
+            boolean useQuestionId, final boolean useQID) {
         int offset = originalOffset;
         if (useQuestionId) {
             createCell(
                     row,
                     offset++,
                     (useQID ? questionId + "_"
-                            : getLocalizedText(q.getText(),
-                                    q.getTranslationMap())
-                                    + " - ")
-                            + LAT_LABEL.get(columnLocale),
+                            : q.getText() + " - ")
+                            + LAT_LABEL,
                     headerStyle);
         } else {
             createCell(row, offset++, q.getKeyId() + "|"
-                    + LAT_LABEL.get(columnLocale),
+                    + LAT_LABEL,
                     headerStyle);
         }
         createCell(row, offset++, (useQID ? questionId
                 + "_" : "--GEOLON--|")
-                + LON_LABEL.get(columnLocale), headerStyle);
+                + LON_LABEL, headerStyle);
         createCell(row, offset++, (useQID ? questionId
                 + "_" : "--GEOELE--|")
-                + ELEV_LABEL.get(columnLocale), headerStyle);
-        String codeLabel = CODE_LABEL.get(columnLocale);
+                + ELEV_LABEL, headerStyle);
+        String codeLabel = CODE_LABEL;
         createCell(row, offset++, useQID ? questionId + "_"
                 + codeLabel.replaceAll("\\s", "")
                 : "--GEOCODE--|" + codeLabel, headerStyle);
@@ -1632,7 +1444,7 @@ public class GraphicalSurveySummaryExporter extends SurveySummaryExporter {
             Map<QuestionGroupDto, List<QuestionDto>> questionMap,
             SummaryModel summaryModel, String sector, Workbook wb)
             throws Exception {
-        String title = sector == null ? SUMMARY_LABEL.get(locale) : sector;
+        String title = sector == null ? SUMMARY_LABEL : sector;
         Sheet sheet = null;
         int sheetCount = 2;
         String curTitle = WorkbookUtil.createSafeSheetName(title); //first try the whole sector name
@@ -1655,9 +1467,9 @@ public class GraphicalSurveySummaryExporter extends SurveySummaryExporter {
         int curRow = 0;
         Row row = getRow(curRow++, sheet);
         if (sector == null) {
-            createCell(row, 0, REPORT_HEADER.get(locale), headerStyle);
+            createCell(row, 0, REPORT_HEADER, headerStyle);
         } else {
-            createCell(row, 0, sector + " " + REPORT_HEADER.get(locale), headerStyle);
+            createCell(row, 0, sector + " " + REPORT_HEADER, headerStyle);
         }
         for (QuestionGroupDto group : orderedGroupList) {
             if (questionMap.get(group) != null) {
@@ -1683,7 +1495,7 @@ public class GraphicalSurveySummaryExporter extends SurveySummaryExporter {
                     createCell(
                             row,
                             0,
-                            getLocalizedText(question.getText(), question.getTranslationMap()),
+                            question.getText(),
                             headerStyle);
                     DescriptiveStats stats = summaryModel
                             .getDescriptiveStatsForQuestion(
@@ -1693,13 +1505,11 @@ public class GraphicalSurveySummaryExporter extends SurveySummaryExporter {
                         createCell(
                                 row,
                                 4,
-                                getLocalizedText(question.getText(),
-                                        question.getTranslationMap()),
-                                headerStyle);
+                                question.getText(),headerStyle);
                     }
                     row = getRow(curRow++, sheet);
-                    createCell(row, 1, FREQ_LABEL.get(locale), headerStyle);
-                    createCell(row, 2, PCT_LABEL.get(locale), headerStyle);
+                    createCell(row, 1, FREQ_LABEL, headerStyle);
+                    createCell(row, 2, PCT_LABEL, headerStyle);
 
                     // now create the data table for the option count
                     Map<String, Long> counts = summaryModel
@@ -1737,41 +1547,7 @@ public class GraphicalSurveySummaryExporter extends SurveySummaryExporter {
                             }
                         }
                         StringBuilder builder = new StringBuilder();
-                        if (QuestionType.OPTION == question.getType()
-                                && !DEFAULT_LOCALE.equals(locale)) {
-                            String[] tokens = labelText.split("\\|");
-                            // see if we have a translation for this option
-                            for (int i = 0; i < tokens.length; i++) {
-                                if (i > 0) {
-                                    builder.append("|");
-                                }
-                                if (question.getOptionContainerDto() != null
-                                        && question.getOptionContainerDto()
-                                                .getOptionsList() != null) {
-                                    boolean found = false;
-                                    for (QuestionOptionDto opt : question
-                                            .getOptionContainerDto()
-                                            .getOptionsList()) {
-                                        if (opt.getText() != null
-                                                && opt.getText()
-                                                        .trim()
-                                                        .equalsIgnoreCase(
-                                                                tokens[i])) {
-                                            builder.append(getLocalizedText(
-                                                    tokens[i],
-                                                    opt.getTranslationMap()));
-                                            found = true;
-                                            break;
-                                        }
-                                    }
-                                    if (!found) {
-                                        builder.append(tokens[i]);
-                                    }
-                                }
-                            }
-                        } else {
-                            builder.append(labelText);
-                        }
+                        builder.append(labelText);
                         createCell(row, 0, builder.toString(), null);
                         createCell(row, 1, count.getValue().toString(), null);
 
@@ -1780,7 +1556,7 @@ public class GraphicalSurveySummaryExporter extends SurveySummaryExporter {
                         sampleTotal += count.getValue();
                     }
                     row = getRow(curRow++, sheet);
-                    createCell(row, 0, TOTAL_LABEL.get(locale), null);
+                    createCell(row, 0, TOTAL_LABEL, null);
                     createCell(row, 1, sampleTotal + "", null);
                     for (int i = 0; i < values.size(); i++) {
                         row = getRow(firstOptRow + i, sheet);
@@ -1801,32 +1577,32 @@ public class GraphicalSurveySummaryExporter extends SurveySummaryExporter {
                         createCell(row, 4, "N", null);
                         createCell(row, 5, sampleTotal + "", null);
                         row = getRow(tempRow++, sheet);
-                        createCell(row, 4, MEAN_LABEL.get(locale), null);
+                        createCell(row, 4, MEAN_LABEL, null);
                         createCell(row, 5, stats.getMean() + "", null);
                         row = getRow(tempRow++, sheet);
-                        createCell(row, 4, STD_E_LABEL.get(locale), null);
+                        createCell(row, 4, STD_E_LABEL, null);
                         createCell(row, 5, stats.getStandardError() + "", null);
                         row = getRow(tempRow++, sheet);
-                        createCell(row, 4, MEDIAN_LABEL.get(locale), null);
+                        createCell(row, 4, MEDIAN_LABEL, null);
                         createCell(row, 5, stats.getMedian() + "", null);
                         row = getRow(tempRow++, sheet);
-                        createCell(row, 4, MODE_LABEL.get(locale), null);
+                        createCell(row, 4, MODE_LABEL, null);
                         createCell(row, 5, stats.getMode() + "", null);
                         row = getRow(tempRow++, sheet);
-                        createCell(row, 4, STD_D_LABEL.get(locale), null);
+                        createCell(row, 4, STD_D_LABEL, null);
                         createCell(row, 5, stats.getStandardDeviation() + "",
                                 null);
                         row = getRow(tempRow++, sheet);
-                        createCell(row, 4, VAR_LABEL.get(locale), null);
+                        createCell(row, 4, VAR_LABEL, null);
                         createCell(row, 5, stats.getVariance() + "", null);
                         row = getRow(tempRow++, sheet);
-                        createCell(row, 4, RANGE_LABEL.get(locale), null);
+                        createCell(row, 4, RANGE_LABEL, null);
                         createCell(row, 5, stats.getRange() + "", null);
                         row = getRow(tempRow++, sheet);
-                        createCell(row, 4, MIN_LABEL.get(locale), null);
+                        createCell(row, 4, MIN_LABEL, null);
                         createCell(row, 5, stats.getMin() + "", null);
                         row = getRow(tempRow++, sheet);
-                        createCell(row, 4, MAX_LABEL.get(locale), null);
+                        createCell(row, 4, MAX_LABEL, null);
                         createCell(row, 5, stats.getMax() + "", null);
                         if (tableBottomRow < tempRow) {
                             tableBottomRow = tempRow;
@@ -1855,11 +1631,9 @@ public class GraphicalSurveySummaryExporter extends SurveySummaryExporter {
                                     JFreechartChartUtil.getPieChart(
                                             labels,
                                             values,
-                                            getLocalizedText(
-                                                    question.getText(),
-                                                    question.getTranslationMap()),
-                                                    CHART_WIDTH,
-                                                    CHART_HEIGHT),
+                                            question.getText(),
+                                            CHART_WIDTH,
+                                            CHART_HEIGHT),
                                             Workbook.PICTURE_TYPE_PNG);
                             ClientAnchor anchor = creationHelper.createClientAnchor();
                             anchor.setDx1(0);
@@ -1988,7 +1762,6 @@ public class GraphicalSurveySummaryExporter extends SurveySummaryExporter {
                 return false;
             }
             
-            locale = options.get(LOCALE_OPT); 
             imagePrefix = options.get(IMAGE_PREFIX_OPT);
             selectionFrom = options.get(FROM_OPT);
             selectionTo = options.get(TO_OPT);
@@ -2003,15 +1776,6 @@ public class GraphicalSurveySummaryExporter extends SurveySummaryExporter {
                     && !options.get(CADDISFLY_TESTS_FILE_URL_OPT).isEmpty()) {
                 caddisflyTestsFileUrl = options.get(CADDISFLY_TESTS_FILE_URL_OPT);
             }
-        }
-        if (locale != null) {
-            locale = locale.trim().toLowerCase();
-            if (DEFAULT.equalsIgnoreCase(locale)) {
-                locale = DEFAULT_LOCALE;
-            }
-
-        } else {
-            locale = DEFAULT_LOCALE;
         }
         if (imagePrefix != null) {
             imagePrefix = imagePrefix.trim();
@@ -2048,30 +1812,6 @@ public class GraphicalSurveySummaryExporter extends SurveySummaryExporter {
         }
     }
 
-
-    /**
-     * uses the locale and the translation map passed in to determine what value to use for the
-     * string
-     *
-     * @param text
-     * @param translationMap
-     * @return
-     */
-    private String getLocalizedText(String text,
-            Map<String, TranslationDto> translationMap) {
-        TranslationDto trans = null;
-        if (translationMap != null) {
-            trans = translationMap.get(locale);
-        }
-        if (trans != null && trans.getText() != null
-                && trans.getText().trim().length() > 0) {
-            return trans.getText();
-        } else {
-            return text;
-
-        }
-    }
-
     private String getDurationText(Long duration) {
         if (duration == null) {
             return "";
@@ -2105,10 +1845,9 @@ public class GraphicalSurveySummaryExporter extends SurveySummaryExporter {
         GraphicalSurveySummaryExporter exporter = new GraphicalSurveySummaryExporter();
         Map<String, String> criteria = new HashMap<String, String>();
         Map<String, String> options = new HashMap<String, String>();
-        options.put(LOCALE_OPT, "en");
 //        options.put(TYPE_OPT, DATA_CLEANING_TYPE);
-//        options.put(TYPE_OPT, DATA_ANALYSIS_TYPE);
-        options.put(TYPE_OPT, COMPREHENSIVE_TYPE);
+        options.put(TYPE_OPT, DATA_ANALYSIS_TYPE);
+//        options.put(TYPE_OPT, COMPREHENSIVE_TYPE);
         options.put(LAST_COLLECTION_OPT, "false");
         options.put(EMAIL_OPT, "email@example.com");
         options.put(FROM_OPT, null);
