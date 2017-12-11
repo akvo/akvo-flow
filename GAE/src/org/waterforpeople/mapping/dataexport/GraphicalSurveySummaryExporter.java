@@ -133,7 +133,6 @@ public class GraphicalSurveySummaryExporter extends SurveySummaryExporter {
     private static final String IMAGE_LABEL = "Image";
     private static final String ELEV_LABEL = "Elevation";
     private static final String ACC_LABEL = "Accuracy (m)";
-    private static final String CODE_LABEL = "Geo Code";
     private static final String IDENTIFIER_LABEL = "Identifier";
     private static final String DISPLAY_NAME_LABEL = "Display Name";
     private static final String DEVICE_IDENTIFIER_LABEL = "Device identifier";
@@ -788,11 +787,11 @@ public class GraphicalSurveySummaryExporter extends SurveySummaryExporter {
         String[] geoParts = value.split("\\|");
         List<String> cells = new ArrayList<>();
         int count = 0;
-        for (count = 0; count < geoParts.length; count++) {
+        for (count = 0; count < Math.min(geoParts.length,3); count++) { //discard any geocode
             cells.add(geoParts[count]);
         }
         // now handle any missing fields
-        for (int j = count; j < 4; j++) {
+        for (int j = count; j < 3; j++) {
             cells.add("");
         }
 
@@ -1431,18 +1430,15 @@ public class GraphicalSurveySummaryExporter extends SurveySummaryExporter {
                 createHeaderCell(row, offset++, varName + "_" + LAT_LABEL);
                 createHeaderCell(row, offset++, varName + "_" + LON_LABEL);
                 createHeaderCell(row, offset++, varName + "_" + ELEV_LABEL);
-                createHeaderCell(row, offset++, varName + "_" + CODE_LABEL.replaceAll("\\s", ""));
             } else {
                 createHeaderCell(row, offset++, q.getText() + " - " + LAT_LABEL);
                 createHeaderCell(row, offset++, q.getText() + " - " + LON_LABEL);
                 createHeaderCell(row, offset++, q.getText() + " - " + ELEV_LABEL);
-                createHeaderCell(row, offset++, q.getText() + " - " + CODE_LABEL);
             }
         } else { //Import currently relies on the --GEO headers
             createHeaderCell(row, offset++, q.getKeyId() + "|" + LAT_LABEL);
             createHeaderCell(row, offset++, "--GEOLON--|"      + LON_LABEL);
             createHeaderCell(row, offset++, "--GEOELE--|"      + ELEV_LABEL);
-            createHeaderCell(row, offset++, "--GEOCODE--|"     + CODE_LABEL);
         }
         return offset;
     }
