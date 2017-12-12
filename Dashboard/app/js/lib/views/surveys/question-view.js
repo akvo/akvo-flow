@@ -858,7 +858,7 @@ FLOW.QuestionView = FLOW.View.extend({
     this.set('showAddAttributeDialogBool', false);
   },
 
-  validateQuestionObserver: function(){
+  validateQuestionObserver: function () {
       this.set('questionValidationFailure', (this.text != null && this.text.length > 500));
   }.observes('this.text'),
 
