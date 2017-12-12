@@ -479,7 +479,7 @@ public class RawDataSpreadsheetImporter implements DataImporter {
                 && row.getCell(repeatIterationColumnIndex).getCellType() == Cell.CELL_TYPE_NUMERIC) {
             Long rep = (long) row.getCell(repeatIterationColumnIndex).getNumericCellValue(); //might throw on huge number
             //check repeat no for sanity
-            if (rep < 1) { break;}
+            if (rep < 1) { continue;}
             checksumRows.add(row);
             
             //loop over the data columns
