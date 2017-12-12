@@ -115,7 +115,7 @@ FLOW.QuestionView = FLOW.View.extend({
 
   amNoOptionsType: function () {
     var val;
-    if (!Ember.none(this.type)) { 
+    if (!Ember.none(this.type)) {
       val = this.type.get('value');
       return val === 'PHOTO' || val === 'VIDEO' || val === 'DATE' || val === 'SIGNATURE';
     }
@@ -210,15 +210,12 @@ FLOW.QuestionView = FLOW.View.extend({
     }
 
     // reset selected caddisfly resource
-    FLOW.selectedControl.set('selectedCaddisflyResource', null);//do u need this like above
+    FLOW.selectedControl.set('selectedCaddisflyResource', null);
     // if the caddisflyResourceUuid is not null, get the resource
     if (!Ember.empty(FLOW.selectedControl.selectedQuestion.get('caddisflyResourceUuid'))) {
       var caddResource = FLOW.router.caddisflyResourceController.content.findProperty('uuid', FLOW.selectedControl.selectedQuestion.get('caddisflyResourceUuid'));
       if (!Ember.empty(caddResource)) {
-        FLOW.selectedControl.set('selectedCaddisflyResource',caddResource);// u selected it here thus
-        //thus stays in memory already
-      }else {
-        console.log(' zero based cadissfly!!!')
+        FLOW.selectedControl.set('selectedCaddisflyResource',caddResource);
       }
     }
     // if the dependentQuestionId is not null, get the question
@@ -861,7 +858,7 @@ FLOW.QuestionView = FLOW.View.extend({
     this.set('showAddAttributeDialogBool', false);
   },
 
-  validateQuestionObserver: function(){ //this code makes questionValidationFailure true after observing text
+  validateQuestionObserver: function(){
       this.set('questionValidationFailure', (this.text != null && this.text.length > 500));
   }.observes('this.text'),
 
