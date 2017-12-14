@@ -1,5 +1,27 @@
 # Akvo Flow Release Notes
 ----
+# 1.9.26 Zetetic Zonkey
+
+## New and noteworthy
+* **Importing new data using the data cleaning export format** [#2368] - we enable importing new data into Flow that is formatted according to our new data cleaning export format (that is, having data from repeat question groups on separate sheets in a spreadsheet file)
+
+## Resolved issues
+* **Caddisfly tests dropdown remains when editing questions** [#1809] - we fix a bug that causes the caddisfly tests dropdown to keep showing when switching between question types during survey editing
+
+* **16-digit numbers get rounded in report cells** [#2291] - we fix a bug where numbers that are over 16-digits long get rounded when using Microsoft excel.  The numbers that are over 16-digits long are represented as strings so that users get their data as it arrived in the system.
+
+* **Update translation strings for new reports** [#2373] - we update the translation strings for the new reports user interface.
+
+* **Add level button in cascade** [#2268] - we replace a link to add a new cascade level, with a button
+
+* **Remove internationalisation header code from report engine** [#2309] - code cleanup removing translations/i18n code from the reports engine.
+
+* **Remove "No additional settings for this question type"** [#2319] - we remove the redundant section from question types that have no additional settings to configure when they are created.
+
+* **Remove unused data members** [#2379] - code cleanup to remove unused fields for country data
+
+* **Update configuration files to include instanceUrl field** [#2219] - we update our deployment code to include a new property that is needed for the instance configuration.
+
 # 1.9.25.1 Yetanother Yak Hotfix 1
 Date: 30 November 2017
 
