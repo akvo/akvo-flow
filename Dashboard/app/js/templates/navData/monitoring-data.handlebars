@@ -100,7 +100,6 @@
             <!-- TABLE HEADER-->
             <thead>
                 <tr>
-                    <th class="noArrows">{{t _id}}</th>
                     <th class="noArrows">{{t _question}}</th>
                     <th class="noArrows">{{t _answer}}</th>
                 </tr>
@@ -110,7 +109,6 @@
                 {{#each QA in FLOW.questionAnswerControl}}
                   {{#view FLOW.QuestionAnswerView contentBinding="QA"}}
                     <tr>
-                      <td class="device">{{QA.keyId}}</td>
                       <td class="survey" style="text-align:left;">{{QA.questionText}}</td>
 
                     <td class="submitter" style="text-align:left;">
