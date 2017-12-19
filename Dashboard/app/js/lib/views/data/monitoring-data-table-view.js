@@ -100,7 +100,11 @@ FLOW.DataPointView = FLOW.View.extend({
     templateName: 'navData/monitoring-data-row',
 
     approvalStatus: [{label: Ember.String.loc('_pending'), value: 'PENDING'}, { label: Ember.String.loc('_approved'), value: 'APPROVED' },{ label: Ember.String.loc('_rejected'), value: 'REJECTED'}],
-
+     
+     //catering for counter for the data points.
+    tagName: 'span',
+    content: null,
+    pageNumber: 0,
     showDataApprovalBlock: false,
 
     showSurveyedLocaleDeleteButton: function() {
@@ -179,6 +183,15 @@ FLOW.DataPointView = FLOW.View.extend({
     toggleShowDataApprovalBlock: function () {
         this.toggleProperty('showDataApprovalBlock');
     },
+    //catering for counter of the data point names.
+     rownum: function(){
+      /*var counter = pageNumber += 1;
+      console.log(counter);
+      return counter; */
+        console.log('numrow activated!!!****')
+        return this.get('_parentView.contentIndex') + 1 + 20 * this.get('pageNumber') 
+    }.property()
+    
 });
 
 /**

@@ -49,7 +49,12 @@ FLOW.inspectDataTableView = FLOW.View.extend({
       this.set('selectedLevel1',null),
       this.set('selectedLevel2',null);*/
       //it is better to call this cleaningRecords function from data-controller.
-      FLOW.surveyInstanceControl.depopulateRecords();
+      //FLOW.surveyInstanceControl.depopulateRecords();
+      FLOW.surveyInstanceControl.set('content', null);//this error.
+      /*
+      Uncaught TypeError: Cannot read property 'forEach' of null
+        at c.contentChanged
+      */
       
         
   },
