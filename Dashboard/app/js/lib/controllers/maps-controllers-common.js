@@ -6,7 +6,7 @@
       a placemark counterpart.
 **/
 
-FLOW.mapsController = Ember.ArrayController.create({
+FLOW.MapsController = Ember.ArrayController.extend({
     content: null,
     map: null,
     marker: null,
@@ -268,7 +268,7 @@ FLOW.mapsController = Ember.ArrayController.create({
                 dataLayer.setInteraction(true);
 
                 dataLayer.on('featureClick', function(e, latlng, pos, data) {
-                    FLOW.mapsController.set('markerCoordinates', [data.lat, data.lon]);
+                    self.set('markerCoordinates', [data.lat, data.lon]);
 
                     //get survey instance
                     FLOW.placemarkDetailController.set( 'si', FLOW.store.find(FLOW.SurveyInstance, data.id));
