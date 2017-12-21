@@ -62,9 +62,10 @@
   {{/if}}
 
     <!-- Question specific material -->
+{{#if view.hasExtraSettings}}
 <div class="questionOption floats-in">
-
     {{#if view.amOptionType}}
+      
       <h1 class="answerNbr">{{t _settings}}: </h1>
       <ul>
         <li><label class="labelcheckbox"> {{view Ember.Checkbox checkedBinding="view.allowMultipleFlag"}}{{t _allow_multiple}} </label></li>
@@ -149,14 +150,9 @@
         <li><label class="labelcheckbox"> {{view Ember.Checkbox checkedBinding="view.geoLocked"}}{{t _disable_manual_geo_edit}} </label></li>
       </ul>
     {{/if}}
-
-    {{#if view.amNoOptionsType}}
-    <p class="noOptions">
-      {{t _no_additional_settings_for_this_type_of_question}}
-    </p>
-    {{/if}}
-
 </div>
+{{/if}}
+<!-- End of question specific material -->
 <div class="dependencyBlock">
     <label class="labelcheckbox">{{view Ember.Checkbox checkedBinding="view.dependentFlag"}}{{t _dependent}}
     </label>

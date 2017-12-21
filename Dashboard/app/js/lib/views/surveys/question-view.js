@@ -113,11 +113,12 @@ FLOW.QuestionView = FLOW.View.extend({
 	}
   }.property('this.type').cacheable(),
 
-  amNoOptionsType: function () {
+  hasExtraSettings: function () {
     var val;
     if (!Ember.none(this.type)) {
       val = this.type.get('value');
-      return val === 'PHOTO' || val === 'VIDEO' || val === 'DATE' || val === 'SIGNATURE';
+      return val === 'GEOSHAPE' || val === 'CASCADE' || val === 'NUMBER' || val === 'GEO' 
+      || val === 'FREE_TEXT' || val === 'SCAN' || val === 'OPTION' || val === 'CADDISFLY';
     }
   }.property('this.type').cacheable(),
 
@@ -141,12 +142,11 @@ FLOW.QuestionView = FLOW.View.extend({
     return (this.content && this.content.get('type') === 'SIGNATURE')
             || (this.type && this.type.get('value') === 'SIGNATURE');
   }.property('this.type'),
-
-  amCaddisflyType: function () {
-	return (this.content && this.content.get('type') === 'CADDISFLY'
-		|| (this.type && this.type.get('value') === 'CADDISFLY'));
-	}.property('this.type').cacheable(),
-
+  
+   amCaddisflyType: function(){
+       return this.type && this.type.get('value') == 'CADDISFLY';
+   }.property('this.type').cacheable(),
+  
   showLocaleName: function () {
     if (!this.type) {
       return false;
@@ -219,7 +219,6 @@ FLOW.QuestionView = FLOW.View.extend({
         FLOW.selectedControl.set('selectedCaddisflyResource',caddResource);
       }
     }
-
     // if the dependentQuestionId is not null, get the question
     if (!Ember.empty(FLOW.selectedControl.selectedQuestion.get('dependentQuestionId'))) {
       dependentQuestion = FLOW.store.find(FLOW.Question, FLOW.selectedControl.selectedQuestion.get('dependentQuestionId'));
@@ -860,7 +859,7 @@ FLOW.QuestionView = FLOW.View.extend({
     this.set('showAddAttributeDialogBool', false);
   },
 
-  validateQuestionObserver: function(){
+  validateQuestionObserver: function () {
       this.set('questionValidationFailure', (this.text != null && this.text.length > 500));
   }.observes('this.text'),
 
