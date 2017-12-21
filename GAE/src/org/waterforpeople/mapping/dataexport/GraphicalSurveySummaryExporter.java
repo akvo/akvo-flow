@@ -1462,6 +1462,7 @@ public class GraphicalSurveySummaryExporter extends SurveySummaryExporter {
                 }
             }
         }
+
         CreationHelper creationHelper = wb.getCreationHelper();
         Drawing patriarch = sheet.createDrawingPatriarch();
         int curRow = 0;
@@ -1471,22 +1472,30 @@ public class GraphicalSurveySummaryExporter extends SurveySummaryExporter {
         } else {
             createCell(row, 0, sector + " " + REPORT_HEADER, headerStyle);
         }
+
         for (QuestionGroupDto group : orderedGroupList) {
             if (questionMap.get(group) != null) {
+                boolean doDescriptiveStats = false;
+                boolean doChart = false;
+                boolean doDataTable = false;
+            
                 for (QuestionDto question : questionMap.get(group)) {
-                    if (!(QuestionType.OPTION == question.getType() //TODO: add cascade
-                            || QuestionType.NUMBER == question.getType())) {
+                    if (QuestionType.OPTION == question.getType() { 
+                        boolean doChart = true;
+                        boolean doDataTable = true;                        
+                    } else if (QuestionType.NUMBER == question.getType()) {
+                        doDescriptiveStats = true;
+                    } else { //TODO: add cascade
                         continue;
-                    } else {
-                        if (summaryModel.getResponseCountsForQuestion(
-                                question.getKeyId(), sector).size() == 0) {
-                            // if there is no data, skip the question
-                            continue;
-                        }
                     }
-                    // for both options and numeric, we want a pie chart and
-                    // data table. for numeric, we also want descriptive
-                    // statistics.
+
+                    if (summaryModel.getResponseCountsForQuestion(
+                            question.getKeyId(), sector).size() == 0) {
+                        // if there is no data, skip the question
+                        continue;
+                    }
+
+                    //We want a header, spanned across 2 columns
                     int tableTopRow = curRow++;
                     int tableBottomRow = curRow;
                     row = getRow(tableTopRow, sheet);
@@ -1497,6 +1506,10 @@ public class GraphicalSurveySummaryExporter extends SurveySummaryExporter {
                             0,
                             question.getText(),
                             headerStyle);
+
+                    // For numeric, we only want descriptive statistics.
+                    if ( QuestionType.NUMBER == question.getType()) {
+
                     DescriptiveStats stats = summaryModel
                             .getDescriptiveStatsForQuestion(
                                     question.getKeyId(), sector);
@@ -1609,7 +1622,9 @@ public class GraphicalSurveySummaryExporter extends SurveySummaryExporter {
                         }
                     }
                     curRow = tableBottomRow;
-                    if (labels.size() > 0) {
+
+                    //Pie chart, but skip for numbers, phone numbers etc get ridiculous
+                    if (QuestionType.NUMBER != question.getType() && labels.size() > 0) {
                         boolean hasVals = false;
                         if (values != null) {
                             for (String val : values) {
@@ -1657,7 +1672,6 @@ public class GraphicalSurveySummaryExporter extends SurveySummaryExporter {
                     // flush the sheet so far to disk; we will not go back up
                     ((SXSSFSheet) sheet).flushRows(0); // retain 0 last rows and
                     // flush all others
-
                 }
             }
         }
@@ -1846,8 +1860,8 @@ public class GraphicalSurveySummaryExporter extends SurveySummaryExporter {
         Map<String, String> criteria = new HashMap<String, String>();
         Map<String, String> options = new HashMap<String, String>();
 //        options.put(TYPE_OPT, DATA_CLEANING_TYPE);
-        options.put(TYPE_OPT, DATA_ANALYSIS_TYPE);
-//        options.put(TYPE_OPT, COMPREHENSIVE_TYPE);
+//        options.put(TYPE_OPT, DATA_ANALYSIS_TYPE);
+        options.put(TYPE_OPT, COMPREHENSIVE_TYPE);
         options.put(LAST_COLLECTION_OPT, "false");
         options.put(EMAIL_OPT, "email@example.com");
         options.put(FROM_OPT, null);
