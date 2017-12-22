@@ -102,6 +102,7 @@ FLOW.DataPointView = FLOW.View.extend({
     approvalStatus: [{label: Ember.String.loc('_pending'), value: 'PENDING'}, { label: Ember.String.loc('_approved'), value: 'APPROVED' },{ label: Ember.String.loc('_rejected'), value: 'REJECTED'}],
 
     showDataApprovalBlock: false,
+    count: 0,
 
     showSurveyedLocaleDeleteButton: function() {
         return FLOW.router.surveyedLocaleController.get('userCanDelete');
@@ -179,6 +180,11 @@ FLOW.DataPointView = FLOW.View.extend({
     toggleShowDataApprovalBlock: function () {
         this.toggleProperty('showDataApprovalBlock');
     },
+    //counting the number of data points in monitoring tab
+    dataPointIndex: function () {
+        var pageNumber = FLOW.router.surveyedLocaleController.get('pageNumber');
+        return this.get('_parentView.contentIndex') + 1 + 20 * pageNumber;
+     }.property()
 });
 
 /**
