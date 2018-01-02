@@ -11,7 +11,6 @@ require('akvo-flow/views/surveys/survey-group-views');
 require('akvo-flow/views/surveys/survey-details-views');
 require('akvo-flow/views/surveys/form-view');
 require('akvo-flow/views/data/inspect-data-table-views');
-require('akvo-flow/views/data/data-attribute-views');
 require('akvo-flow/views/data/bulk-upload-view');
 require('akvo-flow/views/data/monitoring-data-table-view');
 require('akvo-flow/views/data/cascade-resources-view');
@@ -291,21 +290,6 @@ Ember.Handlebars.registerHelper('toPointType', function (value) {
   });
   return label;
 });
-
-// translates values to labels for attributeTypes
-Ember.Handlebars.registerHelper('toAttributeType', function (value) {
-  var label, valueLoc;
-  label = "";
-  valueLoc = Ember.get(this, value);
-
-  FLOW.attributeTypeControl.get('content').forEach(function (item) {
-    if (item.get('value') == valueLoc) {
-      label = item.get('label');
-    }
-  });
-  return label;
-});
-
 
 // add space to vertical bar helper
 Ember.Handlebars.registerHelper('addSpace', function (property) {
@@ -741,10 +725,6 @@ FLOW.InspectDataView = Ember.View.extend({
   templateName: 'navData/inspect-data'
 });
 
-FLOW.ManageAttributesView = Ember.View.extend({
-  templateName: 'navData/manage-attributes'
-});
-
 FLOW.BulkUploadView = Ember.View.extend({
   templateName: 'navData/bulk-upload'
 });
@@ -921,8 +901,6 @@ FLOW.ColumnView = Ember.View.extend({
       FLOW.deviceControl.getSortInfo();
     } else if (this.get('type') === 'assignment') {
       FLOW.surveyAssignmentControl.getSortInfo();
-    } else if (this.get('type') === 'attribute') {
-      FLOW.attributeControl.getSortInfo();
     } else if (this.get('type') === 'message') {
       FLOW.messageControl.getSortInfo();
     }
