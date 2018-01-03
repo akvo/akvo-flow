@@ -23,7 +23,6 @@
     <bean name="/actions" class="org.waterforpeople.mapping.app.web.rest.ActionRestService" lazy-init="true" />
     <bean name="/approval_groups" class="org.waterforpeople.mapping.app.web.rest.ApprovalGroupRestService" lazy-init="true" />
     <bean name="/approval_steps" class="org.waterforpeople.mapping.app.web.rest.ApprovalStepRestService" lazy-init="true" />
-    <bean name="/caddisfly_resources" class="org.waterforpeople.mapping.app.web.rest.CaddisflyResourceRestService" lazy-init="true" />
     <bean name="/cartodb" class="org.waterforpeople.mapping.app.web.rest.CartodbRestService" lazy-init="true" />
     <bean name="/cascade_nodes" class="org.waterforpeople.mapping.app.web.rest.CascadeNodeRestService" lazy-init="true" />
     <bean name="/cascade_resources" class="org.waterforpeople.mapping.app.web.rest.CascadeResourceRestService" lazy-init="true" />
