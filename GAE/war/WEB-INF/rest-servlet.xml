@@ -31,7 +31,6 @@
     <bean name="/device_groups" class="org.waterforpeople.mapping.app.web.rest.DeviceGroupRestService" lazy-init="true" />
     <bean name="/devices" class="org.waterforpeople.mapping.app.web.rest.DeviceRestService" lazy-init="true" />
     <bean name="/messages" class="org.waterforpeople.mapping.app.web.rest.MessageRestService" lazy-init="true" />
-    <bean name="/metrics" class="org.waterforpeople.mapping.app.web.rest.MetricRestService" lazy-init="true" />
     <bean name="/notification_subscriptions" class="org.waterforpeople.mapping.app.web.rest.NotificationSubscriptionRestService" lazy-init="true" />
     <bean name="/placemark_details" class="org.waterforpeople.mapping.app.web.rest.PlacemarkDetailsRestService" lazy-init="true" />
     <bean name="/placemarks" class="org.waterforpeople.mapping.app.web.rest.PlacemarkRestService" lazy-init="true" />

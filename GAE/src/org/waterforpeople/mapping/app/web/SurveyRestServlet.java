@@ -53,10 +53,6 @@ import com.gallatinsystems.framework.gwt.dto.client.BaseDto;
 import com.gallatinsystems.framework.rest.AbstractRestApiServlet;
 import com.gallatinsystems.framework.rest.RestRequest;
 import com.gallatinsystems.framework.rest.RestResponse;
-import com.gallatinsystems.metric.dao.MetricDao;
-import com.gallatinsystems.metric.dao.SurveyMetricMappingDao;
-import com.gallatinsystems.metric.domain.Metric;
-import com.gallatinsystems.metric.domain.SurveyMetricMapping;
 import com.gallatinsystems.survey.dao.CascadeResourceDao;
 import com.gallatinsystems.survey.dao.QuestionDao;
 import com.gallatinsystems.survey.dao.QuestionGroupDao;
@@ -377,10 +373,9 @@ public class SurveyRestServlet extends AbstractRestApiServlet {
      */
     private List<QuestionDto> listQuestions(Collection<Question> questions) {
         List<QuestionDto> dtoList = new ArrayList<QuestionDto>();
-        QuestionDtoMapper mapper = new QuestionDtoMapper();
         if (questions != null) {
             for (Question q : questions) {
-                dtoList.add(mapper.transform(q));
+                dtoList.add(QuestionDtoMapper.transform(q));
             }
         }
         return dtoList;
@@ -438,10 +433,9 @@ public class SurveyRestServlet extends AbstractRestApiServlet {
 
         List<QuestionOption> options = qoDao.listByQuestionId(questionId);
         List<QuestionOptionDto> dtoList = new ArrayList<>();
-        QuestionOptionDtoMapper mapper = new QuestionOptionDtoMapper();
         if (options != null) {
             for (QuestionOption option : options) {
-                dtoList.add(mapper.transform(option));
+                dtoList.add(QuestionOptionDtoMapper.transform(option));
             }
         }
 
@@ -457,12 +451,11 @@ public class SurveyRestServlet extends AbstractRestApiServlet {
 
         List<QuestionOptionDto> dtoList = new ArrayList<>();
         List<Question> questions = qDao.listQuestionsInOrder(surveyId, Type.OPTION);
-        QuestionOptionDtoMapper mapper = new QuestionOptionDtoMapper();
         for (Question question : questions) {
             List<QuestionOption> options = qoDao.listByQuestionId(question.getKey().getId());
             if (options != null) {
                 for (QuestionOption option : options) {
-                    dtoList.add(mapper.transform(option));
+                    dtoList.add(QuestionOptionDtoMapper.transform(option));
                 }
             }
         }
@@ -515,8 +508,7 @@ public class SurveyRestServlet extends AbstractRestApiServlet {
 
         // TODO: Change Impl Later if we support multiple langs
         String surveyName = parseLangMap(req.getSurveyName()).get("en");
-        String questionGroupName = parseLangMap(req.getQuestionGroupName())
-                .get("en");
+        String questionGroupName = parseLangMap(req.getQuestionGroupName()).get("en");
 
         SurveyGroup sg = null;
         String surveyGroupName = req.getSurveyGroupName();
@@ -533,8 +525,7 @@ public class SurveyRestServlet extends AbstractRestApiServlet {
         Survey survey = null;
         String surveyPath = surveyGroupName;
         // survey = surveyDao.getByPath(surveyName, surveyPath);
-        survey = surveyDao
-                .getByParentIdAndCode(surveyName, sg.getKey().getId());
+        survey = surveyDao.getByParentIdAndCode(surveyName, sg.getKey().getId());
 
         if (survey == null) {
             survey = new Survey();
@@ -665,21 +656,6 @@ public class SurveyRestServlet extends AbstractRestApiServlet {
             q.setDependentFlag(false);
         }
         q = qDao.save(q);
-        if (req.getMetricName() != null
-                && req.getMetricName().trim().length() > 0) {
-            MetricDao metricDao = new MetricDao();
-            List<Metric> metrics = metricDao.listMetrics(req.getMetricName(),
-                    req.getMetricGroup(), null, null, null);
-            if (metrics != null && metrics.size() > 0) {
-                SurveyMetricMappingDao mappingDao = new SurveyMetricMappingDao();
-                SurveyMetricMapping mapping = new SurveyMetricMapping();
-                mapping.setSurveyId(q.getSurveyId());
-                mapping.setQuestionGroupId(q.getQuestionGroupId());
-                mapping.setSurveyQuestionId(q.getKey().getId());
-                mapping.setMetricId(metrics.get(0).getKey().getId());
-                mappingDao.save(mapping);
-            }
-        }
 
         // now update the question id in the children and save
         if (q.getQuestionOptionMap() != null) {
