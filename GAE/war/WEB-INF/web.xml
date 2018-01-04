@@ -388,14 +388,6 @@
 		<servlet-name>DataUpdate</servlet-name>
 		<url-pattern>/app_worker/dataupdate</url-pattern>
 	</servlet-mapping>
-	<servlet>
-		<servlet-name>AuthSub</servlet-name>
-		<servlet-class>com.gallatinsystems.security.authorization.app.web.AuthenticationSubscriptionServlet</servlet-class>
-	</servlet>
-	<servlet-mapping>
-		<servlet-name>AuthSub</servlet-name>
-		<url-pattern>/authsub</url-pattern>
-	</servlet-mapping>
 
 	<servlet>
 		<servlet-name>PhotoUpload</servlet-name>
