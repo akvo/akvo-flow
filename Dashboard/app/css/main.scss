@@ -3392,6 +3392,11 @@ label.collectedTo {
     }
 }
 
+#monitoringData div.noResults {
+    color: red;
+    text-align: center;
+  }
+
 div.chooseLocationData {
     position: relative;
     display: block;
