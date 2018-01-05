@@ -180,11 +180,11 @@ FLOW.DataPointView = FLOW.View.extend({
     toggleShowDataApprovalBlock: function () {
         this.toggleProperty('showDataApprovalBlock');
     },
-    //counting the number of data points in monitoring tab
-    dataPointIndex: function () {
+
+    dataPointRowNumber: function () {
         var pageNumber = FLOW.router.surveyedLocaleController.get('pageNumber');
         return this.get('_parentView.contentIndex') + 1 + 20 * pageNumber;
-     }.property()
+    }.property()
 });
 
 /**

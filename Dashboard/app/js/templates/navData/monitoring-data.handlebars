@@ -37,8 +37,8 @@
           </tr>
         </thead>
         <tbody>
-          {{#each FLOW.router.surveyedLocaleController}}
-           {{view FLOW.DataPointView contentBinding="this"}}
+          {{#each item in FLOW.router.surveyedLocaleController}}
+            {{view FLOW.DataPointView contentBinding="item"}}
           {{/each}}
         </tbody>
       </table>
