@@ -1,5 +1,5 @@
 /*
- *  Copyright (C) 2010-2017 Stichting Akvo (Akvo Foundation)
+ *  Copyright (C) 2010-2018 Stichting Akvo (Akvo Foundation)
  *
  *  This file is part of Akvo FLOW.
  *
@@ -89,9 +89,8 @@ import com.google.appengine.api.taskqueue.TaskOptions;
 import com.google.appengine.api.users.User;
 import com.google.appengine.api.users.UserService;
 import com.google.appengine.api.users.UserServiceFactory;
-import com.google.gwt.user.server.rpc.RemoteServiceServlet;
 
-public class SurveyServiceImpl extends RemoteServiceServlet implements
+public class SurveyServiceImpl implements
         SurveyService {
 
     public static final String FREE_QUESTION_TYPE = "free";
@@ -114,7 +113,6 @@ public class SurveyServiceImpl extends RemoteServiceServlet implements
     private static final Logger log = Logger.getLogger(SurveyServiceImpl.class
             .getName());
 
-    private static final long serialVersionUID = 5557965649047558451L;
     private SurveyDAO surveyDao;
     private Cache cache;
     private MessageDao messageDao;

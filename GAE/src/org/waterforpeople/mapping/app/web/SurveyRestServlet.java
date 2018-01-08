@@ -40,9 +40,7 @@ import org.waterforpeople.mapping.app.gwt.client.survey.SurveyDto;
 import org.waterforpeople.mapping.app.gwt.client.survey.SurveyGroupDto;
 import org.waterforpeople.mapping.app.gwt.client.survey.SurveySummaryDto;
 import org.waterforpeople.mapping.app.gwt.client.surveyinstance.SurveyInstanceDto;
-import org.waterforpeople.mapping.app.gwt.client.surveyinstance.SurveyInstanceService;
 import org.waterforpeople.mapping.app.gwt.server.survey.SurveyServiceImpl;
-import org.waterforpeople.mapping.app.gwt.server.surveyinstance.SurveyInstanceServiceImpl;
 import org.waterforpeople.mapping.app.util.DtoMarshaller;
 import org.waterforpeople.mapping.app.web.dto.SurveyRestRequest;
 import org.waterforpeople.mapping.app.web.dto.SurveyRestResponse;
@@ -196,10 +194,6 @@ public class SurveyRestServlet extends AbstractRestApiServlet {
             List<BaseDto> dtoList = new ArrayList<BaseDto>();
             dtoList.add(dto);
             response.setDtoList(dtoList);
-        } else if (SurveyRestRequest.DELETE_SURVEY_INSTANCE.equals(surveyReq
-                .getAction())) {
-            SurveyInstanceService sis = new SurveyInstanceServiceImpl();
-            sis.deleteSurveyInstance(surveyReq.getInstanceId());
         } else if (SurveyRestRequest.GET_GRAPH_ACTION.equals(surveyReq
                 .getAction())) {
             response.setUrl(constructChartUrl(surveyReq.getQuestionId(),
