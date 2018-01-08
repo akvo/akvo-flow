@@ -372,6 +372,15 @@ Ember.Handlebars.registerHelper("date3", function (property) {
   }
 });
 
+//custom helper for show the index of items in {{#each item in array }}
+Ember.Handlebars.registerHelper('counter', function(indexNum){
+    //let idx = Number(indexNum);
+    //return idx + 1;
+      console.log(indexNum)
+      return indexNum + 1;
+    //return  indexNum[0] + 1;
+})
+
 FLOW.parseJSON = function(jsonString, property) {
   try {
     var jsonObject = JSON.parse(jsonString);
