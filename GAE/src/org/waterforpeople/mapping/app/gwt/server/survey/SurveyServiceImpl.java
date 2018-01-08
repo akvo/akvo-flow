@@ -47,6 +47,7 @@ import com.gallatinsystems.survey.domain.Translation.ParentType;
 import com.google.appengine.api.datastore.KeyFactory;
 import com.google.appengine.api.taskqueue.TaskOptions;
 
+@Deprecated
 public class SurveyServiceImpl {
 
     public static final String FREE_QUESTION_TYPE = "free";
