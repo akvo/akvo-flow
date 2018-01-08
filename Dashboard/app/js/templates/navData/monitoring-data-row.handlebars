@@ -2,7 +2,7 @@
     <td class="device">{{view.dataPointRowNumber}}</td>
     <td class="displayName" style="text-align:left;">{{item.displayName}}</td>
     <td class="identifier" style="text-align:left;">{{item.identifier}}</td>
-    <td class="collected">{{#with item}{{date1 lastUpdateDateTime}}{{/with}}</td>
+    <td class="collected">{{#with item}}{{date1 lastUpdateDateTime}}{{/with}}</td>
 
     {{#if view.parentView.showApprovalStatusColumn}}
     <td class="approvalStatus">
