@@ -512,7 +512,7 @@ FLOW.QuestionView = FLOW.View.extend({
         if (isUnique) {
           args.success();
         } else {
-          args.failure('the question id is not unique');
+          args.failure(Ember.String.loc('_question_id_not_unique'));
         }
       }
     }
