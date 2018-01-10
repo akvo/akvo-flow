@@ -65,6 +65,13 @@ FLOW.MonitoringDataTableView = FLOW.View.extend({
           FLOW.router.userListController.set('content', FLOW.User.find());
       }
   },
+  
+  noResults: function () {
+    var content = FLOW.router.surveyedLocaleController.get('content');
+    if (content && content.get('isLoaded')) {
+        return content.get('length') === 0;
+    }
+  }.property('FLOW.router.surveyedLocaleController.content','FLOW.router.surveyedLocaleController.content.isLoaded'),
 
   doNextPage: function () {
 	var cursorArray, cursorStart;

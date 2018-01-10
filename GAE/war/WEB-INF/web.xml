@@ -278,14 +278,6 @@
 		<url-pattern>/surveymanager</url-pattern>
 	</servlet-mapping>
 	<servlet>
-		<servlet-name>ImageProcessor</servlet-name>
-		<servlet-class>org.waterforpeople.mapping.app.web.ImageProcessorServlet</servlet-class>
-	</servlet>
-	<servlet-mapping>
-		<servlet-name>ImageProcessor</servlet-name>
-		<url-pattern>/webapp/imageprocessor</url-pattern>
-	</servlet-mapping>
-	<servlet>
 		<servlet-name>DeviceManager</servlet-name>
 		<servlet-class>com.gallatinsystems.device.app.web.DeviceManagerServlet</servlet-class>
 	</servlet>
@@ -388,23 +380,7 @@
 		<servlet-name>DataUpdate</servlet-name>
 		<url-pattern>/app_worker/dataupdate</url-pattern>
 	</servlet-mapping>
-	<servlet>
-		<servlet-name>AuthSub</servlet-name>
-		<servlet-class>com.gallatinsystems.security.authorization.app.web.AuthenticationSubscriptionServlet</servlet-class>
-	</servlet>
-	<servlet-mapping>
-		<servlet-name>AuthSub</servlet-name>
-		<url-pattern>/authsub</url-pattern>
-	</servlet-mapping>
 
-	<servlet>
-		<servlet-name>PhotoUpload</servlet-name>
-		<servlet-class>org.waterforpeople.mapping.app.web.PhotoUpload</servlet-class>
-	</servlet>
-	<servlet-mapping>
-		<servlet-name>PhotoUpload</servlet-name>
-		<url-pattern>/webapp/photoupload</url-pattern>
-	</servlet-mapping>
 	<servlet>
 		<servlet-name>SurveyRestApi</servlet-name>
 		<servlet-class>org.waterforpeople.mapping.app.web.SurveyRestServlet</servlet-class>

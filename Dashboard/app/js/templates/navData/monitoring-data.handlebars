@@ -21,7 +21,11 @@
           size=30}}
       </div>
       <a {{action "findSurveyedLocale" target="this"}} class="findData standardBtn btnAboveTable">{{t _find}}</a>
-    </div>
+  </div>
+    {{#if view.noResults}}
+      <div class="noResults">{{t _no_results_found}}</div>
+    {{/if}}
+    
     <section class="fullWidth " id="devicesList">
       <table class="dataTable" id="surveyDataTable">
         <thead>
