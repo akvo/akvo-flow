@@ -1499,7 +1499,8 @@ public class GraphicalSurveySummaryExporter extends SurveySummaryExporter {
 
                     //We want a header, spanned across 2 columns
                     int tableTopRow = curRow++;
-                    int tableBottomRow = curRow;
+                    int bottomRow = curRow;
+
                     row = getRow(tableTopRow, sheet);
                     // span the question heading over any data table
                     sheet.addMergedRegion(new CellRangeAddress(curRow - 1, curRow - 1, 0, 2));
@@ -1513,8 +1514,7 @@ public class GraphicalSurveySummaryExporter extends SurveySummaryExporter {
                             question.getQuestionId(),
                             headerStyle);
 
-                    DescriptiveStats stats = summaryModel
-                            .getDescriptiveStatsForQuestion(
+                    DescriptiveStats stats = summaryModel.getDescriptiveStatsForQuestion(
                                     question.getKeyId(), sector);
                     if (doDescriptiveStats && stats != null && stats.getSampleCount() > 0) {
                         sheet.addMergedRegion(new CellRangeAddress(curRow - 1, curRow - 1, 4, 5));
@@ -1524,22 +1524,13 @@ public class GraphicalSurveySummaryExporter extends SurveySummaryExporter {
                                 question.getText(), headerStyle);
                     }
                     
-                    if (doDataTable) { //Draw headers
-                        row = getRow(curRow++, sheet);
-                        createCell(row, 1, FREQ_LABEL, headerStyle);
-                        createCell(row, 2, PCT_LABEL, headerStyle);
-                    }    
-                    // now create the data table for the option count
+                    // Collect data for use in table, stats and chart
                     Map<String, Long> counts = summaryModel
                             .getResponseCountsForQuestion(question.getKeyId(), sector);
                     int sampleTotal = 0;
                     List<String> labels = new ArrayList<String>();
                     List<String> values = new ArrayList<String>();
-                    int firstOptRow = curRow;
                     for (Entry<String, Long> count : counts.entrySet()) {
-                        if (doDataTable) {
-                            row = getRow(curRow++, sheet);
-                        }
                         String labelText = count.getKey();
                         if (labelText == null) {
                             labelText = "";
@@ -1566,34 +1557,12 @@ public class GraphicalSurveySummaryExporter extends SurveySummaryExporter {
                                 }
                             }
                         }
-                        StringBuilder builder = new StringBuilder();
-                        builder.append(labelText);
-                        if (doDataTable) {
-                            createCell(row, 0, builder.toString());
-                            createCell(row, 1, count.getValue().toString());
-                        }
-                        labels.add(builder.toString());
+                        labels.add(labelText);
                         values.add(count.getValue().toString());
                         sampleTotal += count.getValue();
                     }
-                    if (doDataTable) {
-                        row = getRow(curRow++, sheet);
-                        createCell(row, 0, TOTAL_LABEL);
-                        createCell(row, 1, sampleTotal + "");
-                        for (int i = 0; i < values.size(); i++) {
-                            row = getRow(firstOptRow + i, sheet);
-                            if (sampleTotal > 0) {
-                                createCell(row, 2,
-                                        PCT_FMT.format((Double.parseDouble(values.get(i))
-                                                / sampleTotal)));
-                            } else {
-                                createCell(row, 2, PCT_FMT.format(0));
-                            }
-                        }
-                        tableBottomRow = curRow;
-                    }
-                    
-                    //Output the descriptive stats
+
+                    //Output the descriptive stats; always within window
                     if (stats != null && stats.getSampleCount() > 0) {
                         int tempRow = tableTopRow + 1;
                         row = getRow(tempRow++, sheet);
@@ -1626,11 +1595,9 @@ public class GraphicalSurveySummaryExporter extends SurveySummaryExporter {
                         row = getRow(tempRow++, sheet);
                         createCell(row, 4, MAX_LABEL);
                         createCell(row, 5, stats.getMax() + "", null, Cell.CELL_TYPE_NUMERIC);
-                        if (tableBottomRow < tempRow) {
-                            tableBottomRow = tempRow;
-                        }
+                        
+                        bottomRow = tempRow;
                     }
-                    curRow = tableBottomRow;
 
                     //Pie chart, soon to be bar chart
                     if (doChart && labels.size() > 0) {
@@ -1670,11 +1637,46 @@ public class GraphicalSurveySummaryExporter extends SurveySummaryExporter {
                             anchor.setRow2(tableTopRow + CHART_CELL_HEIGHT);
                             anchor.setAnchorType(2);
                             patriarch.createPicture(anchor, indx);
-                            if (tableTopRow + CHART_CELL_HEIGHT > tableBottomRow) {
-                                curRow = tableTopRow + CHART_CELL_HEIGHT;
+                            if (tableTopRow + CHART_CELL_HEIGHT > bottomRow) {
+                                bottomRow = tableTopRow + CHART_CELL_HEIGHT;
                             }
                         }
                     }
+
+                    if (doDataTable) {
+                        curRow = tableTopRow;
+                        //header
+                        row = getRow(curRow++, sheet);
+                        createCell(row, 1, FREQ_LABEL, headerStyle);
+                        createCell(row, 2, PCT_LABEL, headerStyle);
+                        
+                        //items
+                        for (int i=0; i<labels.size(); i++) {
+                            row = getRow(curRow++, sheet);
+                            createCell(row, 0, labels.get(i));
+                            createCell(row, 1, values.get(i));
+                            if (sampleTotal > 0) {
+                                createCell(row, 2,
+                                        PCT_FMT.format((Double.parseDouble(values.get(i))
+                                                / sampleTotal)));
+                            } else {
+                                createCell(row, 2, PCT_FMT.format(0));
+                            }
+                            if (i % 50 == 49) {
+                                //flush to stay within window
+                                ((SXSSFSheet) sheet).flushRows(0);
+                            }
+                        }
+                        
+                        //total
+                        row = getRow(curRow++, sheet);
+                        createCell(row, 0, TOTAL_LABEL);
+                        createCell(row, 1, sampleTotal + "");
+                        if (curRow > bottomRow) {
+                            bottomRow = curRow;
+                        }
+                    }
+                    curRow = bottomRow;
 
                     // add a blank row between questions
                     getRow(curRow++, sheet);
