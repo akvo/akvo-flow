@@ -397,8 +397,8 @@ FLOW.projectControl = Ember.ArrayController.create({
     if (this.moveTarget == project) {
     	return;
     }
-    
-    this.setCurrentProject(evt.context);
+
+    this.setCurrentProject(project);
 
     // User is using the breadcrumb to navigate, we could have unsaved changes
     FLOW.store.commit();
