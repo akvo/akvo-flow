@@ -39,7 +39,7 @@ FLOW.NavMapsView = FLOW.View.extend({
       var bestBB = this.geoModel.best_bbox_search_cells(bb);
 
       // adapt the points shown on the map
-      FLOW.mapsController.adaptMap(bestBB, this.map.getZoom());
+      FLOW.router.mapsController.adaptMap(bestBB, this.map.getZoom());
     },
 
   /**
@@ -83,7 +83,7 @@ FLOW.NavMapsView = FLOW.View.extend({
       self.redoMap();
     });
 
-    FLOW.mapsController.set('map', this.map);
+    FLOW.router.mapsController.set('map', this.map);
     this.geoModel = create_geomodel();
 
     //load points for the visible map

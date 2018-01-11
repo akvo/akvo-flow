@@ -122,7 +122,7 @@ Ember.Handlebars.registerHelper('placemarkDetail', function () {
   questionType, imageSrcAttr, signatureJson, photoJson, cartoQuestionType, self=this;
 
   if (FLOW.Env.mapsProvider === 'cartodb') {
-      FLOW.mapsController.questions.forEach(function(qItem){
+      FLOW.router.mapsController.questions.forEach(function(qItem){
           if (qItem.get("keyId") == Ember.get(self, 'questionID')) {
               cartoQuestionType = qItem.get("type");
           }
@@ -215,7 +215,7 @@ Ember.Handlebars.registerHelper('placemarkDetail', function () {
 Ember.Handlebars.registerHelper('drawGeoshapes', function () {
     var cartoQuestionType, questionType, self=this;
     if (FLOW.Env.mapsProvider === 'cartodb') {
-        FLOW.mapsController.questions.forEach(function(qItem){
+        FLOW.router.mapsController.questions.forEach(function(qItem){
             if (qItem.get("keyId") == Ember.get(self, 'questionID')) {
                 cartoQuestionType = qItem.get("type");
             }
