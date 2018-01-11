@@ -41,8 +41,8 @@
           </tr>
         </thead>
         <tbody>
-          {{#each FLOW.router.surveyedLocaleController}}
-           {{view FLOW.DataPointView contentBinding="this"}}
+          {{#each item in FLOW.router.surveyedLocaleController.currentContents}}
+           {{view FLOW.DataPointView contentBinding="item"}}
           {{/each}}
         </tbody>
       </table>
@@ -104,9 +104,8 @@
             <!-- TABLE HEADER-->
             <thead>
                 <tr>
-                    <th class="noArrows">{{t _id}}</th>
-                    <th class="noArrows">{{t _question}}</th>
-                    <th class="noArrows">{{t _answer}}</th>
+                    <th class="noArrows" style="text-align:left;font-weight:bold;">{{t _question}}</th>
+                    <th class="noArrows" style="text-align:left;font-weight:bold;">{{t _answer}}</th>
                 </tr>
             </thead>
             <!-- TABLE BODY: MAIN CONTENT-->
@@ -114,10 +113,8 @@
                 {{#each QA in FLOW.questionAnswerControl}}
                   {{#view FLOW.QuestionAnswerView contentBinding="QA"}}
                     <tr>
-                      <td class="device">{{QA.keyId}}</td>
                       <td class="survey" style="text-align:left;">{{QA.questionText}}</td>
-
-                    <td class="submitter" style="text-align:left;">
+                      <td class="submitter" style="text-align:left;">
                         {{#if view.isPhotoType}}
                           {{view.photoUrl}}  <a {{bindAttr href="view.photoUrl"}} target="_blank">{{t _open_photo}}</a>
                           {{#if view.photoLocation}}
