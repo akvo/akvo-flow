@@ -22,18 +22,6 @@
     </label>
     <label class="labelcheckbox">{{view Ember.Checkbox checkedBinding="view.mandatoryFlag"}}{{t _mandatory}}</label>
 
-  {{#if FLOW.Env.showStatisticsFeature}}
-    <label class="selectinLabel"><span>{{t _tag}} {{tooltip _what_is_tag}}:</span> {{view Ember.Select
-      contentBinding="FLOW.attributeControl.content"
-      optionLabelPath="content.name"
-      optionValuePath="content.keyId"
-      selectionBinding="view.attribute"
-      prompt=""
-      promptBinding="Ember.STRINGS._select_tag"}}
-     <a {{action "showAddAttributeDialog" target="this"}} class="addAttribute"><span>+</span>{{t _create_new_tag}} </a> </label>
-      {{#if view.attribute}}<label class="labelcheckbox">{{view Ember.Checkbox checkedBinding="view.includeInMap"}}{{t _include_in_map}}</label>{{/if}}
-  {{/if}}
-
   <label class="selectinLabel">
     <span>
       {{t _question_type}}:
@@ -176,35 +164,6 @@
       {{/if}}
   {{/if}}
 </div>
-<!-- add attribute dialog-->
-    <div {{bindAttr class="view.showAddAttributeDialogBool:display :overlay"}}>
-      <div class="blanket"></div>
-          <div class="dialogWrap">
-        <!-- the dialog contents -->
-        <div class="confirmDialog dialog">
-          <h2>{{t _add_attribute}}</h2>
-          <p class="dialogMsg">{{t _please_provide_name_for_attribute}}</p>
-          <br/>
-         <label for="newAttributeName">{{t _attribute_name}}:</label> {{view Ember.TextField valueBinding="view.newAttributeName" id="newAttributeName" size=40}}
-         <label for="newAttributeGroup">{{t _group}}:</label> {{view Ember.TextField valueBinding="view.newAttributeGroup" id="newAttributeGroup" size=40}}
-          <label>{{t _value_type}}:</label>
-             {{view Ember.Select
-            contentBinding="FLOW.attributeTypeControl.content"
-            selectionBinding="view.newAttributeType"
-            optionLabelPath="content.label"
-            optionValuePath="content.value"
-            prompt=""
-            promptBinding="Ember.STRINGS._select_value_type"}}
-
-          <div class="buttons menuCentre">
-            <ul>
-               <li><a {{action "doAddAttribute" target="this"}} class="ok smallBtn">{{t _save}}</a></li>
-              <li><a {{action "cancelAddAttribute" target="this"}} class="cancel">{{t _cancel}}</a></li>
-            </ul>
-          </div>
-        </div>
-      </div>
-    </div>
     <!-- End question specific material -->
     <nav>
       <ul>
