@@ -1,5 +1,5 @@
 /*
- *  Copyright (C) 2010-2017 Stichting Akvo (Akvo Foundation)
+ *  Copyright (C) 2010-2018 Stichting Akvo (Akvo Foundation)
  *
  *  This file is part of Akvo FLOW.
  *
@@ -133,7 +133,6 @@ public class GraphicalSurveySummaryExporter extends SurveySummaryExporter {
     private static final String IMAGE_LABEL = "Image";
     private static final String ELEV_LABEL = "Elevation";
     private static final String ACC_LABEL = "Accuracy (m)";
-    private static final String CODE_LABEL = "Geo Code";
     private static final String IDENTIFIER_LABEL = "Identifier";
     private static final String DISPLAY_NAME_LABEL = "Display Name";
     private static final String DEVICE_IDENTIFIER_LABEL = "Device identifier";
@@ -144,6 +143,7 @@ public class GraphicalSurveySummaryExporter extends SurveySummaryExporter {
     private static final int CHART_CELL_WIDTH = 10;
     private static final int CHART_CELL_HEIGHT = 22;
     private static final NumberFormat PCT_FMT = DecimalFormat.getPercentInstance();
+    private static final int GEO_COLUMN_COUNT = 3;
    
     private CellStyle headerStyle;
     private CellStyle textStyle;
@@ -788,11 +788,13 @@ public class GraphicalSurveySummaryExporter extends SurveySummaryExporter {
         String[] geoParts = value.split("\\|");
         List<String> cells = new ArrayList<>();
         int count = 0;
-        for (count = 0; count < geoParts.length; count++) {
+        //discard geocode (if present)
+        int partsToCopy = Math.min(geoParts.length, GEO_COLUMN_COUNT);
+        for (count = 0; count < partsToCopy; count++) {
             cells.add(geoParts[count]);
         }
         // now handle any missing fields
-        for (int j = count; j < 4; j++) {
+        for (int j = count; j < GEO_COLUMN_COUNT; j++) {
             cells.add("");
         }
 
@@ -1431,18 +1433,15 @@ public class GraphicalSurveySummaryExporter extends SurveySummaryExporter {
                 createHeaderCell(row, offset++, varName + "_" + LAT_LABEL);
                 createHeaderCell(row, offset++, varName + "_" + LON_LABEL);
                 createHeaderCell(row, offset++, varName + "_" + ELEV_LABEL);
-                createHeaderCell(row, offset++, varName + "_" + CODE_LABEL.replaceAll("\\s", ""));
             } else {
                 createHeaderCell(row, offset++, q.getText() + " - " + LAT_LABEL);
                 createHeaderCell(row, offset++, q.getText() + " - " + LON_LABEL);
                 createHeaderCell(row, offset++, q.getText() + " - " + ELEV_LABEL);
-                createHeaderCell(row, offset++, q.getText() + " - " + CODE_LABEL);
             }
         } else { //Import currently relies on the --GEO headers
             createHeaderCell(row, offset++, q.getKeyId() + "|" + LAT_LABEL);
             createHeaderCell(row, offset++, "--GEOLON--|"      + LON_LABEL);
             createHeaderCell(row, offset++, "--GEOELE--|"      + ELEV_LABEL);
-            createHeaderCell(row, offset++, "--GEOCODE--|"     + CODE_LABEL);
         }
         return offset;
     }
