@@ -1619,7 +1619,7 @@ public class GraphicalSurveySummaryExporter extends SurveySummaryExporter {
                         if (hasVals && generateCharts) {
                             // now insert the graph
                             int indx = wb.addPicture(
-                                    JFreechartChartUtil.getPieChart(
+                                    JFreechartChartUtil.getBarChart(
                                             labels,
                                             values,
                                             question.getText(),
