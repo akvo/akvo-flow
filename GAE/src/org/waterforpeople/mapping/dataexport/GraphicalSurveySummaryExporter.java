@@ -1,5 +1,5 @@
 /*
- *  Copyright (C) 2010-2017 Stichting Akvo (Akvo Foundation)
+ *  Copyright (C) 2010-2018 Stichting Akvo (Akvo Foundation)
  *
  *  This file is part of Akvo FLOW.
  *
@@ -143,6 +143,7 @@ public class GraphicalSurveySummaryExporter extends SurveySummaryExporter {
     private static final int CHART_CELL_WIDTH = 10;
     private static final int CHART_CELL_HEIGHT = 22;
     private static final NumberFormat PCT_FMT = DecimalFormat.getPercentInstance();
+    private static final int GEO_COLUMN_COUNT = 3;
    
     private CellStyle headerStyle;
     private CellStyle textStyle;
@@ -787,11 +788,13 @@ public class GraphicalSurveySummaryExporter extends SurveySummaryExporter {
         String[] geoParts = value.split("\\|");
         List<String> cells = new ArrayList<>();
         int count = 0;
-        for (count = 0; count < Math.min(geoParts.length,3); count++) { //discard any geocode
+        //discard geocode (if present)
+        int partsToCopy = Math.min(geoParts.length, GEO_COLUMN_COUNT);
+        for (count = 0; count < partsToCopy; count++) {
             cells.add(geoParts[count]);
         }
         // now handle any missing fields
-        for (int j = count; j < 3; j++) {
+        for (int j = count; j < GEO_COLUMN_COUNT; j++) {
             cells.add("");
         }
 
