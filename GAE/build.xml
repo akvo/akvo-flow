@@ -16,7 +16,6 @@
 			<include name="**/*.jar" />
 		</fileset>
 
-		<pathelement path="${gwtlibs.dir}/gwt-user.jar" />
 		<pathelement path="${gwtlibs.dir}/gwt-dev.jar" />
 		<pathelement path="${gwtlibs.dir}/validation-api-1.0.0.GA-sources.jar" />
 		<pathelement path="${gwtlibs.dir}/validation-api-1.0.0.GA.jar" />

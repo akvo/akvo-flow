@@ -4,45 +4,6 @@ function capitaliseFirstLetter(string) {
   return string.charAt(0).toUpperCase() + string.slice(1);
 }
 
-FLOW.attributeTypeControl = Ember.Object.create({
-  content: [
-    Ember.Object.create({
-      label: "text",
-      value: "String"
-    }), Ember.Object.create({
-      label: "number",
-      value: "Double"
-    })
-  ]
-});
-
-FLOW.attributeControl = Ember.ArrayController.create({
-  sortProperties: null,
-  sortAscending: true,
-  content: null,
-
-  setFilteredContent: function () {
-    this.set('content', FLOW.store.filter(FLOW.Metric, function (item) {
-      return true;
-    }));
-  },
-
-  // load all Survey Groups
-  populate: function () {
-    if (FLOW.Env.showStatisticsFeature) {
-        FLOW.store.find(FLOW.Metric);
-    }
-    this.setFilteredContent();
-    this.set('sortProperties', ['name']);
-    this.set('sortAscending', true);
-  },
-
-  getSortInfo: function () {
-    this.set('sortProperties', FLOW.tableColumnControl.get('sortProperties'));
-    this.set('sortAscending', FLOW.tableColumnControl.get('sortAscending'));
-  }
-});
-
 FLOW.cascadeResourceControl = Ember.ArrayController.create({
   content:null,
   published:null,
