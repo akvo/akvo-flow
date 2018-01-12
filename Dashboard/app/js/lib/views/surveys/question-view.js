@@ -164,7 +164,6 @@ FLOW.QuestionView = FLOW.View.extend({
   // TODO options
   doQuestionEdit: function () {
     var questionType = null,
-    attribute = null,
     dependentQuestion, dependentAnswer, dependentAnswerArray,cascadeResource;
     if (this.content && (this.content.get('isDirty') || this.content.get('isSaving'))) {
       this.showMessageDialog(Ember.String.loc('_question_is_being_saved'),
