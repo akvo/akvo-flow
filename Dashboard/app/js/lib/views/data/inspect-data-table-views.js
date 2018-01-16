@@ -281,8 +281,15 @@ FLOW.inspectDataTableView = FLOW.View.extend({
     } else {
       return false;
     }
-  }.property('FLOW.surveyInstanceControl.content', 'FLOW.surveyInstanceControl.content.isLoaded')
-
+  }.property('FLOW.surveyInstanceControl.content', 'FLOW.surveyInstanceControl.content.isLoaded'),
+  
+  //clearing the SI records when the user navigates away from inspect-tab.
+  willDestroyElement: function () {
+     //FLOW.surveyInstanceControl.set('content', null) //this causes the contentChanged bug
+     FLOW.surveyInstanceControl.set('currentContents', null)
+     console.log('clearing inspect records!!!')
+  }
+   
 });
 
 FLOW.DataItemView = FLOW.View.extend({
