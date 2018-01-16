@@ -33,32 +33,6 @@ FLOW.inspectDataTableView = FLOW.View.extend({
     FLOW.locationControl.set('selectedLevel2', null);
   },
   
-  //what cleaning teh view after it z removed.. when someone navigates away.
-  //like ondestroy for th router.
-  willDestroyElement: function(){
-      console.log('hey my view is destroyed')
-      //iam going to reset all these values n see the response.
-      /*this.set('surveyInstanceId',null),
-      this.set('surveyId',null),
-      this.set('deviceId',null),
-      this.set('since',null),
-      this.set('beginDate',null),
-      this.set('endDate',null),
-      this.set('submitterName',null),
-      this.set('selectedCountryCode',null),
-      this.set('selectedLevel1',null),
-      this.set('selectedLevel2',null);*/
-      //it is better to call this cleaningRecords function from data-controller.
-      //FLOW.surveyInstanceControl.depopulateRecords();
-      FLOW.surveyInstanceControl.set('content', null);//this error.
-      /*
-      Uncaught TypeError: Cannot read property 'forEach' of null
-        at c.contentChanged
-      */
-      
-        
-  },
-
   // do a new query
   doFindSurveyInstances: function () {
     FLOW.surveyInstanceControl.get('sinceArray').clear();
@@ -285,11 +259,11 @@ FLOW.inspectDataTableView = FLOW.View.extend({
   
   //clearing the SI records when the user navigates away from inspect-tab.
   willDestroyElement: function () {
-     //FLOW.surveyInstanceControl.set('content', null) //this causes the contentChanged bug
-     FLOW.surveyInstanceControl.set('currentContents', null)
-     console.log('clearing inspect records!!!')
+     FLOW.surveyInstanceControl.set('currentContents', null);
+     FLOW.metaControl.set('numSILoaded', null);
+     FLOW.surveyInstanceControl.set('pageNumber', 0);     
   }
-   
+  
 });
 
 FLOW.DataItemView = FLOW.View.extend({
