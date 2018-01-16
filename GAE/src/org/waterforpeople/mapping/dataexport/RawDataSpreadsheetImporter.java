@@ -1,5 +1,5 @@
 /*
- *  Copyright (C) 2010-2017 Stichting Akvo (Akvo Foundation)
+ *  Copyright (C) 2010-2018 Stichting Akvo (Akvo Foundation)
  *
  *  This file is part of Akvo FLOW.
  *
@@ -598,6 +598,9 @@ public class RawDataSpreadsheetImporter implements DataImporter {
             long questionId = m.getValue();
 
             QuestionDto questionDto = questionIdToQuestionDto.get(questionId);
+            if (questionDto == null) { //no such question
+                continue;
+            }
             QuestionType questionType = questionDto.getType();
 
             for (int iter = 0; iter < iterations; iter++) {
