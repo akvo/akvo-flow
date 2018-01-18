@@ -1,5 +1,5 @@
 /*
- *  Copyright (C) 2010-2012 Stichting Akvo (Akvo Foundation)
+ *  Copyright (C) 2010-2012, 2018 Stichting Akvo (Akvo Foundation)
  *
  *  This file is part of Akvo FLOW.
  *
@@ -14,26 +14,32 @@
  *  The full license text can also be seen at <http://www.gnu.org/licenses/agpl.html>.
  */
 
-package com.gallatinsystems.common.util;
+package org.akvo.flow.util;
 
 import java.awt.Color;
-import java.awt.RenderingHints;
 import java.util.List;
 
 import org.jfree.chart.ChartFactory;
 import org.jfree.chart.ChartUtilities;
 import org.jfree.chart.JFreeChart;
+import org.jfree.chart.plot.CategoryPlot;
 import org.jfree.chart.plot.PlotOrientation;
 import org.jfree.chart.renderer.category.BarRenderer;
+import org.jfree.chart.renderer.category.StandardBarPainter;
 import org.jfree.data.category.DefaultCategoryDataset;
 import org.jfree.data.general.DefaultPieDataset;
+
+import org.akvo.AkvoColours;
+
 
 /**
  * wrapper class for interaction with the JFreechart library.
  * 
  * @author cfagiani
  */
+
 public class JFreechartChartUtil {
+
 
     /**
      * generates a pie chart with the set of labels and values passed in (the labels and values
@@ -65,6 +71,7 @@ public class JFreechartChartUtil {
         }
 
     }
+    
     /**
      * generates a bar chart with the set of labels and values passed in (the labels and values
      * arrays must both be non-null and contain the same number of elements). The chart is returned
@@ -84,21 +91,34 @@ public class JFreechartChartUtil {
         for (int i = 0; i < labels.size(); i++) {
             dataset.setValue(
                     Double.parseDouble(values.get(i)),
-                    labels.get(i),//Integer.valueOf(i), //Row
-                    "" //Integer.valueOf(0) //Column
+                    "", // All on one nameless row
+                    labels.get(i) //Integer.valueOf(i) //Column
                     );
         }
-        //TODO: legend or not? It can take up lots of space.
-        JFreeChart chart = ChartFactory.createBarChart(title, "", "", dataset, PlotOrientation.HORIZONTAL, true, false, false);
-        // Colors
-        chart.setBackgroundPaint(new Color(255,255,255)); //White
-        chart.setBorderVisible(false);
-        BarRenderer r = (BarRenderer) chart.getCategoryPlot().getRenderer();
-        r.setShadowVisible(false); //Flatten chart
+
+        JFreeChart chart = ChartFactory.createBarChart(title,
+                "", //Domain axis label
+                "", //Range axis label; counts need no unit
+                dataset,
+                PlotOrientation.HORIZONTAL,
+                false, //No legend
+                false, //not interactive, so no tooltips
+                false); //and no URLs
+
+        // Change overall look
+        chart.getTitle().setPaint(new Color(AkvoColours.darkPurple));
+        chart.setBackgroundPaint(Color.white);
+        chart.setBorderVisible(false); //in the 2010's we do everything flat
+        CategoryPlot plot = (CategoryPlot) chart.getPlot();
+        plot.setBackgroundPaint(Color.white);
+        plot.setRangeGridlinePaint(Color.lightGray);
         
-        //Pixel and font stuff:
-        //RenderingHints renderingHints = new RenderingHints(key, value);
-        //chart.setRenderingHints(renderingHints);
+        // Change bar look
+        BarRenderer r = (BarRenderer) plot.getRenderer();
+        r.setShadowVisible(false); //Flatter
+        r.setSeriesPaint(0, new Color(AkvoColours.orange));
+        r.setBarPainter(new StandardBarPainter()); //Flattest
+        
         try {
             return ChartUtilities.encodeAsPNG(chart.createBufferedImage(width, height));
         } catch (Exception e) {

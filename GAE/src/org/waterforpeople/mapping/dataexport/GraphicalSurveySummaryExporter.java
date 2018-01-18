@@ -1,5 +1,5 @@
 /*
- *  Copyright (C) 2010-2017 Stichting Akvo (Akvo Foundation)
+ *  Copyright (C) 2010-2018 Stichting Akvo (Akvo Foundation)
  *
  *  This file is part of Akvo FLOW.
  *
@@ -41,6 +41,7 @@ import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicLong;
 
 import org.akvo.flow.domain.DataUtils;
+import org.akvo.flow.util.JFreechartChartUtil;
 import org.apache.log4j.ConsoleAppender;
 import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
@@ -75,7 +76,6 @@ import org.waterforpeople.mapping.domain.CaddisflyResult;
 import org.waterforpeople.mapping.domain.response.value.Media;
 import org.waterforpeople.mapping.serialization.response.MediaResponse;
 
-import com.gallatinsystems.common.util.JFreechartChartUtil;
 import com.gallatinsystems.survey.dao.CaddisflyResourceDao;
 
 import static com.gallatinsystems.common.Constants.*;
@@ -1599,7 +1599,7 @@ public class GraphicalSurveySummaryExporter extends SurveySummaryExporter {
                         bottomRow = tempRow;
                     }
 
-                    //Pie chart, soon to be bar chart
+                    //bar chart
                     if (doChart && labels.size() > 0) {
                         boolean hasVals = false;
                         if (values != null) {
