@@ -360,6 +360,7 @@ public class ActionRestService {
         surveysAncestorIds.add(savedProjectCopy.getKey().getId());
 
         for (Survey sourceSurvey : sourceSurveys) {
+            sourceSurvey.setAncestorIds(surveysAncestorIds);
             SurveyDto surveyDto = new SurveyDto();
             surveyDto.setCode(sourceSurvey.getCode());
             surveyDto.setName(sourceSurvey.getName());
@@ -367,7 +368,6 @@ public class ActionRestService {
             surveyDto.setSurveyGroupId(savedProjectCopy.getKey().getId());
             Survey surveyCopy = SurveyUtils.copySurvey(sourceSurvey, surveyDto);
             surveyCopy.setSurveyGroupId(savedProjectCopy.getKey().getId());
-            sourceSurvey.setAncestorIds(surveysAncestorIds);
             long copyId = surveyDao.save(surveyCopy).getKey().getId();
             if (isRegistrationFormId(sourceSurvey.getKey().getId(),
                     projectSource.getNewLocaleSurveyId())) {
