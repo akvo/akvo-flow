@@ -571,6 +571,8 @@ FLOW.projectControl = Ember.ArrayController.create({
   saveProject: function() {
     var currentProject = this.get('currentProject');
     var currentForm = FLOW.selectedControl.get('selectedSurvey');
+    currentProject.set('lastUpdateDateTime', '');
+    currentForm.set('lastUpdateDateTime', '');
 
     if (currentProject && currentProject.get('isDirty')) {
       var name = currentProject.get('name').trim();
