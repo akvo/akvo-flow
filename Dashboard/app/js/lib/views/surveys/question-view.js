@@ -428,7 +428,7 @@ FLOW.QuestionView = FLOW.View.extend({
     }
 
     FLOW.selectedControl.selectedSurvey.set('status', 'NOT_PUBLISHED');
-    FLOW.store.commit();
+    FLOW.projectControl.saveProject();
     FLOW.selectedControl.set('selectedQuestion', null);
     FLOW.selectedControl.set('dependentQuestion', null);
     FLOW.selectedControl.set('selectedCascadeResource',null);
@@ -675,7 +675,7 @@ FLOW.QuestionView = FLOW.View.extend({
       	}
     }
     FLOW.selectedControl.selectedSurvey.set('status', 'NOT_PUBLISHED');
-    FLOW.store.commit();
+    FLOW.projectControl.saveProject();
     FLOW.selectedControl.set('selectedForMoveQuestion', null);
   },
 
@@ -725,7 +725,7 @@ FLOW.QuestionView = FLOW.View.extend({
     // restore order in case the order has gone haywire
     FLOW.questionControl.restoreOrder(questionsInGroup);
     FLOW.selectedControl.selectedSurvey.set('status', 'NOT_PUBLISHED');
-    FLOW.store.commit();
+    FLOW.projectControl.saveProject();
 
     FLOW.selectedControl.set('selectedForCopyQuestion', null);
   },
@@ -778,7 +778,7 @@ FLOW.QuestionView = FLOW.View.extend({
     // restore order in case the order has gone haywire
     FLOW.questionControl.restoreOrder(questionsInGroup);
     FLOW.selectedControl.selectedSurvey.set('status', 'NOT_PUBLISHED');
-    FLOW.store.commit();
+    FLOW.projectControl.saveProject();
   },
 
   // true if one question has been selected for Move
