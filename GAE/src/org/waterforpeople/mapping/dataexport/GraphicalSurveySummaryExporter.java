@@ -475,6 +475,56 @@ public class GraphicalSurveySummaryExporter extends SurveySummaryExporter {
         log.debug("Finished data sort");
     }
 
+    //gather some statistics
+    private List<String> analyseData(final List<InstanceData> allData) {
+        int totalInstances = allData.size();
+        int approvedInstances = 0;
+        Date firstSubmission = null;
+        Date lastSubmission = null;
+        Map<String, Integer> instancesByUser = new HashMap<>();
+        Map<String, Integer> instancesByDevice = new HashMap<>();
+        long totalDuration = 0L;
+        long minDuration = Long.MAX_VALUE;
+        long maxDuration = 0;
+        
+        for (InstanceData instance : allData) {
+            SurveyInstanceDto sid = instance.surveyInstanceDto;
+            if (sid.getApprovedFlag() != null && sid.getApprovedFlag().equalsIgnoreCase("true")) {
+                approvedInstances++;
+            }
+            
+            Date cd = sid.getCollectionDate();
+            if (firstSubmission == null || cd.before(firstSubmission)) {
+                firstSubmission = cd;
+            }
+            if (lastSubmission == null || cd.after(lastSubmission)) {
+                lastSubmission = cd;
+            }
+            String u = sid.getSubmitterName();
+            if (instancesByUser.containsKey(u)){
+                instancesByUser.put(u, instancesByUser.get(u) + 1);
+            } else {
+                instancesByUser.put(u, Integer.valueOf(1));
+            }
+            String dev = sid.getDeviceIdentifier();
+            if (instancesByDevice.containsKey(dev)){
+                instancesByDevice.put(dev, instancesByDevice.get(dev) + 1);
+            } else {
+                instancesByDevice.put(dev, Integer.valueOf(1));
+            }
+            Long dur = sid.getSurveyalTime(); //seconds
+            if (dur != null) {
+                totalDuration += dur;
+                maxDuration = Long.max(maxDuration, dur);
+                minDuration = Long.min(minDuration, dur);
+            }
+                
+        }
+        List <String> instanceStats = new ArrayList<>();
+        instanceStats.add("Instances: " + totalInstances);
+        return instanceStats;
+    }
+    
     private synchronized void writeInstanceDataSplit(
             Sheet sheet,
             InstanceData instanceData,
@@ -1474,6 +1524,26 @@ public class GraphicalSurveySummaryExporter extends SurveySummaryExporter {
             createCell(row, 0, sector + " " + REPORT_HEADER, headerStyle);
         }
 
+        //Global statistics
+        //Calculate them first (due to the window, we cannot sum this while looping and 
+        // then go back up and draw it last)
+        int totalQuestions = 0;
+        for (List<QuestionDto> group : questionMap.values()) {
+            totalQuestions += group.size();
+        }
+        //Now draw them
+        curRow++;
+        row = getRow(curRow++, sheet);
+        createCell(row, 0, "Questions");
+        createCell(row, 3, totalQuestions);
+        row = getRow(curRow++, sheet);
+        createCell(row, 0, "Questions with answers");
+        createCell(row, 3, questionMap.size());
+        
+        curRow++;
+        curRow++;
+        
+        
         for (QuestionGroupDto group : orderedGroupList) {
             if (questionMap.get(group) != null) {
                 for (QuestionDto question : questionMap.get(group)) {
@@ -1567,7 +1637,7 @@ public class GraphicalSurveySummaryExporter extends SurveySummaryExporter {
                         int tempRow = tableTopRow + 1;
                         row = getRow(tempRow++, sheet);
                         createCell(row, 4, "N");
-                        createCell(row, 5, sampleTotal + "", null, Cell.CELL_TYPE_NUMERIC);
+                        createCell(row, 5, sampleTotal);
                         row = getRow(tempRow++, sheet);
                         createCell(row, 4, MEAN_LABEL);
                         createCell(row, 5, stats.getMean() + "", null, Cell.CELL_TYPE_NUMERIC);
@@ -1577,9 +1647,6 @@ public class GraphicalSurveySummaryExporter extends SurveySummaryExporter {
                         row = getRow(tempRow++, sheet);
                         createCell(row, 4, MEDIAN_LABEL);
                         createCell(row, 5, stats.getMedian() + "", null, Cell.CELL_TYPE_NUMERIC);
-                        row = getRow(tempRow++, sheet);
-                        createCell(row, 4, MODE_LABEL);
-                        createCell(row, 5, stats.getMode() + "", null, Cell.CELL_TYPE_NUMERIC);
                         row = getRow(tempRow++, sheet);
                         createCell(row, 4, STD_D_LABEL);
                         createCell(row, 5, stats.getStandardDeviation() + "", null, Cell.CELL_TYPE_NUMERIC);
@@ -1695,6 +1762,13 @@ public class GraphicalSurveySummaryExporter extends SurveySummaryExporter {
      */
     protected Cell createCell(Row row, int col, String value) {
         return createCell(row, col, value, null, -1);
+    }
+
+    protected Cell createCell(Row row, int col, int value) {
+        Cell cell = row.createCell(col);
+        cell.setCellType(Cell.CELL_TYPE_NUMERIC);
+        cell.setCellValue((double)value);
+        return cell;
     }
 
     protected Cell createCell(Row row, int col, String value, CellStyle style) {
