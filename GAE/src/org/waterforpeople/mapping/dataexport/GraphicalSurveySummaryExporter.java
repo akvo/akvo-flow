@@ -1442,9 +1442,15 @@ public class GraphicalSurveySummaryExporter extends SurveySummaryExporter {
      * Writes the stats and graphs sheet
      */
     private void writeStatsAndGraphsSheet(
-            Map<QuestionGroupDto, List<QuestionDto>> questionMap,
-            SummaryModel summaryModel, String sector, Workbook wb)
+            Map<QuestionGroupDto,
+            List<QuestionDto>> questionMap,
+            SummaryModel summaryModel,
+            String sector,
+            Workbook wb)
             throws Exception {
+        final int variableNameColumnIndex = 3;
+        final int descriptiveStatsColumnIndex = 4;
+        
         String title = sector == null ? SUMMARY_LABEL : sector;
         Sheet sheet = null;
         int sheetCount = 2;
@@ -1502,7 +1508,7 @@ public class GraphicalSurveySummaryExporter extends SurveySummaryExporter {
                     int bottomRow = curRow;
 
                     row = getRow(tableTopRow, sheet);
-                    // span the question heading over any data table
+                    // Span the question text over any data table
                     sheet.addMergedRegion(new CellRangeAddress(curRow - 1, curRow - 1, 0, 2));
                     createCell(
                             row,
@@ -1510,17 +1516,18 @@ public class GraphicalSurveySummaryExporter extends SurveySummaryExporter {
                             question.getText(),
                             headerStyle);
                     // Variable name
-                    createCell(row, 3,
+                    createCell(row, variableNameColumnIndex,
                             question.getQuestionId(),
                             headerStyle);
 
                     DescriptiveStats stats = summaryModel.getDescriptiveStatsForQuestion(
                                     question.getKeyId(), sector);
                     if (doDescriptiveStats && stats != null && stats.getSampleCount() > 0) {
+                        // span the question text over the stats table
                         sheet.addMergedRegion(new CellRangeAddress(curRow - 1, curRow - 1, 4, 5));
                         createCell(
                                 row,
-                                4,
+                                descriptiveStatsColumnIndex,
                                 question.getText(), headerStyle);
                     }
                     
@@ -1565,36 +1572,38 @@ public class GraphicalSurveySummaryExporter extends SurveySummaryExporter {
                     //Output the descriptive stats; always within window
                     if (stats != null && stats.getSampleCount() > 0) {
                         int tempRow = tableTopRow + 1;
+                        int c1 = descriptiveStatsColumnIndex;
+                        int c2 = c1 + 1;
                         row = getRow(tempRow++, sheet);
-                        createCell(row, 4, "N");
-                        createCell(row, 5, sampleTotal + "", null, Cell.CELL_TYPE_NUMERIC);
+                        createCell(row, c1, "N");
+                        createCell(row, c2, sampleTotal + "", null, Cell.CELL_TYPE_NUMERIC);
                         row = getRow(tempRow++, sheet);
-                        createCell(row, 4, MEAN_LABEL);
-                        createCell(row, 5, stats.getMean() + "", null, Cell.CELL_TYPE_NUMERIC);
+                        createCell(row, c1, MEAN_LABEL);
+                        createCell(row, c2, stats.getMean() + "", null, Cell.CELL_TYPE_NUMERIC);
                         row = getRow(tempRow++, sheet);
-                        createCell(row, 4, STD_E_LABEL);
-                        createCell(row, 5, stats.getStandardError() + "", null, Cell.CELL_TYPE_NUMERIC);
+                        createCell(row, c1, STD_E_LABEL);
+                        createCell(row, c2, stats.getStandardError() + "", null, Cell.CELL_TYPE_NUMERIC);
                         row = getRow(tempRow++, sheet);
-                        createCell(row, 4, MEDIAN_LABEL);
-                        createCell(row, 5, stats.getMedian() + "", null, Cell.CELL_TYPE_NUMERIC);
+                        createCell(row, c1, MEDIAN_LABEL);
+                        createCell(row, c2, stats.getMedian() + "", null, Cell.CELL_TYPE_NUMERIC);
                         row = getRow(tempRow++, sheet);
-                        createCell(row, 4, MODE_LABEL);
-                        createCell(row, 5, stats.getMode() + "", null, Cell.CELL_TYPE_NUMERIC);
+                        createCell(row, c1, MODE_LABEL);
+                        createCell(row, c2, stats.getMode() + "", null, Cell.CELL_TYPE_NUMERIC);
                         row = getRow(tempRow++, sheet);
-                        createCell(row, 4, STD_D_LABEL);
-                        createCell(row, 5, stats.getStandardDeviation() + "", null, Cell.CELL_TYPE_NUMERIC);
+                        createCell(row, c1, STD_D_LABEL);
+                        createCell(row, c2, stats.getStandardDeviation() + "", null, Cell.CELL_TYPE_NUMERIC);
                         row = getRow(tempRow++, sheet);
-                        createCell(row, 4, VAR_LABEL);
-                        createCell(row, 5, stats.getVariance() + "", null, Cell.CELL_TYPE_NUMERIC);
+                        createCell(row, c1, VAR_LABEL);
+                        createCell(row, c2, stats.getVariance() + "", null, Cell.CELL_TYPE_NUMERIC);
                         row = getRow(tempRow++, sheet);
-                        createCell(row, 4, RANGE_LABEL);
-                        createCell(row, 5, stats.getRange() + "", null, Cell.CELL_TYPE_NUMERIC);
+                        createCell(row, c1, RANGE_LABEL);
+                        createCell(row, c2, stats.getRange() + "", null, Cell.CELL_TYPE_NUMERIC);
                         row = getRow(tempRow++, sheet);
-                        createCell(row, 4, MIN_LABEL);
-                        createCell(row, 5, stats.getMin() + "", null, Cell.CELL_TYPE_NUMERIC);
+                        createCell(row, c1, MIN_LABEL);
+                        createCell(row, c2, stats.getMin() + "", null, Cell.CELL_TYPE_NUMERIC);
                         row = getRow(tempRow++, sheet);
-                        createCell(row, 4, MAX_LABEL);
-                        createCell(row, 5, stats.getMax() + "", null, Cell.CELL_TYPE_NUMERIC);
+                        createCell(row, c1, MAX_LABEL);
+                        createCell(row, c2, stats.getMax() + "", null, Cell.CELL_TYPE_NUMERIC);
                         
                         bottomRow = tempRow;
                     }
@@ -1662,10 +1671,6 @@ public class GraphicalSurveySummaryExporter extends SurveySummaryExporter {
                             } else {
                                 createCell(row, 2, PCT_FMT.format(0));
                             }
-                            if (i % 50 == 49) {
-                                //flush to stay within window
-                                ((SXSSFSheet) sheet).flushRows(0);
-                            }
                         }
                         
                         //total
@@ -1681,8 +1686,7 @@ public class GraphicalSurveySummaryExporter extends SurveySummaryExporter {
                     // add a blank row between questions
                     getRow(curRow++, sheet);
                     // flush the sheet so far to disk; we will not go back up
-                    // This is crucial, not just an optimisation!
-                    // File broken if we have too many lines between each flush
+                    // File will be broken if we write outside the window!
                     ((SXSSFSheet) sheet).flushRows(0); // retain 0 last rows and
                     // flush all others
                 }
