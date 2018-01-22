@@ -633,9 +633,21 @@ FLOW.surveyControl = Ember.ArrayController.create({
 
   selectFirstForm: function() {
     if (this.get('content') && this.content.get('isLoaded')) {
-      var form = this.content.get('firstObject');
-      if (form) {
-        FLOW.selectedControl.set('selectedSurvey', form);
+      if (this.newForm) {
+        //set selected survey to latest
+        var latestForm;
+        this.get('content').forEach(function(item){
+          if (typeof item.get('lastUpdateDateTime') === "undefined") {
+            latestForm = item;
+          }
+        });
+        FLOW.selectedControl.set('selectedSurvey', latestForm);
+        this.newForm = false;
+      } else {
+        var form = this.content.get('firstObject');
+        if (form) {
+          FLOW.selectedControl.set('selectedSurvey', form);
+        }
       }
     }
   }.observes('content.isLoaded'),
