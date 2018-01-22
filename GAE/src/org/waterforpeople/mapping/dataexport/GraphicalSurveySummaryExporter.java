@@ -184,6 +184,18 @@ public class GraphicalSurveySummaryExporter extends SurveySummaryExporter {
     private List<String> questionIdList = new ArrayList<>();
     private List<String> unsummarizable = new ArrayList<>();
 
+    //data about the data
+    int totalInstances = 0;
+    int approvedInstances = 0;
+    Date firstSubmission = null;
+    Date lastSubmission = null;
+    private Map<String, Integer> instancesByUser = new HashMap<>();
+    private Map<String, Integer> instancesByDevice = new HashMap<>();
+    long totalDuration = 0L;
+    long minDuration = Long.MAX_VALUE;
+    long maxDuration = 0;
+
+    
 
     //@Override
     public void export(Map<String, String> criteria, File fileName,
@@ -405,6 +417,7 @@ public class GraphicalSurveySummaryExporter extends SurveySummaryExporter {
         }
         
         sortDataOnCollectionDate(allData);
+        analyseData(allData);
 
         // write the data now, row by row
         for (InstanceData instanceData : allData) {
@@ -475,17 +488,9 @@ public class GraphicalSurveySummaryExporter extends SurveySummaryExporter {
         log.debug("Finished data sort");
     }
 
-    //gather some statistics
-    private List<String> analyseData(final List<InstanceData> allData) {
-        int totalInstances = allData.size();
-        int approvedInstances = 0;
-        Date firstSubmission = null;
-        Date lastSubmission = null;
-        Map<String, Integer> instancesByUser = new HashMap<>();
-        Map<String, Integer> instancesByDevice = new HashMap<>();
-        long totalDuration = 0L;
-        long minDuration = Long.MAX_VALUE;
-        long maxDuration = 0;
+    //gather some statistics on the data collection
+    private void analyseData(final List<InstanceData> allData) {
+        totalInstances = allData.size();
         
         for (InstanceData instance : allData) {
             SurveyInstanceDto sid = instance.surveyInstanceDto;
@@ -501,13 +506,13 @@ public class GraphicalSurveySummaryExporter extends SurveySummaryExporter {
                 lastSubmission = cd;
             }
             String u = sid.getSubmitterName();
-            if (instancesByUser.containsKey(u)){
+            if (instancesByUser.containsKey(u)) {
                 instancesByUser.put(u, instancesByUser.get(u) + 1);
             } else {
                 instancesByUser.put(u, Integer.valueOf(1));
             }
             String dev = sid.getDeviceIdentifier();
-            if (instancesByDevice.containsKey(dev)){
+            if (instancesByDevice.containsKey(dev)) {
                 instancesByDevice.put(dev, instancesByDevice.get(dev) + 1);
             } else {
                 instancesByDevice.put(dev, Integer.valueOf(1));
@@ -520,9 +525,6 @@ public class GraphicalSurveySummaryExporter extends SurveySummaryExporter {
             }
                 
         }
-        List <String> instanceStats = new ArrayList<>();
-        instanceStats.add("Instances: " + totalInstances);
-        return instanceStats;
     }
     
     private synchronized void writeInstanceDataSplit(
@@ -1495,6 +1497,7 @@ public class GraphicalSurveySummaryExporter extends SurveySummaryExporter {
             Map<QuestionGroupDto, List<QuestionDto>> questionMap,
             SummaryModel summaryModel, String sector, Workbook wb)
             throws Exception {
+        
         String title = sector == null ? SUMMARY_LABEL : sector;
         Sheet sheet = null;
         int sheetCount = 2;
@@ -1520,30 +1523,11 @@ public class GraphicalSurveySummaryExporter extends SurveySummaryExporter {
         Row row = getRow(curRow++, sheet);
         if (sector == null) {
             createCell(row, 0, REPORT_HEADER, headerStyle);
+            curRow = writeDataStats(questionMap, sheet, curRow);
         } else {
             createCell(row, 0, sector + " " + REPORT_HEADER, headerStyle);
         }
 
-        //Global statistics
-        //Calculate them first (due to the window, we cannot sum this while looping and 
-        // then go back up and draw it last)
-        int totalQuestions = 0;
-        for (List<QuestionDto> group : questionMap.values()) {
-            totalQuestions += group.size();
-        }
-        //Now draw them
-        curRow++;
-        row = getRow(curRow++, sheet);
-        createCell(row, 0, "Questions");
-        createCell(row, 3, totalQuestions);
-        row = getRow(curRow++, sheet);
-        createCell(row, 0, "Questions with answers");
-        createCell(row, 3, questionMap.size());
-        
-        curRow++;
-        curRow++;
-        
-        
         for (QuestionGroupDto group : orderedGroupList) {
             if (questionMap.get(group) != null) {
                 for (QuestionDto question : questionMap.get(group)) {
@@ -1757,17 +1741,102 @@ public class GraphicalSurveySummaryExporter extends SurveySummaryExporter {
         }
     }
 
-    /**
-     * creates a cell in the row passed in and sets the style and value (if non-null)
-     */
+    private int writeDataStats(Map<QuestionGroupDto,
+            List<QuestionDto>> questionMap,
+            Sheet sheet,
+            int curRow) {
+        final int tagCol = 0;
+        final int valCol = 3;
+        //Global statistics
+        //Calculate them first (due to the window, we cannot sum this while looping and 
+        // then go back up and draw it last)
+        int totalQuestions = 0;
+        for (List<QuestionDto> group : questionMap.values()) {
+            totalQuestions += group.size();
+        }
+        //Now draw them
+        curRow++;
+        Row statRow = getRow(curRow++, sheet);
+        createCell(statRow, tagCol, "Questions");
+        createCell(statRow, valCol, totalQuestions);
+   
+        statRow = getRow(curRow++, sheet);
+        createCell(statRow, tagCol, "Form submissions");
+        createCell(statRow, valCol, totalInstances);
+        
+        if (totalInstances == 0) return curRow + 2; //add a little space
+   
+        statRow = getRow(curRow++, sheet);
+        createCell(statRow, tagCol, "First submission");
+        createCell(statRow, valCol, ExportImportUtils.formatDateTime(firstSubmission)); //Todo: date cell?
+   
+        statRow = getRow(curRow++, sheet);
+        createCell(statRow, tagCol, "Last submission");
+        createCell(statRow, valCol, ExportImportUtils.formatDateTime(lastSubmission)); //Todo: date cell?
+        
+        statRow = getRow(curRow++, sheet);
+        createCell(statRow, tagCol, "Shortest duration");
+        createCell(statRow, valCol, getDurationText(minDuration));
+   
+        statRow = getRow(curRow++, sheet);
+        createCell(statRow, tagCol, "Longest duration");
+        createCell(statRow, valCol, getDurationText(maxDuration));
+   
+        statRow = getRow(curRow++, sheet);
+        createCell(statRow, tagCol, "Average duration");
+        try {
+            createCell(statRow, valCol, getDurationText((long) totalDuration / totalInstances));
+        } catch (Exception e) {
+            // swallow exception, leave cell empty
+        }
+   
+        for (String user : instancesByUser.keySet()) {
+            statRow = getRow(curRow++, sheet);
+            if (user != null) {
+                createCell(statRow, tagCol, "User " + user);
+            } else {
+                createCell(statRow, tagCol, "No user");
+            }
+            createCell(statRow, valCol, instancesByUser.get(user));   
+        }
+        
+        for (String dev : instancesByDevice.keySet()) {
+            statRow = getRow(curRow++, sheet);
+            createCell(statRow, tagCol, "Device " + dev);
+            createCell(statRow, valCol, instancesByDevice.get(dev));            
+        }
+        
+        return curRow + 2; //add a little space
+    }
+
+    
+    // Create a string cell
     protected Cell createCell(Row row, int col, String value) {
         return createCell(row, col, value, null, -1);
     }
 
+    // Create a number cell
     protected Cell createCell(Row row, int col, int value) {
         Cell cell = row.createCell(col);
         cell.setCellType(Cell.CELL_TYPE_NUMERIC);
         cell.setCellValue((double)value);
+        return cell;
+    }
+
+    // Create a number cell
+    protected Cell createCell(Row row, int col, double value) {
+        Cell cell = row.createCell(col);
+        cell.setCellType(Cell.CELL_TYPE_NUMERIC);
+        cell.setCellValue(value);
+        return cell;
+    }
+
+    // Create a date cell
+    //TODO: set date formatting on this cell
+    protected Cell createCell(Row row, int col, Date value) {
+        Cell cell = row.createCell(col);
+        cell.setCellType(Cell.CELL_TYPE_NUMERIC);
+        cell.setCellValue(value);
         return cell;
     }
 
