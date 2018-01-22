@@ -597,6 +597,7 @@ FLOW.surveyControl = Ember.ArrayController.create({
   publishedContent: null,
   sortProperties: ['name'],
   sortAscending: true,
+  newForm: false,
 
   setPublishedContent: function () {
     var sgId;
@@ -681,6 +682,7 @@ FLOW.surveyControl = Ember.ArrayController.create({
       "version":"1.0"
     });
     FLOW.projectControl.get('currentProject').set('deleteDisabled', true);
+    this.newForm = true;
     FLOW.store.commit();
     this.refresh();
   },
