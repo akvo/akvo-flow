@@ -176,6 +176,26 @@ FLOW.ExportReportsAppletView = FLOW.View.extend({
     }
   }.property('FLOW.selectedControl.selectedSurvey'),
 
+  incompleteSelection: function () {
+    if (this.get('selectedSurvey') === null){
+      FLOW.dialogControl.set('activeAction', 'ignore');
+		  FLOW.dialogControl.set('header', Ember.String.loc('_survey_type_not_set'));
+		  FLOW.dialogControl.set('message', Ember.String.loc('_survey_type_not_set_text'));
+		  FLOW.dialogControl.set('showCANCEL', false);
+      FLOW.dialogControl.set('showDialog', true);
+      return true;
+    }
+    if (Ember.none(FLOW.dateControl.get('toDate')) || Ember.none(FLOW.dateControl.get('fromDate'))) {
+		  FLOW.dialogControl.set('activeAction', 'ignore');
+		  FLOW.dialogControl.set('header', Ember.String.loc('_date_not_set'));
+		  FLOW.dialogControl.set('message', Ember.String.loc('_date_not_set_text'));
+		  FLOW.dialogControl.set('showCANCEL', false);
+		  FLOW.dialogControl.set('showDialog', true);
+		  return true;
+	  }
+    return false;
+  },
+
   selectedQuestion: function () {
     if (!Ember.none(FLOW.selectedControl.get('selectedQuestion'))
         && !Ember.none(FLOW.selectedControl.selectedQuestion.get('keyId'))){
@@ -190,6 +210,9 @@ FLOW.ExportReportsAppletView = FLOW.View.extend({
   }.property('FLOW.selectedControl.selectedSurveyGroup'),
 
   showDataCleaningReport: function () {
+    if (this.incompleteSelection()){
+      return;
+    }
 	var opts = {}, sId = this.get('selectedSurvey');
 	FLOW.ReportLoader.load('DATA_CLEANING', sId, opts);
   },
