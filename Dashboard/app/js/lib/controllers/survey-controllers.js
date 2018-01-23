@@ -585,6 +585,7 @@ FLOW.projectControl = Ember.ArrayController.create({
       currentForm.set('code', name);
       var path = this.get('currentProjectPath') + "/" + name;
       currentForm.set('path', path);
+      currentForm.set('status', 'NOT_PUBLISHED');
     }
 
     FLOW.store.commit();
