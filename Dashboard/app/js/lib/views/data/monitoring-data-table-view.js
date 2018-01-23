@@ -186,6 +186,11 @@ FLOW.DataPointView = FLOW.View.extend({
     toggleShowDataApprovalBlock: function () {
         this.toggleProperty('showDataApprovalBlock');
     },
+
+    dataPointRowNumber: function () {
+        var pageNumber = FLOW.router.surveyedLocaleController.get('pageNumber');
+        return this.get('_parentView.contentIndex') + 1 + 20 * pageNumber;
+    }.property()
 });
 
 /**
