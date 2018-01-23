@@ -227,7 +227,7 @@ public class GraphicalSurveySummaryExporter extends SurveySummaryExporter {
                         criteria.get("apiKey"));
 
                 if (isFullReport) {
-                    writeSummaryReport(questionMap, model, null, wb);
+                    writeStatsAndGraphsSheet(questionMap, model, null, wb);
                 }
                 if (model.getSectorList() != null
                         && model.getSectorList().size() > 0) {
@@ -245,7 +245,7 @@ public class GraphicalSurveySummaryExporter extends SurveySummaryExporter {
                                 }
                             });
                     for (String sector : model.getSectorList()) {
-                        writeSummaryReport(questionMap, model, sector, wb);
+                        writeStatsAndGraphsSheet(questionMap, model, sector, wb);
                     }
                 }
 
@@ -264,9 +264,10 @@ public class GraphicalSurveySummaryExporter extends SurveySummaryExporter {
         }
     }
 
-    private Workbook createWorkbookAndFormats(){
+    private Workbook createWorkbookAndFormats() {
+        // This window may be too small for some OPTION questions
+        // on a comprehensive stats sheet
         Workbook wb = new SXSSFWorkbook(100);
-
         headerStyle = wb.createCellStyle();
         headerStyle.setAlignment(CellStyle.ALIGN_LEFT);
         Font headerFont = wb.createFont();
@@ -1448,12 +1449,18 @@ public class GraphicalSurveySummaryExporter extends SurveySummaryExporter {
 
     
     /**
-     * Writes the report as an XLS document
+     * Writes the stats and graphs sheet
      */
-    private void writeSummaryReport(
-            Map<QuestionGroupDto, List<QuestionDto>> questionMap,
-            SummaryModel summaryModel, String sector, Workbook wb)
+    private void writeStatsAndGraphsSheet(
+            Map<QuestionGroupDto,
+            List<QuestionDto>> questionMap,
+            SummaryModel summaryModel,
+            String sector,
+            Workbook wb)
             throws Exception {
+        final int variableNameColumnIndex = 3;
+        final int descriptiveStatsColumnIndex = 4;
+        
         String title = sector == null ? SUMMARY_LABEL : sector;
         Sheet sheet = null;
         int sheetCount = 2;
@@ -1472,6 +1479,7 @@ public class GraphicalSurveySummaryExporter extends SurveySummaryExporter {
                 }
             }
         }
+
         CreationHelper creationHelper = wb.getCreationHelper();
         Drawing patriarch = sheet.createDrawingPatriarch();
         int curRow = 0;
@@ -1481,55 +1489,65 @@ public class GraphicalSurveySummaryExporter extends SurveySummaryExporter {
         } else {
             createCell(row, 0, sector + " " + REPORT_HEADER, headerStyle);
         }
+
         for (QuestionGroupDto group : orderedGroupList) {
             if (questionMap.get(group) != null) {
                 for (QuestionDto question : questionMap.get(group)) {
-                    if (!(QuestionType.OPTION == question.getType() //TODO: add cascade
-                            || QuestionType.NUMBER == question.getType())) {
+                    boolean doDescriptiveStats = false;
+                    boolean doChart = false;
+                    boolean doDataTable = false;
+                
+                    if (QuestionType.OPTION == question.getType()) { 
+                        doChart = true;
+                        doDataTable = true;                        
+                    } else if (QuestionType.NUMBER == question.getType()) {
+                        doDescriptiveStats = true;
+                        //skip table and chart (phone numbers etc get ridiculous)
+                    } else { //TODO: add cascade
                         continue;
-                    } else {
-                        if (summaryModel.getResponseCountsForQuestion(
-                                question.getKeyId(), sector).size() == 0) {
-                            // if there is no data, skip the question
-                            continue;
-                        }
                     }
-                    // for both options and numeric, we want a pie chart and
-                    // data table. for numeric, we also want descriptive
-                    // statistics.
+
+                    if (summaryModel.getResponseCountsForQuestion(
+                            question.getKeyId(), sector).size() == 0) {
+                        // if there is no data, skip the question
+                        continue;
+                    }
+
+                    //We want a header, spanned across 2 columns
                     int tableTopRow = curRow++;
-                    int tableBottomRow = curRow;
+                    int bottomRow = curRow;
+
                     row = getRow(tableTopRow, sheet);
-                    // span the question heading over the data table
+                    // Span the question text over any data table
                     sheet.addMergedRegion(new CellRangeAddress(curRow - 1, curRow - 1, 0, 2));
                     createCell(
                             row,
                             0,
                             question.getText(),
                             headerStyle);
-                    DescriptiveStats stats = summaryModel
-                            .getDescriptiveStatsForQuestion(
+                    // Variable name
+                    createCell(row, variableNameColumnIndex,
+                            question.getQuestionId(),
+                            headerStyle);
+
+                    DescriptiveStats stats = summaryModel.getDescriptiveStatsForQuestion(
                                     question.getKeyId(), sector);
-                    if (stats != null && stats.getSampleCount() > 0) {
+                    if (doDescriptiveStats && stats != null && stats.getSampleCount() > 0) {
+                        // span the question text over the stats table
                         sheet.addMergedRegion(new CellRangeAddress(curRow - 1, curRow - 1, 4, 5));
                         createCell(
                                 row,
-                                4,
-                                question.getText(),headerStyle);
+                                descriptiveStatsColumnIndex,
+                                question.getText(), headerStyle);
                     }
-                    row = getRow(curRow++, sheet);
-                    createCell(row, 1, FREQ_LABEL, headerStyle);
-                    createCell(row, 2, PCT_LABEL, headerStyle);
-
-                    // now create the data table for the option count
+                    
+                    // Collect data for use in table, stats and chart
                     Map<String, Long> counts = summaryModel
                             .getResponseCountsForQuestion(question.getKeyId(), sector);
                     int sampleTotal = 0;
                     List<String> labels = new ArrayList<String>();
                     List<String> values = new ArrayList<String>();
-                    int firstOptRow = curRow;
                     for (Entry<String, Long> count : counts.entrySet()) {
-                        row = getRow(curRow++, sheet);
                         String labelText = count.getKey();
                         if (labelText == null) {
                             labelText = "";
@@ -1556,70 +1574,52 @@ public class GraphicalSurveySummaryExporter extends SurveySummaryExporter {
                                 }
                             }
                         }
-                        StringBuilder builder = new StringBuilder();
-                        builder.append(labelText);
-                        createCell(row, 0, builder.toString(), null);
-                        createCell(row, 1, count.getValue().toString(), null);
-
-                        labels.add(builder.toString());
+                        labels.add(labelText);
                         values.add(count.getValue().toString());
                         sampleTotal += count.getValue();
                     }
-                    row = getRow(curRow++, sheet);
-                    createCell(row, 0, TOTAL_LABEL, null);
-                    createCell(row, 1, sampleTotal + "", null);
-                    for (int i = 0; i < values.size(); i++) {
-                        row = getRow(firstOptRow + i, sheet);
-                        if (sampleTotal > 0) {
-                            createCell(row, 2,
-                                    PCT_FMT.format((Double.parseDouble(values
-                                            .get(i)) / sampleTotal)), null);
-                        } else {
-                            createCell(row, 2, PCT_FMT.format(0), null);
-                        }
-                    }
 
-                    tableBottomRow = curRow;
-
+                    //Output the descriptive stats; always within window
                     if (stats != null && stats.getSampleCount() > 0) {
                         int tempRow = tableTopRow + 1;
+                        int c1 = descriptiveStatsColumnIndex;
+                        int c2 = c1 + 1;
                         row = getRow(tempRow++, sheet);
-                        createCell(row, 4, "N", null);
-                        createCell(row, 5, sampleTotal + "", null);
+                        createCell(row, c1, "N");
+                        createCell(row, c2, sampleTotal + "", null, Cell.CELL_TYPE_NUMERIC);
                         row = getRow(tempRow++, sheet);
-                        createCell(row, 4, MEAN_LABEL, null);
-                        createCell(row, 5, stats.getMean() + "", null);
+                        createCell(row, c1, MEAN_LABEL);
+                        createCell(row, c2, stats.getMean() + "", null, Cell.CELL_TYPE_NUMERIC);
                         row = getRow(tempRow++, sheet);
-                        createCell(row, 4, STD_E_LABEL, null);
-                        createCell(row, 5, stats.getStandardError() + "", null);
+                        createCell(row, c1, STD_E_LABEL);
+                        createCell(row, c2, stats.getStandardError() + "", null, Cell.CELL_TYPE_NUMERIC);
                         row = getRow(tempRow++, sheet);
-                        createCell(row, 4, MEDIAN_LABEL, null);
-                        createCell(row, 5, stats.getMedian() + "", null);
+                        createCell(row, c1, MEDIAN_LABEL);
+                        createCell(row, c2, stats.getMedian() + "", null, Cell.CELL_TYPE_NUMERIC);
                         row = getRow(tempRow++, sheet);
-                        createCell(row, 4, MODE_LABEL, null);
-                        createCell(row, 5, stats.getMode() + "", null);
+                        createCell(row, c1, MODE_LABEL);
+                        createCell(row, c2, stats.getMode() + "", null, Cell.CELL_TYPE_NUMERIC);
                         row = getRow(tempRow++, sheet);
-                        createCell(row, 4, STD_D_LABEL, null);
-                        createCell(row, 5, stats.getStandardDeviation() + "",
-                                null);
+                        createCell(row, c1, STD_D_LABEL);
+                        createCell(row, c2, stats.getStandardDeviation() + "", null, Cell.CELL_TYPE_NUMERIC);
                         row = getRow(tempRow++, sheet);
-                        createCell(row, 4, VAR_LABEL, null);
-                        createCell(row, 5, stats.getVariance() + "", null);
+                        createCell(row, c1, VAR_LABEL);
+                        createCell(row, c2, stats.getVariance() + "", null, Cell.CELL_TYPE_NUMERIC);
                         row = getRow(tempRow++, sheet);
-                        createCell(row, 4, RANGE_LABEL, null);
-                        createCell(row, 5, stats.getRange() + "", null);
+                        createCell(row, c1, RANGE_LABEL);
+                        createCell(row, c2, stats.getRange() + "", null, Cell.CELL_TYPE_NUMERIC);
                         row = getRow(tempRow++, sheet);
-                        createCell(row, 4, MIN_LABEL, null);
-                        createCell(row, 5, stats.getMin() + "", null);
+                        createCell(row, c1, MIN_LABEL);
+                        createCell(row, c2, stats.getMin() + "", null, Cell.CELL_TYPE_NUMERIC);
                         row = getRow(tempRow++, sheet);
-                        createCell(row, 4, MAX_LABEL, null);
-                        createCell(row, 5, stats.getMax() + "", null);
-                        if (tableBottomRow < tempRow) {
-                            tableBottomRow = tempRow;
-                        }
+                        createCell(row, c1, MAX_LABEL);
+                        createCell(row, c2, stats.getMax() + "", null, Cell.CELL_TYPE_NUMERIC);
+                        
+                        bottomRow = tempRow;
                     }
-                    curRow = tableBottomRow;
-                    if (labels.size() > 0) {
+
+                    //Pie chart, soon to be bar chart
+                    if (doChart && labels.size() > 0) {
                         boolean hasVals = false;
                         if (values != null) {
                             for (String val : values) {
@@ -1656,18 +1656,49 @@ public class GraphicalSurveySummaryExporter extends SurveySummaryExporter {
                             anchor.setRow2(tableTopRow + CHART_CELL_HEIGHT);
                             anchor.setAnchorType(2);
                             patriarch.createPicture(anchor, indx);
-                            if (tableTopRow + CHART_CELL_HEIGHT > tableBottomRow) {
-                                curRow = tableTopRow + CHART_CELL_HEIGHT;
+                            if (tableTopRow + CHART_CELL_HEIGHT > bottomRow) {
+                                bottomRow = tableTopRow + CHART_CELL_HEIGHT;
                             }
                         }
                     }
 
+                    if (doDataTable) {
+                        curRow = tableTopRow;
+                        //header
+                        row = getRow(curRow++, sheet);
+                        createCell(row, 1, FREQ_LABEL, headerStyle);
+                        createCell(row, 2, PCT_LABEL, headerStyle);
+                        
+                        //items
+                        for (int i=0; i<labels.size(); i++) {
+                            row = getRow(curRow++, sheet);
+                            createCell(row, 0, labels.get(i));
+                            createCell(row, 1, values.get(i));
+                            if (sampleTotal > 0) {
+                                createCell(row, 2,
+                                        PCT_FMT.format((Double.parseDouble(values.get(i))
+                                                / sampleTotal)));
+                            } else {
+                                createCell(row, 2, PCT_FMT.format(0));
+                            }
+                        }
+                        
+                        //total
+                        row = getRow(curRow++, sheet);
+                        createCell(row, 0, TOTAL_LABEL);
+                        createCell(row, 1, sampleTotal + "");
+                        if (curRow > bottomRow) {
+                            bottomRow = curRow;
+                        }
+                    }
+                    curRow = bottomRow;
+
                     // add a blank row between questions
                     getRow(curRow++, sheet);
                     // flush the sheet so far to disk; we will not go back up
+                    // File will be broken if we write outside the window!
                     ((SXSSFSheet) sheet).flushRows(0); // retain 0 last rows and
                     // flush all others
-
                 }
             }
         }
@@ -1860,8 +1891,8 @@ public class GraphicalSurveySummaryExporter extends SurveySummaryExporter {
         Map<String, String> criteria = new HashMap<String, String>();
         Map<String, String> options = new HashMap<String, String>();
 //        options.put(TYPE_OPT, DATA_CLEANING_TYPE);
-        options.put(TYPE_OPT, DATA_ANALYSIS_TYPE);
-//        options.put(TYPE_OPT, COMPREHENSIVE_TYPE);
+//        options.put(TYPE_OPT, DATA_ANALYSIS_TYPE);
+        options.put(TYPE_OPT, COMPREHENSIVE_TYPE);
         options.put(LAST_COLLECTION_OPT, "false");
         options.put(EMAIL_OPT, "email@example.com");
         options.put(FROM_OPT, null);
