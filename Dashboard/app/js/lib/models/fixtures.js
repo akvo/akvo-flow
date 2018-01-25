@@ -1192,24 +1192,6 @@ FLOW.SurveyInstance.FIXTURES = [{
 }];
 
 
-FLOW.Metric.FIXTURES = [{
-    name:'metric 1',
-    questionId: 1,
-    id:1,
-    keyId:1
-},{
-    name:'metric 2',
-    questionId: 1,
-    id:2,
-    keyId:2
-},{
-    name:'metric 2',
-    questionId: 1,
-    id:1,
-    keyId:1
-}];
-
-
 FLOW.SurveyQuestionSummary.FIXTURES = [{
     id: 1,
     keyId: 1,

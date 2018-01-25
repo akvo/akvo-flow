@@ -448,15 +448,6 @@ FLOW.UserConfig = FLOW.BaseModel.extend({
   userId: DS.attr('number')
 });
 
-// this is called attribute in the dashboard, but metric in the backend, for historic reasons.
-FLOW.Metric = FLOW.BaseModel.extend({
-  organization: DS.attr('string'),
-  name: DS.attr('string'),
-  group: DS.attr('string'),
-  valueType: DS.attr('string'),
-  questionId: DS.attr('number')
-});
-
 FLOW.Message = FLOW.BaseModel.extend({
   objectId: DS.attr('number'),
   lastUpdateDateTime: DS.attr('number'),

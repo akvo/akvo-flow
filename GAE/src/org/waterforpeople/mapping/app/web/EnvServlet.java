@@ -1,5 +1,5 @@
 /*
- *  Copyright (C) 2013-2017 Stichting Akvo (Akvo Foundation)
+ *  Copyright (C) 2013-2018 Stichting Akvo (Akvo Foundation)
  *
  *  This file is part of Akvo FLOW.
  *
@@ -60,7 +60,6 @@ public class EnvServlet extends HttpServlet {
         properties.add("imageroot");
         properties.add("flowServices");
         properties.add("surveyuploadurl");
-        properties.add("showStatisticsFeature");
         properties.add("showMonitoringFeature");
         properties.add("mandatoryQuestionID");
         properties.add("showExternalSourcesFeature");
@@ -103,11 +102,7 @@ public class EnvServlet extends HttpServlet {
         final Map<String, String> props = PropertyUtil
                 .getPropertiesMap(properties);
 
-        // if the showStatisticsFeature is not present in appengine-web.xml, we want it to be false.
-        if (props.get("showStatisticsFeature") == null) {
-            props.put("showStatisticsFeature", "false");
-        }
-
+        // if a feature flag is not present in appengine-web.xml, we want it to be false.
         if (props.get("showMonitoringFeature") == null) {
             props.put("showMonitoringFeature", "false");
         }
