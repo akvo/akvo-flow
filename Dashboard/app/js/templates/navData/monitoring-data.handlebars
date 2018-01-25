@@ -41,8 +41,8 @@
           </tr>
         </thead>
         <tbody>
-          {{#each item in FLOW.router.surveyedLocaleController.currentContents}}
-           {{view FLOW.DataPointView contentBinding="item"}}
+          {{#each FLOW.router.surveyedLocaleController.currentContents}}
+           {{view FLOW.DataPointView contentBinding="this"}}
           {{/each}}
         </tbody>
       </table>
@@ -62,7 +62,7 @@
           <div class="dialogWrap">
         <!-- the dialog contents -->
         <div class="confirmDialog dialogWide">
-         <a {{action "closeDetailsDialog" target="this"}} class="ok clodeDialog">{{t _close_window}}</a>
+         <a {{action "closeDetailsDialog" target="this"}} class="ok closeDialog">{{t _close_window}}</a>
 
           <h2>{{t _details}}</h2>
             <nav class="editAnswerMenu">
