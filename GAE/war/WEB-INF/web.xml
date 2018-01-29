@@ -328,15 +328,6 @@
 	</servlet-mapping>
 
 	<servlet>
-		<servlet-name>RemoteLogging</servlet-name>
-		<servlet-class>com.google.gwt.logging.server.RemoteLoggingServiceImpl</servlet-class>
-	</servlet>
-	<servlet-mapping>
-		<servlet-name>RemoteLogging</servlet-name>
-		<url-pattern>/org.waterforpeople.mapping.portal.portal/remote_logging</url-pattern>
-	</servlet-mapping>
-
-	<servlet>
 		<servlet-name>NotificationProcessor</servlet-name>
 		<servlet-class>org.waterforpeople.mapping.notification.MappingNotificationProcessor</servlet-class>
 	</servlet>

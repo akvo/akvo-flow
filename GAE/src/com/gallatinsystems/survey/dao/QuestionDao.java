@@ -252,28 +252,6 @@ public class QuestionDao extends BaseDAO<Question> {
     }
 
     /**
-     * Lists questions by questionGroupId and type
-     *
-     * @param questionGroupId
-     * @param type
-     * @return
-     */
-    @SuppressWarnings("unchecked")
-    private List<Question> getByQuestiongroupAndType(long questionGroupId, Question.Type type) {
-        PersistenceManager pm = PersistenceFilter.getManager();
-        javax.jdo.Query query = pm.newQuery(Question.class);
-        query.setFilter(" questionGroupId == questionGroupIdParam && type == questionTypeParam");
-        query.declareParameters("Long questionGroupIdParam, String questionTypeParam");
-        query.setOrdering("order asc");
-        List<Question> results = (List<Question>) query.execute(questionGroupId, type.toString());
-        if (results != null && results.size() > 0) {
-            return results;
-        } else {
-            return null;
-        }
-    }
-
-    /**
      * Lists questions by surveyId and type
      *
      * @param surveyId
