@@ -158,6 +158,7 @@ FLOW.ExportReportsAppletView = FLOW.View.extend({
   showComprehensiveDialog: false,
   showRawDataImportApplet: false,
   showGoogleEarthButton: false,
+  missingSurvey: false,
 
   didInsertElement: function () {
     FLOW.selectedControl.set('surveySelection', FLOW.SurveySelection.create());
@@ -177,22 +178,11 @@ FLOW.ExportReportsAppletView = FLOW.View.extend({
   }.property('FLOW.selectedControl.selectedSurvey'),
 
   incompleteSelection: function () {
-    if (this.get('selectedSurvey') === null){
-      FLOW.dialogControl.set('activeAction', 'ignore');
-		  FLOW.dialogControl.set('header', Ember.String.loc('_survey_type_not_set'));
-		  FLOW.dialogControl.set('message', Ember.String.loc('_survey_type_not_set_text'));
-		  FLOW.dialogControl.set('showCANCEL', false);
-      FLOW.dialogControl.set('showDialog', true);
+    if (FLOW.selectedControl.get('selectedSurvey') === null){
+      this.set('missingSurvey',true);
+      console.log(this.get('missingSurvey'));
       return true;
     }
-    if (Ember.none(FLOW.dateControl.get('toDate')) || Ember.none(FLOW.dateControl.get('fromDate'))) {
-		  FLOW.dialogControl.set('activeAction', 'ignore');
-		  FLOW.dialogControl.set('header', Ember.String.loc('_date_not_set'));
-		  FLOW.dialogControl.set('message', Ember.String.loc('_date_not_set_text'));
-		  FLOW.dialogControl.set('showCANCEL', false);
-		  FLOW.dialogControl.set('showDialog', true);
-		  return true;
-	  }
     return false;
   },
 
@@ -210,9 +200,10 @@ FLOW.ExportReportsAppletView = FLOW.View.extend({
   }.property('FLOW.selectedControl.selectedSurveyGroup'),
 
   showDataCleaningReport: function () {
-    if (this.incompleteSelection()){
-      return;
-    }
+  if(this.incompleteSelection()){
+    console.log("ok");
+    return;
+  }
 	var opts = {}, sId = this.get('selectedSurvey');
 	FLOW.ReportLoader.load('DATA_CLEANING', sId, opts);
   },
