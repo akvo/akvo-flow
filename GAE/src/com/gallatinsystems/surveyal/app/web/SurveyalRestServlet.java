@@ -1,5 +1,5 @@
 /*
- *  Copyright (C) 2010-2016 Stichting Akvo (Akvo Foundation)
+ *  Copyright (C) 2010-2018 Stichting Akvo (Akvo Foundation)
  *
  *  This file is part of Akvo FLOW.
  *
@@ -433,7 +433,6 @@ public class SurveyalRestServlet extends AbstractRestApiServlet {
             List<SurveyalValue> oldVals = surveyedLocaleDao
                     .listSurveyalValuesByInstance(answers.get(0)
                             .getSurveyInstanceId());
-            boolean loadedItems = false;
             List<Question> questionList = qDao.listQuestionsBySurvey(answers.get(0).getSurveyId());
 
             // put questions in map for easy retrieval

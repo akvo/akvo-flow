@@ -16,7 +16,6 @@
 
 package org.waterforpeople.mapping.app.gwt.server.surveyinstance;
 
-import org.apache.log4j.Logger;
 import org.waterforpeople.mapping.domain.SurveyInstance;
 import com.gallatinsystems.surveyal.app.web.SurveyalRestRequest;
 import com.google.appengine.api.taskqueue.QueueFactory;
@@ -25,8 +24,7 @@ import com.google.appengine.api.taskqueue.TaskOptions;
 @Deprecated
 public class SurveyInstanceServiceImpl {
 
-    private static final Logger log = Logger
-            .getLogger(SurveyInstanceServiceImpl.class);
+
 
     public void sendProcessingMessages(SurveyInstance domain) {
         // send async request to populate the AccessPoint using the mapping

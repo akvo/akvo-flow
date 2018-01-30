@@ -1833,30 +1833,6 @@ public class GraphicalSurveySummaryExporter extends SurveySummaryExporter {
         return true;
     }
 
-    /**
-     * call the server to augment the data already loaded in each QuestionDto in the map passed in.
-     *
-     * @param questionMap
-     * @param apiKey
-     */
-    private void loadFullQuestions(
-            Map<QuestionGroupDto, List<QuestionDto>> questionMap, String apiKey) {
-        for (List<QuestionDto> questionList : questionMap.values()) {
-            for (int i = 0; i < questionList.size(); i++) {
-                try {
-                    QuestionDto newQ = BulkDataServiceClient.loadQuestionDetails(
-                            serverBase, questionList.get(i).getKeyId(), apiKey);
-                    if (newQ != null) {
-                        questionList.set(i, newQ);
-                    }
-                } catch (Exception e) {
-                    System.err.println("Could not fetch question details");
-                    e.printStackTrace(System.err);
-                }
-            }
-        }
-    }
-
     private String getDurationText(Long duration) {
         if (duration == null) {
             return "";
