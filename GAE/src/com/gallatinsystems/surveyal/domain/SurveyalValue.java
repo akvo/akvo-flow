@@ -60,12 +60,6 @@ public class SurveyalValue extends BaseDomain {
     private Double numericValue;
     private String organization;
     private String countryCode;
-    private String sublevel1;
-    private String sublevel2;
-    private String sublevel3;
-    private String sublevel4;
-    private String sublevel5;
-    private String sublevel6;
     private String localeType;
     private String systemIdentifier;
     private String questionType;
@@ -108,54 +102,6 @@ public class SurveyalValue extends BaseDomain {
 
     public void setCountryCode(String countryCode) {
         this.countryCode = countryCode;
-    }
-
-    public String getSublevel1() {
-        return sublevel1;
-    }
-
-    public void setSublevel1(String sublevel1) {
-        this.sublevel1 = sublevel1;
-    }
-
-    public String getSublevel2() {
-        return sublevel2;
-    }
-
-    public void setSublevel2(String sublevel2) {
-        this.sublevel2 = sublevel2;
-    }
-
-    public String getSublevel3() {
-        return sublevel3;
-    }
-
-    public void setSublevel3(String sublevel3) {
-        this.sublevel3 = sublevel3;
-    }
-
-    public String getSublevel4() {
-        return sublevel4;
-    }
-
-    public void setSublevel4(String sublevel4) {
-        this.sublevel4 = sublevel4;
-    }
-
-    public String getSublevel5() {
-        return sublevel5;
-    }
-
-    public void setSublevel5(String sublevel5) {
-        this.sublevel5 = sublevel5;
-    }
-
-    public String getSublevel6() {
-        return sublevel6;
-    }
-
-    public void setSublevel6(String sublevel6) {
-        this.sublevel6 = sublevel6;
     }
 
     public String getLocaleType() {

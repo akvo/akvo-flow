@@ -59,7 +59,6 @@ FLOW.NavReportsController = Ember.Controller.extend();
 FLOW.ReportsSubnavController = Em.Controller.extend();
 FLOW.ExportReportsController = Ember.ArrayController.extend();
 FLOW.ChartReportsController = Ember.Controller.extend();
-FLOW.StatisticsController = Ember.Controller.extend();
 
 FLOW.NavMapsController = Ember.Controller.extend();
 FLOW.NavUsersController = Ember.Controller.extend();

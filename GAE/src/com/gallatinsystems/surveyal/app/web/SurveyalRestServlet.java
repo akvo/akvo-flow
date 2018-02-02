@@ -1,5 +1,5 @@
 /*
- *  Copyright (C) 2010-2016 Stichting Akvo (Akvo Foundation)
+ *  Copyright (C) 2010-2018 Stichting Akvo (Akvo Foundation)
  *
  *  This file is part of Akvo FLOW.
  *
@@ -46,10 +46,6 @@ import com.gallatinsystems.gis.location.GeoLocationServiceGeonamesImpl;
 import com.gallatinsystems.gis.location.GeoPlace;
 import com.gallatinsystems.gis.map.MapUtils;
 import com.gallatinsystems.gis.map.domain.OGRFeature;
-import com.gallatinsystems.metric.dao.MetricDao;
-import com.gallatinsystems.metric.dao.SurveyMetricMappingDao;
-import com.gallatinsystems.metric.domain.Metric;
-import com.gallatinsystems.metric.domain.SurveyMetricMapping;
 import com.gallatinsystems.survey.dao.QuestionDao;
 import com.gallatinsystems.survey.dao.QuestionGroupDao;
 import com.gallatinsystems.survey.domain.Question;
@@ -80,8 +76,6 @@ public class SurveyalRestServlet extends AbstractRestApiServlet {
     private SurveyedLocaleDao surveyedLocaleDao;
     private QuestionDao qDao;
     private CountryDao countryDao;
-    private SurveyMetricMappingDao metricMappingDao;
-    private MetricDao metricDao;
     private String statusFragment;
     private Map<String, String> scoredVals;
 
@@ -94,8 +88,6 @@ public class SurveyalRestServlet extends AbstractRestApiServlet {
         surveyedLocaleDao = new SurveyedLocaleDao();
         qDao = new QuestionDao();
         countryDao = new CountryDao();
-        metricDao = new MetricDao();
-        metricMappingDao = new SurveyMetricMappingDao();
         // TODO: once the appropriate metric types are defined and reliably
         // assigned, consider removing this in favor of metrics
         statusFragment = PropertyUtil.getProperty("statusQuestionText");
@@ -292,12 +284,6 @@ public class SurveyalRestServlet extends AbstractRestApiServlet {
             // TODO: move this to survey instance processing logic
             // if we have a geoPlace, set it on the instance
             surveyInstance.setCountryCode(geoPlace.getCountryCode());
-            surveyInstance.setSublevel1(geoPlace.getSub1());
-            surveyInstance.setSublevel2(geoPlace.getSub2());
-            surveyInstance.setSublevel3(geoPlace.getSub3());
-            surveyInstance.setSublevel4(geoPlace.getSub4());
-            surveyInstance.setSublevel5(geoPlace.getSub5());
-            surveyInstance.setSublevel6(geoPlace.getSub6());
         }
 
         // add surveyInstanceId to list of contributed surveyInstances
@@ -416,12 +402,6 @@ public class SurveyalRestServlet extends AbstractRestApiServlet {
     private void setGeoData(GeoPlace geoPlace, SurveyedLocale l) {
         if (geoPlace != null) {
             l.setCountryCode(geoPlace.getCountryCode());
-            l.setSublevel1(geoPlace.getSub1());
-            l.setSublevel2(geoPlace.getSub2());
-            l.setSublevel3(geoPlace.getSub3());
-            l.setSublevel4(geoPlace.getSub4());
-            l.setSublevel5(geoPlace.getSub5());
-            l.setSublevel6(geoPlace.getSub6());
         }
     }
 
@@ -450,12 +430,9 @@ public class SurveyalRestServlet extends AbstractRestApiServlet {
 
             Cache cache = MemCacheUtils.initCache(12 * 60 * 60); // 12 hours
 
-            List<SurveyMetricMapping> mappings = null;
             List<SurveyalValue> oldVals = surveyedLocaleDao
                     .listSurveyalValuesByInstance(answers.get(0)
                             .getSurveyInstanceId());
-            List<Metric> metrics = null;
-            boolean loadedItems = false;
             List<Question> questionList = qDao.listQuestionsBySurvey(answers.get(0).getSurveyId());
 
             // put questions in map for easy retrieval
@@ -471,13 +448,6 @@ public class SurveyalRestServlet extends AbstractRestApiServlet {
             // date value
             Calendar cal = new GregorianCalendar();
             for (QuestionAnswerStore ans : answers) {
-                if (!loadedItems && ans.getSurveyId() != null) {
-                    metrics = metricDao.listMetrics(null, null, null,
-                            l.getOrganization(), "all");
-                    mappings = metricMappingDao.listMappingsBySurvey(ans
-                            .getSurveyId());
-                    loadedItems = true;
-                }
                 SurveyalValue val = null;
                 if (oldVals != null) {
                     for (SurveyalValue oldVal : oldVals) {
@@ -515,30 +485,8 @@ public class SurveyalRestServlet extends AbstractRestApiServlet {
                         // no-op
                     }
                 }
-                if (metrics != null && mappings != null) {
-                    metriccheck: for (SurveyMetricMapping mapping : mappings) {
-                        if (ans.getQuestionID() != null
-                                && Long.parseLong(ans.getQuestionID()) == mapping
-                                        .getSurveyQuestionId()) {
-                            for (Metric m : metrics) {
-                                if (mapping.getMetricId() == m.getKey().getId()) {
-                                    val.setMetricId(m.getKey().getId());
-                                    val.setMetricName(m.getName());
-                                    val.setMetricGroup(m.getGroup());
-                                    break metriccheck;
-                                }
-                            }
-                        }
-                    }
-                }
                 // TODO: resolve score
                 val.setOrganization(l.getOrganization());
-                val.setSublevel1(l.getSublevel1());
-                val.setSublevel2(l.getSublevel2());
-                val.setSublevel3(l.getSublevel3());
-                val.setSublevel4(l.getSublevel4());
-                val.setSublevel5(l.getSublevel5());
-                val.setSublevel6(l.getSublevel6());
                 val.setSurveyInstanceId(ans.getSurveyInstanceId());
                 val.setSystemIdentifier(l.getSystemIdentifier());
 

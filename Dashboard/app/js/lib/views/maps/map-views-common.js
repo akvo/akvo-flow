@@ -46,7 +46,7 @@ FLOW.NavMapsView = FLOW.View.extend({
       var bestBB = this.geoModel.best_bbox_search_cells(bb);
 
       // adapt the points shown on the map
-      FLOW.mapsController.adaptMap(bestBB, this.map.getZoom());
+      FLOW.router.mapsController.adaptMap(bestBB, this.map.getZoom());
     },
 
   /**
@@ -67,7 +67,7 @@ FLOW.NavMapsView = FLOW.View.extend({
       this.map.on('moveend', function (e) {
         self.redoMap();
       });
-      FLOW.mapsController.set('map', this.map);
+      FLOW.router.mapsController.set('map', this.map);
       this.geoModel = create_geomodel();
       //load points for the visible map
       this.redoMap();
@@ -172,7 +172,7 @@ FLOW.NavMapsView = FLOW.View.extend({
 
     L.control.layers(baseLayers).addTo(this.map);
 
-    FLOW.mapsController.set('map', this.map);
+    FLOW.router.mapsController.set('map', this.map);
 
     this.map.on('click', function(e) {
       self.clearMap(); //remove any previously loaded point data
@@ -260,15 +260,15 @@ FLOW.NavMapsView = FLOW.View.extend({
 
   surveySelection: function () {
       this.clearMap();
-      FLOW.mapsController.clearSurveyDataLayer();
+      FLOW.router.mapsController.clearSurveyDataLayer();
       if (!Ember.none(this.get('selectedSurvey'))) {
-          FLOW.mapsController.loadNamedMap(this.selectedSurvey.get('keyId'));
+          FLOW.router.mapsController.loadNamedMap(this.selectedSurvey.get('keyId'));
       }
   }.observes('this.selectedSurvey'),
 
   surveyGroupSelection: function () {
       this.clearMap();
-      FLOW.mapsController.clearSurveyDataLayer();
+      FLOW.router.mapsController.clearSurveyDataLayer();
   }.observes('FLOW.selectedControl.selectedSurveyGroup'),
 
   /**
@@ -370,11 +370,11 @@ FLOW.NavMapsView = FLOW.View.extend({
           iconUrl: 'images/marker.svg',
           iconSize: [10, 10]
       });
-      this.marker = new L.marker(FLOW.mapsController.get('markerCoordinates'), {icon: markerIcon});
+      this.marker = new L.marker(FLOW.router.mapsController.get('markerCoordinates'), {icon: markerIcon});
       this.map.addLayer(this.marker);
 
       this.showDetailsPane();
-  }.observes('FLOW.mapsController.markerCoordinates'),
+  }.observes('FLOW.router.mapsController.markerCoordinates'),
 
   detailsPaneShowHide: function(){
       var button = this.$('#mapDetailsHideShow');

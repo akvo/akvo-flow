@@ -16,8 +16,6 @@
 
 package org.waterforpeople.mapping.app.web.rest;
 
-import com.gallatinsystems.metric.dao.SurveyMetricMappingDao;
-import com.gallatinsystems.metric.domain.SurveyMetricMapping;
 import com.gallatinsystems.survey.dao.QuestionDao;
 import com.gallatinsystems.survey.dao.QuestionOptionDao;
 import com.gallatinsystems.survey.dao.SurveyDAO;
@@ -61,8 +59,6 @@ public class QuestionRestService {
     private QuestionDao questionDao = new QuestionDao();
 
     private QuestionOptionDao questionOptionDao = new QuestionOptionDao();
-
-    private SurveyMetricMappingDao surveyMetricMappingDao = new SurveyMetricMappingDao();
 
     private SurveyDAO surveyDao = new SurveyDAO();
 
@@ -266,19 +262,6 @@ public class QuestionRestService {
                         q.setType(Question.Type.valueOf(questionDto.getType()
                                 .toString()));
 
-                    if (questionDto.getMetricId() != null) {
-                        // delete existing mappings
-                        surveyMetricMappingDao.deleteMetricMapping(keyId);
-
-                        // create a new mapping
-                        SurveyMetricMapping newMapping = new SurveyMetricMapping();
-                        newMapping.setMetricId(questionDto.getMetricId());
-                        newMapping.setQuestionGroupId(questionDto
-                                .getQuestionGroupId());
-                        newMapping.setSurveyId(questionDto.getSurveyId());
-                        newMapping.setSurveyQuestionId(keyId);
-                        surveyMetricMappingDao.save(newMapping);
-                    }
                     q = questionDao.save(q);
 
                     dto = QuestionDtoMapper.transform(q);

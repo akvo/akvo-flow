@@ -1,5 +1,5 @@
 /*
- *  Copyright (C) 2010-2017 Stichting Akvo (Akvo Foundation)
+ *  Copyright (C) 2010-2018 Stichting Akvo (Akvo Foundation)
  *
  *  This file is part of Akvo FLOW.
  *
@@ -23,10 +23,8 @@ import static com.gallatinsystems.common.util.MemCacheUtils.putObject;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 import java.util.Map.Entry;
 import java.util.logging.Level;
 import java.util.logging.Logger;

@@ -24,10 +24,6 @@ FLOW.QuestionView = FLOW.View.extend({
   dependentFlag: false,
   dependentQuestion: null,
   includeInMap: null,
-  showAddAttributeDialogBool: false,
-  newAttributeName: null,
-  newAttributeGroup: null,
-  newAttributeType: null,
   allowPoints: true,
   allowLine: true,
   allowPolygon: true,
@@ -113,11 +109,12 @@ FLOW.QuestionView = FLOW.View.extend({
 	}
   }.property('this.type').cacheable(),
 
-  amNoOptionsType: function () {
+  hasExtraSettings: function () {
     var val;
     if (!Ember.none(this.type)) {
       val = this.type.get('value');
-      return val === 'PHOTO' || val === 'VIDEO' || val === 'DATE' || val === 'SIGNATURE';
+      return val === 'GEOSHAPE' || val === 'CASCADE' || val === 'NUMBER' || val === 'GEO' 
+      || val === 'FREE_TEXT' || val === 'SCAN' || val === 'OPTION' || val === 'CADDISFLY';
     }
   }.property('this.type').cacheable(),
 
@@ -141,12 +138,11 @@ FLOW.QuestionView = FLOW.View.extend({
     return (this.content && this.content.get('type') === 'SIGNATURE')
             || (this.type && this.type.get('value') === 'SIGNATURE');
   }.property('this.type'),
-
-  amCaddisflyType: function () {
-	return (this.content && this.content.get('type') === 'CADDISFLY'
-		|| (this.type && this.type.get('value') === 'CADDISFLY'));
-	}.property('this.type').cacheable(),
-
+  
+   amCaddisflyType: function(){
+       return this.type && this.type.get('value') == 'CADDISFLY';
+   }.property('this.type').cacheable(),
+  
   showLocaleName: function () {
     if (!this.type) {
       return false;
@@ -168,7 +164,6 @@ FLOW.QuestionView = FLOW.View.extend({
   // TODO options
   doQuestionEdit: function () {
     var questionType = null,
-    attribute = null,
     dependentQuestion, dependentAnswer, dependentAnswerArray,cascadeResource;
     if (this.content && (this.content.get('isDirty') || this.content.get('isSaving'))) {
       this.showMessageDialog(Ember.String.loc('_question_is_being_saved'),
@@ -219,7 +214,6 @@ FLOW.QuestionView = FLOW.View.extend({
         FLOW.selectedControl.set('selectedCaddisflyResource',caddResource);
       }
     }
-
     // if the dependentQuestionId is not null, get the question
     if (!Ember.empty(FLOW.selectedControl.selectedQuestion.get('dependentQuestionId'))) {
       dependentQuestion = FLOW.store.find(FLOW.Question, FLOW.selectedControl.selectedQuestion.get('dependentQuestionId'));
@@ -239,14 +233,6 @@ FLOW.QuestionView = FLOW.View.extend({
         });
       }
     }
-
-    // set the attribute to the original choice
-    FLOW.attributeControl.get('content').forEach(function (item) {
-      if (item.get('keyId') == FLOW.selectedControl.selectedQuestion.get('metricId')) {
-        attribute = item;
-      }
-    });
-    this.set('attribute', attribute);
 
     // set the type to the original choice
     FLOW.questionTypeControl.get('content').forEach(function (item) {
@@ -419,10 +405,6 @@ FLOW.QuestionView = FLOW.View.extend({
       FLOW.selectedControl.selectedQuestion.set('dependentFlag', false);
       FLOW.selectedControl.selectedQuestion.set('dependentQuestionId', null);
       FLOW.selectedControl.selectedQuestion.set('dependentQuestionAnswer', null);
-    }
-
-    if (this.get('attribute')) {
-      FLOW.selectedControl.selectedQuestion.set('metricId', this.attribute.get('keyId'));
     }
 
     if (this.get('type')) {
@@ -840,27 +822,8 @@ FLOW.QuestionView = FLOW.View.extend({
   doQuestionMoveCancel: function () {
     FLOW.selectedControl.set('selectedForMoveQuestion', null);
   },
-  showAddAttributeDialog: function () {
-    this.set('showAddAttributeDialogBool', true);
-  },
 
-  doAddAttribute: function () {
-    if ((this.get('newAttributeName') !== null) && (this.get('newAttributeType') !== null)) {
-      FLOW.store.createRecord(FLOW.Metric, {
-        "name": this.get('newAttributeName'),
-        "group": this.get('newAttributeGroup'),
-        "valueType": this.newAttributeType.get('value')
-      });
-      FLOW.store.commit();
-    }
-    this.set('showAddAttributeDialogBool', false);
-  },
-
-  cancelAddAttribute: function () {
-    this.set('showAddAttributeDialogBool', false);
-  },
-
-  validateQuestionObserver: function(){
+  validateQuestionObserver: function () {
       this.set('questionValidationFailure', (this.text != null && this.text.length > 500));
   }.observes('this.text'),
 

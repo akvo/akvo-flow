@@ -1,5 +1,5 @@
 /*
- *  Copyright (C) 2010-2017 Stichting Akvo (Akvo Foundation)
+ *  Copyright (C) 2010-2018 Stichting Akvo (Akvo Foundation)
  *
  *  This file is part of Akvo FLOW.
  *
@@ -85,6 +85,7 @@ public class RawDataSpreadsheetImporter implements DataImporter {
     public static final String DURATION_COLUMN_KEY = "surveyalTime";
     
     public static final String METADATA_HEADER = "Metadata";
+    public static final String NEW_DATA_PATTERN = "^[Nn]ew-\\d+"; // new- or New- followed by one or more digits
     
 
     /**
@@ -148,8 +149,18 @@ public class RawDataSpreadsheetImporter implements DataImporter {
 
             List<InstanceData> instanceDataList = new ArrayList<>();
             if (splitSheets) {
-                instanceDataList = parseSplitSheets(wb.getSheetAt(0), sheetMap, questionIdToQuestionDto,
-                optionNodes, headerRowIndex);                
+                instanceDataList = parseSplitSheets(wb.getSheetAt(0),
+                        sheetMap,
+                        questionIdToQuestionDto,
+                        optionNodes,
+                        headerRowIndex);
+                //Strip link-identifiers from new data 
+                for (InstanceData instanceData : instanceDataList) {
+                    if (instanceData.surveyInstanceDto.getSurveyedLocaleIdentifier().matches(NEW_DATA_PATTERN)) {
+                        instanceData.surveyInstanceDto.setSurveyedLocaleIdentifier("");
+                        //TODO maybe clear out instance id too, just in case?
+                    }
+                }
             } else { //Legacy format
                 instanceDataList = parseSingleSheet(wb.getSheetAt(0), questionIdToQuestionDto,
                         optionNodes, sheetMap.get(wb.getSheetAt(0)));
@@ -413,7 +424,7 @@ public class RawDataSpreadsheetImporter implements DataImporter {
     private Integer parseRepeatsForInstance(InstanceData instanceData,
             Sheet repSheet,
             int currentRowIndex,
-            Map<String, Integer> metadataColumnHeaderIndex2,
+            Map<String, Integer> metadataColumnHeaderIdx,
             Map<Long, QuestionDto> questionIdToQuestionDto,
             Map<Integer, Long> columnIndexToQuestionId,
             Map<Long, List<QuestionOptionDto>> optionNodes,
@@ -423,7 +434,7 @@ public class RawDataSpreadsheetImporter implements DataImporter {
         //  the rest of row 0 is a group header. Question headers are on row 1
         //  and RQGs are on separate sheets.
         
-        // 0. SurveyedLocaleIdentifier - link to base sheet?
+        // 0. SurveyedLocaleIdentifier - link to base sheet
         // 1. Approval (if hasIterationColumn) - ignored duplicate
         // 2. Repeat
         // 3. SurveyedLocaleDisplayName - ignored duplicate
@@ -434,27 +445,27 @@ public class RawDataSpreadsheetImporter implements DataImporter {
         // 8. SurveyalTime - ignored duplicate
         // 9 - N. Questions
 
-        int instanceIdColumnIndex = metadataColumnHeaderIndex2.get(SURVEY_INSTANCE_COLUMN_KEY);
-        int repeatIterationColumnIndex = metadataColumnHeaderIndex2.get(REPEAT_COLUMN_KEY);
+        int identifierColumnIndex = metadataColumnHeaderIdx.get(DATAPOINT_IDENTIFIER_COLUMN_KEY);
+        int repeatIterationColumnIndex = metadataColumnHeaderIdx.get(REPEAT_COLUMN_KEY);
 
-        String SurveyInstanceId = instanceData.surveyInstanceDto.getKeyId().toString();
+        String dataPointIdentifier = instanceData.surveyInstanceDto.getSurveyedLocaleIdentifier();
         //Find first row matching this, or give up
         int rowIx = currentRowIndex;
         Row row;
         while (true) {
             row = repSheet.getRow(rowIx);
             if (row != null
-                    && row.getCell(instanceIdColumnIndex) != null
-                    && row.getCell(instanceIdColumnIndex).getStringCellValue().equals(SurveyInstanceId)) { //found!
+                    && row.getCell(identifierColumnIndex) != null
+                    && row.getCell(identifierColumnIndex).getStringCellValue().equals(dataPointIdentifier)) { //found!
                 break;
             } else {
-                if (isEmptyRow(row)) { // a row without any cells defined
-                    rowIx = 1; //end of sheet; start over
-                    }
-                rowIx++;
-                if (rowIx == currentRowIndex) { //back to where we started
-                    return rowIx; //not found; there were 0 iterations
+                if (rowIx > repSheet.getLastRowNum()) { //fell off the end
+                    rowIx = 1; //start over
                 }
+            }
+            rowIx++;
+            if (rowIx == currentRowIndex) { //back to where we started
+                return rowIx; //not found; there were 0 iterations
             }
         }
         //Found one row for the instance, read them all
@@ -462,13 +473,13 @@ public class RawDataSpreadsheetImporter implements DataImporter {
         Map<Long, Map<Long, String>> responseMap = new HashMap<>();
 
         while (row != null
-                && row.getCell(instanceIdColumnIndex) != null
-                && row.getCell(instanceIdColumnIndex).getStringCellValue().equals(SurveyInstanceId) //TODO: use "identifier" as link instead to handle new data?
+                && row.getCell(identifierColumnIndex) != null
+                && row.getCell(identifierColumnIndex).getStringCellValue().equals(dataPointIdentifier)
                 && row.getCell(repeatIterationColumnIndex) != null
                 && row.getCell(repeatIterationColumnIndex).getCellType() == Cell.CELL_TYPE_NUMERIC) {
             Long rep = (long) row.getCell(repeatIterationColumnIndex).getNumericCellValue(); //might throw on huge number
-            //check rep for sanity
-            if (rep<1) { break;}
+            //check repeat no for sanity
+            if (rep < 1) { continue;}
             checksumRows.add(row);
             
             //loop over the data columns
@@ -491,7 +502,6 @@ public class RawDataSpreadsheetImporter implements DataImporter {
             log.warn("Some questions have answers on more than one sheet!");
         }
 
-        
         return rowIx;
         
     }
@@ -588,6 +598,9 @@ public class RawDataSpreadsheetImporter implements DataImporter {
             long questionId = m.getValue();
 
             QuestionDto questionDto = questionIdToQuestionDto.get(questionId);
+            if (questionDto == null) { //no such question
+                continue;
+            }
             QuestionType questionType = questionDto.getType();
 
             for (int iter = 0; iter < iterations; iter++) {
@@ -659,10 +672,8 @@ public class RawDataSpreadsheetImporter implements DataImporter {
                             .getCell(columnIndex + 1));
                     String elevation = ExportImportUtils.parseCellAsString(iterationRow
                             .getCell(columnIndex + 2));
-                    String geoCode = ExportImportUtils.parseCellAsString(iterationRow
-                            .getCell(columnIndex + 3));
                     if (latitude != "" && longitude != "") { //We want both else ignore
-                        val = latitude + "|" + longitude + "|" + elevation + "|" + geoCode;
+                        val = latitude + "|" + longitude + "|" + elevation;
                     }
                     break;
                 case CASCADE:

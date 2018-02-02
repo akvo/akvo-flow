@@ -209,6 +209,7 @@ public class InstanceConfigurator {
         apkData.put("awsAccessKeyId", accessKeys.get(apkUser).getAccessKeyId());
         apkData.put("awsSecretKey", accessKeys.get(apkUser).getSecretAccessKey());
         apkData.put("serverBase", "https://" + gaeId + ".appspot.com");
+	apkData.put("instanceUrl", "https://" + alias);
         apkData.put("restApiKey", apiKey);
 
         Template t3 = cfg.getTemplate("survey.properties.ftl");

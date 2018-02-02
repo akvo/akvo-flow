@@ -267,7 +267,6 @@ FLOW.dialogControl = Ember.Object.create({
   delQG: "delQG",
   delQ: "delQ",
   delUser: "delUser",
-  delAttr: "delAttr",
   delAssignment: "delAssignment",
   delDeviceGroup: "delDeviceGroup",
   delSI: "delSI",
@@ -310,12 +309,6 @@ FLOW.dialogControl = Ember.Object.create({
 
     case "delUser":
       this.set('header', Ember.String.loc('_are_you_sure_you_want_to_delete_this_user'));
-      this.set('message', Ember.String.loc('_this_cant_be_undo'));
-      this.set('showDialog', true);
-      break;
-
-    case "delAttr":
-      this.set('header', Ember.String.loc('_attr_delete_header'));
       this.set('message', Ember.String.loc('_this_cant_be_undo'));
       this.set('showDialog', true);
       break;
@@ -388,11 +381,6 @@ FLOW.dialogControl = Ember.Object.create({
     case "delUser":
       this.set('showDialog', false);
       view.deleteUser.apply(view, arguments);
-      break;
-
-    case "delAttr":
-      this.set('showDialog', false);
-      view.deleteAttribute.apply(view, arguments);
       break;
 
     case "delAssignment":

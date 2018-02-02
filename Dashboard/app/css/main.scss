@@ -267,13 +267,13 @@ a, a:link, a:visited {
     &.AddBtn {
         display: inline-block !important;
         padding: 1em 1% 0.8em 1.5em;
-        background: url(../images/addbtfullWidthn.png) left center no-repeat;
+        background: url(../images/addbtn.png) left center no-repeat;
         color: rgb(0, 123, 182);
         text-align: left;
         font-size: 1.1em;
         &:hover {}
     }
-    &.clodeDialog {
+    &.closeDialog {
         position: absolute;
         top: 10px;
         right: 10px;
@@ -836,10 +836,6 @@ table.dataTable thead tr th a:link,
 table.dataTable thead tr th a:visited {
     cursor: pointer;
     display: block;
-}
-
-#statisticsDataTable {
-    width: 400px;
 }
 
 /* end addition MTW */
@@ -3300,6 +3296,8 @@ table.dataTable.notificationTable thead tr th {
 
 table.dataTable.notificationTable thead tr th.noArrows {
     background: #3A3A3A;
+    text-align: left;
+    font-weight: bold;
 }
 
 table.dataTable.notificationTable thead tr th a,
@@ -3340,7 +3338,6 @@ div.chooseSurveyData {
 }
 
 .filterData {
-    border: thin solid rgb(224, 224, 224);
     border-top: 1px solid white;
     .dataDeviceId {
         display: block;
@@ -3391,6 +3388,11 @@ label.collectedTo {
         width: 98%;
     }
 }
+
+#monitoringData div.noResults {
+    color: red;
+    text-align: center;
+  }
 
 div.chooseLocationData {
     position: relative;

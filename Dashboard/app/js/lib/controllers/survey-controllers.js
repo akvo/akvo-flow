@@ -567,6 +567,28 @@ FLOW.projectControl = Ember.ArrayController.create({
       var groups = FLOW.router.approvalGroupListController.get('content');
       return groups && groups.filterProperty('keyId', approvalGroupId).get('firstObject');
   }.property('this.currentProject.dataApprovalGroupId'),
+
+  saveProject: function() {
+    var currentProject = this.get('currentProject');
+    var currentForm = FLOW.selectedControl.get('selectedSurvey');
+
+    if (currentProject && currentProject.get('isDirty')) {
+      var name = currentProject.get('name').trim();
+      currentProject.set('name', name);
+      currentProject.set('code', name);
+      currentProject.set('path', this.get('currentProjectPath'));
+    }
+
+    if (currentForm && currentForm.get('isDirty')) {
+      var name = currentForm.get('name').trim();
+      currentForm.set('name', name);
+      currentForm.set('code', name);
+      var path = this.get('currentProjectPath') + "/" + name;
+      currentForm.set('path', path);
+    }
+
+    FLOW.store.commit();
+  }
 });
 
 

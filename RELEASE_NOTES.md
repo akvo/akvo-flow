@@ -1,5 +1,60 @@
 # Akvo Flow Release Notes
 ----
+# 1.9.27 Aerodynamic Avocado
+Date: 25 January 2018
+
+## New and noteworthy
+### Code Cleanup
+* **Caddisfly tests file definition cleanup** [#2333] - Removed unnecessary caddisfly endpoint and test file
+* [#2410] - Removed unneeded `com.gallatinsystems.common.data` classes
+* [#2412] - Removed ununsed authentication class and endpoint definition
+* [#2414] - Removed unneeded S3Driver and dependent classes
+* [#2417] - Removed gwt-user.jar dependency
+* [#2431] - Removed unused classes for data export packages
+* [#2198] - Fix 'fullWidth' class misspelling in css.
+* [#2367] - Removed geocode column from exported reports
+
+### UI
+* [#2385] - Removed the question ID column in the detailed submission view on monitoring tab
+* [#2429] - Updated copyright from 2017 to 2018
+
+### Code refactor
+* **Use `extend` instead of `create` in the maps controller** [#2275] - Extend ArrayController class instead of creating a new instance of it
+* **Deprecate metrics** [#2397] - Removed attributes and statistics from UI and removed metrics from backend
+
+## Resolved issues
+* **Add "No results found" in Monitoring tab** [#1868] - When a user clicks find on the monitoring tab but there is no data to display, a "No results found" message is displayed
+
+### Bug fixes
+* **Error thrown sometimes when opening comprehensive reports using Excel** [#2279] - Issue occurred when the frequency table for a number question was over 96 items long. Fix was to set is to handle any length content
+* **Sometimes duplicate column names generated in raw data** [#2315] - Append variable name to geolocation column headers to make each one unique
+* **Hitting the enter key after changing the form/survey name causes the dashboard to reload** [#1929] - Trigger save when user hits enter after editing survey/form title
+* **Report imports fails if there is no question with the column header id** [#2436] - ignore column if it does not exist
+* **Forms of copied survey does not showing for all users** [#1765] - Fixed the ancestor identifiers for copied surveys so they match the copy destination and therefore the surveys display for all users with view access for the destination
+* **In Monitoring tab data point order shows as NaN** [#2386] - Order now displayed as number
+
+# 1.9.26 Zetetic Zonkey
+
+## New and noteworthy
+* **Importing new data using the data cleaning export format** [#2368] - we enable importing new data into Flow that is formatted according to our new data cleaning export format (that is, having data from repeat question groups on separate sheets in a spreadsheet file)
+
+## Resolved issues
+* **Caddisfly tests dropdown remains when editing questions** [#1809] - we fix a bug that causes the caddisfly tests dropdown to keep showing when switching between question types during survey editing
+
+* **16-digit numbers get rounded in report cells** [#2291] - we fix a bug where numbers that are over 16-digits long get rounded when using Microsoft excel.  The numbers that are over 16-digits long are represented as strings so that users get their data as it arrived in the system.
+
+* **Update translation strings for new reports** [#2373] - we update the translation strings for the new reports user interface.
+
+* **Add level button in cascade** [#2268] - we replace a link to add a new cascade level, with a button
+
+* **Remove internationalisation header code from report engine** [#2309] - code cleanup removing translations/i18n code from the reports engine.
+
+* **Remove "No additional settings for this question type"** [#2319] - we remove the redundant section from question types that have no additional settings to configure when they are created.
+
+* **Remove unused data members** [#2379] - code cleanup to remove unused fields for country data
+
+* **Update configuration files to include instanceUrl field** [#2219] - we update our deployment code to include a new property that is needed for the instance configuration.
+
 # 1.9.25.1 Yetanother Yak Hotfix 1
 Date: 30 November 2017
 
