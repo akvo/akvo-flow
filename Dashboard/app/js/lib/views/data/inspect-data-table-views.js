@@ -42,7 +42,6 @@ FLOW.inspectDataTableView = FLOW.View.extend({
   },
 
   doInstanceQuery: function () {
-    console.log('finding data records from inspect-data-table');
     this.set('beginDate', Date.parse(FLOW.dateControl.get('fromDate')));
     // we add 24 hours to the date, in order to make the date search inclusive.
     dayInMilliseconds = 24 * 60 * 60 * 1000;
@@ -87,7 +86,6 @@ FLOW.inspectDataTableView = FLOW.View.extend({
     }
 
     FLOW.surveyInstanceControl.doInstanceQuery(
-      //console.log('finding data records from inspect-data-table');
       this.get('surveyInstanceId'),
       this.get('surveyId'),
       this.get('deviceId'),
