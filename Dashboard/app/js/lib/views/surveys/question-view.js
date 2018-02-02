@@ -300,7 +300,7 @@ FLOW.QuestionView = FLOW.View.extend({
     var path, anyActive, first, dependentQuestionAnswer, minVal, maxVal, options, found, optionsToDelete;
 
     if (this.questionIdValidationFailure) {
-      this.showMessageDialog(Ember.String.loc('_question_id_must_be_valid_and_unique'), this.questionIdValidationFailureReason);
+      this.showMessageDialog(Ember.String.loc('_variable_name_must_be_valid_and_unique'), this.questionIdValidationFailureReason);
       return;
     }
 
@@ -458,9 +458,9 @@ FLOW.QuestionView = FLOW.View.extend({
     var questionKeyId = selectedQuestion.get('keyId');
     var questionId = this.get('questionId') || "";
     if (FLOW.Env.mandatoryQuestionID && questionId.match(/^\s*$/)) {
-      args.failure(Ember.String.loc('_question_id_mandatory'));
+      args.failure(Ember.String.loc('_variable_name_mandatory'));
     } else if (!questionId.match(/^[A-Za-z0-9_\-]*$/)) {
-      args.failure(Ember.String.loc('_question_id_only_alphanumeric'))
+      args.failure(Ember.String.loc('_variable_name_only_alphanumeric'))
     } else {
       var monitoring = this.isPartOfMonitoringGroup(questionKeyId);
       if (monitoring) {
@@ -477,7 +477,7 @@ FLOW.QuestionView = FLOW.View.extend({
               }
             },
             error: function() {
-              args.failure(Ember.String.loc('_could_not_validate_question_id_with_server'));
+              args.failure(Ember.String.loc('_could_not_validate_variable_name_with_server'));
             }
           });
         }, 1000);
@@ -495,7 +495,7 @@ FLOW.QuestionView = FLOW.View.extend({
         if (isUnique) {
           args.success();
         } else {
-          args.failure('the question id is not unique');
+          args.failure(Ember.String.loc('_variable_name_not_unique'));
         }
       }
     }
