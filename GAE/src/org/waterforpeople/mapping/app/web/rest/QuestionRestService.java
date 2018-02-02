@@ -366,7 +366,7 @@ public class QuestionRestService {
             if (questionId.equals(q.getQuestionId())
                     && !question.getKey().equals(q.getKey())) {
                 result.put("success", false);
-                result.put("reason", "Question id not unique");
+                result.put("reason", "Variable name not unique");
                 return result;
             }
         }
