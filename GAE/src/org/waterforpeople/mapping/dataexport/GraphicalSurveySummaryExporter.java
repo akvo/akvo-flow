@@ -139,6 +139,11 @@ public class GraphicalSurveySummaryExporter extends SurveySummaryExporter {
     private static final String DEVICE_IDENTIFIER_LABEL = "Device identifier";
     private static final String DATA_APPROVAL_STATUS_LABEL = "Data approval status";
     
+    // Maximum number of rows of a sheet kept in memory
+    // We must take care to never go back up longer than this
+    private static final int WORKBOOK_WINDOW = 100;
+    
+    // Formatting for comprehensive summary sheet graphs
     private static final int CHART_WIDTH = 600;
     private static final int CHART_HEIGHT = 400;
     private static final int CHART_CELL_WIDTH = 10;
@@ -265,9 +270,7 @@ public class GraphicalSurveySummaryExporter extends SurveySummaryExporter {
     }
 
     private Workbook createWorkbookAndFormats() {
-        // This window may be too small for some OPTION questions
-        // on a comprehensive stats sheet
-        Workbook wb = new SXSSFWorkbook(100);
+        Workbook wb = new SXSSFWorkbook(WORKBOOK_WINDOW);
         headerStyle = wb.createCellStyle();
         headerStyle.setAlignment(CellStyle.ALIGN_LEFT);
         Font headerFont = wb.createFont();
