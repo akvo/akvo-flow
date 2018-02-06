@@ -15,6 +15,7 @@ FLOW.inspectDataTableView = FLOW.View.extend({
   selectedSurveyInstanceId: null,
   selectedSurveyInstanceNum: null,
   siString: null,
+  missingSurvey: false,
 
   form: function() {
     if (FLOW.selectedControl.get('selectedSurvey')) {
@@ -35,10 +36,15 @@ FLOW.inspectDataTableView = FLOW.View.extend({
 
   // do a new query
   doFindSurveyInstances: function () {
-    FLOW.surveyInstanceControl.get('sinceArray').clear();
-    FLOW.surveyInstanceControl.set('pageNumber', -1);
-    FLOW.metaControl.set('since', null);
-    this.doNextPage();
+    if (FLOW.selectedControl.get('selectedSurvey') === null) {
+      this.set('missingSurvey', true);
+    } else {
+      this.set('missingSurvey', false);
+      FLOW.surveyInstanceControl.get('sinceArray').clear();
+      FLOW.surveyInstanceControl.set('pageNumber', -1);
+      FLOW.metaControl.set('since', null);
+      this.doNextPage();
+    }
   },
 
   doInstanceQuery: function () {
@@ -247,6 +253,9 @@ FLOW.inspectDataTableView = FLOW.View.extend({
   }.property('this.surveyInstanceId'),
 
   noResults: function() {
+    if (FLOW.selectedControl.get('selectedSurvey') === null) {
+      return;
+    }
     var content = FLOW.surveyInstanceControl.get('content');
     if (content && content.get('isLoaded')) {
       return content.get('length') === 0;
