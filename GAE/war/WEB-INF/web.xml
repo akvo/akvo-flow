@@ -114,14 +114,6 @@
 	</servlet-mapping>
 
 	<servlet>
-		<servlet-name>WaterForPeopleMappingGoogle</servlet-name>
-		<servlet-class>org.waterforpeople.mapping.app.web.WaterForPeopleMappingGoogleServlet</servlet-class>
-	</servlet>
-	<servlet-mapping>
-		<servlet-name>WaterForPeopleMappingGoogle</servlet-name>
-		<url-pattern>/webapp/waterforpeoplemappinggoogle</url-pattern>
-	</servlet-mapping>
-	<servlet>
 		<servlet-name>CronCommanderServlet</servlet-name>
 		<servlet-class>org.waterforpeople.mapping.app.web.CronCommanderServlet</servlet-class>
 	</servlet>
@@ -278,14 +270,6 @@
 		<url-pattern>/surveymanager</url-pattern>
 	</servlet-mapping>
 	<servlet>
-		<servlet-name>ImageProcessor</servlet-name>
-		<servlet-class>org.waterforpeople.mapping.app.web.ImageProcessorServlet</servlet-class>
-	</servlet>
-	<servlet-mapping>
-		<servlet-name>ImageProcessor</servlet-name>
-		<url-pattern>/webapp/imageprocessor</url-pattern>
-	</servlet-mapping>
-	<servlet>
 		<servlet-name>DeviceManager</servlet-name>
 		<servlet-class>com.gallatinsystems.device.app.web.DeviceManagerServlet</servlet-class>
 	</servlet>
@@ -336,15 +320,6 @@
 	</servlet-mapping>
 
 	<servlet>
-		<servlet-name>RemoteLogging</servlet-name>
-		<servlet-class>com.google.gwt.logging.server.RemoteLoggingServiceImpl</servlet-class>
-	</servlet>
-	<servlet-mapping>
-		<servlet-name>RemoteLogging</servlet-name>
-		<url-pattern>/org.waterforpeople.mapping.portal.portal/remote_logging</url-pattern>
-	</servlet-mapping>
-
-	<servlet>
 		<servlet-name>NotificationProcessor</servlet-name>
 		<servlet-class>org.waterforpeople.mapping.notification.MappingNotificationProcessor</servlet-class>
 	</servlet>
@@ -359,18 +334,6 @@
 	<servlet-mapping>
 		<servlet-name>MapingSummarization</servlet-name>
 		<url-pattern>/webapp/mapping/summary</url-pattern>
-	</servlet-mapping>
-	<servlet>
-		<servlet-name>SurveyRpcServlet</servlet-name>
-		<servlet-class>org.waterforpeople.mapping.app.gwt.server.survey.SurveyServiceImpl</servlet-class>
-	</servlet>
-	<servlet-mapping>
-		<servlet-name>SurveyRpcServlet</servlet-name>
-		<url-pattern>/org.waterforpeople.mapping.portal.portal/surveyrpcservice</url-pattern>
-	</servlet-mapping>
-	<servlet-mapping>
-		<servlet-name>SurveyRpcServlet</servlet-name>
-		<url-pattern>/org.waterforpeople.mapping.surveyentry.surveyentry/surveyrpcservice</url-pattern>
 	</servlet-mapping>
 	<servlet>
 		<servlet-name>DataSummarization</servlet-name>
@@ -388,23 +351,7 @@
 		<servlet-name>DataUpdate</servlet-name>
 		<url-pattern>/app_worker/dataupdate</url-pattern>
 	</servlet-mapping>
-	<servlet>
-		<servlet-name>AuthSub</servlet-name>
-		<servlet-class>com.gallatinsystems.security.authorization.app.web.AuthenticationSubscriptionServlet</servlet-class>
-	</servlet>
-	<servlet-mapping>
-		<servlet-name>AuthSub</servlet-name>
-		<url-pattern>/authsub</url-pattern>
-	</servlet-mapping>
 
-	<servlet>
-		<servlet-name>PhotoUpload</servlet-name>
-		<servlet-class>org.waterforpeople.mapping.app.web.PhotoUpload</servlet-class>
-	</servlet>
-	<servlet-mapping>
-		<servlet-name>PhotoUpload</servlet-name>
-		<url-pattern>/webapp/photoupload</url-pattern>
-	</servlet-mapping>
 	<servlet>
 		<servlet-name>SurveyRestApi</servlet-name>
 		<servlet-class>org.waterforpeople.mapping.app.web.SurveyRestServlet</servlet-class>

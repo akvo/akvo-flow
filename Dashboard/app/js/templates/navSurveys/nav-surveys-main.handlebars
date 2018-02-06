@@ -55,7 +55,7 @@
         <nav class="menuTopbar">
           <ul>
             {{#if view.hasUnsavedChanges}}
-              <li><a class="saveProject" {{action "doSave" target="this"}}>{{t _save}}</a></li>
+              <li><a class="saveProject" {{action 'saveProject' target="FLOW.projectControl"}}>{{t _save}}</a></li>
             {{else}}
               <li><a class="saveProject noChanges">{{t _save}}</a></li>
             {{/if}}

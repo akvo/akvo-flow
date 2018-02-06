@@ -24,10 +24,6 @@ FLOW.QuestionView = FLOW.View.extend({
   dependentFlag: false,
   dependentQuestion: null,
   includeInMap: null,
-  showAddAttributeDialogBool: false,
-  newAttributeName: null,
-  newAttributeGroup: null,
-  newAttributeType: null,
   allowPoints: true,
   allowLine: true,
   allowPolygon: true,
@@ -168,7 +164,6 @@ FLOW.QuestionView = FLOW.View.extend({
   // TODO options
   doQuestionEdit: function () {
     var questionType = null,
-    attribute = null,
     dependentQuestion, dependentAnswer, dependentAnswerArray,cascadeResource;
     if (this.content && (this.content.get('isDirty') || this.content.get('isSaving'))) {
       this.showMessageDialog(Ember.String.loc('_question_is_being_saved'),
@@ -239,14 +234,6 @@ FLOW.QuestionView = FLOW.View.extend({
       }
     }
 
-    // set the attribute to the original choice
-    FLOW.attributeControl.get('content').forEach(function (item) {
-      if (item.get('keyId') == FLOW.selectedControl.selectedQuestion.get('metricId')) {
-        attribute = item;
-      }
-    });
-    this.set('attribute', attribute);
-
     // set the type to the original choice
     FLOW.questionTypeControl.get('content').forEach(function (item) {
       if (item.get('value') == FLOW.selectedControl.selectedQuestion.get('type')) {
@@ -313,7 +300,7 @@ FLOW.QuestionView = FLOW.View.extend({
     var path, anyActive, first, dependentQuestionAnswer, minVal, maxVal, options, found, optionsToDelete;
 
     if (this.questionIdValidationFailure) {
-      this.showMessageDialog(Ember.String.loc('_question_id_must_be_valid_and_unique'), this.questionIdValidationFailureReason);
+      this.showMessageDialog(Ember.String.loc('_variable_name_must_be_valid_and_unique'), this.questionIdValidationFailureReason);
       return;
     }
 
@@ -420,10 +407,6 @@ FLOW.QuestionView = FLOW.View.extend({
       FLOW.selectedControl.selectedQuestion.set('dependentQuestionAnswer', null);
     }
 
-    if (this.get('attribute')) {
-      FLOW.selectedControl.selectedQuestion.set('metricId', this.attribute.get('keyId'));
-    }
-
     if (this.get('type')) {
       FLOW.selectedControl.selectedQuestion.set('type', this.type.get('value'));
     }
@@ -475,9 +458,9 @@ FLOW.QuestionView = FLOW.View.extend({
     var questionKeyId = selectedQuestion.get('keyId');
     var questionId = this.get('questionId') || "";
     if (FLOW.Env.mandatoryQuestionID && questionId.match(/^\s*$/)) {
-      args.failure(Ember.String.loc('_question_id_mandatory'));
+      args.failure(Ember.String.loc('_variable_name_mandatory'));
     } else if (!questionId.match(/^[A-Za-z0-9_\-]*$/)) {
-      args.failure(Ember.String.loc('_question_id_only_alphanumeric'))
+      args.failure(Ember.String.loc('_variable_name_only_alphanumeric'))
     } else {
       var monitoring = this.isPartOfMonitoringGroup(questionKeyId);
       if (monitoring) {
@@ -494,7 +477,7 @@ FLOW.QuestionView = FLOW.View.extend({
               }
             },
             error: function() {
-              args.failure(Ember.String.loc('_could_not_validate_question_id_with_server'));
+              args.failure(Ember.String.loc('_could_not_validate_variable_name_with_server'));
             }
           });
         }, 1000);
@@ -512,7 +495,7 @@ FLOW.QuestionView = FLOW.View.extend({
         if (isUnique) {
           args.success();
         } else {
-          args.failure('the question id is not unique');
+          args.failure(Ember.String.loc('_variable_name_not_unique'));
         }
       }
     }
@@ -838,25 +821,6 @@ FLOW.QuestionView = FLOW.View.extend({
   // cancel group move
   doQuestionMoveCancel: function () {
     FLOW.selectedControl.set('selectedForMoveQuestion', null);
-  },
-  showAddAttributeDialog: function () {
-    this.set('showAddAttributeDialogBool', true);
-  },
-
-  doAddAttribute: function () {
-    if ((this.get('newAttributeName') !== null) && (this.get('newAttributeType') !== null)) {
-      FLOW.store.createRecord(FLOW.Metric, {
-        "name": this.get('newAttributeName'),
-        "group": this.get('newAttributeGroup'),
-        "valueType": this.newAttributeType.get('value')
-      });
-      FLOW.store.commit();
-    }
-    this.set('showAddAttributeDialogBool', false);
-  },
-
-  cancelAddAttribute: function () {
-    this.set('showAddAttributeDialogBool', false);
   },
 
   validateQuestionObserver: function () {

@@ -92,7 +92,7 @@ public class JFreechartChartUtil {
             dataset.setValue(
                     Double.parseDouble(values.get(i)),
                     "", // All on one nameless row
-                    labels.get(i) //Integer.valueOf(i) //Column
+                    labels.get(i) // Set the labels for each column
                     );
         }
 

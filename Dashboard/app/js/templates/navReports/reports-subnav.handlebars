@@ -5,10 +5,4 @@
     {{#view view.NavItemView item="chartReports" }}
       <a {{action doChartReports}}>{{t _charts}}</a>
     {{/view}} 
-    {{#if FLOW.Env.showStatisticsFeature}}
-     {{#view view.NavItemView item="statistics" }}
-      <a {{action doStatistics}}>{{t _statistics}}</a>
-    {{/view}} 
-    {{/if}}
-
 </ul>

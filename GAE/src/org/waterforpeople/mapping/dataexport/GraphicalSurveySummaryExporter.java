@@ -133,17 +133,22 @@ public class GraphicalSurveySummaryExporter extends SurveySummaryExporter {
     private static final String IMAGE_LABEL = "Image";
     private static final String ELEV_LABEL = "Elevation";
     private static final String ACC_LABEL = "Accuracy (m)";
-    private static final String CODE_LABEL = "Geo Code";
     private static final String IDENTIFIER_LABEL = "Identifier";
     private static final String DISPLAY_NAME_LABEL = "Display Name";
     private static final String DEVICE_IDENTIFIER_LABEL = "Device identifier";
     private static final String DATA_APPROVAL_STATUS_LABEL = "Data approval status";
     
+    // Maximum number of rows of a sheet kept in memory
+    // We must take care to never go back up longer than this
+    private static final int WORKBOOK_WINDOW = 100;
+    
+    // Formatting for comprehensive summary sheet graphs
     private static final int CHART_WIDTH = 600;
     private static final int CHART_HEIGHT = 400;
     private static final int CHART_CELL_WIDTH = 10;
     private static final int CHART_CELL_HEIGHT = 22;
     private static final NumberFormat PCT_FMT = DecimalFormat.getPercentInstance();
+    private static final int GEO_COLUMN_COUNT = 3;
    
     private CellStyle headerStyle;
     private CellStyle textStyle;
@@ -277,9 +282,7 @@ public class GraphicalSurveySummaryExporter extends SurveySummaryExporter {
     }
 
     private Workbook createWorkbookAndFormats() {
-        // This window may be too small for some OPTION questions
-        // on a comprehensive stats sheet
-        Workbook wb = new SXSSFWorkbook(100);
+        Workbook wb = new SXSSFWorkbook(WORKBOOK_WINDOW);
         headerStyle = wb.createCellStyle();
         headerStyle.setAlignment(CellStyle.ALIGN_LEFT);
         Font headerFont = wb.createFont();
@@ -841,11 +844,13 @@ public class GraphicalSurveySummaryExporter extends SurveySummaryExporter {
         String[] geoParts = value.split("\\|");
         List<String> cells = new ArrayList<>();
         int count = 0;
-        for (count = 0; count < geoParts.length; count++) {
+        //discard geocode (if present)
+        int partsToCopy = Math.min(geoParts.length, GEO_COLUMN_COUNT);
+        for (count = 0; count < partsToCopy; count++) {
             cells.add(geoParts[count]);
         }
         // now handle any missing fields
-        for (int j = count; j < 4; j++) {
+        for (int j = count; j < GEO_COLUMN_COUNT; j++) {
             cells.add("");
         }
 
@@ -1255,6 +1260,14 @@ public class GraphicalSurveySummaryExporter extends SurveySummaryExporter {
     }
 
 
+    /**
+     * writes the raw data headers for one question group
+     * @param sheet
+     * @param group
+     * @param questions
+     * @param startOffset
+     * @return
+     */
     private int writeRawDataGroupHeaders(Sheet sheet, QuestionGroupDto group, List<QuestionDto> questions, final int startOffset) {
         int offset = startOffset;
         Row row = getRow(doGroupHeaders ? 1 : 0, sheet);
@@ -1263,6 +1276,7 @@ public class GraphicalSurveySummaryExporter extends SurveySummaryExporter {
             questionIdList.add(q.getKeyId().toString());
 
             String questionId = q.getQuestionId();
+            // Can we tag the column with the variable name?
             final boolean useQID = useQuestionId && questionId != null
                     && !questionId.equals("");
 
@@ -1280,7 +1294,7 @@ public class GraphicalSurveySummaryExporter extends SurveySummaryExporter {
                     String levelName = useQID ? questionId + "_"
                             + level.replaceAll(" ", "_")
                             : q.getText() + " - " + level;
-                    createCell(row, offset++, levelName, headerStyle);
+                    createHeaderCell(row, offset++, levelName);
                 }
             } else if (QuestionType.CADDISFLY == q.getType()) {
                 offset = addCaddisflyDataHeaderColumns(q, row, offset, questionId, useQID);
@@ -1296,7 +1310,7 @@ public class GraphicalSurveySummaryExporter extends SurveySummaryExporter {
                             + q.getText().replaceAll("\n", "").trim();
                 }
 
-                createCell(row, offset++, header, headerStyle);
+                createHeaderCell(row, offset++, header);
 
                 // check if we need to create columns for all options
                 //TODO cascade
@@ -1314,18 +1328,16 @@ public class GraphicalSurveySummaryExporter extends SurveySummaryExporter {
                                         && qo.getCode().length() > 0)
                                         ? qo.getCode() + ":"
                                         : "";
-                                createCell(row,
+                                createHeaderCell(row,
                                         offset++,
-                                        "--OPTION--|" + header + qo.getText(),
-                                        headerStyle);
+                                        "--OPTION--|" + header + qo.getText());
                             }
 
                             // add 'other' column if needed
                             if (q.getAllowOtherFlag()) {
-                                createCell(row,
+                                createHeaderCell(row,
                                         offset++,
-                                        "--OTHER--",
-                                        headerStyle);
+                                        "--OTHER--");
                             }
 
                             optionMap.put(q.getKeyId(), qoList);
@@ -1405,17 +1417,16 @@ public class GraphicalSurveySummaryExporter extends SurveySummaryExporter {
                 } else {
                     columnHeader = "--CADDISFLY--|" + columnHeaderSuffix;
                 }
-                createCell(row, offset++, columnHeader, headerStyle);
+                createHeaderCell(row, offset++, columnHeader);
             }
 
             if (cr.getHasImage()) {
-                createCell(
+                createHeaderCell(
                         row,
                         offset++,
                         "--CADDISFLY--|" + q.getText()
                                 + "--"
-                                + IMAGE_LABEL,
-                        headerStyle);
+                                + IMAGE_LABEL);
             }
 
             // store hasImage in hashmap
@@ -1434,69 +1445,77 @@ public class GraphicalSurveySummaryExporter extends SurveySummaryExporter {
     }
 
     private int addPhotoDataColumnHeader(QuestionDto q, Row row, int originalOffset, String questionId,
-            boolean useQuestionId, final boolean useQID) {
+            boolean analysisFormat, final boolean useVarName) {
         int offset = originalOffset;
         // Always a URL column
         String header = "";
-        if (useQID) {
+        if (useVarName) {
             header = questionId;
-        } else if (useQuestionId) {
+        } else if (analysisFormat) {
             header = q.getText().replaceAll("\n", "").trim();
         } else {
             header = q.getKeyId().toString()
                     + "|"
                     + q.getText().replaceAll("\n", "").trim();
         }
-        createCell(row, offset++, header, headerStyle);
-        if (useQuestionId) {
+        createHeaderCell(row, offset++, header);
+        if (analysisFormat) {
             // Media gets 3 extra columns: Latitude, Longitude and Accuracy
             String prefix = "--PHOTO--|";
-            createCell(row, offset++,
-                    prefix + LAT_LABEL, headerStyle);
-            createCell(row, offset++,
-                    prefix + LON_LABEL, headerStyle);
-            createCell(row, offset++,
-                    prefix + ACC_LABEL, headerStyle);
+            createHeaderCell(row, offset++, prefix + LAT_LABEL);
+            createHeaderCell(row, offset++, prefix + LON_LABEL);
+            createHeaderCell(row, offset++, prefix + ACC_LABEL);
         }
         return offset;
     }
 
-    private int addGeoDataColumnHeader(QuestionDto q, Row row, int originalOffset, String questionId,
-            boolean useQuestionId, final boolean useQID) {
+
+    
+    /**
+     * @param q
+     * @param row
+     * @param originalOffset
+     * @param varName
+     * @param analysisFormat
+     * @param useVarName
+     * @return the new offset
+     * 
+     */
+    private int addGeoDataColumnHeader(QuestionDto q, Row row, int originalOffset, String varName,
+            boolean analysisFormat, final boolean useVarName) {
         int offset = originalOffset;
-        if (useQuestionId) {
-            createCell(
-                    row,
-                    offset++,
-                    (useQID ? questionId + "_"
-                            : q.getText() + " - ")
-                            + LAT_LABEL,
-                    headerStyle);
-        } else {
-            createCell(row, offset++, q.getKeyId() + "|"
-                    + LAT_LABEL,
-                    headerStyle);
+        if (analysisFormat) {
+            if (useVarName) {
+                createHeaderCell(row, offset++, varName + "_" + LAT_LABEL);
+                createHeaderCell(row, offset++, varName + "_" + LON_LABEL);
+                createHeaderCell(row, offset++, varName + "_" + ELEV_LABEL);
+            } else {
+                createHeaderCell(row, offset++, q.getText() + " - " + LAT_LABEL);
+                createHeaderCell(row, offset++, q.getText() + " - " + LON_LABEL);
+                createHeaderCell(row, offset++, q.getText() + " - " + ELEV_LABEL);
+            }
+        } else { //Import currently relies on the --GEO headers
+            createHeaderCell(row, offset++, q.getKeyId() + "|" + LAT_LABEL);
+            createHeaderCell(row, offset++, "--GEOLON--|"      + LON_LABEL);
+            createHeaderCell(row, offset++, "--GEOELE--|"      + ELEV_LABEL);
         }
-        createCell(row, offset++, (useQID ? questionId
-                + "_" : "--GEOLON--|")
-                + LON_LABEL, headerStyle);
-        createCell(row, offset++, (useQID ? questionId
-                + "_" : "--GEOELE--|")
-                + ELEV_LABEL, headerStyle);
-        String codeLabel = CODE_LABEL;
-        createCell(row, offset++, useQID ? questionId + "_"
-                + codeLabel.replaceAll("\\s", "")
-                : "--GEOCODE--|" + codeLabel, headerStyle);
         return offset;
     }
 
+    
     /**
      * Writes the stats and graphs sheet
      */
     private void writeStatsAndGraphsSheet(
-            Map<QuestionGroupDto, List<QuestionDto>> questionMap,
-            SummaryModel summaryModel, String sector, Workbook wb)
+            Map<QuestionGroupDto,
+            List<QuestionDto>> questionMap,
+            SummaryModel summaryModel,
+            String sector,
+            Workbook wb)
             throws Exception {
+
+        final int variableNameColumnIndex = 3;
+        final int descriptiveStatsColumnIndex = 4;
         
         String title = sector == null ? SUMMARY_LABEL : sector;
         Sheet sheet = null;
@@ -1523,7 +1542,7 @@ public class GraphicalSurveySummaryExporter extends SurveySummaryExporter {
         Row row = getRow(curRow++, sheet);
         if (sector == null) {
             createCell(row, 0, REPORT_HEADER, headerStyle);
-            curRow = writeDataStats(questionMap, sheet, curRow);
+            curRow = writeCollectionStats(questionMap, sheet, curRow);
         } else {
             createCell(row, 0, sector + " " + REPORT_HEADER, headerStyle);
         }
@@ -1556,7 +1575,7 @@ public class GraphicalSurveySummaryExporter extends SurveySummaryExporter {
                     int bottomRow = curRow;
 
                     row = getRow(tableTopRow, sheet);
-                    // span the question heading over any data table
+                    // Span the question text over any data table
                     sheet.addMergedRegion(new CellRangeAddress(curRow - 1, curRow - 1, 0, 2));
                     createCell(
                             row,
@@ -1564,17 +1583,18 @@ public class GraphicalSurveySummaryExporter extends SurveySummaryExporter {
                             question.getText(),
                             headerStyle);
                     // Variable name
-                    createCell(row, 3,
+                    createCell(row, variableNameColumnIndex,
                             question.getQuestionId(),
                             headerStyle);
 
                     DescriptiveStats stats = summaryModel.getDescriptiveStatsForQuestion(
                                     question.getKeyId(), sector);
                     if (doDescriptiveStats && stats != null && stats.getSampleCount() > 0) {
+                        // span the question text over the stats table
                         sheet.addMergedRegion(new CellRangeAddress(curRow - 1, curRow - 1, 4, 5));
                         createCell(
                                 row,
-                                4,
+                                descriptiveStatsColumnIndex,
                                 question.getText(), headerStyle);
                     }
                     
@@ -1619,33 +1639,35 @@ public class GraphicalSurveySummaryExporter extends SurveySummaryExporter {
                     //Output the descriptive stats; always within window
                     if (stats != null && stats.getSampleCount() > 0) {
                         int tempRow = tableTopRow + 1;
+                        int c1 = descriptiveStatsColumnIndex;
+                        int c2 = c1 + 1;
                         row = getRow(tempRow++, sheet);
-                        createCell(row, 4, "N");
-                        createCell(row, 5, sampleTotal);
+                        createCell(row, c1, "N");
+                        createCell(row, c2, sampleTotal);
                         row = getRow(tempRow++, sheet);
-                        createCell(row, 4, MEAN_LABEL);
-                        createCell(row, 5, stats.getMean() + "", null, Cell.CELL_TYPE_NUMERIC);
+                        createCell(row, c1, MEAN_LABEL);
+                        createCell(row, c2, stats.getMean());
                         row = getRow(tempRow++, sheet);
-                        createCell(row, 4, STD_E_LABEL);
-                        createCell(row, 5, stats.getStandardError() + "", null, Cell.CELL_TYPE_NUMERIC);
+                        createCell(row, c1, STD_E_LABEL);
+                        createCell(row, c2, stats.getStandardError());
                         row = getRow(tempRow++, sheet);
-                        createCell(row, 4, MEDIAN_LABEL);
-                        createCell(row, 5, stats.getMedian() + "", null, Cell.CELL_TYPE_NUMERIC);
+                        createCell(row, c1, MEDIAN_LABEL);
+                        createCell(row, c2, stats.getMedian());
                         row = getRow(tempRow++, sheet);
-                        createCell(row, 4, STD_D_LABEL);
-                        createCell(row, 5, stats.getStandardDeviation() + "", null, Cell.CELL_TYPE_NUMERIC);
+                        createCell(row, c1, STD_D_LABEL);
+                        createCell(row, c2, stats.getStandardDeviation());
                         row = getRow(tempRow++, sheet);
-                        createCell(row, 4, VAR_LABEL);
-                        createCell(row, 5, stats.getVariance() + "", null, Cell.CELL_TYPE_NUMERIC);
+                        createCell(row, c1, VAR_LABEL);
+                        createCell(row, c2, stats.getVariance());
                         row = getRow(tempRow++, sheet);
-                        createCell(row, 4, RANGE_LABEL);
-                        createCell(row, 5, stats.getRange() + "", null, Cell.CELL_TYPE_NUMERIC);
+                        createCell(row, c1, RANGE_LABEL);
+                        createCell(row, c2, stats.getRange());
                         row = getRow(tempRow++, sheet);
-                        createCell(row, 4, MIN_LABEL);
-                        createCell(row, 5, stats.getMin() + "", null, Cell.CELL_TYPE_NUMERIC);
+                        createCell(row, c1, MIN_LABEL);
+                        createCell(row, c2, stats.getMin());
                         row = getRow(tempRow++, sheet);
-                        createCell(row, 4, MAX_LABEL);
-                        createCell(row, 5, stats.getMax() + "", null, Cell.CELL_TYPE_NUMERIC);
+                        createCell(row, c1, MAX_LABEL);
+                        createCell(row, c2, stats.getMax());
                         
                         bottomRow = tempRow;
                     }
@@ -1713,10 +1735,6 @@ public class GraphicalSurveySummaryExporter extends SurveySummaryExporter {
                             } else {
                                 createCell(row, 2, PCT_FMT.format(0));
                             }
-                            if (i % 50 == 49) {
-                                //flush to stay within window
-                                ((SXSSFSheet) sheet).flushRows(0);
-                            }
                         }
                         
                         //total
@@ -1732,8 +1750,7 @@ public class GraphicalSurveySummaryExporter extends SurveySummaryExporter {
                     // add a blank row between questions
                     getRow(curRow++, sheet);
                     // flush the sheet so far to disk; we will not go back up
-                    // This is crucial, not just an optimisation!
-                    // File broken if we have too many lines between each flush
+                    // File will be broken if we write outside the window!
                     ((SXSSFSheet) sheet).flushRows(0); // retain 0 last rows and
                     // flush all others
                 }
@@ -1741,7 +1758,7 @@ public class GraphicalSurveySummaryExporter extends SurveySummaryExporter {
         }
     }
 
-    private int writeDataStats(Map<QuestionGroupDto,
+    private int writeCollectionStats(Map<QuestionGroupDto,
             List<QuestionDto>> questionMap,
             Sheet sheet,
             int curRow) {
@@ -1766,13 +1783,14 @@ public class GraphicalSurveySummaryExporter extends SurveySummaryExporter {
         
         if (totalInstances == 0) return curRow + 2; //add a little space
    
+        //The following two cells could also be made into date cells
         statRow = getRow(curRow++, sheet);
         createCell(statRow, tagCol, "First submission");
-        createCell(statRow, valCol, ExportImportUtils.formatDateTime(firstSubmission)); //Todo: date cell?
+        createCell(statRow, valCol, ExportImportUtils.formatDateTime(firstSubmission));
    
         statRow = getRow(curRow++, sheet);
         createCell(statRow, tagCol, "Last submission");
-        createCell(statRow, valCol, ExportImportUtils.formatDateTime(lastSubmission)); //Todo: date cell?
+        createCell(statRow, valCol, ExportImportUtils.formatDateTime(lastSubmission));
         
         statRow = getRow(curRow++, sheet);
         createCell(statRow, tagCol, "Shortest duration");
@@ -1838,6 +1856,11 @@ public class GraphicalSurveySummaryExporter extends SurveySummaryExporter {
         cell.setCellType(Cell.CELL_TYPE_NUMERIC);
         cell.setCellValue(value);
         return cell;
+    }
+    
+    // Create a header cell
+    protected Cell createHeaderCell(Row row, int col, String value) {
+        return createCell(row, col, value, headerStyle, -1);
     }
 
     protected Cell createCell(Row row, int col, String value, CellStyle style) {
@@ -1956,30 +1979,6 @@ public class GraphicalSurveySummaryExporter extends SurveySummaryExporter {
             imagePrefix = DEFAULT_IMAGE_PREFIX;
         }
         return true;
-    }
-
-    /**
-     * call the server to augment the data already loaded in each QuestionDto in the map passed in.
-     *
-     * @param questionMap
-     * @param apiKey
-     */
-    private void loadFullQuestions(
-            Map<QuestionGroupDto, List<QuestionDto>> questionMap, String apiKey) {
-        for (List<QuestionDto> questionList : questionMap.values()) {
-            for (int i = 0; i < questionList.size(); i++) {
-                try {
-                    QuestionDto newQ = BulkDataServiceClient.loadQuestionDetails(
-                            serverBase, questionList.get(i).getKeyId(), apiKey);
-                    if (newQ != null) {
-                        questionList.set(i, newQ);
-                    }
-                } catch (Exception e) {
-                    System.err.println("Could not fetch question details");
-                    e.printStackTrace(System.err);
-                }
-            }
-        }
     }
 
     private String getDurationText(Long duration) {

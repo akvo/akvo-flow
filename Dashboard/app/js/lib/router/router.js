@@ -105,7 +105,6 @@ FLOW.Router = Ember.Router.extend({
           FLOW.selectedControl.set('selectedSurvey', null);
           FLOW.selectedControl.set('selectedQuestion', null);
           FLOW.questionControl.set('OPTIONcontent', null);
-          FLOW.attributeControl.populate();
         }
       }),
 
@@ -257,9 +256,6 @@ FLOW.Router = Ember.Router.extend({
       doInspectData: function (router, event) {
         router.transitionTo('navData.inspectData');
       },
-      doManageAttributes: function (router, event) {
-        router.transitionTo('navData.manageAttributes');
-      },
       doBulkUpload: function (router, event) {
         router.transitionTo('navData.bulkUpload');
       },
@@ -288,15 +284,6 @@ FLOW.Router = Ember.Router.extend({
           router.get('navDataController').connectOutlet('inspectData');
           router.set('datasubnavController.selected', 'inspectData');
           router.resetState();
-        }
-      }),
-
-      manageAttributes: Ember.Route.extend({
-        route: '/manageattributes',
-        connectOutlets: function (router, context) {
-          router.get('navDataController').connectOutlet('manageAttributes');
-          router.set('datasubnavController.selected', 'manageAttributes');
-          FLOW.attributeControl.populate();
         }
       }),
 
@@ -415,10 +402,6 @@ FLOW.Router = Ember.Router.extend({
         router.transitionTo('navReports.chartReports');
       },
 
-      doStatistics: function(router, event) {
-        router.transitionTo('navReports.statistics');
-      },
-
       index: Ember.Route.extend({
         route: '/',
         redirectsTo: 'exportReports'
@@ -439,15 +422,6 @@ FLOW.Router = Ember.Router.extend({
           router.resetState();
           router.get('navReportsController').connectOutlet('chartReports');
           router.set('reportsSubnavController.selected', 'chartReports');
-        }
-      }),
-      statistics: Ember.Route.extend({
-        route: '/statistics',
-        connectOutlets: function(router, context) {
-          router.resetState();
-          router.get('navReportsController').connectOutlet('statistics');
-          router.set('reportsSubnavController.selected', 'statistics');
-          FLOW.surveyGroupControl.populate();
         }
       })
     }),

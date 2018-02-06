@@ -32,7 +32,7 @@
               </a>
             {{/unless}}
             {{#if view.visibleProjectBasics}}
-              <form class="projectDetailForm">
+              <form class="projectDetailForm" {{action 'saveProject' on='submit' target="FLOW.projectControl"}}>
                 <label>{{t _survey_title}}</label>{{view Ember.TextField id="projectTitle" valueBinding="FLOW.projectControl.currentProject.name" disabledBinding="view.disableFolderSurveyInputField"}}
 
                 <ul class="projectSelect floats-in">

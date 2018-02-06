@@ -65,6 +65,13 @@ FLOW.MonitoringDataTableView = FLOW.View.extend({
           FLOW.router.userListController.set('content', FLOW.User.find());
       }
   },
+  
+  noResults: function () {
+    var content = FLOW.router.surveyedLocaleController.get('content');
+    if (content && content.get('isLoaded')) {
+        return content.get('length') === 0;
+    }
+  }.property('FLOW.router.surveyedLocaleController.content','FLOW.router.surveyedLocaleController.content.isLoaded'),
 
   doNextPage: function () {
 	var cursorArray, cursorStart;
@@ -179,6 +186,11 @@ FLOW.DataPointView = FLOW.View.extend({
     toggleShowDataApprovalBlock: function () {
         this.toggleProperty('showDataApprovalBlock');
     },
+
+    dataPointRowNumber: function () {
+        var pageNumber = FLOW.router.surveyedLocaleController.get('pageNumber');
+        return this.get('_parentView.contentIndex') + 1 + 20 * pageNumber;
+    }.property()
 });
 
 /**

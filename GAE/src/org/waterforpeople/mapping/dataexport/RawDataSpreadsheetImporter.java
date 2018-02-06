@@ -1,5 +1,5 @@
 /*
- *  Copyright (C) 2010-2017 Stichting Akvo (Akvo Foundation)
+ *  Copyright (C) 2010-2018 Stichting Akvo (Akvo Foundation)
  *
  *  This file is part of Akvo FLOW.
  *
@@ -598,6 +598,9 @@ public class RawDataSpreadsheetImporter implements DataImporter {
             long questionId = m.getValue();
 
             QuestionDto questionDto = questionIdToQuestionDto.get(questionId);
+            if (questionDto == null) { //no such question
+                continue;
+            }
             QuestionType questionType = questionDto.getType();
 
             for (int iter = 0; iter < iterations; iter++) {
@@ -669,10 +672,8 @@ public class RawDataSpreadsheetImporter implements DataImporter {
                             .getCell(columnIndex + 1));
                     String elevation = ExportImportUtils.parseCellAsString(iterationRow
                             .getCell(columnIndex + 2));
-                    String geoCode = ExportImportUtils.parseCellAsString(iterationRow
-                            .getCell(columnIndex + 3));
                     if (latitude != "" && longitude != "") { //We want both else ignore
-                        val = latitude + "|" + longitude + "|" + elevation + "|" + geoCode;
+                        val = latitude + "|" + longitude + "|" + elevation;
                     }
                     break;
                 case CASCADE:
