@@ -875,7 +875,7 @@ FLOW.QuestionView = FLOW.View.extend({
       },
       failure: function(msg) {
         self.set('variableNameValidationFailure', true);
-        self.set('variableNameValidationFailureReason', Ember.String.loc('_variable_name_validation_failure_reason'));
+        self.set('variableNameValidationFailureReason', Ember.String.loc('_variable_name_not_unique'));
       }
     });
   }.observes('this.variableName'),
