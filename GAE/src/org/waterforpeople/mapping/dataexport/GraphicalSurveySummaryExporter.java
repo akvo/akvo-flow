@@ -41,6 +41,7 @@ import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicLong;
 
 import org.akvo.flow.domain.DataUtils;
+import org.akvo.flow.util.JFreechartChartUtil;
 import org.apache.log4j.ConsoleAppender;
 import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
@@ -75,7 +76,6 @@ import org.waterforpeople.mapping.domain.CaddisflyResult;
 import org.waterforpeople.mapping.domain.response.value.Media;
 import org.waterforpeople.mapping.serialization.response.MediaResponse;
 
-import com.gallatinsystems.common.util.JFreechartChartUtil;
 import com.gallatinsystems.survey.dao.CaddisflyResourceDao;
 
 import static com.gallatinsystems.common.Constants.*;
@@ -138,6 +138,11 @@ public class GraphicalSurveySummaryExporter extends SurveySummaryExporter {
     private static final String DEVICE_IDENTIFIER_LABEL = "Device identifier";
     private static final String DATA_APPROVAL_STATUS_LABEL = "Data approval status";
     
+    // Maximum number of rows of a sheet kept in memory
+    // We must take care to never go back up longer than this
+    private static final int WORKBOOK_WINDOW = 100;
+    
+    // Formatting for comprehensive summary sheet graphs
     private static final int CHART_WIDTH = 600;
     private static final int CHART_HEIGHT = 400;
     private static final int CHART_CELL_WIDTH = 10;
@@ -265,9 +270,7 @@ public class GraphicalSurveySummaryExporter extends SurveySummaryExporter {
     }
 
     private Workbook createWorkbookAndFormats() {
-        // This window may be too small for some OPTION questions
-        // on a comprehensive stats sheet
-        Workbook wb = new SXSSFWorkbook(100);
+        Workbook wb = new SXSSFWorkbook(WORKBOOK_WINDOW);
         headerStyle = wb.createCellStyle();
         headerStyle.setAlignment(CellStyle.ALIGN_LEFT);
         Font headerFont = wb.createFont();
@@ -1618,7 +1621,7 @@ public class GraphicalSurveySummaryExporter extends SurveySummaryExporter {
                         bottomRow = tempRow;
                     }
 
-                    //Pie chart, soon to be bar chart
+                    //bar chart
                     if (doChart && labels.size() > 0) {
                         boolean hasVals = false;
                         if (values != null) {
@@ -1638,7 +1641,7 @@ public class GraphicalSurveySummaryExporter extends SurveySummaryExporter {
                         if (hasVals && generateCharts) {
                             // now insert the graph
                             int indx = wb.addPicture(
-                                    JFreechartChartUtil.getPieChart(
+                                    JFreechartChartUtil.getBarChart(
                                             labels,
                                             values,
                                             question.getText(),
