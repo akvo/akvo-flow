@@ -110,10 +110,6 @@ FLOW.DataPointView = FLOW.View.extend({
 
     showDataApprovalBlock: false,
 
-    showSurveyedLocaleDeleteButton: function() {
-        return FLOW.router.surveyedLocaleController.get('userCanDelete');
-    }.property(),
-
     showApprovalStatusColumn: function () {
         return this.get('parentView').get('showApprovalStatusColumn');
     }.property(),
