@@ -520,11 +520,11 @@ public class GraphicalSurveySummaryExporter extends SurveySummaryExporter {
             } else {
                 instancesByDevice.put(dev, Integer.valueOf(1));
             }
-            Long dur = sid.getSurveyalTime(); //seconds
-            if (dur != null) {
-                totalDuration += dur;
-                maxDuration = Long.max(maxDuration, dur);
-                minDuration = Long.min(minDuration, dur);
+            Long durationSeconds = sid.getSurveyalTime();
+            if (durationSeconds != null) {
+                totalDuration += durationSeconds;
+                maxDuration = Long.max(maxDuration, durationSeconds);
+                minDuration = Long.min(minDuration, durationSeconds);
             }
                 
         }
@@ -1781,7 +1781,9 @@ public class GraphicalSurveySummaryExporter extends SurveySummaryExporter {
         createCell(statRow, tagCol, "Form submissions");
         createCell(statRow, valCol, totalInstances);
         
-        if (totalInstances == 0) return curRow + 2; //add a little space
+        if (totalInstances == 0) {
+            return curRow + 2; //add a little space
+        }
    
         //The following two cells could also be made into date cells
         statRow = getRow(curRow++, sheet);
