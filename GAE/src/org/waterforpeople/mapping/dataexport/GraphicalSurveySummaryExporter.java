@@ -700,7 +700,11 @@ public class GraphicalSurveySummaryExporter extends SurveySummaryExporter {
                                     );
                             List<String> valsList = new ArrayList<>();
                             for (Map<String, String> optionNode : optionNodes) {
-                                valsList.add(optionNode.get("text")); //get "name" for CASCADE
+                                if (optionNode.containsKey("text")) {
+                                    valsList.add(optionNode.get("text")); //OPTION and NUMBER
+                                } else if (optionNode.containsKey("name")) {
+                                    valsList.add(optionNode.get("name")); //"name" for CASCADE
+                                }
                             }
                             vals = valsList.toArray(new String[valsList.size()]);
                         } catch (IOException e) {
@@ -1347,7 +1351,9 @@ public class GraphicalSurveySummaryExporter extends SurveySummaryExporter {
             }
             //TODO: add cascade
             if (!(QuestionType.NUMBER == q.getType() 
-                    || QuestionType.OPTION == q.getType())) {
+                    || QuestionType.OPTION == q.getType()
+                    || QuestionType.CASCADE == q.getType()
+                    )) {
                 unsummarizable.add(q.getKeyId().toString());
             }
         }
@@ -1556,10 +1562,13 @@ public class GraphicalSurveySummaryExporter extends SurveySummaryExporter {
                     if (QuestionType.OPTION == question.getType()) { 
                         doChart = true;
                         doDataTable = true;                        
+                    } else if (QuestionType.CASCADE == question.getType()) {
+                        doChart = true;
+                        doDataTable = true;                        
                     } else if (QuestionType.NUMBER == question.getType()) {
                         doDescriptiveStats = true;
                         //skip table and chart (phone numbers etc get ridiculous)
-                    } else { //TODO: add cascade
+                    } else {
                         continue;
                     }
 
@@ -1637,7 +1646,7 @@ public class GraphicalSurveySummaryExporter extends SurveySummaryExporter {
 
                     //Output the descriptive stats;
                     // this section is short enough to stay within window
-                    if (stats != null && stats.getSampleCount() > 0) {
+                    if (doDescriptiveStats && stats != null && stats.getSampleCount() > 0) {
                         int tempRow = tableTopRow + 1;
                         int c1 = descriptiveStatsColumnIndex;
                         int c2 = c1 + 1;
