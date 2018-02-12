@@ -119,7 +119,6 @@ public class GraphicalSurveySummaryExporter extends SurveySummaryExporter {
     private static final String DURATION_LABEL = "Duration";
     private static final String REPEAT_LABEL = "Repeat no";
     private static final String MEAN_LABEL = "Mean";
-    private static final String MODE_LABEL = "Mode";
     private static final String MEDIAN_LABEL = "Median";
     private static final String MIN_LABEL = "Min";
     private static final String MAX_LABEL = "Max";
@@ -1800,7 +1799,8 @@ public class GraphicalSurveySummaryExporter extends SurveySummaryExporter {
         if (totalInstances == 0) {
             return rowIndex + 2; //add a little space
         }
-   
+        //TODO approvedInstances, but only if approval enable for this survey
+        
         //The following two cells could also be made into date cells
         statRow = getRow(rowIndex++, sheet);
         createCell(statRow, tagCol, "First submission");
