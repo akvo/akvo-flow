@@ -190,18 +190,17 @@ public class GraphicalSurveySummaryExporter extends SurveySummaryExporter {
     private List<String> unsummarizable = new ArrayList<>();
 
     //data about the data
-    int totalInstances = 0;
-    int approvedInstances = 0;
-    Date firstSubmission = null;
-    Date lastSubmission = null;
+    private int totalInstances = 0;
+    private int approvedInstances = 0;
+    private Date firstSubmission = null;
+    private Date lastSubmission = null;
     private Map<String, Integer> instancesByUser = new HashMap<>();
     private Map<String, Integer> instancesByDevice = new HashMap<>();
-    long totalDuration = 0L;
-    long minDuration = Long.MAX_VALUE;
-    long maxDuration = 0;
+    private long totalDuration = 0L;
+    private long minDuration = Long.MAX_VALUE;
+    private long maxDuration = 0;
 
     
-
     //@Override
     public void export(Map<String, String> criteria, File fileName,
             String serverBaseUrl, Map<String, String> options) {
@@ -1769,7 +1768,7 @@ public class GraphicalSurveySummaryExporter extends SurveySummaryExporter {
     private int writeCollectionStats(Map<QuestionGroupDto,
             List<QuestionDto>> questionMap,
             Sheet sheet,
-            int rowIndex) {
+            int firstRowIndex) {
         final int tagCol = 0;
         final int valCol = 3;
 
@@ -1780,7 +1779,7 @@ public class GraphicalSurveySummaryExporter extends SurveySummaryExporter {
             totalQuestions += group.size();
         }
         //Now draw them
-        rowIndex++;
+        int rowIndex = firstRowIndex + 1;
         Row statRow = getRow(rowIndex++, sheet);
         createCell(statRow, tagCol, "Questions");
         createCell(statRow, valCol, totalQuestions);
