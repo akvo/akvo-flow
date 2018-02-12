@@ -1820,10 +1820,10 @@ public class GraphicalSurveySummaryExporter extends SurveySummaryExporter {
             createCell(statRow, valCol, instancesByUser.get(user));   
         }
         
-        for (String dev : instancesByDevice.keySet()) {
+        for (String device : instancesByDevice.keySet()) {
             statRow = getRow(curRow++, sheet);
-            createCell(statRow, tagCol, "Device " + dev);
-            createCell(statRow, valCol, instancesByDevice.get(dev));            
+            createCell(statRow, tagCol, "Device " + device);
+            createCell(statRow, valCol, instancesByDevice.get(device));            
         }
         
         return curRow + 2; //add a little space
