@@ -1538,11 +1538,11 @@ public class GraphicalSurveySummaryExporter extends SurveySummaryExporter {
 
         CreationHelper creationHelper = wb.getCreationHelper();
         Drawing patriarch = sheet.createDrawingPatriarch();
-        int curRow = 0;
-        Row row = getRow(curRow++, sheet);
+        int rowIndex = 0;
+        Row row = getRow(rowIndex++, sheet);
         if (sector == null) {
             createCell(row, 0, REPORT_HEADER, headerStyle);
-            curRow = writeCollectionStats(questionMap, sheet, curRow);
+            rowIndex = writeCollectionStats(questionMap, sheet, rowIndex);
         } else {
             createCell(row, 0, sector + " " + REPORT_HEADER, headerStyle);
         }
@@ -1571,12 +1571,12 @@ public class GraphicalSurveySummaryExporter extends SurveySummaryExporter {
                     }
 
                     //We want a header, spanned across 2 columns
-                    int tableTopRow = curRow++;
-                    int bottomRow = curRow;
+                    int tableTopRow = rowIndex++;
+                    int bottomRow = rowIndex;
 
                     row = getRow(tableTopRow, sheet);
                     // Span the question text over any data table
-                    sheet.addMergedRegion(new CellRangeAddress(curRow - 1, curRow - 1, 0, 2));
+                    sheet.addMergedRegion(new CellRangeAddress(rowIndex - 1, rowIndex - 1, 0, 2));
                     createCell(
                             row,
                             0,
@@ -1591,7 +1591,7 @@ public class GraphicalSurveySummaryExporter extends SurveySummaryExporter {
                                     question.getKeyId(), sector);
                     if (doDescriptiveStats && stats != null && stats.getSampleCount() > 0) {
                         // span the question text over the stats table
-                        sheet.addMergedRegion(new CellRangeAddress(curRow - 1, curRow - 1, 4, 5));
+                        sheet.addMergedRegion(new CellRangeAddress(rowIndex - 1, rowIndex - 1, 4, 5));
                         createCell(
                                 row,
                                 descriptiveStatsColumnIndex,
@@ -1636,7 +1636,8 @@ public class GraphicalSurveySummaryExporter extends SurveySummaryExporter {
                         sampleTotal += count.getValue();
                     }
 
-                    //Output the descriptive stats; always within window
+                    //Output the descriptive stats;
+                    // this section is short enough to stay within window
                     if (stats != null && stats.getSampleCount() > 0) {
                         int tempRow = tableTopRow + 1;
                         int c1 = descriptiveStatsColumnIndex;
@@ -1717,15 +1718,15 @@ public class GraphicalSurveySummaryExporter extends SurveySummaryExporter {
                     }
 
                     if (doDataTable) {
-                        curRow = tableTopRow;
+                        rowIndex = tableTopRow;
                         //header
-                        row = getRow(curRow++, sheet);
+                        row = getRow(rowIndex++, sheet);
                         createCell(row, 1, FREQ_LABEL, headerStyle);
                         createCell(row, 2, PCT_LABEL, headerStyle);
                         
                         //items
                         for (int i=0; i<labels.size(); i++) {
-                            row = getRow(curRow++, sheet);
+                            row = getRow(rowIndex++, sheet);
                             createCell(row, 0, labels.get(i));
                             createCell(row, 1, values.get(i));
                             if (sampleTotal > 0) {
@@ -1738,17 +1739,17 @@ public class GraphicalSurveySummaryExporter extends SurveySummaryExporter {
                         }
                         
                         //total
-                        row = getRow(curRow++, sheet);
+                        row = getRow(rowIndex++, sheet);
                         createCell(row, 0, TOTAL_LABEL);
                         createCell(row, 1, sampleTotal + "");
-                        if (curRow > bottomRow) {
-                            bottomRow = curRow;
+                        if (rowIndex > bottomRow) {
+                            bottomRow = rowIndex;
                         }
                     }
-                    curRow = bottomRow;
+                    rowIndex = bottomRow;
 
                     // add a blank row between questions
-                    getRow(curRow++, sheet);
+                    getRow(rowIndex++, sheet);
                     // flush the sheet so far to disk; we will not go back up
                     // File will be broken if we write outside the window!
                     ((SXSSFSheet) sheet).flushRows(0); // retain 0 last rows and
@@ -1758,13 +1759,20 @@ public class GraphicalSurveySummaryExporter extends SurveySummaryExporter {
         }
     }
 
+    /**
+     * Write statitics on the collection itself
+     * @param questionMap
+     * @param sheet
+     * @param rowIndex
+     * @return
+     */
     private int writeCollectionStats(Map<QuestionGroupDto,
             List<QuestionDto>> questionMap,
             Sheet sheet,
-            int curRow) {
+            int rowIndex) {
         final int tagCol = 0;
         final int valCol = 3;
-        //Global statistics
+
         //Calculate them first (due to the window, we cannot sum this while looping and 
         // then go back up and draw it last)
         int totalQuestions = 0;
@@ -1772,37 +1780,37 @@ public class GraphicalSurveySummaryExporter extends SurveySummaryExporter {
             totalQuestions += group.size();
         }
         //Now draw them
-        curRow++;
-        Row statRow = getRow(curRow++, sheet);
+        rowIndex++;
+        Row statRow = getRow(rowIndex++, sheet);
         createCell(statRow, tagCol, "Questions");
         createCell(statRow, valCol, totalQuestions);
    
-        statRow = getRow(curRow++, sheet);
+        statRow = getRow(rowIndex++, sheet);
         createCell(statRow, tagCol, "Form submissions");
         createCell(statRow, valCol, totalInstances);
         
         if (totalInstances == 0) {
-            return curRow + 2; //add a little space
+            return rowIndex + 2; //add a little space
         }
    
         //The following two cells could also be made into date cells
-        statRow = getRow(curRow++, sheet);
+        statRow = getRow(rowIndex++, sheet);
         createCell(statRow, tagCol, "First submission");
         createCell(statRow, valCol, ExportImportUtils.formatDateTime(firstSubmission));
    
-        statRow = getRow(curRow++, sheet);
+        statRow = getRow(rowIndex++, sheet);
         createCell(statRow, tagCol, "Last submission");
         createCell(statRow, valCol, ExportImportUtils.formatDateTime(lastSubmission));
         
-        statRow = getRow(curRow++, sheet);
+        statRow = getRow(rowIndex++, sheet);
         createCell(statRow, tagCol, "Shortest duration");
         createCell(statRow, valCol, getDurationText(minDuration));
    
-        statRow = getRow(curRow++, sheet);
+        statRow = getRow(rowIndex++, sheet);
         createCell(statRow, tagCol, "Longest duration");
         createCell(statRow, valCol, getDurationText(maxDuration));
    
-        statRow = getRow(curRow++, sheet);
+        statRow = getRow(rowIndex++, sheet);
         createCell(statRow, tagCol, "Average duration");
         try {
             createCell(statRow, valCol, getDurationText((long) totalDuration / totalInstances));
@@ -1811,7 +1819,7 @@ public class GraphicalSurveySummaryExporter extends SurveySummaryExporter {
         }
    
         for (String user : instancesByUser.keySet()) {
-            statRow = getRow(curRow++, sheet);
+            statRow = getRow(rowIndex++, sheet);
             if (user != null) {
                 createCell(statRow, tagCol, "User " + user);
             } else {
@@ -1821,12 +1829,12 @@ public class GraphicalSurveySummaryExporter extends SurveySummaryExporter {
         }
         
         for (String device : instancesByDevice.keySet()) {
-            statRow = getRow(curRow++, sheet);
+            statRow = getRow(rowIndex++, sheet);
             createCell(statRow, tagCol, "Device " + device);
             createCell(statRow, valCol, instancesByDevice.get(device));            
         }
         
-        return curRow + 2; //add a little space
+        return rowIndex + 2; //add a little space
     }
 
     
