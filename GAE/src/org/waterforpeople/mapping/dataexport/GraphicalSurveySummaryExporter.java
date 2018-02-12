@@ -1799,7 +1799,12 @@ public class GraphicalSurveySummaryExporter extends SurveySummaryExporter {
         if (totalInstances == 0) {
             return rowIndex + 2; //add a little space
         }
-        //TODO approvedInstances, but only if approval enable for this survey
+        
+        if (safeTrue(surveyGroupDto.getRequireDataApproval())) {
+            statRow = getRow(rowIndex++, sheet);
+            createCell(statRow, tagCol, "Approved submissions");
+            createCell(statRow, valCol, approvedInstances);            
+        }
         
         //The following two cells could also be made into date cells
         statRow = getRow(rowIndex++, sheet);
