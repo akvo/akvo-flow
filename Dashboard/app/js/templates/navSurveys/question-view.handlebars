@@ -14,7 +14,7 @@
       {{/if}}
       {{view Ember.TextField valueBinding="view.tip" size=100 }} </label>
     <label>
-      {{t _question_id}}: <span class="fadedText">({{t _optional}})</span> {{tooltip _question_id_tooltip}}
+      {{t _variable_name}}: <span class="fadedText">({{t _optional}})</span> {{tooltip _variable_name_tooltip}}
       {{#if view.questionIdValidationFailure }}
       <span style="color:red">{{view.questionIdValidationFailureReason}}</span>
       {{/if}}
@@ -167,7 +167,11 @@
     <!-- End question specific material -->
     <nav>
       <ul>
+        {{#if view.questionIdValidationFailure }}
+        <li><a class="button noChanges" id="standardBtn_01">{{t _save_question}}</a> </li>
+        {{else}}
         <li><a class="button" id="standardBtn_01" {{action "doSaveEditQuestion" target="this"}}>{{t _save_question}}</a> </li>
+        {{/if}}
         <li><a class="cancel" id="standardBtn_01" {{action "doCancelEditQuestion" target="this"}}>{{t _cancel}}</a> </li>
       </ul>
     </nav>

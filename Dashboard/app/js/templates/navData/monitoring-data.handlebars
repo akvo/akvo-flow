@@ -93,9 +93,6 @@
                 <a {{action showSurveyInstanceDetails SI target="this"}}>
                   {{t _view_details}}
                 </a>
-                {{#if view.showSurveyedLocaleDeleteButton }} {{#view FLOW.DataItemView contentBinding="SI"}}<a {{action confirm FLOW.dialogControl.delSI2 target="FLOW.dialogControl" }}>
-                  {{t _delete}}
-                </a>{{/view}} {{/if}}
               </td>
             </tr>
             <tr class="si_details" style="background: #fff; display:none;" data-flow-id="si_details_{{unbound SI.id}}">

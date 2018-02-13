@@ -2,6 +2,11 @@
     {{#view view.NavItemView item="inspectData" }}
     <a {{action doInspectData}}>{{t _inspect_data}}</a>
     {{/view}}
+    {{#if FLOW.Env.showMonitoringFeature}}
+      {{#view view.NavItemView item="monitoringData" }}
+        <a {{action doMonitoringData}}>{{t _monitoring}}</a>
+      {{/view}}
+    {{/if}}
     {{#view view.NavItemView item="bulkUpload" }}
     <a {{action doBulkUpload}}>{{t _bulk_upload_data}}</a>
     {{/view}} 
@@ -10,11 +15,6 @@
         <a {{action doDataCleaning}}>{{t _data_cleaning}}</a>
         {{/if}}
     {{/view}}
-    {{#if FLOW.Env.showMonitoringFeature}}
-      {{#view view.NavItemView item="monitoringData" }}
-        <a {{action doMonitoringData}}>{{t _monitoring}}</a>
-      {{/view}}
-    {{/if}}
     {{#view view.NavItemView item="cascadeResources" }}
         {{#if view.showCascadeResourcesButton}}
         <a {{action doCascadeResources}}>{{t _cascade_resources}}</a>

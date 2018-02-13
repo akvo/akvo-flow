@@ -114,14 +114,6 @@
 	</servlet-mapping>
 
 	<servlet>
-		<servlet-name>WaterForPeopleMappingGoogle</servlet-name>
-		<servlet-class>org.waterforpeople.mapping.app.web.WaterForPeopleMappingGoogleServlet</servlet-class>
-	</servlet>
-	<servlet-mapping>
-		<servlet-name>WaterForPeopleMappingGoogle</servlet-name>
-		<url-pattern>/webapp/waterforpeoplemappinggoogle</url-pattern>
-	</servlet-mapping>
-	<servlet>
 		<servlet-name>CronCommanderServlet</servlet-name>
 		<servlet-class>org.waterforpeople.mapping.app.web.CronCommanderServlet</servlet-class>
 	</servlet>

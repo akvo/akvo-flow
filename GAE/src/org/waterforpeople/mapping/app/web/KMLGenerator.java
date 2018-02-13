@@ -1,5 +1,5 @@
 /*
- *  Copyright (C) 2010-2012 Stichting Akvo (Akvo Foundation)
+ *  Copyright (C) 2010-2012, 2018 Stichting Akvo (Akvo Foundation)
  *
  *  This file is part of Akvo FLOW.
  *
@@ -173,24 +173,6 @@ public class KMLGenerator {
     public String generateRegionDocumentString(String regionVMName) {
         String regionKML = generateRegionOutlines(regionVMName);
         return regionKML;
-    }
-
-    public String generateDocument(String placemarksVMName) {
-        return generateDocument(placemarksVMName, Constants.ALL_RESULTS);
-    }
-
-    public String generateDocument(String placemarksVMName, String countryCode) {
-        try {
-            VelocityContext context = new VelocityContext();
-            String placemarks = generatePlacemarks(placemarksVMName,
-                    countryCode);
-            context.put("folderContents", placemarks);
-            context.put("regionPlacemark", generateRegionOutlines("Regions.vm"));
-            return mergeContext(context, "Document.vm");
-        } catch (Exception ex) {
-            log.log(Level.SEVERE, "Could create kml", ex);
-        }
-        return null;
     }
 
     @SuppressWarnings("unused")
