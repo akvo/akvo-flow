@@ -180,7 +180,6 @@ FLOW.ExportReportsAppletView = FLOW.View.extend({
   incompleteSelection: function () {
     if (FLOW.selectedControl.get('selectedSurvey') === null){
       this.set('missingSurvey',true);
-      console.log(this.get('missingSurvey'));
       return true;
     }
     return false;
@@ -200,44 +199,49 @@ FLOW.ExportReportsAppletView = FLOW.View.extend({
   }.property('FLOW.selectedControl.selectedSurveyGroup'),
 
   showDataCleaningReport: function () {
-  if(this.incompleteSelection()){
-    console.log("ok");
-    return;
-  }
-	var opts = {}, sId = this.get('selectedSurvey');
-	FLOW.ReportLoader.load('DATA_CLEANING', sId, opts);
+    if (this.incompleteSelection()){
+      return;
+    }
+    this.set('missingSurvey',false);
+	  var opts = {}, sId = this.get('selectedSurvey');
+    FLOW.ReportLoader.load('DATA_CLEANING', sId, opts);
   },
 
   showDataAnalysisReport: function () {
-	var opts = {}, sId = this.get('selectedSurvey');
+    if (this.incompleteSelection()){
+      return;
+    } 
+    this.set('missingSurvey', false)
+    var opts = {}, sId = this.get('selectedSurvey');
     FLOW.ReportLoader.load('DATA_ANALYSIS', sId, opts);
   },
 
   showComprehensiveReport: function () {
+    if (this.incompleteSelection()){
+      return;
+    }
+    this.set('missingSurvey', false)
     var opts = {}, sId = this.get('selectedSurvey');
-
     FLOW.ReportLoader.load('COMPREHENSIVE', sId, opts);
   },
 
   showGeoshapeReport: function () {
     var sId = this.get('selectedSurvey');
     var qId = this.get('selectedQuestion');
-    if (!sId || !qId) {
-      this.showWarningMessage(
-        Ember.String.loc('_export_data'),
-        Ember.String.loc('_select_survey_and_geoshape_question_warning')
-      );
+    if (!sId) {
+      this.set("missingSurvey", true);
       return;
-    }
+    } 
+    this.set("missingSurvey", false);
     FLOW.ReportLoader.load('GEOSHAPE', sId, {"questionId": qId});
   },
 
   showSurveyForm: function () {
-	var sId = this.get('selectedSurvey');
-    if (!sId) {
-      this.showWarning();
+    if (this.incompleteSelection()) {
       return;
     }
+	  var sId = this.get('selectedSurvey');
+    this.set("missingSurvey", false)
     FLOW.ReportLoader.load('SURVEY_FORM', sId);
   },
 

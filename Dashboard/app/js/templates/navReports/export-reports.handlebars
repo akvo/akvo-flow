@@ -1,6 +1,6 @@
 <section class="fullWidth reportTools" id="reportBlocks">
   {{#view FLOW.ExportReportsAppletView}}
-    <div class="surveySelect">
+    <div {{bindAttr class=":surveySelect view.missingSurvey:redErrorBorder"}}>
       <nav class="breadCrumb floats-in">
         {{#unless FLOW.projectControl.isLoading}}
           {{view FLOW.SurveySelectionView}}
