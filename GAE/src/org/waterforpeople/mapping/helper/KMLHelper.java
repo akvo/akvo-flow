@@ -16,7 +16,6 @@
 
 package org.waterforpeople.mapping.helper;
 
-import java.io.ByteArrayOutputStream;
 import java.io.StringWriter;
 import java.text.DateFormat;
 import java.util.Date;
@@ -32,15 +31,10 @@ import org.waterforpeople.mapping.domain.AccessPoint;
 import org.waterforpeople.mapping.domain.AccessPoint.AccessPointType;
 import org.waterforpeople.mapping.domain.TechnologyType;
 
-import com.gallatinsystems.common.util.ZipUtil;
 import com.gallatinsystems.framework.dao.BaseDAO;
 import com.gallatinsystems.gis.geography.domain.Country;
 import com.gallatinsystems.gis.map.dao.MapControlDao;
-import com.gallatinsystems.gis.map.dao.MapFragmentDao;
 import com.gallatinsystems.gis.map.domain.MapControl;
-import com.gallatinsystems.gis.map.domain.MapFragment;
-import com.gallatinsystems.gis.map.domain.MapFragment.FRAGMENTTYPE;
-import com.google.appengine.api.datastore.Blob;
 
 public class KMLHelper {
     private static final Logger log = Logger.getLogger(KMLHelper.class
@@ -333,16 +327,6 @@ public class KMLHelper {
         }
     }
 
-    private String generateFolderContents(String countryCode, String techType,
-            String mapFragmentText) throws Exception {
-        VelocityContext context = new VelocityContext();
-        StringBuilder techFolders = new StringBuilder();
-        context.put("techFolderName", techType);
-        context.put("techPlacemarks", mapFragmentText);
-        techFolders.append(mergeContext(context, "techFolders.vm"));
-        return techFolders.toString();
-    }
-
     public void buildMap() {
         // Select all individual placemarks, but techtype and country
         // Save Each tech type to MapFragment
@@ -387,91 +371,6 @@ public class KMLHelper {
                 }
             }
 
-    }
-
-    public void assembleCountryTechTypeFragments(String countryCode,
-            String techType) {
-        MapFragmentDao mfDao = new MapFragmentDao();
-        StringBuilder kml = new StringBuilder();
-        List<MapFragment> mfList = mfDao.searchMapFragments(countryCode, null,
-                null, FRAGMENTTYPE.COUNTRY_TECH_PLACEMARK_LIST, "all",
-                null, null);
-        StringBuilder sbAllCountryPlacemark = new StringBuilder();
-
-        for (MapFragment mfItem : mfList) {
-            try {
-                sbAllCountryPlacemark.append(ZipUtil.unZip(mfItem.getBlob()
-                        .getBytes()));
-            } catch (Exception e) {
-                log.log(Level.SEVERE,
-                        "Could not assemble country tech type fragments", e);
-            }
-        }
-        VelocityContext context = new VelocityContext();
-
-        context.put("country", countryCode);
-        context.put("techFolders", sbAllCountryPlacemark.toString());
-        try {
-            kml.append(mergeContext(context, "Folders.vm"));
-        } catch (Exception e) {
-            log.log(Level.SEVERE, "Could not generate folders", e);
-        }
-
-    }
-
-    public void assembleCompleteMap() {
-        VelocityContext context = new VelocityContext();
-        // context.put("folderContents", kml.toString());
-        try {
-            String completeKML = mergeContext(context, "Document.vm");
-            MapFragment mf = new MapFragment();
-            mf.setCountryCode("ALL");
-            mf.setFragmentType(FRAGMENTTYPE.GLOBAL_ALL_PLACEMARKS);
-            ByteArrayOutputStream bos = ZipUtil.generateZip(completeKML,
-                    "waterforpeoplemapping.kml");
-            mf.setBlob(new Blob(bos.toByteArray()));
-            // mfDao.save(mf);
-            // mc.setEndDate(new Date());
-            // mc.setStatus(MapControl.Status.SUCCESS);
-            // mcDao.save(mc);
-        } catch (Exception e) {
-            log.log(Level.SEVERE, "Could not assemble map", e);
-            // mc.setEndDate(new Date());
-            // mc.setStatus(MapControl.Status.FAILURE);
-            // mcDao.save(mc);
-        }
-    }
-
-    public void buildCountryTechTypeFragment(String countryCode, String techType) {
-        StringBuilder sbTechList = new StringBuilder();
-        MapFragmentDao mfDao = new MapFragmentDao();
-        String mfTechItemsByCountry = null;
-        List<MapFragment> mfList = mfDao.listFragmentsByCountryAndTechType(
-                countryCode, techType);
-        for (MapFragment mfItem : mfList) {
-            sbTechList.append(mfItem.getFragmentValue().getValue());
-        }
-        try {
-            mfTechItemsByCountry = generateFolderContents(countryCode,
-                    techType, sbTechList.toString());
-        } catch (Exception e) {
-            // log.Log(LogLevel.ERROR,
-            // "Could not generate country tech folders for: " + countryCode +
-            // ":" + techType + e);
-        }
-        MapFragment mf = new MapFragment();
-        mf.setFragmentType(FRAGMENTTYPE.COUNTRY_TECH_PLACEMARK_LIST);
-        mf.setCountryCode(countryCode);
-        mf.setTechnologyType(techType);
-        // mf.setFragmentValue(new Text(mfTechItemsByCountry));
-        ByteArrayOutputStream os = ZipUtil.generateZip(mfTechItemsByCountry,
-                "waterforpeoplemapping.kml");
-        Blob blob = new Blob(os.toByteArray());
-
-        mf.setBlob(blob);
-        log.log(Level.INFO, "Size of techItemsByCountry: "
-                + mfTechItemsByCountry.length());
-        mfDao.save(mf);
     }
 
     public Boolean checkCreateNewMap() {
