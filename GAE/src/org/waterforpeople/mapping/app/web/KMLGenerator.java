@@ -175,28 +175,6 @@ public class KMLGenerator {
         return regionKML;
     }
 
-    @SuppressWarnings("unused")
-    private String generateFolderContents(
-            HashMap<String, ArrayList<String>> contents, String vmName)
-            throws Exception {
-        VelocityContext context = new VelocityContext();
-        StringBuilder techFolders = new StringBuilder();
-
-        for (Entry<String, ArrayList<String>> techItem : contents.entrySet()) {
-            String key = techItem.getKey();
-            StringBuilder sbFolderPl = new StringBuilder();
-            for (String placemark : techItem.getValue()) {
-                sbFolderPl.append(placemark);
-            }
-            context.put("techFolderName", key);
-            context.put("techPlacemarks", sbFolderPl);
-            techFolders.append(mergeContext(context, "techFolders.vm"));
-        }
-        context.put("techFolders", techFolders.toString());
-        return mergeContext(context, vmName);
-
-    }
-
     public void generateCountryOrderedPlacemarks(String vmName,
             String countryCode, String technologyType) {
 
