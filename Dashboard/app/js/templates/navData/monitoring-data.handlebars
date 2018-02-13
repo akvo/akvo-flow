@@ -113,22 +113,20 @@
             <tbody>
                 {{#each responseSublist in FLOW.questionAnswerControl.contentByGroup}}
                    {{#each iterations in responseSublist}}
-                      <tr><td colspan="3" style="text-align:left"></td><h3 class="questionGroupName">{{iterations.groupName}}</h3></tr>
-                          {{each iterations itemViewClass = "FLOW.QuestionAnswerMonitorDataView"}}
+                       <tr><td colspan="3" style="text-align:left"><h3 class="questionGroupName">{{iterations.groupName}}</h3></td></tr>
+                            {{each iterations itemViewClass = "FLOW.QuestionAnswerMonitorDataView"}}
                    {{/each}}
                 {{/each}}
             </tbody>
             <!-- TABLE FOOTER-->
-        </table>
+          </table>
               </td>
             </tr>
-            {{/each}}
+          {{/each}}
         </tbody>
       </table>
-      <ul class="prevNext">
-      </ul>
-         </div>
-      </div>
+     </div>
     </div>
+  </div>
 </section>
 {{/view}}
