@@ -584,14 +584,11 @@ FLOW.QuestionAnswerInspectDataView = FLOW.QuestionAnswerView.extend({
   templateName: 'navData/question-answer',
 });
 
-//what baout the monitoring data tab part.
 FLOW.QuestionAnswerMonitorDataView = FLOW.QuestionAnswerView.extend({
   templateName: 'navData/question-answer',
   
-   doEdit : function (){
-     //testing whether this action can override the action in parentView(FLOW.QuestionAnswerView)
+  doEdit : function (){ //override the doEdit action in the parentView
       this._super();
-      console.log('monitoring activity!!!!!')
       this.set('inEditMode', false)
-   }
+  }
 })
