@@ -1,5 +1,5 @@
 /*
- *  Copyright (C) 2010-2012 Stichting Akvo (Akvo Foundation)
+ *  Copyright (C) 2010-2012,2018 Stichting Akvo (Akvo Foundation)
  *
  *  This file is part of Akvo FLOW.
  *
@@ -55,12 +55,6 @@ public class MapAssemblyServlet extends AbstractRestApiServlet {
             String countryCode = importReq.getCountryCode();
             if (countryCode != null)
                 kmlHelper.buildCountryFragments(countryCode);
-        } else if (Constants.BUILD_COUNTRY_TECH_TYPE_FRAGMENTS.equals(importReq
-                .getAction())) {
-            String countryCode = importReq.getCountryCode();
-            String techType = importReq.getTechType();
-            if (techType != null && countryCode != null)
-                kmlHelper.buildCountryTechTypeFragment(countryCode, techType);
         }
         return null;
     }
