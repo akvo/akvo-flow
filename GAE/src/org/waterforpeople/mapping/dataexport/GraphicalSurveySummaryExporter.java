@@ -219,11 +219,10 @@ public class GraphicalSurveySummaryExporter extends SurveySummaryExporter {
             Map<QuestionGroupDto, List<QuestionDto>> questionMap = 
                     loadAllQuestions(surveyId, performGeoRollup, serverBaseUrl, apiKey);
             //minimal data plus cascade level names
-            if (useQuestionId) { //splitting options into columns
-                //optimise the fetch away if none of the questions allow multiple answers
-                if (anyMultipleSelectQuestions(questionMap)) {
+            if (useQuestionId  //splitting options into columns
+                && anyMultipleSelectQuestions(questionMap)) {
+                    //optimise the fetch away if none of the questions allow multiple answers
                     loadQuestionOptions(surveyId, serverBaseUrl, questionMap, apiKey);
-                }
             }
             if (questionMap.size() > 0) {
                 //questionMap is now stable; make the id-to-dto map
