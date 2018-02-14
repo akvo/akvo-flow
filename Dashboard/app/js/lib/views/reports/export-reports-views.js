@@ -158,6 +158,7 @@ FLOW.ExportReportsAppletView = FLOW.View.extend({
   showComprehensiveDialog: false,
   showRawDataImportApplet: false,
   showGoogleEarthButton: false,
+  missingQuestion: false,
 
   didInsertElement: function () {
     FLOW.selectedControl.set('surveySelection', FLOW.SurveySelection.create());
@@ -208,13 +209,18 @@ FLOW.ExportReportsAppletView = FLOW.View.extend({
   showGeoshapeReport: function () {
     var sId = this.get('selectedSurvey');
     var qId = this.get('selectedQuestion');
-    if (!sId || !qId) {
+    if (!sId) {
       this.showWarningMessage(
         Ember.String.loc('_export_data'),
         Ember.String.loc('_select_survey_and_geoshape_question_warning')
       );
       return;
     }
+    if (!qId) {
+      this.set("missingQuestion", true);
+      return;
+    }
+    this.set("missingQuestion", false);
     FLOW.ReportLoader.load('GEOSHAPE', sId, {"questionId": qId});
   },
 

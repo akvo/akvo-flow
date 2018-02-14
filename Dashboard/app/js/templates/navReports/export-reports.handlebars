@@ -78,7 +78,7 @@
           <li class="geoShapeDataExp trigger"  onclick="openExportOptions(event, 'geoShapeDataExp_options')">
             <h2>{{t _geoshape_data}}</h2>
             <p class="expDescr">{{t _geojson}}</p>
-              <div class="geoshapeSelect">
+              <div {{bindAttr class=":geoshapeSelect view.missingQuestion:redBorderColor"}}>
               {{#if FLOW.selectedControl.selectedSurvey}}
                 {{view Ember.Select
                     contentBinding="FLOW.questionControl.geoshapeContent"

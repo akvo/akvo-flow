@@ -3337,6 +3337,12 @@ div.chooseSurveyData {
     }
 }
 
+.redBorderColor {
+    .ember-select {
+        border-color: red;
+    }
+}
+
 .filterData {
     border-top: 1px solid white;
     .dataDeviceId {
