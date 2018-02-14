@@ -127,15 +127,10 @@ FLOW.QuestionAnswerView = Ember.View.extend({
     var isEditableQuestionType, canEditFormResponses;
     isEditableQuestionType = this.nonEditableQuestionTypes.indexOf(this.get('questionType')) < 0;
     if (!isEditableQuestionType) {
-      console.log('i have no powers of editing!!!')
       return false; // no need to check permissions
     }
-
+    
     canEditFormResponses = FLOW.permControl.canEditResponses(this.get('form'));
-    //test this in the morning tab n inspect-data-tab.
-    if (canEditFormResponses) { //it z true...
-      console.log('yep, i can go on and edit stuff!!!')
-    }
     return isEditableQuestionType && canEditFormResponses;
   }.property('this.questionType,this.form'),
 
