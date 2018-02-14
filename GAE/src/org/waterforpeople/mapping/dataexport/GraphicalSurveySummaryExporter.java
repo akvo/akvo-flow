@@ -1124,7 +1124,7 @@ public class GraphicalSurveySummaryExporter extends SurveySummaryExporter {
         cells.add(optionString);
 
         // if needed, build cells for options
-        if (useQuestionId && allowMultiple) { //Split options into own columns, iff multiselect
+        if (useQuestionId && allowMultiple) { //Split options into own columns, if multiselect
             String text;
             String code;
             String cacheId;
