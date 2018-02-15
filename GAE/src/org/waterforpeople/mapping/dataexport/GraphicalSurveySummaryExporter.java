@@ -337,6 +337,10 @@ public class GraphicalSurveySummaryExporter extends SurveySummaryExporter {
         return b != null && b.booleanValue();
     }
     
+    private boolean safeNonEmpty(String s) {
+        return s != null && s.length() > 0 && !s.trim().equals("");
+    }
+    
     /*
      * Fetches data from FLOW instance, and writes it to a file row by row. Called from export
      * method.
@@ -1124,7 +1128,7 @@ public class GraphicalSurveySummaryExporter extends SurveySummaryExporter {
         cells.add(optionString);
 
         // if needed, build cells for options
-        if (useQuestionId && allowMultiple) { //Split options into own columns, iff multiselect
+        if (useQuestionId && allowMultiple) { //Split options into own columns, if multiselect
             String text;
             String code;
             String cacheId;
@@ -1293,33 +1297,33 @@ public class GraphicalSurveySummaryExporter extends SurveySummaryExporter {
         for (QuestionDto q : questions) {
             questionIdList.add(q.getKeyId().toString());
 
-            String questionId = q.getQuestionId();
-            // Can we tag the column with the variable name?
-            final boolean useQID = useQuestionId && questionId != null
-                    && !questionId.equals("");
+            String varName = q.getQuestionId();
+            // Can we tag the column(s) with the variable name?
+            final boolean doVarName = useQuestionId && varName != null
+                    && !varName.equals("");
 
             columnIndexMap.put(q.getKeyId().toString(), offset);
 
             if (QuestionType.GEO == q.getType()) {
-                offset = addGeoDataColumnHeader(q, row, offset, questionId, useQuestionId, useQID);
+                offset = addGeoDataColumnHeaders(q, row, offset, varName, useQuestionId, doVarName);
             } else if (QuestionType.PHOTO == q.getType()) {
-                offset = addPhotoDataColumnHeader(q, row, offset, questionId,
-                        useQuestionId, useQID);
+                offset = addPhotoDataColumnHeader(q, row, offset, varName,
+                        useQuestionId, doVarName);
             } else if (QuestionType.CASCADE == q.getType()
                     && q.getLevelNames() != null && useQuestionId) {
                 // if no cascade assigned, column is not shown
                 for (String level : q.getLevelNames()) {
-                    String levelName = useQID ? questionId + "_"
+                    String levelName = doVarName ? varName + "_"
                             + level.replaceAll(" ", "_")
                             : q.getText() + " - " + level;
                     createHeaderCell(row, offset++, levelName);
                 }
             } else if (QuestionType.CADDISFLY == q.getType()) {
-                offset = addCaddisflyDataHeaderColumns(q, row, offset, questionId, useQID);
+                offset = addCaddisflyDataHeaderColumns(q, row, offset, varName, doVarName);
             } else { // All other types
                 String header = "";
-                if (useQID) {
-                    header = questionId;
+                if (doVarName) {
+                    header = varName;
                 } else if (useQuestionId) {
                     header = q.getText().replaceAll("\n", "").trim();
                 } else {
@@ -1330,40 +1334,16 @@ public class GraphicalSurveySummaryExporter extends SurveySummaryExporter {
 
                 createHeaderCell(row, offset++, header);
 
-                // check if we need to create columns for all options
-                //TODO cascade
-                if (QuestionType.OPTION == q.getType()
-                        && useQuestionId
-                        && safeTrue(q.getAllowMultipleFlag())) {
-
-                    // get options for question and create columns
-                    OptionContainerDto ocDto = q.getOptionContainerDto();
-                    if (ocDto != null) { //used to be legal
-                        List<QuestionOptionDto> qoList = ocDto.getOptionsList();
-                        if (qoList != null) {
-                            for (QuestionOptionDto qo : qoList) {
-                                // create header column
-                                header = (qo.getCode() != null
-                                        && !qo.getCode().equals("null")
-                                        && qo.getCode().length() > 0)
-                                        ? qo.getCode() + ":"
-                                        : "";
-                                createHeaderCell(row,
-                                        offset++,
-                                        "--OPTION--|" + header + qo.getText());
-                            }
-
-                            // add 'other' column if needed
-                            if (q.getAllowOtherFlag()) {
-                                createHeaderCell(row,
-                                        offset++,
-                                        "--OTHER--");
-                            }
-
-                            optionMap.put(q.getKeyId(), qoList);
-                            allowOtherMap.put(q.getKeyId(), q.getAllowOtherFlag());
-                        }
-                    }
+                if (QuestionType.OPTION == q.getType()){
+                    // check if we need to create columns for all options
+                  if ( useQuestionId & safeTrue(q.getAllowMultipleFlag())) {
+                    offset = addSplitOptionColumnHeaders(offset, row, q);
+                  }
+                  // for all formats, add 'other' column if needed
+                  if (safeTrue(q.getAllowOtherFlag())){
+                      createHeaderCell(row, offset++, header + "--OTHER--");  //TODO import this?
+                  }
+                  allowOtherMap.put(q.getKeyId(), q.getAllowOtherFlag()); //remember                      
                 }
             }
             //TODO: add cascade
@@ -1382,6 +1362,7 @@ public class GraphicalSurveySummaryExporter extends SurveySummaryExporter {
         }
         return offset;
     }
+
     
     @SuppressWarnings("unchecked")
     private int addCaddisflyDataHeaderColumns(QuestionDto q, Row row, int originalOffset,
@@ -1503,7 +1484,7 @@ public class GraphicalSurveySummaryExporter extends SurveySummaryExporter {
      * @return the new offset
      * 
      */
-    private int addGeoDataColumnHeader(QuestionDto q, Row row, int originalOffset, String varName,
+    private int addGeoDataColumnHeaders(QuestionDto q, Row row, int originalOffset, String varName,
             boolean analysisFormat, final boolean useVarName) {
         int offset = originalOffset;
         if (analysisFormat) {
@@ -1524,6 +1505,35 @@ public class GraphicalSurveySummaryExporter extends SurveySummaryExporter {
         return offset;
     }
 
+    private int addSplitOptionColumnHeaders(final int initialOffset, Row row, QuestionDto q) {
+        int offset = initialOffset;
+        String header;
+        // get options for question and create columns
+        OptionContainerDto ocDto = q.getOptionContainerDto();
+        if (ocDto != null) { //used to be legal
+            List<QuestionOptionDto> qoList = ocDto.getOptionsList();
+            if (qoList != null) {
+                for (QuestionOptionDto qo : qoList) {
+                    // create header column
+                    header = (qo.getCode() != null
+                            && !qo.getCode().equals("null")
+                            && qo.getCode().length() > 0)
+                            ? qo.getCode() + ":"
+                            : "";
+                    createHeaderCell(row, offset++, "--OPTION--|" + header + qo.getText());
+                }
+
+                // add 'other' column if needed
+                if (q.getAllowOtherFlag()) {
+                    createHeaderCell(row, offset++, "--OTHER--");  //TODO make unique
+                }
+
+                optionMap.put(q.getKeyId(), qoList);
+                allowOtherMap.put(q.getKeyId(), q.getAllowOtherFlag());
+            }
+        }
+        return offset;
+    }
     
     /**
      * Writes the stats and graphs sheet
