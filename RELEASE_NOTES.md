@@ -5,7 +5,7 @@ Date: 25 January 2018
 
 ## New and noteworthy
 ### Code Cleanup
-* **Caddisfly tests file definition cleanup** [#2333] - Removed unnecessary caddisfly endpoint and test file
+* [#2333] - Removed unnecessary caddisfly endpoint and test file
 * [#2410] - Removed unneeded `com.gallatinsystems.common.data` classes
 * [#2412] - Removed ununsed authentication class and endpoint definition
 * [#2414] - Removed unneeded S3Driver and dependent classes
