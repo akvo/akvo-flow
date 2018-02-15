@@ -491,9 +491,6 @@ public class SurveyInstanceDAO extends BaseDAO<SurveyInstance> {
      * @param surveyInstance survey instance to be deleted
      */
     // TODO update lastSurveyalInstanceId in surveydLocale objects
-    @SuppressWarnings({
-            "unchecked", "rawtypes"
-    })
     public void deleteSurveyInstance(SurveyInstance surveyInstance) {
         final Long surveyInstanceId = surveyInstance.getKey().getId();
 

@@ -41,6 +41,7 @@ import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicLong;
 
 import org.akvo.flow.domain.DataUtils;
+import org.akvo.flow.util.JFreechartChartUtil;
 import org.apache.log4j.ConsoleAppender;
 import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
@@ -75,7 +76,6 @@ import org.waterforpeople.mapping.domain.CaddisflyResult;
 import org.waterforpeople.mapping.domain.response.value.Media;
 import org.waterforpeople.mapping.serialization.response.MediaResponse;
 
-import com.gallatinsystems.common.util.JFreechartChartUtil;
 import com.gallatinsystems.survey.dao.CaddisflyResourceDao;
 
 import static com.gallatinsystems.common.Constants.*;
@@ -119,7 +119,6 @@ public class GraphicalSurveySummaryExporter extends SurveySummaryExporter {
     private static final String DURATION_LABEL = "Duration";
     private static final String REPEAT_LABEL = "Repeat no";
     private static final String MEAN_LABEL = "Mean";
-    private static final String MODE_LABEL = "Mode";
     private static final String MEDIAN_LABEL = "Median";
     private static final String MIN_LABEL = "Min";
     private static final String MAX_LABEL = "Max";
@@ -138,6 +137,11 @@ public class GraphicalSurveySummaryExporter extends SurveySummaryExporter {
     private static final String DEVICE_IDENTIFIER_LABEL = "Device identifier";
     private static final String DATA_APPROVAL_STATUS_LABEL = "Data approval status";
     
+    // Maximum number of rows of a sheet kept in memory
+    // We must take care to never go back up longer than this
+    private static final int WORKBOOK_WINDOW = 100;
+    
+    // Formatting for comprehensive summary sheet graphs
     private static final int CHART_WIDTH = 600;
     private static final int CHART_HEIGHT = 400;
     private static final int CHART_CELL_WIDTH = 10;
@@ -184,7 +188,18 @@ public class GraphicalSurveySummaryExporter extends SurveySummaryExporter {
     private List<String> questionIdList = new ArrayList<>();
     private List<String> unsummarizable = new ArrayList<>();
 
+    //data about the data
+    private int totalInstances = 0;
+    private int approvedInstances = 0;
+    private Date firstSubmission = null;
+    private Date lastSubmission = null;
+    private Map<String, Integer> instancesByUser = new HashMap<>();
+    private Map<String, Integer> instancesByDevice = new HashMap<>();
+    private long totalDuration = 0L;
+    private long minDuration = Long.MAX_VALUE;
+    private long maxDuration = 0;
 
+    
     //@Override
     public void export(Map<String, String> criteria, File fileName,
             String serverBaseUrl, Map<String, String> options) {
@@ -265,9 +280,7 @@ public class GraphicalSurveySummaryExporter extends SurveySummaryExporter {
     }
 
     private Workbook createWorkbookAndFormats() {
-        // This window may be too small for some OPTION questions
-        // on a comprehensive stats sheet
-        Workbook wb = new SXSSFWorkbook(100);
+        Workbook wb = new SXSSFWorkbook(WORKBOOK_WINDOW);
         headerStyle = wb.createCellStyle();
         headerStyle.setAlignment(CellStyle.ALIGN_LEFT);
         Font headerFont = wb.createFont();
@@ -405,6 +418,7 @@ public class GraphicalSurveySummaryExporter extends SurveySummaryExporter {
         }
         
         sortDataOnCollectionDate(allData);
+        analyseData(allData);
 
         // write the data now, row by row
         for (InstanceData instanceData : allData) {
@@ -475,6 +489,45 @@ public class GraphicalSurveySummaryExporter extends SurveySummaryExporter {
         log.debug("Finished data sort");
     }
 
+    //gather some statistics on the data collection
+    private void analyseData(final List<InstanceData> allData) {
+        totalInstances = allData.size();
+        
+        for (InstanceData instance : allData) {
+            SurveyInstanceDto sid = instance.surveyInstanceDto;
+            if (sid.getApprovedFlag() != null && sid.getApprovedFlag().equalsIgnoreCase("true")) {
+                approvedInstances++;
+            }
+            
+            Date cd = sid.getCollectionDate();
+            if (firstSubmission == null || cd.before(firstSubmission)) {
+                firstSubmission = cd;
+            }
+            if (lastSubmission == null || cd.after(lastSubmission)) {
+                lastSubmission = cd;
+            }
+            String u = sid.getSubmitterName();
+            if (instancesByUser.containsKey(u)) {
+                instancesByUser.put(u, instancesByUser.get(u) + 1);
+            } else {
+                instancesByUser.put(u, Integer.valueOf(1));
+            }
+            String dev = sid.getDeviceIdentifier();
+            if (instancesByDevice.containsKey(dev)) {
+                instancesByDevice.put(dev, instancesByDevice.get(dev) + 1);
+            } else {
+                instancesByDevice.put(dev, Integer.valueOf(1));
+            }
+            Long durationSeconds = sid.getSurveyalTime();
+            if (durationSeconds != null) {
+                totalDuration += durationSeconds;
+                maxDuration = Long.max(maxDuration, durationSeconds);
+                minDuration = Long.min(minDuration, durationSeconds);
+            }
+                
+        }
+    }
+    
     private synchronized void writeInstanceDataSplit(
             Sheet sheet,
             InstanceData instanceData,
@@ -630,7 +683,7 @@ public class GraphicalSurveySummaryExporter extends SurveySummaryExporter {
                 rollups = formRollupStrings(responseMap);
             }
             for (Entry<String, String> entry : responseMap.entrySet()) {
-                //TODO: only OPTION and NUMBER summarizable now. Simple to add CASCADE.
+                //OPTION, NUMBER and CASCADE summarizable now.
                 if (!unsummarizable.contains(entry.getKey())) {
                     String effectiveId = entry.getKey();
                     if (nameToIdMap.get(effectiveId) != null) {
@@ -646,7 +699,12 @@ public class GraphicalSurveySummaryExporter extends SurveySummaryExporter {
                                     );
                             List<String> valsList = new ArrayList<>();
                             for (Map<String, String> optionNode : optionNodes) {
-                                valsList.add(optionNode.get("text")); //get "name" for CASCADE
+                                if (optionNode.containsKey("text")) {
+                                    valsList.add(optionNode.get("text")); // OPTION and NUMBER
+                                } else if (optionNode.containsKey("name")) {
+                                    valsList.clear(); // Keep only the last one
+                                    valsList.add(optionNode.get("name")); // "name" for CASCADE
+                                }
                             }
                             vals = valsList.toArray(new String[valsList.size()]);
                         } catch (IOException e) {
@@ -1258,7 +1316,6 @@ public class GraphicalSurveySummaryExporter extends SurveySummaryExporter {
                 createHeaderCell(row, offset++, header);
 
                 // check if we need to create columns for all options
-                //TODO cascade
                 if (QuestionType.OPTION == q.getType() && useQuestionId) {
 
                     // get options for question and create columns
@@ -1291,9 +1348,11 @@ public class GraphicalSurveySummaryExporter extends SurveySummaryExporter {
                     }
                 }
             }
-            //TODO: add cascade
+
             if (!(QuestionType.NUMBER == q.getType() 
-                    || QuestionType.OPTION == q.getType())) {
+                    || QuestionType.OPTION == q.getType()
+                    || QuestionType.CASCADE == q.getType()
+                    )) {
                 unsummarizable.add(q.getKeyId().toString());
             }
         }
@@ -1458,6 +1517,7 @@ public class GraphicalSurveySummaryExporter extends SurveySummaryExporter {
             String sector,
             Workbook wb)
             throws Exception {
+
         final int variableNameColumnIndex = 3;
         final int descriptiveStatsColumnIndex = 4;
         
@@ -1482,10 +1542,11 @@ public class GraphicalSurveySummaryExporter extends SurveySummaryExporter {
 
         CreationHelper creationHelper = wb.getCreationHelper();
         Drawing patriarch = sheet.createDrawingPatriarch();
-        int curRow = 0;
-        Row row = getRow(curRow++, sheet);
+        int rowIndex = 0;
+        Row row = getRow(rowIndex++, sheet);
         if (sector == null) {
             createCell(row, 0, REPORT_HEADER, headerStyle);
+            rowIndex = writeCollectionStats(questionMap, sheet, rowIndex);
         } else {
             createCell(row, 0, sector + " " + REPORT_HEADER, headerStyle);
         }
@@ -1500,10 +1561,13 @@ public class GraphicalSurveySummaryExporter extends SurveySummaryExporter {
                     if (QuestionType.OPTION == question.getType()) { 
                         doChart = true;
                         doDataTable = true;                        
+                    } else if (QuestionType.CASCADE == question.getType()) {
+                        doChart = true;
+                        doDataTable = true;                        
                     } else if (QuestionType.NUMBER == question.getType()) {
                         doDescriptiveStats = true;
                         //skip table and chart (phone numbers etc get ridiculous)
-                    } else { //TODO: add cascade
+                    } else {
                         continue;
                     }
 
@@ -1514,12 +1578,12 @@ public class GraphicalSurveySummaryExporter extends SurveySummaryExporter {
                     }
 
                     //We want a header, spanned across 2 columns
-                    int tableTopRow = curRow++;
-                    int bottomRow = curRow;
+                    int tableTopRow = rowIndex++;
+                    int bottomRow = rowIndex;
 
                     row = getRow(tableTopRow, sheet);
                     // Span the question text over any data table
-                    sheet.addMergedRegion(new CellRangeAddress(curRow - 1, curRow - 1, 0, 2));
+                    sheet.addMergedRegion(new CellRangeAddress(rowIndex - 1, rowIndex - 1, 0, 2));
                     createCell(
                             row,
                             0,
@@ -1534,7 +1598,7 @@ public class GraphicalSurveySummaryExporter extends SurveySummaryExporter {
                                     question.getKeyId(), sector);
                     if (doDescriptiveStats && stats != null && stats.getSampleCount() > 0) {
                         // span the question text over the stats table
-                        sheet.addMergedRegion(new CellRangeAddress(curRow - 1, curRow - 1, 4, 5));
+                        sheet.addMergedRegion(new CellRangeAddress(rowIndex - 1, rowIndex - 1, 4, 5));
                         createCell(
                                 row,
                                 descriptiveStatsColumnIndex,
@@ -1579,46 +1643,44 @@ public class GraphicalSurveySummaryExporter extends SurveySummaryExporter {
                         sampleTotal += count.getValue();
                     }
 
-                    //Output the descriptive stats; always within window
-                    if (stats != null && stats.getSampleCount() > 0) {
+                    //Output the descriptive stats;
+                    // this section is short enough to stay within window
+                    if (doDescriptiveStats && stats != null && stats.getSampleCount() > 0) {
                         int tempRow = tableTopRow + 1;
                         int c1 = descriptiveStatsColumnIndex;
                         int c2 = c1 + 1;
                         row = getRow(tempRow++, sheet);
                         createCell(row, c1, "N");
-                        createCell(row, c2, sampleTotal + "", null, Cell.CELL_TYPE_NUMERIC);
+                        createCell(row, c2, sampleTotal);
                         row = getRow(tempRow++, sheet);
                         createCell(row, c1, MEAN_LABEL);
-                        createCell(row, c2, stats.getMean() + "", null, Cell.CELL_TYPE_NUMERIC);
+                        createCell(row, c2, stats.getMean());
                         row = getRow(tempRow++, sheet);
                         createCell(row, c1, STD_E_LABEL);
-                        createCell(row, c2, stats.getStandardError() + "", null, Cell.CELL_TYPE_NUMERIC);
+                        createCell(row, c2, stats.getStandardError());
                         row = getRow(tempRow++, sheet);
                         createCell(row, c1, MEDIAN_LABEL);
-                        createCell(row, c2, stats.getMedian() + "", null, Cell.CELL_TYPE_NUMERIC);
-                        row = getRow(tempRow++, sheet);
-                        createCell(row, c1, MODE_LABEL);
-                        createCell(row, c2, stats.getMode() + "", null, Cell.CELL_TYPE_NUMERIC);
+                        createCell(row, c2, stats.getMedian());
                         row = getRow(tempRow++, sheet);
                         createCell(row, c1, STD_D_LABEL);
-                        createCell(row, c2, stats.getStandardDeviation() + "", null, Cell.CELL_TYPE_NUMERIC);
+                        createCell(row, c2, stats.getStandardDeviation());
                         row = getRow(tempRow++, sheet);
                         createCell(row, c1, VAR_LABEL);
-                        createCell(row, c2, stats.getVariance() + "", null, Cell.CELL_TYPE_NUMERIC);
+                        createCell(row, c2, stats.getVariance());
                         row = getRow(tempRow++, sheet);
                         createCell(row, c1, RANGE_LABEL);
-                        createCell(row, c2, stats.getRange() + "", null, Cell.CELL_TYPE_NUMERIC);
+                        createCell(row, c2, stats.getRange());
                         row = getRow(tempRow++, sheet);
                         createCell(row, c1, MIN_LABEL);
-                        createCell(row, c2, stats.getMin() + "", null, Cell.CELL_TYPE_NUMERIC);
+                        createCell(row, c2, stats.getMin());
                         row = getRow(tempRow++, sheet);
                         createCell(row, c1, MAX_LABEL);
-                        createCell(row, c2, stats.getMax() + "", null, Cell.CELL_TYPE_NUMERIC);
+                        createCell(row, c2, stats.getMax());
                         
                         bottomRow = tempRow;
                     }
 
-                    //Pie chart, soon to be bar chart
+                    //bar chart
                     if (doChart && labels.size() > 0) {
                         boolean hasVals = false;
                         if (values != null) {
@@ -1638,7 +1700,7 @@ public class GraphicalSurveySummaryExporter extends SurveySummaryExporter {
                         if (hasVals && generateCharts) {
                             // now insert the graph
                             int indx = wb.addPicture(
-                                    JFreechartChartUtil.getPieChart(
+                                    JFreechartChartUtil.getBarChart(
                                             labels,
                                             values,
                                             question.getText(),
@@ -1663,15 +1725,15 @@ public class GraphicalSurveySummaryExporter extends SurveySummaryExporter {
                     }
 
                     if (doDataTable) {
-                        curRow = tableTopRow;
+                        rowIndex = tableTopRow;
                         //header
-                        row = getRow(curRow++, sheet);
+                        row = getRow(rowIndex++, sheet);
                         createCell(row, 1, FREQ_LABEL, headerStyle);
                         createCell(row, 2, PCT_LABEL, headerStyle);
                         
                         //items
                         for (int i=0; i<labels.size(); i++) {
-                            row = getRow(curRow++, sheet);
+                            row = getRow(rowIndex++, sheet);
                             createCell(row, 0, labels.get(i));
                             createCell(row, 1, values.get(i));
                             if (sampleTotal > 0) {
@@ -1684,17 +1746,17 @@ public class GraphicalSurveySummaryExporter extends SurveySummaryExporter {
                         }
                         
                         //total
-                        row = getRow(curRow++, sheet);
+                        row = getRow(rowIndex++, sheet);
                         createCell(row, 0, TOTAL_LABEL);
                         createCell(row, 1, sampleTotal + "");
-                        if (curRow > bottomRow) {
-                            bottomRow = curRow;
+                        if (rowIndex > bottomRow) {
+                            bottomRow = rowIndex;
                         }
                     }
-                    curRow = bottomRow;
+                    rowIndex = bottomRow;
 
                     // add a blank row between questions
-                    getRow(curRow++, sheet);
+                    getRow(rowIndex++, sheet);
                     // flush the sheet so far to disk; we will not go back up
                     // File will be broken if we write outside the window!
                     ((SXSSFSheet) sheet).flushRows(0); // retain 0 last rows and
@@ -1705,12 +1767,121 @@ public class GraphicalSurveySummaryExporter extends SurveySummaryExporter {
     }
 
     /**
-     * creates a cell in the row passed in and sets the style and value (if non-null)
+     * Write statitics on the collection itself
+     * @param questionMap
+     * @param sheet
+     * @param rowIndex
+     * @return
      */
+    private int writeCollectionStats(Map<QuestionGroupDto,
+            List<QuestionDto>> questionMap,
+            Sheet sheet,
+            int firstRowIndex) {
+        final int tagCol = 0;
+        final int valCol = 3;
+
+        //Calculate them first (due to the window, we cannot sum this while looping and 
+        // then go back up and draw it last)
+        int totalQuestions = 0;
+        for (List<QuestionDto> group : questionMap.values()) {
+            totalQuestions += group.size();
+        }
+        //Now draw them
+        int rowIndex = firstRowIndex + 1;
+        Row statRow = getRow(rowIndex++, sheet);
+        createCell(statRow, tagCol, "Questions");
+        createCell(statRow, valCol, totalQuestions);
+   
+        statRow = getRow(rowIndex++, sheet);
+        createCell(statRow, tagCol, "Form submissions");
+        createCell(statRow, valCol, totalInstances);
+        
+        if (totalInstances == 0) {
+            return rowIndex + 2; //add a little space
+        }
+        
+        if (safeTrue(surveyGroupDto.getRequireDataApproval())) {
+            statRow = getRow(rowIndex++, sheet);
+            createCell(statRow, tagCol, "Approved submissions");
+            createCell(statRow, valCol, approvedInstances);            
+        }
+        
+        //The following two cells could also be made into date cells
+        statRow = getRow(rowIndex++, sheet);
+        createCell(statRow, tagCol, "First submission");
+        createCell(statRow, valCol, ExportImportUtils.formatDateTime(firstSubmission));
+   
+        statRow = getRow(rowIndex++, sheet);
+        createCell(statRow, tagCol, "Last submission");
+        createCell(statRow, valCol, ExportImportUtils.formatDateTime(lastSubmission));
+        
+        statRow = getRow(rowIndex++, sheet);
+        createCell(statRow, tagCol, "Shortest duration");
+        createCell(statRow, valCol, getDurationText(minDuration));
+   
+        statRow = getRow(rowIndex++, sheet);
+        createCell(statRow, tagCol, "Longest duration");
+        createCell(statRow, valCol, getDurationText(maxDuration));
+   
+        statRow = getRow(rowIndex++, sheet);
+        createCell(statRow, tagCol, "Average duration");
+        try {
+            createCell(statRow, valCol, getDurationText((long) totalDuration / totalInstances));
+        } catch (Exception e) {
+            // swallow exception, leave cell empty
+        }
+   
+        for (String user : instancesByUser.keySet()) {
+            statRow = getRow(rowIndex++, sheet);
+            if (user != null) {
+                createCell(statRow, tagCol, "User " + user);
+            } else {
+                createCell(statRow, tagCol, "No user");
+            }
+            createCell(statRow, valCol, instancesByUser.get(user));   
+        }
+        
+        for (String device : instancesByDevice.keySet()) {
+            statRow = getRow(rowIndex++, sheet);
+            createCell(statRow, tagCol, "Device " + device);
+            createCell(statRow, valCol, instancesByDevice.get(device));            
+        }
+        
+        return rowIndex + 2; //add a little space
+    }
+
+    
+    // Create a string cell
     protected Cell createCell(Row row, int col, String value) {
         return createCell(row, col, value, null, -1);
     }
 
+    // Create a number cell
+    protected Cell createCell(Row row, int col, int value) {
+        Cell cell = row.createCell(col);
+        cell.setCellType(Cell.CELL_TYPE_NUMERIC);
+        cell.setCellValue((double)value);
+        return cell;
+    }
+
+    // Create a number cell
+    protected Cell createCell(Row row, int col, double value) {
+        Cell cell = row.createCell(col);
+        cell.setCellType(Cell.CELL_TYPE_NUMERIC);
+        cell.setCellValue(value);
+        return cell;
+    }
+
+    // Create a date cell
+    //TODO: set date formatting on this cell
+    protected Cell createCell(Row row, int col, Date value) {
+        Cell cell = row.createCell(col);
+        cell.setCellType(Cell.CELL_TYPE_NUMERIC);
+        cell.setCellValue(value);
+        return cell;
+    }
+    
+    // Create a header cell
     protected Cell createHeaderCell(Row row, int col, String value) {
         return createCell(row, col, value, headerStyle, -1);
     }
@@ -1831,30 +2002,6 @@ public class GraphicalSurveySummaryExporter extends SurveySummaryExporter {
             imagePrefix = DEFAULT_IMAGE_PREFIX;
         }
         return true;
-    }
-
-    /**
-     * call the server to augment the data already loaded in each QuestionDto in the map passed in.
-     *
-     * @param questionMap
-     * @param apiKey
-     */
-    private void loadFullQuestions(
-            Map<QuestionGroupDto, List<QuestionDto>> questionMap, String apiKey) {
-        for (List<QuestionDto> questionList : questionMap.values()) {
-            for (int i = 0; i < questionList.size(); i++) {
-                try {
-                    QuestionDto newQ = BulkDataServiceClient.loadQuestionDetails(
-                            serverBase, questionList.get(i).getKeyId(), apiKey);
-                    if (newQ != null) {
-                        questionList.set(i, newQ);
-                    }
-                } catch (Exception e) {
-                    System.err.println("Could not fetch question details");
-                    e.printStackTrace(System.err);
-                }
-            }
-        }
     }
 
     private String getDurationText(Long duration) {

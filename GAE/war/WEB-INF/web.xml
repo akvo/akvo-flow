@@ -114,14 +114,6 @@
 	</servlet-mapping>
 
 	<servlet>
-		<servlet-name>WaterForPeopleMappingGoogle</servlet-name>
-		<servlet-class>org.waterforpeople.mapping.app.web.WaterForPeopleMappingGoogleServlet</servlet-class>
-	</servlet>
-	<servlet-mapping>
-		<servlet-name>WaterForPeopleMappingGoogle</servlet-name>
-		<url-pattern>/webapp/waterforpeoplemappinggoogle</url-pattern>
-	</servlet-mapping>
-	<servlet>
 		<servlet-name>CronCommanderServlet</servlet-name>
 		<servlet-class>org.waterforpeople.mapping.app.web.CronCommanderServlet</servlet-class>
 	</servlet>
@@ -325,15 +317,6 @@
 	<servlet-mapping>
 		<servlet-name>RemoteExceptionServlet</servlet-name>
 		<url-pattern>/remoteexception</url-pattern>
-	</servlet-mapping>
-
-	<servlet>
-		<servlet-name>RemoteLogging</servlet-name>
-		<servlet-class>com.google.gwt.logging.server.RemoteLoggingServiceImpl</servlet-class>
-	</servlet>
-	<servlet-mapping>
-		<servlet-name>RemoteLogging</servlet-name>
-		<url-pattern>/org.waterforpeople.mapping.portal.portal/remote_logging</url-pattern>
 	</servlet-mapping>
 
 	<servlet>
