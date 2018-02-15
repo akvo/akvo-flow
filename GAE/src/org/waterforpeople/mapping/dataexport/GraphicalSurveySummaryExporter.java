@@ -696,7 +696,7 @@ public class GraphicalSurveySummaryExporter extends SurveySummaryExporter {
                 rollups = formRollupStrings(responseMap);
             }
             for (Entry<String, String> entry : responseMap.entrySet()) {
-                //TODO: only OPTION and NUMBER summarizable now. Simple to add CASCADE.
+                //OPTION, NUMBER and CASCADE summarizable now.
                 if (!unsummarizable.contains(entry.getKey())) {
                     String effectiveId = entry.getKey();
                     if (nameToIdMap.get(effectiveId) != null) {
@@ -713,9 +713,10 @@ public class GraphicalSurveySummaryExporter extends SurveySummaryExporter {
                             List<String> valsList = new ArrayList<>();
                             for (Map<String, String> optionNode : optionNodes) {
                                 if (optionNode.containsKey("text")) {
-                                    valsList.add(optionNode.get("text")); //OPTION and NUMBER
+                                    valsList.add(optionNode.get("text")); // OPTION and NUMBER
                                 } else if (optionNode.containsKey("name")) {
-                                    valsList.add(optionNode.get("name")); //"name" for CASCADE
+                                    valsList.clear(); // Keep only the last one
+                                    valsList.add(optionNode.get("name")); // "name" for CASCADE
                                 }
                             }
                             vals = valsList.toArray(new String[valsList.size()]);
@@ -1366,7 +1367,7 @@ public class GraphicalSurveySummaryExporter extends SurveySummaryExporter {
                     }
                 }
             }
-            //TODO: add cascade
+
             if (!(QuestionType.NUMBER == q.getType() 
                     || QuestionType.OPTION == q.getType()
                     || QuestionType.CASCADE == q.getType()
