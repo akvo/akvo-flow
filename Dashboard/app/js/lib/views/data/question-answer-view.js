@@ -583,7 +583,7 @@ FLOW.QuestionAnswerMonitorDataView = FLOW.QuestionAnswerView.extend({
   templateName: 'navData/question-answer',
   
   doEdit : function (){ //override the doEdit action in the parentView
-      this._super();
-      this.set('inEditMode', false)
+    this._super();
+    this.set('inEditMode', false)
   }
 })
