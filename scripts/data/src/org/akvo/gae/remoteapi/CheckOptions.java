@@ -21,7 +21,9 @@ import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.TimeZone;
 
 import com.google.appengine.api.datastore.DatastoreService;
@@ -38,24 +40,21 @@ import com.google.appengine.repackaged.org.apache.commons.io.FileUtils;
 import com.google.appengine.tools.remoteapi.RemoteApiInstaller;
 import com.google.appengine.tools.remoteapi.RemoteApiOptions;
 
-public class CheckOptions {
+public class CheckOptions implements Process {
 
-    public static void main(String[] args) {
-        final String usr = args[0];
-        final String pwd = args[1];
+    final String usr = args[0];
+    final String pwd = args[1];
 
-        final RemoteApiOptions options = new RemoteApiOptions().server(
-                "instance.appspot.com", 443)
-                .credentials(usr, pwd);
-        final RemoteApiInstaller installer = new RemoteApiInstaller();
-//        File out = new File("/tmp/s3/qas.txt");
+    private boolean fixSurveyPointers = false; // Make question survey pointer match the group's
+    private boolean deleteOrphans = false;
+
+    @Override
+    public void execute(DatastoreService ds, String[] args) throws Exception {
 
         try {
             int optionsJson = 0;
             int optionsOther = 0;
             
-            installer.install(options);
-            DatastoreService ds = DatastoreServiceFactory.getDatastoreService();
             Filter f = new FilterPredicate("type", FilterOperator.EQUAL, "OPTION");
             Query q = new Query("QuestionAnswerStore").setFilter(f).addSort("createdDateTime",
                     SortDirection.DESCENDING);
