@@ -42,12 +42,6 @@ import com.google.appengine.tools.remoteapi.RemoteApiOptions;
 
 public class CheckOptions implements Process {
 
-    final String usr = args[0];
-    final String pwd = args[1];
-
-    private boolean fixSurveyPointers = false; // Make question survey pointer match the group's
-    private boolean deleteOrphans = false;
-
     @Override
     public void execute(DatastoreService ds, String[] args) throws Exception {
 
