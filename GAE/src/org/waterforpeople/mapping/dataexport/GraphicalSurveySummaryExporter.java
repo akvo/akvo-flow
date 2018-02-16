@@ -538,8 +538,8 @@ public class GraphicalSurveySummaryExporter extends SurveySummaryExporter {
             Long durationSeconds = sid.getSurveyalTime();
             if (durationSeconds != null) {
                 totalDuration += durationSeconds;
-                maxDuration = Long.max(maxDuration, durationSeconds);
-                minDuration = Long.min(minDuration, durationSeconds);
+                maxDuration = Math.max(maxDuration, durationSeconds);
+                minDuration = Math.min(minDuration, durationSeconds);
             }
                 
         }

@@ -87,6 +87,7 @@ public class RawDataSpreadsheetImporter implements DataImporter {
     public static final String DURATION_COLUMN_KEY = "surveyalTime";
     
     public static final String METADATA_HEADER = "Metadata";
+    public static final String OTHER_SUFFIX = "--OTHER--";
     public static final String NEW_DATA_PATTERN = "^[Nn]ew-\\d+"; // new- or New- followed by one or more digits
     
 
@@ -718,36 +719,37 @@ public class RawDataSpreadsheetImporter implements DataImporter {
                     String[] optionParts = optionString.split("\\|");
                     List<Map<String, Object>> optionList = new ArrayList<>();
                     for (String optionNode : optionParts) {
-                        String[] codeAndText = optionNode.split(":", 2);
-                        Map<String, Object> optionMap = new HashMap<>();
-                        if (codeAndText.length == 1) {
-                            optionMap.put("text", codeAndText[0].trim());
-
-                        } else if (codeAndText.length == 2) {
-                            optionMap.put("code", codeAndText[0].trim());
-                            optionMap.put("text", codeAndText[1].trim());
-                        }
-                        optionList.add(optionMap);
+                        optionList.add(parsedOptionValue(optionNode, false));
                     }
 
-                    // Should we add the 'allowOther' flag to the last node?
-                    if (Boolean.TRUE.equals(questionDto.getAllowOtherFlag())
-                            && !optionList.isEmpty()) {
-                        Map<String, Object> lastNode = optionList.get(optionList.size() - 1);
-                        String lastNodeText = (String) lastNode.get("text");
-                        boolean isOther = true;
-                        List<QuestionOptionDto> existingOptions = optionNodes.get(questionId);
-                        if (existingOptions != null && lastNodeText != null) {
-                            for (QuestionOptionDto questionOptionDto : existingOptions) {
-                                if (lastNodeText.equals(questionOptionDto.getText())) {
-                                    isOther = false;
-                                    break;
+                    //Handle "other" data
+                    if (Boolean.TRUE.equals(questionDto.getAllowOtherFlag())) {
+                        if (otherValuesInSeparateColumns) { //2018-style
+                            //get "other" from the next cell
+                            Cell nextCell = iterationRow.getCell(columnIndex + 1);
+                            if (nextCell != null) {
+                                String otherString = ExportImportUtils.parseCellAsString(nextCell);
+                                optionList.add(parsedOptionValue(otherString, true));
+                            }
+                        } else if (!optionList.isEmpty()) {
+                            // could be the last entry in the cell
+                            // unless the value matches one of the option names
+                            Map<String, Object> lastNode = optionList.get(optionList.size() - 1);
+                            String lastNodeText = (String) lastNode.get("text");
+                            boolean isOther = true;
+                            List<QuestionOptionDto> existingOptions = optionNodes.get(questionId);
+                            if (existingOptions != null && lastNodeText != null) {
+                                for (QuestionOptionDto questionOptionDto : existingOptions) {
+                                    if (lastNodeText.equals(questionOptionDto.getText())) {
+                                        isOther = false;
+                                        break;
+                                    }
                                 }
                             }
-                        }
-
-                        if (isOther) {
-                            lastNode.put("isOther", true);
+    
+                            if (isOther) {
+                                lastNode.put("isOther", true);
+                            }
                         }
                     }
 
@@ -803,6 +805,21 @@ public class RawDataSpreadsheetImporter implements DataImporter {
         }
     }
 
+    private Map<String, Object> parsedOptionValue(String optionNode, boolean other) {
+        String[] codeAndText = optionNode.split(":", 2);
+        Map<String, Object> optionMap = new HashMap<>();
+        if (codeAndText.length == 1) {
+            optionMap.put("text", codeAndText[0].trim());
+        } else if (codeAndText.length == 2) {
+            optionMap.put("code", codeAndText[0].trim());
+            optionMap.put("text", codeAndText[1].trim());
+        }
+        if (other) {
+            optionMap.put("isOther", true);
+        }
+        return optionMap;
+    }
+
     private static String getMetadataCellContent(Row baseRow,
             Map<String, Integer> metadataColumnHeaderIndex, String metadataCellColumnKey) {
         Cell metadataCell = baseRow.getCell(metadataColumnHeaderIndex.get(metadataCellColumnKey));
@@ -813,7 +830,8 @@ public class RawDataSpreadsheetImporter implements DataImporter {
         Row headerRow = sheet.getRow(headerRowIndex);
         for (Cell cell : headerRow) {
             String cellValue = cell.getStringCellValue();
-            if (cellValue.endsWith("--OTHER--")) {
+            if (cell.getStringCellValue().indexOf("|") > -1 
+                    && cellValue.endsWith(OTHER_SUFFIX)) {
                 return true;
             }
         }
@@ -835,7 +853,7 @@ public class RawDataSpreadsheetImporter implements DataImporter {
             String cellValue = cell.getStringCellValue();
             if (cell.getStringCellValue().indexOf("|") > -1
                     && !cellValue.startsWith("--GEO")
-                    && !cellValue.endsWith("--OTHER--")
+                    && !cellValue.endsWith(OTHER_SUFFIX)
                     && !cellValue.startsWith("--CADDISFLY")) {
                 String[] parts = cell.getStringCellValue().split("\\|");
                 if (parts[0].trim().length() > 0) {
