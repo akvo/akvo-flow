@@ -73,6 +73,8 @@ public class RawDataSpreadsheetImporter implements DataImporter {
     private static final int MONITORING_FORMAT_WITH_REPEAT_COLUMN = 8;
     private static final int MONITORING_FORMAT_WITH_APPROVAL_COLUMN = 9;
     private static boolean splitSheets = false; //also has Group Headers
+    
+    private boolean otherValuesInSeparateColumns = false; //until we find one
 
     public static final String DATAPOINT_IDENTIFIER_COLUMN_KEY = "dataPointIdentifier";
     private static final String DATAPOINT_APPROVAL_COLUMN_KEY = "dataPointApproval";
@@ -139,6 +141,7 @@ public class RawDataSpreadsheetImporter implements DataImporter {
                 String sn = sheet.getSheetName();
                 if (i == 0 || sn.startsWith("Group ")) {
                     sheetMap.put(sheet, processHeader(sheet, headerRowIndex));
+                    otherValuesInSeparateColumns |= separatedOtherValues(sheet, headerRowIndex);
                 }
             }
             
@@ -806,6 +809,17 @@ public class RawDataSpreadsheetImporter implements DataImporter {
         return ExportImportUtils.parseCellAsString(metadataCell);
     }
 
+    private boolean separatedOtherValues(Sheet sheet, int headerRowIndex) {
+        Row headerRow = sheet.getRow(headerRowIndex);
+        for (Cell cell : headerRow) {
+            String cellValue = cell.getStringCellValue();
+            if (cellValue.endsWith("--OTHER--")) {
+                return true;
+            }
+        }
+        return false;
+    }
+
     /**
      * Return a map of column index -> question id on a sheet.
      * Metadata headers are assumed to never contain a "|".
@@ -821,6 +835,7 @@ public class RawDataSpreadsheetImporter implements DataImporter {
             String cellValue = cell.getStringCellValue();
             if (cell.getStringCellValue().indexOf("|") > -1
                     && !cellValue.startsWith("--GEO")
+                    && !cellValue.endsWith("--OTHER--")
                     && !cellValue.startsWith("--CADDISFLY")) {
                 String[] parts = cell.getStringCellValue().split("\\|");
                 if (parts[0].trim().length() > 0) {
