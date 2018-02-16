@@ -16,18 +16,11 @@
 
 package org.akvo.gae.remoteapi;
 
-import java.io.File;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
 import java.util.TimeZone;
 
 import com.google.appengine.api.datastore.DatastoreService;
-import com.google.appengine.api.datastore.DatastoreServiceFactory;
 import com.google.appengine.api.datastore.Entity;
 import com.google.appengine.api.datastore.FetchOptions;
 import com.google.appengine.api.datastore.PreparedQuery;
@@ -36,9 +29,6 @@ import com.google.appengine.api.datastore.Query.Filter;
 import com.google.appengine.api.datastore.Query.FilterOperator;
 import com.google.appengine.api.datastore.Query.FilterPredicate;
 import com.google.appengine.api.datastore.Query.SortDirection;
-import com.google.appengine.repackaged.org.apache.commons.io.FileUtils;
-import com.google.appengine.tools.remoteapi.RemoteApiInstaller;
-import com.google.appengine.tools.remoteapi.RemoteApiOptions;
 
 public class CheckOptions implements Process {
 
@@ -54,7 +44,7 @@ public class CheckOptions implements Process {
                     SortDirection.DESCENDING);
             PreparedQuery pq = ds.prepare(q);
 
-            List<String> data = new ArrayList<String>();
+//            List<String> data = new ArrayList<String>();
             DateFormat df = new SimpleDateFormat("yyyy-MM-dd HH:mm");
             df.setTimeZone(TimeZone.getTimeZone("GMT"));
 
@@ -76,8 +66,6 @@ public class CheckOptions implements Process {
 //            FileUtils.writeLines(out, data, "\n");
         } catch (Exception e) {
             e.printStackTrace();
-        } finally {
-            installer.uninstall();
         }
     }
 }
