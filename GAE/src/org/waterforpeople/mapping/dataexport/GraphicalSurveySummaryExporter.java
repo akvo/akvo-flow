@@ -136,6 +136,7 @@ public class GraphicalSurveySummaryExporter extends SurveySummaryExporter {
     private static final String DISPLAY_NAME_LABEL = "Display Name";
     private static final String DEVICE_IDENTIFIER_LABEL = "Device identifier";
     private static final String DATA_APPROVAL_STATUS_LABEL = "Data approval status";
+    private static final String OTHER_TAG = "--OTHER--";
     
     // Maximum number of rows of a sheet kept in memory
     // We must take care to never go back up longer than this
@@ -1062,8 +1063,9 @@ public class GraphicalSurveySummaryExporter extends SurveySummaryExporter {
 
     /*
      * Takes a option question value in either the old or new format, and returns a list of option
-     * maps. The response can be either: old format: text1|text2|text3 new format: [{"code":
-     * "code1", "text": "text1"},{"code": "code2", "text": "text2"}]
+     * maps. The response can be either:
+     *  old format: text1|text2|text3
+     *  new format: [{"code":"code1", "text":"text1"},{"code":"code2", "text":"text2"}]
      */
     private List<Map<String, String>> getNodes(String value) {
         boolean isNewFormat = value.startsWith("[");
@@ -1110,10 +1112,11 @@ public class GraphicalSurveySummaryExporter extends SurveySummaryExporter {
     }
 
     /*
-     * Creates list of option values. The first value is always the pipe-separated format Depending
-     * on the useQuestionId parameter, each option is given its own column A 0 or 1 denotes if that
-     * option was selected or not if the AllowOther flag is true, a column is created for the Other
-     * option. We first try to match on text, and if that fails, we try to match on code. This
+     * Creates list of option values. The value is always the pipe-separated format.
+     * Depending on the useQuestionId variable, each option is given its own column.
+     * A 0 or 1 denotes if that option was selected or not.
+     * If the AllowOther flag is true, a column is created for the Other option.
+     *  We first try to match on text, and if that fails, we try to match on code. This
      * guards against texts that are slightly changed during the evolution of a survey
      */
     private List<String> optionCellValues(Long questionId, String value,
@@ -1124,11 +1127,11 @@ public class GraphicalSurveySummaryExporter extends SurveySummaryExporter {
         List<Map<String, String>> optionNodes = getNodes(value);
 
         // build pipe-separated format and add this to cell list
-        String optionString = buildOptionString(optionNodes);
+        String optionString = buildOptionString(optionNodes); //TODO strip out "other"
         cells.add(optionString);
 
         // if needed, build cells for options
-        if (useQuestionId && allowMultiple) { //Split options into own columns, if multiselect
+        if (allowOther || (useQuestionId && allowMultiple)) { //Split options into own columns, if multiselect
             String text;
             String code;
             String cacheId;
@@ -1157,8 +1160,7 @@ public class GraphicalSurveySummaryExporter extends SurveySummaryExporter {
                     for (int i = 0; i < numOptions; i++) {
                         if (text != null
                                 && text.length() > 0
-                                && text.equalsIgnoreCase(options.get(i)
-                                        .getText())) {
+                                && text.equalsIgnoreCase(options.get(i).getText())) {
                             optionFound[i] = true;
                             found = true;
                             // put in cache
@@ -1173,8 +1175,7 @@ public class GraphicalSurveySummaryExporter extends SurveySummaryExporter {
                     for (int i = 0; i < numOptions; i++) {
                         if (code != null
                                 && code.length() > 0
-                                && code.equalsIgnoreCase(options.get(i)
-                                        .getCode())) {
+                                && code.equalsIgnoreCase(options.get(i).getCode())) {
                             optionFound[i] = true;
                             found = true;
                             // put in cache
@@ -1185,14 +1186,17 @@ public class GraphicalSurveySummaryExporter extends SurveySummaryExporter {
                 }
 
                 // if still not found, keep this value as other
+                //TODO, this guess is unnecessary when an isOther flag is present.
                 if (!found) {
                     other = text;
                 }
             }
 
             // create cells with 0 or 1
-            for (int i = 0; i < numOptions; i++) {
-                cells.add(optionFound[i] ? "1" : "0");
+            if (useQuestionId && allowMultiple) {
+                for (int i = 0; i < numOptions; i++) {
+                    cells.add(optionFound[i] ? "1" : "0");
+                }
             }
 
             if (allowOther) {
@@ -1341,7 +1345,7 @@ public class GraphicalSurveySummaryExporter extends SurveySummaryExporter {
                   }
                   // for all formats, add 'other' column if needed
                   if (safeTrue(q.getAllowOtherFlag())){
-                      createHeaderCell(row, offset++, header + "--OTHER--");  //TODO import this?
+                      createHeaderCell(row, offset++, header + OTHER_TAG);
                   }
                   allowOtherMap.put(q.getKeyId(), q.getAllowOtherFlag()); //remember                      
                 }

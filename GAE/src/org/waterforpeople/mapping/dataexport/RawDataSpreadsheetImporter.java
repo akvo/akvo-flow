@@ -727,8 +727,8 @@ public class RawDataSpreadsheetImporter implements DataImporter {
                         if (otherValuesInSeparateColumns) { //2018-style
                             //get "other" from the next cell
                             Cell nextCell = iterationRow.getCell(columnIndex + 1);
-                            if (nextCell != null) {
-                                String otherString = ExportImportUtils.parseCellAsString(nextCell);
+                            String otherString = ExportImportUtils.parseCellAsString(nextCell);
+                            if (otherString != null && !otherString.trim().isEmpty()) {
                                 optionList.add(parsedOptionValue(otherString, true));
                             }
                         } else if (!optionList.isEmpty()) {
