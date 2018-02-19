@@ -5977,3 +5977,32 @@ svg {
         }
     }
 }
+
+.gdprSwitchSteps {
+    * {
+        box-sizing: border-box;
+    }
+    display: flex;
+    flex-direction: row;
+    flex-wrap: nowrap;
+    justify-content: flex-start;
+    align-items: stretch;
+    align-content: flex-start;
+    li {
+        cursor: pointer;
+        flex-grow: 1;
+        min-height: 150px;
+        flex-basis: 20%;
+        margin-right: 10px;
+        padding: 10px 15px;
+        text-align: center;
+        transition: opacity 0.4s ease-in;
+        h2 {
+            font-weight: bold;
+        }
+        p {
+            max-width: 50%;
+            margin: 15px auto 0 auto;
+        }
+    }
+}
