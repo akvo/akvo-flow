@@ -1588,7 +1588,7 @@ FLOW.translationControl = Ember.ArrayController.create({
         tempArray.push(Ember.Object.create({
           keyId: item.get('keyId'),
           type: "QO",
-          order: 1000000 * qgOrder + 1000 * qOrder + parseInt(item.get('order'), 10),
+          order: 1000000 * qgOrder + 1000 * qOrder + parseInt(item.get('order'), 10) + 1,
           displayOrder: item.get('order'),
           qoText: item.get('text'),
           isQO: true
