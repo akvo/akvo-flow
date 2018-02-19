@@ -1,6 +1,36 @@
 <section class="fullWidth reportTools" id="reportBlocks">
   {{#view FLOW.BulkUploadAppletView}}
-
+ <section class="gdprSwitch">
+        <ul class="gdprSwitchSteps">
+          <li>
+            <figure>
+              <img src="images/gdprStep01.svg">
+              <fication>
+                <h2>Locate survey data</h2>
+                <p>Use the *Publish data* option in Settings to prepare data collected offline for bulk upload</p>
+              </fication>
+            </figure>
+          </li>
+          <li>
+            <figure>
+              <img src="images/gdprStep02.svg">
+              <fication>                
+                <h2>Copy it to the PC Create a zip it</h2>
+                <p>Copy survey data to your PC and zip it into a .zip file</p>
+              </fication>
+            </figure>
+          </li>
+          <li>
+            <figure>
+              <img src="images/gdprStep03.svg">
+              <fication>                
+                <h2>Upload the zip file</h2>
+                <p>Upload the zip file as instructed below</p>
+              </fication>
+            </figure>          
+          </li>
+        </ul>
+    </section>
   <div class="bulkUpload block">
     {{#if FLOW.uploader.support}}
       <div class="resumable-drop" ondragenter="jQuery(this).addClass('resumable-dragover');" ondragend="jQuery(this).removeClass('resumable-dragover');" ondrop="jQuery(this).removeClass('resumable-dragover');">
