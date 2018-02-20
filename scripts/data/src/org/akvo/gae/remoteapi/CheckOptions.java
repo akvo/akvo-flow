@@ -49,7 +49,6 @@ public class CheckOptions implements Process {
 
             for (Entity e : pq.asIterable(FetchOptions.Builder.withChunkSize(100))) {
                 String val = (String) e.getProperty("value");
-                //Date created = (Date) e.getProperty("createdDateTime");
                 if (val.startsWith("[")) {
                     optionsJson++;
                 } else {
