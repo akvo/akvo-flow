@@ -73,6 +73,8 @@ public class RawDataSpreadsheetImporter implements DataImporter {
     private static final int MONITORING_FORMAT_WITH_REPEAT_COLUMN = 8;
     private static final int MONITORING_FORMAT_WITH_APPROVAL_COLUMN = 9;
     private static boolean splitSheets = false; //also has Group Headers
+    
+    private boolean otherValuesInSeparateColumns = false; //until we find one
 
     public static final String DATAPOINT_IDENTIFIER_COLUMN_KEY = "dataPointIdentifier";
     private static final String DATAPOINT_APPROVAL_COLUMN_KEY = "dataPointApproval";
@@ -85,6 +87,7 @@ public class RawDataSpreadsheetImporter implements DataImporter {
     public static final String DURATION_COLUMN_KEY = "surveyalTime";
     
     public static final String METADATA_HEADER = "Metadata";
+    public static final String OTHER_SUFFIX = "--OTHER--";
     public static final String NEW_DATA_PATTERN = "^[Nn]ew-\\d+"; // new- or New- followed by one or more digits
     
 
@@ -139,6 +142,7 @@ public class RawDataSpreadsheetImporter implements DataImporter {
                 String sn = sheet.getSheetName();
                 if (i == 0 || sn.startsWith("Group ")) {
                     sheetMap.put(sheet, processHeader(sheet, headerRowIndex));
+                    otherValuesInSeparateColumns |= separatedOtherValues(sheet, headerRowIndex);
                 }
             }
             
@@ -715,36 +719,37 @@ public class RawDataSpreadsheetImporter implements DataImporter {
                     String[] optionParts = optionString.split("\\|");
                     List<Map<String, Object>> optionList = new ArrayList<>();
                     for (String optionNode : optionParts) {
-                        String[] codeAndText = optionNode.split(":", 2);
-                        Map<String, Object> optionMap = new HashMap<>();
-                        if (codeAndText.length == 1) {
-                            optionMap.put("text", codeAndText[0].trim());
-
-                        } else if (codeAndText.length == 2) {
-                            optionMap.put("code", codeAndText[0].trim());
-                            optionMap.put("text", codeAndText[1].trim());
-                        }
-                        optionList.add(optionMap);
+                        optionList.add(parsedOptionValue(optionNode, false));
                     }
 
-                    // Should we add the 'allowOther' flag to the last node?
-                    if (Boolean.TRUE.equals(questionDto.getAllowOtherFlag())
-                            && !optionList.isEmpty()) {
-                        Map<String, Object> lastNode = optionList.get(optionList.size() - 1);
-                        String lastNodeText = (String) lastNode.get("text");
-                        boolean isOther = true;
-                        List<QuestionOptionDto> existingOptions = optionNodes.get(questionId);
-                        if (existingOptions != null && lastNodeText != null) {
-                            for (QuestionOptionDto questionOptionDto : existingOptions) {
-                                if (lastNodeText.equals(questionOptionDto.getText())) {
-                                    isOther = false;
-                                    break;
+                    //Handle "other" data
+                    if (Boolean.TRUE.equals(questionDto.getAllowOtherFlag())) {
+                        if (otherValuesInSeparateColumns) { //2018-style
+                            //get "other" from the next cell
+                            Cell nextCell = iterationRow.getCell(columnIndex + 1);
+                            String otherString = ExportImportUtils.parseCellAsString(nextCell);
+                            if (otherString != null && !otherString.trim().isEmpty()) {
+                                optionList.add(parsedOptionValue(otherString, true));
+                            }
+                        } else if (!optionList.isEmpty()) {
+                            // could be the last entry in the cell
+                            // unless the value matches one of the option names
+                            Map<String, Object> lastNode = optionList.get(optionList.size() - 1);
+                            String lastNodeText = (String) lastNode.get("text");
+                            boolean isOther = true;
+                            List<QuestionOptionDto> existingOptions = optionNodes.get(questionId);
+                            if (existingOptions != null && lastNodeText != null) {
+                                for (QuestionOptionDto questionOptionDto : existingOptions) {
+                                    if (lastNodeText.equals(questionOptionDto.getText())) {
+                                        isOther = false;
+                                        break;
+                                    }
                                 }
                             }
-                        }
-
-                        if (isOther) {
-                            lastNode.put("isOther", true);
+    
+                            if (isOther) {
+                                lastNode.put("isOther", true);
+                            }
                         }
                     }
 
@@ -800,10 +805,37 @@ public class RawDataSpreadsheetImporter implements DataImporter {
         }
     }
 
+    private Map<String, Object> parsedOptionValue(String optionNode, boolean other) {
+        String[] codeAndText = optionNode.split(":", 2);
+        Map<String, Object> optionMap = new HashMap<>();
+        if (codeAndText.length == 1) {
+            optionMap.put("text", codeAndText[0].trim());
+        } else if (codeAndText.length == 2) {
+            optionMap.put("code", codeAndText[0].trim());
+            optionMap.put("text", codeAndText[1].trim());
+        }
+        if (other) {
+            optionMap.put("isOther", true);
+        }
+        return optionMap;
+    }
+
     private static String getMetadataCellContent(Row baseRow,
             Map<String, Integer> metadataColumnHeaderIndex, String metadataCellColumnKey) {
         Cell metadataCell = baseRow.getCell(metadataColumnHeaderIndex.get(metadataCellColumnKey));
         return ExportImportUtils.parseCellAsString(metadataCell);
+    }
+
+    private boolean separatedOtherValues(Sheet sheet, int headerRowIndex) {
+        Row headerRow = sheet.getRow(headerRowIndex);
+        for (Cell cell : headerRow) {
+            String cellValue = cell.getStringCellValue();
+            if (cell.getStringCellValue().indexOf("|") > -1 
+                    && cellValue.endsWith(OTHER_SUFFIX)) {
+                return true;
+            }
+        }
+        return false;
     }
 
     /**
@@ -821,6 +853,7 @@ public class RawDataSpreadsheetImporter implements DataImporter {
             String cellValue = cell.getStringCellValue();
             if (cell.getStringCellValue().indexOf("|") > -1
                     && !cellValue.startsWith("--GEO")
+                    && !cellValue.endsWith(OTHER_SUFFIX)
                     && !cellValue.startsWith("--CADDISFLY")) {
                 String[] parts = cell.getStringCellValue().split("\\|");
                 if (parts[0].trim().length() > 0) {
