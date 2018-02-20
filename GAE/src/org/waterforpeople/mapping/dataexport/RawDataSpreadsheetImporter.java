@@ -148,8 +148,7 @@ public class RawDataSpreadsheetImporter implements DataImporter {
             Map<Long, List<QuestionOptionDto>> optionNodes = fetchOptionNodes(serverBase,
                     criteria, questionIdToQuestionDto.values());
 
-            List<InstanceData> instanceDataList = new ArrayList<>();
-            instanceDataList = parseSplitSheets(wb.getSheetAt(0),
+            List<InstanceData> instanceDataList = parseSplitSheets(wb.getSheetAt(0),
                     sheetMap,
                     questionIdToQuestionDto,
                     optionNodes,
