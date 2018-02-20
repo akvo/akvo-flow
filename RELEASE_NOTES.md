@@ -1,5 +1,10 @@
 # Akvo Flow Release Notes
 ----
+# Akvo Flow Dashboard v1.9.28.1 - Bent Banana (Hotfix 1)
+Date: 20 February 2018
+## Resolved issues
+* **Integrity check failing for CartoDB libraries** [#2500] - Fixed issue causing maps on CartoDB enabled instances not to work
+
 # Akvo Flow Dashboard v1.9.28 - Bent Banana
 Date: 15 February 2018
 
