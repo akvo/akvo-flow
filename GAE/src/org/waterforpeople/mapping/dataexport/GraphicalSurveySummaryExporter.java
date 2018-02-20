@@ -1989,20 +1989,20 @@ public class GraphicalSurveySummaryExporter extends SurveySummaryExporter {
                 includeSummarySheet = false;
                 doGroupHeaders = true;
                 separateSheetsForRepeatableGroups = true;
-                variableNamesInHeaders = false; //So we can import
+                variableNamesInHeaders = false; //So we can import - also enables digests
                 splitIntoColumns = false;
             } else if (DATA_ANALYSIS_TYPE.equalsIgnoreCase(reportType)) {
                 includeSummarySheet = false;
                 doGroupHeaders = false;
                 separateSheetsForRepeatableGroups = false;
-                variableNamesInHeaders = true; //also prevents digests
+                variableNamesInHeaders = true;
                 splitIntoColumns = true;
             } else if (COMPREHENSIVE_TYPE.equalsIgnoreCase(reportType)) {
                 includeSummarySheet = true;
                 doGroupHeaders = false;
                 separateSheetsForRepeatableGroups = false;
-                variableNamesInHeaders = false; //TODO change
-                splitIntoColumns = false; //TODO change
+                variableNamesInHeaders = true;
+                splitIntoColumns = true;
             } else {
                 log.error("Unknown value " + reportType + " for " + TYPE_OPT);                
                 return false;
