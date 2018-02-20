@@ -1,15 +1,19 @@
 # Akvo Flow Release Notes
 ----
 # Akvo Flow Dashboard v1.9.28 - Bent Banana
-Date: 15 February 2015
+Date: 15 February 2018
 
 ## New and noteworthy
-* [#2287] - Updated French, Spanish, and Portuguese translations
-* [#2427] - Show frequency table and graphs for cascades
-* [#2443] - Add statistics about collected data to comprehensive report
-* [#2428] - Improve comprehensive report graph styling and display as bar graph
-* [#2467] - Move monitoring tab after inspect data tab
-* Rephrase question ID to variable name [#2143], and update variable name help text [#2444]
+* **Add updated translations of online workspace** - Updated French, Spanish, and Portuguese translations [#2287]
+* **Comprehensive report improvement** - Show frequency table and graphs for cascades [#2427], add statistics about collected data [#2443], and improve graph styling [#2428]
+* **Rearrange data tab** - Moved monitoring tab after inspect data tab [#2467]
+* **Simplify validation** - Rephrased question ID to variable name [#2143], and update variable name help text [#2444]
+
+## Resolved issues
+* **Users unable to delete data under monitoring tab** [#2261] - Removed delete option to reduce the the risk of high data loss
+* **Form version number not incrementing correctly** [#1403] - Set form as not published each time the form basics are changed
+* **Code Cleanup** [#2447],[#555] - Remove unused code
+* **UI** - Remove line above "No results found" in inspect data and monitoring tabs [#2452]
 
 ## Resolved issues
 * Users unable to delete data under monitoring tab [#2261] - Removed delete option to reduce the the risk of high data loss
