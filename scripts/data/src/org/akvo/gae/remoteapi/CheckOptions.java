@@ -44,7 +44,6 @@ public class CheckOptions implements Process {
                     SortDirection.DESCENDING);
             PreparedQuery pq = ds.prepare(q);
 
-//            List<String> data = new ArrayList<String>();
             DateFormat df = new SimpleDateFormat("yyyy-MM-dd HH:mm");
             df.setTimeZone(TimeZone.getTimeZone("GMT"));
 
@@ -57,13 +56,10 @@ public class CheckOptions implements Process {
                     optionsOther++;
                 }
                 
-//                data.add(df.format(created) + "\t" + val.substring(pos + 1));
                 System.out.println(".");
             }
             System.out.println("JSON:" + optionsJson);
             System.out.println("Other:" + optionsOther);
-//            System.out.println(data.subList(0, 10));
-//            FileUtils.writeLines(out, data, "\n");
         } catch (Exception e) {
             e.printStackTrace();
         }

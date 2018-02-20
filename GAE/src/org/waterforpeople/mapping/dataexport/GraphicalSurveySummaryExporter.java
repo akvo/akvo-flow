@@ -1103,7 +1103,7 @@ public class GraphicalSurveySummaryExporter extends SurveySummaryExporter {
 
     /*
      * Creates list of option values. The value is always the pipe-separated format.
-     * Depending on the useQuestionId variable, each option is given its own column.
+     * Depending on the splitIntoColumns variable, each option is given its own column.
      * A 0 or 1 denotes if that option was selected or not.
      * If the AllowOther flag is true, a column is created for the Other option.
      *  We first try to match on text, and if that fails, we try to match on code. This
@@ -1295,7 +1295,7 @@ public class GraphicalSurveySummaryExporter extends SurveySummaryExporter {
 
             String varName = q.getQuestionId();
             // Can we tag the column(s) with the variable name?
-            final boolean doVarName = variableNamesInHeaders
+            final boolean useVarName = variableNamesInHeaders
                     && varName != null
                     && !varName.equals(""); //TODO other whitespace?
 
@@ -1303,24 +1303,24 @@ public class GraphicalSurveySummaryExporter extends SurveySummaryExporter {
 
             if (QuestionType.GEO == q.getType()) {
                 offset = addGeoDataColumnHeaders(q, row, offset, varName,
-                        variableNamesInHeaders, doVarName);
+                        variableNamesInHeaders, useVarName);
             } else if (QuestionType.PHOTO == q.getType()) {
                 offset = addPhotoDataColumnHeader(q, row, offset, varName,
-                        splitIntoColumns, doVarName);
+                        splitIntoColumns, useVarName);
             } else if (QuestionType.CASCADE == q.getType()
                     && q.getLevelNames() != null && splitIntoColumns) {
                 // if no cascade assigned, column is not shown
                 for (String level : q.getLevelNames()) {
-                    String levelName = doVarName ? varName + "_"
+                    String levelName = useVarName ? varName + "_"
                             + level.replaceAll(" ", "_")
                             : q.getText() + " - " + level;
                     createHeaderCell(row, offset++, levelName);
                 }
             } else if (QuestionType.CADDISFLY == q.getType()) {
-                offset = addCaddisflyDataHeaderColumns(q, row, offset, varName, doVarName);
+                offset = addCaddisflyDataHeaderColumns(q, row, offset, varName, useVarName);
             } else { // All other cases
                 String header = "";
-                if (doVarName) {
+                if (useVarName) {
                     header = varName;
                 } else if (variableNamesInHeaders) { //fall back to sanitised text
                     header = q.getText().replaceAll("\n", "").trim();
