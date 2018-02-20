@@ -4,6 +4,7 @@
   <div class="bulkUpload block">
     {{#if FLOW.uploader.support}}
       <div class="resumable-drop" ondragenter="jQuery(this).addClass('resumable-dragover');" ondragend="jQuery(this).removeClass('resumable-dragover');" ondrop="jQuery(this).removeClass('resumable-dragover');">
+        <div  class = "zip_icon"></div>
         {{t _drop_files}} <a class="resumable-browse"><u>{{t _select_files}}</u></a>
       </div>
       <div class="resumable-progress">
