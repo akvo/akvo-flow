@@ -37,7 +37,7 @@ public class QuestionAnswerStoreDto extends BaseDto {
     private Integer iteration;
     private String oldValue;
     private String questionText;
-    private String textualQuestionId;
+    private String textualQuestionId; //TODO rename to variableName?
 
     public String getOldValue() {
         return oldValue;

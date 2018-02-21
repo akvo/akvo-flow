@@ -1209,32 +1209,32 @@ public class GraphicalSurveySummaryExporter extends SurveySummaryExporter {
         for (QuestionDto q : questions) {
             questionIdList.add(q.getKeyId().toString());
 
-            String questionId = q.getQuestionId();
-            final boolean useQID = useQuestionId && questionId != null
-                    && !questionId.equals("");
+            String variableName = q.getVariableName();
+            final boolean useQID = useQuestionId && variableName != null
+                    && !variableName.equals("");
 
             columnIndexMap.put(q.getKeyId().toString(), offset);
 
             if (QuestionType.GEO == q.getType()) {
-                offset = addGeoDataColumnHeader(q, row, offset, questionId, useQuestionId, useQID);
+                offset = addGeoDataColumnHeader(q, row, offset, variableName, useQuestionId, useQID);
             } else if (QuestionType.PHOTO == q.getType()) {
-                offset = addPhotoDataColumnHeader(q, row, offset, questionId,
+                offset = addPhotoDataColumnHeader(q, row, offset, variableName,
                         useQuestionId, useQID);
             } else if (QuestionType.CASCADE == q.getType()
                     && q.getLevelNames() != null && useQuestionId) {
                 // if no cascade assigned, column is not shown
                 for (String level : q.getLevelNames()) {
-                    String levelName = useQID ? questionId + "_"
+                    String levelName = useQID ? variableName + "_"
                             + level.replaceAll(" ", "_")
                             : q.getText() + " - " + level;
                     createCell(row, offset++, levelName, headerStyle);
                 }
             } else if (QuestionType.CADDISFLY == q.getType()) {
-                offset = addCaddisflyDataHeaderColumns(q, row, offset, questionId, useQID);
+                offset = addCaddisflyDataHeaderColumns(q, row, offset, variableName, useQID);
             } else { // All other types
                 String header = "";
                 if (useQID) {
-                    header = questionId;
+                    header = variableName;
                 } else if (useQuestionId) {
                     header = q.getText().replaceAll("\n", "").trim();
                 } else {
