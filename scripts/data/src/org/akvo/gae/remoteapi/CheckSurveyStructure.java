@@ -135,7 +135,7 @@ public class CheckSurveyStructure implements Process {
             String questionText = (String) q.getProperty("text");
             Long questionGroupSurvey = (Long) qgToSurvey.get(questionGroup);
 
-            if (questionGroup == null || questionGroupSurvey == null) { // in no group or a nonexistent group; hopelessly lost
+            if (questionSurvey == null || questionGroup == null || questionGroupSurvey == null) { // in no survey, group or a nonexistent group; hopelessly lost
                 System.out.printf("#ERR: Question %d '%s',survey %d, group %d\n",
                         questionId, questionText, questionSurvey, questionGroup);
                 orphanQuestions++;
