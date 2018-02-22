@@ -104,7 +104,6 @@ public class QuestionAnswerRestService {
                             if (Long.parseLong(qas.getQuestionID()) == qList
                                     .get(i).getKey().getId()) {
                                 qasDto.setQuestionText(qList.get(i).getText());
-                                qasDto.setTextualQuestionId(qList.get(i).getVariableName());
                                 idx = i;
                                 break;
                             }
