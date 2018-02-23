@@ -5,6 +5,7 @@ FLOW.uuid = function (file) {
 };
 
 FLOW.uploader = Ember.Object.create({
+  showDragAction: false,
   r: new Resumable({
     target: FLOW.Env.flowServices + '/upload',
     uploadDomain: FLOW.Env.surveyuploadurl.split('/')[2],
@@ -83,7 +84,14 @@ FLOW.uploader = Ember.Object.create({
     
     r.on('uploadStart', function(){
        console.log('started file upload', new Date())
-       $('.resumable-drop').append('<div class= "resumable-dragover"></div>');
+       //$('.resumable-drop').append('<div class= "resumable-dragover"></div>');
+       //momentarily change teh border color to indicate file upload being accepted
+       /*$('.resumable-drop').css({
+          border: 3px solid #4ab1cf
+       })*/
+       //$('.resumable-drop').style.border = "3px solid #4ab1cf";
+       FLOW.uploader.set('showDragAction', true);
+       
     })
 
     r.on('complete', function () {
@@ -93,7 +101,8 @@ FLOW.uploader = Ember.Object.create({
         FLOW.uploader.showCompleteMessage();
       }
       console.log('the file upload has completed!!!', new Date())
-      $('.resumable-dragover').remove();
+      //$('.resumable-dragover').remove();
+       FLOW.uploader.set('showDragAction', false)
     });
 
     r.on('fileSuccess', function (file, message) {

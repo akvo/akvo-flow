@@ -3,7 +3,7 @@
 
   <div class="bulkUpload block">
     {{#if FLOW.uploader.support}}
-      <div class="resumable-drop">
+      <div class="resumable-drop"{{bindAttr class =":resumable-drop FLOW.uploader.showDragAction:resumable-dragover"}}>
         <div  class = "zip_icon"></div>
         {{t _drop_files}} <a class="resumable-browse"><u>{{t _select_files}}</u></a>
       </div>
