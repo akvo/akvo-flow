@@ -5967,6 +5967,7 @@ svg {
 }
 
 .gdprSwitchSteps {
+    padding-top: 20px;
     * {
         box-sizing: border-box;
     }
@@ -5976,6 +5977,10 @@ svg {
     justify-content: flex-start;
     align-items: stretch;
     align-content: flex-start;
+    margin-bottom: 20px;
+    @media only screen and (max-width: 670px) {
+        flex-direction: column;
+    }
     li {
         cursor: pointer;
         flex-grow: 1;
@@ -5985,11 +5990,14 @@ svg {
         padding: 10px 15px;
         text-align: center;
         transition: opacity 0.4s ease-in;
+        &:last-child {
+            margin-right: 0;
+        }
         h2 {
             font-weight: bold;
         }
         p {
-            max-width: 50%;
+            max-width: 85%;
             margin: 15px auto 0 auto;
         }
     }
