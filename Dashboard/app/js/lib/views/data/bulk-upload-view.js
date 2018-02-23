@@ -80,6 +80,11 @@ FLOW.uploader = Ember.Object.create({
       $('.resumable-progress .progress-resume-link').show();
       $('.resumable-progress .progress-pause-link').hide();
     });
+    
+    r.on('uploadStart', function(){
+       console.log('started file upload', new Date())
+       $('.resumable-drop').append('<div class= "resumable-dragover"></div>');
+    })
 
     r.on('complete', function () {
       // Hide pause/resume when the upload has completed
@@ -87,6 +92,8 @@ FLOW.uploader = Ember.Object.create({
       if (!FLOW.uploader.get('cancelled')) {
         FLOW.uploader.showCompleteMessage();
       }
+      console.log('the file upload has completed!!!', new Date())
+      $('.resumable-dragover').remove();
     });
 
     r.on('fileSuccess', function (file, message) {
