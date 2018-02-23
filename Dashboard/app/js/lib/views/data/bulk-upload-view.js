@@ -83,13 +83,7 @@ FLOW.uploader = Ember.Object.create({
     });
     
     r.on('uploadStart', function(){
-       console.log('started file upload', new Date())
-       //$('.resumable-drop').append('<div class= "resumable-dragover"></div>');
-       //momentarily change teh border color to indicate file upload being accepted
-       /*$('.resumable-drop').css({
-          border: 3px solid #4ab1cf
-       })*/
-       //$('.resumable-drop').style.border = "3px solid #4ab1cf";
+      //show the drop action border when upload starts
        FLOW.uploader.set('showDragAction', true);
        
     })
@@ -100,8 +94,7 @@ FLOW.uploader = Ember.Object.create({
       if (!FLOW.uploader.get('cancelled')) {
         FLOW.uploader.showCompleteMessage();
       }
-      console.log('the file upload has completed!!!', new Date())
-      //$('.resumable-dragover').remove();
+      //Hide the drag action border after uploading
        FLOW.uploader.set('showDragAction', false)
     });
 
