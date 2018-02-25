@@ -179,7 +179,7 @@ FLOW.QuestionView = FLOW.View.extend({
     this.loadQuestionOptions();
 
     FLOW.selectedControl.set('selectedQuestion', this.get('content'));
-    this.set('variableName', FLOW.selectedControl.selectedQuestion.get('questionId'));
+    this.set('variableName', FLOW.selectedControl.selectedQuestion.get('variableName'));
     this.set('text', FLOW.selectedControl.selectedQuestion.get('text'));
     this.set('tip', FLOW.selectedControl.selectedQuestion.get('tip'));
     this.set('mandatoryFlag', FLOW.selectedControl.selectedQuestion.get('mandatoryFlag'));
@@ -370,7 +370,7 @@ FLOW.QuestionView = FLOW.View.extend({
     }
 
     path = FLOW.selectedControl.selectedSurveyGroup.get('code') + "/" + FLOW.selectedControl.selectedSurvey.get('name') + "/" + FLOW.selectedControl.selectedQuestionGroup.get('code');
-    FLOW.selectedControl.selectedQuestion.set('questionId', this.get('variableName'));
+    FLOW.selectedControl.selectedQuestion.set('variableName', this.get('variableName'));
     FLOW.selectedControl.selectedQuestion.set('text', this.get('text'));
     FLOW.selectedControl.selectedQuestion.set('tip', this.get('tip'));
     FLOW.selectedControl.selectedQuestion.set('mandatoryFlag', this.get('mandatoryFlag'));
@@ -484,7 +484,7 @@ FLOW.QuestionView = FLOW.View.extend({
         clearTimeout(this.throttleTimer);
         this.throttleTimer = setTimeout(function () {
           $.ajax({
-            url: '/rest/questions/' + questionKeyId + '/validate?questionId=' + variableName,
+            url: '/rest/questions/' + questionKeyId + '/validate?variableName=' + variableName,
             type: 'POST',
             success: function(data) {
               if (data.success) {
@@ -503,7 +503,7 @@ FLOW.QuestionView = FLOW.View.extend({
           return (selectedQuestion.get('surveyId') === question.get('surveyId'))
             && (questionKeyId !== question.get('keyId'));
         }).map(function(question) {
-          return question.get('questionId');
+          return question.get('variableName');
         }).filter(function(variableName) {
           return variableName !== "";
         });
