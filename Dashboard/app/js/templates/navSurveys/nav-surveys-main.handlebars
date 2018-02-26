@@ -14,6 +14,7 @@
       </nav>
       {{#if view.projectListView}}
         {{#if FLOW.projectControl.moveTarget}}
+          {{#unless view.disableAddSurveyButtonInRoot}}
           <nav class="menuTopbar actionHighLighted">
             <ul>
               <li><p>{{t _moving}} <span class="itemMoved">{{FLOW.projectControl.moveTarget.code}}</span> {{FLOW.projectControl.moveTargetType}}</p></li>
@@ -21,8 +22,10 @@
               <li><a class="redCancel  btnOutline" {{action "cancelMoveProject" target="FLOW.projectControl"}}>{{t _cancel}}</a></li>
             </ul>
           </nav>
+          {{/unless}}
         {{else}}
           {{#if FLOW.projectControl.copyTarget}}
+            {{#unless view.disableAddSurveyButtonInRoot}}
             <nav class="menuTopbar actionHighLighted">
               <ul>
                 <li><p>{{t _copying}} <span class="itemMoved">{{FLOW.projectControl.copyTarget.code}}</span></p></li>
@@ -30,6 +33,7 @@
                 <li><a class="redCancel btnOutline" {{action "cancelCopyProject" target="FLOW.projectControl"}}>{{t _cancel}}</a></li>
               </ul>
             </nav>
+            {{/unless}}
           {{else}}
             <nav class="menuTopbar">
               <ul>
