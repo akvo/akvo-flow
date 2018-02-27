@@ -73,18 +73,6 @@ FLOW.ReportLoader = Ember.Object.create({
     criteria.opts.lastCollection = '' + ((exportType === 'DATA_CLEANING' || exportType === 'DATA_ANALYSIS')
       && FLOW.selectedControl.get('selectedSurveyGroup').get('monitoringGroup') && exportOption === "recent");
 
-    var fromDate = FLOW.dateControl.get('fromDate');
-    if (fromDate == null) {
-      delete criteria.opts.from;
-    } else {
-      criteria.opts.from = fromDate;
-    }
-    var toDate = FLOW.dateControl.get('toDate');
-    if (toDate == null) {
-      delete criteria.opts.to;
-    } else {
-      criteria.opts.to = toDate;
-    }
     criteria.opts.email = FLOW.currentUser.email;
     criteria.opts.flowServices = FLOW.Env.flowServices;
 
@@ -163,6 +151,8 @@ FLOW.ExportReportsAppletView = FLOW.View.extend({
   showComprehensiveDialog: false,
   showRawDataImportApplet: false,
   showGoogleEarthButton: false,
+  reportFromDate: undefined,
+  reportToDate: undefined,
   cleaningDateRangeSelected: true,
   analysisDateRangeSelected: true,
 
@@ -183,6 +173,26 @@ FLOW.ExportReportsAppletView = FLOW.View.extend({
       FLOW.dateControl.set('toDate', null);
     }
   }.observes('FLOW.ReportLoader.cleaningExportOption', 'FLOW.ReportLoader.analysisExportOption'),
+
+  setMinDate: function () {
+    if (this.get('reportFromDate') !== "") {
+      if (this.get("dataCleaningSection")) {
+        $("#to_date02").datepicker("option", "minDate", this.get("reportFromDate"))
+      } else {
+        $("#to_date").datepicker("option", "minDate", this.get("reportFromDate"))
+      }
+    }
+  }.observes('this.reportFromDate'),
+
+  setMaxDate: function () {
+    if (this.get('reportToDate') !== "") {
+      if (this.get("dataCleaningSection")) {
+        $("#from_date02").datepicker("option", "maxDate", this.get("reportToDate"))
+      } else {
+        $("#from_date").datepicker("option", "maxDate", this.get("reportToDate"))
+      }
+    }
+  }.observes('this.reportToDate'),
 
   didInsertElement: function () {
     FLOW.selectedControl.set('surveySelection', FLOW.SurveySelection.create());
@@ -226,9 +236,9 @@ FLOW.ExportReportsAppletView = FLOW.View.extend({
   }.property('FLOW.selectedControl.selectedSurvey'),
 
   showDataCleaningReport: function () {
-    var opts = {from:this.get("reportFromDate"), to:this.get("reportToDate")};
-    var sId = this.get('selectedSurvey');
-    FLOW.ReportLoader.load('DATA_CLEANING', sId, opts);
+  var opts = {from:this.get("reportFromDate"), to:this.get("reportToDate")};
+  var sId = this.get('selectedSurvey');
+  FLOW.ReportLoader.load('DATA_CLEANING', sId, opts);
   },
 
   showDataAnalysisReport: function () {

@@ -49,16 +49,15 @@
           <h2>{{t _data_cleaning_export}}</h2>
           <h6>{{t _importable_back_to_akvo_flow}}</h6>
           <p class="expDescr">{{t _combines_options}}</p>
-        {{#view FLOW.ExportReportsAppletView}}
+        {{#view FLOW.ExportReportsAppletView dataCleaningSection=true}}
           <div id="dataCleanExp_options" class="options">
               <div class="dataCollectedDate">
                 <p>{{view Ember.RadioButton selectionBinding="FLOW.ReportLoader.cleaningExportOption" value="range" name="cleaning-export-option"}}{{t _collection_period}}</p>
-                {{#if view.cleaningDateRangeSelected}}
                 <label class="collectedFrom">
-                  {{view FLOW.DateField2 valueBinding="view.reportFromDate" class="from_date" placeholder="" placeholderBinding="Ember.STRINGS._collected_from" size=30}}
+                  {{view FLOW.DateField2 valueBinding="view.reportFromDate" elementId="from_date02" placeholder="" placeholderBinding="Ember.STRINGS._collected_from" size=30}}
                 </label>
                 <label class="collectedTo">
-                  {{view FLOW.DateField2 valueBinding="view.reportToDate" class="to_date" placeholder="" placeholderBinding="Ember.STRINGS._to" size=30}}
+                  {{view FLOW.DateField2 valueBinding="view.reportToDate" elementId="to_date02" placeholder="" placeholderBinding="Ember.STRINGS._to" size=30}}
                 </label>
                 {{/if}}
               </div>
@@ -75,16 +74,16 @@
           <h2>{{t _data_analysis_export}}</h2>
           <h6>{{t _not_importable_back}}</h6>
           <p class="expDescr">{{t _replaces_question}}</p>
-          {{#view FLOW.ExportReportsAppletView}}
+          {{#view FLOW.ExportReportsAppletView dataAnalysisSection=true }}
             <div id="dataAnalyseExp_options" class="options">
               <div class="dataCollectedDate">
                 <p>{{view Ember.RadioButton selectionBinding="FLOW.ReportLoader.analysisExportOption" value="range" name="analysis-export-option"}}{{t _collection_period}}</p>
                 {{#if view.analysisDateRangeSelected}}
                 <label class="collectedFrom">
-                   {{view FLOW.DateField2 minDate=false valueBinding="view.reportFromDate" class="from_date" placeholder="" placeholderBinding="Ember.STRINGS._collected_from" size=30}}
+                   {{view FLOW.DateField2 minDate=false valueBinding="view.reportFromDate" elementId="from_date" placeholder="" placeholderBinding="Ember.STRINGS._collected_from" size=30}}
                 </label>
                 <label class="collectedTo">
-                  {{view FLOW.DateField2 minDate=false valueBinding="view.reportToDate" class="to_date" placeholder="" placeholderBinding="Ember.STRINGS._to" size=30}}
+                  {{view FLOW.DateField2 minDate=false valueBinding="view.reportToDate" elementId="to_date" placeholder="" placeholderBinding="Ember.STRINGS._to" size=30}}
                 </label>
                 {{/if}}
               </div>
