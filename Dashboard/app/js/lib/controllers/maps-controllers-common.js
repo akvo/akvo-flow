@@ -6,7 +6,7 @@
       a placemark counterpart.
 **/
 
-FLOW.mapsController = Ember.ArrayController.create({
+FLOW.MapsController = Ember.ArrayController.extend({
     content: null,
     map: null,
     marker: null,
@@ -134,13 +134,13 @@ FLOW.mapsController = Ember.ArrayController.create({
 
         function onMarkerClick(marker){
             // first deselect others
-            if (!Ember.none(FLOW.mapsController.get('selectedMarker'))) {
-                if (FLOW.mapsController.selectedMarker.target.options.placemarkId != marker.target.options.placemarkId) {
-                    FLOW.mapsController.selectedMarker.target.options.selected = false;
-                    FLOW.mapsController.selectedMarker.target.setStyle({
+            if (!Ember.none(FLOW.router.mapsController.get('selectedMarker'))) {
+                if (FLOW.router.mapsController.selectedMarker.target.options.placemarkId != marker.target.options.placemarkId) {
+                    FLOW.router.mapsController.selectedMarker.target.options.selected = false;
+                    FLOW.router.mapsController.selectedMarker.target.setStyle({
                         color:'#d46f12',
                         fillColor:'#edb660'});
-                    FLOW.mapsController.set('selectedMarker',null);
+                    FLOW.router.mapsController.set('selectedMarker',null);
                 }
             }
 
@@ -150,13 +150,13 @@ FLOW.mapsController = Ember.ArrayController.create({
                     color:'#d46f12',
                     fillColor:'#edb660'});
                 marker.target.options.selected = false;
-                FLOW.mapsController.set('selectedMarker',null);
+                FLOW.router.mapsController.set('selectedMarker',null);
             } else {
                 marker.target.setStyle({
                     color:'#d46f12',
                     fillColor:'#433ec9'});
                 marker.target.options.selected = true;
-                FLOW.mapsController.set('selectedMarker',marker);
+                FLOW.router.mapsController.set('selectedMarker',marker);
             }
         }
     },
@@ -268,7 +268,7 @@ FLOW.mapsController = Ember.ArrayController.create({
                 dataLayer.setInteraction(true);
 
                 dataLayer.on('featureClick', function(e, latlng, pos, data) {
-                    FLOW.mapsController.set('markerCoordinates', [data.lat, data.lon]);
+                    self.set('markerCoordinates', [data.lat, data.lon]);
 
                     //get survey instance
                     FLOW.placemarkDetailController.set( 'si', FLOW.store.find(FLOW.SurveyInstance, data.id));
@@ -351,11 +351,14 @@ FLOW.placemarkDetailController = Ember.ArrayController.create({
 
   handlePlacemarkSelection: function () {
     var selectedPlacemarkId = null;
-    if (!Ember.none(FLOW.mapsController.get('selectedMarker'))) {
-    	selectedPlacemarkId = FLOW.mapsController.selectedMarker.target.options.placemarkId;
-    	this.set('collectionDate',FLOW.mapsController.selectedMarker.target.options.collectionDate);
+    if (!Ember.none(FLOW.router.get('mapsController'))) {
+      var mapsController = FLOW.router.get('mapsController');
+      if (!Ember.none(mapsController.get('selectedMarker'))) {
+      	selectedPlacemarkId = mapsController.selectedMarker.target.options.placemarkId;
+      	this.set('collectionDate',mapsController.selectedMarker.target.options.collectionDate);
+      }
+      this.populate(selectedPlacemarkId);
     }
-    this.populate(selectedPlacemarkId);
-  }.observes('FLOW.mapsController.selectedMarker')
+  }.observes('FLOW.router.mapsController.selectedMarker')
 
 });

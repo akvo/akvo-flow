@@ -110,10 +110,6 @@ FLOW.DataPointView = FLOW.View.extend({
 
     showDataApprovalBlock: false,
 
-    showSurveyedLocaleDeleteButton: function() {
-        return FLOW.router.surveyedLocaleController.get('userCanDelete');
-    }.property(),
-
     showApprovalStatusColumn: function () {
         return this.get('parentView').get('showApprovalStatusColumn');
     }.property(),
@@ -186,6 +182,11 @@ FLOW.DataPointView = FLOW.View.extend({
     toggleShowDataApprovalBlock: function () {
         this.toggleProperty('showDataApprovalBlock');
     },
+
+    dataPointRowNumber: function () {
+        var pageNumber = FLOW.router.surveyedLocaleController.get('pageNumber');
+        return this.get('_parentView.contentIndex') + 1 + 20 * pageNumber;
+    }.property()
 });
 
 /**

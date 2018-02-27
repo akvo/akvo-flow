@@ -55,7 +55,6 @@ public class Question extends BaseDomain {
     private String dependentQuestionAnswer;
     private Long cascadeResourceId;
     private String caddisflyResourceUuid;
-    private Long metricId;
     @NotPersistent
     private TreeMap<Integer, QuestionOption> questionOptionMap = null;
     @NotPersistent
@@ -166,13 +165,6 @@ public class Question extends BaseDomain {
         this.dependentQuestionId = dependentQuestionId;
     }
 
-    public Long getMetricId() {
-        return metricId;
-    }
-
-    public void setMetricId(Long metricId) {
-        this.metricId = metricId;
-    }
 
     public Long getQuestionGroupId() {
         return questionGroupId;

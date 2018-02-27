@@ -96,8 +96,6 @@ public class SurveyRestRequest extends RestRequest {
     private Boolean allowDecimal;
     private Double minVal;
     private Double maxVal;
-    private String metricName;
-    private String metricGroup;
 
     public Boolean getIsName() {
         return isName;
@@ -346,8 +344,6 @@ public class SurveyRestRequest extends RestRequest {
         if (req.getParameter(GRAPH_TYPE_PARAM) != null) {
             graphType = req.getParameter(GRAPH_TYPE_PARAM).trim();
         }
-        metricName = req.getParameter(METRIC_NAME_PARAM);
-        metricGroup = req.getParameter(METRIC_GROUP_PARAM);
 
         allowDecimal = parseBooleanValue(
                 req.getParameter(VALIDATION_ALLOW_DECIMAL_PARAM), null);
@@ -403,22 +399,6 @@ public class SurveyRestRequest extends RestRequest {
 
     public Integer getQuestionOrder() {
         return questionOrder;
-    }
-
-    public void setMetricName(String metricName) {
-        this.metricName = metricName;
-    }
-
-    public String getMetricName() {
-        return metricName;
-    }
-
-    public void setMetricGroup(String metricGroup) {
-        this.metricGroup = metricGroup;
-    }
-
-    public String getMetricGroup() {
-        return metricGroup;
     }
 
 }

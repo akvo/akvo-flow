@@ -24,10 +24,6 @@ FLOW.QuestionView = FLOW.View.extend({
   dependentFlag: false,
   dependentQuestion: null,
   includeInMap: null,
-  showAddAttributeDialogBool: false,
-  newAttributeName: null,
-  newAttributeGroup: null,
-  newAttributeType: null,
   allowPoints: true,
   allowLine: true,
   allowPolygon: true,
@@ -168,7 +164,6 @@ FLOW.QuestionView = FLOW.View.extend({
   // TODO options
   doQuestionEdit: function () {
     var questionType = null,
-    attribute = null,
     dependentQuestion, dependentAnswer, dependentAnswerArray,cascadeResource;
     if (this.content && (this.content.get('isDirty') || this.content.get('isSaving'))) {
       this.showMessageDialog(Ember.String.loc('_question_is_being_saved'),
@@ -238,14 +233,6 @@ FLOW.QuestionView = FLOW.View.extend({
         });
       }
     }
-
-    // set the attribute to the original choice
-    FLOW.attributeControl.get('content').forEach(function (item) {
-      if (item.get('keyId') == FLOW.selectedControl.selectedQuestion.get('metricId')) {
-        attribute = item;
-      }
-    });
-    this.set('attribute', attribute);
 
     // set the type to the original choice
     FLOW.questionTypeControl.get('content').forEach(function (item) {
@@ -418,10 +405,6 @@ FLOW.QuestionView = FLOW.View.extend({
       FLOW.selectedControl.selectedQuestion.set('dependentFlag', false);
       FLOW.selectedControl.selectedQuestion.set('dependentQuestionId', null);
       FLOW.selectedControl.selectedQuestion.set('dependentQuestionAnswer', null);
-    }
-
-    if (this.get('attribute')) {
-      FLOW.selectedControl.selectedQuestion.set('metricId', this.attribute.get('keyId'));
     }
 
     if (this.get('type')) {
@@ -837,25 +820,6 @@ FLOW.QuestionView = FLOW.View.extend({
   // cancel group move
   doQuestionMoveCancel: function () {
     FLOW.selectedControl.set('selectedForMoveQuestion', null);
-  },
-  showAddAttributeDialog: function () {
-    this.set('showAddAttributeDialogBool', true);
-  },
-
-  doAddAttribute: function () {
-    if ((this.get('newAttributeName') !== null) && (this.get('newAttributeType') !== null)) {
-      FLOW.store.createRecord(FLOW.Metric, {
-        "name": this.get('newAttributeName'),
-        "group": this.get('newAttributeGroup'),
-        "valueType": this.newAttributeType.get('value')
-      });
-      FLOW.store.commit();
-    }
-    this.set('showAddAttributeDialogBool', false);
-  },
-
-  cancelAddAttribute: function () {
-    this.set('showAddAttributeDialogBool', false);
   },
 
   validateQuestionObserver: function () {

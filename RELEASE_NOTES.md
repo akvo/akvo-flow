@@ -1,5 +1,64 @@
 # Akvo Flow Release Notes
 ----
+# Akvo Flow Dashboard v1.9.28.1 - Bent Banana (Hotfix 1)
+Date: 20 February 2018
+## Resolved issues
+* **Integrity check failing for CartoDB libraries** [#2500] - Fixed issue causing maps on CartoDB enabled instances not to work
+
+# Akvo Flow Dashboard v1.9.28 - Bent Banana
+Date: 15 February 2018
+
+## New and noteworthy
+* **Add updated translations of online workspace** - Updated French, Spanish, and Portuguese translations [#2287]
+* **Comprehensive report improvement** - Show frequency table and graphs for cascades [#2427], add statistics about collected data [#2443], and improve graph styling [#2428]
+* **Rearrange data tab** - Moved monitoring tab after inspect data tab [#2467]
+* **Simplify validation** - Rephrased question ID to variable name [#2143], and update variable name help text [#2444]
+
+## Resolved issues
+* **Users unable to delete data under monitoring tab** [#2261] - Removed delete option to reduce the the risk of high data loss
+* **Form version number not incrementing correctly** [#1403] - Set form as not published each time the form basics are changed
+* **Code Cleanup** [#2447],[#555] - Remove unused code
+* **UI** - Remove line above "No results found" in inspect data and monitoring tabs [#2452]
+
+## Resolved issues
+* Users unable to delete data under monitoring tab [#2261] - Removed delete option to reduce the the risk of high data loss
+* Form version number not incrementing correctly [#1403] - Set form as not published each time the form basics are changed
+* Code Cleanup [#2447],[#555] - Remove unused code
+* UI - Remove line above "No results found" in inspect data and monitoring tabs [#2452]
+
+# 1.9.27 Aerodynamic Avocado
+Date: 25 January 2018
+
+## New and noteworthy
+### Code Cleanup
+* [#2333] - Removed unnecessary caddisfly endpoint and test file
+* [#2410] - Removed unneeded `com.gallatinsystems.common.data` classes
+* [#2412] - Removed ununsed authentication class and endpoint definition
+* [#2414] - Removed unneeded S3Driver and dependent classes
+* [#2417] - Removed gwt-user.jar dependency
+* [#2431] - Removed unused classes for data export packages
+* [#2198] - Fix 'fullWidth' class misspelling in css.
+* [#2367] - Removed geocode column from exported reports
+
+### UI
+* [#2385] - Removed the question ID column in the detailed submission view on monitoring tab
+* [#2429] - Updated copyright from 2017 to 2018
+
+### Code refactor
+* **Use `extend` instead of `create` in the maps controller** [#2275] - Extend ArrayController class instead of creating a new instance of it
+* **Deprecate metrics** [#2397] - Removed attributes and statistics from UI and removed metrics from backend
+
+## Resolved issues
+* **Add "No results found" in Monitoring tab** [#1868] - When a user clicks find on the monitoring tab but there is no data to display, a "No results found" message is displayed
+
+### Bug fixes
+* **Error thrown sometimes when opening comprehensive reports using Excel** [#2279] - Issue occurred when the frequency table for a number question was over 96 items long. Fix was to set is to handle any length content
+* **Sometimes duplicate column names generated in raw data** [#2315] - Append variable name to geolocation column headers to make each one unique
+* **Hitting the enter key after changing the form/survey name causes the dashboard to reload** [#1929] - Trigger save when user hits enter after editing survey/form title
+* **Report imports fails if there is no question with the column header id** [#2436] - ignore column if it does not exist
+* **Forms of copied survey does not showing for all users** [#1765] - Fixed the ancestor identifiers for copied surveys so they match the copy destination and therefore the surveys display for all users with view access for the destination
+* **In Monitoring tab data point order shows as NaN** [#2386] - Order now displayed as number
+
 # 1.9.26 Zetetic Zonkey
 
 ## New and noteworthy

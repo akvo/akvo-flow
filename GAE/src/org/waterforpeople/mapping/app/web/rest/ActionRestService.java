@@ -366,8 +366,8 @@ public class ActionRestService {
             surveyDto.setPath(projectCopy.getPath() + "/" + sourceSurvey.getName());
             surveyDto.setSurveyGroupId(savedProjectCopy.getKey().getId());
             Survey surveyCopy = SurveyUtils.copySurvey(sourceSurvey, surveyDto);
+            surveyCopy.setAncestorIds(surveysAncestorIds);
             surveyCopy.setSurveyGroupId(savedProjectCopy.getKey().getId());
-            sourceSurvey.setAncestorIds(surveysAncestorIds);
             long copyId = surveyDao.save(surveyCopy).getKey().getId();
             if (isRegistrationFormId(sourceSurvey.getKey().getId(),
                     projectSource.getNewLocaleSurveyId())) {

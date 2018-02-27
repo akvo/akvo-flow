@@ -267,12 +267,10 @@ FLOW.dialogControl = Ember.Object.create({
   delQG: "delQG",
   delQ: "delQ",
   delUser: "delUser",
-  delAttr: "delAttr",
   delAssignment: "delAssignment",
   delDeviceGroup: "delDeviceGroup",
   delSI: "delSI",
   delSI2: "delSI2",
-  delSL: "delSL",
   delCR: "delCR",
   delForm: "delForm",
   showDialog: false,
@@ -314,12 +312,6 @@ FLOW.dialogControl = Ember.Object.create({
       this.set('showDialog', true);
       break;
 
-    case "delAttr":
-      this.set('header', Ember.String.loc('_attr_delete_header'));
-      this.set('message', Ember.String.loc('_this_cant_be_undo'));
-      this.set('showDialog', true);
-      break;
-
     case "delAssignment":
       this.set('header', Ember.String.loc('_assignment_delete_header'));
       this.set('message', Ember.String.loc('_this_cant_be_undo'));
@@ -342,12 +334,6 @@ FLOW.dialogControl = Ember.Object.create({
       this.set('header', Ember.String.loc('_delete_record_header'));
       this.set('showDialog', true);
       break;
-
-    case "delSL":
-        this.set('header', Ember.String.loc('_delete_data_point_header'));
-        this.set('message', Ember.String.loc('_are_you_sure_delete_this_data_point'));
-        this.set('showDialog', true);
-        break;
 
     case "delForm":
       this.set('header', "Delete form");
@@ -390,11 +376,6 @@ FLOW.dialogControl = Ember.Object.create({
       view.deleteUser.apply(view, arguments);
       break;
 
-    case "delAttr":
-      this.set('showDialog', false);
-      view.deleteAttribute.apply(view, arguments);
-      break;
-
     case "delAssignment":
       this.set('showDialog', false);
       view.deleteSurveyAssignment.apply(view, arguments);
@@ -414,12 +395,7 @@ FLOW.dialogControl = Ember.Object.create({
       this.set('showDialog', false);
       view.deleteSI.apply(view, arguments);
       break;
-
-    case "delSL":
-        this.set('showDialog', false);
-        view.deleteSL.apply(view, arguments);
-        break;
-
+      
     case "delForm":
       this.set('showDialog', false);
       FLOW.surveyControl.deleteForm();
