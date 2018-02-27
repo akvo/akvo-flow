@@ -346,7 +346,7 @@ public class QuestionRestService {
         Map<String, Object> result = new HashMap<String, Object>();
 
         for (Question q : questions) {
-            if (variableName.equals(q.getVariableName())
+            if (variableName.equalsIgnoreCase(q.getVariableName())
                     && !question.getKey().equals(q.getKey())) {
                 result.put("success", false);
                 result.put("reason", "Variable name not unique");
