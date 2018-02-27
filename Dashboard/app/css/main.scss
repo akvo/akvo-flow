@@ -4422,10 +4422,14 @@ table.surveyDetails {
     border-radius: 0.25em;
     margin: 1.5em auto 1.5em;
     z-index: 9999;
-    /*background:url(../images/zipFile.svg) center top no-repeat;*/
-    .zip_icon{
-      background: url(../images/zipFile.svg) center top no-repeat;
+    li {
+      background: url(../images/zipFile.svg) center  no-repeat;
+      height:60px;
+      width:50%;
+      margin:auto;
     }
+    
+  
 }
 
 .resumable-drop u {
@@ -4436,11 +4440,6 @@ table.surveyDetails {
 .resumable-drop input {
     cursor: pointer;
 }
-
-/*.resumable-drop .zip_icon {
-  background:url(../images/zipFile.svg) center top no-repeat ;
-  background-size:80px;
-}*/
 
 .resumable-dragover {
     padding: 50px;
