@@ -977,6 +977,33 @@ FLOW.questionControl = Ember.ArrayController.create({
     }
   }.observes('FLOW.selectedControl.selectedQuestion'),
 
+  reorderQuestions: function (qgId, reorderPoint, reorderDirection) {
+    FLOW.store.adapter.set('bulkCommit', true);
+    var questionsInGroup = FLOW.store.filter(FLOW.Question, function (item) {
+      return item.get('questionGroupId') == qgId;
+    });
+
+    // move items up to make space
+    questionsInGroup.forEach(function (item) {
+      if (reorderDirection == "down") {
+        if (item.get('order') > reorderPoint) {
+          item.set('order', item.get('order') + 1);
+        }
+      } else if (reorderDirection == "up") {
+        if (item.get('order') > reorderPoint) {
+          item.set('order', item.get('order') - 1);
+        }
+      }
+    });
+
+    questionsInGroup = FLOW.store.filter(FLOW.Question, function (item) {
+      return item.get('questionGroupId') == qgId;
+    });
+    // restore order in case the order has gone haywire
+    FLOW.questionControl.restoreOrder(questionsInGroup);
+    FLOW.store.commit();
+    FLOW.store.adapter.set('bulkCommit', false);
+  },
 
 
   // true if all items have been saved
