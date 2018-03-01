@@ -61,8 +61,9 @@ public class Question extends BaseDomain {
     private TreeMap<Integer, QuestionHelpMedia> questionHelpMediaMap = null;
     private Long questionGroupId;
     private Long surveyId;
-    private String questionId;
-    private String variableName;
+    @Deprecated
+    private String questionId; //Renamed to variableName
+    private String variableName; //Getter will fetch legacy data from questionId
     private Integer order = null;
     private Boolean mandatoryFlag = null;
     private String path = null;
