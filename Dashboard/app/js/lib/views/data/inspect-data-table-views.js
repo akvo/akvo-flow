@@ -32,7 +32,7 @@ FLOW.inspectDataTableView = FLOW.View.extend({
     FLOW.locationControl.set('selectedLevel1', null);
     FLOW.locationControl.set('selectedLevel2', null);
   },
-
+  
   // do a new query
   doFindSurveyInstances: function () {
     FLOW.surveyInstanceControl.get('sinceArray').clear();
@@ -253,8 +253,15 @@ FLOW.inspectDataTableView = FLOW.View.extend({
     } else {
       return false;
     }
-  }.property('FLOW.surveyInstanceControl.content', 'FLOW.surveyInstanceControl.content.isLoaded')
-
+  }.property('FLOW.surveyInstanceControl.content', 'FLOW.surveyInstanceControl.content.isLoaded'),
+  
+  //clearing the SI records when the user navigates away from inspect-tab.
+  willDestroyElement: function () {
+     FLOW.surveyInstanceControl.set('currentContents', null);
+     FLOW.metaControl.set('numSILoaded', null);
+     FLOW.surveyInstanceControl.set('pageNumber', 0);     
+  }
+  
 });
 
 FLOW.DataItemView = FLOW.View.extend({
