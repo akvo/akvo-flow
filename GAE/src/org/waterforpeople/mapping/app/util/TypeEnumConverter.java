@@ -21,7 +21,6 @@ import org.waterforpeople.mapping.app.gwt.client.survey.QuestionDto;
 import org.waterforpeople.mapping.app.gwt.client.survey.QuestionDto.QuestionType;
 import org.waterforpeople.mapping.app.gwt.client.survey.QuestionHelpDto;
 import org.waterforpeople.mapping.app.web.dto.OGRFeatureDto;
-import org.waterforpeople.mapping.domain.AccessPoint;
 
 import com.gallatinsystems.survey.domain.Question;
 import com.gallatinsystems.survey.domain.QuestionHelpMedia;
@@ -47,12 +46,6 @@ public class TypeEnumConverter extends AbstractConverter {
 
                 return QuestionDto.QuestionType.valueOf(value.toString());
 
-            } else if (type == AccessPoint.Status.class) {
-
-                return AccessPoint.Status.valueOf(value.toString());
-
-            } else if (type == AccessPoint.AccessPointType.class) {
-                return AccessPoint.AccessPointType.valueOf(value.toString());
             } else if (type == UnitOfMeasure.UnitOfMeasureSystem.class) {
                 return UnitOfMeasure.UnitOfMeasureSystem.valueOf(value
                         .toString());

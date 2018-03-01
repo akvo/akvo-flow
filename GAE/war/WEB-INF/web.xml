@@ -295,22 +295,6 @@
 	</servlet-mapping>
 
 	<servlet>
-		<servlet-name>SMSServlet</servlet-name>
-		<servlet-class>org.waterforpeople.mapping.app.web.SMSReceiverServlet</servlet-class>
-	</servlet>
-	<servlet-mapping>
-		<servlet-name>SMSServlet</servlet-name>
-		<url-pattern>/smsreceiver</url-pattern>
-	</servlet-mapping>
-	<servlet>
-		<servlet-name>PointOfInterestServlet</servlet-name>
-		<servlet-class>org.waterforpeople.mapping.app.web.PointOfInterestServlet</servlet-class>
-	</servlet>
-	<servlet-mapping>
-		<servlet-name>PointOfInterestServlet</servlet-name>
-		<url-pattern>/pointofinterest</url-pattern>
-	</servlet-mapping>
-	<servlet>
 		<servlet-name>RemoteExceptionServlet</servlet-name>
 		<servlet-class>com.gallatinsystems.diagnostics.app.web.RemoteExceptionRestServlet</servlet-class>
 	</servlet>
@@ -375,14 +359,6 @@
 	<servlet-mapping>
 		<servlet-name>DeviceNotificationRestApi</servlet-name>
 		<url-pattern>/devicenotification</url-pattern>
-	</servlet-mapping>
-	<servlet>
-		<servlet-name>PlacemarkRestApi</servlet-name>
-		<servlet-class>org.waterforpeople.mapping.app.web.PlacemarkServlet</servlet-class>
-	</servlet>
-	<servlet-mapping>
-		<servlet-name>PlacemarkRestApi</servlet-name>
-		<url-pattern>/placemarkrestapi</url-pattern>
 	</servlet-mapping>
 	<servlet>
 		<servlet-name>GeoRestApi</servlet-name>

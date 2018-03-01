@@ -28,21 +28,16 @@ import javax.servlet.http.HttpServletRequest;
 import org.akvo.flow.domain.DataUtils;
 import org.apache.commons.codec.binary.Base64;
 import org.json.JSONObject;
-import org.waterforpeople.mapping.analytics.dao.AccessPointStatusSummaryDao;
 import org.waterforpeople.mapping.analytics.dao.SurveyQuestionSummaryDao;
-import org.waterforpeople.mapping.analytics.domain.AccessPointStatusSummary;
 import org.waterforpeople.mapping.analytics.domain.SurveyQuestionSummary;
 import org.waterforpeople.mapping.app.gwt.client.surveyinstance.QuestionAnswerStoreDto;
 import org.waterforpeople.mapping.app.util.DtoMarshaller;
 import org.waterforpeople.mapping.app.web.dto.DataBackoutRequest;
 import org.waterforpeople.mapping.app.web.dto.QuestionAnswerResponse;
-import org.waterforpeople.mapping.dao.AccessPointDao;
 import org.waterforpeople.mapping.dao.SurveyInstanceDAO;
-import org.waterforpeople.mapping.domain.AccessPoint;
 import org.waterforpeople.mapping.domain.QuestionAnswerStore;
 import org.waterforpeople.mapping.domain.SurveyInstance;
 
-import com.gallatinsystems.framework.dao.BaseDAO;
 import com.gallatinsystems.framework.rest.AbstractRestApiServlet;
 import com.gallatinsystems.framework.rest.RestRequest;
 import com.gallatinsystems.framework.rest.RestResponse;
@@ -65,9 +60,7 @@ public class DataBackoutServlet extends AbstractRestApiServlet {
     private QuestionDao qDao;
     private SurveyQuestionSummaryDao questionSummaryDao;
     private SurveyInstanceDAO instanceDao;
-    private AccessPointDao accessPointDao;
     private SurveyedLocaleDao localeDao;
-    private AccessPointStatusSummaryDao apSummaryDao;
     private static final ThreadLocal<DateFormat> OUT_FMT = new ThreadLocal<DateFormat>() {
         @Override
         protected DateFormat initialValue() {
@@ -81,8 +74,6 @@ public class DataBackoutServlet extends AbstractRestApiServlet {
         localeDao = new SurveyedLocaleDao();
         questionSummaryDao = new SurveyQuestionSummaryDao();
         instanceDao = new SurveyInstanceDAO();
-        accessPointDao = new AccessPointDao();
-        apSummaryDao = new AccessPointStatusSummaryDao();
     }
 
     @Override
@@ -113,15 +104,6 @@ public class DataBackoutServlet extends AbstractRestApiServlet {
         } else if (DataBackoutRequest.DELETE_SURVEY_INSTANCE_ACTION
                 .equals(boReq.getAction())) {
             deleteSurveyInstance(boReq.getSurveyInstanceId());
-        } else if (DataBackoutRequest.DELETE_ACCESS_POINT_ACTION.equals(boReq
-                .getAction())) {
-            response.setMessage(""
-                    + deleteAccessPoint(boReq.getCountryCode(), boReq.getToDate()));
-        } else if (DataBackoutRequest.DELETE_AP_SUMMARY_ACTION.equals(boReq
-                .getAction())) {
-            response.setMessage(""
-                    + deleteAccessPointSummary(boReq.getCountryCode(),
-                            boReq.getToDate()));
         } else if (DataBackoutRequest.LIST_INSTANCE_RESPONSE_ACTION
                 .equals(boReq.getAction())) {
             response.setMessage(listResponses(boReq.getSurveyInstanceId()));
@@ -192,50 +174,7 @@ public class DataBackoutServlet extends AbstractRestApiServlet {
         return result.toString();
     }
 
-    /**
-     * deletes all access point status summary objects for the country specified with a creation
-     * date on or after the date passed in. This method will delete 20 records at a time. If there
-     * are more remaining, it will return true, otherwise it will return false
-     * 
-     * @param country
-     * @param creationDate
-     * @return
-     */
-    private boolean deleteAccessPointSummary(String country, Date creationDate) {
-        boolean hasMore = false;
-        List<AccessPointStatusSummary> apList = apSummaryDao
-                .listByCountryAndCreationDate(country, creationDate, null);
-        if (apList != null) {
-            if (apList.size() == BaseDAO.DEFAULT_RESULT_COUNT) {
-                hasMore = true;
-            }
-            accessPointDao.delete(apList);
-        }
-        return hasMore;
-    }
 
-    /**
-     * deletes all access points in the country specified with a collection date on or after the
-     * date passed in. This method will delete 20 records at a time. If there are more remaining, it
-     * will return true, otherwise it will return false
-     * 
-     * @param country
-     * @param collectionDateFrom
-     * @return
-     */
-    private boolean deleteAccessPoint(String country, Date collectionDateFrom) {
-        boolean hasMore = false;
-        List<AccessPoint> apList = accessPointDao.searchAccessPoints(country,
-                null, collectionDateFrom, null, null, null, null, null, null,
-                null, null, null);
-        if (apList != null) {
-            if (apList.size() == BaseDAO.DEFAULT_RESULT_COUNT) {
-                hasMore = true;
-            }
-            accessPointDao.delete(apList);
-        }
-        return hasMore;
-    }
 
     /**
      * returns a comma separated list of survyeInstanceIds for the survey passed in

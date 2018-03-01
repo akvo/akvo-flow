@@ -44,11 +44,9 @@ import org.waterforpeople.mapping.analytics.dao.SurveyInstanceSummaryDao;
 import org.waterforpeople.mapping.analytics.dao.SurveyQuestionSummaryDao;
 import org.waterforpeople.mapping.analytics.domain.SurveyQuestionSummary;
 import org.waterforpeople.mapping.app.web.dto.DataProcessorRequest;
-import org.waterforpeople.mapping.dao.AccessPointDao;
 import org.waterforpeople.mapping.dao.QuestionAnswerStoreDao;
 import org.waterforpeople.mapping.dao.SurveyInstanceDAO;
 import org.waterforpeople.mapping.dataexport.SurveyReplicationImporter;
-import org.waterforpeople.mapping.domain.AccessPoint;
 import org.waterforpeople.mapping.domain.GeoCoordinates;
 import org.waterforpeople.mapping.domain.QuestionAnswerStore;
 import org.waterforpeople.mapping.domain.SurveyInstance;
@@ -122,10 +120,7 @@ public class DataProcessorRestServlet extends AbstractRestApiServlet {
     @Override
     protected RestResponse handleRequest(RestRequest req) throws Exception {
         DataProcessorRequest dpReq = (DataProcessorRequest) req;
-        if (DataProcessorRequest.PROJECT_FLAG_UPDATE_ACTION
-                .equalsIgnoreCase(dpReq.getAction())) {
-            updateAccessPointProjectFlag(dpReq.getCountry(), dpReq.getCursor());
-        } else if (DataProcessorRequest.REBUILD_QUESTION_SUMMARY_ACTION
+        if (DataProcessorRequest.REBUILD_QUESTION_SUMMARY_ACTION
                 .equalsIgnoreCase(dpReq.getAction())) {
             rebuildQuestionSummary(dpReq.getSurveyId());
         } else if (DataProcessorRequest.COPY_SURVEY.equalsIgnoreCase(dpReq
@@ -197,9 +192,6 @@ public class DataProcessorRestServlet extends AbstractRestApiServlet {
                 .equalsIgnoreCase(dpReq.getAction())) {
             SurveyReplicationImporter sri = new SurveyReplicationImporter();
             sri.executeImport(dpReq.getSource(), dpReq.getSurveyId(), dpReq.getApiKey());
-        } else if (DataProcessorRequest.RESCORE_AP_ACTION
-                .equalsIgnoreCase(dpReq.getAction())) {
-            rescoreAp(dpReq.getCountry());
         } else if (DataProcessorRequest.FIX_DUPLICATE_OTHER_TEXT_ACTION
                 .equalsIgnoreCase(dpReq.getAction())) {
             fixDuplicateOtherText();
@@ -521,27 +513,6 @@ public class DataProcessorRestServlet extends AbstractRestApiServlet {
         }
     }
 
-    /**
-     * this method re-runs scoring on all access points for a country
-     *
-     * @param country
-     */
-    private void rescoreAp(String country) {
-        AccessPointDao apDao = new AccessPointDao();
-        String cursor = null;
-        List<AccessPoint> apList = null;
-        do {
-            apList = apDao.listAccessPointByLocation(country, null, null, null,
-                    cursor, 200);
-            if (apList != null) {
-                cursor = AccessPointDao.getCursor(apList);
-
-                for (AccessPoint ap : apList) {
-                    apDao.save(ap);
-                }
-            }
-        } while (apList != null && apList.size() == 200);
-    }
 
     private void copySurvey(Long copiedSurveyId, Long originalSurveyId) {
 
@@ -846,64 +817,6 @@ public class DataProcessorRestServlet extends AbstractRestApiServlet {
         return summaryMap;
     }
 
-    /**
-     * iterates over all AccessPoints in a country and applies a static set of rules to determine
-     * the proper value of the WFPProjectFlag
-     *
-     * @param country
-     * @param cursor
-     */
-    private void updateAccessPointProjectFlag(String country, String cursor) {
-        AccessPointDao apDao = new AccessPointDao();
-        Integer pageSize = 200;
-        List<AccessPoint> apList = apDao.listAccessPointByLocation(country,
-                null, null, null, cursor, pageSize);
-        if (apList != null) {
-            for (AccessPoint ap : apList) {
-
-                if ("PE".equalsIgnoreCase(ap.getCountryCode())) {
-                    ap.setWaterForPeopleProjectFlag(false);
-                } else if ("RW".equalsIgnoreCase(ap.getCountryCode())) {
-                    ap.setWaterForPeopleProjectFlag(false);
-                } else if ("MW".equalsIgnoreCase(ap.getCountryCode())) {
-                    if (ap.getCommunityName().trim()
-                            .equalsIgnoreCase("Kachere/Makhetha/Nkolokoti")) {
-                        ap.setCommunityName("Kachere/Makhetha/Nkolokoti");
-                        if (ap.getWaterForPeopleProjectFlag() == null) {
-                            ap.setWaterForPeopleProjectFlag(true);
-                        }
-                    } else if (ap.getWaterForPeopleProjectFlag() == null) {
-                        ap.setWaterForPeopleProjectFlag(false);
-                    }
-                } else if ("HN".equalsIgnoreCase(ap.getCountryCode())) {
-                    if (ap.getCommunityCode().startsWith("IL")) {
-                        ap.setWaterForPeopleProjectFlag(false);
-                    } else {
-                        ap.setWaterForPeopleProjectFlag(true);
-                    }
-
-                } else if ("IN".equalsIgnoreCase(ap.getCountryCode())) {
-                    if (ap.getWaterForPeopleProjectFlag() == null) {
-                        ap.setWaterForPeopleProjectFlag(true);
-                    }
-                } else if ("GT".equalsIgnoreCase(ap.getCountryCode())) {
-                    if (ap.getWaterForPeopleProjectFlag() == null) {
-                        ap.setWaterAvailableDayVisitFlag(true);
-                    }
-                } else {
-                    // handles BO, DO, SV
-                    if (ap.getWaterForPeopleProjectFlag() == null) {
-                        ap.setWaterForPeopleProjectFlag(false);
-                    }
-                }
-            }
-
-            if (apList.size() == pageSize) {
-                // check for more
-                sendProjectUpdateTask(country, AccessPointDao.getCursor(apList));
-            }
-        }
-    }
 
     /**
      * Sends a message to a task queue to start or continue the processing of the AP Project Flag
