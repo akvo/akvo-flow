@@ -6,6 +6,7 @@ FLOW.uuid = function (file) {
 
 FLOW.uploader = Ember.Object.create({
   showDragAction: false,
+  startUploadingAction: false,
   r: new Resumable({
     target: FLOW.Env.flowServices + '/upload',
     uploadDomain: FLOW.Env.surveyuploadurl.split('/')[2],
@@ -84,8 +85,8 @@ FLOW.uploader = Ember.Object.create({
     
     r.on('uploadStart', function(){
       //show the drop action border when upload starts
-       FLOW.uploader.set('showDragAction', true);
-       
+       //FLOW.uploader.set('showDragAction', true); got it wrong... listen to dragEnter n dragLeave
+        FLOW.uploader.set('startUploadingAction', true)
     })
 
     r.on('complete', function () {
@@ -95,7 +96,7 @@ FLOW.uploader = Ember.Object.create({
         FLOW.uploader.showCompleteMessage();
       }
       //Hide the drag action border after uploading
-       FLOW.uploader.set('showDragAction', false)
+       //FLOW.uploader.set('showDragAction', false) got the stuff wrong listen to dragEnter n dragLeave
     });
 
     r.on('fileSuccess', function (file, message) {
@@ -178,7 +179,36 @@ FLOW.BulkUploadAppletView = FLOW.View.extend({
     FLOW.uploader.set('cancelled', FLOW.uploader.isUploading());
     FLOW.uploader.cancel();
     this._super();
+  },
+  //listening to events when file is dragged here.
+   dragStart: function (evt) {
+    evt.preventDefault();
+    console.log('hey start drag operation')
+  },
+  dragEnter: function (evt) {
+    evt.preventDefault();
+    //console.log('starting to drag files')
+    //console.log(evt.target)
+    FLOW.uploader.set('showDragAction',true)
+  },
+  dragOver: function (evt) {
+     evt.preventDefault();
+     //console.log('passing over!!!')
+  },
+  dragLeave: function (evt) {
+    evt.preventDefault();
+    console.log('iam leaving the valid drop point')
+    //revert back to the original border color when user hovers the file away from drop point
+     /*if (!FLOW.uploader.isUploading()) {
+        console.log('yeah he has left the drop zone')
+     }*/
+      /*if (!FLOW.uploader.startUploadingAction) {
+         console.log('Left drag zone without uploading') //somehow but still buggy
+         FLOW.uploader.set('showDragAction', false)
+      }*/
+      FLOW.uploader.set('showDragAction',false)
   }
+  
 });
 
 /* Show warning when trying to close the tab/window with an upload process in progress */
