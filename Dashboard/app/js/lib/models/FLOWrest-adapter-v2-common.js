@@ -193,14 +193,22 @@ DS.FLOWRESTAdapter = DS.RESTAdapter.extend({
       plural = this.pluralize(root);
 
     var data = {};
-    data[plural] = [];
-    records.forEach(function (record) {
-      data[plural].push(this.serialize(record, {
-        includeId: true
-      }));
-    }, this);
-
-    this.ajax(this.buildURL(root, 'bulk'), "POST", {
+    if (root === "question") {
+      data[root] = {};
+      records.forEach(function (record) {
+        data[root] = this.serialize(record, {
+          includeId: true
+        });
+      }, this);
+    } else {
+      data[plural] = [];
+      records.forEach(function (record) {
+        data[plural].push(this.serialize(record, {
+          includeId: true
+        }));
+      }, this);
+    }
+    this.ajax(this.buildURL(root, (root === "question") ? '' : 'bulk'), "POST", {
       data: data,
       context: this,
       success: function (json) {
