@@ -1,5 +1,5 @@
 /*
- *  Copyright (C) 2017 Stichting Akvo (Akvo Foundation)
+ *  Copyright (C) 2017-2018 Stichting Akvo (Akvo Foundation)
  *
  *  This file is part of Akvo FLOW.
  *
@@ -49,6 +49,7 @@ public interface QuestionDtoMappableFields {
     //QuestionDependencyDto questionDependency = null;
     Long surveyId = null;
     String questionId = null;
+    String variableName = null;
     Long questionGroupId = null;
     Boolean collapseable = null;
     Boolean immutable = null;

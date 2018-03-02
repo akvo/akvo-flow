@@ -1,5 +1,5 @@
 /*
- *  Copyright (C) 2012-2017 Stichting Akvo (Akvo Foundation)
+ *  Copyright (C) 2012-2018 Stichting Akvo (Akvo Foundation)
  *
  *  This file is part of Akvo FLOW.
  *
@@ -317,7 +317,7 @@ public class QuestionRestService {
     @ResponseBody
     public Map<String, Object> validateQuestionId(
             @PathVariable("id") Long id,
-            @RequestParam(value = "questionId") String questionId) {
+            @RequestParam(value = "variableName") String variableName) {
 
         Question question = questionDao.getByKey(id);
 
@@ -346,7 +346,7 @@ public class QuestionRestService {
         Map<String, Object> result = new HashMap<String, Object>();
 
         for (Question q : questions) {
-            if (questionId.equals(q.getQuestionId())
+            if (variableName.equals(q.getVariableName())
                     && !question.getKey().equals(q.getKey())) {
                 result.put("success", false);
                 result.put("reason", "Variable name not unique");
