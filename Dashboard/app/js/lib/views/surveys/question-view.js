@@ -713,7 +713,7 @@ FLOW.QuestionView = FLOW.View.extend({
       "questionGroupId": qgId
     });
 
-    // restore order
+    // reorder the rest of the questions
     FLOW.questionControl.reorderQuestions(qgId, insertAfterOrder, "down");
 
     FLOW.selectedControl.selectedSurvey.set('status', 'NOT_PUBLISHED');
