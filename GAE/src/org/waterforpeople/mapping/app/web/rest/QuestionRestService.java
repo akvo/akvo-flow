@@ -276,7 +276,7 @@ public class QuestionRestService {
         return response;
     }
 
-    // update existing questions
+    // update several existing questions
     // questionOptions are saved and updated on their own
     @RequestMapping(method = RequestMethod.PUT, value = "/bulk")
     @ResponseBody
@@ -290,8 +290,6 @@ public class QuestionRestService {
         //Loop over questions
         final List<QuestionDto> requestList = payLoad.getQuestions();
         if (requestList != null && requestList.size() > 0) {
-            final List<QuestionDto> responseList = new ArrayList<>();
-
             for (final QuestionDto questionDto : requestList) {
     
                 if (questionDto != null) {
@@ -314,7 +312,6 @@ public class QuestionRestService {
         
                             q = questionDao.save(q);
         
-                            responseList.add(QuestionDtoMapper.transform(q));
                         } else { //missing in db - fail
                             statusDto.setMessage("Cannot change unknown question " + keyId);
                             response.put("meta", statusDto);
@@ -327,7 +324,6 @@ public class QuestionRestService {
                     }
                 }
             }
-            response.put("questions", responseList);
         }
         statusDto.setStatus("ok");
         statusDto.setMessage("");
