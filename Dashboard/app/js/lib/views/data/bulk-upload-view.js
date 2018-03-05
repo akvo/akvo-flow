@@ -180,24 +180,34 @@ FLOW.BulkUploadAppletView = FLOW.View.extend({
     FLOW.uploader.cancel();
     this._super();
   },
+  dragActionStarted: false,
+
   //listening to events when file is dragged here.
   dragEnter: function (evt) {
     evt.preventDefault();
-     console.log('starting to drag files')
     //console.log(evt.target)
-    FLOW.uploader.set('showDragAction',true)
+    if (!this.showDragAction) {
+      console.log('starting to drag files, set new style')
+      //call function to set style
+      this.set('showDragAction',true);
+    }
   },
   dragOver: function (evt) {
      evt.preventDefault();
-     console.log('passing over!!!')
+     if (!this.dragActionStarted) {
+       console.log('passing over!!!');
+       this.set('dragActionStarted', true);
+     }
   },
   dragLeave: function (evt) {
     evt.preventDefault();
-    console.log('iam leaving the valid drop point')
+    console.log('iam leaving the valid drop point');
+    this.set('dragActionStarted', false);
     //revert back to the original border color when user hovers the file away from drop point
-       if (!FLOW.uploader.startUploadingAction) {
-         console.log('Left drag zone without uploading') //somehow but still buggy
-         FLOW.uploader.set('showDragAction', false)
+       if (!this.startUploadingAction) {
+         console.log('Left drag zone without uploading, revert style') //somehow but still buggy
+         //call function to revert style
+         this.set('showDragAction', false);
       }
   }
   
