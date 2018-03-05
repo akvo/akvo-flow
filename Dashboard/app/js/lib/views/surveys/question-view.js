@@ -153,13 +153,6 @@ FLOW.QuestionView = FLOW.View.extend({
         || this.type.get('value') == 'CASCADE';
   }.property('this.type').cacheable(),
 
-  // when we change the question type to GEO, we turn on the
-  // localeLocationFLag by default. If we change to something else, we
-  // turn the flag of.
-  enableLocaleLocation: function() {
-    this.set('localeLocationFlag', this.type.get('value') == 'GEO');
-  }.observes('this.type'),
-
   // TODO dependencies
   // TODO options
   doQuestionEdit: function () {
