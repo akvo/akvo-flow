@@ -199,9 +199,9 @@ FLOW.ExportReportsAppletView = FLOW.View.extend({
   }.property('FLOW.selectedControl.selectedSurveyGroup'),
 
   showDataCleaningReport: function () {
-  var opts = {from:this.get("reportFromDate"), to:this.get("reportToDate")};
-  var sId = this.get('selectedSurvey');
-  FLOW.ReportLoader.load('DATA_CLEANING', sId, opts);
+    var opts = {from:this.get("reportFromDate"), to:this.get("reportToDate")};
+    var sId = this.get('selectedSurvey');
+    FLOW.ReportLoader.load('DATA_CLEANING', sId, opts);
   },
 
   showDataAnalysisReport: function () {
@@ -212,7 +212,6 @@ FLOW.ExportReportsAppletView = FLOW.View.extend({
 
   showComprehensiveReport: function () {
     var opts = {}, sId = this.get('selectedSurvey');
-
     FLOW.ReportLoader.load('COMPREHENSIVE', sId, opts);
   },
 
