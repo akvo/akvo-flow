@@ -236,9 +236,9 @@ FLOW.ExportReportsAppletView = FLOW.View.extend({
   }.property('FLOW.selectedControl.selectedSurvey'),
 
   showDataCleaningReport: function () {
-  var opts = {from:this.get("reportFromDate"), to:this.get("reportToDate")};
-  var sId = this.get('selectedSurvey');
-  FLOW.ReportLoader.load('DATA_CLEANING', sId, opts);
+    var opts = {from:this.get("reportFromDate"), to:this.get("reportToDate")};
+    var sId = this.get('selectedSurvey');
+    FLOW.ReportLoader.load('DATA_CLEANING', sId, opts);
   },
 
   showDataAnalysisReport: function () {
