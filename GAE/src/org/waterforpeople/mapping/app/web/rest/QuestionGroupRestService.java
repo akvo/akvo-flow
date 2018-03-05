@@ -31,10 +31,13 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
+import org.waterforpeople.mapping.app.gwt.client.survey.QuestionDto;
 import org.waterforpeople.mapping.app.gwt.client.survey.QuestionGroupDto;
 import org.waterforpeople.mapping.app.web.dto.DataProcessorRequest;
 import org.waterforpeople.mapping.app.web.dto.SurveyTaskRequest;
+import org.waterforpeople.mapping.app.web.rest.dto.QuestionGroupListPayload;
 import org.waterforpeople.mapping.app.web.rest.dto.QuestionGroupPayload;
+import org.waterforpeople.mapping.app.web.rest.dto.QuestionListPayload;
 import org.waterforpeople.mapping.app.web.rest.dto.RestStatusDto;
 import org.waterforpeople.mapping.dao.QuestionAnswerStoreDao;
 
@@ -228,6 +231,56 @@ public class QuestionGroupRestService {
         }
         response.put("meta", statusDto);
         response.put("question_group", dto);
+        return response;
+    }
+
+    // update several existing question groups
+    @RequestMapping(method = RequestMethod.PUT, value = "/bulk")
+    @ResponseBody
+    public Map<String, Object> saveExistingQuestionGroups(
+            @RequestBody QuestionGroupListPayload payLoad) {
+        final Map<String, Object> response = new HashMap<String, Object>();
+        RestStatusDto statusDto = new RestStatusDto();
+        statusDto.setStatus("failed");
+        statusDto.setMessage("No question groups to change");
+
+        //Loop over question groups
+        final List<QuestionGroupDto> requestList = payLoad.getQuestionGroups();
+        if (requestList != null && requestList.size() > 0) {
+            for (final QuestionGroupDto questionGroupDto : requestList) {
+    
+                if (questionGroupDto != null) {
+                    Long keyId = questionGroupDto.getKeyId();
+                    QuestionGroup qg;
+        
+                    // if the questionGroupDto has a key, try to get the question group.
+                    if (keyId != null) {
+                        qg = questionGroupDao.getByKey(keyId);
+                        // if we find the question, update it's properties
+                        if (qg != null) {
+                            // copy the properties, except the createdDateTime property,
+                            // because it is set in the Dao.
+                            BeanUtils.copyProperties(questionGroupDto, qg, new String[] {
+                                    "createdDateTime"
+                            });
+                            qg = questionGroupDao.save(qg);
+        
+                        } else { //missing in db - fail
+                            statusDto.setMessage("Cannot change unknown question group " + keyId);
+                            response.put("meta", statusDto);
+                            return response;                            
+                        }
+                    } else  { //no db key - fail
+                        statusDto.setMessage("Cannot change question group without id");
+                        response.put("meta", statusDto);
+                        return response;                            
+                    }
+                }
+            }
+            statusDto.setStatus("ok");
+            statusDto.setMessage("");
+        }
+        response.put("meta", statusDto);
         return response;
     }
 
