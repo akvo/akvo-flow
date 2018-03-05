@@ -1,5 +1,5 @@
 /*
- *  Copyright (C) 2012-2017 Stichting Akvo (Akvo Foundation)
+ *  Copyright (C) 2012-2018 Stichting Akvo (Akvo Foundation)
  *
  *  This file is part of Akvo FLOW.
  *
@@ -260,9 +260,8 @@ public class QuestionGroupRestService {
                         if (qg != null) {
                             // copy the properties, except the createdDateTime property,
                             // because it is set in the Dao.
-                            BeanUtils.copyProperties(questionGroupDto, qg, new String[] {
-                                    "createdDateTime"
-                            });
+                            BeanUtils.copyProperties(questionGroupDto, qg,
+                                    new String[] {"createdDateTime", "status"});
                             qg = questionGroupDao.save(qg);
         
                         } else { //missing in db - fail
