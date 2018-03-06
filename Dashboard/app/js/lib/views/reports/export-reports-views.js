@@ -158,7 +158,7 @@ FLOW.ExportReportsAppletView = FLOW.View.extend({
   showComprehensiveDialog: false,
   showRawDataImportApplet: false,
   showGoogleEarthButton: false,
-  missingQuestion: false,
+  redBorder: false,
 
   didInsertElement: function () {
     FLOW.selectedControl.set('surveySelection', FLOW.SurveySelection.create());
@@ -217,10 +217,10 @@ FLOW.ExportReportsAppletView = FLOW.View.extend({
       return;
     }
     if (!qId) {
-      this.set("missingQuestion", true);
+      this.set("redBorder", true);
       return;
     }
-    this.set("missingQuestion", false);
+    this.set("redBorder", false);
     FLOW.ReportLoader.load('GEOSHAPE', sId, {"questionId": qId});
   },
 
