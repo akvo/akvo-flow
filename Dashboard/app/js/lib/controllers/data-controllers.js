@@ -289,7 +289,6 @@ FLOW.questionAnswerControl = Ember.ArrayController.create({
     if (content) {
 		var surveyQuestions = FLOW.questionControl.get('content');
 		var groups = FLOW.questionGroupControl.get('content');
-
 		var allResponses = [];
 		var groupResponses = [];
 		var answersInGroup = [];

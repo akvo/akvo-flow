@@ -5,7 +5,7 @@ function sortByOrder(a , b) {
 FLOW.QuestionView = FLOW.View.extend({
   templateName: 'navSurveys/question-view',
   content: null,
-  questionId: null,
+  variableName: null,
   text: null,
   tip: null,
   type: null,
@@ -153,13 +153,6 @@ FLOW.QuestionView = FLOW.View.extend({
         || this.type.get('value') == 'CASCADE';
   }.property('this.type').cacheable(),
 
-  // when we change the question type to GEO, we turn on the
-  // localeLocationFLag by default. If we change to something else, we
-  // turn the flag of.
-  enableLocaleLocation: function() {
-    this.set('localeLocationFlag', this.type.get('value') == 'GEO');
-  }.observes('this.type'),
-
   // TODO dependencies
   // TODO options
   doQuestionEdit: function () {
@@ -174,7 +167,7 @@ FLOW.QuestionView = FLOW.View.extend({
     this.loadQuestionOptions();
 
     FLOW.selectedControl.set('selectedQuestion', this.get('content'));
-    this.set('questionId', FLOW.selectedControl.selectedQuestion.get('questionId'));
+    this.set('variableName', FLOW.selectedControl.selectedQuestion.get('variableName'));
     this.set('text', FLOW.selectedControl.selectedQuestion.get('text'));
     this.set('tip', FLOW.selectedControl.selectedQuestion.get('tip'));
     this.set('mandatoryFlag', FLOW.selectedControl.selectedQuestion.get('mandatoryFlag'));
@@ -299,8 +292,8 @@ FLOW.QuestionView = FLOW.View.extend({
   doSaveEditQuestion: function() {
     var path, anyActive, first, dependentQuestionAnswer, minVal, maxVal, options, found, optionsToDelete;
 
-    if (this.questionIdValidationFailure) {
-      this.showMessageDialog(Ember.String.loc('_variable_name_must_be_valid_and_unique'), this.questionIdValidationFailureReason);
+    if (this.variableNameValidationFailure) {
+      this.showMessageDialog(Ember.String.loc('_variable_name_must_be_valid_and_unique'), this.variableNameValidationFailureReason);
       return;
     }
 
@@ -357,7 +350,7 @@ FLOW.QuestionView = FLOW.View.extend({
     }
 
     path = FLOW.selectedControl.selectedSurveyGroup.get('code') + "/" + FLOW.selectedControl.selectedSurvey.get('name') + "/" + FLOW.selectedControl.selectedQuestionGroup.get('code');
-    FLOW.selectedControl.selectedQuestion.set('questionId', this.get('questionId'));
+    FLOW.selectedControl.selectedQuestion.set('variableName', this.get('variableName'));
     FLOW.selectedControl.selectedQuestion.set('text', this.get('text'));
     FLOW.selectedControl.selectedQuestion.set('tip', this.get('tip'));
     FLOW.selectedControl.selectedQuestion.set('mandatoryFlag', this.get('mandatoryFlag'));
@@ -441,9 +434,9 @@ FLOW.QuestionView = FLOW.View.extend({
   },
 
   /**
-   * QuestionId validation
+   * Variable name validation
    *
-   * A valid questionId must match /^[A-Za-z0-9_\-]*$/. Uniqueness
+   * A valid variable name must match /^[A-Za-z0-9_\-]*$/. Uniqueness
    * constraints depends on wether the question is part of a
    * monitoring group or not. If the question is part of a
    * monitoring group, uniqueness validation _must_ happen on the
@@ -453,13 +446,13 @@ FLOW.QuestionView = FLOW.View.extend({
    */
   throttleTimer: null,
 
-  validateQuestionId: function(args) {
+  validateVariableName: function(args) {
     var selectedQuestion = FLOW.selectedControl.selectedQuestion
     var questionKeyId = selectedQuestion.get('keyId');
-    var questionId = this.get('questionId') || "";
-    if (FLOW.Env.mandatoryQuestionID && questionId.match(/^\s*$/)) {
+    var variableName = this.get('variableName') || "";
+    if (FLOW.Env.mandatoryQuestionID && variableName.match(/^\s*$/)) {
       args.failure(Ember.String.loc('_variable_name_mandatory'));
-    } else if (!questionId.match(/^[A-Za-z0-9_\-]*$/)) {
+    } else if (!variableName.match(/^[A-Za-z0-9_\-]*$/)) {
       args.failure(Ember.String.loc('_variable_name_only_alphanumeric'))
     } else {
       var monitoring = this.isPartOfMonitoringGroup(questionKeyId);
@@ -467,7 +460,7 @@ FLOW.QuestionView = FLOW.View.extend({
         clearTimeout(this.throttleTimer);
         this.throttleTimer = setTimeout(function () {
           $.ajax({
-            url: '/rest/questions/' + questionKeyId + '/validate?questionId=' + questionId,
+            url: '/rest/questions/' + questionKeyId + '/validate?variableName=' + variableName,
             type: 'POST',
             success: function(data) {
               if (data.success) {
@@ -482,16 +475,15 @@ FLOW.QuestionView = FLOW.View.extend({
           });
         }, 1000);
       } else {
-        var otherQuestionIds = FLOW.store.filter(FLOW.Question, function(question) {
-          var keyId = question.get('keyId');
+        var otherVariableNames = FLOW.store.filter(FLOW.Question, function(question) {
           return (selectedQuestion.get('surveyId') === question.get('surveyId'))
             && (questionKeyId !== question.get('keyId'));
         }).map(function(question) {
-          return question.get('questionId');
-        }).filter(function(questionId) {
-          return questionId !== "";
+          return question.get('variableName');
+        }).filter(function(variableName) {
+          return variableName !== "";
         });
-        var isUnique = !otherQuestionIds.contains(questionId);
+        var isUnique = !otherVariableNames.contains(variableName);
         if (isUnique) {
           args.success();
         } else {
@@ -831,19 +823,19 @@ FLOW.QuestionView = FLOW.View.extend({
       this.set('questionTooltipValidationFailure', (this.tip != null && this.tip.length > 500));
   }.observes('this.tip'),
 
-  validateQuestionIdObserver: function() {
+  validateVariableNameObserver: function() {
     var self = this;
-    self.validateQuestionId({
+    self.validateVariableName({
       success: function() {
-        self.set('questionIdValidationFailure', false);
-        self.set('questionIdValidationFailureReason', null);
+        self.set('variableNameValidationFailure', false);
+        self.set('variableNameValidationFailureReason', null);
       },
       failure: function(msg) {
-        self.set('questionIdValidationFailure', true);
-        self.set('questionIdValidationFailureReason', msg);
+        self.set('variableNameValidationFailure', true);
+        self.set('variableNameValidationFailureReason', msg);
       }
     });
-  }.observes('this.questionId'),
+  }.observes('this.variableName'),
 
   showQuestionModifyButtons: function () {
     var form = FLOW.selectedControl.get('selectedSurvey');

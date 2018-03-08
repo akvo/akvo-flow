@@ -107,7 +107,11 @@ FLOW.DataPointView = FLOW.View.extend({
     templateName: 'navData/monitoring-data-row',
 
     approvalStatus: [{label: Ember.String.loc('_pending'), value: 'PENDING'}, { label: Ember.String.loc('_approved'), value: 'APPROVED' },{ label: Ember.String.loc('_rejected'), value: 'REJECTED'}],
-
+     
+     //catering for counter for the data points.
+    tagName: 'span',
+    content: null,
+    pageNumber: 0,
     showDataApprovalBlock: false,
 
     showApprovalStatusColumn: function () {
