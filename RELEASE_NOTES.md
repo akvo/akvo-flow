@@ -1,5 +1,21 @@
 # Akvo Flow Release Notes
 ----
+# Akvo Flow Dashboard v1.9.29 - Cosmic Coconut
+Date: 08 March 2018
+
+## Resolved issues
+* **Monitoring tab user interface improvement** - Ordered question answers in the monitoring tab as well as showing the question groups to which the questions belong [#2387]
+* **Simplify validation** - Changed how question variable name validation errors are displayed by moving from hard coded error message to error messages defined via transifex. Also changed instances of questionId on the code to variable name [#2474]. Made variable name validation case-sensitive [#839]
+* **Surveys tab** - Fixed issue causing surveys tab to sometimes go blank during a session [#1402]. Also fixed issue allowing users to copy or move surveys to the root folder [#2464]
+* **Submissions list on data tab** - Fixed issue causing submissions to still be displayed on the inspect data tab even after a user navigates away [#2372]
+* **Data script** - Fixed issue causing data script to crash in case a question had a null survey pointer [#2508]
+
+## New and noteworthy
+* **Data point location** - Changed questions of type geolocation from being automatically used as the data point's location. Users will now have to tick which question is to be used as the data point location [#2517]
+* **Reports** - The "other, please specify" option in exported reports is now displayed in its own column [#2290]. Changed the raw data sheet in comprehensive reports to have analysis format [#2469]
+* **Data cleaning** - No longer support data cleaning using imports from old-format reports [#2330]
+* **Code cleanup** - Removed unused code [#2481]
+
 # Akvo Flow Dashboard v1.9.28.1 - Bent Banana (Hotfix 1)
 Date: 20 February 2018
 ## Resolved issues
