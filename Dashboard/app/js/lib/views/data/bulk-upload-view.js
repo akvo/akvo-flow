@@ -6,9 +6,6 @@ FLOW.uuid = function (file) {
 
 FLOW.uploader = Ember.Object.create({
   showDragAction: false,
-  startUploadingAction: false,
-  endDragAction: false,
-  droppedAction: false,
   r: new Resumable({
     target: FLOW.Env.flowServices + '/upload',
     uploadDomain: FLOW.Env.surveyuploadurl.split('/')[2],
@@ -177,7 +174,7 @@ FLOW.BulkUploadAppletView = FLOW.View.extend({
     FLOW.uploader.assignDrop($('.resumable-drop')[0]);
     FLOW.uploader.assignBrowse($('.resumable-browse')[0]);
     FLOW.uploader.registerEvents();
-    
+        
     //listening to some  drag n drop events.
     $('.resumable-drop').on('dragenter', function(evt){
        evt.preventDefault();
@@ -187,17 +184,11 @@ FLOW.BulkUploadAppletView = FLOW.View.extend({
     
     $('.resumable-drop').on('dragleave', function(evt){
        evt.preventDefault();
-       console.log('ended the dragging')
-        //this.set('endDragAction', true)
-        //FLOW.uploader.set('endDragAction', true)
         FLOW.uploader.set('showDragAction', false)
     })
     
     $('.resumable-drop').on('drop', function(evt) {
       evt.preventDefault();
-      console.log('dropping something!!!')
-      //this.set('droppedAction', true)
-      //FLOW.uploader.set('droppedAction', true) 
       FLOW.uploader.set('showDragAction', true) 
     })
     
@@ -206,39 +197,7 @@ FLOW.BulkUploadAppletView = FLOW.View.extend({
     FLOW.uploader.set('cancelled', FLOW.uploader.isUploading());
     FLOW.uploader.cancel();
     this._super();
-  },
-  //dragActionStarted: false,
-  
-  
-  //listening to events when file is dragged here.
-/*  dragEnter: function (evt) {
-    evt.preventDefault();
-    //console.log(evt.target)
-    if (!this.showDragAction) {
-      console.log('starting to drag files, set new style')
-      //call function to set style
-      this.set('showDragAction',true);
-    }
-  },
-  dragOver: function (evt) {
-     evt.preventDefault();
-     if (!this.dragActionStarted) {
-       console.log('passing over!!!');
-       this.set('dragActionStarted', true);
-     }
-  },
-  dragLeave: function (evt) {
-    evt.preventDefault();
-    console.log('iam leaving the valid drop point');
-    this.set('dragActionStarted', false);
-    //revert back to the original border color when user hovers the file away from drop point
-       if (!this.startUploadingAction) {
-         console.log('Left drag zone without uploading, revert style') //somehow but still buggy
-         //call function to revert style
-         this.set('showDragAction', false);
-      }
-  }*/
-  
+  }
 });
 
 /* Show warning when trying to close the tab/window with an upload process in progress */
