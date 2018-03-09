@@ -7,6 +7,8 @@ FLOW.uuid = function (file) {
 FLOW.uploader = Ember.Object.create({
   showDragAction: false,
   startUploadingAction: false,
+  endDragAction: false,
+  droppedAction: false,
   r: new Resumable({
     target: FLOW.Env.flowServices + '/upload',
     uploadDomain: FLOW.Env.surveyuploadurl.split('/')[2],
@@ -170,20 +172,46 @@ FLOW.uploader = Ember.Object.create({
 });
 
 FLOW.BulkUploadAppletView = FLOW.View.extend({
+
   didInsertElement: function () {
     FLOW.uploader.assignDrop($('.resumable-drop')[0]);
     FLOW.uploader.assignBrowse($('.resumable-browse')[0]);
     FLOW.uploader.registerEvents();
+    
+    //listening to some  drag n drop events.
+    $('.resumable-drop').on('dragenter', function(evt){
+       evt.preventDefault();
+       console.log('started dragging')
+       FLOW.uploader.set('showDragAction', true)
+    })
+    
+    $('.resumable-drop').on('dragleave', function(evt){
+       evt.preventDefault();
+       console.log('ended the dragging')
+        //this.set('endDragAction', true)
+        //FLOW.uploader.set('endDragAction', true)
+        FLOW.uploader.set('showDragAction', false)
+    })
+    
+    $('.resumable-drop').on('drop', function(evt) {
+      evt.preventDefault();
+      console.log('dropping something!!!')
+      //this.set('droppedAction', true)
+      //FLOW.uploader.set('droppedAction', true) 
+      FLOW.uploader.set('showDragAction', true) 
+    })
+    
   },
   willDestroyElement: function () {
     FLOW.uploader.set('cancelled', FLOW.uploader.isUploading());
     FLOW.uploader.cancel();
     this._super();
   },
-  dragActionStarted: false,
-
+  //dragActionStarted: false,
+  
+  
   //listening to events when file is dragged here.
-  dragEnter: function (evt) {
+/*  dragEnter: function (evt) {
     evt.preventDefault();
     //console.log(evt.target)
     if (!this.showDragAction) {
@@ -209,7 +237,7 @@ FLOW.BulkUploadAppletView = FLOW.View.extend({
          //call function to revert style
          this.set('showDragAction', false);
       }
-  }
+  }*/
   
 });
 
