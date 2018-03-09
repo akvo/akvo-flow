@@ -1,6 +1,6 @@
 #!/bin/sh
 
-# USAGE: ./check-datapoint-location.sh akvoflow-uat1 [FIX]
+# USAGE: ./check-datapoint-location.sh akvoflow-uat1 [surveyId] [FIX]
 # FIX to actually fix the datapoint location
 APP_ID=$1
 SERVICE_ACCOUNT="sa-$APP_ID@$APP_ID.iam.gserviceaccount.com"
@@ -13,4 +13,4 @@ java -cp bin:"lib/*" \
      $APP_ID \
      $SERVICE_ACCOUNT \
      $P12_FILE_PATH \
-     $2
+     $2 $3

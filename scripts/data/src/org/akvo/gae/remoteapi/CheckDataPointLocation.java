@@ -18,7 +18,10 @@ package org.akvo.gae.remoteapi;
 
 import com.google.appengine.api.datastore.DatastoreService;
 import com.google.appengine.api.datastore.Entity;
+import com.google.appengine.api.datastore.EntityNotFoundException;
 import com.google.appengine.api.datastore.FetchOptions;
+import com.google.appengine.api.datastore.Key;
+import com.google.appengine.api.datastore.KeyFactory;
 import com.google.appengine.api.datastore.PreparedQuery;
 import com.google.appengine.api.datastore.Query;
 import com.google.appengine.api.datastore.Query.FilterOperator;
@@ -29,71 +32,114 @@ import java.util.List;
 
 /*
  * - Checks that the DataPoint (SurveyedLocale) location is correct and updates it using data from
- * the localeGeolocation field of each SurveyInstance
+ * the localeGeolocation field of each SurveyInstance.
+ *
+ * This may take a very long time so it is better to provide the surveyId (the id of SurveyGroup)
  */
 public class CheckDataPointLocation implements Process {
 
     private boolean fixDataPointLocation = false;
     private int counterNotFound = 0;
+    private long surveyId = -1;
 
     @Override
     public void execute(DatastoreService ds, String[] args) {
         long timeStart = System.currentTimeMillis();
-        System.out.println("#Arguments: FIX to correct datapoint location");
-        for (String arg : args) {
-            if (arg.equalsIgnoreCase("FIX")) {
-                fixDataPointLocation = true;
-            }
+        System.out.println("#Arguments: survey id to fix one survey, FIX to correct datapoint location");
+
+        String arg0 = args[0];
+        if (arg0.equalsIgnoreCase("FIX")) {
+            fixDataPointLocation = true;
+        } else {
+            Long surveyId = safeParseLong(arg0);
+            this.surveyId = surveyId != null? surveyId: -1;
         }
 
-        List<Entity> dataPointsToSave = getDataToFix(ds);
+        String arg1 = args[1];
+        if (!fixDataPointLocation && arg1.equalsIgnoreCase("FIX")) {
+            fixDataPointLocation = true;
+        } else if (surveyId == -1){
+            Long surveyId = safeParseLong(arg1);
+            this.surveyId = surveyId != null? surveyId: -1;
+        }
+        List<Entity> dataPointsToSave;
+        if (surveyId == -1) {
+            dataPointsToSave = getDataToFix(ds);
+        } else {
+            Key key = KeyFactory.createKey("SurveyGroup", surveyId);
+            try {
+                System.out.println("Checking data for one survey");
+                Entity entity = ds.get(key);
+                dataPointsToSave = getDataPointsToFixForSurvey(ds, entity);
+            } catch (EntityNotFoundException e) {
+                e.printStackTrace();
+                dataPointsToSave = new ArrayList<>();
+            }
+        }
         long timeEnd = System.currentTimeMillis();
 
         System.out.println("Getting data to fix took: " + (timeEnd - timeStart) + " ms");
         System.out.println("SurveyInstances not Found " + counterNotFound);
         System.out.println(dataPointsToSave.size() + " data points need update");
         if (fixDataPointLocation) {
-            if (dataPointsToSave.size() > 0) {
+            if (!dataPointsToSave.isEmpty()) {
                 System.out.println("Will fix data...");
                 DataUtils.batchSaveEntities(ds, dataPointsToSave);
                 timeEnd = System.currentTimeMillis();
-                System.out.println("Getting fixing data took: " + (timeEnd - timeStart) + " ms");
+                System.out.println("Fixing data took: " + (timeEnd - timeStart) + " ms");
             } else {
                 System.out.println("No data to fix...");
             }
         }
     }
 
+    private Long safeParseLong(String longAsString) {
+        if (longAsString == null || longAsString.isEmpty()) {
+            return null;
+        }
+        try {
+            return Long.parseLong(longAsString);
+        } catch (NumberFormatException e) {
+            return null;
+        }
+    }
+
     private List<Entity> getDataToFix(DatastoreService ds) {
-        List<Entity> modifiedDataPoints = new ArrayList<>();
-        Iterable<Entity> entities = getSurveyGroups(ds);
+        List<Entity> brokenDataPoints = new ArrayList<>();
+        Iterable<Entity> entities = getSurveys(ds);
         int surveyCounter = 0;
-        for (Entity e : entities) {
+        for (Entity survey : entities) {
             surveyCounter++;
-            long surveyId = e.getKey().getId();
-            List<Entity> list = getSurveys(ds, surveyId);
+            brokenDataPoints.addAll(getDataPointsToFixForSurvey(ds, survey));
+        }
+        System.out.println("Found " + surveyCounter + " monitored SurveyGroups");
+        return brokenDataPoints;
+    }
+
+    private List<Entity> getDataPointsToFixForSurvey(DatastoreService ds, Entity survey) {
+        List<Entity> brokenDataPoints = new ArrayList<>();
+        long surveyId = survey.getKey().getId();
+        Long registrationFormId = (Long) survey.getProperty("newLocaleSurveyId");
+        if (registrationFormId != null) {
+            List<Entity> list = getForms(ds, surveyId);
             if (list.size() > 1) {
-                Long registrationFormId = (Long) e.getProperty("newLocaleSurveyId");
-                if (registrationFormId != null) {
-                    Entity geoQuestion = getGeoQuestion(ds, registrationFormId);
-                    if (geoQuestion != null) {
-                        List<Entity> dataPoints = getDataPoints(ds, surveyId);
-                        if (dataPoints.size() > 0) {
-                            long geoQuestionId = geoQuestion.getKey().getId();
-                            for (Entity dataPoint : dataPoints) {
-                                Entity dataPointToUpdate = getDataPointToUpdate(ds, dataPoint,
-                                        registrationFormId, geoQuestionId);
-                                if (dataPointToUpdate != null) {
-                                    modifiedDataPoints.add(dataPointToUpdate);
-                                }
+                Entity geoQuestion = getGeoQuestion(ds, registrationFormId);
+                if (geoQuestion != null) {
+                    List<Entity> dataPoints = getDataPoints(ds, surveyId);
+                    if (dataPoints.size() > 0) {
+                        long geoQuestionId = geoQuestion.getKey().getId();
+                        for (Entity dataPoint : dataPoints) {
+                            Entity dataPointToUpdate = getDataPointToUpdate(ds, dataPoint,
+                                    registrationFormId, geoQuestionId);
+                            if (dataPointToUpdate != null) {
+                                brokenDataPoints.add(dataPointToUpdate);
                             }
                         }
                     }
                 }
             }
         }
-        System.out.println("Found " + surveyCounter + " monitored SurveyGroups");
-        return modifiedDataPoints;
+        return brokenDataPoints;
     }
 
     private Entity getDataPointToUpdate(DatastoreService ds, Entity dataPoint,
@@ -198,7 +244,7 @@ public class CheckDataPointLocation implements Process {
         return pq.asList(FetchOptions.Builder.withDefaults());
     }
 
-    private List<Entity> getSurveys(DatastoreService ds, long surveyId) {
+    private List<Entity> getForms(DatastoreService ds, long surveyId) {
         Query.Filter f1 = new FilterPredicate("surveyGroupId", FilterOperator.EQUAL, surveyId);
         Query.Filter f2 = new FilterPredicate("status", FilterOperator.EQUAL,
                 "PUBLISHED");
@@ -210,7 +256,7 @@ public class CheckDataPointLocation implements Process {
         return pq.asList(FetchOptions.Builder.withLimit(2));
     }
 
-    private Iterable<Entity> getSurveyGroups(DatastoreService ds) {
+    private Iterable<Entity> getSurveys(DatastoreService ds) {
         Query.Filter f = new FilterPredicate("monitoringGroup", FilterOperator.EQUAL, true);
         Query q = new Query("SurveyGroup").setFilter(f);
         PreparedQuery pq = ds.prepare(q);
