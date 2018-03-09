@@ -46,10 +46,9 @@ public class CheckDataPointLocation implements Process {
             }
         }
 
-        List<ModificationData> dataToFix = getDataToFix(ds);
+        List<Entity> dataPointsToSave = getDataToFix(ds);
         long timeEnd = System.currentTimeMillis();
 
-        List<Entity> dataPointsToSave = getDataPointsToModify(ds, dataToFix);
         System.out.println("Getting data to fix took: " + (timeEnd - timeStart) + " ms");
         System.out.println("SurveyInstances not Found " + counterNotFound);
         System.out.println(dataPointsToSave.size() + " data points need update");
@@ -65,8 +64,8 @@ public class CheckDataPointLocation implements Process {
         }
     }
 
-    private List<ModificationData> getDataToFix(DatastoreService ds) {
-        List<ModificationData> dataToFix = new ArrayList<>();
+    private List<Entity> getDataToFix(DatastoreService ds) {
+        List<Entity> modifiedDataPoints = new ArrayList<>();
         Iterable<Entity> entities = getSurveyGroups(ds);
         int surveyCounter = 0;
         for (Entity e : entities) {
@@ -80,52 +79,12 @@ public class CheckDataPointLocation implements Process {
                     if (geoQuestion != null) {
                         List<Entity> dataPoints = getDataPoints(ds, surveyId);
                         if (dataPoints.size() > 0) {
-                            dataToFix.add(new ModificationData(surveyId, registrationFormId,
-                                    geoQuestion.getKey().getId(), dataPoints));
-                        }
-                    }
-                }
-            }
-        }
-        System.out.println("Found " + surveyCounter + " monitored SurveyGroups");
-        System.out.println("Found " + dataToFix.size() + " registration forms with geo questions");
-        return dataToFix;
-    }
-
-    private List<Entity> getDataPointsToModify(DatastoreService ds,
-            List<ModificationData> dataToFix) {
-        List<Entity> modifiedDataPoints = new ArrayList<>();
-        for (ModificationData data : dataToFix) {
-            long formId = data.getRegistrationFormId();
-            long questionId = data.getGeoQuestionId();
-            List<Entity> dataPoints = data.getDataPoints();
-            for (Entity dataPoint : dataPoints) {
-                long dataPointId = dataPoint.getKey().getId();
-                long surveyInstanceId = getSurveyInstanceId(ds, formId,
-                        (String) dataPoint.getProperty("identifier"), dataPointId);
-                if (surveyInstanceId != -1) {
-                    Entity questionAnswer = getQuestionAnswer(ds, surveyInstanceId, questionId);
-                    if (questionAnswer != null) {
-                        Double dataPointLatitude = (Double) dataPoint.getProperty("latitude");
-                        Double dataPointLongitude = (Double) dataPoint.getProperty("longitude");
-
-                        String answerValue = (String) questionAnswer.getProperty("value");
-                        if (answerValue != null && !answerValue.isEmpty()) {
-                            String[] answerBits = answerValue.split("\\|");
-                            if (answerBits.length > 1) {
-                                Double answerLatitude = safeParseDouble(answerBits[0]);
-                                Double answerLongitude = safeParseDouble(answerBits[1]);
-
-                                boolean dataPointLocationNeedsUpdate =
-                                        answerLatitude != null && answerLongitude != null
-                                                && (!answerLatitude.equals(dataPointLatitude)
-                                                || !answerLongitude.equals(dataPointLongitude));
-                                if (dataPointLocationNeedsUpdate) {
-                                    dataPoint.setProperty("latitude", answerLatitude);
-                                    dataPoint.setProperty("longitude", answerLongitude);
-                                    modifiedDataPoints.add(dataPoint);
-                                    System.out
-                                            .println("Data point " + dataPointId + " needs fixing");
+                            long geoQuestionId = geoQuestion.getKey().getId();
+                            for (Entity dataPoint : dataPoints) {
+                                Entity dataPointToUpdate = getDataPointToUpdate(ds, dataPoint,
+                                        registrationFormId, geoQuestionId);
+                                if (dataPointToUpdate != null) {
+                                    modifiedDataPoints.add(dataPointToUpdate);
                                 }
                             }
                         }
@@ -133,7 +92,44 @@ public class CheckDataPointLocation implements Process {
                 }
             }
         }
+        System.out.println("Found " + surveyCounter + " monitored SurveyGroups");
         return modifiedDataPoints;
+    }
+
+    private Entity getDataPointToUpdate(DatastoreService ds, Entity dataPoint,
+            Long registrationFormId, long geoQuestionId) {
+        long dataPointId = dataPoint.getKey().getId();
+        long surveyInstanceId = getSurveyInstanceId(ds, registrationFormId,
+                (String) dataPoint.getProperty("identifier"), dataPointId);
+        if (surveyInstanceId != -1) {
+            Entity questionAnswer = getQuestionAnswer(ds, surveyInstanceId, geoQuestionId);
+            if (questionAnswer != null) {
+                Double dataPointLatitude = (Double) dataPoint.getProperty("latitude");
+                Double dataPointLongitude = (Double) dataPoint.getProperty("longitude");
+
+                String answerValue = (String) questionAnswer.getProperty("value");
+                if (answerValue != null && !answerValue.isEmpty()) {
+                    String[] answerBits = answerValue.split("\\|");
+                    if (answerBits.length > 1) {
+                        Double answerLatitude = safeParseDouble(answerBits[0]);
+                        Double answerLongitude = safeParseDouble(answerBits[1]);
+
+                        boolean dataPointLocationNeedsUpdate =
+                                answerLatitude != null && answerLongitude != null
+                                        && (!answerLatitude.equals(dataPointLatitude)
+                                        || !answerLongitude.equals(dataPointLongitude));
+                        if (dataPointLocationNeedsUpdate) {
+                            dataPoint.setProperty("latitude", answerLatitude);
+                            dataPoint.setProperty("longitude", answerLongitude);
+
+                            System.out.println("Data point " + dataPointId + " needs fixing");
+                            return dataPoint;
+                        }
+                    }
+                }
+            }
+        }
+        return null;
     }
 
     private Double safeParseDouble(String doubleAsString) {
@@ -219,37 +215,5 @@ public class CheckDataPointLocation implements Process {
         Query q = new Query("SurveyGroup").setFilter(f);
         PreparedQuery pq = ds.prepare(q);
         return pq.asIterable();
-    }
-
-    public class ModificationData {
-
-        private final long surveyId;
-        private final long registrationFormId;
-        private final long geoQuestionId;
-        private final List<Entity> dataPoints;
-
-        public ModificationData(long surveyId, long registrationFormId, long geoQuestionId,
-                List<Entity> dataPoints) {
-            this.surveyId = surveyId;
-            this.registrationFormId = registrationFormId;
-            this.geoQuestionId = geoQuestionId;
-            this.dataPoints = dataPoints;
-        }
-
-        public long getSurveyId() {
-            return surveyId;
-        }
-
-        public long getRegistrationFormId() {
-            return registrationFormId;
-        }
-
-        public long getGeoQuestionId() {
-            return geoQuestionId;
-        }
-
-        public List<Entity> getDataPoints() {
-            return dataPoints;
-        }
     }
 }
