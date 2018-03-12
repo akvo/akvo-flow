@@ -56,7 +56,7 @@ public class CheckDataPointLocation implements Process {
                 this.surveyId = surveyId != null? surveyId: -1;
             }
 
-            String arg1 = args.length > 0? args[1]: null;
+            String arg1 = args.length > 1? args[1]: null;
             if (!fixDataPointLocation && "FIX".equalsIgnoreCase(arg1)) {
                 fixDataPointLocation = true;
             } else if (surveyId == -1){
