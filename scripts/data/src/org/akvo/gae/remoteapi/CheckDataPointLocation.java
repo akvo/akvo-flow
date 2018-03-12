@@ -38,31 +38,29 @@ import java.util.List;
  */
 public class CheckDataPointLocation implements Process {
 
-    private boolean fixDataPointLocation = false;
-    private int counterNotFound = 0;
-    private long surveyId = -1;
-
     @Override
     public void execute(DatastoreService ds, String[] args) {
         long timeStart = System.currentTimeMillis();
         System.out.println(
                 "#Arguments: survey id to fix one survey, FIX to correct datapoint location");
+        boolean fixDataPointLocation = false;
+        long surveyId = -1;
 
         if (args != null) {
             String arg0 = args.length > 0 ? args[0] : null;
             if ("FIX".equalsIgnoreCase(arg0)) {
                 fixDataPointLocation = true;
             } else {
-                Long surveyId = safeParseLong(arg0);
-                this.surveyId = surveyId != null ? surveyId : -1;
+                Long surveyIdArg = safeParseLong(arg0);
+                surveyId = surveyIdArg != null ? surveyIdArg : -1;
             }
 
             String arg1 = args.length > 1 ? args[1] : null;
             if (!fixDataPointLocation && "FIX".equalsIgnoreCase(arg1)) {
                 fixDataPointLocation = true;
             } else if (surveyId == -1) {
-                Long surveyId = safeParseLong(arg1);
-                this.surveyId = surveyId != null ? surveyId : -1;
+                Long surveyIdArg = safeParseLong(arg1);
+                surveyId = surveyIdArg != null ? surveyIdArg : -1;
             }
         }
         List<Entity> dataPointsToSave;
@@ -82,7 +80,6 @@ public class CheckDataPointLocation implements Process {
         long timeEnd = System.currentTimeMillis();
 
         System.out.println("Getting data to fix took: " + (timeEnd - timeStart) + " ms");
-        System.out.println("SurveyInstances not Found " + counterNotFound);
         System.out.println(dataPointsToSave.size() + " data points need update");
         if (fixDataPointLocation) {
             if (!dataPointsToSave.isEmpty()) {
@@ -218,7 +215,6 @@ public class CheckDataPointLocation implements Process {
         PreparedQuery pq = ds.prepare(q);
         Entity surveyInstance = pq.asSingleEntity();
         if (surveyInstance == null) {
-            counterNotFound++;
             return -1;
         }
         return surveyInstance.getKey().getId();
