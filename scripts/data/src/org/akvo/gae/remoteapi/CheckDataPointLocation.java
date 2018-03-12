@@ -26,6 +26,7 @@ import com.google.appengine.api.datastore.PreparedQuery;
 import com.google.appengine.api.datastore.Query;
 import com.google.appengine.api.datastore.Query.FilterOperator;
 import com.google.appengine.api.datastore.Query.FilterPredicate;
+import com.google.gdata.util.common.base.Pair;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -42,27 +43,12 @@ public class CheckDataPointLocation implements Process {
     public void execute(DatastoreService ds, String[] args) {
         long timeStart = System.currentTimeMillis();
         System.out.println(
-                "#Arguments: survey id to fix one survey, FIX to correct datapoint location");
-        boolean fixDataPointLocation = false;
-        long surveyId = -1;
+                "#Arguments: survey id to fix one survey, FIX to correct data point location");
 
-        if (args != null) {
-            String arg0 = args.length > 0 ? args[0] : null;
-            if ("FIX".equalsIgnoreCase(arg0)) {
-                fixDataPointLocation = true;
-            } else {
-                Long surveyIdArg = safeParseLong(arg0);
-                surveyId = surveyIdArg != null ? surveyIdArg : -1;
-            }
+        Pair<Boolean, Long> params = extractParamsFromArgs(args);
+        boolean fixDataPointLocation = params.first;
+        long surveyId = -params.second;
 
-            String arg1 = args.length > 1 ? args[1] : null;
-            if (!fixDataPointLocation && "FIX".equalsIgnoreCase(arg1)) {
-                fixDataPointLocation = true;
-            } else if (surveyId == -1) {
-                Long surveyIdArg = safeParseLong(arg1);
-                surveyId = surveyIdArg != null ? surveyIdArg : -1;
-            }
-        }
         List<Entity> dataPointsToSave;
         if (surveyId == -1) {
             dataPointsToSave = getDataToFix(ds);
@@ -91,6 +77,30 @@ public class CheckDataPointLocation implements Process {
                 System.out.println("No data to fix...");
             }
         }
+    }
+
+    private Pair<Boolean, Long> extractParamsFromArgs(String[] args) {
+        boolean fixDataPointLocation = false;
+        long surveyId = -1;
+
+        if (args != null) {
+            String arg0 = args.length > 0 ? args[0] : null;
+            if ("FIX".equalsIgnoreCase(arg0)) {
+                fixDataPointLocation = true;
+            } else {
+                Long surveyIdArg = safeParseLong(arg0);
+                surveyId = surveyIdArg != null ? surveyIdArg : -1;
+            }
+
+            String arg1 = args.length > 1 ? args[1] : null;
+            if (!fixDataPointLocation && "FIX".equalsIgnoreCase(arg1)) {
+                fixDataPointLocation = true;
+            } else if (surveyId == -1) {
+                Long surveyIdArg = safeParseLong(arg1);
+                surveyId = surveyIdArg != null ? surveyIdArg : -1;
+            }
+        }
+        return new Pair<>(fixDataPointLocation, surveyId);
     }
 
     private Long safeParseLong(String longAsString) {
