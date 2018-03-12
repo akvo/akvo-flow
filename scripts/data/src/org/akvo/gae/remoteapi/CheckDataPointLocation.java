@@ -204,8 +204,7 @@ public class CheckDataPointLocation implements Process {
             String surveyedLocaleIdentifier, long surveyedLocaleId) {
         Query.Filter f1 = new FilterPredicate("surveyId", FilterOperator.EQUAL, formId);
         Query.Filter f3 = Query.CompositeFilterOperator
-                .or(new FilterPredicate("surveyedLocaleId", FilterOperator.EQUAL,
-                                (int) surveyedLocaleId),
+                .or(new FilterPredicate("surveyedLocaleId", FilterOperator.EQUAL, surveyedLocaleId),
                         new FilterPredicate("surveyedLocaleIdentifier", FilterOperator.EQUAL,
                                 surveyedLocaleIdentifier));
         Query q = new Query("SurveyInstance");
