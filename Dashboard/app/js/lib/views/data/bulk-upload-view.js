@@ -6,6 +6,8 @@ FLOW.uuid = function (file) {
 
 FLOW.uploader = Ember.Object.create({
   showDragAction: false,
+  droppedAction: false,
+  endDragAction: false,
   r: new Resumable({
     target: FLOW.Env.flowServices + '/upload',
     uploadDomain: FLOW.Env.surveyuploadurl.split('/')[2],
@@ -180,16 +182,28 @@ FLOW.BulkUploadAppletView = FLOW.View.extend({
        evt.preventDefault();
        console.log('started dragging')
        FLOW.uploader.set('showDragAction', true)
+       //what about reseting the droppedAction property.
+       FLOW.uploader.set('droppedAction', false)
     })
     
     $('.resumable-drop').on('dragleave', function(evt){
        evt.preventDefault();
-        FLOW.uploader.set('showDragAction', false)
+       console.log('left drag zone')
+        FLOW.uploader.set('endDragAction', true)
+        //check if the user is still hovering the file and not yet dropped it.
+        setTimeout(()=>{
+          //if (FLOW.uploader.endDragAction && !FLOW.uploader.droppedAction) {
+          if(FLOW.uploader.endDragAction == true && FLOW.uploader.droppedAction == false){
+            //console.log('revert back to original color!!!') 
+             FLOW.uploader.set('showDragAction',false) 
+          }  
+        },1000) //1 second.. what about 500ms
     })
     
     $('.resumable-drop').on('drop', function(evt) {
       evt.preventDefault();
-      FLOW.uploader.set('showDragAction', true) 
+      //FLOW.uploader.set('showDragAction', true)
+      FLOW.uploader.set('droppedAction',true) 
     })
     
   },
