@@ -47,20 +47,22 @@ public class CheckDataPointLocation implements Process {
         long timeStart = System.currentTimeMillis();
         System.out.println("#Arguments: survey id to fix one survey, FIX to correct datapoint location");
 
-        String arg0 = args[0];
-        if (arg0.equalsIgnoreCase("FIX")) {
-            fixDataPointLocation = true;
-        } else {
-            Long surveyId = safeParseLong(arg0);
-            this.surveyId = surveyId != null? surveyId: -1;
-        }
+        if (args != null) {
+            String arg0 = args.length > 0? args[0]: null;
+            if ("FIX".equalsIgnoreCase(arg0)) {
+                fixDataPointLocation = true;
+            } else {
+                Long surveyId = safeParseLong(arg0);
+                this.surveyId = surveyId != null? surveyId: -1;
+            }
 
-        String arg1 = args[1];
-        if (!fixDataPointLocation && arg1.equalsIgnoreCase("FIX")) {
-            fixDataPointLocation = true;
-        } else if (surveyId == -1){
-            Long surveyId = safeParseLong(arg1);
-            this.surveyId = surveyId != null? surveyId: -1;
+            String arg1 = args.length > 0? args[1]: null;
+            if (!fixDataPointLocation && "FIX".equalsIgnoreCase(arg1)) {
+                fixDataPointLocation = true;
+            } else if (surveyId == -1){
+                Long surveyId = safeParseLong(arg1);
+                this.surveyId = surveyId != null? surveyId: -1;
+            }
         }
         List<Entity> dataPointsToSave;
         if (surveyId == -1) {
