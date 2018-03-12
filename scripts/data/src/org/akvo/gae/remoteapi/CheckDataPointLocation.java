@@ -191,7 +191,7 @@ public class CheckDataPointLocation implements Process {
 
     private Entity getQuestionAnswer(DatastoreService ds, long surveyInstanceId, long questionId) {
         Query.Filter f1 = new FilterPredicate("surveyInstanceId", FilterOperator.EQUAL,
-                (int) surveyInstanceId);
+                surveyInstanceId);
         Query.Filter f2 = new FilterPredicate("questionID", FilterOperator.EQUAL,
                 questionId + "");
         Query q = new Query("QuestionAnswerStore");
