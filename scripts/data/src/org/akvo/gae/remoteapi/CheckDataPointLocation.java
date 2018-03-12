@@ -194,9 +194,8 @@ public class CheckDataPointLocation implements Process {
                 (int) surveyInstanceId);
         Query.Filter f2 = new FilterPredicate("questionID", FilterOperator.EQUAL,
                 questionId + "");
-        Query.Filter f3 = new FilterPredicate("type", FilterOperator.EQUAL, "GEO");
         Query q = new Query("QuestionAnswerStore");
-        q.setFilter(Query.CompositeFilterOperator.and(f1, f2, f3));
+        q.setFilter(Query.CompositeFilterOperator.and(f1, f2));
         PreparedQuery pq = ds.prepare(q);
         return pq.asSingleEntity();
     }
