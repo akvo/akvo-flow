@@ -84,33 +84,39 @@ public class CheckDataPointLocation implements Process {
         long surveyId = -1;
 
         if (args != null) {
-            String arg0 = args.length > 0 ? args[0] : null;
-            if ("FIX".equalsIgnoreCase(arg0)) {
+            String arg0 = extractArgument(args, 0);
+            if (isFixRequested(arg0)) {
                 fixDataPointLocation = true;
             } else {
-                Long surveyIdArg = safeParseLong(arg0);
-                surveyId = surveyIdArg != null ? surveyIdArg : -1;
+                surveyId = safeParseSurveyId(arg0);
             }
 
-            String arg1 = args.length > 1 ? args[1] : null;
-            if (!fixDataPointLocation && "FIX".equalsIgnoreCase(arg1)) {
+            String arg1 = extractArgument(args, 1);
+            if (!fixDataPointLocation && isFixRequested(arg1)) {
                 fixDataPointLocation = true;
             } else if (surveyId == -1) {
-                Long surveyIdArg = safeParseLong(arg1);
-                surveyId = surveyIdArg != null ? surveyIdArg : -1;
+                surveyId = safeParseSurveyId(arg1);
             }
         }
         return new Pair<>(fixDataPointLocation, surveyId);
     }
 
-    private Long safeParseLong(String longAsString) {
+    private boolean isFixRequested(String arg0) {
+        return "FIX".equalsIgnoreCase(arg0);
+    }
+
+    private String extractArgument(String[] args, int i) {
+        return args.length > i ? args[i] : null;
+    }
+
+    private long safeParseSurveyId(String longAsString) {
         if (longAsString == null || longAsString.isEmpty()) {
-            return null;
+            return -1L;
         }
         try {
             return Long.parseLong(longAsString);
         } catch (NumberFormatException e) {
-            return null;
+            return -1L;
         }
     }
 
