@@ -26,7 +26,6 @@ import com.google.appengine.api.datastore.PreparedQuery;
 import com.google.appengine.api.datastore.Query;
 import com.google.appengine.api.datastore.Query.FilterOperator;
 import com.google.appengine.api.datastore.Query.FilterPredicate;
-import com.google.gdata.util.common.base.Pair;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -39,18 +38,19 @@ import java.util.List;
  */
 public class CheckDataPointLocation implements Process {
 
+    private static final long MISSING_SURVEY_ID = -1;
+
     @Override
     public void execute(DatastoreService ds, String[] args) {
         long timeStart = System.currentTimeMillis();
         System.out.println(
                 "#Arguments: survey id to fix one survey, FIX to correct data point location");
 
-        Pair<Boolean, Long> params = extractParamsFromArgs(args);
-        boolean fixDataPointLocation = params.first;
-        long surveyId = -params.second;
+        boolean fixDataPointLocation = dataPointFixRequested(args);
+        long surveyId = getRequestedSurveyId(args);
 
         List<Entity> dataPointsToSave;
-        if (surveyId == -1) {
+        if (surveyId == MISSING_SURVEY_ID) {
             dataPointsToSave = getDataToFix(ds);
         } else {
             Key key = KeyFactory.createKey("SurveyGroup", surveyId);
@@ -79,44 +79,40 @@ public class CheckDataPointLocation implements Process {
         }
     }
 
-    private Pair<Boolean, Long> extractParamsFromArgs(String[] args) {
-        boolean fixDataPointLocation = false;
-        long surveyId = -1;
-
-        if (args != null) {
-            String arg0 = extractArgument(args, 0);
-            if (isFixRequested(arg0)) {
-                fixDataPointLocation = true;
-            } else {
-                surveyId = safeParseSurveyId(arg0);
-            }
-
-            String arg1 = extractArgument(args, 1);
-            if (!fixDataPointLocation && isFixRequested(arg1)) {
-                fixDataPointLocation = true;
-            } else if (surveyId == -1) {
-                surveyId = safeParseSurveyId(arg1);
+    private long getRequestedSurveyId(String[] args) {
+        long surveyId = MISSING_SURVEY_ID;
+        if (args == null) {
+            return surveyId;
+        }
+        for (String arg : args) {
+            surveyId = safeParseSurveyId(arg);
+            if (surveyId != MISSING_SURVEY_ID) {
+                return surveyId;
             }
         }
-        return new Pair<>(fixDataPointLocation, surveyId);
+        return surveyId;
     }
 
-    private boolean isFixRequested(String arg0) {
-        return "FIX".equalsIgnoreCase(arg0);
-    }
-
-    private String extractArgument(String[] args, int i) {
-        return args.length > i ? args[i] : null;
+    private boolean dataPointFixRequested(String[] args) {
+        if (args == null) {
+            return false;
+        }
+        for (String arg : args) {
+            if ("FIX".equalsIgnoreCase(arg)) {
+                return true;
+            }
+        }
+        return false;
     }
 
     private long safeParseSurveyId(String longAsString) {
         if (longAsString == null || longAsString.isEmpty()) {
-            return -1L;
+            return MISSING_SURVEY_ID;
         }
         try {
             return Long.parseLong(longAsString);
         } catch (NumberFormatException e) {
-            return -1L;
+            return MISSING_SURVEY_ID;
         }
     }
 
