@@ -49,29 +49,22 @@ public class CheckDataPointLocation implements Process {
         boolean fixDataPointLocation = dataPointFixRequested(args);
         long surveyId = getRequestedSurveyId(args);
 
-        List<Entity> dataPointsToSave;
-        if (surveyId == MISSING_SURVEY_ID) {
-            dataPointsToSave = getDataToFix(ds);
-        } else {
-            Key key = KeyFactory.createKey("SurveyGroup", surveyId);
-            try {
-                System.out.println("Checking data for one survey");
-                Entity entity = ds.get(key);
-                dataPointsToSave = getDataPointsToFixForSurvey(ds, entity);
-            } catch (EntityNotFoundException e) {
-                e.printStackTrace();
-                dataPointsToSave = new ArrayList<>();
-            }
-        }
-        long timeEnd = System.currentTimeMillis();
+        List<Entity> dataPointsToFix = getDataToFix(ds, surveyId);
 
+        long timeEnd = System.currentTimeMillis();
         System.out.println("Getting data to fix took: " + (timeEnd - timeStart) + " ms");
-        System.out.println(dataPointsToSave.size() + " data points need update");
+        System.out.println(dataPointsToFix.size() + " data points need update");
+
+        fixDataPoints(ds, timeStart, fixDataPointLocation, dataPointsToFix);
+    }
+
+    private void fixDataPoints(DatastoreService ds, long timeStart, boolean fixDataPointLocation,
+            List<Entity> dataPointsToFix) {
         if (fixDataPointLocation) {
-            if (!dataPointsToSave.isEmpty()) {
+            if (!dataPointsToFix.isEmpty()) {
                 System.out.println("Will fix data...");
-                DataUtils.batchSaveEntities(ds, dataPointsToSave);
-                timeEnd = System.currentTimeMillis();
+                DataUtils.batchSaveEntities(ds, dataPointsToFix);
+                long timeEnd = System.currentTimeMillis();
                 System.out.println("Fixing data took: " + (timeEnd - timeStart) + " ms");
             } else {
                 System.out.println("No data to fix...");
@@ -116,15 +109,26 @@ public class CheckDataPointLocation implements Process {
         }
     }
 
-    private List<Entity> getDataToFix(DatastoreService ds) {
+    private List<Entity> getDataToFix(DatastoreService ds, long surveyId) {
         List<Entity> brokenDataPoints = new ArrayList<>();
-        Iterable<Entity> entities = getSurveys(ds);
-        int surveyCounter = 0;
-        for (Entity survey : entities) {
-            surveyCounter++;
-            brokenDataPoints.addAll(getDataPointsToFixForSurvey(ds, survey));
+        if (surveyId == MISSING_SURVEY_ID) {
+            Iterable<Entity> entities = getSurveys(ds);
+            int surveyCounter = 0;
+            for (Entity survey : entities) {
+                surveyCounter++;
+                brokenDataPoints.addAll(getDataPointsToFixForSurvey(ds, survey));
+            }
+            System.out.println("Found " + surveyCounter + " monitored SurveyGroups to check");
+        } else {
+            Key key = KeyFactory.createKey("SurveyGroup", surveyId);
+            try {
+                System.out.println("Checking data points for one survey: "+surveyId);
+                Entity entity = ds.get(key);
+                brokenDataPoints = getDataPointsToFixForSurvey(ds, entity);
+            } catch (EntityNotFoundException e) {
+                e.printStackTrace();
+            }
         }
-        System.out.println("Found " + surveyCounter + " monitored SurveyGroups");
         return brokenDataPoints;
     }
 
