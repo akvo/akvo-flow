@@ -1,5 +1,5 @@
 /*
- *  Copyright (C) 2012-2016 Stichting Akvo (Akvo Foundation)
+ *  Copyright (C) 2012-2016, 2018 Stichting Akvo (Akvo Foundation)
  *
  *  This file is part of Akvo FLOW.
  *
@@ -113,6 +113,14 @@ public class CurrentUserServlet extends HttpServlet {
         return uDao.findUserByEmail(currentUserEmail);
     }
 
+    public static Long getCurrentUserId() {
+        User u = getCurrentUser();
+        if (u == null || u.getKey() == null) {
+            return null;
+        }
+        return u.getKey().getId();
+    }
+    
     /**
      * Retrieve a javascript map of the paths and corresponding permissions for the current user
      *

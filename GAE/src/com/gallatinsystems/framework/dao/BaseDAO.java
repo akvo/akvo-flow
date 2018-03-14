@@ -1,5 +1,5 @@
 /*
- *  Copyright (C) 2010-2017 Stichting Akvo (Akvo Foundation)
+ *  Copyright (C) 2010-2018 Stichting Akvo (Akvo Foundation)
  *
  *  This file is part of Akvo FLOW.
  *
@@ -28,7 +28,9 @@ import com.gallatinsystems.user.domain.UserAuthorization;
 import com.google.appengine.api.datastore.Cursor;
 import com.google.appengine.api.datastore.Key;
 import com.google.appengine.api.datastore.KeyFactory;
+
 import net.sf.jsr107cache.CacheException;
+
 import org.akvo.flow.domain.SecuredObject;
 import org.datanucleus.store.appengine.query.JDOCursorHelper;
 import org.springframework.security.core.Authentication;
@@ -36,6 +38,7 @@ import org.springframework.security.core.context.SecurityContextHolder;
 
 import javax.jdo.JDOObjectNotFoundException;
 import javax.jdo.PersistenceManager;
+
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
@@ -87,6 +90,7 @@ public class BaseDAO<T extends BaseDomain> {
         this.concreteClass = e;
     }
 
+
     /**
      * saves an object to the data store. This method will set the lastUpdateDateTime on the domain
      * object prior to saving and will set the createdDateTime (if it is null).
@@ -97,9 +101,12 @@ public class BaseDAO<T extends BaseDomain> {
      */
     public <E extends BaseDomain> E save(E obj) {
         PersistenceManager pm = PersistenceFilter.getManager();
+        Long who = org.waterforpeople.mapping.app.web.CurrentUserServlet.getCurrentUserId();
         obj.setLastUpdateDateTime(new Date());
+        obj.setLastUpdateUserId(who);
         if (obj.getCreatedDateTime() == null) {
             obj.setCreatedDateTime(obj.getLastUpdateDateTime());
+            obj.setCreateUserId(who);
         }
         obj = pm.makePersistent(obj);
         return obj;
@@ -115,10 +122,13 @@ public class BaseDAO<T extends BaseDomain> {
      */
     public <E extends BaseDomain> Collection<E> save(Collection<E> objList) {
         if (objList != null) {
+            Long who = org.waterforpeople.mapping.app.web.CurrentUserServlet.getCurrentUserId();
             for (E item : objList) {
                 item.setLastUpdateDateTime(new Date());
+                item.setLastUpdateUserId(who);
                 if (item.getCreatedDateTime() == null) {
                     item.setCreatedDateTime(item.getLastUpdateDateTime());
+                    item.setCreateUserId(who);
                 }
             }
             PersistenceManager pm = PersistenceFilter.getManager();
