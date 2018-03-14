@@ -1,5 +1,5 @@
 /*
- *  Copyright (C) 2010-2015, 2017 Stichting Akvo (Akvo Foundation)
+ *  Copyright (C) 2010-2015, 2017, 2018 Stichting Akvo (Akvo Foundation)
  *
  *  This file is part of Akvo FLOW.
  *
@@ -16,6 +16,7 @@
 
 package org.waterforpeople.mapping.dao;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
@@ -29,6 +30,8 @@ import javax.jdo.PersistenceManager;
 import javax.jdo.Query;
 
 import org.apache.commons.lang.StringUtils;
+import org.codehaus.jackson.map.ObjectMapper;
+import org.codehaus.jackson.type.TypeReference;
 import org.waterforpeople.mapping.analytics.dao.SurveyQuestionSummaryDao;
 import org.waterforpeople.mapping.analytics.domain.SurveyQuestionSummary;
 import org.waterforpeople.mapping.app.web.dto.DataProcessorRequest;
@@ -143,19 +146,34 @@ public class SurveyInstanceDAO extends BaseDAO<SurveyInstance> {
             Device d = deviceDao.getDevice(deviceFile.getAndroidId(),
                     deviceFile.getImei(), deviceFile.getPhoneNumber());
             String deviceId = d == null ? "null" : String.valueOf(d.getKey().getId());
+            ObjectMapper objectMapper = new ObjectMapper();
 
             for (QuestionAnswerStore qas : images) {
-                String filename = qas.getValue().substring(
-                        qas.getValue().lastIndexOf("/") + 1);
-
-                Queue queue = QueueFactory.getQueue("background-processing");
-                TaskOptions to = TaskOptions.Builder
-                        .withUrl("/app_worker/imagecheck")
-                        .param(ImageCheckRequest.FILENAME_PARAM, filename)
-                        .param(ImageCheckRequest.DEVICE_ID_PARAM, deviceId)
-                        .param(ImageCheckRequest.QAS_ID_PARAM, String.valueOf(qas.getKey().getId()))
-                        .param(ImageCheckRequest.ATTEMPT_PARAM, "1");
-                queue.add(to);
+                String value = qas.getValue();
+                String filename = null;            
+                if (value.startsWith("{")) { //JSON
+                    try {
+                        Map<String,String>imgMap = objectMapper.readValue(value,
+                                new TypeReference<Map<String, String>>() {
+                                });
+                        filename = imgMap.get("filename");
+                    } catch (IOException e) {
+                        log.log(Level.INFO,"Unable to parse IMAGE JSON - " + value, e);
+                    }
+                } else { //legacy: naked filename
+                    filename = value;
+                }
+                if (filename != null) {
+                    filename = filename.substring(filename.lastIndexOf("/") + 1); //strip path
+                    Queue queue = QueueFactory.getQueue("background-processing");
+                    TaskOptions to = TaskOptions.Builder
+                            .withUrl("/app_worker/imagecheck")
+                            .param(ImageCheckRequest.FILENAME_PARAM, filename)
+                            .param(ImageCheckRequest.DEVICE_ID_PARAM, deviceId)
+                            .param(ImageCheckRequest.QAS_ID_PARAM, String.valueOf(qas.getKey().getId()))
+                            .param(ImageCheckRequest.ATTEMPT_PARAM, "1");
+                    queue.add(to);
+                }
             }
         }
 
