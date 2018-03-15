@@ -1,52 +1,68 @@
 <section class="fullWidth reportTools" id="reportBlocks">
   {{#view FLOW.BulkUploadAppletView}}
-  <section class="gdprSwitch">
-    <h1>{{t _gdpr_wakthrough_title}}</h1>
-    <ul class="gdprSwitchSteps">
-      <li>
-        <figure>
-          <img src="images/gdprStep01.png">
-          <fication>
-            <h2>{{t _locate_the_data}}</h2>
-            <p>{{t _gdpr_walkthrough_step1}}</p>
-          </fication>
-        </figure>
-      </li>
-      <li>
-        <figure>
-          <img src="images/gdprStep02.png">
-          <fication>                
-            <h2>{{t _copy_the_data}}</h2>
-            <p>{{t _gdpr_walkthrough_step2}}</p>
-          </fication>
-        </figure>
-      </li>
-      <li>
-        <figure>
-          <img src="images/gdprStep03.png">
-          <fication>                
-            <h2>{{t _upload_zip}}</h2>
-            <p>{{t _gdpr_walkthrough_step3}}</p>
-          </fication>
-        </figure>          
-      </li>
-    </ul>
-  </section>
-  <div class="bulkUpload block">
-    {{#if FLOW.uploader.support}}
-      <div class="resumable-drop" ondragenter="jQuery(this).addClass('resumable-dragover');" ondragend="jQuery(this).removeClass('resumable-dragover');" ondrop="jQuery(this).removeClass('resumable-dragover');">
-        {{t _drop_files}} <a class="resumable-browse"><u>{{t _select_files}}</u></a>
-      </div>
-      <div>{{t _do_not_navigate_away}}</div>
-      <div class="resumable-progress">
-      	<div class="progress-container"><div class="progress-bar"></div></div>
-      </div>
-      <ul class="resumable-list"></ul>
-    {{else}}
-      <div class="resumable-error">
-        {{t _bulk_upload_unsupported_browser}}
-      </div>
-    {{/if}}
-  </div>
+    <h1>{{t _gdpr_wakthrough_title}}</h1>  <a onClick="showHideDiv('gdprSwitch');return false;" href="#" id="gdprBtn">close</a>
+    <div   id="gdprSwitch" style="display : block;">
+      <ul class="gdprSwitchSteps">
+        <li>
+          <figure>
+            <img src="images/gdprStep01.png">
+            <fication>
+              <h2>{{t _locate_the_data}}</h2>
+              <p>{{t _gdpr_walkthrough_step1}}</p>
+            </fication>
+          </figure>
+        </li>
+        <li>
+          <figure>
+            <img src="images/gdprStep02.png">
+            <fication>                
+              <h2>{{t _copy_the_data}}</h2>
+              <p>{{t _gdpr_walkthrough_step2}}</p>
+            </fication>
+          </figure>
+        </li>
+        <li>
+          <figure>
+            <img src="images/gdprStep03.png">
+            <fication>                
+              <h2>{{t _upload_zip}}</h2>
+              <p>{{t _gdpr_walkthrough_step3}}</p>
+            </fication>
+          </figure>          
+        </li>
+      </ul>
+      <script type="text/javascript">
+        function showHideDiv(ele) {
+          var srcElement = document.getElementById(ele);
+          if (srcElement != null) {
+            if (srcElement.style.display == "block") {
+              srcElement.style.display = 'none';
+              document.getElementById('gdprBtn').innerHTML = 'open';
+            }
+            else {
+              srcElement.style.display = 'block';
+              document.getElementById('gdprBtn').innerHTML = 'close';
+            }
+            return false;
+          }
+        }
+      </script>
+    </div>  
+    <div class="bulkUpload block">
+      {{#if FLOW.uploader.support}}
+        <div class="resumable-drop" ondragenter="jQuery(this).addClass('resumable-dragover');" ondragend="jQuery(this).removeClass('resumable-dragover');" ondrop="jQuery(this).removeClass('resumable-dragover');">
+          {{t _drop_files}} <a class="resumable-browse"><u>{{t _select_files}}</u></a>
+        </div>
+        <div>{{t _do_not_navigate_away}}</div>
+        <div class="resumable-progress">
+        	<div class="progress-container"><div class="progress-bar"></div></div>
+        </div>
+        <ul class="resumable-list"></ul>
+      {{else}}
+        <div class="resumable-error">
+          {{t _bulk_upload_unsupported_browser}}
+        </div>
+      {{/if}}
+    </div>
 {{/view}}
 </section>
