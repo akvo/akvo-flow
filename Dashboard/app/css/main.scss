@@ -3322,6 +3322,10 @@ table.dataTable.notificationTable thead tr th a:visited {
 
 .reportTools {
     padding-left: 0.5%;
+    position: relative;
+    >div {
+        position: relative;
+    }
 }
 
 div.chooseSurveyData {
@@ -5976,6 +5980,13 @@ svg {
             }
         }
     }
+}
+
+#gdprBtn {
+    position: absolute;
+    right: 15px;
+    top: 10px;
+    margin-bottom: 20px;
 }
 
 .gdprSwitchSteps {
