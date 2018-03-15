@@ -98,6 +98,10 @@ FLOW.MonitoringDataTableView = FLOW.View.extend({
   hasPrevPage: function () {
     return FLOW.router.surveyedLocaleController.get('pageNumber');
   }.property('FLOW.router.surveyedLocaleController.pageNumber'),
+  
+  willDestroyElement: function () {
+    FLOW.router.surveyedLocaleController.set('currentContents', null)
+  }
 });
 
 /**
