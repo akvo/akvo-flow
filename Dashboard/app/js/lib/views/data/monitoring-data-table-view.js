@@ -100,7 +100,9 @@ FLOW.MonitoringDataTableView = FLOW.View.extend({
   }.property('FLOW.router.surveyedLocaleController.pageNumber'),
   
   willDestroyElement: function () {
-    FLOW.router.surveyedLocaleController.set('currentContents', null)
+    FLOW.router.surveyedLocaleController.set('currentContents', null);
+    FLOW.metaControl.set('numSLLoaded',null)
+    FLOW.router.surveyedLocaleController.set('pageNumber',0)
   }
 });
 
