@@ -39,14 +39,19 @@
           <p class="expDescr">{{t _combines_options}}</p>
           <div id="dataCleanExp_options" class="options">
               <div class="dataCollectedDate">
-                <p>{{t _collection_period}}</p>
+                <p><input type="radio" name="date" value="range" checked>{{t _collection_period}}</p>
                 <label class="collectedFrom">
                   {{view FLOW.DateField minDate=false valueBinding="FLOW.dateControl.fromDate" elementId="from_date02" placeholder="" placeholderBinding="Ember.STRINGS._collected_from" size=30}}
                 </label>
                 <label class="collectedTo">
                   {{view FLOW.DateField minDate=false valueBinding="FLOW.dateControl.toDate" elementId="to_date02" placeholder="" placeholderBinding="Ember.STRINGS._to" size=30}}
                 </label>
-            </div>
+              </div>
+              <div>
+                <div class="dataCollectedDate"  style="background-color: transparent;">
+                  <input type="radio" name="date" value="recent"> Only recent submissions
+                </div>
+              </div> 
             <a {{action showDataCleaningReport target="this"}} class="button trigger2">{{t _download}}</a>
           </div>
         </li>
@@ -56,7 +61,7 @@
           <p class="expDescr">{{t _replaces_question}}</p>
             <div id="dataAnalyseExp_options" class="options">
               <div class="dataCollectedDate">
-                <p>{{t _collection_period}}</p>
+                <p><input type="radio" name="date" value="range" checked> {{t _collection_period}}</p>
                 <label class="collectedFrom">
                    {{view FLOW.DateField minDate=false valueBinding="FLOW.dateControl.fromDate" elementId="from_date" placeholder="" placeholderBinding="Ember.STRINGS._collected_from" size=30}}
                 </label>
@@ -64,6 +69,11 @@
                   {{view FLOW.DateField minDate=false valueBinding="FLOW.dateControl.toDate" elementId="to_date" placeholder="" placeholderBinding="Ember.STRINGS._to" size=30}}
                 </label>
               </div>
+              <div>
+                <div class="dataCollectedDate"  style="background-color: transparent;">
+                  <input type="radio" name="date" value="recent"> Only recent submissions
+                </div>
+              </div> 
               <a {{action showDataAnalysisReport target="this"}} class="button trigger2">{{t _download}}</a>
             </div>
           </li>
