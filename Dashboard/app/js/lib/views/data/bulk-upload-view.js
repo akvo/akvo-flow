@@ -58,21 +58,29 @@ FLOW.uploader = Ember.Object.create({
       FLOW.uploader.set('cancelled', false);
 
       // Show progress pabr
-      $('.resumable-progress, .resumable-list').show();
-      // Show pause, hide resume
-      // $('.resumable-progress .progress-resume-link').hide();
-      // $('.resumable-progress .progress-pause-link').show();
+      $('.resumable-list').show();
+
       // Add the file to the list
       li = $('.resumable-file-' + file.uniqueIdentifier);
-      if (li.length === 0) {
-        $('.resumable-list').append('<li class="resumable-file-' + file.uniqueIdentifier + '">Uploading <span class="resumable-file-name"></span> <span class="resumable-file-progress"></span>');
+      if (file.file.type != "application/zip") {
+        $('.resumable-progress').hide();
+        $('.resumable-list').append('<li class="resumable-file-' + file.uniqueIdentifier
+          + '">'+Ember.String.loc('_unsupported_file_type')+'<span class="resumable-file-name">'+file.fileName+'</span>');
+      } else {
+        $('.resumable-progress').show();
+        if (li.length === 0) {
+          $('.resumable-list').append('<li class="resumable-file-' + file.uniqueIdentifier
+            + '">Uploading <span class="resumable-file-name"></span> <span class="resumable-file-progress"></span>');
+        }
+
+        $('.resumable-file-' + file.uniqueIdentifier + ' .resumable-file-name').html(file.fileName);
+
+        $('.progress-bar').css({
+          width: '0%'
+        });
+        // Actually start the upload
+        r.upload();
       }
-      $('.resumable-file-' + file.uniqueIdentifier + ' .resumable-file-name').html(file.fileName);
-      $('.progress-bar').css({
-        width: '0%'
-      });
-      // Actually start the upload
-      r.upload();
     });
 
     r.on('pause', function () {
