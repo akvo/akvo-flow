@@ -43,14 +43,12 @@ import com.google.appengine.api.datastore.Query.FilterPredicate;
  */
 public class CheckTrimDevicesAndDeviceFiles implements Process {
 
-    private int orphanSurveys = 0, allDevicesJobs = 0;
+    private int orphanSurveys = 0, jobs = 0, allDevicesJobs = 0, oldJobs = 0;
     private Map<Long, String> devices = new HashMap<>();
     private Map<Long, String> deviceFiles = new HashMap<>();
-    private Integer ageLimit;
-    private List<Entity>oldDevices = new ArrayList();
+    private List<Key>oldEntities = new ArrayList<>();
 
     private boolean retireOld = false; // Make question survey pointer match the group's
-    private boolean deleteOrphans = false;
     
     Date now = new Date();
     Date then = new Date();
@@ -59,15 +57,14 @@ public class CheckTrimDevicesAndDeviceFiles implements Process {
     @Override
     public void execute(DatastoreService ds, String[] args) throws Exception {
 
-        System.out.printf("#Arguments: [date [CULL]] to show/remove devices older than date.\n");
-        for (int i = 0; i < args.length; i++) {
-            System.out.printf("#Argument %d: %s\n", i, args[i]);
-        }
+        System.out.printf("#Arguments: [date [--retire]] to show/remove deviceFiles older than date.\n");
+//        for (int i = 0; i < args.length; i++) {
+//            System.out.printf("#Argument %d: %s\n", i, args[i]);
+//        }
         if (args.length > 0) {
             then = df.parse(args[0]);
-//            System.out.printf("#Cutoff: %tF\n", then);
         }
-        if (args.length > 1  && args[1].equalsIgnoreCase("CULL")) {
+        if (args.length > 1  && args[1].equalsIgnoreCase("--retire")) {
             retireOld = true;
         }
 
@@ -75,7 +72,12 @@ public class CheckTrimDevicesAndDeviceFiles implements Process {
         processDeviceFiles(ds);
 
         System.out.printf("#Devices:         %5d total, %4d older than %tF\n", devices.size(), orphanSurveys, then);
-        System.out.printf("#DeviceFileJobs:  %5d total, %4d all-device\n", deviceFiles.size(), allDevicesJobs);
+        System.out.printf("#DeviceFileJobs:  %5d total, %4d all-device, %4d old \n", jobs, allDevicesJobs, oldJobs);
+
+        if (retireOld) {
+            System.out.printf("#INF Deleting %d entites\n", oldEntities.size());
+            batchDelete(ds, oldEntities);
+        }
 
     }
 
@@ -104,7 +106,7 @@ public class CheckTrimDevicesAndDeviceFiles implements Process {
                     );
             if (then.after(lastBeacon)) {
                 orphanSurveys++;
-                oldDevices.add(g);
+//                oldEntities.add(g.getKey());
             }
             devices.put(deviceId, name);
         }
@@ -117,19 +119,35 @@ public class CheckTrimDevicesAndDeviceFiles implements Process {
         
         //find jobs for "unknown" device (= for all devices)
         final Filter f = new FilterPredicate("deviceId", FilterOperator.EQUAL, null);
-        final Query group_q = new Query("DeviceFileJobQueue").setFilter(f);
+        final Query group_q = new Query("DeviceFileJobQueue");//.setFilter(f);
         final PreparedQuery pq = ds.prepare(group_q);
 
         for (Entity g : pq.asIterable(FetchOptions.Builder.withChunkSize(500))) {
 
             Long dfjId = g.getKey().getId();
+            Long devId = (Long) g.getProperty("deviceId");
             String name = (String) g.getProperty("fileName");
-            System.out.printf("#INF All-device job %d '%s'\n",
+            Date lastModified = (Date) g.getProperty("lastUpdateDateTime");
+            String state = then.after(lastModified)?"OLD":"NEW";
+            if (devId != null && !devices.containsKey(devId)) {
+                state = "ORPHAN";
+            }
+            /*
+            System.out.printf("#INF %s Device %d file job %d '%s'\n",
+                    state,
+                    devId,
                     dfjId,
                     name
                     );
-            allDevicesJobs++;
-            deviceFiles.put(dfjId, name);
+                    */
+            jobs++;
+            if (devId == null) {
+                allDevicesJobs++;
+            }
+            if (lastModified == null || then.after(lastModified)) {
+                oldJobs++;
+                oldEntities.add(g.getKey());
+            }
         }
     }
 
