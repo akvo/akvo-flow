@@ -1,34 +1,31 @@
 <section class="fullWidth reportTools" id="reportBlocks">
   {{#view FLOW.BulkUploadAppletView}}
-    <h1>{{t _gdpr_wakthrough_title}}</h1>  <a onClick="showHideDiv('gdprSwitch');return false;" href="#" id="gdprBtn">close</a>
-    <div   id="gdprSwitch" style="display : block;">
+    <div id="gdprSwitch" style="display : block;">
+      <h3>{{t _gdpr_wakthrough_title}}</h3>  
+      <a onClick="showHideDiv('gdprSwitch');return false;" href="#" id="gdprBtn" class="hidden">close</a>
       <ul class="gdprSwitchSteps">
-        <li>
-          <figure>
-            <img src="images/gdprStep01.png">
-            <fication>
-              <h2>{{t _locate_the_data}}</h2>
+        <li class="gdprStep">
+            <div class="innerFrame gdpr01">
+              <img src="images/gdpr01.svg">            
+            </div>
+              <h3>{{t _locate_the_data}}</h3>
               <p>{{t _gdpr_walkthrough_step1}}</p>
-            </fication>
-          </figure>
         </li>
-        <li>
-          <figure>
-            <img src="images/gdprStep02.png">
-            <fication>                
-              <h2>{{t _copy_the_data}}</h2>
+        <li class="gdprStep">
+            <div class="innerFrame gdpr02">
+              <img src="images/gdpr02.svg">            
+              </div>
+
+              <h3>{{t _copy_the_data}}</h3>
               <p>{{t _gdpr_walkthrough_step2}}</p>
-            </fication>
-          </figure>
         </li>
-        <li>
-          <figure>
-            <img src="images/gdprStep03.png">
-            <fication>                
-              <h2>{{t _upload_zip}}</h2>
+        <li class="gdprStep">
+            <div class="innerFrame gdpr03">                        
+              <img src="images/gdpr03.svg">            
+              </div>
+
+              <h3>{{t _upload_zip}}</h3>
               <p>{{t _gdpr_walkthrough_step3}}</p>
-            </fication>
-          </figure>          
         </li>
       </ul>
       <script type="text/javascript">
@@ -48,12 +45,13 @@
         }
       </script>
     </div>  
-    <div class="bulkUpload block">
+    <div class="bulkUpload">
       {{#if FLOW.uploader.support}}
         <div class="resumable-drop" ondragenter="jQuery(this).addClass('resumable-dragover');" ondragend="jQuery(this).removeClass('resumable-dragover');" ondrop="jQuery(this).removeClass('resumable-dragover');">
-          {{t _drop_files}} <a class="resumable-browse"><u>{{t _select_files}}</u></a>
+          <p>{{t _drop_files}} <a class="resumable-browse"><u>{{t _select_files}}</u></a><br/>
+          <span class="warningMsg">{{t _do_not_navigate_away}}</span></p>
         </div>
-        <div>{{t _do_not_navigate_away}}</div>
+        <div></div>
         <div class="resumable-progress">
         	<div class="progress-container"><div class="progress-bar"></div></div>
         </div>
