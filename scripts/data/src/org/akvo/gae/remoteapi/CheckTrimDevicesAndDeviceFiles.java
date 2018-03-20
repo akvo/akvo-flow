@@ -19,6 +19,11 @@ package org.akvo.gae.remoteapi;
 import static org.akvo.gae.remoteapi.DataUtils.batchSaveEntities;
 import static org.akvo.gae.remoteapi.DataUtils.batchDelete;
 
+import java.io.IOException;
+import java.net.HttpURLConnection;
+import java.net.MalformedURLException;
+import java.net.SocketTimeoutException;
+import java.net.URL;
 import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -43,7 +48,8 @@ import com.google.appengine.api.datastore.Query.FilterPredicate;
  */
 public class CheckTrimDevicesAndDeviceFiles implements Process {
 
-    private int orphanSurveys = 0, jobs = 0, allDevicesJobs = 0, oldJobs = 0;
+    private int orphanSurveys = 0, jobs = 0, allDevicesJobs = 0, oldJobs = 0, badJobs = 0, orphanJobs = 0;
+    private int s3errors = 0, s3timeouts = 0;
     private Map<Long, String> devices = new HashMap<>();
     private Map<Long, String> deviceFiles = new HashMap<>();
     private List<Key>oldEntities = new ArrayList<>();
@@ -53,26 +59,33 @@ public class CheckTrimDevicesAndDeviceFiles implements Process {
     Date now = new Date();
     Date then = new Date();
     SimpleDateFormat df = new SimpleDateFormat("yyyy-MM-dd");
-
+    String baseUrl;
+    
     @Override
     public void execute(DatastoreService ds, String[] args) throws Exception {
 
-        System.out.printf("#Arguments: [date [--retire]] to show/remove deviceFiles older than date.\n");
+        System.out.printf("#Arguments: [date [baseurl][--retire]] to show/remove deviceFiles older than date.\n");
 //        for (int i = 0; i < args.length; i++) {
 //            System.out.printf("#Argument %d: %s\n", i, args[i]);
 //        }
         if (args.length > 0) {
             then = df.parse(args[0]);
         }
-        if (args.length > 1  && args[1].equalsIgnoreCase("--retire")) {
-            retireOld = true;
+        if (args.length > 1) {
+            baseUrl = args[1];
+        }
+        if (args.length > 1  && args[1].equalsIgnoreCase("--retire")
+                || args.length > 2  && args[2].equalsIgnoreCase("--retire")) {
+            retireOld = true;            
         }
 
         processDevices(ds);
         processDeviceFiles(ds);
 
-        System.out.printf("#Devices:         %5d total, %4d older than %tF\n", devices.size(), orphanSurveys, then);
-        System.out.printf("#DeviceFileJobs:  %5d total, %4d all-device, %4d old \n", jobs, allDevicesJobs, oldJobs);
+        System.out.printf("#Devices:         %5d total, %d older than %tF\n", devices.size(), orphanSurveys, then);
+        System.out.printf("#DeviceFileJobs:  %5d total, %d all-device, %d old, %d bad, %d orphan\n", jobs, allDevicesJobs, oldJobs, badJobs, orphanJobs);
+        System.out.printf("#S3: %d timeouts, %d errors\n", s3timeouts, s3errors);
+        
 
         if (retireOld) {
             System.out.printf("#INF Deleting %d entites\n", oldEntities.size());
@@ -113,7 +126,7 @@ public class CheckTrimDevicesAndDeviceFiles implements Process {
     }
 
     
-    private void processDeviceFiles(DatastoreService ds) {
+    private void processDeviceFiles(DatastoreService ds) throws MalformedURLException {
 
         System.out.println("#Processing DeviceFileJobQueue");
         
@@ -128,27 +141,68 @@ public class CheckTrimDevicesAndDeviceFiles implements Process {
             Long devId = (Long) g.getProperty("deviceId");
             String name = (String) g.getProperty("fileName");
             Date lastModified = (Date) g.getProperty("lastUpdateDateTime");
-            String state = then.after(lastModified)?"OLD":"NEW";
-            if (devId != null && !devices.containsKey(devId)) {
-                state = "ORPHAN";
+            jobs++;
+            if (devId == null) {
+                allDevicesJobs++;
             }
-            /*
-            System.out.printf("#INF %s Device %d file job %d '%s'\n",
+            
+            String state = then.after(lastModified)?"OLD":"NEW";
+            if (baseUrl != null && presentInS3(name)) {
+                state = "BAD";
+                badJobs++;
+                oldEntities.add(g.getKey());
+            } else if (devId != null && !devices.containsKey(devId)) {
+                state = "ORPHAN";
+                orphanJobs++;
+                oldEntities.add(g.getKey());
+            }
+            
+            if (lastModified == null || then.after(lastModified)) {
+                oldJobs++;
+                oldEntities.add(g.getKey());
+            }
+            System.out.printf("#INF %s job (device %d) #%d filename '%s'\n",
                     state,
                     devId,
                     dfjId,
                     name
                     );
-                    */
-            jobs++;
-            if (devId == null) {
-                allDevicesJobs++;
+
+            //progressive delete so an error does not fail to delete anything
+            if (retireOld && oldEntities.size() >= 1000) {
+                System.out.printf("#DEL Deleting %d entites\n", oldEntities.size());
+                batchDelete(ds, oldEntities);
+                oldEntities.clear();
             }
-            if (lastModified == null || then.after(lastModified)) {
-                oldJobs++;
-                oldEntities.add(g.getKey());
-            }
+                    
         }
     }
+    
+    private boolean presentInS3(String fn) throws MalformedURLException {
+        final String imageUrl = baseUrl + "/" + fn;
 
+        // MalformedURLException exception caught by method signature
+        final URL url = new URL(imageUrl);
+
+        try {
+            HttpURLConnection conn = (HttpURLConnection) url.openConnection();
+            conn.setConnectTimeout(60000); //one minute
+            conn.setRequestMethod("HEAD");
+
+            if (conn.getResponseCode() == HttpURLConnection.HTTP_OK) {
+                return true;
+            } else {
+                System.out.printf("Got %d while checking %s\n", conn.getResponseCode(), imageUrl);
+            }
+        } catch (SocketTimeoutException timeout) {
+            // reschedule the task without delay
+            // Possible a hiccup in GAE side
+            s3timeouts++;
+        } catch (IOException e) {
+            // IOException possible a http 403, reschedule the task
+            s3errors++;
+        }
+        return false;
+        
+    }
 }
