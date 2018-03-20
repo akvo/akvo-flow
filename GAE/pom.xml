@@ -459,6 +459,7 @@
               <goal>enforce</goal>
             </goals>
             <configuration>
+              <skip>${skip.appengine.file.check}</skip>
               <rules>
                 <requireFilesExist>
                   <files>
@@ -472,4 +473,13 @@
       </plugin>
     </plugins>
   </build>
+
+    <profiles>
+        <profile>
+            <id>ci</id>
+            <properties>
+                <skip.appengine.file.check>true</skip.appengine.file.check>
+            </properties>
+        </profile>
+    </profiles>
 </project>
