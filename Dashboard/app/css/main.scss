@@ -5770,6 +5770,7 @@ svg {
     width: 49%;
     height: calc(100vh - 355px);
     /* Uploader: Drag & Drop */
+    position: relative;
     .resumable-error {
         font-style: italic;
     }
@@ -5819,8 +5820,8 @@ svg {
     }
     /* Uploader: Progress bar */
     .resumable-progress {
-        margin: 0 0 0.5em 0;
-        width: 100%;
+        margin: -100px auto 0.5em auto;
+        width: 95%;
         display: none;
     }
     .progress-container {
