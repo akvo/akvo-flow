@@ -5751,7 +5751,8 @@ svg {
 
 #gdprSwitch {
     float: left;
-    width: 50%;
+    width: calc(50% - 1px);
+    margin-right: 1px;
     height: calc(100vh - 255px);
     box-sizing: border-box;
     background: rgba(gray, 0.05);
@@ -5778,7 +5779,7 @@ svg {
         color: rgb(32, 32, 36);
         background-color: white;
         background-color: rgba(44, 42, 116, 0);
-        border: 2px dashed rgb(171, 170, 200);
+        border: 1px dashed rgb(171, 170, 200);
         margin: 0em auto 1.5em;
         z-index: 9999;
         height: 100%;
@@ -5985,66 +5986,30 @@ svg {
     * {
         box-sizing: border-box;
     }
-    /*     display: flex;
-        flex-direction: row;
-        flex-wrap: nowrap;
-        justify-content: flex-start;
-        align-items: stretch;
-        align-content: flex-start;
-        margin-bottom: 20px;
-        @media only screen and (max-width: 670px) {
-            flex-direction: column;
-        } */
-    height: calc(100vh - 290px);
+    height: calc(100vh - 320px);
     display: grid;
+    overflow-y: hidden;
     li {
-        /*         
-        cursor: pointer;
-        flex-grow: 1;
-        min-height: 150px;
-        flex-basis: 20%; 
-        */
-        // margin-right: 10px;
         text-align: center;
         position: relative;
         margin-bottom: 20px;
-        // height: calc((100vh - 290px) / 3);
         height: calc((100% -150px) / 3);
         width: 100%;
         .innerFrame {
             display: table;
             height: 100%;
             width: 100%;
-            overflow: auto;
             .wrap {
                 display: table-cell;
                 text-align: center;
                 margin: 0;
                 padding: 0;
                 img {
-                    max-width: 100%;
-                    max-height: 100%;
-                    height: auto;
-                    resize: both;
-                    overflow: auto;
+                    max-width: 80%;
+                    max-height: 80%;
+                    min-height: 80px !important;
                 }
             }
-            // &.gdpr01 {
-            //     background: url(../images/gdrp01.svg) center center contain no-repeat !important;
-            //     background-size: contain;
-            //     background-repeat: no-repeat;
-            // }
-            // &.gdpr02 {
-            //     background: url(../images/gdrp02.svg) center center !important;
-            //     background-size: contain;
-            //     background-repeat: no-repeat;
-            // }
-            // &.gdpr03 {
-            //     background: url(../images/gdrp03.svg) center center !important;
-            //     background-size: contain;
-            //     background-repeat: no-repeat;
-            // }
-
         }
         h3 {
             font-weight: bold;
