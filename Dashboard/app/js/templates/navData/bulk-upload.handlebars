@@ -6,22 +6,27 @@
       <ul class="gdprSwitchSteps">
         <li class="gdprStep">
             <div class="innerFrame gdpr01">
-              <img src="images/gdpr01.svg">
+              <div class="wrap">
+                <img src="images/gdpr01.svg">
+              </div>
             </div>
               <h3>{{t _locate_the_data}}</h3>
               <p>{{t _gdpr_walkthrough_step1}}</p>
         </li>
         <li class="gdprStep">
             <div class="innerFrame gdpr02">
-              <img src="images/gdpr02.svg">
+              <div class="wrap">
+                <img src="images/gdpr02.svg">
               </div>
-
+            </div>
               <h3>{{t _copy_the_data}}</h3>
               <p>{{t _gdpr_walkthrough_step2}}</p>
         </li>
         <li class="gdprStep">
             <div class="innerFrame gdpr03">
-              <img src="images/gdpr03.svg">
+                <div class="wrap">
+                  <img src="images/gdpr03.svg">
+                </div>
               </div>
 
               <h3>{{t _upload_zip}}</h3>
@@ -29,6 +34,12 @@
         </li>
       </ul>
       <script type="text/javascript">
+        window.onresize = function(){
+          $('.innerFrame img').css({
+            maxWidth: $('.innerFrame').width() * 0.8,
+            maxHeight: $('.innerFrame').height() * 0.8,
+          });
+        };
         function showHideDiv(ele) {
           var srcElement = document.getElementById(ele);
           if (srcElement != null) {
