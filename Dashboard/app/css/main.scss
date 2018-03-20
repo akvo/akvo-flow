@@ -5783,16 +5783,23 @@ svg {
         margin: 0em auto 1.5em;
         z-index: 9999;
         height: 100%;
-        p {
+        .dragTxt {
             width: 100%;
             max-width: 450px;
             position: absolute;
             top: 50%;
             left: 50%;
             transform: translate(-50%, -50%);
-            .warningMsg {
-                font-size: 0.8em;
-                margin-top: 10px;
+            .zipIcn {
+                height: 80px;
+                background: url(../images/zipIcn.svg) center top no-repeat;
+                background-size: 60px;
+            }
+            p {
+                .warningMsg {
+                    font-size: 0.8em;
+                    margin-top: 10px;
+                }
             }
         }
     }
