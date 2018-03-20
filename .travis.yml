@@ -11,7 +11,7 @@ cache:
     - $HOME/.cache
 
 before_install:
-  - docker pull akvo/flow-build
+  - docker pull akvo/flow-maven-build
 
 script:
   - ./docker/bootstrap-build.sh

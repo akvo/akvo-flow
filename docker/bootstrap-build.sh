@@ -46,4 +46,4 @@ docker run \
        --volume "$MAVEN_REPO":"/home/$USER/.m2" \
        --volume "$LOCAL_CACHE":"/home/$USER/.cache" \
        --volume `pwd`:/app/src \
-       akvo/flow-build "$@"
+       akvo/flow-maven-build "$@"
