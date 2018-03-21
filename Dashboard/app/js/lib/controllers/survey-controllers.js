@@ -850,6 +850,7 @@ FLOW.questionControl = Ember.ArrayController.create({
   sortProperties: ['order'],
   sortAscending: true,
   preflightQId: null,
+  bulkCommit: false,
 
   populateAllQuestions: function () {
     var sId;
