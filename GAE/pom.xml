@@ -281,45 +281,6 @@
           </dependencies>
       </plugin>
 
-      <!-- FLOW UI building plugins -->
-      <plugin>
-        <artifactId>exec-maven-plugin</artifactId>
-        <groupId>org.codehaus.mojo</groupId>
-        <version>1.6.0</version>
-        <executions>
-          <execution>
-            <id>FLOW UI Ember Compile</id>
-            <phase>compile</phase>
-            <goals>
-              <goal>exec</goal>
-            </goals>
-            <configuration>
-              <workingDirectory>${project.basedir}/../Dashboard</workingDirectory>
-              <executable>bundle</executable>
-              <commandlineArgs>exec rake build --trace</commandlineArgs>
-              <environmentVariables>
-                <RAKEP_MODE>production</RAKEP_MODE>
-              </environmentVariables>
-            </configuration>
-          </execution>
-          <execution>
-            <id>FLOW UI CLJS Compile</id>
-            <phase>compile</phase>
-            <goals>
-              <goal>exec</goal>
-            </goals>
-            <configuration>
-              <workingDirectory>${project.basedir}/../Dashboard/app/cljs</workingDirectory>
-              <executable>lein</executable>
-              <commandlineArgs>build</commandlineArgs>
-              <environmentVariables>
-                <RAKEP_MODE>production</RAKEP_MODE>
-              </environmentVariables>
-            </configuration>
-          </execution>
-        </executions>
-      </plugin>
-
       <plugin>
         <groupId>org.codehaus.mojo</groupId>
         <artifactId>versions-maven-plugin</artifactId>
