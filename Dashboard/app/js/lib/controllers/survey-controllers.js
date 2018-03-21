@@ -1020,8 +1020,6 @@ FLOW.questionControl = Ember.ArrayController.create({
         }
       }
     });
-
-    this.submitBulkQuestionGroupsReorder(surveyId);
   },
 
   submitBulkQuestionGroupsReorder: function (surveyId) {

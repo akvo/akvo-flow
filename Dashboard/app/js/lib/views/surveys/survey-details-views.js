@@ -384,6 +384,9 @@ FLOW.QuestionGroupItemView = FLOW.View.extend({
       // restore order
       sId = FLOW.selectedControl.selectedSurvey.get('keyId');
 
+      // reorder the rest of the question groups
+      FLOW.questionControl.reorderQuestionGroups(sId, insertAfterOrder, "down");
+
       // create new QuestionGroup item in the store
       FLOW.store.createRecord(FLOW.QuestionGroup, {
         "code": Ember.String.loc('_new_group_please_change_name'),
@@ -394,8 +397,7 @@ FLOW.QuestionGroupItemView = FLOW.View.extend({
         "surveyId": FLOW.selectedControl.selectedSurvey.get('keyId')
       });
 
-      // reorder the rest of the question groups
-      FLOW.questionControl.reorderQuestionGroups(sId, insertAfterOrder, "down");
+      FLOW.questionControl.submitBulkQuestionGroupsReorder(sId);
 
       FLOW.selectedControl.selectedSurvey.set('status', 'NOT_PUBLISHED');
       FLOW.store.commit();
@@ -543,6 +545,9 @@ FLOW.QuestionGroupItemView = FLOW.View.extend({
 
     sId = FLOW.selectedControl.selectedSurvey.get('keyId');
 
+    // restore order
+    FLOW.questionControl.reorderQuestionGroups(sId, insertAfterOrder, "down");
+
     FLOW.store.createRecord(FLOW.QuestionGroup, {
       "order": insertAfterOrder + 1,
       "code": FLOW.selectedControl.selectedForCopyQuestionGroup.get('code'),
@@ -554,8 +559,7 @@ FLOW.QuestionGroupItemView = FLOW.View.extend({
       "repeatable":FLOW.selectedControl.selectedForCopyQuestionGroup.get('repeatable')
     });
 
-    // restore order
-    FLOW.questionControl.reorderQuestionGroups(sId, insertAfterOrder, "down");
+    FLOW.questionControl.submitBulkQuestionGroupsReorder(sId);
 
     FLOW.selectedControl.selectedSurvey.set('status', 'NOT_PUBLISHED');
     FLOW.store.commit();
