@@ -64,7 +64,6 @@ FLOW.uploader = Ember.Object.create({
       li = $('.resumable-file-' + file.uniqueIdentifier);
       if (file.file.type != "application/zip" && file.file.type !="application/x-zip-compressed") {
         $('.resumable-progress').hide();
-
         $('.resumable-list').append('<hr><div><li class="resumable-file-' + file.uniqueIdentifier
           + '">'+'<h4><span class="resumable-file-name">'+file.fileName+'</span></h4>' 
           + Ember.String.loc('_unsupported_file_type')) + '<img src="images/infolnc.png" class="unsupportedFile"/>'+ '</div></hr>';
