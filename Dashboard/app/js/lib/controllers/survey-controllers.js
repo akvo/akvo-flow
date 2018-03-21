@@ -896,18 +896,10 @@ FLOW.questionControl = Ember.ArrayController.create({
     qOrder = question.get('order');
     question.deleteRecord();
 
-    // restore order
-    questionsInGroup = FLOW.store.filter(FLOW.Question, function (item) {
-      return item.get('questionGroupId') == qgId;
-    });
+    //reorder the rest of the questions
+    FLOW.questionControl.reorderQuestions(qgId, qOrder, "up");
+    FLOW.questionControl.submitBulkQuestionsReorder([qgId]);
 
-    questionsInGroup.forEach(function (item) {
-      if (item.get('order') > qOrder) {
-        item.set('order', item.get('order') - 1);
-      }
-    });
-    // restore order in case the order has gone haywire
-    this.restoreOrder(questionsInGroup);
     FLOW.selectedControl.selectedSurvey.set('status', 'NOT_PUBLISHED');
     FLOW.store.commit();
   },
