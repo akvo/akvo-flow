@@ -481,8 +481,7 @@ FLOW.QuestionGroupItemView = FLOW.View.extend({
           }
         });
 
-        // restore order in case the order has gone haywire
-        FLOW.questionControl.restoreOrder(questionGroupsInSurvey);
+        FLOW.questionControl.submitBulkQuestionGroupsReorder(sId);
 
         FLOW.selectedControl.selectedSurvey.set('status', 'NOT_PUBLISHED');
         FLOW.store.commit();
