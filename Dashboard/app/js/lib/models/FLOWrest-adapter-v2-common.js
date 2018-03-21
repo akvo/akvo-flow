@@ -185,6 +185,11 @@ DS.FLOWRESTAdapter = DS.RESTAdapter.extend({
   // includes 'bulk' in the POST call, to allign
   // with updateRecords and deleteRecords behaviour.
   createRecords: function (store, type, records) {
+    //do not bulk commit when creating questions and question groups
+    if (FLOW.questionControl.get('bulkCommit')) {
+      this.set('bulkCommit', false);
+    }
+
     if (get(this, 'bulkCommit') === false) {
       return this._super(store, type, records);
     }
@@ -193,26 +198,47 @@ DS.FLOWRESTAdapter = DS.RESTAdapter.extend({
       plural = this.pluralize(root);
 
     var data = {};
-    if (root === "question") {
-      data[root] = {};
-      records.forEach(function (record) {
-        data[root] = this.serialize(record, {
-          includeId: true
-        });
-      }, this);
-    } else {
-      data[plural] = [];
-      records.forEach(function (record) {
-        data[plural].push(this.serialize(record, {
-          includeId: true
-        }));
-      }, this);
-    }
-    this.ajax(this.buildURL(root, (root === "question") ? '' : 'bulk'), "POST", {
+    data[plural] = [];
+    records.forEach(function (record) {
+      data[plural].push(this.serialize(record, {
+        includeId: true
+      }));
+    }, this);
+
+    this.ajax(this.buildURL(root, 'bulk'), "POST", {
       data: data,
       context: this,
       success: function (json) {
         this.didCreateRecords(store, type, records, json);
+      }
+    });
+  },
+
+
+  updateRecords: function(store, type, records) {
+    //if updating questions and question groups ordering, enable bulkCommit
+    if (FLOW.questionControl.get('bulkCommit')) {
+      this.set('bulkCommit', true);
+    }
+
+    if (get(this, 'bulkCommit') === false) {
+      return this._super(store, type, records);
+    }
+
+    var root = this.rootForType(type),
+        plural = this.pluralize(root);
+
+    var data = {};
+    data[plural] = [];
+    records.forEach(function(record) {
+      data[plural].push(this.serialize(record, { includeId: true }));
+    }, this);
+
+    this.ajax(this.buildURL(root, "bulk"), "PUT", {
+      data: data,
+      context: this,
+      success: function(json) {
+        this.didUpdateRecords(store, type, records, json);
       }
     });
   }
