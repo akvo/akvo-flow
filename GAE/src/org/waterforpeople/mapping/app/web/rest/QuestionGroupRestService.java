@@ -31,13 +31,11 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
-import org.waterforpeople.mapping.app.gwt.client.survey.QuestionDto;
 import org.waterforpeople.mapping.app.gwt.client.survey.QuestionGroupDto;
 import org.waterforpeople.mapping.app.web.dto.DataProcessorRequest;
 import org.waterforpeople.mapping.app.web.dto.SurveyTaskRequest;
 import org.waterforpeople.mapping.app.web.rest.dto.QuestionGroupListPayload;
 import org.waterforpeople.mapping.app.web.rest.dto.QuestionGroupPayload;
-import org.waterforpeople.mapping.app.web.rest.dto.QuestionListPayload;
 import org.waterforpeople.mapping.app.web.rest.dto.RestStatusDto;
 import org.waterforpeople.mapping.dao.QuestionAnswerStoreDao;
 
@@ -55,7 +53,6 @@ import com.google.appengine.api.taskqueue.TaskOptions;
 @Controller
 @RequestMapping("/question_groups")
 public class QuestionGroupRestService {
-
     private QuestionGroupDao questionGroupDao = new QuestionGroupDao();
 
     private QuestionDao questionDao = new QuestionDao();
