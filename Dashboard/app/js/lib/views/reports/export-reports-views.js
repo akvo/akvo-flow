@@ -19,6 +19,7 @@ FLOW.ReportLoader = Ember.Object.create({
 	  exportType: 'DATA_ANALYSIS',
 	  opts: {
 		exportMode: 'DATA_ANALYSIS',
+		lastCollection: 'false',
 	  }
 	},
     COMPREHENSIVE: {
