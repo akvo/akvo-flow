@@ -3392,7 +3392,7 @@ label.collectedTo {
 #monitoringData div.noResults {
     color: red;
     text-align: center;
-  }
+}
 
 div.chooseLocationData {
     position: relative;
@@ -4524,7 +4524,7 @@ table.surveyDetails {
 
 .resumable-list li {
     margin: 0 0 1px 0;
-    padding: 0.25em;
+    padding: 10px 0.25em;
     background: rgb(245, 245, 245);
 }
 
@@ -4532,6 +4532,12 @@ table.surveyDetails {
     color: rgb(44, 42, 116);
     margin-left: 5px;
     margin-right: 15px;
+}
+
+.unsupportedFile {
+    display: inline;
+    width: 15px;
+    height: 15px;
 }
 
 .resumable-file-progress {
