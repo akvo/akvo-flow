@@ -241,5 +241,34 @@ DS.FLOWRESTAdapter = DS.RESTAdapter.extend({
         this.didUpdateRecords(store, type, records, json);
       }
     });
+  },
+
+  deleteRecords: function(store, type, records) {
+    //do not bulk commit when deleting questions and question groups
+    if (FLOW.questionControl.get('bulkCommit')) {
+      this.set('bulkCommit', false);
+    }
+
+    if (get(this, 'bulkCommit') === false) {
+      return this._super(store, type, records);
+    }
+
+    var root = this.rootForType(type),
+        plural = this.pluralize(root),
+        serializer = get(this, 'serializer');
+
+    var data = {};
+    data[plural] = [];
+    records.forEach(function(record) {
+      data[plural].push(serializer.serializeId( get(record, 'id') ));
+    });
+
+    this.ajax(this.buildURL(root, 'bulk'), "DELETE", {
+      data: data,
+      context: this,
+      success: function(json) {
+        this.didDeleteRecords(store, type, records, json);
+      }
+    });
   }
 });
