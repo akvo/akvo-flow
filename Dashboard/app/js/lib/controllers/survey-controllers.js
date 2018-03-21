@@ -1014,7 +1014,7 @@ FLOW.questionControl = Ember.ArrayController.create({
 
   submitBulkQuestionGroupsReorder: function (surveyId) {
     this.set('bulkCommit', true);
-    var questionGroupsInSurvey = FLOW.store.filter(FLOW.Question, function (item) {
+    var questionGroupsInSurvey = FLOW.store.filter(FLOW.QuestionGroup, function (item) {
       return item.get('surveyId') == surveyId;
     });
     // restore order in case the order has gone haywire
