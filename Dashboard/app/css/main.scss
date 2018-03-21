@@ -4524,8 +4524,9 @@ table.surveyDetails {
 
 .resumable-list li {
     margin: 0 0 1px 0;
-    padding: 10px 0.25em;
+    padding: 15px 0.25em;
     background: rgb(245, 245, 245);
+    border-bottom: 1px solid rgba($akvoBlack, 0.1);
 }
 
 .resumable-file-name {
