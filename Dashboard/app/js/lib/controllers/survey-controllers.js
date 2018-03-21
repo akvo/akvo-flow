@@ -979,7 +979,6 @@ FLOW.questionControl = Ember.ArrayController.create({
   }.observes('FLOW.selectedControl.selectedQuestion'),
 
   reorderQuestions: function (qgId, reorderPoint, reorderDirection) {
-    FLOW.store.adapter.set('bulkCommit', true);
     var questionsInGroup = FLOW.store.filter(FLOW.Question, function (item) {
       return item.get('questionGroupId') == qgId;
     });
@@ -996,14 +995,20 @@ FLOW.questionControl = Ember.ArrayController.create({
         }
       }
     });
+  },
 
-    questionsInGroup = FLOW.store.filter(FLOW.Question, function (item) {
-      return item.get('questionGroupId') == qgId;
-    });
-    // restore order in case the order has gone haywire
-    FLOW.questionControl.restoreOrder(questionsInGroup);
+  submitBulkQuestionsReorder: function (qgIds) {
+    this.set('bulkCommit', true);
+    for (var i=0; i>qgIds.length; i++) {
+      var questionsInGroup = FLOW.store.filter(FLOW.Question, function (item) {
+        return item.get('questionGroupId') == qgIds[i];
+      });
+      // restore order in case the order has gone haywire
+      FLOW.questionControl.restoreOrder(questionsInGroup);
+    }
     FLOW.store.commit();
     FLOW.store.adapter.set('bulkCommit', false);
+    this.set('bulkCommit', false);
   },
 
   reorderQuestionGroups: function (surveyId, reorderPoint, reorderDirection) {

@@ -584,18 +584,19 @@ FLOW.QuestionView = FLOW.View.extend({
         qgIdSource = FLOW.selectedControl.selectedForMoveQuestion.get('questionGroupId');
         qgIdDest = FLOW.selectedControl.selectedQuestionGroup.get('keyId');
 
+        // restore order
+        FLOW.questionControl.reorderQuestions(qgIdSource, selectedOrder, "up");
+        FLOW.questionControl.reorderQuestions(qgIdDest, insertAfterOrder, "down");
+
         // move question
         selectedQ.set('order', insertAfterOrder + 1);
         selectedQ.set('questionGroupId', qgIdDest);
 
-        // restore order
-        FLOW.questionControl.reorderQuestions(qgIdSource, selectedOrder, "up");
-        FLOW.questionControl.reorderQuestions(qgIdDest, insertAfterOrder, "down");
+        FLOW.questionControl.submitBulkQuestionsReorder([qgIdSource, qgIdDest]);
       }
     // if we are not moving to another group, we must be moving inside a group
     // only do something if we are not moving to the same place
     } else if (!((selectedOrder == insertAfterOrder) || (selectedOrder == (insertAfterOrder + 1)))) {
-      FLOW.store.adapter.set('bulkCommit', true);
       selectedQ = FLOW.store.find(FLOW.Question, FLOW.selectedControl.selectedForMoveQuestion.get('keyId'));
       if (selectedQ !== null) {
         // restore order
@@ -629,17 +630,11 @@ FLOW.QuestionView = FLOW.View.extend({
           }
         });
 
-        questionsInGroup = FLOW.store.filter(FLOW.Question, function (item) {
-        	return item.get('questionGroupId') == qgId;
-       	});
-
-        // restore order in case the order has gone haywire
-        FLOW.questionControl.restoreOrder(questionsInGroup);
+        FLOW.questionControl.submitBulkQuestionsReorder([qgId]);
       }
     }
     FLOW.selectedControl.selectedSurvey.set('status', 'NOT_PUBLISHED');
     FLOW.store.commit();
-    FLOW.store.adapter.set('bulkCommit', false);
     FLOW.selectedControl.set('selectedForMoveQuestion', null);
   },
 
@@ -664,6 +659,9 @@ FLOW.QuestionView = FLOW.View.extend({
     // restore order
     qgId = FLOW.selectedControl.selectedQuestionGroup.get('keyId');
 
+    // restore order
+    FLOW.questionControl.reorderQuestions(qgId, insertAfterOrder, "down");
+
     question = FLOW.selectedControl.get('selectedForCopyQuestion');
     // create copy of Question item in the store
     FLOW.store.createRecord(FLOW.Question, {
@@ -673,12 +671,10 @@ FLOW.QuestionView = FLOW.View.extend({
       "sourceId":question.get('keyId')
     });
 
-    // restore order
-    FLOW.questionControl.reorderQuestions(qgId, insertAfterOrder, "down");
+    FLOW.questionControl.submitBulkQuestionsReorder([qgId]);
 
     FLOW.selectedControl.selectedSurvey.set('status', 'NOT_PUBLISHED');
     FLOW.store.commit();
-
     FLOW.selectedControl.set('selectedForCopyQuestion', null);
   },
 
@@ -703,6 +699,9 @@ FLOW.QuestionView = FLOW.View.extend({
 
     qgId = FLOW.selectedControl.selectedQuestionGroup.get('keyId');
 
+    // reorder the rest of the questions
+    FLOW.questionControl.reorderQuestions(qgId, insertAfterOrder, "down");
+
     // create new Question item in the store
     FLOW.store.createRecord(FLOW.Question, {
       "order": insertAfterOrder + 1,
@@ -713,8 +712,7 @@ FLOW.QuestionView = FLOW.View.extend({
       "questionGroupId": qgId
     });
 
-    // reorder the rest of the questions
-    FLOW.questionControl.reorderQuestions(qgId, insertAfterOrder, "down");
+    FLOW.questionControl.submitBulkQuestionsReorder([qgId]);
 
     FLOW.selectedControl.selectedSurvey.set('status', 'NOT_PUBLISHED');
     FLOW.store.commit();
