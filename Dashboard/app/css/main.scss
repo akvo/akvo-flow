@@ -5751,12 +5751,12 @@ svg {
 
 #gdprSwitch {
     float: left;
-    width: calc(50% - 1px);
+    width: calc(35% - 1px);
     margin-right: 1px;
     height: calc(100vh - 255px);
     box-sizing: border-box;
-    background: rgba(gray, 0.05);
-    border: 1px solid rgba($akvoBlack, 0.05);
+    // background: rgba(gray, 0.05);
+    // border: 1px solid rgba($akvoBlack, 0.05);
     text-align: center;
     h3 {
         margin: 1em auto;
@@ -5766,7 +5766,7 @@ svg {
 .bulkUpload {
     float: right;
     margin-right: 1%;
-    width: 49%;
+    width: 64%;
     height: calc(100vh - 355px);
     /* Uploader: Drag & Drop */
     position: relative;
@@ -5989,7 +5989,7 @@ svg {
     }
     height: calc(100vh - 320px);
     display: grid;
-    overflow-y: hidden;
+    overflow-y: scroll;
     li {
         text-align: center;
         position: relative;
@@ -6008,7 +6008,7 @@ svg {
                 img {
                     max-width: 80%;
                     max-height: 80%;
-                    min-height: 80px !important;
+                    min-height: 95px !important;
                 }
             }
         }
