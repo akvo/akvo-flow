@@ -74,7 +74,7 @@ FLOW.uploader = Ember.Object.create({
         $('.resumable-progress').show();
         if (li.length === 0) {
           $('.resumable-list').append('<li class="resumable-file-' + file.uniqueIdentifier
-            + '">Uploading... <span class="resumable-file-name"></span> <span class="resumable-file-progress"></span>');
+            + '"><span class="resumable-file-name"></span>Uploading...  <span class="resumable-file-progress"></span>');
         }
 
         $('.resumable-file-' + file.uniqueIdentifier + ' .resumable-file-name').html(file.fileName);
@@ -96,9 +96,6 @@ FLOW.uploader = Ember.Object.create({
     r.on('complete', function () {
       // Hide pause/resume when the upload has completed
       $('.resumable-progress .progress-resume-link, .resumable-progress .progress-pause-link').hide();
-      /*if (!FLOW.uploader.get('cancelled')) {
-        FLOW.uploader.showCompleteMessage();
-      }*/
     });
 
     r.on('fileSuccess', function (file, message) {
@@ -131,7 +128,7 @@ FLOW.uploader = Ember.Object.create({
       //$('.resumable-file-' + file.uniqueIdentifier + ' .resumable-file-progress').html( Ember.String.loc('_upload_complete') );
       $('.resumable-list').append('<li class="resumable-file-' + file.uniqueIdentifier
                        + '">' +'<span class="resumable-file-name">'+file.fileName+'</span>' 
-                       + '<img src = "images/tickBox.svg" class = "uploadComplete">' + '<span></span>' 
+                       + '<img src = "images/tickBox.svg" class = "uploadComplete">' + ' ' 
                        + Ember.String.loc('_upload_complete')
                        + '</li>'
                      );
