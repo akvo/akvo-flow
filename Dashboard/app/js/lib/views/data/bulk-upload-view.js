@@ -96,9 +96,9 @@ FLOW.uploader = Ember.Object.create({
     r.on('complete', function () {
       // Hide pause/resume when the upload has completed
       $('.resumable-progress .progress-resume-link, .resumable-progress .progress-pause-link').hide();
-      if (!FLOW.uploader.get('cancelled')) {
+      /*if (!FLOW.uploader.get('cancelled')) {
         FLOW.uploader.showCompleteMessage();
-      }
+      }*/
     });
 
     r.on('fileSuccess', function (file, message) {
@@ -128,7 +128,13 @@ FLOW.uploader = Ember.Object.create({
       }
 
       // Reflect that the file upload has completed
-      $('.resumable-file-' + file.uniqueIdentifier + ' .resumable-file-progress').html('(' + Ember.String.loc('_upload_complete') + ')');
+      //$('.resumable-file-' + file.uniqueIdentifier + ' .resumable-file-progress').html( Ember.String.loc('_upload_complete') );
+      $('.resumable-list').append('<li class="resumable-file-' + file.uniqueIdentifier
+                       + '">' +'<span class="resumable-file-name">'+file.fileName+'</span>' 
+                       + '<img src = "images/tickBox.svg" class = "uploadComplete">' + '<span></span>' 
+                       + Ember.String.loc('_upload_complete')
+                       + '</li>'
+                     );
 
       setTimeout(function() {
         $.ajax({
