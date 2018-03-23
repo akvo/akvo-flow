@@ -126,7 +126,7 @@ input 'app' do
 
 end
 
-output '../GAE/war/vendorjs'
+output '../GAE/target/akvo-flow/vendorjs'
 input 'app' do
   match "js/vendor/**/*.js" do
     concat do |input|
