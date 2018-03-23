@@ -125,7 +125,6 @@ FLOW.uploader = Ember.Object.create({
       }
 
       // Reflect that the file upload has completed
-      //$('.resumable-file-' + file.uniqueIdentifier + ' .resumable-file-progress').html( Ember.String.loc('_upload_complete') );
       $('.resumable-list').append('<li class="resumable-file-' + file.uniqueIdentifier
                        + '">' +'<span class="resumable-file-name">'+file.fileName+'</span>' 
                        + '<img src = "images/tickBox.svg" class = "uploadComplete">' + ' ' 
@@ -162,13 +161,6 @@ FLOW.uploader = Ember.Object.create({
     FLOW.dialogControl.set('activeAction', 'ignore');
     FLOW.dialogControl.set('header', Ember.String.loc('_upload_cancelled'));
     FLOW.dialogControl.set('message', Ember.String.loc('_upload_cancelled_due_to_navigation'));
-    FLOW.dialogControl.set('showCANCEL', false);
-    FLOW.dialogControl.set('showDialog', true);
-  },
-  showCompleteMessage: function () {
-    FLOW.dialogControl.set('activeAction', 'ignore');
-    FLOW.dialogControl.set('header', Ember.String.loc('_upload_complete'));
-    FLOW.dialogControl.set('message', Ember.String.loc('_upload_complete_message'));
     FLOW.dialogControl.set('showCANCEL', false);
     FLOW.dialogControl.set('showDialog', true);
   }
