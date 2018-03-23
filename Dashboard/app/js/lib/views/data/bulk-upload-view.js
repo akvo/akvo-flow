@@ -62,7 +62,7 @@ FLOW.uploader = Ember.Object.create({
 
       // Add the file to the list
       li = $('.resumable-file-' + file.uniqueIdentifier);
-      if (file.file.type != "application/zip" && file.file.type !="application/x-zip-compressed") {
+      if (file.file.type !== "application/zip" && file.file.type !== "application/x-zip-compressed") {
         $('.resumable-progress').hide();
         $('.resumable-list').append('<li class="resumable-file-' + file.uniqueIdentifier
           + '">'+'<span class="resumable-file-name">'+file.fileName+'</span>' + '<img src="images/infolnc.png" class="unsupportedFile">' 
@@ -76,7 +76,7 @@ FLOW.uploader = Ember.Object.create({
           $('.resumable-list').append('<li class="resumable-file-' + file.uniqueIdentifier
             + '"><span class="resumable-file-name"></span>Uploading...  <span class="resumable-file-progress"></span>');
         }
-
+        
         $('.resumable-file-' + file.uniqueIdentifier + ' .resumable-file-name').html(file.fileName);
 
         $('.progress-bar').css({
@@ -126,12 +126,11 @@ FLOW.uploader = Ember.Object.create({
 
       // Reflect that the file upload has completed
       $('.resumable-list').append('<li class="resumable-file-' + file.uniqueIdentifier
-                       + '">' +'<span class="resumable-file-name">'+file.fileName+'</span>' 
+                       + '">' + '<span class="resumable-file-name">'+file.fileName+'</span>' 
                        + '<img src = "images/tickBox.svg" class = "uploadComplete">' + ' ' 
                        + Ember.String.loc('_upload_complete')
                        + '</li>'
                      );
-
       setTimeout(function() {
         $.ajax({
           url : target,
