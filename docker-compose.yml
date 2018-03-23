@@ -1,0 +1,19 @@
+version: "3"
+services:
+  fake-flow-services:
+    image: solsson/http-echo
+  s3:
+    image:  technekes/fake-s3-ssl:latest
+  akvo-flow:
+    build: .
+    entrypoint: /app/src/docker/devserver.sh
+    links:
+     - s3:akvoflowsandbox.s3.amazonaws.com
+    ports:
+     - 8888:8888
+     - 5005:5005
+    volumes:
+     - .:/app/src/:delegated
+     - ~/.m2:/root/.m2:delegated
+     - ~/.cache:/root/.cache:delegated
+
