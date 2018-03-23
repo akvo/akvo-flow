@@ -48,7 +48,7 @@ class CSSMinFilter < Filter
   end
 end
 
-output '../GAE/war/admin'
+output '../GAE/target/akvo-flow/admin'
 input 'app' do
 
   match 'css/main.scss' do
