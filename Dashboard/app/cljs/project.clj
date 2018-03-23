@@ -14,9 +14,9 @@
 
   :source-paths ["src"]
 
-  :clean-targets ^{:protect false}  ["../../../GAE/war/admin/frames/users.html"
-                                     "../../../GAE/war/admin/frames/users.js"
-                                     "../../../GAE/war/admin/frames/out/"]
+  :clean-targets ^{:protect false}  ["../../../GAE/target/akvo-flow/admin/frames/users.html"
+                                     "../../../GAE/target/akvo-flow/admin/frames/users.js"
+                                     "../../../GAE/target/akvo-flow/admin/frames/out/"]
 
   :aliases {"copyhtml" ["shell" "./cp-html.sh"]
             "copyhtml-production" ["shell" "./cp-html.sh" "--production"]
@@ -34,8 +34,8 @@
               :source-paths ["src"]
               :compiler {
                 :main org.akvo.flow.dashboard.users.core
-                :output-to "../../../GAE/war/admin/frames/users.js"
-                :output-dir "../../../GAE/war/admin/frames/out"
+                :output-to "../../../GAE/target/akvo-flow/admin/frames/users.js"
+                :output-dir "../../../GAE/target/akvo-flow/admin/frames/out"
                 :asset-path "out"
                 :optimizations :none
                 :source-map true}}
@@ -43,5 +43,5 @@
               :source-paths ["src"]
               :compiler {
                 :main org.akvo.flow.dashboard.users.core
-                :output-to "../../../GAE/war/admin/frames/users.js"
+                :output-to "../../../GAE/target/akvo-flow/admin/frames/users.js"
                 :optimizations :advanced}}]})

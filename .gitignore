@@ -84,3 +84,4 @@ out/
 .idea/
 *.iml
 rake.log
+lein.log

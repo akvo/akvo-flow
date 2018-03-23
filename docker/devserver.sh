@@ -30,12 +30,9 @@ cd "$SRC_DIR/Dashboard"
 
 bundle exec rake watchbg > "$SRC_DIR/rake.log" 2>&1 &
 
-if [[ ! -f "$SRC_DIR/GAE/war/admin/frames/users.js" ]]; then
-    cd "$SRC_DIR/Dashboard/app/cljs"
-    lein build
-else
-    echo "Skipping ClojureScript build ..."
-fi
+cd "$SRC_DIR/Dashboard/app/cljs"
+
+lein watch > "$SRC_DIR/lein.log" 2>&1 &
 
 cd "$SRC_DIR/GAE"
 
@@ -54,4 +51,4 @@ fi
 
 mvn -P ci package appengine:devserver_start
 
-tail -F ./target/akvo-flow/flow0.log "$SRC_DIR/rake.log"
+tail -F ./target/akvo-flow/flow0.log "$SRC_DIR/rake.log" "$SRC_DIR/lein.log"
