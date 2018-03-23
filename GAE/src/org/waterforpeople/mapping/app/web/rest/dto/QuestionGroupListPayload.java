@@ -29,11 +29,11 @@ public class QuestionGroupListPayload implements Serializable {
     private static final long serialVersionUID = 1L;
     List<QuestionGroupDto> question_groups = null;
 
-    public List<QuestionGroupDto> getQuestionGroups() {
+    public List<QuestionGroupDto> getQuestion_groups() {
         return question_groups;
     }
 
-    public void setQuestionGroups(List<QuestionGroupDto> question_groups) {
+    public void setQuestion_groups(List<QuestionGroupDto> question_groups) {
         this.question_groups = question_groups;
     }
 }

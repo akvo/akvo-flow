@@ -242,7 +242,7 @@ public class QuestionGroupRestService {
         statusDto.setMessage("No question groups to change");
 
         //Loop over question groups
-        final List<QuestionGroupDto> requestList = payLoad.getQuestionGroups();
+        final List<QuestionGroupDto> requestList = payLoad.getQuestion_groups();
         if (requestList != null && requestList.size() > 0) {
             for (final QuestionGroupDto questionGroupDto : requestList) {
     
