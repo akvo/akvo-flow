@@ -297,6 +297,7 @@
                       <include>/admin/**</include>
                       <include>/WEB-INF/**/*.xml</include>
                       <include>/WEB-INF/logging.properties</include>
+                      <include>/WEB-INF/dev-logging.properties</include>
                       <include>/publicmap/**</include>
                       <include>/vendorjs/**</include>
                       <include>CurrentUser.vm</include>
