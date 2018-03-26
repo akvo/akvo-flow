@@ -918,8 +918,8 @@ FLOW.questionControl = Ember.ArrayController.create({
     question.deleteRecord();
 
     //reorder the rest of the questions
-    FLOW.questionControl.reorderQuestions(qgId, qOrder, "up");
-    FLOW.questionControl.submitBulkQuestionsReorder([qgId]);
+    this.reorderQuestions(qgId, qOrder, "up");
+    this.submitBulkQuestionsReorder([qgId]);
 
     FLOW.selectedControl.selectedSurvey.set('status', 'NOT_PUBLISHED');
     FLOW.store.commit();
