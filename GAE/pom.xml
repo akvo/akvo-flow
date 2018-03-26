@@ -247,6 +247,7 @@
         <artifactId>appengine-maven-plugin</artifactId>
         <version>1.9.59</version>
         <configuration>
+          <fullScanSeconds>20</fullScanSeconds>
           <version>1</version>
           <retainUploadDir>true</retainUploadDir>
           <port>8888</port>
