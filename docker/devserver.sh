@@ -48,8 +48,9 @@ if [[ ! -f "$SRC_DIR/GAE/target/akvo-flow/WEB-INF/appengine-generated/local_db.b
     wget "https://s3-eu-west-1.amazonaws.com/akvoflow/test-data/local_db.bin" -O "$SRC_DIR/GAE/target/akvo-flow/WEB-INF/appengine-generated/local_db.bin"
 fi
 
-if [[ ! -f "$SRC_DIR/GAE/war/WEB-INF/appengine-web.xml" ]]; then
-    cp "$SRC_DIR/tests/dev-appengine-web.xml" "$SRC_DIR/GAE/war/WEB-INF/appengine-web.xml"
+if [[ ! -f "$SRC_DIR/GAE/target/akvo-flow/WEB-INF/appengine-web.xml" ]]; then
+    mkdir -p "$SRC_DIR/GAE/target/akvo-flow/WEB-INF/"
+    cp "$SRC_DIR/tests/dev-appengine-web.xml" "$SRC_DIR/GAE/target/akvo-flow/WEB-INF/appengine-web.xml"
 fi
 
 mvn package appengine:devserver_start
