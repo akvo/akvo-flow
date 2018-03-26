@@ -580,7 +580,6 @@ FLOW.QuestionView = FLOW.View.extend({
       selectedQ = FLOW.store.find(FLOW.Question, FLOW.selectedControl.selectedForMoveQuestion.get('keyId'));
       if (selectedQ !== null) {
 
-        // restore order
         qgIdSource = FLOW.selectedControl.selectedForMoveQuestion.get('questionGroupId');
         qgIdDest = FLOW.selectedControl.selectedQuestionGroup.get('keyId');
 
@@ -656,7 +655,6 @@ FLOW.QuestionView = FLOW.View.extend({
       return;
     }
 
-    // restore order
     qgId = FLOW.selectedControl.selectedQuestionGroup.get('keyId');
 
     // restore order
