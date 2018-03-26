@@ -146,19 +146,16 @@ public class SurveyInstanceDAO extends BaseDAO<SurveyInstance> {
             Device d = deviceDao.getDevice(deviceFile.getAndroidId(),
                     deviceFile.getImei(), deviceFile.getPhoneNumber());
             String deviceId = d == null ? "null" : String.valueOf(d.getKey().getId());
-            ObjectMapper objectMapper = new ObjectMapper();
+            //ObjectMapper objectMapper = new ObjectMapper();
 
             for (QuestionAnswerStore qas : images) {
                 String value = qas.getValue();
-                String filename = null;            
+                String filename = null;        
                 if (value.startsWith("{")) { //JSON
-                    try {
-                        Map<String,String>imgMap = objectMapper.readValue(value,
-                                new TypeReference<Map<String, String>>() {
-                                });
-                        filename = imgMap.get("filename");
-                    } catch (IOException e) {
-                        log.log(Level.INFO,"Unable to parse IMAGE JSON - " + value, e);
+                    final String key = "\"filename\":\"";
+                    int i = value.indexOf(key);
+                    if (i >- 1) { //key found, grab all until next "
+                        filename = value.substring(i + key.length()).split("\"", 2)[0];
                     }
                 } else { //legacy: naked filename
                     filename = value;
