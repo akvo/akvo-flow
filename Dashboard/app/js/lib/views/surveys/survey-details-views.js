@@ -385,7 +385,7 @@ FLOW.QuestionGroupItemView = FLOW.View.extend({
       sId = FLOW.selectedControl.selectedSurvey.get('keyId');
 
       // reorder the rest of the question groups
-      FLOW.questionGroupControl.reorderQuestionGroups(sId, insertAfterOrder, "down");
+      FLOW.questionGroupControl.reorderQuestionGroups(sId, insertAfterOrder, "increment");
 
       // create new QuestionGroup item in the store
       FLOW.store.createRecord(FLOW.QuestionGroup, {
@@ -546,7 +546,7 @@ FLOW.QuestionGroupItemView = FLOW.View.extend({
     sId = FLOW.selectedControl.selectedSurvey.get('keyId');
 
     // restore order
-    FLOW.questionGroupControl.reorderQuestionGroups(sId, insertAfterOrder, "down");
+    FLOW.questionGroupControl.reorderQuestionGroups(sId, insertAfterOrder, "increment");
 
     FLOW.store.createRecord(FLOW.QuestionGroup, {
       "order": insertAfterOrder + 1,

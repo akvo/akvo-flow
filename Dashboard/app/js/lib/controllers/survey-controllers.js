@@ -822,25 +822,25 @@ FLOW.questionGroupControl = Ember.ArrayController.create({
     questionGroup.deleteRecord();
 
     // reorder the rest of the question groups
-    this.reorderQuestionGroups(sId, qgOrder, "up");
+    this.reorderQuestionGroups(sId, qgOrder, "decrement");
     this.submitBulkQuestionGroupsReorder(sId);
 
     FLOW.selectedControl.selectedSurvey.set('status', 'NOT_PUBLISHED');
     FLOW.store.commit();
   },
 
-  reorderQuestionGroups: function (surveyId, reorderPoint, reorderDirection) {
+  reorderQuestionGroups: function (surveyId, reorderPoint, reorderOperation) {
     var questionGroupsInSurvey = FLOW.store.filter(FLOW.QuestionGroup, function (item) {
       return item.get('surveyId') == surveyId;
     });
 
     // move items up to make space
     questionGroupsInSurvey.forEach(function (item) {
-      if (reorderDirection == "down") {
+      if (reorderOperation == "increment") {
         if (item.get('order') > reorderPoint) {
           item.set('order', item.get('order') + 1);
         }
-      } else if (reorderDirection == "up") {
+      } else if (reorderOperation == "decrement") {
         if (item.get('order') > reorderPoint) {
           item.set('order', item.get('order') - 1);
         }
@@ -918,7 +918,7 @@ FLOW.questionControl = Ember.ArrayController.create({
     question.deleteRecord();
 
     //reorder the rest of the questions
-    this.reorderQuestions(qgId, qOrder, "up");
+    this.reorderQuestions(qgId, qOrder, "decrement");
     this.submitBulkQuestionsReorder([qgId]);
 
     FLOW.selectedControl.selectedSurvey.set('status', 'NOT_PUBLISHED');
@@ -991,18 +991,18 @@ FLOW.questionControl = Ember.ArrayController.create({
     }
   }.observes('FLOW.selectedControl.selectedQuestion'),
 
-  reorderQuestions: function (qgId, reorderPoint, reorderDirection) {
+  reorderQuestions: function (qgId, reorderPoint, reorderOperation) {
     var questionsInGroup = FLOW.store.filter(FLOW.Question, function (item) {
       return item.get('questionGroupId') == qgId;
     });
 
     // move items up to make space
     questionsInGroup.forEach(function (item) {
-      if (reorderDirection == "down") {
+      if (reorderOperation == "increment") {
         if (item.get('order') > reorderPoint) {
           item.set('order', item.get('order') + 1);
         }
-      } else if (reorderDirection == "up") {
+      } else if (reorderOperation == "decrement") {
         if (item.get('order') > reorderPoint) {
           item.set('order', item.get('order') - 1);
         }
