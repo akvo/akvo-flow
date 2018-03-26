@@ -52,6 +52,6 @@ if [[ ! -f "$SRC_DIR/GAE/war/WEB-INF/appengine-web.xml" ]]; then
     cp "$SRC_DIR/tests/dev-appengine-web.xml" "$SRC_DIR/GAE/war/WEB-INF/appengine-web.xml"
 fi
 
-mvn -P ci package appengine:devserver_start
+mvn package appengine:devserver_start
 
 tail -F ./target/akvo-flow/flow0.log "$SRC_DIR/rake.log" "$SRC_DIR/lein.log"

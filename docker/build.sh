@@ -41,4 +41,4 @@ cp -f build.properties.template build.properties
 sed -i "s|^sdk\.dir=.*|sdk\.dir=$HOME/.cache/appengine-java-sdk-$APP_ENGINE_SDK_VERSION|" build.properties
 
 
-mvn -P ci package
+mvn package

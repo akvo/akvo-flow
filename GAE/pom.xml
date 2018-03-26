@@ -399,33 +399,9 @@
               </rules>
             </configuration>
           </execution>
-          <execution>
-            <id>enforce-flow-config</id>
-            <goals>
-              <goal>enforce</goal>
-            </goals>
-            <configuration>
-              <skip>${skip.appengine.file.check}</skip>
-              <rules>
-                <requireFilesExist>
-                  <files>
-                    <file>${project.configFilesDir}/${appId}/appengine-web.xml</file>
-                  </files>
-                </requireFilesExist>
-              </rules>
-            </configuration>
-          </execution>
         </executions>
       </plugin>
     </plugins>
   </build>
 
-    <profiles>
-        <profile>
-            <id>ci</id>
-            <properties>
-                <skip.appengine.file.check>true</skip.appengine.file.check>
-            </properties>
-        </profile>
-    </profiles>
 </project>
