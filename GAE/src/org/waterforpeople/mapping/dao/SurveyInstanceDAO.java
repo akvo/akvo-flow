@@ -16,7 +16,6 @@
 
 package org.waterforpeople.mapping.dao;
 
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
@@ -30,8 +29,6 @@ import javax.jdo.PersistenceManager;
 import javax.jdo.Query;
 
 import org.apache.commons.lang.StringUtils;
-import org.codehaus.jackson.map.ObjectMapper;
-import org.codehaus.jackson.type.TypeReference;
 import org.waterforpeople.mapping.analytics.dao.SurveyQuestionSummaryDao;
 import org.waterforpeople.mapping.analytics.domain.SurveyQuestionSummary;
 import org.waterforpeople.mapping.app.web.dto.DataProcessorRequest;
@@ -146,7 +143,6 @@ public class SurveyInstanceDAO extends BaseDAO<SurveyInstance> {
             Device d = deviceDao.getDevice(deviceFile.getAndroidId(),
                     deviceFile.getImei(), deviceFile.getPhoneNumber());
             String deviceId = d == null ? "null" : String.valueOf(d.getKey().getId());
-            //ObjectMapper objectMapper = new ObjectMapper();
 
             for (QuestionAnswerStore qas : images) {
                 String value = qas.getValue();
@@ -154,7 +150,7 @@ public class SurveyInstanceDAO extends BaseDAO<SurveyInstance> {
                 if (value.startsWith("{")) { //JSON
                     final String key = "\"filename\":\"";
                     int i = value.indexOf(key);
-                    if (i >- 1) { //key found, grab all until next "
+                    if (i > -1) { //key found, grab all until next "
                         filename = value.substring(i + key.length()).split("\"", 2)[0];
                     }
                 } else { //legacy: naked filename
