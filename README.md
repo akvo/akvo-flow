@@ -6,6 +6,76 @@
 
 You can read more about the [motivation and history of Akvo Flow](http://www.akvo.org/blog/?p=4836) as well as its place in [the platform of tools created by Akvo](http://www.akvo.org/blog/?p=4822).
 
+## Developement
+
+### Start
+
+To run Flow:
+
+    docker-compose up --build -d && docker-compose logs -f 
+
+Flow should be running [here](http://localhost:8888) and you can login with user "akvo.flow.user.test@gmail.com"
+
+You also have the appengine admin console [here](http://localhost:8888/_ah/admin)
+
+### UI development
+
+Once Flow is started, any changes in the Dashboard folder will trigger a build of the UI code, except for the ClojureScript bit.
+
+If you are going to work on the ClojureScript side, you can run a watch process with: 
+
+    docker-compose exec akvo-flow /bin/bash -c "cd /app/src/Dashboard/app/cljs && lein watch"
+
+Or run the commands from a terminal inside the container:
+
+    docker-compose exec akvo-flow /bin/bash
+    cd app/cljs
+    lein watch
+
+### Backend development
+
+There is 
+
+The server is started in debug mode, listening in port 5005.
+
+docker-compose exec akvo-flow /bin/bash
+
+You can change the scan interval in GAE/pom.xml. You can also trigger a reload hitting [the reload url](http://localhost:8888/_ah/reloadwebapp).
+
+If you need to restart the server:
+
+    docker-compose exec akvo-flow /bin/bash -c "cd /app/src/GAE && mvn appengine:devserver_stop appengine:devserver_start"
+
+If you also need to recompile the code, add a package target:
+
+    docker-compose exec akvo-flow /bin/bash -c "cd /app/src/GAE && mvn appengine:devserver_stop package appengine:devserver_start"
+
+You also can run those commands from a terminal inside the container.
+
+### Stop
+
+    docker-compose stop
+        
+### Tear down and reset    
+    
+    docker-compose down
+    rm -rf GAE/target
+        
+### Environment
+
+The Docker-Compose environment will have:
+
+1. A fake s3 server.
+2. A fake flow services, that always returns 200.
+3. The dev environment.
+
+It downloads a prepopulated database from https://s3-eu-west-1.amazonaws.com/akvoflow/test-data/local_db.bin *if* there is none.
+
+It will use the [dev appengine-web.xml](tests/dev-appengine-web.xml) *if* there is none.
+
+See the [devserver.sh](docker/devserver.sh) for more details.
+
+---
 
 <p>&nbsp;</p>
 
