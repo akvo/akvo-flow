@@ -240,7 +240,8 @@ public class QuestionGroupRestService {
         RestStatusDto statusDto = new RestStatusDto();
         statusDto.setStatus("failed");
         statusDto.setMessage("No question groups to change");
-
+        List<QuestionGroup> saveList = new ArrayList<>();
+        
         //Loop over question groups
         final List<QuestionGroupDto> requestList = payLoad.getQuestion_groups();
         if (requestList != null && requestList.size() > 0) {
@@ -259,8 +260,7 @@ public class QuestionGroupRestService {
                             // because it is set in the Dao.
                             BeanUtils.copyProperties(questionGroupDto, qg,
                                     new String[] {"createdDateTime", "status"});
-                            qg = questionGroupDao.save(qg);
-        
+                            saveList.add(qg);
                         } else { //missing in db - fail
                             statusDto.setMessage("Cannot change unknown question group " + keyId);
                             response.put("meta", statusDto);
@@ -273,6 +273,7 @@ public class QuestionGroupRestService {
                     }
                 }
             }
+            questionGroupDao.save(saveList);
             statusDto.setStatus("ok");
             statusDto.setMessage("");
         }

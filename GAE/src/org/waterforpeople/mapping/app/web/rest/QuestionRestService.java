@@ -286,6 +286,7 @@ public class QuestionRestService {
         RestStatusDto statusDto = new RestStatusDto();
         statusDto.setStatus("failed");
         statusDto.setMessage("No questions to change");
+        List<Question> saveList = new ArrayList<>();
 
         //Loop over questions
         final List<QuestionDto> requestList = payLoad.getQuestions();
@@ -309,8 +310,7 @@ public class QuestionRestService {
                             if (questionDto.getType() != null)
                                 q.setType(Question.Type.valueOf(questionDto.getType()
                                         .toString()));
-        
-                            q = questionDao.save(q);
+                            saveList.add(q);
         
                         } else { //missing in db - fail
                             statusDto.setMessage("Cannot change unknown question " + keyId);
@@ -324,9 +324,10 @@ public class QuestionRestService {
                     }
                 }
             }
+            questionDao.save(saveList);
+            statusDto.setStatus("ok");
+            statusDto.setMessage("");
         }
-        statusDto.setStatus("ok");
-        statusDto.setMessage("");
         response.put("meta", statusDto);
         return response;
     }
