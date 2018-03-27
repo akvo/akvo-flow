@@ -1,5 +1,5 @@
 /*
- *  Copyright (C) 2010-2012 Stichting Akvo (Akvo Foundation)
+ *  Copyright (C) 2010-2012, 2018 Stichting Akvo (Akvo Foundation)
  *
  *  This file is part of Akvo FLOW.
  *
@@ -127,13 +127,10 @@ public class SurveyTaskServlet extends AbstractRestApiServlet {
                             buffer.append(nextSet.get(i).getKey().getId());
                         }
                         queue.add(TaskOptions.Builder.withUrl("/app_worker/surveytask")
-                                .param("action",
-                                        "reprocessMapSurveyInstance").param(
-                                        SurveyTaskRequest.ID_PARAM,
-                                        stReq.getId().toString()).param(
-                                        SurveyTaskRequest.ID_LIST_PARAM,
-                                        buffer.toString()).param(
-                                        SurveyTaskRequest.CURSOR_PARAM,
+                                .param("action", SurveyTaskRequest.REMAP_SURVEY_INSTANCE)
+                                .param(SurveyTaskRequest.ID_PARAM, stReq.getId().toString())
+                                .param(SurveyTaskRequest.ID_LIST_PARAM, buffer.toString())
+                                .param(SurveyTaskRequest.CURSOR_PARAM,
                                         SurveyInstanceDAO.getCursor(nextSet)));
                     }
                 }

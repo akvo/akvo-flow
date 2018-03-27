@@ -17,7 +17,7 @@
     </cron>
     <cron>
         <url>/cron/croncommander?action=purgeDeviceFileJobQueueRecords</url>
-        <description>Purge completed or ancient entries from Device File Job Queue</description>
-        <schedule>every 7 days</schedule>
+        <description>Purge fulfilled or ancient entries from Device File Job Queue</description>
+        <schedule>every 5 minutes</schedule>
     </cron>
 </cronentries>

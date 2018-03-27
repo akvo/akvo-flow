@@ -16,12 +16,16 @@
 
 package org.waterforpeople.mapping.app.web;
 
+import java.io.BufferedInputStream;
 import java.io.IOException;
+import java.net.HttpURLConnection;
+import java.net.URLConnection;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
 import java.util.logging.Logger;
+import java.util.zip.ZipInputStream;
 
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
@@ -29,6 +33,8 @@ import javax.servlet.http.HttpServletResponse;
 
 import org.waterforpeople.mapping.app.web.dto.SurveyTaskRequest;
 
+import com.gallatinsystems.common.Constants;
+import com.gallatinsystems.common.util.S3Util;
 import com.gallatinsystems.device.dao.DeviceFileJobQueueDAO;
 import com.gallatinsystems.device.domain.DeviceFileJobQueue;
 import com.gallatinsystems.device.domain.DeviceSurveyJobQueue;
@@ -75,6 +81,7 @@ public class CronCommanderServlet extends HttpServlet {
     private void purgeDeviceFileJobQueueRecords() {
         Calendar deadline = Calendar.getInstance();
         deadline.add(Calendar.YEAR, -2); //two years ago
+        log.info("Starting scan for DFJQ entries fulfilled or older than: " + deadline);
         DeviceFileJobQueueDAO dfjqDao = new DeviceFileJobQueueDAO();
         List<DeviceFileJobQueue> dfjqList = dfjqDao.list(null); //ever null?
         for (DeviceFileJobQueue item : dfjqList) {
@@ -83,11 +90,22 @@ public class CronCommanderServlet extends HttpServlet {
                 log.info("Deleting old DFJQ entry: " + item.getKey().getId());
                 SurveyTaskUtil.spawnDeleteTask(SurveyTaskRequest.DELETE_DFJQ_ACTION,
                         item.getKey().getId());
-            } else if (false) { //TODO check the (now protected) S3 store - need credentials
-                // best case - fulfilled
-                log.info("Deleting fulfilled DFJQ entry: " + item.getKey().getId());
-                SurveyTaskUtil.spawnDeleteTask(SurveyTaskRequest.DELETE_DFJQ_ACTION,
-                        item.getKey().getId());
+            } else {//check the (now protected)image file in S3 store - need credentials
+                try {
+                    String bucket = 
+                            com.gallatinsystems.common.util.PropertyUtil.getProperty("s3bucket");
+                    HttpURLConnection conn = (HttpURLConnection)
+                            S3Util.getConnection(bucket, "images/" + item.getFileName());
+                    if (conn.getResponseCode() == 200) {
+                        // best case - fulfilled
+                        log.info("Deleting fulfilled DFJQ entry: " + item.getKey().getId());
+                        SurveyTaskUtil.spawnDeleteTask(SurveyTaskRequest.DELETE_DFJQ_ACTION,
+                                item.getKey().getId());
+                    }
+                } catch (Exception e) {
+                    // catchall
+                    log.info("Error while connecing to " + item.getFileName() +"\n\n" + e.getMessage());
+                }
             }
         }
     }
