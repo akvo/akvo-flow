@@ -16,12 +16,12 @@
 
 package org.waterforpeople.mapping.dataexport;
 
-import java.util.HashMap;
-import java.util.Map;
-
 import com.gallatinsystems.framework.dataexport.applet.DataExporter;
 import com.gallatinsystems.framework.dataexport.applet.DataImportExportFactory;
 import com.gallatinsystems.framework.dataexport.applet.DataImporter;
+
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  * Factory to create a DataExporter or DataImporter instance based on the type passed in
@@ -48,7 +48,6 @@ public class SurveyDataImportExportFactory implements DataImportExportFactory {
         {
             put("SURVEY_SPREADSHEET", SurveySpreadsheetImporter.class);
             put("RAW_DATA", RawDataSpreadsheetImporter.class);
-            put("BULK_SURVEY", SurveyBulkUploader.class);
         }
     };
 
