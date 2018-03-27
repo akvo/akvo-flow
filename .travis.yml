@@ -1,17 +1,14 @@
 language: java
-
 sudo: required
-
 services:
-  - docker
-
+- docker
 cache:
   directories:
-    - $HOME/.m2
-    - $HOME/.cache
-
+  - "$HOME/.m2"
+  - "$HOME/.cache"
 before_install:
-  - docker pull akvo/flow-maven-build
-
+- openssl aes-256-cbc -K $encrypted_12c8071d2874_key -iv $encrypted_12c8071d2874_iv
+  -in devops.asc.enc -out devops.asc -d
+- docker pull akvo/flow-maven-build
 script:
-  - ./docker/bootstrap-build.sh
+- "./docker/bootstrap-build.sh"

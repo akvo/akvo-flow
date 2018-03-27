@@ -38,6 +38,8 @@ if [[ ! -f "$LOCAL_CACHE/$APP_ENGINE_SDK_FILE" ]]; then
     cd ..
 fi
 
+FLOW_GIT_VERSION=$(git describe)
+
 docker run \
        --rm \
        --env HOST_GID=`id -g` \
@@ -46,4 +48,6 @@ docker run \
        --volume "$MAVEN_REPO":"/home/$USER/.m2" \
        --volume "$LOCAL_CACHE":"/home/$USER/.cache" \
        --volume `pwd`:/app/src \
+       -e CLOJARS_PASSWORD="${CLOJARS_PASSWORD}" -e FLOW_GIT_VERSION="${FLOW_GIT_VERSION}" \
+       -e CLOJARS_GPG_PASSWORD="${CLOJARS_GPG_PASSWORD}" \
        akvo/flow-maven-build "$@"
