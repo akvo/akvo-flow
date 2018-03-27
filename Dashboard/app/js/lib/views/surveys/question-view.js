@@ -580,13 +580,12 @@ FLOW.QuestionView = FLOW.View.extend({
       selectedQ = FLOW.store.find(FLOW.Question, FLOW.selectedControl.selectedForMoveQuestion.get('keyId'));
       if (selectedQ !== null) {
 
-        // restore order
         qgIdSource = FLOW.selectedControl.selectedForMoveQuestion.get('questionGroupId');
         qgIdDest = FLOW.selectedControl.selectedQuestionGroup.get('keyId');
 
         // restore order
-        FLOW.questionControl.reorderQuestions(qgIdSource, selectedOrder, "up");
-        FLOW.questionControl.reorderQuestions(qgIdDest, insertAfterOrder, "down");
+        FLOW.questionControl.reorderQuestions(qgIdSource, selectedOrder, "decrement");
+        FLOW.questionControl.reorderQuestions(qgIdDest, insertAfterOrder, "increment");
 
         // move question
         selectedQ.set('order', insertAfterOrder + 1);
@@ -656,11 +655,10 @@ FLOW.QuestionView = FLOW.View.extend({
       return;
     }
 
-    // restore order
     qgId = FLOW.selectedControl.selectedQuestionGroup.get('keyId');
 
     // restore order
-    FLOW.questionControl.reorderQuestions(qgId, insertAfterOrder, "down");
+    FLOW.questionControl.reorderQuestions(qgId, insertAfterOrder, "increment");
 
     question = FLOW.selectedControl.get('selectedForCopyQuestion');
     // create copy of Question item in the store
@@ -700,7 +698,7 @@ FLOW.QuestionView = FLOW.View.extend({
     qgId = FLOW.selectedControl.selectedQuestionGroup.get('keyId');
 
     // reorder the rest of the questions
-    FLOW.questionControl.reorderQuestions(qgId, insertAfterOrder, "down");
+    FLOW.questionControl.reorderQuestions(qgId, insertAfterOrder, "increment");
 
     // create new Question item in the store
     FLOW.store.createRecord(FLOW.Question, {

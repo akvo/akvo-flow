@@ -822,11 +822,42 @@ FLOW.questionGroupControl = Ember.ArrayController.create({
     questionGroup.deleteRecord();
 
     // reorder the rest of the question groups
-    FLOW.questionControl.reorderQuestionGroups(sId, qgOrder, "up");
-    FLOW.questionControl.submitBulkQuestionGroupsReorder(sId);
+    this.reorderQuestionGroups(sId, qgOrder, "decrement");
+    this.submitBulkQuestionGroupsReorder(sId);
 
     FLOW.selectedControl.selectedSurvey.set('status', 'NOT_PUBLISHED');
     FLOW.store.commit();
+  },
+
+  reorderQuestionGroups: function (surveyId, reorderPoint, reorderOperation) {
+    var questionGroupsInSurvey = FLOW.store.filter(FLOW.QuestionGroup, function (item) {
+      return item.get('surveyId') == surveyId;
+    });
+
+    // move items up to make space
+    questionGroupsInSurvey.forEach(function (item) {
+      if (reorderOperation == "increment") {
+        if (item.get('order') > reorderPoint) {
+          item.set('order', item.get('order') + 1);
+        }
+      } else if (reorderOperation == "decrement") {
+        if (item.get('order') > reorderPoint) {
+          item.set('order', item.get('order') - 1);
+        }
+      }
+    });
+  },
+
+  submitBulkQuestionGroupsReorder: function (surveyId) {
+    FLOW.questionControl.set('bulkCommit', true);
+    var questionGroupsInSurvey = FLOW.store.filter(FLOW.QuestionGroup, function (item) {
+      return item.get('surveyId') == surveyId;
+    });
+    // restore order in case the order has gone haywire
+    FLOW.questionControl.restoreOrder(questionGroupsInSurvey);
+    FLOW.store.commit();
+    FLOW.store.adapter.set('bulkCommit', false);
+    FLOW.questionControl.set('bulkCommit', false);
   }
 });
 
@@ -887,8 +918,8 @@ FLOW.questionControl = Ember.ArrayController.create({
     question.deleteRecord();
 
     //reorder the rest of the questions
-    FLOW.questionControl.reorderQuestions(qgId, qOrder, "up");
-    FLOW.questionControl.submitBulkQuestionsReorder([qgId]);
+    this.reorderQuestions(qgId, qOrder, "decrement");
+    this.submitBulkQuestionsReorder([qgId]);
 
     FLOW.selectedControl.selectedSurvey.set('status', 'NOT_PUBLISHED');
     FLOW.store.commit();
@@ -960,18 +991,18 @@ FLOW.questionControl = Ember.ArrayController.create({
     }
   }.observes('FLOW.selectedControl.selectedQuestion'),
 
-  reorderQuestions: function (qgId, reorderPoint, reorderDirection) {
+  reorderQuestions: function (qgId, reorderPoint, reorderOperation) {
     var questionsInGroup = FLOW.store.filter(FLOW.Question, function (item) {
       return item.get('questionGroupId') == qgId;
     });
 
     // move items up to make space
     questionsInGroup.forEach(function (item) {
-      if (reorderDirection == "down") {
+      if (reorderOperation == "increment") {
         if (item.get('order') > reorderPoint) {
           item.set('order', item.get('order') + 1);
         }
-      } else if (reorderDirection == "up") {
+      } else if (reorderOperation == "decrement") {
         if (item.get('order') > reorderPoint) {
           item.set('order', item.get('order') - 1);
         }
@@ -988,37 +1019,6 @@ FLOW.questionControl = Ember.ArrayController.create({
       // restore order in case the order has gone haywire
       FLOW.questionControl.restoreOrder(questionsInGroup);
     }
-    FLOW.store.commit();
-    FLOW.store.adapter.set('bulkCommit', false);
-    this.set('bulkCommit', false);
-  },
-
-  reorderQuestionGroups: function (surveyId, reorderPoint, reorderDirection) {
-    var questionGroupsInSurvey = FLOW.store.filter(FLOW.QuestionGroup, function (item) {
-      return item.get('surveyId') == surveyId;
-    });
-
-    // move items up to make space
-    questionGroupsInSurvey.forEach(function (item) {
-      if (reorderDirection == "down") {
-        if (item.get('order') > reorderPoint) {
-          item.set('order', item.get('order') + 1);
-        }
-      } else if (reorderDirection == "up") {
-        if (item.get('order') > reorderPoint) {
-          item.set('order', item.get('order') - 1);
-        }
-      }
-    });
-  },
-
-  submitBulkQuestionGroupsReorder: function (surveyId) {
-    this.set('bulkCommit', true);
-    var questionGroupsInSurvey = FLOW.store.filter(FLOW.QuestionGroup, function (item) {
-      return item.get('surveyId') == surveyId;
-    });
-    // restore order in case the order has gone haywire
-    FLOW.questionControl.restoreOrder(questionGroupsInSurvey);
     FLOW.store.commit();
     FLOW.store.adapter.set('bulkCommit', false);
     this.set('bulkCommit', false);

@@ -385,7 +385,7 @@ FLOW.QuestionGroupItemView = FLOW.View.extend({
       sId = FLOW.selectedControl.selectedSurvey.get('keyId');
 
       // reorder the rest of the question groups
-      FLOW.questionControl.reorderQuestionGroups(sId, insertAfterOrder, "down");
+      FLOW.questionGroupControl.reorderQuestionGroups(sId, insertAfterOrder, "increment");
 
       // create new QuestionGroup item in the store
       FLOW.store.createRecord(FLOW.QuestionGroup, {
@@ -397,7 +397,7 @@ FLOW.QuestionGroupItemView = FLOW.View.extend({
         "surveyId": FLOW.selectedControl.selectedSurvey.get('keyId')
       });
 
-      FLOW.questionControl.submitBulkQuestionGroupsReorder(sId);
+      FLOW.questionGroupControl.submitBulkQuestionGroupsReorder(sId);
 
       FLOW.selectedControl.selectedSurvey.set('status', 'NOT_PUBLISHED');
       FLOW.store.commit();
@@ -483,7 +483,7 @@ FLOW.QuestionGroupItemView = FLOW.View.extend({
           }
         });
 
-        FLOW.questionControl.submitBulkQuestionGroupsReorder(sId);
+        FLOW.questionGroupControl.submitBulkQuestionGroupsReorder(sId);
 
         FLOW.selectedControl.selectedSurvey.set('status', 'NOT_PUBLISHED');
         FLOW.store.commit();
@@ -546,7 +546,7 @@ FLOW.QuestionGroupItemView = FLOW.View.extend({
     sId = FLOW.selectedControl.selectedSurvey.get('keyId');
 
     // restore order
-    FLOW.questionControl.reorderQuestionGroups(sId, insertAfterOrder, "down");
+    FLOW.questionGroupControl.reorderQuestionGroups(sId, insertAfterOrder, "increment");
 
     FLOW.store.createRecord(FLOW.QuestionGroup, {
       "order": insertAfterOrder + 1,
@@ -559,7 +559,7 @@ FLOW.QuestionGroupItemView = FLOW.View.extend({
       "repeatable":FLOW.selectedControl.selectedForCopyQuestionGroup.get('repeatable')
     });
 
-    FLOW.questionControl.submitBulkQuestionGroupsReorder(sId);
+    FLOW.questionGroupControl.submitBulkQuestionGroupsReorder(sId);
 
     FLOW.selectedControl.selectedSurvey.set('status', 'NOT_PUBLISHED');
     FLOW.store.commit();
