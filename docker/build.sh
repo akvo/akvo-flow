@@ -16,7 +16,7 @@
 #  The full license text can also be seen at <http://www.gnu.org/licenses/agpl.html>.
 #
 
-set -eu
+set -e
 
 SRC_DIR="/app/src"
 APP_ENGINE_SDK_VERSION="1.9.54"
@@ -43,16 +43,20 @@ sed -i "s|^sdk\.dir=.*|sdk\.dir=$HOME/.cache/appengine-java-sdk-$APP_ENGINE_SDK_
 
 mvn package
 
-gpg --batch --passphrase ${CLOJARS_GPG_PASSWORD} --import "$SRC_DIR/devops.asc"
+if ! [[ -z "$TRAVIS_TAG" ]]; then
 
-echo "Setting project version to $FLOW_GIT_VERSION"
-mvn versions:set -DnewVersion=${FLOW_GIT_VERSION}
+    gpg --batch --passphrase ${CLOJARS_GPG_PASSWORD} --import "$SRC_DIR/devops.asc"
 
-mvn deploy:deploy-file -s "$SRC_DIR/maven-ci-settings.xml" \
-                       -Dgpg.passphrase=${CLOJARS_GPG_PASSWORD} \
-                       -Durl="https://clojars.org/repo" \
-                       -DrepositoryId=clojars \
-                       -Dfile=target/akvo-flow-classes.jar \
-                       -DpomFile=pom.xml \
-                       -Dpackaging=jar \
-                       -Dclassifier=classes
+    echo "Setting project version to $FLOW_GIT_VERSION"
+    mvn versions:set -DnewVersion=${FLOW_GIT_VERSION}
+
+    mvn deploy:deploy-file -s "$SRC_DIR/maven-ci-settings.xml" \
+                           -Dgpg.passphrase=${CLOJARS_GPG_PASSWORD} \
+                           -Durl="https://clojars.org/repo" \
+                           -DrepositoryId=clojars \
+                           -Dfile=target/akvo-flow-classes.jar \
+                           -DpomFile=pom.xml \
+                           -Dpackaging=jar \
+                           -Dclassifier=classes
+
+fi
