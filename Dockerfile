@@ -2,7 +2,7 @@ FROM ruby:2.4.1
 
 RUN echo "deb http://ftp.debian.org/debian jessie-backports main" >> /etc/apt/sources.list && \
     apt-get update && \
-    apt-get -t jessie-backports install -y -q --no-install-recommends openjdk-8-jdk git unzip && \
+    apt-get -t jessie-backports install -y -q --no-install-recommends openjdk-8-jdk git unzip gnupg2 && \
     apt-get clean && \
     rm -rf /var/lib/apt/lists/* && \
     update-java-alternatives -s java-1.8.0-openjdk-amd64 && \

@@ -417,6 +417,7 @@
               <goal>sign</goal>
             </goals>
             <configuration>
+              <executable>/usr/bin/gpg2</executable>
               <keyname>devops</keyname>
               <gpgArguments>
                 <arg>--batch</arg>
