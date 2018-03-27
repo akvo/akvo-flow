@@ -317,12 +317,6 @@
       <plugin>
         <artifactId>maven-compiler-plugin</artifactId>
         <version>3.6.1</version>
-        <configuration>
-            <excludes>
-                <exclude>org/waterforpeople/mapping/dataexport/**/*.java</exclude>
-                <exclude>com/gallatinsystems/framework/dataexport/**/*.java</exclude>
-            </excludes>
-        </configuration>
       </plugin>
 
       <plugin>
