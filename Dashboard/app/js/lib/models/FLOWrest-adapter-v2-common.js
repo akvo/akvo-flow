@@ -220,27 +220,7 @@ DS.FLOWRESTAdapter = DS.RESTAdapter.extend({
     if (FLOW.questionControl.get('bulkCommit')) {
       this.set('bulkCommit', true);
     }
-
-    if (get(this, 'bulkCommit') === false) {
-      return this._super(store, type, records);
-    }
-
-    var root = this.rootForType(type),
-        plural = this.pluralize(root);
-
-    var data = {};
-    data[plural] = [];
-    records.forEach(function(record) {
-      data[plural].push(this.serialize(record, { includeId: true }));
-    }, this);
-
-    this.ajax(this.buildURL(root, "bulk"), "PUT", {
-      data: data,
-      context: this,
-      success: function(json) {
-        this.didUpdateRecords(store, type, records, json);
-      }
-    });
+    this._super(store, type, records);
   },
 
   deleteRecords: function(store, type, records) {
@@ -248,27 +228,6 @@ DS.FLOWRESTAdapter = DS.RESTAdapter.extend({
     if (FLOW.questionControl.get('bulkCommit')) {
       this.set('bulkCommit', false);
     }
-
-    if (get(this, 'bulkCommit') === false) {
-      return this._super(store, type, records);
-    }
-
-    var root = this.rootForType(type),
-        plural = this.pluralize(root),
-        serializer = get(this, 'serializer');
-
-    var data = {};
-    data[plural] = [];
-    records.forEach(function(record) {
-      data[plural].push(serializer.serializeId( get(record, 'id') ));
-    });
-
-    this.ajax(this.buildURL(root, 'bulk'), "DELETE", {
-      data: data,
-      context: this,
-      success: function(json) {
-        this.didDeleteRecords(store, type, records, json);
-      }
-    });
+    this._super(store, type, records);
   }
 });
