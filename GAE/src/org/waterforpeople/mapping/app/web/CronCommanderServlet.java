@@ -18,6 +18,7 @@ package org.waterforpeople.mapping.app.web;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
 import java.util.logging.Logger;
@@ -26,6 +27,10 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.waterforpeople.mapping.app.web.dto.SurveyTaskRequest;
+
+import com.gallatinsystems.device.dao.DeviceFileJobQueueDAO;
+import com.gallatinsystems.device.domain.DeviceFileJobQueue;
 import com.gallatinsystems.device.domain.DeviceSurveyJobQueue;
 import com.gallatinsystems.notification.helper.NotificationHelper;
 import com.gallatinsystems.survey.dao.DeviceSurveyJobQueueDAO;
@@ -33,6 +38,10 @@ import com.gallatinsystems.survey.dao.SurveyDAO;
 import com.gallatinsystems.survey.dao.SurveyTaskUtil;
 import com.google.appengine.api.datastore.Key;
 
+/**
+ * @author stellan
+ *
+ */
 public class CronCommanderServlet extends HttpServlet {
 
     /**
@@ -58,6 +67,28 @@ public class CronCommanderServlet extends HttpServlet {
             purgeOrphanJobQueueRecords();
         } else if ("generateNotifications".equals(action)) {
             generateNotifications();
+        } else if ("purgeDeviceFileJobQueueRecords".equals(action)) {
+            purgeDeviceFileJobQueueRecords();
+        }
+    }
+
+    private void purgeDeviceFileJobQueueRecords() {
+        Calendar deadline = Calendar.getInstance();
+        deadline.add(Calendar.YEAR, -2); //two years ago
+        DeviceFileJobQueueDAO dfjqDao = new DeviceFileJobQueueDAO();
+        List<DeviceFileJobQueue> dfjqList = dfjqDao.list(null); //ever null?
+        for (DeviceFileJobQueue item : dfjqList) {
+            if (deadline.before(item.getCreatedDateTime())) {
+                //cheap case - old
+                log.info("Deleting old DFJQ entry: " + item.getKey().getId());
+                SurveyTaskUtil.spawnDeleteTask(SurveyTaskRequest.DELETE_DFJQ_ACTION,
+                        item.getKey().getId());
+            } else if (false) { //TODO check the (now protected) S3 store - need credentials
+                // best case - fulfilled
+                log.info("Deleting fulfilled DFJQ entry: " + item.getKey().getId());
+                SurveyTaskUtil.spawnDeleteTask(SurveyTaskRequest.DELETE_DFJQ_ACTION,
+                        item.getKey().getId());
+            }
         }
     }
 
@@ -74,7 +105,7 @@ public class CronCommanderServlet extends HttpServlet {
         List<DeviceSurveyJobQueue> dsjqList = dsjqDao
                 .listAssignmentsWithEarlierExpirationDate(new Date());
         for (DeviceSurveyJobQueue item : dsjqList) {
-            SurveyTaskUtil.spawnDeleteTask("deleteDeviceSurveyJobQueue",
+            SurveyTaskUtil.spawnDeleteTask(SurveyTaskRequest.DELETE_DSJQ_ACTION,
                     item.getAssignmentId());
         }
     }
@@ -95,7 +126,7 @@ public class CronCommanderServlet extends HttpServlet {
                 log.info("found orphan assignmentId: " + item.getAssignmentId()
                         + " id: " + item.getId() + " survey: "
                         + item.getSurveyID() + " for deletion");
-                SurveyTaskUtil.spawnDeleteTask("deleteDeviceSurveyJobQueue",
+                SurveyTaskUtil.spawnDeleteTask(SurveyTaskRequest.DELETE_DSJQ_ACTION,
                         item.getAssignmentId());
 
             }

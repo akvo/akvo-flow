@@ -27,6 +27,7 @@ import org.waterforpeople.mapping.dao.SurveyInstanceDAO;
 import org.waterforpeople.mapping.domain.SurveyInstance;
 import org.waterforpeople.mapping.helper.AccessPointHelper;
 
+import com.gallatinsystems.device.dao.DeviceFileJobQueueDAO;
 import com.gallatinsystems.framework.rest.AbstractRestApiServlet;
 import com.gallatinsystems.framework.rest.RestRequest;
 import com.gallatinsystems.framework.rest.RestResponse;
@@ -77,37 +78,34 @@ public class SurveyTaskServlet extends AbstractRestApiServlet {
             if(s != null) {
                 surveyDao.delete(s);
             }
-        } else if (stReq.getAction().equals(
-                SurveyTaskRequest.DELETE_QUESTION_GROUP_ACTION)) {
+        } else if (stReq.getAction().equals(SurveyTaskRequest.DELETE_QUESTION_GROUP_ACTION)) {
             QuestionGroupDao qgDao = new QuestionGroupDao();
             QuestionGroup qg = qgDao.getByKey(id);
             if(qg != null) {
                 qgDao.delete(qg);
             }
-        } else if (stReq.getAction().equals(
-                SurveyTaskRequest.DELETE_QUESTION_ACTION)) {
+        } else if (stReq.getAction().equals(SurveyTaskRequest.DELETE_QUESTION_ACTION)) {
             QuestionDao qDao = new QuestionDao();
             Question q = qDao.getByKey(id);
             if( q != null) {
                 qDao.delete(q);
             }
-        } else if (stReq.getAction().equals(
-                SurveyTaskRequest.DELETE_QUESTION_OPTION_ACTION)) {
+        } else if (stReq.getAction().equals(SurveyTaskRequest.DELETE_QUESTION_OPTION_ACTION)) {
             QuestionOptionDao qoDao = new QuestionOptionDao();
             qoDao.delete(qoDao.getByKey(id));
-        } else if (stReq.getAction().equals(
-                SurveyTaskRequest.DELETE_QUESTION_HELP_ACTION)) {
+        } else if (stReq.getAction().equals(SurveyTaskRequest.DELETE_QUESTION_HELP_ACTION)) {
             QuestionHelpMediaDao qhDao = new QuestionHelpMediaDao();
             qhDao.delete(qhDao.getByKey(id));
-        } else if (stReq.getAction().equals(
-                SurveyTaskRequest.DELETE_QUESTION_TRANSLATION_ACTION)) {
+        } else if (stReq.getAction().equals(SurveyTaskRequest.DELETE_QUESTION_TRANSLATION_ACTION)){
             TranslationDao tDao = new TranslationDao();
             tDao.delete(tDao.getByKey(id));
-        } else if (stReq.getAction().equals("deleteDeviceSurveyJobQueue")) {
+        } else if (stReq.getAction().equals(SurveyTaskRequest.DELETE_DSJQ_ACTION)) {
             DeviceSurveyJobQueueDAO dsjqDao = new DeviceSurveyJobQueueDAO();
             dsjqDao.deleteJob(id);
-        } else if (stReq.getAction().equals(
-                SurveyTaskRequest.REMAP_SURVEY_INSTANCE)) {
+        } else if (stReq.getAction().equals(SurveyTaskRequest.DELETE_DFJQ_ACTION)) {
+            DeviceFileJobQueueDAO dfjqDao = new DeviceFileJobQueueDAO();
+            dfjqDao.delete(dfjqDao.getByKey(id));
+        } else if (stReq.getAction().equals(SurveyTaskRequest.REMAP_SURVEY_INSTANCE)) {
             String idList = stReq.getIdList();
             if (idList != null && idList.trim().length() > 0) {
                 String[] ids = idList.split(",");

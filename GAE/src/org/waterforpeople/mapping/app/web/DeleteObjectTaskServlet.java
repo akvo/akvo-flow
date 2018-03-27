@@ -76,8 +76,7 @@ public class DeleteObjectTaskServlet extends AbstractRestApiServlet {
         int deleted_count = 0;
         boolean is_finished = false;
 
-        final DatastoreService dss = DatastoreServiceFactory
-                .getDatastoreService();
+        final DatastoreService dss = DatastoreServiceFactory.getDatastoreService();
         final long start = System.currentTimeMillis();
         while (System.currentTimeMillis() - start < 16384) {
 
@@ -110,7 +109,7 @@ public class DeleteObjectTaskServlet extends AbstractRestApiServlet {
                 }
             }
         }
-        System.err.println("*** deleted " + deleted_count + " entities form "
+        System.err.println("*** deleted " + deleted_count + " entities from "
                 + kind);
 
         if (is_finished) {
