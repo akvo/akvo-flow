@@ -42,10 +42,6 @@ RUN curl -L -O https://raw.githubusercontent.com/technomancy/leiningen/stable/bi
     chmod a+x /usr/local/bin/lein && \
     lein
 
-COPY docker/startup.sh docker/build.sh /usr/local/bin/
+ENTRYPOINT ["/app/src/startup.sh"]
 
-RUN chmod a+x /usr/local/bin/*.sh
-
-ENTRYPOINT ["/usr/local/bin/startup.sh"]
-
-CMD ["/usr/local/bin/build.sh"]
+CMD ["/app/src/build.sh"]
