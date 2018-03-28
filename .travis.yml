@@ -15,4 +15,4 @@ before_install:
   - docker pull google/cloud-sdk:latest
 
 script:
-  - "./docker/bootstrap-build.sh && ./ci/deploy.sh"
+  - "./ci/bootstrap-build.sh && ./ci/deploy.sh"
