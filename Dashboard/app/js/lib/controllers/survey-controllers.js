@@ -911,7 +911,7 @@ FLOW.questionControl = Ember.ArrayController.create({
   },
 
   deleteQuestion: function (questionId) {
-    qgId = this.content.get('questionGroupId');
+    var question, qgId, qOrder;
     question = FLOW.store.find(FLOW.Question, questionId);
     qgId = question.get('questionGroupId');
     qOrder = question.get('order');
