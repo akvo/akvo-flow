@@ -81,15 +81,18 @@ public class CronCommanderServlet extends HttpServlet {
     private void purgeDeviceFileJobQueueRecords() {
         Calendar deadline = Calendar.getInstance();
         deadline.add(Calendar.YEAR, -2); //two years ago
-        log.info("Starting scan for DFJQ entries fulfilled or older than: " + deadline);
+        log.info("Starting scan for DFJQ entries fulfilled or older than: " + deadline.getTime());
         DeviceFileJobQueueDAO dfjqDao = new DeviceFileJobQueueDAO();
-        List<DeviceFileJobQueue> dfjqList = dfjqDao.list(null); //ever null?
+        List<DeviceFileJobQueue> dfjqList = dfjqDao.list("all"); //ever null?
+        int retirees = 0;
         for (DeviceFileJobQueue item : dfjqList) {
-            if (deadline.before(item.getCreatedDateTime())) {
+            if (item.getCreatedDateTime() != null
+                    && deadline.getTime().after(item.getCreatedDateTime())) {
                 //cheap case - old
                 log.info("Deleting old DFJQ entry: " + item.getKey().getId());
                 SurveyTaskUtil.spawnDeleteTask(SurveyTaskRequest.DELETE_DFJQ_ACTION,
                         item.getKey().getId());
+                retirees++;
             } else {//check the (now protected)image file in S3 store - need credentials
                 try {
                     String bucket = 
@@ -101,13 +104,15 @@ public class CronCommanderServlet extends HttpServlet {
                         log.info("Deleting fulfilled DFJQ entry: " + item.getKey().getId());
                         SurveyTaskUtil.spawnDeleteTask(SurveyTaskRequest.DELETE_DFJQ_ACTION,
                                 item.getKey().getId());
+                        retirees++;
                     }
                 } catch (Exception e) {
                     // catchall
-                    log.info("Error while connecing to " + item.getFileName() +"\n\n" + e.getMessage());
+                    log.warning("Error while connecing to " + item.getFileName() +"\n\n" + e.getMessage());
                 }
             }
         }
+        log.info("Attempted to retire "+retirees+" of " + dfjqList.size());
     }
 
     private void generateNotifications() {
