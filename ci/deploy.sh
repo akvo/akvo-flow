@@ -14,6 +14,9 @@ function log {
 #    exit 0
 #fi
 
+openssl aes-256-cbc -K $encrypted_ac356ff71e5e_key -iv $encrypted_ac356ff71e5e_iv \
+	-in ci/akvoflow-uat1.p12.enc -out ci/akvoflow-uat1.p12 -d
+
 log Authentication with gcloud
 docker run -ti google/cloud-sdk:latest gcloud version
 
