@@ -814,7 +814,7 @@ FLOW.questionGroupControl = Ember.ArrayController.create({
 
   // execute group delete
   deleteQuestionGroup: function (questionGroupId) {
-    var questionGroup, questionsGroupsInSurvey, sId, qgOrder;
+    var questionGroup, sId, qgOrder;
     sId = FLOW.selectedControl.selectedSurvey.get('keyId');
     questionGroup = FLOW.store.find(FLOW.QuestionGroup, questionGroupId);
     qgOrder = questionGroup.get('order');
