@@ -447,7 +447,8 @@ FLOW.QuestionView = FLOW.View.extend({
   throttleTimer: null,
 
   validateVariableName: function(args) {
-    var selectedQuestion = FLOW.selectedControl.selectedQuestion
+    var self = this;
+    var selectedQuestion = FLOW.selectedControl.selectedQuestion;
     var questionKeyId = selectedQuestion.get('keyId');
     var variableName = this.get('variableName') || "";
     if (FLOW.Env.mandatoryQuestionID && variableName.match(/^\s*$/)) {
@@ -464,7 +465,12 @@ FLOW.QuestionView = FLOW.View.extend({
             type: 'POST',
             success: function(data) {
               if (data.success) {
-                args.success();
+                //check for special characters once more
+                if (!self.get('variableName').match(/^[A-Za-z0-9_\-]*$/)) {
+                  args.failure(Ember.String.loc('_variable_name_only_alphanumeric'));
+                } else {
+                  args.success();
+                }
               } else {
                 args.failure(data.reason);
               }
