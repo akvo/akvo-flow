@@ -115,8 +115,7 @@ public class SurveyTaskServlet extends AbstractRestApiServlet {
                 }
                 if (stReq.getCursor() != null) {
                     List<SurveyInstance> nextSet = siDao
-                            .listSurveyInstanceBySurveyId(stReq.getId(), stReq
-                                    .getCursor());
+                            .listSurveyInstanceBySurveyId(stReq.getId(), stReq.getCursor());
                     if (nextSet != null && nextSet.size() > 0) {
                         StringBuffer buffer = new StringBuffer();
                         Queue queue = QueueFactory.getDefaultQueue();
@@ -127,7 +126,8 @@ public class SurveyTaskServlet extends AbstractRestApiServlet {
                             buffer.append(nextSet.get(i).getKey().getId());
                         }
                         queue.add(TaskOptions.Builder.withUrl("/app_worker/surveytask")
-                                .param("action", SurveyTaskRequest.REMAP_SURVEY_INSTANCE)
+                                .param(SurveyTaskRequest.ACTION_PARAM,
+                                        SurveyTaskRequest.REMAP_SURVEY_INSTANCE)
                                 .param(SurveyTaskRequest.ID_PARAM, stReq.getId().toString())
                                 .param(SurveyTaskRequest.ID_LIST_PARAM, buffer.toString())
                                 .param(SurveyTaskRequest.CURSOR_PARAM,

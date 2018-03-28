@@ -1,5 +1,5 @@
 /*
- *  Copyright (C) 2010-2012 Stichting Akvo (Akvo Foundation)
+ *  Copyright (C) 2010-2012, 2018 Stichting Akvo (Akvo Foundation)
  *
  *  This file is part of Akvo FLOW.
  *
@@ -16,24 +16,19 @@
 
 package org.waterforpeople.mapping.app.web;
 
-import java.io.BufferedInputStream;
 import java.io.IOException;
 import java.net.HttpURLConnection;
-import java.net.URLConnection;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
 import java.util.logging.Logger;
-import java.util.zip.ZipInputStream;
-
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import org.waterforpeople.mapping.app.web.dto.SurveyTaskRequest;
 
-import com.gallatinsystems.common.Constants;
 import com.gallatinsystems.common.util.S3Util;
 import com.gallatinsystems.device.dao.DeviceFileJobQueueDAO;
 import com.gallatinsystems.device.domain.DeviceFileJobQueue;
@@ -44,10 +39,7 @@ import com.gallatinsystems.survey.dao.SurveyDAO;
 import com.gallatinsystems.survey.dao.SurveyTaskUtil;
 import com.google.appengine.api.datastore.Key;
 
-/**
- * @author stellan
- *
- */
+
 public class CronCommanderServlet extends HttpServlet {
 
     /**
@@ -78,12 +70,16 @@ public class CronCommanderServlet extends HttpServlet {
         }
     }
 
+    /**
+     * scans for and deletes DeviceFileJobQueue entries that are either more than two years old
+     * or that refer to files that have been successfully uploaded.
+     */
     private void purgeDeviceFileJobQueueRecords() {
         Calendar deadline = Calendar.getInstance();
         deadline.add(Calendar.YEAR, -2); //two years ago
-        log.info("Starting scan for DFJQ entries fulfilled or older than: " + deadline.getTime());
+        log.info("Starting scan for DFJQ entries, fulfilled or older than: " + deadline.getTime());
         DeviceFileJobQueueDAO dfjqDao = new DeviceFileJobQueueDAO();
-        List<DeviceFileJobQueue> dfjqList = dfjqDao.list("all"); //ever null?
+        List<DeviceFileJobQueue> dfjqList = dfjqDao.list("all");
         int retirees = 0;
         for (DeviceFileJobQueue item : dfjqList) {
             if (item.getCreatedDateTime() != null
@@ -99,6 +95,8 @@ public class CronCommanderServlet extends HttpServlet {
                             com.gallatinsystems.common.util.PropertyUtil.getProperty("s3bucket");
                     HttpURLConnection conn = (HttpURLConnection)
                             S3Util.getConnection(bucket, "images/" + item.getFileName());
+                    log.info("Checking for " + item.getFileName() + 
+                            " : " + conn.getResponseCode() + " " + conn.getResponseMessage());
                     if (conn.getResponseCode() == 200) {
                         // best case - fulfilled
                         log.info("Deleting fulfilled DFJQ entry: " + item.getKey().getId());
