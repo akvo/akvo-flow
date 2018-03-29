@@ -29,6 +29,7 @@ FLOW.inspectDataTableView = FLOW.View.extend({
     FLOW.dateControl.set('toDate', null);
     FLOW.dateControl.set('fromDate', null);
     FLOW.surveyInstanceControl.set('pageNumber', 0);
+    FLOW.surveyInstanceControl.set('currentContents', null);
     FLOW.locationControl.set('selectedLevel1', null);
     FLOW.locationControl.set('selectedLevel2', null);
   },
