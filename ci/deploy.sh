@@ -41,4 +41,4 @@ gcloud app deploy GAE/target/akvo-flow/WEB-INF/appengine-web.xml --promote --ver
 
 log Updating default service version dataprocessor
 
-gcloud app deploy GAE/target/akvo-flow/WEB-INF/appengine-web.xml --promote --version=dataprocessor
+gcloud app deploy GAE/target/akvo-flow/WEB-INF/appengine-web.xml --no-promote --version=dataprocessor
