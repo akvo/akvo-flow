@@ -16,7 +16,6 @@ before_install:
   - if [[ ! -f "$HOME/google-cloud-sdk/bin/gcloud" ]]; then rm -rf "$HOME/google-cloud-sdk";
     curl https://sdk.cloud.google.com | bash > /dev/null; fi
   - pip install pyopenssl
-  - which gcloud
 
 script:
   - "./ci/bootstrap-build.sh /app/src/ci/build.sh && ./ci/deploy.sh"
