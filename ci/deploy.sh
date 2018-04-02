@@ -35,6 +35,10 @@ log Requesting UAT1 config
 curl -s -o GAE/target/akvo-flow/WEB-INF/appengine-web.xml \
      "https://$GH_USER:$GH_TOKEN@raw.githubusercontent.com/akvo/$CONFIG_REPO/master/akvoflow-uat1/appengine-web.xml"
 
+log Update __VERSION__
+
+sed -i -e "s/__VERSION__/$(git describe)/" GAE/target/akvo-flow/admin/js/app.js
+
 log Updating default service version 1
 
 gcloud app deploy GAE/target/akvo-flow/WEB-INF/appengine-web.xml --promote --version=1
