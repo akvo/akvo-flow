@@ -3,6 +3,7 @@
 *.class
 *.rpc
 *.swp
+*.p12
 
 # Eclipse files
 .classpath
