@@ -29,3 +29,16 @@ openssl aes-256-cbc -K $encrypted_ac356ff71e5e_key -iv $encrypted_ac356ff71e5e_i
 gcloud auth activate-service-account "${SERVICE_ACCOUNT_ID}" --key-file=ci/akvoflow-uat1.p12
 gcloud config set project akvoflow-uat1
 gcloud config set compute/zone europe-west1-d
+
+log Requesting UAT1 config
+
+curl -s -o GAE/target/akvo-flow/WEB-INF/appengine-web.xml \
+     "https://$GH_USER:$GH_TOKEN@raw.githubusercontent.com/akvo/$CONFIG_REPO/master/akvoflow-uat1/appengine-web.xml"
+
+log Updating default service version 1
+
+gcloud app deploy GAE/target/akvo-flow/WEB-INF/appengine-web.xml --promote --version=1
+
+log Updating default service version dataprocessor
+
+gcloud app deploy GAE/target/akvo-flow/WEB-INF/appengine-web.xml --promote --version=dataprocessor
