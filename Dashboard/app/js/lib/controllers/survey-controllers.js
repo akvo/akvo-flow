@@ -632,6 +632,7 @@ FLOW.surveyControl = Ember.ArrayController.create({
   }.observes('FLOW.selectedControl.selectedSurveyGroup'),
 
   selectFirstForm: function() {
+    if(FLOW.selectedControl.selectedSurvey) return; // ignore if form is already selected
     if (this.get('content') && this.content.get('isLoaded')) {
       var form = this.content.get('firstObject');
       if (form) {
