@@ -20,7 +20,6 @@ import javax.servlet.http.HttpServletRequest;
 
 import com.gallatinsystems.framework.rest.RestError;
 import com.gallatinsystems.framework.rest.RestRequest;
-import com.gallatinsystems.survey.dao.DeviceSurveyJobQueueDAO;
 
 public class SurveyTaskRequest extends RestRequest {
     public static final String ID_PARAM = "id";
