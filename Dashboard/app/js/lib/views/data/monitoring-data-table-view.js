@@ -22,7 +22,7 @@ FLOW.MonitoringDataTableView = FLOW.View.extend({
   },
 
   showSurveyInstanceDetails: function (evt) {
-    FLOW.questionAnswerControl.doQuestionAnswerQuery(evt.context.get('keyId'));
+    FLOW.questionAnswerControl.doQuestionAnswerQuery(evt.context);
     $('.si_details').hide();
     $('tr[data-flow-id="si_details_' + evt.context.get('keyId') + '"]').show();
   },
@@ -98,6 +98,12 @@ FLOW.MonitoringDataTableView = FLOW.View.extend({
   hasPrevPage: function () {
     return FLOW.router.surveyedLocaleController.get('pageNumber');
   }.property('FLOW.router.surveyedLocaleController.pageNumber'),
+  
+  willDestroyElement: function () {
+    FLOW.router.surveyedLocaleController.set('currentContents', null);
+    FLOW.metaControl.set('numSLLoaded',null)
+    FLOW.router.surveyedLocaleController.set('pageNumber',0)
+  }
 });
 
 /**

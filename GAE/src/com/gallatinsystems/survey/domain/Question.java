@@ -21,7 +21,6 @@ import com.gallatinsystems.framework.domain.BaseDomain;
 import javax.jdo.annotations.NotPersistent;
 import javax.jdo.annotations.PersistenceCapable;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
@@ -181,12 +180,6 @@ public class Question extends BaseDomain {
 
     public void setTranslationMap(Map<String, Translation> translationMap) {
         this.translationMap = translationMap;
-    }
-
-    public void setTranslationMap(HashMap<String, Translation> transMap) {
-        if (transMap != null) {
-            translationMap = new TreeMap<String, Translation>(transMap);
-        }
     }
 
     public void addQuestionOption(QuestionOption questionOption) {
@@ -396,6 +389,7 @@ public class Question extends BaseDomain {
 
     public void setVariableName(String variableName) {
         this.variableName = variableName;
+        questionId = null; //ensure correct fallback
     }
 
     public Long getCascadeResourceId() {
