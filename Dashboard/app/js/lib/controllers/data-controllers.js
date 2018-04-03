@@ -347,9 +347,18 @@ FLOW.questionAnswerControl = Ember.ArrayController.create({
 	return allIterations;
   },
 
-  doQuestionAnswerQuery: function (surveyInstanceId) {
+  doQuestionAnswerQuery: function (surveyInstance) {
+    var formId = surveyInstance.get('surveyId');
+    var form = FLOW.surveyControl.filter(function (form) {
+      return form.get('keyId') === formId;
+    }).get(0);
+
+    if (formId !== FLOW.selectedControl.selectedSurvey.get('keyId')) {
+      FLOW.selectedControl.set('selectedSurvey', form);
+    }
+
     this.set('content', FLOW.store.findQuery(FLOW.QuestionAnswer, {
-      'surveyInstanceId': surveyInstanceId
+      'surveyInstanceId': surveyInstance.get('keyId')
     }));
   },
 });
