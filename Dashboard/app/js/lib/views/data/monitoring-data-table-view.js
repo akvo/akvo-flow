@@ -22,7 +22,7 @@ FLOW.MonitoringDataTableView = FLOW.View.extend({
   },
 
   showSurveyInstanceDetails: function (evt) {
-    FLOW.questionAnswerControl.doQuestionAnswerQuery(evt.context.get('keyId'));
+    FLOW.questionAnswerControl.doQuestionAnswerQuery(evt.context);
     $('.si_details').hide();
     $('tr[data-flow-id="si_details_' + evt.context.get('keyId') + '"]').show();
   },
