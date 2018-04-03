@@ -23,6 +23,7 @@ import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
 import java.util.logging.Logger;
+
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -42,12 +43,9 @@ import com.google.appengine.api.datastore.Key;
 
 public class CronCommanderServlet extends HttpServlet {
 
-    /**
-	 * 
-	 */
+    private static final int TWO_YEARS_AGO = -2;
     private static final long serialVersionUID = 2287175129835274533L;
-    private static final Logger log = Logger
-            .getLogger(CronCommanderServlet.class.getName());
+    private static final Logger log = Logger.getLogger(CronCommanderServlet.class.getName());
 
     public void doGet(HttpServletRequest req, HttpServletResponse resp)
             throws IOException {
@@ -76,7 +74,7 @@ public class CronCommanderServlet extends HttpServlet {
      */
     private void purgeDeviceFileJobQueueRecords() {
         Calendar deadline = Calendar.getInstance();
-        deadline.add(Calendar.YEAR, -2); //two years ago
+        deadline.add(Calendar.YEAR, TWO_YEARS_AGO);
         log.info("Starting scan for DFJQ entries, fulfilled or older than: " + deadline.getTime());
         DeviceFileJobQueueDAO dfjqDao = new DeviceFileJobQueueDAO();
         List<DeviceFileJobQueue> dfjqList = dfjqDao.list("all");
@@ -105,12 +103,11 @@ public class CronCommanderServlet extends HttpServlet {
                         retirees++;
                     }
                 } catch (Exception e) {
-                    // catchall
-                    log.warning("Error while connecing to " + item.getFileName() +"\n\n" + e.getMessage());
+                    log.warning("Error while connecing to " + item.getFileName() +"\n" + e.getMessage());
                 }
             }
         }
-        log.info("Attempted to retire "+retirees+" of " + dfjqList.size());
+        log.info("Attempted to retire " + retirees + " of " + dfjqList.size());
     }
 
     private void generateNotifications() {
@@ -137,8 +134,9 @@ public class CronCommanderServlet extends HttpServlet {
         List<Key> surveyIdList = surveyDao.listSurveyIds();
         List<Long> ids = new ArrayList<Long>();
 
-        for (Key key : surveyIdList)
+        for (Key key : surveyIdList) {
             ids.add(key.getId());
+        }
 
         for (DeviceSurveyJobQueue item : dsjqDao.listAllJobsInQueue()) {
             Long dsjqSurveyId = item.getSurveyID();
