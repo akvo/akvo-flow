@@ -149,7 +149,9 @@ public class SurveyTaskServlet extends AbstractRestApiServlet {
                     }
                 }
                 break;
-            default:log.warning("Unknown action.");
+            default:
+                log.warning("Unknown action.");
+                break;
         }
         return null;
     }
