@@ -283,10 +283,14 @@ FLOW.questionAnswerControl = Ember.ArrayController.create({
   // over a set of responses to questions in a specific question group, ordered
   // by question order. For repeat question groups two adjacent sub lists
   // represent two iterations of responses for that group
-  contentByGroup: Ember.computed('content.isLoaded', function(key, value) {
-    var content = Ember.get(this, 'content'),
-        self = this;
-    if (content) {
+  contentByGroup: Ember.computed('content.isLoaded',
+                                  'FLOW.questionContol.content.isLoaded',
+                                  'FLOW.questionContol.content.isLoaded', function(key, value) {
+    var content = Ember.get(this, 'content'), self = this;
+    var questions = FLOW.questionControl.get('content');
+    var questionGroups = FLOW.questionGroupControl.get('content');
+
+    if (content && questions && questionGroups) {
 		var surveyQuestions = FLOW.questionControl.get('content');
 		var groups = FLOW.questionGroupControl.get('content');
 		var allResponses = [];
