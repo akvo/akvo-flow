@@ -32,10 +32,11 @@ if [[ ! -d "$LOCAL_CACHE" ]]; then
 fi
 
 if [[ ! -f "$LOCAL_CACHE/$APP_ENGINE_SDK_FILE" ]]; then
+    (
     cd "$LOCAL_CACHE"
     curl -L -O "http://central.maven.org/maven2/com/google/appengine/appengine-java-sdk/$APP_ENGINE_SDK_VERSION/$APP_ENGINE_SDK_FILE"
     unzip "$APP_ENGINE_SDK_FILE"
-    cd ..
+    )
 fi
 
 docker run \

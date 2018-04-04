@@ -6,13 +6,13 @@ function log {
    echo "$(date +"%T") - INFO - $*"
 }
 
-#if [[ "${TRAVIS_BRANCH}" != "develop" ]]; then
-#    exit 0
-#fi
+if [[ "${TRAVIS_BRANCH}" != "develop" ]]; then
+  exit 0
+fi
 
-#if [[ "${TRAVIS_PULL_REQUEST}" != "false" ]]; then
-#    exit 0
-#fi
+if [[ "${TRAVIS_PULL_REQUEST}" != "false" ]]; then
+    exit 0
+fi
 
 log Making sure gcloud and app-engine-java are installed and up to date
 
@@ -23,7 +23,8 @@ which gcloud
 
 log Authentication with gcloud
 
-openssl aes-256-cbc -K $encrypted_ac356ff71e5e_key -iv $encrypted_ac356ff71e5e_iv \
+# shellcheck disable=SC2154
+openssl aes-256-cbc -K "$encrypted_ac356ff71e5e_key" -iv "$encrypted_ac356ff71e5e_iv" \
 	-in ci/akvoflow-uat1.p12.enc -out ci/akvoflow-uat1.p12 -d
 
 gcloud auth activate-service-account "${SERVICE_ACCOUNT_ID}" --key-file=ci/akvoflow-uat1.p12
