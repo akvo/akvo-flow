@@ -1,5 +1,11 @@
 # Akvo Flow Release Notes
 ----
+# Akvo Flow Dashboard v1.9.30.1 - Deterministic Daisy (Hotfix 1)
+Date: 04 April 2018
+
+## Resolved issues
+* **Bug fixes** - Fix issue with unidentified users causing dashboard translations and reports exports not to work after v1.9.30 release [#2572]
+
 # Akvo Flow Dashboard v1.9.30 - Deterministic Daisy
 Date: 03 April 2018
 
