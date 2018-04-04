@@ -80,21 +80,21 @@ public class SurveyTaskServlet extends AbstractRestApiServlet {
             case SurveyTaskRequest.DELETE_SURVEY_ACTION:
                 SurveyDAO surveyDao = new SurveyDAO();
                 Survey s = surveyDao.getByKey(id);
-                if(s != null) {
+                if (s != null) {
                     surveyDao.delete(s);
                 }
                 break;
             case SurveyTaskRequest.DELETE_QUESTION_GROUP_ACTION:
                 QuestionGroupDao qgDao = new QuestionGroupDao();
                 QuestionGroup qg = qgDao.getByKey(id);
-                if(qg != null) {
+                if (qg != null) {
                     qgDao.delete(qg);
                 }
                 break;
             case SurveyTaskRequest.DELETE_QUESTION_ACTION:
                 QuestionDao qDao = new QuestionDao();
                 Question q = qDao.getByKey(id);
-                if( q != null) {
+                if (q != null) {
                     qDao.delete(q);
                 }
                 break;
