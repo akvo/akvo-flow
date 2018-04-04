@@ -101,8 +101,14 @@ public class BaseDAO<T extends BaseDomain> {
      */
     public <E extends BaseDomain> E save(E obj) {
         PersistenceManager pm = PersistenceFilter.getManager();
-        final Long who = (Long) SecurityContextHolder.getContext()
+        Long who = 0L;
+        final Object credentials = SecurityContextHolder.getContext()
                 .getAuthentication().getCredentials();
+        if (credentials instanceof Long) {
+            who = (Long) credentials;
+        } else {
+            log.warning("saver credentials: " + credentials);
+        }
         obj.setLastUpdateDateTime(new Date());
         obj.setLastUpdateUserId(who);
         if (obj.getCreatedDateTime() == null) {
@@ -123,8 +129,14 @@ public class BaseDAO<T extends BaseDomain> {
      */
     public <E extends BaseDomain> Collection<E> save(Collection<E> objList) {
         if (objList != null) {
-            final Long who = (Long) SecurityContextHolder.getContext()
+            Long who = 0L;
+            final Object credentials = SecurityContextHolder.getContext()
                     .getAuthentication().getCredentials();
+            if (credentials instanceof Long) {
+                who = (Long) credentials;
+            } else {
+                log.warning("saver credentials: " + credentials);
+            }
             for (E item : objList) {
                 item.setLastUpdateDateTime(new Date());
                 item.setLastUpdateUserId(who);
