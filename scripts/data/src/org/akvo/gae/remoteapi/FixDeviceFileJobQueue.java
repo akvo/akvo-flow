@@ -17,25 +17,15 @@
 package org.akvo.gae.remoteapi;
 
 import static org.akvo.gae.remoteapi.DataUtils.batchSaveEntities;
-import static org.akvo.gae.remoteapi.DataUtils.batchDelete;
 
-import java.io.IOException;
-import java.text.DateFormat;
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.HashMap;
-
-import org.codehaus.jackson.map.ObjectMapper;
-import org.codehaus.jackson.type.TypeReference;
 
 import com.google.appengine.api.datastore.DatastoreService;
 import com.google.appengine.api.datastore.Entity;
 import com.google.appengine.api.datastore.FetchOptions;
-import com.google.appengine.api.datastore.Key;
 import com.google.appengine.api.datastore.PreparedQuery;
 import com.google.appengine.api.datastore.Query;
 import com.google.appengine.api.datastore.Query.Filter;
@@ -50,7 +40,7 @@ public class FixDeviceFileJobQueue implements Process {
     private int allDevicesJobs = 0, jsonDeviceJobs = 0;
     private Map<Long, String> devices = new HashMap<>();
     private List<Entity>fixupList = new ArrayList();
-    private boolean doBatch = true; // any failure will mean nothing is updated
+    private boolean doBatch = true;
     
     @Override
     public void execute(DatastoreService ds, String[] args) throws Exception {
@@ -58,9 +48,7 @@ public class FixDeviceFileJobQueue implements Process {
         processDeviceFileJobQueue(ds);
 
         System.out.printf("#DeviceFileJobs:  %d/%d with bad filenames\n", jsonDeviceJobs, allDevicesJobs);
-        
-
-    }
+     }
 
         
     private void processDeviceFileJobQueue(DatastoreService ds) throws InterruptedException {
@@ -68,7 +56,7 @@ public class FixDeviceFileJobQueue implements Process {
         System.out.println("#Processing DeviceFileJobQueue");
         
         //find all jobs made since we changed from wfpPhotonnnn format
-        final Filter f = new FilterPredicate("fileName", FilterOperator.LESS_THAN, "wfp");
+        final Filter f = new FilterPredicate("fileName", FilterOperator.LESS_THAN, "wfp"); 
         final Filter f2 = new FilterPredicate("fileName", FilterOperator.GREATER_THAN, "ff");
         final Query group_q = new Query("DeviceFileJobQueue");//.setFilter(f).setFilter(f2);
         final PreparedQuery pq = ds.prepare(group_q);
@@ -86,14 +74,19 @@ public class FixDeviceFileJobQueue implements Process {
                 if (!doBatch) {
                     ds.put(job);
                     Thread.sleep(100);//short delay to lessen server load
-                } else if (fixupList.size()>99){
+                } else if (fixupList.size() > 99) {
+                    // save once we have 100 victims, so that an occasional 
+                    // db failure will not ruin everything
                     System.out.printf("#Fixing %d Jobs\n",fixupList.size());
                     batchSaveEntities(ds, fixupList);
                     fixupList.clear();
                 }
 
             }
-//            System.out.printf("#INF All-device job %d '%s'\n", dfjId, name);
+        }
+        if (doBatch) {
+            System.out.printf("#Fixing final %d Jobs\n",fixupList.size());
+            batchSaveEntities(ds, fixupList);
         }
     }
 
