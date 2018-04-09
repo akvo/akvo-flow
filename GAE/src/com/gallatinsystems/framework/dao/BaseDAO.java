@@ -16,6 +16,27 @@
 
 package com.gallatinsystems.framework.dao;
 
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+import java.util.logging.Logger;
+
+import javax.jdo.JDOObjectNotFoundException;
+import javax.jdo.PersistenceManager;
+
+import net.sf.jsr107cache.CacheException;
+
+import org.akvo.flow.domain.SecuredObject;
+import org.datanucleus.store.appengine.query.JDOCursorHelper;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
+
 import com.gallatinsystems.common.Constants;
 import com.gallatinsystems.framework.domain.BaseDomain;
 import com.gallatinsystems.framework.servlet.PersistenceFilter;
@@ -32,7 +53,7 @@ import com.google.appengine.api.datastore.KeyFactory;
 import net.sf.jsr107cache.CacheException;
 
 import org.akvo.flow.domain.SecuredObject;
-import com.google.appengine.datanucleus.query.JDOCursorHelper;
+import org.datanucleus.store.appengine.query.JDOCursorHelper;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 
@@ -101,7 +122,14 @@ public class BaseDAO<T extends BaseDomain> {
      */
     public <E extends BaseDomain> E save(E obj) {
         PersistenceManager pm = PersistenceFilter.getManager();
-        Long who = org.waterforpeople.mapping.app.web.CurrentUserServlet.getCurrentUserId();
+        Long who = 0L;
+        final Object credentials = SecurityContextHolder.getContext()
+                .getAuthentication().getCredentials();
+        if (credentials instanceof Long) {
+            who = (Long) credentials;
+        } else {
+            log.warning("saver credentials: " + credentials);
+        }
         obj.setLastUpdateDateTime(new Date());
         obj.setLastUpdateUserId(who);
         if (obj.getCreatedDateTime() == null) {
@@ -122,7 +150,14 @@ public class BaseDAO<T extends BaseDomain> {
      */
     public <E extends BaseDomain> Collection<E> save(Collection<E> objList) {
         if (objList != null) {
-            Long who = org.waterforpeople.mapping.app.web.CurrentUserServlet.getCurrentUserId();
+            Long who = 0L;
+            final Object credentials = SecurityContextHolder.getContext()
+                    .getAuthentication().getCredentials();
+            if (credentials instanceof Long) {
+                who = (Long) credentials;
+            } else {
+                log.warning("saver credentials: " + credentials);
+            }
             for (E item : objList) {
                 item.setLastUpdateDateTime(new Date());
                 item.setLastUpdateUserId(who);
