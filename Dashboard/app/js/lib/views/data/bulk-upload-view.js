@@ -53,34 +53,34 @@ FLOW.uploader = Ember.Object.create({
 
     // Handle file add event
     r.on('fileAdded', function (file) {
-      var li;
-
+      var li = $('#resumable-file-'+file.uniqueIdentifier);
       FLOW.uploader.set('cancelled', false);
 
       // Show progress pabr
       $('.resumable-list').show();
+      if (li.length === 0) {
+        $(".resumable-list").append("<li id='resumable-file-"+ file.uniqueIdentifier + "'></li>");
+      }
 
       // Add the file to the list
-      li = $('.resumable-file-' + file.uniqueIdentifier);
       if (file.file.type !== "application/zip" && file.file.type !== "application/x-zip-compressed") {
         $(".resumable-progress").hide();
-        $(".resumable-list").append("<li class = 'resumable-file-'"  + file.uniqueIdentifier + "'>"
-                + "<span class = 'resumable-file-name'"  + file.fileName + "</span>"
-                + "<img src = 'images/infolnc.png' class = 'unsupportedFile'> "
-                +  Ember.String.loc('_unsupported_file_type') + "</li>" );
-        $('.resumable-list').css({
+        $("#resumable-file-"+ file.uniqueIdentifier).html(
+          "<span class='resumable-file-name'>"+file.fileName+"</span>"
+                +  Ember.String.loc('_unsupported_file_type')
+                + "<img src='images/infolnc.png' class='unsupportedFile uploadStatus'> ");
+        $("#resumable-file-"+ file.uniqueIdentifier).css({
             color: '#FF0000'
-        })
+        });
+        r.removeFile(file); //remove file
       } else {
         $('.resumable-progress').show();
-        if (li.length === 0) {
-          $('.resumable-list').append('<li class="resumable-file-' + file.uniqueIdentifier
-            + '"><span class="resumable-file-name"></span>Uploading...  <span class="resumable-file-progress"></span>');
-        }
-        
-        $('.resumable-file-' + file.uniqueIdentifier + ' .resumable-file-name').html(file.fileName);
+        $("#resumable-file-"+ file.uniqueIdentifier).html(
+          '<span class="resumable-file-name">'+file.fileName+'</span>'
+          +'<span id="resumable-file-progress-'+file.uniqueIdentifier+'" class="uploadStatus"></span>'
+          +'<div id="progress-bar-'+file.uniqueIdentifier+'" class="progress-bar"></div>');
 
-        $('.progress-bar').css({
+        $('#progress-bar-'+file.uniqueIdentifier).css({
           width: '0%'
         });
         // Actually start the upload
@@ -126,12 +126,10 @@ FLOW.uploader = Ember.Object.create({
       }
 
       // Reflect that the file upload has completed
-      $('.resumable-list').append('<li class="resumable-file-' + file.uniqueIdentifier
-                       + '">' + '<span class="resumable-file-name">'+file.fileName+'</span>' 
-                       + '<img src = "images/tickBox.svg" class = "uploadComplete">' + ' ' 
-                       + Ember.String.loc('_upload_complete')
-                       + '</li>'
-                     );
+      $("#resumable-file-"+ file.uniqueIdentifier).html(
+        '<span class="resumable-file-name">'+file.fileName+'</span>'
+        +'<img src = "images/tickBox.svg" class = "uploadComplete uploadStatus">'
+      );
       setTimeout(function() {
         $.ajax({
           url : target,
@@ -145,13 +143,13 @@ FLOW.uploader = Ember.Object.create({
 
     r.on('fileError', function (file, message) {
       // Reflect that the file upload has resulted in error
-      $('.resumable-file-' + file.uniqueIdentifier + ' .resumable-file-progress').html('(file could not be uploaded: ' + message + ')');
+      $('#resumable-file-progress-'+file.uniqueIdentifier).html('('+ Ember.String.loc('_file_could_not_upload')+': ' + message + ')');
     });
 
     r.on('fileProgress', function (file) {
       // Handle progress for both the file and the overall upload
-      $('.resumable-file-' + file.uniqueIdentifier + ' .resumable-file-progress').html(Math.floor(file.progress() * 100) + '%');
-      $('.progress-bar').css({
+      $('#resumable-file-progress-'+file.uniqueIdentifier).html(Ember.String.loc('_uploading')+Math.floor(file.progress() * 100) + '%');
+      $('#progress-bar-'+file.uniqueIdentifier).css({
         width: Math.floor(r.progress() * 100) + '%'
       });
     });
