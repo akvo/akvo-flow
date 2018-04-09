@@ -4051,7 +4051,6 @@ label.languageSelector:after {
     display: block;
     clear: both;
     width: 97%;
-    margin: 0.5em auto 1.5em auto;
     background: rgb(240, 240, 240);
     padding: 1em 1%;
     -o-border-radius: 0.3em;
@@ -4462,11 +4461,8 @@ table.surveyDetails {
 }
 
 .progress-bar {
-    position: absolute;
     height: 10px;
-    top: 0;
     left: -1px;
-    bottom: 0;
     background: rgb(191, 210, 85);
     /* Old browsers */
     /* IE9 SVG, needs conditional override of 'filter' to 'none' */
@@ -4515,7 +4511,6 @@ table.surveyDetails {
 
 .resumable-list {
     display: table;
-    text-align: center;
     overflow: auto;
     display: none;
     margin: 0 auto;
@@ -4545,6 +4540,10 @@ table.surveyDetails {
   display:inline;
   width:15px;
   height:15px;
+}
+
+.uploadStatus {
+  float: right
 }
 
 .resumable-file-progress {
