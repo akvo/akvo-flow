@@ -288,15 +288,15 @@ public class QuestionRestService {
         statusDto.setMessage("No questions to change");
         List<Question> saveList = new ArrayList<>();
 
-        //Loop over questions
+        // Loop over questions
         final List<QuestionDto> requestList = payLoad.getQuestions();
         if (requestList != null && requestList.size() > 0) {
             for (final QuestionDto questionDto : requestList) {
-    
+
                 if (questionDto != null) {
                     Long keyId = questionDto.getKeyId();
                     Question q;
-        
+
                     // if the questionDto has a key, try to get the question.
                     if (keyId != null) {
                         q = questionDao.getByKey(keyId);
@@ -311,16 +311,16 @@ public class QuestionRestService {
                                 q.setType(Question.Type.valueOf(questionDto.getType()
                                         .toString()));
                             saveList.add(q);
-        
-                        } else { //missing in db - fail
+
+                        } else { // missing in db - fail
                             statusDto.setMessage("Cannot change unknown question " + keyId);
                             response.put("meta", statusDto);
-                            return response;                            
+                            return response;
                         }
                     } else  { //no db key - fail
                         statusDto.setMessage("Cannot change question without id");
                         response.put("meta", statusDto);
-                        return response;                            
+                        return response;
                     }
                 }
             }

@@ -89,11 +89,11 @@ public class CronCommanderServlet extends HttpServlet {
                 retirees++;
             } else {//check the (now protected)image file in S3 store - need credentials
                 try {
-                    String bucket = 
+                    String bucket =
                             com.gallatinsystems.common.util.PropertyUtil.getProperty("s3bucket");
                     HttpURLConnection conn = (HttpURLConnection)
                             S3Util.getConnection(bucket, "images/" + item.getFileName());
-                    log.info("Checking for " + item.getFileName() + 
+                    log.info("Checking for " + item.getFileName() +
                             " : " + conn.getResponseCode() + " " + conn.getResponseMessage());
                     if (conn.getResponseCode() == 200) {
                         // best case - fulfilled

@@ -33,7 +33,7 @@ import javax.jdo.PersistenceManager;
 import net.sf.jsr107cache.CacheException;
 
 import org.akvo.flow.domain.SecuredObject;
-import org.datanucleus.store.appengine.query.JDOCursorHelper;
+import com.google.appengine.datanucleus.query.JDOCursorHelper;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 
@@ -89,7 +89,6 @@ public class BaseDAO<T extends BaseDomain> {
     public void setDomainClass(Class<T> e) {
         this.concreteClass = e;
     }
-
 
     /**
      * saves an object to the data store. This method will set the lastUpdateDateTime on the domain

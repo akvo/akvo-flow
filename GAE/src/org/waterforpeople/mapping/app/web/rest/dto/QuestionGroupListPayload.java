@@ -23,10 +23,8 @@ import org.waterforpeople.mapping.app.gwt.client.survey.QuestionGroupDto;
 
 public class QuestionGroupListPayload implements Serializable {
 
-    /**
-     * 
-     */
     private static final long serialVersionUID = 1L;
+
     List<QuestionGroupDto> question_groups = null;
 
     public List<QuestionGroupDto> getQuestion_groups() {
