@@ -146,8 +146,8 @@ public class SurveyInstanceDAO extends BaseDAO<SurveyInstance> {
 
             for (QuestionAnswerStore qas : images) {
                 String value = qas.getValue();
-                String filename = null;        
-                if (value.startsWith("{")) { //JSON
+                String filename = null;
+                if (value.startsWith("{")) { // JSON
                     final String key = "\"filename\":\"";
                     int i = value.indexOf(key);
                     if (i > -1) { //key found, grab all until next "

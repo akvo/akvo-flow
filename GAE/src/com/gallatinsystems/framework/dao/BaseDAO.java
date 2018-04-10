@@ -90,7 +90,6 @@ public class BaseDAO<T extends BaseDomain> {
         this.concreteClass = e;
     }
 
-
     /**
      * saves an object to the data store. This method will set the lastUpdateDateTime on the domain
      * object prior to saving and will set the createdDateTime (if it is null).
