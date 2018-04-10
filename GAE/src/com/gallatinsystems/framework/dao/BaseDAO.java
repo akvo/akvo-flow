@@ -33,6 +33,7 @@ import javax.jdo.PersistenceManager;
 import net.sf.jsr107cache.CacheException;
 
 import org.akvo.flow.domain.SecuredObject;
+import com.google.appengine.datanucleus.query.JDOCursorHelper;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 
@@ -48,8 +49,6 @@ import com.gallatinsystems.user.domain.UserAuthorization;
 import com.google.appengine.api.datastore.Cursor;
 import com.google.appengine.api.datastore.Key;
 import com.google.appengine.api.datastore.KeyFactory;
-
-import com.google.appengine.datanucleus.query.JDOCursorHelper;
 
 /**
  * This is a reusable data access object that supports basic operations (save, find by property,
