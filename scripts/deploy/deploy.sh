@@ -2,11 +2,12 @@
 
 set -euo pipefail
 
-TARGET_DIR="${TARGET_DIR:=/akvo-flow/GAE/target/akvo-flow}"
-CONFIG_REPO="${CONFIG_REPO:=/akvo-flow-server-config}"
-DEPLOY_BUCKET_NAME="${DEPLOY_BUCKET_NAME:=akvoflowsandbox-deployment}"
-API_ROOT="https://appengine.googleapis.com/v1"
+version="${1}"
+config_repo="${CONFIG_REPO:=/akvo-flow-server-config}"
+deploy_bucket_name="${deploy_bucket_name:=akvoflowsandbox-deployment}"
+api_root="https://appengine.googleapis.com/v1"
 tmp="/tmp/$(date +%s)"
+target_dir="${tmp}/akvo-flow"
 
 # Install requirements assuming Debian jessie
 echo "Installing dependencies..."
@@ -26,7 +27,7 @@ fi
 
 echo "Updating akvo-flow-server-config to latest changes..."
 (
-    cd "${CONFIG_REPO}"
+    cd "${config_repo}"
     git checkout -- .
     git checkout master
     # temporary hack to enable java8
@@ -35,19 +36,23 @@ echo "Updating akvo-flow-server-config to latest changes..."
 )
 
 echo "Deploying to akvoflowsandbox..."
-mkdir -p "${tmp}"
-cp -v "${CONFIG_REPO}/akvoflowsandbox/appengine-web.xml" "${TARGET_DIR}/WEB-INF/"
-sed -i -e "s/__VERSION__/$(git describe)/" "${TARGET_DIR}/admin/js/app.js"
 
-gcloud app deploy "${TARGET_DIR}/WEB-INF/appengine-web.xml" \
+mkdir -p "${tmp}"
+gsutil cp "gs://${deploy_bucket_name}/${version}.war" "${tmp}"
+unzip "${tmp}/${version}.war" -d "${target_dir}"
+rm -rf "${tmp}/${version}.war"
+cp -v "${config_repo}/akvoflowsandbox/appengine-web.xml" "${target_dir}/WEB-INF/"
+sed -i -e "s/__VERSION__/$(git describe)/" "${target_dir}/admin/js/app.js"
+
+gcloud app deploy "${target_dir}/WEB-INF/appengine-web.xml" \
        --project=akvoflowsandbox \
-       --bucket="gs://${DEPLOY_BUCKET_NAME}" \
+       --bucket="gs://${deploy_bucket_name}" \
        --version=1 \
        --promote
 
-gcloud app deploy "${TARGET_DIR}/WEB-INF/appengine-web.xml" \
+gcloud app deploy "${target_dir}/WEB-INF/appengine-web.xml" \
        --project=akvoflowsandbox \
-       --bucket="gs://${DEPLOY_BUCKET_NAME}" \
+       --bucket="gs://${deploy_bucket_name}" \
        --version=dataprocessor \
        --no-promote
 
@@ -56,14 +61,14 @@ echo "Retrieving version definitions..."
 access_token=$(gcloud auth print-access-token)
 
 curl -H "Authorization: Bearer ${access_token}" \
-     "${API_ROOT}/apps/akvoflowsandbox/services/default/versions/1?view=FULL" \
+     "${api_root}/apps/akvoflowsandbox/services/default/versions/1?view=FULL" \
      > "${tmp}/1.json"
 
 curl -H "Authorization: Bearer ${access_token}" \
-     "${API_ROOT}/apps/akvoflowsandbox/services/default/versions/dataprocessor?view=FULL" \
+     "${api_root}/apps/akvoflowsandbox/services/default/versions/dataprocessor?view=FULL" \
      > "${tmp}/dataprocessor.json"
 
-find "${CONFIG_REPO}" -name 'appengine-web.xml' -exec sha1sum {} + > "${tmp}/sha1sum.txt"
+find "${config_repo}" -name 'appengine-web.xml' -exec sha1sum {} + > "${tmp}/sha1sum.txt"
 
 (
     cd "${tmp}"
@@ -87,9 +92,9 @@ find "${CONFIG_REPO}" -name 'appengine-web.xml' -exec sha1sum {} + > "${tmp}/sha
     instance_sha1_sum=$(awk -v instance="${instance_id}" '$2 ~ "/"instance"/appengine-web.xml$" {print $1}' sha1sum.txt)
 
     sed -i -e "s|${sandbox_sha1_sum}|${instance_sha1_sum}|g" "${instance_file}"
-    gsutil cp -J "${CONFIG_REPO}/${instance_id}/appengine-web.xml" "gs://${DEPLOY_BUCKET_NAME}/${instance_sha1_sum}"
+    gsutil cp -J "${config_repo}/${instance_id}/appengine-web.xml" "gs://${deploy_bucket_name}/${instance_sha1_sum}"
 
     curl -X POST -T "${instance_file}" -H "Content-Type: application/json" \
 	 -H "Authorization: Bearer ${access_token}" \
-	 "${API_ROOT}/apps/${instance_id}/services/default/versions"
+	 "${api_root}/apps/${instance_id}/services/default/versions"
 )
