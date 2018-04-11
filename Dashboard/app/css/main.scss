@@ -4422,6 +4422,14 @@ table.surveyDetails {
     border-radius: 0.25em;
     margin: 1.5em auto 1.5em;
     z-index: 9999;
+    li {
+      background: url(../images/zipFile.svg) center  no-repeat;
+      height:60px;
+      width:50%;
+      margin:auto;
+    }
+    
+  
 }
 
 .resumable-drop u {
@@ -4434,10 +4442,10 @@ table.surveyDetails {
 }
 
 .resumable-dragover {
-    padding: 30px;
+    padding: 50px;
     color: #555;
     background-color: #ddd;
-    border: 1px solid #999;
+    border: 2px solid #4ab1cf;
 }
 
 /* Uploader: Progress bar */

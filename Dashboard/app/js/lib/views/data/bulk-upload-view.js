@@ -5,6 +5,9 @@ FLOW.uuid = function (file) {
 };
 
 FLOW.uploader = Ember.Object.create({
+  showDragAction: false,
+  droppedAction: false,
+  endDragAction: false,
   r: new Resumable({
     target: FLOW.Env.flowServices + '/upload',
     uploadDomain: FLOW.Env.surveyuploadurl.split('/')[2],
@@ -80,6 +83,12 @@ FLOW.uploader = Ember.Object.create({
       $('.resumable-progress .progress-resume-link').show();
       $('.resumable-progress .progress-pause-link').hide();
     });
+    
+    r.on('uploadStart', function(){
+      //show the drop action border when upload starts
+       //FLOW.uploader.set('showDragAction', true); got it wrong... listen to dragEnter n dragLeave
+        FLOW.uploader.set('startUploadingAction', true)
+    })
 
     r.on('complete', function () {
       // Hide pause/resume when the upload has completed
@@ -87,6 +96,8 @@ FLOW.uploader = Ember.Object.create({
       if (!FLOW.uploader.get('cancelled')) {
         FLOW.uploader.showCompleteMessage();
       }
+      //Hide the drag action border after uploading
+       FLOW.uploader.set('showDragAction', false); //got the stuff wrong listen to dragEnter n dragLeave
     });
 
     r.on('fileSuccess', function (file, message) {
@@ -160,10 +171,35 @@ FLOW.uploader = Ember.Object.create({
 });
 
 FLOW.BulkUploadAppletView = FLOW.View.extend({
+
   didInsertElement: function () {
     FLOW.uploader.assignDrop($('.resumable-drop')[0]);
     FLOW.uploader.assignBrowse($('.resumable-browse')[0]);
     FLOW.uploader.registerEvents();
+        
+    //listening to some  drag n drop events.
+    $('.resumable-drop').on('dragenter', function(evt){
+       evt.preventDefault();
+       FLOW.uploader.set('showDragAction', true)
+       FLOW.uploader.set('droppedAction', false)
+    })
+    
+    $('.resumable-drop').on('dragleave', function(evt){
+       evt.preventDefault();
+        FLOW.uploader.set('endDragAction', true)
+        //check if the user is still hovering the file and not yet dropped it.
+        setTimeout(()=>{
+          if(FLOW.uploader.endDragAction == true && FLOW.uploader.droppedAction == false){
+             FLOW.uploader.set('showDragAction',false) 
+          }  
+        },1000)
+    })
+    
+    $('.resumable-drop').on('drop', function(evt) {
+      evt.preventDefault();
+      FLOW.uploader.set('droppedAction',true) 
+    })
+    
   },
   willDestroyElement: function () {
     FLOW.uploader.set('cancelled', FLOW.uploader.isUploading());
