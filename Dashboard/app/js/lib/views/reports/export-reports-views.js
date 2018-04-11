@@ -4,6 +4,8 @@ FLOW.ReportLoader = Ember.Object.create({
   criteria: null,
   timeout: 30000,
   requestInterval: 3000,
+  analysisExportOption: "range", //date range selected by default
+  cleaningExportOption: "range",
 
   payloads: {
 	DATA_CLEANING: {
@@ -67,7 +69,9 @@ FLOW.ReportLoader = Ember.Object.create({
       });
     }
 
-    criteria.opts.lastCollection = '' + (exportType === 'DATA_CLEANING' && FLOW.selectedControl.get('selectedSurveyGroup').get('monitoringGroup') && !!FLOW.editControl.lastCollection);
+    var exportOption = exportType === 'DATA_CLEANING' ? this.cleaningExportOption : exportType === 'DATA_ANALYSIS' ? this.analysisExportOption : "" ;
+    criteria.opts.lastCollection = '' + ((exportType === 'DATA_CLEANING' || exportType === 'DATA_ANALYSIS')
+      && FLOW.selectedControl.get('selectedSurveyGroup').get('monitoringGroup') && exportOption === "recent");
 
     var fromDate = FLOW.dateControl.get('fromDate');
     if (fromDate == null) {
@@ -159,6 +163,26 @@ FLOW.ExportReportsAppletView = FLOW.View.extend({
   showComprehensiveDialog: false,
   showRawDataImportApplet: false,
   showGoogleEarthButton: false,
+  cleaningDateRangeSelected: true,
+  analysisDateRangeSelected: true,
+
+  dateRangeSelectedObserver: function () {
+    if (FLOW.ReportLoader.cleaningExportOption == "range") {
+      this.set('cleaningDateRangeSelected', true);
+    } else {
+      this.set('cleaningDateRangeSelected', false);
+      FLOW.dateControl.set('fromDate', null);
+      FLOW.dateControl.set('toDate', null);
+    }
+
+    if (FLOW.ReportLoader.analysisExportOption == "range") {
+      this.set('analysisDateRangeSelected', true);
+    } else {
+      this.set('analysisDateRangeSelected', false);
+      FLOW.dateControl.set('fromDate', null);
+      FLOW.dateControl.set('toDate', null);
+    }
+  }.observes('FLOW.ReportLoader.cleaningExportOption', 'FLOW.ReportLoader.analysisExportOption'),
 
   didInsertElement: function () {
     FLOW.selectedControl.set('surveySelection', FLOW.SurveySelection.create());
@@ -187,8 +211,17 @@ FLOW.ExportReportsAppletView = FLOW.View.extend({
   }.property('FLOW.selectedControl.selectedQuestion'),
 
   showLastCollection: function () {
-    return FLOW.Env.showMonitoringFeature && FLOW.selectedControl.selectedSurveyGroup && FLOW.selectedControl.selectedSurveyGroup.get('monitoringGroup');
-  }.property('FLOW.selectedControl.selectedSurveyGroup'),
+    if (FLOW.selectedControl.selectedSurveyGroup && FLOW.selectedControl.selectedSurvey) {
+      //if not a monitoring form, export should be filtered by date
+      if (FLOW.selectedControl.selectedSurvey.get('keyId') == FLOW.selectedControl.selectedSurveyGroup.get('newLocaleSurveyId')) {
+        FLOW.ReportLoader.set('cleaningExportOption', "range");
+        FLOW.ReportLoader.set('analysisExportOption', "range");
+      }
+    }
+    return FLOW.Env.showMonitoringFeature && FLOW.selectedControl.selectedSurveyGroup
+      && FLOW.selectedControl.selectedSurveyGroup.get('monitoringGroup')
+        && FLOW.selectedControl.selectedSurvey.get('keyId') != FLOW.selectedControl.selectedSurveyGroup.get('newLocaleSurveyId');
+  }.property('FLOW.selectedControl.selectedSurvey'),
 
   showDataCleaningReport: function () {
 	var opts = {}, sId = this.get('selectedSurvey');

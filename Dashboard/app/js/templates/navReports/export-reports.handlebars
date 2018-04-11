@@ -39,17 +39,21 @@
           <p class="expDescr">{{t _combines_options}}</p>
           <div id="dataCleanExp_options" class="options">
               <div class="dataCollectedDate">
-                <p><input type="radio" name="date1" value="range"  checked="true">{{t _collection_period}}</p>
+                <p>{{view Ember.RadioButton selectionBinding="FLOW.ReportLoader.cleaningExportOption" value="range" name="cleaning-export-option" checked="true"}}{{t _collection_period}}</p>
+                {{#if view.cleaningDateRangeSelected}}
                 <label class="collectedFrom">
                   {{view FLOW.DateField minDate=false valueBinding="FLOW.dateControl.fromDate" elementId="from_date02" placeholder="" placeholderBinding="Ember.STRINGS._collected_from" size=30}}
                 </label>
                 <label class="collectedTo">
                   {{view FLOW.DateField minDate=false valueBinding="FLOW.dateControl.toDate" elementId="to_date02" placeholder="" placeholderBinding="Ember.STRINGS._to" size=30}}
                 </label>
+                {{/if}}
               </div>
+              {{#if view.showLastCollection}}
               <div class="dataCollectedDate"  style="background-color: transparent;">
-                <input type="radio" name="date1" value="recent" disabled="true"> Only recent submissions
+              {{view Ember.RadioButton selectionBinding="FLOW.ReportLoader.cleaningExportOption" value="recent" name="cleaning-export-option"}}{{t _only_recent_submissions}}
               </div>
+              {{/if}}
             <a {{action showDataCleaningReport target="this"}} class="button trigger2">{{t _download}}</a>
           </div>
         </li>
@@ -59,19 +63,21 @@
           <p class="expDescr">{{t _replaces_question}}</p>
             <div id="dataAnalyseExp_options" class="options">
               <div class="dataCollectedDate">
-                <p><input type="radio" name="date2" value="range" checked="true"> {{t _collection_period}}</p>
+                <p>{{view Ember.RadioButton selectionBinding="FLOW.ReportLoader.analysisExportOption" value="range" name="analysis-export-option" checked="true"}}{{t _collection_period}}</p>
+                {{#if view.analysisDateRangeSelected}}
                 <label class="collectedFrom">
                    {{view FLOW.DateField minDate=false valueBinding="FLOW.dateControl.fromDate" elementId="from_date" placeholder="" placeholderBinding="Ember.STRINGS._collected_from" size=30}}
                 </label>
                 <label class="collectedTo">
                   {{view FLOW.DateField minDate=false valueBinding="FLOW.dateControl.toDate" elementId="to_date" placeholder="" placeholderBinding="Ember.STRINGS._to" size=30}}
                 </label>
+                {{/if}}
               </div>
-              <div>
-                <div class="dataCollectedDate"  style="background-color: transparent;">
-                  <input type="radio" name="date2" value="recent" disabled="true"> Only recent submissions
-                </div>
-              </div> 
+              {{#if view.showLastCollection}}
+              <div class="dataCollectedDate"  style="background-color: transparent;">
+                {{view Ember.RadioButton selectionBinding="FLOW.ReportLoader.analysisExportOption" value="recent" name="analysis-export-option"}}{{t _only_recent_submissions}}
+              </div>
+              {{/if}}
               <a {{action showDataAnalysisReport target="this"}} class="button trigger2">{{t _download}}</a>
             </div>
           </li>
