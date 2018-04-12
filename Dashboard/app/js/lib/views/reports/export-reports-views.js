@@ -158,6 +158,7 @@ FLOW.ExportReportsAppletView = FLOW.View.extend({
   showComprehensiveDialog: false,
   showRawDataImportApplet: false,
   showGoogleEarthButton: false,
+  missingSurvey: false,
 
   didInsertElement: function () {
     FLOW.selectedControl.set('surveySelection', FLOW.SurveySelection.create());
@@ -176,6 +177,14 @@ FLOW.ExportReportsAppletView = FLOW.View.extend({
     }
   }.property('FLOW.selectedControl.selectedSurvey'),
 
+  incompleteSelection: function () {
+    if (FLOW.selectedControl.get('selectedSurvey') === null) {
+      this.set('missingSurvey',true);
+      return true;
+    }
+    return false;
+  },
+
   selectedQuestion: function () {
     if (!Ember.none(FLOW.selectedControl.get('selectedQuestion'))
         && !Ember.none(FLOW.selectedControl.selectedQuestion.get('keyId'))){
@@ -190,8 +199,12 @@ FLOW.ExportReportsAppletView = FLOW.View.extend({
   }.property('FLOW.selectedControl.selectedSurveyGroup'),
 
   showDataCleaningReport: function () {
-	var opts = {}, sId = this.get('selectedSurvey');
-	FLOW.ReportLoader.load('DATA_CLEANING', sId, opts);
+    if (this.incompleteSelection()) {
+      return;
+    }
+    this.set('missingSurvey',false);
+    var opts = {}, sId = this.get('selectedSurvey');
+    FLOW.ReportLoader.load('DATA_CLEANING', sId, opts);
   },
 
   showDataAnalysisReport: function () {

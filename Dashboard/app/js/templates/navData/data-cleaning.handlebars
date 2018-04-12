@@ -1,6 +1,6 @@
 <section class="fullWidth reportTools" id="reportBlocks">
   {{#view FLOW.ExportReportsAppletView}}
-
+  <div {{bindAttr class="view.missingSurvey:dataCleaningErrorBorder"}}>
     {{#unless FLOW.projectControl.isLoading}}
       {{view FLOW.DataCleaningSurveySelectionView}}
     {{/unless}}
@@ -14,6 +14,7 @@
           prompt=""
           promptBinding="Ember.STRINGS._select_form"}}
     {{/if}}
+  </div>
 
     <div class="rawDataReport block">
       <h3>{{t _data_cleaning_export}}</h3>

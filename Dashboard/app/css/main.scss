@@ -3337,6 +3337,14 @@ div.chooseSurveyData {
     }
 }
 
+.dataCleaningErrorBorder {
+    padding: 8px 0 8px 0%;
+    border-style: solid;
+    border-width: 1px;
+    border-color: red;
+    width: 99%;
+}
+
 .filterData {
     border-top: 1px solid white;
     .dataDeviceId {
