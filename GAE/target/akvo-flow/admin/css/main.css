@@ -5515,281 +5515,8 @@ table.surveyDetails {
   padding-top: 35px;
 }
 
-/* Uploader: Drag & Drop */
-/* line 4414, /akvo-flow/Dashboard/app/css/main.scss */
-.resumable-error {
-  font-style: italic;
-}
-
-/* line 4418, /akvo-flow/Dashboard/app/css/main.scss */
-.resumable-drop {
-  padding: 3em;
-  text-align: center;
-  color: #202024;
-  background-color: white;
-  background-color: rgba(44, 42, 116, 0.1);
-  border: thin solid #abaac8;
-  border-radius: 0.25em;
-  margin: 1.5em auto 1.5em;
-  z-index: 9999;
-}
-
-/* line 4430, /akvo-flow/Dashboard/app/css/main.scss */
-.resumable-drop u {
-  font-weight: bold;
-  cursor: pointer;
-}
-
-/* line 4435, /akvo-flow/Dashboard/app/css/main.scss */
-.resumable-drop input {
-  cursor: pointer;
-}
-
-/* line 4439, /akvo-flow/Dashboard/app/css/main.scss */
-.resumable-dragover {
-  padding: 30px;
-  color: #555;
-  background-color: #ddd;
-  border: 1px solid #999;
-}
-
-/* Uploader: Progress bar */
-/* line 4448, /akvo-flow/Dashboard/app/css/main.scss */
-.resumable-progress {
-  margin: 0 0 0.5em 0;
-  width: 100%;
-  display: none;
-}
-
-/* line 4454, /akvo-flow/Dashboard/app/css/main.scss */
-.progress-container {
-  height: 10px;
-  background: #eab92d;
-  background: url(data:image/svg+xml;base64,PD94bWwgdmVyc2lvbj0iMS4wIiA/Pgo8c3ZnIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyIgd2lkdGg9IjEwMCUiIGhlaWdodD0iMTAwJSIgdmlld0JveD0iMCAwIDEgMSIgcHJlc2VydmVBc3BlY3RSYXRpbz0ibm9uZSI+CiAgPGxpbmVhckdyYWRpZW50IGlkPSJncmFkLXVjZ2ctZ2VuZXJhdGVkIiBncmFkaWVudFVuaXRzPSJ1c2VyU3BhY2VPblVzZSIgeDE9IjAlIiB5MT0iMCUiIHgyPSIwJSIgeTI9IjEwMCUiPgogICAgPHN0b3Agb2Zmc2V0PSIwJSIgc3RvcC1jb2xvcj0iI2VhYjkyZCIgc3RvcC1vcGFjaXR5PSIxIi8+CiAgICA8c3RvcCBvZmZzZXQ9IjEwMCUiIHN0b3AtY29sb3I9IiNjNzk4MTAiIHN0b3Atb3BhY2l0eT0iMSIvPgogIDwvbGluZWFyR3JhZGllbnQ+CiAgPHJlY3QgeD0iMCIgeT0iMCIgd2lkdGg9IjEiIGhlaWdodD0iMSIgZmlsbD0idXJsKCNncmFkLXVjZ2ctZ2VuZXJhdGVkKSIgLz4KPC9zdmc+);
-  background: -webkit-gradient(linear, left top, left bottom, color-stop(0%, #eab92d), color-stop(100%, #c79810));
-  background: -webkit-linear-gradient(top, #eab92d 0%, #c79810 100%);
-  background: -webkit-gradient(linear, left top, left bottom, from(#eab92d), to(#c79810));
-  background: linear-gradient(to bottom, #eab92d 0%, #c79810 100%);
-  position: relative;
-  -o-border-radius: 0.5em;
-  border-radius: 0.5em;
-}
-
-/* line 4467, /akvo-flow/Dashboard/app/css/main.scss */
-.progress-bar {
-  height: 10px;
-  left: -1px;
-  background: #bfd255;
-  /* Old browsers */
-  /* IE9 SVG, needs conditional override of 'filter' to 'none' */
-  background: url(data:image/svg+xml;base64,PD94bWwgdmVyc2lvbj0iMS4wIiA/Pgo8c3ZnIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyIgd2lkdGg9IjEwMCUiIGhlaWdodD0iMTAwJSIgdmlld0JveD0iMCAwIDEgMSIgcHJlc2VydmVBc3BlY3RSYXRpbz0ibm9uZSI+CiAgPGxpbmVhckdyYWRpZW50IGlkPSJncmFkLXVjZ2ctZ2VuZXJhdGVkIiBncmFkaWVudFVuaXRzPSJ1c2VyU3BhY2VPblVzZSIgeDE9IjAlIiB5MT0iMCUiIHgyPSIwJSIgeTI9IjEwMCUiPgogICAgPHN0b3Agb2Zmc2V0PSIwJSIgc3RvcC1jb2xvcj0iI2JmZDI1NSIgc3RvcC1vcGFjaXR5PSIxIi8+CiAgICA8c3RvcCBvZmZzZXQ9IjUwJSIgc3RvcC1jb2xvcj0iIzhlYjkyYSIgc3RvcC1vcGFjaXR5PSIxIi8+CiAgICA8c3RvcCBvZmZzZXQ9IjUxJSIgc3RvcC1jb2xvcj0iIzcyYWEwMCIgc3RvcC1vcGFjaXR5PSIxIi8+CiAgICA8c3RvcCBvZmZzZXQ9IjEwMCUiIHN0b3AtY29sb3I9IiM5ZWNiMmQiIHN0b3Atb3BhY2l0eT0iMSIvPgogIDwvbGluZWFyR3JhZGllbnQ+CiAgPHJlY3QgeD0iMCIgeT0iMCIgd2lkdGg9IjEiIGhlaWdodD0iMSIgZmlsbD0idXJsKCNncmFkLXVjZ2ctZ2VuZXJhdGVkKSIgLz4KPC9zdmc+);
-  /* FF3.6+ */
-  background: -webkit-gradient(linear, left top, left bottom, color-stop(0%, #bfd255), color-stop(50%, #8eb92a), color-stop(51%, #72aa00), color-stop(100%, #9ecb2d));
-  /* Chrome,Safari4+ */
-  background: -webkit-linear-gradient(top, #bfd255 0%, #8eb92a 50%, #72aa00 51%, #9ecb2d 100%);
-  /* Chrome10+,Safari5.1+ */
-  /* Opera 11.10+ */
-  /* IE10+ */
-  background: -webkit-gradient(linear, left top, left bottom, from(#bfd255), color-stop(50%, #8eb92a), color-stop(51%, #72aa00), to(#9ecb2d));
-  background: linear-gradient(to bottom, #bfd255 0%, #8eb92a 50%, #72aa00 51%, #9ecb2d 100%);
-  width: 0;
-  border-right: 1px solid white;
-  -o-border-radius: 0.5em;
-  border-radius: 0.5em;
-}
-
-/* line 4489, /akvo-flow/Dashboard/app/css/main.scss */
-.progress-text {
-  line-height: 9px;
-  padding-left: 10px;
-}
-
-/* line 4494, /akvo-flow/Dashboard/app/css/main.scss */
-.progress-pause {
-  padding: 0 0 0 7px;
-}
-
-/* line 4498, /akvo-flow/Dashboard/app/css/main.scss */
-.progress-resume-link {
-  display: none;
-}
-
-/* line 4502, /akvo-flow/Dashboard/app/css/main.scss */
-.is-paused .progress-resume-link {
-  display: inline;
-}
-
-/* line 4506, /akvo-flow/Dashboard/app/css/main.scss */
-.is-paused .progress-pause-link {
-  display: none;
-}
-
-/* line 4510, /akvo-flow/Dashboard/app/css/main.scss */
-.is-complete .progress-pause {
-  display: none;
-}
-
-/* Uploader: List of items being uploaded */
-/* line 4516, /akvo-flow/Dashboard/app/css/main.scss */
-.resumable-list {
-  display: table;
-  overflow: auto;
-  display: none;
-  margin: 0 auto;
-  padding: 0.25em;
-  color: #b4b4b4;
-}
-
-/* line 4525, /akvo-flow/Dashboard/app/css/main.scss */
-.resumable-list li {
-  margin: 0 0 1px 0;
-  padding: 15px 0.25em;
-  background: whitesmoke;
-  border-bottom: 1px solid rgba(32, 32, 36, 0.1);
-}
-
-/* line 4532, /akvo-flow/Dashboard/app/css/main.scss */
-.resumable-file-name {
-  color: #2c2a74;
-  margin-left: 5px;
-  margin-right: 15px;
-}
-
-/* line 4538, /akvo-flow/Dashboard/app/css/main.scss */
-.unsupportedFile {
-  display: inline;
-  width: 15px;
-  height: 15px;
-}
-
-/* line 4543, /akvo-flow/Dashboard/app/css/main.scss */
-.uploadComplete {
-  display: inline;
-  width: 15px;
-  height: 15px;
-}
-
-/* line 4549, /akvo-flow/Dashboard/app/css/main.scss */
-.uploadStatus {
-  float: right;
-}
-
-/* line 4553, /akvo-flow/Dashboard/app/css/main.scss */
-.resumable-file-progress {
-  color: #2c2a74;
-  font-weight: bold;
-}
-
-/* line 4558, /akvo-flow/Dashboard/app/css/main.scss */
-.uploader-item {
-  width: 148px;
-  height: 90px;
-  background-color: #666;
-  position: relative;
-  border: 2px solid black;
-  float: left;
-  margin: 0 6px 6px 0;
-}
-
-/* line 4568, /akvo-flow/Dashboard/app/css/main.scss */
-.uploader-item-thumbnail {
-  width: 100%;
-  height: 100%;
-  position: absolute;
-  top: 0;
-  left: 0;
-}
-
-/* line 4576, /akvo-flow/Dashboard/app/css/main.scss */
-.uploader-item img.uploader-item-thumbnail {
-  opacity: 0;
-}
-
-/* line 4580, /akvo-flow/Dashboard/app/css/main.scss */
-.uploader-item-creating-thumbnail {
-  padding: 0 5px;
-  color: white;
-}
-
-/* line 4585, /akvo-flow/Dashboard/app/css/main.scss */
-.uploader-item-title {
-  position: absolute;
-  line-height: 11px;
-  padding: 3px 50px 3px 5px;
-  bottom: 0;
-  left: 0;
-  right: 0;
-  color: white;
-  background-color: rgba(0, 0, 0, 0.6);
-  min-height: 27px;
-}
-
-/* line 4597, /akvo-flow/Dashboard/app/css/main.scss */
-.uploader-item-status {
-  position: absolute;
-  bottom: 3px;
-  right: 3px;
-}
-
-/* Uploader: Hover & Active status */
-/* line 4606, /akvo-flow/Dashboard/app/css/main.scss */
-.uploader-item:hover,
-.is-active .uploader-item {
-  border-color: #4a873c;
-  cursor: pointer;
-}
-
-/* line 4612, /akvo-flow/Dashboard/app/css/main.scss */
-.uploader-item:hover .uploader-item-title,
-.is-active .uploader-item .uploader-item-title {
-  background-color: rgba(74, 135, 60, 0.8);
-}
-
-/* Uploader: Error status */
-/* line 4619, /akvo-flow/Dashboard/app/css/main.scss */
-.is-error .uploader-item:hover,
-.is-active.is-error .uploader-item {
-  border-color: #900;
-}
-
-/* line 4624, /akvo-flow/Dashboard/app/css/main.scss */
-.is-error .uploader-item:hover .uploader-item-title,
-.is-active.is-error .uploader-item .uploader-item-title {
-  background-color: rgba(153, 0, 0, 0.6);
-}
-
-/* line 4628, /akvo-flow/Dashboard/app/css/main.scss */
-.is-error .uploader-item-creating-thumbnail {
-  display: none;
-}
-
-/* line 4632, /akvo-flow/Dashboard/app/css/main.scss */
-.marker-cluster {
-  background-color: rgba(253, 156, 115, 0.6);
-  -webkit-background-clip: padding-box;
-  background-clip: padding-box;
-  border-radius: 20px;
-}
-
-/* line 4639, /akvo-flow/Dashboard/app/css/main.scss */
-.marker-cluster div {
-  background-color: rgba(241, 128, 23, 0.6);
-  width: 30px;
-  height: 30px;
-  margin-left: 5px;
-  margin-top: 5px;
-  text-align: center;
-  border-radius: 15px;
-  font: 12px "Helvetica Neue", Arial, Helvetica, sans-serif;
-}
-
-/* line 4650, /akvo-flow/Dashboard/app/css/main.scss */
-.marker-cluster span {
-  line-height: 30px;
-}
-
 /************************************* New styles ****************************************/
-/* line 4655, /akvo-flow/Dashboard/app/css/main.scss */
+/* line 4413, /akvo-flow/Dashboard/app/css/main.scss */
 .projectSection {
   background: #38454a;
   box-sizing: border-box;
@@ -5797,40 +5524,40 @@ table.surveyDetails {
   padding: 1em 0 0 0;
   margin: 0 auto;
 }
-/* line 4661, /akvo-flow/Dashboard/app/css/main.scss */
+/* line 4419, /akvo-flow/Dashboard/app/css/main.scss */
 .projectSection .publishProject {
   padding: 30px 5px;
   display: table;
   text-align: center;
   width: calc(100% - 10px);
 }
-/* line 4666, /akvo-flow/Dashboard/app/css/main.scss */
+/* line 4424, /akvo-flow/Dashboard/app/css/main.scss */
 .projectSection .publishProject .publishProjectBtn {
   text-align: center;
   margin: 0 auto;
 }
-/* line 4671, /akvo-flow/Dashboard/app/css/main.scss */
+/* line 4429, /akvo-flow/Dashboard/app/css/main.scss */
 .projectSection .projectDetailsPanel {
   position: relative;
 }
-/* line 4673, /akvo-flow/Dashboard/app/css/main.scss */
+/* line 4431, /akvo-flow/Dashboard/app/css/main.scss */
 .projectSection .projectDetailsPanel .addMenuAction {
   display: inline-block;
   margin: 0 auto;
 }
-/* line 4676, /akvo-flow/Dashboard/app/css/main.scss */
+/* line 4434, /akvo-flow/Dashboard/app/css/main.scss */
 .projectSection .projectDetailsPanel .addMenuAction.addNewForm {
   display: table;
   padding: 8px 8px;
 }
-/* line 4681, /akvo-flow/Dashboard/app/css/main.scss */
+/* line 4439, /akvo-flow/Dashboard/app/css/main.scss */
 .projectSection .projectDetailsPanel .addFormBtn {
   position: absolute;
   right: 0px;
   z-index: 9997;
   margin-top: 20px;
 }
-/* line 4687, /akvo-flow/Dashboard/app/css/main.scss */
+/* line 4445, /akvo-flow/Dashboard/app/css/main.scss */
 .projectSection .projectDetailsPanel .projectSummary, .projectSection .projectDetailsPanel .formSummary {
   display: -webkit-box;
   display: -moz-box;
@@ -5849,7 +5576,7 @@ table.surveyDetails {
   align-content: center;
   margin-top: 10px;
 }
-/* line 4704, /akvo-flow/Dashboard/app/css/main.scss */
+/* line 4462, /akvo-flow/Dashboard/app/css/main.scss */
 .projectSection .projectDetailsPanel .projectSummary li, .projectSection .projectDetailsPanel .formSummary li {
   width: 49.75%;
   text-align: center;
@@ -5861,44 +5588,44 @@ table.surveyDetails {
   text-overflow: ellipsis;
   white-space: nowrap;
 }
-/* line 4712, /akvo-flow/Dashboard/app/css/main.scss */
+/* line 4470, /akvo-flow/Dashboard/app/css/main.scss */
 .projectSection .projectDetailsPanel .projectSummary li span, .projectSection .projectDetailsPanel .formSummary li span {
   display: block;
   margin-top: 5px;
   font-weight: 600;
 }
-/* line 4716, /akvo-flow/Dashboard/app/css/main.scss */
+/* line 4474, /akvo-flow/Dashboard/app/css/main.scss */
 .projectSection .projectDetailsPanel .projectSummary li span.projectForm, .projectSection .projectDetailsPanel .projectSummary li span.projectMonitoring, .projectSection .projectDetailsPanel .projectSummary li span.projectStatus, .projectSection .projectDetailsPanel .projectSummary li span.formVersion, .projectSection .projectDetailsPanel .projectSummary li span.formID, .projectSection .projectDetailsPanel .projectSummary li span.formQuestionCount, .projectSection .projectDetailsPanel .formSummary li span.projectForm, .projectSection .projectDetailsPanel .formSummary li span.projectMonitoring, .projectSection .projectDetailsPanel .formSummary li span.projectStatus, .projectSection .projectDetailsPanel .formSummary li span.formVersion, .projectSection .projectDetailsPanel .formSummary li span.formID, .projectSection .projectDetailsPanel .formSummary li span.formQuestionCount {
   color: white;
   font-size: 1.8em;
 }
-/* line 4720, /akvo-flow/Dashboard/app/css/main.scss */
+/* line 4478, /akvo-flow/Dashboard/app/css/main.scss */
 .projectSection .projectDetailsPanel .projectSummary li span.projectStatus.redColor, .projectSection .projectDetailsPanel .formSummary li span.projectStatus.redColor {
   color: #ef4136;
 }
-/* line 4726, /akvo-flow/Dashboard/app/css/main.scss */
+/* line 4484, /akvo-flow/Dashboard/app/css/main.scss */
 .projectSection .projectDetailsPanel span.fontInfo {
   color: #d4d4d4;
   margin: 0 0.5em;
 }
-/* line 4730, /akvo-flow/Dashboard/app/css/main.scss */
+/* line 4488, /akvo-flow/Dashboard/app/css/main.scss */
 .projectSection .projectDetailsPanel h2 {
   color: #e27c00;
   display: inline;
 }
-/* line 4734, /akvo-flow/Dashboard/app/css/main.scss */
+/* line 4492, /akvo-flow/Dashboard/app/css/main.scss */
 .projectSection .projectDetailsPanel .forms {
   background: white;
 }
-/* line 4736, /akvo-flow/Dashboard/app/css/main.scss */
+/* line 4494, /akvo-flow/Dashboard/app/css/main.scss */
 .projectSection .projectDetailsPanel .forms .menuTopbar {
   display: inline-block;
 }
-/* line 4740, /akvo-flow/Dashboard/app/css/main.scss */
+/* line 4498, /akvo-flow/Dashboard/app/css/main.scss */
 .projectSection .projectDetailsPanel .forms #tabs h2 {
   margin: 0 0 15px 5px;
 }
-/* line 4744, /akvo-flow/Dashboard/app/css/main.scss */
+/* line 4502, /akvo-flow/Dashboard/app/css/main.scss */
 .projectSection .projectDetailsPanel .forms .formSummary {
   display: -webkit-flex;
   display: flex;
@@ -5912,7 +5639,7 @@ table.surveyDetails {
   align-content: center;
   margin: 30px auto;
 }
-/* line 4756, /akvo-flow/Dashboard/app/css/main.scss */
+/* line 4514, /akvo-flow/Dashboard/app/css/main.scss */
 .projectSection .projectDetailsPanel .forms .formSummary li {
   width: 33.33333%;
   text-align: center;
@@ -5920,25 +5647,25 @@ table.surveyDetails {
   background: rgba(32, 32, 36, 0.2);
   color: #808285;
 }
-/* line 4762, /akvo-flow/Dashboard/app/css/main.scss */
+/* line 4520, /akvo-flow/Dashboard/app/css/main.scss */
 .projectSection .projectDetailsPanel .forms .formSummary li span {
   display: block;
   margin-top: 5px;
   font-weight: 600;
   color: white;
 }
-/* line 4770, /akvo-flow/Dashboard/app/css/main.scss */
+/* line 4528, /akvo-flow/Dashboard/app/css/main.scss */
 .projectSection .projectDetailsPanel .forms #tabs div > section {
   border-top: thin solid white;
   background: white;
   margin-top: 15px;
 }
-/* line 4774, /akvo-flow/Dashboard/app/css/main.scss */
+/* line 4532, /akvo-flow/Dashboard/app/css/main.scss */
 .projectSection .projectDetailsPanel .forms #tabs div > section.surveyForm, .projectSection .projectDetailsPanel .forms #tabs div > section#questionSet {
   margin-top: 5px;
   padding: 0 0 5px 0;
 }
-/* line 4778, /akvo-flow/Dashboard/app/css/main.scss */
+/* line 4536, /akvo-flow/Dashboard/app/css/main.scss */
 .projectSection .projectDetailsPanel .forms #tabs div > section.formDetails {
   border: inherit;
   background: inherit;
@@ -5950,11 +5677,11 @@ table.surveyDetails {
   width: 99.5%;
   margin: 0 auto;
 }
-/* line 4790, /akvo-flow/Dashboard/app/css/main.scss */
+/* line 4548, /akvo-flow/Dashboard/app/css/main.scss */
 .projectSection .projectDetailsPanel .forms #tabs div > section h3 {
   text-shadow: none;
 }
-/* line 4793, /akvo-flow/Dashboard/app/css/main.scss */
+/* line 4551, /akvo-flow/Dashboard/app/css/main.scss */
 .projectSection .projectDetailsPanel .forms #tabs nav.tabNav {
   position: relative;
   display: block;
@@ -5964,11 +5691,11 @@ table.surveyDetails {
   overflow-y: hidden;
   overflow-x: scroll;
 }
-/* line 4801, /akvo-flow/Dashboard/app/css/main.scss */
+/* line 4559, /akvo-flow/Dashboard/app/css/main.scss */
 .projectSection .projectDetailsPanel .forms #tabs nav.tabNav + section, .projectSection .projectDetailsPanel .forms #tabs nav.tabNav + div {
   margin-top: 0;
 }
-/* line 4805, /akvo-flow/Dashboard/app/css/main.scss */
+/* line 4563, /akvo-flow/Dashboard/app/css/main.scss */
 .projectSection .projectDetailsPanel .forms #tabs nav.tabNav ul {
   padding: 0;
   display: -webkit-flex;
@@ -5980,7 +5707,7 @@ table.surveyDetails {
   -webkit-align-items: center;
   align-items: center;
 }
-/* line 4816, /akvo-flow/Dashboard/app/css/main.scss */
+/* line 4574, /akvo-flow/Dashboard/app/css/main.scss */
 .projectSection .projectDetailsPanel .forms #tabs nav.tabNav ul li {
   border-right: 1px solid rgba(32, 32, 36, 0.2);
   margin: 0;
@@ -5995,91 +5722,91 @@ table.surveyDetails {
   -moz-background-clip: padding;
   -webkit-background-clip: padding-box;
 }
-/* line 4826, /akvo-flow/Dashboard/app/css/main.scss */
+/* line 4584, /akvo-flow/Dashboard/app/css/main.scss */
 .projectSection .projectDetailsPanel .forms #tabs nav.tabNav ul li a {
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
 }
-/* line 4829, /akvo-flow/Dashboard/app/css/main.scss */
+/* line 4587, /akvo-flow/Dashboard/app/css/main.scss */
 .projectSection .projectDetailsPanel .forms #tabs nav.tabNav ul li.aFormTab {
   background: rgba(32, 32, 36, 0.5);
 }
-/* line 4831, /akvo-flow/Dashboard/app/css/main.scss */
+/* line 4589, /akvo-flow/Dashboard/app/css/main.scss */
 .projectSection .projectDetailsPanel .forms #tabs nav.tabNav ul li.aFormTab:hover {
   background: #202024;
 }
-/* line 4834, /akvo-flow/Dashboard/app/css/main.scss */
+/* line 4592, /akvo-flow/Dashboard/app/css/main.scss */
 .projectSection .projectDetailsPanel .forms #tabs nav.tabNav ul li.aFormTab a {
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
 }
-/* line 4837, /akvo-flow/Dashboard/app/css/main.scss */
+/* line 4595, /akvo-flow/Dashboard/app/css/main.scss */
 .projectSection .projectDetailsPanel .forms #tabs nav.tabNav ul li.aFormTab.current {
   background: rgba(32, 32, 36, 0.9);
 }
-/* line 4839, /akvo-flow/Dashboard/app/css/main.scss */
+/* line 4597, /akvo-flow/Dashboard/app/css/main.scss */
 .projectSection .projectDetailsPanel .forms #tabs nav.tabNav ul li.aFormTab.current a {
   color: #e27c00;
 }
-/* line 4843, /akvo-flow/Dashboard/app/css/main.scss */
+/* line 4601, /akvo-flow/Dashboard/app/css/main.scss */
 .projectSection .projectDetailsPanel .forms #tabs nav.tabNav ul li.aFormTab.registrationForm {
   box-sizing: border-box;
   -webkit-box-shadow: inset 0px 5px 0px 0px rgba(0, 167, 157, 0.5);
   -moz-box-shadow: inset 0px 5px 0px 0px rgba(0, 167, 157, 0.5);
   box-shadow: inset 0px 5px 0px 0px rgba(0, 167, 157, 0.5);
 }
-/* line 4848, /akvo-flow/Dashboard/app/css/main.scss */
+/* line 4606, /akvo-flow/Dashboard/app/css/main.scss */
 .projectSection .projectDetailsPanel .forms #tabs nav.tabNav ul li.aFormTab.registrationForm:hover {
   -webkit-box-shadow: inset 0px 5px 0px 0px #00a79d;
   -moz-box-shadow: inset 0px 5px 0px 0px #00a79d;
   box-shadow: inset 0px 5px 0px 0px #00a79d;
 }
-/* line 4853, /akvo-flow/Dashboard/app/css/main.scss */
+/* line 4611, /akvo-flow/Dashboard/app/css/main.scss */
 .projectSection .projectDetailsPanel .forms #tabs nav.tabNav ul li.aFormTab.registrationForm.current {
   -webkit-box-shadow: inset 0px 5px 0px 0px #00a79d;
   -moz-box-shadow: inset 0px 5px 0px 0px #00a79d;
   box-shadow: inset 0px 5px 0px 0px #00a79d;
 }
-/* line 4857, /akvo-flow/Dashboard/app/css/main.scss */
+/* line 4615, /akvo-flow/Dashboard/app/css/main.scss */
 .projectSection .projectDetailsPanel .forms #tabs nav.tabNav ul li.aFormTab.registrationForm.current:hover {
   -webkit-box-shadow: inset 0px 5px 0px 0px #00a79d;
   -moz-box-shadow: inset 0px 5px 0px 0px #00a79d;
   box-shadow: inset 0px 5px 0px 0px #00a79d;
 }
-/* line 4865, /akvo-flow/Dashboard/app/css/main.scss */
+/* line 4623, /akvo-flow/Dashboard/app/css/main.scss */
 .projectSection .projectDetailsPanel .forms #tabs nav.tabNav ul li.newFormTab {
   background: transparent;
   border-right: none;
 }
-/* line 4868, /akvo-flow/Dashboard/app/css/main.scss */
+/* line 4626, /akvo-flow/Dashboard/app/css/main.scss */
 .projectSection .projectDetailsPanel .forms #tabs nav.tabNav ul li.newFormTab a {
   color: #4ab1cf;
 }
-/* line 4870, /akvo-flow/Dashboard/app/css/main.scss */
+/* line 4628, /akvo-flow/Dashboard/app/css/main.scss */
 .projectSection .projectDetailsPanel .forms #tabs nav.tabNav ul li.newFormTab a:hover {
   color: #e27c00;
 }
-/* line 4874, /akvo-flow/Dashboard/app/css/main.scss */
+/* line 4632, /akvo-flow/Dashboard/app/css/main.scss */
 .projectSection .projectDetailsPanel .forms #tabs nav.tabNav ul li.newFormTab span {
   font-weight: bold;
   margin-right: 5px;
 }
-/* line 4878, /akvo-flow/Dashboard/app/css/main.scss */
+/* line 4636, /akvo-flow/Dashboard/app/css/main.scss */
 .projectSection .projectDetailsPanel .forms #tabs nav.tabNav ul li.newFormTab:hover {
   background: transparent;
 }
-/* line 4883, /akvo-flow/Dashboard/app/css/main.scss */
+/* line 4641, /akvo-flow/Dashboard/app/css/main.scss */
 .projectSection .projectDetailsPanel .forms #tabs nav.tabNav ul li:hover {
   background: #aeaeae;
 }
-/* line 4887, /akvo-flow/Dashboard/app/css/main.scss */
+/* line 4645, /akvo-flow/Dashboard/app/css/main.scss */
 .projectSection .projectDetailsPanel .forms #tabs nav.tabNav ul li.active,
 .projectSection .projectDetailsPanel .forms #tabs nav.tabNav ul li.active:hover {
   background: black;
 }
-/* line 4890, /akvo-flow/Dashboard/app/css/main.scss */
+/* line 4648, /akvo-flow/Dashboard/app/css/main.scss */
 .projectSection .projectDetailsPanel .forms #tabs nav.tabNav ul li a {
   display: block;
   padding: 0.75em 1em;
@@ -6090,7 +5817,7 @@ table.surveyDetails {
   min-width: 1px;
   min-height: 12px;
 }
-/* line 4901, /akvo-flow/Dashboard/app/css/main.scss */
+/* line 4659, /akvo-flow/Dashboard/app/css/main.scss */
 .projectSection .projectDetailsPanel .forms #tabs nav.tabNav ul li.active a,
 .projectSection .projectDetailsPanel .forms #tabs nav.tabNav ul li.active a:hover {
   color: white;
@@ -6098,141 +5825,141 @@ table.surveyDetails {
   -webkit-text-shadow: none;
   -moz-text-shadow: none;
 }
-/* line 4907, /akvo-flow/Dashboard/app/css/main.scss */
+/* line 4665, /akvo-flow/Dashboard/app/css/main.scss */
 .projectSection .projectDetailsPanel .forms #tabs nav.tabNav ul li a:hover {
   color: white;
   text-shadow: none;
   -webkit-text-shadow: none;
   -moz-text-shadow: none;
 }
-/* line 4914, /akvo-flow/Dashboard/app/css/main.scss */
+/* line 4672, /akvo-flow/Dashboard/app/css/main.scss */
 .projectSection .projectDetailsPanel .forms .tabNav .aFormTab {
   background: #202024 url(../images/IconForms.png) no-repeat left center;
 }
-/* line 4919, /akvo-flow/Dashboard/app/css/main.scss */
+/* line 4677, /akvo-flow/Dashboard/app/css/main.scss */
 .projectSection .projectDetailsPanel .formsContainer {
   background: rgba(32, 32, 36, 0.9);
   margin: 0px auto;
 }
-/* line 4923, /akvo-flow/Dashboard/app/css/main.scss */
+/* line 4681, /akvo-flow/Dashboard/app/css/main.scss */
 .projectSection .projectDetailsPanel .projectDetails {
   background: #364f5a;
   margin: 10px auto;
 }
-/* line 4927, /akvo-flow/Dashboard/app/css/main.scss */
+/* line 4685, /akvo-flow/Dashboard/app/css/main.scss */
 .projectSection .projectDetailsPanel .projectDetails, .projectSection .projectDetailsPanel .formsContainer {
   width: 99.5%;
   position: relative;
   padding: 2em 0.25% 2em 0.25%;
 }
-/* line 4931, /akvo-flow/Dashboard/app/css/main.scss */
+/* line 4689, /akvo-flow/Dashboard/app/css/main.scss */
 .projectSection .projectDetailsPanel .projectDetails h3, .projectSection .projectDetailsPanel .formsContainer h3 {
   color: #c49a6c;
   margin-bottom: 20px;
   display: inline-block;
 }
-/* line 4937, /akvo-flow/Dashboard/app/css/main.scss */
+/* line 4695, /akvo-flow/Dashboard/app/css/main.scss */
 .projectSection .projectDetailsPanel .projectDetails label[for=enableMonitoring] input, .projectSection .projectDetailsPanel .projectDetails label[for=enableDataApproval] input, .projectSection .projectDetailsPanel .formsContainer label[for=enableMonitoring] input, .projectSection .projectDetailsPanel .formsContainer label[for=enableDataApproval] input {
   margin-bottom: 15px;
 }
-/* line 4941, /akvo-flow/Dashboard/app/css/main.scss */
+/* line 4699, /akvo-flow/Dashboard/app/css/main.scss */
 .projectSection .projectDetailsPanel .projectDetails label[for=enableDataApproval], .projectSection .projectDetailsPanel .formsContainer label[for=enableDataApproval] {
   clear: left;
   margin: 0px 0 0 5px;
 }
-/* line 4945, /akvo-flow/Dashboard/app/css/main.scss */
+/* line 4703, /akvo-flow/Dashboard/app/css/main.scss */
 .projectSection .projectDetailsPanel .projectDetails label[for=enableMonitoring], .projectSection .projectDetailsPanel .formsContainer label[for=enableMonitoring] {
   margin: 10px 0 0 5px;
 }
-/* line 4948, /akvo-flow/Dashboard/app/css/main.scss */
+/* line 4706, /akvo-flow/Dashboard/app/css/main.scss */
 .projectSection .projectDetailsPanel .projectDetails .projectDetailForm, .projectSection .projectDetailsPanel .projectDetails .surveyDetailForm, .projectSection .projectDetailsPanel .formsContainer .projectDetailForm, .projectSection .projectDetailsPanel .formsContainer .surveyDetailForm {
   display: block;
   margin-top: 0 !important;
 }
-/* line 4951, /akvo-flow/Dashboard/app/css/main.scss */
+/* line 4709, /akvo-flow/Dashboard/app/css/main.scss */
 .projectSection .projectDetailsPanel .projectDetails .projectDetailForm .monitoringHint, .projectSection .projectDetailsPanel .projectDetails .surveyDetailForm .monitoringHint, .projectSection .projectDetailsPanel .formsContainer .projectDetailForm .monitoringHint, .projectSection .projectDetailsPanel .formsContainer .surveyDetailForm .monitoringHint {
   margin: 10px 0 0 10px;
   color: #c49a6c;
 }
-/* line 4954, /akvo-flow/Dashboard/app/css/main.scss */
+/* line 4712, /akvo-flow/Dashboard/app/css/main.scss */
 .projectSection .projectDetailsPanel .projectDetails .projectDetailForm .monitoringHint + select, .projectSection .projectDetailsPanel .projectDetails .surveyDetailForm .monitoringHint + select, .projectSection .projectDetailsPanel .formsContainer .projectDetailForm .monitoringHint + select, .projectSection .projectDetailsPanel .formsContainer .surveyDetailForm .monitoringHint + select {
   margin: 0 0 20px 10px;
   display: block;
 }
-/* line 4959, /akvo-flow/Dashboard/app/css/main.scss */
+/* line 4717, /akvo-flow/Dashboard/app/css/main.scss */
 .projectSection .projectDetailsPanel .projectDetails .projectDetailForm form, .projectSection .projectDetailsPanel .projectDetails .surveyDetailForm form, .projectSection .projectDetailsPanel .formsContainer .projectDetailForm form, .projectSection .projectDetailsPanel .formsContainer .surveyDetailForm form {
   width: 100%;
 }
-/* line 4962, /akvo-flow/Dashboard/app/css/main.scss */
+/* line 4720, /akvo-flow/Dashboard/app/css/main.scss */
 .projectSection .projectDetailsPanel .projectDetails .projectDetailForm label.labelcheckbox, .projectSection .projectDetailsPanel .projectDetails .surveyDetailForm label.labelcheckbox, .projectSection .projectDetailsPanel .formsContainer .projectDetailForm label.labelcheckbox, .projectSection .projectDetailsPanel .formsContainer .surveyDetailForm label.labelcheckbox {
   display: inline-block;
 }
-/* line 4965, /akvo-flow/Dashboard/app/css/main.scss */
+/* line 4723, /akvo-flow/Dashboard/app/css/main.scss */
 .projectSection .projectDetailsPanel .projectDetails .projectDetailForm input, .projectSection .projectDetailsPanel .projectDetails .surveyDetailForm input, .projectSection .projectDetailsPanel .formsContainer .projectDetailForm input, .projectSection .projectDetailsPanel .formsContainer .surveyDetailForm input {
   width: 99%;
   margin-bottom: 35px;
   background: #f8f8f8;
   color: #585858;
 }
-/* line 4970, /akvo-flow/Dashboard/app/css/main.scss */
+/* line 4728, /akvo-flow/Dashboard/app/css/main.scss */
 .projectSection .projectDetailsPanel .projectDetails .projectDetailForm input:focus, .projectSection .projectDetailsPanel .projectDetails .surveyDetailForm input:focus, .projectSection .projectDetailsPanel .formsContainer .projectDetailForm input:focus, .projectSection .projectDetailsPanel .formsContainer .surveyDetailForm input:focus {
   border: 1px solid #cdcdcd;
   background: #f5ffd8;
 }
-/* line 4974, /akvo-flow/Dashboard/app/css/main.scss */
+/* line 4732, /akvo-flow/Dashboard/app/css/main.scss */
 .projectSection .projectDetailsPanel .projectDetails .projectDetailForm input[type=checkbox], .projectSection .projectDetailsPanel .projectDetails .surveyDetailForm input[type=checkbox], .projectSection .projectDetailsPanel .formsContainer .projectDetailForm input[type=checkbox], .projectSection .projectDetailsPanel .formsContainer .surveyDetailForm input[type=checkbox] {
   width: 20px;
   float: left;
 }
-/* line 4980, /akvo-flow/Dashboard/app/css/main.scss */
+/* line 4738, /akvo-flow/Dashboard/app/css/main.scss */
 .projectSection .projectDetailsPanel .projectDetails .projectDetailForm .projectSelect li, .projectSection .projectDetailsPanel .projectDetails .surveyDetailForm .projectSelect li, .projectSection .projectDetailsPanel .formsContainer .projectDetailForm .projectSelect li, .projectSection .projectDetailsPanel .formsContainer .surveyDetailForm .projectSelect li {
   display: block;
   width: 100%;
   margin-bottom: 20px;
 }
-/* line 4984, /akvo-flow/Dashboard/app/css/main.scss */
+/* line 4742, /akvo-flow/Dashboard/app/css/main.scss */
 .projectSection .projectDetailsPanel .projectDetails .projectDetailForm .projectSelect li select, .projectSection .projectDetailsPanel .projectDetails .surveyDetailForm .projectSelect li select, .projectSection .projectDetailsPanel .formsContainer .projectDetailForm .projectSelect li select, .projectSection .projectDetailsPanel .formsContainer .surveyDetailForm .projectSelect li select {
   width: 99.5%;
 }
 
-/* line 4994, /akvo-flow/Dashboard/app/css/main.scss */
+/* line 4752, /akvo-flow/Dashboard/app/css/main.scss */
 .forms #tabs nav.tabNav ul:after {
   border: none;
 }
 
 /************************************** CASCADING QUESTIONS ************************************/
-/* line 4999, /akvo-flow/Dashboard/app/css/main.scss */
+/* line 4757, /akvo-flow/Dashboard/app/css/main.scss */
 .noCascadeContainer {
   color: white;
   background: rgba(255, 255, 255, 0);
   padding: 2em 0;
 }
-/* line 5003, /akvo-flow/Dashboard/app/css/main.scss */
+/* line 4761, /akvo-flow/Dashboard/app/css/main.scss */
 .noCascadeContainer li.formList {
   padding: 10px 0;
 }
-/* line 5005, /akvo-flow/Dashboard/app/css/main.scss */
+/* line 4763, /akvo-flow/Dashboard/app/css/main.scss */
 .noCascadeContainer li.formList.populated {
   background: rgba(255, 255, 255, 0);
 }
-/* line 5008, /akvo-flow/Dashboard/app/css/main.scss */
+/* line 4766, /akvo-flow/Dashboard/app/css/main.scss */
 .noCascadeContainer li.formList h4 {
   margin: 5px 0 10px 5px;
   color: rgba(74, 177, 207, 0.5);
 }
-/* line 5012, /akvo-flow/Dashboard/app/css/main.scss */
+/* line 4770, /akvo-flow/Dashboard/app/css/main.scss */
 .noCascadeContainer li.formList .noCascade {
   text-align: center;
   width: 90%;
   margin: 0 auto 20px auto;
 }
 
-/* line 5020, /akvo-flow/Dashboard/app/css/main.scss */
+/* line 4778, /akvo-flow/Dashboard/app/css/main.scss */
 .addMenuAction {
   display: inline-block;
   margin: 0 auto;
 }
-/* line 5023, /akvo-flow/Dashboard/app/css/main.scss */
+/* line 4781, /akvo-flow/Dashboard/app/css/main.scss */
 .addMenuAction.addNewForm {
   display: table;
   padding: 8px 8px 8px 31px;
@@ -6241,7 +5968,7 @@ table.surveyDetails {
 /*.cascadeWrap {
      height:calc(100vh - 180px);
 }*/
-/* line 5032, /akvo-flow/Dashboard/app/css/main.scss */
+/* line 4790, /akvo-flow/Dashboard/app/css/main.scss */
 .cascadeSection {
   box-sizing: border-box;
   width: 100%;
@@ -6298,63 +6025,63 @@ table.surveyDetails {
           }
       } */
 }
-/* line 5039, /akvo-flow/Dashboard/app/css/main.scss */
+/* line 4797, /akvo-flow/Dashboard/app/css/main.scss */
 .cascadeSection .cascadeDetailsPanel {
   padding: 5px 0;
 }
-/* line 5040, /akvo-flow/Dashboard/app/css/main.scss */
+/* line 4798, /akvo-flow/Dashboard/app/css/main.scss */
 .cascadeSection .cascadeDetailsPanel .offSet {
   margin-left: 60px;
   margin-right: 0;
 }
-/* line 5044, /akvo-flow/Dashboard/app/css/main.scss */
+/* line 4802, /akvo-flow/Dashboard/app/css/main.scss */
 .cascadeSection .cascadeDetailsPanel h2 {
   display: block;
   margin-bottom: 10px;
 }
-/* line 5048, /akvo-flow/Dashboard/app/css/main.scss */
+/* line 4806, /akvo-flow/Dashboard/app/css/main.scss */
 .cascadeSection .cascadeDetailsPanel li.cascadeInfo {
   font-size: 0.9em;
   margin-left: 20px;
   color: rgba(32, 32, 36, 0.5);
 }
-/* line 5052, /akvo-flow/Dashboard/app/css/main.scss */
+/* line 4810, /akvo-flow/Dashboard/app/css/main.scss */
 .cascadeSection .cascadeDetailsPanel li.cascadeInfo span {
   margin-left: 10px;
   color: #202024;
 }
-/* line 5106, /akvo-flow/Dashboard/app/css/main.scss */
+/* line 4864, /akvo-flow/Dashboard/app/css/main.scss */
 .cascadeSection span.fontInfo {
   color: #d4d4d4;
   margin: 0 0.5em;
 }
-/* line 5110, /akvo-flow/Dashboard/app/css/main.scss */
+/* line 4868, /akvo-flow/Dashboard/app/css/main.scss */
 .cascadeSection h2 {
   color: #e27c00;
   display: inline;
 }
-/* line 5113, /akvo-flow/Dashboard/app/css/main.scss */
+/* line 4871, /akvo-flow/Dashboard/app/css/main.scss */
 .cascadeSection h2 a {
   display: inline-block;
   width: 20px;
   text-indent: -9999px;
 }
-/* line 5117, /akvo-flow/Dashboard/app/css/main.scss */
+/* line 4875, /akvo-flow/Dashboard/app/css/main.scss */
 .cascadeSection h2 a.editSurvey {
   background: url(../images/IconEdit.svg) center center no-repeat;
   background-size: 18px 18px;
 }
-/* line 5120, /akvo-flow/Dashboard/app/css/main.scss */
+/* line 4878, /akvo-flow/Dashboard/app/css/main.scss */
 .cascadeSection h2 a.editSurvey:hover {
   background: url(../images/IconEditOrange.svg) center center no-repeat;
   background-size: 18px 18px;
 }
 
-/* line 5129, /akvo-flow/Dashboard/app/css/main.scss */
+/* line 4887, /akvo-flow/Dashboard/app/css/main.scss */
 nav.cascadeBreadCrumb {
   position: relative;
 }
-/* line 5131, /akvo-flow/Dashboard/app/css/main.scss */
+/* line 4889, /akvo-flow/Dashboard/app/css/main.scss */
 nav.cascadeBreadCrumb ul li {
   display: inline-block;
   height: 34px;
@@ -6365,7 +6092,7 @@ nav.cascadeBreadCrumb ul li {
   position: relative;
   transition: all 0.4s ease-in;
 }
-/* line 5141, /akvo-flow/Dashboard/app/css/main.scss */
+/* line 4899, /akvo-flow/Dashboard/app/css/main.scss */
 nav.cascadeBreadCrumb ul li:before {
   content: " ";
   height: 0;
@@ -6378,11 +6105,11 @@ nav.cascadeBreadCrumb ul li:before {
   z-index: 0;
   transition: all 0.4s ease-in;
 }
-/* line 5153, /akvo-flow/Dashboard/app/css/main.scss */
+/* line 4911, /akvo-flow/Dashboard/app/css/main.scss */
 nav.cascadeBreadCrumb ul li:first-of-type:before {
   border-color: transparent;
 }
-/* line 5156, /akvo-flow/Dashboard/app/css/main.scss */
+/* line 4914, /akvo-flow/Dashboard/app/css/main.scss */
 nav.cascadeBreadCrumb ul li a:after {
   content: " ";
   height: 0;
@@ -6395,7 +6122,7 @@ nav.cascadeBreadCrumb ul li a:after {
   z-index: 10;
   transition: all 0.4s ease-in;
 }
-/* line 5169, /akvo-flow/Dashboard/app/css/main.scss */
+/* line 4927, /akvo-flow/Dashboard/app/css/main.scss */
 nav.cascadeBreadCrumb ul li a {
   display: block;
   background: #396680;
@@ -6406,7 +6133,7 @@ nav.cascadeBreadCrumb ul li a {
   text-overflow: ellipsis;
   white-space: nowrap;
 }
-/* line 5175, /akvo-flow/Dashboard/app/css/main.scss */
+/* line 4933, /akvo-flow/Dashboard/app/css/main.scss */
 nav.cascadeBreadCrumb ul li a span {
   display: inline-block;
   margin-left: -20px;
@@ -6414,58 +6141,58 @@ nav.cascadeBreadCrumb ul li a span {
   font-weight: bold;
   color: #c49a6c;
 }
-/* line 5183, /akvo-flow/Dashboard/app/css/main.scss */
+/* line 4941, /akvo-flow/Dashboard/app/css/main.scss */
 nav.cascadeBreadCrumb ul li a:hover {
   background: #396680;
 }
-/* line 5185, /akvo-flow/Dashboard/app/css/main.scss */
+/* line 4943, /akvo-flow/Dashboard/app/css/main.scss */
 nav.cascadeBreadCrumb ul li a:hover:after {
   border-color: transparent transparent transparent #396680;
 }
-/* line 5191, /akvo-flow/Dashboard/app/css/main.scss */
+/* line 4949, /akvo-flow/Dashboard/app/css/main.scss */
 nav.cascadeBreadCrumb ul li.offScreen a {
   background: rgba(32, 32, 36, 0.1);
   color: white;
   border-color: transparent transparent transparent rgba(32, 32, 36, 0.1);
   transition: all 0.4s ease-in;
 }
-/* line 5196, /akvo-flow/Dashboard/app/css/main.scss */
+/* line 4954, /akvo-flow/Dashboard/app/css/main.scss */
 nav.cascadeBreadCrumb ul li.offScreen a:after {
   border-color: transparent transparent transparent rgba(32, 32, 36, 0.1);
   transition: all 0.4s ease-in;
 }
-/* line 5200, /akvo-flow/Dashboard/app/css/main.scss */
+/* line 4958, /akvo-flow/Dashboard/app/css/main.scss */
 nav.cascadeBreadCrumb ul li.offScreen a:hover {
   background: rgba(226, 124, 0, 0.5);
 }
-/* line 5202, /akvo-flow/Dashboard/app/css/main.scss */
+/* line 4960, /akvo-flow/Dashboard/app/css/main.scss */
 nav.cascadeBreadCrumb ul li.offScreen a:hover:after {
   border-color: transparent transparent transparent rgba(226, 124, 0, 0.5);
 }
-/* line 5209, /akvo-flow/Dashboard/app/css/main.scss */
+/* line 4967, /akvo-flow/Dashboard/app/css/main.scss */
 nav.cascadeBreadCrumb div.addLevelBtn {
   position: absolute;
   top: 10px;
   right: 15px;
 }
 @media only screen and (max-width: 992px) {
-  /* line 5209, /akvo-flow/Dashboard/app/css/main.scss */
+  /* line 4967, /akvo-flow/Dashboard/app/css/main.scss */
   nav.cascadeBreadCrumb div.addLevelBtn {
     position: relative;
     display: table;
     margin: 10px auto;
   }
 }
-/* line 5219, /akvo-flow/Dashboard/app/css/main.scss */
+/* line 4977, /akvo-flow/Dashboard/app/css/main.scss */
 nav.cascadeBreadCrumb div.addLevelBtn.addLevel {
   display: table;
 }
-/* line 5221, /akvo-flow/Dashboard/app/css/main.scss */
+/* line 4979, /akvo-flow/Dashboard/app/css/main.scss */
 nav.cascadeBreadCrumb div.addLevelBtn.addLevel:hover {
   background: #e27c00;
 }
 
-/* line 5228, /akvo-flow/Dashboard/app/css/main.scss */
+/* line 4986, /akvo-flow/Dashboard/app/css/main.scss */
 .levelColumns {
   width: 100%;
   white-space: nowrap;
@@ -6476,7 +6203,7 @@ nav.cascadeBreadCrumb div.addLevelBtn.addLevel:hover {
   box-shadow: 0px -1px 3px rgba(32, 32, 36, 0);
   padding-top: 5px;
 }
-/* line 5237, /akvo-flow/Dashboard/app/css/main.scss */
+/* line 4995, /akvo-flow/Dashboard/app/css/main.scss */
 .levelColumns .levelCol {
   position: relative;
   -moz-border-radius: 3px;
@@ -6495,21 +6222,21 @@ nav.cascadeBreadCrumb div.addLevelBtn.addLevel:hover {
   min-height: 100px;
   box-shadow: 0px 0px 2px rgba(32, 32, 36, 0.2);
 }
-/* line 5251, /akvo-flow/Dashboard/app/css/main.scss */
+/* line 5009, /akvo-flow/Dashboard/app/css/main.scss */
 .levelColumns .levelCol .levelNbr {
   color: #c49a6c;
   padding-left: 5px;
   font-weight: bold;
 }
-/* line 5256, /akvo-flow/Dashboard/app/css/main.scss */
+/* line 5014, /akvo-flow/Dashboard/app/css/main.scss */
 .levelColumns .levelCol .cascadeEntryName {
   width: 55%;
 }
-/* line 5259, /akvo-flow/Dashboard/app/css/main.scss */
+/* line 5017, /akvo-flow/Dashboard/app/css/main.scss */
 .levelColumns .levelCol .cascadeEntryCode {
   width: 15%;
 }
-/* line 5262, /akvo-flow/Dashboard/app/css/main.scss */
+/* line 5020, /akvo-flow/Dashboard/app/css/main.scss */
 .levelColumns .levelCol button {
   width: 15%;
   -moz-border-radius: 3px;
@@ -6520,39 +6247,39 @@ nav.cascadeBreadCrumb div.addLevelBtn.addLevel:hover {
   color: white;
   border: none;
 }
-/* line 5268, /akvo-flow/Dashboard/app/css/main.scss */
+/* line 5026, /akvo-flow/Dashboard/app/css/main.scss */
 .levelColumns .levelCol button.squeezeR {
   width: 10%;
 }
-/* line 5271, /akvo-flow/Dashboard/app/css/main.scss */
+/* line 5029, /akvo-flow/Dashboard/app/css/main.scss */
 .levelColumns .levelCol button:hover {
   background: #e27c00;
 }
-/* line 5275, /akvo-flow/Dashboard/app/css/main.scss */
+/* line 5033, /akvo-flow/Dashboard/app/css/main.scss */
 .levelColumns .levelCol .levelHead {
   padding-left: 5px;
   width: calc(100% - 10px);
   padding-bottom: 15px;
 }
-/* line 5279, /akvo-flow/Dashboard/app/css/main.scss */
+/* line 5037, /akvo-flow/Dashboard/app/css/main.scss */
 .levelColumns .levelCol .levelHead label {
   margin-bottom: 10px;
 }
-/* line 5281, /akvo-flow/Dashboard/app/css/main.scss */
+/* line 5039, /akvo-flow/Dashboard/app/css/main.scss */
 .levelColumns .levelCol .levelHead label a {
   display: inline-block;
   width: 20px;
   margin-left: 10px;
 }
-/* line 5285, /akvo-flow/Dashboard/app/css/main.scss */
+/* line 5043, /akvo-flow/Dashboard/app/css/main.scss */
 .levelColumns .levelCol .levelHead label a.editSurvey {
   background-size: 18px 18px;
 }
-/* line 5292, /akvo-flow/Dashboard/app/css/main.scss */
+/* line 5050, /akvo-flow/Dashboard/app/css/main.scss */
 .levelColumns .levelCol ul {
   margin-top: 15px;
 }
-/* line 5294, /akvo-flow/Dashboard/app/css/main.scss */
+/* line 5052, /akvo-flow/Dashboard/app/css/main.scss */
 .levelColumns .levelCol ul li {
   position: relative;
   color: white;
@@ -6563,21 +6290,21 @@ nav.cascadeBreadCrumb div.addLevelBtn.addLevel:hover {
   background-size: 15px 15px;
   border-top: 1px solid rgba(32, 32, 36, 0.1);
 }
-/* line 5304, /akvo-flow/Dashboard/app/css/main.scss */
+/* line 5062, /akvo-flow/Dashboard/app/css/main.scss */
 .levelColumns .levelCol ul li:hover {
   background: rgba(255, 255, 255, 0.2) url(../images/carret.svg) right center no-repeat;
   background-size: 15px 15px;
   cursor: pointer;
   box-shadow: 1px 1px 1px rgba(32, 32, 36, 0.2);
 }
-/* line 5310, /akvo-flow/Dashboard/app/css/main.scss */
+/* line 5068, /akvo-flow/Dashboard/app/css/main.scss */
 .levelColumns .levelCol ul li.selected {
   background: rgba(41, 119, 152, 0.1) url(../images/carret.svg) right center no-repeat;
   background-size: 15px 15px;
   cursor: text;
   box-shadow: 1px 1px 1px rgba(32, 32, 36, 0.2);
 }
-/* line 5317, /akvo-flow/Dashboard/app/css/main.scss */
+/* line 5075, /akvo-flow/Dashboard/app/css/main.scss */
 .levelColumns .levelCol ul a {
   display: block;
   width: 80%;
@@ -6586,11 +6313,11 @@ nav.cascadeBreadCrumb div.addLevelBtn.addLevel:hover {
   text-overflow: ellipsis;
   white-space: nowrap;
 }
-/* line 5321, /akvo-flow/Dashboard/app/css/main.scss */
+/* line 5079, /akvo-flow/Dashboard/app/css/main.scss */
 .levelColumns .levelCol ul a:first-of-type {
   color: rgba(32, 32, 36, 0.7);
 }
-/* line 5325, /akvo-flow/Dashboard/app/css/main.scss */
+/* line 5083, /akvo-flow/Dashboard/app/css/main.scss */
 .levelColumns .levelCol ul a.deleteLevel {
   text-align: right;
   position: absolute;
@@ -6603,7 +6330,7 @@ nav.cascadeBreadCrumb div.addLevelBtn.addLevel:hover {
   right: 15px;
   font-size: 90%;
 }
-/* line 5337, /akvo-flow/Dashboard/app/css/main.scss */
+/* line 5095, /akvo-flow/Dashboard/app/css/main.scss */
 .levelColumns .levelCol ul a.editLevel {
   text-align: right;
   position: absolute;
@@ -6617,21 +6344,21 @@ nav.cascadeBreadCrumb div.addLevelBtn.addLevel:hover {
   right: 100px;
 }
 
-/* line 5354, /akvo-flow/Dashboard/app/css/main.scss */
+/* line 5112, /akvo-flow/Dashboard/app/css/main.scss */
 ul.cascadeAction {
   display: inline-block;
 }
 @media only screen and (max-width: 992px) {
-  /* line 5354, /akvo-flow/Dashboard/app/css/main.scss */
+  /* line 5112, /akvo-flow/Dashboard/app/css/main.scss */
   ul.cascadeAction {
     margin: 10px 0 10px 0;
   }
 }
-/* line 5360, /akvo-flow/Dashboard/app/css/main.scss */
+/* line 5118, /akvo-flow/Dashboard/app/css/main.scss */
 ul.cascadeAction li {
   display: inline-block;
 }
-/* line 5362, /akvo-flow/Dashboard/app/css/main.scss */
+/* line 5120, /akvo-flow/Dashboard/app/css/main.scss */
 ul.cascadeAction li a {
   /* use @extend .button on any element ( a or button) or use directly in markup class="button" */
   display: inline-block;
@@ -6668,7 +6395,7 @@ ul.cascadeAction li a.disabled:hover {
   border: 1px solid transparent;
 }
 
-/* line 5368, /akvo-flow/Dashboard/app/css/main.scss */
+/* line 5126, /akvo-flow/Dashboard/app/css/main.scss */
 a.levelUp {
   display: table;
   margin: 20px auto 0;
@@ -6679,14 +6406,14 @@ a.levelUp {
   -webkit-background-size: 25px 25px;
   background-size: 25px 25px;
 }
-/* line 5377, /akvo-flow/Dashboard/app/css/main.scss */
+/* line 5135, /akvo-flow/Dashboard/app/css/main.scss */
 a.levelUp:hover {
   background: rgba(74, 177, 207, 0.1) url(../images/IconRightOrange.svg) right center no-repeat;
   -webkit-background-size: 25px 25px;
   background-size: 25px 25px;
 }
 
-/* line 5384, /akvo-flow/Dashboard/app/css/main.scss */
+/* line 5142, /akvo-flow/Dashboard/app/css/main.scss */
 a.levelDown {
   display: table;
   margin: 20px auto 0;
@@ -6697,14 +6424,14 @@ a.levelDown {
   -webkit-background-size: 25px 25px;
   background-size: 25px 25px;
 }
-/* line 5393, /akvo-flow/Dashboard/app/css/main.scss */
+/* line 5151, /akvo-flow/Dashboard/app/css/main.scss */
 a.levelDown:hover {
   background: rgba(74, 177, 207, 0.1) url(../images/IconLeftOrange.svg) left center no-repeat;
   -webkit-background-size: 25px 25px;
   background-size: 25px 25px;
 }
 
-/* line 5401, /akvo-flow/Dashboard/app/css/main.scss */
+/* line 5159, /akvo-flow/Dashboard/app/css/main.scss */
 li.disable a.levelUp {
   pointer-events: none;
   /* Disables the button completely. Better than just cursor: default; */
@@ -6716,13 +6443,13 @@ li.disable a.levelUp {
   -webkit-background-size: 25px 25px;
   background-size: 25px 25px;
 }
-/* line 5410, /akvo-flow/Dashboard/app/css/main.scss */
+/* line 5168, /akvo-flow/Dashboard/app/css/main.scss */
 li.disable a.levelUp:hover {
   -webkit-background-size: 25px 25px;
   background-size: 25px 25px;
   background: rgba(74, 177, 207, 0) url(../images/IconRightWhite.svg) right center no-repeat;
 }
-/* line 5416, /akvo-flow/Dashboard/app/css/main.scss */
+/* line 5174, /akvo-flow/Dashboard/app/css/main.scss */
 li.disable a.levelDown {
   pointer-events: none;
   /* Disables the button completely. Better than just cursor: default; */
@@ -6734,14 +6461,14 @@ li.disable a.levelDown {
   -webkit-background-size: 25px 25px;
   background-size: 25px 25px;
 }
-/* line 5425, /akvo-flow/Dashboard/app/css/main.scss */
+/* line 5183, /akvo-flow/Dashboard/app/css/main.scss */
 li.disable a.levelDown:hover {
   background: rgba(74, 177, 207, 0) url(../images/IconLeftWhite.svg) left center no-repeat;
   -webkit-background-size: 25px 25px;
   background-size: 25px 25px;
 }
 
-/* line 5435, /akvo-flow/Dashboard/app/css/main.scss */
+/* line 5193, /akvo-flow/Dashboard/app/css/main.scss */
 .levelSecondNav nav ul {
   display: -webkit-box;
   display: -moz-box;
@@ -6751,7 +6478,7 @@ li.disable a.levelDown:hover {
   -webkit-align-items: center;
   align-items: center;
 }
-/* line 5443, /akvo-flow/Dashboard/app/css/main.scss */
+/* line 5201, /akvo-flow/Dashboard/app/css/main.scss */
 .levelSecondNav nav ul li {
   text-align: center;
   width: 50%;
@@ -6759,7 +6486,7 @@ li.disable a.levelDown:hover {
   justify-content: flex-justified;
 }
 
-/* line 5453, /akvo-flow/Dashboard/app/css/main.scss */
+/* line 5211, /akvo-flow/Dashboard/app/css/main.scss */
 .importBlock {
   width: 98%;
   margin: 5px auto;
@@ -6771,29 +6498,29 @@ li.disable a.levelDown:hover {
   -webkit-border-radius: 5px;
   border-radius: 5px;
 }
-/* line 5460, /akvo-flow/Dashboard/app/css/main.scss */
+/* line 5218, /akvo-flow/Dashboard/app/css/main.scss */
 .importBlock a + a {
   margin-left: 10px;
 }
-/* line 5464, /akvo-flow/Dashboard/app/css/main.scss */
+/* line 5222, /akvo-flow/Dashboard/app/css/main.scss */
 .importBlock h4 {
   color: #e27c00;
   margin: 5px 0 10px 0;
 }
-/* line 5469, /akvo-flow/Dashboard/app/css/main.scss */
+/* line 5227, /akvo-flow/Dashboard/app/css/main.scss */
 .importBlock fieldset {
   padding: 10px;
   background-color: rgba(32, 32, 36, 0.1);
 }
-/* line 5472, /akvo-flow/Dashboard/app/css/main.scss */
+/* line 5230, /akvo-flow/Dashboard/app/css/main.scss */
 .importBlock fieldset label {
   display: inline-block;
 }
-/* line 5476, /akvo-flow/Dashboard/app/css/main.scss */
+/* line 5234, /akvo-flow/Dashboard/app/css/main.scss */
 .importBlock fieldset:first-of-type label {
   display: inherit;
 }
-/* line 5480, /akvo-flow/Dashboard/app/css/main.scss */
+/* line 5238, /akvo-flow/Dashboard/app/css/main.scss */
 .importBlock fieldset input {
   background: rgba(255, 255, 255, 0.4);
   border: none;
@@ -6823,25 +6550,25 @@ li.disable a.levelDown:hover {
   /* Firefox 19+ */
   color: #202024;
 }
-/* line 5484, /akvo-flow/Dashboard/app/css/main.scss */
+/* line 5242, /akvo-flow/Dashboard/app/css/main.scss */
 .importBlock fieldset input:first-of-type {
   width: 25%;
 }
-/* line 5487, /akvo-flow/Dashboard/app/css/main.scss */
+/* line 5245, /akvo-flow/Dashboard/app/css/main.scss */
 .importBlock fieldset input[type="checkbox"] {
   display: inline-block;
 }
-/* line 5492, /akvo-flow/Dashboard/app/css/main.scss */
+/* line 5250, /akvo-flow/Dashboard/app/css/main.scss */
 .importBlock p {
   width: 35%;
   margin-top: 15px;
 }
-/* line 5496, /akvo-flow/Dashboard/app/css/main.scss */
+/* line 5254, /akvo-flow/Dashboard/app/css/main.scss */
 .importBlock .resumable-progress {
   margin-top: 15px;
 }
 
-/* line 5501, /akvo-flow/Dashboard/app/css/main.scss */
+/* line 5259, /akvo-flow/Dashboard/app/css/main.scss */
 .copyingSpinner {
   position: absolute;
   left: 45%;
@@ -6855,7 +6582,7 @@ li.disable a.levelDown:hover {
 }
 
 /* Set device buttons on device tab to position: fixed */
-/* line 5514, /akvo-flow/Dashboard/app/css/main.scss */
+/* line 5272, /akvo-flow/Dashboard/app/css/main.scss */
 .deviceControls, .cascadeControls {
   position: fixed;
   top: 96px;
@@ -6867,97 +6594,97 @@ li.disable a.levelDown:hover {
   width: 99.5%;
   padding: 5px 0.25%;
 }
-/* line 5525, /akvo-flow/Dashboard/app/css/main.scss */
+/* line 5283, /akvo-flow/Dashboard/app/css/main.scss */
 .deviceControls nav.doubleMenu, .cascadeControls nav.doubleMenu {
   width: 49%;
 }
-/* line 5527, /akvo-flow/Dashboard/app/css/main.scss */
+/* line 5285, /akvo-flow/Dashboard/app/css/main.scss */
 .deviceControls nav.doubleMenu:first-child, .cascadeControls nav.doubleMenu:first-child {
   float: left;
   margin-top: 7px;
 }
-/* line 5531, /akvo-flow/Dashboard/app/css/main.scss */
+/* line 5289, /akvo-flow/Dashboard/app/css/main.scss */
 .deviceControls nav.doubleMenu:last-child, .cascadeControls nav.doubleMenu:last-child {
   float: right;
   text-align: right;
   margin-top: 3px;
 }
-/* line 5538, /akvo-flow/Dashboard/app/css/main.scss */
+/* line 5296, /akvo-flow/Dashboard/app/css/main.scss */
 .deviceControls > a, .cascadeControls > a {
   margin-top: 10px;
 }
-/* line 5541, /akvo-flow/Dashboard/app/css/main.scss */
+/* line 5299, /akvo-flow/Dashboard/app/css/main.scss */
 .deviceControls .dataTabMenu, .cascadeControls .dataTabMenu {
   top: 0px;
   padding-top: 15px;
   background: white;
 }
-/* line 5546, /akvo-flow/Dashboard/app/css/main.scss */
+/* line 5304, /akvo-flow/Dashboard/app/css/main.scss */
 .deviceControls + div + .dataTable, .cascadeControls + div + .dataTable {
   margin-top: 40px;
 }
-/* line 5549, /akvo-flow/Dashboard/app/css/main.scss */
+/* line 5307, /akvo-flow/Dashboard/app/css/main.scss */
 .deviceControls + .dataTable, .cascadeControls + .dataTable {
   margin-top: 60px;
 }
 @media only screen and (max-width: 600px) {
-  /* line 5514, /akvo-flow/Dashboard/app/css/main.scss */
+  /* line 5272, /akvo-flow/Dashboard/app/css/main.scss */
   .deviceControls, .cascadeControls {
     height: 80px;
   }
-  /* line 5554, /akvo-flow/Dashboard/app/css/main.scss */
+  /* line 5312, /akvo-flow/Dashboard/app/css/main.scss */
   .deviceControls .dataTabMenu, .cascadeControls .dataTabMenu {
     top: 48px;
   }
-  /* line 5557, /akvo-flow/Dashboard/app/css/main.scss */
+  /* line 5315, /akvo-flow/Dashboard/app/css/main.scss */
   .deviceControls + .dataTable, .cascadeControls + .dataTable {
     margin-top: 60px;
   }
 }
 
 /* Repeatable question groups */
-/* line 5567, /akvo-flow/Dashboard/app/css/main.scss */
+/* line 5325, /akvo-flow/Dashboard/app/css/main.scss */
 .questionGroupBlock header > .labelcheckbox {
   display: inline-block;
 }
-/* line 5569, /akvo-flow/Dashboard/app/css/main.scss */
+/* line 5327, /akvo-flow/Dashboard/app/css/main.scss */
 .questionGroupBlock header > .labelcheckbox .ember-checkbox {
   width: initial;
   margin: 5px 5px 5px 12px;
   display: inline-block;
 }
 
-/* line 5580, /akvo-flow/Dashboard/app/css/main.scss */
+/* line 5338, /akvo-flow/Dashboard/app/css/main.scss */
 #inspectData h3.questionGroupName {
   margin: 10px 0;
 }
-/* line 5586, /akvo-flow/Dashboard/app/css/main.scss */
+/* line 5344, /akvo-flow/Dashboard/app/css/main.scss */
 background
 #inspectData h5.iterationNumber {
   margin: 16px 0px 5px 8px;
 }
 
-/* line 5593, /akvo-flow/Dashboard/app/css/main.scss */
+/* line 5351, /akvo-flow/Dashboard/app/css/main.scss */
 .groupSave .smallBtn {
   margin-top: 0.75em;
   margin-bottom: 0.75em;
 }
 
 /* Non-scrollable map views */
-/* line 5601, /akvo-flow/Dashboard/app/css/main.scss */
+/* line 5359, /akvo-flow/Dashboard/app/css/main.scss */
 html.navMaps, .public {
   border-top: 0px;
 }
-/* line 5603, /akvo-flow/Dashboard/app/css/main.scss */
+/* line 5361, /akvo-flow/Dashboard/app/css/main.scss */
 html.navMaps header, .public header {
   position: initial;
 }
-/* line 5606, /akvo-flow/Dashboard/app/css/main.scss */
+/* line 5364, /akvo-flow/Dashboard/app/css/main.scss */
 html.navMaps #flowMap, html.navMaps #pointDetails, .public #flowMap, .public #pointDetails {
   height: 600px;
   height: 75vh;
 }
-/* line 5610, /akvo-flow/Dashboard/app/css/main.scss */
+/* line 5368, /akvo-flow/Dashboard/app/css/main.scss */
 html.navMaps #selected-media, .public #selected-media {
   z-index: 999;
   position: absolute;
@@ -6966,85 +6693,85 @@ html.navMaps #selected-media, .public #selected-media {
   left: 20%;
   background-color: white;
 }
-/* line 5617, /akvo-flow/Dashboard/app/css/main.scss */
+/* line 5375, /akvo-flow/Dashboard/app/css/main.scss */
 html.navMaps #selected-media img, .public #selected-media img {
   float: left;
   height: 70px;
 }
-/* line 5621, /akvo-flow/Dashboard/app/css/main.scss */
+/* line 5379, /akvo-flow/Dashboard/app/css/main.scss */
 html.navMaps #selected-media label, .public #selected-media label {
   float: left;
   margin-left: 10px;
 }
-/* line 5626, /akvo-flow/Dashboard/app/css/main.scss */
+/* line 5384, /akvo-flow/Dashboard/app/css/main.scss */
 html.navMaps .mapFlow.middleSection, .public .mapFlow.middleSection {
   padding: 0;
 }
-/* line 5629, /akvo-flow/Dashboard/app/css/main.scss */
+/* line 5387, /akvo-flow/Dashboard/app/css/main.scss */
 html.navMaps footer, .public footer {
   padding-bottom: 15px;
 }
-/* line 5632, /akvo-flow/Dashboard/app/css/main.scss */
+/* line 5390, /akvo-flow/Dashboard/app/css/main.scss */
 html.navMaps .mapFlow.middleSection, .public .mapFlow.middleSection {
   padding: 0;
 }
-/* line 5635, /akvo-flow/Dashboard/app/css/main.scss */
+/* line 5393, /akvo-flow/Dashboard/app/css/main.scss */
 html.navMaps footer, .public footer {
   padding-bottom: 15px;
 }
 
 /* Approval Process */
-/* line 5642, /akvo-flow/Dashboard/app/css/main.scss */
+/* line 5400, /akvo-flow/Dashboard/app/css/main.scss */
 .dataApprovalRow {
   background: rgba(232, 230, 220, 0.2) !important;
   box-shadow: inset 0 -2px 8px rgba(0, 0, 0, 0.1);
 }
-/* line 5644, /akvo-flow/Dashboard/app/css/main.scss */
+/* line 5402, /akvo-flow/Dashboard/app/css/main.scss */
 .dataApprovalRow:hover {
   background: rgba(232, 230, 220, 0.2) !important;
 }
-/* line 5650, /akvo-flow/Dashboard/app/css/main.scss */
+/* line 5408, /akvo-flow/Dashboard/app/css/main.scss */
 .dataApprovalRow .dataApprovalBlock ol.dataPointApproval {
   list-style-type: none;
   list-style: none;
 }
-/* line 5653, /akvo-flow/Dashboard/app/css/main.scss */
+/* line 5411, /akvo-flow/Dashboard/app/css/main.scss */
 .dataApprovalRow .dataApprovalBlock ol.dataPointApproval li {
   text-align: left;
   margin-bottom: 20px;
 }
-/* line 5656, /akvo-flow/Dashboard/app/css/main.scss */
+/* line 5414, /akvo-flow/Dashboard/app/css/main.scss */
 .dataApprovalRow .dataApprovalBlock ol.dataPointApproval li select {
   margin-right: 20px;
 }
-/* line 5659, /akvo-flow/Dashboard/app/css/main.scss */
+/* line 5417, /akvo-flow/Dashboard/app/css/main.scss */
 .dataApprovalRow .dataApprovalBlock ol.dataPointApproval li input {
   text-overflow: ellipsis;
 }
-/* line 5662, /akvo-flow/Dashboard/app/css/main.scss */
+/* line 5420, /akvo-flow/Dashboard/app/css/main.scss */
 .dataApprovalRow .dataApprovalBlock ol.dataPointApproval li .btn {
   display: inline-block;
 }
-/* line 5665, /akvo-flow/Dashboard/app/css/main.scss */
+/* line 5423, /akvo-flow/Dashboard/app/css/main.scss */
 .dataApprovalRow .dataApprovalBlock ol.dataPointApproval li h4 {
   margin-bottom: 5px;
 }
 
-/* line 5674, /akvo-flow/Dashboard/app/css/main.scss */
+/* line 5432, /akvo-flow/Dashboard/app/css/main.scss */
 .approvalDetail {
   padding-left: 30px;
 }
-/* line 5676, /akvo-flow/Dashboard/app/css/main.scss */
+/* line 5434, /akvo-flow/Dashboard/app/css/main.scss */
 .approvalDetail > p {
   color: #d4d4d4;
   margin-bottom: 10px;
 }
-/* line 5680, /akvo-flow/Dashboard/app/css/main.scss */
+/* line 5438, /akvo-flow/Dashboard/app/css/main.scss */
 .approvalDetail h2 {
   display: inline-block !important;
   margin-top: 15px;
 }
-/* line 5684, /akvo-flow/Dashboard/app/css/main.scss */
+/* line 5442, /akvo-flow/Dashboard/app/css/main.scss */
 .approvalDetail li {
   display: block;
   padding: 10px 5px !important;
@@ -7058,13 +6785,13 @@ html.navMaps footer, .public footer {
   -webkit-border-radius: 2px;
   border-radius: 2px;
 }
-/* line 5693, /akvo-flow/Dashboard/app/css/main.scss */
+/* line 5451, /akvo-flow/Dashboard/app/css/main.scss */
 .approvalDetail li h4 {
   display: inline;
   float: left;
   color: white;
 }
-/* line 5698, /akvo-flow/Dashboard/app/css/main.scss */
+/* line 5456, /akvo-flow/Dashboard/app/css/main.scss */
 .approvalDetail li a {
   display: inline-block;
   text-indent: -9999px;
@@ -7076,82 +6803,82 @@ html.navMaps footer, .public footer {
   background-size: 15px auto;
   background: url(../images/topnavUsers.svg) left center no-repeat;
 }
-/* line 5708, /akvo-flow/Dashboard/app/css/main.scss */
+/* line 5466, /akvo-flow/Dashboard/app/css/main.scss */
 .approvalDetail li a:hover {
   background: url(../images/topnavUsersOrange.svg) left center no-repeat;
 }
 
-/* line 5715, /akvo-flow/Dashboard/app/css/main.scss */
+/* line 5473, /akvo-flow/Dashboard/app/css/main.scss */
 .hideShow {
   margin: 5px 0 0 30px;
 }
 
-/* line 5720, /akvo-flow/Dashboard/app/css/main.scss */
+/* line 5478, /akvo-flow/Dashboard/app/css/main.scss */
 .public #dropdown-holder {
   margin-top: 30px;
   z-index: 9999;
 }
-/* line 5724, /akvo-flow/Dashboard/app/css/main.scss */
+/* line 5482, /akvo-flow/Dashboard/app/css/main.scss */
 .public footer {
   height: 60px;
 }
-/* line 5727, /akvo-flow/Dashboard/app/css/main.scss */
+/* line 5485, /akvo-flow/Dashboard/app/css/main.scss */
 .public #flowMap {
   height: calc(100vh - (3px + 83px + 53px + 60px));
 }
-/* line 5730, /akvo-flow/Dashboard/app/css/main.scss */
+/* line 5488, /akvo-flow/Dashboard/app/css/main.scss */
 .public #pointDetails {
   height: calc(100vh - (3px + 83px + 53px + 60px + 5px));
 }
 
-/* line 5735, /akvo-flow/Dashboard/app/css/main.scss */
+/* line 5493, /akvo-flow/Dashboard/app/css/main.scss */
 iframe {
   height: 100vh;
   min-height: calc(100% - 225px);
 }
 
-/* line 5742, /akvo-flow/Dashboard/app/css/main.scss */
+/* line 5500, /akvo-flow/Dashboard/app/css/main.scss */
 svg g text {
   font-weight: normal !important;
   font-size: 1em !important;
 }
 
 /****************************************** NEW EXPORT SECTION ***********************************************/
-/* line 5750, /akvo-flow/Dashboard/app/css/main.scss */
+/* line 5508, /akvo-flow/Dashboard/app/css/main.scss */
 .surveySelect {
   background: rgba(32, 32, 36, 0.05);
   padding: 10px 5px;
   margin-bottom: 25px;
 }
-/* line 5755, /akvo-flow/Dashboard/app/css/main.scss */
+/* line 5513, /akvo-flow/Dashboard/app/css/main.scss */
 .surveySelect nav.monitorFormSelect {
   margin-left: 15px;
 }
-/* line 5758, /akvo-flow/Dashboard/app/css/main.scss */
+/* line 5516, /akvo-flow/Dashboard/app/css/main.scss */
 .surveySelect nav.breadCrumb {
   background: rgba(32, 32, 36, 0);
 }
-/* line 5762, /akvo-flow/Dashboard/app/css/main.scss */
+/* line 5520, /akvo-flow/Dashboard/app/css/main.scss */
 .surveySelect nav.breadCrumb select#monitorSelection, .surveySelect nav.monitorFormSelect select#monitorSelection {
   display: inline-block;
   top: -5px;
   position: relative;
   left: 25px;
 }
-/* line 5768, /akvo-flow/Dashboard/app/css/main.scss */
+/* line 5526, /akvo-flow/Dashboard/app/css/main.scss */
 .surveySelect nav.breadCrumb .modularSelection, .surveySelect nav.monitorFormSelect .modularSelection {
   padding: 0;
   display: inline-block;
   min-width: 200px;
 }
-/* line 5772, /akvo-flow/Dashboard/app/css/main.scss */
+/* line 5530, /akvo-flow/Dashboard/app/css/main.scss */
 .surveySelect nav.breadCrumb .modularSelection select, .surveySelect nav.monitorFormSelect .modularSelection select {
   max-width: 200px;
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
 }
-/* line 5777, /akvo-flow/Dashboard/app/css/main.scss */
+/* line 5535, /akvo-flow/Dashboard/app/css/main.scss */
 .surveySelect nav.breadCrumb ul li, .surveySelect nav.monitorFormSelect ul li {
   white-space: nowrap;
   display: inline-block;
@@ -7163,11 +6890,11 @@ svg g text {
   position: relative;
   max-width: 175px;
 }
-/* line 5788, /akvo-flow/Dashboard/app/css/main.scss */
+/* line 5546, /akvo-flow/Dashboard/app/css/main.scss */
 .surveySelect nav.breadCrumb ul li:first-child:before, .surveySelect nav.monitorFormSelect ul li:first-child:before {
   border-color: transparent;
 }
-/* line 5791, /akvo-flow/Dashboard/app/css/main.scss */
+/* line 5549, /akvo-flow/Dashboard/app/css/main.scss */
 .surveySelect nav.breadCrumb ul li:first-child a:after, .surveySelect nav.monitorFormSelect ul li:first-child a:after {
   content: " ";
   height: 0;
@@ -7179,7 +6906,7 @@ svg g text {
   border-color: transparent transparent transparent #202024;
   z-index: 10;
 }
-/* line 5802, /akvo-flow/Dashboard/app/css/main.scss */
+/* line 5560, /akvo-flow/Dashboard/app/css/main.scss */
 .surveySelect nav.breadCrumb ul li a, .surveySelect nav.monitorFormSelect ul li a {
   display: block;
   background: #27aae1;
@@ -7188,11 +6915,11 @@ svg g text {
   text-overflow: ellipsis;
   white-space: nowrap;
 }
-/* line 5807, /akvo-flow/Dashboard/app/css/main.scss */
+/* line 5565, /akvo-flow/Dashboard/app/css/main.scss */
 .surveySelect nav.breadCrumb ul li a:hover, .surveySelect nav.monitorFormSelect ul li a:hover {
   background: #e27c00;
 }
-/* line 5810, /akvo-flow/Dashboard/app/css/main.scss */
+/* line 5568, /akvo-flow/Dashboard/app/css/main.scss */
 .surveySelect nav.breadCrumb ul li a.homeRoot, .surveySelect nav.monitorFormSelect ul li a.homeRoot {
   border-radius: 3px 0 0 3px;
   width: 40px;
@@ -7202,22 +6929,22 @@ svg g text {
   z-index: 9999;
   margin-left: 0;
 }
-/* line 5818, /akvo-flow/Dashboard/app/css/main.scss */
+/* line 5576, /akvo-flow/Dashboard/app/css/main.scss */
 .surveySelect nav.breadCrumb ul li a.homeRoot:hover, .surveySelect nav.monitorFormSelect ul li a.homeRoot:hover {
   background: url(../images/breadCrumb-Root.png) center center no-repeat #202024;
   background-size: 40%;
 }
-/* line 5824, /akvo-flow/Dashboard/app/css/main.scss */
+/* line 5582, /akvo-flow/Dashboard/app/css/main.scss */
 .surveySelect nav.breadCrumb ul li a:hover:after, .surveySelect nav.breadCrumb ul li select:hover:after, .surveySelect nav.monitorFormSelect ul li a:hover:after, .surveySelect nav.monitorFormSelect ul li select:hover:after {
   border-color: transparent transparent transparent #202024;
 }
 
-/* line 5831, /akvo-flow/Dashboard/app/css/main.scss */
+/* line 5589, /akvo-flow/Dashboard/app/css/main.scss */
 .exportContainer {
   padding: 5px 20px 0 5px;
 }
 
-/* line 5835, /akvo-flow/Dashboard/app/css/main.scss */
+/* line 5593, /akvo-flow/Dashboard/app/css/main.scss */
 .exportSelect {
   display: flex;
   flex-direction: row;
@@ -7226,11 +6953,11 @@ svg g text {
   align-items: stretch;
   align-content: flex-start;
 }
-/* line 5836, /akvo-flow/Dashboard/app/css/main.scss */
+/* line 5594, /akvo-flow/Dashboard/app/css/main.scss */
 .exportSelect * {
   box-sizing: border-box;
 }
-/* line 5845, /akvo-flow/Dashboard/app/css/main.scss */
+/* line 5603, /akvo-flow/Dashboard/app/css/main.scss */
 .exportSelect li {
   cursor: pointer;
   flex-grow: 1;
@@ -7243,50 +6970,50 @@ svg g text {
   transition: opacity 0.4s ease-in;
   border: 1px solid rgba(32, 32, 36, 0.2);
 }
-/* line 5856, /akvo-flow/Dashboard/app/css/main.scss */
+/* line 5614, /akvo-flow/Dashboard/app/css/main.scss */
 .exportSelect li h2 {
   font-weight: bold;
   padding-top: 70px;
 }
-/* line 5861, /akvo-flow/Dashboard/app/css/main.scss */
+/* line 5619, /akvo-flow/Dashboard/app/css/main.scss */
 .exportSelect li.dataCleanExp h2 {
   background: url(../images/Export01.svg) center top no-repeat;
   background-size: 60px;
 }
-/* line 5867, /akvo-flow/Dashboard/app/css/main.scss */
+/* line 5625, /akvo-flow/Dashboard/app/css/main.scss */
 .exportSelect li.dataAnalyseExp h2 {
   background: url(../images/Export02.svg) center top no-repeat;
   background-size: 60px;
 }
-/* line 5873, /akvo-flow/Dashboard/app/css/main.scss */
+/* line 5631, /akvo-flow/Dashboard/app/css/main.scss */
 .exportSelect li.compReportExp h2 {
   background: url(../images/Export03.svg) center top no-repeat;
   background-size: 60px;
 }
-/* line 5879, /akvo-flow/Dashboard/app/css/main.scss */
+/* line 5637, /akvo-flow/Dashboard/app/css/main.scss */
 .exportSelect li.geoShapeDataExp h2 {
   background: url(../images/Export04.svg) center top no-repeat;
   background-size: 60px;
 }
-/* line 5885, /akvo-flow/Dashboard/app/css/main.scss */
+/* line 5643, /akvo-flow/Dashboard/app/css/main.scss */
 .exportSelect li.surveyFormExp h2 {
   background: url(../images/Export05.svg) center top no-repeat;
   background-size: 60px;
 }
-/* line 5890, /akvo-flow/Dashboard/app/css/main.scss */
+/* line 5648, /akvo-flow/Dashboard/app/css/main.scss */
 .exportSelect li:hover {
   opacity: 1;
 }
-/* line 5893, /akvo-flow/Dashboard/app/css/main.scss */
+/* line 5651, /akvo-flow/Dashboard/app/css/main.scss */
 .exportSelect li .expDescr {
   font-size: 90%;
   margin: 10px auto;
 }
-/* line 5897, /akvo-flow/Dashboard/app/css/main.scss */
+/* line 5655, /akvo-flow/Dashboard/app/css/main.scss */
 .exportSelect li:last-child {
   margin-right: 0px;
 }
-/* line 5900, /akvo-flow/Dashboard/app/css/main.scss */
+/* line 5658, /akvo-flow/Dashboard/app/css/main.scss */
 .exportSelect li.active {
   opacity: 1;
   -webkit-animation: fadeExportClick 1s  linear 1 normal forwards;
@@ -7297,13 +7024,13 @@ svg g text {
   background: rgba(32, 32, 36, 0.05);
   box-shadow: 0 0 10px rgba(32, 32, 36, 0.5);
   @-webkit-keyframes fadeExportClick {
-    /* line 5910, /akvo-flow/Dashboard/app/css/main.scss */
+    /* line 5668, /akvo-flow/Dashboard/app/css/main.scss */
     from {
       background: transparent;
       box-shadow: 0 0 4px rgba(32, 32, 36, 0);
     }
 
-    /* line 5914, /akvo-flow/Dashboard/app/css/main.scss */
+    /* line 5672, /akvo-flow/Dashboard/app/css/main.scss */
     to {
       background: rgba(32, 32, 36, 0.05);
       box-shadow: 0 0 10px rgba(32, 32, 36, 0.5);
@@ -7311,13 +7038,13 @@ svg g text {
 }
 
   @keyframes fadeExportClick {
-    /* line 5921, /akvo-flow/Dashboard/app/css/main.scss */
+    /* line 5679, /akvo-flow/Dashboard/app/css/main.scss */
     from {
       background: transparent;
       box-shadow: 0 0 4px rgba(32, 32, 36, 0);
     }
 
-    /* line 5925, /akvo-flow/Dashboard/app/css/main.scss */
+    /* line 5683, /akvo-flow/Dashboard/app/css/main.scss */
     to {
       background: rgba(32, 32, 36, 0.05);
       box-shadow: 0 0 10px rgba(32, 32, 36, 0.5);
@@ -7325,50 +7052,50 @@ svg g text {
 }
 
 }
-/* line 5931, /akvo-flow/Dashboard/app/css/main.scss */
+/* line 5689, /akvo-flow/Dashboard/app/css/main.scss */
 .exportSelect li input[type="submit"], .exportSelect li a.trigger2 {
   margin: 10px auto;
 }
-/* line 5934, /akvo-flow/Dashboard/app/css/main.scss */
+/* line 5692, /akvo-flow/Dashboard/app/css/main.scss */
 .exportSelect li .options {
   animation: fadeExport 2s;
   @keyframes fadeExport {
-    /* line 5937, /akvo-flow/Dashboard/app/css/main.scss */
+    /* line 5695, /akvo-flow/Dashboard/app/css/main.scss */
     from {
       opacity: 0;
     }
 
-    /* line 5940, /akvo-flow/Dashboard/app/css/main.scss */
+    /* line 5698, /akvo-flow/Dashboard/app/css/main.scss */
     to {
       opacity: 1;
     }
 }
 
 }
-/* line 5945, /akvo-flow/Dashboard/app/css/main.scss */
+/* line 5703, /akvo-flow/Dashboard/app/css/main.scss */
 .exportSelect li .options:not(.active) {
   display: none;
 }
-/* line 5948, /akvo-flow/Dashboard/app/css/main.scss */
+/* line 5706, /akvo-flow/Dashboard/app/css/main.scss */
 .exportSelect li .options .latestOption {
   margin: 10px auto;
 }
-/* line 5950, /akvo-flow/Dashboard/app/css/main.scss */
+/* line 5708, /akvo-flow/Dashboard/app/css/main.scss */
 .exportSelect li .options .latestOption label, .exportSelect li .options .latestOption input {
   display: inline-block;
   font-size: 90%;
 }
-/* line 5955, /akvo-flow/Dashboard/app/css/main.scss */
+/* line 5713, /akvo-flow/Dashboard/app/css/main.scss */
 .exportSelect li .options .downFeedback {
   font-size: 90%;
   margin-top: 20px;
   color: rgba(32, 32, 36, 0.5);
 }
-/* line 5959, /akvo-flow/Dashboard/app/css/main.scss */
+/* line 5717, /akvo-flow/Dashboard/app/css/main.scss */
 .exportSelect li .options .downFeedback em {
   font-weight: bold;
 }
-/* line 5963, /akvo-flow/Dashboard/app/css/main.scss */
+/* line 5721, /akvo-flow/Dashboard/app/css/main.scss */
 .exportSelect li .options .dataCollectedDate {
   position: relative;
   display: block;
@@ -7381,18 +7108,18 @@ svg g text {
   padding: 10px;
   background-color: rgba(32, 32, 36, 0.05);
 }
-/* line 5974, /akvo-flow/Dashboard/app/css/main.scss */
+/* line 5732, /akvo-flow/Dashboard/app/css/main.scss */
 .exportSelect li .options .dataCollectedDate p {
   font-size: 90%;
   margin-bottom: 10px;
 }
-/* line 5978, /akvo-flow/Dashboard/app/css/main.scss */
+/* line 5736, /akvo-flow/Dashboard/app/css/main.scss */
 .exportSelect li .options .dataCollectedDate label {
   margin-top: 0;
   font-size: 90%;
 }
 
-/* line 5987, /akvo-flow/Dashboard/app/css/main.scss */
+/* line 5745, /akvo-flow/Dashboard/app/css/main.scss */
 #gdprBtn {
   position: absolute;
   right: 15px;
@@ -7400,7 +7127,7 @@ svg g text {
   margin-bottom: 20px;
 }
 
-/* line 5994, /akvo-flow/Dashboard/app/css/main.scss */
+/* line 5752, /akvo-flow/Dashboard/app/css/main.scss */
 #gdprSwitch {
   float: left;
   width: calc(35% - 1px);
@@ -7409,13 +7136,13 @@ svg g text {
   box-sizing: border-box;
   text-align: center;
 }
-/* line 6003, /akvo-flow/Dashboard/app/css/main.scss */
+/* line 5761, /akvo-flow/Dashboard/app/css/main.scss */
 #gdprSwitch h3 {
   margin: 1em auto;
   color: #396680;
 }
 
-/* line 6009, /akvo-flow/Dashboard/app/css/main.scss */
+/* line 5767, /akvo-flow/Dashboard/app/css/main.scss */
 .bulkUpload {
   float: right;
   margin-right: 1%;
@@ -7428,15 +7155,14 @@ svg g text {
   /* Uploader: Hover & Active status */
   /* Uploader: Error status */
 }
-/* line 6016, /akvo-flow/Dashboard/app/css/main.scss */
+/* line 5774, /akvo-flow/Dashboard/app/css/main.scss */
 .bulkUpload .resumable-error {
   font-style: italic;
 }
-/* line 6019, /akvo-flow/Dashboard/app/css/main.scss */
+/* line 5777, /akvo-flow/Dashboard/app/css/main.scss */
 .bulkUpload .resumable-drop {
   position: relative;
-  padding: 3em;
-  text-align: center;
+  padding: 3em 0;
   color: #202024;
   background-color: white;
   background-color: rgba(44, 42, 116, 0);
@@ -7445,7 +7171,7 @@ svg g text {
   z-index: 9999;
   height: 100%;
 }
-/* line 6030, /akvo-flow/Dashboard/app/css/main.scss */
+/* line 5787, /akvo-flow/Dashboard/app/css/main.scss */
 .bulkUpload .resumable-drop .dragTxt {
   width: 100%;
   max-width: 450px;
@@ -7453,95 +7179,96 @@ svg g text {
   top: 50%;
   left: 50%;
   transform: translate(-50%, -50%);
+  text-align: center;
 }
-/* line 6037, /akvo-flow/Dashboard/app/css/main.scss */
+/* line 5795, /akvo-flow/Dashboard/app/css/main.scss */
 .bulkUpload .resumable-drop .dragTxt .zipIcn {
   height: 80px;
   background: url(../images/zipIcn.svg) center top no-repeat;
   background-size: 60px;
 }
-/* line 6043, /akvo-flow/Dashboard/app/css/main.scss */
+/* line 5801, /akvo-flow/Dashboard/app/css/main.scss */
 .bulkUpload .resumable-drop .dragTxt p .warningMsg {
   font-size: 0.8em;
   margin-top: 10px;
 }
-/* line 6050, /akvo-flow/Dashboard/app/css/main.scss */
+/* line 5808, /akvo-flow/Dashboard/app/css/main.scss */
 .bulkUpload .resumable-drop u {
   font-weight: bold;
   cursor: pointer;
 }
-/* line 6054, /akvo-flow/Dashboard/app/css/main.scss */
+/* line 5812, /akvo-flow/Dashboard/app/css/main.scss */
 .bulkUpload .resumable-drop input {
   cursor: pointer;
 }
-/* line 6057, /akvo-flow/Dashboard/app/css/main.scss */
+/* line 5815, /akvo-flow/Dashboard/app/css/main.scss */
 .bulkUpload .resumable-dragover {
   padding: 30px;
   color: #555;
   background-color: #ddd;
   border: 1px solid #999;
 }
-/* line 6064, /akvo-flow/Dashboard/app/css/main.scss */
+/* line 5822, /akvo-flow/Dashboard/app/css/main.scss */
 .bulkUpload .resumable-progress {
   margin: -100px auto 0.5em auto;
   width: 95%;
   display: none;
 }
-/* line 6069, /akvo-flow/Dashboard/app/css/main.scss */
+/* line 5827, /akvo-flow/Dashboard/app/css/main.scss */
 .bulkUpload .progress-text {
   line-height: 9px;
   padding-left: 10px;
 }
-/* line 6073, /akvo-flow/Dashboard/app/css/main.scss */
+/* line 5831, /akvo-flow/Dashboard/app/css/main.scss */
 .bulkUpload .progress-pause {
   padding: 0 0 0 7px;
 }
-/* line 6076, /akvo-flow/Dashboard/app/css/main.scss */
+/* line 5834, /akvo-flow/Dashboard/app/css/main.scss */
 .bulkUpload .progress-resume-link {
   display: none;
 }
-/* line 6079, /akvo-flow/Dashboard/app/css/main.scss */
+/* line 5837, /akvo-flow/Dashboard/app/css/main.scss */
 .bulkUpload .is-paused .progress-resume-link {
   display: inline;
 }
-/* line 6082, /akvo-flow/Dashboard/app/css/main.scss */
+/* line 5840, /akvo-flow/Dashboard/app/css/main.scss */
 .bulkUpload .is-paused .progress-pause-link {
   display: none;
 }
-/* line 6085, /akvo-flow/Dashboard/app/css/main.scss */
+/* line 5843, /akvo-flow/Dashboard/app/css/main.scss */
 .bulkUpload .is-complete .progress-pause {
   display: none;
 }
-/* line 6089, /akvo-flow/Dashboard/app/css/main.scss */
+/* line 5847, /akvo-flow/Dashboard/app/css/main.scss */
 .bulkUpload .resumable-list {
   position: absolute;
-  display: table;
+  bottom: 0;
   width: 90%;
-  text-align: center;
-  overflow: auto;
-  display: none;
-  margin: 0 auto;
-  padding: 0.25em;
+  text-align: left;
+  max-height: 150px;
+  overflow-y: scroll;
+  margin: 0 0 0 5%;
+  padding: 0.25em 1em;
   color: #b4b4b4;
 }
-/* line 6099, /akvo-flow/Dashboard/app/css/main.scss */
+/* line 5857, /akvo-flow/Dashboard/app/css/main.scss */
 .bulkUpload .resumable-list li {
   margin: 0 0 1px 0;
-  padding: 0.25em;
-  background: whitesmoke;
+  padding: 15px 0.25em;
+  border-bottom: 1px solid rgba(32, 32, 36, 0.05);
+  font-size: 0.85em;
 }
-/* line 6103, /akvo-flow/Dashboard/app/css/main.scss */
+/* line 5862, /akvo-flow/Dashboard/app/css/main.scss */
+.bulkUpload .resumable-list li:last-child {
+  border-bottom: none;
+}
+/* line 5865, /akvo-flow/Dashboard/app/css/main.scss */
 .bulkUpload .resumable-list li .resumable-file-name {
-  color: #2c2a74;
   margin-left: 5px;
   margin-right: 15px;
+  color: #202024;
 }
-/* line 6108, /akvo-flow/Dashboard/app/css/main.scss */
-.bulkUpload .resumable-list li .resumable-file-progress {
-  color: #2c2a74;
-  font-weight: bold;
-}
-/* line 6116, /akvo-flow/Dashboard/app/css/main.scss */
+/* line 5876, /akvo-flow/Dashboard/app/css/main.scss */
 .bulkUpload .uploader-item {
   width: 148px;
   height: 90px;
@@ -7550,8 +7277,9 @@ svg g text {
   border: 2px solid black;
   float: left;
   margin: 0 6px 6px 0;
+  padding: 3em 0;
 }
-/* line 6125, /akvo-flow/Dashboard/app/css/main.scss */
+/* line 5886, /akvo-flow/Dashboard/app/css/main.scss */
 .bulkUpload .uploader-item-thumbnail {
   width: 100%;
   height: 100%;
@@ -7559,16 +7287,16 @@ svg g text {
   top: 0;
   left: 0;
 }
-/* line 6132, /akvo-flow/Dashboard/app/css/main.scss */
+/* line 5893, /akvo-flow/Dashboard/app/css/main.scss */
 .bulkUpload .uploader-item img.uploader-item-thumbnail {
   opacity: 0;
 }
-/* line 6135, /akvo-flow/Dashboard/app/css/main.scss */
+/* line 5896, /akvo-flow/Dashboard/app/css/main.scss */
 .bulkUpload .uploader-item-creating-thumbnail {
   padding: 0 5px;
   color: white;
 }
-/* line 6139, /akvo-flow/Dashboard/app/css/main.scss */
+/* line 5900, /akvo-flow/Dashboard/app/css/main.scss */
 .bulkUpload .uploader-item-title {
   position: absolute;
   line-height: 11px;
@@ -7580,45 +7308,45 @@ svg g text {
   background-color: rgba(0, 0, 0, 0.6);
   min-height: 27px;
 }
-/* line 6150, /akvo-flow/Dashboard/app/css/main.scss */
+/* line 5911, /akvo-flow/Dashboard/app/css/main.scss */
 .bulkUpload .uploader-item-status {
   position: absolute;
   bottom: 3px;
   right: 3px;
 }
-/* line 6157, /akvo-flow/Dashboard/app/css/main.scss */
+/* line 5918, /akvo-flow/Dashboard/app/css/main.scss */
 .bulkUpload .uploader-item:hover,
 .bulkUpload .is-active .uploader-item {
   border-color: #4a873c;
   cursor: pointer;
 }
-/* line 6162, /akvo-flow/Dashboard/app/css/main.scss */
+/* line 5923, /akvo-flow/Dashboard/app/css/main.scss */
 .bulkUpload .uploader-item:hover .uploader-item-title,
 .bulkUpload .is-active .uploader-item .uploader-item-title {
   background-color: rgba(74, 135, 60, 0.8);
 }
-/* line 6167, /akvo-flow/Dashboard/app/css/main.scss */
+/* line 5928, /akvo-flow/Dashboard/app/css/main.scss */
 .bulkUpload .is-error .uploader-item:hover,
 .bulkUpload .is-active.is-error .uploader-item {
   border-color: #900;
 }
-/* line 6171, /akvo-flow/Dashboard/app/css/main.scss */
+/* line 5932, /akvo-flow/Dashboard/app/css/main.scss */
 .bulkUpload .is-error .uploader-item:hover .uploader-item-title,
 .bulkUpload .is-active.is-error .uploader-item .uploader-item-title {
   background-color: rgba(153, 0, 0, 0.6);
 }
-/* line 6174, /akvo-flow/Dashboard/app/css/main.scss */
+/* line 5935, /akvo-flow/Dashboard/app/css/main.scss */
 .bulkUpload .is-error .uploader-item-creating-thumbnail {
   display: none;
 }
-/* line 6177, /akvo-flow/Dashboard/app/css/main.scss */
+/* line 5938, /akvo-flow/Dashboard/app/css/main.scss */
 .bulkUpload .marker-cluster {
   background-color: rgba(253, 156, 115, 0.6);
   -webkit-background-clip: padding-box;
   background-clip: padding-box;
   border-radius: 20px;
 }
-/* line 6183, /akvo-flow/Dashboard/app/css/main.scss */
+/* line 5944, /akvo-flow/Dashboard/app/css/main.scss */
 .bulkUpload .marker-cluster div {
   background-color: rgba(241, 128, 23, 0.6);
   width: 30px;
@@ -7629,22 +7357,246 @@ svg g text {
   border-radius: 15px;
   font: 12px "Helvetica Neue", Arial, Helvetica, sans-serif;
 }
-/* line 6193, /akvo-flow/Dashboard/app/css/main.scss */
+/* line 5954, /akvo-flow/Dashboard/app/css/main.scss */
 .bulkUpload .marker-cluster span {
   line-height: 30px;
 }
 
-/* line 6198, /akvo-flow/Dashboard/app/css/main.scss */
+/* Uploader: Drag & Drop */
+/* line 5961, /akvo-flow/Dashboard/app/css/main.scss */
+.resumable-error {
+  font-style: italic;
+}
+
+/* line 5965, /akvo-flow/Dashboard/app/css/main.scss */
+.resumable-dragover {
+  padding: 30px;
+  color: #555;
+  background-color: #ddd;
+  border: 1px solid #999;
+}
+
+/* Uploader: Progress bar */
+/* line 5974, /akvo-flow/Dashboard/app/css/main.scss */
+.resumable-progress {
+  margin: 0 0 0.5em 0;
+  width: 100%;
+  display: none;
+}
+
+/* line 5980, /akvo-flow/Dashboard/app/css/main.scss */
+.progress-container {
+  height: 10px;
+  background: #eab92d;
+  background: url(data:image/svg+xml;base64,PD94bWwgdmVyc2lvbj0iMS4wIiA/Pgo8c3ZnIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyIgd2lkdGg9IjEwMCUiIGhlaWdodD0iMTAwJSIgdmlld0JveD0iMCAwIDEgMSIgcHJlc2VydmVBc3BlY3RSYXRpbz0ibm9uZSI+CiAgPGxpbmVhckdyYWRpZW50IGlkPSJncmFkLXVjZ2ctZ2VuZXJhdGVkIiBncmFkaWVudFVuaXRzPSJ1c2VyU3BhY2VPblVzZSIgeDE9IjAlIiB5MT0iMCUiIHgyPSIwJSIgeTI9IjEwMCUiPgogICAgPHN0b3Agb2Zmc2V0PSIwJSIgc3RvcC1jb2xvcj0iI2VhYjkyZCIgc3RvcC1vcGFjaXR5PSIxIi8+CiAgICA8c3RvcCBvZmZzZXQ9IjEwMCUiIHN0b3AtY29sb3I9IiNjNzk4MTAiIHN0b3Atb3BhY2l0eT0iMSIvPgogIDwvbGluZWFyR3JhZGllbnQ+CiAgPHJlY3QgeD0iMCIgeT0iMCIgd2lkdGg9IjEiIGhlaWdodD0iMSIgZmlsbD0idXJsKCNncmFkLXVjZ2ctZ2VuZXJhdGVkKSIgLz4KPC9zdmc+);
+  background: -webkit-gradient(linear, left top, left bottom, color-stop(0%, #eab92d), color-stop(100%, #c79810));
+  background: -webkit-linear-gradient(top, #eab92d 0%, #c79810 100%);
+  background: -webkit-gradient(linear, left top, left bottom, from(#eab92d), to(#c79810));
+  background: linear-gradient(to bottom, #eab92d 0%, #c79810 100%);
+  position: relative;
+  -o-border-radius: 0.5em;
+  border-radius: 0.5em;
+}
+
+/* line 5993, /akvo-flow/Dashboard/app/css/main.scss */
+.progress-bar {
+  height: 10px;
+  left: -1px;
+  background: #bfd255;
+  /* Old browsers */
+  /* IE9 SVG, needs conditional override of 'filter' to 'none' */
+  background: url(data:image/svg+xml;base64,PD94bWwgdmVyc2lvbj0iMS4wIiA/Pgo8c3ZnIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyIgd2lkdGg9IjEwMCUiIGhlaWdodD0iMTAwJSIgdmlld0JveD0iMCAwIDEgMSIgcHJlc2VydmVBc3BlY3RSYXRpbz0ibm9uZSI+CiAgPGxpbmVhckdyYWRpZW50IGlkPSJncmFkLXVjZ2ctZ2VuZXJhdGVkIiBncmFkaWVudFVuaXRzPSJ1c2VyU3BhY2VPblVzZSIgeDE9IjAlIiB5MT0iMCUiIHgyPSIwJSIgeTI9IjEwMCUiPgogICAgPHN0b3Agb2Zmc2V0PSIwJSIgc3RvcC1jb2xvcj0iI2JmZDI1NSIgc3RvcC1vcGFjaXR5PSIxIi8+CiAgICA8c3RvcCBvZmZzZXQ9IjUwJSIgc3RvcC1jb2xvcj0iIzhlYjkyYSIgc3RvcC1vcGFjaXR5PSIxIi8+CiAgICA8c3RvcCBvZmZzZXQ9IjUxJSIgc3RvcC1jb2xvcj0iIzcyYWEwMCIgc3RvcC1vcGFjaXR5PSIxIi8+CiAgICA8c3RvcCBvZmZzZXQ9IjEwMCUiIHN0b3AtY29sb3I9IiM5ZWNiMmQiIHN0b3Atb3BhY2l0eT0iMSIvPgogIDwvbGluZWFyR3JhZGllbnQ+CiAgPHJlY3QgeD0iMCIgeT0iMCIgd2lkdGg9IjEiIGhlaWdodD0iMSIgZmlsbD0idXJsKCNncmFkLXVjZ2ctZ2VuZXJhdGVkKSIgLz4KPC9zdmc+);
+  /* FF3.6+ */
+  background: -webkit-gradient(linear, left top, left bottom, color-stop(0%, #bfd255), color-stop(50%, #8eb92a), color-stop(51%, #72aa00), color-stop(100%, #9ecb2d));
+  /* Chrome,Safari4+ */
+  background: -webkit-linear-gradient(top, #bfd255 0%, #8eb92a 50%, #72aa00 51%, #9ecb2d 100%);
+  /* Chrome10+,Safari5.1+ */
+  /* Opera 11.10+ */
+  /* IE10+ */
+  background: -webkit-gradient(linear, left top, left bottom, from(#bfd255), color-stop(50%, #8eb92a), color-stop(51%, #72aa00), to(#9ecb2d));
+  background: linear-gradient(to bottom, #bfd255 0%, #8eb92a 50%, #72aa00 51%, #9ecb2d 100%);
+  width: 0;
+  border-right: 1px solid white;
+  -o-border-radius: 0.5em;
+  border-radius: 0.5em;
+}
+
+/* line 6015, /akvo-flow/Dashboard/app/css/main.scss */
+.progress-text {
+  line-height: 9px;
+  padding-left: 10px;
+}
+
+/* line 6020, /akvo-flow/Dashboard/app/css/main.scss */
+.progress-pause {
+  padding: 0 0 0 7px;
+}
+
+/* line 6024, /akvo-flow/Dashboard/app/css/main.scss */
+.progress-resume-link {
+  display: none;
+}
+
+/* line 6028, /akvo-flow/Dashboard/app/css/main.scss */
+.is-paused .progress-resume-link {
+  display: inline;
+}
+
+/* line 6032, /akvo-flow/Dashboard/app/css/main.scss */
+.is-paused .progress-pause-link {
+  display: none;
+}
+
+/* line 6036, /akvo-flow/Dashboard/app/css/main.scss */
+.is-complete .progress-pause {
+  display: none;
+}
+
+/* Uploader: List of items being uploaded */
+/* line 6041, /akvo-flow/Dashboard/app/css/main.scss */
+.unsupportedFile {
+  display: inline;
+  width: 15px;
+  height: 15px;
+}
+
+/* line 6046, /akvo-flow/Dashboard/app/css/main.scss */
+.uploadComplete {
+  display: inline;
+  width: 15px;
+  height: 15px;
+}
+
+/* line 6052, /akvo-flow/Dashboard/app/css/main.scss */
+.uploadStatus {
+  float: right;
+}
+
+/* line 6056, /akvo-flow/Dashboard/app/css/main.scss */
+.resumable-file-progress {
+  color: #2c2a74;
+  font-weight: bold;
+}
+
+/* line 6061, /akvo-flow/Dashboard/app/css/main.scss */
+.uploader-item {
+  width: 148px;
+  height: 90px;
+  background-color: #666;
+  position: relative;
+  border: 2px solid black;
+  float: left;
+  margin: 0 6px 6px 0;
+}
+
+/* line 6071, /akvo-flow/Dashboard/app/css/main.scss */
+.uploader-item-thumbnail {
+  width: 100%;
+  height: 100%;
+  position: absolute;
+  top: 0;
+  left: 0;
+}
+
+/* line 6079, /akvo-flow/Dashboard/app/css/main.scss */
+.uploader-item img.uploader-item-thumbnail {
+  opacity: 0;
+}
+
+/* line 6083, /akvo-flow/Dashboard/app/css/main.scss */
+.uploader-item-creating-thumbnail {
+  padding: 0 5px;
+  color: white;
+}
+
+/* line 6088, /akvo-flow/Dashboard/app/css/main.scss */
+.uploader-item-title {
+  position: absolute;
+  line-height: 11px;
+  padding: 3px 50px 3px 5px;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  color: white;
+  background-color: rgba(0, 0, 0, 0.6);
+  min-height: 27px;
+}
+
+/* line 6100, /akvo-flow/Dashboard/app/css/main.scss */
+.uploader-item-status {
+  position: absolute;
+  bottom: 3px;
+  right: 3px;
+}
+
+/* Uploader: Hover & Active status */
+/* line 6109, /akvo-flow/Dashboard/app/css/main.scss */
+.uploader-item:hover,
+.is-active .uploader-item {
+  border-color: #4a873c;
+  cursor: pointer;
+}
+
+/* line 6115, /akvo-flow/Dashboard/app/css/main.scss */
+.uploader-item:hover .uploader-item-title,
+.is-active .uploader-item .uploader-item-title {
+  background-color: rgba(74, 135, 60, 0.8);
+}
+
+/* Uploader: Error status */
+/* line 6122, /akvo-flow/Dashboard/app/css/main.scss */
+.is-error .uploader-item:hover,
+.is-active.is-error .uploader-item {
+  border-color: #900;
+}
+
+/* line 6127, /akvo-flow/Dashboard/app/css/main.scss */
+.is-error .uploader-item:hover .uploader-item-title,
+.is-active.is-error .uploader-item .uploader-item-title {
+  background-color: rgba(153, 0, 0, 0.6);
+}
+
+/* line 6131, /akvo-flow/Dashboard/app/css/main.scss */
+.is-error .uploader-item-creating-thumbnail {
+  display: none;
+}
+
+/* line 6135, /akvo-flow/Dashboard/app/css/main.scss */
+.marker-cluster {
+  background-color: rgba(253, 156, 115, 0.6);
+  -webkit-background-clip: padding-box;
+  background-clip: padding-box;
+  border-radius: 20px;
+}
+
+/* line 6142, /akvo-flow/Dashboard/app/css/main.scss */
+.marker-cluster div {
+  background-color: rgba(241, 128, 23, 0.6);
+  width: 30px;
+  height: 30px;
+  margin-left: 5px;
+  margin-top: 5px;
+  text-align: center;
+  border-radius: 15px;
+  font: 12px "Helvetica Neue", Arial, Helvetica, sans-serif;
+}
+
+/* line 6153, /akvo-flow/Dashboard/app/css/main.scss */
+.marker-cluster span {
+  line-height: 30px;
+}
+
+/* line 6157, /akvo-flow/Dashboard/app/css/main.scss */
 .gdprSwitchSteps {
   height: calc(100vh - 320px);
   display: grid;
   overflow-y: scroll;
 }
-/* line 6199, /akvo-flow/Dashboard/app/css/main.scss */
+/* line 6158, /akvo-flow/Dashboard/app/css/main.scss */
 .gdprSwitchSteps * {
   box-sizing: border-box;
 }
-/* line 6205, /akvo-flow/Dashboard/app/css/main.scss */
+/* line 6164, /akvo-flow/Dashboard/app/css/main.scss */
 .gdprSwitchSteps li {
   text-align: center;
   position: relative;
@@ -7652,32 +7604,32 @@ svg g text {
   height: calc((100% -150px) / 3);
   width: 100%;
 }
-/* line 6211, /akvo-flow/Dashboard/app/css/main.scss */
+/* line 6170, /akvo-flow/Dashboard/app/css/main.scss */
 .gdprSwitchSteps li .innerFrame {
   display: table;
   height: 100%;
   width: 100%;
 }
-/* line 6215, /akvo-flow/Dashboard/app/css/main.scss */
+/* line 6174, /akvo-flow/Dashboard/app/css/main.scss */
 .gdprSwitchSteps li .innerFrame .wrap {
   display: table-cell;
   text-align: center;
   margin: 0;
   padding: 0;
 }
-/* line 6220, /akvo-flow/Dashboard/app/css/main.scss */
+/* line 6179, /akvo-flow/Dashboard/app/css/main.scss */
 .gdprSwitchSteps li .innerFrame .wrap img {
   max-width: 80%;
   max-height: 80%;
   min-height: 95px !important;
 }
-/* line 6227, /akvo-flow/Dashboard/app/css/main.scss */
+/* line 6186, /akvo-flow/Dashboard/app/css/main.scss */
 .gdprSwitchSteps li h3 {
   font-weight: bold;
   color: #243032;
   margin: 1em auto 0 !important;
 }
-/* line 6232, /akvo-flow/Dashboard/app/css/main.scss */
+/* line 6191, /akvo-flow/Dashboard/app/css/main.scss */
 .gdprSwitchSteps li p {
   max-width: 80%;
   margin: 10px auto 0 auto;
