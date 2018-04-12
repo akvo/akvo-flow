@@ -6066,41 +6066,6 @@ svg {
         width: 95%;
         display: none;
     }
-    .progress-container {
-        height: 20px;
-        background: rgb(234, 185, 45);
-        background: url(data:image/svg+xml;base64,PD94bWwgdmVyc2lvbj0iMS4wIiA/Pgo8c3ZnIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyIgd2lkdGg9IjEwMCUiIGhlaWdodD0iMTAwJSIgdmlld0JveD0iMCAwIDEgMSIgcHJlc2VydmVBc3BlY3RSYXRpbz0ibm9uZSI+CiAgPGxpbmVhckdyYWRpZW50IGlkPSJncmFkLXVjZ2ctZ2VuZXJhdGVkIiBncmFkaWVudFVuaXRzPSJ1c2VyU3BhY2VPblVzZSIgeDE9IjAlIiB5MT0iMCUiIHgyPSIwJSIgeTI9IjEwMCUiPgogICAgPHN0b3Agb2Zmc2V0PSIwJSIgc3RvcC1jb2xvcj0iI2VhYjkyZCIgc3RvcC1vcGFjaXR5PSIxIi8+CiAgICA8c3RvcCBvZmZzZXQ9IjEwMCUiIHN0b3AtY29sb3I9IiNjNzk4MTAiIHN0b3Atb3BhY2l0eT0iMSIvPgogIDwvbGluZWFyR3JhZGllbnQ+CiAgPHJlY3QgeD0iMCIgeT0iMCIgd2lkdGg9IjEiIGhlaWdodD0iMSIgZmlsbD0idXJsKCNncmFkLXVjZ2ctZ2VuZXJhdGVkKSIgLz4KPC9zdmc+);
-        background: -webkit-gradient(linear, left top, left bottom, color-stop(0%, rgba(234, 185, 45, 1)), color-stop(100%, rgba(199, 152, 16, 1)));
-        background: -webkit-linear-gradient(top, rgba(234, 185, 45, 1) 0%, rgba(199, 152, 16, 1) 100%);
-        background: -webkit-gradient(linear, left top, left bottom, from(rgba(234, 185, 45, 1)), to(rgba(199, 152, 16, 1)));
-        background: linear-gradient(to bottom, rgba(234, 185, 45, 1) 0%, rgba(199, 152, 16, 1) 100%);
-        position: relative;
-        -o-border-radius: 0.5em;
-        border-radius: 0.5em;
-    }
-    .progress-bar {
-        position: absolute;
-        top: 0;
-        left: -1px;
-        bottom: 0;
-        background: rgb(191, 210, 85);
-        /* Old browsers */
-        /* IE9 SVG, needs conditional override of 'filter' to 'none' */
-        background: url(data:image/svg+xml;base64,PD94bWwgdmVyc2lvbj0iMS4wIiA/Pgo8c3ZnIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyIgd2lkdGg9IjEwMCUiIGhlaWdodD0iMTAwJSIgdmlld0JveD0iMCAwIDEgMSIgcHJlc2VydmVBc3BlY3RSYXRpbz0ibm9uZSI+CiAgPGxpbmVhckdyYWRpZW50IGlkPSJncmFkLXVjZ2ctZ2VuZXJhdGVkIiBncmFkaWVudFVuaXRzPSJ1c2VyU3BhY2VPblVzZSIgeDE9IjAlIiB5MT0iMCUiIHgyPSIwJSIgeTI9IjEwMCUiPgogICAgPHN0b3Agb2Zmc2V0PSIwJSIgc3RvcC1jb2xvcj0iI2JmZDI1NSIgc3RvcC1vcGFjaXR5PSIxIi8+CiAgICA8c3RvcCBvZmZzZXQ9IjUwJSIgc3RvcC1jb2xvcj0iIzhlYjkyYSIgc3RvcC1vcGFjaXR5PSIxIi8+CiAgICA8c3RvcCBvZmZzZXQ9IjUxJSIgc3RvcC1jb2xvcj0iIzcyYWEwMCIgc3RvcC1vcGFjaXR5PSIxIi8+CiAgICA8c3RvcCBvZmZzZXQ9IjEwMCUiIHN0b3AtY29sb3I9IiM5ZWNiMmQiIHN0b3Atb3BhY2l0eT0iMSIvPgogIDwvbGluZWFyR3JhZGllbnQ+CiAgPHJlY3QgeD0iMCIgeT0iMCIgd2lkdGg9IjEiIGhlaWdodD0iMSIgZmlsbD0idXJsKCNncmFkLXVjZ2ctZ2VuZXJhdGVkKSIgLz4KPC9zdmc+);
-        /* FF3.6+ */
-        background: -webkit-gradient(linear, left top, left bottom, color-stop(0%, rgba(191, 210, 85, 1)), color-stop(50%, rgba(142, 185, 42, 1)), color-stop(51%, rgba(114, 170, 0, 1)), color-stop(100%, rgba(158, 203, 45, 1)));
-        /* Chrome,Safari4+ */
-        background: -webkit-linear-gradient(top, rgba(191, 210, 85, 1) 0%, rgba(142, 185, 42, 1) 50%, rgba(114, 170, 0, 1) 51%, rgba(158, 203, 45, 1) 100%);
-        /* Chrome10+,Safari5.1+ */
-        /* Opera 11.10+ */
-        /* IE10+ */
-        background: -webkit-gradient(linear, left top, left bottom, from(rgba(191, 210, 85, 1)), color-stop(50%, rgba(142, 185, 42, 1)), color-stop(51%, rgba(114, 170, 0, 1)), to(rgba(158, 203, 45, 1)));
-        background: linear-gradient(to bottom, rgba(191, 210, 85, 1) 0%, rgba(142, 185, 42, 1) 50%, rgba(114, 170, 0, 1) 51%, rgba(158, 203, 45, 1) 100%);
-        width: 0;
-        border-right: 1px solid white;
-        -o-border-radius: 0.5em;
-        border-radius: 0.5em;
-    }
     .progress-text {
         line-height: 9px;
         padding-left: 10px;
@@ -6122,28 +6087,32 @@ svg {
     }
     /* Uploader: List of items being uploaded */
     .resumable-list {
+        position: absolute;
         display: table;
+        width: 90%;
         text-align: center;
         overflow: auto;
         display: none;
         margin: 0 auto;
         padding: 0.25em;
         color: rgb(180, 180, 180);
+        li {
+            margin: 0 0 1px 0;
+            padding: 0.25em;
+            background: rgb(245, 245, 245);
+            .resumable-file-name {
+                color: rgb(44, 42, 116);
+                margin-left: 5px;
+                margin-right: 15px;
+            }
+            .resumable-file-progress {
+                color: rgb(44, 42, 116);
+                font-weight: bold;
+            }        
+        }
     }
-    .resumable-list li {
-        margin: 0 0 1px 0;
-        padding: 0.25em;
-        background: rgb(245, 245, 245);
-    }
-    .resumable-file-name {
-        color: rgb(44, 42, 116);
-        margin-left: 5px;
-        margin-right: 15px;
-    }
-    .resumable-file-progress {
-        color: rgb(44, 42, 116);
-        font-weight: bold;
-    }
+
+
     .uploader-item {
         width: 148px;
         height: 90px;

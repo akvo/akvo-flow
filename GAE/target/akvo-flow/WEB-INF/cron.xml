@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<cronentries>
+	<cron>
+		<url>/cron/croncommander?action=purgeExpiredSurveys</url>
+		<description>Purge expired Surveys from Device Survey Job Queue</description>
+		<schedule>every 24 hours</schedule>
+	</cron>
+	<cron>
+		<url>/cron/croncommander?action=purgeOrphanJobQueueRecords</url>
+		<description>Purge orphans from Survey Job Queue</description>
+		<schedule>every 24 hours</schedule>
+	</cron>
+    <cron>
+        <url>/cron/croncommander?action=generateNotifications</url>
+        <description>Trigger Notification Processing</description>
+        <schedule>every 24 hours</schedule>
+    </cron>
+    <cron>
+        <url>/cron/croncommander?action=purgeDeviceFileJobQueueRecords</url>
+        <description>Purge fulfilled or ancient entries from Device File Job Queue</description>
+        <schedule>every monday 00:00</schedule>
+    </cron>
+</cronentries>

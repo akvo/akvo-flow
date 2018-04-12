@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!DOCTYPE properties SYSTEM "http://java.sun.com/dtd/properties.dtd">
+<properties>
+<comment>Datastore Callbacks. DO NOT EDIT BY HAND!</comment>
+<entry key="DeviceFiles.PostDelete">org.akvo.flow.events.EventLogger:logDelete</entry>
+<entry key="QuestionGroup.PostDelete">org.akvo.flow.events.EventLogger:logDelete</entry>
+<entry key="Survey.PostPut">org.akvo.flow.events.EventLogger:logPut</entry>
+<entry key="QuestionGroup.PostPut">org.akvo.flow.events.EventLogger:logPut</entry>
+<entry key="SurveyInstance.PostDelete">org.akvo.flow.events.EventLogger:logDelete</entry>
+<entry key="QuestionAnswerStore.PostDelete">org.akvo.flow.events.EventLogger:logDelete</entry>
+<entry key="DeviceFiles.PostPut">org.akvo.flow.events.EventLogger:logPut</entry>
+<entry key="DatastoreCallbacksFormatVersion">1</entry>
+<entry key="SurveyedLocale.PostPut">org.akvo.flow.events.EventLogger:logPut</entry>
+<entry key="QuestionAnswerStore.PostPut">org.akvo.flow.events.EventLogger:logPut</entry>
+<entry key="SurveyInstance.PostPut">org.akvo.flow.events.EventLogger:logPut</entry>
+<entry key="SurveyedLocale.PostDelete">org.akvo.flow.events.EventLogger:logDelete</entry>
+<entry key="SurveyGroup.PostPut">org.akvo.flow.events.EventLogger:logPut</entry>
+<entry key="Question.PostDelete">org.akvo.flow.events.EventLogger:logDelete</entry>
+<entry key="SurveyGroup.PostDelete">org.akvo.flow.events.EventLogger:logDelete</entry>
+<entry key="Survey.PostDelete">org.akvo.flow.events.EventLogger:logDelete</entry>
+<entry key="Question.PostPut">org.akvo.flow.events.EventLogger:logPut</entry>
+</properties>
