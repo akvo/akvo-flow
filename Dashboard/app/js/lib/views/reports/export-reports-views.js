@@ -149,13 +149,13 @@ FLOW.ExportReportsAppletView = FLOW.View.extend({
   reportToDate: undefined,
   
   setMinDate: function () {
-    if (this.get('reportFromDate') !== "") {
+    if (this.get('reportFromDate')) {
       this.$(".to_date").datepicker("option", "minDate", this.get("reportFromDate"))
     }
   }.observes('this.reportFromDate'),
 
   setMaxDate: function () {
-    if (this.get('reportToDate') !== "") { 
+    if (this.get('reportToDate')) {
      this.$(".from_date").datepicker("option", "maxDate", this.get("reportToDate"))
     }
   }.observes('this.reportToDate'),

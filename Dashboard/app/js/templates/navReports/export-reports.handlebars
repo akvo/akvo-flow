@@ -31,17 +31,17 @@
         document.getElementById(exportName).style.display = "block";
         evt.currentTarget.className += " active";
        }
-    </script>      
+    </script>
     <section class="exportContainer">
       <ul class="exportSelect">
         <li class="dataCleanExp trigger" onclick="openExportOptions(event, 'dataCleanExp_options')">
           <h2>{{t _data_cleaning_export}}</h2>
           <h6>{{t _importable_back_to_akvo_flow}}</h6>
           <p class="expDescr">{{t _combines_options}}</p>
-        {{#view FLOW.ExportReportsAppletView dataCleaningSection=true}}
+        {{#view FLOW.ExportReportsAppletView}}
           <div id="dataCleanExp_options" class="options">
               <div class="dataCollectedDate">
-                <p>{{t _collection_period}}</p>  
+                <p>{{t _collection_period}}</p>
                 <label class="collectedFrom">
                   {{view FLOW.DateField2 valueBinding="view.reportFromDate" class="from_date" placeholder="" placeholderBinding="Ember.STRINGS._collected_from" size=30}}
                 </label>
@@ -57,7 +57,7 @@
           <h2>{{t _data_analysis_export}}</h2>
           <h6>{{t _not_importable_back}}</h6>
           <p class="expDescr">{{t _replaces_question}}</p>  
-          {{#view FLOW.ExportReportsAppletView dataAnalysisSection=true }}
+          {{#view FLOW.ExportReportsAppletView}}
             <div id="dataAnalyseExp_options" class="options">
               <div class="dataCollectedDate">
                 <p>{{t _collection_period}}</p>
