@@ -49,6 +49,10 @@ FLOW.ReportLoader = Ember.Object.create({
       return;
     }
 
+    if (!surveyId) {
+      return;
+    }
+
     Ember.assert('exportType param is required', exportType !== undefined);
     Ember.assert('surveyId param is required', surveyId !== undefined);
 
@@ -158,6 +162,8 @@ FLOW.ExportReportsAppletView = FLOW.View.extend({
   showComprehensiveDialog: false,
   showRawDataImportApplet: false,
   showGoogleEarthButton: false,
+  missingSurvey: false,
+  downloadCall: false,
 
   didInsertElement: function () {
     FLOW.selectedControl.set('surveySelection', FLOW.SurveySelection.create());
@@ -185,45 +191,52 @@ FLOW.ExportReportsAppletView = FLOW.View.extend({
     }
   }.property('FLOW.selectedControl.selectedQuestion'),
 
+  checkSurveySelection: function() {
+    if (this.get("downloadCall")) {
+      if (!this.get('selectedSurvey')){
+        this.set('missingSurvey',true);
+      } else {
+          this.set('missingSurvey',false);
+      }
+    }
+      this.set("downloadCall", false);
+  }.observes("this.downloadCall"),
+
   showLastCollection: function () {
     return FLOW.Env.showMonitoringFeature && FLOW.selectedControl.selectedSurveyGroup && FLOW.selectedControl.selectedSurveyGroup.get('monitoringGroup');
   }.property('FLOW.selectedControl.selectedSurveyGroup'),
 
   showDataCleaningReport: function () {
-	var opts = {}, sId = this.get('selectedSurvey');
-	FLOW.ReportLoader.load('DATA_CLEANING', sId, opts);
+    this.set('downloadCall', true)
+	  var opts = {}, sId = this.get('selectedSurvey');
+	  FLOW.ReportLoader.load('DATA_CLEANING', sId, opts);
   },
 
   showDataAnalysisReport: function () {
-	var opts = {}, sId = this.get('selectedSurvey');
+    this.set('downloadCall', true)
+	  var opts = {}, sId = this.get('selectedSurvey');
     FLOW.ReportLoader.load('DATA_ANALYSIS', sId, opts);
   },
 
   showComprehensiveReport: function () {
+    this.set('downloadCall', true)
     var opts = {}, sId = this.get('selectedSurvey');
-
     FLOW.ReportLoader.load('COMPREHENSIVE', sId, opts);
   },
 
   showGeoshapeReport: function () {
+    this.set('downloadCall', true)
     var sId = this.get('selectedSurvey');
     var qId = this.get('selectedQuestion');
-    if (!sId || !qId) {
-      this.showWarningMessage(
-        Ember.String.loc('_export_data'),
-        Ember.String.loc('_select_survey_and_geoshape_question_warning')
-      );
+    if (!qId) {
       return;
     }
     FLOW.ReportLoader.load('GEOSHAPE', sId, {"questionId": qId});
   },
 
   showSurveyForm: function () {
-	var sId = this.get('selectedSurvey');
-    if (!sId) {
-      this.showWarning();
-      return;
-    }
+    this.set('downloadCall', true)
+	  var sId = this.get('selectedSurvey');
     FLOW.ReportLoader.load('SURVEY_FORM', sId);
   },
 
