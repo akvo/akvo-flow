@@ -49,7 +49,7 @@
           <h2>{{t _data_cleaning_export}}</h2>
           <h6>{{t _importable_back_to_akvo_flow}}</h6>
           <p class="expDescr">{{t _combines_options}}</p>
-        {{#view FLOW.ExportReportsAppletView dataCleaningSection=true}}
+        {{#view FLOW.ExportReportsAppletView}}
           <div id="dataCleanExp_options" class="options">
               <div class="dataCollectedDate">
                 <p>{{view Ember.RadioButton selectionBinding="FLOW.ReportLoader.cleaningExportOption" value="range" name="cleaning-export-option"}}{{t _collection_period}}</p>
@@ -74,7 +74,7 @@
           <h2>{{t _data_analysis_export}}</h2>
           <h6>{{t _not_importable_back}}</h6>
           <p class="expDescr">{{t _replaces_question}}</p>
-          {{#view FLOW.ExportReportsAppletView dataAnalysisSection=true }}
+          {{#view FLOW.ExportReportsAppletView}}
             <div id="dataAnalyseExp_options" class="options">
               <div class="dataCollectedDate">
                 <p>{{view Ember.RadioButton selectionBinding="FLOW.ReportLoader.analysisExportOption" value="range" name="analysis-export-option"}}{{t _collection_period}}</p>
