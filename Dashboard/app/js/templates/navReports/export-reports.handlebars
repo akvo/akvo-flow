@@ -43,10 +43,10 @@
               <div class="dataCollectedDate">
                 <p>{{t _collection_period}}</p>  
                 <label class="collectedFrom">
-                  {{view FLOW.DateField2 valueBinding="view.reportFromDate" elementId="from_date02" placeholder="" placeholderBinding="Ember.STRINGS._collected_from" size=30}}
+                  {{view FLOW.DateField2 valueBinding="view.reportFromDate" class="from_date" placeholder="" placeholderBinding="Ember.STRINGS._collected_from" size=30}}
                 </label>
                 <label class="collectedTo">
-                  {{view FLOW.DateField2 valueBinding="view.reportToDate" elementId="to_date02" placeholder="" placeholderBinding="Ember.STRINGS._to" size=30}}
+                  {{view FLOW.DateField2 valueBinding="view.reportToDate" class="to_date" placeholder="" placeholderBinding="Ember.STRINGS._to" size=30}}
                 </label>
             </div>
             <a {{action showDataCleaningReport target="this"}} class="button trigger2">{{t _download}}</a>
@@ -62,10 +62,10 @@
               <div class="dataCollectedDate">
                 <p>{{t _collection_period}}</p>
                 <label class="collectedFrom">
-                   {{view FLOW.DateField2 minDate=false valueBinding="view.reportFromDate" elementId="from_date" placeholder="" placeholderBinding="Ember.STRINGS._collected_from" size=30}}
+                   {{view FLOW.DateField2 minDate=false valueBinding="view.reportFromDate" class="from_date" placeholder="" placeholderBinding="Ember.STRINGS._collected_from" size=30}}
                 </label>
                 <label class="collectedTo">
-                  {{view FLOW.DateField2 minDate=false valueBinding="view.reportToDate" elementId="to_date" placeholder="" placeholderBinding="Ember.STRINGS._to" size=30}}
+                  {{view FLOW.DateField2 minDate=false valueBinding="view.reportToDate" class="to_date" placeholder="" placeholderBinding="Ember.STRINGS._to" size=30}}
                 </label>
               </div>
               <a {{action showDataAnalysisReport target="this"}} class="button trigger2">{{t _download}}</a>
