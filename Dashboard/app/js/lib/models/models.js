@@ -236,7 +236,7 @@ FLOW.Question = FLOW.BaseModel.extend({
   path: DS.attr('string'),
   questionGroupId: DS.attr('number'),
   surveyId: DS.attr('number'),
-  variableName: DS.attr('string'),
+  questionId: DS.attr('string'),
   metricId: DS.attr('number'),
   text: DS.attr('string'),
   tip: DS.attr('string'),
@@ -389,7 +389,7 @@ FLOW.QuestionAnswer = FLOW.BaseModel.extend({
   collectionDate: DS.attr('number'),
   surveyInstanceId: DS.attr('number'),
   iteration: DS.attr('number'),
-  questionID: DS.attr('string'), //TODO should be number?
+  questionID: DS.attr('string'),
   questionText: DS.attr('string')
 });
 

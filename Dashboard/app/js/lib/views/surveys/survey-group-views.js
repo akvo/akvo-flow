@@ -110,15 +110,7 @@ FLOW.Project = FLOW.View.extend({
   }.observes('currentRegistrationForm'),
 
   isPublished: function() {
-    var form;
-    if (!Ember.none(FLOW.selectedControl.get('selectedSurvey'))) {
-      form = FLOW.selectedControl.get('selectedSurvey');
-    } else {
-      if (FLOW.surveyControl.content.get('isLoaded')) {
-        form = FLOW.surveyControl.content.get('firstObject');
-        FLOW.selectedControl.set('selectedSurvey', form);
-      }
-    }
+    var form = FLOW.selectedControl.get('selectedSurvey');
     return form.get('status') === 'PUBLISHED'
   }.property('FLOW.selectedControl.selectedSurvey.status'),
 

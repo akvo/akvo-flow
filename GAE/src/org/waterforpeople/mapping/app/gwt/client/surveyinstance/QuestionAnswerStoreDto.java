@@ -37,6 +37,7 @@ public class QuestionAnswerStoreDto extends BaseDto {
     private Integer iteration;
     private String oldValue;
     private String questionText;
+    private String textualQuestionId;
 
     public String getOldValue() {
         return oldValue;
@@ -108,6 +109,14 @@ public class QuestionAnswerStoreDto extends BaseDto {
 
     public String getQuestionText() {
         return questionText;
+    }
+
+    public String getTextualQuestionId() {
+        return textualQuestionId;
+    }
+
+    public void setTextualQuestionId(String textualQuestionId) {
+        this.textualQuestionId = textualQuestionId;
     }
 
     public Integer getIteration() {

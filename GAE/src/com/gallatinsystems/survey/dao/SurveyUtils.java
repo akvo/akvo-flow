@@ -1,5 +1,5 @@
 /*
- *  Copyright (C) 2013-2018 Stichting Akvo (Akvo Foundation)
+ *  Copyright (C) 2013-2017 Stichting Akvo (Akvo Foundation)
  *
  *  This file is part of Akvo FLOW.
  *
@@ -199,20 +199,20 @@ public class SurveyUtils {
         tmp.setOrder(order);
         tmp.setSourceQuestionId(sourceQuestionId);
 
-        if (source.getVariableName() != null) {
+        if (source.getQuestionId() != null) {
             if (idsInUse != null) { //must avoid these
-                String newId = source.getVariableName() + "_1";
+                String newId = source.getQuestionId() + "_1";
                 int index = 2;
                 while  (idsInUse.contains(newId)) {
-                    newId = source.getVariableName() + "_" + index++;
+                    newId = source.getQuestionId() + "_" + index++;
                 }
-                tmp.setVariableName(newId);
+                tmp.setQuestionId(newId);
                 //one more to avoid
                 idsInUse.add(newId);
-                log.log(Level.FINE, "Changing QuestionId from " + source.getVariableName() + " to " + newId);
+                log.log(Level.FINE, "Changing QuestionId from " + source.getQuestionId() + " to " + newId);
             } else {
-                tmp.setVariableName(source.getVariableName());
-                log.log(Level.FINE, "Keeping QuestionId " + source.getVariableName());
+                tmp.setQuestionId(source.getQuestionId());
+                log.log(Level.FINE, "Keeping QuestionId " + source.getQuestionId());
             }
         }
 
@@ -535,7 +535,7 @@ public class SurveyUtils {
         for (Survey s : sList) {
             List<Question> qList = qDao.listQuestionsBySurvey(s.getKey().getId());
             for (Question q : qList) {
-                idsInUse.add(q.getVariableName());
+                idsInUse.add(q.getQuestionId());
             }
         }
 

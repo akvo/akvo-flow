@@ -1,5 +1,5 @@
 /*
- *  Copyright (C) 2012-2018 Stichting Akvo (Akvo Foundation)
+ *  Copyright (C) 2012-2017 Stichting Akvo (Akvo Foundation)
  *
  *  This file is part of Akvo FLOW.
  *
@@ -42,7 +42,6 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import org.waterforpeople.mapping.app.gwt.client.survey.QuestionDto;
 import org.waterforpeople.mapping.app.gwt.client.survey.QuestionOptionDto;
 import org.waterforpeople.mapping.app.web.dto.SurveyTaskRequest;
-import org.waterforpeople.mapping.app.web.rest.dto.QuestionListPayload;
 import org.waterforpeople.mapping.app.web.rest.dto.QuestionPayload;
 import org.waterforpeople.mapping.app.web.rest.dto.RestStatusDto;
 import org.waterforpeople.mapping.dao.QuestionAnswerStoreDao;
@@ -276,62 +275,6 @@ public class QuestionRestService {
         return response;
     }
 
-    // update several existing questions
-    // questionOptions are saved and updated on their own
-    @RequestMapping(method = RequestMethod.PUT, value = "/bulk")
-    @ResponseBody
-    public Map<String, Object> saveExistingQuestions(
-            @RequestBody QuestionListPayload payLoad) {
-        final Map<String, Object> response = new HashMap<String, Object>();
-        RestStatusDto statusDto = new RestStatusDto();
-        statusDto.setStatus("failed");
-        statusDto.setMessage("No questions to change");
-        List<Question> saveList = new ArrayList<>();
-
-        // Loop over questions
-        final List<QuestionDto> requestList = payLoad.getQuestions();
-        if (requestList != null && requestList.size() > 0) {
-            for (final QuestionDto questionDto : requestList) {
-
-                if (questionDto != null) {
-                    Long keyId = questionDto.getKeyId();
-                    Question q;
-
-                    // if the questionDto has a key, try to get the question.
-                    if (keyId != null) {
-                        q = questionDao.getByKey(keyId);
-                        // if we find the question, update it's properties
-                        if (q != null) {
-                            // copy the properties, except the createdDateTime property,
-                            // because it is set in the Dao.
-                            BeanUtils.copyProperties(questionDto, q, new String[] {
-                                    "createdDateTime", "type", "optionList"
-                            });
-                            if (questionDto.getType() != null)
-                                q.setType(Question.Type.valueOf(questionDto.getType()
-                                        .toString()));
-                            saveList.add(q);
-
-                        } else { // missing in db - fail
-                            statusDto.setMessage("Cannot change unknown question " + keyId);
-                            response.put("meta", statusDto);
-                            return response;
-                        }
-                    } else  { //no db key - fail
-                        statusDto.setMessage("Cannot change question without id");
-                        response.put("meta", statusDto);
-                        return response;
-                    }
-                }
-            }
-            questionDao.save(saveList);
-            statusDto.setStatus("ok");
-            statusDto.setMessage("");
-        }
-        response.put("meta", statusDto);
-        return response;
-    }
-
     // create new question
     // questionOptions are saved and updated on their own
     @RequestMapping(method = RequestMethod.POST, value = "")
@@ -374,7 +317,7 @@ public class QuestionRestService {
     @ResponseBody
     public Map<String, Object> validateQuestionId(
             @PathVariable("id") Long id,
-            @RequestParam(value = "variableName") String variableName) {
+            @RequestParam(value = "questionId") String questionId) {
 
         Question question = questionDao.getByKey(id);
 
@@ -403,7 +346,7 @@ public class QuestionRestService {
         Map<String, Object> result = new HashMap<String, Object>();
 
         for (Question q : questions) {
-            if (variableName.equalsIgnoreCase(q.getVariableName())
+            if (questionId.equals(q.getQuestionId())
                     && !question.getKey().equals(q.getKey())) {
                 result.put("success", false);
                 result.put("reason", "Variable name not unique");

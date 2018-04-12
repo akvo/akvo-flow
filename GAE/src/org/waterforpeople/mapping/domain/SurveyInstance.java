@@ -1,5 +1,5 @@
 /*
- *  Copyright (C) 2010-2016,2018 Stichting Akvo (Akvo Foundation)
+ *  Copyright (C) 2010-2016 Stichting Akvo (Akvo Foundation)
  *
  *  This file is part of Akvo FLOW.
  *
@@ -16,22 +16,6 @@
 
 package org.waterforpeople.mapping.domain;
 
-import com.gallatinsystems.device.domain.DeviceFiles;
-import com.gallatinsystems.framework.domain.BaseDomain;
-import com.gallatinsystems.gis.map.MapUtils;
-import com.gallatinsystems.survey.dao.QuestionDao;
-import com.gallatinsystems.survey.dao.SurveyDAO;
-import com.gallatinsystems.survey.domain.Question;
-import org.akvo.flow.domain.DataUtils;
-import org.akvo.flow.domain.SecuredObject;
-import org.apache.commons.lang.StringUtils;
-import org.waterforpeople.mapping.analytics.dao.SurveyQuestionSummaryDao;
-import org.waterforpeople.mapping.analytics.domain.SurveyQuestionSummary;
-
-import javax.jdo.annotations.IdentityType;
-import javax.jdo.annotations.NotPersistent;
-import javax.jdo.annotations.PersistenceCapable;
-import javax.jdo.annotations.Persistent;
 import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -39,6 +23,26 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+
+import javax.jdo.annotations.IdentityType;
+import javax.jdo.annotations.NotPersistent;
+import javax.jdo.annotations.PersistenceCapable;
+import javax.jdo.annotations.Persistent;
+
+import org.akvo.flow.domain.DataUtils;
+import org.akvo.flow.domain.SecuredObject;
+import org.apache.commons.lang.StringUtils;
+import org.waterforpeople.mapping.analytics.dao.SurveyQuestionSummaryDao;
+import org.waterforpeople.mapping.analytics.domain.SurveyQuestionSummary;
+import org.waterforpeople.mapping.app.gwt.client.survey.QuestionDto.QuestionType;
+import org.waterforpeople.mapping.dao.SurveyInstanceDAO;
+
+import com.gallatinsystems.device.domain.DeviceFiles;
+import com.gallatinsystems.framework.domain.BaseDomain;
+import com.gallatinsystems.gis.map.MapUtils;
+import com.gallatinsystems.survey.dao.QuestionDao;
+import com.gallatinsystems.survey.dao.SurveyDAO;
+import com.gallatinsystems.survey.domain.Question;
 
 import static com.gallatinsystems.common.Constants.MAX_LENGTH;
 
@@ -252,6 +256,7 @@ public class SurveyInstance extends BaseDomain implements SecuredObject {
     /**
      * Extract geolocation information from a survey instance
      *
+     * @param surveyInstance
      * @return a map containing latitude and longitude entries null if a null string is provided
      */
     public static Map<String, Object> retrieveGeoLocation(
@@ -263,13 +268,25 @@ public class SurveyInstance extends BaseDomain implements SecuredObject {
         // if the GEO information was present as Meta data, get it from there
         if (StringUtils.isNotBlank(surveyInstance.getLocaleGeoLocation())) {
             geoLocationString = surveyInstance.getLocaleGeoLocation();
+        } else {
+            // else, try to look for a GEO question
+            List<QuestionAnswerStore> geoAnswers = new SurveyInstanceDAO()
+                    .listQuestionAnswerStoreByType(surveyInstance.getKey()
+                            .getId(), QuestionType.GEO.toString());
+            if (geoAnswers != null && !geoAnswers.isEmpty()) {
+                geoLocationString = geoAnswers.get(0).getValue();
+            }
         }
 
         String[] tokens = StringUtils.split(geoLocationString, "\\|");
         if (tokens != null && tokens.length >= 2) {
-            geoLocationMap = new HashMap<>();
+            geoLocationMap = new HashMap<String, Object>();
             geoLocationMap.put(MapUtils.LATITUDE, Double.parseDouble(tokens[0]));
             geoLocationMap.put(MapUtils.LONGITUDE, Double.parseDouble(tokens[1]));
+            // if(tokens.length > 2) {
+            // TODO: currently a string is generated for altitude. need to fix
+            // geoLocationMap.put(ALTITUDE, Long.parseLong(tokens[2]));
+            // }
         }
 
         return geoLocationMap;

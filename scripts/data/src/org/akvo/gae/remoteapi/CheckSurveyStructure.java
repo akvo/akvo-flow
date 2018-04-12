@@ -1,5 +1,5 @@
 /*
- *  Copyright (C) 2017-2018 Stichting Akvo (Akvo Foundation)
+ *  Copyright (C) 2017 Stichting Akvo (Akvo Foundation)
  *
  *  This file is part of Akvo FLOW.
  *
@@ -135,7 +135,7 @@ public class CheckSurveyStructure implements Process {
             String questionText = (String) q.getProperty("text");
             Long questionGroupSurvey = (Long) qgToSurvey.get(questionGroup);
 
-            if (questionSurvey == null || questionGroup == null || questionGroupSurvey == null) { // in no survey, group or a nonexistent group; hopelessly lost
+            if (questionGroup == null || questionGroupSurvey == null) { // in no group or a nonexistent group; hopelessly lost
                 System.out.printf("#ERR: Question %d '%s',survey %d, group %d\n",
                         questionId, questionText, questionSurvey, questionGroup);
                 orphanQuestions++;

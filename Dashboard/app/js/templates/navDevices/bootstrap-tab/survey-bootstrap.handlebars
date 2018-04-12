@@ -2,8 +2,7 @@
 <section class="fullWidth manualTransfer" id="assignSurveys">
     <form>
       <div class="fieldSetWrap floats-in">
-      <div class="formLeftPanel">
-        <fieldset id="surveySelect" class="floats-in">
+        <fieldset id="surveySelect" class="formLeftPanel floats-in">
           <h2>01. {{t _select_survey}}:</h2>
           <span class="infoText">{{t _cant_find_your_survey_}}</span>
           <div class="">
@@ -31,9 +30,7 @@
       <a {{action addSelectedSurveys target="this"}}  class="AddBtn">{{t _add_selected_forms}}</a>
           </div>
         </fieldset>
-      </div>
-      <div class="formRightPanel">
-        <fieldset id="surveyPreview" class="floats-in">
+        <fieldset id="surveyPreview" class="formRightPanel">
           <h2>{{t _preview_survey_selection}}:</h2>
           <div class="">
             <!-- DEVICES TABLE-->
@@ -65,7 +62,6 @@
             </table>
           </div>
         </fieldset>
-      </div>
       </div>
 
     <div class="fieldSetWrap makeWhite noBG">

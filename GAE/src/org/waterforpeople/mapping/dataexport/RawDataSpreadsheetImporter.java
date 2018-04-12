@@ -72,8 +72,7 @@ public class RawDataSpreadsheetImporter implements DataImporter {
     private static final int MONITORING_FORMAT_WITH_DEVICE_ID_COLUMN = 7;
     private static final int MONITORING_FORMAT_WITH_REPEAT_COLUMN = 8;
     private static final int MONITORING_FORMAT_WITH_APPROVAL_COLUMN = 9;
-    
-    private boolean otherValuesInSeparateColumns = false; //until we find one
+    private static boolean splitSheets = false; //also has Group Headers
 
     public static final String DATAPOINT_IDENTIFIER_COLUMN_KEY = "dataPointIdentifier";
     private static final String DATAPOINT_APPROVAL_COLUMN_KEY = "dataPointApproval";
@@ -86,7 +85,6 @@ public class RawDataSpreadsheetImporter implements DataImporter {
     public static final String DURATION_COLUMN_KEY = "surveyalTime";
     
     public static final String METADATA_HEADER = "Metadata";
-    public static final String OTHER_SUFFIX = "--OTHER--";
     public static final String NEW_DATA_PATTERN = "^[Nn]ew-\\d+"; // new- or New- followed by one or more digits
     
 
@@ -130,7 +128,9 @@ public class RawDataSpreadsheetImporter implements DataImporter {
                     criteria));
             Workbook wb = getDataSheet(file).getWorkbook();
             
-            int headerRowIndex = 1; //Only support split sheets from now on
+            //Find out if this is a 2017-style report w group headers and rqg's on separate sheets
+            splitSheets = safeCellCompare(wb.getSheetAt(0), 0, 0, METADATA_HEADER);
+            int headerRowIndex = splitSheets ? 1 : 0;
      
             Map<Sheet, Map<Integer, Long>> sheetMap = new HashMap<>();
             // Find all data sheets
@@ -139,7 +139,6 @@ public class RawDataSpreadsheetImporter implements DataImporter {
                 String sn = sheet.getSheetName();
                 if (i == 0 || sn.startsWith("Group ")) {
                     sheetMap.put(sheet, processHeader(sheet, headerRowIndex));
-                    otherValuesInSeparateColumns |= separatedOtherValues(sheet, headerRowIndex);
                 }
             }
             
@@ -148,20 +147,26 @@ public class RawDataSpreadsheetImporter implements DataImporter {
             Map<Long, List<QuestionOptionDto>> optionNodes = fetchOptionNodes(serverBase,
                     criteria, questionIdToQuestionDto.values());
 
-            List<InstanceData> instanceDataList = parseSplitSheets(wb.getSheetAt(0),
-                    sheetMap,
-                    questionIdToQuestionDto,
-                    optionNodes,
-                    headerRowIndex);
-            //Strip link-identifiers from new data 
-            for (InstanceData instanceData : instanceDataList) {
-                if (instanceData.surveyInstanceDto.getSurveyedLocaleIdentifier().matches(NEW_DATA_PATTERN)) {
-                    instanceData.surveyInstanceDto.setSurveyedLocaleIdentifier("");
-                    //TODO maybe clear out instance id too, just in case?
+            List<InstanceData> instanceDataList = new ArrayList<>();
+            if (splitSheets) {
+                instanceDataList = parseSplitSheets(wb.getSheetAt(0),
+                        sheetMap,
+                        questionIdToQuestionDto,
+                        optionNodes,
+                        headerRowIndex);
+                //Strip link-identifiers from new data 
+                for (InstanceData instanceData : instanceDataList) {
+                    if (instanceData.surveyInstanceDto.getSurveyedLocaleIdentifier().matches(NEW_DATA_PATTERN)) {
+                        instanceData.surveyInstanceDto.setSurveyedLocaleIdentifier("");
+                        //TODO maybe clear out instance id too, just in case?
+                    }
                 }
+            } else { //Legacy format
+                instanceDataList = parseSingleSheet(wb.getSheetAt(0), questionIdToQuestionDto,
+                        optionNodes, sheetMap.get(wb.getSheetAt(0)));
             }
-
             List<String> importUrls = new ArrayList<>();
+
             String surveyId = criteria.get("surveyId");
             for (InstanceData instanceData : instanceDataList) {
                 String importUrl = buildImportURL(instanceData, surveyId,
@@ -297,6 +302,68 @@ public class RawDataSpreadsheetImporter implements DataImporter {
         return result;
     }
 
+    /**
+     * Parse a raw data report file into a list of InstanceData
+     *
+     * @param sheet
+     * @param columnIndexToQuestionId
+     * @param questionIdToQuestionDto
+     * @param optionNodes
+     * @return
+     */
+    public List<InstanceData> parseSingleSheet(Sheet sheet,
+            Map<Long, QuestionDto> questionIdToQuestionDto,
+            Map<Long, List<QuestionOptionDto>> optionNodes,
+            Map<Integer, Long> columnIndexToQuestionId)
+            throws Exception {
+
+        List<InstanceData> result = new ArrayList<>();
+        
+        // Find the first empty/null cell in the header row. This is the position of the md5 hashes
+        int md5Column = 0;
+        while (true) {
+            if (isEmptyCell(sheet.getRow(0).getCell(md5Column))) {
+                break;
+            }
+            md5Column++;
+        }
+
+        int firstQuestionColumnIndex = Collections.min(columnIndexToQuestionId.keySet());
+        Map<String, Integer> metadataColumnHeaderIndex = calculateMetadataColumnIndex(firstQuestionColumnIndex, true);
+
+        int row = 1;
+        while (true) {
+            InstanceData instanceData = parseInstance(sheet, row, metadataColumnHeaderIndex,
+                    firstQuestionColumnIndex, questionIdToQuestionDto, columnIndexToQuestionId,
+                    optionNodes, true);
+
+            if (instanceData == null) {
+                break;
+            }
+
+            // Get all the parsed rows for md5 calculation
+            List<Row> rows = new ArrayList<>();
+            for (int r = row; r < row + instanceData.maxIterationsCount; r++) {
+                rows.add(sheet.getRow(r));
+            }
+
+            String existingMd5Hash = "";
+            Cell md5Cell = sheet.getRow(row).getCell(md5Column);
+            // For new data the md5 hash column could be empty
+            if (md5Cell != null) {
+                existingMd5Hash = md5Cell.getStringCellValue();
+            }
+            String newMd5Hash = ExportImportUtils.md5Digest(rows, md5Column - 1, sheet);
+
+            if (!newMd5Hash.equals(existingMd5Hash)) {
+                result.add(instanceData);
+            }
+
+            row += instanceData.maxIterationsCount;
+        }
+
+        return result;
+    }
 
     /**
      * creates a map of where the metadata columns are
@@ -582,6 +649,7 @@ public class RawDataSpreadsheetImporter implements DataImporter {
      * @param iteration
      * @param optionNodes
      * 
+     * TODO: nothing prevents getting >1 iteration for a question that is NOT in an a RQG
      */
     private void getIterationResponse(Row iterationRow,
             int columnIndex,
@@ -647,37 +715,36 @@ public class RawDataSpreadsheetImporter implements DataImporter {
                     String[] optionParts = optionString.split("\\|");
                     List<Map<String, Object>> optionList = new ArrayList<>();
                     for (String optionNode : optionParts) {
-                        optionList.add(parsedOptionValue(optionNode, false));
+                        String[] codeAndText = optionNode.split(":", 2);
+                        Map<String, Object> optionMap = new HashMap<>();
+                        if (codeAndText.length == 1) {
+                            optionMap.put("text", codeAndText[0].trim());
+
+                        } else if (codeAndText.length == 2) {
+                            optionMap.put("code", codeAndText[0].trim());
+                            optionMap.put("text", codeAndText[1].trim());
+                        }
+                        optionList.add(optionMap);
                     }
 
-                    //Handle "other" data
-                    if (Boolean.TRUE.equals(questionDto.getAllowOtherFlag())) {
-                        if (otherValuesInSeparateColumns) { //2018-style
-                            //get "other" from the next cell
-                            Cell nextCell = iterationRow.getCell(columnIndex + 1);
-                            String otherString = ExportImportUtils.parseCellAsString(nextCell);
-                            if (otherString != null && !otherString.trim().isEmpty()) {
-                                optionList.add(parsedOptionValue(otherString, true));
-                            }
-                        } else if (!optionList.isEmpty()) {
-                            // could be the last entry in the cell
-                            // unless the value matches one of the option names
-                            Map<String, Object> lastNode = optionList.get(optionList.size() - 1);
-                            String lastNodeText = (String) lastNode.get("text");
-                            boolean isOther = true;
-                            List<QuestionOptionDto> existingOptions = optionNodes.get(questionId);
-                            if (existingOptions != null && lastNodeText != null) {
-                                for (QuestionOptionDto questionOptionDto : existingOptions) {
-                                    if (lastNodeText.equals(questionOptionDto.getText())) {
-                                        isOther = false;
-                                        break;
-                                    }
+                    // Should we add the 'allowOther' flag to the last node?
+                    if (Boolean.TRUE.equals(questionDto.getAllowOtherFlag())
+                            && !optionList.isEmpty()) {
+                        Map<String, Object> lastNode = optionList.get(optionList.size() - 1);
+                        String lastNodeText = (String) lastNode.get("text");
+                        boolean isOther = true;
+                        List<QuestionOptionDto> existingOptions = optionNodes.get(questionId);
+                        if (existingOptions != null && lastNodeText != null) {
+                            for (QuestionOptionDto questionOptionDto : existingOptions) {
+                                if (lastNodeText.equals(questionOptionDto.getText())) {
+                                    isOther = false;
+                                    break;
                                 }
                             }
-    
-                            if (isOther) {
-                                lastNode.put("isOther", true);
-                            }
+                        }
+
+                        if (isOther) {
+                            lastNode.put("isOther", true);
                         }
                     }
 
@@ -733,37 +800,10 @@ public class RawDataSpreadsheetImporter implements DataImporter {
         }
     }
 
-    private Map<String, Object> parsedOptionValue(String optionNode, boolean other) {
-        String[] codeAndText = optionNode.split(":", 2);
-        Map<String, Object> optionMap = new HashMap<>();
-        if (codeAndText.length == 1) {
-            optionMap.put("text", codeAndText[0].trim());
-        } else if (codeAndText.length == 2) {
-            optionMap.put("code", codeAndText[0].trim());
-            optionMap.put("text", codeAndText[1].trim());
-        }
-        if (other) {
-            optionMap.put("isOther", true);
-        }
-        return optionMap;
-    }
-
     private static String getMetadataCellContent(Row baseRow,
             Map<String, Integer> metadataColumnHeaderIndex, String metadataCellColumnKey) {
         Cell metadataCell = baseRow.getCell(metadataColumnHeaderIndex.get(metadataCellColumnKey));
         return ExportImportUtils.parseCellAsString(metadataCell);
-    }
-
-    private boolean separatedOtherValues(Sheet sheet, int headerRowIndex) {
-        Row headerRow = sheet.getRow(headerRowIndex);
-        for (Cell cell : headerRow) {
-            String cellValue = cell.getStringCellValue();
-            if (cell.getStringCellValue().indexOf("|") > -1 
-                    && cellValue.endsWith(OTHER_SUFFIX)) {
-                return true;
-            }
-        }
-        return false;
     }
 
     /**
@@ -781,7 +821,6 @@ public class RawDataSpreadsheetImporter implements DataImporter {
             String cellValue = cell.getStringCellValue();
             if (cell.getStringCellValue().indexOf("|") > -1
                     && !cellValue.startsWith("--GEO")
-                    && !cellValue.endsWith(OTHER_SUFFIX)
                     && !cellValue.startsWith("--CADDISFLY")) {
                 String[] parts = cell.getStringCellValue().split("\\|");
                 if (parts[0].trim().length() > 0) {
@@ -1000,11 +1039,6 @@ public class RawDataSpreadsheetImporter implements DataImporter {
             
             //Find out if this is a 2017-style report w group headers and rqg's on separate sheets
             boolean splitSheets = safeCellCompare(sheet, 0, 0, METADATA_HEADER);
-            if (!splitSheets) {
-                errorMap.put(0, "First header cell must contain '" + METADATA_HEADER + "'");
-                return errorMap;
-            }
-            
             int headerRowIndex = splitSheets ? 1 : 0;
 
             Row headerRow = sheet.getRow(headerRowIndex);

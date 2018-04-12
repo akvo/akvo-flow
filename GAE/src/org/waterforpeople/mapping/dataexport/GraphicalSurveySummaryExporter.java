@@ -136,7 +136,6 @@ public class GraphicalSurveySummaryExporter extends SurveySummaryExporter {
     private static final String DISPLAY_NAME_LABEL = "Display Name";
     private static final String DEVICE_IDENTIFIER_LABEL = "Device identifier";
     private static final String DATA_APPROVAL_STATUS_LABEL = "Data approval status";
-    private static final String OTHER_TAG = "--OTHER--";
     
     // Maximum number of rows of a sheet kept in memory
     // We must take care to never go back up longer than this
@@ -154,11 +153,10 @@ public class GraphicalSurveySummaryExporter extends SurveySummaryExporter {
     private CellStyle textStyle;
     private String imagePrefix;
     private String serverBase;
-    private boolean includeSummarySheet;
+    private boolean isFullReport;
     private boolean performGeoRollup;
     private boolean generateCharts;
-    private boolean variableNamesInHeaders; // Also turns on splitting of answers into separate columns (options, geo, etc.) and turns off digests
-    private boolean splitIntoColumns; // Turns on splitting of answers into separate columns (options, geo, etc.) and turns off digests
+    private boolean useQuestionId; //=Variable names. Also turns on splitting of answers into separate columns (options, geo, etc.) and turns off digests
     private boolean separateSheetsForRepeatableGroups;
     private boolean doGroupHeaders; //First header line is group names spanned over the group columns
     private Map<Long, QuestionDto> questionsById;
@@ -218,12 +216,14 @@ public class GraphicalSurveySummaryExporter extends SurveySummaryExporter {
 
         serverBase = serverBaseUrl;
         try {
-            // Get minimal data plus cascade level names
             Map<QuestionGroupDto, List<QuestionDto>> questionMap = 
                     loadAllQuestions(surveyId, performGeoRollup, serverBaseUrl, apiKey);
-            // Need options to be able to split out "other" value
-            loadQuestionOptions(surveyId, serverBaseUrl, questionMap, apiKey);
-            
+            //minimal data plus cascade level names
+            if (useQuestionId  //splitting options into columns
+                && anyMultipleSelectQuestions(questionMap)) {
+                    //optimise the fetch away if none of the questions allow multiple answers
+                    loadQuestionOptions(surveyId, serverBaseUrl, questionMap, apiKey);
+            }
             if (questionMap.size() > 0) {
                 //questionMap is now stable; make the id-to-dto map
                 for (List<QuestionDto> qList : questionMap.values()) {
@@ -240,10 +240,10 @@ public class GraphicalSurveySummaryExporter extends SurveySummaryExporter {
                         criteria.get(SurveyRestRequest.SURVEY_ID_PARAM),
                         questionMap,
                         wb, baseSheet,
-                        includeSummarySheet, fileName,
+                        isFullReport, fileName,
                         criteria.get("apiKey"));
 
-                if (includeSummarySheet) {
+                if (isFullReport) {
                     writeStatsAndGraphsSheet(questionMap, model, null, wb);
                 }
                 if (model.getSectorList() != null
@@ -267,7 +267,7 @@ public class GraphicalSurveySummaryExporter extends SurveySummaryExporter {
                 }
 
                 FileOutputStream fileOut = new FileOutputStream(fileName);
-                wb.setActiveSheet(includeSummarySheet ? wb.getNumberOfSheets()-1 : 0);
+                wb.setActiveSheet(isFullReport ? wb.getNumberOfSheets()-1 : 0);
                 wb.write(fileOut);
                 fileOut.close();
 
@@ -279,6 +279,17 @@ public class GraphicalSurveySummaryExporter extends SurveySummaryExporter {
         } catch (Exception e) {
             log.error("Error generating report: " + e.getMessage(), e);
         }
+    }
+
+    private boolean anyMultipleSelectQuestions(Map<QuestionGroupDto, List<QuestionDto>> questionMap) {
+        for (List<QuestionDto> qList : questionMap.values()) {
+            for (QuestionDto q : qList) {
+                if (safeTrue(q.getAllowMultipleFlag())) {
+                    return true;
+                }
+            }
+        }
+        return false;
     }
     
     private Workbook createWorkbookAndFormats() {
@@ -311,6 +322,7 @@ public class GraphicalSurveySummaryExporter extends SurveySummaryExporter {
                 qgSheetMap.put(gid, repSheet);
             }
         }
+
         
         return baseSheet;
     }
@@ -323,13 +335,6 @@ public class GraphicalSurveySummaryExporter extends SurveySummaryExporter {
 
     private boolean safeTrue(Boolean b) {
         return b != null && b.booleanValue();
-    }
-    
-    private String neverNull(String s) {
-        if (s == null) {
-            return "";
-        }
-        return s;
     }
     
     /*
@@ -457,13 +462,14 @@ public class GraphicalSurveySummaryExporter extends SurveySummaryExporter {
                 String digest = ExportImportUtils.md5Digest(digestRows,
                         columnIndexMap.get(DIGEST_COLUMN), baseSheet); //in case any rep group is wider than the base sheet
 
-                if (!variableNamesInHeaders) {
+                if (!useQuestionId) {
                     // now add 1 more col on the base sheet that contains the digest
                     createCell(getRow(baseSheet.getLastRowNum(), baseSheet),
                             columnIndexMap.get(DIGEST_COLUMN),
                             digest,
                             null);
                 }
+
 
                 
             } else { //just one sheet - do all at once with a global repeat column
@@ -528,8 +534,8 @@ public class GraphicalSurveySummaryExporter extends SurveySummaryExporter {
             Long durationSeconds = sid.getSurveyalTime();
             if (durationSeconds != null) {
                 totalDuration += durationSeconds;
-                maxDuration = Math.max(maxDuration, durationSeconds);
-                minDuration = Math.min(minDuration, durationSeconds);
+                maxDuration = Long.max(maxDuration, durationSeconds);
+                minDuration = Long.min(minDuration, durationSeconds);
             }
                 
         }
@@ -663,7 +669,7 @@ public class GraphicalSurveySummaryExporter extends SurveySummaryExporter {
         String digest = ExportImportUtils.md5Digest(rows,
                 columnIndexMap.get(DIGEST_COLUMN), sheet);
 
-        if (!variableNamesInHeaders) {
+        if (!useQuestionId) {
             // now add 1 more col that contains the digest
             createCell(firstRow, columnIndexMap.get(DIGEST_COLUMN), digest, null);
         }
@@ -840,7 +846,7 @@ public class GraphicalSurveySummaryExporter extends SurveySummaryExporter {
                 : -1;
         if (filenameIndex > 0 && filenameIndex < filename.length()) {
             cells.add(imagePrefix + filename.substring(filenameIndex));
-            if (splitIntoColumns && media.getLocation() != null) {
+            if (useQuestionId && media.getLocation() != null) {
                 cells.add(Double.toString(media.getLocation().getLatitude()));
                 cells.add(Double.toString(media.getLocation().getLongitude()));
                 cells.add(Double.toString(media.getLocation().getAccuracy()));
@@ -1006,7 +1012,7 @@ public class GraphicalSurveySummaryExporter extends SurveySummaryExporter {
             }
         }
 
-        if (splitIntoColumns) {
+        if (useQuestionId) {
             // +------------+------------+-----
             // |code1:value1|code2:value2| ...
             // +------------+------------+-----
@@ -1053,9 +1059,8 @@ public class GraphicalSurveySummaryExporter extends SurveySummaryExporter {
 
     /*
      * Takes a option question value in either the old or new format, and returns a list of option
-     * maps. The response can be either:
-     *  old format: text1|text2|text3
-     *  new format: [{"code":"code1", "text":"text1"},{"code":"code2", "text":"text2"}]
+     * maps. The response can be either: old format: text1|text2|text3 new format: [{"code":
+     * "code1", "text": "text1"},{"code": "code2", "text": "text2"}]
      */
     private List<Map<String, String>> getNodes(String value) {
         boolean isNewFormat = value.startsWith("[");
@@ -1095,18 +1100,17 @@ public class GraphicalSurveySummaryExporter extends SurveySummaryExporter {
             }
         }
         if (optionString.length() > 0) {
-            // Remove the first "|"
+            // Remove the first |
             optionString.deleteCharAt(0);
         }
         return optionString.toString();
     }
 
     /*
-     * Creates list of option values. The value is always the pipe-separated format.
-     * Depending on the splitIntoColumns variable, each option is given its own column.
-     * A 0 or 1 denotes if that option was selected or not.
-     * If the AllowOther flag is true, a column is created for the Other option.
-     *  We first try to match on text, and if that fails, we try to match on code. This
+     * Creates list of option values. The first value is always the pipe-separated format Depending
+     * on the useQuestionId parameter, each option is given its own column A 0 or 1 denotes if that
+     * option was selected or not if the AllowOther flag is true, a column is created for the Other
+     * option. We first try to match on text, and if that fails, we try to match on code. This
      * guards against texts that are slightly changed during the evolution of a survey
      */
     private List<String> optionCellValues(Long questionId, String value,
@@ -1115,27 +1119,31 @@ public class GraphicalSurveySummaryExporter extends SurveySummaryExporter {
 
         // get optionNodes from packed string value
         List<Map<String, String>> optionNodes = getNodes(value);
-        //'Other' value may or may not be tagged
-        //Latest: isOther = true
-        //If codes: code = OTHER
-        //otherwise: if last and the text is not in option list
-        Map<String, String> otherNode = null;
-        String other = null;
-        int numOptions = options.size();
-        boolean[] optionFound = new boolean[numOptions];
 
-        // if needed, scan options
-        if (allowOther || (splitIntoColumns && allowMultiple)) { //Split options into own columns, if multiselect
+        // build pipe-separated format and add this to cell list
+        String optionString = buildOptionString(optionNodes);
+        cells.add(optionString);
+
+        // if needed, build cells for options
+        if (useQuestionId && allowMultiple) { //Split options into own columns, if multiselect
+            String text;
+            String code;
+            String cacheId;
+            String other = null;
             boolean found;
+            int numOptions = options.size();
+            boolean[] optionFound = new boolean[numOptions];
             String qId = questionId.toString();
 
             for (Map<String, String> optAnswer : optionNodes) {
-                String text = neverNull(optAnswer.get("text"));
-                String code = neverNull(optAnswer.get("code"));
+                text = optAnswer.get("text") != null ? optAnswer.get("text")
+                        : "";
+                code = optAnswer.get("code") != null ? optAnswer.get("code")
+                        : "";
                 found = false;
 
                 // try cache first
-                String cacheId = qId + text + code;
+                cacheId = qId + text + code;
                 if (optionsPositionCache.containsKey(cacheId)) {
                     optionFound[optionsPositionCache.get(cacheId)] = true;
                     found = true;
@@ -1146,7 +1154,8 @@ public class GraphicalSurveySummaryExporter extends SurveySummaryExporter {
                     for (int i = 0; i < numOptions; i++) {
                         if (text != null
                                 && text.length() > 0
-                                && text.equalsIgnoreCase(options.get(i).getText())) {
+                                && text.equalsIgnoreCase(options.get(i)
+                                        .getText())) {
                             optionFound[i] = true;
                             found = true;
                             // put in cache
@@ -1161,7 +1170,8 @@ public class GraphicalSurveySummaryExporter extends SurveySummaryExporter {
                     for (int i = 0; i < numOptions; i++) {
                         if (code != null
                                 && code.length() > 0
-                                && code.equalsIgnoreCase(options.get(i).getCode())) {
+                                && code.equalsIgnoreCase(options.get(i)
+                                        .getCode())) {
                             optionFound[i] = true;
                             found = true;
                             // put in cache
@@ -1172,31 +1182,20 @@ public class GraphicalSurveySummaryExporter extends SurveySummaryExporter {
                 }
 
                 // if still not found, keep this value as other
-                //TODO: this guess is unnecessary when an isOther flag (or OTHER code) is present.
                 if (!found) {
-                    otherNode = optAnswer;
                     other = text;
                 }
             }
-        }
-        if (otherNode != null) {
-            optionNodes.remove(otherNode); //goes in it's own cell
-        }
-        // First build pipe-separated format to start the cell list
-        String optionString = buildOptionString(optionNodes);
-        cells.add(optionString);
 
-        // if splitting multiples, create cells with 0 or 1
-        if (variableNamesInHeaders && allowMultiple) {
+            // create cells with 0 or 1
             for (int i = 0; i < numOptions; i++) {
                 cells.add(optionFound[i] ? "1" : "0");
             }
-        }
 
-        if (allowOther) {
-            cells.add(other != null ? other : "");
+            if (allowOther) {
+                cells.add(other != null ? other : "");
+            }
         }
-        
         return cells;
     }
 
@@ -1219,6 +1218,7 @@ public class GraphicalSurveySummaryExporter extends SurveySummaryExporter {
             List<QuestionDto>> questionMap
             ) {
 
+
         int columnIdx = addMetaDataHeaders(baseSheet, !separateSheetsForRepeatableGroups);
 
         if (questionMap != null) {
@@ -1234,6 +1234,7 @@ public class GraphicalSurveySummaryExporter extends SurveySummaryExporter {
                     // if not, keep adding it on to base sheet and return new offset
                         offset = writeRawDataGroupHeaders(baseSheet, group, questionMap.get(group), offset);
                     }
+                    
                 }
             }
 
@@ -1293,36 +1294,34 @@ public class GraphicalSurveySummaryExporter extends SurveySummaryExporter {
         for (QuestionDto q : questions) {
             questionIdList.add(q.getKeyId().toString());
 
-            String varName = q.getVariableName();
-            // Can we tag the column(s) with the variable name?
-            final boolean useVarName = variableNamesInHeaders
-                    && varName != null
-                    && !varName.equals(""); //TODO other whitespace?
+            String questionId = q.getQuestionId();
+            // Can we tag the column with the variable name?
+            final boolean useQID = useQuestionId && questionId != null
+                    && !questionId.equals("");
 
             columnIndexMap.put(q.getKeyId().toString(), offset);
 
             if (QuestionType.GEO == q.getType()) {
-                offset = addGeoDataColumnHeaders(q, row, offset, varName,
-                        variableNamesInHeaders, useVarName);
+                offset = addGeoDataColumnHeader(q, row, offset, questionId, useQuestionId, useQID);
             } else if (QuestionType.PHOTO == q.getType()) {
-                offset = addPhotoDataColumnHeader(q, row, offset, varName,
-                        splitIntoColumns, useVarName);
+                offset = addPhotoDataColumnHeader(q, row, offset, questionId,
+                        useQuestionId, useQID);
             } else if (QuestionType.CASCADE == q.getType()
-                    && q.getLevelNames() != null && splitIntoColumns) {
+                    && q.getLevelNames() != null && useQuestionId) {
                 // if no cascade assigned, column is not shown
                 for (String level : q.getLevelNames()) {
-                    String levelName = useVarName ? varName + "_"
+                    String levelName = useQID ? questionId + "_"
                             + level.replaceAll(" ", "_")
                             : q.getText() + " - " + level;
                     createHeaderCell(row, offset++, levelName);
                 }
             } else if (QuestionType.CADDISFLY == q.getType()) {
-                offset = addCaddisflyDataHeaderColumns(q, row, offset, varName, useVarName);
-            } else { // All other cases
+                offset = addCaddisflyDataHeaderColumns(q, row, offset, questionId, useQID);
+            } else { // All other types
                 String header = "";
-                if (useVarName) {
-                    header = varName;
-                } else if (variableNamesInHeaders) { //fall back to sanitised text
+                if (useQID) {
+                    header = questionId;
+                } else if (useQuestionId) {
                     header = q.getText().replaceAll("\n", "").trim();
                 } else {
                     header = q.getKeyId().toString()
@@ -1332,8 +1331,40 @@ public class GraphicalSurveySummaryExporter extends SurveySummaryExporter {
 
                 createHeaderCell(row, offset++, header);
 
-                if (QuestionType.OPTION == q.getType()){
-                    offset = addExtraOptionColumnHeaders(header, offset, row, q);
+                // check if we need to create columns for all options
+                //TODO cascade
+                if (QuestionType.OPTION == q.getType()
+                        && useQuestionId
+                        && safeTrue(q.getAllowMultipleFlag())) {
+
+                    // get options for question and create columns
+                    OptionContainerDto ocDto = q.getOptionContainerDto();
+                    if (ocDto != null) { //used to be legal
+                        List<QuestionOptionDto> qoList = ocDto.getOptionsList();
+                        if (qoList != null) {
+                            for (QuestionOptionDto qo : qoList) {
+                                // create header column
+                                header = (qo.getCode() != null
+                                        && !qo.getCode().equals("null")
+                                        && qo.getCode().length() > 0)
+                                        ? qo.getCode() + ":"
+                                        : "";
+                                createHeaderCell(row,
+                                        offset++,
+                                        "--OPTION--|" + header + qo.getText());
+                            }
+
+                            // add 'other' column if needed
+                            if (q.getAllowOtherFlag()) {
+                                createHeaderCell(row,
+                                        offset++,
+                                        "--OTHER--");
+                            }
+
+                            optionMap.put(q.getKeyId(), qoList);
+                            allowOtherMap.put(q.getKeyId(), q.getAllowOtherFlag());
+                        }
+                    }
                 }
             }
 
@@ -1344,7 +1375,6 @@ public class GraphicalSurveySummaryExporter extends SurveySummaryExporter {
                 unsummarizable.add(q.getKeyId().toString());
             }
         }
-        
         if (doGroupHeaders) {
             //Now we know the width; write the group name spanned over entire group
             createCell(getRow(0, sheet), startOffset,
@@ -1353,16 +1383,15 @@ public class GraphicalSurveySummaryExporter extends SurveySummaryExporter {
         }
         return offset;
     }
-
     
     @SuppressWarnings("unchecked")
-    private int addCaddisflyDataHeaderColumns(QuestionDto q, Row row, final int originalOffset,
-            final String variableName, final boolean useVariableName) {
+    private int addCaddisflyDataHeaderColumns(QuestionDto q, Row row, int originalOffset,
+            String questionId, final boolean useQID) {
         int offset = originalOffset;
         Map<String, CaddisflyResource> caddisflyResourceMap = null;
         StringBuilder caddisflyFirstResultColumnHeaderPrefix = new StringBuilder();
-        if (useVariableName) {
-            caddisflyFirstResultColumnHeaderPrefix.append(variableName);
+        if (useQID) {
+            caddisflyFirstResultColumnHeaderPrefix.append(questionId);
         } else {
             caddisflyFirstResultColumnHeaderPrefix.append(q.getKeyId());
         }
@@ -1438,13 +1467,13 @@ public class GraphicalSurveySummaryExporter extends SurveySummaryExporter {
         }
     }
 
-    private int addPhotoDataColumnHeader(QuestionDto q, Row row, final int originalOffset, String variableName,
-            boolean analysisFormat, final boolean useVariableName) {
+    private int addPhotoDataColumnHeader(QuestionDto q, Row row, int originalOffset, String questionId,
+            boolean analysisFormat, final boolean useVarName) {
         int offset = originalOffset;
         // Always a URL column
         String header = "";
-        if (useVariableName) {
-            header = variableName;
+        if (useVarName) {
+            header = questionId;
         } else if (analysisFormat) {
             header = q.getText().replaceAll("\n", "").trim();
         } else {
@@ -1463,28 +1492,26 @@ public class GraphicalSurveySummaryExporter extends SurveySummaryExporter {
         return offset;
     }
 
+
     
     /**
      * @param q
      * @param row
      * @param originalOffset
-     * @param variableName
+     * @param varName
      * @param analysisFormat
-     * @param useVariableName
+     * @param useVarName
      * @return the new offset
      * 
      */
-    private int addGeoDataColumnHeaders(QuestionDto q, Row row,
-            final int originalOffset,
-            final String variableName,
-            final boolean analysisFormat,
-            final boolean useVariableName) {
+    private int addGeoDataColumnHeader(QuestionDto q, Row row, int originalOffset, String varName,
+            boolean analysisFormat, final boolean useVarName) {
         int offset = originalOffset;
         if (analysisFormat) {
-            if (useVariableName) {
-                createHeaderCell(row, offset++, variableName + "_" + LAT_LABEL);
-                createHeaderCell(row, offset++, variableName + "_" + LON_LABEL);
-                createHeaderCell(row, offset++, variableName + "_" + ELEV_LABEL);
+            if (useVarName) {
+                createHeaderCell(row, offset++, varName + "_" + LAT_LABEL);
+                createHeaderCell(row, offset++, varName + "_" + LON_LABEL);
+                createHeaderCell(row, offset++, varName + "_" + ELEV_LABEL);
             } else {
                 createHeaderCell(row, offset++, q.getText() + " - " + LAT_LABEL);
                 createHeaderCell(row, offset++, q.getText() + " - " + LON_LABEL);
@@ -1494,41 +1521,6 @@ public class GraphicalSurveySummaryExporter extends SurveySummaryExporter {
             createHeaderCell(row, offset++, q.getKeyId() + "|" + LAT_LABEL);
             createHeaderCell(row, offset++, "--GEOLON--|"      + LON_LABEL);
             createHeaderCell(row, offset++, "--GEOELE--|"      + ELEV_LABEL);
-        }
-        return offset;
-    }
-
-    
-    private int addExtraOptionColumnHeaders(String header,
-            final int initialOffset,
-            Row row,
-            QuestionDto q) {
-        int offset = initialOffset;
-        // get options for question and create columns
-        OptionContainerDto ocDto = q.getOptionContainerDto();
-        if (ocDto != null) { //null used to be legal if no options
-            List<QuestionOptionDto> qoList = ocDto.getOptionsList();
-            if (qoList != null) {
-                if ( splitIntoColumns & safeTrue(q.getAllowMultipleFlag())) { 
-                    for (QuestionOptionDto qo : qoList) {
-                        // create split header column
-                        String hdr = (qo.getCode() != null
-                                && !qo.getCode().equals("null")
-                                && qo.getCode().length() > 0)
-                                ? qo.getCode() + ":"
-                                : "";
-                        createHeaderCell(row, offset++, "--OPTION--|" + hdr + qo.getText());
-                    }
-                }
-                
-                // add 'other' column if needed
-                if (safeTrue(q.getAllowOtherFlag())){
-                  createHeaderCell(row, offset++, header + OTHER_TAG);
-                }
-
-                optionMap.put(q.getKeyId(), qoList);
-                allowOtherMap.put(q.getKeyId(), q.getAllowOtherFlag());
-            }
         }
         return offset;
     }
@@ -1618,7 +1610,7 @@ public class GraphicalSurveySummaryExporter extends SurveySummaryExporter {
                             headerStyle);
                     // Variable name
                     createCell(row, variableNameColumnIndex,
-                            question.getVariableName(),
+                            question.getQuestionId(),
                             headerStyle);
 
                     DescriptiveStats stats = summaryModel.getDescriptiveStatsForQuestion(
@@ -1969,12 +1961,12 @@ public class GraphicalSurveySummaryExporter extends SurveySummaryExporter {
      * @param options
      */
     protected boolean processOptions(Map<String, String> options) {
-        includeSummarySheet = true;
+        isFullReport = true;
         performGeoRollup = true;
         generateCharts = true;
         separateSheetsForRepeatableGroups = false;
         doGroupHeaders = false;
-        variableNamesInHeaders = false;
+        useQuestionId = false;
         
         if (options != null) {
             log.debug(options);
@@ -1986,23 +1978,20 @@ public class GraphicalSurveySummaryExporter extends SurveySummaryExporter {
                 return false;
             } else
             if (DATA_CLEANING_TYPE.equalsIgnoreCase(reportType)) {
-                includeSummarySheet = false;
+                isFullReport = false;
                 doGroupHeaders = true;
                 separateSheetsForRepeatableGroups = true;
-                variableNamesInHeaders = false; //So we can import - also enables digests
-                splitIntoColumns = false;
+                useQuestionId = false; //So we can import
             } else if (DATA_ANALYSIS_TYPE.equalsIgnoreCase(reportType)) {
-                includeSummarySheet = false;
+                isFullReport = false;
                 doGroupHeaders = false;
                 separateSheetsForRepeatableGroups = false;
-                variableNamesInHeaders = true;
-                splitIntoColumns = true;
+                useQuestionId = true; //also splits options into columns, and prevents digests
             } else if (COMPREHENSIVE_TYPE.equalsIgnoreCase(reportType)) {
-                includeSummarySheet = true;
+                isFullReport = true;
                 doGroupHeaders = false;
                 separateSheetsForRepeatableGroups = false;
-                variableNamesInHeaders = true;
-                splitIntoColumns = true;
+                useQuestionId = false; //is this correct?
             } else {
                 log.error("Unknown value " + reportType + " for " + TYPE_OPT);                
                 return false;
@@ -2068,8 +2057,8 @@ public class GraphicalSurveySummaryExporter extends SurveySummaryExporter {
         Map<String, String> criteria = new HashMap<String, String>();
         Map<String, String> options = new HashMap<String, String>();
 //        options.put(TYPE_OPT, DATA_CLEANING_TYPE);
-        options.put(TYPE_OPT, DATA_ANALYSIS_TYPE);
-//        options.put(TYPE_OPT, COMPREHENSIVE_TYPE);
+//        options.put(TYPE_OPT, DATA_ANALYSIS_TYPE);
+        options.put(TYPE_OPT, COMPREHENSIVE_TYPE);
         options.put(LAST_COLLECTION_OPT, "false");
         options.put(EMAIL_OPT, "email@example.com");
         options.put(FROM_OPT, null);

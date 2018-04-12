@@ -124,7 +124,7 @@ public class QuestionDao extends BaseDAO<Question> {
      * @param question
      */
     public void delete(Question question) throws IllegalDeletionException {
-        delete(question, Boolean.FALSE);
+        delete(question, Boolean.TRUE);
     }
 
     /**

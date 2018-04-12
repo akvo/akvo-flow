@@ -1,5 +1,5 @@
 /*
- *  Copyright (C) 2010-2018 Stichting Akvo (Akvo Foundation)
+ *  Copyright (C) 2010-2017 Stichting Akvo (Akvo Foundation)
  *
  *  This file is part of Akvo FLOW.
  *
@@ -1011,8 +1011,8 @@ public class BulkDataServiceClient {
                             if (!json.isNull("tip")) {
                                 dto.setTip(json.optString("tip"));
                             }
-                            if (!json.isNull("variableName")) {
-                                dto.setVariableName(json.optString("variableName"));
+                            if (!json.isNull("questionId")) {
+                                dto.setQuestionId(json.optString("questionId"));
                             }
                             if (!json.isNull("path")) {
                                 dto.setPath(json.getString("path"));

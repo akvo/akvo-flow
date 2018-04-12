@@ -1,0 +1,835 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<kml xmlns="http://www.opengis.net/kml/2.2">
+	<Document>
+	
+		<Style id="waterpushpingreen">
+		    <BalloonStyle> 
+      <text>$[description]</text> 
+    </BalloonStyle> 
+     <IconStyle id="watergreenwpin">
+      <Icon>
+        <href>http://watermapmonitordev.appspot.com/images/iconGreen.png</href>
+      </Icon>
+    </IconStyle>
+  </Style>
+  <Style id="waterpushpinyellow">
+      <BalloonStyle> 
+      <text>$[description]</text> 
+    </BalloonStyle> 
+     <IconStyle id="wateryellowpin">
+      <Icon>
+        <href>http://watermapmonitordev.appspot.com/images/iconYellow.png</href>
+      </Icon>
+    </IconStyle>
+  </Style>
+   <Style id="waterpushpinred">
+       <BalloonStyle> 
+      <text>$[description]</text> 
+    </BalloonStyle> 
+     <IconStyle id="waterredpin">
+      <Icon>
+        <href>http://watermapmonitordev.appspot.com/images/iconRed.png</href>
+      </Icon>
+    </IconStyle>
+  </Style>  
+   <Style id="waterpushpinblk">
+           <BalloonStyle> 
+      <text>$[description]</text> 
+    </BalloonStyle> 
+     <IconStyle id="waterblackpin">
+      <Icon>
+        <href>http://watermapmonitordev.appspot.com/images/iconBlack.png</href>
+      </Icon>
+    </IconStyle>
+  </Style>	
+  
+  	<Style id="sanipushpingreen">
+		    <BalloonStyle> 
+      <text>$[description]</text> 
+    </BalloonStyle> 
+     <IconStyle id="sanigreenwpin">
+      <Icon>
+        <href>http://watermapmonitordev.appspot.com/images/map/san-green-1.png</href>
+      </Icon>
+    </IconStyle>
+  </Style>
+  <Style id="sanipushpinyellow">
+      <BalloonStyle> 
+      <text>$[description]</text> 
+    </BalloonStyle> 
+     <IconStyle id="saniyellowpin">
+      <Icon>
+        <href>http://watermapmonitordev.appspot.com/images/map/san-yellow-1.png</href>
+      </Icon>
+    </IconStyle>
+  </Style>
+   <Style id="sanipushpinred">
+       <BalloonStyle> 
+      <text>$[description]</text> 
+    </BalloonStyle> 
+     <IconStyle id="saniredpin">
+      <Icon>
+        <href>http://watermapmonitordev.appspot.com/images/map/san-red-1.png</href>
+      </Icon>
+    </IconStyle>
+  </Style>
+   <Style id="sanipushpinblk">
+           <BalloonStyle> 
+      <text>$[description]</text> 
+    </BalloonStyle> 
+     <IconStyle id="saniblackpin">
+      <Icon>
+        <href>http://watermapmonitordev.appspot.com/images/map/san-black-1.png</href>
+      </Icon>
+    </IconStyle>
+  </Style>	
+	
+	
+	
+	<Style id="schwaterpushpingreen">
+		    <BalloonStyle> 
+      <text>$[description]</text> 
+    </BalloonStyle> 
+     <IconStyle id="schwatergreenwpin">
+      <Icon>
+        <href>http://watermapmonitordev.appspot.com/images/pencilGreen.png</href>
+      </Icon>
+    </IconStyle>
+  </Style>
+  <Style id="schwaterpushpinyellow">
+      <BalloonStyle> 
+      <text>$[description]</text> 
+    </BalloonStyle> 
+     <IconStyle id="schwateryellowpin">
+      <Icon>
+        <href>http://watermapmonitordev.appspot.com/images/pencilYellow.png</href>
+      </Icon>
+    </IconStyle>
+  </Style>
+   <Style id="schwaterpushpinred">
+       <BalloonStyle> 
+      <text>$[description]</text> 
+    </BalloonStyle> 
+     <IconStyle id="schwaterredpin">
+      <Icon>
+        <href>http://watermapmonitordev.appspot.com/images/pencilRed.png</href>
+      </Icon>
+    </IconStyle>
+  </Style>  
+   <Style id="schwaterpushpinblk">
+           <BalloonStyle> 
+      <text>$[description]</text> 
+    </BalloonStyle> 
+     <IconStyle id="schwaterblackpin">
+      <Icon>
+        <href>http://watermapmonitordev.appspot.com/images/pencilBlack.png</href>
+      </Icon>
+    </IconStyle>
+  </Style>	
+  
+  
+  <Style id="pubwaterpushpingreen">
+		    <BalloonStyle> 
+      <text>$[description]</text> 
+    </BalloonStyle> 
+     <IconStyle id="pubwatergreenwpin">
+      <Icon>
+        <href>http://watermapmonitordev.appspot.com/images/houseGreen.png</href>
+      </Icon>
+    </IconStyle>
+  </Style>
+  <Style id="pubwaterpushpinyellow">
+      <BalloonStyle> 
+      <text>$[description]</text> 
+    </BalloonStyle> 
+     <IconStyle id="pubwateryellowpin">
+      <Icon>
+        <href>http://watermapmonitordev.appspot.com/images/houseYellow.png</href>
+      </Icon>
+    </IconStyle>
+  </Style>
+   <Style id="pubwaterpushpinred">
+       <BalloonStyle> 
+      <text>$[description]</text> 
+    </BalloonStyle> 
+     <IconStyle id="pubwaterredpin">
+      <Icon>
+        <href>http://watermapmonitordev.appspot.com/images/houseRed.png</href>
+      </Icon>
+    </IconStyle>
+  </Style>  
+   <Style id="pubwaterpushpinblk">
+           <BalloonStyle> 
+      <text>$[description]</text> 
+    </BalloonStyle> 
+     <IconStyle id="pubwaterblackpin">
+      <Icon>
+        <href>http://watermapmonitordev.appspot.com/images/houseBlack.png</href>
+      </Icon>
+    </IconStyle>
+  </Style>	
+	
+		<Style id="pushpingreen">
+		    <BalloonStyle> 
+      <text>$[description]</text> 
+    </BalloonStyle> 
+     <IconStyle id="greenwpin">
+      <Icon>
+        <href>http://maps.google.com/mapfiles/kml/pushpin/grn-pushpin.png</href>
+      </Icon>
+    </IconStyle>
+  </Style>
+  <Style id="pushpinyellow">
+      <BalloonStyle> 
+      <text>$[description]</text> 
+    </BalloonStyle> 
+     <IconStyle id="yellowpin">
+      <Icon>
+        <href>http://maps.google.com/mapfiles/kml/pushpin/ylw-pushpin.png</href>
+      </Icon>
+    </IconStyle>
+  </Style>
+   <Style id="pushpinred">
+       <BalloonStyle> 
+      <text>$[description]</text> 
+    </BalloonStyle> 
+     <IconStyle id="redpin">
+      <Icon>
+        <href>http://maps.google.com/mapfiles/kml/pushpin/red-pushpin.png</href>
+      </Icon>
+    </IconStyle>
+  </Style>
+   <Style id="pushpinpurple">
+       <BalloonStyle> 
+      <text>$[description]</text> 
+    </BalloonStyle> 
+     <IconStyle id="purplepin">
+      <Icon>
+        <href>http://maps.google.com/mapfiles/kml/pushpin/wht-pushpin.png</href>
+      </Icon>
+    </IconStyle>
+  </Style>
+   <Style id="pushpinblk">
+           <BalloonStyle> 
+      <text>$[description]</text> 
+    </BalloonStyle> 
+     <IconStyle id="purpulepin">
+      <Icon>
+        <href>http://waterforpeople.s3.amazonaws.com/images/black-pushpin.png</href>
+      </Icon>
+    </IconStyle>
+  </Style>	
+	   <Style id="transBluePoly">
+      <LineStyle>
+        <width>1.5</width>
+      </LineStyle>
+      <PolyStyle>
+        <color>7dff0000</color>
+      </PolyStyle>
+    </Style>
+	
+	<name>Water For People Mapping Assesment</name>
+	<description>description</description>
+	<Style id="exampleBalloonStyle">
+    <BalloonStyle>
+      <!-- a background color for the balloon -->
+      <bgColor>white</bgColor>
+      <!-- styling of the balloon text -->
+      <text><![CDATA[      
+      <br/><br/>
+      <font face="Verdana">$[description]</font>
+      <br/><br/>
+      ]]></text>
+    </BalloonStyle>
+  </Style>
+   <Style id="PolyStyle00">
+
+    <LabelStyle>
+
+      <color>00000000</color>
+
+      <scale>0.000000</scale>
+
+    </LabelStyle>
+
+    <LineStyle>
+
+      <color>ff0038a8</color>
+
+      <width>4.000000</width>
+
+    </LineStyle>
+
+    <PolyStyle>
+
+      <color>00e3dee0</color>
+
+      <outline>1</outline>
+
+    </PolyStyle>
+
+  </Style>
+
+  <Style id="PolyStyle01">
+
+    <LabelStyle>
+
+      <color>00000000</color>
+
+      <scale>0.000000</scale>
+
+    </LabelStyle>
+
+    <LineStyle>
+
+      <color>ff00e698</color>
+
+      <width>4.000000</width>
+
+    </LineStyle>
+
+    <PolyStyle>
+
+      <color>00e3dfe0</color>
+
+      <outline>1</outline>
+
+    </PolyStyle>
+
+  </Style>
+
+  <Style id="PolyStyle02">
+
+    <LabelStyle>
+
+      <color>00000000</color>
+
+      <scale>0.000000</scale>
+
+    </LabelStyle>
+
+    <LineStyle>
+
+      <color>ff44abc8</color>
+
+      <width>4.000000</width>
+
+    </LineStyle>
+
+    <PolyStyle>
+
+      <color>00e3dee0</color>
+
+      <outline>1</outline>
+
+    </PolyStyle>
+
+  </Style>
+
+  <Style id="PolyStyle03">
+
+    <LabelStyle>
+
+      <color>00000000</color>
+
+      <scale>0.000000</scale>
+
+    </LabelStyle>
+
+    <LineStyle>
+
+      <color>ff6dd45b</color>
+
+      <width>4.000000</width>
+
+    </LineStyle>
+
+    <PolyStyle>
+
+      <color>00e3dee0</color>
+
+      <outline>1</outline>
+
+    </PolyStyle>
+
+  </Style>
+
+  <Style id="PolyStyle04">
+
+    <LabelStyle>
+
+      <color>00000000</color>
+
+      <scale>0.000000</scale>
+
+    </LabelStyle>
+
+    <LineStyle>
+
+      <color>ffcd7766</color>
+
+      <width>4.000000</width>
+
+    </LineStyle>
+
+    <PolyStyle>
+
+      <color>00e3dee0</color>
+
+      <outline>1</outline>
+
+    </PolyStyle>
+
+  </Style>
+
+  <Style id="PolyStyle05">
+
+    <LabelStyle>
+
+      <color>00000000</color>
+
+      <scale>0.000000</scale>
+
+    </LabelStyle>
+
+    <LineStyle>
+
+      <color>ff9739bf</color>
+
+      <width>4.000000</width>
+
+    </LineStyle>
+
+    <PolyStyle>
+
+      <color>00e3dee0</color>
+
+      <outline>1</outline>
+
+    </PolyStyle>
+
+  </Style>
+
+  <Style id="PolyStyle06">
+
+    <LabelStyle>
+
+      <color>00000000</color>
+
+      <scale>0.000000</scale>
+
+    </LabelStyle>
+
+    <LineStyle>
+
+      <color>fff2b841</color>
+
+      <width>4.000000</width>
+
+    </LineStyle>
+
+    <PolyStyle>
+
+      <color>00e3dee0</color>
+
+      <outline>1</outline>
+
+    </PolyStyle>
+
+  </Style>
+
+  <Style id="PolyStyle07">
+
+    <LabelStyle>
+
+      <color>00000000</color>
+
+      <scale>0.000000</scale>
+
+    </LabelStyle>
+
+    <LineStyle>
+
+      <color>ffb67af5</color>
+
+      <width>4.000000</width>
+
+    </LineStyle>
+
+    <PolyStyle>
+
+      <color>00e3dee0</color>
+
+      <outline>1</outline>
+
+    </PolyStyle>
+
+  </Style>
+
+  <Style id="PolyStyle08">
+
+    <LabelStyle>
+
+      <color>00000000</color>
+
+      <scale>0.000000</scale>
+
+    </LabelStyle>
+
+    <LineStyle>
+
+      <color>ff7acaf5</color>
+
+      <width>4.000000</width>
+
+    </LineStyle>
+
+    <PolyStyle>
+
+      <color>00e3dee0</color>
+
+      <outline>1</outline>
+
+    </PolyStyle>
+
+  </Style>
+
+  <Style id="PolyStyle09">
+
+    <LabelStyle>
+
+      <color>00000000</color>
+
+      <scale>0.000000</scale>
+
+    </LabelStyle>
+
+    <LineStyle>
+
+      <color>ff6666cd</color>
+
+      <width>4.000000</width>
+
+    </LineStyle>
+
+    <PolyStyle>
+
+      <color>00e3dfe0</color>
+
+      <outline>1</outline>
+
+    </PolyStyle>
+
+  </Style>
+
+  <Style id="PolyStyle010">
+
+    <LabelStyle>
+
+      <color>00000000</color>
+
+      <scale>0.000000</scale>
+
+    </LabelStyle>
+
+    <LineStyle>
+
+      <color>ff9565c9</color>
+
+      <width>4.000000</width>
+
+    </LineStyle>
+
+    <PolyStyle>
+
+      <color>00e3dfe0</color>
+
+      <outline>1</outline>
+
+    </PolyStyle>
+
+  </Style>
+
+  <Style id="PolyStyle011">
+
+    <LabelStyle>
+
+      <color>00000000</color>
+
+      <scale>0.000000</scale>
+
+    </LabelStyle>
+
+    <LineStyle>
+
+      <color>ff007326</color>
+
+      <width>4.000000</width>
+
+    </LineStyle>
+
+    <PolyStyle>
+
+      <color>00e3dee0</color>
+
+      <outline>1</outline>
+
+    </PolyStyle>
+
+  </Style>
+
+  <Style id="PolyStyle012">
+
+    <LabelStyle>
+
+      <color>00000000</color>
+
+      <scale>0.000000</scale>
+
+    </LabelStyle>
+
+    <LineStyle>
+
+      <color>ff8b1a55</color>
+
+      <width>4.000000</width>
+
+    </LineStyle>
+
+    <PolyStyle>
+
+      <color>00e3dee0</color>
+
+      <outline>1</outline>
+
+    </PolyStyle>
+
+  </Style>
+
+  <Style id="PolyStyle013">
+
+    <LabelStyle>
+
+      <color>00000000</color>
+
+      <scale>0.000000</scale>
+
+    </LabelStyle>
+
+    <LineStyle>
+
+      <color>ff652b89</color>
+
+      <width>4.000000</width>
+
+    </LineStyle>
+
+    <PolyStyle>
+
+      <color>00e3dee0</color>
+
+      <outline>1</outline>
+
+    </PolyStyle>
+
+  </Style>
+
+  <Style id="PolyStyle014">
+
+    <LabelStyle>
+
+      <color>00000000</color>
+
+      <scale>0.000000</scale>
+
+    </LabelStyle>
+
+    <LineStyle>
+
+      <color>ffff7000</color>
+
+      <width>4.000000</width>
+
+    </LineStyle>
+
+    <PolyStyle>
+
+      <color>00e3dee0</color>
+
+      <outline>1</outline>
+
+    </PolyStyle>
+
+  </Style>
+
+  <Style id="PolyStyle015">
+
+    <LabelStyle>
+
+      <color>00000000</color>
+
+      <scale>0.000000</scale>
+
+    </LabelStyle>
+
+    <LineStyle>
+
+      <color>ffcd9966</color>
+
+      <width>4.000000</width>
+
+    </LineStyle>
+
+    <PolyStyle>
+
+      <color>00e3dee0</color>
+
+      <outline>1</outline>
+
+    </PolyStyle>
+
+  </Style>
+
+  <Style id="PolyStyle016">
+
+    <LabelStyle>
+
+      <color>00000000</color>
+
+      <scale>0.000000</scale>
+
+    </LabelStyle>
+
+    <LineStyle>
+
+      <color>ff0055ff</color>
+
+      <width>4.000000</width>
+
+    </LineStyle>
+
+    <PolyStyle>
+
+      <color>00e3dee0</color>
+
+      <outline>1</outline>
+
+    </PolyStyle>
+
+  </Style>
+
+  <Style id="PolyStyle017">
+
+    <LabelStyle>
+
+      <color>00000000</color>
+
+      <scale>0.000000</scale>
+
+    </LabelStyle>
+
+    <LineStyle>
+
+      <color>ffcaf57a</color>
+
+      <width>4.000000</width>
+
+    </LineStyle>
+
+    <PolyStyle>
+
+      <color>00e3dee0</color>
+
+      <outline>1</outline>
+
+    </PolyStyle>
+
+  </Style>
+
+  <Style id="PolyStyle018">
+
+    <LabelStyle>
+
+      <color>00000000</color>
+
+      <scale>0.000000</scale>
+
+    </LabelStyle>
+
+    <LineStyle>
+
+      <color>ff894f44</color>
+
+      <width>4.000000</width>
+
+    </LineStyle>
+
+    <PolyStyle>
+
+      <color>00e3dee0</color>
+
+      <outline>1</outline>
+
+    </PolyStyle>
+
+  </Style>
+
+  <Style id="PolyStyle019">
+
+    <LabelStyle>
+
+      <color>00000000</color>
+
+      <scale>0.000000</scale>
+
+    </LabelStyle>
+
+    <LineStyle>
+
+      <color>ff7c87ff</color>
+
+      <width>4.000000</width>
+
+    </LineStyle>
+
+    <PolyStyle>
+
+      <color>00e3dee0</color>
+
+      <outline>1</outline>
+
+    </PolyStyle>
+
+  </Style>
+
+  <Style id="PolyStyle020">
+
+    <LabelStyle>
+
+      <color>00000000</color>
+
+      <scale>0.000000</scale>
+
+    </LabelStyle>
+
+    <LineStyle>
+
+      <color>ff00ff55</color>
+
+      <width>4.000000</width>
+
+    </LineStyle>
+
+    <PolyStyle>
+
+      <color>00e3dee0</color>
+
+      <outline>1</outline>
+
+    </PolyStyle>
+
+  </Style>
+
+  
+		
+	

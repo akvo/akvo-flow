@@ -384,6 +384,106 @@ public class KMLGenerator {
         return null;
     }
 
+    public String generatePlacemarks(String vmName, String countryCode) {
+        return generatePlacemarks(vmName, countryCode, GOOGLE_EARTH_DISPLAY);
+    }
+
+    public String generatePlacemarks(String vmName, String countryCode,
+            String display) {
+        StringBuilder sb = new StringBuilder();
+        AccessPointDao apDAO = new AccessPointDao();
+        List<AccessPoint> entries = null;
+        if (countryCode.equals(Constants.ALL_RESULTS))
+            entries = apDAO.list(Constants.ALL_RESULTS);
+        else
+            entries = apDAO.searchAccessPoints(countryCode, null, null, null,
+                    null, null, null, null, null, null, null,
+                    Constants.ALL_RESULTS);
+
+        // loop through accessPoints and bind to variables
+        int i = 0;
+        try {
+            for (AccessPoint ap : entries) {
+                if (!ap.getPointType().equals(
+                        AccessPoint.AccessPointType.SANITATION_POINT)) {
+                    try {
+                        VelocityContext context = new VelocityContext();
+                        String pmContents = bindPlacemark(
+                                ap,
+                                display.equalsIgnoreCase(GOOGLE_EARTH_DISPLAY) ? "placemarkGoogleEarth.vm"
+                                        : "placemarkExternalMap.vm", display,
+                                null);
+
+                        if (ap.getCollectionDate() != null) {
+                            String timestamp = DateFormatUtils.formatUTC(ap
+                                    .getCollectionDate(),
+                                    DateFormatUtils.ISO_DATE_FORMAT
+                                            .getPattern());
+                            String formattedDate = DateFormat.getDateInstance(
+                                    DateFormat.SHORT).format(
+                                    ap.getCollectionDate());
+                            context.put("collectionDate", formattedDate);
+                            context.put("timestamp", timestamp);
+                            String collectionYear = new SimpleDateFormat("yyyy")
+                                    .format(ap.getCollectionDate());
+                            context.put("collectionYear", collectionYear);
+                        } else {
+                            String timestamp = DateFormatUtils.formatUTC(
+                                    new Date(), DateFormatUtils.ISO_DATE_FORMAT
+                                            .getPattern());
+                            String formattedDate = DateFormat.getDateInstance(
+                                    DateFormat.SHORT).format(new Date());
+                            context.put("collectionDate", formattedDate);
+                            context.put("timestamp", timestamp);
+                        }
+                        if (ap.getCommunityName() == null) {
+                            context.put("communityName", "Unknown");
+                        } else {
+                            context.put("communityName", ap.getCommunityName());
+                        }
+                        if (ap.getCommunityCode() != null)
+                            context.put("communityCode", ap.getCommunityCode());
+                        else
+                            context.put("communityCode", "Unknown" + new Date());
+                        // Need to check this
+                        if (ap.getPointType() != null) {
+                            if (Boolean.parseBoolean(PropertyUtil
+                                    .getProperty(DYNAMIC_SCORING_FLAG))) {
+
+                            } else {
+                                encodeStatusString(ap, context);
+                                context.put(
+                                        "pinStyle",
+                                        encodePinStyle(ap.getPointType(),
+                                                ap.getPointStatus()));
+                            }
+                        } else {
+                            context.put("pinStyle", "waterpushpinblk");
+                        }
+                        context.put("latitude", ap.getLatitude());
+                        context.put("longitude", ap.getLongitude());
+                        if (ap.getAltitude() == null)
+                            context.put("altitude", 0.0);
+                        else
+                            context.put("altitude", ap.getAltitude());
+
+                        context.put("balloon", pmContents);
+                        String placemarkStr = mergeContext(context, vmName);
+                        sb.append(placemarkStr);
+                        i++;
+                    } catch (Exception e) {
+                        log.log(Level.INFO, "Error generating placemarks: "
+                                + ap.getCommunityCode(), e);
+                    }
+                }
+            }
+        } catch (Exception ex) {
+            log.log(Level.SEVERE, "Bad access point: "
+                    + entries.get(i + 1).toString());
+        }
+        return sb.toString();
+    }
+
     /**
      * attempts to merge the context with the template. The template will be resolved from cache
      * and, if there is a miss, it will use the EditorialPageDao as the templateBackingStore. If the

@@ -499,10 +499,6 @@ FLOW.isoLanguagesDict = {
     "name": "Persian",
     "nativeName": "فارسی"
   },
-  "pis": {
-    "name": "Pijin",
-    "nativeName": "Pijin"
-  },
   "pl": {
     "name": "Polish",
     "nativeName": "polski"
@@ -638,10 +634,6 @@ FLOW.isoLanguagesDict = {
   "bo": {
     "name": "Tibetan Standard, Tibetan, Central",
     "nativeName": "བོད་ཡིག"
-  },
-  "tpi": {
-    "name": "Tok Pisin",
-    "nativeName": "Tok Pisin"
   },
   "tk": {
     "name": "Turkmen",

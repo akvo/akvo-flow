@@ -371,7 +371,7 @@ FLOW.QuestionGroupItemView = FLOW.View.extend({
 
   // insert group
   doInsertQuestionGroup: function () {
-    var insertAfterOrder, path, sId;
+    var insertAfterOrder, path, sId, questionGroupsInSurvey;
     path = FLOW.selectedControl.selectedSurveyGroup.get('code') + "/" + FLOW.selectedControl.selectedSurvey.get('name');
     if (FLOW.selectedControl.selectedSurvey.get('keyId')) {
 
@@ -383,9 +383,16 @@ FLOW.QuestionGroupItemView = FLOW.View.extend({
 
       // restore order
       sId = FLOW.selectedControl.selectedSurvey.get('keyId');
+      questionGroupsInSurvey = FLOW.store.filter(FLOW.QuestionGroup, function (item) {
+        return item.get('surveyId') == sId;
+      });
 
-      // reorder the rest of the question groups
-      FLOW.questionGroupControl.reorderQuestionGroups(sId, insertAfterOrder, "increment");
+      // move items up to make space
+      questionGroupsInSurvey.forEach(function (item) {
+        if (item.get('order') > insertAfterOrder) {
+          item.set('order', item.get('order') + 1);
+        }
+      });
 
       // create new QuestionGroup item in the store
       FLOW.store.createRecord(FLOW.QuestionGroup, {
@@ -397,7 +404,13 @@ FLOW.QuestionGroupItemView = FLOW.View.extend({
         "surveyId": FLOW.selectedControl.selectedSurvey.get('keyId')
       });
 
-      FLOW.questionGroupControl.submitBulkQuestionGroupsReorder(sId);
+      // get the question groups again, now it contains the new one as well
+      questionGroupsInSurvey = FLOW.store.filter(FLOW.QuestionGroup, function (item) {
+        return item.get('surveyId') == sId;
+      });
+
+      // restore order in case the order has gone haywire
+      FLOW.questionControl.restoreOrder(questionGroupsInSurvey);
 
       FLOW.selectedControl.selectedSurvey.set('status', 'NOT_PUBLISHED');
       FLOW.store.commit();
@@ -483,7 +496,8 @@ FLOW.QuestionGroupItemView = FLOW.View.extend({
           }
         });
 
-        FLOW.questionGroupControl.submitBulkQuestionGroupsReorder(sId);
+        // restore order in case the order has gone haywire
+        FLOW.questionControl.restoreOrder(questionGroupsInSurvey);
 
         FLOW.selectedControl.selectedSurvey.set('status', 'NOT_PUBLISHED');
         FLOW.store.commit();
@@ -534,7 +548,7 @@ FLOW.QuestionGroupItemView = FLOW.View.extend({
 
   // execute group copy to selected location
   doQGroupCopyHere: function () {
-    var insertAfterOrder, path, sId;
+    var insertAfterOrder, path, sId, questionGroupsInSurvey;
     path = FLOW.selectedControl.selectedSurveyGroup.get('code') + "/" + FLOW.selectedControl.selectedSurvey.get('name');
 
     if (this.get('zeroItem')) {
@@ -544,9 +558,16 @@ FLOW.QuestionGroupItemView = FLOW.View.extend({
     }
 
     sId = FLOW.selectedControl.selectedSurvey.get('keyId');
+    questionGroupsInSurvey = FLOW.store.filter(FLOW.QuestionGroup, function (item) {
+      return item.get('surveyId') === sId;
+    });
 
-    // restore order
-    FLOW.questionGroupControl.reorderQuestionGroups(sId, insertAfterOrder, "increment");
+    // restore order - move items up to make space
+    questionGroupsInSurvey.forEach(function (item) {
+      if (item.get('order') > insertAfterOrder) {
+        item.set('order', item.get('order') + 1);
+      }
+    });
 
     FLOW.store.createRecord(FLOW.QuestionGroup, {
       "order": insertAfterOrder + 1,
@@ -558,8 +579,6 @@ FLOW.QuestionGroupItemView = FLOW.View.extend({
       "sourceId":FLOW.selectedControl.selectedForCopyQuestionGroup.get('keyId'),
       "repeatable":FLOW.selectedControl.selectedForCopyQuestionGroup.get('repeatable')
     });
-
-    FLOW.questionGroupControl.submitBulkQuestionGroupsReorder(sId);
 
     FLOW.selectedControl.selectedSurvey.set('status', 'NOT_PUBLISHED');
     FLOW.store.commit();

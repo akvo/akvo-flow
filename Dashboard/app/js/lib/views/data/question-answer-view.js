@@ -129,6 +129,7 @@ FLOW.QuestionAnswerView = Ember.View.extend({
     if (!isEditableQuestionType) {
       return false; // no need to check permissions
     }
+
     canEditFormResponses = FLOW.permControl.canEditResponses(this.get('form'));
     return isEditableQuestionType && canEditFormResponses;
   }.property('this.questionType,this.form'),
@@ -577,12 +578,3 @@ FLOW.QuestionAnswerMultiOptionEditView = Ember.CollectionView.extend({
 FLOW.QuestionAnswerInspectDataView = FLOW.QuestionAnswerView.extend({
   templateName: 'navData/question-answer',
 });
-
-FLOW.QuestionAnswerMonitorDataView = FLOW.QuestionAnswerView.extend({
-  templateName: 'navData/question-answer',
-  
-  doEdit : function (){ //override the doEdit action in the parentView
-    this._super();
-    this.set('inEditMode', false)
-  }
-})

@@ -397,8 +397,8 @@ FLOW.projectControl = Ember.ArrayController.create({
     if (this.moveTarget == project) {
     	return;
     }
-
-    this.setCurrentProject(project);
+    
+    this.setCurrentProject(evt.context);
 
     // User is using the breadcrumb to navigate, we could have unsaved changes
     FLOW.store.commit();
@@ -632,7 +632,6 @@ FLOW.surveyControl = Ember.ArrayController.create({
   }.observes('FLOW.selectedControl.selectedSurveyGroup'),
 
   selectFirstForm: function() {
-    if(FLOW.selectedControl.selectedSurvey) return; // ignore if form is already selected
     if (this.get('content') && this.content.get('isLoaded')) {
       var form = this.content.get('firstObject');
       if (form) {
@@ -815,50 +814,29 @@ FLOW.questionGroupControl = Ember.ArrayController.create({
 
   // execute group delete
   deleteQuestionGroup: function (questionGroupId) {
-    var questionGroup, sId, qgOrder;
+    var questionGroup, questionsGroupsInSurvey, sId, qgOrder;
     sId = FLOW.selectedControl.selectedSurvey.get('keyId');
     questionGroup = FLOW.store.find(FLOW.QuestionGroup, questionGroupId);
     qgOrder = questionGroup.get('order');
 
     questionGroup.deleteRecord();
 
-    // reorder the rest of the question groups
-    this.reorderQuestionGroups(sId, qgOrder, "decrement");
-    this.submitBulkQuestionGroupsReorder(sId);
-
-    FLOW.selectedControl.selectedSurvey.set('status', 'NOT_PUBLISHED');
-    FLOW.store.commit();
-  },
-
-  reorderQuestionGroups: function (surveyId, reorderPoint, reorderOperation) {
-    var questionGroupsInSurvey = FLOW.store.filter(FLOW.QuestionGroup, function (item) {
-      return item.get('surveyId') == surveyId;
+    // restore order of remaining groups
+    questionGroupsInSurvey = FLOW.store.filter(FLOW.QuestionGroup, function (item) {
+      return item.get('surveyId') == sId;
     });
 
-    // move items up to make space
+    // restore order
     questionGroupsInSurvey.forEach(function (item) {
-      if (reorderOperation == "increment") {
-        if (item.get('order') > reorderPoint) {
-          item.set('order', item.get('order') + 1);
-        }
-      } else if (reorderOperation == "decrement") {
-        if (item.get('order') > reorderPoint) {
-          item.set('order', item.get('order') - 1);
-        }
+      if (item.get('order') > qgOrder) {
+        item.set('order', item.get('order') - 1);
       }
     });
-  },
 
-  submitBulkQuestionGroupsReorder: function (surveyId) {
-    FLOW.questionControl.set('bulkCommit', true);
-    var questionGroupsInSurvey = FLOW.store.filter(FLOW.QuestionGroup, function (item) {
-      return item.get('surveyId') == surveyId;
-    });
     // restore order in case the order has gone haywire
     FLOW.questionControl.restoreOrder(questionGroupsInSurvey);
+    FLOW.selectedControl.selectedSurvey.set('status', 'NOT_PUBLISHED');
     FLOW.store.commit();
-    FLOW.store.adapter.set('bulkCommit', false);
-    FLOW.questionControl.set('bulkCommit', false);
   }
 });
 
@@ -872,7 +850,6 @@ FLOW.questionControl = Ember.ArrayController.create({
   sortProperties: ['order'],
   sortAscending: true,
   preflightQId: null,
-  bulkCommit: false,
 
   populateAllQuestions: function () {
     var sId;
@@ -912,16 +889,24 @@ FLOW.questionControl = Ember.ArrayController.create({
   },
 
   deleteQuestion: function (questionId) {
-    var question, qgId, qOrder;
+    qgId = this.content.get('questionGroupId');
     question = FLOW.store.find(FLOW.Question, questionId);
     qgId = question.get('questionGroupId');
     qOrder = question.get('order');
     question.deleteRecord();
 
-    //reorder the rest of the questions
-    this.reorderQuestions(qgId, qOrder, "decrement");
-    this.submitBulkQuestionsReorder([qgId]);
+    // restore order
+    questionsInGroup = FLOW.store.filter(FLOW.Question, function (item) {
+      return item.get('questionGroupId') == qgId;
+    });
 
+    questionsInGroup.forEach(function (item) {
+      if (item.get('order') > qOrder) {
+        item.set('order', item.get('order') - 1);
+      }
+    });
+    // restore order in case the order has gone haywire
+    this.restoreOrder(questionsInGroup);
     FLOW.selectedControl.selectedSurvey.set('status', 'NOT_PUBLISHED');
     FLOW.store.commit();
   },
@@ -992,38 +977,6 @@ FLOW.questionControl = Ember.ArrayController.create({
     }
   }.observes('FLOW.selectedControl.selectedQuestion'),
 
-  reorderQuestions: function (qgId, reorderPoint, reorderOperation) {
-    var questionsInGroup = FLOW.store.filter(FLOW.Question, function (item) {
-      return item.get('questionGroupId') == qgId;
-    });
-
-    // move items up to make space
-    questionsInGroup.forEach(function (item) {
-      if (reorderOperation == "increment") {
-        if (item.get('order') > reorderPoint) {
-          item.set('order', item.get('order') + 1);
-        }
-      } else if (reorderOperation == "decrement") {
-        if (item.get('order') > reorderPoint) {
-          item.set('order', item.get('order') - 1);
-        }
-      }
-    });
-  },
-
-  submitBulkQuestionsReorder: function (qgIds) {
-    this.set('bulkCommit', true);
-    for (var i=0; i>qgIds.length; i++) {
-      var questionsInGroup = FLOW.store.filter(FLOW.Question, function (item) {
-        return item.get('questionGroupId') == qgIds[i];
-      });
-      // restore order in case the order has gone haywire
-      FLOW.questionControl.restoreOrder(questionsInGroup);
-    }
-    FLOW.store.commit();
-    FLOW.store.adapter.set('bulkCommit', false);
-    this.set('bulkCommit', false);
-  },
 
 
   // true if all items have been saved

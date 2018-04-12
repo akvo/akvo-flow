@@ -1,0 +1,25 @@
+uploadUrl = $s3url
+s3Id = $awsIdentifier
+
+# NOTE: the S3 policies expire on 2 October 2025
+surveyDataS3Policy = $surveyDataS3Policy
+surveyDataS3Sig = $surveyDataS3Sig
+surveyDataS3Path = devicezip
+surveyDataContentType = application/zip
+
+imageS3Policy = $imagesS3Policy
+imageS3Sig = $imagesS3Sig
+imageS3Path = images
+imageContentType = image/jpeg
+
+helpS3Policy = $helpcontentS3Policy
+helpS3Sig =  $helpcontentS3Sig
+helpS3Path = helpcontent
+videoContentType = video/mpeg
+
+apkS3Policy = $apkS3Policy
+apkS3Sig = $apkS3Sig
+apkS3Path = apk
+apkContentType = application/vnd.android.package-archive
+
+apiKey = $restApiKey

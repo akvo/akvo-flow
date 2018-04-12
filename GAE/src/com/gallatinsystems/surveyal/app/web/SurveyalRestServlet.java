@@ -222,6 +222,7 @@ public class SurveyalRestServlet extends AbstractRestApiServlet {
      * surveyInstance. This method is unlikely to run in under 1 minute (based on datastore latency)
      * so it is best invoked via a task queue
      *
+     * @param surveyInstanceId
      */
     private void ingestSurveyInstance(SurveyInstance surveyInstance) {
         Boolean adaptClusterData = Boolean.FALSE;
@@ -234,9 +235,14 @@ public class SurveyalRestServlet extends AbstractRestApiServlet {
                     + "for SurveyInstance " + surveyInstance.toString());
         }
 
+        // try to construct geoPlace. Geo information can come from two sources:
+        // 1) the META_GEO information in the surveyInstance, and
+        // 2) a geo question.
+        // If we can't find geo information in 1), we try 2)
+
         GeoPlace geoPlace = null;
-        Double latitude;
-        Double longitude;
+        Double latitude = UNSET_VAL;
+        Double longitude = UNSET_VAL;
         Map<String, Object> geoLocationMap = null;
 
         try {
