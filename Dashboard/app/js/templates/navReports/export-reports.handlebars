@@ -1,6 +1,6 @@
 <section class="fullWidth reportTools" id="reportBlocks">
   {{#view FLOW.ExportReportsAppletView}}
-    <div class="surveySelect">
+    <div {{bindAttr class=":surveySelect view.missingSurvey:redErrorBorder"}}>
       <nav class="breadCrumb floats-in">
         {{#unless FLOW.projectControl.isLoading}}
           {{view FLOW.SurveySelectionView}}
@@ -86,7 +86,8 @@
                     optionLabelPath="content.text"
                     optionValuePath="content.keyId"
                     prompt=""
-                    promptBinding="Ember.STRINGS._select_question"}}
+                    promptBinding="Ember.STRINGS._select_question"
+                    classBinding="view.redBorder"}}
               {{/if}}
             </div>
             <div id="geoShapeDataExp_options" class="options">
