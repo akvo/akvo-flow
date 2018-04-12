@@ -176,21 +176,13 @@ FLOW.ExportReportsAppletView = FLOW.View.extend({
 
   setMinDate: function () {
     if (this.get('reportFromDate') !== "") {
-      if (this.get("dataCleaningSection")) {
-        $("#to_date02").datepicker("option", "minDate", this.get("reportFromDate"))
-      } else {
-        $("#to_date").datepicker("option", "minDate", this.get("reportFromDate"))
-      }
+      this.$(".to_date").datepicker("option", "minDate", this.get("reportFromDate"))
     }
   }.observes('this.reportFromDate'),
 
   setMaxDate: function () {
     if (this.get('reportToDate') !== "") {
-      if (this.get("dataCleaningSection")) {
-        $("#from_date02").datepicker("option", "maxDate", this.get("reportToDate"))
-      } else {
-        $("#from_date").datepicker("option", "maxDate", this.get("reportToDate"))
-      }
+     this.$(".from_date").datepicker("option", "maxDate", this.get("reportToDate"))
     }
   }.observes('this.reportToDate'),
 
