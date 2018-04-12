@@ -28,7 +28,6 @@
                   <img src="images/gdpr03.svg">     
                 </div>       
               </div>
-
               <h3>{{t _upload_zip}}</h3>
               <p>{{t _gdpr_walkthrough_step3}}</p>
         </li>
@@ -56,25 +55,21 @@
         }
       </script>
     </div>  
-    <div class="bulkUpload">
-      {{#if FLOW.uploader.support}}
-        <div class="resumable-drop" ondragenter="jQuery(this).addClass('resumable-dragover');" ondragend="jQuery(this).removeClass('resumable-dragover');" ondrop="jQuery(this).removeClass('resumable-dragover');">
-          <div class="dragTxt">
-            <div class="zipIcn"></div>
-            <p>{{t _drop_files}} <a class="resumable-browse"><u>{{t _select_files}}</u></a><br/>
-            <span class="warningMsg">{{t _do_not_navigate_away}}</span></p>
-          </div>
+  <div class="bulkUpload block">
+    {{#if FLOW.uploader.support}}
+      <div class="resumable-drop" ondragenter="jQuery(this).addClass('resumable-dragover');" ondragend="jQuery(this).removeClass('resumable-dragover');" ondrop="jQuery(this).removeClass('resumable-dragover');">
+        <div class="dragTxt">
+          <div class="zipIcn"></div>
+          <p>{{t _drop_files}} <a class="resumable-browse"><u>{{t _select_files}}</u></a><br/>
+          <span class="warningMsg">{{t _do_not_navigate_away}}</span></p>
         </div>
-        <div></div>
-        <div class="resumable-progress">
-        	<div class="progress-container"><div class="progress-bar"></div></div>
-        </div>
-        <ul class="resumable-list"></ul>
-      {{else}}
-        <div class="resumable-error">
-          {{t _bulk_upload_unsupported_browser}}
-        </div>
-      {{/if}}
-    </div>
+      </div>
+      <ul class="resumable-list"></ul>
+    {{else}}
+      <div class="resumable-error">
+        {{t _bulk_upload_unsupported_browser}}
+      </div>
+    {{/if}}
+  </div>
 {{/view}}
 </section>
