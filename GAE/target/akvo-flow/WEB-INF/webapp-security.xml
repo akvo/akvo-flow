@@ -1,0 +1,98 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<b:beans xmlns="http://www.springframework.org/schema/security"
+    xmlns:b="http://www.springframework.org/schema/beans"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-3.0.xsd
+    http://www.springframework.org/schema/security http://www.springframework.org/schema/security/spring-security-3.1.xsd">
+
+
+    <http pattern="/admin/js/**" security="none" />
+    <http pattern="/admin/images/**" security="none" />
+    <http pattern="/admin/css/**" security="none" />
+    <http pattern="/vendorjs/js/**" security="none" />
+    <http pattern="/publicmap/images/**" security="none" />
+    <http pattern="/publicmap/css/**" security="none" />
+    <http pattern="/publicmap/js/**" security="none" />
+
+	<http pattern="/api/v1/**" use-expressions="true" entry-point-ref="apiEntryPoint" authentication-manager-ref="apiAuthenticationManager" >
+
+		<intercept-url pattern="/api/v1/survey_groups/**" method="GET" access="hasRole('USER')"/>
+		<intercept-url pattern="/api/v1/surveys/**" method="GET" access="hasRole('USER')"/>
+		<intercept-url pattern="/api/v1/question_groups/**" method="GET" access="hasRole('USER')"/>
+		<intercept-url pattern="/api/v1/questions/**" method="GET" access="hasRole('USER')"/>
+		<intercept-url pattern="/api/v1/question_answers" method="GET" access="hasRole('USER')"/>
+		<intercept-url pattern="/api/v1/survey_assignments/**" method="GET" access="hasRole('USER')"/>
+		<intercept-url pattern="/api/v1/surveyed_locales/**" method="GET" access="hasRole('USER')"/>
+		<intercept-url pattern="/api/v1/survey_instances/**" method="GET" access="hasRole('USER')"/>
+		<intercept-url pattern="/api/v1/device_groups/**" method="GET" access="hasRole('USER')"/>
+		<intercept-url pattern="/api/v1/devices/**" method="GET" access="hasRole('USER')"/>
+		<intercept-url pattern="/**" access="denyAll"/>
+		<custom-filter position="PRE_AUTH_FILTER" ref="apiFilter"/>
+	</http>
+
+    <http use-expressions="true" entry-point-ref="gaeEntryPoint" authentication-manager-ref="authenticationManager"
+        access-decision-manager-ref="accessDecisionManager">
+        <intercept-url pattern="/remote_api**" access="permitAll"/>
+        <intercept-url pattern="/admin/logout.html" access="permitAll"/>
+        <intercept-url pattern="/rest/placemark**" method="GET" access="permitAll"/>
+        <intercept-url pattern="/_ah/**" access="permitAll"/>
+        <intercept-url pattern="/webapp/testharness**" access="hasRole('SUPER_ADMIN')"/>
+        <intercept-url pattern="/dashboard.html" access="hasRole('SUPER_ADMIN')"/>
+        <intercept-url pattern="/rest/users" access="hasRole('USER')"/>
+        <intercept-url pattern="/rest/user_roles" access="hasRole('ADMIN')"/>
+        <intercept-url pattern="/rest/user_auth" access="hasRole('ADMIN')"/>
+        <intercept-url pattern="/rest/**" access="hasRole('USER')"/>
+        <intercept-url pattern="/admin/**" access="hasRole('USER')"/>
+        <intercept-url pattern="/**" access="permitAll"/>
+        <logout logout-success-url="/" delete-cookies="JSESSIONID"/>
+		<custom-filter position="PRE_AUTH_FILTER" ref="gaeFilter"/>
+    </http>
+
+    <b:bean id="accessDecisionManager" class="org.springframework.security.access.vote.AffirmativeBased">
+		<b:property name="decisionVoters">
+			<b:list>
+				<b:bean class="org.waterforpeople.mapping.app.web.rest.security.RequestUriVoter" />
+				<b:bean class="org.springframework.security.web.access.expression.WebExpressionVoter" />
+			</b:list>
+		</b:property>
+	</b:bean>
+
+	<!-- API Authentication -->
+
+	<b:bean id="apiEntryPoint" class="org.waterforpeople.mapping.app.web.rest.security.ApiAuthenticationEntryPoint"/>
+
+	<b:bean id="apiFilter" class="org.waterforpeople.mapping.app.web.rest.security.ApiAuthenticationFilter">
+		<b:property name="authenticationManager" ref="apiAuthenticationManager"></b:property>
+	</b:bean>
+
+	<authentication-manager id="apiAuthenticationManager">
+		<authentication-provider ref="apiAuthenticationProvider"/>
+	</authentication-manager>
+
+	<b:bean id="apiAuthenticationProvider" class="org.waterforpeople.mapping.app.web.rest.security.ApiAuthenticationProvider"/>
+
+	<!-- GAE Authentication -->
+
+    <b:bean id="gaeEntryPoint" class="org.waterforpeople.mapping.app.web.rest.security.GoogleAccountsAuthenticationEntryPoint" />
+
+    <b:bean id="gaeFilter" class="org.waterforpeople.mapping.app.web.rest.security.GaeAuthenticationFilter">
+        <b:property name="authenticationManager" ref="authenticationManager"/>
+        <b:property name="failureHandler">
+            <b:bean class="org.springframework.security.web.authentication.ExceptionMappingAuthenticationFailureHandler">
+                <b:property name="exceptionMappings">
+                    <b:map>
+                        <b:entry key="org.springframework.security.authentication.DisabledException" value="/disabled.htm" />
+                    </b:map>
+                </b:property>
+            </b:bean>
+        </b:property>
+    </b:bean>
+
+    <authentication-manager id="authenticationManager">
+        <authentication-provider ref="gaeAuthenticationProvider"/>
+    </authentication-manager>
+
+    <b:bean id="gaeAuthenticationProvider" class="org.waterforpeople.mapping.app.web.rest.security.GoogleAccountsAuthenticationProvider" />
+
+</b:beans>

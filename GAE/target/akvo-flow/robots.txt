@@ -1,0 +1,14 @@
+User-agent: *
+Disallow: /webapp/
+Disallow: /admin/
+Disallow: /app_worker/
+Disallow: /rest/
+Disallow: /databackout
+Disallow: /locationBeacon
+Disallow: /processor
+Disallow: /surveyrestapi
+Disallow: /devicefilesrestapi
+Disallow: /placemarkrestapi
+Disallow: /rawdatarestapi
+Disallow: /remote_api
+Disallow: /app

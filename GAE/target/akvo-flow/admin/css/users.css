@@ -1,0 +1,364 @@
+/* http://meyerweb.com/eric/tools/css/reset/
+   v2.0 | 20110126
+   License: none (public domain)
+*/
+/* line 18, /akvo-flow/Dashboard/app/css/reset.scss */
+html, body, div, span, applet, object, iframe,
+h1, h2, h3, h4, h5, h6, p, blockquote, pre,
+a, abbr, acronym, address, big, cite, code,
+del, dfn, em, img, ins, kbd, q, s, samp,
+small, strike, strong, sub, sup, tt, var,
+b, u, i, center,
+dl, dt, dd, ol, ul, li,
+fieldset, form, label, legend,
+table, caption, tbody, tfoot, thead, tr, th, td,
+article, aside, canvas, details, embed,
+figure, figcaption, footer, header, hgroup,
+menu, nav, output, ruby, section, summary,
+time, mark, audio, video {
+  margin: 0;
+  padding: 0;
+  border: 0;
+  font-size: 100%;
+  font: inherit;
+  vertical-align: baseline;
+}
+
+/* HTML5 display-role reset for older browsers */
+/* line 29, /akvo-flow/Dashboard/app/css/reset.scss */
+article, aside, details, figcaption, figure,
+footer, header, hgroup, menu, nav, section {
+  display: block;
+}
+
+/* line 33, /akvo-flow/Dashboard/app/css/reset.scss */
+ol, ul {
+  list-style: none;
+}
+
+/* line 37, /akvo-flow/Dashboard/app/css/reset.scss */
+blockquote, q {
+  quotes: none;
+}
+
+/* line 42, /akvo-flow/Dashboard/app/css/reset.scss */
+blockquote:before, blockquote:after,
+q:before, q:after {
+  content: '';
+  content: none;
+}
+
+/* line 47, /akvo-flow/Dashboard/app/css/reset.scss */
+table {
+  border-collapse: collapse;
+  border-spacing: 0;
+}
+
+/*-------------------------------------------------------------------------------------------------------------
+
+                    Title:          SASS library and Style Guide for Akvo Flow dashboard.
+                    Author:         Loic Sans, loic@akvo.org
+
+
+-------------------------------------------------------------------------------------------------------------*/
+/*  !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!  PLEASE NEVER EDIT main.css directly  !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!  */
+/************************ FORMS DEFAULT ****************************/
+/* line 2, /akvo-flow/Dashboard/app/css/forms.scss */
+form {
+  margin: 0;
+  padding: 0;
+}
+
+/* line 10, /akvo-flow/Dashboard/app/css/forms.scss */
+input,
+textarea,
+button,
+select {
+  font-weight: normal;
+}
+
+/* line 15, /akvo-flow/Dashboard/app/css/forms.scss */
+input,
+textarea {
+  border: thin solid #e8e8e8;
+  background: #faf4e6;
+  border-radius: 2px;
+}
+/* line 20, /akvo-flow/Dashboard/app/css/forms.scss */
+input:hover,
+textarea:hover {
+  border: 1px solid #72cdff;
+  background: #e0e0e0;
+  background: -webkit-linear-gradient(whitesmoke, #eaeaea);
+  background: -webkit-gradient(linear, left top, left bottom, from(whitesmoke), to(#eaeaea));
+  background: linear-gradient(#f5f5f5, #eaeaea);
+}
+/* line 28, /akvo-flow/Dashboard/app/css/forms.scss */
+input:focus,
+textarea:focus {
+  border: 1px solid #cdcdcd;
+  background: #f5ffd8;
+}
+
+/* line 34, /akvo-flow/Dashboard/app/css/forms.scss */
+select {
+  padding: 15px 5px;
+}
+/* line 37, /akvo-flow/Dashboard/app/css/forms.scss */
+.modularSelection select {
+  padding: inherit;
+}
+
+/*--------------------------------------------------------------
+
+                    * Default Typography.
+
+-------------------------------------------------------------- */
+/* line 11, /akvo-flow/Dashboard/app/css/users.scss */
+html {
+  width: 100%;
+  height: 100%;
+  overflow-y: scroll;
+  box-sizing: border-box;
+  color: #243032;
+  font-size: 16px;
+  line-height: 1.42857;
+  text-rendering: optimizelegibility;
+  font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
+  -webkit-font-smoothing: antialiased;
+}
+
+/* line 24, /akvo-flow/Dashboard/app/css/users.scss */
+body {
+  width: 100%;
+  height: 100%;
+  -ms-overflow-style: -ms-autohiding-scrollbar;
+  overflow-x: hidden;
+}
+
+/* line 31, /akvo-flow/Dashboard/app/css/users.scss */
+h1 {
+  font-size: 1.5em;
+}
+
+/* line 35, /akvo-flow/Dashboard/app/css/users.scss */
+h2 {
+  color: #2c2a74;
+  font-size: 1.3em;
+}
+
+/* line 40, /akvo-flow/Dashboard/app/css/users.scss */
+h3 {
+  font-size: 1.2em;
+  line-height: 1;
+}
+
+/* line 45, /akvo-flow/Dashboard/app/css/users.scss */
+h4 {
+  font-size: 1.1em;
+  line-height: 1.25em;
+}
+
+/* line 50, /akvo-flow/Dashboard/app/css/users.scss */
+h5 {
+  margin-bottom: 0.5em;
+  font-size: 1em;
+}
+
+/* line 55, /akvo-flow/Dashboard/app/css/users.scss */
+h6 {
+  font-size: 1em;
+}
+
+/* line 64, /akvo-flow/Dashboard/app/css/users.scss */
+h1 img,
+h2 img,
+h3 img,
+h4 img,
+h5 img,
+h6 img {
+  margin: 0;
+}
+
+/* line 68, /akvo-flow/Dashboard/app/css/users.scss */
+em {
+  padding-bottom: 1em;
+}
+
+/* line 72, /akvo-flow/Dashboard/app/css/users.scss */
+.smaller {
+  font-size: 0.8em;
+}
+
+/*--------------------------------------------------------------
+
+                    * End Default Typography.
+
+-------------------------------------------------------------- */
+/* Sliding panels
+--------------------------------------------- */
+/* line 84, /akvo-flow/Dashboard/app/css/users.scss */
+section[role=main] {
+  padding-top: 20px;
+  padding-bottom: 20px;
+  overflow: hidden;
+}
+/* line 91, /akvo-flow/Dashboard/app/css/users.scss */
+section[role=main] .nav-tabs li:hover {
+  cursor: pointer;
+}
+/* line 97, /akvo-flow/Dashboard/app/css/users.scss */
+section[role=main] .panels {
+  height: 100%;
+  background: white;
+  width: calc(100% * 2);
+  overflow: hidden;
+}
+/* line 103, /akvo-flow/Dashboard/app/css/users.scss */
+section[role=main] .panels .mypanel {
+  width: calc(100% / 2);
+  float: left;
+  -webkit-transition: transform .6s ease-out;
+  -moz-transition: transform .6s ease-out;
+  -o-transition: transform .6s ease-out;
+  transition: transform .6s ease-out;
+  background: white;
+}
+/* line 112, /akvo-flow/Dashboard/app/css/users.scss */
+section[role=main] .panels .mypanel.opened {
+  /* visible */
+  -webkit-transform: translate(-100%, 0);
+  -moz-transform: translate(-100%, 0);
+  -ms-transform: translate(-100%, 0);
+  transform: translate(-100%, 0);
+}
+/* line 120, /akvo-flow/Dashboard/app/css/users.scss */
+section[role=main] .panels .mypanel.closed {
+  /* completely offscreen */
+  -webkit-transform: translate(0%, 0);
+  -moz-transform: translate(0%, 0);
+  -ms-transform: translate(0%, 0);
+  transform: translate(0%, 0);
+}
+/* line 128, /akvo-flow/Dashboard/app/css/users.scss */
+section[role=main] .panels .mypanel .panelHeader {
+  padding: 20px 0 20px 0;
+  margin-left: 0;
+  background: rgba(212, 212, 212, 0.2);
+}
+/* line 135, /akvo-flow/Dashboard/app/css/users.scss */
+section[role=main] .panels .mypanel .panelHeader h4 span.usrNm {
+  font-weight: bold;
+  color: rgba(32, 32, 36, 0.8);
+  margin-left: 5px;
+}
+/* line 143, /akvo-flow/Dashboard/app/css/users.scss */
+section[role=main] .panels .mypanel .panelHeader .panelTitle {
+  color: #b6b6b6;
+}
+/* line 148, /akvo-flow/Dashboard/app/css/users.scss */
+section[role=main] .panels .mypanel .roleEditSelect {
+  border-bottom: 1px solid #d4d4d4;
+}
+/* line 151, /akvo-flow/Dashboard/app/css/users.scss */
+section[role=main] .panels .mypanel .roleEditSelect select:first-child {
+  margin-right: 10px;
+}
+/* line 154, /akvo-flow/Dashboard/app/css/users.scss */
+section[role=main] .panels .mypanel .roleEditSelect select:first-child:after {
+  content: " > ";
+  display: inline;
+  margin-right: 10px;
+}
+
+/* line 167, /akvo-flow/Dashboard/app/css/users.scss */
+.permissionList div.checkbox {
+  padding: 10px 0;
+  -moz-border-radius: 3px;
+  -o-border-radius: 3px;
+  -webkit-border-radius: 3px;
+  border-radius: 3px;
+}
+/* line 172, /akvo-flow/Dashboard/app/css/users.scss */
+.permissionList div.checkbox:nth-child(2n) {
+  background-color: #f8f8f8;
+}
+/* line 178, /akvo-flow/Dashboard/app/css/users.scss */
+.permissionList label {
+  font-size: 130%;
+}
+
+/* line 183, /akvo-flow/Dashboard/app/css/users.scss */
+.btn {
+  text-transform: uppercase;
+}
+
+/********************************* Tables ********************************/
+/* line 190, /akvo-flow/Dashboard/app/css/users.scss */
+table.userRoleList thead {
+  border-bottom: none;
+}
+/* line 193, /akvo-flow/Dashboard/app/css/users.scss */
+table.userRoleList thead tr {
+  border-bottom: none;
+}
+/* line 196, /akvo-flow/Dashboard/app/css/users.scss */
+table.userRoleList thead tr th {
+  color: grey;
+}
+/* line 203, /akvo-flow/Dashboard/app/css/users.scss */
+table.dataTable {
+  margin: 15px auto;
+}
+/* line 208, /akvo-flow/Dashboard/app/css/users.scss */
+table tr.tabHeader {
+  background: #545355;
+  color: #f5c82b;
+  padding: 15px 0;
+  text-transform: uppercase;
+}
+/* line 214, /akvo-flow/Dashboard/app/css/users.scss */
+table tr.tabHeader a {
+  color: #f5c82b;
+}
+
+/* line 223, /akvo-flow/Dashboard/app/css/users.scss */
+.table-striped > tbody > tr:nth-child(odd) {
+  background-color: #dedede;
+}
+
+/********************************* Structure ********************************/
+/* line 228, /akvo-flow/Dashboard/app/css/users.scss */
+.topMargin {
+  margin-top: 15px;
+}
+
+/* line 232, /akvo-flow/Dashboard/app/css/users.scss */
+.paddingTop {
+  padding: 20px 0;
+}
+/* line 235, /akvo-flow/Dashboard/app/css/users.scss */
+.paddingTop.dropdown {
+  padding: 7px 0 10px 0;
+}
+
+/* line 240, /akvo-flow/Dashboard/app/css/users.scss */
+.userEditSection, .userRolesPerm, .apiKeySection {
+  padding: 10px 5px;
+}
+/* line 243, /akvo-flow/Dashboard/app/css/users.scss */
+.userEditSection h2, .userRolesPerm h2, .apiKeySection h2 {
+  margin: 10px 5px;
+  text-align: left;
+}
+
+/* line 250, /akvo-flow/Dashboard/app/css/users.scss */
+.userRolesPerm ul.dropdown-menu {
+  max-height: 220px;
+  overflow-y: scroll;
+}
+
+/* line 257, /akvo-flow/Dashboard/app/css/users.scss */
+div.folderStructure:first-child {
+  margin-left: 15px;
+}
