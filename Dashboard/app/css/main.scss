@@ -5768,7 +5768,7 @@ svg {
     float: right;
     margin-right: 1%;
     width: 64%;
-    height: calc(100vh - 355px);
+    height: calc(100vh - 335px);
     /* Uploader: Drag & Drop */
     position: relative;
     .resumable-error {
@@ -5854,6 +5854,9 @@ svg {
         margin: 0 0 0 5%;
         padding: 0.25em 1em;
         color: rgb(180, 180, 180);
+        transition-property: all;
+        transition-duration: .5s;
+        transition-timing-function: cubic-bezier(0, 1, 0.5, 1);
         li {
             margin: 0 0 1px 0;
             padding: 15px 0.25em;

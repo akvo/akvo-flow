@@ -55,7 +55,7 @@ return Ember.Handlebars.compile("<div class=\"block\">\n<applet height=\"30\" wi
 
 loader.register('akvo-flow/templates/navData/bulk-upload', function(require) {
 
-return Ember.Handlebars.compile("<section class=\"fullWidth reportTools\" id=\"reportBlocks\">\n  {{#view FLOW.BulkUploadAppletView}}\n    <div id=\"gdprSwitch\" style=\"display : block;\">\n      <h3>{{t _gdpr_wakthrough_title}}</h3>  \n      <a onClick=\"showHideDiv('gdprSwitch');return false;\" href=\"#\" id=\"gdprBtn\" class=\"hidden\">close</a>\n      <ul class=\"gdprSwitchSteps\">\n        <li class=\"gdprStep\">\n            <div class=\"innerFrame gdpr01\">\n              <div class=\"wrap\">\n                <img src=\"images/gdpr01.svg\">     \n              </div>               \n            </div>\n              <h3>{{t _locate_the_data}}</h3>\n              <p>{{t _gdpr_walkthrough_step1}}</p>\n        </li>\n        <li class=\"gdprStep\">\n            <div class=\"innerFrame gdpr02\">\n              <div class=\"wrap\">\n                <img src=\"images/gdpr02.svg\">     \n              </div>      \n            </div>\n              <h3>{{t _copy_the_data}}</h3>\n              <p>{{t _gdpr_walkthrough_step2}}</p>\n        </li>\n        <li class=\"gdprStep\">\n            <div class=\"innerFrame gdpr03\">\n                <div class=\"wrap\">\n                  <img src=\"images/gdpr03.svg\">     \n                </div>       \n              </div>\n              <h3>{{t _upload_zip}}</h3>\n              <p>{{t _gdpr_walkthrough_step3}}</p>\n        </li>\n      </ul>\n      <script type=\"text/javascript\">\n        window.onresize = function(){\n          $('.innerFrame img').css({\n            maxWidth: $('.innerFrame').width() * 0.9,\n            maxHeight: $('.innerFrame').height() * 0.9,\n          });\n        };s\n        function showHideDiv(ele) {\n          var srcElement = document.getElementById(ele);\n          if (srcElement != null) {\n            if (srcElement.style.display == \"block\") {\n              srcElement.style.display = 'none';\n              document.getElementById('gdprBtn').innerHTML = 'open';\n            }\n            else {\n              srcElement.style.display = 'block';\n              document.getElementById('gdprBtn').innerHTML = 'close';\n            }\n            return false;\n          }\n        }\n      </script>\n    </div>  \n    <div class=\"bulkUpload\">\n      {{#if FLOW.uploader.support}}\n        <div class=\"resumable-drop\" ondragenter=\"jQuery(this).addClass('resumable-dragover');\" ondragend=\"jQuery(this).removeClass('resumable-dragover');\" ondrop=\"jQuery(this).removeClass('resumable-dragover');\">\n          <div class=\"dragTxt\">\n            <div class=\"zipIcn\"></div>\n            <p>{{t _drop_files}} <a class=\"resumable-browse\"><u>{{t _select_files}}</u></a></p>\n          </div>\n          <ul class=\"resumable-list\"></ul>\n        </div>\n      {{else}}\n        <div class=\"resumable-error\">\n          {{t _bulk_upload_unsupported_browser}}\n        </div>\n      {{/if}}\n    </div>\n{{/view}}\n</section>");
+return Ember.Handlebars.compile("<section class=\"fullWidth reportTools\" id=\"reportBlocks\">\n  {{#view FLOW.BulkUploadAppletView}}\n    <div id=\"gdprSwitch\" style=\"display : block;\">\n      <h3>{{t _gdpr_wakthrough_title}}</h3>  \n      <a onClick=\"showHideDiv('gdprSwitch');return false;\" href=\"#\" id=\"gdprBtn\" class=\"hidden\">close</a>\n      <ul class=\"gdprSwitchSteps\">\n        <li class=\"gdprStep\">\n            <div class=\"innerFrame gdpr01\">\n              <div class=\"wrap\">\n                <img src=\"images/gdpr01.svg\">     \n              </div>               \n            </div>\n              <h3>{{t _locate_the_data}}</h3>\n              <p>{{t _gdpr_walkthrough_step1}}</p>\n        </li>\n        <li class=\"gdprStep\">\n            <div class=\"innerFrame gdpr02\">\n              <div class=\"wrap\">\n                <img src=\"images/gdpr02.svg\">     \n              </div>      \n            </div>\n              <h3>{{t _copy_the_data}}</h3>\n              <p>{{t _gdpr_walkthrough_step2}}</p>\n        </li>\n        <li class=\"gdprStep\">\n            <div class=\"innerFrame gdpr03\">\n                <div class=\"wrap\">\n                  <img src=\"images/gdpr03.svg\">     \n                </div>       \n              </div>\n              <h3>{{t _upload_zip}}</h3>\n        </li>\n      </ul>\n      <script type=\"text/javascript\">\n        window.onresize = function(){\n          $('.innerFrame img').css({\n            maxWidth: $('.innerFrame').width() * 0.9,\n            maxHeight: $('.innerFrame').height() * 0.9,\n          });\n        };s\n        function showHideDiv(ele) {\n          var srcElement = document.getElementById(ele);\n          if (srcElement != null) {\n            if (srcElement.style.display == \"block\") {\n              srcElement.style.display = 'none';\n              document.getElementById('gdprBtn').innerHTML = 'open';\n            }\n            else {\n              srcElement.style.display = 'block';\n              document.getElementById('gdprBtn').innerHTML = 'close';\n            }\n            return false;\n          }\n        }\n      </script>\n    </div>  \n    <div class=\"bulkUpload\">\n      {{#if FLOW.uploader.support}}\n        <div class=\"resumable-drop\" ondragenter=\"jQuery(this).addClass('resumable-dragover');\" ondragend=\"jQuery(this).removeClass('resumable-dragover');\" ondrop=\"jQuery(this).removeClass('resumable-dragover');\">\n          <div class=\"dragTxt\">\n            <div class=\"zipIcn\"></div>\n            <p>{{t _drop_files}} <a class=\"resumable-browse\"><u>{{t _select_files}}</u></a></p>\n          </div>\n          <ul class=\"resumable-list\"></ul>\n        </div>\n      {{else}}\n        <div class=\"resumable-error\">\n          {{t _bulk_upload_unsupported_browser}}\n        </div>\n      {{/if}}\n    </div>\n{{/view}}\n</section>");
 
 });
 
@@ -7725,9 +7725,8 @@ FLOW.uploader = Ember.Object.create({
       // Show progress pabr
       $('.resumable-list').show();
       if (li.length === 0) {
-        $(".resumable-list").append("<li id='resumable-file-"+ file.uniqueIdentifier + "'></li>");
+        $(".resumable-list").append("<li id='resumable-file-"+ file.uniqueIdentifier + "'></li>").scrollTop($('.resumable-list').outerHeight(true));
       }
-
       // Add the file to the list
       if (file.file.type !== "application/zip" && file.file.type !== "application/x-zip-compressed") {
         $(".resumable-progress").hide();
@@ -7736,15 +7735,14 @@ FLOW.uploader = Ember.Object.create({
                 +  Ember.String.loc('_unsupported_file_type')
                 + "<img src='images/infolnc.png' class='unsupportedFile uploadStatus'> ");
         $("#resumable-file-"+ file.uniqueIdentifier).css({
-            color: '#FF0000'
-        });
+            color: '#FF0000'});
         r.removeFile(file); //remove file
       } else {
         $('.resumable-progress').show();
         $("#resumable-file-"+ file.uniqueIdentifier).html(
           '<span class="resumable-file-name">'+file.fileName+'</span>'
           +'<span id="resumable-file-progress-'+file.uniqueIdentifier+'" class="uploadStatus"></span>'
-          +'<div id="progress-bar-'+file.uniqueIdentifier+'" class="progress-bar"></div>');
+          +'<div id="progress-bar-'+file.uniqueIdentifier+'" class="progress-bar"></div>').css('position','sticky');
 
         $('#progress-bar-'+file.uniqueIdentifier).css({
           width: '0%'
@@ -7795,7 +7793,7 @@ FLOW.uploader = Ember.Object.create({
       $("#resumable-file-"+ file.uniqueIdentifier).html(
         '<span class="resumable-file-name">'+file.fileName+'</span>'
         +'<img src = "images/tickBox.svg" class = "uploadComplete uploadStatus">'
-      );
+      ).slideDown( "slow", function() {});
       setTimeout(function() {
         $.ajax({
           url : target,

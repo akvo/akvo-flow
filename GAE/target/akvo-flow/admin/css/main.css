@@ -7147,7 +7147,7 @@ svg g text {
   float: right;
   margin-right: 1%;
   width: 64%;
-  height: calc(100vh - 355px);
+  height: calc(100vh - 335px);
   /* Uploader: Drag & Drop */
   position: relative;
   /* Uploader: Progress bar */
@@ -7250,25 +7250,28 @@ svg g text {
   margin: 0 0 0 5%;
   padding: 0.25em 1em;
   color: #b4b4b4;
+  transition-property: all;
+  transition-duration: .5s;
+  transition-timing-function: cubic-bezier(0, 1, 0.5, 1);
 }
-/* line 5857, /akvo-flow/Dashboard/app/css/main.scss */
+/* line 5860, /akvo-flow/Dashboard/app/css/main.scss */
 .bulkUpload .resumable-list li {
   margin: 0 0 1px 0;
   padding: 15px 0.25em;
   border-bottom: 1px solid rgba(32, 32, 36, 0.05);
   font-size: 0.85em;
 }
-/* line 5862, /akvo-flow/Dashboard/app/css/main.scss */
+/* line 5865, /akvo-flow/Dashboard/app/css/main.scss */
 .bulkUpload .resumable-list li:last-child {
   border-bottom: none;
 }
-/* line 5865, /akvo-flow/Dashboard/app/css/main.scss */
+/* line 5868, /akvo-flow/Dashboard/app/css/main.scss */
 .bulkUpload .resumable-list li .resumable-file-name {
   margin-left: 5px;
   margin-right: 15px;
   color: #202024;
 }
-/* line 5876, /akvo-flow/Dashboard/app/css/main.scss */
+/* line 5879, /akvo-flow/Dashboard/app/css/main.scss */
 .bulkUpload .uploader-item {
   width: 148px;
   height: 90px;
@@ -7279,7 +7282,7 @@ svg g text {
   margin: 0 6px 6px 0;
   padding: 3em 0;
 }
-/* line 5886, /akvo-flow/Dashboard/app/css/main.scss */
+/* line 5889, /akvo-flow/Dashboard/app/css/main.scss */
 .bulkUpload .uploader-item-thumbnail {
   width: 100%;
   height: 100%;
@@ -7287,16 +7290,16 @@ svg g text {
   top: 0;
   left: 0;
 }
-/* line 5893, /akvo-flow/Dashboard/app/css/main.scss */
+/* line 5896, /akvo-flow/Dashboard/app/css/main.scss */
 .bulkUpload .uploader-item img.uploader-item-thumbnail {
   opacity: 0;
 }
-/* line 5896, /akvo-flow/Dashboard/app/css/main.scss */
+/* line 5899, /akvo-flow/Dashboard/app/css/main.scss */
 .bulkUpload .uploader-item-creating-thumbnail {
   padding: 0 5px;
   color: white;
 }
-/* line 5900, /akvo-flow/Dashboard/app/css/main.scss */
+/* line 5903, /akvo-flow/Dashboard/app/css/main.scss */
 .bulkUpload .uploader-item-title {
   position: absolute;
   line-height: 11px;
@@ -7308,45 +7311,45 @@ svg g text {
   background-color: rgba(0, 0, 0, 0.6);
   min-height: 27px;
 }
-/* line 5911, /akvo-flow/Dashboard/app/css/main.scss */
+/* line 5914, /akvo-flow/Dashboard/app/css/main.scss */
 .bulkUpload .uploader-item-status {
   position: absolute;
   bottom: 3px;
   right: 3px;
 }
-/* line 5918, /akvo-flow/Dashboard/app/css/main.scss */
+/* line 5921, /akvo-flow/Dashboard/app/css/main.scss */
 .bulkUpload .uploader-item:hover,
 .bulkUpload .is-active .uploader-item {
   border-color: #4a873c;
   cursor: pointer;
 }
-/* line 5923, /akvo-flow/Dashboard/app/css/main.scss */
+/* line 5926, /akvo-flow/Dashboard/app/css/main.scss */
 .bulkUpload .uploader-item:hover .uploader-item-title,
 .bulkUpload .is-active .uploader-item .uploader-item-title {
   background-color: rgba(74, 135, 60, 0.8);
 }
-/* line 5928, /akvo-flow/Dashboard/app/css/main.scss */
+/* line 5931, /akvo-flow/Dashboard/app/css/main.scss */
 .bulkUpload .is-error .uploader-item:hover,
 .bulkUpload .is-active.is-error .uploader-item {
   border-color: #900;
 }
-/* line 5932, /akvo-flow/Dashboard/app/css/main.scss */
+/* line 5935, /akvo-flow/Dashboard/app/css/main.scss */
 .bulkUpload .is-error .uploader-item:hover .uploader-item-title,
 .bulkUpload .is-active.is-error .uploader-item .uploader-item-title {
   background-color: rgba(153, 0, 0, 0.6);
 }
-/* line 5935, /akvo-flow/Dashboard/app/css/main.scss */
+/* line 5938, /akvo-flow/Dashboard/app/css/main.scss */
 .bulkUpload .is-error .uploader-item-creating-thumbnail {
   display: none;
 }
-/* line 5938, /akvo-flow/Dashboard/app/css/main.scss */
+/* line 5941, /akvo-flow/Dashboard/app/css/main.scss */
 .bulkUpload .marker-cluster {
   background-color: rgba(253, 156, 115, 0.6);
   -webkit-background-clip: padding-box;
   background-clip: padding-box;
   border-radius: 20px;
 }
-/* line 5944, /akvo-flow/Dashboard/app/css/main.scss */
+/* line 5947, /akvo-flow/Dashboard/app/css/main.scss */
 .bulkUpload .marker-cluster div {
   background-color: rgba(241, 128, 23, 0.6);
   width: 30px;
@@ -7357,18 +7360,18 @@ svg g text {
   border-radius: 15px;
   font: 12px "Helvetica Neue", Arial, Helvetica, sans-serif;
 }
-/* line 5954, /akvo-flow/Dashboard/app/css/main.scss */
+/* line 5957, /akvo-flow/Dashboard/app/css/main.scss */
 .bulkUpload .marker-cluster span {
   line-height: 30px;
 }
 
 /* Uploader: Drag & Drop */
-/* line 5961, /akvo-flow/Dashboard/app/css/main.scss */
+/* line 5964, /akvo-flow/Dashboard/app/css/main.scss */
 .resumable-error {
   font-style: italic;
 }
 
-/* line 5965, /akvo-flow/Dashboard/app/css/main.scss */
+/* line 5968, /akvo-flow/Dashboard/app/css/main.scss */
 .resumable-dragover {
   padding: 30px;
   color: #555;
@@ -7377,14 +7380,14 @@ svg g text {
 }
 
 /* Uploader: Progress bar */
-/* line 5974, /akvo-flow/Dashboard/app/css/main.scss */
+/* line 5977, /akvo-flow/Dashboard/app/css/main.scss */
 .resumable-progress {
   margin: 0 0 0.5em 0;
   width: 100%;
   display: none;
 }
 
-/* line 5980, /akvo-flow/Dashboard/app/css/main.scss */
+/* line 5983, /akvo-flow/Dashboard/app/css/main.scss */
 .progress-container {
   height: 10px;
   background: #eab92d;
@@ -7398,7 +7401,7 @@ svg g text {
   border-radius: 0.5em;
 }
 
-/* line 5993, /akvo-flow/Dashboard/app/css/main.scss */
+/* line 5996, /akvo-flow/Dashboard/app/css/main.scss */
 .progress-bar {
   height: 10px;
   left: -1px;
@@ -7421,64 +7424,64 @@ svg g text {
   border-radius: 0.5em;
 }
 
-/* line 6015, /akvo-flow/Dashboard/app/css/main.scss */
+/* line 6018, /akvo-flow/Dashboard/app/css/main.scss */
 .progress-text {
   line-height: 9px;
   padding-left: 10px;
 }
 
-/* line 6020, /akvo-flow/Dashboard/app/css/main.scss */
+/* line 6023, /akvo-flow/Dashboard/app/css/main.scss */
 .progress-pause {
   padding: 0 0 0 7px;
 }
 
-/* line 6024, /akvo-flow/Dashboard/app/css/main.scss */
+/* line 6027, /akvo-flow/Dashboard/app/css/main.scss */
 .progress-resume-link {
   display: none;
 }
 
-/* line 6028, /akvo-flow/Dashboard/app/css/main.scss */
+/* line 6031, /akvo-flow/Dashboard/app/css/main.scss */
 .is-paused .progress-resume-link {
   display: inline;
 }
 
-/* line 6032, /akvo-flow/Dashboard/app/css/main.scss */
+/* line 6035, /akvo-flow/Dashboard/app/css/main.scss */
 .is-paused .progress-pause-link {
   display: none;
 }
 
-/* line 6036, /akvo-flow/Dashboard/app/css/main.scss */
+/* line 6039, /akvo-flow/Dashboard/app/css/main.scss */
 .is-complete .progress-pause {
   display: none;
 }
 
 /* Uploader: List of items being uploaded */
-/* line 6041, /akvo-flow/Dashboard/app/css/main.scss */
+/* line 6044, /akvo-flow/Dashboard/app/css/main.scss */
 .unsupportedFile {
   display: inline;
   width: 15px;
   height: 15px;
 }
 
-/* line 6046, /akvo-flow/Dashboard/app/css/main.scss */
+/* line 6049, /akvo-flow/Dashboard/app/css/main.scss */
 .uploadComplete {
   display: inline;
   width: 15px;
   height: 15px;
 }
 
-/* line 6052, /akvo-flow/Dashboard/app/css/main.scss */
+/* line 6055, /akvo-flow/Dashboard/app/css/main.scss */
 .uploadStatus {
   float: right;
 }
 
-/* line 6056, /akvo-flow/Dashboard/app/css/main.scss */
+/* line 6059, /akvo-flow/Dashboard/app/css/main.scss */
 .resumable-file-progress {
   color: #2c2a74;
   font-weight: bold;
 }
 
-/* line 6061, /akvo-flow/Dashboard/app/css/main.scss */
+/* line 6064, /akvo-flow/Dashboard/app/css/main.scss */
 .uploader-item {
   width: 148px;
   height: 90px;
@@ -7489,7 +7492,7 @@ svg g text {
   margin: 0 6px 6px 0;
 }
 
-/* line 6071, /akvo-flow/Dashboard/app/css/main.scss */
+/* line 6074, /akvo-flow/Dashboard/app/css/main.scss */
 .uploader-item-thumbnail {
   width: 100%;
   height: 100%;
@@ -7498,18 +7501,18 @@ svg g text {
   left: 0;
 }
 
-/* line 6079, /akvo-flow/Dashboard/app/css/main.scss */
+/* line 6082, /akvo-flow/Dashboard/app/css/main.scss */
 .uploader-item img.uploader-item-thumbnail {
   opacity: 0;
 }
 
-/* line 6083, /akvo-flow/Dashboard/app/css/main.scss */
+/* line 6086, /akvo-flow/Dashboard/app/css/main.scss */
 .uploader-item-creating-thumbnail {
   padding: 0 5px;
   color: white;
 }
 
-/* line 6088, /akvo-flow/Dashboard/app/css/main.scss */
+/* line 6091, /akvo-flow/Dashboard/app/css/main.scss */
 .uploader-item-title {
   position: absolute;
   line-height: 11px;
@@ -7522,7 +7525,7 @@ svg g text {
   min-height: 27px;
 }
 
-/* line 6100, /akvo-flow/Dashboard/app/css/main.scss */
+/* line 6103, /akvo-flow/Dashboard/app/css/main.scss */
 .uploader-item-status {
   position: absolute;
   bottom: 3px;
@@ -7530,38 +7533,38 @@ svg g text {
 }
 
 /* Uploader: Hover & Active status */
-/* line 6109, /akvo-flow/Dashboard/app/css/main.scss */
+/* line 6112, /akvo-flow/Dashboard/app/css/main.scss */
 .uploader-item:hover,
 .is-active .uploader-item {
   border-color: #4a873c;
   cursor: pointer;
 }
 
-/* line 6115, /akvo-flow/Dashboard/app/css/main.scss */
+/* line 6118, /akvo-flow/Dashboard/app/css/main.scss */
 .uploader-item:hover .uploader-item-title,
 .is-active .uploader-item .uploader-item-title {
   background-color: rgba(74, 135, 60, 0.8);
 }
 
 /* Uploader: Error status */
-/* line 6122, /akvo-flow/Dashboard/app/css/main.scss */
+/* line 6125, /akvo-flow/Dashboard/app/css/main.scss */
 .is-error .uploader-item:hover,
 .is-active.is-error .uploader-item {
   border-color: #900;
 }
 
-/* line 6127, /akvo-flow/Dashboard/app/css/main.scss */
+/* line 6130, /akvo-flow/Dashboard/app/css/main.scss */
 .is-error .uploader-item:hover .uploader-item-title,
 .is-active.is-error .uploader-item .uploader-item-title {
   background-color: rgba(153, 0, 0, 0.6);
 }
 
-/* line 6131, /akvo-flow/Dashboard/app/css/main.scss */
+/* line 6134, /akvo-flow/Dashboard/app/css/main.scss */
 .is-error .uploader-item-creating-thumbnail {
   display: none;
 }
 
-/* line 6135, /akvo-flow/Dashboard/app/css/main.scss */
+/* line 6138, /akvo-flow/Dashboard/app/css/main.scss */
 .marker-cluster {
   background-color: rgba(253, 156, 115, 0.6);
   -webkit-background-clip: padding-box;
@@ -7569,7 +7572,7 @@ svg g text {
   border-radius: 20px;
 }
 
-/* line 6142, /akvo-flow/Dashboard/app/css/main.scss */
+/* line 6145, /akvo-flow/Dashboard/app/css/main.scss */
 .marker-cluster div {
   background-color: rgba(241, 128, 23, 0.6);
   width: 30px;
@@ -7581,22 +7584,22 @@ svg g text {
   font: 12px "Helvetica Neue", Arial, Helvetica, sans-serif;
 }
 
-/* line 6153, /akvo-flow/Dashboard/app/css/main.scss */
+/* line 6156, /akvo-flow/Dashboard/app/css/main.scss */
 .marker-cluster span {
   line-height: 30px;
 }
 
-/* line 6157, /akvo-flow/Dashboard/app/css/main.scss */
+/* line 6160, /akvo-flow/Dashboard/app/css/main.scss */
 .gdprSwitchSteps {
   height: calc(100vh - 320px);
   display: grid;
   overflow-y: scroll;
 }
-/* line 6158, /akvo-flow/Dashboard/app/css/main.scss */
+/* line 6161, /akvo-flow/Dashboard/app/css/main.scss */
 .gdprSwitchSteps * {
   box-sizing: border-box;
 }
-/* line 6164, /akvo-flow/Dashboard/app/css/main.scss */
+/* line 6167, /akvo-flow/Dashboard/app/css/main.scss */
 .gdprSwitchSteps li {
   text-align: center;
   position: relative;
@@ -7604,32 +7607,32 @@ svg g text {
   height: calc((100% -150px) / 3);
   width: 100%;
 }
-/* line 6170, /akvo-flow/Dashboard/app/css/main.scss */
+/* line 6173, /akvo-flow/Dashboard/app/css/main.scss */
 .gdprSwitchSteps li .innerFrame {
   display: table;
   height: 100%;
   width: 100%;
 }
-/* line 6174, /akvo-flow/Dashboard/app/css/main.scss */
+/* line 6177, /akvo-flow/Dashboard/app/css/main.scss */
 .gdprSwitchSteps li .innerFrame .wrap {
   display: table-cell;
   text-align: center;
   margin: 0;
   padding: 0;
 }
-/* line 6179, /akvo-flow/Dashboard/app/css/main.scss */
+/* line 6182, /akvo-flow/Dashboard/app/css/main.scss */
 .gdprSwitchSteps li .innerFrame .wrap img {
   max-width: 80%;
   max-height: 80%;
   min-height: 95px !important;
 }
-/* line 6186, /akvo-flow/Dashboard/app/css/main.scss */
+/* line 6189, /akvo-flow/Dashboard/app/css/main.scss */
 .gdprSwitchSteps li h3 {
   font-weight: bold;
   color: #243032;
   margin: 1em auto 0 !important;
 }
-/* line 6191, /akvo-flow/Dashboard/app/css/main.scss */
+/* line 6194, /akvo-flow/Dashboard/app/css/main.scss */
 .gdprSwitchSteps li p {
   max-width: 80%;
   margin: 10px auto 0 auto;
