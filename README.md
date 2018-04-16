@@ -48,7 +48,9 @@ Or run the commands from a terminal inside the container:
 
 The appengine dev server is started in debug mode, listening in port 5005.
 
-You can change the scan interval in GAE/pom.xml. You can also trigger a reload hitting [the reload url](http://localhost:8888/_ah/reloadwebapp).
+It is expected that your IDE understand the Maven pom and that it compiles the Java classes to the right place. 
+
+After you IDE compiles the classes, the dev server should refresh the webcontext. Due to some Mac performance issues with Docker, the refresh interval is 20 secs instead of the default 5 secs. You can change the scan interval in GAE/pom.xml. You can also trigger a reload hitting [the reload url](http://localhost:8888/_ah/reloadwebapp).
 
 If you need to restart the server:
 
@@ -79,7 +81,7 @@ To switch back to the dev setup:
 
     swith_to_local_tenant.sh
     
-To deploy the current state of the container:
+To deploy the current state of the container to whatever tenant you last switched to, run:
 
     docker-compose exec akvo-flow /bin/bash -c "cd GAE && mvn appengine:update"
         
