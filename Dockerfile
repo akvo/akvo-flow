@@ -42,7 +42,7 @@ RUN curl -L -O https://raw.githubusercontent.com/technomancy/leiningen/stable/bi
     chmod a+x /usr/local/bin/lein && \
     lein
 
-COPY docker/startup.sh docker/build.sh /usr/local/bin/
+COPY ci/startup.sh ci/build.sh /usr/local/bin/
 
 RUN chmod a+x /usr/local/bin/*.sh
 
