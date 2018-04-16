@@ -6,7 +6,7 @@ services:
     image:  technekes/fake-s3-ssl:latest
   akvo-flow:
     build: .
-    entrypoint: /app/src/docker/devserver.sh
+    entrypoint: /app/src/ci/devserver.sh
     working_dir: /app/src
     links:
      - s3:akvoflowsandbox.s3.amazonaws.com
