@@ -215,7 +215,9 @@ FLOW.ExportReportsAppletView = FLOW.View.extend({
       //if not a monitoring form, export should be filtered by date
       if (FLOW.selectedControl.selectedSurvey.get('keyId') == FLOW.selectedControl.selectedSurveyGroup.get('newLocaleSurveyId')) {
         FLOW.ReportLoader.set('cleaningExportOption', "range");
+        $('input:radio[name=cleaning-export-option]').filter('[value=range]').prop('checked', true);
         FLOW.ReportLoader.set('analysisExportOption', "range");
+        $('input:radio[name=analysis-export-option]').filter('[value=range]').prop('checked', true);
       }
     }
     return FLOW.Env.showMonitoringFeature && FLOW.selectedControl.selectedSurveyGroup

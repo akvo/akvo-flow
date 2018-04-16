@@ -30,6 +30,17 @@
         }
         document.getElementById(exportName).style.display = "block";
         evt.currentTarget.className += " active";
+
+        //by default select the range option
+        if (exportName == "dataCleanExp_options") {
+          if ($('input:radio[name=cleaning-export-option]').is(':checked') === false) {
+            $('input:radio[name=cleaning-export-option]').filter('[value=range]').prop('checked', true);
+          }
+        } else if (exportName == "dataAnalyseExp_options") {
+          if ($('input:radio[name=analysis-export-option]').is(':checked') === false) {
+            $('input:radio[name=analysis-export-option]').filter('[value=range]').prop('checked', true);
+          }
+        }
        }
     </script>
     <section class="exportContainer">
@@ -41,7 +52,7 @@
         {{#view FLOW.ExportReportsAppletView}}
           <div id="dataCleanExp_options" class="options">
               <div class="dataCollectedDate">
-                <p>{{view Ember.RadioButton selectionBinding="FLOW.ReportLoader.cleaningExportOption" value="range" name="cleaning-export-option" checked="true"}}{{t _collection_period}}</p>
+                <p>{{view Ember.RadioButton selectionBinding="FLOW.ReportLoader.cleaningExportOption" value="range" name="cleaning-export-option"}}{{t _collection_period}}</p>
                 {{#if view.cleaningDateRangeSelected}}
                 <label class="collectedFrom">
                   {{view FLOW.DateField2 valueBinding="view.reportFromDate" class="from_date" placeholder="" placeholderBinding="Ember.STRINGS._collected_from" size=30}}
@@ -63,11 +74,11 @@
         <li class="dataAnalyseExp trigger" onclick="openExportOptions(event, 'dataAnalyseExp_options')">
           <h2>{{t _data_analysis_export}}</h2>
           <h6>{{t _not_importable_back}}</h6>
-          <p class="expDescr">{{t _replaces_question}}</p>  
+          <p class="expDescr">{{t _replaces_question}}</p>
           {{#view FLOW.ExportReportsAppletView}}
             <div id="dataAnalyseExp_options" class="options">
               <div class="dataCollectedDate">
-                <p>{{view Ember.RadioButton selectionBinding="FLOW.ReportLoader.analysisExportOption" value="range" name="analysis-export-option" checked="true"}}{{t _collection_period}}</p>
+                <p>{{view Ember.RadioButton selectionBinding="FLOW.ReportLoader.analysisExportOption" value="range" name="analysis-export-option"}}{{t _collection_period}}</p>
                 {{#if view.analysisDateRangeSelected}}
                 <label class="collectedFrom">
                    {{view FLOW.DateField2 minDate=false valueBinding="view.reportFromDate" class="from_date" placeholder="" placeholderBinding="Ember.STRINGS._collected_from" size=30}}
