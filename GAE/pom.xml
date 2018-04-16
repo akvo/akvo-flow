@@ -39,8 +39,6 @@
     <maven.compiler.target>1.8</maven.compiler.target>
     <maven.compiler.showDeprecation>false</maven.compiler.showDeprecation>
     <archiveClasses>true</archiveClasses>
-    <appId>akvoflowsandbox</appId> <!-- default setting for appId -->
-    <project.configFilesDir>${project.basedir}/../../akvo-flow-server-config</project.configFilesDir>
   </properties>
 
   <dependencies>
@@ -348,27 +346,6 @@
       <plugin>
         <artifactId>maven-resources-plugin</artifactId>
         <version>3.0.2</version>
-        <executions>
-          <execution>
-            <id>copy-resources</id>
-            <phase>process-resources</phase>
-            <goals>
-              <goal>copy-resources</goal>
-            </goals>
-            <configuration>
-              <outputDirectory>${project.basedir}/target/akvo-flow/WEB-INF</outputDirectory>
-              <overwrite>true</overwrite>
-              <resources>
-                <resource>
-                  <directory>${project.configFilesDir}/${appId}</directory>
-                  <includes>
-                      <include>appengine-web.xml</include>
-                  </includes>
-                </resource>
-              </resources>
-            </configuration>
-          </execution>
-        </executions>
       </plugin>
 
       <plugin>
@@ -404,12 +381,4 @@
     </plugins>
   </build>
 
-    <profiles>
-        <profile>
-            <id>ci</id>
-            <properties>
-                <skip.appengine.file.check>true</skip.appengine.file.check>
-            </properties>
-        </profile>
-    </profiles>
 </project>
