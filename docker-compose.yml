@@ -16,5 +16,4 @@ services:
     volumes:
      - .:/app/src/:delegated
      - ~/.m2:/root/.m2:delegated
-     - ~/.cache:/root/.cache:delegated
 
