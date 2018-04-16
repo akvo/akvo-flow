@@ -5790,7 +5790,7 @@ svg {
             position: absolute;
             top: 50%;
             left: 50%;
-            transform: translate(-50%, -50%);        
+            transform: translate(-50%, -50%);
             text-align: center;
             .zipIcn {
                 height: 80px;
@@ -5870,12 +5870,9 @@ svg {
                 margin-right: 15px;
                 color: $akvoBlack;
             }
-            .resumable-file-progress {
-            }        
+            .resumable-file-progress {}
         }
     }
-
-
     .uploader-item {
         width: 148px;
         height: 90px;
@@ -6046,14 +6043,15 @@ svg {
     width: 15px;
     height: 15px;
 }
+
 .uploadComplete {
-  display:inline;
-  width:15px;
-  height:15px;
+    display: inline;
+    width: 15px;
+    height: 15px;
 }
 
 .uploadStatus {
-  float: right
+    float: right;
 }
 
 .resumable-file-progress {
@@ -6172,7 +6170,6 @@ svg {
         width: 100%;
         .innerFrame {
             display: table;
-            height: 100%;
             width: 100%;
             .wrap {
                 display: table-cell;
@@ -6180,7 +6177,7 @@ svg {
                 margin: 0;
                 padding: 0;
                 img {
-                    max-width: 80%;
+                    max-width: 40%;
                     max-height: 80%;
                     min-height: 95px !important;
                 }
