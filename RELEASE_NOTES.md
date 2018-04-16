@@ -1,5 +1,26 @@
 # Akvo Flow Release Notes
 ----
+# Akvo Flow Dashboard v1.9.30.1 - Deterministic Daisy (Hotfix 1)
+Date: 04 April 2018
+
+## Resolved issues
+* **Bug fixes** - Fix issue with unidentified users causing dashboard translations and reports exports not to work after v1.9.30 release [#2572]
+
+# Akvo Flow Dashboard v1.9.30 - Deterministic Daisy
+Date: 03 April 2018
+
+## New and noteworthy
+* **Translations** - Add translations for Pijin and Tok Pisin [#2202]
+* **Data security** - Log who changed entity [#2525]
+* **Data point location** - Created a script to fix data point location [#2520]. This stems from issue [#2518] where a data point's location was being overriden by GEO type question answers from monitoring forms
+
+## Resolved issues
+* **Questions reordering** - Changed how questions and question groups are reordered [#1393],[#2523]. Reordering is now done in bulk for all affected so that order does not break in case of unstable network issues
+* **User interface** - Remove submissions list from monitoring tab after users navigates away [#2531]. Fixed alignment on manual survey transfers tab [#2276]. Load questions and answers for monitoring forms when viewing data in monitoring tab [#2567]
+* **Variable name validation** - Recheck variable name for special characters after successful validation [#2563]. Preempt returning of old values when variable name is set to null [#2551]
+* **Code cleanup** - Deleted code causing exception to be thrown when listing questions [#2421]
+* **Performance improvement** - No longer putting bad file names in device file job queue [#2539]
+
 # Akvo Flow Dashboard v1.9.29 - Cosmic Coconut
 Date: 08 March 2018
 

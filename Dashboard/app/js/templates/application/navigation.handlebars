@@ -10,9 +10,6 @@
 	{{#view view.NavItemView item="navData" }}
     <a {{action doNavData}}>{{t _data}}</a>
   {{/view}}
-	{{#view view.NavItemView item="navReports" }}
-    <a {{action doNavReports}}>{{t _reports}}</a>
-  {{/view}}
   {{#if view.showMapsButton}}
   {{#view view.NavItemView item="navMaps" }}
     <a {{action doNavMaps}}>{{t _maps}}</a>
