@@ -324,6 +324,7 @@
                     </includes>
                     <excludes>
                       <exclude>/WEB-INF/appengine-generated/**</exclude>
+                      <exclude>/WEB-INF/appengine-web.xml</exclude>
                     </excludes>
                 </resource>
             </webResources>
