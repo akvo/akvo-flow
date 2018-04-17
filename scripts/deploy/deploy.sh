@@ -97,7 +97,7 @@ instance_sha1_sum=$(awk -v instance="${instance_id}" '$2 ~ "/"instance"/appengin
 sed -i "s|${sandbox_sha1_sum}|${instance_sha1_sum}|g" "${instance_file}"
 gsutil cp -J "${config_repo}/${instance_id}/appengine-web.xml" "gs://${deploy_bucket_name}/${instance_sha1_sum}"
 
-echo "Deploying akvoflow-dev2 using GAE Admin API..."
+echo "Deploying ${instance_id} using GAE Admin API..."
 
 curl -s -X POST -T "${instance_file}" -H "Content-Type: application/json" \
      -H "Authorization: Bearer ${access_token}" \
@@ -119,13 +119,13 @@ do
     fi
 done
 
-echo "Deployment to akvoflow-dev2 done"
-echo "Basic check for akvoflow-dev2"
+echo "Deployment to ${instance_id} done"
+echo "Basic check for ${instance_id}"
 
-available=$(curl -s -o /dev/null -w "%{http_code}" http://akvoflow-dev2.appspot.com/devicetimerest || "")
+available=$(curl -s -o /dev/null -w "%{http_code}" "http://${instance_id}.appspot.com/devicetimerest" || "")
 
 if [[ "${available}" != "200" ]]; then
-    echo >&2 "http://akvoflow-dev2.appspot.com/devicetimerest is not available"
+    echo >&2 "http://${instance_id}.appspot.com/devicetimerest is not available"
     echo >&2 "Aborting"
     exit 1
 fi
