@@ -73,60 +73,61 @@ curl -s -H "Authorization: Bearer ${access_token}" \
 
 find "${config_repo}" -name 'appengine-web.xml' -exec sha1sum {} + > "${tmp}/sha1sum.txt"
 
-(
-    cd "${tmp}"
+# Move to tmp folder and work there
+cd "${tmp}"
 
-    instance_id="akvoflow-dev2"
-    instance_file="${instance_id}.json"
+instance_id="akvoflow-dev2"
+instance_file="${instance_id}.json"
 
-    # select required keys
-    jq -M ". | {id, instanceClass, runtime, env, threadsafe, handlers, deployment}" \
-       1.json > "${instance_file}.tmp"
+# select required keys
+jq -M ". | {id, instanceClass, runtime, env, threadsafe, handlers, deployment}" \
+   1.json > "${instance_file}.tmp"
 
-    # remove __static__ entries
-    jq '.deployment.files |= with_entries(select (.key | test("^__static__") | not))' "${instance_file}.tmp" \
-       > "${instance_file}"
+# remove __static__ entries
+jq '.deployment.files |= with_entries(select (.key | test("^__static__") | not))' "${instance_file}.tmp" \
+   > "${instance_file}"
 
-    rm -rf "${instance_file}.tmp"
+rm -rf "${instance_file}.tmp"
 
-    sed -i -e "s|apps/akvoflowsandbox/|apps/${instance_id}/|g" "${instance_file}"
+sed -i "s|apps/akvoflowsandbox/|apps/${instance_id}/|g" "${instance_file}"
 
-    sandbox_sha1_sum=$(awk '$2 ~ "/akvoflowsandbox/appengine-web.xml$" {print $1}' sha1sum.txt)
-    instance_sha1_sum=$(awk -v instance="${instance_id}" '$2 ~ "/"instance"/appengine-web.xml$" {print $1}' sha1sum.txt)
+sandbox_sha1_sum=$(awk '$2 ~ "/akvoflowsandbox/appengine-web.xml$" {print $1}' sha1sum.txt)
+instance_sha1_sum=$(awk -v instance="${instance_id}" '$2 ~ "/"instance"/appengine-web.xml$" {print $1}' sha1sum.txt)
 
-    sed -i -e "s|${sandbox_sha1_sum}|${instance_sha1_sum}|g" "${instance_file}"
-    gsutil cp -J "${config_repo}/${instance_id}/appengine-web.xml" "gs://${deploy_bucket_name}/${instance_sha1_sum}"
+sed -i "s|${sandbox_sha1_sum}|${instance_sha1_sum}|g" "${instance_file}"
+gsutil cp -J "${config_repo}/${instance_id}/appengine-web.xml" "gs://${deploy_bucket_name}/${instance_sha1_sum}"
 
-    echo "Deploying akvoflow-dev2 using GAE Admin API..."
-    curl -s -X POST -T "${instance_file}" -H "Content-Type: application/json" \
-	 -H "Authorization: Bearer ${access_token}" \
-	 "${api_root}/apps/${instance_id}/services/default/versions" > \
-         "${instance_id}_operation.json"
+echo "Deploying akvoflow-dev2 using GAE Admin API..."
 
-    instance_operation_path=$(jq -r .name "${instance_id}_operation.json")
-    for i in {1..20}
-    do
-      sleep 5
-      echo "Checking deployment status - Attempt ${i}"
-      done=$( (curl -s \
-                    -H "Content-Type: application/json" \
-                    -H "Authorization: Bearer ${access_token}" \
-                    "${api_root}/${instance_operation_path}" | jq .done) || "")
-      if [[ "${done}" == "true" ]]; then
+curl -s -X POST -T "${instance_file}" -H "Content-Type: application/json" \
+     -H "Authorization: Bearer ${access_token}" \
+     "${api_root}/apps/${instance_id}/services/default/versions" > \
+     "${instance_id}_operation.json"
+
+instance_operation_path=$(jq -r .name "${instance_id}_operation.json")
+
+for i in {1..20}
+do
+    sleep 5
+    echo "Checking deployment status - Attempt ${i}"
+    done=$( (curl -s \
+                  -H "Content-Type: application/json" \
+                  -H "Authorization: Bearer ${access_token}" \
+                  "${api_root}/${instance_operation_path}" | jq .done) || "")
+    if [[ "${done}" == "true" ]]; then
         break
-      fi
-    done
-
-    echo "Deployment to akvoflow-dev2 done"
-    echo "Basic check for akvoflow-dev2"
-
-    available=$(curl -s -o /dev/null -w "%{http_code}" http://akvoflow-dev2.appspot.com/devicetimerest || "")
-
-    if [[ "${available}" != "200" ]]; then
-	echo >&2 "http://akvoflow-dev2.appspot.com/devicetimerest is not available"
-	echo >&2 "Aborting"
-	exit 1
     fi
+done
 
-    echo "Done"
-)
+echo "Deployment to akvoflow-dev2 done"
+echo "Basic check for akvoflow-dev2"
+
+available=$(curl -s -o /dev/null -w "%{http_code}" http://akvoflow-dev2.appspot.com/devicetimerest || "")
+
+if [[ "${available}" != "200" ]]; then
+    echo >&2 "http://akvoflow-dev2.appspot.com/devicetimerest is not available"
+    echo >&2 "Aborting"
+    exit 1
+fi
+
+echo "Done"
