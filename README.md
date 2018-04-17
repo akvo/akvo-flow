@@ -73,7 +73,7 @@ Remember that you also can run those commands from a terminal inside the contain
 
 ### Test instances and Manual deployments
 
-If you want to use a configuration different from the dev one, run:
+If you want to use a configuration different from the dev one, checkout the akvo-flow-server-config directory into `..` and run:
 
     switch_tenant.sh akvoflowsandbox
     
@@ -81,7 +81,7 @@ To switch back to the dev setup:
 
     swith_to_local_tenant.sh
     
-To deploy the current state of the container to whatever tenant you last switched to, run:
+To deploy the current state of the docker container to whatever tenant you last switched to, run:
 
     docker-compose exec akvo-flow /bin/bash -c "cd GAE && mvn appengine:update"
         
