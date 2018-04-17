@@ -32,22 +32,24 @@ if [[ ! -d "$LOCAL_CACHE" ]]; then
 fi
 
 if [[ ! -f "$LOCAL_CACHE/$APP_ENGINE_SDK_FILE" ]]; then
+    (
     cd "$LOCAL_CACHE"
     curl -L -O "http://central.maven.org/maven2/com/google/appengine/appengine-java-sdk/$APP_ENGINE_SDK_VERSION/$APP_ENGINE_SDK_FILE"
     unzip "$APP_ENGINE_SDK_FILE"
-    cd ..
+    )
 fi
 
 FLOW_GIT_VERSION=$(git describe)
 
 docker run \
        --rm \
-       --env HOST_GID=`id -g` \
-       --env HOST_UID=`id -u` \
-       --env HOST_USER="$USER" \
-       --volume "$MAVEN_REPO":"/home/$USER/.m2" \
-       --volume "$LOCAL_CACHE":"/home/$USER/.cache" \
-       --volume `pwd`:/app/src \
+       --env "HOST_GID=$(id -g)" \
+       --env "HOST_UID=$(id -u)" \
+       --env "HOST_USER=${USER}" \
+       --volume "${MAVEN_REPO}:/home/$USER/.m2" \
+       --volume "${LOCAL_CACHE}:/home/$USER/.cache" \
+       --volume "$(pwd):/app/src" \
        -e CLOJARS_PASSWORD="${CLOJARS_PASSWORD}" -e FLOW_GIT_VERSION="${FLOW_GIT_VERSION}" \
        -e CLOJARS_GPG_PASSWORD="${CLOJARS_GPG_PASSWORD}" \
+       --entrypoint /app/src/ci/startup.sh \
        akvo/flow-maven-build "$@"

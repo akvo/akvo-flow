@@ -1,5 +1,5 @@
 /*
- *  Copyright (C) 2010-2012 Stichting Akvo (Akvo Foundation)
+ *  Copyright (C) 2010-2012, 2018 Stichting Akvo (Akvo Foundation)
  *
  *  This file is part of Akvo FLOW.
  *
@@ -76,8 +76,7 @@ public class DeleteObjectTaskServlet extends AbstractRestApiServlet {
         int deleted_count = 0;
         boolean is_finished = false;
 
-        final DatastoreService dss = DatastoreServiceFactory
-                .getDatastoreService();
+        final DatastoreService dss = DatastoreServiceFactory.getDatastoreService();
         final long start = System.currentTimeMillis();
         while (System.currentTimeMillis() - start < 16384) {
 
@@ -110,7 +109,7 @@ public class DeleteObjectTaskServlet extends AbstractRestApiServlet {
                 }
             }
         }
-        System.err.println("*** deleted " + deleted_count + " entities form "
+        System.err.println("*** deleted " + deleted_count + " entities from "
                 + kind);
 
         if (is_finished) {
@@ -129,8 +128,7 @@ public class DeleteObjectTaskServlet extends AbstractRestApiServlet {
             deleteQueue.add(TaskOptions.Builder.withUrl(DELETE_OBJECT_TASK_URL)
                     .param(DeleteTaskRequest.OBJECT_PARAM, kind + "")
                     .param(DeleteTaskRequest.KEY_PARAM, key)
-                    .param(DeleteTaskRequest.TASK_COUNT_PARAM,
-                            taskcount.toString()));
+                    .param(DeleteTaskRequest.TASK_COUNT_PARAM, taskcount.toString()));
 
             System.err.println("*** deletion task # " + taskcount + " for "
                     + kind + " is queued.");

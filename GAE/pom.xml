@@ -43,12 +43,10 @@
   <properties>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
-    <maven.compiler.source>1.8</maven.compiler.source>
-    <maven.compiler.target>1.8</maven.compiler.target>
+    <maven.compiler.source>1.7</maven.compiler.source>
+    <maven.compiler.target>1.7</maven.compiler.target>
     <maven.compiler.showDeprecation>false</maven.compiler.showDeprecation>
     <archiveClasses>true</archiveClasses>
-    <appId>akvoflowsandbox</appId> <!-- default setting for appId -->
-    <project.configFilesDir>${project.basedir}/../../akvo-flow-server-config</project.configFilesDir>
   </properties>
 
   <dependencies>
@@ -317,6 +315,7 @@
                     </includes>
                     <excludes>
                       <exclude>/WEB-INF/appengine-generated/**</exclude>
+                      <exclude>/WEB-INF/appengine-web.xml</exclude>
                     </excludes>
                 </resource>
             </webResources>
@@ -351,27 +350,6 @@
       <plugin>
         <artifactId>maven-resources-plugin</artifactId>
         <version>3.0.2</version>
-        <executions>
-          <execution>
-            <id>copy-resources</id>
-            <phase>process-resources</phase>
-            <goals>
-              <goal>copy-resources</goal>
-            </goals>
-            <configuration>
-              <outputDirectory>${project.basedir}/target/akvo-flow/WEB-INF</outputDirectory>
-              <overwrite>true</overwrite>
-              <resources>
-                <resource>
-                  <directory>${project.configFilesDir}/${appId}</directory>
-                  <includes>
-                      <include>appengine-web.xml</include>
-                  </includes>
-                </resource>
-              </resources>
-            </configuration>
-          </execution>
-        </executions>
       </plugin>
 
       <plugin>

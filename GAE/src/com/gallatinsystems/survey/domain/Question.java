@@ -389,6 +389,7 @@ public class Question extends BaseDomain {
 
     public void setVariableName(String variableName) {
         this.variableName = variableName;
+        questionId = null; //ensure correct fallback
     }
 
     public Long getCascadeResourceId() {

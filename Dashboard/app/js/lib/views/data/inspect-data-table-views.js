@@ -29,6 +29,7 @@ FLOW.inspectDataTableView = FLOW.View.extend({
     FLOW.dateControl.set('toDate', null);
     FLOW.dateControl.set('fromDate', null);
     FLOW.surveyInstanceControl.set('pageNumber', 0);
+    FLOW.surveyInstanceControl.set('currentContents', null);
     FLOW.locationControl.set('selectedLevel1', null);
     FLOW.locationControl.set('selectedLevel2', null);
   },
@@ -149,7 +150,7 @@ FLOW.inspectDataTableView = FLOW.View.extend({
   // Survey instance edit popup window
   // TODO solve when popup is open, no new surveyIdQuery is done
   showEditSurveyInstanceWindow: function (event) {
-    FLOW.questionAnswerControl.doQuestionAnswerQuery(event.context.get('keyId'));
+    FLOW.questionAnswerControl.doQuestionAnswerQuery(event.context);
     this.get('alreadyLoaded').push(event.context.get('surveyId'));
     this.set('selectedSurveyInstanceId', event.context.get('keyId'));
     this.set('selectedSurveyInstanceNum', event.context.clientId);
@@ -181,12 +182,13 @@ FLOW.inspectDataTableView = FLOW.View.extend({
           return false;
         }
       });
-      nextSIkeyId = filtered.objectAt(0).get('keyId');
+      var nextSI = filtered.objectAt(0);
+      nextSIkeyId = nextSI.get('keyId');
       this.set('selectedSurveyInstanceId', nextSIkeyId);
       this.set('selectedSurveyInstanceNum', nextItem);
       this.createSurveyInstanceString();
       this.downloadQuestionsIfNeeded();
-      FLOW.questionAnswerControl.doQuestionAnswerQuery(nextSIkeyId);
+      FLOW.questionAnswerControl.doQuestionAnswerQuery(nextSI);
     }
   },
 
@@ -208,12 +210,13 @@ FLOW.inspectDataTableView = FLOW.View.extend({
           return false;
         }
       });
-      nextSIkeyId = filtered.objectAt(0).get('keyId');
+      var nextSI = filtered.objectAt(0);
+      nextSIkeyId = nextSI.get('keyId');
       this.set('selectedSurveyInstanceId', nextSIkeyId);
       this.set('selectedSurveyInstanceNum', nextItem);
       this.createSurveyInstanceString();
       this.downloadQuestionsIfNeeded();
-      FLOW.questionAnswerControl.doQuestionAnswerQuery(nextSIkeyId);
+      FLOW.questionAnswerControl.doQuestionAnswerQuery(nextSI);
     }
   },
 

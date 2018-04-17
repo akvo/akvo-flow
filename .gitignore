@@ -3,6 +3,7 @@
 *.class
 *.rpc
 *.swp
+*.p12
 
 # Eclipse files
 .classpath
@@ -37,7 +38,7 @@ GAE/bin
 GAE/build
 
 GAE/src/services/DataIssues.java
-
+GAE/target
 GAE/war/admin
 GAE/war/com.*
 GAE/war/exporterapplet.jar
@@ -56,6 +57,7 @@ GAE/war/WEB-INF/lib/geronimo*.jar
 GAE/war/WEB-INF/lib/jdo2-api*.jar
 GAE/war/WEB-INF/lib/jsr107*.jar
 GAE/war/WEB-INF/lib/libservice.jar
+GAE/target
 
 # APK paths
 WFPMapping/device/debugcert

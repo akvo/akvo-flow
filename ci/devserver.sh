@@ -19,12 +19,6 @@
 set -eu
 
 SRC_DIR="/app/src"
-APP_ENGINE_SDK_VERSION="1.9.54"
-APP_ENGINE_SDK_FILE="appengine-java-sdk-1.9.54.zip"
-
-if [[ ! -d "$HOME/.cache/appengine-java-sdk-$APP_ENGINE_SDK_VERSION" ]]; then
-    unzip "$HOME/.cache/$APP_ENGINE_SDK_FILE" -d "$HOME/.cache"
-fi
 
 cd "$SRC_DIR/Dashboard"
 
@@ -39,10 +33,6 @@ fi
 
 cd "$SRC_DIR/GAE"
 
-cp -f build.properties.template build.properties
-
-sed -i "s|^sdk\.dir=.*|sdk\.dir=$HOME/.cache/appengine-java-sdk-$APP_ENGINE_SDK_VERSION|" build.properties
-
 if [[ ! -f "$SRC_DIR/GAE/target/akvo-flow/WEB-INF/appengine-generated/local_db.bin" ]]; then
     mkdir -p "$SRC_DIR/GAE/target/akvo-flow/WEB-INF/appengine-generated/"
     wget "https://s3-eu-west-1.amazonaws.com/akvoflow/test-data/local_db.bin" -O "$SRC_DIR/GAE/target/akvo-flow/WEB-INF/appengine-generated/local_db.bin"
@@ -55,4 +45,4 @@ fi
 
 mvn package appengine:devserver_start
 
-tail -F ./target/akvo-flow/flow0.log "$SRC_DIR/rake.log" "$SRC_DIR/lein.log"
+tail -F ./target/akvo-flow/flow0.log "$SRC_DIR/rake.log"
