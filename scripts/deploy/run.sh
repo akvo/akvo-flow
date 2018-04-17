@@ -8,7 +8,6 @@ docker run --rm \
        --interactive \
        --tty \
        --volume "$(pwd):/akvo-flow" \
-       --volume "$(pwd)/../akvo-flow-server-config:/akvo-flow-server-config" \
        --workdir "/akvo-flow" \
        "google/cloud-sdk:${CLOUD_SDK_VERSION}" \
        "/akvo-flow/scripts/deploy/deploy.sh" "$@"
