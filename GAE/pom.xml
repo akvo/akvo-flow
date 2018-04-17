@@ -35,8 +35,8 @@
   <properties>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
-    <maven.compiler.source>1.8</maven.compiler.source>
-    <maven.compiler.target>1.8</maven.compiler.target>
+    <maven.compiler.source>1.7</maven.compiler.source>
+    <maven.compiler.target>1.7</maven.compiler.target>
     <maven.compiler.showDeprecation>false</maven.compiler.showDeprecation>
     <archiveClasses>true</archiveClasses>
   </properties>
@@ -306,6 +306,7 @@
                     </includes>
                     <excludes>
                       <exclude>/WEB-INF/appengine-generated/**</exclude>
+                      <exclude>/WEB-INF/appengine-web.xml</exclude>
                     </excludes>
                 </resource>
             </webResources>

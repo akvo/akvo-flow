@@ -38,7 +38,7 @@ GAE/bin
 GAE/build
 
 GAE/src/services/DataIssues.java
-
+GAE/target
 GAE/war/admin
 GAE/war/com.*
 GAE/war/exporterapplet.jar
