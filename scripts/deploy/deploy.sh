@@ -12,8 +12,10 @@ target_dir="${tmp}/akvo-flow"
 # Install requirements assuming Debian jessie
 echo "Installing dependencies..."
 echo "deb http://ftp.debian.org/debian jessie-backports main" >> /etc/apt/sources.list && \
-    apt-get update && \
-    apt-get -t jessie-backports install -y -qq --no-install-recommends jq unzip
+     apt-get update && \
+     apt-get -t jessie-backports install -y -qq --no-install-recommends \
+     jq=1.5+dfsg-1.3~bpo8+1 \
+     unzip=6.0-16+deb8u3
 
 # Force login
 gcloud auth login --activate --force
@@ -30,9 +32,6 @@ echo "Updating akvo-flow-server-config to latest changes..."
     cd "${config_repo}"
     git checkout -- .
     git checkout master
-    # temporary hack to enable java8
-    patch -p1 < java8.diff
-    git diff
 )
 
 echo "Deploying to akvoflowsandbox..."

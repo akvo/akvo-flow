@@ -1,5 +1,7 @@
 #!/usr/bin/env bash
 
+set -euo pipefail
+
 CLOUD_SDK_VERSION="${CLOUD_SDK_VERSION:=196.0.0}"
 
 docker run --rm \
