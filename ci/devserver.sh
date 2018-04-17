@@ -45,4 +45,4 @@ fi
 
 mvn package appengine:devserver_start
 
-tail -F ./target/akvo-flow/flow0.log "$SRC_DIR/rake.log" "$SRC_DIR/lein.log"
+tail -F ./target/akvo-flow/flow0.log "$SRC_DIR/rake.log"
