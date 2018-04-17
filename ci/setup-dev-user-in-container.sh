@@ -43,10 +43,15 @@ if [ -z ${USER_EXISTS} ]; then
     cp -r /root/.lein "/home/$HOST_USER/"
 
     chown -R "$HOST_USER":"$HOST_USER" "/home/$HOST_USER"
-    su "$HOST_USER" -c "$@"
 else
  echo "Not creating any user in container"
- $@
 fi
 
 
+if [ ${HOST_UID} -eq "0" ]; then
+    echo "Guessing you are in a Mac, running as root"
+    $@
+else
+    echo "Guessing you are in Linux, running as akvo"
+    su "$HOST_USER" -c "$@"
+fi
