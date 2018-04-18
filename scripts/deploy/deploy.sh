@@ -18,7 +18,8 @@ export config_repo="${CONFIG_REPO:=/akvo-flow-server-config}"
 export deploy_bucket_name="${deploy_bucket_name:=akvoflowsandbox-deployment}"
 export api_root="https://appengine.googleapis.com/v1"
 
-tmp="/tmp/$(date +%s)"
+deploy_id="$(date +%s)"
+tmp="/tmp/${deploy_id}"
 target_dir="${tmp}/akvo-flow"
 gh_user="${GH_USER:=''}"
 gh_token="${GH_TOKEN:=''}"
@@ -141,24 +142,10 @@ function deploy_instance {
 
     if [[ "${done}" != "true" ]]; then
 	echo "Deployment to ${instance_id} failed"
-        exit 0 # we're in _strict_ mode so we can't exit with 1
+        exit 1
     fi
-
-    echo "Deployment to ${instance_id} done"
-    echo "Basic check for ${instance_id}"
-
-    for i in {1..20}
-    do
-	sleep 5
-	echo "Checking deployment status - Attempt ${i}"
-	available=$(curl -s -o /dev/null -w "%{http_code}" "http://${instance_id}.appspot.com/devicetimerest" || "")
-	if [[ "${available}" == "200" ]]; then
-	    echo "http://${instance_id}.appspot.com/devicetimerest is available"
-	    echo "Done for ${instance_id}"
-	    break
-	fi
-    done
 }
+
 export -f deploy_instance
-parallel deploy_instance ::: akvoflow-dev1 akvoflow-dev2 akvoflow-dev3
+parallel --job-log "${deploy_id}.log" deploy_instance ::: akvoflow-dev1 akvoflow-dev2 akvoflow-dev3
 echo "Done"
