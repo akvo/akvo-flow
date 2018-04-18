@@ -4,7 +4,9 @@ set -euo pipefail
 
 CLOUD_SDK_VERSION="${CLOUD_SDK_VERSION:=196.0.0}"
 
-mkdir "tmp"
+if [[ ! -d "tmp" ]]; then
+    mkdir "tmp"
+fi
 
 docker run --rm \
        --interactive \

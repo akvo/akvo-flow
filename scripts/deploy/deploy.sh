@@ -7,8 +7,13 @@ export SHELL=/bin/bash
 yellow='\033[1;33m'
 green='\033[0;32m'
 nc='\033[0m'
-version="${1}"
 
+if [[ "$#" -ne 1 ]]; then
+    echo "Usage: ./scripts/deploy/run.sh <version>"
+    exit 1
+fi
+
+export version="${1}"
 export config_repo="${CONFIG_REPO:=/akvo-flow-server-config}"
 export deploy_bucket_name="${deploy_bucket_name:=akvoflowsandbox-deployment}"
 export api_root="https://appengine.googleapis.com/v1"
@@ -56,7 +61,7 @@ gsutil cp "gs://${deploy_bucket_name}/${version}.war" "${tmp}"
 unzip "${tmp}/${version}.war" -d "${target_dir}"
 rm -rf "${tmp}/${version}.war"
 cp -v "${config_repo}/akvoflowsandbox/appengine-web.xml" "${target_dir}/WEB-INF/"
-sed -i -e "s/__VERSION__/$(git describe)/" "${target_dir}/admin/js/app.js"
+sed -i -e "s/__VERSION__/${version}/" "${target_dir}/admin/js/app.js"
 
 gcloud app deploy "${target_dir}/WEB-INF/appengine-web.xml" \
        --project=akvoflowsandbox \
@@ -72,7 +77,8 @@ gcloud app deploy "${target_dir}/WEB-INF/appengine-web.xml" \
 
 echo "Retrieving version definitions..."
 
-export access_token=$(gcloud auth print-access-token)
+access_token=$(gcloud auth print-access-token)
+export access_token
 
 curl -s -H "Authorization: Bearer ${access_token}" \
      "${api_root}/apps/akvoflowsandbox/services/default/versions/1?view=FULL" \
