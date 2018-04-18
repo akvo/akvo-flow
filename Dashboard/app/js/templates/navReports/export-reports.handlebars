@@ -53,6 +53,7 @@
           <div id="dataCleanExp_options" class="options">
               <div class="dataCollectedDate">
                 <p>{{view Ember.RadioButton selectionBinding="FLOW.ReportLoader.cleaningExportOption" value="range" name="cleaning-export-option"}}{{t _collection_period}}</p>
+                {{#if view.cleaningDateRangeSelected}}
                 <label class="collectedFrom">
                   {{view FLOW.DateField2 valueBinding="view.reportFromDate" class="from_date" placeholder="" placeholderBinding="Ember.STRINGS._collected_from" size=30}}
                 </label>
