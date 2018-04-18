@@ -8,12 +8,14 @@ yellow='\033[1;33m'
 green='\033[0;32m'
 nc='\033[0m'
 
-if [[ "$#" -ne 1 ]]; then
-    echo "Usage: ./scripts/deploy/run.sh <version>"
+if [[ "$#" -lt 2 ]]; then
+    echo "Usage: ./scripts/deploy/run.sh <version> <instance-id-1> <instance-id-2> ... <instance-id-n>"
     exit 1
 fi
 
-export version="${1}"
+export version="${1}" # <version> as "$1"
+shift                 # we want "$@" to be the instances to deploy
+
 export config_repo="${CONFIG_REPO:=/akvo-flow-server-config}"
 export deploy_bucket_name="${deploy_bucket_name:=akvoflowsandbox-deployment}"
 export api_root="https://appengine.googleapis.com/v1"
@@ -85,10 +87,6 @@ curl -s -H "Authorization: Bearer ${access_token}" \
      "${api_root}/apps/akvoflowsandbox/services/default/versions/1?view=FULL" \
      > "${tmp}/1.json"
 
-curl -s -H "Authorization: Bearer ${access_token}" \
-     "${api_root}/apps/akvoflowsandbox/services/default/versions/dataprocessor?view=FULL" \
-     > "${tmp}/dataprocessor.json"
-
 find "${config_repo}" -name 'appengine-web.xml' -exec sha1sum {} + > "${tmp}/sha1sum.txt"
 
 echo "Deploying instances..."
@@ -99,15 +97,15 @@ cd "${tmp}"
 function deploy_instance {
     instance_id="${1}"
     instance_file="${instance_id}.json"
+    backend_file="${instance_id}_dataprocessor.json"
 
     # select required keys
-    jq -M ". | {id, instanceClass, runtime, env, threadsafe, handlers, deployment}" \
+    jq -M ". | {id, inboundServices, instanceClass, runtime, env, threadsafe, handlers, deployment}" \
        1.json > "${instance_file}.tmp"
 
     # remove __static__ entries
     jq '.deployment.files |= with_entries(select (.key | test("^__static__") | not))' "${instance_file}.tmp" \
        > "${instance_file}"
-
     rm -rf "${instance_file}.tmp"
 
     sed -i "s|apps/akvoflowsandbox/|apps/${instance_id}/|g" "${instance_file}"
@@ -116,6 +114,12 @@ function deploy_instance {
     instance_sha1_sum=$(awk -v instance="${instance_id}" '$2 ~ "/"instance"/appengine-web.xml$" {print $1}' sha1sum.txt)
 
     sed -i "s|${sandbox_sha1_sum}|${instance_sha1_sum}|g" "${instance_file}"
+
+    # Copy definition and modify `version` and `instanceClass`
+    cp "${instance_file}" "${backend_file}"
+    sed -i 's/"F1"/"B2"/' "${backend_file}"
+    sed -i 's/"1"/"dataprocessor"/' "${backend_file}"
+
     gsutil cp -J "${config_repo}/${instance_id}/appengine-web.xml" "gs://${deploy_bucket_name}/${instance_sha1_sum}"
 
     echo "Deploying ${instance_id} using GAE Admin API..."
@@ -125,8 +129,14 @@ function deploy_instance {
 	 "${api_root}/apps/${instance_id}/services/default/versions" > \
 	 "${instance_id}_operation.json"
 
+    curl -s -X POST -T "${backend_file}" -H "Content-Type: application/json" \
+	 -H "Authorization: Bearer ${access_token}" \
+	 "${api_root}/apps/${instance_id}/services/default/versions" > \
+	 "${instance_id}_dataprocessor_operation.json"
+
     instance_operation_path=$(jq -r .name "${instance_id}_operation.json")
 
+    # We only check for liveness of version 1
     for i in {1..20}
     do
 	sleep 5
@@ -134,7 +144,7 @@ function deploy_instance {
 	done=$( (curl -s \
                       -H "Content-Type: application/json" \
                       -H "Authorization: Bearer ${access_token}" \
-                      "${api_root}/${instance_operation_path}" | jq .done) || "")
+                      "${api_root}/${instance_operation_path}" | jq -r .done) || "")
 	if [[ "${done}" == "true" ]]; then
             break
 	fi
@@ -147,5 +157,5 @@ function deploy_instance {
 }
 
 export -f deploy_instance
-parallel --job-log "${deploy_id}.log" deploy_instance ::: akvoflow-dev1 akvoflow-dev2 akvoflow-dev3
+parallel -j 8 --joblog "${deploy_id}.log" deploy_instance ::: "$@"
 echo "Done"
