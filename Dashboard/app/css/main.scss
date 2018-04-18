@@ -5759,8 +5759,50 @@ svg {
     // border: 1px solid rgba($akvoBlack, 0.05);
     text-align: center;
     h3 {
-        margin: 1em auto;
-        color: $akvoDarkBlue;
+        font-size: 1em;
+    }
+}
+
+.gdprSwitchSteps {
+    * {
+        box-sizing: border-box;
+    }
+    height: calc(100vh - 255px);
+    display: grid;
+    overflow-y: scroll;
+    li {
+        text-align: center;
+        position: relative;
+        height: calc((100% -150px) / 3);
+        width: 100%;
+        margin-bottom: 25px;
+        &:first-of-type {
+            margin-top: 20px;
+        }
+        .innerFrame {
+            display: table;
+            width: 100%;
+            .wrap {
+                display: table-cell;
+                text-align: center;
+                margin: 0;
+                padding: 0;
+                img {
+                    max-width: 50%;
+                    max-height: 80%;
+                    min-height: 95px !important;
+                }
+            }
+        }
+        h3 {
+            font-weight: bold;
+            color: $akvoDarkBlue;
+            margin: 0 auto !important;
+        }
+        p {
+            max-width: 90%;
+            margin: 10px auto 0 auto;
+        }
     }
 }
 
@@ -6153,44 +6195,4 @@ svg {
 
 .marker-cluster span {
     line-height: 30px;
-}
-
-.gdprSwitchSteps {
-    * {
-        box-sizing: border-box;
-    }
-    height: calc(100vh - 320px);
-    display: grid;
-    overflow-y: scroll;
-    li {
-        text-align: center;
-        position: relative;
-        margin-bottom: 20px;
-        height: calc((100% -150px) / 3);
-        width: 100%;
-        .innerFrame {
-            display: table;
-            width: 100%;
-            .wrap {
-                display: table-cell;
-                text-align: center;
-                margin: 0;
-                padding: 0;
-                img {
-                    max-width: 40%;
-                    max-height: 80%;
-                    min-height: 95px !important;
-                }
-            }
-        }
-        h3 {
-            font-weight: bold;
-            color: #243032;
-            margin: 1em auto 0 !important;
-        }
-        p {
-            max-width: 80%;
-            margin: 10px auto 0 auto;
-        }
-    }
 }
