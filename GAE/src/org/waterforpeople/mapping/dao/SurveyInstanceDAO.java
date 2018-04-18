@@ -1,5 +1,5 @@
 /*
- *  Copyright (C) 2010-2015, 2017 Stichting Akvo (Akvo Foundation)
+ *  Copyright (C) 2010-2015, 2017, 2018 Stichting Akvo (Akvo Foundation)
  *
  *  This file is part of Akvo FLOW.
  *
@@ -145,17 +145,28 @@ public class SurveyInstanceDAO extends BaseDAO<SurveyInstance> {
             String deviceId = d == null ? "null" : String.valueOf(d.getKey().getId());
 
             for (QuestionAnswerStore qas : images) {
-                String filename = qas.getValue().substring(
-                        qas.getValue().lastIndexOf("/") + 1);
-
-                Queue queue = QueueFactory.getQueue("background-processing");
-                TaskOptions to = TaskOptions.Builder
-                        .withUrl("/app_worker/imagecheck")
-                        .param(ImageCheckRequest.FILENAME_PARAM, filename)
-                        .param(ImageCheckRequest.DEVICE_ID_PARAM, deviceId)
-                        .param(ImageCheckRequest.QAS_ID_PARAM, String.valueOf(qas.getKey().getId()))
-                        .param(ImageCheckRequest.ATTEMPT_PARAM, "1");
-                queue.add(to);
+                String value = qas.getValue();
+                String filename = null;
+                if (value.startsWith("{")) { // JSON
+                    final String key = "\"filename\":\"";
+                    int i = value.indexOf(key);
+                    if (i > -1) { //key found, grab all until next "
+                        filename = value.substring(i + key.length()).split("\"", 2)[0];
+                    }
+                } else { //legacy: naked filename
+                    filename = value;
+                }
+                if (filename != null) {
+                    filename = filename.substring(filename.lastIndexOf("/") + 1); //strip path
+                    Queue queue = QueueFactory.getQueue("background-processing");
+                    TaskOptions to = TaskOptions.Builder
+                            .withUrl("/app_worker/imagecheck")
+                            .param(ImageCheckRequest.FILENAME_PARAM, filename)
+                            .param(ImageCheckRequest.DEVICE_ID_PARAM, deviceId)
+                            .param(ImageCheckRequest.QAS_ID_PARAM, String.valueOf(qas.getKey().getId()))
+                            .param(ImageCheckRequest.ATTEMPT_PARAM, "1");
+                    queue.add(to);
+                }
             }
         }
 
@@ -491,9 +502,6 @@ public class SurveyInstanceDAO extends BaseDAO<SurveyInstance> {
      * @param surveyInstance survey instance to be deleted
      */
     // TODO update lastSurveyalInstanceId in surveydLocale objects
-    @SuppressWarnings({
-            "unchecked", "rawtypes"
-    })
     public void deleteSurveyInstance(SurveyInstance surveyInstance) {
         final Long surveyInstanceId = surveyInstance.getKey().getId();
 

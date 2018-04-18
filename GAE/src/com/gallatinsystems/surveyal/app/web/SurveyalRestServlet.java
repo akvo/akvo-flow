@@ -1,5 +1,5 @@
 /*
- *  Copyright (C) 2010-2016 Stichting Akvo (Akvo Foundation)
+ *  Copyright (C) 2010-2018 Stichting Akvo (Akvo Foundation)
  *
  *  This file is part of Akvo FLOW.
  *
@@ -222,7 +222,6 @@ public class SurveyalRestServlet extends AbstractRestApiServlet {
      * surveyInstance. This method is unlikely to run in under 1 minute (based on datastore latency)
      * so it is best invoked via a task queue
      *
-     * @param surveyInstanceId
      */
     private void ingestSurveyInstance(SurveyInstance surveyInstance) {
         Boolean adaptClusterData = Boolean.FALSE;
@@ -235,14 +234,9 @@ public class SurveyalRestServlet extends AbstractRestApiServlet {
                     + "for SurveyInstance " + surveyInstance.toString());
         }
 
-        // try to construct geoPlace. Geo information can come from two sources:
-        // 1) the META_GEO information in the surveyInstance, and
-        // 2) a geo question.
-        // If we can't find geo information in 1), we try 2)
-
         GeoPlace geoPlace = null;
-        Double latitude = UNSET_VAL;
-        Double longitude = UNSET_VAL;
+        Double latitude;
+        Double longitude;
         Map<String, Object> geoLocationMap = null;
 
         try {
@@ -433,7 +427,6 @@ public class SurveyalRestServlet extends AbstractRestApiServlet {
             List<SurveyalValue> oldVals = surveyedLocaleDao
                     .listSurveyalValuesByInstance(answers.get(0)
                             .getSurveyInstanceId());
-            boolean loadedItems = false;
             List<Question> questionList = qDao.listQuestionsBySurvey(answers.get(0).getSurveyId());
 
             // put questions in map for easy retrieval

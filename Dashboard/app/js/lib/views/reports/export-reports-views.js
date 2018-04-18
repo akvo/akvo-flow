@@ -67,19 +67,6 @@ FLOW.ReportLoader = Ember.Object.create({
     }
 
     criteria.opts.lastCollection = '' + (exportType === 'DATA_CLEANING' && FLOW.selectedControl.get('selectedSurveyGroup').get('monitoringGroup') && !!FLOW.editControl.lastCollection);
-
-    var fromDate = FLOW.dateControl.get('fromDate');
-    if (fromDate == null) {
-      delete criteria.opts.from;
-    } else {
-      criteria.opts.from = fromDate;
-    }
-    var toDate = FLOW.dateControl.get('toDate');
-    if (toDate == null) {
-      delete criteria.opts.to;
-    } else {
-      criteria.opts.to = toDate;
-    }
     criteria.opts.email = FLOW.currentUser.email;
     criteria.opts.flowServices = FLOW.Env.flowServices;
 
@@ -158,6 +145,20 @@ FLOW.ExportReportsAppletView = FLOW.View.extend({
   showComprehensiveDialog: false,
   showRawDataImportApplet: false,
   showGoogleEarthButton: false,
+  reportFromDate: undefined,
+  reportToDate: undefined,
+  
+  setMinDate: function () {
+    if (this.get('reportFromDate')) {
+      this.$(".to_date").datepicker("option", "minDate", this.get("reportFromDate"))
+    }
+  }.observes('this.reportFromDate'),
+
+  setMaxDate: function () {
+    if (this.get('reportToDate')) {
+     this.$(".from_date").datepicker("option", "maxDate", this.get("reportToDate"))
+    }
+  }.observes('this.reportToDate'),
 
   didInsertElement: function () {
     FLOW.selectedControl.set('surveySelection', FLOW.SurveySelection.create());
@@ -190,18 +191,19 @@ FLOW.ExportReportsAppletView = FLOW.View.extend({
   }.property('FLOW.selectedControl.selectedSurveyGroup'),
 
   showDataCleaningReport: function () {
-	var opts = {}, sId = this.get('selectedSurvey');
-	FLOW.ReportLoader.load('DATA_CLEANING', sId, opts);
+    var opts = {from:this.get("reportFromDate"), to:this.get("reportToDate")};
+    var sId = this.get('selectedSurvey');
+    FLOW.ReportLoader.load('DATA_CLEANING', sId, opts);
   },
 
   showDataAnalysisReport: function () {
-	var opts = {}, sId = this.get('selectedSurvey');
+    var opts = {from:this.get("reportFromDate"), to:this.get("reportToDate")};
+    var sId = this.get('selectedSurvey');
     FLOW.ReportLoader.load('DATA_ANALYSIS', sId, opts);
   },
 
   showComprehensiveReport: function () {
     var opts = {}, sId = this.get('selectedSurvey');
-
     FLOW.ReportLoader.load('COMPREHENSIVE', sId, opts);
   },
 

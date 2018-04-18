@@ -5,7 +5,7 @@
     <h1 class="questionNbr"><span>{{view.content.order}}} </span>{{view.content.text}}</h1>
     <label>{{t _question_text}}:
     {{#if view.questionValidationFailure }}
-      <span style="color:red">{{t _question_over_500_chars_header}}</span>
+      <span style="color:red">{{view.questionValidationFailureReason}}</span>
       {{/if}}
       {{view Ember.TextField valueBinding="view.text" size=100 }}</label>
     <label>{{t _question_help_tooltip}}: <span class="fadedText">({{t _optional}})</span>
@@ -14,11 +14,11 @@
       {{/if}}
       {{view Ember.TextField valueBinding="view.tip" size=100 }} </label>
     <label>
-      {{t _question_id}}: <span class="fadedText">({{t _optional}})</span> {{tooltip _question_id_tooltip}}
-      {{#if view.questionIdValidationFailure }}
-      <span style="color:red">{{view.questionIdValidationFailureReason}}</span>
+      {{t _variable_name}}: <span class="fadedText">({{t _optional}})</span> {{tooltip _variable_name_tooltip}}
+      {{#if view.variableNameValidationFailure }}
+      <span style="color:red">{{view.variableNameValidationFailureReason}}</span>
       {{/if}}
-      {{view Ember.TextField valueBinding="view.questionId" size=100}}
+      {{view Ember.TextField valueBinding="view.variableName" size=100}}
     </label>
     <label class="labelcheckbox">{{view Ember.Checkbox checkedBinding="view.mandatoryFlag"}}{{t _mandatory}}</label>
 
@@ -167,7 +167,15 @@
     <!-- End question specific material -->
     <nav>
       <ul>
+        {{#if view.variableNameValidationFailure }}
+        <li><a class="button noChanges" id="standardBtn_01">{{t _save_question}}</a> </li>
+        {{else}}
+        {{#if view.questionValidationFailure }}
+        <li><a class="button noChanges" id="standardBtn_01">{{t _save_question}}</a> </li>
+        {{else}}
         <li><a class="button" id="standardBtn_01" {{action "doSaveEditQuestion" target="this"}}>{{t _save_question}}</a> </li>
+        {{/if}}
+        {{/if}}
         <li><a class="cancel" id="standardBtn_01" {{action "doCancelEditQuestion" target="this"}}>{{t _cancel}}</a> </li>
       </ul>
     </nav>

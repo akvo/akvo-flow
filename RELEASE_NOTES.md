@@ -1,5 +1,101 @@
 # Akvo Flow Release Notes
 ----
+# Akvo Flow Dashboard v1.9.30.1 - Deterministic Daisy (Hotfix 1)
+Date: 04 April 2018
+
+## Resolved issues
+* **Bug fixes** - Fix issue with unidentified users causing dashboard translations and reports exports not to work after v1.9.30 release [#2572]
+
+# Akvo Flow Dashboard v1.9.30 - Deterministic Daisy
+Date: 03 April 2018
+
+## New and noteworthy
+* **Translations** - Add translations for Pijin and Tok Pisin [#2202]
+* **Data security** - Log who changed entity [#2525]
+* **Data point location** - Created a script to fix data point location [#2520]. This stems from issue [#2518] where a data point's location was being overriden by GEO type question answers from monitoring forms
+
+## Resolved issues
+* **Questions reordering** - Changed how questions and question groups are reordered [#1393],[#2523]. Reordering is now done in bulk for all affected so that order does not break in case of unstable network issues
+* **User interface** - Remove submissions list from monitoring tab after users navigates away [#2531]. Fixed alignment on manual survey transfers tab [#2276]. Load questions and answers for monitoring forms when viewing data in monitoring tab [#2567]
+* **Variable name validation** - Recheck variable name for special characters after successful validation [#2563]. Preempt returning of old values when variable name is set to null [#2551]
+* **Code cleanup** - Deleted code causing exception to be thrown when listing questions [#2421]
+* **Performance improvement** - No longer putting bad file names in device file job queue [#2539]
+
+# Akvo Flow Dashboard v1.9.29 - Cosmic Coconut
+Date: 08 March 2018
+
+## New and noteworthy
+* **Data point location** - Changed questions of type geolocation from being automatically used as the data point's location. Users will now have to tick which question is to be used as the data point location [#2517]
+* **Reports** - The "other, please specify" option in exported reports is now displayed in its own column [#2290]. Changed the raw data sheet in comprehensive reports to have analysis format [#2469]
+* **Data cleaning** - No longer support data cleaning using imports from old-format reports [#2330]
+* **Code cleanup** - Removed unused code [#2481]
+
+## Resolved issues
+* **Monitoring tab user interface improvement** - Ordered question answers in the monitoring tab as well as showing the question groups to which the questions belong [#2387]
+* **Simplify validation** - Changed how question variable name validation errors are displayed by moving from hard coded error message to error messages defined via transifex. Also changed instances of questionId on the code to variable name [#2474]. Made variable name validation case-sensitive [#839]
+* **Surveys tab** - Fixed issue causing surveys tab to sometimes go blank during a session [#1402]. Also fixed issue allowing users to copy or move surveys to the root folder [#2464]
+* **Submissions list on data tab** - Fixed issue causing submissions to still be displayed on the inspect data tab even after a user navigates away [#2372]
+* **Data script** - Fixed issue causing data script to crash in case a question had a null survey pointer [#2508]
+
+# Akvo Flow Dashboard v1.9.28.1 - Bent Banana (Hotfix 1)
+Date: 20 February 2018
+## Resolved issues
+* **Integrity check failing for CartoDB libraries** [#2500] - Fixed issue causing maps on CartoDB enabled instances not to work
+
+# Akvo Flow Dashboard v1.9.28 - Bent Banana
+Date: 15 February 2018
+
+## New and noteworthy
+* **Add updated translations of online workspace** - Updated French, Spanish, and Portuguese translations [#2287]
+* **Comprehensive report improvement** - Show frequency table and graphs for cascades [#2427], add statistics about collected data [#2443], and improve graph styling [#2428]
+* **Rearrange data tab** - Moved monitoring tab after inspect data tab [#2467]
+* **Simplify validation** - Rephrased question ID to variable name [#2143], and update variable name help text [#2444]
+
+## Resolved issues
+* **Users unable to delete data under monitoring tab** [#2261] - Removed delete option to reduce the the risk of high data loss
+* **Form version number not incrementing correctly** [#1403] - Set form as not published each time the form basics are changed
+* **Code Cleanup** [#2447],[#555] - Remove unused code
+* **UI** - Remove line above "No results found" in inspect data and monitoring tabs [#2452]
+
+## Resolved issues
+* Users unable to delete data under monitoring tab [#2261] - Removed delete option to reduce the the risk of high data loss
+* Form version number not incrementing correctly [#1403] - Set form as not published each time the form basics are changed
+* Code Cleanup [#2447],[#555] - Remove unused code
+* UI - Remove line above "No results found" in inspect data and monitoring tabs [#2452]
+
+# 1.9.27 Aerodynamic Avocado
+Date: 25 January 2018
+
+## New and noteworthy
+### Code Cleanup
+* [#2333] - Removed unnecessary caddisfly endpoint and test file
+* [#2410] - Removed unneeded `com.gallatinsystems.common.data` classes
+* [#2412] - Removed ununsed authentication class and endpoint definition
+* [#2414] - Removed unneeded S3Driver and dependent classes
+* [#2417] - Removed gwt-user.jar dependency
+* [#2431] - Removed unused classes for data export packages
+* [#2198] - Fix 'fullWidth' class misspelling in css.
+* [#2367] - Removed geocode column from exported reports
+
+### UI
+* [#2385] - Removed the question ID column in the detailed submission view on monitoring tab
+* [#2429] - Updated copyright from 2017 to 2018
+
+### Code refactor
+* **Use `extend` instead of `create` in the maps controller** [#2275] - Extend ArrayController class instead of creating a new instance of it
+* **Deprecate metrics** [#2397] - Removed attributes and statistics from UI and removed metrics from backend
+
+## Resolved issues
+* **Add "No results found" in Monitoring tab** [#1868] - When a user clicks find on the monitoring tab but there is no data to display, a "No results found" message is displayed
+
+### Bug fixes
+* **Error thrown sometimes when opening comprehensive reports using Excel** [#2279] - Issue occurred when the frequency table for a number question was over 96 items long. Fix was to set is to handle any length content
+* **Sometimes duplicate column names generated in raw data** [#2315] - Append variable name to geolocation column headers to make each one unique
+* **Hitting the enter key after changing the form/survey name causes the dashboard to reload** [#1929] - Trigger save when user hits enter after editing survey/form title
+* **Report imports fails if there is no question with the column header id** [#2436] - ignore column if it does not exist
+* **Forms of copied survey does not showing for all users** [#1765] - Fixed the ancestor identifiers for copied surveys so they match the copy destination and therefore the surveys display for all users with view access for the destination
+* **In Monitoring tab data point order shows as NaN** [#2386] - Order now displayed as number
+
 # 1.9.26 Zetetic Zonkey
 
 ## New and noteworthy

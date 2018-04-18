@@ -1,5 +1,5 @@
 /*
- *  Copyright (C) 2010-2017 Stichting Akvo (Akvo Foundation)
+ *  Copyright (C) 2010-2018 Stichting Akvo (Akvo Foundation)
  *
  *  This file is part of Akvo FLOW.
  *
@@ -124,7 +124,7 @@ public class QuestionDao extends BaseDAO<Question> {
      * @param question
      */
     public void delete(Question question) throws IllegalDeletionException {
-        delete(question, Boolean.TRUE);
+        delete(question, Boolean.FALSE);
     }
 
     /**
@@ -249,28 +249,6 @@ public class QuestionDao extends BaseDAO<Question> {
         }
         
         return orderedQuestionList;
-    }
-
-    /**
-     * Lists questions by questionGroupId and type
-     *
-     * @param questionGroupId
-     * @param type
-     * @return
-     */
-    @SuppressWarnings("unchecked")
-    private List<Question> getByQuestiongroupAndType(long questionGroupId, Question.Type type) {
-        PersistenceManager pm = PersistenceFilter.getManager();
-        javax.jdo.Query query = pm.newQuery(Question.class);
-        query.setFilter(" questionGroupId == questionGroupIdParam && type == questionTypeParam");
-        query.declareParameters("Long questionGroupIdParam, String questionTypeParam");
-        query.setOrdering("order asc");
-        List<Question> results = (List<Question>) query.execute(questionGroupId, type.toString());
-        if (results != null && results.size() > 0) {
-            return results;
-        } else {
-            return null;
-        }
     }
 
     /**

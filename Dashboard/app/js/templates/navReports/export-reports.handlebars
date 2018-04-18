@@ -16,6 +16,7 @@
         {{/if}}
       </nav>
     </div>
+  {{/view}}
     <script>
       function openExportOptions(evt, exportName) {
         var i, options, trigger;
@@ -30,50 +31,56 @@
         document.getElementById(exportName).style.display = "block";
         evt.currentTarget.className += " active";
        }
-    </script> 
+    </script>
     <section class="exportContainer">
       <ul class="exportSelect">
         <li class="dataCleanExp trigger" onclick="openExportOptions(event, 'dataCleanExp_options')">
           <h2>{{t _data_cleaning_export}}</h2>
           <h6>{{t _importable_back_to_akvo_flow}}</h6>
           <p class="expDescr">{{t _combines_options}}</p>
+        {{#view FLOW.ExportReportsAppletView}}
           <div id="dataCleanExp_options" class="options">
               <div class="dataCollectedDate">
                 <p>{{t _collection_period}}</p>
                 <label class="collectedFrom">
-                  {{view FLOW.DateField minDate=false valueBinding="FLOW.dateControl.fromDate" elementId="from_date02" placeholder="" placeholderBinding="Ember.STRINGS._collected_from" size=30}}
+                  {{view FLOW.DateField2 valueBinding="view.reportFromDate" class="from_date" placeholder="" placeholderBinding="Ember.STRINGS._collected_from" size=30}}
                 </label>
                 <label class="collectedTo">
-                  {{view FLOW.DateField minDate=false valueBinding="FLOW.dateControl.toDate" elementId="to_date02" placeholder="" placeholderBinding="Ember.STRINGS._to" size=30}}
+                  {{view FLOW.DateField2 valueBinding="view.reportToDate" class="to_date" placeholder="" placeholderBinding="Ember.STRINGS._to" size=30}}
                 </label>
             </div>
             <a {{action showDataCleaningReport target="this"}} class="button trigger2">{{t _download}}</a>
           </div>
+        {{/view}}
         </li>
         <li class="dataAnalyseExp trigger" onclick="openExportOptions(event, 'dataAnalyseExp_options')">
           <h2>{{t _data_analysis_export}}</h2>
           <h6>{{t _not_importable_back}}</h6>
-          <p class="expDescr">{{t _replaces_question}}</p>
+          <p class="expDescr">{{t _replaces_question}}</p>  
+          {{#view FLOW.ExportReportsAppletView}}
             <div id="dataAnalyseExp_options" class="options">
               <div class="dataCollectedDate">
                 <p>{{t _collection_period}}</p>
                 <label class="collectedFrom">
-                   {{view FLOW.DateField minDate=false valueBinding="FLOW.dateControl.fromDate" elementId="from_date" placeholder="" placeholderBinding="Ember.STRINGS._collected_from" size=30}}
+                   {{view FLOW.DateField2 minDate=false valueBinding="view.reportFromDate" class="from_date" placeholder="" placeholderBinding="Ember.STRINGS._collected_from" size=30}}
                 </label>
                 <label class="collectedTo">
-                  {{view FLOW.DateField minDate=false valueBinding="FLOW.dateControl.toDate" elementId="to_date" placeholder="" placeholderBinding="Ember.STRINGS._to" size=30}}
+                  {{view FLOW.DateField2 minDate=false valueBinding="view.reportToDate" class="to_date" placeholder="" placeholderBinding="Ember.STRINGS._to" size=30}}
                 </label>
               </div>
               <a {{action showDataAnalysisReport target="this"}} class="button trigger2">{{t _download}}</a>
             </div>
+          {{/view}}
           </li>
           <li class="compReportExp trigger"  onclick="openExportOptions(event, 'compReportExp_options')">
             <h2>{{t _comprehensive_report}}</h2>
             <h6>{{t _not_importable_back}}</h6>
             <p class="expDescr">{{t _summarizes_responses}}</p>
+            {{#view FLOW.ExportReportsAppletView}}
             <div id="compReportExp_options" class="options">
               <a {{action showComprehensiveReport target="this"}} class="button trigger2">{{t _download}}</a>
             </div>
+            {{/view}}
           </li>
           <li class="geoShapeDataExp trigger"  onclick="openExportOptions(event, 'geoShapeDataExp_options')">
             <h2>{{t _geoshape_data}}</h2>
@@ -89,21 +96,24 @@
                     promptBinding="Ember.STRINGS._select_question"}}
               {{/if}}
             </div>
+            {{#view FLOW.ExportReportsAppletView}}
             <div id="geoShapeDataExp_options" class="options">
               <a {{action showGeoshapeReport target="this"}} class="button trigger2">{{t _download}}</a>
-          </div>
+            </div>
+            {{/view}}
         </li>
         <li class="surveyFormExp trigger"  onclick="openExportOptions(event, 'surveyFormExp_options')">
           <h2>{{t _survey_form}}</h2>
           <p class="expDescr">{{t _printable}}</p>
+          {{#view FLOW.ExportReportsAppletView}}
           <div id="surveyFormExp_options" class="options">
             <a {{action showSurveyForm target="this"}} class="button trigger2">{{t _download}}</a>
               {{#if view.showSurveyFormApplet }}
                 {{view FLOW.surveyFormApplet}}
               {{/if}}
-        </div>
+          </div>
+          {{/view}}
       </li>
     </ul>
   </section>
-{{/view}}
 </section>

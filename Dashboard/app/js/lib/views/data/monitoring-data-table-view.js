@@ -22,7 +22,7 @@ FLOW.MonitoringDataTableView = FLOW.View.extend({
   },
 
   showSurveyInstanceDetails: function (evt) {
-    FLOW.questionAnswerControl.doQuestionAnswerQuery(evt.context.get('keyId'));
+    FLOW.questionAnswerControl.doQuestionAnswerQuery(evt.context);
     $('.si_details').hide();
     $('tr[data-flow-id="si_details_' + evt.context.get('keyId') + '"]').show();
   },
@@ -98,6 +98,12 @@ FLOW.MonitoringDataTableView = FLOW.View.extend({
   hasPrevPage: function () {
     return FLOW.router.surveyedLocaleController.get('pageNumber');
   }.property('FLOW.router.surveyedLocaleController.pageNumber'),
+  
+  willDestroyElement: function () {
+    FLOW.router.surveyedLocaleController.set('currentContents', null);
+    FLOW.metaControl.set('numSLLoaded',null)
+    FLOW.router.surveyedLocaleController.set('pageNumber',0)
+  }
 });
 
 /**
@@ -107,12 +113,12 @@ FLOW.DataPointView = FLOW.View.extend({
     templateName: 'navData/monitoring-data-row',
 
     approvalStatus: [{label: Ember.String.loc('_pending'), value: 'PENDING'}, { label: Ember.String.loc('_approved'), value: 'APPROVED' },{ label: Ember.String.loc('_rejected'), value: 'REJECTED'}],
-
+     
+     //catering for counter for the data points.
+    tagName: 'span',
+    content: null,
+    pageNumber: 0,
     showDataApprovalBlock: false,
-
-    showSurveyedLocaleDeleteButton: function() {
-        return FLOW.router.surveyedLocaleController.get('userCanDelete');
-    }.property(),
 
     showApprovalStatusColumn: function () {
         return this.get('parentView').get('showApprovalStatusColumn');
@@ -186,6 +192,11 @@ FLOW.DataPointView = FLOW.View.extend({
     toggleShowDataApprovalBlock: function () {
         this.toggleProperty('showDataApprovalBlock');
     },
+
+    dataPointRowNumber: function () {
+        var pageNumber = FLOW.router.surveyedLocaleController.get('pageNumber');
+        return this.get('_parentView.contentIndex') + 1 + 20 * pageNumber;
+    }.property()
 });
 
 /**
