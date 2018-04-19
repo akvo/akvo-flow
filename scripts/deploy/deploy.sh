@@ -115,10 +115,7 @@ function deploy_instance {
 
     sed -i "s|${sandbox_sha1_sum}|${instance_sha1_sum}|g" "${instance_file}"
 
-    # Copy definition and modify `version` and `instanceClass`
-    cp "${instance_file}" "${backend_file}"
-    sed -i 's/"F1"/"B2"/' "${backend_file}"
-    sed -i 's/"1"/"dataprocessor"/' "${backend_file}"
+    jq ". + {id: \"dataprocessor\", manualScaling: {instances: 1}, instanceClass: \"B2\"}" "${instance_file}" > "${backend_file}"
 
     gsutil cp -J "${config_repo}/${instance_id}/appengine-web.xml" "gs://${deploy_bucket_name}/${instance_sha1_sum}"
 
