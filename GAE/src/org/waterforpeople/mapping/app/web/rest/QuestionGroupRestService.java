@@ -241,16 +241,16 @@ public class QuestionGroupRestService {
         statusDto.setStatus("failed");
         statusDto.setMessage("No question groups to change");
         List<QuestionGroup> saveList = new ArrayList<>();
-        
-        //Loop over question groups
+
+        // Loop over question groups
         final List<QuestionGroupDto> requestList = payLoad.getQuestion_groups();
         if (requestList != null && requestList.size() > 0) {
             for (final QuestionGroupDto questionGroupDto : requestList) {
-    
+
                 if (questionGroupDto != null) {
                     Long keyId = questionGroupDto.getKeyId();
                     QuestionGroup qg;
-        
+
                     // if the questionGroupDto has a key, try to get the question group.
                     if (keyId != null) {
                         qg = questionGroupDao.getByKey(keyId);
@@ -264,12 +264,12 @@ public class QuestionGroupRestService {
                         } else { //missing in db - fail
                             statusDto.setMessage("Cannot change unknown question group " + keyId);
                             response.put("meta", statusDto);
-                            return response;                            
+                            return response;
                         }
                     } else  { //no db key - fail
                         statusDto.setMessage("Cannot change question group without id");
                         response.put("meta", statusDto);
-                        return response;                            
+                        return response;
                     }
                 }
             }
