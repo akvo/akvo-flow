@@ -129,12 +129,22 @@ function deploy_instance {
 	 "${api_root}/apps/${instance_id}/services/default/versions" > \
 	 "${instance_id}_operation.json"
 
+    instance_operation_path=$(jq -r .name "${instance_id}_operation.json")
+
+    if [ "${instance_operation_path}" == "null" ]; then
+        echo "Deployment to ${instance_id} failed"
+        exit 1
+    fi
+
     curl -s -X POST -T "${backend_file}" -H "Content-Type: application/json" \
 	 -H "Authorization: Bearer ${access_token}" \
 	 "${api_root}/apps/${instance_id}/services/default/versions" > \
 	 "${instance_id}_dataprocessor_operation.json"
 
-    instance_operation_path=$(jq -r .name "${instance_id}_operation.json")
+    if [ $(jq -r .name "${instance_id}_dataprocessor_operation.json") == "null" ]; then
+        echo "Deployment to dataprocessor of ${instance_id} failed"
+        exit 1
+    fi
 
     # We only check for liveness of version 1
     for i in {1..20}
