@@ -1,5 +1,17 @@
 # Akvo Flow Release Notes
 ----
+# Akvo Flow Dashboard v1.9.31 - Epic Elm
+Date: 19 April 2018
+
+## New and noteworthy
+* **Development environment** - Improved tools for setting up the development environment by moving from ant to maven build #2406
+* **UI Improvement** - Validate against file types when bulk uploading data #2471. Added a bulk data upload walkthrough #2466
+* **Reports** - Move reports to under data tab #2555
+
+## Resolved issues
+* **Bug fixes** - Date range when exporting reports is independent for different report types #2363. Validate against saving questions without text #2221
+* **Code cleanup** - Remove unnecessary file #2593. Fix device file job queue weekly script #2550
+
 # Akvo Flow Dashboard v1.9.30.1 - Deterministic Daisy (Hotfix 1)
 Date: 04 April 2018
 
