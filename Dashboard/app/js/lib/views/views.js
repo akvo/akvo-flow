@@ -816,6 +816,13 @@ FLOW.DatasubnavView = FLOW.View.extend({
     classNameBindings: 'isActive:active'.w(),
 
     isActive: function () {
+      if (this.get('item') === this.get('parentView.selected') && this.get('parentView.selected') === "bulkUpload") {
+        FLOW.uploader.set('bulkUpload', true);
+      } else {
+        if (this.get('parentView.selected') !== "bulkUpload") {
+          FLOW.uploader.set('bulkUpload', false);
+        }
+      }
       return this.get('item') === this.get('parentView.selected');
     }.property('item', 'parentView.selected').cacheable(),
 
