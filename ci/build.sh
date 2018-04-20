@@ -42,7 +42,7 @@ sed -i "s|^sdk\\.dir=.*|sdk\\.dir=${HOME}/.cache/appengine-java-sdk-${APP_ENGINE
 
 mvn package
 
-if ! [[ -z "$TRAVIS_TAG" ]]; then
+#if ! [[ -z "$TRAVIS_TAG" ]]; then
 
     gpg --batch --passphrase ${CLOJARS_GPG_PASSWORD} --import "$SRC_DIR/devops.asc"
 
@@ -58,4 +58,4 @@ if ! [[ -z "$TRAVIS_TAG" ]]; then
                            -Dpackaging=jar \
                            -Dclassifier=classes
 
-fi
+#fi
