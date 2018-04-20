@@ -46,4 +46,4 @@ COPY ci/startup.sh ci/build.sh /usr/local/bin/
 
 RUN chmod a+x /usr/local/bin/*.sh
 
-CMD ["/app/src/docker/build.sh"]
+CMD ["/app/src/ci/build.sh"]
