@@ -48,7 +48,7 @@ class CSSMinFilter < Filter
   end
 end
 
-output '../GAE/war/publicmap'
+output '../GAE/target/akvo-flow/publicmap'
 input 'app' do
 
   match 'css/main.scss' do
