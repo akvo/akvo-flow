@@ -35,10 +35,6 @@
       {{#if FLOW.uploader.support}}
         <p><input id="raw-data-import-file" type="file"/></p>
         <a {{action importFile target="this"}} class="standardBtn"> {{t _import}}</a>
-        <div class="resumable-progress">
-          <h5>{{t _progress}}</h5>
-          <div class="progress-container"><div class="progress-bar"></div></div>
-        </div>
         <ul class="resumable-list"></ul>
       {{else}}
        <div class="resumable-error">
