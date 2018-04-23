@@ -21,6 +21,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+
 import com.google.appengine.api.datastore.DatastoreService;
 import com.google.appengine.api.datastore.Entity;
 import com.google.appengine.api.datastore.FetchOptions;
@@ -55,6 +56,15 @@ public class DeleteUsers implements Process {
         Map<String, Entity> existingUsers = retrieveExistingUsers(ds);
         List<Key> users = selectUserEntities(existingUsers, userLines);
         deleteSelectedUsers(ds, users);
+        listRemainingSupers(existingUsers);
+    }
+
+    private void listRemainingSupers(Map<String, Entity> existingUsers) {
+        for (Entity e: existingUsers.values()) {
+            if (Boolean.TRUE.equals((Boolean)e.getProperty(USER_ROLE_FIELD))) {
+                System.out.println("Remaining superAdmin: " + e.getProperty(USER_EMAIL_FIELD));
+            }
+        }
     }
 
     private List<Key> selectUserEntities(Map<String, Entity> existing, List<String> userLines) {
@@ -62,14 +72,21 @@ public class DeleteUsers implements Process {
 
         for (String line : userLines) {
             String[] userParts = line.split(",", 3); //accept AddUser files
-            if (userParts[0].trim().length() == 0) {
+            String email = userParts[0].trim();
+            if (email.length() == 0) {
                 System.out.println("Skipping user: " + line);
                 continue;
             }
-            Entity user = existing.get(userParts[0].trim());
+            Entity user = existing.get(email);
             if (user != null) {
-                System.out.println("Found user: " + line);
-                users.add(user.getKey());
+                boolean sa = Boolean.TRUE.equals((Boolean)user.getProperty(USER_ROLE_FIELD));
+                System.out.println("Found user: " + email +
+                        " id " + user.getKey().getId() +
+                        " superAdmin " + sa);
+                if (sa) {
+                    users.add(user.getKey());
+                    existing.remove(email);
+                }
             }
         }
         return users;
