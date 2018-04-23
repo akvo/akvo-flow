@@ -49,7 +49,9 @@ curl -s -o GAE/target/akvo-flow/WEB-INF/appengine-web.xml \
 log Update __VERSION__
 
 version=$(git describe)
+
 sed -i "s/__VERSION__/${version}/" GAE/target/akvo-flow/admin/js/app.js
+gsutil cp GAE/target/akvo-flow.war "gs://akvoflowsandbox-deployment/${version}.war"
 
 log Updating default service version 1
 
