@@ -115,10 +115,7 @@ function deploy_instance {
 
     sed -i "s|${sandbox_sha1_sum}|${instance_sha1_sum}|g" "${instance_file}"
 
-    # Copy definition and modify `version` and `instanceClass`
-    cp "${instance_file}" "${backend_file}"
-    sed -i 's/"F1"/"B2"/' "${backend_file}"
-    sed -i 's/"1"/"dataprocessor"/' "${backend_file}"
+    jq ". + {id: \"dataprocessor\", manualScaling: {instances: 1}, instanceClass: \"B2\"}" "${instance_file}" > "${backend_file}"
 
     gsutil cp -J "${config_repo}/${instance_id}/appengine-web.xml" "gs://${deploy_bucket_name}/${instance_sha1_sum}"
 
@@ -129,12 +126,22 @@ function deploy_instance {
 	 "${api_root}/apps/${instance_id}/services/default/versions" > \
 	 "${instance_id}_operation.json"
 
+    instance_operation_path=$(jq -r .name "${instance_id}_operation.json")
+
+    if [ "${instance_operation_path}" == "null" ]; then
+        echo "Deployment to ${instance_id} failed"
+        exit 1
+    fi
+
     curl -s -X POST -T "${backend_file}" -H "Content-Type: application/json" \
 	 -H "Authorization: Bearer ${access_token}" \
 	 "${api_root}/apps/${instance_id}/services/default/versions" > \
 	 "${instance_id}_dataprocessor_operation.json"
 
-    instance_operation_path=$(jq -r .name "${instance_id}_operation.json")
+    if [ $(jq -r .name "${instance_id}_dataprocessor_operation.json") == "null" ]; then
+        echo "Deployment to dataprocessor of ${instance_id} failed"
+        exit 1
+    fi
 
     # We only check for liveness of version 1
     for i in {1..20}
