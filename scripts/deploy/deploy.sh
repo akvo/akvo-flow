@@ -138,7 +138,7 @@ function deploy_instance {
 	 "${api_root}/apps/${instance_id}/services/default/versions" > \
 	 "${instance_id}_dataprocessor_operation.json"
 
-    if [ $(jq -r .name "${instance_id}_dataprocessor_operation.json") == "null" ]; then
+    if [[ "$(jq -r .name "${instance_id}_dataprocessor_operation.json")" == "null" ]]; then
         echo "Deployment to dataprocessor of ${instance_id} failed"
         exit 1
     fi
