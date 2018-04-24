@@ -1293,7 +1293,7 @@ public class GraphicalSurveySummaryExporter extends SurveySummaryExporter {
         for (QuestionDto q : questions) {
             questionIdList.add(q.getKeyId().toString());
 
-            String varName = q.getQuestionId();
+            String varName = q.getVariableName();
             // Can we tag the column(s) with the variable name?
             final boolean useVarName = variableNamesInHeaders
                     && varName != null
@@ -1618,7 +1618,7 @@ public class GraphicalSurveySummaryExporter extends SurveySummaryExporter {
                             headerStyle);
                     // Variable name
                     createCell(row, variableNameColumnIndex,
-                            question.getQuestionId(),
+                            question.getVariableName(),
                             headerStyle);
 
                     DescriptiveStats stats = summaryModel.getDescriptiveStatsForQuestion(

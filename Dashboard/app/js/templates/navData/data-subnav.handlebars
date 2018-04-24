@@ -7,6 +7,12 @@
         <a {{action doMonitoringData}}>{{t _monitoring}}</a>
       {{/view}}
     {{/if}}
+    {{#view view.NavItemView item="chartReports" }}
+      <a {{action doChartReports}}>{{t _charts}}</a>
+    {{/view}}
+    {{#view view.NavItemView item="exportReports" }}
+    	<a {{action doExportReports}}>{{t _export_reports}}</a>
+    {{/view}}
     {{#view view.NavItemView item="bulkUpload" }}
     <a {{action doBulkUpload}}>{{t _bulk_upload_data}}</a>
     {{/view}} 

@@ -1,15 +1,73 @@
 # Akvo Flow Release Notes
 ----
-# Akvo Flow Dashboard v1.9.28 - Bent Banana
-Date: 15 February 2015
+# Akvo Flow Dashboard v1.9.31 - Epic Elm
+Date: 19 April 2018
 
 ## New and noteworthy
-* [#2287] - Updated French, Spanish, and Portuguese translations
-* [#2427] - Show frequency table and graphs for cascades
-* [#2443] - Add statistics about collected data to comprehensive report
-* [#2428] - Improve comprehensive report graph styling and display as bar graph
-* [#2467] - Move monitoring tab after inspect data tab
-* Rephrase question ID to variable name [#2143], and update variable name help text [#2444]
+* **Development environment** - Improved tools for setting up the development environment by moving from ant to maven build #2406
+* **UI Improvement** - Validate against file types when bulk uploading data #2471. Added a bulk data upload walkthrough #2466
+* **Reports** - Move reports to under data tab #2555
+
+## Resolved issues
+* **Bug fixes** - Date range when exporting reports is independent for different report types #2363. Validate against saving questions without text #2221
+* **Code cleanup** - Remove unnecessary file #2593. Fix device file job queue weekly script #2550
+
+# Akvo Flow Dashboard v1.9.30.1 - Deterministic Daisy (Hotfix 1)
+Date: 04 April 2018
+
+## Resolved issues
+* **Bug fixes** - Fix issue with unidentified users causing dashboard translations and reports exports not to work after v1.9.30 release [#2572]
+
+# Akvo Flow Dashboard v1.9.30 - Deterministic Daisy
+Date: 03 April 2018
+
+## New and noteworthy
+* **Translations** - Add translations for Pijin and Tok Pisin [#2202]
+* **Data security** - Log who changed entity [#2525]
+* **Data point location** - Created a script to fix data point location [#2520]. This stems from issue [#2518] where a data point's location was being overriden by GEO type question answers from monitoring forms
+
+## Resolved issues
+* **Questions reordering** - Changed how questions and question groups are reordered [#1393],[#2523]. Reordering is now done in bulk for all affected so that order does not break in case of unstable network issues
+* **User interface** - Remove submissions list from monitoring tab after users navigates away [#2531]. Fixed alignment on manual survey transfers tab [#2276]. Load questions and answers for monitoring forms when viewing data in monitoring tab [#2567]
+* **Variable name validation** - Recheck variable name for special characters after successful validation [#2563]. Preempt returning of old values when variable name is set to null [#2551]
+* **Code cleanup** - Deleted code causing exception to be thrown when listing questions [#2421]
+* **Performance improvement** - No longer putting bad file names in device file job queue [#2539]
+
+# Akvo Flow Dashboard v1.9.29 - Cosmic Coconut
+Date: 08 March 2018
+
+## New and noteworthy
+* **Data point location** - Changed questions of type geolocation from being automatically used as the data point's location. Users will now have to tick which question is to be used as the data point location [#2517]
+* **Reports** - The "other, please specify" option in exported reports is now displayed in its own column [#2290]. Changed the raw data sheet in comprehensive reports to have analysis format [#2469]
+* **Data cleaning** - No longer support data cleaning using imports from old-format reports [#2330]
+* **Code cleanup** - Removed unused code [#2481]
+
+## Resolved issues
+* **Monitoring tab user interface improvement** - Ordered question answers in the monitoring tab as well as showing the question groups to which the questions belong [#2387]
+* **Simplify validation** - Changed how question variable name validation errors are displayed by moving from hard coded error message to error messages defined via transifex. Also changed instances of questionId on the code to variable name [#2474]. Made variable name validation case-sensitive [#839]
+* **Surveys tab** - Fixed issue causing surveys tab to sometimes go blank during a session [#1402]. Also fixed issue allowing users to copy or move surveys to the root folder [#2464]
+* **Submissions list on data tab** - Fixed issue causing submissions to still be displayed on the inspect data tab even after a user navigates away [#2372]
+* **Data script** - Fixed issue causing data script to crash in case a question had a null survey pointer [#2508]
+
+# Akvo Flow Dashboard v1.9.28.1 - Bent Banana (Hotfix 1)
+Date: 20 February 2018
+## Resolved issues
+* **Integrity check failing for CartoDB libraries** [#2500] - Fixed issue causing maps on CartoDB enabled instances not to work
+
+# Akvo Flow Dashboard v1.9.28 - Bent Banana
+Date: 15 February 2018
+
+## New and noteworthy
+* **Add updated translations of online workspace** - Updated French, Spanish, and Portuguese translations [#2287]
+* **Comprehensive report improvement** - Show frequency table and graphs for cascades [#2427], add statistics about collected data [#2443], and improve graph styling [#2428]
+* **Rearrange data tab** - Moved monitoring tab after inspect data tab [#2467]
+* **Simplify validation** - Rephrased question ID to variable name [#2143], and update variable name help text [#2444]
+
+## Resolved issues
+* **Users unable to delete data under monitoring tab** [#2261] - Removed delete option to reduce the the risk of high data loss
+* **Form version number not incrementing correctly** [#1403] - Set form as not published each time the form basics are changed
+* **Code Cleanup** [#2447],[#555] - Remove unused code
+* **UI** - Remove line above "No results found" in inspect data and monitoring tabs [#2452]
 
 ## Resolved issues
 * Users unable to delete data under monitoring tab [#2261] - Removed delete option to reduce the the risk of high data loss
