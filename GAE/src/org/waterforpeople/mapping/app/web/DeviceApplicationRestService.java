@@ -16,29 +16,28 @@
 
 package org.waterforpeople.mapping.app.web;
 
-import java.util.List;
-import java.util.Properties;
-
-import javax.servlet.http.HttpServletRequest;
-
+import com.gallatinsystems.framework.rest.AbstractRestApiServlet;
+import com.gallatinsystems.framework.rest.RestRequest;
+import com.gallatinsystems.framework.rest.RestResponse;
 import org.json.JSONObject;
 import org.waterforpeople.mapping.app.web.dto.DeviceApplicationRestRequest;
 import org.waterforpeople.mapping.app.web.dto.DeviceApplicationRestResponse;
 import org.waterforpeople.mapping.dao.DeviceApplicationDao;
 import org.waterforpeople.mapping.domain.DeviceApplication;
 
-import com.gallatinsystems.framework.rest.AbstractRestApiServlet;
-import com.gallatinsystems.framework.rest.RestRequest;
-import com.gallatinsystems.framework.rest.RestResponse;
+import javax.servlet.http.HttpServletRequest;
+import java.util.List;
+import java.util.Properties;
 
 /**
  * restful service for DeviceApplications
- * 
+ *
  * @author Christopher Fagiani
  */
 public class DeviceApplicationRestService extends AbstractRestApiServlet {
 
     private static final long serialVersionUID = -830140106880504436L;
+    private static final int MINIMUM_SUPPORTED_ANDROID_VERSION = 15;
     private DeviceApplicationDao devAppDao;
 
     public DeviceApplicationRestService() {
@@ -64,16 +63,38 @@ public class DeviceApplicationRestService extends AbstractRestApiServlet {
                 && autoUpdateApk.equalsIgnoreCase("true")) {
 
             DeviceApplicationRestRequest daReq = (DeviceApplicationRestRequest) req;
-            List<DeviceApplication> devAppList = devAppDao
-                    .listByDeviceTypeAndAppCode(daReq.getDeviceType(),
-                            daReq.getAppCode(), 1);
-            if (devAppList != null && devAppList.size() > 0) {
-                resp.setVersion(devAppList.get(0).getVersion());
-                resp.setFileName(devAppList.get(0).getFileName());
-                resp.setMd5Checksum(devAppList.get(0).getMd5Checksum());
+            String androidBuildVersion = daReq.getAndroidBuildVersion();
+            if (androidBuildVersion == null || parseBuildVersion(
+                    androidBuildVersion) < MINIMUM_SUPPORTED_ANDROID_VERSION) {
+                DeviceApplication devApp = devAppDao
+                        .listAppVersionForUnsupportedDevices(daReq.getDeviceType(),
+                                daReq.getAppCode());
+                if (devApp != null) {
+                    resp.setVersion(devApp.getVersion());
+                    resp.setFileName(devApp.getFileName());
+                    resp.setMd5Checksum(devApp.getMd5Checksum());
+                }
+            } else {
+                List<DeviceApplication> devAppList = devAppDao
+                        .listByDeviceTypeAndAppCode(daReq.getDeviceType(),
+                                daReq.getAppCode(), 1);
+                if (devAppList != null && devAppList.size() > 0) {
+                    DeviceApplication deviceApplication = devAppList.get(0);
+                    resp.setVersion(deviceApplication.getVersion());
+                    resp.setFileName(deviceApplication.getFileName());
+                    resp.setMd5Checksum(deviceApplication.getMd5Checksum());
+                }
             }
         }
         return resp;
+    }
+
+    private int parseBuildVersion(String androidBuildVersion) {
+        try {
+            return Integer.parseInt(androidBuildVersion);
+        } catch (NumberFormatException e) {
+            return 0;
+        }
     }
 
     @Override
