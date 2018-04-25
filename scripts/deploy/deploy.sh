@@ -47,7 +47,7 @@ fi
 
 echo "Cloning akvo-flow-server-config..."
 
-if [[ -n "${gh_user}" ]] && [[ -n "${gh_token}" ]]; then
+if [[ -z "${gh_user}" ]] && [[ -z "${gh_token}" ]]; then
     git clone --depth=50 --branch=master \
 	"https://${gh_user}:${gh_token}@github.com/akvo/akvo-flow-server-config.git" "${config_repo}" > /dev/null
 else

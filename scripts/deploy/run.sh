@@ -11,8 +11,8 @@ fi
 docker run --rm \
        --interactive \
        --tty \
-       --volume "$(pwd):/akvo-flow" \
-       --volume "$(pwd)/tmp:/tmp" \
+       --volume "$(pwd):/akvo-flow:delegated" \
+       --volume "$(pwd)/tmp:/tmp:delegated" \
        --workdir "/akvo-flow" \
        --env GH_USER \
        --env GH_TOKEN \
