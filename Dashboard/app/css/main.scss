@@ -3770,7 +3770,7 @@ footer.bottomPage nav.footItems {
     clear: both;
     background: rgba($akvoBlack, 0.05);
     border-top: thin solid rgba($akvoBlack, 0.05);
-                                          /*     
+                                          /*
 border-bottom: thin solid rgba($akvoBlack, 0.05); */
     padding: 5px 0 7px 0;
     ul {
@@ -4830,31 +4830,31 @@ table.surveyDetails {
             margin: 5px auto;
             box-shadow: 0 2px 3px rgba(32, 32, 36, 0.1);
             border-top: 1px solid rgba(32, 32, 36, 0.1);
-    
+
             li {
                 width: 49.75%;
                 text-align: center;
                 padding: 5px 0;
                 color: rgb(128, 130, 133);
                 margin-right: 0.5%;
-    
+
                 &:last-of-type {
                     margin-right: 0;
                 }
-    
+
                 span {
                     display: block;
                     margin-top: -5px;
                     font-weight: 600;
-    
+
                     &.projectForm, &.projectMonitoring, &.cascadeStatus {
                         color: white;
                     }
-    
+
                     &.cascadeStatus.redColor {
                         color: $akvoRed2;
                     }
-    
+
                     &.cascadeStatus.published {
                         color: $green;
                     }
