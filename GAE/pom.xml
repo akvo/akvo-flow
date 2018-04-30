@@ -310,6 +310,12 @@
                     </excludes>
                 </resource>
             </webResources>
+            <packagingExcludes>
+                /WEB-INF/appengine-generated/**,
+                /WEB-INF/dev-logging.properties,
+                /WEB-INF/flow*.log,
+                /WEB-INF/classes/services/**
+            </packagingExcludes>
         </configuration>
       </plugin>
 
