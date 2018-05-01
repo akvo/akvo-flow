@@ -42,6 +42,7 @@
         <intercept-url pattern="/rest/users" access="hasRole('USER')"/>
         <intercept-url pattern="/rest/user_roles" access="hasRole('ADMIN')"/>
         <intercept-url pattern="/rest/user_auth" access="hasRole('ADMIN')"/>
+        <intercept-url pattern="/rest/reports" method="GET" access="hasRole('USER')/>
         <intercept-url pattern="/rest/**" access="hasRole('USER')"/>
         <intercept-url pattern="/admin/**" access="hasRole('USER')"/>
         <intercept-url pattern="/**" access="permitAll"/>
