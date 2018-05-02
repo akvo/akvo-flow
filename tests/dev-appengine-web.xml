@@ -18,7 +18,7 @@
         <property name="aws_identifier" value="an identifier" />
         <property name="photo_url_root" value="http://s3/images/" />
         <property name="alias" value="akvoflowsandbox.appspot.com" />
-        <property name="flowServices" value="http://fake-flow-services/" />
+        <property name="flowServices" value="http://localhost:3000" />
         <property name="s3bucket" value="akvoflowsandbox" />
         <property name="surveyuploadurl" value="http://s3/" />
         <property name="surveyuploaddir" value="surveys" />

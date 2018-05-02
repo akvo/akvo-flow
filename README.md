@@ -84,6 +84,14 @@ To switch back to the dev setup:
 To deploy the current state of the docker container to whatever tenant you last switched to, run:
 
     docker-compose exec akvo-flow /bin/bash -c "cd GAE && mvn appengine:update appengine:backends_update"
+   
+### Running Flow Services and Flow together locally
+
+If you want to run both Flow and Flow Services locally and talking to each other, run:
+
+    docker-compose -f docker-compose.together.yml up --build -d
+
+Read the Flow Services documentation for the Flow Services specific instructions.   
         
 ---
 
