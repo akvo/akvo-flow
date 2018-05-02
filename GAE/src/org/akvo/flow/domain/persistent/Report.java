@@ -16,6 +16,8 @@
 
 package org.akvo.flow.domain.persistent;
 
+import java.util.Date;
+
 import javax.jdo.annotations.PersistenceCapable;
 
 import com.gallatinsystems.framework.domain.BaseDomain;
@@ -40,6 +42,8 @@ public class Report extends BaseDomain {
     private Long user;
     //we could also use baseDomain.createUserId, but
     //it will be set wrong if the entity is created by the report engine
+    private Date startDate;
+    private Date endDate;
 
 
     public String getReportType() {
@@ -77,6 +81,18 @@ public class Report extends BaseDomain {
     }
     public void setUser(Long user) {
         this.user = user;
+    }
+    public Date getStartDate() {
+        return startDate;
+    }
+    public void setStartDate(Date startDate) {
+        this.startDate = startDate;
+    }
+    public Date getEndDate() {
+        return endDate;
+    }
+    public void setEndDate(Date endDate) {
+        this.endDate = endDate;
     }
 
 

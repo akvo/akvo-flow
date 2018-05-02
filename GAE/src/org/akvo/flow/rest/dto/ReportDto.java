@@ -16,6 +16,8 @@
 
 package org.akvo.flow.rest.dto;
 
+import java.util.Date;
+
 import com.gallatinsystems.framework.gwt.dto.client.BaseDto;
 
 public class ReportDto extends BaseDto {
@@ -28,6 +30,8 @@ public class ReportDto extends BaseDto {
     private String filename;
     private String message;
     private String user;
+    private Date startDate;
+    private Date endDate;
 
     public ReportDto() {
 
@@ -79,6 +83,22 @@ public class ReportDto extends BaseDto {
 
     public void setUser(String user) {
         this.user = user;
+    }
+
+    public Date getStartDate() {
+        return startDate;
+    }
+
+    public void setStartDate(Date startDate) {
+        this.startDate = startDate;
+    }
+
+    public Date getEndDate() {
+        return endDate;
+    }
+
+    public void setEndDate(Date endDate) {
+        this.endDate = endDate;
     }
 
 }

@@ -21,7 +21,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import org.akvo.dao.ReportDAO;
+import org.akvo.dao.ReportDao;
 import org.akvo.flow.domain.persistent.Report;
 import org.akvo.flow.rest.dto.ReportDto;
 import org.akvo.flow.rest.dto.ReportPayload;
@@ -45,7 +45,7 @@ public class ReportRestService {
     final String[] doNotCopy = {
             "user"};
 
-    private ReportDAO reportDao = new ReportDAO();
+    private ReportDao reportDao = new ReportDao();
     private UserDao userDao = new UserDao();
 
     /**
