@@ -44,7 +44,6 @@ import com.gallatinsystems.common.util.MD5Util;
 import com.gallatinsystems.framework.rest.RestRequest;
 import com.gallatinsystems.survey.domain.SurveyGroup.PrivacyLevel;
 import com.gallatinsystems.survey.domain.SurveyGroup.ProjectType;
-
 import org.apache.commons.codec.binary.Base64;
 import org.apache.log4j.Logger;
 import org.codehaus.jackson.JsonNode;
@@ -141,11 +140,10 @@ public class BulkDataServiceClient {
             cursor = jsonOuter.getString("cursor");
             List<DeviceFilesDto> dfDtoTemp = fetchData(cursor, serverBase,
                     statusCode);
-            if (dfDtoTemp != null) {
+            if (dfDtoTemp != null)
                 for (DeviceFilesDto item : dfDtoTemp) {
                     dfDto.add(item);
                 }
-            }
         }
 
         return dfDto;
@@ -207,16 +205,14 @@ public class BulkDataServiceClient {
             if (json != null) {
                 if (json.has("placemarks")) {
                     try {
-                        if (!json.getString("placemarks").equals("null")) {
+                        if (!json.getString("placemarks").equals("null"))
                             arr = json.getJSONArray("placemarks");
-                        }
                     } catch (Exception ex) {
                         ex.printStackTrace();
                         arr = null;
                     }
-                } else {
+                } else
                     return null;
-                }
             }
 
             if (arr != null) {
@@ -1174,9 +1170,8 @@ public class BulkDataServiceClient {
                 }
             }
             return dtoList;
-        } else {
+        } else
             return null;
-        }
     }
 
     /**
@@ -1446,121 +1441,5 @@ public class BulkDataServiceClient {
             }
         }
         return null;
-    }
-
-
-    /**
-     * executes a post or put to a rest api
-     */
-    private static String sendDataToServer(String method, String baseUrl, String body, String apiKey)
-            throws Exception {
-        BufferedReader reader = null;
-        String result = null;
-        try {
-            String queryString = null;
-            if (apiKey != null) {
-                queryString = new String();
-                DateFormat df = new SimpleDateFormat("yyyy/MM/dd HH:mm:ss");
-                df.setTimeZone(TimeZone.getTimeZone("GMT"));
-                queryString += RestRequest.TIMESTAMP_PARAM + "="
-                        + URLEncoder.encode(df.format(new Date()), "UTF-8");
-                queryString = sortQueryString(queryString);
-                queryString += "&" + RestRequest.HASH_PARAM + "="
-                        + MD5Util.generateHMAC(queryString, apiKey);
-                baseUrl += "?" + queryString;
-            }
-
-
-            URL url = new URL(baseUrl);
-            log.debug("Calling: " + method + " " + baseUrl);
-            HttpURLConnection conn = (HttpURLConnection) url.openConnection();
-
-            conn.setConnectTimeout(30000);
-            conn.setRequestMethod(method);
-            conn.setUseCaches(false);
-            conn.setRequestProperty("Content-Length",
-                    "" + Integer.toString(body.getBytes().length));
-            conn.setRequestProperty("Content-Type", "application/json");
-
-            conn.setDoInput(true);
-            conn.setDoOutput(true);
-            conn.addRequestProperty("Accept-Encoding", "gzip");
-            conn.addRequestProperty("User-Agent", "gzip");
-
-            DataOutputStream wr = new DataOutputStream(conn.getOutputStream());
-            wr.writeBytes(body);
-            wr.flush();
-            wr.close();
-            InputStream instream = conn.getInputStream();
-            String contentEncoding = conn.getHeaderField("Content-Encoding");
-
-            if (contentEncoding != null
-                    && contentEncoding.equalsIgnoreCase("gzip")) {
-                reader = new BufferedReader(new InputStreamReader(
-                        new GZIPInputStream(instream), "UTF-8"));
-            } else {
-                reader = new BufferedReader(new InputStreamReader(instream,
-                        "UTF-8"));
-            }
-
-            StringBuilder sb = new StringBuilder();
-            String line = null;
-
-            while ((line = reader.readLine()) != null) {
-                sb.append(line + "\n");
-            }
-            result = sb.toString();
-        } finally {
-            if (reader != null) {
-                reader.close();
-            }
-        }
-        return result;
-    }
-    /**
-     * @param reportType
-     * @param userEmail
-     * @param initialState
-     * @param baseUrl
-     * @param apiKey
-     * @return entity id on server, or null on error
-     */
-    public static Long addNewReport(
-            String reportType,
-            String userEmail,
-            String initialState,
-            String baseUrl,
-            String apiKey) {
-
-        //prepare the package
-        JSONObject postBody = new JSONObject();
-        try {
-            postBody.put("user", userEmail);
-            postBody.put("state", initialState);
-            postBody.put("reportType", reportType);
-            postBody.put("user", userEmail);
-            //No filename or message yet
-        } catch (JSONException e) {
-            log.error("Could not create Report post body." , e);
-            return null;
-        }
-
-
-        String returnedJson;
-        try {
-            returnedJson = sendDataToServer("POST", baseUrl + "/rest/report", postBody.toString(), apiKey);
-        } catch (Exception e) {
-            log.warn("Could not POST Report entity." , e);
-            return null;
-        }
-        try {
-            JSONObject returnedReport = new JSONObject(returnedJson);
-            Long id = returnedReport.getLong("id");
-            return id;
-        } catch (JSONException e) {
-            log.warn("Could not parse Report entity." , e);
-            return null;
-        }
-
     }
 }
