@@ -2,10 +2,14 @@ version: "3"
 services:
   akvo-flow:
     build: .
-    network_mode: "host"
     entrypoint: /app/src/ci/setup-dev-user-in-container.sh
     command: /app/src/ci/devserver.sh
     working_dir: /app/src
+    external_links:
+        - "flow-services:services.akvoflow.local"
+    ports:
+     - 8888:8888
+     - 5005:5005
     volumes:
      - .:/app/src/:delegated
      - ~/.m2:/root/.m2:delegated

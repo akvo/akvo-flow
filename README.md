@@ -87,11 +87,21 @@ To deploy the current state of the docker container to whatever tenant you last 
    
 ### Running Flow Services and Flow together locally
 
-If you want to run both Flow and Flow Services locally and talking to each other, run:
+If you want to run both Flow and Flow Services locally and talking to each other, you will need add some config to your `/etc/hosts`:
+
+    127.0.0.1 services.akvoflow.local akvoflow.local
+
+Then run:
 
     docker-compose -f docker-compose.together.yml up --build -d
 
-Read the Flow Services documentation for the Flow Services specific instructions.   
+**You will need to access Flow using the url [http://akvoflow.local:8888/](http://akvoflow.local:8888/)**
+
+Then read the Flow Services documentation for the Flow Services specific instructions.   
+
+The DNS alias is required because the UI is sending to Flow Services the baseUrl of the Flow service, which Flow Services needs to resolve to the Flow container.
+The way Docker works, this baseUrl cannot be "localhost", as "localhost" for the Flow Service container is itself. 
+Adding a DNS entry allows for one level of indirection where "akvoflow.local" will be resolved to "127.0.0.1" for the Browser, while it resolves to the flow container for the flow-services container.
         
 ---
 
