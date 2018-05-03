@@ -1,4 +1,4 @@
-version: "3"
+version: "3.5"
 services:
   akvo-flow:
     build: .
@@ -7,6 +7,8 @@ services:
     working_dir: /app/src
     external_links:
         - "flow-services:services.akvoflow.local"
+    networks:
+      - akvoflow_together
     ports:
      - 8888:8888
      - 5005:5005
@@ -14,3 +16,7 @@ services:
      - .:/app/src/:delegated
      - ~/.m2:/root/.m2:delegated
      - ~/.m2:/home/akvo/.m2:delegated
+
+networks:
+  akvoflow_together:
+    name: akvoflow_together
