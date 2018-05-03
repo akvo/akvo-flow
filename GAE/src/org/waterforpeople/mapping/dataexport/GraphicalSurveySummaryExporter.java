@@ -213,8 +213,6 @@ public class GraphicalSurveySummaryExporter extends SurveySummaryExporter {
             return;
         }
 
-        BulkDataServiceClient.addNewReport(reportType, "email@example.com", "IN_PROGRESS", serverBaseUrl, apiKey);
-
         questionsById = new HashMap<Long, QuestionDto>();
 
         surveyGroupDto = BulkDataServiceClient.fetchSurveyGroup(surveyId, serverBaseUrl, apiKey);
