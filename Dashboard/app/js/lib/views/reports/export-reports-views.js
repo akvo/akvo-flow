@@ -59,6 +59,7 @@ FLOW.ReportLoader = Ember.Object.create({
     criteria.opts.imgPrefix = FLOW.Env.photo_url_root;
     criteria.opts.uploadUrl = FLOW.Env.surveyuploadurl;
     criteria.opts.appId = FLOW.Env.appId;
+    criteria.opts.gdpr = "true";
 
     if (opts) {
       Ember.keys(opts).forEach(function (k) {
