@@ -1,6 +1,6 @@
 #!/bin/bash
 
-OUT_ROOT=../../../GAE/war/admin/frames/
+OUT_ROOT=../../../GAE/target/akvo-flow/admin/frames/
 
 mkdir -p ${OUT_ROOT}
 

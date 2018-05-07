@@ -39,8 +39,6 @@
     <maven.compiler.target>1.7</maven.compiler.target>
     <maven.compiler.showDeprecation>false</maven.compiler.showDeprecation>
     <archiveClasses>true</archiveClasses>
-    <appId>akvoflowsandbox</appId> <!-- default setting for appId -->
-    <project.configFilesDir>${project.basedir}/../../akvo-flow-server-config</project.configFilesDir>
   </properties>
 
   <dependencies>
@@ -247,10 +245,15 @@
         <artifactId>appengine-maven-plugin</artifactId>
         <version>1.9.59</version>
         <configuration>
+          <fullScanSeconds>20</fullScanSeconds>
           <version>1</version>
           <retainUploadDir>true</retainUploadDir>
           <port>8888</port>
           <address>0.0.0.0</address>
+          <jvmFlags>
+              <jvmFlag>-Xdebug</jvmFlag>
+              <jvmFlag>-agentlib:jdwp=transport=dt_socket,server=y,suspend=n,address=5005</jvmFlag>
+          </jvmFlags>
         </configuration>
       </plugin>
 
@@ -281,28 +284,6 @@
           </dependencies>
       </plugin>
 
-
-      <plugin>
-        <groupId>org.codehaus.mojo</groupId>
-        <artifactId>versions-maven-plugin</artifactId>
-        <version>2.3</version>
-        <executions>
-          <execution>
-            <phase>compile</phase>
-            <goals>
-              <goal>display-dependency-updates</goal>
-              <goal>display-plugin-updates</goal>
-            </goals>
-          </execution>
-        </executions>
-        <configuration>
-          <excludes>
-            <exclude>javax.servlet:javax.servlet-api</exclude>
-            <exclude>com.google.guava:guava</exclude> <!-- avoid android version -->
-          </excludes>
-        </configuration>
-      </plugin>
-
       <plugin>
         <artifactId>maven-war-plugin</artifactId>
         <version>3.1.0</version>
@@ -315,6 +296,7 @@
                       <include>/admin/**</include>
                       <include>/WEB-INF/**/*.xml</include>
                       <include>/WEB-INF/logging.properties</include>
+                      <include>/WEB-INF/dev-logging.properties</include>
                       <include>/publicmap/**</include>
                       <include>/vendorjs/**</include>
                       <include>CurrentUser.vm</include>
@@ -328,6 +310,12 @@
                     </excludes>
                 </resource>
             </webResources>
+            <packagingExcludes>
+                /WEB-INF/appengine-generated/**,
+                /WEB-INF/dev-logging.properties,
+                /WEB-INF/flow*.log,
+                /WEB-INF/classes/services/**
+            </packagingExcludes>
         </configuration>
       </plugin>
 
@@ -365,27 +353,6 @@
       <plugin>
         <artifactId>maven-resources-plugin</artifactId>
         <version>3.0.2</version>
-        <executions>
-          <execution>
-            <id>copy-resources</id>
-            <phase>process-resources</phase>
-            <goals>
-              <goal>copy-resources</goal>
-            </goals>
-            <configuration>
-              <outputDirectory>${project.basedir}/target/akvo-flow/WEB-INF</outputDirectory>
-              <overwrite>true</overwrite>
-              <resources>
-                <resource>
-                  <directory>${project.configFilesDir}/${appId}</directory>
-                  <includes>
-                      <include>appengine-web.xml</include>
-                  </includes>
-                </resource>
-              </resources>
-            </configuration>
-          </execution>
-        </executions>
       </plugin>
 
       <plugin>
@@ -416,23 +383,9 @@
               </rules>
             </configuration>
           </execution>
-          <execution>
-            <id>enforce-flow-config</id>
-            <goals>
-              <goal>enforce</goal>
-            </goals>
-            <configuration>
-              <rules>
-                <requireFilesExist>
-                  <files>
-                    <file>${project.configFilesDir}/${appId}/appengine-web.xml</file>
-                  </files>
-                </requireFilesExist>
-              </rules>
-            </configuration>
-          </execution>
         </executions>
       </plugin>
     </plugins>
   </build>
+
 </project>
