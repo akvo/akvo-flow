@@ -23,8 +23,8 @@ export api_root="https://appengine.googleapis.com/v1"
 deploy_id="$(date +%s)"
 tmp="/tmp/${deploy_id}"
 target_dir="${tmp}/akvo-flow"
-gh_user="${GH_USER:=''}"
-gh_token="${GH_TOKEN:=''}"
+gh_user="${GH_USER:=unknown}"
+gh_token="${GH_TOKEN:=unknown}"
 
 # Install requirements assuming Debian jessie
 echo "Installing dependencies..."
@@ -47,7 +47,7 @@ fi
 
 echo "Cloning akvo-flow-server-config..."
 
-if [[ -z "${gh_user}" ]] && [[ -z "${gh_token}" ]]; then
+if [[ "${gh_user}" != "unknown" ]] && [[ "${gh_token}" != "unknown" ]]; then
     git clone --depth=50 --branch=master \
 	"https://${gh_user}:${gh_token}@github.com/akvo/akvo-flow-server-config.git" "${config_repo}" > /dev/null
 else
