@@ -36,7 +36,7 @@ RUN set -ex; \
     apt-get clean && \
     rm -rf /var/lib/apt/lists/* && \
     update-java-alternatives -s java-1.8.0-openjdk-amd64 && \
-    curl -L https://nodejs.org/dist/v8.2.1/node-v8.2.1-linux-x64.tar.xz | tar -xJf - --strip-components=1 -C /usr && \
+    curl -L https://nodejs.org/dist/v8.11.1/node-v8.11.1-linux-x64.tar.xz | tar -xJf - --strip-components=1 -C /usr && \
     mkdir -p /usr/share/maven /usr/share/maven/ref && \
     curl -fsSL -o /tmp/apache-maven.tar.gz "${BASE_URL}/apache-maven-${MAVEN_VERSION}-bin.tar.gz" && \
     echo "${SHA}  /tmp/apache-maven.tar.gz" | sha256sum -c - && \
