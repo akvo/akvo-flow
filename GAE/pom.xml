@@ -238,26 +238,29 @@
         </resource>
     </resources>
 
-    <!-- app engine SDk version -->
+    <!-- App Engine Maven Plugin (Cloud SDK-based)  -->
     <plugins>
       <plugin>
-        <groupId>com.google.appengine</groupId>
+        <groupId>com.google.cloud.tools</groupId>
         <artifactId>appengine-maven-plugin</artifactId>
-        <version>1.9.59</version>
+        <version>1.3.2</version>
         <configuration>
-          <fullScanSeconds>20</fullScanSeconds>
-          <version>1</version>
-          <retainUploadDir>true</retainUploadDir>
-          <port>8888</port>
-          <address>0.0.0.0</address>
-          <jvmFlags>
-              <jvmFlag>-Xdebug</jvmFlag>
-              <jvmFlag>-agentlib:jdwp=transport=dt_socket,server=y,suspend=n,address=5005</jvmFlag>
-          </jvmFlags>
+            <stage.enableJarClasses>true</stage.enableJarClasses>
+            <stage.enableJarSplitting>true</stage.enableJarSplitting>
+            <deploy.stopPreviousVersion>true</deploy.stopPreviousVersion>
+            <deploy.bucket>akvoflowsandbox-deployment</deploy.bucket>
+            <devserver.version>1</devserver.version>
+            <devserver.port>8888</devserver.port>
+            <devserver.host>0.0.0.0</devserver.host>
+            <devserver.jvmFlags>
+                <devserver.jvmFlag>-Xdebug</devserver.jvmFlag>
+                <devserver.jvmFlag>-agentlib:jdwp=transport=dt_socket,server=y,suspend=n,address=5005</devserver.jvmFlag>
+            </devserver.jvmFlags>
         </configuration>
       </plugin>
 
-      <!-- datanucleus enhancer -->
+
+        <!-- datanucleus enhancer -->
       <plugin>
           <groupId>org.datanucleus</groupId>
           <artifactId>maven-datanucleus-plugin</artifactId>
