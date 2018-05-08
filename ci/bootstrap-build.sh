@@ -26,11 +26,7 @@ fi
 
 docker run \
        --rm \
-       --env "HOST_GID=$(id -g)" \
-       --env "HOST_UID=$(id -u)" \
-       --env "HOST_USER=${USER}" \
-       --volume "${MAVEN_REPO}:/home/$USER/.m2" \
-       --volume "$(pwd):/app/src" \
-       --entrypoint /app/src/ci/startup.sh \
-       --interactive --tty \
+       --volume "${MAVEN_REPO}:/home/akvo/.m2:delegated" \
+       --volume "$(pwd):/app/src:delegated" \
+       --entrypoint /app/src/ci/run-as-user.sh \
        akvo/flow-maven-build "$@"
