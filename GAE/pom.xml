@@ -248,7 +248,7 @@
             <stage.enableJarClasses>true</stage.enableJarClasses>
             <stage.enableJarSplitting>true</stage.enableJarSplitting>
             <deploy.stopPreviousVersion>true</deploy.stopPreviousVersion>
-            <deploy.bucket>akvoflowsandbox-deployment</deploy.bucket>
+            <deploy.bucket>gs://akvoflowsandbox-deployment</deploy.bucket>
             <devserver.version>1</devserver.version>
             <devserver.port>8888</devserver.port>
             <devserver.host>0.0.0.0</devserver.host>

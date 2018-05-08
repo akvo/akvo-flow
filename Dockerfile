@@ -1,7 +1,11 @@
 FROM google/cloud-sdk:196.0.0-slim as gcloud
 
 RUN set -ex; \
-    apt-get update && apt-get install -y google-cloud-sdk-app-engine-java=196.0.0-0
+    apt-get update && \
+    apt-get install -y --no-install-recommends \
+    google-cloud-sdk-app-engine-java=196.0.0-0 && \
+    apt-get clean && \
+    rm -rf /var/lib/apt/lists/*
 
 FROM ruby:2.4.4 as ruby-deps
 
@@ -15,7 +19,7 @@ FROM ruby:2.4.4-slim-jessie
 ARG MAVEN_VERSION=3.5.3
 ARG USER_HOME_DIR="/root"
 ARG SHA=b52956373fab1dd4277926507ab189fb797b3bc51a2a267a193c931fffad8408
-ARG BASE_URL=https://apache.osuosl.org/maven/maven-3/${MAVEN_VERSION}/binaries
+ARG BASE_URL="https://apache.osuosl.org/maven/maven-3/${MAVEN_VERSION}/binaries"
 
 ENV LEIN_ROOT=1
 ENV MAVEN_HOME=/usr/share/maven
@@ -28,11 +32,16 @@ RUN set -ex; \
     echo "deb http://ftp.debian.org/debian jessie-backports main" >> /etc/apt/sources.list && \
     apt-get update && \
     apt-get -t jessie-backports install -y -q --no-install-recommends \
-    curl \
-    git \
-    openjdk-8-jdk \
-    unzip \
-    xz-utils && \
+    curl=7.38.0-4+deb8u10 \
+    git=1:2.11.0-3~bpo8+1 \
+    openjdk-8-jdk=8u162-b12-1~bpo8+1 \
+    openssh-client=1:6.7p1-5+deb8u3 \
+    python-dev=2.7.9-1 \
+    python-setuptools=33.1.1-1~bpo8+1 \
+    unzip=6.0-16+deb8u2 \
+    xz-utils=5.1.1alpha+20120614-2+b3 && \
+    easy_install -U pip && \
+    pip install crcmod==1.7 pyopenssl==17.5.0 && \
     apt-get clean && \
     rm -rf /var/lib/apt/lists/* && \
     update-java-alternatives -s java-1.8.0-openjdk-amd64 && \
@@ -43,18 +52,10 @@ RUN set -ex; \
     tar -xzf /tmp/apache-maven.tar.gz -C /usr/share/maven --strip-components=1 && \
     rm -rf /tmp/apache-maven.tar.gz && \
     ln -s /usr/share/maven/bin/mvn /usr/bin/mvn && \
-    mkdir /akvo-flow && \
-    ln -s /usr/lib/google-cloud-sdk/bin/gloud /usr/bin/gcloud && \
+    ln -s /usr/lib/google-cloud-sdk/bin/gcloud /usr/bin/gcloud && \
     curl -L -o /usr/local/bin/lein https://raw.githubusercontent.com/technomancy/leiningen/stable/bin/lein && \
     chmod a+x /usr/local/bin/lein && \
-    lein
+    lein && \
+    mkdir /akvo-flow
 
 WORKDIR /akvo-flow
-
-COPY ci/startup.sh ci/build.sh /usr/local/bin/
-
-RUN chmod a+x /usr/local/bin/*.sh
-
-ENTRYPOINT ["/usr/local/bin/startup.sh"]
-
-CMD ["/usr/local/bin/build.sh"]

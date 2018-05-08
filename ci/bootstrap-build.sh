@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 
 #
-#  Copyright (C) 2017 Stichting Akvo (Akvo Foundation)
+#  Copyright (C) 2017-2018 Stichting Akvo (Akvo Foundation)
 #
 #  This file is part of Akvo FLOW.
 #
@@ -19,24 +19,9 @@
 set -eu
 
 MAVEN_REPO="$HOME/.m2"
-LOCAL_CACHE="$HOME/.cache"
-APP_ENGINE_SDK_VERSION="1.9.54"
-APP_ENGINE_SDK_FILE="appengine-java-sdk-$APP_ENGINE_SDK_VERSION.zip"
 
 if [[ ! -d "$MAVEN_REPO" ]]; then
     mkdir "$MAVEN_REPO"
-fi
-
-if [[ ! -d "$LOCAL_CACHE" ]]; then
-    mkdir "$LOCAL_CACHE"
-fi
-
-if [[ ! -f "$LOCAL_CACHE/$APP_ENGINE_SDK_FILE" ]]; then
-    (
-    cd "$LOCAL_CACHE"
-    curl -L -O "http://central.maven.org/maven2/com/google/appengine/appengine-java-sdk/$APP_ENGINE_SDK_VERSION/$APP_ENGINE_SDK_FILE"
-    unzip "$APP_ENGINE_SDK_FILE"
-    )
 fi
 
 docker run \
@@ -45,7 +30,7 @@ docker run \
        --env "HOST_UID=$(id -u)" \
        --env "HOST_USER=${USER}" \
        --volume "${MAVEN_REPO}:/home/$USER/.m2" \
-       --volume "${LOCAL_CACHE}:/home/$USER/.cache" \
        --volume "$(pwd):/app/src" \
        --entrypoint /app/src/ci/startup.sh \
+       --interactive --tty \
        akvo/flow-maven-build "$@"
