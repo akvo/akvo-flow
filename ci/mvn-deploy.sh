@@ -6,6 +6,8 @@ function log {
    echo "$(date +"%T") - INFO - $*"
 }
 
+cd /app/src/GAE
+
 gcloud auth activate-service-account "${SERVICE_ACCOUNT_ID}" --key-file=/app/src/ci/akvoflow-uat1.p12
 gcloud config set project "${PROJECT_ID}"
 gcloud config set compute/zone europe-west1-d
@@ -19,9 +21,7 @@ log Update __VERSION__
 
 version=$(git describe)
 
-sed -i "s/__VERSION__/${version}/" GAE/target/akvo-flow/admin/js/app.js
-
-cd /app/src/GAE
+sed -i "s/__VERSION__/${version}/" target/akvo-flow/admin/js/app.js
 
 log Updating version 1
 
