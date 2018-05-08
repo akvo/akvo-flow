@@ -6,6 +6,8 @@ FLOW.ReportLoader = Ember.Object.create({
   requestInterval: 3000,
   analysisExportOption: "range", //date range selected by default
   cleaningExportOption: "range",
+  dateRangeText: Ember.String.loc('_collection_period'),
+  onlyRecentText: Ember.String.loc('_only_recent_submissions'),
 
   payloads: {
 	DATA_CLEANING: {
