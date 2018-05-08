@@ -36,10 +36,6 @@ public class ReportDto extends BaseDto {
     private Date lastUpdateDateTime;
 
 
-    public ReportDto() {
-
-    }
-
     public String getReportType() {
         return reportType;
     }

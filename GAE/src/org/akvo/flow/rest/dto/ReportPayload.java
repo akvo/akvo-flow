@@ -22,7 +22,7 @@ import java.io.Serializable;
 public class ReportPayload implements Serializable {
 
     private static final long serialVersionUID = 1927125743666112187L;
-    ReportDto report = null;
+    private ReportDto report = null;
 
     public ReportDto getReport() {
         return report;

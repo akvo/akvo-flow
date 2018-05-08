@@ -42,8 +42,11 @@ import com.gallatinsystems.user.domain.User;
 @RequestMapping("/reports")
 public class ReportRestService {
 
-    final String[] doNotCopy = {
-            "user"};
+    private final String[] doNotCopy = {
+            "user",
+            "createdDateTime",
+            "lastUpdateDateTime"
+          };
 
     private ReportDao reportDao = new ReportDao();
     private UserDao userDao = new UserDao();
@@ -89,6 +92,7 @@ public class ReportRestService {
     }
 
     // find all reports belonging to the current user
+    //TODO: unfiltered if superAdmin?
     @RequestMapping(method = RequestMethod.GET, value = "")
     @ResponseBody
     public Map<String, Object> listMyReports() {
@@ -102,16 +106,6 @@ public class ReportRestService {
                 results.add(dto);
             }
         }
- /*
-        RestStatusDto statusDto = null;
-        statusDto = new RestStatusDto();
-        final Object credentials = SecurityContextHolder.getContext()
-                .getAuthentication();
-        if (credentials instanceof Long) {
-            return listByUser((Long) credentials);
-        statusDto.setStatus("Listing user " +  + " found records " + reports.size());
-        response.put("meta", statusDto);
-*/
         response.put("reports", results);
         return response;
     }
@@ -120,8 +114,7 @@ public class ReportRestService {
     // TODO: remove or restrict use to owner+superAdmins
     @RequestMapping(method = RequestMethod.GET, value = "/{id}")
     @ResponseBody
-    public Map<String, ReportDto> findReport(@PathVariable("id")
-    Long id) {
+    public Map<String, ReportDto> findReport(@PathVariable("id") Long id) {
         final Map<String, ReportDto> response = new HashMap<String, ReportDto>();
         Report qo = reportDao.getByKey(id);
         ReportDto dto = null;
@@ -137,8 +130,7 @@ public class ReportRestService {
     // delete report by id
     @RequestMapping(method = RequestMethod.DELETE, value = "/{id}")
     @ResponseBody
-    public Map<String, RestStatusDto> deleteReportById(@PathVariable("id")
-    Long id) {
+    public Map<String, RestStatusDto> deleteReportById(@PathVariable("id") Long id) {
         final Map<String, RestStatusDto> response = new HashMap<String, RestStatusDto>();
         Report qo = reportDao.getByKey(id);
         RestStatusDto statusDto = null;
@@ -180,8 +172,8 @@ public class ReportRestService {
                 // if we find the report, update it's properties
                 if (qo != null) {
                     BeanUtils.copyProperties(reportDto, qo, doNotCopy);
-                    //TODO: look up user
-                    qo = reportDao.save(qo);
+                    //TODO: look up user (but why would it change?)
+                    qo = reportDao.save(qo); //Also stores lastUpdateDateTime
                     dto = new ReportDto();
                     DtoMarshaller.copyToDto(qo, dto);
                     statusDto.setStatus("ok");
