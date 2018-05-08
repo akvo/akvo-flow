@@ -44,8 +44,8 @@ RUN set -ex ; \
     gcloud config set core/disable_usage_reporting true && \
     gcloud config set component_manager/disable_update_check true && \
     gcloud components install app-engine-java && \
-    gcloud components remove app-engine-python && \
-    rm -rf /google-cloud-sdk/.install && \
+    rm -rf /google-cloud-sdk/.install/.backup && \
+    rm -rf /google-cloud-sdk/.install/.download && \
     mkdir -p /usr/share/maven /usr/share/maven/ref && \
     curl -fsSL -o /tmp/apache-maven.tar.gz "${BASE_URL}/apache-maven-${MAVEN_VERSION}-bin.tar.gz" && \
     echo "${SHA}  /tmp/apache-maven.tar.gz" | sha256sum -c - && \
