@@ -38,7 +38,7 @@ RUN set -ex ; \
     su-exec=0.2-r0 \
     shadow=4.5-r0 && \
     curl -O "https://dl.google.com/dl/cloudsdk/channels/rapid/downloads/google-cloud-sdk-${CLOUD_SDK_VERSION}-linux-x86_64.tar.gz" && \
-    tar xvzf "google-cloud-sdk-${CLOUD_SDK_VERSION}-linux-x86_64.tar.gz" && \
+    tar xzf "google-cloud-sdk-${CLOUD_SDK_VERSION}-linux-x86_64.tar.gz" && \
     rm "google-cloud-sdk-${CLOUD_SDK_VERSION}-linux-x86_64.tar.gz" && \
     ln -s /lib /lib64 && \
     gcloud config set core/disable_usage_reporting true && \
