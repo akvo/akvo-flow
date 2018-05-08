@@ -33,7 +33,7 @@ public class ReportDto extends BaseDto {
     private Date startDate;
     private Date endDate;
     private Date createdDateTime;
-    private Date modifiedDateTime;
+    private Date lastUpdateDateTime;
 
 
     public ReportDto() {
@@ -112,12 +112,12 @@ public class ReportDto extends BaseDto {
         this.createdDateTime = createdDateTime;
     }
 
-    public Date getModifiedDateTime() {
-        return modifiedDateTime;
+    public Date getLastUpdateDateTime() {
+        return lastUpdateDateTime;
     }
 
-    public void setModifiedDateTime(Date modifiedDateTime) {
-        this.modifiedDateTime = modifiedDateTime;
+    public void setLastUpdateDateTime(Date lastUpdateDateTime) {
+        this.lastUpdateDateTime = lastUpdateDateTime;
     }
 
 }
