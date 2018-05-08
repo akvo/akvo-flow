@@ -32,6 +32,9 @@ public class ReportDto extends BaseDto {
     private String user;
     private Date startDate;
     private Date endDate;
+    private Date createdDateTime;
+    private Date modifiedDateTime;
+
 
     public ReportDto() {
 
@@ -99,6 +102,22 @@ public class ReportDto extends BaseDto {
 
     public void setEndDate(Date endDate) {
         this.endDate = endDate;
+    }
+
+    public Date getCreatedDateTime() {
+        return createdDateTime;
+    }
+
+    public void setCreatedDateTime(Date createdDateTime) {
+        this.createdDateTime = createdDateTime;
+    }
+
+    public Date getModifiedDateTime() {
+        return modifiedDateTime;
+    }
+
+    public void setModifiedDateTime(Date modifiedDateTime) {
+        this.modifiedDateTime = modifiedDateTime;
     }
 
 }
