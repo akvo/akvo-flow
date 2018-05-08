@@ -14,7 +14,7 @@
  *  The full license text can also be seen at <http://www.gnu.org/licenses/agpl.html>.
  */
 
-package org.akvo.dao;
+package org.akvo.flow.dao;
 
 import java.util.Collections;
 import java.util.List;
@@ -43,7 +43,7 @@ public class ReportDao extends BaseDAO<Report> {
      */
     public List<Report> listAllByCurrentUser() {
         final Object credentials = SecurityContextHolder.getContext()
-                .getAuthentication();
+                .getAuthentication().getCredentials();
         if (credentials instanceof Long) {
             return listByUser((Long) credentials);
         } else {

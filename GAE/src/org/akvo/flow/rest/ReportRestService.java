@@ -21,7 +21,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import org.akvo.dao.ReportDao;
+import org.akvo.flow.dao.ReportDao;
 import org.akvo.flow.domain.persistent.Report;
 import org.akvo.flow.rest.dto.ReportDto;
 import org.akvo.flow.rest.dto.ReportPayload;
@@ -102,6 +102,16 @@ public class ReportRestService {
                 results.add(dto);
             }
         }
+ /*
+        RestStatusDto statusDto = null;
+        statusDto = new RestStatusDto();
+        final Object credentials = SecurityContextHolder.getContext()
+                .getAuthentication();
+        if (credentials instanceof Long) {
+            return listByUser((Long) credentials);
+        statusDto.setStatus("Listing user " +  + " found records " + reports.size());
+        response.put("meta", statusDto);
+*/
         response.put("reports", results);
         return response;
     }
