@@ -27,14 +27,14 @@ log Updating version 1
 
 mvn appengine:deploy -Dapp.deploy.project="${PROJECT_ID}" -Dapp.deploy.version=1
 
-log Version 1 updated
+log Uploading artifacts
 
-#gsutil cp GAE/target/akvo-flow.war "gs://akvoflowsandbox-deployment/${version}.war"
+archive_name="deployables-${version}.zip"
+zip "${archive_name}" ./target/appengine-staging/*.yaml
 
-#log Updating default service version 1
+gsutil cp ./target/akvo-flow.war "gs://akvoflowsandbox-deployment/${version}.war"
+gsutil cp "${archive_name}" "gs://akvoflowsandbox-deployment/${archive_name}"
 
-#gcloud app deploy GAE/target/akvo-flow/WEB-INF/appengine-web.xml --promote --version=1
+log Updating dataprocessor
 
-#log Updating default service version dataprocessor
-
-#gcloud app deploy GAE/target/akvo-flow/WEB-INF/appengine-web.xml --no-promote --version=dataprocessor
+mvn appengine:deploy -Dapp.deploy.project="${PROJECT_ID}" -Dapp.deploy.version=dataprocessor

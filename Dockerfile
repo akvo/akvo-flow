@@ -36,7 +36,8 @@ RUN set -ex ; \
     py-openssl=17.2.0-r0 \
     libc6-compat=1.1.18-r3 \
     su-exec=0.2-r0 \
-    shadow=4.5-r0 && \
+    shadow=4.5-r0 \
+    zip=3.0-r4 && \
     curl -O "https://dl.google.com/dl/cloudsdk/channels/rapid/downloads/google-cloud-sdk-${CLOUD_SDK_VERSION}-linux-x86_64.tar.gz" && \
     tar xzf "google-cloud-sdk-${CLOUD_SDK_VERSION}-linux-x86_64.tar.gz" && \
     rm "google-cloud-sdk-${CLOUD_SDK_VERSION}-linux-x86_64.tar.gz" && \
