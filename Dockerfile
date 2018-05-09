@@ -12,7 +12,6 @@ FROM ruby:2.4.4-alpine3.7
 
 ARG CLOUD_SDK_VERSION=198.0.0
 ENV LEIN_ROOT=1
-ENV MAVEN_HOME=/usr/share/maven
 ENV PATH="/google-cloud-sdk/bin:${PATH}"
 ENV CLOUDSDK_PYTHON_SITEPACKAGES=1
 ENV BUNDLE_GEMFILE=/app/src/Dashboard/Gemfile
