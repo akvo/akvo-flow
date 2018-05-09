@@ -15,6 +15,7 @@ ENV LEIN_ROOT=1
 ENV MAVEN_HOME=/usr/share/maven
 ENV PATH="/google-cloud-sdk/bin:${PATH}"
 ENV CLOUDSDK_PYTHON_SITEPACKAGES=1
+ENV BUNDLE_GEMFILE=/app/src/Dashboard/Gemfile
 
 COPY --from=ruby-deps /usr/local/bundle /usr/local/bundle
 
