@@ -27,4 +27,9 @@ usermod -u "$NEW_UID" -o akvo >/dev/null 2>&1
 mkdir /akvo-flow-server-config
 chown akvo:akvo /akvo-flow-server-config
 
+# Disable annoying citation warning
+mkdir -p /home/akvo/.parallel
+touch /home/akvo/.parallel/will-cite
+chown akvo:akvo /home/akvo/.parallel/will-cite
+
 exec su-exec akvo:akvo ./scripts/deploy/deploy.sh "$@"
