@@ -27,6 +27,12 @@ log Updating version 1
 
 mvn appengine:deploy -Dapp.deploy.project="${PROJECT_ID}" -Dapp.deploy.version=1
 
+log Updating cron, index, queue
+
+gcloud app deploy target/appengine-staging/WEB-INF/cron.yaml --quiet
+gcloud app deploy target/appengine-staging/WEB-INF/index.yaml --quiet
+gcloud app deploy target/appengine-staging/WEB-INF/queue.yaml --quiet
+
 log Uploading artifacts
 
 archive_name="${version}.zip"
