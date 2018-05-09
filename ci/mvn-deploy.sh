@@ -29,9 +29,9 @@ mvn appengine:deploy -Dapp.deploy.project="${PROJECT_ID}" -Dapp.deploy.version=1
 
 log Updating cron, index, queue
 
-gcloud app deploy target/appengine-staging/WEB-INF/cron.yaml --quiet
-gcloud app deploy target/appengine-staging/WEB-INF/index.yaml --quiet
-gcloud app deploy target/appengine-staging/WEB-INF/queue.yaml --quiet
+gcloud app deploy target/appengine-staging/WEB-INF/appengine-generated/cron.yaml --quiet
+gcloud app deploy target/appengine-staging/WEB-INF/appengine-generated/index.yaml --quiet
+gcloud app deploy target/appengine-staging/WEB-INF/appengine-generated/queue.yaml --quiet
 
 log Uploading artifacts
 
