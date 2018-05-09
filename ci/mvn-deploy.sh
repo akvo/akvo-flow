@@ -32,10 +32,10 @@ log Uploading artifacts
 archive_name="${version}.zip"
 (
   cd target
-  zip "${archive_name}" appengine-staging/*.yaml appengine-staging/WEB-INF/*.yaml akvo-flow.war
+  zip "${archive_name}" -r appengine-staging/* akvo-flow.war
 )
 
-gsutil cp "${archive_name}" "gs://akvoflowsandbox-deployment/${archive_name}"
+gsutil cp "target/${archive_name}" "gs://akvoflowsandbox-deployment/${archive_name}"
 
 log Updating dataprocessor
 
