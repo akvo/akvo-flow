@@ -24,7 +24,6 @@ export api_root="https://appengine.googleapis.com/v1"
 
 deploy_id="$(date +%s)"
 tmp="/tmp/${deploy_id}"
-target_dir="${tmp}/akvo-flow"
 gh_user="${GH_USER:=''}"
 gh_token="${GH_TOKEN:=''}"
 
