@@ -26,15 +26,6 @@ target_dir="${tmp}/akvo-flow"
 gh_user="${GH_USER:=''}"
 gh_token="${GH_TOKEN:=''}"
 
-# Install requirements assuming Debian jessie
-echo "Installing dependencies..."
-echo "deb http://ftp.debian.org/debian jessie-backports main" >> /etc/apt/sources.list && \
-    apt-get update && \
-    apt-get -t jessie-backports install -y -qq --no-install-recommends \
-	    jq=1.5+dfsg-1.3~bpo8+1 \
-	    unzip=6.0-16+deb8u3 \
-	    parallel=20130922-1
-
 # Force login
 gcloud auth login --brief --activate --force
 
@@ -164,5 +155,5 @@ function deploy_instance {
 }
 
 export -f deploy_instance
-parallel -j 8 --joblog "${deploy_id}.log" deploy_instance ::: "$@"
+parallel --citation -j 8 --joblog "${deploy_id}.log" deploy_instance ::: "$@"
 echo "Done"

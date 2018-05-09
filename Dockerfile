@@ -10,7 +10,7 @@ RUN set -ex ; \
 
 FROM ruby:2.4.4-alpine3.7
 
-ARG CLOUD_SDK_VERSION=200.0.0
+ARG CLOUD_SDK_VERSION=198.0.0
 ENV LEIN_ROOT=1
 ENV MAVEN_HOME=/usr/share/maven
 ENV PATH="/google-cloud-sdk/bin:${PATH}"
