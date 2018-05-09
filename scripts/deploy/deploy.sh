@@ -24,8 +24,8 @@ export api_root="https://appengine.googleapis.com/v1"
 
 deploy_id="$(date +%s)"
 tmp="/tmp/${deploy_id}"
-gh_user="${GH_USER:=''}"
-gh_token="${GH_TOKEN:=''}"
+gh_user="${GH_USER:=unknown}"
+gh_token="${GH_TOKEN:=unknown}"
 
 CRON_UPDATE="${CRON_UPDATE:=true}"
 INDEX_UPDATE="${INDEX_UPDATE:=true}"
