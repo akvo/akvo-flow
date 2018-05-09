@@ -29,12 +29,14 @@ mvn appengine:deploy -Dapp.deploy.project="${PROJECT_ID}" -Dapp.deploy.version=1
 
 log Uploading artifacts
 
-archive_name="deployables-${version}.zip"
-zip "${archive_name}" ./target/appengine-staging/*.yaml
+archive_name="${version}.zip"
+(
+  cd target
+  zip "${archive_name}" appengine-staging/*.yaml appengine-staging/WEB-INF/*.yaml akvo-flow.war
+)
 
-gsutil cp ./target/akvo-flow.war "gs://akvoflowsandbox-deployment/${version}.war"
 gsutil cp "${archive_name}" "gs://akvoflowsandbox-deployment/${archive_name}"
 
 log Updating dataprocessor
 
-mvn appengine:deploy -Dapp.deploy.project="${PROJECT_ID}" -Dapp.deploy.version=dataprocessor
+mvn appengine:deploy -Dapp.deploy.project="${PROJECT_ID}" -Dapp.deploy.version=dataprocessor -Dapp.deploy.promote=false

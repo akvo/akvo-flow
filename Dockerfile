@@ -56,7 +56,6 @@ RUN set -ex ; \
     curl -L -o /usr/local/bin/lein https://raw.githubusercontent.com/technomancy/leiningen/stable/bin/lein && \
     chmod a+x /usr/local/bin/lein && \
     lein && \
-    mkdir /akvo-flow && \
     adduser -D -h /home/akvo -s /bin/bash akvo akvo
 
-WORKDIR /akvo-flow
+WORKDIR /app/src
