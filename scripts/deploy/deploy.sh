@@ -23,8 +23,15 @@ export api_root="https://appengine.googleapis.com/v1"
 deploy_id="$(date +%s)"
 tmp="/tmp/${deploy_id}"
 target_dir="${tmp}/akvo-flow"
-gh_user="${GH_USER:=''}"
-gh_token="${GH_TOKEN:=''}"
+gh_user="${GH_USER:=unkonwn}"
+gh_token="${GH_TOKEN:=unknown}"
+
+cron_update="${CRON_UPDATE:=true}"
+index_update="${INDEX_UPDATE:=true}"
+queue_update="${QUEUE_UPDATE:=true}"
+export cron_update
+export index_update
+export queue_update
 
 # Force login
 gcloud auth login --brief --activate --force
@@ -38,7 +45,7 @@ fi
 
 echo "Cloning akvo-flow-server-config..."
 
-if [[ -z "${gh_user}" ]] && [[ -z "${gh_token}" ]]; then
+if [[ "${gh_user}" != "unknown" ]] && [[ "${gh_token}" != "unknown" ]]; then
     git clone --depth=50 --branch=master \
 	"https://${gh_user}:${gh_token}@github.com/akvo/akvo-flow-server-config.git" "${config_repo}" > /dev/null
 else
@@ -50,24 +57,43 @@ else
 fi
 
 echo "Deploying to akvoflowsandbox using gcloud..."
-mkdir -p "${tmp}"
-gsutil cp "gs://${deploy_bucket_name}/${version}.war" "${tmp}"
-unzip "${tmp}/${version}.war" -d "${target_dir}"
-rm -rf "${tmp}/${version}.war"
-cp -v "${config_repo}/akvoflowsandbox/appengine-web.xml" "${target_dir}/WEB-INF/"
-sed -i -e "s/__VERSION__/${version}/" "${target_dir}/admin/js/app.js"
 
-gcloud app deploy "${target_dir}/WEB-INF/appengine-web.xml" \
+mkdir -p "${tmp}"
+
+# Move to tmp folder and work there
+cd "${tmp}"
+
+gsutil cp "gs://${deploy_bucket_name}/${version}.zip" "${version}.zip"
+unzip "${version}.zip"
+
+if [[ ! -d "appengine-staging" ]]; then
+    echo "Staging folder is not present"
+    exit 1
+fi
+
+cp -v "${config_repo}/akvoflowsandbox/appengine-web.xml" appengine-staging/WEB-INF/
+sed -i "s/__VERSION__/${version}/" appengine-staging/admin/js/app.js
+
+gcloud app deploy appengine-staging/app.yaml \
        --project=akvoflowsandbox \
        --bucket="gs://${deploy_bucket_name}" \
        --version=1 \
        --promote
 
-gcloud app deploy "${target_dir}/WEB-INF/appengine-web.xml" \
+gcloud app deploy appengine-staging/WEB-INF/appengine-generated/cron.yaml \
+       --project=akvoflowsandbox --quiet
+
+gcloud app deploy appengine-staging/WEB-INF/appengine-generated/index.yaml \
+       --project=akvoflowsandbox --quiet
+
+gcloud app deploy appengine-staging/WEB-INF/appengine-generated/queue.yaml \
+       --project=akvoflowsandbox --quiet
+
+gcloud app deploy appengine-staging/app.yaml \
        --project=akvoflowsandbox \
        --bucket="gs://${deploy_bucket_name}" \
        --version=dataprocessor \
-       --no-promote
+       --no-promote --quiet
 
 echo "Retrieving version definitions..."
 
@@ -79,11 +105,6 @@ curl -s -H "Authorization: Bearer ${access_token}" \
      > "${tmp}/1.json"
 
 find "${config_repo}" -name 'appengine-web.xml' -exec sha1sum {} + > "${tmp}/sha1sum.txt"
-
-echo "Deploying instances..."
-
-# Move to tmp folder and work there
-cd "${tmp}"
 
 function deploy_instance {
     instance_id="${1}"
@@ -152,8 +173,24 @@ function deploy_instance {
 	echo "Deployment to ${instance_id} failed"
         exit 1
     fi
+
+    if [[ "${cron_update}" != "false" ]]; then
+	gcloud app deploy appengine-staging/WEB-INF/appengine-generated/cron.yaml \
+	       --project="${instance_id}" --quiet
+    fi
+
+    if [[ "${index_update}" != "false" ]]; then
+	gcloud app deploy appengine-staging/WEB-INF/appengine-generated/index.yaml \
+	       --project="${instance_id}" --quiet
+    fi
+    if [[ "${queue_update}" != "false" ]]; then
+	gcloud app deploy appengine-staging/WEB-INF/appengine-generated/queue.yaml \
+	       --project="${instance_id}" --quiet
+    fi
 }
 
 export -f deploy_instance
-parallel --citation -j 8 --joblog "${deploy_id}.log" deploy_instance ::: "$@"
+echo "Deploying instances... $@"
+mkdir "${tmp}/parallel"
+parallel --results "${tmp}/parallel" --jobs 10 --joblog "${deploy_id}.log" deploy_instance ::: "$@"
 echo "Done"
