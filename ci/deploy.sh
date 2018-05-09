@@ -6,9 +6,9 @@ function log {
    echo "$(date +"%T") - INFO - $*"
 }
 
-#if [[ "${TRAVIS_BRANCH}" != "develop" ]] && [[ "${TRAVIS_BRANCH:0:8}" != "release/" ]]; then
-#  exit 0
-#fi
+if [[ "${TRAVIS_BRANCH}" != "develop" ]] && [[ "${TRAVIS_BRANCH:0:8}" != "release/" ]]; then
+  exit 0
+fi
 
 if [[ "${TRAVIS_PULL_REQUEST}" != "false" ]]; then
     exit 0
