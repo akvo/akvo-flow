@@ -10,5 +10,5 @@ cache:
     - $HOME/.m2
 
 script:
-  - docker build -t akvo/flow-maven-build .
+  - docker build -t akvo/flow-builder .
   - "./ci/bootstrap-build.sh /app/src/ci/build.sh && ./ci/deploy.sh"

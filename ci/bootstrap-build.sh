@@ -29,4 +29,4 @@ docker run \
        --volume "${MAVEN_REPO}:/home/akvo/.m2:delegated" \
        --volume "$(pwd):/app/src:delegated" \
        --entrypoint /app/src/ci/run-as-user.sh \
-       akvo/flow-maven-build "$@"
+       akvo/flow-builder "$@"
