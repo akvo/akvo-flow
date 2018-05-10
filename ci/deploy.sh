@@ -37,4 +37,4 @@ docker run \
     --env SERVICE_ACCOUNT_ID \
     --env "PROJECT_ID=${project_id}" \
     --entrypoint /app/src/ci/run-as-user.sh \
-    akvo/flow-maven-build /app/src/ci/mvn-deploy.sh
+    akvo/flow-builder /app/src/ci/mvn-deploy.sh
