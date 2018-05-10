@@ -71,7 +71,12 @@ FLOW.ReportLoader = Ember.Object.create({
       });
     }
 
-    var exportOption = exportType === 'DATA_CLEANING' ? this.cleaningExportOption : exportType === 'DATA_ANALYSIS' ? this.analysisExportOption : "" ;
+    var exportOption = "";
+    if (exportType === 'DATA_CLEANING') {
+      exportOption = this.cleaningExportOption;
+    } else if (exportType === 'DATA_ANALYSIS') {
+      exportOption = this.analysisExportOption;
+    }
     criteria.opts.lastCollection = '' + ((exportType === 'DATA_CLEANING' || exportType === 'DATA_ANALYSIS')
       && FLOW.selectedControl.get('selectedSurveyGroup').get('monitoringGroup') && exportOption === "recent");
 
@@ -142,7 +147,33 @@ FLOW.ReportLoader = Ember.Object.create({
     FLOW.dialogControl.set('message', Ember.String.loc('_we_will_notify_via_email'));
     FLOW.dialogControl.set('showCANCEL', false);
     FLOW.dialogControl.set('showDialog', true);
-  }
+  },
+
+  openExportOptions: function (evt, exportName) {
+    var i, options, trigger;
+    options = document.getElementsByClassName("options");
+    for (i = 0; i < options.length; i++) {
+      options[i].style.display = "none";
+    }
+    trigger = document.getElementsByClassName("trigger");
+    for (i = 0; i < trigger.length; i++) {
+      trigger[i].className = trigger[i].className.replace(" active", "");
+    }
+    document.getElementById(exportName).style.display = "block";
+    evt.currentTarget.className += " active";
+
+    //by default select the range option
+    if (exportName == "dataCleanExp_options") {
+      if ($('input:radio[name=cleaning-export-option]').is(':checked') === false) {
+        $('input:radio[name=cleaning-export-option]').filter('[value=range]').prop('checked', true);
+      }
+    } else if (exportName == "dataAnalyseExp_options") {
+      if ($('input:radio[name=analysis-export-option]').is(':checked') === false) {
+        $('input:radio[name=analysis-export-option]').filter('[value=range]').prop('checked', true);
+      }
+    }
+   }
+
 });
 
 FLOW.ExportReportsAppletView = FLOW.View.extend({

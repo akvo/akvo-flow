@@ -1,5 +1,4 @@
 <section class="fullWidth reportTools" id="reportBlocks">
-  {{#view FLOW.ExportReportsAppletView}}
     <div class="surveySelect">
       <nav class="breadCrumb floats-in">
         {{#unless FLOW.projectControl.isLoading}}
@@ -18,10 +17,11 @@
     </div>
     <section class="exportContainer">
       <ul class="exportSelect">
-        <li class="dataCleanExp trigger" onclick="openExportOptions(event, 'dataCleanExp_options')">
+        <li class="dataCleanExp trigger" onclick="FLOW.ReportLoader.openExportOptions(event, 'dataCleanExp_options')">
           <h2>{{t _data_cleaning_export}}</h2>
           <h6>{{t _importable_back_to_akvo_flow}}</h6>
           <p class="expDescr">{{t _combines_options}}</p>
+          {{#view FLOW.ExportReportsAppletView}}
           <div id="dataCleanExp_options" class="options">
               <div class="dataCollectedDate">
                 <p>{{view Em.RadioButton titleBinding="FLOW.ReportLoader.dateRangeText" valueBinding="FLOW.ReportLoader.cleaningExportOption" option="range" group="cleaning-export-option"}}</p>
@@ -41,11 +41,13 @@
               {{/if}}
             <a {{action showDataCleaningReport target="this"}} class="button trigger2">{{t _download}}</a>
           </div>
+          {{/view}}
         </li>
-        <li class="dataAnalyseExp trigger" onclick="openExportOptions(event, 'dataAnalyseExp_options')">
+        <li class="dataAnalyseExp trigger" onclick="FLOW.ReportLoader.openExportOptions(event, 'dataAnalyseExp_options')">
           <h2>{{t _data_analysis_export}}</h2>
           <h6>{{t _not_importable_back}}</h6>
           <p class="expDescr">{{t _replaces_question}}</p>
+          {{#view FLOW.ExportReportsAppletView}}
             <div id="dataAnalyseExp_options" class="options">
               <div class="dataCollectedDate">
                 <p>{{view Em.RadioButton titleBinding="FLOW.ReportLoader.dateRangeText" valueBinding="FLOW.ReportLoader.analysisExportOption" option="range" group="analysis-export-option"}}</p>
@@ -65,16 +67,19 @@
               {{/if}}
               <a {{action showDataAnalysisReport target="this"}} class="button trigger2">{{t _download}}</a>
             </div>
+            {{/view}}
           </li>
-          <li class="compReportExp trigger"  onclick="openExportOptions(event, 'compReportExp_options')">
+          <li class="compReportExp trigger"  onclick="FLOW.ReportLoader.openExportOptions(event, 'compReportExp_options')">
             <h2>{{t _comprehensive_report}}</h2>
             <h6>{{t _not_importable_back}}</h6>
             <p class="expDescr">{{t _summarizes_responses}}</p>
+            {{#view FLOW.ExportReportsAppletView}}
             <div id="compReportExp_options" class="options">
               <a {{action showComprehensiveReport target="this"}} class="button trigger2">{{t _download}}</a>
             </div>
+            {{/view}}
           </li>
-          <li class="geoShapeDataExp trigger"  onclick="openExportOptions(event, 'geoShapeDataExp_options')">
+          <li class="geoShapeDataExp trigger"  onclick="FLOW.ReportLoader.openExportOptions(event, 'geoShapeDataExp_options')">
             <h2>{{t _geoshape_data}}</h2>
             <p class="expDescr">{{t _geojson}}</p>
               <div class="geoshapeSelect">
@@ -88,47 +93,24 @@
                     promptBinding="Ember.STRINGS._select_question"}}
               {{/if}}
             </div>
+            {{#view FLOW.ExportReportsAppletView}}
             <div id="geoShapeDataExp_options" class="options">
               <a {{action showGeoshapeReport target="this"}} class="button trigger2">{{t _download}}</a>
             </div>
+            {{/view}}
         </li>
-        <li class="surveyFormExp trigger"  onclick="openExportOptions(event, 'surveyFormExp_options')">
+        <li class="surveyFormExp trigger"  onclick="FLOW.ReportLoader.openExportOptions(event, 'surveyFormExp_options')">
           <h2>{{t _survey_form}}</h2>
           <p class="expDescr">{{t _printable}}</p>
+          {{#view FLOW.ExportReportsAppletView}}
           <div id="surveyFormExp_options" class="options">
             <a {{action showSurveyForm target="this"}} class="button trigger2">{{t _download}}</a>
               {{#if view.showSurveyFormApplet }}
                 {{view FLOW.surveyFormApplet}}
               {{/if}}
           </div>
+          {{/view}}
       </li>
     </ul>
   </section>
-  {{/view}}
-  <script type="text/javascript">
-    function openExportOptions(evt, exportName) {
-      var i, options, trigger;
-      options = document.getElementsByClassName("options");
-      for (i = 0; i < options.length; i++) {
-        options[i].style.display = "none";
-      }
-      trigger = document.getElementsByClassName("trigger");
-      for (i = 0; i < trigger.length; i++) {
-        trigger[i].className = trigger[i].className.replace(" active", "");
-      }
-      document.getElementById(exportName).style.display = "block";
-      evt.currentTarget.className += " active";
-
-      //by default select the range option
-      if (exportName == "dataCleanExp_options") {
-        if ($('input:radio[name=cleaning-export-option]').is(':checked') === false) {
-          $('input:radio[name=cleaning-export-option]').filter('[value=range]').prop('checked', true);
-        }
-      } else if (exportName == "dataAnalyseExp_options") {
-        if ($('input:radio[name=analysis-export-option]').is(':checked') === false) {
-          $('input:radio[name=analysis-export-option]').filter('[value=range]').prop('checked', true);
-        }
-      }
-     }
-  </script>
 </section>
