@@ -49,3 +49,4 @@ RUN set -ex ; \
     adduser -D -h /home/akvo -s /bin/bash akvo akvo
 
 WORKDIR /app/src
+ENTRYPOINT /app/src/ci/run-as-user.sh
