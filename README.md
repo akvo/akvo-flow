@@ -56,10 +56,6 @@ If you need to restart the server:
 
     docker-compose exec -u akvo -d akvo-flow /bin/bash -c "cd GAE && mvn appengine:stop appengine:run >> ./target/build.log"
 
-If you also need to recompile the code, add a package target:
-
-    docker-compose exec -u akvo -d akvo-flow /bin/bash -c "cd GAE && mvn appengine:stop package appengine:run >> ./target/build.log"
-
 Remember that you also can run those commands from a terminal inside the container.
 
 ### Stop
