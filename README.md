@@ -36,11 +36,11 @@ Once Flow is started, any changes in the Dashboard folder will trigger a build o
 
 If you are going to work on the ClojureScript side, you can run a watch process with: 
 
-    docker-compose exec akvo-flow /bin/bash -c "cd Dashboard/app/cljs && lein watch"
+    docker-compose exec -u akvo akvo-flow /bin/bash -c "cd Dashboard/app/cljs && lein watch"
 
 Or run the commands from a terminal inside the container:
 
-    docker-compose exec akvo-flow /bin/bash
+    docker-compose exec -u akvo akvo-flow /bin/bash
     cd Dashboard/app/cljs
     lein watch
 
@@ -54,11 +54,11 @@ After you IDE compiles the classes, the dev server should refresh the webcontext
 
 If you need to restart the server:
 
-    docker-compose exec akvo-flow /bin/bash -c "cd GAE && mvn appengine:devserver_stop appengine:devserver_start"
+    docker-compose exec -u akvo -d akvo-flow /bin/bash -c "cd GAE && mvn appengine:stop appengine:run >> ./target/build.log"
 
 If you also need to recompile the code, add a package target:
 
-    docker-compose exec akvo-flow /bin/bash -c "cd GAE && mvn appengine:devserver_stop package appengine:devserver_start"
+    docker-compose exec -u akvo -d akvo-flow /bin/bash -c "cd GAE && mvn appengine:stop package appengine:run >> ./target/build.log"
 
 Remember that you also can run those commands from a terminal inside the container.
 
@@ -83,7 +83,7 @@ To switch back to the dev setup:
     
 To deploy the current state of the docker container to whatever tenant you last switched to, run:
 
-    docker-compose exec akvo-flow /bin/bash -c "cd GAE && mvn appengine:update appengine:backends_update"
+    docker-compose exec -u akvo akvo-flow /bin/bash -c "cd GAE && mvn appengine:update appengine:backends_update"
         
 ---
 

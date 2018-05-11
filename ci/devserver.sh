@@ -45,4 +45,4 @@ fi
 
 mvn package appengine:start
 
-tail -F ./target/akvo-flow/flow0.log "$SRC_DIR/rake.log"
+tail -F ./target/akvo-flow/flow0.log "$SRC_DIR/rake.log" ./target/build.log
