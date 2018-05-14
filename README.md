@@ -79,7 +79,8 @@ To switch back to the dev setup:
 
 To deploy the current state of the docker container to whatever tenant you last switched to, run:
 
-    docker-compose exec -u akvo akvo-flow /bin/bash -c "cd GAE && mvn appengine:update appengine:backends_update"
+
+    docker-compose exec -u akvo akvo-flow ./dev-deploy.sh
 
 ---
 
