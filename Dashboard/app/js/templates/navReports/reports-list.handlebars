@@ -1,1 +1,67 @@
-<a {{action doExportReports}}>{{t _export_reports}}</a>
+      <div class="generatedExports">
+        <h1>Generated exports</h1>
+        <a {{action doExportReports}} class="button exportNewBtn">{{t _export_reports}}</a>
+      </div>
+      <section class="exportContainer">
+        <!-- This is the message you get if you have no exports --> 
+       <div class="newExportMsg hidden">
+          <h3>No exports generated, yet</h3>
+          <p>Click "New export" to get started</p>
+        </div>
+        <!-- End -->
+
+        <!-- Here is the list of exports generated--> 
+        <ul class="exportList">
+          <li class="dataCleanExp exportGenerating">
+            <div class="exportInfo">
+              <a href="#fileLink"><h5>{{t _data_cleaning_export}} - <span class="exportFileName">289453.xls</span></h5></a>
+              <span class="surveyPath">Root > Malawi > Survey</span>
+            </div>
+            <div class="exportStatus">
+              <span class="loading">Generating</span>
+              <span class="exportDate">2018-02-18 12:54</span>
+            </div>
+          </li>
+          <li class="dataAnalyseExp">
+            <div class="exportInfo">
+              <a href="#fileLink"><h5>{{t _data_analysis_export}} - <span class="exportFileName">Here is your export.xls</span></h5></a>
+              <span class="surveyPath">Root > Malawi > Survey</span>
+            </div>
+            <div class="exportStatus">
+              <span class="loading">Generating</span>
+              <span class="exportDate">2018-02-18 12:54</span>
+            </div>
+          </li>
+          <li class="compReportExp">
+            <div class="exportInfo">
+              <a href="#fileLink"><h5>{{t _comprehensive_report}} - <span class="exportFileName">An other export.xls</span></h5></a>
+              <span class="surveyPath">Root > Malawi > Survey</span>
+            </div>
+            <div class="exportStatus">
+              <span class="loading">Generating</span>
+              <span class="exportDate">2018-02-18 12:54</span>
+            </div>
+          </li>
+          <li class="geoShapeDataExp">
+            <div class="exportInfo">
+              <a href="#fileLink"><h5>{{t _geoshape_data}} - <span class="exportFileName">This is a file.xls</span></h5></a>
+              <span class="surveyPath">Root > Malawi > Survey</span>
+            </div>
+            <div class="exportStatus">
+              <span class="loading">Generating</span>
+              <span class="exportDate">2018-02-18 12:54</span>
+            </div>
+          </li>
+          <li class="surveyFormExp">
+            <div class="exportInfo">
+              <a href="#fileLink"><h5>{{t _survey_form}} - <span class="exportFileName">New export.xls</span></h5></a>
+              <span class="surveyPath">Root > Malawi > Survey</span>
+            </div>
+            <div class="exportStatus">
+              <span class="loading">Generating</span>
+              <span class="exportDate">2018-02-18 12:54</span>
+            </div>
+          </li>
+        </ul>
+        <!-- End -->
+      </section>
