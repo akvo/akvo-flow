@@ -1,5 +1,14 @@
 # Akvo Flow Release Notes
 ----
+# Akvo Flow Dashboard v1.9.32 - Internal release
+Date: 15th May 2018
+## New and noteworthy
+* **Development environment** - Further improvements to our development workflow including, the user of docker containers to homogenise and ease setup of dev environment [#2406][#2553][#2624][#2633], speeding up parallel deployments of our instances [#2562]
+
+* **UI Improvment** - Implement a walkthrough for the bulk upload page explaining how the new GDPR compliant bulk upload will function [#2466].
+
+* **App downloads** - Prevent devices containing old android versions (< Android 4.0.3) from downloading recent app versions [#2603].
+
 # Akvo Flow Dashboard v1.9.31 - Epic Elm
 Date: 19 April 2018
 
