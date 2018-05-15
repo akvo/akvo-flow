@@ -93,8 +93,7 @@ public class SurveyFormExporter implements DataExporter {
      */
     private void populateQuestionMap(String surveyId, String serverBase, String apiKey)
             throws Exception {
-        groupList = BulkDataServiceClient.fetchQuestionGroups(serverBase,
-                surveyId, apiKey);
+        groupList = BulkDataServiceClient.fetchQuestionGroups(serverBase, surveyId, apiKey);
         questionMap = new HashMap<QuestionGroupDto, List<QuestionDto>>();
         idToNumberMap = new HashMap<Long, Long>();
         if (groupList != null) {
@@ -105,8 +104,8 @@ public class SurveyFormExporter implements DataExporter {
                 if (questions != null) {
                     List<QuestionDto> fullQuestions = new ArrayList<QuestionDto>();
                     for (QuestionDto q : questions) {
-                        QuestionDto fullQ = BulkDataServiceClient
-                                .loadQuestionDetails(serverBase, q.getKeyId(), apiKey);
+                        QuestionDto fullQ = BulkDataServiceClient.loadQuestionDetails(
+                                serverBase, q.getKeyId(), apiKey);
                         if (fullQ != null) {
                             fullQuestions.add(fullQ);
                             idToNumberMap.put(fullQ.getKeyId(), count++);
@@ -149,9 +148,7 @@ public class SurveyFormExporter implements DataExporter {
 
         int curRow = 0;
         HSSFRow row = sheet.createRow(curRow++);
-        sheet
-        .addMergedRegion(new CellRangeAddress(curRow - 1, curRow - 1,
-                0, 1));
+        sheet.addMergedRegion(new CellRangeAddress(curRow - 1, curRow - 1, 0, 1));
         createCell(row, 0, title, headerStyle);
         row = sheet.createRow(curRow++);
         createCell(row, 0, QUESTION_HEADER, headerStyle);
@@ -161,10 +158,8 @@ public class SurveyFormExporter implements DataExporter {
         if (questions != null) {
             for (int i = 0; i < groupList.size(); i++) {
                 HSSFRow groupHeaderRow = sheet.createRow(curRow++);
-                sheet.addMergedRegion(new CellRangeAddress(curRow - 1,
-                        curRow - 1, 0, 1));
-                createCell(groupHeaderRow, 0,
-                        groupList.get(i).getDisplayName(), headerStyle);
+                sheet.addMergedRegion(new CellRangeAddress(curRow - 1, curRow - 1, 0, 1));
+                createCell(groupHeaderRow, 0, groupList.get(i).getDisplayName(), headerStyle);
 
                 for (QuestionDto q : questions.get(groupList.get(i))) {
                     int questionStartRow = curRow;
@@ -172,8 +167,7 @@ public class SurveyFormExporter implements DataExporter {
                     if (q.getQuestionDependency() != null) {
                         // if there is a dependency, add a row about not
                         // answering unless the dependency is satisfied
-                        sheet.addMergedRegion(new CellRangeAddress(curRow - 1,
-                                curRow - 1, 0, 1));
+                        sheet.addMergedRegion(new CellRangeAddress(curRow - 1, curRow - 1, 0, 1));
                         Long qNum = idToNumberMap.get(q.getQuestionDependency()
                                 .getQuestionId());
                         createCell(tempRow, 0, DEP_HEAD
