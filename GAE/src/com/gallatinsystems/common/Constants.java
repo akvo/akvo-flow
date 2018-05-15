@@ -47,4 +47,7 @@ public class Constants {
 
     public static final String DEFAULT_SURVEY_FILE_NAME = "survey";
 
+    public static final String LATITUDE = "latitude";
+    public static final String LONGITUDE = "longitude";
+
 }

@@ -27,6 +27,7 @@ import java.util.logging.Logger;
 
 import javax.servlet.http.HttpServletRequest;
 
+import com.gallatinsystems.common.Constants;
 import net.sf.jsr107cache.Cache;
 
 import org.waterforpeople.mapping.dao.SurveyInstanceDAO;
@@ -44,7 +45,6 @@ import com.gallatinsystems.gis.geography.dao.CountryDao;
 import com.gallatinsystems.gis.geography.domain.Country;
 import com.gallatinsystems.gis.location.GeoLocationServiceGeonamesImpl;
 import com.gallatinsystems.gis.location.GeoPlace;
-import com.gallatinsystems.gis.map.MapUtils;
 import com.gallatinsystems.gis.map.domain.OGRFeature;
 import com.gallatinsystems.survey.dao.QuestionDao;
 import com.gallatinsystems.survey.dao.QuestionGroupDao;
@@ -248,8 +248,8 @@ public class SurveyalRestServlet extends AbstractRestApiServlet {
         }
 
         if (geoLocationMap != null && !geoLocationMap.isEmpty()) {
-            latitude = (Double) geoLocationMap.get(MapUtils.LATITUDE);
-            longitude = (Double) geoLocationMap.get(MapUtils.LONGITUDE);
+            latitude = (Double) geoLocationMap.get(Constants.LATITUDE);
+            longitude = (Double) geoLocationMap.get(Constants.LONGITUDE);
 
             if (!latitude.equals(locale.getLatitude()) || !longitude.equals(locale.getLongitude())
                     || locale.getGeocells() == null || locale.getGeocells().isEmpty()) {
@@ -348,8 +348,6 @@ public class SurveyalRestServlet extends AbstractRestApiServlet {
             queue.add(to);
             return;
         }
-
-        MapUtils.recomputeCluster(cache, locale, delta);
 
         // delete locale if the Delta was a subtraction
         if (delta < 0) {

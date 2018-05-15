@@ -37,11 +37,8 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.waterforpeople.mapping.app.web.rest.dto.PlacemarkDto;
 import org.waterforpeople.mapping.app.web.rest.security.AppRole;
-
-import com.gallatinsystems.surveyal.dao.SurveyedLocaleClusterDao;
 import com.gallatinsystems.surveyal.dao.SurveyedLocaleDao;
 import com.gallatinsystems.surveyal.domain.SurveyedLocale;
-import com.gallatinsystems.surveyal.domain.SurveyedLocaleCluster;
 
 @Controller
 @RequestMapping("/placemarks")
@@ -51,8 +48,6 @@ public class PlacemarkRestService {
             .getLogger(PlacemarkRestService.class.getName());
 
     private SurveyedLocaleDao localeDao = new SurveyedLocaleDao();
-
-    private SurveyedLocaleClusterDao slcDao = new SurveyedLocaleClusterDao();
 
     @RequestMapping(method = RequestMethod.GET, value = "")
     @ResponseBody
@@ -128,21 +123,6 @@ public class PlacemarkRestService {
         dto.setCollectionDate(sl.getLastSurveyedDate());
         // make even to avoid clash with cluster keyIds in client cache
         dto.setKeyId(sl.getKey().getId() * 2);
-        return dto;
-    }
-
-    private PlacemarkDto marshallClusterDomainToDto(SurveyedLocaleCluster slc) {
-        final PlacemarkDto dto = new PlacemarkDto();
-        dto.setLatitude(slc.getLatCenter());
-        dto.setLongitude(slc.getLonCenter());
-        dto.setCount(slc.getCount());
-        dto.setLevel(slc.getLevel());
-        // make odd to avoid clash with cluster keyIds in client cache
-        dto.setKeyId(slc.getKey().getId() * 2 + 1);
-        if (slc.getCount() == 1) {
-            dto.setDetailsId(slc.getFirstSurveyedLocaleId());
-            dto.setCollectionDate(slc.getFirstCollectionDate());
-        }
         return dto;
     }
 }
