@@ -12,3 +12,7 @@ cache:
 script:
   - docker build -t akvo/flow-builder .
   - "./ci/bootstrap-build.sh /app/src/ci/build.sh && ./ci/deploy.sh"
+
+before_cache:
+ - find $HOME/.m2 -name resolver-status.properties -exec rm {} \;
+
