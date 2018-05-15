@@ -20,6 +20,9 @@ before_install:
 script:
   - "./ci/bootstrap-build.sh /app/src/ci/build.sh && ./ci/deploy.sh"
 
+before_cache:
+ - find $HOME/.m2 -name resolver-status.properties -exec rm {} \;
+
 env:
   global:
   - PATH=$HOME/google-cloud-sdk/bin:$PATH
