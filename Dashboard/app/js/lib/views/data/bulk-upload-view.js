@@ -61,9 +61,8 @@ FLOW.uploader = Ember.Object.create({
       // Show progress pabr
       $('.resumable-list').show();
       if (li.length === 0) {
-        $(".resumable-list").append("<li id='resumable-file-"+ file.uniqueIdentifier + "'></li>");
+        $(".resumable-list").append("<li id='resumable-file-"+ file.uniqueIdentifier + "'></li>").scrollTop($('.resumable-list').outerHeight(true));
       }
-
       // Add the file to the list
       if (file.file.type !== "application/zip" && file.file.type !== "application/x-zip-compressed" && FLOW.uploader.get('bulkUpload')) {
         $("#resumable-file-"+ file.uniqueIdentifier).html(
@@ -71,14 +70,13 @@ FLOW.uploader = Ember.Object.create({
                 +  Ember.String.loc('_unsupported_file_type')
                 + "<img src='images/infolnc.png' class='unsupportedFile uploadStatus'> ");
         $("#resumable-file-"+ file.uniqueIdentifier).css({
-            color: '#FF0000'
-        });
+            color: '#FF0000'});
         r.removeFile(file); //remove file
       } else {
         $("#resumable-file-"+ file.uniqueIdentifier).html(
           '<span class="resumable-file-name">'+file.fileName+'</span>'
           +'<span id="resumable-file-progress-'+file.uniqueIdentifier+'" class="uploadStatus"></span>'
-          +'<div id="progress-bar-'+file.uniqueIdentifier+'" class="progress-bar"></div>');
+          +'<div id="progress-bar-'+file.uniqueIdentifier+'" class="progress-bar"></div>').css('position','sticky');
 
         $('#progress-bar-'+file.uniqueIdentifier).css({
           width: '0%'
@@ -133,7 +131,7 @@ FLOW.uploader = Ember.Object.create({
       $("#resumable-file-"+ file.uniqueIdentifier).html(
         '<span class="resumable-file-name">'+file.fileName+'</span>'
         +'<img src = "images/tickBox.svg" class = "uploadComplete uploadStatus">'
-      );
+      ).slideDown( "slow", function() {});
       setTimeout(function() {
         $.ajax({
           url : target,

@@ -1,16 +1,73 @@
 <section class="fullWidth reportTools" id="reportBlocks">
   {{#view FLOW.BulkUploadAppletView}}
+    <div id="gdprSwitch" style="display : block;">
+      <h3>{{t _gdpr_wakthrough_title}}</h3>  
+      <a onClick="showHideDiv('gdprSwitch');return false;" href="#" id="gdprBtn" class="hidden">close</a>
+      <ul class="gdprSwitchSteps">
+        <li class="gdprStep">
+            <div class="innerFrame gdpr01">
+              <div class="wrap">
+                <img src="images/gdpr01.svg">     
+              </div>               
+            </div>
+              <h3>{{t _locate_the_data}}</h3>
+              <p>{{t _gdpr_walkthrough_step1}}</p>
+        </li>
+        <li class="gdprStep">
+            <div class="innerFrame gdpr02">
+              <div class="wrap">
+                <img src="images/gdpr02.svg">     
+              </div>      
+            </div>
+              <h3>{{t _copy_the_data}}</h3>
+              <p>{{t _gdpr_walkthrough_step2}}</p>
+        </li>
+        <li class="gdprStep">
+            <div class="innerFrame gdpr03">
+                <div class="wrap">
+                  <img src="images/gdpr03.svg">     
+                </div>       
+              </div>
+              <h3>{{t _upload_zip}}</h3>
+        </li>
+      </ul>
+      <script type="text/javascript">
+        window.onresize = function(){
+          $('.innerFrame img').css({
+            maxWidth: $('.innerFrame').width() * 0.9,
+            maxHeight: $('.innerFrame').height() * 0.9,
+          });
+        };s
+        function showHideDiv(ele) {
+          var srcElement = document.getElementById(ele);
+          if (srcElement != null) {
+            if (srcElement.style.display == "block") {
+              srcElement.style.display = 'none';
+              document.getElementById('gdprBtn').innerHTML = 'open';
+            }
+            else {
+              srcElement.style.display = 'block';
+              document.getElementById('gdprBtn').innerHTML = 'close';
+            }
+            return false;
+          }
+        }
+      </script>
+    </div>  
     <div class="bulkUpload">
       {{#if FLOW.uploader.support}}
         <div class="resumable-drop" ondragenter="jQuery(this).addClass('resumable-dragover');" ondragend="jQuery(this).removeClass('resumable-dragover');" ondrop="jQuery(this).removeClass('resumable-dragover');">
-          {{t _drop_files}} <a class="resumable-browse"><u>{{t _select_files}}</u></a>
+          <div class="dragTxt">
+            <div class="zipIcn"></div>
+            <p>{{t _drop_files}} <a class="resumable-browse"><u>{{t _select_files}}</u></a></p>
+          </div>
+          <ul class="resumable-list"></ul>
         </div>
-        <ul class="resumable-list"></ul>
       {{else}}
         <div class="resumable-error">
           {{t _bulk_upload_unsupported_browser}}
         </div>
       {{/if}}
     </div>
-  {{/view}}
+{{/view}}
 </section>
