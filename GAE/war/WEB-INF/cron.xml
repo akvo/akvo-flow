@@ -20,4 +20,9 @@
         <description>Purge fulfilled or ancient entries from Device File Job Queue</description>
         <schedule>every monday 00:00</schedule>
     </cron>
+    <cron>
+        <url>/cron/croncommander?action=purgeReportRecords</url>
+        <description>Purge ancient Reports</description>
+        <schedule>every monday 00:00</schedule>
+    </cron>
 </cronentries>

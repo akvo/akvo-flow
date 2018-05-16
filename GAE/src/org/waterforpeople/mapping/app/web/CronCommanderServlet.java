@@ -28,6 +28,8 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.akvo.flow.dao.ReportDao;
+import org.akvo.flow.domain.persistent.Report;
 import org.waterforpeople.mapping.app.web.dto.SurveyTaskRequest;
 
 import com.gallatinsystems.common.util.S3Util;
@@ -43,6 +45,7 @@ import com.google.appengine.api.datastore.Key;
 
 public class CronCommanderServlet extends HttpServlet {
 
+    private static final int ONE_YEAR_AGO = -1;
     private static final int TWO_YEARS_AGO = -2;
     private static final long serialVersionUID = 2287175129835274533L;
     private static final Logger log = Logger.getLogger(CronCommanderServlet.class.getName());
@@ -65,7 +68,35 @@ public class CronCommanderServlet extends HttpServlet {
             generateNotifications();
         } else if ("purgeDeviceFileJobQueueRecords".equals(action)) {
             purgeDeviceFileJobQueueRecords();
+        } else if ("purgeReportRecords".equals(action)) {
+            purgeReportRecords();
         }
+    }
+
+    /**
+     * scans for and deletes Report entries that are either more than one year old
+     */
+    private void purgeReportRecords() {
+        Calendar deadline = Calendar.getInstance();
+        deadline.add(Calendar.YEAR, ONE_YEAR_AGO);
+        log.info("Starting scan for Report entries, older than: " + deadline.getTime());
+        ReportDao reportDao = new ReportDao();
+        List<Report> reportList = reportDao.list("all"); //TODO: only list old entities
+        int retirees = 0;
+        for (Report item : reportList) {
+            if (item.getCreatedDateTime() != null
+                    && deadline.getTime().after(item.getCreatedDateTime())) {
+                //cheap case - old
+                log.info("Deleting old Report entry: " + item.getKey().getId());
+                //TODO delete file from file store?
+                //If that succeeded:
+                SurveyTaskUtil.spawnDeleteTask(SurveyTaskRequest.DELETE_REPORT_ACTION,
+                        item.getKey().getId());
+                retirees++;
+            }
+            //TODO: check for too-long IN_PROGRESS?
+        }
+        log.info("Attempted to retire " + retirees + " of " + reportList.size());
     }
 
     /**

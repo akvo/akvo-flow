@@ -32,6 +32,7 @@ public class SurveyTaskRequest extends RestRequest {
     public static final String DELETE_QUESTION_OPTION_ACTION = "deleteQuestionOptions";
     public static final String DELETE_DSJQ_ACTION = "deleteDeviceSurveyJobQueue";
     public static final String DELETE_DFJQ_ACTION = "deleteDeviceFileJobQueue";
+    public static final String DELETE_REPORT_ACTION = "deleteReport";
     public static final String REMAP_SURVEY_INSTANCE = "reprocessMapSurveyInstance";
 
     private static final long serialVersionUID = 8374278438245797012L;

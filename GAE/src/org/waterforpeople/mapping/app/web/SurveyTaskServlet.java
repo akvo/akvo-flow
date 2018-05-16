@@ -22,6 +22,7 @@ import java.util.logging.Logger;
 
 import javax.servlet.http.HttpServletRequest;
 
+import org.akvo.flow.dao.ReportDao;
 import org.waterforpeople.mapping.app.web.dto.SurveyTaskRequest;
 import org.waterforpeople.mapping.dao.SurveyInstanceDAO;
 import org.waterforpeople.mapping.domain.SurveyInstance;
@@ -117,6 +118,10 @@ public class SurveyTaskServlet extends AbstractRestApiServlet {
             case SurveyTaskRequest.DELETE_DFJQ_ACTION:
                 DeviceFileJobQueueDAO dfjqDao = new DeviceFileJobQueueDAO();
                 dfjqDao.delete(dfjqDao.getByKey(id));
+                break;
+            case SurveyTaskRequest.DELETE_REPORT_ACTION:
+                ReportDao reportDao = new ReportDao();
+                reportDao.delete(reportDao.getByKey(id));
                 break;
             case SurveyTaskRequest.REMAP_SURVEY_INSTANCE:
                 String idList = stReq.getIdList();
