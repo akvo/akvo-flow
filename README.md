@@ -12,7 +12,7 @@ You can read more about the [motivation and history of Akvo Flow](http://www.akv
 
 To run Flow:
 
-    docker-compose up --build -d && docker-compose logs -f 
+    docker-compose up --build -d && docker-compose logs -f
 
 Flow should be running [here](http://localhost:8888) and you can login with user "akvo.flow.user.test@gmail.com"
 
@@ -34,13 +34,13 @@ See the [devserver.sh](ci/devserver.sh) for more details.
 
 Once Flow is started, any changes in the Dashboard folder will trigger a build of the UI code, except for the ClojureScript bit.
 
-If you are going to work on the ClojureScript side, you can run a watch process with: 
+If you are going to work on the ClojureScript side, you can run a watch process with:
 
-    docker-compose exec akvo-flow /bin/bash -c "cd Dashboard/app/cljs && lein watch"
+    docker-compose exec -u akvo akvo-flow /bin/bash -c "cd Dashboard/app/cljs && lein watch"
 
 Or run the commands from a terminal inside the container:
 
-    docker-compose exec akvo-flow /bin/bash
+    docker-compose exec -u akvo akvo-flow /bin/bash
     cd Dashboard/app/cljs
     lein watch
 
@@ -48,26 +48,22 @@ Or run the commands from a terminal inside the container:
 
 The appengine dev server is started in debug mode, listening in port 5005.
 
-It is expected that your IDE understand the Maven pom and that it compiles the Java classes to the right place. 
+It is expected that your IDE understand the Maven pom and that it compiles the Java classes to the right place.
 
 After you IDE compiles the classes, the dev server should refresh the webcontext. Due to some Mac performance issues with Docker, the refresh interval is 20 secs instead of the default 5 secs. You can change the scan interval in GAE/pom.xml. You can also trigger a reload hitting [the reload url](http://localhost:8888/_ah/reloadwebapp).
 
 If you need to restart the server:
 
-    docker-compose exec akvo-flow /bin/bash -c "cd GAE && mvn appengine:devserver_stop appengine:devserver_start"
-
-If you also need to recompile the code, add a package target:
-
-    docker-compose exec akvo-flow /bin/bash -c "cd GAE && mvn appengine:devserver_stop package appengine:devserver_start"
+    docker-compose exec -u akvo -d akvo-flow /bin/bash -c "cd GAE && mvn appengine:stop appengine:run >> ./target/build.log"
 
 Remember that you also can run those commands from a terminal inside the container.
 
 ### Stop
 
     docker-compose stop
-        
-### Tear down and reset    
-    
+
+### Tear down and reset
+
     docker-compose down
     rm -rf GAE/target
 
@@ -76,15 +72,16 @@ Remember that you also can run those commands from a terminal inside the contain
 If you want to use a configuration different from the dev one, checkout the akvo-flow-server-config directory into `..` and run:
 
     switch_tenant.sh akvoflowsandbox
-    
+
 To switch back to the dev setup:
 
     swith_to_local_tenant.sh
-    
+
 To deploy the current state of the docker container to whatever tenant you last switched to, run:
 
-    docker-compose exec akvo-flow /bin/bash -c "cd GAE && mvn appengine:update appengine:backends_update"
-        
+
+    docker-compose exec -u akvo akvo-flow ./dev-deploy.sh
+
 ---
 
 <p>&nbsp;</p>
