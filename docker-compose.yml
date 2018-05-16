@@ -17,3 +17,4 @@ services:
     volumes:
      - .:/app/src/:delegated
      - ~/.m2:/home/akvo/.m2:delegated
+     - ~/.m2:/root/.m2:delegated
