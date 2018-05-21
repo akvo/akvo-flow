@@ -205,9 +205,13 @@ FLOW.permControl = Ember.Controller.create({
   /* takes a form (ember object) and checks with user permissions
   whether the current user has edit permissions for the form */
   canEditForm: function(form) {
-    var permissions;
+    var permissions, userPerms = FLOW.currentUser.get('pathPermissions');
     if (!Ember.none(form)) {
-      permissions = this.permissions(form);
+      if (form.get("keyId") in userPerms) {
+        permissions = userPerms[form.get("keyId")];
+      } else {
+        permissions = this.permissions(form);
+      }
     }
     return permissions && permissions.indexOf("FORM_UPDATE") > -1;
   },
