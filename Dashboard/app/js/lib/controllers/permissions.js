@@ -259,6 +259,16 @@ FLOW.permControl = Ember.Controller.create({
       }
       return false;
   }.property(),
+
+  canReadData: function () {
+    var currentUserPermissions = FLOW.currentUser.get('pathPermissions');
+    for (key in currentUserPermissions) {
+      if (currentUserPermissions[key].indexOf("DATA_READ") > -1) {
+        return true;
+      }
+    }
+    return false;
+  }
 });
 
 

@@ -1,4 +1,5 @@
 <ul>
+  {{#if FLOW.permControl.canReadData}}
     {{#view view.NavItemView item="inspectData" }}
     <a {{action doInspectData}}>{{t _inspect_data}}</a>
     {{/view}}
@@ -13,6 +14,7 @@
     {{#view view.NavItemView item="exportReports" }}
     	<a {{action doExportReports}}>{{t _export_reports}}</a>
     {{/view}}
+  {{/if}}
     {{#view view.NavItemView item="bulkUpload" }}
     <a {{action doBulkUpload}}>{{t _bulk_upload_data}}</a>
     {{/view}} 
