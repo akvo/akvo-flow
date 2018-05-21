@@ -45,20 +45,8 @@ FLOW.MapsController = Ember.ArrayController.extend({
     }.observes('this.content.isLoaded'),
 
     adaptMap: function(bestBB, zoomlevel){
-        var bbString = "", gcLevel, listToRetrieve = [];
+        var bbString = "", gcLevel = 0, listToRetrieve = [];
 
-        // determine the geocell cluster level we want to show
-        if (zoomlevel < 4) {
-            gcLevel = 2;
-        } else if (zoomlevel < 6) {
-            gcLevel = 3;
-        } else if (zoomlevel < 8) {
-            gcLevel = 4;
-        } else if (zoomlevel < 11) {
-            gcLevel = 5;
-        } else {
-            gcLevel = 0;
-        }
         this.set('currentGcLevel',gcLevel);
         // on zoomlevel 2, the map repeats itself, leading to wrong results
         // therefore, we force to download the highest level on all the world.
