@@ -37,6 +37,9 @@ GAE/appletbin
 GAE/bin
 GAE/build
 
+# Temp folder
+GAE/tmp
+
 GAE/src/services/DataIssues.java
 GAE/target
 GAE/war/admin

@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 
 #
-#  Copyright (C) 2017 Stichting Akvo (Akvo Foundation)
+#  Copyright (C) 2017-2018 Stichting Akvo (Akvo Foundation)
 #
 #  This file is part of Akvo FLOW.
 #
@@ -35,7 +35,11 @@ cd "$SRC_DIR/GAE"
 
 if [[ ! -f "$SRC_DIR/GAE/target/akvo-flow/WEB-INF/appengine-generated/local_db.bin" ]]; then
     mkdir -p "$SRC_DIR/GAE/target/akvo-flow/WEB-INF/appengine-generated/"
-    wget "https://s3-eu-west-1.amazonaws.com/akvoflow/test-data/local_db.bin" -O "$SRC_DIR/GAE/target/akvo-flow/WEB-INF/appengine-generated/local_db.bin"
+    mkdir -p "$SRC_DIR/GAE/tmp/"
+    if [[ ! -f "$SRC_DIR/GAE/tmp/local_db.bin" ]]; then
+	wget "https://s3-eu-west-1.amazonaws.com/akvoflow/test-data/local_db.bin" -O "$SRC_DIR/GAE/tmp/local_db.bin"
+    fi
+    cp "$SRC_DIR/GAE/tmp/local_db.bin" "$SRC_DIR/GAE/target/akvo-flow/WEB-INF/appengine-generated/local_db.bin"
 fi
 
 if [[ ! -f "$SRC_DIR/GAE/target/akvo-flow/WEB-INF/appengine-web.xml" ]]; then
