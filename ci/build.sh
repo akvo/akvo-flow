@@ -39,8 +39,6 @@ mvn package
 
 if ! [[ -z "$TRAVIS_TAG" ]]; then
 
-    gpg --batch --passphrase ${CLOJARS_GPG_PASSWORD} --import "$SRC_DIR/devops.asc"
-
     echo "Setting project version to $FLOW_GIT_VERSION"
     mvn versions:set -DnewVersion=${FLOW_GIT_VERSION}
 
