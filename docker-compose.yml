@@ -19,7 +19,6 @@ services:
     build: .
     entrypoint: /app/src/ci/run-as-user.sh
     network_mode: service:mainnetwork
-    entrypoint: /app/src/ci/setup-dev-user-in-container.sh
     command: /app/src/ci/devserver.sh
     working_dir: /app/src
     volumes:
