@@ -37,7 +37,7 @@ cd "${SRC_DIR}/GAE"
 
 mvn package
 
-if ! [[ -z "$TRAVIS_TAG" ]]; then
+#if ! [[ -z "$TRAVIS_TAG" ]]; then
 
     echo "Setting project version to $FLOW_GIT_VERSION"
     mvn versions:set -DnewVersion=${FLOW_GIT_VERSION}
@@ -51,4 +51,4 @@ if ! [[ -z "$TRAVIS_TAG" ]]; then
                            -Dpackaging=jar \
                            -Dclassifier=classes
 
-fi
+#fi
