@@ -146,11 +146,6 @@ FLOW.permControl = Ember.Controller.create({
 
     if (!currentUserPermissions || !entity) { return []; }
 
-    // return superAdmin permissions
-    if ("0" in currentUserPermissions){
-      return currentUserPermissions["0"];
-    }
-
     // first check current object id
     keyId = entity.get('keyId');
     if (keyId in currentUserPermissions) {
@@ -176,6 +171,15 @@ FLOW.permControl = Ember.Controller.create({
       }
     }
 
+    // return superAdmin permissions
+    if ("0" in currentUserPermissions){
+      currentUserPermissions["0"].forEach(function(item){
+        if (permissions.indexOf(item) < 0) {
+          permissions.push(item);
+        }
+      });
+    }
+
     return permissions;
   },
 
@@ -197,11 +201,7 @@ FLOW.permControl = Ember.Controller.create({
   canEditSurvey: function(survey) {
     var permissions, userPerms = FLOW.currentUser.get('pathPermissions');
     if (!Ember.none(survey)) {
-      if (survey.get("keyId") in userPerms) {
-        permissions = userPerms[survey.get("keyId")];
-      } else {
-        permissions = this.permissions(survey);
-      }
+      permissions = this.permissions(survey);
     }
     return permissions && permissions.indexOf("PROJECT_FOLDER_UPDATE") > -1;
   },
@@ -211,11 +211,7 @@ FLOW.permControl = Ember.Controller.create({
   canEditForm: function(form) {
     var permissions, userPerms = FLOW.currentUser.get('pathPermissions');
     if (!Ember.none(form)) {
-      if (form.get("keyId") in userPerms) {
-        permissions = userPerms[form.get("keyId")];
-      } else {
-        permissions = this.permissions(form);
-      }
+      permissions = this.permissions(form);
     }
     return permissions && permissions.indexOf("FORM_UPDATE") > -1;
   },
@@ -223,11 +219,7 @@ FLOW.permControl = Ember.Controller.create({
   canEditResponses: function (form) {
     var permissions, userPerms = FLOW.currentUser.get('pathPermissions');
     if (!Ember.none(form)) {
-      if (form.get("keyId") in userPerms) {
-        permissions = userPerms[form.get("keyId")];
-      } else {
-        permissions = this.permissions(form);
-      }
+      permissions = this.permissions(form);
     }
     return permissions && permissions.indexOf("DATA_UPDATE") > -1;
   },
