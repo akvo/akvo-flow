@@ -2,12 +2,12 @@
   {{#view view.NavItemView item="navSurveys" }}
     <a {{action doNavSurveys}}>{{t _surveys}}</a>
   {{/view}}
-  {{#view view.NavItemView item="navDevices" }}
 	{{#if view.showDevicesButton}}
+  {{#view view.NavItemView item="navDevices" }}
     <a {{action doNavDevices}}>{{t _devices}}</a>
-	{{/if}}
-  {{/view}}
-	{{#view view.NavItemView item="navData" }}
+	{{/view}}
+  {{/if}}
+  {{#view view.NavItemView item="navData" }}
     <a {{action doNavData}}>{{t _data}}</a>
   {{/view}}
   {{#if FLOW.permControl.canReadData}}

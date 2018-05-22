@@ -283,7 +283,7 @@ FLOW.Router = Ember.Router.extend({
 
       index: Ember.Route.extend({
         route: '/',
-        redirectsTo: 'inspectData'
+        redirectsTo:  FLOW.permControl.canReadData ? 'inspectData' : 'bulkUpload'
       }),
 
       inspectData: Ember.Route.extend({

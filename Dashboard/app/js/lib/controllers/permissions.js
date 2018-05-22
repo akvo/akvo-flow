@@ -268,7 +268,7 @@ FLOW.permControl = Ember.Controller.create({
       }
     }
     return false;
-  }
+  }.property()
 });
 
 
