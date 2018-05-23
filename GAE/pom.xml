@@ -26,10 +26,6 @@
         <id>geotoolkit.org</id>
         <url>http://maven.geotoolkit.org/</url>
       </repository>
-      <repository>
-        <id>ebi.ac.uk</id>
-        <url>http://www.ebi.ac.uk/intact/maven/nexus/content/repositories/ebi-repo/</url>
-      </repository>
   </repositories>
 
   <properties>
@@ -172,11 +168,6 @@
         <version>3.8</version>
     </dependency>
     <dependency>
-        <groupId>com.google.gdata.data</groupId>
-        <artifactId>gdata-core</artifactId>
-        <version>1.0</version>
-    </dependency>
-    <dependency>
         <groupId>commons-beanutils</groupId>
         <artifactId>commons-beanutils</artifactId>
         <version>1.8.3</version>
@@ -191,6 +182,11 @@
         <artifactId>commons-io</artifactId>
         <version>2.4</version>
         <scope>runtime</scope>
+    </dependency>
+    <dependency>
+        <groupId>commons-lang</groupId>
+        <artifactId>commons-lang</artifactId>
+        <version>2.4</version>
     </dependency>
 
     <!-- Will this work in place of version 1.0.13? -->
