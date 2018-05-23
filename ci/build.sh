@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 
 #
-#  Copyright (C) 2017 Stichting Akvo (Akvo Foundation)
+#  Copyright (C) 2017-2018 Stichting Akvo (Akvo Foundation)
 #
 #  This file is part of Akvo FLOW.
 #
@@ -19,25 +19,20 @@
 set -eu
 
 SRC_DIR="/app/src"
-APP_ENGINE_SDK_VERSION="1.9.54"
-APP_ENGINE_SDK_FILE="appengine-java-sdk-1.9.54.zip"
+BUNDLE_GEMFILE="${SRC_DIR}/Dashboard/Gemfile"
+RAKEP_MODE=production
 
-if [[ ! -d "${HOME}/.cache/appengine-java-sdk-${APP_ENGINE_SDK_VERSION}" ]]; then
-    unzip "${HOME}/.cache/${APP_ENGINE_SDK_FILE}" -d "${HOME}/.cache"
-fi
+export BUNDLE_GEMFILE
+export RAKEP_MODE
 
 cd "${SRC_DIR}/Dashboard"
 
-RAKEP_MODE=production bundle exec rake build --trace
+bundle exec rake build --trace
 
 cd "${SRC_DIR}/Dashboard/app/cljs"
 
 lein build
 
 cd "${SRC_DIR}/GAE"
-
-cp -f build.properties.template build.properties
-
-sed -i "s|^sdk\\.dir=.*|sdk\\.dir=${HOME}/.cache/appengine-java-sdk-${APP_ENGINE_SDK_VERSION}|" build.properties
 
 mvn package

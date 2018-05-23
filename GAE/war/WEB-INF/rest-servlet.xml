@@ -37,6 +37,7 @@
     <bean name="/question_groups" class="org.waterforpeople.mapping.app.web.rest.QuestionGroupRestService" lazy-init="true" />
     <bean name="/question_options" class="org.waterforpeople.mapping.app.web.rest.QuestionOptionRestService" lazy-init="true" />
     <bean name="/questions" class="org.waterforpeople.mapping.app.web.rest.QuestionRestService" lazy-init="true" />
+    <bean name="/reports" class="org.akvo.flow.rest.ReportRestService" />
     <bean name="/sub_countrys" class="org.waterforpeople.mapping.app.web.rest.SubCountryRestService" lazy-init="true" />
     <bean name="/survey_assignments" class="org.waterforpeople.mapping.app.web.rest.SurveyAssignmentRestService" lazy-init="true" />
     <bean name="/survey_groups" class="org.waterforpeople.mapping.app.web.rest.SurveyGroupRestService" />

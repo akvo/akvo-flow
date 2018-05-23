@@ -13,8 +13,10 @@ if [[ "$#" -lt 2 ]]; then
     exit 1
 fi
 
-export version="${1}" # <version> as "$1"
-shift                 # we want "$@" to be the instances to deploy
+export version="${1}"         # <version>       as $1
+export source_instance="${2}" # <instance-id-1> as $2
+shift 2                       # $@ rest of instances
+
 
 export config_repo="${CONFIG_REPO:=/akvo-flow-server-config}"
 export deploy_bucket_name="${deploy_bucket_name:=akvoflowsandbox-deployment}"
@@ -22,18 +24,15 @@ export api_root="https://appengine.googleapis.com/v1"
 
 deploy_id="$(date +%s)"
 tmp="/tmp/${deploy_id}"
-target_dir="${tmp}/akvo-flow"
 gh_user="${GH_USER:=unknown}"
 gh_token="${GH_TOKEN:=unknown}"
 
-# Install requirements assuming Debian jessie
-echo "Installing dependencies..."
-echo "deb http://ftp.debian.org/debian jessie-backports main" >> /etc/apt/sources.list && \
-    apt-get update && \
-    apt-get -t jessie-backports install -y -qq --no-install-recommends \
-	    jq=1.5+dfsg-1.3~bpo8+1 \
-	    unzip=6.0-16+deb8u3 \
-	    parallel=20130922-1
+CRON_UPDATE="${CRON_UPDATE:=true}"
+INDEX_UPDATE="${INDEX_UPDATE:=true}"
+QUEUE_UPDATE="${QUEUE_UPDATE:=true}"
+export CRON_UPDATE
+export INDEX_UPDATE
+export QUEUE_UPDATE
 
 # Force login
 gcloud auth login --brief --activate --force
@@ -58,25 +57,55 @@ else
 	"https://github.com/akvo/akvo-flow-server-config.git" "${config_repo}" > /dev/null
 fi
 
-echo "Deploying to akvoflowsandbox using gcloud..."
-mkdir -p "${tmp}"
-gsutil cp "gs://${deploy_bucket_name}/${version}.war" "${tmp}"
-unzip "${tmp}/${version}.war" -d "${target_dir}"
-rm -rf "${tmp}/${version}.war"
-cp -v "${config_repo}/akvoflowsandbox/appengine-web.xml" "${target_dir}/WEB-INF/"
-sed -i -e "s/__VERSION__/${version}/" "${target_dir}/admin/js/app.js"
+echo "Deploying to ${source_instance} using gcloud..."
 
-gcloud app deploy "${target_dir}/WEB-INF/appengine-web.xml" \
-       --project=akvoflowsandbox \
+mkdir -p "${tmp}"
+
+# Move to tmp folder and work there
+cd "${tmp}"
+
+gsutil cp "gs://${deploy_bucket_name}/${version}.zip" "${version}.zip"
+unzip "${version}.zip"
+
+if [[ ! -d "appengine-staging" ]]; then
+    echo "Staging folder is not present"
+    exit 1
+fi
+
+cp -v "${config_repo}/${source_instance}/appengine-web.xml" appengine-staging/WEB-INF/
+sed -i "s/__VERSION__/${version}/" appengine-staging/admin/js/app.js
+
+gcloud app deploy appengine-staging/app.yaml \
+       --project="${source_instance}" \
        --bucket="gs://${deploy_bucket_name}" \
        --version=1 \
        --promote
 
-gcloud app deploy "${target_dir}/WEB-INF/appengine-web.xml" \
-       --project=akvoflowsandbox \
+if [[ "${CRON_UPDATE}" != "false" ]]; then
+    gcloud app deploy appengine-staging/WEB-INF/appengine-generated/cron.yaml \
+	   --project="${source_instance}" --quiet
+fi
+
+if [[ "${INDEX_UPDATE}" != "false" ]]; then
+    gcloud app deploy appengine-staging/WEB-INF/appengine-generated/index.yaml \
+	   --project="${source_instance}" --quiet
+fi
+
+if [[ "${QUEUE_UPDATE}" != "false" ]]; then
+    gcloud app deploy appengine-staging/WEB-INF/appengine-generated/queue.yaml \
+	   --project="${source_instance}" --quiet
+fi
+
+gcloud app deploy appengine-staging/app.yaml \
+       --project="${source_instance}" \
        --bucket="gs://${deploy_bucket_name}" \
        --version=dataprocessor \
-       --no-promote
+       --no-promote --quiet
+
+if [[ "$#" -eq 0 ]]; then
+    echo "Done"
+    exit 0
+fi
 
 echo "Retrieving version definitions..."
 
@@ -84,15 +113,10 @@ access_token=$(gcloud auth print-access-token)
 export access_token
 
 curl -s -H "Authorization: Bearer ${access_token}" \
-     "${api_root}/apps/akvoflowsandbox/services/default/versions/1?view=FULL" \
+     "${api_root}/apps/${source_instance}/services/default/versions/1?view=FULL" \
      > "${tmp}/1.json"
 
 find "${config_repo}" -name 'appengine-web.xml' -exec sha1sum {} + > "${tmp}/sha1sum.txt"
-
-echo "Deploying instances..."
-
-# Move to tmp folder and work there
-cd "${tmp}"
 
 function deploy_instance {
     instance_id="${1}"
@@ -108,9 +132,9 @@ function deploy_instance {
        > "${instance_file}"
     rm -rf "${instance_file}.tmp"
 
-    sed -i "s|apps/akvoflowsandbox/|apps/${instance_id}/|g" "${instance_file}"
+    sed -i "s|apps/${source_instance}/|apps/${instance_id}/|g" "${instance_file}"
 
-    sandbox_sha1_sum=$(awk '$2 ~ "/akvoflowsandbox/appengine-web.xml$" {print $1}' sha1sum.txt)
+    sandbox_sha1_sum=$(awk '$2 ~ "/${source_instance}/appengine-web.xml$" {print $1}' sha1sum.txt)
     instance_sha1_sum=$(awk -v instance="${instance_id}" '$2 ~ "/"instance"/appengine-web.xml$" {print $1}' sha1sum.txt)
 
     sed -i "s|${sandbox_sha1_sum}|${instance_sha1_sum}|g" "${instance_file}"
@@ -161,8 +185,24 @@ function deploy_instance {
 	echo "Deployment to ${instance_id} failed"
         exit 1
     fi
+
+    if [[ "${CRON_UPDATE}" != "false" ]]; then
+	gcloud app deploy appengine-staging/WEB-INF/appengine-generated/cron.yaml \
+	       --project="${instance_id}" --quiet
+    fi
+
+    if [[ "${INDEX_UPDATE}" != "false" ]]; then
+	gcloud app deploy appengine-staging/WEB-INF/appengine-generated/index.yaml \
+	       --project="${instance_id}" --quiet
+    fi
+    if [[ "${QUEUE_UPDATE}" != "false" ]]; then
+	gcloud app deploy appengine-staging/WEB-INF/appengine-generated/queue.yaml \
+	       --project="${instance_id}" --quiet
+    fi
 }
 
 export -f deploy_instance
-parallel -j 8 --joblog "${deploy_id}.log" deploy_instance ::: "$@"
+echo "Deploying instances... $*"
+mkdir "${tmp}/parallel"
+parallel --results "${tmp}/parallel" --jobs 10 --joblog "${deploy_id}.log" deploy_instance ::: "$@"
 echo "Done"
