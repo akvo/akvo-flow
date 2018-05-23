@@ -16,20 +16,6 @@
     {{/if}}
 
     <div class="rawDataReport block">
-      <h3>{{t _data_cleaning_export}}</h3>
-      <p>{{t _raw_data_report_applet_text_short}}</p>
-      <div class="dataCollectedDate">
-          <label class="collectedFrom">
-            <span>{{t _collected_from}}:</span> {{view FLOW.DateField minDate=false valueBinding="FLOW.dateControl.fromDate" elementId="from_date" placeholder="" placeholderBinding="Ember.STRINGS._collected_from" size=30}}
-          </label>
-          <label class="collectedTo">
-            <span>{{t _to}}:</span> {{view FLOW.DateField minDate=false valueBinding="FLOW.dateControl.toDate" elementId="to_date" placeholder="" placeholderBinding="Ember.STRINGS._to" size=30}}
-          </label>
-      </div>
-      <a {{action showDataCleaningReport target="this"}} class="standardBtn"> {{t _download}} </a>
-    </div>
-
-    <div class="rawDataReport block">
       <h3>{{t _import_data}}</h3>
       <p>{{t _import_raw_data_applet_text_short_}}</p>
       {{#if FLOW.uploader.support}}
