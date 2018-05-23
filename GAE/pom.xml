@@ -26,10 +26,6 @@
         <id>geotoolkit.org</id>
         <url>http://maven.geotoolkit.org/</url>
       </repository>
-      <repository>
-        <id>ebi.ac.uk</id>
-        <url>http://www.ebi.ac.uk/intact/maven/nexus/content/repositories/ebi-repo/</url>
-      </repository>
   </repositories>
 
   <properties>
