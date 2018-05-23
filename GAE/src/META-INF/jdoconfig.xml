@@ -8,5 +8,6 @@
 		<property name="javax.jdo.option.RetainValues" value="true"/>
 		<property name="datanucleus.appengine.autoCreateDatastoreTxns" value="false"/>
 		<property name="datanucleus.appengine.singletonPMFForName" value="true"/>
+		<property name="datanucleus.IgnoreCache" value="true"/>
 	</persistence-manager-factory>
 </jdoconfig>

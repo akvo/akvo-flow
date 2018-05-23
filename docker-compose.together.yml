@@ -2,7 +2,7 @@ version: "3.5"
 services:
   akvo-flow:
     build: .
-    entrypoint: /app/src/ci/setup-dev-user-in-container.sh
+    entrypoint: /app/src/ci/run-as-user.sh
     command: /app/src/ci/devserver.sh
     working_dir: /app/src
     external_links:
