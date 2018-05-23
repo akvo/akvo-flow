@@ -221,14 +221,23 @@
 		<servlet-name>AccessPointMetricProcessor</servlet-name>
 		<url-pattern>/app_worker/accesspointmetricprocessor</url-pattern>
 	</servlet-mapping>
-	<servlet>
-		<servlet-name>SurveyTask</servlet-name>
-		<servlet-class>org.waterforpeople.mapping.app.web.SurveyTaskServlet</servlet-class>
-	</servlet>
-	<servlet-mapping>
-		<servlet-name>SurveyTask</servlet-name>
-		<url-pattern>/app_worker/surveytask</url-pattern>
-	</servlet-mapping>
+    <servlet>
+        <servlet-name>SurveyTask</servlet-name>
+        <servlet-class>org.waterforpeople.mapping.app.web.SurveyTaskServlet</servlet-class>
+    </servlet>
+    <servlet-mapping>
+        <servlet-name>SurveyTask</servlet-name>
+        <url-pattern>/app_worker/surveytask</url-pattern>
+    </servlet-mapping>
+    <servlet>
+        <servlet-name>ReportTask</servlet-name>
+        <servlet-class>org.akvo.flow.servlet.ReportTaskServlet</servlet-class>
+    </servlet>
+    <servlet-mapping>
+        <servlet-name>ReportTask</servlet-name>
+        <url-pattern>/app_worker/reportservlet</url-pattern>
+    </servlet-mapping>
+    	/app_worker/
 		<servlet>
 		<servlet-name>QuestionAnswerStoreCleanup</servlet-name>
 		<servlet-class>org.waterforpeople.mapping.app.web.QuestionAnswerStoreCleanup</servlet-class>

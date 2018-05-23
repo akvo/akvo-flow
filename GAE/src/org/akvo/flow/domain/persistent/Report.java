@@ -29,6 +29,7 @@ import com.gallatinsystems.framework.domain.BaseDomain;
 @PersistenceCapable
 public class Report extends BaseDomain {
 
+    public static final String QUEUED = "QUEUED";
     public static final String IN_PROGRESS = "IN_PROGRESS";
     public static final String FINISHED_SUCCESS = "FINISHED_SUCCESS";
     public static final String FINISHED_ERROR = "FINISHED_ERROR";
@@ -44,6 +45,8 @@ public class Report extends BaseDomain {
     //it will be set wrong if the entity is created by the report engine
     private Date startDate;
     private Date endDate;
+    private Boolean lastCollectionOnly;
+    private Long questionId;
 
 
     public String getReportType() {
@@ -93,6 +96,18 @@ public class Report extends BaseDomain {
     }
     public void setEndDate(Date endDate) {
         this.endDate = endDate;
+    }
+    public Boolean getLastCollectionOnly() {
+        return lastCollectionOnly;
+    }
+    public void setLastCollectionOnly(Boolean lastCollectionOnly) {
+        this.lastCollectionOnly = lastCollectionOnly;
+    }
+    public Long getQuestionId() {
+        return questionId;
+    }
+    public void setQuestionId(Long questionId) {
+        this.questionId = questionId;
     }
 
 
