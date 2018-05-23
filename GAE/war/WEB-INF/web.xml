@@ -231,7 +231,7 @@
     </servlet-mapping>
     <servlet>
         <servlet-name>ReportTask</servlet-name>
-        <servlet-class>org.akvo.flow.servlet.ReportTaskServlet</servlet-class>
+        <servlet-class>org.akvo.flow.servlet.ReportServlet</servlet-class>
     </servlet>
     <servlet-mapping>
         <servlet-name>ReportTask</servlet-name>

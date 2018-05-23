@@ -42,28 +42,6 @@ import com.google.appengine.api.taskqueue.Queue;
 import com.google.appengine.api.taskqueue.QueueFactory;
 import com.google.appengine.api.taskqueue.TaskOptions;
 
-class ReportOptions {
-    String exportMode;
-    Long reportId;
-    Long questionId; //only for GeoJSON
-    Date from;
-    Date to;
-    Boolean lastCollection;
-    String imgPrefix;
-    String uploadUrl;
-}
-
-class ReportCriteria {
-    ReportOptions opts;
-    String exportType;
-    String appId;
-    Long surveyId;
-    String email;
-}
-
-class ReportBody {
-    ReportCriteria criteria;
-}
 
 public class ReportServlet extends AbstractRestApiServlet {
     private static final Logger log = Logger.getLogger(ReportServlet.class.getName());
@@ -72,6 +50,29 @@ public class ReportServlet extends AbstractRestApiServlet {
 
     private ReportDao rDao;
     private UserDao uDao;
+
+    class ReportOptions {
+        String exportMode;
+        Long reportId;
+        Long questionId; //only for GeoJSON
+        Date from;
+        Date to;
+        Boolean lastCollection;
+        String imgPrefix;
+        String uploadUrl;
+    }
+
+    class ReportCriteria {
+        ReportOptions opts;
+        String exportType;
+        String appId;
+        Long surveyId;
+        String email;
+    }
+
+    class ReportBody {
+        ReportCriteria criteria;
+    }
 
     public ReportServlet() {
         rDao = new ReportDao();
