@@ -79,17 +79,29 @@ FLOW.ExportReportsAppletView = FLOW.View.extend({
   showDataCleaningReport: function () {
     var opts = {startDate:this.get("reportFromDate"), endDate:this.get("reportToDate")};
     var sId = this.get('selectedSurvey');
+    if (!sId) {
+      this.showWarning();
+      return;
+    }
     FLOW.ReportLoader.load('DATA_CLEANING', sId, opts);
   },
 
   showDataAnalysisReport: function () {
     var opts = {startDate:this.get("reportFromDate"), endDate:this.get("reportToDate")};
     var sId = this.get('selectedSurvey');
+    if (!sId) {
+      this.showWarning();
+      return;
+    }
     FLOW.ReportLoader.load('DATA_ANALYSIS', sId, opts);
   },
 
   showComprehensiveReport: function () {
     var opts = {}, sId = this.get('selectedSurvey');
+    if (!sId) {
+      this.showWarning();
+      return;
+    }
     FLOW.ReportLoader.load('COMPREHENSIVE', sId, opts);
   },
 
@@ -107,7 +119,7 @@ FLOW.ExportReportsAppletView = FLOW.View.extend({
   },
 
   showSurveyForm: function () {
-	var sId = this.get('selectedSurvey');
+    var sId = this.get('selectedSurvey');
     if (!sId) {
       this.showWarning();
       return;
