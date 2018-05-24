@@ -158,8 +158,7 @@ FLOW.permControl = Ember.Controller.create({
       return permissions;
     }
 
-    var i;
-    for(i = 0; i < ancestorIds.length; i++){
+    for(var i = 0; i < ancestorIds.length; i++){
       if (ancestorIds[i] in currentUserPermissions) {
         if (currentUserPermissions[ancestorIds[i]]) {
           currentUserPermissions[ancestorIds[i]].forEach(function(item){
@@ -169,15 +168,6 @@ FLOW.permControl = Ember.Controller.create({
           });
         }
       }
-    }
-
-    // return superAdmin permissions
-    if ("0" in currentUserPermissions){
-      currentUserPermissions["0"].forEach(function(item){
-        if (permissions.indexOf(item) < 0) {
-          permissions.push(item);
-        }
-      });
     }
 
     return permissions;
@@ -199,7 +189,7 @@ FLOW.permControl = Ember.Controller.create({
   /* takes a survey (ember object) and checks whether the current user
     has edit permissions for the survey */
   canEditSurvey: function(survey) {
-    var permissions, userPerms = FLOW.currentUser.get('pathPermissions');
+    var permissions;
     if (!Ember.none(survey)) {
       permissions = this.permissions(survey);
     }
@@ -209,7 +199,7 @@ FLOW.permControl = Ember.Controller.create({
   /* takes a form (ember object) and checks with user permissions
   whether the current user has edit permissions for the form */
   canEditForm: function(form) {
-    var permissions, userPerms = FLOW.currentUser.get('pathPermissions');
+    var permissions;
     if (!Ember.none(form)) {
       permissions = this.permissions(form);
     }
@@ -217,7 +207,7 @@ FLOW.permControl = Ember.Controller.create({
   },
 
   canEditResponses: function (form) {
-    var permissions, userPerms = FLOW.currentUser.get('pathPermissions');
+    var permissions;
     if (!Ember.none(form)) {
       permissions = this.permissions(form);
     }
