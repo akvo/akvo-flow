@@ -33,6 +33,7 @@ import org.codehaus.jackson.map.ObjectMapper;
 import org.jfree.util.Log;
 import org.waterforpeople.mapping.app.web.dto.TaskRequest;
 
+import com.gallatinsystems.common.Constants;
 import com.gallatinsystems.common.util.PropertyUtil;
 import com.gallatinsystems.framework.rest.AbstractRestApiServlet;
 import com.gallatinsystems.framework.rest.RestRequest;
@@ -176,12 +177,13 @@ public class ReportServlet extends AbstractRestApiServlet {
     }
 
     private void requeueStart(Report r) {
-        //TODO check if this has been going on too long
+        //TODO give up if this has been going on too long
 
         Queue queue = QueueFactory.getDefaultQueue();
         TaskOptions options = TaskOptions.Builder.withUrl("/app_worker/reportservlet")
                 .param(TaskRequest.ACTION_PARAM, ReportTaskRequest.START_ACTION)
-                .param(ReportTaskRequest.ID_PARAM, Long.toString(r.getKey().getId()));
+                .param(ReportTaskRequest.ID_PARAM, Long.toString(r.getKey().getId()))
+                .countdownMillis(Constants.TASK_RETRY_INTERVAL);
         queue.add(options); //overwrite any supplied state
     }
 
