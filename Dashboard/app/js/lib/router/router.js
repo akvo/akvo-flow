@@ -339,6 +339,7 @@ FLOW.Router = Ember.Router.extend({
         connectOutlets: function (router, context) {
           //if landing on tab, show reports list first
           router.get('navDataController').connectOutlet('reportsList');
+          FLOW.reportsControl.populate();
           router.set('datasubnavController.selected', 'exportReports');
           router.resetState();
         }
