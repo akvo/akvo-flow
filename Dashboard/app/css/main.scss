@@ -6264,10 +6264,18 @@ svg {
                 padding-left: 50px;
                 h5 {
                     margin: 5px 0 0 0;
+                    color: rgba($akvoBlack, 0.7);
                     span {
-                        font-weight: bold;
+                        &.exportFileName {
+                            font-weight: bold;
+                        }
+                        &.submissionsDate {
+                            color: rgba($akvoBlack, 0.4);
+                            margin-left: 20px;
+                        }
                     }
                 }
+
                 .surveyPath {
                     font-size: 0.8em;
                     margin-top: -5px;
