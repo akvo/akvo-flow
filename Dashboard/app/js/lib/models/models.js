@@ -512,9 +512,12 @@ FLOW.Report = FLOW.BaseModel.extend({
   user: DS.attr('string'),
   formId: DS.attr('number'),
   state: DS.attr('string'), //IN_PROGRESS/FINISHED_SUCCESS/FINISHED_ERROR
-  startDate: DS.attr('number'),
-  endDate: DS.attr('number'),
+  startDate: DS.attr('string'),
+  endDate: DS.attr('string'),
   message: DS.attr('string'),
   createdDate: DS.attr('number'),
   lastModifiedDate: DS.attr('number'),
+  lastCollectionOnly: DS.attr('boolean', {
+    defaultValue: false
+  })
 });
