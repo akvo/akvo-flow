@@ -43,6 +43,23 @@ import com.google.appengine.api.taskqueue.Queue;
 import com.google.appengine.api.taskqueue.QueueFactory;
 import com.google.appengine.api.taskqueue.TaskOptions;
 
+/*
+ * @startuml
+ * UI -> ReportRestService: POST
+ * ReportRestService --> UI: Report with id (JSON object in QUEUED state)
+ * ReportRestService -> ReportServlet: START
+ * ReportServlet -> FlowService: POST with Report id
+ * FlowService -> ReportRestService: PUT Report in IN_PROGRESS state
+ * UI -> ReportRestService: GET
+ * ReportRestService --> UI: List of Reports by current user (JSON list)
+ * FlowService -> ReportRestService: PUT Report (FINISHED_SUCCESS state and filename)
+ * UI -> ReportRestService: GET
+ * ReportRestService --> UI: List of Reports by current user (JSON list)
+ * UI -> FlowService: GET filename
+ * FlowService --> UI: Report file
+ * @enduml
+ */
+
 @Controller
 @RequestMapping("/reports")
 public class ReportRestService {
