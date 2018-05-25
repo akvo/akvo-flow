@@ -9,7 +9,20 @@
           {{#each report in FLOW.reportsControl}}
           <li class="{{#with report}} {{reportType reportType}} {{reportStatus state}} {{/with}}">
             <div class="exportInfo">
-              <a href="{{report.filename}}"><h5>{{#with report}} {{reportTypeString reportType}} - <span class="exportFileName">{{reportFilename filename}}</span> {{/with}}</h5></a>
+              <a href="{{report.filename}}">
+                {{#with report}}
+                <h5>
+                  {{reportTypeString reportType}} - <span class="exportFileName">{{reportFilename filename}}</span>
+                  <span class="submissionsDate">
+                    {{#if lastCollectionOnly}}
+                    Recent submissions
+                    {{else}}
+                    {{startDate}} - {{endDate}} submissions
+                    {{/if}}
+                  </span>
+                </h5>
+                {{/with}}
+              </a>
               <span class="surveyPath"></span>
             </div>
             <div class="exportStatus">
