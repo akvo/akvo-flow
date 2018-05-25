@@ -3,7 +3,6 @@
 FLOW.ReportLoader = Ember.Object.create({
   load: function (exportType, surveyId, opts) {
     var criteria = {};
-    console.log(opts);
 
     Ember.assert('exportType param is required', exportType !== undefined);
     Ember.assert('surveyId param is required', surveyId !== undefined);
@@ -16,10 +15,12 @@ FLOW.ReportLoader = Ember.Object.create({
 
     criteria.reportType = exportType;
     criteria.formId = surveyId;
+    criteria.filename = '';
     //criteria.lastCollectionOnly = '' + (exportType === 'DATA_CLEANING' && FLOW.selectedControl.get('selectedSurveyGroup').get('monitoringGroup') && !!FLOW.editControl.lastCollection);
 
     FLOW.store.createRecord(FLOW.Report, criteria);
     FLOW.store.commit();
+    FLOW.router.transitionTo('navData.reportsList');
   },
 });
 
