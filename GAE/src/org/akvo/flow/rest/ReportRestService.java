@@ -98,17 +98,21 @@ public class ReportRestService {
                 Report r = new Report();
 
                 BeanUtils.copyProperties(reportDto, r, doNotCopy);
+                //Report r  = new Report();
+                //DtoMarshaller.copyToCanonical(reportDto, r);
+
                 r.setUser(user.getKey().getId());
-                r.setState(Report.QUEUED);
+                r.setState(Report.QUEUED);  //overwrite any supplied state
                 // Save it, so we get an id assigned
                 r = reportDao.save(r);
 
                 //Queue it
                 Queue queue = QueueFactory.getDefaultQueue();
-                TaskOptions options = TaskOptions.Builder.withUrl("/app_worker/reportservlet")
+                TaskOptions options = TaskOptions.Builder
+                        .withUrl("/app_worker/reportservlet")
                         .param(TaskRequest.ACTION_PARAM, ReportTaskRequest.START_ACTION)
                         .param(ReportTaskRequest.ID_PARAM, Long.toString(r.getKey().getId()));
-                queue.add(options); //overwrite any supplied state
+                queue.add(options);
                 dto = new ReportDto();
                 DtoMarshaller.copyToDto(r, dto);
                 statusDto.setStatus("ok");
