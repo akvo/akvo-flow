@@ -32,6 +32,8 @@ public class ReportDto extends BaseDto {
     private String user;
     private Date startDate;
     private Date endDate;
+    private Boolean lastCollectionOnly;
+    private Long questionId;
     private Date createdDateTime;
     private Date lastUpdateDateTime;
 
@@ -114,6 +116,22 @@ public class ReportDto extends BaseDto {
 
     public void setLastUpdateDateTime(Date lastUpdateDateTime) {
         this.lastUpdateDateTime = lastUpdateDateTime;
+    }
+
+    public Boolean getLastCollectionOnly() {
+        return lastCollectionOnly;
+    }
+
+    public void setLastCollectionOnly(Boolean lastCollectionOnly) {
+        this.lastCollectionOnly = lastCollectionOnly;
+    }
+
+    public Long getQuestionId() {
+        return questionId;
+    }
+
+    public void setQuestionId(Long questionId) {
+        this.questionId = questionId;
     }
 
 }
