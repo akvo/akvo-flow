@@ -98,24 +98,6 @@ public class PlacemarkRestService {
         return localeDao.listPublicLocalesByGeocell(geocells, LIMIT_PLACEMARK_POINTS);
     }
 
-    @RequestMapping(method = RequestMethod.GET, value = "/{id}")
-    @ResponseBody
-    public Map<String, Object> placeMarkDetails(@PathVariable("id") Long id) {
-        return getPlacemarkResponseById(id);
-    }
-
-    private Map<String, Object> getPlacemarkResponseById(Long id) {
-        final Map<String, Object> response = new HashMap<String, Object>();
-        final SurveyedLocale sl = localeDao.getById(id);
-
-        if (sl == null) {
-            throw new HttpMessageNotReadableException("ID not found");
-        }
-
-        response.put("placemark", marshallDomainToDto(sl));
-        return response;
-    }
-
     private PlacemarkDto marshallDomainToDto(SurveyedLocale sl) {
         final PlacemarkDto dto = new PlacemarkDto();
         dto.setLatitude(sl.getLatitude());
