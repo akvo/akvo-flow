@@ -54,43 +54,21 @@ public class PlacemarkRestService {
     public Map<String, Object> listPlaceMarks(
             @RequestParam(value = "bbString", defaultValue = "") String boundingBoxString,
             @RequestParam(value = "gcLevel", defaultValue = "") Integer gcLevel) {
-        // assume we are on the public map
-        Boolean allPlacemarks = false;
+
         log.log(Level.FINE, "received request for: " + boundingBoxString + ", " + gcLevel);
 
-        List<String> geocells = Arrays.asList(boundingBoxString.split(","));
-
-        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        if (authentication != null) {
-            Collection<? extends GrantedAuthority> auths = authentication.getAuthorities();
-            if (auths.contains(AppRole.USER) || auths.contains(AppRole.ADMIN)
-                    || auths.contains(AppRole.SUPER_ADMIN)) {
-                allPlacemarks = true;
-            }
-        }
-
-        return getPlacemarksReponse(geocells, gcLevel, allPlacemarks);
-    }
-
-    @RequestMapping(method = RequestMethod.GET, value = "/{id}")
-    @ResponseBody
-    public Map<String, Object> placeMarkDetails(@PathVariable("id") Long id) {
-        return getPlacemarkResponseById(id);
-    }
-
-    private Map<String, Object> getPlacemarksReponse(List<String> geocells, Integer gcLevel,
-            Boolean allPlacemarks) {
+        final List<String> geocells = Arrays.asList(boundingBoxString.split(","));
         final Map<String, Object> response = new HashMap<String, Object>();
         final List<PlacemarkDto> placemarkList = new ArrayList<PlacemarkDto>();
-        final List<SurveyedLocale> slList = new ArrayList<SurveyedLocale>();
-        // get surveyedLocales
-        if (allPlacemarks) {
-            slList.addAll(localeDao.listLocalesByGeocell(geocells, LIMIT_PLACEMARK_POINTS));
+        List<SurveyedLocale> slList = new ArrayList<>();
+
+        if(isAuthorizedUser()) {
+            slList.addAll(listAllDataPoints(geocells, gcLevel));
         } else {
-            slList.addAll(localeDao
-                    .listPublicLocalesByGeocell(geocells, LIMIT_PLACEMARK_POINTS));
+            slList.addAll(listOnlyPublicDataPoints(geocells, gcLevel));
         }
-        if (slList.size() > 0) {
+
+        if (slList != null) {
             for (SurveyedLocale sl : slList) {
                 placemarkList.add(marshallDomainToDto(sl));
             }
@@ -98,6 +76,32 @@ public class PlacemarkRestService {
 
         response.put("placemarks", placemarkList);
         return response;
+    }
+
+    private boolean isAuthorizedUser() {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        if (authentication == null) {
+            return false;
+        } else {
+            Collection<? extends GrantedAuthority> auths = authentication.getAuthorities();
+            return auths.contains(AppRole.USER)
+                    || auths.contains(AppRole.ADMIN)
+                    || auths.contains(AppRole.SUPER_ADMIN);
+        }
+    }
+
+    private List<SurveyedLocale> listAllDataPoints(List<String> geocells, Integer gcLevel) {
+        return localeDao.listLocalesByGeocell(geocells, LIMIT_PLACEMARK_POINTS);
+    }
+
+    private List<SurveyedLocale> listOnlyPublicDataPoints(List<String> geocells, Integer gcLevel) {
+        return localeDao.listPublicLocalesByGeocell(geocells, LIMIT_PLACEMARK_POINTS);
+    }
+
+    @RequestMapping(method = RequestMethod.GET, value = "/{id}")
+    @ResponseBody
+    public Map<String, Object> placeMarkDetails(@PathVariable("id") Long id) {
+        return getPlacemarkResponseById(id);
     }
 
     private Map<String, Object> getPlacemarkResponseById(Long id) {
