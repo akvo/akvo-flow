@@ -37,18 +37,18 @@ cd "${SRC_DIR}/GAE"
 
 mvn package
 
-if ! [[ -z "$TRAVIS_TAG" ]]; then
-
-    echo "Setting project version to $FLOW_GIT_VERSION"
-    mvn versions:set -DnewVersion=${FLOW_GIT_VERSION}
-
-    mvn deploy:deploy-file -s "$SRC_DIR/maven-ci-settings.xml" \
-                           -Dgpg.passphrase=${CLOJARS_GPG_PASSWORD} \
-                           -Durl="https://clojars.org/repo" \
-                           -DrepositoryId=clojars \
-                           -Dfile=target/akvo-flow-classes.jar \
-                           -DpomFile=pom.xml \
-                           -Dpackaging=jar \
-                           -Dclassifier=classes
-
+if [[ "${TRAVIS_BRANCH}" != "develop" ]] && [[ -z "$TRAVIS_TAG" ]]; then
+  exit 0
 fi
+
+echo "Setting project version to $FLOW_GIT_VERSION"
+mvn versions:set -DnewVersion=${FLOW_GIT_VERSION}
+
+mvn deploy:deploy-file -s "$SRC_DIR/maven-ci-settings.xml" \
+                       -Dgpg.passphrase=${CLOJARS_GPG_PASSWORD} \
+                       -Durl="https://clojars.org/repo" \
+                       -DrepositoryId=clojars \
+                       -Dfile=target/akvo-flow-classes.jar \
+                       -DpomFile=pom.xml \
+                       -Dpackaging=jar \
+                       -Dclassifier=classes
