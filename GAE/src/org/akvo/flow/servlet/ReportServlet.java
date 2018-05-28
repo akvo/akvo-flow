@@ -18,6 +18,7 @@ package org.akvo.flow.servlet;
 
 import java.io.DataOutputStream;
 import java.io.IOException;
+import java.io.Serializable;
 import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.URL;
@@ -55,7 +56,11 @@ public class ReportServlet extends AbstractRestApiServlet {
     private ReportDao rDao;
     private UserDao uDao;
 
-    class ReportOptions {
+    class ReportOptions implements Serializable {
+        /**
+         *
+         */
+        private static final long serialVersionUID = 1L;
         String exportMode;
         Long reportId;
         Long questionId; //only for GeoJSON
@@ -66,7 +71,11 @@ public class ReportServlet extends AbstractRestApiServlet {
         String uploadUrl;
     }
 
-    class ReportCriteria {
+    class ReportCriteria implements Serializable {
+        /**
+         *
+         */
+        private static final long serialVersionUID = 1L;
         ReportOptions opts;
         String exportType;
         String appId;
@@ -74,7 +83,11 @@ public class ReportServlet extends AbstractRestApiServlet {
         String email;
     }
 
-    class ReportBody {
+    class ReportBody implements Serializable {
+        /**
+         *
+         */
+        private static final long serialVersionUID = 1L;
         ReportCriteria criteria;
     }
 

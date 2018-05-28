@@ -27,6 +27,7 @@ import org.akvo.flow.rest.dto.ReportDto;
 import org.akvo.flow.rest.dto.ReportPayload;
 import org.akvo.flow.servlet.ReportServlet;
 import org.springframework.beans.BeanUtils;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -37,7 +38,6 @@ import org.waterforpeople.mapping.app.util.DtoMarshaller;
 import org.waterforpeople.mapping.app.web.rest.dto.RestStatusDto;
 
 import com.gallatinsystems.user.dao.UserDao;
-import com.gallatinsystems.user.domain.User;
 
 /*
  * @startuml
@@ -88,29 +88,26 @@ public class ReportRestService {
         // if the POST data contains a valid ReportDto, continue.
         // Otherwise, server will respond with 400 Bad Request
         if (reportDto != null) {
-            User user = userDao.findUserByEmail(reportDto.getUser());
+            Report r = new Report();
 
-            if (user != null) {
-                Report r = new Report();
+            BeanUtils.copyProperties(reportDto, r, doNotCopy);
 
-                BeanUtils.copyProperties(reportDto, r, doNotCopy);
+            r.setUser((Long)SecurityContextHolder.getContext().getAuthentication().getCredentials());
+            r.setState(Report.QUEUED);  //overwrite any supplied state
+            // Save it, so we get an id assigned
+            r = reportDao.save(r);
+            ReportServlet.queueStart(r);
 
-                r.setUser(user.getKey().getId());
-                r.setState(Report.QUEUED);  //overwrite any supplied state
-                // Save it, so we get an id assigned
-                r = reportDao.save(r);
-                ReportServlet.queueStart(r);
-
-                dto = new ReportDto();
-                BeanUtils.copyProperties(r, dto);
-                statusDto.setStatus("ok");
-            }
+            dto = new ReportDto();
+            BeanUtils.copyProperties(r, dto);
+            statusDto.setStatus("ok");
         }
 
         response.put("meta", statusDto);
         response.put("report", dto);
         return response;
     }
+
 
     // find all reports belonging to the current user
     @RequestMapping(method = RequestMethod.GET, value = "")
