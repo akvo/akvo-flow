@@ -1,6 +1,7 @@
+{{#view FLOW.ReportsListAppletView}}
       <div class="generatedExports">
         <h1>Generated exports</h1>
-        <a {{action doExportReports}} class="button exportNewBtn">{{t _export_reports}}</a>
+        <a {{action "exportNewReport" target="this"}} class="button exportNewBtn">{{t _export_reports}}</a>
       </div>
       <section class="exportContainer">
         {{#if FLOW.reportsControl.reportsAvailable}}
@@ -42,3 +43,4 @@
         <!-- End -->
         {{/if}}
       </section>
+{{/view}}

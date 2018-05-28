@@ -2,23 +2,23 @@
 
 FLOW.ReportLoader = Ember.Object.create({
   load: function (exportType, surveyId, opts) {
-    var criteria = {};
+    FLOW.selectedControl.set('selectedReportExport', FLOW.store.createRecord(FLOW.Report, {}));
+    var newReport = FLOW.selectedControl.get('selectedReportExport');
 
     Ember.assert('exportType param is required', exportType !== undefined);
     Ember.assert('surveyId param is required', surveyId !== undefined);
 
     if (opts) {
       Ember.keys(opts).forEach(function (k) {
-        criteria[k] = opts[k];
+        newReport.set(k, opts[k])
       });
     }
 
-    criteria.reportType = exportType;
-    criteria.formId = surveyId;
-    criteria.filename = '';
-    //criteria.lastCollectionOnly = '' + (exportType === 'DATA_CLEANING' && FLOW.selectedControl.get('selectedSurveyGroup').get('monitoringGroup') && !!FLOW.editControl.lastCollection);
+    newReport.set('reportType', exportType);
+    newReport.set('formId', surveyId);
+    newReport.set('filename', '');
+    //newReport.set('lastCollectionOnly', ('' + (exportType === 'DATA_CLEANING' && FLOW.selectedControl.get('selectedSurveyGroup').get('monitoringGroup') && !!FLOW.editControl.lastCollection));
 
-    FLOW.store.createRecord(FLOW.Report, criteria);
     FLOW.store.commit();
     FLOW.router.transitionTo('navData.reportsList');
   },
@@ -172,5 +172,11 @@ FLOW.ExportReportsAppletView = FLOW.View.extend({
     FLOW.dialogControl.set('message', message);
     FLOW.dialogControl.set('showCANCEL', false);
     FLOW.dialogControl.set('showDialog', true);
+  }
+});
+
+FLOW.ReportsListAppletView = FLOW.View.extend({
+  exportNewReport: function () {
+    FLOW.router.transitionTo('navData.exportReports');
   }
 });
