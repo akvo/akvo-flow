@@ -25,12 +25,10 @@ import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-import org.springframework.http.converter.HttpMessageNotReadableException;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -63,9 +61,9 @@ public class PlacemarkRestService {
         List<SurveyedLocale> slList = new ArrayList<>();
 
         if(isAuthorizedUser()) {
-            slList.addAll(listAllDataPoints(geocells, gcLevel));
+            slList.addAll(listAllDataPoints(geocells));
         } else {
-            slList.addAll(listOnlyPublicDataPoints(geocells, gcLevel));
+            slList.addAll(listOnlyPublicDataPoints(geocells));
         }
 
         if (slList != null) {
@@ -90,11 +88,11 @@ public class PlacemarkRestService {
         }
     }
 
-    private List<SurveyedLocale> listAllDataPoints(List<String> geocells, Integer gcLevel) {
+    private List<SurveyedLocale> listAllDataPoints(List<String> geocells) {
         return localeDao.listLocalesByGeocell(geocells, LIMIT_PLACEMARK_POINTS);
     }
 
-    private List<SurveyedLocale> listOnlyPublicDataPoints(List<String> geocells, Integer gcLevel) {
+    private List<SurveyedLocale> listOnlyPublicDataPoints(List<String> geocells) {
         return localeDao.listPublicLocalesByGeocell(geocells, LIMIT_PLACEMARK_POINTS);
     }
 
