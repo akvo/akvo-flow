@@ -50,6 +50,7 @@ public class PlacemarkRestService {
     @RequestMapping(method = RequestMethod.GET, value = "")
     @ResponseBody
     public Map<String, Object> listPlaceMarks(
+            @RequestParam(value = "surveyId", defaultValue = "-1") Long surveyId, // default to non-existing surveyId
             @RequestParam(value = "bbString", defaultValue = "") String boundingBoxString,
             @RequestParam(value = "gcLevel", defaultValue = "") Integer gcLevel) {
 
@@ -61,7 +62,7 @@ public class PlacemarkRestService {
         List<SurveyedLocale> slList = new ArrayList<>();
 
         if(isAuthorizedUser()) {
-            slList.addAll(listAllDataPoints(geocells));
+            slList.addAll(listAllDataPoints(surveyId, geocells));
         } else {
             slList.addAll(listOnlyPublicDataPoints(geocells));
         }
@@ -88,8 +89,8 @@ public class PlacemarkRestService {
         }
     }
 
-    private List<SurveyedLocale> listAllDataPoints(List<String> geocells) {
-        return localeDao.listLocalesByGeocell(geocells, LIMIT_PLACEMARK_POINTS);
+    private List<SurveyedLocale> listAllDataPoints(Long surveyId, List<String> geocells) {
+        return localeDao.listLocalesByGeocell(surveyId, geocells, LIMIT_PLACEMARK_POINTS);
     }
 
     private List<SurveyedLocale> listOnlyPublicDataPoints(List<String> geocells) {
