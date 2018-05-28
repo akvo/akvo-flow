@@ -20,6 +20,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.logging.Logger;
 
 import org.akvo.flow.dao.ReportDao;
 import org.akvo.flow.domain.persistent.Report;
@@ -38,6 +39,7 @@ import org.waterforpeople.mapping.app.util.DtoMarshaller;
 import org.waterforpeople.mapping.app.web.rest.dto.RestStatusDto;
 
 import com.gallatinsystems.user.dao.UserDao;
+
 
 /*
  * @startuml
@@ -59,6 +61,7 @@ import com.gallatinsystems.user.dao.UserDao;
 @Controller
 @RequestMapping("/reports")
 public class ReportRestService {
+    private static final Logger log = Logger.getLogger(ReportRestService.class.getName());
 
     private final String[] doNotCopy = {
             "user",

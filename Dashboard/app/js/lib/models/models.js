@@ -506,3 +506,19 @@ FLOW.SubCountry = FLOW.BaseModel.extend({
   parentKey: DS.attr('number'),
   parentName: DS.attr('string')
 });
+
+FLOW.Report = FLOW.BaseModel.extend({
+  reportType: DS.attr('string'), //DATA_CLEANING/COMPREHENSIVE/...
+  user: DS.attr('string'),
+  formId: DS.attr('number'),
+  state: DS.attr('string'), //IN_PROGRESS/FINISHED_SUCCESS/FINISHED_ERROR
+  startDate: DS.attr('string'),
+  endDate: DS.attr('string'),
+  message: DS.attr('string'),
+  filename: DS.attr('string'),
+  createdDateTime: DS.attr('number'),
+  lastUpdateDateTime: DS.attr('number'),
+  lastCollectionOnly: DS.attr('boolean', {
+    defaultValue: false
+  })
+});
