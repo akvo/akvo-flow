@@ -16,7 +16,7 @@
   <repositories>
     <repository>
       <id>DN_M2_Repo</id>
-      <url>http://central.maven.org/maven2/</url>
+      <url>https://repo1.maven.org/maven2/</url>
     </repository>
       <repository>
         <id>bintray.com</id>
@@ -24,7 +24,7 @@
       </repository>
       <repository>
         <id>geotoolkit.org</id>
-        <url>http://maven.geotoolkit.org/</url>
+        <url>https://nexus.geomatys.com/repository/geotoolkit/</url>
       </repository>
   </repositories>
 
