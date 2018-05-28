@@ -20,6 +20,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.logging.Logger;
 
 import org.akvo.flow.dao.ReportDao;
 import org.akvo.flow.domain.persistent.Report;
@@ -27,6 +28,7 @@ import org.akvo.flow.rest.dto.ReportDto;
 import org.akvo.flow.rest.dto.ReportPayload;
 import org.akvo.flow.rest.dto.ReportTaskRequest;
 import org.springframework.beans.BeanUtils;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -38,7 +40,6 @@ import org.waterforpeople.mapping.app.web.dto.TaskRequest;
 import org.waterforpeople.mapping.app.web.rest.dto.RestStatusDto;
 
 import com.gallatinsystems.user.dao.UserDao;
-import com.gallatinsystems.user.domain.User;
 import com.google.appengine.api.taskqueue.Queue;
 import com.google.appengine.api.taskqueue.QueueFactory;
 import com.google.appengine.api.taskqueue.TaskOptions;
@@ -63,6 +64,7 @@ import com.google.appengine.api.taskqueue.TaskOptions;
 @Controller
 @RequestMapping("/reports")
 public class ReportRestService {
+    private static final Logger log = Logger.getLogger(ReportRestService.class.getName());
 
     private final String[] doNotCopy = {
             "user",
@@ -92,27 +94,23 @@ public class ReportRestService {
         // if the POST data contains a valid ReportDto, continue.
         // Otherwise, server will respond with 400 Bad Request
         if (reportDto != null) {
-            User user = userDao.findUserByEmail(reportDto.getUser());
+            Report r = new Report();
 
-            if (user != null) {
-                Report r = new Report();
+            BeanUtils.copyProperties(reportDto, r, doNotCopy);
+            r.setUser((Long)SecurityContextHolder.getContext().getAuthentication().getCredentials());
+            r.setState(Report.QUEUED);
+            // Save it, so we get an id assigned
+            r = reportDao.save(r);
 
-                BeanUtils.copyProperties(reportDto, r, doNotCopy);
-                r.setUser(user.getKey().getId());
-                r.setState(Report.QUEUED);
-                // Save it, so we get an id assigned
-                r = reportDao.save(r);
-
-                //Queue it
-                Queue queue = QueueFactory.getDefaultQueue();
-                TaskOptions options = TaskOptions.Builder.withUrl("/app_worker/reportservlet")
-                        .param(TaskRequest.ACTION_PARAM, ReportTaskRequest.START_ACTION)
-                        .param(ReportTaskRequest.ID_PARAM, Long.toString(r.getKey().getId()));
-                queue.add(options); //overwrite any supplied state
-                dto = new ReportDto();
-                DtoMarshaller.copyToDto(r, dto);
-                statusDto.setStatus("ok");
-            }
+            //Queue it
+            Queue queue = QueueFactory.getDefaultQueue();
+            TaskOptions options = TaskOptions.Builder.withUrl("/app_worker/reportservlet")
+                    .param(TaskRequest.ACTION_PARAM, ReportTaskRequest.START_ACTION)
+                    .param(ReportTaskRequest.ID_PARAM, Long.toString(r.getKey().getId()));
+            queue.add(options);
+            dto = new ReportDto();
+            DtoMarshaller.copyToDto(r, dto);
+            statusDto.setStatus("ok");
         }
 
         response.put("meta", statusDto);

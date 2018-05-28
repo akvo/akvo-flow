@@ -473,11 +473,6 @@
         <filter-name>restAuthFilter</filter-name>
         <url-pattern>/rawdatarestapi</url-pattern>
     </filter-mapping>
-    <!-- Experiment. Also protected by Spring. -->
-    <filter-mapping>
-        <filter-name>restAuthFilter</filter-name>
-        <url-pattern>/rest/reports</url-pattern>
-    </filter-mapping>
     
 	<security-constraint>
 		<web-resource-collection>
