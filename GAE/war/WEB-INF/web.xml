@@ -473,10 +473,9 @@
         <filter-name>restAuthFilter</filter-name>
         <url-pattern>/rawdatarestapi</url-pattern>
     </filter-mapping>
-    <!-- Experiment. Also protected by Spring. -->
     <filter-mapping>
         <filter-name>restAuthFilter</filter-name>
-        <url-pattern>/rest/reports</url-pattern>
+        <url-pattern>/app_worker/reportservlet</url-pattern>
     </filter-mapping>
     
 	<security-constraint>

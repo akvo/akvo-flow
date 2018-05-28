@@ -25,7 +25,7 @@ import org.akvo.flow.dao.ReportDao;
 import org.akvo.flow.domain.persistent.Report;
 import org.akvo.flow.rest.dto.ReportDto;
 import org.akvo.flow.rest.dto.ReportPayload;
-import org.akvo.flow.rest.dto.ReportTaskRequest;
+import org.akvo.flow.servlet.ReportServlet;
 import org.springframework.beans.BeanUtils;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -34,14 +34,10 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.waterforpeople.mapping.app.util.DtoMarshaller;
-import org.waterforpeople.mapping.app.web.dto.TaskRequest;
 import org.waterforpeople.mapping.app.web.rest.dto.RestStatusDto;
 
 import com.gallatinsystems.user.dao.UserDao;
 import com.gallatinsystems.user.domain.User;
-import com.google.appengine.api.taskqueue.Queue;
-import com.google.appengine.api.taskqueue.QueueFactory;
-import com.google.appengine.api.taskqueue.TaskOptions;
 
 /*
  * @startuml
@@ -98,23 +94,15 @@ public class ReportRestService {
                 Report r = new Report();
 
                 BeanUtils.copyProperties(reportDto, r, doNotCopy);
-                //Report r  = new Report();
-                //DtoMarshaller.copyToCanonical(reportDto, r);
 
                 r.setUser(user.getKey().getId());
                 r.setState(Report.QUEUED);  //overwrite any supplied state
                 // Save it, so we get an id assigned
                 r = reportDao.save(r);
+                ReportServlet.queueStart(r);
 
-                //Queue it
-                Queue queue = QueueFactory.getDefaultQueue();
-                TaskOptions options = TaskOptions.Builder
-                        .withUrl("/app_worker/reportservlet")
-                        .param(TaskRequest.ACTION_PARAM, ReportTaskRequest.START_ACTION)
-                        .param(ReportTaskRequest.ID_PARAM, Long.toString(r.getKey().getId()));
-                queue.add(options);
                 dto = new ReportDto();
-                DtoMarshaller.copyToDto(r, dto);
+                BeanUtils.copyProperties(r, dto);
                 statusDto.setStatus("ok");
             }
         }
@@ -125,7 +113,6 @@ public class ReportRestService {
     }
 
     // find all reports belonging to the current user
-    //TODO: get an unfiltered list if superAdmin?
     @RequestMapping(method = RequestMethod.GET, value = "")
     @ResponseBody
     public Map<String, Object> listMyReports() {
@@ -135,7 +122,7 @@ public class ReportRestService {
         if (reports != null) {
             for (Report r : reports) {
                 ReportDto dto = new ReportDto();
-                DtoMarshaller.copyToDto(r, dto);
+                BeanUtils.copyProperties(r, dto);
                 results.add(dto);
             }
         }
@@ -208,7 +195,7 @@ public class ReportRestService {
                     //TODO: look up user (but why would it change?)
                     qo = reportDao.save(qo); //Also stores lastUpdateDateTime
                     dto = new ReportDto();
-                    DtoMarshaller.copyToDto(qo, dto);
+                    BeanUtils.copyProperties(qo, dto);
                     statusDto.setStatus("ok");
                 }
             }
