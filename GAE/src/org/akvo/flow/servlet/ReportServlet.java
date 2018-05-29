@@ -61,14 +61,14 @@ public class ReportServlet extends AbstractRestApiServlet {
          *
          */
         private static final long serialVersionUID = 1L;
-        String exportMode;
-        Long reportId;
-        Long questionId; //only for GeoJSON
-        Date from;
-        Date to;
-        Boolean lastCollection;
-        String imgPrefix;
-        String uploadUrl;
+        public String exportMode;
+        public Long reportId;
+        public Long questionId; //only for GeoJSON
+        public Date from;
+        public Date to;
+        public Boolean lastCollection;
+        public String imgPrefix;
+        public String uploadUrl;
     }
 
     class ReportCriteria implements Serializable {
@@ -76,11 +76,11 @@ public class ReportServlet extends AbstractRestApiServlet {
          *
          */
         private static final long serialVersionUID = 1L;
-        ReportOptions opts;
-        String exportType;
-        String appId;
-        Long surveyId;
-        String email;
+        public ReportOptions opts;
+        public String exportType;
+        public String appId;
+        public Long surveyId;
+        public String email;
     }
 
     class ReportBody implements Serializable {
@@ -88,7 +88,7 @@ public class ReportServlet extends AbstractRestApiServlet {
          *
          */
         private static final long serialVersionUID = 1L;
-        ReportCriteria criteria;
+        public ReportCriteria criteria;
     }
 
     public ReportServlet() {
@@ -123,6 +123,7 @@ public class ReportServlet extends AbstractRestApiServlet {
                         //TODO do anything else?
                         return null;
                     }
+                    log.info(" ====Starting========");
 
                     //hit the services server
                     try {
@@ -146,6 +147,7 @@ public class ReportServlet extends AbstractRestApiServlet {
                         Log.error("Bad URL");
                     }
                     catch (IOException e) {
+                        log.warning("====IOerror: " + e);
                         //call it a transient error, re-queue
                         requeueStart(r);
                     }
@@ -173,6 +175,7 @@ public class ReportServlet extends AbstractRestApiServlet {
     }
 
     public static void queueStart(Report r) {
+        log.info("Forking to task with action START");
         Queue queue = QueueFactory.getDefaultQueue();
         TaskOptions options = TaskOptions.Builder.withUrl(SERVLET_URL)
                 .param(TaskRequest.ACTION_PARAM, ReportTaskRequest.START_ACTION)
@@ -181,6 +184,7 @@ public class ReportServlet extends AbstractRestApiServlet {
     }
 
     private void requeueStart(Report r) {
+        log.warning("Requeuing task with action START");
         //TODO give up if this has been going on too long
 
         Queue queue = QueueFactory.getDefaultQueue();
@@ -220,6 +224,7 @@ public class ReportServlet extends AbstractRestApiServlet {
         con.setRequestMethod("POST");
         con.setRequestProperty("Content-Type", "application/json");
         con.setRequestProperty("charset", "utf-8");
+        con.setDoOutput(true);
         log.info("Preparing to POST " + body.toString() + " to " + url);
         try( DataOutputStream wr = new DataOutputStream( con.getOutputStream())) {
            wr.write( postData );
