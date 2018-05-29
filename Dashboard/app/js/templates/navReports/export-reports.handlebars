@@ -7,7 +7,7 @@
         {{/unless}}
         {{#if FLOW.selectedControl.selectedSurvey}}
           {{view Ember.Select
-              contentBinding="FLOW.surveyControl.arrangedContent"
+              contentBinding="FLOW.surveyControl.viewDataForms"
               selectionBinding="FLOW.selectedControl.selectedSurvey"
               optionLabelPath="content.code"
               optionValuePath="content.keyId"
