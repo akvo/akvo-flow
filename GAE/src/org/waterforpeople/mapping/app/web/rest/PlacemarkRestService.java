@@ -59,19 +59,16 @@ public class PlacemarkRestService {
         final List<String> geocells = Arrays.asList(boundingBoxString.split(","));
         final Map<String, Object> response = new HashMap<String, Object>();
         final List<PlacemarkDto> placemarkList = new ArrayList<PlacemarkDto>();
-        List<SurveyedLocale> slList = new ArrayList<>();
+        final List<SurveyedLocale> dataPointList = new ArrayList<>();
+        final boolean isAuthorizedUser = isAuthorizedUser();
 
-        if(isAuthorizedUser()) {
-            slList.addAll(listAllDataPoints(surveyId, geocells));
+        if(isAuthorizedUser) {
+            dataPointList.addAll(listAllDataPoints(surveyId, geocells));
         } else {
-            slList.addAll(listOnlyPublicDataPoints(geocells));
+            dataPointList.addAll(listOnlyPublicDataPoints(geocells));
         }
 
-        if (slList != null) {
-            for (SurveyedLocale sl : slList) {
-                placemarkList.add(marshallDomainToDto(sl));
-            }
-        }
+        placemarkList.addAll(marshallDataPointListToDto(dataPointList, isAuthorizedUser));
 
         response.put("placemarks", placemarkList);
         return response;
@@ -97,17 +94,38 @@ public class PlacemarkRestService {
         return localeDao.listPublicLocalesByGeocell(geocells, LIMIT_PLACEMARK_POINTS);
     }
 
-    private PlacemarkDto marshallDomainToDto(SurveyedLocale sl) {
-        final PlacemarkDto dto = new PlacemarkDto();
-        dto.setLatitude(sl.getLatitude());
-        dto.setLongitude(sl.getLongitude());
-        dto.setCount(1);
-        dto.setDetailsId(sl.getKey().getId());
-        dto.setLevel(0);
-        dto.setSurveyId(sl.getCreationSurveyId());
-        dto.setCollectionDate(sl.getLastSurveyedDate());
+    private List<PlacemarkDto> marshallDataPointListToDto(List<SurveyedLocale> dataPointList, boolean isAuthorisedUser) {
+        if (dataPointList == null) {
+            return Collections.emptyList();
+        }
+
+        final List<PlacemarkDto> placemarkList = new ArrayList<PlacemarkDto>();
+        for (SurveyedLocale dataPoint : dataPointList) {
+            if(isAuthorisedUser) {
+                placemarkList.add(marshallDataPointToDto(dataPoint));
+            } else {
+                placemarkList.add(marshallPublicDataPointToDto(dataPoint));
+            }
+        }
+        return placemarkList;
+    }
+
+    private PlacemarkDto marshallDataPointToDto(SurveyedLocale dataPoint) {
+        final PlacemarkDto dataPointDto = marshallPublicDataPointToDto(dataPoint);
+        dataPointDto.setDetailsId(dataPoint.getKey().getId());
+        dataPointDto.setSurveyId(dataPoint.getCreationSurveyId());
         // make even to avoid clash with cluster keyIds in client cache
-        dto.setKeyId(sl.getKey().getId() * 2);
-        return dto;
+        dataPointDto.setKeyId(dataPoint.getKey().getId() * 2);
+        return dataPointDto;
+    }
+
+    private PlacemarkDto marshallPublicDataPointToDto(SurveyedLocale dataPoint) {
+        final PlacemarkDto dataPointDto = new PlacemarkDto();
+        dataPointDto.setLatitude(dataPoint.getLatitude());
+        dataPointDto.setLongitude(dataPoint.getLongitude());
+        dataPointDto.setCount(1);
+        dataPointDto.setLevel(0);
+        dataPointDto.setCollectionDate(dataPoint.getLastSurveyedDate());
+        return dataPointDto;
     }
 }
