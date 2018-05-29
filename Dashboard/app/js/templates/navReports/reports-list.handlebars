@@ -7,11 +7,11 @@
         {{#if FLOW.reportsControl.reportsAvailable}}
         <!-- Here is the list of exports generated-->
         <ul class="exportList">
-          {{#each report in FLOW.reportsControl}}
-          <li class="{{#with report}} {{reportType reportType}} {{reportStatus state}} {{/with}}">
+          {{#each report in FLOW.reportsControl}}{{#with report}}
+          <li class="{{reportType reportType}} {{reportStatus state}}">
             <div class="exportInfo">
-              <a href="{{report.filename}}">
-                {{#with report}}
+              <a href="{{filename}}">
+
                 <h5>
                   {{reportTypeString reportType}} - <span class="exportFileName">{{reportFilename filename}}</span>
                   <span class="submissionsDate">
@@ -22,16 +22,16 @@
                     {{/if}}
                   </span>
                 </h5>
-                {{/with}}
+
               </a>
               <span class="surveyPath"></span>
             </div>
             <div class="exportStatus">
               <span class="loading">Generating</span>
-              <span class="exportDate">{{report.lastUpdateDateTime}}</span>
+              <span class="exportDate">{{lastUpdateDateTime}}</span>
             </div>
           </li>
-          {{/each}}
+          {{/with}}{{/each}}
         </ul>
         <!-- End -->
         {{else}}

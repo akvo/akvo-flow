@@ -43,5 +43,5 @@ FLOW.reportsControl = Ember.ArrayController.create({
 
   reportsAvailable: function () {
     return this.get('content').content.length > 0;
-  }.property('content.isLoaded')
+  }.observes('content')
 });
