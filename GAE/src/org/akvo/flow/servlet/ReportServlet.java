@@ -16,7 +16,6 @@
 
 package org.akvo.flow.servlet;
 
-import java.io.DataOutputStream;
 import java.io.IOException;
 import java.io.Serializable;
 import java.net.HttpURLConnection;
@@ -200,35 +199,28 @@ public class ReportServlet extends AbstractRestApiServlet {
         final String email = uDao.getByKey(r.getUser()).getEmailAddress();
 
         //Gleaned from export-reports-views.js
-        ReportBody body = new ReportBody();
-        body.criteria = new ReportCriteria();
-        body.criteria.opts = new ReportOptions();
-        body.criteria.appId = PropertyUtil.getProperty("appId");
-        body.criteria.email = email;
-        body.criteria.surveyId = r.getFormId();
-        body.criteria.appId = PropertyUtil.getProperty("appId");
-        body.criteria.exportType = r.getReportType();
-        body.criteria.opts.exportMode = r.getReportType();
-        body.criteria.opts.reportId = r.getKey().getId();
-        body.criteria.opts.from = r.getStartDate();
-        body.criteria.opts.to = r.getEndDate();
-        body.criteria.opts.lastCollection = r.getLastCollectionOnly();
-        body.criteria.opts.questionId = r.getQuestionId();
-        body.criteria.opts.imgPrefix = PropertyUtil.getProperty("photo_url_root");
-        body.criteria.opts.uploadUrl = PropertyUtil.getProperty("surveyuploadurl");
+        ReportCriteria criteria = new ReportCriteria();
+        criteria.opts = new ReportOptions();
+        criteria.appId = PropertyUtil.getProperty("appId");
+        criteria.email = email;
+        criteria.surveyId = r.getFormId();
+        criteria.appId = PropertyUtil.getProperty("appId");
+        criteria.exportType = r.getReportType();
+        criteria.opts.exportMode = r.getReportType();
+        criteria.opts.reportId = r.getKey().getId();
+        criteria.opts.from = r.getStartDate();
+        criteria.opts.to = r.getEndDate();
+        criteria.opts.lastCollection = r.getLastCollectionOnly();
+        criteria.opts.questionId = r.getQuestionId();
+        criteria.opts.imgPrefix = PropertyUtil.getProperty("photo_url_root");
+        criteria.opts.uploadUrl = PropertyUtil.getProperty("surveyuploadurl");
         ObjectMapper objectMapper = new ObjectMapper();
-        byte[] postData = objectMapper.writeValueAsBytes(body);//UTF-8?
+        String crit = java.net.URLEncoder.encode(objectMapper.writeValueAsString(criteria), "ISO-8859-1");;
 
-        URL url = new URL(PropertyUtil.getProperty("flowServices") + "/generate");
+        URL url = new URL(PropertyUtil.getProperty("flowServices") + "/generate?criteria=" +  crit);
         HttpURLConnection con = (HttpURLConnection) url.openConnection();
-        con.setRequestMethod("POST");
-        con.setRequestProperty("Content-Type", "application/json");
-        con.setRequestProperty("charset", "utf-8");
-        con.setDoOutput(true);
-        log.info("Preparing to POST " + body.toString() + " to " + url);
-        try( DataOutputStream wr = new DataOutputStream( con.getOutputStream())) {
-           wr.write( postData );
-        }
+        con.setRequestMethod("GET");
+        log.info("Preparing to GET " + url);
         return con.getResponseCode();
 
     }
