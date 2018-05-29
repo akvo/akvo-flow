@@ -37,9 +37,9 @@ cd "${SRC_DIR}/GAE"
 
 mvn package
 
-#if [[ "${TRAVIS_BRANCH}" != "develop" ]] && [[ -z "$TRAVIS_TAG" ]]; then
-#  exit 0
-#fi
+if [[ "${TRAVIS_BRANCH}" != "develop" ]] && [[ -z "$TRAVIS_TAG" ]]; then
+  exit 0
+fi
 
 echo "Setting project version to $FLOW_GIT_VERSION"
 mvn versions:set -DnewVersion=${FLOW_GIT_VERSION}
