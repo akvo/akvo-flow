@@ -146,11 +146,6 @@ FLOW.permControl = Ember.Controller.create({
 
     if (!currentUserPermissions || !entity) { return []; }
 
-    // return superAdmin permissions
-    if ("0" in currentUserPermissions){
-      return currentUserPermissions["0"];
-    }
-
     // first check current object id
     keyId = entity.get('keyId');
     if (keyId in currentUserPermissions) {
@@ -163,8 +158,7 @@ FLOW.permControl = Ember.Controller.create({
       return permissions;
     }
 
-    var i;
-    for(i = 0; i < ancestorIds.length; i++){
+    for(var i = 0; i < ancestorIds.length; i++){
       if (ancestorIds[i] in currentUserPermissions) {
         if (currentUserPermissions[ancestorIds[i]]) {
           currentUserPermissions[ancestorIds[i]].forEach(function(item){
