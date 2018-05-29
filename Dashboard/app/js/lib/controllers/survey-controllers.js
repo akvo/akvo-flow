@@ -761,13 +761,18 @@ FLOW.surveyControl = Ember.ArrayController.create({
 
   viewDataForms: function () {
     var forms = [];
-    this.get('content').forEach(function(item){
-      if (FLOW.surveyControl.userCanViewData(item.get('keyId'))) {
-        forms.push(item);
-      }
-    });
-    return forms;
-  },
+    if (!Ember.none(this.get('content')) && this.get('content')) {
+      this.get('content').forEach(function(item){
+        if (FLOW.surveyControl.userCanViewData(item.get('keyId'))) {
+          forms.push(item);
+        }
+      });
+    }
+    this.set('readDataContent', forms);
+    if (forms.length === 0) {
+      FLOW.selectedControl.set('selectedSurvey', null);
+    }
+  }.observes('content.isLoaded'),
 
   userCanViewData: function (formID) {
     var permissions = this.formPermissions(formID);
@@ -778,7 +783,7 @@ FLOW.surveyControl = Ember.ArrayController.create({
     var currentUserPermissions = FLOW.currentUser.get('pathPermissions'), formPermissions = [];
     this.get('content').forEach(function(item){
       if (item.get('keyId') == formId) {
-        var ancestorIds = currentForm.get('ancestorIds');
+        var ancestorIds = item.get('ancestorIds');
         if (ancestorIds) {
           for(var i = 0; i < ancestorIds.length; i++){
             if (ancestorIds[i] in currentUserPermissions) {
