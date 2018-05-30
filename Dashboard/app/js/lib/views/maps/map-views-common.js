@@ -13,7 +13,13 @@ FLOW.NavMapsView = FLOW.View.extend({
   mediaMarkerSelected: {},
   geoModel: null,
   selectedSurvey: null,
-  allowFilters: FLOW.Env.mapsProvider && FLOW.Env.mapsProvider === 'cartodb',
+  showSurveyFilters: true, // show filters when user is logged in
+
+  showFormFilter: function () {
+      return FLOW.selectedControl.selectedSurveyGroup
+            && FLOW.Env.mapsProvider
+            && FLOW.Env.mapsProvider === 'cartodb';
+  }.property('FLOW.selectedControl.selectedSurveyGroup'),
 
   init: function () {
     this._super();
