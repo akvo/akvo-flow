@@ -261,23 +261,11 @@ FLOW.permControl = Ember.Controller.create({
   }.property(),
 
   userCanViewData: function (form) {
-    var permissions = this.formPermissions(form);
-    return permissions.indexOf("DATA_READ") >= 0;
-  },
-
-  formPermissions: function (form) {
-    var currentUserPermissions = FLOW.currentUser.get('pathPermissions'), formPermissions = [];
-    var ancestorIds = form.get('ancestorIds');
-    if (ancestorIds) {
-      for (var i = 0; i < ancestorIds.length; i++) {
-        if (ancestorIds[i] in currentUserPermissions) {
-          currentUserPermissions[ancestorIds[i]].forEach(function(item){
-            formPermissions.push(item);
-          });
-        }
-      }
+    var permissions;
+    if (!Ember.none(form)) {
+      permissions = this.permissions(form);
     }
-    return formPermissions;
+    return permissions && permissions.indexOf("DATA_READ") > -1;
   }
 });
 
