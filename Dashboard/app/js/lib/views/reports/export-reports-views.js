@@ -6,8 +6,6 @@ FLOW.ReportLoader = Ember.Object.create({
   requestInterval: 3000,
   analysisExportOption: "range", //date range selected by default
   cleaningExportOption: "range",
-  dateRangeText: Ember.String.loc('_collection_period'),
-  onlyRecentText: Ember.String.loc('_only_recent_submissions'),
 
   payloads: {
 	DATA_CLEANING: {
@@ -70,15 +68,6 @@ FLOW.ReportLoader = Ember.Object.create({
         criteria.opts[k] = opts[k];
       });
     }
-
-    var exportOption = "";
-    if (exportType === 'DATA_CLEANING') {
-      exportOption = this.cleaningExportOption;
-    } else if (exportType === 'DATA_ANALYSIS') {
-      exportOption = this.analysisExportOption;
-    }
-    criteria.opts.lastCollection = '' + ((exportType === 'DATA_CLEANING' || exportType === 'DATA_ANALYSIS')
-      && FLOW.selectedControl.get('selectedSurveyGroup').get('monitoringGroup') && exportOption === "recent");
 
     criteria.opts.email = FLOW.currentUser.email;
     criteria.opts.flowServices = FLOW.Env.flowServices;
@@ -186,26 +175,20 @@ FLOW.ExportReportsAppletView = FLOW.View.extend({
   showGoogleEarthButton: false,
   reportFromDate: undefined,
   reportToDate: undefined,
-  cleaningDateRangeSelected: true,
-  analysisDateRangeSelected: true,
+  dateRangeSelected: true,
+  exportOption: "range",
+  dateRangeText: Ember.String.loc('_collection_period'),
+  onlyRecentText: Ember.String.loc('_only_recent_submissions'),
 
   dateRangeSelectedObserver: function () {
-    if (FLOW.ReportLoader.cleaningExportOption == "range") {
-      this.set('cleaningDateRangeSelected', true);
+    if (this.get("exportOption") == "range") {
+      this.set('dateRangeSelected', true);
     } else {
-      this.set('cleaningDateRangeSelected', false);
+      this.set('dateRangeSelected', false);
       FLOW.dateControl.set('fromDate', null);
       FLOW.dateControl.set('toDate', null);
     }
-
-    if (FLOW.ReportLoader.analysisExportOption == "range") {
-      this.set('analysisDateRangeSelected', true);
-    } else {
-      this.set('analysisDateRangeSelected', false);
-      FLOW.dateControl.set('fromDate', null);
-      FLOW.dateControl.set('toDate', null);
-    }
-  }.observes('FLOW.ReportLoader.cleaningExportOption', 'FLOW.ReportLoader.analysisExportOption'),
+  }.observes('this.exportOption'),
 
   setMinDate: function () {
     if (this.get('reportFromDate')) {
@@ -261,13 +244,13 @@ FLOW.ExportReportsAppletView = FLOW.View.extend({
   }.property('FLOW.selectedControl.selectedSurvey'),
 
   showDataCleaningReport: function () {
-    var opts = {from:this.get("reportFromDate"), to:this.get("reportToDate")};
+    var opts = {from:this.get("reportFromDate"), to:this.get("reportToDate"), lastCollection: this.get('exportOption') === "recent"};
     var sId = this.get('selectedSurvey');
     FLOW.ReportLoader.load('DATA_CLEANING', sId, opts);
   },
 
   showDataAnalysisReport: function () {
-    var opts = {from:this.get("reportFromDate"), to:this.get("reportToDate")};
+    var opts = {from:this.get("reportFromDate"), to:this.get("reportToDate"), lastCollection: this.get('exportOption') === "recent"};
     var sId = this.get('selectedSurvey');
     FLOW.ReportLoader.load('DATA_ANALYSIS', sId, opts);
   },
