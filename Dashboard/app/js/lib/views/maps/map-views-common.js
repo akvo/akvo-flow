@@ -15,10 +15,12 @@ FLOW.NavMapsView = FLOW.View.extend({
   selectedSurvey: null,
   showSurveyFilters: true, // show filters when user is logged in
 
+  isCartoDbMap: function () {
+      return FLOW.Env.mapsProvider && FLOW.Env.mapsProvider === 'cartodb';
+  }.property(),
+
   showFormFilter: function () {
-      return FLOW.selectedControl.selectedSurveyGroup
-            && FLOW.Env.mapsProvider
-            && FLOW.Env.mapsProvider === 'cartodb';
+      return FLOW.selectedControl.selectedSurveyGroup && this.get('isCartoDbMap');
   }.property('FLOW.selectedControl.selectedSurveyGroup'),
 
   init: function () {
