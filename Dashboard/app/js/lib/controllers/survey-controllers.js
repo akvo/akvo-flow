@@ -761,9 +761,9 @@ FLOW.surveyControl = Ember.ArrayController.create({
 
   viewDataForms: function () {
     var forms = [];
-    if (!Ember.none(this.get('content')) && this.get('content')) {
+    if (this.get('content')) {
       this.get('content').forEach(function(item){
-        if (FLOW.surveyControl.userCanViewData(item.get('keyId'))) {
+        if (FLOW.permControl.userCanViewData(item.get('keyId'))) {
           forms.push(item);
         }
       });
@@ -772,31 +772,7 @@ FLOW.surveyControl = Ember.ArrayController.create({
     if (forms.length === 0) {
       FLOW.selectedControl.set('selectedSurvey', null);
     }
-  }.observes('content.isLoaded'),
-
-  userCanViewData: function (formID) {
-    var permissions = this.formPermissions(formID);
-    return permissions.indexOf("DATA_READ") >= 0;
-  },
-
-  formPermissions: function (formId) {
-    var currentUserPermissions = FLOW.currentUser.get('pathPermissions'), formPermissions = [];
-    this.get('content').forEach(function(item){
-      if (item.get('keyId') == formId) {
-        var ancestorIds = item.get('ancestorIds');
-        if (ancestorIds) {
-          for(var i = 0; i < ancestorIds.length; i++){
-            if (ancestorIds[i] in currentUserPermissions) {
-              currentUserPermissions[ancestorIds[i]].forEach(function(item){
-                formPermissions.push(item);
-              });
-            }
-          }
-        }
-      }
-    });
-    return formPermissions;
-  }
+  }.observes('content.isLoaded')
 });
 
 

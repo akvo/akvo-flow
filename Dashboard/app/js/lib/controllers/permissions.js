@@ -258,7 +258,31 @@ FLOW.permControl = Ember.Controller.create({
           }
       }
       return false;
-  }.property()
+  }.property(),
+
+  userCanViewData: function (formID) {
+    var permissions = this.formPermissions(formID);
+    return permissions.indexOf("DATA_READ") >= 0;
+  },
+
+  formPermissions: function (formId) {
+    var currentUserPermissions = FLOW.currentUser.get('pathPermissions'), formPermissions = [];
+    FLOW.surveyControl.get('content').forEach(function(item){
+      if (item.get('keyId') == formId) {
+        var ancestorIds = item.get('ancestorIds');
+        if (ancestorIds) {
+          for (var i = 0; i < ancestorIds.length; i++) {
+            if (ancestorIds[i] in currentUserPermissions) {
+              currentUserPermissions[ancestorIds[i]].forEach(function(item){
+                formPermissions.push(item);
+              });
+            }
+          }
+        }
+      }
+    });
+    return formPermissions;
+  }
 });
 
 
