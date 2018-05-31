@@ -2,11 +2,11 @@
   {{#view view.NavItemView item="navSurveys" }}
     <a {{action doNavSurveys}}>{{t _surveys}}</a>
   {{/view}}
-	{{#if view.showDevicesButton}}
   {{#view view.NavItemView item="navDevices" }}
+	{{#if view.showDevicesButton}}
     <a {{action doNavDevices}}>{{t _devices}}</a>
-	{{/view}}
   {{/if}}
+	{{/view}}
   {{#view view.NavItemView item="navData" }}
     <a {{action doNavData}}>{{t _data}}</a>
   {{/view}}
