@@ -45,7 +45,7 @@ FLOW.MapsController = Ember.ArrayController.extend({
     }.observes('this.content.isLoaded'),
 
     adaptMap: function(bestBB, zoomlevel){
-        var bbString = "", gcLevel = 0, listToRetrieve = [];
+        var bbString = "", gcLevel = 0, listToRetrieve = [], surveyId;
 
         this.set('currentGcLevel',gcLevel);
         // on zoomlevel 2, the map repeats itself, leading to wrong results
@@ -74,8 +74,11 @@ FLOW.MapsController = Ember.ArrayController.extend({
         // go get it in the datastore
         // when the points come in, populateMap will trigger and place the points
         if (!Ember.empty(bbString)) {
-            this.set('content',FLOW.store.findQuery(FLOW.Placemark,
-                {bbString: bbString, gcLevel: gcLevel}));
+            var requestParams = { bbString: bbString, gcLevel: gcLevel };
+            if (FLOW.selectedControl.selectedSurveyGroup) {
+                requestParams.surveyId = FLOW.selectedControl.selectedSurveyGroup.get('keyId');
+            }
+            this.set('content',FLOW.store.findQuery(FLOW.Placemark, requestParams));
         } else {
             // we might have stuff in cache, so draw anyway
             this.populateMap();
