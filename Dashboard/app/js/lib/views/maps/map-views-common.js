@@ -77,8 +77,6 @@ FLOW.NavMapsView = FLOW.View.extend({
       });
       FLOW.router.mapsController.set('map', this.map);
       this.geoModel = create_geomodel();
-      //load points for the visible map
-      this.redoMap();
     }
 
     // add scale indication to map
@@ -277,6 +275,9 @@ FLOW.NavMapsView = FLOW.View.extend({
   surveyGroupSelection: function () {
       this.clearMap();
       FLOW.router.mapsController.clearSurveyDataLayer();
+      if (FLOW.selectedControl.selectedSurveyGroup && !this.get('isCartoDbMap')) {
+          this.redoMap();
+      }
   }.observes('FLOW.selectedControl.selectedSurveyGroup'),
 
   /**
