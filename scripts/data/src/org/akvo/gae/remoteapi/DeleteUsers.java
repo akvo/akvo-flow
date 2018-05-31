@@ -60,9 +60,11 @@ public class DeleteUsers implements Process {
     }
 
     private void listRemainingSupers(Map<String, Entity> existingUsers) {
+        System.out.println("Remaining superAdmins: ");
         for (Entity e: existingUsers.values()) {
-            if (Boolean.TRUE.equals((Boolean)e.getProperty(USER_ROLE_FIELD))) {
-                System.out.println("Remaining superAdmin: " + e.getProperty(USER_EMAIL_FIELD));
+            if (Boolean.TRUE.equals((Boolean)e.getProperty(USER_ROLE_FIELD))
+                    || "0".equals((String)e.getProperty("permissionList"))) {
+                System.out.println(e.getProperty(USER_EMAIL_FIELD));
             }
         }
     }
@@ -79,7 +81,8 @@ public class DeleteUsers implements Process {
             }
             Entity user = existing.get(email);
             if (user != null) {
-                boolean sa = Boolean.TRUE.equals((Boolean)user.getProperty(USER_ROLE_FIELD));
+                boolean sa = Boolean.TRUE.equals((Boolean)user.getProperty(USER_ROLE_FIELD))
+                        || "0".equals((String)user.getProperty("permissionList"));
                 System.out.println("Found user: " + email +
                         " id " + user.getKey().getId() +
                         " superAdmin " + sa);
