@@ -32,9 +32,10 @@ import com.google.appengine.repackaged.org.apache.commons.io.FileUtils;
 import static org.akvo.gae.remoteapi.DataUtils.*;
 
 /**
- * Delete users from the datastore configuration. Takes in the path of a CSV file containing a list
+ * Delete users from the datastore. Takes in the path of a CSV file containing a list
  * of users to be removed (if present). The CSV file format is
  * emailAddress[,permissionList,superAdmin] e.g. test@example.com,10,False
+ * only the email part is used here
  */
 public class DeleteUsers implements Process {
 
@@ -73,7 +74,7 @@ public class DeleteUsers implements Process {
         List<Key> users = new ArrayList<Key>();
 
         for (String line : userLines) {
-            String[] userParts = line.split(",", 3); //accept AddUser files
+            String[] userParts = line.split(",", 3); //lets us accept AddUser files
             String email = userParts[0].trim();
             if (email.length() == 0) {
                 System.out.println("Skipping user: " + line);
@@ -108,8 +109,7 @@ public class DeleteUsers implements Process {
     }
 
     private static void deleteSelectedUsers(DatastoreService ds, List<Key> keys) {
-        System.out.println(String.format(
-                "Deleting %d user entities", keys.size()));
+        System.out.printf("Deleting %d user entities\n", keys.size());
         ds.delete(keys);
     }
 
