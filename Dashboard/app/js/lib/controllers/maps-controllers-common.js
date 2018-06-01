@@ -23,24 +23,23 @@ FLOW.MapsController = Ember.ArrayController.extend({
 
     populateMap: function () {
         var gcLevel, placemarks, placemarkArray=[];
-        if (this.content.get('isLoaded') === true) {
-            gcLevel = this.get('currentGcLevel');
-            // filter placemarks
+
+        if (this.content.get('isLoaded') && FLOW.selectedControl.selectedSurveyGroup) {
+            var surveyId = FLOW.selectedControl.selectedSurveyGroup.get('keyId');
+
             placemarks = FLOW.store.filter(FLOW.Placemark, function(item){
-                return item.get('level') == gcLevel;
+                return item.get('surveyId') === surveyId;
             });
+
+            if (!this.allPlacemarks) {
+                this.set('allPlacemarks', L.layerGroup());
+                this.allPlacemarks.addTo(this.map);
+            }
 
             placemarks.forEach(function (placemark) {
                 marker = this.addMarker(placemark);
-                placemarkArray.push(marker);
+                this.allPlacemarks.addLayer(marker);
             }, this);
-
-            if (!Ember.none(this.allPlacemarks)){
-                this.allPlacemarks.clearLayers();
-            }
-
-            this.allPlacemarks = L.layerGroup(placemarkArray);
-            this.allPlacemarks.addTo(this.map);
         }
     }.observes('this.content.isLoaded'),
 
@@ -54,18 +53,8 @@ FLOW.MapsController = Ember.ArrayController.extend({
             bestBB = "0123456789abcdef".split("");
         }
 
-        // see if we already have it in the cache
-        // in the cache, we use a combination of geocell and gcLevel requested as the key:
-        // for example "af-3", "4ee-5", etc.
-        // TODO this is not optimal at high zoom levels, as we will already have loaded the same points on a level before
         for (var i = 0; i < bestBB.length; i++) {
-            if (this.get('geocellCache').indexOf(bestBB[i]+"-"+gcLevel) < 0 ) {
-                // if we don't have it in the cache add it to the list of items to be loaded
-                listToRetrieve.push(bestBB[i]);
-
-                // now add this key to cache
-                this.get('geocellCache').push(bestBB[i] + "-" + gcLevel);
-            }
+            listToRetrieve.push(bestBB[i]);
         }
 
         // pack best bounding box values in a string for sending to the server
