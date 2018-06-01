@@ -48,10 +48,12 @@ public class PlacemarkRestService {
 
     private SurveyedLocaleDao localeDao = new SurveyedLocaleDao();
 
+    private final static String DEFAULT_NON_EXISTENT_SURVEY_ID = "-1";
+
     @RequestMapping(method = RequestMethod.GET, value = "")
     @ResponseBody
     public Map<String, Object> listPlaceMarks(
-            @RequestParam(value = "surveyId", defaultValue = "-1") Long surveyId, // default to non-existing surveyId
+            @RequestParam(value = "surveyId", defaultValue = DEFAULT_NON_EXISTENT_SURVEY_ID) Long surveyId,
             @RequestParam(value = "bbString", defaultValue = "") String boundingBoxString,
             @RequestParam(value = "gcLevel", defaultValue = "") Integer gcLevel) {
 
