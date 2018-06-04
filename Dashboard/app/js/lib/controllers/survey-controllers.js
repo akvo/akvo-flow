@@ -758,6 +758,21 @@ FLOW.surveyControl = Ember.ArrayController.create({
     return formPermissions;
 
   }.property('FLOW.selectedControl.selectedSurvey'),
+
+  viewDataForms: function () {
+    var forms = [];
+    if (this.get('content')) {
+      this.get('content').forEach(function(item){
+        if (FLOW.permControl.userCanViewData(item)) {
+          forms.push(item);
+        }
+      });
+    }
+    this.set('readDataContent', forms);
+    if (forms.length === 0) {
+      FLOW.selectedControl.set('selectedSurvey', null);
+    }
+  }.observes('content.isLoaded')
 });
 
 

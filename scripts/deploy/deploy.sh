@@ -139,7 +139,7 @@ function deploy_instance {
 
     sed -i "s|${sandbox_sha1_sum}|${instance_sha1_sum}|g" "${instance_file}"
 
-    jq ". + {id: \"dataprocessor\", manualScaling: {instances: 1}, instanceClass: \"B2\"}" "${instance_file}" > "${backend_file}"
+    jq ". + {id: \"dataprocessor\", basicScaling: {maxInstances: 1, idleTimeout: \"300s\"}, instanceClass: \"B2\"}" "${instance_file}" > "${backend_file}"
 
     gsutil cp -J "${config_repo}/${instance_id}/appengine-web.xml" "gs://${deploy_bucket_name}/${instance_sha1_sum}"
 

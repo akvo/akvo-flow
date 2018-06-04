@@ -5,9 +5,9 @@
         {{#unless FLOW.projectControl.isLoading}}
           {{view FLOW.SurveySelectionView}}
         {{/unless}}
-        {{#if FLOW.selectedControl.selectedSurvey}}
+        {{#if FLOW.selectedControl.selectedSurveyGroup}}
           {{view Ember.Select
-              contentBinding="FLOW.surveyControl.arrangedContent"
+              contentBinding="FLOW.surveyControl.readDataContent"
               selectionBinding="FLOW.selectedControl.selectedSurvey"
               optionLabelPath="content.code"
               optionValuePath="content.keyId"
