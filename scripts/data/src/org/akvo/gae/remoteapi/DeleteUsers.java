@@ -43,8 +43,8 @@ public class DeleteUsers implements Process {
     public void execute(DatastoreService ds, String[] args) throws Exception {
         if (args.length == 0 || args[0].length() == 0) {
             System.err.println("Usage: " + RemoteAPI.class.getName()
-                    + "DeleteUsers <appid> <username> <password> <users file path>");
-            System.exit(1);
+                    + "DeleteUsers <appid> <username> <password> <user-file path>");
+            throw new IllegalArgumentException("Missing params");
         }
 
         final File f = new File(args[0]);
