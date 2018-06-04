@@ -156,10 +156,6 @@ FLOW.NavMapsView = FLOW.View.extend({
 
     FLOW.router.mapsController.set('map', this.map);
 
-    this.map.on('click', function(e) {
-      self.clearMap(); //remove any previously loaded point data
-    });
-
     this.map.on('zoomend', function() {
       $('body, html, #flowMap').scrollTop(0);
     });
