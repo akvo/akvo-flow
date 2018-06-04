@@ -228,63 +228,6 @@
                                    :class "text-center"
                                    :component actions}]})]))))
 
-(defn generate-apikeys [owner user]
-  (POST (str "/rest/users/" (get user "keyId") "/apikeys")
-        (merge default-ajax-config
-               {:handler (fn [response]
-                           (let [access-key (get-in response ["apikeys" "accessKey"])
-                                 secret (get-in response ["apikeys" "secret"])]
-                             (om/set-state! owner {:access-key access-key
-                                                   :secret secret})
-                             (dispatch :new-access-key {:access-key access-key
-                                                        :user user})))})))
-
-(defn revoke-apikeys [owner user]
-  (DELETE (str "/rest/users/" (get user "keyId") "/apikeys")
-          (merge default-ajax-config
-                 {:format (url-request-format)
-                  :handler (fn [response]
-                             (om/set-state! owner {:access-key nil :secret nil})
-                             (dispatch :new-access-key {:access-key nil :user user}))})))
-
-(defn api-keys-section [{:keys [user]} owner]
-  (reify
-    om/IInitState
-    (init-state [this]
-      {:access-key (get user "accessKey")
-       :secret nil})
-    om/IWillReceiveProps
-    (will-receive-props [this {:keys [user]}]
-      (om/set-state! owner :access-key (get user "accessKey")))
-    om/IRenderState
-    (render-state [this {:keys [access-key secret]}]
-      (html
-       [:div.apiKeySection.topMargin
-        [:h2 (t> _manage_api_keys) ":"]
-        [:p (t> _you_can_regen_or_revoke_api_key_for_this_user)]
-        (when secret
-           [:div.alert.alert-success {:role "alert"}
-            (b/icon :ok) " " (t> _secret_will_only_be_shown_once)])
-        [:form
-         [:div.form-group
-          [:label.control-label.text-left (t> _access_key)]
-          [:input.form-control {:type "text"
-                                :value access-key}]]
-         (when secret
-           [:div.form-group
-            [:label.control-label.text-left (t> _secret)]
-            [:input.form-control {:type "text"
-                                  :value secret}]])
-
-
-         [:div.btn-group
-          [:button.btn.btn-default {:on-click #(do (.preventDefault %)
-                                                   (generate-apikeys owner user))}
-           (b/icon :refresh) " " (t> _re_generate)]
-          [:button.btn.btn-default {:on-click #(do (.preventDefault %)
-                                                   (revoke-apikeys owner user))}
-           (b/icon :ban-circle) " " (t> _revoke)]]]]))))
-
 (defn user-details [{:keys [close! user users-store projects-store roles-store user-auth-store]} owner]
   (reify
     om/IRender
@@ -305,5 +248,4 @@
                                             :users-store users-store
                                             :projects-store projects-store
                                             :roles-store roles-store
-                                            :user-auth-store user-auth-store})
-          (om/build api-keys-section {:user user})])]))))
+                                            :user-auth-store user-auth-store})])]))))
