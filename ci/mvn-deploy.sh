@@ -20,8 +20,8 @@ mvn appengine:stage
 
 log Requesting "${PROJECT_ID}" config
 
-curl -L -s -o ./target/appengine-staging/WEB-INF/appengine-web.xml \
-     "https://$GH_USER:$GH_TOKEN@raw.githubusercontent.com/akvo/$CONFIG_REPO/master/${PROJECT_ID}/appengine-web.xml"
+curl --location --silent --output ./target/appengine-staging/WEB-INF/appengine-web.xml \
+     "https://${GH_USER}:${GH_TOKEN}@raw.githubusercontent.com/akvo/${CONFIG_REPO}/master/${PROJECT_ID}/appengine-web.xml"
 
 sed -i "s/__VERSION__/${version}/" ./target/appengine-staging/admin/js/app.js
 
