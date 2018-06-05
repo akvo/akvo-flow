@@ -632,12 +632,20 @@ FLOW.surveyControl = Ember.ArrayController.create({
   }.observes('FLOW.selectedControl.selectedSurveyGroup'),
 
   selectFirstForm: function() {
-    if(FLOW.selectedControl.selectedSurvey) return; // ignore if form is already selected
+    if (FLOW.selectedControl.selectedSurvey) return; // ignore if form is already selected
     if (this.get('content') && this.content.get('isLoaded')) {
-      var form = this.content.get('firstObject');
+      var form = this.content.get('firstObject'), forms = [];
       if (form) {
         FLOW.selectedControl.set('selectedSurvey', form);
       }
+
+      //set readDataContent property for only surveys user has "DATA_READ" permissions for
+      this.content.forEach(function(item){
+        if (FLOW.permControl.userCanViewData(item)) {
+          forms.push(item);
+        }
+      });
+      this.set('readDataContent', forms);
     }
   }.observes('content.isLoaded'),
 

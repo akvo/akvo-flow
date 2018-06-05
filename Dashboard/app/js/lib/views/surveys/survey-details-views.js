@@ -573,6 +573,6 @@ FLOW.QuestionGroupItemView = FLOW.View.extend({
 
   disableQuestionGroupEditing: function() {
     var form = FLOW.selectedControl.get('selectedSurvey');
-    return FLOW.permControl.canEditForm(form);
+    return !FLOW.permControl.canEditForm(form);
   }.property('FLOW.selectedControl.selectedSurvey'),
 });
