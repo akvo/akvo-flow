@@ -80,9 +80,7 @@
 (defn admin?-user-mark [user owner]
   (om/component
    (html (if (user-details/admin-str? user)
-           (do
-             (println user (keys user) (type (first (keys user))))
-             (b/icon :ok))
+           (b/icon :ok)
            [:div]))))
 
 (defn columns [owner user-auth-store roles-store]
