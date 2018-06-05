@@ -14,16 +14,16 @@ gcloud config set compute/zone europe-west1-d
 
 version=$(git describe)
 
+log Requesting "${PROJECT_ID}" config
+
+curl --location --silent --output ./target/akvo-flow/WEB-INF/appengine-web.xml \
+     "https://${GH_USER}:${GH_TOKEN}@raw.githubusercontent.com/akvo/${CONFIG_REPO}/master/${PROJECT_ID}/appengine-web.xml"
+
+sed -i "s/__VERSION__/${version}/" ./target/akvo-flow/admin/js/app.js
+
 log Staging app
 
 mvn appengine:stage
-
-log Requesting "${PROJECT_ID}" config
-
-curl --location --silent --output ./target/appengine-staging/WEB-INF/appengine-web.xml \
-     "https://${GH_USER}:${GH_TOKEN}@raw.githubusercontent.com/akvo/${CONFIG_REPO}/master/${PROJECT_ID}/appengine-web.xml"
-
-sed -i "s/__VERSION__/${version}/" ./target/appengine-staging/admin/js/app.js
 
 log Deploying version 1
 
@@ -34,6 +34,8 @@ java -cp /google-cloud-sdk/platform/google_appengine/google/appengine/tools/java
      update ./target/appengine-staging
 
 log Deploying backend dataprocessor
+
+gcloud app versions delete dataprocessor --project="${PROJECT_ID}" --quiet
 
 java -cp /google-cloud-sdk/platform/google_appengine/google/appengine/tools/java/lib/appengine-tools-api.jar \
      com.google.appengine.tools.admin.AppCfg \
