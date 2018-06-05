@@ -36,22 +36,22 @@ FLOW.FormView = Ember.View.extend({
 	},
 
 	disableFormFields: function () {
-		var survey = FLOW.selectedControl.get('selectedSurveyGroup');
-		return !FLOW.permControl.canEditForm(survey);
+		var form = this.get('form');
+		return !FLOW.permControl.canEditForm(form);
 	}.property('this.form'),
 
 	showFormTranslationsButton: function() {
-		var survey = FLOW.selectedControl.get('selectedSurveyGroup');
-		return FLOW.permControl.canEditForm(survey);
+		var form = this.get('form');
+		return FLOW.permControl.canEditForm(form);
 	}.property('this.form'),
 
 	showFormDeleteButton: function () {
-		var survey = FLOW.selectedControl.get('selectedSurveyGroup');
-		return FLOW.permControl.canEditForm(survey);
+		var form = this.get('form');
+		return FLOW.permControl.canEditForm(form);
 	}.property('this.form'),
 
 	showFormPublishButton: function () {
-		var survey = FLOW.selectedControl.get('selectedSurveyGroup');
-		return FLOW.permControl.canEditForm(survey);
+		var form = this.get('selectedSurveyGroup');
+		return FLOW.permControl.canEditForm(form);
 	}.property('this.form')
 });

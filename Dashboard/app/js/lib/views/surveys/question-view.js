@@ -794,8 +794,8 @@ FLOW.QuestionView = FLOW.View.extend({
   }.observes('this.variableName'),
 
   showQuestionModifyButtons: function () {
-    var survey = FLOW.selectedControl.get('selectedSurveyGroup');
-    return FLOW.permControl.canEditForm(survey);
+    var form = FLOW.selectedControl.get('selectedSurvey');
+    return FLOW.permControl.canEditForm(form);
   }.property('FLOW.selectedControl.selectedSurvey'),
 });
 
