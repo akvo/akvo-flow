@@ -27,6 +27,10 @@ fi
 openssl aes-256-cbc -K "$encrypted_ac356ff71e5e_key" -iv "$encrypted_ac356ff71e5e_iv" \
 	-in ci/akvoflow-uat1.p12.enc -out ci/akvoflow-uat1.p12 -d
 
+# shellcheck disable=SC2154
+openssl aes-256-cbc -K "$encrypted_ac356ff71e5e_key" -iv "$encrypted_ac356ff71e5e_iv" \
+	-in ci/akvoflow-uat1.json.enc -out ci/akvoflow-uat1.json -d
+
 docker run \
     --rm \
     --volume "${HOME}/.m2:/root/.m2:delegated" \
