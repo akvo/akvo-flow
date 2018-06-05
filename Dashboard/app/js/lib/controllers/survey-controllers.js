@@ -763,11 +763,13 @@ FLOW.surveyControl = Ember.ArrayController.create({
 
   viewDataForms: function() {
     var forms = [];
+    
     this.content.forEach(function(item){
       if (FLOW.permControl.userCanViewData(item)) {
         forms.push(item);
       }
     });
+
     this.set('readDataContent', forms);
   }
 });
