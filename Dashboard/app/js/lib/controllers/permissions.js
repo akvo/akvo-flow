@@ -188,20 +188,20 @@ FLOW.permControl = Ember.Controller.create({
 
   /* takes a survey (ember object) and checks whether the current user
     has edit permissions for the survey */
-  canEditSurvey: function(form) {
+  canEditSurvey: function(survey) {
     var permissions;
-    if (!Ember.none(form)) {
-      permissions = this.permissions(form);
+    if (!Ember.none(survey)) {
+      permissions = this.permissions(survey);
     }
     return permissions && permissions.indexOf("PROJECT_FOLDER_UPDATE") > -1;
   },
 
   /* takes a form (ember object) and checks with user permissions
   whether the current user has edit permissions for the form */
-  canEditForm: function(survey) {
+  canEditForm: function(form) {
     var permissions;
-    if (!Ember.none(survey)) {
-      permissions = this.permissions(survey);
+    if (!Ember.none(form)) {
+      permissions = this.permissions(form);
     }
     return permissions && permissions.indexOf("FORM_UPDATE") > -1;
   },
