@@ -4,6 +4,7 @@
 *.rpc
 *.swp
 *.p12
+ci/*.json
 
 # Eclipse files
 .classpath

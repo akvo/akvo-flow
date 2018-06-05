@@ -9,30 +9,27 @@ green='\033[0;32m'
 nc='\033[0m'
 
 if [[ "$#" -lt 2 ]]; then
-    echo "Usage: ./scripts/deploy/run.sh <version> <instance-id-1> <instance-id-2> ... <instance-id-n>"
+    echo "Usage: ./scripts/deploy/run.sh <version> <instance-id-1> [<instance-id-2> ... <instance-id-n>]"
     exit 1
 fi
 
-export version="${1}"         # <version>       as $1
-export source_instance="${2}" # <instance-id-1> as $2
-shift 2                       # $@ rest of instances
-
-
-export config_repo="${CONFIG_REPO:=/akvo-flow-server-config}"
-export deploy_bucket_name="${deploy_bucket_name:=akvoflowsandbox-deployment}"
-export api_root="https://appengine.googleapis.com/v1"
+export version="${1}"         # <version> as $1
+shift 1                       # $@ rest of instances
 
 deploy_id="$(date +%s)"
 tmp="/tmp/${deploy_id}"
+
+mkdir -p "${tmp}"
+mkdir -p "${tmp}/parallel"
+
+# Move to tmp folder and work there
+cd "${tmp}"
+
+export config_repo="${CONFIG_REPO:=${tmp}/akvo-flow-server-config}"
+export deploy_bucket_name="${deploy_bucket_name:=akvoflowsandbox-deployment}"
+
 gh_user="${GH_USER:=unknown}"
 gh_token="${GH_TOKEN:=unknown}"
-
-CRON_UPDATE="${CRON_UPDATE:=true}"
-INDEX_UPDATE="${INDEX_UPDATE:=true}"
-QUEUE_UPDATE="${QUEUE_UPDATE:=true}"
-export CRON_UPDATE
-export INDEX_UPDATE
-export QUEUE_UPDATE
 
 # Force login
 gcloud auth login --brief --activate --force
@@ -57,13 +54,6 @@ else
 	"https://github.com/akvo/akvo-flow-server-config.git" "${config_repo}" > /dev/null
 fi
 
-echo "Deploying to ${source_instance} using gcloud..."
-
-mkdir -p "${tmp}"
-
-# Move to tmp folder and work there
-cd "${tmp}"
-
 gsutil cp "gs://${deploy_bucket_name}/${version}.zip" "${version}.zip"
 unzip "${version}.zip"
 
@@ -72,137 +62,47 @@ if [[ ! -d "appengine-staging" ]]; then
     exit 1
 fi
 
-cp -v "${config_repo}/${source_instance}/appengine-web.xml" appengine-staging/WEB-INF/
-sed -i "s/__VERSION__/${version}/" appengine-staging/admin/js/app.js
-
-gcloud app deploy appengine-staging/app.yaml \
-       --project="${source_instance}" \
-       --bucket="gs://${deploy_bucket_name}" \
-       --version=1 \
-       --promote
-
-if [[ "${CRON_UPDATE}" != "false" ]]; then
-    gcloud app deploy appengine-staging/WEB-INF/appengine-generated/cron.yaml \
-	   --project="${source_instance}" --quiet
-fi
-
-if [[ "${INDEX_UPDATE}" != "false" ]]; then
-    gcloud app deploy appengine-staging/WEB-INF/appengine-generated/index.yaml \
-	   --project="${source_instance}" --quiet
-fi
-
-if [[ "${QUEUE_UPDATE}" != "false" ]]; then
-    gcloud app deploy appengine-staging/WEB-INF/appengine-generated/queue.yaml \
-	   --project="${source_instance}" --quiet
-fi
-
-gcloud app deploy appengine-staging/app.yaml \
-       --project="${source_instance}" \
-       --bucket="gs://${deploy_bucket_name}" \
-       --version=dataprocessor \
-       --no-promote --quiet
-
-if [[ "$#" -eq 0 ]]; then
-    echo "Done"
-    exit 0
-fi
-
-echo "Retrieving version definitions..."
-
-access_token=$(gcloud auth print-access-token)
-export access_token
-
-curl -s -H "Authorization: Bearer ${access_token}" \
-     "${api_root}/apps/${source_instance}/services/default/versions/1?view=FULL" \
-     > "${tmp}/1.json"
-
-find "${config_repo}" -name 'appengine-web.xml' -exec sha1sum {} + > "${tmp}/sha1sum.txt"
-
 function deploy_instance {
     instance_id="${1}"
-    instance_file="${instance_id}.json"
-    backend_file="${instance_id}_dataprocessor.json"
+    staging_dir="appengine-staging-${1}"
 
-    # select required keys
-    jq -M ". | {id, inboundServices, instanceClass, runtime, env, threadsafe, handlers, deployment}" \
-       1.json > "${instance_file}.tmp"
+    echo "Copying staging dir to ${staging_dir}"
+    cp -r appengine-staging "${staging_dir}"
 
-    # remove __static__ entries
-    jq '.deployment.files |= with_entries(select (.key | test("^__static__") | not))' "${instance_file}.tmp" \
-       > "${instance_file}"
-    rm -rf "${instance_file}.tmp"
+    echo "Deleting dataprocessor version"
+    gcloud app versions delete dataprocessor --project="${instance_id}" --quiet
 
-    sed -i "s|apps/${source_instance}/|apps/${instance_id}/|g" "${instance_file}"
+    echo "Deploying ${instance_id} from ${staging_dir}"
 
-    sandbox_sha1_sum=$(awk '$2 ~ "/${source_instance}/appengine-web.xml$" {print $1}' sha1sum.txt)
-    instance_sha1_sum=$(awk -v instance="${instance_id}" '$2 ~ "/"instance"/appengine-web.xml$" {print $1}' sha1sum.txt)
+    cp "${config_repo}/${instance_id}/appengine-web.xml" "${staging_dir}/WEB-INF/appengine-web.xml"
 
-    sed -i "s|${sandbox_sha1_sum}|${instance_sha1_sum}|g" "${instance_file}"
+    java -cp /google-cloud-sdk/platform/google_appengine/google/appengine/tools/java/lib/appengine-tools-api.jar \
+	 com.google.appengine.tools.admin.AppCfg \
+	 --retain_upload_dir \
+	 --application="${instance_id}" \
+	 update "${staging_dir}"
 
-    jq ". + {id: \"dataprocessor\", basicScaling: {maxInstances: 1, idleTimeout: \"300s\"}, instanceClass: \"B2\"}" "${instance_file}" > "${backend_file}"
-
-    gsutil cp -J "${config_repo}/${instance_id}/appengine-web.xml" "gs://${deploy_bucket_name}/${instance_sha1_sum}"
-
-    echo "Deploying ${instance_id} using GAE Admin API..."
-
-    curl -s -X POST -T "${instance_file}" -H "Content-Type: application/json" \
-	 -H "Authorization: Bearer ${access_token}" \
-	 "${api_root}/apps/${instance_id}/services/default/versions" > \
-	 "${instance_id}_operation.json"
-
-    instance_operation_path=$(jq -r .name "${instance_id}_operation.json")
-
-    if [ "${instance_operation_path}" == "null" ]; then
-        echo "Deployment to ${instance_id} failed"
-        exit 1
-    fi
-
-    curl -s -X POST -T "${backend_file}" -H "Content-Type: application/json" \
-	 -H "Authorization: Bearer ${access_token}" \
-	 "${api_root}/apps/${instance_id}/services/default/versions" > \
-	 "${instance_id}_dataprocessor_operation.json"
-
-    if [[ "$(jq -r .name "${instance_id}_dataprocessor_operation.json")" == "null" ]]; then
-        echo "Deployment to dataprocessor of ${instance_id} failed"
-        exit 1
-    fi
-
-    # We only check for liveness of version 1
-    for i in {1..20}
-    do
-	sleep 5
-	echo "Checking deployment status - Attempt ${i}"
-	done=$( (curl -s \
-                      -H "Content-Type: application/json" \
-                      -H "Authorization: Bearer ${access_token}" \
-                      "${api_root}/${instance_operation_path}" | jq -r .done) || "")
-	if [[ "${done}" == "true" ]]; then
-            break
-	fi
-    done
-
-    if [[ "${done}" != "true" ]]; then
-	echo "Deployment to ${instance_id} failed"
-        exit 1
-    fi
-
-    if [[ "${CRON_UPDATE}" != "false" ]]; then
-	gcloud app deploy appengine-staging/WEB-INF/appengine-generated/cron.yaml \
-	       --project="${instance_id}" --quiet
-    fi
-
-    if [[ "${INDEX_UPDATE}" != "false" ]]; then
-	gcloud app deploy appengine-staging/WEB-INF/appengine-generated/index.yaml \
-	       --project="${instance_id}" --quiet
-    fi
-    if [[ "${QUEUE_UPDATE}" != "false" ]]; then
-	gcloud app deploy appengine-staging/WEB-INF/appengine-generated/queue.yaml \
-	       --project="${instance_id}" --quiet
-    fi
+    java -cp /google-cloud-sdk/platform/google_appengine/google/appengine/tools/java/lib/appengine-tools-api.jar \
+	 com.google.appengine.tools.admin.AppCfg \
+	 --retain_upload_dir \
+	 --application="${instance_id}" \
+	 backends update "${staging_dir}"
 }
 
 export -f deploy_instance
+
+# Deploy first instance to be able to grab OAuth2 token in $HOME/.appcfg_oauth2_tokens_java
+deploy_instance "${1}"
+
+# Deploy rest if present
+shift 1
+
+if [[ "$#" -eq 0 ]]; then
+    exit 0
+fi
+
 echo "Deploying instances... $*"
-mkdir "${tmp}/parallel"
-parallel --results "${tmp}/parallel" --jobs 10 --joblog "${deploy_id}.log" deploy_instance ::: "$@"
+
+parallel --results "${tmp}/parallel" --retries 3 --jobs 10 --joblog "${deploy_id}.log" deploy_instance ::: "$@"
+
 echo "Done"
