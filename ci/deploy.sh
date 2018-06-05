@@ -23,13 +23,11 @@ if [[ "${TRAVIS_BRANCH:0:8}" == "release/" ]] || [[ ! -z "${TRAVIS_TAG}" ]]; the
     project_id="${release_project_id}"
 fi
 
-# shellcheck disable=SC2154
-openssl aes-256-cbc -K "$encrypted_ac356ff71e5e_key" -iv "$encrypted_ac356ff71e5e_iv" \
-	-in ci/akvoflow-uat1.p12.enc -out ci/akvoflow-uat1.p12 -d
+curl -s -o ./ci/akvoflow-uat1.p12 \
+     "https://$GH_USER:$GH_TOKEN@raw.githubusercontent.com/akvo/$CONFIG_REPO/master/akvoflow-uat1/akvoflow-uat1.p12"
 
-# shellcheck disable=SC2154
-openssl aes-256-cbc -K "$encrypted_ac356ff71e5e_key" -iv "$encrypted_ac356ff71e5e_iv" \
-	-in ci/akvoflow-uat1.json.enc -out ci/akvoflow-uat1.json -d
+curl -s -o ./ci/akvoflow-uat1.json \
+     "https://$GH_USER:$GH_TOKEN@raw.githubusercontent.com/akvo/$CONFIG_REPO/master/akvoflow-uat1/akvoflow-uat1-29cd359eae9b.json"
 
 docker run \
     --rm \
