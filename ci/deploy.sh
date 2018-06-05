@@ -23,10 +23,10 @@ if [[ "${TRAVIS_BRANCH:0:8}" == "release/" ]] || [[ ! -z "${TRAVIS_TAG}" ]]; the
     project_id="${release_project_id}"
 fi
 
-curl -s -o ./ci/akvoflow-uat1.p12 \
+curl -L -s -o ./ci/akvoflow-uat1.p12 \
      "https://$GH_USER:$GH_TOKEN@raw.githubusercontent.com/akvo/$CONFIG_REPO/master/akvoflow-uat1/akvoflow-uat1.p12"
 
-curl -s -o ./ci/akvoflow-uat1.json \
+curl -L -s -o ./ci/akvoflow-uat1.json \
      "https://$GH_USER:$GH_TOKEN@raw.githubusercontent.com/akvo/$CONFIG_REPO/master/akvoflow-uat1/akvoflow-uat1-29cd359eae9b.json"
 
 docker run \
