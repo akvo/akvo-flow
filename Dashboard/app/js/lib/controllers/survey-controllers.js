@@ -674,6 +674,8 @@ FLOW.surveyControl = Ember.ArrayController.create({
   createForm: function() {
     var code = Ember.String.loc('_new_form').trim();
     var path = FLOW.projectControl.get('currentProjectPath') + "/" + code;
+    var ancestorIds = FLOW.selectedControl.selectedSurveyGroup.get('ancestorIds');
+    ancestorIds.push(FLOW.selectedControl.selectedSurveyGroup.get('keyId'));
     FLOW.store.createRecord(FLOW.Survey, {
       "name": code,
       "code": code,
@@ -682,7 +684,8 @@ FLOW.surveyControl = Ember.ArrayController.create({
       "requireApproval": false,
       "status": "NOT_PUBLISHED",
       "surveyGroupId": FLOW.selectedControl.selectedSurveyGroup.get('keyId'),
-      "version":"1.0"
+      "version":"1.0",
+      "ancestorIds": ancestorIds
     });
     FLOW.projectControl.get('currentProject').set('deleteDisabled', true);
     FLOW.store.commit();

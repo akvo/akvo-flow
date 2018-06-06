@@ -201,11 +201,7 @@ FLOW.permControl = Ember.Controller.create({
   canEditForm: function(form) {
     var permissions;
     if (!Ember.none(form)) {
-      if (!Ember.none(form.get("keyId"))) {
-        permissions = this.permissions(form);
-      } else {
-        return true; //no formId passed so new form being created
-      }
+      permissions = this.permissions(form);
     }
     return permissions && permissions.indexOf("FORM_UPDATE") > -1;
   },
