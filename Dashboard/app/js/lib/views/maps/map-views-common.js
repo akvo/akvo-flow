@@ -13,7 +13,15 @@ FLOW.NavMapsView = FLOW.View.extend({
   mediaMarkerSelected: {},
   geoModel: null,
   selectedSurvey: null,
-  allowFilters: FLOW.Env.mapsProvider && FLOW.Env.mapsProvider === 'cartodb',
+  showSurveyFilters: true, // show filters when user is logged in
+
+  isCartoDbMap: function () {
+      return FLOW.Env.mapsProvider && FLOW.Env.mapsProvider === 'cartodb';
+  }.property(),
+
+  showFormFilter: function () {
+      return FLOW.selectedControl.selectedSurveyGroup && this.get('isCartoDbMap');
+  }.property('FLOW.selectedControl.selectedSurveyGroup'),
 
   init: function () {
     this._super();
@@ -24,30 +32,6 @@ FLOW.NavMapsView = FLOW.View.extend({
       ", .placeMarkBasicInfo" +
       ", .noDetails";
   },
-
-  redoMap: function() {
-      var n, e, s, w, mapBounds;
-      mapBounds = this.map.getBounds();
-      // get current bounding box of the visible map
-      n = mapBounds.getNorthEast().lat;
-      e = mapBounds.getNorthEast().lng;
-      s = mapBounds.getSouthWest().lat;
-      w = mapBounds.getSouthWest().lng;
-
-      // bound east and west
-      e = (e + 3 * 180.0) % (2 * 180.0) - 180.0;
-      w = (w + 3 * 180.0) % (2 * 180.0) - 180.0;
-
-      // create bounding box object
-      var bb = this.geoModel.create_bounding_box(n, e, s, w);
-
-      // create the best set of geocell box cells which covers
-      // the current viewport
-      var bestBB = this.geoModel.best_bbox_search_cells(bb);
-
-      // adapt the points shown on the map
-      FLOW.router.mapsController.adaptMap(bestBB, this.map.getZoom());
-    },
 
   /**
     Once the view is in the DOM create the map
@@ -69,8 +53,6 @@ FLOW.NavMapsView = FLOW.View.extend({
       });
       FLOW.router.mapsController.set('map', this.map);
       this.geoModel = create_geomodel();
-      //load points for the visible map
-      this.redoMap();
     }
 
     // add scale indication to map
@@ -105,7 +87,7 @@ FLOW.NavMapsView = FLOW.View.extend({
       };
     this.map = L.mapbox.map('flowMap', 'akvo.he30g8mm', options).setView([-0.703107, 36.765], 2);
     L.control.layers({
-      'Terrain': L.mapbox.tileLayer('akvo.he30g8mm').addTo(this.map),
+      'Terrain': L.mapbox.tileLayer('akvo.he30g8mm'),
       'Streets': L.mapbox.tileLayer('akvo.he2pdjhk'),
       'Satellite': L.mapbox.tileLayer('akvo.he30neh4')
     }).addTo(this.map);
@@ -173,10 +155,6 @@ FLOW.NavMapsView = FLOW.View.extend({
     L.control.layers(baseLayers).addTo(this.map);
 
     FLOW.router.mapsController.set('map', this.map);
-
-    this.map.on('click', function(e) {
-      self.clearMap(); //remove any previously loaded point data
-    });
 
     this.map.on('zoomend', function() {
       $('body, html, #flowMap').scrollTop(0);
@@ -258,19 +236,6 @@ FLOW.NavMapsView = FLOW.View.extend({
       });
   },
 
-  surveySelection: function () {
-      this.clearMap();
-      FLOW.router.mapsController.clearSurveyDataLayer();
-      if (!Ember.none(this.get('selectedSurvey'))) {
-          FLOW.router.mapsController.loadNamedMap(this.selectedSurvey.get('keyId'));
-      }
-  }.observes('this.selectedSurvey'),
-
-  surveyGroupSelection: function () {
-      this.clearMap();
-      FLOW.router.mapsController.clearSurveyDataLayer();
-  }.observes('FLOW.selectedControl.selectedSurveyGroup'),
-
   /**
     If a placemark is selected and the details pane is hidden make sure to
     slide out
@@ -336,7 +301,25 @@ FLOW.NavMapsView = FLOW.View.extend({
     this.polygons.push(geoShape);
   },
 
-  clearMap: function() {
+  surveySelection: function () {
+      this.clearMap();
+      this.redoMap();
+  }.observes('this.selectedSurvey'),
+
+  surveyGroupSelection: function () {
+      this.clearMap();
+      this.redoMap();
+  }.observes('FLOW.selectedControl.selectedSurveyGroup'),
+
+  clearMap: function () {
+      if (this.get('isCartoDbMap')) {
+          this.clearCartoDbMap();
+      } else {
+          this.clearMapboxMap();
+      }
+  },
+
+  clearCartoDbMap: function() {
     var self = this;
     self.set('detailsPaneVisible', false);
     if (self.marker) {
@@ -357,7 +340,57 @@ FLOW.NavMapsView = FLOW.View.extend({
       self.map.setView(self.mapCenter, self.mapZoomLevel);
       self.polygons = [];
     }
+
+    FLOW.router.mapsController.clearSurveyDataLayer();
   },
+
+  clearMapboxMap: function () {
+      if (!Ember.empty(FLOW.router.mapsController.allPlacemarks)) {
+          FLOW.router.mapsController.allPlacemarks.clearLayers();
+      }
+  },
+
+  redoMap: function () {
+      if (this.get('isCartoDbMap')) {
+          this.redoCartoDbMap();
+      } else {
+          this.redoMapboxMap();
+      }
+  },
+
+  redoCartoDbMap: function () {
+      if (!Ember.none(this.get('selectedSurvey'))) {
+          FLOW.router.mapsController.loadNamedMap(this.selectedSurvey.get('keyId'));
+      }
+  },
+
+  redoMapboxMap: function() {
+      if (!FLOW.selectedControl.selectedSurveyGroup) {
+          return;
+      }
+
+      var n, e, s, w, mapBounds;
+      mapBounds = this.map.getBounds();
+      // get current bounding box of the visible map
+      n = mapBounds.getNorthEast().lat;
+      e = mapBounds.getNorthEast().lng;
+      s = mapBounds.getSouthWest().lat;
+      w = mapBounds.getSouthWest().lng;
+
+      // bound east and west
+      e = (e + 3 * 180.0) % (2 * 180.0) - 180.0;
+      w = (w + 3 * 180.0) % (2 * 180.0) - 180.0;
+
+      // create bounding box object
+      var bb = this.geoModel.create_bounding_box(n, e, s, w);
+
+      // create the best set of geocell box cells which covers
+      // the current viewport
+      var bestBB = this.geoModel.best_bbox_search_cells(bb);
+
+      // adapt the points shown on the map
+      FLOW.router.mapsController.adaptMap(bestBB, this.map.getZoom());
+    },
 
   /*Place a marker to highlight clicked point of layer on cartodb map*/
   placeMarker: function(latlng){
