@@ -12,37 +12,42 @@ gcloud auth activate-service-account "${SERVICE_ACCOUNT_ID}" --key-file=/app/src
 gcloud config set project "${PROJECT_ID}"
 gcloud config set compute/zone europe-west1-d
 
+version=$(git describe)
+
 log Requesting "${PROJECT_ID}" config
 
-curl -s -o ./target/akvo-flow/WEB-INF/appengine-web.xml \
-     "https://$GH_USER:$GH_TOKEN@raw.githubusercontent.com/akvo/$CONFIG_REPO/master/${PROJECT_ID}/appengine-web.xml"
-
-log Update __VERSION__
-
-version=$(git describe)
+curl --location --silent --output ./target/akvo-flow/WEB-INF/appengine-web.xml \
+     "https://${GH_USER}:${GH_TOKEN}@raw.githubusercontent.com/akvo/${CONFIG_REPO}/master/${PROJECT_ID}/appengine-web.xml"
 
 sed -i "s/__VERSION__/${version}/" ./target/akvo-flow/admin/js/app.js
 
-log Updating version 1
+log Staging app
 
-mvn appengine:deploy -Dapp.deploy.project="${PROJECT_ID}" -Dapp.deploy.version=1
+mvn appengine:stage
 
-log Updating cron, index, queue
+log Deploying version 1
 
-gcloud app deploy target/appengine-staging/WEB-INF/appengine-generated/cron.yaml --quiet
-gcloud app deploy target/appengine-staging/WEB-INF/appengine-generated/index.yaml --quiet
-gcloud app deploy target/appengine-staging/WEB-INF/appengine-generated/queue.yaml --quiet
+java -cp /google-cloud-sdk/platform/google_appengine/google/appengine/tools/java/lib/appengine-tools-api.jar \
+     com.google.appengine.tools.admin.AppCfg \
+     --service_account_json_key_file=/app/src/ci/akvoflow-uat1.json \
+     --application="${PROJECT_ID}" \
+     update ./target/appengine-staging
 
-log Uploading artifacts
+log Deploying backend dataprocessor
+
+gcloud app versions delete dataprocessor --project="${PROJECT_ID}" --quiet
+
+java -cp /google-cloud-sdk/platform/google_appengine/google/appengine/tools/java/lib/appengine-tools-api.jar \
+     com.google.appengine.tools.admin.AppCfg \
+     --service_account_json_key_file=/app/src/ci/akvoflow-uat1.json \
+     --application="${PROJECT_ID}" \
+     backends update ./target/appengine-staging
 
 archive_name="${version}.zip"
 (
-  cd target
-  zip "${archive_name}" -r appengine-staging/*
+    cd target
+    rm -rf appengine-staging/WEB-INF/appengine-web.xml
+    zip "${archive_name}" -r appengine-staging/*
 )
 
 gsutil cp "target/${archive_name}" "gs://akvoflowsandbox-deployment/${archive_name}"
-
-log Updating dataprocessor
-
-mvn appengine:deploy -Dapp.deploy.project="${PROJECT_ID}" -Dapp.deploy.version=dataprocessor -Dapp.deploy.promote=false

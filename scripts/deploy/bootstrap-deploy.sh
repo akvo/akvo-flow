@@ -4,7 +4,7 @@ set -eu
 
 apk add --no-cache \
     bash=4.4.19-r1 \
-    git=2.15.0-r1 \
+    git=2.15.2-r0 \
     jq=1.5-r5 \
     unzip=6.0-r2 \
     openjdk8=8.151.12-r0 \
