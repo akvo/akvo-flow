@@ -1,5 +1,5 @@
 /*
- *  Copyright (C) 2010-2012 Stichting Akvo (Akvo Foundation)
+ *  Copyright (C) 2010-2018 Stichting Akvo (Akvo Foundation)
  *
  *  This file is part of Akvo FLOW.
  *
@@ -21,11 +21,10 @@ import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import javax.xml.bind.DatatypeConverter;
 
 import javax.crypto.Mac;
 import javax.crypto.spec.SecretKeySpec;
-
-import com.google.gdata.util.common.util.Base64;
 
 /**
  * utility for generating checksums and digests
@@ -76,7 +75,8 @@ public class MD5Util {
                     mac.getAlgorithm());
             mac.init(secret);
             byte[] digest = mac.doFinal(content.getBytes());
-            return Base64.encode(digest);
+            // TODO: Change to Base64 API when moved to Java 8
+            return DatatypeConverter.printBase64Binary(digest);
         } catch (NoSuchAlgorithmException e) {
             log.log(Level.SEVERE, e.getMessage(), e);
         } catch (InvalidKeyException e) {

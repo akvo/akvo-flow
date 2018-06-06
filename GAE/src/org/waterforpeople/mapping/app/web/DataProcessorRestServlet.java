@@ -61,7 +61,6 @@ import com.gallatinsystems.framework.servlet.PersistenceFilter;
 import com.gallatinsystems.gis.location.GeoLocationService;
 import com.gallatinsystems.gis.location.GeoLocationServiceGeonamesImpl;
 import com.gallatinsystems.gis.location.GeoPlace;
-import com.gallatinsystems.gis.map.MapUtils;
 import com.gallatinsystems.messaging.dao.MessageDao;
 import com.gallatinsystems.messaging.domain.Message;
 import com.gallatinsystems.operations.dao.ProcessingStatusDao;
@@ -222,9 +221,6 @@ public class DataProcessorRestServlet extends AbstractRestApiServlet {
         } else if (DataProcessorRequest.ADD_TRANSLATION_FIELDS
                 .equalsIgnoreCase(dpReq.getAction())) {
             addTranslationFields(dpReq.getCursor());
-        } else if (DataProcessorRequest.RECOMPUTE_LOCALE_CLUSTERS
-                .equalsIgnoreCase(dpReq.getAction())) {
-            recomputeLocaleClusters(dpReq.getCursor());
         } else if (DataProcessorRequest.ADD_CREATION_SURVEY_ID_TO_LOCALE
                 .equalsIgnoreCase(dpReq.getAction())) {
             addCreationSurveyIdToLocale(dpReq.getCursor());
@@ -474,50 +470,6 @@ public class DataProcessorRestServlet extends AbstractRestApiServlet {
             QuestionAnswerStoreDao dao = new QuestionAnswerStoreDao();
             pm.makePersistentAll(toRemove); // some objects are in "transient" state
             dao.delete(toRemove);
-        }
-    }
-
-    /**
-     * This recomputes all Locale clusters. Clusters are deleted in the testharnessservlet. The keys
-     * are first removed in the testharnessservlet.
-     *
-     * @param offset
-     */
-    private void recomputeLocaleClusters(String cursor) {
-
-        log.log(Level.INFO, "recomputing locale clusters [cursor: " + cursor + "]");
-
-        final SurveyedLocaleDao slDao = new SurveyedLocaleDao();
-        final List<SurveyedLocale> results = slDao.listAll(cursor, LOCALE_PAGE_SIZE);
-
-        // initialize the memcache
-        final Cache cache = initCache(12 * 60 * 60);
-
-        if (cache == null) {
-            return;
-        }
-
-        for (SurveyedLocale locale : results) {
-            // adjust Geocell cluster data
-            if (locale.getGeocells() != null && !locale.getGeocells().isEmpty()) {
-                MapUtils.recomputeCluster(cache, locale, 1);
-            }
-        }
-
-        if (results.size() == LOCALE_PAGE_SIZE) {
-            final String newCursor = SurveyedLocaleDao.getCursor(results);
-            final TaskOptions options = TaskOptions.Builder
-                    .withUrl("/app_worker/dataprocessor")
-                    .param(DataProcessorRequest.ACTION_PARAM,
-                            DataProcessorRequest.RECOMPUTE_LOCALE_CLUSTERS)
-                    .param(DataProcessorRequest.CURSOR_PARAM,
-                            newCursor != null ? newCursor : "")
-                    .header("Host", BackendServiceFactory.getBackendService()
-                            .getBackendAddress("dataprocessor"));
-            ;
-            Queue queue = QueueFactory.getDefaultQueue();
-            queue.add(options);
-
         }
     }
 
