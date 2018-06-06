@@ -67,7 +67,7 @@
 ;; Dispatch loops
 
 (dispatch-loop
- :new-user new-user
+ :new-user [new-user callback]
  (assert new-user)
  (POST "/rest/users"
        (merge ajax/default-ajax-config
@@ -75,7 +75,9 @@
                :handler (fn [response]
                           (let [user (get response "user")
                                 user-id (get user "keyId")]
-                            (swap! app-state assoc-in [:users :by-id user-id] user)))})))
+                            (swap! app-state assoc-in [:users :by-id user-id] user)
+                            (callback user)))})))
+
 
 (dispatch-loop
  :edit-user user

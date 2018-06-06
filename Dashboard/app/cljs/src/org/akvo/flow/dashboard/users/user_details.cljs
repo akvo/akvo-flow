@@ -144,6 +144,11 @@
       {:selected-role nil
        :selected-folders []})
 
+    om/IWillMount
+    (will-mount [this]
+      (dispatch :roles/fetch nil)
+      (dispatch :projects/fetch nil))
+
     om/IRenderState
     (render-state [this {:keys [selected-role selected-folders]}]
       (html [:div.userRolesPerm.well.topMargin
@@ -228,24 +233,23 @@
                                    :class "text-center"
                                    :component actions}]})]))))
 
-(defn user-details [{:keys [close! user users-store projects-store roles-store user-auth-store]} owner]
+(defn user-details [{:keys [close! user users-store projects-store roles-store user-auth-store set-current-user!]} owner]
   (reify
     om/IRender
     (render [this]
       (html
-       [:div
-        (om/build panel-header-section {:user user
-                                        :close! close!})
-        (om/build user-edit-section {:user user
-                                     :on-save #(if (integer? (get % "keyId"))
-                                                 (dispatch :edit-user %)
-                                                 (do
-                                                   (dispatch :new-user %)
-                                                   (close!)))})
-        (when (get user "keyId")
-          [:div
-           (om/build roles-and-permissions {:user user
-                                            :users-store users-store
-                                            :projects-store projects-store
-                                            :roles-store roles-store
-                                            :user-auth-store user-auth-store})])]))))
+        [:div
+         (om/build panel-header-section {:user user
+                                         :close! close!})
+         (om/build user-edit-section {:user    user
+                                      :on-save #(if (integer? (get % "keyId"))
+                                                  (dispatch :edit-user %)
+                                                  (dispatch :new-user [% (fn [user-id]
+                                                                           (set-current-user! (get user-id "keyId")))]))})
+         (when (get user "keyId")
+           [:div
+            (om/build roles-and-permissions {:user user
+                                             :users-store users-store
+                                             :projects-store projects-store
+                                             :roles-store roles-store
+                                             :user-auth-store user-auth-store})])]))))

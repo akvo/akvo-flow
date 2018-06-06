@@ -57,7 +57,6 @@
           (b/btn-link {:on-click #(om/set-state! owner :confirm-delete? false)} (t> _no))]
          [:span
           (b/btn-link {:on-click #(do
-                                    (dispatch :projects/fetch nil)
                                     (scroll-to-top)
                                     (on-action user))}
                       :pencil (t> _edit))
@@ -80,9 +79,7 @@
 (defn admin?-user-mark [user owner]
   (om/component
    (html (if (user-details/admin-str? user)
-           (do
-             (println user (keys user) (type (first (keys user))))
-             (b/icon :ok))
+           (b/icon :ok)
            [:div]))))
 
 (defn columns [owner user-auth-store roles-store]
@@ -139,6 +136,7 @@
             (b/btn-primary {:class "btn-md"
                             :type "button"
                             :on-click #(do (scroll-to-top)
+                                           (om/set-state! owner :random-seed (rand-int 1000000))
                                            (om/set-state! owner :current-user-id 0))}
                            :plus (t> _add_new_user))]]]
          (om/build grid
@@ -161,7 +159,12 @@
                                           empty-user
                                           (store/get-user users current-user-id))
                                   :close! #(do (scroll-to-top)
+                                               (om/set-state! owner :random-seed nil)
                                                (om/set-state! owner :current-user-id nil))
+                                  :set-current-user! (let [seed (:random-seed state)]
+                                                       (fn [user-id]
+                                                         (when (= seed (om/get-state owner :random-seed))
+                                                           (om/set-state! owner :current-user-id user-id))))
                                   :users-store users
                                   :projects-store projects
                                   :roles-store user_roles
