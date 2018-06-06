@@ -22,7 +22,7 @@ RUN set -ex ; \
     apk add --no-cache \
     bash=4.4.19-r1 \
     curl=7.60.0-r1 \
-    git=2.15.0-r1 \
+    git \
     nodejs=8.9.3-r1 \
     openjdk8=8.151.12-r0 \
     openssh-client=7.5_p1-r8 \
