@@ -774,6 +774,10 @@ FLOW.surveyControl = Ember.ArrayController.create({
     });
 
     this.set('readDataContent', forms);
+
+    if (forms.length === 0) {
+      FLOW.selectedControl.set("selectedSurvey", null);
+    }
   }
 });
 
