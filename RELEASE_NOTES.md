@@ -1,5 +1,11 @@
 # Akvo Flow Release Notes
 ----
+# Akvo Flow Dashboard v1.9.33.1 - Fantastic Fern - (Hotfix 1)
+Date: 07th June 2018
+
+## Resolved issues
+* **App updates** - Update datastore index [#2690]. Update datastore index to work for both new and old device updates.
+
 # Akvo Flow Dashboard v1.9.33 - Fantastic Fern
 Date: 06th June 2018
 
