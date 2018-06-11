@@ -201,8 +201,9 @@ public class RawDataSpreadsheetImporter implements DataImporter {
         } catch (Exception e) {
             log.error("Failed to import raw data report", e);
         } finally {
-            if (threadPool != null)
+            if (threadPool != null) {
                 threadPool.shutdown();
+            }
             cleanup();
         }
         
@@ -421,9 +422,10 @@ public class RawDataSpreadsheetImporter implements DataImporter {
                 long questionId = m.getValue();
 
                 QuestionDto questionDto = questionIdToQuestionDto.get(questionId);
-                QuestionType questionType = questionDto.getType();
-
-                getIterationResponse(row, columnIndex, responseMap, questionType, questionId, questionDto, rep, optionNodes);
+                if (questionDto != null) { //Somehow slipped by the Clojure validation
+                    QuestionType questionType = questionDto.getType();
+                    getIterationResponse(row, columnIndex, responseMap, questionType, questionId, questionDto, rep, optionNodes);
+                }
             }
 
             rowIx++;
@@ -925,8 +927,9 @@ public class RawDataSpreadsheetImporter implements DataImporter {
     }
 
     private Integer durationToSeconds(String duration) {
-        if (duration == null || duration.length() == 0)
+        if (duration == null || duration.length() == 0) {
             return 0;
+        }
 
         // try to parse as integer
         if (!duration.contains(":")) {
@@ -940,8 +943,9 @@ public class RawDataSpreadsheetImporter implements DataImporter {
 
         // try do parse as hh:mm:ss
         String[] tokens = duration.split(":");
-        if (tokens.length != 3)
+        if (tokens.length != 3) {
             return 0;
+        }
         try {
             int hours = Integer.parseInt(tokens[0]);
             int minutes = Integer.parseInt(tokens[1]);

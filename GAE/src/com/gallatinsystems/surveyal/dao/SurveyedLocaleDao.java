@@ -67,12 +67,12 @@ public class SurveyedLocaleDao extends BaseDAO<SurveyedLocale> {
      * @return
      */
     @SuppressWarnings("unchecked")
-    public List<SurveyedLocale> listLocalesByGeocell(List<String> geocells, int pageSize) {
+    public List<SurveyedLocale> listLocalesByGeocell(Long surveyId, List<String> geocells, int pageSize) {
         PersistenceManager pm = PersistenceFilter.getManager();
-        String queryString = ":p1.contains(geocells)";
+        String queryString = "surveyGroupId == :p1 && :p2.contains(geocells)";
         javax.jdo.Query query = pm.newQuery(SurveyedLocale.class, queryString);
         prepareCursor(null, pageSize, query);
-        List<SurveyedLocale> results = (List<SurveyedLocale>) query.execute(geocells);
+        List<SurveyedLocale> results = (List<SurveyedLocale>) query.execute(surveyId, geocells);
         return results;
     }
 
