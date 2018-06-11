@@ -16,8 +16,8 @@
 
 package org.akvo.flow.servlet;
 
-import java.io.DataOutputStream;
 import java.io.IOException;
+import java.io.Serializable;
 import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.URL;
@@ -29,6 +29,8 @@ import javax.servlet.http.HttpServletRequest;
 import org.akvo.flow.dao.ReportDao;
 import org.akvo.flow.domain.persistent.Report;
 import org.akvo.flow.rest.dto.ReportTaskRequest;
+import org.codehaus.jackson.JsonGenerationException;
+import org.codehaus.jackson.map.JsonMappingException;
 import org.codehaus.jackson.map.ObjectMapper;
 import org.jfree.util.Log;
 import org.waterforpeople.mapping.app.web.dto.TaskRequest;
@@ -48,31 +50,44 @@ public class ReportServlet extends AbstractRestApiServlet {
     private static final Logger log = Logger.getLogger(ReportServlet.class.getName());
 
     private static final long serialVersionUID = -9064136799930675167L;
+    private static final String SERVLET_URL = "/app_worker/reportservlet";
 
     private ReportDao rDao;
     private UserDao uDao;
 
-    class ReportOptions {
-        String exportMode;
-        Long reportId;
-        Long questionId; //only for GeoJSON
-        Date from;
-        Date to;
-        Boolean lastCollection;
-        String imgPrefix;
-        String uploadUrl;
+    class ReportOptions implements Serializable {
+        /**
+         *
+         */
+        private static final long serialVersionUID = 1L;
+        public String exportMode;
+        public Long reportId;
+        public Long questionId; //only for GeoJSON
+        public Date from;
+        public Date to;
+        public Boolean lastCollection;
+        public String imgPrefix;
+        public String uploadUrl;
     }
 
-    class ReportCriteria {
-        ReportOptions opts;
-        String exportType;
-        String appId;
-        Long surveyId;
-        String email;
+    class ReportCriteria implements Serializable {
+        /**
+         *
+         */
+        private static final long serialVersionUID = 1L;
+        public ReportOptions opts;
+        public String exportType;
+        public String appId;
+        public Long surveyId;
+        public String email;
     }
 
-    class ReportBody {
-        ReportCriteria criteria;
+    class ReportBody implements Serializable {
+        /**
+         *
+         */
+        private static final long serialVersionUID = 1L;
+        public ReportCriteria criteria;
     }
 
     public ReportServlet() {
@@ -107,55 +122,22 @@ public class ReportServlet extends AbstractRestApiServlet {
                         //TODO do anything else?
                         return null;
                     }
-                    //look up user
-                    final String email = uDao.getByKey(r.getUser()).getEmailAddress();
-
-                    //Gleaned from export-reports-views.js
-                    ReportBody body = new ReportBody();
-                    body.criteria = new ReportCriteria();
-                    body.criteria.opts = new ReportOptions();
-                    body.criteria.appId = PropertyUtil.getProperty("appId");
-                    body.criteria.email = email;
-                    body.criteria.surveyId = r.getFormId();
-                    body.criteria.appId = PropertyUtil.getProperty("appId");
-                    body.criteria.exportType = r.getReportType();
-                    body.criteria.opts.exportMode = r.getReportType();
-                    body.criteria.opts.reportId = r.getKey().getId();
-                    body.criteria.opts.from = r.getStartDate();
-                    body.criteria.opts.to = r.getEndDate();
-                    body.criteria.opts.lastCollection = r.getLastCollectionOnly();
-                    body.criteria.opts.questionId = r.getQuestionId();
-                    body.criteria.opts.imgPrefix = PropertyUtil.getProperty("photo_url_root");
-                    body.criteria.opts.uploadUrl = PropertyUtil.getProperty("surveyuploadurl");
-                    ObjectMapper objectMapper = new ObjectMapper();
-                    byte[] postData = objectMapper.writeValueAsBytes(body);//UTF-8?
-
+                    log.info(" ====Starting========");
 
                     //hit the services server
                     try {
-                        URL url = new URL(PropertyUtil.getProperty("flowServices") + "/generate");
-                        HttpURLConnection con = (HttpURLConnection) url.openConnection();
-                        con.setRequestMethod("POST");
-                        con.setRequestProperty("Content-Type", "application/json");
-                        con.setRequestProperty("charset", "utf-8");
-                        log.info("Preparing to POST " + body.toString() + " to  " + url);
-                        try( DataOutputStream wr = new DataOutputStream( con.getOutputStream())) {
-                           wr.write( postData );
-                        }
-                        final int sts = con.getResponseCode();
+                        final int sts = engage(r);
                         log.info(" got  " + sts);
 
                         if (sts == 200) {
                             //Success, we are done!
                             return null;
-                        }
-                        //if permanent error, fail this report
-                        else if ((sts % 100) == 4) { //4xx: you messed up
+                        } else if ((sts % 100) == 4) { //4xx: you messed up
+                            //permanent error, fail this report
                             r.setState(Report.FINISHED_ERROR);
                             r.setMessage("Unexpected result when starting report: " + sts);
                             rDao.save(r);
-                        }
-                        else {
+                        } else {
                             //if we get a transient error, re-queue
                             requeueStart(r);
                         }
@@ -164,9 +146,24 @@ public class ReportServlet extends AbstractRestApiServlet {
                         Log.error("Bad URL");
                     }
                     catch (IOException e) {
+                        log.warning("====IOerror: " + e);
                         //call it a transient error, re-queue
                         requeueStart(r);
                     }
+                }
+                break;
+            case ReportTaskRequest.PROGRESS_ACTION:
+                Report r2 = rDao.getByKey(id);
+                if (r2 != null) {
+                    if (!r2.getState().equals(Report.QUEUED)
+                            && !r2.getState().equals(Report.IN_PROGRESS)) {
+                        //wrong state
+                        log.warning("Cannot set progress on report that is " + r2.getState());
+                        return null;
+                    }
+                    r2.setState(stReq.getState());
+                    r2.setMessage(stReq.getMessage());
+                    rDao.save(r2);
                 }
                 break;
             default:
@@ -176,16 +173,60 @@ public class ReportServlet extends AbstractRestApiServlet {
         return null;
     }
 
+    public static void queueStart(Report r) {
+        log.info("Forking to task with action START");
+        Queue queue = QueueFactory.getDefaultQueue();
+        TaskOptions options = TaskOptions.Builder.withUrl(SERVLET_URL)
+                .param(TaskRequest.ACTION_PARAM, ReportTaskRequest.START_ACTION)
+                .param(ReportTaskRequest.ID_PARAM, Long.toString(r.getKey().getId()));
+        queue.add(options);
+    }
+
     private void requeueStart(Report r) {
+        log.warning("Requeuing task with action START");
         //TODO give up if this has been going on too long
 
         Queue queue = QueueFactory.getDefaultQueue();
-        TaskOptions options = TaskOptions.Builder.withUrl("/app_worker/reportservlet")
+        TaskOptions options = TaskOptions.Builder.withUrl(SERVLET_URL)
                 .param(TaskRequest.ACTION_PARAM, ReportTaskRequest.START_ACTION)
                 .param(ReportTaskRequest.ID_PARAM, Long.toString(r.getKey().getId()))
                 .countdownMillis(Constants.TASK_RETRY_INTERVAL);
-        queue.add(options); //overwrite any supplied state
+        queue.add(options);
     }
+
+    private int engage(Report r) throws JsonGenerationException, JsonMappingException, IOException {
+        //look up user
+        final String email = uDao.getByKey(r.getUser()).getEmailAddress();
+
+        //Gleaned from export-reports-views.js
+        ReportCriteria criteria = new ReportCriteria();
+        criteria.opts = new ReportOptions();
+        criteria.appId = PropertyUtil.getProperty("appId");
+        criteria.email = email;
+        criteria.surveyId = r.getFormId();
+        criteria.appId = PropertyUtil.getProperty("appId");
+        criteria.exportType = r.getReportType();
+        criteria.opts.exportMode = r.getReportType();
+        criteria.opts.reportId = r.getKey().getId();
+        criteria.opts.from = r.getStartDate();
+        criteria.opts.to = r.getEndDate();
+        criteria.opts.lastCollection = r.getLastCollectionOnly();
+        criteria.opts.questionId = r.getQuestionId();
+        criteria.opts.imgPrefix = PropertyUtil.getProperty("photo_url_root");
+        criteria.opts.uploadUrl = PropertyUtil.getProperty("surveyuploadurl");
+        ObjectMapper objectMapper = new ObjectMapper();
+        String crit = java.net.URLEncoder.encode(objectMapper.writeValueAsString(criteria), "ISO-8859-1");;
+
+        URL url = new URL(PropertyUtil.getProperty("flowServices") + "/generate?criteria=" +  crit);
+        HttpURLConnection con = (HttpURLConnection) url.openConnection();
+        con.setRequestMethod("GET");
+        log.info("Preparing to GET " + url);
+        return con.getResponseCode();
+
+    }
+
+
+
 
     @Override
     protected void writeOkResponse(RestResponse resp) throws Exception {

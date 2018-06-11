@@ -26,7 +26,7 @@ import org.akvo.flow.dao.ReportDao;
 import org.akvo.flow.domain.persistent.Report;
 import org.akvo.flow.rest.dto.ReportDto;
 import org.akvo.flow.rest.dto.ReportPayload;
-import org.akvo.flow.rest.dto.ReportTaskRequest;
+import org.akvo.flow.servlet.ReportServlet;
 import org.springframework.beans.BeanUtils;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Controller;
@@ -35,14 +35,10 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
-import org.waterforpeople.mapping.app.util.DtoMarshaller;
-import org.waterforpeople.mapping.app.web.dto.TaskRequest;
 import org.waterforpeople.mapping.app.web.rest.dto.RestStatusDto;
 
 import com.gallatinsystems.user.dao.UserDao;
-import com.google.appengine.api.taskqueue.Queue;
-import com.google.appengine.api.taskqueue.QueueFactory;
-import com.google.appengine.api.taskqueue.TaskOptions;
+
 
 /*
  * @startuml
@@ -66,6 +62,9 @@ import com.google.appengine.api.taskqueue.TaskOptions;
 public class ReportRestService {
     private static final Logger log = Logger.getLogger(ReportRestService.class.getName());
 
+    private final String[] doNotCopyUser = {
+            "user",
+          };
     private final String[] doNotCopy = {
             "user",
             "createdDateTime",
@@ -97,19 +96,16 @@ public class ReportRestService {
             Report r = new Report();
 
             BeanUtils.copyProperties(reportDto, r, doNotCopy);
+
             r.setUser((Long)SecurityContextHolder.getContext().getAuthentication().getCredentials());
-            r.setState(Report.QUEUED);
+            r.setState(Report.QUEUED);  //overwrite any supplied state
             // Save it, so we get an id assigned
             r = reportDao.save(r);
+            ReportServlet.queueStart(r);
 
-            //Queue it
-            Queue queue = QueueFactory.getDefaultQueue();
-            TaskOptions options = TaskOptions.Builder.withUrl("/app_worker/reportservlet")
-                    .param(TaskRequest.ACTION_PARAM, ReportTaskRequest.START_ACTION)
-                    .param(ReportTaskRequest.ID_PARAM, Long.toString(r.getKey().getId()));
-            queue.add(options);
             dto = new ReportDto();
-            DtoMarshaller.copyToDto(r, dto);
+            BeanUtils.copyProperties(r, dto, doNotCopyUser);
+            dto.setKeyId(r.getKey().getId());
             statusDto.setStatus("ok");
         }
 
@@ -118,8 +114,8 @@ public class ReportRestService {
         return response;
     }
 
+
     // find all reports belonging to the current user
-    //TODO: get an unfiltered list if superAdmin?
     @RequestMapping(method = RequestMethod.GET, value = "")
     @ResponseBody
     public Map<String, Object> listMyReports() {
@@ -129,7 +125,8 @@ public class ReportRestService {
         if (reports != null) {
             for (Report r : reports) {
                 ReportDto dto = new ReportDto();
-                DtoMarshaller.copyToDto(r, dto);
+                BeanUtils.copyProperties(r, dto, doNotCopyUser);
+                dto.setKeyId(r.getKey().getId());
                 results.add(dto);
             }
         }
@@ -143,11 +140,12 @@ public class ReportRestService {
     @ResponseBody
     public Map<String, ReportDto> findReport(@PathVariable("id") Long id) {
         final Map<String, ReportDto> response = new HashMap<String, ReportDto>();
-        Report qo = reportDao.getByKey(id);
+        Report r = reportDao.getByKey(id);
         ReportDto dto = null;
-        if (qo != null) {
+        if (r != null) {
             dto = new ReportDto();
-            DtoMarshaller.copyToDto(qo, dto);
+            BeanUtils.copyProperties(r, dto, doNotCopyUser);
+            dto.setKeyId(r.getKey().getId());
         }
         response.put("report", dto);
         return response;
@@ -159,23 +157,23 @@ public class ReportRestService {
     @ResponseBody
     public Map<String, RestStatusDto> deleteReportById(@PathVariable("id") Long id) {
         final Map<String, RestStatusDto> response = new HashMap<String, RestStatusDto>();
-        Report qo = reportDao.getByKey(id);
+        Report r = reportDao.getByKey(id);
         RestStatusDto statusDto = null;
         statusDto = new RestStatusDto();
         statusDto.setStatus("failed");
 
         // check if report exists in the datastore
-        if (qo != null) {
+        if (r != null) {
             // delete report group
-            reportDao.delete(qo);
+            reportDao.delete(r);
             statusDto.setStatus("ok");
         }
         response.put("meta", statusDto);
         return response;
     }
 
-    // update existing report
-    //TODO: only allow status changes?
+    // update an existing report
+    // only allow status changes
     @RequestMapping(method = RequestMethod.PUT, value = "/{id}")
     @ResponseBody
     public Map<String, Object> saveExistingReport(@RequestBody
@@ -191,18 +189,17 @@ public class ReportRestService {
         // Otherwise, server will respond with 400 Bad Request
         if (reportDto != null) {
             Long keyId = reportDto.getKeyId();
-            Report qo;
 
             // if the reportDto has a key, try to get the report.
             if (keyId != null) {
-                qo = reportDao.getByKey(keyId);
-                // if we find the report, update it's properties
-                if (qo != null) {
-                    BeanUtils.copyProperties(reportDto, qo, doNotCopy);
-                    //TODO: look up user (but why would it change?)
-                    qo = reportDao.save(qo); //Also stores lastUpdateDateTime
+                Report r = reportDao.getByKey(keyId);
+                if (r != null) {
+                    // found the report, update selected properties
+                    r.setState(reportDto.getState());
+                    r.setMessage(reportDto.getMessage());
+                    r = reportDao.save(r); //Updates lastUpdateDateTime
                     dto = new ReportDto();
-                    DtoMarshaller.copyToDto(qo, dto);
+                    BeanUtils.copyProperties(r, dto, doNotCopyUser);
                     statusDto.setStatus("ok");
                 }
             }

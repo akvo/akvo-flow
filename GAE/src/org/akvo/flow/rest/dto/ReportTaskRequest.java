@@ -23,11 +23,16 @@ import com.gallatinsystems.framework.rest.RestRequest;
 
 public class ReportTaskRequest extends RestRequest {
     public static final String ID_PARAM = "id";
+    public static final String STATE_PARAM = "state";
+    public static final String MESSAGE_PARAM = "message";
     public static final String START_ACTION = "start";
+    public static final String PROGRESS_ACTION = "progress";
 
     private static final long serialVersionUID = 8374279438245797012L;
 
     private Long id;
+    private String state;
+    private String message;
 
     @Override
     protected void populateErrors() {
@@ -56,6 +61,22 @@ public class ReportTaskRequest extends RestRequest {
 
     public Long getId() {
         return id;
+    }
+
+    public String getState() {
+        return state;
+    }
+
+    public void setState(String state) {
+        this.state = state;
+    }
+
+    public String getMessage() {
+        return message;
+    }
+
+    public void setMessage(String message) {
+        this.message = message;
     }
 
 
