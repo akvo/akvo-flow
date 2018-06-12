@@ -122,7 +122,8 @@ public class SurveyQuestionSummaryDao extends BaseDAO<SurveyQuestionSummary> {
      * @param questionResponse
      * @return
      */
-    public List<SurveyQuestionSummary> listByResponse(String questionId, String questionResponse) {
+    @SuppressWarnings("unchecked")
+	public List<SurveyQuestionSummary> listByResponse(String questionId, String questionResponse) {
         List<SurveyQuestionSummary> result = null;
         String cacheKey = null;
         try {

@@ -773,7 +773,8 @@ public class BaseDAO<T extends BaseDomain> {
         PersistenceManager pm = PersistenceFilter.getManager();
         String queryString = ":p1.contains(" + fieldName + ")";
         javax.jdo.Query query = pm.newQuery(concreteClass, queryString);
-        List<T> results = (List<T>) query.execute(idsList);
+        @SuppressWarnings("unchecked")
+		List<T> results = (List<T>) query.execute(idsList);
         return results;
     }
 }
