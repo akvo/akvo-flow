@@ -17,6 +17,7 @@ FLOW.ReportLoader = Ember.Object.create({
     newReport.set('reportType', exportType);
     newReport.set('formId', surveyId);
     newReport.set('filename', '');
+    newReport.set('state', 'QUEUED');
     //newReport.set('lastCollectionOnly', ('' + (exportType === 'DATA_CLEANING' && FLOW.selectedControl.get('selectedSurveyGroup').get('monitoringGroup') && !!FLOW.editControl.lastCollection));
 
     FLOW.store.commit();

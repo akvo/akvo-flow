@@ -370,6 +370,7 @@ Ember.Handlebars.registerHelper("reportType", function (reportType) {
 Ember.Handlebars.registerHelper("reportStatus", function (state) {
   var reportStates = {
     IN_PROGRESS: "exportGenerating",
+    QUEUED: "exportGenerating",
     FINISHED_SUCCESS: "",
     FINISHED_ERROR: ""
   };
@@ -507,6 +508,31 @@ Ember.Handlebars.registerHelper('sgName', function (property) {
         return item.get && item.get('keyId') === sgId;
       });
   return sg && sg.get('name') || sgId;
+});
+
+Ember.Handlebars.registerHelper('surveyPath', function (property) {
+  var formId = Ember.get(this, property), path = Ember.String.loc('_root'), sgs = FLOW.projectControl.get('content'), survey = null;
+  if (sgs) {
+    sgs.forEach(function(item) {
+      var surveysList = item.get('surveyList');
+      if (item.get && surveysList && surveysList.indexOf(formId) > -1) {
+        survey = item;
+      }
+    });
+    if (survey) {
+      var ancestorIds = survey.get('ancestorIds')
+      for (var i = 0; i < ancestorIds.length; i++) {
+        if (ancestorIds[i] !== null && ancestorIds[i] !== 0) {
+          var level = FLOW.SurveyGroup.find(ancestorIds[i]);
+          if (level) {
+            path += " > "+level.get('name');
+          }
+        }
+      }
+      path += " > "+survey.get('name');
+    }
+  }
+  return path;
 });
 
 // Register a Handlebars helper that instantiates `view`.
