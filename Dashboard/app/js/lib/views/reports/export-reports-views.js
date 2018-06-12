@@ -4,8 +4,6 @@ FLOW.ReportLoader = Ember.Object.create({
   criteria: null,
   timeout: 30000,
   requestInterval: 3000,
-  analysisExportOption: "range", //date range selected by default
-  cleaningExportOption: "range",
 
   payloads: {
 	DATA_CLEANING: {
@@ -228,9 +226,7 @@ FLOW.ExportReportsAppletView = FLOW.View.extend({
     if (FLOW.selectedControl.selectedSurveyGroup && FLOW.selectedControl.selectedSurvey) {
       //if not a monitoring form, export should be filtered by date
       if (FLOW.selectedControl.selectedSurvey.get('keyId') == FLOW.selectedControl.selectedSurveyGroup.get('newLocaleSurveyId')) {
-        FLOW.ReportLoader.set('cleaningExportOption', "range");
         $('input:radio[name=cleaning-export-option]').filter('[value=range]').prop('checked', true);
-        FLOW.ReportLoader.set('analysisExportOption', "range");
         $('input:radio[name=analysis-export-option]').filter('[value=range]').prop('checked', true);
       }
     }
