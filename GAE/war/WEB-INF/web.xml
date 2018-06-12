@@ -464,6 +464,7 @@
 	</filter-mapping>
 	<security-constraint>
 		<web-resource-collection>
+		<web-resource-name>devicetimerest</web-resource-name>
 			<url-pattern>/devicetimerest</url-pattern>
 		</web-resource-collection>
 		<user-data-constraint>
@@ -472,6 +473,7 @@
 	</security-constraint>
 	<security-constraint>
 		<web-resource-collection>
+			<web-resource-name>all</web-resource-name>
 			<url-pattern>/*</url-pattern>
 		</web-resource-collection>
 		<user-data-constraint>
@@ -480,22 +482,7 @@
 	</security-constraint>
 	<security-constraint>
 		<web-resource-collection>
-			<url-pattern>/SecureSurveyEntry.html</url-pattern>
-		</web-resource-collection>
-		<auth-constraint>
-			<role-name>*</role-name>
-		</auth-constraint>
-	</security-constraint>
-	<security-constraint>
-		<web-resource-collection>
-			<url-pattern>/Dashboard.html</url-pattern>
-		</web-resource-collection>
-		<auth-constraint>
-			<role-name>*</role-name>
-		</auth-constraint>
-	</security-constraint>
-	<security-constraint>
-		<web-resource-collection>
+			<web-resource-name>webapp</web-resource-name>
 			<url-pattern>/webapp/*</url-pattern>
 		</web-resource-collection>
 		<auth-constraint>
@@ -504,6 +491,7 @@
 	</security-constraint>
 	<security-constraint>
 		<web-resource-collection>
+			<web-resource-name>cron</web-resource-name>
 			<url-pattern>/cron/*</url-pattern>
 		</web-resource-collection>
 		<auth-constraint>
