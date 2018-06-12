@@ -185,8 +185,6 @@ FLOW.ExportReportsAppletView = FLOW.View.extend({
       this.set('dateRangeSelected', true);
     } else {
       this.set('dateRangeSelected', false);
-      FLOW.dateControl.set('fromDate', null);
-      FLOW.dateControl.set('toDate', null);
     }
   }.observes('this.exportOption'),
 
@@ -206,8 +204,6 @@ FLOW.ExportReportsAppletView = FLOW.View.extend({
     FLOW.selectedControl.set('surveySelection', FLOW.SurveySelection.create());
     FLOW.selectedControl.set('selectedSurvey', null);
     FLOW.editControl.set('useQuestionId', false);
-    FLOW.dateControl.set('fromDate', null);
-    FLOW.dateControl.set('toDate', null);
     FLOW.uploader.registerEvents();
   },
 
@@ -238,9 +234,8 @@ FLOW.ExportReportsAppletView = FLOW.View.extend({
         $('input:radio[name=analysis-export-option]').filter('[value=range]').prop('checked', true);
       }
     }
-    return FLOW.Env.showMonitoringFeature && FLOW.selectedControl.selectedSurveyGroup
-      && FLOW.selectedControl.selectedSurveyGroup.get('monitoringGroup')
-        && FLOW.selectedControl.selectedSurvey.get('keyId') != FLOW.selectedControl.selectedSurveyGroup.get('newLocaleSurveyId');
+    return FLOW.selectedControl.selectedSurveyGroup && FLOW.selectedControl.selectedSurveyGroup.get('monitoringGroup')
+      && FLOW.selectedControl.selectedSurvey.get('keyId') != FLOW.selectedControl.selectedSurveyGroup.get('newLocaleSurveyId');
   }.property('FLOW.selectedControl.selectedSurvey'),
 
   showDataCleaningReport: function () {
