@@ -105,8 +105,6 @@ public class BaseDAO<T extends BaseDomain> {
                 .getAuthentication().getCredentials();
         if (credentials instanceof Long) {
             who = (Long) credentials;
-        } else {
-            log.warning("saver credentials: " + credentials);
         }
         obj.setLastUpdateDateTime(new Date());
         obj.setLastUpdateUserId(who);
@@ -133,8 +131,6 @@ public class BaseDAO<T extends BaseDomain> {
                     .getAuthentication().getCredentials();
             if (credentials instanceof Long) {
                 who = (Long) credentials;
-            } else {
-                log.warning("saver credentials: " + credentials);
             }
             for (E item : objList) {
                 item.setLastUpdateDateTime(new Date());
