@@ -6,7 +6,7 @@ services:
     image:  technekes/fake-s3-ssl:latest
   akvo-flow:
     build: .
-    entrypoint: /app/src/ci/setup-dev-user-in-container.sh
+    entrypoint: /app/src/ci/run-as-user.sh
     command: /app/src/ci/devserver.sh
     working_dir: /app/src
     links:
@@ -16,6 +16,5 @@ services:
      - 5005:5005
     volumes:
      - .:/app/src/:delegated
-     - ~/.m2:/root/.m2:delegated
      - ~/.m2:/home/akvo/.m2:delegated
-
+     - ~/.m2:/root/.m2:delegated

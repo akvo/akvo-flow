@@ -6,7 +6,7 @@
       <span class=""></span>
       {{#if FLOW.selectedControl.selectedSurvey}}
         {{view Ember.Select
-            contentBinding="FLOW.surveyControl.arrangedContent"
+            contentBinding="FLOW.surveyControl.readDataContent"
             selectionBinding="view.selectedSurvey"
             optionLabelPath="content.name"
             optionValuePath="content.keyId"
