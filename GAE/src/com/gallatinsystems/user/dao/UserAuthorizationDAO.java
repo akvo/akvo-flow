@@ -120,7 +120,9 @@ public class UserAuthorizationDAO extends BaseDAO<UserAuthorization> {
         query.declareParameters("Long roleIdParam");
         query.setRange(0, 1);
 
-        return (List<UserAuthorization>) query.execute(roleId);
+        @SuppressWarnings("unchecked")
+        List<UserAuthorization> results = (List<UserAuthorization>) query.execute(roleId);
+        return results;
     }
 
     /**
