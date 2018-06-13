@@ -1,4 +1,4 @@
-;; Copyright (C) 2014-2015 Stichting Akvo (Akvo Foundation)
+;; Copyright (C) 2014-2015,2018 Stichting Akvo (Akvo Foundation)
 ;;
 ;; This file is part of Akvo FLOW.
 ;;
@@ -43,6 +43,19 @@
   (fn [event]
     (om/set-state! owner key (target-value event))))
 
+(defn super-admin? [user]
+  (let [permission-list (aget user "permissionList")]
+    (assert (integer? permission-list))
+    (zero? permission-list)))
+
+(defn admin? [user]
+  (let [permission-list (aget user "permissionList")]
+    (assert (integer? permission-list))
+    (= permission-list 10)))
+
+(defn admin-str? [user]
+  (= (get user "permissionList") "10"))
+
 (defn user-edit-section [{:keys [on-save user]} owner]
   (reify
     om/IInitState
@@ -70,7 +83,7 @@
                                 :on-change (update-input! owner "emailAddress")}]]
          [:div.form-group
           [:label
-           [:input {:type "checkbox" :value permissionList :checked (= permissionList "10")
+           [:input {:type "checkbox" :value permissionList :checked (admin-str? state)
                     :on-change #(condp = (target-value %)
                                   "10" (om/set-state! owner "permissionList" "20")
                                   "20" (om/set-state! owner "permissionList" "10"))}]
@@ -111,16 +124,6 @@
       (aget "parent")
       (aget "FLOW")
       (aget "currentUser")))
-
-(defn super-admin? [user]
-  (let [permission-list (aget user "permissionList")]
-    (assert (integer? permission-list))
-    (zero? permission-list)))
-
-(defn admin? [user]
-  (let [permission-list (aget user "permissionList")]
-    (assert (integer? permission-list))
-    (= permission-list 10)))
 
 (defn survey-or-folder [s]
   (let [name (get s "name")

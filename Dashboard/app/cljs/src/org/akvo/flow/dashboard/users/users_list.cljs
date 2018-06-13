@@ -1,4 +1,4 @@
-;; Copyright (C) 2014-2015 Stichting Akvo (Akvo Foundation)
+;; Copyright (C) 2014-2015,2018 Stichting Akvo (Akvo Foundation)
 ;;
 ;; This file is part of Akvo FLOW.
 ;;
@@ -20,7 +20,7 @@
             [org.akvo.flow.dashboard.components.bootstrap :as b]
             [org.akvo.flow.dashboard.ajax-helpers :refer (default-ajax-config)]
             [org.akvo.flow.dashboard.dom-helpers :refer (scroll-to-top)]
-            [org.akvo.flow.dashboard.users.user-details :refer (user-details)]
+            [org.akvo.flow.dashboard.users.user-details :refer (user-details) :as user-details]
             [org.akvo.flow.dashboard.users.store :as store]
             [org.akvo.flow.dashboard.projects.store :as projects-store]
             [org.akvo.flow.dashboard.user-auth.store :as user-auth-store]
@@ -77,9 +77,9 @@
                                     objectPath) ")"]))))]
     (html [:div roles]))))
 
-(defn api-user-mark [{:strs [accessKey]} owner]
+(defn admin?-user-mark [user owner]
   (om/component
-   (html (if accessKey
+   (html (if (user-details/admin-str? user)
            (b/icon :ok)
            [:div]))))
 
@@ -98,9 +98,9 @@
                            {:user user
                             :user-auth-store user-auth-store
                             :roles-store roles-store})}
-     {:title (t> _api_keys)
-      :class "text-center"
-      :component api-user-mark}
+     {:title     (t> _admin)
+      :class     "text-center"
+      :component admin?-user-mark}
      {:title (t> _actions)
       :class "text-center"
       :component user-actions
