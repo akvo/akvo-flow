@@ -48,7 +48,7 @@ public class DataPointApprovalDAO extends BaseDAO<DataPointApproval> {
         String queryString = ":p2.contains(surveyedLocaleId)";
         javax.jdo.Query query = pm.newQuery(DataPointApproval.class, queryString);
         @SuppressWarnings("unchecked")
-		List<DataPointApproval> results = (List<DataPointApproval>) query.execute(surveyedLocaleIds);
+        List<DataPointApproval> results = (List<DataPointApproval>) query.execute(surveyedLocaleIds);
         return results;
     }
 }

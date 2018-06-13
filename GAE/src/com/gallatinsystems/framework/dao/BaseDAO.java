@@ -774,7 +774,7 @@ public class BaseDAO<T extends BaseDomain> {
         String queryString = ":p1.contains(" + fieldName + ")";
         javax.jdo.Query query = pm.newQuery(concreteClass, queryString);
         @SuppressWarnings("unchecked")
-		List<T> results = (List<T>) query.execute(idsList);
+        List<T> results = (List<T>) query.execute(idsList);
         return results;
     }
 }

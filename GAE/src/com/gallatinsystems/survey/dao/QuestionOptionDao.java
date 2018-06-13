@@ -82,7 +82,7 @@ public class QuestionOptionDao extends BaseDAO<QuestionOption> {
         String queryString = ":p1.contains(questionId)";
         javax.jdo.Query query = pm.newQuery(QuestionOption.class, queryString);
         @SuppressWarnings("unchecked")
-		List<QuestionOption> results = (List<QuestionOption>) query.execute(questionIds);
+        List<QuestionOption> results = (List<QuestionOption>) query.execute(questionIds);
         return results;
     }
 

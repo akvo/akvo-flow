@@ -121,7 +121,7 @@ public class UserAuthorizationDAO extends BaseDAO<UserAuthorization> {
         query.setRange(0, 1);
 
         @SuppressWarnings("unchecked")
-		List<UserAuthorization> results = (List<UserAuthorization>) query.execute(roleId);
+        List<UserAuthorization> results = (List<UserAuthorization>) query.execute(roleId);
         return results;
     }
 

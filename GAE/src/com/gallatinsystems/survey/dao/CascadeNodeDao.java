@@ -105,7 +105,7 @@ public class CascadeNodeDao extends BaseDAO<CascadeNode> {
     }
 
     @SuppressWarnings("unchecked")
-	public List<CascadeNode> listByName(Long cascadeResourceId, List<String> cascadeNodeNames) {
+    public List<CascadeNode> listByName(Long cascadeResourceId, List<String> cascadeNodeNames) {
         PersistenceManager pm = PersistenceFilter.getManager();
         String queryString = "cascadeResourceId == :p1 && :p2.contains(name)";
         javax.jdo.Query query = pm.newQuery(CascadeNode.class, queryString);
