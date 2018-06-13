@@ -237,17 +237,29 @@ FLOW.ExportReportsAppletView = FLOW.View.extend({
   showDataCleaningReport: function () {
     var opts = {from:this.get("reportFromDate"), to:this.get("reportToDate"), lastCollection: this.get('exportOption') === "recent"};
     var sId = this.get('selectedSurvey');
+    if (!sId) {
+      this.showWarning();
+      return;
+    }
     FLOW.ReportLoader.load('DATA_CLEANING', sId, opts);
   },
 
   showDataAnalysisReport: function () {
     var opts = {from:this.get("reportFromDate"), to:this.get("reportToDate"), lastCollection: this.get('exportOption') === "recent"};
     var sId = this.get('selectedSurvey');
+    if (!sId) {
+      this.showWarning();
+      return;
+    }
     FLOW.ReportLoader.load('DATA_ANALYSIS', sId, opts);
   },
 
   showComprehensiveReport: function () {
     var opts = {}, sId = this.get('selectedSurvey');
+    if (!sId) {
+      this.showWarning();
+      return;
+    }
     FLOW.ReportLoader.load('COMPREHENSIVE', sId, opts);
   },
 
