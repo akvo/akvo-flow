@@ -5,6 +5,12 @@
         <property name="deviceType" direction="asc"/>
         <property name="createdDateTime" direction="desc"/>
     </datastore-index>
+    <datastore-index kind="DeviceApplication" ancestor="false" source="manual">
+        <property name="appCode" direction="asc"/>
+        <property name="deviceType" direction="asc"/>
+        <property name="version" direction="asc"/>
+        <property name="createdDateTime" direction="desc"/>
+    </datastore-index>
 	<datastore-index kind="AccessPoint" ancestor="false"
 		source="manual">
 		<property name="pointType" direction="asc" />
