@@ -134,32 +134,7 @@ FLOW.ReportLoader = Ember.Object.create({
     FLOW.dialogControl.set('message', Ember.String.loc('_we_will_notify_via_email'));
     FLOW.dialogControl.set('showCANCEL', false);
     FLOW.dialogControl.set('showDialog', true);
-  },
-
-  openExportOptions: function (evt, exportName) {
-    var i, options, trigger;
-    options = document.getElementsByClassName("options");
-    for (i = 0; i < options.length; i++) {
-      options[i].style.display = "none";
-    }
-    trigger = document.getElementsByClassName("trigger");
-    for (i = 0; i < trigger.length; i++) {
-      trigger[i].className = trigger[i].className.replace(" active", "");
-    }
-    document.getElementById(exportName).style.display = "block";
-    evt.currentTarget.className += " active";
-
-    //by default select the range option
-    if (exportName == "dataCleanExp_options") {
-      if ($('input:radio[name=cleaning-export-option]').is(':checked') === false) {
-        $('input:radio[name=cleaning-export-option]').filter('[value=range]').prop('checked', true);
-      }
-    } else if (exportName == "dataAnalyseExp_options") {
-      if ($('input:radio[name=analysis-export-option]').is(':checked') === false) {
-        $('input:radio[name=analysis-export-option]').filter('[value=range]').prop('checked', true);
-      }
-    }
-   }
+  }
 
 });
 
@@ -177,13 +152,11 @@ FLOW.ExportReportsAppletView = FLOW.View.extend({
   exportOption: "range",
   dateRangeText: Ember.String.loc('_collection_period'),
   onlyRecentText: Ember.String.loc('_only_recent_submissions'),
+  tagName: 'li',
+  classNames: 'trigger',
 
   dateRangeSelectedObserver: function () {
-    if (this.get("exportOption") == "range") {
-      this.set('dateRangeSelected', true);
-    } else {
-      this.set('dateRangeSelected', false);
-    }
+    this.set('dateRangeSelected', this.get("exportOption") === "range");
   }.observes('this.exportOption'),
 
   setMinDate: function () {
@@ -329,5 +302,35 @@ FLOW.ExportReportsAppletView = FLOW.View.extend({
     FLOW.dialogControl.set('message', message);
     FLOW.dialogControl.set('showCANCEL', false);
     FLOW.dialogControl.set('showDialog', true);
-  }
+  },
+
+  eventManager: Ember.Object.create({
+    click: function(event, clickedView){
+      var exportTypes = ["dataCleanExp", "dataAnalyseExp", "compReportExp", "geoshapeSelect", "surveyFormExp"];
+      if (exportTypes.indexOf(clickedView.get('export')) > -1) {
+        var i, options, trigger;
+        options = document.getElementsByClassName("options");
+        for (i = 0; i < options.length; i++) {
+          options[i].style.display = "none";
+        }
+        trigger = document.getElementsByClassName("trigger");
+        for (i = 0; i < trigger.length; i++) {
+          trigger[i].className = trigger[i].className.replace(" active", "");
+        }
+        document.getElementById(clickedView.get('export')).style.display = "block";
+        event.currentTarget.className += " active";
+
+        //by default select the range option
+        if (clickedView.get('export') == "dataCleanExp") {
+          if ($('input:radio[name=cleaning-export-option]').is(':checked') === false) {
+            $('input:radio[name=cleaning-export-option]').filter('[value=range]').prop('checked', true);
+          }
+        } else if (clickedView.get('export') == "dataAnalyseExp") {
+          if ($('input:radio[name=analysis-export-option]').is(':checked') === false) {
+            $('input:radio[name=analysis-export-option]').filter('[value=range]').prop('checked', true);
+          }
+        }
+      }
+    }
+  })
 });
