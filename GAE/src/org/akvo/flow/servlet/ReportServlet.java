@@ -57,7 +57,7 @@ public class ReportServlet extends AbstractRestApiServlet {
 
     class ReportOptions implements Serializable {
         /**
-         *
+         * Used to send the start command to the report engine
          */
         private static final long serialVersionUID = 1L;
         public String exportMode;
@@ -72,7 +72,7 @@ public class ReportServlet extends AbstractRestApiServlet {
 
     class ReportCriteria implements Serializable {
         /**
-         *
+         * Used to send the start command to the report engine
          */
         private static final long serialVersionUID = 1L;
         public ReportOptions opts;
@@ -80,14 +80,6 @@ public class ReportServlet extends AbstractRestApiServlet {
         public String appId;
         public Long surveyId;
         public String email;
-    }
-
-    class ReportBody implements Serializable {
-        /**
-         *
-         */
-        private static final long serialVersionUID = 1L;
-        public ReportCriteria criteria;
     }
 
     public ReportServlet() {
@@ -112,13 +104,13 @@ public class ReportServlet extends AbstractRestApiServlet {
         if (action == null) {
             return null;
         }
+        Report r = rDao.getByKey(id);
         switch (action) {
             case ReportTaskRequest.START_ACTION:
-                Report r = rDao.getByKey(id);
                 if (r != null) {
                     if (!r.getState().equals(Report.QUEUED)) {
                         //wrong state
-                        log.warning("Cannot start report that is " + r.getState());
+                        log.warning("Cannot start report " + id + " that is " + r.getState());
                         //TODO do anything else?
                         return null;
                     }
@@ -135,7 +127,7 @@ public class ReportServlet extends AbstractRestApiServlet {
                         } else if ((sts % 100) == 4) { //4xx: you messed up
                             //permanent error, fail this report
                             r.setState(Report.FINISHED_ERROR);
-                            r.setMessage("Unexpected result when starting report: " + sts);
+                            r.setMessage("Unexpected result when starting report \" + id + \" : " + sts);
                             rDao.save(r);
                         } else {
                             //if we get a transient error, re-queue
@@ -153,17 +145,16 @@ public class ReportServlet extends AbstractRestApiServlet {
                 }
                 break;
             case ReportTaskRequest.PROGRESS_ACTION:
-                Report r2 = rDao.getByKey(id);
-                if (r2 != null) {
-                    if (!r2.getState().equals(Report.QUEUED)
-                            && !r2.getState().equals(Report.IN_PROGRESS)) {
+                if (r != null) {
+                    if (!r.getState().equals(Report.QUEUED)
+                            && !r.getState().equals(Report.IN_PROGRESS)) {
                         //wrong state
-                        log.warning("Cannot set progress on report that is " + r2.getState());
+                        log.warning("Cannot set progress on report " + id + " that is " + r.getState());
                         return null;
                     }
-                    r2.setState(stReq.getState());
-                    r2.setMessage(stReq.getMessage());
-                    rDao.save(r2);
+                    r.setState(stReq.getState());
+                    r.setMessage(stReq.getMessage());
+                    rDao.save(r);
                 }
                 break;
             default:
@@ -215,7 +206,7 @@ public class ReportServlet extends AbstractRestApiServlet {
         criteria.opts.imgPrefix = PropertyUtil.getProperty("photo_url_root");
         criteria.opts.uploadUrl = PropertyUtil.getProperty("surveyuploadurl");
         ObjectMapper objectMapper = new ObjectMapper();
-        String crit = java.net.URLEncoder.encode(objectMapper.writeValueAsString(criteria), "ISO-8859-1");;
+        String crit = java.net.URLEncoder.encode(objectMapper.writeValueAsString(criteria), "UTF-8");
 
         URL url = new URL(PropertyUtil.getProperty("flowServices") + "/generate?criteria=" +  crit);
         HttpURLConnection con = (HttpURLConnection) url.openConnection();

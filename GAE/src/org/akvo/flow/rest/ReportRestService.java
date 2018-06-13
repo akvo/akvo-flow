@@ -37,42 +37,18 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.waterforpeople.mapping.app.web.rest.dto.RestStatusDto;
 
-import com.gallatinsystems.user.dao.UserDao;
-
-
-/*
- * @startuml
- * UI -> ReportRestService: POST
- * ReportRestService --> UI: Report with id (JSON object in QUEUED state)
- * ReportRestService -> ReportServlet: START
- * ReportServlet -> FlowService: POST with Report id
- * FlowService -> ReportRestService: PUT Report in IN_PROGRESS state
- * UI -> ReportRestService: GET
- * ReportRestService --> UI: List of Reports by current user (JSON list)
- * FlowService -> ReportRestService: PUT Report (FINISHED_SUCCESS state and filename)
- * UI -> ReportRestService: GET
- * ReportRestService --> UI: List of Reports by current user (JSON list)
- * UI -> FlowService: GET filename
- * FlowService --> UI: Report file
- * @enduml
- */
 
 @Controller
 @RequestMapping("/reports")
 public class ReportRestService {
     private static final Logger log = Logger.getLogger(ReportRestService.class.getName());
 
-    private final String[] doNotCopyUser = {
-            "user",
-          };
     private final String[] doNotCopy = {
-            "user",
             "createdDateTime",
             "lastUpdateDateTime"
           };
 
     private ReportDao reportDao = new ReportDao();
-    private UserDao userDao = new UserDao();
 
     /**
      * Create a new Report from posted payload.
@@ -104,7 +80,7 @@ public class ReportRestService {
             ReportServlet.queueStart(r);
 
             dto = new ReportDto();
-            BeanUtils.copyProperties(r, dto, doNotCopyUser);
+            BeanUtils.copyProperties(r, dto);
             dto.setKeyId(r.getKey().getId());
             statusDto.setStatus("ok");
         }
@@ -125,7 +101,7 @@ public class ReportRestService {
         if (reports != null) {
             for (Report r : reports) {
                 ReportDto dto = new ReportDto();
-                BeanUtils.copyProperties(r, dto, doNotCopyUser);
+                BeanUtils.copyProperties(r, dto);
                 dto.setKeyId(r.getKey().getId());
                 results.add(dto);
             }
@@ -144,7 +120,7 @@ public class ReportRestService {
         ReportDto dto = null;
         if (r != null) {
             dto = new ReportDto();
-            BeanUtils.copyProperties(r, dto, doNotCopyUser);
+            BeanUtils.copyProperties(r, dto);
             dto.setKeyId(r.getKey().getId());
         }
         response.put("report", dto);
@@ -199,7 +175,7 @@ public class ReportRestService {
                     r.setMessage(reportDto.getMessage());
                     r = reportDao.save(r); //Updates lastUpdateDateTime
                     dto = new ReportDto();
-                    BeanUtils.copyProperties(r, dto, doNotCopyUser);
+                    BeanUtils.copyProperties(r, dto);
                     statusDto.setStatus("ok");
                 }
             }
