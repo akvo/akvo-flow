@@ -24,28 +24,15 @@
           <div id="dataCleanExp" class="options">
             <div class="dataCollectedDate">
               <p>{{view Em.RadioButton titleBinding="view.dateRangeText" valueBinding="view.exportOption" option="range" group="cleaning-export-option"}}</p>
-              {{#if view.dateRangeSelected}}
               <label class="collectedFrom dateInput">
-                {{view FLOW.DateField2 valueBinding="view.reportFromDate" class="from_date" placeholder="" placeholderBinding="Ember.STRINGS._collected_from" size=30}}
+                {{view FLOW.DateField2 valueBinding="view.reportFromDate" class="from_date" placeholder="" placeholderBinding="Ember.STRINGS._collected_from" size=30 disabledBinding="view.dateRangeDisabled"}}
               </label>
               <label class="collectedTo dateInput">
-                {{view FLOW.DateField2 valueBinding="view.reportToDate" class="to_date" placeholder="" placeholderBinding="Ember.STRINGS._to" size=30}}
+                {{view FLOW.DateField2 valueBinding="view.reportToDate" class="to_date" placeholder="" placeholderBinding="Ember.STRINGS._to" size=30 disabledBinding="view.dateRangeDisabled"}}
               </label>
-              {{else}}
-              <label class="collectedFrom dateInput">
-                {{view FLOW.DateField2 valueBinding="view.reportFromDate" class="from_date" placeholder="" placeholderBinding="Ember.STRINGS._collected_from" size=30 disabled="true"}}
-              </label>
-              <label class="collectedTo dateInput">
-                {{view FLOW.DateField2 valueBinding="view.reportToDate" class="to_date" placeholder="" placeholderBinding="Ember.STRINGS._to" size=30 disabled="true"}}
-              </label>
-              {{/if}}
             </div>
-            <div class="dataCollectedDate"  style="background-color: transparent;">
-            {{#if view.showLastCollection}}
-              {{view Em.RadioButton titleBinding="view.onlyRecentText" valueBinding="view.exportOption" option="recent" group="cleaning-export-option"}}
-            {{else}}
-              {{view Em.RadioButton titleBinding="view.onlyRecentText" valueBinding="view.exportOption" option="recent" group="cleaning-export-option" disabled="true"}}
-            {{/if}}
+            <div class="dataCollectedDate" style="background-color: transparent;">
+            {{view Em.RadioButton titleBinding="view.onlyRecentText" valueBinding="view.exportOption" option="recent" group="cleaning-export-option" disabledBinding="view.hideLastCollection"}}
             </div>
             <a {{action showDataCleaningReport target="this"}} class="button trigger2">{{t _download}}</a>
           </div>
@@ -57,28 +44,15 @@
           <div id="dataAnalyseExp" class="options">
             <div class="dataCollectedDate">
               <p>{{view Em.RadioButton titleBinding="view.dateRangeText" valueBinding="view.exportOption" option="range" group="analysis-export-option"}}</p>
-              {{#if view.dateRangeSelected}}
               <label class="collectedFrom dateInput">
-                 {{view FLOW.DateField2 minDate=false valueBinding="view.reportFromDate" class="from_date" placeholder="" placeholderBinding="Ember.STRINGS._collected_from" size=30}}
+                 {{view FLOW.DateField2 minDate=false valueBinding="view.reportFromDate" class="from_date" placeholder="" placeholderBinding="Ember.STRINGS._collected_from" size=30 disabledBinding="view.dateRangeDisabled"}}
               </label>
               <label class="collectedTo dateInput">
-                {{view FLOW.DateField2 minDate=false valueBinding="view.reportToDate" class="to_date" placeholder="" placeholderBinding="Ember.STRINGS._to" size=30}}
+                {{view FLOW.DateField2 minDate=false valueBinding="view.reportToDate" class="to_date" placeholder="" placeholderBinding="Ember.STRINGS._to" size=30 disabledBinding="view.dateRangeDisabled"}}
               </label>
-              {{else}}
-              <label class="collectedFrom dateInput">
-                 {{view FLOW.DateField2 minDate=false valueBinding="view.reportFromDate" class="from_date" placeholder="" placeholderBinding="Ember.STRINGS._collected_from" size=30 disabled="true"}}
-              </label>
-              <label class="collectedTo dateInput">
-                {{view FLOW.DateField2 minDate=false valueBinding="view.reportToDate" class="to_date" placeholder="" placeholderBinding="Ember.STRINGS._to" size=30 disabled="true"}}
-              </label>
-              {{/if}}
             </div>
-            <div class="dataCollectedDate"  style="background-color: transparent;">
-            {{#if view.showLastCollection}}
-              {{view Em.RadioButton titleBinding="view.onlyRecentText" valueBinding="view.exportOption" option="recent" group="analysis-export-option"}}
-            {{else}}
-              {{view Em.RadioButton titleBinding="view.onlyRecentText" valueBinding="view.exportOption" option="recent" group="analysis-export-option" disabled="true"}}
-            {{/if}}
+            <div class="dataCollectedDate" style="background-color: transparent;">
+            {{view Em.RadioButton titleBinding="view.onlyRecentText" valueBinding="view.exportOption" option="recent" group="analysis-export-option" disabledBinding="view.hideLastCollection"}}
             </div>
             <a {{action showDataAnalysisReport target="this"}} class="button trigger2">{{t _download}}</a>
           </div>

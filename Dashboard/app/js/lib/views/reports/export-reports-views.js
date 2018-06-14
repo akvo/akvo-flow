@@ -148,15 +148,15 @@ FLOW.ExportReportsAppletView = FLOW.View.extend({
   showGoogleEarthButton: false,
   reportFromDate: undefined,
   reportToDate: undefined,
-  dateRangeSelected: true,
+  dateRangeDisabled: false,
   exportOption: "range",
   dateRangeText: Ember.String.loc('_collection_period'),
   onlyRecentText: Ember.String.loc('_only_recent_submissions'),
   tagName: 'li',
   classNames: 'trigger',
 
-  dateRangeSelectedObserver: function () {
-    this.set('dateRangeSelected', this.get("exportOption") === "range");
+  dateRangeDisabledObserver: function () {
+    this.set('dateRangeDisabled', this.get("exportOption") === "recent");
   }.observes('this.exportOption'),
 
   setMinDate: function () {
@@ -195,7 +195,7 @@ FLOW.ExportReportsAppletView = FLOW.View.extend({
     }
   }.property('FLOW.selectedControl.selectedQuestion'),
 
-  showLastCollection: function () {
+  hideLastCollection: function () {
     if (FLOW.selectedControl.selectedSurveyGroup && FLOW.selectedControl.selectedSurvey) {
       //if not a monitoring form, export should be filtered by date
       if (FLOW.selectedControl.selectedSurvey.get('keyId') == FLOW.selectedControl.selectedSurveyGroup.get('newLocaleSurveyId')) {
@@ -203,8 +203,8 @@ FLOW.ExportReportsAppletView = FLOW.View.extend({
         $('input:radio[name=analysis-export-option]').filter('[value=range]').prop('checked', true);
       }
     }
-    return FLOW.selectedControl.selectedSurveyGroup && FLOW.selectedControl.selectedSurveyGroup.get('monitoringGroup')
-      && FLOW.selectedControl.selectedSurvey.get('keyId') != FLOW.selectedControl.selectedSurveyGroup.get('newLocaleSurveyId');
+    return !(FLOW.selectedControl.selectedSurveyGroup && FLOW.selectedControl.selectedSurveyGroup.get('monitoringGroup')
+      && FLOW.selectedControl.selectedSurvey.get('keyId') != FLOW.selectedControl.selectedSurveyGroup.get('newLocaleSurveyId'));
   }.property('FLOW.selectedControl.selectedSurvey'),
 
   showDataCleaningReport: function () {
