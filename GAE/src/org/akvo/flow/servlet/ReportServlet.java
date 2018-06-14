@@ -33,7 +33,6 @@ import org.akvo.flow.rest.dto.ReportTaskRequest;
 import org.codehaus.jackson.JsonGenerationException;
 import org.codehaus.jackson.map.JsonMappingException;
 import org.codehaus.jackson.map.ObjectMapper;
-import org.jfree.util.Log;
 import org.waterforpeople.mapping.app.web.dto.TaskRequest;
 
 import com.gallatinsystems.common.Constants;
