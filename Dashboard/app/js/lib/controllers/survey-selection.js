@@ -17,14 +17,24 @@ FLOW.SurveySelection = Ember.ObjectController.extend({
     this.populate();
   },
 
-  getByParentId: function(parentId, monitoringGroupsOnly) {
-
+  getByParentId: function(parentId, filters) {
     return this.get('surveyGroups').filter(function(sg) {
-      if (monitoringGroupsOnly) {
-        return sg.get('parentId') === parentId &&
-          (sg.get('monitoringGroup') || sg.get('projectType') === 'PROJECT_FOLDER');
+      if (filters.monitoringSurveysOnly) {
+        //check if user has DATA_READ permissions
+        if (filters.dataReadSurveysOnly) {
+          return sg.get('parentId') === parentId &&
+            ((sg.get('monitoringGroup') && FLOW.permControl.userCanViewData(sg)) || sg.get('projectType') === 'PROJECT_FOLDER');
+        } else {
+          return sg.get('parentId') === parentId &&
+            (sg.get('monitoringGroup') || sg.get('projectType') === 'PROJECT_FOLDER');
+        }
       } else {
-        return sg.get('parentId') === parentId;
+        //check if user has DATA_READ permissions
+        if (filters.dataReadSurveysOnly) {
+          return sg.get('parentId') === parentId && (FLOW.permControl.userCanViewData(sg) || sg.get('projectType') === 'PROJECT_FOLDER');
+        } else {
+          return sg.get('parentId') === parentId;
+        }
       }
     }).sort(function (survey1, survey2) {
       var s1 = survey1.get('name') || "";
