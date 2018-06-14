@@ -22,6 +22,7 @@ import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.Date;
+import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import javax.servlet.http.HttpServletRequest;
@@ -100,10 +101,7 @@ public class ReportServlet extends AbstractRestApiServlet {
         ReportTaskRequest stReq = (ReportTaskRequest) req;
         String action = stReq.getAction();
         Long id = stReq.getId();
-        log.info("action: " + action + " id: " + id);
-        if (action == null) {
-            return null;
-        }
+        log.log(Level.FINE, "action: " + action + " id: " + id);
         Report r = rDao.getByKey(id);
         switch (action) {
             case ReportTaskRequest.START_ACTION:
@@ -114,12 +112,12 @@ public class ReportServlet extends AbstractRestApiServlet {
                         //TODO do anything else?
                         return null;
                     }
-                    log.info(" ====Starting========");
+                    log.log(Level.FINE, " ====Starting========");
 
                     //hit the services server
                     try {
-                        final int sts = engage(r);
-                        log.info(" got  " + sts);
+                        final int sts = startReportEngine(r);
+                        log.log(Level.FINE, " got  " + sts);
 
                         if (sts == 200) {
                             //Success, we are done!
@@ -133,11 +131,9 @@ public class ReportServlet extends AbstractRestApiServlet {
                             //if we get a transient error, re-queue
                             requeueStart(r);
                         }
-                    }
-                    catch (MalformedURLException e) {
-                        Log.error("Bad URL");
-                    }
-                    catch (IOException e) {
+                    } catch (MalformedURLException e) {
+                        log.log(Level.SEVERE, "Bad URL");
+                    } catch (IOException e) {
                         log.warning("====IOerror: " + e);
                         //call it a transient error, re-queue
                         requeueStart(r);
@@ -185,7 +181,7 @@ public class ReportServlet extends AbstractRestApiServlet {
         queue.add(options);
     }
 
-    private int engage(Report r) throws JsonGenerationException, JsonMappingException, IOException {
+    private int startReportEngine(Report r) throws JsonGenerationException, JsonMappingException, IOException {
         //look up user
         final String email = uDao.getByKey(r.getUser()).getEmailAddress();
 
@@ -211,12 +207,9 @@ public class ReportServlet extends AbstractRestApiServlet {
         URL url = new URL(PropertyUtil.getProperty("flowServices") + "/generate?criteria=" +  crit);
         HttpURLConnection con = (HttpURLConnection) url.openConnection();
         con.setRequestMethod("GET");
-        log.info("Preparing to GET " + url);
+        log.log(Level.FINE, "Preparing to GET " + url);
         return con.getResponseCode();
-
     }
-
-
 
 
     @Override
