@@ -28,7 +28,8 @@ public class FormInstance {
     private String username;
     private String email;
     private List<Response> responses;
-
+    private Double formVersion;
+    
     public List<Response> getResponses() {
         return responses;
     }
@@ -100,5 +101,13 @@ public class FormInstance {
     public void setDuration(long duration) {
         this.duration = duration;
     }
+
+	public Double getFormVersion() {
+		return formVersion;
+	}
+
+	public void setFormVersion(Double formVersion) {
+		this.formVersion = formVersion;
+	}
 
 }

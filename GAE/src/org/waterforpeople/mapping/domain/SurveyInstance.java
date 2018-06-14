@@ -61,7 +61,8 @@ public class SurveyInstance extends BaseDomain implements SecuredObject {
     private List<QuestionAnswerStore> questionAnswersStore;
 
     private Long surveyId;
-
+    private Double formVersion; //What form version was used to collect the data
+    
     private String deviceIdentifier;
     private String submitterName;
     private String approvedFlag;
@@ -365,4 +366,12 @@ public class SurveyInstance extends BaseDomain implements SecuredObject {
         // do not update or return any child objects. Survey entities are the leaves
         return Collections.emptyList();
     }
+
+	public Double getFormVersion() {
+		return formVersion;
+	}
+
+	public void setFormVersion(Double formVersion) {
+		this.formVersion = formVersion;
+	}
 }
