@@ -149,6 +149,8 @@ FLOW.ExportReportsAppletView = FLOW.View.extend({
   reportFromDate: undefined,
   reportToDate: undefined,
   dateRangeDisabled: false,
+  rangeActive: "",
+  recentActive: "background-color: transparent;",
   exportOption: "range",
   dateRangeText: Ember.String.loc('_collection_period'),
   onlyRecentText: Ember.String.loc('_only_recent_submissions'),
@@ -156,6 +158,8 @@ FLOW.ExportReportsAppletView = FLOW.View.extend({
   classNames: 'trigger',
 
   dateRangeDisabledObserver: function () {
+    this.set('rangeActive', this.get("exportOption") === "range" ? "" : "background-color: transparent;");
+    this.set('recentActive', this.get("exportOption") === "recent" ? "" : "background-color: transparent;");
     this.set('dateRangeDisabled', this.get("exportOption") === "recent");
   }.observes('this.exportOption'),
 

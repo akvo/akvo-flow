@@ -22,7 +22,7 @@
           <h6>{{t _importable_back_to_akvo_flow}}</h6>
           <p class="expDescr">{{t _combines_options}}</p>
           <div id="dataCleanExp" class="options">
-            <div class="dataCollectedDate">
+            <div class="dataCollectedDate" {{bindAttr style="view.rangeActive"}}>
               <p>{{view Em.RadioButton titleBinding="view.dateRangeText" valueBinding="view.exportOption" option="range" group="cleaning-export-option"}}</p>
               <label class="collectedFrom dateInput">
                 {{view FLOW.DateField2 valueBinding="view.reportFromDate" class="from_date" placeholder="" placeholderBinding="Ember.STRINGS._collected_from" size=30 disabledBinding="view.dateRangeDisabled"}}
@@ -31,7 +31,7 @@
                 {{view FLOW.DateField2 valueBinding="view.reportToDate" class="to_date" placeholder="" placeholderBinding="Ember.STRINGS._to" size=30 disabledBinding="view.dateRangeDisabled"}}
               </label>
             </div>
-            <div class="dataCollectedDate" style="background-color: transparent;">
+            <div class="dataCollectedDate" {{bindAttr style="view.recentActive"}}>
             {{view Em.RadioButton titleBinding="view.onlyRecentText" valueBinding="view.exportOption" option="recent" group="cleaning-export-option" disabledBinding="view.hideLastCollection"}}
             </div>
             <a {{action showDataCleaningReport target="this"}} class="button trigger2">{{t _download}}</a>
@@ -42,7 +42,7 @@
           <h6>{{t _not_importable_back}}</h6>
           <p class="expDescr">{{t _replaces_question}}</p>
           <div id="dataAnalyseExp" class="options">
-            <div class="dataCollectedDate">
+            <div class="dataCollectedDate" {{bindAttr style="view.rangeActive"}}>
               <p>{{view Em.RadioButton titleBinding="view.dateRangeText" valueBinding="view.exportOption" option="range" group="analysis-export-option"}}</p>
               <label class="collectedFrom dateInput">
                  {{view FLOW.DateField2 minDate=false valueBinding="view.reportFromDate" class="from_date" placeholder="" placeholderBinding="Ember.STRINGS._collected_from" size=30 disabledBinding="view.dateRangeDisabled"}}
@@ -51,7 +51,7 @@
                 {{view FLOW.DateField2 minDate=false valueBinding="view.reportToDate" class="to_date" placeholder="" placeholderBinding="Ember.STRINGS._to" size=30 disabledBinding="view.dateRangeDisabled"}}
               </label>
             </div>
-            <div class="dataCollectedDate" style="background-color: transparent;">
+            <div class="dataCollectedDate" {{bindAttr style="view.recentActive"}}>
             {{view Em.RadioButton titleBinding="view.onlyRecentText" valueBinding="view.exportOption" option="recent" group="analysis-export-option" disabledBinding="view.hideLastCollection"}}
             </div>
             <a {{action showDataAnalysisReport target="this"}} class="button trigger2">{{t _download}}</a>
