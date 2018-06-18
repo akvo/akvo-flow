@@ -5,7 +5,7 @@ FLOW.NavMapsView = FLOW.View.extend({
   detailsPaneVisible: null,
   map: null,
   geoModel: null,
-  allowFilters: false,
+  showSurveyFilters: false,
 
   init: function () {
     this._super();

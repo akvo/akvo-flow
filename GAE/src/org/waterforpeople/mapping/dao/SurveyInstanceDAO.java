@@ -740,6 +740,7 @@ public class SurveyInstanceDAO extends BaseDAO<SurveyInstance> {
         query.declareParameters(paramString.toString());
         query.setOrdering("collectionDate ascending");
 
+        @SuppressWarnings("unchecked")
         List<SurveyInstance> res = (List<SurveyInstance>) query.executeWithMap(paramMap);
         if (res != null && !res.isEmpty()) {
             return res.get(0);

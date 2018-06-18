@@ -1,4 +1,4 @@
-language: java
+language: generic
 
 sudo: required
 
@@ -15,4 +15,3 @@ script:
 
 before_cache:
  - find $HOME/.m2 -name resolver-status.properties -exec rm {} \;
-
