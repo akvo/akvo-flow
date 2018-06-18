@@ -200,6 +200,9 @@ FLOW.ExportReportsAppletView = FLOW.View.extend({
   }.property('FLOW.selectedControl.selectedQuestion'),
 
   hideLastCollection: function () {
+    if (!FLOW.selectedControl.selectedSurvey) {
+      return;
+    }
     if (FLOW.selectedControl.selectedSurveyGroup && FLOW.selectedControl.selectedSurvey) {
       //if not a monitoring form, export should be filtered by date
       if (FLOW.selectedControl.selectedSurvey.get('keyId') == FLOW.selectedControl.selectedSurveyGroup.get('newLocaleSurveyId')) {
