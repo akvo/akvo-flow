@@ -253,6 +253,7 @@
             <devserver.host>0.0.0.0</devserver.host>
             <devserver.jvmFlags>
                 <devserver.jvmFlag>-Xdebug</devserver.jvmFlag>
+                <devserver.jvmFlag>-Dappengine.fullscan.seconds=${GAE_FULL_SCAN_SECS}</devserver.jvmFlag>
                 <devserver.jvmFlag>-agentlib:jdwp=transport=dt_socket,server=y,suspend=n,address=5005</devserver.jvmFlag>
             </devserver.jvmFlags>
         </configuration>

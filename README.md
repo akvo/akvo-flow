@@ -50,7 +50,7 @@ The appengine dev server is started in debug mode, listening in port 5005.
 
 It is expected that your IDE understand the Maven pom and that it compiles the Java classes to the right place.
 
-After you IDE compiles the classes, the dev server should refresh the webcontext. Due to some Mac performance issues with Docker, the refresh interval is 20 secs instead of the default 5 secs. You can change the scan interval in GAE/pom.xml. You can also trigger a reload hitting [the reload url](http://localhost:8888/_ah/reloadwebapp).
+After you IDE compiles the classes, the dev server should refresh the webcontext. Due to some Mac performance issues with Docker, the refresh interval is 20 secs instead of the default 5 secs. You can change the scan interval by setting the property GAE_FULL_SCAN_SECS to the desired value. You can also trigger a reload hitting [the reload url](http://localhost:8888/_ah/reloadwebapp).
 
 If you need to restart the server:
 
