@@ -29,7 +29,6 @@ public class ReportDto extends BaseDto {
     private String state;
     private String filename;
     private String message;
-    private String user;
     private Date startDate;
     private Date endDate;
     private Boolean lastCollectionOnly;
@@ -76,14 +75,6 @@ public class ReportDto extends BaseDto {
 
     public void setMessage(String message) {
         this.message = message;
-    }
-
-    public String getUser() {
-        return user;
-    }
-
-    public void setUser(String user) {
-        this.user = user;
     }
 
     public Date getStartDate() {

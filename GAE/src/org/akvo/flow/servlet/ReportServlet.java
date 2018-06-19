@@ -22,6 +22,7 @@ import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.Date;
+import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import javax.servlet.http.HttpServletRequest;
@@ -32,7 +33,6 @@ import org.akvo.flow.rest.dto.ReportTaskRequest;
 import org.codehaus.jackson.JsonGenerationException;
 import org.codehaus.jackson.map.JsonMappingException;
 import org.codehaus.jackson.map.ObjectMapper;
-import org.jfree.util.Log;
 import org.waterforpeople.mapping.app.web.dto.TaskRequest;
 
 import com.gallatinsystems.common.Constants;
@@ -57,7 +57,7 @@ public class ReportServlet extends AbstractRestApiServlet {
 
     class ReportOptions implements Serializable {
         /**
-         *
+         * Used to send the start command to the report engine
          */
         private static final long serialVersionUID = 1L;
         public String exportMode;
@@ -72,7 +72,7 @@ public class ReportServlet extends AbstractRestApiServlet {
 
     class ReportCriteria implements Serializable {
         /**
-         *
+         * Used to send the start command to the report engine
          */
         private static final long serialVersionUID = 1L;
         public ReportOptions opts;
@@ -80,14 +80,6 @@ public class ReportServlet extends AbstractRestApiServlet {
         public String appId;
         public Long surveyId;
         public String email;
-    }
-
-    class ReportBody implements Serializable {
-        /**
-         *
-         */
-        private static final long serialVersionUID = 1L;
-        public ReportCriteria criteria;
     }
 
     public ReportServlet() {
@@ -108,26 +100,23 @@ public class ReportServlet extends AbstractRestApiServlet {
         ReportTaskRequest stReq = (ReportTaskRequest) req;
         String action = stReq.getAction();
         Long id = stReq.getId();
-        log.info("action: " + action + " id: " + id);
-        if (action == null) {
-            return null;
-        }
+        log.log(Level.FINE, "action: " + action + " id: " + id);
+        Report r = rDao.getByKey(id);
         switch (action) {
             case ReportTaskRequest.START_ACTION:
-                Report r = rDao.getByKey(id);
                 if (r != null) {
                     if (!r.getState().equals(Report.QUEUED)) {
                         //wrong state
-                        log.warning("Cannot start report that is " + r.getState());
+                        log.warning("Cannot start report " + id + " that is " + r.getState());
                         //TODO do anything else?
                         return null;
                     }
-                    log.info(" ====Starting========");
+                    log.log(Level.FINE, " ====Starting========");
 
                     //hit the services server
                     try {
-                        final int sts = engage(r);
-                        log.info(" got  " + sts);
+                        final int sts = startReportEngine(r);
+                        log.log(Level.FINE, " got  " + sts);
 
                         if (sts == 200) {
                             //Success, we are done!
@@ -135,17 +124,15 @@ public class ReportServlet extends AbstractRestApiServlet {
                         } else if ((sts % 100) == 4) { //4xx: you messed up
                             //permanent error, fail this report
                             r.setState(Report.FINISHED_ERROR);
-                            r.setMessage("Unexpected result when starting report: " + sts);
+                            r.setMessage("Unexpected result when starting report \" + id + \" : " + sts);
                             rDao.save(r);
                         } else {
                             //if we get a transient error, re-queue
                             requeueStart(r);
                         }
-                    }
-                    catch (MalformedURLException e) {
-                        Log.error("Bad URL");
-                    }
-                    catch (IOException e) {
+                    } catch (MalformedURLException e) {
+                        log.log(Level.SEVERE, "Bad URL");
+                    } catch (IOException e) {
                         log.warning("====IOerror: " + e);
                         //call it a transient error, re-queue
                         requeueStart(r);
@@ -153,17 +140,16 @@ public class ReportServlet extends AbstractRestApiServlet {
                 }
                 break;
             case ReportTaskRequest.PROGRESS_ACTION:
-                Report r2 = rDao.getByKey(id);
-                if (r2 != null) {
-                    if (!r2.getState().equals(Report.QUEUED)
-                            && !r2.getState().equals(Report.IN_PROGRESS)) {
+                if (r != null) {
+                    if (!r.getState().equals(Report.QUEUED)
+                            && !r.getState().equals(Report.IN_PROGRESS)) {
                         //wrong state
-                        log.warning("Cannot set progress on report that is " + r2.getState());
+                        log.warning("Cannot set progress on report " + id + " that is " + r.getState());
                         return null;
                     }
-                    r2.setState(stReq.getState());
-                    r2.setMessage(stReq.getMessage());
-                    rDao.save(r2);
+                    r.setState(stReq.getState());
+                    r.setMessage(stReq.getMessage());
+                    rDao.save(r);
                 }
                 break;
             default:
@@ -194,7 +180,7 @@ public class ReportServlet extends AbstractRestApiServlet {
         queue.add(options);
     }
 
-    private int engage(Report r) throws JsonGenerationException, JsonMappingException, IOException {
+    private int startReportEngine(Report r) throws JsonGenerationException, JsonMappingException, IOException {
         //look up user
         final String email = uDao.getByKey(r.getUser()).getEmailAddress();
 
@@ -215,17 +201,14 @@ public class ReportServlet extends AbstractRestApiServlet {
         criteria.opts.imgPrefix = PropertyUtil.getProperty("photo_url_root");
         criteria.opts.uploadUrl = PropertyUtil.getProperty("surveyuploadurl");
         ObjectMapper objectMapper = new ObjectMapper();
-        String crit = java.net.URLEncoder.encode(objectMapper.writeValueAsString(criteria), "ISO-8859-1");;
+        String crit = java.net.URLEncoder.encode(objectMapper.writeValueAsString(criteria), "UTF-8");
 
         URL url = new URL(PropertyUtil.getProperty("flowServices") + "/generate?criteria=" +  crit);
         HttpURLConnection con = (HttpURLConnection) url.openConnection();
         con.setRequestMethod("GET");
-        log.info("Preparing to GET " + url);
+        log.log(Level.FINE, "Preparing to GET " + url);
         return con.getResponseCode();
-
     }
-
-
 
 
     @Override
