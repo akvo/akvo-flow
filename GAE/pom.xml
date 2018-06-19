@@ -251,6 +251,7 @@
             <devserver.version>1</devserver.version>
             <devserver.port>8888</devserver.port>
             <devserver.host>0.0.0.0</devserver.host>
+            <devserver.startSuccessTimeout>300</devserver.startSuccessTimeout>
             <devserver.jvmFlags>
                 <devserver.jvmFlag>-Xdebug</devserver.jvmFlag>
                 <devserver.jvmFlag>-Dappengine.fullscan.seconds=${GAE_FULL_SCAN_SECS}</devserver.jvmFlag>
