@@ -1,13 +1,13 @@
-{{#view FLOW.ReportsListView}}
+{{#view FLOW.ReportsListView controllerBinding="controller.reports-controllers.reportsController"}}
       <div class="generatedExports">
         <h1>{{t _generated_reports}}</h1>
         <a {{action "exportNewReport" target="this"}} class="button exportNewBtn">{{t _export_reports}}</a>
       </div>
       <section class="exportContainer">
-        {{#if FLOW.reportsControl.reportsAvailable}}
+        {{#if FLOW.router.reportsController.reportsAvailable}}
         <!-- Here is the list of exports generated-->
         <ul class="exportList">
-          {{#each report in FLOW.reportsControl}}{{#with report}}
+          {{#each report in FLOW.router.reportsController}}{{#with report}}
           <li class="{{reportType reportType}} {{reportStatus state}}">
             <div class="exportInfo">
               <a href="{{filename}}">
