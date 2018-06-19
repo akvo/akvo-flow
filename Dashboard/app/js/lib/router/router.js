@@ -287,7 +287,7 @@ FLOW.Router = Ember.Router.extend({
 
       index: Ember.Route.extend({
         route: '/',
-        redirectsTo: 'inspectData'
+        redirectsTo:  'inspectData'
       }),
 
       inspectData: Ember.Route.extend({

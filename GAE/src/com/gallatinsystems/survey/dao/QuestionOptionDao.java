@@ -81,6 +81,7 @@ public class QuestionOptionDao extends BaseDAO<QuestionOption> {
         PersistenceManager pm = PersistenceFilter.getManager();
         String queryString = ":p1.contains(questionId)";
         javax.jdo.Query query = pm.newQuery(QuestionOption.class, queryString);
+        @SuppressWarnings("unchecked")
         List<QuestionOption> results = (List<QuestionOption>) query.execute(questionIds);
         return results;
     }
