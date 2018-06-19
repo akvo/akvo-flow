@@ -390,6 +390,9 @@ Ember.Handlebars.registerHelper("reportTypeString", function (reportType) {
 
 Ember.Handlebars.registerHelper("reportFilename", function (filename) {
   var url = Ember.get(this, filename);
+  if (!url || url == "") {
+    return;
+  }
   return url.split('/').pop().replace(/\s/g, '');
 });
 
