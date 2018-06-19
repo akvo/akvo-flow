@@ -1,5 +1,4 @@
 <section class="fullWidth reportTools" id="reportBlocks">
-  {{#view FLOW.ExportReportsView}}
     <div class="surveySelect">
       <nav class="breadCrumb floats-in">
         {{#unless FLOW.projectControl.isLoading}}
@@ -16,7 +15,6 @@
         {{/if}}
       </nav>
     </div>
-  {{/view}}
     <script>
       function openExportOptions(evt, exportName) {
         var i, options, trigger;
@@ -38,7 +36,7 @@
           <h2>{{t _data_cleaning_export}}</h2>
           <h6>{{t _importable_back_to_akvo_flow}}</h6>
           <p class="expDescr">{{t _combines_options}}</p>
-        {{#view FLOW.ExportReportsView}}
+        {{#view FLOW.ExportReportTypeView}}
           <div id="dataCleanExp_options" class="options">
               <div class="dataCollectedDate">
                 <p>{{t _collection_period}}</p>
@@ -57,7 +55,7 @@
           <h2>{{t _data_analysis_export}}</h2>
           <h6>{{t _not_importable_back}}</h6>
           <p class="expDescr">{{t _replaces_question}}</p>
-          {{#view FLOW.ExportReportsView}}
+          {{#view FLOW.ExportReportTypeView}}
             <div id="dataAnalyseExp_options" class="options">
               <div class="dataCollectedDate">
                 <p>{{t _collection_period}}</p>
@@ -76,7 +74,7 @@
             <h2>{{t _comprehensive_report}}</h2>
             <h6>{{t _not_importable_back}}</h6>
             <p class="expDescr">{{t _summarizes_responses}}</p>
-            {{#view FLOW.ExportReportsView}}
+            {{#view FLOW.ExportReportTypeView}}
             <div id="compReportExp_options" class="options">
               <a {{action showComprehensiveReport target="this"}} class="button trigger2">{{t _download}}</a>
             </div>
@@ -96,7 +94,7 @@
                     promptBinding="Ember.STRINGS._select_question"}}
               {{/if}}
             </div>
-            {{#view FLOW.ExportReportsView}}
+            {{#view FLOW.ExportReportTypeView}}
             <div id="geoShapeDataExp_options" class="options">
               <a {{action showGeoshapeReport target="this"}} class="button trigger2">{{t _download}}</a>
             </div>
@@ -105,7 +103,7 @@
         <li class="surveyFormExp trigger"  onclick="openExportOptions(event, 'surveyFormExp_options')">
           <h2>{{t _survey_form}}</h2>
           <p class="expDescr">{{t _printable}}</p>
-          {{#view FLOW.ExportReportsView}}
+          {{#view FLOW.ExportReportTypeView}}
           <div id="surveyFormExp_options" class="options">
             <a {{action showSurveyForm target="this"}} class="button trigger2">{{t _download}}</a>
               {{#if view.showSurveyFormApplet }}
