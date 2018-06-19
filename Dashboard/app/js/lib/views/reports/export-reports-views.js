@@ -25,7 +25,8 @@ FLOW.ReportLoader = Ember.Object.create({
   },
 });
 
-FLOW.ExportReportsAppletView = FLOW.View.extend({
+FLOW.ExportReportsView = Ember.View.extend({
+  templateName: 'navReports/export-reports',
   showRawDataReportApplet: false,
   showComprehensiveReportApplet: false,
   showGoogleEarthFileApplet: false,
@@ -176,7 +177,8 @@ FLOW.ExportReportsAppletView = FLOW.View.extend({
   }
 });
 
-FLOW.ReportsListAppletView = FLOW.View.extend({
+FLOW.ReportsListView = Ember.View.extend({
+  templateName: 'navReports/reports-list',
   exportNewReport: function () {
     FLOW.router.transitionTo('navData.exportReports');
   }

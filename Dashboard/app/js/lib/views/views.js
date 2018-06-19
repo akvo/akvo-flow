@@ -807,14 +807,6 @@ FLOW.NavReportsView = Ember.View.extend({
   templateName: 'navReports/nav-reports'
 });
 
-FLOW.ReportsListView = Ember.View.extend({
-  templateName: 'navReports/reports-list'
-});
-
-FLOW.ExportReportsView = Ember.View.extend({
-  templateName: 'navReports/export-reports'
-});
-
 FLOW.ChartReportsView = Ember.View.extend({
   templateName: 'navReports/chart-reports'
 });
