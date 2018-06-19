@@ -509,9 +509,8 @@ FLOW.SubCountry = FLOW.BaseModel.extend({
 
 FLOW.Report = FLOW.BaseModel.extend({
   reportType: DS.attr('string'), //DATA_CLEANING/COMPREHENSIVE/...
-  user: DS.attr('string'),
   formId: DS.attr('number'),
-  state: DS.attr('string'), //IN_PROGRESS/FINISHED_SUCCESS/FINISHED_ERROR
+  state: DS.attr('string'), //QUEUED/IN_PROGRESS/FINISHED_SUCCESS/FINISHED_ERROR
   startDate: DS.attr('string'),
   endDate: DS.attr('string'),
   message: DS.attr('string'),
