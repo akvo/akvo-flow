@@ -68,6 +68,8 @@ public class ReportServlet extends AbstractRestApiServlet {
         public Boolean lastCollection;
         public String imgPrefix;
         public String uploadUrl;
+        public String flowServices;
+        public String appId;
     }
 
     class ReportCriteria implements Serializable {
@@ -80,6 +82,7 @@ public class ReportServlet extends AbstractRestApiServlet {
         public String appId;
         public Long surveyId;
         public String email;
+        public String baseURL;
     }
 
     public ReportServlet() {
@@ -100,7 +103,7 @@ public class ReportServlet extends AbstractRestApiServlet {
         ReportTaskRequest stReq = (ReportTaskRequest) req;
         String action = stReq.getAction();
         Long id = stReq.getId();
-        log.log(Level.FINE, "action: " + action + " id: " + id);
+        log.fine("action: " + action + " id: " + id);
         Report r = rDao.getByKey(id);
         switch (action) {
             case ReportTaskRequest.START_ACTION:
@@ -111,12 +114,12 @@ public class ReportServlet extends AbstractRestApiServlet {
                         //TODO do anything else?
                         return null;
                     }
-                    log.log(Level.FINE, " ====Starting========");
+                    log.fine(" ====Starting");
 
                     //hit the services server
                     try {
                         final int sts = startReportEngine(r);
-                        log.log(Level.FINE, " got  " + sts);
+                        log.fine(" got  " + sts);
 
                         if (sts == 200) {
                             //Success, we are done!
@@ -190,8 +193,9 @@ public class ReportServlet extends AbstractRestApiServlet {
         criteria.appId = PropertyUtil.getProperty("appId");
         criteria.email = email;
         criteria.surveyId = r.getFormId();
-        criteria.appId = PropertyUtil.getProperty("appId");
         criteria.exportType = r.getReportType();
+        criteria.baseURL = PropertyUtil.getProperty("alias");
+        criteria.opts.appId = PropertyUtil.getProperty("appId");
         criteria.opts.exportMode = r.getReportType();
         criteria.opts.reportId = r.getKey().getId();
         criteria.opts.from = r.getStartDate();
@@ -200,6 +204,7 @@ public class ReportServlet extends AbstractRestApiServlet {
         criteria.opts.questionId = r.getQuestionId();
         criteria.opts.imgPrefix = PropertyUtil.getProperty("photo_url_root");
         criteria.opts.uploadUrl = PropertyUtil.getProperty("surveyuploadurl");
+        criteria.opts.flowServices = PropertyUtil.getProperty("flowServices");
         ObjectMapper objectMapper = new ObjectMapper();
         String crit = java.net.URLEncoder.encode(objectMapper.writeValueAsString(criteria), "UTF-8");
 
