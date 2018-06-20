@@ -55,6 +55,7 @@ public class ReportServlet extends AbstractRestApiServlet {
 
     private ReportDao rDao;
     private UserDao uDao;
+    private String baseUrl;
 
     class ReportOptions implements Serializable {
         /**
@@ -94,6 +95,10 @@ public class ReportServlet extends AbstractRestApiServlet {
     @Override
     protected RestRequest convertRequest() throws Exception {
         HttpServletRequest req = getRequest();
+        baseUrl = req.getProtocol() + "://" + req.getServerName();
+        if (req.getServerPort() != 80) {
+        	baseUrl += ":" + req.getServerPort();
+        }
         RestRequest restRequest = new ReportTaskRequest();
         restRequest.populateFromHttpRequest(req);
         return restRequest;
@@ -195,7 +200,7 @@ public class ReportServlet extends AbstractRestApiServlet {
         criteria.email = email;
         criteria.surveyId = r.getFormId().toString();
         criteria.exportType = r.getReportType();
-        criteria.baseURL = PropertyUtil.getProperty("alias");
+        criteria.baseURL = baseUrl;
         criteria.opts.appId = SystemProperty.applicationId.get();
         criteria.opts.exportMode = r.getReportType();
         criteria.opts.reportId = r.getKey().getId();
