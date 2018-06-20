@@ -22,16 +22,20 @@ import java.util.List;
 import java.util.Map;
 import java.util.logging.Logger;
 
+import javax.servlet.http.HttpServletRequest;
+
 import org.akvo.flow.dao.ReportDao;
 import org.akvo.flow.domain.persistent.Report;
 import org.akvo.flow.rest.dto.ReportDto;
 import org.akvo.flow.rest.dto.ReportPayload;
 import org.akvo.flow.servlet.ReportServlet;
 import org.springframework.beans.BeanUtils;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
@@ -41,7 +45,10 @@ import org.waterforpeople.mapping.app.web.rest.dto.RestStatusDto;
 @Controller
 @RequestMapping("/reports")
 public class ReportRestService {
-    private static final Logger log = Logger.getLogger(ReportRestService.class.getName());
+	@Autowired
+	private HttpServletRequest request;
+
+	private static final Logger log = Logger.getLogger(ReportRestService.class.getName());
 
     private final String[] doNotCopy = {
             "createdDateTime",
@@ -59,7 +66,9 @@ public class ReportRestService {
     @RequestMapping(method = RequestMethod.POST, value = "")
     @ResponseBody
     public Map<String, Object> saveNewReport(@RequestBody
-    ReportPayload payLoad) {
+    ReportPayload payLoad,
+    @RequestHeader(value = "Host", required = false) String host) {
+    	
         final ReportDto reportDto = payLoad.getReport();
         final Map<String, Object> response = new HashMap<String, Object>();
         ReportDto dto = null;
@@ -77,7 +86,9 @@ public class ReportRestService {
             r.setState(Report.QUEUED);  //overwrite any supplied state
             // Save it, so we get an id assigned
             r = reportDao.save(r);
-            ReportServlet.queueStart(r);
+            String baseUrl = request.getProtocol() + host;
+
+            ReportServlet.queueStart(baseUrl, r);
 
             dto = new ReportDto();
             BeanUtils.copyProperties(r, dto);

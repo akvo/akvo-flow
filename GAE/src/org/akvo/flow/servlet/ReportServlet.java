@@ -55,7 +55,6 @@ public class ReportServlet extends AbstractRestApiServlet {
 
     private ReportDao rDao;
     private UserDao uDao;
-    private String baseUrl;
 
     class ReportOptions implements Serializable {
         /**
@@ -95,10 +94,6 @@ public class ReportServlet extends AbstractRestApiServlet {
     @Override
     protected RestRequest convertRequest() throws Exception {
         HttpServletRequest req = getRequest();
-        baseUrl = req.getProtocol() + "://" + req.getServerName();
-        if (req.getServerPort() != 80) {
-        	baseUrl += ":" + req.getServerPort();
-        }
         RestRequest restRequest = new ReportTaskRequest();
         restRequest.populateFromHttpRequest(req);
         return restRequest;
@@ -124,7 +119,7 @@ public class ReportServlet extends AbstractRestApiServlet {
 
                     //hit the services server
                     try {
-                        final int sts = startReportEngine(r);
+                        final int sts = startReportEngine(stReq.getBaseUrl(), r);
                         log.fine(" got  " + sts);
 
                         if (sts == 200) {
@@ -168,12 +163,13 @@ public class ReportServlet extends AbstractRestApiServlet {
         return null;
     }
 
-    public static void queueStart(Report r) {
+    public static void queueStart(String baseUrl, Report r) {
         log.info("Forking to task with action START");
         Queue queue = QueueFactory.getDefaultQueue();
         TaskOptions options = TaskOptions.Builder.withUrl(SERVLET_URL)
                 .param(TaskRequest.ACTION_PARAM, ReportTaskRequest.START_ACTION)
-                .param(ReportTaskRequest.ID_PARAM, Long.toString(r.getKey().getId()));
+                .param(ReportTaskRequest.ID_PARAM, Long.toString(r.getKey().getId()))
+                .param(ReportTaskRequest.BASE_URL_PARAM, baseUrl);
         queue.add(options);
     }
 
@@ -189,7 +185,7 @@ public class ReportServlet extends AbstractRestApiServlet {
         queue.add(options);
     }
 
-    private int startReportEngine(Report r) throws JsonGenerationException, JsonMappingException, IOException {
+    private int startReportEngine(String baseUrl, Report r) throws JsonGenerationException, JsonMappingException, IOException {
         //look up user
         final String email = uDao.getByKey(r.getUser()).getEmailAddress();
 
