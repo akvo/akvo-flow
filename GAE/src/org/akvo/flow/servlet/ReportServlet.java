@@ -27,6 +27,7 @@ import java.util.logging.Logger;
 
 import javax.servlet.http.HttpServletRequest;
 
+import com.google.appengine.api.utils.SystemProperty;
 import org.akvo.flow.dao.ReportDao;
 import org.akvo.flow.domain.persistent.Report;
 import org.akvo.flow.rest.dto.ReportTaskRequest;
@@ -190,12 +191,12 @@ public class ReportServlet extends AbstractRestApiServlet {
         //Gleaned from export-reports-views.js
         ReportCriteria criteria = new ReportCriteria();
         criteria.opts = new ReportOptions();
-        criteria.appId = PropertyUtil.getProperty("appId");
+        criteria.appId = SystemProperty.applicationId.get();
         criteria.email = email;
         criteria.surveyId = r.getFormId();
         criteria.exportType = r.getReportType();
         criteria.baseURL = PropertyUtil.getProperty("alias");
-        criteria.opts.appId = PropertyUtil.getProperty("appId");
+        criteria.opts.appId = SystemProperty.applicationId.get();
         criteria.opts.exportMode = r.getReportType();
         criteria.opts.reportId = r.getKey().getId();
         criteria.opts.from = r.getStartDate();
