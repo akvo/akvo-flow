@@ -182,6 +182,9 @@ FLOW.ExportReportTypeView = Ember.View.extend({
 
 FLOW.ReportsListView = Ember.View.extend({
   templateName: 'navReports/reports-list',
+  didInsertElement: function () {
+    FLOW.router.reportsController.populate();
+  },
   exportNewReport: function () {
     FLOW.router.transitionTo('navData.exportReports');
   }

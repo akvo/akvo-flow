@@ -36,9 +36,6 @@ FLOW.ReportsController = Ember.ArrayController.extend({
   sortProperties: ["createdDateTime"],
   sortAscending: true,
   content: null,
-  init: function () {
-    this.populate();
-  },
 
   populate: function () {
     this.set('content', FLOW.store.find(FLOW.Report));
