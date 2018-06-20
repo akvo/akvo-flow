@@ -81,7 +81,7 @@ public class ReportServlet extends AbstractRestApiServlet {
         public ReportOptions opts;
         public String exportType;
         public String appId;
-        public Long surveyId;
+        public String surveyId;
         public String email;
         public String baseURL;
     }
@@ -193,7 +193,7 @@ public class ReportServlet extends AbstractRestApiServlet {
         criteria.opts = new ReportOptions();
         criteria.appId = SystemProperty.applicationId.get();
         criteria.email = email;
-        criteria.surveyId = r.getFormId();
+        criteria.surveyId = r.getFormId().toString();
         criteria.exportType = r.getReportType();
         criteria.baseURL = PropertyUtil.getProperty("alias");
         criteria.opts.appId = SystemProperty.applicationId.get();
