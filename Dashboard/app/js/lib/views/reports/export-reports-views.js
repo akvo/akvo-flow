@@ -102,13 +102,17 @@ FLOW.ExportReportTypeView = Ember.View.extend({
 
   hideLastCollection: function () {
     if (!FLOW.selectedControl.selectedSurvey) {
-      return;
+      return true;
     }
     if (FLOW.selectedControl.selectedSurveyGroup && FLOW.selectedControl.selectedSurvey) {
       //if not a monitoring form, export should be filtered by date
       if (FLOW.selectedControl.selectedSurvey.get('keyId') == FLOW.selectedControl.selectedSurveyGroup.get('newLocaleSurveyId')) {
         $('input:radio[name=cleaning-export-option]').filter('[value=range]').prop('checked', true);
         $('input:radio[name=analysis-export-option]').filter('[value=range]').prop('checked', true);
+        this.set('rangeActive', "");
+        this.set('recentActive', "background-color: transparent; opacity: 0.5");
+      } else {
+        this.set('recentActive', "background-color: transparent;");
       }
     }
     return !(FLOW.selectedControl.selectedSurveyGroup && FLOW.selectedControl.selectedSurveyGroup.get('monitoringGroup')
