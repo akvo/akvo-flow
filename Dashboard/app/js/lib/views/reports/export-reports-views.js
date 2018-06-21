@@ -23,10 +23,9 @@ FLOW.ReportLoader = Ember.Object.create({
     this.showEmailNotification();
     FLOW.router.transitionTo('navData.reportsList');
   },
+
   showEmailNotification: function () {
     FLOW.savingMessageControl.numLoadingChange(-1);
-    this.set('processing', false);
-    this.set('criteria', null);
     FLOW.dialogControl.set('activeAction', 'ignore');
     FLOW.dialogControl.set('header', Ember.String.loc('_your_report_is_being_prepared'));
     FLOW.dialogControl.set('message', Ember.String.loc('_we_will_notify_via_email'));
