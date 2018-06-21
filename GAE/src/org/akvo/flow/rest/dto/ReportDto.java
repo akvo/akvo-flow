@@ -29,9 +29,10 @@ public class ReportDto extends BaseDto {
     private String state;
     private String filename;
     private String message;
-    private String user;
     private Date startDate;
     private Date endDate;
+    private Boolean lastCollectionOnly;
+    private Long questionId;
     private Date createdDateTime;
     private Date lastUpdateDateTime;
 
@@ -76,14 +77,6 @@ public class ReportDto extends BaseDto {
         this.message = message;
     }
 
-    public String getUser() {
-        return user;
-    }
-
-    public void setUser(String user) {
-        this.user = user;
-    }
-
     public Date getStartDate() {
         return startDate;
     }
@@ -114,6 +107,22 @@ public class ReportDto extends BaseDto {
 
     public void setLastUpdateDateTime(Date lastUpdateDateTime) {
         this.lastUpdateDateTime = lastUpdateDateTime;
+    }
+
+    public Boolean getLastCollectionOnly() {
+        return lastCollectionOnly;
+    }
+
+    public void setLastCollectionOnly(Boolean lastCollectionOnly) {
+        this.lastCollectionOnly = lastCollectionOnly;
+    }
+
+    public Long getQuestionId() {
+        return questionId;
+    }
+
+    public void setQuestionId(Long questionId) {
+        this.questionId = questionId;
     }
 
 }

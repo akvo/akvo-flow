@@ -1,5 +1,32 @@
 # Akvo Flow Release Notes
 ----
+# Akvo Flow Dashboard v1.9.33.1 - Fantastic Fern - (Hotfix 1)
+Date: 07th June 2018
+
+## Resolved issues
+* **App updates** - Update datastore index [#2690]. Update datastore index to work for both new and old device updates.
+
+# Akvo Flow Dashboard v1.9.33 - Fantastic Fern
+Date: 06th June 2018
+
+## New and noteworthy
+* **Maps** - Filter data points on the maps tab based on a selected survey [#2661]. Removed clustering of points on when overlaying on Mapbox maps [#2631]
+* **UI Improvement** - Removed data cleaning export option from data cleaning tab [#2548]
+
+## Resolved issues
+* **Development environment** - Use basic autoscaling on dataprocessor backend [#2670]. Deploy dataprocessor with correct instance type [#2673]. Use HTTPS based urls for maven repositories [#2665]. Load latest cron jobs definition for deployments via admin API [#2628], Cache the local dev datastore [#2649]
+* **User permissions** - Respect user permissions set by confirming users have view data permissions before displaying data [#1558]. Stop overriding nested folder and surveys permissions [#1582]
+* **Code cleanup** - Remove unused css and html files [#2651]. Remove dependency on unused maven repo [#2658]
+
+# Akvo Flow Dashboard v1.9.32 - Internal release
+Date: 15th May 2018
+## New and noteworthy
+* **Development environment** - Further improvements to our development workflow including, the user of docker containers to homogenise and ease setup of dev environment [#2406][#2553][#2624][#2633], speeding up parallel deployments of our instances [#2562]
+
+* **UI Improvement** - Implement a walkthrough for the bulk upload page explaining how the new GDPR compliant bulk upload will function [#2466].
+
+* **App downloads** - Prevent devices containing old android versions (< Android 4.0.3) from downloading recent app versions [#2603].
+
 # Akvo Flow Dashboard v1.9.31 - Epic Elm
 Date: 19 April 2018
 
