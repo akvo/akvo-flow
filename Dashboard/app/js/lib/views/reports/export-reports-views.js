@@ -17,6 +17,7 @@ FLOW.ReportLoader = Ember.Object.create({
     newReport.set('reportType', exportType);
     newReport.set('formId', surveyId);
     newReport.set('filename', '');
+    newReport.set('state', 'QUEUED');
     //newReport.set('lastCollectionOnly', ('' + (exportType === 'DATA_CLEANING' && FLOW.selectedControl.get('selectedSurveyGroup').get('monitoringGroup') && !!FLOW.editControl.lastCollection));
 
     FLOW.store.commit();
@@ -24,7 +25,11 @@ FLOW.ReportLoader = Ember.Object.create({
   },
 });
 
-FLOW.ExportReportsAppletView = FLOW.View.extend({
+FLOW.ExportReportsView = Ember.View.extend({
+  templateName: 'navReports/export-reports'
+});
+
+FLOW.ExportReportTypeView = Ember.View.extend({
   showRawDataReportApplet: false,
   showComprehensiveReportApplet: false,
   showGoogleEarthFileApplet: false,
@@ -175,7 +180,11 @@ FLOW.ExportReportsAppletView = FLOW.View.extend({
   }
 });
 
-FLOW.ReportsListAppletView = FLOW.View.extend({
+FLOW.ReportsListView = Ember.View.extend({
+  templateName: 'navReports/reports-list',
+  didInsertElement: function () {
+    FLOW.router.reportsController.populate();
+  },
   exportNewReport: function () {
     FLOW.router.transitionTo('navData.exportReports');
   }

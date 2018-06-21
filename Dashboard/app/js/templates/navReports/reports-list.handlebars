@@ -1,46 +1,44 @@
-{{#view FLOW.ReportsListAppletView}}
       <div class="generatedExports">
-        <h1>Generated exports</h1>
+        <h1>{{t _generated_reports}}</h1>
         <a {{action "exportNewReport" target="this"}} class="button exportNewBtn">{{t _export_reports}}</a>
       </div>
       <section class="exportContainer">
-        {{#if FLOW.reportsControl.reportsAvailable}}
+        {{#if FLOW.router.reportsController.reportsAvailable}}
         <!-- Here is the list of exports generated-->
         <ul class="exportList">
-          {{#each report in FLOW.reportsControl}}
-          <li class="{{#with report}} {{reportType reportType}} {{reportStatus state}} {{/with}}">
+          {{#each report in FLOW.router.reportsController}}{{#with report}}
+          <li class="{{reportType reportType}} {{reportStatus state}}">
             <div class="exportInfo">
-              <a href="{{report.filename}}">
-                {{#with report}}
+              <a href="{{#if filename}}{{filename}}{{/if}}">
+
                 <h5>
                   {{reportTypeString reportType}} - <span class="exportFileName">{{reportFilename filename}}</span>
                   <span class="submissionsDate">
                     {{#if lastCollectionOnly}}
-                    Recent submissions
+                    {{t _recent_submissions}}
                     {{else}}
-                    {{startDate}} - {{endDate}} submissions
+                    {{#if startDate}}{{date1 startDate}} -{{/if}}{{#if endDate}}- {{date1 endDate}}{{/if}} {{t _submissions}}
                     {{/if}}
                   </span>
                 </h5>
-                {{/with}}
+
               </a>
-              <span class="surveyPath"></span>
+              <span class="surveyPath">{{surveyPath formId}}</span>
             </div>
             <div class="exportStatus">
-              <span class="loading">Generating</span>
-              <span class="exportDate">{{report.lastUpdateDateTime}}</span>
+              <span class="loading">{{t _generating}}</span>
+              <span class="exportDate">{{#if lastUpdateDateTime}}{{date1 lastUpdateDateTime}}{{/if}}</span>
             </div>
           </li>
-          {{/each}}
+          {{/with}}{{/each}}
         </ul>
         <!-- End -->
         {{else}}
         <!-- This is the message you get if you have no exports -->
         <div class="noExportMsg">
-          <h3>No exports generated, yet</h3>
-          <p>Click "New export" to get started</p>
+          <h3>{{t _no_exports_yet}}</h3>
+          <p>{{t _click_new_export}}</p>
         </div>
         <!-- End -->
         {{/if}}
       </section>
-{{/view}}
