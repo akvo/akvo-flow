@@ -269,6 +269,10 @@ FLOW.Router = Ember.Router.extend({
         router.transitionTo('navData.monitoringData');
       },
 
+      doReportsList: function (router, event) {
+        router.transitionTo('navData.reportsList');
+      },
+
       doExportReports: function (router, event) {
         router.transitionTo('navData.exportReports');
       },
@@ -283,7 +287,7 @@ FLOW.Router = Ember.Router.extend({
 
       index: Ember.Route.extend({
         route: '/',
-        redirectsTo: 'inspectData'
+        redirectsTo:  'inspectData'
       }),
 
       inspectData: Ember.Route.extend({
@@ -328,6 +332,18 @@ FLOW.Router = Ember.Router.extend({
           router.set('datasubnavController.selected', 'monitoringData');
           router.resetState();
         }
+      }),
+
+      reportsList: Ember.Route.extend({
+        route: '/reportslist',
+        connectOutlets: function (router, context) {
+          //if landing on tab, show reports list first
+          router.get('navDataController').connectOutlet('reportsList');
+          FLOW.reportsControl.populate();
+          router.set('datasubnavController.selected', 'exportReports');
+          router.resetState();
+        }
+
       }),
 
       exportReports: Ember.Route.extend({

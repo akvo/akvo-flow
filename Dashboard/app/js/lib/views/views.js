@@ -356,6 +356,42 @@ Ember.Handlebars.registerHelper("date3", function (property) {
   }
 });
 
+Ember.Handlebars.registerHelper("reportType", function (reportType) {
+  var reportTypeClasses = {
+    DATA_CLEANING: "dataCleanExp",
+    DATA_ANALYSIS: "dataAnalyseExp",
+    COMPREHENSIVE: "compReportExp",
+    GEOSHAPE: "geoShapeDataExp",
+    SURVEY_FORM: "surveyFormExp"
+  };
+  return reportTypeClasses[Ember.get(this, reportType)];
+});
+
+Ember.Handlebars.registerHelper("reportStatus", function (state) {
+  var reportStates = {
+    IN_PROGRESS: "exportGenerating",
+    FINISHED_SUCCESS: "",
+    FINISHED_ERROR: ""
+  };
+  return reportStates[Ember.get(this, state)];
+});
+
+Ember.Handlebars.registerHelper("reportTypeString", function (reportType) {
+  var reportTypeStrings = {
+    DATA_CLEANING: Ember.String.loc('_data_cleaning_export'),
+    DATA_ANALYSIS: Ember.String.loc('_data_analysis_export'),
+    COMPREHENSIVE: Ember.String.loc('_comprehensive_report'),
+    GEOSHAPE: Ember.String.loc('_geoshape_data'),
+    SURVEY_FORM: Ember.String.loc('_survey_form')
+  };
+  return reportTypeStrings[Ember.get(this, reportType)];
+});
+
+Ember.Handlebars.registerHelper("reportFilename", function (filename) {
+  var url = Ember.get(this, filename);
+  return url.split('/').pop().replace(/\s/g, '');
+});
+
 FLOW.parseJSON = function(jsonString, property) {
   try {
     var jsonObject = JSON.parse(jsonString);
@@ -743,6 +779,10 @@ FLOW.MonitoringDataView = Ember.View.extend({
 // reports views
 FLOW.NavReportsView = Ember.View.extend({
   templateName: 'navReports/nav-reports'
+});
+
+FLOW.ReportsListView = Ember.View.extend({
+  templateName: 'navReports/reports-list'
 });
 
 FLOW.ExportReportsView = Ember.View.extend({

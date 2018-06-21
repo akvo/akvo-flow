@@ -31,3 +31,17 @@ FLOW.chartTypeControl = Ember.Object.create({
     })
   ]
 });
+
+FLOW.reportsControl = Ember.ArrayController.create({
+  sortProperties: ["lastModifiedDate"],
+  sortAscending: true,
+  content: null,
+
+  populate: function () {
+    this.set('content', FLOW.store.find(FLOW.Report));
+  },
+
+  reportsAvailable: function () {
+    return this.get('content').content.length > 0;
+  }.property('content.isLoaded')
+});

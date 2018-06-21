@@ -1,0 +1,46 @@
+{{#view FLOW.ReportsListAppletView}}
+      <div class="generatedExports">
+        <h1>Generated exports</h1>
+        <a {{action "exportNewReport" target="this"}} class="button exportNewBtn">{{t _export_reports}}</a>
+      </div>
+      <section class="exportContainer">
+        {{#if FLOW.reportsControl.reportsAvailable}}
+        <!-- Here is the list of exports generated-->
+        <ul class="exportList">
+          {{#each report in FLOW.reportsControl}}
+          <li class="{{#with report}} {{reportType reportType}} {{reportStatus state}} {{/with}}">
+            <div class="exportInfo">
+              <a href="{{report.filename}}">
+                {{#with report}}
+                <h5>
+                  {{reportTypeString reportType}} - <span class="exportFileName">{{reportFilename filename}}</span>
+                  <span class="submissionsDate">
+                    {{#if lastCollectionOnly}}
+                    Recent submissions
+                    {{else}}
+                    {{startDate}} - {{endDate}} submissions
+                    {{/if}}
+                  </span>
+                </h5>
+                {{/with}}
+              </a>
+              <span class="surveyPath"></span>
+            </div>
+            <div class="exportStatus">
+              <span class="loading">Generating</span>
+              <span class="exportDate">{{report.lastUpdateDateTime}}</span>
+            </div>
+          </li>
+          {{/each}}
+        </ul>
+        <!-- End -->
+        {{else}}
+        <!-- This is the message you get if you have no exports -->
+        <div class="noExportMsg">
+          <h3>No exports generated, yet</h3>
+          <p>Click "New export" to get started</p>
+        </div>
+        <!-- End -->
+        {{/if}}
+      </section>
+{{/view}}
