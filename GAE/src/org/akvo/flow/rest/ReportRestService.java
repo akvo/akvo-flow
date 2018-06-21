@@ -30,7 +30,7 @@ import org.akvo.flow.rest.dto.ReportDto;
 import org.akvo.flow.rest.dto.ReportPayload;
 import org.akvo.flow.servlet.ReportServlet;
 import org.springframework.beans.BeanUtils;
-import org.springframework.beans.factory.annotation.Autowired;
+//import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -39,14 +39,16 @@ import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.context.request.ServletRequestAttributes;
+import org.springframework.web.context.request.RequestContextHolder;
 import org.waterforpeople.mapping.app.web.rest.dto.RestStatusDto;
 
 
 @Controller
 @RequestMapping("/reports")
 public class ReportRestService {
-	@Autowired
-	private HttpServletRequest request;
+	//@Context
+	//private HttpServletRequest request;
 
 	private static final Logger log = Logger.getLogger(ReportRestService.class.getName());
 
@@ -86,8 +88,14 @@ public class ReportRestService {
             r.setState(Report.QUEUED);  //overwrite any supplied state
             // Save it, so we get an id assigned
             r = reportDao.save(r);
-            String baseUrl = request.getProtocol() + host;
-
+            String baseUrl = null;
+            HttpServletRequest request = ((ServletRequestAttributes) RequestContextHolder
+                    .getRequestAttributes()).getRequest();
+            if (request == null){
+            	log.severe("Request details not available!");
+            } else {
+            	baseUrl = request.getScheme() + "://" + host;
+            }
             ReportServlet.queueStart(baseUrl, r);
 
             dto = new ReportDto();

@@ -164,12 +164,12 @@ public class ReportServlet extends AbstractRestApiServlet {
     }
 
     public static void queueStart(String baseUrl, Report r) {
-        log.info("Forking to task with action START");
         Queue queue = QueueFactory.getDefaultQueue();
         TaskOptions options = TaskOptions.Builder.withUrl(SERVLET_URL)
                 .param(TaskRequest.ACTION_PARAM, ReportTaskRequest.START_ACTION)
                 .param(ReportTaskRequest.ID_PARAM, Long.toString(r.getKey().getId()))
                 .param(ReportTaskRequest.BASE_URL_PARAM, baseUrl);
+        log.info("Forking to task with options: " + options.toString());
         queue.add(options);
     }
 
