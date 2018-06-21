@@ -37,7 +37,7 @@ cd "${SRC_DIR}/GAE"
 
 mvn package
 
-if [[ "${TRAVIS_BRANCH}" != "develop" ]] && [[ -z "$TRAVIS_TAG" ]]; then
+if [[ "${TRAVIS_BRANCH:0:8}" != "release/" ]] && [[ "${TRAVIS_BRANCH}" != "develop" ]] && [[ -z "$TRAVIS_TAG" ]]; then
   exit 0
 fi
 
