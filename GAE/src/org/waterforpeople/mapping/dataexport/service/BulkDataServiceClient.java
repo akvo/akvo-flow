@@ -535,7 +535,7 @@ public class BulkDataServiceClient {
         } catch (JsonParseException | JsonMappingException e) {
             log.warn("Failed to parse the InstanceDataDto string: " + e);
         } catch (IOException e) {
-            log.equals(e);
+            log.error("Error while parsing: ", e);
         }
 
         return new InstanceDataDto();

@@ -1,5 +1,5 @@
 /*
- *  Copyright (C) 2010-2017 Stichting Akvo (Akvo Foundation)
+ *  Copyright (C) 2010-2018 Stichting Akvo (Akvo Foundation)
  *
  *  This file is part of Akvo FLOW.
  *
@@ -29,11 +29,11 @@ import com.gallatinsystems.survey.dao.SurveyDAO;
 import com.gallatinsystems.survey.domain.CascadeResource;
 import com.gallatinsystems.survey.domain.Question;
 import com.gallatinsystems.survey.domain.Survey;
-import com.google.gdata.util.common.base.Nullable;
-import com.google.gdata.util.common.base.StringUtil;
 import org.apache.commons.io.IOUtils;
+import org.apache.commons.lang.StringUtils;
 import org.waterforpeople.mapping.app.web.dto.BootstrapGeneratorRequest;
 
+import javax.annotation.Nullable;
 import javax.servlet.http.HttpServletRequest;
 import java.io.*;
 import java.net.URLConnection;
@@ -169,7 +169,7 @@ public class BootstrapGeneratorServlet extends AbstractRestApiServlet {
      */
     private String generateSanitizedFilename(@Nullable String name) {
         String filename;
-        if (StringUtil.isEmpty(name)) {
+        if (StringUtils.isEmpty(name)) {
             filename = DEFAULT_SURVEY_FILE_NAME;
         } else {
             filename = name.trim().replaceAll(FILENAME_REGEX, FILENAME_REPLACEMENT);

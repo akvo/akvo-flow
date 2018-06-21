@@ -47,6 +47,8 @@ public class DataPointApprovalDAO extends BaseDAO<DataPointApproval> {
         PersistenceManager pm = PersistenceFilter.getManager();
         String queryString = ":p2.contains(surveyedLocaleId)";
         javax.jdo.Query query = pm.newQuery(DataPointApproval.class, queryString);
-        return (List<DataPointApproval>) query.execute(surveyedLocaleIds);
+        @SuppressWarnings("unchecked")
+        List<DataPointApproval> results = (List<DataPointApproval>) query.execute(surveyedLocaleIds);
+        return results;
     }
 }

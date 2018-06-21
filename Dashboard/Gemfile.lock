@@ -28,7 +28,7 @@ GEM
       fssm (>= 0.2.7)
       sass (~> 3.2.19)
     execjs (2.2.1)
-    ffi (1.9.3)
+    ffi (1.9.23)
     formatador (0.2.5)
     fssm (0.2.10)
     guard (2.6.1)
