@@ -30,7 +30,6 @@ import org.akvo.flow.rest.dto.ReportDto;
 import org.akvo.flow.rest.dto.ReportPayload;
 import org.akvo.flow.servlet.ReportServlet;
 import org.springframework.beans.BeanUtils;
-//import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -47,8 +46,6 @@ import org.waterforpeople.mapping.app.web.rest.dto.RestStatusDto;
 @Controller
 @RequestMapping("/reports")
 public class ReportRestService {
-	//@Context
-	//private HttpServletRequest request;
 
 	private static final Logger log = Logger.getLogger(ReportRestService.class.getName());
 
@@ -93,6 +90,7 @@ public class ReportRestService {
                     .getRequestAttributes()).getRequest();
             if (request == null){
             	log.severe("Request details not available!");
+            	baseUrl = "https://www.example.com";
             } else {
             	baseUrl = request.getScheme() + "://" + host;
             }
