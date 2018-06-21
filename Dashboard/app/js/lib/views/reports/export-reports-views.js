@@ -1,130 +1,28 @@
 /*global Ember, $, FLOW */
 
 FLOW.ReportLoader = Ember.Object.create({
-  criteria: null,
-  timeout: 30000,
-  requestInterval: 3000,
-
-  payloads: {
-	DATA_CLEANING: {
-	  surveyId: '75201',
-	  exportType: 'DATA_CLEANING',
-	  opts: {
-		exportMode: 'DATA_CLEANING',
-		lastCollection: 'false',
-	  }
-	},
-	DATA_ANALYSIS: {
-	  surveyId: '75201',
-	  exportType: 'DATA_ANALYSIS',
-	  opts: {
-		exportMode: 'DATA_ANALYSIS',
-		lastCollection: 'false',
-	  }
-	},
-    COMPREHENSIVE: {
-      surveyId: '75201',
-      exportType: 'COMPREHENSIVE',
-      opts: {
-        exportMode: 'COMPREHENSIVE',
-      }
-    },
-    GEOSHAPE: {
-      surveyId: '75201',
-      exportType: 'GEOSHAPE',
-      opts: {
-        questionId: '12345'
-      }
-    },
-    SURVEY_FORM: {
-      surveyId: '75201',
-      exportType: 'SURVEY_FORM',
-      opts: {}
-    }
-  },
-
   load: function (exportType, surveyId, opts) {
-    var criteria;
-
-    if (this.get('criteria')) {
-      return;
-    }
+    FLOW.selectedControl.set('selectedReportExport', FLOW.store.createRecord(FLOW.Report, {}));
+    var newReport = FLOW.selectedControl.get('selectedReportExport');
 
     Ember.assert('exportType param is required', exportType !== undefined);
     Ember.assert('surveyId param is required', surveyId !== undefined);
 
-    criteria = Ember.copy(this.get('payloads')[exportType]);
-    criteria.surveyId = '' + surveyId;
-    criteria.baseURL = location.protocol + '//' + location.host;
-
-    criteria.opts.imgPrefix = FLOW.Env.photo_url_root;
-    criteria.opts.uploadUrl = FLOW.Env.surveyuploadurl;
-    criteria.opts.appId = FLOW.Env.appId;
-
     if (opts) {
       Ember.keys(opts).forEach(function (k) {
-        criteria.opts[k] = opts[k];
+        newReport.set(k, opts[k])
       });
     }
 
-    criteria.opts.email = FLOW.currentUser.email;
-    criteria.opts.flowServices = FLOW.Env.flowServices;
+    newReport.set('reportType', exportType);
+    newReport.set('formId', surveyId);
+    newReport.set('filename', '');
+    newReport.set('state', 'QUEUED');
 
-    this.set('criteria', criteria);
-    FLOW.savingMessageControl.numLoadingChange(1);
-    this.requestReport();
+    FLOW.store.commit();
+    this.showEmailNotification();
+    FLOW.router.transitionTo('navData.reportsList');
   },
-
-  requestReport: function () {
-	this.set('processing', true);
-	$.ajax({
-	  url: FLOW.Env.flowServices + '/generate',
-	  data: {
-		criteria: JSON.stringify(this.get('criteria'))
-	  },
-	  jsonpCallback: 'FLOW.ReportLoader.handleResponse',
-	  dataType: 'jsonp',
-	  timeout: this.timeout
-	});
-
-	Ember.run.later(this, this.handleError, this.timeout);
-  },
-
-  handleResponse: function (resp) {
-    if (!resp || resp.status !== 'OK') {
-      FLOW.savingMessageControl.numLoadingChange(-1);
-      this.showError();
-      return;
-    }
-    if (resp.message === 'PROCESSING') {
-      this.set('processing', false);
-      this.showEmailNotification();
-    } else if (resp.file && this.get('processing')) {
-      FLOW.savingMessageControl.numLoadingChange(-1);
-      this.set('processing', false);
-      this.set('criteria', null);
-      $('#downloader').attr('src', FLOW.Env.flowServices + '/report/' + resp.file);
-    }
-  },
-
-  handleError: function () {
-    if (this.get('processing')) {
-      FLOW.savingMessageControl.numLoadingChange(-1);
-      this.showError();
-    }
-  },
-
-  showError: function () {
-	  FLOW.savingMessageControl.numLoadingChange(-1);
-    this.set('processing', false);
-    this.set('criteria', null);
-    FLOW.dialogControl.set('activeAction', 'ignore');
-    FLOW.dialogControl.set('header', Ember.String.loc('_error_generating_report'));
-    FLOW.dialogControl.set('message', Ember.String.loc('_error_generating_report_try_later'));
-    FLOW.dialogControl.set('showCANCEL', false);
-    FLOW.dialogControl.set('showDialog', true);
-  },
-
   showEmailNotification: function () {
     FLOW.savingMessageControl.numLoadingChange(-1);
     this.set('processing', false);
@@ -135,10 +33,13 @@ FLOW.ReportLoader = Ember.Object.create({
     FLOW.dialogControl.set('showCANCEL', false);
     FLOW.dialogControl.set('showDialog', true);
   }
-
 });
 
-FLOW.ExportReportsAppletView = FLOW.View.extend({
+FLOW.ExportReportsView = Ember.View.extend({
+  templateName: 'navReports/export-reports'
+});
+
+FLOW.ExportReportTypeView = Ember.View.extend({
   showRawDataReportApplet: false,
   showComprehensiveReportApplet: false,
   showGoogleEarthFileApplet: false,
@@ -215,7 +116,7 @@ FLOW.ExportReportsAppletView = FLOW.View.extend({
   }.property('FLOW.selectedControl.selectedSurvey'),
 
   showDataCleaningReport: function () {
-    var opts = {from:this.get("reportFromDate"), to:this.get("reportToDate"), lastCollection: this.get('exportOption') === "recent"};
+    var opts = {startDate:this.get("reportFromDate"), endDate:this.get("reportToDate"), lastCollectionOnly: this.get('exportOption') === "recent"};
     var sId = this.get('selectedSurvey');
     if (!sId) {
       this.showWarning();
@@ -225,7 +126,7 @@ FLOW.ExportReportsAppletView = FLOW.View.extend({
   },
 
   showDataAnalysisReport: function () {
-    var opts = {from:this.get("reportFromDate"), to:this.get("reportToDate"), lastCollection: this.get('exportOption') === "recent"};
+    var opts = {startDate:this.get("reportFromDate"), endDate:this.get("reportToDate"), lastCollectionOnly: this.get('exportOption') === "recent"};
     var sId = this.get('selectedSurvey');
     if (!sId) {
       this.showWarning();
@@ -257,7 +158,7 @@ FLOW.ExportReportsAppletView = FLOW.View.extend({
   },
 
   showSurveyForm: function () {
-	var sId = this.get('selectedSurvey');
+    var sId = this.get('selectedSurvey');
     if (!sId) {
       this.showWarning();
       return;
@@ -340,4 +241,14 @@ FLOW.ExportReportsAppletView = FLOW.View.extend({
       }
     }
   })
+});
+
+FLOW.ReportsListView = Ember.View.extend({
+  templateName: 'navReports/reports-list',
+  didInsertElement: function () {
+    FLOW.router.reportsController.populate();
+  },
+  exportNewReport: function () {
+    FLOW.router.transitionTo('navData.exportReports');
+  }
 });

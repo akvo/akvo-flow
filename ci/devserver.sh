@@ -26,7 +26,7 @@ bundle exec rake watchbg > "$SRC_DIR/rake.log" 2>&1 &
 
 if [[ ! -f "$SRC_DIR/GAE/target/akvo-flow/admin/frames/users.js" ]]; then
     cd "$SRC_DIR/Dashboard/app/cljs"
-    lein build
+    lein build copyhtml
 else
     echo "Skipping ClojureScript build ..."
 fi

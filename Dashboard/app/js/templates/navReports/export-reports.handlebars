@@ -17,7 +17,7 @@
     </div>
     <section class="exportContainer">
       <ul class="exportSelect">
-        {{#view FLOW.ExportReportsAppletView class="dataCleanExp" export="dataCleanExp"}}
+        {{#view FLOW.ExportReportTypeView class="dataCleanExp" export="dataCleanExp"}}
           <h2>{{t _data_cleaning_export}}</h2>
           <h6>{{t _importable_back_to_akvo_flow}}</h6>
           <p class="expDescr">{{t _combines_options}}</p>
@@ -37,7 +37,7 @@
             <a {{action showDataCleaningReport target="this"}} class="button trigger2">{{t _download}}</a>
           </div>
         {{/view}}
-        {{#view FLOW.ExportReportsAppletView class="dataAnalyseExp" export="dataAnalyseExp"}}
+        {{#view FLOW.ExportReportTypeView class="dataAnalyseExp" export="dataAnalyseExp"}}
           <h2>{{t _data_analysis_export}}</h2>
           <h6>{{t _not_importable_back}}</h6>
           <p class="expDescr">{{t _replaces_question}}</p>
@@ -57,7 +57,7 @@
             <a {{action showDataAnalysisReport target="this"}} class="button trigger2">{{t _download}}</a>
           </div>
         {{/view}}
-        {{#view FLOW.ExportReportsAppletView class="compReportExp" export="compReportExp"}}
+        {{#view FLOW.ExportReportTypeView class="compReportExp" export="compReportExp"}}
           <h2>{{t _comprehensive_report}}</h2>
           <h6>{{t _not_importable_back}}</h6>
           <p class="expDescr">{{t _summarizes_responses}}</p>
@@ -65,7 +65,7 @@
             <a {{action showComprehensiveReport target="this"}} class="button trigger2">{{t _download}}</a>
           </div>
         {{/view}}
-        {{#view FLOW.ExportReportsAppletView class="geoShapeDataExp" export="geoShapeDataExp"}}
+        {{#view FLOW.ExportReportTypeView class="geoShapeDataExp" export="geoShapeDataExp"}}
           <h2>{{t _geoshape_data}}</h2>
           <p class="expDescr">{{t _geojson}}</p>
           <div class="geoshapeSelect">
@@ -83,7 +83,7 @@
             <a {{action showGeoshapeReport target="this"}} class="button trigger2">{{t _download}}</a>
           </div>
         {{/view}}
-        {{#view FLOW.ExportReportsAppletView class="surveyFormExp" export="surveyFormExp"}}
+        {{#view FLOW.ExportReportTypeView class="surveyFormExp" export="surveyFormExp"}}
           <h2>{{t _survey_form}}</h2>
           <p class="expDescr">{{t _printable}}</p>
           <div id="surveyFormExp" class="options">

@@ -221,14 +221,23 @@
 		<servlet-name>AccessPointMetricProcessor</servlet-name>
 		<url-pattern>/app_worker/accesspointmetricprocessor</url-pattern>
 	</servlet-mapping>
-	<servlet>
-		<servlet-name>SurveyTask</servlet-name>
-		<servlet-class>org.waterforpeople.mapping.app.web.SurveyTaskServlet</servlet-class>
-	</servlet>
-	<servlet-mapping>
-		<servlet-name>SurveyTask</servlet-name>
-		<url-pattern>/app_worker/surveytask</url-pattern>
-	</servlet-mapping>
+    <servlet>
+        <servlet-name>SurveyTask</servlet-name>
+        <servlet-class>org.waterforpeople.mapping.app.web.SurveyTaskServlet</servlet-class>
+    </servlet>
+    <servlet-mapping>
+        <servlet-name>SurveyTask</servlet-name>
+        <url-pattern>/app_worker/surveytask</url-pattern>
+    </servlet-mapping>
+    <servlet>
+        <servlet-name>ReportTask</servlet-name>
+        <servlet-class>org.akvo.flow.servlet.ReportServlet</servlet-class>
+    </servlet>
+    <servlet-mapping>
+        <servlet-name>ReportTask</servlet-name>
+        <url-pattern>/app_worker/reportservlet</url-pattern>
+    </servlet-mapping>
+    	/app_worker/
 		<servlet>
 		<servlet-name>QuestionAnswerStoreCleanup</servlet-name>
 		<servlet-class>org.waterforpeople.mapping.app.web.QuestionAnswerStoreCleanup</servlet-class>
@@ -433,6 +442,7 @@
 		<url-pattern>/remote_api</url-pattern>
 		<url-pattern>/traced_remote_api/*</url-pattern>
 	</servlet-mapping>
+
 	<filter>
 		<filter-name>persistenceFilter</filter-name>
 		<filter-class>com.gallatinsystems.framework.servlet.PersistenceFilter</filter-class>
@@ -442,6 +452,7 @@
 		<url-pattern>*</url-pattern>
 	</filter-mapping>
 
+    <!-- Export/Import API. -->
 	<filter>
 		<filter-name>restAuthFilter</filter-name>
 		<filter-class>com.gallatinsystems.framework.servlet.RestAuthFilter</filter-class>
@@ -451,19 +462,21 @@
 		<url-pattern>/databackout</url-pattern>
 	</filter-mapping>
 	<filter-mapping>
-    <filter-name>restAuthFilter</filter-name>
-    <url-pattern>/surveyedlocale</url-pattern>
-</filter-mapping>
+        <filter-name>restAuthFilter</filter-name>
+        <url-pattern>/surveyedlocale</url-pattern>
+    </filter-mapping>
 	<filter-mapping>
 		<filter-name>restAuthFilter</filter-name>
 		<url-pattern>/surveyrestapi</url-pattern>
 	</filter-mapping>
-	<filter-mapping>
-		<filter-name>restAuthFilter</filter-name>
-		<url-pattern>/rawdatarestapi</url-pattern>
-	</filter-mapping>
+    <filter-mapping>
+        <filter-name>restAuthFilter</filter-name>
+        <url-pattern>/rawdatarestapi</url-pattern>
+    </filter-mapping>
+    
 	<security-constraint>
 		<web-resource-collection>
+		<web-resource-name>devicetimerest</web-resource-name>
 			<url-pattern>/devicetimerest</url-pattern>
 		</web-resource-collection>
 		<user-data-constraint>
@@ -472,6 +485,7 @@
 	</security-constraint>
 	<security-constraint>
 		<web-resource-collection>
+			<web-resource-name>all</web-resource-name>
 			<url-pattern>/*</url-pattern>
 		</web-resource-collection>
 		<user-data-constraint>
@@ -480,22 +494,7 @@
 	</security-constraint>
 	<security-constraint>
 		<web-resource-collection>
-			<url-pattern>/SecureSurveyEntry.html</url-pattern>
-		</web-resource-collection>
-		<auth-constraint>
-			<role-name>*</role-name>
-		</auth-constraint>
-	</security-constraint>
-	<security-constraint>
-		<web-resource-collection>
-			<url-pattern>/Dashboard.html</url-pattern>
-		</web-resource-collection>
-		<auth-constraint>
-			<role-name>*</role-name>
-		</auth-constraint>
-	</security-constraint>
-	<security-constraint>
-		<web-resource-collection>
+			<web-resource-name>webapp</web-resource-name>
 			<url-pattern>/webapp/*</url-pattern>
 		</web-resource-collection>
 		<auth-constraint>
@@ -504,6 +503,7 @@
 	</security-constraint>
 	<security-constraint>
 		<web-resource-collection>
+			<web-resource-name>cron</web-resource-name>
 			<url-pattern>/cron/*</url-pattern>
 		</web-resource-collection>
 		<auth-constraint>
