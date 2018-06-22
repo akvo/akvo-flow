@@ -89,7 +89,7 @@ public class ReportRestService {
             HttpServletRequest request = ((ServletRequestAttributes) RequestContextHolder
                     .getRequestAttributes()).getRequest();
             if (request == null){
-            	throw new RuntimeException("Request details not available!")
+            	throw new RuntimeException("Request details not available!");
             } else {
             	baseUrl = request.getScheme() + "://" + host;
             }
