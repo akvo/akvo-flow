@@ -55,6 +55,7 @@ public class ReportTaskRequest extends RestRequest {
         if (req.getParameter(ID_PARAM) != null) {
             setId(new Long(req.getParameter(ID_PARAM)));
         }
+        setBaseUrl(req.getParameter(BASE_URL_PARAM));
     }
 
     public void setId(Long id) {
