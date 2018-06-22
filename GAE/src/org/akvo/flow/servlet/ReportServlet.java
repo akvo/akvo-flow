@@ -125,7 +125,7 @@ public class ReportServlet extends AbstractRestApiServlet {
                         if (sts == 200) {
                             //Success, we are done!
                             return null;
-                        } else if ((sts % 100) == 4) { //4xx: you messed up
+                        } else if ((sts / 100) == 4) { //4xx: you messed up
                             //permanent error, fail this report
                             r.setState(Report.FINISHED_ERROR);
                             r.setMessage("Unexpected result when starting report \" + id + \" : " + sts);
