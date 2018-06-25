@@ -30,3 +30,7 @@ task :watch do
   system "bundle exec guard start"
 end
 
+desc "Watch for changes in the background"
+task :watchbg do
+  system "bundle exec guard start --no-interactions"
+end

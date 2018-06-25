@@ -101,67 +101,29 @@
             <!-- TABLE HEADER-->
             <thead>
                 <tr>
+                    <th class="noArrows" style="width:10%"></th>
                     <th class="noArrows">{{t _question}}</th>
                     <th class="noArrows">{{t _answer}}</th>
                 </tr>
             </thead>
             <!-- TABLE BODY: MAIN CONTENT-->
             <tbody>
-                {{#each QA in FLOW.questionAnswerControl}}
-                  {{#view FLOW.QuestionAnswerView contentBinding="QA"}}
-                    <tr>
-                      <td class="survey" style="text-align:left;">{{QA.questionText}}</td>
-                      <td class="submitter" style="text-align:left;">
-                        {{#if view.isPhotoType}}
-                          {{view.photoUrl}}  <a {{bindAttr href="view.photoUrl"}} target="_blank">{{t _open_photo}}</a>
-                          {{#if view.photoLocation}}
-                              <br>{{view.photoLocation}}
-                          {{/if}}
-                        {{else}} {{#if view.isVideoType}}
-                          {{view.photoUrl}} <a {{bindAttr href="view.photoUrl" }} target="_blank">{{t _open_video}}</a>
-                          {{#if view.photoLocation}}
-                              <br>{{view.photoLocation}}
-                          {{/if}}
-                        {{else}} {{#if view.isGeoShapeType}}
-                          {{view FLOW.GeoshapeMapView}}
-                        {{else}} {{#if view.isCascadeType}}
-                          <span>{{view.cascadeValue}}</span>
-                        {{else}} {{#if view.isOptionType}}
-                          {{view FLOW.QuestionAnswerOptionListView contentBinding="view.optionValue"}}
-                        {{else}} {{#if view.isDateType}}
-                          {{#with QA}}{{date3 value}}{{/with}}
-                        {{else}} {{#if view.isSignatureType}}
-                            {{#if view.signatureImageSrc}}
-                                <div class="signatureImage"><img {{bindAttr src="view.signatureImageSrc"}} /></div>
-                                <div class="signedBySection">{{t _signed_by}}: {{view.signatureSignatory}}</div>
-                            {{else}}
-                                {{t _no_signature_found}}
-                            {{/if}}
-                        {{else}} {{#if view.isCaddisflyType}}
-                            <div class=""><strong>{{view.testName}}</strong></div>
-                            {{#each result in view.testResult}}
-                                <br><div>{{result.name}} : {{result.value}} {{result.unit}}</div>
-                            {{/each}}<br>
-                            <div class="signatureImage"><img {{bindAttr src="view.caddisflyImageURL"}} /></div>
-                        {{else}}
-                          <span>{{QA.value}} {{#with QA}}{{if_blank value}}{{/with}}</span>
-                        {{/if}} {{/if}} {{/if}} {{/if}} {{/if}} {{/if}} {{/if}} {{/if}}
-                    </td>
-                    </tr>
-                    {{/view}}
+                {{#each responseSublist in FLOW.questionAnswerControl.contentByGroup}}
+                   {{#each iterations in responseSublist}}
+                       <tr><td colspan="3" style="text-align:left"><h3 class="questionGroupName">{{iterations.groupName}}</h3></td></tr>
+                            {{each iterations itemViewClass = "FLOW.QuestionAnswerMonitorDataView"}}
+                   {{/each}}
                 {{/each}}
             </tbody>
             <!-- TABLE FOOTER-->
-        </table>
+          </table>
               </td>
             </tr>
-            {{/each}}
+          {{/each}}
         </tbody>
       </table>
-      <ul class="prevNext">
-      </ul>
-         </div>
-      </div>
+     </div>
     </div>
+  </div>
 </section>
 {{/view}}

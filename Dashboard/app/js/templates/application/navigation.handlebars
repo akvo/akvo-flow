@@ -3,15 +3,12 @@
     <a {{action doNavSurveys}}>{{t _surveys}}</a>
   {{/view}}
   {{#view view.NavItemView item="navDevices" }}
-	{{#if view.showDevicesButton}}
+  {{#if view.showDevicesButton}}
     <a {{action doNavDevices}}>{{t _devices}}</a>
-	{{/if}}
+  {{/if}}
   {{/view}}
-	{{#view view.NavItemView item="navData" }}
+  {{#view view.NavItemView item="navData" }}
     <a {{action doNavData}}>{{t _data}}</a>
-  {{/view}}
-	{{#view view.NavItemView item="navReports" }}
-    <a {{action doNavReports}}>{{t _reports}}</a>
   {{/view}}
   {{#if view.showMapsButton}}
   {{#view view.NavItemView item="navMaps" }}

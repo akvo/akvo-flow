@@ -1,5 +1,5 @@
 /*
- *  Copyright (C) 2010-2017 Stichting Akvo (Akvo Foundation)
+ *  Copyright (C) 2010-2018 Stichting Akvo (Akvo Foundation)
  *
  *  This file is part of Akvo FLOW.
  *
@@ -535,7 +535,7 @@ public class BulkDataServiceClient {
         } catch (JsonParseException | JsonMappingException e) {
             log.warn("Failed to parse the InstanceDataDto string: " + e);
         } catch (IOException e) {
-            log.equals(e);
+            log.error("Error while parsing: ", e);
         }
 
         return new InstanceDataDto();
@@ -1011,8 +1011,8 @@ public class BulkDataServiceClient {
                             if (!json.isNull("tip")) {
                                 dto.setTip(json.optString("tip"));
                             }
-                            if (!json.isNull("questionId")) {
-                                dto.setQuestionId(json.optString("questionId"));
+                            if (!json.isNull("variableName")) {
+                                dto.setVariableName(json.optString("variableName"));
                             }
                             if (!json.isNull("path")) {
                                 dto.setPath(json.getString("path"));
@@ -1209,16 +1209,19 @@ public class BulkDataServiceClient {
         TreeMap<String, TranslationDto> translationMap = null;
         if (keyIter != null) {
             translationMap = new TreeMap<String, TranslationDto>();
-            String lang = keyIter.next();
-            JSONObject transObj = translationMapJson.getJSONObject(lang);
-            if (transObj != null) {
-                TranslationDto tDto = new TranslationDto();
-                tDto.setKeyId(transObj.getLong("keyId"));
-                tDto.setParentId(transObj.getLong(("parentId")));
-                tDto.setParentType(transObj.getString("parentType"));
-                tDto.setLangCode(lang);
-                tDto.setText(transObj.getString("text"));
-                translationMap.put(lang, tDto);
+            //Iterate on all the languages
+            while (keyIter.hasNext()) {
+                String lang = keyIter.next();
+                JSONObject transObj = translationMapJson.getJSONObject(lang);
+                if (transObj != null) {
+                    TranslationDto tDto = new TranslationDto();
+                    tDto.setKeyId(transObj.getLong("keyId"));
+                    tDto.setParentId(transObj.getLong(("parentId")));
+                    tDto.setParentType(transObj.getString("parentType"));
+                    tDto.setLangCode(lang);
+                    tDto.setText(transObj.getString("text"));
+                    translationMap.put(lang, tDto);
+                }
             }
         }
         return translationMap;

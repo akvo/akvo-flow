@@ -1,5 +1,5 @@
 /*
- *  Copyright (C) 2010-2017 Stichting Akvo (Akvo Foundation)
+ *  Copyright (C) 2010-2018 Stichting Akvo (Akvo Foundation)
  *
  *  This file is part of Akvo FLOW.
  *
@@ -16,6 +16,27 @@
 
 package com.gallatinsystems.framework.dao;
 
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+import java.util.logging.Logger;
+
+import javax.jdo.JDOObjectNotFoundException;
+import javax.jdo.PersistenceManager;
+
+import net.sf.jsr107cache.CacheException;
+
+import org.akvo.flow.domain.SecuredObject;
+import com.google.appengine.datanucleus.query.JDOCursorHelper;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
+
 import com.gallatinsystems.common.Constants;
 import com.gallatinsystems.framework.domain.BaseDomain;
 import com.gallatinsystems.framework.servlet.PersistenceFilter;
@@ -28,24 +49,6 @@ import com.gallatinsystems.user.domain.UserAuthorization;
 import com.google.appengine.api.datastore.Cursor;
 import com.google.appengine.api.datastore.Key;
 import com.google.appengine.api.datastore.KeyFactory;
-import net.sf.jsr107cache.CacheException;
-import org.akvo.flow.domain.SecuredObject;
-import org.datanucleus.store.appengine.query.JDOCursorHelper;
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.context.SecurityContextHolder;
-
-import javax.jdo.JDOObjectNotFoundException;
-import javax.jdo.PersistenceManager;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-import java.util.logging.Logger;
 
 /**
  * This is a reusable data access object that supports basic operations (save, find by property,
@@ -97,9 +100,17 @@ public class BaseDAO<T extends BaseDomain> {
      */
     public <E extends BaseDomain> E save(E obj) {
         PersistenceManager pm = PersistenceFilter.getManager();
+        Long who = 0L;
+        final Object credentials = SecurityContextHolder.getContext()
+                .getAuthentication().getCredentials();
+        if (credentials instanceof Long) {
+            who = (Long) credentials;
+        }
         obj.setLastUpdateDateTime(new Date());
+        obj.setLastUpdateUserId(who);
         if (obj.getCreatedDateTime() == null) {
             obj.setCreatedDateTime(obj.getLastUpdateDateTime());
+            obj.setCreateUserId(who);
         }
         obj = pm.makePersistent(obj);
         return obj;
@@ -115,10 +126,18 @@ public class BaseDAO<T extends BaseDomain> {
      */
     public <E extends BaseDomain> Collection<E> save(Collection<E> objList) {
         if (objList != null) {
+            Long who = 0L;
+            final Object credentials = SecurityContextHolder.getContext()
+                    .getAuthentication().getCredentials();
+            if (credentials instanceof Long) {
+                who = (Long) credentials;
+            }
             for (E item : objList) {
                 item.setLastUpdateDateTime(new Date());
+                item.setLastUpdateUserId(who);
                 if (item.getCreatedDateTime() == null) {
                     item.setCreatedDateTime(item.getLastUpdateDateTime());
+                    item.setCreateUserId(who);
                 }
             }
             PersistenceManager pm = PersistenceFilter.getManager();
@@ -754,6 +773,7 @@ public class BaseDAO<T extends BaseDomain> {
         PersistenceManager pm = PersistenceFilter.getManager();
         String queryString = ":p1.contains(" + fieldName + ")";
         javax.jdo.Query query = pm.newQuery(concreteClass, queryString);
+        @SuppressWarnings("unchecked")
         List<T> results = (List<T>) query.execute(idsList);
         return results;
     }

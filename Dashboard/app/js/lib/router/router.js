@@ -269,13 +269,25 @@ FLOW.Router = Ember.Router.extend({
         router.transitionTo('navData.monitoringData');
       },
 
+      doReportsList: function (router, event) {
+        router.transitionTo('navData.reportsList');
+      },
+
+      doExportReports: function (router, event) {
+        router.transitionTo('navData.exportReports');
+      },
+
+      doChartReports: function (router, event) {
+        router.transitionTo('navData.chartReports');
+      },
+
       doDataApproval: function (router, event) {
           router.transitionTo('navData.dataApproval.listApprovalGroups');
       },
 
       index: Ember.Route.extend({
         route: '/',
-        redirectsTo: 'inspectData'
+        redirectsTo:  'inspectData'
       }),
 
       inspectData: Ember.Route.extend({
@@ -319,6 +331,35 @@ FLOW.Router = Ember.Router.extend({
           router.get('navDataController').connectOutlet('monitoringData');
           router.set('datasubnavController.selected', 'monitoringData');
           router.resetState();
+        }
+      }),
+
+      reportsList: Ember.Route.extend({
+        route: '/reportslist',
+        connectOutlets: function (router, context) {
+          //if landing on tab, show reports list first
+          router.get('navDataController').connectOutlet('reportsList');
+          router.set('datasubnavController.selected', 'exportReports');
+          router.resetState();
+        }
+
+      }),
+
+      exportReports: Ember.Route.extend({
+        route: '/exportreports',
+        connectOutlets: function (router, context) {
+          router.get('navDataController').connectOutlet('exportReports');
+          router.set('datasubnavController.selected', 'exportReports');
+          router.resetState();
+        }
+      }),
+
+      chartReports: Ember.Route.extend({
+        route: '/chartreports',
+        connectOutlets: function (router, context) {
+          router.resetState();
+          router.get('navDataController').connectOutlet('chartReports');
+          router.set('datasubnavController.selected', 'chartReports');
         }
       }),
 
@@ -383,47 +424,6 @@ FLOW.Router = Ember.Router.extend({
               },
           }),
       }),
-    }),
-
-    // ************************** REPORTS ROUTER **********************************
-    navReports: Ember.Route.extend({
-      route: '/reports',
-      connectOutlets: function (router, context) {
-        router.get('applicationController').connectOutlet('navReports');
-        router.resetState();
-        router.set('navigationController.selected', 'navReports');
-      },
-
-      doExportReports: function (router, event) {
-        router.transitionTo('navReports.exportReports');
-      },
-
-      doChartReports: function (router, event) {
-        router.transitionTo('navReports.chartReports');
-      },
-
-      index: Ember.Route.extend({
-        route: '/',
-        redirectsTo: 'exportReports'
-      }),
-
-      exportReports: Ember.Route.extend({
-        route: '/exportreports',
-        connectOutlets: function (router, context) {
-          router.get('navReportsController').connectOutlet('exportReports');
-          router.set('reportsSubnavController.selected', 'exportReports');
-          router.resetState();
-        }
-      }),
-
-      chartReports: Ember.Route.extend({
-        route: '/chartreports',
-        connectOutlets: function (router, context) {
-          router.resetState();
-          router.get('navReportsController').connectOutlet('chartReports');
-          router.set('reportsSubnavController.selected', 'chartReports');
-        }
-      })
     }),
 
     // ************************** MAPS ROUTER **********************************

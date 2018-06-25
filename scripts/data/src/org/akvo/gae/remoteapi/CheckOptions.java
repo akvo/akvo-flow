@@ -1,5 +1,5 @@
 /*
- *  Copyright (C) 2014 Stichting Akvo (Akvo Foundation)
+ *  Copyright (C) 2018 Stichting Akvo (Akvo Foundation)
  *
  *  This file is part of Akvo FLOW.
  *
@@ -36,8 +36,11 @@ public class CheckOptions implements Process {
     public void execute(DatastoreService ds, String[] args) throws Exception {
 
         try {
+            int optionsNull = 0;
             int optionsJson = 0;
             int optionsOther = 0;
+            int optionsLong = 0;
+            int optionsLegacy = 0;
             
             Filter f = new FilterPredicate("type", FilterOperator.EQUAL, "OPTION");
             Query q = new Query("QuestionAnswerStore").setFilter(f).addSort("createdDateTime",
@@ -47,18 +50,25 @@ public class CheckOptions implements Process {
             DateFormat df = new SimpleDateFormat("yyyy-MM-dd HH:mm");
             df.setTimeZone(TimeZone.getTimeZone("GMT"));
 
-            for (Entity e : pq.asIterable(FetchOptions.Builder.withChunkSize(100))) {
+            for (Entity e : pq.asIterable(FetchOptions.Builder.withChunkSize(1000))) {
                 String val = (String) e.getProperty("value");
-                if (val.startsWith("[")) {
-                    optionsJson++;
+                if (val == null) {
+                    val = ((com.google.appengine.api.datastore.Text) e.getProperty("valueText")).getValue(); //it was too big for string
+                    optionsLong++;
+                }
+                if (val == null) {
+                    optionsNull++;
+                } else if (val.startsWith("[")) {
+                        optionsJson++;
+                        if (val.contains("\"code\":\"OTHER\"") || val.contains("isOther")) {
+                            optionsOther++;
+                        }
                 } else {
-                    optionsOther++;
+                    optionsLegacy++;
                 }
                 
-                System.out.println(".");
             }
-            System.out.println("JSON:" + optionsJson);
-            System.out.println("Other:" + optionsOther);
+            System.out.println("JSON:" + optionsJson +  "  Legacy:" + optionsLegacy + "  null:" + optionsNull+ "  Long:" + optionsLong+ "  Other:" + optionsOther);
         } catch (Exception e) {
             e.printStackTrace();
         }
