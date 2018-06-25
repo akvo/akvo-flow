@@ -79,24 +79,18 @@ public class CronCommanderServlet extends HttpServlet {
     private void purgeReportRecords() {
         Calendar deadline = Calendar.getInstance();
         deadline.add(Calendar.YEAR, ONE_YEAR_AGO);
-        log.info("Starting scan for Report entries, older than: " + deadline.getTime());
+        log.fine("Starting scan for Report entries, older than: " + deadline.getTime());
         ReportDao reportDao = new ReportDao();
-        List<Report> reportList = reportDao.list("all"); //TODO: only list old entities
-        int retirees = 0;
+        List<Report> reportList = reportDao.listAllCreatedBefore(deadline.getTime());
+        log.fine("Attempting to retire " + reportList.size());
         for (Report item : reportList) {
-            if (item.getCreatedDateTime() != null
-                    && deadline.getTime().after(item.getCreatedDateTime())) {
-                //cheap case - old
-                log.info("Deleting old Report entry: " + item.getKey().getId());
-                //TODO delete file from file store?
-                //If that succeeded:
-                SurveyTaskUtil.spawnDeleteTask(SurveyTaskRequest.DELETE_REPORT_ACTION,
-                        item.getKey().getId());
-                retirees++;
-            }
-            //TODO: check for too-long IN_PROGRESS?
+        	log.fine("Deleting old Report entry: " + item.getKey().getId());
+        	//TODO delete file from file store
+        	//If that succeeded:
+        	SurveyTaskUtil.spawnDeleteTask(SurveyTaskRequest.DELETE_REPORT_ACTION,
+        			item.getKey().getId());
+            //TODO: check for too-long IN_PROGRESS? Then we need to list all, not just old.
         }
-        log.info("Attempted to retire " + retirees + " of " + reportList.size());
     }
 
     /**
@@ -106,7 +100,7 @@ public class CronCommanderServlet extends HttpServlet {
     private void purgeDeviceFileJobQueueRecords() {
         Calendar deadline = Calendar.getInstance();
         deadline.add(Calendar.YEAR, TWO_YEARS_AGO);
-        log.info("Starting scan for DFJQ entries, fulfilled or older than: " + deadline.getTime());
+        log.fine("Starting scan for DFJQ entries, fulfilled or older than: " + deadline.getTime());
         DeviceFileJobQueueDAO dfjqDao = new DeviceFileJobQueueDAO();
         List<DeviceFileJobQueue> dfjqList = dfjqDao.list("all");
         int retirees = 0;
@@ -114,7 +108,7 @@ public class CronCommanderServlet extends HttpServlet {
             if (item.getCreatedDateTime() != null
                     && deadline.getTime().after(item.getCreatedDateTime())) {
                 //cheap case - old
-                log.info("Deleting old DFJQ entry: " + item.getKey().getId());
+                log.fine("Deleting old DFJQ entry: " + item.getKey().getId());
                 SurveyTaskUtil.spawnDeleteTask(SurveyTaskRequest.DELETE_DFJQ_ACTION,
                         item.getKey().getId());
                 retirees++;
@@ -124,11 +118,11 @@ public class CronCommanderServlet extends HttpServlet {
                             com.gallatinsystems.common.util.PropertyUtil.getProperty("s3bucket");
                     HttpURLConnection conn = (HttpURLConnection)
                             S3Util.getConnection(bucket, "images/" + item.getFileName());
-                    log.info("Checking for " + item.getFileName() +
+                    log.fine("Checking for " + item.getFileName() +
                             " : " + conn.getResponseCode() + " " + conn.getResponseMessage());
                     if (conn.getResponseCode() == 200) {
                         // best case - fulfilled
-                        log.info("Deleting fulfilled DFJQ entry: " + item.getKey().getId());
+                        log.fine("Deleting fulfilled DFJQ entry: " + item.getKey().getId());
                         SurveyTaskUtil.spawnDeleteTask(SurveyTaskRequest.DELETE_DFJQ_ACTION,
                                 item.getKey().getId());
                         retirees++;
@@ -138,7 +132,7 @@ public class CronCommanderServlet extends HttpServlet {
                 }
             }
         }
-        log.info("Attempted to retire " + retirees + " of " + dfjqList.size());
+        log.fine("Attempted to retire " + retirees + " of " + dfjqList.size());
     }
 
     private void generateNotifications() {
