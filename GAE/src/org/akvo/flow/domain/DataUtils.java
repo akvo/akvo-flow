@@ -155,7 +155,7 @@ public class DataUtils {
         try {
             caddisflyResponseMap = JSON_OBJECT_MAPPER.readValue(caddisflyValue, Map.class);
         } catch (IOException e) {
-            log.error("Failed to parse the caddisfly response");
+            log.warn("Failed to parse the caddisfly response");
         }
         if (caddisflyResponseMap != null) {
             return caddisflyResponseMap;
