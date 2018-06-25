@@ -165,12 +165,12 @@
     <dependency>
        <groupId>com.google.appengine</groupId>
        <artifactId>appengine-jsr107cache</artifactId>
-       <version>1.9.59</version>
+       <version>${appengine.sdk.version}</version>
     </dependency>
     <dependency>
         <groupId>com.google.appengine</groupId>
         <artifactId>appengine-endpoints</artifactId>
-        <version>1.9.59</version>
+        <version>${appengine.sdk.version}</version>
     </dependency>
 
     <dependency>
