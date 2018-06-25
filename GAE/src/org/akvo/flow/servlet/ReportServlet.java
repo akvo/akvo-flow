@@ -125,21 +125,21 @@ public class ReportServlet extends AbstractRestApiServlet {
                         if (sts == 200) {
                             //Success, we are done!
                             return null;
-                        } else if ((sts % 100) == 4) { //4xx: you messed up
+                        } else if ((sts / 100) == 4) { //4xx: you messed up
                             //permanent error, fail this report
                             r.setState(Report.FINISHED_ERROR);
                             r.setMessage("Unexpected result when starting report \" + id + \" : " + sts);
                             rDao.save(r);
                         } else {
                             //if we get a transient error, re-queue
-                            requeueStart(r);
+                            requeueStart(stReq.getBaseUrl(), r);
                         }
                     } catch (MalformedURLException e) {
                         log.log(Level.SEVERE, "Bad URL");
                     } catch (IOException e) {
                         log.warning("====IOerror: " + e);
                         //call it a transient error, re-queue
-                        requeueStart(r);
+                        requeueStart(stReq.getBaseUrl(), r);
                     }
                 }
                 break;
@@ -165,24 +165,24 @@ public class ReportServlet extends AbstractRestApiServlet {
 
     public static void queueStart(String baseUrl, Report r) {
         Queue queue = QueueFactory.getDefaultQueue();
-        TaskOptions options = TaskOptions.Builder.withUrl(SERVLET_URL)
-                .param(TaskRequest.ACTION_PARAM, ReportTaskRequest.START_ACTION)
-                .param(ReportTaskRequest.ID_PARAM, Long.toString(r.getKey().getId()))
-                .param(ReportTaskRequest.BASE_URL_PARAM, baseUrl);
+        TaskOptions options = getTaskOptions(baseUrl, r);
         log.info("Forking to task with options: " + options.toString());
         queue.add(options);
     }
 
-    private void requeueStart(Report r) {
+    private static TaskOptions getTaskOptions(String baseUrl, Report r) {
+        return TaskOptions.Builder.withUrl(SERVLET_URL)
+                    .param(TaskRequest.ACTION_PARAM, ReportTaskRequest.START_ACTION)
+                    .param(ReportTaskRequest.ID_PARAM, Long.toString(r.getKey().getId()))
+                    .param(ReportTaskRequest.BASE_URL_PARAM, baseUrl);
+    }
+
+    private void requeueStart(String baseUrl, Report r) {
         log.warning("Requeuing task with action START");
         //TODO give up if this has been going on too long
 
         Queue queue = QueueFactory.getDefaultQueue();
-        TaskOptions options = TaskOptions.Builder.withUrl(SERVLET_URL)
-                .param(TaskRequest.ACTION_PARAM, ReportTaskRequest.START_ACTION)
-                .param(ReportTaskRequest.ID_PARAM, Long.toString(r.getKey().getId()))
-                .countdownMillis(Constants.TASK_RETRY_INTERVAL);
-        queue.add(options);
+        queue.add(getTaskOptions(baseUrl, r));
     }
 
     private int startReportEngine(String baseUrl, Report r) throws JsonGenerationException, JsonMappingException, IOException {
