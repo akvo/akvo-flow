@@ -3,6 +3,7 @@
     <application>akvoflowsandbox</application>
     <version>1</version>
     <sessions-enabled>true</sessions-enabled>
+    <runtime>java8</runtime>
     <threadsafe>true</threadsafe>
     <auto-id-policy>legacy</auto-id-policy>
     <static-files>
