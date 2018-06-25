@@ -397,14 +397,6 @@
 		<servlet-name>RawDataRestApi</servlet-name>
 		<url-pattern>/rawdatarestapi</url-pattern>
 	</servlet-mapping>
-	<servlet>
-		<servlet-name>MapAssembly</servlet-name>
-		<servlet-class>org.waterforpeople.mapping.app.web.MapAssemblyServlet</servlet-class>
-	</servlet>
-	<servlet-mapping>
-		<servlet-name>MapAssembly</servlet-name>
-		<url-pattern>/app_worker/mapassembly</url-pattern>
-	</servlet-mapping>
 	<servlet-mapping>
 		<servlet-name>DataBackoutApi</servlet-name>
 		<url-pattern>/databackout</url-pattern>
