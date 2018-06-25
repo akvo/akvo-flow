@@ -24,8 +24,14 @@ if [[ ! -d "$MAVEN_REPO" ]]; then
     mkdir "$MAVEN_REPO"
 fi
 
+FLOW_GIT_VERSION=$(git describe)
+
 docker run \
        --rm \
+       -e CLOJARS_PASSWORD="${CLOJARS_PASSWORD}" -e FLOW_GIT_VERSION="${FLOW_GIT_VERSION}" \
+       -e CLOJARS_GPG_PASSWORD="${CLOJARS_GPG_PASSWORD}" \
+       -e TRAVIS_BRANCH="${TRAVIS_BRANCH}" \
+       -e TRAVIS_TAG="${TRAVIS_TAG}" \
        --volume "${MAVEN_REPO}:/root/.m2:delegated" \
        --volume "${MAVEN_REPO}:/home/akvo/.m2:delegated" \
        --volume "$(pwd):/app/src:delegated" \
