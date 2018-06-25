@@ -21,7 +21,6 @@ import java.util.logging.Logger;
 import javax.servlet.http.HttpServletRequest;
 
 import org.waterforpeople.mapping.app.web.dto.MapAssemblyRestRequest;
-import org.waterforpeople.mapping.helper.KMLHelper;
 
 import com.gallatinsystems.common.Constants;
 import com.gallatinsystems.framework.rest.AbstractRestApiServlet;
