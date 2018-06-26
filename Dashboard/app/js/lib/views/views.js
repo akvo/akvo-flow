@@ -390,10 +390,15 @@ Ember.Handlebars.registerHelper("reportTypeString", function (reportType) {
 
 Ember.Handlebars.registerHelper("reportFilename", function (filename) {
   var url = Ember.get(this, filename);
-  if (!url || url == "") {
+  if (!url) {
     return;
   }
   return url.split('/').pop().replace(/\s/g, '');
+});
+
+Ember.Handlebars.registerHelper("reportLink", function (filename) {
+  var url = Ember.get(this, filename);
+  return !url ? "#" : url;
 });
 
 FLOW.parseJSON = function(jsonString, property) {
