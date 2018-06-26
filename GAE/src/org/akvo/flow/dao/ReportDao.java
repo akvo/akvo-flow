@@ -58,7 +58,7 @@ public class ReportDao extends BaseDAO<Report> {
      */
     public List<Report> listAllCreatedBefore(Date date) {
         return listByProperty("createdDateTime", date, "Date",
-                "createdDateTime", null, GTE_OP, Report.class);
+                "createdDateTime", null, LTE_OP, Report.class);
     }
 
 

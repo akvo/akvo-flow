@@ -23,6 +23,6 @@
     <cron>
         <url>/cron/croncommander?action=purgeReportRecords</url>
         <description>Purge ancient Reports</description>
-        <schedule>every 5 minutes</schedule>
+        <schedule>every monday 00:00</schedule>
     </cron>
 </cronentries>
