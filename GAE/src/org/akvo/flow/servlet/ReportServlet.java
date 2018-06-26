@@ -166,7 +166,7 @@ public class ReportServlet extends AbstractRestApiServlet {
     public static void queueStart(String baseUrl, Report r) {
         Queue queue = QueueFactory.getDefaultQueue();
         TaskOptions options = getTaskOptions(baseUrl, r);
-        log.info("Forking to task with options: " + options.toString());
+        log.fine("Forking to task with options: " + options.toString());
         queue.add(options);
     }
 
