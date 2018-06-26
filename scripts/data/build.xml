@@ -7,10 +7,10 @@
 		<fileset dir="${lib}">
 			<include name="**/*.jar" />
 		</fileset>
-		<fileset dir="${gae}/war/WEB-INF/lib">
+		<fileset dir="${gae}/target/akvo-flow/WEB-INF/lib">
 			<include name="**/*.jar" />
 		</fileset>
-		<pathelement path="${gae}/war/WEB-INF/classes"/>
+		<pathelement path="${gae}/target/akvo-flow/WEB-INF/classes"/>
 		<pathelement path="${build}"/>
 	</path>
 
