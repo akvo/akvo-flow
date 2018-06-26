@@ -1,5 +1,5 @@
 /*
- *  Copyright (C) 2010-2012 Stichting Akvo (Akvo Foundation)
+ *  Copyright (C) 2010-2012,2018 Stichting Akvo (Akvo Foundation)
  *
  *  This file is part of Akvo FLOW.
  *
@@ -16,11 +16,6 @@
 
 package org.waterforpeople.mapping.helper;
 
-import com.gallatinsystems.common.Constants;
-import com.vividsolutions.jts.geom.Coordinate;
-import com.vividsolutions.jts.geom.GeometryFactory;
-import com.vividsolutions.jts.geom.Point;
-import com.vividsolutions.jts.index.strtree.STRtree;
 import org.waterforpeople.mapping.dao.GeoIndexDao;
 
 import java.util.ArrayList;
