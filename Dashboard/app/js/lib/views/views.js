@@ -396,6 +396,11 @@ Ember.Handlebars.registerHelper("reportFilename", function (filename) {
   return url.split('/').pop().replace(/\s/g, '');
 });
 
+Ember.Handlebars.registerHelper("reportLink", function (filename) {
+  var url = Ember.get(this, filename);
+  return !url || url == "" ? "#" : url;
+});
+
 FLOW.parseJSON = function(jsonString, property) {
   try {
     var jsonObject = JSON.parse(jsonString);
