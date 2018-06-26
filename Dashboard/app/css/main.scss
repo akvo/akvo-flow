@@ -3442,8 +3442,8 @@ div.dataCollectedDate {
     }
 }
 
-div.dataCollectedDate label {
-    width: 48%;
+.dateInput {
+    width: 49.5%;
     float: left;
     margin-top: -25px;
     &:last-child {
@@ -3451,7 +3451,7 @@ div.dataCollectedDate label {
     }
 }
 
-div.dataCollectedDate label input {
+div.dateInput input {
     width: 97%;
 }
 
@@ -3730,6 +3730,8 @@ div.drawHandle {
 -----------------------------------------------*/
 
 footer.bottomPage {
+    position: relative;
+    margin-top: 5px;
     bottom: 0;
     padding: 10px 0 10px 0;
     width: 100%;
@@ -4017,8 +4019,14 @@ label.languageSelector:after {
 
 .reportsSection > div > div > section.reportTools select,
 .reportTools > div > select {}
-
+.dataSection {
+    min-height: 650px;
+    height: auto;
+}
 #reportBlocks.reportTools {
+    min-height: 650px;    
+    height: auto;
+
     .geoshapeExport {
         .geoshapeSelect {
             > select {

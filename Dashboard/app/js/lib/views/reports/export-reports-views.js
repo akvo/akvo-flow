@@ -18,11 +18,20 @@ FLOW.ReportLoader = Ember.Object.create({
     newReport.set('formId', surveyId);
     newReport.set('filename', '');
     newReport.set('state', 'QUEUED');
-    //newReport.set('lastCollectionOnly', ('' + (exportType === 'DATA_CLEANING' && FLOW.selectedControl.get('selectedSurveyGroup').get('monitoringGroup') && !!FLOW.editControl.lastCollection));
 
     FLOW.store.commit();
+    this.showEmailNotification();
     FLOW.router.transitionTo('navData.reportsList');
   },
+
+  showEmailNotification: function () {
+    FLOW.savingMessageControl.numLoadingChange(-1);
+    FLOW.dialogControl.set('activeAction', 'ignore');
+    FLOW.dialogControl.set('header', Ember.String.loc('_your_report_is_being_prepared'));
+    FLOW.dialogControl.set('message', Ember.String.loc('_we_will_notify_via_email'));
+    FLOW.dialogControl.set('showCANCEL', false);
+    FLOW.dialogControl.set('showDialog', true);
+  }
 });
 
 FLOW.ExportReportsView = Ember.View.extend({
@@ -39,7 +48,21 @@ FLOW.ExportReportTypeView = Ember.View.extend({
   showGoogleEarthButton: false,
   reportFromDate: undefined,
   reportToDate: undefined,
-  
+  dateRangeDisabled: false,
+  rangeActive: "",
+  recentActive: "background-color: transparent;",
+  exportOption: "range",
+  dateRangeText: Ember.String.loc('_collection_period'),
+  onlyRecentText: Ember.String.loc('_only_recent_submissions'),
+  tagName: 'li',
+  classNames: 'trigger',
+
+  dateRangeDisabledObserver: function () {
+    this.set('rangeActive', this.get("exportOption") === "range" ? "" : "background-color: transparent;");
+    this.set('recentActive', this.get("exportOption") === "recent" ? "" : "background-color: transparent;");
+    this.set('dateRangeDisabled', this.get("exportOption") === "recent");
+  }.observes('this.exportOption'),
+
   setMinDate: function () {
     if (this.get('reportFromDate')) {
       this.$(".to_date").datepicker("option", "minDate", this.get("reportFromDate"))
@@ -56,8 +79,6 @@ FLOW.ExportReportTypeView = Ember.View.extend({
     FLOW.selectedControl.set('surveySelection', FLOW.SurveySelection.create());
     FLOW.selectedControl.set('selectedSurvey', null);
     FLOW.editControl.set('useQuestionId', false);
-    FLOW.dateControl.set('fromDate', null);
-    FLOW.dateControl.set('toDate', null);
     FLOW.uploader.registerEvents();
   },
 
@@ -78,12 +99,27 @@ FLOW.ExportReportTypeView = Ember.View.extend({
     }
   }.property('FLOW.selectedControl.selectedQuestion'),
 
-  showLastCollection: function () {
-    return FLOW.Env.showMonitoringFeature && FLOW.selectedControl.selectedSurveyGroup && FLOW.selectedControl.selectedSurveyGroup.get('monitoringGroup');
-  }.property('FLOW.selectedControl.selectedSurveyGroup'),
+  hideLastCollection: function () {
+    if (!FLOW.selectedControl.selectedSurvey) {
+      return true;
+    }
+    if (FLOW.selectedControl.selectedSurveyGroup && FLOW.selectedControl.selectedSurvey) {
+      //if not a monitoring form, export should be filtered by date
+      if (FLOW.selectedControl.selectedSurvey.get('keyId') == FLOW.selectedControl.selectedSurveyGroup.get('newLocaleSurveyId')) {
+        $('input:radio[name=cleaning-export-option]').filter('[value=range]').prop('checked', true);
+        $('input:radio[name=analysis-export-option]').filter('[value=range]').prop('checked', true);
+        this.set('rangeActive', "");
+        this.set('recentActive', "background-color: transparent; opacity: 0.5");
+      } else {
+        this.set('recentActive', "background-color: transparent;");
+      }
+    }
+    return !(FLOW.selectedControl.selectedSurveyGroup && FLOW.selectedControl.selectedSurveyGroup.get('monitoringGroup')
+      && FLOW.selectedControl.selectedSurvey.get('keyId') != FLOW.selectedControl.selectedSurveyGroup.get('newLocaleSurveyId'));
+  }.property('FLOW.selectedControl.selectedSurvey'),
 
   showDataCleaningReport: function () {
-    var opts = {startDate:this.get("reportFromDate"), endDate:this.get("reportToDate")};
+    var opts = {startDate:this.get("reportFromDate"), endDate:this.get("reportToDate"), lastCollectionOnly: this.get('exportOption') === "recent"};
     var sId = this.get('selectedSurvey');
     if (!sId) {
       this.showWarning();
@@ -93,7 +129,7 @@ FLOW.ExportReportTypeView = Ember.View.extend({
   },
 
   showDataAnalysisReport: function () {
-    var opts = {startDate:this.get("reportFromDate"), endDate:this.get("reportToDate")};
+    var opts = {startDate:this.get("reportFromDate"), endDate:this.get("reportToDate"), lastCollectionOnly: this.get('exportOption') === "recent"};
     var sId = this.get('selectedSurvey');
     if (!sId) {
       this.showWarning();
@@ -177,7 +213,37 @@ FLOW.ExportReportTypeView = Ember.View.extend({
     FLOW.dialogControl.set('message', message);
     FLOW.dialogControl.set('showCANCEL', false);
     FLOW.dialogControl.set('showDialog', true);
-  }
+  },
+
+  eventManager: Ember.Object.create({
+    click: function(event, clickedView){
+      var exportTypes = ["dataCleanExp", "dataAnalyseExp", "compReportExp", "geoshapeSelect", "surveyFormExp"];
+      if (exportTypes.indexOf(clickedView.get('export')) > -1) {
+        var i, options, trigger;
+        options = document.getElementsByClassName("options");
+        for (i = 0; i < options.length; i++) {
+          options[i].style.display = "none";
+        }
+        trigger = document.getElementsByClassName("trigger");
+        for (i = 0; i < trigger.length; i++) {
+          trigger[i].className = trigger[i].className.replace(" active", "");
+        }
+        document.getElementById(clickedView.get('export')).style.display = "block";
+        event.currentTarget.className += " active";
+
+        //by default select the range option
+        if (clickedView.get('export') == "dataCleanExp") {
+          if ($('input:radio[name=cleaning-export-option]').is(':checked') === false) {
+            $('input:radio[name=cleaning-export-option]').filter('[value=range]').prop('checked', true);
+          }
+        } else if (clickedView.get('export') == "dataAnalyseExp") {
+          if ($('input:radio[name=analysis-export-option]').is(':checked') === false) {
+            $('input:radio[name=analysis-export-option]').filter('[value=range]').prop('checked', true);
+          }
+        }
+      }
+    }
+  })
 });
 
 FLOW.ReportsListView = Ember.View.extend({
