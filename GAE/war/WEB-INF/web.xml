@@ -122,15 +122,6 @@
 		<url-pattern>/cron/croncommander</url-pattern>
 	</servlet-mapping>
 	<servlet>
-		<servlet-name>ScoreProcessor</servlet-name>
-		<servlet-class>org.waterforpeople.mapping.app.web.ScoreProcessor</servlet-class>
-	</servlet>
-	<servlet-mapping>
-		<servlet-name>ScoreProcessor</servlet-name>
-		<url-pattern>/app_worker/scoreprocessor</url-pattern>
-	</servlet-mapping>
-
-	<servlet>
 		<servlet-name>LocationBeacon</servlet-name>
 		<servlet-class>org.waterforpeople.mapping.app.web.LocationBeaconServlet</servlet-class>
 	</servlet>
@@ -204,22 +195,6 @@
 	<servlet-mapping>
 		<servlet-name>DeleteObjectTask</servlet-name>
 		<url-pattern>/app_worker/deleteobjecttask</url-pattern>
-	</servlet-mapping>
-	<servlet>
-		<servlet-name>ProcessAccessPointTaskServlet</servlet-name>
-		<servlet-class>org.waterforpeople.mapping.app.web.ProcessAccessPointTaskServlet</servlet-class>
-	</servlet>
-	<servlet-mapping>
-		<servlet-name>ProcessAccessPointTaskServlet</servlet-name>
-		<url-pattern>/app_worker/processaccesspointtaskservlet</url-pattern>
-	</servlet-mapping>
-	<servlet>
-		<servlet-name>AccessPointMetricProcessor</servlet-name>
-		<servlet-class>org.waterforpeople.mapping.app.web.AccessPointMetricProcessor</servlet-class>
-	</servlet>
-	<servlet-mapping>
-		<servlet-name>AccessPointMetricProcessor</servlet-name>
-		<url-pattern>/app_worker/accesspointmetricprocessor</url-pattern>
 	</servlet-mapping>
     <servlet>
         <servlet-name>SurveyTask</servlet-name>

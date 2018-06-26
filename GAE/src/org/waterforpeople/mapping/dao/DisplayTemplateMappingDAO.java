@@ -43,11 +43,6 @@ public class DisplayTemplateMappingDAO extends BaseDAO<DisplayTemplateMapping> {
         return returnList;
     }
 
-    public List<DisplayTemplateMapping> listByAccessPointType(
-            String propertyValue, String cursorString) {
-        return listByProperty("AccessPointType", propertyValue, "String");
-    }
-
     public DisplayTemplateMapping get(Long id) {
         return (DisplayTemplateMapping) getByKey(id);
     }

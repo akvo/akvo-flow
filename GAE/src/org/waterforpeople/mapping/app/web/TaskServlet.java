@@ -321,15 +321,6 @@ public class TaskServlet extends AbstractRestApiServlet {
         return dateTime;
     }
 
-    private ProcessingAction dispatch(String surveyKey) {
-        ProcessingAction pa = new ProcessingAction();
-
-        pa.setAction("addAccessPoint");
-        pa.setDispatchURL("/worker/task");
-        pa.addParam("surveyId", surveyKey);
-        return pa;
-    }
-
     @Override
     protected RestRequest convertRequest() throws Exception {
         HttpServletRequest req = getRequest();
@@ -393,16 +384,6 @@ public class TaskServlet extends AbstractRestApiServlet {
                     instance.setApprovedFlag("False");
                     continue;
                 } else {
-                    ProcessingAction pa = dispatch(instance.getKey().getId()
-                            + "");
-                    TaskOptions options = TaskOptions.Builder.withUrl(pa.getDispatchURL());
-                    Iterator it = pa.getParams().keySet().iterator();
-                    while (it.hasNext()) {
-                        options.param("key", (String) it.next());
-                    }
-                    log.info("Received Task Queue calls for surveyInstanceKey: "
-                            + instance.getKey().getId() + "");
-
                     defaultQueue.add(TaskOptions.Builder.withUrl("/app_worker/surveyalservlet")
                             .param(
                                     SurveyalRestRequest.ACTION_PARAM,

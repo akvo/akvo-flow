@@ -35,16 +35,6 @@
 		<property name="fragmentType" direction="asc" />
 		<property name="createdDateTime" direction="desc" />
 	</datastore-index>
-	<datastore-index kind="AccessPoint" ancestor="false"
-		source="manual">
-		<property name="latitude" direction="asc" />
-		<property name="createdDateTime" direction="desc" />
-	</datastore-index>
-	<datastore-index kind="AccessPointStatusSummary"
-		ancestor="false" source="manual">
-		<property name="country" direction="asc" />
-		<property name="createdDateTime" direction="asc" />
-	</datastore-index>
 	<datastore-index kind="QuestionAnswerStore" ancestor="false"
 		source="manual">
 		<property name="type" direction="asc" />
@@ -63,29 +53,6 @@
 	<datastore-index kind="QuestionAnswerStore" ancestor="false" source="manual">
         <property name="questionID" direction="asc"/>
         <property name="createdDateTime" direction="asc"/>
-	</datastore-index>
-	<datastore-index kind="AccessPoint" ancestor="false"
-		source="manual">
-		<property name="pointStatus" direction="asc" />
-		<property name="CollectionDate" direction="desc" />
-	</datastore-index>
-	<datastore-index kind="AccessPoint" ancestor="false"
-		source="manual">
-		<property name="communityCode" direction="asc" />
-		<property name="collectionDate" direction="desc" />
-	</datastore-index>
-	<datastore-index kind="AccessPoint" ancestor="false"
-		source="manual">
-		<property name="countryCode" direction="asc" />
-		<property name="pointType" direction="asc" />
-		<property name="lastUpdateDateTime" direction="desc" />
-	</datastore-index>
-	<datastore-index kind="AccessPoint" ancestor="false"
-		source="manual">
-		<property name="communityCode" direction="asc" />
-		<property name="countryCode" direction="asc" />
-		<property name="pointType" direction="asc" />
-		<property name="lastUpdateDateTime" direction="desc" />
 	</datastore-index>
 	<datastore-index kind="DeviceSurveyJobQueue" ancestor="false"
 		source="manual">
@@ -250,18 +217,6 @@
 		source="manual">
 		<property name="coordinates_INTEGER_IDX" direction="asc" />
 	</datastore-index>
-	
-	<datastore-index kind="AccessPointScoreDetail"
-		ancestor="false" source="manual">
-		<property name="accessPointId" direction="asc" />
-		<property name="computationDate" direction="desc" />
-	</datastore-index>
-	<datastore-index kind="AccessPoint" ancestor="false"
-		source="manual">
-		<property name="communityCode" direction="asc" />
-		<property name="pointType" direction="asc" />
-		<property name="collectionDate" direction="desc" />
-	</datastore-index>
 	<datastore-index kind="Message" ancestor="false"
 		source="manual">
 		<property name="actionAbout" direction="asc" />
@@ -278,17 +233,6 @@
 		<property name="surveyInstanceId" direction="asc" />
 		<property name="questionText" direction="asc" />
 		<property name="metricName" direction="asc" />
-	</datastore-index>
-	<datastore-index kind="AccessPoint" ancestor="false"
-		source="manual">
-		<property name="countryCode" direction="asc" />
-		<property name="waterForPeopleProjectFlag" direction="asc" />
-		<property name="collectionDate" direction="asc" />
-	</datastore-index>
-
-	<datastore-index kind="AccessPointScoreComputationItem"
-		ancestor="true" source="manual">
-		<property name="scoreComputationItems_INTEGER_IDX" direction="asc" />
 	</datastore-index>
 	<datastore-index kind="NotificationSubscription"
 		ancestor="false" source="manual">

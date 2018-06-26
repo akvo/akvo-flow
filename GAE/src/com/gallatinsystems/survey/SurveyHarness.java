@@ -29,7 +29,6 @@ public class SurveyHarness {
     public static void main(String[] args) {
         SurveyHarness sh = new SurveyHarness();
         // sh.sendSuveyXML(args[0]);
-        sh.sendAccessPoint();
     }
 
     @SuppressWarnings("unused")
@@ -53,37 +52,6 @@ public class SurveyHarness {
             // Get the response
             BufferedReader rd = new BufferedReader(new InputStreamReader(conn
                     .getInputStream()));
-            String line;
-            while ((line = rd.readLine()) != null) {
-                // Process line...
-            }
-            wr.close();
-            rd.close();
-        } catch (Exception e) {
-        }
-    }
-
-    public void sendAccessPoint() {
-        try {
-            // Construct data
-            String data = URLEncoder.encode("action", "UTF-8") + "="
-                    + URLEncoder.encode("addAccessPoints", "UTF-8");
-            data += "&" + URLEncoder.encode("surveyId", "UTF-8") + "="
-                    + URLEncoder.encode("2025", "UTF-8");
-
-            // Send data
-            URL url = new URL("http://watermappingmonitoring.appspot.com/app_worker/task");
-            URLConnection conn = url.openConnection();
-            conn.setDoOutput(true);
-            OutputStreamWriter wr = new OutputStreamWriter(conn
-                    .getOutputStream());
-            wr.write(data);
-            wr.flush();
-
-            // Get the response
-            BufferedReader rd = new BufferedReader(new InputStreamReader(conn
-                    .getInputStream()));
-            @SuppressWarnings("unused")
             String line;
             while ((line = rd.readLine()) != null) {
                 // Process line...
