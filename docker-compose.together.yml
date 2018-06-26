@@ -1,0 +1,22 @@
+version: "3.5"
+services:
+  akvo-flow:
+    build: .
+    entrypoint: /app/src/ci/run-as-user.sh
+    command: /app/src/ci/devserver.sh
+    working_dir: /app/src
+    external_links:
+        - "flow-services:services.akvoflow.local"
+    networks:
+      - akvoflow_together
+    ports:
+     - 8888:8888
+     - 5005:5005
+    volumes:
+     - .:/app/src/:delegated
+     - ~/.m2:/root/.m2:delegated
+     - ~/.m2:/home/akvo/.m2:delegated
+
+networks:
+  akvoflow_together:
+    name: akvoflow_together
