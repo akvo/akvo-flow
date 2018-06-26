@@ -62,8 +62,6 @@ public class ReorderQuestionGroup implements Process {
     	Long qgid = Long.parseLong(args[0]);
         processQuestions(ds, qgid);
 
-        System.out.printf("#Questions:       %5d good, %4d groupless, %4d unreachable\n", goodQuestions, orphanQuestions, unreachableQuestions);
-
     }
 
     private void processGroups(DatastoreService ds) {
@@ -87,22 +85,22 @@ public class ReorderQuestionGroup implements Process {
     }
 
     private void processQuestions(DatastoreService ds, Long groupId) {
-        System.out.println("#Processing Questions");
-        final Filter f = new FilterPredicate("QuestionGroup", FilterOperator.EQUAL, groupId);
-        final Query qq = new Query("Question").setFilter(f);//.addSort("order",SortDirection.ASCENDING);
+        System.out.println("#Processing Questions in group " + groupId);
+        final Filter f = new FilterPredicate("questionGroupId", FilterOperator.EQUAL, groupId);
+        final Query qq = new Query("Question").setFilter(f).addSort("order",SortDirection.ASCENDING);
         final PreparedQuery qpq = ds.prepare(qq);
         List<Entity> questionsToFix = new ArrayList<Entity>(); 
 
-        Integer newOrder = 1;
+        Long newOrder = 1L;
         for (Entity q : qpq.asIterable(FetchOptions.Builder.withChunkSize(500))) {
-        	Integer oldOrder = (Integer) q.getProperty("order");
+        	Long oldOrder = (Long) q.getProperty("order");
             System.out.printf("# %d -> %d\n", oldOrder, newOrder);
             q.setProperty("order", newOrder++);
 
             questionsToFix.add(q);
         }
         System.out.printf("#Fixing %d Questions\n",questionsToFix.size());
-        //batchSaveEntities(ds, questionsToFix);
+        batchSaveEntities(ds, questionsToFix);
     }
 
 }
