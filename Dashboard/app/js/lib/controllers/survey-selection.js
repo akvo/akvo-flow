@@ -20,21 +20,18 @@ FLOW.SurveySelection = Ember.ObjectController.extend({
   getByParentId: function(parentId, filters) {
     return this.get('surveyGroups').filter(function(sg) {
       if (filters.monitoringSurveysOnly) {
-        //check if user has DATA_READ permissions
-        if (filters.dataReadSurveysOnly) {
-          return sg.get('parentId') === parentId &&
-            ((sg.get('monitoringGroup') && FLOW.permControl.userCanViewData(sg)) || sg.get('projectType') === 'PROJECT_FOLDER');
-        } else {
-          return sg.get('parentId') === parentId &&
-            (sg.get('monitoringGroup') || sg.get('projectType') === 'PROJECT_FOLDER');
-        }
+        return sg.get('parentId') === parentId &&
+          (sg.get('monitoringGroup') || sg.get('projectType') === 'PROJECT_FOLDER');
       } else {
-        //check if user has DATA_READ permissions
-        if (filters.dataReadSurveysOnly) {
-          return sg.get('parentId') === parentId && (FLOW.permControl.userCanViewData(sg) || sg.get('projectType') === 'PROJECT_FOLDER');
-        } else {
-          return sg.get('parentId') === parentId;
-        }
+        return sg.get('parentId') === parentId;
+      }
+    }).filter(function(sg) {
+      //check if user has DATA_READ permissions
+      if (filters.dataReadSurveysOnly) {
+        return sg.get('parentId') === parentId &&
+          (FLOW.permControl.userCanViewData(sg) || sg.get('projectType') === 'PROJECT_FOLDER');
+      } else {
+        return sg.get('parentId') === parentId;
       }
     }).sort(function (survey1, survey2) {
       var s1 = survey1.get('name') || "";
