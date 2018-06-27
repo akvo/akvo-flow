@@ -1012,7 +1012,8 @@ FLOW.SelectFolder = Ember.Select.extend({
     this.set('optionLabelPath', 'content.code');
     this.set('optionValuePath', 'content.keyId');
     this.set('controller', FLOW.SurveySelection.create({ selectionFilter: this.get('selectionFilter')}));
-    this.set('content', this.get('controller').getByParentId(this.get('parentId'), this.get('showMonitoringSurveysOnly')));
+    this.set('content', this.get('controller').getByParentId(this.get('parentId'),
+      {monitoringSurveysOnly: this.get('showMonitoringSurveysOnly'), dataReadSurveysOnly: this.get('showDataReadSurveysOnly')}));
   },
 
   onChange: function() {
@@ -1021,6 +1022,7 @@ FLOW.SelectFolder = Ember.Select.extend({
     var survey = this.get('controller').getSurvey(keyId);
     var nextIdx = this.get('idx') + 1;
     var monitoringOnly = this.get('showMonitoringSurveysOnly');
+    var dataReadOnly = this.get('showDataReadSurveysOnly');
     var filter = this.get('selectionFilter');
 
     if (nextIdx !== childViews.length) {
@@ -1039,6 +1041,7 @@ FLOW.SelectFolder = Ember.Select.extend({
         parentId: keyId,
         idx: nextIdx,
         showMonitoringSurveysOnly: monitoringOnly,
+        showDataReadSurveysOnly: dataReadOnly,
         selectionFilter : filter
       }));
     }
@@ -1056,7 +1059,8 @@ FLOW.SurveySelectionView = Ember.ContainerView.extend({
     this.get('childViews').pushObject(FLOW.SelectFolder.create({
       parentId: 0, // start with the root folder
       idx: 0,
-      showMonitoringSurveysOnly: this.get('showMonitoringSurveysOnly') || false
+      showMonitoringSurveysOnly: this.get('showMonitoringSurveysOnly') || false,
+      showDataReadSurveysOnly: this.get('showDataReadSurveysOnly') || false
     }));
   },
 })
@@ -1073,6 +1077,7 @@ FLOW.DataCleaningSurveySelectionView = Ember.ContainerView.extend({
       parentId: 0, // start with the root folder
       idx: 0,
       showMonitoringSurveysOnly: this.get('showMonitoringSurveysOnly') || false,
+      showDataReadSurveysOnly: this.get('showDataReadSurveysOnly') || false,
       selectionFilter : FLOW.projectControl.dataCleaningEnabled
     }));
   },

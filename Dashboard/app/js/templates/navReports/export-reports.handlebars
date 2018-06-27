@@ -2,7 +2,7 @@
     <div class="surveySelect">
       <nav class="breadCrumb floats-in">
         {{#unless FLOW.projectControl.isLoading}}
-          {{view FLOW.SurveySelectionView}}
+          {{view FLOW.SurveySelectionView showDataReadSurveysOnly=true}}
         {{/unless}}
         {{#if FLOW.selectedControl.selectedSurveyGroup}}
           {{view Ember.Select
