@@ -9,7 +9,7 @@
           {{#each report in FLOW.router.reportsController}}{{#with report}}
           <li class="{{reportType reportType}} {{reportStatus state}}">
             <div class="exportInfo">
-              <a href="{{#if filename}}{{filename}}{{/if}}">
+              <a href="{{reportLink filename}}">
 
                 <h5>
                   {{reportTypeString reportType}} - <span class="exportFileName">{{reportFilename filename}}</span>
