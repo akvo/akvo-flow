@@ -128,7 +128,7 @@ public class ReportServlet extends AbstractRestApiServlet {
                         } else if ((sts / 100) == 4) { //4xx: you messed up
                             //permanent error, fail this report
                             r.setState(Report.FINISHED_ERROR);
-                            r.setMessage("Unexpected result when starting report \" + id + \" : " + sts);
+                            r.setMessage("Unexpected result when starting report " + id + " : " + sts);
                             rDao.save(r);
                         } else {
                             //if we get a transient error, re-queue
