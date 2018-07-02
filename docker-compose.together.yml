@@ -5,6 +5,8 @@ services:
     entrypoint: /app/src/ci/run-as-user.sh
     command: /app/src/ci/devserver.sh
     working_dir: /app/src
+    environment:
+      - GAE_FULL_SCAN_SECS
     external_links:
         - "flow-services:services.akvoflow.local"
     networks:
