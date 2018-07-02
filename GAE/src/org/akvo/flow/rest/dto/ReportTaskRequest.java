@@ -26,6 +26,7 @@ public class ReportTaskRequest extends RestRequest {
     public static final String STATE_PARAM = "state";
     public static final String BASE_URL_PARAM = "baseUrl";
     public static final String MESSAGE_PARAM = "message";
+    public static final String FILENAME_PARAM = "filename";
     public static final String START_ACTION = "start";
     public static final String PROGRESS_ACTION = "progress";
 
@@ -34,6 +35,7 @@ public class ReportTaskRequest extends RestRequest {
     private Long id;
     private String state;
     private String message;
+    private String filename;
     private String baseUrl;
 
     @Override
@@ -88,6 +90,14 @@ public class ReportTaskRequest extends RestRequest {
 
 	public void setBaseUrl(String baseUrl) {
 		this.baseUrl = baseUrl;
+	}
+
+	public String getFilename() {
+		return filename;
+	}
+
+	public void setFilename(String filename) {
+		this.filename = filename;
 	}
 
 

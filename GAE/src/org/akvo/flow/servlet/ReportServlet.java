@@ -153,6 +153,7 @@ public class ReportServlet extends AbstractRestApiServlet {
                     }
                     r.setState(stReq.getState());
                     r.setMessage(stReq.getMessage());
+                    r.setFilename(stReq.getFilename());
                     rDao.save(r);
                 }
                 break;
