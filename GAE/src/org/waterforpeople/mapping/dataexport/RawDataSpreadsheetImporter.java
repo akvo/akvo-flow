@@ -46,7 +46,6 @@ import org.apache.poi.ss.usermodel.Workbook;
 import org.apache.poi.ss.usermodel.WorkbookFactory;
 import org.apache.poi.ss.util.CellReference;
 import org.codehaus.jackson.map.ObjectMapper;
-import org.jfree.util.Log;
 import org.waterforpeople.mapping.app.gwt.client.survey.QuestionDto;
 import org.waterforpeople.mapping.app.gwt.client.survey.QuestionDto.QuestionType;
 import org.waterforpeople.mapping.app.gwt.client.survey.QuestionOptionDto;
@@ -101,12 +100,12 @@ public class RawDataSpreadsheetImporter implements DataImporter {
      * @throws Exception
      */
     public Sheet getDataSheet(File file) {
-        stream = new PushbackInputStream(new FileInputStream(file));
         Workbook wb = null;
         try {
+            stream = new PushbackInputStream(new FileInputStream(file));
             wb = WorkbookFactory.create(stream);
         } catch (Exception e) {
-            Log.error("Workbook creation exception:" + e);
+            log.error("Workbook creation exception:" + e);
         }
         return wb.getSheetAt(0);
     }
@@ -644,10 +643,10 @@ public class RawDataSpreadsheetImporter implements DataImporter {
                     // Two different possible formats:
                     // With codes: code1:val1|code2:val2|...
                     // Without codes: val1|val2|...
+                    List<Map<String, Object>> optionList = new ArrayList<>();
                     String optionString = ExportImportUtils.parseCellAsString(cell);
                     if (!optionString.isEmpty()) {
                         String[] optionParts = optionString.split("\\|");
-                        List<Map<String, Object>> optionList = new ArrayList<>();
                         for (String optionNode : optionParts) {
                             optionList.add(parsedOptionValue(optionNode, false));
                         }
