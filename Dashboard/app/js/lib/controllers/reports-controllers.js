@@ -34,7 +34,7 @@ FLOW.chartTypeControl = Ember.Object.create({
 
 FLOW.ReportsController = Ember.ArrayController.extend({
   sortProperties: ["createdDateTime"],
-  sortAscending: true,
+  sortAscending: false,
   content: null,
 
   populate: function () {
