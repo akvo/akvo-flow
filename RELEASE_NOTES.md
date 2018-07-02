@@ -1,5 +1,11 @@
 # Akvo Flow Release Notes
 ----
+# Akvo Flow Dashboard v1.9.33.2 - Fantastic Fern - (Hotfix 2)
+Date: 07th June 2018
+
+## Resolved issues
+* **CartoDB Maps** - Fix the SHA integrity hashes for carto.css and carto.js [#2721].
+* **Development environment** - Use fuzzy values for APK versions in docker builds [#2704]
 # Akvo Flow Dashboard v1.9.33.1 - Fantastic Fern - (Hotfix 1)
 Date: 07th June 2018
 
