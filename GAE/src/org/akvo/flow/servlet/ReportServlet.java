@@ -21,6 +21,7 @@ import java.io.Serializable;
 import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -64,8 +65,8 @@ public class ReportServlet extends AbstractRestApiServlet {
         public String exportMode;
         public Long reportId;
         public Long questionId; //only for GeoJSON
-        public Date from;
-        public Date to;
+        public String from;
+        public String to;
         public Boolean lastCollection;
         public String imgPrefix;
         public String uploadUrl;
@@ -190,6 +191,8 @@ public class ReportServlet extends AbstractRestApiServlet {
         //look up user
         final String email = uDao.getByKey(r.getUser()).getEmailAddress();
 
+        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
+        		
         //Gleaned from export-reports-views.js
         ReportCriteria criteria = new ReportCriteria();
         criteria.opts = new ReportOptions();
@@ -201,8 +204,8 @@ public class ReportServlet extends AbstractRestApiServlet {
         criteria.opts.appId = SystemProperty.applicationId.get();
         criteria.opts.exportMode = r.getReportType();
         criteria.opts.reportId = r.getKey().getId();
-        criteria.opts.from = r.getStartDate();
-        criteria.opts.to = r.getEndDate();
+        criteria.opts.from = sdf.format(r.getStartDate());
+        criteria.opts.to = sdf.format(r.getEndDate());
         criteria.opts.lastCollection = r.getLastCollectionOnly();
         criteria.opts.questionId = r.getQuestionId();
         criteria.opts.imgPrefix = PropertyUtil.getProperty("photo_url_root");
