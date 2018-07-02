@@ -24,7 +24,9 @@ import com.gallatinsystems.framework.rest.RestRequest;
 public class ReportTaskRequest extends RestRequest {
     public static final String ID_PARAM = "id";
     public static final String STATE_PARAM = "state";
+    public static final String BASE_URL_PARAM = "baseUrl";
     public static final String MESSAGE_PARAM = "message";
+    public static final String FILENAME_PARAM = "filename";
     public static final String START_ACTION = "start";
     public static final String PROGRESS_ACTION = "progress";
 
@@ -33,6 +35,8 @@ public class ReportTaskRequest extends RestRequest {
     private Long id;
     private String state;
     private String message;
+    private String filename;
+    private String baseUrl;
 
     @Override
     protected void populateErrors() {
@@ -53,6 +57,7 @@ public class ReportTaskRequest extends RestRequest {
         if (req.getParameter(ID_PARAM) != null) {
             setId(new Long(req.getParameter(ID_PARAM)));
         }
+        setBaseUrl(req.getParameter(BASE_URL_PARAM));
     }
 
     public void setId(Long id) {
@@ -78,6 +83,22 @@ public class ReportTaskRequest extends RestRequest {
     public void setMessage(String message) {
         this.message = message;
     }
+
+	public String getBaseUrl() {
+		return baseUrl;
+	}
+
+	public void setBaseUrl(String baseUrl) {
+		this.baseUrl = baseUrl;
+	}
+
+	public String getFilename() {
+		return filename;
+	}
+
+	public void setFilename(String filename) {
+		this.filename = filename;
+	}
 
 
 }

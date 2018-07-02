@@ -1,6 +1,6 @@
       <div class="generatedExports">
         <h1>{{t _generated_reports}}</h1>
-        <a {{action "exportNewReport" target="this"}} class="button exportNewBtn">{{t _export_reports}}</a>
+        <a {{action "exportNewReport" target="this"}} class="button exportNewBtn">{{t _new_export}}</a>
       </div>
       <section class="exportContainer">
         {{#if FLOW.router.reportsController.reportsAvailable}}
@@ -9,7 +9,7 @@
           {{#each report in FLOW.router.reportsController}}{{#with report}}
           <li class="{{reportType reportType}} {{reportStatus state}}">
             <div class="exportInfo">
-              <a href="{{#if filename}}{{filename}}{{/if}}">
+              <a href="{{reportLink filename}}">
 
                 <h5>
                   {{reportTypeString reportType}} - <span class="exportFileName">{{reportFilename filename}}</span>
@@ -17,7 +17,7 @@
                     {{#if lastCollectionOnly}}
                     {{t _recent_submissions}}
                     {{else}}
-                    {{#if startDate}}{{date1 startDate}} -{{/if}}{{#if endDate}}- {{date1 endDate}}{{/if}} {{t _submissions}}
+                    {{#if startDate}}{{t _from}} {{date1 startDate}} {{/if}}{{#if endDate}}{{t _to}} {{date1 endDate}}{{/if}}
                     {{/if}}
                   </span>
                 </h5>

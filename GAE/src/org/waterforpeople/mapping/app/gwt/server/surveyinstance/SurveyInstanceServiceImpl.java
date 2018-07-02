@@ -27,11 +27,6 @@ public class SurveyInstanceServiceImpl {
 
 
     public void sendProcessingMessages(SurveyInstance domain) {
-        // send async request to populate the AccessPoint using the mapping
-        QueueFactory.getDefaultQueue().add(
-                TaskOptions.Builder.withUrl("/app_worker/task")
-                        .param("action", "addAccessPoint")
-                        .param("surveyId", domain.getKey().getId() + ""));
         // send asyn crequest to summarize the instance
         QueueFactory.getQueue("dataSummarization").add(
                 TaskOptions.Builder.withUrl("/app_worker/datasummarization")

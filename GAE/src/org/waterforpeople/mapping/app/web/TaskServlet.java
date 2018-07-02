@@ -46,7 +46,6 @@ import org.waterforpeople.mapping.dao.SurveyInstanceDAO;
 import org.waterforpeople.mapping.domain.ProcessingAction;
 import org.waterforpeople.mapping.domain.Status.StatusCode;
 import org.waterforpeople.mapping.domain.SurveyInstance;
-import org.waterforpeople.mapping.helper.AccessPointHelper;
 import org.waterforpeople.mapping.helper.SurveyEventHelper;
 import org.waterforpeople.mapping.serialization.SurveyInstanceHandler;
 
@@ -78,7 +77,6 @@ public class TaskServlet extends AbstractRestApiServlet {
     private static final long serialVersionUID = -2607990749512391457L;
     private static final Logger log = Logger.getLogger(TaskServlet.class
             .getName());
-    private AccessPointHelper aph;
     private SurveyInstanceDAO siDao;
     private final static String EMAIL_FROM_ADDRESS_KEY = "emailFromAddress";
     private TreeMap<String, String> recepientList = null;
@@ -92,7 +90,6 @@ public class TaskServlet extends AbstractRestApiServlet {
         FROM_ADDRESS = com.gallatinsystems.common.util.PropertyUtil
                 .getProperty(EMAIL_FROM_ADDRESS_KEY);
         BUCKET_NAME = com.gallatinsystems.common.util.PropertyUtil.getProperty("s3bucket");
-        aph = new AccessPointHelper();
         siDao = new SurveyInstanceDAO();
         recepientList = MailUtil.loadRecipientList();
     }
@@ -308,10 +305,6 @@ public class TaskServlet extends AbstractRestApiServlet {
 
     /**
      * Send an email regarding file processing status/outcome
-     *
-     * @param fileProcessingRequest
-     * @param subject
-     * @param messageBody
      */
     private void sendMail(TaskRequest fileProcessingRequest, String body) {
         String fileName = fileProcessingRequest.getFileName();
@@ -326,15 +319,6 @@ public class TaskServlet extends AbstractRestApiServlet {
         java.util.Date date = new java.util.Date();
         String dateTime = dateFormat.format(date);
         return dateTime;
-    }
-
-    private ProcessingAction dispatch(String surveyKey) {
-        ProcessingAction pa = new ProcessingAction();
-
-        pa.setAction("addAccessPoint");
-        pa.setDispatchURL("/worker/task");
-        pa.addParam("surveyId", surveyKey);
-        return pa;
     }
 
     @Override
@@ -352,9 +336,6 @@ public class TaskServlet extends AbstractRestApiServlet {
         if (TaskRequest.PROCESS_FILE_ACTION.equalsIgnoreCase(taskReq
                 .getAction())) {
             ingestFile(taskReq);
-        } else if (TaskRequest.ADD_ACCESS_POINT_ACTION.equalsIgnoreCase(taskReq
-                .getAction())) {
-            addAccessPoint(taskReq);
         }
         return response;
     }
@@ -362,14 +343,6 @@ public class TaskServlet extends AbstractRestApiServlet {
     @Override
     protected void writeOkResponse(RestResponse resp) throws Exception {
         getResponse().setStatus(200);
-    }
-
-    private void addAccessPoint(TaskRequest req) {
-        Long surveyInstanceId = req.getSurveyId();
-        log.info("Received Task Queue calls for surveyInstanceId: "
-                + surveyInstanceId);
-
-        aph.processSurveyInstance(surveyInstanceId.toString());
     }
 
     /**
@@ -411,17 +384,6 @@ public class TaskServlet extends AbstractRestApiServlet {
                     instance.setApprovedFlag("False");
                     continue;
                 } else {
-                    ProcessingAction pa = dispatch(instance.getKey().getId()
-                            + "");
-                    TaskOptions options = TaskOptions.Builder.withUrl(pa.getDispatchURL());
-                    Iterator it = pa.getParams().keySet().iterator();
-                    while (it.hasNext()) {
-                        options.param("key", (String) it.next());
-                    }
-                    log.info("Received Task Queue calls for surveyInstanceKey: "
-                            + instance.getKey().getId() + "");
-                    aph.processSurveyInstance(instance.getKey().getId() + "");
-
                     defaultQueue.add(TaskOptions.Builder.withUrl("/app_worker/surveyalservlet")
                             .param(
                                     SurveyalRestRequest.ACTION_PARAM,

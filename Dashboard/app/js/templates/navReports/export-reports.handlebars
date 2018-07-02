@@ -1,8 +1,12 @@
 <section class="fullWidth reportTools" id="reportBlocks">
+  <div class="generatedExports">
+    <h1>{{t _new_export}}</h1>
+    <a {{action "doReportsList"}} class="button exportNewBtn">{{t _back_to_reports}}</a>
+  </div>
     <div class="surveySelect">
       <nav class="breadCrumb floats-in">
         {{#unless FLOW.projectControl.isLoading}}
-          {{view FLOW.SurveySelectionView}}
+          {{view FLOW.SurveySelectionView showDataReadSurveysOnly=true}}
         {{/unless}}
         {{#if FLOW.selectedControl.selectedSurveyGroup}}
           {{view Ember.Select

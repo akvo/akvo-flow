@@ -122,15 +122,6 @@
 		<url-pattern>/cron/croncommander</url-pattern>
 	</servlet-mapping>
 	<servlet>
-		<servlet-name>ScoreProcessor</servlet-name>
-		<servlet-class>org.waterforpeople.mapping.app.web.ScoreProcessor</servlet-class>
-	</servlet>
-	<servlet-mapping>
-		<servlet-name>ScoreProcessor</servlet-name>
-		<url-pattern>/app_worker/scoreprocessor</url-pattern>
-	</servlet-mapping>
-
-	<servlet>
 		<servlet-name>LocationBeacon</servlet-name>
 		<servlet-class>org.waterforpeople.mapping.app.web.LocationBeaconServlet</servlet-class>
 	</servlet>
@@ -204,22 +195,6 @@
 	<servlet-mapping>
 		<servlet-name>DeleteObjectTask</servlet-name>
 		<url-pattern>/app_worker/deleteobjecttask</url-pattern>
-	</servlet-mapping>
-	<servlet>
-		<servlet-name>ProcessAccessPointTaskServlet</servlet-name>
-		<servlet-class>org.waterforpeople.mapping.app.web.ProcessAccessPointTaskServlet</servlet-class>
-	</servlet>
-	<servlet-mapping>
-		<servlet-name>ProcessAccessPointTaskServlet</servlet-name>
-		<url-pattern>/app_worker/processaccesspointtaskservlet</url-pattern>
-	</servlet-mapping>
-	<servlet>
-		<servlet-name>AccessPointMetricProcessor</servlet-name>
-		<servlet-class>org.waterforpeople.mapping.app.web.AccessPointMetricProcessor</servlet-class>
-	</servlet>
-	<servlet-mapping>
-		<servlet-name>AccessPointMetricProcessor</servlet-name>
-		<url-pattern>/app_worker/accesspointmetricprocessor</url-pattern>
 	</servlet-mapping>
     <servlet>
         <servlet-name>SurveyTask</servlet-name>
@@ -304,22 +279,6 @@
 	</servlet-mapping>
 
 	<servlet>
-		<servlet-name>SMSServlet</servlet-name>
-		<servlet-class>org.waterforpeople.mapping.app.web.SMSReceiverServlet</servlet-class>
-	</servlet>
-	<servlet-mapping>
-		<servlet-name>SMSServlet</servlet-name>
-		<url-pattern>/smsreceiver</url-pattern>
-	</servlet-mapping>
-	<servlet>
-		<servlet-name>PointOfInterestServlet</servlet-name>
-		<servlet-class>org.waterforpeople.mapping.app.web.PointOfInterestServlet</servlet-class>
-	</servlet>
-	<servlet-mapping>
-		<servlet-name>PointOfInterestServlet</servlet-name>
-		<url-pattern>/pointofinterest</url-pattern>
-	</servlet-mapping>
-	<servlet>
 		<servlet-name>RemoteExceptionServlet</servlet-name>
 		<servlet-class>com.gallatinsystems.diagnostics.app.web.RemoteExceptionRestServlet</servlet-class>
 	</servlet>
@@ -386,14 +345,6 @@
 		<url-pattern>/devicenotification</url-pattern>
 	</servlet-mapping>
 	<servlet>
-		<servlet-name>PlacemarkRestApi</servlet-name>
-		<servlet-class>org.waterforpeople.mapping.app.web.PlacemarkServlet</servlet-class>
-	</servlet>
-	<servlet-mapping>
-		<servlet-name>PlacemarkRestApi</servlet-name>
-		<url-pattern>/placemarkrestapi</url-pattern>
-	</servlet-mapping>
-	<servlet>
 		<servlet-name>GeoRestApi</servlet-name>
 		<servlet-class>org.waterforpeople.mapping.app.web.GeoServlet</servlet-class>
 	</servlet>
@@ -420,14 +371,6 @@
 	<servlet-mapping>
 		<servlet-name>RawDataRestApi</servlet-name>
 		<url-pattern>/rawdatarestapi</url-pattern>
-	</servlet-mapping>
-	<servlet>
-		<servlet-name>MapAssembly</servlet-name>
-		<servlet-class>org.waterforpeople.mapping.app.web.MapAssemblyServlet</servlet-class>
-	</servlet>
-	<servlet-mapping>
-		<servlet-name>MapAssembly</servlet-name>
-		<url-pattern>/app_worker/mapassembly</url-pattern>
 	</servlet-mapping>
 	<servlet-mapping>
 		<servlet-name>DataBackoutApi</servlet-name>
