@@ -21,7 +21,6 @@ FLOW.ReportLoader = Ember.Object.create({
 
     FLOW.store.commit();
     this.showEmailNotification();
-    FLOW.router.transitionTo('navData.reportsList');
   },
 
   showEmailNotification: function () {

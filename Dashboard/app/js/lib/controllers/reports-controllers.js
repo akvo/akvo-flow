@@ -43,7 +43,7 @@ FLOW.ReportsController = Ember.ArrayController.extend({
   },
 
   reportsObserver: function () {
-    var reports = this.get('content'), self = this;
+    var reports = this.get('content');
     if (reports && !reports.isUpdating) {
       this.set('reportsAvailable', reports.content.length > 0);
 
@@ -53,7 +53,7 @@ FLOW.ReportsController = Ember.ArrayController.extend({
       //if reports are still generating, wait 5s and then reload
       if (generatingReports.length > 0) {
         setTimeout(function(){
-          self.set('content', FLOW.store.find(FLOW.Report));
+          FLOW.router.reportsController.set('content', FLOW.store.find(FLOW.Report));
         }, 5000);
       }
     }
