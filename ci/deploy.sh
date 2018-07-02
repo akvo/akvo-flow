@@ -6,7 +6,7 @@ function log {
    echo "$(date +"%T") - INFO - $*"
 }
 
-if [[ "${TRAVIS_BRANCH}" != "develop" ]] && [[ "${TRAVIS_BRANCH:0:8}" != "release/" ]]; then
+if [[ "${TRAVIS_BRANCH}" != "develop" ]] && [[ "${TRAVIS_BRANCH:0:8}" != "release/" ]] && [[ -z "${TRAVIS_TAG}" ]]; then
   exit 0
 fi
 
@@ -19,13 +19,15 @@ release_project_id="${RELEASE_PROJECT_ID:=akvoflow-uat1}"
 
 project_id="${develop_project_id}"
 
-if [[ "${TRAVIS_BRANCH:0:8}" == "release/" ]]; then
+if [[ "${TRAVIS_BRANCH:0:8}" == "release/" ]] || [[ ! -z "${TRAVIS_TAG}" ]]; then
     project_id="${release_project_id}"
 fi
 
-# shellcheck disable=SC2154
-openssl aes-256-cbc -K "$encrypted_ac356ff71e5e_key" -iv "$encrypted_ac356ff71e5e_iv" \
-	-in ci/akvoflow-uat1.p12.enc -out ci/akvoflow-uat1.p12 -d
+curl --location --silent --output ./ci/akvoflow-uat1.p12 \
+     "https://${GH_USER}:${GH_TOKEN}@raw.githubusercontent.com/akvo/${CONFIG_REPO}/master/akvoflow-uat1/akvoflow-uat1.p12"
+
+curl --location --silent --output ./ci/akvoflow-uat1.json \
+     "https://${GH_USER}:${GH_TOKEN}@raw.githubusercontent.com/akvo/${CONFIG_REPO}/master/akvoflow-uat1/akvoflow-uat1-29cd359eae9b.json"
 
 docker run \
     --rm \

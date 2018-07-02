@@ -88,12 +88,24 @@ input[disabled] {
     cursor: default;
 }
 
-input[type="checkbox"],
-input[type="radio"] {
+input[type="checkbox"] {
     -webkit-box-sizing: border-box;
     -moz-box-sizing: border-box;
     box-sizing: border-box;
     -webkit-appearance: checkbox;
+    padding: 0;
+    width: 13px;
+    height: 13px;
+    display: block;
+    & + label {
+        display: inline;
+    }
+}
+
+input[type="radio"] {
+    -webkit-box-sizing: border-box;
+    -moz-box-sizing: border-box;
+    box-sizing: border-box;
     padding: 0;
     width: 13px;
     height: 13px;

@@ -1,4 +1,4 @@
-/*  Copyright (C) 2015-2017 Stichting Akvo (Akvo Foundation)
+/*  Copyright (C) 2015-2018 Stichting Akvo (Akvo Foundation)
  *
  *  This file is part of Akvo FLOW.
  *
@@ -130,7 +130,7 @@ public class ExportImportUtils {
         try {
             return new Date(Long.valueOf(value));
         } catch (NumberFormatException e) {
-            log.error("Value is not a valid timestamp: " + value);
+            log.info("Value is not a valid timestamp: " + value);
         }
 
         // Value is not a timestamp. Try to parse as a spreadsheet value

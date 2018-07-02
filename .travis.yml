@@ -1,10 +1,8 @@
-language: java
+language: generic
 
 sudo: required
-
 services:
-  - docker
-
+- docker
 cache:
   directories:
     - $HOME/.m2
@@ -15,4 +13,3 @@ script:
 
 before_cache:
  - find $HOME/.m2 -name resolver-status.properties -exec rm {} \;
-

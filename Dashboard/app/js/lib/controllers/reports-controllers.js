@@ -31,3 +31,31 @@ FLOW.chartTypeControl = Ember.Object.create({
     })
   ]
 });
+
+FLOW.ReportsController = Ember.ArrayController.extend({
+  sortProperties: ["createdDateTime"],
+  sortAscending: false,
+  content: null,
+  reportsAvailable: false,
+
+  populate: function () {
+    this.set('content', FLOW.store.find(FLOW.Report));
+  },
+
+  reportsObserver: function () {
+    var reports = this.get('content');
+    if (reports && !reports.isUpdating) {
+      this.set('reportsAvailable', reports.content.length > 0);
+
+      var generatingReports = reports.filter(function(report) {
+        return report.get('state') === "IN_PROGRESS" || report.get('state') === "QUEUED";
+      });
+      //if reports are still generating, wait 5s and then reload
+      if (generatingReports.length > 0) {
+        setTimeout(function(){
+          FLOW.router.reportsController.set('content', FLOW.store.find(FLOW.Report));
+        }, 5000);
+      }
+    }
+  }.observes('content', 'content.isUpdating')
+});

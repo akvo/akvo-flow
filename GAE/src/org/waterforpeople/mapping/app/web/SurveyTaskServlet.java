@@ -25,7 +25,6 @@ import javax.servlet.http.HttpServletRequest;
 import org.waterforpeople.mapping.app.web.dto.SurveyTaskRequest;
 import org.waterforpeople.mapping.dao.SurveyInstanceDAO;
 import org.waterforpeople.mapping.domain.SurveyInstance;
-import org.waterforpeople.mapping.helper.AccessPointHelper;
 
 import com.gallatinsystems.device.dao.DeviceFileJobQueueDAO;
 import com.gallatinsystems.framework.rest.AbstractRestApiServlet;
@@ -51,11 +50,10 @@ public class SurveyTaskServlet extends AbstractRestApiServlet {
 
     private static final long serialVersionUID = -9064136783930675167L;
 
-    private AccessPointHelper aph;
+
     private SurveyInstanceDAO siDao;
 
     public SurveyTaskServlet() {
-        aph = new AccessPointHelper();
         siDao = new SurveyInstanceDAO();
     }
 
@@ -117,37 +115,6 @@ public class SurveyTaskServlet extends AbstractRestApiServlet {
             case SurveyTaskRequest.DELETE_DFJQ_ACTION:
                 DeviceFileJobQueueDAO dfjqDao = new DeviceFileJobQueueDAO();
                 dfjqDao.delete(dfjqDao.getByKey(id));
-                break;
-            case SurveyTaskRequest.REMAP_SURVEY_INSTANCE:
-                String idList = stReq.getIdList();
-                if (idList != null && idList.trim().length() > 0) {
-                    String[] ids = idList.split(",");
-                    log.log(Level.INFO, "action: " + stReq.getAction() + " idList: " + idList);
-                    for (int i = 0; i < ids.length; i++) {
-                        aph.processSurveyInstance(ids[i]);
-                    }
-                    if (stReq.getCursor() != null) {
-                        List<SurveyInstance> nextSet = siDao
-                                .listSurveyInstanceBySurveyId(stReq.getId(), stReq.getCursor());
-                        if (nextSet != null && nextSet.size() > 0) {
-                            StringBuffer buffer = new StringBuffer();
-                            Queue queue = QueueFactory.getDefaultQueue();
-                            for (int i = 0; i < nextSet.size(); i++) {
-                                if (i > 0) {
-                                    buffer.append(",");
-                                }
-                                buffer.append(nextSet.get(i).getKey().getId());
-                            }
-                            queue.add(TaskOptions.Builder.withUrl("/app_worker/surveytask")
-                                    .param(SurveyTaskRequest.ACTION_PARAM,
-                                            SurveyTaskRequest.REMAP_SURVEY_INSTANCE)
-                                    .param(SurveyTaskRequest.ID_PARAM, stReq.getId().toString())
-                                    .param(SurveyTaskRequest.ID_LIST_PARAM, buffer.toString())
-                                    .param(SurveyTaskRequest.CURSOR_PARAM,
-                                            SurveyInstanceDAO.getCursor(nextSet)));
-                        }
-                    }
-                }
                 break;
             default:
                 log.warning("Unknown action.");

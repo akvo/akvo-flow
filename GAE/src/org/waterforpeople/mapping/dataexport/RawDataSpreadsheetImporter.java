@@ -424,9 +424,10 @@ public class RawDataSpreadsheetImporter implements DataImporter {
                 long questionId = m.getValue();
 
                 QuestionDto questionDto = questionIdToQuestionDto.get(questionId);
-                QuestionType questionType = questionDto.getType();
-
-                getIterationResponse(row, columnIndex, responseMap, questionType, questionId, questionDto, rep, optionNodes);
+                if (questionDto != null) { //Somehow slipped by the Clojure validation
+                    QuestionType questionType = questionDto.getType();
+                    getIterationResponse(row, columnIndex, responseMap, questionType, questionId, questionDto, rep, optionNodes);
+                }
             }
 
             rowIx++;

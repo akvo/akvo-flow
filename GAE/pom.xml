@@ -16,7 +16,7 @@
   <repositories>
     <repository>
       <id>DN_M2_Repo</id>
-      <url>http://central.maven.org/maven2/</url>
+      <url>https://repo1.maven.org/maven2/</url>
     </repository>
       <repository>
         <id>bintray.com</id>
@@ -24,9 +24,17 @@
       </repository>
       <repository>
         <id>geotoolkit.org</id>
-        <url>http://maven.geotoolkit.org/</url>
+        <url>https://nexus.geomatys.com/repository/geotoolkit/</url>
       </repository>
   </repositories>
+
+  <distributionManagement>
+    <repository>
+      <id>clojars</id>
+      <name>Clojars repository</name>
+      <url>https://clojars.org/repo</url>
+    </repository>
+  </distributionManagement>
 
   <properties>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
@@ -157,12 +165,12 @@
     <dependency>
        <groupId>com.google.appengine</groupId>
        <artifactId>appengine-jsr107cache</artifactId>
-       <version>1.9.59</version>
+       <version>${appengine.sdk.version}</version>
     </dependency>
     <dependency>
         <groupId>com.google.appengine</groupId>
         <artifactId>appengine-endpoints</artifactId>
-        <version>1.9.59</version>
+        <version>${appengine.sdk.version}</version>
     </dependency>
 
     <dependency>
@@ -251,9 +259,12 @@
             <devserver.version>1</devserver.version>
             <devserver.port>8888</devserver.port>
             <devserver.host>0.0.0.0</devserver.host>
+            <devserver.startSuccessTimeout>300</devserver.startSuccessTimeout>
             <devserver.jvmFlags>
                 <devserver.jvmFlag>-Xdebug</devserver.jvmFlag>
+                <devserver.jvmFlag>-Dappengine.fullscan.seconds=${GAE_FULL_SCAN_SECS}</devserver.jvmFlag>
                 <devserver.jvmFlag>-agentlib:jdwp=transport=dt_socket,server=y,suspend=n,address=5005</devserver.jvmFlag>
+                <devserver.jvmFlag>-Djava.util.logging.SimpleFormatter.format=[%1$tT] %4$s: %2$s - %5$s %6$s%n</devserver.jvmFlag>
             </devserver.jvmFlags>
         </configuration>
       </plugin>
@@ -290,6 +301,7 @@
         <artifactId>maven-war-plugin</artifactId>
         <version>3.1.0</version>
         <configuration>
+            <attachClasses>true</attachClasses>
             <webResources>
                 <resource>
                     <directory>war</directory>
@@ -324,12 +336,6 @@
       <plugin>
         <artifactId>maven-compiler-plugin</artifactId>
         <version>3.6.1</version>
-        <configuration>
-            <excludes>
-                <exclude>org/waterforpeople/mapping/dataexport/**/*.java</exclude>
-                <exclude>com/gallatinsystems/framework/dataexport/**/*.java</exclude>
-            </excludes>
-        </configuration>
       </plugin>
 
       <plugin>
@@ -359,7 +365,7 @@
 
       <plugin>
         <artifactId>maven-deploy-plugin</artifactId>
-        <version>3.1</version>
+        <version>2.8.2</version>
       </plugin>
 
       <plugin>
@@ -387,6 +393,22 @@
           </execution>
         </executions>
       </plugin>
+
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-gpg-plugin</artifactId>
+        <version>1.6</version>
+        <executions>
+          <execution>
+            <id>sign-artifacts</id>
+            <phase>verify</phase>
+            <goals>
+              <goal>sign</goal>
+            </goals>
+          </execution>
+        </executions>
+      </plugin>
+
     </plugins>
   </build>
 

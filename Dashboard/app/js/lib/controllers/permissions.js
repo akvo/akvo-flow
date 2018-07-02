@@ -253,6 +253,14 @@ FLOW.permControl = Ember.Controller.create({
       }
       return false;
   }.property(),
+
+  userCanViewData: function (entity) {
+    var permissions;
+    if (!Ember.none(entity)) {
+      permissions = this.permissions(entity);
+    }
+    return permissions && permissions.indexOf("DATA_READ") > -1;
+  }
 });
 
 

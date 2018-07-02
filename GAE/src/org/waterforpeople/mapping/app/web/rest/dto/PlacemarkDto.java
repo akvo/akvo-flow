@@ -28,6 +28,7 @@ public class PlacemarkDto extends BaseDto {
     private Integer count = 0;
     private Integer level = 0;
     private Long surveyId;
+    private Long formId;
     private Date collectionDate = null;
     private Long detailsId = null;
 
@@ -85,6 +86,14 @@ public class PlacemarkDto extends BaseDto {
 
     public void setSurveyId(Long surveyId) {
         this.surveyId = surveyId;
+    }
+
+    public Long getFormId() {
+        return formId;
+    }
+
+    public void setFormId(Long formId) {
+        this.formId = formId;
     }
 
     public Long getDetailsId() {

@@ -356,6 +356,51 @@ Ember.Handlebars.registerHelper("date3", function (property) {
   }
 });
 
+Ember.Handlebars.registerHelper("reportType", function (reportType) {
+  var reportTypeClasses = {
+    DATA_CLEANING: "dataCleanExp",
+    DATA_ANALYSIS: "dataAnalyseExp",
+    COMPREHENSIVE: "compReportExp",
+    GEOSHAPE: "geoShapeDataExp",
+    SURVEY_FORM: "surveyFormExp"
+  };
+  return reportTypeClasses[Ember.get(this, reportType)];
+});
+
+Ember.Handlebars.registerHelper("reportStatus", function (state) {
+  var reportStates = {
+    IN_PROGRESS: "exportGenerating",
+    QUEUED: "exportGenerating",
+    FINISHED_SUCCESS: "",
+    FINISHED_ERROR: ""
+  };
+  return reportStates[Ember.get(this, state)];
+});
+
+Ember.Handlebars.registerHelper("reportTypeString", function (reportType) {
+  var reportTypeStrings = {
+    DATA_CLEANING: Ember.String.loc('_data_cleaning_export'),
+    DATA_ANALYSIS: Ember.String.loc('_data_analysis_export'),
+    COMPREHENSIVE: Ember.String.loc('_comprehensive_report'),
+    GEOSHAPE: Ember.String.loc('_geoshape_data'),
+    SURVEY_FORM: Ember.String.loc('_survey_form')
+  };
+  return reportTypeStrings[Ember.get(this, reportType)];
+});
+
+Ember.Handlebars.registerHelper("reportFilename", function (filename) {
+  var url = Ember.get(this, filename);
+  if (!url) {
+    return;
+  }
+  return url.split('/').pop().replace(/\s/g, '');
+});
+
+Ember.Handlebars.registerHelper("reportLink", function (filename) {
+  var url = Ember.get(this, filename);
+  return !url ? "#" : url;
+});
+
 FLOW.parseJSON = function(jsonString, property) {
   try {
     var jsonObject = JSON.parse(jsonString);
@@ -471,6 +516,31 @@ Ember.Handlebars.registerHelper('sgName', function (property) {
         return item.get && item.get('keyId') === sgId;
       });
   return sg && sg.get('name') || sgId;
+});
+
+Ember.Handlebars.registerHelper('surveyPath', function (property) {
+  var formId = Ember.get(this, property), path = "", sgs = FLOW.projectControl.get('content'), survey = null;
+  if (sgs) {
+    sgs.forEach(function(item) {
+      var surveysList = item.get('surveyList');
+      if (item.get && surveysList && surveysList.indexOf(formId) > -1) {
+        survey = item;
+      }
+    });
+    if (survey) {
+      var ancestorIds = survey.get('ancestorIds')
+      for (var i = 0; i < ancestorIds.length; i++) {
+        if (ancestorIds[i] !== null && ancestorIds[i] !== 0) {
+          var level = FLOW.SurveyGroup.find(ancestorIds[i]);
+          if (level) {
+            path += (i > 0 ? " > ": "")+level.get('name');
+          }
+        }
+      }
+      path += " > "+survey.get('name');
+    }
+  }
+  return path;
 });
 
 // Register a Handlebars helper that instantiates `view`.
@@ -745,10 +815,6 @@ FLOW.NavReportsView = Ember.View.extend({
   templateName: 'navReports/nav-reports'
 });
 
-FLOW.ExportReportsView = Ember.View.extend({
-  templateName: 'navReports/export-reports'
-});
-
 FLOW.ChartReportsView = Ember.View.extend({
   templateName: 'navReports/chart-reports'
 });
@@ -946,7 +1012,8 @@ FLOW.SelectFolder = Ember.Select.extend({
     this.set('optionLabelPath', 'content.code');
     this.set('optionValuePath', 'content.keyId');
     this.set('controller', FLOW.SurveySelection.create({ selectionFilter: this.get('selectionFilter')}));
-    this.set('content', this.get('controller').getByParentId(this.get('parentId'), this.get('showMonitoringSurveysOnly')));
+    this.set('content', this.get('controller').getByParentId(this.get('parentId'),
+      {monitoringSurveysOnly: this.get('showMonitoringSurveysOnly'), dataReadSurveysOnly: this.get('showDataReadSurveysOnly')}));
   },
 
   onChange: function() {
@@ -955,6 +1022,7 @@ FLOW.SelectFolder = Ember.Select.extend({
     var survey = this.get('controller').getSurvey(keyId);
     var nextIdx = this.get('idx') + 1;
     var monitoringOnly = this.get('showMonitoringSurveysOnly');
+    var dataReadOnly = this.get('showDataReadSurveysOnly');
     var filter = this.get('selectionFilter');
 
     if (nextIdx !== childViews.length) {
@@ -973,6 +1041,7 @@ FLOW.SelectFolder = Ember.Select.extend({
         parentId: keyId,
         idx: nextIdx,
         showMonitoringSurveysOnly: monitoringOnly,
+        showDataReadSurveysOnly: dataReadOnly,
         selectionFilter : filter
       }));
     }
@@ -990,7 +1059,8 @@ FLOW.SurveySelectionView = Ember.ContainerView.extend({
     this.get('childViews').pushObject(FLOW.SelectFolder.create({
       parentId: 0, // start with the root folder
       idx: 0,
-      showMonitoringSurveysOnly: this.get('showMonitoringSurveysOnly') || false
+      showMonitoringSurveysOnly: this.get('showMonitoringSurveysOnly') || false,
+      showDataReadSurveysOnly: this.get('showDataReadSurveysOnly') || false
     }));
   },
 })
@@ -1007,6 +1077,7 @@ FLOW.DataCleaningSurveySelectionView = Ember.ContainerView.extend({
       parentId: 0, // start with the root folder
       idx: 0,
       showMonitoringSurveysOnly: this.get('showMonitoringSurveysOnly') || false,
+      showDataReadSurveysOnly: this.get('showDataReadSurveysOnly') || false,
       selectionFilter : FLOW.projectControl.dataCleaningEnabled
     }));
   },

@@ -1,9 +1,9 @@
 <section id="main" class="mapFlow floats-in middleSection" role="main">
-  {{#if view.allowFilters}}
+  {{#if view.showSurveyFilters}}
       {{#unless FLOW.projectControl.isLoading}}
-        {{view FLOW.SurveySelectionView}}
+        {{view FLOW.SurveySelectionView showDataReadSurveysOnly=true}}
       {{/unless}}
-      {{#if FLOW.selectedControl.selectedSurveyGroup}}
+      {{#if view.showFormFilter}}
         {{view Ember.Select
             contentBinding="FLOW.surveyControl.arrangedContent"
             selectionBinding="view.selectedSurvey"
