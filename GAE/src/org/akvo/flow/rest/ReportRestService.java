@@ -189,6 +189,7 @@ public class ReportRestService {
                     // found the report, update selected properties
                     r.setState(reportDto.getState());
                     r.setMessage(reportDto.getMessage());
+                    r.setFilename(reportDto.getFilename());
                     r = reportDao.save(r); //Updates lastUpdateDateTime
                     dto = new ReportDto();
                     BeanUtils.copyProperties(r, dto);
