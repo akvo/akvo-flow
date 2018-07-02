@@ -519,7 +519,7 @@ Ember.Handlebars.registerHelper('sgName', function (property) {
 });
 
 Ember.Handlebars.registerHelper('surveyPath', function (property) {
-  var formId = Ember.get(this, property), path = Ember.String.loc('_root'), sgs = FLOW.projectControl.get('content'), survey = null;
+  var formId = Ember.get(this, property), path = "", sgs = FLOW.projectControl.get('content'), survey = null;
   if (sgs) {
     sgs.forEach(function(item) {
       var surveysList = item.get('surveyList');
@@ -533,7 +533,7 @@ Ember.Handlebars.registerHelper('surveyPath', function (property) {
         if (ancestorIds[i] !== null && ancestorIds[i] !== 0) {
           var level = FLOW.SurveyGroup.find(ancestorIds[i]);
           if (level) {
-            path += " > "+level.get('name');
+            path += (i > 0 ? " > ": "")+level.get('name');
           }
         }
       }
