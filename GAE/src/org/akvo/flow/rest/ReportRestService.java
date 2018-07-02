@@ -153,14 +153,21 @@ public class ReportRestService {
         RestStatusDto statusDto = null;
         statusDto = new RestStatusDto();
         statusDto.setStatus("failed");
-
-        // check if report exists in the datastore
-        if (r != null) {
-            // delete report group
-            reportDao.delete(r);
-            statusDto.setStatus("ok");
-        }
         response.put("meta", statusDto);
+
+        if (r == null) { //bad id
+        	statusDto.setMessage("Nonexistent id");
+        	return response;
+        }
+        Object deleter = SecurityContextHolder.getContext()
+                .getAuthentication().getCredentials();
+        if (r.getUser() == null || !r.getUser().equals(deleter)) { //wrong user
+        	statusDto.setMessage("You may not delete other users' reports");
+        	return response;
+        }
+        // ok, delete report
+        reportDao.delete(r);
+        statusDto.setStatus("ok");
         return response;
     }
 
