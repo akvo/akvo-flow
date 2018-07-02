@@ -204,8 +204,12 @@ public class ReportServlet extends AbstractRestApiServlet {
         criteria.opts.appId = SystemProperty.applicationId.get();
         criteria.opts.exportMode = r.getReportType();
         criteria.opts.reportId = r.getKey().getId();
-        criteria.opts.from = sdf.format(r.getStartDate());
-        criteria.opts.to = sdf.format(r.getEndDate());
+        if (r.getStartDate() != null) {
+        	criteria.opts.from = sdf.format(r.getStartDate());
+        }
+        if (r.getEndDate() != null) {
+        	criteria.opts.to = sdf.format(r.getEndDate());
+        }
         criteria.opts.lastCollection = r.getLastCollectionOnly();
         criteria.opts.questionId = r.getQuestionId();
         criteria.opts.imgPrefix = PropertyUtil.getProperty("photo_url_root");
