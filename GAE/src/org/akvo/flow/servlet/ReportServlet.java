@@ -72,6 +72,7 @@ public class ReportServlet extends AbstractRestApiServlet {
         public String uploadUrl;
         public String flowServices;
         public String appId;
+        public String email;
     }
 
     class ReportCriteria implements Serializable {
@@ -83,7 +84,6 @@ public class ReportServlet extends AbstractRestApiServlet {
         public String exportType;
         public String appId;
         public String surveyId;
-        public String email;
         public String baseURL;
     }
 
@@ -197,7 +197,6 @@ public class ReportServlet extends AbstractRestApiServlet {
         ReportCriteria criteria = new ReportCriteria();
         criteria.opts = new ReportOptions();
         criteria.appId = SystemProperty.applicationId.get();
-        criteria.email = email;
         criteria.surveyId = r.getFormId().toString();
         criteria.exportType = r.getReportType();
         criteria.baseURL = baseUrl;
@@ -215,6 +214,7 @@ public class ReportServlet extends AbstractRestApiServlet {
         criteria.opts.imgPrefix = PropertyUtil.getProperty("photo_url_root");
         criteria.opts.uploadUrl = PropertyUtil.getProperty("surveyuploadurl");
         criteria.opts.flowServices = PropertyUtil.getProperty("flowServices");
+        criteria.opts.email = email;
         ObjectMapper objectMapper = new ObjectMapper();
         String crit = java.net.URLEncoder.encode(objectMapper.writeValueAsString(criteria), "UTF-8");
 
