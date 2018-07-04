@@ -25,7 +25,7 @@ FLOW.ReportLoader = Ember.Object.create({
 
   showEmailNotification: function () {
     FLOW.savingMessageControl.numLoadingChange(-1);
-    FLOW.dialogControl.set('activeAction', 'ignore');
+    FLOW.dialogControl.set('activeAction', 'reports');
     FLOW.dialogControl.set('header', Ember.String.loc('_your_report_is_being_prepared'));
     FLOW.dialogControl.set('message', Ember.String.loc('_we_will_notify_via_email'));
     FLOW.dialogControl.set('showCANCEL', false);
