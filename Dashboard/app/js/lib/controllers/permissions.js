@@ -408,6 +408,10 @@ FLOW.dialogControl = Ember.Object.create({
         view.deleteResource(view, arguments);
         break;
 
+    case "reports":
+      FLOW.router.transitionTo('navData.reportsList');
+      break;
+
     default:
     }
   },
