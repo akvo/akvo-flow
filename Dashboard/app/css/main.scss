@@ -4020,13 +4020,9 @@ label.languageSelector:after {
 .reportsSection > div > div > section.reportTools select,
 .reportTools > div > select {}
 .dataSection {
-    min-height: 650px;
     height: auto;
 }
 #reportBlocks.reportTools {
-    min-height: 650px;    
-    height: auto;
-
     .geoshapeExport {
         .geoshapeSelect {
             > select {
