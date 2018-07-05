@@ -25,7 +25,7 @@ FLOW.ReportLoader = Ember.Object.create({
 
   showEmailNotification: function () {
     FLOW.savingMessageControl.numLoadingChange(-1);
-    FLOW.dialogControl.set('activeAction', 'ignore');
+    FLOW.dialogControl.set('activeAction', 'reports');
     FLOW.dialogControl.set('header', Ember.String.loc('_your_report_is_being_prepared'));
     FLOW.dialogControl.set('message', Ember.String.loc('_we_will_notify_via_email'));
     FLOW.dialogControl.set('showCANCEL', false);
@@ -216,7 +216,7 @@ FLOW.ExportReportTypeView = Ember.View.extend({
 
   eventManager: Ember.Object.create({
     click: function(event, clickedView){
-      var exportTypes = ["dataCleanExp", "dataAnalyseExp", "compReportExp", "geoshapeSelect", "surveyFormExp"];
+      var exportTypes = ["dataCleanExp", "dataAnalyseExp", "compReportExp", "geoShapeDataExp", "surveyFormExp"];
       if (exportTypes.indexOf(clickedView.get('export')) > -1) {
         var i, options, trigger;
         options = document.getElementsByClassName("options");

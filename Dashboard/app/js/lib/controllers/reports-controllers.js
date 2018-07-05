@@ -47,15 +47,7 @@ FLOW.ReportsController = Ember.ArrayController.extend({
     if (reports && !reports.isUpdating) {
       this.set('reportsAvailable', reports.content.length > 0);
 
-      var generatingReports = reports.filter(function(report) {
-        return report.get('state') === "IN_PROGRESS" || report.get('state') === "QUEUED";
-      });
-      //if reports are still generating, wait 5s and then reload
-      if (generatingReports.length > 0) {
-        setTimeout(function(){
-          FLOW.router.reportsController.set('content', FLOW.store.find(FLOW.Report));
-        }, 5000);
-      }
+      //TODO refresh reports list after checing if processing has completed
     }
   }.observes('content', 'content.isUpdating')
 });

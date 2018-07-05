@@ -1,5 +1,27 @@
 # Akvo Flow Release Notes
 ----
+# Akvo Flow Dashboard v1.9.34 - Groundbreaking Grass
+Date: 05th July 2018
+
+## New and noteworthy
+### Reports
+* Reports are not longer sent via email but accessible on a new reports list page [#2505]
+* Show date whether date filter was applied on a generated report on the reports list page [#2675]
+* Added filter to export only latest submissions of monitoring form to data point [#2340]
+* Created a new datatype and endpoint for reports [#2617]
+* Log who generates an export and only make available reports that a user has generated [#2610]
+* Added metadata and submissions data to geojson report export. [#1810]
+* Changed the email confirmation email sent when a report is ready for download [#1334]
+### Users
+* Show who has User admin role in User list [#2619]
+* Simplify user creation by not navigating away till all fields are set[#2403]
+* Removed API keys from UI [#2394]
+
+## Resolved issues
+* Importing new form responses through the data cleaning/upload no longer throws exception [#2709]
+* Remove logging of non-Spring auth when saving objects. [#2702]
+* Copy stripped off jar file to staging folder [#2756]
+
 # Akvo Flow Dashboard v1.9.33.2 - Fantastic Fern - (Hotfix 2)
 Date: 02nd July 2018
 

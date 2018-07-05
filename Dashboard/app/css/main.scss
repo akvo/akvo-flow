@@ -4019,12 +4019,9 @@ label.languageSelector:after {
 
 .reportsSection > div > div > section.reportTools select,
 .reportTools > div > select {}
-.dataSection {
+
+#reportsBlock.reportTools {
     min-height: 650px;
-    height: auto;
-}
-#reportBlocks.reportTools {
-    min-height: 650px;    
     height: auto;
 
     .geoshapeExport {
@@ -6214,7 +6211,6 @@ svg {
 
 .exportContainer {
     position: relative;
-    height: calc(100vh - 200px);
     .noExportMsg {
         position: absolute;
         top: 50%;
