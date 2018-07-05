@@ -216,7 +216,7 @@ FLOW.ExportReportTypeView = Ember.View.extend({
 
   eventManager: Ember.Object.create({
     click: function(event, clickedView){
-      var exportTypes = ["dataCleanExp", "dataAnalyseExp", "compReportExp", "geoshapeSelect", "surveyFormExp"];
+      var exportTypes = ["dataCleanExp", "dataAnalyseExp", "compReportExp", "geoShapeDataExp", "surveyFormExp"];
       if (exportTypes.indexOf(clickedView.get('export')) > -1) {
         var i, options, trigger;
         options = document.getElementsByClassName("options");
