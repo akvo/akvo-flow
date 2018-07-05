@@ -1,0 +1,44 @@
+      <div class="generatedExports">
+        <h1>{{t _generated_reports}}</h1>
+        <a {{action "exportNewReport" target="this"}} class="button exportNewBtn">{{t _new_export}}</a>
+      </div>
+      <section class="exportContainer">
+        {{#if FLOW.router.reportsController.reportsAvailable}}
+        <!-- Here is the list of exports generated-->
+        <ul class="exportList">
+          {{#each report in FLOW.router.reportsController}}{{#with report}}
+          <li class="{{reportType reportType}} {{reportStatus state}}">
+            <div class="exportInfo">
+              <a href="{{reportLink filename}}">
+
+                <h5>
+                  {{reportTypeString reportType}} - <span class="exportFileName">{{reportFilename filename}}</span>
+                  <span class="submissionsDate">
+                    {{#if lastCollectionOnly}}
+                    {{t _recent_submissions}}
+                    {{else}}
+                    {{#if startDate}}{{t _from}} {{date1 startDate}} {{/if}}{{#if endDate}}{{t _to}} {{date1 endDate}}{{/if}}
+                    {{/if}}
+                  </span>
+                </h5>
+
+              </a>
+              <span class="surveyPath">{{surveyPath formId}}</span>
+            </div>
+            <div class="exportStatus">
+              <span class="loading">{{t _generating}}</span>
+              <span class="exportDate">{{#if lastUpdateDateTime}}{{date1 lastUpdateDateTime}}{{/if}}</span>
+            </div>
+          </li>
+          {{/with}}{{/each}}
+        </ul>
+        <!-- End -->
+        {{else}}
+        <!-- This is the message you get if you have no exports -->
+        <div class="noExportMsg">
+          <h3>{{t _no_exports_yet}}</h3>
+          <p>{{t _click_new_export}}</p>
+        </div>
+        <!-- End -->
+        {{/if}}
+      </section>

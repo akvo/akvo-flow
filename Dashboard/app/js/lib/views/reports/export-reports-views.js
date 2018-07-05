@@ -1,135 +1,31 @@
 /*global Ember, $, FLOW */
 
 FLOW.ReportLoader = Ember.Object.create({
-  criteria: null,
-  timeout: 30000,
-  requestInterval: 3000,
-
-  payloads: {
-	DATA_CLEANING: {
-	  surveyId: '75201',
-	  exportType: 'DATA_CLEANING',
-	  opts: {
-		exportMode: 'DATA_CLEANING',
-		lastCollection: 'false',
-	  }
-	},
-	DATA_ANALYSIS: {
-	  surveyId: '75201',
-	  exportType: 'DATA_ANALYSIS',
-	  opts: {
-		exportMode: 'DATA_ANALYSIS',
-	  }
-	},
-    COMPREHENSIVE: {
-      surveyId: '75201',
-      exportType: 'COMPREHENSIVE',
-      opts: {
-        exportMode: 'COMPREHENSIVE',
-      }
-    },
-    GEOSHAPE: {
-      surveyId: '75201',
-      exportType: 'GEOSHAPE',
-      opts: {
-        questionId: '12345'
-      }
-    },
-    SURVEY_FORM: {
-      surveyId: '75201',
-      exportType: 'SURVEY_FORM',
-      opts: {}
-    }
-  },
-
   load: function (exportType, surveyId, opts) {
-    var criteria;
-
-    if (this.get('criteria')) {
-      return;
-    }
+    FLOW.selectedControl.set('selectedReportExport', FLOW.store.createRecord(FLOW.Report, {}));
+    var newReport = FLOW.selectedControl.get('selectedReportExport');
 
     Ember.assert('exportType param is required', exportType !== undefined);
     Ember.assert('surveyId param is required', surveyId !== undefined);
 
-    criteria = Ember.copy(this.get('payloads')[exportType]);
-    criteria.surveyId = '' + surveyId;
-    criteria.baseURL = location.protocol + '//' + location.host;
-
-    criteria.opts.imgPrefix = FLOW.Env.photo_url_root;
-    criteria.opts.uploadUrl = FLOW.Env.surveyuploadurl;
-    criteria.opts.appId = FLOW.Env.appId;
-
     if (opts) {
       Ember.keys(opts).forEach(function (k) {
-        criteria.opts[k] = opts[k];
+        newReport.set(k, opts[k])
       });
     }
 
-    criteria.opts.lastCollection = '' + (exportType === 'DATA_CLEANING' && FLOW.selectedControl.get('selectedSurveyGroup').get('monitoringGroup') && !!FLOW.editControl.lastCollection);
-    criteria.opts.email = FLOW.currentUser.email;
-    criteria.opts.flowServices = FLOW.Env.flowServices;
+    newReport.set('reportType', exportType);
+    newReport.set('formId', surveyId);
+    newReport.set('filename', '');
+    newReport.set('state', 'QUEUED');
 
-    this.set('criteria', criteria);
-    FLOW.savingMessageControl.numLoadingChange(1);
-    this.requestReport();
-  },
-
-  requestReport: function () {
-	this.set('processing', true);
-	$.ajax({
-	  url: FLOW.Env.flowServices + '/generate',
-	  data: {
-		criteria: JSON.stringify(this.get('criteria'))
-	  },
-	  jsonpCallback: 'FLOW.ReportLoader.handleResponse',
-	  dataType: 'jsonp',
-	  timeout: this.timeout
-	});
-
-	Ember.run.later(this, this.handleError, this.timeout);
-  },
-
-  handleResponse: function (resp) {
-    if (!resp || resp.status !== 'OK') {
-      FLOW.savingMessageControl.numLoadingChange(-1);
-      this.showError();
-      return;
-    }
-    if (resp.message === 'PROCESSING') {
-      this.set('processing', false);
-      this.showEmailNotification();
-    } else if (resp.file && this.get('processing')) {
-      FLOW.savingMessageControl.numLoadingChange(-1);
-      this.set('processing', false);
-      this.set('criteria', null);
-      $('#downloader').attr('src', FLOW.Env.flowServices + '/report/' + resp.file);
-    }
-  },
-
-  handleError: function () {
-    if (this.get('processing')) {
-      FLOW.savingMessageControl.numLoadingChange(-1);
-      this.showError();
-    }
-  },
-
-  showError: function () {
-	  FLOW.savingMessageControl.numLoadingChange(-1);
-    this.set('processing', false);
-    this.set('criteria', null);
-    FLOW.dialogControl.set('activeAction', 'ignore');
-    FLOW.dialogControl.set('header', Ember.String.loc('_error_generating_report'));
-    FLOW.dialogControl.set('message', Ember.String.loc('_error_generating_report_try_later'));
-    FLOW.dialogControl.set('showCANCEL', false);
-    FLOW.dialogControl.set('showDialog', true);
+    FLOW.store.commit();
+    this.showEmailNotification();
   },
 
   showEmailNotification: function () {
     FLOW.savingMessageControl.numLoadingChange(-1);
-    this.set('processing', false);
-    this.set('criteria', null);
-    FLOW.dialogControl.set('activeAction', 'ignore');
+    FLOW.dialogControl.set('activeAction', 'reports');
     FLOW.dialogControl.set('header', Ember.String.loc('_your_report_is_being_prepared'));
     FLOW.dialogControl.set('message', Ember.String.loc('_we_will_notify_via_email'));
     FLOW.dialogControl.set('showCANCEL', false);
@@ -137,7 +33,11 @@ FLOW.ReportLoader = Ember.Object.create({
   }
 });
 
-FLOW.ExportReportsAppletView = FLOW.View.extend({
+FLOW.ExportReportsView = Ember.View.extend({
+  templateName: 'navReports/export-reports'
+});
+
+FLOW.ExportReportTypeView = Ember.View.extend({
   showRawDataReportApplet: false,
   showComprehensiveReportApplet: false,
   showGoogleEarthFileApplet: false,
@@ -147,7 +47,21 @@ FLOW.ExportReportsAppletView = FLOW.View.extend({
   showGoogleEarthButton: false,
   reportFromDate: undefined,
   reportToDate: undefined,
-  
+  dateRangeDisabled: false,
+  rangeActive: "",
+  recentActive: "background-color: transparent;",
+  exportOption: "range",
+  dateRangeText: Ember.String.loc('_collection_period'),
+  onlyRecentText: Ember.String.loc('_only_recent_submissions'),
+  tagName: 'li',
+  classNames: 'trigger',
+
+  dateRangeDisabledObserver: function () {
+    this.set('rangeActive', this.get("exportOption") === "range" ? "" : "background-color: transparent;");
+    this.set('recentActive', this.get("exportOption") === "recent" ? "" : "background-color: transparent;");
+    this.set('dateRangeDisabled', this.get("exportOption") === "recent");
+  }.observes('this.exportOption'),
+
   setMinDate: function () {
     if (this.get('reportFromDate')) {
       this.$(".to_date").datepicker("option", "minDate", this.get("reportFromDate"))
@@ -164,8 +78,6 @@ FLOW.ExportReportsAppletView = FLOW.View.extend({
     FLOW.selectedControl.set('surveySelection', FLOW.SurveySelection.create());
     FLOW.selectedControl.set('selectedSurvey', null);
     FLOW.editControl.set('useQuestionId', false);
-    FLOW.dateControl.set('fromDate', null);
-    FLOW.dateControl.set('toDate', null);
     FLOW.uploader.registerEvents();
   },
 
@@ -186,24 +98,51 @@ FLOW.ExportReportsAppletView = FLOW.View.extend({
     }
   }.property('FLOW.selectedControl.selectedQuestion'),
 
-  showLastCollection: function () {
-    return FLOW.Env.showMonitoringFeature && FLOW.selectedControl.selectedSurveyGroup && FLOW.selectedControl.selectedSurveyGroup.get('monitoringGroup');
-  }.property('FLOW.selectedControl.selectedSurveyGroup'),
+  hideLastCollection: function () {
+    if (!FLOW.selectedControl.selectedSurvey) {
+      return true;
+    }
+    if (FLOW.selectedControl.selectedSurveyGroup && FLOW.selectedControl.selectedSurvey) {
+      //if not a monitoring form, export should be filtered by date
+      if (FLOW.selectedControl.selectedSurvey.get('keyId') == FLOW.selectedControl.selectedSurveyGroup.get('newLocaleSurveyId')) {
+        $('input:radio[name=cleaning-export-option]').filter('[value=range]').prop('checked', true);
+        $('input:radio[name=analysis-export-option]').filter('[value=range]').prop('checked', true);
+        this.set('rangeActive', "");
+        this.set('recentActive', "background-color: transparent; opacity: 0.5");
+      } else {
+        this.set('recentActive', "background-color: transparent;");
+      }
+    }
+    return !(FLOW.selectedControl.selectedSurveyGroup && FLOW.selectedControl.selectedSurveyGroup.get('monitoringGroup')
+      && FLOW.selectedControl.selectedSurvey.get('keyId') != FLOW.selectedControl.selectedSurveyGroup.get('newLocaleSurveyId'));
+  }.property('FLOW.selectedControl.selectedSurvey'),
 
   showDataCleaningReport: function () {
-    var opts = {from:this.get("reportFromDate"), to:this.get("reportToDate")};
+    var opts = {startDate:this.get("reportFromDate"), endDate:this.get("reportToDate"), lastCollectionOnly: this.get('exportOption') === "recent"};
     var sId = this.get('selectedSurvey');
+    if (!sId) {
+      this.showWarning();
+      return;
+    }
     FLOW.ReportLoader.load('DATA_CLEANING', sId, opts);
   },
 
   showDataAnalysisReport: function () {
-    var opts = {from:this.get("reportFromDate"), to:this.get("reportToDate")};
+    var opts = {startDate:this.get("reportFromDate"), endDate:this.get("reportToDate"), lastCollectionOnly: this.get('exportOption') === "recent"};
     var sId = this.get('selectedSurvey');
+    if (!sId) {
+      this.showWarning();
+      return;
+    }
     FLOW.ReportLoader.load('DATA_ANALYSIS', sId, opts);
   },
 
   showComprehensiveReport: function () {
     var opts = {}, sId = this.get('selectedSurvey');
+    if (!sId) {
+      this.showWarning();
+      return;
+    }
     FLOW.ReportLoader.load('COMPREHENSIVE', sId, opts);
   },
 
@@ -221,7 +160,7 @@ FLOW.ExportReportsAppletView = FLOW.View.extend({
   },
 
   showSurveyForm: function () {
-	var sId = this.get('selectedSurvey');
+    var sId = this.get('selectedSurvey');
     if (!sId) {
       this.showWarning();
       return;
@@ -273,5 +212,47 @@ FLOW.ExportReportsAppletView = FLOW.View.extend({
     FLOW.dialogControl.set('message', message);
     FLOW.dialogControl.set('showCANCEL', false);
     FLOW.dialogControl.set('showDialog', true);
+  },
+
+  eventManager: Ember.Object.create({
+    click: function(event, clickedView){
+      var exportTypes = ["dataCleanExp", "dataAnalyseExp", "compReportExp", "geoShapeDataExp", "surveyFormExp"];
+      if (exportTypes.indexOf(clickedView.get('export')) > -1) {
+        var i, options, trigger;
+        options = document.getElementsByClassName("options");
+        for (i = 0; i < options.length; i++) {
+          options[i].style.display = "none";
+        }
+        trigger = document.getElementsByClassName("trigger");
+        for (i = 0; i < trigger.length; i++) {
+          trigger[i].className = trigger[i].className.replace(" active", "");
+        }
+        document.getElementById(clickedView.get('export')).style.display = "block";
+        event.currentTarget.className += " active";
+
+        //by default select the range option
+        if (clickedView.get('export') == "dataCleanExp") {
+          if ($('input:radio[name=cleaning-export-option]').is(':checked') === false) {
+            $('input:radio[name=cleaning-export-option]').filter('[value=range]').prop('checked', true);
+          }
+        } else if (clickedView.get('export') == "dataAnalyseExp") {
+          if ($('input:radio[name=analysis-export-option]').is(':checked') === false) {
+            $('input:radio[name=analysis-export-option]').filter('[value=range]').prop('checked', true);
+          }
+        }
+      }
+    }
+  })
+});
+
+FLOW.ReportsListView = Ember.View.extend({
+  templateName: 'navReports/reports-list',
+
+  didInsertElement: function () {
+    FLOW.router.reportsController.populate();
+  },
+
+  exportNewReport: function () {
+    FLOW.router.transitionTo('navData.exportReports');
   }
 });

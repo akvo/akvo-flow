@@ -1,9 +1,12 @@
-<section class="fullWidth reportTools" id="reportBlocks">
-  {{#view FLOW.ExportReportsAppletView}}
+<section class="fullWidth reportTools" id="reportsBlock">
+  <div class="generatedExports">
+    <h1>{{t _new_export}}</h1>
+    <a {{action "doReportsList"}} class="button exportNewBtn">{{t _back_to_reports}}</a>
+  </div>
     <div class="surveySelect">
       <nav class="breadCrumb floats-in">
         {{#unless FLOW.projectControl.isLoading}}
-          {{view FLOW.SurveySelectionView}}
+          {{view FLOW.SurveySelectionView showDataReadSurveysOnly=true}}
         {{/unless}}
         {{#if FLOW.selectedControl.selectedSurveyGroup}}
           {{view Ember.Select
@@ -16,104 +19,84 @@
         {{/if}}
       </nav>
     </div>
-  {{/view}}
-    <script>
-      function openExportOptions(evt, exportName) {
-        var i, options, trigger;
-        options = document.getElementsByClassName("options");
-        for (i = 0; i < options.length; i++) {
-          options[i].style.display = "none";
-        }
-        trigger = document.getElementsByClassName("trigger");
-        for (i = 0; i < trigger.length; i++) {
-          trigger[i].className = trigger[i].className.replace(" active", "");
-        }
-        document.getElementById(exportName).style.display = "block";
-        evt.currentTarget.className += " active";
-       }
-    </script>
     <section class="exportContainer">
       <ul class="exportSelect">
-        <li class="dataCleanExp trigger" onclick="openExportOptions(event, 'dataCleanExp_options')">
+        {{#view FLOW.ExportReportTypeView class="dataCleanExp" export="dataCleanExp"}}
           <h2>{{t _data_cleaning_export}}</h2>
           <h6>{{t _importable_back_to_akvo_flow}}</h6>
           <p class="expDescr">{{t _combines_options}}</p>
-        {{#view FLOW.ExportReportsAppletView}}
-          <div id="dataCleanExp_options" class="options">
-              <div class="dataCollectedDate">
-                <p>{{t _collection_period}}</p>
-                <label class="collectedFrom">
-                  {{view FLOW.DateField2 valueBinding="view.reportFromDate" class="from_date" placeholder="" placeholderBinding="Ember.STRINGS._collected_from" size=30}}
-                </label>
-                <label class="collectedTo">
-                  {{view FLOW.DateField2 valueBinding="view.reportToDate" class="to_date" placeholder="" placeholderBinding="Ember.STRINGS._to" size=30}}
-                </label>
+          <div id="dataCleanExp" class="options">
+            <div class="dataCollectedDate" {{bindAttr style="view.rangeActive"}}>
+              <p>{{view Em.RadioButton titleBinding="view.dateRangeText" valueBinding="view.exportOption" option="range" group="cleaning-export-option"}}</p>
+              <label class="collectedFrom dateInput">
+                {{view FLOW.DateField2 valueBinding="view.reportFromDate" class="from_date" placeholder="" placeholderBinding="Ember.STRINGS._collected_from" size=30 disabledBinding="view.dateRangeDisabled"}}
+              </label>
+              <label class="collectedTo dateInput">
+                {{view FLOW.DateField2 valueBinding="view.reportToDate" class="to_date" placeholder="" placeholderBinding="Ember.STRINGS._to" size=30 disabledBinding="view.dateRangeDisabled"}}
+              </label>
             </div>
-            <a {{action showDataCleaningReport target="this"}} class="button trigger2">{{t _download}}</a>
+            <div class="dataCollectedDate" {{bindAttr style="view.recentActive"}}>
+            {{view Em.RadioButton titleBinding="view.onlyRecentText" valueBinding="view.exportOption" option="recent" group="cleaning-export-option" disabledBinding="view.hideLastCollection"}}
+            </div>
+            <a {{action showDataCleaningReport target="this"}} class="button trigger2">{{t _generate}}</a>
           </div>
         {{/view}}
-        </li>
-        <li class="dataAnalyseExp trigger" onclick="openExportOptions(event, 'dataAnalyseExp_options')">
+        {{#view FLOW.ExportReportTypeView class="dataAnalyseExp" export="dataAnalyseExp"}}
           <h2>{{t _data_analysis_export}}</h2>
           <h6>{{t _not_importable_back}}</h6>
-          <p class="expDescr">{{t _replaces_question}}</p>  
-          {{#view FLOW.ExportReportsAppletView}}
-            <div id="dataAnalyseExp_options" class="options">
-              <div class="dataCollectedDate">
-                <p>{{t _collection_period}}</p>
-                <label class="collectedFrom">
-                   {{view FLOW.DateField2 minDate=false valueBinding="view.reportFromDate" class="from_date" placeholder="" placeholderBinding="Ember.STRINGS._collected_from" size=30}}
-                </label>
-                <label class="collectedTo">
-                  {{view FLOW.DateField2 minDate=false valueBinding="view.reportToDate" class="to_date" placeholder="" placeholderBinding="Ember.STRINGS._to" size=30}}
-                </label>
-              </div>
-              <a {{action showDataAnalysisReport target="this"}} class="button trigger2">{{t _download}}</a>
+          <p class="expDescr">{{t _replaces_question}}</p>
+          <div id="dataAnalyseExp" class="options">
+            <div class="dataCollectedDate" {{bindAttr style="view.rangeActive"}}>
+              <p>{{view Em.RadioButton titleBinding="view.dateRangeText" valueBinding="view.exportOption" option="range" group="analysis-export-option"}}</p>
+              <label class="collectedFrom dateInput">
+                 {{view FLOW.DateField2 minDate=false valueBinding="view.reportFromDate" class="from_date" placeholder="" placeholderBinding="Ember.STRINGS._collected_from" size=30 disabledBinding="view.dateRangeDisabled"}}
+              </label>
+              <label class="collectedTo dateInput">
+                {{view FLOW.DateField2 minDate=false valueBinding="view.reportToDate" class="to_date" placeholder="" placeholderBinding="Ember.STRINGS._to" size=30 disabledBinding="view.dateRangeDisabled"}}
+              </label>
             </div>
-          {{/view}}
-          </li>
-          <li class="compReportExp trigger"  onclick="openExportOptions(event, 'compReportExp_options')">
-            <h2>{{t _comprehensive_report}}</h2>
-            <h6>{{t _not_importable_back}}</h6>
-            <p class="expDescr">{{t _summarizes_responses}}</p>
-            {{#view FLOW.ExportReportsAppletView}}
-            <div id="compReportExp_options" class="options">
-              <a {{action showComprehensiveReport target="this"}} class="button trigger2">{{t _download}}</a>
+            <div class="dataCollectedDate" {{bindAttr style="view.recentActive"}}>
+            {{view Em.RadioButton titleBinding="view.onlyRecentText" valueBinding="view.exportOption" option="recent" group="analysis-export-option" disabledBinding="view.hideLastCollection"}}
             </div>
-            {{/view}}
-          </li>
-          <li class="geoShapeDataExp trigger"  onclick="openExportOptions(event, 'geoShapeDataExp_options')">
-            <h2>{{t _geoshape_data}}</h2>
-            <p class="expDescr">{{t _geojson}}</p>
-              <div class="geoshapeSelect">
-              {{#if FLOW.selectedControl.selectedSurvey}}
-                {{view Ember.Select
-                    contentBinding="FLOW.questionControl.geoshapeContent"
-                    selectionBinding="FLOW.selectedControl.selectedQuestion"
-                    optionLabelPath="content.text"
-                    optionValuePath="content.keyId"
-                    prompt=""
-                    promptBinding="Ember.STRINGS._select_question"}}
-              {{/if}}
-            </div>
-            {{#view FLOW.ExportReportsAppletView}}
-            <div id="geoShapeDataExp_options" class="options">
-              <a {{action showGeoshapeReport target="this"}} class="button trigger2">{{t _download}}</a>
-            </div>
-            {{/view}}
-        </li>
-        <li class="surveyFormExp trigger"  onclick="openExportOptions(event, 'surveyFormExp_options')">
+            <a {{action showDataAnalysisReport target="this"}} class="button trigger2">{{t _generate}}</a>
+          </div>
+        {{/view}}
+        {{#view FLOW.ExportReportTypeView class="compReportExp" export="compReportExp"}}
+          <h2>{{t _comprehensive_report}}</h2>
+          <h6>{{t _not_importable_back}}</h6>
+          <p class="expDescr">{{t _summarizes_responses}}</p>
+          <div id="compReportExp" class="options">
+            <a {{action showComprehensiveReport target="this"}} class="button trigger2">{{t _generate}}</a>
+          </div>
+        {{/view}}
+        {{#view FLOW.ExportReportTypeView class="geoShapeDataExp" export="geoShapeDataExp"}}
+          <h2>{{t _geoshape_data}}</h2>
+          <p class="expDescr">{{t _geojson}}</p>
+          <div class="geoshapeSelect">
+            {{#if FLOW.selectedControl.selectedSurvey}}
+              {{view Ember.Select
+                contentBinding="FLOW.questionControl.geoshapeContent"
+                selectionBinding="FLOW.selectedControl.selectedQuestion"
+                optionLabelPath="content.text"
+                optionValuePath="content.keyId"
+                prompt=""
+                promptBinding="Ember.STRINGS._select_question"}}
+            {{/if}}
+          </div>
+          <div id="geoShapeDataExp" class="options">
+            <a {{action showGeoshapeReport target="this"}} class="button trigger2">{{t _generate}}</a>
+          </div>
+        {{/view}}
+        {{#view FLOW.ExportReportTypeView class="surveyFormExp" export="surveyFormExp"}}
           <h2>{{t _survey_form}}</h2>
           <p class="expDescr">{{t _printable}}</p>
-          {{#view FLOW.ExportReportsAppletView}}
-          <div id="surveyFormExp_options" class="options">
-            <a {{action showSurveyForm target="this"}} class="button trigger2">{{t _download}}</a>
-              {{#if view.showSurveyFormApplet }}
-                {{view FLOW.surveyFormApplet}}
-              {{/if}}
+          <div id="surveyFormExp" class="options">
+            <a {{action showSurveyForm target="this"}} class="button trigger2">{{t _generate}}</a>
+            {{#if view.showSurveyFormApplet }}
+            {{view FLOW.surveyFormApplet}}
+            {{/if}}
           </div>
-          {{/view}}
-      </li>
+        {{/view}}
     </ul>
   </section>
 </section>

@@ -254,10 +254,10 @@ FLOW.permControl = Ember.Controller.create({
       return false;
   }.property(),
 
-  userCanViewData: function (form) {
+  userCanViewData: function (entity) {
     var permissions;
-    if (!Ember.none(form)) {
-      permissions = this.permissions(form);
+    if (!Ember.none(entity)) {
+      permissions = this.permissions(entity);
     }
     return permissions && permissions.indexOf("DATA_READ") > -1;
   }
@@ -407,6 +407,10 @@ FLOW.dialogControl = Ember.Object.create({
         this.set('showDialog', false);
         view.deleteResource(view, arguments);
         break;
+
+    case "reports":
+      FLOW.router.transitionTo('navData.reportsList');
+      break;
 
     default:
     }

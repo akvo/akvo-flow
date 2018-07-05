@@ -32,17 +32,14 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import net.sf.jsr107cache.Cache;
 import net.sf.jsr107cache.CacheException;
 
 import org.apache.commons.lang.StringUtils;
 import org.waterforpeople.mapping.app.web.dto.DataProcessorRequest;
 import org.waterforpeople.mapping.app.web.rest.security.AppRole;
 import org.waterforpeople.mapping.app.web.test.DeleteObjectUtil;
-import org.waterforpeople.mapping.dao.AccessPointDao;
 import org.waterforpeople.mapping.dao.QuestionAnswerStoreDao;
 import org.waterforpeople.mapping.dao.SurveyInstanceDAO;
-import org.waterforpeople.mapping.domain.AccessPoint;
 import org.waterforpeople.mapping.domain.QuestionAnswerStore;
 import org.waterforpeople.mapping.domain.SurveyInstance;
 
@@ -120,21 +117,6 @@ public class TestHarnessServlet extends HttpServlet {
             } catch (IOException e) {
                 // TODO Auto-generated catch block
                 e.printStackTrace();
-            }
-        } else if ("generateGeocells".equals(action)) {
-            AccessPointDao apDao = new AccessPointDao();
-            List<AccessPoint> apList = apDao.list(null);
-            if (apList != null) {
-                for (AccessPoint ap : apList) {
-
-                    if (ap.getGeocells() == null || ap.getGeocells().size() == 0) {
-                        if (ap.getLatitude() != null && ap.getLongitude() != null) {
-                            ap.setGeocells(GeocellManager.generateGeoCell(new Point(ap
-                                    .getLatitude(), ap.getLongitude())));
-                            apDao.save(ap);
-                        }
-                    }
-                }
             }
         } else if ("importsinglesurvey".equals(action)) {
             TaskOptions options = TaskOptions.Builder

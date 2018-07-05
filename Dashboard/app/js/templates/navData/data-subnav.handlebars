@@ -11,7 +11,7 @@
       <a {{action doChartReports}}>{{t _charts}}</a>
     {{/view}}
     {{#view view.NavItemView item="exportReports" }}
-    	<a {{action doExportReports}}>{{t _export_reports}}</a>
+    	<a {{action doReportsList}}>{{t _export_reports}}</a>
     {{/view}}
     {{#view view.NavItemView item="bulkUpload" }}
     <a {{action doBulkUpload}}>{{t _bulk_upload_data}}</a>
@@ -31,5 +31,4 @@
         <a {{action doDataApproval}}>{{t _data_approval}}</a>
         {{/if}}
     {{/view}}
-</ul> 
-  
+</ul>

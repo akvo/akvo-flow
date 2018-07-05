@@ -18,6 +18,7 @@ package com.gallatinsystems.surveyal.app.web;
 
 import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.Date;
 import java.util.GregorianCalendar;
 import java.util.HashMap;
 import java.util.List;
@@ -284,7 +285,7 @@ public class SurveyalRestServlet extends AbstractRestApiServlet {
         locale.addContributingSurveyInstance(surveyInstance.getKey().getId());
 
         // last update of the locale information
-        locale.setLastSurveyedDate(surveyInstance.getCollectionDate());
+        locale.setLastSurveyedDate(new Date(surveyInstance.getCollectionDate().getTime()));
         locale.setLastSurveyalInstanceId(surveyInstance.getKey().getId());
 
         log.log(Level.FINE, "SurveyLocale at this point " + locale.toString());

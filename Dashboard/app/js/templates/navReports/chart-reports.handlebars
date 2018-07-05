@@ -1,7 +1,7 @@
  <section class="fullWidth reportTools" id="reportBlocks">
     {{#view FLOW.chartView}}
       {{#unless FLOW.projectControl.isLoading}}
-        {{view FLOW.SurveySelectionView}}
+        {{view FLOW.SurveySelectionView showDataReadSurveysOnly=true}}
       {{/unless}}
       <span class=""></span>
       {{#if FLOW.selectedControl.selectedSurvey}}

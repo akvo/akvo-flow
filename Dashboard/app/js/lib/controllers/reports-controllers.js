@@ -31,3 +31,23 @@ FLOW.chartTypeControl = Ember.Object.create({
     })
   ]
 });
+
+FLOW.ReportsController = Ember.ArrayController.extend({
+  sortProperties: ["createdDateTime"],
+  sortAscending: false,
+  content: null,
+  reportsAvailable: false,
+
+  populate: function () {
+    this.set('content', FLOW.store.find(FLOW.Report));
+  },
+
+  reportsObserver: function () {
+    var reports = this.get('content');
+    if (reports && !reports.isUpdating) {
+      this.set('reportsAvailable', reports.content.length > 0);
+
+      //TODO refresh reports list after checing if processing has completed
+    }
+  }.observes('content', 'content.isUpdating')
+});

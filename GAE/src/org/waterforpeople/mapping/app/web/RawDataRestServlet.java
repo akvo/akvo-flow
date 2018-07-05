@@ -238,6 +238,7 @@ public class RawDataRestServlet extends AbstractRestApiServlet {
                 locale.assembleDisplayName(
                         qDao.listDisplayNameQuestionsBySurveyId(s.getKey().getId()), updatedAnswers);
 
+                updateDataPointLocation(locale, updatedAnswers);
                 locale = slDao.save(locale);
                 instance.setSurveyedLocaleId(locale.getKey().getId());
                 instanceDao.save(instance);
