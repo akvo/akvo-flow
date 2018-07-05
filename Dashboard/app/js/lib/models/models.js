@@ -515,6 +515,7 @@ FLOW.Report = FLOW.BaseModel.extend({
   endDate: DS.attr('string'),
   message: DS.attr('string'),
   filename: DS.attr('string'),
+  questionId: DS.attr('number'),
   createdDateTime: DS.attr('number'),
   lastUpdateDateTime: DS.attr('number'),
   lastCollectionOnly: DS.attr('boolean', {
