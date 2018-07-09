@@ -653,7 +653,7 @@ public class RawDataSpreadsheetImporter implements DataImporter {
                         for (String optionNode : optionParts) {
                             optionList.add(parsedOptionValue(optionNode, false));
                         }
-                   }
+                    }
 
                     //Handle "other" data (even if there is nothing else)
                     if (Boolean.TRUE.equals(questionDto.getAllowOtherFlag())) {
