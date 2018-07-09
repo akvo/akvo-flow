@@ -71,7 +71,8 @@ public class SurveyInstanceHandler {
         si.setSurveyedLocaleIdentifier(formInstance.getDataPointId());
         si.setUuid(formInstance.getUUID());
         si.setQuestionAnswersStore(new ArrayList<QuestionAnswerStore>());
-
+        si.setFormVersion(formInstance.getFormVersion());
+        
         // Process form responses
         for (Response response : formInstance.getResponses()) {
             QuestionAnswerStore qas = new QuestionAnswerStore();
