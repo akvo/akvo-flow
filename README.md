@@ -99,6 +99,17 @@ Then read the Flow Services documentation for the Flow Services specific instruc
 The DNS alias is required because the UI is sending to Flow Services the baseUrl of the Flow service, which Flow Services needs to resolve to the Flow container.
 The way Docker works, this baseUrl cannot be "localhost", as "localhost" for the Flow Service container is itself. 
 Adding a DNS entry allows for one level of indirection where "akvoflow.local" will be resolved to "127.0.0.1" for the Browser, while it resolves to the flow container for the flow-services container.
+
+#### Changing report Java classes
+
+Once you have both flow and flow services running, if you are making changes to the Java report classes used in flow-services, 
+you will need to run:
+
+    docker-compose exec -u akvo akvo-flow /bin/bash -c "cd GAE && mvn install"
+
+To package and install the Flow jar in your local maven repository. Then you can use this Flow jar as a dependency 
+in your local Flow Services dev environment. See Flow Services README for how to set it up.
+
        
 ---
 
