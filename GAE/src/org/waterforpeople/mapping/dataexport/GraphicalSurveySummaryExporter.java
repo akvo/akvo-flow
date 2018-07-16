@@ -1127,8 +1127,11 @@ public class GraphicalSurveySummaryExporter extends SurveySummaryExporter {
         //otherwise: if last and the text is not in option list
         Map<String, String> otherNode = null;
         String other = null;
-        int numOptions = options.size();
-        boolean[] optionFound = new boolean[numOptions];
+        int numOptions = 0;
+        if (options != null) {
+        	numOptions = options.size();
+        }
+        boolean[] optionFound = new boolean[numOptions]; //Zero-length array ok
 
         // if needed, scan options
         if (allowOther || (splitIntoColumns && allowMultiple)) { //Split options into own columns, if multiselect
