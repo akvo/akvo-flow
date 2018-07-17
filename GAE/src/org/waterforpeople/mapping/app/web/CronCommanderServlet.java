@@ -83,10 +83,7 @@ public class CronCommanderServlet extends HttpServlet {
         ReportDao reportDao = new ReportDao();
         List<Report> reportList = reportDao.listAllCreatedBefore(deadline.getTime());
         log.fine("Attempting to retire " + reportList.size() + " old Report entries");
-    	//TODO delete files from file store
-        //If that succeeded:
         reportDao.delete(reportList);
-        //TODO: check for too-long IN_PROGRESS? Then we need to list all, not just old.
     }
 
     /**
