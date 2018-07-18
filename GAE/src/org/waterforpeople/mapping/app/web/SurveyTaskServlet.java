@@ -16,16 +16,11 @@
 
 package org.waterforpeople.mapping.app.web;
 
-import java.util.List;
-import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import javax.servlet.http.HttpServletRequest;
 
 import org.waterforpeople.mapping.app.web.dto.SurveyTaskRequest;
-import org.waterforpeople.mapping.dao.SurveyInstanceDAO;
-import org.waterforpeople.mapping.domain.SurveyInstance;
-
 import com.gallatinsystems.device.dao.DeviceFileJobQueueDAO;
 import com.gallatinsystems.framework.rest.AbstractRestApiServlet;
 import com.gallatinsystems.framework.rest.RestRequest;
@@ -40,22 +35,12 @@ import com.gallatinsystems.survey.dao.TranslationDao;
 import com.gallatinsystems.survey.domain.Question;
 import com.gallatinsystems.survey.domain.QuestionGroup;
 import com.gallatinsystems.survey.domain.Survey;
-import com.google.appengine.api.taskqueue.Queue;
-import com.google.appengine.api.taskqueue.QueueFactory;
-import com.google.appengine.api.taskqueue.TaskOptions;
 
 public class SurveyTaskServlet extends AbstractRestApiServlet {
     private static final Logger log = Logger.getLogger(SurveyTaskServlet.class
             .getName());
 
     private static final long serialVersionUID = -9064136783930675167L;
-
-
-    private SurveyInstanceDAO siDao;
-
-    public SurveyTaskServlet() {
-        siDao = new SurveyInstanceDAO();
-    }
 
     @Override
     protected RestRequest convertRequest() throws Exception {
