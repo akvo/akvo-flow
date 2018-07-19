@@ -153,18 +153,18 @@ public class SurveyFormExporterFull implements DataExporter {
                 int firstRowInGroup = startRow + count;
                 for (QuestionDto q : questions.get(groupList.get(i))) {
                     // create the row
-                    String optionsList = null;
+                    String optionsList = null; //TODO
                     int r = startRow + count;
                     count++;
                     HSSFRow row = sheet.createRow(r);
                     if (r == firstRowInGroup) { // only once per group
                         createCell(row, 0, Long.valueOf(i), headerStyle);
                         createCell(row, 1, groupList.get(i).getDisplayName(), headerStyle);
-                        createCell(row, 2, groupList.get(i).getRepeatable().toString(), headerStyle);
+                        createCell(row, 2, groupList.get(i).getRepeatable(), headerStyle);
                     }
                     createCell(row, 3, Long.valueOf(q.getOrder()), headerStyle);
                     createCell(row, 4, Long.valueOf(count), headerStyle);
-                    createCell(row, 5, q.getText(), headerStyle);
+                    createCell(row, 5, q.getText(), headerStyle); //TODO translations
                     // Scrolling part(?)
                     createCell(row, 6, q.getTip(), null);
                     createCell(row, 7, q.getVariableName(), null);
@@ -242,7 +242,7 @@ public class SurveyFormExporterFull implements DataExporter {
         createCellBlock(row, ++c, "Dependency", style, 3); // 3 wide
 
         row = sheet.createRow(r++);
-        c = 11;
+        c = 10;
         // Text and numbers
         createCell(row, ++c, "Allow external source", style);
         createCell(row, ++c, "Confirmation required", style);
@@ -325,8 +325,8 @@ public class SurveyFormExporterFull implements DataExporter {
         if (style != null) {
             cell.setCellStyle(style);
         }
-        if (value != null) {
-            cell.setCellValue(value);
+        if (value != null && value) {
+            cell.setCellValue("Yes");
         }
         return cell;
     }
