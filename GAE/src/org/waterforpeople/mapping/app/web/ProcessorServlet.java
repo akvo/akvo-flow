@@ -134,15 +134,18 @@ public class ProcessorServlet extends HttpServlet {
             dfDao.delete(missing);
         } else if (action.equals("cascade")) {
             Long crId = null;
-            final String status = req.getParameter("status");
+            final String status = StringUtils.trim(req.getParameter("status"));
+            final String message = StringUtils.trim(req.getParameter("message"));
             final CascadeResourceDao crDao = new CascadeResourceDao();
 
+
             try {
-                crId = Long.valueOf(req.getParameter("cascadeResourceId"));
+                crId = Long.valueOf(StringUtils.trim(req.getParameter("cascadeResourceId")));
             } catch (NumberFormatException e) {
             }
 
             if (crId == null || status == null) {
+                log.warning(String.format("Invalid processor request - [resourceId: %s , status: %s]", crId, status));
                 return;
             }
 
@@ -162,7 +165,11 @@ public class ProcessorServlet extends HttpServlet {
                 m.setShortMessage("Cascade resource " + cr.getName() + " successfully published");
             } else {
                 cr.setStatus(Status.NOT_PUBLISHED);
-                m.setShortMessage("Failed to publish cascade resource " + cr.getName());
+                String errorMessage = "Failed to publish cascade resource " + cr.getName();
+                if (StringUtils.isNotBlank(message)) {
+                    errorMessage = errorMessage + " - Error: " + message;
+                }
+                m.setShortMessage(errorMessage);
             }
 
             crDao.save(cr);
