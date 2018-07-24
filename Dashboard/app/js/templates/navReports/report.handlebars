@@ -1,6 +1,6 @@
-<li class="{{unbound view.reportType}} {{unbound view.reportStatus}}">
+<li {{bindAttr class="view.reportType view.reportStatus"}}>
   <div class="exportInfo">
-    <a href="{{unbound view.reportLink}}">
+    <a {{bindAttr href="view.reportLink"}}>
 
       <h5>
         {{view.reportTypeString}} - <span class="exportFileName">{{view.reportFilename}}</span>
