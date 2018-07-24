@@ -359,53 +359,8 @@ Ember.Handlebars.registerHelper("date1", function (property) {
 Ember.Handlebars.registerHelper("date3", function (property) {
   var d, curr_date, curr_month, curr_year, monthString, dateString;
   if (Ember.get(this, property) !== null) {
-    return renderTimeStamp(Ember.get(this, property));
+    return FLOW.renderTimeStamp(Ember.get(this, property));
   }
-});
-
-Ember.Handlebars.registerHelper("reportType", function (reportType) {
-  var reportTypeClasses = {
-    DATA_CLEANING: "dataCleanExp",
-    DATA_ANALYSIS: "dataAnalyseExp",
-    COMPREHENSIVE: "compReportExp",
-    GEOSHAPE: "geoShapeDataExp",
-    SURVEY_FORM: "surveyFormExp"
-  };
-  return reportTypeClasses[Ember.get(this, reportType)];
-});
-
-Ember.Handlebars.registerHelper("reportStatus", function (state) {
-  var reportStates = {
-    IN_PROGRESS: "exportGenerating",
-    QUEUED: "exportGenerating",
-    FINISHED_SUCCESS: "",
-    FINISHED_ERROR: ""
-  };
-  return reportStates[Ember.get(this, state)];
-});
-
-Ember.Handlebars.registerHelper("reportTypeString", function (reportType) {
-  var reportTypeStrings = {
-    DATA_CLEANING: Ember.String.loc('_data_cleaning_export'),
-    DATA_ANALYSIS: Ember.String.loc('_data_analysis_export'),
-    COMPREHENSIVE: Ember.String.loc('_comprehensive_report'),
-    GEOSHAPE: Ember.String.loc('_geoshape_data'),
-    SURVEY_FORM: Ember.String.loc('_survey_form')
-  };
-  return reportTypeStrings[Ember.get(this, reportType)];
-});
-
-Ember.Handlebars.registerHelper("reportFilename", function (filename) {
-  var url = Ember.get(this, filename);
-  if (!url) {
-    return;
-  }
-  return url.split('/').pop().replace(/\s/g, '');
-});
-
-Ember.Handlebars.registerHelper("reportLink", function (filename) {
-  var url = Ember.get(this, filename);
-  return !url ? "#" : url;
 });
 
 FLOW.parseJSON = function(jsonString, property) {
@@ -523,31 +478,6 @@ Ember.Handlebars.registerHelper('sgName', function (property) {
         return item.get && item.get('keyId') === sgId;
       });
   return sg && sg.get('name') || sgId;
-});
-
-Ember.Handlebars.registerHelper('surveyPath', function (property) {
-  var formId = Ember.get(this, property), path = "", sgs = FLOW.projectControl.get('content'), survey = null;
-  if (sgs) {
-    sgs.forEach(function(item) {
-      var surveysList = item.get('surveyList');
-      if (item.get && surveysList && surveysList.indexOf(formId) > -1) {
-        survey = item;
-      }
-    });
-    if (survey) {
-      var ancestorIds = survey.get('ancestorIds')
-      for (var i = 0; i < ancestorIds.length; i++) {
-        if (ancestorIds[i] !== null && ancestorIds[i] !== 0) {
-          var level = FLOW.SurveyGroup.find(ancestorIds[i]);
-          if (level) {
-            path += (i > 0 ? " > ": "")+level.get('name');
-          }
-        }
-      }
-      path += " > "+survey.get('name');
-    }
-  }
-  return path;
 });
 
 // Register a Handlebars helper that instantiates `view`.
