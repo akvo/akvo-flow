@@ -177,7 +177,7 @@ Ember.Handlebars.registerHelper('placemarkDetail', function () {
     answer = answer && '<img src="' + answer + '" />';
     answer = answer && answer + '<div>' + Ember.String.loc('_signed_by') + ':' + signatureJson.name + '</div>' || '';
   } else if (questionType === 'DATE') {
-    answer = renderTimeStamp(answer);
+    answer = FLOW.renderTimeStamp(answer);
   } else if (questionType === 'CADDISFLY'){
     answer = FLOW.renderCaddisflyAnswer(answer)
   } else if (questionType === 'GEOSHAPE') {
@@ -232,7 +232,7 @@ Ember.Handlebars.registerHelper('drawGeoshapes', function () {
 
 /*  Take a timestamp and render it as a date in format
     YYYY-mm-dd */
-function renderTimeStamp(timestamp) {
+FLOW.renderTimeStamp = function(timestamp) {
   var d, t, date, month, year;
   t = parseInt(timestamp, 10);
   if (isNaN(t)) {
@@ -262,6 +262,44 @@ function renderTimeStamp(timestamp) {
 
   return year + "-" + monthString + "-" + dateString;
 }
+
+FLOW.renderDate = function(timestamp){
+  if (timestamp) {
+    d = new Date(parseInt(timestamp, 10));
+    curr_date = d.getDate();
+    curr_month = d.getMonth() + 1;
+    curr_year = d.getFullYear();
+    curr_hour = d.getHours();
+    curr_min = d.getMinutes();
+
+    if (curr_month < 10) {
+      monthString = "0" + curr_month.toString();
+    } else {
+      monthString = curr_month.toString();
+    }
+
+    if (curr_date < 10) {
+      dateString = "0" + curr_date.toString();
+    } else {
+      dateString = curr_date.toString();
+    }
+
+    if (curr_hour < 10) {
+      hourString = "0" + curr_hour.toString();
+    } else {
+      hourString = curr_hour.toString();
+    }
+
+    if (curr_min < 10) {
+      minString = "0" + curr_min.toString();
+    } else {
+      minString = curr_min.toString();
+    }
+
+    return curr_year + "-" + monthString + "-" + dateString + "  " + hourString + ":" + minString;
+  }
+  return;
+};
 
 // translates values to labels for languages
 Ember.Handlebars.registerHelper('toLanguage', function (value) {
@@ -311,38 +349,7 @@ Ember.Handlebars.registerHelper("date", function (property) {
 Ember.Handlebars.registerHelper("date1", function (property) {
   var d, curr_date, curr_month, curr_year, curr_hour, curr_min, monthString, dateString, hourString, minString;
   if (Ember.get(this, property) !== null) {
-    d = new Date(parseInt(Ember.get(this, property), 10));
-    curr_date = d.getDate();
-    curr_month = d.getMonth() + 1;
-    curr_year = d.getFullYear();
-    curr_hour = d.getHours();
-    curr_min = d.getMinutes();
-
-    if (curr_month < 10) {
-      monthString = "0" + curr_month.toString();
-    } else {
-      monthString = curr_month.toString();
-    }
-
-    if (curr_date < 10) {
-      dateString = "0" + curr_date.toString();
-    } else {
-      dateString = curr_date.toString();
-    }
-
-    if (curr_hour < 10) {
-      hourString = "0" + curr_hour.toString();
-    } else {
-      hourString = curr_hour.toString();
-    }
-
-    if (curr_min < 10) {
-      minString = "0" + curr_min.toString();
-    } else {
-      minString = curr_min.toString();
-    }
-
-    return curr_year + "-" + monthString + "-" + dateString + "  " + hourString + ":" + minString;
+    return FLOW.renderDate(Ember.get(this, property));
   } else {
     return "";
   }
