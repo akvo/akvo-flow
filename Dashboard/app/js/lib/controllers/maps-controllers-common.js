@@ -125,19 +125,11 @@ FLOW.MapsController = Ember.ArrayController.extend({
             }
 
             // now toggle this one
-            if (marker.target.options.selected) {
-                marker.target.setStyle({
-                    color:'#d46f12',
-                    fillColor:'#edb660'});
-                marker.target.options.selected = false;
-                FLOW.router.mapsController.set('selectedMarker',null);
-            } else {
-                marker.target.setStyle({
-                    color:'#d46f12',
-                    fillColor:'#433ec9'});
-                marker.target.options.selected = true;
-                FLOW.router.mapsController.set('selectedMarker',marker);
-            }
+            marker.target.setStyle({
+                color:'#d46f12',
+                fillColor:'#433ec9'});
+            marker.target.options.selected = true;
+            FLOW.router.mapsController.set('selectedMarker',marker);
         }
     },
 
