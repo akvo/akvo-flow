@@ -98,6 +98,7 @@ FLOW.Router = Ember.Router.extend({
             name: 'navSurveysMain'
           });
           FLOW.projectControl.populate();
+          FLOW.surveyControl.populateAll();
           FLOW.cascadeResourceControl.populate();
           FLOW.projectControl.set('currentProject', null);
           FLOW.projectControl.set('newlyCreated', null);
