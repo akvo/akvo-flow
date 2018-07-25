@@ -464,7 +464,14 @@ FLOW.getCentroid = function (arr) {
   return arr.reduce(function (x,y) {
     return [x[0] + y[0]/arr.length, x[1] + y[1]/arr.length]
   }, [0,0])
-}
+};
+
+FLOW.reportFilename = function(url){
+  if (!url) {
+    return;
+  }
+  return url.split('/').pop().replace(/\s/g, '');
+};
 
 Ember.Handlebars.registerHelper("getServer", function () {
   var loc = window.location.href,

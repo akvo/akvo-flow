@@ -294,10 +294,7 @@ FLOW.ReportListItemView = FLOW.View.extend({
 
   reportFilename: function(){
     var url = this.content.get('filename');
-    if (!url) {
-      return;
-    }
-    return url.split('/').pop().replace(/\s/g, '');
+    return FLOW.reportFilename(url);
   }.property(this.content),
 
   reportLink: function(){
