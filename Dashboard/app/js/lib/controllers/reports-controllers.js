@@ -60,9 +60,9 @@ FLOW.ReportsController = Ember.ArrayController.extend({
             });
 
             if (stillGeneratingReports.length > 0) {
-              stillGeneratingReports.forEach(function(report){
-                FLOW.store.findQuery(FLOW.Report, {keyId: report.get('keyId')});
-              });
+              self.set('content', FLOW.store.find(FLOW.Report));
+              //TODO only retrieve still generating reports
+              self.refreshList();
             } else {
               self.set('reportsCheckScheduled', false);
               clearInterval(reportsQuery);
