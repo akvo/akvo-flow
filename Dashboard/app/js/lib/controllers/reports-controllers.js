@@ -66,14 +66,28 @@ FLOW.ReportsController = Ember.ArrayController.extend({
             } else {
               self.set('reportsCheckScheduled', false);
               clearInterval(reportsQuery);
+              self.refreshList();
             }
           }, 10000);
         } else {
           if (reportsQuery) {
             clearInterval(reportsQuery);
+            self.refreshList();
           }
         }
       }
     }
-  }.observes('content', 'content.isUpdating')
+  }.observes('content', 'content.isUpdating'),
+
+  refreshList: function(){
+    var reports = this.get('content');
+    reports.forEach(function(report){
+      var reportState = report.get('state');
+      if (reportState != "IN_PROGRESS" && reportState != "QUEUED") {
+        $("#list-"+report.get('keyId')).removeClass("exportGenerating");
+        $("#link-"+report.get('keyId')).attr("href", report.get('filename') !== "" ? report.get('filename') : "#");
+        $("#filename-"+report.get('keyId')).html(report.get('filename') !== "" ? FLOW.reportFilename(report.get('filename')) : "");
+      }
+    });
+  }
 });
