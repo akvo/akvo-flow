@@ -527,7 +527,7 @@ Ember.Handlebars.registerHelper('surveyPath', function (property) {
       if (ancestorIds[i] !== null && ancestorIds[i] !== 0) {
         var ancestor = FLOW.SurveyGroup.find(ancestorIds[i]);
         if (ancestor) {
-          path += (i > 0 ? " > ": "")+ancestor.get('name');
+          path += (i > 1 ? " > ": "")+ancestor.get('name');
         }
       }
     }
