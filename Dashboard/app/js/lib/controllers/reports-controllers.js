@@ -49,10 +49,6 @@ FLOW.ReportsController = Ember.ArrayController.extend({
       this.set('reportsAvailable', reports.content.length > 0);
 
       if (!this.get('reportsCheckScheduled')) {
-        var generatingReports = reports.filter(function(report) {
-          return report.get('state') === "IN_PROGRESS" || report.get('state') === "QUEUED";
-        });
-        if (generatingReports.length > 0) {
           this.set('reportsCheckScheduled', true);
           reportsQuery = setInterval(function(){//if reports are still generating, wait 5s and then recheck
             var stillGeneratingReports = self.get('content').filter(function(report){
@@ -69,12 +65,6 @@ FLOW.ReportsController = Ember.ArrayController.extend({
               self.refreshList();
             }
           }, 10000);
-        } else {
-          if (reportsQuery) {
-            clearInterval(reportsQuery);
-            self.refreshList();
-          }
-        }
       }
     }
   }.observes('content', 'content.isUpdating'),
