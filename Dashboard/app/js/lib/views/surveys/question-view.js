@@ -150,6 +150,7 @@ FLOW.QuestionView = FLOW.View.extend({
     return this.type.get('value') == 'FREE_TEXT'
         || this.type.get('value') == 'NUMBER'
         || this.type.get('value') == 'OPTION'
+        || this.type.get('value') == 'SCAN'
         || this.type.get('value') == 'CASCADE';
   }.property('this.type').cacheable(),
 

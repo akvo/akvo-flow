@@ -615,6 +615,10 @@ FLOW.surveyControl = Ember.ArrayController.create({
     }
   }.observes('FLOW.selectedControl.selectedSurveyGroup'),
 
+  populateAll: function () {
+    FLOW.store.find(FLOW.Survey);
+  },
+
   populate: function () {
 
     var id;
