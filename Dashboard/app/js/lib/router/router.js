@@ -35,8 +35,8 @@ FLOW.Router = Ember.Router.extend({
     doNavData: function (router, context) {
       router.transitionTo('navData.index');
     },
-    doNavReports: function (router, context) {
-      router.transitionTo('navReports.index');
+    doNavResources: function (router, context) {
+      router.transitionTo('navResources.index');
     },
     doNavMaps: function (router, context) {
       router.transitionTo('navMaps');
@@ -263,9 +263,6 @@ FLOW.Router = Ember.Router.extend({
       doDataCleaning: function (router, event) {
         router.transitionTo('navData.dataCleaning');
       },
-      doCascadeResources: function (router, event) {
-          router.transitionTo('navData.cascadeResources');
-        },
       doMonitoringData: function (router, event) {
         router.transitionTo('navData.monitoringData');
       },
@@ -280,10 +277,6 @@ FLOW.Router = Ember.Router.extend({
 
       doChartReports: function (router, event) {
         router.transitionTo('navData.chartReports');
-      },
-
-      doDataApproval: function (router, event) {
-          router.transitionTo('navData.dataApproval.listApprovalGroups');
       },
 
       index: Ember.Route.extend({
@@ -316,15 +309,6 @@ FLOW.Router = Ember.Router.extend({
           router.resetState();
         }
       }),
-
-      cascadeResources: Ember.Route.extend({
-          route: '/cascaderesources',
-          connectOutlets: function (router, context) {
-            router.get('navDataController').connectOutlet('cascadeResources');
-            router.set('datasubnavController.selected', 'cascadeResources');
-            FLOW.cascadeResourceControl.populate();
-          }
-        }),
 
       monitoringData: Ember.Route.extend({
         route: '/monitoringdata',
@@ -362,20 +346,51 @@ FLOW.Router = Ember.Router.extend({
           router.get('navDataController').connectOutlet('chartReports');
           router.set('datasubnavController.selected', 'chartReports');
         }
+      })
+    }),
+
+    // ************************** RESOURCES ROUTER **********************************
+    navResources: Ember.Route.extend({
+      route: '/resources',
+      connectOutlets: function (router, event) {
+        router.get('applicationController').connectOutlet('navResources');
+        router.set('navigationController.selected', 'navResources');
+      },
+
+      doCascadeResources: function (router, event) {
+        router.transitionTo('navResources.cascadeResources');
+      },
+
+      doDataApproval: function (router, event) {
+          router.transitionTo('navResources.dataApproval.listApprovalGroups');
+      },
+
+      index: Ember.Route.extend({
+        route: '/',
+        redirectsTo: 'cascadeResources'
+      }),
+
+      cascadeResources: Ember.Route.extend({
+        route: '/cascaderesources',
+        connectOutlets: function (router, context) {
+          router.get('navResourcesController').connectOutlet('cascadeResources');
+          router.set('resourcesSubnavController.selected', 'cascadeResources');
+          FLOW.cascadeResourceControl.populate();
+        }
       }),
 
       dataApproval: Ember.Route.extend({
           route: '/dataapproval',
 
           connectOutlets: function (router, context) {
-              router.get('navDataController').connectOutlet('dataApproval');
-              router.set('datasubnavController.selected', 'approvalGroup');
+              router.get('navResourcesController').connectOutlet('dataApproval');
+              router.set('resourcesSubnavController.selected', 'approvalGroup');
           },
 
           doAddApprovalGroup: function (router, event) {
               router.get('approvalGroupController').add();
               router.get('approvalStepsController').loadByGroupId();
-              router.transitionTo('navData.dataApproval.editApprovalGroup');
+              router.transitionTo('navResources.dataApproval.editApprovalGroup');
           },
 
           doEditApprovalGroup: function (router, event) {
@@ -385,17 +400,17 @@ FLOW.Router = Ember.Router.extend({
                   router.get('approvalGroupController').load(groupId);
                   router.get('approvalStepsController').loadByGroupId(groupId);
               }
-              router.transitionTo('navData.dataApproval.editApprovalGroup');
+              router.transitionTo('navResources.dataApproval.editApprovalGroup');
           },
 
           doSaveApprovalGroup: function (router, event) {
               router.get('approvalGroupController').save();
-              router.transitionTo('navData.dataApproval.listApprovalGroups');
+              router.transitionTo('navResources.dataApproval.listApprovalGroups');
           },
 
           doCancelEditApprovalGroup: function (router, event) {
               router.get('approvalGroupController').cancel();
-              router.transitionTo('navData.dataApproval.listApprovalGroups');
+              router.transitionTo('navResources.dataApproval.listApprovalGroups');
           },
 
           doDeleteApprovalGroup: function (router, event) {
@@ -424,7 +439,7 @@ FLOW.Router = Ember.Router.extend({
                   router.get('approvalGroupController').connectOutlet('approvalStepsOutlet', 'approvalSteps');
               },
           }),
-      }),
+      })
     }),
 
     // ************************** MAPS ROUTER **********************************
