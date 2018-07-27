@@ -754,13 +754,13 @@ FLOW.MonitoringDataView = Ember.View.extend({
   templateName: 'navData/monitoring-data'
 });
 
-// reports views
-FLOW.NavReportsView = Ember.View.extend({
-  templateName: 'navReports/nav-reports'
-});
-
 FLOW.ChartReportsView = Ember.View.extend({
   templateName: 'navReports/chart-reports'
+});
+
+// resources views
+FLOW.NavResourcesView = Ember.View.extend({
+  templateName: 'navResources/nav-resources'
 });
 
 // applets
@@ -838,15 +838,7 @@ FLOW.DatasubnavView = FLOW.View.extend({
 
     showDataCleaningButton: function () {
         return FLOW.permControl.get('canCleanData');
-    }.property(),
-
-    showCascadeResourcesButton: function () {
-      return FLOW.permControl.get('canManageCascadeResources');
-    }.property(),
-
-    showDataApprovalButton: function () {
-        return FLOW.Env.enableDataApproval && FLOW.permControl.get('canManageDataAppoval');
-    }.property(),
+    }.property()
   })
 });
 
@@ -867,10 +859,10 @@ FLOW.DevicesSubnavView = FLOW.View.extend({
 });
 
 // ********************************************************//
-//             Subnavigation for the Reports tabs
+//             Subnavigation for the Resources tabs
 // ********************************************************//
-FLOW.ReportsSubnavView = Em.View.extend({
-  templateName: 'navReports/reports-subnav',
+FLOW.ResourcesSubnavView = Em.View.extend({
+  templateName: 'navResources/resources-subnav',
   selectedBinding: 'controller.selected',
   NavItemView: Ember.View.extend({
     tagName: 'li',
@@ -878,7 +870,15 @@ FLOW.ReportsSubnavView = Em.View.extend({
 
     isActive: function () {
       return this.get('item') === this.get('parentView.selected');
-    }.property('item', 'parentView.selected').cacheable()
+    }.property('item', 'parentView.selected').cacheable(),
+
+    showCascadeResourcesButton: function () {
+      return FLOW.permControl.get('canManageCascadeResources');
+    }.property(),
+
+    showDataApprovalButton: function () {
+        return FLOW.Env.enableDataApproval && FLOW.permControl.get('canManageDataAppoval');
+    }.property()
   })
 });
 

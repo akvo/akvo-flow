@@ -55,10 +55,8 @@ FLOW.InspectDataController = Ember.ArrayController.extend();
 FLOW.BulkUploadController = Ember.Controller.extend();
 FLOW.DataCleaningController = Ember.Controller.extend();
 
-FLOW.NavReportsController = Ember.Controller.extend();
-FLOW.ReportsSubnavController = Em.Controller.extend();
-FLOW.ExportReportsController = Ember.ArrayController.extend();
-FLOW.ChartReportsController = Ember.Controller.extend();
+FLOW.NavResourcesController = Ember.Controller.extend();
+FLOW.ResourcesSubnavController = Em.Controller.extend();
 
 FLOW.NavMapsController = Ember.Controller.extend();
 FLOW.NavUsersController = Ember.Controller.extend();

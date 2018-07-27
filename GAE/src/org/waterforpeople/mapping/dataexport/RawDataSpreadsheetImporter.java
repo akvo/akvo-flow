@@ -599,7 +599,10 @@ public class RawDataSpreadsheetImporter implements DataImporter {
 
         Cell cell = iterationRow.getCell(columnIndex);
 
-        if (cell != null) {
+        if (cell != null //misses empty-but-has-other
+        		|| (questionType == questionType.OPTION
+        				&& Boolean.TRUE.equals(questionDto.getAllowOtherFlag()
+        				&& otherValuesInSeparateColumns))) { 
             switch (questionType) {
                 case GEO:
                     String latitude = ExportImportUtils.parseCellAsString(cell);
@@ -656,8 +659,8 @@ public class RawDataSpreadsheetImporter implements DataImporter {
                     if (Boolean.TRUE.equals(questionDto.getAllowOtherFlag())) {
                         if (otherValuesInSeparateColumns) { //2018-style
                             //get "other" from the next cell
-                            Cell nextCell = iterationRow.getCell(columnIndex + 1);
-                            String otherString = ExportImportUtils.parseCellAsString(nextCell);
+                            Cell otherCell = iterationRow.getCell(columnIndex + 1);
+                            String otherString = ExportImportUtils.parseCellAsString(otherCell);
                             if (otherString != null && !otherString.trim().isEmpty()) {
                                 optionList.add(parsedOptionValue(otherString, true));
                             }

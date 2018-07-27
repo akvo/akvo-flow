@@ -49,22 +49,22 @@ FLOW.ReportsController = Ember.ArrayController.extend({
       this.set('reportsAvailable', reports.content.length > 0);
 
       if (!this.get('reportsCheckScheduled')) {
-          this.set('reportsCheckScheduled', true);
-          reportsQuery = setInterval(function(){//if reports are still generating, wait 5s and then recheck
-            var stillGeneratingReports = self.get('content').filter(function(report){
-              return report.get('state') === "IN_PROGRESS" || report.get('state') === "QUEUED";
-            });
+        this.set('reportsCheckScheduled', true);
+        reportsQuery = setInterval(function(){//if reports are still generating, wait 5s and then recheck
+          var stillGeneratingReports = self.get('content').filter(function(report){
+            return report.get('state') === "IN_PROGRESS" || report.get('state') === "QUEUED";
+          });
 
-            if (stillGeneratingReports.length > 0) {
-              self.set('content', FLOW.store.find(FLOW.Report));
-              //TODO only retrieve still generating reports
-              self.refreshList();
-            } else {
-              self.set('reportsCheckScheduled', false);
-              clearInterval(reportsQuery);
-              self.refreshList();
-            }
-          }, 10000);
+          if (stillGeneratingReports.length > 0) {
+            self.set('content', FLOW.store.find(FLOW.Report));
+            //TODO only retrieve still generating reports
+            self.refreshList();
+          } else {
+            self.set('reportsCheckScheduled', false);
+            clearInterval(reportsQuery);
+            self.refreshList();
+          }
+        }, 10000);
       }
     }
   }.observes('content', 'content.isUpdating'),

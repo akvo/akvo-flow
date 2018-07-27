@@ -303,26 +303,19 @@ FLOW.ReportListItemView = FLOW.View.extend({
   }.property(this.content),
 
   surveyPath: function(){
-    var formId = this.content.get('formId'), path = "", sgs = FLOW.projectControl.get('content'), survey = null;
-    if (sgs) {
-      sgs.forEach(function(item) {
-        var surveysList = item.get('surveyList');
-        if (item.get && surveysList && surveysList.indexOf(formId) > -1) {
-          survey = item;
-        }
-      });
-      if (survey) {
-        var ancestorIds = survey.get('ancestorIds')
-        for (var i = 0; i < ancestorIds.length; i++) {
-          if (ancestorIds[i] !== null && ancestorIds[i] !== 0) {
-            var level = FLOW.SurveyGroup.find(ancestorIds[i]);
-            if (level) {
-              path += (i > 0 ? " > ": "")+level.get('name');
-            }
+    var formId = this.content.get('formId'), path = "";
+    var form  = FLOW.Survey.find(formId);
+    if (form) {
+      var ancestorIds = form.get('ancestorIds');
+      for (var i = 0; i < ancestorIds.length; i++) {
+        if (ancestorIds[i] !== null && ancestorIds[i] !== 0) {
+          var ancestor = FLOW.SurveyGroup.find(ancestorIds[i]);
+          if (ancestor) {
+            path += (i > 1 ? " > ": "")+ancestor.get('name');
           }
         }
-        path += " > "+survey.get('name');
       }
+      path += " > "+form.get('name');
     }
     return path;
   }.property(this.content),

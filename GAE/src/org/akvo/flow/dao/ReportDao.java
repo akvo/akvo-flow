@@ -17,6 +17,7 @@
 package org.akvo.flow.dao;
 
 import java.util.Collections;
+import java.util.Date;
 import java.util.List;
 
 import org.akvo.flow.domain.persistent.Report;
@@ -52,7 +53,13 @@ public class ReportDao extends BaseDAO<Report> {
 
     }
 
-
+    /**
+     * lists all reports older than a specific date
+     */
+    public List<Report> listAllCreatedBefore(Date date) {
+        return listByProperty("createdDateTime", date, "Date",
+                "createdDateTime", null, LTE_OP, Report.class);
+    }
 
 
 

@@ -1,5 +1,5 @@
 /*
- *  Copyright (C) 2010-2015 Stichting Akvo (Akvo Foundation)
+ *  Copyright (C) 2010,2012-2016,2018 Stichting Akvo (Akvo Foundation)
  *
  *  This file is part of Akvo FLOW.
  *
@@ -16,17 +16,6 @@
 
 package org.waterforpeople.mapping.app.web;
 
-import java.io.IOException;
-import java.util.List;
-import java.util.logging.Logger;
-
-import javax.servlet.http.HttpServlet;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-
-import org.apache.commons.lang.StringUtils;
-import org.waterforpeople.mapping.app.web.dto.TaskRequest;
-
 import com.gallatinsystems.device.dao.DeviceDAO;
 import com.gallatinsystems.device.dao.DeviceFileJobQueueDAO;
 import com.gallatinsystems.device.domain.Device;
@@ -40,6 +29,15 @@ import com.gallatinsystems.survey.domain.CascadeResource.Status;
 import com.google.appengine.api.taskqueue.Queue;
 import com.google.appengine.api.taskqueue.QueueFactory;
 import com.google.appengine.api.taskqueue.TaskOptions;
+import org.apache.commons.lang.StringUtils;
+import org.waterforpeople.mapping.app.web.dto.TaskRequest;
+
+import javax.servlet.http.HttpServlet;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import java.io.IOException;
+import java.util.List;
+import java.util.logging.Logger;
 
 /**
  * Servlet used by app to trigger processing of new survey data TODO: move parameter name strings
@@ -75,7 +73,7 @@ public class ProcessorServlet extends HttpServlet {
                 resp.setStatus(HttpServletResponse.SC_BAD_REQUEST);
                 return;
             }
-            
+
             // If we get a form ID, ensure the form is still present in the datastore
             Long formID = parseFormID(req);
             if (formID != null) {
@@ -136,15 +134,18 @@ public class ProcessorServlet extends HttpServlet {
             dfDao.delete(missing);
         } else if (action.equals("cascade")) {
             Long crId = null;
-            final String status = req.getParameter("status");
+            final String status = StringUtils.trim(req.getParameter("status"));
+            final String message = StringUtils.trim(req.getParameter("message"));
             final CascadeResourceDao crDao = new CascadeResourceDao();
 
+
             try {
-                crId = Long.valueOf(req.getParameter("cascadeResourceId"));
+                crId = Long.valueOf(StringUtils.trim(req.getParameter("cascadeResourceId")));
             } catch (NumberFormatException e) {
             }
 
             if (crId == null || status == null) {
+                log.warning(String.format("Invalid processor request - [resourceId: %s , status: %s]", crId, status));
                 return;
             }
 
@@ -164,7 +165,11 @@ public class ProcessorServlet extends HttpServlet {
                 m.setShortMessage("Cascade resource " + cr.getName() + " successfully published");
             } else {
                 cr.setStatus(Status.NOT_PUBLISHED);
-                m.setShortMessage("Failed to publish cascade resource " + cr.getName());
+                String errorMessage = "Failed to publish cascade resource " + cr.getName();
+                if (StringUtils.isNotBlank(message)) {
+                    errorMessage = errorMessage + " - Error: " + message;
+                }
+                m.setShortMessage(errorMessage);
             }
 
             crDao.save(cr);
@@ -173,7 +178,7 @@ public class ProcessorServlet extends HttpServlet {
         }
 
     }
-    
+
     private Long parseFormID(HttpServletRequest req) {
         String formID = StringUtils.trim(req.getParameter("formID"));
         if (StringUtils.isNotBlank(formID)) {
@@ -183,8 +188,8 @@ public class ProcessorServlet extends HttpServlet {
                 log.warning("Form ID is not a valid number: " + formID);
             }
         }
-        
+
         return null;
     }
-    
+
 }
