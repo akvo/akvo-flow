@@ -389,7 +389,7 @@ FLOW.Router = Ember.Router.extend({
           doAddApprovalGroup: function (router, event) {
               router.get('approvalGroupController').add();
               router.get('approvalStepsController').loadByGroupId();
-              router.transitionTo('navResourcesController.dataApproval.editApprovalGroup');
+              router.transitionTo('navResources.dataApproval.editApprovalGroup');
           },
 
           doEditApprovalGroup: function (router, event) {
@@ -399,17 +399,17 @@ FLOW.Router = Ember.Router.extend({
                   router.get('approvalGroupController').load(groupId);
                   router.get('approvalStepsController').loadByGroupId(groupId);
               }
-              router.transitionTo('navResourcesController.dataApproval.editApprovalGroup');
+              router.transitionTo('navResources.dataApproval.editApprovalGroup');
           },
 
           doSaveApprovalGroup: function (router, event) {
               router.get('approvalGroupController').save();
-              router.transitionTo('navResourcesController.dataApproval.listApprovalGroups');
+              router.transitionTo('navResources.dataApproval.listApprovalGroups');
           },
 
           doCancelEditApprovalGroup: function (router, event) {
               router.get('approvalGroupController').cancel();
-              router.transitionTo('navResourcesController.dataApproval.listApprovalGroups');
+              router.transitionTo('navResources.dataApproval.listApprovalGroups');
           },
 
           doDeleteApprovalGroup: function (router, event) {
