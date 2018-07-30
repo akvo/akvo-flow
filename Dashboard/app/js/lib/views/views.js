@@ -177,7 +177,7 @@ Ember.Handlebars.registerHelper('placemarkDetail', function () {
     answer = answer && '<img src="' + answer + '" />';
     answer = answer && answer + '<div>' + Ember.String.loc('_signed_by') + ':' + signatureJson.name + '</div>' || '';
   } else if (questionType === 'DATE') {
-    answer = renderTimeStamp(answer);
+    answer = FLOW.renderTimeStamp(answer);
   } else if (questionType === 'CADDISFLY'){
     answer = FLOW.renderCaddisflyAnswer(answer)
   } else if (questionType === 'GEOSHAPE') {
@@ -232,7 +232,7 @@ Ember.Handlebars.registerHelper('drawGeoshapes', function () {
 
 /*  Take a timestamp and render it as a date in format
     YYYY-mm-dd */
-function renderTimeStamp(timestamp) {
+FLOW.renderTimeStamp = function(timestamp) {
   var d, t, date, month, year;
   t = parseInt(timestamp, 10);
   if (isNaN(t)) {
@@ -262,6 +262,44 @@ function renderTimeStamp(timestamp) {
 
   return year + "-" + monthString + "-" + dateString;
 }
+
+FLOW.renderDate = function(timestamp){
+  if (timestamp) {
+    d = new Date(parseInt(timestamp, 10));
+    curr_date = d.getDate();
+    curr_month = d.getMonth() + 1;
+    curr_year = d.getFullYear();
+    curr_hour = d.getHours();
+    curr_min = d.getMinutes();
+
+    if (curr_month < 10) {
+      monthString = "0" + curr_month.toString();
+    } else {
+      monthString = curr_month.toString();
+    }
+
+    if (curr_date < 10) {
+      dateString = "0" + curr_date.toString();
+    } else {
+      dateString = curr_date.toString();
+    }
+
+    if (curr_hour < 10) {
+      hourString = "0" + curr_hour.toString();
+    } else {
+      hourString = curr_hour.toString();
+    }
+
+    if (curr_min < 10) {
+      minString = "0" + curr_min.toString();
+    } else {
+      minString = curr_min.toString();
+    }
+
+    return curr_year + "-" + monthString + "-" + dateString + "  " + hourString + ":" + minString;
+  }
+  return;
+};
 
 // translates values to labels for languages
 Ember.Handlebars.registerHelper('toLanguage', function (value) {
@@ -311,38 +349,7 @@ Ember.Handlebars.registerHelper("date", function (property) {
 Ember.Handlebars.registerHelper("date1", function (property) {
   var d, curr_date, curr_month, curr_year, curr_hour, curr_min, monthString, dateString, hourString, minString;
   if (Ember.get(this, property) !== null) {
-    d = new Date(parseInt(Ember.get(this, property), 10));
-    curr_date = d.getDate();
-    curr_month = d.getMonth() + 1;
-    curr_year = d.getFullYear();
-    curr_hour = d.getHours();
-    curr_min = d.getMinutes();
-
-    if (curr_month < 10) {
-      monthString = "0" + curr_month.toString();
-    } else {
-      monthString = curr_month.toString();
-    }
-
-    if (curr_date < 10) {
-      dateString = "0" + curr_date.toString();
-    } else {
-      dateString = curr_date.toString();
-    }
-
-    if (curr_hour < 10) {
-      hourString = "0" + curr_hour.toString();
-    } else {
-      hourString = curr_hour.toString();
-    }
-
-    if (curr_min < 10) {
-      minString = "0" + curr_min.toString();
-    } else {
-      minString = curr_min.toString();
-    }
-
-    return curr_year + "-" + monthString + "-" + dateString + "  " + hourString + ":" + minString;
+    return FLOW.renderDate(Ember.get(this, property));
   } else {
     return "";
   }
@@ -352,53 +359,8 @@ Ember.Handlebars.registerHelper("date1", function (property) {
 Ember.Handlebars.registerHelper("date3", function (property) {
   var d, curr_date, curr_month, curr_year, monthString, dateString;
   if (Ember.get(this, property) !== null) {
-    return renderTimeStamp(Ember.get(this, property));
+    return FLOW.renderTimeStamp(Ember.get(this, property));
   }
-});
-
-Ember.Handlebars.registerHelper("reportType", function (reportType) {
-  var reportTypeClasses = {
-    DATA_CLEANING: "dataCleanExp",
-    DATA_ANALYSIS: "dataAnalyseExp",
-    COMPREHENSIVE: "compReportExp",
-    GEOSHAPE: "geoShapeDataExp",
-    SURVEY_FORM: "surveyFormExp"
-  };
-  return reportTypeClasses[Ember.get(this, reportType)];
-});
-
-Ember.Handlebars.registerHelper("reportStatus", function (state) {
-  var reportStates = {
-    IN_PROGRESS: "exportGenerating",
-    QUEUED: "exportGenerating",
-    FINISHED_SUCCESS: "",
-    FINISHED_ERROR: ""
-  };
-  return reportStates[Ember.get(this, state)];
-});
-
-Ember.Handlebars.registerHelper("reportTypeString", function (reportType) {
-  var reportTypeStrings = {
-    DATA_CLEANING: Ember.String.loc('_data_cleaning_export'),
-    DATA_ANALYSIS: Ember.String.loc('_data_analysis_export'),
-    COMPREHENSIVE: Ember.String.loc('_comprehensive_report'),
-    GEOSHAPE: Ember.String.loc('_geoshape_data'),
-    SURVEY_FORM: Ember.String.loc('_survey_form')
-  };
-  return reportTypeStrings[Ember.get(this, reportType)];
-});
-
-Ember.Handlebars.registerHelper("reportFilename", function (filename) {
-  var url = Ember.get(this, filename);
-  if (!url) {
-    return;
-  }
-  return url.split('/').pop().replace(/\s/g, '');
-});
-
-Ember.Handlebars.registerHelper("reportLink", function (filename) {
-  var url = Ember.get(this, filename);
-  return !url ? "#" : url;
 });
 
 FLOW.parseJSON = function(jsonString, property) {
@@ -502,7 +464,14 @@ FLOW.getCentroid = function (arr) {
   return arr.reduce(function (x,y) {
     return [x[0] + y[0]/arr.length, x[1] + y[1]/arr.length]
   }, [0,0])
-}
+};
+
+FLOW.reportFilename = function(url){
+  if (!url) {
+    return;
+  }
+  return url.split('/').pop().replace(/\s/g, '');
+};
 
 Ember.Handlebars.registerHelper("getServer", function () {
   var loc = window.location.href,
@@ -516,24 +485,6 @@ Ember.Handlebars.registerHelper('sgName', function (property) {
         return item.get && item.get('keyId') === sgId;
       });
   return sg && sg.get('name') || sgId;
-});
-
-Ember.Handlebars.registerHelper('surveyPath', function (property) {
-  var formId = Ember.get(this, property), path = "";
-  var form  = FLOW.Survey.find(formId);
-  if (form) {
-    var ancestorIds = form.get('ancestorIds');
-    for (var i = 0; i < ancestorIds.length; i++) {
-      if (ancestorIds[i] !== null && ancestorIds[i] !== 0) {
-        var ancestor = FLOW.SurveyGroup.find(ancestorIds[i]);
-        if (ancestor) {
-          path += (i > 1 ? " > ": "")+ancestor.get('name');
-        }
-      }
-    }
-    path += " > "+form.get('name');
-  }
-  return path;
 });
 
 // Register a Handlebars helper that instantiates `view`.
