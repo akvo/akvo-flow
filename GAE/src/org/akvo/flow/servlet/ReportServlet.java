@@ -120,8 +120,9 @@ public class ReportServlet extends AbstractRestApiServlet {
                     log.fine(" ====Starting");
 
                     //hit the services server
+                    int sts = 0;
                     try {
-                        final int sts = startReportEngine(stReq.getBaseUrl(), r);
+                        sts = startReportEngine(stReq.getBaseUrl(), r);
                         log.fine(" got  " + sts);
 
                         if (sts == 200) {
