@@ -53,6 +53,7 @@ public class ReportServlet extends AbstractRestApiServlet {
 
     private static final long serialVersionUID = -9064136799930675167L;
     private static final String SERVLET_URL = "/app_worker/reportservlet";
+    private static final Long MAX_ATTEMPTS = 5L; //Give up after this many attempts to start engine
 
     private ReportDao rDao;
     private UserDao uDao;
@@ -105,7 +106,7 @@ public class ReportServlet extends AbstractRestApiServlet {
         ReportTaskRequest stReq = (ReportTaskRequest) req;
         String action = stReq.getAction();
         Long id = stReq.getId();
-        log.fine("action: " + action + " id: " + id);
+        log.fine("action: " + action + " id: " + id + "attempt:" + stReq.getAttempt());
         Report r = rDao.getByKey(id);
         switch (action) {
             case ReportTaskRequest.START_ACTION:
@@ -133,14 +134,14 @@ public class ReportServlet extends AbstractRestApiServlet {
                             rDao.save(r);
                         } else {
                             //if we get a transient error, re-queue
-                            requeueStart(stReq.getBaseUrl(), r);
+                            requeueStart(stReq, r);
                         }
                     } catch (MalformedURLException e) {
                         log.log(Level.SEVERE, "Bad URL");
                     } catch (IOException e) {
                         log.warning("====IOerror: " + e);
                         //call it a transient error, re-queue
-                        requeueStart(stReq.getBaseUrl(), r);
+                        requeueStart(stReq, r);
                     }
                 }
                 break;
@@ -167,27 +168,34 @@ public class ReportServlet extends AbstractRestApiServlet {
 
     public static void queueStart(String baseUrl, Report r) {
         Queue queue = QueueFactory.getDefaultQueue();
-        TaskOptions options = getTaskOptions(baseUrl, r);
+        TaskOptions options = getTaskOptions(baseUrl, 1L, r); //First time
         log.fine("Forking to task with options: " + options.toString());
         queue.add(options);
     }
 
-    private static TaskOptions getTaskOptions(String baseUrl, Report r) {
+    private static TaskOptions getTaskOptions(String baseUrl, Long attempt, Report r) {
         return TaskOptions.Builder.withUrl(SERVLET_URL)
                     .param(TaskRequest.ACTION_PARAM, ReportTaskRequest.START_ACTION)
                     .param(ReportTaskRequest.ID_PARAM, Long.toString(r.getKey().getId()))
-                    .param(ReportTaskRequest.BASE_URL_PARAM, baseUrl);
+                    .param(ReportTaskRequest.BASE_URL_PARAM, baseUrl)
+                    .param(ReportTaskRequest.ATTEMPT_PARAM, Long.toString(attempt));
     }
 
-    private void requeueStart(String baseUrl, Report r) {
-        log.warning("Requeuing task with action START");
-        //TODO give up if this has been going on too long
+    private void requeueStart(ReportTaskRequest req, Report r) {
+        //give up if this has been going on too long
+        if (req.getAttempt() == null || req.getAttempt() >= MAX_ATTEMPTS) {
+            log.warning("Abandoning START task after attempt " + req.getAttempt());
+            
+        } else {
+            log.warning("Requeuing START task");
 
-        Queue queue = QueueFactory.getDefaultQueue();
-        queue.add(getTaskOptions(baseUrl, r));
+            Queue queue = QueueFactory.getDefaultQueue();
+            queue.add(getTaskOptions(req.getBaseUrl(), req.getAttempt() + 1, r));
+        }
     }
 
-    private int startReportEngine(String baseUrl, Report r) throws JsonGenerationException, JsonMappingException, IOException {
+    private int startReportEngine(String baseUrl, Report r)
+            throws JsonGenerationException, JsonMappingException, IOException {
         //look up user
         final String email = uDao.getByKey(r.getUser()).getEmailAddress();
 
