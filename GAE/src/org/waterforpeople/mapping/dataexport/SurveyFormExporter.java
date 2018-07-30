@@ -224,7 +224,7 @@ public class SurveyFormExporter implements DataExporter {
      */
     private void writeFullSheet(HSSFWorkbook wb, String title, List<QuestionGroupDto> groupList,
             Map<QuestionGroupDto, List<QuestionDto>> questions) throws Exception {
-        HSSFSheet sheet = wb.createSheet();
+        HSSFSheet sheet = wb.createSheet(FULL_SHEET_NAME);
 
         HSSFCellStyle headerCtr = wb.createCellStyle();
         headerCtr.setAlignment(HSSFCellStyle.ALIGN_CENTER);
@@ -506,7 +506,7 @@ public class SurveyFormExporter implements DataExporter {
         console.activateOptions();
         Logger.getRootLogger().addAppender(console);
 
-        SurveyFormExporterFull exporter = new SurveyFormExporterFull();
+        SurveyFormExporter exporter = new SurveyFormExporter();
         Map<String, String> criteria = new HashMap<String, String>();
         Map<String, String> options = new HashMap<String, String>();
 
