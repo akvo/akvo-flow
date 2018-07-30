@@ -57,7 +57,6 @@ FLOW.ReportsController = Ember.ArrayController.extend({
 
           if (stillGeneratingReports.length > 0) {
             self.set('content', FLOW.store.find(FLOW.Report));
-            //TODO only retrieve still generating reports
             self.refreshList();
           } else {
             self.set('reportsCheckScheduled', false);
