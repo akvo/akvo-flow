@@ -134,14 +134,14 @@ public class ReportServlet extends AbstractRestApiServlet {
                             rDao.save(r);
                         } else {
                             //if we get a transient error, re-queue
-                            requeueStart(stReq, r);
+                            requeueStart(stReq, r, sts);
                         }
                     } catch (MalformedURLException e) {
                         log.log(Level.SEVERE, "Bad URL");
                     } catch (IOException e) {
                         log.warning("====IOerror: " + e);
                         //call it a transient error, re-queue
-                        requeueStart(stReq, r);
+                        requeueStart(stReq, r, sts);
                     }
                 }
                 break;
@@ -181,11 +181,13 @@ public class ReportServlet extends AbstractRestApiServlet {
                     .param(ReportTaskRequest.ATTEMPT_PARAM, Long.toString(attempt));
     }
 
-    private void requeueStart(ReportTaskRequest req, Report r) {
+    private void requeueStart(ReportTaskRequest req, Report r, int err) {
         //give up if this has been going on too long
         if (req.getAttempt() == null || req.getAttempt() >= MAX_ATTEMPTS) {
             log.warning("Abandoning START task after attempt " + req.getAttempt());
-            
+            r.setState(Report.FINISHED_ERROR);
+            r.setMessage("Could not start report generation after " + MAX_ATTEMPTS + " attempts: " + err);
+            rDao.save(r);
         } else {
             log.warning("Requeuing START task");
 
