@@ -1,5 +1,13 @@
 # Akvo Flow Release Notes
 ----
+# Akvo Flow Dashboard v1.9.35 - H.. H..
+Date: 01st August 2018
+
+## New and noteworthy
+
+## Resolved issues
+
+
 # Akvo Flow Dashboard v1.9.34 - Groundbreaking Grass
 Date: 05th July 2018
 
