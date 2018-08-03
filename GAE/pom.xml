@@ -22,10 +22,6 @@
         <id>bintray.com</id>
         <url>https://dl.bintray.com/meetup/maven/</url>
       </repository>
-      <repository>
-        <id>geotoolkit.org</id>
-        <url>https://nexus.geomatys.com/repository/geotoolkit/</url>
-      </repository>
   </repositories>
 
   <distributionManagement>
