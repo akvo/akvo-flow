@@ -1,6 +1,6 @@
 # Akvo Flow Release Notes
 ----
-# Akvo Flow Dashboard v1.9.35 - H.. H..
+# Akvo Flow Dashboard v1.9.35 - Haptic Hazel
 Date: 06th August 2018
 
 ## New and noteworthy
