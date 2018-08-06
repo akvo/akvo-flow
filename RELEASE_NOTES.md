@@ -1,23 +1,17 @@
 # Akvo Flow Release Notes
 ----
 # Akvo Flow Dashboard v1.9.35 - H.. H..
-Date: 01st August 2018
+Date: 06th August 2018
 
 ## New and noteworthy
-* New "Resources" tab that holds cascade resources and data approval [#2731]
-* You can now use barcode question types as data point name [#2776]
-* We now check the status of generating reports every 10 seconds and update the list once they're ready for download [#2755]
-* Preload surveys on dashboard [#2754]
-* Save form version used to collect data [#2707]
-* Cron job for removing exported reports that are older than one year [#2638]
-* Migrate Flow backend to Java 8 [#2395]
+* **UI Improvement** - New "Resources" tab that holds cascade resources and data approval [#2731]
+* **Survey data** - You can now use barcode question types as data point name [#2776]. Save form version used to collect data [#2707]
+* **Backend** - Migrate Flow backend to Java 8 [#2395].
 
 ## Resolved issues
-* The survey path for a generated report now always displays correctly [#2782]
-* Place a timeout for report generation that takes too long [#2779]
-* Handle addition of other option during data cleaning reports [#2780]
-* More comprehensive error messaging when cascade publishing fails [#2794]
-* When exporting reports, handle optionless option questions [#2777]
+* **Bug fixes** The survey path for a generated report now always displays correctly [#2782] based on preloading surveys on dashboard [#2754]
+* **Reports** - We now check the status of generating reports every 10 seconds and update the list once they're ready for download [#2755]. Cron job for removing exported reports that are older than one year [#2638]. Place a timeout for report generation that takes too long [#2779]
+* **Backend processes** - Handle addition of other option during data cleaning reports [#2780]. More comprehensive error messaging when cascade publishing fails [#2794]. When exporting reports, handle option-less option questions [#2777]
 
 # Akvo Flow Dashboard v1.9.34 - Groundbreaking Grass
 Date: 05th July 2018
