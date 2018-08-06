@@ -25,6 +25,7 @@ public class ReportTaskRequest extends RestRequest {
     public static final String ID_PARAM = "id";
     public static final String STATE_PARAM = "state";
     public static final String BASE_URL_PARAM = "baseUrl";
+    public static final String ATTEMPT_PARAM = "attempt";
     public static final String MESSAGE_PARAM = "message";
     public static final String FILENAME_PARAM = "filename";
     public static final String START_ACTION = "start";
@@ -37,6 +38,7 @@ public class ReportTaskRequest extends RestRequest {
     private String message;
     private String filename;
     private String baseUrl;
+    private Long attempt;
 
     @Override
     protected void populateErrors() {
@@ -56,6 +58,9 @@ public class ReportTaskRequest extends RestRequest {
     protected void populateFields(HttpServletRequest req) throws Exception {
         if (req.getParameter(ID_PARAM) != null) {
             setId(new Long(req.getParameter(ID_PARAM)));
+        }
+        if (req.getParameter(ATTEMPT_PARAM) == null) { //May be old entry from before we counted attempts
+            setAttempt(1L);
         }
         setBaseUrl(req.getParameter(BASE_URL_PARAM));
     }
@@ -99,6 +104,14 @@ public class ReportTaskRequest extends RestRequest {
 	public void setFilename(String filename) {
 		this.filename = filename;
 	}
+
+    public Long getAttempt() {
+        return attempt;
+    }
+
+    public void setAttempt(Long attempt) {
+        this.attempt = attempt;
+    }
 
 
 }
