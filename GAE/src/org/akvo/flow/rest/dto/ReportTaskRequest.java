@@ -38,7 +38,7 @@ public class ReportTaskRequest extends RestRequest {
     private String message;
     private String filename;
     private String baseUrl;
-    private Long attempt;
+    private int attempt;
 
     @Override
     protected void populateErrors() {
@@ -60,7 +60,9 @@ public class ReportTaskRequest extends RestRequest {
             setId(new Long(req.getParameter(ID_PARAM)));
         }
         if (req.getParameter(ATTEMPT_PARAM) == null) { //May be old entry from before we counted attempts
-            setAttempt(1L);
+            setAttempt(1);
+        } else {
+            setAttempt(new Integer(req.getParameter(ATTEMPT_PARAM)));
         }
         setBaseUrl(req.getParameter(BASE_URL_PARAM));
     }
@@ -105,11 +107,11 @@ public class ReportTaskRequest extends RestRequest {
 		this.filename = filename;
 	}
 
-    public Long getAttempt() {
+    public int getAttempt() {
         return attempt;
     }
 
-    public void setAttempt(Long attempt) {
+    public void setAttempt(int attempt) {
         this.attempt = attempt;
     }
 
