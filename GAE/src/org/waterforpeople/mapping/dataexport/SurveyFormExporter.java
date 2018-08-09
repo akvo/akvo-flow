@@ -36,6 +36,7 @@ import org.apache.poi.hssf.usermodel.HSSFRow;
 import org.apache.poi.hssf.usermodel.HSSFSheet;
 import org.apache.poi.hssf.usermodel.HSSFWorkbook;
 import org.apache.poi.ss.util.CellRangeAddress;
+import org.waterforpeople.mapping.app.gwt.client.survey.CascadeResourceDto;
 import org.waterforpeople.mapping.app.gwt.client.survey.QuestionDto;
 import org.waterforpeople.mapping.app.gwt.client.survey.QuestionGroupDto;
 import org.waterforpeople.mapping.app.gwt.client.survey.QuestionOptionDto;
@@ -68,10 +69,13 @@ public class SurveyFormExporter implements DataExporter {
     private static final String QUESTION_HEADER = "Question";
     private static final String RESPONSE_HEADER = "Response";
     private static final String SURVEY_ID_KEY = "surveyId";
+
+    private static final String OPTION_SEPARATOR = "|";
     private Map<Long, Long> idToNumberMap;
     private List<QuestionGroupDto> groupList;
     private String surveyTitle;
     private Map<QuestionGroupDto, List<QuestionDto>> questionMap;
+    private Map<Long, CascadeResourceDto> cascadeMap;
 
     @Override
     public void export(Map<String, String> criteria, File fileName,
@@ -87,6 +91,7 @@ public class SurveyFormExporter implements DataExporter {
                 SurveyDto surveyDto = surveys.get(0);
                 surveyTitle = String.format("%s (v. %s)", surveyDto.getName(), surveyDto.getVersion());
             }
+            cascadeMap = BulkDataServiceClient.fetchCascadeResources(serverBase, apiKey);
 
             writeSurvey(surveyTitle, fileName, groupList, questionMap);
         } catch (Exception e) {
@@ -220,7 +225,7 @@ public class SurveyFormExporter implements DataExporter {
     }
 
     /**
-     * Writes the survey as an XLS document
+     * Writes full information about the form
      */
     private void writeFullSheet(HSSFWorkbook wb, String title, List<QuestionGroupDto> groupList,
             Map<QuestionGroupDto, List<QuestionDto>> questions) throws Exception {
@@ -232,10 +237,11 @@ public class SurveyFormExporter implements DataExporter {
         HSSFFont headerFont = wb.createFont();
         headerFont.setBoldweight(HSSFFont.BOLDWEIGHT_BOLD);
         headerCtr.setFont(headerFont);
+        headerCtr.setWrapText(true);//TODO Wrap headers or not?
 
-        HSSFCellStyle questionStyle = wb.createCellStyle();
-        questionStyle.setVerticalAlignment(HSSFCellStyle.VERTICAL_TOP);
-        questionStyle.setWrapText(true);
+        HSSFCellStyle optionStyle = wb.createCellStyle();
+        optionStyle.setVerticalAlignment(HSSFCellStyle.VERTICAL_TOP);
+        optionStyle.setWrapText(true);
 
         HSSFCellStyle headerLeft = wb.createCellStyle();
 //        headerLeft.setAlignment(HSSFCellStyle.ALIGN_CENTER);
@@ -258,26 +264,25 @@ public class SurveyFormExporter implements DataExporter {
             for (int i = 0; i < groupList.size(); i++) {
                 int firstRowInGroup = startRow + count;
                 for (QuestionDto q : questions.get(groupList.get(i))) {
+
                     // create the row
-                    String optionsList = q.getOptionList(); //neat enough?
-                    
-                    
                     int r = startRow + count;
                     count++;
                     HSSFRow row = sheet.createRow(r);
+
                     if (r == firstRowInGroup) { // only once per group
                         createCell(row, 0, Long.valueOf(i), headerCtr);
                         createCell(row, 1, groupList.get(i).getDisplayName(), headerCtr);
                         createCell(row, 2, groupList.get(i).getRepeatable(), headerCtr);
                     }
-                    createCell(row, 3, Long.valueOf(q.getOrder()), headerCtr);
-                    createCell(row, 4, Long.valueOf(count), headerCtr);
-                    createCell(row, 5, q.getText(), headerLeft); //TODO translations
+                    createCell(row,  3, Long.valueOf(q.getOrder()), headerCtr);
+                    createCell(row,  4, Long.valueOf(count), headerCtr);
+                    createCell(row,  5, q.getText(), headerLeft); //TODO translations
                     // Scrolling part:
-                    createCell(row, 6, q.getTip(), null);
-                    createCell(row, 7, q.getVariableName(), null);
-                    createCell(row, 8, q.getType().toString(), null);
-                    createCell(row, 9, q.getMandatoryFlag(), null);
+                    createCell(row,  6, q.getTip(), null);
+                    createCell(row,  7, q.getVariableName(), null);
+                    createCell(row,  8, typeString(q), null);
+                    createCell(row,  9, q.getMandatoryFlag(), null);
                     createCell(row, 10, q.getLocaleNameFlag(), null);
                     createCell(row, 11, q.getRequireDoubleEntry(), null);
                     // Number
@@ -286,14 +291,16 @@ public class SurveyFormExporter implements DataExporter {
                     createCell(row, 14, q.getMinVal(), null);
                     createCell(row, 15, q.getMaxVal(), null);
                     // Option
-                    createCell(row, 16, optionsList, null);
+                    createCell(row, 16, optionString(q), optionStyle); //TODO: wrap this cell
                     createCell(row, 17, q.getAllowMultipleFlag(), null);
                     createCell(row, 18, q.getAllowOtherFlag(), null);
                     // Geopos
                     createCell(row, 19, q.getLocaleLocationFlag(), null);
                     createCell(row, 20, q.getGeoLocked(), null);
                     // CASCADE
-                    createCell(row, 21, q.getCascadeResourceId(), null);// TODO: name
+                    if (q.getCascadeResourceId() != null && cascadeMap.get(q.getCascadeResourceId()) != null) {
+                        createCell(row, 21, cascadeMap.get(q.getCascadeResourceId()).getName(), null);                        
+                    }
                     // Dependency
                     createCell(row, 22, q.getDependentFlag(), null);
                     createCell(row, 23, qTextFromId.get(q.getDependentQuestionId()), null);
@@ -303,8 +310,9 @@ public class SurveyFormExporter implements DataExporter {
                     createCell(row, 26, q.getAllowLine(), null);
                     createCell(row, 27, q.getAllowPolygon(), null);
                     // caddisfly
-                    createCell(row, 27, q.getCaddisflyResourceUuid(), null);
-
+                    createCell(row, 28, q.getCaddisflyResourceUuid(), null);
+                    //TODO barcode? Or is that just another use of allowMultiple?
+                    
                     /*
                      * createCell(tempRow, 0, (count++) + ". " + formText(q.getText(),
                      * q.getTranslationMap()), questionStyle); if (q.getOptionContainerDto() != null
@@ -325,7 +333,7 @@ public class SurveyFormExporter implements DataExporter {
     }
 
     private int createFullHeader(HSSFSheet sheet, int startRow, HSSFCellStyle style) {
-        int r = startRow, c = 0, c2 = 0;
+        int r = startRow, c = 0;
         HSSFRow row = sheet.createRow(r++);
         createCell(row, c++, "Form version", style);
         createCell(row, c++, 1.0, style); // TODO: from where?
@@ -333,20 +341,10 @@ public class SurveyFormExporter implements DataExporter {
         createCell(row, c++, "EN/FR/ES", style); // TODO: from where?
 
         row = sheet.createRow(r++);
-        c = 0;
-        createCell(row, c, "Group no", style);
-        createCell(row, ++c, "Group title", style);
-        createCell(row, ++c, "Repeatable", style);
-        createCell(row, ++c, "Question # in group", style);
-        createCell(row, ++c, "Question #", style);
-        createCell(row, ++c, "Question text", style);
-        createCell(row, ++c, "Question help", style);
-        createCell(row, ++c, "Variable name", style);
-        createCell(row, ++c, "Question type", style);
-        createCell(row, ++c, "Mandatory", style);
-        createCell(row, ++c, "Use for DP name", style);
-        createCell(row, ++c, "Double entry", style);
-        createCellBlock(row, c2=++c, "Numbers", style, 4); // 4 wide
+        createCellBlock(row, 0, "Group", style, 3);
+        createCellBlock(row, 3, "Question", style, 3);
+        c = 12; //Group headers
+        createCellBlock(row, c, "Numbers", style, 4); // 4 wide
         createCellBlock(row, c += 4, "Options", style, 3); // 3 wide
         createCellBlock(row, c += 3, "Geolocation", style, 2); // 2 wide
         createCell(row, c += 2, "Cascade", style);
@@ -354,7 +352,20 @@ public class SurveyFormExporter implements DataExporter {
         createCellBlock(row, c+=3, "Geographic area", style, 3); // 3 wide
 
         row = sheet.createRow(r++);
-        c = c2 - 1;
+        c = 0;
+        // Common
+        createCell(row, c,   "#", style);
+        createCell(row, ++c, "title", style);
+        createCell(row, ++c, "Repeatable", style);
+        createCell(row, ++c, "# in group", style);
+        createCell(row, ++c, "# in form", style);
+        createCell(row, ++c, "text", style);
+        createCell(row, ++c, "Question help", style);
+        createCell(row, ++c, "Variable name", style);
+        createCell(row, ++c, "Question type", style);
+        createCell(row, ++c, "Mandatory", style);
+        createCell(row, ++c, "Use for DP name", style);
+        createCell(row, ++c, "Double entry", style);
         // Numbers
         createCell(row, ++c, "Sign", style);
         createCell(row, ++c, "Decimal point", style);
@@ -373,12 +384,13 @@ public class SurveyFormExporter implements DataExporter {
         createCell(row, ++c, "Dependent", style);
         createCell(row, ++c, "Question", style);
         createCell(row, ++c, "Answer(s)", style);
-        // TODO: geoshapes
+        // Geoshapes TODO: move next to GEO?
         createCell(row, ++c, "Points", style);
         createCell(row, ++c, "Lines", style);
         createCell(row, ++c, "Areas", style);
         // TODO: barcode
-        // TODO: caddisfly
+        // caddisfly
+        createCell(row, ++c, "Caddisfly resource", style);
 
         // set these (3) rows non-scrolling
         // set the first 6 column non-scrolling
@@ -463,6 +475,42 @@ public class SurveyFormExporter implements DataExporter {
             cell.setCellValue(value);
         }
         return cell;
+    }
+    
+    
+    private String optionString(QuestionDto q) {
+        String s = "";
+        if (q.getOptionContainerDto() != null && q.getOptionContainerDto().getOptionsList() != null)
+        for (QuestionOptionDto opt : q.getOptionContainerDto().getOptionsList()) {
+            s += formText(opt.getText(), opt.getTranslationMap()) + OPTION_SEPARATOR;
+        }
+        if (s.endsWith(OPTION_SEPARATOR)) {
+            s = s.substring(0, s.length() - OPTION_SEPARATOR.length());
+        }
+        return s;
+    }
+    
+    private String typeString(QuestionDto q) {
+        if (q != null) {
+            switch (q.getType()) {
+            case FREE_TEXT: return "Text";
+            case OPTION: return "Option";
+            case NUMBER: return "Number";
+            case GEO: return "Geolocation";
+            case PHOTO: return "Photo";
+            case VIDEO: return "Video";
+            case SCAN: return "Barcode";
+            case TRACK: return "(Track)";
+            case STRENGTH: return "(Strength)";
+            case DATE: return "Date";
+            case CASCADE: return "Cascade";
+            case GEOSHAPE: return "Geoshape";
+            case SIGNATURE: return "Signature";
+            case CADDISFLY: return "Caddisfly";
+            default: return "(Unknown)";
+            }
+        }
+        return null;
     }
     
     /**

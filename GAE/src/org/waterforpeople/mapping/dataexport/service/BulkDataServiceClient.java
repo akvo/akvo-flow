@@ -57,6 +57,7 @@ import org.json.JSONObject;
 import org.waterforpeople.mapping.app.gwt.client.devicefiles.DeviceFilesDto;
 import org.waterforpeople.mapping.app.gwt.client.location.PlacemarkDto;
 import org.waterforpeople.mapping.app.gwt.client.location.PlacemarkDtoResponse;
+import org.waterforpeople.mapping.app.gwt.client.survey.CascadeResourceDto;
 import org.waterforpeople.mapping.app.gwt.client.survey.OptionContainerDto;
 import org.waterforpeople.mapping.app.gwt.client.survey.QuestionDependencyDto;
 import org.waterforpeople.mapping.app.gwt.client.survey.QuestionDto;
@@ -1431,6 +1432,12 @@ public class BulkDataServiceClient {
         }
         return result.toString();
     }
+    
+    public static Map<Long, CascadeResourceDto> fetchCascadeResources(String serverBase, String apiKey) {
+        
+        return null;
+    }
+    
 
     /**
      * converts the string into a JSON array object.
