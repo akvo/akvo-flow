@@ -85,7 +85,7 @@ FLOW.MapsController = Ember.ArrayController.extend({
                     fillColor:'#edb660',
                     opacity:0.9,
                     fillOpacity:0.7,
-                    placemarkId: placemark.get('detailsId'),
+                    placemarkId: placemark.get('keyId'),
                     collectionDate:placemark.get('collectionDate')});
                 marker.on('click', onMarkerClick);
                 return marker;
@@ -106,7 +106,7 @@ FLOW.MapsController = Ember.ArrayController.extend({
                 radius:7,
                 color:'#d46f12',
                 fillColor:'#edb660',
-                placemarkId: placemark.get('detailsId'),
+                placemarkId: placemark.get('keyId'),
                 collectionDate:placemark.get('collectionDate')});
             marker.on('click', onMarkerClick);
             return marker;

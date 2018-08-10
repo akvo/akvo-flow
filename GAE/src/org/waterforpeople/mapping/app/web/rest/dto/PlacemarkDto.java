@@ -22,7 +22,6 @@ import com.gallatinsystems.framework.gwt.dto.client.BaseDto;
 
 public class PlacemarkDto extends BaseDto {
     private static final long serialVersionUID = 7506078448656852101L;
-    private String markType = null;
     private Double latitude = null;
     private Double longitude = null;
     private Integer count = 0;
@@ -30,15 +29,6 @@ public class PlacemarkDto extends BaseDto {
     private Long surveyId;
     private Long formId;
     private Date collectionDate = null;
-    private Long detailsId = null;
-
-    public String getMarkType() {
-        return markType;
-    }
-
-    public void setMarkType(String markType) {
-        this.markType = markType;
-    }
 
     public Double getLatitude() {
         return latitude;
@@ -94,13 +84,5 @@ public class PlacemarkDto extends BaseDto {
 
     public void setFormId(Long formId) {
         this.formId = formId;
-    }
-
-    public Long getDetailsId() {
-        return detailsId;
-    }
-
-    public void setDetailsId(Long detailsId) {
-        this.detailsId = detailsId;
     }
 }
