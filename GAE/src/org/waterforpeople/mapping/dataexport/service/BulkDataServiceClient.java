@@ -106,47 +106,6 @@ public class BulkDataServiceClient {
         return parseSurveyInstanceResponse(instanceValues);
     }
 
-    public static List<DeviceFilesDto> fetchDeviceFiles(String statusCode,
-            String serverBase) throws Exception {
-        return fetchData(null, serverBase, statusCode);
-    }
-
-    private static List<DeviceFilesDto> fetchData(String cursor,
-            String serverBase, String statusCode) throws Exception {
-
-        String queryString = null;
-        String response = null;
-        ArrayList<DeviceFilesDto> dfDto = new ArrayList<DeviceFilesDto>();
-        queryString = serverBase + DEVICE_FILES_SERVLET_PATH
-                + DeviceFileRestRequest.LIST_DEVICE_FILES_ACTION + "&"
-                + DeviceFileRestRequest.PROCESSED_STATUS_PARAM + "="
-                + statusCode;
-        if (cursor != null) {
-            queryString = queryString + "&cursor=" + cursor;
-        }
-        response = fetchDataFromServer(queryString);
-        List<DeviceFilesDto> list = parseDeviceFiles(response);
-        if (list == null || list.size() == 0) {
-            return null;
-        }
-        for (DeviceFilesDto dto : list) {
-            dfDto.add(dto);
-        }
-
-        JSONObject jsonOuter = new JSONObject(response);
-        if (jsonOuter.has("cursor")) {
-            cursor = jsonOuter.getString("cursor");
-            List<DeviceFilesDto> dfDtoTemp = fetchData(cursor, serverBase,
-                    statusCode);
-            if (dfDtoTemp != null)
-                for (DeviceFilesDto item : dfDtoTemp) {
-                    dfDto.add(item);
-                }
-        }
-
-        return dfDto;
-    }
-
     /**
      * survey instance ids and their submission dates. Map keys are the instances and values are the
      * dates.
@@ -1095,12 +1054,6 @@ public class BulkDataServiceClient {
     /**
      * invokes a remote REST api using the base and query string passed in. If shouldSign is true,
      * the queryString will be augmented with a timestamp and hash parameter.
-     *
-     * @param baseUrl
-     * @param queryString
-     * @param shouldSign
-     * @param key
-     * @return
      * @throws Exception
      */
     public static String fetchDataFromServer(String baseUrl,
@@ -1133,9 +1086,6 @@ public class BulkDataServiceClient {
     /**
      * invokes a remote REST api. If the url is longer than 1900 characters, this method will use
      * POST since that is too long for a GET
-     *
-     * @param fullUrl
-     * @return
      * @throws Exception
      */
     public static String fetchDataFromServer(String fullUrl) throws Exception {
