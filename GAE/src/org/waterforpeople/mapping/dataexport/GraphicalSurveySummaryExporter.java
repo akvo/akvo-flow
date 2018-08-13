@@ -1129,7 +1129,7 @@ public class GraphicalSurveySummaryExporter extends SurveySummaryExporter {
         String other = null;
         int numOptions = 0;
         if (options != null) {
-        	numOptions = options.size();
+            numOptions = options.size();
         }
         boolean[] optionFound = new boolean[numOptions]; //Zero-length array ok
 
