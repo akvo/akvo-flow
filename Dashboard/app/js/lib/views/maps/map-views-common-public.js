@@ -61,18 +61,20 @@ FLOW.NavMapsView = FLOW.View.extend({
         'Terrain': terrain
       }, {}));
     } else {
-      // insert the map
+      // insert the map for the mapbox
       var options = {
-          minZoom: 2,
+          minZoom: 10,
           maxZoom: 18
       };
-      this.map = L.mapbox.map('flowMap', 'akvo.he30g8mm', options).setView([-0.703107, 36.765], 2);
+      L.mapbox.accessToken = 'pk.eyJ1IjoiYWt2byIsImEiOiJzUFVwR3pJIn0.8dLa4fHG19fBwwBUJMDOSQ';
+      var baseLayers = {
+        Terrain: L.mapbox.tileLayer('akvo.he30g8mm'),
+        Streets: L.mapbox.tileLayer('akvo.he2pdjhk'),
+        Satellite: L.mapbox.tileLayer('akvo.he30neh4')
+      }
 
-      L.control.layers({
-        'Terrain': L.mapbox.tileLayer('akvo.he30g8mm').addTo(this.map),
-        'Streets': L.mapbox.tileLayer('akvo.he2pdjhk'),
-        'Satellite': L.mapbox.tileLayer('akvo.he30neh4')
-      }).addTo(this.map);
+      this.map = L.mapbox.map('flowMap', 'akvo.he30g8mm', options).setView([-0.703107, 36.765], 2);
+      L.control.layers(baseLayers).addTo(this.map)
     }
 
     // add scale indication to map
