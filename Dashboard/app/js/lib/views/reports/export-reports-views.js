@@ -256,3 +256,79 @@ FLOW.ReportsListView = Ember.View.extend({
     FLOW.router.transitionTo('navData.exportReports');
   }
 });
+
+FLOW.ReportListItemView = FLOW.View.extend({
+  templateName: 'navReports/report',
+
+  reportType: function(){
+    var reportTypeClasses = {
+      DATA_CLEANING: "dataCleanExp",
+      DATA_ANALYSIS: "dataAnalyseExp",
+      COMPREHENSIVE: "compReportExp",
+      GEOSHAPE: "geoShapeDataExp",
+      SURVEY_FORM: "surveyFormExp"
+    };
+    return reportTypeClasses[this.content.get('reportType')];
+  }.property(this.content),
+
+  reportStatus: function(){
+    var reportStates = {
+      IN_PROGRESS: "exportGenerating",
+      QUEUED: "exportGenerating",
+      FINISHED_SUCCESS: "",
+      FINISHED_ERROR: ""
+    };
+    return reportStates[this.content.get('state')];
+  }.property(this.content),
+
+  reportTypeString: function(){
+    var reportTypeStrings = {
+      DATA_CLEANING: Ember.String.loc('_data_cleaning_export'),
+      DATA_ANALYSIS: Ember.String.loc('_data_analysis_export'),
+      COMPREHENSIVE: Ember.String.loc('_comprehensive_report'),
+      GEOSHAPE: Ember.String.loc('_geoshape_data'),
+      SURVEY_FORM: Ember.String.loc('_survey_form')
+    };
+    return reportTypeStrings[this.content.get('reportType')];
+  }.property(this.content),
+
+  reportFilename: function(){
+    var url = this.content.get('filename');
+    return FLOW.reportFilename(url);
+  }.property(this.content),
+
+  reportLink: function(){
+    var url = this.content.get('filename');
+    return !url ? "#" : url;
+  }.property(this.content),
+
+  surveyPath: function(){
+    var formId = this.content.get('formId'), path = "";
+    var form  = FLOW.Survey.find(formId);
+    if (form) {
+      var ancestorIds = form.get('ancestorIds');
+      for (var i = 0; i < ancestorIds.length; i++) {
+        if (ancestorIds[i] !== null && ancestorIds[i] !== 0) {
+          var ancestor = FLOW.SurveyGroup.find(ancestorIds[i]);
+          if (ancestor) {
+            path += (i > 1 ? " > ": "")+ancestor.get('name');
+          }
+        }
+      }
+      path += " > "+form.get('name');
+    }
+    return path;
+  }.property(this.content),
+
+  startDate: function(){
+    return FLOW.renderTimeStamp(this.content.get('startDate'));
+  }.property(this.content),
+
+  endDate: function(){
+    return FLOW.renderTimeStamp(this.content.get('endDate'));
+  }.property(this.content),
+
+  lastUpdateDateTime: function(){
+    return FLOW.renderDate(this.content.get('lastUpdateDateTime'));
+  }.property(this.content)
+});

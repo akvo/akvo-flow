@@ -22,10 +22,6 @@
         <id>bintray.com</id>
         <url>https://dl.bintray.com/meetup/maven/</url>
       </repository>
-      <repository>
-        <id>geotoolkit.org</id>
-        <url>https://nexus.geomatys.com/repository/geotoolkit/</url>
-      </repository>
   </repositories>
 
   <distributionManagement>
@@ -39,8 +35,8 @@
   <properties>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
-    <maven.compiler.source>1.7</maven.compiler.source>
-    <maven.compiler.target>1.7</maven.compiler.target>
+    <maven.compiler.source>1.8</maven.compiler.source>
+    <maven.compiler.target>1.8</maven.compiler.target>
     <maven.compiler.showDeprecation>false</maven.compiler.showDeprecation>
     <archiveClasses>true</archiveClasses>
     <spring.version>3.2.18.RELEASE</spring.version>
@@ -218,7 +214,7 @@
     <dependency>
         <groupId>com.vividsolutions</groupId>
         <artifactId>jts</artifactId>
-        <version>1.10</version>
+        <version>1.13</version>
     </dependency>
 
 

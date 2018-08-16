@@ -38,6 +38,7 @@ import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
 
+import org.apache.log4j.BasicConfigurator;
 import org.apache.log4j.Logger;
 import org.apache.poi.ss.usermodel.Cell;
 import org.apache.poi.ss.usermodel.Row;
@@ -599,7 +600,10 @@ public class RawDataSpreadsheetImporter implements DataImporter {
 
         Cell cell = iterationRow.getCell(columnIndex);
 
-        if (cell != null) {
+        if (cell != null //misses empty-but-has-other
+        		|| (questionType == questionType.OPTION
+        				&& Boolean.TRUE.equals(questionDto.getAllowOtherFlag()
+        				&& otherValuesInSeparateColumns))) { 
             switch (questionType) {
                 case GEO:
                     String latitude = ExportImportUtils.parseCellAsString(cell);
@@ -656,8 +660,8 @@ public class RawDataSpreadsheetImporter implements DataImporter {
                     if (Boolean.TRUE.equals(questionDto.getAllowOtherFlag())) {
                         if (otherValuesInSeparateColumns) { //2018-style
                             //get "other" from the next cell
-                            Cell nextCell = iterationRow.getCell(columnIndex + 1);
-                            String otherString = ExportImportUtils.parseCellAsString(nextCell);
+                            Cell otherCell = iterationRow.getCell(columnIndex + 1);
+                            String otherString = ExportImportUtils.parseCellAsString(otherCell);
                             if (otherString != null && !otherString.trim().isEmpty()) {
                                 optionList.add(parsedOptionValue(otherString, true));
                             }
@@ -1169,6 +1173,9 @@ public class RawDataSpreadsheetImporter implements DataImporter {
     //This main() method is only for testing and debugging.
     //executeImport() is called from Clojure code in live deployment.
     public static void main(String[] args) throws Exception {
+        // Set up a simple configuration that logs on the console.
+        BasicConfigurator.configure();
+
         if (args.length != 4) {
             log.error("Error.\nUsage:\n\tjava org.waterforpeople.mapping.dataexport.RawDataSpreadsheetImporter <file> <serverBase> <surveyId> <apiKey>");
             System.exit(1);

@@ -419,32 +419,6 @@ public class SurveyedLocaleDao extends BaseDAO<SurveyedLocale> {
         return (List<SurveyedLocale>) query.executeWithMap(paramMap);
     }
 
-    /**
-     * returns all the locales with the identifier passed in. If needDetails is true, it will list
-     * the surveyalValues for the locale from the most recent survey instance only.
-     *
-     * @param identifier
-     * @param needDetails
-     * @return
-     */
-    public List<SurveyedLocale> listLocalesByCode(String identifier,
-            boolean needDetails) {
-        List<SurveyedLocale> locales = listByProperty("identifier", identifier,
-                "String");
-        if (locales != null && needDetails) {
-            for (SurveyedLocale l : locales) {
-                if (l.getLastSurveyalInstanceId() != null) {
-                    l.setSurveyalValues(listSurveyalValuesByInstance(l
-                            .getLastSurveyalInstanceId()));
-                } else {
-                    // get the most recent instance and use its id
-                    l.setSurveyalValues(getSurveyalValues(l.getKey().getId()));
-                }
-            }
-        }
-        return locales;
-    }
-
     public SurveyedLocale getById(Long id) {
         final SurveyedLocale sl = getByKey(id);
         if (sl != null) {
