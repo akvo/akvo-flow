@@ -129,9 +129,11 @@ FLOW.SurveyGroup = FLOW.BaseModel.extend({
 FLOW.Survey = FLOW.BaseModel.extend({
   didLoad: function () {
     // set the survey group name
-    var sg = FLOW.store.find(FLOW.SurveyGroup, this.get('surveyGroupId'));
-    if (!Ember.empty(sg)) {
-      this.set('surveyGroupName', sg.get('code'));
+    if (this.get('surveyGroupId')) {
+      var sg = FLOW.store.find(FLOW.SurveyGroup, this.get('surveyGroupId'));
+      if (!Ember.empty(sg)) {
+        this.set('surveyGroupName', sg.get('code'));
+      }
     }
   },
 
