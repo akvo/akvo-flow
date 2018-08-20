@@ -312,11 +312,11 @@ FLOW.ReportListItemView = FLOW.View.extend({
           if (ancestorIds[i] !== null && ancestorIds[i] !== 0) {
             var ancestor = FLOW.SurveyGroup.find(ancestorIds[i]);
             if (ancestor) {
-              path += (i > 1 ? " > ": "")+ancestor.get('name');
+              path += (i > 1 ? " > ": "") + ancestor.get('name');
             }
           }
         }
-        path += " > "+form.get('name');
+        path += " > " + form.get('name');
       }
     }
     return path;
