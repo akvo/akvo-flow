@@ -307,15 +307,17 @@ FLOW.ReportListItemView = FLOW.View.extend({
     var form  = FLOW.Survey.find(formId);
     if (form) {
       var ancestorIds = form.get('ancestorIds');
-      for (var i = 0; i < ancestorIds.length; i++) {
-        if (ancestorIds[i] !== null && ancestorIds[i] !== 0) {
-          var ancestor = FLOW.SurveyGroup.find(ancestorIds[i]);
-          if (ancestor) {
-            path += (i > 1 ? " > ": "")+ancestor.get('name');
+      if (ancestorIds) {
+        for (var i = 0; i < ancestorIds.length; i++) {
+          if (ancestorIds[i] !== null && ancestorIds[i] !== 0) {
+            var ancestor = FLOW.SurveyGroup.find(ancestorIds[i]);
+            if (ancestor) {
+              path += (i > 1 ? " > ": "")+ancestor.get('name');
+            }
           }
         }
+        path += " > "+form.get('name');
       }
-      path += " > "+form.get('name');
     }
     return path;
   }.property(this.content),
