@@ -2,6 +2,19 @@
 ----
 # Akvo Flow Dashboard v1.9.36..
 
+# Akvo Flow Dashboard v1.9.35 - Haptic Hazel
+Date: 06th August 2018
+
+## New and noteworthy
+* **UI Improvement** - New "Resources" tab that holds cascade resources and data approval [#2731]
+* **Survey data** - You can now use barcode question types as data point name [#2776]. Save form version used to collect data [#2707]
+* **Backend** - Migrate Flow backend to Java 8 [#2395].
+
+## Resolved issues
+* **Bug fixes** The survey path for a generated report now always displays correctly [#2782] based on preloading surveys on dashboard [#2754]
+* **Reports** - We now check the status of generating reports every 10 seconds and update the list once they're ready for download [#2755]. Cron job for removing exported reports that are older than one year [#2638]. Place a timeout for report generation that takes too long [#2779]
+* **Backend processes** - Handle addition of other option during data cleaning reports [#2780]. More comprehensive error messaging when cascade publishing fails [#2794]. When exporting reports, handle option-less option questions [#2777]
+
 # Akvo Flow Dashboard v1.9.34.1 - Groundbreaking Grass Hotfix
 Date: 06th August 2018
 
@@ -262,7 +275,7 @@ Date: 31 August 2017
 Date: 26 July 2017
 
 ## Resolved issues
-* **Reporting fixes** - Comprehensive reports should now work when the regional summary sheets get their names from a cascade question [#2206], and also work for questions that have very long names. 
+* **Reporting fixes** - Comprehensive reports should now work when the regional summary sheets get their names from a cascade question [#2206], and also work for questions that have very long names.
 
 # 1.9.21 Thoroughbred Tamandua
 Date: 21 July 2017
