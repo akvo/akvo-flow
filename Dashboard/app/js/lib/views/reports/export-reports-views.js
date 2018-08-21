@@ -20,14 +20,14 @@ FLOW.ReportLoader = Ember.Object.create({
     newReport.set('state', 'QUEUED');
 
     FLOW.store.commit();
-    this.showEmailNotification();
+    this.showDialogMessage(Ember.String.loc('_your_report_is_being_prepared'), Ember.String.loc('_we_will_notify_via_email'));
   },
 
-  showEmailNotification: function () {
+  showDialogMessage: function(header, message) {
     FLOW.savingMessageControl.numLoadingChange(-1);
-    FLOW.dialogControl.set('activeAction', 'reports');
-    FLOW.dialogControl.set('header', Ember.String.loc('_your_report_is_being_prepared'));
-    FLOW.dialogControl.set('message', Ember.String.loc('_we_will_notify_via_email'));
+    FLOW.dialogControl.set('activeAction', 'ignore');
+    FLOW.dialogControl.set('header', header);
+    FLOW.dialogControl.set('message', message);
     FLOW.dialogControl.set('showCANCEL', false);
     FLOW.dialogControl.set('showDialog', true);
   }
@@ -150,7 +150,7 @@ FLOW.ExportReportTypeView = Ember.View.extend({
     var sId = this.get('selectedSurvey');
     var qId = this.get('selectedQuestion');
     if (!sId || !qId) {
-      this.showWarningMessage(
+      FLOW.ReportLoader.showDialogMessage(
         Ember.String.loc('_export_data'),
         Ember.String.loc('_select_survey_and_geoshape_question_warning')
       );
@@ -199,19 +199,7 @@ FLOW.ExportReportTypeView = Ember.View.extend({
   },
 
   showWarning: function () {
-    this.showWarningMessage(Ember.String.loc('_export_data'), Ember.String.loc('_applet_select_survey'));
-  },
-
-  showImportWarning: function (msg) {
-    this.showWarningMessage(Ember.String.loc('_import_clean_data'), msg);
-  },
-
-  showWarningMessage: function(header, message) {
-    FLOW.dialogControl.set('activeAction', 'ignore');
-    FLOW.dialogControl.set('header', header);
-    FLOW.dialogControl.set('message', message);
-    FLOW.dialogControl.set('showCANCEL', false);
-    FLOW.dialogControl.set('showDialog', true);
+    FLOW.ReportLoader.showDialogMessage(Ember.String.loc('_export_data'), Ember.String.loc('_applet_select_survey'));
   },
 
   eventManager: Ember.Object.create({
