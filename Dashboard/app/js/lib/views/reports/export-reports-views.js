@@ -168,24 +168,6 @@ FLOW.ExportReportTypeView = Ember.View.extend({
     FLOW.ReportLoader.load('SURVEY_FORM', sId);
   },
 
-  importFile: function () {
-    var file, sId = this.get('selectedSurvey');
-    if (!sId) {
-      this.showImportWarning(Ember.String.loc('_import_select_survey'));
-      return;
-    }
-
-    file = $('#raw-data-import-file')[0];
-
-    if (!file || file.files.length === 0) {
-      this.showImportWarning(Ember.String.loc('_import_select_file'));
-      return;
-    }
-
-    FLOW.uploader.addFile(file.files[0]);
-    FLOW.uploader.upload();
-  },
-
   showComprehensiveOptions: function () {
     var sId = this.get('selectedSurvey');
     if (!sId) {
@@ -321,4 +303,26 @@ FLOW.ReportListItemView = FLOW.View.extend({
   lastUpdateDateTime: function(){
     return FLOW.renderDate(this.content.get('lastUpdateDateTime'));
   }.property(this.content)
+});
+
+FLOW.DataCleaningView = Ember.View.extend({
+  templateName: 'navData/data-cleaning',
+
+  importFile: function () {
+    var file, survey = FLOW.selectedControl.get('selectedSurvey');
+    if (!survey.get('keyId')) {
+      FLOW.ReportLoader.showDialogMessage(Ember.String.loc('_import_clean_data'), Ember.String.loc('_import_select_survey'));
+      return;
+    }
+
+    file = $('#raw-data-import-file')[0];
+
+    if (!file || file.files.length === 0) {
+      FLOW.ReportLoader.showDialogMessage(Ember.String.loc('_import_clean_data'), Ember.String.loc('_import_select_file'));
+      return;
+    }
+
+    FLOW.uploader.addFile(file.files[0]);
+    FLOW.uploader.upload();
+  }
 });
