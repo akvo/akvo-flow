@@ -63,7 +63,7 @@ FLOW.NavMapsView = FLOW.View.extend({
     } else {
       // insert the map for the mapbox
       var options = {
-          minZoom: 10,
+          minZoom: 2,
           maxZoom: 18
       };
       L.mapbox.accessToken = 'pk.eyJ1IjoiYWt2byIsImEiOiJzUFVwR3pJIn0.8dLa4fHG19fBwwBUJMDOSQ';
