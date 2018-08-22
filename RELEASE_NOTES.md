@@ -1,6 +1,13 @@
 # Akvo Flow Release Notes
 ----
-# Akvo Flow Dashboard v1.9.36..
+# Akvo Flow Dashboard v1.9.36 - Iconic Iris
+Date: 22nd August 2018
+
+## New and noteworthy
+* **JavaScript libraries** - Upgraded Mapbox library version [#2769]
+
+## Resolved issues
+* **Bug fixes** - List button showing in data cleaning tab [#2826]. Errors showing on survey page [#2821]
 
 # Akvo Flow Dashboard v1.9.35 - Haptic Hazel
 Date: 06th August 2018
