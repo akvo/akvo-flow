@@ -20,12 +20,12 @@ FLOW.ReportLoader = Ember.Object.create({
     newReport.set('state', 'QUEUED');
 
     FLOW.store.commit();
-    this.showDialogMessage(Ember.String.loc('_your_report_is_being_prepared'), Ember.String.loc('_we_will_notify_via_email'));
+    this.showDialogMessage(Ember.String.loc('_your_report_is_being_prepared'), Ember.String.loc('_we_will_notify_via_email'), 'reports');
   },
 
-  showDialogMessage: function(header, message) {
+  showDialogMessage: function(header, message, action) {
     FLOW.savingMessageControl.numLoadingChange(-1);
-    FLOW.dialogControl.set('activeAction', 'ignore');
+    FLOW.dialogControl.set('activeAction', action);
     FLOW.dialogControl.set('header', header);
     FLOW.dialogControl.set('message', message);
     FLOW.dialogControl.set('showCANCEL', false);
@@ -152,7 +152,8 @@ FLOW.ExportReportTypeView = Ember.View.extend({
     if (!sId || !qId) {
       FLOW.ReportLoader.showDialogMessage(
         Ember.String.loc('_export_data'),
-        Ember.String.loc('_select_survey_and_geoshape_question_warning')
+        Ember.String.loc('_select_survey_and_geoshape_question_warning'),
+        'ignore'
       );
       return;
     }
@@ -181,7 +182,7 @@ FLOW.ExportReportTypeView = Ember.View.extend({
   },
 
   showWarning: function () {
-    FLOW.ReportLoader.showDialogMessage(Ember.String.loc('_export_data'), Ember.String.loc('_applet_select_survey'));
+    FLOW.ReportLoader.showDialogMessage(Ember.String.loc('_export_data'), Ember.String.loc('_applet_select_survey'), 'ignore');
   },
 
   eventManager: Ember.Object.create({
@@ -311,14 +312,14 @@ FLOW.DataCleaningView = Ember.View.extend({
   importFile: function () {
     var file, survey = FLOW.selectedControl.get('selectedSurvey');
     if (!survey.get('keyId')) {
-      FLOW.ReportLoader.showDialogMessage(Ember.String.loc('_import_clean_data'), Ember.String.loc('_import_select_survey'));
+      FLOW.ReportLoader.showDialogMessage(Ember.String.loc('_import_clean_data'), Ember.String.loc('_import_select_survey'), 'ignore');
       return;
     }
 
     file = $('#raw-data-import-file')[0];
 
     if (!file || file.files.length === 0) {
-      FLOW.ReportLoader.showDialogMessage(Ember.String.loc('_import_clean_data'), Ember.String.loc('_import_select_file'));
+      FLOW.ReportLoader.showDialogMessage(Ember.String.loc('_import_clean_data'), Ember.String.loc('_import_select_file'), 'ignore');
       return;
     }
 
