@@ -742,9 +742,6 @@ FLOW.InspectDataView = Ember.View.extend({
 FLOW.BulkUploadView = Ember.View.extend({
   templateName: 'navData/bulk-upload'
 });
-FLOW.DataCleaningView = Ember.View.extend({
-  templateName: 'navData/data-cleaning'
-});
 
 FLOW.CascadeResourcesView = Ember.View.extend({
 	  templateName: 'navData/cascade-resources'

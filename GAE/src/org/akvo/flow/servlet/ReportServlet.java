@@ -22,7 +22,6 @@ import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.text.SimpleDateFormat;
-import java.util.Date;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -37,7 +36,6 @@ import org.codehaus.jackson.map.JsonMappingException;
 import org.codehaus.jackson.map.ObjectMapper;
 import org.waterforpeople.mapping.app.web.dto.TaskRequest;
 
-import com.gallatinsystems.common.Constants;
 import com.gallatinsystems.common.util.PropertyUtil;
 import com.gallatinsystems.framework.rest.AbstractRestApiServlet;
 import com.gallatinsystems.framework.rest.RestRequest;
@@ -106,7 +104,7 @@ public class ReportServlet extends AbstractRestApiServlet {
         ReportTaskRequest stReq = (ReportTaskRequest) req;
         String action = stReq.getAction();
         Long id = stReq.getId();
-        log.fine("action: " + action + " id: " + id + "attempt:" + stReq.getAttempt());
+        log.fine("action: " + action + " id: " + id + " attempt:" + stReq.getAttempt());
         Report r = rDao.getByKey(id);
         switch (action) {
             case ReportTaskRequest.START_ACTION:
@@ -169,12 +167,12 @@ public class ReportServlet extends AbstractRestApiServlet {
 
     public static void queueStart(String baseUrl, Report r) {
         Queue queue = QueueFactory.getDefaultQueue();
-        TaskOptions options = getTaskOptions(baseUrl, 1L, r); //First time
+        TaskOptions options = getTaskOptions(baseUrl, 1, r); //First time
         log.fine("Forking to task with options: " + options.toString());
         queue.add(options);
     }
 
-    private static TaskOptions getTaskOptions(String baseUrl, Long attempt, Report r) {
+    private static TaskOptions getTaskOptions(String baseUrl, int attempt, Report r) {
         return TaskOptions.Builder.withUrl(SERVLET_URL)
                     .param(TaskRequest.ACTION_PARAM, ReportTaskRequest.START_ACTION)
                     .param(ReportTaskRequest.ID_PARAM, Long.toString(r.getKey().getId()))
@@ -184,16 +182,18 @@ public class ReportServlet extends AbstractRestApiServlet {
 
     private void requeueStart(ReportTaskRequest req, Report r, int err) {
         //give up if this has been going on too long
-        if (req.getAttempt() == null || req.getAttempt() >= MAX_ATTEMPTS) {
+        if (req.getAttempt() >= MAX_ATTEMPTS) {
             log.warning("Abandoning START task after attempt " + req.getAttempt());
             r.setState(Report.FINISHED_ERROR);
-            r.setMessage("Could not start report generation after " + MAX_ATTEMPTS + " attempts: " + err);
+            r.setMessage("Could not start report generation after " + req.getAttempt() + " attempts: " + err);
             rDao.save(r);
         } else {
             log.warning("Requeuing START task");
 
             Queue queue = QueueFactory.getDefaultQueue();
-            queue.add(getTaskOptions(req.getBaseUrl(), req.getAttempt() + 1, r));
+            queue.add(getTaskOptions(req.getBaseUrl(), req.getAttempt() + 1, r)
+                    .countdownMillis(30 * 1000) // 30 seconds delay
+                    );
         }
     }
 
