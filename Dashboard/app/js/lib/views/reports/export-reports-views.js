@@ -282,7 +282,7 @@ FLOW.ReportListItemView = FLOW.View.extend({
         for (var i = 0; i < ancestorIds.length; i++) {
           if (ancestorIds[i] !== null && ancestorIds[i] !== 0) {
             var ancestor = FLOW.SurveyGroup.find(ancestorIds[i]);
-            if (ancestor) {
+            if (ancestor && ancestor.get('name')) {
               path += (i > 1 ? " > ": "") + ancestor.get('name');
             }
           }
