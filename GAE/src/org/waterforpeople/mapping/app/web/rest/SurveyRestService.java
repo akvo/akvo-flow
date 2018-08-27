@@ -153,8 +153,6 @@ public class SurveyRestService {
         if (s != null) {
             dto = new SurveyDto();
             DtoMarshaller.copyToDto(s, dto);
-            // add surveyInstance Count
-
             // needed because of different names for description in survey and
             // surveyDto
             dto.setDescription(s.getDesc());
