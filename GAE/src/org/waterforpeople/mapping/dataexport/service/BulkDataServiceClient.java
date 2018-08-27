@@ -688,9 +688,6 @@ public class BulkDataServiceClient {
                         if (!json.isNull("description")) {
                             dto.setDescription(json.getString("description"));
                         }
-                        if (!json.isNull("instanceCount")) {
-                            dto.setInstanceCount(json.getLong("instanceCount"));
-                        }
                         if (!json.isNull("keyId")) {
                             dto.setKeyId(json.getLong("keyId"));
                         }
