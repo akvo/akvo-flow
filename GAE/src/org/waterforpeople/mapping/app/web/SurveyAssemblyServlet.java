@@ -241,10 +241,7 @@ public class SurveyAssemblyServlet extends AbstractRestApiServlet {
     }
 
     private void assembleSurveyOnePass(Long surveyId) {
-        /**************
-         * 1, Select survey based on surveyId 2. Retrieve all question groups fire off queue tasks
-         */
-        log.warn("Starting assembly of " + surveyId);
+        log.info("Starting assembly of " + surveyId);
         // Swap with proper UUID
         SurveyDAO surveyDao = new SurveyDAO();
         Survey s = surveyDao.getById(surveyId);
@@ -292,18 +289,17 @@ public class SurveyAssemblyServlet extends AbstractRestApiServlet {
             }
 
             surveyXML.append(surveyFooter);
-            log.warn("Uploading " + surveyId);
-            UploadStatusContainer uc = uploadSurveyXML(surveyId,
-                    surveyXML.toString());
+            log.info("Uploading " + surveyId);
+            UploadStatusContainer uc = uploadSurveyXML(Long.toString(surveyId), surveyXML.toString());
             Message message = new Message();
             message.setActionAbout("surveyAssembly");
             message.setObjectId(surveyId);
             message.setObjectTitle(sg.getCode() + " / " + s.getName());
-            // String messageText = CONSTANTS.surveyPublishOkMessage() + " "
-            // + url;
             if (uc.getUploadedFile() && uc.getUploadedZip()) {
+                //Success. Also try to upload archive copy of specific version
+                uploadSurveyXML(Long.toString(surveyId) + "v" + s.getVersion(), surveyXML.toString());
                 // increment the version so devices know to pick up the changes
-                log.warn("Finishing assembly of " + surveyId);
+                log.info("Finishing assembly of " + surveyId);
                 s.setStatus(Survey.Status.PUBLISHED);
                 surveyDao.save(s);
                 String messageText = "Published.  Please check: " + uc.getUrl();
@@ -320,12 +316,14 @@ public class SurveyAssemblyServlet extends AbstractRestApiServlet {
                 message.setShortMessage(messageText);
                 MessageDao messageDao = new MessageDao();
                 messageDao.save(message);
+                log.info("Failed to upload assembled survey id " + surveyId + "\n"
+                        + uc.getMessage());
             }
-            log.warn("Completed onepass assembly method for " + surveyId);
+            log.info("Completed survey assembly for " + surveyId);
         }
     }
 
-    public UploadStatusContainer uploadSurveyXML(Long surveyId, String surveyXML) {
+    public UploadStatusContainer uploadSurveyXML(String fileName, String surveyXML) {
         Properties props = System.getProperties();
         String bucketName = props.getProperty("s3bucket");
         String document = surveyXML;
@@ -334,27 +332,27 @@ public class SurveyAssemblyServlet extends AbstractRestApiServlet {
 
         try {
             uploadedFile = S3Util.put(bucketName, props.getProperty(SURVEY_UPLOAD_DIR) + "/"
-                    + surveyId
+                    + fileName
                     + ".xml", document.getBytes("UTF-8"), "text/xml", true);
         } catch (IOException e) {
             log.error("Error uploading file: " + e.getMessage(), e);
         }
 
-        ByteArrayOutputStream os = ZipUtil.generateZip(document, surveyId
+        ByteArrayOutputStream os = ZipUtil.generateZip(document, fileName
                 + ".xml");
 
         UploadStatusContainer uc = new UploadStatusContainer();
 
         try {
             uploadedZip = S3Util.put(bucketName, props.getProperty(SURVEY_UPLOAD_DIR) + "/"
-                    + surveyId + ".zip", os.toByteArray(), "application/zip", true);
+                    + fileName + ".zip", os.toByteArray(), "application/zip", true);
         } catch (IOException e) {
             log.error("Error uploading file: " + e.getMessage(), e);
         }
         uc.setUploadedFile(uploadedFile);
         uc.setUploadedZip(uploadedZip);
         uc.setUrl(props.getProperty(SURVEY_UPLOAD_URL)
-                + props.getProperty(SURVEY_UPLOAD_DIR) + "/" + surveyId
+                + props.getProperty(SURVEY_UPLOAD_DIR) + "/" + fileName
                 + ".xml");
         return uc;
     }
