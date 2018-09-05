@@ -3341,6 +3341,20 @@ div.chooseSurveyData {
     }
 }
 
+div.redBorder {
+    position: relative;
+    display: inline-block;
+    margin: 0px 0 10px 0;
+    width: 33%;
+    border: 2px solid red;
+    border-radius: 8px;
+    > select {
+        max-width: 20%;
+        float: left;
+        display: inline;
+    }
+}
+
 .filterData {
     border-top: 1px solid white;
     .dataDeviceId {

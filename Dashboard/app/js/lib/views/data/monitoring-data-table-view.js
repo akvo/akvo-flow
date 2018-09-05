@@ -1,6 +1,7 @@
 FLOW.MonitoringDataTableView = FLOW.View.extend({
   showingDetailsDialog: false,
   cursorStart: null,
+  missingSurvey:false,
 
   pageNumber: function(){
 	return FLOW.router.surveyedLocaleController.get('pageNumber');
@@ -26,6 +27,14 @@ FLOW.MonitoringDataTableView = FLOW.View.extend({
     $('.si_details').hide();
     $('tr[data-flow-id="si_details_' + evt.context.get('keyId') + '"]').show();
   },
+  
+  incompleteSurveySelection: function (){
+     if (FLOW.selectedControl.get('selectedSurveyGroup') === null) {
+       this.set('missingSurvey',true);
+       return true;
+     }
+     return false;
+  },
 
   findSurveyedLocale: function (evt) {
 	  var ident = this.get('identifier'),
@@ -33,7 +42,12 @@ FLOW.MonitoringDataTableView = FLOW.View.extend({
 	      sgId = FLOW.selectedControl.get('selectedSurveyGroup'),
 	      cursorType = FLOW.metaControl.get('cursorType'),
         criteria = {};
-
+    //check if the survey is not selected, then highlight the dropdown
+    if (this.incompleteSurveySelection()) {
+        return;  
+    }
+    this.set('missingSurvey', false)
+    
 	  if (ident) {
 		  criteria.identifier = ident;
 	  }
