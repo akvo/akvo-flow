@@ -15,7 +15,8 @@ FLOW.inspectDataTableView = FLOW.View.extend({
   selectedSurveyInstanceId: null,
   selectedSurveyInstanceNum: null,
   siString: null,
-
+  missingSurvey:false,
+  
   form: function() {
     if (FLOW.selectedControl.get('selectedSurvey')) {
       return FLOW.selectedControl.get('selectedSurvey');
@@ -36,10 +37,23 @@ FLOW.inspectDataTableView = FLOW.View.extend({
   
   // do a new query
   doFindSurveyInstances: function () {
+    //check first that survey is selected before performing find action
+    if (this.incompleteSurveySelection()) {
+      return;
+    }
+    this.set('missingSurvey', false)
     FLOW.surveyInstanceControl.get('sinceArray').clear();
     FLOW.surveyInstanceControl.set('pageNumber', -1);
     FLOW.metaControl.set('since', null);
     this.doNextPage();
+  },
+  
+  incompleteSurveySelection: function () {
+    if (FLOW.selectedControl.get('selectedSurvey') === null) {
+        this.set('missingSurvey', true);
+        return true;
+     }
+    return false;
   },
 
   doInstanceQuery: function () {
