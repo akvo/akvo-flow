@@ -331,29 +331,33 @@ public class SurveyAssemblyServlet extends AbstractRestApiServlet {
         boolean uploadedZip = false;
 
         try {
-            uploadedFile = S3Util.put(bucketName, props.getProperty(SURVEY_UPLOAD_DIR) + "/"
-                    + fileName
-                    + ".xml", document.getBytes("UTF-8"), "text/xml", true);
+            uploadedFile = S3Util.put(bucketName,
+                    props.getProperty(SURVEY_UPLOAD_DIR) + "/" + fileName + ".xml",
+                    document.getBytes("UTF-8"),
+                    "text/xml",
+                    true);
         } catch (IOException e) {
             log.error("Error uploading file: " + e.getMessage(), e);
         }
 
-        ByteArrayOutputStream os = ZipUtil.generateZip(document, fileName
-                + ".xml");
+        ByteArrayOutputStream os = ZipUtil.generateZip(document, fileName + ".xml");
 
         UploadStatusContainer uc = new UploadStatusContainer();
 
         try {
-            uploadedZip = S3Util.put(bucketName, props.getProperty(SURVEY_UPLOAD_DIR) + "/"
-                    + fileName + ".zip", os.toByteArray(), "application/zip", true);
+            uploadedZip = S3Util.put(bucketName,
+                    props.getProperty(SURVEY_UPLOAD_DIR) + "/" + fileName + ".zip",
+                    os.toByteArray(),
+                    "application/zip",
+                    true);
         } catch (IOException e) {
-            log.error("Error uploading file: " + e.getMessage(), e);
+            log.error("Error uploading zipfile: " + e.getMessage(), e);
         }
         uc.setUploadedFile(uploadedFile);
         uc.setUploadedZip(uploadedZip);
         uc.setUrl(props.getProperty(SURVEY_UPLOAD_URL)
-                + props.getProperty(SURVEY_UPLOAD_DIR) + "/" + fileName
-                + ".xml");
+                + props.getProperty(SURVEY_UPLOAD_DIR)
+                + "/" + fileName + ".xml");
         return uc;
     }
 
