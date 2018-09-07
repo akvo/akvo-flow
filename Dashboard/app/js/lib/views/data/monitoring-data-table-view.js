@@ -27,14 +27,12 @@ FLOW.MonitoringDataTableView = FLOW.View.extend({
     $('.si_details').hide();
     $('tr[data-flow-id="si_details_' + evt.context.get('keyId') + '"]').show();
   },
-  
-  incompleteSurveySelection: function (){
-     if (FLOW.selectedControl.get('selectedSurveyGroup') === null) {
-       this.set('missingSurvey',true);
-       return true;
+    
+  watchSurveySelection: function(){
+     if (FLOW.selectedControl.get('selectedSurveyGroup') !== null) {
+        this.set('missingSurvey', false)
      }
-     return false;
-  },
+  }.observes('FLOW.selectedControl.selectedSurveyGroup'),
 
   findSurveyedLocale: function (evt) {
 	  var ident = this.get('identifier'),
@@ -43,10 +41,10 @@ FLOW.MonitoringDataTableView = FLOW.View.extend({
 	      cursorType = FLOW.metaControl.get('cursorType'),
         criteria = {};
     //check if the survey is not selected, then highlight the dropdown
-    if (this.incompleteSurveySelection()) {
-        return;  
-    }
-    this.set('missingSurvey', false)
+     if (FLOW.selectedControl.get('selectedSurveyGroup') === null) {
+       this.set('missingSurvey', true)
+       return;
+     }
     
 	  if (ident) {
 		  criteria.identifier = ident;
