@@ -298,10 +298,18 @@ FLOW.placemarkDetailController = Ember.ArrayController.create({
   content: Ember.A(),
   sortProperties: ['order'],
   sortAscending: true,
-  collectionDate: null,
-  surveyedLocaleDisplayName: null,
-  surveyedLocaleIdentifier: null,
-  si: null,
+
+  dataPoint: null,
+
+  dataPointCollectionDate: null,
+
+  dataPointDisplayName: function () {
+      return this.dataPoint && this.dataPoint.get('displayName')
+  }.property('this.dataPoint.isLoaded'),
+
+  dataPointIdentifier: function () {
+      return this.dataPoint && this.dataPoint.get('identifier')
+  }.property('this.dataPoint.isLoaded'),
 
   populate: function (placemarkId) {
 	  if (placemarkId) {
@@ -313,24 +321,13 @@ FLOW.placemarkDetailController = Ember.ArrayController.create({
 	  }
   },
 
-  siDetails: function() {
-      if (FLOW.Env.mapsProvider === 'cartodb') {
-          this.set('surveyedLocaleDisplayName', this.si.get('surveyedLocaleDisplayName'));
-          this.set('surveyedLocaleIdentifier', this.si.get('surveyedLocaleIdentifier'));
-      }
-      this.set('collectionDate', this.si.get('collectionDate'));
-  }.observes('si.isLoaded'),
-
-  handlePlacemarkSelection: function () {
-    var selectedPlacemarkId = null;
-    if (!Ember.none(FLOW.router.get('mapsController'))) {
+  placemarkSelectionHandler: function () {
       var mapsController = FLOW.router.get('mapsController');
-      if (!Ember.none(mapsController.get('selectedMarker'))) {
-      	selectedPlacemarkId = mapsController.selectedMarker.target.options.placemarkId;
-      	this.set('collectionDate',mapsController.selectedMarker.target.options.collectionDate);
+      if (mapsController && mapsController.get('selectedMarker')) {
+          var selectedPlacemarkId = mapsController.selectedMarker.target.options.placemarkId;
+          this.set('dataPointCollectionDate', mapsController.selectedMarker.target.options.collectionDate);
+          this.set('dataPoint', FLOW.store.find(FLOW.SurveyedLocale, selectedPlacemarkId));
+          this.populate(selectedPlacemarkId);
       }
-      this.populate(selectedPlacemarkId);
-    }
   }.observes('FLOW.router.mapsController.selectedMarker')
-
 });

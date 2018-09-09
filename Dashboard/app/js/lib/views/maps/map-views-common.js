@@ -447,28 +447,7 @@ FLOW.NavMapsView = FLOW.View.extend({
 });
 
 FLOW.countryView = FLOW.View.extend({});
-FLOW.PlacemarkDetailsView = FLOW.View.extend({
-    dataPoint: null,
-
-    dataPointCollectionDate: null,
-
-    dataPointDisplayName: function () {
-        return this.dataPoint && this.dataPoint.get('displayName')
-    }.property('this.dataPoint.isLoaded'),
-
-    dataPointIdentifier: function () {
-        return this.dataPoint && this.dataPoint.get('identifier')
-    }.property('this.dataPoint.isLoaded'),
-
-    placemarkSelectionHandler: function () {
-        var mapsController = FLOW.router.get('mapsController');
-        if (mapsController.get('selectedMarker')) {
-            var selectedPlacemarkId = mapsController.selectedMarker.target.options.placemarkId;
-            this.set('dataPointCollectionDate', mapsController.selectedMarker.target.options.collectionDate);
-            this.set('dataPoint', FLOW.store.find(FLOW.SurveyedLocale, selectedPlacemarkId));
-        }
-    }.observes('FLOW.router.mapsController.selectedMarker')
-});
+FLOW.PlacemarkDetailsView = FLOW.View.extend({});
 
 FLOW.PlacemarkDetailPhotoView = Ember.View.extend({});
 
