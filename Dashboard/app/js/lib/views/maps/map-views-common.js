@@ -453,11 +453,11 @@ FLOW.PlacemarkDetailsView = FLOW.View.extend({
     dataPointCollectionDate: null,
 
     dataPointDisplayName: function () {
-        return this.dataPoint.get('displayName')
+        return this.dataPoint && this.dataPoint.get('displayName')
     }.property('this.dataPoint.isLoaded'),
 
     dataPointIdentifier: function () {
-        return this.dataPoint.get('identifier')
+        return this.dataPoint && this.dataPoint.get('identifier')
     }.property('this.dataPoint.isLoaded'),
 
     placemarkSelectionHandler: function () {
