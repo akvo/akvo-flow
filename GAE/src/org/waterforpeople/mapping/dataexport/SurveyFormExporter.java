@@ -76,7 +76,6 @@ public class SurveyFormExporter implements DataExporter {
     private List<QuestionGroupDto> groupList;
     private String surveyTitle;
     private Map<QuestionGroupDto, List<QuestionDto>> questionMap;
-    private Map<Long, CascadeResourceDto> cascadeMap;
 
     @Override
     public void export(Map<String, String> criteria, File fileName,
@@ -92,7 +91,6 @@ public class SurveyFormExporter implements DataExporter {
                 SurveyDto surveyDto = surveys.get(0);
                 surveyTitle = String.format("%s (v. %s)", surveyDto.getName(), surveyDto.getVersion());
             }
-            cascadeMap = BulkDataServiceClient.fetchCascadeResources(serverBase, apiKey);
 
             writeSurvey(surveyTitle, fileName, groupList, questionMap);
         } catch (Exception e) {
@@ -301,9 +299,7 @@ public class SurveyFormExporter implements DataExporter {
                     createCell(row, 23, q.getType() == QuestionType.GEO ? 
                             q.getGeoLocked() : null, null);
                     // CASCADE
-                    if (q.getCascadeResourceId() != null && cascadeMap.get(q.getCascadeResourceId()) != null) {
-                        createCell(row, 24, cascadeMap.get(q.getCascadeResourceId()).getName(), null);                        
-                    }
+                    createCell(row, 24, q.getCascadeResourceId(), null);                        
                     // geoshapes
                     createCell(row, 25, q.getAllowPoints(), null);
                     createCell(row, 26, q.getAllowLine(), null);
@@ -327,10 +323,10 @@ public class SurveyFormExporter implements DataExporter {
     private int createFullHeader(HSSFSheet sheet, int startRow, HSSFCellStyle style) {
         int r = startRow, c = 0;
         HSSFRow row = sheet.createRow(r++);
-        createCell(row, c++, "Form version", style);
-        createCell(row, c++, 1.0, style); // TODO: from where?
-        createCell(row, c++, "Languages", style);
-        createCell(row, c++, "EN/FR/ES", style); // TODO: from where?
+        //createCell(row, c++, "Form version", style);
+        //createCell(row, c++, 1.0, style); // TODO: from where?
+        //createCell(row, c++, "Languages", style);
+        //createCell(row, c++, "EN/FR/ES", style); // TODO: from where?
 
         row = sheet.createRow(r++);
         createCellBlock(row, 0, "Group", style, 3);
