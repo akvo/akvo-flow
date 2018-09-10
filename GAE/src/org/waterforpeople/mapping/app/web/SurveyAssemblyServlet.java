@@ -483,8 +483,7 @@ public class SurveyAssemblyServlet extends AbstractRestApiServlet {
                 // any translations for question tooltip?
 
                 List<AltText> translationList = new ArrayList<AltText>();
-                for (Translation trans : tipTrans
-                        .values()) {
+                for (Translation trans : tipTrans.values()) {
                     AltText aText = new AltText();
                     aText.setContent(trans.getText());
                     aText.setLanguage(trans.getLanguageCode());
