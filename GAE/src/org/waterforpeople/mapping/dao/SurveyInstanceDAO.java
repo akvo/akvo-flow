@@ -124,19 +124,6 @@ public class SurveyInstanceDAO extends BaseDAO<SurveyInstance> {
             qasDao.save(responses);
         }
 
-        // Recompute data summarization for new locations.
-        for (QuestionAnswerStore qas : locations) {
-            long geoQasId = qas.getKey().getId();
-            Queue summQueue = QueueFactory.getQueue("dataSummarization");
-            summQueue.add(TaskOptions.Builder
-                    .withUrl("/app_worker/dataprocessor")
-                    .param(DataProcessorRequest.ACTION_PARAM,
-                            DataProcessorRequest.SURVEY_INSTANCE_SUMMARIZER)
-                    .param("surveyInstanceId", si.getKey().getId() + "")
-                    .param("qasId", geoQasId + "")
-                    .param("delta", 1 + ""));
-        }
-
         // Now that QAS IDs are set, enqueue imagecheck tasks,
         // whereby the presence of an image in S3 will be checked.
         if (!images.isEmpty()) {
@@ -509,41 +496,7 @@ public class SurveyInstanceDAO extends BaseDAO<SurveyInstance> {
         QuestionAnswerStoreDao qasDao = new QuestionAnswerStoreDao();
         QuestionDao qDao = new QuestionDao();
         List<QuestionAnswerStore> qasList = qasDao.listBySurveyInstance(surveyInstanceId);
-        SurveyQuestionSummaryDao summDao = new SurveyQuestionSummaryDao();
         if (qasList != null && !qasList.isEmpty()) {
-            for (QuestionAnswerStore qasItem : qasList) {
-                // question summaries
-                Question question = qDao.getByKey(Long.parseLong(qasItem.getQuestionID()));
-                if (question != null && question.canBeCharted()) {
-                    Queue questionSummaryQueue = QueueFactory.getQueue("surveyResponseCount");
-                    List<SurveyQuestionSummary> summaryList = summDao.listByResponse(
-                            qasItem.getQuestionID(), qasItem.getValue());
-                    if (summaryList != null && !summaryList.isEmpty()) {
-                        TaskOptions to = TaskOptions.Builder
-                                .withUrl("/app_worker/dataprocessor")
-                                .param(DataProcessorRequest.ACTION_PARAM,
-                                        DataProcessorRequest.SURVEY_RESPONSE_COUNT)
-                                .param(DataProcessorRequest.COUNTER_ID_PARAM,
-                                        summaryList.get(0).getKey().getId() + "")
-                                .param(DataProcessorRequest.DELTA_PARAM, "-1");
-                        questionSummaryQueue.add(to);
-                        continue;
-                    }
-                }
-
-                // survey instance summary task
-                if (Question.Type.GEO.toString().equals(qasItem.getType())) {
-                    Queue summaryQueue = QueueFactory.getQueue("dataSummarization");
-
-                    TaskOptions to = TaskOptions.Builder
-                            .withUrl("/app_worker/dataprocessor")
-                            .param(DataProcessorRequest.ACTION_PARAM,
-                                    DataProcessorRequest.SURVEY_INSTANCE_SUMMARIZER)
-                            .param(DataProcessorRequest.DELTA_PARAM, "-1");
-                    summaryQueue.add(to);
-                }
-            }
-
             qasDao.delete(qasList);
         }
 

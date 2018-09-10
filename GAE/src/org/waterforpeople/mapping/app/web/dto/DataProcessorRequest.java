@@ -44,8 +44,6 @@ public class DataProcessorRequest extends RestRequest {
     public static final String ASSEMBLE_DATAPOINT_NAME = "assembleDatapointName";
     public static final String DELETE_DUPLICATE_QAS = "deleteDuplicatedQAS";
     public static final String RECOMPUTE_LOCALE_CLUSTERS = "recomputeLocaleClusters";
-    public static final String SURVEY_INSTANCE_SUMMARIZER = "surveyInstanceSummarizer";
-    public static final String SURVEY_RESPONSE_COUNT = "surveyResponseCount";
     public static final String TRIM_OPTIONS = "trimOptions";
     public static final String RESCORE_AP_ACTION = "rescoreAp";
     public static final String SOURCE_PARAM = "source";
