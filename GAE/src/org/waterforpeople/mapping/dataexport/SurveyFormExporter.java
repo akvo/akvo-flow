@@ -266,7 +266,7 @@ public class SurveyFormExporter implements DataExporter {
                     HSSFRow row = sheet.createRow(r);
 
                     if (r == firstRowInGroup) { // only once per group
-                        createCell(row, 0, Long.valueOf(i), headerCtr);
+                        createCell(row, 0, Long.valueOf(i + 1), headerCtr);
                         createCell(row, 1, groupList.get(i).getDisplayName(), headerCtr);
                         createCell(row, 2, groupList.get(i).getRepeatable(), headerCtr);
                     }
@@ -345,11 +345,11 @@ public class SurveyFormExporter implements DataExporter {
         c = 0;
         // Common
         createCell(row, c,   "#", style);
-        createCell(row, ++c, "title", style);
+        createCell(row, ++c, "Title", style);
         createCell(row, ++c, "Repeatable", style);
         createCell(row, ++c, "# in group", style);
         createCell(row, ++c, "# in form", style);
-        createCell(row, ++c, "text", style);
+        createCell(row, ++c, "Text", style);
         createCell(row, ++c, "Question help", style);
         createCell(row, ++c, "Variable name", style);
         createCell(row, ++c, "Question type", style);
