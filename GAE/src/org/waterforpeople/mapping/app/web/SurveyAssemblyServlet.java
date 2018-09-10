@@ -388,9 +388,10 @@ public class SurveyAssemblyServlet extends AbstractRestApiServlet {
     private void sendQueueMessage(String action, Long surveyId,
             String questionGroups, Long transactionId) {
         Queue surveyAssemblyQueue = QueueFactory.getQueue("surveyAssembly");
-        TaskOptions task = TaskOptions.Builder.withUrl("/app_worker/surveyassembly")
-                .param("action",
-                        action).param("surveyId", surveyId.toString());
+        TaskOptions task = TaskOptions.Builder
+                .withUrl("/app_worker/surveyassembly")
+                .param("action", action)
+                .param("surveyId", surveyId.toString());
         if (questionGroups != null) {
             task.param("questionGroupId", questionGroups);
         }
@@ -407,10 +408,8 @@ public class SurveyAssemblyServlet extends AbstractRestApiServlet {
         String remainingIds = null;
         if (questionGroupIds.contains(",")) {
             isLast = false;
-            currentId = questionGroupIds.substring(0,
-                    questionGroupIds.indexOf(","));
-            remainingIds = questionGroupIds.substring(questionGroupIds
-                    .indexOf(",") + 1);
+            currentId = questionGroupIds.substring(0, questionGroupIds.indexOf(","));
+            remainingIds = questionGroupIds.substring(questionGroupIds.indexOf(",") + 1);
         }
 
         QuestionDao questionDao = new QuestionDao();
@@ -455,13 +454,13 @@ public class SurveyAssemblyServlet extends AbstractRestApiServlet {
 
         SurveyXMLAdapter sax = new SurveyXMLAdapter();
         ObjectFactory objFactory = new ObjectFactory();
-        com.gallatinsystems.survey.domain.xml.Question qXML = objFactory
-                .createQuestion();
+        com.gallatinsystems.survey.domain.xml.Question qXML = objFactory.createQuestion();
         qXML.setId(new String("" + q.getKey().getId() + ""));
         // ToDo fix
         qXML.setMandatory("false");
         if (q.getText() != null) {
-            com.gallatinsystems.survey.domain.xml.Text t = new com.gallatinsystems.survey.domain.xml.Text();
+            com.gallatinsystems.survey.domain.xml.Text t =
+                    new com.gallatinsystems.survey.domain.xml.Text();
             t.setContent(q.getText());
             qXML.setText(t);
         }
@@ -470,7 +469,8 @@ public class SurveyAssemblyServlet extends AbstractRestApiServlet {
         // however, we don't use the helpMedia at the moment
         if (q.getTip() != null) {
             Help tip = new Help();
-            com.gallatinsystems.survey.domain.xml.Text t = new com.gallatinsystems.survey.domain.xml.Text();
+            com.gallatinsystems.survey.domain.xml.Text t =
+                    new com.gallatinsystems.survey.domain.xml.Text();
             t.setContent(q.getTip());
             tip.setText(t);
             tip.setType("tip");
@@ -498,10 +498,10 @@ public class SurveyAssemblyServlet extends AbstractRestApiServlet {
             }
         }
         if (q.getQuestionHelpMediaMap() != null) {
-            for (QuestionHelpMedia helpItem : q.getQuestionHelpMediaMap()
-                    .values()) {
+            for (QuestionHelpMedia helpItem : q.getQuestionHelpMediaMap().values()) {
                 Help tip = new Help();
-                com.gallatinsystems.survey.domain.xml.Text t = new com.gallatinsystems.survey.domain.xml.Text();
+                com.gallatinsystems.survey.domain.xml.Text t =
+                        new com.gallatinsystems.survey.domain.xml.Text();
                 t.setContent(helpItem.getText());
                 if (helpItem.getType() == QuestionHelpMedia.Type.TEXT) {
                     tip.setType("tip");
@@ -511,8 +511,7 @@ public class SurveyAssemblyServlet extends AbstractRestApiServlet {
                 }
                 if (helpItem.getTranslationMap() != null) {
                     List<AltText> translationList = new ArrayList<AltText>();
-                    for (Translation trans : helpItem.getTranslationMap()
-                            .values()) {
+                    for (Translation trans : helpItem.getTranslationMap().values()) {
                         AltText aText = new AltText();
                         aText.setContent(trans.getText());
                         aText.setLanguage(trans.getLanguageCode());
@@ -612,7 +611,8 @@ public class SurveyAssemblyServlet extends AbstractRestApiServlet {
                     ArrayList<Level> levelList = new ArrayList<Level>();
                     for (int i = 0; i < cr.getNumLevels(); i++) {
                         Level levelItem = objFactory.createLevel();
-                        com.gallatinsystems.survey.domain.xml.Text t = new com.gallatinsystems.survey.domain.xml.Text();
+                        com.gallatinsystems.survey.domain.xml.Text t =
+                                new com.gallatinsystems.survey.domain.xml.Text();
                         t.setContent(levelNames.get(i));
                         levelItem.addContent(t);
                         levelList.add(levelItem);
@@ -671,7 +671,8 @@ public class SurveyAssemblyServlet extends AbstractRestApiServlet {
             ArrayList<Option> optionList = new ArrayList<Option>();
             for (QuestionOption qo : q.getQuestionOptionMap().values()) {
                 Option option = objFactory.createOption();
-                com.gallatinsystems.survey.domain.xml.Text t = new com.gallatinsystems.survey.domain.xml.Text();
+                com.gallatinsystems.survey.domain.xml.Text t =
+                        new com.gallatinsystems.survey.domain.xml.Text();
                 t.setContent(qo.getText());
                 option.addContent(t);
                 option.setCode(qo.getCode());
