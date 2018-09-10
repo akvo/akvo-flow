@@ -1,6 +1,7 @@
 FLOW.MonitoringDataTableView = FLOW.View.extend({
   showingDetailsDialog: false,
   cursorStart: null,
+  missingSurvey: false,
 
   pageNumber: function(){
 	return FLOW.router.surveyedLocaleController.get('pageNumber');
@@ -28,6 +29,10 @@ FLOW.MonitoringDataTableView = FLOW.View.extend({
   },
 
   findSurveyedLocale: function (evt) {
+      if (FLOW.selectedControl.get('selectedSurveyGroup') === null) {
+         this.set('missingSurvey', true)
+      } else {
+          this.set('missingSurvey', false);
 	  var ident = this.get('identifier'),
 	      displayName = this.get('displayName'),
 	      sgId = FLOW.selectedControl.get('selectedSurveyGroup'),
@@ -64,12 +69,17 @@ FLOW.MonitoringDataTableView = FLOW.View.extend({
       if(Ember.empty(FLOW.router.userListController.get('content'))) {
           FLOW.router.userListController.set('content', FLOW.User.find());
       }
+    }
   },
   
   noResults: function () {
+    if (FLOW.selectedControl.get('selectedSurveyGroup') === null) {
+        return;
+     } else {
     var content = FLOW.router.surveyedLocaleController.get('content');
-    if (content && content.get('isLoaded')) {
-        return content.get('length') === 0;
+        if (content && content.get('isLoaded')) {
+            return content.get('length') === 0;
+        }
     }
   }.property('FLOW.router.surveyedLocaleController.content','FLOW.router.surveyedLocaleController.content.isLoaded'),
 

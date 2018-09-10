@@ -1,7 +1,7 @@
 {{#view FLOW.MonitoringDataTableView}}
 <section class="" id="monitoringData">
     <div class="floats-in filterData" id="dataFilter">
-      <div class="chooseSurveyData">
+      <div {{bindAttr class=":chooseSurveyData view.missingSurvey:redBorder"}}>
       {{#unless FLOW.projectControl.isLoading}}
         {{view FLOW.SurveySelectionView showMonitoringSurveysOnly=true}}
       {{/unless}}
