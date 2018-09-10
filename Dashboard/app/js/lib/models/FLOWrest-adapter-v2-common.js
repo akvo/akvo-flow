@@ -166,11 +166,11 @@ DS.FLOWRESTAdapter = DS.RESTAdapter.extend({
   },
 
   didFindAll: function (store, type, json) {
+    this._super(store, type, json);
     if (type === FLOW.SurveyGroup) {
       FLOW.projectControl.set('isLoading', false);
     }
     FLOW.savingMessageControl.numLoadingChange(-1);
-    this._super(store, type, json);
   },
 
   didFindQuery: function (store, type, json, recordArray) {
