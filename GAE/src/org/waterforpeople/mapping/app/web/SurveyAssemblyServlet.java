@@ -260,14 +260,13 @@ public class SurveyAssemblyServlet extends AbstractRestApiServlet {
         String surveyGroupId = "";
         String surveyGroupName = "";
         String registrationForm = "";
-        String surveyIdKeyValue = "surveyId=\""+surveyId+"\"";
+        String surveyIdKeyValue = "surveyId=\"" + surveyId + "\"";
         if (sg != null) {
             surveyGroupId = "surveyGroupId=\"" + sg.getKey().getId() + "\"";
             surveyGroupName = "surveyGroupName=\"" + StringEscapeUtils.escapeXml(sg.getCode())
                     + "\"";
             if (Boolean.TRUE.equals(sg.getMonitoringGroup())) {
-                registrationForm = " registrationSurvey=\""
-                        + sg.getNewLocaleSurveyId() + "\"";
+                registrationForm = " registrationSurvey=\"" + sg.getNewLocaleSurveyId() + "\"";
             }
         }
         String surveyHeader = "<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?><survey"
@@ -283,7 +282,7 @@ public class SurveyAssemblyServlet extends AbstractRestApiServlet {
             StringBuilder surveyXML = new StringBuilder();
             surveyXML.append(surveyHeader);
             for (QuestionGroup item : qgList.values()) {
-                log.warn("Assembling group " + item.getKey().getId()
+                log.info("Assembling group " + item.getKey().getId()
                         + " for survey " + surveyId);
                 surveyXML.append(buildQuestionGroupXML(item));
             }
@@ -313,7 +312,7 @@ public class SurveyAssemblyServlet extends AbstractRestApiServlet {
                 message.setShortMessage(messageText);
                 MessageDao messageDao = new MessageDao();
                 messageDao.save(message);
-                log.info("Failed to upload assembled survey id " + surveyId + "\n"
+                log.warn("Failed to upload assembled survey id " + surveyId + "\n"
                         + uc.getMessage());
             }
             log.info("Completed survey assembly for " + surveyId);
