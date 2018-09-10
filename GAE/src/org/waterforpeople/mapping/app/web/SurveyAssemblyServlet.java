@@ -308,10 +308,7 @@ public class SurveyAssemblyServlet extends AbstractRestApiServlet {
                 MessageDao messageDao = new MessageDao();
                 messageDao.save(message);
             } else {
-                // String messageText =
-                // CONSTANTS.surveyPublishErrorMessage();
-                String messageText = "Failed to publish: " + surveyId + "\n"
-                        + uc.getMessage();
+                String messageText = "Failed to publish: " + surveyId + "\n" + uc.getMessage();
                 message.setTransactionUUID(transactionId.toString());
                 message.setShortMessage(messageText);
                 MessageDao messageDao = new MessageDao();
