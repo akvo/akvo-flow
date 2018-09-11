@@ -1,5 +1,8 @@
 # Akvo Flow Release Notes
 ----
+# Akvo Flow Dashboard v1.9.37
+..
+
 # Akvo Flow Dashboard v1.9.36 - Iconic Iris
 Date: 22nd August 2018
 
