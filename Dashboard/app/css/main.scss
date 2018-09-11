@@ -3332,13 +3332,18 @@ div.chooseSurveyData {
     position: relative;
     display: block;
     margin: 0px 0 10px 0;
-    width: 100%;
     overflow: auto;
     > select {
         max-width: 20%;
         float: left;
         display: inline;
     }
+}
+
+div.redBorder {
+    border: 2px solid red;
+    border-radius: 8px;
+    padding: 5px 3px 0 5px;
 }
 
 .filterData {
