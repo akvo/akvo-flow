@@ -1,5 +1,5 @@
 /*
- *  Copyright (C) 2012-2018 Stichting Akvo (Akvo Foundation)
+ *  Copyright (C) 2012-2015,2017-2018 Stichting Akvo (Akvo Foundation)
  *
  *  This file is part of Akvo FLOW.
  *
@@ -221,8 +221,7 @@ public class SurveyRestService {
                 // because it is set in the Dao.
                 BeanUtils.copyProperties(requestDto, s, new String[] {
                         "createdDateTime", "status", "sector", "version",
-                        "lastUpdateDateTime", "description",
-                        "instanceCount", ANCESTOR_IDS_FIELD
+                        "lastUpdateDateTime", "description", ANCESTOR_IDS_FIELD
                 });
 
                 s.setAncestorIds(SurveyUtils.retrieveAncestorIds(s));
@@ -325,7 +324,7 @@ public class SurveyRestService {
         BeanUtils.copyProperties(dto, s, new String[] {
                 "createdDateTime",
                 "status", "sector", "version", "lastUpdateDateTime",
-                "displayName", "questionGroupList", "instanceCount", ANCESTOR_IDS_FIELD
+                "displayName", "questionGroupList", ANCESTOR_IDS_FIELD
         });
 
         if (dto.getStatus() != null) {
