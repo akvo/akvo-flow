@@ -1,6 +1,6 @@
 # Akvo Flow Release Notes
 ----
-# Akvo Flow Dashboard v1.9.37
+# Akvo Flow Dashboard v1.9.37 - Jovial Jojoba
 Date: 12th September 2018
 
 ## New and noteworthy
