@@ -225,6 +225,11 @@ public class DataProcessorRestServlet extends AbstractRestApiServlet {
             if (dpReq.getSurveyInstanceId() != null) {
                 deleteSurveyResponses(dpReq.getSurveyInstanceId());
             }
+        } else if (DataProcessorRequest.SURVEY_RESPONSE_COUNT.equalsIgnoreCase(req
+                .getAction())) {
+            if (dpReq.getSummaryCounterId() != null && dpReq.getDelta() != null) {
+                updateSurveyResponseCounter(dpReq.getSummaryCounterId(), dpReq.getDelta());
+            }
         } else if (DataProcessorRequest.DELETE_CASCADE_NODES.equalsIgnoreCase(req.getAction())) {
             deleteCascadeNodes(dpReq.getCascadeResourceId(), dpReq.getParentNodeId());
         } else if (DataProcessorRequest.ASSEMBLE_DATAPOINT_NAME.equalsIgnoreCase(req.getAction())) {
@@ -503,8 +508,8 @@ public class DataProcessorRestServlet extends AbstractRestApiServlet {
      * Resolve dependencies for copied questions that are not in the same group as the question on
      * which they are dependent
      *
-     * @param newQuestionGroup the copied question group
-     * @param oldQuestionGroup the original question group from which this copy has been made
+     * @param newQuestionGroupId the copied question group
+     * @param oldQuestionGroupId the original question group from which this copy has been made
      * @param dependentQuestionIdsList list of ids for questions in the copied group that are
      *            dependent on questions *not* in the copied group
      * @return returns the list of dependentQuestions that has been processed.
@@ -1266,6 +1271,24 @@ public class DataProcessorRestServlet extends AbstractRestApiServlet {
         if (surveyInstance != null) {
             siDao.deleteSurveyInstance(surveyInstance);
         }
+    }
+
+    /**
+     * Update a survey response counter according to the provided delta. This method should be
+     * invoked though the task queue 'surveyResponseCount' to avoid concurrent updates
+     *
+     * @param summaryCounterId
+     * @param delta
+     */
+    private void updateSurveyResponseCounter(long summaryCounterId, int delta) {
+        SurveyQuestionSummaryDao summaryDao = new SurveyQuestionSummaryDao();
+        SurveyQuestionSummary summary = summaryDao.getByKey(summaryCounterId);
+        if (summary == null) {
+            return;
+        }
+
+        summary.setCount(summary.getCount() + delta);
+        summaryDao.save(summary);
     }
 
     private void deleteCascadeNodes(Long cascadeResourceId, Long parentNodeId) {
