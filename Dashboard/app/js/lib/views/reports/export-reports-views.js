@@ -119,7 +119,7 @@ FLOW.ExportReportTypeView = Ember.View.extend({
 
   showDataCleaningReport: function () {
     var opts = {startDate:this.get("reportFromDate"), endDate:this.get("reportToDate"), lastCollectionOnly: this.get('exportOption') === "recent"};
-    var sId = FLOW.ReportLoader.get('selectedSurvey');
+    var sId = FLOW.ReportLoader.get('selectedSurveyId');
     if (!sId) {
       this.showWarning();
       return;
