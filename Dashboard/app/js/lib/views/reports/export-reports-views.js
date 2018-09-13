@@ -308,12 +308,19 @@ FLOW.ReportListItemView = FLOW.View.extend({
 
 FLOW.DataCleaningView = Ember.View.extend({
   templateName: 'navData/data-cleaning',
+  missingSurvey:false,
 
   importFile: function () {
     var file, survey = FLOW.selectedControl.get('selectedSurvey');
-    if (!survey.get('keyId')) {
-      FLOW.ReportLoader.showDialogMessage(Ember.String.loc('_import_clean_data'), Ember.String.loc('_import_select_survey'), 'ignore');
+    /*if (!survey.get('keyId')) {
+      //FLOW.ReportLoader.showDialogMessage(Ember.String.loc('_import_clean_data'), Ember.String.loc('_import_select_survey'), 'ignore');
+      console.log('No survey is selected!!!!')
       return;
+    }*/
+    if (survey === null) {
+       console.log('No survey is selected')
+       this.set('missingSurvey',true)
+       return;
     }
 
     file = $('#raw-data-import-file')[0];
@@ -325,5 +332,12 @@ FLOW.DataCleaningView = Ember.View.extend({
 
     FLOW.uploader.addFile(file.files[0]);
     FLOW.uploader.upload();
-  }
+  },
+   //remove the highlight box if the survey is finally selected.
+   watchSurveySelection: function(){
+      console.log('survey has been selected')
+      if (FLOW.selectedControl.get('selectedSurvey')!== null) {
+         this.set('missingSurvey', false)
+      }
+   }.observes('FLOW.selectedControl.selectedSurvey')
 });

@@ -1,5 +1,5 @@
 <section class="fullWidth reportTools" id="reportBlocks">
-
+  <div {{bindAttr class = "view.missingSurvey:redBorder"}} >
     {{#unless FLOW.projectControl.isLoading}}
       {{view FLOW.DataCleaningSurveySelectionView}}
     {{/unless}}
@@ -13,6 +13,7 @@
           prompt=""
           promptBinding="Ember.STRINGS._select_form"}}
     {{/if}}
+  </div>
 
     <div class="rawDataReport block">
       <h3>{{t _import_data}}</h3>
