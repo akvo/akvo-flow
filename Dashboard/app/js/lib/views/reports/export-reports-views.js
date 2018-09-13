@@ -309,6 +309,10 @@ FLOW.ReportListItemView = FLOW.View.extend({
 FLOW.DataCleaningView = Ember.View.extend({
   templateName: 'navData/data-cleaning',
 
+  didInsertElement: function () {
+    FLOW.uploader.registerEvents();
+  },
+
   importFile: function () {
     var file, sId = FLOW.ReportLoader.get('selectedSurveyId');
     if (!sId) {
