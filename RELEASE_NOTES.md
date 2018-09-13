@@ -1,5 +1,15 @@
 # Akvo Flow Release Notes
 ----
+# Akvo Flow Dashboard v1.9.37 - Jovial Jojoba
+Date: 12th September 2018
+
+## New and noteworthy
+* **UI improvement** - Highlight the folder/survey filters when a user tries to perform an action without having selected a form under the inspect data and monitoring tabs [#2455]
+
+## Resolved issues
+* **Bug fixes** - Catch browser error thrown when a user filters down to form level then selects an ancestor's "Choose folder or survey" option [#2848]. Remove delay after the loading icon disappears when fetching data under inspect data and monitoring data tabs to the data till the submissions actually showing [#2827]
+* **Performance improvement** - Remove unnecessary fetch for survey instance counts causing delay when calling the surveys endpoint[#2823]
+
 # Akvo Flow Dashboard v1.9.36 - Iconic Iris
 Date: 22nd August 2018
 

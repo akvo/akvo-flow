@@ -252,21 +252,6 @@ public class RawDataRestServlet extends AbstractRestApiServlet {
                                 Long.toString(instance.getKey().getId()))
                         .countdownMillis(Constants.TASK_DELAY);
                 defaultQueue.add(processSurveyedLocaleOptions);
-
-                // data summarisation
-                List<QuestionAnswerStore> qasList = instanceDao.listQuestionAnswerStoreByType(
-                        new Long(importReq.getSurveyInstanceId()), "GEO");
-                if (qasList != null && qasList.size() > 0) {
-                    Queue summQueue = QueueFactory.getQueue("dataSummarization");
-                    summQueue.add(TaskOptions.Builder
-                            .withUrl("/app_worker/dataprocessor")
-                            .param(
-                                    DataProcessorRequest.ACTION_PARAM,
-                                    DataProcessorRequest.SURVEY_INSTANCE_SUMMARIZER)
-                            .param("surveyInstanceId", importReq.getSurveyInstanceId() + "")
-                            .param("qasId", qasList.get(0).getKey().getId() + "")
-                            .param("delta", 1 + ""));
-                }
             }
         } else if (RawDataImportRequest.RESET_SURVEY_INSTANCE_ACTION
                 .equals(importReq.getAction())) {
