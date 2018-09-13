@@ -1,6 +1,14 @@
 /*global Ember, $, FLOW */
 
 FLOW.ReportLoader = Ember.Object.create({
+  selectedSurvey: function () {
+    if (!Ember.none(FLOW.selectedControl.get('selectedSurvey')) && !Ember.none(FLOW.selectedControl.selectedSurvey.get('keyId'))){
+      return FLOW.selectedControl.selectedSurvey.get('keyId');
+    } else {
+      return null;
+    }
+  }.property('FLOW.selectedControl.selectedSurvey'),
+
   load: function (exportType, surveyId, opts) {
     FLOW.selectedControl.set('selectedReportExport', FLOW.store.createRecord(FLOW.Report, {}));
     var newReport = FLOW.selectedControl.get('selectedReportExport');
@@ -81,14 +89,6 @@ FLOW.ExportReportTypeView = Ember.View.extend({
     FLOW.uploader.registerEvents();
   },
 
-  selectedSurvey: function () {
-    if (!Ember.none(FLOW.selectedControl.get('selectedSurvey')) && !Ember.none(FLOW.selectedControl.selectedSurvey.get('keyId'))){
-      return FLOW.selectedControl.selectedSurvey.get('keyId');
-    } else {
-      return null;
-    }
-  }.property('FLOW.selectedControl.selectedSurvey'),
-
   selectedQuestion: function () {
     if (!Ember.none(FLOW.selectedControl.get('selectedQuestion'))
         && !Ember.none(FLOW.selectedControl.selectedQuestion.get('keyId'))){
@@ -119,7 +119,7 @@ FLOW.ExportReportTypeView = Ember.View.extend({
 
   showDataCleaningReport: function () {
     var opts = {startDate:this.get("reportFromDate"), endDate:this.get("reportToDate"), lastCollectionOnly: this.get('exportOption') === "recent"};
-    var sId = this.get('selectedSurvey');
+    var sId = FLOW.ReportLoader.get('selectedSurvey');
     if (!sId) {
       this.showWarning();
       return;
@@ -129,7 +129,7 @@ FLOW.ExportReportTypeView = Ember.View.extend({
 
   showDataAnalysisReport: function () {
     var opts = {startDate:this.get("reportFromDate"), endDate:this.get("reportToDate"), lastCollectionOnly: this.get('exportOption') === "recent"};
-    var sId = this.get('selectedSurvey');
+    var sId = FLOW.ReportLoader.get('selectedSurvey');
     if (!sId) {
       this.showWarning();
       return;
@@ -138,7 +138,7 @@ FLOW.ExportReportTypeView = Ember.View.extend({
   },
 
   showComprehensiveReport: function () {
-    var opts = {}, sId = this.get('selectedSurvey');
+    var opts = {}, sId = FLOW.ReportLoader.get('selectedSurvey');
     if (!sId) {
       this.showWarning();
       return;
@@ -147,7 +147,7 @@ FLOW.ExportReportTypeView = Ember.View.extend({
   },
 
   showGeoshapeReport: function () {
-    var sId = this.get('selectedSurvey');
+    var sId = FLOW.ReportLoader.get('selectedSurvey');
     var qId = this.get('selectedQuestion');
     if (!sId || !qId) {
       FLOW.ReportLoader.showDialogMessage(
@@ -161,7 +161,7 @@ FLOW.ExportReportTypeView = Ember.View.extend({
   },
 
   showSurveyForm: function () {
-    var sId = this.get('selectedSurvey');
+    var sId = FLOW.ReportLoader.get('selectedSurvey');
     if (!sId) {
       this.showWarning();
       return;
@@ -170,7 +170,7 @@ FLOW.ExportReportTypeView = Ember.View.extend({
   },
 
   showComprehensiveOptions: function () {
-    var sId = this.get('selectedSurvey');
+    var sId = FLOW.ReportLoader.get('selectedSurvey');
     if (!sId) {
       this.showWarning();
       return;
@@ -310,8 +310,8 @@ FLOW.DataCleaningView = Ember.View.extend({
   templateName: 'navData/data-cleaning',
 
   importFile: function () {
-    var file, survey = FLOW.selectedControl.get('selectedSurvey');
-    if (!survey.get('keyId')) {
+    var file, sId = FLOW.ReportLoader.get('selectedSurvey');
+    if (!sId) {
       FLOW.ReportLoader.showDialogMessage(Ember.String.loc('_import_clean_data'), Ember.String.loc('_import_select_survey'), 'ignore');
       return;
     }
