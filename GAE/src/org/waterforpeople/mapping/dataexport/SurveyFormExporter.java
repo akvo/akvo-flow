@@ -547,11 +547,11 @@ public class SurveyFormExporter implements DataExporter {
                 sortedMap = new TreeMap<String, TranslationDto>(translationMap);
             }
             for (Entry<String, TranslationDto> trans : sortedMap.entrySet()) {
-                if (trans.getValue() != null && trans.getValue().getText() != null) {
-                    if (!trans.getValue().getText().trim().equalsIgnoreCase("null")) {
-                        buff.append(LANG_DELIM);
-                        buff.append(trans.getValue().getText());
-                    }
+                if (trans.getValue() != null 
+                        && trans.getValue().getText() != null
+                        && !trans.getValue().getText().trim().equalsIgnoreCase("null")) {
+                            buff.append(LANG_DELIM);
+                            buff.append(trans.getValue().getText());
                 }
             }
         }
