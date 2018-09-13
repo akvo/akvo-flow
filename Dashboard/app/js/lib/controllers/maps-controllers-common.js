@@ -327,6 +327,9 @@ FLOW.placemarkDetailController = Ember.ArrayController.create({
           var selectedPlacemarkId = mapsController.selectedMarker.target.options.placemarkId;
           this.set('dataPointCollectionDate', mapsController.selectedMarker.target.options.collectionDate);
           this.set('dataPoint', FLOW.store.find(FLOW.SurveyedLocale, selectedPlacemarkId));
+          FLOW.surveyInstanceControl.set('content', FLOW.store.findQuery(FLOW.SurveyInstance, {
+                'surveyedLocaleId': selectedPlacemarkId,
+          }));
           this.populate(selectedPlacemarkId);
       }
   }.observes('FLOW.router.mapsController.selectedMarker')
