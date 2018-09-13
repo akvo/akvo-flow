@@ -1,5 +1,5 @@
 /*
- *  Copyright (C) 2010-2015 Stichting Akvo (Akvo Foundation)
+ *  Copyright (C) 2010-2015, 2018 Stichting Akvo (Akvo Foundation)
  *
  *  This file is part of Akvo FLOW.
  *
@@ -36,7 +36,6 @@ import org.apache.poi.hssf.usermodel.HSSFRow;
 import org.apache.poi.hssf.usermodel.HSSFSheet;
 import org.apache.poi.hssf.usermodel.HSSFWorkbook;
 import org.apache.poi.ss.util.CellRangeAddress;
-import org.waterforpeople.mapping.app.gwt.client.survey.CascadeResourceDto;
 import org.waterforpeople.mapping.app.gwt.client.survey.QuestionDto;
 import org.waterforpeople.mapping.app.gwt.client.survey.QuestionDto.QuestionType;
 import org.waterforpeople.mapping.app.gwt.client.survey.QuestionGroupDto;
@@ -130,7 +129,7 @@ public class SurveyFormExporter implements DataExporter {
     }
 
     /**
-     * Writes the survey as an XLS document
+     * Writes the form as an XLS document
      */
     private void writeSurvey(String title, File fileName,
             List<QuestionGroupDto> groupList,
@@ -156,13 +155,22 @@ public class SurveyFormExporter implements DataExporter {
         depStyle.setFont(depFont);
 
         writePaperSheet(title, groupList, questions, wb, headerStyle, questionStyle, depStyle);
-        writeFullSheet(wb, title, groupList, questions);
+        writeFullSheet(title, groupList, questions, wb);
 
         FileOutputStream fileOut = new FileOutputStream(fileName);
         wb.write(fileOut);
         fileOut.close();
     }
 
+    /**
+     * @param title
+     * @param groupList
+     * @param questions
+     * @param wb
+     * @param headerStyle
+     * @param questionStyle
+     * @param depStyle
+     */
     private void writePaperSheet(String title, List<QuestionGroupDto> groupList,
             Map<QuestionGroupDto, List<QuestionDto>> questions, HSSFWorkbook wb, HSSFCellStyle headerStyle,
             HSSFCellStyle questionStyle, HSSFCellStyle depStyle) {
@@ -224,10 +232,13 @@ public class SurveyFormExporter implements DataExporter {
     }
 
     /**
-     * Writes full information about the form
+     * Write comprehensive info about the form as a table
      */
-    private void writeFullSheet(HSSFWorkbook wb, String title, List<QuestionGroupDto> groupList,
-            Map<QuestionGroupDto, List<QuestionDto>> questions) throws Exception {
+    private void writeFullSheet(String title,
+            List<QuestionGroupDto> groupList,
+            Map<QuestionGroupDto,
+            List<QuestionDto>> questions,
+            HSSFWorkbook wb) throws Exception {
         HSSFSheet sheet = wb.createSheet(FULL_SHEET_NAME);
 
         HSSFCellStyle headerCtr = wb.createCellStyle();
@@ -236,7 +247,7 @@ public class SurveyFormExporter implements DataExporter {
         HSSFFont headerFont = wb.createFont();
         headerFont.setBoldweight(HSSFFont.BOLDWEIGHT_BOLD);
         headerCtr.setFont(headerFont);
-        headerCtr.setWrapText(true);//TODO Wrap headers or not?
+        headerCtr.setWrapText(true); //TODO Wrap headers or not?
 
         HSSFCellStyle headerLeft = wb.createCellStyle();
         headerLeft.setFont(headerFont);
@@ -245,7 +256,7 @@ public class SurveyFormExporter implements DataExporter {
         optionStyle.setVerticalAlignment(HSSFCellStyle.VERTICAL_TOP);
         optionStyle.setWrapText(true);
 
-        final int startRow = createFullHeader(sheet, 0, headerCtr);
+        final int startRow = createFullHeader(sheet, 0, title, headerCtr);
 
         int count = 0; // running count of all questions
         if (questions != null) {
@@ -274,43 +285,7 @@ public class SurveyFormExporter implements DataExporter {
                     createCell(row,  4, Long.valueOf(count), headerCtr);
                     createCell(row,  5, formText(q.getText(), q.getTranslationMap()), headerLeft);
                     // Scrolling part:
-                    createCell(row,  6, q.getTip(), null);
-                    createCell(row,  7, q.getVariableName(), null);
-                    createCell(row,  8, typeString(q), null);
-                    createCell(row,  9, q.getMandatoryFlag(), null);
-                    createCell(row, 10, q.getLocaleNameFlag(), null);
-                    createCell(row, 11, q.getRequireDoubleEntry(), null);
-                    // Dependency
-                    createCell(row, 12, q.getDependentFlag(), null);
-                    createCell(row, 13, qTextFromId.get(q.getDependentQuestionId()), null);
-                    createCell(row, 14, q.getDependentQuestionAnswer(), null);
-                    // Number
-                    createCell(row, 15, q.getAllowSign(), null);
-                    createCell(row, 16, q.getAllowDecimal(), null);
-                    createCell(row, 17, q.getMinVal(), null);
-                    createCell(row, 18, q.getMaxVal(), null);
-                    // Option
-                    createCell(row, 19, optionString(q), optionStyle); //TODO: wrap this cell?
-                    createCell(row, 20, q.getType() == QuestionType.OPTION ?
-                            q.getAllowMultipleFlag() : null, null);
-                    createCell(row, 21, q.getAllowOtherFlag(), null);
-                    // Geopos
-                    createCell(row, 22, q.getLocaleLocationFlag(), null);
-                    createCell(row, 23, q.getType() == QuestionType.GEO ? 
-                            q.getGeoLocked() : null, null);
-                    // CASCADE
-                    createCell(row, 24, q.getCascadeResourceId(), null);                        
-                    // geoshapes
-                    createCell(row, 25, q.getAllowPoints(), null);
-                    createCell(row, 26, q.getAllowLine(), null);
-                    createCell(row, 27, q.getAllowPolygon(), null);
-                    // caddisfly
-                    createCell(row, 28, q.getCaddisflyResourceUuid(), null);
-                    // barcode (just reusing other flags)
-                    createCell(row, 29, q.getType() == QuestionType.SCAN ? 
-                            q.getAllowMultipleFlag() : null, null);
-                    createCell(row, 30, q.getType() == QuestionType.SCAN ? 
-                            q.getGeoLocked() : null, null);                    
+                    writeScrollingRowPart(optionStyle, qTextFromId, q, row);                    
                 }
                 // all rows created; merge all-group cells vertically
                 sheet.addMergedRegion(new CellRangeAddress(firstRowInGroup, startRow + count - 1, 0, 0));
@@ -320,13 +295,59 @@ public class SurveyFormExporter implements DataExporter {
         }
     }
 
-    private int createFullHeader(HSSFSheet sheet, int startRow, HSSFCellStyle style) {
-        int r = startRow, c = 0;
+    private void writeScrollingRowPart(
+            HSSFCellStyle optionStyle, Map<Long, String> qTextFromId, QuestionDto q, HSSFRow row) {
+        createCell(row,  6, q.getTip(), null);
+        createCell(row,  7, q.getVariableName(), null);
+        createCell(row,  8, typeString(q), null);
+        createCell(row,  9, q.getMandatoryFlag(), null);
+        createCell(row, 10, q.getLocaleNameFlag(), null);
+        createCell(row, 11, q.getRequireDoubleEntry(), null);
+        // Dependency
+        createCell(row, 12, q.getDependentFlag(), null);
+        createCell(row, 13, qTextFromId.get(q.getDependentQuestionId()), null);
+        createCell(row, 14, q.getDependentQuestionAnswer(), null);
+        // Number
+        createCell(row, 15, q.getAllowSign(), null);
+        createCell(row, 16, q.getAllowDecimal(), null);
+        createCell(row, 17, q.getMinVal(), null);
+        createCell(row, 18, q.getMaxVal(), null);
+        // Option
+        createCell(row, 19, optionString(q), optionStyle); //TODO: wrap this cell?
+        createCell(row, 20, q.getType() == QuestionType.OPTION ?
+                q.getAllowMultipleFlag() : null, null);
+        createCell(row, 21, q.getAllowOtherFlag(), null);
+        // Geopos
+        createCell(row, 22, q.getLocaleLocationFlag(), null);
+        createCell(row, 23, q.getType() == QuestionType.GEO ? 
+                q.getGeoLocked() : null, null);
+        // CASCADE
+        createCell(row, 24, q.getCascadeResourceId(), null);                        
+        // geoshapes
+        createCell(row, 25, q.getAllowPoints(), null);
+        createCell(row, 26, q.getAllowLine(), null);
+        createCell(row, 27, q.getAllowPolygon(), null);
+        // caddisfly
+        createCell(row, 28, q.getCaddisflyResourceUuid(), null);
+        // barcode (just reusing other flags)
+        createCell(row, 29, q.getType() == QuestionType.SCAN ? 
+                q.getAllowMultipleFlag() : null, null);
+        createCell(row, 30, q.getType() == QuestionType.SCAN ? 
+                q.getGeoLocked() : null, null);
+    }
+
+    /**
+     * Creates the headers for the full-form export
+     * @param sheet
+     * @param startRow
+     * @param style
+     * @return
+     */
+    private int createFullHeader(HSSFSheet sheet, int startRow, String title, HSSFCellStyle style) {
+        int r = startRow;
+        int c = 0;
         HSSFRow row = sheet.createRow(r++);
-        //createCell(row, c++, "Form version", style);
-        //createCell(row, c++, 1.0, style); // TODO: from where?
-        //createCell(row, c++, "Languages", style);
-        //createCell(row, c++, "EN/FR/ES", style); // TODO: from where?
+        createCellBlock(row, c++, title, style, 6);
 
         row = sheet.createRow(r++);
         createCellBlock(row, 0, "Group", style, 3);
@@ -407,8 +428,7 @@ public class SurveyFormExporter implements DataExporter {
     }
 
     /**
-     * creates a cell in the row passed in and sets the style and value (if
-     * non-null)
+     * creates a cell in the row passed in and sets the style and value (if non-null)
      */
     private HSSFCell createCell(HSSFRow row, int col, Double value, HSSFCellStyle style) {
         HSSFCell cell = row.createCell(col);
@@ -422,8 +442,7 @@ public class SurveyFormExporter implements DataExporter {
     }
 
     /**
-     * creates a cell in the row passed in and sets the style and value (if
-     * non-null)
+     * creates a cell in the row passed in and sets the style and value (if non-null)
      */
     private HSSFCell createCell(HSSFRow row, int col, Long value, HSSFCellStyle style) {
         HSSFCell cell = row.createCell(col);
@@ -437,8 +456,7 @@ public class SurveyFormExporter implements DataExporter {
     }
 
     /**
-     * creates a cell in the row passed in and sets the style and value (if
-     * non-null)
+     * creates a cell in the row passed in and sets the style and value (if non-null)
      */
     private HSSFCell createCell(HSSFRow row, int col, Boolean value, HSSFCellStyle style) {
         HSSFCell cell = row.createCell(col);
@@ -452,8 +470,8 @@ public class SurveyFormExporter implements DataExporter {
     }
 
     /**
-     * creates a cell in the row passed in and sets the style and value (if
-     * non-null)
+     * creates a cell in the row passed in, makes it 'width' columns wide
+     *  and sets the style and value (if non-null)
      */
     private HSSFCell createCellBlock(HSSFRow row, int col, String value, HSSFCellStyle style, int width) {
         HSSFCell cell = row.createCell(col);
@@ -476,12 +494,13 @@ public class SurveyFormExporter implements DataExporter {
     private String optionString(QuestionDto q) {
         String s = "";
         if (q.getOptionContainerDto() != null
-                && q.getOptionContainerDto().getOptionsList() != null)
-        for (QuestionOptionDto opt : q.getOptionContainerDto().getOptionsList()) {
-            s += formText(opt.getText(), opt.getTranslationMap()) + OPTION_SEPARATOR;
-        }
-        if (s.endsWith(OPTION_SEPARATOR)) {
-            s = s.substring(0, s.length() - OPTION_SEPARATOR.length());
+                && q.getOptionContainerDto().getOptionsList() != null) {
+            for (QuestionOptionDto opt : q.getOptionContainerDto().getOptionsList()) {
+                s += formText(opt.getText(), opt.getTranslationMap()) + OPTION_SEPARATOR;
+            }
+            if (s.endsWith(OPTION_SEPARATOR)) {
+                s = s.substring(0, s.length() - OPTION_SEPARATOR.length());
+            }
         }
         return s;
     }
