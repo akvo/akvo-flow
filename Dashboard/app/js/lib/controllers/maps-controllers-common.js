@@ -296,8 +296,6 @@ FLOW.MapsController = Ember.ArrayController.extend({
 
 FLOW.placemarkDetailController = Ember.ArrayController.create({
   content: Ember.A(),
-  sortProperties: ['order'],
-  sortAscending: true,
 
   dataPoint: null,
 
@@ -311,16 +309,6 @@ FLOW.placemarkDetailController = Ember.ArrayController.create({
       return this.dataPoint && this.dataPoint.get('identifier')
   }.property('this.dataPoint.isLoaded'),
 
-  populate: function (placemarkId) {
-	  if (placemarkId) {
-		  this.set('content', FLOW.store.findQuery(FLOW.PlacemarkDetail, {
-			  placemarkId: placemarkId
-		  }));
-	  } else {
-		  this.set('content', Ember.A());
-	  }
-  },
-
   /*
   * Observer that loads a datapoint and its associated details when clicked
   */
@@ -333,7 +321,6 @@ FLOW.placemarkDetailController = Ember.ArrayController.create({
           FLOW.surveyInstanceControl.set('content', FLOW.store.findQuery(FLOW.SurveyInstance, {
                 'surveyedLocaleId': selectedPlacemarkId,
           }));
-          this.populate(selectedPlacemarkId);
       }
   }.observes('FLOW.router.mapsController.selectedMarker'),
 
