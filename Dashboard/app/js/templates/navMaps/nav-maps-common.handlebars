@@ -37,12 +37,17 @@
           <li></li>
         </ul>
         <div class="mapInfoDetail">
-          {{#each arrangedContent}}
-            <p>{{placemarkDetail}}</p>
-            {{drawGeoshapes}}
-          {{else}}
-            <p class="noDetails">{{t _no_details}}</p>
-          {{/each}}
+            {{#each responseSubList in FLOW.questionAnswerControl.contentByGroup}}
+              {{#each iterations in responseSubList}}
+                <tr><td colspan="3" style="text-align:left"><h3 class="questionGroupName">{{iterations.groupName}}</h3></td></tr>
+                      {{#each iterations}}
+                          <p>{{placemarkDetail}}</p>
+                          {{drawGeoshapes}}
+                      {{/each}}
+              {{/each}}
+            {{else}}
+                <p class="noDetails">{{t _no_details}}</p>
+            {{/each}}
         </div>
       {{else}}
         <p class="noDetails">{{t _no_details}}</p>

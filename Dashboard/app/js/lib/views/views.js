@@ -129,7 +129,7 @@ Ember.Handlebars.registerHelper('placemarkDetail', function () {
   }
 
   question = Ember.get(this, 'questionText');
-  answer = Ember.get(this, FLOW.Env.mapsProvider === 'cartodb' ? 'value': 'stringValue') || '';
+  answer = Ember.get(this, 'value') || '';
   answer = answer.replace(/\|/g, ' | '); // geo, option and cascade data
   answer = answer.replace(/\//g, ' / '); // also split folder paths
   questionType = FLOW.Env.mapsProvider === 'cartodb' ? cartoQuestionType: Ember.get(this, 'questionType');
