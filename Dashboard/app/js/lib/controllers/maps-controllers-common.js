@@ -321,7 +321,10 @@ FLOW.placemarkDetailController = Ember.ArrayController.create({
 	  }
   },
 
-  placemarkSelectionHandler: function () {
+  /*
+  * Observer that loads a datapoint and its associated details when clicked
+  */
+  mapPointClickHandler: function () {
       var mapsController = FLOW.router.get('mapsController');
       if (mapsController && mapsController.get('selectedMarker')) {
           var selectedPlacemarkId = mapsController.selectedMarker.target.options.placemarkId;
@@ -332,5 +335,33 @@ FLOW.placemarkDetailController = Ember.ArrayController.create({
           }));
           this.populate(selectedPlacemarkId);
       }
-  }.observes('FLOW.router.mapsController.selectedMarker')
+  }.observes('FLOW.router.mapsController.selectedMarker'),
+
+  /*
+  * Observer that retrieves question answers associated with a datapoint
+  * when it is clicked on.
+  *
+  * !!! Only data from the REGISTRATION FORMS is loaded at the moment !!!
+  */
+  mapPointRetrieveDetailsHandler: function () {
+      var formInstances = FLOW.surveyInstanceControl.content;
+      var mapsController = FLOW.router.get('mapsController');
+
+      if (Ember.empty(formInstances)
+        || !formInstances.isLoaded
+        || !mapsController.get('selectedMarker')) {
+            return;
+        }
+
+      var survey = FLOW.projectControl.content.filterProperty('keyId', this.dataPoint.get('surveyGroupId')).get('firstObject');
+      var registrationFormId, registrationFormInstance;
+      if (survey) {
+          registrationFormId = survey.get('newLocaleSurveyId');
+          registrationFormInstance = formInstances.filterProperty('surveyId', registrationFormId).get('firstObject');
+      }
+
+      if (registrationFormInstance) {
+          FLOW.questionAnswerControl.doQuestionAnswerQuery(registrationFormInstance);
+      }
+  }.observes('FLOW.surveyInstanceControl.content.isLoaded'),
 });

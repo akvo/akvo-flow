@@ -96,6 +96,7 @@ public class SurveyedLocaleRestService {
         if (dataPoint != null) {
             dto = new SurveyedLocaleDto();
             BeanUtils.copyProperties(dataPoint, dto, Constants.EXCLUDED_PROPERTIES);
+            dto.setKeyId(dataPoint.getKey().getId());
         }
         response.put("surveyed_locale", dto);
         response.put("meta", statusDto);
