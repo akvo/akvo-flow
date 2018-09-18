@@ -55,6 +55,7 @@ FLOW.ExportReportTypeView = Ember.View.extend({
   onlyRecentText: Ember.String.loc('_only_recent_submissions'),
   tagName: 'li',
   classNames: 'trigger',
+  missingSurvey: false,
 
   dateRangeDisabledObserver: function () {
     this.set('rangeActive', this.get("exportOption") === "range" ? "" : "background-color: transparent;");
@@ -97,6 +98,22 @@ FLOW.ExportReportTypeView = Ember.View.extend({
       return null;
     }
   }.property('FLOW.selectedControl.selectedQuestion'),
+  
+  incompleteSurveySelection: function(){
+     if (FLOW.selectedControl.get('selectedSurvey') == null) {
+       console.log('survey is not selected')
+        this.set('missingSurvey', true);
+        return true;
+     }
+     return false;
+  },
+  
+  watchSurveySelection: function(){
+     console.log('survey has been selected')
+     if (FLOW.selectedControl.get('selectedSurvey')!== null) {
+        this.set('missingSurvey', false)
+     }
+  }.observes('FLOW.selectedControl.selectedSurvey'),
 
   hideLastCollection: function () {
     if (!FLOW.selectedControl.selectedSurvey) {
@@ -120,8 +137,16 @@ FLOW.ExportReportTypeView = Ember.View.extend({
   showDataCleaningReport: function () {
     var opts = {startDate:this.get("reportFromDate"), endDate:this.get("reportToDate"), lastCollectionOnly: this.get('exportOption') === "recent"};
     var sId = this.get('selectedSurvey');
-    if (!sId) {
+    /*if (!sId) {
       this.showWarning();
+      return;
+    }*/
+    //console.log(sId)
+    if (!sId) {
+       console.log('hey nothing')
+       return;
+    }
+    if (this.incompleteSurveySelection()) {
       return;
     }
     FLOW.ReportLoader.load('DATA_CLEANING', sId, opts);
@@ -132,6 +157,10 @@ FLOW.ExportReportTypeView = Ember.View.extend({
     var sId = this.get('selectedSurvey');
     if (!sId) {
       this.showWarning();
+      console.log('hey nothing')
+      return;
+    }
+    if (this.incompleteSurveySelection()) {
       return;
     }
     FLOW.ReportLoader.load('DATA_ANALYSIS', sId, opts);
@@ -141,6 +170,10 @@ FLOW.ExportReportTypeView = Ember.View.extend({
     var opts = {}, sId = this.get('selectedSurvey');
     if (!sId) {
       this.showWarning();
+      console.log('hey nothing....')
+      return;
+    }
+    if (this.incompleteSurveySelection()) {
       return;
     }
     FLOW.ReportLoader.load('COMPREHENSIVE', sId, opts);
@@ -162,8 +195,11 @@ FLOW.ExportReportTypeView = Ember.View.extend({
 
   showSurveyForm: function () {
     var sId = this.get('selectedSurvey');
-    if (!sId) {
+    /*if (!sId) {
       this.showWarning();
+      return;
+    }*/
+    if (this.incompleteSurveySelection()) {
       return;
     }
     FLOW.ReportLoader.load('SURVEY_FORM', sId);
@@ -171,8 +207,11 @@ FLOW.ExportReportTypeView = Ember.View.extend({
 
   showComprehensiveOptions: function () {
     var sId = this.get('selectedSurvey');
-    if (!sId) {
+    /*if (!sId) {
       this.showWarning();
+      return;
+    }*/
+    if (this.incompleteSurveySelection()) {
       return;
     }
 
