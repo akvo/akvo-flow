@@ -204,5 +204,5 @@ FLOW.NavMapsView = FLOW.View.extend({
 
 
 FLOW.countryView = FLOW.View.extend({});
-FLOW.PlacemarkDetailView = Ember.View.extend({});
+FLOW.PlacemarkDetailsView = Ember.View.extend({});
 FLOW.PlacemarkDetailPhotoView = Ember.View.extend({});
