@@ -1,5 +1,11 @@
 # Akvo Flow Release Notes
 ----
+# Akvo Flow Dashboard v1.9.37.1 - Jovial Jojoba (Hotfix 1)
+Date: 13th September 2018
+
+## Resolved issues
+* **Bug fix** - Fix broken actions in data cleaning tab [#2855]
+
 # Akvo Flow Dashboard v1.9.37 - Jovial Jojoba
 Date: 12th September 2018
 
