@@ -523,18 +523,22 @@ FLOW.QuestionGroupItemView = FLOW.View.extend({
   pollQuestionGroupStatus: function(){
       var self = this, qgQuery = null;
       //clearInterval(this.pollingTimer);
-      if (this.get('amCopying') && !this.get('qgCheckScheduled')) {
+      if (this.get('amCopying')) {
+        if (!this.get('qgCheckScheduled')) {
           this.set('qgCheckScheduled', true);
           qgQuery = setInterval(function () {
               // if the question group has a keyId, we can start polling it remotely
               if (self.content && self.content.get('keyId')) {
+                if (self.content.get('status') == "READY") {
+                  self.set('qgCheckScheduled', false);
+                  clearInterval(qgQuery);
+                } else {
                   // we have an id and can start polling remotely
                   self.ajaxCall(self.content.get('keyId'));
+                }
               }
           },5000);
-      } else {
-        self.set('qgCheckScheduled', false);
-        clearInterval(qgQuery);
+        }
       }
   }.observes('this.amCopying'),
 
