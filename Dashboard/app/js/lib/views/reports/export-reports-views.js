@@ -39,13 +39,11 @@ FLOW.ExportReportsView = Ember.View.extend({
   
   updateSurveyStatus: function(surveyStatus){
      if (surveyStatus === 'survey-selected') {
-       console.log('survey selected finally')
        this.set('missingSurvey',false)
      }else if (surveyStatus === 'not-selected') {
-       console.log('not selected survey')
        this.set('missingSurvey',true)
      }else{
-       console.log('nothing boy ....')
+       //do nothing....
      }
   }
 });
@@ -162,9 +160,6 @@ FLOW.ExportReportTypeView = Ember.View.extend({
       this.get('parentView').updateSurveyStatus('not-selected')
       return;
     }
-    if (this.incompleteSurveySelection()) {
-      return;
-    }
     FLOW.ReportLoader.load('COMPREHENSIVE', sId, opts);
   },
 
@@ -191,6 +186,7 @@ FLOW.ExportReportTypeView = Ember.View.extend({
     var sId = this.get('selectedSurvey');
     if (!sId) {
       this.get('parentView').updateSurveyStatus('not-selected')
+      return;
     }
 
     FLOW.editControl.set('summaryPerGeoArea', true);
