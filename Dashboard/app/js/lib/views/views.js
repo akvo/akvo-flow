@@ -160,7 +160,7 @@ Ember.Handlebars.registerHelper('placemarkDetail', function () {
         +'</div>';
     } else if (questionType == "VIDEO") {
         answer = '<div><div class="media" data-coordinates=\''
-        +((photoJson.location) ? answer : '' )+'\'>'+mediaFileURL+'</div><br>'
+        +((photoJson.location) ? answer : '' )+'\'><video controls><source src="'+mediaFileURL+'" type="video/mp4"></video></div><br>'
         +'<a href="'+mediaFileURL+'" target="_blank">'+Ember.String.loc('_open_video')+'</a>'
         +((photoJson.location) ? '&nbsp;|&nbsp;<a class="media-location" data-coordinates=\''+answer+'\'>'+Ember.String.loc('_show_photo_on_map')+'</a>' : '')
         +'</div>';
