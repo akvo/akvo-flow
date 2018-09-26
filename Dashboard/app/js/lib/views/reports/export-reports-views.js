@@ -35,11 +35,15 @@ FLOW.ReportLoader = Ember.Object.create({
 
 FLOW.ExportReportsView = Ember.View.extend({
   templateName: 'navReports/export-reports',
+  missingSurvey: false,
+  
   updateSurveyStatus: function(surveyStatus){
      if (surveyStatus === 'survey-selected') {
        console.log('survey selected finally')
+       this.set('missingSurvey',false)
      }else if (surveyStatus === 'not-selected') {
        console.log('not selected survey')
+       this.set('missingSurvey',true)
      }else{
        console.log('nothing boy ....')
      }
