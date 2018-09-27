@@ -37,13 +37,11 @@ FLOW.ExportReportsView = Ember.View.extend({
   templateName: 'navReports/export-reports',
   missingSurvey: false,
   
-  updateSurveyStatus: function(surveyStatus){
+  updateSurveyStatus: function (surveyStatus) {
      if (surveyStatus === 'survey-selected') {
-       this.set('missingSurvey',false)
-     }else if (surveyStatus === 'not-selected') {
-       this.set('missingSurvey',true)
-     }else{
-       //do nothing....
+         this.set('missingSurvey',false)
+     } else {
+         this.set('missingSurvey',true)
      }
   }
 });
@@ -109,7 +107,7 @@ FLOW.ExportReportTypeView = Ember.View.extend({
     }
   }.property('FLOW.selectedControl.selectedQuestion'),
   
-  watchSurveySelection: function(){
+  watchSurveySelection: function () {
      if (FLOW.selectedControl.get('selectedSurvey')!== null) {
         this.get('parentView').updateSurveyStatus('survey-selected')
      }
