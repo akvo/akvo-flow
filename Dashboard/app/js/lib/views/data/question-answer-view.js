@@ -520,7 +520,17 @@ FLOW.QuestionAnswerView = Ember.View.extend({
   doValidateNumber: function () {
     // TODO should check for minus sign and decimal point, depending on question setting
     this.set('numberValue', this.get('numberValue').toString().replace(/[^\d.]/g, ""));
-  }.observes('this.numberValue')
+  }.observes('this.numberValue'),
+
+  popupMedia: function () {
+    if (this.get('photoUrl')) {
+      FLOW.dialogControl.set('activeAction', "ignore");
+      FLOW.dialogControl.set('header', "");
+      FLOW.dialogControl.set('message', Ember.String.htmlSafe("<img src=\""+this.get('photoUrl')+"\">"));
+      FLOW.dialogControl.set('showCANCEL', false);
+      FLOW.dialogControl.set('showDialog', true);
+    }
+  }
 });
 
 FLOW.QuestionAnswerOptionListView = Ember.CollectionView.extend({

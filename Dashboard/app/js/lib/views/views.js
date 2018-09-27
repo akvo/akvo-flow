@@ -160,7 +160,7 @@ Ember.Handlebars.registerHelper('placemarkDetail', function () {
         +'</div>';
     } else if (responseType == "VIDEO") {
         answer = '<div><div class="media" data-coordinates=\''
-        +((photoJson.location) ? answer : '' )+'\'>'+mediaFileURL+'</div><br>'
+        +((photoJson.location) ? answer : '' )+'\'><video controls><source src="'+mediaFileURL+'" type="video/mp4"></video></div><br>'
         +'<a href="'+mediaFileURL+'" target="_blank">'+Ember.String.loc('_open_video')+'</a>'
         +((photoJson.location) ? '&nbsp;|&nbsp;<a class="media-location" data-coordinates=\''+answer+'\'>'+Ember.String.loc('_show_photo_on_map')+'</a>' : '')
         +'</div>';
@@ -970,21 +970,25 @@ FLOW.SelectFolder = Ember.Select.extend({
       childViews.removeAt(nextIdx, childViews.length - nextIdx);
     }
 
-    if (this.get('controller').isSurvey(keyId)) {
-      FLOW.selectedControl.set('selectedSurveyGroup', survey);
-      if (FLOW.Env.enableDataApproval && survey.get('dataApprovalGroupId')) {
-          FLOW.router.approvalGroupController.load(survey.get('dataApprovalGroupId'));
-          FLOW.router.approvalStepsController.loadByGroupId(survey.get('dataApprovalGroupId'));
+    if (keyId) { //only proceed if a folder/survey is selected
+      if (this.get('controller').isSurvey(keyId)) {
+        FLOW.selectedControl.set('selectedSurveyGroup', survey);
+        if (FLOW.Env.enableDataApproval && survey.get('dataApprovalGroupId')) {
+            FLOW.router.approvalGroupController.load(survey.get('dataApprovalGroupId'));
+            FLOW.router.approvalStepsController.loadByGroupId(survey.get('dataApprovalGroupId'));
+        }
+      } else {
+        FLOW.selectedControl.set('selectedSurveyGroup', null);
+        childViews.pushObject(FLOW.SelectFolder.create({
+          parentId: keyId,
+          idx: nextIdx,
+          showMonitoringSurveysOnly: monitoringOnly,
+          showDataReadSurveysOnly: dataReadOnly,
+          selectionFilter : filter
+        }));
       }
     } else {
       FLOW.selectedControl.set('selectedSurveyGroup', null);
-      childViews.pushObject(FLOW.SelectFolder.create({
-        parentId: keyId,
-        idx: nextIdx,
-        showMonitoringSurveysOnly: monitoringOnly,
-        showDataReadSurveysOnly: dataReadOnly,
-        selectionFilter : filter
-      }));
     }
   }.observes('value'),
 });
