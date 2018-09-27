@@ -121,6 +121,7 @@ FLOW.MapsController = Ember.ArrayController.extend({
                         color:'#d46f12',
                         fillColor:'#edb660'});
                     FLOW.router.mapsController.set('selectedMarker',null);
+                    FLOW.questionAnswerControl.set('content', null); //clear answers from side bar
                 }
             }
 
