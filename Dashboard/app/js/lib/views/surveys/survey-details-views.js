@@ -522,7 +522,6 @@ FLOW.QuestionGroupItemView = FLOW.View.extend({
   // when this is done, start monitoring the status of the remote question group
   pollQuestionGroupStatus: function(){
       var self = this, qgQuery = null;
-      //clearInterval(this.pollingTimer);
       if (this.get('amCopying')) {
         if (!this.get('qgCheckScheduled')) {
           this.set('qgCheckScheduled', true);
