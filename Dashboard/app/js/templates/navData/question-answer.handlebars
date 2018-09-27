@@ -34,7 +34,7 @@
         {{else}}
             {{#if view.isNotEditable}}
                 {{#if view.isPhotoType}}
-                    {{view.photoUrl}} <a {{bindAttr href="view.photoUrl"}} target="_blank">{{t _open_photo}}</a>
+                  <a {{action popupMedia target="this"}} class="media"><img {{bindAttr src="view.photoUrl"}} alt=""/></a>
                     {{#if view.photoLocation}}
                         <br>{{view.photoLocation}}
                     {{/if}}
