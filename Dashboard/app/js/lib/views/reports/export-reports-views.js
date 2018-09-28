@@ -149,13 +149,17 @@ FLOW.ExportReportTypeView = Ember.View.extend({
   showGeoshapeReport: function () {
     var sId = FLOW.ReportLoader.get('selectedSurveyId');
     var qId = this.get('selectedQuestion');
-    if (!sId || !qId) {
+    if (!sId) {
       FLOW.ReportLoader.showDialogMessage(
         Ember.String.loc('_export_data'),
         Ember.String.loc('_select_survey_and_geoshape_question_warning'),
         'ignore'
       );
       return;
+    }
+    if (!qId) {
+       console.log('you must select question first!!!')
+       return;
     }
     FLOW.ReportLoader.load('GEOSHAPE', sId, {"questionId": qId});
   },
