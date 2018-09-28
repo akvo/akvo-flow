@@ -115,11 +115,9 @@ public class PlacemarkRestService {
 
     private PlacemarkDto marshallDataPointToDto(SurveyedLocale dataPoint) {
         final PlacemarkDto dataPointDto = marshallPublicDataPointToDto(dataPoint);
-        dataPointDto.setDetailsId(dataPoint.getKey().getId());
         dataPointDto.setSurveyId(dataPoint.getSurveyGroupId());
         dataPointDto.setFormId(dataPoint.getCreationSurveyId());
-        // make even to avoid clash with cluster keyIds in client cache
-        dataPointDto.setKeyId(dataPoint.getKey().getId() * 2);
+        dataPointDto.setKeyId(dataPoint.getKey().getId());
         return dataPointDto;
     }
 

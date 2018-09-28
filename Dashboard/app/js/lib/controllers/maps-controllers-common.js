@@ -85,7 +85,7 @@ FLOW.MapsController = Ember.ArrayController.extend({
                     fillColor:'#edb660',
                     opacity:0.9,
                     fillOpacity:0.7,
-                    placemarkId: placemark.get('detailsId'),
+                    placemarkId: placemark.get('keyId'),
                     collectionDate:placemark.get('collectionDate')});
                 marker.on('click', onMarkerClick);
                 return marker;
@@ -106,7 +106,7 @@ FLOW.MapsController = Ember.ArrayController.extend({
                 radius:7,
                 color:'#d46f12',
                 fillColor:'#edb660',
-                placemarkId: placemark.get('detailsId'),
+                placemarkId: placemark.get('keyId'),
                 collectionDate:placemark.get('collectionDate')});
             marker.on('click', onMarkerClick);
             return marker;
@@ -121,6 +121,7 @@ FLOW.MapsController = Ember.ArrayController.extend({
                         color:'#d46f12',
                         fillColor:'#edb660'});
                     FLOW.router.mapsController.set('selectedMarker',null);
+                    FLOW.questionAnswerControl.set('content', null); //clear answers from side bar
                 }
             }
 
@@ -296,41 +297,59 @@ FLOW.MapsController = Ember.ArrayController.extend({
 
 FLOW.placemarkDetailController = Ember.ArrayController.create({
   content: Ember.A(),
-  sortProperties: ['order'],
-  sortAscending: true,
-  collectionDate: null,
-  surveyedLocaleDisplayName: null,
-  surveyedLocaleIdentifier: null,
-  si: null,
 
-  populate: function (placemarkId) {
-	  if (placemarkId) {
-		  this.set('content', FLOW.store.findQuery(FLOW.PlacemarkDetail, {
-			  placemarkId: placemarkId
-		  }));
-	  } else {
-		  this.set('content', Ember.A());
-	  }
-  },
+  dataPoint: null,
 
-  siDetails: function() {
-      if (FLOW.Env.mapsProvider === 'cartodb') {
-          this.set('surveyedLocaleDisplayName', this.si.get('surveyedLocaleDisplayName'));
-          this.set('surveyedLocaleIdentifier', this.si.get('surveyedLocaleIdentifier'));
-      }
-      this.set('collectionDate', this.si.get('collectionDate'));
-  }.observes('si.isLoaded'),
+  dataPointCollectionDate: null,
 
-  handlePlacemarkSelection: function () {
-    var selectedPlacemarkId = null;
-    if (!Ember.none(FLOW.router.get('mapsController'))) {
+  dataPointDisplayName: function () {
+      return this.dataPoint && this.dataPoint.get('displayName')
+  }.property('this.dataPoint.isLoaded'),
+
+  dataPointIdentifier: function () {
+      return this.dataPoint && this.dataPoint.get('identifier')
+  }.property('this.dataPoint.isLoaded'),
+
+  /*
+  * Observer that loads a datapoint and its associated details when clicked
+  */
+  mapPointClickHandler: function () {
       var mapsController = FLOW.router.get('mapsController');
-      if (!Ember.none(mapsController.get('selectedMarker'))) {
-      	selectedPlacemarkId = mapsController.selectedMarker.target.options.placemarkId;
-      	this.set('collectionDate',mapsController.selectedMarker.target.options.collectionDate);
+      if (mapsController && mapsController.get('selectedMarker')) {
+          var selectedPlacemarkId = mapsController.selectedMarker.target.options.placemarkId;
+          this.set('dataPointCollectionDate', mapsController.selectedMarker.target.options.collectionDate);
+          this.set('dataPoint', FLOW.store.find(FLOW.SurveyedLocale, selectedPlacemarkId));
+          FLOW.surveyInstanceControl.set('content', FLOW.store.findQuery(FLOW.SurveyInstance, {
+                'surveyedLocaleId': selectedPlacemarkId,
+          }));
       }
-      this.populate(selectedPlacemarkId);
-    }
-  }.observes('FLOW.router.mapsController.selectedMarker')
+  }.observes('FLOW.router.mapsController.selectedMarker'),
 
+  /*
+  * Observer that retrieves question answers associated with a datapoint
+  * when it is clicked on.
+  *
+  * !!! Only data from the REGISTRATION FORMS is loaded at the moment !!!
+  */
+  mapPointRetrieveDetailsHandler: function () {
+      var formInstances = FLOW.surveyInstanceControl.content;
+      var mapsController = FLOW.router.get('mapsController');
+
+      if (Ember.empty(formInstances)
+        || !formInstances.isLoaded
+        || !mapsController.get('selectedMarker')) {
+            return;
+        }
+
+      var survey = FLOW.projectControl.content.filterProperty('keyId', this.dataPoint.get('surveyGroupId')).get('firstObject');
+      var registrationFormId, registrationFormInstance;
+      if (survey) {
+          registrationFormId = survey.get('newLocaleSurveyId');
+          registrationFormInstance = formInstances.filterProperty('surveyId', registrationFormId).get('firstObject');
+      }
+
+      if (registrationFormInstance) {
+          FLOW.questionAnswerControl.doQuestionAnswerQuery(registrationFormInstance);
+      }
+  }.observes('FLOW.surveyInstanceControl.content.isLoaded'),
 });
