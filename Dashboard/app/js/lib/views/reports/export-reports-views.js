@@ -42,7 +42,12 @@ FLOW.ReportLoader = Ember.Object.create({
 });
 
 FLOW.ExportReportsView = Ember.View.extend({
-  templateName: 'navReports/export-reports'
+  templateName: 'navReports/export-reports',
+  missingSurvey: false,
+  
+  updateSurveyStatus: function (surveyStatus) {
+     this.set('missingSurvey', surveyStatus !== 'survey-selected')
+  }
 });
 
 FLOW.ExportReportTypeView = Ember.View.extend({
@@ -97,6 +102,12 @@ FLOW.ExportReportTypeView = Ember.View.extend({
       return null;
     }
   }.property('FLOW.selectedControl.selectedQuestion'),
+  
+  watchSurveySelection: function () {
+     if (FLOW.selectedControl.get('selectedSurvey')!== null) {
+        this.get('parentView').updateSurveyStatus('survey-selected')
+     }
+  }.observes('FLOW.selectedControl.selectedSurvey'),
 
   hideLastCollection: function () {
     if (!FLOW.selectedControl.selectedSurvey) {
@@ -121,8 +132,8 @@ FLOW.ExportReportTypeView = Ember.View.extend({
     var opts = {startDate:this.get("reportFromDate"), endDate:this.get("reportToDate"), lastCollectionOnly: this.get('exportOption') === "recent"};
     var sId = FLOW.ReportLoader.get('selectedSurveyId');
     if (!sId) {
-      this.showWarning();
-      return;
+       this.get('parentView').updateSurveyStatus('not-selected')
+       return;
     }
     FLOW.ReportLoader.load('DATA_CLEANING', sId, opts);
   },
@@ -131,7 +142,7 @@ FLOW.ExportReportTypeView = Ember.View.extend({
     var opts = {startDate:this.get("reportFromDate"), endDate:this.get("reportToDate"), lastCollectionOnly: this.get('exportOption') === "recent"};
     var sId = FLOW.ReportLoader.get('selectedSurveyId');
     if (!sId) {
-      this.showWarning();
+      this.get('parentView').updateSurveyStatus('not-selected')
       return;
     }
     FLOW.ReportLoader.load('DATA_ANALYSIS', sId, opts);
@@ -140,7 +151,7 @@ FLOW.ExportReportTypeView = Ember.View.extend({
   showComprehensiveReport: function () {
     var opts = {}, sId = FLOW.ReportLoader.get('selectedSurveyId');
     if (!sId) {
-      this.showWarning();
+      this.get('parentView').updateSurveyStatus('not-selected')
       return;
     }
     FLOW.ReportLoader.load('COMPREHENSIVE', sId, opts);
@@ -150,11 +161,7 @@ FLOW.ExportReportTypeView = Ember.View.extend({
     var sId = FLOW.ReportLoader.get('selectedSurveyId');
     var qId = this.get('selectedQuestion');
     if (!sId || !qId) {
-      FLOW.ReportLoader.showDialogMessage(
-        Ember.String.loc('_export_data'),
-        Ember.String.loc('_select_survey_and_geoshape_question_warning'),
-        'ignore'
-      );
+      this.get('parentView').updateSurveyStatus('not-selected')
       return;
     }
     FLOW.ReportLoader.load('GEOSHAPE', sId, {"questionId": qId});
@@ -163,7 +170,7 @@ FLOW.ExportReportTypeView = Ember.View.extend({
   showSurveyForm: function () {
     var sId = FLOW.ReportLoader.get('selectedSurveyId');
     if (!sId) {
-      this.showWarning();
+      this.get('parentView').updateSurveyStatus('not-selected')
       return;
     }
     FLOW.ReportLoader.load('SURVEY_FORM', sId);
@@ -172,7 +179,7 @@ FLOW.ExportReportTypeView = Ember.View.extend({
   showComprehensiveOptions: function () {
     var sId = FLOW.ReportLoader.get('selectedSurveyId');
     if (!sId) {
-      this.showWarning();
+      this.get('parentView').updateSurveyStatus('not-selected')
       return;
     }
 
