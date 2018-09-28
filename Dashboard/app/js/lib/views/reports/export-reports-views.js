@@ -38,11 +38,7 @@ FLOW.ExportReportsView = Ember.View.extend({
   missingSurvey: false,
   
   updateSurveyStatus: function (surveyStatus) {
-     if (surveyStatus === 'survey-selected') {
-         this.set('missingSurvey',false)
-     } else {
-         this.set('missingSurvey',true)
-     }
+     this.set('missingSurvey', surveyStatus !== 'survey-selected')
   }
 });
 
