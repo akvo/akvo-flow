@@ -72,7 +72,7 @@
         {{#view FLOW.ExportReportTypeView class="geoShapeDataExp" export="geoShapeDataExp"}}
           <h2>{{t _geoshape_data}}</h2>
           <p class="expDescr">{{t _geojson}}</p>
-          <div class="geoshapeSelect">
+          <div {{bindAttr class = "view.missingQuestion:geoshapeSelectError :geoshapeSelect"}}>
             {{#if FLOW.selectedControl.selectedSurvey}}
               {{view Ember.Select
                 contentBinding="FLOW.questionControl.geoshapeContent"

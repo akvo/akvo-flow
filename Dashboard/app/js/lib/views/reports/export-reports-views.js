@@ -63,6 +63,7 @@ FLOW.ExportReportTypeView = Ember.View.extend({
   onlyRecentText: Ember.String.loc('_only_recent_submissions'),
   tagName: 'li',
   classNames: 'trigger',
+  missingQuestion: false,
 
   dateRangeDisabledObserver: function () {
     this.set('rangeActive', this.get("exportOption") === "range" ? "" : "background-color: transparent;");
@@ -159,6 +160,7 @@ FLOW.ExportReportTypeView = Ember.View.extend({
     }
     if (!qId) {
        console.log('you must select question first!!!')
+       this.set('missingQuestion', true)
        return;
     }
     FLOW.ReportLoader.load('GEOSHAPE', sId, {"questionId": qId});
