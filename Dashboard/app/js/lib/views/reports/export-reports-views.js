@@ -47,6 +47,7 @@ FLOW.ExportReportsView = Ember.View.extend({
   
   updateSurveyStatus: function (surveyStatus) {
      this.set('missingSurvey', surveyStatus !== 'survey-selected')
+     Ember.$('body, html ,#navExportSelect').scrollTop(0);
   }
 });
 

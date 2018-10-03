@@ -4,7 +4,7 @@
     <a {{action "doReportsList"}} class="button exportNewBtn">{{t _back_to_reports}}</a>
   </div>
     <div class="surveySelect">
-      <nav class="breadCrumb floats-in">
+      <nav class="breadCrumb floats-in" id = "navExportSelect">
        <div {{bindAttr class= "view.missingSurvey:redBorder"}}>
         {{#unless FLOW.projectControl.isLoading}}
           {{view FLOW.SurveySelectionView showDataReadSurveysOnly=true}}
