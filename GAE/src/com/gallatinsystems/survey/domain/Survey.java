@@ -1,5 +1,5 @@
 /*
- *  Copyright (C) 2010-2015 Stichting Akvo (Akvo Foundation)
+ *  Copyright (C) 2010-2015,2018 Stichting Akvo (Akvo Foundation)
  *
  *  This file is part of Akvo FLOW.
  *
@@ -48,8 +48,6 @@ public class Survey extends BaseDomain implements SecuredObject {
     @NotPersistent
     private TreeMap<Integer, QuestionGroup> questionGroupMap = null;
     private Double version = null;
-    @NotPersistent
-    private Long instanceCount;
     private String path = null;
     private Long surveyGroupId;
     private String pointType;
@@ -83,14 +81,6 @@ public class Survey extends BaseDomain implements SecuredObject {
 
     public void setSurveyGroupId(Long surveyGroupId) {
         this.surveyGroupId = surveyGroupId;
-    }
-
-    public void setInstanceCount(Long instanceCount) {
-        this.instanceCount = instanceCount;
-    }
-
-    public Long getInstanceCount() {
-        return instanceCount;
     }
 
     public HashMap<String, Translation> getTranslationMap() {

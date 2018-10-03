@@ -250,30 +250,8 @@ FLOW.NavMapsView = FLOW.View.extend({
     slide out
   */
   handlePlacemarkDetails: function () {
-    var details = FLOW.placemarkDetailController.get('content');
-
     this.showDetailsPane();
-    if (!Ember.empty(details) && details.get('isLoaded')) {
-      this.populateDetailsPane(details);
-    }
-  }.observes('FLOW.placemarkDetailController.content.isLoaded'),
-
-  /**
-    Populates the details pane with data from a placemark
-  */
-  populateDetailsPane: function (details) {
-    var rawImagePath, verticalBars;
-
-    this.set('showDetailsBool', true);
-    details.forEach(function (item) {
-      rawImagePath = item.get('stringValue') || '';
-      verticalBars = rawImagePath.split('|');
-      if (verticalBars.length === 4) {
-        FLOW.placemarkDetailController.set('selectedPointCode',
-          verticalBars[3]);
-      }
-    }, this);
-  },
+  }.observes('FLOW.router.mapsController.selectedMarker'),
 
   //function to project geoshape from details panel to main map canvas
   projectGeoshape: function(geoShapeObject){
@@ -447,9 +425,8 @@ FLOW.NavMapsView = FLOW.View.extend({
 });
 
 FLOW.countryView = FLOW.View.extend({});
-FLOW.PlacemarkDetailView = Ember.View.extend({
-    cartoMaps: FLOW.Env.mapsProvider && FLOW.Env.mapsProvider === 'cartodb'
-});
+FLOW.PlacemarkDetailsView = FLOW.View.extend({});
+
 FLOW.PlacemarkDetailPhotoView = Ember.View.extend({});
 
 FLOW.GeoshapeMapView = FLOW.View.extend({

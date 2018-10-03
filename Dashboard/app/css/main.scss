@@ -475,6 +475,7 @@ input[type="submit"] {
     background: white;
     -o-border-radius: 6px;
     overflow: auto;
+    text-align: center;
 }
 
 .dialogWide {
@@ -3542,6 +3543,10 @@ div.dateInput input {
 
 .dataSection label {
     font-weight: normal;
+}
+
+.media {
+  max-width: 100%
 }
 
 /******************************************************************************
