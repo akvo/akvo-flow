@@ -4044,7 +4044,11 @@ label.languageSelector:after {
         }
         .geoshapeSelectError {
            border: 2px solid red;
-            
+           > select {
+               display: block;
+               float: none;
+               margin-left: 0;
+           }            
         }
     }
 }
