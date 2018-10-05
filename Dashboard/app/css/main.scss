@@ -4042,14 +4042,12 @@ label.languageSelector:after {
                 margin-left: 0;
             }
         }
-        .geoshapeSelectError {
-           border: 2px solid red;
-           > select {
-               display: block;
-               float: none;
-               margin-left: 0;
-           }            
-        }
+    }
+    .geoshapeSelectError{
+       padding:2px;
+       display: inline-block;
+       border-radius:8px;
+       border: 2px red solid;   
     }
 }
 
