@@ -161,12 +161,11 @@ FLOW.ExportReportTypeView = Ember.View.extend({
   showGeoshapeReport: function () {
     var sId = FLOW.ReportLoader.get('selectedSurveyId');
     var qId = this.get('selectedQuestion');
-    if (!sId || !qId) {
+    if (!sId) {
       this.get('parentView').updateSurveyStatus('not-selected')
       return;
     }
     if (!qId) {
-       console.log('you must select question first!!!')
        this.set('missingQuestion', true)
        return;
     }
