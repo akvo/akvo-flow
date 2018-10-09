@@ -342,14 +342,18 @@ FLOW.placemarkDetailController = Ember.ArrayController.create({
         }
 
       var survey = FLOW.projectControl.content.filterProperty('keyId', this.dataPoint.get('surveyGroupId')).get('firstObject');
-      var registrationFormId, registrationFormInstance;
-      if (survey) {
-          registrationFormId = survey.get('newLocaleSurveyId');
-          registrationFormInstance = formInstances.filterProperty('surveyId', registrationFormId).get('firstObject');
+      if (!survey) return;
+
+      var formInstance;
+      if (survey.get('monitoringGroup')) {
+          var registrationFormId = survey.get('newLocaleSurveyId');
+          formInstance = formInstances.filterProperty('surveyId', registrationFormId).get('firstObject');
+      } else {
+          formInstance = formInstances.get('firstObject');
       }
 
-      if (registrationFormInstance) {
-          FLOW.questionAnswerControl.doQuestionAnswerQuery(registrationFormInstance);
+      if (formInstance) {
+          FLOW.questionAnswerControl.doQuestionAnswerQuery(formInstance);
       }
   }.observes('FLOW.surveyInstanceControl.content.isLoaded'),
 });
