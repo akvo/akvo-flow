@@ -1,6 +1,14 @@
 # Akvo Flow Release Notes
 ----
-# Akvo Flow Dashboard v1.9.38 - K... K...
+# Akvo Flow Dashboard v1.9.38 - Key Kalmia
+Date: 9th October 2018
+
+## New and noteworthy
+* **Reports export** - Highlight folder/survey/form selection when user tries to export a report without selecting a form [#2380]. Highlight question selection when user tries to export a geojson report without selecting a geoshape type question [#2479]
+* **Question answers** - Display images [#2557] and videos [#2561] directly on dashboard instead of a link opening on different tab
+
+## Resolved Issues
+* **Bug fix** - Load question answers for non-monitoring survey on Mapbox maps [#2680]
 
 # Akvo Flow Dashboard v1.9.37.1 - Jovial Jojoba (Hotfix 1)
 Date: 13th September 2018
