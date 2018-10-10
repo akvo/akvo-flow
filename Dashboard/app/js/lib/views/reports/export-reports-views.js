@@ -47,6 +47,7 @@ FLOW.ExportReportsView = Ember.View.extend({
   
   updateSurveyStatus: function (surveyStatus) {
      this.set('missingSurvey', surveyStatus !== 'survey-selected')
+     Ember.$('body, html ,#navExportSelect').scrollTop(0);
   }
 });
 
@@ -68,6 +69,7 @@ FLOW.ExportReportTypeView = Ember.View.extend({
   onlyRecentText: Ember.String.loc('_only_recent_submissions'),
   tagName: 'li',
   classNames: 'trigger',
+  missingQuestion: false,
 
   dateRangeDisabledObserver: function () {
     this.set('rangeActive', this.get("exportOption") === "range" ? "" : "background-color: transparent;");
@@ -160,9 +162,13 @@ FLOW.ExportReportTypeView = Ember.View.extend({
   showGeoshapeReport: function () {
     var sId = FLOW.ReportLoader.get('selectedSurveyId');
     var qId = this.get('selectedQuestion');
-    if (!sId || !qId) {
+    if (!sId) {
       this.get('parentView').updateSurveyStatus('not-selected')
       return;
+    }
+    if (!qId) {
+       this.set('missingQuestion', true)
+       return;
     }
     FLOW.ReportLoader.load('GEOSHAPE', sId, {"questionId": qId});
   },

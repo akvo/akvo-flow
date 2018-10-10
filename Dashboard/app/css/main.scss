@@ -4043,6 +4043,12 @@ label.languageSelector:after {
             }
         }
     }
+    .geoshapeSelectError{
+       padding:2px;
+       display: inline-block;
+       border-radius:8px;
+       border: 2px red solid;   
+    }
 }
 
 .reportTools select:last-child {
