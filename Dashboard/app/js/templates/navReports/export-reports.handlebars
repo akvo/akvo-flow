@@ -4,7 +4,8 @@
     <a {{action "doReportsList"}} class="button exportNewBtn">{{t _back_to_reports}}</a>
   </div>
     <div class="surveySelect">
-      <nav class="breadCrumb floats-in">
+      <nav class="breadCrumb floats-in" id = "navExportSelect">
+       <div {{bindAttr class= "view.missingSurvey:redBorder"}}>
         {{#unless FLOW.projectControl.isLoading}}
           {{view FLOW.SurveySelectionView showDataReadSurveysOnly=true}}
         {{/unless}}
@@ -17,6 +18,7 @@
               prompt=""
               promptBinding="Ember.STRINGS._select_form" id="monitorSelection"}}
         {{/if}}
+       </div>
       </nav>
     </div>
     <section class="exportContainer">
@@ -72,7 +74,7 @@
         {{#view FLOW.ExportReportTypeView class="geoShapeDataExp" export="geoShapeDataExp"}}
           <h2>{{t _geoshape_data}}</h2>
           <p class="expDescr">{{t _geojson}}</p>
-          <div class="geoshapeSelect">
+          <div {{bindAttr class = "view.missingQuestion:geoshapeSelectError:geoshapeSelect"}}>
             {{#if FLOW.selectedControl.selectedSurvey}}
               {{view Ember.Select
                 contentBinding="FLOW.questionControl.geoshapeContent"

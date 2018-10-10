@@ -72,7 +72,7 @@ FLOW.NavMapsView = FLOW.View.extend({
         Streets: L.mapbox.tileLayer('akvo.he2pdjhk'),
         Satellite: L.mapbox.tileLayer('akvo.he30neh4')
       }
-      
+
       this.map = L.mapbox.map('flowMap', 'akvo.he30g8mm', options).setView([-0.703107, 36.765], 2);
       L.control.layers(baseLayers).addTo(this.map)
     }
@@ -204,5 +204,5 @@ FLOW.NavMapsView = FLOW.View.extend({
 
 
 FLOW.countryView = FLOW.View.extend({});
-FLOW.PlacemarkDetailView = Ember.View.extend({});
+FLOW.PlacemarkDetailsView = Ember.View.extend({});
 FLOW.PlacemarkDetailPhotoView = Ember.View.extend({});

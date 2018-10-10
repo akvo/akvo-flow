@@ -1,5 +1,5 @@
 /*
- *  Copyright (C) 2014-2015,2017 Stichting Akvo (Akvo Foundation)
+ *  Copyright (C) 2014-2015,2017-2018 Stichting Akvo (Akvo Foundation)
  *
  *  This file is part of Akvo FLOW.
  *
@@ -21,6 +21,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import com.gallatinsystems.common.Constants;
+import org.springframework.beans.BeanUtils;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -76,6 +78,27 @@ public class SurveyedLocaleRestService {
         statusDto.setSince(newSince);
 
         response.put("surveyed_locales", locales);
+        response.put("meta", statusDto);
+        return response;
+    }
+
+    @RequestMapping(method = RequestMethod.GET, value = "/{dataPointId}")
+    @ResponseBody
+    public Map<String, Object> findDataPointById(
+            @PathVariable("dataPointId") Long dataPointId) {
+        final Map<String, Object> response = new HashMap<>();
+        final RestStatusDto statusDto = new RestStatusDto();
+        statusDto.setStatus("");
+        statusDto.setMessage("");
+
+        SurveyedLocale dataPoint = surveyedLocaleDao.getByKey(dataPointId);
+        SurveyedLocaleDto dto = null;
+        if (dataPoint != null) {
+            dto = new SurveyedLocaleDto();
+            BeanUtils.copyProperties(dataPoint, dto, Constants.EXCLUDED_PROPERTIES);
+            dto.setKeyId(dataPoint.getKey().getId());
+        }
+        response.put("surveyed_locale", dto);
         response.put("meta", statusDto);
         return response;
     }

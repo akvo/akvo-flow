@@ -129,12 +129,12 @@ Ember.Handlebars.registerHelper('placemarkDetail', function () {
   }
 
   question = Ember.get(this, 'questionText');
-  answer = Ember.get(this, FLOW.Env.mapsProvider === 'cartodb' ? 'value': 'stringValue') || '';
+  answer = Ember.get(this, 'value') || '';
   answer = answer.replace(/\|/g, ' | '); // geo, option and cascade data
   answer = answer.replace(/\//g, ' / '); // also split folder paths
-  questionType = FLOW.Env.mapsProvider === 'cartodb' ? cartoQuestionType: Ember.get(this, 'questionType');
+  responseType = Ember.get(this, 'type');
 
-  if (questionType === 'CASCADE') {
+  if (responseType === 'CASCADE') {
 
       if (answer.indexOf("|") > -1) {
         // ignore
@@ -146,41 +146,41 @@ Ember.Handlebars.registerHelper('placemarkDetail', function () {
               }).join("|");
           }
       }
-  } else if ((questionType === 'VIDEO' || questionType === 'PHOTO') && answer.charAt(0) === '{') {
+  } else if ((responseType === 'VIDEO' || responseType === 'IMAGE') && answer.charAt(0) === '{') {
     photoJson = JSON.parse(answer)
     var mediaAnswer = photoJson.filename;
 
     var mediaFileURL = FLOW.Env.photo_url_root + mediaAnswer.split('/').pop().replace(/\s/g, '');
-    if (questionType == "PHOTO") {
+    if (responseType == "IMAGE") {
         answer = '<div class=":imgContainer photoUrl:shown:hidden">'
         +'<a class="media" data-coordinates=\''
         +((photoJson.location) ? answer : '' )+'\' href="'
         +mediaFileURL+'" target="_blank"><img src="'+mediaFileURL+'" alt=""/></a><br>'
         +((photoJson.location) ? '<a class="media-location" data-coordinates=\''+answer+'\'>'+Ember.String.loc('_show_photo_on_map')+'</a>' : '')
         +'</div>';
-    } else if (questionType == "VIDEO") {
+    } else if (responseType == "VIDEO") {
         answer = '<div><div class="media" data-coordinates=\''
-        +((photoJson.location) ? answer : '' )+'\'>'+mediaFileURL+'</div><br>'
+        +((photoJson.location) ? answer : '' )+'\'><video controls><source src="'+mediaFileURL+'" type="video/mp4"></video></div><br>'
         +'<a href="'+mediaFileURL+'" target="_blank">'+Ember.String.loc('_open_video')+'</a>'
         +((photoJson.location) ? '&nbsp;|&nbsp;<a class="media-location" data-coordinates=\''+answer+'\'>'+Ember.String.loc('_show_photo_on_map')+'</a>' : '')
         +'</div>';
     }
-  } else if (questionType === 'OPTION' && answer.charAt(0) === '[') {
+  } else if (responseType === 'OPTION' && answer.charAt(0) === '[') {
     optionJson = JSON.parse(answer);
     answer = optionJson.map(function(item){
       return item.text;
     }).join("|");
-  } else if (questionType === 'SIGNATURE') {
+  } else if (responseType === 'SIGNATURE') {
     imageSrcAttr = 'data:image/png;base64,';
     signatureJson = JSON.parse(answer);
     answer = signatureJson && imageSrcAttr + signatureJson.image || '';
     answer = answer && '<img src="' + answer + '" />';
     answer = answer && answer + '<div>' + Ember.String.loc('_signed_by') + ':' + signatureJson.name + '</div>' || '';
-  } else if (questionType === 'DATE') {
+  } else if (responseType === 'DATE') {
     answer = FLOW.renderTimeStamp(answer);
-  } else if (questionType === 'CADDISFLY'){
+  } else if (responseType === 'CADDISFLY'){
     answer = FLOW.renderCaddisflyAnswer(answer)
-  } else if (questionType === 'GEOSHAPE') {
+} else if (responseType === 'VALUE' && answer.indexOf("{\"features") > 0) {
     var geoshapeObject = FLOW.parseJSON(answer, "features");
     if (geoshapeObject) {
         answer = '<div class="geoshape-map" data-geoshape-object=\''+answer+'\' style="width:100%; height: 100px; float: left"></div>'

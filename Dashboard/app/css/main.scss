@@ -475,6 +475,7 @@ input[type="submit"] {
     background: white;
     -o-border-radius: 6px;
     overflow: auto;
+    text-align: center;
 }
 
 .dialogWide {
@@ -3544,6 +3545,10 @@ div.dateInput input {
     font-weight: normal;
 }
 
+.media {
+  max-width: 100%
+}
+
 /******************************************************************************
                                     FLOW MAP
 ******************************************************************************/
@@ -4037,6 +4042,12 @@ label.languageSelector:after {
                 margin-left: 0;
             }
         }
+    }
+    .geoshapeSelectError{
+       padding:2px;
+       display: inline-block;
+       border-radius:8px;
+       border: 2px red solid;   
     }
 }
 

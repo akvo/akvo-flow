@@ -864,10 +864,9 @@ public class BulkDataServiceClient {
                             if (!json.isNull("geoLocked")) {
                                 dto.setGeoLocked(json.getBoolean("geoLocked"));
                             }
-                            if (json.has("caddisflyResourceUuid")
-                                    && json.getString("caddisflyResourceUuid") != null) {
-                                dto.setCaddisflyResourceUuid(json
-                                        .getString("caddisflyResourceUuid"));
+                            if (!json.isNull("caddisflyResourceUuid")) {
+                                dto.setCaddisflyResourceUuid(
+                                        json.getString("caddisflyResourceUuid"));
                             }
                             if (!json.isNull("immutable")) {
                                 dto.setImmutable(json.getBoolean("immutable"));
@@ -1243,7 +1242,7 @@ public class BulkDataServiceClient {
         }
         return result.toString();
     }
-
+    
     /**
      * converts the string into a JSON array object.
      */
