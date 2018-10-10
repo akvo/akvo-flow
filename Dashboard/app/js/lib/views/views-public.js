@@ -81,64 +81,6 @@ FLOW.renderCaddisflyAnswer = function(json){
   }
 }
 
-Ember.Handlebars.registerHelper('placemarkDetail', function () {
-  var answer, markup, question, cascadeJson, optionJson, cascadeString = "",
-  questionType, imageSrcAttr, signatureJson, photoJson;
-
-  question = Ember.get(this, 'questionText');
-  answer = Ember.get(this, 'stringValue') || '';
-  answer = answer.replace(/\|/g, ' | '); // geo, option and cascade data
-  answer = answer.replace(/\//g, ' / '); // also split folder paths
-  questionType = Ember.get(this, 'questionType');
-
-  if (questionType === 'CASCADE') {
-
-      if (answer.indexOf("|") > -1) {
-        // ignore
-      } else {
-        cascadeJson = JSON.parse(answer);
-        answer = cascadeJson.map(function(item){
-          return item.name;
-        }).join("|");
-      }
-  } else if ((questionType === 'VIDEO' || questionType === 'PHOTO') && answer.charAt(0) === '{') {
-    photoJson = JSON.parse(answer)
-    var mediaAnswer = photoJson.filename;
-
-    var mediaFileURL = FLOW.Env.photo_url_root + mediaAnswer.split('/').pop().replace(/\s/g, '');
-    if (questionType == "PHOTO") {
-        answer = '<div class=":imgContainer photoUrl:shown:hidden">'
-        +'<a class="media" href="'+mediaFileURL+'" target="_blank"><img src="'+mediaFileURL+'" alt=""/></a>'
-        +'</div>';
-    } else if (questionType == "VIDEO") {
-        answer = '<div><div class="media">'+mediaFileURL+'</div><br>'
-        +'<a href="'+mediaFileURL+'" target="_blank">'+Ember.String.loc('_open_video')+'</a>'
-        +'</div>';
-    }
-  } else if (questionType === 'OPTION' && answer.charAt(0) === '[') {
-    optionJson = JSON.parse(answer);
-    answer = optionJson.map(function(item){
-      return item.text;
-    }).join("|");
-  } else if (questionType === 'SIGNATURE') {
-    imageSrcAttr = 'data:image/png;base64,';
-    signatureJson = JSON.parse(answer);
-    answer = signatureJson && imageSrcAttr + signatureJson.image || '';
-    answer = answer && '<img src="' + answer + '" />';
-    answer = answer && answer + '<div>' + Ember.String.loc('_signed_by') + ':' + signatureJson.name + '</div>' || '';
-  } else if (questionType === 'DATE') {
-    answer = renderTimeStamp(answer);
-  } else if (questionType === 'CADDISFLY'){
-    answer = FLOW.renderCaddisflyAnswer(answer)
-  }
-
-  markup = '<div class="defListWrap"><dt>' +
-    question + ':</dt><dd>' +
-    answer + '</dd></div>';
-
-  return new Handlebars.SafeString(markup);
-});
-
 /*  Take a timestamp and render it as a date in format
     YYYY-mm-dd */
 function renderTimeStamp(timestamp) {

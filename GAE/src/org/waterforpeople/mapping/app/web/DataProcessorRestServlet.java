@@ -40,7 +40,6 @@ import net.sf.jsr107cache.CacheFactory;
 import net.sf.jsr107cache.CacheManager;
 
 import org.akvo.flow.domain.DataUtils;
-import org.waterforpeople.mapping.analytics.dao.SurveyInstanceSummaryDao;
 import org.waterforpeople.mapping.analytics.dao.SurveyQuestionSummaryDao;
 import org.waterforpeople.mapping.analytics.domain.SurveyQuestionSummary;
 import org.waterforpeople.mapping.app.web.dto.DataProcessorRequest;
@@ -200,10 +199,6 @@ public class DataProcessorRestServlet extends AbstractRestApiServlet {
         } else if (DataProcessorRequest.FIX_OPTIONS2VALUES_ACTION
                 .equalsIgnoreCase(dpReq.getAction())) {
             fixOptions2Values();
-        } else if (DataProcessorRequest.SURVEY_INSTANCE_SUMMARIZER
-                .equalsIgnoreCase(dpReq.getAction())) {
-            surveyInstanceSummarizer(dpReq.getSurveyInstanceId(),
-                    dpReq.getQasId(), dpReq.getDelta());
         } else if (DataProcessorRequest.DELETE_DUPLICATE_QAS
                 .equalsIgnoreCase(dpReq.getAction())) {
             deleteDuplicatedQAS(dpReq.getOffset());
@@ -836,43 +831,6 @@ public class DataProcessorRestServlet extends AbstractRestApiServlet {
         }
     }
 
-    public static void surveyInstanceSummarizer(Long surveyInstanceId,
-            Long qasId, Integer delta) {
-        SurveyInstanceDAO siDao = new SurveyInstanceDAO();
-        QuestionAnswerStoreDao qasDao = new QuestionAnswerStoreDao();
-        boolean success = false;
-        if (surveyInstanceId != null) {
-            SurveyInstance si = siDao.getByKey(surveyInstanceId);
-            if (si != null && qasId != null) {
-                QuestionAnswerStore qas = qasDao.getByKey(qasId);
-                if (qas != null) {
-                    GeoCoordinates geoC = null;
-                    if (qas.getValue() != null
-                            && qas.getValue().trim().length() > 0) {
-                        geoC = GeoCoordinates.extractGeoCoordinate(qas
-                                .getValue());
-                    }
-                    if (geoC != null) {
-                        GeoLocationService gisService = new GeoLocationServiceGeonamesImpl();
-                        GeoPlace gp = gisService.findDetailedGeoPlace(geoC
-                                .getLatitude().toString(), geoC.getLongitude()
-                                .toString());
-                        if (gp != null) {
-                            SurveyInstanceSummaryDao.incrementCount(
-                                    gp.getSub1(), gp.getCountryCode(),
-                                    qas.getCollectionDate(), delta.intValue());
-                            success = true;
-                        }
-                    }
-                }
-            }
-        }
-        if (!success) {
-            log.log(Level.SEVERE,
-                    "Couldnt find geoplace for instance. Instance id: "
-                            + surveyInstanceId);
-        }
-    }
 
     /**
      * Adds surveyId and questionGroupId to translations This only needs to happen once to populate

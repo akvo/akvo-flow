@@ -1,6 +1,14 @@
 /*global Ember, $, FLOW */
 
 FLOW.ReportLoader = Ember.Object.create({
+  selectedSurveyId: function () {
+    if (!Ember.none(FLOW.selectedControl.get('selectedSurvey')) && !Ember.none(FLOW.selectedControl.selectedSurvey.get('keyId'))){
+      return FLOW.selectedControl.selectedSurvey.get('keyId');
+    } else {
+      return null;
+    }
+  }.property('FLOW.selectedControl.selectedSurvey'),
+
   load: function (exportType, surveyId, opts) {
     FLOW.selectedControl.set('selectedReportExport', FLOW.store.createRecord(FLOW.Report, {}));
     var newReport = FLOW.selectedControl.get('selectedReportExport');
@@ -34,7 +42,12 @@ FLOW.ReportLoader = Ember.Object.create({
 });
 
 FLOW.ExportReportsView = Ember.View.extend({
-  templateName: 'navReports/export-reports'
+  templateName: 'navReports/export-reports',
+  missingSurvey: false,
+  
+  updateSurveyStatus: function (surveyStatus) {
+     this.set('missingSurvey', surveyStatus !== 'survey-selected')
+  }
 });
 
 FLOW.ExportReportTypeView = Ember.View.extend({
@@ -81,14 +94,6 @@ FLOW.ExportReportTypeView = Ember.View.extend({
     FLOW.uploader.registerEvents();
   },
 
-  selectedSurvey: function () {
-    if (!Ember.none(FLOW.selectedControl.get('selectedSurvey')) && !Ember.none(FLOW.selectedControl.selectedSurvey.get('keyId'))){
-      return FLOW.selectedControl.selectedSurvey.get('keyId');
-    } else {
-      return null;
-    }
-  }.property('FLOW.selectedControl.selectedSurvey'),
-
   selectedQuestion: function () {
     if (!Ember.none(FLOW.selectedControl.get('selectedQuestion'))
         && !Ember.none(FLOW.selectedControl.selectedQuestion.get('keyId'))){
@@ -97,6 +102,12 @@ FLOW.ExportReportTypeView = Ember.View.extend({
       return null;
     }
   }.property('FLOW.selectedControl.selectedQuestion'),
+  
+  watchSurveySelection: function () {
+     if (FLOW.selectedControl.get('selectedSurvey')!== null) {
+        this.get('parentView').updateSurveyStatus('survey-selected')
+     }
+  }.observes('FLOW.selectedControl.selectedSurvey'),
 
   hideLastCollection: function () {
     if (!FLOW.selectedControl.selectedSurvey) {
@@ -119,60 +130,56 @@ FLOW.ExportReportTypeView = Ember.View.extend({
 
   showDataCleaningReport: function () {
     var opts = {startDate:this.get("reportFromDate"), endDate:this.get("reportToDate"), lastCollectionOnly: this.get('exportOption') === "recent"};
-    var sId = this.get('selectedSurvey');
+    var sId = FLOW.ReportLoader.get('selectedSurveyId');
     if (!sId) {
-      this.showWarning();
-      return;
+       this.get('parentView').updateSurveyStatus('not-selected')
+       return;
     }
     FLOW.ReportLoader.load('DATA_CLEANING', sId, opts);
   },
 
   showDataAnalysisReport: function () {
     var opts = {startDate:this.get("reportFromDate"), endDate:this.get("reportToDate"), lastCollectionOnly: this.get('exportOption') === "recent"};
-    var sId = this.get('selectedSurvey');
+    var sId = FLOW.ReportLoader.get('selectedSurveyId');
     if (!sId) {
-      this.showWarning();
+      this.get('parentView').updateSurveyStatus('not-selected')
       return;
     }
     FLOW.ReportLoader.load('DATA_ANALYSIS', sId, opts);
   },
 
   showComprehensiveReport: function () {
-    var opts = {}, sId = this.get('selectedSurvey');
+    var opts = {}, sId = FLOW.ReportLoader.get('selectedSurveyId');
     if (!sId) {
-      this.showWarning();
+      this.get('parentView').updateSurveyStatus('not-selected')
       return;
     }
     FLOW.ReportLoader.load('COMPREHENSIVE', sId, opts);
   },
 
   showGeoshapeReport: function () {
-    var sId = this.get('selectedSurvey');
+    var sId = FLOW.ReportLoader.get('selectedSurveyId');
     var qId = this.get('selectedQuestion');
     if (!sId || !qId) {
-      FLOW.ReportLoader.showDialogMessage(
-        Ember.String.loc('_export_data'),
-        Ember.String.loc('_select_survey_and_geoshape_question_warning'),
-        'ignore'
-      );
+      this.get('parentView').updateSurveyStatus('not-selected')
       return;
     }
     FLOW.ReportLoader.load('GEOSHAPE', sId, {"questionId": qId});
   },
 
   showSurveyForm: function () {
-    var sId = this.get('selectedSurvey');
+    var sId = FLOW.ReportLoader.get('selectedSurveyId');
     if (!sId) {
-      this.showWarning();
+      this.get('parentView').updateSurveyStatus('not-selected')
       return;
     }
     FLOW.ReportLoader.load('SURVEY_FORM', sId);
   },
 
   showComprehensiveOptions: function () {
-    var sId = this.get('selectedSurvey');
+    var sId = FLOW.ReportLoader.get('selectedSurveyId');
     if (!sId) {
-      this.showWarning();
+      this.get('parentView').updateSurveyStatus('not-selected')
       return;
     }
 
@@ -309,6 +316,10 @@ FLOW.ReportListItemView = FLOW.View.extend({
 FLOW.DataCleaningView = Ember.View.extend({
   templateName: 'navData/data-cleaning',
   missingSurvey:false,
+
+  didInsertElement: function () {
+    FLOW.uploader.registerEvents();
+  },
 
   importFile: function () {
     var file, survey = FLOW.selectedControl.get('selectedSurvey');
