@@ -255,13 +255,13 @@ FLOW.Question = FLOW.BaseModel.extend({
   }),
   // Geoshape question type options
   allowPoints: DS.attr('boolean', {
-    defaultValue: true
+    defaultValue: false
   }),
   allowLine: DS.attr('boolean', {
-    defaultValue: true
+    defaultValue: false
   }),
   allowPolygon: DS.attr('boolean', {
-    defaultValue: true
+    defaultValue: false
   })
 });
 
