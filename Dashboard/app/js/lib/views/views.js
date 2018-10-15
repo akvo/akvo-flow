@@ -180,7 +180,7 @@ Ember.Handlebars.registerHelper('placemarkDetail', function () {
     answer = FLOW.renderTimeStamp(answer);
   } else if (responseType === 'CADDISFLY'){
     answer = FLOW.renderCaddisflyAnswer(answer)
-} else if (responseType === 'VALUE' && answer.indexOf("{\"features") > 0) {
+  } else if (responseType === 'VALUE' && answer.indexOf("features\":[") > 0) {
     var geoshapeObject = FLOW.parseJSON(answer, "features");
     if (geoshapeObject) {
         answer = '<div class="geoshape-map" data-geoshape-object=\''+answer+'\' style="width:100%; height: 100px; float: left"></div>'
