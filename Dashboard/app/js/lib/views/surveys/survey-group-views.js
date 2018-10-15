@@ -321,7 +321,7 @@ FLOW.ProjectItemView = FLOW.View.extend({
 
   showSurveyEditButton: function() {
     var survey = this.get('content');
-    return FLOW.permControl.canEditSurvey(survey);
+    return FLOW.permControl.canEditSurvey(survey) || FLOW.projectControl.get('newlyCreated') === survey;
   }.property(),
 
   showSurveyMoveButton: function() {
