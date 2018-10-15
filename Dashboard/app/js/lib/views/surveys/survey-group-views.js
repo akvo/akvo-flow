@@ -355,6 +355,7 @@ FLOW.FolderEditView = Ember.TextField.extend({
 
   insertNewline: function() {
     this.get('parentView').set('folderEdit', false);
+    this.saveFolderName();
   }
 });
 
