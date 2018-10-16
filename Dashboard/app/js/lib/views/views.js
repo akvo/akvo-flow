@@ -476,18 +476,7 @@ Ember.Handlebars.registerHelper('surveyPath', function (property) {
   var formId = Ember.get(this, property), path = "";
   var form  = FLOW.Survey.find(formId);
   if (form) {
-    var ancestorIds = form.get('ancestorIds');
-    if (ancestorIds) {
-      for (var i = 0; i < ancestorIds.length; i++) {
-        if (ancestorIds[i] !== null && ancestorIds[i] !== 0) {
-          var ancestor = FLOW.SurveyGroup.find(ancestorIds[i]);
-          if (ancestor && ancestor.get('name')) {
-            path += (i > 1 ? " > ": "") + ancestor.get('name');
-          }
-        }
-      }
-      path += " > " + form.get('name');
-    }
+    path += form.get('name');
   }
   return path;
 });
