@@ -96,7 +96,7 @@ FLOW.renderCaddisflyAnswer = function(json){
         var jsonParsed = JSON.parse(json);
 
         // get out image url
-        if (!Ember.empty(jsonParsed.image)){
+        if ('image' in jsonParsed){
           imageUrl = FLOW.Env.photo_url_root + jsonParsed.image.trim();
         }
 
@@ -106,7 +106,7 @@ FLOW.renderCaddisflyAnswer = function(json){
                 return "<br><div>" + item.name + " : " + item.value + " " + item.unit + "</div>";
             }).join("\n");
         html += "<br>"
-        html += "<div class=\"signatureImage\"><img src=\"" + imageUrl +"\"}} /></div>"
+        html += "<div class=\"signatureImage\"><img src=\"" + imageUrl +"\"/></div>"
         return html;
     } catch (e) {
         return json;
