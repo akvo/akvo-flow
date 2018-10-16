@@ -75,12 +75,6 @@ FLOW.inspectDataTableView = FLOW.View.extend({
       this.set('surveyId', null);
     }
 
-    // if we have selected a survey, preload the questions as we'll need them
-    // the questions are also loaded once the surveyInstances come in.
-    if (FLOW.selectedControl.get('selectedSurvey')) {
-      FLOW.questionControl.populateAllQuestions(FLOW.selectedControl.selectedSurvey.get('keyId'));
-    }
-
     if (!Ember.none(FLOW.locationControl.get('selectedCountry'))) {
       this.set('selectedCountryCode',FLOW.locationControl.selectedCountry.get('iso'));
     } else {
