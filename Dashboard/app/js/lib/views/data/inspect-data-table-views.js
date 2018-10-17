@@ -135,12 +135,6 @@ FLOW.inspectDataTableView = FLOW.View.extend({
     return FLOW.surveyInstanceControl.get('pageNumber');
   }.property('FLOW.surveyInstanceControl.pageNumber'),
 
-  createSurveyInstanceString: function () {
-    var si;
-    si = FLOW.store.find(FLOW.SurveyInstance, this.get('selectedSurveyInstanceId'));
-    this.set('siString', si.get('surveyCode') + "/" + si.get('keyId') + "/" + si.get('submitterName'));
-  },
-
   downloadQuestionsIfNeeded: function () {
     var si, surveyId;
     si = FLOW.store.find(FLOW.SurveyInstance, this.get('selectedSurveyInstanceId'));
@@ -162,7 +156,6 @@ FLOW.inspectDataTableView = FLOW.View.extend({
     this.set('selectedSurveyInstanceId', event.context.get('keyId'));
     this.set('selectedSurveyInstanceNum', event.context.clientId);
     this.set('showEditSurveyInstanceWindowBool', true);
-    this.createSurveyInstanceString();
   },
 
   showEditResponseLink: function () {
@@ -193,7 +186,6 @@ FLOW.inspectDataTableView = FLOW.View.extend({
       nextSIkeyId = nextSI.get('keyId');
       this.set('selectedSurveyInstanceId', nextSIkeyId);
       this.set('selectedSurveyInstanceNum', nextItem);
-      this.createSurveyInstanceString();
       this.downloadQuestionsIfNeeded();
       FLOW.questionAnswerControl.doQuestionAnswerQuery(nextSI);
     }
@@ -221,7 +213,6 @@ FLOW.inspectDataTableView = FLOW.View.extend({
       nextSIkeyId = nextSI.get('keyId');
       this.set('selectedSurveyInstanceId', nextSIkeyId);
       this.set('selectedSurveyInstanceNum', nextItem);
-      this.createSurveyInstanceString();
       this.downloadQuestionsIfNeeded();
       FLOW.questionAnswerControl.doQuestionAnswerQuery(nextSI);
     }

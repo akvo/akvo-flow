@@ -472,6 +472,15 @@ Ember.Handlebars.registerHelper('sgName', function (property) {
   return sg && sg.get('name') || sgId;
 });
 
+Ember.Handlebars.registerHelper('formName', function (property) {
+  var formId = Ember.get(this, property), name = "";
+  var form  = FLOW.Survey.find(formId);
+  if (form) {
+    name += form.get('name');
+  }
+  return name;
+});
+
 // Register a Handlebars helper that instantiates `view`.
 // The view will have its `content` property bound to the
 // helper argument.
