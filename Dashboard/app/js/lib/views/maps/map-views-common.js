@@ -332,6 +332,9 @@ FLOW.NavMapsView = FLOW.View.extend({
   },
 
   clearMapboxMap: function () {
+    FLOW.router.mapsController.set('selectedMarker',null);
+    FLOW.questionAnswerControl.set('content', null);
+    this.set('detailsPaneVisible', false);
       if (!Ember.empty(FLOW.router.mapsController.allPlacemarks)) {
           FLOW.router.mapsController.allPlacemarks.clearLayers();
       }
