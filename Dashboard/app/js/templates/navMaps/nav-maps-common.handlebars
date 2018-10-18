@@ -3,17 +3,6 @@
       {{#unless FLOW.projectControl.isLoading}}
         {{view FLOW.SurveySelectionView showDataReadSurveysOnly=true}}
       {{/unless}}
-      {{#if view.showFormFilter}}
-        {{view Ember.Select
-            contentBinding="FLOW.surveyControl.arrangedContent"
-            selectionBinding="view.selectedSurvey"
-            optionLabelPath="content.code"
-            optionValuePath="content.keyId"
-            prompt=""
-            promptBinding="Ember.STRINGS._select_form"
-            classNames="form-selector"
-        }}
-      {{/if}}
   {{/if}}
   <div id="dropdown-holder">
     <div id="mapDetailsHideShow" class="drawHandle hideMapD"></div>
