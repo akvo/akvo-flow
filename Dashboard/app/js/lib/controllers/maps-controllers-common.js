@@ -9,16 +9,11 @@
 FLOW.MapsController = Ember.ArrayController.extend({
     content: null,
     map: null,
-    marker: null,
-    markerCoordinates: null,
-    questions: null,
     geocellCache: [],
     currentGcLevel: null,
     allPlacemarks: null,
     selectedMarker:null,
     selectedSI: null,
-    questionAnswers: null,
-    namedMap: null,
     surveyDataLayer: null,
 
     populateMap: function () {
@@ -134,159 +129,6 @@ FLOW.MapsController = Ember.ArrayController.extend({
         }
     },
 
-    loadNamedMap: function(formId){
-        var self = this;
-        //TODO Clear map
-        this.loadQuestions(formId); //Load questions
-        var namedMapObject = {};
-        namedMapObject['mapName'] = 'raw_data_'+formId;
-        namedMapObject['tableName'] = 'raw_data_'+formId;
-        namedMapObject['interactivity'] = ['lat','lon','id'];
-        namedMapObject['query'] = 'SELECT * FROM raw_data_'+formId;
-
-        this.namedMapCheck(namedMapObject, formId);
-    },
-
-    /*Check if a named map exists. If one exists, call function to overlay it
-    else call function to create a new one*/
-    namedMapCheck: function(namedMapObject, formId){
-        var self = this;
-        $.get("/rest/cartodb/named_maps", function(data, status) {
-            if (data.template_ids) {
-                var mapExists = false;
-                for (var i=0; i<data['template_ids'].length; i++) {
-                    if (data['template_ids'][i] === namedMapObject.mapName) {
-                        //named map already exists
-                        mapExists = true;
-                        self.set('namedMap', namedMapObject.mapName);
-                        break;
-                    }
-                }
-
-                if (!mapExists) {
-                    //create new named map
-                    self.createNamedMap(namedMapObject, formId);
-                }
-            }
-        });
-    },
-
-    //create named map
-    createNamedMap: function(namedMapObject, formId){
-        var self = this;
-
-        //style of points for new layer
-        var cartocss = "#"+namedMapObject.tableName+"{"
-        +"marker-fill-opacity: 0.9;"
-        +"marker-line-color: #FFF;"
-        +"marker-line-width: 1.5;"
-        +"marker-line-opacity: 1;"
-        +"marker-placement: point;"
-        +"marker-type: ellipse;"
-        +"marker-width: 10;"
-        +"marker-fill: #FF6600;"
-        +"marker-allow-overlap: true;"
-        +"}";
-
-        var configJsonData = {};
-        configJsonData['interactivity'] = namedMapObject.interactivity;
-        configJsonData['name'] = namedMapObject.mapName;
-        configJsonData['cartocss'] = cartocss;
-        configJsonData['sql'] = namedMapObject.query;
-
-        $.ajax({
-            type: 'POST',
-            contentType: "application/json",
-            url: '/rest/cartodb/named_maps',
-            data: JSON.stringify(configJsonData), //stringify the payload before sending it
-            dataType: 'json',
-            success: function(namedMapData){
-                if (namedMapData.template_id) {
-                    self.set('namedMap', namedMapData.template_id);
-                }
-            }
-        });
-    },
-
-    /*this function overlays a named map on the cartodb map*/
-    createLayer: function(formId){
-        if (this.namedMap) {
-            var self = this;
-
-            // add cartodb layer with one sublayer
-            cartodb.createLayer(self.map, {
-                user_name: FLOW.Env.appId,
-                type: 'namedmap',
-                named_map: {
-                    name: this.namedMap,
-                    layers: [{
-                        layer_name: "t",
-                        interactivity: "id"
-                    }]
-                }
-            },{
-                tiler_domain: FLOW.Env.cartodbHost,
-                tiler_port: "", //set to empty string to stop cartodb js from appending default port
-                tiler_protocol: "https",
-                no_cdn: true
-            })
-            .addTo(self.map)
-            .done(function(layer) {
-                layer.setZIndex(1000); //required to ensure that the cartodb layer is not obscured by the here maps base layers
-                self.set('surveyDataLayer', layer);
-
-                self.addCursorInteraction(layer);
-
-                var dataLayer = layer.getSubLayer(0);
-                dataLayer.setInteraction(true);
-
-                dataLayer.on('featureClick', function(e, latlng, pos, data) {
-                    self.set('markerCoordinates', [data.lat, data.lon]);
-
-                    //get survey instance
-                    FLOW.placemarkDetailController.set( 'si', FLOW.store.find(FLOW.SurveyInstance, data.id));
-
-                    //get questions answers for clicked survey instance
-                    FLOW.placemarkDetailController.set('content', FLOW.store.findQuery(FLOW.QuestionAnswer, {
-                        'surveyInstanceId' : data.id
-                    }));
-                });
-            });
-        }
-    }.observes('this.namedMap'),
-
-    loadQuestions: function(formId){
-        this.set('questions', FLOW.store.findQuery(FLOW.Question, {
-            'surveyId' : formId
-        }));
-    },
-
-    /*function is required to manage how the cursor appears on the cartodb map canvas*/
-    addCursorInteraction: function (layer) {
-        var hovers = [];
-
-        layer.bind('featureOver', function(e, latlon, pxPos, data, layer) {
-            hovers[layer] = 1;
-            if(_.any(hovers)) {
-                $('#flowMap').css('cursor', 'pointer');
-            }
-        });
-
-        layer.bind('featureOut', function(m, layer) {
-            hovers[layer] = 0;
-            if(!_.any(hovers)) {
-                $('#flowMap').css({"cursor":"-moz-grab","cursor":"-webkit-grab"});
-            }
-        });
-    },
-
-    clearSurveyDataLayer: function(){
-        if (this.surveyDataLayer) {
-            this.map.removeLayer(this.surveyDataLayer);
-            this.set('surveyDataLayer', null);
-        }
-    },
-
     formatDate: function(date) {
       if (date && !isNaN(date.getTime())) {
         return date.getFullYear() + "-" + (date.getMonth() + 1) + "-" + date.getDate();
@@ -342,14 +184,18 @@ FLOW.placemarkDetailController = Ember.ArrayController.create({
         }
 
       var survey = FLOW.projectControl.content.filterProperty('keyId', this.dataPoint.get('surveyGroupId')).get('firstObject');
-      var registrationFormId, registrationFormInstance;
-      if (survey) {
-          registrationFormId = survey.get('newLocaleSurveyId');
-          registrationFormInstance = formInstances.filterProperty('surveyId', registrationFormId).get('firstObject');
+      if (!survey) return;
+
+      var formInstance;
+      if (survey.get('monitoringGroup')) {
+          var registrationFormId = survey.get('newLocaleSurveyId');
+          formInstance = formInstances.filterProperty('surveyId', registrationFormId).get('firstObject');
+      } else {
+          formInstance = formInstances.get('firstObject');
       }
 
-      if (registrationFormInstance) {
-          FLOW.questionAnswerControl.doQuestionAnswerQuery(registrationFormInstance);
+      if (formInstance) {
+          FLOW.questionAnswerControl.doQuestionAnswerQuery(formInstance);
       }
   }.observes('FLOW.surveyInstanceControl.content.isLoaded'),
 });

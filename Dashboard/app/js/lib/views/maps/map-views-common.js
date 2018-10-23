@@ -4,7 +4,6 @@ FLOW.NavMapsView = FLOW.View.extend({
   detailsPaneElements: null,
   detailsPaneVisible: null,
   map: null,
-  marker: null,
   polygons: [],
   mapZoomLevel: 0,
   mapCenter: null,
@@ -14,14 +13,6 @@ FLOW.NavMapsView = FLOW.View.extend({
   geoModel: null,
   selectedSurvey: null,
   showSurveyFilters: true, // show filters when user is logged in
-
-  isCartoDbMap: function () {
-      return FLOW.Env.mapsProvider && FLOW.Env.mapsProvider === 'cartodb';
-  }.property(),
-
-  showFormFilter: function () {
-      return FLOW.selectedControl.selectedSurveyGroup && this.get('isCartoDbMap');
-  }.property('FLOW.selectedControl.selectedSurveyGroup'),
 
   init: function () {
     this._super();
@@ -39,9 +30,6 @@ FLOW.NavMapsView = FLOW.View.extend({
   didInsertElement: function () {
     var self = this;
 
-    if (FLOW.Env.mapsProvider === 'cartodb') {
-      self.insertCartodbMap();
-    } else {
       if (FLOW.Env.mapsProvider === 'google') {
         self.insertGoogleMap();
       } else {
@@ -53,7 +41,6 @@ FLOW.NavMapsView = FLOW.View.extend({
       });
       FLOW.router.mapsController.set('map', this.map);
       this.geoModel = create_geomodel();
-    }
 
     // add scale indication to map
     L.control.scale({position:'topleft', maxWidth:150}).addTo(this.map);
@@ -100,74 +87,6 @@ FLOW.NavMapsView = FLOW.View.extend({
          prefix: ''
       }))
       L.control.layers(baseLayers).addTo(this.map);
-  },
-
-  insertCartodbMap: function() {
-    var self = this;
-
-    $.ajaxSetup({
-    	beforeSend: function(){
-    		FLOW.savingMessageControl.numLoadingChange(1);
-        },
-    	complete: function(){
-    		FLOW.savingMessageControl.numLoadingChange(-1);
-        }
-    });
-
-    this.map = L.map('flowMap', {scrollWheelZoom: true}).setView([26.11598592533351, 1.9335937499999998], 2);
-
-    var bounds = new L.LatLngBounds(this.map.getBounds().getSouthWest(), this.map.getBounds().getNorthEast());
-
-    this.map.options.maxBoundsViscosity = 1.0;
-    this.map.options.maxBounds = bounds;
-    this.map.options.maxZoom = 18;
-    this.map.options.minZoom = 2;
-
-    var hereAttr = 'Map &copy; 1987-2014 <a href="http://developer.here.com">HERE</a>',
-			hereUrl = 'https://{s}.{base}.maps.cit.api.here.com/maptile/2.1/maptile/{mapID}/{scheme}/{z}/{x}/{y}/256/{format}?app_id={app_id}&app_code={app_code}',
-      mbAttr = 'Map &copy; <a href="http://openstreetmap.org">OSM</a>',
-      mbUrl = 'http://{s}.tiles.mapbox.com/v3/akvo.he30g8mm/{z}/{x}/{y}.png';
-
-    var normal = L.tileLayer(hereUrl, {
-      scheme: 'normal.day.transit',
-      format: 'png8',
-      attribution: hereAttr,
-      subdomains: '1234',
-      mapID: 'newest',
-      app_id: FLOW.Env.hereMapsAppId,
-      app_code: FLOW.Env.hereMapsAppCode,
-      base: 'base'
-    }).addTo(this.map),
-    terrain  = L.tileLayer(mbUrl, {
-      attribution: mbAttr,
-      subdomains: 'abc'
-    }),
-    satellite  = L.tileLayer(hereUrl, {
-      scheme: 'hybrid.day',
-      format: 'jpg',
-      attribution: hereAttr,
-      subdomains: '1234',
-      mapID: 'newest',
-      app_id: FLOW.Env.hereMapsAppId,
-      app_code: FLOW.Env.hereMapsAppCode,
-      base: 'aerial'
-    });
-
-    var baseLayers = {
-			"Normal": normal,
-      "Terrain": terrain,
-			"Satellite": satellite
-		};
-
-    FLOW.addExtraMapBoxTileLayer(baseLayers);
-
-    L.control.layers(baseLayers).addTo(this.map);
-
-    FLOW.router.mapsController.set('map', this.map);
-
-    this.map.on('zoomend', function() {
-      $('body, html, #flowMap').scrollTop(0);
-    });
   },
 
   detailsPanelListeners: function(){
@@ -299,59 +218,15 @@ FLOW.NavMapsView = FLOW.View.extend({
   }.observes('FLOW.selectedControl.selectedSurveyGroup'),
 
   clearMap: function () {
-      if (this.get('isCartoDbMap')) {
-          this.clearCartoDbMap();
-      } else {
-          this.clearMapboxMap();
-      }
-  },
-
-  clearCartoDbMap: function() {
-    var self = this;
-    self.set('detailsPaneVisible', false);
-    if (self.marker) {
-      self.map.removeLayer(self.marker);
-    }
-
-    if (!Ember.empty(self.mediaMarkers)) {
-      for (mediaMarker in self.mediaMarkers) {
-        self.map.removeLayer(self.mediaMarkers[mediaMarker]);
-      }
-    }
-
-    if (self.polygons.length > 0) {
-      for (var i=0; i<self.polygons.length; i++) {
-        self.map.removeLayer(self.polygons[i])
-      }
-      //restore the previous zoom level and map center
-      self.map.setView(self.mapCenter, self.mapZoomLevel);
-      self.polygons = [];
-    }
-
-    FLOW.router.mapsController.clearSurveyDataLayer();
-  },
-
-  clearMapboxMap: function () {
+    FLOW.router.mapsController.set('selectedMarker',null);
+    FLOW.questionAnswerControl.set('content', null);
+    this.set('detailsPaneVisible', false);
       if (!Ember.empty(FLOW.router.mapsController.allPlacemarks)) {
           FLOW.router.mapsController.allPlacemarks.clearLayers();
       }
   },
 
-  redoMap: function () {
-      if (this.get('isCartoDbMap')) {
-          this.redoCartoDbMap();
-      } else {
-          this.redoMapboxMap();
-      }
-  },
-
-  redoCartoDbMap: function () {
-      if (!Ember.none(this.get('selectedSurvey'))) {
-          FLOW.router.mapsController.loadNamedMap(this.selectedSurvey.get('keyId'));
-      }
-  },
-
-  redoMapboxMap: function() {
+  redoMap: function() {
       if (!FLOW.selectedControl.selectedSurveyGroup) {
           return;
       }
@@ -378,23 +253,6 @@ FLOW.NavMapsView = FLOW.View.extend({
       // adapt the points shown on the map
       FLOW.router.mapsController.adaptMap(bestBB, this.map.getZoom());
     },
-
-  /*Place a marker to highlight clicked point of layer on cartodb map*/
-  placeMarker: function(latlng){
-      //if there's a previously loaded marker, first remove it
-      if (this.marker) {
-          this.map.removeLayer(this.marker);
-      }
-
-      var markerIcon = new L.Icon({
-          iconUrl: 'images/marker.svg',
-          iconSize: [10, 10]
-      });
-      this.marker = new L.marker(FLOW.router.mapsController.get('markerCoordinates'), {icon: markerIcon});
-      this.map.addLayer(this.marker);
-
-      this.showDetailsPane();
-  }.observes('FLOW.router.mapsController.markerCoordinates'),
 
   detailsPaneShowHide: function(){
       var button = this.$('#mapDetailsHideShow');

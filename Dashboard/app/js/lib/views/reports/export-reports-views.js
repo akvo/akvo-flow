@@ -47,6 +47,7 @@ FLOW.ExportReportsView = Ember.View.extend({
   
   updateSurveyStatus: function (surveyStatus) {
      this.set('missingSurvey', surveyStatus !== 'survey-selected')
+     Ember.$('body, html ,#navExportSelect').scrollTop(0);
   }
 });
 
@@ -68,6 +69,7 @@ FLOW.ExportReportTypeView = Ember.View.extend({
   onlyRecentText: Ember.String.loc('_only_recent_submissions'),
   tagName: 'li',
   classNames: 'trigger',
+  missingQuestion: false,
 
   dateRangeDisabledObserver: function () {
     this.set('rangeActive', this.get("exportOption") === "range" ? "" : "background-color: transparent;");
@@ -160,9 +162,13 @@ FLOW.ExportReportTypeView = Ember.View.extend({
   showGeoshapeReport: function () {
     var sId = FLOW.ReportLoader.get('selectedSurveyId');
     var qId = this.get('selectedQuestion');
-    if (!sId || !qId) {
+    if (!sId) {
       this.get('parentView').updateSurveyStatus('not-selected')
       return;
+    }
+    if (!qId) {
+       this.set('missingQuestion', true)
+       return;
     }
     FLOW.ReportLoader.load('GEOSHAPE', sId, {"questionId": qId});
   },
@@ -315,15 +321,17 @@ FLOW.ReportListItemView = FLOW.View.extend({
 
 FLOW.DataCleaningView = Ember.View.extend({
   templateName: 'navData/data-cleaning',
+  missingSurvey:false,
 
   didInsertElement: function () {
     FLOW.uploader.registerEvents();
   },
 
   importFile: function () {
-    var file, sId = FLOW.ReportLoader.get('selectedSurveyId');
-    if (!sId) {
-      FLOW.ReportLoader.showDialogMessage(Ember.String.loc('_import_clean_data'), Ember.String.loc('_import_select_survey'), 'ignore');
+    var file, survey = FLOW.selectedControl.get('selectedSurvey');
+    
+    if (survey === null) {
+      this.set('missingSurvey',true)
       return;
     }
 
@@ -336,5 +344,11 @@ FLOW.DataCleaningView = Ember.View.extend({
 
     FLOW.uploader.addFile(file.files[0]);
     FLOW.uploader.upload();
-  }
+  },
+   watchSurveySelection: function(){ 
+     //remove the highlight around the dropdown if survey is selected
+      if (FLOW.selectedControl.get('selectedSurvey')!== null) {
+         this.set('missingSurvey', false)
+      }
+   }.observes('FLOW.selectedControl.selectedSurvey')
 });
