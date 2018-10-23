@@ -1,5 +1,10 @@
 # Akvo Flow Release Notes
 ----
+# Akvo Flow Dashboard v1.9.39 - L... L...
+Date: 24th October 2018
+
+## New and noteworthy
+
 # Akvo Flow Dashboard v1.9.38 - Key Kalmia
 Date: 9th October 2018
 
