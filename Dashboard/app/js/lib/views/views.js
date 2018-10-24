@@ -95,18 +95,18 @@ FLOW.renderCaddisflyAnswer = function(json){
     try {
         var jsonParsed = JSON.parse(json);
 
-        // get out image url
-        if ('image' in jsonParsed){
-          imageUrl = FLOW.Env.photo_url_root + jsonParsed.image.trim();
-        }
-
         // contruct html
-        html = "<div><strong>" + name + "</strong></div>"
+        html = "<div><strong>" + jsonParsed.name + "</strong></div>"
         html += jsonParsed.result.map(function(item){
                 return "<br><div>" + item.name + " : " + item.value + " " + item.unit + "</div>";
             }).join("\n");
-        html += "<br>"
-        html += "<div class=\"signatureImage\"><img src=\"" + imageUrl +"\"/></div>"
+        html += "<br>";
+
+        // get out image url
+        if ('image' in jsonParsed) {
+          imageUrl = FLOW.Env.photo_url_root + jsonParsed.image.trim();
+          html += "<div class=\"signatureImage\"><img src=\"" + imageUrl +"\"/></div>";
+        }
         return html;
     } catch (e) {
         return json;
@@ -171,7 +171,7 @@ Ember.Handlebars.registerHelper('placemarkDetail', function () {
   } else if (responseType === 'DATE') {
     answer = FLOW.renderTimeStamp(answer);
   } else if (responseType === 'CADDISFLY'){
-    answer = FLOW.renderCaddisflyAnswer(answer)
+    answer = FLOW.renderCaddisflyAnswer(answer);
   } else if (responseType === 'VALUE' && answer.indexOf("features\":[") > 0) {
     var geoshapeObject = FLOW.parseJSON(answer, "features");
     if (geoshapeObject) {
