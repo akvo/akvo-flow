@@ -88,10 +88,9 @@ Ember.Handlebars.registerHelper('tooltip', function (i18nKey) {
 
 
 FLOW.renderCaddisflyAnswer = function(json){
-  var caddisflyResponse = JSON.stringify(json);
-  if (!Ember.empty(caddisflyResponse)) {
+  if (!Ember.empty(json)) {
     try {
-        var jsonParsed = JSON.parse(caddisflyResponse);
+        var jsonParsed = JSON.parse(json);
 
         // contruct html
         html = "<div><strong>" + jsonParsed.name + "</strong></div>";
