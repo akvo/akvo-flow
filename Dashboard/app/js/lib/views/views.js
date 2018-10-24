@@ -87,24 +87,34 @@ Ember.Handlebars.registerHelper('tooltip', function (i18nKey) {
 });
 
 
-FLOW.renderCaddisflyAnswer = function(response){
+FLOW.renderCaddisflyAnswer = function(json){
+  var name = ""
+  var imageUrl = ""
+  var result = Ember.A();
+  if (!Ember.empty(json)){
     try {
+        var jsonParsed = JSON.parse(json);
+
         // contruct html
-        var html = "<div><strong>" + response.name + "</strong></div>";
-        html += response.result.map(function(item){
+        html = "<div><strong>" + jsonParsed.name + "</strong></div>";
+        html += jsonParsed.result.map(function(item){
                 return "<br><div>" + item.name + " : " + item.value + " " + item.unit + "</div>";
             }).join("\n");
+        html += "<br>";
 
         // get out image url
         if ('image' in jsonParsed) {
-          var imageUrl = FLOW.Env.photo_url_root + response.image.trim();
-          html += "<br>";
+          imageUrl = FLOW.Env.photo_url_root + jsonParsed.image.trim();
           html += "<div class=\"signatureImage\"><img src=\"" + imageUrl +"\"/></div>";
         }
         return html;
     } catch (e) {
-        return JSON.stringify(response);
+      console.log(e);
+        return json;
     }
+  } else {
+    return "Wrong JSON format";
+  }
 }
 
 Ember.Handlebars.registerHelper('placemarkDetail', function () {
@@ -161,11 +171,8 @@ Ember.Handlebars.registerHelper('placemarkDetail', function () {
     answer = answer && answer + '<div>' + Ember.String.loc('_signed_by') + ':' + signatureJson.name + '</div>' || '';
   } else if (responseType === 'DATE') {
     answer = FLOW.renderTimeStamp(answer);
-  } else if (responseType === 'CADDISFLY') {
-    var caddisflyResponse = JSON.parse(Ember.get(this, 'value'));
-    if (caddisflyResponse.result && !Ember.empty(caddisflyResponse.result)){
-        answer = FLOW.renderCaddisflyAnswer(caddisflyResponse);
-    }
+  } else if (responseType === 'CADDISFLY'){
+    answer = FLOW.renderCaddisflyAnswer(answer);
   } else if (responseType === 'VALUE' && answer.indexOf("features\":[") > 0) {
     var geoshapeObject = FLOW.parseJSON(answer, "features");
     if (geoshapeObject) {
