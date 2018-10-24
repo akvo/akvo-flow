@@ -96,7 +96,7 @@ FLOW.renderCaddisflyAnswer = function(json){
         var jsonParsed = JSON.parse(json);
 
         // contruct html
-        html = "<div><strong>" + jsonParsed.name + "</strong></div>"
+        html = "<div><strong>" + jsonParsed.name + "</strong></div>";
         html += jsonParsed.result.map(function(item){
                 return "<br><div>" + item.name + " : " + item.value + " " + item.unit + "</div>";
             }).join("\n");
