@@ -88,12 +88,10 @@ Ember.Handlebars.registerHelper('tooltip', function (i18nKey) {
 
 
 FLOW.renderCaddisflyAnswer = function(json){
-  var name = ""
-  var imageUrl = ""
-  var result = Ember.A();
-  if (!Ember.empty(json)){
+  var caddisflyResponse = JSON.stringify(json);
+  if (!Ember.empty(caddisflyResponse)) {
     try {
-        var jsonParsed = JSON.parse(json);
+        var jsonParsed = JSON.parse(caddisflyResponse);
 
         // contruct html
         html = "<div><strong>" + jsonParsed.name + "</strong></div>";
@@ -109,7 +107,6 @@ FLOW.renderCaddisflyAnswer = function(json){
         }
         return html;
     } catch (e) {
-      console.log(e);
         return json;
     }
   } else {
