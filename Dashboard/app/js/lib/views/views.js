@@ -88,10 +88,9 @@ Ember.Handlebars.registerHelper('tooltip', function (i18nKey) {
 
 
 FLOW.renderCaddisflyAnswer = function(json){
-  var caddisflyResponse = JSON.stringify(json);
-  if (!Ember.empty(caddisflyResponse)) {
+  if (!Ember.empty(json)) {
     try {
-        var jsonParsed = JSON.parse(caddisflyResponse);
+        var jsonParsed = JSON.parse(json);
 
         // contruct html
         html = "<div><strong>" + jsonParsed.name + "</strong></div>";
@@ -122,6 +121,7 @@ Ember.Handlebars.registerHelper('placemarkDetail', function () {
   answer = Ember.get(this, 'value') || '';
   answer = answer.replace(/\|/g, ' | '); // geo, option and cascade data
   answer = answer.replace(/\//g, ' / '); // also split folder paths
+  answer = answer.replace(/\\/g, ''); // remove escape characters
   responseType = Ember.get(this, 'type');
 
   if (responseType === 'CASCADE') {
