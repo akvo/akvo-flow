@@ -109,6 +109,7 @@ FLOW.renderCaddisflyAnswer = function(json){
         }
         return html;
     } catch (e) {
+      console.log(e);
         return json;
     }
   } else {
