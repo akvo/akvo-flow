@@ -88,25 +88,22 @@ Ember.Handlebars.registerHelper('tooltip', function (i18nKey) {
 
 
 FLOW.renderCaddisflyAnswer = function(json){
-  var name = ""
-  var imageUrl = ""
-  var result = Ember.A();
-  if (!Ember.empty(json)){
+  if (!Ember.empty(json)) {
     try {
         var jsonParsed = JSON.parse(json);
 
-        // get out image url
-        if (!Ember.empty(jsonParsed.image)){
-          imageUrl = FLOW.Env.photo_url_root + jsonParsed.image.trim();
-        }
-
         // contruct html
-        html = "<div><strong>" + name + "</strong></div>"
+        html = "<div><strong>" + jsonParsed.name + "</strong></div>";
         html += jsonParsed.result.map(function(item){
                 return "<br><div>" + item.name + " : " + item.value + " " + item.unit + "</div>";
             }).join("\n");
-        html += "<br>"
-        html += "<div class=\"signatureImage\"><img src=\"" + imageUrl +"\"}} /></div>"
+        html += "<br>";
+
+        // get out image url
+        if ('image' in jsonParsed) {
+          imageUrl = FLOW.Env.photo_url_root + jsonParsed.image.trim();
+          html += "<div class=\"signatureImage\"><img src=\"" + imageUrl +"\"/></div>";
+        }
         return html;
     } catch (e) {
         return json;
@@ -118,20 +115,13 @@ FLOW.renderCaddisflyAnswer = function(json){
 
 Ember.Handlebars.registerHelper('placemarkDetail', function () {
   var answer, markup, question, cascadeJson, optionJson, cascadeString = "",
-  questionType, imageSrcAttr, signatureJson, photoJson, cartoQuestionType, self=this;
-
-  if (FLOW.Env.mapsProvider === 'cartodb') {
-      FLOW.router.mapsController.questions.forEach(function(qItem){
-          if (qItem.get("keyId") == Ember.get(self, 'questionID')) {
-              cartoQuestionType = qItem.get("type");
-          }
-      });
-  }
+  imageSrcAttr, signatureJson, photoJson, self=this;
 
   question = Ember.get(this, 'questionText');
   answer = Ember.get(this, 'value') || '';
   answer = answer.replace(/\|/g, ' | '); // geo, option and cascade data
   answer = answer.replace(/\//g, ' / '); // also split folder paths
+  answer = answer.replace(/\\/g, ''); // remove escape characters
   responseType = Ember.get(this, 'type');
 
   if (responseType === 'CASCADE') {
@@ -179,8 +169,8 @@ Ember.Handlebars.registerHelper('placemarkDetail', function () {
   } else if (responseType === 'DATE') {
     answer = FLOW.renderTimeStamp(answer);
   } else if (responseType === 'CADDISFLY'){
-    answer = FLOW.renderCaddisflyAnswer(answer)
-} else if (responseType === 'VALUE' && answer.indexOf("{\"features") > 0) {
+    answer = FLOW.renderCaddisflyAnswer(answer);
+  } else if (responseType === 'VALUE' && answer.indexOf("features\":[") > 0) {
     var geoshapeObject = FLOW.parseJSON(answer, "features");
     if (geoshapeObject) {
         answer = '<div class="geoshape-map" data-geoshape-object=\''+answer+'\' style="width:100%; height: 100px; float: left"></div>'
@@ -212,16 +202,9 @@ Ember.Handlebars.registerHelper('placemarkDetail', function () {
 
 //if there's geoshape, draw it
 Ember.Handlebars.registerHelper('drawGeoshapes', function () {
-    var cartoQuestionType, questionType, self=this;
-    if (FLOW.Env.mapsProvider === 'cartodb') {
-        FLOW.router.mapsController.questions.forEach(function(qItem){
-            if (qItem.get("keyId") == Ember.get(self, 'questionID')) {
-                cartoQuestionType = qItem.get("type");
-            }
-        });
-    }
-    questionType = FLOW.Env.mapsProvider === 'cartodb' ? cartoQuestionType: Ember.get(this, 'questionType');
-    if (questionType == "GEOSHAPE") {
+    var self = this, responseType = Ember.get(this, 'type'), answer = Ember.get(this, 'value');
+
+    if (responseType === 'VALUE' && answer.indexOf("features\":[") > 0) {
         setTimeout(function(){
             $('.geoshape-map').each(function(index){
                 FLOW.drawGeoShape($('.geoshape-map')[index], $(this).data('geoshape-object'));
@@ -485,6 +468,15 @@ Ember.Handlebars.registerHelper('sgName', function (property) {
         return item.get && item.get('keyId') === sgId;
       });
   return sg && sg.get('name') || sgId;
+});
+
+Ember.Handlebars.registerHelper('formName', function (property) {
+  var formId = Ember.get(this, property), name = "";
+  var form  = FLOW.Survey.find(formId);
+  if (form) {
+    name += form.get('name');
+  }
+  return name;
 });
 
 // Register a Handlebars helper that instantiates `view`.
