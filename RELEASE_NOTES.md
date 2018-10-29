@@ -1,5 +1,18 @@
 # Akvo Flow Release Notes
 ----
+# Akvo Flow Dashboard v1.9.39 - Laid-back Lagerstroemia
+Date: 24th October 2018
+
+## New and noteworthy
+* **Project folders** - Enable editing folder name when created [#2875]
+
+## Resolved issues
+* **Surveys** - Require selecting at least one type before allowing saving geoshape questions [#2877]
+* **Maps** - Properly render all caddisfly responses on maps[#1750]. If a point has been previously selected, hide details panel when filtering [#2881]. Properly render geoshape responses on maps tab [#2884]
+* **UI improvement** - Remove table header arrows where unneeded [#2389]. Fix how and where survey path is displayed on dashboard [#2507]
+* **UX improvement** - Indicate form must be selected to perform actions on data cleaning tab [#2456]. Remove delay between fetching retching form submissions on inspect data tab and displaying when fetch completes [#2827]
+* **Code cleanup** - Remove CartoDB code [#2867]
+
 # Akvo Flow Dashboard v1.9.38 - Key Kalmia
 Date: 9th October 2018
 
