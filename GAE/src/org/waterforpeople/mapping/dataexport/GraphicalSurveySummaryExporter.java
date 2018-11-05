@@ -160,6 +160,7 @@ public class GraphicalSurveySummaryExporter extends SurveySummaryExporter {
     private boolean variableNamesInHeaders; // Also turns on splitting of answers into separate columns (options, geo, etc.) and turns off digests
     private boolean splitIntoColumns; // Turns on splitting of answers into separate columns (options, geo, etc.) and turns off digests
     private boolean separateSheetsForRepeatableGroups;
+    private boolean justCodes; //Only output the codes from multiple-choice answers (option and cascade)
     private boolean doGroupHeaders; //First header line is group names spanned over the group columns
     private Map<Long, QuestionDto> questionsById;
     private SurveyGroupDto surveyGroupDto;
@@ -995,23 +996,6 @@ public class GraphicalSurveySummaryExporter extends SurveySummaryExporter {
             }
         }
 
-        boolean allCodesEqualsName = true;
-        for (Map<String, String> cascadeNode : cascadeNodes) {
-            String code = cascadeNode.get("code");
-            String name = cascadeNode.get("name");
-
-            if (code != null && name != null
-                    && !code.toLowerCase().equals(name.toLowerCase())) {
-                allCodesEqualsName = false;
-                break;
-            }
-        }
-        if (allCodesEqualsName) {
-            for (Map<String, String> cascadeNode : cascadeNodes) {
-                cascadeNode.put("code", null);
-            }
-        }
-
         if (splitIntoColumns) {
             // +------------+------------+-----
             // |code1:value1|code2:value2| ...
@@ -1022,7 +1006,16 @@ public class GraphicalSurveySummaryExporter extends SurveySummaryExporter {
             for (Map<String, String> map : cascadeNodes) {
                 String code = map.get("code");
                 String name = map.get("name");
-                String nodeVal = (code == null ? "" : code + ":") + name;
+                String nodeVal;
+                if (code != null) {
+                    if (justCodes) {
+                        nodeVal = code;
+                    } else {
+                        nodeVal = code + ":" + name;
+                    }
+                } else {
+                    nodeVal = name;
+                }
 
                 if (cells.size() == levels) {
                     // Don't create too many cells
@@ -1046,7 +1039,15 @@ public class GraphicalSurveySummaryExporter extends SurveySummaryExporter {
                 String code = node.get("code");
                 String name = node.get("name");
                 cascadeString.append("|");
-                cascadeString.append((code == null ? "" : code + ":") + name);
+                if (code != null) {
+                    if (justCodes) {
+                        cascadeString.append(code);
+                    } else {
+                        cascadeString.append(code + ":" + name);
+                    }
+                } else {
+                    cascadeString.append(name);
+                }
             }
             if (cascadeString.length() > 0) {
                 // Drop the first pipe character.
@@ -1086,7 +1087,7 @@ public class GraphicalSurveySummaryExporter extends SurveySummaryExporter {
     }
 
     /*
-     * Build pipe-separated value from option nodes To be included in reports
+     * Build pipe-separated value from option nodes
      */
     private String buildOptionString(List<Map<String, String>> optionNodes) {
         StringBuilder optionString = new StringBuilder();
@@ -1095,7 +1096,11 @@ public class GraphicalSurveySummaryExporter extends SurveySummaryExporter {
             String text = node.get("text");
             optionString.append("|");
             if (code != null) {
-                optionString.append(code + ":" + text);
+                if (justCodes) {
+                    optionString.append(code);
+                } else {
+                    optionString.append(code + ":" + text);
+                }
             } else {
                 optionString.append(text);
             }
@@ -1132,7 +1137,7 @@ public class GraphicalSurveySummaryExporter extends SurveySummaryExporter {
             numOptions = options.size();
         }
         boolean[] optionFound = new boolean[numOptions]; //Zero-length array ok
-
+        
         // if needed, scan options
         if (allowOther || (splitIntoColumns && allowMultiple)) { //Split options into own columns, if multiselect
             boolean found;
@@ -2000,18 +2005,21 @@ public class GraphicalSurveySummaryExporter extends SurveySummaryExporter {
                 separateSheetsForRepeatableGroups = true;
                 variableNamesInHeaders = false; //So we can import - also enables digests
                 splitIntoColumns = false;
+                justCodes = false;
             } else if (DATA_ANALYSIS_TYPE.equalsIgnoreCase(reportType)) {
                 includeSummarySheet = false;
                 doGroupHeaders = false;
                 separateSheetsForRepeatableGroups = false;
                 variableNamesInHeaders = true;
                 splitIntoColumns = true;
+                justCodes = true;
             } else if (COMPREHENSIVE_TYPE.equalsIgnoreCase(reportType)) {
                 includeSummarySheet = true;
                 doGroupHeaders = false;
                 separateSheetsForRepeatableGroups = false;
                 variableNamesInHeaders = true;
                 splitIntoColumns = true;
+                justCodes = true;
             } else {
                 log.error("Unknown value " + reportType + " for " + TYPE_OPT);
                 return false;
