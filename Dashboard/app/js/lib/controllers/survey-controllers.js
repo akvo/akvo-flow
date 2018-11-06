@@ -598,7 +598,6 @@ FLOW.surveyControl = Ember.ArrayController.create({
   publishedContent: null,
   sortProperties: ['name'],
   sortAscending: true,
-  newForm: false,
 
   setPublishedContent: function () {
     var sgId;
@@ -639,23 +638,10 @@ FLOW.surveyControl = Ember.ArrayController.create({
   selectFirstForm: function() {
     if (FLOW.selectedControl.selectedSurvey) return; // ignore if form is already selected
     if (this.get('content') && this.content.get('isLoaded')) {
-      if (this.newForm) {
-        //set selected survey to latest
-        var latestForm;
-        this.get('content').forEach(function(item){
-          if (typeof item.get('lastUpdateDateTime') === "undefined") {
-            latestForm = item;
-          }
-        });
-        FLOW.selectedControl.set('selectedSurvey', latestForm);
-        this.newForm = false;
-      } else {
-        var form = this.content.get('firstObject');
-        if (form) {
-          FLOW.selectedControl.set('selectedSurvey', form);
-        }
+      var form = this.content.get('firstObject');
+      if (form) {
+        FLOW.selectedControl.set('selectedSurvey', form);
       }
-
       this.viewDataForms();
     }
   }.observes('content.isLoaded'),
@@ -693,7 +679,7 @@ FLOW.surveyControl = Ember.ArrayController.create({
     var path = FLOW.projectControl.get('currentProjectPath') + "/" + code;
     var ancestorIds = FLOW.selectedControl.selectedSurveyGroup.get('ancestorIds');
     ancestorIds.push(FLOW.selectedControl.selectedSurveyGroup.get('keyId'));
-    FLOW.store.createRecord(FLOW.Survey, {
+    var newForm = FLOW.store.createRecord(FLOW.Survey, {
       "name": code,
       "code": code,
       "path": path,
@@ -705,7 +691,7 @@ FLOW.surveyControl = Ember.ArrayController.create({
       "ancestorIds": ancestorIds
     });
     FLOW.projectControl.get('currentProject').set('deleteDisabled', true);
-    this.newForm = true;
+    FLOW.selectedControl.set('selectedSurvey', newForm);
     FLOW.store.commit();
     this.refresh();
   },
