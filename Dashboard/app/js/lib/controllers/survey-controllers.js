@@ -704,6 +704,7 @@ FLOW.surveyControl = Ember.ArrayController.create({
       FLOW.projectControl.get('currentProject').set('deleteDisabled', false);
     }
     survey.deleteRecord();
+    FLOW.selectedControl.set('selectedSurvey', null);
 
     FLOW.store.commit();
     this.refresh();
