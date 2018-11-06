@@ -596,7 +596,7 @@ FLOW.projectControl = Ember.ArrayController.create({
 FLOW.surveyControl = Ember.ArrayController.create({
   content: null,
   publishedContent: null,
-  sortProperties: ['name'],
+  sortProperties: ['createdDateTime'],
   sortAscending: true,
 
   setPublishedContent: function () {
