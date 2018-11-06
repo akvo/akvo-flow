@@ -1078,6 +1078,7 @@ FLOW.optionListControl = Ember.ArrayController.create({
 FLOW.questionOptionsControl = Ember.ArrayController.create({
   content: null,
   questionId: null,
+  emptyOptions: false,
 
   /*
    *  Add two empty option objects to the options list.  This is used
@@ -1089,7 +1090,7 @@ FLOW.questionOptionsControl = Ember.ArrayController.create({
       while (defaultLength > 0) {
         c.addObject(Ember.Object.create({
           code: null,
-          text: null,
+          text: Ember.String.loc('_option') +" "+ (c.get('length') + 1),
           order: c.get('length') + 1,
           questionId: this.get('questionId'),
         }));
@@ -1104,9 +1105,12 @@ FLOW.questionOptionsControl = Ember.ArrayController.create({
    */
   addOption: function() {
     var c = this.content;
+    if (this.get('emptyOptions')) {
+      this.set('emptyOptions', false);
+    }
     c.addObject(Ember.Object.create({
         code: null,
-        text: null,
+        text: Ember.String.loc('_option') +" "+ (c.get('length') + 1),
         order: c.get('length') + 1,
         questionId: this.get('questionId'),
     }));
@@ -1160,6 +1164,9 @@ FLOW.questionOptionsControl = Ember.ArrayController.create({
   deleteOption: function(event) {
     var c = this.content, option = event.view.content;
     c.removeObject(option);
+    if (!(c.get('length') > 0)) {
+      this.set('emptyOptions', true);
+    }
 
     if (option.get('keyId')) { // clear persisted versions
       option.deleteRecord();

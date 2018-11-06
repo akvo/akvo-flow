@@ -53,14 +53,19 @@
 {{#if view.hasExtraSettings}}
 <div class="questionOption floats-in">
     {{#if view.amOptionType}}
-      
+
       <h1 class="answerNbr">{{t _settings}}: </h1>
       <ul>
         <li><label class="labelcheckbox"> {{view Ember.Checkbox checkedBinding="view.allowMultipleFlag"}}{{t _allow_multiple}} </label></li>
         <li><label class="labelcheckbox"> {{view Ember.Checkbox checkedBinding="view.allowOtherFlag"}}{{t _allow_other}} </label>
         </li>
       </ul>
-      <p class="optionTitle"><strong>{{t _options}}:&nbsp;</strong></p>
+      <p class="optionTitle">
+        <strong>{{t _options}}:&nbsp;</strong>
+        {{#if FLOW.questionOptionsControl.emptyOptions}}
+        <span style="color:red">{{t _empty_options_not_allowed}}</span>
+        {{/if}}
+      </p>
       <div class="optionListView">
     	  {{view FLOW.OptionListView contentBinding="FLOW.questionOptionsControl"}}
     	  <a {{action addOption target="FLOW.questionOptionsControl"}} class="optionAdd">{{t _add_option}}</a>

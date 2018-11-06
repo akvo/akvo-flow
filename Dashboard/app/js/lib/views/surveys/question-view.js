@@ -774,7 +774,7 @@ FLOW.QuestionView = FLOW.View.extend({
   },
 
   validateQuestionObserver: function () {
-      this.set('questionValidationFailure', ((this.text && this.text.length > 500) || !this.text || this.text == ""));
+      this.set('questionValidationFailure', ((this.text && this.text.length > 500) || !this.text || this.text == "" || FLOW.questionOptionsControl.get('emptyOptions')));
       if (this.text && this.text.length > 500) {
         this.set('questionValidationFailureReason', Ember.String.loc('_question_over_500_chars_header'));
       } else {
@@ -782,7 +782,7 @@ FLOW.QuestionView = FLOW.View.extend({
           this.set('questionValidationFailureReason', Ember.String.loc('_question_text_empty'));
         }
       }
-  }.observes('this.text'),
+  }.observes('this.text', 'FLOW.questionOptionsControl.emptyOptions'),
 
   validateQuestionTooltipObserver: function(){
       this.set('questionTooltipValidationFailure', (this.tip != null && this.tip.length > 500));
