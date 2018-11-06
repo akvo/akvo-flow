@@ -475,6 +475,7 @@ input[type="submit"] {
     background: white;
     -o-border-radius: 6px;
     overflow: auto;
+    text-align: center;
 }
 
 .dialogWide {
@@ -3295,10 +3296,8 @@ table.dataTable.notificationTable thead tr th {
     padding: 9px 1em 9px 1em;
 }
 
-table.dataTable.notificationTable thead tr th.noArrows {
-    background: #3A3A3A;
-    text-align: left;
-    font-weight: bold;
+table.dataTable thead tr th.noArrows {
+    background: transparent;
 }
 
 table.dataTable.notificationTable thead tr th a,
@@ -3332,13 +3331,18 @@ div.chooseSurveyData {
     position: relative;
     display: block;
     margin: 0px 0 10px 0;
-    width: 100%;
     overflow: auto;
     > select {
         max-width: 20%;
         float: left;
         display: inline;
     }
+}
+
+div.redBorder {
+    border: 2px solid red;
+    border-radius: 8px;
+    padding: 5px 3px 0 5px;
 }
 
 .filterData {
@@ -3442,8 +3446,8 @@ div.dataCollectedDate {
     }
 }
 
-div.dataCollectedDate label {
-    width: 48%;
+.dateInput {
+    width: 49.5%;
     float: left;
     margin-top: -25px;
     &:last-child {
@@ -3451,7 +3455,7 @@ div.dataCollectedDate label {
     }
 }
 
-div.dataCollectedDate label input {
+div.dateInput input {
     width: 97%;
 }
 
@@ -3537,6 +3541,10 @@ div.dataCollectedDate label input {
 
 .dataSection label {
     font-weight: normal;
+}
+
+.media {
+  max-width: 100%
 }
 
 /******************************************************************************
@@ -3730,6 +3738,8 @@ div.drawHandle {
 -----------------------------------------------*/
 
 footer.bottomPage {
+    position: relative;
+    margin-top: 5px;
     bottom: 0;
     padding: 10px 0 10px 0;
     width: 100%;
@@ -3770,7 +3780,7 @@ footer.bottomPage nav.footItems {
     clear: both;
     background: rgba($akvoBlack, 0.05);
     border-top: thin solid rgba($akvoBlack, 0.05);
-                                          /*     
+                                          /*
 border-bottom: thin solid rgba($akvoBlack, 0.05); */
     padding: 5px 0 7px 0;
     ul {
@@ -4018,7 +4028,10 @@ label.languageSelector:after {
 .reportsSection > div > div > section.reportTools select,
 .reportTools > div > select {}
 
-#reportBlocks.reportTools {
+#reportsBlock.reportTools {
+    min-height: 650px;
+    height: auto;
+
     .geoshapeExport {
         .geoshapeSelect {
             > select {
@@ -4027,6 +4040,12 @@ label.languageSelector:after {
                 margin-left: 0;
             }
         }
+    }
+    .geoshapeSelectError{
+       padding:2px;
+       display: inline-block;
+       border-radius:8px;
+       border: 2px red solid;   
     }
 }
 
@@ -4830,31 +4849,31 @@ table.surveyDetails {
             margin: 5px auto;
             box-shadow: 0 2px 3px rgba(32, 32, 36, 0.1);
             border-top: 1px solid rgba(32, 32, 36, 0.1);
-    
+
             li {
                 width: 49.75%;
                 text-align: center;
                 padding: 5px 0;
                 color: rgb(128, 130, 133);
                 margin-right: 0.5%;
-    
+
                 &:last-of-type {
                     margin-right: 0;
                 }
-    
+
                 span {
                     display: block;
                     margin-top: -5px;
                     font-weight: 600;
-    
+
                     &.projectForm, &.projectMonitoring, &.cascadeStatus {
                         color: white;
                     }
-    
+
                     &.cascadeStatus.redColor {
                         color: $akvoRed2;
                     }
-    
+
                     &.cascadeStatus.published {
                         color: $green;
                     }
@@ -5586,10 +5605,6 @@ svg {
     }
 }
 
-.exportContainer {
-    padding: 5px 20px 0 5px;
-}
-
 .exportSelect {
     * {
         box-sizing: border-box;
@@ -6195,4 +6210,135 @@ svg {
 
 .marker-cluster span {
     line-height: 30px;
+}
+
+.generatedExports {
+    position: relative;
+    height: 50px;
+    h1 {}
+    a.exportNewBtn {
+        position: absolute;
+        right: 0;
+        top: 5px;
+    }
+}
+
+.exportContainer {
+    position: relative;
+    .noExportMsg {
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        margin-right: -50%;
+        transform: translate(-50%, -50%);
+        text-align: center;
+    }
+    .exportList {
+        margin: 0 auto;
+        li {
+            height: 50px;
+            display: block;
+            padding: 1em 5px;
+            border-bottom: 1px solid rgba(128, 128, 128, 0.3);
+            &:first-child {
+                border-top: 1px solid rgba(128, 128, 128, 0.3);
+            }
+            .exportStatus {
+                display: inline-block;
+                width: 20%;
+                vertical-align: super;
+                margin-top: -5px;
+                .loading {
+                    display: none;
+                    font-size: 0.8em;
+                }
+                .exportDate {
+                    display: inline-block;
+                    font-size: 0.8em;
+                }
+            }
+            &.exportGenerating {
+                .exportStatus {
+                    display: inline-block;
+                    width: 20%;
+                    .loading {
+                        padding-left: 40px;
+                        padding-top: 5px;
+                        display: inline-block;
+                        width: 100%;
+                        height: 23px;
+                        background: url(../images/loading.svg) left center no-repeat;
+                        background-size: contain;
+                        font-size: 0.8em;
+                    }
+                    .exportDate {
+                        display: none;
+                    }
+                }
+            }
+            .exportInfo {
+                display: inline-block;
+                width: calc(80% - 60px);
+                padding-left: 50px;
+                h5 {
+                    margin: 5px 0 0 0;
+                    color: rgba($akvoBlack, 0.7);
+                    span {
+                        &.exportFileName {
+                            font-weight: bold;
+                        }
+                        &.submissionsDate {
+                            color: rgba($akvoBlack, 0.4);
+                            margin-left: 20px;
+                        }
+                    }
+                }
+
+                .surveyPath {
+                    font-size: 0.8em;
+                    margin-top: -5px;
+                }
+            }
+            &.dataCleanExp {
+                background: url(../images/Export01.svg) 15px center no-repeat;
+                background-size: 30px;
+                &.exportGenerating {
+                    background: rgba(128, 128, 128, 0.1) url(../images/Export01.svg) 15px center no-repeat;
+                    background-size: 30px;
+                }
+            }
+            &.dataAnalyseExp {
+                background: url(../images/Export02.svg) 15px center no-repeat;
+                background-size: 30px;
+                &.exportGenerating {
+                    background: rgba(128, 128, 128, 0.1) url(../images/Export02.svg) 15px center no-repeat;
+                    background-size: 30px;
+                }
+            }
+            &.compReportExp {
+                background: url(../images/Export03.svg) 15px center no-repeat;
+                background-size: 30px;
+                &.exportGenerating {
+                    background: rgba(128, 128, 128, 0.1) url(../images/Export03.svg) 15px center no-repeat;
+                    background-size: 30px;
+                }
+            }
+            &.geoShapeDataExp {
+                background: url(../images/Export04.svg) 15px center no-repeat;
+                background-size: 30px;
+                &.exportGenerating {
+                    background: rgba(128, 128, 128, 0.1) url(../images/Export04.svg) 15px center no-repeat;
+                    background-size: 30px;
+                }
+            }
+            &.surveyFormExp {
+                background: url(../images/Export05.svg) 15px center no-repeat;
+                background-size: 30px;
+                &.exportGenerating {
+                    background: rgba(128, 128, 128, 0.1) url(../images/Export05.svg) 15px center no-repeat;
+                    background-size: 30px;
+                }
+            }
+        }
+    }
 }

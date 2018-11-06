@@ -1,5 +1,5 @@
 /*
- *  Copyright (C) 2010-2012 Stichting Akvo (Akvo Foundation)
+ *  Copyright (C) 2010-2012,2018 Stichting Akvo (Akvo Foundation)
  *
  *  This file is part of Akvo FLOW.
  *
@@ -16,10 +16,11 @@
 
 package org.waterforpeople.mapping.app.web.dto;
 
-import javax.servlet.http.HttpServletRequest;
-
 import com.gallatinsystems.framework.rest.RestError;
 import com.gallatinsystems.framework.rest.RestRequest;
+
+import javax.annotation.Nullable;
+import javax.servlet.http.HttpServletRequest;
 
 /**
  * encapsulates request to the devapp service
@@ -31,16 +32,21 @@ public class DeviceApplicationRestRequest extends RestRequest {
     private static final long serialVersionUID = -158448412036367889L;
 
     public static final String GET_LATEST_VERSION_ACTION = "getLatestVersion";
-    public static final String DEV_TYPE_PARAM = "deviceType";
-    public static final String APP_CODE_PARAM = "appCode";
+    private static final String DEV_TYPE_PARAM = "deviceType";
+    private static final String APP_CODE_PARAM = "appCode";
+    private static final String ANDROID_BUILD_VERSION_PARAM = "androidBuildVersion";
 
     private String deviceType;
     private String appCode;
+
+    @Nullable
+    private String androidBuildVersion;
 
     @Override
     protected void populateFields(HttpServletRequest req) throws Exception {
         deviceType = req.getParameter(DEV_TYPE_PARAM);
         appCode = req.getParameter(APP_CODE_PARAM);
+        androidBuildVersion = req.getParameter(ANDROID_BUILD_VERSION_PARAM);
     }
 
     @Override
@@ -73,4 +79,12 @@ public class DeviceApplicationRestRequest extends RestRequest {
         this.appCode = appCode;
     }
 
+    @Nullable
+    public String getAndroidBuildVersion() {
+        return androidBuildVersion;
+    }
+
+    public void setAndroidBuildVersion(@Nullable String androidBuildVersion) {
+        this.androidBuildVersion = androidBuildVersion;
+    }
 }

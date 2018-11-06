@@ -616,6 +616,10 @@ FLOW.surveyControl = Ember.ArrayController.create({
     }
   }.observes('FLOW.selectedControl.selectedSurveyGroup'),
 
+  populateAll: function () {
+    FLOW.store.find(FLOW.Survey);
+  },
+
   populate: function () {
 
     var id;
@@ -633,7 +637,7 @@ FLOW.surveyControl = Ember.ArrayController.create({
   }.observes('FLOW.selectedControl.selectedSurveyGroup'),
 
   selectFirstForm: function() {
-    if(FLOW.selectedControl.selectedSurvey) return; // ignore if form is already selected
+    if (FLOW.selectedControl.selectedSurvey) return; // ignore if form is already selected
     if (this.get('content') && this.content.get('isLoaded')) {
       if (this.newForm) {
         //set selected survey to latest
@@ -651,6 +655,8 @@ FLOW.surveyControl = Ember.ArrayController.create({
           FLOW.selectedControl.set('selectedSurvey', form);
         }
       }
+
+      this.viewDataForms();
     }
   }.observes('content.isLoaded'),
 
@@ -685,6 +691,8 @@ FLOW.surveyControl = Ember.ArrayController.create({
   createForm: function() {
     var code = Ember.String.loc('_new_form').trim();
     var path = FLOW.projectControl.get('currentProjectPath') + "/" + code;
+    var ancestorIds = FLOW.selectedControl.selectedSurveyGroup.get('ancestorIds');
+    ancestorIds.push(FLOW.selectedControl.selectedSurveyGroup.get('keyId'));
     FLOW.store.createRecord(FLOW.Survey, {
       "name": code,
       "code": code,
@@ -693,7 +701,8 @@ FLOW.surveyControl = Ember.ArrayController.create({
       "requireApproval": false,
       "status": "NOT_PUBLISHED",
       "surveyGroupId": FLOW.selectedControl.selectedSurveyGroup.get('keyId'),
-      "version":"1.0"
+      "version":"1.0",
+      "ancestorIds": ancestorIds
     });
     FLOW.projectControl.get('currentProject').set('deleteDisabled', true);
     this.newForm = true;
@@ -772,6 +781,22 @@ FLOW.surveyControl = Ember.ArrayController.create({
     return formPermissions;
 
   }.property('FLOW.selectedControl.selectedSurvey'),
+
+  viewDataForms: function() {
+    var forms = [];
+    
+    this.content.forEach(function(item){
+      if (FLOW.permControl.userCanViewData(item)) {
+        forms.push(item);
+      }
+    });
+
+    this.set('readDataContent', forms);
+
+    if (forms.length === 0) {
+      FLOW.selectedControl.set("selectedSurvey", null);
+    }
+  }
 });
 
 

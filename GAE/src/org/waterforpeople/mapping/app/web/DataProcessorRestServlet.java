@@ -40,15 +40,12 @@ import net.sf.jsr107cache.CacheFactory;
 import net.sf.jsr107cache.CacheManager;
 
 import org.akvo.flow.domain.DataUtils;
-import org.waterforpeople.mapping.analytics.dao.SurveyInstanceSummaryDao;
 import org.waterforpeople.mapping.analytics.dao.SurveyQuestionSummaryDao;
 import org.waterforpeople.mapping.analytics.domain.SurveyQuestionSummary;
 import org.waterforpeople.mapping.app.web.dto.DataProcessorRequest;
-import org.waterforpeople.mapping.dao.AccessPointDao;
 import org.waterforpeople.mapping.dao.QuestionAnswerStoreDao;
 import org.waterforpeople.mapping.dao.SurveyInstanceDAO;
 import org.waterforpeople.mapping.dataexport.SurveyReplicationImporter;
-import org.waterforpeople.mapping.domain.AccessPoint;
 import org.waterforpeople.mapping.domain.GeoCoordinates;
 import org.waterforpeople.mapping.domain.QuestionAnswerStore;
 import org.waterforpeople.mapping.domain.SurveyInstance;
@@ -61,7 +58,6 @@ import com.gallatinsystems.framework.servlet.PersistenceFilter;
 import com.gallatinsystems.gis.location.GeoLocationService;
 import com.gallatinsystems.gis.location.GeoLocationServiceGeonamesImpl;
 import com.gallatinsystems.gis.location.GeoPlace;
-import com.gallatinsystems.gis.map.MapUtils;
 import com.gallatinsystems.messaging.dao.MessageDao;
 import com.gallatinsystems.messaging.domain.Message;
 import com.gallatinsystems.operations.dao.ProcessingStatusDao;
@@ -122,10 +118,7 @@ public class DataProcessorRestServlet extends AbstractRestApiServlet {
     @Override
     protected RestResponse handleRequest(RestRequest req) throws Exception {
         DataProcessorRequest dpReq = (DataProcessorRequest) req;
-        if (DataProcessorRequest.PROJECT_FLAG_UPDATE_ACTION
-                .equalsIgnoreCase(dpReq.getAction())) {
-            updateAccessPointProjectFlag(dpReq.getCountry(), dpReq.getCursor());
-        } else if (DataProcessorRequest.REBUILD_QUESTION_SUMMARY_ACTION
+        if (DataProcessorRequest.REBUILD_QUESTION_SUMMARY_ACTION
                 .equalsIgnoreCase(dpReq.getAction())) {
             rebuildQuestionSummary(dpReq.getSurveyId());
         } else if (DataProcessorRequest.COPY_SURVEY.equalsIgnoreCase(dpReq
@@ -197,9 +190,6 @@ public class DataProcessorRestServlet extends AbstractRestApiServlet {
                 .equalsIgnoreCase(dpReq.getAction())) {
             SurveyReplicationImporter sri = new SurveyReplicationImporter();
             sri.executeImport(dpReq.getSource(), dpReq.getSurveyId(), dpReq.getApiKey());
-        } else if (DataProcessorRequest.RESCORE_AP_ACTION
-                .equalsIgnoreCase(dpReq.getAction())) {
-            rescoreAp(dpReq.getCountry());
         } else if (DataProcessorRequest.FIX_DUPLICATE_OTHER_TEXT_ACTION
                 .equalsIgnoreCase(dpReq.getAction())) {
             fixDuplicateOtherText();
@@ -209,10 +199,6 @@ public class DataProcessorRestServlet extends AbstractRestApiServlet {
         } else if (DataProcessorRequest.FIX_OPTIONS2VALUES_ACTION
                 .equalsIgnoreCase(dpReq.getAction())) {
             fixOptions2Values();
-        } else if (DataProcessorRequest.SURVEY_INSTANCE_SUMMARIZER
-                .equalsIgnoreCase(dpReq.getAction())) {
-            surveyInstanceSummarizer(dpReq.getSurveyInstanceId(),
-                    dpReq.getQasId(), dpReq.getDelta());
         } else if (DataProcessorRequest.DELETE_DUPLICATE_QAS
                 .equalsIgnoreCase(dpReq.getAction())) {
             deleteDuplicatedQAS(dpReq.getOffset());
@@ -222,9 +208,6 @@ public class DataProcessorRestServlet extends AbstractRestApiServlet {
         } else if (DataProcessorRequest.ADD_TRANSLATION_FIELDS
                 .equalsIgnoreCase(dpReq.getAction())) {
             addTranslationFields(dpReq.getCursor());
-        } else if (DataProcessorRequest.RECOMPUTE_LOCALE_CLUSTERS
-                .equalsIgnoreCase(dpReq.getAction())) {
-            recomputeLocaleClusters(dpReq.getCursor());
         } else if (DataProcessorRequest.ADD_CREATION_SURVEY_ID_TO_LOCALE
                 .equalsIgnoreCase(dpReq.getAction())) {
             addCreationSurveyIdToLocale(dpReq.getCursor());
@@ -477,71 +460,6 @@ public class DataProcessorRestServlet extends AbstractRestApiServlet {
         }
     }
 
-    /**
-     * This recomputes all Locale clusters. Clusters are deleted in the testharnessservlet. The keys
-     * are first removed in the testharnessservlet.
-     *
-     * @param offset
-     */
-    private void recomputeLocaleClusters(String cursor) {
-
-        log.log(Level.INFO, "recomputing locale clusters [cursor: " + cursor + "]");
-
-        final SurveyedLocaleDao slDao = new SurveyedLocaleDao();
-        final List<SurveyedLocale> results = slDao.listAll(cursor, LOCALE_PAGE_SIZE);
-
-        // initialize the memcache
-        final Cache cache = initCache(12 * 60 * 60);
-
-        if (cache == null) {
-            return;
-        }
-
-        for (SurveyedLocale locale : results) {
-            // adjust Geocell cluster data
-            if (locale.getGeocells() != null && !locale.getGeocells().isEmpty()) {
-                MapUtils.recomputeCluster(cache, locale, 1);
-            }
-        }
-
-        if (results.size() == LOCALE_PAGE_SIZE) {
-            final String newCursor = SurveyedLocaleDao.getCursor(results);
-            final TaskOptions options = TaskOptions.Builder
-                    .withUrl("/app_worker/dataprocessor")
-                    .param(DataProcessorRequest.ACTION_PARAM,
-                            DataProcessorRequest.RECOMPUTE_LOCALE_CLUSTERS)
-                    .param(DataProcessorRequest.CURSOR_PARAM,
-                            newCursor != null ? newCursor : "")
-                    .header("Host", BackendServiceFactory.getBackendService()
-                            .getBackendAddress("dataprocessor"));
-            ;
-            Queue queue = QueueFactory.getDefaultQueue();
-            queue.add(options);
-
-        }
-    }
-
-    /**
-     * this method re-runs scoring on all access points for a country
-     *
-     * @param country
-     */
-    private void rescoreAp(String country) {
-        AccessPointDao apDao = new AccessPointDao();
-        String cursor = null;
-        List<AccessPoint> apList = null;
-        do {
-            apList = apDao.listAccessPointByLocation(country, null, null, null,
-                    cursor, 200);
-            if (apList != null) {
-                cursor = AccessPointDao.getCursor(apList);
-
-                for (AccessPoint ap : apList) {
-                    apDao.save(ap);
-                }
-            }
-        } while (apList != null && apList.size() == 200);
-    }
 
     private void copySurvey(Long copiedSurveyId, Long originalSurveyId) {
 
@@ -846,64 +764,6 @@ public class DataProcessorRestServlet extends AbstractRestApiServlet {
         return summaryMap;
     }
 
-    /**
-     * iterates over all AccessPoints in a country and applies a static set of rules to determine
-     * the proper value of the WFPProjectFlag
-     *
-     * @param country
-     * @param cursor
-     */
-    private void updateAccessPointProjectFlag(String country, String cursor) {
-        AccessPointDao apDao = new AccessPointDao();
-        Integer pageSize = 200;
-        List<AccessPoint> apList = apDao.listAccessPointByLocation(country,
-                null, null, null, cursor, pageSize);
-        if (apList != null) {
-            for (AccessPoint ap : apList) {
-
-                if ("PE".equalsIgnoreCase(ap.getCountryCode())) {
-                    ap.setWaterForPeopleProjectFlag(false);
-                } else if ("RW".equalsIgnoreCase(ap.getCountryCode())) {
-                    ap.setWaterForPeopleProjectFlag(false);
-                } else if ("MW".equalsIgnoreCase(ap.getCountryCode())) {
-                    if (ap.getCommunityName().trim()
-                            .equalsIgnoreCase("Kachere/Makhetha/Nkolokoti")) {
-                        ap.setCommunityName("Kachere/Makhetha/Nkolokoti");
-                        if (ap.getWaterForPeopleProjectFlag() == null) {
-                            ap.setWaterForPeopleProjectFlag(true);
-                        }
-                    } else if (ap.getWaterForPeopleProjectFlag() == null) {
-                        ap.setWaterForPeopleProjectFlag(false);
-                    }
-                } else if ("HN".equalsIgnoreCase(ap.getCountryCode())) {
-                    if (ap.getCommunityCode().startsWith("IL")) {
-                        ap.setWaterForPeopleProjectFlag(false);
-                    } else {
-                        ap.setWaterForPeopleProjectFlag(true);
-                    }
-
-                } else if ("IN".equalsIgnoreCase(ap.getCountryCode())) {
-                    if (ap.getWaterForPeopleProjectFlag() == null) {
-                        ap.setWaterForPeopleProjectFlag(true);
-                    }
-                } else if ("GT".equalsIgnoreCase(ap.getCountryCode())) {
-                    if (ap.getWaterForPeopleProjectFlag() == null) {
-                        ap.setWaterAvailableDayVisitFlag(true);
-                    }
-                } else {
-                    // handles BO, DO, SV
-                    if (ap.getWaterForPeopleProjectFlag() == null) {
-                        ap.setWaterForPeopleProjectFlag(false);
-                    }
-                }
-            }
-
-            if (apList.size() == pageSize) {
-                // check for more
-                sendProjectUpdateTask(country, AccessPointDao.getCursor(apList));
-            }
-        }
-    }
 
     /**
      * Sends a message to a task queue to start or continue the processing of the AP Project Flag
@@ -971,43 +831,6 @@ public class DataProcessorRestServlet extends AbstractRestApiServlet {
         }
     }
 
-    public static void surveyInstanceSummarizer(Long surveyInstanceId,
-            Long qasId, Integer delta) {
-        SurveyInstanceDAO siDao = new SurveyInstanceDAO();
-        QuestionAnswerStoreDao qasDao = new QuestionAnswerStoreDao();
-        boolean success = false;
-        if (surveyInstanceId != null) {
-            SurveyInstance si = siDao.getByKey(surveyInstanceId);
-            if (si != null && qasId != null) {
-                QuestionAnswerStore qas = qasDao.getByKey(qasId);
-                if (qas != null) {
-                    GeoCoordinates geoC = null;
-                    if (qas.getValue() != null
-                            && qas.getValue().trim().length() > 0) {
-                        geoC = GeoCoordinates.extractGeoCoordinate(qas
-                                .getValue());
-                    }
-                    if (geoC != null) {
-                        GeoLocationService gisService = new GeoLocationServiceGeonamesImpl();
-                        GeoPlace gp = gisService.findDetailedGeoPlace(geoC
-                                .getLatitude().toString(), geoC.getLongitude()
-                                .toString());
-                        if (gp != null) {
-                            SurveyInstanceSummaryDao.incrementCount(
-                                    gp.getSub1(), gp.getCountryCode(),
-                                    qas.getCollectionDate(), delta.intValue());
-                            success = true;
-                        }
-                    }
-                }
-            }
-        }
-        if (!success) {
-            log.log(Level.SEVERE,
-                    "Couldnt find geoplace for instance. Instance id: "
-                            + surveyInstanceId);
-        }
-    }
 
     /**
      * Adds surveyId and questionGroupId to translations This only needs to happen once to populate

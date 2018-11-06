@@ -124,19 +124,6 @@ public class SurveyInstanceDAO extends BaseDAO<SurveyInstance> {
             qasDao.save(responses);
         }
 
-        // Recompute data summarization for new locations.
-        for (QuestionAnswerStore qas : locations) {
-            long geoQasId = qas.getKey().getId();
-            Queue summQueue = QueueFactory.getQueue("dataSummarization");
-            summQueue.add(TaskOptions.Builder
-                    .withUrl("/app_worker/dataprocessor")
-                    .param(DataProcessorRequest.ACTION_PARAM,
-                            DataProcessorRequest.SURVEY_INSTANCE_SUMMARIZER)
-                    .param("surveyInstanceId", si.getKey().getId() + "")
-                    .param("qasId", geoQasId + "")
-                    .param("delta", 1 + ""));
-        }
-
         // Now that QAS IDs are set, enqueue imagecheck tasks,
         // whereby the presence of an image in S3 will be checked.
         if (!images.isEmpty()) {
@@ -530,18 +517,6 @@ public class SurveyInstanceDAO extends BaseDAO<SurveyInstance> {
                         continue;
                     }
                 }
-
-                // survey instance summary task
-                if (Question.Type.GEO.toString().equals(qasItem.getType())) {
-                    Queue summaryQueue = QueueFactory.getQueue("dataSummarization");
-
-                    TaskOptions to = TaskOptions.Builder
-                            .withUrl("/app_worker/dataprocessor")
-                            .param(DataProcessorRequest.ACTION_PARAM,
-                                    DataProcessorRequest.SURVEY_INSTANCE_SUMMARIZER)
-                            .param(DataProcessorRequest.DELTA_PARAM, "-1");
-                    summaryQueue.add(to);
-                }
             }
 
             qasDao.delete(qasList);
@@ -740,6 +715,7 @@ public class SurveyInstanceDAO extends BaseDAO<SurveyInstance> {
         query.declareParameters(paramString.toString());
         query.setOrdering("collectionDate ascending");
 
+        @SuppressWarnings("unchecked")
         List<SurveyInstance> res = (List<SurveyInstance>) query.executeWithMap(paramMap);
         if (res != null && !res.isEmpty()) {
             return res.get(0);

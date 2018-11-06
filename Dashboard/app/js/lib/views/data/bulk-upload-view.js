@@ -48,6 +48,8 @@ FLOW.uploader = Ember.Object.create({
     return this.get('r').addFile(file);
   },
 
+  bulkUpload: null,
+
   registerEvents: function () {
     var r = this.get('r');
 
@@ -62,8 +64,7 @@ FLOW.uploader = Ember.Object.create({
         $(".resumable-list").append("<li id='resumable-file-"+ file.uniqueIdentifier + "'></li>").scrollTop($('.resumable-list').outerHeight(true));
       }
       // Add the file to the list
-      if (file.file.type !== "application/zip" && file.file.type !== "application/x-zip-compressed") {
-        $(".resumable-progress").hide();
+      if (file.file.type !== "application/zip" && file.file.type !== "application/x-zip-compressed" && FLOW.uploader.get('bulkUpload')) {
         $("#resumable-file-"+ file.uniqueIdentifier).html(
           "<span class='resumable-file-name'>"+file.fileName+"</span>"
                 +  Ember.String.loc('_unsupported_file_type')
@@ -72,7 +73,6 @@ FLOW.uploader = Ember.Object.create({
             color: '#FF0000'});
         r.removeFile(file); //remove file
       } else {
-        $('.resumable-progress').show();
         $("#resumable-file-"+ file.uniqueIdentifier).html(
           '<span class="resumable-file-name">'+file.fileName+'</span>'
           +'<span id="resumable-file-progress-'+file.uniqueIdentifier+'" class="uploadStatus"></span>'
@@ -95,6 +95,10 @@ FLOW.uploader = Ember.Object.create({
     r.on('complete', function () {
       // Hide pause/resume when the upload has completed
       $('.resumable-progress .progress-resume-link, .resumable-progress .progress-pause-link').hide();
+
+      if (!FLOW.uploader.get('bulkUpload') && !FLOW.uploader.get('cancelled')) {
+        FLOW.uploader.showCompleteMessage();
+      }
     });
 
     r.on('fileSuccess', function (file, message) {
@@ -157,6 +161,13 @@ FLOW.uploader = Ember.Object.create({
     FLOW.dialogControl.set('activeAction', 'ignore');
     FLOW.dialogControl.set('header', Ember.String.loc('_upload_cancelled'));
     FLOW.dialogControl.set('message', Ember.String.loc('_upload_cancelled_due_to_navigation'));
+    FLOW.dialogControl.set('showCANCEL', false);
+    FLOW.dialogControl.set('showDialog', true);
+  },
+  showCompleteMessage: function () {
+    FLOW.dialogControl.set('activeAction', 'ignore');
+    FLOW.dialogControl.set('header', Ember.String.loc('_upload_complete'));
+    FLOW.dialogControl.set('message', Ember.String.loc('_upload_complete_message'));
     FLOW.dialogControl.set('showCANCEL', false);
     FLOW.dialogControl.set('showDialog', true);
   }

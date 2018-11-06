@@ -16,9 +16,9 @@
 
 package org.waterforpeople.mapping.domain;
 
+import com.gallatinsystems.common.Constants;
 import com.gallatinsystems.device.domain.DeviceFiles;
 import com.gallatinsystems.framework.domain.BaseDomain;
-import com.gallatinsystems.gis.map.MapUtils;
 import com.gallatinsystems.survey.dao.QuestionDao;
 import com.gallatinsystems.survey.dao.SurveyDAO;
 import com.gallatinsystems.survey.domain.Question;
@@ -61,7 +61,8 @@ public class SurveyInstance extends BaseDomain implements SecuredObject {
     private List<QuestionAnswerStore> questionAnswersStore;
 
     private Long surveyId;
-
+    private Double formVersion; //What form version was used to collect the data
+    
     private String deviceIdentifier;
     private String submitterName;
     private String approvedFlag;
@@ -268,8 +269,8 @@ public class SurveyInstance extends BaseDomain implements SecuredObject {
         String[] tokens = StringUtils.split(geoLocationString, "\\|");
         if (tokens != null && tokens.length >= 2) {
             geoLocationMap = new HashMap<>();
-            geoLocationMap.put(MapUtils.LATITUDE, Double.parseDouble(tokens[0]));
-            geoLocationMap.put(MapUtils.LONGITUDE, Double.parseDouble(tokens[1]));
+            geoLocationMap.put(Constants.LATITUDE, Double.parseDouble(tokens[0]));
+            geoLocationMap.put(Constants.LONGITUDE, Double.parseDouble(tokens[1]));
         }
 
         return geoLocationMap;
@@ -365,4 +366,12 @@ public class SurveyInstance extends BaseDomain implements SecuredObject {
         // do not update or return any child objects. Survey entities are the leaves
         return Collections.emptyList();
     }
+
+	public Double getFormVersion() {
+		return formVersion;
+	}
+
+	public void setFormVersion(Double formVersion) {
+		this.formVersion = formVersion;
+	}
 }

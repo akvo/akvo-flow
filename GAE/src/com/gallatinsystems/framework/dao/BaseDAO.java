@@ -101,12 +101,13 @@ public class BaseDAO<T extends BaseDomain> {
     public <E extends BaseDomain> E save(E obj) {
         PersistenceManager pm = PersistenceFilter.getManager();
         Long who = 0L;
-        final Object credentials = SecurityContextHolder.getContext()
-                .getAuthentication().getCredentials();
-        if (credentials instanceof Long) {
-            who = (Long) credentials;
-        } else {
-            log.warning("saver credentials: " + credentials);
+        if (SecurityContextHolder.getContext() != null
+                && SecurityContextHolder.getContext().getAuthentication() != null ) {
+            final Object credentials = SecurityContextHolder.getContext()
+                    .getAuthentication().getCredentials();
+            if (credentials instanceof Long) {
+                who = (Long) credentials;
+            }
         }
         obj.setLastUpdateDateTime(new Date());
         obj.setLastUpdateUserId(who);
@@ -133,8 +134,6 @@ public class BaseDAO<T extends BaseDomain> {
                     .getAuthentication().getCredentials();
             if (credentials instanceof Long) {
                 who = (Long) credentials;
-            } else {
-                log.warning("saver credentials: " + credentials);
             }
             for (E item : objList) {
                 item.setLastUpdateDateTime(new Date());
@@ -777,6 +776,7 @@ public class BaseDAO<T extends BaseDomain> {
         PersistenceManager pm = PersistenceFilter.getManager();
         String queryString = ":p1.contains(" + fieldName + ")";
         javax.jdo.Query query = pm.newQuery(concreteClass, queryString);
+        @SuppressWarnings("unchecked")
         List<T> results = (List<T>) query.execute(idsList);
         return results;
     }
