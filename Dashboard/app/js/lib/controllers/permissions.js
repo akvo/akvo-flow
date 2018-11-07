@@ -146,11 +146,6 @@ FLOW.permControl = Ember.Controller.create({
 
     if (!currentUserPermissions || !entity) { return []; }
 
-    // return superAdmin permissions
-    if ("0" in currentUserPermissions){
-      return currentUserPermissions["0"];
-    }
-
     // first check current object id
     keyId = entity.get('keyId');
     if (keyId in currentUserPermissions) {
@@ -163,8 +158,7 @@ FLOW.permControl = Ember.Controller.create({
       return permissions;
     }
 
-    var i;
-    for(i = 0; i < ancestorIds.length; i++){
+    for(var i = 0; i < ancestorIds.length; i++){
       if (ancestorIds[i] in currentUserPermissions) {
         if (currentUserPermissions[ancestorIds[i]]) {
           currentUserPermissions[ancestorIds[i]].forEach(function(item){
@@ -259,6 +253,14 @@ FLOW.permControl = Ember.Controller.create({
       }
       return false;
   }.property(),
+
+  userCanViewData: function (entity) {
+    var permissions;
+    if (!Ember.none(entity)) {
+      permissions = this.permissions(entity);
+    }
+    return permissions && permissions.indexOf("DATA_READ") > -1;
+  }
 });
 
 
@@ -271,7 +273,6 @@ FLOW.dialogControl = Ember.Object.create({
   delDeviceGroup: "delDeviceGroup",
   delSI: "delSI",
   delSI2: "delSI2",
-  delSL: "delSL",
   delCR: "delCR",
   delForm: "delForm",
   showDialog: false,
@@ -336,12 +337,6 @@ FLOW.dialogControl = Ember.Object.create({
       this.set('showDialog', true);
       break;
 
-    case "delSL":
-        this.set('header', Ember.String.loc('_delete_data_point_header'));
-        this.set('message', Ember.String.loc('_are_you_sure_delete_this_data_point'));
-        this.set('showDialog', true);
-        break;
-
     case "delForm":
       this.set('header', "Delete form");
       this.set('message', "Are you sure you want to delete this form?");
@@ -402,12 +397,7 @@ FLOW.dialogControl = Ember.Object.create({
       this.set('showDialog', false);
       view.deleteSI.apply(view, arguments);
       break;
-
-    case "delSL":
-        this.set('showDialog', false);
-        view.deleteSL.apply(view, arguments);
-        break;
-
+      
     case "delForm":
       this.set('showDialog', false);
       FLOW.surveyControl.deleteForm();
@@ -417,6 +407,10 @@ FLOW.dialogControl = Ember.Object.create({
         this.set('showDialog', false);
         view.deleteResource(view, arguments);
         break;
+
+    case "reports":
+      FLOW.router.transitionTo('navData.reportsList');
+      break;
 
     default:
     }

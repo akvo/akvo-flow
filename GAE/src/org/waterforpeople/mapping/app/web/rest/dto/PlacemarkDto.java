@@ -1,5 +1,5 @@
 /*
- *  Copyright (C) 2012 Stichting Akvo (Akvo Foundation)
+ *  Copyright (C) 2012,2018 Stichting Akvo (Akvo Foundation)
  *
  *  This file is part of Akvo FLOW.
  *
@@ -22,22 +22,13 @@ import com.gallatinsystems.framework.gwt.dto.client.BaseDto;
 
 public class PlacemarkDto extends BaseDto {
     private static final long serialVersionUID = 7506078448656852101L;
-    private String markType = null;
     private Double latitude = null;
     private Double longitude = null;
     private Integer count = 0;
     private Integer level = 0;
     private Long surveyId;
+    private Long formId;
     private Date collectionDate = null;
-    private Long detailsId = null;
-
-    public String getMarkType() {
-        return markType;
-    }
-
-    public void setMarkType(String markType) {
-        this.markType = markType;
-    }
 
     public Double getLatitude() {
         return latitude;
@@ -87,11 +78,11 @@ public class PlacemarkDto extends BaseDto {
         this.surveyId = surveyId;
     }
 
-    public Long getDetailsId() {
-        return detailsId;
+    public Long getFormId() {
+        return formId;
     }
 
-    public void setDetailsId(Long detailsId) {
-        this.detailsId = detailsId;
+    public void setFormId(Long formId) {
+        this.formId = formId;
     }
 }

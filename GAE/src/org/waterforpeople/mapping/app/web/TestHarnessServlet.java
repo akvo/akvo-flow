@@ -32,17 +32,14 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import net.sf.jsr107cache.Cache;
 import net.sf.jsr107cache.CacheException;
 
 import org.apache.commons.lang.StringUtils;
 import org.waterforpeople.mapping.app.web.dto.DataProcessorRequest;
 import org.waterforpeople.mapping.app.web.rest.security.AppRole;
 import org.waterforpeople.mapping.app.web.test.DeleteObjectUtil;
-import org.waterforpeople.mapping.dao.AccessPointDao;
 import org.waterforpeople.mapping.dao.QuestionAnswerStoreDao;
 import org.waterforpeople.mapping.dao.SurveyInstanceDAO;
-import org.waterforpeople.mapping.domain.AccessPoint;
 import org.waterforpeople.mapping.domain.QuestionAnswerStore;
 import org.waterforpeople.mapping.domain.SurveyInstance;
 
@@ -64,8 +61,6 @@ import com.gallatinsystems.survey.domain.QuestionGroup;
 import com.gallatinsystems.survey.domain.Survey;
 import com.gallatinsystems.survey.domain.SurveyGroup;
 import com.gallatinsystems.surveyal.app.web.SurveyalRestRequest;
-import com.gallatinsystems.surveyal.dao.SurveyedLocaleClusterDao;
-import com.gallatinsystems.surveyal.domain.SurveyedLocaleCluster;
 import com.gallatinsystems.user.dao.UserDao;
 import com.gallatinsystems.user.domain.User;
 import com.google.appengine.api.backends.BackendServiceFactory;
@@ -122,21 +117,6 @@ public class TestHarnessServlet extends HttpServlet {
             } catch (IOException e) {
                 // TODO Auto-generated catch block
                 e.printStackTrace();
-            }
-        } else if ("generateGeocells".equals(action)) {
-            AccessPointDao apDao = new AccessPointDao();
-            List<AccessPoint> apList = apDao.list(null);
-            if (apList != null) {
-                for (AccessPoint ap : apList) {
-
-                    if (ap.getGeocells() == null || ap.getGeocells().size() == 0) {
-                        if (ap.getLatitude() != null && ap.getLongitude() != null) {
-                            ap.setGeocells(GeocellManager.generateGeoCell(new Point(ap
-                                    .getLatitude(), ap.getLongitude())));
-                            apDao.save(ap);
-                        }
-                    }
-                }
             }
         } else if ("importsinglesurvey".equals(action)) {
             TaskOptions options = TaskOptions.Builder
@@ -211,33 +191,6 @@ public class TestHarnessServlet extends HttpServlet {
                     .withUrl("/app_worker/dataprocessor")
                     .param(DataProcessorRequest.ACTION_PARAM,
                             DataProcessorRequest.DELETE_DUPLICATE_QAS)
-                    .header("Host",
-                            BackendServiceFactory.getBackendService().getBackendAddress(
-                                    "dataprocessor"));
-            Queue queue = QueueFactory.getDefaultQueue();
-            queue.add(options);
-            try {
-                resp.getWriter().print("Request Processed - Check the logs");
-            } catch (Exception e) {
-                // no-op
-            }
-        } else if (DataProcessorRequest.RECOMPUTE_LOCALE_CLUSTERS.equals(action)) {
-            SurveyedLocaleClusterDao slcDao = new SurveyedLocaleClusterDao();
-            // first, delete all clusters
-            for (SurveyedLocaleCluster slc : slcDao.list("all")) {
-                slcDao.delete(slc);
-            }
-
-            // initialize the memcache
-            Cache cache = initCache(60 * 60 * 1);
-            if (cache != null) {
-                cache.clear();
-            }
-
-            final TaskOptions options = TaskOptions.Builder
-                    .withUrl("/app_worker/dataprocessor")
-                    .param(DataProcessorRequest.ACTION_PARAM,
-                            DataProcessorRequest.RECOMPUTE_LOCALE_CLUSTERS)
                     .header("Host",
                             BackendServiceFactory.getBackendService().getBackendAddress(
                                     "dataprocessor"));

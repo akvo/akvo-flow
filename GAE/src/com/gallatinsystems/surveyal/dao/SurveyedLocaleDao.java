@@ -67,12 +67,12 @@ public class SurveyedLocaleDao extends BaseDAO<SurveyedLocale> {
      * @return
      */
     @SuppressWarnings("unchecked")
-    public List<SurveyedLocale> listLocalesByGeocell(List<String> geocells, int pageSize) {
+    public List<SurveyedLocale> listLocalesByGeocell(Long surveyId, List<String> geocells, int pageSize) {
         PersistenceManager pm = PersistenceFilter.getManager();
-        String queryString = ":p1.contains(geocells)";
+        String queryString = "surveyGroupId == :p1 && :p2.contains(geocells)";
         javax.jdo.Query query = pm.newQuery(SurveyedLocale.class, queryString);
         prepareCursor(null, pageSize, query);
-        List<SurveyedLocale> results = (List<SurveyedLocale>) query.execute(geocells);
+        List<SurveyedLocale> results = (List<SurveyedLocale>) query.execute(surveyId, geocells);
         return results;
     }
 
@@ -417,32 +417,6 @@ public class SurveyedLocaleDao extends BaseDAO<SurveyedLocale> {
         query.setRange(0, pageSize);
 
         return (List<SurveyedLocale>) query.executeWithMap(paramMap);
-    }
-
-    /**
-     * returns all the locales with the identifier passed in. If needDetails is true, it will list
-     * the surveyalValues for the locale from the most recent survey instance only.
-     *
-     * @param identifier
-     * @param needDetails
-     * @return
-     */
-    public List<SurveyedLocale> listLocalesByCode(String identifier,
-            boolean needDetails) {
-        List<SurveyedLocale> locales = listByProperty("identifier", identifier,
-                "String");
-        if (locales != null && needDetails) {
-            for (SurveyedLocale l : locales) {
-                if (l.getLastSurveyalInstanceId() != null) {
-                    l.setSurveyalValues(listSurveyalValuesByInstance(l
-                            .getLastSurveyalInstanceId()));
-                } else {
-                    // get the most recent instance and use its id
-                    l.setSurveyalValues(getSurveyalValues(l.getKey().getId()));
-                }
-            }
-        }
-        return locales;
     }
 
     public SurveyedLocale getById(Long id) {

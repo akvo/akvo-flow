@@ -1,11 +1,209 @@
 # Akvo Flow Release Notes
 ----
+# Akvo Flow Dashboard v1.9.39 - Laid-back Lagerstroemia
+Date: 24th October 2018
+
+## New and noteworthy
+* **Project folders** - Enable editing folder name when created [#2875]
+
+## Resolved issues
+* **Surveys** - Require selecting at least one type before allowing saving geoshape questions [#2877]
+* **Maps** - Properly render all caddisfly responses on maps[#1750]. If a point has been previously selected, hide details panel when filtering [#2881]. Properly render geoshape responses on maps tab [#2884]
+* **UI improvement** - Remove table header arrows where unneeded [#2389]. Fix how and where survey path is displayed on dashboard [#2507]
+* **UX improvement** - Indicate form must be selected to perform actions on data cleaning tab [#2456]. Remove delay between fetching retching form submissions on inspect data tab and displaying when fetch completes [#2827]
+* **Code cleanup** - Remove CartoDB code [#2867]
+
+# Akvo Flow Dashboard v1.9.38 - Key Kalmia
+Date: 9th October 2018
+
+## New and noteworthy
+* **Reports export** - Highlight folder/survey/form selection when user tries to export a report without selecting a form [#2380]. Highlight question selection when user tries to export a geojson report without selecting a geoshape type question [#2479]
+* **Question answers** - Display images [#2557] and videos [#2561] directly on dashboard instead of a link opening on different tab
+
+## Resolved Issues
+* **Bug fix** - Load question answers for non-monitoring survey on Mapbox maps [#2680]
+
+# Akvo Flow Dashboard v1.9.37.1 - Jovial Jojoba (Hotfix 1)
+Date: 13th September 2018
+
+## Resolved issues
+* **Bug fix** - Fix broken actions in data cleaning tab [#2855]
+
+# Akvo Flow Dashboard v1.9.37 - Jovial Jojoba
+Date: 12th September 2018
+
+## New and noteworthy
+* **UI improvement** - Highlight the folder/survey filters when a user tries to perform an action without having selected a form under the inspect data and monitoring tabs [#2455]
+
+## Resolved issues
+* **Bug fixes** - Catch browser error thrown when a user filters down to form level then selects an ancestor's "Choose folder or survey" option [#2848]. Remove delay after the loading icon disappears when fetching data under inspect data and monitoring data tabs to the data till the submissions actually showing [#2827]
+* **Performance improvement** - Remove unnecessary fetch for survey instance counts causing delay when calling the surveys endpoint[#2823]
+
+# Akvo Flow Dashboard v1.9.36 - Iconic Iris
+Date: 22nd August 2018
+
+## New and noteworthy
+* **JavaScript libraries** - Upgraded Mapbox library version [#2769]
+
+## Resolved issues
+* **Bug fixes** - List button showing in data cleaning tab [#2826]. Errors showing on survey page [#2821]
+
+# Akvo Flow Dashboard v1.9.35 - Haptic Hazel
+Date: 06th August 2018
+
+## New and noteworthy
+* **UI Improvement** - New "Resources" tab that holds cascade resources and data approval [#2731]
+* **Survey data** - You can now use barcode question types as data point name [#2776]. Save form version used to collect data [#2707]
+* **Backend** - Migrate Flow backend to Java 8 [#2395].
+
+## Resolved issues
+* **Bug fixes** The survey path for a generated report now always displays correctly [#2782] based on preloading surveys on dashboard [#2754]
+* **Reports** - We now check the status of generating reports every 10 seconds and update the list once they're ready for download [#2755]. Cron job for removing exported reports that are older than one year [#2638]. Place a timeout for report generation that takes too long [#2779]
+* **Backend processes** - Handle addition of other option during data cleaning reports [#2780]. More comprehensive error messaging when cascade publishing fails [#2794]. When exporting reports, handle option-less option questions [#2777]
+
+# Akvo Flow Dashboard v1.9.34.1 - Groundbreaking Grass Hotfix
+Date: 06th August 2018
+
+## Resolved issues
+* **CartoDB Maps** - Fix the SHA integrity hashes for carto.css and carto.js [#2721].
+
+# Akvo Flow Dashboard v1.9.34 - Groundbreaking Grass
+Date: 05th July 2018
+
+## New and noteworthy
+### Reports
+* Reports are not longer sent via email but accessible on a new reports list page [#2505]
+* Show date whether date filter was applied on a generated report on the reports list page [#2675]
+* Added filter to export only latest submissions of monitoring form to data point [#2340]
+* Created a new datatype and endpoint for reports [#2617]
+* Log who generates an export and only make available reports that a user has generated [#2610]
+* Added metadata and submissions data to geojson report export. [#1810]
+* Changed the email confirmation email sent when a report is ready for download [#1334]
+### Users
+* Show who has User admin role in User list [#2619]
+* Simplify user creation by not navigating away till all fields are set[#2403]
+* Removed API keys from UI [#2394]
+
+## Resolved issues
+* Importing new form responses through the data cleaning/upload no longer throws exception [#2709]
+* Remove logging of non-Spring auth when saving objects. [#2702]
+* Copy stripped off jar file to staging folder [#2756]
+
+# Akvo Flow Dashboard v1.9.33.2 - Fantastic Fern - (Hotfix 2)
+Date: 02nd July 2018
+
+## Resolved issues
+* **CartoDB Maps** - Fix the SHA integrity hashes for carto.css and carto.js [#2721].
+* **Development environment** - Use fuzzy values for APK versions in docker builds [#2704]
+
+# Akvo Flow Dashboard v1.9.33.1 - Fantastic Fern - (Hotfix 1)
+Date: 07th June 2018
+
+## Resolved issues
+* **App updates** - Update datastore index [#2690]. Update datastore index to work for both new and old device updates.
+
+# Akvo Flow Dashboard v1.9.33 - Fantastic Fern
+Date: 06th June 2018
+
+## New and noteworthy
+* **Maps** - Filter data points on the maps tab based on a selected survey [#2661]. Removed clustering of points on when overlaying on Mapbox maps [#2631]
+* **UI Improvement** - Removed data cleaning export option from data cleaning tab [#2548]
+
+## Resolved issues
+* **Development environment** - Use basic autoscaling on dataprocessor backend [#2670]. Deploy dataprocessor with correct instance type [#2673]. Use HTTPS based urls for maven repositories [#2665]. Load latest cron jobs definition for deployments via admin API [#2628], Cache the local dev datastore [#2649]
+* **User permissions** - Respect user permissions set by confirming users have view data permissions before displaying data [#1558]. Stop overriding nested folder and surveys permissions [#1582]
+* **Code cleanup** - Remove unused css and html files [#2651]. Remove dependency on unused maven repo [#2658]
+
+# Akvo Flow Dashboard v1.9.32 - Internal release
+Date: 15th May 2018
+## New and noteworthy
+* **Development environment** - Further improvements to our development workflow including, the user of docker containers to homogenise and ease setup of dev environment [#2406][#2553][#2624][#2633], speeding up parallel deployments of our instances [#2562]
+
+* **UI Improvement** - Implement a walkthrough for the bulk upload page explaining how the new GDPR compliant bulk upload will function [#2466].
+
+* **App downloads** - Prevent devices containing old android versions (< Android 4.0.3) from downloading recent app versions [#2603].
+
+# Akvo Flow Dashboard v1.9.31 - Epic Elm
+Date: 19 April 2018
+
+## New and noteworthy
+* **Development environment** - Improved tools for setting up the development environment by moving from ant to maven build #2406
+* **UI Improvement** - Validate against file types when bulk uploading data #2471. Added a bulk data upload walkthrough #2466
+* **Reports** - Move reports to under data tab #2555
+
+## Resolved issues
+* **Bug fixes** - Date range when exporting reports is independent for different report types #2363. Validate against saving questions without text #2221
+* **Code cleanup** - Remove unnecessary file #2593. Fix device file job queue weekly script #2550
+
+# Akvo Flow Dashboard v1.9.30.1 - Deterministic Daisy (Hotfix 1)
+Date: 04 April 2018
+
+## Resolved issues
+* **Bug fixes** - Fix issue with unidentified users causing dashboard translations and reports exports not to work after v1.9.30 release [#2572]
+
+# Akvo Flow Dashboard v1.9.30 - Deterministic Daisy
+Date: 03 April 2018
+
+## New and noteworthy
+* **Translations** - Add translations for Pijin and Tok Pisin [#2202]
+* **Data security** - Log who changed entity [#2525]
+* **Data point location** - Created a script to fix data point location [#2520]. This stems from issue [#2518] where a data point's location was being overriden by GEO type question answers from monitoring forms
+
+## Resolved issues
+* **Questions reordering** - Changed how questions and question groups are reordered [#1393],[#2523]. Reordering is now done in bulk for all affected so that order does not break in case of unstable network issues
+* **User interface** - Remove submissions list from monitoring tab after users navigates away [#2531]. Fixed alignment on manual survey transfers tab [#2276]. Load questions and answers for monitoring forms when viewing data in monitoring tab [#2567]
+* **Variable name validation** - Recheck variable name for special characters after successful validation [#2563]. Preempt returning of old values when variable name is set to null [#2551]
+* **Code cleanup** - Deleted code causing exception to be thrown when listing questions [#2421]
+* **Performance improvement** - No longer putting bad file names in device file job queue [#2539]
+
+# Akvo Flow Dashboard v1.9.29 - Cosmic Coconut
+Date: 08 March 2018
+
+## New and noteworthy
+* **Data point location** - Changed questions of type geolocation from being automatically used as the data point's location. Users will now have to tick which question is to be used as the data point location [#2517]
+* **Reports** - The "other, please specify" option in exported reports is now displayed in its own column [#2290]. Changed the raw data sheet in comprehensive reports to have analysis format [#2469]
+* **Data cleaning** - No longer support data cleaning using imports from old-format reports [#2330]
+* **Code cleanup** - Removed unused code [#2481]
+
+## Resolved issues
+* **Monitoring tab user interface improvement** - Ordered question answers in the monitoring tab as well as showing the question groups to which the questions belong [#2387]
+* **Simplify validation** - Changed how question variable name validation errors are displayed by moving from hard coded error message to error messages defined via transifex. Also changed instances of questionId on the code to variable name [#2474]. Made variable name validation case-sensitive [#839]
+* **Surveys tab** - Fixed issue causing surveys tab to sometimes go blank during a session [#1402]. Also fixed issue allowing users to copy or move surveys to the root folder [#2464]
+* **Submissions list on data tab** - Fixed issue causing submissions to still be displayed on the inspect data tab even after a user navigates away [#2372]
+* **Data script** - Fixed issue causing data script to crash in case a question had a null survey pointer [#2508]
+
+# Akvo Flow Dashboard v1.9.28.1 - Bent Banana (Hotfix 1)
+Date: 20 February 2018
+## Resolved issues
+* **Integrity check failing for CartoDB libraries** [#2500] - Fixed issue causing maps on CartoDB enabled instances not to work
+
+# Akvo Flow Dashboard v1.9.28 - Bent Banana
+Date: 15 February 2018
+
+## New and noteworthy
+* **Add updated translations of online workspace** - Updated French, Spanish, and Portuguese translations [#2287]
+* **Comprehensive report improvement** - Show frequency table and graphs for cascades [#2427], add statistics about collected data [#2443], and improve graph styling [#2428]
+* **Rearrange data tab** - Moved monitoring tab after inspect data tab [#2467]
+* **Simplify validation** - Rephrased question ID to variable name [#2143], and update variable name help text [#2444]
+
+## Resolved issues
+* **Users unable to delete data under monitoring tab** [#2261] - Removed delete option to reduce the the risk of high data loss
+* **Form version number not incrementing correctly** [#1403] - Set form as not published each time the form basics are changed
+* **Code Cleanup** [#2447],[#555] - Remove unused code
+* **UI** - Remove line above "No results found" in inspect data and monitoring tabs [#2452]
+
+## Resolved issues
+* Users unable to delete data under monitoring tab [#2261] - Removed delete option to reduce the the risk of high data loss
+* Form version number not incrementing correctly [#1403] - Set form as not published each time the form basics are changed
+* Code Cleanup [#2447],[#555] - Remove unused code
+* UI - Remove line above "No results found" in inspect data and monitoring tabs [#2452]
+
 # 1.9.27 Aerodynamic Avocado
 Date: 25 January 2018
 
 ## New and noteworthy
 ### Code Cleanup
-* **Caddisfly tests file definition cleanup** [#2333] - Removed unnecessary caddisfly endpoint and test file
+* [#2333] - Removed unnecessary caddisfly endpoint and test file
 * [#2410] - Removed unneeded `com.gallatinsystems.common.data` classes
 * [#2412] - Removed ununsed authentication class and endpoint definition
 * [#2414] - Removed unneeded S3Driver and dependent classes
@@ -123,7 +321,7 @@ Date: 31 August 2017
 Date: 26 July 2017
 
 ## Resolved issues
-* **Reporting fixes** - Comprehensive reports should now work when the regional summary sheets get their names from a cascade question [#2206], and also work for questions that have very long names. 
+* **Reporting fixes** - Comprehensive reports should now work when the regional summary sheets get their names from a cascade question [#2206], and also work for questions that have very long names.
 
 # 1.9.21 Thoroughbred Tamandua
 Date: 21 July 2017

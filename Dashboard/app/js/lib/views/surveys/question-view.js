@@ -5,7 +5,7 @@ function sortByOrder(a , b) {
 FLOW.QuestionView = FLOW.View.extend({
   templateName: 'navSurveys/question-view',
   content: null,
-  questionId: null,
+  variableName: null,
   text: null,
   tip: null,
   type: null,
@@ -103,10 +103,10 @@ FLOW.QuestionView = FLOW.View.extend({
 
   amCascadeType: function () {
     if (this.type) {
-	  return this.type.get('value') == 'CASCADE';
-	} else {
-	  return false;
-	}
+      return this.type.get('value') == 'CASCADE';
+    } else {
+      return false;
+    }
   }.property('this.type').cacheable(),
 
   hasExtraSettings: function () {
@@ -120,10 +120,10 @@ FLOW.QuestionView = FLOW.View.extend({
 
   amGeoshapeType: function () {
     if (this.type) {
-	  return this.type.get('value') == 'GEOSHAPE';
-	} else {
-	  return false;
-	}
+      return this.type.get('value') == 'GEOSHAPE';
+    } else {
+      return false;
+    }
   }.property('this.type').cacheable(),
 
   amDateType: function () {
@@ -150,15 +150,9 @@ FLOW.QuestionView = FLOW.View.extend({
     return this.type.get('value') == 'FREE_TEXT'
         || this.type.get('value') == 'NUMBER'
         || this.type.get('value') == 'OPTION'
+        || this.type.get('value') == 'SCAN'
         || this.type.get('value') == 'CASCADE';
   }.property('this.type').cacheable(),
-
-  // when we change the question type to GEO, we turn on the
-  // localeLocationFLag by default. If we change to something else, we
-  // turn the flag of.
-  enableLocaleLocation: function() {
-    this.set('localeLocationFlag', this.type.get('value') == 'GEO');
-  }.observes('this.type'),
 
   // TODO dependencies
   // TODO options
@@ -174,7 +168,7 @@ FLOW.QuestionView = FLOW.View.extend({
     this.loadQuestionOptions();
 
     FLOW.selectedControl.set('selectedQuestion', this.get('content'));
-    this.set('questionId', FLOW.selectedControl.selectedQuestion.get('questionId'));
+    this.set('variableName', FLOW.selectedControl.selectedQuestion.get('variableName'));
     this.set('text', FLOW.selectedControl.selectedQuestion.get('text'));
     this.set('tip', FLOW.selectedControl.selectedQuestion.get('tip'));
     this.set('mandatoryFlag', FLOW.selectedControl.selectedQuestion.get('mandatoryFlag'));
@@ -279,7 +273,7 @@ FLOW.QuestionView = FLOW.View.extend({
 
       optionArray = options.toArray();
       optionArray.sort(function (a, b) {
-    	  return a.get('order') - b.get('order');
+        return a.get('order') - b.get('order');
       });
 
       optionArray.forEach(function (item) {
@@ -299,30 +293,38 @@ FLOW.QuestionView = FLOW.View.extend({
   doSaveEditQuestion: function() {
     var path, anyActive, first, dependentQuestionAnswer, minVal, maxVal, options, found, optionsToDelete;
 
-    if (this.questionIdValidationFailure) {
-      this.showMessageDialog(Ember.String.loc('_variable_name_must_be_valid_and_unique'), this.questionIdValidationFailureReason);
+    if (this.variableNameValidationFailure) {
+      this.showMessageDialog(Ember.String.loc('_variable_name_must_be_valid_and_unique'), this.variableNameValidationFailureReason);
       return;
     }
 
     if (this.questionValidationFailure) {
         this.showMessageDialog(Ember.String.loc('_question_over_500_chars_header'), Ember.String.loc('_question_over_500_chars_text'));
         return;
-      }
+    }
 
     if (this.questionTooltipValidationFailure) {
         this.showMessageDialog(Ember.String.loc('_tooltip_over_500_chars_header'), Ember.String.loc('_tooltip_over_500_chars_text'));
         return;
-      }
+    }
 
     if (this.get('amOptionType')) {
-      var invalidOptions = FLOW.questionOptionsControl.validateOptions();
-      if (invalidOptions) {
-        this.showMessageDialog(Ember.String.loc('_invalid_options_header'), invalidOptions);
-        return;
-      }
+	    var invalidOptions = FLOW.questionOptionsControl.validateOptions();
+        if (invalidOptions) {
+          this.showMessageDialog(Ember.String.loc('_invalid_options_header'), invalidOptions);
+          return;
+        }
 
       // save options to the datastore
       FLOW.questionOptionsControl.persistOptions();
+    }
+
+    if (this.type.get('value') === 'GEOSHAPE'
+    	&& this.get('allowPoints') === false
+    	&& this.get('allowLine') === false
+    	&& this.get('allowPolygon') === false) {
+    	this.showMessageDialog(Ember.String.loc('_no_geoshape_types_header'), Ember.String.loc('_no_geoshape_types_text'));
+    	return;
     }
 
     if (this.type.get('value') === 'CASCADE' && Ember.empty(FLOW.selectedControl.get('selectedCascadeResource'))) {
@@ -357,7 +359,7 @@ FLOW.QuestionView = FLOW.View.extend({
     }
 
     path = FLOW.selectedControl.selectedSurveyGroup.get('code') + "/" + FLOW.selectedControl.selectedSurvey.get('name') + "/" + FLOW.selectedControl.selectedQuestionGroup.get('code');
-    FLOW.selectedControl.selectedQuestion.set('questionId', this.get('questionId'));
+    FLOW.selectedControl.selectedQuestion.set('variableName', this.get('variableName'));
     FLOW.selectedControl.selectedQuestion.set('text', this.get('text'));
     FLOW.selectedControl.selectedQuestion.set('tip', this.get('tip'));
     FLOW.selectedControl.selectedQuestion.set('mandatoryFlag', this.get('mandatoryFlag'));
@@ -441,9 +443,9 @@ FLOW.QuestionView = FLOW.View.extend({
   },
 
   /**
-   * QuestionId validation
+   * Variable name validation
    *
-   * A valid questionId must match /^[A-Za-z0-9_\-]*$/. Uniqueness
+   * A valid variable name must match /^[A-Za-z0-9_\-]*$/. Uniqueness
    * constraints depends on wether the question is part of a
    * monitoring group or not. If the question is part of a
    * monitoring group, uniqueness validation _must_ happen on the
@@ -453,13 +455,14 @@ FLOW.QuestionView = FLOW.View.extend({
    */
   throttleTimer: null,
 
-  validateQuestionId: function(args) {
-    var selectedQuestion = FLOW.selectedControl.selectedQuestion
+  validateVariableName: function(args) {
+    var self = this;
+    var selectedQuestion = FLOW.selectedControl.selectedQuestion;
     var questionKeyId = selectedQuestion.get('keyId');
-    var questionId = this.get('questionId') || "";
-    if (FLOW.Env.mandatoryQuestionID && questionId.match(/^\s*$/)) {
+    var variableName = this.get('variableName') || "";
+    if (FLOW.Env.mandatoryQuestionID && variableName.match(/^\s*$/)) {
       args.failure(Ember.String.loc('_variable_name_mandatory'));
-    } else if (!questionId.match(/^[A-Za-z0-9_\-]*$/)) {
+    } else if (!variableName.match(/^[A-Za-z0-9_\-]*$/)) {
       args.failure(Ember.String.loc('_variable_name_only_alphanumeric'))
     } else {
       var monitoring = this.isPartOfMonitoringGroup(questionKeyId);
@@ -467,11 +470,16 @@ FLOW.QuestionView = FLOW.View.extend({
         clearTimeout(this.throttleTimer);
         this.throttleTimer = setTimeout(function () {
           $.ajax({
-            url: '/rest/questions/' + questionKeyId + '/validate?questionId=' + questionId,
+            url: '/rest/questions/' + questionKeyId + '/validate?variableName=' + variableName,
             type: 'POST',
             success: function(data) {
               if (data.success) {
-                args.success();
+                //check for special characters once more
+                if (!self.get('variableName').match(/^[A-Za-z0-9_\-]*$/)) {
+                  args.failure(Ember.String.loc('_variable_name_only_alphanumeric'));
+                } else {
+                  args.success();
+                }
               } else {
                 args.failure(data.reason);
               }
@@ -482,16 +490,15 @@ FLOW.QuestionView = FLOW.View.extend({
           });
         }, 1000);
       } else {
-        var otherQuestionIds = FLOW.store.filter(FLOW.Question, function(question) {
-          var keyId = question.get('keyId');
+        var otherVariableNames = FLOW.store.filter(FLOW.Question, function(question) {
           return (selectedQuestion.get('surveyId') === question.get('surveyId'))
             && (questionKeyId !== question.get('keyId'));
         }).map(function(question) {
-          return question.get('questionId');
-        }).filter(function(questionId) {
-          return questionId !== "";
+          return question.get('variableName');
+        }).filter(function(variableName) {
+          return variableName !== "";
         });
-        var isUnique = !otherQuestionIds.contains(questionId);
+        var isUnique = !otherVariableNames.contains(variableName);
         if (isUnique) {
           args.success();
         } else {
@@ -505,11 +512,11 @@ FLOW.QuestionView = FLOW.View.extend({
     if (this.type.get('value') == 'NUMBER') {
       if (!Ember.empty(this.get('minVal')) && !Ember.empty(this.get('maxVal'))) {
         if (isNaN(this.get('minVal')) || isNaN(this.get('maxVal'))) {
-	  args.NaNFailure();
-	  return;
+          args.NaNFailure();
+          return;
         } else if (parseFloat(this.get('minVal')) >= parseFloat(this.get('maxVal'))) {
           args.valueFailure();
-	  return;
+          return;
         }
       }
     }
@@ -531,7 +538,7 @@ FLOW.QuestionView = FLOW.View.extend({
     // check if anything is being saved at the moment
     if (this.checkQuestionsBeingSaved()) {
       this.showMessageDialog(Ember.String.loc('_please_wait'),
-			     Ember.String.loc('_please_wait_until_previous_request'));
+        Ember.String.loc('_please_wait_until_previous_request'));
       return;
     }
 
@@ -567,7 +574,7 @@ FLOW.QuestionView = FLOW.View.extend({
 
   // move question to selected location
   doQuestionMoveHere: function () {
-    var selectedOrder, insertAfterOrder, selectedQ, useMoveQuestion;
+    var selectedOrder, insertAfterOrder, selectedQ, useMoveQuestion, qgIdSource, qgIdDest;
     selectedOrder = FLOW.selectedControl.selectedForMoveQuestion.get('order');
 
     if (this.get('zeroItemQuestion')) {
@@ -588,47 +595,18 @@ FLOW.QuestionView = FLOW.View.extend({
       selectedQ = FLOW.store.find(FLOW.Question, FLOW.selectedControl.selectedForMoveQuestion.get('keyId'));
       if (selectedQ !== null) {
 
-        // restore order
         qgIdSource = FLOW.selectedControl.selectedForMoveQuestion.get('questionGroupId');
         qgIdDest = FLOW.selectedControl.selectedQuestionGroup.get('keyId');
 
-        questionsInSourceGroup = FLOW.store.filter(FLOW.Question, function (item) {
-          return item.get('questionGroupId') == qgIdSource;
-        });
-
-        questionsInDestGroup = FLOW.store.filter(FLOW.Question, function (item) {
-          return item.get('questionGroupId') == qgIdDest;
-        });
-
-        // restore order in source group, where the question dissapears
-        questionsInSourceGroup.forEach(function (item) {
-          if (item.get('order') > selectedOrder) {
-            item.set('order', item.get('order') - 1);
-          }
-        });
-
-        // make room in destination group
-        questionsInDestGroup.forEach(function (item) {
-          if (item.get('order') > insertAfterOrder) {
-            item.set('order', item.get('order') + 1);
-          }
-        });
+        // restore order
+        FLOW.questionControl.reorderQuestions(qgIdSource, selectedOrder, "decrement");
+        FLOW.questionControl.reorderQuestions(qgIdDest, insertAfterOrder, "increment");
 
         // move question
         selectedQ.set('order', insertAfterOrder + 1);
         selectedQ.set('questionGroupId', qgIdDest);
 
-        // recompute questions in groups so we can correct any order problems
-        questionsInSourceGroup = FLOW.store.filter(FLOW.Question, function (item) {
-          return item.get('questionGroupId') == qgIdSource;
-        });
-
-        questionsInDestGroup = FLOW.store.filter(FLOW.Question, function (item) {
-          return item.get('questionGroupId') == qgIdDest;
-        });
-
-        FLOW.questionControl.restoreOrder(questionsInSourceGroup);
-        FLOW.questionControl.restoreOrder(questionsInDestGroup);
+        FLOW.questionControl.submitBulkQuestionsReorder([qgIdSource, qgIdDest]);
       }
     // if we are not moving to another group, we must be moving inside a group
     // only do something if we are not moving to the same place
@@ -666,13 +644,8 @@ FLOW.QuestionView = FLOW.View.extend({
           }
         });
 
-        questionsInGroup = FLOW.store.filter(FLOW.Question, function (item) {
-        	return item.get('questionGroupId') == qgId;
-       	});
-
-        // restore order in case the order has gone haywire
-        FLOW.questionControl.restoreOrder(questionsInGroup);
-      	}
+        FLOW.questionControl.submitBulkQuestionsReorder([qgId]);
+      }
     }
     FLOW.selectedControl.selectedSurvey.set('status', 'NOT_PUBLISHED');
     FLOW.store.commit();
@@ -681,7 +654,7 @@ FLOW.QuestionView = FLOW.View.extend({
 
   // execute question copy to selected location
   doQuestionCopyHere: function () {
-    var insertAfterOrder, path, qgId, questionsInGroup, question;
+    var insertAfterOrder, path, qgId, question;
     //path = FLOW.selectedControl.selectedSurveyGroup.get('code') + "/" + FLOW.selectedControl.selectedSurvey.get('name') + "/" + FLOW.selectedControl.selectedQuestionGroup.get('code');
 
     if (this.get('zeroItemQuestion')) {
@@ -693,21 +666,14 @@ FLOW.QuestionView = FLOW.View.extend({
     // check if anything is being saved at the moment
     if (this.checkQuestionsBeingSaved()) {
       this.showMessageDialog(Ember.String.loc('_please_wait'),
-			     Ember.String.loc('_please_wait_until_previous_request'));
+        Ember.String.loc('_please_wait_until_previous_request'));
       return;
     }
 
-    // restore order
     qgId = FLOW.selectedControl.selectedQuestionGroup.get('keyId');
-    questionsInGroup = FLOW.store.filter(FLOW.Question, function (item) {
-      return item.get('questionGroupId') == qgId;
-    });
-    // move items up to make space
-    questionsInGroup.forEach(function (item) {
-      if (item.get('order') > insertAfterOrder) {
-        item.set('order', item.get('order') + 1);
-      }
-    });
+
+    // restore order
+    FLOW.questionControl.reorderQuestions(qgId, insertAfterOrder, "increment");
 
     question = FLOW.selectedControl.get('selectedForCopyQuestion');
     // create copy of Question item in the store
@@ -718,21 +684,16 @@ FLOW.QuestionView = FLOW.View.extend({
       "sourceId":question.get('keyId')
     });
 
-    questionsInGroup = FLOW.store.filter(FLOW.Question, function (item) {
-      return item.get('questionGroupId') == qgId;
-    });
+    FLOW.questionControl.submitBulkQuestionsReorder([qgId]);
 
-    // restore order in case the order has gone haywire
-    FLOW.questionControl.restoreOrder(questionsInGroup);
     FLOW.selectedControl.selectedSurvey.set('status', 'NOT_PUBLISHED');
     FLOW.store.commit();
-
     FLOW.selectedControl.set('selectedForCopyQuestion', null);
   },
 
   // create new question
   doInsertQuestion: function () {
-    var insertAfterOrder, path, qgId, questionsInGroup;
+    var insertAfterOrder, path, qgId;
     path = FLOW.selectedControl.selectedSurveyGroup.get('code') + "/" + FLOW.selectedControl.selectedSurvey.get('name') + "/" + FLOW.selectedControl.selectedQuestionGroup.get('code');
 
     if (this.get('zeroItemQuestion')) {
@@ -744,23 +705,15 @@ FLOW.QuestionView = FLOW.View.extend({
     // check if anything is being saved at the moment
     if (this.checkQuestionsBeingSaved()) {
       this.showMessageDialog(Ember.String.loc('_please_wait'),
-			     Ember.String.loc('_please_wait_until_previous_request'));
+        Ember.String.loc('_please_wait_until_previous_request'));
       return;
     }
 
 
-    // restore order
     qgId = FLOW.selectedControl.selectedQuestionGroup.get('keyId');
-    questionsInGroup = FLOW.store.filter(FLOW.Question, function (item) {
-      return item.get('questionGroupId') == qgId;
-    });
 
-    // move items up to make space
-    questionsInGroup.forEach(function (item) {
-      if (item.get('order') > insertAfterOrder) {
-        item.set('order', item.get('order') + 1);
-      }
-    });
+    // reorder the rest of the questions
+    FLOW.questionControl.reorderQuestions(qgId, insertAfterOrder, "increment");
 
     // create new Question item in the store
     FLOW.store.createRecord(FLOW.Question, {
@@ -769,14 +722,11 @@ FLOW.QuestionView = FLOW.View.extend({
       "path": path,
       "text": Ember.String.loc('_new_question_please_change_name'),
       "surveyId": FLOW.selectedControl.selectedSurvey.get('keyId'),
-      "questionGroupId": FLOW.selectedControl.selectedQuestionGroup.get('keyId')
+      "questionGroupId": qgId
     });
 
-    questionsInGroup = FLOW.store.filter(FLOW.Question, function (item) {
-      return item.get('questionGroupId') == qgId;
-    });
-    // restore order in case the order has gone haywire
-    FLOW.questionControl.restoreOrder(questionsInGroup);
+    FLOW.questionControl.submitBulkQuestionsReorder([qgId]);
+
     FLOW.selectedControl.selectedSurvey.set('status', 'NOT_PUBLISHED');
     FLOW.store.commit();
   },
@@ -824,26 +774,33 @@ FLOW.QuestionView = FLOW.View.extend({
   },
 
   validateQuestionObserver: function () {
-      this.set('questionValidationFailure', (this.text != null && this.text.length > 500));
+      this.set('questionValidationFailure', ((this.text && this.text.length > 500) || !this.text || this.text == ""));
+      if (this.text && this.text.length > 500) {
+        this.set('questionValidationFailureReason', Ember.String.loc('_question_over_500_chars_header'));
+      } else {
+        if (!this.text || this.text == "") {
+          this.set('questionValidationFailureReason', Ember.String.loc('_question_text_empty'));
+        }
+      }
   }.observes('this.text'),
 
   validateQuestionTooltipObserver: function(){
       this.set('questionTooltipValidationFailure', (this.tip != null && this.tip.length > 500));
   }.observes('this.tip'),
 
-  validateQuestionIdObserver: function() {
+  validateVariableNameObserver: function() {
     var self = this;
-    self.validateQuestionId({
+    self.validateVariableName({
       success: function() {
-        self.set('questionIdValidationFailure', false);
-        self.set('questionIdValidationFailureReason', null);
+        self.set('variableNameValidationFailure', false);
+        self.set('variableNameValidationFailureReason', null);
       },
       failure: function(msg) {
-        self.set('questionIdValidationFailure', true);
-        self.set('questionIdValidationFailureReason', msg);
+        self.set('variableNameValidationFailure', true);
+        self.set('variableNameValidationFailureReason', msg);
       }
     });
-  }.observes('this.questionId'),
+  }.observes('this.variableName'),
 
   showQuestionModifyButtons: function () {
     var form = FLOW.selectedControl.get('selectedSurvey');

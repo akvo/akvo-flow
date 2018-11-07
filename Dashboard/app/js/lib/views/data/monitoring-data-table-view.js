@@ -1,6 +1,7 @@
 FLOW.MonitoringDataTableView = FLOW.View.extend({
   showingDetailsDialog: false,
   cursorStart: null,
+  missingSurvey:false,
 
   pageNumber: function(){
 	return FLOW.router.surveyedLocaleController.get('pageNumber');
@@ -22,10 +23,16 @@ FLOW.MonitoringDataTableView = FLOW.View.extend({
   },
 
   showSurveyInstanceDetails: function (evt) {
-    FLOW.questionAnswerControl.doQuestionAnswerQuery(evt.context.get('keyId'));
+    FLOW.questionAnswerControl.doQuestionAnswerQuery(evt.context);
     $('.si_details').hide();
     $('tr[data-flow-id="si_details_' + evt.context.get('keyId') + '"]').show();
   },
+    
+  watchSurveySelection: function(){
+     if (FLOW.selectedControl.get('selectedSurveyGroup') !== null) {
+        this.set('missingSurvey', false)
+     }
+  }.observes('FLOW.selectedControl.selectedSurveyGroup'),
 
   findSurveyedLocale: function (evt) {
 	  var ident = this.get('identifier'),
@@ -33,7 +40,12 @@ FLOW.MonitoringDataTableView = FLOW.View.extend({
 	      sgId = FLOW.selectedControl.get('selectedSurveyGroup'),
 	      cursorType = FLOW.metaControl.get('cursorType'),
         criteria = {};
-
+    //check if the survey is not selected, then highlight the dropdown
+     if (FLOW.selectedControl.get('selectedSurveyGroup') === null) {
+       this.set('missingSurvey', true)
+       return;
+     }
+    
 	  if (ident) {
 		  criteria.identifier = ident;
 	  }
@@ -98,6 +110,12 @@ FLOW.MonitoringDataTableView = FLOW.View.extend({
   hasPrevPage: function () {
     return FLOW.router.surveyedLocaleController.get('pageNumber');
   }.property('FLOW.router.surveyedLocaleController.pageNumber'),
+  
+  willDestroyElement: function () {
+    FLOW.router.surveyedLocaleController.set('currentContents', null);
+    FLOW.metaControl.set('numSLLoaded',null)
+    FLOW.router.surveyedLocaleController.set('pageNumber',0)
+  }
 });
 
 /**
@@ -107,12 +125,12 @@ FLOW.DataPointView = FLOW.View.extend({
     templateName: 'navData/monitoring-data-row',
 
     approvalStatus: [{label: Ember.String.loc('_pending'), value: 'PENDING'}, { label: Ember.String.loc('_approved'), value: 'APPROVED' },{ label: Ember.String.loc('_rejected'), value: 'REJECTED'}],
-
+     
+     //catering for counter for the data points.
+    tagName: 'span',
+    content: null,
+    pageNumber: 0,
     showDataApprovalBlock: false,
-
-    showSurveyedLocaleDeleteButton: function() {
-        return FLOW.router.surveyedLocaleController.get('userCanDelete');
-    }.property(),
 
     showApprovalStatusColumn: function () {
         return this.get('parentView').get('showApprovalStatusColumn');

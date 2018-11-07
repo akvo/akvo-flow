@@ -1,5 +1,5 @@
 /*
- *  Copyright (C) 2010-2012 Stichting Akvo (Akvo Foundation)
+ *  Copyright (C) 2010-2012,2018 Stichting Akvo (Akvo Foundation)
  *
  *  This file is part of Akvo FLOW.
  *
@@ -41,11 +41,6 @@ public class DisplayTemplateMappingDAO extends BaseDAO<DisplayTemplateMapping> {
             returnList.add((DisplayTemplateMapping) super.save(item));
         }
         return returnList;
-    }
-
-    public List<DisplayTemplateMapping> listByAccessPointType(
-            String propertyValue, String cursorString) {
-        return listByProperty("AccessPointType", propertyValue, "String");
     }
 
     public DisplayTemplateMapping get(Long id) {

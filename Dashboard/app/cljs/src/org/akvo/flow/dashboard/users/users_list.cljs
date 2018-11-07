@@ -1,4 +1,4 @@
-;; Copyright (C) 2014-2015 Stichting Akvo (Akvo Foundation)
+;; Copyright (C) 2014-2015,2018 Stichting Akvo (Akvo Foundation)
 ;;
 ;; This file is part of Akvo FLOW.
 ;;
@@ -20,7 +20,7 @@
             [org.akvo.flow.dashboard.components.bootstrap :as b]
             [org.akvo.flow.dashboard.ajax-helpers :refer (default-ajax-config)]
             [org.akvo.flow.dashboard.dom-helpers :refer (scroll-to-top)]
-            [org.akvo.flow.dashboard.users.user-details :refer (user-details)]
+            [org.akvo.flow.dashboard.users.user-details :refer (user-details) :as user-details]
             [org.akvo.flow.dashboard.users.store :as store]
             [org.akvo.flow.dashboard.projects.store :as projects-store]
             [org.akvo.flow.dashboard.user-auth.store :as user-auth-store]
@@ -57,7 +57,6 @@
           (b/btn-link {:on-click #(om/set-state! owner :confirm-delete? false)} (t> _no))]
          [:span
           (b/btn-link {:on-click #(do
-                                    (dispatch :projects/fetch nil)
                                     (scroll-to-top)
                                     (on-action user))}
                       :pencil (t> _edit))
@@ -77,9 +76,9 @@
                                     objectPath) ")"]))))]
     (html [:div roles]))))
 
-(defn api-user-mark [{:strs [accessKey]} owner]
+(defn admin?-user-mark [user owner]
   (om/component
-   (html (if accessKey
+   (html (if (user-details/admin-str? user)
            (b/icon :ok)
            [:div]))))
 
@@ -98,9 +97,9 @@
                            {:user user
                             :user-auth-store user-auth-store
                             :roles-store roles-store})}
-     {:title (t> _api_keys)
-      :class "text-center"
-      :component api-user-mark}
+     {:title     (t> _admin)
+      :class     "text-center"
+      :component admin?-user-mark}
      {:title (t> _actions)
       :class "text-center"
       :component user-actions
@@ -137,6 +136,7 @@
             (b/btn-primary {:class "btn-md"
                             :type "button"
                             :on-click #(do (scroll-to-top)
+                                           (om/set-state! owner :random-seed (rand-int 1000000))
                                            (om/set-state! owner :current-user-id 0))}
                            :plus (t> _add_new_user))]]]
          (om/build grid
@@ -159,7 +159,12 @@
                                           empty-user
                                           (store/get-user users current-user-id))
                                   :close! #(do (scroll-to-top)
+                                               (om/set-state! owner :random-seed nil)
                                                (om/set-state! owner :current-user-id nil))
+                                  :set-current-user! (let [seed (:random-seed state)]
+                                                       (fn [user-id]
+                                                         (when (= seed (om/get-state owner :random-seed))
+                                                           (om/set-state! owner :current-user-id user-id))))
                                   :users-store users
                                   :projects-store projects
                                   :roles-store user_roles

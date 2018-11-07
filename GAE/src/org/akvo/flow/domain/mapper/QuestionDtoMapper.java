@@ -1,5 +1,5 @@
 /*
- *  Copyright (C) 2017 Stichting Akvo (Akvo Foundation)
+ *  Copyright (C) 2017-2018 Stichting Akvo (Akvo Foundation)
  *
  *  This file is part of Akvo FLOW.
  *
@@ -51,6 +51,9 @@ public class QuestionDtoMapper {
             if (question.getType() != null) {
                 questionDto.setType(QuestionDto.QuestionType.valueOf(question.getType()
                         .toString()));
+            }
+            if (question.getVariableName() == null) { //Fall back to legacy field
+                questionDto.setVariableName(question.getVariableName());
             }
             questionDto.setKeyId(question.getKey().getId());
             return questionDto;

@@ -47,7 +47,6 @@
             <include name="com/gallatinsystems/framework/dataexport/**" />
             <include name="com/gallatinsystems/framework/gwt/dto/client/**" />
             <include name="org/waterforpeople/mapping/dataexport/**" />
-            <include name="org/waterforpeople/mapping/app/gwt/client/accesspoint/**" />
             <include name="org/waterforpeople/mapping/app/gwt/client/survey/**" />
             <include name="org/waterforpeople/mapping/app/gwt/client/surveyinstance/**" />
             <include name="org/waterforpeople/mapping/app/gwt/client/location/**" />

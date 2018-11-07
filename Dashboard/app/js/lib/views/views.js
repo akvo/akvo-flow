@@ -88,25 +88,22 @@ Ember.Handlebars.registerHelper('tooltip', function (i18nKey) {
 
 
 FLOW.renderCaddisflyAnswer = function(json){
-  var name = ""
-  var imageUrl = ""
-  var result = Ember.A();
-  if (!Ember.empty(json)){
+  if (!Ember.empty(json)) {
     try {
         var jsonParsed = JSON.parse(json);
 
-        // get out image url
-        if (!Ember.empty(jsonParsed.image)){
-          imageUrl = FLOW.Env.photo_url_root + jsonParsed.image.trim();
-        }
-
         // contruct html
-        html = "<div><strong>" + name + "</strong></div>"
+        html = "<div><strong>" + jsonParsed.name + "</strong></div>";
         html += jsonParsed.result.map(function(item){
                 return "<br><div>" + item.name + " : " + item.value + " " + item.unit + "</div>";
             }).join("\n");
-        html += "<br>"
-        html += "<div class=\"signatureImage\"><img src=\"" + imageUrl +"\"}} /></div>"
+        html += "<br>";
+
+        // get out image url
+        if ('image' in jsonParsed) {
+          imageUrl = FLOW.Env.photo_url_root + jsonParsed.image.trim();
+          html += "<div class=\"signatureImage\"><img src=\"" + imageUrl +"\"/></div>";
+        }
         return html;
     } catch (e) {
         return json;
@@ -118,23 +115,16 @@ FLOW.renderCaddisflyAnswer = function(json){
 
 Ember.Handlebars.registerHelper('placemarkDetail', function () {
   var answer, markup, question, cascadeJson, optionJson, cascadeString = "",
-  questionType, imageSrcAttr, signatureJson, photoJson, cartoQuestionType, self=this;
-
-  if (FLOW.Env.mapsProvider === 'cartodb') {
-      FLOW.router.mapsController.questions.forEach(function(qItem){
-          if (qItem.get("keyId") == Ember.get(self, 'questionID')) {
-              cartoQuestionType = qItem.get("type");
-          }
-      });
-  }
+  imageSrcAttr, signatureJson, photoJson, self=this;
 
   question = Ember.get(this, 'questionText');
-  answer = Ember.get(this, FLOW.Env.mapsProvider === 'cartodb' ? 'value': 'stringValue') || '';
+  answer = Ember.get(this, 'value') || '';
   answer = answer.replace(/\|/g, ' | '); // geo, option and cascade data
   answer = answer.replace(/\//g, ' / '); // also split folder paths
-  questionType = FLOW.Env.mapsProvider === 'cartodb' ? cartoQuestionType: Ember.get(this, 'questionType');
+  answer = answer.replace(/\\/g, ''); // remove escape characters
+  responseType = Ember.get(this, 'type');
 
-  if (questionType === 'CASCADE') {
+  if (responseType === 'CASCADE') {
 
       if (answer.indexOf("|") > -1) {
         // ignore
@@ -146,41 +136,41 @@ Ember.Handlebars.registerHelper('placemarkDetail', function () {
               }).join("|");
           }
       }
-  } else if ((questionType === 'VIDEO' || questionType === 'PHOTO') && answer.charAt(0) === '{') {
+  } else if ((responseType === 'VIDEO' || responseType === 'IMAGE') && answer.charAt(0) === '{') {
     photoJson = JSON.parse(answer)
     var mediaAnswer = photoJson.filename;
 
     var mediaFileURL = FLOW.Env.photo_url_root + mediaAnswer.split('/').pop().replace(/\s/g, '');
-    if (questionType == "PHOTO") {
+    if (responseType == "IMAGE") {
         answer = '<div class=":imgContainer photoUrl:shown:hidden">'
         +'<a class="media" data-coordinates=\''
         +((photoJson.location) ? answer : '' )+'\' href="'
         +mediaFileURL+'" target="_blank"><img src="'+mediaFileURL+'" alt=""/></a><br>'
         +((photoJson.location) ? '<a class="media-location" data-coordinates=\''+answer+'\'>'+Ember.String.loc('_show_photo_on_map')+'</a>' : '')
         +'</div>';
-    } else if (questionType == "VIDEO") {
+    } else if (responseType == "VIDEO") {
         answer = '<div><div class="media" data-coordinates=\''
-        +((photoJson.location) ? answer : '' )+'\'>'+mediaFileURL+'</div><br>'
+        +((photoJson.location) ? answer : '' )+'\'><video controls><source src="'+mediaFileURL+'" type="video/mp4"></video></div><br>'
         +'<a href="'+mediaFileURL+'" target="_blank">'+Ember.String.loc('_open_video')+'</a>'
         +((photoJson.location) ? '&nbsp;|&nbsp;<a class="media-location" data-coordinates=\''+answer+'\'>'+Ember.String.loc('_show_photo_on_map')+'</a>' : '')
         +'</div>';
     }
-  } else if (questionType === 'OPTION' && answer.charAt(0) === '[') {
+  } else if (responseType === 'OPTION' && answer.charAt(0) === '[') {
     optionJson = JSON.parse(answer);
     answer = optionJson.map(function(item){
       return item.text;
     }).join("|");
-  } else if (questionType === 'SIGNATURE') {
+  } else if (responseType === 'SIGNATURE') {
     imageSrcAttr = 'data:image/png;base64,';
     signatureJson = JSON.parse(answer);
     answer = signatureJson && imageSrcAttr + signatureJson.image || '';
     answer = answer && '<img src="' + answer + '" />';
     answer = answer && answer + '<div>' + Ember.String.loc('_signed_by') + ':' + signatureJson.name + '</div>' || '';
-  } else if (questionType === 'DATE') {
-    answer = renderTimeStamp(answer);
-  } else if (questionType === 'CADDISFLY'){
-    answer = FLOW.renderCaddisflyAnswer(answer)
-  } else if (questionType === 'GEOSHAPE') {
+  } else if (responseType === 'DATE') {
+    answer = FLOW.renderTimeStamp(answer);
+  } else if (responseType === 'CADDISFLY'){
+    answer = FLOW.renderCaddisflyAnswer(answer);
+  } else if (responseType === 'VALUE' && answer.indexOf("features\":[") > 0) {
     var geoshapeObject = FLOW.parseJSON(answer, "features");
     if (geoshapeObject) {
         answer = '<div class="geoshape-map" data-geoshape-object=\''+answer+'\' style="width:100%; height: 100px; float: left"></div>'
@@ -212,16 +202,9 @@ Ember.Handlebars.registerHelper('placemarkDetail', function () {
 
 //if there's geoshape, draw it
 Ember.Handlebars.registerHelper('drawGeoshapes', function () {
-    var cartoQuestionType, questionType, self=this;
-    if (FLOW.Env.mapsProvider === 'cartodb') {
-        FLOW.router.mapsController.questions.forEach(function(qItem){
-            if (qItem.get("keyId") == Ember.get(self, 'questionID')) {
-                cartoQuestionType = qItem.get("type");
-            }
-        });
-    }
-    questionType = FLOW.Env.mapsProvider === 'cartodb' ? cartoQuestionType: Ember.get(this, 'questionType');
-    if (questionType == "GEOSHAPE") {
+    var self = this, responseType = Ember.get(this, 'type'), answer = Ember.get(this, 'value');
+
+    if (responseType === 'VALUE' && answer.indexOf("features\":[") > 0) {
         setTimeout(function(){
             $('.geoshape-map').each(function(index){
                 FLOW.drawGeoShape($('.geoshape-map')[index], $(this).data('geoshape-object'));
@@ -232,7 +215,7 @@ Ember.Handlebars.registerHelper('drawGeoshapes', function () {
 
 /*  Take a timestamp and render it as a date in format
     YYYY-mm-dd */
-function renderTimeStamp(timestamp) {
+FLOW.renderTimeStamp = function(timestamp) {
   var d, t, date, month, year;
   t = parseInt(timestamp, 10);
   if (isNaN(t)) {
@@ -262,6 +245,44 @@ function renderTimeStamp(timestamp) {
 
   return year + "-" + monthString + "-" + dateString;
 }
+
+FLOW.renderDate = function(timestamp){
+  if (timestamp) {
+    d = new Date(parseInt(timestamp, 10));
+    curr_date = d.getDate();
+    curr_month = d.getMonth() + 1;
+    curr_year = d.getFullYear();
+    curr_hour = d.getHours();
+    curr_min = d.getMinutes();
+
+    if (curr_month < 10) {
+      monthString = "0" + curr_month.toString();
+    } else {
+      monthString = curr_month.toString();
+    }
+
+    if (curr_date < 10) {
+      dateString = "0" + curr_date.toString();
+    } else {
+      dateString = curr_date.toString();
+    }
+
+    if (curr_hour < 10) {
+      hourString = "0" + curr_hour.toString();
+    } else {
+      hourString = curr_hour.toString();
+    }
+
+    if (curr_min < 10) {
+      minString = "0" + curr_min.toString();
+    } else {
+      minString = curr_min.toString();
+    }
+
+    return curr_year + "-" + monthString + "-" + dateString + "  " + hourString + ":" + minString;
+  }
+  return;
+};
 
 // translates values to labels for languages
 Ember.Handlebars.registerHelper('toLanguage', function (value) {
@@ -311,38 +332,7 @@ Ember.Handlebars.registerHelper("date", function (property) {
 Ember.Handlebars.registerHelper("date1", function (property) {
   var d, curr_date, curr_month, curr_year, curr_hour, curr_min, monthString, dateString, hourString, minString;
   if (Ember.get(this, property) !== null) {
-    d = new Date(parseInt(Ember.get(this, property), 10));
-    curr_date = d.getDate();
-    curr_month = d.getMonth() + 1;
-    curr_year = d.getFullYear();
-    curr_hour = d.getHours();
-    curr_min = d.getMinutes();
-
-    if (curr_month < 10) {
-      monthString = "0" + curr_month.toString();
-    } else {
-      monthString = curr_month.toString();
-    }
-
-    if (curr_date < 10) {
-      dateString = "0" + curr_date.toString();
-    } else {
-      dateString = curr_date.toString();
-    }
-
-    if (curr_hour < 10) {
-      hourString = "0" + curr_hour.toString();
-    } else {
-      hourString = curr_hour.toString();
-    }
-
-    if (curr_min < 10) {
-      minString = "0" + curr_min.toString();
-    } else {
-      minString = curr_min.toString();
-    }
-
-    return curr_year + "-" + monthString + "-" + dateString + "  " + hourString + ":" + minString;
+    return FLOW.renderDate(Ember.get(this, property));
   } else {
     return "";
   }
@@ -352,7 +342,7 @@ Ember.Handlebars.registerHelper("date1", function (property) {
 Ember.Handlebars.registerHelper("date3", function (property) {
   var d, curr_date, curr_month, curr_year, monthString, dateString;
   if (Ember.get(this, property) !== null) {
-    return renderTimeStamp(Ember.get(this, property));
+    return FLOW.renderTimeStamp(Ember.get(this, property));
   }
 });
 
@@ -457,7 +447,14 @@ FLOW.getCentroid = function (arr) {
   return arr.reduce(function (x,y) {
     return [x[0] + y[0]/arr.length, x[1] + y[1]/arr.length]
   }, [0,0])
-}
+};
+
+FLOW.reportFilename = function(url){
+  if (!url) {
+    return;
+  }
+  return url.split('/').pop().replace(/\s/g, '');
+};
 
 Ember.Handlebars.registerHelper("getServer", function () {
   var loc = window.location.href,
@@ -471,6 +468,15 @@ Ember.Handlebars.registerHelper('sgName', function (property) {
         return item.get && item.get('keyId') === sgId;
       });
   return sg && sg.get('name') || sgId;
+});
+
+Ember.Handlebars.registerHelper('formName', function (property) {
+  var formId = Ember.get(this, property), name = "";
+  var form  = FLOW.Survey.find(formId);
+  if (form) {
+    name += form.get('name');
+  }
+  return name;
 });
 
 // Register a Handlebars helper that instantiates `view`.
@@ -728,9 +734,6 @@ FLOW.InspectDataView = Ember.View.extend({
 FLOW.BulkUploadView = Ember.View.extend({
   templateName: 'navData/bulk-upload'
 });
-FLOW.DataCleaningView = Ember.View.extend({
-  templateName: 'navData/data-cleaning'
-});
 
 FLOW.CascadeResourcesView = Ember.View.extend({
 	  templateName: 'navData/cascade-resources'
@@ -740,17 +743,13 @@ FLOW.MonitoringDataView = Ember.View.extend({
   templateName: 'navData/monitoring-data'
 });
 
-// reports views
-FLOW.NavReportsView = Ember.View.extend({
-  templateName: 'navReports/nav-reports'
-});
-
-FLOW.ExportReportsView = Ember.View.extend({
-  templateName: 'navReports/export-reports'
-});
-
 FLOW.ChartReportsView = Ember.View.extend({
   templateName: 'navReports/chart-reports'
+});
+
+// resources views
+FLOW.NavResourcesView = Ember.View.extend({
+  templateName: 'navResources/nav-resources'
 });
 
 // applets
@@ -816,20 +815,19 @@ FLOW.DatasubnavView = FLOW.View.extend({
     classNameBindings: 'isActive:active'.w(),
 
     isActive: function () {
+      if (this.get('item') === this.get('parentView.selected') && this.get('parentView.selected') === "bulkUpload") {
+        FLOW.uploader.set('bulkUpload', true);
+      } else {
+        if (this.get('parentView.selected') !== "bulkUpload") {
+          FLOW.uploader.set('bulkUpload', false);
+        }
+      }
       return this.get('item') === this.get('parentView.selected');
     }.property('item', 'parentView.selected').cacheable(),
 
     showDataCleaningButton: function () {
         return FLOW.permControl.get('canCleanData');
-    }.property(),
-
-    showCascadeResourcesButton: function () {
-      return FLOW.permControl.get('canManageCascadeResources');
-    }.property(),
-
-    showDataApprovalButton: function () {
-        return FLOW.Env.enableDataApproval && FLOW.permControl.get('canManageDataAppoval');
-    }.property(),
+    }.property()
   })
 });
 
@@ -850,10 +848,10 @@ FLOW.DevicesSubnavView = FLOW.View.extend({
 });
 
 // ********************************************************//
-//             Subnavigation for the Reports tabs
+//             Subnavigation for the Resources tabs
 // ********************************************************//
-FLOW.ReportsSubnavView = Em.View.extend({
-  templateName: 'navReports/reports-subnav',
+FLOW.ResourcesSubnavView = Em.View.extend({
+  templateName: 'navResources/resources-subnav',
   selectedBinding: 'controller.selected',
   NavItemView: Ember.View.extend({
     tagName: 'li',
@@ -861,7 +859,15 @@ FLOW.ReportsSubnavView = Em.View.extend({
 
     isActive: function () {
       return this.get('item') === this.get('parentView.selected');
-    }.property('item', 'parentView.selected').cacheable()
+    }.property('item', 'parentView.selected').cacheable(),
+
+    showCascadeResourcesButton: function () {
+      return FLOW.permControl.get('canManageCascadeResources');
+    }.property(),
+
+    showDataApprovalButton: function () {
+        return FLOW.Env.enableDataApproval && FLOW.permControl.get('canManageDataAppoval');
+    }.property()
   })
 });
 
@@ -939,7 +945,8 @@ FLOW.SelectFolder = Ember.Select.extend({
     this.set('optionLabelPath', 'content.code');
     this.set('optionValuePath', 'content.keyId');
     this.set('controller', FLOW.SurveySelection.create({ selectionFilter: this.get('selectionFilter')}));
-    this.set('content', this.get('controller').getByParentId(this.get('parentId'), this.get('showMonitoringSurveysOnly')));
+    this.set('content', this.get('controller').getByParentId(this.get('parentId'),
+      {monitoringSurveysOnly: this.get('showMonitoringSurveysOnly'), dataReadSurveysOnly: this.get('showDataReadSurveysOnly')}));
   },
 
   onChange: function() {
@@ -948,26 +955,32 @@ FLOW.SelectFolder = Ember.Select.extend({
     var survey = this.get('controller').getSurvey(keyId);
     var nextIdx = this.get('idx') + 1;
     var monitoringOnly = this.get('showMonitoringSurveysOnly');
+    var dataReadOnly = this.get('showDataReadSurveysOnly');
     var filter = this.get('selectionFilter');
 
     if (nextIdx !== childViews.length) {
       childViews.removeAt(nextIdx, childViews.length - nextIdx);
     }
 
-    if (this.get('controller').isSurvey(keyId)) {
-      FLOW.selectedControl.set('selectedSurveyGroup', survey);
-      if (FLOW.Env.enableDataApproval && survey.get('dataApprovalGroupId')) {
-          FLOW.router.approvalGroupController.load(survey.get('dataApprovalGroupId'));
-          FLOW.router.approvalStepsController.loadByGroupId(survey.get('dataApprovalGroupId'));
+    if (keyId) { //only proceed if a folder/survey is selected
+      if (this.get('controller').isSurvey(keyId)) {
+        FLOW.selectedControl.set('selectedSurveyGroup', survey);
+        if (FLOW.Env.enableDataApproval && survey.get('dataApprovalGroupId')) {
+            FLOW.router.approvalGroupController.load(survey.get('dataApprovalGroupId'));
+            FLOW.router.approvalStepsController.loadByGroupId(survey.get('dataApprovalGroupId'));
+        }
+      } else {
+        FLOW.selectedControl.set('selectedSurveyGroup', null);
+        childViews.pushObject(FLOW.SelectFolder.create({
+          parentId: keyId,
+          idx: nextIdx,
+          showMonitoringSurveysOnly: monitoringOnly,
+          showDataReadSurveysOnly: dataReadOnly,
+          selectionFilter : filter
+        }));
       }
     } else {
       FLOW.selectedControl.set('selectedSurveyGroup', null);
-      childViews.pushObject(FLOW.SelectFolder.create({
-        parentId: keyId,
-        idx: nextIdx,
-        showMonitoringSurveysOnly: monitoringOnly,
-        selectionFilter : filter
-      }));
     }
   }.observes('value'),
 });
@@ -983,7 +996,8 @@ FLOW.SurveySelectionView = Ember.ContainerView.extend({
     this.get('childViews').pushObject(FLOW.SelectFolder.create({
       parentId: 0, // start with the root folder
       idx: 0,
-      showMonitoringSurveysOnly: this.get('showMonitoringSurveysOnly') || false
+      showMonitoringSurveysOnly: this.get('showMonitoringSurveysOnly') || false,
+      showDataReadSurveysOnly: this.get('showDataReadSurveysOnly') || false
     }));
   },
 })
@@ -1000,6 +1014,7 @@ FLOW.DataCleaningSurveySelectionView = Ember.ContainerView.extend({
       parentId: 0, // start with the root folder
       idx: 0,
       showMonitoringSurveysOnly: this.get('showMonitoringSurveysOnly') || false,
+      showDataReadSurveysOnly: this.get('showDataReadSurveysOnly') || false,
       selectionFilter : FLOW.projectControl.dataCleaningEnabled
     }));
   },

@@ -1,5 +1,5 @@
 /*
- *  Copyright (C) 2010-2015 Stichting Akvo (Akvo Foundation)
+ *  Copyright (C) 2010-2015,2018 Stichting Akvo (Akvo Foundation)
  *
  *  This file is part of Akvo FLOW.
  *
@@ -29,9 +29,7 @@ import com.gallatinsystems.framework.rest.RestRequest;
 public class TaskRequest extends RestRequest {
 
     private static final long serialVersionUID = 3002548651592779931L;
-    public static final String ADD_ACCESS_POINT_ACTION = "addAccessPoint";
     public static final String PROCESS_FILE_ACTION = "processFile";
-    public static final String UPDATE_AP_GEO_SUB = "updateAccessPointGeoSub";
 
     public static final String FILE_NAME_PARAM = "fileName";
     public static final String SURVEY_ID_PARAM = "surveyId";
@@ -40,7 +38,6 @@ public class TaskRequest extends RestRequest {
     public static final String IMEI_PARAM = "imei";
     public static final String CHECKSUM_PARAM = "checksum";
     public static final String OFFSET_PARAM = "offset";
-    public static final String ACCESS_POINT_ID_PARAM = "accessPointId";
     public static final String TASK_RETRY_PARAM = "retry";
 
     private String fileName;
@@ -50,7 +47,6 @@ public class TaskRequest extends RestRequest {
     private String imei;
     private String checksum;
     private Integer offset = 0;
-    private Long accessPointId = null;
     private Integer retry = 0;
 
     public Integer getRetry() {
@@ -124,9 +120,6 @@ public class TaskRequest extends RestRequest {
         androidId = req.getParameter(ANDROID_ID);
         imei = req.getParameter(IMEI_PARAM);
         checksum = req.getParameter(CHECKSUM_PARAM);
-        if (req.getParameter(ACCESS_POINT_ID_PARAM) != null) {
-            setAccessPointId(Long.parseLong(req.getParameter(ACCESS_POINT_ID_PARAM)));
-        }
         try {
             if (req.getParameter(SURVEY_ID_PARAM) != null) {
                 surveyId = Long.parseLong(req.getParameter(SURVEY_ID_PARAM));
@@ -163,14 +156,6 @@ public class TaskRequest extends RestRequest {
             addError(new RestError(RestError.MISSING_PARAM_ERROR_CODE,
                     RestError.MISSING_PARAM_ERROR_MESSAGE, errorMsg));
         }
-    }
-
-    public void setAccessPointId(Long accessPointId) {
-        this.accessPointId = accessPointId;
-    }
-
-    public Long getAccessPointId() {
-        return accessPointId;
     }
 
 }
