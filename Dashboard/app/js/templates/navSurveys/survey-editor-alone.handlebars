@@ -1,0 +1,21 @@
+  {{#view FLOW.ProjectMainView}}
+    <section class="topBar">
+      <nav class="breadCrumb">
+        <ul>
+          <li>
+            I am here!
+          </li>
+        </ul>
+      </nav>
+        <nav class="menuTopbar">
+          <ul>
+            {{#if view.hasUnsavedChanges}}
+              <li><a class="saveProject" {{action 'saveProject' target="FLOW.projectControl"}}>{{t _save}}</a></li>
+            {{else}}
+              <li><a class="saveProject noChanges">{{t _save}}</a></li>
+            {{/if}}
+          </ul>
+        </nav>
+    </section>
+    {{view FLOW.ProjectView}}
+{{/view}}

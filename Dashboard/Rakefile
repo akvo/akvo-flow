@@ -9,6 +9,10 @@ def pipeline
   Rake::Pipeline::Project.new('Assetfile')
 end
 
+def pipelineAlone
+  Rake::Pipeline::Project.new('AssetfileAlone')
+end
+
 def pipeline_public
   Rake::Pipeline::Project.new('AssetfilePublic')
 end
@@ -21,8 +25,8 @@ end
 
 desc "Build #{APPNAME}"
 task :build => :clean do
+  pipelineAlone.invoke
   pipeline.invoke
-  pipeline_public.invoke
 end
 
 desc "Watch for changes"
