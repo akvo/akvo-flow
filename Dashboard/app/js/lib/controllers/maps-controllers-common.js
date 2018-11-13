@@ -159,7 +159,6 @@ FLOW.placemarkDetailController = Ember.ArrayController.create({
       var mapsController = FLOW.router.get('mapsController');
       if (mapsController && mapsController.get('selectedMarker')) {
           var selectedPlacemarkId = mapsController.selectedMarker.target.options.placemarkId;
-          this.set('dataPointCollectionDate', mapsController.selectedMarker.target.options.collectionDate);
           this.set('dataPoint', FLOW.store.find(FLOW.SurveyedLocale, selectedPlacemarkId));
           FLOW.surveyInstanceControl.set('content', FLOW.store.findQuery(FLOW.SurveyInstance, {
                 'surveyedLocaleId': selectedPlacemarkId,
@@ -190,7 +189,10 @@ FLOW.placemarkDetailController = Ember.ArrayController.create({
       var formInstance = formInstances.filterProperty('surveyId', formId).get('firstObject');
 
       if (formInstance) {
+        this.set('dataPointCollectionDate', formInstance.get('collectionDate'));
           FLOW.questionAnswerControl.doQuestionAnswerQuery(formInstance);
+      } else {
+        this.set('dataPointCollectionDate', null);
       }
   }.observes('FLOW.surveyInstanceControl.content.isLoaded'),
 });
