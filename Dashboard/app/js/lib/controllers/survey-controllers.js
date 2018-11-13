@@ -1078,7 +1078,10 @@ FLOW.optionListControl = Ember.ArrayController.create({
 FLOW.questionOptionsControl = Ember.ArrayController.create({
   content: null,
   questionId: null,
-  emptyOptions: false,
+  emptyOptions: function () {
+    var c = this.content;
+    return !(c.get('length') > 0);
+  }.property('content.length'),
 
   /*
    *  Add two empty option objects to the options list.  This is used
@@ -1105,9 +1108,6 @@ FLOW.questionOptionsControl = Ember.ArrayController.create({
    */
   addOption: function() {
     var c = this.content;
-    if (this.get('emptyOptions')) {
-      this.set('emptyOptions', false);
-    }
     c.addObject(Ember.Object.create({
         code: null,
         text: Ember.String.loc('_option') +" "+ (c.get('length') + 1),
@@ -1164,9 +1164,6 @@ FLOW.questionOptionsControl = Ember.ArrayController.create({
   deleteOption: function(event) {
     var c = this.content, option = event.view.content;
     c.removeObject(option);
-    if (!(c.get('length') > 0)) {
-      this.set('emptyOptions', true);
-    }
 
     if (option.get('keyId')) { // clear persisted versions
       option.deleteRecord();
