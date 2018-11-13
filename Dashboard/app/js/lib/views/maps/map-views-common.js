@@ -11,7 +11,6 @@ FLOW.NavMapsView = FLOW.View.extend({
   selectedMediaMarker: {},
   mediaMarkerSelected: {},
   geoModel: null,
-  selectedSurvey: null,
   showSurveyFilters: true, // show filters when user is logged in
 
   init: function () {
