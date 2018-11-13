@@ -1093,7 +1093,7 @@ FLOW.questionOptionsControl = Ember.ArrayController.create({
       while (defaultLength > 0) {
         c.addObject(Ember.Object.create({
           code: null,
-          text: Ember.String.loc('_option') +" "+ (c.get('length') + 1),
+          text: Ember.String.loc('_new_option'),
           order: c.get('length') + 1,
           questionId: this.get('questionId'),
         }));
@@ -1110,7 +1110,7 @@ FLOW.questionOptionsControl = Ember.ArrayController.create({
     var c = this.content;
     c.addObject(Ember.Object.create({
         code: null,
-        text: Ember.String.loc('_option') +" "+ (c.get('length') + 1),
+        text: Ember.String.loc('_new_option'),
         order: c.get('length') + 1,
         questionId: this.get('questionId'),
     }));
