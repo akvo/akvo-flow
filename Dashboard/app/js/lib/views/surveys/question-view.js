@@ -774,7 +774,7 @@ FLOW.QuestionView = FLOW.View.extend({
   },
 
   validateQuestionObserver: function () {
-      this.set('questionValidationFailure', ((this.text && this.text.length > 500) || !this.text || this.text == "" || FLOW.questionOptionsControl.get('emptyOptions')));
+      this.set('questionValidationFailure', ((this.text && this.text.length > 500) || !this.text || this.text == ""));
       if (this.text && this.text.length > 500) {
         this.set('questionValidationFailureReason', Ember.String.loc('_question_over_500_chars_header'));
       } else {

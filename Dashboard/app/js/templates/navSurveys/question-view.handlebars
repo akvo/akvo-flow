@@ -178,7 +178,11 @@
         {{#if view.questionValidationFailure }}
         <li><a class="button noChanges" id="standardBtn_01">{{t _save_question}}</a> </li>
         {{else}}
+        {{#if FLOW.questionOptionsControl.emptyOptions }}
+        <li><a class="button noChanges" id="standardBtn_01">{{t _save_question}}</a> </li>
+        {{else}}
         <li><a class="button" id="standardBtn_01" {{action "doSaveEditQuestion" target="this"}}>{{t _save_question}}</a> </li>
+        {{/if}}
         {{/if}}
         {{/if}}
         <li><a class="cancel" id="standardBtn_01" {{action "doCancelEditQuestion" target="this"}}>{{t _cancel}}</a> </li>
