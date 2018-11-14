@@ -11,7 +11,6 @@ FLOW.NavMapsView = FLOW.View.extend({
   selectedMediaMarker: {},
   mediaMarkerSelected: {},
   geoModel: null,
-  selectedSurvey: null,
   showSurveyFilters: true, // show filters when user is logged in
 
   init: function () {
@@ -208,20 +207,18 @@ FLOW.NavMapsView = FLOW.View.extend({
   },
 
   surveySelection: function () {
-      this.clearMap();
-      this.redoMap();
-  }.observes('this.selectedSurvey'),
+      this.clearMap("form-selection");
+  }.observes('FLOW.selectedControl.selectedSurvey'),
 
   surveyGroupSelection: function () {
-      this.clearMap();
+      this.clearMap("survey-selection");
       this.redoMap();
   }.observes('FLOW.selectedControl.selectedSurveyGroup'),
 
-  clearMap: function () {
-    FLOW.router.mapsController.set('selectedMarker',null);
-    FLOW.questionAnswerControl.set('content', null);
+  clearMap: function (trigger) {
+    FLOW.router.mapsController.clearMarker();
     this.set('detailsPaneVisible', false);
-      if (!Ember.empty(FLOW.router.mapsController.allPlacemarks)) {
+      if (!Ember.empty(FLOW.router.mapsController.allPlacemarks) && trigger == "survey-selection") {
           FLOW.router.mapsController.allPlacemarks.clearLayers();
       }
   },

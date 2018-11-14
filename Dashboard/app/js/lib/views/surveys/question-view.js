@@ -782,7 +782,7 @@ FLOW.QuestionView = FLOW.View.extend({
           this.set('questionValidationFailureReason', Ember.String.loc('_question_text_empty'));
         }
       }
-  }.observes('this.text'),
+  }.observes('this.text', 'FLOW.questionOptionsControl.emptyOptions'),
 
   validateQuestionTooltipObserver: function(){
       this.set('questionTooltipValidationFailure', (this.tip != null && this.tip.length > 500));

@@ -111,12 +111,7 @@ FLOW.MapsController = Ember.ArrayController.extend({
             // first deselect others
             if (!Ember.none(FLOW.router.mapsController.get('selectedMarker'))) {
                 if (FLOW.router.mapsController.selectedMarker.target.options.placemarkId != marker.target.options.placemarkId) {
-                    FLOW.router.mapsController.selectedMarker.target.options.selected = false;
-                    FLOW.router.mapsController.selectedMarker.target.setStyle({
-                        color:'#d46f12',
-                        fillColor:'#edb660'});
-                    FLOW.router.mapsController.set('selectedMarker',null);
-                    FLOW.questionAnswerControl.set('content', null); //clear answers from side bar
+                  FLOW.router.mapsController.clearMarker();
                 }
             }
 
@@ -127,6 +122,20 @@ FLOW.MapsController = Ember.ArrayController.extend({
             marker.target.options.selected = true;
             FLOW.router.mapsController.set('selectedMarker',marker);
         }
+    },
+
+    clearMarker: function () {
+      if (!Ember.none(FLOW.router.mapsController.get('selectedMarker'))) {
+        FLOW.router.mapsController.selectedMarker.target.options.selected = false;
+        FLOW.router.mapsController.selectedMarker.target.setStyle({
+            color:'#d46f12',
+            fillColor:'#edb660'});
+      }
+      FLOW.router.mapsController.set('selectedMarker',null);
+      FLOW.questionAnswerControl.set('content', null); //clear answers from side bar
+      FLOW.placemarkDetailController.set('dataPoint', null); //clear details panel header
+      FLOW.placemarkDetailController.set('dataPointCollectionDate', null); //in case previous point's collection date is still cached
+      FLOW.placemarkDetailController.set('noSubmissions', false); //can't confirm absence of data if we haven't checked
     },
 
     formatDate: function(date) {
@@ -143,6 +152,7 @@ FLOW.placemarkDetailController = Ember.ArrayController.create({
   dataPoint: null,
 
   dataPointCollectionDate: null,
+  noSubmissions: false,
 
   dataPointDisplayName: function () {
       return this.dataPoint && this.dataPoint.get('displayName')
@@ -159,7 +169,6 @@ FLOW.placemarkDetailController = Ember.ArrayController.create({
       var mapsController = FLOW.router.get('mapsController');
       if (mapsController && mapsController.get('selectedMarker')) {
           var selectedPlacemarkId = mapsController.selectedMarker.target.options.placemarkId;
-          this.set('dataPointCollectionDate', mapsController.selectedMarker.target.options.collectionDate);
           this.set('dataPoint', FLOW.store.find(FLOW.SurveyedLocale, selectedPlacemarkId));
           FLOW.surveyInstanceControl.set('content', FLOW.store.findQuery(FLOW.SurveyInstance, {
                 'surveyedLocaleId': selectedPlacemarkId,
@@ -183,19 +192,19 @@ FLOW.placemarkDetailController = Ember.ArrayController.create({
             return;
         }
 
-      var survey = FLOW.projectControl.content.filterProperty('keyId', this.dataPoint.get('surveyGroupId')).get('firstObject');
+      var survey = FLOW.selectedControl.get('selectedSurvey');
       if (!survey) return;
 
-      var formInstance;
-      if (survey.get('monitoringGroup')) {
-          var registrationFormId = survey.get('newLocaleSurveyId');
-          formInstance = formInstances.filterProperty('surveyId', registrationFormId).get('firstObject');
-      } else {
-          formInstance = formInstances.get('firstObject');
-      }
+      var formId = survey.get('keyId');
+      var formInstance = formInstances.filterProperty('surveyId', formId).get('firstObject');
 
       if (formInstance) {
+        this.set('noSubmissions', false);
+        this.set('dataPointCollectionDate', formInstance.get('collectionDate'));
           FLOW.questionAnswerControl.doQuestionAnswerQuery(formInstance);
+      } else {
+        this.set('noSubmissions', true);
+        this.set('dataPointCollectionDate', null);
       }
   }.observes('FLOW.surveyInstanceControl.content.isLoaded'),
 });
