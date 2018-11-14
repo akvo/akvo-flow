@@ -1666,7 +1666,7 @@ FLOW.translationControl = Ember.ArrayController.create({
           keyId: item.get('keyId'),
           type: "QO",
           order: 1000000 * qgOrder + 1000 * qOrder + parseInt(item.get('order'), 10) + 1,
-          displayOrder: item.get('order'),
+          displayOrder: item.get('order') + 1,
           qoText: item.get('text'),
           isQO: true
         }));
