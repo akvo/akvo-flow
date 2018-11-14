@@ -1079,6 +1079,10 @@ FLOW.optionListControl = Ember.ArrayController.create({
 FLOW.questionOptionsControl = Ember.ArrayController.create({
   content: null,
   questionId: null,
+  emptyOptions: function () {
+    var c = this.content;
+    return !(c.get('length') > 0);
+  }.property('content.length'),
 
   /*
    *  Add two empty option objects to the options list.  This is used
@@ -1090,7 +1094,7 @@ FLOW.questionOptionsControl = Ember.ArrayController.create({
       while (defaultLength > 0) {
         c.addObject(Ember.Object.create({
           code: null,
-          text: null,
+          text: Ember.String.loc('_new_option'),
           order: c.get('length') + 1,
           questionId: this.get('questionId'),
         }));
@@ -1107,7 +1111,7 @@ FLOW.questionOptionsControl = Ember.ArrayController.create({
     var c = this.content;
     c.addObject(Ember.Object.create({
         code: null,
-        text: null,
+        text: Ember.String.loc('_new_option'),
         order: c.get('length') + 1,
         questionId: this.get('questionId'),
     }));
