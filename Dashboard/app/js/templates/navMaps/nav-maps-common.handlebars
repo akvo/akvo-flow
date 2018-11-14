@@ -37,6 +37,9 @@
           <li></li>
         </ul>
         <div class="mapInfoDetail">
+          {{#if FLOW.placemarkDetailController.noSubmissions}}
+            <p class="noDetails">{{t _no_submissions_on_point}}</p>
+          {{else}}
             {{#each responseSubList in FLOW.questionAnswerControl.contentByGroup}}
               {{#each iterations in responseSubList}}
                 <p></p>
@@ -46,9 +49,8 @@
                           {{drawGeoshapes}}
                       {{/each}}
               {{/each}}
-            {{else}}
-                <p class="noDetails">{{t _no_submissions_on_point}}</p>
             {{/each}}
+          {{/if}}
         </div>
       {{else}}
         <p class="noDetails">{{t _no_details}}</p>

@@ -152,6 +152,7 @@ FLOW.placemarkDetailController = Ember.ArrayController.create({
   dataPoint: null,
 
   dataPointCollectionDate: null,
+  noSubmissions: false,
 
   dataPointDisplayName: function () {
       return this.dataPoint && this.dataPoint.get('displayName')
@@ -198,9 +199,11 @@ FLOW.placemarkDetailController = Ember.ArrayController.create({
       var formInstance = formInstances.filterProperty('surveyId', formId).get('firstObject');
 
       if (formInstance) {
+        this.set('noSubmissions', false);
         this.set('dataPointCollectionDate', formInstance.get('collectionDate'));
           FLOW.questionAnswerControl.doQuestionAnswerQuery(formInstance);
       } else {
+        this.set('noSubmissions', true);
         this.set('dataPointCollectionDate', null);
       }
   }.observes('FLOW.surveyInstanceControl.content.isLoaded'),
