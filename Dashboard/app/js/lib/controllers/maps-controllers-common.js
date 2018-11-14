@@ -111,12 +111,7 @@ FLOW.MapsController = Ember.ArrayController.extend({
             // first deselect others
             if (!Ember.none(FLOW.router.mapsController.get('selectedMarker'))) {
                 if (FLOW.router.mapsController.selectedMarker.target.options.placemarkId != marker.target.options.placemarkId) {
-                    FLOW.router.mapsController.selectedMarker.target.options.selected = false;
-                    FLOW.router.mapsController.selectedMarker.target.setStyle({
-                        color:'#d46f12',
-                        fillColor:'#edb660'});
-                    FLOW.router.mapsController.set('selectedMarker',null);
-                    FLOW.questionAnswerControl.set('content', null); //clear answers from side bar
+                  FLOW.router.mapsController.clearMarker();
                 }
             }
 
@@ -127,6 +122,20 @@ FLOW.MapsController = Ember.ArrayController.extend({
             marker.target.options.selected = true;
             FLOW.router.mapsController.set('selectedMarker',marker);
         }
+    },
+
+    clearMarker: function () {
+      if (!Ember.none(FLOW.router.mapsController.get('selectedMarker'))) {
+        FLOW.router.mapsController.selectedMarker.target.options.selected = false;
+        FLOW.router.mapsController.selectedMarker.target.setStyle({
+            color:'#d46f12',
+            fillColor:'#edb660'});
+      }
+      FLOW.router.mapsController.set('selectedMarker',null);
+      FLOW.questionAnswerControl.set('content', null); //clear answers from side bar
+      FLOW.placemarkDetailController.set('dataPoint', null); //clear details panel header
+      FLOW.placemarkDetailController.set('dataPointCollectionDate', null); //in case previous point's collection date is still cached
+      FLOW.placemarkDetailController.set('noSubmissions', false); //can't confirm absence of data if we haven't checked
     },
 
     formatDate: function(date) {

@@ -216,8 +216,7 @@ FLOW.NavMapsView = FLOW.View.extend({
   }.observes('FLOW.selectedControl.selectedSurveyGroup'),
 
   clearMap: function (trigger) {
-    FLOW.router.mapsController.set('selectedMarker',null);
-    FLOW.questionAnswerControl.set('content', null);
+    FLOW.router.mapsController.clearMarker();
     this.set('detailsPaneVisible', false);
       if (!Ember.empty(FLOW.router.mapsController.allPlacemarks) && trigger == "survey-selection") {
           FLOW.router.mapsController.allPlacemarks.clearLayers();
