@@ -2,7 +2,16 @@
 ----
 # Akvo Flow Dashboard v1.9.40 - Melodious Melon
 Date: 14th November 2018
-...
+
+## New and noteworthy
+* **Maps** - Filter data points on maps tab by form [#2770]
+* **Survey design** - Disable ability to save optionless option type questions [#2118]. Order forms on survey tab by date created instead of alphabetically [#2917]
+* **Exports** - Show codes by default if they exist when exporting data analysis and comprehensive reports [#2742]
+* **Backend optimisation** - Shorten the time we keep asking for device files from two years to one year[#2913]
+
+## Resolved issues
+* **Front-end bug fixes** - Fix options ordering in translations page [#1983]. Display newly created form [#1981].
+* **Backend bug fixes** - Allow unilog notification setting to be empty [#2906]. Fix question order mixup when publishing [#2911]. Catch null pointer exceptions when fetching credentials [#2909]
 
 # Akvo Flow Dashboard v1.9.39 - Laid-back Lagerstroemia
 Date: 24th October 2018
