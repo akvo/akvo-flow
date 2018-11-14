@@ -1,5 +1,9 @@
 # Akvo Flow Release Notes
 ----
+# Akvo Flow Dashboard v1.9.40 - Melodious Melon
+Date: 14th November 2018
+...
+
 # Akvo Flow Dashboard v1.9.39 - Laid-back Lagerstroemia
 Date: 24th October 2018
 
