@@ -159,7 +159,6 @@ FLOW.placemarkDetailController = Ember.ArrayController.create({
       var mapsController = FLOW.router.get('mapsController');
       if (mapsController && mapsController.get('selectedMarker')) {
           var selectedPlacemarkId = mapsController.selectedMarker.target.options.placemarkId;
-          this.set('dataPointCollectionDate', mapsController.selectedMarker.target.options.collectionDate);
           this.set('dataPoint', FLOW.store.find(FLOW.SurveyedLocale, selectedPlacemarkId));
           FLOW.surveyInstanceControl.set('content', FLOW.store.findQuery(FLOW.SurveyInstance, {
                 'surveyedLocaleId': selectedPlacemarkId,
@@ -183,19 +182,17 @@ FLOW.placemarkDetailController = Ember.ArrayController.create({
             return;
         }
 
-      var survey = FLOW.projectControl.content.filterProperty('keyId', this.dataPoint.get('surveyGroupId')).get('firstObject');
+      var survey = FLOW.selectedControl.get('selectedSurvey');
       if (!survey) return;
 
-      var formInstance;
-      if (survey.get('monitoringGroup')) {
-          var registrationFormId = survey.get('newLocaleSurveyId');
-          formInstance = formInstances.filterProperty('surveyId', registrationFormId).get('firstObject');
-      } else {
-          formInstance = formInstances.get('firstObject');
-      }
+      var formId = survey.get('keyId');
+      var formInstance = formInstances.filterProperty('surveyId', formId).get('firstObject');
 
       if (formInstance) {
+        this.set('dataPointCollectionDate', formInstance.get('collectionDate'));
           FLOW.questionAnswerControl.doQuestionAnswerQuery(formInstance);
+      } else {
+        this.set('dataPointCollectionDate', null);
       }
   }.observes('FLOW.surveyInstanceControl.content.isLoaded'),
 });
