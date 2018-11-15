@@ -596,7 +596,7 @@ FLOW.projectControl = Ember.ArrayController.create({
 FLOW.surveyControl = Ember.ArrayController.create({
   content: null,
   publishedContent: null,
-  sortProperties: ['name'],
+  sortProperties: ['createdDateTime'],
   sortAscending: true,
 
   setPublishedContent: function () {
@@ -642,7 +642,6 @@ FLOW.surveyControl = Ember.ArrayController.create({
       if (form) {
         FLOW.selectedControl.set('selectedSurvey', form);
       }
-
       this.viewDataForms();
     }
   }.observes('content.isLoaded'),
@@ -680,7 +679,7 @@ FLOW.surveyControl = Ember.ArrayController.create({
     var path = FLOW.projectControl.get('currentProjectPath') + "/" + code;
     var ancestorIds = FLOW.selectedControl.selectedSurveyGroup.get('ancestorIds');
     ancestorIds.push(FLOW.selectedControl.selectedSurveyGroup.get('keyId'));
-    FLOW.store.createRecord(FLOW.Survey, {
+    var newForm = FLOW.store.createRecord(FLOW.Survey, {
       "name": code,
       "code": code,
       "path": path,
@@ -692,6 +691,7 @@ FLOW.surveyControl = Ember.ArrayController.create({
       "ancestorIds": ancestorIds
     });
     FLOW.projectControl.get('currentProject').set('deleteDisabled', true);
+    FLOW.selectedControl.set('selectedSurvey', newForm);
     FLOW.store.commit();
     this.refresh();
   },
@@ -704,6 +704,7 @@ FLOW.surveyControl = Ember.ArrayController.create({
       FLOW.projectControl.get('currentProject').set('deleteDisabled', false);
     }
     survey.deleteRecord();
+    FLOW.selectedControl.set('selectedSurvey', null);
 
     FLOW.store.commit();
     this.refresh();
@@ -1078,6 +1079,10 @@ FLOW.optionListControl = Ember.ArrayController.create({
 FLOW.questionOptionsControl = Ember.ArrayController.create({
   content: null,
   questionId: null,
+  emptyOptions: function () {
+    var c = this.content;
+    return !(c.get('length') > 0);
+  }.property('content.length'),
 
   /*
    *  Add two empty option objects to the options list.  This is used
@@ -1089,7 +1094,7 @@ FLOW.questionOptionsControl = Ember.ArrayController.create({
       while (defaultLength > 0) {
         c.addObject(Ember.Object.create({
           code: null,
-          text: null,
+          text: Ember.String.loc('_new_option'),
           order: c.get('length') + 1,
           questionId: this.get('questionId'),
         }));
@@ -1106,7 +1111,7 @@ FLOW.questionOptionsControl = Ember.ArrayController.create({
     var c = this.content;
     c.addObject(Ember.Object.create({
         code: null,
-        text: null,
+        text: Ember.String.loc('_new_option'),
         order: c.get('length') + 1,
         questionId: this.get('questionId'),
     }));
@@ -1660,8 +1665,8 @@ FLOW.translationControl = Ember.ArrayController.create({
         tempArray.push(Ember.Object.create({
           keyId: item.get('keyId'),
           type: "QO",
-          order: 1000000 * qgOrder + 1000 * qOrder + parseInt(item.get('order'), 10),
-          displayOrder: item.get('order'),
+          order: 1000000 * qgOrder + 1000 * qOrder + parseInt(item.get('order'), 10) + 1,
+          displayOrder: item.get('order') + 1,
           qoText: item.get('text'),
           isQO: true
         }));

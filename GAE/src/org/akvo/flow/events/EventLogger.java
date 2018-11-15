@@ -68,7 +68,6 @@ public class EventLogger {
             String urlPath = PropertyUtil.getProperty(Prop.EVENT_NOTIFICATION);
 
             if (urlPath == null || urlPath.trim().length() == 0) {
-                logger.log(Level.SEVERE, "Event notification URL not present in appengine-web.xml");
                 return;
             }
 
