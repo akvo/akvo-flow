@@ -1,5 +1,5 @@
 /*
- *  Copyright (C) 2016-2017 Stichting Akvo (Akvo Foundation)
+ *  Copyright (C) 2016-2018 Stichting Akvo (Akvo Foundation)
  *
  *  This file is part of Akvo FLOW.
  *
@@ -16,16 +16,14 @@
 
 package com.gallatinsystems.survey.dao;
 
-import java.io.InputStream;
 import java.net.URL;
 import java.util.Collections;
 import java.util.List;
+import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-import org.codehaus.jackson.JsonNode;
-import org.codehaus.jackson.map.ObjectMapper;
-import org.codehaus.jackson.type.TypeReference;
+import org.akvo.flow.util.FlowJsonObjectReader;
 import org.waterforpeople.mapping.domain.CaddisflyResource;
 
 /**
@@ -33,7 +31,6 @@ import org.waterforpeople.mapping.domain.CaddisflyResource;
  * consists of only a single method.
  */
 public class CaddisflyResourceDao {
-    private static ObjectMapper mapper = new ObjectMapper();
 
     public static String DEFAULT_CADDISFLY_TESTS_FILE_URL = "https://akvoflow-public.s3.amazonaws.com/caddisfly-tests.json";
 
@@ -41,25 +38,19 @@ public class CaddisflyResourceDao {
             .getName());
 
     public List<CaddisflyResource> listResources(String caddisflyTestsUrl) {
-        List<CaddisflyResource> result = null;
+        Map<String, List<CaddisflyResource>> testsMap = null;
+        FlowJsonObjectReader<Map<String, List<CaddisflyResource>>> jsonReader = new FlowJsonObjectReader<>();
 
         try {
             URL caddisflyFileUrl = new URL(caddisflyTestsUrl);
-            InputStream stream = caddisflyFileUrl.openStream();
-
-            // create a list of caddisflyResource objects
-            JsonNode rootNode = mapper.readTree(stream);
-            result = mapper.readValue(rootNode.get("tests"),
-                    new TypeReference<List<CaddisflyResource>>() {
-                    });
-
+            testsMap = jsonReader.readObject(caddisflyFileUrl);
         } catch (Exception e) {
             log.log(Level.SEVERE,
                     "Error parsing Caddisfly resource: " + e.getMessage(), e);
         }
 
-        if (result != null) {
-            return result;
+        if (testsMap != null && testsMap.get("tests") != null) {
+            return testsMap.get("tests");
         } else {
             return Collections.emptyList();
         }

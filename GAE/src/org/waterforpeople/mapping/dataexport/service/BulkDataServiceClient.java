@@ -44,13 +44,9 @@ import com.gallatinsystems.common.util.MD5Util;
 import com.gallatinsystems.framework.rest.RestRequest;
 import com.gallatinsystems.survey.domain.SurveyGroup.PrivacyLevel;
 import com.gallatinsystems.survey.domain.SurveyGroup.ProjectType;
+import org.akvo.flow.util.FlowJsonObjectReader;
 import org.apache.commons.codec.binary.Base64;
 import org.apache.log4j.Logger;
-import org.codehaus.jackson.JsonNode;
-import org.codehaus.jackson.JsonParseException;
-import org.codehaus.jackson.map.JsonMappingException;
-import org.codehaus.jackson.map.ObjectMapper;
-import org.codehaus.jackson.type.TypeReference;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -65,7 +61,6 @@ import org.waterforpeople.mapping.app.gwt.client.survey.SurveyGroupDto;
 import org.waterforpeople.mapping.app.gwt.client.survey.TranslationDto;
 import org.waterforpeople.mapping.app.gwt.client.surveyinstance.SurveyInstanceDto;
 import org.waterforpeople.mapping.app.web.dto.DataBackoutRequest;
-import org.waterforpeople.mapping.app.web.dto.DeviceFileRestRequest;
 import org.waterforpeople.mapping.app.web.dto.InstanceDataDto;
 import org.waterforpeople.mapping.app.web.dto.SurveyRestRequest;
 
@@ -85,7 +80,6 @@ public class BulkDataServiceClient {
     private static final String SURVEY_SERVLET_PATH = "/surveyrestapi";
     private static final String INSTANCE_DATA_SERVLET_PATH = "/instancedata";
     private static final String DEVICE_FILES_SERVLET_PATH = "/devicefilesrestapi?action=";
-    private static final ObjectMapper JSON_RESPONSE_PARSER = new ObjectMapper();
 
     /**
      * lists all responses from the server for a surveyInstance submission as a map of values keyed
@@ -352,12 +346,10 @@ public class BulkDataServiceClient {
     }
 
     private static InstanceDataDto parseInstanceData(String instanceDataResponse) {
+        FlowJsonObjectReader<InstanceDataDto> jsonReader = new FlowJsonObjectReader<>();
         try {
-            InstanceDataDto instanceData = JSON_RESPONSE_PARSER.readValue(instanceDataResponse,
-                    InstanceDataDto.class);
+            InstanceDataDto instanceData = jsonReader.readObject(instanceDataResponse);
             return instanceData;
-        } catch (JsonParseException | JsonMappingException e) {
-            log.warn("Failed to parse the InstanceDataDto string: " + e);
         } catch (IOException e) {
             log.error("Error while parsing: ", e);
         }
@@ -403,11 +395,10 @@ public class BulkDataServiceClient {
 
             log.debug("response: " + surveyGroupResponse);
 
-            final JsonNode surveyGroupListNode = JSON_RESPONSE_PARSER.readTree(surveyGroupResponse)
-                    .get("dtoList");
-            final List<SurveyGroupDto> surveyGroupList = JSON_RESPONSE_PARSER.readValue(
-                    surveyGroupListNode, new TypeReference<List<SurveyGroupDto>>() {
-                    });
+            final FlowJsonObjectReader<Map<String, List<SurveyGroupDto>>> jsonDeserialiser = new FlowJsonObjectReader<>();
+            final Map<String, List<SurveyGroupDto>> surveyGroupListMap = jsonDeserialiser.readObject(surveyGroupResponse);
+
+            final List<SurveyGroupDto> surveyGroupList = surveyGroupListMap.get("dtoList");
             if (surveyGroupList != null && !surveyGroupList.isEmpty()) {
                 surveyGroupDto = surveyGroupList.get(0);
             }

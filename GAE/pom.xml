@@ -42,6 +42,7 @@
     <spring.version>3.2.18.RELEASE</spring.version>
     <spring.security.version>3.2.10.RELEASE</spring.security.version>
     <appengine.sdk.version>1.9.63</appengine.sdk.version>
+    <jackson.version>2.6.7</jackson.version>
   </properties>
 
   <dependencies>
@@ -154,9 +155,19 @@
         <version>${spring.version}</version>
     </dependency>
     <dependency>
-       <groupId>org.codehaus.jackson</groupId>
-       <artifactId>jackson-mapper-asl</artifactId>
-       <version>1.8.5</version>
+        <groupId>com.fasterxml.jackson.core</groupId>
+        <artifactId>jackson-core</artifactId>
+        <version>${jackson.version}</version>
+    </dependency>
+    <dependency>
+        <groupId>com.fasterxml.jackson.core</groupId>
+        <artifactId>jackson-databind</artifactId>
+        <version>${jackson.version}</version>
+    </dependency>
+    <dependency>
+        <groupId>com.fasterxml.jackson.core</groupId>
+        <artifactId>jackson-annotations</artifactId>
+        <version>${jackson.version}</version>
     </dependency>
     <dependency>
        <groupId>com.google.appengine</groupId>

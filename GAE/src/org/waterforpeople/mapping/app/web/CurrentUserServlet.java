@@ -33,12 +33,10 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.akvo.flow.util.FlowJsonObjectWriter;
 import org.apache.velocity.Template;
 import org.apache.velocity.VelocityContext;
 import org.apache.velocity.app.VelocityEngine;
-import org.codehaus.jackson.JsonGenerationException;
-import org.codehaus.jackson.map.JsonMappingException;
-import org.codehaus.jackson.map.ObjectMapper;
 
 import com.gallatinsystems.common.Constants;
 import com.gallatinsystems.user.dao.UserAuthorizationDAO;
@@ -148,19 +146,15 @@ public class CurrentUserServlet extends HttpServlet {
 
         addSuperAdminPermissions(currentUser, permissions);
 
-        ObjectMapper jsonObjectMapper = new ObjectMapper();
-        StringWriter writer = new StringWriter();
+        FlowJsonObjectWriter writer = new FlowJsonObjectWriter();
+        String permissionsString = null;
         try {
-            jsonObjectMapper.writeValue(writer, permissions);
-        } catch (JsonGenerationException e) {
-            // ignore
-        } catch (JsonMappingException e) {
-            // ignore
+            permissionsString = writer.writeValueAsString(permissions);
         } catch (IOException e) {
             // ignore
         }
 
-        return writer.toString();
+        return permissionsString;
     }
 
     /**

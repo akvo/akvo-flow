@@ -1,5 +1,5 @@
 /*
- *  Copyright (C) 2016 Stichting Akvo (Akvo Foundation)
+ *  Copyright (C) 2016,2018 Stichting Akvo (Akvo Foundation)
  *
  *  This file is part of Akvo FLOW.
  *
@@ -19,12 +19,14 @@ package org.waterforpeople.mapping.serialization.response;
 import java.io.IOException;
 import java.util.logging.Logger;
 
-import org.codehaus.jackson.map.ObjectMapper;
+import org.akvo.flow.util.FlowJsonObjectReader;
+import org.akvo.flow.util.FlowJsonObjectWriter;
 import org.waterforpeople.mapping.domain.response.value.Media;
 
 public class MediaResponse {
     private static final Logger log = Logger.getLogger(MediaResponse.class.getName());
-    private static final ObjectMapper JSON_OBJECT_MAPPER = new ObjectMapper();
+    private static FlowJsonObjectReader<Media> jsonObjectReader = new FlowJsonObjectReader<>();
+    private static FlowJsonObjectWriter jsonObjectWriter = new FlowJsonObjectWriter();
 
     public static final int VERSION_STRING = 0;
     public static final int VERSION_GEOTAGGING = 1;
@@ -36,8 +38,9 @@ public class MediaResponse {
     public static String format(String value, int version) {
         Media media;
         int savedVersion;
+
         try {
-            media = JSON_OBJECT_MAPPER.readValue(value, Media.class);
+            media = jsonObjectReader.readObject(value);
             savedVersion = VERSION_GEOTAGGING;
         } catch (IOException e) {
             // Value is not JSON-formatted
@@ -52,7 +55,7 @@ public class MediaResponse {
 
         if (version == VERSION_GEOTAGGING) {
             try {
-                return JSON_OBJECT_MAPPER.writeValueAsString(media);
+                return jsonObjectWriter.writeValueAsString(media);
             } catch (IOException e) {
                 log.warning(e.getMessage());
                 return "";
@@ -65,7 +68,7 @@ public class MediaResponse {
 
     public static Media parse(String value) {
         try {
-            return JSON_OBJECT_MAPPER.readValue(value, Media.class);
+            return jsonObjectReader.readObject(value);
         } catch (IOException e) {
         }
 

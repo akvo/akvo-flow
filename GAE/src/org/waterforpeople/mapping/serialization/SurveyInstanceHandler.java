@@ -1,5 +1,5 @@
 /*
- *  Copyright (C) 2015-2017 Stichting Akvo (Akvo Foundation)
+ *  Copyright (C) 2015-2018 Stichting Akvo (Akvo Foundation)
  *
  *  This file is part of Akvo FLOW.
  *
@@ -23,8 +23,8 @@ import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+import org.akvo.flow.util.FlowJsonObjectReader;
 import org.apache.commons.lang.StringUtils;
-import org.codehaus.jackson.map.ObjectMapper;
 import org.waterforpeople.mapping.domain.QuestionAnswerStore;
 import org.waterforpeople.mapping.domain.SurveyInstance;
 import org.waterforpeople.mapping.domain.response.FormInstance;
@@ -52,9 +52,10 @@ public class SurveyInstanceHandler {
 
     public static SurveyInstance fromJSON(String data) {
         FormInstance formInstance = null;
-        ObjectMapper mapper = new ObjectMapper();
+        FlowJsonObjectReader<FormInstance> jsonReader = new FlowJsonObjectReader<>();
+
         try {
-            formInstance = mapper.readValue(data, FormInstance.class);
+            formInstance = jsonReader.readObject(data);
         } catch (IOException e) {
             log.log(Level.SEVERE, "Error mapping JSON data: " + e.getMessage(), e);
             return null;

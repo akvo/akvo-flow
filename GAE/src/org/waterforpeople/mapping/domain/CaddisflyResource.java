@@ -1,4 +1,4 @@
-/*  Copyright (C) 2016-2017 Stichting Akvo (Akvo Foundation)
+/*  Copyright (C) 2016-2018 Stichting Akvo (Akvo Foundation)
  *
  *  This file is part of Akvo FLOW.
  *
@@ -15,7 +15,7 @@
 
 package org.waterforpeople.mapping.domain;
 
-import org.codehaus.jackson.annotate.JsonIgnoreProperties;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
 import java.io.Serializable;
 import java.util.List;

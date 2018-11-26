@@ -38,6 +38,7 @@ import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
 
+import org.akvo.flow.util.FlowJsonObjectWriter;
 import org.apache.log4j.BasicConfigurator;
 import org.apache.log4j.Logger;
 import org.apache.poi.ss.usermodel.Cell;
@@ -46,7 +47,6 @@ import org.apache.poi.ss.usermodel.Sheet;
 import org.apache.poi.ss.usermodel.Workbook;
 import org.apache.poi.ss.usermodel.WorkbookFactory;
 import org.apache.poi.ss.util.CellReference;
-import org.codehaus.jackson.map.ObjectMapper;
 import org.waterforpeople.mapping.app.gwt.client.survey.QuestionDto;
 import org.waterforpeople.mapping.app.gwt.client.survey.QuestionDto.QuestionType;
 import org.waterforpeople.mapping.app.gwt.client.survey.QuestionOptionDto;
@@ -67,8 +67,7 @@ public class RawDataSpreadsheetImporter implements DataImporter {
     private ThreadPoolExecutor threadPool;
     private BlockingQueue<Runnable> jobQueue;
     private List<String> errorIds;
-    private static final ObjectMapper OBJECT_MAPPER = new ObjectMapper();
-
+    private static final FlowJsonObjectWriter JSON_OBJECT_WRITER = new FlowJsonObjectWriter();
     private static final int LEGACY_MONITORING_FORMAT = 6;
     private static final int MONITORING_FORMAT_WITH_DEVICE_ID_COLUMN = 7;
     private static final int MONITORING_FORMAT_WITH_REPEAT_COLUMN = 8;
@@ -637,7 +636,7 @@ public class RawDataSpreadsheetImporter implements DataImporter {
                         cascadeList.add(cascadeMap);
                     }
                     try {
-                        val = OBJECT_MAPPER.writeValueAsString(cascadeList);
+                        val = JSON_OBJECT_WRITER.writeValueAsString(cascadeList);
                     } catch (IOException e) {
                         log.warn("Could not parse cascade string: " + cascadeString);
                     }
@@ -689,7 +688,7 @@ public class RawDataSpreadsheetImporter implements DataImporter {
 
                     try {
                         if (!optionList.isEmpty()) {
-                            val = OBJECT_MAPPER.writeValueAsString(optionList);
+                            val = JSON_OBJECT_WRITER.writeValueAsString(optionList);
                         }
                     } catch (IOException e) {
                         log.warn("Could not parse option string: " + optionString, e);

@@ -17,7 +17,6 @@
 package org.akvo.flow.events;
 
 import java.io.IOException;
-import java.io.OutputStreamWriter;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.util.Date;
@@ -27,7 +26,7 @@ import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-import org.codehaus.jackson.map.ObjectMapper;
+import org.akvo.flow.util.FlowJsonObjectWriter;
 import org.waterforpeople.mapping.app.web.rest.security.user.GaeUser;
 
 import com.gallatinsystems.survey.domain.SurveyGroup;
@@ -38,7 +37,6 @@ import com.google.appengine.api.datastore.Text;
 public class EventUtils {
 
     private static Logger log = Logger.getLogger(EventUtils.class.getName());
-    private static final ObjectMapper objectMapper = new ObjectMapper();
 
     public enum EventSourceType {
         USER, DEVICE, SENSOR, WEBFORM, API, UNKNOWN, SYSTEM
@@ -343,14 +341,11 @@ public class EventUtils {
         connection.setRequestProperty("Content-Type",
                 "application/json");
 
-        OutputStreamWriter writer = new OutputStreamWriter(
-                connection.getOutputStream());
-        objectMapper.writeValue(writer, events);
+        FlowJsonObjectWriter writer = new FlowJsonObjectWriter();
+        writer.writeValue(connection.getOutputStream(), events);
 
         System.out.println("    " + connection.getResponseCode());
 
-        writer.close();
         connection.disconnect();
-
     }
 }

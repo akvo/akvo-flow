@@ -41,6 +41,7 @@ import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicLong;
 
 import org.akvo.flow.domain.DataUtils;
+import org.akvo.flow.util.FlowJsonObjectReader;
 import org.akvo.flow.util.JFreechartChartUtil;
 import org.apache.log4j.ConsoleAppender;
 import org.apache.log4j.Level;
@@ -59,8 +60,6 @@ import org.apache.poi.ss.util.CellRangeAddress;
 import org.apache.poi.ss.util.WorkbookUtil;
 import org.apache.poi.xssf.streaming.SXSSFSheet;
 import org.apache.poi.xssf.streaming.SXSSFWorkbook;
-import org.codehaus.jackson.map.ObjectMapper;
-import org.codehaus.jackson.type.TypeReference;
 import org.waterforpeople.mapping.app.gwt.client.survey.OptionContainerDto;
 import org.waterforpeople.mapping.app.gwt.client.survey.QuestionDto;
 import org.waterforpeople.mapping.app.gwt.client.survey.QuestionDto.QuestionType;
@@ -164,7 +163,6 @@ public class GraphicalSurveySummaryExporter extends SurveySummaryExporter {
     private Map<Long, QuestionDto> questionsById;
     private SurveyGroupDto surveyGroupDto;
     private boolean lastCollection = false;
-    private static final ObjectMapper OBJECT_MAPPER = new ObjectMapper();
     private CaddisflyResourceDao caddisflyResourceDao = new CaddisflyResourceDao();
     private String caddisflyTestsFileUrl;
     private String selectionFrom = null;
@@ -695,6 +693,8 @@ public class GraphicalSurveySummaryExporter extends SurveySummaryExporter {
             if (rollupOrder != null && rollupOrder.size() > 0) {
                 rollups = formRollupStrings(responseMap);
             }
+            FlowJsonObjectReader<List<Map<String, String>>> jsonReader = new FlowJsonObjectReader<>();
+
             for (Entry<String, String> entry : responseMap.entrySet()) {
                 //OPTION, NUMBER and CASCADE summarizable now.
                 if (!unsummarizable.contains(entry.getKey())) {
@@ -706,10 +706,7 @@ public class GraphicalSurveySummaryExporter extends SurveySummaryExporter {
                     String[] vals;
                     if (entry.getValue().startsWith("[")) { //JSON
                         try {
-                            List<Map<String, String>> optionNodes = OBJECT_MAPPER.readValue(
-                                    entry.getValue(),
-                                    new TypeReference<List<Map<String, String>>>() {}
-                                    );
+                            List<Map<String, String>> optionNodes = jsonReader.readObject(entry.getValue());
                             List<String> valsList = new ArrayList<>();
                             for (Map<String, String> optionNode : optionNodes) {
                                 if (optionNode.containsKey("text")) {
@@ -980,10 +977,9 @@ public class GraphicalSurveySummaryExporter extends SurveySummaryExporter {
         List<Map<String, String>> cascadeNodes = new ArrayList<>();
 
         if (value.startsWith("[")) {
+            FlowJsonObjectReader<List<Map<String, String>>> jsonReader = new FlowJsonObjectReader<>();
             try {
-                cascadeNodes = OBJECT_MAPPER.readValue(value,
-                        new TypeReference<List<Map<String, String>>>() {
-                        });
+                cascadeNodes = jsonReader.readObject(value);
             } catch (IOException e) {
                 log.warn("Unable to parse CASCADE response - " + value, e);
             }
@@ -1066,11 +1062,11 @@ public class GraphicalSurveySummaryExporter extends SurveySummaryExporter {
     private List<Map<String, String>> getNodes(String value) {
         boolean isNewFormat = value.startsWith("[");
         List<Map<String, String>> optionNodes = new ArrayList<>();
+        FlowJsonObjectReader<List<Map<String, String>>> jsonReader = new FlowJsonObjectReader<>();
+
         if (isNewFormat) {
             try {
-                optionNodes = OBJECT_MAPPER.readValue(value,
-                        new TypeReference<List<Map<String, String>>>() {
-                        });
+                optionNodes = jsonReader.readObject(value);
             } catch (IOException e) {
                 log.warn("Could not parse option response: " + value, e);
             }
@@ -1654,12 +1650,9 @@ public class GraphicalSurveySummaryExporter extends SurveySummaryExporter {
                         } else {
                             // Handle the json option question response type
                             if (labelText.startsWith("[")) {
+                                FlowJsonObjectReader<List<Map<String, String>>> jsonReader = new FlowJsonObjectReader<>();
                                 try {
-                                    List<Map<String, String>> optionNodes = OBJECT_MAPPER
-                                            .readValue(
-                                                    labelText,
-                                                    new TypeReference<List<Map<String, String>>>() {
-                                                    });
+                                    List<Map<String, String>> optionNodes = jsonReader.readObject(labelText);
                                     StringBuilder labelTextBuilder = new StringBuilder();
 
                                     for (Map<String, String> optionNode : optionNodes) {

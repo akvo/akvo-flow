@@ -1,5 +1,5 @@
 /*
- *  Copyright (C) 2010-2017 Stichting Akvo (Akvo Foundation)
+ *  Copyright (C) 2010-2018 Stichting Akvo (Akvo Foundation)
  *
  *  This file is part of Akvo FLOW.
  *
@@ -29,7 +29,7 @@ import com.gallatinsystems.surveyal.dao.SurveyedLocaleDao;
 import com.gallatinsystems.surveyal.domain.SurveyedLocale;
 import com.google.api.server.spi.config.Nullable;
 import org.akvo.flow.domain.DataUtils;
-import org.codehaus.jackson.map.ObjectMapper;
+import org.akvo.flow.util.FlowJsonObjectWriter;
 import org.waterforpeople.mapping.app.web.dto.SurveyInstanceDto;
 import org.waterforpeople.mapping.app.web.dto.SurveyedLocaleDto;
 import org.waterforpeople.mapping.app.web.dto.SurveyedLocaleRequest;
@@ -332,8 +332,8 @@ public class SurveyedLocaleServlet extends AbstractRestApiServlet {
         }
         getResponse().setStatus(sc);
         if (sc == HttpServletResponse.SC_OK) {
-            ObjectMapper jsonMapper = new ObjectMapper();
-            jsonMapper.writeValue(getResponse().getWriter(), resp);
+            FlowJsonObjectWriter writer = new FlowJsonObjectWriter();
+            writer.writeValue(getResponse().getOutputStream(), resp);
             getResponse().getWriter().println();
         } else {
             getResponse().getWriter().println(resp.getMessage());
