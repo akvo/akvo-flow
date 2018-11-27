@@ -1002,8 +1002,7 @@ public class GraphicalSurveySummaryExporter extends SurveySummaryExporter {
         for (Map<String, String> cascadeNode : cascadeNodes) {
             String code = cascadeNode.get("code");
             String name = cascadeNode.get("name");
-            if (code != null && name != null
-                    && !code.toLowerCase().equals(name.toLowerCase())) {
+            if (code != null && !code.equalsIgnoreCase(name)) {
                 allCodesEqualsName = false;
                 break;
             }

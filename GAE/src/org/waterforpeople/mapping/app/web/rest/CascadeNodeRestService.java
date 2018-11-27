@@ -20,7 +20,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.BeanUtils;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -115,8 +114,8 @@ public class CascadeNodeRestService {
                 if (cr != null) {
                     // copy the properties, except the createdDateTime property,
                     // because it is set in the Dao.
-                    BeanUtils.copyProperties(cascadeNodeDto, cr, new String[] {
-                            "createdDateTime"});
+                    BeanUtils.copyProperties(cascadeNodeDto, cr,
+                    		new String[] {"createdDateTime"});
                     cr = cascadeNodeDao.save(cr);
                     dto = new CascadeNodeDto();
                     BeanUtils.copyProperties(cr, dto);
@@ -188,7 +187,7 @@ public class CascadeNodeRestService {
         }
 
         String status = stateSuccess ? "ok" : "failed";
-        if (status.equals("failed")) {
+        if (!stateSuccess) {
             statusDto.setMessage("Cannot save cascade nodes");
         }
         statusDto.setStatus(status);
