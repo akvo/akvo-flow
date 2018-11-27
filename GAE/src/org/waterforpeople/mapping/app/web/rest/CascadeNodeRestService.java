@@ -160,9 +160,6 @@ public class CascadeNodeRestService {
     private CascadeNodeDto createCascadeNode(CascadeNodeDto cascadeNodeDto){
     	CascadeNode cn = new CascadeNode();
         BeanUtils.copyProperties(cascadeNodeDto, cn);
-        if (StringUtils.isEmpty(cascadeNodeDto.getCode())) {
-            cn.setCode(cn.getName());
-        }
     	cn = cascadeNodeDao.save(cn);
     	CascadeNodeDto cnDto = new CascadeNodeDto();
     	DtoMarshaller.copyToDto(cn,cnDto);
@@ -174,8 +171,7 @@ public class CascadeNodeRestService {
     @ResponseBody
     public Map<String, Object> saveNewCascadeNodeBulk(@RequestBody
     CascadeNodeBulkPayload payLoad) {
-    	final List<CascadeNodeDto> cascadeNodeDtoList = payLoad
-                .getCascade_nodes();
+    	final List<CascadeNodeDto> cascadeNodeDtoList = payLoad.getCascade_nodes();
         final Map<String, Object> response = new HashMap<String, Object>();
         List<CascadeNodeDto> results = new ArrayList<CascadeNodeDto>();
         CascadeNodeDto dto = null;
