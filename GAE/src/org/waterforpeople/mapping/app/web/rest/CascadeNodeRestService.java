@@ -1,4 +1,4 @@
-/*  Copyright (C) 2014,2017 Stichting Akvo (Akvo Foundation)
+/*  Copyright (C) 2014,2017-2018 Stichting Akvo (Akvo Foundation)
  *
  *  This file is part of Akvo FLOW.
  *
@@ -20,7 +20,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.BeanUtils;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -115,8 +114,8 @@ public class CascadeNodeRestService {
                 if (cr != null) {
                     // copy the properties, except the createdDateTime property,
                     // because it is set in the Dao.
-                    BeanUtils.copyProperties(cascadeNodeDto, cr, new String[] {
-                            "createdDateTime"});
+                    BeanUtils.copyProperties(cascadeNodeDto, cr,
+                    		new String[] {"createdDateTime"});
                     cr = cascadeNodeDao.save(cr);
                     dto = new CascadeNodeDto();
                     BeanUtils.copyProperties(cr, dto);
@@ -160,9 +159,6 @@ public class CascadeNodeRestService {
     private CascadeNodeDto createCascadeNode(CascadeNodeDto cascadeNodeDto){
     	CascadeNode cn = new CascadeNode();
         BeanUtils.copyProperties(cascadeNodeDto, cn);
-        if (StringUtils.isEmpty(cascadeNodeDto.getCode())) {
-            cn.setCode(cn.getName());
-        }
     	cn = cascadeNodeDao.save(cn);
     	CascadeNodeDto cnDto = new CascadeNodeDto();
     	DtoMarshaller.copyToDto(cn,cnDto);
@@ -174,8 +170,7 @@ public class CascadeNodeRestService {
     @ResponseBody
     public Map<String, Object> saveNewCascadeNodeBulk(@RequestBody
     CascadeNodeBulkPayload payLoad) {
-    	final List<CascadeNodeDto> cascadeNodeDtoList = payLoad
-                .getCascade_nodes();
+    	final List<CascadeNodeDto> cascadeNodeDtoList = payLoad.getCascade_nodes();
         final Map<String, Object> response = new HashMap<String, Object>();
         List<CascadeNodeDto> results = new ArrayList<CascadeNodeDto>();
         CascadeNodeDto dto = null;
@@ -192,7 +187,7 @@ public class CascadeNodeRestService {
         }
 
         String status = stateSuccess ? "ok" : "failed";
-        if (status.equals("failed")) {
+        if (!stateSuccess) {
             statusDto.setMessage("Cannot save cascade nodes");
         }
         statusDto.setStatus(status);
