@@ -31,8 +31,6 @@ import javax.servlet.http.HttpServletRequest;
 import org.akvo.flow.domain.mapper.QuestionDtoMapper;
 import org.akvo.flow.domain.mapper.QuestionOptionDtoMapper;
 import org.codehaus.jackson.map.ObjectMapper;
-import org.waterforpeople.mapping.analytics.dao.SurveyQuestionSummaryDao;
-import org.waterforpeople.mapping.analytics.domain.SurveyQuestionSummary;
 import org.waterforpeople.mapping.app.gwt.client.survey.QuestionDto;
 import org.waterforpeople.mapping.app.gwt.client.survey.QuestionGroupDto;
 import org.waterforpeople.mapping.app.gwt.client.survey.QuestionOptionDto;
@@ -88,7 +86,6 @@ public class SurveyRestServlet extends AbstractRestApiServlet {
     private QuestionGroupDao qgDao;
     private QuestionDao qDao;
     private QuestionOptionDao qoDao;
-    private SurveyQuestionSummaryDao summaryDao;
     private SurveyInstanceDAO instanceDao;
 
     public SurveyRestServlet() {
@@ -102,7 +99,6 @@ public class SurveyRestServlet extends AbstractRestApiServlet {
         qgDao = new QuestionGroupDao();
         qDao = new QuestionDao();
         qoDao = new QuestionOptionDao();
-        summaryDao = new SurveyQuestionSummaryDao();
     }
 
     private static final long serialVersionUID = 1165507917062204859L;
@@ -172,10 +168,6 @@ public class SurveyRestServlet extends AbstractRestApiServlet {
             response.setDtoList(listQuestionOptions(surveyReq.getQuestionId()));
         } else if (SurveyRestRequest.LIST_SURVEY_QUESTION_OPTIONS_ACTION.equals(surveyReq.getAction())) {
             response.setDtoList(listSurveyQuestionOptions(surveyReq.getSurveyId()));
-        } else if (SurveyRestRequest.GET_SUMMARY_ACTION.equals(surveyReq
-                .getAction())) {
-            response.setDtoList(listSummaries(new Long(surveyReq
-                    .getQuestionId())));
         } else if (SurveyRestRequest.GET_QUESTION_DETAILS_ACTION
                 .equals(surveyReq.getAction())) {
             QuestionDto dto = loadQuestionDetails(new Long(
@@ -190,10 +182,6 @@ public class SurveyRestServlet extends AbstractRestApiServlet {
             List<BaseDto> dtoList = new ArrayList<BaseDto>();
             dtoList.add(dto);
             response.setDtoList(dtoList);
-        } else if (SurveyRestRequest.GET_GRAPH_ACTION.equals(surveyReq
-                .getAction())) {
-            response.setUrl(constructChartUrl(surveyReq.getQuestionId(),
-                    surveyReq.getGraphType()));
         } else if (SurveyRestRequest.UPDATE_QUESTION_ORDER_ACTION
                 .equals(surveyReq.getAction())) {
             Question q = new Question();
@@ -204,40 +192,6 @@ public class SurveyRestServlet extends AbstractRestApiServlet {
             qDao.updateQuestionOrder(questionList);
         }
         return response;
-    }
-
-    /**
-     * constructs a Google Charts API url for creating an image chart using the data in the data
-     * store for the selected question TODO: support other graph types. Right now, we always return
-     * pie charts
-     *
-     * @param questionId
-     * @param graphType
-     * @return
-     */
-    private String constructChartUrl(Long questionId, String graphType) {
-        StringBuilder url = new StringBuilder(CHART_API_URL);
-        SurveyQuestionSummaryDao summaryDao = new SurveyQuestionSummaryDao();
-        List<SurveyQuestionSummary> summaries = summaryDao
-                .listByQuestion(questionId.toString());
-        Question q = qDao.getByKey(questionId);
-        if (q != null && summaries != null) {
-            url.append(q.getText()).append(CHART_API_LEGEND_PARAM);
-            StringBuilder legend = new StringBuilder();
-            StringBuilder data = new StringBuilder();
-            int i = 0;
-            for (SurveyQuestionSummary sum : summaries) {
-                if (i > 0) {
-                    legend.append("|");
-                    data.append(",");
-                }
-                legend.append(sum.getResponse());
-                data.append(sum.getCount());
-            }
-            url.append(legend.toString()).append(CHART_API_DATA_PARAM)
-                    .append(data.toString());
-        }
-        return url.toString();
     }
 
     private SurveyRestResponse listSurveys(Long surveyGroupId,
@@ -469,27 +423,6 @@ public class SurveyRestServlet extends AbstractRestApiServlet {
             result = SurveyServiceImpl.marshalQuestionDto(q);
         }
         return result;
-    }
-
-    /**
-     * lists all the SurveyQuestionSummary objects associated with a given questionId
-     *
-     * @param questionId
-     * @return
-     */
-    private List<SurveySummaryDto> listSummaries(Long questionId) {
-        List<SurveyQuestionSummary> summaries = summaryDao
-                .listByQuestion(questionId.toString());
-        List<SurveySummaryDto> dtoList = new ArrayList<SurveySummaryDto>();
-        if (summaries != null) {
-            for (SurveyQuestionSummary s : summaries) {
-                SurveySummaryDto dto = new SurveySummaryDto();
-                dto.setCount(s.getCount());
-                dto.setResponseText(s.getResponse());
-                dtoList.add(dto);
-            }
-        }
-        return dtoList;
     }
 
     private Boolean saveQuestion(SurveyRestRequest req)

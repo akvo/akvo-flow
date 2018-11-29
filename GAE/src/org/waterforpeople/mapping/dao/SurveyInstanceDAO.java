@@ -29,8 +29,6 @@ import javax.jdo.PersistenceManager;
 import javax.jdo.Query;
 
 import org.apache.commons.lang.StringUtils;
-import org.waterforpeople.mapping.analytics.dao.SurveyQuestionSummaryDao;
-import org.waterforpeople.mapping.analytics.domain.SurveyQuestionSummary;
 import org.waterforpeople.mapping.app.web.dto.DataProcessorRequest;
 import org.waterforpeople.mapping.app.web.dto.ImageCheckRequest;
 import org.waterforpeople.mapping.domain.QuestionAnswerStore;
@@ -158,7 +156,6 @@ public class SurveyInstanceDAO extends BaseDAO<SurveyInstance> {
         }
 
         deviceFile.setSurveyInstanceId(si.getKey().getId());
-        si.updateSummaryCounts(true);
 
         return si;
     }
@@ -494,31 +491,8 @@ public class SurveyInstanceDAO extends BaseDAO<SurveyInstance> {
 
         // update summary counts + delete question answers
         QuestionAnswerStoreDao qasDao = new QuestionAnswerStoreDao();
-        QuestionDao qDao = new QuestionDao();
         List<QuestionAnswerStore> qasList = qasDao.listBySurveyInstance(surveyInstanceId);
-        SurveyQuestionSummaryDao summDao = new SurveyQuestionSummaryDao();
         if (qasList != null && !qasList.isEmpty()) {
-            for (QuestionAnswerStore qasItem : qasList) {
-                // question summaries
-                Question question = qDao.getByKey(Long.parseLong(qasItem.getQuestionID()));
-                if (question != null && question.canBeCharted()) {
-                    Queue questionSummaryQueue = QueueFactory.getQueue("surveyResponseCount");
-                    List<SurveyQuestionSummary> summaryList = summDao.listByResponse(
-                            qasItem.getQuestionID(), qasItem.getValue());
-                    if (summaryList != null && !summaryList.isEmpty()) {
-                        TaskOptions to = TaskOptions.Builder
-                                .withUrl("/app_worker/dataprocessor")
-                                .param(DataProcessorRequest.ACTION_PARAM,
-                                        DataProcessorRequest.SURVEY_RESPONSE_COUNT)
-                                .param(DataProcessorRequest.COUNTER_ID_PARAM,
-                                        summaryList.get(0).getKey().getId() + "")
-                                .param(DataProcessorRequest.DELTA_PARAM, "-1");
-                        questionSummaryQueue.add(to);
-                        continue;
-                    }
-                }
-            }
-
             qasDao.delete(qasList);
         }
 

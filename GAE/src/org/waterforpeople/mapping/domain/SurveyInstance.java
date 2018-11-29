@@ -19,21 +19,15 @@ package org.waterforpeople.mapping.domain;
 import com.gallatinsystems.common.Constants;
 import com.gallatinsystems.device.domain.DeviceFiles;
 import com.gallatinsystems.framework.domain.BaseDomain;
-import com.gallatinsystems.survey.dao.QuestionDao;
 import com.gallatinsystems.survey.dao.SurveyDAO;
-import com.gallatinsystems.survey.domain.Question;
-import org.akvo.flow.domain.DataUtils;
 import org.akvo.flow.domain.SecuredObject;
 import org.apache.commons.lang.StringUtils;
-import org.waterforpeople.mapping.analytics.dao.SurveyQuestionSummaryDao;
-import org.waterforpeople.mapping.analytics.domain.SurveyQuestionSummary;
 
 import javax.jdo.annotations.IdentityType;
 import javax.jdo.annotations.NotPersistent;
 import javax.jdo.annotations.PersistenceCapable;
 import javax.jdo.annotations.Persistent;
 import java.lang.reflect.Field;
-import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
@@ -274,60 +268,6 @@ public class SurveyInstance extends BaseDomain implements SecuredObject {
         }
 
         return geoLocationMap;
-    }
-
-    /**
-     * Update counts of SurveyQuestionSummary entities related to responses from this survey
-     * instance.
-     */
-    public void updateSummaryCounts(boolean increment) {
-
-        // retrieve all summary objects
-        SurveyQuestionSummaryDao summaryDao = new SurveyQuestionSummaryDao();
-        QuestionDao qDao = new QuestionDao();
-
-        List<SurveyQuestionSummary> saveList = new ArrayList<SurveyQuestionSummary>();
-        List<SurveyQuestionSummary> deleteList = new ArrayList<SurveyQuestionSummary>();
-
-        for (QuestionAnswerStore response : questionAnswersStore) {
-            final Long questionId = Long.parseLong(response.getQuestionID());
-            Question question = qDao.getByKey(questionId);
-            if (question == null || !question.canBeCharted()) {
-                continue;
-            }
-
-            final String questionIdStr = response.getQuestionID();
-            final String[] questionResponse = DataUtils.optionResponsesTextArray(response
-                    .getValue());
-
-            for (int i = 0; i < questionResponse.length; i++) {
-                List<SurveyQuestionSummary> questionSummaryList = summaryDao
-                        .listByResponse(questionIdStr, questionResponse[i]);
-                SurveyQuestionSummary questionSummary = null;
-                if (questionSummaryList.isEmpty()) {
-                    questionSummary = new SurveyQuestionSummary();
-                    questionSummary.setQuestionId(response.getQuestionID());
-                    questionSummary.setResponse(questionResponse[i]);
-                    questionSummary.setCount(0L);
-                } else {
-                    questionSummary = questionSummaryList.get(0);
-                }
-
-                // update and save or delete
-                long count = questionSummary.getCount() == null ? 0 : questionSummary.getCount();
-                count = increment ? ++count : --count;
-                questionSummary.setCount(count);
-
-                if (count > 0) {
-                    saveList.add(questionSummary);
-                } else {
-                    deleteList.add(questionSummary);
-                }
-            }
-        }
-
-        summaryDao.save(saveList);
-        summaryDao.delete(deleteList);
     }
 
     @Override

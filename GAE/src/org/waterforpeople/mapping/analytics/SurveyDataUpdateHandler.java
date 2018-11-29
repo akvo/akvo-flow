@@ -43,11 +43,6 @@ public class SurveyDataUpdateHandler extends DataSummarizationHandler {
                 .add("org.waterforpeople.mapping.analytics.NameQuestionDataCleanser");
         summarizers.put("NameQuestionFix", nameUpdateSummarizers);
 
-        List<String> questionUpdateSummarizers = new ArrayList<String>();
-        questionUpdateSummarizers
-                .add("org.waterforpeople.mapping.analytics.SurveyQuestionSummaryUpdater");
-        summarizers.put("QuestionDataChange", questionUpdateSummarizers);
-
         List<String> deviceQueueUpdaters = new ArrayList<String>();
         deviceQueueUpdaters.add("com.gallatinsystems.device.DeviceSurveyJobQueueUpdater");
         summarizers.put("DeviceSurveyJobQueueChange", deviceQueueUpdaters);

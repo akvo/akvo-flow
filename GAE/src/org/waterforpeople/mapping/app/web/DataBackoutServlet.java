@@ -28,8 +28,6 @@ import javax.servlet.http.HttpServletRequest;
 import org.akvo.flow.domain.DataUtils;
 import org.apache.commons.codec.binary.Base64;
 import org.json.JSONObject;
-import org.waterforpeople.mapping.analytics.dao.SurveyQuestionSummaryDao;
-import org.waterforpeople.mapping.analytics.domain.SurveyQuestionSummary;
 import org.waterforpeople.mapping.app.gwt.client.surveyinstance.QuestionAnswerStoreDto;
 import org.waterforpeople.mapping.app.util.DtoMarshaller;
 import org.waterforpeople.mapping.app.web.dto.DataBackoutRequest;
@@ -58,7 +56,6 @@ public class DataBackoutServlet extends AbstractRestApiServlet {
     private static final long serialVersionUID = 4608959174864994769L;
 
     private QuestionDao qDao;
-    private SurveyQuestionSummaryDao questionSummaryDao;
     private SurveyInstanceDAO instanceDao;
     private SurveyedLocaleDao localeDao;
     private static final ThreadLocal<DateFormat> OUT_FMT = new ThreadLocal<DateFormat>() {
@@ -72,7 +69,6 @@ public class DataBackoutServlet extends AbstractRestApiServlet {
         setMode(PLAINTEXT_MODE);
         qDao = new QuestionDao();
         localeDao = new SurveyedLocaleDao();
-        questionSummaryDao = new SurveyQuestionSummaryDao();
         instanceDao = new SurveyInstanceDAO();
     }
 
@@ -90,9 +86,6 @@ public class DataBackoutServlet extends AbstractRestApiServlet {
         RestResponse response = new RestResponse();
         if (DataBackoutRequest.GET_QUESTION_ACTION.equals(boReq.getAction())) {
             response.setMessage(listQuestionIds(boReq.getSurveyId()));
-        } else if (DataBackoutRequest.DELETE_QUESTION_SUMMARY_ACTION
-                .equals(boReq.getAction())) {
-            deleteQuestionSummary(boReq.getQuestionId());
         } else if (DataBackoutRequest.LIST_INSTANCE_ACTION.equals(boReq
                 .getAction())) {
             response.setMessage(listSurveyInstance(boReq.getSurveyId(),
@@ -247,19 +240,6 @@ public class DataBackoutServlet extends AbstractRestApiServlet {
                 SurveyedLocale l = localeDao.getByKey(localeId);
                 localeDao.delete(l);
             }
-        }
-    }
-
-    /**
-     * deletes all the SurveyQuestionSummary objects for a specific questionId
-     * 
-     * @param questionId
-     */
-    private void deleteQuestionSummary(Long questionId) {
-        List<SurveyQuestionSummary> summaries = questionSummaryDao
-                .listByQuestion(questionId.toString());
-        if (summaries != null) {
-            questionSummaryDao.delete(summaries);
         }
     }
 

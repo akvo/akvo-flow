@@ -40,8 +40,6 @@ import net.sf.jsr107cache.CacheFactory;
 import net.sf.jsr107cache.CacheManager;
 
 import org.akvo.flow.domain.DataUtils;
-import org.waterforpeople.mapping.analytics.dao.SurveyQuestionSummaryDao;
-import org.waterforpeople.mapping.analytics.domain.SurveyQuestionSummary;
 import org.waterforpeople.mapping.app.web.dto.DataProcessorRequest;
 import org.waterforpeople.mapping.dao.QuestionAnswerStoreDao;
 import org.waterforpeople.mapping.dao.SurveyInstanceDAO;
@@ -118,10 +116,7 @@ public class DataProcessorRestServlet extends AbstractRestApiServlet {
     @Override
     protected RestResponse handleRequest(RestRequest req) throws Exception {
         DataProcessorRequest dpReq = (DataProcessorRequest) req;
-        if (DataProcessorRequest.REBUILD_QUESTION_SUMMARY_ACTION
-                .equalsIgnoreCase(dpReq.getAction())) {
-            rebuildQuestionSummary(dpReq.getSurveyId());
-        } else if (DataProcessorRequest.COPY_SURVEY.equalsIgnoreCase(dpReq
+        if (DataProcessorRequest.COPY_SURVEY.equalsIgnoreCase(dpReq
                 .getAction())) {
             copySurvey(dpReq.getSurveyId(), Long.valueOf(dpReq.getSource()));
         } else if (DataProcessorRequest.COPY_QUESTION_GROUP.equalsIgnoreCase(dpReq
@@ -224,11 +219,6 @@ public class DataProcessorRestServlet extends AbstractRestApiServlet {
                 .getAction())) {
             if (dpReq.getSurveyInstanceId() != null) {
                 deleteSurveyResponses(dpReq.getSurveyInstanceId());
-            }
-        } else if (DataProcessorRequest.SURVEY_RESPONSE_COUNT.equalsIgnoreCase(req
-                .getAction())) {
-            if (dpReq.getSummaryCounterId() != null && dpReq.getDelta() != null) {
-                updateSurveyResponseCounter(dpReq.getSummaryCounterId(), dpReq.getDelta());
             }
         } else if (DataProcessorRequest.DELETE_CASCADE_NODES.equalsIgnoreCase(req.getAction())) {
             deleteCascadeNodes(dpReq.getCascadeResourceId(), dpReq.getParentNodeId());
@@ -569,201 +559,6 @@ public class DataProcessorRestServlet extends AbstractRestApiServlet {
         qDao.save(unresolvedDependentQuestions);
         return unresolvedDependentQuestions;
     }
-
-    /**
-     * rebuilds the SurveyQuestionSummary object for ALL data in the system. This method should only
-     * be run on a Backend instance as it is unlikely to complete within the task duration limits on
-     * other instances.
-     */
-    private void rebuildQuestionSummary(Long surveyId) {
-        ProcessingStatusDao statusDao = new ProcessingStatusDao();
-        List<Long> surveyIds = new ArrayList<Long>();
-        if (surveyId == null) {
-            SurveyDAO surveyDao = new SurveyDAO();
-            List<Survey> surveys = surveyDao.list(Constants.ALL_RESULTS);
-            if (surveys != null) {
-                for (Survey s : surveys) {
-                    surveyIds.add(s.getKey().getId());
-                }
-            }
-        } else {
-            surveyIds.add(surveyId);
-        }
-
-        for (Long sid : surveyIds) {
-            ProcessingStatus status = statusDao
-                    .getStatusByCode(REBUILD_Q_SUM_STATUS_KEY
-                            + (sid != null ? ":" + sid : ""));
-
-            Map<String, Map<String, Long>> summaryMap = summarizeQuestionAnswerStore(
-                    sid, null);
-            if (summaryMap != null) {
-                saveSummaries(summaryMap);
-            }
-            // now update the status so we can know it last ran
-            if (status == null) {
-                status = new ProcessingStatus();
-                status.setCode(REBUILD_Q_SUM_STATUS_KEY
-                        + (sid != null ? ":" + sid : ""));
-            }
-            status.setInError(false);
-            status.setLastEventDate(new Date());
-            statusDao.save(status);
-        }
-    }
-
-    /**
-     * iterates over the new summary counts and updates the records in the datastore. Where
-     * appropriate, new records will be created and defunct records will be removed.
-     *
-     * @param summaryMap
-     */
-    private void saveSummaries(Map<String, Map<String, Long>> summaryMap) {
-        SurveyQuestionSummaryDao summaryDao = new SurveyQuestionSummaryDao();
-        for (Entry<String, Map<String, Long>> summaryEntry : summaryMap
-                .entrySet()) {
-            List<SurveyQuestionSummary> summaryList = summaryDao
-                    .listByQuestion(summaryEntry.getKey());
-            // iterate over all the counts and update the summaryList with the
-            // count values. Create any missing elements and remove defunct
-            // entries as we go
-            List<SurveyQuestionSummary> toDeleteList = new ArrayList<SurveyQuestionSummary>(
-                    summaryList);
-            List<SurveyQuestionSummary> toCreateList = new ArrayList<SurveyQuestionSummary>();
-            for (Entry<String, Long> valueEntry : summaryEntry.getValue()
-                    .entrySet()) {
-                String val = valueEntry.getKey();
-                boolean found = false;
-                for (SurveyQuestionSummary sum : summaryList) {
-                    if (sum.getResponse() != null
-                            && sum.getResponse().equals(val)) {
-                        // since it's still valid, remove it from toDeleteList
-                        toDeleteList.remove(sum);
-                        // update the count. Since we still have the
-                        // persistenceContext open, this will automatically be
-                        // flushed to the datastore without an explicit call to
-                        // save
-                        sum.setCount(valueEntry.getValue());
-                        found = true;
-                    }
-                }
-                if (!found) {
-                    // need to create it
-                    SurveyQuestionSummary s = new SurveyQuestionSummary();
-                    s.setCount(valueEntry.getValue());
-                    s.setQuestionId(summaryEntry.getKey());
-                    s.setResponse(val);
-                    toCreateList.add(s);
-                }
-            }
-            // delete the unseen entities
-            if (toDeleteList.size() > 0) {
-                summaryDao.delete(toDeleteList);
-            }
-            // save the new items
-            if (toCreateList.size() > 0) {
-                summaryDao.save(toCreateList);
-            }
-            // flush the datastore operation
-            summaryDao.flushBatch();
-        }
-    }
-
-    /**
-     * loads all the summarizable QuestionAnswerStore instances from the data store and accrues
-     * counts by value occurrence in a map keyed on the questionId
-     *
-     * @param sinceDate
-     * @return
-     */
-    @SuppressWarnings({
-            "unchecked", "rawtypes"
-    })
-    private Map<String, Map<String, Long>> summarizeQuestionAnswerStore(
-            Long surveyId, Date sinceDate) {
-
-        final QuestionAnswerStoreDao qasDao = new QuestionAnswerStoreDao();
-        final QuestionDao questionDao = new QuestionDao();
-        final List<Question> qList = questionDao.listQuestionsInOrder(surveyId,
-                Question.Type.OPTION);
-
-        Cache cache = null;
-        Map props = new HashMap();
-        props.put(GCacheFactory.EXPIRATION_DELTA, 60 * 60 * 2); // 2h
-        props.put(MemcacheService.SetPolicy.SET_ALWAYS, true);
-        try {
-            CacheFactory cacheFactory = CacheManager.getInstance()
-                    .getCacheFactory();
-            cache = cacheFactory.createCache(props);
-        } catch (Exception e) {
-            log.log(Level.SEVERE,
-                    "Couldn't initialize cache: " + e.getMessage(), e);
-        }
-
-        String cursor = null;
-        final Map<String, Map<String, Long>> summaryMap = new HashMap<String, Map<String, Long>>();
-
-        for (Question q : qList) {
-            List<QuestionAnswerStore> qasList = qasDao.listByQuestion(q.getKey().getId(), cursor,
-                    QAS_PAGE_SIZE);
-
-            if (qasList == null || qasList.size() == 0) {
-                continue; // skip
-            }
-
-            do {
-                cursor = QuestionAnswerStoreDao.getCursor(qasList);
-
-                for (QuestionAnswerStore qas : qasList) {
-
-                    if (cache != null) {
-                        Map<Long, String> answer = new HashMap<Long, String>();
-                        answer.put(qas.getSurveyInstanceId(), qas.getQuestionID());
-
-                        if (cache.containsKey(answer)) {
-                            log.log(Level.INFO,
-                                    "Found duplicated QAS {surveyInstanceId: "
-                                            + qas.getSurveyInstanceId() + " , questionID: "
-                                            + qas.getQuestionID() + "}");
-                            continue;
-                        }
-
-                        cache.put(answer, true);
-                    }
-
-                    Map<String, Long> countMap = summaryMap.get(qas
-                            .getQuestionID());
-
-                    if (countMap == null) {
-                        countMap = new HashMap<String, Long>();
-                        summaryMap.put(qas.getQuestionID(), countMap);
-                    }
-
-                    // split up multiple answers
-                    String[] answers = DataUtils.optionResponsesTextArray(qas.getValue());
-
-                    // perform count
-                    for (int i = 0; i < answers.length; i++) {
-                        Long count = countMap.get(answers[i]);
-                        if (count == null) {
-                            count = 1L;
-                        } else {
-                            count = count + 1;
-                        }
-                        countMap.put(answers[i], count);
-                    }
-                }
-
-                qasList = qasDao.listByQuestion(q.getKey().getId(), cursor, QAS_PAGE_SIZE);
-
-            } while (qasList != null && qasList.size() > 0);
-
-            cursor = null;
-        }
-
-        return summaryMap;
-    }
-
 
     /**
      * Sends a message to a task queue to start or continue the processing of the AP Project Flag
@@ -1271,24 +1066,6 @@ public class DataProcessorRestServlet extends AbstractRestApiServlet {
         if (surveyInstance != null) {
             siDao.deleteSurveyInstance(surveyInstance);
         }
-    }
-
-    /**
-     * Update a survey response counter according to the provided delta. This method should be
-     * invoked though the task queue 'surveyResponseCount' to avoid concurrent updates
-     *
-     * @param summaryCounterId
-     * @param delta
-     */
-    private void updateSurveyResponseCounter(long summaryCounterId, int delta) {
-        SurveyQuestionSummaryDao summaryDao = new SurveyQuestionSummaryDao();
-        SurveyQuestionSummary summary = summaryDao.getByKey(summaryCounterId);
-        if (summary == null) {
-            return;
-        }
-
-        summary.setCount(summary.getCount() + delta);
-        summaryDao.save(summary);
     }
 
     private void deleteCascadeNodes(Long cascadeResourceId, Long parentNodeId) {

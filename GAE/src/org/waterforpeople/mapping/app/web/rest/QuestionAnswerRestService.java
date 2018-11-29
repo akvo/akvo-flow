@@ -36,7 +36,6 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
-import org.waterforpeople.mapping.analytics.dao.SurveyQuestionSummaryDao;
 import org.waterforpeople.mapping.app.gwt.client.surveyinstance.QuestionAnswerStoreDto;
 import org.waterforpeople.mapping.app.util.DtoMarshaller;
 import org.waterforpeople.mapping.app.web.DataProcessorRestServlet;
@@ -250,36 +249,6 @@ public class QuestionAnswerRestService {
                 qa = questionAnswerStoreDao.getByKey(keyId);
                 // if we find the questionAnswerStore, update it's properties
                 if (qa != null) {
-                    // Before updating the properties, fix the questionAnswerSummary counts if it is
-                    // an OPTION question
-                    if (Question.Type.OPTION.equals(q.getType())) {
-                        // decrease count of current item
-                        SurveyQuestionSummaryDao.incrementCount(qa, -1);
-
-                        // increase count of new item
-                        String newVal = requestDto.getValue();
-                        if (newVal != null && newVal.trim().length() > 0) {
-                            SurveyQuestionSummaryDao.incrementCount(
-                                    constructQAS(qa.getQuestionID(), newVal), 1);
-                        }
-                    } else if (Question.Type.CASCADE.equals(q.getType())) {
-                        JSONArray cascadeResponse = null;
-                        boolean isValidJson = true;
-                        boolean isValidResponse = true;
-                        try {
-                            cascadeResponse = new JSONArray(requestDto.getValue());
-
-                            isValidResponse = isValidCascadeResponse(q, cascadeResponse);
-                        } catch (JSONException e) {
-                            isValidJson = false;
-                        }
-
-                        // validate individual nodes
-                        if (!isValidJson || !isValidResponse) {
-                            statusDto.setMessage("_invalid_cascade_response");
-                            return response;
-                        }
-                    }
                     // copy the properties, except the createdDateTime property,
                     // because it is set in the Dao.
                     BeanUtils.copyProperties(requestDto, qa,
