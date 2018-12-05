@@ -38,8 +38,10 @@ public class CheckSurveyStructure implements Process {
 
     private int orphanSurveys = 0, orphanGroups = 0, orphanQuestions = 0, unreachableQuestions = 0, orphanOptions = 0;
     private int goodQuestions = 0, goodOptions = 0;
+	private int goodTranslations = 0, orphanTranslations = 0;
     private Map<Long, String> surveys = new HashMap<>();
     private Map<Long, Long> qToSurvey = new HashMap<>();
+    private Map<Long, Long> qToQg = new HashMap<>();
     private Map<Long, Long> qgToSurvey = new HashMap<>();
 
     private boolean fixSurveyPointers = false; // Make question survey pointer match the group's
@@ -48,26 +50,27 @@ public class CheckSurveyStructure implements Process {
     @Override
     public void execute(DatastoreService ds, String[] args) throws Exception {
 
-        System.out.printf("#Arguments: FIX to correct survey pointers, GC to delete orphaned entites.\n");
+        System.out.printf("#Arguments: --fix to correct survey pointers of questions, --gc to delete orphaned entites.\n");
         for (int i = 0; i < args.length; i++) {
-            //System.out.printf("#Argument %d: %s\n", i, args[i]);
-            if (args[i].equalsIgnoreCase("FIX")) {
+            if (args[i].equalsIgnoreCase("--fix")) {
                 fixSurveyPointers = true;
             }
-            if (args[i].equalsIgnoreCase("GC")) {
+            if (args[i].equalsIgnoreCase("--gc")) {
                 deleteOrphans = true;
             }
         }
 
-        processSurveys(ds);
+        processAllSurveys(ds);
         processGroups(ds);
         processQuestions(ds);
         processOptions(ds);
+        processTranslations(ds);
 
         System.out.printf("#Surveys:         %5d good, %4d groupless\n", surveys.size(), orphanSurveys);
         System.out.printf("#QuestionGroups:  %5d good, %4d surveyless\n", qgToSurvey.size(), orphanGroups);
-        System.out.printf("#Questions:       %5d good, %4d groupless, %4d unreachable\n", goodQuestions, orphanQuestions, unreachableQuestions);
+        System.out.printf("#Questions:       %5d good, %4d group-or-surveyless, %4d unreachable\n", goodQuestions, orphanQuestions, unreachableQuestions);
         System.out.printf("#QuestionOptions: %5d good, %4d questionless\n", goodOptions, orphanOptions++);
+        System.out.printf("#Translations:    %5d good, %4d lost\n", goodTranslations, orphanTranslations);
 
     }
 
@@ -77,27 +80,34 @@ public class CheckSurveyStructure implements Process {
 
         final Query group_q = new Query("QuestionGroup");
         final PreparedQuery group_pq = ds.prepare(group_q);
+        List<Key> qgsToKill = new ArrayList<Key>();
 
         for (Entity g : group_pq.asIterable(FetchOptions.Builder.withChunkSize(500))) {
 
-            Long questionGroupId = g.getKey().getId();
-            Long questionGroupSurvey = (Long) g.getProperty("surveyId");
-            String questionGroupName = (String) g.getProperty("name");
-            if (questionGroupSurvey == null) {
-                System.out.printf("#ERR group %d '%s' is not in a survey\n",
-                        questionGroupId, questionGroupName);
+            Long qgId = g.getKey().getId();
+            Long surveyId = (Long) g.getProperty("surveyId");
+            String qgName = (String) g.getProperty("name");
+            if (surveyId == null) {
+                System.out.printf("#ERR group %d '%s' is not in a survey\n", qgId, qgName);
                 orphanGroups++;
-            } else if (!surveys.containsKey(questionGroupSurvey)) {
-                System.out.printf("#ERR group %d '%s' in nonexistent survey %d\n",
-                        questionGroupId, questionGroupName, questionGroupSurvey);
+                qgsToKill.add(g.getKey());
+            } else if (!surveys.containsKey(surveyId)) {
+                System.out.printf("#ERR group %d '%s' is in nonexistent survey %d\n",
+                        qgId, qgName, surveyId);
                 orphanGroups++;
+                qgsToKill.add(g.getKey());
             } else {
-                qgToSurvey.put(questionGroupId, questionGroupSurvey); //ok to have questions in
+                qgToSurvey.put(qgId, surveyId); //ok to have questions in
             }
+            //delete orphan groups
+        }
+        if (deleteOrphans) {
+            System.out.printf("#Deleting %d QuestionGroups\n", qgsToKill.size());
+            batchDelete(ds, qgsToKill);
         }
     }
 
-    private void processSurveys(DatastoreService ds) {
+    private void processAllSurveys(DatastoreService ds) {
 
         System.out.println("#Processing Surveys");
 
@@ -105,7 +115,6 @@ public class CheckSurveyStructure implements Process {
         final PreparedQuery survey_pq = ds.prepare(survey_q);
 
         for (Entity s : survey_pq.asIterable(FetchOptions.Builder.withChunkSize(500))) {
-
             Long surveyId = s.getKey().getId();
             String surveyName = (String) s.getProperty("name");
             Long surveyGroup = (Long) s.getProperty("surveyGroupId");
@@ -113,9 +122,9 @@ public class CheckSurveyStructure implements Process {
                 System.out.printf("#ERR survey %d '%s' is not in a survey group\n",
                         surveyId, surveyName);
                 orphanSurveys++;
-	    } else {
-		surveys.put(surveyId,surveyName); //ok to have questions in
-	    }
+            } else {
+                surveys.put(surveyId,surveyName); //ok to have questions in
+            }
         }
     }
 
@@ -146,6 +155,7 @@ public class CheckSurveyStructure implements Process {
                 }
             } else { // check for wrong survey/qg
                 qToSurvey.put(questionId, questionSurvey); //ok parent for options
+                qToQg.put(questionId, questionGroup);
                 if (!questionSurvey.equals(questionGroupSurvey)) {
                     System.out.printf("#ERR: Question %d '%s' in survey %d, but group %d is in survey %d\n",
                             questionId, questionText, questionSurvey, questionGroup, questionGroupSurvey);
@@ -210,4 +220,63 @@ public class CheckSurveyStructure implements Process {
             batchDelete(ds, optionsToKill);
         }
     }
+
+    private void processTranslations(DatastoreService ds) {
+
+        System.out.println("#Processing Translations");
+
+        final Query tran_q = new Query("Translation");
+        final PreparedQuery tran_pq = ds.prepare(tran_q);
+        List<Key> transToKill = new ArrayList<Key>();
+
+        for (Entity t : tran_pq.asIterable(FetchOptions.Builder.withChunkSize(500))) {
+
+            Long tranId = t.getKey().getId();
+            Long surveyId = (Long) t.getProperty("surveyId");
+            Long parentId = (Long) t.getProperty("parentId");
+            Long qgId = (Long) t.getProperty("questionGroupId");
+            String parentType = (String) t.getProperty("parentType");
+            if (surveyId == null) {
+                System.out.printf("#ERR translation %d '%s' is not in a survey\n", tranId, parentType);
+                orphanTranslations++;
+                transToKill.add(t.getKey());
+            } else if (!surveys.containsKey(surveyId)) {
+                System.out.printf("#ERR translation %d '%s' is not in a good survey\n", tranId, parentType);
+                orphanTranslations++;
+                transToKill.add(t.getKey());
+            } else if (parentId == null) {
+                System.out.printf("#ERR translation %d '%s' has no parent\n", tranId, parentType);
+                orphanTranslations++;
+                transToKill.add(t.getKey());
+            } else if (qgId != null && !qgToSurvey.containsKey(qgId)) {
+            	System.out.printf("#ERR translation %d '%s' is not in a good question group\n", tranId, parentType);
+            	orphanTranslations++;
+            	transToKill.add(t.getKey());
+            } else if (qgId != null && !surveyId.equals(qgToSurvey.get(qgId))) {
+            	System.out.printf("#ERR translation %d '%s' %d is not in a question group of the right survey. My survey %d, qg's survey %d\n",
+            			tranId,
+            			parentType,
+            			parentId,
+            			surveyId,
+            			qgToSurvey.get(qgId));
+            	orphanTranslations++;
+            	transToKill.add(t.getKey());
+            } else if (parentType.equals("QUESTION_TEXT") && !qToSurvey.containsKey(parentId)) {
+            	System.out.printf("#ERR translation %d '%s' is in a nonexistent question\n", tranId, parentType);
+            	orphanTranslations++;
+            	transToKill.add(t.getKey());
+            } else if (parentType.equals("QUESTION_TEXT") && !qgId.equals(qToQg.get(parentId))) {
+            	System.out.printf("#ERR translation %d '%s' is in a question with a different question group\n", tranId, parentType);
+            	orphanTranslations++;
+            	transToKill.add(t.getKey());
+            } else {
+                goodTranslations++;
+            }
+        }
+        if (deleteOrphans) {
+            System.out.printf("#Deleting %d Translations\n", transToKill.size());
+            batchDelete(ds, transToKill);
+        }
+    }
 }
+
