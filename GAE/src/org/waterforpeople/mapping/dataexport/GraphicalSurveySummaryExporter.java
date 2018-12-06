@@ -995,6 +995,24 @@ public class GraphicalSurveySummaryExporter extends SurveySummaryExporter {
                 cascadeNodes.add(m);
             }
         }
+        
+        //We used to always set code=name if not otherwise set
+        //and users did not like getting a:a, b:b, etc. everywhere 
+        boolean allCodesEqualsName = true;
+        for (Map<String, String> cascadeNode : cascadeNodes) {
+            String code = cascadeNode.get("code");
+            String name = cascadeNode.get("name");
+            if (code != null && !code.equalsIgnoreCase(name)) {
+                allCodesEqualsName = false;
+                break;
+            }
+        }
+        if (allCodesEqualsName) {
+            for (Map<String, String> cascadeNode : cascadeNodes) {
+                cascadeNode.put("code", null);
+            }
+        }
+
 
         if (splitIntoColumns) {
             // +------------+------------+-----
@@ -1007,7 +1025,7 @@ public class GraphicalSurveySummaryExporter extends SurveySummaryExporter {
                 String code = map.get("code");
                 String name = map.get("name");
                 String nodeVal;
-                if (code != null) {
+                if (code != null  && !code.isEmpty()) {
                     if (justCodes) {
                         nodeVal = code;
                     } else {
@@ -1039,7 +1057,7 @@ public class GraphicalSurveySummaryExporter extends SurveySummaryExporter {
                 String code = node.get("code");
                 String name = node.get("name");
                 cascadeString.append("|");
-                if (code != null) {
+                if (code != null  && !code.isEmpty()) {
                     if (justCodes) {
                         cascadeString.append(code);
                     } else {

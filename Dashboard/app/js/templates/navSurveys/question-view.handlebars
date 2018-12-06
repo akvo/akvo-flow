@@ -63,7 +63,25 @@
       <p class="optionTitle">
         <strong>{{t _options}}:&nbsp;</strong>
         {{#if FLOW.questionOptionsControl.emptyOptions}}
-        <span style="color:red">{{t _empty_options_not_allowed}}</span>
+        <br><span style="color:red">{{t _empty_options_not_allowed}}</span>
+        {{/if}}
+        {{#if FLOW.questionOptionsControl.duplicateOptionNames}}
+        <br><span style="color:red">{{t _duplicate_option_text}}</span>
+        {{/if}}
+        {{#if FLOW.questionOptionsControl.emptyOptionNames}}
+        <br><span style="color:red">{{t _missing_option_text}}</span>
+        {{/if}}
+        {{#if FLOW.questionOptionsControl.partialOptionCodes}}
+        <br><span style="color:red">{{t _all_option_codes_have_values}}</span>
+        {{/if}}
+        {{#if FLOW.questionOptionsControl.duplicateOptionCodes}}
+        <br><span style="color:red">{{t _duplicate_option_codes}}</span>
+        {{/if}}
+        {{#if FLOW.questionOptionsControl.disallowedCharacters}}
+        <br><span style="color:red">{{t _disallowed_xters_in_code}}</span>
+        {{/if}}
+        {{#if FLOW.questionOptionsControl.reservedCode}}
+        <br><span style="color:red">{{t _reserved_code}}</span>
         {{/if}}
       </p>
       <div class="optionListView">
@@ -178,13 +196,33 @@
         {{#if view.questionValidationFailure }}
         <li><a class="button noChanges" id="standardBtn_01">{{t _save_question}}</a> </li>
         {{else}}
+        {{#if view.amOptionType}}
         {{#if FLOW.questionOptionsControl.emptyOptions }}
         <li><a class="button noChanges" id="standardBtn_01">{{t _save_question}}</a> </li>
         {{else}}
+        {{#if FLOW.questionOptionsControl.emptyOptionNames}}
+        <li><a class="button noChanges" id="standardBtn_01">{{t _save_question}}</a> </li>
+        {{else}}
+        {{#if FLOW.questionOptionsControl.duplicateOptionNames}}
+        <li><a class="button noChanges" id="standardBtn_01">{{t _save_question}}</a> </li>
+        {{else}}
+        {{#if FLOW.questionOptionsControl.partialOptionCodes}}
+        <li><a class="button noChanges" id="standardBtn_01">{{t _save_question}}</a> </li>
+        {{else}}
+        {{#if FLOW.questionOptionsControl.duplicateOptionCodes}}
+        <li><a class="button noChanges" id="standardBtn_01">{{t _save_question}}</a> </li>
+        {{else}}
+        {{#if FLOW.questionOptionsControl.disallowedCharacters}}
+        <li><a class="button noChanges" id="standardBtn_01">{{t _save_question}}</a> </li>
+        {{else}}
+        {{#if FLOW.questionOptionsControl.reservedCode}}
+        <li><a class="button noChanges" id="standardBtn_01">{{t _save_question}}</a> </li>
+        {{else}}
         <li><a class="button" id="standardBtn_01" {{action "doSaveEditQuestion" target="this"}}>{{t _save_question}}</a> </li>
-        {{/if}}
-        {{/if}}
-        {{/if}}
+        {{/if}}{{/if}}{{/if}}{{/if}}{{/if}}{{/if}}{{/if}}
+        {{else}}
+        <li><a class="button" id="standardBtn_01" {{action "doSaveEditQuestion" target="this"}}>{{t _save_question}}</a> </li>
+        {{/if}}{{/if}}{{/if}}
         <li><a class="cancel" id="standardBtn_01" {{action "doCancelEditQuestion" target="this"}}>{{t _cancel}}</a> </li>
       </ul>
     </nav>
