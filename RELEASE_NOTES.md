@@ -1,5 +1,12 @@
 # Akvo Flow Release Notes
 ----
+# Akvo Flow Dashboard v1.9.41 - Nebulous Nemesia
+Date: 06th December 2018
+
+## Resolved issues
+* **Cascades** - Fix new cascades code created automatically [#2926]
+* **Options** - Simplify option code validation [#2150]
+
 # Akvo Flow Dashboard v1.9.40 - Melodious Melon
 Date: 14th November 2018
 
