@@ -225,10 +225,13 @@ public class DataProcessorRestServlet extends AbstractRestApiServlet {
             if (dpReq.getSurveyInstanceId() != null) {
                 deleteSurveyResponses(dpReq.getSurveyInstanceId());
             }
-        } else if (DataProcessorRequest.SURVEY_RESPONSE_COUNT.equalsIgnoreCase(req
-                .getAction())) {
+        } else if (DataProcessorRequest.SURVEY_RESPONSE_COUNT.equalsIgnoreCase(req.getAction())) {
             if (dpReq.getSummaryCounterId() != null && dpReq.getDelta() != null) {
                 updateSurveyResponseCounter(dpReq.getSummaryCounterId(), dpReq.getDelta());
+            }
+        } else if (DataProcessorRequest.UPDATE_SURVEY_INSTANCE_SUMMARIES.equalsIgnoreCase(req.getAction())) {
+            if (dpReq.getSurveyInstanceId() != null && dpReq.getDelta() != null) {
+            	updateSurveyInstanceResponseCounters(dpReq.getSurveyInstanceId(), dpReq.getDelta());
             }
         } else if (DataProcessorRequest.DELETE_CASCADE_NODES.equalsIgnoreCase(req.getAction())) {
             deleteCascadeNodes(dpReq.getCascadeResourceId(), dpReq.getParentNodeId());
@@ -1274,7 +1277,7 @@ public class DataProcessorRestServlet extends AbstractRestApiServlet {
     }
 
     /**
-     * Update a survey response counter according to the provided delta. This method should be
+     * Update a single survey response counter according to the provided delta. This method should be
      * invoked though the task queue 'surveyResponseCount' to avoid concurrent updates
      *
      * @param summaryCounterId
@@ -1289,6 +1292,23 @@ public class DataProcessorRestServlet extends AbstractRestApiServlet {
 
         summary.setCount(summary.getCount() + delta);
         summaryDao.save(summary);
+    }
+
+    /**
+     * Update a single survey response counter according to the provided delta. This method should be
+     * invoked though the task queue 'surveyResponseCount' to avoid concurrent updates
+     *
+     * @param summaryCounterId
+     * @param delta +1 or -1
+     */
+
+    private void updateSurveyInstanceResponseCounters(long surveyInstanceId, int delta) {
+        SurveyInstanceDAO siDao = new SurveyInstanceDAO();
+        SurveyInstance si = siDao.getByKey(surveyInstanceId);
+        if (si != null && (delta == 1 || delta == -1)) {
+            siDao.updateSummaryCounts(si, delta > 0);
+        }
+    	
     }
 
     private void deleteCascadeNodes(Long cascadeResourceId, Long parentNodeId) {

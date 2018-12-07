@@ -1,5 +1,5 @@
 /*
- *  Copyright (C) 2010-2012, 2017 Stichting Akvo (Akvo Foundation)
+ *  Copyright (C) 2010-2012, 2017-2018 Stichting Akvo (Akvo Foundation)
  *
  *  This file is part of Akvo FLOW.
  *
@@ -233,8 +233,8 @@ public class SurveyQuestionSummaryDao extends BaseDAO<SurveyQuestionSummary> {
      * @param summary
      */
     public List<SurveyQuestionSummary> save(List<SurveyQuestionSummary> summary) {
-        List<SurveyQuestionSummary> savedSummaryList = (List<SurveyQuestionSummary>) super
-                .save(summary);
+        List<SurveyQuestionSummary> savedSummaryList =
+        		(List<SurveyQuestionSummary>) super.save(summary);
         cache(savedSummaryList);
         return savedSummaryList;
     }
