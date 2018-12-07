@@ -1295,18 +1295,17 @@ public class DataProcessorRestServlet extends AbstractRestApiServlet {
     }
 
     /**
-     * Update a single survey response counter according to the provided delta. This method should be
+     * Update all survey response counters for the provided surveyInstance. This method should be
      * invoked though the task queue 'surveyResponseCount' to avoid concurrent updates
      *
-     * @param summaryCounterId
+     * @param surveyInstanceId
      * @param delta +1 or -1
      */
 
     private void updateSurveyInstanceResponseCounters(long surveyInstanceId, int delta) {
         SurveyInstanceDAO siDao = new SurveyInstanceDAO();
-        SurveyInstance si = siDao.getByKey(surveyInstanceId);
-        if (si != null && (delta == 1 || delta == -1)) {
-            siDao.updateSummaryCounts(si, delta > 0);
+        if (delta == 1 || delta == -1) {
+            siDao.updateSummaryCounts(surveyInstanceId, delta > 0);
         }
     	
     }

@@ -489,16 +489,20 @@ public class SurveyInstanceDAO extends BaseDAO<SurveyInstance> {
      * instance.
      * This does not yet execute on the surveyResponseCount task queue and so is not synchronized!
      */
-    public void updateSummaryCounts(SurveyInstance si, boolean increment) {
-
+    public void updateSummaryCounts(long siId, boolean increment) {
         // retrieve all summary objects
         SurveyQuestionSummaryDao summaryDao = new SurveyQuestionSummaryDao();
+        QuestionAnswerStoreDao qasDao = new QuestionAnswerStoreDao();
         QuestionDao qDao = new QuestionDao();
 
+        List<QuestionAnswerStore> answerList = qasDao.listBySurveyInstance(siId);
+        if (answerList == null || answerList.isEmpty()) {
+        	return;
+        }
         List<SurveyQuestionSummary> saveList = new ArrayList<SurveyQuestionSummary>();
         List<SurveyQuestionSummary> deleteList = new ArrayList<SurveyQuestionSummary>();
 
-        for (QuestionAnswerStore response : si.getQuestionAnswersStore()) {
+        for (QuestionAnswerStore response : answerList) {
             final Long questionId = Long.parseLong(response.getQuestionID());
             Question question = qDao.getByKey(questionId);
             if (question == null || !question.canBeCharted()) {
@@ -518,7 +522,7 @@ public class SurveyInstanceDAO extends BaseDAO<SurveyInstance> {
                     questionSummary.setQuestionId(response.getQuestionID());
                     questionSummary.setResponse(questionResponse[i]);
                     questionSummary.setCount(0L);
-                    summaryDao.save(questionSummary);//New, so OK to save from here? NO it could be created from other threads simultaneously!
+                    summaryDao.save(questionSummary);
                 } else {
                     questionSummary = questionSummaryList.get(0);
                 }
@@ -526,7 +530,7 @@ public class SurveyInstanceDAO extends BaseDAO<SurveyInstance> {
                 // update and save or delete
                 long count = questionSummary.getCount() == null ? 0 : questionSummary.getCount();
                 count = increment ? ++count : --count;
-                questionSummary.setCount(count);//need to keep track of the delta instead!
+                questionSummary.setCount(count);
 
                 if (count > 0) {
                     saveList.add(questionSummary);
@@ -547,13 +551,11 @@ public class SurveyInstanceDAO extends BaseDAO<SurveyInstance> {
                 .withUrl("/app_worker/dataprocessor")
                 .param(DataProcessorRequest.ACTION_PARAM,
                         DataProcessorRequest.UPDATE_SURVEY_INSTANCE_SUMMARIES)
-                .param(DataProcessorRequest.SURVEY_INSTANCE_PARAM,
-                        si.getKey().getId() + "")
+                .param(DataProcessorRequest.SURVEY_INSTANCE_PARAM, si.getKey().getId() + "")
                 .param(DataProcessorRequest.DELTA_PARAM, increment ? "1":"-1");
         questionSummaryQueue.add(to);
     	
     }
-
     
     
     /**
