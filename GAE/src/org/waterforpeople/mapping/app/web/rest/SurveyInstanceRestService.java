@@ -142,6 +142,7 @@ public class SurveyInstanceRestService {
         List<SurveyInstance> siList = null;
         if (surveyId != null) {
             // authorized surveys list
+            // PERMS: Simple HTTP call "Can user change/see form.parent"
             List<Survey> authorizedSurveys = surveyDao.listAllFilteredByUserAuthorization();
             Set<Long> authorizedSurveyIds = new HashSet<Long>();
             for (Survey s : authorizedSurveys) {
@@ -164,6 +165,7 @@ public class SurveyInstanceRestService {
             }
 
             // authorized survey groups list
+            // PERMS: Simple HTTP call "Can user change/see survey"
             List<SurveyGroup> authorizedSurveyGroups = surveyGroupDao
                     .listAllFilteredByUserAuthorization();
             Set<Long> authorizedSurveyGroupIds = new HashSet<Long>();

@@ -112,8 +112,10 @@ public class RequestUriVoter implements AccessDecisionVoter<FilterInvocation> {
 
         if (requestUri.startsWith(PROJECT_FOLDER_URI_PREFIX)
                 || requestUri.startsWith(FORM_URI_PREFIX)) {
+            // PERMS: Simple HTTP call "Can user change/see (form.parent or survey/folder"
             return voteFolderSurveyUri(authentication, securedObject);
         } else if (requestUri.startsWith(SURVEY_RESPONSE_URI_PREFIX)) {
+            // PERMS: Simple HTTP call "Can user change/see form.parent"
             return voteSurveyResponseUri(authentication, securedObject);
         }
 

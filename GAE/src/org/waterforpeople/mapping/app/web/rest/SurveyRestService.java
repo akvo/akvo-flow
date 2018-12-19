@@ -64,6 +64,7 @@ public class SurveyRestService {
     public Map<String, Object> listSurveys() {
         final Map<String, Object> response = new HashMap<String, Object>();
         List<SurveyDto> results = new ArrayList<SurveyDto>();
+        // PERMS: List all forms. We are not going to have forms, hence, what do we do here? Get all projects and then get all surveys from them?
         List<Survey> surveys = surveyDao.listAllFilteredByUserAuthorization();
         if (surveys != null) {
             for (Survey s : surveys) {
@@ -121,13 +122,14 @@ public class SurveyRestService {
 
         // if we are here, it is a regular request and not preflight
         if (surveyGroupId != null) {
-            surveys = surveyDao.listSurveysByGroup(surveyGroupId);
+            surveys = surveyDao.listSurveysByGroup(surveyGroupId); // PERMS: Simple HTTP call "Can user change/see form.parent"
+
         } else if (ids[0] != null) {
-            surveys = surveyDao.listByKeys(ids);
+            surveys = surveyDao.listByKeys(ids); // PERMS: this would require a multi query to check several folders at once (form.parent)
         }
 
         if (surveys != null) {
-            for (Survey s : surveyDao.filterByUserAuthorizationObjectId(surveys)) {
+            for (Survey s : surveyDao.filterByUserAuthorizationObjectId(surveys)) { // PERMS: check previous comments
                 SurveyDto dto = new SurveyDto();
                 DtoMarshaller.copyToDto(s, dto);
 

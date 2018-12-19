@@ -505,7 +505,7 @@ public class SurveyUtils {
      *
      * @param surveyGroup
      */
-    public static void setChildObjects(SurveyGroup surveyGroup) {
+    public static void setChildObjects(SurveyGroup surveyGroup) { // PERMS: just when moving folder
         if (surveyGroup == null || surveyGroup.getKey() == null) {
             return;
         }

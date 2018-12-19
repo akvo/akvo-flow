@@ -223,7 +223,7 @@ public class SurveyGroup extends BaseDomain implements SecuredObject {
     }
 
     @Override
-    public List<BaseDomain> updateAncestorIds(boolean cascade) {
+    public List<BaseDomain> updateAncestorIds(boolean cascade) { // PERMS: just when moving folder
         if (ancestorIds == null || key == null) {
             return Collections.emptyList();
         }
@@ -236,7 +236,7 @@ public class SurveyGroup extends BaseDomain implements SecuredObject {
             for (SurveyGroup sg : childFolders) {
                 sg.setAncestorIds(childAncestorIds);
                 if (cascade) {
-                    SurveyUtils.setChildObjects(sg);
+                    SurveyUtils.setChildObjects(sg); // PERMS: just when moving folder
                     updatedEntities.addAll(sg.updateAncestorIds(cascade));
                 }
             }

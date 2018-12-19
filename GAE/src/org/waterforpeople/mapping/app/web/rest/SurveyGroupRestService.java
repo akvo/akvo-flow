@@ -81,6 +81,9 @@ public class SurveyGroupRestService {
         }
 
         // if we are here, it is a regular request
+        // PERMS: we need to change this relationship in the FE: right now we add the Forms to the Surveys, we
+        // will need to do the opposite
+        // PERMS: list of folders and projects
         List<SurveyGroup> surveyGroups = surveyGroupDao.listAllFilteredByUserAuthorization();
 
         // we do not need to filter the list of Survey entities (forms) i.e. we list *all* results
@@ -152,7 +155,7 @@ public class SurveyGroupRestService {
                     break;
                 case PROJECT_FOLDER:
                     // only delete surveyGroups if there are no sub folders in there
-                    List<SurveyGroup> surveyGroups = surveyGroupDao.listByProjectFolderId(id);
+                    List<SurveyGroup> surveyGroups = surveyGroupDao.listByProjectFolderId(id); // PERMS: check if can be dleeted
                     delete = surveyGroups.size() == 0;
                     break;
             }
