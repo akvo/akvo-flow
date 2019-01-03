@@ -1,5 +1,8 @@
 # Akvo Flow Release Notes
 ----
+# Akvo Flow Dashboard v1.9.41.1 - Nebulous Nemesia (Hotfix 1)
+Date: ...
+
 # Akvo Flow Dashboard v1.9.41 - Nebulous Nemesia
 Date: 06th December 2018
 
