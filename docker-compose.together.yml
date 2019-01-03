@@ -11,12 +11,15 @@ services:
     external_links:
         - "flow-services:services.akvoflow.local"
         - "akvo-flow:akvoflow.local"
+        - "rsrdbhost:rsrdbhost.local"
     networks:
       - akvoflow_together
     ports:
      - 8888:8888
      - 5005:5005
      - 7888:7888
+     - 7889:7889
+     - 3449:3449
      - 3000:3000
     volumes:
      - .:/app/src/:delegated

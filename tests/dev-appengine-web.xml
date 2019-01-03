@@ -54,6 +54,8 @@
         <property name="windshaftMaps" value="true" />
         <property name="showMonitoringFeature" value="true"/>
         <property name="enableDataApproval" value="true"/>
+        <property name="enableChangeEvents" value="true" />
+        <property name="eventNotification" value="http://localhost:3000/event-notification" />
         <property name="mandatoryQuestionID" value="false"/>
         <property name="serviceAccountId" value="sa-akvoflowsandbox@akvoflowsandbox.iam.gserviceaccount.com"/>
         <property name="hereMapsAppId" value="none"/>
