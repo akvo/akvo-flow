@@ -60,7 +60,9 @@ FLOW.Router = Ember.Router.extend({
           });
 
 
-          FLOW.projectControl.set('currentProject', FLOW.store.findById(FLOW.SurveyGroup, 152342023));
+          var the_url = new URL(window.location.href);
+          var survey_id = the_url.searchParams.get("survey_id");
+          FLOW.projectControl.set('currentProject', FLOW.store.findById(FLOW.SurveyGroup, survey_id));
           FLOW.surveyControl.populateAll();
           FLOW.cascadeResourceControl.populate();
           FLOW.projectControl.set('newlyCreated', null);
