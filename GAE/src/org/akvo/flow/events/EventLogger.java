@@ -158,7 +158,7 @@ public class EventLogger {
 
     @PostPut(kinds = {
             "SurveyGroup", "Survey", "QuestionGroup", "Question", "SurveyInstance",
-            "QuestionAnswerStore", "SurveyedLocale", "DeviceFiles"
+            "QuestionAnswerStore", "SurveyedLocale", "DeviceFiles", "UserRole", "User", "UserAuthorization"
     })
     void logPut(PutContext context) {
 
@@ -211,7 +211,7 @@ public class EventLogger {
 
     @PostDelete(kinds = {
             "SurveyGroup", "Survey", "QuestionGroup", "Question", "SurveyInstance",
-            "QuestionAnswerStore", "SurveyedLocale", "DeviceFiles"
+            "QuestionAnswerStore", "SurveyedLocale", "DeviceFiles", "UserRole", "User", "UserAuthorization"
     })
     void logDelete(DeleteContext context) {
         try {
