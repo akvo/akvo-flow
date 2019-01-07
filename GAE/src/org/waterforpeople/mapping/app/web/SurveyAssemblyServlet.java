@@ -89,8 +89,7 @@ public class SurveyAssemblyServlet extends AbstractRestApiServlet {
     protected RestResponse handleRequest(RestRequest req) throws Exception {
         RestResponse response = new RestResponse();
         SurveyAssemblyRequest importReq = (SurveyAssemblyRequest) req;
-        if (SurveyAssemblyRequest.ASSEMBLE_SURVEY.equalsIgnoreCase(importReq
-                .getAction())) {
+        if (SurveyAssemblyRequest.ASSEMBLE_SURVEY.equalsIgnoreCase(importReq.getAction())) {
 
             QuestionDao questionDao = new QuestionDao();
             boolean useBackend = false;
@@ -103,12 +102,12 @@ public class SurveyAssemblyServlet extends AbstractRestApiServlet {
                 // need to (based on survey size)
                 List<Question> questionList = questionDao
                         .listQuestionsBySurvey(importReq.getSurveyId());
-                if (questionList != null
-                        && questionList.size() > BACKEND_QUESTION_THRESHOLD) {
+                if (questionList != null && questionList.size() > BACKEND_QUESTION_THRESHOLD) {
                     useBackend = true;
                 }
             }
             if (useBackend) {
+                log.debug("Forking to task for assembly");
                 com.google.appengine.api.taskqueue.TaskOptions options = com.google.appengine.api.taskqueue.TaskOptions.Builder
                         .withUrl("/app_worker/surveyassembly")
                         .param(SurveyAssemblyRequest.ACTION_PARAM,
@@ -276,31 +275,29 @@ public class SurveyAssemblyServlet extends AbstractRestApiServlet {
                 + surveyIdKeyValue + ">";
         String surveyFooter = "</survey>";
         QuestionGroupDao qgDao = new QuestionGroupDao();
-        TreeMap<Integer, QuestionGroup> qgList = qgDao
-                .listQuestionGroupsBySurvey(surveyId);
+        TreeMap<Integer, QuestionGroup> qgList = qgDao.listQuestionGroupsBySurvey(surveyId);
         if (qgList != null) {
             StringBuilder surveyXML = new StringBuilder();
             surveyXML.append(surveyHeader);
             for (QuestionGroup item : qgList.values()) {
-                log.info("Assembling group " + item.getKey().getId()
-                        + " for survey " + surveyId);
+                log.info("Assembling group " + item.getKey().getId() + " for survey " + surveyId);
                 surveyXML.append(buildQuestionGroupXML(item));
             }
 
             surveyXML.append(surveyFooter);
             log.info("Uploading " + surveyId);
-            UploadStatusContainer uc = uploadSurveyXML(Long.toString(surveyId), surveyXML.toString());
+            UploadStatusContainer uc = uploadSurveyXML(
+            		Long.toString(surveyId), //latest version in plain filename
+            		Long.toString(surveyId) + "v" + s.getVersion(), //archive copy
+            		surveyXML.toString());
             Message message = new Message();
             message.setActionAbout("surveyAssembly");
             message.setObjectId(surveyId);
             message.setObjectTitle(sg.getCode() + " / " + s.getName());
-            if (uc.getUploadedFile() && uc.getUploadedZip()) {
-                //Success. Also try to upload archive copy of specific version
-                uploadSurveyXML(Long.toString(surveyId) + "v" + s.getVersion(), surveyXML.toString());
-                // increment the version so devices know to pick up the changes
+            if (uc.getUploadedZip1() && uc.getUploadedZip2()) {
                 log.info("Finishing assembly of " + surveyId);
                 s.setStatus(Survey.Status.PUBLISHED);
-                surveyDao.save(s);
+                surveyDao.save(s); //remember PUBLISHED status
                 String messageText = "Published.  Please check: " + uc.getUrl();
                 message.setShortMessage(messageText);
                 message.setTransactionUUID(transactionId.toString());
@@ -319,42 +316,40 @@ public class SurveyAssemblyServlet extends AbstractRestApiServlet {
         }
     }
 
-    public UploadStatusContainer uploadSurveyXML(String fileName, String surveyXML) {
+    
+    /**  Upload a zipped file twice to S3 under different filenames.
+     * @param fileName1
+     * @param fileName2
+     * @param surveyXML
+     * @return
+     */
+    public UploadStatusContainer uploadSurveyXML(String fileName1, String fileName2, String surveyXML) {
         Properties props = System.getProperties();
         String bucketName = props.getProperty("s3bucket");
-        String document = surveyXML;
-        boolean uploadedFile = false;
-        boolean uploadedZip = false;
-
-        try {
-            uploadedFile = S3Util.put(bucketName,
-                    props.getProperty(SURVEY_UPLOAD_DIR) + "/" + fileName + ".xml",
-                    document.getBytes("UTF-8"),
-                    "text/xml",
-                    true);
-        } catch (IOException e) {
-            log.error("Error uploading file: " + e.getMessage(), e);
-        }
-
-        ByteArrayOutputStream os = ZipUtil.generateZip(document, fileName + ".xml");
+        String directory = props.getProperty(SURVEY_UPLOAD_DIR);
 
         UploadStatusContainer uc = new UploadStatusContainer();
+        uc.setUploadedZip1(uploadZippedXml(surveyXML, bucketName, directory, fileName1));
+        uc.setUploadedZip2(uploadZippedXml(surveyXML, bucketName, directory, fileName2));
+        uc.setUrl(props.getProperty(SURVEY_UPLOAD_URL)
+                + props.getProperty(SURVEY_UPLOAD_DIR)
+                + "/" + fileName1 + ".xml");
+        return uc;
+    }
+    
+    private boolean uploadZippedXml(String content, String bucketName, String directory, String fileName) {
+        ByteArrayOutputStream os2 = ZipUtil.generateZip(content, fileName + ".xml");
 
         try {
-            uploadedZip = S3Util.put(bucketName,
-                    props.getProperty(SURVEY_UPLOAD_DIR) + "/" + fileName + ".zip",
-                    os.toByteArray(),
+           return S3Util.put(bucketName,
+                    directory + "/" + fileName + ".zip",
+                    os2.toByteArray(),
                     "application/zip",
                     true);
         } catch (IOException e) {
             log.error("Error uploading zipfile: " + e.getMessage(), e);
+            return false;
         }
-        uc.setUploadedFile(uploadedFile);
-        uc.setUploadedZip(uploadedZip);
-        uc.setUrl(props.getProperty(SURVEY_UPLOAD_URL)
-                + props.getProperty(SURVEY_UPLOAD_DIR)
-                + "/" + fileName + ".xml");
-        return uc;
     }
 
     public String buildQuestionGroupXML(QuestionGroup item) {
