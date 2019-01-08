@@ -92,7 +92,7 @@ public class CronCommanderServlet extends HttpServlet {
      */
     private void purgeDeviceFileJobQueueRecords() {
         Calendar deadline = Calendar.getInstance();
-        deadline.add(Calendar.YEAR, TWO_YEARS_AGO);
+        deadline.add(Calendar.YEAR, ONE_YEAR_AGO);
         log.fine("Starting scan for DFJQ entries, fulfilled or older than: " + deadline.getTime());
         DeviceFileJobQueueDAO dfjqDao = new DeviceFileJobQueueDAO();
         List<DeviceFileJobQueue> dfjqList = dfjqDao.list("all");

@@ -1,5 +1,64 @@
 # Akvo Flow Release Notes
 ----
+# Akvo Flow Dashboard v1.9.41 - Nebulous Nemesia
+Date: 06th December 2018
+
+## Resolved issues
+* **Cascades** - Fix new cascades code created automatically [#2926]
+* **Options** - Simplify option code validation [#2150]
+
+# Akvo Flow Dashboard v1.9.40 - Melodious Melon
+Date: 14th November 2018
+
+## New and noteworthy
+* **Maps** - Filter data points on maps tab by form [#2770]
+* **Survey design** - Disable ability to save optionless option type questions [#2118]. Order forms on survey tab by date created instead of alphabetically [#2917]
+* **Exports** - Show codes by default if they exist when exporting data analysis and comprehensive reports [#2742]
+* **Backend optimisation** - Shorten the time we keep asking for device files from two years to one year[#2913]
+
+## Resolved issues
+* **Front-end bug fixes** - Fix options ordering in translations page [#1983]. Display newly created form [#1981].
+* **Backend bug fixes** - Allow unilog notification setting to be empty [#2906]. Fix question order mixup when publishing [#2911]. Catch null pointer exceptions when fetching credentials [#2909]
+
+# Akvo Flow Dashboard v1.9.39 - Laid-back Lagerstroemia
+Date: 24th October 2018
+
+## New and noteworthy
+* **Project folders** - Enable editing folder name when created [#2875]
+
+## Resolved issues
+* **Surveys** - Require selecting at least one type before allowing saving geoshape questions [#2877]
+* **Maps** - Properly render all caddisfly responses on maps[#1750]. If a point has been previously selected, hide details panel when filtering [#2881]. Properly render geoshape responses on maps tab [#2884]
+* **UI improvement** - Remove table header arrows where unneeded [#2389]. Fix how and where survey path is displayed on dashboard [#2507]
+* **UX improvement** - Indicate form must be selected to perform actions on data cleaning tab [#2456]. Remove delay between fetching retching form submissions on inspect data tab and displaying when fetch completes [#2827]
+* **Code cleanup** - Remove CartoDB code [#2867]
+
+# Akvo Flow Dashboard v1.9.38 - Key Kalmia
+Date: 9th October 2018
+
+## New and noteworthy
+* **Reports export** - Highlight folder/survey/form selection when user tries to export a report without selecting a form [#2380]. Highlight question selection when user tries to export a geojson report without selecting a geoshape type question [#2479]
+* **Question answers** - Display images [#2557] and videos [#2561] directly on dashboard instead of a link opening on different tab
+
+## Resolved Issues
+* **Bug fix** - Load question answers for non-monitoring survey on Mapbox maps [#2680]
+
+# Akvo Flow Dashboard v1.9.37.1 - Jovial Jojoba (Hotfix 1)
+Date: 13th September 2018
+
+## Resolved issues
+* **Bug fix** - Fix broken actions in data cleaning tab [#2855]
+
+# Akvo Flow Dashboard v1.9.37 - Jovial Jojoba
+Date: 12th September 2018
+
+## New and noteworthy
+* **UI improvement** - Highlight the folder/survey filters when a user tries to perform an action without having selected a form under the inspect data and monitoring tabs [#2455]
+
+## Resolved issues
+* **Bug fixes** - Catch browser error thrown when a user filters down to form level then selects an ancestor's "Choose folder or survey" option [#2848]. Remove delay after the loading icon disappears when fetching data under inspect data and monitoring data tabs to the data till the submissions actually showing [#2827]
+* **Performance improvement** - Remove unnecessary fetch for survey instance counts causing delay when calling the surveys endpoint[#2823]
+
 # Akvo Flow Dashboard v1.9.36 - Iconic Iris
 Date: 22nd August 2018
 

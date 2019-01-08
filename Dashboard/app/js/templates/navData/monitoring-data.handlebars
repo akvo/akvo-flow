@@ -1,7 +1,7 @@
 {{#view FLOW.MonitoringDataTableView}}
 <section class="" id="monitoringData">
     <div class="floats-in filterData" id="dataFilter">
-      <div class="chooseSurveyData">
+      <div {{bindAttr class="view.missingSurvey:redBorder :chooseSurveyData"}}>
       {{#unless FLOW.projectControl.isLoading}}
         {{view FLOW.SurveySelectionView showMonitoringSurveysOnly=true}}
       {{/unless}}
@@ -73,7 +73,7 @@
           <tr>
               <th class="noArrows"></th>
               <th class="noArrows">{{t _id}}</th>
-              <th class="noArrows">{{t _survey}}</th>
+              <th class="noArrows">{{t _form}}</th>
               <th class="noArrows">{{t _submitter}}</th>
               <th class="noArrows">{{t _device}}</th>
               <th class="noArrows">{{t _collected}}</th>
@@ -85,7 +85,7 @@
             <tr>
               <td class="device">{{#view FLOW.DataNumView contentBinding="this"}}{{view.rownum}}{{/view}}</td>
               <td class="device">{{SI.keyId}}</td>
-              <td class="survey" style="text-align:left;">{{SI.surveyCode}}</td>
+              <td class="survey" style="text-align:left;">{{#with SI}}{{formName surveyId}}{{/with}}</td>
               <td class="submitter" style="text-align:left;">{{SI.submitterName}}</td>
               <td class="device">{{SI.deviceIdentifier}}</td>
               <td class="collected">{{#with SI}}{{date1 collectionDate}}{{/with}}</td>

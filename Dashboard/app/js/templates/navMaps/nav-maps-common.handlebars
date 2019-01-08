@@ -3,15 +3,15 @@
       {{#unless FLOW.projectControl.isLoading}}
         {{view FLOW.SurveySelectionView showDataReadSurveysOnly=true}}
       {{/unless}}
-      {{#if view.showFormFilter}}
+      {{#if FLOW.selectedControl.selectedSurveyGroup}}
         {{view Ember.Select
-            contentBinding="FLOW.surveyControl.arrangedContent"
-            selectionBinding="view.selectedSurvey"
-            optionLabelPath="content.code"
-            optionValuePath="content.keyId"
-            prompt=""
-            promptBinding="Ember.STRINGS._select_form"
-            classNames="form-selector"
+          contentBinding="FLOW.surveyControl.arrangedContent"
+          selectionBinding="FLOW.selectedControl.selectedSurvey"
+          optionLabelPath="content.code"
+          optionValuePath="content.keyId"
+          prompt=""
+          promptBinding="Ember.STRINGS._select_form"
+          classNames="form-selector"
         }}
       {{/if}}
   {{/if}}
@@ -19,32 +19,38 @@
     <div id="mapDetailsHideShow" class="drawHandle hideMapD"></div>
   </div>
   <div id="flowMap"></div>
-  {{#view FLOW.PlacemarkDetailView controllerBinding="FLOW.placemarkDetailController"}}
+  {{#view FLOW.PlacemarkDetailsView controllerBinding="FLOW.placemarkDetailController"}}
     <div id="pointDetails">
-      {{#if content}}
+      {{#if dataPoint}}
         <ul class="placeMarkBasicInfo floats-in">
-            {{#if view.cartoMaps}}
-            <h3>{{surveyedLocaleDisplayName}}</h3>
+            <h3>{{dataPointDisplayName}}</h3>
             <li>
                 <span>{{t _data_point_id}}:</span>
-                <label style="display: inline; margin: 0 0 0 5px;">{{surveyedLocaleIdentifier}}</label>
+                <label style="display: inline; margin: 0 0 0 5px;">{{dataPointIdentifier}}</label>
             </li><br>
-            {{/if}}
           <li>
             <span>{{t _collected_on}}:</span>
             <div class="placeMarkCollectionDate">
-              {{date2 collectionDate}}
+              {{date2 dataPointCollectionDate}}
             </div>
           </li>
           <li></li>
         </ul>
         <div class="mapInfoDetail">
-          {{#each arrangedContent}}
-            <p>{{placemarkDetail}}</p>
-            {{drawGeoshapes}}
+          {{#if FLOW.placemarkDetailController.noSubmissions}}
+            <p class="noDetails">{{t _no_submissions_on_point}}</p>
           {{else}}
-            <p class="noDetails">{{t _no_details}}</p>
-          {{/each}}
+            {{#each responseSubList in FLOW.questionAnswerControl.contentByGroup}}
+              {{#each iterations in responseSubList}}
+                <p></p>
+                <h3 class="questionGroupName">{{iterations.groupName}}</h3>
+                      {{#each iterations}}
+                          <p>{{placemarkDetail}}</p>
+                          {{drawGeoshapes}}
+                      {{/each}}
+              {{/each}}
+            {{/each}}
+          {{/if}}
         </div>
       {{else}}
         <p class="noDetails">{{t _no_details}}</p>

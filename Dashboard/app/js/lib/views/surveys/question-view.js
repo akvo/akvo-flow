@@ -103,10 +103,10 @@ FLOW.QuestionView = FLOW.View.extend({
 
   amCascadeType: function () {
     if (this.type) {
-	  return this.type.get('value') == 'CASCADE';
-	} else {
-	  return false;
-	}
+      return this.type.get('value') == 'CASCADE';
+    } else {
+      return false;
+    }
   }.property('this.type').cacheable(),
 
   hasExtraSettings: function () {
@@ -120,10 +120,10 @@ FLOW.QuestionView = FLOW.View.extend({
 
   amGeoshapeType: function () {
     if (this.type) {
-	  return this.type.get('value') == 'GEOSHAPE';
-	} else {
-	  return false;
-	}
+      return this.type.get('value') == 'GEOSHAPE';
+    } else {
+      return false;
+    }
   }.property('this.type').cacheable(),
 
   amDateType: function () {
@@ -273,7 +273,7 @@ FLOW.QuestionView = FLOW.View.extend({
 
       optionArray = options.toArray();
       optionArray.sort(function (a, b) {
-    	  return a.get('order') - b.get('order');
+        return a.get('order') - b.get('order');
       });
 
       optionArray.forEach(function (item) {
@@ -301,22 +301,24 @@ FLOW.QuestionView = FLOW.View.extend({
     if (this.questionValidationFailure) {
         this.showMessageDialog(Ember.String.loc('_question_over_500_chars_header'), Ember.String.loc('_question_over_500_chars_text'));
         return;
-      }
+    }
 
     if (this.questionTooltipValidationFailure) {
         this.showMessageDialog(Ember.String.loc('_tooltip_over_500_chars_header'), Ember.String.loc('_tooltip_over_500_chars_text'));
         return;
-      }
+    }
 
     if (this.get('amOptionType')) {
-      var invalidOptions = FLOW.questionOptionsControl.validateOptions();
-      if (invalidOptions) {
-        this.showMessageDialog(Ember.String.loc('_invalid_options_header'), invalidOptions);
-        return;
-      }
-
       // save options to the datastore
       FLOW.questionOptionsControl.persistOptions();
+    }
+
+    if (this.type.get('value') === 'GEOSHAPE'
+    	&& this.get('allowPoints') === false
+    	&& this.get('allowLine') === false
+    	&& this.get('allowPolygon') === false) {
+    	this.showMessageDialog(Ember.String.loc('_no_geoshape_types_header'), Ember.String.loc('_no_geoshape_types_text'));
+    	return;
     }
 
     if (this.type.get('value') === 'CASCADE' && Ember.empty(FLOW.selectedControl.get('selectedCascadeResource'))) {
@@ -504,11 +506,11 @@ FLOW.QuestionView = FLOW.View.extend({
     if (this.type.get('value') == 'NUMBER') {
       if (!Ember.empty(this.get('minVal')) && !Ember.empty(this.get('maxVal'))) {
         if (isNaN(this.get('minVal')) || isNaN(this.get('maxVal'))) {
-	  args.NaNFailure();
-	  return;
+          args.NaNFailure();
+          return;
         } else if (parseFloat(this.get('minVal')) >= parseFloat(this.get('maxVal'))) {
           args.valueFailure();
-	  return;
+          return;
         }
       }
     }
@@ -530,7 +532,7 @@ FLOW.QuestionView = FLOW.View.extend({
     // check if anything is being saved at the moment
     if (this.checkQuestionsBeingSaved()) {
       this.showMessageDialog(Ember.String.loc('_please_wait'),
-			     Ember.String.loc('_please_wait_until_previous_request'));
+        Ember.String.loc('_please_wait_until_previous_request'));
       return;
     }
 
@@ -658,7 +660,7 @@ FLOW.QuestionView = FLOW.View.extend({
     // check if anything is being saved at the moment
     if (this.checkQuestionsBeingSaved()) {
       this.showMessageDialog(Ember.String.loc('_please_wait'),
-			     Ember.String.loc('_please_wait_until_previous_request'));
+        Ember.String.loc('_please_wait_until_previous_request'));
       return;
     }
 
@@ -697,7 +699,7 @@ FLOW.QuestionView = FLOW.View.extend({
     // check if anything is being saved at the moment
     if (this.checkQuestionsBeingSaved()) {
       this.showMessageDialog(Ember.String.loc('_please_wait'),
-			     Ember.String.loc('_please_wait_until_previous_request'));
+        Ember.String.loc('_please_wait_until_previous_request'));
       return;
     }
 
@@ -774,7 +776,7 @@ FLOW.QuestionView = FLOW.View.extend({
           this.set('questionValidationFailureReason', Ember.String.loc('_question_text_empty'));
         }
       }
-  }.observes('this.text'),
+  }.observes('this.text', 'FLOW.questionOptionsControl.emptyOptions'),
 
   validateQuestionTooltipObserver: function(){
       this.set('questionTooltipValidationFailure', (this.tip != null && this.tip.length > 500));

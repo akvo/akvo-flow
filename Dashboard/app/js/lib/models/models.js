@@ -152,7 +152,6 @@ FLOW.Survey = FLOW.BaseModel.extend({
   surveyGroupId: DS.attr('number'),
   createdDateTime: DS.attr('number'),
   lastUpdateDateTime: DS.attr('number'),
-  instanceCount: DS.attr('number'),
 
   // This attribute is used for the 'Copy Survey' functionality
   // Most of the times is `null`
@@ -256,13 +255,13 @@ FLOW.Question = FLOW.BaseModel.extend({
   }),
   // Geoshape question type options
   allowPoints: DS.attr('boolean', {
-    defaultValue: true
+    defaultValue: false
   }),
   allowLine: DS.attr('boolean', {
-    defaultValue: true
+    defaultValue: false
   }),
   allowPolygon: DS.attr('boolean', {
-    defaultValue: true
+    defaultValue: false
   })
 });
 
@@ -347,26 +346,12 @@ FLOW.SurveyedLocale = DS.Model.extend({
   primaryKey: 'keyId'
 });
 
-// Explicitly avoid to use belongTo and hasMany as
-// Ember-Data lacks of partial loading
-// https://github.com/emberjs/data/issues/51
-FLOW.PlacemarkDetail = FLOW.BaseModel.extend({
-  placemarkId: DS.attr('number'),
-  collectionDate: DS.attr('number'),
-  order: DS.attr('number'),
-  questionText: DS.attr('string'),
-  metricName: DS.attr('string'),
-  stringValue: DS.attr('string'),
-  questionType: DS.attr('string')
-});
-
 FLOW.Placemark = FLOW.BaseModel.extend({
 	latitude: DS.attr('number'),
 	longitude: DS.attr('number'),
 	count: DS.attr('number'),
 	level: DS.attr('number'),
 	surveyId: DS.attr('number'),
-	detailsId: DS.attr('number'),
 	collectionDate: DS.attr('number')
 });
 

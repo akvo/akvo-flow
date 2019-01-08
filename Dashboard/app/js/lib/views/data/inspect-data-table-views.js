@@ -15,7 +15,8 @@ FLOW.inspectDataTableView = FLOW.View.extend({
   selectedSurveyInstanceId: null,
   selectedSurveyInstanceNum: null,
   siString: null,
-
+  missingSurvey:false,
+  
   form: function() {
     if (FLOW.selectedControl.get('selectedSurvey')) {
       return FLOW.selectedControl.get('selectedSurvey');
@@ -36,11 +37,23 @@ FLOW.inspectDataTableView = FLOW.View.extend({
   
   // do a new query
   doFindSurveyInstances: function () {
+    //check first that survey is selected before performing find action
+    if (FLOW.selectedControl.get('selectedSurvey') === null) {
+      this.set('missingSurvey', true)
+      return;
+    }
+    
     FLOW.surveyInstanceControl.get('sinceArray').clear();
     FLOW.surveyInstanceControl.set('pageNumber', -1);
     FLOW.metaControl.set('since', null);
     this.doNextPage();
   },
+    
+  watchSurveySelection: function(){
+      if (FLOW.selectedControl.get('selectedSurvey')!== null) {
+         this.set('missingSurvey', false)  
+      }  
+  }.observes('FLOW.selectedControl.selectedSurvey'),
 
   doInstanceQuery: function () {
     this.set('beginDate', Date.parse(FLOW.dateControl.get('fromDate')));
@@ -60,12 +73,6 @@ FLOW.inspectDataTableView = FLOW.View.extend({
       this.set('surveyId', FLOW.selectedControl.selectedSurvey.get('keyId'));
     } else {
       this.set('surveyId', null);
-    }
-
-    // if we have selected a survey, preload the questions as we'll need them
-    // the questions are also loaded once the surveyInstances come in.
-    if (FLOW.selectedControl.get('selectedSurvey')) {
-      FLOW.questionControl.populateAllQuestions(FLOW.selectedControl.selectedSurvey.get('keyId'));
     }
 
     if (!Ember.none(FLOW.locationControl.get('selectedCountry'))) {
@@ -128,12 +135,6 @@ FLOW.inspectDataTableView = FLOW.View.extend({
     return FLOW.surveyInstanceControl.get('pageNumber');
   }.property('FLOW.surveyInstanceControl.pageNumber'),
 
-  createSurveyInstanceString: function () {
-    var si;
-    si = FLOW.store.find(FLOW.SurveyInstance, this.get('selectedSurveyInstanceId'));
-    this.set('siString', si.get('surveyCode') + "/" + si.get('keyId') + "/" + si.get('submitterName'));
-  },
-
   downloadQuestionsIfNeeded: function () {
     var si, surveyId;
     si = FLOW.store.find(FLOW.SurveyInstance, this.get('selectedSurveyInstanceId'));
@@ -155,7 +156,6 @@ FLOW.inspectDataTableView = FLOW.View.extend({
     this.set('selectedSurveyInstanceId', event.context.get('keyId'));
     this.set('selectedSurveyInstanceNum', event.context.clientId);
     this.set('showEditSurveyInstanceWindowBool', true);
-    this.createSurveyInstanceString();
   },
 
   showEditResponseLink: function () {
@@ -186,7 +186,6 @@ FLOW.inspectDataTableView = FLOW.View.extend({
       nextSIkeyId = nextSI.get('keyId');
       this.set('selectedSurveyInstanceId', nextSIkeyId);
       this.set('selectedSurveyInstanceNum', nextItem);
-      this.createSurveyInstanceString();
       this.downloadQuestionsIfNeeded();
       FLOW.questionAnswerControl.doQuestionAnswerQuery(nextSI);
     }
@@ -214,7 +213,6 @@ FLOW.inspectDataTableView = FLOW.View.extend({
       nextSIkeyId = nextSI.get('keyId');
       this.set('selectedSurveyInstanceId', nextSIkeyId);
       this.set('selectedSurveyInstanceNum', nextItem);
-      this.createSurveyInstanceString();
       this.downloadQuestionsIfNeeded();
       FLOW.questionAnswerControl.doQuestionAnswerQuery(nextSI);
     }

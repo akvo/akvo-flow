@@ -33,7 +33,6 @@ public class SurveyDto extends BaseDto {
     private List<QuestionGroupDto> questionGroupList;
     private String path;
     private Long surveyGroupId = null;
-    private Long instanceCount;
     private String pointType;
     private String defaultLanguageCode;
     private Boolean requireApproval;
@@ -127,14 +126,6 @@ public class SurveyDto extends BaseDto {
 
     public Long getSurveyGroupId() {
         return surveyGroupId;
-    }
-
-    public void setInstanceCount(Long instanceCount) {
-        this.instanceCount = instanceCount;
-    }
-
-    public Long getInstanceCount() {
-        return instanceCount;
     }
 
     public void setCode(String code) {

@@ -475,6 +475,7 @@ input[type="submit"] {
     background: white;
     -o-border-radius: 6px;
     overflow: auto;
+    text-align: center;
 }
 
 .dialogWide {
@@ -3295,10 +3296,8 @@ table.dataTable.notificationTable thead tr th {
     padding: 9px 1em 9px 1em;
 }
 
-table.dataTable.notificationTable thead tr th.noArrows {
-    background: #3A3A3A;
-    text-align: left;
-    font-weight: bold;
+table.dataTable thead tr th.noArrows {
+    background: transparent;
 }
 
 table.dataTable.notificationTable thead tr th a,
@@ -3332,13 +3331,18 @@ div.chooseSurveyData {
     position: relative;
     display: block;
     margin: 0px 0 10px 0;
-    width: 100%;
     overflow: auto;
     > select {
         max-width: 20%;
         float: left;
         display: inline;
     }
+}
+
+div.redBorder {
+    border: 2px solid red;
+    border-radius: 8px;
+    padding: 5px 3px 0 5px;
 }
 
 .filterData {
@@ -3537,6 +3541,10 @@ div.dateInput input {
 
 .dataSection label {
     font-weight: normal;
+}
+
+.media {
+  max-width: 100%
 }
 
 /******************************************************************************
@@ -4032,6 +4040,12 @@ label.languageSelector:after {
                 margin-left: 0;
             }
         }
+    }
+    .geoshapeSelectError{
+       padding:2px;
+       display: inline-block;
+       border-radius:8px;
+       border: 2px red solid;   
     }
 }
 
