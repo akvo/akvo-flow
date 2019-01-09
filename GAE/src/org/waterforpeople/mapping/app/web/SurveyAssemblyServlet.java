@@ -49,7 +49,12 @@ import javax.servlet.http.HttpServletResponse;
 import javax.xml.bind.JAXBException;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
+import java.util.Properties;
+import java.util.Random;
+import java.util.TreeMap;
 
 public class SurveyAssemblyServlet extends AbstractRestApiServlet {
     private static final Logger log = Logger
@@ -107,7 +112,7 @@ public class SurveyAssemblyServlet extends AbstractRestApiServlet {
                 }
             }
             if (useBackend) {
-                log.debug("Forking to task for assembly");
+                log.info("Forking to task for long assembly");
                 com.google.appengine.api.taskqueue.TaskOptions options = com.google.appengine.api.taskqueue.TaskOptions.Builder
                         .withUrl("/app_worker/surveyassembly")
                         .param(SurveyAssemblyRequest.ACTION_PARAM,
@@ -200,7 +205,7 @@ public class SurveyAssemblyServlet extends AbstractRestApiServlet {
             String messageText = "Published.  Please check: "
                     + props.getProperty(SURVEY_UPLOAD_URL)
                     + props.getProperty(SURVEY_UPLOAD_DIR) + "/" + surveyId
-                    + ".xml";
+                    + ".zip";
             message.setShortMessage(messageText);
 
             Survey s = surveyDao.getById(surveyId);
@@ -764,7 +769,6 @@ public class SurveyAssemblyServlet extends AbstractRestApiServlet {
 
         scDao.save(sc);
 
-        sendQueueMessage(SurveyAssemblyRequest.DISTRIBUTE_SURVEY, surveyId,
-                null, transactionId);
+        sendQueueMessage(SurveyAssemblyRequest.DISTRIBUTE_SURVEY, surveyId, null, transactionId);
     }
 }
