@@ -1,5 +1,5 @@
 /*
- *  Copyright (C) 2010-2012, 2018 Stichting Akvo (Akvo Foundation)
+ *  Copyright (C) 2010-2012, 2018-2019 Stichting Akvo (Akvo Foundation)
  *
  *  This file is part of Akvo FLOW.
  *
@@ -33,7 +33,9 @@ import org.akvo.flow.domain.persistent.Report;
 import org.waterforpeople.mapping.app.web.dto.SurveyTaskRequest;
 
 import com.gallatinsystems.common.util.S3Util;
+import com.gallatinsystems.device.dao.DeviceDAO;
 import com.gallatinsystems.device.dao.DeviceFileJobQueueDAO;
+import com.gallatinsystems.device.domain.Device;
 import com.gallatinsystems.device.domain.DeviceFileJobQueue;
 import com.gallatinsystems.device.domain.DeviceSurveyJobQueue;
 import com.gallatinsystems.notification.helper.NotificationHelper;
@@ -43,6 +45,10 @@ import com.gallatinsystems.survey.dao.SurveyTaskUtil;
 import com.google.appengine.api.datastore.Key;
 
 
+/**
+ * @author stellan
+ *
+ */
 public class CronCommanderServlet extends HttpServlet {
 
     private static final int ONE_YEAR_AGO = -1;
@@ -68,21 +74,50 @@ public class CronCommanderServlet extends HttpServlet {
             generateNotifications();
         } else if ("purgeDeviceFileJobQueueRecords".equals(action)) {
             purgeDeviceFileJobQueueRecords();
+        } else if ("purgeExpiredDevices".equals(action)) {
+            purgeExpiredDevices();
         } else if ("purgeReportRecords".equals(action)) {
             purgeReportRecords();
         }
     }
 
     /**
-     * scans for and deletes Report entries that are either more than one year old
+     * scans for and deletes Device entries that have not been seen in more than two years
+     */
+    private void purgeExpiredDevices() {
+        Calendar deadline = Calendar.getInstance();
+        deadline.add(Calendar.YEAR, TWO_YEARS_AGO);
+        log.info("Starting scan for Devices not seen since: " + deadline.getTime());
+        DeviceDAO deviceDao = new DeviceDAO();
+        DeviceSurveyJobQueueDAO dsjqDao = new DeviceSurveyJobQueueDAO();
+        DeviceFileJobQueueDAO dfjqDao = new DeviceFileJobQueueDAO();
+        List<Device> deviceList = deviceDao.listAllWithBeaconBefore(deadline.getTime());
+        log.info("Found " + deviceList.size() + " old Devices");
+        for (Device d: deviceList) {
+        	List<DeviceSurveyJobQueue> djql = dsjqDao.get(d.getPhoneNumber(), d.getEsn(), d.getAndroidId());
+        	if (djql.size() > 0) {
+        		log.fine("Deleting " + djql.size() + " form assignments for device " + d.getKey().getId());
+        		dsjqDao.delete(djql);
+        	}
+        	List<DeviceFileJobQueue> dfql = dfjqDao.listByDeviceId(d.getKey().getId());
+        	if (dfql.size() > 0) {
+        		log.fine("Deleting " + dfql.size() + " file requests for device " + d.getKey().getId());
+        		dfjqDao.delete(dfql);
+        	}
+        }
+        deviceDao.delete(deviceList);
+    }
+
+    /**
+     * scans for and deletes Report entries that are more than one year old
      */
     private void purgeReportRecords() {
         Calendar deadline = Calendar.getInstance();
         deadline.add(Calendar.YEAR, ONE_YEAR_AGO);
-        log.fine("Starting scan for Report entries, older than: " + deadline.getTime());
+        log.info("Starting scan for Report entries older than: " + deadline.getTime());
         ReportDao reportDao = new ReportDao();
         List<Report> reportList = reportDao.listAllCreatedBefore(deadline.getTime());
-        log.fine("Attempting to retire " + reportList.size() + " old Report entries");
+        log.fine("Deleting " + reportList.size() + " old Report entries");
         reportDao.delete(reportList);
     }
 
@@ -93,7 +128,7 @@ public class CronCommanderServlet extends HttpServlet {
     private void purgeDeviceFileJobQueueRecords() {
         Calendar deadline = Calendar.getInstance();
         deadline.add(Calendar.YEAR, ONE_YEAR_AGO);
-        log.fine("Starting scan for DFJQ entries, fulfilled or older than: " + deadline.getTime());
+        log.info("Starting scan for DFJQ entries, fulfilled or older than: " + deadline.getTime());
         DeviceFileJobQueueDAO dfjqDao = new DeviceFileJobQueueDAO();
         List<DeviceFileJobQueue> dfjqList = dfjqDao.list("all");
         int retirees = 0;
@@ -105,7 +140,7 @@ public class CronCommanderServlet extends HttpServlet {
                 SurveyTaskUtil.spawnDeleteTask(SurveyTaskRequest.DELETE_DFJQ_ACTION,
                         item.getKey().getId());
                 retirees++;
-            } else {//check the (now protected)image file in S3 store - need credentials
+            } else { //check the (now protected) image file in S3 store - need credentials
                 try {
                     String bucket =
                             com.gallatinsystems.common.util.PropertyUtil.getProperty("s3bucket");
@@ -121,7 +156,7 @@ public class CronCommanderServlet extends HttpServlet {
                         retirees++;
                     }
                 } catch (Exception e) {
-                    log.warning("Error while connecing to " + item.getFileName() +"\n" + e.getMessage());
+                    log.warning("Error while connecing to " + item.getFileName() + "\n" + e.getMessage());
                 }
             }
         }
@@ -129,8 +164,7 @@ public class CronCommanderServlet extends HttpServlet {
     }
 
     private void generateNotifications() {
-        NotificationHelper helper = new NotificationHelper("rawDataReport",
-                null);
+        NotificationHelper helper = new NotificationHelper("rawDataReport", null);
         helper.execute();
         NotificationHelper fieldReportHelper = new NotificationHelper("fieldStatusReport", null);
         fieldReportHelper.execute();
@@ -146,6 +180,10 @@ public class CronCommanderServlet extends HttpServlet {
         }
     }
 
+    /**
+     * Remove assignments with nonexistent forms
+     * TODO: remove those with nonexistent devices
+     */
     private void purgeOrphanJobQueueRecords() {
         DeviceSurveyJobQueueDAO dsjqDao = new DeviceSurveyJobQueueDAO();
         SurveyDAO surveyDao = new SurveyDAO();

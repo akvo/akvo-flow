@@ -17,8 +17,10 @@
 package com.gallatinsystems.device.dao;
 
 import java.util.Date;
+import java.util.List;
 import java.util.logging.Logger;
 
+import org.akvo.flow.domain.persistent.Report;
 import org.apache.commons.lang.StringUtils;
 
 import com.gallatinsystems.device.domain.Device;
@@ -118,4 +120,14 @@ public class DeviceDAO extends BaseDAO<Device> {
         }
         save(d);
     }
+    
+    /**
+     * lists all devices where lastLocationBeaconTime is older than a specific date
+     */
+    public List<Device> listAllWithBeaconBefore(Date date) {
+        return listByProperty("lastLocationBeaconTime", date, "Date",
+                "lastLocationBeaconTime", null, LTE_OP, Device.class);
+    }
+
+
 }

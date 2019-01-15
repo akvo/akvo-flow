@@ -23,6 +23,11 @@
     <cron>
         <url>/cron/croncommander?action=purgeReportRecords</url>
         <description>Purge ancient Reports</description>
-        <schedule>every monday 00:00</schedule>
+        <schedule>every monday 00:01</schedule>
+    </cron>
+    <cron>
+        <url>/cron/croncommander?action=purgeExpiredDevices</url>
+        <description>Purge expired Devices</description>
+        <schedule>every monday 00:02</schedule>
     </cron>
 </cronentries>
