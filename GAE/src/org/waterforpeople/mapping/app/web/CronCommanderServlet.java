@@ -31,7 +31,6 @@ import javax.servlet.http.HttpServletResponse;
 import org.akvo.flow.dao.ReportDao;
 import org.akvo.flow.domain.persistent.Report;
 import org.waterforpeople.mapping.app.web.dto.SurveyTaskRequest;
-
 import com.gallatinsystems.common.util.S3Util;
 import com.gallatinsystems.device.dao.DeviceDAO;
 import com.gallatinsystems.device.dao.DeviceFileJobQueueDAO;
@@ -40,6 +39,7 @@ import com.gallatinsystems.device.domain.DeviceFileJobQueue;
 import com.gallatinsystems.device.domain.DeviceSurveyJobQueue;
 import com.gallatinsystems.notification.helper.NotificationHelper;
 import com.gallatinsystems.survey.dao.DeviceSurveyJobQueueDAO;
+import com.gallatinsystems.survey.dao.SurveyAssignmentDAO;
 import com.gallatinsystems.survey.dao.SurveyDAO;
 import com.gallatinsystems.survey.dao.SurveyTaskUtil;
 import com.google.appengine.api.datastore.Key;
@@ -91,9 +91,12 @@ public class CronCommanderServlet extends HttpServlet {
         DeviceDAO deviceDao = new DeviceDAO();
         DeviceSurveyJobQueueDAO dsjqDao = new DeviceSurveyJobQueueDAO();
         DeviceFileJobQueueDAO dfjqDao = new DeviceFileJobQueueDAO();
+        SurveyAssignmentDAO saDao = new SurveyAssignmentDAO();
         List<Device> deviceList = deviceDao.listAllWithBeaconBefore(deadline.getTime());
         log.info("Found " + deviceList.size() + " old Devices");
-        for (Device d: deviceList) {
+
+        for (Device d: deviceList) { //Clean up everything referencing this device
+        	
         	List<DeviceSurveyJobQueue> djql = dsjqDao.get(d.getPhoneNumber(), d.getEsn(), d.getAndroidId());
         	if (djql.size() > 0) {
         		log.fine("Deleting " + djql.size() + " form assignments for device " + d.getKey().getId());
@@ -104,6 +107,9 @@ public class CronCommanderServlet extends HttpServlet {
         		log.fine("Deleting " + dfql.size() + " file requests for device " + d.getKey().getId());
         		dfjqDao.delete(dfql);
         	}
+        	int affected = saDao.removeDevice(d.getKey().getId());
+        	log.fine("Removed device " + d.getKey().getId() + " from " + affected + " assignments.");
+        	
         }
         deviceDao.delete(deviceList);
     }
@@ -196,7 +202,7 @@ public class CronCommanderServlet extends HttpServlet {
 
         for (DeviceSurveyJobQueue item : dsjqDao.listAllJobsInQueue()) {
             Long dsjqSurveyId = item.getSurveyID();
-            Boolean found = ids.contains(dsjqSurveyId);
+            boolean found = ids.contains(dsjqSurveyId);
             if (!found) {
                 log.info("found orphan assignmentId: " + item.getAssignmentId()
                         + " id: " + item.getId() + " survey: "

@@ -1,5 +1,5 @@
 /*
- *  Copyright (C) 2010-2016 Stichting Akvo (Akvo Foundation)
+ *  Copyright (C) 2010-2016, 2019 Stichting Akvo (Akvo Foundation)
  *
  *  This file is part of Akvo FLOW.
  *
@@ -20,7 +20,6 @@ import java.util.Date;
 import java.util.List;
 import java.util.logging.Logger;
 
-import org.akvo.flow.domain.persistent.Report;
 import org.apache.commons.lang.StringUtils;
 
 import com.gallatinsystems.device.domain.Device;
