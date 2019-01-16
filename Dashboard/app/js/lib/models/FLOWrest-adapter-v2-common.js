@@ -157,6 +157,26 @@ DS.FLOWRESTAdapter = DS.RESTAdapter.extend({
     }
   },
 
+  find: function (store, type, id) {
+    var root = this.rootForType(type);
+
+    this.ajax(this.buildURL(root, id), "GET", {
+      success: function(json) {
+        if (type === FLOW.SurveyGroup) {
+          if (json.survey_group) {
+            this.didFindRecord(store, type, json, id);
+          } else {
+            //missing survey so no further action
+            FLOW.projectControl.set('isLoading', false);
+            FLOW.savingMessageControl.numLoadingChange(-1);
+          }
+        } else {
+          this.didFindRecord(store, type, json, id);
+        }
+      }
+    });
+  },
+
   didFindRecord: function (store, type, json, id) {
     this._super(store, type, json, id);
     if (type === FLOW.SurveyGroup) {
