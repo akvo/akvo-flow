@@ -173,6 +173,13 @@ DS.FLOWRESTAdapter = DS.RESTAdapter.extend({
         } else {
           this.didFindRecord(store, type, json, id);
         }
+      },
+      error: function () {
+        // TODO: Handle various error response codes
+        if (type === FLOW.SurveyGroup) {
+          FLOW.projectControl.set('isLoading', false);
+        }
+        FLOW.savingMessageControl.numLoadingChange(-1);
       }
     });
   },
