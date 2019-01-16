@@ -1,5 +1,12 @@
 # Akvo Flow Release Notes
 ----
+# Akvo Flow Dashboard v1.9.41.1 - Nebulous Nemesia (Hotfix 1)
+Date: 03-01-2019
+
+## Resolved issues
+* **Reports** - Fix issue causing filters under reports export to not display [#2938]
+* **User Interface** - Update copyright year
+
 # Akvo Flow Dashboard v1.9.41 - Nebulous Nemesia
 Date: 06th December 2018
 
