@@ -121,7 +121,7 @@ Ember.Handlebars.registerHelper('placemarkDetail', function () {
   question = Ember.get(this, 'questionText');
   answer = Ember.get(this, 'value') || '';
   answer = answer.replace(/\|/g, ' | '); // geo, option and cascade data
-  if (responseType != 'CASCADE') {
+  if (responseType != 'SIGNATURE') {
     answer = answer.replace(/\//g, ' / '); // also split folder paths
   }
   answer = answer.replace(/\\/g, ''); // remove escape characters
