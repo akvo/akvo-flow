@@ -147,6 +147,40 @@
             optionValuePath="content.keyId"
             prompt=""
             promptBinding="Ember.STRINGS._select_caddisfly_test"}}
+            {{view Ember.Select
+            contentBinding="view.caddisflyTestSamples"
+            selectionBinding="view.selectedCaddisflyTestSample"
+            optionLabelPath="content.sample"
+            optionValuePath="content.keyId"
+            prompt=""
+            promptBinding="Ember.STRINGS._select_caddisfly_test"}}
+            {{#if view.selectedCaddisflyTestSample}}
+            {{view Ember.Select
+            contentBinding="view.caddisflyTestNames"
+            selectionBinding="view.selectedCaddisflyTestName"
+            optionLabelPath="content.name"
+            optionValuePath="content.keyId"
+            prompt=""
+            promptBinding="Ember.STRINGS._select_caddisfly_test"}}
+            {{/if}}
+            {{#if view.selectedCaddisflyTestName}}
+            {{view Ember.Select
+            contentBinding="view.caddisflyTestBrands"
+            selectionBinding="view.selectedCaddisflyTestBrand"
+            optionLabelPath="content.brandDisplayName"
+            optionValuePath="content.keyId"
+            prompt=""
+            promptBinding="Ember.STRINGS._select_caddisfly_test"}}
+            {{/if}}
+            {{#if view.selectedCaddisflyTestBrand}}
+            {{view Ember.Select
+            contentBinding="view.caddisflyTestDetails"
+            selectionBinding="view.selectedCaddisflyTestDetail"
+            optionLabelPath="content.detailsDisplayName"
+            optionValuePath="content.keyId"
+            prompt=""
+            promptBinding="Ember.STRINGS._select_caddisfly_test"}}
+            {{/if}}
         {{else}}
         <div class="errorLoading">{{t _failed_load_caddisfly_tests}}</div>
         {{/if}}
