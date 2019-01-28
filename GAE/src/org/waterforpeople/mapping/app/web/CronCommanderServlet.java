@@ -45,10 +45,6 @@ import com.gallatinsystems.survey.dao.SurveyTaskUtil;
 import com.google.appengine.api.datastore.Key;
 
 
-/**
- * @author stellan
- *
- */
 public class CronCommanderServlet extends HttpServlet {
 
     private static final int ONE_YEAR_AGO = -1;
@@ -97,18 +93,20 @@ public class CronCommanderServlet extends HttpServlet {
 
         for (Device d: deviceList) { //Clean up everything referencing this device
         	
+        	long did = d.getKey().getId();
         	List<DeviceSurveyJobQueue> djql = dsjqDao.get(d.getPhoneNumber(), d.getEsn(), d.getAndroidId());
         	if (djql.size() > 0) {
-        		log.fine("Deleting " + djql.size() + " form assignments for device " + d.getKey().getId());
+        		log.fine("Deleting " + djql.size() + " form assignments for device " + did);
         		dsjqDao.delete(djql);
         	}
-        	List<DeviceFileJobQueue> dfql = dfjqDao.listByDeviceId(d.getKey().getId());
+        	List<DeviceFileJobQueue> dfql = dfjqDao.listByDeviceId(did);
         	if (dfql.size() > 0) {
-        		log.fine("Deleting " + dfql.size() + " file requests for device " + d.getKey().getId());
+        		log.fine("Deleting " + dfql.size() + " file requests for device " + did);
         		dfjqDao.delete(dfql);
         	}
-        	int affected = saDao.removeDevice(d.getKey().getId());
-        	log.fine("Removed device " + d.getKey().getId() + " from " + affected + " assignments.");
+
+        	int affected = saDao.removeDevice(did);
+        	log.fine("Removed device " + did + " from " + affected + " assignments.");
         	
         }
         deviceDao.delete(deviceList);

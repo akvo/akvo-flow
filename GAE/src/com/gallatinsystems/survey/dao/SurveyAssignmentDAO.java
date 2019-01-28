@@ -16,12 +16,10 @@
 
 package com.gallatinsystems.survey.dao;
 
-import java.util.ArrayList;
 import java.util.List;
 
 import org.waterforpeople.mapping.domain.SurveyAssignment;
 
-import com.gallatinsystems.common.Constants;
 import com.gallatinsystems.framework.dao.BaseDAO;
 
 public class SurveyAssignmentDAO extends BaseDAO<SurveyAssignment> {
@@ -30,20 +28,14 @@ public class SurveyAssignmentDAO extends BaseDAO<SurveyAssignment> {
         super(SurveyAssignment.class);
     }
     
+
     /**
      * Return a list of survey assignments containing a specified device
      *
      * @return list of assignments
      */
     public List<SurveyAssignment> listAllContainingDevice(Long devId) {
-    	List<SurveyAssignment> all = list(Constants.ALL_RESULTS);
-    	List<SurveyAssignment> selected = new ArrayList<>();
-    	for (SurveyAssignment ass : all) {
-    		List<Long> devs = ass.getDeviceIds();
-    		if (devs.contains(devId)) {
-    			selected.add(ass);
-    		}
-    	}
+    	List<SurveyAssignment> selected = listByProperty("deviceIds", devId, "Long");
         return selected;
     }
 
@@ -53,15 +45,12 @@ public class SurveyAssignmentDAO extends BaseDAO<SurveyAssignment> {
      * @return number of affected assignments
      */
     public int removeDevice(Long devId) {
-    	List<SurveyAssignment> all = list(Constants.ALL_RESULTS);
-    	List<SurveyAssignment> changed = new ArrayList<>();
+    	List<SurveyAssignment> all = listAllContainingDevice(devId);
     	for (SurveyAssignment ass : all) {
     		List<Long> devs = ass.getDeviceIds();
-    		if (devs.remove(devId)) {
-    			changed.add(ass);
-    		}
+    		devs.remove(devId);
     	}
-    	save(changed);
-        return changed.size();
+    	save(all);
+        return all.size();
     }
 }
