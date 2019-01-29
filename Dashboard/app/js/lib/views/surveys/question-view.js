@@ -848,7 +848,10 @@ FLOW.QuestionView = FLOW.View.extend({
         return item['sample'] == name['sample'] && item['name'] === name['name'];
       });
       brands.forEach(function (obj) {
-        var displayName = obj.brand + " - " + obj.model + " - " + obj.device;
+        var displayName = "brand" in obj && obj.brand ? obj.brand : "";
+        displayName += "model" in obj && obj.model ? " - " + obj.model : "";
+        displayName += "device" in obj && obj.device ? " - " + obj.device : "";
+
         if (typeof(unique[displayName]) == "undefined") {
           obj['brandDisplayName'] = displayName;
           distinct.push(obj);
