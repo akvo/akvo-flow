@@ -207,7 +207,9 @@ FLOW.QuestionView = FLOW.View.extend({
       if (!Ember.empty(caddResource)) {
         this.set('selectedCaddisflyTestSample', this.get('caddisflyTestSamples').findProperty('sample', caddResource.get('sample')));
         this.set('selectedCaddisflyTestName', this.get('caddisflyTestNames').findProperty('name', caddResource.get('name')));
-        //this.set('selectedCaddisflyTestBrand', this.get('caddisflyTestNames').findProperty('name', caddResource.get('name')));
+        this.set('selectedCaddisflyTestBrand', this.get('caddisflyTestBrands').find(function (item) {
+          return item.brand === caddResource.get('brand') && item.model === caddResource.get('model') && item.device === caddResource.get('device')
+        }));
         FLOW.selectedControl.set('selectedCaddisflyResource',caddResource);
       }
     }

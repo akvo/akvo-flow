@@ -139,21 +139,14 @@
         <h1 class="answerNbr">{{t _settings}}: </h1>
          <label class="selectinLabel dependencySelect">
          {{#if view.showCaddisflyTests}}
-         {{t _choose_caddisfly_question_resource}}: {{tooltip _choose_caddisfly_question_resource_tooltip}}
-            {{view Ember.Select
-            contentBinding="FLOW.router.caddisflyResourceController"
-            selectionBinding="FLOW.selectedControl.selectedCaddisflyResource"
-            optionLabelPath="content.displayName"
-            optionValuePath="content.keyId"
-            prompt=""
-            promptBinding="Ember.STRINGS._select_caddisfly_test"}}
+         {{t _choose_caddisfly_question_resource}}: {{tooltip _choose_caddisfly_question_resource_tooltip}}<br>
             {{view Ember.Select
             contentBinding="view.caddisflyTestSamples"
             selectionBinding="view.selectedCaddisflyTestSample"
             optionLabelPath="content.sample"
             optionValuePath="content.keyId"
             prompt=""
-            promptBinding="Ember.STRINGS._select_caddisfly_test"}}
+            promptBinding="Ember.STRINGS._select_caddisfly_test_sample"}}
             {{#if view.selectedCaddisflyTestSample}}
             {{view Ember.Select
             contentBinding="view.caddisflyTestNames"
@@ -161,7 +154,7 @@
             optionLabelPath="content.name"
             optionValuePath="content.keyId"
             prompt=""
-            promptBinding="Ember.STRINGS._select_caddisfly_test"}}
+            promptBinding="Ember.STRINGS._select_caddisfly_test_name"}}
             {{/if}}
             {{#if view.selectedCaddisflyTestName}}
             {{view Ember.Select
@@ -170,16 +163,16 @@
             optionLabelPath="content.brandDisplayName"
             optionValuePath="content.keyId"
             prompt=""
-            promptBinding="Ember.STRINGS._select_caddisfly_test"}}
+            promptBinding="Ember.STRINGS._select_caddisfly_test_brand"}}
             {{/if}}
             {{#if view.selectedCaddisflyTestBrand}}
             {{view Ember.Select
             contentBinding="view.caddisflyTestDetails"
-            selectionBinding="view.selectedCaddisflyTestDetail"
+            selectionBinding="FLOW.selectedControl.selectedCaddisflyResource"
             optionLabelPath="content.detailsDisplayName"
             optionValuePath="content.keyId"
             prompt=""
-            promptBinding="Ember.STRINGS._select_caddisfly_test"}}
+            promptBinding="Ember.STRINGS._select_caddisfly_test_details"}}
             {{/if}}
         {{else}}
         <div class="errorLoading">{{t _failed_load_caddisfly_tests}}</div>
