@@ -28,7 +28,7 @@ RUN set -ex ; \
     openssh-client~=7 \
     python2~=2.7 \
     py-crcmod~=1.7 \
-    py-openssl~=17.2 \
+    py-openssl~=17.5 \
     maven~=3.5 \
     libc6-compat~=1.1 \
     su-exec~=0.2 \
