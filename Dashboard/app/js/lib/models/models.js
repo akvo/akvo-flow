@@ -24,33 +24,12 @@ FLOW.BaseModel = DS.Model.extend({
 FLOW.CaddisflyTestDefinition = Ember.Object.extend({
     name: null,
     multiParameter: null,
-    sample: DS.attr('string', {
-      defaultValue: ''
-    }),
+    sample: null,
     device: null,
     brand: null,
     model: null,
     uuid: null,
     results: [],
-
-    detailsDisplayName: function () {
-      var results = this.get('results'), displayName = "";
-      for (var i in results) {
-        displayName += "name" in results[i] ? results[i].name : "";
-        displayName += "chemical" in results[i] ? " "+results[i].chemical : "";
-        displayName += "unit" in results[i] ? " "+results[i].unit : "";
-        displayName += "range" in results[i] ? " "+results[i].range : "";
-        displayName += i > 0 ? ", " : "";
-      }
-    },
-
-    brandDisplayName: function () {
-      return this.get('brand') + " - " + this.get('model') + " - " + this.get('device')
-    },
-
-    displayName: function() {
-        return this.get('name') + " (" + this.get('brand') +")";
-    }.property(''),
 });
 
 FLOW.CascadeResource = FLOW.BaseModel.extend({
