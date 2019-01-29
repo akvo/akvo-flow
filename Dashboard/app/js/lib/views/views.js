@@ -117,12 +117,14 @@ Ember.Handlebars.registerHelper('placemarkDetail', function () {
   var answer, markup, question, cascadeJson, optionJson, cascadeString = "",
   imageSrcAttr, signatureJson, photoJson, self=this;
 
+  responseType = Ember.get(this, 'type');
   question = Ember.get(this, 'questionText');
   answer = Ember.get(this, 'value') || '';
   answer = answer.replace(/\|/g, ' | '); // geo, option and cascade data
-  answer = answer.replace(/\//g, ' / '); // also split folder paths
+  if (responseType != 'SIGNATURE') {
+    answer = answer.replace(/\//g, ' / '); // also split folder paths
+  }
   answer = answer.replace(/\\/g, ''); // remove escape characters
-  responseType = Ember.get(this, 'type');
 
   if (responseType === 'CASCADE') {
 
