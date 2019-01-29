@@ -82,7 +82,7 @@ public class CronCommanderServlet extends HttpServlet {
      */
     private void purgeExpiredDevices() {
         Calendar deadline = Calendar.getInstance();
-        deadline.add(Calendar.YEAR, TWO_YEARS_AGO);
+        deadline.add(Calendar.YEAR, ONE_YEAR_AGO);
         log.info("Starting scan for Devices not seen since: " + deadline.getTime());
         DeviceDAO deviceDao = new DeviceDAO();
         DeviceSurveyJobQueueDAO dsjqDao = new DeviceSurveyJobQueueDAO();
