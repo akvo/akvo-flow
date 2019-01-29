@@ -806,6 +806,7 @@ FLOW.QuestionView = FLOW.View.extend({
 
   caddisflyTestSamples: function () {
     var tests = FLOW.router.caddisflyResourceController.get('content'), unique = {}, distinct = [];
+    FLOW.selectedControl.set('selectedCaddisflyResource', null);
     this.set('selectedCaddisflyTestSample', null);
     tests.forEach(function (obj) {
       if (typeof(unique[obj.sample]) == "undefined") {
@@ -818,6 +819,7 @@ FLOW.QuestionView = FLOW.View.extend({
 
   caddisflyTestNames: function () {
     var tests = FLOW.router.caddisflyResourceController.get('content'), distinct = [];
+    FLOW.selectedControl.set('selectedCaddisflyResource', null);
     this.set('selectedCaddisflyTestName', null);
     if (this.get('selectedCaddisflyTestSample')) {
       var sample = this.get('selectedCaddisflyTestSample'), unique = {};
@@ -836,6 +838,7 @@ FLOW.QuestionView = FLOW.View.extend({
 
   caddisflyTestBrands: function () {
     var tests = FLOW.router.caddisflyResourceController.get('content'), distinct = [];
+    FLOW.selectedControl.set('selectedCaddisflyResource', null);
     this.set('selectedCaddisflyTestBrand', null);
     if (this.get('selectedCaddisflyTestName')) {
       var name = this.get('selectedCaddisflyTestName'), unique = {};
@@ -883,7 +886,12 @@ FLOW.QuestionView = FLOW.View.extend({
       });
     }
     return distinct;
-  }.property('this.selectedCaddisflyTestBrand')
+  }.property('this.selectedCaddisflyTestBrand'),
+
+  brandsObserver: function () {
+    //needed to disable save button when no resource brand is specified
+    FLOW.selectedControl.set('selectedCaddisflyResource', null);
+  }.observes('this.selectedCaddisflyTestBrand')
 });
 
 /*
