@@ -205,6 +205,9 @@ FLOW.QuestionView = FLOW.View.extend({
     if (!Ember.empty(FLOW.selectedControl.selectedQuestion.get('caddisflyResourceUuid'))) {
       var caddResource = FLOW.router.caddisflyResourceController.content.findProperty('uuid', FLOW.selectedControl.selectedQuestion.get('caddisflyResourceUuid'));
       if (!Ember.empty(caddResource)) {
+        this.set('selectedCaddisflyTestSample', this.get('caddisflyTestSamples').findProperty('sample', caddResource.get('sample')));
+        this.set('selectedCaddisflyTestName', this.get('caddisflyTestNames').findProperty('name', caddResource.get('name')));
+        //this.set('selectedCaddisflyTestBrand', this.get('caddisflyTestNames').findProperty('name', caddResource.get('name')));
         FLOW.selectedControl.set('selectedCaddisflyResource',caddResource);
       }
     }
