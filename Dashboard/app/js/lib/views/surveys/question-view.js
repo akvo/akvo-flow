@@ -816,7 +816,7 @@ FLOW.QuestionView = FLOW.View.extend({
       }
       unique[obj.sample] = 0;
     });
-    return distinct;
+    return this.sortedList(distinct, 'sample');
   }.property('FLOW.router.caddisflyResourceController.content'),
 
   caddisflyTestNames: function () {
@@ -835,7 +835,7 @@ FLOW.QuestionView = FLOW.View.extend({
         unique[obj.name] = 0;
       });
     }
-    return distinct;
+    return this.sortedList(distinct, 'name');
   }.property('this.selectedCaddisflyTestSample'),
 
   caddisflyTestBrands: function () {
@@ -858,7 +858,7 @@ FLOW.QuestionView = FLOW.View.extend({
     } else {
       this.set('selectedCaddisflyTestBrand', null);
     }
-    return distinct;
+    return this.sortedList(distinct, 'brandDisplayName');
   }.property('this.selectedCaddisflyTestName'),
 
   caddisflyTestDetails: function () {
@@ -887,8 +887,24 @@ FLOW.QuestionView = FLOW.View.extend({
         unique[displayName] = 0;
       });
     }
-    return distinct;
+    return this.sortedList(distinct, 'detailsDisplayName');
   }.property('this.selectedCaddisflyTestBrand'),
+
+  sortedList: function (arr, prop) {
+    return arr.sort(function (a, b) {
+      var nameA = a[prop].toUpperCase(); // ignore upper and lowercase
+      var nameB = b[prop].toUpperCase(); // ignore upper and lowercase
+      if (nameA < nameB) {
+        return -1;
+      }
+      if (nameA > nameB) {
+        return 1;
+      }
+
+      // names must be equal
+      return 0;
+    });
+  },
 
   brandsObserver: function () {
     //needed to disable save button when no resource brand is specified
