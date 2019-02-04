@@ -807,43 +807,43 @@ FLOW.QuestionView = FLOW.View.extend({
   }.property('FLOW.selectedControl.selectedSurvey'),
 
   caddisflyTestSamples: function () {
-    var tests = FLOW.router.caddisflyResourceController.get('content'), unique = {}, distinct = [];
+    var tests = FLOW.router.caddisflyResourceController.get('content'), distinct = {}, testSamples = [];
     FLOW.selectedControl.set('selectedCaddisflyResource', null);
     this.set('selectedCaddisflyTestSample', null);
     tests.forEach(function (obj) {
-      if (typeof(unique[obj.sample]) == "undefined") {
-        distinct.push(obj);
+      if (!(obj.sample in distinct)) {
+        testSamples.push(obj);
       }
-      unique[obj.sample] = 0;
+      distinct[obj.sample] = 0;
     });
-    return this.sortedList(distinct, 'sample');
+    return this.sortedList(testSamples, 'sample');
   }.property('FLOW.router.caddisflyResourceController.content'),
 
   caddisflyTestNames: function () {
-    var tests = FLOW.router.caddisflyResourceController.get('content'), distinct = [];
+    var tests = FLOW.router.caddisflyResourceController.get('content'), distinct = {}, testNames = [];
     FLOW.selectedControl.set('selectedCaddisflyResource', null);
     this.set('selectedCaddisflyTestName', null);
     if (this.get('selectedCaddisflyTestSample')) {
-      var sample = this.get('selectedCaddisflyTestSample'), unique = {};
+      var sample = this.get('selectedCaddisflyTestSample');
       var names = tests.filter(function (item) {
         return item['sample'] === sample['sample'];
       });
       names.forEach(function (obj) {
-        if (typeof(unique[obj.name]) == "undefined") {
-          distinct.push(obj);
+        if (!(obj.name in distinct)) {
+          testNames.push(obj);
         }
-        unique[obj.name] = 0;
+        distinct[obj.name] = 0;
       });
     }
-    return this.sortedList(distinct, 'name');
+    return this.sortedList(testNames, 'name');
   }.property('this.selectedCaddisflyTestSample'),
 
   caddisflyTestBrands: function () {
-    var tests = FLOW.router.caddisflyResourceController.get('content'), distinct = [];
+    var tests = FLOW.router.caddisflyResourceController.get('content'), distinct = {}, testBrands = [];
     FLOW.selectedControl.set('selectedCaddisflyResource', null);
     this.set('selectedCaddisflyTestBrand', null);
     if (this.get('selectedCaddisflyTestName')) {
-      var name = this.get('selectedCaddisflyTestName'), unique = {};
+      var name = this.get('selectedCaddisflyTestName');
       var brands = tests.filter(function (item) {
         return item['sample'] == name['sample'] && item['name'] === name['name'];
       });
@@ -852,22 +852,22 @@ FLOW.QuestionView = FLOW.View.extend({
         displayName += "model" in obj && obj.model ? " - " + obj.model : "";
         displayName += "device" in obj && obj.device ? " - " + obj.device : "";
 
-        if (typeof(unique[displayName]) == "undefined") {
+        if (!(displayName in distinct)) {
           obj['brandDisplayName'] = displayName;
-          distinct.push(obj);
+          testBrands.push(obj);
         }
-        unique[displayName] = 0;
+        distinct[displayName] = 0;
       });
     } else {
       this.set('selectedCaddisflyTestBrand', null);
     }
-    return this.sortedList(distinct, 'brandDisplayName');
+    return this.sortedList(testBrands, 'brandDisplayName');
   }.property('this.selectedCaddisflyTestName'),
 
   caddisflyTestDetails: function () {
-    var tests = FLOW.router.caddisflyResourceController.get('content'), distinct = [];
+    var tests = FLOW.router.caddisflyResourceController.get('content'), distinct = {}, testDetails = [];
     if (this.get('selectedCaddisflyTestBrand')) {
-      var brands = this.get('selectedCaddisflyTestBrand'), unique = {};
+      var brands = this.get('selectedCaddisflyTestBrand');
       var details = tests.filter(function (item) {
         return item['sample'] == brands['sample'] && item['name'] === brands['name'] &&
           item['brand'] === brands['brand'] && item['model'] === brands['model'] &&
@@ -889,14 +889,14 @@ FLOW.QuestionView = FLOW.View.extend({
           }
         }
 
-        if (typeof(unique[displayName]) == "undefined") {
+        if (!(displayName in distinct)) {
           obj['detailsDisplayName'] = displayName;
-          distinct.push(obj);
+          testDetails.push(obj);
         }
-        unique[displayName] = 0;
+        distinct[displayName] = 0;
       });
     }
-    return this.sortedList(distinct, 'detailsDisplayName');
+    return this.sortedList(testDetails, 'detailsDisplayName');
   }.property('this.selectedCaddisflyTestBrand'),
 
   sortedList: function (arr, prop) {
