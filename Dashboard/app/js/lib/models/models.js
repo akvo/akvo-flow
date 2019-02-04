@@ -23,12 +23,13 @@ FLOW.BaseModel = DS.Model.extend({
 
 FLOW.CaddisflyTestDefinition = Ember.Object.extend({
     name: null,
+    multiParameter: null,
+    sample: null,
+    device: null,
     brand: null,
+    model: null,
     uuid: null,
-
-    displayName: function() {
-        return this.get('name') + " (" + this.get('brand') +")";
-    }.property(''),
+    results: [],
 });
 
 FLOW.CascadeResource = FLOW.BaseModel.extend({
