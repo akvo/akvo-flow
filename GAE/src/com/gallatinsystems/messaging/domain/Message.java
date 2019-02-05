@@ -1,5 +1,5 @@
 /*
- *  Copyright (C) 2010-2012 Stichting Akvo (Akvo Foundation)
+ *  Copyright (C) 2010-2012, 2019 Stichting Akvo (Akvo Foundation)
  *
  *  This file is part of Akvo FLOW.
  *
@@ -96,6 +96,7 @@ public class Message extends BaseDomain {
     }
 
     //Max 1500 chars
+    //TODO If the UI displayed the long msg instead if it exists, we should clear shortMessage.
     public void setShortMessage(String shortMessage) {
         if (shortMessage.length() > 1500) {
         	setMessage(shortMessage);
