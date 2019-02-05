@@ -1,5 +1,5 @@
 /*
- *  Copyright (C) 2010-2018 Stichting Akvo (Akvo Foundation)
+ *  Copyright (C) 2010-2019 Stichting Akvo (Akvo Foundation)
  *
  *  This file is part of Akvo FLOW.
  *
@@ -53,6 +53,7 @@ import org.waterforpeople.mapping.app.gwt.client.survey.QuestionOptionDto;
 import org.waterforpeople.mapping.app.gwt.client.surveyinstance.SurveyInstanceDto;
 import org.waterforpeople.mapping.app.web.dto.RawDataImportRequest;
 import org.waterforpeople.mapping.dataexport.service.BulkDataServiceClient;
+import static org.waterforpeople.mapping.dataexport.ExportImportConstants.*;
 
 import com.gallatinsystems.framework.dataexport.applet.DataImporter;
 
@@ -86,8 +87,8 @@ public class RawDataSpreadsheetImporter implements DataImporter {
     public static final String SUBMITTER_COLUMN_KEY = "submitterName";
     public static final String DURATION_COLUMN_KEY = "surveyalTime";
 
-    public static final String METADATA_HEADER = "Metadata";
-    public static final String OTHER_SUFFIX = "--OTHER--";
+//    public static final String METADATA_HEADER = "Metadata";
+//    public static final String OTHER_SUFFIX = "--OTHER--";
     public static final String NEW_DATA_PATTERN = "^[Nn]ew-\\d+"; // new- or New- followed by one or more digits
 
 
@@ -242,7 +243,8 @@ public class RawDataSpreadsheetImporter implements DataImporter {
         //these are all for the base sheet
         Map<Integer, Long> columnIndexToQuestionId = sheetMap.get(baseSheet);
         int firstQuestionColumnIndex = Collections.min(columnIndexToQuestionId.keySet());
-        Map<String, Integer> metadataColumnHeaderIndex = calculateMetadataColumnIndex(firstQuestionColumnIndex, false);
+//        Map<String, Integer> metadataColumnHeaderIndex = calculateMetadataColumnIndex(firstQuestionColumnIndex, false);
+        Map<String, Integer> metadataColumnHeaderIndex = getMetadataColumnIndex(baseSheet, firstQuestionColumnIndex, headerRowIndex);
         Map<String, Integer> repMetadataIndex = null; //lazy calc, done if needed; all rep sheets should be the same!
 
         int row = headerRowIndex + 1; //where the data starts
@@ -263,8 +265,9 @@ public class RawDataSpreadsheetImporter implements DataImporter {
                 if (repSheet != baseSheet) {
                     Map<Integer, Long> repQMap = sheetMap.get(repSheet);
                     int repFirstQIdx = Collections.min(repQMap.keySet());
-                    if (repMetadataIndex == null) { //do this only once
-                        repMetadataIndex = calculateMetadataColumnIndex(repFirstQIdx, true);
+                    if (repMetadataIndex == null) { //do this only once??
+//                        repMetadataIndex = calculateMetadataColumnIndex(repFirstQIdx, true);
+                        repMetadataIndex = getMetadataColumnIndex(repSheet, repFirstQIdx, headerRowIndex);
                     }
                     Integer pos = sheetPosition.get(repSheet);
                     if (pos == null) { //never scanned this one before; start at top
@@ -302,7 +305,7 @@ public class RawDataSpreadsheetImporter implements DataImporter {
 
 
     /**
-     * creates a map of where the metadata columns are
+     * creates a map of where the metadata columns are, IF layout follows the rules
      * @param firstQuestionColumnIndex
      * @return
      */
@@ -330,6 +333,54 @@ public class RawDataSpreadsheetImporter implements DataImporter {
         metadataColumnIndex.put(COLLECTION_DATE_COLUMN_KEY, ++currentColumnIndex);
         metadataColumnIndex.put(SUBMITTER_COLUMN_KEY, ++currentColumnIndex);
         metadataColumnIndex.put(DURATION_COLUMN_KEY, ++currentColumnIndex);
+
+        return metadataColumnIndex;
+    }
+
+    /**
+     * returns a map of where the metadata columns are on this sheet
+     * @param firstQuestionColumnIndex
+     * @return
+     */
+    private static Map<String, Integer> getMetadataColumnIndex(Sheet sheet, int firstQuestionColumnIndex, int headerRow) {
+        Map<String, Integer> metadataColumnIndex = new HashMap<>();
+
+        Row row = sheet.getRow(headerRow);
+        for (int i=0; i<firstQuestionColumnIndex; i++) {
+        	String header = row.getCell(i).getStringCellValue();
+        	switch (header) {
+        	case IDENTIFIER_LABEL:
+        		metadataColumnIndex.put(DATAPOINT_IDENTIFIER_COLUMN_KEY, i);
+        		break;
+        	case DATA_APPROVAL_STATUS_LABEL:
+                metadataColumnIndex.put(DATAPOINT_APPROVAL_COLUMN_KEY, i);
+                break;
+        	case REPEAT_LABEL:
+                metadataColumnIndex.put(REPEAT_COLUMN_KEY, i);
+                break;
+        	case DISPLAY_NAME_LABEL:
+                metadataColumnIndex.put(DATAPOINT_NAME_COLUMN_KEY,i);
+                break;
+        	case DEVICE_IDENTIFIER_LABEL:
+                metadataColumnIndex.put(DEVICE_IDENTIFIER_COLUMN_KEY, i);
+                break;
+        	case INSTANCE_LABEL:
+                metadataColumnIndex.put(SURVEY_INSTANCE_COLUMN_KEY, i);
+                break;
+        	case SUB_DATE_LABEL:
+                metadataColumnIndex.put(COLLECTION_DATE_COLUMN_KEY, i);
+                break;
+        	case SUBMITTER_LABEL:
+                metadataColumnIndex.put(SUBMITTER_COLUMN_KEY, i);
+                break;
+        	case DURATION_LABEL:
+                metadataColumnIndex.put(DURATION_COLUMN_KEY, i);
+                break;
+        	default:
+        		log.warn("Unknown column header '" + header + "'");
+        		break;
+        	}
+        }
 
         return metadataColumnIndex;
     }
@@ -786,9 +837,9 @@ public class RawDataSpreadsheetImporter implements DataImporter {
         for (Cell cell : headerRow) {
             String cellValue = cell.getStringCellValue();
             if (cell.getStringCellValue().indexOf("|") > -1
-                    && !cellValue.startsWith("--GEO")
+                    && !cellValue.startsWith(GEO_PREFIX)
                     && !cellValue.endsWith(OTHER_SUFFIX)
-                    && !cellValue.startsWith("--CADDISFLY")) {
+                    && !cellValue.startsWith(CADDISFLY_PREFIX)) {
                 String[] parts = cell.getStringCellValue().split("\\|");
                 if (parts[0].trim().length() > 0) {
                     columnIndexToQuestionId.put(cell.getColumnIndex(),
@@ -1007,9 +1058,9 @@ public class RawDataSpreadsheetImporter implements DataImporter {
             Sheet sheet = getDataSheet(file);
 
             //Find out if this is a 2017-style report w group headers and rqg's on separate sheets
-            boolean splitSheets = safeCellCompare(sheet, 0, 0, METADATA_HEADER);
+            boolean splitSheets = safeCellCompare(sheet, 0, 0, METADATA_LABEL);
             if (!splitSheets) {
-                errorMap.put(0, "First header cell must contain '" + METADATA_HEADER + "'");
+                errorMap.put(0, "First header cell must contain '" + METADATA_LABEL + "'");
                 return errorMap;
             }
 
