@@ -95,8 +95,14 @@ public class Message extends BaseDomain {
         return shortMessage;
     }
 
+    //Max 1500 chars
     public void setShortMessage(String shortMessage) {
-        this.shortMessage = shortMessage;
+        if (shortMessage.length() > 1500) {
+        	setMessage(shortMessage);
+        	this.shortMessage = shortMessage.substring(0, 1495) + " ...";
+        } else {
+        	this.shortMessage = shortMessage;
+        }
     }
 
 }
