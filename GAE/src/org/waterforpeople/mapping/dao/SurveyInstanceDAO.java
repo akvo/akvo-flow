@@ -487,7 +487,7 @@ public class SurveyInstanceDAO extends BaseDAO<SurveyInstance> {
     /**
      * Update counts of SurveyQuestionSummary entities related to responses from this survey
      * instance.
-     * This does not yet execute on the surveyResponseCount task queue and so is not synchronized!
+     * Execute on the surveyResponseCount task queue to prevent concurrent access errors
      */
     public void updateSummaryCounts(long siId, boolean increment) {
         // retrieve all summary objects
