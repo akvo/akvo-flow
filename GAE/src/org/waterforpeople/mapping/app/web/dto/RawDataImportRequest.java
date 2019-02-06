@@ -1,5 +1,5 @@
 /*
- *  Copyright (C) 2010-2015 Stichting Akvo (Akvo Foundation)
+ *  Copyright (C) 2010-2015, 2019 Stichting Akvo (Akvo Foundation)
  *
  *  This file is part of Akvo FLOW.
  *
@@ -51,6 +51,7 @@ public class RawDataImportRequest extends RestRequest {
     public static final String FIXED_FIELD_VALUE_PARAM = "values";
     public static final String LOCALE_ID_PARAM = "surveyedLocale";
     public static final String DURATION_PARAM = "duration";
+    public static final String FORM_VER_PARAM = "formVersion";
 
     public static final String SAVE_SURVEY_INSTANCE_ACTION = "saveSurveyInstance";
     public static final String RESET_SURVEY_INSTANCE_ACTION = "resetSurveyInstance";
@@ -66,6 +67,7 @@ public class RawDataImportRequest extends RestRequest {
     private Long duration = null;
     private Date collectionDate = null;
     private String submitter = null;
+    private Double formVersion = null;
 
     // questionId -> iteration -> [response, type]
     private Map<Long, Map<Integer, String[]>> responseMap = new HashMap<>();
@@ -238,6 +240,15 @@ public class RawDataImportRequest extends RestRequest {
                 setSurveyDuration(0L);
             }
         }
+        if (req.getParameter(FORM_VER_PARAM) != null) {
+            try {
+                setFormVersion(Double.valueOf(req.getParameter(FORM_VER_PARAM)));
+            } catch (NumberFormatException e) {
+                log.warning("Could not parse " + FORM_VER_PARAM + ": "
+                        + req.getParameter(FORM_VER_PARAM));
+                setFormVersion(0.0);
+            }
+        }
     }
 
     public void setSubmitter(String submitter) {
@@ -263,5 +274,13 @@ public class RawDataImportRequest extends RestRequest {
     public Long getSurveyDuration() {
         return duration;
     }
+
+	public Double getFormVersion() {
+		return formVersion;
+	}
+
+	public void setFormVersion(Double formVersion) {
+		this.formVersion = formVersion;
+	}
 
 }

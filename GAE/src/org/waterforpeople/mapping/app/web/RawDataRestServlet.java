@@ -1,5 +1,5 @@
 /*
- *  Copyright (C) 2010-2015 Stichting Akvo (Akvo Foundation)
+ *  Copyright (C) 2010-2015, 2019 Stichting Akvo (Akvo Foundation)
  *
  *  This file is part of Akvo FLOW.
  *
@@ -92,8 +92,7 @@ public class RawDataRestServlet extends AbstractRestApiServlet {
     protected RestResponse handleRequest(RestRequest req) throws Exception {
         SurveyInstanceServiceImpl sisi = new SurveyInstanceServiceImpl();
         RawDataImportRequest importReq = (RawDataImportRequest) req;
-        if (RawDataImportRequest.SAVE_SURVEY_INSTANCE_ACTION.equals(importReq
-                .getAction())) {
+        if (RawDataImportRequest.SAVE_SURVEY_INSTANCE_ACTION.equals(importReq.getAction())) {
 
             Survey s = null;
             if (importReq.getSurveyId() != null) {
@@ -426,14 +425,16 @@ public class RawDataRestServlet extends AbstractRestApiServlet {
         SurveyInstance inst = new SurveyInstance();
         inst.setUserID(1L);
         inst.setSurveyId(importReq.getSurveyId());
-        inst.setCollectionDate(importReq.getCollectionDate() != null ? importReq
-                .getCollectionDate() : new Date());
+        inst.setCollectionDate(importReq.getCollectionDate() != null 
+        		? importReq.getCollectionDate()
+        		: new Date());
         inst.setDeviceIdentifier("IMPORTER");
         inst.setUuid(UUID.randomUUID().toString());
         inst.setSurveyedLocaleId(importReq.getSurveyedLocaleId());
         inst.setUuid(UUID.randomUUID().toString());
         inst.setSubmitterName(importReq.getSubmitter());
         inst.setSurveyalTime(importReq.getSurveyDuration());
+        inst.setFormVersion(importReq.getFormVersion());
 
         // set the key so the subsequent logic can populate it in the
         // QuestionAnswerStore objects
