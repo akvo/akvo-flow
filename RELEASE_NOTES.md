@@ -1,6 +1,17 @@
 # Akvo Flow Release Notes
 ----
-# Akvo Flow Dashboard v1.9.42 - O.. O..
+# Akvo Flow Dashboard v1.9.42 - Outstanding Orange
+Date: 06-02-2019
+
+# New and noteworthy
+* **User experience** - Cascading selection of caddisfly tests in survey design [#2842]
+* **Devices** - Cleanup idle devices from the device list after a year [#2939]
+* **Surveys** - Save an archive copy of each published version of a form to the S3 bucket [#2844]
+
+# Resolved issues
+* **Bub fixes** - Truncate long error messages causing causing cascade publishing to fail silently [#2961]. Disable saving caddisfly question when no test type is selected [#1808]. Handle end point error responses [#2948]. Fix issue causing signature responses not to display on map [#2937
+* **Development environment** - Update openssl requirements [#2956]. Data script to print the tree-structure of an instance [#2958]
+* **Code cleanup** - Remove unused SMS classes [#2949]
 
 # Akvo Flow Dashboard v1.9.41.1 - Nebulous Nemesia (Hotfix 1)
 Date: 03-01-2019
