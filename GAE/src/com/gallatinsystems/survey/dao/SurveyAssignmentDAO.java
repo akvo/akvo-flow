@@ -1,5 +1,5 @@
 /*
- *  Copyright (C) 2012 Stichting Akvo (Akvo Foundation)
+ *  Copyright (C) 2012, 2019 Stichting Akvo (Akvo Foundation)
  *
  *  This file is part of Akvo FLOW.
  *
@@ -16,6 +16,8 @@
 
 package com.gallatinsystems.survey.dao;
 
+import java.util.List;
+
 import org.waterforpeople.mapping.domain.SurveyAssignment;
 
 import com.gallatinsystems.framework.dao.BaseDAO;
@@ -24,5 +26,31 @@ public class SurveyAssignmentDAO extends BaseDAO<SurveyAssignment> {
 
     public SurveyAssignmentDAO() {
         super(SurveyAssignment.class);
+    }
+    
+
+    /**
+     * Return a list of survey assignments containing a specified device
+     *
+     * @return list of assignments
+     */
+    public List<SurveyAssignment> listAllContainingDevice(Long devId) {
+    	List<SurveyAssignment> selected = listByProperty("deviceIds", devId, "Long");
+        return selected;
+    }
+
+    /**
+     * Remove a device from all assignments
+     *
+     * @return number of affected assignments
+     */
+    public int removeDevice(Long devId) {
+    	List<SurveyAssignment> all = listAllContainingDevice(devId);
+    	for (SurveyAssignment ass : all) {
+    		List<Long> devs = ass.getDeviceIds();
+    		devs.remove(devId);
+    	}
+    	save(all);
+        return all.size();
     }
 }

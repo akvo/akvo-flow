@@ -205,6 +205,11 @@ FLOW.QuestionView = FLOW.View.extend({
     if (!Ember.empty(FLOW.selectedControl.selectedQuestion.get('caddisflyResourceUuid'))) {
       var caddResource = FLOW.router.caddisflyResourceController.content.findProperty('uuid', FLOW.selectedControl.selectedQuestion.get('caddisflyResourceUuid'));
       if (!Ember.empty(caddResource)) {
+        this.set('selectedCaddisflyTestSample', this.get('caddisflyTestSamples').findProperty('sample', caddResource.get('sample')));
+        this.set('selectedCaddisflyTestName', this.get('caddisflyTestNames').findProperty('name', caddResource.get('name')));
+        this.set('selectedCaddisflyTestBrand', this.get('caddisflyTestBrands').find(function (item) {
+          return item.brand === caddResource.get('brand') && item.model === caddResource.get('model') && item.device === caddResource.get('device')
+        }));
         FLOW.selectedControl.set('selectedCaddisflyResource',caddResource);
       }
     }
@@ -800,6 +805,120 @@ FLOW.QuestionView = FLOW.View.extend({
     var form = FLOW.selectedControl.get('selectedSurvey');
     return FLOW.permControl.canEditForm(form);
   }.property('FLOW.selectedControl.selectedSurvey'),
+
+  caddisflyTestSamples: function () {
+    var tests = FLOW.router.caddisflyResourceController.get('content'), distinct = {}, testSamples = [];
+    FLOW.selectedControl.set('selectedCaddisflyResource', null);
+    this.set('selectedCaddisflyTestSample', null);
+    tests.forEach(function (obj) {
+      if (!(obj.sample in distinct)) {
+        testSamples.push(obj);
+      }
+      distinct[obj.sample] = 0;
+    });
+    return this.sortedList(testSamples, 'sample');
+  }.property('FLOW.router.caddisflyResourceController.content'),
+
+  caddisflyTestNames: function () {
+    var tests = FLOW.router.caddisflyResourceController.get('content'), distinct = {}, testNames = [];
+    FLOW.selectedControl.set('selectedCaddisflyResource', null);
+    this.set('selectedCaddisflyTestName', null);
+    if (this.get('selectedCaddisflyTestSample')) {
+      var sample = this.get('selectedCaddisflyTestSample');
+      var names = tests.filter(function (item) {
+        return item['sample'] === sample['sample'];
+      });
+      names.forEach(function (obj) {
+        if (!(obj.name in distinct)) {
+          testNames.push(obj);
+        }
+        distinct[obj.name] = 0;
+      });
+    }
+    return this.sortedList(testNames, 'name');
+  }.property('this.selectedCaddisflyTestSample'),
+
+  caddisflyTestBrands: function () {
+    var tests = FLOW.router.caddisflyResourceController.get('content'), distinct = {}, testBrands = [];
+    FLOW.selectedControl.set('selectedCaddisflyResource', null);
+    this.set('selectedCaddisflyTestBrand', null);
+    if (this.get('selectedCaddisflyTestName')) {
+      var name = this.get('selectedCaddisflyTestName');
+      var brands = tests.filter(function (item) {
+        return item['sample'] == name['sample'] && item['name'] === name['name'];
+      });
+      brands.forEach(function (obj) {
+        var displayName = "brand" in obj && obj.brand ? obj.brand : "";
+        displayName += "model" in obj && obj.model ? " - " + obj.model : "";
+        displayName += "device" in obj && obj.device ? " - " + obj.device : "";
+
+        if (!(displayName in distinct)) {
+          obj['brandDisplayName'] = displayName;
+          testBrands.push(obj);
+        }
+        distinct[displayName] = 0;
+      });
+    } else {
+      this.set('selectedCaddisflyTestBrand', null);
+    }
+    return this.sortedList(testBrands, 'brandDisplayName');
+  }.property('this.selectedCaddisflyTestName'),
+
+  caddisflyTestDetails: function () {
+    var tests = FLOW.router.caddisflyResourceController.get('content'), distinct = {}, testDetails = [];
+    if (this.get('selectedCaddisflyTestBrand')) {
+      var brands = this.get('selectedCaddisflyTestBrand');
+      var details = tests.filter(function (item) {
+        return item['sample'] == brands['sample'] && item['name'] === brands['name'] &&
+          item['brand'] === brands['brand'] && item['model'] === brands['model'] &&
+            item['device'] === brands['device'];
+      });
+      details.forEach(function (obj) {
+        var results = obj.results, displayName = "";
+        for (var i = 0; i < results.length; i++) {
+          displayName += "name" in results[i] ? results[i].name : "";
+          displayName += "chemical" in results[i] ? " ("+results[i].chemical+")" : "";
+          displayName += "range" in results[i] ? " "+results[i].range : "";
+          displayName += "unit" in results[i] ? " "+results[i].unit : "";
+          displayName += (i+1) < results.length ? ", " : "";
+        }
+
+        if ("reagents" in obj) {
+          for (var i = 0; i < obj["reagents"].length; i++) {
+            displayName += " "+obj["reagents"]["code"];
+          }
+        }
+
+        if (!(displayName in distinct)) {
+          obj['detailsDisplayName'] = displayName;
+          testDetails.push(obj);
+        }
+        distinct[displayName] = 0;
+      });
+    }
+    return this.sortedList(testDetails, 'detailsDisplayName');
+  }.property('this.selectedCaddisflyTestBrand'),
+
+  sortedList: function (arr, prop) {
+    return arr.sort(function (a, b) {
+      var nameA = a[prop].toUpperCase(); // ignore upper and lowercase
+      var nameB = b[prop].toUpperCase(); // ignore upper and lowercase
+      if (nameA < nameB) {
+        return -1;
+      }
+      if (nameA > nameB) {
+        return 1;
+      }
+
+      // names must be equal
+      return 0;
+    });
+  },
+
+  brandsObserver: function () {
+    //needed to disable save button when no resource brand is specified
+    FLOW.selectedControl.set('selectedCaddisflyResource', null);
+  }.observes('this.selectedCaddisflyTestBrand')
 });
 
 /*
