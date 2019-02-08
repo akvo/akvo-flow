@@ -1847,6 +1847,11 @@ FLOW.CaddisflyResourceController = Ember.ArrayController.extend({
                 "name": test.name,
                 "brand": test.brand,
                 "uuid": test.uuid,
+                "multiParameter": test.multiParameter,
+                "sample": test.sample,
+                "device": test.device,
+                "model": test.model,
+                "results": test.results
             }));
         });
 

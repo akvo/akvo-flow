@@ -139,14 +139,41 @@
         <h1 class="answerNbr">{{t _settings}}: </h1>
          <label class="selectinLabel dependencySelect">
          {{#if view.showCaddisflyTests}}
-         {{t _choose_caddisfly_question_resource}}: {{tooltip _choose_caddisfly_question_resource_tooltip}}
+         {{t _choose_caddisfly_question_resource}}: {{tooltip _choose_caddisfly_question_resource_tooltip}}<br>
             {{view Ember.Select
-            contentBinding="FLOW.router.caddisflyResourceController"
-            selectionBinding="FLOW.selectedControl.selectedCaddisflyResource"
-            optionLabelPath="content.displayName"
+            contentBinding="view.caddisflyTestSamples"
+            selectionBinding="view.selectedCaddisflyTestSample"
+            optionLabelPath="content.sample"
             optionValuePath="content.keyId"
             prompt=""
-            promptBinding="Ember.STRINGS._select_caddisfly_test"}}
+            promptBinding="Ember.STRINGS._select_caddisfly_test_sample"}}
+            {{#if view.selectedCaddisflyTestSample}}
+            {{view Ember.Select
+            contentBinding="view.caddisflyTestNames"
+            selectionBinding="view.selectedCaddisflyTestName"
+            optionLabelPath="content.name"
+            optionValuePath="content.keyId"
+            prompt=""
+            promptBinding="Ember.STRINGS._select_caddisfly_test_name"}}
+            {{/if}}
+            {{#if view.selectedCaddisflyTestName}}
+            {{view Ember.Select
+            contentBinding="view.caddisflyTestBrands"
+            selectionBinding="view.selectedCaddisflyTestBrand"
+            optionLabelPath="content.brandDisplayName"
+            optionValuePath="content.keyId"
+            prompt=""
+            promptBinding="Ember.STRINGS._select_caddisfly_test_brand"}}
+            {{/if}}
+            {{#if view.selectedCaddisflyTestBrand}}
+            {{view Ember.Select
+            contentBinding="view.caddisflyTestDetails"
+            selectionBinding="FLOW.selectedControl.selectedCaddisflyResource"
+            optionLabelPath="content.detailsDisplayName"
+            optionValuePath="content.keyId"
+            prompt=""
+            promptBinding="Ember.STRINGS._select_caddisfly_test_details"}}
+            {{/if}}
         {{else}}
         <div class="errorLoading">{{t _failed_load_caddisfly_tests}}</div>
         {{/if}}
@@ -196,6 +223,7 @@
         {{#if view.questionValidationFailure }}
         <li><a class="button noChanges" id="standardBtn_01">{{t _save_question}}</a> </li>
         {{else}}
+        {{#if view.amOptionType}}
         {{#if FLOW.questionOptionsControl.emptyOptions }}
         <li><a class="button noChanges" id="standardBtn_01">{{t _save_question}}</a> </li>
         {{else}}
@@ -218,7 +246,17 @@
         <li><a class="button noChanges" id="standardBtn_01">{{t _save_question}}</a> </li>
         {{else}}
         <li><a class="button" id="standardBtn_01" {{action "doSaveEditQuestion" target="this"}}>{{t _save_question}}</a> </li>
-        {{/if}}{{/if}}{{/if}}{{/if}}{{/if}}{{/if}}{{/if}}{{/if}}{{/if}}
+        {{/if}}{{/if}}{{/if}}{{/if}}{{/if}}{{/if}}{{/if}}
+        {{else}}
+        {{#if view.amCaddisflyType}}
+        {{#unless FLOW.selectedControl.selectedCaddisflyResource}}
+        <li><a class="button noChanges" id="standardBtn_01">{{t _save_question}}</a> </li>
+        {{else}}
+        <li><a class="button" id="standardBtn_01" {{action "doSaveEditQuestion" target="this"}}>{{t _save_question}}</a> </li>
+        {{/unless}}
+        {{else}}
+        <li><a class="button" id="standardBtn_01" {{action "doSaveEditQuestion" target="this"}}>{{t _save_question}}</a> </li>
+        {{/if}}{{/if}}{{/if}}{{/if}}
         <li><a class="cancel" id="standardBtn_01" {{action "doCancelEditQuestion" target="this"}}>{{t _cancel}}</a> </li>
       </ul>
     </nav>

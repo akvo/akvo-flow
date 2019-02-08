@@ -1,5 +1,5 @@
 /*
- *  Copyright (C) 2010-2012 Stichting Akvo (Akvo Foundation)
+ *  Copyright (C) 2010-2012,2019 Stichting Akvo (Akvo Foundation)
  *
  *  This file is part of Akvo FLOW.
  *
@@ -20,28 +20,26 @@ package com.gallatinsystems.common.domain;
  * Simple data structure class to encapsulate responses from file upload.
  */
 public class UploadStatusContainer {
-    private Boolean uploadedFile = null;
-    private Boolean uploadedZip = null;
+    private Boolean uploadedZip1 = null;
+    private Boolean uploadedZip2 = null;
+    private String url = null;
     private String message = null;
 
-    public Boolean getUploadedFile() {
-        return uploadedFile;
+    public Boolean getUploadedZip1() {
+        return uploadedZip1;
     }
 
-    public void setUploadedFile(Boolean uploadedFile) {
-        this.uploadedFile = uploadedFile;
+    public void setUploadedZip1(Boolean uploadedFile) {
+        this.uploadedZip1 = uploadedFile;
     }
 
-    public Boolean getUploadedZip() {
-        return uploadedZip;
+    public Boolean getUploadedZip2() {
+        return uploadedZip2;
     }
 
-    public void setUploadedZip(Boolean uploadedZip) {
-        this.uploadedZip = uploadedZip;
+    public void setUploadedZip2(Boolean uploadedZip) {
+        this.uploadedZip2 = uploadedZip;
     }
-
-    private String url = null;
-
     public String getUrl() {
         return url;
     }
