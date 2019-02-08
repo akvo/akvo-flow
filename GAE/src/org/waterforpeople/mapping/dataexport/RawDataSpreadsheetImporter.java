@@ -160,8 +160,6 @@ public class RawDataSpreadsheetImporter implements DataImporter {
                 if (instanceData.surveyInstanceDto.getSurveyedLocaleIdentifier().matches(NEW_DATA_PATTERN)) {
                     instanceData.surveyInstanceDto.setSurveyedLocaleIdentifier("");
                     //TODO maybe clear out instance id too, just in case?
-                } else { //For old data, ignore form version(?)
-                	instanceData.surveyInstanceDto.setFormVersion(null);
                 }
             }
 
@@ -345,6 +343,9 @@ public class RawDataSpreadsheetImporter implements DataImporter {
         	case DURATION_LABEL:
                 index.put(DURATION_COLUMN_KEY, i);
                 break;
+        	case FORM_VER_LABEL:
+                index.put(FORM_VER_COLUMN_KEY, i);
+                break;
         	default:
         		log.warn("Unknown column header '" + header + "'");
         		break;
@@ -356,7 +357,7 @@ public class RawDataSpreadsheetImporter implements DataImporter {
 
     boolean checkCol(Map<String, Integer> index, String name) {
         if (!index.containsKey(name)) {
-        	log.warn("Required column '" + IDENTIFIER_LABEL + "' not found!");
+        	log.warn("Required column '" + name + "' not found!");
         	return false;
         }
         return true;    	
@@ -1131,27 +1132,31 @@ public class RawDataSpreadsheetImporter implements DataImporter {
             }
 
             Workbook wb = sheet.getWorkbook();
-            int i = 0;
-            while ((sheet = wb.getSheetAt(i)) != null) {
-	            //check that all mandatory columns exist on all sheets
+            
+            //check that all mandatory columns exist on all sheets
+            for (int i = 0; i < wb.getNumberOfSheets(); i++) {
+            	sheet = wb.getSheetAt(i);
 	            Map<String,Integer> index = 
 	            		getMetadataColumnIndex(sheet, firstQuestionColumnIndex, headerRowIndex, false);
-	            if (!checkCol(index, IDENTIFIER_LABEL)) {
+	            if (!checkCol(index, DATAPOINT_IDENTIFIER_COLUMN_KEY)) {
 	            	errorMap.put(-1, "Column header '" + IDENTIFIER_LABEL + "' missing on sheet " + i);
 	            }
-	            if (!checkCol(index, DISPLAY_NAME_LABEL)) {
+	            if (!checkCol(index, DATAPOINT_NAME_COLUMN_KEY)) {
 	            	errorMap.put(-1, "Column header '" + DISPLAY_NAME_LABEL + "' missing on sheet " + i);
 	            }
-	            if (!checkCol(index, INSTANCE_LABEL)) {
+//	            if (!checkCol(index, DATAPOINT_APPROVAL_COLUMN_KEY)) {
+//	            	errorMap.put(-1, "Column header '" + DATA_APPROVAL_STATUS_LABEL + "' missing on sheet " + i);
+//	            }
+	            if (!checkCol(index, SURVEY_INSTANCE_COLUMN_KEY)) {
 	            	errorMap.put(-1, "Column header '" + INSTANCE_LABEL + "' missing on sheet " + i);
 	            }
-	            if (!checkCol(index, SUB_DATE_LABEL)) {
+	            if (!checkCol(index, COLLECTION_DATE_COLUMN_KEY)) {
 	            	errorMap.put(-1, "Column header '" + SUB_DATE_LABEL + "' missing on sheet " + i);
 	            }
-	            if (!checkCol(index, SUBMITTER_LABEL)) {
+	            if (!checkCol(index, SUBMITTER_COLUMN_KEY)) {
 	            	errorMap.put(-1, "Column header '" + SUBMITTER_LABEL + "' missing on sheet " + i);
 	            }
-	            if (!checkCol(index, DURATION_LABEL)) {
+	            if (!checkCol(index, DURATION_COLUMN_KEY)) {
 	            	errorMap.put(-1, "Column header '" + DURATION_LABEL + "' missing on sheet " + i);
 	            }
 	            if (i > 0 && !checkCol(index, REPEAT_LABEL)) {

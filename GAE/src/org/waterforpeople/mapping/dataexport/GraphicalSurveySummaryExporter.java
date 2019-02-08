@@ -198,7 +198,7 @@ public class GraphicalSurveySummaryExporter extends SurveySummaryExporter {
         final String surveyId = criteria.get(SurveyRestRequest.SURVEY_ID_PARAM).trim();
         final String apiKey = criteria.get("apiKey").trim();
 
-        log.debug("===Export criteria=" + criteria.toString() +
+        log.debug("### Export criteria=" + criteria.toString() +
         		" filename=" + fileName.toString() +
         		" options=" + options.toString() );
         if (!processOptions(options)) {
