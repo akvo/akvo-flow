@@ -38,7 +38,6 @@ import com.google.appengine.api.datastore.Query.FilterPredicate;
 public class FixDeviceFileJobQueue implements Process {
 
     private int allDevicesJobs = 0, jsonDeviceJobs = 0;
-    private Map<Long, String> devices = new HashMap<>();
     private List<Entity>fixupList = new ArrayList();
     private boolean doBatch = true;
     
@@ -56,14 +55,11 @@ public class FixDeviceFileJobQueue implements Process {
         System.out.println("#Processing DeviceFileJobQueue");
         
         //find all jobs made since we changed from wfpPhotonnnn format
-        final Filter f = new FilterPredicate("fileName", FilterOperator.LESS_THAN, "wfp"); 
-        final Filter f2 = new FilterPredicate("fileName", FilterOperator.GREATER_THAN, "ff");
-        final Query group_q = new Query("DeviceFileJobQueue");//.setFilter(f).setFilter(f2);
+        final Query group_q = new Query("DeviceFileJobQueue");
         final PreparedQuery pq = ds.prepare(group_q);
 
         for (Entity job : pq.asIterable(FetchOptions.Builder.withChunkSize(500))) {
             allDevicesJobs++;
-            Long dfjId = job.getKey().getId();
             String name = (String) job.getProperty("fileName");
             if (name.endsWith("}")) { //JSON - must fix up
                 jsonDeviceJobs++;
