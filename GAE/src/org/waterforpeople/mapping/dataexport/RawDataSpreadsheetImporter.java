@@ -314,108 +314,42 @@ public class RawDataSpreadsheetImporter implements DataImporter {
 
         Row row = sheet.getRow(headerRow);
         for (int i = 0; i < firstQuestionColumnIndex; i++) {
-        	String header = row.getCell(i).getStringCellValue();
-        	switch (header) {
-        	case IDENTIFIER_LABEL:
-        		index.put(DATAPOINT_IDENTIFIER_COLUMN_KEY, i);
-        		break;
-        	case DATA_APPROVAL_STATUS_LABEL:
+            String header = row.getCell(i).getStringCellValue();
+            if (header.equalsIgnoreCase(IDENTIFIER_LABEL)) {
+                index.put(DATAPOINT_IDENTIFIER_COLUMN_KEY, i);
+            } else if (header.equalsIgnoreCase(DATA_APPROVAL_STATUS_LABEL)) {
                 index.put(DATAPOINT_APPROVAL_COLUMN_KEY, i);
-                break;
-        	case REPEAT_LABEL:
+            } else if (header.equalsIgnoreCase(REPEAT_LABEL)) {
                 index.put(REPEAT_COLUMN_KEY, i);
-                break;
-        	case DISPLAY_NAME_LABEL:
-                index.put(DATAPOINT_NAME_COLUMN_KEY,i);
-                break;
-        	case DEVICE_IDENTIFIER_LABEL:
+            } else if (header.equalsIgnoreCase(DISPLAY_NAME_LABEL)) {
+                index.put(DATAPOINT_NAME_COLUMN_KEY, i);
+            } else if (header.equalsIgnoreCase(DEVICE_IDENTIFIER_LABEL)) {
                 index.put(DEVICE_IDENTIFIER_COLUMN_KEY, i);
-                break;
-        	case INSTANCE_LABEL:
+            } else if (header.equalsIgnoreCase(INSTANCE_LABEL)) {
                 index.put(SURVEY_INSTANCE_COLUMN_KEY, i);
-                break;
-        	case SUB_DATE_LABEL:
+            } else if (header.equalsIgnoreCase(SUB_DATE_LABEL)) {
                 index.put(COLLECTION_DATE_COLUMN_KEY, i);
-                break;
-        	case SUBMITTER_LABEL:
+            } else if (header.equalsIgnoreCase(SUBMITTER_LABEL)) {
                 index.put(SUBMITTER_COLUMN_KEY, i);
-                break;
-        	case DURATION_LABEL:
+            } else if (header.equalsIgnoreCase(DURATION_LABEL)) {
                 index.put(DURATION_COLUMN_KEY, i);
-                break;
-        	case FORM_VER_LABEL:
+            } else if (header.equalsIgnoreCase(FORM_VER_LABEL)) {
                 index.put(FORM_VER_COLUMN_KEY, i);
-                break;
-        	default:
-        		log.warn("Unknown column header '" + header + "'");
-        		break;
-        	}
+            } else  {
+                log.warn("Unknown column header '" + header + "'");
+            }
         }
-
         return index;
     }
 
     boolean checkCol(Map<String, Integer> index, String name) {
         if (!index.containsKey(name)) {
-        	log.warn("Required column '" + name + "' not found!");
-        	return false;
+            log.warn("Required column '" + name + "' not found!");
+            return false;
         }
         return true;    	
     }
     
-    /**
-     * creates a map of where the metadata columns are, IF layout follows the rules
-     * @param firstQuestionColumnIndex
-     * @return
-     *
-    private static Map<String, Integer> calculateMetadataColumnIndex(int firstQuestionColumnIndex, boolean singleOrRepSheet) {
-        Map<String, Integer> metadataColumnIndex = new HashMap<>();
-
-        int currentColumnIndex = -1;
-
-        metadataColumnIndex.put(DATAPOINT_IDENTIFIER_COLUMN_KEY, ++currentColumnIndex);
-
-        if (hasApprovalColumn(firstQuestionColumnIndex, singleOrRepSheet)) {
-            metadataColumnIndex.put(DATAPOINT_APPROVAL_COLUMN_KEY, ++currentColumnIndex);
-        }
-
-        if (hasRepeatIterationColumn(firstQuestionColumnIndex, singleOrRepSheet)) {
-            metadataColumnIndex.put(REPEAT_COLUMN_KEY, ++currentColumnIndex);
-        }
-
-        metadataColumnIndex.put(DATAPOINT_NAME_COLUMN_KEY, ++currentColumnIndex);
-
-        if (hasDeviceIdentifierColumn(firstQuestionColumnIndex, singleOrRepSheet)) {
-            metadataColumnIndex.put(DEVICE_IDENTIFIER_COLUMN_KEY, ++currentColumnIndex);
-        }
-        metadataColumnIndex.put(SURVEY_INSTANCE_COLUMN_KEY, ++currentColumnIndex);
-        metadataColumnIndex.put(COLLECTION_DATE_COLUMN_KEY, ++currentColumnIndex);
-        metadataColumnIndex.put(SUBMITTER_COLUMN_KEY, ++currentColumnIndex);
-        metadataColumnIndex.put(DURATION_COLUMN_KEY, ++currentColumnIndex);
-
-        return metadataColumnIndex;
-    }
-*/
-    // This is based solely on the number of columns, which was good
-    //   when the headers might be localized.
-    // Since we dropped that, we should consider *reading* the headers in the future.
-/*
-    private static boolean hasApprovalColumn(int firstQuestionColumnIndex, boolean repSheet) {
-        return (repSheet && firstQuestionColumnIndex == MONITORING_FORMAT_WITH_APPROVAL_COLUMN)
-                || (!repSheet && firstQuestionColumnIndex == MONITORING_FORMAT_WITH_REPEAT_COLUMN);
-    }
-
-    private static boolean hasRepeatIterationColumn(int firstQuestionColumnIndex, boolean repSheet) {
-        return repSheet || hasApprovalColumn(firstQuestionColumnIndex, repSheet)
-                || firstQuestionColumnIndex == MONITORING_FORMAT_WITH_REPEAT_COLUMN;
-    }
-
-    private static boolean hasDeviceIdentifierColumn(int firstQuestionColumnIndex, boolean repSheet) {
-        return repSheet || hasRepeatIterationColumn(firstQuestionColumnIndex, repSheet)
-                || firstQuestionColumnIndex == MONITORING_FORMAT_WITH_DEVICE_ID_COLUMN;
-    }
-*/
-
     /**
      * @return
      */
@@ -573,10 +507,10 @@ public class RawDataSpreadsheetImporter implements DataImporter {
         Double formVer = null;
         if (metadataColumnHeaderIndex.containsKey(FORM_VER_COLUMN_KEY)) {
             String fvStr = getMetadataCellContent(baseRow, metadataColumnHeaderIndex,
-            		FORM_VER_COLUMN_KEY);
+                    FORM_VER_COLUMN_KEY);
             try
             {
-            	formVer = Double.valueOf(fvStr);
+                formVer = Double.valueOf(fvStr);
             }
             catch (NumberFormatException e) { /*ignore*/ }
         }
@@ -676,9 +610,9 @@ public class RawDataSpreadsheetImporter implements DataImporter {
         Cell cell = iterationRow.getCell(columnIndex);
 
         if (cell != null //misses empty-but-has-other
-        		|| (questionType == questionType.OPTION
-        				&& Boolean.TRUE.equals(questionDto.getAllowOtherFlag()
-        				&& otherValuesInSeparateColumns))) { 
+                || (questionType == questionType.OPTION
+                        && Boolean.TRUE.equals(questionDto.getAllowOtherFlag()
+                        && otherValuesInSeparateColumns))) { 
             switch (questionType) {
                 case GEO:
                     String latitude = ExportImportUtils.parseCellAsString(cell);
@@ -1135,34 +1069,31 @@ public class RawDataSpreadsheetImporter implements DataImporter {
             
             //check that all mandatory columns exist on all sheets
             for (int i = 0; i < wb.getNumberOfSheets(); i++) {
-            	sheet = wb.getSheetAt(i);
-	            Map<String,Integer> index = 
-	            		getMetadataColumnIndex(sheet, firstQuestionColumnIndex, headerRowIndex, false);
-	            if (!checkCol(index, DATAPOINT_IDENTIFIER_COLUMN_KEY)) {
-	            	errorMap.put(-1, "Column header '" + IDENTIFIER_LABEL + "' missing on sheet " + i);
-	            }
-	            if (!checkCol(index, DATAPOINT_NAME_COLUMN_KEY)) {
-	            	errorMap.put(-1, "Column header '" + DISPLAY_NAME_LABEL + "' missing on sheet " + i);
-	            }
-//	            if (!checkCol(index, DATAPOINT_APPROVAL_COLUMN_KEY)) {
-//	            	errorMap.put(-1, "Column header '" + DATA_APPROVAL_STATUS_LABEL + "' missing on sheet " + i);
-//	            }
-	            if (!checkCol(index, SURVEY_INSTANCE_COLUMN_KEY)) {
-	            	errorMap.put(-1, "Column header '" + INSTANCE_LABEL + "' missing on sheet " + i);
-	            }
-	            if (!checkCol(index, COLLECTION_DATE_COLUMN_KEY)) {
-	            	errorMap.put(-1, "Column header '" + SUB_DATE_LABEL + "' missing on sheet " + i);
-	            }
-	            if (!checkCol(index, SUBMITTER_COLUMN_KEY)) {
-	            	errorMap.put(-1, "Column header '" + SUBMITTER_LABEL + "' missing on sheet " + i);
-	            }
-	            if (!checkCol(index, DURATION_COLUMN_KEY)) {
-	            	errorMap.put(-1, "Column header '" + DURATION_LABEL + "' missing on sheet " + i);
-	            }
-	            if (i > 0 && !checkCol(index, REPEAT_LABEL)) {
-	            	errorMap.put(-1, "Column header '" + REPEAT_LABEL + "' missing on sheet " + i);
-	            }
-	            i++;
+                sheet = wb.getSheetAt(i);
+                Map<String, Integer> index = getMetadataColumnIndex(sheet, firstQuestionColumnIndex, headerRowIndex,
+                        false);
+                if (!checkCol(index, DATAPOINT_IDENTIFIER_COLUMN_KEY)) {
+                    errorMap.put(-1, "Column header '" + IDENTIFIER_LABEL + "' missing on sheet " + i);
+                }
+                if (!checkCol(index, DATAPOINT_NAME_COLUMN_KEY)) {
+                    errorMap.put(-1, "Column header '" + DISPLAY_NAME_LABEL + "' missing on sheet " + i);
+                }
+                if (!checkCol(index, SURVEY_INSTANCE_COLUMN_KEY)) {
+                    errorMap.put(-1, "Column header '" + INSTANCE_LABEL + "' missing on sheet " + i);
+                }
+                if (!checkCol(index, COLLECTION_DATE_COLUMN_KEY)) {
+                    errorMap.put(-1, "Column header '" + SUB_DATE_LABEL + "' missing on sheet " + i);
+                }
+                if (!checkCol(index, SUBMITTER_COLUMN_KEY)) {
+                    errorMap.put(-1, "Column header '" + SUBMITTER_LABEL + "' missing on sheet " + i);
+                }
+                if (!checkCol(index, DURATION_COLUMN_KEY)) {
+                    errorMap.put(-1, "Column header '" + DURATION_LABEL + "' missing on sheet " + i);
+                }
+                if (i > 0 && !checkCol(index, REPEAT_LABEL)) {
+                    errorMap.put(-1, "Column header '" + REPEAT_LABEL + "' missing on sheet " + i);
+                }
+                i++;
             }
 
         } catch (Exception e) {
