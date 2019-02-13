@@ -25,7 +25,7 @@ import com.google.appengine.api.datastore.Query;
 import java.util.List;
 
 /*
- * - Checks that all surveys, groups, questions and options are consistent
+ * - Checks missing files listed in DeviceFileJobQueue
  */
 public class CheckMissingFiles implements Process {
 
