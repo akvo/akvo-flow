@@ -7,16 +7,16 @@
 		<fileset dir="${lib}">
 			<include name="**/*.jar" />
 		</fileset>
-		<fileset dir="${gae}/war/WEB-INF/lib">
+		<fileset dir="${gae}/target/akvo-flow/WEB-INF/lib">
 			<include name="**/*.jar" />
 		</fileset>
-		<pathelement path="${gae}/war/WEB-INF/classes"/>
+		<pathelement path="${gae}/target/akvo-flow/WEB-INF/classes"/>
 		<pathelement path="${build}"/>
 	</path>
 
 	<target name="compile">
 		<mkdir dir="${build}" />
-		<javac source="1.7" target="1.7" encoding="UTF8" srcdir="src" destdir="${build}"
+		<javac source="1.8" target="1.8" encoding="UTF8" srcdir="src" destdir="${build}"
 			classpathref="project.classpath" debug="on" includeantruntime="false" />
 	</target>
 

@@ -110,7 +110,15 @@ FLOW.Project = FLOW.View.extend({
   }.observes('currentRegistrationForm'),
 
   isPublished: function() {
-    var form = FLOW.selectedControl.get('selectedSurvey');
+    var form;
+    if (!Ember.none(FLOW.selectedControl.get('selectedSurvey'))) {
+      form = FLOW.selectedControl.get('selectedSurvey');
+    } else {
+      if (FLOW.surveyControl.content.get('isLoaded')) {
+        form = FLOW.surveyControl.content.get('firstObject');
+        FLOW.selectedControl.set('selectedSurvey', form);
+      }
+    }
     return form.get('status') === 'PUBLISHED'
   }.property('FLOW.selectedControl.selectedSurvey.status'),
 
@@ -313,7 +321,7 @@ FLOW.ProjectItemView = FLOW.View.extend({
 
   showSurveyEditButton: function() {
     var survey = this.get('content');
-    return FLOW.permControl.canEditSurvey(survey);
+    return FLOW.permControl.canEditSurvey(survey) || FLOW.projectControl.get('newlyCreated') === survey;
   }.property(),
 
   showSurveyMoveButton: function() {
@@ -347,6 +355,7 @@ FLOW.FolderEditView = Ember.TextField.extend({
 
   insertNewline: function() {
     this.get('parentView').set('folderEdit', false);
+    this.saveFolderName();
   }
 });
 

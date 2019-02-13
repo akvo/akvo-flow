@@ -1,5 +1,5 @@
 /*
- *  Copyright (C) 2010-2017 Stichting Akvo (Akvo Foundation)
+ *  Copyright (C) 2010-2018 Stichting Akvo (Akvo Foundation)
  *
  *  This file is part of Akvo FLOW.
  *
@@ -55,8 +55,6 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 import org.waterforpeople.mapping.app.gwt.client.devicefiles.DeviceFilesDto;
-import org.waterforpeople.mapping.app.gwt.client.location.PlacemarkDto;
-import org.waterforpeople.mapping.app.gwt.client.location.PlacemarkDtoResponse;
 import org.waterforpeople.mapping.app.gwt.client.survey.OptionContainerDto;
 import org.waterforpeople.mapping.app.gwt.client.survey.QuestionDependencyDto;
 import org.waterforpeople.mapping.app.gwt.client.survey.QuestionDto;
@@ -106,180 +104,6 @@ public class BulkDataServiceClient {
                 + DataBackoutRequest.SURVEY_INSTANCE_ID_PARAM + "="
                 + instanceId, true, apiKey);
         return parseSurveyInstanceResponse(instanceValues);
-    }
-
-    public static List<DeviceFilesDto> fetchDeviceFiles(String statusCode,
-            String serverBase) throws Exception {
-        return fetchData(null, serverBase, statusCode);
-    }
-
-    private static List<DeviceFilesDto> fetchData(String cursor,
-            String serverBase, String statusCode) throws Exception {
-
-        String queryString = null;
-        String response = null;
-        ArrayList<DeviceFilesDto> dfDto = new ArrayList<DeviceFilesDto>();
-        queryString = serverBase + DEVICE_FILES_SERVLET_PATH
-                + DeviceFileRestRequest.LIST_DEVICE_FILES_ACTION + "&"
-                + DeviceFileRestRequest.PROCESSED_STATUS_PARAM + "="
-                + statusCode;
-        if (cursor != null) {
-            queryString = queryString + "&cursor=" + cursor;
-        }
-        response = fetchDataFromServer(queryString);
-        List<DeviceFilesDto> list = parseDeviceFiles(response);
-        if (list == null || list.size() == 0) {
-            return null;
-        }
-        for (DeviceFilesDto dto : list) {
-            dfDto.add(dto);
-        }
-
-        JSONObject jsonOuter = new JSONObject(response);
-        if (jsonOuter.has("cursor")) {
-            cursor = jsonOuter.getString("cursor");
-            List<DeviceFilesDto> dfDtoTemp = fetchData(cursor, serverBase,
-                    statusCode);
-            if (dfDtoTemp != null)
-                for (DeviceFilesDto item : dfDtoTemp) {
-                    dfDto.add(item);
-                }
-        }
-
-        return dfDto;
-    }
-
-    public static PlacemarkDtoResponse fetchPlacemarks(String countryCode,
-            String serverBase, String cursor) throws Exception {
-        try {
-            return fetchPlacemarkData(cursor, serverBase, countryCode);
-        } catch (Exception ex) {
-            return fetchPlacemarkData(cursor, serverBase, countryCode);
-        }
-    }
-
-    private static PlacemarkDtoResponse fetchPlacemarkData(String cursor,
-            String serverBase, String countryCode) throws Exception {
-        String queryString = null;
-        String response = null;
-        ArrayList<PlacemarkDto> pmDto = new ArrayList<PlacemarkDto>();
-        queryString = serverBase + "/placemarkrestapi?"
-                + "needDetailsFlag=true" + "&country=" + countryCode
-                + "&display=googleearth&ignoreCache=true";
-        if (cursor != null) {
-            queryString = queryString + "&cursor=" + cursor;
-        }
-        response = fetchDataFromServer(queryString);
-        List<PlacemarkDto> list = null;
-        try {
-            list = parsePlacemarks(response);
-        } catch (Exception ex) {
-            log.error("Caught Exception skipping this response");
-        }
-        if (list == null || list.size() == 0) {
-            return null;
-        }
-        for (PlacemarkDto dto : list) {
-            pmDto.add(dto);
-        }
-
-        PlacemarkDtoResponse pdr = new PlacemarkDtoResponse();
-        pdr.setDtoList(pmDto);
-        JSONObject jsonOuter = new JSONObject(response);
-        if (jsonOuter.has("cursor")) {
-            cursor = jsonOuter.getString("cursor");
-            pdr.setCursor(cursor);
-        } else {
-            pdr.setCursor(null);
-        }
-        return pdr;
-    }
-
-    private static List<PlacemarkDto> parsePlacemarks(String response)
-            throws Exception {
-        JSONArray arr = null;
-        if (response != null && response.startsWith("{")) {
-            List<PlacemarkDto> dtoList = new ArrayList<PlacemarkDto>();
-
-            JSONObject json = new JSONObject(response);
-            if (json != null) {
-                if (json.has("placemarks")) {
-                    try {
-                        if (!json.getString("placemarks").equals("null"))
-                            arr = json.getJSONArray("placemarks");
-                    } catch (Exception ex) {
-                        ex.printStackTrace();
-                        arr = null;
-                    }
-                } else
-                    return null;
-            }
-
-            if (arr != null) {
-                for (int i = 0; i < arr.length(); i++) {
-                    PlacemarkDto dto = new PlacemarkDto();
-                    JSONObject jsonMark = arr.getJSONObject(i);
-                    if (jsonMark != null) {
-                        if (jsonMark.has("communityCode")) {
-                            String x = jsonMark.getString("communityCode");
-                            dto.setCommunityCode(x);
-                        }
-                        if (jsonMark.has("markType")) {
-                            String x = jsonMark.getString("markType");
-                            dto.setMarkType(x);
-                        }
-                        if (jsonMark.has("iconUrl")) {
-                            String x = jsonMark.getString("iconUrl");
-                            dto.setIconUrl(x);
-                        }
-                        if (jsonMark.has("longitude")) {
-                            String x = jsonMark.getString("longitude");
-                            try {
-                                dto.setLongitude(new Double(x));
-                            } catch (NumberFormatException nex) {
-                                log.error("Couldn't parse Longitude for"
-                                        + dto.getCommunityCode(), nex);
-                                dto.setLongitude(null);
-                            }
-                        }
-                        if (jsonMark.has("latitude")) {
-                            String x = jsonMark.getString("latitude");
-                            try {
-                                dto.setLatitude(new Double(x));
-                            } catch (NumberFormatException nex) {
-                                log.error("Couldn't parse Latitude for"
-                                        + dto.getCommunityCode(), nex);
-                                dto.setLatitude(null);
-                            }
-                        }
-                        if (jsonMark.has("collectionDate")) {
-                            String x = jsonMark.getString("collectionDate");
-                            if (x != null) {
-                                try {
-                                    dto.setCollectionDate(new Date(x));
-                                } catch (IllegalArgumentException iae) {
-                                    // log it and ignore it
-                                    log.error("Couldn't parse date for"
-                                            + dto.getCommunityCode(), iae);
-                                    dto.setCollectionDate(null);
-                                }
-                            }
-                        }
-                        if (jsonMark.has("placemarkContents")) {
-                            String x = jsonMark.getString("placemarkContents");
-                            dto.setPlacemarkContents(x);
-                        }
-                        if (jsonMark.has("pinStyle")) {
-                            dto.setPinStyle(jsonMark.getString("pinStyle"));
-                        }
-                    }
-                    dtoList.add(dto);
-                }
-                return dtoList;
-            }
-            return null;
-        }
-        return null;
     }
 
     /**
@@ -535,7 +359,7 @@ public class BulkDataServiceClient {
         } catch (JsonParseException | JsonMappingException e) {
             log.warn("Failed to parse the InstanceDataDto string: " + e);
         } catch (IOException e) {
-            log.equals(e);
+            log.error("Error while parsing: ", e);
         }
 
         return new InstanceDataDto();
@@ -864,9 +688,6 @@ public class BulkDataServiceClient {
                         if (!json.isNull("description")) {
                             dto.setDescription(json.getString("description"));
                         }
-                        if (!json.isNull("instanceCount")) {
-                            dto.setInstanceCount(json.getLong("instanceCount"));
-                        }
                         if (!json.isNull("keyId")) {
                             dto.setKeyId(json.getLong("keyId"));
                         }
@@ -1011,8 +832,8 @@ public class BulkDataServiceClient {
                             if (!json.isNull("tip")) {
                                 dto.setTip(json.optString("tip"));
                             }
-                            if (!json.isNull("questionId")) {
-                                dto.setQuestionId(json.optString("questionId"));
+                            if (!json.isNull("variableName")) {
+                                dto.setVariableName(json.optString("variableName"));
                             }
                             if (!json.isNull("path")) {
                                 dto.setPath(json.getString("path"));
@@ -1043,10 +864,9 @@ public class BulkDataServiceClient {
                             if (!json.isNull("geoLocked")) {
                                 dto.setGeoLocked(json.getBoolean("geoLocked"));
                             }
-                            if (json.has("caddisflyResourceUuid")
-                                    && json.getString("caddisflyResourceUuid") != null) {
-                                dto.setCaddisflyResourceUuid(json
-                                        .getString("caddisflyResourceUuid"));
+                            if (!json.isNull("caddisflyResourceUuid")) {
+                                dto.setCaddisflyResourceUuid(
+                                        json.getString("caddisflyResourceUuid"));
                             }
                             if (!json.isNull("immutable")) {
                                 dto.setImmutable(json.getBoolean("immutable"));
@@ -1209,16 +1029,19 @@ public class BulkDataServiceClient {
         TreeMap<String, TranslationDto> translationMap = null;
         if (keyIter != null) {
             translationMap = new TreeMap<String, TranslationDto>();
-            String lang = keyIter.next();
-            JSONObject transObj = translationMapJson.getJSONObject(lang);
-            if (transObj != null) {
-                TranslationDto tDto = new TranslationDto();
-                tDto.setKeyId(transObj.getLong("keyId"));
-                tDto.setParentId(transObj.getLong(("parentId")));
-                tDto.setParentType(transObj.getString("parentType"));
-                tDto.setLangCode(lang);
-                tDto.setText(transObj.getString("text"));
-                translationMap.put(lang, tDto);
+            //Iterate on all the languages
+            while (keyIter.hasNext()) {
+                String lang = keyIter.next();
+                JSONObject transObj = translationMapJson.getJSONObject(lang);
+                if (transObj != null) {
+                    TranslationDto tDto = new TranslationDto();
+                    tDto.setKeyId(transObj.getLong("keyId"));
+                    tDto.setParentId(transObj.getLong(("parentId")));
+                    tDto.setParentType(transObj.getString("parentType"));
+                    tDto.setLangCode(lang);
+                    tDto.setText(transObj.getString("text"));
+                    translationMap.put(lang, tDto);
+                }
             }
         }
         return translationMap;
@@ -1227,12 +1050,6 @@ public class BulkDataServiceClient {
     /**
      * invokes a remote REST api using the base and query string passed in. If shouldSign is true,
      * the queryString will be augmented with a timestamp and hash parameter.
-     *
-     * @param baseUrl
-     * @param queryString
-     * @param shouldSign
-     * @param key
-     * @return
      * @throws Exception
      */
     public static String fetchDataFromServer(String baseUrl,
@@ -1265,9 +1082,6 @@ public class BulkDataServiceClient {
     /**
      * invokes a remote REST api. If the url is longer than 1900 characters, this method will use
      * POST since that is too long for a GET
-     *
-     * @param fullUrl
-     * @return
      * @throws Exception
      */
     public static String fetchDataFromServer(String fullUrl) throws Exception {
@@ -1428,7 +1242,7 @@ public class BulkDataServiceClient {
         }
         return result.toString();
     }
-
+    
     /**
      * converts the string into a JSON array object.
      */

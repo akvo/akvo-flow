@@ -67,7 +67,6 @@ public class EnvServlet extends HttpServlet {
         properties.add("mapsProvider");
         properties.add(SHOW_MAPS_PROPERTY_KEY);
         properties.add("googleMapsRegionBias");
-        properties.add("cartodbHost");
         properties.add("hereMapsAppId");
         properties.add("hereMapsAppCode");
         properties.add("enableDataApproval");
@@ -144,7 +143,7 @@ public class EnvServlet extends HttpServlet {
         if (props.get(CADDISFLY_TESTS_FILE_URL_KEY) == null
                 || props.get(CADDISFLY_TESTS_FILE_URL_KEY).isEmpty()) {
             props.put("caddisflyTestsFileUrl",
-                    "https://akvoflow-public.s3.amazonaws.com/caddisfly-tests.json");
+                    "https://s3-eu-west-1.amazonaws.com/akvoflow-public/caddisfly-tests-v2.json");
         }
 
         // load language configuration and strings if present

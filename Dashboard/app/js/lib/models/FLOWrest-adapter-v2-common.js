@@ -157,6 +157,33 @@ DS.FLOWRESTAdapter = DS.RESTAdapter.extend({
     }
   },
 
+  find: function (store, type, id) {
+    var root = this.rootForType(type);
+
+    this.ajax(this.buildURL(root, id), "GET", {
+      success: function(json) {
+        if (type === FLOW.SurveyGroup) {
+          if (json.survey_group) {
+            this.didFindRecord(store, type, json, id);
+          } else {
+            //missing survey so no further action
+            FLOW.projectControl.set('isLoading', false);
+            FLOW.savingMessageControl.numLoadingChange(-1);
+          }
+        } else {
+          this.didFindRecord(store, type, json, id);
+        }
+      },
+      error: function () {
+        // TODO: Handle various error response codes
+        if (type === FLOW.SurveyGroup) {
+          FLOW.projectControl.set('isLoading', false);
+        }
+        FLOW.savingMessageControl.numLoadingChange(-1);
+      }
+    });
+  },
+
   didFindRecord: function (store, type, json, id) {
     this._super(store, type, json, id);
     if (type === FLOW.SurveyGroup) {
@@ -166,11 +193,11 @@ DS.FLOWRESTAdapter = DS.RESTAdapter.extend({
   },
 
   didFindAll: function (store, type, json) {
+    this._super(store, type, json);
     if (type === FLOW.SurveyGroup) {
       FLOW.projectControl.set('isLoading', false);
     }
     FLOW.savingMessageControl.numLoadingChange(-1);
-    this._super(store, type, json);
   },
 
   didFindQuery: function (store, type, json, recordArray) {
@@ -185,6 +212,11 @@ DS.FLOWRESTAdapter = DS.RESTAdapter.extend({
   // includes 'bulk' in the POST call, to allign
   // with updateRecords and deleteRecords behaviour.
   createRecords: function (store, type, records) {
+    //do not bulk commit when creating questions and question groups
+    if (FLOW.questionControl.get('bulkCommit')) {
+      this.set('bulkCommit', false);
+    }
+
     if (get(this, 'bulkCommit') === false) {
       return this._super(store, type, records);
     }
@@ -207,5 +239,22 @@ DS.FLOWRESTAdapter = DS.RESTAdapter.extend({
         this.didCreateRecords(store, type, records, json);
       }
     });
+  },
+
+
+  updateRecords: function(store, type, records) {
+    //if updating questions and question groups ordering, enable bulkCommit
+    if (FLOW.questionControl.get('bulkCommit')) {
+      this.set('bulkCommit', true);
+    }
+    this._super(store, type, records);
+  },
+
+  deleteRecords: function(store, type, records) {
+    //do not bulk commit when deleting questions and question groups
+    if (FLOW.questionControl.get('bulkCommit')) {
+      this.set('bulkCommit', false);
+    }
+    this._super(store, type, records);
   }
 });

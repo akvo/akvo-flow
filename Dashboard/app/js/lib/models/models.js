@@ -23,12 +23,13 @@ FLOW.BaseModel = DS.Model.extend({
 
 FLOW.CaddisflyTestDefinition = Ember.Object.extend({
     name: null,
+    multiParameter: null,
+    sample: null,
+    device: null,
     brand: null,
+    model: null,
     uuid: null,
-
-    displayName: function() {
-        return this.get('name') + " (" + this.get('brand') +")";
-    }.property(''),
+    results: [],
 });
 
 FLOW.CascadeResource = FLOW.BaseModel.extend({
@@ -129,9 +130,12 @@ FLOW.SurveyGroup = FLOW.BaseModel.extend({
 FLOW.Survey = FLOW.BaseModel.extend({
   didLoad: function () {
     // set the survey group name
-    var sg = FLOW.store.find(FLOW.SurveyGroup, this.get('surveyGroupId'));
-    if (!Ember.empty(sg)) {
-      this.set('surveyGroupName', sg.get('code'));
+    var ancestorIds = this.get('ancestorIds'), sgId = this.get('surveyGroupId');
+    if (sgId && ancestorIds.length > 1) { //confirm form has at least the root and the parent survey as ancestors
+      var sg = FLOW.store.find(FLOW.SurveyGroup, sgId);
+      if (!Ember.empty(sg)) {
+        this.set('surveyGroupName', sg.get('code'));
+      }
     }
   },
 
@@ -149,7 +153,6 @@ FLOW.Survey = FLOW.BaseModel.extend({
   surveyGroupId: DS.attr('number'),
   createdDateTime: DS.attr('number'),
   lastUpdateDateTime: DS.attr('number'),
-  instanceCount: DS.attr('number'),
 
   // This attribute is used for the 'Copy Survey' functionality
   // Most of the times is `null`
@@ -236,7 +239,7 @@ FLOW.Question = FLOW.BaseModel.extend({
   path: DS.attr('string'),
   questionGroupId: DS.attr('number'),
   surveyId: DS.attr('number'),
-  questionId: DS.attr('string'),
+  variableName: DS.attr('string'),
   metricId: DS.attr('number'),
   text: DS.attr('string'),
   tip: DS.attr('string'),
@@ -253,13 +256,13 @@ FLOW.Question = FLOW.BaseModel.extend({
   }),
   // Geoshape question type options
   allowPoints: DS.attr('boolean', {
-    defaultValue: true
+    defaultValue: false
   }),
   allowLine: DS.attr('boolean', {
-    defaultValue: true
+    defaultValue: false
   }),
   allowPolygon: DS.attr('boolean', {
-    defaultValue: true
+    defaultValue: false
   })
 });
 
@@ -344,26 +347,12 @@ FLOW.SurveyedLocale = DS.Model.extend({
   primaryKey: 'keyId'
 });
 
-// Explicitly avoid to use belongTo and hasMany as
-// Ember-Data lacks of partial loading
-// https://github.com/emberjs/data/issues/51
-FLOW.PlacemarkDetail = FLOW.BaseModel.extend({
-  placemarkId: DS.attr('number'),
-  collectionDate: DS.attr('number'),
-  order: DS.attr('number'),
-  questionText: DS.attr('string'),
-  metricName: DS.attr('string'),
-  stringValue: DS.attr('string'),
-  questionType: DS.attr('string')
-});
-
 FLOW.Placemark = FLOW.BaseModel.extend({
 	latitude: DS.attr('number'),
 	longitude: DS.attr('number'),
 	count: DS.attr('number'),
 	level: DS.attr('number'),
 	surveyId: DS.attr('number'),
-	detailsId: DS.attr('number'),
 	collectionDate: DS.attr('number')
 });
 
@@ -389,7 +378,7 @@ FLOW.QuestionAnswer = FLOW.BaseModel.extend({
   collectionDate: DS.attr('number'),
   surveyInstanceId: DS.attr('number'),
   iteration: DS.attr('number'),
-  questionID: DS.attr('string'),
+  questionID: DS.attr('string'), //TODO should be number?
   questionText: DS.attr('string')
 });
 
@@ -505,4 +494,20 @@ FLOW.SubCountry = FLOW.BaseModel.extend({
   name: DS.attr('string'),
   parentKey: DS.attr('number'),
   parentName: DS.attr('string')
+});
+
+FLOW.Report = FLOW.BaseModel.extend({
+  reportType: DS.attr('string'), //DATA_CLEANING/COMPREHENSIVE/...
+  formId: DS.attr('number'),
+  state: DS.attr('string'), //QUEUED/IN_PROGRESS/FINISHED_SUCCESS/FINISHED_ERROR
+  startDate: DS.attr('string'),
+  endDate: DS.attr('string'),
+  message: DS.attr('string'),
+  filename: DS.attr('string'),
+  questionId: DS.attr('number'),
+  createdDateTime: DS.attr('number'),
+  lastUpdateDateTime: DS.attr('number'),
+  lastCollectionOnly: DS.attr('boolean', {
+    defaultValue: false
+  })
 });

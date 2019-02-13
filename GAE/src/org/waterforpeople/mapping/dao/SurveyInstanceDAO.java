@@ -1,5 +1,5 @@
 /*
- *  Copyright (C) 2010-2015, 2017 Stichting Akvo (Akvo Foundation)
+ *  Copyright (C) 2010-2015, 2017, 2018 Stichting Akvo (Akvo Foundation)
  *
  *  This file is part of Akvo FLOW.
  *
@@ -124,19 +124,6 @@ public class SurveyInstanceDAO extends BaseDAO<SurveyInstance> {
             qasDao.save(responses);
         }
 
-        // Recompute data summarization for new locations.
-        for (QuestionAnswerStore qas : locations) {
-            long geoQasId = qas.getKey().getId();
-            Queue summQueue = QueueFactory.getQueue("dataSummarization");
-            summQueue.add(TaskOptions.Builder
-                    .withUrl("/app_worker/dataprocessor")
-                    .param(DataProcessorRequest.ACTION_PARAM,
-                            DataProcessorRequest.SURVEY_INSTANCE_SUMMARIZER)
-                    .param("surveyInstanceId", si.getKey().getId() + "")
-                    .param("qasId", geoQasId + "")
-                    .param("delta", 1 + ""));
-        }
-
         // Now that QAS IDs are set, enqueue imagecheck tasks,
         // whereby the presence of an image in S3 will be checked.
         if (!images.isEmpty()) {
@@ -145,17 +132,28 @@ public class SurveyInstanceDAO extends BaseDAO<SurveyInstance> {
             String deviceId = d == null ? "null" : String.valueOf(d.getKey().getId());
 
             for (QuestionAnswerStore qas : images) {
-                String filename = qas.getValue().substring(
-                        qas.getValue().lastIndexOf("/") + 1);
-
-                Queue queue = QueueFactory.getQueue("background-processing");
-                TaskOptions to = TaskOptions.Builder
-                        .withUrl("/app_worker/imagecheck")
-                        .param(ImageCheckRequest.FILENAME_PARAM, filename)
-                        .param(ImageCheckRequest.DEVICE_ID_PARAM, deviceId)
-                        .param(ImageCheckRequest.QAS_ID_PARAM, String.valueOf(qas.getKey().getId()))
-                        .param(ImageCheckRequest.ATTEMPT_PARAM, "1");
-                queue.add(to);
+                String value = qas.getValue();
+                String filename = null;
+                if (value.startsWith("{")) { // JSON
+                    final String key = "\"filename\":\"";
+                    int i = value.indexOf(key);
+                    if (i > -1) { //key found, grab all until next "
+                        filename = value.substring(i + key.length()).split("\"", 2)[0];
+                    }
+                } else { //legacy: naked filename
+                    filename = value;
+                }
+                if (filename != null) {
+                    filename = filename.substring(filename.lastIndexOf("/") + 1); //strip path
+                    Queue queue = QueueFactory.getQueue("background-processing");
+                    TaskOptions to = TaskOptions.Builder
+                            .withUrl("/app_worker/imagecheck")
+                            .param(ImageCheckRequest.FILENAME_PARAM, filename)
+                            .param(ImageCheckRequest.DEVICE_ID_PARAM, deviceId)
+                            .param(ImageCheckRequest.QAS_ID_PARAM, String.valueOf(qas.getKey().getId()))
+                            .param(ImageCheckRequest.ATTEMPT_PARAM, "1");
+                    queue.add(to);
+                }
             }
         }
 
@@ -519,18 +517,6 @@ public class SurveyInstanceDAO extends BaseDAO<SurveyInstance> {
                         continue;
                     }
                 }
-
-                // survey instance summary task
-                if (Question.Type.GEO.toString().equals(qasItem.getType())) {
-                    Queue summaryQueue = QueueFactory.getQueue("dataSummarization");
-
-                    TaskOptions to = TaskOptions.Builder
-                            .withUrl("/app_worker/dataprocessor")
-                            .param(DataProcessorRequest.ACTION_PARAM,
-                                    DataProcessorRequest.SURVEY_INSTANCE_SUMMARIZER)
-                            .param(DataProcessorRequest.DELTA_PARAM, "-1");
-                    summaryQueue.add(to);
-                }
             }
 
             qasDao.delete(qasList);
@@ -729,6 +715,7 @@ public class SurveyInstanceDAO extends BaseDAO<SurveyInstance> {
         query.declareParameters(paramString.toString());
         query.setOrdering("collectionDate ascending");
 
+        @SuppressWarnings("unchecked")
         List<SurveyInstance> res = (List<SurveyInstance>) query.executeWithMap(paramMap);
         if (res != null && !res.isEmpty()) {
             return res.get(0);

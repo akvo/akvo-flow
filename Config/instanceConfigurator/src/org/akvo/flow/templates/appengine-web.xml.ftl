@@ -2,6 +2,7 @@
 <appengine-web-app xmlns="http://appengine.google.com/ns/1.0">
     <application>${instanceId}</application>
     <version>1</version>
+    <runtime>java8</runtime>
     <sessions-enabled>true</sessions-enabled>
     <threadsafe>true</threadsafe>
     <auto-id-policy>legacy</auto-id-policy>

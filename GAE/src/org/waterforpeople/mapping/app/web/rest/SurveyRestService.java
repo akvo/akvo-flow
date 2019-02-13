@@ -1,5 +1,5 @@
 /*
- *  Copyright (C) 2012-2017 Stichting Akvo (Akvo Foundation)
+ *  Copyright (C) 2012-2015,2017-2018 Stichting Akvo (Akvo Foundation)
  *
  *  This file is part of Akvo FLOW.
  *
@@ -33,8 +33,6 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
-import org.waterforpeople.mapping.analytics.dao.SurveyInstanceSummaryDao;
-import org.waterforpeople.mapping.analytics.domain.SurveyInstanceSummary;
 import org.waterforpeople.mapping.app.gwt.client.survey.SurveyDto;
 import org.waterforpeople.mapping.app.util.DtoMarshaller;
 import org.waterforpeople.mapping.app.web.dto.SurveyTaskRequest;
@@ -57,8 +55,6 @@ public class SurveyRestService {
 
     private SurveyDAO surveyDao = new SurveyDAO();
 
-    private SurveyInstanceSummaryDao sisDao = new SurveyInstanceSummaryDao();
-
     private SurveyalValueDao svDao = new SurveyalValueDao();
 
     private QuestionAnswerStoreDao qasDao = new QuestionAnswerStoreDao();
@@ -68,18 +64,12 @@ public class SurveyRestService {
     public Map<String, Object> listSurveys() {
         final Map<String, Object> response = new HashMap<String, Object>();
         List<SurveyDto> results = new ArrayList<SurveyDto>();
-        SurveyInstanceSummary sis = null;
         List<Survey> surveys = surveyDao.listAllFilteredByUserAuthorization();
         if (surveys != null) {
             for (Survey s : surveys) {
                 SurveyDto dto = new SurveyDto();
                 DtoMarshaller.copyToDto(s, dto);
 
-                // add surveyInstance Count
-                sis = sisDao.findBySurveyId(s.getKey().getId());
-                if (sis != null) {
-                    dto.setInstanceCount(sis.getCount());
-                }
                 // needed because of different names for description in survey
                 // and surveyDto
                 dto.setDescription(s.getDesc());
@@ -109,7 +99,6 @@ public class SurveyRestService {
         final Map<String, Object> response = new HashMap<String, Object>();
         List<SurveyDto> results = new ArrayList<SurveyDto>();
         List<Survey> surveys = null;
-        SurveyInstanceSummary sis = null;
         RestStatusDto statusDto = new RestStatusDto();
         statusDto.setStatus("");
         statusDto.setMessage("");
@@ -142,12 +131,6 @@ public class SurveyRestService {
                 SurveyDto dto = new SurveyDto();
                 DtoMarshaller.copyToDto(s, dto);
 
-                // add surveyInstance Count
-                sis = sisDao.findBySurveyId(s.getKey().getId());
-                if (sis != null) {
-                    dto.setInstanceCount(sis.getCount());
-                }
-
                 // needed because of different names for description in survey
                 // and surveyDto
                 dto.setDescription(s.getDesc());
@@ -166,18 +149,10 @@ public class SurveyRestService {
         final Map<String, SurveyDto> response = new HashMap<String, SurveyDto>();
         Survey s = surveyDao.getByKey(id);
         SurveyDto dto = null;
-        SurveyInstanceSummary sis = null;
 
         if (s != null) {
             dto = new SurveyDto();
             DtoMarshaller.copyToDto(s, dto);
-            // add surveyInstance Count
-
-            sis = sisDao.findBySurveyId(s.getKey().getId());
-            if (sis != null) {
-                dto.setInstanceCount(sis.getCount());
-            }
-
             // needed because of different names for description in survey and
             // surveyDto
             dto.setDescription(s.getDesc());
@@ -246,8 +221,7 @@ public class SurveyRestService {
                 // because it is set in the Dao.
                 BeanUtils.copyProperties(requestDto, s, new String[] {
                         "createdDateTime", "status", "sector", "version",
-                        "lastUpdateDateTime", "description",
-                        "instanceCount", ANCESTOR_IDS_FIELD
+                        "lastUpdateDateTime", "description", ANCESTOR_IDS_FIELD
                 });
 
                 s.setAncestorIds(SurveyUtils.retrieveAncestorIds(s));
@@ -350,7 +324,7 @@ public class SurveyRestService {
         BeanUtils.copyProperties(dto, s, new String[] {
                 "createdDateTime",
                 "status", "sector", "version", "lastUpdateDateTime",
-                "displayName", "questionGroupList", "instanceCount", ANCESTOR_IDS_FIELD
+                "displayName", "questionGroupList", ANCESTOR_IDS_FIELD
         });
 
         if (dto.getStatus() != null) {

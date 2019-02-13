@@ -31,3 +31,52 @@ FLOW.chartTypeControl = Ember.Object.create({
     })
   ]
 });
+
+FLOW.ReportsController = Ember.ArrayController.extend({
+  sortProperties: ["createdDateTime"],
+  sortAscending: false,
+  content: null,
+  reportsAvailable: false,
+  reportsCheckScheduled: false,
+
+  populate: function () {
+    this.set('content', FLOW.store.find(FLOW.Report));
+  },
+
+  reportsObserver: function () {
+    var reports = this.get('content'), reportsQuery = null, self = this;
+    if (reports && !reports.isUpdating) {
+      this.set('reportsAvailable', reports.content.length > 0);
+
+      if (!this.get('reportsCheckScheduled')) {
+        this.set('reportsCheckScheduled', true);
+        reportsQuery = setInterval(function(){//if reports are still generating, wait 5s and then recheck
+          var stillGeneratingReports = self.get('content').filter(function(report){
+            return report.get('state') === "IN_PROGRESS" || report.get('state') === "QUEUED";
+          });
+
+          if (stillGeneratingReports.length > 0) {
+            self.set('content', FLOW.store.find(FLOW.Report));
+            self.refreshList();
+          } else {
+            self.set('reportsCheckScheduled', false);
+            clearInterval(reportsQuery);
+            self.refreshList();
+          }
+        }, 10000);
+      }
+    }
+  }.observes('content', 'content.isUpdating'),
+
+  refreshList: function(){
+    var reports = this.get('content');
+    reports.forEach(function(report){
+      var reportState = report.get('state');
+      if (reportState != "IN_PROGRESS" && reportState != "QUEUED") {
+        $("#list-"+report.get('keyId')).removeClass("exportGenerating");
+        $("#link-"+report.get('keyId')).attr("href", report.get('filename') !== "" ? report.get('filename') : "#");
+        $("#filename-"+report.get('keyId')).html(report.get('filename') !== "" ? FLOW.reportFilename(report.get('filename')) : "");
+      }
+    });
+  }
+});

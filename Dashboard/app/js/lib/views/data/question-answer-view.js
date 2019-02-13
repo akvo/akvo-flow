@@ -129,7 +129,6 @@ FLOW.QuestionAnswerView = Ember.View.extend({
     if (!isEditableQuestionType) {
       return false; // no need to check permissions
     }
-
     canEditFormResponses = FLOW.permControl.canEditResponses(this.get('form'));
     return isEditableQuestionType && canEditFormResponses;
   }.property('this.questionType,this.form'),
@@ -521,7 +520,17 @@ FLOW.QuestionAnswerView = Ember.View.extend({
   doValidateNumber: function () {
     // TODO should check for minus sign and decimal point, depending on question setting
     this.set('numberValue', this.get('numberValue').toString().replace(/[^\d.]/g, ""));
-  }.observes('this.numberValue')
+  }.observes('this.numberValue'),
+
+  popupMedia: function () {
+    if (this.get('photoUrl')) {
+      FLOW.dialogControl.set('activeAction', "ignore");
+      FLOW.dialogControl.set('header', "");
+      FLOW.dialogControl.set('message', Ember.String.htmlSafe("<img src=\""+this.get('photoUrl')+"\">"));
+      FLOW.dialogControl.set('showCANCEL', false);
+      FLOW.dialogControl.set('showDialog', true);
+    }
+  }
 });
 
 FLOW.QuestionAnswerOptionListView = Ember.CollectionView.extend({
@@ -578,3 +587,12 @@ FLOW.QuestionAnswerMultiOptionEditView = Ember.CollectionView.extend({
 FLOW.QuestionAnswerInspectDataView = FLOW.QuestionAnswerView.extend({
   templateName: 'navData/question-answer',
 });
+
+FLOW.QuestionAnswerMonitorDataView = FLOW.QuestionAnswerView.extend({
+  templateName: 'navData/question-answer',
+  
+  doEdit : function (){ //override the doEdit action in the parentView
+    this._super();
+    this.set('inEditMode', false)
+  }
+})
