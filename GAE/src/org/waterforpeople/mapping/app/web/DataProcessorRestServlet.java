@@ -1340,9 +1340,6 @@ public class DataProcessorRestServlet extends AbstractRestApiServlet {
         try {
             final TaskOptions options = TaskOptions.Builder
                     .withUrl("/app_worker/dataprocessor")
-                    .header("Host",
-                            BackendServiceFactory.getBackendService()
-                                    .getBackendAddress("dataprocessor"))
                     .param(DataProcessorRequest.ACTION_PARAM,
                             DataProcessorRequest.DELETE_CASCADE_NODES)
                     .param(DataProcessorRequest.CASCADE_RESOURCE_ID,
