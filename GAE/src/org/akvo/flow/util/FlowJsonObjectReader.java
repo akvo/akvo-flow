@@ -1,5 +1,5 @@
 /*
- *  Copyright (C) 2018 Stichting Akvo (Akvo Foundation)
+ *  Copyright (C) 2019 Stichting Akvo (Akvo Foundation)
  *
  *  This file is part of Akvo FLOW.
  *
@@ -17,18 +17,32 @@
 package org.akvo.flow.util;
 
 import com.fasterxml.jackson.core.type.TypeReference;
+import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.JavaType;
+import com.fasterxml.jackson.databind.ObjectReader;
 
 import java.io.IOException;
 import java.net.URL;
+import java.util.List;
 
-public class FlowJsonObjectReader<T> {
+public class FlowJsonObjectReader extends ObjectMapper {
 
-    public T readObject(String jsonString) throws IOException {
-        return new ObjectMapper().readValue(jsonString, new TypeReference<T>(){});
+    public <T> T readObject(String jsonString, TypeReference<T> typeReference) throws IOException {
+        return this.readValue(jsonString, typeReference);
     }
 
-    public T readObject(URL url) throws IOException {
-        return new ObjectMapper().readValue(url, new TypeReference<T>(){});
+    public <T> List<T> readDtoListObject(String dtoListJsonString, TypeReference<T> listItemTypeReference) throws IOException {
+
+        JavaType listItemType = this.getTypeFactory().constructType(listItemTypeReference);
+        JavaType type = this.getTypeFactory().constructParametrizedType(List.class,List.class, listItemType);
+        ObjectReader reader = this.readerFor(type);
+
+        JsonNode dtoListNode = this.readTree(dtoListJsonString).get("dtoList");
+        return reader.readValue(dtoListNode);
+    }
+
+    public <T> T readObject(URL url, TypeReference<T> typeReference) throws IOException {
+        return this.readValue(url, typeReference);
     }
 }
