@@ -1,5 +1,5 @@
 /*
- *  Copyright (C) 2014 Stichting Akvo (Akvo Foundation)
+ *  Copyright (C) 2014, 2019 Stichting Akvo (Akvo Foundation)
  *
  *  This file is part of Akvo FLOW.
  *
@@ -51,7 +51,6 @@ public class CascadeResourceDao extends BaseDAO<CascadeResource> {
         }
 
         try {
-
             super.delete(item);
 
             final Long keyId = item.getKey().getId();

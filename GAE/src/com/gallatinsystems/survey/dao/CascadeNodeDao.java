@@ -1,5 +1,5 @@
 /*
- *  Copyright (C) 2014-2015 Stichting Akvo (Akvo Foundation)
+ *  Copyright (C) 2014-2015, 2019 Stichting Akvo (Akvo Foundation)
  *
  *  This file is part of Akvo FLOW.
  *
@@ -42,8 +42,7 @@ public class CascadeNodeDao extends BaseDAO<CascadeNode> {
         super(CascadeNode.class);
     }
 
-    private static final Logger log = Logger.getLogger(SurveyGroupDAO.class
-            .getName());
+    private static final Logger log = Logger.getLogger(SurveyGroupDAO.class.getName());
 
     /*
      * List Cascade nodes by cascade resource id
