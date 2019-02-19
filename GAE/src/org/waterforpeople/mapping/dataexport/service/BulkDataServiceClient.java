@@ -1,5 +1,5 @@
 /*
- *  Copyright (C) 2010-2018 Stichting Akvo (Akvo Foundation)
+ *  Copyright (C) 2010-2019 Stichting Akvo (Akvo Foundation)
  *
  *  This file is part of Akvo FLOW.
  *
@@ -44,6 +44,7 @@ import com.gallatinsystems.common.util.MD5Util;
 import com.gallatinsystems.framework.rest.RestRequest;
 import com.gallatinsystems.survey.domain.SurveyGroup.PrivacyLevel;
 import com.gallatinsystems.survey.domain.SurveyGroup.ProjectType;
+import com.fasterxml.jackson.core.type.TypeReference;
 import org.akvo.flow.util.FlowJsonObjectReader;
 import org.apache.commons.codec.binary.Base64;
 import org.apache.log4j.Logger;
@@ -346,9 +347,11 @@ public class BulkDataServiceClient {
     }
 
     private static InstanceDataDto parseInstanceData(String instanceDataResponse) {
-        FlowJsonObjectReader<InstanceDataDto> jsonReader = new FlowJsonObjectReader<>();
+        FlowJsonObjectReader jsonReader = new FlowJsonObjectReader();
+        TypeReference<InstanceDataDto> typeReference = new TypeReference<InstanceDataDto>() {};
+
         try {
-            InstanceDataDto instanceData = jsonReader.readObject(instanceDataResponse);
+            InstanceDataDto instanceData = jsonReader.readObject(instanceDataResponse, typeReference);
             return instanceData;
         } catch (IOException e) {
             log.error("Error while parsing: ", e);
@@ -395,10 +398,10 @@ public class BulkDataServiceClient {
 
             log.debug("response: " + surveyGroupResponse);
 
-            final FlowJsonObjectReader<Map<String, List<SurveyGroupDto>>> jsonDeserialiser = new FlowJsonObjectReader<>();
-            final Map<String, List<SurveyGroupDto>> surveyGroupListMap = jsonDeserialiser.readObject(surveyGroupResponse);
+            final FlowJsonObjectReader jsonDeserialiser = new FlowJsonObjectReader();
+            final TypeReference<SurveyGroupDto> listItemTypeReference = new TypeReference<SurveyGroupDto>(){};
+            final List<SurveyGroupDto> surveyGroupList = jsonDeserialiser.readDtoListObject(surveyGroupResponse, listItemTypeReference);
 
-            final List<SurveyGroupDto> surveyGroupList = surveyGroupListMap.get("dtoList");
             if (surveyGroupList != null && !surveyGroupList.isEmpty()) {
                 surveyGroupDto = surveyGroupList.get(0);
             }

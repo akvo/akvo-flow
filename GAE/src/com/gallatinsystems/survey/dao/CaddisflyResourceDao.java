@@ -1,5 +1,5 @@
 /*
- *  Copyright (C) 2016-2018 Stichting Akvo (Akvo Foundation)
+ *  Copyright (C) 2016-2019 Stichting Akvo (Akvo Foundation)
  *
  *  This file is part of Akvo FLOW.
  *
@@ -23,6 +23,7 @@ import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+import com.fasterxml.jackson.core.type.TypeReference;
 import org.akvo.flow.util.FlowJsonObjectReader;
 import org.waterforpeople.mapping.domain.CaddisflyResource;
 
@@ -39,11 +40,11 @@ public class CaddisflyResourceDao {
 
     public List<CaddisflyResource> listResources(String caddisflyTestsUrl) {
         Map<String, List<CaddisflyResource>> testsMap = null;
-        FlowJsonObjectReader<Map<String, List<CaddisflyResource>>> jsonReader = new FlowJsonObjectReader<>();
+        FlowJsonObjectReader jsonReader = new FlowJsonObjectReader();
 
         try {
             URL caddisflyFileUrl = new URL(caddisflyTestsUrl);
-            testsMap = jsonReader.readObject(caddisflyFileUrl);
+            testsMap = jsonReader.readObject(caddisflyFileUrl, new TypeReference<Map<String, List<CaddisflyResource>>>() {});
         } catch (Exception e) {
             log.log(Level.SEVERE,
                     "Error parsing Caddisfly resource: " + e.getMessage(), e);

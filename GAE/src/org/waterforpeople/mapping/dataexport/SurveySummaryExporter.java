@@ -1,5 +1,5 @@
 /*
- *  Copyright (C) 2010-2018 Stichting Akvo (Akvo Foundation)
+ *  Copyright (C) 2010-2019 Stichting Akvo (Akvo Foundation)
  *
  *  This file is part of Akvo FLOW.
  *
@@ -29,6 +29,7 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
 
+import com.fasterxml.jackson.core.type.TypeReference;
 import org.akvo.flow.domain.DataUtils;
 import org.akvo.flow.util.FlowJsonObjectReader;
 import org.apache.log4j.Logger;
@@ -347,10 +348,9 @@ public class SurveySummaryExporter extends AbstractDataExporter {
      * @throws Exception
      */
     protected List<QuestionDto> parseQuestions(String response) throws Exception {
-        final FlowJsonObjectReader<Map<String, List<QuestionDto>>> jsonReader = new FlowJsonObjectReader<>();
-
-        final Map<String, List<QuestionDto>> questionListMap = jsonReader.readObject(response);
-        final List<QuestionDto> qList = questionListMap.get("dtoList");
+        final FlowJsonObjectReader jsonReader = new FlowJsonObjectReader();
+        final TypeReference<QuestionDto> listItemTypeReference = new TypeReference<QuestionDto>(){};
+        final List<QuestionDto> qList = jsonReader.readDtoListObject(response, listItemTypeReference);
         return qList;
     }
     

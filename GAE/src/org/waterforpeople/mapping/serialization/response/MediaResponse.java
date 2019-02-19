@@ -1,5 +1,5 @@
 /*
- *  Copyright (C) 2016,2018 Stichting Akvo (Akvo Foundation)
+ *  Copyright (C) 2016,2018-2019 Stichting Akvo (Akvo Foundation)
  *
  *  This file is part of Akvo FLOW.
  *
@@ -17,15 +17,17 @@
 package org.waterforpeople.mapping.serialization.response;
 
 import java.io.IOException;
+import java.lang.reflect.Type;
 import java.util.logging.Logger;
 
+import com.fasterxml.jackson.core.type.TypeReference;
 import org.akvo.flow.util.FlowJsonObjectReader;
 import org.akvo.flow.util.FlowJsonObjectWriter;
 import org.waterforpeople.mapping.domain.response.value.Media;
 
 public class MediaResponse {
     private static final Logger log = Logger.getLogger(MediaResponse.class.getName());
-    private static FlowJsonObjectReader<Media> jsonObjectReader = new FlowJsonObjectReader<>();
+    private static FlowJsonObjectReader jsonObjectReader = new FlowJsonObjectReader();
     private static FlowJsonObjectWriter jsonObjectWriter = new FlowJsonObjectWriter();
 
     public static final int VERSION_STRING = 0;
@@ -40,7 +42,7 @@ public class MediaResponse {
         int savedVersion;
 
         try {
-            media = jsonObjectReader.readObject(value);
+            media = jsonObjectReader.readObject(value, new TypeReference<Media>() {});
             savedVersion = VERSION_GEOTAGGING;
         } catch (IOException e) {
             // Value is not JSON-formatted
@@ -68,7 +70,7 @@ public class MediaResponse {
 
     public static Media parse(String value) {
         try {
-            return jsonObjectReader.readObject(value);
+            return jsonObjectReader.readObject(value, new TypeReference<Media>() {});
         } catch (IOException e) {
         }
 

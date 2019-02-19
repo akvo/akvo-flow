@@ -1,5 +1,5 @@
 /*
- *  Copyright (C) 2010-2018 Stichting Akvo (Akvo Foundation)
+ *  Copyright (C) 2010-2019 Stichting Akvo (Akvo Foundation)
  *
  *  This file is part of Akvo FLOW.
  *
@@ -40,6 +40,7 @@ import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicLong;
 
+import com.fasterxml.jackson.core.type.TypeReference;
 import org.akvo.flow.domain.DataUtils;
 import org.akvo.flow.util.FlowJsonObjectReader;
 import org.akvo.flow.util.JFreechartChartUtil;
@@ -693,7 +694,9 @@ public class GraphicalSurveySummaryExporter extends SurveySummaryExporter {
             if (rollupOrder != null && rollupOrder.size() > 0) {
                 rollups = formRollupStrings(responseMap);
             }
-            FlowJsonObjectReader<List<Map<String, String>>> jsonReader = new FlowJsonObjectReader<>();
+            FlowJsonObjectReader jsonReader = new FlowJsonObjectReader();
+            TypeReference<List<Map<String, String>>> typeReference = new TypeReference<List<Map<String, String>>>() {};
+
 
             for (Entry<String, String> entry : responseMap.entrySet()) {
                 //OPTION, NUMBER and CASCADE summarizable now.
@@ -706,7 +709,7 @@ public class GraphicalSurveySummaryExporter extends SurveySummaryExporter {
                     String[] vals;
                     if (entry.getValue().startsWith("[")) { //JSON
                         try {
-                            List<Map<String, String>> optionNodes = jsonReader.readObject(entry.getValue());
+                            List<Map<String, String>> optionNodes = jsonReader.readObject(entry.getValue(), typeReference);
                             List<String> valsList = new ArrayList<>();
                             for (Map<String, String> optionNode : optionNodes) {
                                 if (optionNode.containsKey("text")) {
@@ -977,9 +980,11 @@ public class GraphicalSurveySummaryExporter extends SurveySummaryExporter {
         List<Map<String, String>> cascadeNodes = new ArrayList<>();
 
         if (value.startsWith("[")) {
-            FlowJsonObjectReader<List<Map<String, String>>> jsonReader = new FlowJsonObjectReader<>();
+            FlowJsonObjectReader jsonReader = new FlowJsonObjectReader();
+            TypeReference<List<Map<String, String>>> typeReference = new TypeReference<List<Map<String, String>>>() {};
+
             try {
-                cascadeNodes = jsonReader.readObject(value);
+                cascadeNodes = jsonReader.readObject(value, typeReference);
             } catch (IOException e) {
                 log.warn("Unable to parse CASCADE response - " + value, e);
             }
@@ -1062,11 +1067,12 @@ public class GraphicalSurveySummaryExporter extends SurveySummaryExporter {
     private List<Map<String, String>> getNodes(String value) {
         boolean isNewFormat = value.startsWith("[");
         List<Map<String, String>> optionNodes = new ArrayList<>();
-        FlowJsonObjectReader<List<Map<String, String>>> jsonReader = new FlowJsonObjectReader<>();
+        FlowJsonObjectReader jsonReader = new FlowJsonObjectReader();
+        TypeReference<List<Map<String, String>>> typeReference = new TypeReference<List<Map<String, String>>>() {};
 
         if (isNewFormat) {
             try {
-                optionNodes = jsonReader.readObject(value);
+                optionNodes = jsonReader.readObject(value, typeReference);
             } catch (IOException e) {
                 log.warn("Could not parse option response: " + value, e);
             }
@@ -1650,9 +1656,11 @@ public class GraphicalSurveySummaryExporter extends SurveySummaryExporter {
                         } else {
                             // Handle the json option question response type
                             if (labelText.startsWith("[")) {
-                                FlowJsonObjectReader<List<Map<String, String>>> jsonReader = new FlowJsonObjectReader<>();
+                                FlowJsonObjectReader jsonReader = new FlowJsonObjectReader();
+                                TypeReference<List<Map<String, String>>> typeReference = new TypeReference<List<Map<String, String>>>() {};
+
                                 try {
-                                    List<Map<String, String>> optionNodes = jsonReader.readObject(labelText);
+                                    List<Map<String, String>> optionNodes = jsonReader.readObject(labelText, typeReference);
                                     StringBuilder labelTextBuilder = new StringBuilder();
 
                                     for (Map<String, String> optionNode : optionNodes) {

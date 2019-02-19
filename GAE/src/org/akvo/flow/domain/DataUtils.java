@@ -1,5 +1,5 @@
 /*
- *  Copyright (C) 2015,2018 Stichting Akvo (Akvo Foundation)
+ *  Copyright (C) 2015-2019 Stichting Akvo (Akvo Foundation)
  *
  *  This file is part of Akvo FLOW.
  *
@@ -21,6 +21,7 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 
+import com.fasterxml.jackson.core.type.TypeReference;
 import org.akvo.flow.util.FlowJsonObjectReader;
 import org.apache.log4j.Logger;
 
@@ -108,9 +109,10 @@ public class DataUtils {
      * @return List of maps with response properties
      */
     public static List<Map<String, String>> jsonStringToList(String data) {
-        FlowJsonObjectReader<List<Map<String, String>>> jsonReader = new FlowJsonObjectReader<>();
+        FlowJsonObjectReader jsonReader = new FlowJsonObjectReader();
+        TypeReference<List<Map<String, String>>> typeReference = new TypeReference<List<Map<String, String>>>() {};
         try {
-            return jsonReader.readObject(data);
+            return jsonReader.readObject(data, typeReference);
         } catch (IOException e) {
             // Data is not JSON-formatted
         }
@@ -126,10 +128,12 @@ public class DataUtils {
      * @return
      */
     public static String parseSignatory(String value) {
-        FlowJsonObjectReader<Map<String, String>> jsonReader = new FlowJsonObjectReader<>();
+        FlowJsonObjectReader jsonReader = new FlowJsonObjectReader();
         Map<String, String> signatureResponse = null;
+        TypeReference<Map<String, String>> typeReference = new TypeReference<Map<String, String>>() {};
+
         try {
-            signatureResponse = jsonReader.readObject(value);
+            signatureResponse = jsonReader.readObject(value, typeReference);
         } catch (IOException e) {
             // ignore
         }
@@ -146,10 +150,11 @@ public class DataUtils {
     @SuppressWarnings("unchecked")
     public static Map<String, Object> parseCaddisflyResponseValue(String caddisflyValue) {
         Map<String, Object> caddisflyResponseMap = null;
-        FlowJsonObjectReader<Map<String, Object>> jsonReader = new FlowJsonObjectReader<>();
+        FlowJsonObjectReader jsonReader = new FlowJsonObjectReader();
+        TypeReference<Map<String, Object>> typeReference = new TypeReference<Map<String, Object>>() {};
 
         try {
-            caddisflyResponseMap = jsonReader.readObject(caddisflyValue);
+            caddisflyResponseMap = jsonReader.readObject(caddisflyValue, typeReference);
         } catch (IOException e) {
             log.warn("Failed to parse the caddisfly response");
         }
