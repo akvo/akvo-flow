@@ -25,6 +25,7 @@ import com.fasterxml.jackson.core.type.TypeReference;
 import org.akvo.flow.util.FlowJsonObjectReader;
 import org.junit.jupiter.api.Test;
 import org.waterforpeople.mapping.app.gwt.client.survey.QuestionDto;
+import org.waterforpeople.mapping.app.gwt.client.survey.SurveyGroupDto;
 import org.waterforpeople.mapping.domain.CaddisflyResource;
 
 import java.io.IOException;
@@ -88,6 +89,40 @@ class FlowJsonObjectReaderTests {
                                         "    }\n" +
                                         "]}";
 
+    private String DTO_LIST_JSON_OBJECT = "{\n" +
+                                        "  \"code\": null, \n" +
+                                        "  \"cursor\": null, \n" +
+                                        "  \"dtoList\": [\n" +
+                                        "    {\n" +
+                                        "      \"ancestorIds\": [\n" +
+                                        "        0, \n" +
+                                        "        278889175415\n" +
+                                        "      ], \n" +
+                                        "      \"code\": \"1.10.36 all questions\", \n" +
+                                        "      \"createdDateTime\": 1534846914945, \n" +
+                                        "      \"dataApprovalGroupId\": null, \n" +
+                                        "      \"defaultLanguageCode\": \"en\", \n" +
+                                        "      \"description\": \"\", \n" +
+                                        "      \"keyId\": 2989762914097, \n" +
+                                        "      \"lastUpdateDateTime\": 1534846926804, \n" +
+                                        "      \"monitoringGroup\": false, \n" +
+                                        "      \"name\": \"1.10.36 all questions\", \n" +
+                                        "      \"newLocaleSurveyId\": null, \n" +
+                                        "      \"parentId\": 27888911545, \n" +
+                                        "      \"path\": \"/_1.9.36 and 2.6.0/1.10.36 all questions\", \n" +
+                                        "      \"privacyLevel\": \"PRIVATE\", \n" +
+                                        "      \"projectType\": \"PROJECT\", \n" +
+                                        "      \"published\": false, \n" +
+                                        "      \"requireDataApproval\": false, \n" +
+                                        "      \"surveyList\": null\n" +
+                                        "    }\n" +
+                                        "  ], \n" +
+                                        "  \"message\": null, \n" +
+                                        "  \"offset\": 0, \n" +
+                                        "  \"resultCount\": 0, \n" +
+                                        "  \"url\": null\n" +
+                                        "}\n";
+
     @Test
     void testReadSimpleJsonObject() {
         FlowJsonObjectReader reader = new FlowJsonObjectReader();
@@ -124,6 +159,22 @@ class FlowJsonObjectReaderTests {
         assertEquals(resourcesList.get(0).getName(), "Soil - Electrical Conductivity");
         assertEquals(resourcesList.get(1).getResults().size(), 1);
         assertEquals(resourcesList.get(1).getUuid(), "0b4a0aaa-f556-4c11-a539-c4626582cca6");
+    }
 
+    @Test
+    void testDtoListResponses() {
+        FlowJsonObjectReader reader = new FlowJsonObjectReader();
+        TypeReference<SurveyGroupDto> typeReference = new TypeReference<SurveyGroupDto>() {};
+        List<SurveyGroupDto> surveyList = null;
+
+        try {
+            surveyList = reader.readDtoListObject(DTO_LIST_JSON_OBJECT, typeReference);
+        } catch (IOException e) {
+            //
+        }
+
+        assertNotEquals(surveyList, null);
+        assertEquals(surveyList.size(), 1);
+        assertEquals(surveyList.get(0).getName(),"1.10.36 all questions");
     }
 }
