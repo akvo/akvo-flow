@@ -213,14 +213,14 @@
       <groupId>org.junit.jupiter</groupId>
       <artifactId>junit-jupiter-api</artifactId>
       <version>${junit.jupiter.version}</version>
-      <scope>test</scope>
+      <scope>provided</scope>
     </dependency>
 
     <dependency>
       <groupId>org.junit.jupiter</groupId>
       <artifactId>junit-jupiter-engine</artifactId>
       <version>${junit.jupiter.version}</version>
-      <scope>test</scope>
+      <scope>provided</scope>
     </dependency>
 
     <!-- Will this work in place of version 1.0.13? -->
@@ -251,7 +251,6 @@
         <version>2.5.1</version>
         <scope>provided</scope>
     </dependency>
-
   </dependencies>
 
   <build>
