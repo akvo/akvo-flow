@@ -1225,7 +1225,7 @@ FLOW.questionOptionsControl = Ember.ArrayController.create({
 
       // trimmed whitespace
       option.set('text', text);
-      option.set('order', index);
+
       if (!option.get('keyId')) {
         FLOW.store.createRecord(FLOW.QuestionOption, option);
       }
