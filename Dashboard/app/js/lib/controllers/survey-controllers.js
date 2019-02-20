@@ -1077,6 +1077,7 @@ FLOW.optionListControl = Ember.ArrayController.create({
  *
  */
 FLOW.questionOptionsControl = Ember.ArrayController.create({
+  sortProperties: ["order"],
   content: null,
   questionId: null,
   emptyOptions: function () {
@@ -1241,6 +1242,39 @@ FLOW.questionOptionsControl = Ember.ArrayController.create({
 
     if (option.get('keyId')) { // clear persisted versions
       option.deleteRecord();
+    }
+
+    //reorder all options
+    c.forEach(function (item, index) {
+      item.set('order', index + 1);
+    });
+  },
+
+  moveOptionUp: function (event) {
+    var options = this.content, currentOption = event.view.content;
+
+    if (currentOption && currentOption.get('order') > 0) {
+      var previousOption = options.find(function (option) {
+        return option.get('order') == (currentOption.get('order') - 1);
+      });
+      var previousOptionOrder = previousOption.get('order');
+      var currentOptionOrder = currentOption.get('order');
+      previousOption.set('order', currentOptionOrder);
+      currentOption.set('order', previousOptionOrder);
+    }
+  },
+
+  moveOptionDown: function (event) {
+    var options = this.content, currentOption = event.view.content;
+
+    if (currentOption && currentOption.get('order') < (options.get('length') - 1)) {
+      var nextOption = options.find(function (option) {
+        return option.get('order') == (currentOption.get('order') + 1);
+      });
+      var nextOptionOrder = nextOption.get('order');
+      var currentOptionOrder = currentOption.get('order');
+      nextOption.set('order', currentOptionOrder);
+      currentOption.set('order', nextOptionOrder);
     }
   }
 });
