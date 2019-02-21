@@ -1267,7 +1267,7 @@ FLOW.questionOptionsControl = Ember.ArrayController.create({
   moveOptionDown: function (event) {
     var options = this.content, currentOption = event.view.content;
 
-    if (currentOption && currentOption.get('order') < (options.get('length') - 1)) {
+    if (currentOption && currentOption.get('order') < options.get('length')) {
       var nextOption = options.find(function (option) {
         return option.get('order') == (currentOption.get('order') + 1);
       });
