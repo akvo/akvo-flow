@@ -929,5 +929,17 @@ FLOW.OptionListView = Ember.CollectionView.extend({
   content: null,
   itemViewClass: Ember.View.extend({
     templateName: 'navSurveys/question-option',
-  }),
+    topOption: function () {
+      var option = this.get('content');
+      if (option) {
+        return option.get('order') == 1;
+      }
+    }.property('content.order'),
+    bottomOption: function () {
+      var option = this.get('content'), options = FLOW.questionOptionsControl.get('content');
+      if (option && options) {
+        return option.get('order') == options.get('length');
+      }
+    }.property('content.order', 'FLOW.questionOptionsControl.content.length')
+  })
 });
