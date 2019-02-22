@@ -596,8 +596,9 @@ FLOW.projectControl = Ember.ArrayController.create({
 FLOW.surveyControl = Ember.ArrayController.create({
   content: null,
   publishedContent: null,
-  sortProperties: ['createdDateTime'],
+  sortProperties: ['name'],
   sortAscending: true,
+  orderedForms: null,
 
   setPublishedContent: function () {
     var sgId;
@@ -612,6 +613,44 @@ FLOW.surveyControl = Ember.ArrayController.create({
       }));
     } else {
       this.set('publishedContent', null);
+    }
+  }.observes('FLOW.selectedControl.selectedSurveyGroup'),
+
+  orderForms: function () {
+    if (FLOW.selectedControl.get('selectedSurveyGroup') && FLOW.selectedControl.selectedSurveyGroup.get('keyId') > 0) {
+      var sgId = FLOW.selectedControl.selectedSurveyGroup.get('keyId'), self = this;
+      self.orderedForms = [];
+      var forms = FLOW.store.filter(FLOW.Survey, function (item) {
+        return item.get('surveyGroupId') == sgId;
+      });
+
+      if (forms && FLOW.selectedControl.selectedSurveyGroup.get('monitoringGroup')) {
+        var regFormId = FLOW.selectedControl.selectedSurveyGroup.get('newLocaleSurveyId');
+
+        this.orderedForms.push(forms.find(function (form) {
+          return form.get('keyId') == regFormId;
+        }));
+
+        forms.filter( function (form) {
+          return form.get('keyId') != regFormId;
+        }).sort(function (a, b) {
+          var nameA = a.get('name').toUpperCase();
+          var nameB = b.get('name').toUpperCase();
+          if (nameA < nameB) {
+            return -1;
+          }
+          if (nameA > nameB) {
+            return 1;
+          }
+          return 0;
+        }).forEach(function (form) {
+          self.orderedForms.push(form);
+        });
+      } else {
+        self.orderedForms.push(forms.find(function (form) {
+          return form.get('surveyGroupId') == sgId;
+        }));
+      }
     }
   }.observes('FLOW.selectedControl.selectedSurveyGroup'),
 
