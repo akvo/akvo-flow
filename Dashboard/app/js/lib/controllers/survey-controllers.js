@@ -1183,10 +1183,11 @@ FLOW.questionOptionsControl = Ember.ArrayController.create({
    */
   addOption: function() {
     var c = this.content;
+    var currentLength = c.get('length');
     c.addObject(Ember.Object.create({
         code: null,
         text: Ember.String.loc('_new_option'),
-        order: c.get('length') + 1,
+        order: currentLength + 1,
         questionId: this.get('questionId'),
     }));
   },

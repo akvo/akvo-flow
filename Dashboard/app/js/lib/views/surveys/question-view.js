@@ -821,6 +821,6 @@ FLOW.OptionListView = Ember.CollectionView.extend({
       if (option && options) {
         return option.get('order') == options.get('length');
       }
-    }.property('content.order')
+    }.property('content.order', 'FLOW.questionOptionsControl.content.length')
   })
 });
