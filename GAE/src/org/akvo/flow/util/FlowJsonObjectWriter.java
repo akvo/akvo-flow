@@ -1,5 +1,5 @@
 /*
- *  Copyright (C) 2018 Stichting Akvo (Akvo Foundation)
+ *  Copyright (C) 2018-2019 Stichting Akvo (Akvo Foundation)
  *
  *  This file is part of Akvo FLOW.
  *
@@ -17,33 +17,28 @@
 package org.akvo.flow.util;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 import java.io.IOException;
 import java.io.OutputStream;
 
-public class FlowJsonObjectWriter {
-    private boolean excludeNullValues;
+public class FlowJsonObjectWriter extends ObjectMapper {
 
-    public FlowJsonObjectWriter() {}
-
-    public FlowJsonObjectWriter(boolean excludeNullValues) {
-        this.excludeNullValues = excludeNullValues;
-    }
-
-    public ObjectMapper createObjectMapper() {
-        ObjectMapper mapper = new ObjectMapper();
-        if (excludeNullValues) {
-            mapper.getSerializationConfig().withSerializationInclusion(JsonInclude.Include.NON_NULL);
-        }
-        return mapper;
+    public FlowJsonObjectWriter withExcludeNullValues() {
+        this.setSerializationInclusion(JsonInclude.Include.NON_NULL);
+        return this;
     }
 
     public void writeValue(OutputStream outStream, Object value) throws IOException {
-        createObjectMapper().writeValue(outStream, value);
+        super.writeValue(outStream, value);
     }
 
-    public String writeValueAsString(Object value) throws IOException {
-        return createObjectMapper().writeValueAsString(value);
+    public String writeAsString(Object value) throws IOException {
+        try {
+            return super.writeValueAsString(value);
+        } catch (JsonProcessingException e) {
+            throw new IOException(e);
+        }
     }
 }

@@ -17,7 +17,6 @@
 package org.waterforpeople.mapping.serialization.response;
 
 import java.io.IOException;
-import java.lang.reflect.Type;
 import java.util.logging.Logger;
 
 import com.fasterxml.jackson.core.type.TypeReference;
@@ -57,7 +56,7 @@ public class MediaResponse {
 
         if (version == VERSION_GEOTAGGING) {
             try {
-                return jsonObjectWriter.writeValueAsString(media);
+                return jsonObjectWriter.writeAsString(media);
             } catch (IOException e) {
                 log.warning(e.getMessage());
                 return "";

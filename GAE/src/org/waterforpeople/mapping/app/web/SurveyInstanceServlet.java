@@ -208,8 +208,7 @@ public class SurveyInstanceServlet extends AbstractRestApiServlet {
     @Override
     protected void writeOkResponse(RestResponse response) throws Exception {
         getResponse().setStatus(200);
-        boolean excludeNullValues = true;
-        FlowJsonObjectWriter writer = new FlowJsonObjectWriter(excludeNullValues);
+        FlowJsonObjectWriter writer = new FlowJsonObjectWriter().withExcludeNullValues();
         writer.writeValue(getResponse().getOutputStream(), response);
     }
 }

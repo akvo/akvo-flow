@@ -225,7 +225,7 @@ public class ReportServlet extends AbstractRestApiServlet {
         criteria.opts.email = email;
 
         FlowJsonObjectWriter writer = new FlowJsonObjectWriter();
-        String crit = java.net.URLEncoder.encode(writer.writeValueAsString(criteria), "UTF-8");
+        String crit = java.net.URLEncoder.encode(writer.writeAsString(criteria), "UTF-8");
 
         URL url = new URL(PropertyUtil.getProperty("flowServices") + "/generate?criteria=" +  crit);
         HttpURLConnection con = (HttpURLConnection) url.openConnection();

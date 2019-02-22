@@ -149,7 +149,7 @@ public class CurrentUserServlet extends HttpServlet {
         FlowJsonObjectWriter writer = new FlowJsonObjectWriter();
         String permissionsString = null;
         try {
-            permissionsString = writer.writeValueAsString(permissions);
+            permissionsString = writer.writeAsString(permissions);
         } catch (IOException e) {
             // ignore
         }

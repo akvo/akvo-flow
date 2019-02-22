@@ -137,7 +137,7 @@ public class EventLogger {
             entity.setProperty("lastUpdateDateTime", timestamp);
 
             FlowJsonObjectWriter writer = new FlowJsonObjectWriter();
-            String payload = writer.writeValueAsString(event);
+            String payload = writer.writeAsString(event);
 
             if (payload.length() > Constants.MAX_LENGTH) {
                 entity.setProperty("payloadText", new Text(payload));

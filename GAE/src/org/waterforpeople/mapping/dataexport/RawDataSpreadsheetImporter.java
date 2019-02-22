@@ -636,7 +636,7 @@ public class RawDataSpreadsheetImporter implements DataImporter {
                         cascadeList.add(cascadeMap);
                     }
                     try {
-                        val = JSON_OBJECT_WRITER.writeValueAsString(cascadeList);
+                        val = JSON_OBJECT_WRITER.writeAsString(cascadeList);
                     } catch (IOException e) {
                         log.warn("Could not parse cascade string: " + cascadeString);
                     }
@@ -688,7 +688,7 @@ public class RawDataSpreadsheetImporter implements DataImporter {
 
                     try {
                         if (!optionList.isEmpty()) {
-                            val = JSON_OBJECT_WRITER.writeValueAsString(optionList);
+                            val = JSON_OBJECT_WRITER.writeAsString(optionList);
                         }
                     } catch (IOException e) {
                         log.warn("Could not parse option string: " + optionString, e);
