@@ -1,5 +1,5 @@
 /*
- *  Copyright (C) 2010-2015, 2017, 2018 Stichting Akvo (Akvo Foundation)
+ *  Copyright (C) 2010-2015, 2017-2018 Stichting Akvo (Akvo Foundation)
  *
  *  This file is part of Akvo FLOW.
  *
@@ -28,6 +28,7 @@ import java.util.logging.Level;
 import javax.jdo.PersistenceManager;
 import javax.jdo.Query;
 
+import org.akvo.flow.domain.DataUtils;
 import org.apache.commons.lang.StringUtils;
 import org.waterforpeople.mapping.analytics.dao.SurveyQuestionSummaryDao;
 import org.waterforpeople.mapping.analytics.domain.SurveyQuestionSummary;
@@ -158,7 +159,7 @@ public class SurveyInstanceDAO extends BaseDAO<SurveyInstance> {
         }
 
         deviceFile.setSurveyInstanceId(si.getKey().getId());
-        si.updateSummaryCounts(true);
+        queueSynchronizedSummaryUpdate(si, true);
 
         return si;
     }
@@ -481,6 +482,77 @@ public class SurveyInstanceDAO extends BaseDAO<SurveyInstance> {
         q.declareParameters("String qidParam");
         prepareCursor(cursorString, q);
         return (List<QuestionAnswerStore>) q.execute(questionId);
+    }
+
+    /**
+     * Update counts of SurveyQuestionSummary entities related to responses from this survey
+     * instance.
+     * Execute on the surveyResponseCount task queue to prevent concurrent access errors
+     */
+    public void updateSummaryCounts(long siId, boolean increment) {
+        // retrieve all summary objects
+        SurveyQuestionSummaryDao summaryDao = new SurveyQuestionSummaryDao();
+        QuestionAnswerStoreDao qasDao = new QuestionAnswerStoreDao();
+        QuestionDao qDao = new QuestionDao();
+
+        List<QuestionAnswerStore> answerList = qasDao.listBySurveyInstance(siId);
+        if (answerList == null || answerList.isEmpty()) {
+            return;
+        }
+        List<SurveyQuestionSummary> saveList = new ArrayList<SurveyQuestionSummary>();
+        List<SurveyQuestionSummary> deleteList = new ArrayList<SurveyQuestionSummary>();
+
+        for (QuestionAnswerStore response : answerList) {
+            final Long questionId = Long.parseLong(response.getQuestionID());
+            Question question = qDao.getByKey(questionId);
+            if (question == null || !question.canBeCharted()) {
+                continue;
+            }
+
+            final String questionIdStr = response.getQuestionID();
+            final String[] questionResponse = DataUtils.optionResponsesTextArray(response
+                    .getValue());
+
+            for (int i = 0; i < questionResponse.length; i++) {
+                List<SurveyQuestionSummary> questionSummaryList = summaryDao
+                        .listByResponse(questionIdStr, questionResponse[i]);
+                SurveyQuestionSummary questionSummary = null;
+                if (questionSummaryList.isEmpty()) {
+                    questionSummary = new SurveyQuestionSummary();
+                    questionSummary.setQuestionId(response.getQuestionID());
+                    questionSummary.setResponse(questionResponse[i]);
+                    questionSummary.setCount(0L);
+                    summaryDao.save(questionSummary);
+                } else {
+                    questionSummary = questionSummaryList.get(0);
+                }
+
+                // update and save or delete
+                long count = questionSummary.getCount() == null ? 0 : questionSummary.getCount();
+                count = increment ? ++count : --count;
+                questionSummary.setCount(count);
+
+                if (count > 0) {
+                    saveList.add(questionSummary);
+                } else {
+                    deleteList.add(questionSummary);
+                }
+            }
+        }
+
+        summaryDao.save(saveList);
+        summaryDao.delete(deleteList);
+    }
+
+    private void queueSynchronizedSummaryUpdate(SurveyInstance si, boolean increment) {
+        Queue questionSummaryQueue = QueueFactory.getQueue("surveyResponseCount");
+        TaskOptions to = TaskOptions.Builder
+                .withUrl("/app_worker/dataprocessor")
+                .param(DataProcessorRequest.ACTION_PARAM,
+                        DataProcessorRequest.UPDATE_SURVEY_INSTANCE_SUMMARIES)
+                .param(DataProcessorRequest.SURVEY_INSTANCE_PARAM, si.getKey().getId() + "")
+                .param(DataProcessorRequest.DELTA_PARAM, increment ? "1":"-1");
+        questionSummaryQueue.add(to);
     }
 
     /**

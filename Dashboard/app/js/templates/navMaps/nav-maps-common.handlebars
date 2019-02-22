@@ -3,6 +3,17 @@
       {{#unless FLOW.projectControl.isLoading}}
         {{view FLOW.SurveySelectionView showDataReadSurveysOnly=true}}
       {{/unless}}
+      {{#if FLOW.selectedControl.selectedSurveyGroup}}
+        {{view Ember.Select
+          contentBinding="FLOW.surveyControl.arrangedContent"
+          selectionBinding="FLOW.selectedControl.selectedSurvey"
+          optionLabelPath="content.code"
+          optionValuePath="content.keyId"
+          prompt=""
+          promptBinding="Ember.STRINGS._select_form"
+          classNames="form-selector"
+        }}
+      {{/if}}
   {{/if}}
   <div id="dropdown-holder">
     <div id="mapDetailsHideShow" class="drawHandle hideMapD"></div>
@@ -26,6 +37,9 @@
           <li></li>
         </ul>
         <div class="mapInfoDetail">
+          {{#if FLOW.placemarkDetailController.noSubmissions}}
+            <p class="noDetails">{{t _no_submissions_on_point}}</p>
+          {{else}}
             {{#each responseSubList in FLOW.questionAnswerControl.contentByGroup}}
               {{#each iterations in responseSubList}}
                 <p></p>
@@ -35,9 +49,8 @@
                           {{drawGeoshapes}}
                       {{/each}}
               {{/each}}
-            {{else}}
-                <p class="noDetails">{{t _no_details}}</p>
             {{/each}}
+          {{/if}}
         </div>
       {{else}}
         <p class="noDetails">{{t _no_details}}</p>

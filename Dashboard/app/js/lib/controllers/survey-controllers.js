@@ -598,6 +598,7 @@ FLOW.surveyControl = Ember.ArrayController.create({
   publishedContent: null,
   sortProperties: ['name'],
   sortAscending: true,
+  orderedForms: null,
 
   setPublishedContent: function () {
     var sgId;
@@ -612,6 +613,44 @@ FLOW.surveyControl = Ember.ArrayController.create({
       }));
     } else {
       this.set('publishedContent', null);
+    }
+  }.observes('FLOW.selectedControl.selectedSurveyGroup'),
+
+  orderForms: function () {
+    if (FLOW.selectedControl.get('selectedSurveyGroup') && FLOW.selectedControl.selectedSurveyGroup.get('keyId') > 0) {
+      var sgId = FLOW.selectedControl.selectedSurveyGroup.get('keyId'), self = this;
+      self.orderedForms = [];
+      var forms = FLOW.store.filter(FLOW.Survey, function (item) {
+        return item.get('surveyGroupId') == sgId;
+      });
+
+      if (forms && FLOW.selectedControl.selectedSurveyGroup.get('monitoringGroup')) {
+        var regFormId = FLOW.selectedControl.selectedSurveyGroup.get('newLocaleSurveyId');
+
+        this.orderedForms.push(forms.find(function (form) {
+          return form.get('keyId') == regFormId;
+        }));
+
+        forms.filter( function (form) {
+          return form.get('keyId') != regFormId;
+        }).sort(function (a, b) {
+          var nameA = a.get('name').toUpperCase();
+          var nameB = b.get('name').toUpperCase();
+          if (nameA < nameB) {
+            return -1;
+          }
+          if (nameA > nameB) {
+            return 1;
+          }
+          return 0;
+        }).forEach(function (form) {
+          self.orderedForms.push(form);
+        });
+      } else {
+        self.orderedForms.push(forms.find(function (form) {
+          return form.get('surveyGroupId') == sgId;
+        }));
+      }
     }
   }.observes('FLOW.selectedControl.selectedSurveyGroup'),
 
@@ -642,7 +681,6 @@ FLOW.surveyControl = Ember.ArrayController.create({
       if (form) {
         FLOW.selectedControl.set('selectedSurvey', form);
       }
-
       this.viewDataForms();
     }
   }.observes('content.isLoaded'),
@@ -680,7 +718,7 @@ FLOW.surveyControl = Ember.ArrayController.create({
     var path = FLOW.projectControl.get('currentProjectPath') + "/" + code;
     var ancestorIds = FLOW.selectedControl.selectedSurveyGroup.get('ancestorIds');
     ancestorIds.push(FLOW.selectedControl.selectedSurveyGroup.get('keyId'));
-    FLOW.store.createRecord(FLOW.Survey, {
+    var newForm = FLOW.store.createRecord(FLOW.Survey, {
       "name": code,
       "code": code,
       "path": path,
@@ -692,6 +730,7 @@ FLOW.surveyControl = Ember.ArrayController.create({
       "ancestorIds": ancestorIds
     });
     FLOW.projectControl.get('currentProject').set('deleteDisabled', true);
+    FLOW.selectedControl.set('selectedSurvey', newForm);
     FLOW.store.commit();
     this.refresh();
   },
@@ -704,6 +743,7 @@ FLOW.surveyControl = Ember.ArrayController.create({
       FLOW.projectControl.get('currentProject').set('deleteDisabled', false);
     }
     survey.deleteRecord();
+    FLOW.selectedControl.set('selectedSurvey', null);
 
     FLOW.store.commit();
     this.refresh();
@@ -1076,8 +1116,86 @@ FLOW.optionListControl = Ember.ArrayController.create({
  *
  */
 FLOW.questionOptionsControl = Ember.ArrayController.create({
+  sortProperties: ["order"],
   content: null,
   questionId: null,
+  emptyOptions: function () {
+    var c = this.content;
+    return !(c.get('length') > 0);
+  }.property('content.length'),
+
+  duplicateOptionNames: function () {
+    var c = this.content, uniqueText = [], emptyText = 0;
+    c.forEach(function (option) {
+      if (option.get('text') && option.get('text').trim()) {
+        if (!(uniqueText.indexOf(option.get('text').trim()) > -1)) {
+          uniqueText.push(option.get('text').trim());
+        }
+      } else {
+        emptyText++;
+      }
+    });
+    return c.length > uniqueText.length && emptyText === 0;
+  }.property('@each.text','content.length'),
+
+  emptyOptionNames: function () {
+    var c = this.content, emptyText = 0;
+    c.forEach(function (option) {
+      // only take into account options with no text but with code filled in
+      if ((!option.get('text') || option.get('text').trim().length === 0) && option.get('code') && option.get('code').trim()) {
+        emptyText++;
+      }
+    });
+    return emptyText > 0;
+  }.property('@each.text','content.length'),
+
+  partialOptionCodes: function () {
+    var c = this.content;
+    var codes = c.filter(function(option) {
+      return option.get('code');
+    });
+    return codes.length && codes.length < c.length;
+  }.property('@each.code','content.length'),
+
+  duplicateOptionCodes: function () {
+    var c = this.content, uniqueCode = [], emptyCode = 0;
+    c.forEach(function (option) {
+      if (option.get('code') && option.get('code').trim()) {
+        if (!(uniqueCode.indexOf(option.get('code').trim()) > -1)) {
+          uniqueCode.push(option.get('code').trim());
+        }
+      } else {
+        emptyCode++;
+      }
+    });
+    return c.length > uniqueCode.length && emptyCode === 0;
+  }.property('@each.code','content.length'),
+
+  disallowedCharacters: function () {
+    var c = this.content, disallowedCharacters = 0;
+    c.forEach(function (option) {
+      if (option.get('code') && option.get('code').trim()) {
+        if (!option.get('code').trim().match(/^[A-Za-z0-9_\-]*$/)) {
+          disallowedCharacters++;
+        }
+      }
+    });
+
+    return disallowedCharacters > 0;
+  }.property('@each.code','content.length'),
+
+  reservedCode: function () {
+    var c = this.content, reservedCode = [];
+    c.forEach(function (option) {
+      if (option.get('code') && option.get('code').trim()) {
+        if (option.get('code').trim() === "OTHER") {
+          reservedCode.push(option.get('code').trim());
+        }
+      }
+    });
+
+    return reservedCode.length > 0;
+  }.property('@each.code','content.length'),
 
   /*
    *  Add two empty option objects to the options list.  This is used
@@ -1089,7 +1207,7 @@ FLOW.questionOptionsControl = Ember.ArrayController.create({
       while (defaultLength > 0) {
         c.addObject(Ember.Object.create({
           code: null,
-          text: null,
+          text: Ember.String.loc('_new_option'),
           order: c.get('length') + 1,
           questionId: this.get('questionId'),
         }));
@@ -1104,10 +1222,11 @@ FLOW.questionOptionsControl = Ember.ArrayController.create({
    */
   addOption: function() {
     var c = this.content;
+    var currentLength = c.get('length');
     c.addObject(Ember.Object.create({
         code: null,
-        text: null,
-        order: c.get('length') + 1,
+        text: Ember.String.loc('_new_option'),
+        order: currentLength + 1,
         questionId: this.get('questionId'),
     }));
   },
@@ -1146,7 +1265,7 @@ FLOW.questionOptionsControl = Ember.ArrayController.create({
 
       // trimmed whitespace
       option.set('text', text);
-      option.set('order', index);
+
       if (!option.get('keyId')) {
         FLOW.store.createRecord(FLOW.QuestionOption, option);
       }
@@ -1164,178 +1283,40 @@ FLOW.questionOptionsControl = Ember.ArrayController.create({
     if (option.get('keyId')) { // clear persisted versions
       option.deleteRecord();
     }
-  },
 
-  /*
-   *  Validate all code options and if there is invalid input
-   *  return an error message.  Valid input returns null
-   */
-  validateOptions: function () {
-    var options = this.content, error;
-
-    if (!options) {
-      return null;
-    }
-
-    error = this.validateAllTextFilled();
-    if (error && error.trim().length > 0) {
-      return Ember.String.htmlSafe(error);
-    }
-
-    error = this.validateAllCodesFilled();
-    if (error && error.trim().length > 0) {
-      return Ember.String.htmlSafe(error);
-    }
-
-    error = this.validateDuplicateCodes();
-    if (error && error.trim().length > 0) {
-      return Ember.String.htmlSafe(error);
-    }
-
-    error = this.validateDuplicateText();
-    if (error && error.trim().length > 0) {
-      return Ember.String.htmlSafe(error);
-    }
-
-    error = this.validateDisallowedCharacters();
-    if (error && error.trim().length > 0) {
-      return Ember.String.htmlSafe(error);
-    }
-    return null;
-  },
-
-  /*
-   *  Return an error string of any text options are left blank
-   */
-  validateAllTextFilled: function () {
-    var options = this.content, error = '';
-
-    options.forEach(function (option) {
-      // only take into account options with no text but with text filled in
-      if (!option.get('text') || option.get('text').trim().length === 0) {
-        if(option.get('code') && option.get('code').trim()) {
-          error += "<li>" + option.get('code').trim() + "</li>"
-        }
-      }
+    //reorder all options
+    c.forEach(function (item, index) {
+      item.set('order', index + 1);
     });
-
-    if (error) {
-      error = '<ul>' + error + '</ul>';
-      error = Ember.String.loc('_missing_option_text') + "\n" + error;
-      return error;
-    }
-    return null;
   },
 
-  /*
-   * Return an error string if codes are partially filled in
-   */
-  validateAllCodesFilled: function () {
-    var options = this.content, error = '', hasCodes;
+  moveOptionUp: function (event) {
+    var options = this.content, currentOption = event.view.content;
 
-    options.forEach(function (option) {
-      // only take into account options with text to be able to give error dialog
-      if (option.get('text') && option.get('text').trim()) {
-        if(option.get('code') && option.get('code').trim()) {
-          hasCodes = true;
-        } else {
-          error += "<li>" + option.get('text').trim() + "</li>"
-        }
-      }
-    });
-
-    if (hasCodes && error) {
-      error = '<ul>' + error + '</ul>';
-      error = Ember.String.loc('_missing_option_codes') + "\n" + error;
-      return error;
+    if (currentOption && currentOption.get('order') > 0) {
+      var previousOption = options.find(function (option) {
+        return option.get('order') == (currentOption.get('order') - 1);
+      });
+      var previousOptionOrder = previousOption.get('order');
+      var currentOptionOrder = currentOption.get('order');
+      previousOption.set('order', currentOptionOrder);
+      currentOption.set('order', previousOptionOrder);
     }
-    return null;
   },
 
-  /*
-   *  Check for duplicate codes in the created options
-   */
-  validateDuplicateCodes: function () {
-    var options = this.content, error = '';
+  moveOptionDown: function (event) {
+    var options = this.content, currentOption = event.view.content;
 
-    var uniqCodes = [];
-    options.forEach(function (option) {
-      if (option.get('code') && option.get('code').trim()){
-        if(uniqCodes.indexOf(option.get('code').trim()) > -1) {
-          error += '<li>' + option.get('code').trim() + '</li>'
-        } else {
-          uniqCodes.push(option.get('code').trim());
-        }
-      }
-    });
-
-    if (error) {
-      error = '<ul>' + error + '</ul>';
-      error = Ember.String.loc('_duplicate_option_codes') + "\n" + error;
-      return error;
+    if (currentOption && currentOption.get('order') < options.get('length')) {
+      var nextOption = options.find(function (option) {
+        return option.get('order') == (currentOption.get('order') + 1);
+      });
+      var nextOptionOrder = nextOption.get('order');
+      var currentOptionOrder = currentOption.get('order');
+      nextOption.set('order', currentOptionOrder);
+      currentOption.set('order', nextOptionOrder);
     }
-
-    return null;
-  },
-
-  /*
-   *  Check for duplicate texts in the created options
-   */
-  validateDuplicateText: function () {
-    var options = this.content, error = '';
-
-    var uniqText = [];
-    options.forEach(function (option) {
-      if (option.get('text') && option.get('text').trim()){
-        if(uniqText.indexOf(option.get('text').trim()) > -1) {
-          error += '<li>' + option.get('text').trim() + '</li>'
-        } else {
-          uniqText.push(option.get('text').trim());
-        }
-      }
-    });
-
-    if (error) {
-      error = '<ul>' + error + '</ul>';
-      error = Ember.String.loc('_duplicate_option_text') + "\n" + error;
-      return error;
-    }
-
-    return null;
-  },
-
-  /*
-   *  Check for disallowed xters in option codes
-   */
-  validateDisallowedCharacters: function () {
-    var options = this.content, error = '';
-
-    var reservedCode = [];
-    options.forEach(function (option) {
-      if (option.get('code') && option.get('code').trim()){
-        if(!option.get('code').trim().match(/^[A-Za-z0-9_\-]*$/)) {
-          error += '<li>' + option.get('code').trim() + '</li>'
-        }
-
-        if (option.get('code').trim() === "OTHER") {
-          reservedCode.push(option.get('code').trim());
-        }
-      }
-    });
-
-    if (error) {
-      error = '<ul>' + error + '</ul>';
-      error = Ember.String.loc('_disallowed_xters_in_code') + "\n" + error;
-      return error;
-    }
-
-    if (reservedCode.length) {
-      error = Ember.String.loc('_reserved_code');
-      return error;
-    }
-
-    return null;
-  },
+  }
 });
 
 FLOW.previewControl = Ember.ArrayController.create({
@@ -1660,8 +1641,8 @@ FLOW.translationControl = Ember.ArrayController.create({
         tempArray.push(Ember.Object.create({
           keyId: item.get('keyId'),
           type: "QO",
-          order: 1000000 * qgOrder + 1000 * qOrder + parseInt(item.get('order'), 10),
-          displayOrder: item.get('order'),
+          order: 1000000 * qgOrder + 1000 * qOrder + parseInt(item.get('order'), 10) + 1,
+          displayOrder: item.get('order') + 1,
           qoText: item.get('text'),
           isQO: true
         }));
@@ -1940,6 +1921,11 @@ FLOW.CaddisflyResourceController = Ember.ArrayController.extend({
                 "name": test.name,
                 "brand": test.brand,
                 "uuid": test.uuid,
+                "multiParameter": test.multiParameter,
+                "sample": test.sample,
+                "device": test.device,
+                "model": test.model,
+                "results": test.results
             }));
         });
 

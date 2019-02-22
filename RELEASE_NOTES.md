@@ -1,5 +1,58 @@
 # Akvo Flow Release Notes
 ----
+# Akvo Flow Dashboard v1.9.42 - Outstanding Orange
+Date: 06-02-2019
+
+# New and noteworthy
+* **User experience** - Cascading selection of caddisfly tests in survey design [#2842]
+* **Devices** - Cleanup idle devices from the device list after a year [#2939]
+* **Surveys** - Save an archive copy of each published version of a form to the S3 bucket [#2844]
+
+# Resolved issues
+* **Bub fixes** - Truncate long error messages causing causing cascade publishing to fail silently [#2961]. Disable saving caddisfly question when no test type is selected [#1808]. Handle end point error responses [#2948]. Fix issue causing signature responses not to display on map [#2937
+* **Development environment** - Update openssl requirements [#2956]. Data script to print the tree-structure of an instance [#2958]
+* **Code cleanup** - Remove unused SMS classes [#2949]
+
+# Akvo Flow Dashboard v1.9.41.1 - Nebulous Nemesia (Hotfix 1)
+Date: 03-01-2019
+
+## Resolved issues
+* **Reports** - Fix issue causing filters under reports export to not display [#2938]
+* **User Interface** - Update copyright year
+
+# Akvo Flow Dashboard v1.9.41 - Nebulous Nemesia
+Date: 06th December 2018
+
+## Resolved issues
+* **Cascades** - Fix new cascades code created automatically [#2926]
+* **Options** - Simplify option code validation [#2150]
+
+# Akvo Flow Dashboard v1.9.40 - Melodious Melon
+Date: 14th November 2018
+
+## New and noteworthy
+* **Maps** - Filter data points on maps tab by form [#2770]
+* **Survey design** - Disable ability to save optionless option type questions [#2118]. Order forms on survey tab by date created instead of alphabetically [#2917]
+* **Exports** - Show codes by default if they exist when exporting data analysis and comprehensive reports [#2742]
+* **Backend optimisation** - Shorten the time we keep asking for device files from two years to one year[#2913]
+
+## Resolved issues
+* **Front-end bug fixes** - Fix options ordering in translations page [#1983]. Display newly created form [#1981].
+* **Backend bug fixes** - Allow unilog notification setting to be empty [#2906]. Fix question order mixup when publishing [#2911]. Catch null pointer exceptions when fetching credentials [#2909]
+
+# Akvo Flow Dashboard v1.9.39 - Laid-back Lagerstroemia
+Date: 24th October 2018
+
+## New and noteworthy
+* **Project folders** - Enable editing folder name when created [#2875]
+
+## Resolved issues
+* **Surveys** - Require selecting at least one type before allowing saving geoshape questions [#2877]
+* **Maps** - Properly render all caddisfly responses on maps[#1750]. If a point has been previously selected, hide details panel when filtering [#2881]. Properly render geoshape responses on maps tab [#2884]
+* **UI improvement** - Remove table header arrows where unneeded [#2389]. Fix how and where survey path is displayed on dashboard [#2507]
+* **UX improvement** - Indicate form must be selected to perform actions on data cleaning tab [#2456]. Remove delay between fetching retching form submissions on inspect data tab and displaying when fetch completes [#2827]
+* **Code cleanup** - Remove CartoDB code [#2867]
+
 # Akvo Flow Dashboard v1.9.38 - Key Kalmia
 Date: 9th October 2018
 
