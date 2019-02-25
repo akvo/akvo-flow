@@ -133,12 +133,12 @@ class FlowJsonObjectReaderTests {
         } catch (IOException e) {
             //
         }
-        assertEquals(testQuestionDto.getType(), QuestionDto.QuestionType.FREE_TEXT);
-        assertEquals(testQuestionDto.getText(),"How many toilets are present?");
+        assertEquals(QuestionDto.QuestionType.FREE_TEXT, testQuestionDto.getType());
+        assertEquals("How many toilets are present?", testQuestionDto.getText());
         assertFalse(testQuestionDto.getDependentFlag());
-        assertEquals(testQuestionDto.getQuestionGroupId(), 12345678L);
-        assertEquals(testQuestionDto.getType(), QuestionDto.QuestionType.FREE_TEXT);
-        assertEquals(testQuestionDto.getOrder(), 0);
+        assertEquals(12345678L, testQuestionDto.getQuestionGroupId());
+        assertEquals(QuestionDto.QuestionType.FREE_TEXT, testQuestionDto.getType());
+        assertEquals(0, testQuestionDto.getOrder());
     }
 
     @Test
@@ -153,12 +153,12 @@ class FlowJsonObjectReaderTests {
         }
 
         List<CaddisflyResource> resourcesList = resourcesMap.get("tests");
-        assertNotEquals(resourcesList, null);
-        assertEquals(resourcesList.size(), 2);
-        assertEquals(resourcesList.get(0).getResults().size(), 2);
-        assertEquals(resourcesList.get(0).getName(), "Soil - Electrical Conductivity");
-        assertEquals(resourcesList.get(1).getResults().size(), 1);
-        assertEquals(resourcesList.get(1).getUuid(), "0b4a0aaa-f556-4c11-a539-c4626582cca6");
+        assertNotEquals(null, resourcesList);
+        assertEquals(2, resourcesList.size());
+        assertEquals(2, resourcesList.get(0).getResults().size());
+        assertEquals("Soil - Electrical Conductivity", resourcesList.get(0).getName());
+        assertEquals(1, resourcesList.get(1).getResults().size());
+        assertEquals("0b4a0aaa-f556-4c11-a539-c4626582cca6", resourcesList.get(1).getUuid());
     }
 
     @Test
@@ -173,8 +173,8 @@ class FlowJsonObjectReaderTests {
             //
         }
 
-        assertNotEquals(surveyList, null);
-        assertEquals(surveyList.size(), 1);
-        assertEquals(surveyList.get(0).getName(),"1.10.36 all questions");
+        assertNotEquals(null, surveyList);
+        assertEquals(1, surveyList.size());
+        assertEquals("1.10.36 all questions", surveyList.get(0).getName());
     }
 }
