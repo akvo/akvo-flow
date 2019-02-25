@@ -883,10 +883,9 @@ FLOW.QuestionView = FLOW.View.extend({
           displayName += (i+1) < results.length ? ", " : "";
         }
 
-        if ("reagents" in obj) {
-          for (var i = 0; i < obj["reagents"].length; i++) {
-            displayName += " "+obj["reagents"]["code"];
-          }
+        var reagents = obj.reagents;
+        for (var i = 0; i < reagents.length; i++) {
+          displayName += " "+reagents[i]['code'];
         }
 
         if (!(displayName in distinct)) {

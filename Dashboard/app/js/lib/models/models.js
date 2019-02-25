@@ -30,6 +30,7 @@ FLOW.CaddisflyTestDefinition = Ember.Object.extend({
     model: null,
     uuid: null,
     results: [],
+    reagents: []
 });
 
 FLOW.CascadeResource = FLOW.BaseModel.extend({
