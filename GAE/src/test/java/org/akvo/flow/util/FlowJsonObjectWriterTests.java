@@ -59,7 +59,7 @@ class FlowJsonObjectWriterTests {
         try {
             jsonString = writer.writeAsString(complexJsonObject);
         } catch (IOException e) {
-            //
+            // ignoring exception
         }
         String jsonStringExpected = "{\"nullList\":null,\"emptyList\":[],\"listOfNumbers\":[1,2,3],\"mapOfLists\":{\"firstList\":[5345,6587,9987],\"secondList\":[\"tea\",\"coffee\"]}}";
         assertEquals(jsonStringExpected, jsonString);
@@ -79,7 +79,7 @@ class FlowJsonObjectWriterTests {
         try {
             jsonString = writer.writeAsString(question);
         } catch (IOException e) {
-            //
+            // ignoring exception
         }
 
         String jsonStringExpected = "{\"type\":\"FREE_TEXT\",\"text\":\"First Question\",\"allowOtherFlag\":true,\"collapseable\":false,\"immutable\":false,\"order\":0}";

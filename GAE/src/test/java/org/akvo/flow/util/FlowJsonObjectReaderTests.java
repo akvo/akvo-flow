@@ -131,7 +131,7 @@ class FlowJsonObjectReaderTests {
         try {
             testQuestionDto = reader.readObject(QUESTION_DTO_JSON_STRING, typeReference);
         } catch (IOException e) {
-            //
+            // ignoring exception
         }
         assertEquals(QuestionDto.QuestionType.FREE_TEXT, testQuestionDto.getType());
         assertEquals("How many toilets are present?", testQuestionDto.getText());
@@ -149,7 +149,7 @@ class FlowJsonObjectReaderTests {
         try {
             resourcesMap = reader.readObject(COMPLEX_JSON_OBJECT, typeReference);
         } catch (IOException e) {
-            //
+            // ignoring exception
         }
 
         List<CaddisflyResource> resourcesList = resourcesMap.get("tests");
@@ -170,7 +170,7 @@ class FlowJsonObjectReaderTests {
         try {
             surveyList = reader.readDtoListObject(DTO_LIST_JSON_OBJECT, typeReference);
         } catch (IOException e) {
-            //
+            // ignoring exception
         }
 
         assertNotEquals(null, surveyList);
