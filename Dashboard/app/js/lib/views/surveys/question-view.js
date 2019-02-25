@@ -877,16 +877,15 @@ FLOW.QuestionView = FLOW.View.extend({
         var results = obj.results, displayName = "";
         for (var i = 0; i < results.length; i++) {
           displayName += "name" in results[i] ? results[i].name : "";
-          displayName += "chemical" in results[i] ? " ("+results[i].chemical+")" : "";
-          displayName += "range" in results[i] ? " "+results[i].range : "";
-          displayName += "unit" in results[i] ? " "+results[i].unit : "";
+          displayName += "chemical" in results[i] ? " (" + results[i].chemical + ")" : "";
+          displayName += "range" in results[i] ? " " + results[i].range : "";
+          displayName += "unit" in results[i] ? " " + results[i].unit : "";
           displayName += (i+1) < results.length ? ", " : "";
         }
 
-        if ("reagents" in obj) {
-          for (var i = 0; i < obj["reagents"].length; i++) {
-            displayName += " "+obj["reagents"]["code"];
-          }
+        var reagents = obj.reagents;
+        for (var i = 0; i < reagents.length; i++) {
+          displayName += " " + reagents[i]['code'];
         }
 
         if (!(displayName in distinct)) {
