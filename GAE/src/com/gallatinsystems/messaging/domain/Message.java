@@ -99,10 +99,10 @@ public class Message extends BaseDomain {
     //TODO If the UI displayed the long msg instead if it exists, we should clear shortMessage.
     public void setShortMessage(String shortMessage) {
         if (shortMessage.length() > 1500) {
-        	setMessage(shortMessage);
-        	this.shortMessage = shortMessage.substring(0, 1495) + " ...";
+            setMessage(shortMessage);
+            this.shortMessage = shortMessage.substring(0, 1495) + " ...";
         } else {
-        	this.shortMessage = shortMessage;
+            this.shortMessage = shortMessage;
         }
     }
 

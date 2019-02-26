@@ -1,5 +1,5 @@
 /*
- *  Copyright (C) 2010-2017 Stichting Akvo (Akvo Foundation)
+ *  Copyright (C) 2010-2019 Stichting Akvo (Akvo Foundation)
  *
  *  This file is part of Akvo FLOW.
  *
@@ -30,7 +30,7 @@ import javax.servlet.http.HttpServletRequest;
 
 import org.akvo.flow.domain.mapper.QuestionDtoMapper;
 import org.akvo.flow.domain.mapper.QuestionOptionDtoMapper;
-import org.codehaus.jackson.map.ObjectMapper;
+import org.akvo.flow.util.FlowJsonObjectWriter;
 import org.waterforpeople.mapping.analytics.dao.SurveyQuestionSummaryDao;
 import org.waterforpeople.mapping.analytics.domain.SurveyQuestionSummary;
 import org.waterforpeople.mapping.app.gwt.client.survey.QuestionDto;
@@ -280,8 +280,8 @@ public class SurveyRestServlet extends AbstractRestApiServlet {
     @Override
     protected void writeOkResponse(RestResponse resp) throws Exception {
         getResponse().setStatus(200);
-        new ObjectMapper().writeValue(getResponse().getWriter(), resp);
-
+        FlowJsonObjectWriter writer = new FlowJsonObjectWriter();
+        writer.writeValue(getResponse().getOutputStream(), resp);
     }
 
     /**

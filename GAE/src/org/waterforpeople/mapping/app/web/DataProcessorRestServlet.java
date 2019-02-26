@@ -231,7 +231,7 @@ public class DataProcessorRestServlet extends AbstractRestApiServlet {
             }
         } else if (DataProcessorRequest.UPDATE_SURVEY_INSTANCE_SUMMARIES.equalsIgnoreCase(req.getAction())) {
             if (dpReq.getSurveyInstanceId() != null && dpReq.getDelta() != null) {
-            	updateSurveyInstanceResponseCounters(dpReq.getSurveyInstanceId(), dpReq.getDelta());
+                updateSurveyInstanceResponseCounters(dpReq.getSurveyInstanceId(), dpReq.getDelta());
             }
         } else if (DataProcessorRequest.DELETE_CASCADE_NODES.equalsIgnoreCase(req.getAction())) {
             deleteCascadeNodes(dpReq.getCascadeResourceId(), dpReq.getParentNodeId());
@@ -1307,7 +1307,6 @@ public class DataProcessorRestServlet extends AbstractRestApiServlet {
         if (delta == 1 || delta == -1) {
             siDao.updateSummaryCounts(surveyInstanceId, delta > 0);
         }
-    	
     }
 
     private void deleteCascadeNodes(Long cascadeResourceId, Long parentNodeId) {

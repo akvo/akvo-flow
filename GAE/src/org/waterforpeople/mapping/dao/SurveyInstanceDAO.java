@@ -497,7 +497,7 @@ public class SurveyInstanceDAO extends BaseDAO<SurveyInstance> {
 
         List<QuestionAnswerStore> answerList = qasDao.listBySurveyInstance(siId);
         if (answerList == null || answerList.isEmpty()) {
-        	return;
+            return;
         }
         List<SurveyQuestionSummary> saveList = new ArrayList<SurveyQuestionSummary>();
         List<SurveyQuestionSummary> deleteList = new ArrayList<SurveyQuestionSummary>();
@@ -542,9 +542,8 @@ public class SurveyInstanceDAO extends BaseDAO<SurveyInstance> {
 
         summaryDao.save(saveList);
         summaryDao.delete(deleteList);
-    
     }
-    
+
     private void queueSynchronizedSummaryUpdate(SurveyInstance si, boolean increment) {
         Queue questionSummaryQueue = QueueFactory.getQueue("surveyResponseCount");
         TaskOptions to = TaskOptions.Builder
@@ -554,10 +553,8 @@ public class SurveyInstanceDAO extends BaseDAO<SurveyInstance> {
                 .param(DataProcessorRequest.SURVEY_INSTANCE_PARAM, si.getKey().getId() + "")
                 .param(DataProcessorRequest.DELTA_PARAM, increment ? "1":"-1");
         questionSummaryQueue.add(to);
-    	
     }
-    
-    
+
     /**
      * Deletes a surveyInstance and all its related objects
      *

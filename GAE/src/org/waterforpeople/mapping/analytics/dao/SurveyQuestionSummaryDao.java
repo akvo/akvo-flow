@@ -234,7 +234,7 @@ public class SurveyQuestionSummaryDao extends BaseDAO<SurveyQuestionSummary> {
      */
     public List<SurveyQuestionSummary> save(List<SurveyQuestionSummary> summary) {
         List<SurveyQuestionSummary> savedSummaryList =
-        		(List<SurveyQuestionSummary>) super.save(summary);
+                (List<SurveyQuestionSummary>) super.save(summary);
         cache(savedSummaryList);
         return savedSummaryList;
     }

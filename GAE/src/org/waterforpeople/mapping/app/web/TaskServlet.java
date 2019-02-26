@@ -198,7 +198,7 @@ public class TaskServlet extends AbstractRestApiServlet {
             for (SurveyInstance si : surveyInstances) {
                 synchronized (LOCK) {
                     // Synchronize datastore access.
-                	// Only locked against access by other threads in same process.
+                    // Only locked against access by other threads in same process.
                     si = siDao.save(si, deviceFile);
                 }
                 // Fire a survey event

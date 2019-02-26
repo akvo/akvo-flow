@@ -92,22 +92,22 @@ public class CronCommanderServlet extends HttpServlet {
         log.info("Found " + deviceList.size() + " old Devices");
 
         for (Device d: deviceList) { //Clean up everything referencing this device
-        	
-        	long did = d.getKey().getId();
-        	List<DeviceSurveyJobQueue> djql = dsjqDao.get(d.getPhoneNumber(), d.getEsn(), d.getAndroidId());
-        	if (djql.size() > 0) {
-        		log.fine("Deleting " + djql.size() + " form assignments for device " + did);
-        		dsjqDao.delete(djql);
-        	}
-        	List<DeviceFileJobQueue> dfql = dfjqDao.listByDeviceId(did);
-        	if (dfql.size() > 0) {
-        		log.fine("Deleting " + dfql.size() + " file requests for device " + did);
-        		dfjqDao.delete(dfql);
-        	}
 
-        	int affected = saDao.removeDevice(did);
-        	log.fine("Removed device " + did + " from " + affected + " assignments.");
-        	
+            long did = d.getKey().getId();
+            List<DeviceSurveyJobQueue> djql = dsjqDao.get(d.getPhoneNumber(), d.getEsn(), d.getAndroidId());
+            if (djql.size() > 0) {
+                log.fine("Deleting " + djql.size() + " form assignments for device " + did);
+                dsjqDao.delete(djql);
+            }
+            List<DeviceFileJobQueue> dfql = dfjqDao.listByDeviceId(did);
+            if (dfql.size() > 0) {
+                log.fine("Deleting " + dfql.size() + " file requests for device " + did);
+                dfjqDao.delete(dfql);
+            }
+
+            int affected = saDao.removeDevice(did);
+            log.fine("Removed device " + did + " from " + affected + " assignments.");
+
         }
         deviceDao.delete(deviceList);
     }

@@ -292,9 +292,9 @@ public class SurveyAssemblyServlet extends AbstractRestApiServlet {
             surveyXML.append(surveyFooter);
             log.info("Uploading " + surveyId);
             UploadStatusContainer uc = uploadSurveyXML(
-            		Long.toString(surveyId), //latest version in plain filename
-            		Long.toString(surveyId) + "v" + s.getVersion(), //archive copy
-            		surveyXML.toString());
+                    Long.toString(surveyId), //latest version in plain filename
+                    Long.toString(surveyId) + "v" + s.getVersion(), //archive copy
+                    surveyXML.toString());
             Message message = new Message();
             message.setActionAbout("surveyAssembly");
             message.setObjectId(surveyId);
@@ -321,7 +321,6 @@ public class SurveyAssemblyServlet extends AbstractRestApiServlet {
         }
     }
 
-    
     /**  Upload a zipped file twice to S3 under different filenames.
      * @param fileName1
      * @param fileName2
@@ -341,7 +340,7 @@ public class SurveyAssemblyServlet extends AbstractRestApiServlet {
                 + "/" + fileName1 + ".xml");
         return uc;
     }
-    
+
     private boolean uploadZippedXml(String content, String bucketName, String directory, String fileName) {
         ByteArrayOutputStream os2 = ZipUtil.generateZip(content, fileName + ".xml");
 

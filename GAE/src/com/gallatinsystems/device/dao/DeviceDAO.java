@@ -119,7 +119,7 @@ public class DeviceDAO extends BaseDAO<Device> {
         }
         save(d);
     }
-    
+
     /**
      * lists all devices where lastLocationBeaconTime is older than a specific date
      */
