@@ -91,3 +91,5 @@ out/
 *.iml
 rake.log
 lein.log
+
+tmp/

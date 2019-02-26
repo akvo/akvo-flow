@@ -16,7 +16,6 @@
 
 package com.gallatinsystems.common.util;
 
-import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
@@ -106,49 +105,25 @@ public class ZipUtil {
         return bos;
     }
 
-    /**
-     * decodes the byte array representing the zip file into a string. This assumes the zip contains
-     * only 1 file.
-     * 
-     * @param contents
-     * @return
-     * @throws IOException
-     */
-    public static String unZip(byte[] contents) throws IOException {
-        return unZip(contents, null);
-    }
-
-    /**
-     * unzips a single zip entry (file within a zip) and returns the content as a string.
-     * 
-     * @param contents
-     * @param entryName
-     * @return
-     * @throws IOException
-     */
-    public static String unZip(byte[] contents, String entryName)
-            throws IOException {
-        ByteArrayInputStream zipContents = new ByteArrayInputStream(contents);
-        ZipInputStream zis = new ZipInputStream(zipContents);
-        ZipEntry entry;
+    public static String unZipFile(String entryName, ZipInputStream zis) throws IOException {
         StringBuilder line = new StringBuilder();
-        while ((entry = zis.getNextEntry()) != null) {
-            if (entryName == null
-                    || entryName.equalsIgnoreCase(entry.getName())) {
-                ByteArrayOutputStream out = new ByteArrayOutputStream();
-                byte[] buffer = new byte[2048];
-                int size;
-                while ((size = zis.read(buffer, 0, buffer.length)) != -1) {
-                    out.write(buffer, 0, size);
+        if (entryName != null) {
+            ZipEntry entry;
+            while ((entry = zis.getNextEntry()) != null) {
+                if (entryName.equalsIgnoreCase(entry.getName())) {
+                    ByteArrayOutputStream out = new ByteArrayOutputStream();
+                    byte[] buffer = new byte[2048];
+                    int size;
+                    while ((size = zis.read(buffer, 0, buffer.length)) != -1) {
+                        out.write(buffer, 0, size);
+                    }
+                    line.append(out.toString());
+                    out.close();
+                    break;
                 }
-                line.append(out.toString());
-
-                out.close();
             }
+            zis.closeEntry();
         }
-        zis.closeEntry();
-
         return line.toString();
     }
-
 }
