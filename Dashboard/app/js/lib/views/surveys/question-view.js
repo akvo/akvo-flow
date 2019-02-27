@@ -259,13 +259,14 @@ FLOW.QuestionView = FLOW.View.extend({
 
   fillOptionList: function () {
     var optionList, optionListArray, i, sizeList;
-    if (FLOW.selectedControl.get('dependentQuestion') !== null) {
+    if (FLOW.selectedControl.get('dependentQuestion')) {
+      var dependentQuestion = FLOW.selectedControl.get('dependentQuestion');
       FLOW.optionListControl.set('content', []);
       FLOW.optionListControl.set('currentActive', null);
 
       options = FLOW.store.filter(FLOW.QuestionOption, function (item) {
         if (!Ember.none(FLOW.selectedControl.selectedQuestion)) {
-          return item.get('questionId') == FLOW.selectedControl.dependentQuestion.get('keyId');
+          return item.get('questionId') == dependentQuestion.get('keyId');
         } else {
           return false;
         }
