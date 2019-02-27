@@ -265,7 +265,6 @@ public class RawDataSpreadsheetImporter implements DataImporter {
                     Map<Integer, Long> repQMap = sheetMap.get(repSheet);
                     int repFirstQIdx = Collections.min(repQMap.keySet());
                     if (repMetadataIndex == null) { //do this only once??
-//                        repMetadataIndex = calculateMetadataColumnIndex(repFirstQIdx, true);
                         repMetadataIndex = getMetadataColumnIndex(repSheet, repFirstQIdx, headerRowIndex, true);
                     }
                     Integer pos = sheetPosition.get(repSheet);
@@ -610,7 +609,7 @@ public class RawDataSpreadsheetImporter implements DataImporter {
         Cell cell = iterationRow.getCell(columnIndex);
 
         if (cell != null //misses empty-but-has-other
-                || (questionType == questionType.OPTION
+                || (questionType == QuestionType.OPTION
                         && Boolean.TRUE.equals(questionDto.getAllowOtherFlag()
                         && otherValuesInSeparateColumns))) { 
             switch (questionType) {

@@ -1284,7 +1284,7 @@ public class GraphicalSurveySummaryExporter extends SurveySummaryExporter {
         addMetaDataColumnHeader(SUB_DATE_LABEL, ++columnIdx, row);
         addMetaDataColumnHeader(SUBMITTER_LABEL, ++columnIdx, row);
         addMetaDataColumnHeader(DURATION_LABEL, ++columnIdx, row);
-        addMetaDataColumnHeader(FORM_VER_LABEL, ++columnIdx, row); //TODO good place?
+        addMetaDataColumnHeader(FORM_VER_LABEL, ++columnIdx, row);
         //Always put something in the top-left corner to identify the format
         if (doGroupHeaders) {
             row = getRow(0, sheet);

@@ -49,14 +49,14 @@ public class SurveyInstanceDto extends BaseDto {
     private String surveyedLocaleDisplayName;
 
     public Double getFormVersion() {
-		return formVersion;
-	}
+        return formVersion;
+    }
 
-	public void setFormVersion(Double formVersion) {
-		this.formVersion = formVersion;
-	}
+    public void setFormVersion(Double formVersion) {
+        this.formVersion = formVersion;
+    }
 
-	public String getApprovedFlag() {
+    public String getApprovedFlag() {
         return approvedFlag;
     }
 
