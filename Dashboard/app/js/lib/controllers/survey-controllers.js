@@ -619,15 +619,23 @@ FLOW.surveyControl = Ember.ArrayController.create({
   orderForms: function () {
     if (FLOW.selectedControl.get('selectedSurveyGroup') && FLOW.selectedControl.selectedSurveyGroup.get('keyId') > 0) {
       var sgId = FLOW.selectedControl.selectedSurveyGroup.get('keyId'), self = this;
-      self.orderedForms = [];
       var forms = FLOW.store.filter(FLOW.Survey, function (item) {
         return item.get('surveyGroupId') == sgId;
       });
+      self.set('orderedForms', []);
 
-      if (forms && FLOW.selectedControl.selectedSurveyGroup.get('monitoringGroup')) {
-        var regFormId = FLOW.selectedControl.selectedSurveyGroup.get('newLocaleSurveyId');
+      if (forms.get('length') > 1 && FLOW.selectedControl.selectedSurveyGroup.get('monitoringGroup')) {
+        //find registration form if set
+        var regFormId, regForm = forms.find(function (item) {
+          return item.get('keyId') == FLOW.selectedControl.selectedSurveyGroup.get('newLocaleSurveyId');
+        });
+        if (regForm) {
+          regFormId = regForm.get('keyId');
+        } else {
+          regFormId = forms.get('firstObject').get('keyId'); //registration form not defined so assume first form is registration
+        }
 
-        this.orderedForms.push(forms.find(function (form) {
+        self.orderedForms.push(forms.find(function (form) {
           return form.get('keyId') == regFormId;
         }));
 
@@ -652,7 +660,7 @@ FLOW.surveyControl = Ember.ArrayController.create({
         }));
       }
     }
-  }.observes('FLOW.selectedControl.selectedSurveyGroup'),
+  }.observes('FLOW.selectedControl.selectedSurveyGroup', 'content.isLoaded'),
 
   populateAll: function () {
     FLOW.store.find(FLOW.Survey);
