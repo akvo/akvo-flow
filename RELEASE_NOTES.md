@@ -1,6 +1,6 @@
 # Akvo Flow Release Notes
 ----
-# Akvo Flow Dashboard v1.9.43 - P.. P..
+# Akvo Flow Dashboard v1.9.43 - Patient Poppy
 Date: 28-02-2019
 
 # New and noteworthy
