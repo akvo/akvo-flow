@@ -264,13 +264,14 @@ FLOW.QuestionView = FLOW.View.extend({
 
   fillOptionList: function () {
     var optionList, optionListArray, i, sizeList;
-    if (FLOW.selectedControl.get('dependentQuestion') !== null) {
+    if (FLOW.selectedControl.get('dependentQuestion')) {
+      var dependentQuestion = FLOW.selectedControl.get('dependentQuestion');
       FLOW.optionListControl.set('content', []);
       FLOW.optionListControl.set('currentActive', null);
 
       options = FLOW.store.filter(FLOW.QuestionOption, function (item) {
         if (!Ember.none(FLOW.selectedControl.selectedQuestion)) {
-          return item.get('questionId') == FLOW.selectedControl.dependentQuestion.get('keyId');
+          return item.get('questionId') == dependentQuestion.get('keyId');
         } else {
           return false;
         }
@@ -877,16 +878,15 @@ FLOW.QuestionView = FLOW.View.extend({
         var results = obj.results, displayName = "";
         for (var i = 0; i < results.length; i++) {
           displayName += "name" in results[i] ? results[i].name : "";
-          displayName += "chemical" in results[i] ? " ("+results[i].chemical+")" : "";
-          displayName += "range" in results[i] ? " "+results[i].range : "";
-          displayName += "unit" in results[i] ? " "+results[i].unit : "";
+          displayName += "chemical" in results[i] ? " (" + results[i].chemical + ")" : "";
+          displayName += "range" in results[i] ? " " + results[i].range : "";
+          displayName += "unit" in results[i] ? " " + results[i].unit : "";
           displayName += (i+1) < results.length ? ", " : "";
         }
 
-        if ("reagents" in obj) {
-          for (var i = 0; i < obj["reagents"].length; i++) {
-            displayName += " "+obj["reagents"]["code"];
-          }
+        var reagents = obj.reagents;
+        for (var i = 0; i < reagents.length; i++) {
+          displayName += " " + reagents[i]['code'];
         }
 
         if (!(displayName in distinct)) {
@@ -929,5 +929,17 @@ FLOW.OptionListView = Ember.CollectionView.extend({
   content: null,
   itemViewClass: Ember.View.extend({
     templateName: 'navSurveys/question-option',
-  }),
+    topOption: function () {
+      var option = this.get('content');
+      if (option) {
+        return option.get('order') == 1;
+      }
+    }.property('content.order'),
+    bottomOption: function () {
+      var option = this.get('content'), options = FLOW.questionOptionsControl.get('content');
+      if (option && options) {
+        return option.get('order') == options.get('length');
+      }
+    }.property('content.order', 'FLOW.questionOptionsControl.content.length')
+  })
 });

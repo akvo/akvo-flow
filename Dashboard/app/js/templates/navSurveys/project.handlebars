@@ -156,7 +156,7 @@
             {{/if}}
                 <nav class="tabNav floats-in">
                   <ul>
-                    {{#each form in FLOW.surveyControl}}
+                    {{#each form in FLOW.surveyControl.orderedForms}}
                       {{#view FLOW.FormTabView contentBinding="form"}}
                         <a {{action "selectForm" form target="FLOW.surveyControl"}}>{{form.name}}</a></li>
                       {{/view}}

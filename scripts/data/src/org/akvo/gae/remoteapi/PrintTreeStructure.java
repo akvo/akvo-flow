@@ -1,5 +1,5 @@
 /*
- *  Copyright (C) 2017 Stichting Akvo (Akvo Foundation)
+ *  Copyright (C) 2017,2019 Stichting Akvo (Akvo Foundation)
  *
  *  This file is part of Akvo FLOW.
  *
@@ -23,7 +23,6 @@ import java.util.HashMap;
 import com.google.appengine.api.datastore.DatastoreService;
 import com.google.appengine.api.datastore.Entity;
 import com.google.appengine.api.datastore.FetchOptions;
-import com.google.appengine.api.datastore.Key;
 import com.google.appengine.api.datastore.PreparedQuery;
 import com.google.appengine.api.datastore.Query;
 
@@ -44,6 +43,7 @@ public class PrintTreeStructure implements Process {
     private Map<Long, Long> qParents = new HashMap<>();
     private Map<Long, Long> qToSurvey = new HashMap<>();
     private Map<Long, Long> qOrder = new HashMap<>();
+    private Map<Long, Boolean> qMandatory = new HashMap<>();
 
     private Map<Long, String> qgNames = new HashMap<>();
     private Map<Long, Long> qgOrder= new HashMap<>();
@@ -54,7 +54,6 @@ public class PrintTreeStructure implements Process {
     private Map<Long, Long> oParents = new HashMap<>();
 
     private boolean html = false;
-    private boolean gae = false;
     private boolean showQuestions = false;
     private boolean showOptions = false;
 
@@ -66,9 +65,6 @@ public class PrintTreeStructure implements Process {
             //System.out.printf("#Argument %d: %s\n", i, args[i]);
             if (args[i].equalsIgnoreCase("--html")) {
                 html = true;
-            }
-            if (args[i].equalsIgnoreCase("--gae")) {
-                gae = true;
             }
             if (args[i].equalsIgnoreCase("--questions")) {
                 showQuestions = true;
@@ -83,9 +79,9 @@ public class PrintTreeStructure implements Process {
         if (showQuestions) {
             fetchQuestionGroups(ds);
             fetchQuestions(ds);
-	    if (showOptions) {
-		fetchOptions(ds);
-	    }
+            if (showOptions) {
+                fetchOptions(ds);
+            }
         }
 
 //        System.out.printf("/ (root)\n");
@@ -141,18 +137,20 @@ public class PrintTreeStructure implements Process {
 
     private void drawQuestionsIn(Long parent, int indent) {
         for (Long q : qParents.keySet()) {
+            String m = (qMandatory.get(q).equals(Boolean.TRUE)) ? "*":"";
+
             if (qParents.get(q).equals(parent)) {
                 String s = "";
                 for (int i = 0; i<indent; i++) {
                     s += "  ";
                 }
                 if (qTypes.get(q).equals("OPTION")) {
-                    System.out.printf("%s?OPTION %s [%d]\n", s, qNames.get(q), q);
+                    System.out.printf("%s?OPTION%s %s [%d]\n", s, m, qNames.get(q), q);
                     if (showOptions) {
-			drawOptionsIn(q, indent+1);
-		    }
+                        drawOptionsIn(q, indent+1);
+                    }
                 } else {
-                    System.out.printf("%s?%s %s [%d]\n", s, qTypes.get(q), qNames.get(q), q);
+                    System.out.printf("%s?%s%s %s [%d]\n", s, qTypes.get(q), m, qNames.get(q), q);
                 }
             }
         }
@@ -257,6 +255,7 @@ public class PrintTreeStructure implements Process {
             String questionText = (String) q.getProperty("text");
             String qType = (String) q.getProperty("type");
             Long questionGroupSurvey = (Long) qgParents.get(questionGroup);
+            Boolean mandatory = (Boolean) q.getProperty("mandatoryFlag");
 
             if (questionGroup == null || questionGroupSurvey == null) { // in no group or a nonexistent group; hopelessly lost
                 System.out.printf("#ERR: Question [%d] '%s',survey %d, group %d\n",
@@ -267,6 +266,7 @@ public class PrintTreeStructure implements Process {
                 qNames.put(questionId, questionText);
                 qTypes.put(questionId, qType);
                 qOrder.put(questionId, order);
+                qMandatory.put(questionId, mandatory);
                 if (!questionGroupSurvey.equals(questionSurvey)) {
                     System.out.printf("#ERR: Question [%d] '%s' in survey %d, but group %d is in survey %d\n",
                             questionId, questionText, questionSurvey, questionGroup, questionGroupSurvey);
