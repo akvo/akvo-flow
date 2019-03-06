@@ -1,0 +1,44 @@
+{
+  "extends": "airbnb",
+  "parser": "babel-eslint",
+  "env": {
+    "browser": true,
+    "node": true
+  },
+  "plugins": [
+    "react",
+    "babel"
+  ],
+  "parserOptions": {
+    "ecmaFeatures": {
+      "jsx": true
+    }
+  },
+  "rules": {
+    "new-cap": [
+      2, 
+      { "capIsNewExceptions": ["Immutable.Map", "Immutable.Set", "Immutable.List", "Immutable.OrderedMap"] }
+    ],
+    "react/forbid-prop-types": 0,
+    "react/no-unused-prop-types": 0,
+    "react/no-multi-comp": 0,
+    "jsx-a11y/no-static-element-interactions": 0,
+    "comma-dangle": ["error", {
+      "arrays": "always-multiline",
+      "objects": "always-multiline",
+      "imports": "always-multiline",
+      "exports": "never",
+      "functions": "never"
+    }],
+    "class-methods-use-this": 1,
+    "no-plusplus": ["error", { "allowForLoopAfterthoughts": true }],
+    "radix": 1,
+    "global-require": 1
+  },
+  "globals": {
+    "window": true,
+    "document": true,
+    "FLOW": true,
+    "Ember": true
+  }
+}
