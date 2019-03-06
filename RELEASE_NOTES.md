@@ -1,5 +1,16 @@
 # Akvo Flow Release Notes
 ----
+# Akvo Flow Dashboard v1.9.43 - Patient Poppy
+Date: 01-03-2019
+
+# New and noteworthy
+* **Surveys** - Make it easier to reorder options when editing questions [#2891]. Order forms alphabetically in the surveys tab but always have the registration form first for monitoring surveys [#2917]
+* **Development environment** - Upgrade spring framework libraries to fix security vulnerabilities on the repository [#2896]
+
+# Resolved issues
+* **Bug fixes** - Display reagent codes on caddisfly tests [#2842]. Fix survey bootstrap failing for new surveys [#2980]
+* **Backend** - Add mandatory flag status for questions in tree-printing script [#2978]. Avoid concurrent modification errors [#2931]
+
 # Akvo Flow Dashboard v1.9.42 - Outstanding Orange
 Date: 06-02-2019
 
