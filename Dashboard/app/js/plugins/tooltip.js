@@ -1,4 +1,4 @@
-this.tooltip = function() {
+window.tooltip = function() {
 	/* CONFIG */
 	xOffset = 10;
 	yOffset = 20;
@@ -26,5 +26,5 @@ this.tooltip = function() {
 };
 // starting the script on page load
 $(document).ready(function() {
-	tooltip();
+	window.tooltip();
 });

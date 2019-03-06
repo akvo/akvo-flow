@@ -23,6 +23,7 @@ require('akvo-flow/views/maps/map-views-common');
 require('akvo-flow/views/messages/message-view');
 require('akvo-flow/views/devices/devices-views');
 require('akvo-flow/views/devices/assignments-list-tab-view');
+require('akvo-flow/views/devices/assignments-list-view');
 require('akvo-flow/views/devices/assignment-edit-views');
 require('akvo-flow/views/devices/survey-bootstrap-view');
 require('akvo-flow/views/users/user-view');

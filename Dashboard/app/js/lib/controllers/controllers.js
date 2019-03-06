@@ -3,10 +3,10 @@
 // ***********************************************//
 // Define the main application controller. This is automatically picked up by
 // the application and initialized.
+loader.require('akvo-flow/flowenv');
+loader.require('akvo-flow/currentuser');
 require('akvo-flow/core-common');
-require('akvo-flow/flowenv');
 require('akvo-flow/controllers/languages');
-require('akvo-flow/currentuser');
 require('akvo-flow/controllers/permissions');
 require('akvo-flow/controllers/general-controllers-common');
 require('akvo-flow/controllers/survey-controllers');

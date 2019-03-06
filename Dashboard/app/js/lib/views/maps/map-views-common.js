@@ -1,3 +1,4 @@
+const { create_geomodel } = require('../../../plugins/geocells');
 FLOW.NavMapsView = FLOW.View.extend({
   templateName: 'navMaps/nav-maps-common',
   showDetailsBool: false,

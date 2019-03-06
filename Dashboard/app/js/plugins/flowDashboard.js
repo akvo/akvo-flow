@@ -1,6 +1,6 @@
 // Akvo Flow DashBoard Interaction
 // loic@akvo.org
-this.tooltip = function () {
+const tooltip = function () {
   /* CONFIG */
   var xOffset = 10;
   var yOffset = 20;
