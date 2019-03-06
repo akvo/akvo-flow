@@ -42,7 +42,7 @@ FLOW.ReportLoader = Ember.Object.create({
 });
 
 FLOW.ExportReportsView = Ember.View.extend({
-  templateName: 'navReports/export-reports',
+  template: Ember.Handlebars.compile(require('templates/navReports/export-reports')),
   missingSurvey: false,
   
   updateSurveyStatus: function (surveyStatus) {
@@ -230,7 +230,7 @@ FLOW.ExportReportTypeView = Ember.View.extend({
 });
 
 FLOW.ReportsListView = Ember.View.extend({
-  templateName: 'navReports/reports-list',
+  template: Ember.Handlebars.compile(require('templates/navReports/reports-list')),
 
   didInsertElement: function () {
     FLOW.router.reportsController.populate();
@@ -242,7 +242,7 @@ FLOW.ReportsListView = Ember.View.extend({
 });
 
 FLOW.ReportListItemView = FLOW.View.extend({
-  templateName: 'navReports/report',
+  template: Ember.Handlebars.compile(require('templates/navReports/report')),
 
   reportType: function(){
     var reportTypeClasses = {

@@ -28,10 +28,9 @@ require('akvo-flow/views/devices/assignment-edit-views');
 require('akvo-flow/views/devices/survey-bootstrap-view');
 require('akvo-flow/views/users/user-view');
 
-FLOW.ApplicationView = Ember.View.extend({
-  templateName: 'application/application',
+FLOW.ApplicationView = Ember.View.extend({ 
+  template: Ember.Handlebars.compile(require('templates/application/application.handlebars')),
 });
-
 
 FLOW.locale = function (i18nKey) {
   return 'Ember.STRINGS._select_survey_group';
@@ -549,7 +548,7 @@ FLOW.registerViewHelper('date2', Ember.View.extend({
 //                      main navigation
 // ********************************************************//
 FLOW.NavigationView = Em.View.extend({
-  templateName: 'application/navigation',
+  template: Ember.Handlebars.compile(require('templates/application/navigation')),
   selectedBinding: 'controller.selected',
 
   showMapsButton: function () {
@@ -670,148 +669,134 @@ FLOW.DateField2 = Ember.TextField.extend({
   }
 });
 
-// home screen view
-FLOW.NavHomeView = Ember.View.extend({
-  templateName: 'navHome/nav-home'
-});
-
-// project views
-FLOW.NavProjectsView = Ember.View.extend({
-  templateName: 'navProjects/nav-projects-main'
-});
-
 // surveys views
 FLOW.NavSurveysView = Ember.View.extend({
-  templateName: 'navSurveys/nav-surveys'
+  template: Ember.Handlebars.compile(require('templates/navSurveys/nav-surveys'))
 });
 FLOW.NavSurveysMainView = Ember.View.extend({
-  templateName: 'navSurveys/nav-surveys-main'
+  template: Ember.Handlebars.compile(require('templates/navSurveys/nav-surveys-main'))
 });
 
 FLOW.NavSurveysEditView = Ember.View.extend({
-  templateName: 'navSurveys/nav-surveys-edit'
+  template: Ember.Handlebars.compile(require('templates/navSurveys/nav-surveys-edit'))
 });
 
 FLOW.ManageNotificationsView = Ember.View.extend({
-  templateName: 'navSurveys/manage-notifications'
+  template: Ember.Handlebars.compile(require('templates/navSurveys/manage-notifications'))
 });
 
 FLOW.ManageTranslationsView = Ember.View.extend({
-  templateName: 'navSurveys/manage-translations'
+  template: Ember.Handlebars.compile(require('templates/navSurveys/manage-translations'))
 });
 
 FLOW.EditQuestionsView = Ember.View.extend({
-  templateName: 'navSurveys/edit-questions'
+  template: Ember.Handlebars.compile(require('templates/navSurveys/edit-questions'))
 });
 
 // devices views
 FLOW.NavDevicesView = Ember.View.extend({
-  templateName: 'navDevices/nav-devices'
+  template: Ember.Handlebars.compile(require('templates/navDevices/nav-devices'))
 });
 
 FLOW.CurrentDevicesView = FLOW.View.extend({
-  templateName: 'navDevices/devices-list-tab/devices-list'
+  template: Ember.Handlebars.compile(require('templates/navDevices/devices-list-tab/devices-list'))
 });
 
 FLOW.AssignSurveysOverviewView = FLOW.View.extend({
-  templateName: 'navDevices/assignment-list-tab/assignment-list'
+  template: Ember.Handlebars.compile(require('templates/navDevices/assignment-list-tab/assignment-list'))
 });
 
 FLOW.EditSurveyAssignmentView = Ember.View.extend({
-  templateName: 'navDevices/assignment-edit-tab/assignment-edit'
+  template: Ember.Handlebars.compile(require('templates/navDevices/assignment-edit-tab/assignment-edit'))
 });
 
 FLOW.SurveyBootstrapView = FLOW.View.extend({
-  templateName: 'navDevices/bootstrap-tab/survey-bootstrap'
+  template: Ember.Handlebars.compile(require('templates/navDevices/bootstrap-tab/survey-bootstrap'))
 });
 
 // data views
 FLOW.NavDataView = Ember.View.extend({
-  templateName: 'navData/nav-data'
+  template: Ember.Handlebars.compile(require('templates/navData/nav-data'))
 });
 
 FLOW.InspectDataView = Ember.View.extend({
-  templateName: 'navData/inspect-data'
+  template: Ember.Handlebars.compile(require('templates/navData/inspect-data'))
 });
 
 FLOW.BulkUploadView = Ember.View.extend({
-  templateName: 'navData/bulk-upload'
+  template: Ember.Handlebars.compile(require('templates/navData/bulk-upload'))
 });
 
 FLOW.CascadeResourcesView = Ember.View.extend({
-	  templateName: 'navData/cascade-resources'
+	  template: Ember.Handlebars.compile(require('templates/navData/cascade-resources'))
 });
 
 FLOW.MonitoringDataView = Ember.View.extend({
-  templateName: 'navData/monitoring-data'
+  template: Ember.Handlebars.compile(require('templates/navData/monitoring-data'))
 });
 
 FLOW.ChartReportsView = Ember.View.extend({
-  templateName: 'navReports/chart-reports'
+  template: Ember.Handlebars.compile(require('templates/navReports/chart-reports'))
 });
 
 // resources views
 FLOW.NavResourcesView = Ember.View.extend({
-  templateName: 'navResources/nav-resources'
+  template: Ember.Handlebars.compile(require('templates/navResources/nav-resources'))
 });
 
 // applets
-FLOW.BootstrapApplet = Ember.View.extend({
-  templateName: 'navDevices/bootstrap-tab/applets/bootstrap-applet'
-});
-
 FLOW.rawDataReportApplet = Ember.View.extend({
-  templateName: 'navReports/applets/raw-data-report-applet'
+  template: Ember.Handlebars.compile(require('templates/navReports/applets/raw-data-report-applet'))
 });
 
 FLOW.comprehensiveReportApplet = Ember.View.extend({
-  templateName: 'navReports/applets/comprehensive-report-applet'
+  template: Ember.Handlebars.compile(require('templates/navReports/applets/comprehensive-report-applet'))
 });
 
 FLOW.googleEarthFileApplet = Ember.View.extend({
-  templateName: 'navReports/applets/google-earth-file-applet'
+  template: Ember.Handlebars.compile(require('templates/navReports/applets/google-earth-file-applet'))
 });
 
 FLOW.surveyFormApplet = Ember.View.extend({
-  templateName: 'navReports/applets/survey-form-applet'
+  template: Ember.Handlebars.compile(require('templates/navReports/applets/survey-form-applet'))
 });
 
 FLOW.bulkImportApplet = Ember.View.extend({
-  templateName: 'navData/applets/bulk-import-applet'
+  template: Ember.Handlebars.compile(require('templates/navData/applets/bulk-import-applet'))
 });
 
 FLOW.rawDataImportApplet = Ember.View.extend({
-  templateName: 'navData/applets/raw-data-import-applet'
+  template: Ember.Handlebars.compile(require('templates/navData/applets/raw-data-import-applet'))
 });
 
 // users views
 FLOW.NavUsersView = Ember.View.extend({
-  templateName: 'navUsers/nav-users'
+  template: Ember.Handlebars.compile(require('templates/navUsers/nav-users'))
 });
 
 // Messages views
 FLOW.NavMessagesView = Ember.View.extend({
-  templateName: 'navMessages/nav-messages'
+  template: Ember.Handlebars.compile(require('templates/navMessages/nav-messages'))
 });
 
 // admin views
 FLOW.NavAdminView = FLOW.View.extend({
-  templateName: 'navAdmin/nav-admin'
+  template: Ember.Handlebars.compile(require('templates/navAdmin/nav-admin'))
 });
 
 FLOW.HeaderView = FLOW.View.extend({
-  templateName: 'application/header-common'
+  template: Ember.Handlebars.compile(require('templates/application/header-common'))
 });
 
 FLOW.FooterView = FLOW.View.extend({
-  templateName: 'application/footer'
+  template: Ember.Handlebars.compile(require('templates/application/footer'))
 });
 
 // ********************************************************//
 //             Subnavigation for the Data tabs
 // ********************************************************//
 FLOW.DatasubnavView = FLOW.View.extend({
-  templateName: 'navData/data-subnav',
+  template: Ember.Handlebars.compile(require('templates/navData/data-subnav')),
   selectedBinding: 'controller.selected',
   NavItemView: Ember.View.extend({
     tagName: 'li',
@@ -838,7 +823,7 @@ FLOW.DatasubnavView = FLOW.View.extend({
 //             Subnavigation for the Device tabs
 // ********************************************************//
 FLOW.DevicesSubnavView = FLOW.View.extend({
-  templateName: 'navDevices/devices-subnav',
+  template: Ember.Handlebars.compile(require('templates/navDevices/devices-subnav')),
   selectedBinding: 'controller.selected',
   NavItemView: Ember.View.extend({
     tagName: 'li',
@@ -854,7 +839,7 @@ FLOW.DevicesSubnavView = FLOW.View.extend({
 //             Subnavigation for the Resources tabs
 // ********************************************************//
 FLOW.ResourcesSubnavView = Em.View.extend({
-  templateName: 'navResources/resources-subnav',
+  template: Ember.Handlebars.compile(require('templates/navResources/resources-subnav')),
   selectedBinding: 'controller.selected',
   NavItemView: Ember.View.extend({
     tagName: 'li',

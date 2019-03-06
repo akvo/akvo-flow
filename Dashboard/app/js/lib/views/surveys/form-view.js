@@ -1,5 +1,5 @@
 FLOW.FormView = Ember.View.extend({
-	templateName: 'navSurveys/form',
+	template: Ember.Handlebars.compile(require('templates/navSurveys/form')),
 	showFormBasics: false,
 
 	manageTranslations: false,

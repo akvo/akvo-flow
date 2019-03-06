@@ -122,7 +122,7 @@ FLOW.MonitoringDataTableView = FLOW.View.extend({
  * View of each row/data point in the monitoring data tab
  */
 FLOW.DataPointView = FLOW.View.extend({
-    templateName: 'navData/monitoring-data-row',
+    template: Ember.Handlebars.compile(require('templates/navData/monitoring-data-row')),
 
     approvalStatus: [{label: Ember.String.loc('_pending'), value: 'PENDING'}, { label: Ember.String.loc('_approved'), value: 'APPROVED' },{ label: Ember.String.loc('_rejected'), value: 'REJECTED'}],
      

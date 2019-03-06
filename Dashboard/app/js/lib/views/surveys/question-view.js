@@ -3,7 +3,7 @@ function sortByOrder(a , b) {
 }
 
 FLOW.QuestionView = FLOW.View.extend({
-  templateName: 'navSurveys/question-view',
+  template: Ember.Handlebars.compile(require('templates/navSurveys/question-view')),
   content: null,
   variableName: null,
   text: null,
@@ -928,7 +928,7 @@ FLOW.OptionListView = Ember.CollectionView.extend({
   tagName: 'ul',
   content: null,
   itemViewClass: Ember.View.extend({
-    templateName: 'navSurveys/question-option',
+    template: Ember.Handlebars.compile(require('templates/navSurveys/question-option')),
     topOption: function () {
       var option = this.get('content');
       if (option) {

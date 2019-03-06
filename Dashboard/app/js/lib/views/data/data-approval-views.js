@@ -12,11 +12,11 @@ FLOW.DataApprovalView = Ember.View.extend({
 });
 
 FLOW.ApprovalGroupListView = Ember.View.extend({
-    templateName: 'navData/data-approval-group-list'
+    template: Ember.Handlebars.compile(require('templates/navData/data-approval-group-list'))
 });
 
 FLOW.ApprovalGroupView = Ember.View.extend({
-    templateName: 'navData/data-approval-group',
+    template: Ember.Handlebars.compile(require('templates/navData/data-approval-group')),
 
     approvalTypeOptions: [{label: Ember.String.loc('_ordered'), optionValue: "ordered"},
                           {label: Ember.String.loc('_unordered'), optionValue: "unordered"}],
@@ -24,5 +24,5 @@ FLOW.ApprovalGroupView = Ember.View.extend({
 
 
 FLOW.ApprovalStepsView = Ember.View.extend({
-    templateName: 'navData/data-approval-steps',
+    template: Ember.Handlebars.compile(require('templates/navData/data-approval-steps')),
 });

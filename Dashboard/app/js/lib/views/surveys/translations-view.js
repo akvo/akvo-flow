@@ -1,5 +1,5 @@
 FLOW.TranslationsView = FLOW.View.extend({
-  templateName: 'navSurveys/manage-translations',
+  template: Ember.Handlebars.compile(require('templates/navSurveys/manage-translations')),
 
   saveTranslationsAndClose: function () {
     FLOW.translationControl.saveTranslations();

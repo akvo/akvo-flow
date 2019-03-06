@@ -8,7 +8,7 @@ require('akvo-flow/views/maps/map-views-common-public');
 
 
 FLOW.ApplicationView = Ember.View.extend({
-  templateName: 'application/application-public',
+  template: Ember.Handlebars.compile(require('templates/application/application-public')),
 });
 
 
@@ -217,5 +217,5 @@ Ember.Select.reopen({
 });
 
 FLOW.FooterView = FLOW.View.extend({
-  templateName: 'application/footer-public'
+  template: Ember.Handlebars.compile(require('templates/application/footer-public'))
 });

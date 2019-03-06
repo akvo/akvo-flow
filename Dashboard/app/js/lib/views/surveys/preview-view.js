@@ -1,5 +1,5 @@
 FLOW.PreviewView = FLOW.View.extend({
-  templateName: 'navSurveys/preview-view',
+  template: Ember.Handlebars.compile(require('templates/navSurveys/preview-view')),
   closePreviewPopup: function () {
     FLOW.previewControl.set('showPreviewPopup', false);
   }

@@ -585,11 +585,11 @@ FLOW.QuestionAnswerMultiOptionEditView = Ember.CollectionView.extend({
 });
 
 FLOW.QuestionAnswerInspectDataView = FLOW.QuestionAnswerView.extend({
-  templateName: 'navData/question-answer',
+  template: Ember.Handlebars.compile(require('templates/navData/question-answer')),
 });
 
 FLOW.QuestionAnswerMonitorDataView = FLOW.QuestionAnswerView.extend({
-  templateName: 'navData/question-answer',
+  template: Ember.Handlebars.compile(require('templates/navData/question-answer')),
   
   doEdit : function (){ //override the doEdit action in the parentView
     this._super();

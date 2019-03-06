@@ -9,11 +9,11 @@ if (!String.prototype.trim) {
 }
 
 FLOW.ProjectListView = FLOW.View.extend({
-  templateName: 'navSurveys/project-list'
+  template: Ember.Handlebars.compile(require('templates/navSurveys/project-list'))
 });
 
 FLOW.ProjectView = FLOW.View.extend({
-  templateName: 'navSurveys/project',
+  template: Ember.Handlebars.compile(require('templates/navSurveys/project')),
 });
 
 FLOW.Project = FLOW.View.extend({

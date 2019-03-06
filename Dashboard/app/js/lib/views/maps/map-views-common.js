@@ -1,6 +1,7 @@
 const { create_geomodel } = require('../../../plugins/geocells');
+
 FLOW.NavMapsView = FLOW.View.extend({
-  templateName: 'navMaps/nav-maps-common',
+  template: Ember.Handlebars.compile(require('templates/navMaps/nav-maps-common')),
   showDetailsBool: false,
   detailsPaneElements: null,
   detailsPaneVisible: null,
@@ -286,7 +287,7 @@ FLOW.PlacemarkDetailsView = FLOW.View.extend({});
 FLOW.PlacemarkDetailPhotoView = Ember.View.extend({});
 
 FLOW.GeoshapeMapView = FLOW.View.extend({
-  templateName: 'navMaps/geoshape-map',
+  template: Ember.Handlebars.compile(require('templates/navMaps/geoshape-map')),
   geoshape: null,
 
   didInsertElement: function() {

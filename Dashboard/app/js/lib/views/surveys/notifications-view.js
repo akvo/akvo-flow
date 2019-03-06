@@ -1,5 +1,5 @@
 FLOW.NotificationsView = FLOW.View.extend({
-  templateName: 'navSurveys/manage-notifications',
+  template: Ember.Handlebars.compile(require('templates/navSurveys/manage-notifications')),
   notificationOption: null,
   notificationType: null,
   expiryDate: null,
