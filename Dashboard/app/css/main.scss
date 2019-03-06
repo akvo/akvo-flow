@@ -155,7 +155,7 @@ pre {
         border-radius: 3px;
         box-shadow: 0 5px 8px rgba(212, 212, 212, 0.5);
         padding: 5px 3px 5px 25px;
-        background: rgb(248, 248, 248) url(../images/loader.gif) 5px center no-repeat;
+        background: rgb(248, 248, 248) url(../static/images/loader.gif) 5px center no-repeat;
         color: rgb(252, 159, 0);
     }
 }
@@ -267,7 +267,7 @@ a, a:link, a:visited {
     &.AddBtn {
         display: inline-block !important;
         padding: 1em 1% 0.8em 1.5em;
-        background: url(../images/addbtn.png) left center no-repeat;
+        background: url(../static/images/addbtn.png) left center no-repeat;
         color: rgb(0, 123, 182);
         text-align: left;
         font-size: 1.1em;
@@ -281,11 +281,11 @@ a, a:link, a:visited {
         width: 20px;
         height: 16px;
         border-radius: 6px;
-        background: url(../images/closeDialog.png) center top no-repeat;
+        background: url(../static/images/closeDialog.png) center top no-repeat;
         text-indent: -9999px;
         -o-border-radius: 6px;
         &:hover {
-            background: url(../images/closeDialog.png) center bottom no-repeat;
+            background: url(../static/images/closeDialog.png) center bottom no-repeat;
         }
     }
 }
@@ -551,7 +551,7 @@ header.top {
         left: 0px;
         height: 40px;
         width: 145px;
-        background: url(../images/akvoFlowLogo.svg) no-repeat 5px top;
+        background: url(../static/images/akvoFlowLogo.svg) no-repeat 5px top;
         text-indent: -9999px;
         background-size: 90% auto;
     }
@@ -786,7 +786,7 @@ table.dataTable {
             position: relative;
             padding: 9px 1em 9px 1em;
             border-right: thin solid white;
-            background: url(../images/sortTableArrows.png) right center no-repeat;
+            background: url(../static/images/sortTableArrows.png) right center no-repeat;
             text-align: center;
             font-weight: normal;
             color: $linkColor;
@@ -847,11 +847,11 @@ table.dataTable thead tr th a.helpIcon {
 }
 
 table.dataTable thead tr th.sorting_desc {
-    background: url(../images/sortTableDown.png) right center no-repeat;
+    background: url(../static/images/sortTableDown.png) right center no-repeat;
 }
 
 table.dataTable thead tr th.sorting_asc {
-    background: url(../images/sortTableUp.png) right center no-repeat;
+    background: url(../static/images/sortTableUp.png) right center no-repeat;
 }
 
 table.dataTable thead tr th:last-child {
@@ -912,7 +912,7 @@ tfoot tr {
 }
 
 .greyBg a.standardBtn {
-    background-image: url("../images/addPlus.png") left center no-repeat;
+    background-image: url("../static/images/addPlus.png") left center no-repeat;
 }
 
 @mixin disabledMix {
@@ -1139,11 +1139,11 @@ input.hasDatepicker {
     margin: 3px auto;
     padding: 0;
     width: 99%;
-    background: rgb(242, 242, 242) url(../images/FieldSetSep.png) center center no-repeat;
+    background: rgb(242, 242, 242) url(../static/images/FieldSetSep.png) center center no-repeat;
 }
 
 .fieldSetWrap.makeWhite {
-    background: white url(../images/FieldSetSep.png) center center no-repeat;
+    background: white url(../static/images/FieldSetSep.png) center center no-repeat;
 }
 
 #assignSurveys .fieldSetWrap fieldset table {
@@ -1384,11 +1384,11 @@ nav.menuGroupWrap {
             width: calc(98%-30px);
             border-bottom: thin solid rgb(55, 55, 55);
             background: rgb(70, 70, 70);
-            background: rgba(255, 255, 255, 0.05) url(../images/selectFolder.svg) 2px center no-repeat;
+            background: rgba(255, 255, 255, 0.05) url(../static/images/selectFolder.svg) 2px center no-repeat;
             background-size: 20px 20px;
             div.edit {
                 position: absolute;
-                background: url(../images/IconEditGrey.svg) center center no-repeat;
+                background: url(../static/images/IconEditGrey.svg) center center no-repeat;
                 background-size: 20px 20px;
                 width: 25px;
                 height: 25px;
@@ -1399,7 +1399,7 @@ nav.menuGroupWrap {
             }
             div.trashFolder {
                 position: absolute;
-                background: url(../images/IconTrashGrey.svg) center center no-repeat;
+                background: url(../static/images/IconTrashGrey.svg) center center no-repeat;
                 background-size: 20px 20px;
                 width: 25px;
                 height: 25px;
@@ -1410,7 +1410,7 @@ nav.menuGroupWrap {
             }
             div.copyFolder {
                 position: absolute;
-                background: url(../images/IconCopyGrey.svg) center center no-repeat;
+                background: url(../static/images/IconCopyGrey.svg) center center no-repeat;
                 background-size: 20px 20px;
                 width: 25px;
                 height: 25px;
@@ -1421,11 +1421,11 @@ nav.menuGroupWrap {
             }
             &.folderUp {
                 background: rgb(70, 70, 70);
-                background: url(../images/folderUp.svg) 2px center no-repeat;
+                background: url(../static/images/folderUp.svg) 2px center no-repeat;
                 background-size: 35px 35px;
                 &:hover {
                     background: rgb(70, 70, 70);
-                    background: rgba(255, 255, 255, 0.05) url(../images/folderUpHover.svg) 2px center no-repeat;
+                    background: rgba(255, 255, 255, 0.05) url(../static/images/folderUpHover.svg) 2px center no-repeat;
                     background-size: 35px 35px;
                 }
                 a {
@@ -1441,11 +1441,11 @@ nav.menuGroupWrap {
             }
             &.current {
                 border-bottom: thin solid rgb(55, 55, 55);
-                background: rgb(90, 90, 90) url(../images/selectFolder.svg) left center no-repeat;
-                background: rgba(255, 255, 255, 0.15) url(../images/selectFolder.svg) 2px center no-repeat;
+                background: rgb(90, 90, 90) url(../static/images/selectFolder.svg) left center no-repeat;
+                background: rgba(255, 255, 255, 0.15) url(../static/images/selectFolder.svg) 2px center no-repeat;
                 background-size: 20px 20px;
                 a, a:hover {
-                    background: url(../images/carretFolderSelected.svg) right center no-repeat;
+                    background: url(../static/images/carretFolderSelected.svg) right center no-repeat;
                     color: $flowAnchorLinkHover;
                     background-size: 15px 25px;
                 }
@@ -1455,15 +1455,15 @@ nav.menuGroupWrap {
                 padding: 10px 10% 10px 2%;
                 width: 93%;
                 height: 23px;
-                background: url(../images/carretFolder.svg) right center no-repeat;
+                background: url(../static/images/carretFolder.svg) right center no-repeat;
                 background-size: 15px 25px;
                 color: rgb(153, 153, 153);
                 color: rgba(255, 255, 255, 0.6);
                 @include noWrapTxt;
                 cursor: pointer;
                 &:hover {
-                    background: rgb(80, 80, 80) url(../images/carretFolder.svg) right center no-repeat;
-                    background: rgba(255, 255, 255, 0.05) url(../images/carretFolder.svg) right center no-repeat;
+                    background: rgb(80, 80, 80) url(../static/images/carretFolder.svg) right center no-repeat;
+                    background: rgba(255, 255, 255, 0.05) url(../static/images/carretFolder.svg) right center no-repeat;
                     color: rgb(114, 205, 255);
                     background-size: 15px 25px;
                 }
@@ -1499,16 +1499,16 @@ nav.menuGroupWrap {
         transition: background 0.4s ease-in;
         &.scrollUp {
             border-radius: 5px 5px 0 0;
-            background: rgb(31, 31, 31) url(../images/scrollUp.png) center center no-repeat;
+            background: rgb(31, 31, 31) url(../static/images/scrollUp.png) center center no-repeat;
             &:hover {
-                background: rgb(107, 134, 141) url(../images/scrollUp.png) center center no-repeat;
+                background: rgb(107, 134, 141) url(../static/images/scrollUp.png) center center no-repeat;
             }
         }
         &.scrollDown {
             border-radius: 0 0 5px 5px;
-            background: rgb(31, 31, 31) url(../images/scrollDown.png) center center no-repeat;
+            background: rgb(31, 31, 31) url(../static/images/scrollDown.png) center center no-repeat;
             &:hover {
-                background: rgb(107, 134, 141) url(../images/scrollDown.png) center center no-repeat;
+                background: rgb(107, 134, 141) url(../static/images/scrollDown.png) center center no-repeat;
             }
         }
     }
@@ -1748,13 +1748,13 @@ section.topBar {
                 &.homeRoot {
                     border-radius: 3px 0 0 3px;
                     width: 40px;
-                    background: url(../images/breadCrumb-Root.png) center center no-repeat $akvoLightBlue;
+                    background: url(../static/images/breadCrumb-Root.png) center center no-repeat $akvoLightBlue;
                     background-size: 60%;
                     text-indent: -9999px;
                     z-index: 9999;
                     margin-left: 0;
                     &:hover {
-                        background: url(../images/breadCrumb-Root.png) center center no-repeat $flowAnchorLinkHover;
+                        background: url(../static/images/breadCrumb-Root.png) center center no-repeat $flowAnchorLinkHover;
                         background-size: 60%;
                     }
                 }
@@ -1772,7 +1772,7 @@ section.topBar {
                         padding-right: 0;
                         border-radius: 3px 0 0 3px;
                         width: 40px;
-                        background: url(../images/breadCrumb-Root.png) center center no-repeat $akvoLightBlue;
+                        background: url(../static/images/breadCrumb-Root.png) center center no-repeat $akvoLightBlue;
                         text-indent: -9999px;
                         z-index: 9999;
                         margin-left: 0;
@@ -1792,7 +1792,7 @@ section.topBar {
                             z-index: 10;
                         }
                         &:hover {
-                            background: url(../images/breadCrumb-Root.png) center center no-repeat $akvoLightBlue;
+                            background: url(../static/images/breadCrumb-Root.png) center center no-repeat $akvoLightBlue;
                         }
                     }
                     &:after {
@@ -1815,7 +1815,7 @@ section.topBar {
                 padding: 0;
                 &.actionTitleEdit {
                     padding: 5px 5px 5px 15px;
-                    background: url(../images/IconEditGreyLight.svg) left center no-repeat;
+                    background: url(../static/images/IconEditGreyLight.svg) left center no-repeat;
                     background-size: 15px;
                 }
             }
@@ -2044,22 +2044,22 @@ li.aFolder {
     a.editFolderName {
         display: inline-block;
         width: 30px;
-        background: url(../images/IconEditGreyLight.svg) center center no-repeat;
+        background: url(../static/images/IconEditGreyLight.svg) center center no-repeat;
         background-size: 25px;
         text-indent: -9999px;
         opacity: 0.5;
         &:hover {
-            background: url(../images/IconEditOrange.svg) center center no-repeat;
+            background: url(../static/images/IconEditOrange.svg) center center no-repeat;
             background-size: 25px;
             opacity: 1;
         }
     }
     a.editingFolderName {
         @extend .editFolderName;
-        background: url(../images/IconSave.svg) center center no-repeat;
+        background: url(../static/images/IconSave.svg) center center no-repeat;
         background-size: 70px 70px;
         &:hover {
-            background: url(../images/IconSaveOrange.svg) center center no-repeat;
+            background: url(../static/images/IconSaveOrange.svg) center center no-repeat;
             background-size: 70px 70px;
             opacity: 1;
         }
@@ -2071,7 +2071,7 @@ li.aFolder {
         padding-bottom: 10px;
         h2 {
             color: rgba($akvoBlack, 0.7);
-            background: url(../images/folderIcn.svg) right center no-repeat;
+            background: url(../static/images/folderIcn.svg) right center no-repeat;
             display: inline;
             width: initial;
             padding-right: 45px;
@@ -2086,7 +2086,7 @@ li.aFolder {
     }
     &.folderEmpty {
         h2 {
-            background: url(../images/folderIcnEmpty.svg) right center no-repeat;
+            background: url(../static/images/folderIcnEmpty.svg) right center no-repeat;
         }
     }
 }
@@ -2223,7 +2223,7 @@ ul.surveyInfo li.responseNumber {
     -moz-animation: appearFx 2s linear  1 normal forwards;
     -o-animation: appearFx 2s linear 1 normal forwards;
     animation: appearFx 2s linear 1 normal forwards;
-    background-image: url(../images/carret.svg);
+    background-image: url(../static/images/carret.svg);
     background-position: right center;
     background-repeat: no-repeat;
 }
@@ -2473,24 +2473,24 @@ div.published {
 }
 
 a.publishProjectBtn {
-    background: $flowAnchorLink url(../images/IconPublishWhite.svg) left center no-repeat;
+    background: $flowAnchorLink url(../static/images/IconPublishWhite.svg) left center no-repeat;
     background-size: 55px 55px;
     padding: 10px 15px 10px 45px;
     color: white;
     border-radius: 3px;
     &.noChanges {
-        background: rgba(32, 32, 36, 0.1) url(../images/IconPublishWhite.svg) left center no-repeat;
+        background: rgba(32, 32, 36, 0.1) url(../static/images/IconPublishWhite.svg) left center no-repeat;
         background-size: 55px 55px;
         padding: 10px 15px 10px 45px;
         color: white;
         cursor: text;
         &:hover {
-            background: rgba(32, 32, 36, 0.1) url(../images/IconPublishWhite.svg) left center no-repeat;
+            background: rgba(32, 32, 36, 0.1) url(../static/images/IconPublishWhite.svg) left center no-repeat;
             background-size: 55px 55px;
         }
     }
     &:hover {
-        background: $flowAnchorLinkHover url(../images/IconPublishWhite.svg) left center no-repeat;
+        background: $flowAnchorLinkHover url(../static/images/IconPublishWhite.svg) left center no-repeat;
         background-size: 55px 55px;
         color: white;
     }
@@ -2619,7 +2619,7 @@ span.qtnGroupHead {
     display: inline-block;
     margin: 0 0 0 10px;
     padding: 0.75em 0.5em 0.25em 17px;
-    background: url(../images/editTinyIcon.png) left center no-repeat;
+    background: url(../static/images/editTinyIcon.png) left center no-repeat;
 }
 
 .aQuestionSet header input {
@@ -2650,13 +2650,13 @@ span.qtnGroupHead {
     padding: 0.50em 0.5em 0.35em 25px;
     width: 7%;
     border-radius: 3px;
-    background: rgb(235, 235, 235) url(../images/addSet.png) left center no-repeat;
+    background: rgb(235, 235, 235) url(../static/images/addSet.png) left center no-repeat;
     color: rgb(227, 27, 35);
     @include noWrapTxt;
 }
 
 .aQuestionSet footer a.addSet:hover {
-    background: rgb(214, 214, 214) url(../images/addSet.png) left center no-repeat;
+    background: rgb(214, 214, 214) url(../static/images/addSet.png) left center no-repeat;
     color: rgb(227, 27, 35);
 }
 
@@ -2774,7 +2774,7 @@ nav.questionActionMenu a:hover {
 }
 
 .aQuestionSet header nav.qtnGroupMenu ul li a.showQuestionGroup {
-    background: url(../images/IconShow.svg) left center no-repeat;
+    background: url(../static/images/IconShow.svg) left center no-repeat;
     text-align: left;
     padding-left: 25px;
     background-size: 14%;
@@ -2784,7 +2784,7 @@ nav.questionActionMenu a:hover {
 }
 
 .aQuestionSet header nav.qtnGroupMenu ul li a.showQuestionGroup:hover {
-    background: url(../images/IconShowHover.svg) left center no-repeat;
+    background: url(../static/images/IconShowHover.svg) left center no-repeat;
     text-align: left;
     padding-left: 25px;
     background-size: 14%;
@@ -2792,7 +2792,7 @@ nav.questionActionMenu a:hover {
 
 .aQuestionSet header nav.qtnGroupMenu ul li a.showQuestionGroup.shown {
     color: $flowAnchorLinkHover;
-    background: url(../images/IconShowOrange.svg) left center no-repeat;
+    background: url(../static/images/IconShowOrange.svg) left center no-repeat;
     padding-left: 25px;
     background-size: 14%;
 }
@@ -2890,43 +2890,43 @@ nav.questionActionMenu a:hover {
 }
 
 // nav.smallMenu ul li a.editQuestion {
-//     background: url(../images/IconEdit.svg) left center no-repeat;
+//     background: url(../static/images/IconEdit.svg) left center no-repeat;
 // }
 
 // nav.smallMenu ul li a.deleteQuestion {
-//     background: url(../images/IconDelete.svg) left center no-repeat;
+//     background: url(../static/images/IconDelete.svg) left center no-repeat;
 // }
 
 // nav.smallMenu ul li a.moveQuestion {
-//     background: url(../images/IconMove.svg) left center no-repeat;
+//     background: url(../static/images/IconMove.svg) left center no-repeat;
 // }
 
 // nav.smallMenu ul li a.copyQuestion {
-//     background: url(../images/IconCopy.svg) left center no-repeat;
+//     background: url(../static/images/IconCopy.svg) left center no-repeat;
 // }
 
 // nav.smallMenu ul li a.showQuestion {
-//     background: url(../images/IconShow.svg) left center no-repeat;
+//     background: url(../static/images/IconShow.svg) left center no-repeat;
 // }
 
 // nav.smallMenu ul li a.editQuestion:hover {
-//     background: url(../images/IconEditOrange.svg) left center no-repeat;
+//     background: url(../static/images/IconEditOrange.svg) left center no-repeat;
 // }
 
 // nav.smallMenu ul li a.deleteQuestion:hover {
-//     background: url(../images/IconDeleteOrange.svg) left center no-repeat;
+//     background: url(../static/images/IconDeleteOrange.svg) left center no-repeat;
 // }
 
 // nav.smallMenu ul li a.moveQuestion:hover {
-//     background: url(../images/IconMoveOrange.svg) left center no-repeat;
+//     background: url(../static/images/IconMoveOrange.svg) left center no-repeat;
 // }
 
 // nav.smallMenu ul li a.copyQuestion:hover {
-//     background: url(../images/IconCopyOrange.svg) left center no-repeat;
+//     background: url(../static/images/IconCopyOrange.svg) left center no-repeat;
 // }
 
 // nav.smallMenu ul li a.showQuestion:hover {
-//     background: url(../images/IconShowOrange.svg) left center no-repeat;
+//     background: url(../static/images/IconShowOrange.svg) left center no-repeat;
 // }
 
 /*-------------------------------------------------------------------------------------------------------------------------------
@@ -3703,7 +3703,7 @@ div.drawHandle {
 .placeMarkBasicInfo {
     padding: 1em 2%;
     width: 96%;
-    background: url(../images/mapPointDetailSep.png) center bottom no-repeat;
+    background: url(../static/images/mapPointDetailSep.png) center bottom no-repeat;
 }
 
 .placeMarkBasicInfo li {
@@ -3830,7 +3830,7 @@ footer.bottomPage nav ul li a {
 footer.bottomPage nav ul li a.akvoDotOrg {
     margin: 0 10px 0 0;
     width: 42px;
-    background: url(../images/akvo.orgLogo.svg) center center no-repeat;
+    background: url(../static/images/akvo.orgLogo.svg) center center no-repeat;
     text-indent: -9999px;
 }
 
@@ -4254,7 +4254,7 @@ table#languageOption td.formTitle {
 table.surveyTranslate {
     -o-border-radius: 0.25em;
     border-radius: 0.25em;
-    background: white url(../images/borderMiddle.png) center top repeat-y;
+    background: white url(../static/images/borderMiddle.png) center top repeat-y;
 }
 
 table.surveyTranslate td {
@@ -4689,7 +4689,7 @@ table.surveyDetails {
             }
             .tabNav {
                 .aFormTab {
-                    background: rgb(32, 32, 36) url(../images/IconForms.png) no-repeat left center;
+                    background: rgb(32, 32, 36) url(../static/images/IconForms.png) no-repeat left center;
                 }
             }
         }
@@ -4892,10 +4892,10 @@ table.surveyDetails {
             width: 20px;
             text-indent: -9999px;
             &.editSurvey {
-                background: url(../images/IconEdit.svg) center center no-repeat;
+                background: url(../static/images/IconEdit.svg) center center no-repeat;
                 background-size: 18px 18px;
                 &:hover {
-                    background: url(../images/IconEditOrange.svg) center center no-repeat;
+                    background: url(../static/images/IconEditOrange.svg) center center no-repeat;
                     background-size: 18px 18px;
                 }
             }
@@ -5073,19 +5073,19 @@ nav.cascadeBreadCrumb {
                 color: white;
                 padding: 0 2%;
                 width: 96%;
-                background: url(../images/carret.svg) right center no-repeat;
+                background: url(../static/images/carret.svg) right center no-repeat;
                 margin: 5px auto;
                 background-size: 15px 15px;
                 border-top: 1px solid rgba(32, 32, 36, 0.1);
                 &:first-of-type {}
                 &:hover {
-                    background: rgba(255, 255, 255, 0.2) url(../images/carret.svg) right center no-repeat;
+                    background: rgba(255, 255, 255, 0.2) url(../static/images/carret.svg) right center no-repeat;
                     background-size: 15px 15px;
                     cursor: pointer;
                     box-shadow: 1px 1px 1px rgba(32, 32, 36, 0.2);
                 }
                 &.selected {
-                    background: rgba(41, 119, 152, 0.1) url(../images/carret.svg) right center no-repeat;
+                    background: rgba(41, 119, 152, 0.1) url(../static/images/carret.svg) right center no-repeat;
                     background-size: 15px 15px;
                     cursor: text;
                     box-shadow: 1px 1px 1px rgba(32, 32, 36, 0.2);
@@ -5146,13 +5146,13 @@ a.levelUp {
     display: table;
     margin: 20px auto 0;
     padding: 15px 35px 15px 15px;
-    background: rgba($flowAnchorLink, 0) url(../images/IconRightBlue.svg) right center no-repeat;
+    background: rgba($flowAnchorLink, 0) url(../static/images/IconRightBlue.svg) right center no-repeat;
     -webkit-transition: color 0.2s ease-in, background-color 0.2s ease-in;
     transition: color 0.2s ease-in, background-color 0.2s ease-in;
     -webkit-background-size: 25px 25px;
     background-size: 25px 25px;
     &:hover {
-        background: rgba($flowAnchorLink, 0.1) url(../images/IconRightOrange.svg) right center no-repeat;
+        background: rgba($flowAnchorLink, 0.1) url(../static/images/IconRightOrange.svg) right center no-repeat;
         -webkit-background-size: 25px 25px;
         background-size: 25px 25px;
     }
@@ -5162,13 +5162,13 @@ a.levelDown {
     display: table;
     margin: 20px auto 0;
     padding: 15px 15px 15px 35px;
-    background: rgba($flowAnchorLink, 0) url(../images/IconLeftBlue.svg) left center no-repeat;
+    background: rgba($flowAnchorLink, 0) url(../static/images/IconLeftBlue.svg) left center no-repeat;
     -webkit-transition: color 0.2s ease-in, background-color 0.2s ease-in;
     transition: color 0.2s ease-in, background-color 0.2s ease-in;
     -webkit-background-size: 25px 25px;
     background-size: 25px 25px;
     &:hover {
-        background: rgba($flowAnchorLink, 0.1) url(../images/IconLeftOrange.svg) left center no-repeat;
+        background: rgba($flowAnchorLink, 0.1) url(../static/images/IconLeftOrange.svg) left center no-repeat;
         -webkit-background-size: 25px 25px;
         background-size: 25px 25px;
     }
@@ -5181,13 +5181,13 @@ li.disable {
         @include opacity(0.2);
         color: white;
         padding: 15px 35px 15px 15px;
-        background: rgba($flowAnchorLink, 0) url(../images/IconRightWhite.svg) right center no-repeat;
+        background: rgba($flowAnchorLink, 0) url(../static/images/IconRightWhite.svg) right center no-repeat;
         -webkit-background-size: 25px 25px;
         background-size: 25px 25px;
         &:hover {
             -webkit-background-size: 25px 25px;
             background-size: 25px 25px;
-            background: rgba($flowAnchorLink, 0) url(../images/IconRightWhite.svg) right center no-repeat;
+            background: rgba($flowAnchorLink, 0) url(../static/images/IconRightWhite.svg) right center no-repeat;
         }
     }
     a.levelDown {
@@ -5196,11 +5196,11 @@ li.disable {
         @include opacity(0.2);
         color: white;
         padding: 15px 15px 15px 35px;
-        background: rgba($flowAnchorLink, 0) url(../images/IconLeftWhite.svg) left center no-repeat;
+        background: rgba($flowAnchorLink, 0) url(../static/images/IconLeftWhite.svg) left center no-repeat;
         -webkit-background-size: 25px 25px;
         background-size: 25px 25px;
         &:hover {
-            background: rgba($flowAnchorLink, 0) url(../images/IconLeftWhite.svg) left center no-repeat;
+            background: rgba($flowAnchorLink, 0) url(../static/images/IconLeftWhite.svg) left center no-repeat;
             -webkit-background-size: 25px 25px;
             background-size: 25px 25px;
         }
@@ -5282,7 +5282,7 @@ li.disable {
     border-radius: 3px;
     box-shadow: 0 5px 8px rgba(212, 212, 212, 0.5);
     padding: 5px 3px 5px 25px;
-    background: rgb(248, 248, 248) url(../images/loader.gif) 5px center no-repeat;
+    background: rgb(248, 248, 248) url(../static/images/loader.gif) 5px center no-repeat;
     color: rgb(252, 159, 0);
     font-weight: bold;
 }
@@ -5481,9 +5481,9 @@ html.navMaps, .public {
             padding: 5px 0 10px 25px;
             -webkit-background-size: 15px auto;
             background-size: 15px auto;
-            background: url(../images/topnavUsers.svg) left center no-repeat;
+            background: url(../static/images/topnavUsers.svg) left center no-repeat;
             &:hover {
-                background: url(../images/topnavUsersOrange.svg) left center no-repeat;
+                background: url(../static/images/topnavUsersOrange.svg) left center no-repeat;
             }
         }
     }
@@ -5587,13 +5587,13 @@ svg {
                 &.homeRoot {
                     border-radius: 3px 0 0 3px;
                     width: 40px;
-                    background: url(../images/breadCrumb-Root.png) center center no-repeat $akvoBlack;
+                    background: url(../static/images/breadCrumb-Root.png) center center no-repeat $akvoBlack;
                     background-size: 40%;
                     text-indent: -9999px;
                     z-index: 9999;
                     margin-left: 0;
                     &:hover {
-                        background: url(../images/breadCrumb-Root.png) center center no-repeat $akvoBlack;
+                        background: url(../static/images/breadCrumb-Root.png) center center no-repeat $akvoBlack;
                         background-size: 40%;
                     }
                 }
@@ -5632,31 +5632,31 @@ svg {
         }
         &.dataCleanExp {
             h2 {
-                background: url(../images/Export01.svg) center top no-repeat;
+                background: url(../static/images/Export01.svg) center top no-repeat;
                 background-size: 60px;
             }
         }
         &.dataAnalyseExp {
             h2 {
-                background: url(../images/Export02.svg) center top no-repeat;
+                background: url(../static/images/Export02.svg) center top no-repeat;
                 background-size: 60px;
             }
         }
         &.compReportExp {
             h2 {
-                background: url(../images/Export03.svg) center top no-repeat;
+                background: url(../static/images/Export03.svg) center top no-repeat;
                 background-size: 60px;
             }
         }
         &.geoShapeDataExp {
             h2 {
-                background: url(../images/Export04.svg) center top no-repeat;
+                background: url(../static/images/Export04.svg) center top no-repeat;
                 background-size: 60px;
             }
         }
         &.surveyFormExp {
             h2 {
-                background: url(../images/Export05.svg) center top no-repeat;
+                background: url(../static/images/Export05.svg) center top no-repeat;
                 background-size: 60px;
             }
         }
@@ -5851,7 +5851,7 @@ svg {
             text-align: center;
             .zipIcn {
                 height: 80px;
-                background: url(../images/zipIcn.svg) center top no-repeat;
+                background: url(../static/images/zipIcn.svg) center top no-repeat;
                 background-size: 60px;
             }
             p {
@@ -6267,7 +6267,7 @@ svg {
                         display: inline-block;
                         width: 100%;
                         height: 23px;
-                        background: url(../images/loading.svg) left center no-repeat;
+                        background: url(../static/images/loading.svg) left center no-repeat;
                         background-size: contain;
                         font-size: 0.8em;
                     }
@@ -6300,42 +6300,42 @@ svg {
                 }
             }
             &.dataCleanExp {
-                background: url(../images/Export01.svg) 15px center no-repeat;
+                background: url(../static/images/Export01.svg) 15px center no-repeat;
                 background-size: 30px;
                 &.exportGenerating {
-                    background: rgba(128, 128, 128, 0.1) url(../images/Export01.svg) 15px center no-repeat;
+                    background: rgba(128, 128, 128, 0.1) url(../static/images/Export01.svg) 15px center no-repeat;
                     background-size: 30px;
                 }
             }
             &.dataAnalyseExp {
-                background: url(../images/Export02.svg) 15px center no-repeat;
+                background: url(../static/images/Export02.svg) 15px center no-repeat;
                 background-size: 30px;
                 &.exportGenerating {
-                    background: rgba(128, 128, 128, 0.1) url(../images/Export02.svg) 15px center no-repeat;
+                    background: rgba(128, 128, 128, 0.1) url(../static/images/Export02.svg) 15px center no-repeat;
                     background-size: 30px;
                 }
             }
             &.compReportExp {
-                background: url(../images/Export03.svg) 15px center no-repeat;
+                background: url(../static/images/Export03.svg) 15px center no-repeat;
                 background-size: 30px;
                 &.exportGenerating {
-                    background: rgba(128, 128, 128, 0.1) url(../images/Export03.svg) 15px center no-repeat;
+                    background: rgba(128, 128, 128, 0.1) url(../static/images/Export03.svg) 15px center no-repeat;
                     background-size: 30px;
                 }
             }
             &.geoShapeDataExp {
-                background: url(../images/Export04.svg) 15px center no-repeat;
+                background: url(../static/images/Export04.svg) 15px center no-repeat;
                 background-size: 30px;
                 &.exportGenerating {
-                    background: rgba(128, 128, 128, 0.1) url(../images/Export04.svg) 15px center no-repeat;
+                    background: rgba(128, 128, 128, 0.1) url(../static/images/Export04.svg) 15px center no-repeat;
                     background-size: 30px;
                 }
             }
             &.surveyFormExp {
-                background: url(../images/Export05.svg) 15px center no-repeat;
+                background: url(../static/images/Export05.svg) 15px center no-repeat;
                 background-size: 30px;
                 &.exportGenerating {
-                    background: rgba(128, 128, 128, 0.1) url(../images/Export05.svg) 15px center no-repeat;
+                    background: rgba(128, 128, 128, 0.1) url(../static/images/Export05.svg) 15px center no-repeat;
                     background-size: 30px;
                 }
             }
