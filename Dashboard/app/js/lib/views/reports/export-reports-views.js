@@ -324,7 +324,7 @@ FLOW.ReportListItemView = FLOW.View.extend({
 });
 
 FLOW.DataCleaningView = Ember.View.extend({
-  templateName: 'navData/data-cleaning',
+  template: Ember.Handlebars.compile(require('templates/navData/data-cleaning')),
   missingSurvey:false,
 
   didInsertElement: function () {
