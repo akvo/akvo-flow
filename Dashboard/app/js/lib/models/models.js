@@ -164,9 +164,9 @@ FLOW.Survey = FLOW.BaseModel.extend({
   // used in the assignment edit page, not saved to backend
   surveyGroupName: null,
 
-  allowEdit: function () {
+  allowEdit: Ember.computed(function () {
 	  return !this.get('isNew') && this.get('status') !== 'COPYING';
-  }.property('status', 'isNew')
+  }).property('status', 'isNew')
 
 });
 

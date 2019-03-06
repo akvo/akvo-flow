@@ -108,9 +108,9 @@ FLOW.CascadeResourceView = FLOW.View.extend({
 		FLOW.cascadeResourceControl.setDisplayLevelNames();
 	},
 
-	oneSelected: function(){
+	oneSelected: Ember.computed(function(){
 		return !Ember.empty(FLOW.selectedControl.get('selectedCascadeResource'));
-	}.property('FLOW.selectedControl.selectedCascadeResource').cacheable(),
+	}).property('FLOW.selectedControl.selectedCascadeResource').cacheable(),
 
 	resourceSelected: function(){
 		if (!Ember.empty(FLOW.selectedControl.get('selectedCascadeResource'))){
@@ -148,21 +148,21 @@ FLOW.CascadeResourceView = FLOW.View.extend({
 	  this.set('showNewCascadeField', false);
 	},
 
-	hideColumn2: function () {
+	hideColumn2: Ember.computed(function () {
 		var cascade = FLOW.selectedControl.selectedCascadeResource;
 		if (!cascade) {
 			return false;
 		}
 		return cascade.get('numLevels') < 2;
-	}.property('FLOW.selectedControl.selectedCascadeResource', 'FLOW.selectedControl.selectedCascadeResource.numLevels'),
+	}).property('FLOW.selectedControl.selectedCascadeResource', 'FLOW.selectedControl.selectedCascadeResource.numLevels'),
 
-	hideColumn3: function() {
+	hideColumn3: Ember.computed(function() {
 		var cascade = FLOW.selectedControl.selectedCascadeResource;
 		if (!cascade) {
 			return false;
 		}
 		return cascade.get('numLevels') < 3;
-	}.property('FLOW.selectedControl.selectedCascadeResource', 'FLOW.selectedControl.selectedCascadeResource.numLevels')
+	}).property('FLOW.selectedControl.selectedCascadeResource', 'FLOW.selectedControl.selectedCascadeResource.numLevels')
 });
 
 FLOW.CascadeSecondNavView = FLOW.View.extend({
@@ -170,19 +170,19 @@ FLOW.CascadeSecondNavView = FLOW.View.extend({
 	content: null,
 	classNameBindings: 'display:disable'.w(),
 
-	display: function(){
+	display: Ember.computed(function(){
 		if (this.get('dir') == "up"){
 			return !this.get('showGoUpLevel');
 		} else return !this.get('showGoDownLevel');
-	}.property('this.showGoUpLevel','this.showGoUpLevel'),
+	}).property('this.showGoUpLevel','this.showGoUpLevel'),
 
-	showGoUpLevel: function(){
+	showGoUpLevel: Ember.computed(function(){
 		return FLOW.selectedControl.selectedCascadeResource && (FLOW.cascadeNodeControl.get('skip') + 3 < FLOW.selectedControl.selectedCascadeResource.get('numLevels'));
-	}.property('FLOW.cascadeNodeControl.skip', 'FLOW.selectedControl.selectedCascadeResource'),
+	}).property('FLOW.cascadeNodeControl.skip', 'FLOW.selectedControl.selectedCascadeResource'),
 
-	showGoDownLevel: function(){
+	showGoDownLevel: Ember.computed(function(){
 		return FLOW.cascadeNodeControl.get('skip') > 0;
-	}.property('FLOW.cascadeNodeControl.skip','FLOW.selectedControl.selectedCascadeResource'),
+	}).property('FLOW.cascadeNodeControl.skip','FLOW.selectedControl.selectedCascadeResource'),
 
 	goUpLevel: function(){
 		FLOW.cascadeNodeControl.set('skip', FLOW.cascadeNodeControl.get('skip') + 1);
@@ -204,11 +204,11 @@ FLOW.CascadeLevelBreadcrumbView = FLOW.View.extend({
 	content: null,
 	classNameBindings: 'offscreen:offScreen'.w(),
 
-	offscreen: function() {
+	offscreen: Ember.computed(function() {
 		var skip = FLOW.cascadeNodeControl.get('skip');
 		var level = this.content.get('level');
 		return ((level < skip + 1) || (level > skip + 3));
-	}.property('FLOW.cascadeNodeControl.skip', 'FLOW.selectedControl.selectedCascadeResource'),
+	}).property('FLOW.cascadeNodeControl.skip', 'FLOW.selectedControl.selectedCascadeResource'),
 
 	adaptColView: function(){
 		var skip = FLOW.cascadeNodeControl.get('skip');
@@ -278,7 +278,7 @@ FLOW.CascadeNodeView = FLOW.View.extend({
 	cascadeNodeName: null,
 	cascadeNodeCode:null,
 
-	showInputField:function(){
+	showInputField: Ember.computed(function(){
 		var skip = FLOW.cascadeNodeControl.get('skip');
 
 		// determines if we should show an input field in this column
@@ -288,7 +288,7 @@ FLOW.CascadeNodeView = FLOW.View.extend({
 		}
 		return (!Ember.empty(FLOW.cascadeNodeControl.selectedNode[skip + this.get('col') - 1]) &&
 				!Ember.empty(FLOW.cascadeNodeControl.selectedNode[skip + this.get('col') - 1].get('keyId')));
-	}.property('FLOW.cascadeNodeControl.selectedNodeTrigger').cacheable(),
+	}).property('FLOW.cascadeNodeControl.selectedNodeTrigger').cacheable(),
 
 	addNewNode: function() {
 		var newNodeStringArray, level, nodes, exists, item, itemTrim, levelNames;
@@ -333,7 +333,7 @@ FLOW.CascadeNodeItemView = FLOW.View.extend({
 	newName:null,
 
 	// true if the node group is selected. Used to set proper display class
-	amSelected: function () {
+	amSelected: Ember.computed(function () {
 	    var selected = FLOW.cascadeNodeControl.get('selectedNode')[this.get('col') + FLOW.cascadeNodeControl.get('skip')];
 	    if (selected) {
 	      var amSelected = (this.content.get('name') === FLOW.cascadeNodeControl.get('selectedNode')[this.get('col') + FLOW.cascadeNodeControl.get('skip')].get('name'));
@@ -341,7 +341,7 @@ FLOW.CascadeNodeItemView = FLOW.View.extend({
 	    } else {
 	      return false;
 	    }
-	}.property('FLOW.cascadeNodeControl.selectedNodeTrigger').cacheable(),
+	}).property('FLOW.cascadeNodeControl.selectedNodeTrigger').cacheable(),
 
 	deleteNode:function() {
 		FLOW.cascadeNodeControl.emptyNodes(this.get('col') + FLOW.cascadeNodeControl.get('skip') + 1);

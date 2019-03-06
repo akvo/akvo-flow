@@ -21,17 +21,17 @@ require('akvo-flow/controllers/survey-selection');
 FLOW.ApplicationController = Ember.Controller.extend({});
 
 FLOW.role = Ember.Object.create({
-	SUPER_ADMIN: function () {
+	SUPER_ADMIN: Ember.computed(function () {
 		return FLOW.currentUser && FLOW.currentUser.permissionList === 0;
-	}.property(),
+	}).property(),
 
-	ADMIN: function () {
+	ADMIN: Ember.computed(function () {
 		return FLOW.currentUser && FLOW.currentUser.permissionList <= 10;
-	}.property(),
+	}).property(),
 
-	USER: function () {
+	USER: Ember.computed(function () {
 		return FLOW.currentUser && FLOW.currentUser.permissionList <= 20;
-	}.property()
+	}).property()
 });
 
 //require('akvo-flow/currentuser');

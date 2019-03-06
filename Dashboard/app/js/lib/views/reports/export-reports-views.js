@@ -1,13 +1,13 @@
 /*global Ember, $, FLOW */
 
 FLOW.ReportLoader = Ember.Object.create({
-  selectedSurveyId: function () {
+  selectedSurveyId: Ember.computed(function () {
     if (!Ember.none(FLOW.selectedControl.get('selectedSurvey')) && !Ember.none(FLOW.selectedControl.selectedSurvey.get('keyId'))){
       return FLOW.selectedControl.selectedSurvey.get('keyId');
     } else {
       return null;
     }
-  }.property('FLOW.selectedControl.selectedSurvey'),
+  }).property('FLOW.selectedControl.selectedSurvey'),
 
   load: function (exportType, surveyId, opts) {
     FLOW.selectedControl.set('selectedReportExport', FLOW.store.createRecord(FLOW.Report, {}));
@@ -96,14 +96,14 @@ FLOW.ExportReportTypeView = Ember.View.extend({
     FLOW.uploader.registerEvents();
   },
 
-  selectedQuestion: function () {
+  selectedQuestion: Ember.computed(function () {
     if (!Ember.none(FLOW.selectedControl.get('selectedQuestion'))
         && !Ember.none(FLOW.selectedControl.selectedQuestion.get('keyId'))){
       return FLOW.selectedControl.selectedQuestion.get('keyId');
     } else {
       return null;
     }
-  }.property('FLOW.selectedControl.selectedQuestion'),
+  }).property('FLOW.selectedControl.selectedQuestion'),
   
   watchSurveySelection: function () {
      if (FLOW.selectedControl.get('selectedSurvey')!== null) {
@@ -111,7 +111,7 @@ FLOW.ExportReportTypeView = Ember.View.extend({
      }
   }.observes('FLOW.selectedControl.selectedSurvey'),
 
-  hideLastCollection: function () {
+  hideLastCollection: Ember.computed(function () {
     if (!FLOW.selectedControl.selectedSurvey) {
       return true;
     }
@@ -128,7 +128,7 @@ FLOW.ExportReportTypeView = Ember.View.extend({
     }
     return !(FLOW.selectedControl.selectedSurveyGroup && FLOW.selectedControl.selectedSurveyGroup.get('monitoringGroup')
       && FLOW.selectedControl.selectedSurvey.get('keyId') != FLOW.selectedControl.selectedSurveyGroup.get('newLocaleSurveyId'));
-  }.property('FLOW.selectedControl.selectedSurvey'),
+  }).property('FLOW.selectedControl.selectedSurvey'),
 
   showDataCleaningReport: function () {
     var opts = {startDate:this.get("reportFromDate"), endDate:this.get("reportToDate"), lastCollectionOnly: this.get('exportOption') === "recent"};
@@ -244,7 +244,7 @@ FLOW.ReportsListView = Ember.View.extend({
 FLOW.ReportListItemView = FLOW.View.extend({
   template: Ember.Handlebars.compile(require('templates/navReports/report')),
 
-  reportType: function(){
+  reportType: Ember.computed(function (){
     var reportTypeClasses = {
       DATA_CLEANING: "dataCleanExp",
       DATA_ANALYSIS: "dataAnalyseExp",
@@ -253,9 +253,9 @@ FLOW.ReportListItemView = FLOW.View.extend({
       SURVEY_FORM: "surveyFormExp"
     };
     return reportTypeClasses[this.content.get('reportType')];
-  }.property(this.content),
+  }).property('content'),
 
-  reportStatus: function(){
+  reportStatus: Ember.computed(function(){
     var reportStates = {
       IN_PROGRESS: "exportGenerating",
       QUEUED: "exportGenerating",
@@ -263,9 +263,9 @@ FLOW.ReportListItemView = FLOW.View.extend({
       FINISHED_ERROR: ""
     };
     return reportStates[this.content.get('state')];
-  }.property(this.content),
+  }).property('content'),
 
-  reportTypeString: function(){
+  reportTypeString: Ember.computed(function(){
     var reportTypeStrings = {
       DATA_CLEANING: Ember.String.loc('_data_cleaning_export'),
       DATA_ANALYSIS: Ember.String.loc('_data_analysis_export'),
@@ -274,19 +274,19 @@ FLOW.ReportListItemView = FLOW.View.extend({
       SURVEY_FORM: Ember.String.loc('_survey_form')
     };
     return reportTypeStrings[this.content.get('reportType')];
-  }.property(this.content),
+  }).property('content'),
 
-  reportFilename: function(){
+  reportFilename: Ember.computed(function(){
     var url = this.content.get('filename');
     return FLOW.reportFilename(url);
-  }.property(this.content),
+  }).property('content'),
 
-  reportLink: function(){
+  reportLink: Ember.computed(function(){
     var url = this.content.get('filename');
     return !url ? "#" : url;
-  }.property(this.content),
+  }).property('content'),
 
-  surveyPath: function(){
+  surveyPath: Ember.computed(function(){
     var formId = this.content.get('formId'), path = "";
     var form  = FLOW.Survey.find(formId);
     if (form) {
@@ -308,19 +308,19 @@ FLOW.ReportListItemView = FLOW.View.extend({
       }
     }
     return path;
-  }.property(this.content),
+  }).property('content'),
 
-  startDate: function(){
+  startDate: Ember.computed(function(){
     return FLOW.renderTimeStamp(this.content.get('startDate'));
-  }.property(this.content),
+  }).property('content'),
 
-  endDate: function(){
+  endDate: Ember.computed(function(){
     return FLOW.renderTimeStamp(this.content.get('endDate'));
-  }.property(this.content),
+  }).property('content'),
 
-  lastUpdateDateTime: function(){
+  lastUpdateDateTime: Ember.computed(function(){
     return FLOW.renderDate(this.content.get('lastUpdateDateTime'));
-  }.property(this.content)
+  }).property('content')
 });
 
 FLOW.DataCleaningView = Ember.View.extend({

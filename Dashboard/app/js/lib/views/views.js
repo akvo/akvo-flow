@@ -555,25 +555,25 @@ FLOW.NavigationView = Em.View.extend({
   template: Ember.Handlebars.compile(require('templates/application/navigation')),
   selectedBinding: 'controller.selected',
 
-  showMapsButton: function () {
+  showMapsButton: Ember.computed(function () {
       return FLOW.Env.showMapsTab;
-  }.property('FLOW.Env.showMapsTab'),
+  }).property('FLOW.Env.showMapsTab'),
 
   NavItemView: Ember.View.extend({
     tagName: 'li',
     classNameBindings: 'isActive:current navItem'.w(),
 
-    navItem: function () {
+    navItem: Ember.computed(function () {
       return this.get('item');
-    }.property('item').cacheable(),
+    }).property('item').cacheable(),
 
-    isActive: function () {
+    isActive: Ember.computed(function () {
       return this.get('item') === this.get('parentView.selected');
-    }.property('item', 'parentView.selected').cacheable(),
+    }).property('item', 'parentView.selected').cacheable(),
 
     showDevicesButton: function () {
       return FLOW.permControl.get('canManageDevices');
-    }.property(),
+    }).property(),
 
     eventManager: Ember.Object.create({
       click: function(event, clickedView) {
@@ -806,7 +806,7 @@ FLOW.DatasubnavView = FLOW.View.extend({
     tagName: 'li',
     classNameBindings: 'isActive:active'.w(),
 
-    isActive: function () {
+    isActive: Ember.computed(function () {
       if (this.get('item') === this.get('parentView.selected') && this.get('parentView.selected') === "bulkUpload") {
         FLOW.uploader.set('bulkUpload', true);
       } else {
@@ -815,11 +815,11 @@ FLOW.DatasubnavView = FLOW.View.extend({
         }
       }
       return this.get('item') === this.get('parentView.selected');
-    }.property('item', 'parentView.selected').cacheable(),
+    }).property('item', 'parentView.selected').cacheable(),
 
-    showDataCleaningButton: function () {
+    showDataCleaningButton: Ember.computed(function () {
         return FLOW.permControl.get('canCleanData');
-    }.property()
+    }).property()
   })
 });
 
@@ -833,9 +833,9 @@ FLOW.DevicesSubnavView = FLOW.View.extend({
     tagName: 'li',
     classNameBindings: 'isActive:active'.w(),
 
-    isActive: function () {
+    isActive: Ember.computed(function () {
       return this.get('item') === this.get('parentView.selected');
-    }.property('item', 'parentView.selected').cacheable()
+    }).property('item', 'parentView.selected').cacheable()
   })
 });
 
@@ -849,17 +849,17 @@ FLOW.ResourcesSubnavView = Em.View.extend({
     tagName: 'li',
     classNameBindings: 'isActive:active'.w(),
 
-    isActive: function () {
+    isActive: Ember.computed(function () {
       return this.get('item') === this.get('parentView.selected');
-    }.property('item', 'parentView.selected').cacheable(),
+    }).property('item', 'parentView.selected').cacheable(),
 
-    showCascadeResourcesButton: function () {
+    showCascadeResourcesButton: Ember.computed(function () {
       return FLOW.permControl.get('canManageCascadeResources');
-    }.property(),
+    }).property(),
 
-    showDataApprovalButton: function () {
+    showDataApprovalButton: Ember.computed(function () {
         return FLOW.Env.enableDataApproval && FLOW.permControl.get('canManageDataAppoval');
-    }.property()
+    }).property()
   })
 });
 
@@ -874,13 +874,13 @@ FLOW.ColumnView = Ember.View.extend({
 
   classNameBindings: ['isActiveAsc:sorting_asc', 'isActiveDesc:sorting_desc'],
 
-  isActiveAsc: function () {
+  isActiveAsc: Ember.computed(function () {
     return this.get('item') === FLOW.tableColumnControl.get('selected') && FLOW.tableColumnControl.get('sortAscending') === true;
-  }.property('item', 'FLOW.tableColumnControl.selected', 'FLOW.tableColumnControl.sortAscending').cacheable(),
+  }).property('item', 'FLOW.tableColumnControl.selected', 'FLOW.tableColumnControl.sortAscending').cacheable(),
 
-  isActiveDesc: function () {
+  isActiveDesc: Ember.computed(function () {
     return this.get('item') === FLOW.tableColumnControl.get('selected') && FLOW.tableColumnControl.get('sortAscending') === false;
-  }.property('item', 'FLOW.tableColumnControl.selected', 'FLOW.tableColumnControl.sortAscending').cacheable(),
+  }).property('item', 'FLOW.tableColumnControl.selected', 'FLOW.tableColumnControl.sortAscending').cacheable(),
 
   sort: function () {
     if ((this.get('isActiveAsc')) || (this.get('isActiveDesc'))) {

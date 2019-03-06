@@ -154,13 +154,13 @@ FLOW.placemarkDetailController = Ember.ArrayController.create({
   dataPointCollectionDate: null,
   noSubmissions: false,
 
-  dataPointDisplayName: function () {
+  dataPointDisplayName: Ember.computed(function () {
       return this.dataPoint && this.dataPoint.get('displayName')
-  }.property('this.dataPoint.isLoaded'),
+  }).property('this.dataPoint.isLoaded'),
 
-  dataPointIdentifier: function () {
+  dataPointIdentifier: Ember.computed(function () {
       return this.dataPoint && this.dataPoint.get('identifier')
-  }.property('this.dataPoint.isLoaded'),
+  }).property('this.dataPoint.isLoaded'),
 
   /*
   * Observer that loads a datapoint and its associated details when clicked

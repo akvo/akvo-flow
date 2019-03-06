@@ -14,18 +14,18 @@ FLOW.chartView = FLOW.View.extend({
 	  }
   }.observes('this.selectedSurvey'),
 
-  isDoughnut: function () {
+  isDoughnut: Ember.computed(function () {
     return this.chartType.get('value') == 'doughnut';
-  }.property('this.chartType'),
+  }).property('this.chartType'),
 
   init: function () {
     this._super();
     this.chartType = FLOW.chartTypeControl.content[0];
   },
 
-  hideChart: function () {
+  hideChart: Ember.computed(function () {
 	  return this.get('noChoiceBool') || this.get('noDataBool');
-  }.property('noChoiceBool', 'noDataBool'),
+  }).property('noChoiceBool', 'noDataBool'),
 
   getChartData: function () {
     this.set('noChoiceBool', false);

@@ -301,19 +301,19 @@ FLOW.GeoshapeMapView = FLOW.View.extend({
     }
   },
 
-  length: function() {
+  length: Ember.computed(function() {
     return this.geoshape === null ? null : this.geoshape.features[0].properties.length
-  }.property('this.geoshape'),
+  }).property('this.geoshape'),
 
-  area: function() {
+  area: Ember.computed(function() {
     return this.geoshape === null ? null : this.geoshape.features[0].properties.area
-  }.property('this.geoshape'),
+  }).property('this.geoshape'),
 
-  pointCount: function() {
+  pointCount: Ember.computed(function() {
     return this.geoshape === null ? null : this.geoshape.features[0].properties.pointCount
-  }.property('this.geoshape'),
+  }).property('this.geoshape'),
 
-  isPolygon: function() {
+  isPolygon: Ember.computed(function() {
     var geoshape = this.get('geoshape');
     if (geoshape == null) {
       return false;
@@ -321,9 +321,9 @@ FLOW.GeoshapeMapView = FLOW.View.extend({
       return geoshape['features'].length > 0 &&
         geoshape['features'][0]["geometry"]["type"] === "Polygon"
     }
-  }.property('this.geoshape'),
+  }).property('this.geoshape'),
 
-  isLineString: function() {
+  isLineString: Ember.computed(function() {
     var geoshape = this.get('geoshape');
     if (geoshape == null) {
       return false;
@@ -331,9 +331,9 @@ FLOW.GeoshapeMapView = FLOW.View.extend({
       return geoshape['features'].length > 0 &&
         geoshape['features'][0]["geometry"]["type"] === "LineString"
     }
-  }.property('this.geoshape'),
+  }).property('this.geoshape'),
 
-  isMultiPoint: function() {
+  isMultiPoint: Ember.computed(function() {
     var geoshape = this.get('geoshape');
     if (geoshape == null) {
       return false;
@@ -341,9 +341,9 @@ FLOW.GeoshapeMapView = FLOW.View.extend({
       return geoshape['features'].length > 0 &&
         geoshape['features'][0]["geometry"]["type"] === "MultiPoint"
     }
-  }.property('this.geoshape'),
+  }).property('this.geoshape'),
 
-  geoshapeString: function() {
+  geoshapeString: Ember.computed(function() {
     return this.geoshape === null ? null : JSON.stringify(this.geoshape);
-  }.property('this.geoshape')
+  }).property('this.geoshape')
 });

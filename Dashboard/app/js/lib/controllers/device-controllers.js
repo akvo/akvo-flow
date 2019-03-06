@@ -41,18 +41,18 @@ FLOW.deviceControl = Ember.ArrayController.create({
     this.set('sortAscending', false);
   },
 
-  allAreSelected: function (key, value) {
+  allAreSelected: Ember.computed(function (key, value) {
     if (arguments.length === 2) {
       this.setEach('isSelected', value);
       return value;
     } else {
       return !this.get('isEmpty') && this.everyProperty('isSelected', true);
     }
-  }.property('@each.isSelected'),
+  }).property('@each.isSelected'),
 
-  atLeastOneSelected: function () {
+  atLeastOneSelected: Ember.computed(function () {
     return this.filterProperty('isSelected', true).get('length');
-  }.property('@each.isSelected'),
+  }).property('@each.isSelected'),
 
   // fired from tableColumnView.sort
   getSortInfo: function () {

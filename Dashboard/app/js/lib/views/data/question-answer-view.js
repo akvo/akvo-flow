@@ -13,62 +13,62 @@ function sortByOrder(a , b) {
 
 FLOW.QuestionAnswerView = Ember.View.extend({
 
-  isTextType: function(){
+  isTextType: Ember.computed(function(){
     return this.get('questionType') === 'FREE_TEXT';
-  }.property('this.questionType'),
+  }).property('this.questionType'),
 
-  isCascadeType: function(){
+  isCascadeType: Ember.computed(function(){
     return this.get('questionType') === 'CASCADE';
-  }.property('this.questionType'),
+  }).property('this.questionType'),
 
-  isOptionType: function(){
+  isOptionType: Ember.computed(function(){
     return this.get('questionType') === 'OPTION';
-  }.property('this.questionType'),
+  }).property('this.questionType'),
 
-  isNumberType: function(){
+  isNumberType: Ember.computed(function(){
     return this.get('questionType') === 'NUMBER';
-  }.property('this.questionType'),
+  }).property('this.questionType'),
 
-  isBarcodeType: function(){
+  isBarcodeType: Ember.computed(function(){
     return this.get('questionType') === 'SCAN';
-  }.property('this.questionType'),
+  }).property('this.questionType'),
 
-  isDateType: function(){
+  isDateType: Ember.computed(function(){
     return this.get('questionType') === 'DATE';
-  }.property('this.questionType'),
+  }).property('this.questionType'),
 
-  isPhotoType: function(){
+  isPhotoType: Ember.computed(function(){
     return (this.get('questionType') === 'PHOTO' || (this.content && this.content.get('type') === 'IMAGE'));
-  }.property('this.questionType'),
+  }).property('this.questionType'),
 
-  isVideoType: function(){
+  isVideoType: Ember.computed(function(){
     return this.get('questionType') === 'VIDEO';
-  }.property('this.questionType'),
+  }).property('this.questionType'),
 
-  isGeoShapeType: function(){
+  isGeoShapeType: Ember.computed(function(){
     return this.get('questionType') === 'GEOSHAPE';
-  }.property('this.questionType'),
+  }).property('this.questionType'),
 
-  isSignatureType: function(){
+  isSignatureType: Ember.computed(function(){
     return this.get('questionType') === 'SIGNATURE' || (this.content && this.content.get('type') === 'SIGNATURE');
-  }.property('this.questionType'),
+  }).property('this.questionType'),
 
-  isCaddisflyType: function(){
+  isCaddisflyType: Ember.computed(function(){
     return this.get('questionType') === 'CADDISFLY' || (this.content && this.content.get('type') === 'CADDISFLY');
-  }.property('this.questionType'),
+  }).property('this.questionType'),
 
   nonEditableQuestionTypes: ['GEO', 'PHOTO', 'VIDEO', 'GEOSHAPE', 'SIGNATURE','CADDISFLY'],
 
-  form: function() {
+  form: Ember.computed(function() {
     if (FLOW.selectedControl.get('selectedSurvey')) {
       return FLOW.selectedControl.get('selectedSurvey');
     }
-  }.property('FLOW.selectedControl.selectedSurvey'),
+  }).property('FLOW.selectedControl.selectedSurvey'),
 
   /*
    * Get the full list of options related to a particular option type question
    */
-  optionsList: function(){
+  optionsList: Ember.computed(function(){
     var c = this.content;
     if (Ember.none(c) || !this.get('isOptionType')) {
       return Ember.A([]);
@@ -103,27 +103,27 @@ FLOW.QuestionAnswerView = Ember.View.extend({
       tempList.push(Ember.Object.create({
         code: setOptionCodes ? "OTHER" : null, // OTHER is default code
         otherText: null,
-        text: function () {
+        text: Ember.computed(function () {
           var suffix = this.get('otherText') ? this.get('otherText') : Ember.String.loc('_other_option_specify');
           return Ember.String.loc('_other') + ": " + suffix;
-        }.property('this.otherText'),
+        }).property('this.otherText'),
         order: tempList.get('length'),
         isOther: true,
       }));
     }
     return tempList;
-  }.property('this.content'),
+  }).property('this.content'),
 
   content: null,
 
   inEditMode: false,
 
-  isNotEditable: function() {
+  isNotEditable: Ember.computed(function() {
     // keep this property to limit template rafactoring
     return !this.get('isEditable');
-  }.property('this.isEditable'),
+  }).property('this.isEditable'),
 
-  isEditable: function () {
+  isEditable: Ember.computed(function () {
     var isEditableQuestionType, canEditFormResponses;
     isEditableQuestionType = this.nonEditableQuestionTypes.indexOf(this.get('questionType')) < 0;
     if (!isEditableQuestionType) {
@@ -131,7 +131,7 @@ FLOW.QuestionAnswerView = Ember.View.extend({
     }
     canEditFormResponses = FLOW.permControl.canEditResponses(this.get('form'));
     return isEditableQuestionType && canEditFormResponses;
-  }.property('this.questionType,this.form'),
+  }).property('this.questionType,this.form'),
 
   date: null,
 
@@ -139,26 +139,26 @@ FLOW.QuestionAnswerView = Ember.View.extend({
    *  Extract base64 signature image data and convert to src attribute for
    *  HTML img tag
    */
-  signatureImageSrc: function () {
+  signatureImageSrc: Ember.computed(function () {
     var c = this.content, srcAttr = 'data:image/png;base64,', signatureJson;
     if (c && c.get('value')) {
       signatureJson = JSON.parse(c.get('value'));
       return srcAttr + signatureJson.image;
     }
     return null
-  }.property('this.content'),
+  }).property('this.content'),
 
   /*
    * Extract signatory from signature response
    */
-  signatureSignatory: function () {
+  signatureSignatory: Ember.computed(function () {
     var c = this.content, signatureJson;
     if (c && c.get('value')) {
       signatureJson = JSON.parse(c.get('value'));
       return signatureJson.name.trim();
     }
     return null;
-  }.property('this.content'),
+  }).property('this.content'),
 
   /*
   * Parse the caddisfly test JSON result
@@ -191,7 +191,7 @@ FLOW.QuestionAnswerView = Ember.View.extend({
    *
    * Extracts the 'name' attribute from a Caddisfly JSON result string
    */
-  testName: function(){
+  testName: Ember.computed(function(){
     var c = this.content, testJson;
     if (c && c.get('value')) {
       testJson = JSON.parse(c.get('value'));
@@ -203,7 +203,7 @@ FLOW.QuestionAnswerView = Ember.View.extend({
       }
     }
     return null;
-  }.property('this.content'),
+  }).property('this.content'),
 
   /*
    * Get out the caddisfly image URL
@@ -215,7 +215,7 @@ FLOW.QuestionAnswerView = Ember.View.extend({
    *
    * Extracts the 'image' attribute from a Caddisfly JSON result string, and returns a full URL
    */
-  caddisflyImageURL: function(){
+  caddisflyImageURL: Ember.computed(function(){
     var c = this.content, testJson;
     if (c && c.get('value')) {
       testJson = JSON.parse(c.get('value'));
@@ -224,11 +224,11 @@ FLOW.QuestionAnswerView = Ember.View.extend({
       }
     }
     return null;
-  }.property('this.content'),
+  }).property('this.content'),
 
   numberValue: null,
 
-  cascadeValue: function(key, value, previousValue){
+  cascadeValue: Ember.computed(function(key, value, previousValue){
     var c = this.content;
     // setter
     if (arguments.length > 1) {
@@ -261,7 +261,7 @@ FLOW.QuestionAnswerView = Ember.View.extend({
       return cascadeString;
     }
     return null;
-  }.property('this.content'),
+  }).property('this.content'),
 
   /* object properties to include when transforming selected options
    * to string to store in the datastore
@@ -287,7 +287,7 @@ FLOW.QuestionAnswerView = Ember.View.extend({
    *    '[{text: "text with code", code: "code"}]'
    *    '[{text: "only text"}]'
    */
-  optionValue: function (key, value, previousValue) {
+  optionValue: Ember.computed(function (key, value, previousValue) {
     var valueArray = [], selectedOptions = Ember.A(), c = this.content, isOtherEnabled;
 
     // setter
@@ -301,7 +301,7 @@ FLOW.QuestionAnswerView = Ember.View.extend({
       this.set('selectedOptionValues', this.parseOptionsValueString(c.get('value')));
     }
     return this.get('selectedOptionValues');
-  }.property('this.selectedOptionValues'),
+  }).property('this.selectedOptionValues'),
 
   /*
    *  Used to parse a provided string response from the value property of an option question.
@@ -368,7 +368,7 @@ FLOW.QuestionAnswerView = Ember.View.extend({
    *  of a single-select option question.
    *
    */
-  singleSelectOptionValue: function (key, value, previousValue) {
+  singleSelectOptionValue: Ember.computed(function (key, value, previousValue) {
     var selectedOptions, c = this.content;
 
     // setter
@@ -384,14 +384,14 @@ FLOW.QuestionAnswerView = Ember.View.extend({
       return options.get('firstObject');
     }
     return null;
-  }.property('this.optionValue'),
+  }).property('this.optionValue'),
 
   /*
    *  A property to enable setting and getting of the selected element
    *  of a multi-select option question.
    *
    */
-  multiSelectOptionValue: function (key, value, previousValue) {
+  multiSelectOptionValue: Ember.computed(function (key, value, previousValue) {
     var c = this.content;
 
     // setter
@@ -401,22 +401,22 @@ FLOW.QuestionAnswerView = Ember.View.extend({
 
     // getter
     return this.get('optionValue');
-  }.property('this.optionValue'),
+  }).property('this.optionValue'),
 
-  isMultipleSelectOption: function () {
+  isMultipleSelectOption: Ember.computed(function () {
     return this.get('isOptionType') && this.get('question').get('allowMultipleFlag');
-  }.property('this.isOptionType'),
+  }).property('this.isOptionType'),
 
-  isOtherOptionEnabled: function () {
+  isOtherOptionEnabled: Ember.computed(function () {
     return this.get('isOptionType') && this.get('question').get('allowOtherFlag');
-  }.property('this.isOptionType'),
+  }).property('this.isOptionType'),
 
-  isOtherOptionSelected: function () {
+  isOtherOptionSelected: Ember.computed(function () {
     var selectedOption = this.get('optionValue') && this.get('optionValue').get('lastObject');
     return selectedOption && selectedOption.get('isOther');
-  }.property('this.optionValue'),
+  }).property('this.optionValue'),
 
-  photoUrl: function(){
+  photoUrl: Ember.computed(function(){
     var c = this.content;
     if (!Ember.empty(c.get('value'))) {
       jImage = JSON.parse(c.get('value'));
@@ -424,9 +424,9 @@ FLOW.QuestionAnswerView = Ember.View.extend({
           return FLOW.Env.photo_url_root + jImage.filename.split('/').pop();
       }
     }
-  }.property('this.content,this.isPhotoType,this.isVideoType'),
+  }).property('this.content,this.isPhotoType,this.isVideoType'),
 
-  photoLocation: function(){
+  photoLocation: Ember.computed(function(){
     var c = this.content;
     if (!Ember.empty(c.get('value'))) {
       jImage = JSON.parse(c.get('value'));
@@ -434,29 +434,29 @@ FLOW.QuestionAnswerView = Ember.View.extend({
           return "lat:" + jImage.location.latitude + "/lon:" + jImage.location.longitude;
       }
     }
-  }.property('this.content,this.isPhotoType,this.isVideoType'),
+  }).property('this.content,this.isPhotoType,this.isVideoType'),
 
-  geoShapeObject: function(){
+  geoShapeObject: Ember.computed(function(){
     var c = this.content;
     if (!Ember.empty(c.get('value'))) {
       return c.get('value');
     }
-  }.property('this.content,this.isGeoShapeType'),
+  }).property('this.content,this.isGeoShapeType'),
 
-  questionType: function(){
+  questionType: Ember.computed(function(){
     if(this.get('question')){
       return this.get('question').get('type');
     }
-  }.property('this.question'),
+  }).property('this.question'),
 
-  question: function(){
+  question: Ember.computed(function(){
     var c = this.get('content');
     if (c) {
       var questionId = c.get('questionID');
       var q = FLOW.questionControl.findProperty('keyId', +questionId);
       return q;
     }
-  }.property('this.content'),
+  }).property('this.content'),
 
   doEdit: function () {
     this.set('inEditMode', true);
@@ -558,7 +558,7 @@ FLOW.QuestionAnswerMultiOptionEditView = Ember.CollectionView.extend({
   selection: null,
   itemViewClass: Ember.View.extend({
     template: Ember.Handlebars.compile('{{view Ember.Checkbox checkedBinding="view.isSelected"}} {{view.content.text}}'),
-    isSelected: function(key, checked, previousValue) {
+    isSelected: Ember.computed(function(key, checked, previousValue) {
       var selectedOptions = this.get('parentView').get('selection');
       var newSelectedOptions = Ember.A();
 
@@ -580,7 +580,7 @@ FLOW.QuestionAnswerMultiOptionEditView = Ember.CollectionView.extend({
 
       // getter
       return selectedOptions && selectedOptions.contains(this.content);
-    }.property('this.content'),
+    }).property('this.content'),
   })
 });
 

@@ -214,7 +214,7 @@ FLOW.permControl = Ember.Controller.create({
     return permissions && permissions.indexOf("DATA_UPDATE") > -1;
   },
 
-  canManageDevices: function () {
+  canManageDevices: Ember.computed(function () {
     var currentUserPermissions = FLOW.currentUser.get('pathPermissions');
     for (var perms in currentUserPermissions) {
       if (currentUserPermissions[perms].indexOf("DEVICE_MANAGE") > -1) {
@@ -222,9 +222,9 @@ FLOW.permControl = Ember.Controller.create({
       }
     }
     return false;
-  }.property(),
+  }).property(),
 
-  canManageCascadeResources: function () {
+  canManageCascadeResources: Ember.computed(function () {
     var currentUserPermissions = FLOW.currentUser.get('pathPermissions');
     for (var perms in currentUserPermissions) {
       if (currentUserPermissions[perms].indexOf("CASCADE_MANAGE") > -1) {
@@ -232,9 +232,9 @@ FLOW.permControl = Ember.Controller.create({
       }
     }
     return false;
-  }.property(),
+  }).property(),
 
-  canCleanData: function () {
+  canCleanData: Ember.computed(function () {
       var currentUserPermissions = FLOW.currentUser.get('pathPermissions');
       for (var perms in currentUserPermissions) {
           if (currentUserPermissions[perms].indexOf("DATA_CLEANING") > -1) {
@@ -242,9 +242,9 @@ FLOW.permControl = Ember.Controller.create({
           }
       }
       return false;
-  }.property(),
+  }).property(),
 
-  canManageDataAppoval: function () {
+  canManageDataAppoval: Ember.computed(function () {
       var currentUserPermissions = FLOW.currentUser.get('pathPermissions');
       for (var perms in currentUserPermissions) {
           if (currentUserPermissions[perms].indexOf("DATA_APPROVE_MANAGE") > -1) {
@@ -252,7 +252,7 @@ FLOW.permControl = Ember.Controller.create({
           }
       }
       return false;
-  }.property(),
+  }).property(),
 
   userCanViewData: function (entity) {
     var permissions;
