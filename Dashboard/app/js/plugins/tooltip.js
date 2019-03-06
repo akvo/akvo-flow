@@ -1,7 +1,7 @@
 window.tooltip = function() {
 	/* CONFIG */
-	xOffset = 10;
-	yOffset = 20;
+	const 	xOffset = 10;
+	const 	yOffset = 20;
 	// these 2 variable determine popup's distance from the cursor
 	// you might want to adjust to get the right result
 	/* END CONFIG */

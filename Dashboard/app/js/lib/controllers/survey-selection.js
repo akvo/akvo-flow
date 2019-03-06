@@ -4,7 +4,7 @@ FLOW.SurveySelection = Ember.ObjectController.extend({
   selectionFilter: null,
 
   populate: function() {
-    selectionFilter = this.get('selectionFilter');
+    const selectionFilter = this.get('selectionFilter');
     if(selectionFilter) {
         this.surveyGroups = FLOW.store.filter(FLOW.SurveyGroup, selectionFilter);
     } else {

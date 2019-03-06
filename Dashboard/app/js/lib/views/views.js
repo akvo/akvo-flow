@@ -218,7 +218,7 @@ Ember.Handlebars.registerHelper('drawGeoshapes', function () {
 /*  Take a timestamp and render it as a date in format
     YYYY-mm-dd */
 FLOW.renderTimeStamp = function(timestamp) {
-  var d, t, date, month, year;
+  var d, t, date, month, year, monthString, dateString;
   t = parseInt(timestamp, 10);
   if (isNaN(t)) {
   return "";
@@ -250,12 +250,16 @@ FLOW.renderTimeStamp = function(timestamp) {
 
 FLOW.renderDate = function(timestamp){
   if (timestamp) {
-    d = new Date(parseInt(timestamp, 10));
-    curr_date = d.getDate();
-    curr_month = d.getMonth() + 1;
-    curr_year = d.getFullYear();
-    curr_hour = d.getHours();
-    curr_min = d.getMinutes();
+    let d = new Date(parseInt(timestamp, 10));
+    let curr_date = d.getDate();
+    let curr_month = d.getMonth() + 1;
+    let curr_year = d.getFullYear();
+    let curr_hour = d.getHours();
+    let curr_min = d.getMinutes();
+    let monthString;
+    let dateString;
+    let hourString;
+    let minString;
 
     if (curr_month < 10) {
       monthString = "0" + curr_month.toString();

@@ -250,7 +250,7 @@ FLOW.QuestionView = FLOW.View.extend({
     FLOW.questionOptionsControl.set('content', []);
     FLOW.questionOptionsControl.set('questionId', c.get('keyId'));
 
-    options = FLOW.store.filter(FLOW.QuestionOption, function (optionItem) {
+    const options = FLOW.store.filter(FLOW.QuestionOption, function (optionItem) {
         return optionItem.get('questionId') === c.get('keyId');
     });
 

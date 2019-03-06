@@ -290,6 +290,7 @@ FLOW.projectControl = Ember.ArrayController.create({
       // current project is root
       return [];
     }
+    let project;
     var id = currentProject.get('keyId');
     while(id !== null && id !== 0) {
       project = FLOW.store.find(FLOW.SurveyGroup, id);
@@ -340,7 +341,7 @@ FLOW.projectControl = Ember.ArrayController.create({
         return ""; // root project folder
     } else {
         var path = "";
-        for(i = 0; i < projectList.length; i++){
+        for(let i = 0; i < projectList.length; i++){
             path += "/" + projectList[i].get('name');
         }
         return path;
