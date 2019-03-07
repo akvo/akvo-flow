@@ -1,8 +1,17 @@
+import observe from '../mixins/observe';
+
 function sortByOrder(a , b) {
   return a.get('order') - b.get('order');
 }
 
-FLOW.QuestionView = FLOW.View.extend({
+FLOW.QuestionView = FLOW.View.extend(observe({
+  'FLOW.selectedControl.dependentQuestion': 'fillOptionList',
+  'this.text': 'validateQuestionObserver',
+  'FLOW.questionOptionsControl.emptyOptions': 'validateQuestionObserver',
+  'this.tip': 'validateQuestionTooltipObserver',
+  'this.variableName': 'validateVariableNameObserver',
+  'this.selectedCaddisflyTestBrand': 'brandsObserver',
+}), {
   template: Ember.Handlebars.compile(require('templates/navSurveys/question-view')),
   content: null,
   variableName: null,
@@ -289,7 +298,7 @@ FLOW.QuestionView = FLOW.View.extend({
         }));
       });
     }
-  }.observes('FLOW.selectedControl.dependentQuestion'),
+  },
 
   doCancelEditQuestion: function () {
     FLOW.selectedControl.set('selectedQuestion', null);
@@ -782,11 +791,11 @@ FLOW.QuestionView = FLOW.View.extend({
           this.set('questionValidationFailureReason', Ember.String.loc('_question_text_empty'));
         }
       }
-  }.observes('this.text', 'FLOW.questionOptionsControl.emptyOptions'),
+  },
 
   validateQuestionTooltipObserver: function(){
       this.set('questionTooltipValidationFailure', (this.tip != null && this.tip.length > 500));
-  }.observes('this.tip'),
+  },
 
   validateVariableNameObserver: function() {
     var self = this;
@@ -800,7 +809,7 @@ FLOW.QuestionView = FLOW.View.extend({
         self.set('variableNameValidationFailureReason', msg);
       }
     });
-  }.observes('this.variableName'),
+  },
 
   showQuestionModifyButtons: Ember.computed(function () {
     var form = FLOW.selectedControl.get('selectedSurvey');
@@ -918,7 +927,7 @@ FLOW.QuestionView = FLOW.View.extend({
   brandsObserver: function () {
     //needed to disable save button when no resource brand is specified
     FLOW.selectedControl.set('selectedCaddisflyResource', null);
-  }.observes('this.selectedCaddisflyTestBrand')
+  },
 });
 
 /*

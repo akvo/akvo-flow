@@ -1,3 +1,5 @@
+import observe from '../mixins/observe';
+
 // ***********************************************//
 //                      Navigation views
 // ***********************************************//
@@ -571,7 +573,7 @@ FLOW.NavigationView = Em.View.extend({
       return this.get('item') === this.get('parentView.selected');
     }).property('item', 'parentView.selected').cacheable(),
 
-    showDevicesButton: function () {
+    showDevicesButton: Ember.computed(function () {
       return FLOW.permControl.get('canManageDevices');
     }).property(),
 
@@ -902,7 +904,9 @@ FLOW.ColumnView = Ember.View.extend({
 
 var set = Ember.set,
   get = Ember.get;
-Ember.RadioButton = Ember.View.extend({
+Ember.RadioButton = Ember.View.extend(observe({
+    value: 'bindingChanged',
+}), {
   title: null,
   checked: false,
   group: "radio_button",
@@ -916,7 +920,7 @@ Ember.RadioButton = Ember.View.extend({
     if (this.get("option") == get(this, 'value')) {
       this.set("checked", true);
     }
-  }.observes("value"),
+  },
 
   change: function () {
     Ember.run.once(this, this._updateElementValue);
@@ -928,7 +932,9 @@ Ember.RadioButton = Ember.View.extend({
   }
 });
 
-FLOW.SelectFolder = Ember.Select.extend({
+FLOW.SelectFolder = Ember.Select.extend(observe({
+    value: 'onChange',
+}), {
   controller: null,
 
   init: function() {
@@ -974,7 +980,7 @@ FLOW.SelectFolder = Ember.Select.extend({
     } else {
       FLOW.selectedControl.set('selectedSurveyGroup', null);
     }
-  }.observes('value'),
+  },
 });
 
 

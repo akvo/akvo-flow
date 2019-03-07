@@ -1,3 +1,5 @@
+import observe from '../mixins/observe';
+
 FLOW.PreviewView = FLOW.View.extend({
   template: Ember.Handlebars.compile(require('templates/navSurveys/preview-view')),
   closePreviewPopup: function () {
@@ -25,7 +27,11 @@ FLOW.PreviewQuestionGroupView = FLOW.View.extend({
   }
 });
 
-FLOW.PreviewQuestionView = FLOW.View.extend({
+FLOW.PreviewQuestionView = FLOW.View.extend(observe({
+  'FLOW.previewControl.changed': 'checkVisibility',
+  'this.optionChoice': 'storeOptionChoice',
+  'this.answer': 'storeAnswer',
+}), {
   isTextType: false,
   isOptionType: false,
   isNumberType: false,
@@ -108,18 +114,18 @@ FLOW.PreviewQuestionView = FLOW.View.extend({
         this.set('isVisible', false);
       }
     }
-  }.observes('FLOW.previewControl.changed'),
+  },
 
   storeOptionChoice: function () {
     var keyId;
     keyId = this.content.get('keyId');
     FLOW.previewControl.answers[keyId] = this.get('optionChoice');
     FLOW.previewControl.toggleProperty('changed');
-  }.observes('this.optionChoice'),
+  },
 
   storeAnswer: function () {
     var keyId;
     keyId = this.content.get('keyId');
     FLOW.previewControl.answers[keyId] = this.get('answer');
-  }.observes('this.answer')
+  },
 });

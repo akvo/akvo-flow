@@ -1,4 +1,8 @@
-FLOW.inspectDataTableView = FLOW.View.extend({
+import observe from '../mixins/observe';
+
+FLOW.inspectDataTableView = FLOW.View.extend(observe({
+  'FLOW.selectedControl.selectedSurvey': '',
+}), {
   selectedSurvey: null,
   surveyInstanceId: null,
   surveyId: null,
@@ -53,7 +57,7 @@ FLOW.inspectDataTableView = FLOW.View.extend({
       if (FLOW.selectedControl.get('selectedSurvey')!== null) {
          this.set('missingSurvey', false)  
       }  
-  }.observes('FLOW.selectedControl.selectedSurvey'),
+  },
 
   doInstanceQuery: function () {
     this.set('beginDate', Date.parse(FLOW.dateControl.get('fromDate')));

@@ -1,3 +1,5 @@
+import observe from '../mixins/observe';
+
 function capitaliseFirstLetter(string) {
   return string.charAt(0).toUpperCase() + string.slice(1);
 }
@@ -16,7 +18,10 @@ FLOW.ProjectView = FLOW.View.extend({
   template: Ember.Handlebars.compile(require('templates/navSurveys/project')),
 });
 
-FLOW.Project = FLOW.View.extend({
+FLOW.Project = FLOW.View.extend(observe({
+  'this.selectedLanguage': 'updateSelectedLanguage',
+  currentRegistrationForm: 'updateSelectedRegistrationForm',
+}), {
 
   showProjectDetails: false,
   showAdvancedSettings: false,
@@ -98,7 +103,7 @@ FLOW.Project = FLOW.View.extend({
     var currentProject = FLOW.projectControl.get('currentProject');
     if (currentProject)
       currentProject.set('defaultLanguageCode', this.selectedLanguage.get('value'));
-  }.observes('this.selectedLanguage'),
+  },
 
   showMonitoringGroupCheckbox: Ember.computed(function() {
     return FLOW.projectControl.get('formCount') < 2;
@@ -107,7 +112,7 @@ FLOW.Project = FLOW.View.extend({
   updateSelectedRegistrationForm: function() {
     if (!this.get('currentRegistrationForm')) return;
     FLOW.projectControl.currentProject.set('newLocaleSurveyId', this.currentRegistrationForm.get('keyId'));
-  }.observes('currentRegistrationForm'),
+  },
 
   isPublished: Ember.computed(function() {
     var form;

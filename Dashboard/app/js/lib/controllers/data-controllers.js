@@ -1,10 +1,13 @@
+import observe from '../mixins/observe';
 
 function capitaliseFirstLetter(string) {
   if (Ember.empty(string)) return "";
   return string.charAt(0).toUpperCase() + string.slice(1);
 }
 
-FLOW.cascadeResourceControl = Ember.ArrayController.create({
+FLOW.cascadeResourceControl = Ember.ArrayController.create(observe({
+  'FLOW.selectedControl.selectedCascadeResource': 'hasQuestions',
+}), {
   content:null,
   published:null,
   statusUpdateTrigger:false,
@@ -74,7 +77,7 @@ FLOW.cascadeResourceControl = Ember.ArrayController.create({
       return;
     }
     FLOW.store.findQuery(FLOW.Question, {cascadeResourceId: FLOW.selectedControl.selectedCascadeResource.get('keyId')});
-  }.observes('FLOW.selectedControl.selectedCascadeResource'),
+  },
 
   triggerStatusUpdate: function(){
     this.toggleProperty('statusUpdateTrigger');
@@ -167,7 +170,10 @@ FLOW.cascadeNodeControl = Ember.ArrayController.create({
 });
 
 
-FLOW.surveyInstanceControl = Ember.ArrayController.create({
+FLOW.surveyInstanceControl = Ember.ArrayController.create(observe({
+  content: 'contentChanged',
+  'content.isLoaded': 'contentChanged',
+}), {
   sortProperties: ['collectionDate'],
   sortAscending: false,
   selectedSurvey: null,
@@ -202,7 +208,7 @@ FLOW.surveyInstanceControl = Ember.ArrayController.create({
     });
 
     this.set('currentContents', mutableContents);
-  }.observes('content', 'content.isLoaded'),
+  },
 
   removeInstance: function(instance) {
     this.get('currentContents').forEach(function(item, i, currentContents) {
@@ -251,7 +257,7 @@ FLOW.SurveyedLocaleController = Ember.ArrayController.extend({
     });
 
     this.set('currentContents', mutableContents);
-  }.observes('content', 'content.isLoaded'),
+  },
 
   removeLocale: function(locale) {
     this.get('currentContents').forEach(function(item, i, currentContents) {
@@ -367,7 +373,10 @@ FLOW.questionAnswerControl = Ember.ArrayController.create({
   },
 });
 
-FLOW.locationControl = Ember.ArrayController.create({
+FLOW.locationControl = Ember.ArrayController.create(observe({
+  'this.selectedCountry': 'populateLevel1',
+  'this.selectedLevel1': 'populateLevel2',
+}), {
   selectedCountry: null,
   content:null,
   level1Content:null,
@@ -383,7 +392,7 @@ FLOW.locationControl = Ember.ArrayController.create({
       parentId:null
       }));
     }
-  }.observes('this.selectedCountry'),
+  },
 
   populateLevel2: function(){
     if (!Ember.none(this.get('selectedLevel1')) && this.selectedLevel1.get('name').length > 0){
@@ -393,7 +402,7 @@ FLOW.locationControl = Ember.ArrayController.create({
       parentId:this.selectedLevel1.get('keyId')
       }));
     }
-  }.observes('this.selectedLevel1')
+  },
 
 });
 

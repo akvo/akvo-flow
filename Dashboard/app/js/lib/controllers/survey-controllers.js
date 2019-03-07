@@ -1,3 +1,4 @@
+import observe from '../mixins/observe';
 
 FLOW.questionTypeControl = Ember.Object.create({
   content: [
@@ -594,7 +595,14 @@ FLOW.projectControl = Ember.ArrayController.create({
 });
 
 
-FLOW.surveyControl = Ember.ArrayController.create({
+FLOW.surveyControl = Ember.ArrayController.create(observe({
+  'FLOW.selectedControl.selectedSurveyGroup': 'setPublishedContent',
+  'FLOW.selectedControl.selectedSurveyGroup': 'orderForms',
+  'content.isLoaded': 'orderForms',
+  'FLOW.selectedControl.selectedSurveyGroup': 'populate',
+  'content.isLoaded': 'selectFirstForm',
+  'content.isLoaded': 'newLocale',
+}), {
   content: null,
   publishedContent: null,
   sortProperties: ['name'],
@@ -615,7 +623,7 @@ FLOW.surveyControl = Ember.ArrayController.create({
     } else {
       this.set('publishedContent', null);
     }
-  }.observes('FLOW.selectedControl.selectedSurveyGroup'),
+  },
 
   orderForms: function () {
     if (FLOW.selectedControl.get('selectedSurveyGroup') && FLOW.selectedControl.selectedSurveyGroup.get('keyId') > 0) {
@@ -661,14 +669,13 @@ FLOW.surveyControl = Ember.ArrayController.create({
         }));
       }
     }
-  }.observes('FLOW.selectedControl.selectedSurveyGroup', 'content.isLoaded'),
+  },
 
   populateAll: function () {
     FLOW.store.find(FLOW.Survey);
   },
 
   populate: function () {
-
     var id;
     if (FLOW.selectedControl.get('selectedSurveyGroup')) {
       id = FLOW.selectedControl.selectedSurveyGroup.get('keyId');
@@ -681,7 +688,7 @@ FLOW.surveyControl = Ember.ArrayController.create({
     } else {
       this.set('content', null);
     }
-  }.observes('FLOW.selectedControl.selectedSurveyGroup'),
+  },
 
   selectFirstForm: function() {
     if (FLOW.selectedControl.selectedSurvey) return; // ignore if form is already selected
@@ -692,7 +699,7 @@ FLOW.surveyControl = Ember.ArrayController.create({
       }
       this.viewDataForms();
     }
-  }.observes('content.isLoaded'),
+  },
 
   refresh: function () {
 	  var sg = FLOW.selectedControl.get('selectedSurveyGroup');
@@ -705,7 +712,7 @@ FLOW.surveyControl = Ember.ArrayController.create({
 	  var newLocaleId = FLOW.selectedControl && FLOW.selectedControl.selectedSurveyGroup && FLOW.selectedControl.selectedSurveyGroup.get('newLocaleSurveyId');
 	  if(!this.get('content') || !this.get('content').get('isLoaded')) { return; }
 	  this.set('newLocaleSurvey', this.find(function (item) { return item.get('keyId') === newLocaleId; }));
-  }.observes('content.isLoaded'),
+  },
 
   publishSurvey: function () {
     var surveyId;
@@ -835,7 +842,9 @@ FLOW.surveyControl = Ember.ArrayController.create({
 });
 
 
-FLOW.questionGroupControl = Ember.ArrayController.create({
+FLOW.questionGroupControl = Ember.ArrayController.create(observe({
+  'FLOW.selectedControl.selectedSurvey': 'populate',  
+}), {
   sortProperties: ['order'],
   sortAscending: true,
   content: null,
@@ -863,7 +872,7 @@ FLOW.questionGroupControl = Ember.ArrayController.create({
       });
     }
     this.setFilteredContent();
-  }.observes('FLOW.selectedControl.selectedSurvey'),
+  },
 
   getQuestionGroup: function (id) {
 	  FLOW.store.findQuery(FLOW.QuestionGroup,{
@@ -937,7 +946,12 @@ FLOW.questionGroupControl = Ember.ArrayController.create({
 });
 
 
-FLOW.questionControl = Ember.ArrayController.create({
+FLOW.questionControl = Ember.ArrayController.create(observe({
+  'FLOW.selectedControl.selectedSurvey': 'populateAllQuestions',
+  'FLOW.selectedControl.selectedSurvey': 'allQuestionsFilter',
+  'FLOW.selectedControl.selectedQuestionGroup': 'setQGcontent',
+  'FLOW.selectedControl.selectedQuestion': 'setEarlierOptionQuestions',
+}), {
   content: null,
   OPTIONcontent: null,
   earlierOptionQuestions: null,
@@ -956,7 +970,7 @@ FLOW.questionControl = Ember.ArrayController.create({
         surveyId: sId
       }));
     }
-  }.observes('FLOW.selectedControl.selectedSurvey'),
+  },
 
   populateQuestionGroupQuestions: function (qgId) {
         this.set('content', FLOW.store.findQuery(FLOW.Question, {
@@ -1010,7 +1024,7 @@ FLOW.questionControl = Ember.ArrayController.create({
     } else {
       this.set('filterContent', null);
     }
-  }.observes('FLOW.selectedControl.selectedSurvey'),
+  },
 
   setQGcontent: function () {
     if (FLOW.selectedControl.get('selectedQuestionGroup') && FLOW.selectedControl.selectedSurvey.get('keyId') > 0) {
@@ -1019,7 +1033,7 @@ FLOW.questionControl = Ember.ArrayController.create({
         return item.get('questionGroupId') == qId;
       }));
     }
-  }.observes('FLOW.selectedControl.selectedQuestionGroup'),
+  },
 
   geoshapeContent: Ember.computed(function() {
     var selectedSurvey = FLOW.selectedControl.get('selectedSurvey');
@@ -1064,7 +1078,7 @@ FLOW.questionControl = Ember.ArrayController.create({
 
       this.set('earlierOptionQuestions', optionQuestionList);
     }
-  }.observes('FLOW.selectedControl.selectedQuestion'),
+  },
 
   reorderQuestions: function (qgId, reorderPoint, reorderOperation) {
     var questionsInGroup = FLOW.store.filter(FLOW.Question, function (item) {
@@ -1336,7 +1350,9 @@ FLOW.previewControl = Ember.ArrayController.create({
 });
 
 
-FLOW.notificationControl = Ember.ArrayController.create({
+FLOW.notificationControl = Ember.ArrayController.create(observe({
+  'FLOW.selectedControl.selectedSurvey': 'doFilterContent',
+}), {
   content: null,
   filterContent: null,
   sortProperties: ['notificationDestination'],
@@ -1360,11 +1376,14 @@ FLOW.notificationControl = Ember.ArrayController.create({
         return item.get('entityId') == sId;
       }));
     }
-  }.observes('FLOW.selectedControl.selectedSurvey')
+  },
 });
 
 
-FLOW.translationControl = Ember.ArrayController.create({
+FLOW.translationControl = Ember.ArrayController.create(observe({
+  'content.isLoaded': 'initiateData',
+  'this.selectedLanguage': 'lockWhenNewLangChosen',
+}), {
   itemArray: [],
   itemDict: {},
   translations: [],
@@ -1472,7 +1491,7 @@ FLOW.translationControl = Ember.ArrayController.create({
     	  this.putTranslationsInList();
       }
     }
-  }.observes('content.isLoaded'),
+  },
 
   resetTranslationFields: function () {
     this.get('itemArray').forEach(function (item) {
@@ -1558,7 +1577,7 @@ FLOW.translationControl = Ember.ArrayController.create({
       }
       this.set('newSelected', true);
     }
-  }.observes('this.selectedLanguage'),
+  },
 
   addTranslation: function () {
     var found = false,

@@ -1,6 +1,12 @@
+import observe from '../mixins/observe';
 const { create_geomodel } = require('../../../plugins/geocells');
 
-FLOW.NavMapsView = FLOW.View.extend({
+FLOW.NavMapsView = FLOW.View.extend(observe({
+  'FLOW.router.mapsController.selectedMarker': 'handlePlacemarkDetails',
+  'FLOW.selectedControl.selectedSurvey': 'surveySelection',
+  'FLOW.selectedControl.selectedSurveyGroup': 'surveyGroupSelection',
+  'this.detailsPaneVisible': 'detailsPaneShowHide',
+}), {
   template: Ember.Handlebars.compile(require('templates/navMaps/nav-maps-common')),
   showDetailsBool: false,
   detailsPaneElements: null,
@@ -171,7 +177,7 @@ FLOW.NavMapsView = FLOW.View.extend({
   */
   handlePlacemarkDetails: function () {
     this.showDetailsPane();
-  }.observes('FLOW.router.mapsController.selectedMarker'),
+  },
 
   //function to project geoshape from details panel to main map canvas
   projectGeoshape: function(geoShapeObject){
@@ -210,12 +216,12 @@ FLOW.NavMapsView = FLOW.View.extend({
 
   surveySelection: function () {
       this.clearMap("form-selection");
-  }.observes('FLOW.selectedControl.selectedSurvey'),
+  },
 
   surveyGroupSelection: function () {
       this.clearMap("survey-selection");
       this.redoMap();
-  }.observes('FLOW.selectedControl.selectedSurveyGroup'),
+  },
 
   clearMap: function (trigger) {
     FLOW.router.mapsController.clearMarker();
@@ -272,7 +278,7 @@ FLOW.NavMapsView = FLOW.View.extend({
         opacity: (display) ? '1' : '0',
         display: (display) ? 'inherit' : 'none'
       });
-  }.observes('this.detailsPaneVisible'),
+  },
 
   showDetailsPane: function(){
       if (!this.detailsPaneVisible) {

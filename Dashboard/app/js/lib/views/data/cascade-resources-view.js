@@ -1,3 +1,5 @@
+import observe from '../mixins/observe';
+
 function capitaliseFirstLetter(string) {
   return string.charAt(0).toUpperCase() + string.slice(1);
 }
@@ -8,7 +10,9 @@ if (!String.prototype.trim) {
 
 
 
-FLOW.CascadeResourceView = FLOW.View.extend({
+FLOW.CascadeResourceView = FLOW.View.extend(observe({
+	'FLOW.selectedControl.selectedCascadeResource': 'resourceSelected',
+}), {
 	showNewCascadeField: false,
 	cascadeResourceName:null,
 	showImportDialog:false,
@@ -123,7 +127,7 @@ FLOW.CascadeResourceView = FLOW.View.extend({
 			FLOW.cascadeResourceControl.setDisplayLevelNames();
 			FLOW.cascadeNodeControl.toggleSelectedNodeTrigger();
 		}
-	}.observes('FLOW.selectedControl.selectedCascadeResource'),
+	},
 
 	// fired when 'save' is clicked while showing new cascade text field. Saves new cascade resource to the data store
 	saveNewCascadeResource: function () {

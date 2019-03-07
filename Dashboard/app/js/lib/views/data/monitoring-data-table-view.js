@@ -1,4 +1,8 @@
-FLOW.MonitoringDataTableView = FLOW.View.extend({
+import observe from '../mixins/observe';
+
+FLOW.MonitoringDataTableView = FLOW.View.extend(observe({
+    'FLOW.selectedControl.selectedSurveyGroup': 'watchSurveySelection',
+}), {
   showingDetailsDialog: false,
   cursorStart: null,
   missingSurvey:false,
@@ -32,7 +36,7 @@ FLOW.MonitoringDataTableView = FLOW.View.extend({
      if (FLOW.selectedControl.get('selectedSurveyGroup') !== null) {
         this.set('missingSurvey', false)
      }
-  }.observes('FLOW.selectedControl.selectedSurveyGroup'),
+  },
 
   findSurveyedLocale: function (evt) {
 	  var ident = this.get('identifier'),
@@ -121,7 +125,9 @@ FLOW.MonitoringDataTableView = FLOW.View.extend({
 /**
  * View of each row/data point in the monitoring data tab
  */
-FLOW.DataPointView = FLOW.View.extend({
+FLOW.DataPointView = FLOW.View.extend(observer({
+    'this.showDataApprovalBlock': 'loadDataPointApprovalObserver',
+}), {
     template: Ember.Handlebars.compile(require('templates/navData/monitoring-data-row')),
 
     approvalStatus: [{label: Ember.String.loc('_pending'), value: 'PENDING'}, { label: Ember.String.loc('_approved'), value: 'APPROVED' },{ label: Ember.String.loc('_rejected'), value: 'REJECTED'}],
@@ -190,7 +196,7 @@ FLOW.DataPointView = FLOW.View.extend({
         return !Ember.empty(approvals.filterProperty('status', 'REJECTED'));
     }).property('this.dataPointApprovals'),
 
-    loadDataPointApprovalObserver: Ember.computed(function () {
+    loadDataPointApprovalObserver: function () {
         if(!this.get('showDataApprovalBlock')) {
             return; // do nothing when hiding approval block
         }
@@ -199,13 +205,13 @@ FLOW.DataPointView = FLOW.View.extend({
         if (dataPoint) {
             FLOW.router.dataPointApprovalController.loadBySurveyedLocaleId(dataPoint.get('keyId'));
         }
-    }.observes('this.showDataApprovalBlock'),
+    },
 
     toggleShowDataApprovalBlock: function () {
         this.toggleProperty('showDataApprovalBlock');
     },
 
-    dataPointRowNumber: function () {
+    dataPointRowNumber: Ember.computed(function () {
         var pageNumber = FLOW.router.surveyedLocaleController.get('pageNumber');
         return this.get('_parentView.contentIndex') + 1 + 20 * pageNumber;
     }).property()

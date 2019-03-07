@@ -1,4 +1,6 @@
-FLOW.dashboardLanguageControl = Ember.Object.create({
+import observe from '../mixins/observe';
+
+FLOW.dashboardLanguageControl = Ember.Object.create(observe({ dashboardLanguage: 'languageChanged' }), {
   dashboardLanguage: FLOW.Env.locale,
 
   content: [{ label: "English (Default)", value: "en"},
@@ -8,19 +10,23 @@ FLOW.dashboardLanguageControl = Ember.Object.create({
             { label: "Português", value: "pt" },
             { label: "Tiếng Việt", value: "vi"}],
 
-  languageChanged: function () {
-    var localeUrl = '/ui-strings.js?locale=' + this.dashboardLanguage;
-    $.ajax({
-      url: localeUrl,
-      complete: function () {
-        location.reload(false);
-      },
-    });
-  }.observes('dashboardLanguage'),
+  languageChanged: function(){ 
+     var localeUrl = '/ui-strings.js?locale=' + this.dashboardLanguage;
+     $.ajax({
+       url: localeUrl,
+       complete: function () {
+         location.reload(false);
+       },
+     });
+     
+  },
 });
- 
- 
-FLOW.selectedControl = Ember.Controller.create({
+
+FLOW.selectedControl = Ember.Controller.create(observe({
+  'this.selectedSurveyGroup': 'deselectSurveyGroupChildren',
+  'this.selectedSurvey': 'deselectSurveyChildren',
+  // 'this.selectedSurveyOPTIONQuestions': 'OptionQuestions',
+}), {
   selectedSurveyGroup: null,
   selectedSurvey: null,
   selectedSurveys: [],
@@ -48,7 +54,7 @@ FLOW.selectedControl = Ember.Controller.create({
 
   // OptionQuestions:function (){
   //   console.log('optionquestions 1');
-  // }.observes('this.selectedSurveyOPTIONQuestions'),
+  // },
 
   // when selected survey changes, deselect selected surveys and question groups
   deselectSurveyGroupChildren: function () {
@@ -56,12 +62,12 @@ FLOW.selectedControl = Ember.Controller.create({
     FLOW.selectedControl.set('selectedSurveyAllQuestions', null);
     FLOW.selectedControl.set('selectedQuestionGroup', null);
     FLOW.selectedControl.set('selectedQuestion', null);
-  }.observes('this.selectedSurveyGroup'),
+  },
 
   deselectSurveyChildren: function () {
     FLOW.selectedControl.set('selectedQuestionGroup', null);
     FLOW.selectedControl.set('selectedQuestion', null);
-  }.observes('this.selectedSurvey')
+  },
 });
 
 

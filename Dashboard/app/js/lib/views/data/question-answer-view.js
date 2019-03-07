@@ -1,3 +1,5 @@
+import observe from '../mixins/observe';
+
 // this function is also present in assignment-edit-views.js, we need to consolidate using moment.js
 
 function formatDate(date) {
@@ -11,7 +13,9 @@ function sortByOrder(a , b) {
   return a.get('order') - b.get('order');
 }
 
-FLOW.QuestionAnswerView = Ember.View.extend({
+FLOW.QuestionAnswerView = Ember.View.extend(observe({
+  'this.numberValue': 'doValidateNumber',
+}), {
 
   isTextType: Ember.computed(function(){
     return this.get('questionType') === 'FREE_TEXT';
@@ -520,7 +524,7 @@ FLOW.QuestionAnswerView = Ember.View.extend({
   doValidateNumber: function () {
     // TODO should check for minus sign and decimal point, depending on question setting
     this.set('numberValue', this.get('numberValue').toString().replace(/[^\d.]/g, ""));
-  }.observes('this.numberValue'),
+  },
 
   popupMedia: function () {
     if (this.get('photoUrl')) {

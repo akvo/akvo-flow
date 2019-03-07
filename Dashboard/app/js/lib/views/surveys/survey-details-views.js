@@ -1,3 +1,5 @@
+import observe from '../mixins/observe';
+
 // ************************ Surveys *************************
 // FLOW.SurveySidebarView = FLOW.View.extend({
 FLOW.SurveySidebarView = FLOW.View.extend({
@@ -263,7 +265,9 @@ FLOW.QuestionGroupItemTranslationView = FLOW.View.extend({
 });
 
 
-FLOW.QuestionGroupItemView = FLOW.View.extend({
+FLOW.QuestionGroupItemView = FLOW.View.extend(observe({
+  'this.amCopying': 'pollQuestionGroupStatus',
+}), {
   // question group content comes through binding in handlebars file
   zeroItem: false,
   renderView: false,
@@ -539,7 +543,7 @@ FLOW.QuestionGroupItemView = FLOW.View.extend({
           },5000);
         }
       }
-  }.observes('this.amCopying'),
+  },
 
   // execute group copy to selected location
   doQGroupCopyHere: function () {

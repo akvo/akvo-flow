@@ -1,3 +1,5 @@
+import observe from '../mixins/observe';
+
 /*global Ember, $, FLOW */
 
 FLOW.ReportLoader = Ember.Object.create({
@@ -44,14 +46,18 @@ FLOW.ReportLoader = Ember.Object.create({
 FLOW.ExportReportsView = Ember.View.extend({
   template: Ember.Handlebars.compile(require('templates/navReports/export-reports')),
   missingSurvey: false,
-  
   updateSurveyStatus: function (surveyStatus) {
      this.set('missingSurvey', surveyStatus !== 'survey-selected')
      Ember.$('body, html ,#navExportSelect').scrollTop(0);
   }
 });
 
-FLOW.ExportReportTypeView = Ember.View.extend({
+FLOW.ExportReportTypeView = Ember.View.extend(observe({
+  'this.exportOption': 'dateRangeDisabledObserver',
+  'this.reportFromDate': 'setMinDate',
+  'this.reportToDate': 'setMaxDate',
+  'FLOW.selectedControl.selectedSurvey': 'watchSurveySelection',
+}), {
   showRawDataReportApplet: false,
   showComprehensiveReportApplet: false,
   showGoogleEarthFileApplet: false,
@@ -75,19 +81,19 @@ FLOW.ExportReportTypeView = Ember.View.extend({
     this.set('rangeActive', this.get("exportOption") === "range" ? "" : "background-color: transparent;");
     this.set('recentActive', this.get("exportOption") === "recent" ? "" : "background-color: transparent;");
     this.set('dateRangeDisabled', this.get("exportOption") === "recent");
-  }.observes('this.exportOption'),
+  },
 
   setMinDate: function () {
     if (this.get('reportFromDate')) {
       this.$(".to_date").datepicker("option", "minDate", this.get("reportFromDate"))
     }
-  }.observes('this.reportFromDate'),
+  },
 
   setMaxDate: function () {
     if (this.get('reportToDate')) {
      this.$(".from_date").datepicker("option", "maxDate", this.get("reportToDate"))
     }
-  }.observes('this.reportToDate'),
+  },
 
   didInsertElement: function () {
     FLOW.selectedControl.set('surveySelection', FLOW.SurveySelection.create());
@@ -109,7 +115,7 @@ FLOW.ExportReportTypeView = Ember.View.extend({
      if (FLOW.selectedControl.get('selectedSurvey')!== null) {
         this.get('parentView').updateSurveyStatus('survey-selected')
      }
-  }.observes('FLOW.selectedControl.selectedSurvey'),
+  },
 
   hideLastCollection: Ember.computed(function () {
     if (!FLOW.selectedControl.selectedSurvey) {
@@ -323,7 +329,9 @@ FLOW.ReportListItemView = FLOW.View.extend({
   }).property('content')
 });
 
-FLOW.DataCleaningView = Ember.View.extend({
+FLOW.DataCleaningView = Ember.View.extend(observe({
+  'FLOW.selectedControl.selectedSurvey': 'watchSurveySelection',
+}), {
   template: Ember.Handlebars.compile(require('templates/navData/data-cleaning')),
   missingSurvey:false,
 
@@ -354,5 +362,5 @@ FLOW.DataCleaningView = Ember.View.extend({
       if (FLOW.selectedControl.get('selectedSurvey')!== null) {
          this.set('missingSurvey', false)
       }
-   }.observes('FLOW.selectedControl.selectedSurvey')
+   }
 });

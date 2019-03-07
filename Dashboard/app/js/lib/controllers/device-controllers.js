@@ -1,3 +1,5 @@
+import observe from '../mixins/observe';
+
 FLOW.deviceGroupControl = Ember.ArrayController.create({
   content: null,
   contentNoUnassigned: null,
@@ -62,7 +64,9 @@ FLOW.deviceControl = Ember.ArrayController.create({
 });
 
 
-FLOW.devicesInGroupControl = Ember.ArrayController.create({
+FLOW.devicesInGroupControl = Ember.ArrayController.create(observe({
+  'FLOW.selectedControl.selectedDeviceGroup': 'setDevicesInGroup',
+}), {
   content: null,
   sortProperties: ['combinedName'],
   sortAscending: true,
@@ -82,7 +86,7 @@ FLOW.devicesInGroupControl = Ember.ArrayController.create({
         }));
       }
     }
-  }.observes('FLOW.selectedControl.selectedDeviceGroup')
+  },
 });
 
 
