@@ -1,13 +1,13 @@
 import observe from '../../mixins/observe';
+import template from '../../mixins/template';
 const { create_geomodel } = require('../../../plugins/geocells');
 
-FLOW.NavMapsView = FLOW.View.extend(observe({
+FLOW.NavMapsView = FLOW.View.extend(template('navMaps/nav-maps-common'), observe({
   'FLOW.router.mapsController.selectedMarker': 'handlePlacemarkDetails',
   'FLOW.selectedControl.selectedSurvey': 'surveySelection',
   'FLOW.selectedControl.selectedSurveyGroup': 'surveyGroupSelection',
   'this.detailsPaneVisible': 'detailsPaneShowHide',
 }), {
-  template: Ember.Handlebars.compile(require('templates/navMaps/nav-maps-common')),
   showDetailsBool: false,
   detailsPaneElements: null,
   detailsPaneVisible: null,
@@ -292,8 +292,7 @@ FLOW.PlacemarkDetailsView = FLOW.View.extend({});
 
 FLOW.PlacemarkDetailPhotoView = Ember.View.extend({});
 
-FLOW.GeoshapeMapView = FLOW.View.extend({
-  template: Ember.Handlebars.compile(require('templates/navMaps/geoshape-map')),
+FLOW.GeoshapeMapView = FLOW.View.extend(template('navMaps/geoshape-map'), {
   geoshape: null,
 
   didInsertElement: function() {

@@ -1,4 +1,5 @@
 import observe from '../../mixins/observe';
+import template from '../../mixins/template';
 
 function capitaliseFirstLetter(string) {
   return string.charAt(0).toUpperCase() + string.slice(1);
@@ -10,13 +11,9 @@ if (!String.prototype.trim) {
   };
 }
 
-FLOW.ProjectListView = FLOW.View.extend({
-  template: Ember.Handlebars.compile(require('templates/navSurveys/project-list'))
-});
+FLOW.ProjectListView = FLOW.View.extend(template('navSurveys/project-list'));
 
-FLOW.ProjectView = FLOW.View.extend({
-  template: Ember.Handlebars.compile(require('templates/navSurveys/project')),
-});
+FLOW.ProjectView = FLOW.View.extend(template('navSurveys/project'));
 
 FLOW.Project = FLOW.View.extend(observe({
   'this.selectedLanguage': 'updateSelectedLanguage',

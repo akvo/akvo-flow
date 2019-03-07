@@ -1,3 +1,5 @@
+import template from '../../mixins/template';
+
 FLOW.DataApprovalView = Ember.View.extend({
     /*
      * This is a wrapper template for the data approval tab.
@@ -11,18 +13,13 @@ FLOW.DataApprovalView = Ember.View.extend({
     template: Ember.Handlebars.compile('{{outlet approvalMain}}'),
 });
 
-FLOW.ApprovalGroupListView = Ember.View.extend({
-    template: Ember.Handlebars.compile(require('templates/navData/data-approval-group-list'))
-});
+FLOW.ApprovalGroupListView = Ember.View.extend(template('navData/data-approval-group-list'));
 
-FLOW.ApprovalGroupView = Ember.View.extend({
-    template: Ember.Handlebars.compile(require('templates/navData/data-approval-group')),
+FLOW.ApprovalGroupView = Ember.View.extend(template('navData/data-approval-group'), {
 
     approvalTypeOptions: [{label: Ember.String.loc('_ordered'), optionValue: "ordered"},
                           {label: Ember.String.loc('_unordered'), optionValue: "unordered"}],
 });
 
 
-FLOW.ApprovalStepsView = Ember.View.extend({
-    template: Ember.Handlebars.compile(require('templates/navData/data-approval-steps')),
-});
+FLOW.ApprovalStepsView = Ember.View.extend(template('navData/data-approval-steps'));

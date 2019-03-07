@@ -1,4 +1,5 @@
 import observe from '../../mixins/observe';
+import template from '../../mixins/template';
 
 // this function is also present in assignment-edit-views.js, we need to consolidate using moment.js
 
@@ -588,13 +589,9 @@ FLOW.QuestionAnswerMultiOptionEditView = Ember.CollectionView.extend({
   })
 });
 
-FLOW.QuestionAnswerInspectDataView = FLOW.QuestionAnswerView.extend({
-  template: Ember.Handlebars.compile(require('templates/navData/question-answer')),
-});
+FLOW.QuestionAnswerInspectDataView = FLOW.QuestionAnswerView.extend(template('navData/question-answer'));
 
-FLOW.QuestionAnswerMonitorDataView = FLOW.QuestionAnswerView.extend({
-  template: Ember.Handlebars.compile(require('templates/navData/question-answer')),
-  
+FLOW.QuestionAnswerMonitorDataView = FLOW.QuestionAnswerView.extend(template('navData/question-answer'), {
   doEdit : function (){ //override the doEdit action in the parentView
     this._super();
     this.set('inEditMode', false)

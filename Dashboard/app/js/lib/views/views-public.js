@@ -5,12 +5,9 @@
 
 require('akvo-flow/core-common');
 require('akvo-flow/views/maps/map-views-common-public');
+import template from '../../mixins/template';
 
-
-FLOW.ApplicationView = Ember.View.extend({
-  template: Ember.Handlebars.compile(require('templates/application/application-public')),
-});
-
+FLOW.ApplicationView = Ember.View.extend(template('application/application-public'));
 
 FLOW.locale = function (i18nKey) {
   return 'Ember.STRINGS._select_survey_group';
@@ -216,6 +213,4 @@ Ember.Select.reopen({
   attributeBindings: ['size']
 });
 
-FLOW.FooterView = FLOW.View.extend({
-  template: Ember.Handlebars.compile(require('templates/application/footer-public'))
-});
+FLOW.FooterView = FLOW.View.extend(template('application/footer-public'));

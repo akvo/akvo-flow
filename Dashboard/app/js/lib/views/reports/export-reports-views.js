@@ -1,4 +1,5 @@
 import observe from '../../mixins/observe';
+import template from '../../mixins/template';
 
 /*global Ember, $, FLOW */
 
@@ -43,8 +44,7 @@ FLOW.ReportLoader = Ember.Object.create({
   }
 });
 
-FLOW.ExportReportsView = Ember.View.extend({
-  template: Ember.Handlebars.compile(require('templates/navReports/export-reports')),
+FLOW.ExportReportsView = Ember.View.extend(template('navReports/export-reports'), {
   missingSurvey: false,
   updateSurveyStatus: function (surveyStatus) {
      this.set('missingSurvey', surveyStatus !== 'survey-selected')
@@ -235,9 +235,7 @@ FLOW.ExportReportTypeView = Ember.View.extend(observe({
   })
 });
 
-FLOW.ReportsListView = Ember.View.extend({
-  template: Ember.Handlebars.compile(require('templates/navReports/reports-list')),
-
+FLOW.ReportsListView = Ember.View.extend(template('navReports/reports-list'), {
   didInsertElement: function () {
     FLOW.router.reportsController.populate();
   },
@@ -247,9 +245,7 @@ FLOW.ReportsListView = Ember.View.extend({
   }
 });
 
-FLOW.ReportListItemView = FLOW.View.extend({
-  template: Ember.Handlebars.compile(require('templates/navReports/report')),
-
+FLOW.ReportListItemView = FLOW.View.extend(template('navReports/report'), {
   reportType: Ember.computed(function (){
     var reportTypeClasses = {
       DATA_CLEANING: "dataCleanExp",
@@ -329,10 +325,9 @@ FLOW.ReportListItemView = FLOW.View.extend({
   }).property('content')
 });
 
-FLOW.DataCleaningView = Ember.View.extend(observe({
+FLOW.DataCleaningView = Ember.View.extend(template('navData/data-cleaning'), observe({
   'FLOW.selectedControl.selectedSurvey': 'watchSurveySelection',
 }), {
-  template: Ember.Handlebars.compile(require('templates/navData/data-cleaning')),
   missingSurvey:false,
 
   didInsertElement: function () {

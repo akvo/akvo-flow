@@ -1,10 +1,10 @@
 import observe from '../../mixins/observe';
+import template from '../../mixins/template';
 const { create_geomodel } = require('../../../plugins/geocells');
 
-FLOW.NavMapsView = FLOW.View.extend(observe({
+FLOW.NavMapsView = FLOW.View.extend(template('navMaps/nav-maps-common'), observe({
   'FLOW.placemarkDetailController.content.isLoaded': 'handlePlacemarkDetails',
 }), {
-  template: Ember.Handlebars.compile(require('templates/navMaps/nav-maps-common')),
   showDetailsBool: false,
   detailsPaneElements: null,
   detailsPaneVisible: null,

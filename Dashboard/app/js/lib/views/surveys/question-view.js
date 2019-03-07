@@ -1,10 +1,11 @@
 import observe from '../../mixins/observe';
+import template from '../../mixins/template';
 
 function sortByOrder(a , b) {
   return a.get('order') - b.get('order');
 }
 
-FLOW.QuestionView = FLOW.View.extend(observe({
+FLOW.QuestionView = FLOW.View.extend(template('navSurveys/question-view'), observe({
   'FLOW.selectedControl.dependentQuestion': 'fillOptionList',
   'this.text': 'validateQuestionObserver',
   'FLOW.questionOptionsControl.emptyOptions': 'validateQuestionObserver',
@@ -12,7 +13,6 @@ FLOW.QuestionView = FLOW.View.extend(observe({
   'this.variableName': 'validateVariableNameObserver',
   'this.selectedCaddisflyTestBrand': 'brandsObserver',
 }), {
-  template: Ember.Handlebars.compile(require('templates/navSurveys/question-view')),
   content: null,
   variableName: null,
   text: null,
@@ -936,8 +936,7 @@ FLOW.QuestionView = FLOW.View.extend(observe({
 FLOW.OptionListView = Ember.CollectionView.extend({
   tagName: 'ul',
   content: null,
-  itemViewClass: Ember.View.extend({
-    template: Ember.Handlebars.compile(require('templates/navSurveys/question-option')),
+  itemViewClass: Ember.View.extend(template('navSurveys/question-option'), {
     topOption: Ember.computed(function () {
       var option = this.get('content');
       if (option) {

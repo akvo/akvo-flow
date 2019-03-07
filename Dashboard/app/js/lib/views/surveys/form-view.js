@@ -1,5 +1,6 @@
-FLOW.FormView = Ember.View.extend({
-	template: Ember.Handlebars.compile(require('templates/navSurveys/form')),
+import template from '../../mixins/template';
+
+FLOW.FormView = Ember.View.extend(template('navSurveys/form'), {
 	showFormBasics: false,
 
 	manageTranslations: false,

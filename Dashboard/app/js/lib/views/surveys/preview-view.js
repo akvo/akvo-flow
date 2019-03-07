@@ -1,7 +1,7 @@
 import observe from '../../mixins/observe';
+import template from '../../mixins/template';
 
-FLOW.PreviewView = FLOW.View.extend({
-  template: Ember.Handlebars.compile(require('templates/navSurveys/preview-view')),
+FLOW.PreviewView = FLOW.View.extend(template('navSurveys/preview-view'), {
   closePreviewPopup: function () {
     FLOW.previewControl.set('showPreviewPopup', false);
   }

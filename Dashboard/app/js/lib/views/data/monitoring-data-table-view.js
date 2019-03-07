@@ -1,4 +1,5 @@
 import observe from '../../mixins/observe';
+import template from '../../mixins/template';
 
 FLOW.MonitoringDataTableView = FLOW.View.extend(observe({
     'FLOW.selectedControl.selectedSurveyGroup': 'watchSurveySelection',
@@ -125,11 +126,9 @@ FLOW.MonitoringDataTableView = FLOW.View.extend(observe({
 /**
  * View of each row/data point in the monitoring data tab
  */
-FLOW.DataPointView = FLOW.View.extend(observe({
+FLOW.DataPointView = FLOW.View.extend(template('navData/monitoring-data-row'), observe({
     'this.showDataApprovalBlock': 'loadDataPointApprovalObserver',
 }), {
-    template: Ember.Handlebars.compile(require('templates/navData/monitoring-data-row')),
-
     approvalStatus: [{label: Ember.String.loc('_pending'), value: 'PENDING'}, { label: Ember.String.loc('_approved'), value: 'APPROVED' },{ label: Ember.String.loc('_rejected'), value: 'REJECTED'}],
      
      //catering for counter for the data points.
