@@ -1,4 +1,4 @@
-import observe from '../mixins/observe';
+import observe from '../../mixins/observe';
 
 FLOW.MonitoringDataTableView = FLOW.View.extend(observe({
     'FLOW.selectedControl.selectedSurveyGroup': 'watchSurveySelection',
@@ -125,7 +125,7 @@ FLOW.MonitoringDataTableView = FLOW.View.extend(observe({
 /**
  * View of each row/data point in the monitoring data tab
  */
-FLOW.DataPointView = FLOW.View.extend(observer({
+FLOW.DataPointView = FLOW.View.extend(observe({
     'this.showDataApprovalBlock': 'loadDataPointApprovalObserver',
 }), {
     template: Ember.Handlebars.compile(require('templates/navData/monitoring-data-row')),

@@ -1,4 +1,4 @@
-import observe from '../mixins/observe';
+import observe from '../../mixins/observe';
 
 // ************************ Surveys *************************
 // FLOW.SurveySidebarView = FLOW.View.extend({

@@ -1,4 +1,4 @@
-import observe from '../mixins/observe';
+import observe from '../../mixins/observe';
 
 FLOW.CurrentDevicesTabView = Ember.View.extend(observe({
   'this.selectedDeviceGroup': 'copyDeviceGroupName',

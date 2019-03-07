@@ -1,4 +1,4 @@
-import observe from '../mixins/observe';
+import observe from '../../mixins/observe';
 
 FLOW.PreviewView = FLOW.View.extend({
   template: Ember.Handlebars.compile(require('templates/navSurveys/preview-view')),

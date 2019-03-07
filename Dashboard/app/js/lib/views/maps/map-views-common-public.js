@@ -1,4 +1,4 @@
-import observe from '../mixins/observe';
+import observe from '../../mixins/observe';
 const { create_geomodel } = require('../../../plugins/geocells');
 
 FLOW.NavMapsView = FLOW.View.extend(observe({

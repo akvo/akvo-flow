@@ -1,4 +1,4 @@
-import observe from '../mixins/observe';
+import observe from '../../mixins/observe';
 
 // removes duplicate objects with a clientId from an Ember Array
 

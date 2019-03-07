@@ -1,4 +1,4 @@
-import observe from '../mixins/observe';
+import observe from '../../mixins/observe';
 
 FLOW.inspectDataTableView = FLOW.View.extend(observe({
   'FLOW.selectedControl.selectedSurvey': '',

@@ -1,5 +1,5 @@
 /*global deleteChart, createDoughnutChart, createHBarChart, createVBarChart*/
-import observe from '../mixins/observe';
+import observe from '../../mixins/observe';
 
 FLOW.chartView = FLOW.View.extend(observe({
   'this.selectedSurvey': 'downloadOptionQuestions',

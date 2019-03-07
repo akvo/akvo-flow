@@ -1,4 +1,4 @@
-import observe from '../mixins/observe';
+import observe from '../../mixins/observe';
 
 // this function is also present in assignment-edit-views.js, we need to consolidate using moment.js
 

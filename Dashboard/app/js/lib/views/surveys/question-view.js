@@ -1,4 +1,4 @@
-import observe from '../mixins/observe';
+import observe from '../../mixins/observe';
 
 function sortByOrder(a , b) {
   return a.get('order') - b.get('order');
