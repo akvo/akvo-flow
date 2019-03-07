@@ -39,7 +39,7 @@
     <maven.compiler.target>1.8</maven.compiler.target>
     <maven.compiler.showDeprecation>false</maven.compiler.showDeprecation>
     <archiveClasses>true</archiveClasses>
-    <spring.version>3.2.18.RELEASE</spring.version>
+    <spring.version>4.3.22.RELEASE</spring.version>
     <spring.security.version>3.2.10.RELEASE</spring.security.version>
     <appengine.sdk.version>1.9.63</appengine.sdk.version>
     <jackson.version>2.6.7</jackson.version>
@@ -124,7 +124,16 @@
         <artifactId>spring-context-support</artifactId>
         <version>${spring.version}</version>
     </dependency>
-
+    <dependency>
+        <groupId>org.springframework</groupId>
+        <artifactId>spring-expression</artifactId>
+        <version>${spring.version}</version>
+    </dependency>
+    <dependency>
+        <groupId>org.springframework</groupId>
+        <artifactId>spring-webmvc</artifactId>
+        <version>${spring.version}</version>
+    </dependency>
     <dependency>
         <groupId>org.json</groupId>
         <artifactId>json</artifactId>
@@ -144,16 +153,6 @@
         <groupId>org.springframework.security</groupId>
         <artifactId>spring-security-config</artifactId>
         <version>${spring.security.version}</version>
-    </dependency>
-    <dependency>
-        <groupId>org.springframework</groupId>
-        <artifactId>spring-expression</artifactId>
-        <version>${spring.security.version}</version>
-    </dependency>
-    <dependency>
-        <groupId>org.springframework</groupId>
-        <artifactId>spring-webmvc</artifactId>
-        <version>${spring.version}</version>
     </dependency>
     <dependency>
         <groupId>com.fasterxml.jackson.core</groupId>
