@@ -1,0 +1,42 @@
+  {
+    "plugins": [
+      "transform-class-properties",
+      "transform-es2015-for-of"
+    ],
+    "env": {
+      "development": {
+        "presets": [
+          "env",
+          "react",
+          "react-hmre",
+          "stage-2"
+        ]
+      },
+      "production": {
+        "presets": [
+          [
+            "env",
+            {
+              "targets": {
+                "ie": 9,
+                "uglify": true
+              }
+            }
+          ],
+          "react",
+          "stage-2"
+        ],
+        "plugins": [
+          "transform-react-constant-elements",
+          "transform-react-remove-prop-types"
+        ]
+      },
+      "test": {
+        "presets": [
+          "env",
+          "react",
+          "stage-2"
+        ]
+      }
+    }
+  }
