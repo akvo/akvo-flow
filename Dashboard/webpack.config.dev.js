@@ -31,15 +31,14 @@ export default {
       './app/js/lib/webpack-public-path', // must be first entry to properly set public path
       path.resolve(__dirname, 'app/js/lib/main.js'), // Defining path seems necessary for this to work consistently on Windows machines.
     ],
-    publicmap: path.resolve(__dirname, 'app/js/lib/main-public.js'),
   },
   target: 'web',
-  output: { 
+  output: {
     path: path.resolve(__dirname, '../GAE/target/akvo-flow/admin'), // Note: Physical files are only output by the production build task `npm run build`.
     filename: '[name].bundle.js',
-    publicPath: '/[name]/',
+    publicPath: '/admin/',
   },
-  watch: true,
+  watch: true, // TODO do we need this?
   plugins: [
     new webpack.DefinePlugin({
       'process.env.NODE_ENV': JSON.stringify('development'), // Tells React to build in either dev or prod modes. https://facebook.github.io/react/downloads.html (See bottom)

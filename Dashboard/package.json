@@ -1,7 +1,8 @@
 {
   "name": "akvo-flow",
   "scripts": {
-    "build:dev": "babel-node ./scripts/buildDev.js"
+    "build:dev": "babel-node ./scripts/buildDev.js",
+    "build:prod": "babel-node ./scripts/buildProd.js"
   },
   "dependencies": {
     "moment": "^2.24.0",

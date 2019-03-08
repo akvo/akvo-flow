@@ -28,7 +28,7 @@ SRC_DIR="/app/src"
 cd "${SRC_DIR}/Dashboard"
 
 npm install
-npm run build:dev
+npm run build:prod
 
 # bundle exec rake build --trace
 
