@@ -1,5 +1,5 @@
 /*
- *  Copyright (C) 2010-2016 Stichting Akvo (Akvo Foundation)
+ *  Copyright (C) 2010-2016,2019 Stichting Akvo (Akvo Foundation)
  *
  *  This file is part of Akvo FLOW.
  *
@@ -52,7 +52,7 @@ public class UserDto extends BaseDto {
 
     public boolean isAdmin() {
 
-        return hasPermission(PermissionConstants.ADMIN);
+        return hasPermission(PermissionConstants.ROLE_ADMIN);
     }
 
     public boolean isSuperAdmin() {
@@ -114,7 +114,7 @@ public class UserDto extends BaseDto {
         } else {
             if (permissionList != null) {
                 return (permissionList.contains(permission) || permissionList
-                        .contains(PermissionConstants.ADMIN));
+                        .contains(PermissionConstants.ROLE_ADMIN));
             } else {
                 return false;
             }

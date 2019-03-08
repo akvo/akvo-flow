@@ -40,7 +40,7 @@
     <maven.compiler.showDeprecation>false</maven.compiler.showDeprecation>
     <archiveClasses>true</archiveClasses>
     <spring.version>4.3.22.RELEASE</spring.version>
-    <spring.security.version>3.2.10.RELEASE</spring.security.version>
+    <spring.security.version>4.2.11.RELEASE</spring.security.version>
     <appengine.sdk.version>1.9.63</appengine.sdk.version>
     <jackson.version>2.6.7</jackson.version>
     <junit.jupiter.version>5.4.0</junit.jupiter.version>
@@ -83,11 +83,6 @@
         <groupId>org.datanucleus</groupId>
         <artifactId>datanucleus-api-jdo</artifactId>
         <version>3.1.3</version>
-    </dependency>
-    <dependency>
-        <groupId>org.springframework.security</groupId>
-        <artifactId>spring-security-core</artifactId>
-        <version>${spring.security.version}</version>
     </dependency>
     <dependency>
         <groupId>org.apache.velocity</groupId>
@@ -143,6 +138,11 @@
         <groupId>org.apache.poi</groupId>
         <artifactId>poi</artifactId>
         <version>3.8</version>
+    </dependency>
+    <dependency>
+        <groupId>org.springframework.security</groupId>
+        <artifactId>spring-security-core</artifactId>
+        <version>${spring.security.version}</version>
     </dependency>
     <dependency>
         <groupId>org.springframework.security</groupId>

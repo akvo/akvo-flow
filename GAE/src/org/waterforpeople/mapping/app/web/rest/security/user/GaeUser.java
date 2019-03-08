@@ -22,10 +22,10 @@ public class GaeUser implements Serializable {
     private Long userId;
 
     /**
-     * Pre-registration constructor. Assigns the user the "NEW_USER" role only.
+     * Pre-registration constructor. Assigns the user the "ROLE_NEW_USER" role only.
      */
     public GaeUser(String userName, String email) {
-        this.authorities = EnumSet.of(AppRole.NEW_USER);
+        this.authorities = EnumSet.of(AppRole.ROLE_NEW_USER);
         this.userName = userName;
         this.email = email;
         this.enabled = true;

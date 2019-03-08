@@ -83,9 +83,9 @@ public class PlacemarkRestService {
             return false;
         } else {
             Collection<? extends GrantedAuthority> auths = authentication.getAuthorities();
-            return auths.contains(AppRole.USER)
-                    || auths.contains(AppRole.ADMIN)
-                    || auths.contains(AppRole.SUPER_ADMIN);
+            return auths.contains(AppRole.ROLE_USER)
+                    || auths.contains(AppRole.ROLE_ADMIN)
+                    || auths.contains(AppRole.ROLE_SUPER_ADMIN);
         }
     }
 

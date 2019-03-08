@@ -1,5 +1,5 @@
 /*
- *  Copyright (C) 2010-2012 Stichting Akvo (Akvo Foundation)
+ *  Copyright (C) 2010-2012,2019 Stichting Akvo (Akvo Foundation)
  *
  *  This file is part of Akvo FLOW.
  *
@@ -37,6 +37,6 @@ public class PermissionConstants {
     public static final String EDIT_TOKENS = "EDIT TOKENS";
     public static final String VIEW_MESSAGES = "VIEW MESSAGES";
     public static final String EDIT_IMMUTABLITY = "EDIT IMMUTABILITY";
-    public static final String ADMIN = "ADMIN";
-    public static final String SUPER_ADMIN = "SUPER_ADMIN";
+    public static final String ROLE_ADMIN = "ROLE_ADMIN";
+    public static final String SUPER_ADMIN = "ROLE_SUPER_ADMIN";
 }

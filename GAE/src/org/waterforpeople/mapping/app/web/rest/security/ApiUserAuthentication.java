@@ -1,5 +1,5 @@
 /*
- *  Copyright (C) 2014 Stichting Akvo (Akvo Foundation)
+ *  Copyright (C) 2014,2019 Stichting Akvo (Akvo Foundation)
  *
  *  This file is part of Akvo FLOW.
  *
@@ -53,7 +53,7 @@ public class ApiUserAuthentication implements Authentication {
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
-        return EnumSet.of(AppRole.USER);
+        return EnumSet.of(AppRole.ROLE_USER);
     }
 
     @Override

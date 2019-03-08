@@ -1,5 +1,5 @@
 /*
- *  Copyright (C) 2010-2018 Stichting Akvo (Akvo Foundation)
+ *  Copyright (C) 2010-2019 Stichting Akvo (Akvo Foundation)
  *
  *  This file is part of Akvo FLOW.
  *
@@ -15,8 +15,6 @@
  */
 
 package org.waterforpeople.mapping.app.web;
-
-import static com.gallatinsystems.common.util.MemCacheUtils.initCache;
 
 import java.io.IOException;
 import java.io.PrintWriter;
@@ -43,8 +41,6 @@ import org.waterforpeople.mapping.dao.SurveyInstanceDAO;
 import org.waterforpeople.mapping.domain.QuestionAnswerStore;
 import org.waterforpeople.mapping.domain.SurveyInstance;
 
-import com.beoui.geocell.GeocellManager;
-import com.beoui.geocell.model.Point;
 import com.gallatinsystems.framework.dao.BaseDAO;
 import com.gallatinsystems.gis.map.dao.OGRFeatureDao;
 import com.gallatinsystems.gis.map.domain.Geometry;
@@ -412,7 +408,7 @@ public class TestHarnessServlet extends HttpServlet {
             user.setEmailAddress("test@example.com");
         }
         user.setSuperAdmin(true);
-        user.setPermissionList(String.valueOf(AppRole.SUPER_ADMIN.getLevel()));
+        user.setPermissionList(String.valueOf(AppRole.ROLE_SUPER_ADMIN.getLevel()));
         user.setAccessKey(UUID.randomUUID().toString().replaceAll("-", ""));
         user.setSecret(UUID.randomUUID().toString().replaceAll("-", ""));
         userDao.save(user);
