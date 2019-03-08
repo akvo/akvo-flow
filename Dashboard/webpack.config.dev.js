@@ -27,17 +27,17 @@ export default {
   },
   devtool: 'cheap-module-eval-source-map', // more info:https://webpack.js.org/guides/development/#using-source-maps and https://webpack.js.org/configuration/devtool/
   entry: {
-    app: [
+    admin: [
       './app/js/lib/webpack-public-path', // must be first entry to properly set public path
       path.resolve(__dirname, 'app/js/lib/main.js'), // Defining path seems necessary for this to work consistently on Windows machines.
     ],
-    pub: path.resolve(__dirname, 'app/js/lib/main-public.js'),
+    publicmap: path.resolve(__dirname, 'app/js/lib/main-public.js'),
   },
   target: 'web',
-  output: {
+  output: { 
     path: path.resolve(__dirname, '../GAE/target/akvo-flow/admin'), // Note: Physical files are only output by the production build task `npm run build`.
     filename: '[name].bundle.js',
-    publicPath: '/admin/',
+    publicPath: '/[name]/',
   },
   watch: true,
   plugins: [

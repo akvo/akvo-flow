@@ -35,13 +35,11 @@
   <script src="https://cdnjs.cloudflare.com/ajax/libs/jqueryui/1.8.21/jquery-ui.min.js" integrity="sha384-TRmDLt6CvOQBqWp02sWDp/VVYxlkm9lvqzMt7OwAoSHqmGtELVfE/pfkH3zcea8j" crossorigin="anonymous"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/datatables/1.9.2/jquery.dataTables.min.js" integrity="sha384-l4ztyMkjOikIXT8yH7aYF35ElUqxfPgSf9d+fUgST1ZgUFJ8/PD4ZNc8tk49GQxx" crossorigin="anonymous"></script>
 
-	<script src="/publicmap/js/loader.js"></script>
- <script src="/publicmap/js/geocells.js"></script>
+	<script src="js/loader.js"></script>
   <script src="/flowenv.js"></script>
-	<script src="/publicmap/js/app.js"></script>
-	<script>
-    loader.require('akvo-flow/main-public');
-	</script>
+  <script src="/currentuser.js"></script>
+  <script type="text/javascript" src="/publicmap/publicmap.bundle.js"></script>
+
   <script>
     var regionBias = FLOW.Env.googleMapsRegionBias;
     var region = regionBias ? '&region=' + regionBias : '';
