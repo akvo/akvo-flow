@@ -34,8 +34,6 @@ FLOW.role = Ember.Object.create({
 	}).property()
 });
 
-//require('akvo-flow/currentuser');
-
 // Navigation controllers
 FLOW.NavigationController = Em.Controller.extend({
   selected: null

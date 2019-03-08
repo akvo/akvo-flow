@@ -5,7 +5,7 @@
 
 require('akvo-flow/core-common');
 require('akvo-flow/views/maps/map-views-common-public');
-import template from '../../mixins/template';
+import template from '../mixins/template';
 
 FLOW.ApplicationView = Ember.View.extend(template('application/application-public'));
 
