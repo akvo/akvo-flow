@@ -27,8 +27,10 @@ import java.util.TimeZone;
 
 import com.google.appengine.api.datastore.DatastoreService;
 import com.google.appengine.api.datastore.Entity;
+import com.google.appengine.api.datastore.EntityNotFoundException;
 import com.google.appengine.api.datastore.FetchOptions;
 import com.google.appengine.api.datastore.Key;
+import com.google.appengine.api.datastore.KeyFactory;
 import com.google.appengine.api.datastore.PreparedQuery;
 import com.google.appengine.api.datastore.Query;
 import com.google.appengine.api.datastore.Query.FilterOperator;
@@ -96,20 +98,20 @@ public class DuplicatedSurveyedLocale implements Process {
                 if (contrib != null) {                    
                     contribStr = "["; //get more details
                     for (Long i : contrib) {
-                        contribStr += "\n  *si"  + i + qasForInstance(ds,  i);
+                        contribStr += "\n  *si"  + i + surveyInstanceDescription(ds, i) + qasForInstance(ds,  i);
                     }
                     contribStr += "]";
                 }            
                 if (lastContrib != null) {                    
                     lastContribStr = "["; //get more details
                     for (Long i : lastContrib) {
-                        lastContribStr += "\n  *si" + i + qasForInstance(ds,  i);
+                        lastContribStr += "\n  *si" + i + surveyInstanceDescription(ds, i) + qasForInstance(ds,  i);
                     }
                     lastContribStr += "]";
                 }            
                 
-                System.err.println(String.format("**SurveyedLocale #%d created %s identifier %s SG %s contributors %s", lastId, df.format(lastCre), lastIdentifier, " '" + surveyGroups.get(lastId) + "'", lastContribStr));
-                System.err.println(String.format("**SurveyedLocale #%d created %s identifier %s SG %s contributors %s", id, df.format(cre), identifier, " '" + surveyGroups.get(id) + "'", contribStr));
+                System.err.println(String.format("**SurveyedLocale #%d created %s identifier %s contributors %s", lastId, df.format(lastCre), lastIdentifier, lastContribStr));
+                System.err.println(String.format("**SurveyedLocale #%d created %s identifier %s contributors %s", id, df.format(cre), identifier, contribStr));
                 System.err.println("");
                 if (contrib == null || (
                         contrib.size() <= 1
@@ -182,6 +184,27 @@ public class DuplicatedSurveyedLocale implements Process {
             result.add(qa.getKey());
         }
         return result;
+    }
+    
+    private Entity surveyInstance(DatastoreService ds, Long siId) {
+        final Query siq = new Query("SurveyInstance").setFilter(new Query.FilterPredicate("id", FilterOperator.EQUAL, siId));
+        final PreparedQuery psiq = ds.prepare(siq);
+        for (Entity qa : psiq.asIterable()) {
+            return(qa);
+        }
+        return null;
+    }
+    
+    private String surveyInstanceDescription(DatastoreService ds, Long siId) {
+        Key key = KeyFactory.createKey("SurveyInstance", siId);
+        Entity si;
+        try {
+            si = ds.get(key);
+        } catch (EntityNotFoundException e) {
+            return null;
+        }
+        String s = "<survey " + si.getProperty("surveyId") + " id '" + si.getProperty("surveyedLocaleIdentifier") + "'>"; 
+        return(s);
     }
     
       

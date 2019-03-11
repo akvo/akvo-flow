@@ -1,5 +1,5 @@
 /*
- *  Copyright (C) 2017 Stichting Akvo (Akvo Foundation)
+ *  Copyright (C) 2017,2018 Stichting Akvo (Akvo Foundation)
  *
  *  This file is part of Akvo FLOW.
  *
@@ -34,6 +34,7 @@ public class PrintTreeStructure implements Process {
     private Map<Long, String> sgName = new HashMap<>();
     private Map<Long, String> sgType = new HashMap<>();
     private Map<Long, Long> sgParents = new HashMap<>();
+    private Map<Long, Long> sgRegforms = new HashMap<>();
 
     private Map<Long, String> surveyNames = new HashMap<>();
     private Map<Long, Long> surveyParents = new HashMap<>();
@@ -83,9 +84,9 @@ public class PrintTreeStructure implements Process {
         if (showQuestions) {
             fetchQuestionGroups(ds);
             fetchQuestions(ds);
-	    if (showOptions) {
-		fetchOptions(ds);
-	    }
+            if (showOptions) {
+                fetchOptions(ds);
+            }
         }
 
 //        System.out.printf("/ (root)\n");
@@ -102,7 +103,7 @@ public class PrintTreeStructure implements Process {
                 }
                 if (sgType.get(sg).equals("PROJECT")) {
                     System.out.printf("%s* %s [%d]\n", s, sgName.get(sg), sg);
-                    drawFormsIn(sg, indent+1);
+                    drawFormsIn(sg, indent+1, sgRegforms.get(sg));
                 } else {
                     System.out.printf("%s/ %s [%d]\n", s, sgName.get(sg), sg);
                     drawSurveyGroupsIn(sg, indent+1);
@@ -111,14 +112,18 @@ public class PrintTreeStructure implements Process {
         }
     }
 
-    private void drawFormsIn(Long parent, int indent) {
+    private void drawFormsIn(Long parent, int indent, Long regform) {
         for (Long survey : surveyParents.keySet()) {
             if (surveyParents.get(survey).equals(parent)) {
                 String s="";
                 for (int i = 0; i<indent; i++) {
                     s+="  ";
                 }
-                System.out.printf("%s# %s [%d]\n", s, surveyNames.get(survey), survey);
+                if (survey.equals(regform)) {
+                    System.out.printf("%s## %s [%d]\n", s, surveyNames.get(survey), survey);
+                } else {
+                    System.out.printf("%s# %s [%d]\n", s, surveyNames.get(survey), survey);
+                }
                 if (showQuestions) {
                     drawGroupsIn(survey, indent+1);
                 }
@@ -149,8 +154,8 @@ public class PrintTreeStructure implements Process {
                 if (qTypes.get(q).equals("OPTION")) {
                     System.out.printf("%s?OPTION %s [%d]\n", s, qNames.get(q), q);
                     if (showOptions) {
-			drawOptionsIn(q, indent+1);
-		    }
+                        drawOptionsIn(q, indent+1);
+                    }
                 } else {
                     System.out.printf("%s?%s %s [%d]\n", s, qTypes.get(q), qNames.get(q), q);
                 }
@@ -210,11 +215,13 @@ public class PrintTreeStructure implements Process {
 
             Long surveyGroupId = g.getKey().getId();
             Long parentId = (Long) g.getProperty("parentId");
+            Long regformId = (Long) g.getProperty("newLocaleSurveyId");
             String type = (String) g.getProperty("projectType");
             String name = (String) g.getProperty("name");
             if (parentId == null) {
             } else {
                 sgParents.put(surveyGroupId, parentId); //ok to have questions in
+                sgRegforms.put(surveyGroupId, regformId);
                 sgName.put(surveyGroupId, name);
                 sgType.put(surveyGroupId, type);
             }
