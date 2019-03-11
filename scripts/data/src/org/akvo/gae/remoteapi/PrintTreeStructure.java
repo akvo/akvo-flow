@@ -23,7 +23,6 @@ import java.util.HashMap;
 import com.google.appengine.api.datastore.DatastoreService;
 import com.google.appengine.api.datastore.Entity;
 import com.google.appengine.api.datastore.FetchOptions;
-import com.google.appengine.api.datastore.Key;
 import com.google.appengine.api.datastore.PreparedQuery;
 import com.google.appengine.api.datastore.Query;
 
@@ -55,7 +54,6 @@ public class PrintTreeStructure implements Process {
     private Map<Long, Long> oParents = new HashMap<>();
 
     private boolean html = false;
-    private boolean gae = false;
     private boolean showQuestions = false;
     private boolean showOptions = false;
 
@@ -67,9 +65,6 @@ public class PrintTreeStructure implements Process {
             //System.out.printf("#Argument %d: %s\n", i, args[i]);
             if (args[i].equalsIgnoreCase("--html")) {
                 html = true;
-            }
-            if (args[i].equalsIgnoreCase("--gae")) {
-                gae = true;
             }
             if (args[i].equalsIgnoreCase("--questions")) {
                 showQuestions = true;
