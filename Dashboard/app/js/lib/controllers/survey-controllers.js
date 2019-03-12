@@ -381,7 +381,7 @@ FLOW.projectControl = Ember.ArrayController.create({
       }
 
       var i;
-      for(i = 0; i < ancestorIds.length; i++){
+      for(let i = 0; i < ancestorIds.length; i++){
         if (ancestorIds[i] in currentUserPermissions) {
           currentUserPermissions[ancestorIds[i]].forEach(function(item){
             folderPermissions.push(item);
@@ -816,7 +816,7 @@ FLOW.surveyControl = Ember.ArrayController.create(observe({
     }
 
     var i;
-    for(i = 0; i < ancestorIds.length; i++){
+    for(let i = 0; i < ancestorIds.length; i++){
       if (ancestorIds[i] in currentUserPermissions) {
         currentUserPermissions[ancestorIds[i]].forEach(function(item){
           formPermissions.push(item);
@@ -1453,7 +1453,7 @@ FLOW.translationControl = Ember.ArrayController.create(observe({
   },
 
   loadQuestionGroup: function (questionGroupId) {
-        var id;
+      var id, questionGroup;
 	    id = FLOW.selectedControl.selectedSurvey.get('keyId');
 	    questionGroup = FLOW.store.find(FLOW.QuestionGroup, questionGroupId);
 
@@ -1621,7 +1621,7 @@ FLOW.translationControl = Ember.ArrayController.create(observe({
     tempHashDict = {};
 
     // put in survey stuff
-    survey = FLOW.selectedControl.get('selectedSurvey');
+    var survey = FLOW.selectedControl.get('selectedSurvey');
     tempArray.push(Ember.Object.create({
       keyId: survey.get('keyId'),
       type: "S",
@@ -1644,13 +1644,13 @@ FLOW.translationControl = Ember.ArrayController.create(observe({
       }));
     }
     // put in questions
-    questions = FLOW.store.filter(FLOW.Question, function (item) {
+    var questions = FLOW.store.filter(FLOW.Question, function (item) {
       return item.get('questionGroupId') == questionGroupId;
     });
     questions.forEach(function (item) {
       questionGroup = FLOW.store.find(FLOW.QuestionGroup, item.get('questionGroupId'));
       qgOrder = parseInt(questionGroup.get('order'), 10);
-      qId = item.get('keyId');
+      var qId = item.get('keyId');
 
       tempArray.push(Ember.Object.create({
         keyId: item.get('keyId'),
@@ -1663,11 +1663,11 @@ FLOW.translationControl = Ember.ArrayController.create(observe({
         hasTooltip: !Ember.empty(item.get('tip'))
       }));
       // for each question, put in question options
-      options = FLOW.store.filter(FLOW.QuestionOption, function (optionItem) {
+      var options = FLOW.store.filter(FLOW.QuestionOption, function (optionItem) {
         return optionItem.get('questionId') == qId;
       });
 
-      qOrder = parseInt(item.get('order'), 10);
+      var qOrder = parseInt(item.get('order'), 10);
       options.forEach(function (item) {
         tempArray.push(Ember.Object.create({
           keyId: item.get('keyId'),
@@ -1685,7 +1685,7 @@ FLOW.translationControl = Ember.ArrayController.create(observe({
     	return a.get('order') - b.get('order');
     });
 
-    i = 0;
+    var i = 0;
     tempArray.forEach(function (item) {
       tempHashDict[item.get('type') + item.get('keyId')] = i;
       i++;
@@ -1760,13 +1760,13 @@ FLOW.translationControl = Ember.ArrayController.create(observe({
 
 
   putTranslationsInList: function () {
-    var currLang, _self;
+    var currTrans, _self;
     _self = this;
     currTrans = this.get('currentTranslation');
     // only proceed if we have a language selected
     if (!Ember.none(currTrans)) {
       // get the translations with the right surveyId and the right language code
-      translations = FLOW.store.filter(FLOW.Translation, function (item) {
+      var translations = FLOW.store.filter(FLOW.Translation, function (item) {
         return (item.get('surveyId') == FLOW.selectedControl.selectedSurvey.get('keyId') && item.get('langCode') == currTrans);
       });
       translations.forEach(function (item) {
@@ -1809,12 +1809,12 @@ FLOW.translationControl = Ember.ArrayController.create(observe({
             }
         } else {
           // we have an existing translation, so update it, if the text has changed
-          candidates = FLOW.store.filter(FLOW.Translation, function (item) {
+          var candidates = FLOW.store.filter(FLOW.Translation, function (item) {
             return item.get('keyId') == transId;
           });
 
           if (candidates.get('content').length > 0) {
-        	 existingTrans = candidates.objectAt(0);
+        	 var existingTrans = candidates.objectAt(0);
         	 // if the existing translation is different from the existing one, update it
         	 if (existingTrans.get('text') != translationText){
         		 changed = true;
@@ -1849,7 +1849,7 @@ FLOW.translationControl = Ember.ArrayController.create(observe({
 
   // checks if unsaved translations are present, and if so, emits a warning
   unsavedTranslations: function () {
-	  var type, parentId, lan, transId, _self, unsaved;
+	  var type, parentId, surveyId, questionGroupId, lan, transId, _self, unsaved;
 	  _self = this;
 	  unsaved = false;
 	  this.get('itemArray').forEach(function (item) {
@@ -1886,13 +1886,13 @@ FLOW.translationControl = Ember.ArrayController.create(observe({
 
   // after saving is complete, records insert themselves back into the translation item list
   saveTranslations: function () {
-    var type, parentId, lan, transId, _self;
+    var type, parentId, surveyId, questionGroupId, lan, transId, _self;
     _self = this;
+    surveyId = FLOW.selectedControl.selectedSurvey.get('keyId');
     FLOW.store.adapter.set('bulkCommit', true);
     this.get('itemArray').forEach(function (item) {
       type = item.type;
       parentId = item.keyId;
-      surveyId = FLOW.selectedControl.selectedSurvey.get('keyId');
       if (!Ember.none(FLOW.selectedControl.get('selectedQuestionGroup'))) {
         questionGroupId = FLOW.selectedControl.selectedQuestionGroup.get('keyId');
       } else {
@@ -1920,7 +1920,7 @@ FLOW.translationControl = Ember.ArrayController.create(observe({
     });
 
     // make survey unpublished
-    survey = FLOW.store.find(FLOW.Survey,surveyId);
+    var survey = FLOW.store.find(FLOW.Survey, surveyId);
     if (!Ember.empty(survey)){
         survey.set('status','NOT_PUBLISHED');
     }

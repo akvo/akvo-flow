@@ -94,7 +94,7 @@ FLOW.renderCaddisflyAnswer = function(json){
         var jsonParsed = JSON.parse(json);
 
         // contruct html
-        html = "<div><strong>" + jsonParsed.name + "</strong></div>";
+        var html = "<div><strong>" + jsonParsed.name + "</strong></div>";
         html += jsonParsed.result.map(function(item){
                 return "<br><div>" + item.name + " : " + item.value + " " + item.unit + "</div>";
             }).join("\n");
@@ -102,7 +102,7 @@ FLOW.renderCaddisflyAnswer = function(json){
 
         // get out image url
         if ('image' in jsonParsed) {
-          imageUrl = FLOW.Env.photo_url_root + jsonParsed.image.trim();
+          var imageUrl = FLOW.Env.photo_url_root + jsonParsed.image.trim();
           html += "<div class=\"signatureImage\"><img src=\"" + imageUrl +"\"/></div>";
         }
         return html;
@@ -116,7 +116,7 @@ FLOW.renderCaddisflyAnswer = function(json){
 
 Ember.Handlebars.registerHelper('placemarkDetail', function () {
   var answer, markup, question, cascadeJson, optionJson, cascadeString = "",
-  imageSrcAttr, signatureJson, photoJson, self=this;
+  imageSrcAttr, signatureJson, photoJson, responseType, self=this;
 
   responseType = Ember.get(this, 'type');
   question = Ember.get(this, 'questionText');

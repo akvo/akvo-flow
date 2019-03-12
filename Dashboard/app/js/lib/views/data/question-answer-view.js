@@ -85,12 +85,12 @@ FLOW.QuestionAnswerView = Ember.View.extend(observe({
       return item.get('questionId') === +questionId;
     });
 
-    optionArray = options.toArray();
+    var optionArray = options.toArray();
     optionArray.sort(function (a, b) {
         return a.get('order') - b.get('order');
     });
 
-    tempList = Ember.A([]);
+    var tempList = Ember.A([]);
     var obj;
     optionArray.forEach(function (item) {
       obj = Ember.Object.create({
@@ -424,7 +424,7 @@ FLOW.QuestionAnswerView = Ember.View.extend(observe({
   photoUrl: Ember.computed(function(){
     var c = this.content;
     if (!Ember.empty(c.get('value'))) {
-      jImage = JSON.parse(c.get('value'));
+      var jImage = JSON.parse(c.get('value'));
       if (jImage && jImage.filename) {
           return FLOW.Env.photo_url_root + jImage.filename.split('/').pop();
       }
@@ -434,7 +434,7 @@ FLOW.QuestionAnswerView = Ember.View.extend(observe({
   photoLocation: Ember.computed(function(){
     var c = this.content;
     if (!Ember.empty(c.get('value'))) {
-      jImage = JSON.parse(c.get('value'));
+      var jImage = JSON.parse(c.get('value'));
       if (jImage && jImage.location) {
           return "lat:" + jImage.location.latitude + "/lon:" + jImage.location.longitude;
       }

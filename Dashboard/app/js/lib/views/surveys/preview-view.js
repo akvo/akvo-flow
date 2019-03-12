@@ -19,7 +19,7 @@ FLOW.PreviewQuestionGroupView = FLOW.View.extend({
       return item.get('questionGroupId') == qgId;
     });
 
-    tmp = QGcontent.toArray();
+    var tmp = QGcontent.toArray();
     tmp.sort(function(a,b){
     	return a.get('order') - b.get('order');
     });
@@ -51,7 +51,7 @@ FLOW.PreviewQuestionView = FLOW.View.extend(observe({
   longitude: null,
 
   init: function () {
-    var opList, opListArray, i, sizeList, qId, tempList, cascadeNames;
+    var opList, opListArray, i, sizeList, qId, tempList, cascadeNames, optionArray, options;
     this._super();
 
     this.set('isTextType', this.content.get('type') == 'FREE_TEXT');
@@ -94,7 +94,7 @@ FLOW.PreviewQuestionView = FLOW.View.extend(observe({
       this.set('optionsList', tempList);
     }
     if (this.isCascadeType) {
-    	cascade = FLOW.store.find(FLOW.CascadeResource,this.content.get('cascadeResourceId'));
+    	var cascade = FLOW.store.find(FLOW.CascadeResource,this.content.get('cascadeResourceId'));
     	if (!Ember.empty(cascade)){
     		cascadeNames = cascade.get('levelNames');
     		for (i=0 ; i < cascade.get('numLevels'); i++){

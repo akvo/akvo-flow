@@ -63,7 +63,7 @@ FLOW.renderCaddisflyAnswer = function(json){
           }
 
           // contruct html
-          html = "<div><strong>" + name + "</strong></div>"
+          var html = "<div><strong>" + name + "</strong></div>"
           html += jsonParsed.result.map(function(item){
                   return "<br><div>" + item.name + " : " + item.value + " " + item.unit + "</div>";
               }).join("\n");
@@ -81,7 +81,7 @@ FLOW.renderCaddisflyAnswer = function(json){
 /*  Take a timestamp and render it as a date in format
     YYYY-mm-dd */
 function renderTimeStamp(timestamp) {
-  var d, t, date, month, year;
+  var d, t, date, month, year, monthString, dateString;
   t = parseInt(timestamp, 10);
   if (isNaN(t)) {
     return "";

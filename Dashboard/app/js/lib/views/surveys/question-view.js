@@ -255,7 +255,7 @@ FLOW.QuestionView = FLOW.View.extend(template('navSurveys/question-view'), obser
    *  Load the question options for question editing
    */
   loadQuestionOptions: function () {
-    var c = this.content;
+    var c = this.content, optionArray;
     FLOW.questionOptionsControl.set('content', []);
     FLOW.questionOptionsControl.set('questionId', c.get('keyId'));
 
@@ -272,7 +272,7 @@ FLOW.QuestionView = FLOW.View.extend(template('navSurveys/question-view'), obser
   },
 
   fillOptionList: function () {
-    var optionList, optionListArray, i, sizeList;
+    var optionList, optionArray, i, sizeList, options;
     if (FLOW.selectedControl.get('dependentQuestion')) {
       var dependentQuestion = FLOW.selectedControl.get('dependentQuestion');
       FLOW.optionListControl.set('content', []);
@@ -583,7 +583,7 @@ FLOW.QuestionView = FLOW.View.extend(template('navSurveys/question-view'), obser
 
   // move question to selected location
   doQuestionMoveHere: function () {
-    var selectedOrder, insertAfterOrder, selectedQ, useMoveQuestion, qgIdSource, qgIdDest;
+    var selectedOrder, insertAfterOrder, selectedQ, useMoveQuestion, qgIdSource, qgIdDest, qgId, questionsInGroup;
     selectedOrder = FLOW.selectedControl.selectedForMoveQuestion.get('order');
 
     if (this.get('zeroItemQuestion')) {
@@ -628,11 +628,11 @@ FLOW.QuestionView = FLOW.View.extend(template('navSurveys/question-view'), obser
           return item.get('questionGroupId') == qgId;
         });
 
-        origOrder = FLOW.selectedControl.selectedForMoveQuestion.get('order');
-        movingUp = origOrder < insertAfterOrder;
+        var origOrder = FLOW.selectedControl.selectedForMoveQuestion.get('order');
+        var movingUp = origOrder < insertAfterOrder;
 
         questionsInGroup.forEach(function (item) {
-          currentOrder = item.get('order');
+          var currentOrder = item.get('order');
           if (movingUp) {
             if (currentOrder == origOrder) {
               // move moving item to right location
