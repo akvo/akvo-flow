@@ -2,7 +2,8 @@
   "name": "akvo-flow",
   "scripts": {
     "build:dev": "babel-node ./scripts/buildDev.js",
-    "build:prod": "babel-node ./scripts/buildProd.js"
+    "build:prod": "babel-node ./scripts/buildProd.js",
+    "lint": "esw webpack.config.* app/js/lib app/js/plugins scripts --color --ext jsx --ext js"
   },
   "dependencies": {
     "babel-register": "^6.26.0",
