@@ -596,12 +596,16 @@ FLOW.projectControl = Ember.ArrayController.create({
 
 
 FLOW.surveyControl = Ember.ArrayController.create(observe({
-  'FLOW.selectedControl.selectedSurveyGroup': 'setPublishedContent',
-  'FLOW.selectedControl.selectedSurveyGroup': 'orderForms',
-  'content.isLoaded': 'orderForms',
-  'FLOW.selectedControl.selectedSurveyGroup': 'populate',
-  'content.isLoaded': 'selectFirstForm',
-  'content.isLoaded': 'newLocale',
+  'FLOW.selectedControl.selectedSurveyGroup': [
+    'setPublishedContent',
+    'orderForms',
+    'populate',
+  ],
+  'content.isLoaded': [
+    'orderForms',
+    'selectFirstForm',
+    'newLocale',
+  ],
 }), {
   content: null,
   publishedContent: null,
@@ -947,8 +951,7 @@ FLOW.questionGroupControl = Ember.ArrayController.create(observe({
 
 
 FLOW.questionControl = Ember.ArrayController.create(observe({
-  'FLOW.selectedControl.selectedSurvey': 'populateAllQuestions',
-  'FLOW.selectedControl.selectedSurvey': 'allQuestionsFilter',
+  'FLOW.selectedControl.selectedSurvey': ['populateAllQuestions', 'allQuestionsFilter'],
   'FLOW.selectedControl.selectedQuestionGroup': 'setQGcontent',
   'FLOW.selectedControl.selectedQuestion': 'setEarlierOptionQuestions',
 }), {
