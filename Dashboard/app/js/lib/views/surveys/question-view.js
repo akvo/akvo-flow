@@ -102,14 +102,6 @@ FLOW.QuestionView = FLOW.View.extend(template('navSurveys/question-view'), obser
     }
   }).property('this.type').cacheable(),
 
-  amNumberType: Ember.computed(function () {
-    if (this.type) {
-      return this.type.get('value') == 'NUMBER';
-    } else {
-      return false;
-    }
-  }).property('this.type').cacheable(),
-
   amCascadeType: Ember.computed(function () {
     if (this.type) {
       return this.type.get('value') == 'CASCADE';
