@@ -52,7 +52,7 @@ public class UserDto extends BaseDto {
 
     public boolean isAdmin() {
 
-        return hasPermission(PermissionConstants.ROLE_ADMIN);
+        return hasPermission(PermissionConstants.ADMIN);
     }
 
     public boolean isSuperAdmin() {
@@ -114,7 +114,7 @@ public class UserDto extends BaseDto {
         } else {
             if (permissionList != null) {
                 return (permissionList.contains(permission) || permissionList
-                        .contains(PermissionConstants.ROLE_ADMIN));
+                        .contains(PermissionConstants.ADMIN));
             } else {
                 return false;
             }
