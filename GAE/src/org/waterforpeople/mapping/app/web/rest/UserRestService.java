@@ -1,5 +1,5 @@
 /*
- *  Copyright (C) 2012-2014,2017 Stichting Akvo (Akvo Foundation)
+ *  Copyright (C) 2012-2014,2017,2019 Stichting Akvo (Akvo Foundation)
  *
  *  This file is part of Akvo FLOW.
  *
@@ -101,15 +101,15 @@ public class UserRestService {
     }
 
     private boolean isUserAdminRole(User user) {
-        return user.getPermissionList().equals(Integer.toString(AppRole.ADMIN.getLevel()))
+        return user.getPermissionList().equals(Integer.toString(AppRole.ROLE_ADMIN.getLevel()))
                 || user.getPermissionList()
-                        .equals(Integer.toString(AppRole.SUPER_ADMIN.getLevel()));
+                        .equals(Integer.toString(AppRole.ROLE_SUPER_ADMIN.getLevel()));
     }
 
     private boolean isSuperAdminRole(User user) {
         return user.isSuperAdmin()
                 || user.getPermissionList()
-                        .equals(Integer.toString(AppRole.SUPER_ADMIN.getLevel()));
+                        .equals(Integer.toString(AppRole.ROLE_SUPER_ADMIN.getLevel()));
     }
 
     // find a single user by the userId
@@ -182,8 +182,8 @@ public class UserRestService {
                     });
 
                     if (u.getPermissionList().equals(
-                            String.valueOf(AppRole.SUPER_ADMIN.getLevel()))) {
-                        u.setPermissionList(String.valueOf(AppRole.USER
+                            String.valueOf(AppRole.ROLE_SUPER_ADMIN.getLevel()))) {
+                        u.setPermissionList(String.valueOf(AppRole.ROLE_USER
                                 .getLevel()));
                     }
 
@@ -227,8 +227,8 @@ public class UserRestService {
             });
 
             if (u.getPermissionList().equals(
-                    String.valueOf(AppRole.SUPER_ADMIN.getLevel()))) {
-                u.setPermissionList(String.valueOf(AppRole.USER.getLevel()));
+                    String.valueOf(AppRole.ROLE_SUPER_ADMIN.getLevel()))) {
+                u.setPermissionList(String.valueOf(AppRole.ROLE_USER.getLevel()));
             }
 
             u = userDao.save(u);
