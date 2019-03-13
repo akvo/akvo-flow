@@ -1,7 +1,7 @@
 import observe from '../../mixins/observe';
 
 FLOW.inspectDataTableView = FLOW.View.extend(observe({
-  'FLOW.selectedControl.selectedSurvey': '',
+  'FLOW.selectedControl.selectedSurvey': 'watchSurveySelection',
 }), {
   selectedSurvey: null,
   surveyInstanceId: null,
@@ -62,7 +62,7 @@ FLOW.inspectDataTableView = FLOW.View.extend(observe({
   doInstanceQuery: function () {
     this.set('beginDate', Date.parse(FLOW.dateControl.get('fromDate')));
     // we add 24 hours to the date, in order to make the date search inclusive.
-    dayInMilliseconds = 24 * 60 * 60 * 1000;
+    var dayInMilliseconds = 24 * 60 * 60 * 1000;
     this.set('endDate', Date.parse(FLOW.dateControl.get('toDate')) + dayInMilliseconds);
 
     // we shouldn't be sending NaN
@@ -259,20 +259,20 @@ FLOW.inspectDataTableView = FLOW.View.extend(observe({
       return false;
     }
   }).property('FLOW.surveyInstanceControl.content', 'FLOW.surveyInstanceControl.content.isLoaded'),
-  
+
   //clearing the SI records when the user navigates away from inspect-tab.
   willDestroyElement: function () {
      FLOW.surveyInstanceControl.set('currentContents', null);
      FLOW.metaControl.set('numSILoaded', null);
-     FLOW.surveyInstanceControl.set('pageNumber', 0);     
+     FLOW.surveyInstanceControl.set('pageNumber', 0);
   }
-  
+
 });
 
 FLOW.DataItemView = FLOW.View.extend({
   tagName: 'span',
   deleteSI: function () {
-    var SI,slKey, sl;
+    var SI, slKey, SL;
     SI = FLOW.store.find(FLOW.SurveyInstance, this.content.get('keyId'));
     if (SI !== null) {
         // check if we also have the data point loaded locally
@@ -287,7 +287,7 @@ FLOW.DataItemView = FLOW.View.extend({
             // if not, we also need to not show the locale any more.
             // it will also be deleted automatically in the backend,
             // so this is just to not show it in the UI
-            SiList = FLOW.store.filter(FLOW.SurveyInstance,function(item){
+            var SiList = FLOW.store.filter(FLOW.SurveyInstance,function(item){
                 return item.get('surveyedLocaleId') == slKey;
             });
             if (SiList.get('content').length == 1) {

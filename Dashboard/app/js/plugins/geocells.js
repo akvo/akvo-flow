@@ -122,12 +122,12 @@ function create_geomodel() {
     return (this.match("^"+str)==str);
   };
 
-  // adding the Array and String functions below, which are used by the 
+  // adding the Array and String functions below, which are used by the
   // interpolate function and others
   function arrayAddAll(target) {
     var a, i;
     for (a = 1;  a < arguments.length;  a++) {
-      arr = arguments[a];
+      var arr = arguments[a];
       for (i = 0;  i < arr.length;  i++) {
         target.push(arr[i]);
       }

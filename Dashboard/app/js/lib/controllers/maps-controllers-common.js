@@ -36,7 +36,7 @@ FLOW.MapsController = Ember.ArrayController.extend(observe({
             }
 
             placemarks.forEach(function (placemark) {
-                marker = this.addMarker(placemark);
+                var marker = this.addMarker(placemark);
                 this.allPlacemarks.addLayer(marker);
             }, this);
         }
@@ -74,7 +74,7 @@ FLOW.MapsController = Ember.ArrayController.extend(observe({
     },
 
     addMarker: function (placemark) {
-        var marker;
+        var marker, count;
         if (placemark.get('level') > 0){
             count = placemark.get('count');
             if (count == 1) {
@@ -90,7 +90,7 @@ FLOW.MapsController = Ember.ArrayController.extend(observe({
                 return marker;
             }
 
-            myIcon = L.divIcon({
+            var myIcon = L.divIcon({
                 html: '<div><span>' + count + '</span></div>',
                 className: 'marker-cluster',
                 iconSize: new L.Point(40, 40)});

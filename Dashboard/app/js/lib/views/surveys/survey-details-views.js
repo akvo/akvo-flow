@@ -125,7 +125,7 @@ FLOW.SurveySidebarView = FLOW.View.extend({
 		return;
 	}
 	// check if we have any unsaved changes
-	survey = FLOW.store.find(FLOW.Survey, FLOW.selectedControl.selectedSurvey.get('keyId'));
+	var survey = FLOW.store.find(FLOW.Survey, FLOW.selectedControl.selectedSurvey.get('keyId'));
 	this.setIsDirty();
 	if (!Ember.none(survey) && this.get('isDirty')) {
 	    FLOW.dialogControl.set('activeAction', "ignore");
@@ -143,7 +143,7 @@ FLOW.SurveySidebarView = FLOW.View.extend({
 		return;
 	}
 	// check if we have any unsaved changes
-	survey = FLOW.store.find(FLOW.Survey, FLOW.selectedControl.selectedSurvey.get('keyId'));
+	var survey = FLOW.store.find(FLOW.Survey, FLOW.selectedControl.selectedSurvey.get('keyId'));
 	this.setIsDirty();
 	if (!Ember.none(survey) && this.get('isDirty')) {
 		 FLOW.dialogControl.set('activeAction', "ignore");
@@ -466,7 +466,7 @@ FLOW.QuestionGroupItemView = FLOW.View.extend(observe({
         movingUp = origOrder < insertAfterOrder;
 
         questionGroupsInSurvey.forEach(function (item) {
-          currentOrder = item.get('order');
+          var currentOrder = item.get('order');
           if (movingUp) {
             if (currentOrder == origOrder) {
               // move moving item to right location
