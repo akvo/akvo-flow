@@ -1,5 +1,5 @@
 /*
- *  Copyright (C) 2010-2016 Stichting Akvo (Akvo Foundation)
+ *  Copyright (C) 2010-2016,2019 Stichting Akvo (Akvo Foundation)
  *
  *  This file is part of Akvo FLOW.
  *
@@ -50,21 +50,12 @@ public class UserDto extends BaseDto {
         this.permissionList = permissionList;
     }
 
-    public boolean isAdmin() {
-
-        return hasPermission(PermissionConstants.ADMIN);
-    }
-
     public boolean isSuperAdmin() {
         return superAdmin;
     }
 
     public void setSuperAdmin(boolean isSuper) {
         this.superAdmin = isSuper;
-    }
-
-    public void setAdmin(boolean isAdmin) {
-        this.admin = isAdmin;
     }
 
     public boolean hasAccess() {
@@ -105,20 +96,6 @@ public class UserDto extends BaseDto {
 
     public void setEmailAddress(String emailAddress) {
         this.emailAddress = emailAddress;
-    }
-
-    public boolean hasPermission(String permission) {
-        if (admin) {
-            // admins automatically get all permissions
-            return true;
-        } else {
-            if (permissionList != null) {
-                return (permissionList.contains(permission) || permissionList
-                        .contains(PermissionConstants.ADMIN));
-            } else {
-                return false;
-            }
-        }
     }
 
     public String getAccessKey() {
