@@ -1420,7 +1420,6 @@ public class DataProcessorRestServlet extends AbstractRestApiServlet {
         log.info("Scheduling name assembly for survey group, locale - " + surveyGroupId +", " + surveyedLocaleId);
         final TaskOptions options = TaskOptions.Builder
                 .withUrl("/app_worker/dataprocessor")
-                .header("Host", BackendServiceFactory.getBackendService().getBackendAddress("dataprocessor"))
                 .param(DataProcessorRequest.ACTION_PARAM, DataProcessorRequest.ASSEMBLE_DATAPOINT_NAME);
         
         if (delay) {
