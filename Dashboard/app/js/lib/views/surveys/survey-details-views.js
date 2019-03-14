@@ -500,14 +500,20 @@ FLOW.QuestionGroupItemView = FLOW.View.extend({
   ajaxCall: function(qgId){
       var self = this;
       $.ajax({
-          url: '/rest/question_groups/' + qgId,
+          url: '/rest/question_groups?surveyId=' + FLOW.selectedControl.selectedSurvey.get('keyId'),
           type: 'GET',
           success: function(data) {
-            if (data.question_group.status == "READY") {
+            var qgs = data.question_groups;
+            var qg = qgs.find(function (item) {
+              return item.keyId == qgId;
+            });
+            if (qg.status == "READY") {
                 // reload this question group the Ember way, so the UI is updated
-                FLOW.questionGroupControl.getQuestionGroup(self.content.get('keyId'));
+                FLOW.questionGroupControl.populate();
                 // load the questions inside this question group
                 FLOW.questionControl.populateQuestionGroupQuestions(self.content.get('keyId'));
+            } else { //check again in 5s
+              setTimeout(self.ajaxCall(qgId), 5000);
             }
           },
           error: function() {
@@ -516,26 +522,19 @@ FLOW.QuestionGroupItemView = FLOW.View.extend({
       });
   },
 
-  qgCheckScheduled: false,
-
   // cycle until our local question group has an id
   // when this is done, start monitoring the status of the remote question group
   pollQuestionGroupStatus: function(){
       var self = this, qgQuery = null;
       if (this.get('amCopying')) {
-        if (!this.get('qgCheckScheduled')) {
-          this.set('qgCheckScheduled', true);
           qgQuery = setInterval(function () {
               // if the question group has a keyId, we can start polling it remotely
               if (self.content && self.content.get('keyId')) {
                 // we have an id and can start polling remotely
                 self.ajaxCall(self.content.get('keyId'));
+                clearInterval(qgQuery);
               }
           }, 5000);
-        }
-      } else {
-        this.set('qgCheckScheduled', false);
-        clearInterval(qgQuery);
       }
   }.observes('this.amCopying'),
 
