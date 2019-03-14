@@ -1,5 +1,5 @@
 /*
- *  Copyright (C) 2015 Stichting Akvo (Akvo Foundation)
+ *  Copyright (C) 2015,2019 Stichting Akvo (Akvo Foundation)
  *
  *  This file is part of Akvo FLOW.
  *
@@ -25,8 +25,6 @@ import static org.akvo.flow.events.EventUtils.newSource;
 import static org.akvo.flow.events.EventUtils.populateEntityProperties;
 
 import java.io.IOException;
-import java.io.OutputStreamWriter;
-import java.io.StringWriter;
 import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.URL;
@@ -42,7 +40,7 @@ import org.akvo.flow.events.EventUtils.Action;
 import org.akvo.flow.events.EventUtils.EventTypes;
 import org.akvo.flow.events.EventUtils.Key;
 import org.akvo.flow.events.EventUtils.Prop;
-import org.codehaus.jackson.map.ObjectMapper;
+import org.akvo.flow.util.FlowJsonObjectWriter;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 
@@ -68,7 +66,6 @@ public class EventLogger {
             String urlPath = PropertyUtil.getProperty(Prop.EVENT_NOTIFICATION);
 
             if (urlPath == null || urlPath.trim().length() == 0) {
-                logger.log(Level.SEVERE, "Event notification URL not present in appengine-web.xml");
                 return;
             }
 
@@ -83,14 +80,14 @@ public class EventLogger {
             messageMap.put(Key.APP_ID, appId);
             messageMap.put(Key.URL, appId + ".appspot.com");
 
-            ObjectMapper m = new ObjectMapper();
-            OutputStreamWriter writer = new OutputStreamWriter(connection.getOutputStream());
-            m.writeValue(writer, messageMap);
-            writer.close();
+            FlowJsonObjectWriter writer = new FlowJsonObjectWriter();
+            writer.writeValue(connection.getOutputStream(), messageMap);
+
             if (connection.getResponseCode() != HttpURLConnection.HTTP_NO_CONTENT) {
                 logger.log(Level.SEVERE, "Unified log notification failed with status code: "
                         + connection.getResponseCode());
             }
+            connection.disconnect();
         } catch (MalformedURLException e) {
             logger.log(Level.SEVERE,
                     "Unified log notification failed with malformed URL exception", e);
@@ -134,15 +131,13 @@ public class EventLogger {
         try {
             DatastoreService datastore = DatastoreServiceFactory.getDatastoreService();
 
-            ObjectMapper m = new ObjectMapper();
-            StringWriter w = new StringWriter();
-            m.writeValue(w, event);
-
             Entity entity = new Entity("EventQueue");
             entity.setProperty("createdDateTime", timestamp);
             entity.setProperty("lastUpdateDateTime", timestamp);
 
-            String payload = w.toString();
+            FlowJsonObjectWriter writer = new FlowJsonObjectWriter();
+            String payload = writer.writeAsString(event);
+
             if (payload.length() > Constants.MAX_LENGTH) {
                 entity.setProperty("payloadText", new Text(payload));
             } else {

@@ -1,5 +1,5 @@
 /*
- *  Copyright (C) 2010-2017 Stichting Akvo (Akvo Foundation)
+ *  Copyright (C) 2010-2019 Stichting Akvo (Akvo Foundation)
  *
  *  This file is part of Akvo FLOW.
  *
@@ -29,11 +29,10 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
 
+import com.fasterxml.jackson.core.type.TypeReference;
 import org.akvo.flow.domain.DataUtils;
+import org.akvo.flow.util.FlowJsonObjectReader;
 import org.apache.log4j.Logger;
-import org.codehaus.jackson.JsonNode;
-import org.codehaus.jackson.map.ObjectMapper;
-import org.codehaus.jackson.type.TypeReference;
 import org.json.JSONArray;
 import org.json.JSONObject;
 import org.waterforpeople.mapping.app.gwt.client.survey.OptionContainerDto;
@@ -349,13 +348,9 @@ public class SurveySummaryExporter extends AbstractDataExporter {
      * @throws Exception
      */
     protected List<QuestionDto> parseQuestions(String response) throws Exception {
-        final ObjectMapper JSON_RESPONSE_PARSER = new ObjectMapper();
-
-        final JsonNode questionListNode =
-                JSON_RESPONSE_PARSER.readTree(response).get("dtoList");
-        final List<QuestionDto> qList = JSON_RESPONSE_PARSER.readValue(
-                questionListNode, new TypeReference<List<QuestionDto>>() {
-                });
+        final FlowJsonObjectReader jsonReader = new FlowJsonObjectReader();
+        final TypeReference<QuestionDto> listItemTypeReference = new TypeReference<QuestionDto>(){};
+        final List<QuestionDto> qList = jsonReader.readDtoListObject(response, listItemTypeReference);
         return qList;
     }
     

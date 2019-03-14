@@ -42,6 +42,8 @@
     <spring.version>3.2.18.RELEASE</spring.version>
     <spring.security.version>3.2.10.RELEASE</spring.security.version>
     <appengine.sdk.version>1.9.63</appengine.sdk.version>
+    <jackson.version>[2.9.8]</jackson.version>
+    <junit.jupiter.version>5.4.0</junit.jupiter.version>
   </properties>
 
   <dependencies>
@@ -154,9 +156,19 @@
         <version>${spring.version}</version>
     </dependency>
     <dependency>
-       <groupId>org.codehaus.jackson</groupId>
-       <artifactId>jackson-mapper-asl</artifactId>
-       <version>1.8.5</version>
+        <groupId>com.fasterxml.jackson.core</groupId>
+        <artifactId>jackson-core</artifactId>
+        <version>${jackson.version}</version>
+    </dependency>
+    <dependency>
+        <groupId>com.fasterxml.jackson.core</groupId>
+        <artifactId>jackson-databind</artifactId>
+        <version>${jackson.version}</version>
+    </dependency>
+    <dependency>
+        <groupId>com.fasterxml.jackson.core</groupId>
+        <artifactId>jackson-annotations</artifactId>
+        <version>${jackson.version}</version>
     </dependency>
     <dependency>
        <groupId>com.google.appengine</groupId>
@@ -196,6 +208,21 @@
         <version>2.4</version>
     </dependency>
 
+    <!-- test dependencies -->
+    <dependency>
+      <groupId>org.junit.jupiter</groupId>
+      <artifactId>junit-jupiter-api</artifactId>
+      <version>${junit.jupiter.version}</version>
+      <scope>provided</scope>
+    </dependency>
+
+    <dependency>
+      <groupId>org.junit.jupiter</groupId>
+      <artifactId>junit-jupiter-engine</artifactId>
+      <version>${junit.jupiter.version}</version>
+      <scope>provided</scope>
+    </dependency>
+
     <!-- Will this work in place of version 1.0.13? -->
     <dependency>
         <groupId>org.jfree</groupId>
@@ -224,7 +251,6 @@
         <version>2.5.1</version>
         <scope>provided</scope>
     </dependency>
-
   </dependencies>
 
   <build>
@@ -346,7 +372,7 @@
 
       <plugin>
         <artifactId>maven-surefire-plugin</artifactId>
-        <version>2.20</version>
+        <version>2.22.1</version>
       </plugin>
 
       <plugin>

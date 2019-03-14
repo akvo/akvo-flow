@@ -101,10 +101,13 @@ public class BaseDAO<T extends BaseDomain> {
     public <E extends BaseDomain> E save(E obj) {
         PersistenceManager pm = PersistenceFilter.getManager();
         Long who = 0L;
-        final Object credentials = SecurityContextHolder.getContext()
-                .getAuthentication().getCredentials();
-        if (credentials instanceof Long) {
-            who = (Long) credentials;
+        if (SecurityContextHolder.getContext() != null
+                && SecurityContextHolder.getContext().getAuthentication() != null ) {
+            final Object credentials = SecurityContextHolder.getContext()
+                    .getAuthentication().getCredentials();
+            if (credentials instanceof Long) {
+                who = (Long) credentials;
+            }
         }
         obj.setLastUpdateDateTime(new Date());
         obj.setLastUpdateUserId(who);

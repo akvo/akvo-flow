@@ -1,5 +1,5 @@
 /*
- *  Copyright (C) 2010-2018 Stichting Akvo (Akvo Foundation)
+ *  Copyright (C) 2010-2019 Stichting Akvo (Akvo Foundation)
  *
  *  This file is part of Akvo FLOW.
  *
@@ -40,7 +40,9 @@ import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicLong;
 
+import com.fasterxml.jackson.core.type.TypeReference;
 import org.akvo.flow.domain.DataUtils;
+import org.akvo.flow.util.FlowJsonObjectReader;
 import org.akvo.flow.util.JFreechartChartUtil;
 import org.apache.log4j.ConsoleAppender;
 import org.apache.log4j.Level;
@@ -59,8 +61,6 @@ import org.apache.poi.ss.util.CellRangeAddress;
 import org.apache.poi.ss.util.WorkbookUtil;
 import org.apache.poi.xssf.streaming.SXSSFSheet;
 import org.apache.poi.xssf.streaming.SXSSFWorkbook;
-import org.codehaus.jackson.map.ObjectMapper;
-import org.codehaus.jackson.type.TypeReference;
 import org.waterforpeople.mapping.app.gwt.client.survey.OptionContainerDto;
 import org.waterforpeople.mapping.app.gwt.client.survey.QuestionDto;
 import org.waterforpeople.mapping.app.gwt.client.survey.QuestionDto.QuestionType;
@@ -160,11 +160,11 @@ public class GraphicalSurveySummaryExporter extends SurveySummaryExporter {
     private boolean variableNamesInHeaders; // Also turns on splitting of answers into separate columns (options, geo, etc.) and turns off digests
     private boolean splitIntoColumns; // Turns on splitting of answers into separate columns (options, geo, etc.) and turns off digests
     private boolean separateSheetsForRepeatableGroups;
+    private boolean justCodes; //Only output the codes from multiple-choice answers (option and cascade)
     private boolean doGroupHeaders; //First header line is group names spanned over the group columns
     private Map<Long, QuestionDto> questionsById;
     private SurveyGroupDto surveyGroupDto;
     private boolean lastCollection = false;
-    private static final ObjectMapper OBJECT_MAPPER = new ObjectMapper();
     private CaddisflyResourceDao caddisflyResourceDao = new CaddisflyResourceDao();
     private String caddisflyTestsFileUrl;
     private String selectionFrom = null;
@@ -695,6 +695,10 @@ public class GraphicalSurveySummaryExporter extends SurveySummaryExporter {
             if (rollupOrder != null && rollupOrder.size() > 0) {
                 rollups = formRollupStrings(responseMap);
             }
+            FlowJsonObjectReader jsonReader = new FlowJsonObjectReader();
+            TypeReference<List<Map<String, String>>> typeReference = new TypeReference<List<Map<String, String>>>() {};
+
+
             for (Entry<String, String> entry : responseMap.entrySet()) {
                 //OPTION, NUMBER and CASCADE summarizable now.
                 if (!unsummarizable.contains(entry.getKey())) {
@@ -706,10 +710,7 @@ public class GraphicalSurveySummaryExporter extends SurveySummaryExporter {
                     String[] vals;
                     if (entry.getValue().startsWith("[")) { //JSON
                         try {
-                            List<Map<String, String>> optionNodes = OBJECT_MAPPER.readValue(
-                                    entry.getValue(),
-                                    new TypeReference<List<Map<String, String>>>() {}
-                                    );
+                            List<Map<String, String>> optionNodes = jsonReader.readObject(entry.getValue(), typeReference);
                             List<String> valsList = new ArrayList<>();
                             for (Map<String, String> optionNode : optionNodes) {
                                 if (optionNode.containsKey("text")) {
@@ -980,10 +981,11 @@ public class GraphicalSurveySummaryExporter extends SurveySummaryExporter {
         List<Map<String, String>> cascadeNodes = new ArrayList<>();
 
         if (value.startsWith("[")) {
+            FlowJsonObjectReader jsonReader = new FlowJsonObjectReader();
+            TypeReference<List<Map<String, String>>> typeReference = new TypeReference<List<Map<String, String>>>() {};
+
             try {
-                cascadeNodes = OBJECT_MAPPER.readValue(value,
-                        new TypeReference<List<Map<String, String>>>() {
-                        });
+                cascadeNodes = jsonReader.readObject(value, typeReference);
             } catch (IOException e) {
                 log.warn("Unable to parse CASCADE response - " + value, e);
             }
@@ -995,13 +997,13 @@ public class GraphicalSurveySummaryExporter extends SurveySummaryExporter {
             }
         }
 
+        //We used to always set code=name if not otherwise set
+        //and users did not like getting a:a, b:b, etc. everywhere
         boolean allCodesEqualsName = true;
         for (Map<String, String> cascadeNode : cascadeNodes) {
             String code = cascadeNode.get("code");
             String name = cascadeNode.get("name");
-
-            if (code != null && name != null
-                    && !code.toLowerCase().equals(name.toLowerCase())) {
+            if (code != null && !code.equalsIgnoreCase(name)) {
                 allCodesEqualsName = false;
                 break;
             }
@@ -1011,6 +1013,7 @@ public class GraphicalSurveySummaryExporter extends SurveySummaryExporter {
                 cascadeNode.put("code", null);
             }
         }
+
 
         if (splitIntoColumns) {
             // +------------+------------+-----
@@ -1022,7 +1025,16 @@ public class GraphicalSurveySummaryExporter extends SurveySummaryExporter {
             for (Map<String, String> map : cascadeNodes) {
                 String code = map.get("code");
                 String name = map.get("name");
-                String nodeVal = (code == null ? "" : code + ":") + name;
+                String nodeVal;
+                if (code != null  && !code.isEmpty()) {
+                    if (justCodes) {
+                        nodeVal = code;
+                    } else {
+                        nodeVal = code + ":" + name;
+                    }
+                } else {
+                    nodeVal = name;
+                }
 
                 if (cells.size() == levels) {
                     // Don't create too many cells
@@ -1046,7 +1058,15 @@ public class GraphicalSurveySummaryExporter extends SurveySummaryExporter {
                 String code = node.get("code");
                 String name = node.get("name");
                 cascadeString.append("|");
-                cascadeString.append((code == null ? "" : code + ":") + name);
+                if (code != null  && !code.isEmpty()) {
+                    if (justCodes) {
+                        cascadeString.append(code);
+                    } else {
+                        cascadeString.append(code + ":" + name);
+                    }
+                } else {
+                    cascadeString.append(name);
+                }
             }
             if (cascadeString.length() > 0) {
                 // Drop the first pipe character.
@@ -1066,11 +1086,12 @@ public class GraphicalSurveySummaryExporter extends SurveySummaryExporter {
     private List<Map<String, String>> getNodes(String value) {
         boolean isNewFormat = value.startsWith("[");
         List<Map<String, String>> optionNodes = new ArrayList<>();
+        FlowJsonObjectReader jsonReader = new FlowJsonObjectReader();
+        TypeReference<List<Map<String, String>>> typeReference = new TypeReference<List<Map<String, String>>>() {};
+
         if (isNewFormat) {
             try {
-                optionNodes = OBJECT_MAPPER.readValue(value,
-                        new TypeReference<List<Map<String, String>>>() {
-                        });
+                optionNodes = jsonReader.readObject(value, typeReference);
             } catch (IOException e) {
                 log.warn("Could not parse option response: " + value, e);
             }
@@ -1086,7 +1107,7 @@ public class GraphicalSurveySummaryExporter extends SurveySummaryExporter {
     }
 
     /*
-     * Build pipe-separated value from option nodes To be included in reports
+     * Build pipe-separated value from option nodes
      */
     private String buildOptionString(List<Map<String, String>> optionNodes) {
         StringBuilder optionString = new StringBuilder();
@@ -1095,7 +1116,11 @@ public class GraphicalSurveySummaryExporter extends SurveySummaryExporter {
             String text = node.get("text");
             optionString.append("|");
             if (code != null) {
-                optionString.append(code + ":" + text);
+                if (justCodes) {
+                    optionString.append(code);
+                } else {
+                    optionString.append(code + ":" + text);
+                }
             } else {
                 optionString.append(text);
             }
@@ -1654,12 +1679,11 @@ public class GraphicalSurveySummaryExporter extends SurveySummaryExporter {
                         } else {
                             // Handle the json option question response type
                             if (labelText.startsWith("[")) {
+                                FlowJsonObjectReader jsonReader = new FlowJsonObjectReader();
+                                TypeReference<List<Map<String, String>>> typeReference = new TypeReference<List<Map<String, String>>>() {};
+
                                 try {
-                                    List<Map<String, String>> optionNodes = OBJECT_MAPPER
-                                            .readValue(
-                                                    labelText,
-                                                    new TypeReference<List<Map<String, String>>>() {
-                                                    });
+                                    List<Map<String, String>> optionNodes = jsonReader.readObject(labelText, typeReference);
                                     StringBuilder labelTextBuilder = new StringBuilder();
 
                                     for (Map<String, String> optionNode : optionNodes) {
@@ -2000,18 +2024,21 @@ public class GraphicalSurveySummaryExporter extends SurveySummaryExporter {
                 separateSheetsForRepeatableGroups = true;
                 variableNamesInHeaders = false; //So we can import - also enables digests
                 splitIntoColumns = false;
+                justCodes = false;
             } else if (DATA_ANALYSIS_TYPE.equalsIgnoreCase(reportType)) {
                 includeSummarySheet = false;
                 doGroupHeaders = false;
                 separateSheetsForRepeatableGroups = false;
                 variableNamesInHeaders = true;
                 splitIntoColumns = true;
+                justCodes = true;
             } else if (COMPREHENSIVE_TYPE.equalsIgnoreCase(reportType)) {
                 includeSummarySheet = true;
                 doGroupHeaders = false;
                 separateSheetsForRepeatableGroups = false;
                 variableNamesInHeaders = true;
                 splitIntoColumns = true;
+                justCodes = true;
             } else {
                 log.error("Unknown value " + reportType + " for " + TYPE_OPT);
                 return false;

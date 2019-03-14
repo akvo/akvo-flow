@@ -1,5 +1,5 @@
 /*
- *  Copyright (C) 2010-2014 Stichting Akvo (Akvo Foundation)
+ *  Copyright (C) 2010-2014,2019 Stichting Akvo (Akvo Foundation)
  *
  *  This file is part of Akvo FLOW.
  *
@@ -16,6 +16,8 @@
 
 package com.gallatinsystems.framework.gwt.dto.client;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+
 import java.io.Serializable;
 
 /**
@@ -23,6 +25,7 @@ import java.io.Serializable;
  *
  * @author Christopher Fagaini
  */
+@JsonIgnoreProperties(ignoreUnknown = true)
 public class BaseDto implements Serializable {
 
     private static final long serialVersionUID = -5905705837362187943L;

@@ -1,5 +1,5 @@
 /*
- *  Copyright (C) 2015 Stichting Akvo (Akvo Foundation)
+ *  Copyright (C) 2015-2019 Stichting Akvo (Akvo Foundation)
  *
  *  This file is part of Akvo FLOW.
  *
@@ -18,13 +18,12 @@ package org.akvo.flow.domain;
 
 import java.io.IOException;
 import java.util.Collections;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import com.fasterxml.jackson.core.type.TypeReference;
+import org.akvo.flow.util.FlowJsonObjectReader;
 import org.apache.log4j.Logger;
-import org.codehaus.jackson.map.ObjectMapper;
-import org.codehaus.jackson.type.TypeReference;
 
 /**
  * Utilities class for performing transformations on survey data, i.e. response values
@@ -32,8 +31,6 @@ import org.codehaus.jackson.type.TypeReference;
 public class DataUtils {
 
     private static final Logger log = Logger.getLogger(DataUtils.class);
-
-    public static final ObjectMapper JSON_OBJECT_MAPPER = new ObjectMapper();
 
     public static String[] optionResponsesTextArray(String optionResponse) {
         String[] responseArray = null;
@@ -84,7 +81,7 @@ public class DataUtils {
     /**
      * Convert a JSON string response for OPTION type questions to the legacy pipe separated format
      *
-     * @param jsonResponse
+     * @param optionResponses
      * @return
      */
     public static String jsonResponsesToPipeSeparated(String optionResponses) {
@@ -106,15 +103,16 @@ public class DataUtils {
     }
 
     /**
-     * Convert a JSON string response to a list containing corresponding maps
+     * Convert a JSON string response to a list of corresponding maps
      *
      * @param data String containing the JSON-formatted response
      * @return List of maps with response properties
      */
     public static List<Map<String, String>> jsonStringToList(String data) {
+        FlowJsonObjectReader jsonReader = new FlowJsonObjectReader();
+        TypeReference<List<Map<String, String>>> typeReference = new TypeReference<List<Map<String, String>>>() {};
         try {
-            return JSON_OBJECT_MAPPER.readValue(data,
-                    new TypeReference<List<Map<String, String>>>() {});
+            return jsonReader.readObject(data, typeReference);
         } catch (IOException e) {
             // Data is not JSON-formatted
         }
@@ -124,23 +122,23 @@ public class DataUtils {
 
     /**
      * Process the JSON formatted string value of a signature question and return the string
-     * representing the signatory. A blank string is returned
+     * representing the signatory.
      *
      * @param value
      * @return
      */
     public static String parseSignatory(String value) {
-        String signatory = null;
+        FlowJsonObjectReader jsonReader = new FlowJsonObjectReader();
         Map<String, String> signatureResponse = null;
+        TypeReference<Map<String, String>> typeReference = new TypeReference<Map<String, String>>() {};
+
         try {
-            signatureResponse = JSON_OBJECT_MAPPER.readValue(value,
-                    new TypeReference<Map<String, String>>() {
-                    });
-            signatory = signatureResponse.get("name");
+            signatureResponse = jsonReader.readObject(value, typeReference);
         } catch (IOException e) {
             // ignore
         }
-        return signatory;
+
+        return signatureResponse.get("name");
     }
 
     /**
@@ -151,9 +149,12 @@ public class DataUtils {
      */
     @SuppressWarnings("unchecked")
     public static Map<String, Object> parseCaddisflyResponseValue(String caddisflyValue) {
-        Map<String, Object> caddisflyResponseMap = new HashMap<>();
+        Map<String, Object> caddisflyResponseMap = null;
+        FlowJsonObjectReader jsonReader = new FlowJsonObjectReader();
+        TypeReference<Map<String, Object>> typeReference = new TypeReference<Map<String, Object>>() {};
+
         try {
-            caddisflyResponseMap = JSON_OBJECT_MAPPER.readValue(caddisflyValue, Map.class);
+            caddisflyResponseMap = jsonReader.readObject(caddisflyValue, typeReference);
         } catch (IOException e) {
             log.warn("Failed to parse the caddisfly response");
         }

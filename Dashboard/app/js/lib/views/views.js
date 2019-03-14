@@ -88,25 +88,22 @@ Ember.Handlebars.registerHelper('tooltip', function (i18nKey) {
 
 
 FLOW.renderCaddisflyAnswer = function(json){
-  var name = ""
-  var imageUrl = ""
-  var result = Ember.A();
-  if (!Ember.empty(json)){
+  if (!Ember.empty(json)) {
     try {
         var jsonParsed = JSON.parse(json);
 
-        // get out image url
-        if ('image' in jsonParsed){
-          imageUrl = FLOW.Env.photo_url_root + jsonParsed.image.trim();
-        }
-
         // contruct html
-        html = "<div><strong>" + name + "</strong></div>"
+        html = "<div><strong>" + jsonParsed.name + "</strong></div>";
         html += jsonParsed.result.map(function(item){
                 return "<br><div>" + item.name + " : " + item.value + " " + item.unit + "</div>";
             }).join("\n");
-        html += "<br>"
-        html += "<div class=\"signatureImage\"><img src=\"" + imageUrl +"\"/></div>"
+        html += "<br>";
+
+        // get out image url
+        if ('image' in jsonParsed) {
+          imageUrl = FLOW.Env.photo_url_root + jsonParsed.image.trim();
+          html += "<div class=\"signatureImage\"><img src=\"" + imageUrl +"\"/></div>";
+        }
         return html;
     } catch (e) {
         return json;
@@ -120,11 +117,14 @@ Ember.Handlebars.registerHelper('placemarkDetail', function () {
   var answer, markup, question, cascadeJson, optionJson, cascadeString = "",
   imageSrcAttr, signatureJson, photoJson, self=this;
 
+  responseType = Ember.get(this, 'type');
   question = Ember.get(this, 'questionText');
   answer = Ember.get(this, 'value') || '';
   answer = answer.replace(/\|/g, ' | '); // geo, option and cascade data
-  answer = answer.replace(/\//g, ' / '); // also split folder paths
-  responseType = Ember.get(this, 'type');
+  if (responseType != 'SIGNATURE') {
+    answer = answer.replace(/\//g, ' / '); // also split folder paths
+    answer = answer.replace(/\\/g, ''); // remove escape characters
+  }
 
   if (responseType === 'CASCADE') {
 
@@ -171,7 +171,7 @@ Ember.Handlebars.registerHelper('placemarkDetail', function () {
   } else if (responseType === 'DATE') {
     answer = FLOW.renderTimeStamp(answer);
   } else if (responseType === 'CADDISFLY'){
-    answer = FLOW.renderCaddisflyAnswer(answer)
+    answer = FLOW.renderCaddisflyAnswer(answer);
   } else if (responseType === 'VALUE' && answer.indexOf("features\":[") > 0) {
     var geoshapeObject = FLOW.parseJSON(answer, "features");
     if (geoshapeObject) {

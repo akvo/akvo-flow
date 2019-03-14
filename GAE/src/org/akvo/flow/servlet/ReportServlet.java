@@ -1,5 +1,5 @@
 /*
- *  Copyright (C) 2018 Stichting Akvo (Akvo Foundation)
+ *  Copyright (C) 2018-2019 Stichting Akvo (Akvo Foundation)
  *
  *  This file is part of Akvo FLOW.
  *
@@ -31,9 +31,7 @@ import com.google.appengine.api.utils.SystemProperty;
 import org.akvo.flow.dao.ReportDao;
 import org.akvo.flow.domain.persistent.Report;
 import org.akvo.flow.rest.dto.ReportTaskRequest;
-import org.codehaus.jackson.JsonGenerationException;
-import org.codehaus.jackson.map.JsonMappingException;
-import org.codehaus.jackson.map.ObjectMapper;
+import org.akvo.flow.util.FlowJsonObjectWriter;
 import org.waterforpeople.mapping.app.web.dto.TaskRequest;
 
 import com.gallatinsystems.common.util.PropertyUtil;
@@ -197,8 +195,7 @@ public class ReportServlet extends AbstractRestApiServlet {
         }
     }
 
-    private int startReportEngine(String baseUrl, Report r)
-            throws JsonGenerationException, JsonMappingException, IOException {
+    private int startReportEngine(String baseUrl, Report r) throws IOException {
         //look up user
         final String email = uDao.getByKey(r.getUser()).getEmailAddress();
 
@@ -226,8 +223,9 @@ public class ReportServlet extends AbstractRestApiServlet {
         criteria.opts.uploadUrl = PropertyUtil.getProperty("surveyuploadurl");
         criteria.opts.flowServices = PropertyUtil.getProperty("flowServices");
         criteria.opts.email = email;
-        ObjectMapper objectMapper = new ObjectMapper();
-        String crit = java.net.URLEncoder.encode(objectMapper.writeValueAsString(criteria), "UTF-8");
+
+        FlowJsonObjectWriter writer = new FlowJsonObjectWriter();
+        String crit = java.net.URLEncoder.encode(writer.writeAsString(criteria), "UTF-8");
 
         URL url = new URL(PropertyUtil.getProperty("flowServices") + "/generate?criteria=" +  crit);
         HttpURLConnection con = (HttpURLConnection) url.openConnection();
