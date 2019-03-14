@@ -260,10 +260,9 @@ FLOW.NavMapsView = FLOW.View.extend(template('navMaps/nav-maps-common'), observe
     },
 
   detailsPaneShowHide: function(){
-      var button = this.$('#mapDetailsHideShow');
       var display = this.detailsPaneVisible;
 
-      button.html('&lsaquo; ' + Ember.String.loc((display) ? '_hide' : '_show'));
+      this.$('#mapDetailsHideShow').html('&lsaquo; ' + Ember.String.loc((display) ? '_hide' : '_show'));
 
       this.$('#flowMap').animate({
         width: (display) ? '75%' : '99.25%'
