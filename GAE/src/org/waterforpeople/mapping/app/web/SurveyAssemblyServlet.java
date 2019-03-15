@@ -1,5 +1,5 @@
 /*
- *  Copyright (C) 2010-2017 Stichting Akvo (Akvo Foundation)
+ *  Copyright (C) 2010-2017, 2019 Stichting Akvo (Akvo Foundation)
  *
  *  This file is part of Akvo FLOW.
  *
@@ -35,7 +35,6 @@ import com.gallatinsystems.survey.domain.Survey;
 import com.gallatinsystems.survey.domain.SurveyXMLFragment.FRAGMENT_TYPE;
 import com.gallatinsystems.survey.domain.xml.*;
 import com.gallatinsystems.survey.xml.SurveyXMLAdapter;
-import com.google.appengine.api.backends.BackendServiceFactory;
 import com.google.appengine.api.datastore.Text;
 import com.google.appengine.api.taskqueue.Queue;
 import com.google.appengine.api.taskqueue.QueueFactory;
@@ -59,15 +58,10 @@ import java.util.Properties;
 import java.util.Random;
 import java.util.TreeMap;
 
-/**
- * @author stellan
- *
- */
 public class SurveyAssemblyServlet extends AbstractRestApiServlet {
     private static final Logger log = Logger
             .getLogger(SurveyAssemblyServlet.class.getName());
 
-    private static final int BACKEND_QUESTION_THRESHOLD = 80;
     private static final long serialVersionUID = -6044156962558183224L;
     private static final String OPTION_RENDER_MODE_PROP = "optionRenderMode";
     public static final String FREE_QUESTION_TYPE = "free";
@@ -164,13 +158,12 @@ public class SurveyAssemblyServlet extends AbstractRestApiServlet {
     // Manual triggering of publication should start here
     static public void runAsTask(Long surveyId) {
         log.info("Forking to task for long assembly");
-        com.google.appengine.api.taskqueue.TaskOptions options = com.google.appengine.api.taskqueue.TaskOptions.Builder
+        TaskOptions options = TaskOptions.Builder
                 .withUrl("/app_worker/surveyassembly")
                 .param(SurveyAssemblyRequest.ACTION_PARAM,
                         SurveyAssemblyRequest.ASSEMBLE_SURVEY)
-                .param(SurveyAssemblyRequest.IS_FWD_PARAM, "true")
                 .param(SurveyAssemblyRequest.SURVEY_ID_PARAM, surveyId.toString());
-        com.google.appengine.api.taskqueue.Queue queue = QueueFactory.getQueue("surveyAssembly"); //TODO: does qf need to be full name??
+        Queue queue = QueueFactory.getQueue("surveyAssembly");
         queue.add(options);
     }
 
