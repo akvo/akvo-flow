@@ -1,5 +1,5 @@
 /*
- *  Copyright (C) 2010-2017 Stichting Akvo (Akvo Foundation)
+ *  Copyright (C) 2010-2017, 2019 Stichting Akvo (Akvo Foundation)
  *
  *  This file is part of Akvo FLOW.
  *
@@ -35,7 +35,6 @@ import com.gallatinsystems.survey.domain.Survey;
 import com.gallatinsystems.survey.domain.SurveyXMLFragment.FRAGMENT_TYPE;
 import com.gallatinsystems.survey.domain.xml.*;
 import com.gallatinsystems.survey.xml.SurveyXMLAdapter;
-import com.google.appengine.api.backends.BackendServiceFactory;
 import com.google.appengine.api.datastore.Text;
 import com.google.appengine.api.taskqueue.Queue;
 import com.google.appengine.api.taskqueue.QueueFactory;
@@ -59,15 +58,10 @@ import java.util.Properties;
 import java.util.Random;
 import java.util.TreeMap;
 
-/**
- * @author stellan
- *
- */
 public class SurveyAssemblyServlet extends AbstractRestApiServlet {
     private static final Logger log = Logger
             .getLogger(SurveyAssemblyServlet.class.getName());
 
-    private static final int BACKEND_QUESTION_THRESHOLD = 80;
     private static final long serialVersionUID = -6044156962558183224L;
     private static final String OPTION_RENDER_MODE_PROP = "optionRenderMode";
     public static final String FREE_QUESTION_TYPE = "free";
@@ -97,7 +91,6 @@ public class SurveyAssemblyServlet extends AbstractRestApiServlet {
         restRequest.populateFromHttpRequest(req);
         return restRequest;
     }
-
     
     
     @Override
@@ -114,12 +107,12 @@ public class SurveyAssemblyServlet extends AbstractRestApiServlet {
             if (status == null) {
                 status = new ProcessingStatus();
                 status.setCode(FORM_PUB_STATUS_KEY + (id != null ? ":" + id : ""));
-                status.setMaxDuration(0.0);
+                status.setMaxDurationMs(0L);
             }
             status.setLastEventDate(start);
-            Double maxDuration = status.getMaxDuration();
+            Long maxDuration = status.getMaxDurationMs();
             if (maxDuration == null) {
-                maxDuration = 0.0;
+                maxDuration = 0L;
             }
             status.setInError(true); //In case it never saves an end sts
             status.setValue("inProgress");
@@ -135,9 +128,9 @@ public class SurveyAssemblyServlet extends AbstractRestApiServlet {
             // now update the status
             status.setInError(ok);
             status.setValue("finished");
-            Double duration = (new Date().getTime() - start.getTime())/1000.0;
+            Long duration = new Date().getTime() - start.getTime();
             if (duration > maxDuration) {
-                status.setMaxDuration(duration);
+                status.setMaxDurationMs(duration);
                 status.setMaxDurationDate(start);
             }
             statusDao.save(status);
@@ -164,14 +157,22 @@ public class SurveyAssemblyServlet extends AbstractRestApiServlet {
     // Manual triggering of publication should start here
     static public void runAsTask(Long surveyId) {
         log.info("Forking to task for long assembly");
-        com.google.appengine.api.taskqueue.TaskOptions options = com.google.appengine.api.taskqueue.TaskOptions.Builder
+        TaskOptions options = TaskOptions.Builder
                 .withUrl("/app_worker/surveyassembly")
                 .param(SurveyAssemblyRequest.ACTION_PARAM,
                         SurveyAssemblyRequest.ASSEMBLE_SURVEY)
-                .param(SurveyAssemblyRequest.IS_FWD_PARAM, "true")
                 .param(SurveyAssemblyRequest.SURVEY_ID_PARAM, surveyId.toString());
-        com.google.appengine.api.taskqueue.Queue queue = QueueFactory.getQueue("surveyAssembly"); //TODO: does qf need to be full name??
+        Queue queue = QueueFactory.getQueue("surveyAssembly");
         queue.add(options);
+        
+        Survey s = new SurveyDAO().getById(surveyId);
+        SurveyGroup sg = s != null ? new SurveyGroupDAO().getByKey(s.getSurveyGroupId()) : null;
+        if (sg != null && sg.getNewLocaleSurveyId() != null &&
+                sg.getNewLocaleSurveyId().longValue() == surveyId.longValue()) {
+            // This is the registration form. Schedule datapoint name re-assembly
+            DataProcessorRestServlet.scheduleDatapointNameAssembly(sg.getKey().getId(), null);
+        }
+
     }
 
 
