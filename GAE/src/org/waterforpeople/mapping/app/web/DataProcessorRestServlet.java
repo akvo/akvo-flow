@@ -1,5 +1,5 @@
 /*
- *  Copyright (C) 2010-2018 Stichting Akvo (Akvo Foundation)
+ *  Copyright (C) 2010-2019 Stichting Akvo (Akvo Foundation)
  *
  *  This file is part of Akvo FLOW.
  *
@@ -103,8 +103,9 @@ public class DataProcessorRestServlet extends AbstractRestApiServlet {
     private static final Integer T_PAGE_SIZE = 300;
     private static final Integer SVAL_PAGE_SIZE = 600;
     private static final String QAS_TO_REMOVE = "QAStoRemove";
+    private static final String FORM_COPY_STATUS_KEY = "copyForm";
     private static final long NAME_ASSEMBLY_TASK_DELAY = 3 * 1000;// 3 seconds
-
+    
     private SurveyInstanceDAO siDao;
 
     @Override
@@ -121,9 +122,39 @@ public class DataProcessorRestServlet extends AbstractRestApiServlet {
         if (DataProcessorRequest.REBUILD_QUESTION_SUMMARY_ACTION
                 .equalsIgnoreCase(dpReq.getAction())) {
             rebuildQuestionSummary(dpReq.getSurveyId());
-        } else if (DataProcessorRequest.COPY_SURVEY.equalsIgnoreCase(dpReq
-                .getAction())) {
+        } else if (DataProcessorRequest.COPY_SURVEY.equalsIgnoreCase(dpReq.getAction())) {
+            String source = dpReq.getSource();
+            //Instrumentation
+            Date start = new Date();
+            ProcessingStatusDao statusDao = new ProcessingStatusDao();
+            ProcessingStatus status = statusDao.getStatusByCode(
+                    FORM_COPY_STATUS_KEY + (source != null ? ":" + source : ""));
+            if (status == null) {
+                status = new ProcessingStatus();
+                status.setCode(FORM_COPY_STATUS_KEY + (source != null ? ":" + source : ""));
+                status.setMaxDuration(0.0);
+            }
+            status.setLastEventDate(start);
+            Double maxDuration = status.getMaxDuration();
+            if (maxDuration == null) {
+                maxDuration = 0.0;
+            }
+            status.setInError(true); //In case it never saves an end sts
+            status.setValue("inProgress, target=" + dpReq.getSurveyId());
+            statusDao.save(status);
+            
             copySurvey(dpReq.getSurveyId(), Long.valueOf(dpReq.getSource()));
+            
+            // now update the status
+            status.setInError(false);
+            status.setValue("finished, target=" + dpReq.getSurveyId());
+            Double duration = (new Date().getTime() - start.getTime())/1000.0;
+            if (duration > maxDuration) {
+                status.setMaxDuration(duration);
+                status.setMaxDurationDate(start);
+            }
+            statusDao.save(status);
+            
         } else if (DataProcessorRequest.COPY_QUESTION_GROUP.equalsIgnoreCase(dpReq
                 .getAction())) {
             QuestionGroupDao qgDao = new QuestionGroupDao();
