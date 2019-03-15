@@ -274,15 +274,6 @@
         <url-pattern>/webapp/testharness</url-pattern>
     </servlet-mapping>
     <servlet>
-    <servlet-name>PublishSurvey</servlet-name>
-        <servlet-class>org.waterforpeople.mapping.app.web.PublishSurveyServlet</servlet-class>
-    </servlet>
-    <servlet-mapping>
-        <servlet-name>PublishSurvey</servlet-name>
-        <url-pattern>/publishsurvey</url-pattern>
-    </servlet-mapping>
-
-    <servlet>
         <servlet-name>RemoteExceptionServlet</servlet-name>
         <servlet-class>com.gallatinsystems.diagnostics.app.web.RemoteExceptionRestServlet</servlet-class>
     </servlet>

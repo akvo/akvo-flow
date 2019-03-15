@@ -91,7 +91,6 @@ public class SurveyAssemblyServlet extends AbstractRestApiServlet {
         restRequest.populateFromHttpRequest(req);
         return restRequest;
     }
-
     
     
     @Override
@@ -108,12 +107,12 @@ public class SurveyAssemblyServlet extends AbstractRestApiServlet {
             if (status == null) {
                 status = new ProcessingStatus();
                 status.setCode(FORM_PUB_STATUS_KEY + (id != null ? ":" + id : ""));
-                status.setMaxDuration(0.0);
+                status.setMaxDurationMs(0L);
             }
             status.setLastEventDate(start);
-            Double maxDuration = status.getMaxDuration();
+            Long maxDuration = status.getMaxDurationMs();
             if (maxDuration == null) {
-                maxDuration = 0.0;
+                maxDuration = 0L;
             }
             status.setInError(true); //In case it never saves an end sts
             status.setValue("inProgress");
@@ -129,9 +128,9 @@ public class SurveyAssemblyServlet extends AbstractRestApiServlet {
             // now update the status
             status.setInError(ok);
             status.setValue("finished");
-            Double duration = (new Date().getTime() - start.getTime())/1000.0;
+            Long duration = new Date().getTime() - start.getTime();
             if (duration > maxDuration) {
-                status.setMaxDuration(duration);
+                status.setMaxDurationMs(duration);
                 status.setMaxDurationDate(start);
             }
             statusDao.save(status);
@@ -165,6 +164,15 @@ public class SurveyAssemblyServlet extends AbstractRestApiServlet {
                 .param(SurveyAssemblyRequest.SURVEY_ID_PARAM, surveyId.toString());
         Queue queue = QueueFactory.getQueue("surveyAssembly");
         queue.add(options);
+        
+        Survey s = new SurveyDAO().getById(surveyId);
+        SurveyGroup sg = s != null ? new SurveyGroupDAO().getByKey(s.getSurveyGroupId()) : null;
+        if (sg != null && sg.getNewLocaleSurveyId() != null &&
+                sg.getNewLocaleSurveyId().longValue() == surveyId.longValue()) {
+            // This is the registration form. Schedule datapoint name re-assembly
+            DataProcessorRestServlet.scheduleDatapointNameAssembly(sg.getKey().getId(), null);
+        }
+
     }
 
 

@@ -37,7 +37,7 @@ public class ProcessingStatus extends BaseDomain {
     private Boolean inError;
     private Date lastEventDate;
     private Date maxDurationDate;
-    private Double maxDuration; //Seconds
+    private Long maxDurationMs;
     
     public Boolean getInError() {
         return inError;
@@ -87,12 +87,12 @@ public class ProcessingStatus extends BaseDomain {
         this.maxDurationDate = maxDurationDate;
     }
 
-    public Double getMaxDuration() {
-        return maxDuration;
+    public Long getMaxDurationMs() {
+        return maxDurationMs;
     }
 
-    public void setMaxDuration(Double maxDuration) {
-        this.maxDuration = maxDuration;
+    public void setMaxDurationMs(Long maxDuration) {
+        this.maxDurationMs = maxDuration;
     }
 
 }
