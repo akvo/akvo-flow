@@ -127,18 +127,9 @@ public class DataProcessorRestServlet extends AbstractRestApiServlet {
             //Instrumentation
             Date start = new Date();
             ProcessingStatusDao statusDao = new ProcessingStatusDao();
-            ProcessingStatus status = statusDao.getStatusByCode(
+            ProcessingStatus status = statusDao.getOrCreateStatusByCode(
                     FORM_COPY_STATUS_KEY + (source != null ? ":" + source : ""));
-            if (status == null) {
-                status = new ProcessingStatus();
-                status.setCode(FORM_COPY_STATUS_KEY + (source != null ? ":" + source : ""));
-                status.setMaxDuration(0.0);
-            }
             status.setLastEventDate(start);
-            Double maxDuration = status.getMaxDuration();
-            if (maxDuration == null) {
-                maxDuration = 0.0;
-            }
             status.setInError(true); //In case it never saves an end sts
             status.setValue("inProgress, target=" + dpReq.getSurveyId());
             statusDao.save(status);
@@ -148,9 +139,9 @@ public class DataProcessorRestServlet extends AbstractRestApiServlet {
             // now update the status
             status.setInError(false);
             status.setValue("finished, target=" + dpReq.getSurveyId());
-            Double duration = (new Date().getTime() - start.getTime())/1000.0;
-            if (duration > maxDuration) {
-                status.setMaxDuration(duration);
+            Long duration = new Date().getTime() - start.getTime();
+            if (duration > status.getMaxDurationMs()) {
+                status.setMaxDurationMs(duration);
                 status.setMaxDurationDate(start);
             }
             statusDao.save(status);
