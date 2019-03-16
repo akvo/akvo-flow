@@ -1,5 +1,5 @@
 /*
- *  Copyright (C) 2010-2018 Stichting Akvo (Akvo Foundation)
+ *  Copyright (C) 2010-2018, 2019 Stichting Akvo (Akvo Foundation)
  *
  *  This file is part of Akvo FLOW.
  *
@@ -443,10 +443,7 @@ public class DataProcessorRestServlet extends AbstractRestApiServlet {
                     .param(DataProcessorRequest.ACTION_PARAM,
                             DataProcessorRequest.DELETE_DUPLICATE_QAS)
                     .param(DataProcessorRequest.OFFSET_PARAM,
-                            String.valueOf(offset + QAS_PAGE_SIZE))
-                    .header("Host",
-                            BackendServiceFactory.getBackendService()
-                                    .getBackendAddress("dataprocessor"));
+                            String.valueOf(offset + QAS_PAGE_SIZE));
             Queue queue = QueueFactory.getDefaultQueue();
             queue.add(options);
 
@@ -1087,9 +1084,6 @@ public class DataProcessorRestServlet extends AbstractRestApiServlet {
             final String cursorParam = SurveyedLocaleDao.getCursor(locales);
             final TaskOptions options = TaskOptions.Builder
                     .withUrl("/app_worker/dataprocessor")
-                    .header("Host",
-                            BackendServiceFactory.getBackendService().getBackendAddress(
-                                    "dataprocessor"))
                     .param(DataProcessorRequest.ACTION_PARAM,
                             DataProcessorRequest.POPULATE_MONITORING_FIELDS_LOCALE_ACTION)
                     .param(DataProcessorRequest.SURVEY_ID_PARAM, surveyId.toString())
@@ -1146,9 +1140,6 @@ public class DataProcessorRestServlet extends AbstractRestApiServlet {
             final String cursorParam = SurveyedLocaleDao.getCursor(results);
             final TaskOptions options = TaskOptions.Builder
                     .withUrl("/app_worker/dataprocessor")
-                    .header("Host",
-                            BackendServiceFactory.getBackendService().getBackendAddress(
-                                    "dataprocessor"))
                     .param(DataProcessorRequest.ACTION_PARAM,
                             DataProcessorRequest.CREATE_NEW_IDENTIFIERS_LOCALES_ACTION)
                     .param(DataProcessorRequest.SURVEY_ID_PARAM, surveyId.toString())
@@ -1247,10 +1238,7 @@ public class DataProcessorRestServlet extends AbstractRestApiServlet {
                     .withUrl("/app_worker/dataprocessor")
                     .param(DataProcessorRequest.ACTION_PARAM,
                             DataProcessorRequest.POP_QUESTION_ORDER_FIELDS_ACTION)
-                    .param("cursor", newCursor)
-                    .header("host",
-                            BackendServiceFactory.getBackendService().getBackendAddress(
-                                    "dataprocessor"));
+                    .param("cursor", newCursor);
 
             if (surveyId != null) {
                 to.param(DataProcessorRequest.SURVEY_ID_PARAM, surveyId.toString());
