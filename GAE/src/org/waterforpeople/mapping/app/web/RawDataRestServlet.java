@@ -1,5 +1,5 @@
 /*
- *  Copyright (C) 2010-2015 Stichting Akvo (Akvo Foundation)
+ *  Copyright (C) 2010-2015, 2019 Stichting Akvo (Akvo Foundation)
  *
  *  This file is part of Akvo FLOW.
  *
@@ -28,7 +28,6 @@ import java.util.logging.Logger;
 import javax.servlet.http.HttpServletRequest;
 
 import org.waterforpeople.mapping.app.gwt.client.survey.QuestionDto.QuestionType;
-import org.waterforpeople.mapping.app.gwt.server.surveyinstance.SurveyInstanceServiceImpl;
 import org.waterforpeople.mapping.app.web.dto.DataProcessorRequest;
 import org.waterforpeople.mapping.app.web.dto.RawDataImportRequest;
 import org.waterforpeople.mapping.dao.QuestionAnswerStoreDao;
@@ -37,7 +36,6 @@ import org.waterforpeople.mapping.domain.QuestionAnswerStore;
 import org.waterforpeople.mapping.domain.SurveyInstance;
 
 import com.gallatinsystems.common.Constants;
-import com.gallatinsystems.common.util.PropertyUtil;
 import com.gallatinsystems.framework.rest.AbstractRestApiServlet;
 import com.gallatinsystems.framework.rest.RestRequest;
 import com.gallatinsystems.framework.rest.RestResponse;
@@ -54,7 +52,6 @@ import com.gallatinsystems.survey.domain.SurveyGroup;
 import com.gallatinsystems.surveyal.app.web.SurveyalRestRequest;
 import com.gallatinsystems.surveyal.dao.SurveyedLocaleDao;
 import com.gallatinsystems.surveyal.domain.SurveyedLocale;
-import com.google.appengine.api.backends.BackendServiceFactory;
 import com.google.appengine.api.datastore.KeyFactory;
 import com.google.appengine.api.taskqueue.Queue;
 import com.google.appengine.api.taskqueue.QueueFactory;
@@ -90,10 +87,8 @@ public class RawDataRestServlet extends AbstractRestApiServlet {
 
     @Override
     protected RestResponse handleRequest(RestRequest req) throws Exception {
-        SurveyInstanceServiceImpl sisi = new SurveyInstanceServiceImpl();
         RawDataImportRequest importReq = (RawDataImportRequest) req;
-        if (RawDataImportRequest.SAVE_SURVEY_INSTANCE_ACTION.equals(importReq
-                .getAction())) {
+        if (RawDataImportRequest.SAVE_SURVEY_INSTANCE_ACTION.equals(importReq.getAction())) {
 
             Survey s = null;
             if (importReq.getSurveyId() != null) {
@@ -230,8 +225,9 @@ public class RawDataRestServlet extends AbstractRestApiServlet {
                 locale.setIdentifier(SurveyedLocale.generateBase32Uuid());
                 instance.setSurveyedLocaleIdentifier(locale.getIdentifier());
 
-                String privacyLevel = sg.getPrivacyLevel() != null ? sg.getPrivacyLevel()
-                        .toString() : SurveyGroup.PrivacyLevel.PRIVATE.toString();
+                String privacyLevel = sg.getPrivacyLevel() != null
+                        ? sg.getPrivacyLevel().toString()
+                        : SurveyGroup.PrivacyLevel.PRIVATE.toString();
                 locale.setLocaleType(privacyLevel);
                 locale.setSurveyGroupId(sg.getKey().getId());
                 locale.setCreationSurveyId(s.getKey().getId());
@@ -255,11 +251,9 @@ public class RawDataRestServlet extends AbstractRestApiServlet {
             }
         } else if (RawDataImportRequest.RESET_SURVEY_INSTANCE_ACTION
                 .equals(importReq.getAction())) {
-            SurveyInstance instance = instanceDao.getByKey(importReq
-                    .getSurveyInstanceId());
+            SurveyInstance instance = instanceDao.getByKey(importReq.getSurveyInstanceId());
             List<QuestionAnswerStore> oldAnswers = instanceDao
-                    .listQuestionAnswerStore(importReq.getSurveyInstanceId(),
-                            null);
+                    .listQuestionAnswerStore(importReq.getSurveyInstanceId(), null);
 
             if (oldAnswers != null && oldAnswers.size() > 0) {
                 instanceDao.delete(oldAnswers);
@@ -319,16 +313,13 @@ public class RawDataRestServlet extends AbstractRestApiServlet {
                         .listQuestionsBySurvey(importReq.getSurveyId());
 
                 if (questionList != null
-                        && questionList.size() >= importReq
-                                .getFixedFieldValues().size()) {
+                        && questionList.size() >= importReq.getFixedFieldValues().size()) {
                     List<QuestionAnswerStore> answers = new ArrayList<QuestionAnswerStore>();
                     for (int i = 0; i < importReq.getFixedFieldValues().size(); i++) {
                         String val = importReq.getFixedFieldValues().get(i);
                         if (val != null && val.trim().length() > 0) {
                             QuestionAnswerStore ans = new QuestionAnswerStore();
-                            ans.setQuestionID(questionList.get(i).getKey()
-                                    .getId()
-                                    + "");
+                            ans.setQuestionID(questionList.get(i).getKey().getId() + "");
                             ans.setValue(val);
                             Type type = questionList.get(i).getType();
                             if (Type.GEO == type) {
@@ -339,8 +330,7 @@ public class RawDataRestServlet extends AbstractRestApiServlet {
                                 ans.setType("VALUE");
                             }
                             ans.setSurveyId(importReq.getSurveyId());
-                            ans.setSurveyInstanceId(importReq
-                                    .getSurveyInstanceId());
+                            ans.setSurveyInstanceId(importReq.getSurveyInstanceId());
                             ans.setCollectionDate(importReq.getCollectionDate());
                             answers.add(ans);
                         }
@@ -348,12 +338,11 @@ public class RawDataRestServlet extends AbstractRestApiServlet {
                     if (answers.size() > 0) {
                         QuestionAnswerStoreDao qasDao = new QuestionAnswerStoreDao();
                         qasDao.save(answers);
-                        sisi.sendProcessingMessages(inst);
+                        sendProcessingMessages(inst);
                     }
 
                 } else {
-                    log("No questions found for the survey id "
-                            + importReq.getSurveyId());
+                    log("No questions found for the survey id " + importReq.getSurveyId());
                 }
                 // todo: send processing message
             }
@@ -371,19 +360,9 @@ public class RawDataRestServlet extends AbstractRestApiServlet {
                     .withUrl("/app_worker/dataprocessor")
                     .param(DataProcessorRequest.ACTION_PARAM,
                             DataProcessorRequest.REBUILD_QUESTION_SUMMARY_ACTION)
-                    .param(DataProcessorRequest.SURVEY_ID_PARAM, importReq.getSurveyId().toString());
-
-            String backendPub = PropertyUtil.getProperty("backendpublish");
-            if (backendPub != null && "true".equals(backendPub)) {
-                // change the host so the queue invokes the backend
-                options = options
-                        .header("Host",
-                                BackendServiceFactory.getBackendService()
-                                        .getBackendAddress("dataprocessor"));
-            }
-
-            com.google.appengine.api.taskqueue.Queue queue = com.google.appengine.api.taskqueue.QueueFactory
-                    .getDefaultQueue();
+                    .param(DataProcessorRequest.SURVEY_ID_PARAM,
+                            importReq.getSurveyId().toString());
+            com.google.appengine.api.taskqueue.Queue queue = QueueFactory.getDefaultQueue();
             queue.add(options);
         } else if (RawDataImportRequest.SAVE_MESSAGE_ACTION
                 .equalsIgnoreCase(importReq.getAction())) {
@@ -415,7 +394,22 @@ public class RawDataRestServlet extends AbstractRestApiServlet {
             }
         }
     }
-
+    
+    private void sendProcessingMessages(SurveyInstance domain) {
+        // send async request to summarize the instance
+        QueueFactory.getQueue("dataSummarization").add(
+                TaskOptions.Builder.withUrl("/app_worker/datasummarization")
+                        .param("objectKey", domain.getKey().getId() + "")
+                        .param("type", "SurveyInstance"));
+        QueueFactory.getDefaultQueue().add(
+                TaskOptions.Builder
+                        .withUrl("/app_worker/surveyalservlet")
+                        .param(SurveyalRestRequest.ACTION_PARAM,
+                                SurveyalRestRequest.INGEST_INSTANCE_ACTION)
+                        .param(SurveyalRestRequest.SURVEY_INSTANCE_PARAM,
+                                domain.getKey().getId() + ""));
+    }
+    
     /**
      * constructs and persists a new surveyInstance using the data from the import request
      *
@@ -426,8 +420,9 @@ public class RawDataRestServlet extends AbstractRestApiServlet {
         SurveyInstance inst = new SurveyInstance();
         inst.setUserID(1L);
         inst.setSurveyId(importReq.getSurveyId());
-        inst.setCollectionDate(importReq.getCollectionDate() != null ? importReq
-                .getCollectionDate() : new Date());
+        inst.setCollectionDate(importReq.getCollectionDate() != null
+                ? importReq.getCollectionDate()
+                : new Date());
         inst.setDeviceIdentifier("IMPORTER");
         inst.setUuid(UUID.randomUUID().toString());
         inst.setSurveyedLocaleId(importReq.getSurveyedLocaleId());
