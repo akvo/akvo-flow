@@ -493,35 +493,6 @@ FLOW.QuestionGroupItemView = FLOW.View.extend({
     FLOW.selectedControl.set('selectedForMoveQuestionGroup', null);
   },
 
-  /*
-   *  Request question group and check whether copying is completed on the server side
-   *  then load questions for that group.
-   */
-  ajaxCall: function(qgId){
-      var self = this;
-      $.ajax({
-          url: '/rest/question_groups?surveyId=' + FLOW.selectedControl.selectedSurvey.get('keyId'),
-          type: 'GET',
-          success: function(data) {
-            var qgs = data.question_groups;
-            var qg = qgs.find(function (item) {
-              return item.keyId == qgId;
-            });
-            if (qg.status == "READY") {
-                // reload this question group the Ember way, so the UI is updated
-                FLOW.questionGroupControl.populate();
-                // load the questions inside this question group
-                FLOW.questionControl.populateQuestionGroupQuestions(self.content.get('keyId'));
-            } else { //check again in 5s
-              setTimeout(self.ajaxCall(qgId), 5000);
-            }
-          },
-          error: function() {
-            console.error("Error in checking ready status survey group copy");
-          }
-      });
-  },
-
   // cycle until our local question group has an id
   // when this is done, start monitoring the status of the remote question group
   pollQuestionGroupStatus: function(){
@@ -531,10 +502,19 @@ FLOW.QuestionGroupItemView = FLOW.View.extend({
               // if the question group has a keyId, we can start polling it remotely
               if (self.content && self.content.get('keyId')) {
                 // we have an id and can start polling remotely
-                self.ajaxCall(self.content.get('keyId'));
-                clearInterval(qgQuery);
+                if (self.content.get('status') == "READY") {
+                  //load new group's questions and clear interval
+                  FLOW.store.findQuery(FLOW.Question, {
+                    questionGroupId: self.content.get('keyId')
+                  });
+                  clearInterval(qgQuery);
+                } else {
+                  FLOW.questionGroupControl.populate();
+                }
               }
           }, 5000);
+      } else {
+        clearInterval(qgQuery);
       }
   }.observes('this.amCopying'),
 
