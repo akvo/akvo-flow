@@ -90,8 +90,7 @@ import com.google.appengine.api.taskqueue.TaskOptions;
  * @author Christopher Fagiani
  */
 public class DataProcessorRestServlet extends AbstractRestApiServlet {
-    private static final Logger log = Logger
-            .getLogger("DataProcessorRestServlet");
+    private static final Logger log = Logger.getLogger("DataProcessorRestServlet");
     private static final long serialVersionUID = -7902002525342262821L;
     private static final String REBUILD_Q_SUM_STATUS_KEY = "rebuildQuestionSummary";
     private static final Integer QAS_PAGE_SIZE = 300;
@@ -101,7 +100,7 @@ public class DataProcessorRestServlet extends AbstractRestApiServlet {
     private static final String QAS_TO_REMOVE = "QAStoRemove";
     private static final String FORM_COPY_STATUS_KEY = "copyForm";
     private static final long NAME_ASSEMBLY_TASK_DELAY = 3 * 1000;// 3 seconds
-    
+
     private SurveyInstanceDAO siDao;
 
     @Override
