@@ -297,10 +297,7 @@ public class TestHarnessServlet extends HttpServlet {
                     .withUrl("/app_worker/dataprocessor")
                     .param(DataProcessorRequest.ACTION_PARAM,
                             DataProcessorRequest.POP_QUESTION_ORDER_FIELDS_ACTION)
-                    .param("cursor", "")
-                    .header("host",
-                            BackendServiceFactory.getBackendService().getBackendAddress(
-                                    "dataprocessor"));
+                    .param("cursor", "");
             if (req.getParameter("surveyId") != null) {
                 try {
                     // if we have a surveyId, try to parse it to long here
