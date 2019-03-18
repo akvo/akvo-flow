@@ -1,5 +1,5 @@
 /*
- *  Copyright (C) 2010-2012 Stichting Akvo (Akvo Foundation)
+ *  Copyright (C) 2010-2012, 2019 Stichting Akvo (Akvo Foundation)
  *
  *  This file is part of Akvo FLOW.
  *
@@ -26,7 +26,6 @@ import com.gallatinsystems.framework.domain.BaseDomain;
  * Domain that can be used to track processing status for use in computing last-run times and
  * progress of backend jobs.
  * 
- * @author Christopher Fagiani
  */
 @PersistenceCapable
 public class ProcessingStatus extends BaseDomain {
@@ -36,7 +35,10 @@ public class ProcessingStatus extends BaseDomain {
     private String value;
     private String guid;
     private Boolean inError;
-
+    private Date lastEventDate;
+    private Date maxDurationDate;
+    private Long maxDurationMs;
+    
     public Boolean getInError() {
         return inError;
     }
@@ -52,8 +54,6 @@ public class ProcessingStatus extends BaseDomain {
     public void setLastEventDate(Date lastEventDate) {
         this.lastEventDate = lastEventDate;
     }
-
-    private Date lastEventDate;
 
     public String getGuid() {
         return guid;
@@ -77,6 +77,22 @@ public class ProcessingStatus extends BaseDomain {
 
     public void setValue(String value) {
         this.value = value;
+    }
+
+    public Date getMaxDurationDate() {
+        return maxDurationDate;
+    }
+
+    public void setMaxDurationDate(Date maxDurationDate) {
+        this.maxDurationDate = maxDurationDate;
+    }
+
+    public Long getMaxDurationMs() {
+        return maxDurationMs;
+    }
+
+    public void setMaxDurationMs(Long maxDuration) {
+        this.maxDurationMs = maxDuration;
     }
 
 }

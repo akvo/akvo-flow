@@ -1,5 +1,5 @@
 /*
- *  Copyright (C) 2010-2018 Stichting Akvo (Akvo Foundation)
+ *  Copyright (C) 2010-2019 Stichting Akvo (Akvo Foundation)
  *
  *  This file is part of Akvo FLOW.
  *
@@ -30,22 +30,14 @@ import org.waterforpeople.mapping.app.gwt.client.survey.QuestionHelpDto;
 import org.waterforpeople.mapping.app.gwt.client.survey.QuestionOptionDto;
 import org.waterforpeople.mapping.app.gwt.client.survey.TranslationDto;
 import org.waterforpeople.mapping.app.util.DtoMarshaller;
-import org.waterforpeople.mapping.app.web.DataProcessorRestServlet;
-import org.waterforpeople.mapping.app.web.dto.SurveyAssemblyRequest;
-
 import com.gallatinsystems.survey.dao.CascadeResourceDao;
-import com.gallatinsystems.survey.dao.SurveyDAO;
-import com.gallatinsystems.survey.dao.SurveyGroupDAO;
 import com.gallatinsystems.survey.domain.CascadeResource;
 import com.gallatinsystems.survey.domain.Question;
 import com.gallatinsystems.survey.domain.QuestionHelpMedia;
 import com.gallatinsystems.survey.domain.QuestionOption;
-import com.gallatinsystems.survey.domain.Survey;
-import com.gallatinsystems.survey.domain.SurveyGroup;
 import com.gallatinsystems.survey.domain.Translation;
 import com.gallatinsystems.survey.domain.Translation.ParentType;
 import com.google.appengine.api.datastore.KeyFactory;
-import com.google.appengine.api.taskqueue.TaskOptions;
 
 @Deprecated
 public class SurveyServiceImpl {
@@ -259,21 +251,4 @@ public class SurveyServiceImpl {
         return q;
     }
 
-    public void publishSurveyAsync(Long surveyId) {
-        TaskOptions options = TaskOptions.Builder
-                .withUrl("/app_worker/surveyassembly")
-                .param("action", SurveyAssemblyRequest.ASSEMBLE_SURVEY)
-                .param("surveyId", surveyId.toString());
-        com.google.appengine.api.taskqueue.Queue queue = com.google.appengine.api.taskqueue.QueueFactory
-                .getQueue("surveyAssembly");
-        queue.add(options);
-
-        Survey s = new SurveyDAO().getById(surveyId);
-        SurveyGroup sg = s != null ? new SurveyGroupDAO().getByKey(s.getSurveyGroupId()) : null;
-        if (sg != null && sg.getNewLocaleSurveyId() != null &&
-                sg.getNewLocaleSurveyId().longValue() == surveyId.longValue()) {
-            // This is the registration form. Schedule datapoint name re-assembly
-            DataProcessorRestServlet.scheduleDatapointNameAssembly(sg.getKey().getId(), null);
-        }
-    }
 }
