@@ -1,5 +1,5 @@
 /*
- *  Copyright (C) 2010-2012 Stichting Akvo (Akvo Foundation)
+ *  Copyright (C) 2010-2012, 2019 Stichting Akvo (Akvo Foundation)
  *
  *  This file is part of Akvo FLOW.
  *
@@ -21,8 +21,6 @@ import com.gallatinsystems.operations.domain.ProcessingStatus;
 
 /**
  * data access object for the processing status domain
- * 
- * @author Christopher Fagiani
  */
 public class ProcessingStatusDao extends BaseDAO<ProcessingStatus> {
 
@@ -40,4 +38,21 @@ public class ProcessingStatusDao extends BaseDAO<ProcessingStatus> {
         return findByProperty("code", code, "String");
     }
 
+    /**
+     * returns a single ProcessingStatus object, creating it if it does not exist
+     * 
+     * @param code
+     * @return
+     */
+    public ProcessingStatus getOrCreateStatusByCode(String code) {
+        ProcessingStatus status = getStatusByCode(code);
+        if (status == null) {
+            status = new ProcessingStatus();
+            status.setCode(code);
+        }
+        if (status.getMaxDurationMs() == null) {
+            status.setMaxDurationMs(0L);            
+        }
+        return status;
+    }
 }

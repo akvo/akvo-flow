@@ -1,5 +1,5 @@
 /*
- *  Copyright (C) 2010-2018, 2019 Stichting Akvo (Akvo Foundation)
+ *  Copyright (C) 2010-2019 Stichting Akvo (Akvo Foundation)
  *
  *  This file is part of Akvo FLOW.
  *
@@ -90,8 +90,7 @@ import com.google.appengine.api.taskqueue.TaskOptions;
  * @author Christopher Fagiani
  */
 public class DataProcessorRestServlet extends AbstractRestApiServlet {
-    private static final Logger log = Logger
-            .getLogger("DataProcessorRestServlet");
+    private static final Logger log = Logger.getLogger("DataProcessorRestServlet");
     private static final long serialVersionUID = -7902002525342262821L;
     private static final String REBUILD_Q_SUM_STATUS_KEY = "rebuildQuestionSummary";
     private static final Integer QAS_PAGE_SIZE = 300;
@@ -99,6 +98,7 @@ public class DataProcessorRestServlet extends AbstractRestApiServlet {
     private static final Integer T_PAGE_SIZE = 300;
     private static final Integer SVAL_PAGE_SIZE = 600;
     private static final String QAS_TO_REMOVE = "QAStoRemove";
+    private static final String FORM_COPY_STATUS_KEY = "copyForm";
     private static final long NAME_ASSEMBLY_TASK_DELAY = 3 * 1000;// 3 seconds
 
     private SurveyInstanceDAO siDao;
@@ -117,16 +117,37 @@ public class DataProcessorRestServlet extends AbstractRestApiServlet {
         if (DataProcessorRequest.REBUILD_QUESTION_SUMMARY_ACTION
                 .equalsIgnoreCase(dpReq.getAction())) {
             rebuildQuestionSummary(dpReq.getSurveyId());
-        } else if (DataProcessorRequest.COPY_SURVEY.equalsIgnoreCase(dpReq
-                .getAction())) {
+        } else if (DataProcessorRequest.COPY_SURVEY.equalsIgnoreCase(dpReq.getAction())) {
+            String source = dpReq.getSource();
+            //Instrumentation
+            Date start = new Date();
+            ProcessingStatusDao statusDao = new ProcessingStatusDao();
+            ProcessingStatus status = statusDao.getOrCreateStatusByCode(
+                    FORM_COPY_STATUS_KEY + (source != null ? ":" + source : ""));
+            status.setLastEventDate(start);
+            status.setInError(true); //In case it never saves an end sts
+            status.setValue("inProgress, target=" + dpReq.getSurveyId());
+            statusDao.save(status);
+
             copySurvey(dpReq.getSurveyId(), Long.valueOf(dpReq.getSource()));
+
+            // now update the status
+            status.setInError(false);
+            status.setValue("finished, target=" + dpReq.getSurveyId());
+            Long duration = new Date().getTime() - start.getTime();
+            if (duration > status.getMaxDurationMs()) {
+                status.setMaxDurationMs(duration);
+                status.setMaxDurationDate(start);
+            }
+            statusDao.save(status);
+
         } else if (DataProcessorRequest.COPY_QUESTION_GROUP.equalsIgnoreCase(dpReq
                 .getAction())) {
             QuestionGroupDao qgDao = new QuestionGroupDao();
             QuestionGroup newQuestionGroup = qgDao.getByKey(dpReq.getQuestionGroupId());
             QuestionGroup originalQuestionGroup = qgDao.getByKey(Long.valueOf(dpReq.getSource()));
             if (originalQuestionGroup != null && newQuestionGroup != null) {
-                
+
                 Long surveyId = originalQuestionGroup.getSurveyId();
                 SurveyUtils.copyQuestionGroup(originalQuestionGroup, newQuestionGroup,
                         surveyId, null, SurveyUtils.listQuestionIdsUsedInSurveyGroup(surveyId));
@@ -963,7 +984,7 @@ public class DataProcessorRestServlet extends AbstractRestApiServlet {
         final SurveyInstanceDAO siDao = new SurveyInstanceDAO();
         final QuestionDao qDao = new QuestionDao();
         final QuestionAnswerStoreDao qasDao = new QuestionAnswerStoreDao();
-        
+
         List<SurveyedLocale> locales = null;
         if (surveyedLocaleId != null) {
             // Single locale update
@@ -1340,7 +1361,7 @@ public class DataProcessorRestServlet extends AbstractRestApiServlet {
                             cascadeResourceId, parentNodeId), e);
         }
     }
-    
+
     private void assembleDatapointName(Long surveyGroupId, Long surveyedLocaleId) {
         if (surveyedLocaleId == null && surveyGroupId == null) {
             log.log(Level.WARNING, "Either surveyGroupId or surveyedLocaleId must be defined");
@@ -1402,13 +1423,13 @@ public class DataProcessorRestServlet extends AbstractRestApiServlet {
     public static void scheduleDatapointNameAssembly(Long surveyGroupId, Long surveyedLocaleId) {
         scheduleDatapointNameAssembly(surveyGroupId, surveyedLocaleId, false);
     }
-    
+
     public static void scheduleDatapointNameAssembly(Long surveyGroupId, Long surveyedLocaleId, boolean delay) {
         log.fine("Scheduling name assembly for survey group, locale - " + surveyGroupId +", " + surveyedLocaleId);
         final TaskOptions options = TaskOptions.Builder
                 .withUrl("/app_worker/dataprocessor")
                 .param(DataProcessorRequest.ACTION_PARAM, DataProcessorRequest.ASSEMBLE_DATAPOINT_NAME);
-        
+
         if (delay) {
             options.countdownMillis(NAME_ASSEMBLY_TASK_DELAY);
         }

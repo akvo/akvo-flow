@@ -23,8 +23,8 @@ import javax.jdo.annotations.PersistenceCapable;
 import com.gallatinsystems.framework.domain.BaseDomain;
 
 /**
- * Domain that can be used to track processing status for use in computing last-run times and
- * progress of backend jobs.
+ * Domain that can be used to track processing status for use in computing
+ * last-run times, duration and progress of lengthy tasks.
  * 
  */
 @PersistenceCapable
