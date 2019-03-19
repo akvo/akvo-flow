@@ -1,5 +1,5 @@
 /*
- *  Copyright (C) 2013-2018 Stichting Akvo (Akvo Foundation)
+ *  Copyright (C) 2013-2019 Stichting Akvo (Akvo Foundation)
  *
  *  This file is part of Akvo FLOW.
  *
@@ -53,10 +53,7 @@ import com.google.appengine.api.taskqueue.Queue;
 import com.google.appengine.api.taskqueue.QueueFactory;
 import com.google.appengine.api.taskqueue.TaskOptions;
 
-/**
- * @author stellan
- *
- */
+
 public class SurveyUtils {
 
     private static final Logger log = Logger.getLogger(SurveyUtils.class.getName());
@@ -96,10 +93,7 @@ public class SurveyUtils {
                 .param(DataProcessorRequest.SURVEY_ID_PARAM,
                         String.valueOf(newSurvey.getKey().getId()))
                 .param(DataProcessorRequest.SOURCE_PARAM,
-                        String.valueOf(source.getKey().getId()))
-                .header("Host",
-                        BackendServiceFactory.getBackendService()
-                                .getBackendAddress("dataprocessor"));
+                        String.valueOf(source.getKey().getId()));
 
         queue.add(options);
 
