@@ -1,5 +1,10 @@
 # Akvo Flow Release Notes
 ----
+# Akvo Flow Dashboard v1.9.44 - Quintessential Quandong
+Date: 19-03-2019
+
+# Resolved issues
+
 # Akvo Flow Dashboard v1.9.43 - Patient Poppy
 Date: 01-03-2019
 
