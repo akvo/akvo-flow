@@ -61,6 +61,13 @@ public class RawDataRestServlet extends AbstractRestApiServlet {
     private static final Logger log = Logger.getLogger("RawDataRestServlet");
     private static final long serialVersionUID = 2409014651721639814L;
 
+    private static final String DATA_SUMMARIZATION_QUEUE = "dataSummarization";
+    private static final String DATA_SUMMARIZATION_URL = "/app_worker/datasummarization";
+    private static final String SURVEYAL_URL = "/app_worker/surveyalservlet";
+    private static final String OBJECT_KEY_PARAM = "objectKey";
+    private static final String TYPE_PARAM = "type";
+    private static final String SI_TYPE = "SurveyInstance";
+
     private SurveyInstanceDAO instanceDao;
     private SurveyDAO sDao;
     private SurveyGroupDAO sgDao;
@@ -394,22 +401,21 @@ public class RawDataRestServlet extends AbstractRestApiServlet {
             }
         }
     }
-    
+
     private void sendProcessingMessages(SurveyInstance domain) {
         // send async request to summarize the instance
-        QueueFactory.getQueue("dataSummarization").add(
-                TaskOptions.Builder.withUrl("/app_worker/datasummarization")
-                        .param("objectKey", domain.getKey().getId() + "")
-                        .param("type", "SurveyInstance"));
+        QueueFactory.getQueue(DATA_SUMMARIZATION_QUEUE).add(
+                TaskOptions.Builder.withUrl(DATA_SUMMARIZATION_URL)
+                        .param(OBJECT_KEY_PARAM, domain.getKey().getId() + "")
+                        .param(TYPE_PARAM, SI_TYPE));
         QueueFactory.getDefaultQueue().add(
-                TaskOptions.Builder
-                        .withUrl("/app_worker/surveyalservlet")
+                TaskOptions.Builder.withUrl(SURVEYAL_URL)
                         .param(SurveyalRestRequest.ACTION_PARAM,
                                 SurveyalRestRequest.INGEST_INSTANCE_ACTION)
                         .param(SurveyalRestRequest.SURVEY_INSTANCE_PARAM,
                                 domain.getKey().getId() + ""));
     }
-    
+
     /**
      * constructs and persists a new surveyInstance using the data from the import request
      *
