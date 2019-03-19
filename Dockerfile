@@ -30,6 +30,7 @@ RUN set -ex ; \
     py-crcmod~=1.7 \
     py-openssl~=17.5 \
     maven~=3.5 \
+    nss~=3.34 \
     libc6-compat~=1.1 \
     su-exec~=0.2 \
     shadow~=4.5 \
