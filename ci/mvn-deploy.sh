@@ -40,16 +40,6 @@ java -cp /google-cloud-sdk/platform/google_appengine/google/appengine/tools/java
      --application="${PROJECT_ID}" \
      update ./target/appengine-staging
 
-log Deploying backend dataprocessor
-
-gcloud app versions delete dataprocessor --project="${PROJECT_ID}" --quiet
-
-java -cp /google-cloud-sdk/platform/google_appengine/google/appengine/tools/java/lib/appengine-tools-api.jar \
-     com.google.appengine.tools.admin.AppCfg \
-     --service_account_json_key_file=/app/src/ci/akvoflow-uat1.json \
-     --application="${PROJECT_ID}" \
-     backends update ./target/appengine-staging
-
 archive_name="${version}.zip"
 (
     cd target
