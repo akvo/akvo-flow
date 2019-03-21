@@ -70,8 +70,8 @@ public class GoogleAccountsAuthenticationProvider implements AuthenticationProvi
         final int authority = getAuthorityLevel(user);
         final Set<AppRole> roles = EnumSet.noneOf(AppRole.class);
 
-        if (authority == AppRole.NEW_USER.getLevel()) {
-            roles.add(AppRole.NEW_USER);
+        if (authority == AppRole.ROLE_NEW_USER.getLevel()) {
+            roles.add(AppRole.ROLE_NEW_USER);
         } else {
             for (AppRole r : AppRole.values()) {
                 if (authority <= r.getLevel()) {
@@ -86,15 +86,15 @@ public class GoogleAccountsAuthenticationProvider implements AuthenticationProvi
 
     private int getAuthorityLevel(com.gallatinsystems.user.domain.User user) {
         if (user.isSuperAdmin()) {
-            return AppRole.SUPER_ADMIN.getLevel();
+            return AppRole.ROLE_SUPER_ADMIN.getLevel();
         }
         try {
             final int level = Integer.parseInt(user.getPermissionList());
             return level;
         } catch (Exception e) {
-            log.log(Level.WARNING, "Error getting role level, setting USER role", e);
+            log.log(Level.WARNING, "Error getting role level, setting ROLE_USER role", e);
         }
-        return AppRole.USER.getLevel();
+        return AppRole.ROLE_USER.getLevel();
     }
 
     /**

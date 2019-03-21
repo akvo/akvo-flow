@@ -68,7 +68,7 @@ public class GaeAuthenticationFilter extends GenericFilterBean {
                     String logoutUrl = UserServiceFactory.getUserService().createLogoutURL("");
 
                     if (authentication.getAuthorities().contains(
-                            AppRole.NEW_USER)
+                            AppRole.ROLE_NEW_USER)
                             && !logoutUrl.startsWith(httpRequest
                                     .getRequestURI())
                             && !httpRequest.getRequestURI().startsWith(

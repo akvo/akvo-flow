@@ -10,7 +10,8 @@ apk add --no-cache \
     openjdk8~=8 \
     parallel \
     shadow~=4.5 \
-    su-exec~=0.2
+    su-exec~=0.2 \
+    nss~=3.34 \
 
 gcloud components install app-engine-java --quiet
 rm -rf /google-cloud-sdk/.install/.backup

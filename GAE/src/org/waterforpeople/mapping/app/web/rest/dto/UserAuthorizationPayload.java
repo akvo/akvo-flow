@@ -102,8 +102,8 @@ public class UserAuthorizationPayload extends BaseDto {
                 Collection<? extends GrantedAuthority> authorities = SecurityContextHolder
                         .getContext().getAuthentication().getAuthorities();
 
-                return authorities.contains(AppRole.SUPER_ADMIN)
-                        || authorities.contains(AppRole.ADMIN);
+                return authorities.contains(AppRole.ROLE_SUPER_ADMIN)
+                        || authorities.contains(AppRole.ROLE_ADMIN);
 
             } else {
                 return true;
