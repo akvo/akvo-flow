@@ -1,5 +1,11 @@
 # Akvo Flow Release Notes
 ----
+# Akvo Flow Dashboard v1.9.44 - Quintessential Quandong (Hotfix 1)
+Date: 21-03-2019
+
+# Resolved issues
+* **Deployments** - Fixed issue causing deployments to fail due to missing library [#3017]
+
 # Akvo Flow Dashboard v1.9.44 - Quintessential Quandong
 Date: 20-03-2019
 
