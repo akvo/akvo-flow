@@ -1,5 +1,23 @@
 # Akvo Flow Release Notes
 ----
+# Akvo Flow Dashboard v1.9.44 - Quintessential Quandong
+Date: 20-03-2019
+
+# New and noteworthy
+* **Development environment** - Move away from using backends which has been deprecated [#2694]. Refactored code on
+ * publishing forms [#2968]
+ * deleting cascade nodes [#2969]
+ * copying groups and surveys [#2970]
+ * updating question summaries [#2971]
+ * Data point assembly tasks
+
+
+# Resolved issues
+* **Survey design** - Fixed endless copying of question groups [#2802]
+* **Code cleanup** - Removed unused code (permissions [#3005], file-upload library [#3002])
+* **Data** - Resolved issue causing duplication of data point IDs [#2944]
+* **Development environment** - Fixed broken docker build [#3017]. Upgraded spring framework libraries to resolve security vulnerabilities in current versions [#2896]
+
 # Akvo Flow Dashboard v1.9.43 - Patient Poppy
 Date: 01-03-2019
 
