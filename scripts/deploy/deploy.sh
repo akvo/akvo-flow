@@ -81,12 +81,6 @@ function deploy_instance {
 	 --retain_upload_dir \
 	 --application="${instance_id}" \
 	 update "${staging_dir}"
-
-    java -cp /google-cloud-sdk/platform/google_appengine/google/appengine/tools/java/lib/appengine-tools-api.jar \
-	 com.google.appengine.tools.admin.AppCfg \
-	 --retain_upload_dir \
-	 --application="${instance_id}" \
-	 backends update "${staging_dir}"
 }
 
 export -f deploy_instance
