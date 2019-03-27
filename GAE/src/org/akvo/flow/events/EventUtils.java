@@ -361,7 +361,7 @@ public class EventUtils {
     }
 
     public static Entity createEventLogEntity(Map<String, Object> event, Date timestamp) throws IOException {
-        Entity entity = new Entity("EventQueue2");
+        Entity entity = new Entity("EventQueue");
         entity.setProperty("createdDateTime", timestamp);
         entity.setProperty("lastUpdateDateTime", timestamp);
 
