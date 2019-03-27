@@ -250,8 +250,8 @@ public class DataProcessorRestServlet extends AbstractRestApiServlet {
             if (dpReq.getSurveyInstanceId() != null && dpReq.getDelta() != null) {
                 updateSurveyInstanceResponseCounters(dpReq.getSurveyInstanceId(), dpReq.getDelta());
             }
-        } else if (DataProcessorRequest.DELETE_CASCADE_NODES.equalsIgnoreCase(req.getAction())) {
-            deleteCascadeNodes(dpReq.getCascadeResourceId(), dpReq.getParentNodeId());
+        } else if (DataProcessorRequest.DELETE_CHILD_CASCADE_NODES.equalsIgnoreCase(req.getAction())) {
+            deleteChildCascadeNodes(dpReq.getCascadeResourceId(), dpReq.getParentNodeId());
         } else if (DataProcessorRequest.ASSEMBLE_DATAPOINT_NAME.equalsIgnoreCase(req.getAction())) {
             assembleDatapointName(dpReq.getSurveyGroupId(), dpReq.getSurveyedLocaleId());
         }
@@ -1314,33 +1314,26 @@ public class DataProcessorRestServlet extends AbstractRestApiServlet {
         }
     }
 
-    private void deleteCascadeNodes(Long cascadeResourceId, Long parentNodeId) {
+    private void deleteChildCascadeNodes(Long cascadeResourceId, Long parentNodeId) {
         final CascadeNodeDao dao = new CascadeNodeDao();
-        List<CascadeNode> nodes = dao.listCascadeNodesByResourceAndParentId(cascadeResourceId,
+        List<CascadeNode> childNodes = dao.listCascadeNodesByResourceAndParentId(cascadeResourceId,
                 parentNodeId == null ? 0l : parentNodeId);
 
-        if (nodes.isEmpty()) {
-            return;
+        if (childNodes.isEmpty()) {
+            return; // child node is leaf node. no need for further action
         }
 
-        if (!areLeafNodes(dao, cascadeResourceId, nodes)) {
-            for (CascadeNode node : nodes) {
-                scheduleCascadeNodeDeletion(cascadeResourceId, node.getKey().getId());
-            }
+        for (CascadeNode node : childNodes) {
+            scheduleChildCascadeNodeDeletion(cascadeResourceId, node.getKey().getId());
         }
-
-        dao.delete(nodes);
+        dao.delete(childNodes);
     }
 
-    private boolean areLeafNodes(CascadeNodeDao dao, Long cascadeResourceId,
-            List<CascadeNode> nodes) {
-        CascadeNode firstNode = nodes.get(0);
-        List<CascadeNode> childNodes = dao.listCascadeNodesByResourceAndParentId(
-                cascadeResourceId, firstNode.getKey().getId());
-        return childNodes.size() == 0;
+    public static void scheduleCascadeResourceDeletion(Long cascadeResourceId) {
+        scheduleChildCascadeNodeDeletion(cascadeResourceId, null);
     }
 
-    private void scheduleCascadeNodeDeletion(Long cascadeResourceId, Long parentNodeId) {
+    public static void scheduleChildCascadeNodeDeletion(Long cascadeResourceId, Long parentNodeId) {
         try {
             final TaskOptions options = TaskOptions.Builder
                     .withUrl("/app_worker/dataprocessor")
@@ -1348,10 +1341,14 @@ public class DataProcessorRestServlet extends AbstractRestApiServlet {
                             BackendServiceFactory.getBackendService()
                                     .getBackendAddress("dataprocessor"))
                     .param(DataProcessorRequest.ACTION_PARAM,
-                            DataProcessorRequest.DELETE_CASCADE_NODES)
+                            DataProcessorRequest.DELETE_CHILD_CASCADE_NODES)
                     .param(DataProcessorRequest.CASCADE_RESOURCE_ID,
-                            cascadeResourceId.toString())
-                    .param(DataProcessorRequest.PARENT_NODE_ID, parentNodeId.toString());
+                            cascadeResourceId.toString());
+
+            if (parentNodeId != null) {
+                options.param(DataProcessorRequest.PARENT_NODE_ID, parentNodeId.toString());
+            }
+
             final Queue queue = QueueFactory.getQueue("background-processing");
             queue.add(options);
         } catch (Exception e) {
