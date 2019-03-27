@@ -26,6 +26,7 @@ import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+import com.gallatinsystems.common.Constants;
 import org.akvo.flow.util.FlowJsonObjectWriter;
 import org.waterforpeople.mapping.app.web.rest.security.user.GaeUser;
 
@@ -120,7 +121,7 @@ public class EventUtils {
         public static final String ITERATION = "iteration";
     }
 
-    static class Prop {
+    public static class Prop {
         public static final String SURVEY_INSTANCE_ID = "surveyInstanceId";
         public static final String TYPE = "type";
         public static final String VALUE = "value";
@@ -359,6 +360,21 @@ public class EventUtils {
         return entity;
     }
 
+    public static Entity createEventLogEntity(Map<String, Object> event, Date timestamp) throws IOException {
+        Entity entity = new Entity("EventQueue2");
+        entity.setProperty("createdDateTime", timestamp);
+        entity.setProperty("lastUpdateDateTime", timestamp);
+
+        FlowJsonObjectWriter writer = new FlowJsonObjectWriter();
+        String payload = writer.writeAsString(event);
+
+        if (payload.length() > Constants.MAX_LENGTH) {
+            entity.setProperty("payloadText", new Text(payload));
+        } else {
+            entity.setProperty("payload", payload);
+        }
+        return entity;
+    }
     public static void sendEvents(String urlString, List<Map<String, Object>> events)
             throws IOException {
         URL url = new URL(urlString);

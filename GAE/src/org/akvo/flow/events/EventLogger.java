@@ -44,7 +44,6 @@ import org.akvo.flow.util.FlowJsonObjectWriter;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 
-import com.gallatinsystems.common.Constants;
 import com.gallatinsystems.common.util.PropertyUtil;
 import com.google.appengine.api.datastore.DatastoreService;
 import com.google.appengine.api.datastore.DatastoreServiceFactory;
@@ -53,7 +52,6 @@ import com.google.appengine.api.datastore.Entity;
 import com.google.appengine.api.datastore.PostDelete;
 import com.google.appengine.api.datastore.PostPut;
 import com.google.appengine.api.datastore.PutContext;
-import com.google.appengine.api.datastore.Text;
 import com.google.appengine.api.utils.SystemProperty;
 
 public class EventLogger {
@@ -131,18 +129,7 @@ public class EventLogger {
         try {
             DatastoreService datastore = DatastoreServiceFactory.getDatastoreService();
 
-            Entity entity = new Entity("EventQueue");
-            entity.setProperty("createdDateTime", timestamp);
-            entity.setProperty("lastUpdateDateTime", timestamp);
-
-            FlowJsonObjectWriter writer = new FlowJsonObjectWriter();
-            String payload = writer.writeAsString(event);
-
-            if (payload.length() > Constants.MAX_LENGTH) {
-                entity.setProperty("payloadText", new Text(payload));
-            } else {
-                entity.setProperty("payload", payload);
-            }
+            Entity entity = EventUtils.createEventLogEntity(event, timestamp);
 
             datastore.put(entity);
             notifyLog();
