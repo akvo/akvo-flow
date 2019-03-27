@@ -52,7 +52,7 @@
     "text-loader": "0.0.1",
     "url-loader": "^1.1.2",
     "webpack": "^4.29.6",
-    "webpack-bundle-analyzer": "^3.0.4",
+    "webpack-bundle-analyzer": "^3.1.0",
     "webpack-md5-hash": "0.0.6"
   },
   "husky": {

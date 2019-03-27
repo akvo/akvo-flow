@@ -3,6 +3,7 @@ import webpack from 'webpack';
 import HtmlWebpackPlugin from 'html-webpack-plugin';
 import path from 'path';
 import CopyPlugin from 'copy-webpack-plugin';
+import { BundleAnalyzerPlugin } from 'webpack-bundle-analyzer';
 
 const HTML_CONFIG = {
   minify: {
@@ -59,6 +60,7 @@ export default {
       { from: 'app/js/plugins', to: 'js' },
       { from: 'app/js/templates', to: 'templates' },
     ]),
+    new BundleAnalyzerPlugin(),
   ],
   module: {
     rules: [
