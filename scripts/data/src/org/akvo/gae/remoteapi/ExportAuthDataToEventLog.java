@@ -11,7 +11,7 @@ import java.util.Map;
 public class ExportAuthDataToEventLog implements Process {
 
     private static final int BATCH_SIZE = 1000;
-    private static final String[] kinds = { Kind.USER, Kind.USER_AUTHORIZATION, Kind.USER_ROLE};
+    private static final String[] kinds = {Kind.USER_ROLE, Kind.USER, Kind.USER_AUTHORIZATION};
 
     // The timestamp used for imported data.
     private static final Date IMPORT_DATE = new Date(0);
