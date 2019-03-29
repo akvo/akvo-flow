@@ -7,6 +7,7 @@ require('akvo-flow/models/models');
 require('akvo-flow/controllers/controllers');
 require('akvo-flow/views/views');
 require('akvo-flow/router/router');
+require('akvo-flow/version');
 
 require('../../css/screen.scss'); 
  
