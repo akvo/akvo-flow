@@ -3,9 +3,9 @@ import webpack from 'webpack';
 import HtmlWebpackPlugin from 'html-webpack-plugin';
 import path from 'path';
 import CopyPlugin from 'copy-webpack-plugin';
-import { BundleAnalyzerPlugin } from 'webpack-bundle-analyzer';
+import { execSync } from 'child_process';
 
-const HTML_CONFIG = {
+export const HTML_CONFIG = {
   minify: {
     removeComments: true,
     collapseWhitespace: true,
@@ -39,7 +39,6 @@ export default {
     filename: '[name].bundle.js',
     publicPath: '/admin/',
   },
-  watch: true, // TODO do we need this?
   plugins: [
     new webpack.DefinePlugin({
       'process.env.NODE_ENV': JSON.stringify('development'), // Tells React to build in either dev or prod modes. https://facebook.github.io/react/downloads.html (See bottom)
@@ -60,8 +59,8 @@ export default {
     new CopyPlugin([
       { from: 'app/js/plugins', to: 'js' },
       { from: 'app/js/templates', to: 'templates' },
+      { from: 'app/static/images', to: 'images' },
     ]),
-    new BundleAnalyzerPlugin(),
   ],
   module: {
     rules: [
@@ -106,7 +105,7 @@ export default {
             options: {
               limit: 10000,
               mimetype: 'image/svg+xml',
-              outputPath: 'admin/images', // TODO correct this path and serve from there
+              outputPath: 'images',
             },
           },
         ],
@@ -129,7 +128,7 @@ export default {
             loader: 'file-loader',
             options: {
               name: '[name].[ext]',
-              outputPath: 'admin/images', // TODO correct this path and serve from there
+              outputPath: 'images',
             },
           },
         ],

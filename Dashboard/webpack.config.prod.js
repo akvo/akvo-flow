@@ -3,10 +3,11 @@ import ExtractTextPlugin from 'extract-text-webpack-plugin';
 import HtmlWebpackPlugin from 'html-webpack-plugin';
 import CopyPlugin from 'copy-webpack-plugin';
 import path from 'path';
+import { execSync } from 'child_process';
 
 import devConfig from './webpack.config.dev';
 
-const HTML_CONFIG = {
+export const HTML_CONFIG = {
   minify: {
     removeComments: true,
     collapseWhitespace: true,
@@ -26,7 +27,6 @@ const HTML_CONFIG = {
 export default {
   ...devConfig,
   devtool: 'source-map', // more info:https://webpack.js.org/guides/production/#source-mapping and https://webpack.js.org/configuration/devtool/
-  watch: false,
   plugins: [
     // Tells React to build in prod mode. https://facebook.github.io/react/downloads.html
     new webpack.DefinePlugin({
@@ -59,6 +59,7 @@ export default {
     new CopyPlugin([
       { from: 'app/js/plugins', to: 'js' },
       { from: 'app/js/templates', to: 'templates' },
+      { from: 'app/static/images', to: 'images' },
     ]),
   ],
 
@@ -109,7 +110,7 @@ export default {
             options: {
               limit: 10000,
               mimetype: 'image/svg+xml',
-              outputPath: 'admin/images', // TODO correct this path and serve from there
+              outputPath: 'images',
             },
           },
         ],
@@ -132,7 +133,7 @@ export default {
             loader: 'file-loader',
             options: {
               name: '[name].[ext]',
-              outputPath: 'admin/images', // TODO correct this path and serve from there
+              outputPath: 'images',
             },
           },
         ],

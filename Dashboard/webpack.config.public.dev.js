@@ -1,12 +1,12 @@
-import path from 'path';
 import webpack from 'webpack';
+import path from 'path';
 import HtmlWebpackPlugin from 'html-webpack-plugin';
 import { execSync } from 'child_process';
 
-import prodConfig, { HTML_CONFIG } from './webpack.config.prod';
+import devConfig, { HTML_CONFIG } from './webpack.config.dev';
 
 export default {
-  ...prodConfig,
+  ...devConfig,
   plugins: [
     new webpack.DefinePlugin({
       'process.env.NODE_ENV': JSON.stringify('development'), // Tells React to build in either dev or prod modes. https://facebook.github.io/react/downloads.html (See bottom)
