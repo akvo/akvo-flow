@@ -25,7 +25,6 @@ FLOW.dashboardLanguageControl = Ember.Object.create(observe({ dashboardLanguage:
 FLOW.selectedControl = Ember.Controller.create(observe({
   'this.selectedSurveyGroup': 'deselectSurveyGroupChildren',
   'this.selectedSurvey': 'deselectSurveyChildren',
-  // 'this.selectedSurveyOPTIONQuestions': 'OptionQuestions',
 }), {
   selectedSurveyGroup: null,
   selectedSurvey: null,
@@ -51,10 +50,6 @@ FLOW.selectedControl = Ember.Controller.create(observe({
   radioOptions: "",
   cascadeImportNumLevels: null,
   cascadeImportIncludeCodes: null,
-
-  // OptionQuestions:function (){
-  //   console.log('optionquestions 1');
-  // },
 
   // when selected survey changes, deselect selected surveys and question groups
   deselectSurveyGroupChildren: function () {
