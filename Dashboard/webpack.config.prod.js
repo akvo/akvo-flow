@@ -58,7 +58,6 @@ export default {
 
     new CopyPlugin([
       { from: 'app/js/plugins', to: 'js' },
-      { from: 'app/js/templates', to: 'templates' },
       { from: 'app/static/images', to: 'images' },
     ]),
   ],
