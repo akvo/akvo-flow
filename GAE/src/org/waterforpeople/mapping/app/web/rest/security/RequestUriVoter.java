@@ -132,7 +132,7 @@ public class RequestUriVoter implements AccessDecisionVoter<FilterInvocation> {
         if (!URI_PATTERN.matcher(securedObject.getRequestUrl()).find()) {
             // request URL does not match the URI patterns we consider for voting
             return true;
-        } else if (authentication.getAuthorities().contains(AppRole.SUPER_ADMIN)) {
+        } else if (authentication.getAuthorities().contains(AppRole.ROLE_SUPER_ADMIN)) {
             // requester is a super admin user no need to control access or
             return true;
         } else if ("GET".equals(securedObject.getHttpRequest().getMethod())

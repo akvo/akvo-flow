@@ -3,8 +3,8 @@
 <b:beans xmlns="http://www.springframework.org/schema/security"
     xmlns:b="http://www.springframework.org/schema/beans"
     xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-    xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-3.0.xsd
-    http://www.springframework.org/schema/security http://www.springframework.org/schema/security/spring-security-3.2.xsd">
+    xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
+    http://www.springframework.org/schema/security http://www.springframework.org/schema/security/spring-security.xsd">
 
 
     <http pattern="/admin/js/**" security="none" />
@@ -16,47 +16,50 @@
     <http pattern="/publicmap/js/**" security="none" />
 
 	<http pattern="/api/v1/**" use-expressions="true" entry-point-ref="apiEntryPoint" authentication-manager-ref="apiAuthenticationManager" >
-
-		<intercept-url pattern="/api/v1/survey_groups/**" method="GET" access="hasRole('USER')"/>
-		<intercept-url pattern="/api/v1/surveys/**" method="GET" access="hasRole('USER')"/>
-		<intercept-url pattern="/api/v1/question_groups/**" method="GET" access="hasRole('USER')"/>
-		<intercept-url pattern="/api/v1/questions/**" method="GET" access="hasRole('USER')"/>
-		<intercept-url pattern="/api/v1/question_answers" method="GET" access="hasRole('USER')"/>
-		<intercept-url pattern="/api/v1/survey_assignments/**" method="GET" access="hasRole('USER')"/>
-		<intercept-url pattern="/api/v1/surveyed_locales/**" method="GET" access="hasRole('USER')"/>
-		<intercept-url pattern="/api/v1/survey_instances/**" method="GET" access="hasRole('USER')"/>
-		<intercept-url pattern="/api/v1/device_groups/**" method="GET" access="hasRole('USER')"/>
-		<intercept-url pattern="/api/v1/devices/**" method="GET" access="hasRole('USER')"/>
-		<intercept-url pattern="/**" access="denyAll"/>
-		<custom-filter position="PRE_AUTH_FILTER" ref="apiFilter"/>
+        <intercept-url pattern="/api/v1/survey_groups/**" method="GET" access="hasRole('ROLE_USER')"/>
+        <intercept-url pattern="/api/v1/surveys/**" method="GET" access="hasRole('ROLE_USER')"/>
+        <intercept-url pattern="/api/v1/question_groups/**" method="GET" access="hasRole('ROLE_USER')"/>
+        <intercept-url pattern="/api/v1/questions/**" method="GET" access="hasRole('ROLE_USER')"/>
+        <intercept-url pattern="/api/v1/question_answers" method="GET" access="hasRole('ROLE_USER')"/>
+        <intercept-url pattern="/api/v1/survey_assignments/**" method="GET" access="hasRole('ROLE_USER')"/>
+        <intercept-url pattern="/api/v1/surveyed_locales/**" method="GET" access="hasRole('ROLE_USER')"/>
+        <intercept-url pattern="/api/v1/survey_instances/**" method="GET" access="hasRole('ROLE_USER')"/>
+        <intercept-url pattern="/api/v1/device_groups/**" method="GET" access="hasRole('ROLE_USER')"/>
+        <intercept-url pattern="/api/v1/devices/**" method="GET" access="hasRole('ROLE_USER')"/>
+        <intercept-url pattern="/**" access="denyAll"/>
+        <custom-filter position="PRE_AUTH_FILTER" ref="apiFilter"/>
 	</http>
 
     <http use-expressions="true" entry-point-ref="gaeEntryPoint" authentication-manager-ref="authenticationManager"
         access-decision-manager-ref="accessDecisionManager">
+        <headers>
+            <frame-options policy="SAMEORIGIN" />
+        </headers>
         <intercept-url pattern="/remote_api**" access="permitAll"/>
         <intercept-url pattern="/admin/logout.html" access="permitAll"/>
         <intercept-url pattern="/rest/placemark**" method="GET" access="permitAll"/>
         <intercept-url pattern="/_ah/**" access="permitAll"/>
-        <intercept-url pattern="/webapp/testharness**" access="hasRole('SUPER_ADMIN')"/>
-        <intercept-url pattern="/dashboard.html" access="hasRole('SUPER_ADMIN')"/>
+        <intercept-url pattern="/webapp/testharness**" access="hasRole('ROLE_SUPER_ADMIN')"/>
+        <intercept-url pattern="/dashboard.html" access="hasRole('ROLE_SUPER_ADMIN')"/>
         <intercept-url pattern="/rest/reports/**" method="PUT" access="permitAll"/>
-        <intercept-url pattern="/rest/users" access="hasRole('USER')"/>
-        <intercept-url pattern="/rest/user_roles" access="hasRole('ADMIN')"/>
-        <intercept-url pattern="/rest/user_auth" access="hasRole('ADMIN')"/>
-        <intercept-url pattern="/rest/**" access="hasRole('USER')"/>
-        <intercept-url pattern="/admin/**" access="hasRole('USER')"/>
+        <intercept-url pattern="/rest/users" access="hasRole('ROLE_USER')"/>
+        <intercept-url pattern="/rest/user_roles" access="hasRole('ROLE_ADMIN')"/>
+        <intercept-url pattern="/rest/user_auth" access="hasRole('ROLE_ADMIN')"/>
+        <intercept-url pattern="/rest/**" access="hasRole('ROLE_USER')"/>
+        <intercept-url pattern="/admin/**" access="hasRole('ROLE_USER')"/>
         <intercept-url pattern="/**" access="permitAll"/>
         <logout logout-success-url="/" delete-cookies="JSESSIONID"/>
 		<custom-filter position="PRE_AUTH_FILTER" ref="gaeFilter"/>
+        <csrf disabled="true" />
     </http>
 
     <b:bean id="accessDecisionManager" class="org.springframework.security.access.vote.AffirmativeBased">
-		<b:property name="decisionVoters">
+        <b:constructor-arg index="0">
 			<b:list>
 				<b:bean class="org.waterforpeople.mapping.app.web.rest.security.RequestUriVoter" />
 				<b:bean class="org.springframework.security.web.access.expression.WebExpressionVoter" />
 			</b:list>
-		</b:property>
+        </b:constructor-arg>
 	</b:bean>
 
 	<!-- API Authentication -->

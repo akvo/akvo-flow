@@ -878,12 +878,6 @@ FLOW.questionGroupControl = Ember.ArrayController.create(observe({
     this.setFilteredContent();
   },
 
-  getQuestionGroup: function (id) {
-	  FLOW.store.findQuery(FLOW.QuestionGroup,{
-		  questionGroupId: id
-	  });
-  },
-
   // true if all items have been saved
   // used in models.js
   allRecordsSaved: Ember.computed(function () {

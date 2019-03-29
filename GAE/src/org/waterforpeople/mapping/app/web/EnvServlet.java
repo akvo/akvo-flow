@@ -165,7 +165,7 @@ public class EnvServlet extends HttpServlet {
         final List<Map<String, String>> roles = new ArrayList<Map<String, String>>();
         for (AppRole r : AppRole.values()) {
             if (r.getLevel() < 10) {
-                continue; // don't expose NEW_USER, nor SUPER_USER
+                continue; // don't expose ROLE_NEW_USER, nor ROLE_SUPER_USER
             }
             Map<String, String> role = new HashMap<String, String>();
             role.put("value", String.valueOf(r.getLevel()));
@@ -190,15 +190,17 @@ public class EnvServlet extends HttpServlet {
      * @param props
      */
     private void addLocale(Map<String, String> props) {
-        final com.google.appengine.api.users.User currentGoogleUser = UserServiceFactory
-                .getUserService().getCurrentUser();
+        final com.google.appengine.api.users.User currentGoogleUser =
+                UserServiceFactory.getUserService().getCurrentUser();
         if (currentGoogleUser != null && currentGoogleUser.getEmail() != null) {
             final User currentUser = new UserDao().findUserByEmail(currentGoogleUser.getEmail());
-            final String locale = currentUser.getLanguage();
-            if (locale != null) {
-                props.put("locale", locale);
-            } else {
-                props.put("locale", "en");
+            if (currentUser != null) {
+                final String locale = currentUser.getLanguage();
+                if (locale != null) {
+                    props.put("locale", locale);
+                } else {
+                    props.put("locale", "en");
+                }
             }
         }
     }

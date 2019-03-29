@@ -497,51 +497,28 @@ FLOW.QuestionGroupItemView = FLOW.View.extend(observe({
     FLOW.selectedControl.set('selectedForMoveQuestionGroup', null);
   },
 
-  /*
-   *  Request question group and check whether copying is completed on the server side
-   *  then load questions for that group.
-   */
-  ajaxCall: function(qgId){
-      var self = this;
-      $.ajax({
-          url: '/rest/question_groups/' + qgId,
-          type: 'GET',
-          success: function(data) {
-            if (data.question_group.status == "READY") {
-                // reload this question group the Ember way, so the UI is updated
-                FLOW.questionGroupControl.getQuestionGroup(self.content.get('keyId'));
-                // load the questions inside this question group
-                FLOW.questionControl.populateQuestionGroupQuestions(self.content.get('keyId'));
-            }
-          },
-          error: function() {
-            console.error("Error in checking ready status survey group copy");
-          }
-      });
-  },
-
-  qgCheckScheduled: false,
-
   // cycle until our local question group has an id
   // when this is done, start monitoring the status of the remote question group
   pollQuestionGroupStatus: function(){
       var self = this, qgQuery = null;
       if (this.get('amCopying')) {
-        if (!this.get('qgCheckScheduled')) {
-          this.set('qgCheckScheduled', true);
           qgQuery = setInterval(function () {
               // if the question group has a keyId, we can start polling it remotely
               if (self.content && self.content.get('keyId')) {
+                // we have an id and can start polling remotely
                 if (self.content.get('status') == "READY") {
-                  self.set('qgCheckScheduled', false);
+                  //load new group's questions and clear interval
+                  FLOW.store.findQuery(FLOW.Question, {
+                    questionGroupId: self.content.get('keyId')
+                  });
                   clearInterval(qgQuery);
                 } else {
-                  // we have an id and can start polling remotely
-                  self.ajaxCall(self.content.get('keyId'));
+                  FLOW.questionGroupControl.populate();
                 }
               }
-          },5000);
-        }
+          }, 5000);
+      } else {
+        clearInterval(qgQuery);
       }
   },
 
