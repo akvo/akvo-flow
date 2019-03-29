@@ -1,3 +1,5 @@
+import observe from '../mixins/observe';
+
 /**
   Controllers related to the map tab
   Definition:
@@ -6,7 +8,9 @@
       a placemark counterpart.
 **/
 
-FLOW.MapsController = Ember.ArrayController.extend({
+FLOW.MapsController = Ember.ArrayController.extend(observe({
+    'this.content.isLoaded': 'populateMap',
+}), {
     content: null,
     map: null,
     geocellCache: [],
@@ -32,11 +36,11 @@ FLOW.MapsController = Ember.ArrayController.extend({
             }
 
             placemarks.forEach(function (placemark) {
-                marker = this.addMarker(placemark);
+                var marker = this.addMarker(placemark);
                 this.allPlacemarks.addLayer(marker);
             }, this);
         }
-    }.observes('this.content.isLoaded'),
+    },
 
     adaptMap: function(bestBB, zoomlevel){
         var bbString = "", gcLevel = 0, listToRetrieve = [], surveyId;
@@ -70,7 +74,7 @@ FLOW.MapsController = Ember.ArrayController.extend({
     },
 
     addMarker: function (placemark) {
-        var marker;
+        var marker, count;
         if (placemark.get('level') > 0){
             count = placemark.get('count');
             if (count == 1) {
@@ -86,7 +90,7 @@ FLOW.MapsController = Ember.ArrayController.extend({
                 return marker;
             }
 
-            myIcon = L.divIcon({
+            var myIcon = L.divIcon({
                 html: '<div><span>' + count + '</span></div>',
                 className: 'marker-cluster',
                 iconSize: new L.Point(40, 40)});
@@ -146,7 +150,10 @@ FLOW.MapsController = Ember.ArrayController.extend({
     }
 });
 
-FLOW.placemarkDetailController = Ember.ArrayController.create({
+FLOW.placemarkDetailController = Ember.ArrayController.create(observe({
+    'FLOW.router.mapsController.selectedMarker': 'mapPointClickHandler',
+    'FLOW.surveyInstanceControl.content.isLoaded': 'mapPointRetrieveDetailsHandler',
+}), {
   content: Ember.A(),
 
   dataPoint: null,
@@ -154,13 +161,13 @@ FLOW.placemarkDetailController = Ember.ArrayController.create({
   dataPointCollectionDate: null,
   noSubmissions: false,
 
-  dataPointDisplayName: function () {
+  dataPointDisplayName: Ember.computed(function () {
       return this.dataPoint && this.dataPoint.get('displayName')
-  }.property('this.dataPoint.isLoaded'),
+  }).property('this.dataPoint.isLoaded'),
 
-  dataPointIdentifier: function () {
+  dataPointIdentifier: Ember.computed(function () {
       return this.dataPoint && this.dataPoint.get('identifier')
-  }.property('this.dataPoint.isLoaded'),
+  }).property('this.dataPoint.isLoaded'),
 
   /*
   * Observer that loads a datapoint and its associated details when clicked
@@ -174,7 +181,7 @@ FLOW.placemarkDetailController = Ember.ArrayController.create({
                 'surveyedLocaleId': selectedPlacemarkId,
           }));
       }
-  }.observes('FLOW.router.mapsController.selectedMarker'),
+  },
 
   /*
   * Observer that retrieves question answers associated with a datapoint
@@ -206,5 +213,5 @@ FLOW.placemarkDetailController = Ember.ArrayController.create({
         this.set('noSubmissions', true);
         this.set('dataPointCollectionDate', null);
       }
-  }.observes('FLOW.surveyInstanceControl.content.isLoaded'),
+  },
 });

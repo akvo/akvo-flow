@@ -24,9 +24,9 @@ FLOW.uploader = Ember.Object.create({
     return this.get('r').assignBrowse(el);
   },
 
-  support: function () {
+  support: Ember.computed(function () {
     return this.get('r').support;
-  }.property(),
+  }).property(),
 
   upload: function () {
     return this.get('r').upload();

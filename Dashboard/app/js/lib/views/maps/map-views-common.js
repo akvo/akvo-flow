@@ -1,5 +1,13 @@
-FLOW.NavMapsView = FLOW.View.extend({
-  templateName: 'navMaps/nav-maps-common',
+import observe from '../../mixins/observe';
+import template from '../../mixins/template';
+const { create_geomodel } = require('../../../plugins/geocells');
+
+FLOW.NavMapsView = FLOW.View.extend(template('navMaps/nav-maps-common'), observe({
+  'FLOW.router.mapsController.selectedMarker': 'handlePlacemarkDetails',
+  'FLOW.selectedControl.selectedSurvey': 'surveySelection',
+  'FLOW.selectedControl.selectedSurveyGroup': 'surveyGroupSelection',
+  'this.detailsPaneVisible': 'detailsPaneShowHide',
+}), {
   showDetailsBool: false,
   detailsPaneElements: null,
   detailsPaneVisible: null,
@@ -169,7 +177,7 @@ FLOW.NavMapsView = FLOW.View.extend({
   */
   handlePlacemarkDetails: function () {
     this.showDetailsPane();
-  }.observes('FLOW.router.mapsController.selectedMarker'),
+  },
 
   //function to project geoshape from details panel to main map canvas
   projectGeoshape: function(geoShapeObject){
@@ -208,12 +216,12 @@ FLOW.NavMapsView = FLOW.View.extend({
 
   surveySelection: function () {
       this.clearMap("form-selection");
-  }.observes('FLOW.selectedControl.selectedSurvey'),
+  },
 
   surveyGroupSelection: function () {
       this.clearMap("survey-selection");
       this.redoMap();
-  }.observes('FLOW.selectedControl.selectedSurveyGroup'),
+  },
 
   clearMap: function (trigger) {
     FLOW.router.mapsController.clearMarker();
@@ -252,10 +260,9 @@ FLOW.NavMapsView = FLOW.View.extend({
     },
 
   detailsPaneShowHide: function(){
-      var button = this.$('#mapDetailsHideShow');
       var display = this.detailsPaneVisible;
 
-      button.html('&lsaquo; ' + Ember.String.loc((display) ? '_hide' : '_show'));
+      this.$('#mapDetailsHideShow').html('&lsaquo; ' + Ember.String.loc((display) ? '_hide' : '_show'));
 
       this.$('#flowMap').animate({
         width: (display) ? '75%' : '99.25%'
@@ -270,7 +277,7 @@ FLOW.NavMapsView = FLOW.View.extend({
         opacity: (display) ? '1' : '0',
         display: (display) ? 'inherit' : 'none'
       });
-  }.observes('this.detailsPaneVisible'),
+  },
 
   showDetailsPane: function(){
       if (!this.detailsPaneVisible) {
@@ -284,8 +291,7 @@ FLOW.PlacemarkDetailsView = FLOW.View.extend({});
 
 FLOW.PlacemarkDetailPhotoView = Ember.View.extend({});
 
-FLOW.GeoshapeMapView = FLOW.View.extend({
-  templateName: 'navMaps/geoshape-map',
+FLOW.GeoshapeMapView = FLOW.View.extend(template('navMaps/geoshape-map'), {
   geoshape: null,
 
   didInsertElement: function() {
@@ -299,19 +305,19 @@ FLOW.GeoshapeMapView = FLOW.View.extend({
     }
   },
 
-  length: function() {
+  length: Ember.computed(function() {
     return this.geoshape === null ? null : this.geoshape.features[0].properties.length
-  }.property('this.geoshape'),
+  }).property('this.geoshape'),
 
-  area: function() {
+  area: Ember.computed(function() {
     return this.geoshape === null ? null : this.geoshape.features[0].properties.area
-  }.property('this.geoshape'),
+  }).property('this.geoshape'),
 
-  pointCount: function() {
+  pointCount: Ember.computed(function() {
     return this.geoshape === null ? null : this.geoshape.features[0].properties.pointCount
-  }.property('this.geoshape'),
+  }).property('this.geoshape'),
 
-  isPolygon: function() {
+  isPolygon: Ember.computed(function() {
     var geoshape = this.get('geoshape');
     if (geoshape == null) {
       return false;
@@ -319,9 +325,9 @@ FLOW.GeoshapeMapView = FLOW.View.extend({
       return geoshape['features'].length > 0 &&
         geoshape['features'][0]["geometry"]["type"] === "Polygon"
     }
-  }.property('this.geoshape'),
+  }).property('this.geoshape'),
 
-  isLineString: function() {
+  isLineString: Ember.computed(function() {
     var geoshape = this.get('geoshape');
     if (geoshape == null) {
       return false;
@@ -329,9 +335,9 @@ FLOW.GeoshapeMapView = FLOW.View.extend({
       return geoshape['features'].length > 0 &&
         geoshape['features'][0]["geometry"]["type"] === "LineString"
     }
-  }.property('this.geoshape'),
+  }).property('this.geoshape'),
 
-  isMultiPoint: function() {
+  isMultiPoint: Ember.computed(function() {
     var geoshape = this.get('geoshape');
     if (geoshape == null) {
       return false;
@@ -339,9 +345,9 @@ FLOW.GeoshapeMapView = FLOW.View.extend({
       return geoshape['features'].length > 0 &&
         geoshape['features'][0]["geometry"]["type"] === "MultiPoint"
     }
-  }.property('this.geoshape'),
+  }).property('this.geoshape'),
 
-  geoshapeString: function() {
+  geoshapeString: Ember.computed(function() {
     return this.geoshape === null ? null : JSON.stringify(this.geoshape);
-  }.property('this.geoshape')
+  }).property('this.geoshape')
 });

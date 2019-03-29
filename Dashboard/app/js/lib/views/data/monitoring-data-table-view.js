@@ -1,11 +1,16 @@
-FLOW.MonitoringDataTableView = FLOW.View.extend({
+import observe from '../../mixins/observe';
+import template from '../../mixins/template';
+
+FLOW.MonitoringDataTableView = FLOW.View.extend(observe({
+    'FLOW.selectedControl.selectedSurveyGroup': 'watchSurveySelection',
+}), {
   showingDetailsDialog: false,
   cursorStart: null,
   missingSurvey:false,
 
-  pageNumber: function(){
+  pageNumber: Ember.computed(function(){
 	return FLOW.router.surveyedLocaleController.get('pageNumber');
-  }.property('FLOW.router.surveyedLocaleController.pageNumber'),
+  }).property('FLOW.router.surveyedLocaleController.pageNumber'),
 
   showDetailsDialog: function (evt) {
 	FLOW.surveyInstanceControl.set('content', FLOW.store.findQuery(FLOW.SurveyInstance, {
@@ -14,9 +19,9 @@ FLOW.MonitoringDataTableView = FLOW.View.extend({
     this.toggleProperty('showingDetailsDialog');
   },
 
-  showApprovalStatusColumn: function () {
+  showApprovalStatusColumn: Ember.computed(function () {
       return FLOW.Env.enableDataApproval;
-  }.property(),
+  }).property(),
 
   closeDetailsDialog: function () {
     this.toggleProperty('showingDetailsDialog');
@@ -32,7 +37,7 @@ FLOW.MonitoringDataTableView = FLOW.View.extend({
      if (FLOW.selectedControl.get('selectedSurveyGroup') !== null) {
         this.set('missingSurvey', false)
      }
-  }.observes('FLOW.selectedControl.selectedSurveyGroup'),
+  },
 
   findSurveyedLocale: function (evt) {
 	  var ident = this.get('identifier'),
@@ -78,12 +83,12 @@ FLOW.MonitoringDataTableView = FLOW.View.extend({
       }
   },
   
-  noResults: function () {
+  noResults: Ember.computed(function () {
     var content = FLOW.router.surveyedLocaleController.get('content');
     if (content && content.get('isLoaded')) {
         return content.get('length') === 0;
     }
-  }.property('FLOW.router.surveyedLocaleController.content','FLOW.router.surveyedLocaleController.content.isLoaded'),
+  }).property('FLOW.router.surveyedLocaleController.content','FLOW.router.surveyedLocaleController.content.isLoaded'),
 
   doNextPage: function () {
 	var cursorArray, cursorStart;
@@ -103,13 +108,13 @@ FLOW.MonitoringDataTableView = FLOW.View.extend({
     FLOW.router.surveyedLocaleController.set('pageNumber', FLOW.router.surveyedLocaleController.get('pageNumber') - 1);
   },
 
-  hasNextPage: function () {
+  hasNextPage: Ember.computed(function () {
     return FLOW.metaControl.get('numSLLoaded') == 20;
-  }.property('FLOW.metaControl.numSLLoaded'),
+  }).property('FLOW.metaControl.numSLLoaded'),
 
-  hasPrevPage: function () {
+  hasPrevPage: Ember.computed(function () {
     return FLOW.router.surveyedLocaleController.get('pageNumber');
-  }.property('FLOW.router.surveyedLocaleController.pageNumber'),
+  }).property('FLOW.router.surveyedLocaleController.pageNumber'),
   
   willDestroyElement: function () {
     FLOW.router.surveyedLocaleController.set('currentContents', null);
@@ -121,9 +126,9 @@ FLOW.MonitoringDataTableView = FLOW.View.extend({
 /**
  * View of each row/data point in the monitoring data tab
  */
-FLOW.DataPointView = FLOW.View.extend({
-    templateName: 'navData/monitoring-data-row',
-
+FLOW.DataPointView = FLOW.View.extend(template('navData/monitoring-data-row'), observe({
+    'this.showDataApprovalBlock': 'loadDataPointApprovalObserver',
+}), {
     approvalStatus: [{label: Ember.String.loc('_pending'), value: 'PENDING'}, { label: Ember.String.loc('_approved'), value: 'APPROVED' },{ label: Ember.String.loc('_rejected'), value: 'REJECTED'}],
      
      //catering for counter for the data points.
@@ -132,11 +137,11 @@ FLOW.DataPointView = FLOW.View.extend({
     pageNumber: 0,
     showDataApprovalBlock: false,
 
-    showApprovalStatusColumn: function () {
+    showApprovalStatusColumn: Ember.computed(function () {
         return this.get('parentView').get('showApprovalStatusColumn');
-    }.property(),
+    }).property(),
 
-    dataPointApprovals: function () {
+    dataPointApprovals: Ember.computed(function () {
         var approvals = FLOW.router.dataPointApprovalController.get('content');
         if(!approvals) {
             return;
@@ -144,19 +149,19 @@ FLOW.DataPointView = FLOW.View.extend({
 
         var surveyedLocaleId = this.content && this.content.get('keyId');
         return approvals.filterProperty('surveyedLocaleId', surveyedLocaleId);
-    }.property('FLOW.router.dataPointApprovalController.content.@each'),
+    }).property('FLOW.router.dataPointApprovalController.content.@each'),
 
     /*
      * get the next approval step id
      */
-    nextApprovalStepId: function () {
+    nextApprovalStepId: Ember.computed(function () {
         return this.get('nextApprovalStep') && this.get('nextApprovalStep').get('keyId');
-    }.property('this.nextApprovalStep'),
+    }).property('this.nextApprovalStep'),
 
     /*
      * Derive the next approval step (in ordered approvals)
      */
-    nextApprovalStep: function () {
+    nextApprovalStep: Ember.computed(function () {
         var nextStep;
         var approvals = this.get('dataPointApprovals');
         var steps = FLOW.router.approvalStepsController.get('arrangedContent');
@@ -180,15 +185,15 @@ FLOW.DataPointView = FLOW.View.extend({
     // NOTE: below we observe the '@each.approvalDate' in order to be
     // sure that we only recalculate the next step whenever the approval
     //  has been correctly updated on the server side
-    }.property('this.dataPointApprovals.@each.approvalDate'),
+    }).property('this.dataPointApprovals.@each.approvalDate'),
 
     /*
      * return true if there are any of the approvals rejected in this set
      */
-    hasRejectedApproval: function () {
+    hasRejectedApproval: Ember.computed(function () {
         var approvals = this.get('dataPointApprovals');
         return !Ember.empty(approvals.filterProperty('status', 'REJECTED'));
-    }.property('this.dataPointApprovals'),
+    }).property('this.dataPointApprovals'),
 
     loadDataPointApprovalObserver: function () {
         if(!this.get('showDataApprovalBlock')) {
@@ -199,16 +204,16 @@ FLOW.DataPointView = FLOW.View.extend({
         if (dataPoint) {
             FLOW.router.dataPointApprovalController.loadBySurveyedLocaleId(dataPoint.get('keyId'));
         }
-    }.observes('this.showDataApprovalBlock'),
+    },
 
     toggleShowDataApprovalBlock: function () {
         this.toggleProperty('showDataApprovalBlock');
     },
 
-    dataPointRowNumber: function () {
+    dataPointRowNumber: Ember.computed(function () {
         var pageNumber = FLOW.router.surveyedLocaleController.get('pageNumber');
         return this.get('_parentView.contentIndex') + 1 + 20 * pageNumber;
-    }.property()
+    }).property()
 });
 
 /**
@@ -218,7 +223,7 @@ FLOW.DataPointView = FLOW.View.extend({
 FLOW.DataPointApprovalStatusView = FLOW.View.extend({
     content: null,
 
-    dataPointApprovalStatus: function () {
+    dataPointApprovalStatus: Ember.computed(function () {
         var approvalStepStatus;
         var latestApprovalStep = this.get('latestApprovalStep');
         if (!latestApprovalStep) {
@@ -233,12 +238,12 @@ FLOW.DataPointApprovalStatusView = FLOW.View.extend({
                                 Ember.String.loc('_pending');
 
         return latestApprovalStep.get('title') + ' - ' + approvalStepStatus.toUpperCase();
-    }.property('this.parentView.nextApprovalStep'),
+    }).property('this.parentView.nextApprovalStep'),
 
     /*
      * Derive the latest approval step for a particular data point
      */
-    latestApprovalStep: function () {
+    latestApprovalStep: Ember.computed(function () {
         var lastStep, steps;
         var nextStep = this.get('parentView').get('nextApprovalStep');
 
@@ -249,7 +254,7 @@ FLOW.DataPointApprovalStatusView = FLOW.View.extend({
             lastStep = steps && steps.get('lastObject');
             return lastStep;
         }
-    }.property('this.parentView.nextApprovalStep'),
+    }).property('this.parentView.nextApprovalStep'),
 });
 
 /**
@@ -260,7 +265,7 @@ FLOW.DataPointApprovalView = FLOW.View.extend({
 
     dataPoint: null,
 
-    dataPointApproval: function () {
+    dataPointApproval: Ember.computed(function () {
         var approvals = this.get('parentView').get('dataPointApprovals');
         var defaultApproval = Ember.Object.create({ status: null, comment: null});
 
@@ -272,30 +277,30 @@ FLOW.DataPointApprovalView = FLOW.View.extend({
         var approval = approvals.filterProperty('approvalStepId', stepId).get('firstObject');
 
         return approval || defaultApproval;
-    }.property('this.parentView.dataPointApprovals'),
+    }).property('this.parentView.dataPointApprovals'),
 
-    isApprovedStep: function () {
+    isApprovedStep: Ember.computed(function () {
         var dataPointApproval = this.get('dataPointApproval');
         return dataPointApproval && dataPointApproval.get('keyId');
-    }.property('this.dataPointApproval'),
+    }).property('this.dataPointApproval'),
 
     /*
      * return the current user's id
      */
-    currentUserId: function () {
+    currentUserId: Ember.computed(function () {
         var step = this.get('step');
         var currentUserEmail = FLOW.currentUser.get('email');
         var userList = FLOW.router.userListController.get('content');
         var currentUser = userList &&
                             userList.filterProperty('emailAddress', currentUserEmail).get('firstObject');
         return currentUser && currentUser.get('keyId');
-    }.property(),
+    }).property(),
 
     /*
      * Enable the approval fields based on whether or not approval steps
      * should be executed in order
      */
-    showApprovalFields: function () {
+    showApprovalFields: Ember.computed(function () {
         if(this.get('parentView').get('hasRejectedApproval')) {
             return false;
         }
@@ -316,7 +321,7 @@ FLOW.DataPointApprovalView = FLOW.View.extend({
             // all steps so that its possible to approve any step
             return true;
         }
-    }.property('this.parentView.nextApprovalStep'),
+    }).property('this.parentView.nextApprovalStep'),
 
     /*
      *  Submit data approval properties to controller

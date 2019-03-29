@@ -1,5 +1,6 @@
-FLOW.NotificationsView = FLOW.View.extend({
-  templateName: 'navSurveys/manage-notifications',
+import template from '../../mixins/template';
+
+FLOW.NotificationsView = FLOW.View.extend(template('navSurveys/manage-notifications'), {
   notificationOption: null,
   notificationType: null,
   expiryDate: null,

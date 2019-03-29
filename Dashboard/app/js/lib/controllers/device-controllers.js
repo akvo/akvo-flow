@@ -1,3 +1,5 @@
+import observe from '../mixins/observe';
+
 FLOW.deviceGroupControl = Ember.ArrayController.create({
   content: null,
   contentNoUnassigned: null,
@@ -41,18 +43,18 @@ FLOW.deviceControl = Ember.ArrayController.create({
     this.set('sortAscending', false);
   },
 
-  allAreSelected: function (key, value) {
+  allAreSelected: Ember.computed(function (key, value) {
     if (arguments.length === 2) {
       this.setEach('isSelected', value);
       return value;
     } else {
       return !this.get('isEmpty') && this.everyProperty('isSelected', true);
     }
-  }.property('@each.isSelected'),
+  }).property('@each.isSelected'),
 
-  atLeastOneSelected: function () {
+  atLeastOneSelected: Ember.computed(function () {
     return this.filterProperty('isSelected', true).get('length');
-  }.property('@each.isSelected'),
+  }).property('@each.isSelected'),
 
   // fired from tableColumnView.sort
   getSortInfo: function () {
@@ -62,7 +64,9 @@ FLOW.deviceControl = Ember.ArrayController.create({
 });
 
 
-FLOW.devicesInGroupControl = Ember.ArrayController.create({
+FLOW.devicesInGroupControl = Ember.ArrayController.create(observe({
+  'FLOW.selectedControl.selectedDeviceGroup': 'setDevicesInGroup',
+}), {
   content: null,
   sortProperties: ['combinedName'],
   sortAscending: true,
@@ -82,7 +86,7 @@ FLOW.devicesInGroupControl = Ember.ArrayController.create({
         }));
       }
     }
-  }.observes('FLOW.selectedControl.selectedDeviceGroup')
+  },
 });
 
 

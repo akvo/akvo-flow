@@ -1,10 +1,13 @@
+import observe from '../mixins/observe';
 
 function capitaliseFirstLetter(string) {
   if (Ember.empty(string)) return "";
   return string.charAt(0).toUpperCase() + string.slice(1);
 }
 
-FLOW.cascadeResourceControl = Ember.ArrayController.create({
+FLOW.cascadeResourceControl = Ember.ArrayController.create(observe({
+  'FLOW.selectedControl.selectedCascadeResource': 'hasQuestions',
+}), {
   content:null,
   published:null,
   statusUpdateTrigger:false,
@@ -74,13 +77,13 @@ FLOW.cascadeResourceControl = Ember.ArrayController.create({
       return;
     }
     FLOW.store.findQuery(FLOW.Question, {cascadeResourceId: FLOW.selectedControl.selectedCascadeResource.get('keyId')});
-  }.observes('FLOW.selectedControl.selectedCascadeResource'),
+  },
 
   triggerStatusUpdate: function(){
     this.toggleProperty('statusUpdateTrigger');
   },
 
-  currentStatus: function () {
+  currentStatus: Ember.computed(function () {
     // hack to get translation keys, don't delete them
     // {{t _not_published}}
     // {{t _publishing}}
@@ -91,14 +94,14 @@ FLOW.cascadeResourceControl = Ember.ArrayController.create({
     }
     status = ('_' + FLOW.selectedControl.selectedCascadeResource.get('status')).toLowerCase();
     return Ember.String.loc(status);
-  }.property('FLOW.selectedControl.selectedCascadeResource','this.statusUpdateTrigger'),
+  }).property('FLOW.selectedControl.selectedCascadeResource','this.statusUpdateTrigger'),
 
-  isPublished: function () {
+  isPublished: Ember.computed(function () {
     if (!FLOW.selectedControl.selectedCascadeResource) {
       return false;
     }
     return FLOW.selectedControl.selectedCascadeResource.get('status') === 'PUBLISHED';
-  }.property('FLOW.selectedControl.selectedCascadeResource','this.statusUpdateTrigger')
+  }).property('FLOW.selectedControl.selectedCascadeResource','this.statusUpdateTrigger')
 });
 
 FLOW.cascadeNodeControl = Ember.ArrayController.create({
@@ -167,7 +170,10 @@ FLOW.cascadeNodeControl = Ember.ArrayController.create({
 });
 
 
-FLOW.surveyInstanceControl = Ember.ArrayController.create({
+FLOW.surveyInstanceControl = Ember.ArrayController.create(observe({
+  content: 'contentChanged',
+  'content.isLoaded': 'contentChanged',
+}), {
   sortProperties: ['collectionDate'],
   sortAscending: false,
   selectedSurvey: null,
@@ -202,7 +208,7 @@ FLOW.surveyInstanceControl = Ember.ArrayController.create({
     });
 
     this.set('currentContents', mutableContents);
-  }.observes('content', 'content.isLoaded'),
+  },
 
   removeInstance: function(instance) {
     this.get('currentContents').forEach(function(item, i, currentContents) {
@@ -212,18 +218,18 @@ FLOW.surveyInstanceControl = Ember.ArrayController.create({
     });
   },
 
-  allAreSelected: function (key, value) {
+  allAreSelected: Ember.computed(function (key, value) {
     if (arguments.length === 2) {
       this.setEach('isSelected', value);
       return value;
     } else {
       return !this.get('isEmpty') && this.everyProperty('isSelected', true);
     }
-  }.property('@each.isSelected'),
+  }).property('@each.isSelected'),
 
-  atLeastOneSelected: function () {
+  atLeastOneSelected: Ember.computed(function () {
     return this.filterProperty('isSelected', true).get('length');
-  }.property('@each.isSelected'),
+  }).property('@each.isSelected'),
 
   // fired from tableColumnView.sort
   getSortInfo: function () {
@@ -232,7 +238,10 @@ FLOW.surveyInstanceControl = Ember.ArrayController.create({
   }
 });
 
-FLOW.SurveyedLocaleController = Ember.ArrayController.extend({
+FLOW.SurveyedLocaleController = Ember.ArrayController.extend(observe({
+  content: 'contentChanged',
+  'content.isLoaded': 'contentChanged',
+}), {
   sortProperties: ['collectionDate'],
   sortAscending: false,
   selectedSurvey: null,
@@ -251,7 +260,7 @@ FLOW.SurveyedLocaleController = Ember.ArrayController.extend({
     });
 
     this.set('currentContents', mutableContents);
-  }.observes('content', 'content.isLoaded'),
+  },
 
   removeLocale: function(locale) {
     this.get('currentContents').forEach(function(item, i, currentContents) {
@@ -263,7 +272,7 @@ FLOW.SurveyedLocaleController = Ember.ArrayController.extend({
 
   /* the current user is able to delete surveyed locales
     stored in the 'content' property of this controller */
-  userCanDelete: function() {
+  userCanDelete: Ember.computed(function() {
     if(this.get('content') === null) {
       return false;
     }
@@ -272,7 +281,7 @@ FLOW.SurveyedLocaleController = Ember.ArrayController.extend({
       return FLOW.surveyGroupControl.userCanDeleteData(surveyedLocale.get('surveyGroupId'));
     }
     return false; // prevents deletion incase no surveyId found
-  }.property('content'),
+  }).property('content'),
 });
 
 FLOW.questionAnswerControl = Ember.ArrayController.create({
@@ -367,7 +376,10 @@ FLOW.questionAnswerControl = Ember.ArrayController.create({
   },
 });
 
-FLOW.locationControl = Ember.ArrayController.create({
+FLOW.locationControl = Ember.ArrayController.create(observe({
+  'this.selectedCountry': 'populateLevel1',
+  'this.selectedLevel1': 'populateLevel2',
+}), {
   selectedCountry: null,
   content:null,
   level1Content:null,
@@ -383,7 +395,7 @@ FLOW.locationControl = Ember.ArrayController.create({
       parentId:null
       }));
     }
-  }.observes('this.selectedCountry'),
+  },
 
   populateLevel2: function(){
     if (!Ember.none(this.get('selectedLevel1')) && this.selectedLevel1.get('name').length > 0){
@@ -393,7 +405,7 @@ FLOW.locationControl = Ember.ArrayController.create({
       parentId:this.selectedLevel1.get('keyId')
       }));
     }
-  }.observes('this.selectedLevel1')
+  },
 
 });
 
@@ -451,7 +463,7 @@ FLOW.ApprovalGroupController = Ember.ObjectController.extend({
      * to a string representation in order to bind successfully to
      * value attribute of the generated <option> entities
      */
-    isOrderedApprovalGroup: function (key, value, previousValue) {
+    isOrderedApprovalGroup: Ember.computed(function (key, value, previousValue) {
         var group = this.content;
 
         // setter
@@ -465,7 +477,7 @@ FLOW.ApprovalGroupController = Ember.ObjectController.extend({
         } else {
             return "unordered"
         }
-    }.property('this.content'),
+    }).property('this.content'),
 
 
 

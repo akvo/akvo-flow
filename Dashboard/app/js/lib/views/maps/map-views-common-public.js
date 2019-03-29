@@ -1,5 +1,10 @@
-FLOW.NavMapsView = FLOW.View.extend({
-  templateName: 'navMaps/nav-maps-common',
+import observe from '../../mixins/observe';
+import template from '../../mixins/template';
+const { create_geomodel } = require('../../../plugins/geocells');
+
+FLOW.NavMapsView = FLOW.View.extend(template('navMaps/nav-maps-common'), observe({
+  'FLOW.placemarkDetailController.content.isLoaded': 'handlePlacemarkDetails',
+}), {
   showDetailsBool: false,
   detailsPaneElements: null,
   detailsPaneVisible: null,
@@ -180,7 +185,7 @@ FLOW.NavMapsView = FLOW.View.extend({
     if (!Ember.empty(details) && details.get('isLoaded')) {
       this.populateDetailsPane(details);
     }
-  }.observes('FLOW.placemarkDetailController.content.isLoaded'),
+  },
 
 
   /**

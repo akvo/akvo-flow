@@ -1,4 +1,8 @@
-FLOW.CurrentDevicesTabView = Ember.View.extend({
+import observe from '../../mixins/observe';
+
+FLOW.CurrentDevicesTabView = Ember.View.extend(observe({
+  'this.selectedDeviceGroup': 'copyDeviceGroupName',
+}), {
   // FLOW.CurrentDevicesTabView = FLOW.View.extend({
   showDeleteDevicesDialogBool: false,
   showAddToGroupDialogBool: false,
@@ -81,7 +85,7 @@ FLOW.CurrentDevicesTabView = Ember.View.extend({
     if (this.get('selectedDeviceGroup') !== null) {
       this.set('changedDeviceGroupName', this.selectedDeviceGroup.get('code'));
     }
-  }.observes('this.selectedDeviceGroup'),
+  },
 
   // TODO update device group name in tabel.
   doManageDeviceGroups: function () {
@@ -143,7 +147,9 @@ FLOW.CurrentDevicesTabView = Ember.View.extend({
 
 
 // TODO not used?
-FLOW.SavingDeviceGroupView = FLOW.View.extend({
+FLOW.SavingDeviceGroupView = FLOW.View.extend(observe({
+  'FLOW.deviceGroupControl.allRecordsSaved': 'showDGSavingDialog',
+}), {
   showDGSavingDialogBool: false,
 
   showDGSavingDialog: function () {
@@ -152,5 +158,5 @@ FLOW.SavingDeviceGroupView = FLOW.View.extend({
     } else {
       this.set('showDGSavingDialogBool', true);
     }
-  }.observes('FLOW.deviceGroupControl.allRecordsSaved')
+  },
 });

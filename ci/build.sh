@@ -19,15 +19,11 @@
 set -e
 
 SRC_DIR="/app/src"
-BUNDLE_GEMFILE="${SRC_DIR}/Dashboard/Gemfile"
-RAKEP_MODE=production
-
-export BUNDLE_GEMFILE
-export RAKEP_MODE
 
 cd "${SRC_DIR}/Dashboard"
 
-bundle exec rake build --trace
+npm install
+npm run build:prod
 
 cd "${SRC_DIR}/Dashboard/app/cljs"
 

@@ -122,14 +122,14 @@ input[type="search"] {
     box-sizing: content-box;
     padding: 5px 25px 3px 4px;
     border: 1px solid rgb(218, 218, 218);
-    background: rgb(255, 255, 255) url(../images/search-icon.png) no-repeat 3px right;
+    background: rgb(255, 255, 255) url(/admin/images/search-icon.png) no-repeat 3px right;
     &:hover {
         border: 1px solid rgb(114, 205, 255);
-        background: rgb(224, 224, 224) url(../images/search-icon.png) no-repeat top right;
+        background: rgb(224, 224, 224) url(/admin/images/search-icon.png) no-repeat top right;
     }
     &:focus {
         border: 1px solid rgb(123, 123, 123);
-        background: rgb(244, 244, 244) url(../images/search-icon.png) no-repeat top right;
+        background: rgb(244, 244, 244) url(/admin/images/search-icon.png) no-repeat top right;
     }
 }
 

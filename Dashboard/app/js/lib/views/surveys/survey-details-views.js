@@ -1,3 +1,5 @@
+import observe from '../../mixins/observe';
+
 // ************************ Surveys *************************
 // FLOW.SurveySidebarView = FLOW.View.extend({
 FLOW.SurveySidebarView = FLOW.View.extend({
@@ -28,9 +30,9 @@ FLOW.SurveySidebarView = FLOW.View.extend({
     this.set('language', language);
   },
 
-  isExistingSurvey: function () {
+  isExistingSurvey: Ember.computed(function () {
     return !Ember.none(FLOW.selectedControl.selectedSurvey.get('keyId'));
-  }.property('FLOW.selectedControl.selectedSurvey.keyId'),
+  }).property('FLOW.selectedControl.selectedSurvey.keyId'),
 
   setIsDirty: function () {
     var isDirty, survey;
@@ -62,23 +64,23 @@ FLOW.SurveySidebarView = FLOW.View.extend({
     this.set('isDirty', isDirty);
   },
 
-  isPublished: function () {
+  isPublished: Ember.computed(function () {
     return FLOW.selectedControl.selectedSurvey.get('status') == 'PUBLISHED';
-  }.property('FLOW.selectedControl.selectedSurvey.status'),
+  }).property('FLOW.selectedControl.selectedSurvey.status'),
 
-  numberQuestions: function () {
+  numberQuestions: Ember.computed(function () {
     if (Ember.none(FLOW.questionControl.get('filterContent'))) {
       return 0;
     }
     return FLOW.questionControl.filterContent.toArray().length;
-  }.property('FLOW.questionControl.filterContent.@each'),
+  }).property('FLOW.questionControl.filterContent.@each'),
 
-  numberQuestionGroups: function () {
+  numberQuestionGroups: Ember.computed(function () {
     if (Ember.none(FLOW.questionGroupControl.get('content'))) {
       return 0;
     }
     return FLOW.questionGroupControl.content.toArray().length;
-  }.property('FLOW.questionGroupControl.content.@each'),
+  }).property('FLOW.questionGroupControl.content.@each'),
 
   surveyNotComplete: function () {
 	 if (Ember.empty(this.get('surveyTitle'))) {
@@ -123,7 +125,7 @@ FLOW.SurveySidebarView = FLOW.View.extend({
 		return;
 	}
 	// check if we have any unsaved changes
-	survey = FLOW.store.find(FLOW.Survey, FLOW.selectedControl.selectedSurvey.get('keyId'));
+	var survey = FLOW.store.find(FLOW.Survey, FLOW.selectedControl.selectedSurvey.get('keyId'));
 	this.setIsDirty();
 	if (!Ember.none(survey) && this.get('isDirty')) {
 	    FLOW.dialogControl.set('activeAction', "ignore");
@@ -141,7 +143,7 @@ FLOW.SurveySidebarView = FLOW.View.extend({
 		return;
 	}
 	// check if we have any unsaved changes
-	survey = FLOW.store.find(FLOW.Survey, FLOW.selectedControl.selectedSurvey.get('keyId'));
+	var survey = FLOW.store.find(FLOW.Survey, FLOW.selectedControl.selectedSurvey.get('keyId'));
 	this.setIsDirty();
 	if (!Ember.none(survey) && this.get('isDirty')) {
 		 FLOW.dialogControl.set('activeAction', "ignore");
@@ -234,7 +236,7 @@ FLOW.SurveySidebarView = FLOW.View.extend({
 FLOW.QuestionGroupItemTranslationView = FLOW.View.extend({
 	content: null,
 	 // question group content comes through binding in handlebars file
-	amVisible: function () {
+	amVisible: Ember.computed(function () {
 	  var selected, isVis;
 	  selected = FLOW.selectedControl.get('selectedQuestionGroup');
 	  if (selected) {
@@ -243,7 +245,7 @@ FLOW.QuestionGroupItemTranslationView = FLOW.View.extend({
 	   } else {
 	     return null;
 	   }
-	 }.property('FLOW.selectedControl.selectedQuestionGroup', 'content.keyId').cacheable(),
+	 }).property('FLOW.selectedControl.selectedQuestionGroup', 'content.keyId').cacheable(),
 
 	toggleVisibility: function () {
 	   if (this.get('amVisible')) {
@@ -263,7 +265,9 @@ FLOW.QuestionGroupItemTranslationView = FLOW.View.extend({
 });
 
 
-FLOW.QuestionGroupItemView = FLOW.View.extend({
+FLOW.QuestionGroupItemView = FLOW.View.extend(observe({
+  'this.amCopying': 'pollQuestionGroupStatus',
+}), {
   // question group content comes through binding in handlebars file
   zeroItem: false,
   renderView: false,
@@ -272,11 +276,11 @@ FLOW.QuestionGroupItemView = FLOW.View.extend({
   pollingTimer: null,
   showSaveCancelButton: false,
 
-  amCopying: function(){
+  amCopying: Ember.computed(function(){
       return this.content.get('status') == "COPYING";
-  }.property('this.content.status'),
+  }).property('this.content.status'),
 
-  amVisible: function () {
+  amVisible: Ember.computed(function () {
     var selected, isVis;
     selected = FLOW.selectedControl.get('selectedQuestionGroup');
     if (selected) {
@@ -286,7 +290,7 @@ FLOW.QuestionGroupItemView = FLOW.View.extend({
     } else {
       return null;
     }
-  }.property('FLOW.selectedControl.selectedQuestionGroup', 'content.keyId').cacheable(),
+  }).property('FLOW.selectedControl.selectedQuestionGroup', 'content.keyId').cacheable(),
 
   toggleVisibility: function () {
     if (this.get('amVisible')) {
@@ -336,7 +340,7 @@ FLOW.QuestionGroupItemView = FLOW.View.extend({
   },
 
   // true if one question group has been selected for Move
-  oneSelectedForMove: function () {
+  oneSelectedForMove: Ember.computed(function () {
     var selectedForMove, selectedSurvey;
     selectedForMove = FLOW.selectedControl.get('selectedForMoveQuestionGroup');
     selectedSurvey = FLOW.selectedControl.get('selectedSurvey');
@@ -344,10 +348,10 @@ FLOW.QuestionGroupItemView = FLOW.View.extend({
     if (selectedForMove && selectedSurvey) {
       return selectedForMove.get('surveyId') === selectedSurvey.get('keyId');
     }
-  }.property('FLOW.selectedControl.selectedForMoveQuestionGroup'),
+  }).property('FLOW.selectedControl.selectedForMoveQuestionGroup'),
 
   // true if one question group has been selected for Copy
-  oneSelectedForCopy: function () {
+  oneSelectedForCopy: Ember.computed(function () {
     var selectedForCopy, selectedSurvey;
     selectedForCopy = FLOW.selectedControl.get('selectedForCopyQuestionGroup');
     selectedSurvey = FLOW.selectedControl.get('selectedSurvey');
@@ -355,7 +359,7 @@ FLOW.QuestionGroupItemView = FLOW.View.extend({
     if (selectedForCopy && selectedSurvey) {
       return selectedForCopy.get('surveyId') === selectedSurvey.get('keyId');
     }
-  }.property('FLOW.selectedControl.selectedForCopyQuestionGroup'),
+  }).property('FLOW.selectedControl.selectedForCopyQuestionGroup'),
 
   // execute group delete
   deleteQuestionGroup: function () {
@@ -462,7 +466,7 @@ FLOW.QuestionGroupItemView = FLOW.View.extend({
         movingUp = origOrder < insertAfterOrder;
 
         questionGroupsInSurvey.forEach(function (item) {
-          currentOrder = item.get('order');
+          var currentOrder = item.get('order');
           if (movingUp) {
             if (currentOrder == origOrder) {
               // move moving item to right location
@@ -516,7 +520,7 @@ FLOW.QuestionGroupItemView = FLOW.View.extend({
       } else {
         clearInterval(qgQuery);
       }
-  }.observes('this.amCopying'),
+  },
 
   // execute group copy to selected location
   doQGroupCopyHere: function () {
@@ -552,13 +556,13 @@ FLOW.QuestionGroupItemView = FLOW.View.extend({
     FLOW.selectedControl.set('selectedForCopyQuestionGroup', null);
   },
 
-  showQuestionGroupModifyButtons: function() {
+  showQuestionGroupModifyButtons: Ember.computed(function() {
     var form = FLOW.selectedControl.get('selectedSurvey');
     return FLOW.permControl.canEditForm(form);
-  }.property('FLOW.selectedControl.selectedSurvey'),
+  }).property('FLOW.selectedControl.selectedSurvey'),
 
-  disableQuestionGroupEditing: function() {
+  disableQuestionGroupEditing: Ember.computed(function() {
     var form = FLOW.selectedControl.get('selectedSurvey');
     return !FLOW.permControl.canEditForm(form);
-  }.property('FLOW.selectedControl.selectedSurvey'),
+  }).property('FLOW.selectedControl.selectedSurvey'),
 });

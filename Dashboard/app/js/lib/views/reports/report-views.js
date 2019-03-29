@@ -1,7 +1,10 @@
 /*global deleteChart, createDoughnutChart, createHBarChart, createVBarChart*/
+import observe from '../../mixins/observe';
 
-
-FLOW.chartView = FLOW.View.extend({
+FLOW.chartView = FLOW.View.extend(observe({
+  'this.selectedSurvey': 'downloadOptionQuestions',
+  'FLOW.surveyQuestionSummaryControl.content.isLoaded': 'buildChart',
+}), {
   noChoiceBool: false,
   noDataBool: false,
   chartType: null,
@@ -12,20 +15,20 @@ FLOW.chartView = FLOW.View.extend({
 	  if (!Ember.none(this.get('selectedSurvey'))) {
 		  FLOW.questionControl.downloadOptionQuestions(this.selectedSurvey.get('keyId'));
 	  }
-  }.observes('this.selectedSurvey'),
+  },
 
-  isDoughnut: function () {
+  isDoughnut: Ember.computed(function () {
     return this.chartType.get('value') == 'doughnut';
-  }.property('this.chartType'),
+  }).property('this.chartType'),
 
   init: function () {
     this._super();
     this.chartType = FLOW.chartTypeControl.content[0];
   },
 
-  hideChart: function () {
+  hideChart: Ember.computed(function () {
 	  return this.get('noChoiceBool') || this.get('noDataBool');
-  }.property('noChoiceBool', 'noDataBool'),
+  }).property('noChoiceBool', 'noDataBool'),
 
   getChartData: function () {
     this.set('noChoiceBool', false);
@@ -152,5 +155,5 @@ FLOW.chartView = FLOW.View.extend({
         createHBarChart();
       }
     }
-  }.observes('FLOW.surveyQuestionSummaryControl.content.isLoaded')
+  },
 });

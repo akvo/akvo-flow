@@ -1,26 +1,27 @@
-FLOW.FormView = Ember.View.extend({
-	templateName: 'navSurveys/form',
+import template from '../../mixins/template';
+
+FLOW.FormView = Ember.View.extend(template('navSurveys/form'), {
 	showFormBasics: false,
 
 	manageTranslations: false,
 	manageNotifications: false,
 
-	form: function() {
+	form: Ember.computed(function() {
 		return FLOW.selectedControl.get('selectedSurvey');
-	}.property('FLOW.selectedControl.selectedSurvey'),
+	}).property('FLOW.selectedControl.selectedSurvey'),
 
 	toggleShowFormBasics: function () {
 		this.set('showFormBasics', !this.get('showFormBasics'));
 	},
 
-	isNewForm: function() {
+	isNewForm: Ember.computed(function() {
 		var form = FLOW.selectedControl.get('selectedSurvey');
 		return form && form.get('code') == "New Form";
-	}.property('FLOW.selectedControl.selectedSurvey'),
+	}).property('FLOW.selectedControl.selectedSurvey'),
 
-	visibleFormBasics: function() {
+	visibleFormBasics: Ember.computed(function() {
 		return this.get('isNewForm') || this.get('showFormBasics');
-	}.property('showFormBasics'),
+	}).property('showFormBasics'),
 
 
 	doManageTranslations: function() {
@@ -35,23 +36,23 @@ FLOW.FormView = Ember.View.extend({
 		this.set('manageNotifications', true);
 	},
 
-	disableFormFields: function () {
+	disableFormFields: Ember.computed(function () {
 		var form = this.get('form');
 		return !FLOW.permControl.canEditForm(form);
-	}.property('this.form'),
+	}).property('this.form'),
 
-	showFormTranslationsButton: function() {
+	showFormTranslationsButton: Ember.computed(function() {
 		var form = this.get('form');
 		return FLOW.permControl.canEditForm(form);
-	}.property('this.form'),
+	}).property('this.form'),
 
-	showFormDeleteButton: function () {
+	showFormDeleteButton: Ember.computed(function () {
 		var form = this.get('form');
 		return FLOW.permControl.canEditForm(form);
-	}.property('this.form'),
+	}).property('this.form'),
 
-	showFormPublishButton: function () {
+	showFormPublishButton: Ember.computed(function () {
 		var form = this.get('form');
 		return FLOW.permControl.canEditForm(form);
-	}.property('this.form')
+	}).property('this.form')
 });
