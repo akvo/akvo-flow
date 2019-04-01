@@ -6,7 +6,7 @@ FLOW.FormView = Ember.View.extend(template('navSurveys/form'), {
   manageTranslations: false,
   manageNotifications: false,
 
-  form: Ember.computed(() => FLOW.selectedControl.get('selectedSurvey')).propert('FLOW.selectedControl.selectedSurvey'),
+  form: Ember.computed(() => FLOW.selectedControl.get('selectedSurvey')).property('FLOW.selectedControl.selectedSurvey'),
 
   toggleShowFormBasics() {
     this.set('showFormBasics', !this.get('showFormBasics'));
