@@ -4,42 +4,42 @@ FLOW.questionTypeControl = Ember.Object.create({
   content: [
     Ember.Object.create({
       label: Ember.String.loc('_free_text'),
-      value: 'FREE_TEXT'
+      value: 'FREE_TEXT',
     }), Ember.Object.create({
       label: Ember.String.loc('_option'),
-      value: 'OPTION'
+      value: 'OPTION',
     }), Ember.Object.create({
-        label: Ember.String.loc('_cascade'),
-     value: 'CASCADE'
-      }),Ember.Object.create({
+      label: Ember.String.loc('_cascade'),
+      value: 'CASCADE',
+    }), Ember.Object.create({
       label: Ember.String.loc('_number'),
-      value: 'NUMBER'
+      value: 'NUMBER',
     }), Ember.Object.create({
       label: Ember.String.loc('_gelocation'),
-      value: 'GEO'
+      value: 'GEO',
     }), Ember.Object.create({
       label: Ember.String.loc('_photo'),
-      value: 'PHOTO'
+      value: 'PHOTO',
     }), Ember.Object.create({
       label: Ember.String.loc('_video'),
-      value: 'VIDEO'
+      value: 'VIDEO',
     }), Ember.Object.create({
       label: Ember.String.loc('_date'),
-      value: 'DATE'
+      value: 'DATE',
     }), Ember.Object.create({
       label: Ember.String.loc('_barcode'),
-      value: 'SCAN'
+      value: 'SCAN',
     }), Ember.Object.create({
       label: Ember.String.loc('_geoshape'),
-      value: 'GEOSHAPE'
+      value: 'GEOSHAPE',
     }), Ember.Object.create({
       label: Ember.String.loc('_signature'),
-      value: 'SIGNATURE'
+      value: 'SIGNATURE',
     }), Ember.Object.create({
-        label: Ember.String.loc('_caddisfly'),
-        value: 'CADDISFLY'
-      })
-  ]
+      label: Ember.String.loc('_caddisfly'),
+      value: 'CADDISFLY',
+    }),
+  ],
 });
 
 
@@ -47,97 +47,97 @@ FLOW.notificationOptionControl = Ember.Object.create({
   content: [
     Ember.Object.create({
       label: Ember.String.loc('_link'),
-      value: "LINK"
+      value: 'LINK',
     }), Ember.Object.create({
-      label: "attachment",
-      value: "ATTACHMENT"
-    })
-  ]
+      label: 'attachment',
+      value: 'ATTACHMENT',
+    }),
+  ],
 });
 
 FLOW.notificationTypeControl = Ember.Object.create({
   content: [
     Ember.Object.create({
       label: Ember.String.loc('_email'),
-      value: "EMAIL"
-    })
-  ]
+      value: 'EMAIL',
+    }),
+  ],
 });
 
 FLOW.notificationEventControl = Ember.Object.create({
   content: [
     Ember.Object.create({
       label: Ember.String.loc('_raw_data_reports_nightly'),
-      value: "rawDataReport"
+      value: 'rawDataReport',
     }), Ember.Object.create({
       label: Ember.String.loc('_survey_submission'),
-      value: "surveySubmission"
+      value: 'surveySubmission',
     }), Ember.Object.create({
       label: Ember.String.loc('_survey_approval'),
-      value: "surveyApproval"
-    })
-  ]
+      value: 'surveyApproval',
+    }),
+  ],
 });
 
 FLOW.languageControl = Ember.Object.create({
   content: [
     Ember.Object.create({
-      label: "English",
-      value: "en"
+      label: 'English',
+      value: 'en',
     }), Ember.Object.create({
-      label: "Español",
-      value: "es"
+      label: 'Español',
+      value: 'es',
     }), Ember.Object.create({
-      label: "Français",
-      value: "fr"
-    })
-  ]
+      label: 'Français',
+      value: 'fr',
+    }),
+  ],
 });
 
 FLOW.surveyPointTypeControl = Ember.Object.create({
   content: [
     Ember.Object.create({
       label: Ember.String.loc('_point'),
-      value: "Point"
+      value: 'Point',
     }), Ember.Object.create({
       label: Ember.String.loc('_household'),
-      value: "Household"
+      value: 'Household',
     }), Ember.Object.create({
       label: Ember.String.loc('_public_institution'),
-      value: "PublicInstitution"
-    })
-  ]
+      value: 'PublicInstitution',
+    }),
+  ],
 });
 
 FLOW.surveySectorTypeControl = Ember.Object.create({
   content: [
     Ember.Object.create({
-      label: "Water and Sanitation",
-      value: "WASH"
+      label: 'Water and Sanitation',
+      value: 'WASH',
     }), Ember.Object.create({
-      label: "Education",
-      value: "EDUC"
+      label: 'Education',
+      value: 'EDUC',
     }), Ember.Object.create({
-      label: "Economic development",
-      value: "ECONDEV"
+      label: 'Economic development',
+      value: 'ECONDEV',
     }), Ember.Object.create({
-      label: "Health care",
-      value: "HEALTH"
+      label: 'Health care',
+      value: 'HEALTH',
     }), Ember.Object.create({
-      label: "IT and Communication",
-      value: "ICT"
+      label: 'IT and Communication',
+      value: 'ICT',
     }), Ember.Object.create({
-      label: "Food security",
-      value: "FOODSEC"
+      label: 'Food security',
+      value: 'FOODSEC',
     }), Ember.Object.create({
-      label: "Other",
-      value: "OTHER"
-    })
-  ]
+      label: 'Other',
+      value: 'OTHER',
+    }),
+  ],
 });
 
 FLOW.privacyLevelControl = Ember.Object.create({
-  content: ["PRIVATE", "PUBLIC"]
+  content: ['PRIVATE', 'PUBLIC'],
 });
 
 FLOW.alwaysTrue = function () {
@@ -149,23 +149,22 @@ FLOW.surveyGroupControl = Ember.ArrayController.create({
   sortAscending: true,
   content: null,
 
-  setFilteredContent: function (f) {
+  setFilteredContent(f) {
     this.set('content', FLOW.store.filter(FLOW.SurveyGroup, f));
   },
 
   // load all Survey Groups
-  populate: function (f) {
-    var fn = (f && $.isFunction(f) && f) || FLOW.alwaysTrue;
+  populate(f) {
+    const fn = (f && $.isFunction(f) && f) || FLOW.alwaysTrue;
     FLOW.store.find(FLOW.SurveyGroup);
     this.setFilteredContent(fn);
   },
 
   // checks if data store contains surveys within this survey group.
   // this is also checked server side.
-  containsSurveys: function () {
-    var surveys, sgId;
-    surveys = FLOW.store.filter(FLOW.Survey, function (data) {
-      sgId = FLOW.selectedControl.selectedSurveyGroup.get('id');
+  containsSurveys() {
+    const surveys = FLOW.store.filter(FLOW.Survey, (data) => {
+      const sgId = FLOW.selectedControl.selectedSurveyGroup.get('id');
       if (data.get('surveyGroupId') == sgId) {
         return true;
       }
@@ -173,44 +172,39 @@ FLOW.surveyGroupControl = Ember.ArrayController.create({
     return surveys.get('content').length > 0;
   },
 
-  deleteSurveyGroup: function (keyId) {
-    var surveyGroup;
-    surveyGroup = FLOW.store.find(FLOW.SurveyGroup, keyId);
+  deleteSurveyGroup(keyId) {
+    const surveyGroup = FLOW.store.find(FLOW.SurveyGroup, keyId);
     surveyGroup.deleteRecord();
     FLOW.store.commit();
     FLOW.selectedControl.set('selectedSurveyGroup', null);
   },
 
   /* return all the ancestor paths of a given path string */
-  ancestorPaths: function(pathString) {
-    if(!pathString) {
-        return [];
+  ancestorPaths(pathString) {
+    if (!pathString) {
+      return [];
     }
 
-    var ancestors = [];
-    while(pathString) {
-        ancestors.push(pathString);
-        pathString = pathString.slice(0, pathString.lastIndexOf("/"));
+    const ancestors = [];
+    while (pathString) {
+      ancestors.push(pathString);
+      pathString = pathString.slice(0, pathString.lastIndexOf('/'));
     }
-    ancestors.push("/"); // add the root level folder to ancestors list
+    ancestors.push('/'); // add the root level folder to ancestors list
     return ancestors;
   },
 
   /* retrieve a survey group based on its id and check based on its
   path whether or not a user is able to delete data in the group. Used
   for monitoring groups */
-  userCanDeleteData: function(surveyGroupId) {
-    var ancestorIds;
-    var surveyGroups = FLOW.store.filter(FLOW.SurveyGroup, function(sg){
-        return sg.get('keyId') === surveyGroupId;
-    });
+  userCanDeleteData(surveyGroupId) {
+    const surveyGroups = FLOW.store.filter(FLOW.SurveyGroup, sg => sg.get('keyId') === surveyGroupId);
 
-    if(surveyGroups && surveyGroups.get('firstObject')) {
-        ancestorIds = surveyGroups.get('firstObject').get('ancestorIds');
-        return FLOW.permControl.canDeleteData(ancestorIds);
-    } else {
-        return false; // need survey group and ancestorIds, otherwise prevent delete
+    if (surveyGroups && surveyGroups.get('firstObject')) {
+      const ancestorIds = surveyGroups.get('firstObject').get('ancestorIds');
+      return FLOW.permControl.canDeleteData(ancestorIds);
     }
+    return false; // need survey group and ancestorIds, otherwise prevent delete
   },
 });
 
@@ -224,76 +218,73 @@ FLOW.projectControl = Ember.ArrayController.create({
   moveTarget: null,
   isLoading: true,
 
-  populate: function() {
+  populate() {
     FLOW.store.find(FLOW.SurveyGroup);
-    this.set('content', FLOW.store.filter(FLOW.SurveyGroup, function(p) {
-      return true;
-    }));
+    this.set('content', FLOW.store.filter(FLOW.SurveyGroup, () => true));
   },
 
-  setCurrentProject: function(project) {
+  setCurrentProject(project) {
     this.set('currentProject', project);
-    window.scrollTo(0,0);
+    window.scrollTo(0, 0);
   },
 
   /* return true if the given SurveyGroup's has the data cleaning permission
    * associated with it, or if one of the ancestors or descendants of the SurveyGroup
    * has data cleaning permission associated with it.  In the case of descendants we
    * return true in order to be able to browse to the descendant */
-  dataCleaningEnabled: function(surveyGroup) {
-    var permissions = FLOW.currentUser.get('pathPermissions');
-    var keyedSurvey;
+  dataCleaningEnabled(surveyGroup) {
+    const permissions = FLOW.currentUser.get('pathPermissions');
 
-    for (var key in permissions) {
-      if(permissions[key].indexOf("DATA_CLEANING") > -1){
+    Object.keys(permissions).forEach((key) => {
+      if (permissions[key].indexOf('DATA_CLEANING') > -1) {
         // check key against survey group
-        if(surveyGroup.get('keyId') === +key) {
+        if (surveyGroup.get('keyId') === +key) {
           return true;
         }
 
         // check ancestors to for matching permission from higher level in hierarchy
-        var ancestorIds = surveyGroup.get('ancestorIds');
+        const ancestorIds = surveyGroup.get('ancestorIds');
         if (ancestorIds === null) {
           return false;
-        } else {
-          for(var i = 0; i < ancestorIds.length; i++){
-            if(ancestorIds[i] === +key) {
+        }
+        for (let i = 0; i < ancestorIds.length; i++) {
+          if (ancestorIds[i] === +key) {
+            return true;
+          }
+        }
+
+
+        // finally check for all descendents that may have surveyGroup.keyId in their
+        // ancestor list otherwise will not be able to browse to them.
+        const keyedSurvey = FLOW.store.find(FLOW.SurveyGroup, key);
+        if (keyedSurvey) {
+          const keyedAncestorIds = keyedSurvey.get('ancestorIds');
+          if (keyedAncestorIds === null) {
+            return false;
+          }
+          for (let j = 0; j < keyedAncestorIds.length; j++) {
+            if (keyedAncestorIds[j] === surveyGroup.get('keyId')) {
               return true;
             }
           }
         }
-
-        // finally check for all descendents that may have surveyGroup.keyId in their
-        // ancestor list otherwise will not be able to browse to them.
-        keyedSurvey = FLOW.store.find(FLOW.SurveyGroup, key);
-        if (keyedSurvey) {
-          var keyedAncestorIds = keyedSurvey.get('ancestorIds');
-          if (keyedAncestorIds === null) {
-            return false;
-          } else {
-            for (var j = 0; j < keyedAncestorIds.length; j++) {
-              if(keyedAncestorIds[j] === surveyGroup.get('keyId')) {
-                return true;
-              }
-            }
-          }
-        }
       }
-    }
+    });
+
     return false;
   },
 
   /* Computed properties */
-  breadCrumbs: Ember.computed(function() {
-    var result = [];
-    var currentProject = this.get('currentProject');
+  breadCrumbs: Ember.computed(function () {
+    const result = [];
+    const currentProject = this.get('currentProject');
     if (currentProject === null) {
       // current project is root
       return [];
     }
     let project;
-    var id = currentProject.get('keyId');
-    while(id !== null && id !== 0) {
+    let id = currentProject.get('keyId');
+    while (id !== null && id !== 0) {
       project = FLOW.store.find(FLOW.SurveyGroup, id);
       result.push(project);
       id = project.get('parentId');
@@ -301,103 +292,96 @@ FLOW.projectControl = Ember.ArrayController.create({
     return result.reverse();
   }).property('@each', 'currentProject'),
 
-  currentFolders: Ember.computed(function() {
-    var self = this;
-    var currentProject = this.get('currentProject');
-    var parentId = currentProject ? currentProject.get('keyId') : 0;
-    return this.get('content').filter(function(project) {
-      return project.get('parentId') === parentId;
-    }).sort(function(a, b) {
+  currentFolders: Ember.computed(function () {
+    const self = this;
+    const currentProject = this.get('currentProject');
+    const parentId = currentProject ? currentProject.get('keyId') : 0;
+    return this.get('content').filter(project => project.get('parentId') === parentId).sort((a, b) => {
       if (self.isProjectFolder(a) && self.isProject(b)) {
         return -1;
-      } else if (self.isProject(a) && self.isProjectFolder(b)) {
+      } if (self.isProject(a) && self.isProjectFolder(b)) {
         return 1;
-      } else {
-        var aCode = a.get('code') || a.get('name');
-        var bCode = b.get('code') || b.get('name');
-        if (aCode === bCode) return 0;
-        if (aCode === 'New survey' || aCode === 'New folder') return -1;
-        if (bCode === 'New survey' || bCode === 'New folder') return 1;
-        return aCode.localeCompare(bCode);
       }
+      const aCode = a.get('code') || a.get('name');
+      const bCode = b.get('code') || b.get('name');
+      if (aCode === bCode) return 0;
+      if (aCode === 'New survey' || aCode === 'New folder') return -1;
+      if (bCode === 'New survey' || bCode === 'New folder') return 1;
+      return aCode.localeCompare(bCode);
     });
   }).property('@each', 'currentProject', 'moveTarget'),
 
-  formCount: Ember.computed(function() {
-    return FLOW.surveyControl.content && FLOW.surveyControl.content.get('length') || 0;
-  }).property('FLOW.surveyControl.content.@each'),
+  formCount: Ember.computed(() => (FLOW.surveyControl.content ? FLOW.surveyControl.content.get('length') : 0)).property('FLOW.surveyControl.content.@each'),
 
-  questionCount: Ember.computed(function () {
-    var questions = FLOW.questionControl.filterContent;
-    return questions && questions.get('length') || 0;
+  questionCount: Ember.computed(() => {
+    const questions = FLOW.questionControl.filterContent;
+    return questions ? questions.get('length') : 0;
   }).property('FLOW.questionControl.filterContent.@each'),
 
-  hasForms: Ember.computed(function() {
+  hasForms: Ember.computed(function () {
     return this.get('formCount') > 0;
   }).property('this.formCount'),
 
-  currentProjectPath: Ember.computed(function() {
-    var projectList = this.get('breadCrumbs');
-    if(projectList.length === 0) {
-        return ""; // root project folder
-    } else {
-        var path = "";
-        for(let i = 0; i < projectList.length; i++){
-            path += "/" + projectList[i].get('name');
-        }
-        return path;
+  currentProjectPath: Ember.computed(function () {
+    const projectList = this.get('breadCrumbs');
+    if (projectList.length === 0) {
+      return ''; // root project folder
     }
+    let path = '';
+    for (let i = 0; i < projectList.length; i++) {
+      path += `/${projectList[i].get('name')}`;
+    }
+    return path;
   }).property('breadCrumbs'),
 
-  currentFolderPermissions: Ember.computed(function() {
-      var currentFolder = this.get('currentProject');
-      var currentUserPermissions = FLOW.currentUser.get('pathPermissions');
-      var folderPermissions = [];
+  currentFolderPermissions: Ember.computed(function () {
+    const currentFolder = this.get('currentProject');
+    const currentUserPermissions = FLOW.currentUser.get('pathPermissions');
+    const folderPermissions = [];
 
-      if (!currentUserPermissions) {
-        return [];
-      }
+    if (!currentUserPermissions) {
+      return [];
+    }
 
-      // root folder
-      if (!currentFolder) {
-        if (currentUserPermissions[0]) {
-          currentUserPermissions[0].forEach(function(item){
-            folderPermissions.push(item);
-          });
-        }
-        return folderPermissions;
-      }
-
-      // first check current object id
-      if (currentFolder.get('keyId') in currentUserPermissions) {
-        currentUserPermissions[currentFolder.get('keyId')].forEach(function(item){
+    // root folder
+    if (!currentFolder) {
+      if (currentUserPermissions[0]) {
+        currentUserPermissions[0].forEach((item) => {
           folderPermissions.push(item);
         });
       }
-
-      var ancestorIds = currentFolder.get('ancestorIds');
-      if (!ancestorIds) {
-        return folderPermissions;
-      }
-
-      var i;
-      for(let i = 0; i < ancestorIds.length; i++){
-        if (ancestorIds[i] in currentUserPermissions) {
-          currentUserPermissions[ancestorIds[i]].forEach(function(item){
-            folderPermissions.push(item);
-          });
-        }
-      }
-
       return folderPermissions;
+    }
+
+    // first check current object id
+    if (currentFolder.get('keyId') in currentUserPermissions) {
+      currentUserPermissions[currentFolder.get('keyId')].forEach((item) => {
+        folderPermissions.push(item);
+      });
+    }
+
+    const ancestorIds = currentFolder.get('ancestorIds');
+    if (!ancestorIds) {
+      return folderPermissions;
+    }
+
+    for (let i = 0; i < ancestorIds.length; i++) {
+      if (ancestorIds[i] in currentUserPermissions) {
+        currentUserPermissions[ancestorIds[i]].forEach((item) => {
+          folderPermissions.push(item);
+        });
+      }
+    }
+
+    return folderPermissions;
   }).property('currentProject'),
 
   /* Actions */
-  selectProject: function(evt) {
-    var project = evt.context;
+  selectProject(evt) {
+    const project = evt.context;
     // the target should not be openable while being moved. Prevents moving it into itself.
     if (this.moveTarget == project) {
-    	return;
+      return;
     }
 
     this.setCurrentProject(project);
@@ -406,113 +390,113 @@ FLOW.projectControl = Ember.ArrayController.create({
     FLOW.store.commit();
 
     if (this.isProject(project)) {
-        // load caddisfly resources if they are not loaded
-        // and only when surveys are selected
-        this.loadCaddisflyResources();
+      // load caddisfly resources if they are not loaded
+      // and only when surveys are selected
+      this.loadCaddisflyResources();
 
-        // applies to project where data approval has
-        // been previously set
-        if (project.get('requireDataApproval')) {
-            this.loadDataApprovalGroups();
-        }
+      // applies to project where data approval has
+      // been previously set
+      if (project.get('requireDataApproval')) {
+        this.loadDataApprovalGroups();
+      }
 
-        FLOW.selectedControl.set('selectedSurveyGroup', project);
+      FLOW.selectedControl.set('selectedSurveyGroup', project);
     }
 
     this.set('newlyCreated', null);
   },
 
-  selectRootProject: function() {
+  selectRootProject() {
     this.setCurrentProject(null);
   },
 
   /*
    * Load caddisfly resources if they are not already loaded
    */
-  loadCaddisflyResources: function () {
-      var caddisflyResourceController = FLOW.router.get('caddisflyResourceController');
-      if (Ember.empty(caddisflyResourceController.get('content'))) {
-          caddisflyResourceController.load();
-      }
+  loadCaddisflyResources() {
+    const caddisflyResourceController = FLOW.router.get('caddisflyResourceController');
+    if (Ember.empty(caddisflyResourceController.get('content'))) {
+      caddisflyResourceController.load();
+    }
   },
 
   /*
    * Load the data approval resources for this survey
    */
-  loadDataApprovalGroups: function (survey) {
-      var approvalGroups = FLOW.router.approvalGroupListController.get('content');
-      if (Ember.empty(approvalGroups)) {
-          FLOW.router.approvalGroupListController.load();
-      }
+  loadDataApprovalGroups() {
+    const approvalGroups = FLOW.router.approvalGroupListController.get('content');
+    if (Ember.empty(approvalGroups)) {
+      FLOW.router.approvalGroupListController.load();
+    }
   },
 
   /* Create a new project folder. The current project must be root or a project folder */
-  createProjectFolder: function() {
+  createProjectFolder() {
     this.createNewProject(true);
   },
 
-  createProject: function() {
+  createProject() {
     this.createNewProject(false);
   },
 
-  createNewProject: function(folder) {
-    var currentFolder = this.get('currentProject');
-    var currentFolderId = currentFolder ? currentFolder.get('keyId') : 0;
+  createNewProject(folder) {
+    const currentFolder = this.get('currentProject');
+    const currentFolderId = currentFolder ? currentFolder.get('keyId') : 0;
 
-    var name = folder ? Ember.String.loc('_new_folder').trim() : Ember.String.loc('_new_survey').trim();
-    var projectType = folder ? "PROJECT_FOLDER" : "PROJECT";
-    var path = this.get('currentProjectPath') + "/" + name;
+    const name = folder ? Ember.String.loc('_new_folder').trim() : Ember.String.loc('_new_survey').trim();
+    const projectType = folder ? 'PROJECT_FOLDER' : 'PROJECT';
+    const path = `${this.get('currentProjectPath')}/${name}`;
 
-    var newRecord = FLOW.store.createRecord(FLOW.SurveyGroup, {
-      "code": name,
-      "name": name,
-      "path": path,
-      "parentId": currentFolderId,
-      "projectType": projectType
+    const newRecord = FLOW.store.createRecord(FLOW.SurveyGroup, {
+      code: name,
+      name,
+      path,
+      parentId: currentFolderId,
+      projectType,
     });
     FLOW.store.commit();
 
     this.set('newlyCreated', newRecord);
   },
 
-  deleteProject: function(evt) {
-    var project = FLOW.store.find(FLOW.SurveyGroup, evt.context.get('keyId'));
+  deleteProject(evt) {
+    const project = FLOW.store.find(FLOW.SurveyGroup, evt.context.get('keyId'));
     project.deleteRecord();
     FLOW.store.commit();
   },
-  
+
   /* start moving a folder. Confusingly, the target is what will move */
-  beginMoveProject: function(evt) {
+  beginMoveProject(evt) {
     this.set('newlyCreated', null);
     this.set('moveTarget', evt.context);
-    this.set('moveTargetType', this.isProjectFolder(evt.context) ? "folder" : "survey");
+    this.set('moveTargetType', this.isProjectFolder(evt.context) ? 'folder' : 'survey');
   },
 
-  beginCopyProject: function(evt) {
+  beginCopyProject(evt) {
     this.set('newlyCreated', null);
     this.set('copyTarget', evt.context);
   },
 
-  cancelMoveProject: function(evt) {
+  cancelMoveProject() {
     this.set('moveTarget', null);
   },
 
-  cancelCopyProject: function(evt) {
+  cancelCopyProject() {
     this.set('copyTarget', null);
   },
 
-  endMoveProject: function(evt) {
-    var newFolderId = this.get('currentProject') ? this.get('currentProject').get('keyId') : 0;
-    var project = this.get('moveTarget');
-    var path = this.get('currentProjectPath') + "/" + project.get('name');
+  endMoveProject() {
+    const newFolderId = this.get('currentProject') ? this.get('currentProject').get('keyId') : 0;
+    const project = this.get('moveTarget');
+    const path = `${this.get('currentProjectPath')}/${project.get('name')}`;
     project.set('parentId', newFolderId);
     project.set('path', path);
     FLOW.store.commit();
     this.set('moveTarget', null);
   },
 
-  endCopyProject: function(evt) {
-    var currentFolder = this.get('currentProject');
+  endCopyProject() {
+    const currentFolder = this.get('currentProject');
 
     FLOW.store.findQuery(FLOW.Action, {
       action: 'copyProject',
@@ -522,7 +506,7 @@ FLOW.projectControl = Ember.ArrayController.create({
 
     FLOW.store.commit();
 
-    FLOW.dialogControl.set('activeAction', "ignore");
+    FLOW.dialogControl.set('activeAction', 'ignore');
     FLOW.dialogControl.set('header', Ember.String.loc('_copying_survey'));
     FLOW.dialogControl.set('message', Ember.String.loc('_copying_published_text_'));
     FLOW.dialogControl.set('showCANCEL', false);
@@ -532,19 +516,17 @@ FLOW.projectControl = Ember.ArrayController.create({
   },
 
   /* Helper methods */
-  isProjectFolder: function(project) {
+  isProjectFolder(project) {
     return project === null || project.get('projectType') === 'PROJECT_FOLDER';
   },
 
-  isProject: function(project) {
+  isProject(project) {
     return !this.isProjectFolder(project);
   },
 
-  isProjectFolderEmpty: function(folder) {
-    var id = folder.get('keyId');
-    var children = this.get('content').filter(function(project) {
-      return project.get('parentId') === id;
-    });
+  isProjectFolderEmpty(folder) {
+    const id = folder.get('keyId');
+    const children = this.get('content').filter(project => project.get('parentId') === id);
     return children.get('length') === 0;
   },
 
@@ -554,44 +536,44 @@ FLOW.projectControl = Ember.ArrayController.create({
    * loading the appropriate approval steps depending on
    * the selected approval group
    */
-  dataApprovalGroup: Ember.computed(function (key, value, previousValue) {
-      var survey = this.get('currentProject');
+  dataApprovalGroup: Ember.computed(function (key, value) {
+    const survey = this.get('currentProject');
 
-      // setter
-      if (arguments.length > 1 && survey) {
-          survey.set('dataApprovalGroupId', value && value.get('keyId'));
-      }
+    // setter
+    if (arguments.length > 1 && survey) {
+      survey.set('dataApprovalGroupId', value && value.get('keyId'));
+    }
 
-      // getter
-      var approvalGroupId = survey && survey.get('dataApprovalGroupId');
-      FLOW.router.approvalStepsController.loadByGroupId(approvalGroupId);
+    // getter
+    const approvalGroupId = survey && survey.get('dataApprovalGroupId');
+    FLOW.router.approvalStepsController.loadByGroupId(approvalGroupId);
 
-      var groups = FLOW.router.approvalGroupListController.get('content');
-      return groups && groups.filterProperty('keyId', approvalGroupId).get('firstObject');
+    const groups = FLOW.router.approvalGroupListController.get('content');
+    return groups && groups.filterProperty('keyId', approvalGroupId).get('firstObject');
   }).property('this.currentProject.dataApprovalGroupId'),
 
-  saveProject: function() {
-    var currentProject = this.get('currentProject');
-    var currentForm = FLOW.selectedControl.get('selectedSurvey');
+  saveProject() {
+    const currentProject = this.get('currentProject');
+    const currentForm = FLOW.selectedControl.get('selectedSurvey');
 
     if (currentProject && currentProject.get('isDirty')) {
-      var name = currentProject.get('name').trim();
+      const name = currentProject.get('name').trim();
       currentProject.set('name', name);
       currentProject.set('code', name);
       currentProject.set('path', this.get('currentProjectPath'));
     }
 
     if (currentForm && currentForm.get('isDirty')) {
-      var name = currentForm.get('name').trim();
+      const name = currentForm.get('name').trim();
       currentForm.set('name', name);
       currentForm.set('code', name);
-      var path = this.get('currentProjectPath') + "/" + name;
+      const path = `${this.get('currentProjectPath')}/${name}`;
       currentForm.set('path', path);
       currentForm.set('status', 'NOT_PUBLISHED');
     }
 
     FLOW.store.commit();
-  }
+  },
 });
 
 
@@ -613,50 +595,41 @@ FLOW.surveyControl = Ember.ArrayController.create(observe({
   sortAscending: true,
   orderedForms: null,
 
-  setPublishedContent: function () {
-    var sgId;
+  setPublishedContent() {
     if (FLOW.selectedControl.get('selectedSurveyGroup') && FLOW.selectedControl.selectedSurveyGroup.get('keyId') > 0) {
-      sgId = FLOW.selectedControl.selectedSurveyGroup.get('keyId');
+      const sgId = FLOW.selectedControl.selectedSurveyGroup.get('keyId');
       this.set('publishedContent', Ember.ArrayController.create({
         sortProperties: this.get('sortProperties'),
         sortAscending: this.get('sortAscending'),
-        content: FLOW.store.filter(FLOW.Survey, function (item) {
-          return item.get('surveyGroupId') == sgId && item.get('status') == 'PUBLISHED';
-        })
+        content: FLOW.store.filter(FLOW.Survey, item => item.get('surveyGroupId') == sgId && item.get('status') == 'PUBLISHED'),
       }));
     } else {
       this.set('publishedContent', null);
     }
   },
 
-  orderForms: function () {
+  orderForms() {
     if (FLOW.selectedControl.get('selectedSurveyGroup') && FLOW.selectedControl.selectedSurveyGroup.get('keyId') > 0) {
-      var sgId = FLOW.selectedControl.selectedSurveyGroup.get('keyId'), self = this;
-      var forms = FLOW.store.filter(FLOW.Survey, function (item) {
-        return item.get('surveyGroupId') == sgId;
-      });
+      const sgId = FLOW.selectedControl.selectedSurveyGroup.get('keyId');
+      const self = this;
+      const forms = FLOW.store.filter(FLOW.Survey, item => item.get('surveyGroupId') == sgId);
       self.set('orderedForms', []);
 
       if (forms.get('length') > 1 && FLOW.selectedControl.selectedSurveyGroup.get('monitoringGroup')) {
-        //find registration form if set
-        var regFormId, regForm = forms.find(function (item) {
-          return item.get('keyId') == FLOW.selectedControl.selectedSurveyGroup.get('newLocaleSurveyId');
-        });
+        // find registration form if set
+        let regFormId;
+        const regForm = forms.find(item => item.get('keyId') == FLOW.selectedControl.selectedSurveyGroup.get('newLocaleSurveyId'));
         if (regForm) {
           regFormId = regForm.get('keyId');
         } else {
-          regFormId = forms.get('firstObject').get('keyId'); //registration form not defined so assume first form is registration
+          regFormId = forms.get('firstObject').get('keyId'); // registration form not defined so assume first form is registration
         }
 
-        self.orderedForms.push(forms.find(function (form) {
-          return form.get('keyId') == regFormId;
-        }));
+        self.orderedForms.push(forms.find(form => form.get('keyId') == regFormId));
 
-        forms.filter( function (form) {
-          return form.get('keyId') != regFormId;
-        }).sort(function (a, b) {
-          var nameA = a.get('name').toUpperCase();
-          var nameB = b.get('name').toUpperCase();
+        forms.filter(form => form.get('keyId') != regFormId).sort((a, b) => {
+          const nameA = a.get('name').toUpperCase();
+          const nameB = b.get('name').toUpperCase();
           if (nameA < nameB) {
             return -1;
           }
@@ -664,40 +637,36 @@ FLOW.surveyControl = Ember.ArrayController.create(observe({
             return 1;
           }
           return 0;
-        }).forEach(function (form) {
+        }).forEach((form) => {
           self.orderedForms.push(form);
         });
       } else {
-        self.orderedForms.push(forms.find(function (form) {
-          return form.get('surveyGroupId') == sgId;
-        }));
+        self.orderedForms.push(forms.find(form => form.get('surveyGroupId') == sgId));
       }
     }
   },
 
-  populateAll: function () {
+  populateAll() {
     FLOW.store.find(FLOW.Survey);
   },
 
-  populate: function () {
-    var id;
+  populate() {
     if (FLOW.selectedControl.get('selectedSurveyGroup')) {
-      id = FLOW.selectedControl.selectedSurveyGroup.get('keyId');
+      const id = FLOW.selectedControl.selectedSurveyGroup.get('keyId');
       // this content is actualy not used, the data ends up in the store
       // and is accessed through the filtered content above
       this.set('content', FLOW.store.findQuery(FLOW.Survey, {
-        surveyGroupId: id
+        surveyGroupId: id,
       }));
-
     } else {
       this.set('content', null);
     }
   },
 
-  selectFirstForm: function() {
+  selectFirstForm() {
     if (FLOW.selectedControl.selectedSurvey) return; // ignore if form is already selected
     if (this.get('content') && this.content.get('isLoaded')) {
-      var form = this.content.get('firstObject');
+      const form = this.content.get('firstObject');
       if (form) {
         FLOW.selectedControl.set('selectedSurvey', form);
       }
@@ -705,25 +674,22 @@ FLOW.surveyControl = Ember.ArrayController.create(observe({
     }
   },
 
-  refresh: function () {
-	  var sg = FLOW.selectedControl.get('selectedSurveyGroup');
-	  this.set('content', FLOW.store.filter(FLOW.Survey, function (item) {
-		  return item.get('surveyGroupId') === sg.get('keyId');
-	  }));
+  refresh() {
+    const sg = FLOW.selectedControl.get('selectedSurveyGroup');
+    this.set('content', FLOW.store.filter(FLOW.Survey, item => item.get('surveyGroupId') === sg.get('keyId')));
   },
 
-  newLocale: function () {
-	  var newLocaleId = FLOW.selectedControl && FLOW.selectedControl.selectedSurveyGroup && FLOW.selectedControl.selectedSurveyGroup.get('newLocaleSurveyId');
-	  if(!this.get('content') || !this.get('content').get('isLoaded')) { return; }
-	  this.set('newLocaleSurvey', this.find(function (item) { return item.get('keyId') === newLocaleId; }));
+  newLocale() {
+    const newLocaleId = FLOW.selectedControl && FLOW.selectedControl.selectedSurveyGroup && FLOW.selectedControl.selectedSurveyGroup.get('newLocaleSurveyId');
+    if (!this.get('content') || !this.get('content').get('isLoaded')) { return; }
+    this.set('newLocaleSurvey', this.find(item => item.get('keyId') === newLocaleId));
   },
 
-  publishSurvey: function () {
-    var surveyId;
-    surveyId = FLOW.selectedControl.selectedSurvey.get('keyId');
+  publishSurvey() {
+    const surveyId = FLOW.selectedControl.selectedSurvey.get('keyId');
     FLOW.store.findQuery(FLOW.Action, {
       action: 'publishSurvey',
-      surveyId: surveyId
+      surveyId,
     });
 
     FLOW.dialogControl.set('activeAction', 'ignore');
@@ -733,21 +699,21 @@ FLOW.surveyControl = Ember.ArrayController.create(observe({
     FLOW.dialogControl.set('showDialog', true);
   },
 
-  createForm: function() {
-    var code = Ember.String.loc('_new_form').trim();
-    var path = FLOW.projectControl.get('currentProjectPath') + "/" + code;
-    var ancestorIds = FLOW.selectedControl.selectedSurveyGroup.get('ancestorIds');
+  createForm() {
+    const code = Ember.String.loc('_new_form').trim();
+    const path = `${FLOW.projectControl.get('currentProjectPath')}/${code}`;
+    const ancestorIds = FLOW.selectedControl.selectedSurveyGroup.get('ancestorIds');
     ancestorIds.push(FLOW.selectedControl.selectedSurveyGroup.get('keyId'));
-    var newForm = FLOW.store.createRecord(FLOW.Survey, {
-      "name": code,
-      "code": code,
-      "path": path,
-      "defaultLanguageCode": "en",
-      "requireApproval": false,
-      "status": "NOT_PUBLISHED",
-      "surveyGroupId": FLOW.selectedControl.selectedSurveyGroup.get('keyId'),
-      "version":"1.0",
-      "ancestorIds": ancestorIds
+    const newForm = FLOW.store.createRecord(FLOW.Survey, {
+      name: code,
+      code,
+      path,
+      defaultLanguageCode: 'en',
+      requireApproval: false,
+      status: 'NOT_PUBLISHED',
+      surveyGroupId: FLOW.selectedControl.selectedSurveyGroup.get('keyId'),
+      version: '1.0',
+      ancestorIds,
     });
     FLOW.projectControl.get('currentProject').set('deleteDisabled', true);
     FLOW.selectedControl.set('selectedSurvey', newForm);
@@ -755,9 +721,9 @@ FLOW.surveyControl = Ember.ArrayController.create(observe({
     this.refresh();
   },
 
-  deleteForm: function() {
-    var keyId = FLOW.selectedControl.selectedSurvey.get('keyId');
-    var survey = FLOW.store.find(FLOW.Survey, keyId);
+  deleteForm() {
+    const keyId = FLOW.selectedControl.selectedSurvey.get('keyId');
+    const survey = FLOW.store.find(FLOW.Survey, keyId);
     if (FLOW.projectControl.get('formCount') === 1) {
       FLOW.projectControl.get('currentProject').set('surveyList', null);
       FLOW.projectControl.get('currentProject').set('deleteDisabled', false);
@@ -769,69 +735,66 @@ FLOW.surveyControl = Ember.ArrayController.create(observe({
     this.refresh();
   },
 
-  showPreview: function() {
+  showPreview() {
     FLOW.previewControl.set('showPreviewPopup', true);
   },
 
-  selectForm: function(evt) {
+  selectForm(evt) {
     FLOW.selectedControl.set('selectedSurvey', evt.context);
     //  we don't allow copying or moving between forms
-    FLOW.selectedControl.set('selectedForMoveQuestionGroup',null);
-    FLOW.selectedControl.set('selectedForCopyQuestionGroup',null);
-    FLOW.selectedControl.set('selectedForMoveQuestion',null);
-    FLOW.selectedControl.set('selectedForCopyQuestion',null);
+    FLOW.selectedControl.set('selectedForMoveQuestionGroup', null);
+    FLOW.selectedControl.set('selectedForCopyQuestionGroup', null);
+    FLOW.selectedControl.set('selectedForMoveQuestion', null);
+    FLOW.selectedControl.set('selectedForCopyQuestion', null);
   },
 
   /* retrieve a survey and check based on its path whether the user
   is allowed to delete survey instances related to the survey */
-  userCanDeleteData: function(surveyId) {
-    var survey;
-    this.get('content').forEach(function(item){
-        if(item.get('keyId') === surveyId) {
-            survey = item;
-        }
+  userCanDeleteData(surveyId) {
+    let survey;
+    this.get('content').forEach((item) => {
+      if (item.get('keyId') === surveyId) {
+        survey = item;
+      }
     });
 
-    if(survey && survey.get('path')) {
-        return FLOW.permControl.canDeleteData(survey.get('path'));
-    } else {
-        return false; // need survey and survey path, otherwise prevent delete
+    if (survey && survey.get('path')) {
+      return FLOW.permControl.canDeleteData(survey.get('path'));
     }
+    return false; // need survey and survey path, otherwise prevent delete
   },
 
   /* retrieve the list of permissions associated with the currently
     active form */
-  currentFormPermissions: Ember.computed(function() {
-    var currentForm = FLOW.selectedControl.get('selectedSurvey');
-    var currentUserPermissions = FLOW.currentUser.get('pathPermissions');
-    var formPermissions = [];
+  currentFormPermissions: Ember.computed(() => {
+    const currentForm = FLOW.selectedControl.get('selectedSurvey');
+    const currentUserPermissions = FLOW.currentUser.get('pathPermissions');
+    const formPermissions = [];
 
     if (!currentForm || !currentUserPermissions) {
       return [];
     }
 
-    var ancestorIds = currentForm.get('ancestorIds');
+    const ancestorIds = currentForm.get('ancestorIds');
     if (!ancestorIds) {
       return [];
     }
 
-    var i;
-    for(let i = 0; i < ancestorIds.length; i++){
+    for (let i = 0; i < ancestorIds.length; i++) {
       if (ancestorIds[i] in currentUserPermissions) {
-        currentUserPermissions[ancestorIds[i]].forEach(function(item){
+        currentUserPermissions[ancestorIds[i]].forEach((item) => {
           formPermissions.push(item);
         });
       }
     }
 
     return formPermissions;
-
   }).property('FLOW.selectedControl.selectedSurvey'),
 
-  viewDataForms: function() {
-    var forms = [];
-    
-    this.content.forEach(function(item){
+  viewDataForms() {
+    const forms = [];
+
+    this.content.forEach((item) => {
       if (FLOW.permControl.userCanViewData(item)) {
         forms.push(item);
       }
@@ -840,27 +803,24 @@ FLOW.surveyControl = Ember.ArrayController.create(observe({
     this.set('readDataContent', forms);
 
     if (forms.length === 0) {
-      FLOW.selectedControl.set("selectedSurvey", null);
+      FLOW.selectedControl.set('selectedSurvey', null);
     }
-  }
+  },
 });
 
 
 FLOW.questionGroupControl = Ember.ArrayController.create(observe({
-  'FLOW.selectedControl.selectedSurvey': 'populate',  
+  'FLOW.selectedControl.selectedSurvey': 'populate',
 }), {
   sortProperties: ['order'],
   sortAscending: true,
   content: null,
 
-  setFilteredContent: function () {
-    var sId;
+  setFilteredContent() {
     if (FLOW.selectedControl.get('selectedSurvey')) {
       if (!Ember.empty(FLOW.selectedControl.selectedSurvey.get('keyId'))) {
-        sId = FLOW.selectedControl.selectedSurvey.get('keyId');
-        this.set('content', FLOW.store.filter(FLOW.QuestionGroup, function (item) {
-          return item.get('surveyId') == sId;
-        }));
+        const sId = FLOW.selectedControl.selectedSurvey.get('keyId');
+        this.set('content', FLOW.store.filter(FLOW.QuestionGroup, item => item.get('surveyId') == sId));
       } else {
         // this happens when we have created a new survey, which has no id yet
         this.set('content', null);
@@ -868,11 +828,11 @@ FLOW.questionGroupControl = Ember.ArrayController.create(observe({
     }
   },
 
-  populate: function () {
+  populate() {
     if (FLOW.selectedControl.get('selectedSurvey') && FLOW.selectedControl.selectedSurvey.get('keyId') > 0) {
-      var id = FLOW.selectedControl.selectedSurvey.get('keyId');
+      const id = FLOW.selectedControl.selectedSurvey.get('keyId');
       FLOW.store.findQuery(FLOW.QuestionGroup, {
-        surveyId: id
+        surveyId: id,
       });
     }
     this.setFilteredContent();
@@ -881,48 +841,44 @@ FLOW.questionGroupControl = Ember.ArrayController.create(observe({
   // true if all items have been saved
   // used in models.js
   allRecordsSaved: Ember.computed(function () {
-    var allSaved = true;
+    let allSaved = true;
     if (Ember.none(this.get('content'))) {
       return true;
-    } else {
-      this.get('content').forEach(function (item) {
-        if (item.get('isSaving')) {
-          allSaved = false;
-        }
-      });
-      return allSaved;
     }
+    this.get('content').forEach((item) => {
+      if (item.get('isSaving')) {
+        allSaved = false;
+      }
+    });
+    return allSaved;
   }).property('content.@each.isSaving'),
 
   // execute group delete
-  deleteQuestionGroup: function (questionGroupId) {
-    var questionGroup, sId, qgOrder;
-    sId = FLOW.selectedControl.selectedSurvey.get('keyId');
-    questionGroup = FLOW.store.find(FLOW.QuestionGroup, questionGroupId);
-    qgOrder = questionGroup.get('order');
+  deleteQuestionGroup(questionGroupId) {
+    const sId = FLOW.selectedControl.selectedSurvey.get('keyId');
+    const questionGroup = FLOW.store.find(FLOW.QuestionGroup, questionGroupId);
+    const qgOrder = questionGroup.get('order');
 
     questionGroup.deleteRecord();
 
     // reorder the rest of the question groups
-    this.reorderQuestionGroups(sId, qgOrder, "decrement");
+    this.reorderQuestionGroups(sId, qgOrder, 'decrement');
     this.submitBulkQuestionGroupsReorder(sId);
 
     FLOW.selectedControl.selectedSurvey.set('status', 'NOT_PUBLISHED');
     FLOW.store.commit();
   },
 
-  reorderQuestionGroups: function (surveyId, reorderPoint, reorderOperation) {
-    var questionGroupsInSurvey = FLOW.store.filter(FLOW.QuestionGroup, function (item) {
-      return item.get('surveyId') == surveyId;
-    });
+  reorderQuestionGroups(surveyId, reorderPoint, reorderOperation) {
+    const questionGroupsInSurvey = FLOW.store.filter(FLOW.QuestionGroup, item => item.get('surveyId') == surveyId);
 
     // move items up to make space
-    questionGroupsInSurvey.forEach(function (item) {
-      if (reorderOperation == "increment") {
+    questionGroupsInSurvey.forEach((item) => {
+      if (reorderOperation == 'increment') {
         if (item.get('order') > reorderPoint) {
           item.set('order', item.get('order') + 1);
         }
-      } else if (reorderOperation == "decrement") {
+      } else if (reorderOperation == 'decrement') {
         if (item.get('order') > reorderPoint) {
           item.set('order', item.get('order') - 1);
         }
@@ -930,17 +886,15 @@ FLOW.questionGroupControl = Ember.ArrayController.create(observe({
     });
   },
 
-  submitBulkQuestionGroupsReorder: function (surveyId) {
+  submitBulkQuestionGroupsReorder(surveyId) {
     FLOW.questionControl.set('bulkCommit', true);
-    var questionGroupsInSurvey = FLOW.store.filter(FLOW.QuestionGroup, function (item) {
-      return item.get('surveyId') == surveyId;
-    });
+    const questionGroupsInSurvey = FLOW.store.filter(FLOW.QuestionGroup, item => item.get('surveyId') == surveyId);
     // restore order in case the order has gone haywire
     FLOW.questionControl.restoreOrder(questionGroupsInSurvey);
     FLOW.store.commit();
     FLOW.store.adapter.set('bulkCommit', false);
     FLOW.questionControl.set('bulkCommit', false);
-  }
+  },
 });
 
 
@@ -959,109 +913,96 @@ FLOW.questionControl = Ember.ArrayController.create(observe({
   preflightQId: null,
   bulkCommit: false,
 
-  populateAllQuestions: function () {
-    var sId;
+  populateAllQuestions() {
     if (FLOW.selectedControl.get('selectedSurvey') && FLOW.selectedControl.selectedSurvey.get('keyId') > 0) {
-      sId = FLOW.selectedControl.selectedSurvey.get('keyId');
+      const sId = FLOW.selectedControl.selectedSurvey.get('keyId');
       this.set('content', FLOW.store.findQuery(FLOW.Question, {
-        surveyId: sId
+        surveyId: sId,
       }));
     }
   },
 
-  populateQuestionGroupQuestions: function (qgId) {
-        this.set('content', FLOW.store.findQuery(FLOW.Question, {
-          questionGroupId: qgId
-        }));
-    },
-
-  // used for surveyInstances in data edit popup
-  doSurveyIdQuery: function (surveyId) {
+  populateQuestionGroupQuestions(qgId) {
     this.set('content', FLOW.store.findQuery(FLOW.Question, {
-      surveyId: surveyId
+      questionGroupId: qgId,
     }));
   },
 
-  restoreOrder: function (groups) {
-    var temp, i;
+  // used for surveyInstances in data edit popup
+  doSurveyIdQuery(surveyId) {
+    this.set('content', FLOW.store.findQuery(FLOW.Question, {
+      surveyId,
+    }));
+  },
+
+  restoreOrder(groups) {
+    let i = 1;
     // sort them and renumber them according to logical numbering
-    temp = groups.toArray();
-    temp.sort(function(a,b) {
-    	return a.get('order') - b.get('order');
-    });
-    i = 1;
-    temp.forEach(function(item){
-      item.set('order',i);
+    const temp = groups.toArray();
+    temp.sort((a, b) => a.get('order') - b.get('order'));
+    temp.forEach((item) => {
+      item.set('order', i);
       i++;
     });
   },
 
-  deleteQuestion: function (questionId) {
-    var question, qgId, qOrder;
-    question = FLOW.store.find(FLOW.Question, questionId);
-    qgId = question.get('questionGroupId');
-    qOrder = question.get('order');
+  deleteQuestion(questionId) {
+    const question = FLOW.store.find(FLOW.Question, questionId);
+    const qgId = question.get('questionGroupId');
+    const qOrder = question.get('order');
     question.deleteRecord();
 
-    //reorder the rest of the questions
-    this.reorderQuestions(qgId, qOrder, "decrement");
+    // reorder the rest of the questions
+    this.reorderQuestions(qgId, qOrder, 'decrement');
     this.submitBulkQuestionsReorder([qgId]);
 
     FLOW.selectedControl.selectedSurvey.set('status', 'NOT_PUBLISHED');
     FLOW.store.commit();
   },
 
-  allQuestionsFilter: function () {
-    var sId;
+  allQuestionsFilter() {
     if (FLOW.selectedControl.get('selectedSurvey') && FLOW.selectedControl.selectedSurvey.get('keyId') > 0) {
-      sId = FLOW.selectedControl.selectedSurvey.get('keyId');
-      this.set('filterContent', FLOW.store.filter(FLOW.Question, function (item) {
-        return item.get('surveyId') == sId;
-      }));
+      const sId = FLOW.selectedControl.selectedSurvey.get('keyId');
+      this.set('filterContent', FLOW.store.filter(FLOW.Question, item => item.get('surveyId') == sId));
     } else {
       this.set('filterContent', null);
     }
   },
 
-  setQGcontent: function () {
+  setQGcontent() {
     if (FLOW.selectedControl.get('selectedQuestionGroup') && FLOW.selectedControl.selectedSurvey.get('keyId') > 0) {
-      var qId = FLOW.selectedControl.selectedQuestionGroup.get('keyId');
-      this.set('content', FLOW.store.filter(FLOW.Question, function (item) {
-        return item.get('questionGroupId') == qId;
-      }));
+      const qId = FLOW.selectedControl.selectedQuestionGroup.get('keyId');
+      this.set('content', FLOW.store.filter(FLOW.Question, item => item.get('questionGroupId') == qId));
     }
   },
 
-  geoshapeContent: Ember.computed(function() {
-    var selectedSurvey = FLOW.selectedControl.get('selectedSurvey');
-    var surveyId = selectedSurvey ? selectedSurvey.get('keyId') : null;
-    return FLOW.store.filter(FLOW.Question, function (question) {
-      return question.get('type') === 'GEOSHAPE' && surveyId === question.get('surveyId');
-    });
+  geoshapeContent: Ember.computed(() => {
+    const selectedSurvey = FLOW.selectedControl.get('selectedSurvey');
+    const surveyId = selectedSurvey ? selectedSurvey.get('keyId') : null;
+    return FLOW.store.filter(FLOW.Question, question => question.get('type') === 'GEOSHAPE' && surveyId === question.get('surveyId'));
   }).property('content'),
 
-  downloadOptionQuestions: function (surveyId) {
-	  this.set('OPTIONcontent', FLOW.store.findQuery(FLOW.Question, {
-	     surveyId: surveyId,
-	      optionQuestionsOnly:true
-	  }));
+  downloadOptionQuestions(surveyId) {
+    this.set('OPTIONcontent', FLOW.store.findQuery(FLOW.Question, {
+      surveyId,
+      optionQuestionsOnly: true,
+    }));
   },
 
   // used for display of dependencies: a question can only be dependent on earlier questions
-  setEarlierOptionQuestions: function () {
+  setEarlierOptionQuestions() {
     if (!Ember.none(FLOW.selectedControl.get('selectedQuestion')) && !Ember.none(FLOW.selectedControl.get('selectedQuestionGroup'))) {
-      var optionQuestionList, sId, questionGroupOrder, qgOrder, qg, questionOrder, questionGroupId;
-      sId = FLOW.selectedControl.selectedSurvey.get('keyId');
-      questionGroupId = FLOW.selectedControl.selectedQuestionGroup.get('keyId');
-      questionGroupOrder = FLOW.selectedControl.selectedQuestionGroup.get('order');
-      questionOrder = FLOW.selectedControl.selectedQuestion.get('order');
-      optionQuestionList = FLOW.store.filter(FLOW.Question, function (item) {
-        qg = FLOW.store.find(FLOW.QuestionGroup, item.get('questionGroupId'));
+      const sId = FLOW.selectedControl.selectedSurvey.get('keyId');
+      const questionGroupId = FLOW.selectedControl.selectedQuestionGroup.get('keyId');
+      const questionGroupOrder = FLOW.selectedControl.selectedQuestionGroup.get('order');
+      const questionOrder = FLOW.selectedControl.selectedQuestion.get('order');
+      const optionQuestionList = FLOW.store.filter(FLOW.Question, (item) => {
+        const qg = FLOW.store.find(FLOW.QuestionGroup, item.get('questionGroupId'));
         // no dependencies from non-repeat to repeat groups
         if (qg.get('keyId') != questionGroupId && qg.get('repeatable')) {
           return false;
         }
-        qgOrder = qg.get('order');
+        const qgOrder = qg.get('order');
         if (!(item.get('type') == 'OPTION' && item.get('surveyId') == sId)) return false;
         if (qgOrder > questionGroupOrder) {
           return false;
@@ -1077,18 +1018,16 @@ FLOW.questionControl = Ember.ArrayController.create(observe({
     }
   },
 
-  reorderQuestions: function (qgId, reorderPoint, reorderOperation) {
-    var questionsInGroup = FLOW.store.filter(FLOW.Question, function (item) {
-      return item.get('questionGroupId') == qgId;
-    });
+  reorderQuestions(qgId, reorderPoint, reorderOperation) {
+    const questionsInGroup = FLOW.store.filter(FLOW.Question, item => item.get('questionGroupId') == qgId);
 
     // move items up to make space
-    questionsInGroup.forEach(function (item) {
-      if (reorderOperation == "increment") {
+    questionsInGroup.forEach((item) => {
+      if (reorderOperation == 'increment') {
         if (item.get('order') > reorderPoint) {
           item.set('order', item.get('order') + 1);
         }
-      } else if (reorderOperation == "decrement") {
+      } else if (reorderOperation == 'decrement') {
         if (item.get('order') > reorderPoint) {
           item.set('order', item.get('order') - 1);
         }
@@ -1096,12 +1035,10 @@ FLOW.questionControl = Ember.ArrayController.create(observe({
     });
   },
 
-  submitBulkQuestionsReorder: function (qgIds) {
+  submitBulkQuestionsReorder(qgIds) {
     this.set('bulkCommit', true);
-    for (var i=0; i>qgIds.length; i++) {
-      var questionsInGroup = FLOW.store.filter(FLOW.Question, function (item) {
-        return item.get('questionGroupId') == qgIds[i];
-      });
+    for (let i = 0; i > qgIds.length; i++) {
+      const questionsInGroup = FLOW.store.filter(FLOW.Question, item => item.get('questionGroupId') == qgIds[i]);
       // restore order in case the order has gone haywire
       FLOW.questionControl.restoreOrder(questionsInGroup);
     }
@@ -1113,22 +1050,22 @@ FLOW.questionControl = Ember.ArrayController.create(observe({
 
   // true if all items have been saved
   // used in models.js
-  allRecordsSaved: Ember.computed(function () {
-    var allSaved = true;
-    FLOW.questionControl.get('content').forEach(function (item) {
+  allRecordsSaved: Ember.computed(() => {
+    let allSaved = true;
+    FLOW.questionControl.get('content').forEach((item) => {
       if (item.get('isSaving')) {
         allSaved = false;
       }
     });
     return allSaved;
-  }).property('content.@each.isSaving')
+  }).property('content.@each.isSaving'),
 });
 
 /*
  *  Note: This controller is for the option list for a question's dependencies
  */
 FLOW.optionListControl = Ember.ArrayController.create({
-  content: []
+  content: [],
 });
 
 /*
@@ -1136,17 +1073,19 @@ FLOW.optionListControl = Ember.ArrayController.create({
  *
  */
 FLOW.questionOptionsControl = Ember.ArrayController.create({
-  sortProperties: ["order"],
+  sortProperties: ['order'],
   content: null,
   questionId: null,
   emptyOptions: Ember.computed(function () {
-    var c = this.content;
+    const c = this.content;
     return !(c.get('length') > 0);
   }).property('content.length'),
 
   duplicateOptionNames: Ember.computed(function () {
-    var c = this.content, uniqueText = [], emptyText = 0;
-    c.forEach(function (option) {
+    const c = this.content;
+    const uniqueText = [];
+    let emptyText = 0;
+    c.forEach((option) => {
       if (option.get('text') && option.get('text').trim()) {
         if (!(uniqueText.indexOf(option.get('text').trim()) > -1)) {
           uniqueText.push(option.get('text').trim());
@@ -1156,30 +1095,31 @@ FLOW.questionOptionsControl = Ember.ArrayController.create({
       }
     });
     return c.length > uniqueText.length && emptyText === 0;
-  }).property('@each.text','content.length'),
+  }).property('@each.text', 'content.length'),
 
   emptyOptionNames: Ember.computed(function () {
-    var c = this.content, emptyText = 0;
-    c.forEach(function (option) {
+    const c = this.content;
+    let emptyText = 0;
+    c.forEach((option) => {
       // only take into account options with no text but with code filled in
       if ((!option.get('text') || option.get('text').trim().length === 0) && option.get('code') && option.get('code').trim()) {
         emptyText++;
       }
     });
     return emptyText > 0;
-  }).property('@each.text','content.length'),
+  }).property('@each.text', 'content.length'),
 
   partialOptionCodes: Ember.computed(function () {
-    var c = this.content;
-    var codes = c.filter(function(option) {
-      return option.get('code');
-    });
+    const c = this.content;
+    const codes = c.filter(option => option.get('code'));
     return codes.length && codes.length < c.length;
-  }).property('@each.code','content.length'),
+  }).property('@each.code', 'content.length'),
 
   duplicateOptionCodes: Ember.computed(function () {
-    var c = this.content, uniqueCode = [], emptyCode = 0;
-    c.forEach(function (option) {
+    const c = this.content;
+    const uniqueCode = [];
+    let emptyCode = 0;
+    c.forEach((option) => {
       if (option.get('code') && option.get('code').trim()) {
         if (!(uniqueCode.indexOf(option.get('code').trim()) > -1)) {
           uniqueCode.push(option.get('code').trim());
@@ -1189,40 +1129,43 @@ FLOW.questionOptionsControl = Ember.ArrayController.create({
       }
     });
     return c.length > uniqueCode.length && emptyCode === 0;
-  }).property('@each.code','content.length'),
+  }).property('@each.code', 'content.length'),
 
   disallowedCharacters: Ember.computed(function () {
-    var c = this.content, disallowedCharacters = 0;
-    c.forEach(function (option) {
+    const c = this.content;
+    let disallowedCharacters = 0;
+    c.forEach((option) => {
       if (option.get('code') && option.get('code').trim()) {
-        if (!option.get('code').trim().match(/^[A-Za-z0-9_\-]*$/)) {
+        if (!option.get('code').trim().match(/^[A-Za-z0-9_-]*$/)) {
           disallowedCharacters++;
         }
       }
     });
 
     return disallowedCharacters > 0;
-  }).property('@each.code','content.length'),
+  }).property('@each.code', 'content.length'),
 
   reservedCode: Ember.computed(function () {
-    var c = this.content, reservedCode = [];
-    c.forEach(function (option) {
+    const c = this.content;
+    const reservedCode = [];
+    c.forEach((option) => {
       if (option.get('code') && option.get('code').trim()) {
-        if (option.get('code').trim() === "OTHER") {
+        if (option.get('code').trim() === 'OTHER') {
           reservedCode.push(option.get('code').trim());
         }
       }
     });
 
     return reservedCode.length > 0;
-  }).property('@each.code','content.length'),
+  }).property('@each.code', 'content.length'),
 
   /*
    *  Add two empty option objects to the options list.  This is used
    *  as a default setup for new option questions
    */
-  loadDefaultOptions: function () {
-    var c = this.content, defaultLength = 2;
+  loadDefaultOptions() {
+    const c = this.content;
+    let defaultLength = 2;
     if (c && c.get('length') === 0) {
       while (defaultLength > 0) {
         c.addObject(Ember.Object.create({
@@ -1240,14 +1183,14 @@ FLOW.questionOptionsControl = Ember.ArrayController.create({
    *  Add a new option object to the content of this controller.  The object
    *  is not persisted to the data store.
    */
-  addOption: function() {
-    var c = this.content;
-    var currentLength = c.get('length');
+  addOption() {
+    const c = this.content;
+    const currentLength = c.get('length');
     c.addObject(Ember.Object.create({
-        code: null,
-        text: Ember.String.loc('_new_option'),
-        order: currentLength + 1,
-        questionId: this.get('questionId'),
+      code: null,
+      text: Ember.String.loc('_new_option'),
+      order: currentLength + 1,
+      questionId: this.get('questionId'),
     }));
   },
 
@@ -1258,12 +1201,13 @@ FLOW.questionOptionsControl = Ember.ArrayController.create({
    *  they are deleted
    *
    */
-  persistOptions: function () {
-    var options = this.content, blankOptions = [];
+  persistOptions() {
+    const options = this.content;
+    const blankOptions = [];
     // remove blank options
-    options.forEach(function (option) {
-      var code = option.get('code') && option.get('code').trim();
-      var text = option.get('text') && option.get('text').trim();
+    options.forEach((option) => {
+      const code = option.get('code') && option.get('code').trim();
+      const text = option.get('text') && option.get('text').trim();
       if (!code && !text) {
         blankOptions.push(option);
         if (option.get('keyId')) {
@@ -1274,9 +1218,9 @@ FLOW.questionOptionsControl = Ember.ArrayController.create({
     options.removeObjects(blankOptions);
 
     // reset ordering and persist
-    options.forEach(function (option, index) {
-      var code = option.get('code') && option.get('code').trim();
-      var text = option.get('text') && option.get('text').trim();
+    options.forEach((option) => {
+      const code = option.get('code') && option.get('code').trim();
+      const text = option.get('text') && option.get('text').trim();
       if (!code) {
         option.set('code', null); // do not send empty string as code
       } else {
@@ -1296,54 +1240,53 @@ FLOW.questionOptionsControl = Ember.ArrayController.create({
    *  Remove an option from the list of options.
    *
    */
-  deleteOption: function(event) {
-    var c = this.content, option = event.view.content;
+  deleteOption(event) {
+    const c = this.content;
+    const option = event.view.content;
     c.removeObject(option);
 
     if (option.get('keyId')) { // clear persisted versions
       option.deleteRecord();
     }
 
-    //reorder all options
-    c.forEach(function (item, index) {
+    // reorder all options
+    c.forEach((item, index) => {
       item.set('order', index + 1);
     });
   },
 
-  moveOptionUp: function (event) {
-    var options = this.content, currentOption = event.view.content;
+  moveOptionUp(event) {
+    const options = this.content;
+    const currentOption = event.view.content;
 
     if (currentOption && currentOption.get('order') > 0) {
-      var previousOption = options.find(function (option) {
-        return option.get('order') == (currentOption.get('order') - 1);
-      });
-      var previousOptionOrder = previousOption.get('order');
-      var currentOptionOrder = currentOption.get('order');
+      const previousOption = options.find(option => option.get('order') == (currentOption.get('order') - 1));
+      const previousOptionOrder = previousOption.get('order');
+      const currentOptionOrder = currentOption.get('order');
       previousOption.set('order', currentOptionOrder);
       currentOption.set('order', previousOptionOrder);
     }
   },
 
-  moveOptionDown: function (event) {
-    var options = this.content, currentOption = event.view.content;
+  moveOptionDown(event) {
+    const options = this.content;
+    const currentOption = event.view.content;
 
     if (currentOption && currentOption.get('order') < options.get('length')) {
-      var nextOption = options.find(function (option) {
-        return option.get('order') == (currentOption.get('order') + 1);
-      });
-      var nextOptionOrder = nextOption.get('order');
-      var currentOptionOrder = currentOption.get('order');
+      const nextOption = options.find(option => option.get('order') == (currentOption.get('order') + 1));
+      const nextOptionOrder = nextOption.get('order');
+      const currentOptionOrder = currentOption.get('order');
       nextOption.set('order', currentOptionOrder);
       currentOption.set('order', nextOptionOrder);
     }
-  }
+  },
 });
 
 FLOW.previewControl = Ember.ArrayController.create({
   changed: false,
   showPreviewPopup: false,
   // associative array for answers in the preview
-  answers: {}
+  answers: {},
 });
 
 
@@ -1355,23 +1298,21 @@ FLOW.notificationControl = Ember.ArrayController.create(observe({
   sortProperties: ['notificationDestination'],
   sortAscending: true,
 
-  populate: function () {
-    var id;
+  populate() {
+    let id;
     if (FLOW.selectedControl.get('selectedSurvey')) {
       id = FLOW.selectedControl.selectedSurvey.get('keyId');
       FLOW.store.findQuery(FLOW.NotificationSubscription, {
-        surveyId: id
+        surveyId: id,
       });
     }
   },
 
-  doFilterContent: function () {
-    var sId;
+  doFilterContent() {
+    let sId;
     if (FLOW.selectedControl.get('selectedSurvey') && FLOW.selectedControl.selectedSurvey.get('keyId') > 0) {
       sId = FLOW.selectedControl.selectedSurvey.get('keyId');
-      this.set('content', FLOW.store.filter(FLOW.NotificationSubscription, function (item) {
-        return item.get('entityId') == sId;
-      }));
+      this.set('content', FLOW.store.filter(FLOW.NotificationSubscription, item => item.get('entityId') == sId));
     }
   },
 });
@@ -1395,20 +1336,20 @@ FLOW.translationControl = Ember.ArrayController.create(observe({
   toBeDeletedTranslations: [],
   firstLoad: true,
 
-  init: function () {
+  init() {
     this._super();
     this.createIsoLangs();
   },
 
-  createIsoLangs: function () {
-    var tempArray = [];
-    for (var key in FLOW.isoLanguagesDict) {
+  createIsoLangs() {
+    const tempArray = [];
+    Object.keys(FLOW.isoLanguagesDict).forEach((key) => {
       tempArray.push(Ember.Object.create({
         value: key,
         labelShort: FLOW.isoLanguagesDict[key].nativeName,
-        labelLong: FLOW.isoLanguagesDict[key].nativeName + " - " + FLOW.isoLanguagesDict[key].name
+        labelLong: `${FLOW.isoLanguagesDict[key].nativeName} - ${FLOW.isoLanguagesDict[key].name}`,
       }));
-    }
+    });
     this.set('isoLangs', tempArray);
   },
 
@@ -1416,20 +1357,19 @@ FLOW.translationControl = Ember.ArrayController.create(observe({
     return this.get('noCurrentTrans') || this.get('newSelected');
   }).property('noCurrentTrans', 'newSelected'),
 
-  populate: function () {
-    var id, questionGroupId, questionGroup;
-    id = FLOW.selectedControl.selectedSurvey.get('keyId');
-    questionGroupId = FLOW.questionGroupControl.get('arrangedContent')[0].get('keyId');
-    questionGroup = FLOW.store.find(FLOW.QuestionGroup, questionGroupId);
+  populate() {
+    const id = FLOW.selectedControl.selectedSurvey.get('keyId');
+    const questionGroupId = FLOW.questionGroupControl.get('arrangedContent')[0].get('keyId');
+    const questionGroup = FLOW.store.find(FLOW.QuestionGroup, questionGroupId);
 
-    if (!Ember.none(questionGroup)){
-    	FLOW.selectedControl.set('selectedQuestionGroup',questionGroup);
+    if (!Ember.none(questionGroup)) {
+      FLOW.selectedControl.set('selectedQuestionGroup', questionGroup);
     }
 
     if (!Ember.none(id) && !Ember.none(questionGroupId)) {
       this.set('content', FLOW.store.findQuery(FLOW.Translation, {
         surveyId: id,
-        questionGroupId: questionGroupId
+        questionGroupId,
       }));
       this.set('translations', []);
       this.set('newSelected', false);
@@ -1446,31 +1386,29 @@ FLOW.translationControl = Ember.ArrayController.create(observe({
     }
   },
 
-  loadQuestionGroup: function (questionGroupId) {
-      var id, questionGroup;
-	    id = FLOW.selectedControl.selectedSurvey.get('keyId');
-	    questionGroup = FLOW.store.find(FLOW.QuestionGroup, questionGroupId);
+  loadQuestionGroup(questionGroupId) {
+    const id = FLOW.selectedControl.selectedSurvey.get('keyId');
+    const questionGroup = FLOW.store.find(FLOW.QuestionGroup, questionGroupId);
 
-	    if (!Ember.none(questionGroup)){
-	    	FLOW.selectedControl.set('selectedQuestionGroup',questionGroup);
-	    }
+    if (!Ember.none(questionGroup)) {
+      FLOW.selectedControl.set('selectedQuestionGroup', questionGroup);
+    }
 
-	    if (!Ember.none(id)) {}
-	    this.set('content', FLOW.store.findQuery(FLOW.Translation, {
-	      surveyId: id,
-	      questionGroupId: questionGroupId
-	    }));
-	    this.set('firstLoad', false);
+    this.set('content', FLOW.store.findQuery(FLOW.Translation, {
+      surveyId: id,
+      questionGroupId,
+    }));
+    this.set('firstLoad', false);
 
-	    // this creates the internal structure that we use to display all the items for translation
-	    // the translation items are put in here when they arrive from the backend
-	    this.createItemList(id, questionGroupId);
+    // this creates the internal structure that we use to display all the items for translation
+    // the translation items are put in here when they arrive from the backend
+    this.createItemList(id, questionGroupId);
   },
 
-  //when the translations arrive, put them in the internal data structure
-  initiateData: function () {
-    if (this.get('firstLoad')){
-	  if (this.get('content').content.length > 0) {
+  // when the translations arrive, put them in the internal data structure
+  initiateData() {
+    if (this.get('firstLoad')) {
+      if (this.get('content').content.length > 0) {
         this.determineAvailableTranslations();
         this.resetTranslationFields();
         if (this.get('translations').length > 0) {
@@ -1482,69 +1420,68 @@ FLOW.translationControl = Ember.ArrayController.create(observe({
           this.set('noCurrentTrans', true);
         }
       }
-    } else {
-      if (this.get('content').content.length > 0) {
-    	  this.resetTranslationFields();
-    	  this.putTranslationsInList();
-      }
+    } else if (this.get('content').content.length > 0) {
+      this.resetTranslationFields();
+      this.putTranslationsInList();
     }
   },
 
-  resetTranslationFields: function () {
-    this.get('itemArray').forEach(function (item) {
+  resetTranslationFields() {
+    this.get('itemArray').forEach((item) => {
       switch (item.get('type')) {
-      case "S":
-        item.set('surveyTextTrans', null);
-        item.set('surveyTextTransId', null);
-        item.set('sDescTextTrans', null);
-        item.set('sDescTextTransId', null);
-        break;
+        case 'S':
+          item.set('surveyTextTrans', null);
+          item.set('surveyTextTransId', null);
+          item.set('sDescTextTrans', null);
+          item.set('sDescTextTransId', null);
+          break;
 
-      case "QG":
-        item.set('qgTextTrans', null);
-        item.set('qgTextTransId', null);
-        break;
+        case 'QG':
+          item.set('qgTextTrans', null);
+          item.set('qgTextTransId', null);
+          break;
 
-      case "Q":
-        item.set('qTextTrans', null);
-        item.set('qTextTransId', null);
-        item.set('qTipTextTrans', null);
-        item.set('qTipTextTransId', null);
-        break;
+        case 'Q':
+          item.set('qTextTrans', null);
+          item.set('qTextTransId', null);
+          item.set('qTipTextTrans', null);
+          item.set('qTipTextTransId', null);
+          break;
 
-      case "QO":
-        item.set('qoTextTrans', null);
-        item.set('qoTextTransId', null);
-        break;
+        case 'QO':
+          item.set('qoTextTrans', null);
+          item.set('qoTextTransId', null);
+          break;
 
-      default:
-
+        default:
       }
     });
   },
 
   // determine which languages are present in the translation objects,
   // so we can show the proper items
-  determineAvailableTranslations: function () {
-    var tempDict = {};
-    this.get('content').forEach(function (item) {
+  determineAvailableTranslations() {
+    const tempDict = {};
+    this.get('content').forEach((item) => {
       if (!Ember.none(item.get('langCode'))) {
         tempDict[item.get('langCode')] = item.get('langCode');
       }
     });
-    for (var key in tempDict) this.translations.pushObject(Ember.Object.create({
-      value: key,
-      label: FLOW.isoLanguagesDict[key].name
-    }));
+    Object.keys(tempDict).forEach((key) => {
+      this.translations.pushObject(Ember.Object.create({
+        value: key,
+        label: FLOW.isoLanguagesDict[key].name,
+      }));
+    });
   },
 
-  cancelAddTranslation: function () {
+  cancelAddTranslation() {
     this.set('newSelected', false);
     this.set('selectedLanguage', null);
   },
 
-  lockWhenNewLangChosen: function () {
-    var selLang, found = false;
+  lockWhenNewLangChosen() {
+    let found = false;
     if (!Ember.none(this.get('selectedLanguage'))) {
       if (FLOW.selectedControl.selectedSurvey.get('defaultLanguageCode') == this.selectedLanguage.get('value')) {
         // we can't select the same language as the default language
@@ -1557,8 +1494,8 @@ FLOW.translationControl = Ember.ArrayController.create(observe({
         this.set('newSelected', false);
         return;
       }
-      selLang = this.selectedLanguage.get('value');
-      this.get('translations').forEach(function (item) {
+      const selLang = this.selectedLanguage.get('value');
+      this.get('translations').forEach((item) => {
         found = found || selLang == item.value;
       });
 
@@ -1576,19 +1513,18 @@ FLOW.translationControl = Ember.ArrayController.create(observe({
     }
   },
 
-  addTranslation: function () {
-    var found = false,
-      newLang = null;
-    newLang = this.get('selectedLanguage');
+  addTranslation() {
+    let found = false;
+    const newLang = this.get('selectedLanguage');
     if (!Ember.none(newLang)) {
-      this.get('translations').forEach(function (item) {
+      this.get('translations').forEach((item) => {
         found = found || (newLang.value == item.value);
       });
       if (!found) {
         this.resetTranslationFields();
         this.translations.pushObject(Ember.Object.create({
           value: this.get('selectedLanguage').value,
-          label: FLOW.isoLanguagesDict[this.get('selectedLanguage').value].name
+          label: FLOW.isoLanguagesDict[this.get('selectedLanguage').value].name,
         }));
         this.set('currentTranslation', this.get('selectedLanguage').value);
         this.set('currentTranslationName', FLOW.isoLanguagesDict[this.get('selectedLanguage').value].name);
@@ -1598,7 +1534,7 @@ FLOW.translationControl = Ember.ArrayController.create(observe({
     }
   },
 
-  switchTranslation: function (event) {
+  switchTranslation(event) {
     if (event.context.value != this.get('currentTranslation')) {
       this.saveTranslations();
       this.resetTranslationFields();
@@ -1609,78 +1545,71 @@ FLOW.translationControl = Ember.ArrayController.create(observe({
     }
   },
 
-  createItemList: function (id, questionGroupId) {
-    var tempArray, tempHashDict, questionGroup, qgOrder;
-    tempArray = [];
-    tempHashDict = {};
+  createItemList(id, questionGroupId) {
+    const tempArray = [];
+    const tempHashDict = {};
 
     // put in survey stuff
-    var survey = FLOW.selectedControl.get('selectedSurvey');
+    const survey = FLOW.selectedControl.get('selectedSurvey');
     tempArray.push(Ember.Object.create({
       keyId: survey.get('keyId'),
-      type: "S",
+      type: 'S',
       order: 0,
       surveyText: survey.get('name'),
       sDescText: survey.get('description'),
-      isSurvey: true
+      isSurvey: true,
     }));
 
     // put in question group
-    questionGroup = FLOW.store.find(FLOW.QuestionGroup, questionGroupId);
-    if (!Ember.none(questionGroup)){
+    let questionGroup = FLOW.store.find(FLOW.QuestionGroup, questionGroupId);
+    if (!Ember.none(questionGroup)) {
       tempArray.push(Ember.Object.create({
         keyId: questionGroup.get('keyId'),
-        type: "QG",
+        type: 'QG',
         order: 1000000 * parseInt(questionGroup.get('order'), 10),
         displayOrder: questionGroup.get('order'),
         qgText: questionGroup.get('name'),
-        isQG: true
+        isQG: true,
       }));
     }
     // put in questions
-    var questions = FLOW.store.filter(FLOW.Question, function (item) {
-      return item.get('questionGroupId') == questionGroupId;
-    });
-    questions.forEach(function (item) {
+    const questions = FLOW.store.filter(FLOW.Question, item => item.get('questionGroupId') == questionGroupId);
+    questions.forEach((item) => {
       questionGroup = FLOW.store.find(FLOW.QuestionGroup, item.get('questionGroupId'));
-      qgOrder = parseInt(questionGroup.get('order'), 10);
-      var qId = item.get('keyId');
+      const qgOrder = parseInt(questionGroup.get('order'), 10);
+      const qId = item.get('keyId');
 
       tempArray.push(Ember.Object.create({
         keyId: item.get('keyId'),
-        type: "Q",
+        type: 'Q',
         order: 1000000 * qgOrder + 1000 * parseInt(item.get('order'), 10),
         qText: item.get('text'),
         displayOrder: item.get('order'),
         qTipText: item.get('tip'),
         isQ: true,
-        hasTooltip: !Ember.empty(item.get('tip'))
+        hasTooltip: !Ember.empty(item.get('tip')),
       }));
       // for each question, put in question options
-      var options = FLOW.store.filter(FLOW.QuestionOption, function (optionItem) {
-        return optionItem.get('questionId') == qId;
-      });
+      const options = FLOW.store.filter(FLOW.QuestionOption, optionItem => optionItem.get('questionId') == qId);
 
-      var qOrder = parseInt(item.get('order'), 10);
-      options.forEach(function (item) {
+      const qOrder = parseInt(item.get('order'), 10);
+      options.forEach((_item) => {
         tempArray.push(Ember.Object.create({
-          keyId: item.get('keyId'),
-          type: "QO",
-          order: 1000000 * qgOrder + 1000 * qOrder + parseInt(item.get('order'), 10) + 1,
-          displayOrder: item.get('order') + 1,
-          qoText: item.get('text'),
-          isQO: true
+          keyId: _item.get('keyId'),
+          type: 'QO',
+          order: 1000000 * qgOrder + 1000 * qOrder + parseInt(_item.get('order'), 10) + 1,
+          displayOrder: _item.get('order') + 1,
+          qoText: _item.get('text'),
+          isQO: true,
         }));
       });
     });
 
     // put all the items in the right order
-    tempArray.sort(function (a, b) {
-    	return a.get('order') - b.get('order');
-    });
+    tempArray.sort((a, b) => a.get('order') - b.get('order'));
 
-    var i = 0;
-    tempArray.forEach(function (item) {
+    let i = 0;
+    tempArray.forEach((item) => {
       tempHashDict[item.get('type') + item.get('keyId')] = i;
       i++;
     });
@@ -1690,8 +1619,10 @@ FLOW.translationControl = Ember.ArrayController.create(observe({
   },
 
   // if deleteItem is true, the translation information is deleted
-  putSingleTranslationInList: function (parentType, parentId, text, keyId, deleteItem) {
-    var existingItemPos, itemText, itemKeyId;
+  putSingleTranslationInList(parentType, parentId, text, keyId, deleteItem) {
+    let existingItemPos;
+    let itemText;
+    let itemKeyId;
     if (deleteItem) {
       itemText = text;
       itemKeyId = null;
@@ -1700,261 +1631,259 @@ FLOW.translationControl = Ember.ArrayController.create(observe({
       itemKeyId = keyId;
     }
     switch (parentType) {
-    case "SURVEY_NAME":
-      existingItemPos = this.get('itemDict')["S" + parentId];
-      if (!Ember.none(existingItemPos)) {
-        this.get('itemArray')[existingItemPos].set('surveyTextTrans', itemText);
-        this.get('itemArray')[existingItemPos].set('surveyTextTransId', itemKeyId);
-      }
-      break;
+      case 'SURVEY_NAME':
+        existingItemPos = this.get('itemDict')[`S${parentId}`];
+        if (!Ember.none(existingItemPos)) {
+          this.get('itemArray')[existingItemPos].set('surveyTextTrans', itemText);
+          this.get('itemArray')[existingItemPos].set('surveyTextTransId', itemKeyId);
+        }
+        break;
 
-    case "SURVEY_DESC":
-      existingItemPos = this.get('itemDict')["S" + parentId];
-      if (!Ember.none(existingItemPos)) {
-        this.get('itemArray')[existingItemPos].set('sDescTextTrans', itemText);
-        this.get('itemArray')[existingItemPos].set('sDescTextTransId', itemKeyId);
-      }
-      break;
+      case 'SURVEY_DESC':
+        existingItemPos = this.get('itemDict')[`S${parentId}`];
+        if (!Ember.none(existingItemPos)) {
+          this.get('itemArray')[existingItemPos].set('sDescTextTrans', itemText);
+          this.get('itemArray')[existingItemPos].set('sDescTextTransId', itemKeyId);
+        }
+        break;
 
-    case "QUESTION_GROUP_NAME":
-      existingItemPos = this.get('itemDict')["QG" + parentId];
-      if (!Ember.none(existingItemPos)) {
-        this.get('itemArray')[existingItemPos].set('qgTextTrans', itemText);
-        this.get('itemArray')[existingItemPos].set('qgTextTransId', itemKeyId);
-      }
-      break;
+      case 'QUESTION_GROUP_NAME':
+        existingItemPos = this.get('itemDict')[`QG${parentId}`];
+        if (!Ember.none(existingItemPos)) {
+          this.get('itemArray')[existingItemPos].set('qgTextTrans', itemText);
+          this.get('itemArray')[existingItemPos].set('qgTextTransId', itemKeyId);
+        }
+        break;
 
-    case "QUESTION_TEXT":
-      existingItemPos = this.get('itemDict')["Q" + parentId];
-      if (!Ember.none(existingItemPos)) {
-        this.get('itemArray')[existingItemPos].set('qTextTrans', itemText);
-        this.get('itemArray')[existingItemPos].set('qTextTransId', itemKeyId);
-      }
-      break;
+      case 'QUESTION_TEXT':
+        existingItemPos = this.get('itemDict')[`Q${parentId}`];
+        if (!Ember.none(existingItemPos)) {
+          this.get('itemArray')[existingItemPos].set('qTextTrans', itemText);
+          this.get('itemArray')[existingItemPos].set('qTextTransId', itemKeyId);
+        }
+        break;
 
-    case "QUESTION_TIP":
-      existingItemPos = this.get('itemDict')["Q" + parentId];
-      if (!Ember.none(existingItemPos)) {
-        this.get('itemArray')[existingItemPos].set('qTipTextTrans', itemText);
-        this.get('itemArray')[existingItemPos].set('qTipTextTransId', itemKeyId);
-      }
-      break;
+      case 'QUESTION_TIP':
+        existingItemPos = this.get('itemDict')[`Q${parentId}`];
+        if (!Ember.none(existingItemPos)) {
+          this.get('itemArray')[existingItemPos].set('qTipTextTrans', itemText);
+          this.get('itemArray')[existingItemPos].set('qTipTextTransId', itemKeyId);
+        }
+        break;
 
-    case "QUESTION_OPTION":
-      existingItemPos = this.get('itemDict')["QO" + parentId];
-      if (!Ember.none(existingItemPos)) {
-        this.get('itemArray')[existingItemPos].set('qoTextTrans', itemText);
-        this.get('itemArray')[existingItemPos].set('qoTextTransId', itemKeyId);
-      }
-      break;
+      case 'QUESTION_OPTION':
+        existingItemPos = this.get('itemDict')[`QO${parentId}`];
+        if (!Ember.none(existingItemPos)) {
+          this.get('itemArray')[existingItemPos].set('qoTextTrans', itemText);
+          this.get('itemArray')[existingItemPos].set('qoTextTransId', itemKeyId);
+        }
+        break;
 
-    default:
+      default:
     }
   },
 
 
-  putTranslationsInList: function () {
-    var currTrans, _self;
-    _self = this;
-    currTrans = this.get('currentTranslation');
+  putTranslationsInList() {
+    const _self = this;
+    const currTrans = this.get('currentTranslation');
     // only proceed if we have a language selected
     if (!Ember.none(currTrans)) {
       // get the translations with the right surveyId and the right language code
-      var translations = FLOW.store.filter(FLOW.Translation, function (item) {
-        return (item.get('surveyId') == FLOW.selectedControl.selectedSurvey.get('keyId') && item.get('langCode') == currTrans);
-      });
-      translations.forEach(function (item) {
+      const translations = FLOW.store.filter(FLOW.Translation, item => (item.get('surveyId') == FLOW.selectedControl.selectedSurvey.get('keyId') && item.get('langCode') == currTrans));
+      translations.forEach((item) => {
         _self.putSingleTranslationInList(item.get('parentType'), item.get('parentId'), item.get('text'), item.get('keyId'), false);
       });
     }
   },
 
   // delete a translation record by its Id. Committing is done in saveTranslations method
-  deleteRecord: function (transId) {
-    var candidates, existingTrans;
-    candidates = FLOW.store.filter(FLOW.Translation, function (item) {
-      return item.get('keyId') == transId;
-    });
+  deleteRecord(transId) {
+    const candidates = FLOW.store.filter(FLOW.Translation, item => item.get('keyId') == transId);
 
     if (candidates.get('content').length > 0) {
-      existingTrans = candidates.objectAt(0);
+      const existingTrans = candidates.objectAt(0);
       existingTrans.deleteRecord();
     }
   },
 
-  createUpdateOrDeleteRecord: function (surveyId, questionGroupId, type, parentId, origText, translationText, lan, transId, allowSideEffects) {
-	  var changed = false;
-	  if (!Ember.none(origText) && origText.length > 0) {
+  createUpdateOrDeleteRecord(
+    surveyId,
+    questionGroupId,
+    type,
+    parentId,
+    origText,
+    translationText,
+    lan,
+    transId,
+    allowSideEffects
+  ) {
+    let changed = false;
+    if (!Ember.none(origText) && origText.length > 0) {
       // we have an original text
       if (!Ember.none(translationText) && translationText.length > 0) {
         // we have a translation text
         if (Ember.none(transId)) {
           // we don't have an existing translation, so create it
-        	changed = true;
-        	if (allowSideEffects){
-        	  FLOW.store.createRecord(FLOW.Translation, {
-                parentType: type,
-                parentId: parentId,
-                surveyId: surveyId,
-                questionGroupId: questionGroupId,
-                text: translationText,
-                langCode: lan
-              });
-            }
+          changed = true;
+          if (allowSideEffects) {
+            FLOW.store.createRecord(FLOW.Translation, {
+              parentType: type,
+              parentId,
+              surveyId,
+              questionGroupId,
+              text: translationText,
+              langCode: lan,
+            });
+          }
         } else {
           // we have an existing translation, so update it, if the text has changed
-          var candidates = FLOW.store.filter(FLOW.Translation, function (item) {
-            return item.get('keyId') == transId;
-          });
+          const candidates = FLOW.store.filter(FLOW.Translation, item => item.get('keyId') == transId);
 
           if (candidates.get('content').length > 0) {
-        	 var existingTrans = candidates.objectAt(0);
-        	 // if the existing translation is different from the existing one, update it
-        	 if (existingTrans.get('text') != translationText){
-        		 changed = true;
-        		 if(allowSideEffects){
-            		existingTrans.set('text', translationText);
-            	 }
-        	 }
+            const existingTrans = candidates.objectAt(0);
+            // if the existing translation is different from the existing one, update it
+            if (existingTrans.get('text') != translationText) {
+              changed = true;
+              if (allowSideEffects) {
+                existingTrans.set('text', translationText);
+              }
+            }
           }
         }
-      } else {
-        // we don't have a translation text. If there is an existing translation, delete it
-        if (!Ember.none(transId)) {
-          // add this id to the list of to be deleted items
-          changed = true;
-          if (allowSideEffects){
-        	  this.toBeDeletedTranslations.pushObject(transId);
-          }
+      // we don't have a translation text. If there is an existing translation, delete it
+      } else if (!Ember.none(transId)) {
+        // add this id to the list of to be deleted items
+        changed = true;
+        if (allowSideEffects) {
+          this.toBeDeletedTranslations.pushObject(transId);
         }
       }
-    } else {
-      // we don't have an original text. If there is an existing translation, delete it
-      if (!Ember.none(transId)) {
-        // add this to the list of to be deleted items
-        changed = true;
-    	if (allowSideEffects){
-    	  this.toBeDeletedTranslations.pushObject(transId);
-        }
+    // we don't have an original text. If there is an existing translation, delete it
+    } else if (!Ember.none(transId)) {
+      // add this to the list of to be deleted items
+      changed = true;
+      if (allowSideEffects) {
+        this.toBeDeletedTranslations.pushObject(transId);
       }
     }
-	return changed;
+    return changed;
   },
 
   // checks if unsaved translations are present, and if so, emits a warning
-  unsavedTranslations: function () {
-	  var type, parentId, surveyId, questionGroupId, lan, transId, _self, unsaved;
-	  _self = this;
-	  unsaved = false;
-	  this.get('itemArray').forEach(function (item) {
-		  type = item.type;
-	      parentId = item.keyId;
-	      surveyId = FLOW.selectedControl.selectedSurvey.get('keyId');
-        if (!Ember.none(FLOW.selectedControl.get('selectedQuestionGroup'))) {
-          questionGroupId = FLOW.selectedControl.selectedQuestionGroup.get('keyId');
-        } else {
-          questionGroupId = null;
-        }
-	      lan = _self.get('currentTranslation');
-	      if (type == 'S') {
-	        unsaved = unsaved || _self.createUpdateOrDeleteRecord(surveyId, questionGroupId, "SURVEY_NAME", parentId, item.surveyText, item.surveyTextTrans, lan, item.surveyTextTransId, false);
-	        unsaved = unsaved || _self.createUpdateOrDeleteRecord(surveyId, questionGroupId, "SURVEY_DESC", parentId, item.sDescText, item.sDescTextTrans, lan, item.sDescTextTransId, false);
-	      } else if (type == 'QG') {
-	    	unsaved = unsaved || _self.createUpdateOrDeleteRecord(surveyId, questionGroupId, "QUESTION_GROUP_NAME", parentId, item.qgText, item.qgTextTrans, lan, item.qgTextTransId, false);
-	      } else if (type == 'Q') {
-	    	unsaved = unsaved || _self.createUpdateOrDeleteRecord(surveyId, questionGroupId, "QUESTION_TEXT", parentId, item.qText, item.qTextTrans, lan, item.qTextTransId, false);
-	    	unsaved = unsaved || _self.createUpdateOrDeleteRecord(surveyId, questionGroupId, "QUESTION_TIP", parentId, item.qTipText, item.qTipTextTrans, lan, item.qTipTextTransId, false);
-	      } else if (type == 'QO') {
-	    	unsaved = unsaved || _self.createUpdateOrDeleteRecord(surveyId, questionGroupId, "QUESTION_OPTION", parentId, item.qoText, item.qoTextTrans, lan, item.qoTextTransId, false);
-	      }
-	  });
-      if (unsaved){
-    	FLOW.dialogControl.set('activeAction', 'ignore');
-        FLOW.dialogControl.set('header', Ember.String.loc('_unsaved_translations_present'));
-        FLOW.dialogControl.set('message', Ember.String.loc('_unsaved_translations_present_text'));
-        FLOW.dialogControl.set('showCANCEL', false);
-        FLOW.dialogControl.set('showDialog', true);
-      }
-      return unsaved;
-  },
-
-  // after saving is complete, records insert themselves back into the translation item list
-  saveTranslations: function () {
-    var type, parentId, surveyId, questionGroupId, lan, transId, _self;
-    _self = this;
-    surveyId = FLOW.selectedControl.selectedSurvey.get('keyId');
-    FLOW.store.adapter.set('bulkCommit', true);
-    this.get('itemArray').forEach(function (item) {
-      type = item.type;
-      parentId = item.keyId;
+  unsavedTranslations() {
+    let unsaved = false;
+    const _self = this;
+    this.get('itemArray').forEach((item) => {
+      let questionGroupId;
+      const { type } = item;
+      const parentId = item.keyId;
+      const surveyId = FLOW.selectedControl.selectedSurvey.get('keyId');
       if (!Ember.none(FLOW.selectedControl.get('selectedQuestionGroup'))) {
         questionGroupId = FLOW.selectedControl.selectedQuestionGroup.get('keyId');
       } else {
         questionGroupId = null;
       }
-      lan = _self.get('currentTranslation');
+      const lan = _self.get('currentTranslation');
       if (type == 'S') {
-        _self.createUpdateOrDeleteRecord(surveyId, questionGroupId, "SURVEY_NAME", parentId, item.surveyText, item.surveyTextTrans, lan, item.surveyTextTransId, true);
-        _self.createUpdateOrDeleteRecord(surveyId, questionGroupId, "SURVEY_DESC", parentId, item.sDescText, item.sDescTextTrans, lan, item.sDescTextTransId, true);
+        unsaved = unsaved || _self.createUpdateOrDeleteRecord(surveyId, questionGroupId, 'SURVEY_NAME', parentId, item.surveyText, item.surveyTextTrans, lan, item.surveyTextTransId, false);
+        unsaved = unsaved || _self.createUpdateOrDeleteRecord(surveyId, questionGroupId, 'SURVEY_DESC', parentId, item.sDescText, item.sDescTextTrans, lan, item.sDescTextTransId, false);
       } else if (type == 'QG') {
-        _self.createUpdateOrDeleteRecord(surveyId, questionGroupId, "QUESTION_GROUP_NAME", parentId, item.qgText, item.qgTextTrans, lan, item.qgTextTransId, true);
+        unsaved = unsaved || _self.createUpdateOrDeleteRecord(surveyId, questionGroupId, 'QUESTION_GROUP_NAME', parentId, item.qgText, item.qgTextTrans, lan, item.qgTextTransId, false);
       } else if (type == 'Q') {
-        _self.createUpdateOrDeleteRecord(surveyId, questionGroupId, "QUESTION_TEXT", parentId, item.qText, item.qTextTrans, lan, item.qTextTransId, true);
-        _self.createUpdateOrDeleteRecord(surveyId, questionGroupId, "QUESTION_TIP", parentId, item.qTipText, item.qTipTextTrans, lan, item.qTipTextTransId, true);
+        unsaved = unsaved || _self.createUpdateOrDeleteRecord(surveyId, questionGroupId, 'QUESTION_TEXT', parentId, item.qText, item.qTextTrans, lan, item.qTextTransId, false);
+        unsaved = unsaved || _self.createUpdateOrDeleteRecord(surveyId, questionGroupId, 'QUESTION_TIP', parentId, item.qTipText, item.qTipTextTrans, lan, item.qTipTextTransId, false);
       } else if (type == 'QO') {
-        _self.createUpdateOrDeleteRecord(surveyId, questionGroupId, "QUESTION_OPTION", parentId, item.qoText, item.qoTextTrans, lan, item.qoTextTransId, true);
+        unsaved = unsaved || _self.createUpdateOrDeleteRecord(surveyId, questionGroupId, 'QUESTION_OPTION', parentId, item.qoText, item.qoTextTrans, lan, item.qoTextTransId, false);
+      }
+    });
+    if (unsaved) {
+      FLOW.dialogControl.set('activeAction', 'ignore');
+      FLOW.dialogControl.set('header', Ember.String.loc('_unsaved_translations_present'));
+      FLOW.dialogControl.set('message', Ember.String.loc('_unsaved_translations_present_text'));
+      FLOW.dialogControl.set('showCANCEL', false);
+      FLOW.dialogControl.set('showDialog', true);
+    }
+    return unsaved;
+  },
+
+  // after saving is complete, records insert themselves back into the translation item list
+  saveTranslations() {
+    const _self = this;
+    const surveyId = FLOW.selectedControl.selectedSurvey.get('keyId');
+    FLOW.store.adapter.set('bulkCommit', true);
+    this.get('itemArray').forEach((item) => {
+      let questionGroupId;
+      const { type } = item;
+      const parentId = item.keyId;
+      if (!Ember.none(FLOW.selectedControl.get('selectedQuestionGroup'))) {
+        questionGroupId = FLOW.selectedControl.selectedQuestionGroup.get('keyId');
+      } else {
+        questionGroupId = null;
+      }
+      const lan = _self.get('currentTranslation');
+      if (type == 'S') {
+        _self.createUpdateOrDeleteRecord(surveyId, questionGroupId, 'SURVEY_NAME', parentId, item.surveyText, item.surveyTextTrans, lan, item.surveyTextTransId, true);
+        _self.createUpdateOrDeleteRecord(surveyId, questionGroupId, 'SURVEY_DESC', parentId, item.sDescText, item.sDescTextTrans, lan, item.sDescTextTransId, true);
+      } else if (type == 'QG') {
+        _self.createUpdateOrDeleteRecord(surveyId, questionGroupId, 'QUESTION_GROUP_NAME', parentId, item.qgText, item.qgTextTrans, lan, item.qgTextTransId, true);
+      } else if (type == 'Q') {
+        _self.createUpdateOrDeleteRecord(surveyId, questionGroupId, 'QUESTION_TEXT', parentId, item.qText, item.qTextTrans, lan, item.qTextTransId, true);
+        _self.createUpdateOrDeleteRecord(surveyId, questionGroupId, 'QUESTION_TIP', parentId, item.qTipText, item.qTipTextTrans, lan, item.qTipTextTransId, true);
+      } else if (type == 'QO') {
+        _self.createUpdateOrDeleteRecord(surveyId, questionGroupId, 'QUESTION_OPTION', parentId, item.qoText, item.qoTextTrans, lan, item.qoTextTransId, true);
       }
     });
     FLOW.store.commit();
     FLOW.store.adapter.set('bulkCommit', false);
 
     // delete items individually, as a body in a DELETE request is not accepted by GAE
-    this.get('toBeDeletedTranslations').forEach(function (item) {
+    this.get('toBeDeletedTranslations').forEach((item) => {
       _self.deleteRecord(item);
     });
 
     // make survey unpublished
-    var survey = FLOW.store.find(FLOW.Survey, surveyId);
-    if (!Ember.empty(survey)){
-        survey.set('status','NOT_PUBLISHED');
+    const survey = FLOW.store.find(FLOW.Survey, surveyId);
+    if (!Ember.empty(survey)) {
+      survey.set('status', 'NOT_PUBLISHED');
     }
     FLOW.store.commit();
     this.set('toBeDeletedTranslations', []);
-  }
+  },
 });
 
 FLOW.CaddisflyResourceController = Ember.ArrayController.extend({
-    sortProperties: ['name'],
-    sortAscending: true,
-    caddisflyTestsFileUrl: FLOW.Env.caddisflyTestsFileUrl,
-    testsFileLoaded: false,
+  sortProperties: ['name'],
+  sortAscending: true,
+  caddisflyTestsFileUrl: FLOW.Env.caddisflyTestsFileUrl,
+  testsFileLoaded: false,
 
-    load: function () {
-        var self = this;
-        $.getJSON(this.get('caddisflyTestsFileUrl'), function (caddisflyTestsFileContent) {
-            self.set('content', self.parseCaddisflyTestsFile(caddisflyTestsFileContent));
-            self.set('testsFileLoaded', true);
-        }).fail(function () {
-            self.set('content', []);
-        });
-    },
+  load() {
+    const self = this;
+    $.getJSON(this.get('caddisflyTestsFileUrl'), (caddisflyTestsFileContent) => {
+      self.set('content', self.parseCaddisflyTestsFile(caddisflyTestsFileContent));
+      self.set('testsFileLoaded', true);
+    }).fail(() => {
+      self.set('content', []);
+    });
+  },
 
-    parseCaddisflyTestsFile: function (caddisflyTestsFileContent) {
-        var caddisflyTests = Ember.A();
-        caddisflyTestsFileContent.tests.forEach(function (test) {
-            caddisflyTests.push(FLOW.CaddisflyTestDefinition.create({
-                "name": test.name,
-                "brand": test.brand,
-                "uuid": test.uuid,
-                "multiParameter": test.multiParameter,
-                "sample": test.sample,
-                "device": test.device,
-                "model": test.model,
-                "results": test.results,
-                "reagents": 'reagents' in test ? test.reagents : []
-            }));
-        });
+  parseCaddisflyTestsFile(caddisflyTestsFileContent) {
+    const caddisflyTests = Ember.A();
+    caddisflyTestsFileContent.tests.forEach((test) => {
+      caddisflyTests.push(FLOW.CaddisflyTestDefinition.create({
+        name: test.name,
+        brand: test.brand,
+        uuid: test.uuid,
+        multiParameter: test.multiParameter,
+        sample: test.sample,
+        device: test.device,
+        model: test.model,
+        results: test.results,
+        reagents: 'reagents' in test ? test.reagents : [],
+      }));
+    });
 
-        return caddisflyTests;
-    },
+    return caddisflyTests;
+  },
 });

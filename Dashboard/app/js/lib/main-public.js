@@ -5,7 +5,6 @@ require('akvo-flow/views/views-public');
 require('akvo-flow/router/router-public');
 require('akvo-flow/version');
 
-require('../../css/screen.scss'); 
+require('../../css/screen.scss');
 
 FLOW.initialize();
- 
