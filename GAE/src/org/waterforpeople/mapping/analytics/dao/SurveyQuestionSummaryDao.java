@@ -1,5 +1,5 @@
 /*
- *  Copyright (C) 2010-2012, 2017-2018 Stichting Akvo (Akvo Foundation)
+ *  Copyright (C) 2010-2012, 2017-2019 Stichting Akvo (Akvo Foundation)
  *
  *  This file is part of Akvo FLOW.
  *
@@ -21,6 +21,7 @@ import static com.gallatinsystems.common.util.MemCacheUtils.putObjects;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -31,9 +32,11 @@ import javax.jdo.PersistenceManager;
 import net.sf.jsr107cache.Cache;
 import net.sf.jsr107cache.CacheException;
 
+import org.akvo.flow.domain.DataUtils;
 import org.waterforpeople.mapping.analytics.domain.SurveyQuestionSummary;
 import org.waterforpeople.mapping.domain.QuestionAnswerStore;
 
+import com.gallatinsystems.common.Constants;
 import com.gallatinsystems.common.util.MemCacheUtils;
 import com.gallatinsystems.framework.dao.BaseDAO;
 import com.gallatinsystems.framework.domain.BaseDomain;
@@ -61,27 +64,17 @@ public class SurveyQuestionSummaryDao extends BaseDAO<SurveyQuestionSummary> {
      * @param answer
      */
     @SuppressWarnings("rawtypes")
-    public static synchronized void incrementCount(QuestionAnswerStore answer,
-            int unit) {
+    public static synchronized void incrementCount(QuestionAnswerStore answer, int unit) {
         PersistenceManager pm = PersistenceFilter.getManager();
-        String answerText = answer.getValue();
-        String[] answers;
-        if (answerText != null && answerText.contains("|")) {
-            answers = answerText.split("\\|");
-        } else {
-            answers = new String[] {
-                    answerText
-            };
-        }
+        String[]answers = DataUtils.optionResponsesTextArray(answer.getValue()); //JSON or |
+
         for (int i = 0; i < answers.length; i++) {
             // find surveyQuestionSummary objects with the right question id and answer text
             javax.jdo.Query query = pm.newQuery(SurveyQuestionSummary.class);
-            query
-                    .setFilter("questionId == questionIdParam && response == answerParam");
-            query
-                    .declareParameters("String questionIdParam, String answerParam");
-            List results = (List) query.execute(answer.getQuestionID(),
-                    answers[i]);
+            query.setFilter("questionId == questionIdParam && response == answerParam");
+            query.declareParameters("String questionIdParam, String answerParam");
+            List results = (List) query.execute(answer.getQuestionID(), answers[i]);
+
             SurveyQuestionSummary summary = null;
             if ((results == null || results.size() == 0) && unit > 0) {
                 // no previous surveyQuestionSummary for this answer, make a new one
@@ -124,6 +117,11 @@ public class SurveyQuestionSummaryDao extends BaseDAO<SurveyQuestionSummary> {
      */
     @SuppressWarnings("unchecked")
     public List<SurveyQuestionSummary> listByResponse(String questionId, String questionResponse) {
+        //Reject too-long key; TODO truncate instead?
+        if (questionResponse != null && questionResponse.length() > Constants.MAX_DS_STRING_LENGTH) {
+            log.log(Level.WARNING, "Unable to list SQSs with response longer than " + Constants.MAX_DS_STRING_LENGTH);
+            return Collections.emptyList();
+        }
         List<SurveyQuestionSummary> result = null;
         String cacheKey = null;
         try {
