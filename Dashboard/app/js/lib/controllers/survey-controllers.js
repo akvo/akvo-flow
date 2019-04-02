@@ -1222,7 +1222,7 @@ FLOW.questionOptionsControl = Ember.ArrayController.create({
     var longXters = c.find(function (option) {
       if (option.get('text') && option.get('text').trim()) {
         var optionText = option.get('text');
-        return optionText.length > 1500;
+        return optionText.length > 500;
       }
       return false;
     });
