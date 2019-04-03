@@ -77,7 +77,6 @@ import com.gallatinsystems.surveyal.dao.SurveyalValueDao;
 import com.gallatinsystems.surveyal.dao.SurveyedLocaleDao;
 import com.gallatinsystems.surveyal.domain.SurveyalValue;
 import com.gallatinsystems.surveyal.domain.SurveyedLocale;
-import com.google.appengine.api.backends.BackendServiceFactory;
 import com.google.appengine.api.memcache.MemcacheService;
 import com.google.appengine.api.memcache.stdimpl.GCacheFactory;
 import com.google.appengine.api.taskqueue.Queue;
@@ -1337,9 +1336,6 @@ public class DataProcessorRestServlet extends AbstractRestApiServlet {
         try {
             final TaskOptions options = TaskOptions.Builder
                     .withUrl("/app_worker/dataprocessor")
-                    .header("Host",
-                            BackendServiceFactory.getBackendService()
-                                    .getBackendAddress("dataprocessor"))
                     .param(DataProcessorRequest.ACTION_PARAM,
                             DataProcessorRequest.DELETE_CHILD_CASCADE_NODES)
                     .param(DataProcessorRequest.CASCADE_RESOURCE_ID,
@@ -1349,8 +1345,7 @@ public class DataProcessorRestServlet extends AbstractRestApiServlet {
                 options.param(DataProcessorRequest.PARENT_NODE_ID, parentNodeId.toString());
             }
 
-            final Queue queue = QueueFactory.getQueue("background-processing");
-            queue.add(options);
+            QueueFactory.getQueue("background-processing").add(options);
         } catch (Exception e) {
             log.log(Level.SEVERE,
                     String.format(
