@@ -18,11 +18,11 @@ FLOW.AssignmentsListView = FLOW.ReactComponentView.extend({
   renderView () {
     let assignments = FLOW.surveyAssignmentControl.get('content');
     this.reactRender(
-      <tbody>{assignments.map(assignment => (
+      <table className="dataTable"><tbody>{assignments.map(assignment => (
         <tr key={assignment.get('keyId')}>
           <td className="name">{assignment.get('name')}</td>
         </tr>
-      ))}</tbody> //move styling to css
+      ))}</tbody></table> //move styling to css
       //<div style={{ visibility: 'hidden' }}>React {moment().seconds()}</div>
     );
   }
