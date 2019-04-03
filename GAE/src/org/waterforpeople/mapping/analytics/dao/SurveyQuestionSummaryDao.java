@@ -121,7 +121,10 @@ public class SurveyQuestionSummaryDao extends BaseDAO<SurveyQuestionSummary> {
      */
     @SuppressWarnings("unchecked")
     public List<SurveyQuestionSummary> listByResponse(String questionId, String questionResponse) {
-        //Reject too-long key; TODO truncate instead?
+        if (questionResponse == null) {
+            return Collections.emptyList();
+        }
+        //Truncate too-long key
         String answer = questionResponse;
         if (answer.length() > Constants.MAX_LENGTH) {
             answer = answer.substring(0, Constants.MAX_LENGTH);
