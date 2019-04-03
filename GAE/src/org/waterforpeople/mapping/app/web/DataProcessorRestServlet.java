@@ -1431,9 +1431,27 @@ public class DataProcessorRestServlet extends AbstractRestApiServlet {
         if (surveyedLocaleId != null) {
             options.param(DataProcessorRequest.LOCALE_ID_PARAM, String.valueOf(surveyedLocaleId));
         }
-        com.google.appengine.api.taskqueue.Queue queue = com.google.appengine.api.taskqueue.QueueFactory
-                .getQueue("background-processing");
-        queue.add(options);
+        QueueFactory.getQueue("background-processing").add(options);
+    }
+
+    public static void queueSynchronizedSummaryUpdate(SurveyInstance si, boolean increment) {
+        TaskOptions to = TaskOptions.Builder
+                .withUrl("/app_worker/dataprocessor")
+                .param(DataProcessorRequest.ACTION_PARAM,
+                        DataProcessorRequest.UPDATE_SURVEY_INSTANCE_SUMMARIES)
+                .param(DataProcessorRequest.SURVEY_INSTANCE_PARAM, si.getKey().getId() + "")
+                .param(DataProcessorRequest.DELTA_PARAM, increment ? "1":"-1");
+        QueueFactory.getQueue("surveyResponseCount").add(to);
+    }
+
+    public static void queueAdjustSurveyResponseCount(String key, boolean increment) {
+        TaskOptions to = TaskOptions.Builder
+                .withUrl("/app_worker/dataprocessor")
+                .param(DataProcessorRequest.ACTION_PARAM,
+                        DataProcessorRequest.SURVEY_RESPONSE_COUNT)
+                .param(DataProcessorRequest.COUNTER_ID_PARAM, key)
+                .param(DataProcessorRequest.DELTA_PARAM, increment ? "1":"-1");
+        QueueFactory.getQueue("surveyResponseCount").add(to);
     }
 
 }
