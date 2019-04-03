@@ -32,7 +32,6 @@
     <script src="js/loader.js"></script>
     <script src="/flowenv.js"></script>
     <script src="/currentuser.js"></script>
-    <script type="text/javascript" src="/admin/admin.bundle.js"></script>
 
     <script>
       //default leaflet library
@@ -40,11 +39,6 @@
       var cssSrc = "https://api.mapbox.com/mapbox.js/v3.1.1/mapbox.css";
       var jsIntegrity = 'integrity="sha384-DmQhW9kLmOXK0xubm8w+Bd34nJq7Plt9clKmd2XxjgUNuoHcWdxV3GCeO7YSFc74" crossorigin="anonymous"';
       var cssIntegrity = 'integrity="sha384-codniTXEGsozlodYdGbtcNHSm0452RDVJyCJ3eEw+jagZXmaz9RIFHaBD+g/wrvS" crossorigin="anonymous"';
-      if (FLOW.Env.mapsProvider == 'google') {
-        var regionBias = FLOW.Env.googleMapsRegionBias;
-        var region = regionBias ? '&region=' + regionBias : '';
-        document.write('<script src="https://maps.google.com/maps/api/js?key=AIzaSyBZU7kLJ75VlTlC5Qrfi1n1N-5hJYProuQ' + region + '"><\/script>');
-      }
       document.write("<link rel=\"stylesheet\" href=\""+cssSrc+"\"/>");
       document.write("<script type=\"text/javascript\" src=\""+jsSrc+"\"><\/script>");
     </script>

@@ -1,16 +1,14 @@
-// More info on Webpack's Node API here: https://webpack.js.org/api/node/
-// Allowing console calls below since this is a build file.
-/* eslint-disable no-console */
+/* eslint-disable no-console, import/no-extraneous-dependencies */
 import webpack from 'webpack';
 import config from '../webpack.config.prod';
 import configPublic from '../webpack.config.public.prod';
 import { chalkError, chalkSuccess, chalkWarning, chalkProcessing } from './chalkConfig';
 
-process.env.NODE_ENV = 'development'; // this assures React is built in prod mode and that the Babel dev config doesn't apply.
+process.env.NODE_ENV = 'production';
 console.log(chalkProcessing('Generating bundle. This will take a moment...'));
 
 const handler = (callback = () => {}) => (error, stats) => {
-  if (error) { // so a fatal error occurred. Stop here.
+  if (error) {
     console.log(chalkError(error));
     return 1;
   }
@@ -28,8 +26,7 @@ const handler = (callback = () => {}) => (error, stats) => {
 
   console.log(`Webpack stats: ${stats}`);
 
-  // if we got this far, the build succeeded.
-  console.log(chalkSuccess('Your app is compiled and ready to roll!'));
+  console.log(chalkSuccess('The app is compiled and ready for production...'));
 
   callback();
 
