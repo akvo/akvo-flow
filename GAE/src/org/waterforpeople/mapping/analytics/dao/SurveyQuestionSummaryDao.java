@@ -61,27 +61,31 @@ public class SurveyQuestionSummaryDao extends BaseDAO<SurveyQuestionSummary> {
      * inefficient but is the only way we can be sure we're keeping the count consistent since there
      * is no "select for update" or sql dml-like construct
      *
-     * @param answer
+     * @param questionAnswer
      */
     @SuppressWarnings("rawtypes")
-    public static synchronized void incrementCount(QuestionAnswerStore answer, int unit) {
+    public static synchronized void incrementCount(QuestionAnswerStore questionAnswer, int unit) {
         PersistenceManager pm = PersistenceFilter.getManager();
-        String[]answers = DataUtils.optionResponsesTextArray(answer.getValue()); //JSON or |
+        String[] answers = DataUtils.optionResponsesTextArray(questionAnswer.getValue()); //JSON or |
 
         for (int i = 0; i < answers.length; i++) {
+            String answer = answers[i];
+            if (answer.length() > Constants.MAX_LENGTH) {
+                answer = answer.substring(0, Constants.MAX_LENGTH);
+            }
             // find surveyQuestionSummary objects with the right question id and answer text
             javax.jdo.Query query = pm.newQuery(SurveyQuestionSummary.class);
             query.setFilter("questionId == questionIdParam && response == answerParam");
             query.declareParameters("String questionIdParam, String answerParam");
-            List results = (List) query.execute(answer.getQuestionID(), answers[i]);
+            List results = (List) query.execute(questionAnswer.getQuestionID(), answer);
 
             SurveyQuestionSummary summary = null;
             if ((results == null || results.size() == 0) && unit > 0) {
                 // no previous surveyQuestionSummary for this answer, make a new one
                 summary = new SurveyQuestionSummary();
                 summary.setCount(new Long(unit));
-                summary.setQuestionId(answer.getQuestionID());
-                summary.setResponse(answers[i]);
+                summary.setQuestionId(questionAnswer.getQuestionID());
+                summary.setResponse(answer);
             } else if (results != null && results.size() > 0) {
                 // update an existing questionAnswerSummary
                 summary = (SurveyQuestionSummary) results.get(0);
@@ -118,14 +122,15 @@ public class SurveyQuestionSummaryDao extends BaseDAO<SurveyQuestionSummary> {
     @SuppressWarnings("unchecked")
     public List<SurveyQuestionSummary> listByResponse(String questionId, String questionResponse) {
         //Reject too-long key; TODO truncate instead?
-        if (questionResponse != null && questionResponse.length() > Constants.MAX_DS_STRING_LENGTH) {
-            log.log(Level.WARNING, "Unable to list SQSs with response longer than " + Constants.MAX_DS_STRING_LENGTH);
-            return Collections.emptyList();
+        String answer = questionResponse;
+        if (answer.length() > Constants.MAX_LENGTH) {
+            answer = answer.substring(0, Constants.MAX_LENGTH);
         }
+
         List<SurveyQuestionSummary> result = null;
         String cacheKey = null;
         try {
-            cacheKey = getCacheKey(questionId + "-" + questionResponse);
+            cacheKey = getCacheKey(questionId + "-" + answer);
             if (MemCacheUtils.containsKey(cache, cacheKey)) { //let's try to get it
                 SurveyQuestionSummary sqs = (SurveyQuestionSummary)cache.get(cacheKey);
                 if (sqs != null) {
@@ -147,8 +152,7 @@ public class SurveyQuestionSummaryDao extends BaseDAO<SurveyQuestionSummary> {
         paramMap = new HashMap<String, Object>();
 
         appendNonNullParam("questionId", filterString, paramString, "String", questionId, paramMap);
-        appendNonNullParam("response", filterString, paramString, "String", questionResponse,
-                paramMap);
+        appendNonNullParam("response", filterString, paramString, "String", answer, paramMap);
 
         query.setFilter(filterString.toString());
         query.declareParameters(paramString.toString());
