@@ -1,13 +1,12 @@
 FROM ruby:2.4.4-alpine3.7 as ruby-deps
 
-COPY Dashboard/Gemfile Dashboard/Gemfile.lock Dashboard/package.json Dashboard/package-lock.json /
+COPY Dashboard/Gemfile Dashboard/Gemfile.lock /
 
 # throw errors if Gemfile has been modified since Gemfile.lock
 RUN set -ex ; \
     apk add --no-cache git build-base libffi-dev && \
     bundle config --global frozen 1 && \
-    bundle install && \
-    npm install
+    bundle install
 
 FROM ruby:2.4.4-alpine3.7
 
@@ -49,5 +48,10 @@ RUN set -ex ; \
     chmod a+x /usr/local/bin/lein && \
     lein && \
     adduser -D -h /home/akvo -s /bin/bash akvo akvo
+
+COPY Dashboard/package.json Dashboard/package-lock.json /
+
+RUN set -ex ; \
+    npm install
 
 WORKDIR /app/src
