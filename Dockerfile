@@ -49,6 +49,8 @@ RUN set -ex ; \
     lein && \
     adduser -D -h /home/akvo -s /bin/bash akvo akvo
 
-WORKDIR /app/src
+WORKDIR /app/src/Dashboard
 
 RUN npm install
+
+WORKDIR /app/src
