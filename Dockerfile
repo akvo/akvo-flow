@@ -50,3 +50,5 @@ RUN set -ex ; \
     adduser -D -h /home/akvo -s /bin/bash akvo akvo
 
 WORKDIR /app/src
+
+RUN npm install
