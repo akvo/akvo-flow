@@ -1,5 +1,8 @@
 # Akvo Flow Release Notes
 ----
+# Akvo Flow Dashboard v1.9.45 - R.. R..
+Date: ...
+
 # Akvo Flow Dashboard v1.9.44 - Quintessential Quandong (Hotfix 1)
 Date: 21-03-2019
 
