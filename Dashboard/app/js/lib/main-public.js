@@ -5,6 +5,7 @@ require('akvo-flow/views/views-public');
 require('akvo-flow/router/router-public');
 require('akvo-flow/version');
 require('akvo-flow/analytics');
+require('../vendor/Google');
 
 require('../../css/screen.scss');
 
