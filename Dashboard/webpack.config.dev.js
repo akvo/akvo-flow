@@ -4,6 +4,7 @@ import HtmlWebpackPlugin from 'html-webpack-plugin';
 import path from 'path';
 import CopyPlugin from 'copy-webpack-plugin';
 import { execSync } from 'child_process';
+import { BundleAnalyzerPlugin } from 'webpack-bundle-analyzer';
 
 export const HTML_CONFIG = {
   minify: {
@@ -60,6 +61,10 @@ export default {
       { from: 'app/js/plugins', to: 'js' },
       { from: 'app/static/images', to: 'images' },
     ]),
+
+    new BundleAnalyzerPlugin({
+      analyzerMode: 'static',
+    }),
   ],
   module: {
     rules: [
