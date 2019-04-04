@@ -10,7 +10,7 @@ export const HTML_CONFIG = {
     removeComments: true,
     collapseWhitespace: true,
   },
-  inject: false,
+  inject: 'body',
 };
 
 export default {
@@ -45,17 +45,13 @@ export default {
       __DEV__: true,
       __VERSION__: JSON.stringify(execSync('git describe').toString()),
     }),
+
     new HtmlWebpackPlugin({
       ...HTML_CONFIG,
       template: 'app/dashboard.ejs',
-      chunks: ['app'],
+      chunks: ['admin'],
     }),
-    new HtmlWebpackPlugin({
-      ...HTML_CONFIG,
-      template: 'app/public.ejs',
-      chunks: ['pub'],
-      filename: 'pub.html',
-    }),
+
     new CopyPlugin([
       { from: 'app/js/plugins', to: 'js' },
       { from: 'app/static/images', to: 'images' },
