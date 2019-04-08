@@ -16,6 +16,7 @@
 
 package org.waterforpeople.mapping.app.web.dto;
 
+import java.io.UnsupportedEncodingException;
 import java.net.URLDecoder;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
@@ -168,49 +169,7 @@ public class RawDataImportRequest extends RestRequest {
             }
         }
         if (req.getParameter(QUESTION_ID_PARAM) != null) {
-            String[] answers = req.getParameterValues(QUESTION_ID_PARAM);
-            if (answers != null) {
-                for (String answer : answers) {
-                    // answer: 242334|0=abc|1=def|2=ghi|type=VALUE
-                    // The iteration responses are also URLEncoded in order to escape pipe
-                    // characters
-                    String[] parts = URLDecoder.decode(answer, "UTF-8").split("\\|");
-                    Map<Integer, String> iterations = new HashMap<>();
-                    Long questionId = Long.valueOf(parts[0]);
-                    String type = null;
-                    for (int i = 1; i < parts.length; i++) {
-                        String part = parts[i];
-                        String[] keyValue = part.split("=");
-                        if (keyValue.length == 2) {
-                            String key = keyValue[0];
-                            String val = keyValue[1];
-
-                            switch (key) {
-                                case "type":
-                                    type = val;
-                                    break;
-                                default:
-                                    // key is the iteration and value the response
-                                    iterations.put(Integer.valueOf(key),
-                                            URLDecoder.decode(val, "UTF-8"));
-                                    break;
-                            }
-                        }
-                    }
-
-                    if (questionId != null && type != null) {
-
-                        for (Entry<Integer, String> iterationEntry : iterations.entrySet()) {
-                            putResponse(questionId, iterationEntry.getKey(),
-                                    iterationEntry.getValue(),
-                                    type);
-                        }
-                    } else {
-                        log.log(Level.WARNING, "Could not parse \"" + answer
-                                + "\" as RawDataImportRequest");
-                    }
-                }
-            }
+            handleQuestionIdParam(req.getParameterValues(QUESTION_ID_PARAM));
         } else {
             log.warning("No question answers to import");
         }
@@ -251,6 +210,55 @@ public class RawDataImportRequest extends RestRequest {
         }
     }
 
+    /**
+     * @param req
+     * @throws UnsupportedEncodingException
+     */
+    private void handleQuestionIdParam(String[] answers) throws UnsupportedEncodingException {
+        if (answers != null) {
+            for (String answer : answers) {
+                // answer: 242334|0=abc|1=def|2=ghi|type=VALUE
+                // The iteration responses are also URLEncoded in order to escape pipe
+                // characters
+                String[] parts = URLDecoder.decode(answer, "UTF-8").split("\\|");
+                Map<Integer, String> iterations = new HashMap<>();
+                Long questionId = Long.valueOf(parts[0]);
+                String type = null;
+                for (int i = 1; i < parts.length; i++) {
+                    String part = parts[i];
+                    String[] keyValue = part.split("=");
+                    if (keyValue.length == 2) {
+                        String key = keyValue[0];
+                        String val = keyValue[1];
+
+                        switch (key) {
+                            case "type":
+                                type = val;
+                                break;
+                            default:
+                                // key is the iteration and value the response
+                                iterations.put(Integer.valueOf(key),
+                                        URLDecoder.decode(val, "UTF-8"));
+                                break;
+                        }
+                    }
+                }
+
+                if (questionId != null && type != null) {
+
+                    for (Entry<Integer, String> iterationEntry : iterations.entrySet()) {
+                        putResponse(questionId, iterationEntry.getKey(),
+                                iterationEntry.getValue(),
+                                type);
+                    }
+                } else {
+                    log.log(Level.WARNING, "Could not parse \"" + answer
+                            + "\" as RawDataImportRequest");
+                }
+            }
+        }
+    }
+
     public void setSubmitter(String submitter) {
         this.submitter = submitter;
     }
@@ -275,12 +283,12 @@ public class RawDataImportRequest extends RestRequest {
         return duration;
     }
 
-	public Double getFormVersion() {
-		return formVersion;
-	}
+    public Double getFormVersion() {
+        return formVersion;
+    }
 
-	public void setFormVersion(Double formVersion) {
-		this.formVersion = formVersion;
-	}
+    public void setFormVersion(Double formVersion) {
+        this.formVersion = formVersion;
+    }
 
 }

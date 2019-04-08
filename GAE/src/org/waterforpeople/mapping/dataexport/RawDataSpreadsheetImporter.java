@@ -242,7 +242,6 @@ public class RawDataSpreadsheetImporter implements DataImporter {
         //these are all for the base sheet
         Map<Integer, Long> columnIndexToQuestionId = sheetMap.get(baseSheet);
         int firstQuestionColumnIndex = Collections.min(columnIndexToQuestionId.keySet());
-//        Map<String, Integer> metadataColumnHeaderIndex = calculateMetadataColumnIndex(firstQuestionColumnIndex, false);
         Map<String, Integer> metadataColumnHeaderIndex = getMetadataColumnIndex(baseSheet, firstQuestionColumnIndex, headerRowIndex, false);
         Map<String, Integer> repMetadataIndex = null; //lazy calc, done if needed; all rep sheets should be the same!
 
@@ -341,14 +340,14 @@ public class RawDataSpreadsheetImporter implements DataImporter {
         return index;
     }
 
-    boolean checkCol(Map<String, Integer> index, String name) {
+    private boolean checkCol(Map<String, Integer> index, String name) {
         if (!index.containsKey(name)) {
             log.warn("Required column '" + name + "' not found!");
             return false;
         }
-        return true;    	
+        return true;
     }
-    
+
     /**
      * @return
      */
@@ -514,7 +513,7 @@ public class RawDataSpreadsheetImporter implements DataImporter {
             catch (NumberFormatException e) { /*ignore*/ }
         }
 
-        
+
         int iterations = 1;
         int repeatIterationColumnIndex = -1;
 
@@ -611,7 +610,7 @@ public class RawDataSpreadsheetImporter implements DataImporter {
         if (cell != null //misses empty-but-has-other
                 || (questionType == QuestionType.OPTION
                         && Boolean.TRUE.equals(questionDto.getAllowOtherFlag()
-                        && otherValuesInSeparateColumns))) { 
+                        && otherValuesInSeparateColumns))) {
             switch (questionType) {
                 case GEO:
                     String latitude = ExportImportUtils.parseCellAsString(cell);
@@ -889,7 +888,7 @@ public class RawDataSpreadsheetImporter implements DataImporter {
         if (dto.getFormVersion() != null) {
         	sb.append("&formVersion=" + dto.getFormVersion());
         }
-        
+
         // questionId=123|0=sfijd|2=fjsoi|type=GEO&questionId=...
         for (Entry<Long, SortedMap<Long, String>> entry : instanceData.responseMap
                 .entrySet()) {
@@ -1065,7 +1064,7 @@ public class RawDataSpreadsheetImporter implements DataImporter {
             }
 
             Workbook wb = sheet.getWorkbook();
-            
+
             //check that all mandatory columns exist on all sheets
             for (int i = 0; i < wb.getNumberOfSheets(); i++) {
                 sheet = wb.getSheetAt(i);

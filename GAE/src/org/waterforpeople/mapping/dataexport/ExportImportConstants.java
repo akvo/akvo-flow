@@ -17,28 +17,28 @@ package org.waterforpeople.mapping.dataexport;
 
 public final class ExportImportConstants {
 
-	//Output column group header, indicates modern data-cleaning format
-    static final String METADATA_LABEL = "Metadata";
+    //Output column group header, indicates modern data-cleaning format
+    protected static final String METADATA_LABEL = "Metadata";
 
     //Metadata column headers, in canonical order
-    static final String IDENTIFIER_LABEL = "Identifier";
-    static final String DATA_APPROVAL_STATUS_LABEL = "Data approval status";
-    static final String REPEAT_LABEL = "Repeat no";
-    static final String DISPLAY_NAME_LABEL = "Display Name";
-    static final String DEVICE_IDENTIFIER_LABEL = "Device identifier";
-    static final String INSTANCE_LABEL = "Instance";
-    static final String SUB_DATE_LABEL = "Submission Date";
-    static final String SUBMITTER_LABEL = "Submitter";
-    static final String DURATION_LABEL = "Duration";
-    static final String FORM_VER_LABEL = "Form version"; //Good name?
-    
+    protected static final String IDENTIFIER_LABEL = "Identifier";
+    protected static final String DATA_APPROVAL_STATUS_LABEL = "Data approval status";
+    protected static final String REPEAT_LABEL = "Repeat no";
+    protected static final String DISPLAY_NAME_LABEL = "Display Name";
+    protected static final String DEVICE_IDENTIFIER_LABEL = "Device identifier";
+    protected static final String INSTANCE_LABEL = "Instance";
+    protected static final String SUB_DATE_LABEL = "Submission Date";
+    protected static final String SUBMITTER_LABEL = "Submitter";
+    protected static final String DURATION_LABEL = "Duration";
+    protected static final String FORM_VER_LABEL = "Form version"; //Good name?
+
     //Data column headers
-    static final String LAT_LABEL = "Latitude";
-    static final String LON_LABEL = "Longitude";
-    static final String IMAGE_LABEL = "Image";
-    static final String ELEV_LABEL = "Elevation";
-    static final String ACC_LABEL = "Accuracy (m)";
-    static final String OTHER_SUFFIX = "--OTHER--";
-    static final String GEO_PREFIX = "--GEO";
-    static final String CADDISFLY_PREFIX = "--CADDISFLY";
+    protected static final String LAT_LABEL = "Latitude";
+    protected static final String LON_LABEL = "Longitude";
+    protected static final String IMAGE_LABEL = "Image";
+    protected static final String ELEV_LABEL = "Elevation";
+    protected static final String ACC_LABEL = "Accuracy (m)";
+    protected static final String OTHER_SUFFIX = "--OTHER--";
+    protected static final String GEO_PREFIX = "--GEO";
+    protected static final String CADDISFLY_PREFIX = "--CADDISFLY";
 }
