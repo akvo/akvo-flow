@@ -1,5 +1,7 @@
 /* eslint-disable no-console, import/no-extraneous-dependencies */
 import webpack from 'webpack';
+import path from 'path';
+import { execSync } from 'child_process';
 import config from '../webpack.config.prod';
 import configPublic from '../webpack.config.public.prod';
 import { chalkError, chalkSuccess, chalkWarning, chalkProcessing } from './chalkConfig';
@@ -35,4 +37,5 @@ const handler = (callback = () => {}) => (error, stats) => {
 
 webpack(config).run(handler(() => {
   webpack(configPublic).run(handler());
+  execSync(`node ${path.join(__dirname, './buildUsersCss.js')}`);
 }));
