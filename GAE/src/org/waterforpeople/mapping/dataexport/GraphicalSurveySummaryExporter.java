@@ -75,6 +75,7 @@ import org.waterforpeople.mapping.domain.CaddisflyResource;
 import org.waterforpeople.mapping.domain.CaddisflyResult;
 import org.waterforpeople.mapping.domain.response.value.Media;
 import org.waterforpeople.mapping.serialization.response.MediaResponse;
+import static org.waterforpeople.mapping.dataexport.ExportImportConstants.*;
 
 import com.gallatinsystems.survey.dao.CaddisflyResourceDao;
 
@@ -107,17 +108,14 @@ public class GraphicalSurveySummaryExporter extends SurveySummaryExporter {
 
     private static final String DIGEST_COLUMN = "NO_TITLE_DIGEST_COLUMN";
 
-    private static final String METADATA_LABEL = "Metadata";
+    
+    
+    //Statistics page header and labels
     private static final String REPORT_HEADER = "Survey Summary Report";
     private static final String FREQ_LABEL = "Frequency";
     private static final String PCT_LABEL = "Percent";
     private static final String SUMMARY_LABEL = "Summary";
     private static final String RAW_DATA_LABEL = "Raw Data";
-    private static final String INSTANCE_LABEL = "Instance";
-    private static final String SUB_DATE_LABEL = "Submission Date";
-    private static final String SUBMITTER_LABEL = "Submitter";
-    private static final String DURATION_LABEL = "Duration";
-    private static final String REPEAT_LABEL = "Repeat no";
     private static final String MEAN_LABEL = "Mean";
     private static final String MEDIAN_LABEL = "Median";
     private static final String MIN_LABEL = "Min";
@@ -127,16 +125,6 @@ public class GraphicalSurveySummaryExporter extends SurveySummaryExporter {
     private static final String STD_D_LABEL = "Std Deviation";
     private static final String TOTAL_LABEL = "Total";
     private static final String RANGE_LABEL = "Range";
-    private static final String LAT_LABEL = "Latitude";
-    private static final String LON_LABEL = "Longitude";
-    private static final String IMAGE_LABEL = "Image";
-    private static final String ELEV_LABEL = "Elevation";
-    private static final String ACC_LABEL = "Accuracy (m)";
-    private static final String IDENTIFIER_LABEL = "Identifier";
-    private static final String DISPLAY_NAME_LABEL = "Display Name";
-    private static final String DEVICE_IDENTIFIER_LABEL = "Device identifier";
-    private static final String DATA_APPROVAL_STATUS_LABEL = "Data approval status";
-    private static final String OTHER_TAG = "--OTHER--";
 
     // Maximum number of rows of a sheet kept in memory
     // We must take care to never go back up longer than this
@@ -209,7 +197,7 @@ public class GraphicalSurveySummaryExporter extends SurveySummaryExporter {
         final String surveyId = criteria.get(SurveyRestRequest.SURVEY_ID_PARAM).trim();
         final String apiKey = criteria.get("apiKey").trim();
 
-        log.debug("===Export criteria=" + criteria.toString() +
+        log.debug("### Export criteria=" + criteria.toString() +
         		" filename=" + fileName.toString() +
         		" options=" + options.toString() );
         if (!processOptions(options)) {
@@ -604,6 +592,11 @@ public class GraphicalSurveySummaryExporter extends SurveySummaryExporter {
             createCell(r, col++, sanitize(dto.getSubmitterName()));
             String duration = getDurationText(dto.getSurveyalTime());
             createCell(r, col++, duration);
+            Double v = dto.getFormVersion();
+            if (v != null) {	
+            	createCell(r, col++, v);
+            } 
+            //TODO else a cell with 0.0??
         }
 
     }
@@ -1293,6 +1286,7 @@ public class GraphicalSurveySummaryExporter extends SurveySummaryExporter {
         addMetaDataColumnHeader(SUB_DATE_LABEL, ++columnIdx, row);
         addMetaDataColumnHeader(SUBMITTER_LABEL, ++columnIdx, row);
         addMetaDataColumnHeader(DURATION_LABEL, ++columnIdx, row);
+        addMetaDataColumnHeader(FORM_VER_LABEL, ++columnIdx, row);
         //Always put something in the top-left corner to identify the format
         if (doGroupHeaders) {
             row = getRow(0, sheet);
@@ -1524,7 +1518,7 @@ public class GraphicalSurveySummaryExporter extends SurveySummaryExporter {
                 createHeaderCell(row, offset++, q.getText() + " - " + LON_LABEL);
                 createHeaderCell(row, offset++, q.getText() + " - " + ELEV_LABEL);
             }
-        } else { //Import currently relies on the --GEO headers
+        } else { //Import currently relies on the --GEO header prefix
             createHeaderCell(row, offset++, q.getKeyId() + "|" + LAT_LABEL);
             createHeaderCell(row, offset++, "--GEOLON--|"      + LON_LABEL);
             createHeaderCell(row, offset++, "--GEOELE--|"      + ELEV_LABEL);
@@ -1557,7 +1551,7 @@ public class GraphicalSurveySummaryExporter extends SurveySummaryExporter {
 
                 // add 'other' column if needed
                 if (safeTrue(q.getAllowOtherFlag())){
-                  createHeaderCell(row, offset++, header + OTHER_TAG);
+                  createHeaderCell(row, offset++, header + OTHER_SUFFIX);
                 }
 
                 optionMap.put(q.getKeyId(), qoList);
@@ -2103,8 +2097,8 @@ public class GraphicalSurveySummaryExporter extends SurveySummaryExporter {
         GraphicalSurveySummaryExporter exporter = new GraphicalSurveySummaryExporter();
         Map<String, String> criteria = new HashMap<String, String>();
         Map<String, String> options = new HashMap<String, String>();
-//        options.put(TYPE_OPT, DATA_CLEANING_TYPE);
-        options.put(TYPE_OPT, DATA_ANALYSIS_TYPE);
+        options.put(TYPE_OPT, DATA_CLEANING_TYPE);
+//        options.put(TYPE_OPT, DATA_ANALYSIS_TYPE);
 //        options.put(TYPE_OPT, COMPREHENSIVE_TYPE);
         options.put(LAST_COLLECTION_OPT, "false");
         options.put(EMAIL_OPT, "email@example.com");
