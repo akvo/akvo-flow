@@ -1,5 +1,5 @@
 /*
- *  Copyright (C) 2014-2015,2017 Stichting Akvo (Akvo Foundation)
+ *  Copyright (C) 2014-2015,2017-2019 Stichting Akvo (Akvo Foundation)
  *
  *  This file is part of Akvo FLOW.
  *
@@ -26,11 +26,11 @@ import java.util.regex.Pattern;
 
 import javax.servlet.http.HttpServletRequest;
 
+import com.fasterxml.jackson.core.JsonFactory;
+import com.fasterxml.jackson.core.JsonParser;
+import com.fasterxml.jackson.core.JsonToken;
 import org.akvo.flow.domain.RootFolder;
 import org.akvo.flow.domain.SecuredObject;
-import org.codehaus.jackson.JsonFactory;
-import org.codehaus.jackson.JsonParser;
-import org.codehaus.jackson.JsonToken;
 import org.springframework.security.access.AccessDecisionVoter;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.access.ConfigAttribute;
@@ -132,7 +132,7 @@ public class RequestUriVoter implements AccessDecisionVoter<FilterInvocation> {
         if (!URI_PATTERN.matcher(securedObject.getRequestUrl()).find()) {
             // request URL does not match the URI patterns we consider for voting
             return true;
-        } else if (authentication.getAuthorities().contains(AppRole.SUPER_ADMIN)) {
+        } else if (authentication.getAuthorities().contains(AppRole.ROLE_SUPER_ADMIN)) {
             // requester is a super admin user no need to control access or
             return true;
         } else if ("GET".equals(securedObject.getHttpRequest().getMethod())
@@ -199,7 +199,7 @@ public class RequestUriVoter implements AccessDecisionVoter<FilterInvocation> {
 
         try {
             JsonFactory f = new JsonFactory();
-            JsonParser parser = f.createJsonParser(httpRequest.getInputStream());
+            JsonParser parser = f.createParser(httpRequest.getInputStream());
 
             boolean isSurvey = false;
             boolean isForm = false;

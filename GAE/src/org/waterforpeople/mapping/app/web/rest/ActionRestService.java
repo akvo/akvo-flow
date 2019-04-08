@@ -1,5 +1,5 @@
 /*
- *  Copyright (C) 2013-2018 Stichting Akvo (Akvo Foundation)
+ *  Copyright (C) 2013-2019 Stichting Akvo (Akvo Foundation)
  *
  *  This file is part of Akvo FLOW.
  *
@@ -33,7 +33,7 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.waterforpeople.mapping.app.gwt.client.survey.SurveyDto;
-import org.waterforpeople.mapping.app.gwt.server.survey.SurveyServiceImpl;
+import org.waterforpeople.mapping.app.web.SurveyAssemblyServlet;
 import org.waterforpeople.mapping.app.web.dto.BootstrapGeneratorRequest;
 import org.waterforpeople.mapping.app.web.dto.DataProcessorRequest;
 import org.waterforpeople.mapping.app.web.rest.dto.RestStatusDto;
@@ -207,8 +207,7 @@ public class ActionRestService {
 
 
     private String publishSurvey(Long surveyId) {
-        SurveyServiceImpl surveyService = new SurveyServiceImpl();
-        surveyService.publishSurveyAsync(surveyId);
+        SurveyAssemblyServlet.runAsTask(surveyId);
         return "publishing requested";
     }
 

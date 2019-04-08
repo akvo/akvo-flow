@@ -1,4 +1,4 @@
-(function(window) {
+(function() {
   function requireWrapper(self) {
     var require = function() {
       return self.require.apply(self, arguments);
@@ -57,4 +57,4 @@
   };
 
   window.loader = new Loader();
-})(this);
+})();

@@ -1,5 +1,5 @@
 /*
- *  Copyright (C) 2014-2015 Stichting Akvo (Akvo Foundation)
+ *  Copyright (C) 2014-2015,2019 Stichting Akvo (Akvo Foundation)
  *
  *  This file is part of Akvo FLOW.
  *
@@ -19,7 +19,7 @@ package org.waterforpeople.mapping.app.web.rest.dto;
 import java.util.Collection;
 
 import org.apache.commons.lang.StringUtils;
-import org.codehaus.jackson.annotate.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.waterforpeople.mapping.app.web.rest.security.AppRole;
@@ -102,8 +102,8 @@ public class UserAuthorizationPayload extends BaseDto {
                 Collection<? extends GrantedAuthority> authorities = SecurityContextHolder
                         .getContext().getAuthentication().getAuthorities();
 
-                return authorities.contains(AppRole.SUPER_ADMIN)
-                        || authorities.contains(AppRole.ADMIN);
+                return authorities.contains(AppRole.ROLE_SUPER_ADMIN)
+                        || authorities.contains(AppRole.ROLE_ADMIN);
 
             } else {
                 return true;

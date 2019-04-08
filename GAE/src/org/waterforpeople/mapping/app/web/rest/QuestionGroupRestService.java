@@ -1,5 +1,5 @@
 /*
- *  Copyright (C) 2012-2018 Stichting Akvo (Akvo Foundation)
+ *  Copyright (C) 2012-2019 Stichting Akvo (Akvo Foundation)
  *
  *  This file is part of Akvo FLOW.
  *
@@ -352,10 +352,7 @@ public class QuestionGroupRestService {
                         DataProcessorRequest.COPY_QUESTION_GROUP)
                 .param(DataProcessorRequest.QUESTION_GROUP_ID_PARAM,
                         String.valueOf(copyGroup.getKey().getId()))
-                .param(DataProcessorRequest.SOURCE_PARAM, questionGroupDto.getSourceId().toString())
-                .header("Host",
-                        BackendServiceFactory.getBackendService()
-                                .getBackendAddress("dataprocessor"));
+                .param(DataProcessorRequest.SOURCE_PARAM, questionGroupDto.getSourceId().toString());
 
         queue.add(options);
 

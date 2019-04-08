@@ -27,7 +27,6 @@ public class SurveyAssignmentDAO extends BaseDAO<SurveyAssignment> {
     public SurveyAssignmentDAO() {
         super(SurveyAssignment.class);
     }
-    
 
     /**
      * Return a list of survey assignments containing a specified device
@@ -35,7 +34,7 @@ public class SurveyAssignmentDAO extends BaseDAO<SurveyAssignment> {
      * @return list of assignments
      */
     public List<SurveyAssignment> listAllContainingDevice(Long devId) {
-    	List<SurveyAssignment> selected = listByProperty("deviceIds", devId, "Long");
+        List<SurveyAssignment> selected = listByProperty("deviceIds", devId, "Long");
         return selected;
     }
 
@@ -45,12 +44,12 @@ public class SurveyAssignmentDAO extends BaseDAO<SurveyAssignment> {
      * @return number of affected assignments
      */
     public int removeDevice(Long devId) {
-    	List<SurveyAssignment> all = listAllContainingDevice(devId);
-    	for (SurveyAssignment ass : all) {
-    		List<Long> devs = ass.getDeviceIds();
-    		devs.remove(devId);
-    	}
-    	save(all);
+        List<SurveyAssignment> all = listAllContainingDevice(devId);
+        for (SurveyAssignment ass : all) {
+            List<Long> devs = ass.getDeviceIds();
+            devs.remove(devId);
+        }
+        save(all);
         return all.size();
     }
 }

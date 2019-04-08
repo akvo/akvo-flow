@@ -13,7 +13,7 @@ DS.FLOWRESTAdapter = DS.RESTAdapter.extend({
   }),
 
   sideload: function (store, type, json, root) {
-    var msg, status, metaObj;
+    var msg, status, metaObj, keyId;
     this._super(store, type, json, root);
 
     this.setQueryCursor(type, json);

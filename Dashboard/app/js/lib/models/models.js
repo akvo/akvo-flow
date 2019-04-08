@@ -3,8 +3,12 @@
 // ***********************************************//
 require('akvo-flow/core-common');
 require('akvo-flow/models/store_def-common');
+import observe from '../mixins/observe';
 
-FLOW.BaseModel = DS.Model.extend({
+FLOW.BaseModel = DS.Model.extend(observe({
+  isSaving: 'anySaving',
+  isDirty: 'anySaving',
+}), {
   keyId: DS.attr('number'),
   savingStatus: null,
 
@@ -18,17 +22,19 @@ FLOW.BaseModel = DS.Model.extend({
       FLOW.savingMessageControl.checkSaving();
     }
     this.set('savingStatus', (this.get('isSaving') || this.get('isDirty')));
-  }.observes('isSaving', 'isDirty')
+  },
 });
 
 FLOW.CaddisflyTestDefinition = Ember.Object.extend({
     name: null,
+    multiParameter: null,
+    sample: null,
+    device: null,
     brand: null,
+    model: null,
     uuid: null,
-
-    displayName: function() {
-        return this.get('name') + " (" + this.get('brand') +")";
-    }.property(''),
+    results: [],
+    reagents: []
 });
 
 FLOW.CascadeResource = FLOW.BaseModel.extend({
@@ -162,9 +168,9 @@ FLOW.Survey = FLOW.BaseModel.extend({
   // used in the assignment edit page, not saved to backend
   surveyGroupName: null,
 
-  allowEdit: function () {
+  allowEdit: Ember.computed(function () {
 	  return !this.get('isNew') && this.get('status') !== 'COPYING';
-  }.property('status', 'isNew')
+  }).property('status', 'isNew')
 
 });
 
@@ -447,7 +453,9 @@ FLOW.Message = FLOW.BaseModel.extend({
 
 FLOW.Action = FLOW.BaseModel.extend({});
 
-FLOW.Translation = FLOW.BaseModel.extend({
+FLOW.Translation = FLOW.BaseModel.extend(observe({
+  'this.keyId': 'didCreateId',
+}), {
   didUpdate: function () {
     FLOW.translationControl.putSingleTranslationInList(this.get('parentType'), this.get('parentId'), this.get('text'), this.get('keyId'), false);
   },
@@ -463,7 +471,7 @@ FLOW.Translation = FLOW.BaseModel.extend({
     if (!Ember.none(this.get('keyId')) && this.get('keyId') > 0) {
       FLOW.translationControl.putSingleTranslationInList(this.get('parentType'), this.get('parentId'), this.get('text'), this.get('keyId'), false);
     }
-  }.observes('this.keyId'),
+  },
 
   didDelete: function () {
     FLOW.translationControl.putSingleTranslationInList(this.get('parentType'), this.get('parentId'), null, null, true);

@@ -1,5 +1,5 @@
 /*
- *  Copyright (C) 2010-2018 Stichting Akvo (Akvo Foundation)
+ *  Copyright (C) 2010-2019 Stichting Akvo (Akvo Foundation)
  *
  *  This file is part of Akvo FLOW.
  *
@@ -564,7 +564,7 @@ public class QuestionDao extends BaseDAO<Question> {
     /**
      * lists questions within a group. If needDetails flag is true, the child objects will be loaded
      * for each question. Due to processing constraints on GAE, needDetails should only be true when
-     * calling this method if being called from a backend or task.
+     * calling this method from a task.
      *
      * @param questionGroupId
      * @param needDetails
@@ -578,7 +578,7 @@ public class QuestionDao extends BaseDAO<Question> {
     /**
      * lists all the questions in a group, optionally loading details. If allowSideEffects is true,
      * it will attempt to reorder any duplicated question orderings on retrieval. New users of this
-     * method should ALWAY call this with allowSideEffects = false
+     * method should ALWAYS call this with allowSideEffects = false
      *
      * @param questionGroupId
      * @param needDetails
@@ -587,8 +587,8 @@ public class QuestionDao extends BaseDAO<Question> {
      */
     public TreeMap<Integer, Question> listQuestionsByQuestionGroup(
             Long questionGroupId, boolean needDetails, boolean allowSideEffects) {
-        List<Question> qList = listByProperty("questionGroupId",
-                questionGroupId, "Long", "order", "asc");
+        List<Question> qList =
+                listByProperty("questionGroupId", questionGroupId, "Long", "order", "asc");
         TreeMap<Integer, Question> map = new TreeMap<Integer, Question>();
         if (qList != null) {
             for (Question q : qList) {
@@ -601,16 +601,9 @@ public class QuestionDao extends BaseDAO<Question> {
                     }
                     q.setTranslationMap(translationDao.findTranslations(
                             ParentType.QUESTION_TEXT, q.getKey().getId()));
-                    // only load scoring rules for types that support
-                    // scoring
-                    if (Question.Type.OPTION == q.getType()
-                            || Question.Type.FREE_TEXT == q.getType()
-                            || Question.Type.NUMBER == q.getType()) {
-                        q.setScoringRules(scoringRuleDao.listRulesByQuestion(q.getKey().getId()));
-                    }
                 }
                 if (q.getOrder() == null) {
-                    q.setOrder(qList.size() + 1); //Anything, temporarily
+                    q.setOrder(qList.size() + 1); //Anything, temporarily, to make a useable list
                 } else if (allowSideEffects) {
                     if (q.getOrder() != map.size() + 1) { //Not next in sequence
                         log.log(Level.WARNING, "Reordering question in group " + questionGroupId

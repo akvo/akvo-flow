@@ -1,5 +1,5 @@
 /*
- *  Copyright (C) 2010-2015 Stichting Akvo (Akvo Foundation)
+ *  Copyright (C) 2010-2015, 2018,2019 Stichting Akvo (Akvo Foundation)
  *
  *  This file is part of Akvo FLOW.
  *
@@ -66,13 +66,14 @@ public class DataProcessorRequest extends RestRequest {
     public static final String ADD_CREATION_SURVEY_ID_TO_LOCALE = "addCreationSurveyIdToLocale";
     public static final String ADD_TRANSLATION_FIELDS = "addTranslationFields";
     public static final String RECREATE_LOCALES = "recreateLocales";
+    public static final String CASCADE_RESOURCE_ID = "cascadeResourceId";
+    public static final String PARENT_NODE_ID = "parentNodeId";
     public static final String POP_QUESTION_ORDER_FIELDS_ACTION = "populateQuestionOrders";
     public static final String POPULATE_MONITORING_FIELDS_LOCALE_ACTION = "populateMonitoringFieldsLocale";
     public static final String CREATE_NEW_IDENTIFIERS_LOCALES_ACTION = "createNewIdentifiersLocales";
     public static final String DELETE_SURVEY_INSTANCE_ACTION = "deleteSurveyInstance";
-    public static final String DELETE_CASCADE_NODES = "deleteCascadeNodes";
-    public static final String CASCADE_RESOURCE_ID = "cascadeResourceId";
-    public static final String PARENT_NODE_ID = "parentNodeId";
+    public static final String DELETE_CHILD_CASCADE_NODES = "deleteCascadeNodes";
+    public static final String UPDATE_SURVEY_INSTANCE_SUMMARIES = "updateSurveyInstanceSummaries";
     public static final int MAX_TASK_RETRIES = 3;
 
     private String country;

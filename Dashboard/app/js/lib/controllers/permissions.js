@@ -1,143 +1,4 @@
 FLOW.permControl = Ember.Controller.create({
-  perms: [],
-
-  init: function () {
-    this._super();
-    this.initPermissions();
-    this.setUserPermissions();
-    this.setCurrentPermissions();
-  },
-
-  initPermissions: function () {
-    this.perms.push(Ember.Object.create({
-      perm: 'createSurvey',
-      value: false
-    }));
-    this.perms.push(Ember.Object.create({
-      perm: 'editSurvey',
-      value: false
-    }));
-    this.perms.push(Ember.Object.create({
-      perm: 'uploadSurveyZipData',
-      value: false
-    }));
-    this.perms.push(Ember.Object.create({
-      perm: 'importDataReport',
-      value: false
-    }));
-    this.perms.push(Ember.Object.create({
-      perm: 'viewMessages',
-      value: false
-    }));
-    this.perms.push(Ember.Object.create({
-      perm: 'publishSurvey',
-      value: false
-    }));
-    this.perms.push(Ember.Object.create({
-      perm: 'mapData',
-      value: false
-    }));
-    this.perms.push(Ember.Object.create({
-      perm: 'setDataPrivacy',
-      value: false
-    }));
-    this.perms.push(Ember.Object.create({
-      perm: 'editRawData',
-      value: false
-    }));
-    this.perms.push(Ember.Object.create({
-      perm: 'deleteRawData',
-      value: false
-    }));
-    this.perms.push(Ember.Object.create({
-      perm: 'runReport',
-      value: false
-    }));
-    this.perms.push(Ember.Object.create({
-      perm: 'deleteSurvey',
-      value: false
-    }));
-    this.perms.push(Ember.Object.create({
-      perm: 'deleteSurveyGroup',
-      value: false
-    }));
-    this.perms.push(Ember.Object.create({
-      perm: 'addUser',
-      value: false
-    }));
-    this.perms.push(Ember.Object.create({
-      perm: 'editUser',
-      value: false
-    }));
-    this.perms.push(Ember.Object.create({
-      perm: 'deleteUser',
-      value: false
-    }));
-    this.perms.push(Ember.Object.create({
-      perm: 'approveSurvey',
-      value: false
-    }));
-    this.perms.push(Ember.Object.create({
-      perm: 'editEditorialContent',
-      value: false
-    }));
-  },
-
-  setUserPermissions: function () {
-    var user = true;
-    if (user === true) {
-      this.perms.findProperty('perm', 'createSurvey').value = true;
-      this.perms.findProperty('perm', 'editSurvey').value = true;
-      this.perms.findProperty('perm', 'uploadSurveyZipData').value = true;
-      this.perms.findProperty('perm', 'viewMessages').value = true;
-      this.perms.findProperty('perm', 'publishSurvey').value = true;
-      this.perms.findProperty('perm', 'mapData').value = true;
-      this.perms.findProperty('perm', 'setDataPrivacy').value = true;
-      this.perms.findProperty('perm', 'runReport').value = true;
-    }
-
-    if (user === true) {
-      this.perms.findProperty('perm', 'createSurvey').value = true;
-      this.perms.findProperty('perm', 'editSurvey').value = true;
-      this.perms.findProperty('perm', 'uploadSurveyZipData').value = true;
-      this.perms.findProperty('perm', 'importDataReport').value = true;
-      this.perms.findProperty('perm', 'viewMessages').value = true;
-      this.perms.findProperty('perm', 'publishSurvey').value = true;
-      this.perms.findProperty('perm', 'mapData').value = true;
-      this.perms.findProperty('perm', 'setDataPrivacy').value = true;
-      this.perms.findProperty('perm', 'runReport').value = true;
-      this.perms.findProperty('perm', 'editRawData').value = true;
-      this.perms.findProperty('perm', 'deleteRawData').value = true;
-      this.perms.findProperty('perm', 'approveSurvey').value = true;
-    }
-
-    if (user === true) {
-      this.perms.findProperty('perm', 'createSurvey').value = true;
-      this.perms.findProperty('perm', 'editSurvey').value = true;
-      this.perms.findProperty('perm', 'uploadSurveyZipData').value = true;
-      this.perms.findProperty('perm', 'importDataReport').value = true;
-      this.perms.findProperty('perm', 'viewMessages').value = true;
-      this.perms.findProperty('perm', 'publishSurvey').value = true;
-      this.perms.findProperty('perm', 'mapData').value = true;
-      this.perms.findProperty('perm', 'setDataPrivacy').value = true;
-      this.perms.findProperty('perm', 'runReport').value = true;
-      this.perms.findProperty('perm', 'editRawData').value = true;
-      this.perms.findProperty('perm', 'deleteRawData').value = true;
-      this.perms.findProperty('perm', 'approveSurvey').value = true;
-      this.perms.findProperty('perm', 'deleteSurvey').value = true;
-      this.perms.findProperty('perm', 'deleteSurveyGroup').value = true;
-      this.perms.findProperty('perm', 'addUser').value = true;
-      this.perms.findProperty('perm', 'editUser').value = true;
-      this.perms.findProperty('perm', 'deleteUser').value = true;
-    }
-
-  },
-
-  setCurrentPermissions: function () {
-    this.perms.forEach(function (item) {
-      //this.set(item.perm,item.value);
-    });
-  },
 
   /* Given an entity, process the permissions settings for the current user
     and return the permissions associated with that entity.  Entity is an Ember object*/
@@ -214,7 +75,7 @@ FLOW.permControl = Ember.Controller.create({
     return permissions && permissions.indexOf("DATA_UPDATE") > -1;
   },
 
-  canManageDevices: function () {
+  canManageDevices: Ember.computed(function () {
     var currentUserPermissions = FLOW.currentUser.get('pathPermissions');
     for (var perms in currentUserPermissions) {
       if (currentUserPermissions[perms].indexOf("DEVICE_MANAGE") > -1) {
@@ -222,9 +83,9 @@ FLOW.permControl = Ember.Controller.create({
       }
     }
     return false;
-  }.property(),
+  }).property(),
 
-  canManageCascadeResources: function () {
+  canManageCascadeResources: Ember.computed(function () {
     var currentUserPermissions = FLOW.currentUser.get('pathPermissions');
     for (var perms in currentUserPermissions) {
       if (currentUserPermissions[perms].indexOf("CASCADE_MANAGE") > -1) {
@@ -232,9 +93,9 @@ FLOW.permControl = Ember.Controller.create({
       }
     }
     return false;
-  }.property(),
+  }).property(),
 
-  canCleanData: function () {
+  canCleanData: Ember.computed(function () {
       var currentUserPermissions = FLOW.currentUser.get('pathPermissions');
       for (var perms in currentUserPermissions) {
           if (currentUserPermissions[perms].indexOf("DATA_CLEANING") > -1) {
@@ -242,9 +103,9 @@ FLOW.permControl = Ember.Controller.create({
           }
       }
       return false;
-  }.property(),
+  }).property(),
 
-  canManageDataAppoval: function () {
+  canManageDataAppoval: Ember.computed(function () {
       var currentUserPermissions = FLOW.currentUser.get('pathPermissions');
       for (var perms in currentUserPermissions) {
           if (currentUserPermissions[perms].indexOf("DATA_APPROVE_MANAGE") > -1) {
@@ -252,7 +113,7 @@ FLOW.permControl = Ember.Controller.create({
           }
       }
       return false;
-  }.property(),
+  }).property(),
 
   userCanViewData: function (entity) {
     var permissions;

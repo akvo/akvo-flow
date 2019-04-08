@@ -1,3 +1,6 @@
+import observe from '../mixins/observe';
+import template from '../mixins/template'; 
+
 // ***********************************************//
 //                      Navigation views
 // ***********************************************//
@@ -23,14 +26,12 @@ require('akvo-flow/views/maps/map-views-common');
 require('akvo-flow/views/messages/message-view');
 require('akvo-flow/views/devices/devices-views');
 require('akvo-flow/views/devices/assignments-list-tab-view');
+require('akvo-flow/views/devices/assignments-list-view');
 require('akvo-flow/views/devices/assignment-edit-views');
 require('akvo-flow/views/devices/survey-bootstrap-view');
 require('akvo-flow/views/users/user-view');
 
-FLOW.ApplicationView = Ember.View.extend({
-  templateName: 'application/application',
-});
-
+FLOW.ApplicationView = Ember.View.extend(template('application/application'));
 
 FLOW.locale = function (i18nKey) {
   return 'Ember.STRINGS._select_survey_group';
@@ -93,7 +94,7 @@ FLOW.renderCaddisflyAnswer = function(json){
         var jsonParsed = JSON.parse(json);
 
         // contruct html
-        html = "<div><strong>" + jsonParsed.name + "</strong></div>";
+        var html = "<div><strong>" + jsonParsed.name + "</strong></div>";
         html += jsonParsed.result.map(function(item){
                 return "<br><div>" + item.name + " : " + item.value + " " + item.unit + "</div>";
             }).join("\n");
@@ -101,7 +102,7 @@ FLOW.renderCaddisflyAnswer = function(json){
 
         // get out image url
         if ('image' in jsonParsed) {
-          imageUrl = FLOW.Env.photo_url_root + jsonParsed.image.trim();
+          var imageUrl = FLOW.Env.photo_url_root + jsonParsed.image.trim();
           html += "<div class=\"signatureImage\"><img src=\"" + imageUrl +"\"/></div>";
         }
         return html;
@@ -115,7 +116,7 @@ FLOW.renderCaddisflyAnswer = function(json){
 
 Ember.Handlebars.registerHelper('placemarkDetail', function () {
   var answer, markup, question, cascadeJson, optionJson, cascadeString = "",
-  imageSrcAttr, signatureJson, photoJson, self=this;
+  imageSrcAttr, signatureJson, photoJson, responseType, self=this;
 
   responseType = Ember.get(this, 'type');
   question = Ember.get(this, 'questionText');
@@ -123,8 +124,8 @@ Ember.Handlebars.registerHelper('placemarkDetail', function () {
   answer = answer.replace(/\|/g, ' | '); // geo, option and cascade data
   if (responseType != 'SIGNATURE') {
     answer = answer.replace(/\//g, ' / '); // also split folder paths
+    answer = answer.replace(/\\/g, ''); // remove escape characters
   }
-  answer = answer.replace(/\\/g, ''); // remove escape characters
 
   if (responseType === 'CASCADE') {
 
@@ -218,7 +219,7 @@ Ember.Handlebars.registerHelper('drawGeoshapes', function () {
 /*  Take a timestamp and render it as a date in format
     YYYY-mm-dd */
 FLOW.renderTimeStamp = function(timestamp) {
-  var d, t, date, month, year;
+  var d, t, date, month, year, monthString, dateString;
   t = parseInt(timestamp, 10);
   if (isNaN(t)) {
   return "";
@@ -250,12 +251,16 @@ FLOW.renderTimeStamp = function(timestamp) {
 
 FLOW.renderDate = function(timestamp){
   if (timestamp) {
-    d = new Date(parseInt(timestamp, 10));
-    curr_date = d.getDate();
-    curr_month = d.getMonth() + 1;
-    curr_year = d.getFullYear();
-    curr_hour = d.getHours();
-    curr_min = d.getMinutes();
+    let d = new Date(parseInt(timestamp, 10));
+    let curr_date = d.getDate();
+    let curr_month = d.getMonth() + 1;
+    let curr_year = d.getFullYear();
+    let curr_hour = d.getHours();
+    let curr_min = d.getMinutes();
+    let monthString;
+    let dateString;
+    let hourString;
+    let minString;
 
     if (curr_month < 10) {
       monthString = "0" + curr_month.toString();
@@ -547,29 +552,28 @@ FLOW.registerViewHelper('date2', Ember.View.extend({
 // ********************************************************//
 //                      main navigation
 // ********************************************************//
-FLOW.NavigationView = Em.View.extend({
-  templateName: 'application/navigation',
+FLOW.NavigationView = Em.View.extend(template('application/navigation'), {
   selectedBinding: 'controller.selected',
 
-  showMapsButton: function () {
+  showMapsButton: Ember.computed(function () {
       return FLOW.Env.showMapsTab;
-  }.property('FLOW.Env.showMapsTab'),
+  }).property('FLOW.Env.showMapsTab'),
 
   NavItemView: Ember.View.extend({
     tagName: 'li',
     classNameBindings: 'isActive:current navItem'.w(),
 
-    navItem: function () {
+    navItem: Ember.computed(function () {
       return this.get('item');
-    }.property('item').cacheable(),
+    }).property('item').cacheable(),
 
-    isActive: function () {
+    isActive: Ember.computed(function () {
       return this.get('item') === this.get('parentView.selected');
-    }.property('item', 'parentView.selected').cacheable(),
+    }).property('item', 'parentView.selected').cacheable(),
 
-    showDevicesButton: function () {
+    showDevicesButton: Ember.computed(function () {
       return FLOW.permControl.get('canManageDevices');
-    }.property(),
+    }).property(),
 
     eventManager: Ember.Object.create({
       click: function(event, clickedView) {
@@ -669,154 +673,81 @@ FLOW.DateField2 = Ember.TextField.extend({
   }
 });
 
-// home screen view
-FLOW.NavHomeView = Ember.View.extend({
-  templateName: 'navHome/nav-home'
-});
-
-// project views
-FLOW.NavProjectsView = Ember.View.extend({
-  templateName: 'navProjects/nav-projects-main'
-});
-
 // surveys views
-FLOW.NavSurveysView = Ember.View.extend({
-  templateName: 'navSurveys/nav-surveys'
-});
-FLOW.NavSurveysMainView = Ember.View.extend({
-  templateName: 'navSurveys/nav-surveys-main'
-});
+FLOW.NavSurveysView = Ember.View.extend(template('navSurveys/nav-surveys'));
+FLOW.NavSurveysMainView = Ember.View.extend(template('navSurveys/nav-surveys-main'));
 
-FLOW.NavSurveysEditView = Ember.View.extend({
-  templateName: 'navSurveys/nav-surveys-edit'
-});
+FLOW.NavSurveysEditView = Ember.View.extend(template('navSurveys/nav-surveys-edit'));
 
-FLOW.ManageNotificationsView = Ember.View.extend({
-  templateName: 'navSurveys/manage-notifications'
-});
+FLOW.ManageNotificationsView = Ember.View.extend(template('navSurveys/manage-notifications'));
 
-FLOW.ManageTranslationsView = Ember.View.extend({
-  templateName: 'navSurveys/manage-translations'
-});
+FLOW.ManageTranslationsView = Ember.View.extend(template('navSurveys/manage-translations'));
 
-FLOW.EditQuestionsView = Ember.View.extend({
-  templateName: 'navSurveys/edit-questions'
-});
+FLOW.EditQuestionsView = Ember.View.extend(template('navSurveys/edit-questions'));
 
 // devices views
-FLOW.NavDevicesView = Ember.View.extend({
-  templateName: 'navDevices/nav-devices'
-});
+FLOW.NavDevicesView = Ember.View.extend(template('navDevices/nav-devices'));
 
-FLOW.CurrentDevicesView = FLOW.View.extend({
-  templateName: 'navDevices/devices-list-tab/devices-list'
-});
+FLOW.CurrentDevicesView = FLOW.View.extend(template('navDevices/devices-list-tab/devices-list'));
 
-FLOW.AssignSurveysOverviewView = FLOW.View.extend({
-  templateName: 'navDevices/assignment-list-tab/assignment-list'
-});
+FLOW.AssignSurveysOverviewView = FLOW.View.extend(template('navDevices/assignment-list-tab/assignment-list'));
 
-FLOW.EditSurveyAssignmentView = Ember.View.extend({
-  templateName: 'navDevices/assignment-edit-tab/assignment-edit'
-});
+FLOW.EditSurveyAssignmentView = Ember.View.extend(template('navDevices/assignment-edit-tab/assignment-edit'));
 
-FLOW.SurveyBootstrapView = FLOW.View.extend({
-  templateName: 'navDevices/bootstrap-tab/survey-bootstrap'
-});
+FLOW.SurveyBootstrapView = FLOW.View.extend(template('navDevices/bootstrap-tab/survey-bootstrap'));
 
 // data views
-FLOW.NavDataView = Ember.View.extend({
-  templateName: 'navData/nav-data'
-});
+FLOW.NavDataView = Ember.View.extend(template('navData/nav-data'));
 
-FLOW.InspectDataView = Ember.View.extend({
-  templateName: 'navData/inspect-data'
-});
+FLOW.InspectDataView = Ember.View.extend(template('navData/inspect-data'));
 
-FLOW.BulkUploadView = Ember.View.extend({
-  templateName: 'navData/bulk-upload'
-});
+FLOW.BulkUploadView = Ember.View.extend(template('navData/bulk-upload'));
 
-FLOW.CascadeResourcesView = Ember.View.extend({
-	  templateName: 'navData/cascade-resources'
-});
+FLOW.CascadeResourcesView = Ember.View.extend(template('navData/cascade-resources'));
 
-FLOW.MonitoringDataView = Ember.View.extend({
-  templateName: 'navData/monitoring-data'
-});
+FLOW.MonitoringDataView = Ember.View.extend(template('navData/monitoring-data'));
 
-FLOW.ChartReportsView = Ember.View.extend({
-  templateName: 'navReports/chart-reports'
-});
+FLOW.ChartReportsView = Ember.View.extend(template('navReports/chart-reports'));
 
 // resources views
-FLOW.NavResourcesView = Ember.View.extend({
-  templateName: 'navResources/nav-resources'
-});
+FLOW.NavResourcesView = Ember.View.extend(template('navResources/nav-resources'));
 
 // applets
-FLOW.BootstrapApplet = Ember.View.extend({
-  templateName: 'navDevices/bootstrap-tab/applets/bootstrap-applet'
-});
+FLOW.rawDataReportApplet = Ember.View.extend(template('navReports/applets/raw-data-report-applet'));
 
-FLOW.rawDataReportApplet = Ember.View.extend({
-  templateName: 'navReports/applets/raw-data-report-applet'
-});
+FLOW.comprehensiveReportApplet = Ember.View.extend(template('navReports/applets/comprehensive-report-applet'));
 
-FLOW.comprehensiveReportApplet = Ember.View.extend({
-  templateName: 'navReports/applets/comprehensive-report-applet'
-});
+FLOW.googleEarthFileApplet = Ember.View.extend(template('navReports/applets/google-earth-file-applet'));
 
-FLOW.googleEarthFileApplet = Ember.View.extend({
-  templateName: 'navReports/applets/google-earth-file-applet'
-});
+FLOW.surveyFormApplet = Ember.View.extend(template('navReports/applets/survey-form-applet'));
 
-FLOW.surveyFormApplet = Ember.View.extend({
-  templateName: 'navReports/applets/survey-form-applet'
-});
+FLOW.bulkImportApplet = Ember.View.extend(template('navData/applets/bulk-import-applet'));
 
-FLOW.bulkImportApplet = Ember.View.extend({
-  templateName: 'navData/applets/bulk-import-applet'
-});
-
-FLOW.rawDataImportApplet = Ember.View.extend({
-  templateName: 'navData/applets/raw-data-import-applet'
-});
+FLOW.rawDataImportApplet = Ember.View.extend(template('navData/applets/raw-data-import-applet'));
 
 // users views
-FLOW.NavUsersView = Ember.View.extend({
-  templateName: 'navUsers/nav-users'
-});
+FLOW.NavUsersView = Ember.View.extend(template('navUsers/nav-users'));
 
 // Messages views
-FLOW.NavMessagesView = Ember.View.extend({
-  templateName: 'navMessages/nav-messages'
-});
+FLOW.NavMessagesView = Ember.View.extend(template('navMessages/nav-messages'));
 
 // admin views
-FLOW.NavAdminView = FLOW.View.extend({
-  templateName: 'navAdmin/nav-admin'
-});
+FLOW.NavAdminView = FLOW.View.extend(template('navAdmin/nav-admin'));
 
-FLOW.HeaderView = FLOW.View.extend({
-  templateName: 'application/header-common'
-});
+FLOW.HeaderView = FLOW.View.extend(template('application/header-common'));
 
-FLOW.FooterView = FLOW.View.extend({
-  templateName: 'application/footer'
-});
+FLOW.FooterView = FLOW.View.extend(template('application/footer'));
 
 // ********************************************************//
 //             Subnavigation for the Data tabs
 // ********************************************************//
-FLOW.DatasubnavView = FLOW.View.extend({
-  templateName: 'navData/data-subnav',
-  selectedBinding: 'controller.selected',
+FLOW.DatasubnavView = FLOW.View.extend(template('navData/data-subnav'), {
+selectedBinding: 'controller.selected',
   NavItemView: Ember.View.extend({
     tagName: 'li',
     classNameBindings: 'isActive:active'.w(),
 
-    isActive: function () {
+    isActive: Ember.computed(function () {
       if (this.get('item') === this.get('parentView.selected') && this.get('parentView.selected') === "bulkUpload") {
         FLOW.uploader.set('bulkUpload', true);
       } else {
@@ -825,51 +756,49 @@ FLOW.DatasubnavView = FLOW.View.extend({
         }
       }
       return this.get('item') === this.get('parentView.selected');
-    }.property('item', 'parentView.selected').cacheable(),
+    }).property('item', 'parentView.selected').cacheable(),
 
-    showDataCleaningButton: function () {
+    showDataCleaningButton: Ember.computed(function () {
         return FLOW.permControl.get('canCleanData');
-    }.property()
+    }).property()
   })
 });
 
 // ********************************************************//
 //             Subnavigation for the Device tabs
 // ********************************************************//
-FLOW.DevicesSubnavView = FLOW.View.extend({
-  templateName: 'navDevices/devices-subnav',
+FLOW.DevicesSubnavView = FLOW.View.extend(template('navDevices/devices-subnav'), {
   selectedBinding: 'controller.selected',
   NavItemView: Ember.View.extend({
     tagName: 'li',
     classNameBindings: 'isActive:active'.w(),
 
-    isActive: function () {
+    isActive: Ember.computed(function () {
       return this.get('item') === this.get('parentView.selected');
-    }.property('item', 'parentView.selected').cacheable()
+    }).property('item', 'parentView.selected').cacheable()
   })
 });
 
 // ********************************************************//
 //             Subnavigation for the Resources tabs
 // ********************************************************//
-FLOW.ResourcesSubnavView = Em.View.extend({
-  templateName: 'navResources/resources-subnav',
+FLOW.ResourcesSubnavView = Em.View.extend(template('navResources/resources-subnav'), {
   selectedBinding: 'controller.selected',
   NavItemView: Ember.View.extend({
     tagName: 'li',
     classNameBindings: 'isActive:active'.w(),
 
-    isActive: function () {
+    isActive: Ember.computed(function () {
       return this.get('item') === this.get('parentView.selected');
-    }.property('item', 'parentView.selected').cacheable(),
+    }).property('item', 'parentView.selected').cacheable(),
 
-    showCascadeResourcesButton: function () {
+    showCascadeResourcesButton: Ember.computed(function () {
       return FLOW.permControl.get('canManageCascadeResources');
-    }.property(),
+    }).property(),
 
-    showDataApprovalButton: function () {
+    showDataApprovalButton: Ember.computed(function () {
         return FLOW.Env.enableDataApproval && FLOW.permControl.get('canManageDataAppoval');
-    }.property()
+    }).property()
   })
 });
 
@@ -884,13 +813,13 @@ FLOW.ColumnView = Ember.View.extend({
 
   classNameBindings: ['isActiveAsc:sorting_asc', 'isActiveDesc:sorting_desc'],
 
-  isActiveAsc: function () {
+  isActiveAsc: Ember.computed(function () {
     return this.get('item') === FLOW.tableColumnControl.get('selected') && FLOW.tableColumnControl.get('sortAscending') === true;
-  }.property('item', 'FLOW.tableColumnControl.selected', 'FLOW.tableColumnControl.sortAscending').cacheable(),
+  }).property('item', 'FLOW.tableColumnControl.selected', 'FLOW.tableColumnControl.sortAscending').cacheable(),
 
-  isActiveDesc: function () {
+  isActiveDesc: Ember.computed(function () {
     return this.get('item') === FLOW.tableColumnControl.get('selected') && FLOW.tableColumnControl.get('sortAscending') === false;
-  }.property('item', 'FLOW.tableColumnControl.selected', 'FLOW.tableColumnControl.sortAscending').cacheable(),
+  }).property('item', 'FLOW.tableColumnControl.selected', 'FLOW.tableColumnControl.sortAscending').cacheable(),
 
   sort: function () {
     if ((this.get('isActiveAsc')) || (this.get('isActiveDesc'))) {
@@ -912,7 +841,9 @@ FLOW.ColumnView = Ember.View.extend({
 
 var set = Ember.set,
   get = Ember.get;
-Ember.RadioButton = Ember.View.extend({
+Ember.RadioButton = Ember.View.extend(observe({
+    value: 'bindingChanged',
+}), {
   title: null,
   checked: false,
   group: "radio_button",
@@ -926,7 +857,7 @@ Ember.RadioButton = Ember.View.extend({
     if (this.get("option") == get(this, 'value')) {
       this.set("checked", true);
     }
-  }.observes("value"),
+  },
 
   change: function () {
     Ember.run.once(this, this._updateElementValue);
@@ -938,7 +869,9 @@ Ember.RadioButton = Ember.View.extend({
   }
 });
 
-FLOW.SelectFolder = Ember.Select.extend({
+FLOW.SelectFolder = Ember.Select.extend(observe({
+    value: 'onChange',
+}), {
   controller: null,
 
   init: function() {
@@ -984,7 +917,7 @@ FLOW.SelectFolder = Ember.Select.extend({
     } else {
       FLOW.selectedControl.set('selectedSurveyGroup', null);
     }
-  }.observes('value'),
+  },
 });
 
 

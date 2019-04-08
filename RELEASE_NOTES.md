@@ -1,5 +1,53 @@
 # Akvo Flow Release Notes
 ----
+# Akvo Flow Dashboard v1.9.44 - Quintessential Quandong (Hotfix 1)
+Date: 21-03-2019
+
+# Resolved issues
+* **Deployments** - Fixed issue causing deployments to fail due to missing library [#3017]
+
+# Akvo Flow Dashboard v1.9.44 - Quintessential Quandong
+Date: 20-03-2019
+
+# New and noteworthy
+* **Development environment** - Move away from using backends which has been deprecated [#2694]. Refactored code on
+ * publishing forms [#2968]
+ * deleting cascade nodes [#2969]
+ * copying groups and surveys [#2970]
+ * updating question summaries [#2971]
+ * Data point assembly tasks
+
+
+# Resolved issues
+* **Survey design** - Fixed endless copying of question groups [#2802]
+* **Code cleanup** - Removed unused code (permissions [#3005], file-upload library [#3002])
+* **Data** - Resolved issue causing duplication of data point IDs [#2944]
+* **Development environment** - Fixed broken docker build [#3017]. Upgraded spring framework libraries to resolve security vulnerabilities in current versions [#2896]
+
+# Akvo Flow Dashboard v1.9.43 - Patient Poppy
+Date: 01-03-2019
+
+# New and noteworthy
+* **Surveys** - Make it easier to reorder options when editing questions [#2891]. Order forms alphabetically in the surveys tab but always have the registration form first for monitoring surveys [#2917]
+* **Development environment** - Upgrade spring framework libraries to fix security vulnerabilities on the repository [#2896]
+
+# Resolved issues
+* **Bug fixes** - Display reagent codes on caddisfly tests [#2842]. Fix survey bootstrap failing for new surveys [#2980]
+* **Backend** - Add mandatory flag status for questions in tree-printing script [#2978]. Avoid concurrent modification errors [#2931]
+
+# Akvo Flow Dashboard v1.9.42 - Outstanding Orange
+Date: 06-02-2019
+
+# New and noteworthy
+* **User experience** - Cascading selection of caddisfly tests in survey design [#2842]
+* **Devices** - Cleanup idle devices from the device list after a year [#2939]
+* **Surveys** - Save an archive copy of each published version of a form to the S3 bucket [#2844]
+
+# Resolved issues
+* **Bub fixes** - Truncate long error messages causing causing cascade publishing to fail silently [#2961]. Disable saving caddisfly question when no test type is selected [#1808]. Handle end point error responses [#2948]. Fix issue causing signature responses not to display on map [#2937
+* **Development environment** - Update openssl requirements [#2956]. Data script to print the tree-structure of an instance [#2958]
+* **Code cleanup** - Remove unused SMS classes [#2949]
+
 # Akvo Flow Dashboard v1.9.41.1 - Nebulous Nemesia (Hotfix 1)
 Date: 03-01-2019
 

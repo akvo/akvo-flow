@@ -17,7 +17,6 @@
 package org.akvo.flow.events;
 
 import java.io.IOException;
-import java.io.OutputStreamWriter;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.util.Date;
@@ -27,7 +26,8 @@ import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-import org.codehaus.jackson.map.ObjectMapper;
+import com.gallatinsystems.common.Constants;
+import org.akvo.flow.util.FlowJsonObjectWriter;
 import org.waterforpeople.mapping.app.web.rest.security.user.GaeUser;
 
 import com.gallatinsystems.survey.domain.SurveyGroup;
@@ -38,14 +38,14 @@ import com.google.appengine.api.datastore.Text;
 public class EventUtils {
 
     private static Logger log = Logger.getLogger(EventUtils.class.getName());
-    private static final ObjectMapper objectMapper = new ObjectMapper();
 
     public enum EventSourceType {
         USER, DEVICE, SENSOR, WEBFORM, API, UNKNOWN, SYSTEM
     };
 
     public enum EntityType {
-        SURVEY_GROUP, FORM, QUESTION_GROUP, QUESTION, DATA_POINT, FORM_INSTANCE, ANSWER, DEVICE_FILE
+        SURVEY_GROUP, FORM, QUESTION_GROUP, QUESTION, DATA_POINT, FORM_INSTANCE, ANSWER, DEVICE_FILE,
+        USER, USER_AUTHORIZATION, USER_ROLE
     };
 
     // names of kinds in Google App Engine
@@ -58,6 +58,9 @@ public class EventUtils {
         public static final String FORM_INSTANCE = "SurveyInstance";
         public static final String ANSWER = "QuestionAnswerStore";
         public static final String DEVICE_FILE = "DeviceFiles";
+        public static final String USER = "User";
+        public static final String USER_AUTHORIZATION = "UserAuthorization";
+        public static final String USER_ROLE = "UserRole";
     }
 
     // How we name the actions
@@ -70,6 +73,10 @@ public class EventUtils {
         public static final String FORM_INSTANCE = "formInstance";
         public static final String ANSWER = "answer";
         public static final String DEVICE_FILE = "deviceFile";
+
+        public static final String USER = "user";
+        public static final String USER_AUTHORIZATION = "userAuthorization";
+        public static final String USER_ROLE = "userRole";
 
         public static final String DELETED = "Deleted";
         public static final String CREATED = "Created";
@@ -114,7 +121,7 @@ public class EventUtils {
         public static final String ITERATION = "iteration";
     }
 
-    static class Prop {
+    public static class Prop {
         public static final String SURVEY_INSTANCE_ID = "surveyInstanceId";
         public static final String TYPE = "type";
         public static final String VALUE = "value";
@@ -178,6 +185,12 @@ public class EventUtils {
                 return new EventTypes(EntityType.QUESTION, Action.QUESTION);
             case Kind.DEVICE_FILE:
                 return new EventTypes(EntityType.DEVICE_FILE, Action.DEVICE_FILE);
+            case Kind.USER:
+                return new EventTypes(EntityType.USER, Action.USER);
+            case Kind.USER_AUTHORIZATION:
+                return new EventTypes(EntityType.USER_AUTHORIZATION, Action.USER_AUTHORIZATION);
+            case Kind.USER_ROLE:
+                return new EventTypes(EntityType.USER_ROLE, Action.USER_ROLE);
         }
         return null;
     }
@@ -269,11 +282,26 @@ public class EventUtils {
                 addProperty(Key.QUESTION_TYPE, e.getProperty(Prop.TYPE), data);
                 break;
             case DEVICE_FILE:
-                // FIXME move those keys to the proper place
                 addProperty("uri", e.getProperty("URI"), data);
                 addProperty("checksum", e.getProperty("checksum"), data);
                 addProperty("phoneNumber", e.getProperty("phoneNumber"), data);
                 addProperty("imei", e.getProperty("imei"), data);
+                break;
+            case USER:
+                addProperty("userName", e.getProperty("userName"), data);
+                addProperty("emailAddress", e.getProperty("emailAddress"), data);
+                addProperty("superAdmin", e.getProperty("superAdmin"), data);
+                addProperty("permissionList", e.getProperty("permissionList"), data);
+                addProperty("language", e.getProperty("language"), data);
+                break;
+            case USER_AUTHORIZATION:
+                addProperty("securedObjectId", e.getProperty("securedObjectId"), data);
+                addProperty("userId", e.getProperty("userId"), data);
+                addProperty("roleId", e.getProperty("roleId"), data);
+                break;
+            case USER_ROLE:
+                addProperty("permissions", e.getProperty("permissions"), data);
+                addProperty("name", e.getProperty("name"), data);
                 break;
         }
         return data;
@@ -332,6 +360,21 @@ public class EventUtils {
         return entity;
     }
 
+    public static Entity createEventLogEntity(Map<String, Object> event, Date timestamp) throws IOException {
+        Entity entity = new Entity("EventQueue");
+        entity.setProperty("createdDateTime", timestamp);
+        entity.setProperty("lastUpdateDateTime", timestamp);
+
+        FlowJsonObjectWriter writer = new FlowJsonObjectWriter();
+        String payload = writer.writeAsString(event);
+
+        if (payload.length() > Constants.MAX_LENGTH) {
+            entity.setProperty("payloadText", new Text(payload));
+        } else {
+            entity.setProperty("payload", payload);
+        }
+        return entity;
+    }
     public static void sendEvents(String urlString, List<Map<String, Object>> events)
             throws IOException {
         URL url = new URL(urlString);
@@ -343,14 +386,11 @@ public class EventUtils {
         connection.setRequestProperty("Content-Type",
                 "application/json");
 
-        OutputStreamWriter writer = new OutputStreamWriter(
-                connection.getOutputStream());
-        objectMapper.writeValue(writer, events);
+        FlowJsonObjectWriter writer = new FlowJsonObjectWriter();
+        writer.writeValue(connection.getOutputStream(), events);
 
         System.out.println("    " + connection.getResponseCode());
 
-        writer.close();
         connection.disconnect();
-
     }
 }

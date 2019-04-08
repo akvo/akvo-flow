@@ -11,7 +11,7 @@
            {{#view FLOW.PreviewQuestionView contentBinding="Q"}}
              {{#if view.isVisible}}
 			 <div class="previewQuestion"> 
-                <h1 class="questionNbr"><span>{{Q.order}}} </span>{{Q.text}}</h1>
+                <h1 class="questionNbr"><span>{{Q.order}} </span>{{Q.text}}</h1>
                     {{#if view.isOptionType}}
                        {{#each view.optionsList}}
                        <!-- FIXME this should be checkbuttons if Allow Multiple is true -->

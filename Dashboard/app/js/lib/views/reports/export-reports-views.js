@@ -1,13 +1,16 @@
+import observe from '../../mixins/observe';
+import template from '../../mixins/template';
+
 /*global Ember, $, FLOW */
 
 FLOW.ReportLoader = Ember.Object.create({
-  selectedSurveyId: function () {
+  selectedSurveyId: Ember.computed(function () {
     if (!Ember.none(FLOW.selectedControl.get('selectedSurvey')) && !Ember.none(FLOW.selectedControl.selectedSurvey.get('keyId'))){
       return FLOW.selectedControl.selectedSurvey.get('keyId');
     } else {
       return null;
     }
-  }.property('FLOW.selectedControl.selectedSurvey'),
+  }).property('FLOW.selectedControl.selectedSurvey'),
 
   load: function (exportType, surveyId, opts) {
     FLOW.selectedControl.set('selectedReportExport', FLOW.store.createRecord(FLOW.Report, {}));
@@ -41,17 +44,20 @@ FLOW.ReportLoader = Ember.Object.create({
   }
 });
 
-FLOW.ExportReportsView = Ember.View.extend({
-  templateName: 'navReports/export-reports',
+FLOW.ExportReportsView = Ember.View.extend(template('navReports/export-reports'), {
   missingSurvey: false,
-  
   updateSurveyStatus: function (surveyStatus) {
      this.set('missingSurvey', surveyStatus !== 'survey-selected')
      Ember.$('body, html ,#navExportSelect').scrollTop(0);
   }
 });
 
-FLOW.ExportReportTypeView = Ember.View.extend({
+FLOW.ExportReportTypeView = Ember.View.extend(observe({
+  'this.exportOption': 'dateRangeDisabledObserver',
+  'this.reportFromDate': 'setMinDate',
+  'this.reportToDate': 'setMaxDate',
+  'FLOW.selectedControl.selectedSurvey': 'watchSurveySelection',
+}), {
   showRawDataReportApplet: false,
   showComprehensiveReportApplet: false,
   showGoogleEarthFileApplet: false,
@@ -75,19 +81,19 @@ FLOW.ExportReportTypeView = Ember.View.extend({
     this.set('rangeActive', this.get("exportOption") === "range" ? "" : "background-color: transparent;");
     this.set('recentActive', this.get("exportOption") === "recent" ? "" : "background-color: transparent;");
     this.set('dateRangeDisabled', this.get("exportOption") === "recent");
-  }.observes('this.exportOption'),
+  },
 
   setMinDate: function () {
     if (this.get('reportFromDate')) {
       this.$(".to_date").datepicker("option", "minDate", this.get("reportFromDate"))
     }
-  }.observes('this.reportFromDate'),
+  },
 
   setMaxDate: function () {
     if (this.get('reportToDate')) {
      this.$(".from_date").datepicker("option", "maxDate", this.get("reportToDate"))
     }
-  }.observes('this.reportToDate'),
+  },
 
   didInsertElement: function () {
     FLOW.selectedControl.set('surveySelection', FLOW.SurveySelection.create());
@@ -96,22 +102,22 @@ FLOW.ExportReportTypeView = Ember.View.extend({
     FLOW.uploader.registerEvents();
   },
 
-  selectedQuestion: function () {
+  selectedQuestion: Ember.computed(function () {
     if (!Ember.none(FLOW.selectedControl.get('selectedQuestion'))
         && !Ember.none(FLOW.selectedControl.selectedQuestion.get('keyId'))){
       return FLOW.selectedControl.selectedQuestion.get('keyId');
     } else {
       return null;
     }
-  }.property('FLOW.selectedControl.selectedQuestion'),
+  }).property('FLOW.selectedControl.selectedQuestion'),
   
   watchSurveySelection: function () {
      if (FLOW.selectedControl.get('selectedSurvey')!== null) {
         this.get('parentView').updateSurveyStatus('survey-selected')
      }
-  }.observes('FLOW.selectedControl.selectedSurvey'),
+  },
 
-  hideLastCollection: function () {
+  hideLastCollection: Ember.computed(function () {
     if (!FLOW.selectedControl.selectedSurvey) {
       return true;
     }
@@ -128,7 +134,7 @@ FLOW.ExportReportTypeView = Ember.View.extend({
     }
     return !(FLOW.selectedControl.selectedSurveyGroup && FLOW.selectedControl.selectedSurveyGroup.get('monitoringGroup')
       && FLOW.selectedControl.selectedSurvey.get('keyId') != FLOW.selectedControl.selectedSurveyGroup.get('newLocaleSurveyId'));
-  }.property('FLOW.selectedControl.selectedSurvey'),
+  }).property('FLOW.selectedControl.selectedSurvey'),
 
   showDataCleaningReport: function () {
     var opts = {startDate:this.get("reportFromDate"), endDate:this.get("reportToDate"), lastCollectionOnly: this.get('exportOption') === "recent"};
@@ -229,9 +235,7 @@ FLOW.ExportReportTypeView = Ember.View.extend({
   })
 });
 
-FLOW.ReportsListView = Ember.View.extend({
-  templateName: 'navReports/reports-list',
-
+FLOW.ReportsListView = Ember.View.extend(template('navReports/reports-list'), {
   didInsertElement: function () {
     FLOW.router.reportsController.populate();
   },
@@ -241,10 +245,8 @@ FLOW.ReportsListView = Ember.View.extend({
   }
 });
 
-FLOW.ReportListItemView = FLOW.View.extend({
-  templateName: 'navReports/report',
-
-  reportType: function(){
+FLOW.ReportListItemView = FLOW.View.extend(template('navReports/report'), {
+  reportType: Ember.computed(function (){
     var reportTypeClasses = {
       DATA_CLEANING: "dataCleanExp",
       DATA_ANALYSIS: "dataAnalyseExp",
@@ -253,9 +255,9 @@ FLOW.ReportListItemView = FLOW.View.extend({
       SURVEY_FORM: "surveyFormExp"
     };
     return reportTypeClasses[this.content.get('reportType')];
-  }.property(this.content),
+  }).property('content'),
 
-  reportStatus: function(){
+  reportStatus: Ember.computed(function(){
     var reportStates = {
       IN_PROGRESS: "exportGenerating",
       QUEUED: "exportGenerating",
@@ -263,9 +265,9 @@ FLOW.ReportListItemView = FLOW.View.extend({
       FINISHED_ERROR: ""
     };
     return reportStates[this.content.get('state')];
-  }.property(this.content),
+  }).property('content'),
 
-  reportTypeString: function(){
+  reportTypeString: Ember.computed(function(){
     var reportTypeStrings = {
       DATA_CLEANING: Ember.String.loc('_data_cleaning_export'),
       DATA_ANALYSIS: Ember.String.loc('_data_analysis_export'),
@@ -274,19 +276,19 @@ FLOW.ReportListItemView = FLOW.View.extend({
       SURVEY_FORM: Ember.String.loc('_survey_form')
     };
     return reportTypeStrings[this.content.get('reportType')];
-  }.property(this.content),
+  }).property('content'),
 
-  reportFilename: function(){
+  reportFilename: Ember.computed(function(){
     var url = this.content.get('filename');
     return FLOW.reportFilename(url);
-  }.property(this.content),
+  }).property('content'),
 
-  reportLink: function(){
+  reportLink: Ember.computed(function(){
     var url = this.content.get('filename');
     return !url ? "#" : url;
-  }.property(this.content),
+  }).property('content'),
 
-  surveyPath: function(){
+  surveyPath: Ember.computed(function(){
     var formId = this.content.get('formId'), path = "";
     var form  = FLOW.Survey.find(formId);
     if (form) {
@@ -308,23 +310,24 @@ FLOW.ReportListItemView = FLOW.View.extend({
       }
     }
     return path;
-  }.property(this.content),
+  }).property('content'),
 
-  startDate: function(){
+  startDate: Ember.computed(function(){
     return FLOW.renderTimeStamp(this.content.get('startDate'));
-  }.property(this.content),
+  }).property('content'),
 
-  endDate: function(){
+  endDate: Ember.computed(function(){
     return FLOW.renderTimeStamp(this.content.get('endDate'));
-  }.property(this.content),
+  }).property('content'),
 
-  lastUpdateDateTime: function(){
+  lastUpdateDateTime: Ember.computed(function(){
     return FLOW.renderDate(this.content.get('lastUpdateDateTime'));
-  }.property(this.content)
+  }).property('content')
 });
 
-FLOW.DataCleaningView = Ember.View.extend({
-  templateName: 'navData/data-cleaning',
+FLOW.DataCleaningView = Ember.View.extend(template('navData/data-cleaning'), observe({
+  'FLOW.selectedControl.selectedSurvey': 'watchSurveySelection',
+}), {
   missingSurvey:false,
 
   didInsertElement: function () {
@@ -354,5 +357,5 @@ FLOW.DataCleaningView = Ember.View.extend({
       if (FLOW.selectedControl.get('selectedSurvey')!== null) {
          this.set('missingSurvey', false)
       }
-   }.observes('FLOW.selectedControl.selectedSurvey')
+   }
 });

@@ -1,5 +1,5 @@
 /*
- *  Copyright (C) 2010-2017 Stichting Akvo (Akvo Foundation)
+ *  Copyright (C) 2010-2017, 2019 Stichting Akvo (Akvo Foundation)
  *
  *  This file is part of Akvo FLOW.
  *
@@ -25,6 +25,8 @@ import com.gallatinsystems.framework.rest.RestRequest;
 import com.gallatinsystems.framework.rest.RestResponse;
 import com.gallatinsystems.messaging.dao.MessageDao;
 import com.gallatinsystems.messaging.domain.Message;
+import com.gallatinsystems.operations.dao.ProcessingStatusDao;
+import com.gallatinsystems.operations.domain.ProcessingStatus;
 import com.gallatinsystems.survey.dao.*;
 import com.gallatinsystems.survey.domain.*;
 import com.gallatinsystems.survey.domain.Question;
@@ -33,7 +35,6 @@ import com.gallatinsystems.survey.domain.Survey;
 import com.gallatinsystems.survey.domain.SurveyXMLFragment.FRAGMENT_TYPE;
 import com.gallatinsystems.survey.domain.xml.*;
 import com.gallatinsystems.survey.xml.SurveyXMLAdapter;
-import com.google.appengine.api.backends.BackendServiceFactory;
 import com.google.appengine.api.datastore.Text;
 import com.google.appengine.api.taskqueue.Queue;
 import com.google.appengine.api.taskqueue.QueueFactory;
@@ -50,6 +51,7 @@ import javax.xml.bind.JAXBException;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 import java.util.Map;
 import java.util.Properties;
@@ -60,8 +62,6 @@ public class SurveyAssemblyServlet extends AbstractRestApiServlet {
     private static final Logger log = Logger
             .getLogger(SurveyAssemblyServlet.class.getName());
 
-    private static final int BACKEND_QUESTION_THRESHOLD = 80;
-    private static final String BACKEND_PUBLISH_PROP = "backendpublish";
     private static final long serialVersionUID = -6044156962558183224L;
     private static final String OPTION_RENDER_MODE_PROP = "optionRenderMode";
     public static final String FREE_QUESTION_TYPE = "free";
@@ -79,6 +79,8 @@ public class SurveyAssemblyServlet extends AbstractRestApiServlet {
 
     private static final String SURVEY_UPLOAD_URL = "surveyuploadurl";
     private static final String SURVEY_UPLOAD_DIR = "surveyuploaddir";
+    private static final String FORM_PUB_STATUS_KEY = "formPublication";
+    
 
     private Random randomNumber = new Random();
 
@@ -89,52 +91,50 @@ public class SurveyAssemblyServlet extends AbstractRestApiServlet {
         restRequest.populateFromHttpRequest(req);
         return restRequest;
     }
-
+    
+    
     @Override
     protected RestResponse handleRequest(RestRequest req) throws Exception {
         RestResponse response = new RestResponse();
         SurveyAssemblyRequest importReq = (SurveyAssemblyRequest) req;
         if (SurveyAssemblyRequest.ASSEMBLE_SURVEY.equalsIgnoreCase(importReq.getAction())) {
-
-            QuestionDao questionDao = new QuestionDao();
-            boolean useBackend = false;
-            // make sure we're not already running on a backend and that we are
-            // allowed to use one
-            if (!importReq.getIsForwarded()
-                    && "true".equalsIgnoreCase(PropertyUtil
-                            .getProperty(BACKEND_PUBLISH_PROP))) {
-                // if we're allowed to use a backend, then check to see if we
-                // need to (based on survey size)
-                List<Question> questionList = questionDao
-                        .listQuestionsBySurvey(importReq.getSurveyId());
-                if (questionList != null && questionList.size() > BACKEND_QUESTION_THRESHOLD) {
-                    useBackend = true;
-                }
+            Date start = new Date();
+            Long id = importReq.getSurveyId();
+            //Instrumentation
+            ProcessingStatusDao statusDao = new ProcessingStatusDao();
+            ProcessingStatus status = statusDao.getStatusByCode(
+                    FORM_PUB_STATUS_KEY + (id != null ? ":" + id : ""));
+            if (status == null) {
+                status = new ProcessingStatus();
+                status.setCode(FORM_PUB_STATUS_KEY + (id != null ? ":" + id : ""));
+                status.setMaxDurationMs(0L);
             }
-            if (useBackend) {
-                log.info("Forking to task for long assembly");
-                com.google.appengine.api.taskqueue.TaskOptions options = com.google.appengine.api.taskqueue.TaskOptions.Builder
-                        .withUrl("/app_worker/surveyassembly")
-                        .param(SurveyAssemblyRequest.ACTION_PARAM,
-                                SurveyAssemblyRequest.ASSEMBLE_SURVEY)
-                        .param(SurveyAssemblyRequest.IS_FWD_PARAM, "true")
-                        .param(SurveyAssemblyRequest.SURVEY_ID_PARAM,
-                                importReq.getSurveyId().toString());
-                // change the host so the queue invokes the backend
-                options = options
-                        .header("Host",
-                                BackendServiceFactory.getBackendService()
-                                        .getBackendAddress("dataprocessor"));
-                com.google.appengine.api.taskqueue.Queue queue = com.google.appengine.api.taskqueue.QueueFactory
-                        .getQueue("surveyAssembly");
-                queue.add(options);
-            } else {
-                assembleSurveyOnePass(importReq.getSurveyId());
+            status.setLastEventDate(start);
+            Long maxDuration = status.getMaxDurationMs();
+            if (maxDuration == null) {
+                maxDuration = 0L;
             }
+            status.setInError(true); //In case it never saves an end sts
+            status.setValue("inProgress");
+            statusDao.save(status);
 
+            //Need to keep this shorter than task queue limit (600s)
+            boolean ok = assembleSurveyOnePass(importReq.getSurveyId());
+            //Clear caches
             List<Long> ids = new ArrayList<Long>();
-            ids.add(importReq.getSurveyId());
+            ids.add(id);
             SurveyUtils.notifyReportService(ids, "invalidate");
+            
+            // now update the status
+            status.setInError(ok);
+            status.setValue("finished");
+            Long duration = new Date().getTime() - start.getTime();
+            if (duration > maxDuration) {
+                status.setMaxDurationMs(duration);
+                status.setMaxDurationDate(start);
+            }
+            statusDao.save(status);
+
 
         } else if (SurveyAssemblyRequest.DISPATCH_ASSEMBLE_QUESTION_GROUP
                 .equalsIgnoreCase(importReq.getAction())) {
@@ -143,19 +143,38 @@ public class SurveyAssemblyServlet extends AbstractRestApiServlet {
                     importReq.getTransactionId());
         } else if (SurveyAssemblyRequest.ASSEMBLE_QUESTION_GROUP
                 .equalsIgnoreCase(importReq.getAction())) {
-            assembleQuestionGroups(importReq.getSurveyId(),
-                    importReq.getTransactionId());
-        } else if (SurveyAssemblyRequest.DISTRIBUTE_SURVEY
+            assembleQuestionGroups(importReq.getSurveyId(), importReq.getTransactionId());
+        } else if (SurveyAssemblyRequest.DISTRIBUTE_SURVEY //Punt upload to another task
                 .equalsIgnoreCase(importReq.getAction())) {
             uploadSurvey(importReq.getSurveyId(), importReq.getTransactionId());
-        } else if (SurveyAssemblyRequest.CLEANUP.equalsIgnoreCase(importReq
-                .getAction())) {
-            cleanupFragments(importReq.getSurveyId(),
-                    importReq.getTransactionId());
+        } else if (SurveyAssemblyRequest.CLEANUP.equalsIgnoreCase(importReq.getAction())) {
+            cleanupFragments(importReq.getSurveyId(), importReq.getTransactionId());
         }
 
         return response;
     }
+
+    // Manual triggering of publication should start here
+    static public void runAsTask(Long surveyId) {
+        log.info("Forking to task for long assembly");
+        TaskOptions options = TaskOptions.Builder
+                .withUrl("/app_worker/surveyassembly")
+                .param(SurveyAssemblyRequest.ACTION_PARAM,
+                        SurveyAssemblyRequest.ASSEMBLE_SURVEY)
+                .param(SurveyAssemblyRequest.SURVEY_ID_PARAM, surveyId.toString());
+        Queue queue = QueueFactory.getQueue("surveyAssembly");
+        queue.add(options);
+        
+        Survey s = new SurveyDAO().getById(surveyId);
+        SurveyGroup sg = s != null ? new SurveyGroupDAO().getByKey(s.getSurveyGroupId()) : null;
+        if (sg != null && sg.getNewLocaleSurveyId() != null &&
+                sg.getNewLocaleSurveyId().longValue() == surveyId.longValue()) {
+            // This is the registration form. Schedule datapoint name re-assembly
+            DataProcessorRestServlet.scheduleDatapointNameAssembly(sg.getKey().getId(), null);
+        }
+
+    }
+
 
     /**
      * uploads full survey XML to S3
@@ -191,7 +210,7 @@ public class SurveyAssemblyServlet extends AbstractRestApiServlet {
             log.error("Error uploading zip file: " + e.getMessage(), e);
         }
 
-        sendQueueMessage(SurveyAssemblyRequest.CLEANUP, surveyId, null,
+        queueAssemblyTask(SurveyAssemblyRequest.CLEANUP, surveyId, null,
                 transactionId);
 
         Message message = new Message();
@@ -244,7 +263,11 @@ public class SurveyAssemblyServlet extends AbstractRestApiServlet {
         httpResp.flushBuffer();
     }
 
-    private void assembleSurveyOnePass(Long surveyId) {
+    /*
+     * One-pass assembly. May take too long for a single task if there are many questions.
+     * Upload to S3 might also be time-consuming.
+     */
+    private boolean assembleSurveyOnePass(Long surveyId) {
         log.info("Starting assembly of " + surveyId);
         // Swap with proper UUID
         SurveyDAO surveyDao = new SurveyDAO();
@@ -279,8 +302,12 @@ public class SurveyAssemblyServlet extends AbstractRestApiServlet {
                 + registrationForm + " " + surveyGroupId + " " + surveyGroupName + " "
                 + surveyIdKeyValue + ">";
         String surveyFooter = "</survey>";
+
+        //Get groups, with order as key
         QuestionGroupDao qgDao = new QuestionGroupDao();
         TreeMap<Integer, QuestionGroup> qgList = qgDao.listQuestionGroupsBySurvey(surveyId);
+        
+        boolean uploadOk = false;
         if (qgList != null) {
             StringBuilder surveyXML = new StringBuilder();
             surveyXML.append(surveyHeader);
@@ -292,9 +319,9 @@ public class SurveyAssemblyServlet extends AbstractRestApiServlet {
             surveyXML.append(surveyFooter);
             log.info("Uploading " + surveyId);
             UploadStatusContainer uc = uploadSurveyXML(
-            		Long.toString(surveyId), //latest version in plain filename
-            		Long.toString(surveyId) + "v" + s.getVersion(), //archive copy
-            		surveyXML.toString());
+                    Long.toString(surveyId), //latest version in plain filename
+                    Long.toString(surveyId) + "v" + s.getVersion(), //archive copy
+                    surveyXML.toString());
             Message message = new Message();
             message.setActionAbout("surveyAssembly");
             message.setObjectId(surveyId);
@@ -308,6 +335,7 @@ public class SurveyAssemblyServlet extends AbstractRestApiServlet {
                 message.setTransactionUUID(transactionId.toString());
                 MessageDao messageDao = new MessageDao();
                 messageDao.save(message);
+                uploadOk = true;
             } else {
                 String messageText = "Failed to publish: " + surveyId + "\n" + uc.getMessage();
                 message.setTransactionUUID(transactionId.toString());
@@ -319,9 +347,9 @@ public class SurveyAssemblyServlet extends AbstractRestApiServlet {
             }
             log.info("Completed survey assembly for " + surveyId);
         }
+        return uploadOk;
     }
 
-    
     /**  Upload a zipped file twice to S3 under different filenames.
      * @param fileName1
      * @param fileName2
@@ -341,7 +369,7 @@ public class SurveyAssemblyServlet extends AbstractRestApiServlet {
                 + "/" + fileName1 + ".xml");
         return uc;
     }
-    
+
     private boolean uploadZippedXml(String content, String bucketName, String directory, String fileName) {
         ByteArrayOutputStream os2 = ZipUtil.generateZip(content, fileName + ".xml");
 
@@ -362,7 +390,7 @@ public class SurveyAssemblyServlet extends AbstractRestApiServlet {
         QuestionGroupDao questionGroupDao = new QuestionGroupDao();
         QuestionGroup group = questionGroupDao.getByKey(item.getKey().getId());
         TreeMap<Integer, Question> questionList = questionDao
-                .listQuestionsByQuestionGroup(item.getKey().getId(), true);
+                .listQuestionsByQuestionGroup(item.getKey().getId(), true); //with option details
 
         StringBuilder sb = new StringBuilder("<questionGroup")
                 .append(Boolean.TRUE.equals(group.getRepeatable()) ? " repeatable=\"true\"" : "")
@@ -378,13 +406,13 @@ public class SurveyAssemblyServlet extends AbstractRestApiServlet {
     }
 
     /**
-     * sends a message to the task queue for survey assembly
+     * sends a subtask to the task queue for survey assembly
      *
      * @param action
      * @param surveyId
      * @param questionGroups
      */
-    private void sendQueueMessage(String action, Long surveyId,
+    private void queueAssemblyTask(String action, Long surveyId,
             String questionGroups, Long transactionId) {
         Queue surveyAssemblyQueue = QueueFactory.getQueue("surveyAssembly");
         TaskOptions task = TaskOptions.Builder
@@ -400,6 +428,7 @@ public class SurveyAssemblyServlet extends AbstractRestApiServlet {
         surveyAssemblyQueue.add(task);
     }
 
+    
     private void dispatchAssembleQuestionGroup(Long surveyId,
             String questionGroupIds, Long transactionId) {
         boolean isLast = true;
@@ -413,8 +442,7 @@ public class SurveyAssemblyServlet extends AbstractRestApiServlet {
 
         QuestionDao questionDao = new QuestionDao();
         QuestionGroupDao questionGroupDao = new QuestionGroupDao();
-        QuestionGroup group = questionGroupDao.getByKey(Long
-                .parseLong(currentId));
+        QuestionGroup group = questionGroupDao.getByKey(Long.parseLong(currentId));
         TreeMap<Integer, Question> questionList = questionDao
                 .listQuestionsByQuestionGroup(Long.parseLong(currentId), true);
 
@@ -439,16 +467,21 @@ public class SurveyAssemblyServlet extends AbstractRestApiServlet {
         sxmlfDao.save(sxf);
         if (isLast) {
             // Assemble the fragments
-            sendQueueMessage(SurveyAssemblyRequest.ASSEMBLE_QUESTION_GROUP,
+            queueAssemblyTask(SurveyAssemblyRequest.ASSEMBLE_QUESTION_GROUP,
                     surveyId, null, transactionId);
 
         } else {
-            sendQueueMessage(
+            queueAssemblyTask(
                     SurveyAssemblyRequest.DISPATCH_ASSEMBLE_QUESTION_GROUP,
                     surveyId, remainingIds, transactionId);
         }
     }
 
+    
+    /** Express a question and any subitems as XML
+     * @param q
+     * @return
+     */
     private String marshallQuestion(Question q) {
 
         SurveyXMLAdapter sax = new SurveyXMLAdapter();
@@ -528,7 +561,7 @@ public class SurveyAssemblyServlet extends AbstractRestApiServlet {
         }
 
         boolean hasValidation = false;
-       if (q.getType() == Question.Type.NUMBER
+        if (q.getType() == Question.Type.NUMBER
                 && (q.getAllowDecimal() != null || q.getAllowSign() != null
                         || q.getMinVal() != null || q.getMaxVal() != null)) {
             ValidationRule validationRule = objFactory.createValidationRule();
@@ -742,6 +775,10 @@ public class SurveyAssemblyServlet extends AbstractRestApiServlet {
         return altTextList;
     }
 
+    /** Assemble survey from QG fragments in the datastore.
+     * @param surveyId
+     * @param transactionId
+     */
     private void assembleQuestionGroups(Long surveyId, Long transactionId) {
         SurveyXMLFragmentDao sxmlfDao = new SurveyXMLFragmentDao();
         List<SurveyXMLFragment> sxmlfList = sxmlfDao.listSurveyFragments(
@@ -769,6 +806,6 @@ public class SurveyAssemblyServlet extends AbstractRestApiServlet {
 
         scDao.save(sc);
 
-        sendQueueMessage(SurveyAssemblyRequest.DISTRIBUTE_SURVEY, surveyId, null, transactionId);
+        queueAssemblyTask(SurveyAssemblyRequest.DISTRIBUTE_SURVEY, surveyId, null, transactionId);
     }
 }
