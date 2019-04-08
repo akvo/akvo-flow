@@ -13,3 +13,6 @@ script:
 
 before_cache:
  - find $HOME/.m2 -name resolver-status.properties -exec rm {} \;
+ 
+notifications:
+  slack: akvo:ZLetmotGiT22QryK6pR5bnFS
