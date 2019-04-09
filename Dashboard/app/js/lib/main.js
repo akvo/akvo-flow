@@ -13,7 +13,6 @@ require('akvo-flow/analytics');
 require('../vendor/Google');
 
 require('../../css/screen.scss');
-require('../../css/users.scss');
 
 if (FLOW.Env.mapsProvider == 'google') {
   const regionBias = FLOW.Env.googleMapsRegionBias;
