@@ -1,5 +1,28 @@
 # Akvo Flow Release Notes
 ----
+
+# Akvo Flow Dashboard v1.9.45 - Radiant Raspberry 
+Date: 10 April 2019
+
+# New and noteworthy
+* **Development environment** 
+	- Add JSX transpiler to dashboard build process [#1502]. 
+	- Add script to check for missing media files in datastore [#2967].
+	- Push Auth information to Unilog [#3031].
+	- Remove ruby build for public site [#3034].
+	- Optimize webpack build/bundle size [#3036]
+**Reports**
+	- Add meta data column to data exports showing form version if available [#2772].
+	
+# Resolved issues
+* **Development environment** 
+	- Stop using backend to delete cascade child nodes [#3043].
+* **Assignment**
+	- Fix assignment creation visual issues [#3056].
+	- Fix assignment Tab issue [#3057].
+* **Survey design**
+	- Deleting SurveyInstance fails if a summaried answer is > 1500 chars [#3038].
+
 # Akvo Flow Dashboard v1.9.44 - Quintessential Quandong (Hotfix 1)
 Date: 21-03-2019
 
