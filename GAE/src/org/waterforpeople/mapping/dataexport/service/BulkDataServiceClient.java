@@ -533,6 +533,10 @@ public class BulkDataServiceClient {
                     if (json.has("collectionDate")) {
                         dto.setCollectionDate(new Date(json.getLong("collectionDate")));
                     }
+                    if (!json.has("formVersion")) {
+                        dto.setFormVersion(json.getDouble("formVersion"));
+                    }
+
                 }
             }
         }
