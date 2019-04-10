@@ -54,16 +54,17 @@ public class DuplicatedSurveyedLocale implements Process {
                 deleteDuplicates = true;
             }
         }
-        
+
         DateFormat df = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss.SSS");
         df.setTimeZone(TimeZone.getTimeZone("UT"));
 
         processSurveyGroups(ds);
-        
+
         final Query q = new Query("SurveyedLocale").addSort("identifier", SortDirection.ASCENDING);
         final PreparedQuery pq = ds.prepare(q);
 
-        
+
+        System.err.println("#Processing SurveyedLocales");
         System.out.println("#Processing SurveyedLocales");
         if (!deleteDuplicates) {
             System.out.println(" (report only)");
@@ -75,13 +76,13 @@ public class DuplicatedSurveyedLocale implements Process {
         int count = 0;
         List<Long> lastContrib = null;
         String lastContribStr = "";
-        
+
         int slCount = 0;
-        
+
         for (Entity sl : pq.asIterable(FetchOptions.Builder.withChunkSize(500))) {
             slCount++;
-            
-            Long id = (Long) sl.getKey().getId();
+
+            Long id = sl.getKey().getId();
             String identifier = (String) sl.getProperty("identifier");
             if (identifier == null) identifier = "";
             Date cre = (Date) sl.getProperty("createdDateTime");
@@ -90,29 +91,29 @@ public class DuplicatedSurveyedLocale implements Process {
             String contribStr = "";
             if (contrib != null) {
                 contribStr = contrib.toString();
-            }            
+            }
 
             if (identifier.equals(lastIdentifier)) { //Duplicate!
                 //Show what this is for
 
-                if (contrib != null) {                    
+                if (contrib != null) {
                     contribStr = "["; //get more details
                     for (Long i : contrib) {
                         contribStr += "\n  *si"  + i + surveyInstanceDescription(ds, i) + qasForInstance(ds,  i);
                     }
                     contribStr += "]";
-                }            
-                if (lastContrib != null) {                    
+                }
+                if (lastContrib != null) {
                     lastContribStr = "["; //get more details
                     for (Long i : lastContrib) {
                         lastContribStr += "\n  *si" + i + surveyInstanceDescription(ds, i) + qasForInstance(ds,  i);
                     }
                     lastContribStr += "]";
-                }            
-                
-                System.err.println(String.format("**SurveyedLocale #%d created %s identifier %s contributors %s", lastId, df.format(lastCre), lastIdentifier, lastContribStr));
-                System.err.println(String.format("**SurveyedLocale #%d created %s identifier %s contributors %s", id, df.format(cre), identifier, contribStr));
-                System.err.println("");
+                }
+
+                System.out.println(String.format("**SurveyedLocale #%d created %s identifier %s contributors %s", lastId, df.format(lastCre), lastIdentifier, lastContribStr));
+                System.out.println(String.format("**SurveyedLocale #%d created %s identifier %s contributors %s", id, df.format(cre), identifier, contribStr));
+                System.out.println("");
                 if (contrib == null || (
                         contrib.size() <= 1
                         && !contribStr.equals(lastContribStr))) { //one contrib and not the same as the first one
@@ -131,11 +132,11 @@ public class DuplicatedSurveyedLocale implements Process {
         if (!toBeRemoved.isEmpty()) {
             final List<Key> terminate = new ArrayList<>();
             for (Entity sl: toBeRemoved) {
-                
+
                 Long id = sl.getKey().getId();
                 System.out.println("Deleting SL #" + id);
                 terminate.add(sl.getKey()); //SL itself
-                
+
                 //Now get any surveyalValues
                 final Query qv = new Query("SurveyalValue").setFilter(new Query.FilterPredicate("surveyedLocaleId", FilterOperator.EQUAL, id));
                 final PreparedQuery pqv = ds.prepare(qv);
@@ -144,7 +145,7 @@ public class DuplicatedSurveyedLocale implements Process {
                     terminate.add(sv.getKey());
                 }
                 System.out.println("");
-                                
+
                 //Now get any contributing surveyInstances
                 final Query qi = new Query("SurveyInstance").setFilter(new Query.FilterPredicate("surveyedLocaleId", FilterOperator.EQUAL, id));
                 final PreparedQuery pqi = ds.prepare(qi);
@@ -154,7 +155,7 @@ public class DuplicatedSurveyedLocale implements Process {
                     //Now get the QASs for this SI
                     terminate.addAll(qasForInstanceK(ds, si.getKey().getId()));
                 }
-                
+
             }
             System.out.println("Scanned " + slCount + " SLs");
             if (deleteDuplicates) {
@@ -165,7 +166,7 @@ public class DuplicatedSurveyedLocale implements Process {
             }
         }
     }
-    
+
     private List<Long> qasForInstance(DatastoreService ds, Long siId) {
         final Query qasq = new Query("QuestionAnswerStore").setFilter(new Query.FilterPredicate("surveyInstanceId", FilterOperator.EQUAL, siId));
         final PreparedQuery pqasq = ds.prepare(qasq);
@@ -175,7 +176,7 @@ public class DuplicatedSurveyedLocale implements Process {
         }
         return result;
     }
-    
+
     private List<Key> qasForInstanceK(DatastoreService ds, Long siId) {
         final Query qasq = new Query("QuestionAnswerStore").setFilter(new Query.FilterPredicate("surveyInstanceId", FilterOperator.EQUAL, siId));
         final PreparedQuery pqasq = ds.prepare(qasq);
@@ -185,7 +186,7 @@ public class DuplicatedSurveyedLocale implements Process {
         }
         return result;
     }
-    
+
     private Entity surveyInstance(DatastoreService ds, Long siId) {
         final Query siq = new Query("SurveyInstance").setFilter(new Query.FilterPredicate("id", FilterOperator.EQUAL, siId));
         final PreparedQuery psiq = ds.prepare(siq);
@@ -194,7 +195,7 @@ public class DuplicatedSurveyedLocale implements Process {
         }
         return null;
     }
-    
+
     private String surveyInstanceDescription(DatastoreService ds, Long siId) {
         Key key = KeyFactory.createKey("SurveyInstance", siId);
         Entity si;
@@ -203,13 +204,14 @@ public class DuplicatedSurveyedLocale implements Process {
         } catch (EntityNotFoundException e) {
             return null;
         }
-        String s = "<survey " + si.getProperty("surveyId") + " id '" + si.getProperty("surveyedLocaleIdentifier") + "'>"; 
+        String s = "<survey " + si.getProperty("surveyId") + " id '" + si.getProperty("surveyedLocaleIdentifier") + "'>";
         return(s);
     }
-    
-      
+
+
     private void processSurveyGroups(DatastoreService ds) {
 
+        System.err.println("#Processing SurveyGroups");
         System.out.println("#Processing SurveyGroups");
 
         final Query survey_q = new Query("SurveyGroups");
