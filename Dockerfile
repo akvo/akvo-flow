@@ -1,22 +1,13 @@
-FROM ruby:2.4.4-alpine3.7 as ruby-deps
+FROM alpine:3.7
 
-COPY Dashboard/Gemfile Dashboard/Gemfile.lock /
-
-# throw errors if Gemfile has been modified since Gemfile.lock
 RUN set -ex ; \
-    apk add --no-cache git build-base libffi-dev && \
-    bundle config --global frozen 1 && \
-    bundle install
-
-FROM ruby:2.4.4-alpine3.7
+    apk add --no-cache git build-base libffi-dev
 
 ARG CLOUD_SDK_VERSION=198.0.0
 ENV LEIN_ROOT=1
 ENV PATH="/google-cloud-sdk/bin:${PATH}"
 ENV CLOUDSDK_PYTHON_SITEPACKAGES=1
 ENV BUNDLE_GEMFILE=/app/src/Dashboard/Gemfile
-
-COPY --from=ruby-deps /usr/local/bundle /usr/local/bundle
 
 RUN set -ex ; \
     apk add --no-cache \
