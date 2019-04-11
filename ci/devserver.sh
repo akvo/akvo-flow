@@ -1,3 +1,4 @@
+b	
 #!/usr/bin/env bash
 
 #
@@ -24,8 +25,8 @@ cd "$SRC_DIR/Dashboard"
 
 (
     npm install
-    npm run build:dev > "$SRC_DIR/build.dev.log"
-) 2>&1 &
+    npm run build:dev
+) > "$SRC_DIR/build.dev.log" 2>&1 &
 
 if [[ ! -f "$SRC_DIR/GAE/target/akvo-flow/admin/frames/users.js" ]]; then
     cd "$SRC_DIR/Dashboard/app/cljs"
@@ -51,5 +52,4 @@ if [[ ! -f "$SRC_DIR/GAE/target/akvo-flow/WEB-INF/appengine-web.xml" ]]; then
 fi
 
 mvn appengine:start
-
-tail -F -n 5000  "$SRC_DIR/build.dev.log" ./target/akvo-flow/flow0.log
+≈tail -F -n 5000  "$SRC_DIR/build.dev.log" ./target/akvo-flow/flow0.log
