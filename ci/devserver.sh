@@ -22,7 +22,7 @@ SRC_DIR="/app/src"
 
 cd "$SRC_DIR/Dashboard"
 
-npm install &
+npm install
 npm run build:dev > "$SRC_DIR/build.dev.log" 2>&1 &
 
 if [[ ! -f "$SRC_DIR/GAE/target/akvo-flow/admin/frames/users.js" ]]; then
