@@ -1,4 +1,3 @@
-b	
 #!/usr/bin/env bash
 
 #
