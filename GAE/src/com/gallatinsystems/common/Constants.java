@@ -27,6 +27,7 @@ public class Constants {
             "createUserId"
     };
     public static final int MAX_LENGTH = 500;
+    public static final int MAX_DS_STRING_LENGTH = 1500;
     public static final int CONNECTION_TIMEOUT = 60 * 1000; // 1min
     public static final int READ_TIMEOUT = 2 * 60 * 1000; // 2min
     public static final int TASK_RETRY_INTERVAL = 2 * 10 * 1000; // 2 mins

@@ -435,6 +435,7 @@ public class RawDataRestServlet extends AbstractRestApiServlet {
         inst.setUuid(UUID.randomUUID().toString());
         inst.setSubmitterName(importReq.getSubmitter());
         inst.setSurveyalTime(importReq.getSurveyDuration());
+        inst.setFormVersion(importReq.getFormVersion());
 
         // set the key so the subsequent logic can populate it in the
         // QuestionAnswerStore objects

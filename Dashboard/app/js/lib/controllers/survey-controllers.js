@@ -1217,6 +1217,18 @@ FLOW.questionOptionsControl = Ember.ArrayController.create({
     return reservedCode.length > 0;
   }).property('@each.code','content.length'),
 
+  maxLength: Ember.computed(function () {
+    var c = this.content;
+    var longXters = c.find(function (option) {
+      if (option.get('text') && option.get('text').trim()) {
+        var optionText = option.get('text');
+        return optionText.length > 500;
+      }
+      return false;
+    });
+    return longXters;
+  }).property('@each.text','content.length'),
+
   /*
    *  Add two empty option objects to the options list.  This is used
    *  as a default setup for new option questions

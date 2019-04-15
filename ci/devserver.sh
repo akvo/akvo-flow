@@ -22,9 +22,10 @@ SRC_DIR="/app/src"
 
 cd "$SRC_DIR/Dashboard"
 
-bundle exec rake watchbg > "$SRC_DIR/rake.log" 2>&1 &
-bundle exec npm install &
-bundle exec npm run build:dev > "$SRC_DIR/build.dev.log" 2>&1 &
+(
+    npm install
+    npm run build:dev
+) > "$SRC_DIR/build.dev.log" 2>&1 &
 
 if [[ ! -f "$SRC_DIR/GAE/target/akvo-flow/admin/frames/users.js" ]]; then
     cd "$SRC_DIR/Dashboard/app/cljs"
@@ -50,5 +51,4 @@ if [[ ! -f "$SRC_DIR/GAE/target/akvo-flow/WEB-INF/appengine-web.xml" ]]; then
 fi
 
 mvn appengine:start
-
-tail -F -n 5000  "$SRC_DIR/build.dev.log" "$SRC_DIR/rake.log" ./target/akvo-flow/flow0.log
+≈tail -F -n 5000  "$SRC_DIR/build.dev.log" ./target/akvo-flow/flow0.log
