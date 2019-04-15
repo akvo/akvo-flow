@@ -57,7 +57,7 @@
   },
   "husky": {
     "hooks": {
-      "post-merge": "npm install"
+      "post-merge": "npm install --silent"
     }
   }
 }
