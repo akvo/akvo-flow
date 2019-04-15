@@ -27,6 +27,9 @@ export RAKEP_MODE
 
 cd "${SRC_DIR}/Dashboard"
 
+npm install
+npm rebuild node-sass
+npm run build:prod
 bundle exec rake build --trace
 
 cd "${SRC_DIR}/Dashboard/app/cljs"

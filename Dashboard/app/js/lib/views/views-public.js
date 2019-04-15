@@ -5,12 +5,9 @@
 
 require('akvo-flow/core-common');
 require('akvo-flow/views/maps/map-views-common-public');
+import template from '../mixins/template';
 
-
-FLOW.ApplicationView = Ember.View.extend({
-  templateName: 'application/application-public',
-});
-
+FLOW.ApplicationView = Ember.View.extend(template('application/application-public'));
 
 FLOW.locale = function (i18nKey) {
   return 'Ember.STRINGS._select_survey_group';
@@ -66,7 +63,7 @@ FLOW.renderCaddisflyAnswer = function(json){
           }
 
           // contruct html
-          html = "<div><strong>" + name + "</strong></div>"
+          var html = "<div><strong>" + name + "</strong></div>"
           html += jsonParsed.result.map(function(item){
                   return "<br><div>" + item.name + " : " + item.value + " " + item.unit + "</div>";
               }).join("\n");
@@ -84,7 +81,7 @@ FLOW.renderCaddisflyAnswer = function(json){
 /*  Take a timestamp and render it as a date in format
     YYYY-mm-dd */
 function renderTimeStamp(timestamp) {
-  var d, t, date, month, year;
+  var d, t, date, month, year, monthString, dateString;
   t = parseInt(timestamp, 10);
   if (isNaN(t)) {
     return "";
@@ -216,6 +213,4 @@ Ember.Select.reopen({
   attributeBindings: ['size']
 });
 
-FLOW.FooterView = FLOW.View.extend({
-  templateName: 'application/footer-public'
-});
+FLOW.FooterView = FLOW.View.extend(template('application/footer-public'));

@@ -190,15 +190,17 @@ public class EnvServlet extends HttpServlet {
      * @param props
      */
     private void addLocale(Map<String, String> props) {
-        final com.google.appengine.api.users.User currentGoogleUser = UserServiceFactory
-                .getUserService().getCurrentUser();
+        final com.google.appengine.api.users.User currentGoogleUser =
+                UserServiceFactory.getUserService().getCurrentUser();
         if (currentGoogleUser != null && currentGoogleUser.getEmail() != null) {
             final User currentUser = new UserDao().findUserByEmail(currentGoogleUser.getEmail());
-            final String locale = currentUser.getLanguage();
-            if (locale != null) {
-                props.put("locale", locale);
-            } else {
-                props.put("locale", "en");
+            if (currentUser != null) {
+                final String locale = currentUser.getLanguage();
+                if (locale != null) {
+                    props.put("locale", locale);
+                } else {
+                    props.put("locale", "en");
+                }
             }
         }
     }

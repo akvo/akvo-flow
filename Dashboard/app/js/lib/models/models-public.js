@@ -3,8 +3,12 @@
 // ***********************************************//
 require('akvo-flow/core-common');
 require('akvo-flow/models/store_def-common');
+import observe from '../mixins/observe';
 
-FLOW.BaseModel = DS.Model.extend({
+FLOW.BaseModel = DS.Model.extend(observe({
+  isSaving: 'anySaving',
+  isDirty: 'anySaving',
+}), {
   keyId: DS.attr('number'),
   savingStatus: null,
 
@@ -18,7 +22,7 @@ FLOW.BaseModel = DS.Model.extend({
       FLOW.savingMessageControl.checkSaving();
     }
     this.set('savingStatus', (this.get('isSaving') || this.get('isDirty')));
-  }.observes('isSaving', 'isDirty')
+  },
 
 });
 

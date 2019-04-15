@@ -77,7 +77,6 @@ import com.gallatinsystems.surveyal.dao.SurveyalValueDao;
 import com.gallatinsystems.surveyal.dao.SurveyedLocaleDao;
 import com.gallatinsystems.surveyal.domain.SurveyalValue;
 import com.gallatinsystems.surveyal.domain.SurveyedLocale;
-import com.google.appengine.api.backends.BackendServiceFactory;
 import com.google.appengine.api.memcache.MemcacheService;
 import com.google.appengine.api.memcache.stdimpl.GCacheFactory;
 import com.google.appengine.api.taskqueue.Queue;
@@ -250,8 +249,8 @@ public class DataProcessorRestServlet extends AbstractRestApiServlet {
             if (dpReq.getSurveyInstanceId() != null && dpReq.getDelta() != null) {
                 updateSurveyInstanceResponseCounters(dpReq.getSurveyInstanceId(), dpReq.getDelta());
             }
-        } else if (DataProcessorRequest.DELETE_CASCADE_NODES.equalsIgnoreCase(req.getAction())) {
-            deleteCascadeNodes(dpReq.getCascadeResourceId(), dpReq.getParentNodeId());
+        } else if (DataProcessorRequest.DELETE_CHILD_CASCADE_NODES.equalsIgnoreCase(req.getAction())) {
+            deleteChildCascadeNodes(dpReq.getCascadeResourceId(), dpReq.getParentNodeId());
         } else if (DataProcessorRequest.ASSEMBLE_DATAPOINT_NAME.equalsIgnoreCase(req.getAction())) {
             assembleDatapointName(dpReq.getSurveyGroupId(), dpReq.getSurveyedLocaleId());
         }
@@ -1314,46 +1313,39 @@ public class DataProcessorRestServlet extends AbstractRestApiServlet {
         }
     }
 
-    private void deleteCascadeNodes(Long cascadeResourceId, Long parentNodeId) {
+    private void deleteChildCascadeNodes(Long cascadeResourceId, Long parentNodeId) {
         final CascadeNodeDao dao = new CascadeNodeDao();
-        List<CascadeNode> nodes = dao.listCascadeNodesByResourceAndParentId(cascadeResourceId,
+        List<CascadeNode> childNodes = dao.listCascadeNodesByResourceAndParentId(cascadeResourceId,
                 parentNodeId == null ? 0l : parentNodeId);
 
-        if (nodes.isEmpty()) {
-            return;
+        if (childNodes.isEmpty()) {
+            return; // child node is leaf node. no need for further action
         }
 
-        if (!areLeafNodes(dao, cascadeResourceId, nodes)) {
-            for (CascadeNode node : nodes) {
-                scheduleCascadeNodeDeletion(cascadeResourceId, node.getKey().getId());
-            }
+        for (CascadeNode node : childNodes) {
+            scheduleChildCascadeNodeDeletion(cascadeResourceId, node.getKey().getId());
         }
-
-        dao.delete(nodes);
+        dao.delete(childNodes);
     }
 
-    private boolean areLeafNodes(CascadeNodeDao dao, Long cascadeResourceId,
-            List<CascadeNode> nodes) {
-        CascadeNode firstNode = nodes.get(0);
-        List<CascadeNode> childNodes = dao.listCascadeNodesByResourceAndParentId(
-                cascadeResourceId, firstNode.getKey().getId());
-        return childNodes.size() == 0;
+    public static void scheduleCascadeResourceDeletion(Long cascadeResourceId) {
+        scheduleChildCascadeNodeDeletion(cascadeResourceId, null);
     }
 
-    private void scheduleCascadeNodeDeletion(Long cascadeResourceId, Long parentNodeId) {
+    public static void scheduleChildCascadeNodeDeletion(Long cascadeResourceId, Long parentNodeId) {
         try {
             final TaskOptions options = TaskOptions.Builder
                     .withUrl("/app_worker/dataprocessor")
-                    .header("Host",
-                            BackendServiceFactory.getBackendService()
-                                    .getBackendAddress("dataprocessor"))
                     .param(DataProcessorRequest.ACTION_PARAM,
-                            DataProcessorRequest.DELETE_CASCADE_NODES)
+                            DataProcessorRequest.DELETE_CHILD_CASCADE_NODES)
                     .param(DataProcessorRequest.CASCADE_RESOURCE_ID,
-                            cascadeResourceId.toString())
-                    .param(DataProcessorRequest.PARENT_NODE_ID, parentNodeId.toString());
-            final Queue queue = QueueFactory.getQueue("background-processing");
-            queue.add(options);
+                            cascadeResourceId.toString());
+
+            if (parentNodeId != null) {
+                options.param(DataProcessorRequest.PARENT_NODE_ID, parentNodeId.toString());
+            }
+
+            QueueFactory.getQueue("background-processing").add(options);
         } catch (Exception e) {
             log.log(Level.SEVERE,
                     String.format(
@@ -1439,9 +1431,27 @@ public class DataProcessorRestServlet extends AbstractRestApiServlet {
         if (surveyedLocaleId != null) {
             options.param(DataProcessorRequest.LOCALE_ID_PARAM, String.valueOf(surveyedLocaleId));
         }
-        com.google.appengine.api.taskqueue.Queue queue = com.google.appengine.api.taskqueue.QueueFactory
-                .getQueue("background-processing");
-        queue.add(options);
+        QueueFactory.getQueue("background-processing").add(options);
+    }
+
+    public static void queueSynchronizedSummaryUpdate(SurveyInstance si, boolean increment) {
+        TaskOptions to = TaskOptions.Builder
+                .withUrl("/app_worker/dataprocessor")
+                .param(DataProcessorRequest.ACTION_PARAM,
+                        DataProcessorRequest.UPDATE_SURVEY_INSTANCE_SUMMARIES)
+                .param(DataProcessorRequest.SURVEY_INSTANCE_PARAM, si.getKey().getId() + "")
+                .param(DataProcessorRequest.DELTA_PARAM, increment ? "1":"-1");
+        QueueFactory.getQueue("surveyResponseCount").add(to);
+    }
+
+    public static void queueAdjustSurveyResponseCount(String key, boolean increment) {
+        TaskOptions to = TaskOptions.Builder
+                .withUrl("/app_worker/dataprocessor")
+                .param(DataProcessorRequest.ACTION_PARAM,
+                        DataProcessorRequest.SURVEY_RESPONSE_COUNT)
+                .param(DataProcessorRequest.COUNTER_ID_PARAM, key)
+                .param(DataProcessorRequest.DELTA_PARAM, increment ? "1":"-1");
+        QueueFactory.getQueue("surveyResponseCount").add(to);
     }
 
 }

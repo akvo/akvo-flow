@@ -1,5 +1,5 @@
 /*
- *  Copyright (C) 2010-2014 Stichting Akvo (Akvo Foundation)
+ *  Copyright (C) 2010-2014, 2019 Stichting Akvo (Akvo Foundation)
  *
  *  This file is part of Akvo FLOW.
  *
@@ -40,12 +40,21 @@ public class SurveyInstanceDto extends BaseDto {
     private Long surveyalTime = 0L;
 
     private String submitterName;
+    private Double formVersion; //What form version was used to collect the data
     private String deviceIdentifier;
     private String surveyCode;
     private String approvedFlag;
     private Long surveyedLocaleId;
     private String surveyedLocaleIdentifier;
     private String surveyedLocaleDisplayName;
+
+    public Double getFormVersion() {
+        return formVersion;
+    }
+
+    public void setFormVersion(Double formVersion) {
+        this.formVersion = formVersion;
+    }
 
     public String getApprovedFlag() {
         return approvedFlag;

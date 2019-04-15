@@ -1,3 +1,5 @@
+import observe from '../mixins/observe';
+
 FLOW.surveyQuestionSummaryControl = Ember.ArrayController.create({
   content: null,
 
@@ -32,7 +34,10 @@ FLOW.chartTypeControl = Ember.Object.create({
   ]
 });
 
-FLOW.ReportsController = Ember.ArrayController.extend({
+FLOW.ReportsController = Ember.ArrayController.extend(observe({
+  content: 'reportsObserver',
+  'content.isUpdating': 'reportsObserver',
+}), {
   sortProperties: ["createdDateTime"],
   sortAscending: false,
   content: null,
@@ -66,7 +71,7 @@ FLOW.ReportsController = Ember.ArrayController.extend({
         }, 10000);
       }
     }
-  }.observes('content', 'content.isUpdating'),
+  },
 
   refreshList: function(){
     var reports = this.get('content');

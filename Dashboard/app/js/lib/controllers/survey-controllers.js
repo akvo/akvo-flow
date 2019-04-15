@@ -1,3 +1,4 @@
+import observe from '../mixins/observe';
 
 FLOW.questionTypeControl = Ember.Object.create({
   content: [
@@ -283,13 +284,14 @@ FLOW.projectControl = Ember.ArrayController.create({
   },
 
   /* Computed properties */
-  breadCrumbs: function() {
+  breadCrumbs: Ember.computed(function() {
     var result = [];
     var currentProject = this.get('currentProject');
     if (currentProject === null) {
       // current project is root
       return [];
     }
+    let project;
     var id = currentProject.get('keyId');
     while(id !== null && id !== 0) {
       project = FLOW.store.find(FLOW.SurveyGroup, id);
@@ -297,9 +299,9 @@ FLOW.projectControl = Ember.ArrayController.create({
       id = project.get('parentId');
     }
     return result.reverse();
-  }.property('@each', 'currentProject'),
+  }).property('@each', 'currentProject'),
 
-  currentFolders: function() {
+  currentFolders: Ember.computed(function() {
     var self = this;
     var currentProject = this.get('currentProject');
     var parentId = currentProject ? currentProject.get('keyId') : 0;
@@ -319,35 +321,35 @@ FLOW.projectControl = Ember.ArrayController.create({
         return aCode.localeCompare(bCode);
       }
     });
-  }.property('@each', 'currentProject', 'moveTarget'),
+  }).property('@each', 'currentProject', 'moveTarget'),
 
-  formCount: function() {
+  formCount: Ember.computed(function() {
     return FLOW.surveyControl.content && FLOW.surveyControl.content.get('length') || 0;
-  }.property('FLOW.surveyControl.content.@each'),
+  }).property('FLOW.surveyControl.content.@each'),
 
-  questionCount: function () {
+  questionCount: Ember.computed(function () {
     var questions = FLOW.questionControl.filterContent;
     return questions && questions.get('length') || 0;
-  }.property('FLOW.questionControl.filterContent.@each'),
+  }).property('FLOW.questionControl.filterContent.@each'),
 
-  hasForms: function() {
+  hasForms: Ember.computed(function() {
     return this.get('formCount') > 0;
-  }.property('this.formCount'),
+  }).property('this.formCount'),
 
-  currentProjectPath: function() {
+  currentProjectPath: Ember.computed(function() {
     var projectList = this.get('breadCrumbs');
     if(projectList.length === 0) {
         return ""; // root project folder
     } else {
         var path = "";
-        for(i = 0; i < projectList.length; i++){
+        for(let i = 0; i < projectList.length; i++){
             path += "/" + projectList[i].get('name');
         }
         return path;
     }
-  }.property('breadCrumbs'),
+  }).property('breadCrumbs'),
 
-  currentFolderPermissions: function() {
+  currentFolderPermissions: Ember.computed(function() {
       var currentFolder = this.get('currentProject');
       var currentUserPermissions = FLOW.currentUser.get('pathPermissions');
       var folderPermissions = [];
@@ -379,7 +381,7 @@ FLOW.projectControl = Ember.ArrayController.create({
       }
 
       var i;
-      for(i = 0; i < ancestorIds.length; i++){
+      for(let i = 0; i < ancestorIds.length; i++){
         if (ancestorIds[i] in currentUserPermissions) {
           currentUserPermissions[ancestorIds[i]].forEach(function(item){
             folderPermissions.push(item);
@@ -388,7 +390,7 @@ FLOW.projectControl = Ember.ArrayController.create({
       }
 
       return folderPermissions;
-  }.property('currentProject'),
+  }).property('currentProject'),
 
   /* Actions */
   selectProject: function(evt) {
@@ -552,7 +554,7 @@ FLOW.projectControl = Ember.ArrayController.create({
    * loading the appropriate approval steps depending on
    * the selected approval group
    */
-  dataApprovalGroup: function (key, value, previousValue) {
+  dataApprovalGroup: Ember.computed(function (key, value, previousValue) {
       var survey = this.get('currentProject');
 
       // setter
@@ -566,7 +568,7 @@ FLOW.projectControl = Ember.ArrayController.create({
 
       var groups = FLOW.router.approvalGroupListController.get('content');
       return groups && groups.filterProperty('keyId', approvalGroupId).get('firstObject');
-  }.property('this.currentProject.dataApprovalGroupId'),
+  }).property('this.currentProject.dataApprovalGroupId'),
 
   saveProject: function() {
     var currentProject = this.get('currentProject');
@@ -593,7 +595,18 @@ FLOW.projectControl = Ember.ArrayController.create({
 });
 
 
-FLOW.surveyControl = Ember.ArrayController.create({
+FLOW.surveyControl = Ember.ArrayController.create(observe({
+  'FLOW.selectedControl.selectedSurveyGroup': [
+    'setPublishedContent',
+    'orderForms',
+    'populate',
+  ],
+  'content.isLoaded': [
+    'orderForms',
+    'selectFirstForm',
+    'newLocale',
+  ],
+}), {
   content: null,
   publishedContent: null,
   sortProperties: ['name'],
@@ -614,7 +627,7 @@ FLOW.surveyControl = Ember.ArrayController.create({
     } else {
       this.set('publishedContent', null);
     }
-  }.observes('FLOW.selectedControl.selectedSurveyGroup'),
+  },
 
   orderForms: function () {
     if (FLOW.selectedControl.get('selectedSurveyGroup') && FLOW.selectedControl.selectedSurveyGroup.get('keyId') > 0) {
@@ -660,14 +673,13 @@ FLOW.surveyControl = Ember.ArrayController.create({
         }));
       }
     }
-  }.observes('FLOW.selectedControl.selectedSurveyGroup', 'content.isLoaded'),
+  },
 
   populateAll: function () {
     FLOW.store.find(FLOW.Survey);
   },
 
   populate: function () {
-
     var id;
     if (FLOW.selectedControl.get('selectedSurveyGroup')) {
       id = FLOW.selectedControl.selectedSurveyGroup.get('keyId');
@@ -680,7 +692,7 @@ FLOW.surveyControl = Ember.ArrayController.create({
     } else {
       this.set('content', null);
     }
-  }.observes('FLOW.selectedControl.selectedSurveyGroup'),
+  },
 
   selectFirstForm: function() {
     if (FLOW.selectedControl.selectedSurvey) return; // ignore if form is already selected
@@ -691,7 +703,7 @@ FLOW.surveyControl = Ember.ArrayController.create({
       }
       this.viewDataForms();
     }
-  }.observes('content.isLoaded'),
+  },
 
   refresh: function () {
 	  var sg = FLOW.selectedControl.get('selectedSurveyGroup');
@@ -704,7 +716,7 @@ FLOW.surveyControl = Ember.ArrayController.create({
 	  var newLocaleId = FLOW.selectedControl && FLOW.selectedControl.selectedSurveyGroup && FLOW.selectedControl.selectedSurveyGroup.get('newLocaleSurveyId');
 	  if(!this.get('content') || !this.get('content').get('isLoaded')) { return; }
 	  this.set('newLocaleSurvey', this.find(function (item) { return item.get('keyId') === newLocaleId; }));
-  }.observes('content.isLoaded'),
+  },
 
   publishSurvey: function () {
     var surveyId;
@@ -789,7 +801,7 @@ FLOW.surveyControl = Ember.ArrayController.create({
 
   /* retrieve the list of permissions associated with the currently
     active form */
-  currentFormPermissions: function() {
+  currentFormPermissions: Ember.computed(function() {
     var currentForm = FLOW.selectedControl.get('selectedSurvey');
     var currentUserPermissions = FLOW.currentUser.get('pathPermissions');
     var formPermissions = [];
@@ -804,7 +816,7 @@ FLOW.surveyControl = Ember.ArrayController.create({
     }
 
     var i;
-    for(i = 0; i < ancestorIds.length; i++){
+    for(let i = 0; i < ancestorIds.length; i++){
       if (ancestorIds[i] in currentUserPermissions) {
         currentUserPermissions[ancestorIds[i]].forEach(function(item){
           formPermissions.push(item);
@@ -814,7 +826,7 @@ FLOW.surveyControl = Ember.ArrayController.create({
 
     return formPermissions;
 
-  }.property('FLOW.selectedControl.selectedSurvey'),
+  }).property('FLOW.selectedControl.selectedSurvey'),
 
   viewDataForms: function() {
     var forms = [];
@@ -834,7 +846,9 @@ FLOW.surveyControl = Ember.ArrayController.create({
 });
 
 
-FLOW.questionGroupControl = Ember.ArrayController.create({
+FLOW.questionGroupControl = Ember.ArrayController.create(observe({
+  'FLOW.selectedControl.selectedSurvey': 'populate',  
+}), {
   sortProperties: ['order'],
   sortAscending: true,
   content: null,
@@ -862,11 +876,11 @@ FLOW.questionGroupControl = Ember.ArrayController.create({
       });
     }
     this.setFilteredContent();
-  }.observes('FLOW.selectedControl.selectedSurvey'),
+  },
 
   // true if all items have been saved
   // used in models.js
-  allRecordsSaved: function () {
+  allRecordsSaved: Ember.computed(function () {
     var allSaved = true;
     if (Ember.none(this.get('content'))) {
       return true;
@@ -878,7 +892,7 @@ FLOW.questionGroupControl = Ember.ArrayController.create({
       });
       return allSaved;
     }
-  }.property('content.@each.isSaving'),
+  }).property('content.@each.isSaving'),
 
   // execute group delete
   deleteQuestionGroup: function (questionGroupId) {
@@ -930,7 +944,11 @@ FLOW.questionGroupControl = Ember.ArrayController.create({
 });
 
 
-FLOW.questionControl = Ember.ArrayController.create({
+FLOW.questionControl = Ember.ArrayController.create(observe({
+  'FLOW.selectedControl.selectedSurvey': ['populateAllQuestions', 'allQuestionsFilter'],
+  'FLOW.selectedControl.selectedQuestionGroup': 'setQGcontent',
+  'FLOW.selectedControl.selectedQuestion': 'setEarlierOptionQuestions',
+}), {
   content: null,
   OPTIONcontent: null,
   earlierOptionQuestions: null,
@@ -949,7 +967,7 @@ FLOW.questionControl = Ember.ArrayController.create({
         surveyId: sId
       }));
     }
-  }.observes('FLOW.selectedControl.selectedSurvey'),
+  },
 
   populateQuestionGroupQuestions: function (qgId) {
         this.set('content', FLOW.store.findQuery(FLOW.Question, {
@@ -1003,7 +1021,7 @@ FLOW.questionControl = Ember.ArrayController.create({
     } else {
       this.set('filterContent', null);
     }
-  }.observes('FLOW.selectedControl.selectedSurvey'),
+  },
 
   setQGcontent: function () {
     if (FLOW.selectedControl.get('selectedQuestionGroup') && FLOW.selectedControl.selectedSurvey.get('keyId') > 0) {
@@ -1012,15 +1030,15 @@ FLOW.questionControl = Ember.ArrayController.create({
         return item.get('questionGroupId') == qId;
       }));
     }
-  }.observes('FLOW.selectedControl.selectedQuestionGroup'),
+  },
 
-  geoshapeContent: function() {
+  geoshapeContent: Ember.computed(function() {
     var selectedSurvey = FLOW.selectedControl.get('selectedSurvey');
     var surveyId = selectedSurvey ? selectedSurvey.get('keyId') : null;
     return FLOW.store.filter(FLOW.Question, function (question) {
       return question.get('type') === 'GEOSHAPE' && surveyId === question.get('surveyId');
     });
-  }.property('content'),
+  }).property('content'),
 
   downloadOptionQuestions: function (surveyId) {
 	  this.set('OPTIONcontent', FLOW.store.findQuery(FLOW.Question, {
@@ -1057,7 +1075,7 @@ FLOW.questionControl = Ember.ArrayController.create({
 
       this.set('earlierOptionQuestions', optionQuestionList);
     }
-  }.observes('FLOW.selectedControl.selectedQuestion'),
+  },
 
   reorderQuestions: function (qgId, reorderPoint, reorderOperation) {
     var questionsInGroup = FLOW.store.filter(FLOW.Question, function (item) {
@@ -1095,7 +1113,7 @@ FLOW.questionControl = Ember.ArrayController.create({
 
   // true if all items have been saved
   // used in models.js
-  allRecordsSaved: function () {
+  allRecordsSaved: Ember.computed(function () {
     var allSaved = true;
     FLOW.questionControl.get('content').forEach(function (item) {
       if (item.get('isSaving')) {
@@ -1103,7 +1121,7 @@ FLOW.questionControl = Ember.ArrayController.create({
       }
     });
     return allSaved;
-  }.property('content.@each.isSaving')
+  }).property('content.@each.isSaving')
 });
 
 /*
@@ -1121,12 +1139,12 @@ FLOW.questionOptionsControl = Ember.ArrayController.create({
   sortProperties: ["order"],
   content: null,
   questionId: null,
-  emptyOptions: function () {
+  emptyOptions: Ember.computed(function () {
     var c = this.content;
     return !(c.get('length') > 0);
-  }.property('content.length'),
+  }).property('content.length'),
 
-  duplicateOptionNames: function () {
+  duplicateOptionNames: Ember.computed(function () {
     var c = this.content, uniqueText = [], emptyText = 0;
     c.forEach(function (option) {
       if (option.get('text') && option.get('text').trim()) {
@@ -1138,9 +1156,9 @@ FLOW.questionOptionsControl = Ember.ArrayController.create({
       }
     });
     return c.length > uniqueText.length && emptyText === 0;
-  }.property('@each.text','content.length'),
+  }).property('@each.text','content.length'),
 
-  emptyOptionNames: function () {
+  emptyOptionNames: Ember.computed(function () {
     var c = this.content, emptyText = 0;
     c.forEach(function (option) {
       // only take into account options with no text but with code filled in
@@ -1149,17 +1167,17 @@ FLOW.questionOptionsControl = Ember.ArrayController.create({
       }
     });
     return emptyText > 0;
-  }.property('@each.text','content.length'),
+  }).property('@each.text','content.length'),
 
-  partialOptionCodes: function () {
+  partialOptionCodes: Ember.computed(function () {
     var c = this.content;
     var codes = c.filter(function(option) {
       return option.get('code');
     });
     return codes.length && codes.length < c.length;
-  }.property('@each.code','content.length'),
+  }).property('@each.code','content.length'),
 
-  duplicateOptionCodes: function () {
+  duplicateOptionCodes: Ember.computed(function () {
     var c = this.content, uniqueCode = [], emptyCode = 0;
     c.forEach(function (option) {
       if (option.get('code') && option.get('code').trim()) {
@@ -1171,9 +1189,9 @@ FLOW.questionOptionsControl = Ember.ArrayController.create({
       }
     });
     return c.length > uniqueCode.length && emptyCode === 0;
-  }.property('@each.code','content.length'),
+  }).property('@each.code','content.length'),
 
-  disallowedCharacters: function () {
+  disallowedCharacters: Ember.computed(function () {
     var c = this.content, disallowedCharacters = 0;
     c.forEach(function (option) {
       if (option.get('code') && option.get('code').trim()) {
@@ -1184,9 +1202,9 @@ FLOW.questionOptionsControl = Ember.ArrayController.create({
     });
 
     return disallowedCharacters > 0;
-  }.property('@each.code','content.length'),
+  }).property('@each.code','content.length'),
 
-  reservedCode: function () {
+  reservedCode: Ember.computed(function () {
     var c = this.content, reservedCode = [];
     c.forEach(function (option) {
       if (option.get('code') && option.get('code').trim()) {
@@ -1197,7 +1215,19 @@ FLOW.questionOptionsControl = Ember.ArrayController.create({
     });
 
     return reservedCode.length > 0;
-  }.property('@each.code','content.length'),
+  }).property('@each.code','content.length'),
+
+  maxLength: Ember.computed(function () {
+    var c = this.content;
+    var longXters = c.find(function (option) {
+      if (option.get('text') && option.get('text').trim()) {
+        var optionText = option.get('text');
+        return optionText.length > 500;
+      }
+      return false;
+    });
+    return longXters;
+  }).property('@each.text','content.length'),
 
   /*
    *  Add two empty option objects to the options list.  This is used
@@ -1329,7 +1359,9 @@ FLOW.previewControl = Ember.ArrayController.create({
 });
 
 
-FLOW.notificationControl = Ember.ArrayController.create({
+FLOW.notificationControl = Ember.ArrayController.create(observe({
+  'FLOW.selectedControl.selectedSurvey': 'doFilterContent',
+}), {
   content: null,
   filterContent: null,
   sortProperties: ['notificationDestination'],
@@ -1353,11 +1385,14 @@ FLOW.notificationControl = Ember.ArrayController.create({
         return item.get('entityId') == sId;
       }));
     }
-  }.observes('FLOW.selectedControl.selectedSurvey')
+  },
 });
 
 
-FLOW.translationControl = Ember.ArrayController.create({
+FLOW.translationControl = Ember.ArrayController.create(observe({
+  'content.isLoaded': 'initiateData',
+  'this.selectedLanguage': 'lockWhenNewLangChosen',
+}), {
   itemArray: [],
   itemDict: {},
   translations: [],
@@ -1389,9 +1424,9 @@ FLOW.translationControl = Ember.ArrayController.create({
     this.set('isoLangs', tempArray);
   },
 
-  blockInteraction: function () {
+  blockInteraction: Ember.computed(function () {
     return this.get('noCurrentTrans') || this.get('newSelected');
-  }.property('noCurrentTrans', 'newSelected'),
+  }).property('noCurrentTrans', 'newSelected'),
 
   populate: function () {
     var id, questionGroupId, questionGroup;
@@ -1424,7 +1459,7 @@ FLOW.translationControl = Ember.ArrayController.create({
   },
 
   loadQuestionGroup: function (questionGroupId) {
-        var id;
+      var id, questionGroup;
 	    id = FLOW.selectedControl.selectedSurvey.get('keyId');
 	    questionGroup = FLOW.store.find(FLOW.QuestionGroup, questionGroupId);
 
@@ -1465,7 +1500,7 @@ FLOW.translationControl = Ember.ArrayController.create({
     	  this.putTranslationsInList();
       }
     }
-  }.observes('content.isLoaded'),
+  },
 
   resetTranslationFields: function () {
     this.get('itemArray').forEach(function (item) {
@@ -1551,7 +1586,7 @@ FLOW.translationControl = Ember.ArrayController.create({
       }
       this.set('newSelected', true);
     }
-  }.observes('this.selectedLanguage'),
+  },
 
   addTranslation: function () {
     var found = false,
@@ -1592,7 +1627,7 @@ FLOW.translationControl = Ember.ArrayController.create({
     tempHashDict = {};
 
     // put in survey stuff
-    survey = FLOW.selectedControl.get('selectedSurvey');
+    var survey = FLOW.selectedControl.get('selectedSurvey');
     tempArray.push(Ember.Object.create({
       keyId: survey.get('keyId'),
       type: "S",
@@ -1615,13 +1650,13 @@ FLOW.translationControl = Ember.ArrayController.create({
       }));
     }
     // put in questions
-    questions = FLOW.store.filter(FLOW.Question, function (item) {
+    var questions = FLOW.store.filter(FLOW.Question, function (item) {
       return item.get('questionGroupId') == questionGroupId;
     });
     questions.forEach(function (item) {
       questionGroup = FLOW.store.find(FLOW.QuestionGroup, item.get('questionGroupId'));
       qgOrder = parseInt(questionGroup.get('order'), 10);
-      qId = item.get('keyId');
+      var qId = item.get('keyId');
 
       tempArray.push(Ember.Object.create({
         keyId: item.get('keyId'),
@@ -1634,11 +1669,11 @@ FLOW.translationControl = Ember.ArrayController.create({
         hasTooltip: !Ember.empty(item.get('tip'))
       }));
       // for each question, put in question options
-      options = FLOW.store.filter(FLOW.QuestionOption, function (optionItem) {
+      var options = FLOW.store.filter(FLOW.QuestionOption, function (optionItem) {
         return optionItem.get('questionId') == qId;
       });
 
-      qOrder = parseInt(item.get('order'), 10);
+      var qOrder = parseInt(item.get('order'), 10);
       options.forEach(function (item) {
         tempArray.push(Ember.Object.create({
           keyId: item.get('keyId'),
@@ -1656,7 +1691,7 @@ FLOW.translationControl = Ember.ArrayController.create({
     	return a.get('order') - b.get('order');
     });
 
-    i = 0;
+    var i = 0;
     tempArray.forEach(function (item) {
       tempHashDict[item.get('type') + item.get('keyId')] = i;
       i++;
@@ -1731,13 +1766,13 @@ FLOW.translationControl = Ember.ArrayController.create({
 
 
   putTranslationsInList: function () {
-    var currLang, _self;
+    var currTrans, _self;
     _self = this;
     currTrans = this.get('currentTranslation');
     // only proceed if we have a language selected
     if (!Ember.none(currTrans)) {
       // get the translations with the right surveyId and the right language code
-      translations = FLOW.store.filter(FLOW.Translation, function (item) {
+      var translations = FLOW.store.filter(FLOW.Translation, function (item) {
         return (item.get('surveyId') == FLOW.selectedControl.selectedSurvey.get('keyId') && item.get('langCode') == currTrans);
       });
       translations.forEach(function (item) {
@@ -1780,12 +1815,12 @@ FLOW.translationControl = Ember.ArrayController.create({
             }
         } else {
           // we have an existing translation, so update it, if the text has changed
-          candidates = FLOW.store.filter(FLOW.Translation, function (item) {
+          var candidates = FLOW.store.filter(FLOW.Translation, function (item) {
             return item.get('keyId') == transId;
           });
 
           if (candidates.get('content').length > 0) {
-        	 existingTrans = candidates.objectAt(0);
+        	 var existingTrans = candidates.objectAt(0);
         	 // if the existing translation is different from the existing one, update it
         	 if (existingTrans.get('text') != translationText){
         		 changed = true;
@@ -1820,7 +1855,7 @@ FLOW.translationControl = Ember.ArrayController.create({
 
   // checks if unsaved translations are present, and if so, emits a warning
   unsavedTranslations: function () {
-	  var type, parentId, lan, transId, _self, unsaved;
+	  var type, parentId, surveyId, questionGroupId, lan, transId, _self, unsaved;
 	  _self = this;
 	  unsaved = false;
 	  this.get('itemArray').forEach(function (item) {
@@ -1857,13 +1892,13 @@ FLOW.translationControl = Ember.ArrayController.create({
 
   // after saving is complete, records insert themselves back into the translation item list
   saveTranslations: function () {
-    var type, parentId, lan, transId, _self;
+    var type, parentId, surveyId, questionGroupId, lan, transId, _self;
     _self = this;
+    surveyId = FLOW.selectedControl.selectedSurvey.get('keyId');
     FLOW.store.adapter.set('bulkCommit', true);
     this.get('itemArray').forEach(function (item) {
       type = item.type;
       parentId = item.keyId;
-      surveyId = FLOW.selectedControl.selectedSurvey.get('keyId');
       if (!Ember.none(FLOW.selectedControl.get('selectedQuestionGroup'))) {
         questionGroupId = FLOW.selectedControl.selectedQuestionGroup.get('keyId');
       } else {
@@ -1891,7 +1926,7 @@ FLOW.translationControl = Ember.ArrayController.create({
     });
 
     // make survey unpublished
-    survey = FLOW.store.find(FLOW.Survey,surveyId);
+    var survey = FLOW.store.find(FLOW.Survey, surveyId);
     if (!Ember.empty(survey)){
         survey.set('status','NOT_PUBLISHED');
     }

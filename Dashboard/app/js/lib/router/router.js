@@ -446,6 +446,7 @@ FLOW.Router = Ember.Router.extend({
     navMaps: Ember.Route.extend({
       route: '/maps',
       connectOutlets: function (router, context) {
+        FLOW.selectedControl.set('selectedSurveyGroup', null);
         router.get('applicationController').connectOutlet('navMaps');
         router.set('navigationController.selected', 'navMaps');
       }

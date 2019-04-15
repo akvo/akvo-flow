@@ -1,9 +1,18 @@
+import observe from '../../mixins/observe';
+import template from '../../mixins/template';
+
 function sortByOrder(a , b) {
   return a.get('order') - b.get('order');
 }
 
-FLOW.QuestionView = FLOW.View.extend({
-  templateName: 'navSurveys/question-view',
+FLOW.QuestionView = FLOW.View.extend(template('navSurveys/question-view'), observe({
+  'FLOW.selectedControl.dependentQuestion': 'fillOptionList',
+  'this.text': 'validateQuestionObserver',
+  'FLOW.questionOptionsControl.emptyOptions': 'validateQuestionObserver',
+  'this.tip': 'validateQuestionTooltipObserver',
+  'this.variableName': 'validateVariableNameObserver',
+  'this.selectedCaddisflyTestBrand': 'brandsObserver',
+}), {
   content: null,
   variableName: null,
   text: null,
@@ -31,15 +40,15 @@ FLOW.QuestionView = FLOW.View.extend({
   questionTooltipValidationFailure: false,
   caddisflyResourceUuid: null,
 
-  showCaddisflyTests: function () {
+  showCaddisflyTests: Ember.computed(function () {
       return FLOW.router.caddisflyResourceController.get("testsFileLoaded");
-  }.property('FLOW.router.caddisflyResourceController.testsFileLoaded'),
+  }).property('FLOW.router.caddisflyResourceController.testsFileLoaded'),
 
-  showMetaConfig: function () {
+  showMetaConfig: Ember.computed(function () {
     return FLOW.Env.showMonitoringFeature;
-  }.property('FLOW.Env.showMonitoringFeature'),
+  }).property('FLOW.Env.showMonitoringFeature'),
 
-  amOpenQuestion: function () {
+  amOpenQuestion: Ember.computed(function () {
     var selected = FLOW.selectedControl.get('selectedQuestion');
     if (selected && this.get('content')) {
       var isOpen = (this.content.get('keyId') == FLOW.selectedControl.selectedQuestion.get('keyId'));
@@ -47,103 +56,95 @@ FLOW.QuestionView = FLOW.View.extend({
     } else {
       return false;
     }
-  }.property('FLOW.selectedControl.selectedQuestion', 'content.keyId').cacheable(),
+  }).property('FLOW.selectedControl.selectedQuestion', 'content.keyId').cacheable(),
 
-  amTextType: function () {
+  amTextType: Ember.computed(function () {
     if (this.type) {
       return this.type.get('value') == 'FREE_TEXT';
     } else {
       return false;
     }
-  }.property('this.type').cacheable(),
+  }).property('this.type').cacheable(),
 
-  amOptionType: function () {
+  amOptionType: Ember.computed(function () {
     return this.type && this.type.get('value') === 'OPTION';
-  }.property('this.type'),
+  }).property('this.type'),
 
-  amNumberType: function () {
+  amNumberType: Ember.computed(function () {
     if (this.type) {
       return this.type.get('value') == 'NUMBER';
     } else {
       return false;
     }
-  }.property('this.type').cacheable(),
+  }).property('this.type').cacheable(),
 
-  amBarcodeType: function () {
+  amBarcodeType: Ember.computed(function () {
       if (this.type) {
           return this.type.get('value') === 'SCAN';
       } else {
           return false;
       }
-  }.property('this.type').cacheable(),
+  }).property('this.type').cacheable(),
 
-  amFreeTextType: function () {
+  amFreeTextType: Ember.computed(function () {
     if (this.type) {
       return this.type.get('value') == 'FREE_TEXT';
     } else {
       return false;
     }
-  }.property('this.type').cacheable(),
+  }).property('this.type').cacheable(),
 
-  amGeoType: function () {
+  amGeoType: Ember.computed(function () {
     if (this.type) {
       return this.type.get('value') == 'GEO';
     } else {
       return false;
     }
-  }.property('this.type').cacheable(),
+  }).property('this.type').cacheable(),
 
-  amNumberType: function () {
-    if (this.type) {
-      return this.type.get('value') == 'NUMBER';
-    } else {
-      return false;
-    }
-  }.property('this.type').cacheable(),
-
-  amCascadeType: function () {
+  amCascadeType: Ember.computed(function () {
     if (this.type) {
       return this.type.get('value') == 'CASCADE';
     } else {
       return false;
     }
-  }.property('this.type').cacheable(),
+  }).property('this.type').cacheable(),
 
-  hasExtraSettings: function () {
+  hasExtraSettings: Ember.computed(function () {
     var val;
     if (!Ember.none(this.type)) {
       val = this.type.get('value');
       return val === 'GEOSHAPE' || val === 'CASCADE' || val === 'NUMBER' || val === 'GEO' 
       || val === 'FREE_TEXT' || val === 'SCAN' || val === 'OPTION' || val === 'CADDISFLY';
     }
-  }.property('this.type').cacheable(),
+  }).property('this.type').cacheable(),
 
-  amGeoshapeType: function () {
+  amGeoshapeType: Ember.computed(function () {
     if (this.type) {
       return this.type.get('value') == 'GEOSHAPE';
     } else {
       return false;
     }
-  }.property('this.type').cacheable(),
+  }).property('this.type').cacheable(),
 
-  amDateType: function () {
+  amDateType: Ember.computed(function () {
     if (this.type) {
       return this.type.get('value') == 'DATE';
     } else {
       return false;
     }
-  }.property('this.type').cacheable(),
+  }).property('this.type').cacheable(),
 
-  amSignatureType: function () {
+  amSignatureType: Ember.computed(function () {
     return (this.content && this.content.get('type') === 'SIGNATURE')
             || (this.type && this.type.get('value') === 'SIGNATURE');
-  }.property('this.type'),
+  }).property('this.type'),
   
-   amCaddisflyType: function(){
+   amCaddisflyType: Ember.computed(function(){
        return this.type && this.type.get('value') == 'CADDISFLY';
-   }.property('this.type').cacheable(),
+   }).property('this.type').cacheable(),
   
-  showLocaleName: function () {
+  showLocaleName: Ember.computed(function () {
     if (!this.type) {
       return false;
     }
@@ -152,7 +153,7 @@ FLOW.QuestionView = FLOW.View.extend({
         || this.type.get('value') == 'OPTION'
         || this.type.get('value') == 'SCAN'
         || this.type.get('value') == 'CASCADE';
-  }.property('this.type').cacheable(),
+  }).property('this.type').cacheable(),
 
   // TODO dependencies
   // TODO options
@@ -246,11 +247,11 @@ FLOW.QuestionView = FLOW.View.extend({
    *  Load the question options for question editing
    */
   loadQuestionOptions: function () {
-    var c = this.content;
+    var c = this.content, optionArray;
     FLOW.questionOptionsControl.set('content', []);
     FLOW.questionOptionsControl.set('questionId', c.get('keyId'));
 
-    options = FLOW.store.filter(FLOW.QuestionOption, function (optionItem) {
+    const options = FLOW.store.filter(FLOW.QuestionOption, function (optionItem) {
         return optionItem.get('questionId') === c.get('keyId');
     });
 
@@ -263,7 +264,7 @@ FLOW.QuestionView = FLOW.View.extend({
   },
 
   fillOptionList: function () {
-    var optionList, optionListArray, i, sizeList;
+    var optionList, optionArray, i, sizeList, options;
     if (FLOW.selectedControl.get('dependentQuestion')) {
       var dependentQuestion = FLOW.selectedControl.get('dependentQuestion');
       FLOW.optionListControl.set('content', []);
@@ -289,7 +290,7 @@ FLOW.QuestionView = FLOW.View.extend({
         }));
       });
     }
-  }.observes('FLOW.selectedControl.dependentQuestion'),
+  },
 
   doCancelEditQuestion: function () {
     FLOW.selectedControl.set('selectedQuestion', null);
@@ -574,7 +575,7 @@ FLOW.QuestionView = FLOW.View.extend({
 
   // move question to selected location
   doQuestionMoveHere: function () {
-    var selectedOrder, insertAfterOrder, selectedQ, useMoveQuestion, qgIdSource, qgIdDest;
+    var selectedOrder, insertAfterOrder, selectedQ, useMoveQuestion, qgIdSource, qgIdDest, qgId, questionsInGroup;
     selectedOrder = FLOW.selectedControl.selectedForMoveQuestion.get('order');
 
     if (this.get('zeroItemQuestion')) {
@@ -619,11 +620,11 @@ FLOW.QuestionView = FLOW.View.extend({
           return item.get('questionGroupId') == qgId;
         });
 
-        origOrder = FLOW.selectedControl.selectedForMoveQuestion.get('order');
-        movingUp = origOrder < insertAfterOrder;
+        var origOrder = FLOW.selectedControl.selectedForMoveQuestion.get('order');
+        var movingUp = origOrder < insertAfterOrder;
 
         questionsInGroup.forEach(function (item) {
-          currentOrder = item.get('order');
+          var currentOrder = item.get('order');
           if (movingUp) {
             if (currentOrder == origOrder) {
               // move moving item to right location
@@ -732,24 +733,24 @@ FLOW.QuestionView = FLOW.View.extend({
   },
 
   // true if one question has been selected for Move
-  oneSelectedForMove: function () {
+  oneSelectedForMove: Ember.computed(function () {
     var selectedForMove = FLOW.selectedControl.get('selectedForMoveQuestion');
     if (selectedForMove) {
       return true;
     } else {
       return false;
     }
-  }.property('FLOW.selectedControl.selectedForMoveQuestion'),
+  }).property('FLOW.selectedControl.selectedForMoveQuestion'),
 
   // true if one question has been selected for Copy
-  oneSelectedForCopy: function () {
+  oneSelectedForCopy: Ember.computed(function () {
     var selectedForCopy = FLOW.selectedControl.get('selectedForCopyQuestion');
     if (selectedForCopy) {
       return true;
     } else {
       return false;
     }
-  }.property('FLOW.selectedControl.selectedForCopyQuestion'),
+  }).property('FLOW.selectedControl.selectedForCopyQuestion'),
 
   // prepare for question copy. Shows 'copy to here' buttons
   doQuestionCopy: function () {
@@ -782,11 +783,11 @@ FLOW.QuestionView = FLOW.View.extend({
           this.set('questionValidationFailureReason', Ember.String.loc('_question_text_empty'));
         }
       }
-  }.observes('this.text', 'FLOW.questionOptionsControl.emptyOptions'),
+  },
 
   validateQuestionTooltipObserver: function(){
       this.set('questionTooltipValidationFailure', (this.tip != null && this.tip.length > 500));
-  }.observes('this.tip'),
+  },
 
   validateVariableNameObserver: function() {
     var self = this;
@@ -800,14 +801,14 @@ FLOW.QuestionView = FLOW.View.extend({
         self.set('variableNameValidationFailureReason', msg);
       }
     });
-  }.observes('this.variableName'),
+  },
 
-  showQuestionModifyButtons: function () {
+  showQuestionModifyButtons: Ember.computed(function () {
     var form = FLOW.selectedControl.get('selectedSurvey');
     return FLOW.permControl.canEditForm(form);
-  }.property('FLOW.selectedControl.selectedSurvey'),
+  }).property('FLOW.selectedControl.selectedSurvey'),
 
-  caddisflyTestSamples: function () {
+  caddisflyTestSamples: Ember.computed(function () {
     var tests = FLOW.router.caddisflyResourceController.get('content'), distinct = {}, testSamples = [];
     FLOW.selectedControl.set('selectedCaddisflyResource', null);
     this.set('selectedCaddisflyTestSample', null);
@@ -818,9 +819,9 @@ FLOW.QuestionView = FLOW.View.extend({
       distinct[obj.sample] = 0;
     });
     return this.sortedList(testSamples, 'sample');
-  }.property('FLOW.router.caddisflyResourceController.content'),
+  }).property('FLOW.router.caddisflyResourceController.content'),
 
-  caddisflyTestNames: function () {
+  caddisflyTestNames: Ember.computed(function () {
     var tests = FLOW.router.caddisflyResourceController.get('content'), distinct = {}, testNames = [];
     FLOW.selectedControl.set('selectedCaddisflyResource', null);
     this.set('selectedCaddisflyTestName', null);
@@ -837,9 +838,9 @@ FLOW.QuestionView = FLOW.View.extend({
       });
     }
     return this.sortedList(testNames, 'name');
-  }.property('this.selectedCaddisflyTestSample'),
+  }).property('this.selectedCaddisflyTestSample'),
 
-  caddisflyTestBrands: function () {
+  caddisflyTestBrands: Ember.computed(function () {
     var tests = FLOW.router.caddisflyResourceController.get('content'), distinct = {}, testBrands = [];
     FLOW.selectedControl.set('selectedCaddisflyResource', null);
     this.set('selectedCaddisflyTestBrand', null);
@@ -863,9 +864,9 @@ FLOW.QuestionView = FLOW.View.extend({
       this.set('selectedCaddisflyTestBrand', null);
     }
     return this.sortedList(testBrands, 'brandDisplayName');
-  }.property('this.selectedCaddisflyTestName'),
+  }).property('this.selectedCaddisflyTestName'),
 
-  caddisflyTestDetails: function () {
+  caddisflyTestDetails: Ember.computed(function () {
     var tests = FLOW.router.caddisflyResourceController.get('content'), distinct = {}, testDetails = [];
     if (this.get('selectedCaddisflyTestBrand')) {
       var brands = this.get('selectedCaddisflyTestBrand');
@@ -897,7 +898,7 @@ FLOW.QuestionView = FLOW.View.extend({
       });
     }
     return this.sortedList(testDetails, 'detailsDisplayName');
-  }.property('this.selectedCaddisflyTestBrand'),
+  }).property('this.selectedCaddisflyTestBrand'),
 
   sortedList: function (arr, prop) {
     return arr.sort(function (a, b) {
@@ -918,7 +919,7 @@ FLOW.QuestionView = FLOW.View.extend({
   brandsObserver: function () {
     //needed to disable save button when no resource brand is specified
     FLOW.selectedControl.set('selectedCaddisflyResource', null);
-  }.observes('this.selectedCaddisflyTestBrand')
+  },
 });
 
 /*
@@ -927,19 +928,18 @@ FLOW.QuestionView = FLOW.View.extend({
 FLOW.OptionListView = Ember.CollectionView.extend({
   tagName: 'ul',
   content: null,
-  itemViewClass: Ember.View.extend({
-    templateName: 'navSurveys/question-option',
-    topOption: function () {
+  itemViewClass: Ember.View.extend(template('navSurveys/question-option'), {
+    topOption: Ember.computed(function () {
       var option = this.get('content');
       if (option) {
         return option.get('order') == 1;
       }
-    }.property('content.order'),
-    bottomOption: function () {
+    }).property('content.order'),
+    bottomOption: Ember.computed(function () {
       var option = this.get('content'), options = FLOW.questionOptionsControl.get('content');
       if (option && options) {
         return option.get('order') == options.get('length');
       }
-    }.property('content.order', 'FLOW.questionOptionsControl.content.length')
+    }).property('content.order', 'FLOW.questionOptionsControl.content.length')
   })
 });

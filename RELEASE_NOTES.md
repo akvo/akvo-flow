@@ -1,5 +1,16 @@
 # Akvo Flow Release Notes
 ----
+# Akvo Flow Dashboard v1.9.45 - Radiant Raspberry
+Date: 10-04-2019
+
+# New and noteworthy
+* **Development environment** - Switched dashboard builds from ruby to webpack [#1502]
+* **Reports**	- Add meta data column to data exports showing form version used if available [#2772].
+
+# Resolved issues
+* **Surveys** - Fix issue causing survey instances to fail if answers were > 1500 characters and disabled adding options longer than 500 characters  in option questions [#3038]
+* **Development environment** - Added script to check for missing media files in data store [#2967]. Move from using backends which are deprecated [#3043],[#2969]. Push Auth information to Unilog [#3031]
+
 # Akvo Flow Dashboard v1.9.44 - Quintessential Quandong (Hotfix 1)
 Date: 21-03-2019
 

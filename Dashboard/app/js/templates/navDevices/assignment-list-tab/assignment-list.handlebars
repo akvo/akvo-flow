@@ -1,6 +1,9 @@
 <section class="assignmentsListed" id="assignmentsList">
+
+  <!-- assignments REACT. Commented til new assignments implementation-->
+  {{!#view FLOW.AssignmentsListView}}{{!/view}}
+
   <!-- assignments TABLE-->
-  
   {{#view FLOW.AssignmentsListTabView}}
   <div class="deviceControls">
     <a {{action "createNewAssignment" target="this"}} class="btnOutline">{{t _create_new_assignment}}</a></div>

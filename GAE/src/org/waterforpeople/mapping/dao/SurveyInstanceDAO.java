@@ -1,5 +1,5 @@
 /*
- *  Copyright (C) 2010-2015, 2017-2018 Stichting Akvo (Akvo Foundation)
+ *  Copyright (C) 2010-2015, 2017-2019 Stichting Akvo (Akvo Foundation)
  *
  *  This file is part of Akvo FLOW.
  *
@@ -32,7 +32,7 @@ import org.akvo.flow.domain.DataUtils;
 import org.apache.commons.lang.StringUtils;
 import org.waterforpeople.mapping.analytics.dao.SurveyQuestionSummaryDao;
 import org.waterforpeople.mapping.analytics.domain.SurveyQuestionSummary;
-import org.waterforpeople.mapping.app.web.dto.DataProcessorRequest;
+import org.waterforpeople.mapping.app.web.DataProcessorRestServlet;
 import org.waterforpeople.mapping.app.web.dto.ImageCheckRequest;
 import org.waterforpeople.mapping.domain.QuestionAnswerStore;
 import org.waterforpeople.mapping.domain.SurveyInstance;
@@ -91,7 +91,7 @@ public class SurveyInstanceDAO extends BaseDAO<SurveyInstance> {
         SurveyedLocale sl = saveSurveyedLocale(si);
         si.setSurveyedLocaleId(sl.getKey().getId());
         if (si.getSurveyedLocaleDisplayName() == null && sl != null) {
-            //in case app did not send SL name, we may get it from an old SL 
+            //in case app did not send SL name, we may get it from an old SL
             si.setSurveyedLocaleDisplayName(sl.getDisplayName());
         }
         si.setDeviceFile(deviceFile);
@@ -159,7 +159,7 @@ public class SurveyInstanceDAO extends BaseDAO<SurveyInstance> {
         }
 
         deviceFile.setSurveyInstanceId(si.getKey().getId());
-        queueSynchronizedSummaryUpdate(si, true);
+        DataProcessorRestServlet.queueSynchronizedSummaryUpdate(si, true);
 
         return si;
     }
@@ -345,8 +345,7 @@ public class SurveyInstanceDAO extends BaseDAO<SurveyInstance> {
      */
     public Iterable<Entity> listRawEntity(Boolean returnKeysOnly,
             Date beginDate, Date endDate, Integer limit, Long surveyId) {
-        DatastoreService datastore = DatastoreServiceFactory
-                .getDatastoreService();
+        DatastoreService datastore = DatastoreServiceFactory.getDatastoreService();
         // The Query interface assembles a query
         com.google.appengine.api.datastore.Query q = new com.google.appengine.api.datastore.Query(
                 "SurveyInstance");
@@ -487,7 +486,7 @@ public class SurveyInstanceDAO extends BaseDAO<SurveyInstance> {
     /**
      * Update counts of SurveyQuestionSummary entities related to responses from this survey
      * instance.
-     * Execute on the surveyResponseCount task queue to prevent concurrent access errors
+     * Execute on the surveyResponseCount task queue to prevent concurrent access errors!
      */
     public void updateSummaryCounts(long siId, boolean increment) {
         // retrieve all summary objects
@@ -510,17 +509,18 @@ public class SurveyInstanceDAO extends BaseDAO<SurveyInstance> {
             }
 
             final String questionIdStr = response.getQuestionID();
+            //JSON or |-separated content; take it apart
             final String[] questionResponse = DataUtils.optionResponsesTextArray(response
                     .getValue());
 
             for (int i = 0; i < questionResponse.length; i++) {
                 List<SurveyQuestionSummary> questionSummaryList = summaryDao
-                        .listByResponse(questionIdStr, questionResponse[i]);
+                        .listByResponse(questionIdStr, questionResponse[i]); //could be longer than MAX_DS_STRING_LENGTH!
                 SurveyQuestionSummary questionSummary = null;
                 if (questionSummaryList.isEmpty()) {
                     questionSummary = new SurveyQuestionSummary();
                     questionSummary.setQuestionId(response.getQuestionID());
-                    questionSummary.setResponse(questionResponse[i]);
+                    questionSummary.setResponse(questionResponse[i]); //could be longer than MAX_DS_STRING_LENGTH!
                     questionSummary.setCount(0L);
                     summaryDao.save(questionSummary);
                 } else {
@@ -544,17 +544,6 @@ public class SurveyInstanceDAO extends BaseDAO<SurveyInstance> {
         summaryDao.delete(deleteList);
     }
 
-    private void queueSynchronizedSummaryUpdate(SurveyInstance si, boolean increment) {
-        Queue questionSummaryQueue = QueueFactory.getQueue("surveyResponseCount");
-        TaskOptions to = TaskOptions.Builder
-                .withUrl("/app_worker/dataprocessor")
-                .param(DataProcessorRequest.ACTION_PARAM,
-                        DataProcessorRequest.UPDATE_SURVEY_INSTANCE_SUMMARIES)
-                .param(DataProcessorRequest.SURVEY_INSTANCE_PARAM, si.getKey().getId() + "")
-                .param(DataProcessorRequest.DELTA_PARAM, increment ? "1":"-1");
-        questionSummaryQueue.add(to);
-    }
-
     /**
      * Deletes a surveyInstance and all its related objects
      *
@@ -572,21 +561,20 @@ public class SurveyInstanceDAO extends BaseDAO<SurveyInstance> {
         if (qasList != null && !qasList.isEmpty()) {
             for (QuestionAnswerStore qasItem : qasList) {
                 // question summaries
-                Question question = qDao.getByKey(Long.parseLong(qasItem.getQuestionID()));
+                Question question = qDao.getByKey(Long.parseLong(qasItem.getQuestionID())); //QAS question IDs are stored as String...
                 if (question != null && question.canBeCharted()) {
-                    Queue questionSummaryQueue = QueueFactory.getQueue("surveyResponseCount");
-                    List<SurveyQuestionSummary> summaryList = summDao.listByResponse(
-                            qasItem.getQuestionID(), qasItem.getValue());
-                    if (summaryList != null && !summaryList.isEmpty()) {
-                        TaskOptions to = TaskOptions.Builder
-                                .withUrl("/app_worker/dataprocessor")
-                                .param(DataProcessorRequest.ACTION_PARAM,
-                                        DataProcessorRequest.SURVEY_RESPONSE_COUNT)
-                                .param(DataProcessorRequest.COUNTER_ID_PARAM,
-                                        summaryList.get(0).getKey().getId() + "")
-                                .param(DataProcessorRequest.DELTA_PARAM, "-1");
-                        questionSummaryQueue.add(to);
-                        continue;
+                    //JSON or |-separated, possibly multiple choices; take it apart
+                    final String[] responses = DataUtils.optionResponsesTextArray(qasItem.getValue());
+                    for (int i = 0; i < responses.length; i++) {
+                        List<SurveyQuestionSummary> summaryList = summDao.listByResponse(
+                                qasItem.getQuestionID(),
+                                responses[i]); //could be longer than MAX_DS_STRING_LENGTH!
+
+                        if (summaryList != null && !summaryList.isEmpty()) {
+                            String key = Long.toString(summaryList.get(0).getKey().getId());
+                            DataProcessorRestServlet.queueAdjustSurveyResponseCount(key, false);
+                            continue;
+                        }
                     }
                 }
             }
@@ -651,8 +639,7 @@ public class SurveyInstanceDAO extends BaseDAO<SurveyInstance> {
         q.setOrdering("createdDateTime asc");
         q.declareParameters("Long surveyIdParam");
         prepareCursor(cursorString, count, q);
-        List<SurveyInstance> siList = (List<SurveyInstance>) q
-                .execute(surveyId);
+        List<SurveyInstance> siList = (List<SurveyInstance>) q.execute(surveyId);
 
         return siList;
     }
@@ -663,8 +650,7 @@ public class SurveyInstanceDAO extends BaseDAO<SurveyInstance> {
     }
 
     public Iterable<Entity> listSurveyInstanceKeysBySurveyId(Long surveyId) {
-        DatastoreService datastore = DatastoreServiceFactory
-                .getDatastoreService();
+        DatastoreService datastore = DatastoreServiceFactory.getDatastoreService();
         com.google.appengine.api.datastore.Query q = new com.google.appengine.api.datastore.Query(
                 "SurveyInstance");
         q.setKeysOnly().setFilter(new FilterPredicate("surveyId", FilterOperator.EQUAL, surveyId));

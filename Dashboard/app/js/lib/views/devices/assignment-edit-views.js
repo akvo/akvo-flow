@@ -1,3 +1,5 @@
+import observe from '../../mixins/observe';
+
 // removes duplicate objects with a clientId from an Ember Array
 
 FLOW.ArrNoDupe = function (a) {
@@ -26,7 +28,10 @@ FLOW.formatDate = function (value) {
   } else return null;
 };
 
-FLOW.AssignmentEditView = FLOW.View.extend({
+FLOW.AssignmentEditView = FLOW.View.extend(observe({
+  'FLOW.router.navigationController.selected': 'detectChangeTab',
+  'FLOW.router.devicesSubnavController.selected': 'detectChangeTab',
+}), {
   devicesPreview: Ember.A([]),
   surveysPreview: Ember.A([]),
   assignmentName: null,
@@ -79,7 +84,7 @@ FLOW.AssignmentEditView = FLOW.View.extend({
       FLOW.selectedControl.get('selectedSurveyAssignment').deleteRecord();
     }
     FLOW.selectedControl.set('selectedSurveyAssignment', null);
-  }.observes('FLOW.router.navigationController.selected', 'FLOW.router.devicesSubnavController.selected'),
+  },
 
   assignmentNotComplete: function () {
 	  if (Ember.empty(this.get('assignmentName'))) {

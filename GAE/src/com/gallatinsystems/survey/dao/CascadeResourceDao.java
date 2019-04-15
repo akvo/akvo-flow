@@ -1,5 +1,5 @@
 /*
- *  Copyright (C) 2014 Stichting Akvo (Akvo Foundation)
+ *  Copyright (C) 2014,2019 Stichting Akvo (Akvo Foundation)
  *
  *  This file is part of Akvo FLOW.
  *
@@ -16,17 +16,12 @@
 
 package com.gallatinsystems.survey.dao;
 
-import java.util.logging.Level;
 import java.util.logging.Logger;
 
-import org.waterforpeople.mapping.app.web.dto.DataProcessorRequest;
+import org.waterforpeople.mapping.app.web.DataProcessorRestServlet;
 
 import com.gallatinsystems.framework.dao.BaseDAO;
 import com.gallatinsystems.survey.domain.CascadeResource;
-import com.google.appengine.api.backends.BackendServiceFactory;
-import com.google.appengine.api.taskqueue.Queue;
-import com.google.appengine.api.taskqueue.QueueFactory;
-import com.google.appengine.api.taskqueue.TaskOptions;
 
 /**
  * Dao for manipulating CascadeResources
@@ -43,30 +38,15 @@ public class CascadeResourceDao extends BaseDAO<CascadeResource> {
     /**
      * deletes a cascade resource, and the nodes therein asynchronously in a task
      * 
-     * @param item
+     * @param resource
      */
-    public void delete(CascadeResource item) {
-        if (item == null) {
+    public void delete(CascadeResource resource) {
+        if (resource == null) {
             return;
         }
 
-        try {
+        super.delete(resource);
 
-            super.delete(item);
-
-            final Long keyId = item.getKey().getId();
-            final TaskOptions options = TaskOptions.Builder
-                    .withUrl("/app_worker/dataprocessor")
-                    .header("Host",
-                            BackendServiceFactory.getBackendService()
-                                    .getBackendAddress("dataprocessor"))
-                    .param(DataProcessorRequest.ACTION_PARAM,
-                            DataProcessorRequest.DELETE_CASCADE_NODES)
-                    .param(DataProcessorRequest.CASCADE_RESOURCE_ID, keyId.toString());
-            final Queue queue = QueueFactory.getQueue("background-processing");
-            queue.add(options);
-        } catch (Exception e) {
-            log.log(Level.SEVERE, "Error deleting Cascade Resource: " + e.getMessage(), e);
-        }
+        DataProcessorRestServlet.scheduleCascadeResourceDeletion(resource.getKey().getId());
     }
 }
