@@ -40,4 +40,9 @@ RUN set -ex ; \
     lein && \
     adduser -D -h /home/akvo -s /bin/bash akvo akvo
 
+COPY Dashboard/package.json Dashboard/package-lock.json /
+
+RUN set -ex ; \
+    npm install
+
 WORKDIR /app/src

@@ -15,9 +15,9 @@ require('../vendor/Google');
 require('../../css/screen.scss');
 
 if (FLOW.Env.mapsProvider == 'google') {
-  var regionBias = FLOW.Env.googleMapsRegionBias;
-  var region = regionBias ? '&region=' + regionBias : '';
-  document.write('<script src="https://maps.google.com/maps/api/js?key=AIzaSyBZU7kLJ75VlTlC5Qrfi1n1N-5hJYProuQ' + region + '"><\/script>');
+  const regionBias = FLOW.Env.googleMapsRegionBias;
+  const region = regionBias ? `&region=${regionBias}` : '';
+  document.write(`<script src="https://maps.google.com/maps/api/js?key=AIzaSyBZU7kLJ75VlTlC5Qrfi1n1N-5hJYProuQ${region}"><\/script>`);
 }
 
 FLOW.initialize();

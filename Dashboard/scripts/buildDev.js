@@ -1,4 +1,6 @@
 /* eslint-disable no-console, import/no-extraneous-dependencies */
+import path from 'path';
+import { execSync } from 'child_process';
 import webpack from 'webpack';
 import config from '../webpack.config.dev';
 import publicConfig from '../webpack.config.public.dev';
@@ -61,6 +63,8 @@ compiler.watch({
   }
 
   console.log(`Webpack stats: ${stats}`);
+
+  execSync(`node ${path.join(__dirname, './buildUsersCss.js')}`);
 
   console.log(chalkSuccess('The app is compiled and ready for development...'));
 
