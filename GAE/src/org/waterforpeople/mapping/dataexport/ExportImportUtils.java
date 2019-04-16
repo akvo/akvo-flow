@@ -1,4 +1,4 @@
-/*  Copyright (C) 2015-2018 Stichting Akvo (Akvo Foundation)
+/*  Copyright (C) 2015-2019 Stichting Akvo (Akvo Foundation)
  *
  *  This file is part of Akvo FLOW.
  *
@@ -85,6 +85,9 @@ public class ExportImportUtils {
 
         for (Row row : rows) {
             for (Cell cell : row) {
+                if (cell == null) {
+                    continue;
+                    }
                 if (row.getSheet() == limitedSheet && cell.getColumnIndex() > lastColumnIndex) {
                     break;
                 } else {
@@ -160,7 +163,7 @@ public class ExportImportUtils {
             // Date is not ISO 8601
         }
 
-        log.warn("Response doesn't contain a valid format: " + dateString);
+        log.warn("Response is not in a valid date format: " + dateString);
         return null;
     }
 
@@ -168,11 +171,12 @@ public class ExportImportUtils {
         String cell = "";
         Media media = MediaResponse.parse(value);
         String filename = media.getFilename();
-        final int filenameIndex = filename != null ? filename.lastIndexOf("/") + 1 : -1;
-        if (filenameIndex > 0 && filenameIndex < filename.length()) {
-            cell = prefix + filename.substring(filenameIndex);
+        if (filename != null) {
+            final int filenameIndex = filename.lastIndexOf("/") + 1;
+            if (filenameIndex > 0 && filenameIndex < filename.length()) {
+                cell = prefix + filename.substring(filenameIndex);
+            }
         }
-
         return cell;
     }
 

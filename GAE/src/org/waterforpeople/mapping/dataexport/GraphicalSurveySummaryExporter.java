@@ -19,6 +19,7 @@ package org.waterforpeople.mapping.dataexport;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.text.DecimalFormat;
 import java.text.NumberFormat;
@@ -39,6 +40,8 @@ import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicLong;
+
+import javax.annotation.Nonnull;
 
 import com.fasterxml.jackson.core.type.TypeReference;
 import org.akvo.flow.domain.DataUtils;
@@ -76,7 +79,9 @@ import org.waterforpeople.mapping.domain.CaddisflyResult;
 import org.waterforpeople.mapping.domain.response.value.Media;
 import org.waterforpeople.mapping.serialization.response.MediaResponse;
 import static org.waterforpeople.mapping.dataexport.ExportImportConstants.*;
+import static org.waterforpeople.mapping.dataexport.ExportImportUtils.parseCellAsString;
 
+import com.gallatinsystems.common.util.StringUtil;
 import com.gallatinsystems.survey.dao.CaddisflyResourceDao;
 
 import static com.gallatinsystems.common.Constants.*;
@@ -85,6 +90,10 @@ import static com.gallatinsystems.common.Constants.*;
  * Enhancement of the SurveySummaryExporter to support writing to Excel and including chart images.
  *
  * @author Christopher Fagiani
+ */
+/**
+ * @author stellan
+ *
  */
 public class GraphicalSurveySummaryExporter extends SurveySummaryExporter {
 
@@ -104,12 +113,11 @@ public class GraphicalSurveySummaryExporter extends SurveySummaryExporter {
 
     private static final String CADDISFLY_TESTS_FILE_URL_OPT = "caddisflyTestsFileUrl";
 
-    private static final String DEFAULT_IMAGE_PREFIX = "http://waterforpeople.s3.amazonaws.com/images/";
+//    private static final String DEFAULT_IMAGE_PREFIX = "http://waterforpeople.s3.amazonaws.com/images/";
+    private static final String DEFAULT_IMAGE_PREFIX = "http://akvoflow-122.s3.amazonaws.com/images/";
 
     private static final String DIGEST_COLUMN = "NO_TITLE_DIGEST_COLUMN";
 
-    
-    
     //Statistics page header and labels
     private static final String REPORT_HEADER = "Survey Summary Report";
     private static final String FREQ_LABEL = "Frequency";
@@ -126,8 +134,9 @@ public class GraphicalSurveySummaryExporter extends SurveySummaryExporter {
     private static final String TOTAL_LABEL = "Total";
     private static final String RANGE_LABEL = "Range";
 
-    // Maximum number of rows of a sheet kept in memory
+    // Maximum number of rows of a sheet kept in memory by the streaming API
     // We must take care to never go back up longer than this
+    // Max repeats in one instance we have seen as of 2019-04-15 is 172(!)
     private static final int WORKBOOK_WINDOW = 100;
 
     // Formatting for comprehensive summary sheet graphs
@@ -160,8 +169,6 @@ public class GraphicalSurveySummaryExporter extends SurveySummaryExporter {
     private String selectionLimit = null;
     private String reportType = null;
 
-    // for caddisfly-specific metadata
-    //TODO private Map<Long, Integer> numResultsMap = new HashMap<>();
     private Map<Long, Boolean> hasImageMap = new HashMap<>();
     private Map<Long, List<Integer>> resultIdMap = new HashMap<>();
 
@@ -190,8 +197,7 @@ public class GraphicalSurveySummaryExporter extends SurveySummaryExporter {
     private long minDuration = Long.MAX_VALUE;
     private long maxDuration = 0;
 
-
-    //@Override
+    @Override
     public void export(Map<String, String> criteria, File fileName,
             String serverBaseUrl, Map<String, String> options) {
         final String surveyId = criteria.get(SurveyRestRequest.SURVEY_ID_PARAM).trim();
@@ -422,9 +428,9 @@ public class GraphicalSurveySummaryExporter extends SurveySummaryExporter {
 
         // write the data now, row by row
         for (InstanceData instanceData : allData) {
+            MessageDigest digest = MessageDigest.getInstance("MD5");
             if (separateSheetsForRepeatableGroups) {
-                List<QuestionDto> baseSheetQuestions = new ArrayList<>();
-                List<Row> digestRows = new ArrayList<>();
+                List<QuestionDto> baseSheetQuestions = new ArrayList<>(); //Could be empty if all repeatable!
 
                 //For each group, write the repeats from top to bottom
                 for (Entry<QuestionGroupDto, List<QuestionDto>> groupEntry : questionMap.entrySet()) {
@@ -433,9 +439,9 @@ public class GraphicalSurveySummaryExporter extends SurveySummaryExporter {
                         writeInstanceDataSplit(qgSheetMap.get(gid),
                                 instanceData,
                                 groupEntry.getValue(),
-                                digestRows,
+                                digest,
                                 true);
-                    } else {
+                    } else { //might never be called
                         baseSheetQuestions.addAll(groupEntry.getValue());
                     }
                 }
@@ -443,22 +449,20 @@ public class GraphicalSurveySummaryExporter extends SurveySummaryExporter {
                 writeInstanceDataSplit(baseSheet,
                         instanceData,
                         baseSheetQuestions,
-                        digestRows,
+                        digest,
                         false);
 
-                String digest = ExportImportUtils.md5Digest(digestRows,
-                        columnIndexMap.get(DIGEST_COLUMN), baseSheet); //in case any rep group is wider than the base sheet
-
                 if (!variableNamesInHeaders) {
-                    // now add 1 more col on the base sheet that contains the digest
+                    String digestStr = StringUtil.toHexString(digest.digest());
+                    // now add 1 more column on the base sheet that contains the digest
                     createCell(getRow(baseSheet.getLastRowNum(), baseSheet),
                             columnIndexMap.get(DIGEST_COLUMN),
-                            digest,
+                            digestStr,
                             null);
                 }
 
 
-            } else { //just one sheet - do all at once with a global repeat column
+            } else { //just one sheet - do all at once with a global repeat column, no digest
                 int baseCurrentRow = baseSheet.getLastRowNum() + 1;
                 baseCurrentRow = writeInstanceData(baseSheet, baseCurrentRow, instanceData,
                         generateSummary, nameToIdMap, collapseIdMap, model);
@@ -529,80 +533,96 @@ public class GraphicalSurveySummaryExporter extends SurveySummaryExporter {
         }
     }
 
+    /**
+     * @param sheet
+     * @param instanceData
+     * @param whichQuestions
+     * @param md
+     * @param groupSheet
+     * @throws NoSuchAlgorithmException
+     */
     private synchronized void writeInstanceDataSplit(
             Sheet sheet,
             InstanceData instanceData,
             List<QuestionDto> whichQuestions,
-            List<Row> digestRows,
-            boolean showRepeatColumn)
+            MessageDigest md,
+            boolean groupSheet)
             throws NoSuchAlgorithmException {
 
         int startRow = sheet.getLastRowNum() + 1;
-
-        for (QuestionDto questionDto : whichQuestions) {
-            final Long questionId = questionDto.getKeyId();
-
+        //TODO maxIterationsCount is for entire instance. We need it for this sheet only!
+        int maxIter = 0;
+        if (!groupSheet) { //Must have one row of metadata on base sheet, even if no values
+            maxIter = 1;
+        }
+        for (QuestionDto qd : whichQuestions) {
+            final Long questionId = qd.getKeyId();
             SortedMap<Long, String> iterationsMap = instanceData.responseMap.get(questionId);
-            if (iterationsMap == null) {
-                continue;
+            if (iterationsMap != null) {
+                maxIter = Math.max(maxIter, iterationsMap.size());
             }
+        }
 
-            // Write downwards (and possibly rightwards) per iteration
-            int currentRow = startRow - 1;
-            for (Map.Entry<Long, String> iteration : iterationsMap.entrySet()) {
-                String val = iteration.getValue();
-                Row iterationRow = getRow(++currentRow, sheet);
-                writeAnswer(iterationRow, columnIndexMap.get(questionId.toString()),
-                        questionDto, val);
-                if (!digestRows.contains(iterationRow)) { //A Set would be neater
-                    digestRows.add(iterationRow);
+        for (int i = 0; i < maxIter; i++) {
+            Row iterationRow = getRow(startRow + i, sheet);
+            writeMetadataRow(iterationRow, instanceData, i + 1, groupSheet);
+            for (QuestionDto qd : whichQuestions) {
+                final Long questionId = qd.getKeyId();
+                final QuestionDto questionDto = questionsById.get(questionId);
+                SortedMap<Long, String> iterationsMap = instanceData.responseMap.get(questionId);
+                if (iterationsMap == null) {
+                    continue; //No answers on this sheet
+                }
+                String val = iterationsMap.get(new Long(i));
+                if (val != null) {
+                    writeAnswer(iterationRow, columnIndexMap.get(questionId.toString()), questionDto, val);
+                }
+            }
+            //Include this row in the digest
+            for (Cell cell : iterationRow) {
+                String val = parseCellAsString(cell);
+                if (val != null && !val.equals("")) {
+                    md.update(val.getBytes());
                 }
             }
         }
-        // all cells written; now we know how far down we went
-        writeMetadata(sheet, instanceData, startRow, sheet.getLastRowNum() - startRow + 1,
-                showRepeatColumn);
     }
 
-    private void writeMetadata(Sheet sheet,
+
+    //We write one row at a time to stay in window
+    private void writeMetadataRow(Row r,
             InstanceData instanceData,
-            final int firstRowNo,
-            final int iterations,
+            final int iteration,
             final boolean showRepeatColumn) {
-        for (int i = 0; i < iterations; i++) {
-
-            Row r = getRow(firstRowNo + i, sheet);
-            SurveyInstanceDto dto = instanceData.surveyInstanceDto;
-            int col = 0;
-            // Write the identifier
-            createCell(r, col++, dto.getSurveyedLocaleIdentifier());
-            // Write data approval status
-            if (hasDataApproval()) {
-                createCell(r, col++, instanceData.latestApprovalStatus);
-            }
-            // Write the "Repeat" column
-            if (showRepeatColumn) {
-                createCell(r, col++, String.valueOf(i + 1), null, Cell.CELL_TYPE_NUMERIC);
-            }
-            // Write other metadata
-            createCell(r, col++, dto.getSurveyedLocaleDisplayName());
-            createCell(r, col++, dto.getDeviceIdentifier());
-            createCell(r, col++, dto.getKeyId().toString());
-            createCell(r, col++, ExportImportUtils.formatDateTime(dto.getCollectionDate()));
-            createCell(r, col++, sanitize(dto.getSubmitterName()));
-            String duration = getDurationText(dto.getSurveyalTime());
-            createCell(r, col++, duration);
-            Double v = dto.getFormVersion();
-            if (v != null) {	
-            	createCell(r, col++, v);
-            } 
-            //TODO else a cell with 0.0??
+        SurveyInstanceDto dto = instanceData.surveyInstanceDto;
+        int col = 0;
+        // Write the identifier
+        createCell(r, col++, dto.getSurveyedLocaleIdentifier());
+        // Write data approval status
+        if (hasDataApproval()) {
+            createCell(r, col++, instanceData.latestApprovalStatus);
         }
-
+        // Write the "Repeat" column
+        if (showRepeatColumn) {
+            createCell(r, col++, String.valueOf(iteration), null, Cell.CELL_TYPE_NUMERIC);
+        }
+        // Write other metadata
+        createCell(r, col++, dto.getSurveyedLocaleDisplayName());
+        createCell(r, col++, dto.getDeviceIdentifier());
+        createCell(r, col++, dto.getKeyId().toString());
+        createCell(r, col++, ExportImportUtils.formatDateTime(dto.getCollectionDate()));
+        createCell(r, col++, sanitize(dto.getSubmitterName()));
+        String duration = getDurationText(dto.getSurveyalTime());
+        createCell(r, col++, duration);
+        Double v = dto.getFormVersion();
+        if (v != null) {
+            createCell(r, col++, v);
+        }
+        //TODO else a cell with 0.0??
     }
 
     /**
-     * Writes all the data for a single survey instance (form instance) to a sheet.
+     * Writes all the data for a single survey instance (form instance) to the same sheet.
      *
      * @param sheet
      * @param startRow The start row for this instance
@@ -621,15 +641,31 @@ public class GraphicalSurveySummaryExporter extends SurveySummaryExporter {
             boolean generateSummary,
             Map<String, String> nameToIdMap,
             Map<String, String> collapseIdMap,
-            SummaryModel model)
-            throws NoSuchAlgorithmException {
-
-        // maxRow will increase when we write repeatable question groups
-        int maxRow = startRow;
-
-        Row firstRow = getRow(startRow, sheet);
+            SummaryModel model) {
 
         //maxIterationsCount is actually the max iteration index; 0 for 1 iteration...
+        for (int i = 0; i <= (int) instanceData.maxIterationsCount; i++) {
+            Row iterationRow = getRow(startRow + i, sheet);
+            writeMetadataRow(iterationRow, instanceData, i + 1, true);
+            for (String q : questionIdList) {
+                final Long questionId = Long.valueOf(q);
+                final QuestionDto questionDto = questionsById.get(questionId);
+                SortedMap<Long, String> iterationsMap = instanceData.responseMap.get(questionId);
+                if (iterationsMap == null) {
+                    continue;
+                }
+                String val = iterationsMap.get(new Long(i));
+                if (val != null) {
+                    writeAnswer(iterationRow, columnIndexMap.get(q), questionDto, val);
+                }
+            }
+        }
+
+        int maxRow = startRow + (int) instanceData.maxIterationsCount + 1;
+
+/*
+        Row firstRow = getRow(startRow, sheet);
+
         writeMetadata(sheet, instanceData, startRow, (int) instanceData.maxIterationsCount + 1, true);
 
         for (String q : questionIdList) {
@@ -654,18 +690,21 @@ public class GraphicalSurveySummaryExporter extends SurveySummaryExporter {
         }
 
         // Calculate the digest
+        /* only for split sheets
+        //TODO this may go outside the window!
         List<Row> rows = new ArrayList<>();
         for (int r = startRow; r <= maxRow; r++) {
             rows.add(sheet.getRow(r));
         }
+        log.warn("Digesting " + instanceData.surveyInstanceDto.getKeyId());
 
         String digest = ExportImportUtils.md5Digest(rows,
                 columnIndexMap.get(DIGEST_COLUMN), sheet);
-
         if (!variableNamesInHeaders) {
             // now add 1 more col that contains the digest
             createCell(firstRow, columnIndexMap.get(DIGEST_COLUMN), digest, null);
         }
+         */
 
         // Rebuild old response map format for from instanceData.responseMap
         // Question id -> response
@@ -722,10 +761,10 @@ public class GraphicalSurveySummaryExporter extends SurveySummaryExporter {
                     }
 
                     synchronized (model) {
-                        for (int i = 0; i < vals.length; i++) {
-                            if (vals[i] != null && vals[i].trim().length() > 0) {
+                        for (int j = 0; j < vals.length; j++) {
+                            if (vals[j] != null && vals[j].trim().length() > 0) {
                                 QuestionDto q = questionsById.get(Long.valueOf(effectiveId));
-                                model.tallyResponse(effectiveId, rollups, vals[i], q);
+                                model.tallyResponse(effectiveId, rollups, vals[j], q);
                             }
                         }
                     }
@@ -740,16 +779,17 @@ public class GraphicalSurveySummaryExporter extends SurveySummaryExporter {
      * Write the cells for a single answer. Some answers are split into multiple cells. Called from
      * writeInstanceData method
      *
-     * @param sheet
      * @param row
      * @param startColumn
      * @param questionDto
      * @param value
      */
-    private void writeAnswer(Row row, int startColumn,
-            QuestionDto questionDto, String value) {
+    private void writeAnswer(@Nonnull Row row,
+            int startColumn,
+            @Nonnull QuestionDto questionDto,
+            @Nonnull String value) {
 
-        assert value != null;
+        assert value != null; //did not work when debugging in Eclipse
 
         // Some question types splits the value into several columns.
         List<String> cells = new ArrayList<>();
@@ -836,14 +876,15 @@ public class GraphicalSurveySummaryExporter extends SurveySummaryExporter {
         List<String> cells = new ArrayList<>();
         Media media = MediaResponse.parse(value);
         String filename = media.getFilename();
-        final int filenameIndex = filename != null ? filename.lastIndexOf("/") + 1
-                : -1;
-        if (filenameIndex > 0 && filenameIndex < filename.length()) {
-            cells.add(imagePrefix + filename.substring(filenameIndex));
-            if (splitIntoColumns && media.getLocation() != null) {
-                cells.add(Double.toString(media.getLocation().getLatitude()));
-                cells.add(Double.toString(media.getLocation().getLongitude()));
-                cells.add(Double.toString(media.getLocation().getAccuracy()));
+        if (filename != null) {
+            final int filenameIndex = filename.lastIndexOf("/") + 1;
+            if (filenameIndex > 0 && filenameIndex < filename.length()) {
+                cells.add(imagePrefix + filename.substring(filenameIndex));
+                if (splitIntoColumns && media.getLocation() != null) {
+                    cells.add(Double.toString(media.getLocation().getLatitude()));
+                    cells.add(Double.toString(media.getLocation().getLongitude()));
+                    cells.add(Double.toString(media.getLocation().getAccuracy()));
+                }
             }
         }
         return cells;
@@ -1136,6 +1177,9 @@ public class GraphicalSurveySummaryExporter extends SurveySummaryExporter {
     private List<String> optionCellValues(Long questionId, String value,
             List<QuestionOptionDto> options, boolean allowOther, boolean allowMultiple) {
         List<String> cells = new ArrayList<>();
+        if (options == null) {
+            return cells;
+        }
 
         // get optionNodes from packed string value
         List<Map<String, String>> optionNodes = getNodes(value);
@@ -1145,10 +1189,8 @@ public class GraphicalSurveySummaryExporter extends SurveySummaryExporter {
         //otherwise: if last and the text is not in option list
         Map<String, String> otherNode = null;
         String other = null;
-        int numOptions = 0;
-        if (options != null) {
-            numOptions = options.size();
-        }
+        int numOptions = options.size();
+
         boolean[] optionFound = new boolean[numOptions]; //Zero-length array ok
 
         // if needed, scan options
@@ -1880,7 +1922,7 @@ public class GraphicalSurveySummaryExporter extends SurveySummaryExporter {
         statRow = getRow(rowIndex++, sheet);
         createCell(statRow, tagCol, "Average duration");
         try {
-            createCell(statRow, valCol, getDurationText((long) totalDuration / totalInstances));
+            createCell(statRow, valCol, getDurationText(totalDuration / totalInstances));
         } catch (Exception e) {
             // swallow exception, leave cell empty
         }
@@ -1914,7 +1956,7 @@ public class GraphicalSurveySummaryExporter extends SurveySummaryExporter {
     protected Cell createCell(Row row, int col, int value) {
         Cell cell = row.createCell(col);
         cell.setCellType(Cell.CELL_TYPE_NUMERIC);
-        cell.setCellValue((double)value);
+        cell.setCellValue(value);
         return cell;
     }
 
@@ -2097,6 +2139,7 @@ public class GraphicalSurveySummaryExporter extends SurveySummaryExporter {
         GraphicalSurveySummaryExporter exporter = new GraphicalSurveySummaryExporter();
         Map<String, String> criteria = new HashMap<String, String>();
         Map<String, String> options = new HashMap<String, String>();
+        // Uncomment one of the following three lines
         options.put(TYPE_OPT, DATA_CLEANING_TYPE);
 //        options.put(TYPE_OPT, DATA_ANALYSIS_TYPE);
 //        options.put(TYPE_OPT, COMPREHENSIVE_TYPE);
