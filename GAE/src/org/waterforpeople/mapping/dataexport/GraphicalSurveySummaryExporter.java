@@ -113,8 +113,7 @@ public class GraphicalSurveySummaryExporter extends SurveySummaryExporter {
 
     private static final String CADDISFLY_TESTS_FILE_URL_OPT = "caddisflyTestsFileUrl";
 
-//    private static final String DEFAULT_IMAGE_PREFIX = "http://waterforpeople.s3.amazonaws.com/images/";
-    private static final String DEFAULT_IMAGE_PREFIX = "http://akvoflow-122.s3.amazonaws.com/images/";
+    private static final String DEFAULT_IMAGE_PREFIX = "http://waterforpeople.s3.amazonaws.com/images/";
 
     private static final String DIGEST_COLUMN = "NO_TITLE_DIGEST_COLUMN";
 

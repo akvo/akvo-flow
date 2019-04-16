@@ -85,9 +85,6 @@ public class ExportImportUtils {
 
         for (Row row : rows) {
             for (Cell cell : row) {
-                if (cell == null) {
-                    continue;
-                    }
                 if (row.getSheet() == limitedSheet && cell.getColumnIndex() > lastColumnIndex) {
                     break;
                 } else {
