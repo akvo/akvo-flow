@@ -54,10 +54,5 @@
     "webpack-bundle-analyzer": "^3.1.0",
     "webpack-cli": "^3.2.3",
     "webpack-md5-hash": "0.0.6"
-  },
-  "husky": {
-    "hooks": {
-      "post-merge": "npm install"
-    }
   }
 }
