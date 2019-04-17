@@ -4,8 +4,8 @@
     "build:dev": "babel-node ./scripts/buildDev.js",
     "build:prod": "babel-node ./scripts/buildProd.js",
     "lint": "esw webpack.config.* app/js/lib scripts --color --ext jsx --ext js",
-    "lint:fix": "esw webpack.config.* app/js/lib scripts --color --ext jsx --ext js --fix",
-    "pre-commit": "npm run lint:fix"
+    "lint:fix": "npm run lint -- --fix",
+    "lint:quiet": "npm run lint -- --quiet"
   },
   "dependencies": {
     "babel-register": "^6.26.0",
@@ -57,5 +57,10 @@
     "webpack-bundle-analyzer": "^3.1.0",
     "webpack-cli": "^3.2.3",
     "webpack-md5-hash": "0.0.6"
+  },
+  "husky": {
+    "hooks": {
+      "pre-commit": "npm run lint"
+    }
   }
 }
