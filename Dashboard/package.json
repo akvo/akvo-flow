@@ -7,7 +7,7 @@
     "lint:fix": "npm run lint -- --fix",
     "lint:quiet": "npm run lint -- --quiet"
   },
-  "dependencies": {
+  "dependencies": { 
     "babel-register": "^6.26.0",
     "dayjs": "^1.8.12",
     "lodash": "^4.17.11",
