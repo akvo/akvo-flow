@@ -19,10 +19,16 @@
 set -e
 
 SRC_DIR="/app/src"
+BUNDLE_GEMFILE="${SRC_DIR}/Dashboard/Gemfile"
+RAKEP_MODE=production
+
+export BUNDLE_GEMFILE
+export RAKEP_MODE
 
 cd "${SRC_DIR}/Dashboard"
 
 npm install
+npm rebuild node-sass
 npm run build:prod
 
 cd "${SRC_DIR}/Dashboard/app/cljs"

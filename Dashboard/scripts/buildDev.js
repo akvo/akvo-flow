@@ -1,6 +1,6 @@
-// More info on Webpack's Node API here: https://webpack.js.org/api/node/
-// Allowing console calls below since this is a build file.
-/* eslint-disable no-console */
+/* eslint-disable no-console, import/no-extraneous-dependencies */
+import path from 'path';
+import { execSync } from 'child_process';
 import webpack from 'webpack';
 import config from '../webpack.config.dev';
 import publicConfig from '../webpack.config.public.dev';
@@ -14,11 +14,10 @@ console.log(chalkProcessing('Generating bundle. This will take a moment...'));
 const publicCompiler = webpack(publicConfig);
 
 publicCompiler.watch({
-  // Example watchOptions
   aggregateTimeout: 300,
   poll: undefined,
 }, (error, stats) => {
-  if (error) { // so a fatal error occurred. Stop here.
+  if (error) {
     console.log(chalkError(error));
     return 1;
   }
@@ -36,7 +35,6 @@ publicCompiler.watch({
 
   console.log(`Webpack stats: ${stats}`);
 
-  // if we got this far, the build succeeded.
   console.log(chalkSuccess('Public app is compiled. Now compiling dashboard app...'));
 
   return 0;
@@ -45,11 +43,10 @@ publicCompiler.watch({
 const compiler = webpack(config);
 
 compiler.watch({
-  // Example watchOptions
   aggregateTimeout: 300,
   poll: undefined,
 }, (error, stats) => {
-  if (error) { // so a fatal error occurred. Stop here.
+  if (error) {
     console.log(chalkError(error));
     return 1;
   }
@@ -67,8 +64,9 @@ compiler.watch({
 
   console.log(`Webpack stats: ${stats}`);
 
-  // if we got this far, the build succeeded.
-  console.log(chalkSuccess('Your app is compiled and ready to roll!'));
+  execSync(`node ${path.join(__dirname, './buildUsersCss.js')}`);
+
+  console.log(chalkSuccess('The app is compiled and ready for development...'));
 
   return 0;
 });

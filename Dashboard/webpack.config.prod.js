@@ -20,7 +20,7 @@ export const HTML_CONFIG = {
     minifyCSS: true,
     minifyURLs: true,
   },
-  inject: false,
+  inject: 'body',
   trackJSToken: '',
 };
 
@@ -44,14 +44,7 @@ export default {
     new HtmlWebpackPlugin({
       ...HTML_CONFIG,
       template: 'app/dashboard.ejs',
-      chunks: ['app'],
-    }),
-
-    new HtmlWebpackPlugin({
-      ...HTML_CONFIG,
-      template: 'app/public.ejs',
-      chunks: ['pub'],
-      filename: 'pub.html',
+      chunks: ['admin'],
     }),
 
     new webpack.optimize.ModuleConcatenationPlugin(),
@@ -59,6 +52,7 @@ export default {
     new CopyPlugin([
       { from: 'app/js/plugins', to: 'js' },
       { from: 'app/static/images', to: 'images' },
+      { from: 'app/js/vendor', to: '../vendorjs/js/vendor' },
     ]),
   ],
 
@@ -155,7 +149,7 @@ export default {
             }, {
               loader: 'sass-loader',
               options: {
-                includePaths: [path.resolve(__dirname, 'src', 'scss')],
+                includePaths: [path.resolve(__dirname, 'app', 'css')],
                 sourceMap: true,
               },
             },

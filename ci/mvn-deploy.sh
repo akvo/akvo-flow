@@ -36,6 +36,7 @@ java -cp /google-cloud-sdk/platform/google_appengine/google/appengine/tools/java
      --application="${PROJECT_ID}" \
      update ./target/appengine-staging
 
+version=$(git describe)
 archive_name="${version}.zip"
 (
     cd target

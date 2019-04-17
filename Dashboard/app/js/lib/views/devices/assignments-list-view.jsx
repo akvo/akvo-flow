@@ -1,5 +1,5 @@
 import React from 'react';
-import moment from 'moment';
+import dayjs from 'dayjs';
 
 require('akvo-flow/views/react-component');
 
@@ -9,7 +9,8 @@ FLOW.AssignmentsListView = FLOW.ReactComponentView.extend({
     this.reactRender(
       <div style={{ visibility: 'hidden' }}>
         React
-        {moment().seconds()}
+        {' '}
+        {dayjs().seconds()}
       </div>
     );
   },

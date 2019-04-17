@@ -83,6 +83,9 @@
         {{#if FLOW.questionOptionsControl.reservedCode}}
         <br><span style="color:red">{{t _reserved_code}}</span>
         {{/if}}
+        {{#if FLOW.questionOptionsControl.maxLength}}
+        <br><span style="color:red">{{t _option_max_length}}</span>
+        {{/if}}
       </p>
       <div class="optionListView">
     	  {{view FLOW.OptionListView contentBinding="FLOW.questionOptionsControl"}}
@@ -245,8 +248,11 @@
         {{#if FLOW.questionOptionsControl.reservedCode}}
         <li><a class="button noChanges" id="standardBtn_01">{{t _save_question}}</a> </li>
         {{else}}
+        {{#if FLOW.questionOptionsControl.maxLength}}
+        <li><a class="button noChanges" id="standardBtn_01">{{t _save_question}}</a> </li>
+        {{else}}
         <li><a class="button" id="standardBtn_01" {{action "doSaveEditQuestion" target="this"}}>{{t _save_question}}</a> </li>
-        {{/if}}{{/if}}{{/if}}{{/if}}{{/if}}{{/if}}{{/if}}
+        {{/if}}{{/if}}{{/if}}{{/if}}{{/if}}{{/if}}{{/if}}{{/if}}
         {{else}}
         {{#if view.amCaddisflyType}}
         {{#unless FLOW.selectedControl.selectedCaddisflyResource}}
