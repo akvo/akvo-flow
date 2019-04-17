@@ -549,7 +549,7 @@ public class GraphicalSurveySummaryExporter extends SurveySummaryExporter {
             throws NoSuchAlgorithmException {
 
         int startRow = sheet.getLastRowNum() + 1;
-        //TODO maxIterationsCount is for entire instance. We need it for this sheet only!
+        //maxIterationsCount is for entire instance. We need it for this sheet only!
         int maxIter = 0;
         if (!groupSheet) { //Must have one row of metadata on base sheet, even if no values
             maxIter = 1;
@@ -567,14 +567,13 @@ public class GraphicalSurveySummaryExporter extends SurveySummaryExporter {
             writeMetadataRow(iterationRow, instanceData, i + 1, groupSheet);
             for (QuestionDto qd : whichQuestions) {
                 final Long questionId = qd.getKeyId();
-                final QuestionDto questionDto = questionsById.get(questionId);
                 SortedMap<Long, String> iterationsMap = instanceData.responseMap.get(questionId);
                 if (iterationsMap == null) {
                     continue; //No answers on this sheet
                 }
-                String val = iterationsMap.get(new Long(i));
+                String val = iterationsMap.get(Long.valueOf(i));
                 if (val != null) {
-                    writeAnswer(iterationRow, columnIndexMap.get(questionId.toString()), questionDto, val);
+                    writeAnswer(iterationRow, columnIndexMap.get(questionId.toString()), qd, val);
                 }
             }
             //Include this row in the digest
@@ -662,48 +661,6 @@ public class GraphicalSurveySummaryExporter extends SurveySummaryExporter {
 
         int maxRow = startRow + (int) instanceData.maxIterationsCount + 1;
 
-/*
-        Row firstRow = getRow(startRow, sheet);
-
-        writeMetadata(sheet, instanceData, startRow, (int) instanceData.maxIterationsCount + 1, true);
-
-        for (String q : questionIdList) {
-            final Long questionId = Long.valueOf(q);
-            final QuestionDto questionDto = questionsById.get(questionId);
-
-            SortedMap<Long, String> iterationsMap = instanceData.responseMap.get(questionId);
-
-            if (iterationsMap == null) {
-                continue;
-            }
-
-            // Write downwards (and possibly rightwards) per iteration
-            int rowOffset = -1;
-            for (Map.Entry<Long, String> iteration : iterationsMap.entrySet()) {
-                String val = iteration.getValue();
-                rowOffset++;
-                Row iterationRow = getRow(startRow + rowOffset, sheet);
-                writeAnswer(iterationRow, columnIndexMap.get(q), questionDto, val);
-            }
-            maxRow = Math.max(maxRow, startRow + rowOffset);
-        }
-
-        // Calculate the digest
-        /* only for split sheets
-        //TODO this may go outside the window!
-        List<Row> rows = new ArrayList<>();
-        for (int r = startRow; r <= maxRow; r++) {
-            rows.add(sheet.getRow(r));
-        }
-        log.warn("Digesting " + instanceData.surveyInstanceDto.getKeyId());
-
-        String digest = ExportImportUtils.md5Digest(rows,
-                columnIndexMap.get(DIGEST_COLUMN), sheet);
-        if (!variableNamesInHeaders) {
-            // now add 1 more col that contains the digest
-            createCell(firstRow, columnIndexMap.get(DIGEST_COLUMN), digest, null);
-        }
-         */
 
         // Rebuild old response map format for from instanceData.responseMap
         // Question id -> response
