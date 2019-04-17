@@ -1,6 +1,0 @@
-#!/bin/bash
-
-echo "blah"
-npm list | grep eslint || exit 1;
-
-exit 0;
