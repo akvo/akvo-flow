@@ -60,7 +60,7 @@
   },
   "husky": {
     "hooks": {
-      "pre-commit": "HUSKY_DEBUG=false npm run lint"
+      "pre-commit": "npm run lint"
     }
   }
 }
