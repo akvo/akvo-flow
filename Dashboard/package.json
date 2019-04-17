@@ -3,17 +3,17 @@
   "scripts": {
     "build:dev": "babel-node ./scripts/buildDev.js",
     "build:prod": "babel-node ./scripts/buildProd.js",
-    "lint": "esw webpack.config.* app/js/lib scripts --color --ext jsx --ext js",
+    "lint": "./scripts/checkEslintInstalled.sh && esw webpack.config.* app/js/lib scripts --color --ext jsx --ext js",
     "lint:fix": "npm run lint -- --fix",
     "lint:quiet": "npm run lint -- --quiet"
   },
-  "dependencies": { 
+  "dependencies": {
     "babel-register": "^6.26.0",
     "dayjs": "^1.8.12",
     "lodash": "^4.17.11",
     "react": "^16.8.4",
     "react-dom": "^16.8.4"
-  },
+  }, 
   "devDependencies": {
     "autoprefixer": "^9.4.9",
     "babel-cli": "^6.26.0",
@@ -60,7 +60,7 @@
   },
   "husky": {
     "hooks": {
-      "pre-commit": "npm run lint"
+      "pre-commit": "HUSKY_DEBUG=true npm run lint"
     }
   }
 }
