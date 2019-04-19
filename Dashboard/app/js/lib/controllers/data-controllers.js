@@ -311,7 +311,6 @@ FLOW.questionAnswerControl = Ember.ArrayController.create({
   // by question order. For repeat question groups two adjacent sub lists
   // represent two iterations of responses for that group
   contentByGroup: Ember.computed('content.isLoaded',
-    'FLOW.questionContol.content.isLoaded',
     'FLOW.questionContol.content.isLoaded', function () {
       const content = Ember.get(this, 'content');
       const self = this;
