@@ -104,10 +104,11 @@ public class RawDataSpreadsheetImporter implements DataImporter {
         try {
             stream = new PushbackInputStream(new FileInputStream(file));
             wb = WorkbookFactory.create(stream);
+            return wb.getSheetAt(0);
         } catch (Exception e) {
             log.error("Workbook creation exception:" + e);
         }
-        return wb.getSheetAt(0);
+        return null;
     }
 
     /**
@@ -240,8 +241,13 @@ public class RawDataSpreadsheetImporter implements DataImporter {
 
         //these are all for the base sheet
         Map<Integer, Long> columnIndexToQuestionId = sheetMap.get(baseSheet);
-        int firstQuestionColumnIndex = Collections.min(columnIndexToQuestionId.keySet());
-        Map<String, Integer> metadataColumnHeaderIndex = getMetadataColumnIndex(baseSheet, firstQuestionColumnIndex, headerRowIndex, false);
+        int firstQuestionColumnIndex = 0;
+        if (columnIndexToQuestionId.isEmpty()) { //Nothing but metadata
+            firstQuestionColumnIndex = md5Column;
+        } else {
+            firstQuestionColumnIndex = Collections.min(columnIndexToQuestionId.keySet());
+        }
+        Map<String, Integer> metadataColumnHeaderIndex = getMetadataColumnIndex(baseSheet, firstQuestionColumnIndex, headerRowIndex);
         Map<String, Integer> repMetadataIndex = null; //lazy calc, done if needed; all rep sheets should be the same!
 
         int row = headerRowIndex + 1; //where the data starts
@@ -263,7 +269,7 @@ public class RawDataSpreadsheetImporter implements DataImporter {
                     Map<Integer, Long> repQMap = sheetMap.get(repSheet);
                     int repFirstQIdx = Collections.min(repQMap.keySet());
                     if (repMetadataIndex == null) { //do this only once??
-                        repMetadataIndex = getMetadataColumnIndex(repSheet, repFirstQIdx, headerRowIndex, true);
+                        repMetadataIndex = getMetadataColumnIndex(repSheet, repFirstQIdx, headerRowIndex);
                     }
                     Integer pos = sheetPosition.get(repSheet);
                     if (pos == null) { //never scanned this one before; start at top
@@ -306,7 +312,7 @@ public class RawDataSpreadsheetImporter implements DataImporter {
      * @param firstQuestionColumnIndex
      * @return
      */
-    private Map<String, Integer> getMetadataColumnIndex(Sheet sheet, int firstQuestionColumnIndex, int headerRow, boolean singleOrRepSheet) {
+    private Map<String, Integer> getMetadataColumnIndex(Sheet sheet, int firstQuestionColumnIndex, int headerRow) {
         Map<String, Integer> index = new HashMap<>();
 
         Row row = sheet.getRow(headerRow);
@@ -365,7 +371,7 @@ public class RawDataSpreadsheetImporter implements DataImporter {
 
         // 0. SurveyedLocaleIdentifier - link to base sheet
         // 1. Approval (if hasIterationColumn) - ignored duplicate
-        // 2. Repeat
+        // 2. Repeat, >= 1
         // 3. SurveyedLocaleDisplayName - ignored duplicate
         // 4. DeviceIdentifier - ignored duplicate
         // 5. SurveyInstanceId - link to base sheet?
@@ -472,7 +478,7 @@ public class RawDataSpreadsheetImporter implements DataImporter {
         // 7. SubmitterName
         // 8. SurveyalTime
 
-        // 9 - N. Questions
+        // 9 - N. Questions (Possibly none)
         // N + 1. Digest
 
         // First check if we are done with the sheet
@@ -488,8 +494,8 @@ public class RawDataSpreadsheetImporter implements DataImporter {
 
         String deviceIdentifier = "";
         if (metadataColumnHeaderIndex.containsKey(DEVICE_IDENTIFIER_COLUMN_KEY)) {
-            deviceIdentifier = getMetadataCellContent(baseRow, metadataColumnHeaderIndex,
-                    DEVICE_IDENTIFIER_COLUMN_KEY);
+            deviceIdentifier = getMetadataCellContent(baseRow,
+                    metadataColumnHeaderIndex, DEVICE_IDENTIFIER_COLUMN_KEY);
         }
 
         String surveyInstanceId = getMetadataCellContent(baseRow, metadataColumnHeaderIndex,
@@ -1028,13 +1034,14 @@ public class RawDataSpreadsheetImporter implements DataImporter {
 
             Row headerRow = sheet.getRow(headerRowIndex);
             boolean firstQuestionFound = false;
-            int firstQuestionColumnIndex = 0;
+            int firstNonheaderColumnIndex = 0;
+            int lastNonemptyHeaderColumnIndex = 0;
 
             for (Cell cell : headerRow) {
                 String cellValue = cell.getStringCellValue();
                 // if encountering a null cell make sure its only due to phantom cells at the end of
                 // the row. If null or empty cell occurs in middle of header row report an error
-                if ((cellValue == null || cellValue.trim().isEmpty()) && isMissingHeaderCell(cell)) {
+                if (isEmptyCell(cell) && nonEmptyHeaderCellsAfter(cell)) {
                     errorMap.put(
                             cell.getColumnIndex(),
                             String.format(
@@ -1045,30 +1052,30 @@ public class RawDataSpreadsheetImporter implements DataImporter {
                     break;
                 }
 
+                if (!isEmptyCell(cell)) {
+                    lastNonemptyHeaderColumnIndex = cell.getColumnIndex();
+                }
                 if (!firstQuestionFound && cellValue.matches("[0-9]+\\|.+")) {
                     firstQuestionFound = true;
-                    firstQuestionColumnIndex = cell.getColumnIndex();
-                    if (!isSupportedReportFormat(firstQuestionColumnIndex)) {
-                        errorMap.put(firstQuestionColumnIndex,
-                                "Found the first question at the wrong column index");
-                        break;
-                    }
-                    log.info("Importing report with first question column index: "
-                            + firstQuestionColumnIndex);
+                    firstNonheaderColumnIndex = cell.getColumnIndex();
                 }
             }
 
-            if (!firstQuestionFound) {
-                errorMap.put(-1, "A question could not be found");
+            if (!firstQuestionFound && errorMap.isEmpty()) {
+                //May be NO answers on base sheet if all groups are repeatable
+                firstNonheaderColumnIndex = lastNonemptyHeaderColumnIndex + 1;
             }
+            log.info("Importing report with first question column index: "
+                    + firstNonheaderColumnIndex);
 
             Workbook wb = sheet.getWorkbook();
 
             //check that all mandatory columns exist on all sheets
             for (int i = 0; i < wb.getNumberOfSheets(); i++) {
                 sheet = wb.getSheetAt(i);
-                Map<String, Integer> index = getMetadataColumnIndex(sheet, firstQuestionColumnIndex, headerRowIndex,
-                        false);
+                Map<String, Integer> index = getMetadataColumnIndex(sheet,
+                        firstNonheaderColumnIndex,
+                        headerRowIndex);
                 if (!checkCol(index, DATAPOINT_IDENTIFIER_COLUMN_KEY)) {
                     errorMap.put(-1, "Column header '" + IDENTIFIER_LABEL + "' missing on sheet " + i);
                 }
@@ -1098,14 +1105,6 @@ public class RawDataSpreadsheetImporter implements DataImporter {
         }
 
         return errorMap;
-    }
-
-    private boolean isSupportedReportFormat(int firstQuestionColumnIndex) {
-        return firstQuestionColumnIndex == LEGACY_MONITORING_FORMAT
-                || firstQuestionColumnIndex == MONITORING_FORMAT_WITH_DEVICE_ID_COLUMN
-                || firstQuestionColumnIndex == MONITORING_FORMAT_WITH_REPEAT_COLUMN
-                || firstQuestionColumnIndex == MONITORING_FORMAT_WITH_APPROVAL_COLUMN
-                || firstQuestionColumnIndex == MONITORING_FORMAT_WITH_FORM_VERSION;
     }
 
     /**
@@ -1168,12 +1167,12 @@ public class RawDataSpreadsheetImporter implements DataImporter {
      * @param cell
      * @return
      */
-    private boolean isMissingHeaderCell(Cell cell) {
-        assert cell.getRow().getRowNum() == 0; // only process header rows
+    private boolean nonEmptyHeaderCellsAfter(Cell cell) {
+        assert cell.getRow().getRowNum() == 1; // only process header rows
 
         Row row = cell.getRow();
-        for (int i = cell.getColumnIndex(); i < row.getLastCellNum(); i++) {
-            if (row.getCell(i) != null && !row.getCell(i).getStringCellValue().trim().isEmpty()) {
+        for (int i = cell.getColumnIndex() + 1; i < row.getLastCellNum(); i++) {
+            if (!isEmptyCell(row.getCell(i))) {
                 return true;
             }
         }
