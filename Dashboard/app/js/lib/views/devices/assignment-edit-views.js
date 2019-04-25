@@ -3,29 +3,28 @@ import observe from '../../mixins/observe';
 // removes duplicate objects with a clientId from an Ember Array
 
 FLOW.ArrNoDupe = function (a) {
-  var templ, i, item = null,
-    gotIt, tempa;
-  templ = {};
-  tempa = Ember.A([]);
-  for (i = 0; i < a.length; i++) {
+  let gotIt;
+  const templ = {};
+  const tempa = Ember.A([]);
+  for (let i = 0; i < a.length; i++) {
     templ[a.objectAt(i).clientId] = true;
   }
-  for (item in templ) {
+  Object.keys(templ).forEach((item) => {
     gotIt = false;
-    for (i = 0; i < a.length; i++) {
+    for (let i = 0; i < a.length; i++) {
       if (a.objectAt(i).clientId == item && !gotIt) {
         tempa.pushObject(a.objectAt(i));
         gotIt = true;
       }
     }
-  }
+  });
   return tempa;
 };
 
 FLOW.formatDate = function (value) {
   if (!Ember.none(value)) {
-    return value.getFullYear() + "/" + (value.getMonth() + 1) + "/" + value.getDate();
-  } else return null;
+    return `${value.getFullYear()}/${value.getMonth() + 1}/${value.getDate()}`;
+  } return null;
 };
 
 FLOW.AssignmentEditView = FLOW.View.extend(observe({
@@ -37,11 +36,11 @@ FLOW.AssignmentEditView = FLOW.View.extend(observe({
   assignmentName: null,
   language: null,
 
-  init: function () {
-    var deviceIds, previewDevices, surveyIds, previewSurveys, startDate = null,
-      endDate = null;
-    previewDevices = Ember.A([]);
-    previewSurveys = Ember.A([]);
+  init() {
+    let startDate = null;
+    let endDate = null;
+    const previewDevices = Ember.A([]);
+    const previewSurveys = Ember.A([]);
     this._super();
     this.set('assignmentName', FLOW.selectedControl.selectedSurveyAssignment.get('name'));
     FLOW.selectedControl.set('selectedDevices', null);
@@ -62,16 +61,16 @@ FLOW.AssignmentEditView = FLOW.View.extend(observe({
 
     this.set('language', FLOW.selectedControl.selectedSurveyAssignment.get('language'));
 
-    deviceIds = Ember.A(FLOW.selectedControl.selectedSurveyAssignment.get('devices'));
+    const deviceIds = Ember.A(FLOW.selectedControl.selectedSurveyAssignment.get('devices'));
 
-    deviceIds.forEach(function (item) {
+    deviceIds.forEach((item) => {
       previewDevices.pushObjects(FLOW.store.find(FLOW.Device, item));
     });
     this.set('devicesPreview', previewDevices);
 
-    surveyIds = Ember.A(FLOW.selectedControl.selectedSurveyAssignment.get('surveys'));
+    const surveyIds = Ember.A(FLOW.selectedControl.selectedSurveyAssignment.get('surveys'));
 
-    surveyIds.forEach(function (item) {
+    surveyIds.forEach((item) => {
       if (item !== null) {
         previewSurveys.pushObjects(FLOW.store.find(FLOW.Survey, item));
       }
@@ -79,40 +78,42 @@ FLOW.AssignmentEditView = FLOW.View.extend(observe({
     this.set('surveysPreview', previewSurveys);
   },
 
-  detectChangeTab: function () {
+  detectChangeTab() {
     if (Ember.none(FLOW.selectedControl.selectedSurveyAssignment.get('keyId'))) {
       FLOW.selectedControl.get('selectedSurveyAssignment').deleteRecord();
     }
     FLOW.selectedControl.set('selectedSurveyAssignment', null);
   },
 
-  assignmentNotComplete: function () {
-	  if (Ember.empty(this.get('assignmentName'))) {
-		  FLOW.dialogControl.set('activeAction', 'ignore');
-		  FLOW.dialogControl.set('header', Ember.String.loc('_assignment_name_not_set'));
-		  FLOW.dialogControl.set('message', Ember.String.loc('_assignment_name_not_set_text'));
-		  FLOW.dialogControl.set('showCANCEL', false);
-		  FLOW.dialogControl.set('showDialog', true);
-		  return true;
-	  }
-	  if (Ember.none(FLOW.dateControl.get('toDate')) || Ember.none(FLOW.dateControl.get('fromDate'))) {
-		  FLOW.dialogControl.set('activeAction', 'ignore');
-		  FLOW.dialogControl.set('header', Ember.String.loc('_date_not_set'));
-		  FLOW.dialogControl.set('message', Ember.String.loc('_date_not_set_text'));
-		  FLOW.dialogControl.set('showCANCEL', false);
-		  FLOW.dialogControl.set('showDialog', true);
-		  return true;
-	  }
-	  return false;
+  assignmentNotComplete() {
+    if (Ember.empty(this.get('assignmentName'))) {
+      FLOW.dialogControl.set('activeAction', 'ignore');
+      FLOW.dialogControl.set('header', Ember.String.loc('_assignment_name_not_set'));
+      FLOW.dialogControl.set('message', Ember.String.loc('_assignment_name_not_set_text'));
+      FLOW.dialogControl.set('showCANCEL', false);
+      FLOW.dialogControl.set('showDialog', true);
+      return true;
+    }
+    if (Ember.none(FLOW.dateControl.get('toDate')) || Ember.none(FLOW.dateControl.get('fromDate'))) {
+      FLOW.dialogControl.set('activeAction', 'ignore');
+      FLOW.dialogControl.set('header', Ember.String.loc('_date_not_set'));
+      FLOW.dialogControl.set('message', Ember.String.loc('_date_not_set_text'));
+      FLOW.dialogControl.set('showCANCEL', false);
+      FLOW.dialogControl.set('showDialog', true);
+      return true;
+    }
+    return false;
   },
 
-  saveSurveyAssignment: function () {
-    var sa, endDateParse, startDateParse, devices = [],
-      surveys = [];
-    if (this.assignmentNotComplete()){
-		return;
-	}
-    sa = FLOW.selectedControl.get('selectedSurveyAssignment');
+  saveSurveyAssignment() {
+    let endDateParse;
+    let startDateParse;
+    const devices = [];
+    const surveys = [];
+    if (this.assignmentNotComplete()) {
+      return;
+    }
+    const sa = FLOW.selectedControl.get('selectedSurveyAssignment');
     sa.set('name', this.get('assignmentName'));
 
     if (!Ember.none(FLOW.dateControl.get('toDate'))) {
@@ -131,12 +132,12 @@ FLOW.AssignmentEditView = FLOW.View.extend(observe({
     sa.set('startDate', startDateParse);
     sa.set('language', 'en');
 
-    this.get('devicesPreview').forEach(function (item) {
+    this.get('devicesPreview').forEach((item) => {
       devices.push(item.get('keyId'));
     });
     sa.set('devices', devices);
 
-    this.get('surveysPreview').forEach(function (item) {
+    this.get('surveysPreview').forEach((item) => {
       surveys.push(item.get('keyId'));
     });
     sa.set('surveys', surveys);
@@ -145,7 +146,7 @@ FLOW.AssignmentEditView = FLOW.View.extend(observe({
     FLOW.router.transitionTo('navDevices.assignSurveysOverview');
   },
 
-  cancelEditSurveyAssignment: function () {
+  cancelEditSurveyAssignment() {
     if (Ember.none(FLOW.selectedControl.selectedSurveyAssignment.get('keyId'))) {
       FLOW.selectedControl.get('selectedSurveyAssignment').deleteRecord();
     }
@@ -153,16 +154,15 @@ FLOW.AssignmentEditView = FLOW.View.extend(observe({
     FLOW.router.transitionTo('navDevices.assignSurveysOverview');
   },
 
-  addSelectedDevices: function () {
+  addSelectedDevices() {
     this.devicesPreview.pushObjects(FLOW.selectedControl.get('selectedDevices'));
     // delete duplicates
     this.set('devicesPreview', FLOW.ArrNoDupe(this.get('devicesPreview')));
   },
 
-  addSelectedSurveys: function () {
-    var sgName;
-    sgName = FLOW.selectedControl.selectedSurveyGroup.get('code');
-    FLOW.selectedControl.get('selectedSurveys').forEach(function (item) {
+  addSelectedSurveys() {
+    const sgName = FLOW.selectedControl.selectedSurveyGroup.get('code');
+    FLOW.selectedControl.get('selectedSurveys').forEach((item) => {
       item.set('surveyGroupName', sgName);
     });
     this.surveysPreview.pushObjects(FLOW.selectedControl.get('selectedSurveys'));
@@ -170,34 +170,31 @@ FLOW.AssignmentEditView = FLOW.View.extend(observe({
     this.set('surveysPreview', FLOW.ArrNoDupe(this.get('surveysPreview')));
   },
 
-  selectAllDevices: function () {
-    var selected = Ember.A([]);
-    FLOW.devicesInGroupControl.get('content').forEach(function (item) {
+  selectAllDevices() {
+    const selected = Ember.A([]);
+    FLOW.devicesInGroupControl.get('content').forEach((item) => {
       selected.pushObject(item);
     });
     FLOW.selectedControl.set('selectedDevices', selected);
   },
 
-  deselectAllDevices: function () {
+  deselectAllDevices() {
     FLOW.selectedControl.set('selectedDevices', []);
   },
 
-  selectAllSurveys: function () {
-	var selected = FLOW.surveyControl.get('content').filter(function (item) {
-	    return item.get('status') === "PUBLISHED";
-	});
+  selectAllSurveys() {
+    const selected = FLOW.surveyControl.get('content').filter(item => item.get('status') === 'PUBLISHED');
     FLOW.selectedControl.set('selectedSurveys', selected);
   },
 
-  deselectAllSurveys: function () {
+  deselectAllSurveys() {
     FLOW.selectedControl.set('selectedSurveys', []);
   },
 
-  removeSingleSurvey: function (event) {
-    var id, surveysPreview, i;
-    id = event.context.get('clientId');
-    surveysPreview = this.get('surveysPreview');
-    for (i = 0; i < surveysPreview.length; i++) {
+  removeSingleSurvey(event) {
+    const id = event.context.get('clientId');
+    const surveysPreview = this.get('surveysPreview');
+    for (let i = 0; i < surveysPreview.length; i++) {
       if (surveysPreview.objectAt(i).clientId == id) {
         surveysPreview.removeAt(i);
       }
@@ -205,15 +202,14 @@ FLOW.AssignmentEditView = FLOW.View.extend(observe({
     this.set('surveysPreview', surveysPreview);
   },
 
-  removeAllSurveys: function () {
+  removeAllSurveys() {
     this.set('surveysPreview', Ember.A([]));
   },
 
-  removeSingleDevice: function (event) {
-    var id, devicesPreview, i;
-    id = event.context.get('clientId');
-    devicesPreview = this.get('devicesPreview');
-    for (i = 0; i < devicesPreview.length; i++) {
+  removeSingleDevice(event) {
+    const id = event.context.get('clientId');
+    const devicesPreview = this.get('devicesPreview');
+    for (let i = 0; i < devicesPreview.length; i++) {
       if (devicesPreview.objectAt(i).clientId == id) {
         devicesPreview.removeAt(i);
       }
@@ -221,7 +217,7 @@ FLOW.AssignmentEditView = FLOW.View.extend(observe({
     this.set('devicesPreview', devicesPreview);
   },
 
-  removeAllDevices: function () {
+  removeAllDevices() {
     this.set('devicesPreview', Ember.A([]));
-  }
+  },
 });

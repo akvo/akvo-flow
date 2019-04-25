@@ -1,3 +1,4 @@
+import { isNaN } from 'lodash';
 import observe from '../../mixins/observe';
 import template from '../../mixins/template';
 
@@ -5,12 +6,12 @@ import template from '../../mixins/template';
 
 function formatDate(date) {
   if (date && !isNaN(date.getTime())) {
-    return date.getFullYear() + "-" + (date.getMonth() + 1) + "-" + date.getDate();
+    return `${date.getFullYear()}-${date.getMonth() + 1}-${date.getDate()}`;
   }
   return null;
 }
 
-function sortByOrder(a , b) {
+function sortByOrder(a, b) {
   return a.get('order') - b.get('order');
 }
 
@@ -18,53 +19,53 @@ FLOW.QuestionAnswerView = Ember.View.extend(observe({
   'this.numberValue': 'doValidateNumber',
 }), {
 
-  isTextType: Ember.computed(function(){
+  isTextType: Ember.computed(function () {
     return this.get('questionType') === 'FREE_TEXT';
   }).property('this.questionType'),
 
-  isCascadeType: Ember.computed(function(){
+  isCascadeType: Ember.computed(function () {
     return this.get('questionType') === 'CASCADE';
   }).property('this.questionType'),
 
-  isOptionType: Ember.computed(function(){
+  isOptionType: Ember.computed(function () {
     return this.get('questionType') === 'OPTION';
   }).property('this.questionType'),
 
-  isNumberType: Ember.computed(function(){
+  isNumberType: Ember.computed(function () {
     return this.get('questionType') === 'NUMBER';
   }).property('this.questionType'),
 
-  isBarcodeType: Ember.computed(function(){
+  isBarcodeType: Ember.computed(function () {
     return this.get('questionType') === 'SCAN';
   }).property('this.questionType'),
 
-  isDateType: Ember.computed(function(){
+  isDateType: Ember.computed(function () {
     return this.get('questionType') === 'DATE';
   }).property('this.questionType'),
 
-  isPhotoType: Ember.computed(function(){
+  isPhotoType: Ember.computed(function () {
     return (this.get('questionType') === 'PHOTO' || (this.content && this.content.get('type') === 'IMAGE'));
   }).property('this.questionType'),
 
-  isVideoType: Ember.computed(function(){
+  isVideoType: Ember.computed(function () {
     return this.get('questionType') === 'VIDEO';
   }).property('this.questionType'),
 
-  isGeoShapeType: Ember.computed(function(){
+  isGeoShapeType: Ember.computed(function () {
     return this.get('questionType') === 'GEOSHAPE';
   }).property('this.questionType'),
 
-  isSignatureType: Ember.computed(function(){
+  isSignatureType: Ember.computed(function () {
     return this.get('questionType') === 'SIGNATURE' || (this.content && this.content.get('type') === 'SIGNATURE');
   }).property('this.questionType'),
 
-  isCaddisflyType: Ember.computed(function(){
+  isCaddisflyType: Ember.computed(function () {
     return this.get('questionType') === 'CADDISFLY' || (this.content && this.content.get('type') === 'CADDISFLY');
   }).property('this.questionType'),
 
-  nonEditableQuestionTypes: ['GEO', 'PHOTO', 'VIDEO', 'GEOSHAPE', 'SIGNATURE','CADDISFLY'],
+  nonEditableQuestionTypes: ['GEO', 'PHOTO', 'VIDEO', 'GEOSHAPE', 'SIGNATURE', 'CADDISFLY'],
 
-  form: Ember.computed(function() {
+  form: Ember.computed(() => {
     if (FLOW.selectedControl.get('selectedSurvey')) {
       return FLOW.selectedControl.get('selectedSurvey');
     }
@@ -73,44 +74,39 @@ FLOW.QuestionAnswerView = Ember.View.extend(observe({
   /*
    * Get the full list of options related to a particular option type question
    */
-  optionsList: Ember.computed(function(){
-    var c = this.content;
+  optionsList: Ember.computed(function () {
+    const c = this.content;
     if (Ember.none(c) || !this.get('isOptionType')) {
       return Ember.A([]);
     }
 
-    var questionId = c.get('questionID');
+    const questionId = c.get('questionID');
 
-    var options = FLOW.store.filter(FLOW.QuestionOption, function (item) {
-      return item.get('questionId') === +questionId;
-    });
+    const options = FLOW.store.filter(FLOW.QuestionOption, item => item.get('questionId') === +questionId);
 
-    var optionArray = options.toArray();
-    optionArray.sort(function (a, b) {
-        return a.get('order') - b.get('order');
-    });
+    const optionArray = options.toArray();
+    optionArray.sort((a, b) => a.get('order') - b.get('order'));
 
-    var tempList = Ember.A([]);
-    var obj;
-    optionArray.forEach(function (item) {
-      obj = Ember.Object.create({
-        code : item.get('code') && item.get('code').trim(),
-        text : item.get('text').trim(),
-        order: item.get('order')
+    const tempList = Ember.A([]);
+    optionArray.forEach((item) => {
+      const obj = Ember.Object.create({
+        code: item.get('code') && item.get('code').trim(),
+        text: item.get('text').trim(),
+        order: item.get('order'),
       });
       tempList.push(obj);
     });
 
     // add other option if enabed
     // we assume codes are all or nothing
-    var setOptionCodes = tempList.get('firstObject').get('code');
+    const setOptionCodes = tempList.get('firstObject').get('code');
     if (this.get('isOtherOptionEnabled')) {
       tempList.push(Ember.Object.create({
-        code: setOptionCodes ? "OTHER" : null, // OTHER is default code
+        code: setOptionCodes ? 'OTHER' : null, // OTHER is default code
         otherText: null,
         text: Ember.computed(function () {
-          var suffix = this.get('otherText') ? this.get('otherText') : Ember.String.loc('_other_option_specify');
-          return Ember.String.loc('_other') + ": " + suffix;
+          const suffix = this.get('otherText') ? this.get('otherText') : Ember.String.loc('_other_option_specify');
+          return `${Ember.String.loc('_other')}: ${suffix}`;
         }).property('this.otherText'),
         order: tempList.get('length'),
         isOther: true,
@@ -123,18 +119,17 @@ FLOW.QuestionAnswerView = Ember.View.extend(observe({
 
   inEditMode: false,
 
-  isNotEditable: Ember.computed(function() {
+  isNotEditable: Ember.computed(function () {
     // keep this property to limit template rafactoring
     return !this.get('isEditable');
   }).property('this.isEditable'),
 
   isEditable: Ember.computed(function () {
-    var isEditableQuestionType, canEditFormResponses;
-    isEditableQuestionType = this.nonEditableQuestionTypes.indexOf(this.get('questionType')) < 0;
+    const isEditableQuestionType = this.nonEditableQuestionTypes.indexOf(this.get('questionType')) < 0;
     if (!isEditableQuestionType) {
       return false; // no need to check permissions
     }
-    canEditFormResponses = FLOW.permControl.canEditResponses(this.get('form'));
+    const canEditFormResponses = FLOW.permControl.canEditResponses(this.get('form'));
     return isEditableQuestionType && canEditFormResponses;
   }).property('this.questionType,this.form'),
 
@@ -145,21 +140,22 @@ FLOW.QuestionAnswerView = Ember.View.extend(observe({
    *  HTML img tag
    */
   signatureImageSrc: Ember.computed(function () {
-    var c = this.content, srcAttr = 'data:image/png;base64,', signatureJson;
+    const c = this.content;
+    const srcAttr = 'data:image/png;base64,';
     if (c && c.get('value')) {
-      signatureJson = JSON.parse(c.get('value'));
+      const signatureJson = JSON.parse(c.get('value'));
       return srcAttr + signatureJson.image;
     }
-    return null
+    return null;
   }).property('this.content'),
 
   /*
    * Extract signatory from signature response
    */
   signatureSignatory: Ember.computed(function () {
-    var c = this.content, signatureJson;
+    const c = this.content;
     if (c && c.get('value')) {
-      signatureJson = JSON.parse(c.get('value'));
+      const signatureJson = JSON.parse(c.get('value'));
       return signatureJson.name.trim();
     }
     return null;
@@ -172,18 +168,19 @@ FLOW.QuestionAnswerView = Ember.View.extend(observe({
   * Example JSON format: {"result":[{"name":"Total Chlorine (ppm)","value":10,
   * "unit":"ppm","id":0},{"name":"Free Chlorine (ppm)","value":0.5,"unit":"ppm",
   * "id":1}],"type":"caddisfly","name":"Chlorine and Free Chlorine",
-  * "uuid":"bf1c19c0-9788-4e26-999e-1b5c6ca28111","image":"b3893f16-6a02-4e92-a13e-fce25223a0c5.png"}
+  * "uuid":"bf1c19c0-9788-4e26-999e-1b5c6ca28111",
+  * "image":"b3893f16-6a02-4e92-a13e-fce25223a0c5.png"}
   */
-  parseTestJson: function(){
-    var c = this.content, testJson, newResult, image, result;
-    result = Ember.A();
+  parseTestJson() {
+    const c = this.content;
+    let result = Ember.A();
     if (c && c.get('value')) {
-      testJson = JSON.parse(c.get('value'));
-      if (testJson.result && !Ember.empty(testJson.result)){
-          result = Ember.A(testJson.result);
+      const testJson = JSON.parse(c.get('value'));
+      if (testJson.result && !Ember.empty(testJson.result)) {
+        result = Ember.A(testJson.result);
       }
     }
-    this.set('testResult',result);
+    this.set('testResult', result);
   },
 
   /*
@@ -192,19 +189,20 @@ FLOW.QuestionAnswerView = Ember.View.extend(observe({
    * Example JSON format: {"result":[{"name":"Total Chlorine (ppm)","value":10,
    * "unit":"ppm","id":0},{"name":"Free Chlorine (ppm)","value":0.5,"unit":"ppm",
    * "id":1}],"type":"caddisfly","name":"Chlorine and Free Chlorine",
-   * "uuid":"bf1c19c0-9788-4e26-999e-1b5c6ca28111","image":"b3893f16-6a02-4e92-a13e-fce25223a0c5.png"}
+   * "uuid":"bf1c19c0-9788-4e26-999e-1b5c6ca28111",
+   * "image":"b3893f16-6a02-4e92-a13e-fce25223a0c5.png"}
    *
    * Extracts the 'name' attribute from a Caddisfly JSON result string
    */
-  testName: Ember.computed(function(){
-    var c = this.content, testJson;
+  testName: Ember.computed(function () {
+    const c = this.content;
     if (c && c.get('value')) {
-      testJson = JSON.parse(c.get('value'));
-      if (!Ember.empty(testJson.result)){
-          this.parseTestJson();
+      const testJson = JSON.parse(c.get('value'));
+      if (!Ember.empty(testJson.result)) {
+        this.parseTestJson();
       }
-      if (!Ember.empty(testJson.name)){
-          return testJson.name.trim();
+      if (!Ember.empty(testJson.name)) {
+        return testJson.name.trim();
       }
     }
     return null;
@@ -216,15 +214,16 @@ FLOW.QuestionAnswerView = Ember.View.extend(observe({
    * Example JSON format: {"result":[{"name":"Total Chlorine (ppm)","value":10,
    * "unit":"ppm","id":0},{"name":"Free Chlorine (ppm)","value":0.5,"unit":"ppm",
    * "id":1}],"type":"caddisfly","name":"Chlorine and Free Chlorine",
-   * "uuid":"bf1c19c0-9788-4e26-999e-1b5c6ca28111","image":"b3893f16-6a02-4e92-a13e-fce25223a0c5.png"}
+   * "uuid":"bf1c19c0-9788-4e26-999e-1b5c6ca28111",
+   * "image":"b3893f16-6a02-4e92-a13e-fce25223a0c5.png"}
    *
    * Extracts the 'image' attribute from a Caddisfly JSON result string, and returns a full URL
    */
-  caddisflyImageURL: Ember.computed(function(){
-    var c = this.content, testJson;
+  caddisflyImageURL: Ember.computed(function () {
+    const c = this.content;
     if (c && c.get('value')) {
-      testJson = JSON.parse(c.get('value'));
-      if (!Ember.empty(testJson.image)){
+      const testJson = JSON.parse(c.get('value'));
+      if (!Ember.empty(testJson.image)) {
         return FLOW.Env.photo_url_root + testJson.image.trim();
       }
     }
@@ -233,19 +232,16 @@ FLOW.QuestionAnswerView = Ember.View.extend(observe({
 
   numberValue: null,
 
-  cascadeValue: Ember.computed(function(key, value, previousValue){
-    var c = this.content;
+  cascadeValue: Ember.computed(function (key, value) {
+    const c = this.content;
     // setter
     if (arguments.length > 1) {
       // split according to pipes
-      var cascadeNames = value.split("|");
-      var cascadeResponse = [];
-      var obj = null;
-      cascadeNames.forEach(function(item){
+      const cascadeNames = value.split('|');
+      const cascadeResponse = [];
+      cascadeNames.forEach((item) => {
         if (item.trim().length > 0) {
-          obj = {};
-          obj.name = item.trim();
-          cascadeResponse.push(obj);
+          cascadeResponse.push({ name: item.trim() });
         }
       });
 
@@ -253,15 +249,14 @@ FLOW.QuestionAnswerView = Ember.View.extend(observe({
     }
 
     // getter
-    var cascadeString = "", cascadeJson;
+    let cascadeString = '';
+    let cascadeJson;
     if (c && c.get('value')) {
-      if (c.get('value').indexOf("|") > -1) {
+      if (c.get('value').indexOf('|') > -1) {
         cascadeString += c.get('value');
       } else {
         cascadeJson = JSON.parse(c.get('value'));
-        cascadeString = cascadeJson.map(function(item){
-          return item.name;
-        }).join("|");
+        cascadeString = cascadeJson.map(item => item.name).join('|');
       }
       return cascadeString;
     }
@@ -292,8 +287,8 @@ FLOW.QuestionAnswerView = Ember.View.extend(observe({
    *    '[{text: "text with code", code: "code"}]'
    *    '[{text: "only text"}]'
    */
-  optionValue: Ember.computed(function (key, value, previousValue) {
-    var valueArray = [], selectedOptions = Ember.A(), c = this.content, isOtherEnabled;
+  optionValue: Ember.computed(function (key, value) {
+    const c = this.content;
 
     // setter
     if (arguments.length > 1) {
@@ -319,21 +314,21 @@ FLOW.QuestionAnswerView = Ember.View.extend(observe({
    *    '[{text: "text with code", code: "code"}]'
    *    '[{text: "only text"}]'
    */
-  parseOptionsValueString: function (optionsValueString) {
+  parseOptionsValueString(optionsValueString) {
     if (!optionsValueString) {
       return Ember.A();
     }
 
-    var selectedOptions = Ember.A();
-    var optionsList = this.get('optionsList');
-    var isOtherEnabled = this.get('isOtherOptionEnabled');
+    const selectedOptions = Ember.A();
+    const optionsList = this.get('optionsList');
+    const isOtherEnabled = this.get('isOtherOptionEnabled');
 
     if (optionsValueString.charAt(0) === '[') {
       // responses in JSON format
-      JSON.parse(optionsValueString).forEach(function (response) {
-        optionsList.forEach(function (optionObj) {
-          if (response.text === optionObj.get('text') &&
-              response.code == optionObj.get('code')) { // '==' because codes could be undefined or null
+      JSON.parse(optionsValueString).forEach((response) => {
+        optionsList.forEach((optionObj) => {
+          if (response.text === optionObj.get('text')
+              && response.code == optionObj.get('code')) { // '==' because codes could be undefined or null
             selectedOptions.addObject(optionObj);
           }
 
@@ -346,11 +341,12 @@ FLOW.QuestionAnswerView = Ember.View.extend(observe({
       });
     } else {
       // responses in pipe separated format
-      optionsValueString.split("|").forEach(function(item, textIndex, textArray){
-        var text = item.trim(), isLastItem = textIndex === textArray.length - 1;
+      optionsValueString.split('|').forEach((item, textIndex, textArray) => {
+        const text = item.trim();
+        const isLastItem = textIndex === textArray.length - 1;
         if (text.length > 0) {
-          optionsList.forEach(function(optionObj) {
-            var optionIsIncluded = optionObj.get('text') && optionObj.get('text') === text;
+          optionsList.forEach((optionObj) => {
+            const optionIsIncluded = optionObj.get('text') && optionObj.get('text') === text;
             if (optionIsIncluded) {
               selectedOptions.addObject(optionObj);
             }
@@ -373,8 +369,9 @@ FLOW.QuestionAnswerView = Ember.View.extend(observe({
    *  of a single-select option question.
    *
    */
-  singleSelectOptionValue: Ember.computed(function (key, value, previousValue) {
-    var selectedOptions, c = this.content;
+  singleSelectOptionValue: Ember.computed(function (key, value) {
+    let selectedOptions;
+    const c = this.content;
 
     // setter
     if (c && arguments.length > 1) {
@@ -384,7 +381,7 @@ FLOW.QuestionAnswerView = Ember.View.extend(observe({
     }
 
     // getter
-    var options = this.get('optionValue');
+    const options = this.get('optionValue');
     if (options && options.get('length') === 1) {
       return options.get('firstObject');
     }
@@ -396,8 +393,8 @@ FLOW.QuestionAnswerView = Ember.View.extend(observe({
    *  of a multi-select option question.
    *
    */
-  multiSelectOptionValue: Ember.computed(function (key, value, previousValue) {
-    var c = this.content;
+  multiSelectOptionValue: Ember.computed(function (key, value) {
+    const c = this.content;
 
     // setter
     if (c && arguments.length > 1) {
@@ -417,58 +414,58 @@ FLOW.QuestionAnswerView = Ember.View.extend(observe({
   }).property('this.isOptionType'),
 
   isOtherOptionSelected: Ember.computed(function () {
-    var selectedOption = this.get('optionValue') && this.get('optionValue').get('lastObject');
+    const selectedOption = this.get('optionValue') && this.get('optionValue').get('lastObject');
     return selectedOption && selectedOption.get('isOther');
   }).property('this.optionValue'),
 
-  photoUrl: Ember.computed(function(){
-    var c = this.content;
+  photoUrl: Ember.computed(function () {
+    const c = this.content;
     if (!Ember.empty(c.get('value'))) {
-      var jImage = JSON.parse(c.get('value'));
+      const jImage = JSON.parse(c.get('value'));
       if (jImage && jImage.filename) {
-          return FLOW.Env.photo_url_root + jImage.filename.split('/').pop();
+        return FLOW.Env.photo_url_root + jImage.filename.split('/').pop();
       }
     }
   }).property('this.content,this.isPhotoType,this.isVideoType'),
 
-  photoLocation: Ember.computed(function(){
-    var c = this.content;
+  photoLocation: Ember.computed(function () {
+    const c = this.content;
     if (!Ember.empty(c.get('value'))) {
-      var jImage = JSON.parse(c.get('value'));
+      const jImage = JSON.parse(c.get('value'));
       if (jImage && jImage.location) {
-          return "lat:" + jImage.location.latitude + "/lon:" + jImage.location.longitude;
+        return `lat:${jImage.location.latitude}/lon:${jImage.location.longitude}`;
       }
     }
   }).property('this.content,this.isPhotoType,this.isVideoType'),
 
-  geoShapeObject: Ember.computed(function(){
-    var c = this.content;
+  geoShapeObject: Ember.computed(function () {
+    const c = this.content;
     if (!Ember.empty(c.get('value'))) {
       return c.get('value');
     }
   }).property('this.content,this.isGeoShapeType'),
 
-  questionType: Ember.computed(function(){
-    if(this.get('question')){
+  questionType: Ember.computed(function () {
+    if (this.get('question')) {
       return this.get('question').get('type');
     }
   }).property('this.question'),
 
-  question: Ember.computed(function(){
-    var c = this.get('content');
+  question: Ember.computed(function () {
+    const c = this.get('content');
     if (c) {
-      var questionId = c.get('questionID');
-      var q = FLOW.questionControl.findProperty('keyId', +questionId);
+      const questionId = c.get('questionID');
+      const q = FLOW.questionControl.findProperty('keyId', +questionId);
       return q;
     }
   }).property('this.content'),
 
-  doEdit: function () {
+  doEdit() {
     this.set('inEditMode', true);
-    var c = this.content;
+    const c = this.content;
 
     if (this.get('isDateType') && !Ember.empty(c.get('value'))) {
-      var d = new Date(+c.get('value')); // need to coerce c.get('value') due to milliseconds
+      const d = new Date(+c.get('value')); // need to coerce c.get('value') due to milliseconds
       this.set('date', formatDate(d));
     }
 
@@ -477,14 +474,13 @@ FLOW.QuestionAnswerView = Ember.View.extend(observe({
     }
   },
 
-  doCancel: function () {
+  doCancel() {
     this.set('inEditMode', false);
   },
 
-  doSave: function () {
-
+  doSave() {
     if (this.get('isDateType')) {
-      var d = Date.parse(this.get('date'));
+      const d = Date.parse(this.get('date'));
       if (isNaN(d) || d < 0) {
         this.content.set('value', null);
       } else {
@@ -501,9 +497,9 @@ FLOW.QuestionAnswerView = Ember.View.extend(observe({
     }
 
     if (this.get('isOptionType')) {
-      var responseArray = [];
-      this.get('selectedOptionValues').forEach(function(option){
-        var obj = {};
+      const responseArray = [];
+      this.get('selectedOptionValues').forEach((option) => {
+        const obj = {};
         if (option.get('code')) {
           obj.code = option.get('code');
         }
@@ -519,31 +515,30 @@ FLOW.QuestionAnswerView = Ember.View.extend(observe({
     }
     FLOW.store.commit();
     this.set('inEditMode', false);
-
   },
 
-  doValidateNumber: function () {
+  doValidateNumber() {
     // TODO should check for minus sign and decimal point, depending on question setting
-    this.set('numberValue', this.get('numberValue').toString().replace(/[^\d.]/g, ""));
+    this.set('numberValue', this.get('numberValue').toString().replace(/[^\d.]/g, ''));
   },
 
-  popupMedia: function () {
+  popupMedia() {
     if (this.get('photoUrl')) {
-      FLOW.dialogControl.set('activeAction', "ignore");
-      FLOW.dialogControl.set('header', "");
-      FLOW.dialogControl.set('message', Ember.String.htmlSafe("<img src=\""+this.get('photoUrl')+"\">"));
+      FLOW.dialogControl.set('activeAction', 'ignore');
+      FLOW.dialogControl.set('header', '');
+      FLOW.dialogControl.set('message', Ember.String.htmlSafe(`<img src="${this.get('photoUrl')}">`));
       FLOW.dialogControl.set('showCANCEL', false);
       FLOW.dialogControl.set('showDialog', true);
     }
-  }
+  },
 });
 
 FLOW.QuestionAnswerOptionListView = Ember.CollectionView.extend({
   tagName: 'ul',
   content: null,
   itemViewClass: Ember.View.extend({
-    template: Ember.Handlebars.compile("{{view.content.text}}")
-  })
+    template: Ember.Handlebars.compile('{{view.content.text}}'),
+  }),
 });
 
 /**
@@ -563,9 +558,9 @@ FLOW.QuestionAnswerMultiOptionEditView = Ember.CollectionView.extend({
   selection: null,
   itemViewClass: Ember.View.extend({
     template: Ember.Handlebars.compile('{{view Ember.Checkbox checkedBinding="view.isSelected"}} {{view.content.text}}'),
-    isSelected: Ember.computed(function(key, checked, previousValue) {
-      var selectedOptions = this.get('parentView').get('selection');
-      var newSelectedOptions = Ember.A();
+    isSelected: Ember.computed(function (key, checked) {
+      const selectedOptions = this.get('parentView').get('selection');
+      const newSelectedOptions = Ember.A();
 
       // setter
       if (arguments.length > 1) {
@@ -574,7 +569,7 @@ FLOW.QuestionAnswerMultiOptionEditView = Ember.CollectionView.extend({
         } else {
           selectedOptions.removeObject(this.content);
         }
-        selectedOptions.forEach(function(option){
+        selectedOptions.forEach((option) => {
           newSelectedOptions.push(option);
         });
 
@@ -586,14 +581,14 @@ FLOW.QuestionAnswerMultiOptionEditView = Ember.CollectionView.extend({
       // getter
       return selectedOptions && selectedOptions.contains(this.content);
     }).property('this.content'),
-  })
+  }),
 });
 
 FLOW.QuestionAnswerInspectDataView = FLOW.QuestionAnswerView.extend(template('navData/question-answer'));
 
 FLOW.QuestionAnswerMonitorDataView = FLOW.QuestionAnswerView.extend(template('navData/question-answer'), {
-  doEdit : function (){ //override the doEdit action in the parentView
+  doEdit() { // override the doEdit action in the parentView
     this._super();
-    this.set('inEditMode', false)
-  }
-})
+    this.set('inEditMode', false);
+  },
+});

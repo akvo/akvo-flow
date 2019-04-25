@@ -15,42 +15,41 @@ FLOW.CurrentDevicesTabView = Ember.View.extend(observe({
   selectedDeviceGroupForDelete: null,
 
   // bound to devices-list.handlebars
-  showAddToGroupDialog: function () {
+  showAddToGroupDialog() {
     this.set('selectedDeviceGroup', null);
     this.set('showAddToGroupDialogBool', true);
   },
 
-  showRemoveFromGroupDialog: function () {
+  showRemoveFromGroupDialog() {
     this.set('showRemoveFromGroupDialogBool', true);
   },
 
-  cancelAddToGroup: function () {
+  cancelAddToGroup() {
     this.set('showAddToGroupDialogBool', false);
   },
 
-  showManageDeviceGroupsDialog: function () {
+  showManageDeviceGroupsDialog() {
     this.set('newDeviceGroupName', null);
     this.set('changedDeviceGroupName', null);
     this.set('selectedDeviceGroup', null);
     this.set('showManageDeviceGroupsDialogBool', true);
   },
 
-  cancelManageDeviceGroups: function () {
+  cancelManageDeviceGroups() {
     this.set('showManageDeviceGroupsDialogBool', false);
   },
 
-  doAddToGroup: function () {
+  doAddToGroup() {
     if (this.get('selectedDeviceGroup') !== null) {
-      var selectedDeviceGroupId = this.selectedDeviceGroup.get('keyId');
-      var selectedDeviceGroupName = this.selectedDeviceGroup.get('code');
-      var selectedDevices = FLOW.store.filter(FLOW.Device, function (data) {
+      const selectedDeviceGroupId = this.selectedDeviceGroup.get('keyId');
+      const selectedDeviceGroupName = this.selectedDeviceGroup.get('code');
+      const selectedDevices = FLOW.store.filter(FLOW.Device, (data) => {
         if (data.get('isSelected') === true) {
           return true;
-        } else {
-          return false;
         }
+        return false;
       });
-      selectedDevices.forEach(function (item) {
+      selectedDevices.forEach((item) => {
         item.set('deviceGroupName', selectedDeviceGroupName);
         item.set('deviceGroup', selectedDeviceGroupId);
       });
@@ -60,15 +59,14 @@ FLOW.CurrentDevicesTabView = Ember.View.extend(observe({
   },
 
   // TODO repopulate list after update
-  doRemoveFromGroup: function () {
-    var selectedDevices = FLOW.store.filter(FLOW.Device, function (data) {
+  doRemoveFromGroup() {
+    const selectedDevices = FLOW.store.filter(FLOW.Device, (data) => {
       if (data.get('isSelected') === true) {
         return true;
-      } else {
-        return false;
       }
+      return false;
     });
-    selectedDevices.forEach(function (item) {
+    selectedDevices.forEach((item) => {
       item.set('deviceGroupName', null);
       item.set('deviceGroup', null);
     });
@@ -77,33 +75,30 @@ FLOW.CurrentDevicesTabView = Ember.View.extend(observe({
     this.set('showRemoveFromGroupDialogBool', false);
   },
 
-  cancelRemoveFromGroup: function () {
+  cancelRemoveFromGroup() {
     this.set('showRemoveFromGroupDialogBool', false);
   },
 
-  copyDeviceGroupName: function () {
+  copyDeviceGroupName() {
     if (this.get('selectedDeviceGroup') !== null) {
       this.set('changedDeviceGroupName', this.selectedDeviceGroup.get('code'));
     }
   },
 
   // TODO update device group name in tabel.
-  doManageDeviceGroups: function () {
-    var allDevices;
+  doManageDeviceGroups() {
     if (this.get('selectedDeviceGroup') !== null) {
-      var selectedDeviceGroupId = this.selectedDeviceGroup.get('keyId');
+      const selectedDeviceGroupId = this.selectedDeviceGroup.get('keyId');
 
       // this could have been changed in the UI
-      var originalSelectedDeviceGroup = FLOW.store.find(FLOW.DeviceGroup, selectedDeviceGroupId);
+      const originalSelectedDeviceGroup = FLOW.store.find(FLOW.DeviceGroup, selectedDeviceGroupId);
 
       if (originalSelectedDeviceGroup.get('code') != this.get('changedDeviceGroupName')) {
-        var newName = this.get('changedDeviceGroupName');
+        const newName = this.get('changedDeviceGroupName');
         originalSelectedDeviceGroup.set('code', newName);
 
-        allDevices = FLOW.store.filter(FLOW.Device, function (data) {
-          return true;
-        });
-        allDevices.forEach(function (item) {
+        const allDevices = FLOW.store.filter(FLOW.Device, () => true);
+        allDevices.forEach((item) => {
           if (parseInt(item.get('deviceGroup'), 10) == selectedDeviceGroupId) {
             item.set('deviceGroupName', newName);
           }
@@ -111,7 +106,7 @@ FLOW.CurrentDevicesTabView = Ember.View.extend(observe({
       }
     } else if (this.get('newDeviceGroupName') !== null) {
       FLOW.store.createRecord(FLOW.DeviceGroup, {
-        "code": this.get('newDeviceGroupName')
+        code: this.get('newDeviceGroupName'),
       });
     }
 
@@ -123,15 +118,11 @@ FLOW.CurrentDevicesTabView = Ember.View.extend(observe({
     this.set('showManageDeviceGroupsDialogBool', false);
   },
 
-  deleteDeviceGroup: function () {
-    var dgroup, devicesInGroup;
-    dgroup = this.get('selectedDeviceGroupForDelete');
+  deleteDeviceGroup() {
+    const dgroup = this.get('selectedDeviceGroupForDelete');
     if (dgroup !== null) {
-
-      devicesInGroup = FLOW.store.filter(FLOW.Device, function (item) {
-        return item.get('deviceGroup') == dgroup.get('keyId');
-      });
-      devicesInGroup.forEach(function (item) {
+      const devicesInGroup = FLOW.store.filter(FLOW.Device, item => item.get('deviceGroup') == dgroup.get('keyId'));
+      devicesInGroup.forEach((item) => {
         item.set('deviceGroupName', null);
         item.set('deviceGroup', null);
       });
@@ -142,7 +133,7 @@ FLOW.CurrentDevicesTabView = Ember.View.extend(observe({
       FLOW.store.commit();
     }
     this.set('showManageDeviceGroupsDialogBool', false);
-  }
+  },
 });
 
 
@@ -152,7 +143,7 @@ FLOW.SavingDeviceGroupView = FLOW.View.extend(observe({
 }), {
   showDGSavingDialogBool: false,
 
-  showDGSavingDialog: function () {
+  showDGSavingDialog() {
     if (FLOW.DeviceGroupControl.get('allRecordsSaved')) {
       this.set('showDGSavingDialogBool', false);
     } else {

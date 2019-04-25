@@ -1,9 +1,10 @@
 // ***********************************************//
 //                 models and stores
 // ***********************************************//
+import observe from '../mixins/observe';
+
 require('akvo-flow/core-common');
 require('akvo-flow/models/store_def-common');
-import observe from '../mixins/observe';
 
 FLOW.BaseModel = DS.Model.extend(observe({
   isSaving: 'anySaving',
@@ -17,7 +18,7 @@ FLOW.BaseModel = DS.Model.extend(observe({
   // so a saving message can be displayed. savingStatus is used to capture the
   // moment that nothing is being saved anymore, but in the previous event it was
   // so we can turn off the saving message.
-  anySaving: function () {
+  anySaving() {
     if (this.get('isSaving') || this.get('isDirty') || this.get('savingStatus')) {
       FLOW.savingMessageControl.checkSaving();
     }
@@ -26,118 +27,119 @@ FLOW.BaseModel = DS.Model.extend(observe({
 });
 
 FLOW.CaddisflyTestDefinition = Ember.Object.extend({
-    name: null,
-    multiParameter: null,
-    sample: null,
-    device: null,
-    brand: null,
-    model: null,
-    uuid: null,
-    results: [],
-    reagents: []
+  name: null,
+  multiParameter: null,
+  sample: null,
+  device: null,
+  brand: null,
+  model: null,
+  uuid: null,
+  results: [],
+  reagents: [],
 });
 
 FLOW.CascadeResource = FLOW.BaseModel.extend({
-	name: DS.attr('string', {
-	   defaultValue: ''
-	}),
-	version: DS.attr('number', {
-		defaultValue: 1
-	}),
-	numLevels: DS.attr('number', {
-		defaultValue: 1
-	}),
-	status: DS.attr('string', {
-		defaultValue: 'NOT_PUBLISHED'
-	}),
-	levelNames: DS.attr('array', {defaultValue: []
-	}),
+  name: DS.attr('string', {
+    defaultValue: '',
+  }),
+  version: DS.attr('number', {
+    defaultValue: 1,
+  }),
+  numLevels: DS.attr('number', {
+    defaultValue: 1,
+  }),
+  status: DS.attr('string', {
+    defaultValue: 'NOT_PUBLISHED',
+  }),
+  levelNames: DS.attr('array', { defaultValue: [] }),
 });
 
 FLOW.CascadeNode = FLOW.BaseModel.extend({
-	name: DS.attr('string', {
-	   defaultValue: ''
-	}),
-	code: DS.attr('string', {
-		defaultValue: ''
-	}),
-	parentNodeId: DS.attr('number', {
-		defaultValue: ''
-	}),
-	cascadeResourceId: DS.attr('number', {
-		defaultValue: ''
-	})
+  name: DS.attr('string', {
+    defaultValue: '',
+  }),
+  code: DS.attr('string', {
+    defaultValue: '',
+  }),
+  parentNodeId: DS.attr('number', {
+    defaultValue: '',
+  }),
+  cascadeResourceId: DS.attr('number', {
+    defaultValue: '',
+  }),
 });
 
 FLOW.SurveyGroup = FLOW.BaseModel.extend({
   description: DS.attr('string', {
-    defaultValue: ''
+    defaultValue: '',
   }),
   name: DS.attr('string', {
-    defaultValue: ''
+    defaultValue: '',
   }),
   path: DS.attr('string', {
-    defaultValue: null
+    defaultValue: null,
   }),
   ancestorIds: DS.attr('array', {
-    defaultValue: []
+    defaultValue: [],
   }),
   createdDateTime: DS.attr('string', {
-    defaultValue: ''
+    defaultValue: '',
   }),
   monitoringGroup: DS.attr('boolean', {
-    defaultValue: false
+    defaultValue: false,
   }),
   newLocaleSurveyId: DS.attr('number'),
   lastUpdateDateTime: DS.attr('string', {
-    defaultValue: ''
+    defaultValue: '',
   }),
   // the code field is used as name
   code: DS.attr('string', {
-    defaultValue: ''
+    defaultValue: '',
   }),
 
   parentId: DS.attr('number', {
-    defaultValue: null
+    defaultValue: null,
   }),
 
   projectType: DS.attr('string', {
-    defaultValue: "PROJECT"
+    defaultValue: 'PROJECT',
   }),
 
   privacyLevel: DS.attr('string', {
-    defaultValue: "PRIVATE"
+    defaultValue: 'PRIVATE',
   }),
 
   defaultLanguageCode: DS.attr('string', {
-    defaultValue: "en"
+    defaultValue: 'en',
   }),
 
   published: DS.attr('boolean', {
-    defaultValue: false
+    defaultValue: false,
   }),
 
   requireDataApproval: DS.attr('boolean', {
-      defaultValue: false
+    defaultValue: false,
   }),
 
   dataApprovalGroupId: DS.attr('number', {
-      defaultValue: null
+    defaultValue: null,
   }),
 
   surveyList: DS.attr('array', {
-    defaultValue: null
-  })
+    defaultValue: null,
+  }),
 
 });
 
 
 FLOW.Survey = FLOW.BaseModel.extend({
-  didLoad: function () {
+  didLoad() {
     // set the survey group name
-    var ancestorIds = this.get('ancestorIds'), sgId = this.get('surveyGroupId');
-    if (sgId && ancestorIds.length > 1) { //confirm form has at least the root and the parent survey as ancestors
-      var sg = FLOW.store.find(FLOW.SurveyGroup, sgId);
+    const ancestorIds = this.get('ancestorIds');
+    const sgId = this.get('surveyGroupId');
+    // confirm form has at least the root and the parent survey as ancestors
+    if (sgId && ancestorIds.length > 1) {
+      const sg = FLOW.store.find(FLOW.SurveyGroup, sgId);
       if (!Ember.empty(sg)) {
         this.set('surveyGroupName', sg.get('code'));
       }
@@ -162,15 +164,15 @@ FLOW.Survey = FLOW.BaseModel.extend({
   // This attribute is used for the 'Copy Survey' functionality
   // Most of the times is `null`
   sourceId: DS.attr('number', {
-    defaultValue: null
+    defaultValue: null,
   }),
 
   // used in the assignment edit page, not saved to backend
   surveyGroupName: null,
 
   allowEdit: Ember.computed(function () {
-	  return !this.get('isNew') && this.get('status') !== 'COPYING';
-  }).property('status', 'isNew')
+    return !this.get('isNew') && this.get('status') !== 'COPYING';
+  }).property('status', 'isNew'),
 
 });
 
@@ -183,11 +185,11 @@ FLOW.QuestionGroup = FLOW.BaseModel.extend({
   surveyId: DS.attr('number'),
   status: DS.attr('string'),
   sourceId: DS.attr('number', {
-    defaultValue: null
+    defaultValue: null,
   }),
   repeatable: DS.attr('boolean', {
-    defaultValue: false
-  })
+    defaultValue: false,
+  }),
 });
 
 
@@ -195,52 +197,52 @@ FLOW.Question = FLOW.BaseModel.extend({
   questionOptions: DS.hasMany('FLOW.QuestionOption'),
 
   allowDecimal: DS.attr('boolean', {
-    defaultValue: false
+    defaultValue: false,
   }),
   allowMultipleFlag: DS.attr('boolean', {
-    defaultValue: false
+    defaultValue: false,
   }),
   allowOtherFlag: DS.attr('boolean', {
-    defaultValue: false
+    defaultValue: false,
   }),
   localeNameFlag: DS.attr('boolean', {
-	    defaultValue: false
-	  }),
+    defaultValue: false,
+  }),
   localeLocationFlag: DS.attr('boolean', {
-		defaultValue: false
+    defaultValue: false,
   }),
   allowSign: DS.attr('boolean', {
-    defaultValue: false
+    defaultValue: false,
   }),
   geoLocked: DS.attr('boolean', {
-	    defaultValue: false
-	  }),
+    defaultValue: false,
+  }),
   requireDoubleEntry: DS.attr('boolean', {
-    defaultValue: false
+    defaultValue: false,
   }),
   collapseable: DS.attr('boolean', {
-    defaultValue: false
+    defaultValue: false,
   }),
   immutable: DS.attr('boolean', {
-    defaultValue: false
+    defaultValue: false,
   }),
   mandatoryFlag: DS.attr('boolean', {
-    defaultValue: true
+    defaultValue: true,
   }),
   dependentFlag: DS.attr('boolean', {
-    defaultValue: false
+    defaultValue: false,
   }),
   dependentQuestionAnswer: DS.attr('string'),
   dependentQuestionId: DS.attr('number'),
   maxVal: DS.attr('number', {
-    defaultValue: null
+    defaultValue: null,
   }),
   minVal: DS.attr('number', {
-    defaultValue: null
+    defaultValue: null,
   }),
   order: DS.attr('number'),
   cascadeResourceId: DS.attr('number'),
-  caddisflyResourceUuid:DS.attr('string'),
+  caddisflyResourceUuid: DS.attr('string'),
   path: DS.attr('string'),
   questionGroupId: DS.attr('number'),
   surveyId: DS.attr('number'),
@@ -249,26 +251,26 @@ FLOW.Question = FLOW.BaseModel.extend({
   text: DS.attr('string'),
   tip: DS.attr('string'),
   type: DS.attr('string', {
-	defaultValue: "FREE_TEXT"
+    defaultValue: 'FREE_TEXT',
   }),
   // This attribute is used for the 'Copy Survey' functionality
   // Most of the times is `null`
   sourceId: DS.attr('number', {
-	 defaultValue: null
+    defaultValue: null,
   }),
   allowExternalSources: DS.attr('boolean', {
-    defaultValue: false
+    defaultValue: false,
   }),
   // Geoshape question type options
   allowPoints: DS.attr('boolean', {
-    defaultValue: false
+    defaultValue: false,
   }),
   allowLine: DS.attr('boolean', {
-    defaultValue: false
+    defaultValue: false,
   }),
   allowPolygon: DS.attr('boolean', {
-    defaultValue: false
-  })
+    defaultValue: false,
+  }),
 });
 
 
@@ -283,50 +285,50 @@ FLOW.QuestionOption = FLOW.BaseModel.extend({
 
 FLOW.DeviceGroup = FLOW.BaseModel.extend({
   code: DS.attr('string', {
-    defaultValue: ''
-  })
+    defaultValue: '',
+  }),
 });
 
 FLOW.Device = FLOW.BaseModel.extend({
-  didLoad: function () {
-    var combinedName;
+  didLoad() {
+    let combinedName;
     if (Ember.empty(this.get('deviceIdentifier'))) {
-      combinedName = "no identifer";
+      combinedName = 'no identifer';
     } else {
       combinedName = this.get('deviceIdentifier');
     }
-    this.set('combinedName', combinedName + " " + this.get('phoneNumber'));
+    this.set('combinedName', `${combinedName} ${this.get('phoneNumber')}`);
   },
   esn: DS.attr('string', {
-    defaultValue: ''
+    defaultValue: '',
   }),
   phoneNumber: DS.attr('string', {
-    defaultValue: ''
+    defaultValue: '',
   }),
   deviceIdentifier: DS.attr('string', {
-    defaultValue: ''
+    defaultValue: '',
   }),
   gallatinSoftwareManifest: DS.attr('string'),
   lastKnownLat: DS.attr('number', {
-    defaultValue: 0
+    defaultValue: 0,
   }),
   lastKnownLon: DS.attr('number', {
-    defaultValue: 0
+    defaultValue: 0,
   }),
   lastKnownAccuracy: DS.attr('number', {
-    defaultValue: 0
+    defaultValue: 0,
   }),
   lastPositionDate: DS.attr('number', {
-    defaultValue: ''
+    defaultValue: '',
   }),
   deviceGroup: DS.attr('string', {
-    defaultValue: ''
+    defaultValue: '',
   }),
   deviceGroupName: DS.attr('string', {
-    defaultValue: ''
+    defaultValue: '',
   }),
   isSelected: false,
-  combinedName: null
+  combinedName: null,
 });
 
 FLOW.SurveyAssignment = FLOW.BaseModel.extend({
@@ -335,12 +337,12 @@ FLOW.SurveyAssignment = FLOW.BaseModel.extend({
   endDate: DS.attr('number'),
   devices: DS.attr('array'),
   surveys: DS.attr('array'),
-  language: DS.attr('string')
+  language: DS.attr('string'),
 });
 
 FLOW.SurveyedLocale = DS.Model.extend({
   description: DS.attr('string', {
-    defaultValue: ''
+    defaultValue: '',
   }),
   keyId: DS.attr('number'),
   latitude: DS.attr('number'),
@@ -349,16 +351,16 @@ FLOW.SurveyedLocale = DS.Model.extend({
   lastUpdateDateTime: DS.attr('number'),
   surveyGroupId: DS.attr('number'),
   identifier: DS.attr('string'),
-  primaryKey: 'keyId'
+  primaryKey: 'keyId',
 });
 
 FLOW.Placemark = FLOW.BaseModel.extend({
-	latitude: DS.attr('number'),
-	longitude: DS.attr('number'),
-	count: DS.attr('number'),
-	level: DS.attr('number'),
-	surveyId: DS.attr('number'),
-	collectionDate: DS.attr('number')
+  latitude: DS.attr('number'),
+  longitude: DS.attr('number'),
+  count: DS.attr('number'),
+  level: DS.attr('number'),
+  surveyId: DS.attr('number'),
+  collectionDate: DS.attr('number'),
 });
 
 FLOW.SurveyInstance = FLOW.BaseModel.extend({
@@ -366,13 +368,13 @@ FLOW.SurveyInstance = FLOW.BaseModel.extend({
   approximateLocationFlag: DS.attr('string'),
   surveyInstanceId: DS.attr('number'),
   surveyId: DS.attr('number'),
-  surveyedLocaleId:DS.attr('number'),
+  surveyedLocaleId: DS.attr('number'),
   collectionDate: DS.attr('number'),
   surveyCode: DS.attr('string'),
   submitterName: DS.attr('string'),
   deviceIdentifier: DS.attr('string'),
   surveyedLocaleIdentifier: DS.attr('string'),
-  surveyedLocaleDisplayName: DS.attr('string')
+  surveyedLocaleDisplayName: DS.attr('string'),
 });
 
 FLOW.QuestionAnswer = FLOW.BaseModel.extend({
@@ -383,63 +385,63 @@ FLOW.QuestionAnswer = FLOW.BaseModel.extend({
   collectionDate: DS.attr('number'),
   surveyInstanceId: DS.attr('number'),
   iteration: DS.attr('number'),
-  questionID: DS.attr('string'), //TODO should be number?
-  questionText: DS.attr('string')
+  questionID: DS.attr('string'), // TODO should be number?
+  questionText: DS.attr('string'),
 });
 
 FLOW.ApprovalGroup = FLOW.BaseModel.extend({
-    name: DS.attr('string'),
-    ordered: DS.attr('boolean'),
+  name: DS.attr('string'),
+  ordered: DS.attr('boolean'),
 });
 
 FLOW.ApprovalStep = FLOW.BaseModel.extend({
-    approvalGroupId: DS.attr('number'),
-    order: DS.attr('number'),
-    title: DS.attr('string'),
-    approverUserList: DS.attr('array', {
-        defaultValue: null
-    }),
+  approvalGroupId: DS.attr('number'),
+  order: DS.attr('number'),
+  title: DS.attr('string'),
+  approverUserList: DS.attr('array', {
+    defaultValue: null,
+  }),
 });
 
 FLOW.DataPointApproval = FLOW.BaseModel.extend({
-    surveyedLocaleId: DS.attr('number'),
+  surveyedLocaleId: DS.attr('number'),
 
-    approvalStepId: DS.attr('number'),
+  approvalStepId: DS.attr('number'),
 
-    approverUserName: DS.attr('string'),
+  approverUserName: DS.attr('string'),
 
-    approvalDate: DS.attr('number'),
+  approvalDate: DS.attr('number'),
 
-    status: DS.attr('string'),
+  status: DS.attr('string'),
 
-    comment: DS.attr('string'),
+  comment: DS.attr('string'),
 });
 
 FLOW.SurveyQuestionSummary = FLOW.BaseModel.extend({
   response: DS.attr('string'),
   count: DS.attr('number'),
   percentage: null,
-  questionId: DS.attr('string')
+  questionId: DS.attr('string'),
 });
 
 FLOW.User = FLOW.BaseModel.extend({
   userName: DS.attr('string'),
   emailAddress: DS.attr('string'),
   admin: DS.attr('boolean', {
-    defaultValue: 0
+    defaultValue: 0,
   }),
   superAdmin: DS.attr('boolean', {
-    defaultValue: 0
+    defaultValue: 0,
   }),
   permissionList: DS.attr('string'),
-  accessKey: DS.attr('string')
+  accessKey: DS.attr('string'),
 });
 
 FLOW.UserConfig = FLOW.BaseModel.extend({
   group: DS.attr('string'),
   name: DS.attr('string'),
   value: DS.attr('string'),
-  userId: DS.attr('number')
+  userId: DS.attr('number'),
 });
 
 FLOW.Message = FLOW.BaseModel.extend({
@@ -448,7 +450,7 @@ FLOW.Message = FLOW.BaseModel.extend({
   userName: DS.attr('string'),
   objectTitle: DS.attr('string'),
   actionAbout: DS.attr('string'),
-  shortMessage: DS.attr('string')
+  shortMessage: DS.attr('string'),
 });
 
 FLOW.Action = FLOW.BaseModel.extend({});
@@ -456,24 +458,31 @@ FLOW.Action = FLOW.BaseModel.extend({});
 FLOW.Translation = FLOW.BaseModel.extend(observe({
   'this.keyId': 'didCreateId',
 }), {
-  didUpdate: function () {
+  didUpdate() {
     FLOW.translationControl.putSingleTranslationInList(this.get('parentType'), this.get('parentId'), this.get('text'), this.get('keyId'), false);
   },
 
-  // can't use this at the moment, as the didCreate is fired before the id is back from the ajax call
+  // can't use this at the moment, as the didCreate is fired before the id is back from the
+  // ajax call
   // didCreate: function(){
   //   console.log('didCreate',this.get('keyId'));
-  //   FLOW.translationControl.putSingleTranslationInList(this.get('parentType'),this.get('parentId'),this.get('text'),this.get('keyId'), false);
+  // FLOW.translationControl.putSingleTranslationInList(
+  //   this.get('parentType'),
+  //   this.get('parentId'),
+  //   this.get('text'),
+  //   this.get('keyId'),
+  //   false
+  // );
   // },
 
   // temporary hack to fire the didCreate event after the keyId is known
-  didCreateId: function () {
+  didCreateId() {
     if (!Ember.none(this.get('keyId')) && this.get('keyId') > 0) {
       FLOW.translationControl.putSingleTranslationInList(this.get('parentType'), this.get('parentId'), this.get('text'), this.get('keyId'), false);
     }
   },
 
-  didDelete: function () {
+  didDelete() {
     FLOW.translationControl.putSingleTranslationInList(this.get('parentType'), this.get('parentId'), null, null, true);
   },
 
@@ -482,7 +491,7 @@ FLOW.Translation = FLOW.BaseModel.extend(observe({
   surveyId: DS.attr('string'),
   questionGroupId: DS.attr('string'),
   text: DS.attr('string'),
-  langCode: DS.attr('string')
+  langCode: DS.attr('string'),
 });
 
 
@@ -492,7 +501,7 @@ FLOW.NotificationSubscription = FLOW.BaseModel.extend({
   notificationMethod: DS.attr('string'),
   notificationType: DS.attr('string'),
   expiryDate: DS.attr('number'),
-  entityId: DS.attr('number')
+  entityId: DS.attr('number'),
 });
 
 FLOW.SubCountry = FLOW.BaseModel.extend({
@@ -500,13 +509,13 @@ FLOW.SubCountry = FLOW.BaseModel.extend({
   level: DS.attr('number'),
   name: DS.attr('string'),
   parentKey: DS.attr('number'),
-  parentName: DS.attr('string')
+  parentName: DS.attr('string'),
 });
 
 FLOW.Report = FLOW.BaseModel.extend({
-  reportType: DS.attr('string'), //DATA_CLEANING/COMPREHENSIVE/...
+  reportType: DS.attr('string'), // DATA_CLEANING/COMPREHENSIVE/...
   formId: DS.attr('number'),
-  state: DS.attr('string'), //QUEUED/IN_PROGRESS/FINISHED_SUCCESS/FINISHED_ERROR
+  state: DS.attr('string'), // QUEUED/IN_PROGRESS/FINISHED_SUCCESS/FINISHED_ERROR
   startDate: DS.attr('string'),
   endDate: DS.attr('string'),
   message: DS.attr('string'),
@@ -515,6 +524,6 @@ FLOW.Report = FLOW.BaseModel.extend({
   createdDateTime: DS.attr('number'),
   lastUpdateDateTime: DS.attr('number'),
   lastCollectionOnly: DS.attr('boolean', {
-    defaultValue: false
-  })
+    defaultValue: false,
+  }),
 });
