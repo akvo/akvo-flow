@@ -185,6 +185,8 @@ public class GraphicalSurveySummaryExporter extends SurveySummaryExporter {
     private List<String> questionIdList = new ArrayList<>();
     private List<String> unsummarizable = new ArrayList<>();
 
+    Map<String, CaddisflyResource> caddisflyResourceMap = null;
+
     //data about the data
     private int totalInstances = 0;
     private int approvedInstances = 0;
@@ -1385,7 +1387,6 @@ public class GraphicalSurveySummaryExporter extends SurveySummaryExporter {
     private int addCaddisflyDataHeaderColumns(QuestionDto q, Row row, final int originalOffset,
             final String variableName, final boolean useVariableName) {
         int offset = originalOffset;
-        Map<String, CaddisflyResource> caddisflyResourceMap = null;
         StringBuilder caddisflyFirstResultColumnHeaderPrefix = new StringBuilder();
         if (useVariableName) {
             caddisflyFirstResultColumnHeaderPrefix.append(variableName);
@@ -1394,7 +1395,7 @@ public class GraphicalSurveySummaryExporter extends SurveySummaryExporter {
         }
         caddisflyFirstResultColumnHeaderPrefix.append("|").append(q.getText()).append("|");
 
-        if (caddisflyResourceMap == null) {
+        if (caddisflyResourceMap == null) { //retrieve this only once
             caddisflyResourceMap = new HashMap<String, CaddisflyResource>();
             for (CaddisflyResource r : retrieveCaddisflyTestsDefinitions()) {
                 caddisflyResourceMap.put(r.getUuid().trim(), r);
@@ -1440,7 +1441,7 @@ public class GraphicalSurveySummaryExporter extends SurveySummaryExporter {
                 createHeaderCell(row, offset++, columnHeader);
             }
 
-            if (cr.getHasImage()) {
+            if (Boolean.TRUE.equals(cr.getHasImage())) {
                 createHeaderCell(
                         row,
                         offset++,
@@ -1451,7 +1452,7 @@ public class GraphicalSurveySummaryExporter extends SurveySummaryExporter {
 
             // store hasImage in hashmap
             resultIdMap.put(q.getKeyId(), resultIds);
-            hasImageMap.put(q.getKeyId(), cr.getHasImage());
+            hasImageMap.put(q.getKeyId(), Boolean.TRUE.equals(cr.getHasImage()));
         }
         return offset;
     }
