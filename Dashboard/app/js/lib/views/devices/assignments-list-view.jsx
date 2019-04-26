@@ -1,39 +1,30 @@
 import React from 'react';
-import dayjs from 'dayjs';
+
+import AssignmentsList from 'akvo-flow/components/devices/AssignmentsList';
+import observe from '../../mixins/observe';
 
 require('akvo-flow/views/react-component');
 
-FLOW.AssignmentsListView = FLOW.ReactComponentView.extend({
+FLOW.AssignmentsListView = FLOW.ReactComponentView.extend(observe({
+  'FLOW.surveyAssignmentControl.content': 'assignmentsList',
+}), {
   didInsertElement(...args) {
-    const self = this;
     this._super(...args);
-    //tmp solution because observe not working
-    let render = setInterval(() => {
-      if (FLOW.surveyAssignmentControl.content.isLoaded) {
-        self.assignmentsList();
-        clearInterval(render);
-      }
-    }, 500);
+    setTimeout(() => {
+      this.assignmentsList();
+    }, 1000);
   },
 
   assignmentsList () {
+    if (!FLOW.surveyAssignmentControl.content.isLoaded) return;
+
     const assignments = FLOW.surveyAssignmentControl.get('content');
+
     this.reactRender(
-      <div><div className="deviceControls">
-        <a className="btnOutline" onClick={() => this.editAssignment("new")} style={{float: 'right'}}>Create new assignment</a>
-      </div>
-      <div id="devicesListTable_length" className="dataTables_length"></div>
-      {!assignments.get('length') && (<div style={{marginTop: '40px'}}>No assignments</div>)}
-      {assignments.get('length') > 0 && (
-        <table className="dataTable"><tbody>{assignments.map(assignment => (
-          <tr key={assignment.get('keyId')}>
-            <td className="name">{assignment.get('name')}</td>
-            <td className="action"><a style={{cursor: 'pointer'}} onClick={() => this.editAssignment("edit", assignment)}>Edit</a></td>
-          </tr>
-        ))}</tbody></table>
-      )}
-      </div> //move styling to css
-      //<div style={{ visibility: 'hidden' }}>React {moment().seconds()}</div>
+      <AssignmentsList
+        assignments={assignments}
+        onEdit={this.editAssignment.bind(this)}
+      />
     );
   },
 
