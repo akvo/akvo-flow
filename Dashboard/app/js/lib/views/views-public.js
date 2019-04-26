@@ -1,15 +1,16 @@
 // ***********************************************//
 //                      Navigation views
 // ***********************************************//
-/*global tooltip, makePlaceholders */
+/* global tooltip */
+
+import template from '../mixins/template';
 
 require('akvo-flow/core-common');
 require('akvo-flow/views/maps/map-views-common-public');
-import template from '../mixins/template';
 
 FLOW.ApplicationView = Ember.View.extend(template('application/application-public'));
 
-FLOW.locale = function (i18nKey) {
+FLOW.locale = function () {
   return 'Ember.STRINGS._select_survey_group';
   // var i18nValue;
   // try {
@@ -25,8 +26,8 @@ FLOW.locale = function (i18nKey) {
 //                      Handlebar helpers
 // ***********************************************//
 // localisation helper
-Ember.Handlebars.registerHelper('t', function (i18nKey, options) {
-  var i18nValue;
+Ember.Handlebars.registerHelper('t', (i18nKey) => {
+  let i18nValue;
   try {
     i18nValue = Ember.String.loc(i18nKey);
   } catch (err) {
@@ -36,87 +37,51 @@ Ember.Handlebars.registerHelper('t', function (i18nKey, options) {
 });
 
 
-Ember.Handlebars.registerHelper('tooltip', function (i18nKey) {
-  var tooltip;
+Ember.Handlebars.registerHelper('tooltip', (i18nKey) => {
+  let tooltip;
   try {
     tooltip = Ember.String.loc(i18nKey);
   } catch (err) {
     tooltip = i18nKey;
   }
-  tooltip = Handlebars.Utils.escapeExpression(tooltip);
-  return new Handlebars.SafeString(
-    '<a href="#" class="helpIcon tooltip" title="' + tooltip + '">?</a>'
+  tooltip = Ember.Handlebars.Utils.escapeExpression(tooltip);
+  return new Ember.Handlebars.SafeString(
+    `<a href="#" class="helpIcon tooltip" title="${tooltip}">?</a>`
   );
 });
 
-FLOW.renderCaddisflyAnswer = function(json){
-  var name = ""
-  var imageUrl = ""
-  var result = Ember.A();
-  if (!Ember.empty(json)){
-      try {
-          var jsonParsed = JSON.parse(json);
+FLOW.renderCaddisflyAnswer = function (json) {
+  const name = '';
+  let imageUrl = '';
+  if (!Ember.empty(json)) {
+    try {
+      const jsonParsed = JSON.parse(json);
 
-          // get out image url
-          if (!Ember.empty(jsonParsed.image)){
-            imageUrl = FLOW.Env.photo_url_root + jsonParsed.image.trim();
-          }
-
-          // contruct html
-          var html = "<div><strong>" + name + "</strong></div>"
-          html += jsonParsed.result.map(function(item){
-                  return "<br><div>" + item.name + " : " + item.value + " " + item.unit + "</div>";
-              }).join("\n");
-          html += "<br>"
-          html += "<div class=\"signatureImage\"><img src=\"" + imageUrl +"\"}} /></div>"
-          return html;
-      } catch (e) {
-          return json;
+      // get out image url
+      if (!Ember.empty(jsonParsed.image)) {
+        imageUrl = FLOW.Env.photo_url_root + jsonParsed.image.trim();
       }
+
+      // contruct html
+      let html = `<div><strong>${name}</strong></div>`;
+      html += jsonParsed.result.map(item => `<br><div>${item.name} : ${item.value} ${item.unit}</div>`).join('\n');
+      html += '<br>';
+      html += `<div class="signatureImage"><img src="${imageUrl}"}} /></div>`;
+      return html;
+    } catch (e) {
+      return json;
+    }
   } else {
-    return "Wrong JSON format";
+    return 'Wrong JSON format';
   }
-}
-
-/*  Take a timestamp and render it as a date in format
-    YYYY-mm-dd */
-function renderTimeStamp(timestamp) {
-  var d, t, date, month, year, monthString, dateString;
-  t = parseInt(timestamp, 10);
-  if (isNaN(t)) {
-    return "";
-  }
-
-  d = new Date(t);
-  if (!d){
-	  return "";
-  }
-  date = d.getDate();
-  month = d.getMonth() + 1;
-  year = d.getFullYear();
-
-  if (month < 10) {
-    monthString = "0" + month.toString();
-  } else {
-    monthString = month.toString();
-  }
-
-  if (date < 10) {
-    dateString = "0" + date.toString();
-  } else {
-    dateString = date.toString();
-  }
-
-  return year + "-" + monthString + "-" + dateString;
-}
+};
 
 // translates values to labels for languages
 Ember.Handlebars.registerHelper('toLanguage', function (value) {
-  var label, valueLoc;
-  label = "";
-  valueLoc = Ember.get(this, value);
+  let label = '';
+  const valueLoc = Ember.get(this, value);
 
-  FLOW.languageControl.get('content').forEach(function (item) {
+  FLOW.languageControl.get('content').forEach((item) => {
     if (item.get('value') == valueLoc) {
       label = item.get('label');
     }
@@ -129,9 +94,9 @@ Ember.Handlebars.registerHelper('addSpace', function (property) {
   return Ember.get(this, property).replace(/\|/g, ' | ');
 });
 
-Ember.Handlebars.registerHelper("getServer", function () {
-  var loc = window.location.href,
-    pos = loc.indexOf("/admin");
+Ember.Handlebars.registerHelper('getServer', () => {
+  const loc = window.location.href;
+  const pos = loc.indexOf('/admin');
   return loc.substring(0, pos);
 });
 
@@ -152,46 +117,49 @@ FLOW.registerViewHelper('date2', Ember.View.extend({
   template: Ember.Handlebars.compile('{{view.formattedContent}}'),
 
   formattedContent: (function () {
-    var content, d, curr_date, curr_month, curr_year, curr_hour, curr_min, monthString, dateString, hourString, minString;
-    content = this.get('content');
+    let monthString;
+    let dateString;
+    let hourString;
+    let minString;
+    const content = this.get('content');
 
     if (content === null) {
-      return "";
+      return '';
     }
 
-    d = new Date(parseInt(content, 10));
-    curr_date = d.getDate();
-    curr_month = d.getMonth() + 1;
-    curr_year = d.getFullYear();
-    curr_hour = d.getHours();
-    curr_min = d.getMinutes();
+    const d = new Date(parseInt(content, 10));
+    const curr_date = d.getDate();
+    const curr_month = d.getMonth() + 1;
+    const curr_year = d.getFullYear();
+    const curr_hour = d.getHours();
+    const curr_min = d.getMinutes();
 
     if (curr_month < 10) {
-      monthString = "0" + curr_month.toString();
+      monthString = `0${curr_month.toString()}`;
     } else {
       monthString = curr_month.toString();
     }
 
     if (curr_date < 10) {
-      dateString = "0" + curr_date.toString();
+      dateString = `0${curr_date.toString()}`;
     } else {
       dateString = curr_date.toString();
     }
 
     if (curr_hour < 10) {
-      hourString = "0" + curr_hour.toString();
+      hourString = `0${curr_hour.toString()}`;
     } else {
       hourString = curr_hour.toString();
     }
 
     if (curr_min < 10) {
-      minString = "0" + curr_min.toString();
+      minString = `0${curr_min.toString()}`;
     } else {
       minString = curr_min.toString();
     }
 
-    return curr_year + "-" + monthString + "-" + dateString + "  " + hourString + ":" + minString;
-  }).property('content')
+    return `${curr_year}-${monthString}-${dateString}  ${hourString}:${minString}`;
+  }).property('content'),
 }));
 
 
@@ -203,14 +171,14 @@ FLOW.registerViewHelper('date2', Ember.View.extend({
 // one way could be use an extended copy of view, with the didInsertElement,
 // for some of the elements, and not for others.
 Ember.View.reopen({
-  didInsertElement: function () {
+  didInsertElement() {
     this._super();
     tooltip();
-  }
+  },
 });
 
 Ember.Select.reopen({
-  attributeBindings: ['size']
+  attributeBindings: ['size'],
 });
 
 FLOW.FooterView = FLOW.View.extend(template('application/footer-public'));

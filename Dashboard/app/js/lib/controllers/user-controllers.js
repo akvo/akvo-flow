@@ -5,35 +5,35 @@ FLOW.UserListController = Ember.ArrayController.extend({
   currentUser: null,
   dataCleaningPaths: null,
 
-  setFilteredContent: function () {
+  setFilteredContent() {
     this.set('content', FLOW.store.findAll(FLOW.User));
   },
 
   // load all Survey Groups
-  populate: function () {
+  populate() {
     this.setFilteredContent();
     this.set('sortProperties', ['userName']);
     this.set('sortAscending', true);
   },
 
-  getSortInfo: function () {
+  getSortInfo() {
     this.set('sortProperties', FLOW.tableColumnControl.get('sortProperties'));
     this.set('sortAscending', FLOW.tableColumnControl.get('sortAscending'));
     this.set('selected', FLOW.tableColumnControl.get('selected'));
   },
 
   /* return all the ancestor paths for a given path */
-  ancestorPaths: function(pathString) {
-    if(!pathString) {
-        return [];
+  ancestorPaths(pathString) {
+    if (!pathString) {
+      return [];
     }
 
-    var ancestors = [];
-    while(pathString) {
-        ancestors.push(pathString);
-        pathString = pathString.slice(0, pathString.lastIndexOf("/"));
+    const ancestors = [];
+    while (pathString) {
+      ancestors.push(pathString);
+      pathString = pathString.slice(0, pathString.lastIndexOf('/'));
     }
-    ancestors.push("/"); // add the root level folder to ancestors list
+    ancestors.push('/'); // add the root level folder to ancestors list
     return ancestors;
   },
 });

@@ -14,6 +14,5 @@ FLOW.ReactComponentView = Ember.View.extend({
   willDestroyElement() {
     this._super();
     this.unmountReactElement();
-  }
+  },
 });
-  
