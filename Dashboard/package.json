@@ -13,7 +13,7 @@
     "lodash": "^4.17.11",
     "react": "^16.8.4",
     "react-dom": "^16.8.4"
-  }, 
+  },
   "devDependencies": {
     "autoprefixer": "^9.4.9",
     "babel-cli": "^6.26.0",

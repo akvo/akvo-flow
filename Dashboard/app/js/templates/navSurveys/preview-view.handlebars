@@ -15,7 +15,7 @@
                     {{#if view.isOptionType}}
                        {{#each view.optionsList}}
                        <!-- FIXME this should be checkbuttons if Allow Multiple is true -->
-                          {{view Ember.RadioButton title=this.value option=this.value group="options" valueBinding="view.optionChoice"}} 
+                          {{view Ember.RadioButton title=this.value option=this.value group="options" valueBinding="view.optionChoice"}}
                         {{/each}}
                     {{else}}
                       {{#if view.isNumberType}}
