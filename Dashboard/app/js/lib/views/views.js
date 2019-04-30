@@ -691,27 +691,11 @@ FLOW.ChartReportsView = Ember.View.extend(template('navReports/chart-reports'));
 // resources views
 FLOW.NavResourcesView = Ember.View.extend(template('navResources/nav-resources'));
 
-// applets
-FLOW.rawDataReportApplet = Ember.View.extend(template('navReports/applets/raw-data-report-applet'));
-
-FLOW.comprehensiveReportApplet = Ember.View.extend(template('navReports/applets/comprehensive-report-applet'));
-
-FLOW.googleEarthFileApplet = Ember.View.extend(template('navReports/applets/google-earth-file-applet'));
-
-FLOW.surveyFormApplet = Ember.View.extend(template('navReports/applets/survey-form-applet'));
-
-FLOW.bulkImportApplet = Ember.View.extend(template('navData/applets/bulk-import-applet'));
-
-FLOW.rawDataImportApplet = Ember.View.extend(template('navData/applets/raw-data-import-applet'));
-
 // users views
 FLOW.NavUsersView = Ember.View.extend(template('navUsers/nav-users'));
 
 // Messages views
 FLOW.NavMessagesView = Ember.View.extend(template('navMessages/nav-messages'));
-
-// admin views
-FLOW.NavAdminView = FLOW.View.extend(template('navAdmin/nav-admin'));
 
 FLOW.HeaderView = FLOW.View.extend(template('application/header-common'));
 
