@@ -47,10 +47,6 @@ FLOW.Router = Ember.Router.extend({
     doNavMessages(router) {
       router.transitionTo('navMessages');
     },
-    // not used at the moment
-    doNavAdmin(router) {
-      router.transitionTo('navAdmin');
-    },
 
     // non-working code for transitioning to navHome at first entry of the app
     //    setup: function(router){
@@ -466,16 +462,6 @@ FLOW.Router = Ember.Router.extend({
         router.set('navigationController.selected', 'navMessages');
         FLOW.messageControl.populate();
         router.resetState();
-      },
-    }),
-
-    // ************************** ADMIN ROUTER **********************************
-    // not used at the moment
-    navAdmin: Ember.Route.extend({
-      route: '/admin',
-      connectOutlets(router) {
-        router.get('applicationController').connectOutlet('navAdmin');
-        router.set('navigationController.selected', 'navAdmin');
       },
     }),
   }),
