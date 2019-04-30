@@ -11,9 +11,13 @@ FLOW.AssignmentsListView = FLOW.ReactComponentView.extend(observe({
 }), {
   didInsertElement(...args) {
     this._super(...args);
-    setTimeout(() => {
-      this.assignmentsList();
-    }, 1000);
+    const self = this;
+    const interval = setInterval(() => {
+      if (FLOW.surveyAssignmentControl.content.isLoaded) {
+        self.assignmentsList();
+        clearInterval(interval);
+      }
+    }, 500);
   },
 
   assignmentsList () {
