@@ -57,13 +57,7 @@ FLOW.ExportReportTypeView = Ember.View.extend(observe({
   'this.reportToDate': 'setMaxDate',
   'FLOW.selectedControl.selectedSurvey': 'watchSurveySelection',
 }), {
-  showRawDataReportApplet: false,
-  showComprehensiveReportApplet: false,
-  showGoogleEarthFileApplet: false,
-  showSurveyFormApplet: false,
   showComprehensiveDialog: false,
-  showRawDataImportApplet: false,
-  showGoogleEarthButton: false,
   reportFromDate: undefined,
   reportToDate: undefined,
   dateRangeDisabled: false,
