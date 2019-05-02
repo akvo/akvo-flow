@@ -548,6 +548,7 @@ FLOW.registerViewHelper('date2', Ember.View.extend({
 FLOW.NavigationView = Ember.View.extend(template('application/navigation'), {
   selectedBinding: 'controller.selected',
 
+  showDevicesButton: Ember.computed(() => FLOW.permControl.get('canManageDevices')).property(),
   showMapsButton: Ember.computed(() => FLOW.Env.showMapsTab).property('FLOW.Env.showMapsTab'),
 
   NavItemView: Ember.View.extend({
@@ -561,8 +562,6 @@ FLOW.NavigationView = Ember.View.extend(template('application/navigation'), {
     isActive: Ember.computed(function () {
       return this.get('item') === this.get('parentView.selected');
     }).property('item', 'parentView.selected').cacheable(),
-
-    showDevicesButton: Ember.computed(() => FLOW.permControl.get('canManageDevices')).property(),
 
     eventManager: Ember.Object.create({
       click() {
