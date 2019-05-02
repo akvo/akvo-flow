@@ -6,16 +6,21 @@ import observe from '../../mixins/observe';
 require('akvo-flow/views/react-component');
 
 FLOW.AssignmentsListView = FLOW.ReactComponentView.extend(observe({
-  'FLOW.surveyAssignmentControl.content': 'assignmentsList',
+  'FLOW.surveyAssignmentControl.content.isLoaded': 'assignmentsList',
+  'FLOW.surveyAssignmentControl.content.length': 'assignmentsList',
 }), {
-  didInsertElement(...args) {
-    this._super(...args);
-    setTimeout(() => {
-      this.assignmentsList();
-    }, 1000);
+  init() {
+    this._super();
+    this.assignmentsList = this.assignmentsList.bind(this);
+    this.assignmentEdit = this.assignmentEdit.bind(this);
   },
 
-  assignmentsList () {
+  didInsertElement(...args) {
+    this._super(...args);
+    this.assignmentsList();
+  },
+
+  assignmentsList() {
     if (!FLOW.surveyAssignmentControl.content.isLoaded) return;
 
     const assignments = FLOW.surveyAssignmentControl.get('content');
@@ -23,30 +28,40 @@ FLOW.AssignmentsListView = FLOW.ReactComponentView.extend(observe({
     this.reactRender(
       <AssignmentsList
         assignments={assignments}
-        onEdit={this.editAssignment.bind(this)}
+        onEdit={this.assignmentEdit}
       />
     );
   },
 
-  editAssignment (action, assignment) {
-    var self = this;
+  assignmentEdit(action, assignment) {
     this.reactRender(
       <div>
         <div className="deviceControls">
-          <a className="btnOutline" onClick={() => self.assignmentsList()} style={{float: 'left'}}>back</a>{/* TODO: button should reload assignments*/}
-          <label style={{float: 'left'}}>{action == "edit" ? assignment.get('name') : "new ass"}</label>
-          <a className="btnOutline" style={{float: 'right'}}>save</a>
+          <a
+            className="btnOutline"
+            onClick={this.assignmentsList}
+            style={{ float: 'left' }}
+          >
+            back
+          </a>
+          {/* TODO: button should reload assignments */}
+          <label style={{ float: 'left' }}>
+            {action == 'edit' ? assignment.get('name') : 'new ass'}
+          </label>
+          <a className="btnOutline" style={{ float: 'right' }}>
+            save
+          </a>
         </div>
-        <div id="devicesListTable_length" className="dataTables_length"></div>
-        <div style={{marginTop: '40px'}}>
+        <div id="devicesListTable_length" className="dataTables_length" />
+        <div style={{ marginTop: '40px' }}>
           <div>duration</div>
-          <div>{/*should cascade*/}
+          <div>
+            {/* should cascade */}
             folder/survey selectors
           </div>
           <div>forms list</div>
         </div>
       </div>
     );
-    //alert(action+" "+assignment.get("name"));
-  }
+  },
 });
