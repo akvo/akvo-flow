@@ -447,6 +447,15 @@ FLOW.reportFilename = function (url) {
   return url.split('/').pop().replace(/\s/g, '');
 };
 
+FLOW.hasPermission = function (permission) {
+  const currentUserPermissions = FLOW.currentUser.get('pathPermissions');
+  return Object.keys(currentUserPermissions).reduce(
+    (alreadyHasPermission, permissionKey) => alreadyHasPermission
+    || currentUserPermissions[permissionKey].indexOf(permission) > -1,
+    false
+  );
+};
+
 Ember.Handlebars.registerHelper('getServer', () => {
   const loc = window.location.href;
   const pos = loc.indexOf('/admin');
