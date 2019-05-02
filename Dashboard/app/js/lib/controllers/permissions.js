@@ -76,45 +76,13 @@ FLOW.permControl = Ember.Controller.create({
     return permissions && permissions.indexOf('DATA_UPDATE') > -1;
   },
 
-  canManageDevices: Ember.computed(() => {
-    const currentUserPermissions = FLOW.currentUser.get('pathPermissions');
-    Object.keys(currentUserPermissions).forEach((perms) => {
-      if (currentUserPermissions[perms].indexOf('DEVICE_MANAGE') > -1) {
-        return true;
-      }
-    });
-    return false;
-  }).property(),
+  canManageDevices: Ember.computed(() => FLOW.hasPermission('DEVICE_MANAGE')).property(),
 
-  canManageCascadeResources: Ember.computed(() => {
-    const currentUserPermissions = FLOW.currentUser.get('pathPermissions');
-    Object.keys(currentUserPermissions).forEach((perms) => {
-      if (currentUserPermissions[perms].indexOf('CASCADE_MANAGE') > -1) {
-        return true;
-      }
-    });
-    return false;
-  }).property(),
+  canManageCascadeResources: Ember.computed(() => FLOW.hasPermission('CASCADE_MANAGE')).property(),
 
-  canCleanData: Ember.computed(() => {
-    const currentUserPermissions = FLOW.currentUser.get('pathPermissions');
-    Object.keys(currentUserPermissions).forEach((perms) => {
-      if (currentUserPermissions[perms].indexOf('DATA_CLEANING') > -1) {
-        return true;
-      }
-    });
-    return false;
-  }).property(),
+  canCleanData: Ember.computed(() => FLOW.hasPermission('DATA_CLEANING')).property(),
 
-  canManageDataAppoval: Ember.computed(() => {
-    const currentUserPermissions = FLOW.currentUser.get('pathPermissions');
-    Object.keys(currentUserPermissions).forEach((perms) => {
-      if (currentUserPermissions[perms].indexOf('DATA_APPROVE_MANAGE') > -1) {
-        return true;
-      }
-    });
-    return false;
-  }).property(),
+  canManageDataAppoval: Ember.computed(() => FLOW.hasPermission('DATA_APPROVE_MANAGE')).property(),
 
   userCanViewData(entity) {
     let permissions;

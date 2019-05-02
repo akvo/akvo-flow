@@ -447,6 +447,15 @@ FLOW.reportFilename = function (url) {
   return url.split('/').pop().replace(/\s/g, '');
 };
 
+FLOW.hasPermission = function (permission) {
+  const currentUserPermissions = FLOW.currentUser.get('pathPermissions');
+  return Object.keys(currentUserPermissions).reduce(
+    (alreadyHasPermission, permissionKey) => alreadyHasPermission
+    || currentUserPermissions[permissionKey].indexOf(permission) > -1,
+    false
+  );
+};
+
 Ember.Handlebars.registerHelper('getServer', () => {
   const loc = window.location.href;
   const pos = loc.indexOf('/admin');
@@ -539,6 +548,7 @@ FLOW.registerViewHelper('date2', Ember.View.extend({
 FLOW.NavigationView = Ember.View.extend(template('application/navigation'), {
   selectedBinding: 'controller.selected',
 
+  showDevicesButton: Ember.computed(() => FLOW.permControl.get('canManageDevices')).property(),
   showMapsButton: Ember.computed(() => FLOW.Env.showMapsTab).property('FLOW.Env.showMapsTab'),
 
   NavItemView: Ember.View.extend({
@@ -552,8 +562,6 @@ FLOW.NavigationView = Ember.View.extend(template('application/navigation'), {
     isActive: Ember.computed(function () {
       return this.get('item') === this.get('parentView.selected');
     }).property('item', 'parentView.selected').cacheable(),
-
-    showDevicesButton: Ember.computed(() => FLOW.permControl.get('canManageDevices')).property(),
 
     eventManager: Ember.Object.create({
       click() {
