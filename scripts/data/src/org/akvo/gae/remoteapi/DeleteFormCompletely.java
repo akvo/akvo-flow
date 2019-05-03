@@ -33,17 +33,16 @@ import com.google.appengine.api.datastore.Query;
 import com.google.appengine.api.datastore.Query.FilterOperator;
 
 /*
- * - Find duplicated SurveyedLocales
+ * - Delete a form with all it's groups, questions and options
  */
 public class DeleteFormCompletely implements Process {
-
-    boolean doit = false;
-    final List<Key> toBeRemoved = new ArrayList<>();
 
     @Override
     public void execute(DatastoreService ds, String[] args) throws Exception {
 
+        boolean doit = false;
         Long surveyId = null;
+        final List<Key> toBeRemoved = new ArrayList<>();
 
         for (int i = 0; i < args.length; i++) {
             //System.out.printf("#Argument %d: %s\n", i, args[i]);
@@ -81,8 +80,8 @@ public class DeleteFormCompletely implements Process {
             toBeRemoved.add(qg.getKey());
         }
 
-        final Query q2 = new Query("Question").setFilter(new Query.FilterPredicate("surveyId", FilterOperator.EQUAL, surveyId));
-        final PreparedQuery pq2 = ds.prepare(q2);
+        final Query query2 = new Query("Question").setFilter(new Query.FilterPredicate("surveyId", FilterOperator.EQUAL, surveyId));
+        final PreparedQuery pq2 = ds.prepare(query2);
 
         for (Entity q : pq2.asIterable(FetchOptions.Builder.withChunkSize(500))) {
             if ("OPTION".equals(q.getProperty("type"))) {
@@ -99,7 +98,7 @@ public class DeleteFormCompletely implements Process {
             System.out.println("Not deleting " + toBeRemoved.size() + " entities.");
         }
 
-        //Assignments
+        //Assignments are not deleted, just modified
         removeFormFromAssignments(ds, surveyId, doit);
     }
 

@@ -37,13 +37,12 @@ import com.google.appengine.api.datastore.Query.FilterOperator;
  */
 public class DeleteSurveyIfEmpty implements Process {
 
-    boolean doit = false;
-    final List<Key> toBeRemoved = new ArrayList<>();
-
     @Override
     public void execute(DatastoreService ds, String[] args) throws Exception {
 
         Long surveyId = null;
+        boolean doit = false;
+        final List<Key> toBeRemoved = new ArrayList<>();
 
         for (int i = 0; i < args.length; i++) {
             //System.out.printf("#Argument %d: %s\n", i, args[i]);
