@@ -1017,10 +1017,11 @@ public class RawDataSpreadsheetImporter implements DataImporter {
         //Each sheet should have a "Metadata" header, and on the next row, column headers
         //Verify that this is a 2017-style report w group headers and rqg's on separate sheets
         if (!safeCellCompare(sheet, 0, 0, METADATA_LABEL)) {
-            errorMap.put(0, "First header cell must contain '" + METADATA_LABEL + "'");
+            errorMap.put(0, "First header cell on each sheet must contain '" + METADATA_LABEL + "'");
             return 0;
         }
 
+        int questionCount = 0;
         final int headerRowIndex = 1; //Always, now
         Row headerRow = sheet.getRow(headerRowIndex);
         int firstQuestionColumnIndex = -1;
@@ -1044,8 +1045,11 @@ public class RawDataSpreadsheetImporter implements DataImporter {
             if (!isEmptyCell(cell)) {
                 lastNonemptyHeaderColumnIndex = cell.getColumnIndex();
             }
-            if (firstQuestionColumnIndex == -1 && cellValue.matches("[0-9]+\\|.+")) {
-                firstQuestionColumnIndex = cell.getColumnIndex();
+            if (cellValue.matches("[0-9]+\\|.+")) {
+                questionCount++;
+                if (firstQuestionColumnIndex == -1) {
+                    firstQuestionColumnIndex = cell.getColumnIndex();
+                }
             }
         }
 
@@ -1080,11 +1084,11 @@ public class RawDataSpreadsheetImporter implements DataImporter {
         if (!checkCol(index, DURATION_COLUMN_KEY)) {
             errorMap.put(-1, "Column header '" + DURATION_LABEL + "' missing on sheet " + name);
         }
-        if (!isBaseSheet && !checkCol(index, REPEAT_LABEL)) {
+        if (!isBaseSheet && !checkCol(index, REPEAT_COLUMN_KEY)) {
             errorMap.put(-1, "Column header '" + REPEAT_LABEL + "' missing on sheet " + name);
         }
 
-        return 0;
+        return questionCount;
     }
 
     /*
