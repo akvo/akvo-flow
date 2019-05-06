@@ -1007,20 +1007,22 @@ public class RawDataSpreadsheetImporter implements DataImporter {
                 urlString, shouldSign, key);
     }
 
-    //Returns number of questions found
+    /**
+     * @param sheet
+     * @param isBaseSheet
+     * @param errorMap
+     * @return number of questions columns found
+     */
     private int validateSheet(Sheet sheet, boolean isBaseSheet, Map<Integer, String> errorMap) {
         //Each sheet should have a "Metadata" header, and on the next row, column headers
-        //Find out if this is a 2017-style report w group headers and rqg's on separate sheets
-        boolean splitSheets = safeCellCompare(sheet, 0, 0, METADATA_LABEL);
-        if (!splitSheets) {
+        //Verify that this is a 2017-style report w group headers and rqg's on separate sheets
+        if (!safeCellCompare(sheet, 0, 0, METADATA_LABEL)) {
             errorMap.put(0, "First header cell must contain '" + METADATA_LABEL + "'");
             return 0;
         }
 
-        int headerRowIndex = splitSheets ? 1 : 0;
-
+        final int headerRowIndex = 1; //Always, now
         Row headerRow = sheet.getRow(headerRowIndex);
-        boolean firstQuestionFound = false;
         int firstQuestionColumnIndex = -1;
         int lastNonemptyHeaderColumnIndex = 0;
 
@@ -1042,13 +1044,12 @@ public class RawDataSpreadsheetImporter implements DataImporter {
             if (!isEmptyCell(cell)) {
                 lastNonemptyHeaderColumnIndex = cell.getColumnIndex();
             }
-            if (!firstQuestionFound && cellValue.matches("[0-9]+\\|.+")) {
-                firstQuestionFound = true;
+            if (firstQuestionColumnIndex == -1 && cellValue.matches("[0-9]+\\|.+")) {
                 firstQuestionColumnIndex = cell.getColumnIndex();
             }
         }
 
-        if (!firstQuestionFound && errorMap.isEmpty()) {
+        if (firstQuestionColumnIndex == -1 && errorMap.isEmpty()) {
             //May be NO answers on base sheet if all groups are repeatable
             firstQuestionColumnIndex = lastNonemptyHeaderColumnIndex + 1;
         }
@@ -1056,7 +1057,7 @@ public class RawDataSpreadsheetImporter implements DataImporter {
         String name = sheet.getSheetName();
         log.info("Sheet '" + name + "' first question column index: " + firstQuestionColumnIndex);
 
-        //Check that all manadatory metadata columns exist
+        //Check that all mandatory metadata columns exist
         //TODO: we might relax the set on group sheets
         Map<String, Integer> index = getMetadataColumnIndex(sheet,
                 firstQuestionColumnIndex,
@@ -1102,7 +1103,8 @@ public class RawDataSpreadsheetImporter implements DataImporter {
             for (int i = 0; i < wb.getNumberOfSheets(); i++) {
                 Sheet sheet = wb.getSheetAt(i);
                 String name = sheet.getSheetName();
-                if (RAW_DATA_SHEET_LABEL.equals(name)) { //TODO OR just I==0??
+                if (i == 0) { //TODO OR just I==0??
+                //TODO possible variant:   if (RAW_DATA_SHEET_LABEL.equals(name)) {
                     questions += validateSheet(sheet, true, errorMap);
                 } else
                 if (name != null && name.matches(GROUP_DATA_SHEET_PATTERN)) {
@@ -1110,7 +1112,7 @@ public class RawDataSpreadsheetImporter implements DataImporter {
                 } else {
                     //TODO Error or not?
                     errorMap.put(-1, "Sheet name '" + name + "' not valid for import.");
-                    log.info("Sheet '" + name + "' not validated for import.");
+                    log.info("Sheet '" + name + "' not valid for import.");
                 }
             }
             if (questions == 0) {
@@ -1164,17 +1166,12 @@ public class RawDataSpreadsheetImporter implements DataImporter {
             return true; // phantom row
         }
         // maybe cells are all blank/contain only spaces?
-        boolean blank = true;
         for (int ix = row.getFirstCellNum(); ix < row.getLastCellNum(); ix++) {
             if (!isEmptyCell(row.getCell(ix))) {
-                blank = false;
-                break;
+                return false;
             }
         }
-        if (blank) {
-            return true;
-        }
-        return false;
+        return true;
     }
 
     /**
