@@ -68,11 +68,6 @@ public class RawDataSpreadsheetImporter implements DataImporter {
     private BlockingQueue<Runnable> jobQueue;
     private List<String> errorIds;
     private static final FlowJsonObjectWriter JSON_OBJECT_WRITER = new FlowJsonObjectWriter();
-    private static final int LEGACY_MONITORING_FORMAT = 6;
-    private static final int MONITORING_FORMAT_WITH_DEVICE_ID_COLUMN = 7;
-    private static final int MONITORING_FORMAT_WITH_REPEAT_COLUMN = 8;
-    private static final int MONITORING_FORMAT_WITH_APPROVAL_COLUMN = 9;
-    private static final int MONITORING_FORMAT_WITH_FORM_VERSION = 10;
 
     private boolean otherValuesInSeparateColumns = false; //until we find one
 
@@ -139,7 +134,7 @@ public class RawDataSpreadsheetImporter implements DataImporter {
             for (int i = 0; i < wb.getNumberOfSheets(); i++) {
                 Sheet sheet = wb.getSheetAt(i);
                 String sn = sheet.getSheetName();
-                if (i == 0 || sn.startsWith("Group ")) {
+                if (i == 0 || sn != null && sn.matches(GROUP_DATA_SHEET_PATTERN)) {
                     sheetMap.put(sheet, processHeader(sheet, headerRowIndex));
                     otherValuesInSeparateColumns |= separatedOtherValues(sheet, headerRowIndex);
                 }
@@ -241,7 +236,7 @@ public class RawDataSpreadsheetImporter implements DataImporter {
 
         //these are all for the base sheet
         Map<Integer, Long> columnIndexToQuestionId = sheetMap.get(baseSheet);
-        int firstQuestionColumnIndex = 0;
+        int firstQuestionColumnIndex = -1;
         if (columnIndexToQuestionId.isEmpty()) { //Nothing but metadata
             firstQuestionColumnIndex = md5Column;
         } else {
@@ -1012,6 +1007,85 @@ public class RawDataSpreadsheetImporter implements DataImporter {
                 urlString, shouldSign, key);
     }
 
+    //Returns number of questions found
+    private int validateSheet(Sheet sheet, boolean isBaseSheet, Map<Integer, String> errorMap) {
+        //Each sheet should have a "Metadata" header, and on the next row, column headers
+        //Find out if this is a 2017-style report w group headers and rqg's on separate sheets
+        boolean splitSheets = safeCellCompare(sheet, 0, 0, METADATA_LABEL);
+        if (!splitSheets) {
+            errorMap.put(0, "First header cell must contain '" + METADATA_LABEL + "'");
+            return 0;
+        }
+
+        int headerRowIndex = splitSheets ? 1 : 0;
+
+        Row headerRow = sheet.getRow(headerRowIndex);
+        boolean firstQuestionFound = false;
+        int firstQuestionColumnIndex = -1;
+        int lastNonemptyHeaderColumnIndex = 0;
+
+        for (Cell cell : headerRow) {
+            String cellValue = cell.getStringCellValue();
+            // if encountering a null cell make sure its only due to phantom cells at the end of
+            // the row. If null or empty cell occurs in middle of header row report an error
+            if (isEmptyCell(cell) && nonEmptyHeaderCellsAfter(cell)) {
+                errorMap.put(
+                        cell.getColumnIndex(),
+                        String.format(
+                                "Cannot import data from Column %s - \"%s\". Please check and/or fix the header cell",
+                                CellReference.convertNumToColString(cell.getColumnIndex()),
+                                cellValue));
+
+                break;
+            }
+
+            if (!isEmptyCell(cell)) {
+                lastNonemptyHeaderColumnIndex = cell.getColumnIndex();
+            }
+            if (!firstQuestionFound && cellValue.matches("[0-9]+\\|.+")) {
+                firstQuestionFound = true;
+                firstQuestionColumnIndex = cell.getColumnIndex();
+            }
+        }
+
+        if (!firstQuestionFound && errorMap.isEmpty()) {
+            //May be NO answers on base sheet if all groups are repeatable
+            firstQuestionColumnIndex = lastNonemptyHeaderColumnIndex + 1;
+        }
+
+        String name = sheet.getSheetName();
+        log.info("Sheet '" + name + "' first question column index: " + firstQuestionColumnIndex);
+
+        //Check that all manadatory metadata columns exist
+        //TODO: we might relax the set on group sheets
+        Map<String, Integer> index = getMetadataColumnIndex(sheet,
+                firstQuestionColumnIndex,
+                headerRowIndex);
+        if (!checkCol(index, DATAPOINT_IDENTIFIER_COLUMN_KEY)) {
+            errorMap.put(-1, "Column header '" + IDENTIFIER_LABEL + "' missing on sheet " + name);
+        }
+        if (!checkCol(index, DATAPOINT_NAME_COLUMN_KEY)) {
+            errorMap.put(-1, "Column header '" + DISPLAY_NAME_LABEL + "' missing on sheet " + name);
+        }
+        if (!checkCol(index, SURVEY_INSTANCE_COLUMN_KEY)) {
+            errorMap.put(-1, "Column header '" + INSTANCE_LABEL + "' missing on sheet " + name);
+        }
+        if (!checkCol(index, COLLECTION_DATE_COLUMN_KEY)) {
+            errorMap.put(-1, "Column header '" + SUB_DATE_LABEL + "' missing on sheet " + name);
+        }
+        if (!checkCol(index, SUBMITTER_COLUMN_KEY)) {
+            errorMap.put(-1, "Column header '" + SUBMITTER_LABEL + "' missing on sheet " + name);
+        }
+        if (!checkCol(index, DURATION_COLUMN_KEY)) {
+            errorMap.put(-1, "Column header '" + DURATION_LABEL + "' missing on sheet " + name);
+        }
+        if (!isBaseSheet && !checkCol(index, REPEAT_LABEL)) {
+            errorMap.put(-1, "Column header '" + REPEAT_LABEL + "' missing on sheet " + name);
+        }
+
+        return 0;
+    }
+
     /*
      * validate
      * Called from Clojure code before executeImport()
@@ -1021,83 +1095,27 @@ public class RawDataSpreadsheetImporter implements DataImporter {
         Map<Integer, String> errorMap = new HashMap<Integer, String>();
 
         try {
-            Sheet sheet = getDataSheet(file);
+            Workbook wb = getDataSheet(file).getWorkbook();
 
-            //Find out if this is a 2017-style report w group headers and rqg's on separate sheets
-            boolean splitSheets = safeCellCompare(sheet, 0, 0, METADATA_LABEL);
-            if (!splitSheets) {
-                errorMap.put(0, "First header cell must contain '" + METADATA_LABEL + "'");
-                return errorMap;
-            }
-
-            int headerRowIndex = splitSheets ? 1 : 0;
-
-            Row headerRow = sheet.getRow(headerRowIndex);
-            boolean firstQuestionFound = false;
-            int firstNonheaderColumnIndex = 0;
-            int lastNonemptyHeaderColumnIndex = 0;
-
-            for (Cell cell : headerRow) {
-                String cellValue = cell.getStringCellValue();
-                // if encountering a null cell make sure its only due to phantom cells at the end of
-                // the row. If null or empty cell occurs in middle of header row report an error
-                if (isEmptyCell(cell) && nonEmptyHeaderCellsAfter(cell)) {
-                    errorMap.put(
-                            cell.getColumnIndex(),
-                            String.format(
-                                    "Cannot import data from Column %s - \"%s\". Please check and/or fix the header cell",
-                                    CellReference.convertNumToColString(cell.getColumnIndex()),
-                                    cellValue));
-
-                    break;
-                }
-
-                if (!isEmptyCell(cell)) {
-                    lastNonemptyHeaderColumnIndex = cell.getColumnIndex();
-                }
-                if (!firstQuestionFound && cellValue.matches("[0-9]+\\|.+")) {
-                    firstQuestionFound = true;
-                    firstNonheaderColumnIndex = cell.getColumnIndex();
-                }
-            }
-
-            if (!firstQuestionFound && errorMap.isEmpty()) {
-                //May be NO answers on base sheet if all groups are repeatable
-                firstNonheaderColumnIndex = lastNonemptyHeaderColumnIndex + 1;
-            }
-            log.info("Importing report with first question column index: "
-                    + firstNonheaderColumnIndex);
-
-            Workbook wb = sheet.getWorkbook();
-
-            //check that all mandatory columns exist on all sheets
+            //check each sheet in turn
+            int questions = 0;
             for (int i = 0; i < wb.getNumberOfSheets(); i++) {
-                sheet = wb.getSheetAt(i);
-                Map<String, Integer> index = getMetadataColumnIndex(sheet,
-                        firstNonheaderColumnIndex,
-                        headerRowIndex);
-                if (!checkCol(index, DATAPOINT_IDENTIFIER_COLUMN_KEY)) {
-                    errorMap.put(-1, "Column header '" + IDENTIFIER_LABEL + "' missing on sheet " + i);
+                Sheet sheet = wb.getSheetAt(i);
+                String name = sheet.getSheetName();
+                if (RAW_DATA_SHEET_LABEL.equals(name)) { //TODO OR just I==0??
+                    questions += validateSheet(sheet, true, errorMap);
+                } else
+                if (name != null && name.matches(GROUP_DATA_SHEET_PATTERN)) {
+                    questions += validateSheet(sheet, false, errorMap);
+                } else {
+                    //TODO Error or not?
+                    errorMap.put(-1, "Sheet name '" + name + "' not valid for import.");
+                    log.info("Sheet '" + name + "' not validated for import.");
                 }
-                if (!checkCol(index, DATAPOINT_NAME_COLUMN_KEY)) {
-                    errorMap.put(-1, "Column header '" + DISPLAY_NAME_LABEL + "' missing on sheet " + i);
-                }
-                if (!checkCol(index, SURVEY_INSTANCE_COLUMN_KEY)) {
-                    errorMap.put(-1, "Column header '" + INSTANCE_LABEL + "' missing on sheet " + i);
-                }
-                if (!checkCol(index, COLLECTION_DATE_COLUMN_KEY)) {
-                    errorMap.put(-1, "Column header '" + SUB_DATE_LABEL + "' missing on sheet " + i);
-                }
-                if (!checkCol(index, SUBMITTER_COLUMN_KEY)) {
-                    errorMap.put(-1, "Column header '" + SUBMITTER_LABEL + "' missing on sheet " + i);
-                }
-                if (!checkCol(index, DURATION_COLUMN_KEY)) {
-                    errorMap.put(-1, "Column header '" + DURATION_LABEL + "' missing on sheet " + i);
-                }
-                if (i > 0 && !checkCol(index, REPEAT_LABEL)) {
-                    errorMap.put(-1, "Column header '" + REPEAT_LABEL + "' missing on sheet " + i);
-                }
-                i++;
+            }
+            if (questions == 0) {
+                //“Judge a man by his questions rather than by his answers." -- Voltaire
+                errorMap.put(-1, "No question columns found on any sheet.");
             }
 
         } catch (Exception e) {
