@@ -9,15 +9,16 @@ FLOW.ArrNoDupe = function (a) {
   for (let i = 0; i < a.length; i++) {
     templ[a.objectAt(i).clientId] = true;
   }
-  Object.keys(templ).forEach((item) => {
+  const keys = Object.keys(templ);
+  for (let j = 0; j < keys.length; j++) {
     gotIt = false;
     for (let i = 0; i < a.length; i++) {
-      if (a.objectAt(i).clientId == item && !gotIt) {
+      if (a.objectAt(i).clientId == keys[j] && !gotIt) {
         tempa.pushObject(a.objectAt(i));
         gotIt = true;
       }
     }
-  });
+  }
   return tempa;
 };
 

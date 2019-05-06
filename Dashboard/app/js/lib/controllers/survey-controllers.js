@@ -235,10 +235,11 @@ FLOW.projectControl = Ember.ArrayController.create({
   dataCleaningEnabled(surveyGroup) {
     const permissions = FLOW.currentUser.get('pathPermissions');
 
-    Object.keys(permissions).forEach((key) => {
-      if (permissions[key].indexOf('DATA_CLEANING') > -1) {
+    const keys = Object.keys(permissions);
+    for (let i = 0; i < keys.length; i++) {
+      if (permissions[keys[i]].indexOf('DATA_CLEANING') > -1) {
         // check key against survey group
-        if (surveyGroup.get('keyId') === +key) {
+        if (surveyGroup.get('keyId') === +keys[i]) {
           return true;
         }
 
@@ -247,8 +248,8 @@ FLOW.projectControl = Ember.ArrayController.create({
         if (ancestorIds === null) {
           return false;
         }
-        for (let i = 0; i < ancestorIds.length; i++) {
-          if (ancestorIds[i] === +key) {
+        for (let j = 0; j < ancestorIds.length; j++) {
+          if (ancestorIds[j] === +keys[i]) {
             return true;
           }
         }
@@ -256,7 +257,7 @@ FLOW.projectControl = Ember.ArrayController.create({
 
         // finally check for all descendents that may have surveyGroup.keyId in their
         // ancestor list otherwise will not be able to browse to them.
-        const keyedSurvey = FLOW.store.find(FLOW.SurveyGroup, key);
+        const keyedSurvey = FLOW.store.find(FLOW.SurveyGroup, keys[i]);
         if (keyedSurvey) {
           const keyedAncestorIds = keyedSurvey.get('ancestorIds');
           if (keyedAncestorIds === null) {
@@ -269,7 +270,7 @@ FLOW.projectControl = Ember.ArrayController.create({
           }
         }
       }
-    });
+    }
 
     return false;
   },
@@ -1355,13 +1356,14 @@ FLOW.translationControl = Ember.ArrayController.create(observe({
 
   createIsoLangs() {
     const tempArray = [];
-    Object.keys(FLOW.isoLanguagesDict).forEach((key) => {
+    const keys = Object.keys(FLOW.isoLanguagesDict);
+    for (let i = 0; i < keys.length; i++) {
       tempArray.push(Ember.Object.create({
-        value: key,
-        labelShort: FLOW.isoLanguagesDict[key].nativeName,
-        labelLong: `${FLOW.isoLanguagesDict[key].nativeName} - ${FLOW.isoLanguagesDict[key].name}`,
+        value: keys[i],
+        labelShort: FLOW.isoLanguagesDict[keys[i]].nativeName,
+        labelLong: `${FLOW.isoLanguagesDict[keys[i]].nativeName} - ${FLOW.isoLanguagesDict[keys[i]].name}`,
       }));
-    });
+    }
     this.set('isoLangs', tempArray);
   },
 
@@ -1479,12 +1481,13 @@ FLOW.translationControl = Ember.ArrayController.create(observe({
         tempDict[item.get('langCode')] = item.get('langCode');
       }
     });
-    Object.keys(tempDict).forEach((key) => {
+    const keys = Object.keys(tempDict);
+    for (let i = 0; i < keys.length; i++) {
       this.translations.pushObject(Ember.Object.create({
-        value: key,
-        label: FLOW.isoLanguagesDict[key].name,
+        value: keys[i],
+        label: FLOW.isoLanguagesDict[keys[i]].name,
       }));
-    });
+    }
   },
 
   cancelAddTranslation() {
