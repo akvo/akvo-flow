@@ -83,7 +83,7 @@ public class RawDataSpreadsheetImporter implements DataImporter {
     public static final String FORM_VER_COLUMN_KEY = "formVersion";
 
     public static final String NEW_DATA_PATTERN = "^[Nn]ew-\\d+"; // new- or New- followed by one or more digits
-
+    public static final String VALID_QUESTION_HEADER_PATTERN = "[0-9]+\\|.+"; //digits followed by a vertical bar
 
     /**
      * opens a file input stream using the file passed in and tries to return the first worksheet in
@@ -134,7 +134,7 @@ public class RawDataSpreadsheetImporter implements DataImporter {
             for (int i = 0; i < wb.getNumberOfSheets(); i++) {
                 Sheet sheet = wb.getSheetAt(i);
                 String sn = sheet.getSheetName();
-                if (i == 0 || sn != null && sn.matches(GROUP_DATA_SHEET_PATTERN)) {
+                if (i == 0 || sn != null && sn.matches(GROUP_DATA_SHEET_PATTERN)) { //Assume base sheet is 0
                     sheetMap.put(sheet, processHeader(sheet, headerRowIndex));
                     otherValuesInSeparateColumns |= separatedOtherValues(sheet, headerRowIndex);
                 }
@@ -145,7 +145,7 @@ public class RawDataSpreadsheetImporter implements DataImporter {
             Map<Long, List<QuestionOptionDto>> optionNodes = fetchOptionNodes(serverBase,
                     criteria, questionIdToQuestionDto.values());
 
-            List<InstanceData> instanceDataList = parseSplitSheets(wb.getSheetAt(0),
+            List<InstanceData> instanceDataList = parseSplitSheets(wb.getSheetAt(0), //Assume base sheet is 0
                     sheetMap,
                     questionIdToQuestionDto,
                     optionNodes,
@@ -1045,7 +1045,7 @@ public class RawDataSpreadsheetImporter implements DataImporter {
             if (!isEmptyCell(cell)) {
                 lastNonemptyHeaderColumnIndex = cell.getColumnIndex();
             }
-            if (cellValue.matches("[0-9]+\\|.+")) {
+            if (cellValue.matches(VALID_QUESTION_HEADER_PATTERN)) {
                 questionCount++;
                 if (firstQuestionColumnIndex == -1) {
                     firstQuestionColumnIndex = cell.getColumnIndex();
@@ -1107,16 +1107,17 @@ public class RawDataSpreadsheetImporter implements DataImporter {
             for (int i = 0; i < wb.getNumberOfSheets(); i++) {
                 Sheet sheet = wb.getSheetAt(i);
                 String name = sheet.getSheetName();
-                if (i == 0) { //TODO OR just I==0??
-                //TODO possible variant:   if (RAW_DATA_SHEET_LABEL.equals(name)) {
-                    questions += validateSheet(sheet, true, errorMap);
-                } else
-                if (name != null && name.matches(GROUP_DATA_SHEET_PATTERN)) {
+                if (i == 0) {
+                    if (RAW_DATA_SHEET_LABEL.equals(name)) {
+                        questions += validateSheet(sheet, true, errorMap);
+                    } else {
+                        errorMap.put(-1, "First sheet must be named '" + RAW_DATA_SHEET_LABEL + "'.");
+                    }
+                } else if (name != null && name.matches(GROUP_DATA_SHEET_PATTERN)) {
                     questions += validateSheet(sheet, false, errorMap);
                 } else {
-                    //TODO Error or not?
-                    errorMap.put(-1, "Sheet name '" + name + "' not valid for import.");
-                    log.info("Sheet '" + name + "' not valid for import.");
+                    //Not an error; just ignore
+                    log.info("Sheet '" + name + "' not validated for import.");
                 }
             }
             if (questions == 0) {
