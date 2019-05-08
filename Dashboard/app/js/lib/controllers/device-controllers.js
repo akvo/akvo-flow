@@ -37,14 +37,6 @@ FLOW.deviceControl = Ember.ArrayController.create({
     this.set('sortAscending', false);
   },
 
-  allAreSelected: Ember.computed(function (key, value) {
-    if (arguments.length === 2) {
-      this.setEach('isSelected', value);
-      return value;
-    }
-    return !this.get('isEmpty') && this.everyProperty('isSelected', true);
-  }).property('@each.isSelected'),
-
   atLeastOneSelected: Ember.computed(function () {
     return this.filterProperty('isSelected', true).get('length');
   }).property('@each.isSelected'),

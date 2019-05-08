@@ -1,5 +1,15 @@
 # Akvo Flow Release Notes
 ----
+# Akvo Flow Dashboard v1.9.46 - Squishy Squash
+Date: 06-05-2019
+
+# Resolved issues
+* **Devices** - Disable selecting all devices [#3051]
+* **Code cleanup** - Remove unused applet code[#3073]
+* **Webpack** - Enable linting [#3015]. Completely remove ruby build [#3035]
+* **Caddisfly** - Use correct caddisfly definition file [#3077]
+* **Data cleaning** - Change row at which data points begin data cleaning file[#3020]
+
 # Akvo Flow Dashboard v1.9.45 - Radiant Raspberry
 Date: 10-04-2019
 
