@@ -99,7 +99,7 @@ public class RawDataSpreadsheetImporter implements DataImporter {
         try {
             stream = new PushbackInputStream(new FileInputStream(file));
             wb = WorkbookFactory.create(stream);
-            return wb.getSheetAt(0);
+            return wb.getSheetAt(0); //Assumes raw data sheet is first
         } catch (Exception e) {
             log.error("Workbook creation exception:" + e);
         }
@@ -1070,22 +1070,22 @@ public class RawDataSpreadsheetImporter implements DataImporter {
             errorMap.put(-1, "Column header '" + IDENTIFIER_LABEL + "' missing on sheet " + name);
         }
         if (!checkCol(index, DATAPOINT_NAME_COLUMN_KEY)) {
-            errorMap.put(-1, "Column header '" + DISPLAY_NAME_LABEL + "' missing on sheet " + name);
+            errorMap.put(-2, "Column header '" + DISPLAY_NAME_LABEL + "' missing on sheet " + name);
         }
         if (!checkCol(index, SURVEY_INSTANCE_COLUMN_KEY)) {
-            errorMap.put(-1, "Column header '" + INSTANCE_LABEL + "' missing on sheet " + name);
+            errorMap.put(-3, "Column header '" + INSTANCE_LABEL + "' missing on sheet " + name);
         }
         if (!checkCol(index, COLLECTION_DATE_COLUMN_KEY)) {
-            errorMap.put(-1, "Column header '" + SUB_DATE_LABEL + "' missing on sheet " + name);
+            errorMap.put(-4, "Column header '" + SUB_DATE_LABEL + "' missing on sheet " + name);
         }
         if (!checkCol(index, SUBMITTER_COLUMN_KEY)) {
-            errorMap.put(-1, "Column header '" + SUBMITTER_LABEL + "' missing on sheet " + name);
+            errorMap.put(-5, "Column header '" + SUBMITTER_LABEL + "' missing on sheet " + name);
         }
         if (!checkCol(index, DURATION_COLUMN_KEY)) {
-            errorMap.put(-1, "Column header '" + DURATION_LABEL + "' missing on sheet " + name);
+            errorMap.put(-6, "Column header '" + DURATION_LABEL + "' missing on sheet " + name);
         }
         if (!isBaseSheet && !checkCol(index, REPEAT_COLUMN_KEY)) {
-            errorMap.put(-1, "Column header '" + REPEAT_LABEL + "' missing on sheet " + name);
+            errorMap.put(-7, "Column header '" + REPEAT_LABEL + "' missing on sheet " + name);
         }
 
         return questionCount;
@@ -1111,7 +1111,7 @@ public class RawDataSpreadsheetImporter implements DataImporter {
                     if (RAW_DATA_SHEET_LABEL.equals(name)) {
                         questions += validateSheet(sheet, true, errorMap);
                     } else {
-                        errorMap.put(-1, "First sheet must be named '" + RAW_DATA_SHEET_LABEL + "'.");
+                        errorMap.put(-12, "First sheet must be named '" + RAW_DATA_SHEET_LABEL + "'.");
                     }
                 } else if (name != null && name.matches(GROUP_DATA_SHEET_PATTERN)) {
                     questions += validateSheet(sheet, false, errorMap);
@@ -1122,11 +1122,11 @@ public class RawDataSpreadsheetImporter implements DataImporter {
             }
             if (questions == 0) {
                 //“Judge a man by his questions rather than by his answers." -- Voltaire
-                errorMap.put(-1, "No question columns found on any sheet.");
+                errorMap.put(-11, "No question columns found on any sheet.");
             }
 
         } catch (Exception e) {
-            errorMap.put(-1, e.getMessage());
+            errorMap.put(-10, e.getMessage());
         }
 
         return errorMap;
