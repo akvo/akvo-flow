@@ -7,26 +7,24 @@ FLOW.SurveyBootstrap = FLOW.View.extend({
   dbInstructions: '',
   notificationEmail: '',
 
-  init: function () {
+  init() {
     this._super();
     FLOW.selectedControl.set('selectedSurveys', null);
   },
 
-  selectAllSurveys: function () {
-	var selected = FLOW.surveyControl.get('content').filter(function (item) {
-	  return item.get('status') === "PUBLISHED";
-    });
-	FLOW.selectedControl.set('selectedSurveys', selected);
+  selectAllSurveys() {
+    const selected = FLOW.surveyControl.get('content').filter(item => item.get('status') === 'PUBLISHED');
+    FLOW.selectedControl.set('selectedSurveys', selected);
   },
 
-  deselectAllSurveys: function () {
+  deselectAllSurveys() {
     FLOW.selectedControl.set('selectedSurveys', []);
   },
 
-  addSelectedSurveys: function () {
-    var sgName = FLOW.selectedControl.selectedSurveyGroup.get('code');
+  addSelectedSurveys() {
+    const sgName = FLOW.selectedControl.selectedSurveyGroup.get('code');
 
-    FLOW.selectedControl.get('selectedSurveys').forEach(function (item) {
+    FLOW.selectedControl.get('selectedSurveys').forEach((item) => {
       item.set('surveyGroupName', sgName);
     });
 
@@ -35,11 +33,10 @@ FLOW.SurveyBootstrap = FLOW.View.extend({
     this.set('surveysPreview', FLOW.ArrNoDupe(this.get('surveysPreview')));
   },
 
-  removeSingleSurvey: function (event) {
-    var id, surveysPreview, i;
-    id = event.context.get('clientId');
-    surveysPreview = this.get('surveysPreview');
-    for (i = 0; i < surveysPreview.length; i++) {
+  removeSingleSurvey(event) {
+    const id = event.context.get('clientId');
+    const surveysPreview = this.get('surveysPreview');
+    for (let i = 0; i < surveysPreview.length; i++) {
       if (surveysPreview.objectAt(i).clientId == id) {
         surveysPreview.removeAt(i);
       }
@@ -47,13 +44,11 @@ FLOW.SurveyBootstrap = FLOW.View.extend({
     this.set('surveysPreview', surveysPreview);
   },
 
-  removeAllSurveys: function () {
+  removeAllSurveys() {
     this.set('surveysPreview', Ember.A([]));
   },
 
-  sendSurveys: function () {
-    var surveyIds, payload;
-
+  sendSurveys() {
     if (this.get('surveysPreview').length === 0 && !this.get('includeDBInstructions')) {
       this.showMessage(Ember.String.loc('_survey_or_db_instructions_required'));
       return;
@@ -69,14 +64,14 @@ FLOW.SurveyBootstrap = FLOW.View.extend({
       return;
     }
 
-    payload = {
+    const payload = {
       action: 'generateBootstrapFile',
-      email: this.get('notificationEmail')
+      email: this.get('notificationEmail'),
     };
 
-    surveyIds = [];
+    const surveyIds = [];
 
-    this.get('surveysPreview').forEach(function (item) {
+    this.get('surveysPreview').forEach((item) => {
       surveyIds.push(item.get('keyId'));
     });
 
@@ -91,7 +86,7 @@ FLOW.SurveyBootstrap = FLOW.View.extend({
     this.reset();
   },
 
-  showMessage: function (msg) {
+  showMessage(msg) {
     FLOW.dialogControl.set('activeAction', 'ignore');
     FLOW.dialogControl.set('header', Ember.String.loc('_manual_survey_transfer'));
     FLOW.dialogControl.set('message', msg);
@@ -99,11 +94,11 @@ FLOW.SurveyBootstrap = FLOW.View.extend({
     FLOW.dialogControl.set('showDialog', true);
   },
 
-  reset: function () {
+  reset() {
     this.removeAllSurveys();
     this.deselectAllSurveys();
     this.set('dbInstructions', '');
     this.set('includeDBInstructions', false);
     this.set('notificationEmail', '');
-  }
+  },
 });

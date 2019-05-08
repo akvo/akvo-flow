@@ -3,22 +3,20 @@ FLOW.UserListView = FLOW.View.extend({
   showEditUserBool: false,
   showManageApiKeysBool: false,
 
-  showAddUserDialog: function () {
-    var userPerm;
+  showAddUserDialog() {
     FLOW.editControl.set('newUserName', null);
     FLOW.editControl.set('newEmailAddress', null);
 
-    userPerm = FLOW.permissionLevelControl.find(function (item) {
-      return item.value == 20; // USER
-    });
+    const userPerm = FLOW.permissionLevelControl.find(item => item.value == 20); // USER
+
     FLOW.editControl.set('newPermissionLevel', userPerm);
 
     this.set('showAddUserBool', true);
   },
 
-  doAddUser: function () {
-    var value = null,
-      superAdmin = false;
+  doAddUser() {
+    let value = null;
+    let superAdmin = false;
     if (FLOW.editControl.newPermissionLevel !== null) {
       value = FLOW.editControl.newPermissionLevel.value;
     } else {
@@ -31,9 +29,9 @@ FLOW.UserListView = FLOW.View.extend({
     }
 
     FLOW.store.createRecord(FLOW.User, {
-      "userName": FLOW.editControl.get('newUserName'),
-      "emailAddress": Ember.$.trim(FLOW.editControl.get('newEmailAddress').toLowerCase()),
-      "permissionList": value
+      userName: FLOW.editControl.get('newUserName'),
+      emailAddress: Ember.$.trim(FLOW.editControl.get('newEmailAddress').toLowerCase()),
+      permissionList: value,
     });
 
     FLOW.store.commit();
@@ -42,30 +40,27 @@ FLOW.UserListView = FLOW.View.extend({
     if (superAdmin) {
       this.showRoleWarning();
     }
-
   },
 
-  cancelAddUser: function () {
+  cancelAddUser() {
     this.set('showAddUserBool', false);
   },
 
-  showEditUserDialog: function (event) {
-    var permission = null;
+  showEditUserDialog(event) {
+    let permission = null;
     FLOW.editControl.set('editUserName', event.context.get('userName'));
     FLOW.editControl.set('editEmailAddress', event.context.get('emailAddress'));
     FLOW.editControl.set('editUserId', event.context.get('keyId'));
 
-    permission = FLOW.permissionLevelControl.find(function (item) {
-      return item.value == event.context.get('permissionList');
-    });
+    permission = FLOW.permissionLevelControl.find(item => item.value == event.context.get('permissionList'));
 
     FLOW.editControl.set('editPermissionLevel', permission);
     this.set('showEditUserBool', true);
   },
 
-  doEditUser: function () {
-    var user, superAdmin = false;
-    user = FLOW.store.find(FLOW.User, FLOW.editControl.get('editUserId'));
+  doEditUser() {
+    let superAdmin = false;
+    const user = FLOW.store.find(FLOW.User, FLOW.editControl.get('editUserId'));
     user.set('userName', FLOW.editControl.get('editUserName'));
     user.set('emailAddress', Ember.$.trim(FLOW.editControl.get('editEmailAddress').toLowerCase()));
 
@@ -86,11 +81,11 @@ FLOW.UserListView = FLOW.View.extend({
     }
   },
 
-  cancelEditUser: function () {
+  cancelEditUser() {
     this.set('showEditUserBool', false);
   },
 
-  showRoleWarning: function () {
+  showRoleWarning() {
     FLOW.dialogControl.set('activeAction', 'ignore');
     FLOW.dialogControl.set('header', Ember.String.loc('_manage_users_and_user_rights'));
     FLOW.dialogControl.set('message', Ember.String.loc('_cant_set_superadmin'));
@@ -98,24 +93,23 @@ FLOW.UserListView = FLOW.View.extend({
     FLOW.dialogControl.set('showDialog', true);
   },
 
-  showManageApiKeysDialog: function (event) {
+  showManageApiKeysDialog(event) {
     FLOW.editControl.set('manageAccessKey', event.context.get('accessKey'));
     FLOW.editControl.set('showSecret', false);
     FLOW.editControl.set('manageApiUserId', event.context.get('keyId'));
     this.set('showManageApiKeysBool', true);
   },
 
-  doGenerateNewApiKey: function (event) {
-
-    var userId = FLOW.editControl.get('manageApiUserId');
+  doGenerateNewApiKey() {
+    const userId = FLOW.editControl.get('manageApiUserId');
 
     $.ajax({
-      url: '/rest/users/' + userId + '/apikeys',
+      url: `/rest/users/${userId}/apikeys`,
       type: 'POST',
-      success: function(data) {
-        var user = FLOW.store.find(FLOW.User, userId);
-        var accessKey = data.apikeys.accessKey;
-        var secret = data.apikeys.secret;
+      success(data) {
+        const user = FLOW.store.find(FLOW.User, userId);
+        const { accessKey } = data.apikeys;
+        const { secret } = data.apikeys;
 
         user.set('accessKey', accessKey);
 
@@ -123,48 +117,46 @@ FLOW.UserListView = FLOW.View.extend({
         FLOW.editControl.set('manageSecret', secret);
         FLOW.editControl.set('showSecret', true);
       },
-      error: function() {
+      error() {
         console.error('Could not create apikeys');
-      }
+      },
     });
   },
 
-  doRevokeApiKey: function(event) {
-
-    var userId = FLOW.editControl.get('manageApiUserId');
+  doRevokeApiKey() {
+    const userId = FLOW.editControl.get('manageApiUserId');
 
     $.ajax({
-      url: '/rest/users/' + userId + '/apikeys',
+      url: `/rest/users/${userId}/apikeys`,
       type: 'DELETE',
-      success: function(data) {
-        var user = FLOW.store.find(FLOW.User, userId);
+      success() {
+        const user = FLOW.store.find(FLOW.User, userId);
         user.set('accessKey', null);
 
         FLOW.editControl.set('manageAccessKey', null);
         FLOW.editControl.set('manageSecret', null);
         FLOW.editControl.set('showSecret', false);
       },
-      error: function() {
-        console.error('Could not delete apikeys.')
-      }
+      error() {
+        console.error('Could not delete apikeys.');
+      },
     });
   },
 
-  cancelManageApiKeys: function() {
+  cancelManageApiKeys() {
     this.set('showManageApiKeysBool', false);
-  }
+  },
 });
 
 FLOW.UserView = FLOW.View.extend({
   tagName: 'span',
-  deleteUser: function () {
-    var user;
-    user = FLOW.store.find(FLOW.User, this.content.get('keyId'));
+  deleteUser() {
+    const user = FLOW.store.find(FLOW.User, this.content.get('keyId'));
     if (user !== null) {
       user.deleteRecord();
       FLOW.store.commit();
     }
-  }
+  },
 });
 
 FLOW.SingleUserView = FLOW.View.extend({
@@ -172,8 +164,8 @@ FLOW.SingleUserView = FLOW.View.extend({
   permissionLevel: null,
   roleLabel: null,
 
-  init: function () {
-    var role = null;
+  init() {
+    let role = null;
     this._super();
 
     role = FLOW.permissionLevelControl.find(function (item) {
@@ -188,5 +180,5 @@ FLOW.SingleUserView = FLOW.View.extend({
       this.set('roleLabel', role.label);
       this.set('roleClass', Ember.String.camelize(role.label));
     }
-  }
+  },
 });

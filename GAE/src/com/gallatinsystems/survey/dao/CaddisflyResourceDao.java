@@ -33,7 +33,7 @@ import org.waterforpeople.mapping.domain.CaddisflyResource;
  */
 public class CaddisflyResourceDao {
 
-    public static String DEFAULT_CADDISFLY_TESTS_FILE_URL = "https://akvoflow-public.s3.amazonaws.com/caddisfly-tests.json";
+    public static String DEFAULT_CADDISFLY_TESTS_FILE_URL = "https://akvoflow-public.s3.amazonaws.com/caddisfly-tests-v2.json";
 
     private static final Logger log = Logger.getLogger(CascadeResourceDao.class
             .getName());
