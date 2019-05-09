@@ -45,6 +45,7 @@ import org.waterforpeople.mapping.app.web.rest.dto.RestStatusDto;
 import org.waterforpeople.mapping.dao.QuestionAnswerStoreDao;
 import org.waterforpeople.mapping.dao.SurveyInstanceDAO;
 import org.waterforpeople.mapping.domain.QuestionAnswerStore;
+import org.waterforpeople.mapping.domain.SurveyInstance;
 import org.waterforpeople.mapping.serialization.response.MediaResponse;
 
 import com.gallatinsystems.common.Constants;
@@ -290,21 +291,8 @@ public class QuestionAnswerRestService {
                             });
                     qa = questionAnswerStoreDao.save(qa);
 
-                    // next, update the corresponding surveyalValue object
-                    // find surveyalValue based on surveyInstanceId and questionId
-                    Long surveyInstanceId = qa.getSurveyInstanceId();
-                    String questionId = qa.getQuestionID();
-                    SurveyedLocaleDao slDao = new SurveyedLocaleDao();
-                    List<SurveyalValue> svals = slDao.listSVByQuestionAndSurveyInstance(
-                            surveyInstanceId, Long.parseLong(questionId));
-                    Long surveyedLocaleId = null;
-                    if (svals != null && svals.size() > 0) {
-                        SurveyalValue sval = svals.get(0);
-                        sval.setStringValue(qa.getValue());
-                        slDao.save(sval);
-                        // Populate locale id from the only entity containing this attribute
-                        surveyedLocaleId = sval.getSurveyedLocaleId();
-                    }
+                    SurveyInstance surveyInstance = new SurveyInstanceDAO().getByKey(qa.getSurveyInstanceId());
+                    Long surveyedLocaleId = surveyInstance.getSurveyedLocaleId();
 
                     // Update datapoint names for this survey, if applies
                     if (q.getLocaleNameFlag() && surveyedLocaleId != null) {
