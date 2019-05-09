@@ -26,6 +26,7 @@ import org.apache.poi.ss.usermodel.Sheet;
 import org.apache.poi.ss.usermodel.Workbook;
 import org.apache.poi.ss.util.CellRangeAddress;
 import org.apache.poi.xssf.streaming.SXSSFWorkbook;
+import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.Test;
 import org.waterforpeople.mapping.dataexport.RawDataSpreadsheetImporter;
 import java.io.File;
@@ -56,7 +57,7 @@ class RawDataSpreadsheetImporterTests {
         sheet.addMergedRegion(new CellRangeAddress(0, 0, 0, i - 1));
 
         for (int j = 0; j < questionColumns; j++) {
-            row1.createCell(i + j).setCellValue(j + "|Question" + j);
+            row1.createCell(i + j).setCellValue((123000 + j) + "|Question" + j);
         }
     }
 
@@ -88,21 +89,18 @@ class RawDataSpreadsheetImporterTests {
     }
 
     @Test
-    void testValidSheets() throws IOException {
+    public void testValidSheets() throws IOException {
         DataImporter dimp = new RawDataSpreadsheetImporter();
 
         //Check that a canonical file passes
         File file1 = createValidTestSpreadsheet("/tmp/valid1.xlsx");
         Map<Integer,String> errors = dimp.validate(file1);
-            for (Integer i: errors.keySet()) {
-                System.out.printf("Unexpected error, row %d: %s", i, errors.get(i));
-            }
         assertEquals(0, errors.size());
 
     }
 
     @Test
-    void testNoQuestionColumns() throws IOException {
+    public void testNoQuestionColumns() throws IOException {
         DataImporter dimp = new RawDataSpreadsheetImporter();
 
         //Check that a file without any questions fail on "row" -11
@@ -110,7 +108,14 @@ class RawDataSpreadsheetImporterTests {
         Map<Integer,String> errors = dimp.validate(file);
         assertEquals(1, errors.size());
         String err1 = errors.get(-11);
-        assertNotEquals(err1, null);
+        assertEquals("No question columns found on any sheet.", err1);
+
+    }
+
+    @AfterAll
+    public static void removeTestFiles() {
+        new File("/tmp/valid1.xlsx").delete();
+        new File("/tmp/invalid1.xlsx").delete();
 
     }
 
