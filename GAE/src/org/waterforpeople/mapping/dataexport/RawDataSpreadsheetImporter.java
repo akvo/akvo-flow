@@ -1067,25 +1067,25 @@ public class RawDataSpreadsheetImporter implements DataImporter {
                 firstQuestionColumnIndex,
                 headerRowIndex);
         if (!checkCol(index, DATAPOINT_IDENTIFIER_COLUMN_KEY)) {
-            errorMap.put(-1, "Column header '" + IDENTIFIER_LABEL + "' missing on sheet " + name);
+            errorMap.put(-3, "Column header '" + IDENTIFIER_LABEL + "' missing on sheet " + name);
         }
         if (!checkCol(index, DATAPOINT_NAME_COLUMN_KEY)) {
-            errorMap.put(-2, "Column header '" + DISPLAY_NAME_LABEL + "' missing on sheet " + name);
+            errorMap.put(-4, "Column header '" + DISPLAY_NAME_LABEL + "' missing on sheet " + name);
         }
         if (!checkCol(index, SURVEY_INSTANCE_COLUMN_KEY)) {
-            errorMap.put(-3, "Column header '" + INSTANCE_LABEL + "' missing on sheet " + name);
+            errorMap.put(-5, "Column header '" + INSTANCE_LABEL + "' missing on sheet " + name);
         }
         if (!checkCol(index, COLLECTION_DATE_COLUMN_KEY)) {
-            errorMap.put(-4, "Column header '" + SUB_DATE_LABEL + "' missing on sheet " + name);
+            errorMap.put(-6, "Column header '" + SUB_DATE_LABEL + "' missing on sheet " + name);
         }
         if (!checkCol(index, SUBMITTER_COLUMN_KEY)) {
-            errorMap.put(-5, "Column header '" + SUBMITTER_LABEL + "' missing on sheet " + name);
+            errorMap.put(-7, "Column header '" + SUBMITTER_LABEL + "' missing on sheet " + name);
         }
         if (!checkCol(index, DURATION_COLUMN_KEY)) {
-            errorMap.put(-6, "Column header '" + DURATION_LABEL + "' missing on sheet " + name);
+            errorMap.put(-8, "Column header '" + DURATION_LABEL + "' missing on sheet " + name);
         }
         if (!isBaseSheet && !checkCol(index, REPEAT_COLUMN_KEY)) {
-            errorMap.put(-7, "Column header '" + REPEAT_LABEL + "' missing on sheet " + name);
+            errorMap.put(-9, "Column header '" + REPEAT_LABEL + "' missing on sheet " + name);
         }
 
         return questionCount;
