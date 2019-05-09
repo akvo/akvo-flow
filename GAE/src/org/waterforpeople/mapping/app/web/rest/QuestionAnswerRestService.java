@@ -1,5 +1,5 @@
 /*
- *  Copyright (C) 2012-2018 Stichting Akvo (Akvo Foundation)
+ *  Copyright (C) 2012-2019 Stichting Akvo (Akvo Foundation)
  *
  *  This file is part of Akvo FLOW.
  *
@@ -54,8 +54,6 @@ import com.gallatinsystems.survey.dao.QuestionDao;
 import com.gallatinsystems.survey.dao.SurveyUtils;
 import com.gallatinsystems.survey.domain.CascadeNode;
 import com.gallatinsystems.survey.domain.Question;
-import com.gallatinsystems.surveyal.dao.SurveyedLocaleDao;
-import com.gallatinsystems.surveyal.domain.SurveyalValue;
 
 @Controller
 @RequestMapping("/question_answers")
