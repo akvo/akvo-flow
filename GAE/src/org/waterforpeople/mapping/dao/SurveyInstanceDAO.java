@@ -549,7 +549,6 @@ public class SurveyInstanceDAO extends BaseDAO<SurveyInstance> {
      *
      * @param surveyInstance survey instance to be deleted
      */
-    // TODO update lastSurveyalInstanceId in surveydLocale objects
     public void deleteSurveyInstance(SurveyInstance surveyInstance) {
         final Long surveyInstanceId = surveyInstance.getKey().getId();
 
@@ -580,15 +579,6 @@ public class SurveyInstanceDAO extends BaseDAO<SurveyInstance> {
             }
 
             qasDao.delete(qasList);
-        }
-
-        // delete surveyal values
-        SurveyedLocaleDao surveyedLocaleDao = new SurveyedLocaleDao();
-        SurveyalValueDao svDao = new SurveyalValueDao();
-        List<SurveyalValue> surveyalValues = surveyedLocaleDao
-                .listSurveyalValuesByInstance(surveyInstanceId);
-        if (surveyalValues != null && !surveyalValues.isEmpty()) {
-            svDao.delete(surveyalValues);
         }
 
         // task to adapt cluster data + delete surveyedlocale if not needed anymore
