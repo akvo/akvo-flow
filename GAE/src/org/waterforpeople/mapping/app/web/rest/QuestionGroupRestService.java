@@ -44,8 +44,6 @@ import com.gallatinsystems.survey.dao.QuestionDao;
 import com.gallatinsystems.survey.dao.QuestionGroupDao;
 import com.gallatinsystems.survey.domain.Question;
 import com.gallatinsystems.survey.domain.QuestionGroup;
-import com.gallatinsystems.surveyal.dao.SurveyalValueDao;
-import com.google.appengine.api.backends.BackendServiceFactory;
 import com.google.appengine.api.taskqueue.Queue;
 import com.google.appengine.api.taskqueue.QueueFactory;
 import com.google.appengine.api.taskqueue.TaskOptions;
@@ -56,8 +54,6 @@ public class QuestionGroupRestService {
     private QuestionGroupDao questionGroupDao = new QuestionGroupDao();
 
     private QuestionDao questionDao = new QuestionDao();
-
-    private SurveyalValueDao svDao = new SurveyalValueDao();
 
     private QuestionAnswerStoreDao qasDao = new QuestionAnswerStoreDao();
 
@@ -110,8 +106,7 @@ public class QuestionGroupRestService {
 
             for (Question q : questionDao.listQuestionsByQuestionGroup(questionGroupId,
                     Boolean.FALSE).values()) {
-                if (qasDao.listByQuestion(q.getKey().getId()).size() > 0
-                        && svDao.listByQuestion(q.getKey().getId()).size() > 0) {
+                if (qasDao.listByQuestion(q.getKey().getId()).size() > 0) {
                     statusDto.setMessage("cannot_delete");
                     statusDto.setKeyId(null);
                 }
