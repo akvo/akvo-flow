@@ -43,7 +43,6 @@ import org.waterforpeople.mapping.dao.QuestionAnswerStoreDao;
 import com.gallatinsystems.survey.dao.SurveyDAO;
 import com.gallatinsystems.survey.dao.SurveyUtils;
 import com.gallatinsystems.survey.domain.Survey;
-import com.gallatinsystems.surveyal.dao.SurveyalValueDao;
 import com.google.appengine.api.taskqueue.QueueFactory;
 import com.google.appengine.api.taskqueue.TaskOptions;
 
@@ -54,8 +53,6 @@ public class SurveyRestService {
     private static final Logger log = Logger.getLogger(SurveyRestService.class.getName());
 
     private SurveyDAO surveyDao = new SurveyDAO();
-
-    private SurveyalValueDao svDao = new SurveyalValueDao();
 
     private QuestionAnswerStoreDao qasDao = new QuestionAnswerStoreDao();
 
@@ -108,8 +105,7 @@ public class SurveyRestService {
             statusDto.setStatus("preflight-delete-survey");
             statusDto.setMessage("cannot_delete");
 
-            if (qasDao.listBySurvey(surveyId).size() == 0
-                    && svDao.listBySurvey(surveyId, null, null).size() == 0) {
+            if (qasDao.listBySurvey(surveyId).size() == 0) {
                 statusDto.setMessage("can_delete");
                 statusDto.setKeyId(surveyId);
             }
