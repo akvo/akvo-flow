@@ -149,6 +149,7 @@ FLOW.dialogControl = Ember.Object.create({
     this.set('activeAction', event.context);
     this.set('showOK', true);
     this.set('showCANCEL', true);
+    this.set('delAssignmentConfirm', false);
 
     switch (this.get('activeAction')) {
     case "delS":
@@ -178,6 +179,7 @@ FLOW.dialogControl = Ember.Object.create({
     case "delAssignment":
       this.set('header', Ember.String.loc('_assignment_delete_header'));
       this.set('message', Ember.String.loc('_this_cant_be_undo'));
+      this.set('delAssignmentId', event.assignmentId);
       this.set('showDialog', true);
       break;
 
@@ -241,7 +243,7 @@ FLOW.dialogControl = Ember.Object.create({
 
     case "delAssignment":
       this.set('showDialog', false);
-      view.deleteSurveyAssignment.apply(view, arguments);
+      this.set('delAssignmentConfirm', true);
       break;
 
     case "delDeviceGroup":

@@ -353,6 +353,12 @@ Ember.Handlebars.registerHelper("date3", function (property) {
   }
 });
 
+FLOW.date3 = function (dateString) {
+  if (dateString) {
+    return FLOW.renderTimeStamp(dateString);
+  }
+};
+
 FLOW.parseJSON = function(jsonString, property) {
   try {
     var jsonObject = JSON.parse(jsonString);

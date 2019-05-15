@@ -51,4 +51,4 @@ if [[ ! -f "$SRC_DIR/GAE/target/akvo-flow/WEB-INF/appengine-web.xml" ]]; then
 fi
 
 mvn appengine:start
-≈tail -F -n 5000  "$SRC_DIR/build.dev.log" ./target/akvo-flow/flow0.log
+tail -F -n 5000  "$SRC_DIR/build.dev.log" ./target/akvo-flow/flow0.log

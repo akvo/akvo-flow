@@ -1,7 +1,7 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 
-const AssignmentsList = ({ assignments, onEdit }) => (
+const AssignmentsList = ({ assignments, onEdit, onDelete }) => (
   <div>
     <div className="deviceControls">
       <a
@@ -9,7 +9,7 @@ const AssignmentsList = ({ assignments, onEdit }) => (
         onClick={() => onEdit('new')}
         style={{ float: 'right' }}
       >
-        Create new assignment
+        {Ember.String.loc('_create_new_assignment')}
       </a>
     </div>
     <div
@@ -21,17 +21,53 @@ const AssignmentsList = ({ assignments, onEdit }) => (
     )}
     {assignments.get('length') > 0 && (
       <table className="dataTable">
+        {/*TABLE HEADER*/}
+        <thead>
+          <tr>
+            <th className="noArrows">
+              <a>
+                {Ember.String.loc('_name')}
+              </a>
+            </th>
+            <th className="noArrows">
+              <a>
+                {Ember.String.loc('_start_date')}
+              </a>
+            </th>
+            <th className="noArrows">
+              <a>
+                {Ember.String.loc('_end_date')}
+              </a>
+            </th>
+            <th className="noArrows">
+              <a>
+                {Ember.String.loc('_action')}
+              </a>
+            </th>
+          </tr>
+        </thead>
+        {/*TABLE BODY: MAIN CONTENT*/}
         <tbody>
           {assignments.map(assignment => (
             <tr key={assignment.get('keyId')}>
               <td className="name">{assignment.get('name')}</td>
+              <td>{FLOW.date3(assignment.get('startDate'))}</td>
+              <td>{FLOW.date3(assignment.get('endDate'))}</td>
               <td className="action">
                 <a
                   style={{ cursor: 'pointer' }}
                   onClick={() => onEdit('edit', assignment)}
                 >
-                  Edit
+                  {Ember.String.loc('_edit')}
                 </a>
+                <span>
+                  <a
+                    className="remove"
+                    onClick={() => onDelete(assignment)}
+                  >
+                    {Ember.String.loc('_delete')}
+                  </a>
+                </span>
               </td>
             </tr>
           ))}
