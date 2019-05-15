@@ -1,5 +1,5 @@
 /*
- *  Copyright (C) 2010-2012 Stichting Akvo (Akvo Foundation)
+ *  Copyright (C) 2010-2012,2019 Stichting Akvo (Akvo Foundation)
  *
  *  This file is part of Akvo FLOW.
  *
@@ -68,8 +68,6 @@ public class SurveyEventNotificationHandler extends BaseNotificationHandler {
     @Override
     public void generateNotification(String type, Long entityId,
             String destinations, String destOptions, String serverBase) {
-        List<SurveyalValue> values = localeDao
-                .listSurveyalValuesByInstance(entityId);
         StringBuilder contents = new StringBuilder();
 
         TreeMap<String, String> linkAddrList = new TreeMap<String, String>();
@@ -82,14 +80,6 @@ public class SurveyEventNotificationHandler extends BaseNotificationHandler {
 
         }
 
-        if (values != null) {
-            for (SurveyalValue val : values) {
-                contents.append(
-                        val.getMetricName() != null ? val.getMetricName() : val
-                                .getQuestionText()).append(": ")
-                        .append(val.getStringValue()).append("\n");
-            }
-        }
         String body = null;
         EditorialPageDao edDao = new EditorialPageDao();
         String head = null;
