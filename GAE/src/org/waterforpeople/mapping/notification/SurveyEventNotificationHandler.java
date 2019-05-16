@@ -32,7 +32,6 @@ import com.gallatinsystems.notification.NotificationRequest;
 import com.gallatinsystems.survey.dao.SurveyDAO;
 import com.gallatinsystems.survey.domain.Survey;
 import com.gallatinsystems.surveyal.dao.SurveyedLocaleDao;
-import com.gallatinsystems.surveyal.domain.SurveyalValue;
 
 /**
  * This handler sends notifications in response to survey events
@@ -53,13 +52,11 @@ public class SurveyEventNotificationHandler extends BaseNotificationHandler {
     private static final String SUBMISSION_SUBJECT = "FLOW Submisson Received";
     private static final String APPROVAL_SUBJECT = "FLOW Submission Approval";
 
-    private SurveyedLocaleDao localeDao;
     private SurveyInstanceDAO instDao;
     private SurveyDAO surveyDao;
 
     public SurveyEventNotificationHandler() {
         super();
-        localeDao = new SurveyedLocaleDao();
         instDao = new SurveyInstanceDAO();
         surveyDao = new SurveyDAO();
 

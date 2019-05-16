@@ -1,5 +1,5 @@
 /*
- *  Copyright (C) 2010-2015,2018 Stichting Akvo (Akvo Foundation)
+ *  Copyright (C) 2010-2015,2018-2019 Stichting Akvo (Akvo Foundation)
  *
  *  This file is part of Akvo FLOW.
  *
@@ -44,8 +44,6 @@ import com.gallatinsystems.framework.rest.RestResponse;
 import com.gallatinsystems.survey.dao.QuestionDao;
 import com.gallatinsystems.survey.domain.Question;
 import com.gallatinsystems.surveyal.dao.SurveyedLocaleDao;
-import com.gallatinsystems.surveyal.domain.SurveyalValue;
-import com.gallatinsystems.surveyal.domain.SurveyedLocale;
 import com.google.appengine.api.datastore.Entity;
 
 /**
