@@ -170,6 +170,11 @@
         <version>${jackson.version}</version>
     </dependency>
     <dependency>
+        <groupId>com.fasterxml.jackson.dataformat</groupId>
+        <artifactId>jackson-dataformat-xml</artifactId>
+        <version>${jackson.version}</version>
+    </dependency>
+    <dependency>
        <groupId>com.google.appengine</groupId>
        <artifactId>appengine-jsr107cache</artifactId>
        <version>${appengine.sdk.version}</version>

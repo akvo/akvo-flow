@@ -67,6 +67,7 @@ public class ReportServlet extends AbstractRestApiServlet {
         public Boolean lastCollection;
         public String imgPrefix;
         public String uploadUrl;
+        public String uploadDir;
         public String flowServices;
         public String appId;
         public String email;
@@ -200,7 +201,7 @@ public class ReportServlet extends AbstractRestApiServlet {
         final String email = uDao.getByKey(r.getUser()).getEmailAddress();
 
         SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
-        		
+
         //Gleaned from export-reports-views.js
         ReportCriteria criteria = new ReportCriteria();
         criteria.opts = new ReportOptions();
@@ -221,6 +222,7 @@ public class ReportServlet extends AbstractRestApiServlet {
         criteria.opts.questionId = r.getQuestionId();
         criteria.opts.imgPrefix = PropertyUtil.getProperty("photo_url_root");
         criteria.opts.uploadUrl = PropertyUtil.getProperty("surveyuploadurl");
+        criteria.opts.uploadDir = PropertyUtil.getProperty("surveyuploaddir");
         criteria.opts.flowServices = PropertyUtil.getProperty("flowServices");
         criteria.opts.email = email;
 
