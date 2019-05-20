@@ -1,5 +1,5 @@
 /*
- *  Copyright (C) 2010-2015,2018 Stichting Akvo (Akvo Foundation)
+ *  Copyright (C) 2010-2015,2018-2019 Stichting Akvo (Akvo Foundation)
  *
  *  This file is part of Akvo FLOW.
  *
@@ -44,8 +44,6 @@ import com.gallatinsystems.framework.rest.RestResponse;
 import com.gallatinsystems.survey.dao.QuestionDao;
 import com.gallatinsystems.survey.domain.Question;
 import com.gallatinsystems.surveyal.dao.SurveyedLocaleDao;
-import com.gallatinsystems.surveyal.domain.SurveyalValue;
-import com.gallatinsystems.surveyal.domain.SurveyedLocale;
 import com.google.appengine.api.datastore.Entity;
 
 /**
@@ -225,28 +223,9 @@ public class DataBackoutServlet extends AbstractRestApiServlet {
      * @param surveyInstanceId
      */
     private void deleteSurveyInstance(Long surveyInstanceId) {
-        List<QuestionAnswerStore> questions = instanceDao
-                .listQuestionAnswerStore(surveyInstanceId, null);
-        if (questions != null) {
-            instanceDao.delete(questions);
-        }
         SurveyInstance instance = instanceDao.getByKey(surveyInstanceId);
         if (instance != null) {
-            instanceDao.delete(instance);
-        }
-        List<SurveyalValue> vals = localeDao
-                .listSurveyalValuesByInstance(surveyInstanceId);
-        if (vals != null && vals.size() > 0) {
-            Long localeId = vals.get(0).getSurveyedLocaleId();
-            localeDao.delete(vals);
-            // now see if there are any other values for the same locale
-            List<SurveyalValue> otherVals = localeDao
-                    .listValuesByLocale(localeId);
-            if (otherVals == null || otherVals.size() == 0) {
-                // if there are no other values, delete the locale
-                SurveyedLocale l = localeDao.getByKey(localeId);
-                localeDao.delete(l);
-            }
+            instanceDao.deleteSurveyInstance(instance);
         }
     }
 

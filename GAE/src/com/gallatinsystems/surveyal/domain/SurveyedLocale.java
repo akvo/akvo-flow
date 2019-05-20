@@ -1,5 +1,5 @@
 /*
- *  Copyright (C) 2010-2016 Stichting Akvo (Akvo Foundation)
+ *  Copyright (C) 2010-2016,2019 Stichting Akvo (Akvo Foundation)
  *
  *  This file is part of Akvo FLOW.
  *
@@ -68,8 +68,6 @@ public class SurveyedLocale extends BaseDomain {
     private Date lastSurveyedDate;
     private Long lastSurveyalInstanceId;
     private Long creationSurveyId;
-    @NotPersistent
-    private List<SurveyalValue> surveyalValues;
 
     public Long getLastSurveyalInstanceId() {
         return lastSurveyalInstanceId;
@@ -153,14 +151,6 @@ public class SurveyedLocale extends BaseDomain {
 
     public void setSystemIdentifier(String systemIdentifier) {
         this.systemIdentifier = systemIdentifier;
-    }
-
-    public List<SurveyalValue> getSurveyalValues() {
-        return surveyalValues;
-    }
-
-    public void setSurveyalValues(List<SurveyalValue> surveyalValues) {
-        this.surveyalValues = surveyalValues;
     }
 
     public void setCurrentStatus(String currentStatus) {
