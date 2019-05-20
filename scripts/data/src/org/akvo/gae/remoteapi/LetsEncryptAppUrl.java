@@ -22,6 +22,7 @@ import java.util.List;
 import com.google.appengine.api.datastore.DatastoreService;
 import com.google.appengine.api.datastore.Entity;
 import com.google.appengine.api.datastore.FetchOptions;
+import com.google.appengine.api.datastore.Key;
 import com.google.appengine.api.datastore.PreparedQuery;
 import com.google.appengine.api.datastore.Query;
 
@@ -30,8 +31,9 @@ public class LetsEncryptAppUrl implements Process {
     private static final String DEVAPPKIND = "DeviceApplication";
     private static final String DEVURL_PROP = "fileName";
     private static final String APPCODE_PROP = "appCode";
-    private static final String APPCODE_VALUE = "flowapp";
+    private static final String APPCODE_VALUE = "fieldSurvey";
     private List<Entity> updatedEntities = new ArrayList<Entity>();
+    private List<Key> doomedEntities = new ArrayList<Key>();
 
     @Override
     public void execute(DatastoreService ds, String[] args) throws Exception {
@@ -40,12 +42,15 @@ public class LetsEncryptAppUrl implements Process {
 
         PreparedQuery pq = ds.prepare(new Query(DEVAPPKIND));
         for (Entity da : pq.asIterable(FetchOptions.Builder.withChunkSize(500))) {
-            String oldurl = (String) da.getProperty(DEVURL_PROP);
-            String newurl = oldurl.replaceFirst("http:", "https:");
             String appcode  = (String) da.getProperty(APPCODE_PROP);
-            if (!newurl.equals(oldurl)
-//                    && appcode.equals(APPCODE_VALUE) //Only modern apps?
-                    ) {
+            String oldurl = (String) da.getProperty(DEVURL_PROP);
+            if (appcode.equals(APPCODE_VALUE)) { //ancient app, remove
+                System.out.println("Deleting " + oldurl);
+                doomedEntities.add(da.getKey());
+                continue;
+            }
+            String newurl = oldurl.replaceFirst("http:", "https:").replace("\n", "").replace("\r", "");
+            if (!newurl.equals(oldurl)) {
                 System.out.println(oldurl + " -> " + newurl);
                 da.setProperty(DEVURL_PROP, newurl);
                 updatedEntities.add(da);
@@ -54,8 +59,9 @@ public class LetsEncryptAppUrl implements Process {
 
         if (args.length == 1 && args[0].equals("--doit")) {
             ds.put(updatedEntities);
+            ds.delete(doomedEntities);
         } else {
-            System.out.println("This was a dry run. " + updatedEntities.size() + " changes not saved to datastore");
+            System.out.println("This was a dry run. " + doomedEntities.size() + " deletions, " + updatedEntities.size() + " changes not saved to datastore");
         }
     }
 
