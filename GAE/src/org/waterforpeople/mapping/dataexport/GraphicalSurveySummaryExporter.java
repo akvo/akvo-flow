@@ -76,6 +76,7 @@ import org.waterforpeople.mapping.app.gwt.client.survey.QuestionDto;
 import org.waterforpeople.mapping.app.gwt.client.survey.QuestionDto.QuestionType;
 import org.waterforpeople.mapping.app.gwt.client.survey.QuestionGroupDto;
 import org.waterforpeople.mapping.app.gwt.client.survey.QuestionOptionDto;
+import org.waterforpeople.mapping.app.gwt.client.survey.SurveyDto;
 import org.waterforpeople.mapping.app.gwt.client.survey.SurveyGroupDto;
 import org.waterforpeople.mapping.app.gwt.client.surveyinstance.SurveyInstanceDto;
 import org.waterforpeople.mapping.app.web.dto.InstanceDataDto;
@@ -352,17 +353,16 @@ public class GraphicalSurveySummaryExporter extends SurveySummaryExporter {
                 log.error("Error in form: " + e.getMessage(), e);
                 return null;
             }
-            XmlForm form = PublishedForm.parse(formXml);
 
-            //Parse it into the XML-form map
+            SurveyDto formDto = PublishedForm.parse(formXml).toDto();
             questionMap = new HashMap<>();
             orderedGroupList = new ArrayList<QuestionGroupDto>(); //Must exist
             rollupOrder = new ArrayList<QuestionDto>();
 
-            for (XmlQuestionGroup xqg : form.getQuestionGroup()) {
-                QuestionGroupDto qgd = xqg.toDto();
-                //Transform the map
-                //BUT: this is the only use of the map *anywhere*, so it could be changed to a list...
+            for (QuestionGroupDto qgd : formDto.getQuestionGroupList()) {
+                //Transform the question maps to question lists
+                //BUT: this is the only use of this map *anywhere*, so it *could* be changed to a list...
+                //TODO get variableNames from the DS, if there were none in the XML
                 List<QuestionDto> qList = new ArrayList<>();
                 for (QuestionDto dto : qgd.getQuestionMap().values()) {
                     qList.add(dto);

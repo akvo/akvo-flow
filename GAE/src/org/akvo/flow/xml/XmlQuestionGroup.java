@@ -64,6 +64,7 @@ public class XmlQuestionGroup {
         //TODO: lots
         dto.setName(heading);
         dto.setCode(heading);
+        dto.setOrder(order);
         TreeMap<Integer,QuestionDto> qMap = new TreeMap<>();
         for (XmlQuestion q : question) {
             qMap.put(q.getOrder(), q.toDto());
@@ -76,6 +77,7 @@ public class XmlQuestionGroup {
     @Override public String toString() {
 
         return "questionGroup{" +
+                "order='" + order + '\'' +
                 "heading='" + heading + '\'' +
                 "questions=" + Arrays.toString(question) +
                 '}';

@@ -73,7 +73,6 @@ import com.fasterxml.jackson.dataformat.xml.annotation.JacksonXmlRootElement;
         return dto;
     }
 
-
     public String getVersion() {
         return version;
     }

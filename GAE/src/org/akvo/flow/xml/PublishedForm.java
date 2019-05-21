@@ -39,21 +39,20 @@ import org.waterforpeople.mapping.app.gwt.client.survey.SurveyDto;
 
 public class PublishedForm {
 
+    // Reads from XML and converts to Java objects
     public static XmlForm parse(String xml) throws IOException {
 
         ObjectMapper objectMapper = new XmlMapper();
-//        objectMapper.disable(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES);
+//        objectMapper.disable(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES); //For production
 
-        // Reads from XML and converts to POJO
         XmlForm form = objectMapper.readValue(xml, XmlForm.class);
 
-        System.out.println(form);
+        System.out.println(form); //Debug only
 
         return form;
-
     }
 
-
+    // Generates XML from Java objects
     public static String generate(XmlForm tree) throws IOException {
 
         ObjectMapper objectMapper = new XmlMapper();
@@ -61,9 +60,6 @@ public class PublishedForm {
         // Reads from POJO and converts to XML
         String xml = objectMapper.writeValueAsString(tree);
         return xml;
-
-        //      objectMapper.writeValue(new File("/tmp/fieldsets.xml"), fieldSet);
-
     }
 
 
