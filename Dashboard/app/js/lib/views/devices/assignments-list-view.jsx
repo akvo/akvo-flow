@@ -33,25 +33,28 @@ FLOW.AssignmentsListView = FLOW.ReactComponentView.extend(observe({
   assignmentsList() {
     if (!FLOW.surveyAssignmentControl.content.isLoaded) return;
 
+    let assignments = this.sortedAssignments();
+
     this.reactRender(
       <AssignmentsList
-        assignments={FLOW.surveyAssignmentControl.get('content')}
+        assignments={assignments}
         onEdit={this.assignmentEdit}
         onDelete={this.assignmentDeleteConfirm}
+        onSort={this.assignmentSort}
       />
     );
   },
 
   assignmentEdit (action, assignment) {
-    FLOW.selectedControl.set('selectedSurveyAssignment', assignment);
+    switch (action) {
+      case 'new':
+        var newAssignment = FLOW.store.createRecord(FLOW.SurveyAssignment, {});
+        FLOW.selectedControl.set('selectedSurveyAssignment', newAssignment);
+        break;
+      default:
+        FLOW.selectedControl.set('selectedSurveyAssignment', assignment);
+    }
     FLOW.router.transitionTo('navDevices.editSurveysAssignment');
-    // this.reactRender(
-    //   <EditAssignment
-    //     action={action}
-    //     assignment={assignment}
-    //     backToAssignmentsList={this.assignmentsList.bind(this)}
-    //   />
-    // );
   },
 
   assignmentDeleteConfirm (assignment) {
@@ -62,9 +65,8 @@ FLOW.AssignmentsListView = FLOW.ReactComponentView.extend(observe({
     if (FLOW.dialogControl.delAssignmentConfirm) {
       var assignment = FLOW.store.find(FLOW.SurveyAssignment, FLOW.dialogControl.get('delAssignmentId'));
       if (assignment) {
-        console.log(assignment);
-        // assignment.deleteRecord();
-        // FLOW.store.commit();
+        assignment.deleteRecord();
+        FLOW.store.commit();
       }
     }
   },

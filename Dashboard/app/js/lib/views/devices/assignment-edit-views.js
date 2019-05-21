@@ -142,7 +142,10 @@ FLOW.AssignmentEditView = FLOW.View.extend(observe({
     sa.set('surveys', surveys);
 
     FLOW.store.commit();
-    FLOW.router.transitionTo('navDevices.assignSurveysOverview');
+    // wait half a second before transitioning back to the assignments list
+    setTimeout(function () {
+      FLOW.router.transitionTo('navDevices.assignSurveysOverview');
+    }, 500);
   },
 
   cancelEditSurveyAssignment: function () {
