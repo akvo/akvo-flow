@@ -1,7 +1,7 @@
 import React from 'react';
 
 import AssignmentsList from 'akvo-flow/components/devices/AssignmentsList';
-import EditAssignment from 'akvo-flow/components/devices/EditAssignment';
+// import EditAssignment from 'akvo-flow/components/devices/EditAssignment';
 import observe from '../../mixins/observe';
 
 require('akvo-flow/views/react-component');
@@ -9,7 +9,7 @@ require('akvo-flow/views/react-component');
 FLOW.AssignmentsListView = FLOW.ReactComponentView.extend(observe({
   'FLOW.surveyAssignmentControl.content.isLoaded': 'assignmentsList',
   'FLOW.surveyAssignmentControl.content.length': 'assignmentsList',
-  'FLOW.dialogControl.delAssignmentConfirm' : 'assignmentDelete'
+  'FLOW.dialogControl.delAssignmentConfirm': 'assignmentDelete',
 }), {
   init() {
     this._super();
@@ -45,25 +45,27 @@ FLOW.AssignmentsListView = FLOW.ReactComponentView.extend(observe({
     );
   },
 
-  assignmentEdit (action, assignment) {
+  assignmentEdit(action, assignment) {
     switch (action) {
-      case 'new':
-        var newAssignment = FLOW.store.createRecord(FLOW.SurveyAssignment, {});
+      case 'new': {
+        const newAssignment = FLOW.store.createRecord(FLOW.SurveyAssignment, {});
         FLOW.selectedControl.set('selectedSurveyAssignment', newAssignment);
         break;
-      default:
+      }
+      default: {
         FLOW.selectedControl.set('selectedSurveyAssignment', assignment);
+      }
     }
     FLOW.router.transitionTo('navDevices.editSurveysAssignment');
   },
 
-  assignmentDeleteConfirm (assignment) {
-    FLOW.dialogControl.confirm({context: FLOW.dialogControl.delAssignment, assignmentId: assignment.get('keyId')});
+  assignmentDeleteConfirm(assignment) {
+    FLOW.dialogControl.confirm({ context: FLOW.dialogControl.delAssignment, assignmentId: assignment.get('keyId') });
   },
 
-  assignmentDelete () {
+  assignmentDelete() {
     if (FLOW.dialogControl.delAssignmentConfirm) {
-      var assignment = FLOW.store.find(FLOW.SurveyAssignment, FLOW.dialogControl.get('delAssignmentId'));
+      let assignment = FLOW.store.find(FLOW.SurveyAssignment, FLOW.dialogControl.get('delAssignmentId'));
       if (assignment) {
         assignment.deleteRecord();
         FLOW.store.commit();
@@ -71,15 +73,16 @@ FLOW.AssignmentsListView = FLOW.ReactComponentView.extend(observe({
     }
   },
 
-  assignmentSort (item) {
+  assignmentSort(item) {
     FLOW.tableColumnControl.toggleProperty('sortAscending');
     FLOW.tableColumnControl.set('sortProperties', item);
     FLOW.tableColumnControl.set('selected', item);
     this.assignmentsList();
   },
 
-  sortedAssignments () {
-    let assignments = Ember.A(), sortColumn;
+  sortedAssignments() {
+    let assignments = Ember.A();
+    let sortColumn;
     if (FLOW.tableColumnControl.get('selected')) {
       sortColumn = FLOW.tableColumnControl.get('selected');
     } else {
@@ -106,5 +109,5 @@ FLOW.AssignmentsListView = FLOW.ReactComponentView.extend(observe({
       }
       return 0;
     });
-  }
+  },
 });

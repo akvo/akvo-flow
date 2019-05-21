@@ -1,5 +1,7 @@
-module("akvo-flow");
+/* global test, ok */
 
-test("App is defined", function () {
-  ok(typeof App !== undefined, "App is undefined");
+module('akvo-flow');
+
+test('App is defined', () => {
+  ok(typeof App !== 'undefined', 'App is undefined');
 });

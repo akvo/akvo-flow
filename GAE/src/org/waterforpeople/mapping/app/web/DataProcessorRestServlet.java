@@ -73,9 +73,7 @@ import com.gallatinsystems.survey.domain.QuestionOption;
 import com.gallatinsystems.survey.domain.Survey;
 import com.gallatinsystems.survey.domain.SurveyGroup;
 import com.gallatinsystems.survey.domain.Translation;
-import com.gallatinsystems.surveyal.dao.SurveyalValueDao;
 import com.gallatinsystems.surveyal.dao.SurveyedLocaleDao;
-import com.gallatinsystems.surveyal.domain.SurveyalValue;
 import com.gallatinsystems.surveyal.domain.SurveyedLocale;
 import com.google.appengine.api.memcache.MemcacheService;
 import com.google.appengine.api.memcache.stdimpl.GCacheFactory;
@@ -233,9 +231,6 @@ public class DataProcessorRestServlet extends AbstractRestApiServlet {
         } else if (DataProcessorRequest.CREATE_NEW_IDENTIFIERS_LOCALES_ACTION
                 .equalsIgnoreCase(req.getAction())) {
             createNewIdentifiersLocales(dpReq.getCursor(), dpReq.getSurveyId());
-        } else if (DataProcessorRequest.POP_QUESTION_ORDER_FIELDS_ACTION.equalsIgnoreCase(req
-                .getAction())) {
-            populateQuestionOrdersSurveyalValues(dpReq.getSurveyId(), req.getCursor());
         } else if (DataProcessorRequest.DELETE_SURVEY_INSTANCE_ACTION.equalsIgnoreCase(req
                 .getAction())) {
             if (dpReq.getSurveyInstanceId() != null) {
@@ -1167,103 +1162,6 @@ public class DataProcessorRestServlet extends AbstractRestApiServlet {
                             cursorParam != null ? cursorParam : "");
             Queue queue = QueueFactory.getQueue("background-processing");
             queue.add(options);
-        }
-    }
-
-    /**
-     * runs over all surveyal value objects, and populates: the questionOrder and questionGroupOrder
-     * fields, and the surveyId if it is not populated This method is invoked as a URL request:
-     * http://..../webapp/testharness?action=populateQuestionOrders with optional parameter surveyId
-     *
-     * @param cursor
-     */
-    @SuppressWarnings("unchecked")
-    private void populateQuestionOrdersSurveyalValues(Long surveyId, String cursor) {
-
-        final SurveyalValueDao svDao = new SurveyalValueDao();
-        List<SurveyalValue> svList = null;
-
-        // get list of surveyalValues, either by surveyId, or all of them
-        if (surveyId != null) {
-            svList = svDao.listBySurvey(surveyId, cursor, SVAL_PAGE_SIZE);
-        } else {
-            svList = svDao.list(cursor, SVAL_PAGE_SIZE);
-        }
-
-        if (svList == null || svList.size() == 0) {
-            return; // nothing to do
-        }
-
-        final QuestionDao qDao = new QuestionDao();
-        final QuestionGroupDao qgDao = new QuestionGroupDao();
-        final List<SurveyalValue> svSaveList = new ArrayList<SurveyalValue>();
-
-        // initialize the memcache
-        Cache cache = initCache(12 * 60 * 60); // 12 hours
-
-        for (SurveyalValue sv : svList) {
-
-            Long sId = null;
-
-            // if the surveyQuestionId is not there, skip this surveyalValue
-            if (sv.getSurveyQuestionId() != null) {
-
-                final Long sqId = sv.getSurveyQuestionId();
-                final String orderKey = "q-order-" + sqId;
-
-                // get orders from the cache
-                if (containsKey(cache, orderKey)) {
-                    final Map<String, Object> orderMap = (Map<String, Object>) cache.get(orderKey);
-                    sv.setQuestionOrder((Integer) orderMap.get("q-order"));
-                    sv.setQuestionGroupOrder((Integer) orderMap.get("qg-order"));
-                    sId = (Long) orderMap.get("q-survey-id");
-                } else {
-                    // get orders from the datastore
-                    final Question q = qDao.getByKey(sqId);
-                    final QuestionGroup qg = q != null && q.getQuestionGroupId() != null ? qgDao
-                            .getByKey(q.getQuestionGroupId()) : null;
-
-                    if (q != null) {
-                        sv.setQuestionOrder(q.getOrder());
-                        sId = q.getSurveyId();
-                    }
-
-                    if (qg != null) {
-                        sv.setQuestionGroupOrder(qg.getOrder());
-                    }
-
-                    // put it in the cache for further reference
-                    final Map<String, Object> v = new HashMap<String, Object>();
-                    v.put("q-order", sv.getQuestionOrder());
-                    v.put("qg-order", sv.getQuestionGroupOrder());
-                    v.put("q-survey-id", sv.getSurveyId());
-                    putObject(cache, orderKey, v);
-                }
-                // if the surveyId field of the surveyalValue has not been
-                // populated, do it now.
-                if (sv.getSurveyId() == null) {
-                    sv.setSurveyId(sId);
-                }
-
-                svSaveList.add(sv);
-            }
-        }
-
-        svDao.save(svSaveList);
-
-        if (svList.size() == SVAL_PAGE_SIZE) {
-            final Queue queue = QueueFactory.getDefaultQueue();
-            final String newCursor = SurveyalValueDao.getCursor(svList);
-            final TaskOptions to = TaskOptions.Builder
-                    .withUrl("/app_worker/dataprocessor")
-                    .param(DataProcessorRequest.ACTION_PARAM,
-                            DataProcessorRequest.POP_QUESTION_ORDER_FIELDS_ACTION)
-                    .param("cursor", newCursor);
-
-            if (surveyId != null) {
-                to.param(DataProcessorRequest.SURVEY_ID_PARAM, surveyId.toString());
-            }
-            queue.add(to);
         }
     }
 

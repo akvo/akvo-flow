@@ -14,6 +14,16 @@
       "jsx": true
     }
   },
+  "settings": {
+    "import/resolver": {
+      "alias": {
+        "map": [
+          ["akvo-flow", "./app/js/lib"]
+        ],
+        "extensions": [".js", ".jsx", ".json"]
+      }
+    }
+  },
   "rules": {
     "camelcase": 1,
     "class-methods-use-this": 1,
@@ -36,49 +46,27 @@
     "react/forbid-prop-types": 0,
     "react/no-unused-prop-types": 0,
     "react/no-multi-comp": 0,
-
-    "no-mixed-operators": 1,
-    "no-bitwise": 0,
-    "prefer-spread": 1,
-    "prefer-rest-params": 1,
-    "no-throw-literal": 1,
-    "import/no-extraneous-dependencies": 1,
-    "no-unused-vars": 1,
-    "eqeqeq": 1,
-    "max-len": 1,
-    "no-continue": 1,
-    "no-mixed-spaces-and-tabs": 1,
-    "no-tabs": 1,
-    "no-extend-native": 1,
-    "no-use-before-define": 1,
-    "no-param-reassign": 1,
+    "object-shorthand": 1,
+    "prefer-arrow-callback": 1,
     "consistent-return": 1,
-    "no-restricted-globals": 1,
-    "import/no-unresolved": 1,
-    "function-paren-newline": 1,
-    "no-var": 1,
-    "no-lonely-if": 1,
-    "no-useless-escape": 1,
-    "no-useless-concat": 1,
-    "no-irregular-whitespace": 1,
-    "vars-on-top": 1,
-    "new-cap": 1,
-    "no-array-constructor": 1,
-    "no-restricted-syntax": 1,
-    "guard-for-in": 1,
-    "no-empty": 1,
-    "for-direction": 1,
-    "no-shadow": 1,
-    "no-unused-expressions": 1,
-    "no-loop-func": 1
+    "prefer-template": 1,
+    "no-param-reassign": 1,
+    "eqeqeq": 1,
+    "no-loop-func": 1,
+    "operator-linebreak": 0,
+    "prefer-spread": 1,
+    "prefer-rest-params": 1
   },
   "globals": {
     "window": true,
     "document": true,
     "FLOW": true,
-    "Ember": true,
     "$": true,
     "jQuery": true,
-    "DS": true
+    "DS": true,
+    "Ember": true,
+    "L": true,
+    "loader": true,
+    "location": true
   }
 }

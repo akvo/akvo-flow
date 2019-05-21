@@ -11,6 +11,6 @@ require('../../css/screen.scss');
 
 const regionBias = FLOW.Env.googleMapsRegionBias;
 const region = regionBias ? `&region=${regionBias}` : '';
-document.write(`<script src="https://maps.google.com/maps/api/js?v=3.2&sensor=false${region}"><\/script>`);
+document.write(`<script src="https://maps.google.com/maps/api/js?v=3.2&sensor=false${region}"></script>`);
 
 FLOW.initialize();

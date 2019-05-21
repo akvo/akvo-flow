@@ -1,12 +1,18 @@
 import React from 'react';
 import PropTypes from 'prop-types';
-
-const AssignmentsList = ({ assignments, onEdit, onDelete, onSort }) => (
+/* eslint-disable no-nested-ternary */
+const AssignmentsList = ({
+  assignments,
+  onEdit,
+  onDelete,
+  onSort,
+}) => (
   <div>
     <div className="deviceControls">
       <a
         className="btnOutline"
         onClick={() => onEdit('new')}
+        onKeyDown={() => onEdit('new')}
         style={{ float: 'right' }}
       >
         {Ember.String.loc('_create_new_assignment')}
@@ -21,7 +27,7 @@ const AssignmentsList = ({ assignments, onEdit, onDelete, onSort }) => (
     )}
     {assignments.get('length') > 0 && (
       <table className="dataTable">
-        {/*TABLE HEADER*/}
+        {/* TABLE HEADER */}
         <thead>
           <tr>
             <th
@@ -29,6 +35,7 @@ const AssignmentsList = ({ assignments, onEdit, onDelete, onSort }) => (
             >
               <a
                 onClick={() => onSort('name')}
+                onKeyDown={() => onSort('name')}
               >
                 {Ember.String.loc('_name')}
               </a>
@@ -38,6 +45,7 @@ const AssignmentsList = ({ assignments, onEdit, onDelete, onSort }) => (
             >
               <a
                 onClick={() => onSort('startDate')}
+                onKeyDown={() => onSort('startDate')}
               >
                 {Ember.String.loc('_start_date')}
               </a>
@@ -47,6 +55,7 @@ const AssignmentsList = ({ assignments, onEdit, onDelete, onSort }) => (
             >
               <a
                 onClick={() => onSort('endDate')}
+                onKeyDown={() => onSort('endDate')}
               >
                 {Ember.String.loc('_end_date')}
               </a>
@@ -58,7 +67,7 @@ const AssignmentsList = ({ assignments, onEdit, onDelete, onSort }) => (
             </th>
           </tr>
         </thead>
-        {/*TABLE BODY: MAIN CONTENT*/}
+        {/* TABLE BODY: MAIN CONTENT */}
         <tbody>
           {assignments.map(assignment => (
             <tr key={assignment.get('keyId')}>
@@ -69,6 +78,7 @@ const AssignmentsList = ({ assignments, onEdit, onDelete, onSort }) => (
                 <a
                   style={{ cursor: 'pointer' }}
                   onClick={() => onEdit('edit', assignment)}
+                  onKeyDown={() => onEdit('edit', assignment)}
                 >
                   {Ember.String.loc('_edit')}
                 </a>
@@ -76,6 +86,7 @@ const AssignmentsList = ({ assignments, onEdit, onDelete, onSort }) => (
                   <a
                     className="remove"
                     onClick={() => onDelete(assignment)}
+                    onKeyDown={() => onDelete(assignment)}
                   >
                     {Ember.String.loc('_delete')}
                   </a>
@@ -92,6 +103,8 @@ const AssignmentsList = ({ assignments, onEdit, onDelete, onSort }) => (
 AssignmentsList.propTypes = {
   assignments: PropTypes.array.isRequired,
   onEdit: PropTypes.func.isRequired,
+  onDelete: PropTypes.func.isRequired,
+  onSort: PropTypes.func.isRequired,
 };
 
 export default AssignmentsList;

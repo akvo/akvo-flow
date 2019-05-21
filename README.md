@@ -44,6 +44,12 @@ Or run the commands from a terminal inside the container:
     cd Dashboard/app/cljs
     lein watch
 
+#### Editor Setup
+
+The client-side (JS) code is linted using Eslint. It is recommended to install an Eslint plugin in your editor to display linting errors in realtime while making changes to the source code.
+
+See here for a list of intergrations/plugins for various editors: https://eslint.org/docs/user-guide/integrations#editors
+
 ### Backend development
 
 The appengine dev server is started in debug mode, listening in port 5005.

@@ -50,7 +50,6 @@ import com.gallatinsystems.survey.domain.QuestionHelpMedia;
 import com.gallatinsystems.survey.domain.QuestionOption;
 import com.gallatinsystems.survey.domain.Translation;
 import com.gallatinsystems.survey.domain.Translation.ParentType;
-import com.gallatinsystems.surveyal.dao.SurveyalValueDao;
 import com.google.appengine.api.datastore.DatastoreService;
 import com.google.appengine.api.datastore.DatastoreServiceFactory;
 import com.google.appengine.api.datastore.Entity;
@@ -136,9 +135,7 @@ public class QuestionDao extends BaseDAO<Question> {
     public void delete(Question question, Boolean adjustQuestionOrder)
             throws IllegalDeletionException {
         QuestionAnswerStoreDao qasDao = new QuestionAnswerStoreDao();
-        SurveyalValueDao svDao = new SurveyalValueDao();
-        if (qasDao.listByQuestion(question.getKey().getId()).size() > 0
-                || svDao.listByQuestion(question.getKey().getId()).size() > 0) {
+        if (qasDao.listByQuestion(question.getKey().getId()).size() > 0) {
             throw new IllegalDeletionException(
                     "Cannot delete question with id "
                             + question.getKey().getId()

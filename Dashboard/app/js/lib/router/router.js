@@ -7,9 +7,9 @@ FLOW.Router = Ember.Router.extend({
   enableLogging: true,
   loggedIn: false,
   location: 'none',
-  //'hash'or 'none' for URLs
+  // 'hash'or 'none' for URLs
 
-  resetState: function () {
+  resetState() {
     // We could have unsaved changes
     FLOW.store.commit();
 
@@ -26,30 +26,26 @@ FLOW.Router = Ember.Router.extend({
   },
 
   root: Ember.Route.extend({
-    doNavSurveys: function (router, context) {
+    doNavSurveys(router) {
       router.transitionTo('navSurveys.index');
     },
-    doNavDevices: function (router, context) {
+    doNavDevices(router) {
       router.transitionTo('navDevices.index');
     },
-    doNavData: function (router, context) {
+    doNavData(router) {
       router.transitionTo('navData.index');
     },
-    doNavResources: function (router, context) {
+    doNavResources(router) {
       router.transitionTo('navResources.index');
     },
-    doNavMaps: function (router, context) {
+    doNavMaps(router) {
       router.transitionTo('navMaps');
     },
-    doNavUsers: function (router, context) {
+    doNavUsers(router) {
       router.transitionTo('navUsers');
     },
-    doNavMessages: function (router, context) {
+    doNavMessages(router) {
       router.transitionTo('navMessages');
-    },
-    // not used at the moment
-    doNavAdmin: function (router, context) {
-      router.transitionTo('navAdmin');
     },
 
     // non-working code for transitioning to navHome at first entry of the app
@@ -61,41 +57,41 @@ FLOW.Router = Ember.Router.extend({
     //    },
     index: Ember.Route.extend({
       route: '/',
-      redirectsTo: 'navSurveys.index'
+      redirectsTo: 'navSurveys.index',
     }),
 
     // ******************* SURVEYS ROUTER ********************
     navSurveys: Ember.Route.extend({
       route: '/surveys',
-      connectOutlets: function (router, event) {
+      connectOutlets(router) {
         router.get('applicationController').connectOutlet('navSurveys');
         router.set('navigationController.selected', 'navSurveys');
       },
 
-      doNewSurvey: function (router, event) {
+      doNewSurvey(router) {
         router.transitionTo('navSurveys.navSurveysNew');
       },
 
-      doEditSurvey: function (router, event) {
+      doEditSurvey(router, event) {
         FLOW.selectedControl.set('selectedSurvey', event.context);
         router.transitionTo('navSurveys.navSurveysEdit.index');
       },
 
-      doSurveysMain: function (router, event) {
+      doSurveysMain(router) {
         FLOW.selectedControl.set('selectedQuestion', null);
         router.transitionTo('navSurveys.navSurveysMain');
       },
 
       index: Ember.Route.extend({
         route: '/',
-        redirectsTo: 'navSurveysMain'
+        redirectsTo: 'navSurveysMain',
       }),
 
       navSurveysMain: Ember.Route.extend({
         route: '/main',
-        connectOutlets: function (router, event) {
+        connectOutlets(router) {
           router.get('navSurveysController').connectOutlet({
-            name: 'navSurveysMain'
+            name: 'navSurveysMain',
           });
           FLOW.projectControl.populate();
           FLOW.surveyControl.populateAll();
@@ -106,380 +102,367 @@ FLOW.Router = Ember.Router.extend({
           FLOW.selectedControl.set('selectedSurvey', null);
           FLOW.selectedControl.set('selectedQuestion', null);
           FLOW.questionControl.set('OPTIONcontent', null);
-        }
+        },
       }),
 
       navSurveysNew: Ember.Route.extend({
         route: '/new',
-        connectOutlets: function (router, event) {
-          var newSurvey;
-
-          newSurvey = FLOW.store.createRecord(FLOW.Survey, {
-            "name": "",
-            "defaultLanguageCode": "en",
-            "requireApproval": false,
-            "status": "NOT_PUBLISHED",
-            "surveyGroupId": FLOW.selectedControl.selectedSurveyGroup.get('keyId'),
-            "version":"1.0"
+        connectOutlets(router) {
+          const newSurvey = FLOW.store.createRecord(FLOW.Survey, {
+            name: '',
+            defaultLanguageCode: 'en',
+            requireApproval: false,
+            status: 'NOT_PUBLISHED',
+            surveyGroupId: FLOW.selectedControl.selectedSurveyGroup.get('keyId'),
+            version: '1.0',
           });
 
           FLOW.selectedControl.set('selectedSurvey', newSurvey);
           router.transitionTo('navSurveys.navSurveysEdit.index');
-        }
+        },
       }),
 
       navSurveysEdit: Ember.Route.extend({
         route: '/edit',
-        connectOutlets: function (router, event) {
+        connectOutlets(router) {
           router.get('navSurveysController').connectOutlet({
-            name: 'navSurveysEdit'
+            name: 'navSurveysEdit',
           });
           // all questions should be closed when we enter
           FLOW.selectedControl.set('selectedQuestion', null);
         },
 
-        doEditQuestions: function (router, event) {
+        doEditQuestions(router) {
           router.transitionTo('navSurveys.navSurveysEdit.editQuestions');
         },
 
         index: Ember.Route.extend({
           route: '/',
-          redirectsTo: 'editQuestions'
+          redirectsTo: 'editQuestions',
         }),
 
         manageNotifications: Ember.Route.extend({
           route: '/notifications',
-          connectOutlets: function (router, event) {
+          connectOutlets(router) {
             router.get('navSurveysEditController').connectOutlet({
-              name: 'manageNotifications'
+              name: 'manageNotifications',
             });
             FLOW.notificationControl.populate();
-          }
+          },
         }),
 
         manageTranslations: Ember.Route.extend({
           route: '/translations',
-          connectOutlets: function (router, event) {
+          connectOutlets(router) {
             router.get('navSurveysEditController').connectOutlet({
-              name: 'manageTranslations'
+              name: 'manageTranslations',
             });
             FLOW.translationControl.populate();
-          }
+          },
         }),
 
         editQuestions: Ember.Route.extend({
           route: '/questions',
-          connectOutlets: function (router, event) {
+          connectOutlets(router) {
             router.get('navSurveysEditController').connectOutlet({
-              name: 'editQuestions'
+              name: 'editQuestions',
             });
-
-          }
-        })
-      })
+          },
+        }),
+      }),
     }),
 
-    //********************** DEVICES ROUTER *******************
+    //* ********************* DEVICES ROUTER *******************
     navDevices: Ember.Route.extend({
       route: '/devices',
-      connectOutlets: function (router, event) {
+      connectOutlets(router) {
         router.get('applicationController').connectOutlet('navDevices');
         router.set('navigationController.selected', 'navDevices');
       },
 
-      doCurrentDevices: function (router, event) {
+      doCurrentDevices(router) {
         router.transitionTo('navDevices.currentDevices');
       },
 
-      doAssignSurveysOverview: function (router, event) {
+      doAssignSurveysOverview(router) {
         router.transitionTo('navDevices.assignSurveysOverview');
       },
 
-      doEditSurveysAssignment: function (router, event) {
+      doEditSurveysAssignment(router) {
         router.transitionTo('navDevices.editSurveysAssignment');
       },
 
-      doSurveyBootstrap: function (router, event) {
+      doSurveyBootstrap(router) {
         router.transitionTo('navDevices.surveyBootstrap');
       },
 
       index: Ember.Route.extend({
         route: '/',
-        redirectsTo: 'currentDevices'
+        redirectsTo: 'currentDevices',
       }),
 
       currentDevices: Ember.Route.extend({
         route: '/current-devices',
-        connectOutlets: function (router, context) {
+        connectOutlets(router) {
           router.get('navDevicesController').connectOutlet('currentDevices');
           router.resetState();
           FLOW.deviceGroupControl.populate();
           FLOW.deviceControl.populate();
           router.set('devicesSubnavController.selected', 'currentDevices');
-        }
+        },
       }),
 
       assignSurveysOverview: Ember.Route.extend({
         route: '/assign-surveys',
-        connectOutlets: function (router, context) {
+        connectOutlets(router) {
           router.get('navDevicesController').connectOutlet('assignSurveysOverview');
           FLOW.surveyAssignmentControl.populate();
           router.set('devicesSubnavController.selected', 'assignSurveys');
-        }
+        },
       }),
 
       editSurveysAssignment: Ember.Route.extend({
         route: '/assign-surveys',
-        connectOutlets: function (router, context) {
+        connectOutlets(router) {
           router.get('navDevicesController').connectOutlet('editSurveyAssignment');
           router.set('devicesSubnavController.selected', 'assignSurveys');
-        }
+        },
       }),
 
       surveyBootstrap: Ember.Route.extend({
         route: '/manual-transfer',
-        connectOutlets: function (router, context) {
+        connectOutlets(router) {
           router.get('navDevicesController').connectOutlet('surveyBootstrap');
           router.set('devicesSubnavController.selected', 'surveyBootstrap');
-        }
-      })
+        },
+      }),
     }),
 
 
     // ******************* DATA ROUTER ***********************
     navData: Ember.Route.extend({
       route: '/data',
-      connectOutlets: function (router, event) {
+      connectOutlets(router) {
         router.get('applicationController').connectOutlet('navData');
         router.set('navigationController.selected', 'navData');
       },
 
-      doInspectData: function (router, event) {
+      doInspectData(router) {
         router.transitionTo('navData.inspectData');
       },
-      doBulkUpload: function (router, event) {
+      doBulkUpload(router) {
         router.transitionTo('navData.bulkUpload');
       },
-      doDataCleaning: function (router, event) {
+      doDataCleaning(router) {
         router.transitionTo('navData.dataCleaning');
       },
-      doMonitoringData: function (router, event) {
+      doMonitoringData(router) {
         router.transitionTo('navData.monitoringData');
       },
 
-      doReportsList: function (router, event) {
+      doReportsList(router) {
         router.transitionTo('navData.reportsList');
       },
 
-      doExportReports: function (router, event) {
+      doExportReports(router) {
         router.transitionTo('navData.exportReports');
       },
 
-      doChartReports: function (router, event) {
+      doChartReports(router) {
         router.transitionTo('navData.chartReports');
       },
 
       index: Ember.Route.extend({
         route: '/',
-        redirectsTo:  'inspectData'
+        redirectsTo: 'inspectData',
       }),
 
       inspectData: Ember.Route.extend({
         route: '/inspectdata',
-        connectOutlets: function (router, context) {
+        connectOutlets(router) {
           router.get('navDataController').connectOutlet('inspectData');
           router.set('datasubnavController.selected', 'inspectData');
           router.resetState();
-        }
+        },
       }),
 
       bulkUpload: Ember.Route.extend({
         route: '/bulkupload',
-        connectOutlets: function (router, context) {
+        connectOutlets(router) {
           router.get('navDataController').connectOutlet('bulkUpload');
           router.set('datasubnavController.selected', 'bulkUpload');
-        }
+        },
       }),
 
       dataCleaning: Ember.Route.extend({
         route: '/datacleaning',
-        connectOutlets: function (router, context) {
+        connectOutlets(router) {
           router.get('navDataController').connectOutlet('dataCleaning');
           router.set('datasubnavController.selected', 'dataCleaning');
           router.resetState();
-        }
+        },
       }),
 
       monitoringData: Ember.Route.extend({
         route: '/monitoringdata',
-        connectOutlets: function (router, context) {
+        connectOutlets(router) {
           router.get('navDataController').connectOutlet('monitoringData');
           router.set('datasubnavController.selected', 'monitoringData');
           router.resetState();
-        }
+        },
       }),
 
       reportsList: Ember.Route.extend({
         route: '/reportslist',
-        connectOutlets: function (router, context) {
-          //if landing on tab, show reports list first
+        connectOutlets(router) {
+          // if landing on tab, show reports list first
           router.get('navDataController').connectOutlet('reportsList');
           router.set('datasubnavController.selected', 'exportReports');
           router.resetState();
-        }
+        },
 
       }),
 
       exportReports: Ember.Route.extend({
         route: '/exportreports',
-        connectOutlets: function (router, context) {
+        connectOutlets(router) {
           router.get('navDataController').connectOutlet('exportReports');
           router.set('datasubnavController.selected', 'exportReports');
           router.resetState();
-        }
+        },
       }),
 
       chartReports: Ember.Route.extend({
         route: '/chartreports',
-        connectOutlets: function (router, context) {
+        connectOutlets(router) {
           router.resetState();
           router.get('navDataController').connectOutlet('chartReports');
           router.set('datasubnavController.selected', 'chartReports');
-        }
-      })
+        },
+      }),
     }),
 
     // ************************** RESOURCES ROUTER **********************************
     navResources: Ember.Route.extend({
       route: '/resources',
-      connectOutlets: function (router, event) {
+      connectOutlets(router) {
         router.get('applicationController').connectOutlet('navResources');
         router.set('navigationController.selected', 'navResources');
       },
 
-      doCascadeResources: function (router, event) {
+      doCascadeResources(router) {
         router.transitionTo('navResources.cascadeResources');
       },
 
-      doDataApproval: function (router, event) {
-          router.transitionTo('navResources.dataApproval.listApprovalGroups');
+      doDataApproval(router) {
+        router.transitionTo('navResources.dataApproval.listApprovalGroups');
       },
 
       index: Ember.Route.extend({
         route: '/',
-        redirectsTo: 'cascadeResources'
+        redirectsTo: 'cascadeResources',
       }),
 
       cascadeResources: Ember.Route.extend({
         route: '/cascaderesources',
-        connectOutlets: function (router, context) {
+        connectOutlets(router) {
           router.get('navResourcesController').connectOutlet('cascadeResources');
           router.set('resourcesSubnavController.selected', 'cascadeResources');
           FLOW.cascadeResourceControl.populate();
-        }
+        },
       }),
 
       dataApproval: Ember.Route.extend({
-          route: '/dataapproval',
+        route: '/dataapproval',
 
-          connectOutlets: function (router, context) {
-              router.get('navResourcesController').connectOutlet('dataApproval');
-              router.set('resourcesSubnavController.selected', 'approvalGroup');
+        connectOutlets(router) {
+          router.get('navResourcesController').connectOutlet('dataApproval');
+          router.set('resourcesSubnavController.selected', 'approvalGroup');
+        },
+
+        doAddApprovalGroup(router) {
+          router.get('approvalGroupController').add();
+          router.get('approvalStepsController').loadByGroupId();
+          router.transitionTo('navResources.dataApproval.editApprovalGroup');
+        },
+
+        doEditApprovalGroup(router, event) {
+          const groupId = event.context.get('keyId');
+          const lastLoadedGroup = router.get('approvalGroupController').get('content');
+          if (!lastLoadedGroup || (lastLoadedGroup.get('keyId') !== groupId)) {
+            router.get('approvalGroupController').load(groupId);
+            router.get('approvalStepsController').loadByGroupId(groupId);
+          }
+          router.transitionTo('navResources.dataApproval.editApprovalGroup');
+        },
+
+        doSaveApprovalGroup(router) {
+          router.get('approvalGroupController').save();
+          router.transitionTo('navResources.dataApproval.listApprovalGroups');
+        },
+
+        doCancelEditApprovalGroup(router) {
+          router.get('approvalGroupController').cancel();
+          router.transitionTo('navResources.dataApproval.listApprovalGroups');
+        },
+
+        doDeleteApprovalGroup(router, event) {
+          const group = event.context;
+          router.get('approvalGroupListController').delete(group);
+        },
+
+        // default route for dataApproval tab
+        listApprovalGroups: Ember.Route.extend({
+          route: '/list',
+
+          connectOutlets(router) {
+            router.get('dataApprovalController').connectOutlet('approvalMain', 'approvalGroupList');
+            const approvalList = router.get('approvalGroupListController');
+            if (!approvalList.get('content')) {
+              approvalList.set('content', FLOW.ApprovalGroup.find());
+            }
           },
+        }),
 
-          doAddApprovalGroup: function (router, event) {
-              router.get('approvalGroupController').add();
-              router.get('approvalStepsController').loadByGroupId();
-              router.transitionTo('navResources.dataApproval.editApprovalGroup');
+        editApprovalGroup: Ember.Route.extend({
+          route: '/approvalsteps',
+
+          connectOutlets(router) {
+            router.get('dataApprovalController').connectOutlet('approvalMain', 'approvalGroup');
+            router.get('approvalGroupController').connectOutlet('approvalStepsOutlet', 'approvalSteps');
           },
-
-          doEditApprovalGroup: function (router, event) {
-              var groupId = event.context.get('keyId');
-              var lastLoadedGroup = router.get('approvalGroupController').get('content');
-              if (!lastLoadedGroup || (lastLoadedGroup.get('keyId') !== groupId)) {
-                  router.get('approvalGroupController').load(groupId);
-                  router.get('approvalStepsController').loadByGroupId(groupId);
-              }
-              router.transitionTo('navResources.dataApproval.editApprovalGroup');
-          },
-
-          doSaveApprovalGroup: function (router, event) {
-              router.get('approvalGroupController').save();
-              router.transitionTo('navResources.dataApproval.listApprovalGroups');
-          },
-
-          doCancelEditApprovalGroup: function (router, event) {
-              router.get('approvalGroupController').cancel();
-              router.transitionTo('navResources.dataApproval.listApprovalGroups');
-          },
-
-          doDeleteApprovalGroup: function (router, event) {
-              var group = event.context;
-              router.get('approvalGroupListController').delete(group);
-          },
-
-          // default route for dataApproval tab
-          listApprovalGroups: Ember.Route.extend({
-              route: '/list',
-
-              connectOutlets: function (router, context) {
-                  router.get('dataApprovalController').connectOutlet('approvalMain', 'approvalGroupList');
-                  var approvalList = router.get('approvalGroupListController');
-                  if (!approvalList.get('content')) {
-                      approvalList.set('content', FLOW.ApprovalGroup.find())
-                  }
-              },
-          }),
-
-          editApprovalGroup: Ember.Route.extend({
-              route: '/approvalsteps',
-
-              connectOutlets: function (router, event) {
-                  router.get('dataApprovalController').connectOutlet('approvalMain', 'approvalGroup');
-                  router.get('approvalGroupController').connectOutlet('approvalStepsOutlet', 'approvalSteps');
-              },
-          }),
-      })
+        }),
+      }),
     }),
 
     // ************************** MAPS ROUTER **********************************
     navMaps: Ember.Route.extend({
       route: '/maps',
-      connectOutlets: function (router, context) {
+      connectOutlets(router) {
         FLOW.selectedControl.set('selectedSurveyGroup', null);
         router.get('applicationController').connectOutlet('navMaps');
         router.set('navigationController.selected', 'navMaps');
-      }
+      },
     }),
 
     // ************************** USERS ROUTER **********************************
     navUsers: Ember.Route.extend({
       route: '/users',
-      connectOutlets: function (router, context) {
+      connectOutlets(router) {
         router.get('applicationController').connectOutlet('navUsers');
         router.set('navigationController.selected', 'navUsers');
-      }
+      },
     }),
 
     // ************************** MESSAGES ROUTER **********************************
     navMessages: Ember.Route.extend({
       route: '/users',
-      connectOutlets: function (router, context) {
+      connectOutlets(router) {
         router.get('applicationController').connectOutlet('navMessages');
         router.set('navigationController.selected', 'navMessages');
         FLOW.messageControl.populate();
         router.resetState();
-      }
+      },
     }),
-
-    // ************************** ADMIN ROUTER **********************************
-    // not used at the moment
-    navAdmin: Ember.Route.extend({
-      route: '/admin',
-      connectOutlets: function (router, context) {
-        router.get('applicationController').connectOutlet('navAdmin');
-        router.set('navigationController.selected', 'navAdmin');
-      }
-    })
-  })
+  }),
 });

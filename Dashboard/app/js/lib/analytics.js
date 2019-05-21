@@ -1,4 +1,4 @@
-var _paq = _paq || [];
+const _paq = window._paq || [];
 _paq.push(['setDocumentTitle', `${document.domain}/${document.title}`]);
 _paq.push(['setCookieDomain', '*.akvoflow.org']);
 _paq.push(['setDomains', ['*.akvoflow.org']]);

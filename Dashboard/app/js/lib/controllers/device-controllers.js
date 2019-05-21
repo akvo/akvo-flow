@@ -5,19 +5,13 @@ FLOW.deviceGroupControl = Ember.ArrayController.create({
   contentNoUnassigned: null,
 
   filterDevices() {
-    this.set('contentNoUnassigned', FLOW.store.filter(FLOW.DeviceGroup, (item) => {
-      return (item.get('keyId') == 1) ? false : true;
-    }));
+    this.set('contentNoUnassigned', FLOW.store.filter(FLOW.DeviceGroup, item => (item.get('keyId') != 1)));
   },
 
   populate() {
-    let unassigned;
-
     // create a special record, which will to be saved to the datastore
     // to represent all devices unassigned to a device group.
-    unassigned = FLOW.store.filter(FLOW.DeviceGroup, (item) => {
-      return item.get('keyId') == 1;
-    });
+    let unassigned = FLOW.store.filter(FLOW.DeviceGroup, item => item.get('keyId') == 1);
     if (unassigned.toArray().length === 0) {
       unassigned = FLOW.store.createRecord(FLOW.DeviceGroup, {
         code: Ember.String.loc('_devices_not_in_a_group'),
@@ -43,14 +37,6 @@ FLOW.deviceControl = Ember.ArrayController.create({
     this.set('sortAscending', false);
   },
 
-  allAreSelected: Ember.computed(function (key, value) {
-    if (arguments.length === 2) {
-      this.setEach('isSelected', value);
-      return value;
-    }
-    return !this.get('isEmpty') && this.everyProperty('isSelected', true);
-  }).property('@each.isSelected'),
-
   atLeastOneSelected: Ember.computed(function () {
     return this.filterProperty('isSelected', true).get('length');
   }).property('@each.isSelected'),
@@ -70,19 +56,14 @@ FLOW.devicesInGroupControl = Ember.ArrayController.create(observe({
   sortProperties: ['combinedName'],
   sortAscending: true,
   setDevicesInGroup() {
-    let deviceGroupId;
     if (FLOW.selectedControl.get('selectedDeviceGroup') && FLOW.selectedControl.selectedDeviceGroup.get('keyId') !== null) {
-      deviceGroupId = FLOW.selectedControl.selectedDeviceGroup.get('keyId');
+      const deviceGroupId = FLOW.selectedControl.selectedDeviceGroup.get('keyId');
 
       // 1 means all unassigned devices
       if (deviceGroupId == 1) {
-        this.set('content', FLOW.store.filter(FLOW.Device, (item) => {
-          return Ember.empty(item.get('deviceGroup'));
-        }));
+        this.set('content', FLOW.store.filter(FLOW.Device, item => Ember.empty(item.get('deviceGroup'))));
       } else {
-        this.set('content', FLOW.store.filter(FLOW.Device, (item) => {
-          return parseInt(item.get('deviceGroup'), 10) == deviceGroupId;
-        }));
+        this.set('content', FLOW.store.filter(FLOW.Device, item => parseInt(item.get('deviceGroup'), 10) == deviceGroupId));
       }
     }
   },

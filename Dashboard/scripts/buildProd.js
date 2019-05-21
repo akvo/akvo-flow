@@ -4,7 +4,9 @@ import path from 'path';
 import { execSync } from 'child_process';
 import config from '../webpack.config.prod';
 import configPublic from '../webpack.config.public.prod';
-import { chalkError, chalkSuccess, chalkWarning, chalkProcessing } from './chalkConfig';
+import {
+  chalkError, chalkSuccess, chalkWarning, chalkProcessing,
+} from './chalkConfig';
 
 process.env.NODE_ENV = 'production';
 console.log(chalkProcessing('Generating bundle. This will take a moment...'));
