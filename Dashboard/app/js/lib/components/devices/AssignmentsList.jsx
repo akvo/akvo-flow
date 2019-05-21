@@ -1,7 +1,7 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 
-const AssignmentsList = ({ assignments, onEdit, onDelete }) => (
+const AssignmentsList = ({ assignments, onEdit, onDelete, onSort }) => (
   <div>
     <div className="deviceControls">
       <a
@@ -24,18 +24,30 @@ const AssignmentsList = ({ assignments, onEdit, onDelete }) => (
         {/*TABLE HEADER*/}
         <thead>
           <tr>
-            <th className="noArrows">
-              <a>
+            <th
+              className={FLOW.tableColumnControl.get('selected') == 'name' ? (FLOW.tableColumnControl.get('sortAscending') ? 'sorting_asc' : 'sorting_desc') : ''}
+            >
+              <a
+                onClick={() => onSort('name')}
+              >
                 {Ember.String.loc('_name')}
               </a>
             </th>
-            <th className="noArrows">
-              <a>
+            <th
+              className={FLOW.tableColumnControl.get('selected') == 'startDate' ? (FLOW.tableColumnControl.get('sortAscending') ? 'sorting_asc' : 'sorting_desc') : ''}
+            >
+              <a
+                onClick={() => onSort('startDate')}
+              >
                 {Ember.String.loc('_start_date')}
               </a>
             </th>
-            <th className="noArrows">
-              <a>
+            <th
+              className={FLOW.tableColumnControl.get('selected') == 'endDate' ? (FLOW.tableColumnControl.get('sortAscending') ? 'sorting_asc' : 'sorting_desc') : ''}
+            >
+              <a
+                onClick={() => onSort('endDate')}
+              >
                 {Ember.String.loc('_end_date')}
               </a>
             </th>
@@ -78,7 +90,7 @@ const AssignmentsList = ({ assignments, onEdit, onDelete }) => (
 );
 
 AssignmentsList.propTypes = {
-  assignments: PropTypes.object.isRequired,
+  assignments: PropTypes.array.isRequired,
   onEdit: PropTypes.func.isRequired,
 };
 

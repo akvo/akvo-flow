@@ -16,6 +16,7 @@ FLOW.AssignmentsListView = FLOW.ReactComponentView.extend(observe({
     this.assignmentsList = this.assignmentsList.bind(this);
     this.assignmentEdit = this.assignmentEdit.bind(this);
     this.assignmentDeleteConfirm = this.assignmentDeleteConfirm.bind(this);
+    this.assignmentSort = this.assignmentSort.bind(this);
   },
 
   didInsertElement(...args) {
@@ -66,5 +67,42 @@ FLOW.AssignmentsListView = FLOW.ReactComponentView.extend(observe({
         // FLOW.store.commit();
       }
     }
+  },
+
+  assignmentSort (item) {
+    FLOW.tableColumnControl.toggleProperty('sortAscending');
+    FLOW.tableColumnControl.set('sortProperties', item);
+    FLOW.tableColumnControl.set('selected', item);
+    this.assignmentsList();
+  },
+
+  sortedAssignments () {
+    let assignments = Ember.A(), sortColumn;
+    if (FLOW.tableColumnControl.get('selected')) {
+      sortColumn = FLOW.tableColumnControl.get('selected');
+    } else {
+      sortColumn = 'name';
+    }
+    FLOW.surveyAssignmentControl.get('content').forEach(function (item) {
+      assignments.push(item);
+    });
+    return assignments.sort(function (a, b) {
+      if (FLOW.tableColumnControl.get('sortAscending')) {
+        if (a.get(sortColumn) < b.get(sortColumn)) {
+          return -1;
+        }
+        if (a.get(sortColumn) > b.get(sortColumn)) {
+          return 1;
+        }
+      } else {
+        if (b.get(sortColumn) < a.get(sortColumn)) {
+          return -1;
+        }
+        if (b.get(sortColumn) > a.get(sortColumn)) {
+          return 1;
+        }
+      }
+      return 0;
+    });
   }
 });
