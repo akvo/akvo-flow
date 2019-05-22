@@ -5337,6 +5337,19 @@ li.disable {
     }
 }
 
+/* Assignments list*/
+.assignmentsListed {
+  .newAssignment {
+    float: right
+  }
+  .noAssignments {
+    margin-top: 60px
+  }
+  .cursorStyle {
+    cursor: default
+  }
+}
+
 /* Repeatable question groups */
 
 .questionGroupBlock {

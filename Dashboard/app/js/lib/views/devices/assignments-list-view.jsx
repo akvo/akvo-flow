@@ -17,14 +17,15 @@ FLOW.AssignmentsListView = FLOW.ReactComponentView.extend(observe({
     this.assignmentEdit = this.assignmentEdit.bind(this);
     this.assignmentDeleteConfirm = this.assignmentDeleteConfirm.bind(this);
     this.assignmentSort = this.assignmentSort.bind(this);
+    this.sortAscending = true;
+    this.selectedColumn = null;
   },
 
   didInsertElement(...args) {
     this._super(...args);
-    const self = this;
     const interval = setInterval(() => {
       if (FLOW.surveyAssignmentControl.content.isLoaded) {
-        self.assignmentsList();
+        this.assignmentsList();
         clearInterval(interval);
       }
     }, 500);
@@ -34,10 +35,25 @@ FLOW.AssignmentsListView = FLOW.ReactComponentView.extend(observe({
     if (!FLOW.surveyAssignmentControl.content.isLoaded) return;
 
     let assignments = this.sortedAssignments();
+    const strings = {
+      delete: Ember.String.loc('_delete'),
+      edit: Ember.String.loc('_edit'),
+      name: Ember.String.loc('_name'),
+      newAssignment: Ember.String.loc('_create_new_assignment'),
+      noAssignments: Ember.String.loc('_no_assignments'),
+      startDate: Ember.String.loc('_start_date'),
+      endDate: Ember.String.loc('_end_date'),
+      action: Ember.String.loc('_action'),
+    };
 
     this.reactRender(
       <AssignmentsList
         assignments={assignments}
+        strings={strings}
+        sortProperties={{
+          column: this.selectedColumn,
+          ascending: this.sortAscending,
+        }}
         onEdit={this.assignmentEdit}
         onDelete={this.assignmentDeleteConfirm}
         onSort={this.assignmentSort}
@@ -45,7 +61,7 @@ FLOW.AssignmentsListView = FLOW.ReactComponentView.extend(observe({
     );
   },
 
-  assignmentEdit(action, assignment) {
+  assignmentEdit(action, assignmentId) {
     switch (action) {
       case 'new': {
         const newAssignment = FLOW.store.createRecord(FLOW.SurveyAssignment, {});
@@ -53,14 +69,20 @@ FLOW.AssignmentsListView = FLOW.ReactComponentView.extend(observe({
         break;
       }
       default: {
-        FLOW.selectedControl.set('selectedSurveyAssignment', assignment);
+        let selectedSurveyAssignment = FLOW.store.find(FLOW.SurveyAssignment, assignmentId);
+        if (selectedSurveyAssignment) {
+          FLOW.selectedControl.set('selectedSurveyAssignment', selectedSurveyAssignment);
+        }
       }
     }
     FLOW.router.transitionTo('navDevices.editSurveysAssignment');
   },
 
-  assignmentDeleteConfirm(assignment) {
-    FLOW.dialogControl.confirm({ context: FLOW.dialogControl.delAssignment, assignmentId: assignment.get('keyId') });
+  assignmentDeleteConfirm(assignmentId) {
+    FLOW.dialogControl.confirm({
+      context: FLOW.dialogControl.delAssignment,
+      assignmentId: assignmentId,
+    });
   },
 
   assignmentDelete() {
@@ -74,36 +96,37 @@ FLOW.AssignmentsListView = FLOW.ReactComponentView.extend(observe({
   },
 
   assignmentSort(item) {
-    FLOW.tableColumnControl.toggleProperty('sortAscending');
-    FLOW.tableColumnControl.set('sortProperties', item);
-    FLOW.tableColumnControl.set('selected', item);
+    this.sortAscending = !this.sortAscending;
+    this.selectedColumn = item;
     this.assignmentsList();
   },
 
   sortedAssignments() {
     let assignments = Ember.A();
-    let sortColumn;
-    if (FLOW.tableColumnControl.get('selected')) {
-      sortColumn = FLOW.tableColumnControl.get('selected');
-    } else {
-      sortColumn = 'name';
+    if (!this.selectedColumn) {
+      this.selectedColumn = 'name';
     }
-    FLOW.surveyAssignmentControl.get('content').forEach(function (item) {
-      assignments.push(item);
+    FLOW.surveyAssignmentControl.get('content').forEach((item) => {
+      assignments.push({
+        keyId: item.get('keyId'),
+        name: item.get('name'),
+        startDate: FLOW.date3(item.get('startDate')),
+        endDate: FLOW.date3(item.get('endDate')),
+      });
     });
-    return assignments.sort(function (a, b) {
-      if (FLOW.tableColumnControl.get('sortAscending')) {
-        if (a.get(sortColumn) < b.get(sortColumn)) {
+    return assignments.sort((a, b) => {
+      if (this.sortAscending) {
+        if (a[this.selectedColumn] < b[this.selectedColumn]) {
           return -1;
         }
-        if (a.get(sortColumn) > b.get(sortColumn)) {
+        if (a[this.selectedColumn] > b[this.selectedColumn]) {
           return 1;
         }
       } else {
-        if (b.get(sortColumn) < a.get(sortColumn)) {
+        if (b[this.selectedColumn] < a[this.selectedColumn]) {
           return -1;
         }
-        if (b.get(sortColumn) > a.get(sortColumn)) {
+        if (b[this.selectedColumn] > a[this.selectedColumn]) {
           return 1;
         }
       }

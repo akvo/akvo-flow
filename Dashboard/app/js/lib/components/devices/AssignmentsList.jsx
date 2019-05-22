@@ -3,6 +3,8 @@ import PropTypes from 'prop-types';
 /* eslint-disable no-nested-ternary */
 const AssignmentsList = ({
   assignments,
+  strings,
+  sortProperties,
   onEdit,
   onDelete,
   onSort,
@@ -10,59 +12,61 @@ const AssignmentsList = ({
   <div>
     <div className="deviceControls">
       <a
-        className="btnOutline"
+        className="btnOutline newAssignment"
         onClick={() => onEdit('new')}
         onKeyDown={() => onEdit('new')}
-        style={{ float: 'right' }}
       >
-        {Ember.String.loc('_create_new_assignment')}
+        {strings.newAssignment}
       </a>
     </div>
     <div
-      id="devicesListTable_length"
       className="dataTables_length"
     />
-    {!assignments.get('length') && (
-      <div style={{ marginTop: '40px' }}>No assignments</div>
+    {!assignments.length && (
+      <div
+        className="noAssignments"
+      >
+        {strings.noAssignments}
+      </div>
     )}
-    {assignments.get('length') > 0 && (
+    {assignments.length > 0 && (
       <table className="dataTable">
         {/* TABLE HEADER */}
         <thead>
           <tr>
             <th
-              className={FLOW.tableColumnControl.get('selected') == 'name' ? (FLOW.tableColumnControl.get('sortAscending') ? 'sorting_asc' : 'sorting_desc') : ''}
+              className={sortProperties.column == 'name' ? (sortProperties.ascending ? 'sorting_asc' : 'sorting_desc') : ''}
             >
               <a
                 onClick={() => onSort('name')}
                 onKeyDown={() => onSort('name')}
               >
-                {Ember.String.loc('_name')}
+                {strings.name}
               </a>
             </th>
             <th
-              className={FLOW.tableColumnControl.get('selected') == 'startDate' ? (FLOW.tableColumnControl.get('sortAscending') ? 'sorting_asc' : 'sorting_desc') : ''}
+              className={sortProperties.column == 'startDate' ? (sortProperties.ascending ? 'sorting_asc' : 'sorting_desc') : ''}
             >
               <a
                 onClick={() => onSort('startDate')}
                 onKeyDown={() => onSort('startDate')}
               >
-                {Ember.String.loc('_start_date')}
+                {strings.startDate}
               </a>
             </th>
             <th
-              className={FLOW.tableColumnControl.get('selected') == 'endDate' ? (FLOW.tableColumnControl.get('sortAscending') ? 'sorting_asc' : 'sorting_desc') : ''}
+              className={sortProperties.column == 'endDate' ? (sortProperties.ascending ? 'sorting_asc' : 'sorting_desc') : ''}
             >
               <a
                 onClick={() => onSort('endDate')}
                 onKeyDown={() => onSort('endDate')}
               >
-                {Ember.String.loc('_end_date')}
+                {strings.endDate}
               </a>
             </th>
-            <th className="noArrows">
+            <th className="noArrows cursorStyle">
               <a>
-                {Ember.String.loc('_action')}
+                {strings.action}
               </a>
             </th>
           </tr>
@@ -70,25 +74,24 @@ const AssignmentsList = ({
         {/* TABLE BODY: MAIN CONTENT */}
         <tbody>
           {assignments.map(assignment => (
-            <tr key={assignment.get('keyId')}>
-              <td className="name">{assignment.get('name')}</td>
-              <td>{FLOW.date3(assignment.get('startDate'))}</td>
-              <td>{FLOW.date3(assignment.get('endDate'))}</td>
+            <tr key={assignment.keyId}>
+              <td className="name">{assignment.name}</td>
+              <td>{assignment.startDate}</td>
+              <td>{assignment.endDate}</td>
               <td className="action">
                 <a
-                  style={{ cursor: 'pointer' }}
-                  onClick={() => onEdit('edit', assignment)}
-                  onKeyDown={() => onEdit('edit', assignment)}
+                  onClick={() => onEdit('edit', assignment.keyId)}
+                  onKeyDown={() => onEdit('edit', assignment.keyId)}
                 >
-                  {Ember.String.loc('_edit')}
+                  {strings.edit}
                 </a>
                 <span>
                   <a
                     className="remove"
-                    onClick={() => onDelete(assignment)}
-                    onKeyDown={() => onDelete(assignment)}
+                    onClick={() => onDelete(assignment.keyId)}
+                    onKeyDown={() => onDelete(assignment.keyId)}
                   >
-                    {Ember.String.loc('_delete')}
+                    {strings.delete}
                   </a>
                 </span>
               </td>
@@ -102,6 +105,8 @@ const AssignmentsList = ({
 
 AssignmentsList.propTypes = {
   assignments: PropTypes.array.isRequired,
+  strings: PropTypes.object.isRequired,
+  sortProperties: PropTypes.object.isRequired,
   onEdit: PropTypes.func.isRequired,
   onDelete: PropTypes.func.isRequired,
   onSort: PropTypes.func.isRequired,
