@@ -93,3 +93,6 @@ rake.log
 lein.log
 
 tmp/
+
+# Webpack
+Dashboard/package-lock.json
