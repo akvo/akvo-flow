@@ -80,7 +80,7 @@ public class SurveyAssemblyServlet extends AbstractRestApiServlet {
     private static final String SURVEY_UPLOAD_URL = "surveyuploadurl";
     private static final String SURVEY_UPLOAD_DIR = "surveyuploaddir";
     private static final String FORM_PUB_STATUS_KEY = "formPublication";
-    
+
 
     private Random randomNumber = new Random();
 
@@ -91,8 +91,8 @@ public class SurveyAssemblyServlet extends AbstractRestApiServlet {
         restRequest.populateFromHttpRequest(req);
         return restRequest;
     }
-    
-    
+
+
     @Override
     protected RestResponse handleRequest(RestRequest req) throws Exception {
         RestResponse response = new RestResponse();
@@ -124,7 +124,7 @@ public class SurveyAssemblyServlet extends AbstractRestApiServlet {
             List<Long> ids = new ArrayList<Long>();
             ids.add(id);
             SurveyUtils.notifyReportService(ids, "invalidate");
-            
+
             // now update the status
             status.setInError(ok);
             status.setValue("finished");
@@ -164,7 +164,7 @@ public class SurveyAssemblyServlet extends AbstractRestApiServlet {
                 .param(SurveyAssemblyRequest.SURVEY_ID_PARAM, surveyId.toString());
         Queue queue = QueueFactory.getQueue("surveyAssembly");
         queue.add(options);
-        
+
         Survey s = new SurveyDAO().getById(surveyId);
         SurveyGroup sg = s != null ? new SurveyGroupDAO().getByKey(s.getSurveyGroupId()) : null;
         if (sg != null && sg.getNewLocaleSurveyId() != null &&
@@ -306,7 +306,7 @@ public class SurveyAssemblyServlet extends AbstractRestApiServlet {
         //Get groups, with order as key
         QuestionGroupDao qgDao = new QuestionGroupDao();
         TreeMap<Integer, QuestionGroup> qgList = qgDao.listQuestionGroupsBySurvey(surveyId);
-        
+
         boolean uploadOk = false;
         if (qgList != null) {
             StringBuilder surveyXML = new StringBuilder();
@@ -428,7 +428,7 @@ public class SurveyAssemblyServlet extends AbstractRestApiServlet {
         surveyAssemblyQueue.add(task);
     }
 
-    
+
     private void dispatchAssembleQuestionGroup(Long surveyId,
             String questionGroupIds, Long transactionId) {
         boolean isLast = true;
@@ -477,7 +477,7 @@ public class SurveyAssemblyServlet extends AbstractRestApiServlet {
         }
     }
 
-    
+
     /** Express a question and any subitems as XML
      * @param q
      * @return
@@ -744,6 +744,10 @@ public class SurveyAssemblyServlet extends AbstractRestApiServlet {
 
         if ("true".equalsIgnoreCase(String.valueOf(q.getAllowExternalSources()))) {
             qXML.setAllowExternalSources(String.valueOf(q.getAllowExternalSources()));
+        }
+
+        if (q.getVariableName() != null) {
+            qXML.setVariableName(q.getVariableName());
         }
 
         String questionDocument = null;
