@@ -1,5 +1,8 @@
 # Akvo Flow Release Notes
 ----
+# Akvo Flow Dashboard v1.9.47 - T.. T..
+Date: 27-05-2019
+
 # Akvo Flow Dashboard v1.9.46 - Squishy Squash
 Date: 06-05-2019
 
