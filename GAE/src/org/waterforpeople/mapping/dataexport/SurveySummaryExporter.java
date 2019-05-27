@@ -239,6 +239,42 @@ public class SurveySummaryExporter extends AbstractDataExporter {
         return questionMap;
     }
 
+    /**
+     * calls the server to augment the data already loaded in each QuestionDto in the map
+     * with variable names, if not set already
+     *
+     * @param surveyId
+     * @param serverBase
+     * @param questionMap map of lists of questionDtos keyed by id
+     * @param apiKey
+     */
+    protected void loadVariableNames(
+            String surveyId,
+            String serverBase,
+            Map<QuestionGroupDto, List<QuestionDto>> questionMap,
+            String apiKey) {
+
+        Map<Long, QuestionDto> questionsById = new HashMap<>();
+        for (List<QuestionDto> qList : questionMap.values()) {
+            for (QuestionDto q : qList) {
+                questionsById.put(q.getKeyId(), q);
+            }
+        }
+
+        try {
+            List<QuestionDto> dsQuestions = fetchQuestionsOfSurvey(serverBase, surveyId, apiKey); //unordered
+            for (QuestionDto sdDto : dsQuestions) {
+                QuestionDto dto = questionsById.get(sdDto.getKeyId());
+                if (dto != null && dto.getVariableName() == null) {
+                    dto.setVariableName(sdDto.getVariableName());
+                }
+            }
+
+        } catch (Exception e) {
+            System.err.println("Could not fetch question variableNames");
+            e.printStackTrace(System.err);
+        }
+    }
 
     /**
      * calls the server to augment the data already loaded in each QuestionDto in the map

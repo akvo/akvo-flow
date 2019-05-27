@@ -333,7 +333,7 @@ public class GraphicalSurveySummaryExporter extends SurveySummaryExporter {
             String s3FormDir) throws Exception {
         Map<QuestionGroupDto, List<QuestionDto>> questionMap = null;
         if (!publishedForm) {
-            //Legacy method - use datastore snapshot
+            //Legacy method - use datastore current (unpublished?) form structure
             // Get minimal data plus cascade level names
             questionMap = loadAllQuestions(surveyId, performGeoRollup, serverBaseUrl, apiKey);
             // Need options to be able to split out "other" value
@@ -350,7 +350,7 @@ public class GraphicalSurveySummaryExporter extends SurveySummaryExporter {
                 formXml = ZipUtil.unZipFile(surveyId + ".xml", formFileStream);
 
              } catch (IOException e) {
-                log.error("Error in form: " + e.getMessage(), e);
+                log.error("Error getting form XML file: " + e.getMessage(), e);
                 return null;
             }
 
@@ -358,14 +358,17 @@ public class GraphicalSurveySummaryExporter extends SurveySummaryExporter {
             questionMap = new HashMap<>();
             orderedGroupList = new ArrayList<QuestionGroupDto>(); //Must exist
             rollupOrder = new ArrayList<QuestionDto>();
+            boolean anyQuestionsWithoutVariableNames = false;
 
             for (QuestionGroupDto qgd : formDto.getQuestionGroupList()) {
                 //Transform the question maps to question lists
                 //BUT: this is the only use of this map *anywhere*, so it *could* be changed to a list...
-                //TODO get variableNames from the DS, if there were none in the XML
                 List<QuestionDto> qList = new ArrayList<>();
-                for (QuestionDto dto : qgd.getQuestionMap().values()) {
+                for (QuestionDto dto : qgd.getQuestionMap().values()) { //Ordered by key
                     qList.add(dto);
+                    if (dto.getVariableName() == null) {
+                        anyQuestionsWithoutVariableNames = true;
+                    }
                     //See if any questions have names that indicate they belong in rollups
                     if (performGeoRollup) {
                         for (int i = 0; i < ROLLUP_QUESTIONS.length; i++) {
@@ -379,7 +382,10 @@ public class GraphicalSurveySummaryExporter extends SurveySummaryExporter {
                orderedGroupList.add(qgd); //Ordering is implicit in XML
             }
 
-            //TODO: sorting the question lists? Assume the
+            //Fall back to variable names from DS, since VNs in XML is a recent addition
+            if (variableNamesInHeaders && anyQuestionsWithoutVariableNames) {
+                loadVariableNames(surveyId, serverBaseUrl, questionMap, apiKey); //expensive and imperfect fallback
+            }
 
         }
         return questionMap;
@@ -2154,8 +2160,15 @@ public class GraphicalSurveySummaryExporter extends SurveySummaryExporter {
         return this.imagePrefix;
     }
 
-    // This main() method is only used for debugging;
-    // when deployed on server, export() is called from Clojure code
+    /**
+     * This main() method is only used for debugging;
+     * when deployed on server, export() is called from Clojure code
+     * @param args
+     * [0] Output filename
+     * [1] Flow instance URL, like https://akvoflowsandbox.appspot.com
+     * [2] Survey id
+     * [3] report type, DATA_CLEANING|DATA_ANALYSIS|COMPREHENSIVE
+     */
     public static void main(String[] args) {
 
         // Log4j stuff - http://stackoverflow.com/a/9003191
@@ -2168,10 +2181,12 @@ public class GraphicalSurveySummaryExporter extends SurveySummaryExporter {
         GraphicalSurveySummaryExporter exporter = new GraphicalSurveySummaryExporter();
         Map<String, String> criteria = new HashMap<String, String>();
         Map<String, String> options = new HashMap<String, String>();
-        // Uncomment one of the following three lines
-        options.put(TYPE_OPT, DATA_CLEANING_TYPE);
-//        options.put(TYPE_OPT, DATA_ANALYSIS_TYPE);
-//        options.put(TYPE_OPT, COMPREHENSIVE_TYPE);
+        if (args.length < 4) {
+            // Uncomment one of the following three lines
+            options.put(TYPE_OPT, DATA_CLEANING_TYPE);
+//          options.put(TYPE_OPT, DATA_ANALYSIS_TYPE);
+//          options.put(TYPE_OPT, COMPREHENSIVE_TYPE);
+        }
         options.put(LAST_COLLECTION_OPT, "false");
         options.put(EMAIL_OPT, "email@example.com");
         options.put(FROM_OPT, null);
