@@ -75,7 +75,7 @@ public class DeleteSurveyIfEmpty implements Process {
             }
             if (doit) {
                 System.out.println("Deleting survey " + surveyId);
-                ds.delete(toBeRemoved);
+                DataUtils.batchDelete(ds,toBeRemoved);
             } else {
                 System.out.println("Not deleting survey " + surveyId);
             }
@@ -87,7 +87,9 @@ public class DeleteSurveyIfEmpty implements Process {
     }
 
     private List<Key> formsOfSurvey(DatastoreService ds, Long qId) {
-        final Query optq = new Query("Survey").setFilter(new Query.FilterPredicate("surveyGroupId", FilterOperator.EQUAL, qId));
+        final Query optq = new Query("Survey")
+                .setFilter(new Query.FilterPredicate("surveyGroupId", FilterOperator.EQUAL, qId))
+                .setKeysOnly();
         final PreparedQuery pqopt = ds.prepare(optq);
         List<Key> result = new ArrayList<>();
         for (Entity qa : pqopt.asIterable(FetchOptions.Builder.withChunkSize(500))) {

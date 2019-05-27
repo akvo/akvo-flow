@@ -73,14 +73,18 @@ public class DeleteFormCompletely implements Process {
             System.out.println("Form not found: " + surveyId);
         }
 
-        final Query query1 = new Query("QuestionGroup").setFilter(new Query.FilterPredicate("surveyId", FilterOperator.EQUAL, surveyId));
+        final Query query1 = new Query("QuestionGroup")
+                .setFilter(new Query.FilterPredicate("surveyId", FilterOperator.EQUAL, surveyId))
+                .setKeysOnly();
         final PreparedQuery pq = ds.prepare(query1);
 
         for (Entity qg : pq.asIterable(FetchOptions.Builder.withChunkSize(500))) {
             toBeRemoved.add(qg.getKey());
         }
 
-        final Query query2 = new Query("Question").setFilter(new Query.FilterPredicate("surveyId", FilterOperator.EQUAL, surveyId));
+        final Query query2 = new Query("Question")
+                .setFilter(new Query.FilterPredicate("surveyId", FilterOperator.EQUAL, surveyId))
+                .setKeysOnly();
         final PreparedQuery pq2 = ds.prepare(query2);
 
         for (Entity q : pq2.asIterable(FetchOptions.Builder.withChunkSize(500))) {
@@ -93,7 +97,7 @@ public class DeleteFormCompletely implements Process {
 
         if (doit) {
             System.out.println("Deleting " + toBeRemoved.size() + " entities.");
-            ds.delete(toBeRemoved);
+            DataUtils.batchDelete(ds,toBeRemoved);
         } else {
             System.out.println("Not deleting " + toBeRemoved.size() + " entities.");
         }
@@ -104,7 +108,9 @@ public class DeleteFormCompletely implements Process {
 
 
     private List<Key> optionsOfQuestion(DatastoreService ds, Long qId) {
-        final Query optq = new Query("QuestionOptions").setFilter(new Query.FilterPredicate("questionId", FilterOperator.EQUAL, qId));
+        final Query optq = new Query("QuestionOptions")
+                .setFilter(new Query.FilterPredicate("questionId", FilterOperator.EQUAL, qId))
+                .setKeysOnly();
         final PreparedQuery pqopt = ds.prepare(optq);
         List<Key> result = new ArrayList<>();
         for (Entity qa : pqopt.asIterable(FetchOptions.Builder.withChunkSize(500))) {
@@ -130,7 +136,7 @@ public class DeleteFormCompletely implements Process {
         }
         if (doit) {
             System.out.println("Removing from " + toBeSaved.size() + " assignments.");
-            ds.put(toBeSaved);
+            DataUtils.batchSaveEntities(ds,toBeSaved);
         } else {
             System.out.println("Found in " + toBeSaved.size() + " assignments.");
         }
