@@ -1,7 +1,16 @@
 # Akvo Flow Release Notes
 ----
-# Akvo Flow Dashboard v1.9.47 - T.. T..
+# Akvo Flow Dashboard v1.9.47 - Tweedy Tulip
 Date: 27-05-2019
+
+# New and noteworthy
+* **Assignments redesign** - Begin assignment redesign by reimplementing list using react framework [#2796].
+* **App download** - Use https when creating app download link [#3040].
+
+# Resolved issues
+* **Code cleanup and improvement** - Removed unused code [#3094] Remove usage of `SurveyalValue` [#2231]. Save question variable name to published form XML [#3101].
+* **Bug fixes** - Upgraded repository libraries [#3098].
+* **Data cleaning** - Update responses when cleaning data with only repeat question groups [#2995].
 
 # Akvo Flow Dashboard v1.9.46 - Squishy Squash
 Date: 06-05-2019
