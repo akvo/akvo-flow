@@ -1,5 +1,5 @@
 /*
- *  Copyright (C) 2010-2012 Stichting Akvo (Akvo Foundation)
+ *  Copyright (C) 2010-2012,2019 Stichting Akvo (Akvo Foundation)
  *
  *  This file is part of Akvo FLOW.
  *
@@ -32,7 +32,6 @@ import com.gallatinsystems.notification.NotificationRequest;
 import com.gallatinsystems.survey.dao.SurveyDAO;
 import com.gallatinsystems.survey.domain.Survey;
 import com.gallatinsystems.surveyal.dao.SurveyedLocaleDao;
-import com.gallatinsystems.surveyal.domain.SurveyalValue;
 
 /**
  * This handler sends notifications in response to survey events
@@ -53,13 +52,11 @@ public class SurveyEventNotificationHandler extends BaseNotificationHandler {
     private static final String SUBMISSION_SUBJECT = "FLOW Submisson Received";
     private static final String APPROVAL_SUBJECT = "FLOW Submission Approval";
 
-    private SurveyedLocaleDao localeDao;
     private SurveyInstanceDAO instDao;
     private SurveyDAO surveyDao;
 
     public SurveyEventNotificationHandler() {
         super();
-        localeDao = new SurveyedLocaleDao();
         instDao = new SurveyInstanceDAO();
         surveyDao = new SurveyDAO();
 
@@ -68,8 +65,6 @@ public class SurveyEventNotificationHandler extends BaseNotificationHandler {
     @Override
     public void generateNotification(String type, Long entityId,
             String destinations, String destOptions, String serverBase) {
-        List<SurveyalValue> values = localeDao
-                .listSurveyalValuesByInstance(entityId);
         StringBuilder contents = new StringBuilder();
 
         TreeMap<String, String> linkAddrList = new TreeMap<String, String>();
@@ -82,14 +77,6 @@ public class SurveyEventNotificationHandler extends BaseNotificationHandler {
 
         }
 
-        if (values != null) {
-            for (SurveyalValue val : values) {
-                contents.append(
-                        val.getMetricName() != null ? val.getMetricName() : val
-                                .getQuestionText()).append(": ")
-                        .append(val.getStringValue()).append("\n");
-            }
-        }
         String body = null;
         EditorialPageDao edDao = new EditorialPageDao();
         String head = null;

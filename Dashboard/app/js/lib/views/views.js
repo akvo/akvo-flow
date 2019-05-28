@@ -26,7 +26,6 @@ require('akvo-flow/views/reports/export-reports-views');
 require('akvo-flow/views/maps/map-views-common');
 require('akvo-flow/views/messages/message-view');
 require('akvo-flow/views/devices/devices-views');
-require('akvo-flow/views/devices/assignments-list-tab-view');
 require('akvo-flow/views/devices/assignments-list-view');
 require('akvo-flow/views/devices/assignment-edit-views');
 require('akvo-flow/views/devices/survey-bootstrap-view');
@@ -337,6 +336,12 @@ Ember.Handlebars.registerHelper('date3', function (property) {
     return FLOW.renderTimeStamp(Ember.get(this, property));
   }
 });
+
+FLOW.date3 = function (dateString) {
+  if (dateString) {
+    return FLOW.renderTimeStamp(dateString);
+  }
+};
 
 FLOW.parseJSON = function (jsonString, property) {
   try {

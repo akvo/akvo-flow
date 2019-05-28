@@ -1,5 +1,5 @@
 /*
- *  Copyright (C) 2012-2018 Stichting Akvo (Akvo Foundation)
+ *  Copyright (C) 2012-2019 Stichting Akvo (Akvo Foundation)
  *
  *  This file is part of Akvo FLOW.
  *
@@ -25,7 +25,6 @@ import com.gallatinsystems.survey.domain.Question;
 import com.gallatinsystems.survey.domain.QuestionOption;
 import com.gallatinsystems.survey.domain.Survey;
 import com.gallatinsystems.survey.domain.SurveyGroup;
-import com.gallatinsystems.surveyal.dao.SurveyalValueDao;
 import com.google.appengine.api.taskqueue.QueueFactory;
 import com.google.appengine.api.taskqueue.TaskOptions;
 
@@ -90,12 +89,10 @@ public class QuestionRestService {
         if (preflight != null && preflight.equals("delete")
                 && questionId != null) {
             QuestionAnswerStoreDao qasDao = new QuestionAnswerStoreDao();
-            SurveyalValueDao svDao = new SurveyalValueDao();
             statusDto.setStatus("preflight-delete-question");
             statusDto.setMessage("cannot_delete");
 
-            if (qasDao.listByQuestion(questionId).size() == 0
-                    && svDao.listByQuestion(questionId).size() == 0) {
+            if (qasDao.listByQuestion(questionId).size() == 0) {
                 statusDto.setMessage("can_delete");
                 statusDto.setKeyId(questionId);
             }
@@ -203,8 +200,7 @@ public class QuestionRestService {
             @PathVariable("id") Long questionId) {
         final Map<String, RestStatusDto> response = new HashMap<String, RestStatusDto>();
         Question q = questionDao.getByKey(questionId);
-        RestStatusDto statusDto = null;
-        statusDto = new RestStatusDto();
+        RestStatusDto statusDto = new RestStatusDto();
         statusDto.setStatus("failed");
         statusDto.setMessage("_cannot_delete");
 

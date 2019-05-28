@@ -5321,7 +5321,7 @@ li.disable {
         background: white;
     }
     + div + .dataTable {
-        margin-top: 40px;
+        margin-top: 30px;
     }
     + .dataTable {
         margin-top: 60px;
@@ -5335,6 +5335,19 @@ li.disable {
             margin-top: 60px;
         }
     }
+}
+
+/* Assignments list*/
+.assignmentsListed {
+  .newAssignment {
+    float: right
+  }
+  .noAssignments {
+    margin-top: 60px
+  }
+  .cursorStyle {
+    cursor: default
+  }
 }
 
 /* Repeatable question groups */

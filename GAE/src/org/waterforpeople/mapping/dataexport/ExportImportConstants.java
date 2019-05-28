@@ -41,4 +41,10 @@ public final class ExportImportConstants {
     protected static final String OTHER_SUFFIX = "--OTHER--";
     protected static final String GEO_PREFIX = "--GEO";
     protected static final String CADDISFLY_PREFIX = "--CADDISFLY";
+
+    //Sheet names
+    protected static final String RAW_DATA_SHEET_LABEL = "Raw Data";
+    protected static final String GROUP_DATA_SHEET_PREFIX = "Group ";
+    protected static final String GROUP_DATA_SHEET_PATTERN = "^Group \\d+$";
+
 }

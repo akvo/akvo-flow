@@ -137,7 +137,6 @@ public class SurveyedLocaleServlet extends AbstractRestApiServlet {
         Map<Long, List<QuestionAnswerStore>> questionAnswerStore = getQuestionAnswerStoreMap(
                 surveyInstancesMap);
 
-        // for each surveyedLocale, store the SurveyalValue in a map
         for (SurveyedLocale surveyedLocale : slList) {
             long surveyedLocaleId = surveyedLocale.getKey().getId();
             SurveyedLocaleDto dto = createSurveyedLocaleDto(surveyGroupId, questionDao,
@@ -181,11 +180,11 @@ public class SurveyedLocaleServlet extends AbstractRestApiServlet {
             Map<Long, List<SurveyInstance>> surveyInstanceMap) {
         QuestionAnswerStoreDao questionAnswerStoreDao = new QuestionAnswerStoreDao();
         List<Long> surveyInstancesIds = getSurveyInstancesIds(surveyInstanceMap);
-        List<QuestionAnswerStore> surveyalValueList = questionAnswerStoreDao
+        List<QuestionAnswerStore> questionAnswerList = questionAnswerStoreDao
                 .fetchItemsByIdBatches(surveyInstancesIds, "surveyInstanceId");
         Map<Long, List<QuestionAnswerStore>> questionAnswerStoreMap = new HashMap<>();
-        if (surveyalValueList != null && surveyalValueList.size() > 0) {
-            for (QuestionAnswerStore questionAnswerStore : surveyalValueList) {
+        if (questionAnswerList != null && questionAnswerList.size() > 0) {
+            for (QuestionAnswerStore questionAnswerStore : questionAnswerList) {
                 // put them in a map with the surveyInstanceId as key
                 Long surveyInstanceId = questionAnswerStore.getSurveyInstanceId();
                 if (questionAnswerStoreMap.containsKey(surveyInstanceId)) {

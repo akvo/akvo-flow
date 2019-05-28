@@ -68,11 +68,6 @@ public class RawDataSpreadsheetImporter implements DataImporter {
     private BlockingQueue<Runnable> jobQueue;
     private List<String> errorIds;
     private static final FlowJsonObjectWriter JSON_OBJECT_WRITER = new FlowJsonObjectWriter();
-    private static final int LEGACY_MONITORING_FORMAT = 6;
-    private static final int MONITORING_FORMAT_WITH_DEVICE_ID_COLUMN = 7;
-    private static final int MONITORING_FORMAT_WITH_REPEAT_COLUMN = 8;
-    private static final int MONITORING_FORMAT_WITH_APPROVAL_COLUMN = 9;
-    private static final int MONITORING_FORMAT_WITH_FORM_VERSION = 10;
 
     private boolean otherValuesInSeparateColumns = false; //until we find one
 
@@ -88,7 +83,7 @@ public class RawDataSpreadsheetImporter implements DataImporter {
     public static final String FORM_VER_COLUMN_KEY = "formVersion";
 
     public static final String NEW_DATA_PATTERN = "^[Nn]ew-\\d+"; // new- or New- followed by one or more digits
-
+    public static final String VALID_QUESTION_HEADER_PATTERN = "[0-9]+\\|.+"; //digits followed by a vertical bar
 
     /**
      * opens a file input stream using the file passed in and tries to return the first worksheet in
@@ -104,10 +99,11 @@ public class RawDataSpreadsheetImporter implements DataImporter {
         try {
             stream = new PushbackInputStream(new FileInputStream(file));
             wb = WorkbookFactory.create(stream);
+            return wb.getSheetAt(0); //Assumes raw data sheet is first
         } catch (Exception e) {
             log.error("Workbook creation exception:" + e);
         }
-        return wb.getSheetAt(0);
+        return null;
     }
 
     /**
@@ -138,7 +134,7 @@ public class RawDataSpreadsheetImporter implements DataImporter {
             for (int i = 0; i < wb.getNumberOfSheets(); i++) {
                 Sheet sheet = wb.getSheetAt(i);
                 String sn = sheet.getSheetName();
-                if (i == 0 || sn.startsWith("Group ")) {
+                if (i == 0 || sn != null && sn.matches(GROUP_DATA_SHEET_PATTERN)) { //Assume base sheet is 0
                     sheetMap.put(sheet, processHeader(sheet, headerRowIndex));
                     otherValuesInSeparateColumns |= separatedOtherValues(sheet, headerRowIndex);
                 }
@@ -149,7 +145,7 @@ public class RawDataSpreadsheetImporter implements DataImporter {
             Map<Long, List<QuestionOptionDto>> optionNodes = fetchOptionNodes(serverBase,
                     criteria, questionIdToQuestionDto.values());
 
-            List<InstanceData> instanceDataList = parseSplitSheets(wb.getSheetAt(0),
+            List<InstanceData> instanceDataList = parseSplitSheets(wb.getSheetAt(0), //Assume base sheet is 0
                     sheetMap,
                     questionIdToQuestionDto,
                     optionNodes,
@@ -240,8 +236,13 @@ public class RawDataSpreadsheetImporter implements DataImporter {
 
         //these are all for the base sheet
         Map<Integer, Long> columnIndexToQuestionId = sheetMap.get(baseSheet);
-        int firstQuestionColumnIndex = Collections.min(columnIndexToQuestionId.keySet());
-        Map<String, Integer> metadataColumnHeaderIndex = getMetadataColumnIndex(baseSheet, firstQuestionColumnIndex, headerRowIndex, false);
+        int firstQuestionColumnIndex = -1;
+        if (columnIndexToQuestionId.isEmpty()) { //Nothing but metadata
+            firstQuestionColumnIndex = md5Column;
+        } else {
+            firstQuestionColumnIndex = Collections.min(columnIndexToQuestionId.keySet());
+        }
+        Map<String, Integer> metadataColumnHeaderIndex = getMetadataColumnIndex(baseSheet, firstQuestionColumnIndex, headerRowIndex);
         Map<String, Integer> repMetadataIndex = null; //lazy calc, done if needed; all rep sheets should be the same!
 
         int row = headerRowIndex + 1; //where the data starts
@@ -263,7 +264,7 @@ public class RawDataSpreadsheetImporter implements DataImporter {
                     Map<Integer, Long> repQMap = sheetMap.get(repSheet);
                     int repFirstQIdx = Collections.min(repQMap.keySet());
                     if (repMetadataIndex == null) { //do this only once??
-                        repMetadataIndex = getMetadataColumnIndex(repSheet, repFirstQIdx, headerRowIndex, true);
+                        repMetadataIndex = getMetadataColumnIndex(repSheet, repFirstQIdx, headerRowIndex);
                     }
                     Integer pos = sheetPosition.get(repSheet);
                     if (pos == null) { //never scanned this one before; start at top
@@ -306,7 +307,7 @@ public class RawDataSpreadsheetImporter implements DataImporter {
      * @param firstQuestionColumnIndex
      * @return
      */
-    private Map<String, Integer> getMetadataColumnIndex(Sheet sheet, int firstQuestionColumnIndex, int headerRow, boolean singleOrRepSheet) {
+    private Map<String, Integer> getMetadataColumnIndex(Sheet sheet, int firstQuestionColumnIndex, int headerRow) {
         Map<String, Integer> index = new HashMap<>();
 
         Row row = sheet.getRow(headerRow);
@@ -365,7 +366,7 @@ public class RawDataSpreadsheetImporter implements DataImporter {
 
         // 0. SurveyedLocaleIdentifier - link to base sheet
         // 1. Approval (if hasIterationColumn) - ignored duplicate
-        // 2. Repeat
+        // 2. Repeat, >= 1
         // 3. SurveyedLocaleDisplayName - ignored duplicate
         // 4. DeviceIdentifier - ignored duplicate
         // 5. SurveyInstanceId - link to base sheet?
@@ -472,7 +473,7 @@ public class RawDataSpreadsheetImporter implements DataImporter {
         // 7. SubmitterName
         // 8. SurveyalTime
 
-        // 9 - N. Questions
+        // 9 - N. Questions (Possibly none)
         // N + 1. Digest
 
         // First check if we are done with the sheet
@@ -488,8 +489,8 @@ public class RawDataSpreadsheetImporter implements DataImporter {
 
         String deviceIdentifier = "";
         if (metadataColumnHeaderIndex.containsKey(DEVICE_IDENTIFIER_COLUMN_KEY)) {
-            deviceIdentifier = getMetadataCellContent(baseRow, metadataColumnHeaderIndex,
-                    DEVICE_IDENTIFIER_COLUMN_KEY);
+            deviceIdentifier = getMetadataCellContent(baseRow,
+                    metadataColumnHeaderIndex, DEVICE_IDENTIFIER_COLUMN_KEY);
         }
 
         String surveyInstanceId = getMetadataCellContent(baseRow, metadataColumnHeaderIndex,
@@ -1006,6 +1007,90 @@ public class RawDataSpreadsheetImporter implements DataImporter {
                 urlString, shouldSign, key);
     }
 
+    /**
+     * @param sheet
+     * @param isBaseSheet
+     * @param errorMap
+     * @return number of questions columns found
+     */
+    private int validateSheet(Sheet sheet, boolean isBaseSheet, Map<Integer, String> errorMap) {
+        //Each sheet should have a "Metadata" header, and on the next row, column headers
+        //Verify that this is a 2017-style report w group headers and rqg's on separate sheets
+        if (!safeCellCompare(sheet, 0, 0, METADATA_LABEL)) {
+            errorMap.put(0, "First header cell on each sheet must contain '" + METADATA_LABEL + "'");
+            return 0;
+        }
+
+        int questionCount = 0;
+        final int headerRowIndex = 1; //Always, now
+        Row headerRow = sheet.getRow(headerRowIndex);
+        int firstQuestionColumnIndex = -1;
+        int lastNonemptyHeaderColumnIndex = 0;
+
+        for (Cell cell : headerRow) {
+            String cellValue = cell.getStringCellValue();
+            // if encountering a null cell make sure its only due to phantom cells at the end of
+            // the row. If null or empty cell occurs in middle of header row report an error
+            if (isEmptyCell(cell) && nonEmptyHeaderCellsAfter(cell)) {
+                errorMap.put(
+                        cell.getColumnIndex(),
+                        String.format(
+                                "Cannot import data from Column %s - \"%s\". Please check and/or fix the header cell",
+                                CellReference.convertNumToColString(cell.getColumnIndex()),
+                                cellValue));
+
+                break;
+            }
+
+            if (!isEmptyCell(cell)) {
+                lastNonemptyHeaderColumnIndex = cell.getColumnIndex();
+            }
+            if (cellValue.matches(VALID_QUESTION_HEADER_PATTERN)) {
+                questionCount++;
+                if (firstQuestionColumnIndex == -1) {
+                    firstQuestionColumnIndex = cell.getColumnIndex();
+                }
+            }
+        }
+
+        if (firstQuestionColumnIndex == -1 && errorMap.isEmpty()) {
+            //May be NO answers on base sheet if all groups are repeatable
+            firstQuestionColumnIndex = lastNonemptyHeaderColumnIndex + 1;
+        }
+
+        String name = sheet.getSheetName();
+        log.info("Sheet '" + name + "' first question column index: " + firstQuestionColumnIndex);
+
+        //Check that all mandatory metadata columns exist
+        //TODO: we might relax the set on group sheets
+        Map<String, Integer> index = getMetadataColumnIndex(sheet,
+                firstQuestionColumnIndex,
+                headerRowIndex);
+        if (!checkCol(index, DATAPOINT_IDENTIFIER_COLUMN_KEY)) {
+            errorMap.put(-3, "Column header '" + IDENTIFIER_LABEL + "' missing on sheet " + name);
+        }
+        if (!checkCol(index, DATAPOINT_NAME_COLUMN_KEY)) {
+            errorMap.put(-4, "Column header '" + DISPLAY_NAME_LABEL + "' missing on sheet " + name);
+        }
+        if (!checkCol(index, SURVEY_INSTANCE_COLUMN_KEY)) {
+            errorMap.put(-5, "Column header '" + INSTANCE_LABEL + "' missing on sheet " + name);
+        }
+        if (!checkCol(index, COLLECTION_DATE_COLUMN_KEY)) {
+            errorMap.put(-6, "Column header '" + SUB_DATE_LABEL + "' missing on sheet " + name);
+        }
+        if (!checkCol(index, SUBMITTER_COLUMN_KEY)) {
+            errorMap.put(-7, "Column header '" + SUBMITTER_LABEL + "' missing on sheet " + name);
+        }
+        if (!checkCol(index, DURATION_COLUMN_KEY)) {
+            errorMap.put(-8, "Column header '" + DURATION_LABEL + "' missing on sheet " + name);
+        }
+        if (!isBaseSheet && !checkCol(index, REPEAT_COLUMN_KEY)) {
+            errorMap.put(-9, "Column header '" + REPEAT_LABEL + "' missing on sheet " + name);
+        }
+
+        return questionCount;
+    }
+
     /*
      * validate
      * Called from Clojure code before executeImport()
@@ -1015,97 +1100,36 @@ public class RawDataSpreadsheetImporter implements DataImporter {
         Map<Integer, String> errorMap = new HashMap<Integer, String>();
 
         try {
-            Sheet sheet = getDataSheet(file);
+            Workbook wb = getDataSheet(file).getWorkbook();
 
-            //Find out if this is a 2017-style report w group headers and rqg's on separate sheets
-            boolean splitSheets = safeCellCompare(sheet, 0, 0, METADATA_LABEL);
-            if (!splitSheets) {
-                errorMap.put(0, "First header cell must contain '" + METADATA_LABEL + "'");
-                return errorMap;
-            }
-
-            int headerRowIndex = splitSheets ? 1 : 0;
-
-            Row headerRow = sheet.getRow(headerRowIndex);
-            boolean firstQuestionFound = false;
-            int firstQuestionColumnIndex = 0;
-
-            for (Cell cell : headerRow) {
-                String cellValue = cell.getStringCellValue();
-                // if encountering a null cell make sure its only due to phantom cells at the end of
-                // the row. If null or empty cell occurs in middle of header row report an error
-                if ((cellValue == null || cellValue.trim().isEmpty()) && isMissingHeaderCell(cell)) {
-                    errorMap.put(
-                            cell.getColumnIndex(),
-                            String.format(
-                                    "Cannot import data from Column %s - \"%s\". Please check and/or fix the header cell",
-                                    CellReference.convertNumToColString(cell.getColumnIndex()),
-                                    cellValue));
-
-                    break;
-                }
-
-                if (!firstQuestionFound && cellValue.matches("[0-9]+\\|.+")) {
-                    firstQuestionFound = true;
-                    firstQuestionColumnIndex = cell.getColumnIndex();
-                    if (!isSupportedReportFormat(firstQuestionColumnIndex)) {
-                        errorMap.put(firstQuestionColumnIndex,
-                                "Found the first question at the wrong column index");
-                        break;
-                    }
-                    log.info("Importing report with first question column index: "
-                            + firstQuestionColumnIndex);
-                }
-            }
-
-            if (!firstQuestionFound) {
-                errorMap.put(-1, "A question could not be found");
-            }
-
-            Workbook wb = sheet.getWorkbook();
-
-            //check that all mandatory columns exist on all sheets
+            //check each sheet in turn
+            int questions = 0;
             for (int i = 0; i < wb.getNumberOfSheets(); i++) {
-                sheet = wb.getSheetAt(i);
-                Map<String, Integer> index = getMetadataColumnIndex(sheet, firstQuestionColumnIndex, headerRowIndex,
-                        false);
-                if (!checkCol(index, DATAPOINT_IDENTIFIER_COLUMN_KEY)) {
-                    errorMap.put(-1, "Column header '" + IDENTIFIER_LABEL + "' missing on sheet " + i);
+                Sheet sheet = wb.getSheetAt(i);
+                String name = sheet.getSheetName();
+                if (i == 0) {
+                    if (RAW_DATA_SHEET_LABEL.equals(name)) {
+                        questions += validateSheet(sheet, true, errorMap);
+                    } else {
+                        errorMap.put(-12, "First sheet must be named '" + RAW_DATA_SHEET_LABEL + "'.");
+                    }
+                } else if (name != null && name.matches(GROUP_DATA_SHEET_PATTERN)) {
+                    questions += validateSheet(sheet, false, errorMap);
+                } else {
+                    //Not an error; just ignore
+                    log.info("Sheet '" + name + "' not validated for import.");
                 }
-                if (!checkCol(index, DATAPOINT_NAME_COLUMN_KEY)) {
-                    errorMap.put(-1, "Column header '" + DISPLAY_NAME_LABEL + "' missing on sheet " + i);
-                }
-                if (!checkCol(index, SURVEY_INSTANCE_COLUMN_KEY)) {
-                    errorMap.put(-1, "Column header '" + INSTANCE_LABEL + "' missing on sheet " + i);
-                }
-                if (!checkCol(index, COLLECTION_DATE_COLUMN_KEY)) {
-                    errorMap.put(-1, "Column header '" + SUB_DATE_LABEL + "' missing on sheet " + i);
-                }
-                if (!checkCol(index, SUBMITTER_COLUMN_KEY)) {
-                    errorMap.put(-1, "Column header '" + SUBMITTER_LABEL + "' missing on sheet " + i);
-                }
-                if (!checkCol(index, DURATION_COLUMN_KEY)) {
-                    errorMap.put(-1, "Column header '" + DURATION_LABEL + "' missing on sheet " + i);
-                }
-                if (i > 0 && !checkCol(index, REPEAT_LABEL)) {
-                    errorMap.put(-1, "Column header '" + REPEAT_LABEL + "' missing on sheet " + i);
-                }
-                i++;
+            }
+            if (questions == 0) {
+                //“Judge a man by his questions rather than by his answers." -- Voltaire
+                errorMap.put(-11, "No question columns found on any sheet.");
             }
 
         } catch (Exception e) {
-            errorMap.put(-1, e.getMessage());
+            errorMap.put(-10, e.getMessage());
         }
 
         return errorMap;
-    }
-
-    private boolean isSupportedReportFormat(int firstQuestionColumnIndex) {
-        return firstQuestionColumnIndex == LEGACY_MONITORING_FORMAT
-                || firstQuestionColumnIndex == MONITORING_FORMAT_WITH_DEVICE_ID_COLUMN
-                || firstQuestionColumnIndex == MONITORING_FORMAT_WITH_REPEAT_COLUMN
-                || firstQuestionColumnIndex == MONITORING_FORMAT_WITH_APPROVAL_COLUMN
-                || firstQuestionColumnIndex == MONITORING_FORMAT_WITH_FORM_VERSION;
     }
 
     /**
@@ -1147,17 +1171,12 @@ public class RawDataSpreadsheetImporter implements DataImporter {
             return true; // phantom row
         }
         // maybe cells are all blank/contain only spaces?
-        boolean blank = true;
         for (int ix = row.getFirstCellNum(); ix < row.getLastCellNum(); ix++) {
             if (!isEmptyCell(row.getCell(ix))) {
-                blank = false;
-                break;
+                return false;
             }
         }
-        if (blank) {
-            return true;
-        }
-        return false;
+        return true;
     }
 
     /**
@@ -1168,12 +1187,12 @@ public class RawDataSpreadsheetImporter implements DataImporter {
      * @param cell
      * @return
      */
-    private boolean isMissingHeaderCell(Cell cell) {
-        assert cell.getRow().getRowNum() == 0; // only process header rows
+    private boolean nonEmptyHeaderCellsAfter(Cell cell) {
+        assert cell.getRow().getRowNum() == 1; // only process header rows
 
         Row row = cell.getRow();
-        for (int i = cell.getColumnIndex(); i < row.getLastCellNum(); i++) {
-            if (row.getCell(i) != null && !row.getCell(i).getStringCellValue().trim().isEmpty()) {
+        for (int i = cell.getColumnIndex() + 1; i < row.getLastCellNum(); i++) {
+            if (!isEmptyCell(row.getCell(i))) {
                 return true;
             }
         }
