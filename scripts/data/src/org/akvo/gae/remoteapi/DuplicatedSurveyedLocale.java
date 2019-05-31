@@ -1,5 +1,5 @@
 /*
- *  Copyright (C) 2015 Stichting Akvo (Akvo Foundation)
+ *  Copyright (C) 2019 Stichting Akvo (Akvo Foundation)
  *
  *  This file is part of Akvo FLOW.
  *
@@ -24,6 +24,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.TimeZone;
+import java.util.TreeMap;
 
 import com.google.appengine.api.datastore.DatastoreService;
 import com.google.appengine.api.datastore.Entity;
@@ -37,13 +38,13 @@ import com.google.appengine.api.datastore.Query.FilterOperator;
 import com.google.appengine.api.datastore.Query.SortDirection;
 
 /*
- * - Find duplicated SurveyedLocales
+ * - Find duplicated datapoints
  */
 public class DuplicatedSurveyedLocale implements Process {
 
     boolean deleteDuplicates = false;
-    private Map<Long, String> surveyGroups = new HashMap<>();
-    final List<Entity> toBeRemoved = new ArrayList<>();
+    String instance;
+    final List<Entity> toBeJudged = new ArrayList<>();
 
     @Override
     public void execute(DatastoreService ds, String[] args) throws Exception {
@@ -52,180 +53,158 @@ public class DuplicatedSurveyedLocale implements Process {
             //System.out.printf("#Argument %d: %s\n", i, args[i]);
             if (args[i].equalsIgnoreCase("--doit")) {
                 deleteDuplicates = true;
+            } else {
+                instance = args[i];
             }
         }
 
         DateFormat df = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss.SSS");
         df.setTimeZone(TimeZone.getTimeZone("UT"));
 
-        processSurveyGroups(ds);
+        System.out.println("#!/bin/bash");
 
         final Query q = new Query("SurveyedLocale").addSort("identifier", SortDirection.ASCENDING);
         final PreparedQuery pq = ds.prepare(q);
 
-
-        System.err.println("#Processing SurveyedLocales");
-        System.out.println("#Processing SurveyedLocales");
-        if (!deleteDuplicates) {
-            System.out.println(" (report only)");
-        }
-
         String lastIdentifier = "";
-        Long lastId = Long.valueOf(0);
-        Date lastCre = null;
+        Entity lastSL = null;
         int count = 0;
-        List<Long> lastContrib = null;
-        String lastContribStr = "";
 
-        int slCount = 0;
-
+        //Loop over sorted list; any adjacent entries w same identifier means duplicate
         for (Entity sl : pq.asIterable(FetchOptions.Builder.withChunkSize(500))) {
-            slCount++;
-
-            Long id = sl.getKey().getId();
+            count++;
             String identifier = (String) sl.getProperty("identifier");
             if (identifier == null) identifier = "";
-            Date cre = (Date) sl.getProperty("createdDateTime");
-            @SuppressWarnings("unchecked")
-            List<Long> contrib = (List<Long>) sl.getProperty("surveyInstanceContrib");
-            String contribStr = "";
-            if (contrib != null) {
-                contribStr = contrib.toString();
-            }
 
             if (identifier.equals(lastIdentifier)) { //Duplicate!
-                //Show what this is for
-
-                if (contrib != null) {
-                    contribStr = "["; //get more details
-                    for (Long i : contrib) {
-                        contribStr += "\n  *si"  + i + surveyInstanceDescription(ds, i) + qasForInstance(ds,  i);
-                    }
-                    contribStr += "]";
+                //Add both to the list (unless there, in case there are more than 2)
+                toBeJudged.add(sl);
+                if (! toBeJudged.contains(lastSL)) {
+                    toBeJudged.add(lastSL);
                 }
-                if (lastContrib != null) {
-                    lastContribStr = "["; //get more details
-                    for (Long i : lastContrib) {
-                        lastContribStr += "\n  *si" + i + surveyInstanceDescription(ds, i) + qasForInstance(ds,  i);
-                    }
-                    lastContribStr += "]";
-                }
-
-                System.out.println(String.format("**SurveyedLocale #%d created %s identifier %s contributors %s", lastId, df.format(lastCre), lastIdentifier, lastContribStr));
-                System.out.println(String.format("**SurveyedLocale #%d created %s identifier %s contributors %s", id, df.format(cre), identifier, contribStr));
-                System.out.println("");
-                if (contrib == null || (
-                        contrib.size() <= 1
-                        && !contribStr.equals(lastContribStr))) { //one contrib and not the same as the first one
-                    toBeRemoved.add(sl);
-                }
-                count++;
             }
 
             lastIdentifier = identifier;
-            lastId = id;
-            lastCre = cre;
-            lastContrib = contrib;
-            lastContribStr = contribStr;
+            lastSL = sl;
         }
-        System.out.println("Found " + count);
-        if (!toBeRemoved.isEmpty()) {
-            final List<Key> terminate = new ArrayList<>();
-            for (Entity sl: toBeRemoved) {
+        System.out.println("##Scanned " + count + " DPs. Found " + toBeJudged.size() + " suspects:");
 
+
+        lastIdentifier = "";
+        if (!toBeJudged.isEmpty()) {
+            for (Entity sl: toBeJudged) {
                 Long id = sl.getKey().getId();
-                System.out.println("Deleting SL #" + id);
-                terminate.add(sl.getKey()); //SL itself
+                String identifier = (String) sl.getProperty("identifier");
+                if (identifier == null) identifier = "";
+                Date cre = (Date) sl.getProperty("createdDateTime");
 
-                //Now get any surveyalValues
-                final Query qv = new Query("SurveyalValue").setFilter(new Query.FilterPredicate("surveyedLocaleId", FilterOperator.EQUAL, id));
-                final PreparedQuery pqv = ds.prepare(qv);
-                for (Entity sv : pqv.asIterable(FetchOptions.Builder.withChunkSize(500))) {
-                    System.out.print(" SV #" + sv.getKey().getId());
-                    terminate.add(sv.getKey());
-                }
-                System.out.println("");
+                if (! lastIdentifier.equals(identifier)) {
+                    System.out.println(""); //New clone
+                 }
 
-                //Now get any contributing surveyInstances
+                //Decision support:
+                System.out.println(String.format(
+                        "##Datapoint '%s'  created %s ",
+                        identifier,
+                        df.format(cre)
+                        ));
+
+                //Now show any contributing surveyInstances
                 final Query qi = new Query("SurveyInstance").setFilter(new Query.FilterPredicate("surveyedLocaleId", FilterOperator.EQUAL, id));
                 final PreparedQuery pqi = ds.prepare(qi);
                 for (Entity si : pqi.asIterable(FetchOptions.Builder.withChunkSize(500))) {
-                    System.out.println("  Deleting SI # and QAS" + si.getKey().getId());
-                    terminate.add(si.getKey());
-                    //Now get the QASs for this SI
-                    terminate.addAll(qasForInstanceK(ds, si.getKey().getId()));
-                }
 
-            }
-            System.out.println("Scanned " + slCount + " SLs");
-            if (deleteDuplicates) {
-                System.out.println("Deleting " + terminate.size() + " entities ( " + toBeRemoved.size() + ")" + count + " pairs");
-                ds.delete(terminate);
-            } else {
-                System.out.println("Not deleting " + terminate.size() + " entities ( " + toBeRemoved.size() + ")" + count + " pairs");
+                    Date siCre = (Date) si.getProperty("createdDateTime");
+                    Long siId = si.getKey().getId();
+                    Long formId = (Long) si.getProperty("surveyId");
+                    String survey = surveyOfForm(ds, formId);
+                    List<String> answers = qasValuesForInstance(ds, siId);
+                    System.out.println(String.format(
+                            "  ## SI %d  form %d (survey %s) created %s  answers (%d) %s",
+                            siId,
+                            formId,
+                            survey,
+                            df.format(siCre),
+                            answers.size(),
+                            answers.toString()
+                            ));
+                    }
+                lastIdentifier = identifier;
+
+                //Action options:
+                //This line to be uncommented manually if it should be removed
+                System.out.println(String.format(
+                        "#./my_delete-datapoint.sh %s %d%s",
+                        instance,
+                        id,
+                        deleteDuplicates?" --doit":""));
+                //This line to be uncommented manually if it should be renamed
+                System.out.println(String.format(
+                        "#./my_reidentify-datapoint.sh %s %d%s",
+                        instance,
+                        id,
+                        deleteDuplicates?" --doit":""));
+                //This line to be uncommented manually if it should absorb all of the instances
+                System.out.println(String.format(
+                        "#./my_gather-instances-to-datapoint.sh %s %d%s",
+                        instance,
+                        id,
+                        deleteDuplicates?" --doit":""));
+
             }
         }
     }
 
-    private List<Long> qasForInstance(DatastoreService ds, Long siId) {
-        final Query qasq = new Query("QuestionAnswerStore").setFilter(new Query.FilterPredicate("surveyInstanceId", FilterOperator.EQUAL, siId));
+    private List<String> qasValuesForInstance(DatastoreService ds, Long siId) {
+        final Query qasq = new Query("QuestionAnswerStore")
+                .setFilter(new Query.FilterPredicate("surveyInstanceId", FilterOperator.EQUAL, siId));
         final PreparedQuery pqasq = ds.prepare(qasq);
-        List<Long> result = new ArrayList<>();
+        Map<String, Entity> answers = new TreeMap<>();
         for (Entity qa : pqasq.asIterable(FetchOptions.Builder.withChunkSize(500))) {
-            result.add(qa.getKey().getId());
+            answers.put((String) qa.getProperty("questionID"), qa); //Note uppercase D, and type String
+        }
+        List<String> result = new ArrayList<>();
+        for (Entity qa : answers.values()) { //TreeMap gives them in key order, so sorted by questionID (a string!)
+            result.add((String) qa.getProperty("value"));
+//            System.out.println(String.format("     #### answer %s value '%s'",qa.getProperty("questionID"),qa.getProperty("value")));
         }
         return result;
     }
 
-    private List<Key> qasForInstanceK(DatastoreService ds, Long siId) {
-        final Query qasq = new Query("QuestionAnswerStore").setFilter(new Query.FilterPredicate("surveyInstanceId", FilterOperator.EQUAL, siId));
-        final PreparedQuery pqasq = ds.prepare(qasq);
-        List<Key> result = new ArrayList<>();
-        for (Entity qa : pqasq.asIterable(FetchOptions.Builder.withChunkSize(500))) {
-            result.add(qa.getKey());
-        }
-        return result;
-    }
 
-    private Entity surveyInstance(DatastoreService ds, Long siId) {
-        final Query siq = new Query("SurveyInstance").setFilter(new Query.FilterPredicate("id", FilterOperator.EQUAL, siId));
-        final PreparedQuery psiq = ds.prepare(siq);
-        for (Entity qa : psiq.asIterable()) {
-            return(qa);
-        }
-        return null;
-    }
-
-    private String surveyInstanceDescription(DatastoreService ds, Long siId) {
-        Key key = KeyFactory.createKey("SurveyInstance", siId);
-        Entity si;
+    private String surveyOfForm(DatastoreService ds, Long formId) {
+        Key k = KeyFactory.createKey("Survey", formId);
+        Entity form;
         try {
-            si = ds.get(key);
+            form = ds.get(k);
         } catch (EntityNotFoundException e) {
-            return null;
+            return "(nonexistent form)";
         }
-        String s = "<survey " + si.getProperty("surveyId") + " id '" + si.getProperty("surveyedLocaleIdentifier") + "'>";
-        return(s);
+        Long surveyId = (Long) form.getProperty("surveyGroupId");
+        return registrationForm(ds, surveyId, formId) + " " + (surveyId).toString();
     }
 
+    private String registrationForm(DatastoreService ds, Long surveyId, Long formId) {
+        Key k = KeyFactory.createKey("SurveyGroup", surveyId);
+        Entity survey;
+        try {
+            survey = ds.get(k);
+        } catch (EntityNotFoundException e) {
+            return "(nonexistent survey)";
+        }
+        Long regFormId = (Long) survey.getProperty("newLocaleSurveyId");
+        Boolean monitoring = (Boolean) survey.getProperty("monitoringGroup");
+        //Check to see if registration form
+        if (!monitoring) {
+            return "single";
+        } else
+        if (regFormId.equals(formId)) {
+            return "registration";
+        } else {
+            return "monitoring";
 
-    private void processSurveyGroups(DatastoreService ds) {
-
-        System.err.println("#Processing SurveyGroups");
-        System.out.println("#Processing SurveyGroups");
-
-        final Query survey_q = new Query("SurveyGroups");
-        final PreparedQuery survey_pq = ds.prepare(survey_q);
-
-        for (Entity s : survey_pq.asIterable(FetchOptions.Builder.withChunkSize(500))) {
-
-            Long surveyId = s.getKey().getId();
-            String surveyGroupName = (String) s.getProperty("name");
-            String type = (String) s.getProperty("projectType");
-            if (type != null && type.contentEquals("PROJECT")) {
-                surveyGroups.put(surveyId,surveyGroupName);
-            }
         }
     }
+
 
 }
