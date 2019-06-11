@@ -38,13 +38,16 @@ import com.google.appengine.api.datastore.Query.FilterOperator;
 import com.google.appengine.api.datastore.Query.SortDirection;
 
 /*
- * - Find duplicated datapoints
+ * - Find duplicated datapoints, output scrit responses to choose from
  */
 public class DuplicatedSurveyedLocale implements Process {
 
     boolean deleteDuplicates = false;
+    boolean showAnswers = false;
     String instance;
     final List<Entity> toBeJudged = new ArrayList<>();
+
+    private enum formRole {NONE, SINGLE, REGISTRATION, MONITORING};
 
     @Override
     public void execute(DatastoreService ds, String[] args) throws Exception {
@@ -53,6 +56,9 @@ public class DuplicatedSurveyedLocale implements Process {
             //System.out.printf("#Argument %d: %s\n", i, args[i]);
             if (args[i].equalsIgnoreCase("--doit")) {
                 deleteDuplicates = true;
+            }
+            else if (args[i].equalsIgnoreCase("--answers")) {
+                showAnswers = true;
             } else {
                 instance = args[i];
             }
@@ -112,29 +118,48 @@ public class DuplicatedSurveyedLocale implements Process {
                 //Now show any contributing surveyInstances
                 final Query qi = new Query("SurveyInstance").setFilter(new Query.FilterPredicate("surveyedLocaleId", FilterOperator.EQUAL, id));
                 final PreparedQuery pqi = ds.prepare(qi);
+                int siCount = 0;
+                int regCount = 0;
+                int monCount = 0;
+                int singleCount = 0;
+
                 for (Entity si : pqi.asIterable(FetchOptions.Builder.withChunkSize(500))) {
+                    siCount++;
 
                     Date siCre = (Date) si.getProperty("createdDateTime");
                     Long siId = si.getKey().getId();
                     Long formId = (Long) si.getProperty("surveyId");
-                    String survey = surveyOfForm(ds, formId);
-                    List<String> answers = qasValuesForInstance(ds, siId);
-                    System.out.println(String.format(
-                            "  ## SI %d  form %d (survey %s) created %s  answers (%d) %s",
+                    Long surveyId = surveyOfForm(ds, formId);
+                    formRole role = registrationForm(ds, formId, surveyId);
+                    if (role==formRole.REGISTRATION) regCount++;
+                    if (role==formRole.SINGLE) singleCount++;
+                    if (role==formRole.MONITORING) monCount++;
+
+                    String s = String.format(
+                            "  ## SI %d  form %d (%s, survey %s) created %s",
                             siId,
                             formId,
-                            survey,
-                            df.format(siCre),
-                            answers.size(),
-                            answers.toString()
-                            ));
+                            role.toString(),
+                            surveyId,
+                            df.format(siCre));
+                    if (showAnswers) {
+                        List<String> answers = qasValuesForInstance(ds, siId);
+                        s += String.format(
+                                "  answers (%d) %s",
+                                answers.size(),
+                                answers.toString()
+                                );
+
+                        }
+                    System.out.println(s);
                     }
                 lastIdentifier = identifier;
 
                 //Action options:
-                //This line to be uncommented manually if it should be removed
+                //This line to be uncommented if it should be removed. Recommended if no instances
                 System.out.println(String.format(
-                        "#./my_delete-datapoint.sh %s %d%s",
+                        "%s./my_delete-datapoint.sh %s %d%s",
+                        (siCount > 0)?"#":"",
                         instance,
                         id,
                         deleteDuplicates?" --doit":""));
@@ -144,9 +169,10 @@ public class DuplicatedSurveyedLocale implements Process {
                         instance,
                         id,
                         deleteDuplicates?" --doit":""));
-                //This line to be uncommented manually if it should absorb all of the instances
+                //This line to be uncommented if it should absorb all of the instances. Recommended if it has registration instances
                 System.out.println(String.format(
-                        "#./my_gather-instances-to-datapoint.sh %s %d%s",
+                        "%s./my_gather-instances-to-datapoint.sh %s %d%s",
+                        (regCount == 0)?"#":"",
                         instance,
                         id,
                         deleteDuplicates?" --doit":""));
@@ -172,36 +198,35 @@ public class DuplicatedSurveyedLocale implements Process {
     }
 
 
-    private String surveyOfForm(DatastoreService ds, Long formId) {
+    private Long surveyOfForm(final DatastoreService ds, final Long formId) {
         Key k = KeyFactory.createKey("Survey", formId);
         Entity form;
         try {
             form = ds.get(k);
         } catch (EntityNotFoundException e) {
-            return "(nonexistent form)";
+            return 0L;
         }
-        Long surveyId = (Long) form.getProperty("surveyGroupId");
-        return registrationForm(ds, surveyId, formId) + " " + (surveyId).toString();
+        return (Long) form.getProperty("surveyGroupId");
     }
 
-    private String registrationForm(DatastoreService ds, Long surveyId, Long formId) {
+    private formRole registrationForm(DatastoreService ds, Long formId, Long surveyId) {
         Key k = KeyFactory.createKey("SurveyGroup", surveyId);
         Entity survey;
         try {
             survey = ds.get(k);
         } catch (EntityNotFoundException e) {
-            return "(nonexistent survey)";
+            return formRole.NONE;
         }
         Long regFormId = (Long) survey.getProperty("newLocaleSurveyId");
         Boolean monitoring = (Boolean) survey.getProperty("monitoringGroup");
         //Check to see if registration form
         if (!monitoring) {
-            return "single";
+            return formRole.SINGLE;
         } else
         if (regFormId.equals(formId)) {
-            return "registration";
+            return formRole.REGISTRATION;
         } else {
-            return "monitoring";
+            return formRole.MONITORING;
 
         }
     }
