@@ -68,7 +68,7 @@ public class XmlQuestion {
     @JacksonXmlProperty(localName = "caddisflyResourceUuid", isAttribute = true)
     private String caddisflyResourceUuid;
     @JacksonXmlProperty(localName = "cascadeResource", isAttribute = true)
-    private String cascadeResource;
+    private long cascadeResource; //or String??
     @JacksonXmlProperty(localName = "allowPoints", isAttribute = true)
     private boolean allowPoints;
     @JacksonXmlProperty(localName = "allowLine", isAttribute = true)
@@ -80,8 +80,26 @@ public class XmlQuestion {
     public XmlQuestion() {
     }
 
-    public XmlQuestion(QuestionDto q) {
-        //TODO
+    public XmlQuestion(QuestionDto dto) {
+        text = dto.getText();
+        mandatory = dto.getMandatoryFlag();
+        id = dto.getKeyId();
+        order = dto.getOrder();
+        type = dto.getType().toString(); //??
+        localeNameFlag = dto.getLocaleNameFlag();
+        localeLocationFlag = dto.getLocaleLocationFlag();
+        locked = dto.getGeoLocked();
+        allowPoints = dto.getAllowPoints();
+        allowLine = dto.getAllowLine();
+        allowPolygon = dto.getAllowPolygon();
+        caddisflyResourceUuid = dto.getCaddisflyResourceUuid();
+        cascadeResource = dto.getCascadeResourceId();
+        //= dto.get;
+        //= dto.get;
+        //Todo: lots
+
+        //Now copy the option container
+        options = new XmlOptions(dto.getOptionContainerDto());
     }
 
     public long getId() {
@@ -164,11 +182,11 @@ public class XmlQuestion {
         this.caddisflyResourceUuid = caddisflyResourceUuid;
     }
 
-    public String getCascadeResource() {
+    public long getCascadeResource() {
         return cascadeResource;
     }
 
-    public void setCascadeResource(String cascadeResource) {
+    public void setCascadeResource(long cascadeResource) {
         this.cascadeResource = cascadeResource;
     }
 
