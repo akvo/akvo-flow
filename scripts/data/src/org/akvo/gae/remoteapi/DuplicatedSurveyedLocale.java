@@ -21,8 +21,10 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.TimeZone;
 import java.util.TreeMap;
 
@@ -42,8 +44,8 @@ import com.google.appengine.api.datastore.Query.SortDirection;
  */
 public class DuplicatedSurveyedLocale implements Process {
 
-    boolean deleteDuplicates = false;
     boolean showAnswers = false;
+    boolean gatherDefault = true;
     String instance;
     final List<Entity> toBeJudged = new ArrayList<>();
 
@@ -52,13 +54,14 @@ public class DuplicatedSurveyedLocale implements Process {
     @Override
     public void execute(DatastoreService ds, String[] args) throws Exception {
 
+        System.out.println("#!/bin/bash");
+
         for (int i = 0; i < args.length; i++) {
-            //System.out.printf("#Argument %d: %s\n", i, args[i]);
-            if (args[i].equalsIgnoreCase("--doit")) {
-                deleteDuplicates = true;
-            }
-            else if (args[i].equalsIgnoreCase("--answers")) {
+            System.out.printf("#Argument %d: %s\n", i, args[i]);
+            if (args[i].equalsIgnoreCase("--answers")) {
                 showAnswers = true;
+            } else if (args[i].equalsIgnoreCase("--nogather")) {
+                gatherDefault = false;
             } else {
                 instance = args[i];
             }
@@ -66,8 +69,6 @@ public class DuplicatedSurveyedLocale implements Process {
 
         DateFormat df = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss.SSS");
         df.setTimeZone(TimeZone.getTimeZone("UT"));
-
-        System.out.println("#!/bin/bash");
 
         final Query q = new Query("SurveyedLocale").addSort("identifier", SortDirection.ASCENDING);
         final PreparedQuery pq = ds.prepare(q);
@@ -97,6 +98,7 @@ public class DuplicatedSurveyedLocale implements Process {
 
 
         lastIdentifier = "";
+        int globalRegCount = 0;
         if (!toBeJudged.isEmpty()) {
             for (Entity sl: toBeJudged) {
                 Long id = sl.getKey().getId();
@@ -106,6 +108,7 @@ public class DuplicatedSurveyedLocale implements Process {
 
                 if (! lastIdentifier.equals(identifier)) {
                     System.out.println(""); //New clone
+                    globalRegCount = 0;
                  }
 
                 //Decision support:
@@ -121,7 +124,10 @@ public class DuplicatedSurveyedLocale implements Process {
                 int siCount = 0;
                 int regCount = 0;
                 int monCount = 0;
+                int noneCount = 0;
                 int singleCount = 0;
+                boolean doDefaults = true;
+                Set<Long> surveyIds = new HashSet<Long>();
 
                 for (Entity si : pqi.asIterable(FetchOptions.Builder.withChunkSize(500))) {
                     siCount++;
@@ -130,10 +136,14 @@ public class DuplicatedSurveyedLocale implements Process {
                     Long siId = si.getKey().getId();
                     Long formId = (Long) si.getProperty("surveyId");
                     Long surveyId = surveyOfForm(ds, formId);
+                    surveyIds.add(surveyId);
                     formRole role = registrationForm(ds, formId, surveyId);
-                    if (role==formRole.REGISTRATION) regCount++;
+                    if (role==formRole.REGISTRATION) {
+                        regCount++;  globalRegCount++;
+                    }
                     if (role==formRole.SINGLE) singleCount++;
                     if (role==formRole.MONITORING) monCount++;
+                    if (role==formRole.NONE) noneCount++;
 
                     String s = String.format(
                             "  ## SI %d  form %d (%s, survey %s) created %s",
@@ -155,27 +165,45 @@ public class DuplicatedSurveyedLocale implements Process {
                     }
                 lastIdentifier = identifier;
 
+                //Warnings
+                if (surveyIds.size() > 1) {
+                    System.out.println("#Warning! More than one survey involved!");
+                    doDefaults = false;
+                }
+                if (singleCount > 1) {
+                    System.out.println("#Warning! More than one single-form instance involved!");
+                    doDefaults = false;
+                }
+                if (noneCount > 0) {
+                    System.out.println("#Warning! Some instances have invalid surveys!");
+                    doDefaults = false;
+                }
+                if (regCount > 1 || globalRegCount > 1) {
+                    System.out.println("#Warning! More than one registration-form instance involved!");
+                    doDefaults = false;
+                }
+
                 //Action options:
-                //This line to be uncommented if it should be removed. Recommended if no instances
+                //This line to be uncommented if DP should be removed. Default if no instances
                 System.out.println(String.format(
                         "%s./my_delete-datapoint.sh %s %d%s",
-                        (siCount > 0)?"#":"",
+                        (doDefaults && siCount == 0)?"":"#",
                         instance,
                         id,
-                        deleteDuplicates?" --doit":""));
-                //This line to be uncommented manually if it should be renamed
+                        " --doit"));
+                //This line to be uncommented manually if DP should be renamed
                 System.out.println(String.format(
                         "#./my_reidentify-datapoint.sh %s %d%s",
                         instance,
                         id,
-                        deleteDuplicates?" --doit":""));
-                //This line to be uncommented if it should absorb all of the instances. Recommended if it has registration instances
+                        " --doit"));
+                //This line to be uncommented if DP should absorb all of the instances. Default if enabled and it has registration instances
                 System.out.println(String.format(
                         "%s./my_gather-instances-to-datapoint.sh %s %d%s",
-                        (regCount == 0)?"#":"",
+                        (doDefaults && gatherDefault && regCount > 0)?"":"#",
                         instance,
                         id,
-                        deleteDuplicates?" --doit":""));
+                        " --doit"));
 
             }
         }
