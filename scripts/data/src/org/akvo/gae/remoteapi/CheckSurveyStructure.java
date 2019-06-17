@@ -32,15 +32,19 @@ import com.google.appengine.api.datastore.PreparedQuery;
 import com.google.appengine.api.datastore.Query;
 
 /*
- * - Checks that all surveys, groups, questions and options are consistent
+ * - Checks that all folders, surveys, forms, groups, questions and options are consistent
  */
 public class CheckSurveyStructure implements Process {
 
-    private int orphanSurveys = 0, orphanGroups = 0, orphanQuestions = 0, unreachableQuestions = 0, orphanOptions = 0;
+    private int orphanFolders = 0, orphanSurveys = 0, orphanForms = 0, orphanGroups = 0, orphanQuestions = 0, unreachableQuestions = 0, orphanOptions = 0;
     private int goodQuestions = 0, goodOptions = 0;
+    private Map<Long, String> folders = new HashMap<>();
     private Map<Long, String> surveys = new HashMap<>();
+    private Map<Long, String> forms = new HashMap<>();
     private Map<Long, Long> qToSurvey = new HashMap<>();
     private Map<Long, Long> qgToSurvey = new HashMap<>();
+
+    private List<Key> orphans = new ArrayList<>();
 
     private boolean fixSurveyPointers = false; // Make question survey pointer match the group's
     private boolean deleteOrphans = false;
@@ -48,28 +52,140 @@ public class CheckSurveyStructure implements Process {
     @Override
     public void execute(DatastoreService ds, String[] args) throws Exception {
 
-        System.out.printf("#Arguments: FIX to correct survey pointers, GC to delete orphaned entites.\n");
+        System.out.printf("#Arguments: --fix to correct form pointers of unreachable questions, --gc to delete orphaned entites.\n");
         for (int i = 0; i < args.length; i++) {
             //System.out.printf("#Argument %d: %s\n", i, args[i]);
-            if (args[i].equalsIgnoreCase("FIX")) {
+            if (args[i].equalsIgnoreCase("--fix")) {
                 fixSurveyPointers = true;
             }
-            if (args[i].equalsIgnoreCase("GC")) {
+            if (args[i].equalsIgnoreCase("--gc")) {
                 deleteOrphans = true;
             }
         }
 
-        processSurveys(ds);
+        processFoldersAndSurveys(ds);
+        processForms(ds);
         processGroups(ds);
         processQuestions(ds);
         processOptions(ds);
 
-        System.out.printf("#Surveys:         %5d good, %4d groupless\n", surveys.size(), orphanSurveys);
-        System.out.printf("#QuestionGroups:  %5d good, %4d surveyless\n", qgToSurvey.size(), orphanGroups);
-        System.out.printf("#Questions:       %5d good, %4d groupless, %4d unreachable\n", goodQuestions, orphanQuestions, unreachableQuestions);
-        System.out.printf("#QuestionOptions: %5d good, %4d questionless\n", goodOptions, orphanOptions++);
+        System.out.printf("#Folders:         %5d good, %4d orphans\n", folders.size(), orphanFolders);
+        System.out.printf("#Surveys:         %5d good, %4d orphans\n", surveys.size(), orphanSurveys);
+        System.out.printf("#Forms:           %5d good, %4d orphans\n", forms.size(),   orphanForms);
+        System.out.printf("#QuestionGroups:  %5d good, %4d orphans\n", qgToSurvey.size(), orphanGroups);
+        System.out.printf("#Questions:       %5d good, %4d orphans, %4d unreachable\n", goodQuestions, orphanQuestions, unreachableQuestions);
+        System.out.printf("#QuestionOptions: %5d good, %4d orphans\n", goodOptions, orphanOptions++);
+
+        if (deleteOrphans) {
+            System.out.printf("#Deleting %d orphans\n", orphans.size());
+            batchDelete(ds, orphans);
+        } else {
+            System.out.printf("#Not deleting %d orphans\n", orphans.size());
+        }
 
     }
+
+    //How many steps lead to the root (parent=0)?
+    private int rootDepth(Long id, Map<Long, Entity> folders) {
+        int depth = 0;
+        while (depth < 100) { //Max we believe in; could be in a loop
+            Entity e = folders.get(id);
+            if (e == null) return -1; //Fail, broken
+            Long parentId = (Long) e.getProperty("parentId"); //0 means root folder
+            if (parentId == 0) return depth;
+            depth++;
+            id = parentId;
+        }
+        return -1; //Fail, too long
+    }
+
+    private void processFoldersAndSurveys(DatastoreService ds) {
+
+        System.out.println("#Processing Folders and surveys");
+        Map<Long, Entity> tmpfolders = new HashMap<>();
+        Map<Long, Entity> tmpsurveys = new HashMap<>();
+
+        final Query survey_q = new Query("SurveyGroup");
+        final PreparedQuery survey_pq = ds.prepare(survey_q);
+
+        for (Entity fs : survey_pq.asIterable(FetchOptions.Builder.withChunkSize(500))) {
+
+            Long id = fs.getKey().getId();
+            String type = (String) fs.getProperty("projectType");
+            String name = (String) fs.getProperty("name");
+            if ("PROJECT_FOLDER".equals(type)) {
+                tmpfolders.put(id, fs);
+            } else if ("PROJECT".equals(type)) {
+                tmpsurveys.put(id, fs);
+            } else { //Bad type
+                System.out.printf("#ERR folder/survey %d '%s' has bad type '%s'\n", id, name, type);
+            }
+        }
+        //Now verify tree
+        for (Entity fs : tmpfolders.values()) {
+            Long id = fs.getKey().getId();
+            String name = (String) fs.getProperty("name");
+            if (rootDepth(id, tmpfolders) < 0) {
+                Long parentId = (Long) fs.getProperty("parentId"); //0 means root folder
+                System.out.printf("#ERR folder %d '%s' not reachable from root. (Parent is %d)\n", id, name, parentId);
+                orphans.add(fs.getKey());
+                orphanFolders++;
+            } else {
+                folders.put(id, name);
+            }
+        }
+        //TODO recursively remove orphan folders and surveys (as suitable parents for forms) will make this one-pass
+        for (Entity fs : tmpsurveys.values()) {
+            String name = (String) fs.getProperty("name");
+            Long id = fs.getKey().getId();
+            Long parentId = (Long) fs.getProperty("parentId");
+            if (parentId == null || parentId == 0L) { //0 means root folder; deprecated, legacy only
+                System.out.printf("#WARN survey %d '%s' is in root folder\n", id, name);
+                surveys.put(id, name);
+                continue;
+            }
+            Entity parent = tmpfolders.get(parentId);
+            if (parent == null) {
+                System.out.printf("#ERR survey %d '%s' nonexistent parent %d\n", id, name, parentId);
+                orphans.add(fs.getKey());
+                orphanSurveys++;
+            } else {
+                surveys.put(id, name);
+            }
+        }
+
+    }
+
+
+    private void processForms(DatastoreService ds) {
+
+        System.out.println("#Processing Forms");
+
+        final Query survey_q = new Query("Survey");
+        final PreparedQuery survey_pq = ds.prepare(survey_q);
+
+        for (Entity form : survey_pq.asIterable(FetchOptions.Builder.withChunkSize(500))) {
+
+            Long id = form.getKey().getId();
+            String name = (String) form.getProperty("name");
+            Long parentId = (Long) form.getProperty("surveyGroupId");
+            if (parentId == null || parentId == 0L) {
+                System.out.printf("#ERR form %d '%s' is not in a survey\n", id, name);
+                orphanForms++;
+                orphans.add(form.getKey());
+                continue;
+            }
+            String parent = surveys.get(parentId);
+            if (parent == null) {
+                System.out.printf("#ERR form %d '%s' in nonexistent survey %d\n", id, name, parentId);
+                orphans.add(form.getKey());
+                orphanSurveys++;
+            } else {
+                forms.put(id, name); //ok to have question groups in
+            }
+        }
+    }
+
 
     private void processGroups(DatastoreService ds) {
 
@@ -81,43 +197,24 @@ public class CheckSurveyStructure implements Process {
         for (Entity g : group_pq.asIterable(FetchOptions.Builder.withChunkSize(500))) {
 
             Long questionGroupId = g.getKey().getId();
-            Long questionGroupSurvey = (Long) g.getProperty("surveyId");
+            Long formId = (Long) g.getProperty("surveyId");
             String questionGroupName = (String) g.getProperty("name");
-            if (questionGroupSurvey == null) {
-                System.out.printf("#ERR group %d '%s' is not in a survey\n",
+            if (formId == null) {
+                System.out.printf("#ERR group %d '%s' is not in a form\n",
                         questionGroupId, questionGroupName);
+                orphans.add(g.getKey());
                 orphanGroups++;
-            } else if (!surveys.containsKey(questionGroupSurvey)) {
-                System.out.printf("#ERR group %d '%s' in nonexistent survey %d\n",
-                        questionGroupId, questionGroupName, questionGroupSurvey);
+            } else if (!forms.containsKey(formId)) {
+                System.out.printf("#ERR group %d '%s' in nonexistent form %d\n",
+                        questionGroupId, questionGroupName, formId);
+                orphans.add(g.getKey());
                 orphanGroups++;
             } else {
-                qgToSurvey.put(questionGroupId, questionGroupSurvey); //ok to have questions in
+                qgToSurvey.put(questionGroupId, formId); //ok to have questions in
             }
         }
     }
 
-    private void processSurveys(DatastoreService ds) {
-
-        System.out.println("#Processing Surveys");
-
-        final Query survey_q = new Query("Survey");
-        final PreparedQuery survey_pq = ds.prepare(survey_q);
-
-        for (Entity s : survey_pq.asIterable(FetchOptions.Builder.withChunkSize(500))) {
-
-            Long surveyId = s.getKey().getId();
-            String surveyName = (String) s.getProperty("name");
-            Long surveyGroup = (Long) s.getProperty("surveyGroupId");
-            if (surveyGroup == null) {
-                System.out.printf("#ERR survey %d '%s' is not in a survey group\n",
-                        surveyId, surveyName);
-                orphanSurveys++;
-	    } else {
-		surveys.put(surveyId,surveyName); //ok to have questions in
-	    }
-        }
-    }
 
     private void processQuestions(DatastoreService ds) {
         System.out.println("#Processing Questions");
@@ -125,24 +222,24 @@ public class CheckSurveyStructure implements Process {
         final Query qq = new Query("Question");
         final PreparedQuery qpq = ds.prepare(qq);
         List<Entity> questionsToFix = new ArrayList<Entity>();
-        List<Key> questionsToKill = new ArrayList<Key>();
-        
+        List<Key> orphanedQuestions = new ArrayList<Key>();
+
         for (Entity q : qpq.asIterable(FetchOptions.Builder.withChunkSize(500))) {
 
             Long questionId = q.getKey().getId();
             Long questionSurvey = (Long) q.getProperty("surveyId");
             Long questionGroup = (Long) q.getProperty("questionGroupId");
             String questionText = (String) q.getProperty("text");
-            Long questionGroupSurvey = (Long) qgToSurvey.get(questionGroup);
+            Long questionGroupSurvey = qgToSurvey.get(questionGroup);
 
             if (questionSurvey == null || questionGroup == null || questionGroupSurvey == null) { // in no survey, group or a nonexistent group; hopelessly lost
                 System.out.printf("#ERR: Question %d '%s',survey %d, group %d\n",
                         questionId, questionText, questionSurvey, questionGroup);
+                orphanedQuestions.add(q.getKey());
                 orphanQuestions++;
                 if (deleteOrphans){
-                    System.out.println(q.toString());//for posterity
+                    System.out.println(q.toString());//log it for posterity
                     q.setProperty("surveyId", questionGroupSurvey);
-                    questionsToKill.add(q.getKey());
                 }
             } else { // check for wrong survey/qg
                 qToSurvey.put(questionId, questionSurvey); //ok parent for options
@@ -160,13 +257,11 @@ public class CheckSurveyStructure implements Process {
                 }
             }
         }
+        System.out.printf("#Deleting %d Questions\n",orphanedQuestions.size());
+        orphans.addAll(orphanedQuestions);
         if (fixSurveyPointers) {
             System.out.printf("#Fixing %d Questions\n",questionsToFix.size());
             batchSaveEntities(ds, questionsToFix);
-        }
-        if (deleteOrphans) {
-            System.out.printf("#Deleting %d Questions\n",questionsToKill.size());
-            batchDelete(ds, questionsToKill);
         }
     }
 
@@ -175,7 +270,7 @@ public class CheckSurveyStructure implements Process {
 
         final Query oq = new Query("QuestionOption");
         final PreparedQuery opq = ds.prepare(oq);
-        List<Key> optionsToKill = new ArrayList<Key>();
+        List<Key> orphanedOptions = new ArrayList<Key>();
 
         for (Entity option : opq.asIterable(FetchOptions.Builder.withChunkSize(500))) {
 
@@ -186,8 +281,8 @@ public class CheckSurveyStructure implements Process {
             if (questionId == null) { // check for no question
                 System.out.printf("#ERR: Option %d '%s', not in a question\n", optionId, optionText);
                 orphanOptions++;
+                orphanedOptions.add(option.getKey());
                 if (deleteOrphans) {
-                    optionsToKill.add(option.getKey());
                     System.out.println(option.toString());//for posterity
                 }
             } else { // check for bad question
@@ -196,8 +291,8 @@ public class CheckSurveyStructure implements Process {
                             "#ERR: Option %d '%s' is in nonexistent question %d\n",
                             optionId, optionText, questionId);
                     orphanOptions++;
+                    orphanedOptions.add(option.getKey());
                     if (deleteOrphans) {
-                        optionsToKill.add(option.getKey());
                         System.out.println(option.toString());//for posterity
                     }
                 } else {
@@ -205,9 +300,7 @@ public class CheckSurveyStructure implements Process {
                 }
             }
         }
-        if (deleteOrphans) {
-            System.out.printf("#Deleting %d Options\n",optionsToKill.size());
-            batchDelete(ds, optionsToKill);
-        }
+        System.out.printf("#Deleting %d Options\n",orphanedOptions.size());
+        orphans.addAll(orphanedOptions);
     }
 }

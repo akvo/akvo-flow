@@ -59,7 +59,9 @@ public class ReidentifyDatapoint implements Process {
                 System.out.println("Giving up after 100 tries!");
                 return;
             }
-            newIdentifier = generateBase32Uuid();  //Unique?
+            do {
+                newIdentifier = generateBase32Uuid();  //Unique?
+            } while (newIdentifier.length() < 14);
         } while (datapointsWithIdentifier(ds, newIdentifier).size() > 0
                 || formInstancesWithIdentifier(ds, newIdentifier).size() > 0 );
 

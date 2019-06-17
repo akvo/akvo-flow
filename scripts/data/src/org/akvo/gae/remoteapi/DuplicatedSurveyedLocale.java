@@ -20,7 +20,6 @@ import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
-import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
@@ -40,7 +39,7 @@ import com.google.appengine.api.datastore.Query.FilterOperator;
 import com.google.appengine.api.datastore.Query.SortDirection;
 
 /*
- * - Find duplicated datapoints, output scrit responses to choose from
+ * - Find duplicated datapoints, output script responses to choose from
  */
 public class DuplicatedSurveyedLocale implements Process {
 
@@ -99,9 +98,20 @@ public class DuplicatedSurveyedLocale implements Process {
 
         lastIdentifier = "";
         int globalRegCount = 0;
+        int globalMonCount = 0;
+        int globalSingleCount = 0;
         if (!toBeJudged.isEmpty()) {
             for (Entity sl: toBeJudged) {
-                Long id = sl.getKey().getId();
+                if (sl == null) {
+                    System.out.println("#Error! Judging Null entity!");
+                    continue;
+                }
+                if (sl.getKey() == null) {
+                    System.out.println("#Error! Null in key evaluation!");
+                    continue;
+                }
+
+                Long id = sl.getKey().getId(); //NPE?!
                 String identifier = (String) sl.getProperty("identifier");
                 if (identifier == null) identifier = "";
                 Date cre = (Date) sl.getProperty("createdDateTime");
@@ -109,6 +119,8 @@ public class DuplicatedSurveyedLocale implements Process {
                 if (! lastIdentifier.equals(identifier)) {
                     System.out.println(""); //New clone
                     globalRegCount = 0;
+                    globalMonCount = 0;
+                    globalSingleCount = 0;
                  }
 
                 //Decision support:
@@ -141,8 +153,12 @@ public class DuplicatedSurveyedLocale implements Process {
                     if (role==formRole.REGISTRATION) {
                         regCount++;  globalRegCount++;
                     }
-                    if (role==formRole.SINGLE) singleCount++;
-                    if (role==formRole.MONITORING) monCount++;
+                    if (role==formRole.SINGLE) {
+                        singleCount++; globalSingleCount++;
+                    }
+                    if (role==formRole.MONITORING) {
+                        monCount++; globalMonCount++;
+                    }
                     if (role==formRole.NONE) noneCount++;
 
                     String s = String.format(
@@ -183,7 +199,7 @@ public class DuplicatedSurveyedLocale implements Process {
                     doDefaults = false;
                 }
 
-                //Action options:
+                //Action options with defaults:
                 //This line to be uncommented if DP should be removed. Default if no instances
                 System.out.println(String.format(
                         "%s./my_delete-datapoint.sh %s %d%s",
@@ -191,9 +207,10 @@ public class DuplicatedSurveyedLocale implements Process {
                         instance,
                         id,
                         " --doit"));
-                //This line to be uncommented manually if DP should be renamed
+                //This line to be uncommented if DP should be renamed
                 System.out.println(String.format(
-                        "#./my_reidentify-datapoint.sh %s %d%s",
+                        "%s./my_reidentify-datapoint.sh %s %d%s",
+                        (doDefaults && globalSingleCount > 1)?"":"#",
                         instance,
                         id,
                         " --doit"));
@@ -219,7 +236,14 @@ public class DuplicatedSurveyedLocale implements Process {
         }
         List<String> result = new ArrayList<>();
         for (Entity qa : answers.values()) { //TreeMap gives them in key order, so sorted by questionID (a string!)
-            result.add((String) qa.getProperty("value"));
+            String s = (String) qa.getProperty("value");
+            if (s == null) {
+                s = (String) qa.getProperty("valueText");
+            }
+            if (s == null) {
+                s = "";
+            }
+            result.add(s.replaceAll("\n", " ")); //keep it on one line!
 //            System.out.println(String.format("     #### answer %s value '%s'",qa.getProperty("questionID"),qa.getProperty("value")));
         }
         return result;
@@ -227,6 +251,10 @@ public class DuplicatedSurveyedLocale implements Process {
 
 
     private Long surveyOfForm(final DatastoreService ds, final Long formId) {
+        if (formId == 0) {
+            System.out.println(String.format(" ##Error! formId is 0"));
+            return 0L;
+        }
         Key k = KeyFactory.createKey("Survey", formId);
         Entity form;
         try {
@@ -238,6 +266,14 @@ public class DuplicatedSurveyedLocale implements Process {
     }
 
     private formRole registrationForm(DatastoreService ds, Long formId, Long surveyId) {
+        if (formId == 0) {
+            System.out.println(String.format(" ##Error! formId is 0"));
+            return formRole.NONE;
+        }
+        if (surveyId == 0) {
+            System.out.println(String.format(" ##Error! surveyId is 0"));
+            return formRole.NONE;
+        }
         Key k = KeyFactory.createKey("SurveyGroup", surveyId);
         Entity survey;
         try {
@@ -248,7 +284,7 @@ public class DuplicatedSurveyedLocale implements Process {
         Long regFormId = (Long) survey.getProperty("newLocaleSurveyId");
         Boolean monitoring = (Boolean) survey.getProperty("monitoringGroup");
         //Check to see if registration form
-        if (!monitoring) {
+        if (monitoring == null || !monitoring) {
             return formRole.SINGLE;
         } else
         if (regFormId.equals(formId)) {
