@@ -22,6 +22,7 @@ import java.util.UUID;
 
 import com.google.appengine.api.datastore.DatastoreService;
 import com.google.appengine.api.datastore.Entity;
+import com.google.appengine.api.datastore.EntityNotFoundException;
 import com.google.appengine.api.datastore.FetchOptions;
 import com.google.appengine.api.datastore.Key;
 import com.google.appengine.api.datastore.KeyFactory;
@@ -35,6 +36,7 @@ import com.google.appengine.api.datastore.Query.FilterOperator;
 public class GatherInstancesToDatapoint implements Process {
 
     boolean doChange = false;
+    boolean ignoreSurvey = false;
     final List<Entity> toBeSaved = new ArrayList<>();
     Long dpId;
 
@@ -44,6 +46,8 @@ public class GatherInstancesToDatapoint implements Process {
         for (int i = 0; i < args.length; i++) {
             if (args[i].equalsIgnoreCase("--doit")) {
                 doChange = true;
+            } else if (args[i].equalsIgnoreCase("--ignoresurvey")) {
+                ignoreSurvey = true;
             } else {
                 dpId = Long.parseLong(args[i]);
             }
@@ -54,18 +58,29 @@ public class GatherInstancesToDatapoint implements Process {
         String identifier = (String) datapoint.getProperty("identifier");
         @SuppressWarnings("unchecked")
         List<Long> contrib = (List<Long>) datapoint.getProperty("surveyInstanceContrib");
+        Long dpSurvey = (Long) datapoint.getProperty("surveyGroupId");
 
 
-        //Now reparent any form instances with the same identifier
+        //Now re-parent any form instances with the same identifier
         final Query qi = new Query("SurveyInstance").setFilter(new Query.FilterPredicate("surveyedLocaleIdentifier", FilterOperator.EQUAL, identifier));
         final PreparedQuery pqi = ds.prepare(qi);
-        for (Entity si : pqi.asIterable(FetchOptions.Builder.withChunkSize(500))) {
-            Long oldParent = (Long) si.getProperty("surveyedLocaleId");
+        for (Entity fi : pqi.asIterable(FetchOptions.Builder.withChunkSize(500))) {
+            Long oldParent = (Long) fi.getProperty("surveyedLocaleId");
+            Long fiForm = (Long) fi.getProperty("surveyId");
+            Long fiSurvey = surveyOfForm(ds, fiForm);
+
+            if (!ignoreSurvey && fiSurvey != dpSurvey) {
+                System.out.println("Wrong survey for FI #" + fi.getKey().getId());
+                continue;
+            }
             if (!dpId.equals(oldParent)) {
-                System.out.println("Reparenting SI #" + si.getKey().getId());
-                si.setProperty("surveyedLocaleId", dpId);
-                toBeSaved.add(si);
-                contrib.add(si.getKey().getId());
+                System.out.println("Reparenting FI #" + fi.getKey().getId());
+                fi.setProperty("surveyedLocaleId", dpId);
+                toBeSaved.add(fi);
+                if (contrib == null) {
+                    contrib = new ArrayList<>();
+                }
+                contrib.add(fi.getKey().getId());
             }
         }
 
@@ -80,6 +95,30 @@ public class GatherInstancesToDatapoint implements Process {
         } else {
             System.out.println("Not changing " + toBeSaved.size() + " entities");
         }
+    }
+
+    private Long surveyOfForm(final DatastoreService ds, final Long formId) {
+        if (formId == 0) {
+            System.out.println(String.format(" ##Error! formId is 0"));
+            return 0L;
+        }
+        Key k = KeyFactory.createKey("Survey", formId);
+        Entity form;
+        try {
+            form = ds.get(k);
+        } catch (EntityNotFoundException e) {
+            return -1L;
+        }
+        Long surveyId = (Long) form.getProperty("surveyGroupId");
+        //Check that it exists
+        Key k2 = KeyFactory.createKey("SurveyGroup", surveyId);
+        Entity survey;
+        try {
+            survey = ds.get(k2);
+        } catch (EntityNotFoundException e) {
+            return -2L;
+        }
+        return surveyId;
     }
 
 }

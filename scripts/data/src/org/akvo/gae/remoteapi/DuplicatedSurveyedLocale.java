@@ -37,6 +37,7 @@ import com.google.appengine.api.datastore.PreparedQuery;
 import com.google.appengine.api.datastore.Query;
 import com.google.appengine.api.datastore.Query.FilterOperator;
 import com.google.appengine.api.datastore.Query.SortDirection;
+import com.google.appengine.api.datastore.Text;
 
 /*
  * - Find duplicated datapoints, output script responses to choose from
@@ -72,7 +73,8 @@ public class DuplicatedSurveyedLocale implements Process {
         final Query q = new Query("SurveyedLocale").addSort("identifier", SortDirection.ASCENDING);
         final PreparedQuery pq = ds.prepare(q);
 
-        String lastIdentifier = "";
+        String lastAnswers = null;
+        String lastIdentifier = null;
         Entity lastSL = null;
         int count = 0;
 
@@ -96,10 +98,10 @@ public class DuplicatedSurveyedLocale implements Process {
         System.out.println("##Scanned " + count + " DPs. Found " + toBeJudged.size() + " suspects:");
 
 
-        lastIdentifier = "";
         int globalRegCount = 0;
         int globalMonCount = 0;
         int globalSingleCount = 0;
+        lastIdentifier = null;
         if (!toBeJudged.isEmpty()) {
             for (Entity sl: toBeJudged) {
                 if (sl == null) {
@@ -115,18 +117,23 @@ public class DuplicatedSurveyedLocale implements Process {
                 String identifier = (String) sl.getProperty("identifier");
                 if (identifier == null) identifier = "";
                 Date cre = (Date) sl.getProperty("createdDateTime");
+                Long survey = (Long) sl.getProperty("surveyGroupId");
 
-                if (! lastIdentifier.equals(identifier)) {
-                    System.out.println(""); //New clone
+                if (! identifier.equals(lastIdentifier)) { //New clone
+                    System.out.println("");
+                    System.out.println("");
                     globalRegCount = 0;
                     globalMonCount = 0;
                     globalSingleCount = 0;
+                    lastAnswers = null;
                  }
+                lastIdentifier = identifier;
 
                 //Decision support:
                 System.out.println(String.format(
-                        "##Datapoint '%s'  created %s ",
+                        "##Datapoint '%s'  survey %d  created %s ",
                         identifier,
+                        survey,
                         df.format(cre)
                         ));
 
@@ -139,6 +146,7 @@ public class DuplicatedSurveyedLocale implements Process {
                 int noneCount = 0;
                 int singleCount = 0;
                 boolean doDefaults = true;
+                boolean identicalAnswers = true;
                 Set<Long> surveyIds = new HashSet<Long>();
 
                 for (Entity si : pqi.asIterable(FetchOptions.Builder.withChunkSize(500))) {
@@ -160,6 +168,8 @@ public class DuplicatedSurveyedLocale implements Process {
                         monCount++; globalMonCount++;
                     }
                     if (role==formRole.NONE) noneCount++;
+                    List<String> answers = qasValuesForInstance(ds, siId);
+                    String answersString = answers.toString();
 
                     String s = String.format(
                             "  ## SI %d  form %d (%s, survey %s) created %s",
@@ -169,17 +179,18 @@ public class DuplicatedSurveyedLocale implements Process {
                             surveyId,
                             df.format(siCre));
                     if (showAnswers) {
-                        List<String> answers = qasValuesForInstance(ds, siId);
                         s += String.format(
                                 "  answers (%d) %s",
                                 answers.size(),
-                                answers.toString()
+                                answersString
                                 );
 
                         }
                     System.out.println(s);
-                    }
-                lastIdentifier = identifier;
+
+                    if (lastAnswers!= null && !lastAnswers.equals(answersString)) identicalAnswers = false;
+                    lastAnswers = answersString;
+                }
 
                 //Warnings
                 if (surveyIds.size() > 1) {
@@ -203,14 +214,14 @@ public class DuplicatedSurveyedLocale implements Process {
                 //This line to be uncommented if DP should be removed. Default if no instances
                 System.out.println(String.format(
                         "%s./my_delete-datapoint.sh %s %d%s",
-                        (doDefaults && siCount == 0)?"":"#",
+                        (doDefaults && (siCount == 0 || identicalAnswers))?"":"#",
                         instance,
                         id,
                         " --doit"));
                 //This line to be uncommented if DP should be renamed
                 System.out.println(String.format(
                         "%s./my_reidentify-datapoint.sh %s %d%s",
-                        (doDefaults && globalSingleCount > 1)?"":"#",
+                        (doDefaults && globalSingleCount > 1 && !identicalAnswers)?"":"#",
                         instance,
                         id,
                         " --doit"));
@@ -238,7 +249,10 @@ public class DuplicatedSurveyedLocale implements Process {
         for (Entity qa : answers.values()) { //TreeMap gives them in key order, so sorted by questionID (a string!)
             String s = (String) qa.getProperty("value");
             if (s == null) {
-                s = (String) qa.getProperty("valueText");
+                Text t = (Text) qa.getProperty("valueText");
+                if (t != null) {
+                    s = t.getValue();
+                }
             }
             if (s == null) {
                 s = "";

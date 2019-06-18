@@ -22,6 +22,7 @@ import static org.akvo.gae.remoteapi.DataUtils.batchDelete;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.TreeMap;
 import java.util.HashMap;
 
 import com.google.appengine.api.datastore.DatastoreService;
@@ -30,6 +31,8 @@ import com.google.appengine.api.datastore.FetchOptions;
 import com.google.appengine.api.datastore.Key;
 import com.google.appengine.api.datastore.PreparedQuery;
 import com.google.appengine.api.datastore.Query;
+import com.google.appengine.api.datastore.Text;
+import com.google.appengine.api.datastore.Query.FilterOperator;
 
 /*
  * - Checks that all folders, surveys, forms, groups, questions and options are consistent
@@ -48,6 +51,7 @@ public class CheckSurveyStructure implements Process {
 
     private boolean fixSurveyPointers = false; // Make question survey pointer match the group's
     private boolean deleteOrphans = false;
+    private boolean showDetails = false;
 
     @Override
     public void execute(DatastoreService ds, String[] args) throws Exception {
@@ -60,6 +64,10 @@ public class CheckSurveyStructure implements Process {
             }
             if (args[i].equalsIgnoreCase("--gc")) {
                 deleteOrphans = true;
+                showDetails = true;
+            }
+            if (args[i].equalsIgnoreCase("--details")) {
+                showDetails = true;
             }
         }
 
@@ -117,8 +125,15 @@ public class CheckSurveyStructure implements Process {
                 tmpfolders.put(id, fs);
             } else if ("PROJECT".equals(type)) {
                 tmpsurveys.put(id, fs);
-            } else { //Bad type
+            } else { //Bad type; leave it alone
                 System.out.printf("#ERR folder/survey %d '%s' has bad type '%s'\n", id, name, type);
+                /*TODO: maybe remove it? If so:
+                orphans.add(fs.getKey());
+                orphanFolders++;
+                if (showDetails) {
+                    System.out.println(fs.toString());//for posterity
+                }
+                */
             }
         }
         //Now verify tree
@@ -127,14 +142,17 @@ public class CheckSurveyStructure implements Process {
             String name = (String) fs.getProperty("name");
             if (rootDepth(id, tmpfolders) < 0) {
                 Long parentId = (Long) fs.getProperty("parentId"); //0 means root folder
-                System.out.printf("#ERR folder %d '%s' not reachable from root. (Parent is %d)\n", id, name, parentId);
+                System.out.printf("#ERR folder %d '%s' is lost; not reachable from root. (Parent is %d)\n", id, name, parentId);
                 orphans.add(fs.getKey());
                 orphanFolders++;
+                if (showDetails) {
+                    System.out.println(fs.toString());//for posterity
+                }
             } else {
                 folders.put(id, name);
             }
         }
-        //TODO recursively remove orphan folders and surveys (as suitable parents for forms) will make this one-pass
+
         for (Entity fs : tmpsurveys.values()) {
             String name = (String) fs.getProperty("name");
             Long id = fs.getKey().getId();
@@ -149,6 +167,9 @@ public class CheckSurveyStructure implements Process {
                 System.out.printf("#ERR survey %d '%s' nonexistent parent %d\n", id, name, parentId);
                 orphans.add(fs.getKey());
                 orphanSurveys++;
+                if (showDetails) {
+                    System.out.println(fs.toString());//for posterity
+                }
             } else {
                 surveys.put(id, name);
             }
@@ -170,16 +191,24 @@ public class CheckSurveyStructure implements Process {
             String name = (String) form.getProperty("name");
             Long parentId = (Long) form.getProperty("surveyGroupId");
             if (parentId == null || parentId == 0L) {
-                System.out.printf("#ERR form %d '%s' is not in a survey\n", id, name);
+                System.out.printf("#ERR form %d '%s' is not in a survey (%d instances)\n",
+                        id, name, formInstanceIdsForForm(ds, id).size());
                 orphanForms++;
                 orphans.add(form.getKey());
+                if (showDetails) {
+                    System.out.println(form.toString());//for posterity
+                }
                 continue;
             }
             String parent = surveys.get(parentId);
             if (parent == null) {
-                System.out.printf("#ERR form %d '%s' in nonexistent survey %d\n", id, name, parentId);
+                System.out.printf("#ERR form %d '%s' in nonexistent survey %d (%d instances)\n",
+                        id, name, parentId, formInstanceIdsForForm(ds, id).size());
                 orphans.add(form.getKey());
                 orphanSurveys++;
+                if (showDetails) {
+                    System.out.println(form.toString());//for posterity
+                }
             } else {
                 forms.put(id, name); //ok to have question groups in
             }
@@ -204,11 +233,17 @@ public class CheckSurveyStructure implements Process {
                         questionGroupId, questionGroupName);
                 orphans.add(g.getKey());
                 orphanGroups++;
+                if (showDetails) {
+                    System.out.println(g.toString());//for posterity
+                }
             } else if (!forms.containsKey(formId)) {
                 System.out.printf("#ERR group %d '%s' in nonexistent form %d\n",
                         questionGroupId, questionGroupName, formId);
                 orphans.add(g.getKey());
                 orphanGroups++;
+                if (showDetails) {
+                    System.out.println(g.toString());//for posterity
+                }
             } else {
                 qgToSurvey.put(questionGroupId, formId); //ok to have questions in
             }
@@ -232,22 +267,23 @@ public class CheckSurveyStructure implements Process {
             String questionText = (String) q.getProperty("text");
             Long questionGroupSurvey = qgToSurvey.get(questionGroup);
 
-            if (questionSurvey == null || questionGroup == null || questionGroupSurvey == null) { // in no survey, group or a nonexistent group; hopelessly lost
-                System.out.printf("#ERR: Question %d '%s',survey %d, group %d\n",
-                        questionId, questionText, questionSurvey, questionGroup);
+            if (questionSurvey == null || questionGroup == null || questionGroupSurvey == null) { // in no survey, no group or a nonexistent group; hopelessly lost
+                System.out.printf("#ERR: Question %d '%s',form %d, group %d  (%d answers)\n",
+                        questionId, questionText, questionSurvey, questionGroup, qasIdsForQuestion(ds, questionId).size());
                 orphanedQuestions.add(q.getKey());
                 orphanQuestions++;
-                if (deleteOrphans){
-                    System.out.println(q.toString());//log it for posterity
-                    q.setProperty("surveyId", questionGroupSurvey);
+                if (showDetails) {
+                    System.out.println(q.toString());
                 }
             } else { // check for wrong survey/qg
                 qToSurvey.put(questionId, questionSurvey); //ok parent for options
                 if (!questionSurvey.equals(questionGroupSurvey)) {
                     System.out.printf("#ERR: Question %d '%s' in survey %d, but group %d is in survey %d\n",
                             questionId, questionText, questionSurvey, questionGroup, questionGroupSurvey);
+                    if (showDetails) {
+                        System.out.println(q.toString());
+                    }
                     if (fixSurveyPointers){
-                        System.out.println(q.toString());//for posterity
                         q.setProperty("surveyId", questionGroupSurvey);
                         questionsToFix.add(q);
                     }
@@ -282,7 +318,7 @@ public class CheckSurveyStructure implements Process {
                 System.out.printf("#ERR: Option %d '%s', not in a question\n", optionId, optionText);
                 orphanOptions++;
                 orphanedOptions.add(option.getKey());
-                if (deleteOrphans) {
+                if (showDetails) {
                     System.out.println(option.toString());//for posterity
                 }
             } else { // check for bad question
@@ -292,7 +328,7 @@ public class CheckSurveyStructure implements Process {
                             optionId, optionText, questionId);
                     orphanOptions++;
                     orphanedOptions.add(option.getKey());
-                    if (deleteOrphans) {
+                    if (showDetails) {
                         System.out.println(option.toString());//for posterity
                     }
                 } else {
@@ -303,4 +339,30 @@ public class CheckSurveyStructure implements Process {
         System.out.printf("#Deleting %d Options\n",orphanedOptions.size());
         orphans.addAll(orphanedOptions);
     }
+
+    //Todo: opt for keys only
+    private List<Long> formInstanceIdsForForm(DatastoreService ds, Long formId) {
+        final Query qasq = new Query("SurveyInstance")
+                .setFilter(new Query.FilterPredicate("surveyId", FilterOperator.EQUAL, formId));
+        final PreparedQuery pq = ds.prepare(qasq);
+        List<Long> ids = new ArrayList<>();
+        for (Entity fi : pq.asIterable(FetchOptions.Builder.withChunkSize(500))) {
+            ids.add(fi.getKey().getId());
+        }
+        return ids;
+    }
+
+    //Todo: opt for keys only
+    private List<Long> qasIdsForQuestion(DatastoreService ds, Long qId) {
+        final Query qasq = new Query("QuestionAnswerStore")
+                .setFilter(new Query.FilterPredicate("questionID", FilterOperator.EQUAL, qId)); //Note uppercase D
+        final PreparedQuery pq = ds.prepare(qasq);
+        List<Long> answers = new ArrayList<>();
+        for (Entity qa : pq.asIterable(FetchOptions.Builder.withChunkSize(500))) {
+            answers.add(qa.getKey().getId());
+        }
+        return answers;
+    }
+
+
 }
