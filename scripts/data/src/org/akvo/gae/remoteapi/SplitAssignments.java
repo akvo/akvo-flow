@@ -115,16 +115,17 @@ public class SplitAssignments implements Process {
                 for (Entry<Long, List<Long>> entry: surveys.entrySet()) {
                     Long surveyId = entry.getKey();
                     List<Long> formList = entry.getValue();
-                    if (++part == 1) { //change it
-                        toBeSaved.add(ass);
+                    part++;
+                    if (part == 1) { //change it
                         System.out.println(" changing from " + ass);
-                        ass.setProperty("name", name + nameOfSurvey.get(surveyId) + " [" + part + "]");
+                        ass.setProperty("name", name + " [" + nameOfSurvey.get(surveyId) + " #" + part + "]");
                         ass.setProperty("surveyIds", formList);
                         System.out.println(" changing to " + ass);
+                        toBeSaved.add(ass);
                     } else { // make a new one
                         Entity newAss = new Entity("SurveyAssignment");
                         newAss.setPropertiesFrom(ass);
-                        ass.setProperty("name", name + nameOfSurvey.get(surveyId) + " [" + part + "]");
+                        newAss.setProperty("name", name + " [" + nameOfSurvey.get(surveyId) + " #" + part + "]");
                         newAss.setProperty("surveyIds", formList);
                         System.out.println(" creating " + newAss);
                         toBeCreated.add(newAss);
