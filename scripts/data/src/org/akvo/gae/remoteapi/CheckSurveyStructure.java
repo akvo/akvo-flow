@@ -56,7 +56,7 @@ public class CheckSurveyStructure implements Process {
     @Override
     public void execute(DatastoreService ds, String[] args) throws Exception {
 
-        System.out.printf("#Arguments: --fix to correct form pointers of unreachable questions, --gc to delete orphaned entites.\n");
+        System.out.printf("#Arguments: --fix to correct form pointers of unreachable questions, --gc to delete orphaned entites, --details for complete entity output.\n");
         for (int i = 0; i < args.length; i++) {
             //System.out.printf("#Argument %d: %s\n", i, args[i]);
             if (args[i].equalsIgnoreCase("--fix")) {
@@ -100,11 +100,12 @@ public class CheckSurveyStructure implements Process {
             Entity e = folders.get(id);
             if (e == null) return -1; //Fail, broken
             Long parentId = (Long) e.getProperty("parentId"); //0 means root folder
-            if (parentId == 0) return depth;
+            if (parentId == null) return -1; //Fail
+            if (parentId == 0L) return depth;
             depth++;
             id = parentId;
         }
-        return -1; //Fail, too long
+        return -1; //Fail, too far
     }
 
     private void processFoldersAndSurveys(DatastoreService ds) {
@@ -125,15 +126,15 @@ public class CheckSurveyStructure implements Process {
                 tmpfolders.put(id, fs);
             } else if ("PROJECT".equals(type)) {
                 tmpsurveys.put(id, fs);
-            } else { //Bad type; leave it alone
+            } else { //Bad type; leave it alone. But note that dependent items will be treated as orphans!
                 System.out.printf("#ERR folder/survey %d '%s' has bad type '%s'\n", id, name, type);
                 /*TODO: maybe remove it? If so:
                 orphans.add(fs.getKey());
                 orphanFolders++;
+                */
                 if (showDetails) {
                     System.out.println(fs.toString());//for posterity
                 }
-                */
             }
         }
         //Now verify tree
@@ -355,7 +356,7 @@ public class CheckSurveyStructure implements Process {
     //Todo: opt for keys only
     private List<Long> qasIdsForQuestion(DatastoreService ds, Long qId) {
         final Query qasq = new Query("QuestionAnswerStore")
-                .setFilter(new Query.FilterPredicate("questionID", FilterOperator.EQUAL, qId)); //Note uppercase D
+                .setFilter(new Query.FilterPredicate("questionID", FilterOperator.EQUAL, qId.toString())); //Note uppercase D and type String
         final PreparedQuery pq = ds.prepare(qasq);
         List<Long> answers = new ArrayList<>();
         for (Entity qa : pq.asIterable(FetchOptions.Builder.withChunkSize(500))) {
