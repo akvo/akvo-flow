@@ -20,8 +20,12 @@ import static org.akvo.gae.remoteapi.DataUtils.batchSaveEntities;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
+import java.util.Set;
+
 import com.google.appengine.api.datastore.DatastoreService;
 import com.google.appengine.api.datastore.Entity;
 import com.google.appengine.api.datastore.EntityNotFoundException;
@@ -36,9 +40,13 @@ import com.google.appengine.api.datastore.Query;
  */
 public class SplitAssignments implements Process {
 
-    boolean doit = false;
-    final List<Entity> toBeSaved = new ArrayList<>();
-    final List<Entity> toBeCreated = new ArrayList<>();
+    private boolean doit = false;
+    private final List<Entity> toBeSaved = new ArrayList<>();
+    private final List<Entity> toBeCreated = new ArrayList<>();
+    private final Set<Long> surveys = new HashSet<>();
+    private final Set<Long> forms = new HashSet<>();
+    private final Map<Long, Long> surveyOfForm = new HashMap<>();
+    private final Map<Long, String> nameOfSurvey = new HashMap<>();
 
     @Override
     public void execute(DatastoreService ds, String[] args) throws Exception {
@@ -50,6 +58,13 @@ public class SplitAssignments implements Process {
             }
         }
 
+        processSurveys(ds);
+        processForms(ds);
+        processAssignments(ds);
+    }
+
+
+    private void processAssignments(DatastoreService ds) {
         final Query q = new Query("SurveyAssignment");
         final PreparedQuery pq = ds.prepare(q);
 
@@ -69,7 +84,7 @@ public class SplitAssignments implements Process {
             }
 
             for (Long formId: forms) {
-                if (formId == 0){
+                if (formId == 0) { //obviously bogus; fix it
                     System.out.println("ERROR! Form in assignment is 0; removing it " + formId);
                     forceSplit = true;
                     continue;
@@ -79,13 +94,13 @@ public class SplitAssignments implements Process {
                     if (surveys.containsKey(surveyId)) {
                         surveys.get(surveyId).add(formId);
                     } else {
-                        List<Long>formList =new ArrayList<Long>();
+                        List<Long>formList = new ArrayList<Long>();
                         formList.add(formId);
                         surveys.put(surveyId,formList);
                     }
 
-                } else if (surveyId == -2){
-                    System.out.println("ERROR! Form " + formId + " in assignment is in nonexistent survey");
+                } else if (surveyId == -1) { //Survey structure needs repair; leave it alone
+                    System.out.println("ERROR! Form " + formId + " in assignment is in a nonexistent survey");
                     splitAllowed = false;
                 } else {
                     System.out.println("ERROR! Nonexistent form " + formId + " in assignment " + id);
@@ -97,18 +112,20 @@ public class SplitAssignments implements Process {
                 System.out.println("Splitting assignment " + id + " into " + surveys.size());
 
                 int part = 0;
-                for (List<Long> f: surveys.values()) {
+                for (Entry<Long, List<Long>> entry: surveys.entrySet()) {
+                    Long surveyId = entry.getKey();
+                    List<Long> formList = entry.getValue();
                     if (++part == 1) { //change it
                         toBeSaved.add(ass);
                         System.out.println(" changing from " + ass);
-                        ass.setProperty("name", name + " [" + part + "]");
-                        ass.setProperty("surveyIds", f);
+                        ass.setProperty("name", name + nameOfSurvey.get(surveyId) + " [" + part + "]");
+                        ass.setProperty("surveyIds", formList);
                         System.out.println(" changing to " + ass);
                     } else { // make a new one
                         Entity newAss = new Entity("SurveyAssignment");
                         newAss.setPropertiesFrom(ass);
-                        newAss.setProperty("name", name + " [" + part + "]");
-                        newAss.setProperty("surveyIds", f);
+                        ass.setProperty("name", name + nameOfSurvey.get(surveyId) + " [" + part + "]");
+                        newAss.setProperty("surveyIds", formList);
                         System.out.println(" creating " + newAss);
                         toBeCreated.add(newAss);
                     }
@@ -126,29 +143,49 @@ public class SplitAssignments implements Process {
     }
 
 
+    private void processSurveys(final DatastoreService ds) {
+        final Query q = new Query("SurveyGroup");
+        final PreparedQuery pq = ds.prepare(q);
 
-    private Long surveyOfForm(final DatastoreService ds, final Long formId) {
-        if (formId == 0) {
-            System.out.println(String.format(" ##Error! formId is 0"));
-            return 0L;
+        //Loop over forms
+        for (Entity form : pq.asIterable(FetchOptions.Builder.withChunkSize(500))) {
+            Long id = form.getKey().getId();
+            String type = (String) form.getProperty("projectType");
+            String name = (String) form.getProperty("name");
+            //Check that it is a survey
+            if ("PROJECT".contentEquals(type)) {
+                surveys.add(id);
+                nameOfSurvey.put(id, name);
+            }
         }
-        Key k = KeyFactory.createKey("Survey", formId);
-        Entity form;
-        try {
-            form = ds.get(k);
-        } catch (EntityNotFoundException e) {
-            return -1L;
-        }
-        Long surveyId = (Long) form.getProperty("surveyGroupId");
-        //Check that it exists
-        Key k2 = KeyFactory.createKey("SurveyGroup", surveyId);
-        Entity survey;
-        try {
-            survey = ds.get(k2);
-        } catch (EntityNotFoundException e) {
-            return -2L;
-        }
-        return surveyId;
     }
 
+
+    private void processForms(final DatastoreService ds) {
+        final Query q = new Query("Survey");
+        final PreparedQuery pq = ds.prepare(q);
+
+        //Loop over forms
+        for (Entity form : pq.asIterable(FetchOptions.Builder.withChunkSize(500))) {
+            Long id = form.getKey().getId();
+            Long surveyId = (Long) form.getProperty("surveyGroupId");
+            forms.add(id);
+            //Check that it exists
+            if (surveys.contains(surveyId)) {
+                surveyOfForm.put(id,  surveyId);
+            }
+        }
+    }
+
+
+    private Long surveyOfForm(final DatastoreService ds, final Long formId) {
+        if (forms.contains(formId)) {
+            Long surveyId = surveyOfForm.get(formId);
+            if (surveyId == null) {
+                return -1L; //form is in bad survey
+            }
+            return surveyId;
+        }
+        return -2L; //No such form
+    }
 }
