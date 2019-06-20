@@ -121,7 +121,6 @@ public class DuplicatedSurveyedLocale implements Process {
         int globalSingleCount = 0;
 
         List<String> globalAnswerList = new ArrayList<>();
-//        Map<String,Entity> globalSiMap = new TreeMap<>();
 
         System.out.println("");
         System.out.println("");
@@ -216,7 +215,7 @@ public class DuplicatedSurveyedLocale implements Process {
             //Warnings
             if (surveyIds.size() > 1) {
                 System.out.println("#Warning! More than one survey involved!");
-                //doDefaults = false; //Still want to delete duplicates
+                //doDefaults = false; //Want to delete duplicates anyway
             }
             if (singleCount > 1) {
                 System.out.println("#Warning! More than one single-form instance involved!");

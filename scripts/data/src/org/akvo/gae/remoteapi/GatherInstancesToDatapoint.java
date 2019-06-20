@@ -69,8 +69,8 @@ public class GatherInstancesToDatapoint implements Process {
             Long fiForm = (Long) fi.getProperty("surveyId");
             Long fiSurvey = surveyOfForm(ds, fiForm);
 
-            if (!ignoreSurvey && fiSurvey != dpSurvey) {
-                System.out.println("Wrong survey for FI #" + fi.getKey().getId());
+            if (!ignoreSurvey && !fiSurvey.equals(dpSurvey)) {
+                System.out.println("Wrong survey for FI #" + fi.getKey().getId() + " : " + fiSurvey + " <> " + dpSurvey);
                 continue;
             }
             if (!dpId.equals(oldParent)) {
