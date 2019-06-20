@@ -149,10 +149,10 @@ public class SplitAssignments implements Process {
         final PreparedQuery pq = ds.prepare(q);
 
         //Loop over forms
-        for (Entity form : pq.asIterable(FetchOptions.Builder.withChunkSize(500))) {
-            Long id = form.getKey().getId();
-            String type = (String) form.getProperty("projectType");
-            String name = (String) form.getProperty("name");
+        for (Entity survey : pq.asIterable(FetchOptions.Builder.withChunkSize(500))) {
+            Long id = survey.getKey().getId();
+            String type = (String) survey.getProperty("projectType");
+            String name = (String) survey.getProperty("name");
             //Check that it is a survey
             if ("PROJECT".contentEquals(type)) {
                 surveys.add(id);
