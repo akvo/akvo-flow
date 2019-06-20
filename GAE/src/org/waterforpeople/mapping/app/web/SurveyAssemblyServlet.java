@@ -366,7 +366,7 @@ public class SurveyAssemblyServlet extends AbstractRestApiServlet {
         uc.setUploadedZip2(uploadZippedXml(surveyXML, bucketName, directory, fileName2));
         uc.setUrl(props.getProperty(SURVEY_UPLOAD_URL)
                 + props.getProperty(SURVEY_UPLOAD_DIR)
-                + "/" + fileName1 + ".xml");
+                + "/" + fileName1 + ".zip");
         return uc;
     }
 
