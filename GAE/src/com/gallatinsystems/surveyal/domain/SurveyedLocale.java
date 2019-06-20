@@ -208,9 +208,9 @@ public class SurveyedLocale extends BaseDomain {
     public void setCreationSurveyId(Long creationSurveyId) {
         this.creationSurveyId = creationSurveyId;
     }
-    
+
     /**
-     * Given a list of datapoint name questions, and the list of responses for 
+     * Given a list of datapoint name questions, and the list of responses for
      * this locale's registration form, reassemble the display name
      */
     public void assembleDisplayName(List<Question> nameQuestions, List<QuestionAnswerStore> responses) {
@@ -222,7 +222,7 @@ public class SurveyedLocale extends BaseDomain {
                 nameResponses.put(qId, qas.getDatapointNameValue());
             }
         }
-                
+
         StringBuilder sb = new StringBuilder();
         boolean first = true;
         for (Question q : nameQuestions) {
@@ -236,7 +236,7 @@ public class SurveyedLocale extends BaseDomain {
             sb.append(nameResponses.get(id));
             first = false;
         }
-        
+
         displayName = sb.toString();
     }
 
@@ -258,6 +258,9 @@ public class SurveyedLocale extends BaseDomain {
         try {
             Long id = Long.parseLong(strippedUUID, 16);
             result = Long.toString(id, 32).replace("l", "w").replace("o", "x").replace("i", "y");
+            while (result.length() < 12) { //un-suppress leading zeroes; we must have 12 characters
+                result = "0" + result;
+            }
         } catch (NumberFormatException e) {
             // if we can't create the base32 UUID string, return the original uuid.
             result = uuid;
