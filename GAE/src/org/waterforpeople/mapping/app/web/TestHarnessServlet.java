@@ -72,7 +72,8 @@ public class TestHarnessServlet extends HttpServlet {
     public void doGet(HttpServletRequest req, HttpServletResponse resp) {
         String action = req.getParameter("action");
         if ("setupTestUser".equals(action)) {
-            setupTestUser();
+            String email = req.getParameter("email");
+            setupTestUser(email == null ? "test@example.com" : email);
         } else if ("deleteGeoData".equals(action)) {
             try {
                 OGRFeatureDao ogrFeatureDao = new OGRFeatureDao();
@@ -373,12 +374,12 @@ public class TestHarnessServlet extends HttpServlet {
         }
     }
 
-    private void setupTestUser() {
+    private void setupTestUser(String email) {
         UserDao userDao = new UserDao();
-        User user = userDao.findUserByEmail("test@example.com");
+        User user = userDao.findUserByEmail(email);
         if (user == null) {
             user = new User();
-            user.setEmailAddress("test@example.com");
+            user.setEmailAddress(email);
         }
         user.setSuperAdmin(true);
         user.setPermissionList(String.valueOf(AppRole.ROLE_SUPER_ADMIN.getLevel()));
