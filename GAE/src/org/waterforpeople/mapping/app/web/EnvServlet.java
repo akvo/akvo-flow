@@ -39,9 +39,7 @@ import org.apache.velocity.app.VelocityEngine;
 import org.waterforpeople.mapping.app.web.rest.security.AppRole;
 
 import com.gallatinsystems.common.util.PropertyUtil;
-import com.gallatinsystems.user.dao.UserDao;
 import com.gallatinsystems.user.domain.User;
-import com.google.appengine.api.users.UserServiceFactory;
 import com.google.appengine.api.utils.SystemProperty;
 
 public class EnvServlet extends HttpServlet {
@@ -190,17 +188,13 @@ public class EnvServlet extends HttpServlet {
      * @param props
      */
     private void addLocale(Map<String, String> props) {
-        final com.google.appengine.api.users.User currentGoogleUser =
-                UserServiceFactory.getUserService().getCurrentUser();
-        if (currentGoogleUser != null && currentGoogleUser.getEmail() != null) {
-            final User currentUser = new UserDao().findUserByEmail(currentGoogleUser.getEmail());
-            if (currentUser != null) {
-                final String locale = currentUser.getLanguage();
-                if (locale != null) {
-                    props.put("locale", locale);
-                } else {
-                    props.put("locale", "en");
-                }
+        final User currentUser = CurrentUserServlet.getCurrentUser();
+        if (currentUser != null) {
+            final String locale = currentUser.getLanguage();
+            if (locale != null) {
+                props.put("locale", locale);
+            } else {
+                props.put("locale", "en");
             }
         }
     }

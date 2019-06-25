@@ -107,6 +107,11 @@ public class CurrentUserServlet extends HttpServlet {
         }
 
         GaeUser user = (GaeUser) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+
+        if (user == null || user.getEmail() == null) {
+            return null;
+        }
+
         final String currentUserEmail = user.getEmail().toLowerCase();
         final UserDao uDao = new UserDao();
         return uDao.findUserByEmail(currentUserEmail);
