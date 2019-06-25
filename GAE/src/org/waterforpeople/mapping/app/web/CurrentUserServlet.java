@@ -102,19 +102,28 @@ public class CurrentUserServlet extends HttpServlet {
 
     public static User getCurrentUser() {
         if (SecurityContextHolder.getContext() == null
-                || SecurityContextHolder.getContext().getAuthentication() == null ) {
+                || SecurityContextHolder.getContext().getAuthentication() == null) {
             return null;
         }
 
-        GaeUser user = (GaeUser) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        Object principal = SecurityContextHolder.getContext().getAuthentication().getPrincipal();
 
-        if (user == null || user.getEmail() == null) {
+        if (principal instanceof GaeUser) {
+            GaeUser user = (GaeUser) principal;
+
+            if (user.getEmail() == null) {
+                return null;
+            }
+
+            final String currentUserEmail = user.getEmail().toLowerCase();
+            final UserDao uDao = new UserDao();
+            return uDao.findUserByEmail(currentUserEmail);
+
+        } else {
             return null;
         }
 
-        final String currentUserEmail = user.getEmail().toLowerCase();
-        final UserDao uDao = new UserDao();
-        return uDao.findUserByEmail(currentUserEmail);
+
     }
 
     public static Long getCurrentUserId() {
