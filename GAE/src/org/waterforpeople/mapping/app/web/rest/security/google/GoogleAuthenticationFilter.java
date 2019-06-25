@@ -1,5 +1,5 @@
 
-package org.waterforpeople.mapping.app.web.rest.security;
+package org.waterforpeople.mapping.app.web.rest.security.google;
 
 import java.io.IOException;
 import java.util.logging.Level;
@@ -11,9 +11,6 @@ import javax.servlet.ServletRequest;
 import javax.servlet.ServletResponse;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-
-import com.google.appengine.api.users.User;
-import com.google.appengine.api.users.UserServiceFactory;
 
 import org.springframework.security.authentication.AuthenticationDetailsSource;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -27,14 +24,18 @@ import org.springframework.security.web.authentication.WebAuthenticationDetailsS
 import org.springframework.security.web.authentication.preauth.PreAuthenticatedAuthenticationToken;
 import org.springframework.util.Assert;
 import org.springframework.web.filter.GenericFilterBean;
+import org.waterforpeople.mapping.app.web.rest.security.AppRole;
 import org.waterforpeople.mapping.app.web.rest.security.user.GaeUser;
+
+import com.google.appengine.api.users.User;
+import com.google.appengine.api.users.UserServiceFactory;
 
 /**
  * @author Luke Taylor
  */
-public class GaeAuthenticationFilter extends GenericFilterBean {
+public class GoogleAuthenticationFilter extends GenericFilterBean {
     private static final String REGISTRATION_URL = "/register.html";
-    private static final Logger logger = Logger.getLogger(GaeAuthenticationFilter.class.getName());
+    private static final Logger logger = Logger.getLogger(GoogleAuthenticationFilter.class.getName());
 
     private final AuthenticationDetailsSource<HttpServletRequest, WebAuthenticationDetails> ads = new WebAuthenticationDetailsSource();
     private AuthenticationManager authenticationManager;

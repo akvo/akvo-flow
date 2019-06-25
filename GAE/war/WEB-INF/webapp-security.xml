@@ -78,9 +78,9 @@
 
 	<!-- GAE Authentication -->
 
-    <b:bean id="gaeEntryPoint" class="org.waterforpeople.mapping.app.web.rest.security.GoogleAccountsAuthenticationEntryPoint" />
+    <b:bean id="gaeEntryPoint" class="org.waterforpeople.mapping.app.web.rest.security.google.GoogleAccountsAuthenticationEntryPoint" />
 
-    <b:bean id="gaeFilter" class="org.waterforpeople.mapping.app.web.rest.security.GaeAuthenticationFilter">
+    <b:bean id="gaeFilter" class="org.waterforpeople.mapping.app.web.rest.security.google.GoogleAuthenticationFilter">
         <b:property name="authenticationManager" ref="authenticationManager"/>
         <b:property name="failureHandler">
             <b:bean class="org.springframework.security.web.authentication.ExceptionMappingAuthenticationFailureHandler">
@@ -97,6 +97,6 @@
         <authentication-provider ref="gaeAuthenticationProvider"/>
     </authentication-manager>
 
-    <b:bean id="gaeAuthenticationProvider" class="org.waterforpeople.mapping.app.web.rest.security.GoogleAccountsAuthenticationProvider" />
+    <b:bean id="gaeAuthenticationProvider" class="org.waterforpeople.mapping.app.web.rest.security.google.GoogleAccountsAuthenticationProvider" />
 
 </b:beans>
