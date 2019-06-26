@@ -10,7 +10,9 @@
             <h1>Akvo Flow</h1>
             <ul>
                <li class="logIn">
+                   {{#if FLOW.Env.showAltAuthButton}}
                    <a href="/altlogin"  class="button">{{t _log_in}}</a>
+                   {{/if}}
                    <a href="/admin/"  class="smallButton">{{t _log_in}}</a>
                </li>
             </ul>
