@@ -9,6 +9,9 @@ public class AppConfig {
     private String clientSecret;
 
     AuthenticationController authenticationController() {
+        if (domain == null || clientId == null || clientSecret == null) {
+            return null;
+        }
         return AuthenticationController.newBuilder(domain, clientId, clientSecret)
                 .build();
     }
