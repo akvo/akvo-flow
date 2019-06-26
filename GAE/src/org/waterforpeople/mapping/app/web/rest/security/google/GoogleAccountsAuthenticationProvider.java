@@ -48,11 +48,15 @@ public class GoogleAccountsAuthenticationProvider implements AuthenticationProvi
             throws AuthenticationException {
         User googleUser = (User) authentication.getPrincipal();
 
-        GaeUser user = findUser(googleUser.getEmail());
+        return getAuthentication(true, userDao, authentication, googleUser.getEmail(), googleUser.getNickname());
+    }
+
+    public static Authentication getAuthentication(boolean authByGAE, UserDao userDao, Authentication authentication, String email, String nickname) {
+        GaeUser user = findUser(userDao, email, authByGAE);
 
         if (user == null) {
             // User not in registry. Needs to register
-            user = new GaeUser(googleUser.getNickname(), googleUser.getEmail());
+            user = new GaeUser(authByGAE, nickname, email);
         }
 
         if (!user.isEnabled()) {
@@ -62,7 +66,7 @@ public class GoogleAccountsAuthenticationProvider implements AuthenticationProvi
         return new GaeUserAuthentication(user, authentication.getDetails());
     }
 
-    private GaeUser findUser(String email) {
+    private static GaeUser findUser(UserDao userDao, String email, boolean authByGAE) {
         final com.gallatinsystems.user.domain.User user = userDao.findUserByEmail(email);
 
         if (user == null) {
@@ -83,10 +87,10 @@ public class GoogleAccountsAuthenticationProvider implements AuthenticationProvi
         }
 
         return new GaeUser(user.getUserName(), user.getEmailAddress(), user.getKey().getId(),
-                roles, true);
+                roles, true, authByGAE);
     }
 
-    private int getAuthorityLevel(com.gallatinsystems.user.domain.User user) {
+    private static int getAuthorityLevel(com.gallatinsystems.user.domain.User user) {
         if (user.isSuperAdmin()) {
             return AppRole.ROLE_SUPER_ADMIN.getLevel();
         }

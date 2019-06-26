@@ -20,27 +20,30 @@ public class GaeUser implements Serializable {
     private final Set<AppRole> authorities;
     private final boolean enabled;
     private Long userId;
+    private boolean authByGAE;
 
     /**
      * Pre-registration constructor. Assigns the user the "ROLE_NEW_USER" role only.
      */
-    public GaeUser(String userName, String email) {
+    public GaeUser(boolean authByGAE, String userName, String email) {
         this.authorities = EnumSet.of(AppRole.ROLE_NEW_USER);
         this.userName = userName;
         this.email = email;
         this.enabled = true;
+        this.authByGAE = authByGAE;
     }
 
     /**
      * Post-registration constructor
      */
     public GaeUser(String userName, String email, Long userId, Set<AppRole> authorities,
-            boolean enabled) {
+            boolean enabled, boolean authByGAE) {
         this.userName = userName;
         this.email = email;
         this.authorities = authorities;
         this.enabled = enabled;
         this.userId = userId;
+        this.authByGAE = authByGAE;
     }
 
     public boolean isEnabled() {
@@ -58,6 +61,8 @@ public class GaeUser implements Serializable {
     public Long getUserId() {
         return userId;
     }
+
+    public boolean isAuthByGAE() {return authByGAE;}
 
     public Collection<AppRole> getAuthorities() {
         return authorities;
