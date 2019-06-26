@@ -27,6 +27,7 @@
    <http pattern="/altlogin" use-expressions="true" entry-point-ref="alternativeEntryPoint" authentication-manager-ref="authenticationManager"
          access-decision-manager-ref="accessDecisionManager">
       <intercept-url pattern="/**" access="hasRole('ROLE_USER')"/>
+      <custom-filter position="PRE_AUTH_FILTER" ref="gaeFilter"/>
       <csrf disabled="true" />
    </http>
 
