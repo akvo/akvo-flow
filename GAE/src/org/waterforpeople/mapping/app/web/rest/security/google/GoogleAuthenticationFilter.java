@@ -24,7 +24,6 @@ import org.springframework.security.web.authentication.WebAuthenticationDetailsS
 import org.springframework.security.web.authentication.preauth.PreAuthenticatedAuthenticationToken;
 import org.springframework.util.Assert;
 import org.springframework.web.filter.GenericFilterBean;
-import org.waterforpeople.mapping.app.web.rest.security.AppRole;
 import org.waterforpeople.mapping.app.web.rest.security.user.GaeUser;
 
 import com.google.appengine.api.users.User;
@@ -34,7 +33,6 @@ import com.google.appengine.api.users.UserServiceFactory;
  * @author Luke Taylor
  */
 public class GoogleAuthenticationFilter extends GenericFilterBean {
-    private static final String REGISTRATION_URL = "/register.html";
     private static final Logger logger = Logger.getLogger(GoogleAuthenticationFilter.class.getName());
 
     private final AuthenticationDetailsSource<HttpServletRequest, WebAuthenticationDetails> ads = new WebAuthenticationDetailsSource();
@@ -45,7 +43,6 @@ public class GoogleAuthenticationFilter extends GenericFilterBean {
             throws IOException, ServletException {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         User googleUser = UserServiceFactory.getUserService().getCurrentUser();
-        HttpServletRequest httpRequest = (HttpServletRequest) request;
 
         if (authentication != null && !loggedInUserMatchesGaeUser(authentication, googleUser)) {
             SecurityContextHolder.clearContext();
@@ -66,21 +63,6 @@ public class GoogleAuthenticationFilter extends GenericFilterBean {
                 try {
                     authentication = authenticationManager.authenticate(token);
                     SecurityContextHolder.getContext().setAuthentication(authentication);
-                    String logoutUrl = UserServiceFactory.getUserService().createLogoutURL("");
-
-                    if (authentication.getAuthorities().contains(
-                            AppRole.ROLE_NEW_USER)
-                            && !logoutUrl.startsWith(httpRequest
-                                    .getRequestURI())
-                            && !httpRequest.getRequestURI().startsWith(
-                                    "/remote_api")) {
-                        logger.log(Level.INFO,
-                                "New user authenticated. Redirecting to registration page");
-                        ((HttpServletResponse) response)
-                                .sendRedirect(REGISTRATION_URL);
-                        return;
-                    }
-
                 } catch (AuthenticationException e) {
                     logger.log(Level.SEVERE, e.getMessage(), e);
                     failureHandler.onAuthenticationFailure((HttpServletRequest) request,

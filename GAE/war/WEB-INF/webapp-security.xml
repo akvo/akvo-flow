@@ -66,6 +66,7 @@
         <intercept-url pattern="/**" access="permitAll"/>
         <logout logout-url="/admin/logout.html" success-handler-ref="oidcLogout"/>
         <custom-filter position="PRE_AUTH_FILTER" ref="gaeFilter"/>
+        <custom-filter after="PRE_AUTH_FILTER" ref="newUserRegistrationRedirect"/>
         <csrf disabled="true" />
     </http>
 
@@ -95,6 +96,8 @@
 	<!-- GAE Authentication -->
 
     <b:bean id="gaeEntryPoint" class="org.waterforpeople.mapping.app.web.rest.security.google.GoogleAccountsAuthenticationEntryPoint" />
+
+    <b:bean id="newUserRegistrationRedirect" class="org.waterforpeople.mapping.app.web.rest.security.NewUserRegistrationRedirectFilter"/>
 
     <b:bean id="gaeFilter" class="org.waterforpeople.mapping.app.web.rest.security.google.GoogleAuthenticationFilter">
         <b:property name="authenticationManager" ref="authenticationManager"/>
