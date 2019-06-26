@@ -14,8 +14,23 @@
     <http pattern="/publicmap/images/**" security="none" />
     <http pattern="/publicmap/css/**" security="none" />
     <http pattern="/publicmap/js/**" security="none" />
+<!--    <http pattern="/webapp/testharness**" security="none" />-->
 
-	<http pattern="/api/v1/**" use-expressions="true" entry-point-ref="apiEntryPoint" authentication-manager-ref="apiAuthenticationManager" >
+   <b:bean id="oidcConfig" class="org.waterforpeople.mapping.app.web.rest.security.oidc.AppConfig"/>
+   <b:bean id="oidcLogout" class="org.waterforpeople.mapping.app.web.rest.security.LogoutController">
+      <b:constructor-arg ref="oidcConfig"/>
+   </b:bean>
+   <b:bean id="oidcEntryPoint" class="org.waterforpeople.mapping.app.web.rest.security.oidc.EntryPoint">
+      <b:constructor-arg ref="oidcConfig"/>
+   </b:bean>
+
+   <http pattern="/ssologin" use-expressions="true" entry-point-ref="oidcEntryPoint" authentication-manager-ref="authenticationManager"
+         access-decision-manager-ref="accessDecisionManager">
+      <intercept-url pattern="/**" access="hasRole('ROLE_USER')"/>
+      <csrf disabled="true" />
+   </http>
+
+   <http pattern="/api/v1/**" use-expressions="true" entry-point-ref="apiEntryPoint" authentication-manager-ref="apiAuthenticationManager" >
         <intercept-url pattern="/api/v1/survey_groups/**" method="GET" access="hasRole('ROLE_USER')"/>
         <intercept-url pattern="/api/v1/surveys/**" method="GET" access="hasRole('ROLE_USER')"/>
         <intercept-url pattern="/api/v1/question_groups/**" method="GET" access="hasRole('ROLE_USER')"/>
@@ -37,6 +52,7 @@
         </headers>
         <intercept-url pattern="/remote_api**" access="permitAll"/>
         <intercept-url pattern="/admin/logout.html" access="permitAll"/>
+        <intercept-url pattern="/callback**" access="permitAll"/>
         <intercept-url pattern="/rest/placemark**" method="GET" access="permitAll"/>
         <intercept-url pattern="/_ah/**" access="permitAll"/>
         <intercept-url pattern="/webapp/testharness**" access="hasRole('ROLE_SUPER_ADMIN')"/>
@@ -48,12 +64,12 @@
         <intercept-url pattern="/rest/**" access="hasRole('ROLE_USER')"/>
         <intercept-url pattern="/admin/**" access="hasRole('ROLE_USER')"/>
         <intercept-url pattern="/**" access="permitAll"/>
-        <logout logout-success-url="/" delete-cookies="JSESSIONID"/>
-		<custom-filter position="PRE_AUTH_FILTER" ref="gaeFilter"/>
+        <logout logout-url="/admin/logout.html" success-handler-ref="oidcLogout"/>
+        <custom-filter position="PRE_AUTH_FILTER" ref="gaeFilter"/>
         <csrf disabled="true" />
     </http>
 
-    <b:bean id="accessDecisionManager" class="org.springframework.security.access.vote.AffirmativeBased">
+   <b:bean id="accessDecisionManager" class="org.springframework.security.access.vote.AffirmativeBased">
         <b:constructor-arg index="0">
 			<b:list>
 				<b:bean class="org.waterforpeople.mapping.app.web.rest.security.RequestUriVoter" />
