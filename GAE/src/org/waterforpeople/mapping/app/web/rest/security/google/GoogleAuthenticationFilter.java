@@ -96,12 +96,16 @@ public class GoogleAuthenticationFilter extends GenericFilterBean {
     private boolean loggedInUserMatchesGaeUser(Authentication authentication, User googleUser) {
         assert authentication != null;
 
+        GaeUser gaeUser = (GaeUser) authentication.getPrincipal();
+
+        if (!gaeUser.isAuthByGAE()) {
+            return true;
+        }
+
         if (googleUser == null) {
             // User has logged out of GAE but is still logged into application
             return false;
         }
-
-        GaeUser gaeUser = (GaeUser) authentication.getPrincipal();
 
         if (!gaeUser.getEmail().equals(googleUser.getEmail())) {
             return false;
