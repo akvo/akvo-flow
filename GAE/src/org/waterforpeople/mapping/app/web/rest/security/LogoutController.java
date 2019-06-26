@@ -32,7 +32,7 @@ public class LogoutController implements LogoutSuccessHandler {
         logger.fine("Performing logout");
         invalidateSession(req);
 
-        if (authentication.getPrincipal() != null) {
+        if (authentication != null && authentication.getPrincipal() != null) {
             if (authentication.getPrincipal() instanceof GaeUser) {
                 GaeUser principal = (GaeUser) authentication.getPrincipal();
                 if (!principal.isAuthByGAE()) {
