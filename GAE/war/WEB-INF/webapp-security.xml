@@ -24,7 +24,7 @@
       <b:constructor-arg ref="oidcConfig"/>
    </b:bean>
 
-   <http pattern="/ssologin" use-expressions="true" entry-point-ref="oidcEntryPoint" authentication-manager-ref="authenticationManager"
+   <http pattern="/altlogin" use-expressions="true" entry-point-ref="alternativeEntryPoint" authentication-manager-ref="authenticationManager"
          access-decision-manager-ref="accessDecisionManager">
       <intercept-url pattern="/**" access="hasRole('ROLE_USER')"/>
       <csrf disabled="true" />
@@ -45,7 +45,7 @@
         <custom-filter position="PRE_AUTH_FILTER" ref="apiFilter"/>
 	</http>
 
-    <http use-expressions="true" entry-point-ref="gaeEntryPoint" authentication-manager-ref="authenticationManager"
+    <http use-expressions="true" entry-point-ref="defaultEntryPoint" authentication-manager-ref="authenticationManager"
         access-decision-manager-ref="accessDecisionManager">
         <headers>
             <frame-options policy="SAMEORIGIN" />
@@ -118,4 +118,13 @@
 
     <b:bean id="gaeAuthenticationProvider" class="org.waterforpeople.mapping.app.web.rest.security.google.GoogleAccountsAuthenticationProvider" />
 
+    <b:bean id="defaultEntryPoint" class="org.waterforpeople.mapping.app.web.rest.security.featureflag.EntryPoint">
+       <b:constructor-arg ref="gaeEntryPoint"/>
+       <b:constructor-arg ref="oidcEntryPoint"/>
+    </b:bean>
+
+    <b:bean id="alternativeEntryPoint" class="org.waterforpeople.mapping.app.web.rest.security.featureflag.EntryPoint">
+       <b:constructor-arg ref="oidcEntryPoint"/>
+       <b:constructor-arg ref="gaeEntryPoint"/>
+    </b:bean>
 </b:beans>
