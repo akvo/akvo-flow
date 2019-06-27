@@ -41,7 +41,8 @@ import com.google.appengine.api.datastore.Query.SortDirection;
 import com.google.appengine.api.datastore.Text;
 
 /*
- * - Find duplicated datapoints, output script responses to choose from
+ * Find duplicated datapoints, output script responses to choose from
+ * TODO: find DPs with too-short identifiers
  */
 public class DuplicatedSurveyedLocale implements Process {
 
@@ -78,7 +79,7 @@ public class DuplicatedSurveyedLocale implements Process {
 
         String lastIdentifier = null;
         Entity lastSL = null;
-        int count = 0, suspectCount = 0;
+        int count = 0, suspectCount = 0, shortCount = 0, oldCount = 0;
         List<Entity> toBeJudged = new ArrayList<>();
 
         //Loop over sorted list; any adjacent entries w same identifier means duplicate
@@ -95,16 +96,61 @@ public class DuplicatedSurveyedLocale implements Process {
                     suspectCount++;
                     toBeJudged.add(lastSL);
                 }
-            } else if (toBeJudged.size()>0) {
-                handleClone(ds, toBeJudged);
-                toBeJudged = new ArrayList<>();
+            } else {
+                if (toBeJudged.size() > 0) {
+                    handleClone(ds, toBeJudged);
+                    toBeJudged = new ArrayList<>();
+                }
+
+                //check for badly formed identifier
+                if (identifier.contains("-")) {
+
+                    if (identifier.length() < 14) {
+                        shortCount++;
+                        handleShort(ds, sl);
+                    }
+                } else {
+                    oldCount++;
+                }
+
             }
 
             lastIdentifier = identifier;
             lastSL = sl;
         }
-        System.out.println("##Scanned " + count + " DPs. Found " + suspectCount + " suspects.");
+        System.out.println(String.format("##Scanned %d DPs. Found %d duplication suspects, %d short identifiers, %d old.",
+                count,
+                suspectCount,
+                shortCount,
+                oldCount));
 
+    }
+
+
+    //Deal w a DPs with short identifier
+    private void handleShort(DatastoreService ds, Entity sl) {
+        System.out.println("");
+        System.out.println("");
+
+        Long id = sl.getKey().getId(); //NPE?!
+        String identifier = (String) sl.getProperty("identifier");
+        if (identifier == null) identifier = "";
+        Date created = (Date) sl.getProperty("createdDateTime");
+        Long survey = (Long) sl.getProperty("surveyGroupId");
+
+        System.out.println(String.format(
+                "####Datapoint '%s'  survey %d  short identifier  created %s ",
+                identifier,
+                survey,
+                df.format(created)
+                ));
+        //This line to be uncommented if DP should be renamed
+        System.out.println(String.format(
+                "%s./my_reidentify-datapoint.sh %s %d%s",
+                "", //Always
+                instance,
+                id,
+                " --doit"));
     }
 
 
