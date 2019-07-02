@@ -5,12 +5,12 @@ const ChildOption = ({
   name,
   value,
 }) => (
-    <option value={value}>{name}</option>
+  <option value={value}>{name}</option>
 );
 
 ChildOption.propTypes = {
-  name: PropTypes.string,
-  value: PropTypes.number,
+  name: PropTypes.string.isRequired,
+  value: PropTypes.number.isRequired,
 };
 
 export default ChildOption;
