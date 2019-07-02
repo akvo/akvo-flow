@@ -49,9 +49,10 @@ FLOW.FolderSurveySelectorView = FLOW.ReactComponentView.extend(observe({
         }].concat(this.surveyGroups.filter(sgs => sgs.parentId == parent.ancestorIds[i]));
         levels.push(level);
       }
-      const selectedSG = this.surveyGroups.find(sg => sg.keyId == parentId);
-      if (selectedSG && selectedSG.projectType !== 'PROJECT_FOLDER') {
+      const selectedSG = FLOW.projectControl.get('content').find(sg => sg.get('keyId') == parentId);
+      if (selectedSG && selectedSG.get('projectType') !== 'PROJECT_FOLDER') {
         surveySelected = true;
+        FLOW.selectedControl.set('selectedSurveyGroup', selectedSG);
       }
     }
 
