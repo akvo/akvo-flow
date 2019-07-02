@@ -40,16 +40,16 @@ FLOW.FolderSurveySelectorView = FLOW.ReactComponentView.extend(observe({
     let surveySelected = false;
     // if not root level, generate ancestor selectors
     if (parentId !== 0) {
-      const parent = this.surveyGroups.find(sg => sg.keyId === parentId);
+      const parent = this.surveyGroups.find(sg => sg.keyId == parentId);
       for (let i = 0; i < parent.ancestorIds.length; i++) {
         const level = [{
           keyId: 0,
           parentId: null,
           name: Ember.String.loc('_choose_folder_or_survey'),
-        }].concat(this.surveyGroups.filter(sgs => sgs.parentId === parent.ancestorIds[i]));
+        }].concat(this.surveyGroups.filter(sgs => sgs.parentId == parent.ancestorIds[i]));
         levels.push(level);
       }
-      const selectedSG = this.surveyGroups.find(sg => sg.keyId === parentId);
+      const selectedSG = this.surveyGroups.find(sg => sg.keyId == parentId);
       if (selectedSG && selectedSG.projectType !== 'PROJECT_FOLDER') {
         surveySelected = true;
       }
@@ -60,7 +60,7 @@ FLOW.FolderSurveySelectorView = FLOW.ReactComponentView.extend(observe({
         keyId: 0,
         parentId: null,
         name: Ember.String.loc('_choose_folder_or_survey'),
-      }].concat(this.surveyGroups.filter(sg => sg.parentId === parentId)));
+      }].concat(this.surveyGroups.filter(sg => sg.parentId == parentId)));
     }
 
     this.reactRender(
