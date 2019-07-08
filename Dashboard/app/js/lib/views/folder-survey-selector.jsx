@@ -1,13 +1,10 @@
 import React from 'react';
 
 import ChildOption from 'akvo-flow/components/ChildOption';
-import observe from '../mixins/observe';
 
 require('akvo-flow/views/react-component');
 
-FLOW.FolderSurveySelectorView = FLOW.ReactComponentView.extend(observe({
-  // 'FLOW.projectControl.content.isLoaded': 'folderSurveySelector',
-}), {
+FLOW.FolderSurveySelectorView = FLOW.ReactComponentView.extend({
   init() {
     this._super();
     this.handleChange = this.handleChange.bind(this);
