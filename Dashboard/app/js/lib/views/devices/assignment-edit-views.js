@@ -29,6 +29,7 @@ FLOW.formatDate = function (value) {
 };
 
 FLOW.AssignmentEditView = FLOW.View.extend(observe({
+  'this.assignmentName': 'validateAssignmentObserver',
   'FLOW.router.navigationController.selected': 'detectChangeTab',
   'FLOW.router.devicesSubnavController.selected': 'detectChangeTab',
 }), {
@@ -223,5 +224,16 @@ FLOW.AssignmentEditView = FLOW.View.extend(observe({
 
   removeAllDevices() {
     this.set('devicesPreview', Ember.A([]));
+  },
+
+  validateAssignmentObserver() {
+    this.set('assignmentValidationFailure', (
+      (this.assignmentName && this.assignmentName.length > 100)
+      || !this.assignmentName || this.assignmentName == ''));
+    if (this.assignmentName && this.assignmentName.length > 100) {
+      this.set('assignmentValidationFailureReason', Ember.String.loc('_assignment_name_over_100_chars'));
+    } else if (!this.assignmentName || this.assignmentName == '') {
+      this.set('assignmentValidationFailureReason', Ember.String.loc('_assignment_name_not_set'));
+    }
   },
 });
