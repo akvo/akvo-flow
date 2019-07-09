@@ -1,5 +1,8 @@
 # Akvo Flow Release Notes
 ----
+# Akvo Flow Dashboard v1.9.48 - U.. U..
+Date: 10-07-2019
+
 # Akvo Flow Dashboard v1.9.47 - Tweedy Tulip
 Date: 27-05-2019
 
