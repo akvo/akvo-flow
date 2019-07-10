@@ -1,7 +1,15 @@
 # Akvo Flow Release Notes
 ----
-# Akvo Flow Dashboard v1.9.48 - U.. U..
+# Akvo Flow Dashboard v1.9.48 - Unique Ursinia
 Date: 10-07-2019
+
+# New and noteworthy
+* **Assignments redesign** - Created a script to transform current `surveyAssignment` entities to conform to new forms-from-only-one-survey format [#3107]. Reimplement the folder/survey selector on the assignments list using react [#3109]
+* **Back-end** - Created a script to completetly remove a form [#3075]
+
+# Resolved issues
+* **Assignments** - Show an error and disable save button when no assignment name is set [#3132]
+* **Bug fixes** - Ensure data point identifiers are always 14 characters long [#3117]. Fix links to published surveys shown on messages tab from xml to zip [#3123] 
 
 # Akvo Flow Dashboard v1.9.47 - Tweedy Tulip
 Date: 27-05-2019
