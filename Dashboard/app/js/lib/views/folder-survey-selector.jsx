@@ -43,7 +43,20 @@ FLOW.FolderSurveySelectorView = FLOW.ReactComponentView.extend({
           keyId: 0,
           parentId: null,
           name: Ember.String.loc('_choose_folder_or_survey'),
-        }].concat(this.surveyGroups.filter(sgs => sgs.parentId == parent.ancestorIds[i]));
+        }].concat(this.surveyGroups.filter(sgs => sgs.parentId == parent.ancestorIds[i])
+          .sort((a, b) => {
+            const nameA = a.name.toUpperCase(); // ignore upper and lowercase
+            const nameB = b.name.toUpperCase(); // ignore upper and lowercase
+            if (nameA < nameB) {
+              return -1;
+            }
+            if (nameA > nameB) {
+              return 1;
+            }
+
+            // names must be equal
+            return 0;
+          }));
         levels.push(level);
       }
       const selectedSG = FLOW.projectControl.get('content').find(sg => sg.get('keyId') == parentId);
@@ -58,7 +71,19 @@ FLOW.FolderSurveySelectorView = FLOW.ReactComponentView.extend({
         keyId: 0,
         parentId: null,
         name: Ember.String.loc('_choose_folder_or_survey'),
-      }].concat(this.surveyGroups.filter(sg => sg.parentId == parentId)));
+      }].concat(this.surveyGroups.filter(sg => sg.parentId == parentId).sort((a, b) => {
+        const nameA = a.name.toUpperCase(); // ignore upper and lowercase
+        const nameB = b.name.toUpperCase(); // ignore upper and lowercase
+        if (nameA < nameB) {
+          return -1;
+        }
+        if (nameA > nameB) {
+          return 1;
+        }
+
+        // names must be equal
+        return 0;
+      })));
     }
 
     this.reactRender(
