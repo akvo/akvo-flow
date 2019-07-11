@@ -4,7 +4,11 @@
     <form>
       <fieldset id="assignmentDetails">
         <h2>01. {{t _assignment_details}}</h2>
-        <label for="assignmentName">{{t _assignment_name}}:</label>
+        <label for="assignmentName">{{t _assignment_name}}:
+          {{#if view.assignmentValidationFailure }}
+            <span style="color:red">{{view.assignmentValidationFailureReason}}</span>
+          {{/if}}
+        </label>
           {{view Ember.TextField
             valueBinding="view.assignmentName"
             id="assignmentName"
@@ -30,7 +34,7 @@
             <div class="SelectLayout">
               <label for="surveyGroup">{{t _select_survey}}:</label>
               {{#unless FLOW.projectControl.isLoading}}
-                {{view FLOW.SurveySelectionView}}
+                {{view FLOW.FolderSurveySelectorView}}
               {{/unless}}
   			    </div>
             <div class="formSelectorList">
@@ -161,7 +165,11 @@
       </div>
       <div class="menuConfirm">
         <ul>
-          <li><a {{action "saveSurveyAssignment" target="this"}} class="standardBtn">{{t _save_assignment}}</a></li>
+          {{#if view.assignmentValidationFailure}}
+            <li><a class="button noChanges" id="standardBtn">{{t _save_assignment}}</a> </li>
+          {{else}}
+            <li><a {{action "saveSurveyAssignment" target="this"}} class="standardBtn">{{t _save_assignment}}</a></li>
+          {{/if}}
           <li><a {{action "cancelEditSurveyAssignment" target="this"}} class="">{{t _cancel}}</a></li>
         </ul>
       </div>
