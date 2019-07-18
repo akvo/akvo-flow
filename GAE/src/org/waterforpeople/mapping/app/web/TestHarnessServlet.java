@@ -34,7 +34,7 @@ import net.sf.jsr107cache.CacheException;
 
 import org.apache.commons.lang.StringUtils;
 import org.waterforpeople.mapping.app.web.dto.DataProcessorRequest;
-import org.waterforpeople.mapping.app.web.rest.security.AppRole;
+import org.akvo.flow.rest.security.AppRole;
 import org.waterforpeople.mapping.app.web.test.DeleteObjectUtil;
 import org.waterforpeople.mapping.dao.QuestionAnswerStoreDao;
 import org.waterforpeople.mapping.dao.SurveyInstanceDAO;

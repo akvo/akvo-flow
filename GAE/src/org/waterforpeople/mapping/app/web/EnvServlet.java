@@ -36,7 +36,7 @@ import org.akvo.flow.locale.UIStrings;
 import org.apache.velocity.Template;
 import org.apache.velocity.VelocityContext;
 import org.apache.velocity.app.VelocityEngine;
-import org.waterforpeople.mapping.app.web.rest.security.AppRole;
+import org.akvo.flow.rest.security.AppRole;
 
 import com.gallatinsystems.common.util.PropertyUtil;
 import com.gallatinsystems.user.domain.User;

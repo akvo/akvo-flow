@@ -1,4 +1,4 @@
-package org.waterforpeople.mapping.app.web.rest.security;
+package org.akvo.flow.rest.security;
 
 import java.io.IOException;
 import java.util.logging.Logger;
@@ -10,8 +10,8 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.web.authentication.logout.LogoutSuccessHandler;
 import org.springframework.stereotype.Controller;
-import org.waterforpeople.mapping.app.web.rest.security.oidc.AppConfig;
-import org.waterforpeople.mapping.app.web.rest.security.user.GaeUser;
+import org.akvo.flow.rest.security.oidc.AppConfig;
+import org.akvo.flow.rest.security.user.GaeUser;
 
 import com.google.appengine.api.users.UserServiceFactory;
 

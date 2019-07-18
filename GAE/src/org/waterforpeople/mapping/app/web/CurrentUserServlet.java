@@ -38,7 +38,7 @@ import org.apache.velocity.Template;
 import org.apache.velocity.VelocityContext;
 import org.apache.velocity.app.VelocityEngine;
 import org.springframework.security.core.context.SecurityContextHolder;
-import org.waterforpeople.mapping.app.web.rest.security.user.GaeUser;
+import org.akvo.flow.rest.security.user.GaeUser;
 
 import com.gallatinsystems.common.Constants;
 import com.gallatinsystems.user.dao.UserAuthorizationDAO;

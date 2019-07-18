@@ -1,4 +1,4 @@
-package org.waterforpeople.mapping.app.web.rest.security.featureflag;
+package org.akvo.flow.rest.security.featureflag;
 
 import java.io.IOException;
 

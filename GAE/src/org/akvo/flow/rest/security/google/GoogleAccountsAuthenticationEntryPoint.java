@@ -1,5 +1,5 @@
 
-package org.waterforpeople.mapping.app.web.rest.security.google;
+package org.akvo.flow.rest.security.google;
 
 import java.io.IOException;
 

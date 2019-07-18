@@ -1,12 +1,12 @@
 
-package org.waterforpeople.mapping.app.web.rest.security;
+package org.akvo.flow.rest.security;
 
 import java.util.Collection;
 import java.util.HashSet;
 
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.GrantedAuthority;
-import org.waterforpeople.mapping.app.web.rest.security.user.GaeUser;
+import org.akvo.flow.rest.security.user.GaeUser;
 
 /**
  * Authentication object representing a fully-authenticated user.

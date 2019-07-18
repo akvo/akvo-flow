@@ -1,5 +1,5 @@
 
-package org.waterforpeople.mapping.app.web.rest.security.google;
+package org.akvo.flow.rest.security.google;
 
 import java.io.IOException;
 import java.util.logging.Level;
@@ -24,7 +24,7 @@ import org.springframework.security.web.authentication.WebAuthenticationDetailsS
 import org.springframework.security.web.authentication.preauth.PreAuthenticatedAuthenticationToken;
 import org.springframework.util.Assert;
 import org.springframework.web.filter.GenericFilterBean;
-import org.waterforpeople.mapping.app.web.rest.security.user.GaeUser;
+import org.akvo.flow.rest.security.user.GaeUser;
 
 import com.google.appengine.api.users.User;
 import com.google.appengine.api.users.UserServiceFactory;

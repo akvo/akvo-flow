@@ -1,4 +1,4 @@
-package org.waterforpeople.mapping.app.web.rest.security.oidc;
+package org.akvo.flow.rest.security.oidc;
 
 import java.io.IOException;
 import java.util.logging.Logger;

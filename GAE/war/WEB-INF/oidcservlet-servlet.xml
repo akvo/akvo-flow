@@ -21,7 +21,7 @@
 
     <bean id="handlerMapping" class="org.springframework.web.servlet.mvc.method.annotation.RequestMappingHandlerMapping"/>
 
-    <bean name="/callback" class="org.waterforpeople.mapping.app.web.rest.security.oidc.CallbackController" lazy-init="true">
+    <bean name="/callback" class="org.akvo.flow.rest.security.oidc.CallbackController" lazy-init="true">
         <constructor-arg ref="oidcConfig"/>
     </bean>
 </beans>

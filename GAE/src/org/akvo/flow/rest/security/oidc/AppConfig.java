@@ -1,4 +1,4 @@
-package org.waterforpeople.mapping.app.web.rest.security.oidc;
+package org.akvo.flow.rest.security.oidc;
 
 import com.auth0.AuthenticationController;
 import com.gallatinsystems.common.util.PropertyUtil;

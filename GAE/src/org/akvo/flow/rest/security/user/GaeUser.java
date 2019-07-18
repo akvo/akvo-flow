@@ -1,12 +1,12 @@
 
-package org.waterforpeople.mapping.app.web.rest.security.user;
+package org.akvo.flow.rest.security.user;
 
 import java.io.Serializable;
 import java.util.Collection;
 import java.util.EnumSet;
 import java.util.Set;
 
-import org.waterforpeople.mapping.app.web.rest.security.AppRole;
+import org.akvo.flow.rest.security.AppRole;
 
 /**
  * Custom user object for the application.

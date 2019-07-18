@@ -1,5 +1,5 @@
 
-package org.waterforpeople.mapping.app.web.rest.security.google;
+package org.akvo.flow.rest.security.google;
 
 import java.util.EnumSet;
 import java.util.Set;
@@ -15,9 +15,9 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.core.SpringSecurityMessageSource;
 import org.springframework.security.web.authentication.preauth.PreAuthenticatedAuthenticationToken;
-import org.waterforpeople.mapping.app.web.rest.security.AppRole;
-import org.waterforpeople.mapping.app.web.rest.security.GaeUserAuthentication;
-import org.waterforpeople.mapping.app.web.rest.security.user.GaeUser;
+import org.akvo.flow.rest.security.AppRole;
+import org.akvo.flow.rest.security.GaeUserAuthentication;
+import org.akvo.flow.rest.security.user.GaeUser;
 
 import com.gallatinsystems.user.dao.UserDao;
 import com.google.appengine.api.users.User;

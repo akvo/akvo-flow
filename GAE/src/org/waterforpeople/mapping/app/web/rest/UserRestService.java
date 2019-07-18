@@ -34,7 +34,7 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import org.waterforpeople.mapping.app.web.CurrentUserServlet;
 import org.waterforpeople.mapping.app.web.rest.dto.RestStatusDto;
 import org.waterforpeople.mapping.app.web.rest.dto.UserPayload;
-import org.waterforpeople.mapping.app.web.rest.security.AppRole;
+import org.akvo.flow.rest.security.AppRole;
 
 import com.gallatinsystems.common.Constants;
 import com.gallatinsystems.user.app.gwt.client.UserDto;

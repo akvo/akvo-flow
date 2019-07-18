@@ -1,4 +1,4 @@
-package org.waterforpeople.mapping.app.web.rest.security.oidc;
+package org.akvo.flow.rest.security.oidc;
 
 import java.io.IOException;
 import java.util.logging.Level;
@@ -15,7 +15,7 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
-import org.waterforpeople.mapping.app.web.rest.security.google.GoogleAccountsAuthenticationProvider;
+import org.akvo.flow.rest.security.google.GoogleAccountsAuthenticationProvider;
 
 import com.auth0.AuthenticationController;
 import com.auth0.IdentityVerificationException;

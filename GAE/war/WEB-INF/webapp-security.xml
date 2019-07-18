@@ -16,11 +16,11 @@
     <http pattern="/publicmap/js/**" security="none" />
 <!--    <http pattern="/webapp/testharness**" security="none" />-->
 
-   <b:bean id="oidcConfig" class="org.waterforpeople.mapping.app.web.rest.security.oidc.AppConfig"/>
-   <b:bean id="oidcLogout" class="org.waterforpeople.mapping.app.web.rest.security.LogoutController">
+   <b:bean id="oidcConfig" class="org.akvo.flow.rest.security.oidc.AppConfig"/>
+   <b:bean id="oidcLogout" class="org.akvo.flow.rest.security.LogoutController">
       <b:constructor-arg ref="oidcConfig"/>
    </b:bean>
-   <b:bean id="oidcEntryPoint" class="org.waterforpeople.mapping.app.web.rest.security.oidc.EntryPoint">
+   <b:bean id="oidcEntryPoint" class="org.akvo.flow.rest.security.oidc.EntryPoint">
       <b:constructor-arg ref="oidcConfig"/>
    </b:bean>
 
@@ -74,7 +74,7 @@
    <b:bean id="accessDecisionManager" class="org.springframework.security.access.vote.AffirmativeBased">
         <b:constructor-arg index="0">
 			<b:list>
-				<b:bean class="org.waterforpeople.mapping.app.web.rest.security.RequestUriVoter" />
+				<b:bean class="org.akvo.flow.rest.security.RequestUriVoter" />
 				<b:bean class="org.springframework.security.web.access.expression.WebExpressionVoter" />
 			</b:list>
         </b:constructor-arg>
@@ -82,9 +82,9 @@
 
 	<!-- API Authentication -->
 
-	<b:bean id="apiEntryPoint" class="org.waterforpeople.mapping.app.web.rest.security.ApiAuthenticationEntryPoint"/>
+	<b:bean id="apiEntryPoint" class="org.akvo.flow.rest.security.ApiAuthenticationEntryPoint"/>
 
-	<b:bean id="apiFilter" class="org.waterforpeople.mapping.app.web.rest.security.ApiAuthenticationFilter">
+	<b:bean id="apiFilter" class="org.akvo.flow.rest.security.ApiAuthenticationFilter">
 		<b:property name="authenticationManager" ref="apiAuthenticationManager"></b:property>
 	</b:bean>
 
@@ -92,15 +92,15 @@
 		<authentication-provider ref="apiAuthenticationProvider"/>
 	</authentication-manager>
 
-	<b:bean id="apiAuthenticationProvider" class="org.waterforpeople.mapping.app.web.rest.security.ApiAuthenticationProvider"/>
+	<b:bean id="apiAuthenticationProvider" class="org.akvo.flow.rest.security.ApiAuthenticationProvider"/>
 
 	<!-- GAE Authentication -->
 
-    <b:bean id="gaeEntryPoint" class="org.waterforpeople.mapping.app.web.rest.security.google.GoogleAccountsAuthenticationEntryPoint" />
+    <b:bean id="gaeEntryPoint" class="org.akvo.flow.rest.security.google.GoogleAccountsAuthenticationEntryPoint" />
 
-    <b:bean id="newUserRegistrationRedirect" class="org.waterforpeople.mapping.app.web.rest.security.NewUserRegistrationRedirectFilter"/>
+    <b:bean id="newUserRegistrationRedirect" class="org.akvo.flow.rest.security.NewUserRegistrationRedirectFilter"/>
 
-    <b:bean id="gaeFilter" class="org.waterforpeople.mapping.app.web.rest.security.google.GoogleAuthenticationFilter">
+    <b:bean id="gaeFilter" class="org.akvo.flow.rest.security.google.GoogleAuthenticationFilter">
         <b:property name="authenticationManager" ref="authenticationManager"/>
         <b:property name="failureHandler">
             <b:bean class="org.springframework.security.web.authentication.ExceptionMappingAuthenticationFailureHandler">
@@ -117,14 +117,14 @@
         <authentication-provider ref="gaeAuthenticationProvider"/>
     </authentication-manager>
 
-    <b:bean id="gaeAuthenticationProvider" class="org.waterforpeople.mapping.app.web.rest.security.google.GoogleAccountsAuthenticationProvider" />
+    <b:bean id="gaeAuthenticationProvider" class="org.akvo.flow.rest.security.google.GoogleAccountsAuthenticationProvider" />
 
-    <b:bean id="defaultEntryPoint" class="org.waterforpeople.mapping.app.web.rest.security.featureflag.EntryPoint">
+    <b:bean id="defaultEntryPoint" class="org.akvo.flow.rest.security.featureflag.EntryPoint">
        <b:constructor-arg ref="gaeEntryPoint"/>
        <b:constructor-arg ref="oidcEntryPoint"/>
     </b:bean>
 
-    <b:bean id="alternativeEntryPoint" class="org.waterforpeople.mapping.app.web.rest.security.featureflag.EntryPoint">
+    <b:bean id="alternativeEntryPoint" class="org.akvo.flow.rest.security.featureflag.EntryPoint">
        <b:constructor-arg ref="oidcEntryPoint"/>
        <b:constructor-arg ref="gaeEntryPoint"/>
     </b:bean>
