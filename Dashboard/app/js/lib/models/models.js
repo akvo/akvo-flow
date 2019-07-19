@@ -155,18 +155,13 @@ FLOW.Survey = FLOW.BaseModel.extend({
     defaultValue: null,
   }),
 
-  /* computer property that is used in the assignment edit page but never saved to backend.
+  /* computed property that is used in the assignment edit page but never saved to backend.
   it should ideally appear as a view property. to be refactored */
   surveyGroupName: Ember.computed(function () {
-    const ancestorIds = this.get('ancestorIds');
-    const sgId = this.get('surveyGroupId');
-    // confirm form has at least the root and the parent survey as ancestors
-    if (sgId && ancestorIds.length > 1) {
-      const sg = FLOW.store.find(FLOW.SurveyGroup, sgId);
-      if (!Ember.empty(sg)) {
-        this.set('surveyGroupName', sg.get('code'));
-      }
-    }
+    const surveyId = this.get('surveyGroupId');
+    const survey = surveyId && FLOW.store.find(FLOW.SurveyGroup, surveyId);
+    if (!Ember.empty(survey)) return survey.get('name');
+    return '';
   }).property(''),
 
   allowEdit: Ember.computed(function () {
