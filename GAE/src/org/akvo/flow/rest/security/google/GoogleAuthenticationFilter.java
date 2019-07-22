@@ -59,7 +59,7 @@ public class GoogleAuthenticationFilter extends GenericFilterBean {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         User googleUser = UserServiceFactory.getUserService().getCurrentUser();
 
-        if (authentication != null && !loggedInUserMatchesGaeUser(authentication, googleUser)) {
+        if (shouldClearSession(authentication, googleUser)) {
             SecurityContextHolder.clearContext();
             authentication = null;
             ((HttpServletRequest) request).getSession().invalidate();
@@ -90,25 +90,23 @@ public class GoogleAuthenticationFilter extends GenericFilterBean {
         chain.doFilter(request, response);
     }
 
-    private boolean loggedInUserMatchesGaeUser(Authentication authentication, User googleUser) {
-        assert authentication != null;
+    public static boolean shouldClearSession(Authentication authentication, User googleUser) {
+        if (authentication == null) {
+            return false;
+        }
 
         GaeUser gaeUser = (GaeUser) authentication.getPrincipal();
 
         if (!gaeUser.isAuthByGAE()) {
-            return true;
+            return false;
         }
 
         if (googleUser == null) {
             // User has logged out of GAE but is still logged into application
-            return false;
+            return true;
         }
 
-        if (!gaeUser.getEmail().equals(googleUser.getEmail())) {
-            return false;
-        }
-
-        return true;
+        return !gaeUser.getEmail().equals(googleUser.getEmail());
 
     }
 
