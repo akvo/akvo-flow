@@ -1,5 +1,5 @@
 /*
- *  Copyright (C) 2012,2017 Stichting Akvo (Akvo Foundation)
+ *  Copyright (C) 2012,2017,2019 Stichting Akvo (Akvo Foundation)
  *
  *  This file is part of Akvo FLOW.
  *
@@ -81,7 +81,7 @@ public class SurveyAssignmentRestService {
         final SurveyAssignment sa = surveyAssignmentDao.getByKey(id);
 
         if (sa == null) {
-            throw new HttpMessageNotReadableException(
+            throw new ResourceNotFoundException(
                     "Survey Assignment with id: " + id + " not found");
         }
 
