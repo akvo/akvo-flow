@@ -1,5 +1,5 @@
 /*
- *  Copyright (C) 2013-2018 Stichting Akvo (Akvo Foundation)
+ *  Copyright (C) 2013-2019 Stichting Akvo (Akvo Foundation)
  *
  *  This file is part of Akvo FLOW.
  *
@@ -36,12 +36,10 @@ import org.akvo.flow.locale.UIStrings;
 import org.apache.velocity.Template;
 import org.apache.velocity.VelocityContext;
 import org.apache.velocity.app.VelocityEngine;
-import org.waterforpeople.mapping.app.web.rest.security.AppRole;
+import org.akvo.flow.rest.security.AppRole;
 
 import com.gallatinsystems.common.util.PropertyUtil;
-import com.gallatinsystems.user.dao.UserDao;
 import com.gallatinsystems.user.domain.User;
-import com.google.appengine.api.users.UserServiceFactory;
 import com.google.appengine.api.utils.SystemProperty;
 
 public class EnvServlet extends HttpServlet {
@@ -59,6 +57,7 @@ public class EnvServlet extends HttpServlet {
         properties.add("photo_url_root");
         properties.add("imageroot");
         properties.add("flowServices");
+        properties.add("showAltAuthButton");
         properties.add("surveyuploadurl");
         properties.add("showMonitoringFeature");
         properties.add("mandatoryQuestionID");
@@ -104,6 +103,10 @@ public class EnvServlet extends HttpServlet {
         // if a feature flag is not present in appengine-web.xml, we want it to be false.
         if (props.get("showMonitoringFeature") == null) {
             props.put("showMonitoringFeature", "false");
+        }
+
+        if (props.get("showAltAuthButton") == null) {
+            props.put("showAltAuthButton", "false");
         }
 
         if (props.get("mandatoryQuestionID") == null) {
@@ -190,17 +193,13 @@ public class EnvServlet extends HttpServlet {
      * @param props
      */
     private void addLocale(Map<String, String> props) {
-        final com.google.appengine.api.users.User currentGoogleUser =
-                UserServiceFactory.getUserService().getCurrentUser();
-        if (currentGoogleUser != null && currentGoogleUser.getEmail() != null) {
-            final User currentUser = new UserDao().findUserByEmail(currentGoogleUser.getEmail());
-            if (currentUser != null) {
-                final String locale = currentUser.getLanguage();
-                if (locale != null) {
-                    props.put("locale", locale);
-                } else {
-                    props.put("locale", "en");
-                }
+        final User currentUser = CurrentUserServlet.getCurrentUser();
+        if (currentUser != null) {
+            final String locale = currentUser.getLanguage();
+            if (locale != null) {
+                props.put("locale", locale);
+            } else {
+                props.put("locale", "en");
             }
         }
     }

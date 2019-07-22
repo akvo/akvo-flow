@@ -1,5 +1,5 @@
 /*
- *  Copyright (C) 2013-2016 Stichting Akvo (Akvo Foundation)
+ *  Copyright (C) 2013-2016, 2019 Stichting Akvo (Akvo Foundation)
  *
  *  This file is part of Akvo FLOW.
  *
@@ -29,7 +29,6 @@ import javax.servlet.http.HttpServletResponse;
 
 import com.gallatinsystems.user.dao.UserDao;
 import com.gallatinsystems.user.domain.User;
-import com.google.appengine.api.users.UserServiceFactory;
 
 /**
  * Change the locale setting of the current user to a requested one.
@@ -52,16 +51,14 @@ public class StringsServlet extends HttpServlet {
             return;
         }
 
-        // reset user locale
-        final com.google.appengine.api.users.User currentGoogleUser = UserServiceFactory
-                .getUserService().getCurrentUser();
-        if (currentGoogleUser == null || currentGoogleUser.getEmail() == null) {
+        final User currentUser = CurrentUserServlet.getCurrentUser();
+
+        if (currentUser == null) {
             return;
         }
 
-        final UserDao uDao = new UserDao();
-        final User currentUser = uDao.findUserByEmail(currentGoogleUser.getEmail());
         currentUser.setLanguage(locale);
+        final UserDao uDao = new UserDao();
         uDao.save(currentUser);
         log.info("Changed locale setting for user to '" + locale.toUpperCase() + "'");
     }

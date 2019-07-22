@@ -1,5 +1,20 @@
+/*
+ * Copyright (C) 2019 Stichting Akvo (Akvo Foundation)
+ *
+ * This file is part of Akvo FLOW.
+ *
+ * Akvo FLOW is free software: you can redistribute it and modify it under the terms of
+ * the GNU Affero General Public License (AGPL) as published by the Free Software Foundation,
+ * either version 3 of the License or any later version.
+ *
+ * Akvo FLOW is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY;
+ * without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+ * See the GNU Affero General Public License included below for more details.
+ *
+ * The full license text can also be seen at <http://www.gnu.org/licenses/agpl.html>.
+ */
 
-package org.waterforpeople.mapping.app.web.rest.security;
+package org.akvo.flow.rest.security.google;
 
 import java.util.EnumSet;
 import java.util.Set;
@@ -15,7 +30,9 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.core.SpringSecurityMessageSource;
 import org.springframework.security.web.authentication.preauth.PreAuthenticatedAuthenticationToken;
-import org.waterforpeople.mapping.app.web.rest.security.user.GaeUser;
+import org.akvo.flow.rest.security.AppRole;
+import org.akvo.flow.rest.security.GaeUserAuthentication;
+import org.akvo.flow.rest.security.user.GaeUser;
 
 import com.gallatinsystems.user.dao.UserDao;
 import com.google.appengine.api.users.User;
@@ -46,11 +63,15 @@ public class GoogleAccountsAuthenticationProvider implements AuthenticationProvi
             throws AuthenticationException {
         User googleUser = (User) authentication.getPrincipal();
 
-        GaeUser user = findUser(googleUser.getEmail());
+        return getAuthentication(true, userDao, authentication, googleUser.getEmail(), googleUser.getNickname());
+    }
+
+    public static Authentication getAuthentication(boolean authByGAE, UserDao userDao, Authentication authentication, String email, String nickname) {
+        GaeUser user = findUser(userDao, email, authByGAE);
 
         if (user == null) {
             // User not in registry. Needs to register
-            user = new GaeUser(googleUser.getNickname(), googleUser.getEmail());
+            user = new GaeUser(authByGAE, nickname, email);
         }
 
         if (!user.isEnabled()) {
@@ -60,7 +81,7 @@ public class GoogleAccountsAuthenticationProvider implements AuthenticationProvi
         return new GaeUserAuthentication(user, authentication.getDetails());
     }
 
-    private GaeUser findUser(String email) {
+    private static GaeUser findUser(UserDao userDao, String email, boolean authByGAE) {
         final com.gallatinsystems.user.domain.User user = userDao.findUserByEmail(email);
 
         if (user == null) {
@@ -81,10 +102,10 @@ public class GoogleAccountsAuthenticationProvider implements AuthenticationProvi
         }
 
         return new GaeUser(user.getUserName(), user.getEmailAddress(), user.getKey().getId(),
-                roles, true);
+                roles, true, authByGAE);
     }
 
-    private int getAuthorityLevel(com.gallatinsystems.user.domain.User user) {
+    private static int getAuthorityLevel(com.gallatinsystems.user.domain.User user) {
         if (user.isSuperAdmin()) {
             return AppRole.ROLE_SUPER_ADMIN.getLevel();
         }
