@@ -10,30 +10,15 @@ import com.fasterxml.jackson.dataformat.xml.annotation.JacksonXmlElementWrapper;
 import com.fasterxml.jackson.dataformat.xml.annotation.JacksonXmlProperty;
 
 /*
- * Class for working with a form XML file like this:
- * <?xml version="1.0" encoding="UTF-8" standalone="yes"?>
- * <survey name="Brand new form four" defaultLanguageCode="en" version='4.0' app="akvoflowsandbox" surveyGroupId="41213002" surveyGroupName="Brand new" surveyId="43993002">
- * <questionGroup><heading>Foo</heading>
+ * Class for working with form XML like this:
+
  * <question order="1" type="option" mandatory="true" localeNameFlag="false" id="46843002">
  * <options allowOther="false" allowMultiple="false" renderType="radio">
  * <option value="Yes" code="Y"><text>Yes</text></option>
  * <option value="No" code="N"><text>No</text></option>
  * </options>
- * <text>Brand new option question</text></question>
- * <question order="2" type="free" mandatory="true" localeNameFlag="false" id="40533002">
- * <dependency answer-value="Yes" question="46843002"/><text>Name of optimist</text></question>
- * <question order="3" type="free" mandatory="true" localeNameFlag="false" id="45993002">
- * <dependency answer-value="No" question="46843002"/><text>Name of pessimist</text></question>
- * <question order="4" type="free" mandatory="true" localeNameFlag="false" id="47563002"><text>Victim</text></question>
- * <question order="5" type="free" mandatory="true" localeNameFlag="false" id="65813002"><text>New question - please change name</text></question>
- * </questionGroup>
- * <questionGroup><heading>Bar</heading>
- * <question order="1" type="free" mandatory="true" localeNameFlag="false" id="46673002"><text>AA</text></question>
- * <question order="2" type="free" mandatory="true" localeNameFlag="false" id="77813002"><text>BB</text></question>
- * <question order="3" type="free" mandatory="true" localeNameFlag="false" id="48523002"><text>CC</text></question>
- * <question order="4" type="free" mandatory="true" localeNameFlag="false" id="56093002"><text>DD</text></question>
- * </questionGroup>
- * </survey>
+ * <text>Brand new option question</text>
+ * </question>
  */
 
 public class XmlQuestion {
@@ -42,6 +27,8 @@ public class XmlQuestion {
     private XmlOptions options;
     @JacksonXmlProperty(localName = "validationRule", isAttribute = false)
     private XmlValidationRule validationRule; //TODO: only one, ever?
+    @JacksonXmlProperty(localName = "dependency", isAttribute = false)
+    private XmlDependency dependency; //only one
     @JacksonXmlProperty(localName = "help", isAttribute = false)
     private XmlHelp help;
     @JacksonXmlElementWrapper(localName = "altText", useWrapping = false)
@@ -59,6 +46,8 @@ public class XmlQuestion {
     private String type;
     @JacksonXmlProperty(localName = "mandatory", isAttribute = true)
     private boolean mandatory;
+    @JacksonXmlProperty(localName = "requireDoubleEntry", isAttribute = true)
+    private boolean requireDoubleEntry;
     @JacksonXmlProperty(localName = "localeNameFlag", isAttribute = true)
     private boolean localeNameFlag;
     @JacksonXmlProperty(localName = "locked", isAttribute = true)
@@ -68,7 +57,7 @@ public class XmlQuestion {
     @JacksonXmlProperty(localName = "caddisflyResourceUuid", isAttribute = true)
     private String caddisflyResourceUuid;
     @JacksonXmlProperty(localName = "cascadeResource", isAttribute = true)
-    private long cascadeResource; //or String??
+    private String cascadeResource;
     @JacksonXmlProperty(localName = "allowPoints", isAttribute = true)
     private boolean allowPoints;
     @JacksonXmlProperty(localName = "allowLine", isAttribute = true)
@@ -93,10 +82,11 @@ public class XmlQuestion {
         allowLine = dto.getAllowLine();
         allowPolygon = dto.getAllowPolygon();
         caddisflyResourceUuid = dto.getCaddisflyResourceUuid();
-        cascadeResource = dto.getCascadeResourceId();
-        //= dto.get;
-        //= dto.get;
-        //Todo: lots
+        //cascadeResource = dto.getCascadeResourceId();
+        if (dto.getDependentFlag()) {
+            dependency = new XmlDependency(dto.getDependentQuestionId(), dto.getDependentQuestionAnswer());
+        }
+        //TODO: many more fields
 
         //Now copy the option container
         options = new XmlOptions(dto.getOptionContainerDto());
@@ -182,11 +172,11 @@ public class XmlQuestion {
         this.caddisflyResourceUuid = caddisflyResourceUuid;
     }
 
-    public long getCascadeResource() {
+    public String getCascadeResource() {
         return cascadeResource;
     }
 
-    public void setCascadeResource(long cascadeResource) {
+    public void setCascadeResource(String cascadeResource) {
         this.cascadeResource = cascadeResource;
     }
 
@@ -255,17 +245,16 @@ public class XmlQuestion {
         dto.setKeyId(id);
         dto.setText(text);
         dto.setOrder(order);
-//      public enum QuestionType {
-//      FREE_TEXT, OPTION, NUMBER, GEO, PHOTO, VIDEO, SCAN, TRACK, STRENGTH, DATE, CASCADE, GEOSHAPE, SIGNATURE, CADDISFLY
-//  }
-        QuestionType t;
+        QuestionType t; //FREE_TEXT, OPTION, NUMBER, GEO, PHOTO, VIDEO, SCAN, TRACK, STRENGTH, DATE, CASCADE, GEOSHAPE, SIGNATURE, CADDISFLY
+
         if ("free".equalsIgnoreCase(type)) {
             t = QuestionType.FREE_TEXT;
-        } else
-        try {
-            t = QuestionType.valueOf(type.toUpperCase());//UC necessary?
-        } catch (IllegalArgumentException e) {
-            t = QuestionType.FREE_TEXT;
+        } else {
+            try {
+                t = QuestionType.valueOf(type.toUpperCase());
+            } catch (IllegalArgumentException e) {
+                t = QuestionType.FREE_TEXT;
+            }
         }
         dto.setType(t);
 
@@ -282,19 +271,22 @@ public class XmlQuestion {
             dto.setLevelNames(cl);
         }
 
+        if (caddisflyResourceUuid != null) {
+            dto.setCaddisflyResourceUuid(caddisflyResourceUuid);
+        }
         return dto;
     }
 
     @Override public String toString() {
         return "question{" +
-                "id='" + id + '\'' +
-                "order='" + order + '\'' +
-                "type='" + type + '\'' +
-                "mandatory='" + mandatory + '\'' +
-                "localeNameFlag='" + localeNameFlag + '\'' +
-                "options=" + ((options != null) ? options.toString() : "(null)") +
-                "level='" + level + '\'' +
-                '}';
+                "id='" + id +
+                "',order='" + order +
+                "',type='" + type +
+                "',mandatory='" + mandatory +
+                "',localeNameFlag='" + localeNameFlag +
+                "',options=" + ((options != null) ? options.toString() : "(null)") +
+                ",level='" + level +
+                "'}";
     }
 
 }

@@ -50,9 +50,9 @@ public class XmlHelp {
 
     @Override public String toString() {
         return "help{" +
-                "type='" + type + '\'' +
-                "text='" + text + '\'' +
-                '}';
+                "type='" + type +
+                "',text='" + text +
+                "'}";
     }
 
 }

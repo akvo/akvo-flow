@@ -1,15 +1,11 @@
 package org.akvo.flow.xml;
 
 import java.util.ArrayList;
-import java.util.List;
-
 import org.waterforpeople.mapping.app.gwt.client.survey.OptionContainerDto;
-import org.waterforpeople.mapping.app.gwt.client.survey.QuestionDto;
 import org.waterforpeople.mapping.app.gwt.client.survey.QuestionOptionDto;
 
 import com.fasterxml.jackson.dataformat.xml.annotation.JacksonXmlElementWrapper;
 import com.fasterxml.jackson.dataformat.xml.annotation.JacksonXmlProperty;
-import com.gallatinsystems.survey.domain.QuestionOption;
 
 /*
  * Class for working with a form XML file like this:
@@ -106,9 +102,9 @@ public class XmlOptions {
 
     @Override public String toString() {
         return "options{" +
-                "allowOther='" + allowOther + '\'' +
-                "allowMultiple='" + allowMultiple + '\'' +
-                "options=" + option.toString() +
+                "allowOther='" + allowOther +
+                "',allowMultiple='" + allowMultiple +
+                "',options=" + option.toString() +
                 '}';
     }
 

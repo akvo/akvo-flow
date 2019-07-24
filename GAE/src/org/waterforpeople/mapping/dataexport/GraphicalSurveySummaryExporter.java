@@ -116,6 +116,7 @@ public class GraphicalSurveySummaryExporter extends SurveySummaryExporter {
     private static final String EMAIL_OPT = "email";
     private static final String UPLOAD_URL_OPT = "uploadUrl";
     private static final String UPLOAD_DIR_OPT = "uploadDir";
+    private static final String PUBLISHED_OPT = "use PublishedForm";
 
     private static final String CADDISFLY_TESTS_FILE_URL_OPT = "caddisflyTestsFileUrl";
 
@@ -164,6 +165,8 @@ public class GraphicalSurveySummaryExporter extends SurveySummaryExporter {
     private boolean separateSheetsForRepeatableGroups;
     private boolean justCodes; //Only output the codes from multiple-choice answers (option and cascade)
     private boolean doGroupHeaders; //First header line is group names spanned over the group columns
+    private boolean usePublishedForm = true; //use the XML of last publication, not the current datastore state
+
     private Map<Long, QuestionDto> questionsById;
     private SurveyGroupDto surveyGroupDto;
     private boolean lastCollection = false;
@@ -184,8 +187,9 @@ public class GraphicalSurveySummaryExporter extends SurveySummaryExporter {
     // store indices of file columns for lookup when generating responses
     private Map<String, Integer> columnIndexMap = new HashMap<>();
 
-    // maps from a (repeatable) question group id to the sheet that contains the raw data for it (if split)
-    private Map<Long, Sheet> qgSheetMap = new HashMap<>();
+    // maps from a (repeatable) question group dto to the sheet that contains the raw data for it (if split)
+    //private Map<Long, Sheet> qgSheetMap = new HashMap<>();
+    private Map<QuestionGroupDto, Sheet> qgSheetMap = new HashMap<>();
 
     // data about questions gathered while writing headers
     private List<String> questionIdList = new ArrayList<>();
@@ -223,11 +227,12 @@ public class GraphicalSurveySummaryExporter extends SurveySummaryExporter {
         surveyGroupDto = BulkDataServiceClient.fetchSurveyGroup(surveyId, serverBaseUrl, apiKey);
 
         serverBase = serverBaseUrl;
-        try {
-            boolean usePublishedForm = true;
 
+        orderedGroupList = new ArrayList<QuestionGroupDto>(); //Must exist
+
+        try {
             Map<QuestionGroupDto, List<QuestionDto>> questionMap =
-                    fetchQuestionMap(usePublishedForm, surveyId, serverBaseUrl, apiKey, s3formDir);
+                    fetchQuestionMap(usePublishedForm, surveyId, serverBaseUrl, apiKey, s3formDir, orderedGroupList);
 
             if (questionMap.size() > 0) {
                 //questionMap is now stable; make the id-to-dto map
@@ -239,7 +244,7 @@ public class GraphicalSurveySummaryExporter extends SurveySummaryExporter {
 
                 Workbook wb = createWorkbookAndFormats();
 
-                Sheet baseSheet = createDataSheets(wb, questionMap);
+                Sheet baseSheet = createDataSheets(wb, orderedGroupList);
 
                 SummaryModel model = fetchAndWriteRawData(
                         surveyId,
@@ -308,16 +313,16 @@ public class GraphicalSurveySummaryExporter extends SurveySummaryExporter {
     };
 
 
-    private Sheet createDataSheets(Workbook wb, Map<QuestionGroupDto, List<QuestionDto>> questionMap) {
+    private Sheet createDataSheets(Workbook wb, List<QuestionGroupDto> groupList) {
         //make base sheet (for non-repeated data)
         Sheet baseSheet = wb.createSheet(RAW_DATA_LABEL);
 
-        for (Entry<QuestionGroupDto, List<QuestionDto>> groupEntry : questionMap.entrySet()) {
-            if (separateSheetsForRepeatableGroups && safeTrue(groupEntry.getKey().getRepeatable())) {
+        for (QuestionGroupDto groupDto : groupList) {
+            if (separateSheetsForRepeatableGroups && safeTrue(groupDto.getRepeatable())) {
                 // breaking this qg out, so create the sheet for it
-                Long gid = groupEntry.getKey().getKeyId();
-                Sheet repSheet = wb.createSheet("Group " + groupEntry.getKey().getOrder());
-                qgSheetMap.put(gid, repSheet);
+                //Long gid = groupEntry.getKeyId(); //not ḱnown for published groups
+                Sheet repSheet = wb.createSheet("Group " + groupDto.getOrder());
+                qgSheetMap.put(groupDto, repSheet);
             }
         }
 
@@ -326,14 +331,15 @@ public class GraphicalSurveySummaryExporter extends SurveySummaryExporter {
 
 
     private Map<QuestionGroupDto, List<QuestionDto>> fetchQuestionMap(
-            boolean publishedForm,
+            boolean usingPublishedForm,
             String surveyId,
             String serverBaseUrl,
             String apiKey,
-            String s3FormDir) throws Exception {
+            String s3FormDir,
+            List<QuestionGroupDto> groupList) throws Exception {
         Map<QuestionGroupDto, List<QuestionDto>> questionMap = null;
-        if (!publishedForm) {
-            //Legacy method - use datastore current (unpublished?) form structure
+        if (!usingPublishedForm) {
+            //Legacy method - use datastore current (potentially unpublished) form structure
             // Get minimal data plus cascade level names
             questionMap = loadAllQuestions(surveyId, performGeoRollup, serverBaseUrl, apiKey);
             // Need options to be able to split out "other" value
@@ -356,7 +362,6 @@ public class GraphicalSurveySummaryExporter extends SurveySummaryExporter {
 
             SurveyDto formDto = PublishedForm.parse(formXml).toDto();
             questionMap = new HashMap<>();
-            orderedGroupList = new ArrayList<QuestionGroupDto>(); //Must exist
             rollupOrder = new ArrayList<QuestionDto>();
             boolean anyQuestionsWithoutVariableNames = false;
 
@@ -379,10 +384,10 @@ public class GraphicalSurveySummaryExporter extends SurveySummaryExporter {
                     }
                 }
                questionMap.put(qgd, qList);
-               orderedGroupList.add(qgd); //Ordering is implicit in XML
+               groupList.add(qgd); //The XML is written with the groups in order (but without any attributes saying so)
             }
 
-            //Fall back to variable names from DS, since VNs in XML is a recent addition
+            //Fall back to getting variable names from the datastore, since VNs in XML is a recent addition
             if (variableNamesInHeaders && anyQuestionsWithoutVariableNames) {
                 loadVariableNames(surveyId, serverBaseUrl, questionMap, apiKey); //expensive and imperfect fallback
             }
@@ -1331,12 +1336,12 @@ public class GraphicalSurveySummaryExporter extends SurveySummaryExporter {
             for (QuestionGroupDto grpDto : orderedGroupList) {
                 if (questionMap.get(grpDto) != null) {
                     // if RQG, do on separate sheet
-                    if (qgSheetMap.containsKey(grpDto.getKeyId()))   {
-                        Sheet groupSheet = qgSheetMap.get(grpDto.getKeyId());
+                    if (qgSheetMap.containsKey(grpDto))   {
+                        Sheet groupSheet = qgSheetMap.get(grpDto);
                         int metaEnd = addMetaDataHeaders(groupSheet, true);
                         writeRawDataGroupHeaders(groupSheet, grpDto, questionMap.get(grpDto), metaEnd + 1);
                     } else {
-                    // if not, keep adding it on to base sheet and return new offset
+                        // if not, keep adding it on to base sheet and return new offset
                         offset = writeRawDataGroupHeaders(baseSheet, grpDto, questionMap.get(grpDto), offset);
                     }
                 }
@@ -2121,8 +2126,13 @@ public class GraphicalSurveySummaryExporter extends SurveySummaryExporter {
             selectionLimit = options.get(MAX_ROWS_OPT);
 
             if (options.get(LAST_COLLECTION_OPT) != null
-                    && "true".equals(options.get(LAST_COLLECTION_OPT))) {
+                    && "true".equalsIgnoreCase(options.get(LAST_COLLECTION_OPT))) {
                 lastCollection = true;
+            }
+
+            if (options.get(PUBLISHED_OPT) != null
+                    && "false".equalsIgnoreCase(options.get(PUBLISHED_OPT))) {
+                usePublishedForm = false;
             }
 
             if (options.get(CADDISFLY_TESTS_FILE_URL_OPT) != null
@@ -2167,7 +2177,9 @@ public class GraphicalSurveySummaryExporter extends SurveySummaryExporter {
      * [0] Output filename
      * [1] Flow instance URL, like https://akvoflowsandbox.appspot.com
      * [2] Survey id
-     * [3] report type, DATA_CLEANING|DATA_ANALYSIS|COMPREHENSIVE
+     * [3] API key
+     * [4] report type, DATA_CLEANING|DATA_ANALYSIS|COMPREHENSIVE
+     * [5] usePublishedForm, true or false
      */
     public static void main(String[] args) {
 
@@ -2181,11 +2193,16 @@ public class GraphicalSurveySummaryExporter extends SurveySummaryExporter {
         GraphicalSurveySummaryExporter exporter = new GraphicalSurveySummaryExporter();
         Map<String, String> criteria = new HashMap<String, String>();
         Map<String, String> options = new HashMap<String, String>();
-        if (args.length < 4) {
+        if (args.length < 5) {
             // Uncomment one of the following three lines
             options.put(TYPE_OPT, DATA_CLEANING_TYPE);
 //          options.put(TYPE_OPT, DATA_ANALYSIS_TYPE);
 //          options.put(TYPE_OPT, COMPREHENSIVE_TYPE);
+        } else {
+            options.put(TYPE_OPT, args[4]);
+        }
+        if (args.length >=6) {
+            options.put(PUBLISHED_OPT, args[5]);
         }
         options.put(LAST_COLLECTION_OPT, "false");
         options.put(EMAIL_OPT, "email@example.com");

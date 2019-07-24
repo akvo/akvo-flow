@@ -1,14 +1,9 @@
 package org.akvo.flow.xml;
 
-import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.dataformat.xml.XmlMapper;
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.List;
 
-import org.waterforpeople.mapping.app.gwt.client.survey.QuestionGroupDto;
-import org.waterforpeople.mapping.app.gwt.client.survey.SurveyDto;
 /*
  * Class for working with a form XML file like this:
  * <?xml version="1.0" encoding="UTF-8" standalone="yes"?>

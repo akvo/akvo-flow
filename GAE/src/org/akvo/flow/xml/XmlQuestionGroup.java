@@ -5,11 +5,16 @@ import java.util.TreeMap;
 
 import org.waterforpeople.mapping.app.gwt.client.survey.QuestionDto;
 import org.waterforpeople.mapping.app.gwt.client.survey.QuestionGroupDto;
-import org.waterforpeople.mapping.app.gwt.client.survey.SurveyDto;
-
 import com.fasterxml.jackson.dataformat.xml.annotation.JacksonXmlElementWrapper;
 import com.fasterxml.jackson.dataformat.xml.annotation.JacksonXmlProperty;
 
+/* Class for working with XML like this:
+<questionGroup repeatable = "false">
+    <heading>G2</heading>
+    <question>
+    </question>
+</questionGroup>
+ */
 public class XmlQuestionGroup {
 
     @JacksonXmlElementWrapper(useWrapping = false)
@@ -21,7 +26,7 @@ public class XmlQuestionGroup {
     @JacksonXmlProperty(localName = "repeatable", isAttribute = true)
     private boolean repeatable;
 
-    private int order;
+    private int order; //Not in XML
 
     public XmlQuestionGroup() {
     }
@@ -78,10 +83,10 @@ public class XmlQuestionGroup {
      */
     public QuestionGroupDto toDto() {
         QuestionGroupDto dto = new QuestionGroupDto();
-        //TODO: lots
         dto.setName(heading);
         dto.setCode(heading);
         dto.setOrder(order);
+        dto.setRepeatable(repeatable);
         TreeMap<Integer,QuestionDto> qMap = new TreeMap<>();
         for (XmlQuestion q : question) {
             qMap.put(q.getOrder(), q.toDto());
@@ -94,9 +99,9 @@ public class XmlQuestionGroup {
     @Override public String toString() {
 
         return "questionGroup{" +
-                "order='" + order + '\'' +
-                "heading='" + heading + '\'' +
-                "questions=" + Arrays.toString(question) +
+                "order='" + order +
+                "',heading='" + heading +
+                "',questions=" + Arrays.toString(question) +
                 '}';
     }
 }

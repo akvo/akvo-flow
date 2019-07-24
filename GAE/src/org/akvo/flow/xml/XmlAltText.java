@@ -39,10 +39,10 @@ public class XmlAltText {
 
     @Override public String toString() {
         return "translation{" +
-                "langCode='" + language + '\'' +
-                "type='" + type + '\'' +
-                "text='" + text + '\'' +
-                '}';
+                "langCode='" + language +
+                "',type='" + type +
+                "',text='" + text +
+                "'}";
     }
 
 }
