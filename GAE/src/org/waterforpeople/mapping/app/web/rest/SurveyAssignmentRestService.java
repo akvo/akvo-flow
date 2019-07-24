@@ -195,7 +195,6 @@ public class SurveyAssignmentRestService {
      */
     private List<DeviceSurveyJobQueue> generateDeviceSurveyJobQueueItems(SurveyAssignment assignment) {
         List<DeviceSurveyJobQueue> deviceSurveyJobQueues = new ArrayList<>();
-        List<Long> surveyIds = assignment.getSurveyIds();
         List<Survey> forms = surveyDao.listByKeys(assignment.getSurveyIds());
         List<Device> devices = deviceDao.listByKeys(assignment.getDeviceIds());
 
