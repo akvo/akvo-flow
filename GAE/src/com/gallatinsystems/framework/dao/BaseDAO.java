@@ -34,6 +34,7 @@ import net.sf.jsr107cache.CacheException;
 
 import org.akvo.flow.domain.SecuredObject;
 import com.google.appengine.datanucleus.query.JDOCursorHelper;
+import org.datanucleus.exceptions.NucleusObjectNotFoundException;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 
@@ -419,14 +420,7 @@ public class BaseDAO<T extends BaseDomain> {
         if (ids == null) {
             return null;
         }
-        final List<T> list = new ArrayList<T>();
-        for (Long id : ids) {
-            final T obj = getByKey(id);
-            if (obj != null) {
-                list.add(obj);
-            }
-        }
-        return list;
+        return listByKeys(Arrays.asList(ids));
     }
 
     /**
@@ -436,17 +430,34 @@ public class BaseDAO<T extends BaseDomain> {
      * @return empty list if ids is null, otherwise a list of objects
      */
     public List<T> listByKeys(List<Long> ids) {
-        if (ids == null) {
+        return listByKeys(ids, concreteClass);
+    }
+
+    /*
+     * Retrieve a list of datastore entities by the keys provided
+     */
+    public List<T> listByKeys(List<Long> idsList, Class<T> clazz){
+        if (idsList == null || idsList.isEmpty()) {
             return Collections.emptyList();
         }
-        final List<T> list = new ArrayList<T>();
-        for (Long id : ids) {
-            final T obj = getByKey(id);
-            if (obj != null) {
-                list.add(obj);
-            }
+
+        PersistenceManager pm = PersistenceFilter.getManager();
+        List<Object> datastoreKeysList = new ArrayList<>();
+        for (Long id : idsList) {
+            Key key = KeyFactory.createKey(clazz.getSimpleName(), id);
+            Object objectId = pm.newObjectIdInstance(clazz, key);
+            datastoreKeysList.add(objectId);
         }
-        return list;
+
+        final List<T> resultsList = new ArrayList<>();
+
+        try {
+            resultsList.addAll(pm.getObjectsById(datastoreKeysList));
+        } catch (NucleusObjectNotFoundException nfe) {
+            log.warning("No " + clazz.getCanonicalName() + " found: " + nfe.getMessage());
+        }
+
+        return resultsList;
     }
 
     /**
