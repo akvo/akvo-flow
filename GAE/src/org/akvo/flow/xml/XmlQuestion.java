@@ -23,6 +23,9 @@ import com.fasterxml.jackson.dataformat.xml.annotation.JacksonXmlProperty;
 
 public class XmlQuestion {
 
+    private static String FREE_TYPE = "free";
+    private static String NUMERIC_VALIDATION_TYPE = "numeric";
+
     @JacksonXmlProperty(localName = "options", isAttribute = false)
     private XmlOptions options;
     @JacksonXmlProperty(localName = "validationRule", isAttribute = false)
@@ -241,14 +244,17 @@ public class XmlQuestion {
      */
     public QuestionDto toDto() {
         QuestionDto dto = new QuestionDto();
-        //TODO: lots
         dto.setKeyId(id);
         dto.setText(text);
         dto.setOrder(order);
         QuestionType t; //FREE_TEXT, OPTION, NUMBER, GEO, PHOTO, VIDEO, SCAN, TRACK, STRENGTH, DATE, CASCADE, GEOSHAPE, SIGNATURE, CADDISFLY
 
-        if ("free".equalsIgnoreCase(type)) {
-            t = QuestionType.FREE_TEXT;
+        if (FREE_TYPE.equalsIgnoreCase(type)) {
+            if (validationRule != null && NUMERIC_VALIDATION_TYPE.equals(validationRule.getValidationType())) {
+                t = QuestionType.NUMBER;
+            } else {
+                t = QuestionType.FREE_TEXT;
+            }
         } else {
             try {
                 t = QuestionType.valueOf(type.toUpperCase());
@@ -283,6 +289,7 @@ public class XmlQuestion {
                 "',order='" + order +
                 "',type='" + type +
                 "',mandatory='" + mandatory +
+                "',locked='" + locked +
                 "',localeNameFlag='" + localeNameFlag +
                 "',options=" + ((options != null) ? options.toString() : "(null)") +
                 ",level='" + level +

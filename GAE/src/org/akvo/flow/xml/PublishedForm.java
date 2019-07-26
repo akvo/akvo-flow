@@ -1,5 +1,6 @@
 package org.akvo.flow.xml;
 
+import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.dataformat.xml.XmlMapper;
 import java.io.IOException;
@@ -36,10 +37,17 @@ public class PublishedForm {
 
     // Reads from XML and converts to Java objects
     public static XmlForm parse(String xml) throws IOException {
+        return parse(xml, false);
+    }
+
+    // Reads from XML and converts to Java objects
+    public static XmlForm parse(String xml, boolean strict) throws IOException {
 
         ObjectMapper objectMapper = new XmlMapper();
-//        objectMapper.disable(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES); //For production
 
+        if (!strict) {
+            objectMapper.disable(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES); //For production, ignore unknown stuff
+        }
         XmlForm form = objectMapper.readValue(xml, XmlForm.class);
 
         System.out.println(form); //Debug only

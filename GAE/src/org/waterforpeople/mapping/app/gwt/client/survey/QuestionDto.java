@@ -151,7 +151,7 @@ public class QuestionDto extends BaseDto {
     /**
      * adds the translation to the translation map. If a translation already
      * exists (based on language code), it will be replaced
-     * 
+     *
      * @param trans
      */
     public void addTranslation(TranslationDto trans) {
@@ -450,9 +450,9 @@ public class QuestionDto extends BaseDto {
     public void setCaddisflyResourceUuid(String caddisflyResourceUuid) {
         this.caddisflyResourceUuid = caddisflyResourceUuid;
     }
-    
+
     @Override
     public String toString() {
-      return text + "(" + type + ")"; 
+      return type + "'" + text + "' #" + order + (mandatoryFlag?" *":"");
     }
 }
