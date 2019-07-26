@@ -455,9 +455,35 @@ public class BaseDAO<T extends BaseDomain> {
         try {
             resultsList.addAll(pm.getObjectsById(datastoreKeysList));
         } catch (NucleusObjectNotFoundException nfe) {
-            log.warning("No " + clazz.getCanonicalName() + " found: " + nfe.getMessage());
+            log.warning(nfe.getMessage());
+            return listByKeysIndividually(idsList);
+        } catch (ArrayIndexOutOfBoundsException exception) {
+            /* when some of the entities are missing, we encounter an ArrayIndexOutOfBoundsException
+             *  the exception happens within the com.google.appengine.datanucleus.EntityUtils.getEntitiesFromDatastore()
+             * function which we dont have access to.  We catch the exception and run the fall back
+             * function.
+             */
+            log.warning("Some entities were not found");
+            return listByKeysIndividually(idsList);
         }
 
+        return resultsList;
+    }
+
+    /*
+     * Takes a list of IDs and retrieve the items on the list individually.
+     * This is only a fall back method for when there may be some elements
+     * missing when attempting to batch retrieve with `listByKeys()`
+     *
+     */
+    private List<T> listByKeysIndividually(List<Long> idsList) {
+        List<T> resultsList = new ArrayList<>();
+        for (Long id : idsList) {
+            T item = getByKey(id);
+            if (item != null) {
+                resultsList.add(item);
+            }
+        }
         return resultsList;
     }
 
