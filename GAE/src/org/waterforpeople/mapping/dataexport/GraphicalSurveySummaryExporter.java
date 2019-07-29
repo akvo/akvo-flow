@@ -288,9 +288,10 @@ public class GraphicalSurveySummaryExporter extends SurveySummaryExporter {
                         + " - instance: " + serverBaseUrl);
             }
         } catch (Exception e) {
-
             log.error("Error generating report: " + e.getMessage(), e);
-            e.printStackTrace();
+            for (StackTraceElement ste: e.getStackTrace()) {
+                log.debug(ste);
+            }
         }
     }
 

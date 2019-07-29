@@ -26,21 +26,9 @@ import com.fasterxml.jackson.dataformat.xml.annotation.JacksonXmlElementWrapper;
 import com.fasterxml.jackson.dataformat.xml.annotation.JacksonXmlProperty;
 import com.fasterxml.jackson.dataformat.xml.annotation.JacksonXmlRootElement;
 
-/*
- * Class for working with a form XML file like this:
- * <?xml version="1.0" encoding="UTF-8" standalone="yes"?>
- * <survey name="Brand new form four" defaultLanguageCode="en" version='4.0' app="akvoflowsandbox"
- *  surveyGroupId="41213002" surveyGroupName="Brand new" surveyId="43993002">
- * <questionGroup><heading>Foo</heading>
- * ...
- * </questionGroup>
- * <questionGroup><heading>Bar</heading>
- * ...
- * </questionGroup>
- * </survey>
- */
 
-@JacksonXmlRootElement(localName = "survey") public final class XmlForm {
+@JacksonXmlRootElement(localName = "survey")
+public final class XmlForm {
 
     @JacksonXmlElementWrapper(localName = "questionGroup", useWrapping = false)
     private XmlQuestionGroup[] questionGroup;
