@@ -4,7 +4,7 @@ import ChildOption from 'akvo-flow/components/ChildOption';
 
 require('akvo-flow/views/react-component');
 
-FLOW.DeviceSelectorView = FLOW.ReactComponentView.extend({
+FLOW.DeviceGroupSelectorView = FLOW.ReactComponentView.extend({
   init() {
     this._super();
     this.handleChange = this.handleChange.bind(this);
@@ -20,7 +20,7 @@ FLOW.DeviceSelectorView = FLOW.ReactComponentView.extend({
       FLOW.deviceGroupControl.get('content').forEach((item) => {
         this.deviceGroups.push({
           keyId: item.get('keyId'),
-          name: item.get('displayName'),
+          name: item.get('code'),
         });
       });
       this.deviceGroupSelector(0);

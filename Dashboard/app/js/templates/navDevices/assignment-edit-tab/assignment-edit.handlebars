@@ -97,17 +97,10 @@
         <div class="formLeftPanel">
           <fieldset id="devicesSelect" class="floats-in">
             <h2>03. {{t _select_devices}}:</h2>
-            <div class="">
             <label for="deviceGroup">{{t _select_device_group}}:</label>
-            {{view Ember.Select
-        contentBinding="FLOW.deviceGroupControl.content"
-        selectionBinding="FLOW.selectedControl.selectedDeviceGroup"
-        optionLabelPath="content.code"
-        optionValuePath="content.keyId"
-        id="deviceGroup"
-        prompt=""
-        promptBinding="Ember.STRINGS._select_device_group"}}
-            </div>
+            {{#unless FLOW.deviceGroupControl.isLoading}}
+              {{view FLOW.DeviceGroupSelectorView}}
+            {{/unless}}
             <div class="formSelectorList">
               <nav>
                 <ul>
