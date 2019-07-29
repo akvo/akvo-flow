@@ -43,10 +43,6 @@ public class XmlHelp {
     public XmlHelp() {
     }
 
-    public XmlHelp(QuestionOptionDto dto) {
-        //TODO
-    }
-
     public String getText() {
         return text;
     }

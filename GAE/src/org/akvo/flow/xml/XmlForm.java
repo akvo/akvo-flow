@@ -69,20 +69,6 @@ import com.fasterxml.jackson.dataformat.xml.annotation.JacksonXmlRootElement;
     public XmlForm() {
     }
 
-    //Create a form XML object from a DTO
-    public XmlForm(SurveyDto dto) {
-        name = dto.getCode();
-        if (name == null){
-            name = dto.getName();
-        }
-        surveyId = dto.getKeyId();
-        //Now copy the tree
-        questionGroup = new XmlQuestionGroup[dto.getQuestionGroupList().size()];
-        int i = 0;
-        for (QuestionGroupDto g: dto.getQuestionGroupList()) {
-            questionGroup[i++] = new XmlQuestionGroup(g);
-        }
-    }
 
     /**
      * @return a Dto object with relevant fields copied

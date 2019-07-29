@@ -46,9 +46,6 @@ public class XmlOption {
     public XmlOption() {
     }
 
-    public XmlOption(QuestionOptionDto dto) {
-        //TODO
-    }
 
     public String getCode() {
         return code;

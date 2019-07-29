@@ -88,28 +88,6 @@ public class XmlQuestion {
     public XmlQuestion() {
     }
 
-    public XmlQuestion(QuestionDto dto) {
-        text = dto.getText();
-        mandatory = dto.getMandatoryFlag();
-        id = dto.getKeyId();
-        order = dto.getOrder();
-        type = dto.getType().toString(); //??
-        localeNameFlag = dto.getLocaleNameFlag();
-        localeLocationFlag = dto.getLocaleLocationFlag();
-        locked = dto.getGeoLocked();
-        allowPoints = dto.getAllowPoints();
-        allowLine = dto.getAllowLine();
-        allowPolygon = dto.getAllowPolygon();
-        caddisflyResourceUuid = dto.getCaddisflyResourceUuid();
-        //cascadeResource = dto.getCascadeResourceId();
-        if (dto.getDependentFlag()) {
-            dependency = new XmlDependency(dto.getDependentQuestionId(), dto.getDependentQuestionAnswer());
-        }
-        //TODO: many more fields
-
-        //Now copy the option container
-        options = new XmlOptions(dto.getOptionContainerDto());
-    }
 
     public long getId() {
         return id;

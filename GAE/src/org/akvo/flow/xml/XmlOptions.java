@@ -65,10 +65,6 @@ public class XmlOptions {
     public XmlOptions() {
     }
 
-    public XmlOptions(OptionContainerDto dto) {
-        //TODO
-    }
-
     public XmlOption[] getOption() {
         return option;
     }

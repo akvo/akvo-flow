@@ -33,11 +33,6 @@ public class XmlDependency {
     public XmlDependency() {
     }
 
-    public XmlDependency(long questionId, String answer) {
-        question = questionId;
-        answerValue = answer;
-    }
-
     @Override public String toString() {
         return "dependency{" +
                 "question='" + question + '\'' +

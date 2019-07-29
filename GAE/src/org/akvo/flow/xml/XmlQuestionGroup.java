@@ -47,21 +47,6 @@ public class XmlQuestionGroup {
     public XmlQuestionGroup() {
     }
 
-    //Create a form XML object from a DTO
-    public XmlQuestionGroup(QuestionGroupDto dto) {
-        heading = dto.getCode();
-        if (heading == null){
-            heading = dto.getName();
-        }
-        repeatable = dto.getRepeatable();
-        //Now copy the q tree
-        question = new XmlQuestion[dto.getQuestionMap().size()];
-        int i = 0;
-        for (QuestionDto q: dto.getQuestionMap().values()) {
-            question[i++] = new XmlQuestion(q);
-        }
-    }
-
     public String getHeading() {
         return heading;
     }

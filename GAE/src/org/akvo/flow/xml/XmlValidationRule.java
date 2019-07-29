@@ -42,10 +42,6 @@ public class XmlValidationRule {
     public XmlValidationRule() {
     }
 
-    public XmlValidationRule(QuestionOptionDto dto) {
-        //TODO
-    }
-
     @Override public String toString() {
         return "validationRule{" +
                 "validationType='" + validationType +
