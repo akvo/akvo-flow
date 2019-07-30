@@ -1,5 +1,12 @@
 # Akvo Flow Release Notes
 ----
+# Akvo Flow Dashboard v1.9.49 - V... V...
+Date: 31-07-2019
+
+# New and noteworthy
+
+# Resolved issues
+
 # Akvo Flow Dashboard v1.9.48 - Unique Ursinia
 Date: 10-07-2019
 
