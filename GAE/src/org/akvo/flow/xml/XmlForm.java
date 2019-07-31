@@ -67,6 +67,7 @@ public final class XmlForm {
         dto.setKeyId(surveyId);
         dto.setName(name);
         dto.setCode(name);
+        dto.setVersion(version);
         ArrayList<QuestionGroupDto> gList = new ArrayList<>();
         int i = 1;
         for (XmlQuestionGroup g : questionGroup) {

@@ -241,9 +241,11 @@ public class XmlQuestion {
         dto.setKeyId(id);
         dto.setText(text);
         dto.setOrder(order);
+        dto.setMandatoryFlag(mandatory);
+        dto.setLocaleNameFlag(localeNameFlag);
+        //Type is more complicated:
         QuestionType t; //FREE_TEXT, OPTION, NUMBER, GEO, PHOTO, VIDEO, SCAN, TRACK, STRENGTH, DATE, CASCADE, GEOSHAPE, SIGNATURE, CADDISFLY
-
-        if (FREE_TYPE.equalsIgnoreCase(type)) {
+        if (FREE_TYPE.equalsIgnoreCase(type)) { //Text OR number
             if (validationRule != null && NUMERIC_VALIDATION_TYPE.equals(validationRule.getValidationType())) {
                 t = QuestionType.NUMBER;
             } else {
