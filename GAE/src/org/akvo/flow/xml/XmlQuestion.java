@@ -17,10 +17,13 @@
 package org.akvo.flow.xml;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.TreeMap;
 
 import org.waterforpeople.mapping.app.gwt.client.survey.QuestionDto;
 import org.waterforpeople.mapping.app.gwt.client.survey.QuestionDto.QuestionType;
+import org.waterforpeople.mapping.app.gwt.client.survey.TranslationDto;
 
 import com.fasterxml.jackson.dataformat.xml.annotation.JacksonXmlElementWrapper;
 import com.fasterxml.jackson.dataformat.xml.annotation.JacksonXmlProperty;
@@ -263,11 +266,17 @@ public class XmlQuestion {
         if (options != null) {
             dto.setOptionContainerDto(options.toDto());
         }
+        //Translations
+        HashMap<String,TranslationDto> qMap = new HashMap<>();
+        for (XmlAltText alt : altText) {
+            qMap.put(alt.getLanguage(), alt.toDto());
+        }
+        dto.setTranslationMap(qMap);
 
         //return cascade levels as a List<String>
         if (level != null) {
             List<String> cl = new ArrayList<>();
-            for (XmlLevel lvl :level) {
+            for (XmlLevel lvl : level) {
                 cl.add(lvl.getText());
             }
             dto.setLevelNames(cl);
