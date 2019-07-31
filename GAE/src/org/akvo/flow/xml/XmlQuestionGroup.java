@@ -88,11 +88,13 @@ public class XmlQuestionGroup {
         dto.setCode(heading);
         dto.setOrder(order);
         dto.setRepeatable(repeatable);
-        TreeMap<Integer,QuestionDto> qMap = new TreeMap<>();
-        for (XmlQuestion q : question) {
-            qMap.put(q.getOrder(), q.toDto());
+        if (question != null) {
+            TreeMap<Integer,QuestionDto> qMap = new TreeMap<>();
+            for (XmlQuestion q : question) {
+                qMap.put(q.getOrder(), q.toDto());
+            }
+            dto.setQuestionMap(qMap);
         }
-        dto.setQuestionMap(qMap);
 
         return dto;
     }

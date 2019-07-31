@@ -267,11 +267,13 @@ public class XmlQuestion {
             dto.setOptionContainerDto(options.toDto());
         }
         //Translations
-        HashMap<String,TranslationDto> qMap = new HashMap<>();
-        for (XmlAltText alt : altText) {
-            qMap.put(alt.getLanguage(), alt.toDto());
+        if (altText != null) {
+            HashMap<String,TranslationDto> qMap = new HashMap<>();
+            for (XmlAltText alt : altText) {
+                qMap.put(alt.getLanguage(), alt.toDto());
+            }
+            dto.setTranslationMap(qMap);
         }
-        dto.setTranslationMap(qMap);
 
         //return cascade levels as a List<String>
         if (level != null) {

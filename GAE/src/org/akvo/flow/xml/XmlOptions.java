@@ -78,11 +78,14 @@ public class XmlOptions {
         OptionContainerDto dto = new OptionContainerDto();
         dto.setAllowOtherFlag(allowOther);
         dto.setAllowMultipleFlag(allowMultiple);
-        ArrayList<QuestionOptionDto> oList = new ArrayList<>();
-        for (XmlOption o : option) {
-            oList.add(o.toDto());
+        if (option != null) {
+            ArrayList<QuestionOptionDto> oList = new ArrayList<>();
+            for (XmlOption o : option) {
+                oList.add(o.toDto());
+            }
+            dto.setOptionsList(oList);
         }
-        dto.setOptionsList(oList);
+
         return dto;
     }
 
