@@ -52,8 +52,6 @@ import org.akvo.flow.domain.DataUtils;
 import org.akvo.flow.util.FlowJsonObjectReader;
 import org.akvo.flow.util.JFreechartChartUtil;
 import org.akvo.flow.xml.PublishedForm;
-import org.akvo.flow.xml.XmlForm;
-import org.akvo.flow.xml.XmlQuestionGroup;
 import org.apache.log4j.ConsoleAppender;
 import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
@@ -292,6 +290,7 @@ public class GraphicalSurveySummaryExporter extends SurveySummaryExporter {
             for (StackTraceElement ste: e.getStackTrace()) {
                 log.debug(ste);
             }
+            //TODO: return info to user
         }
     }
 
@@ -349,17 +348,12 @@ public class GraphicalSurveySummaryExporter extends SurveySummaryExporter {
             //Fetch the published form from S3, latest version
             String fileName = s3FormDir + "/" + surveyId + ".zip"; //no "v2.0" etc at end
             String formXml = null;
-            try {
-                final URL url = new URL(fileName);
-                final URLConnection conn = url.openConnection();
-                final BufferedInputStream deviceZipFileInputStream = new BufferedInputStream(conn.getInputStream());
-                final ZipInputStream formFileStream = new ZipInputStream(deviceZipFileInputStream);
-                formXml = ZipUtil.unZipFile(surveyId + ".xml", formFileStream);
-
-             } catch (IOException e) {
-                log.error("Error getting form XML file: " + e.getMessage(), e);
-                return null;
-            }
+            final URL url = new URL(fileName);
+            log.debug("Getting form XML from " + url);
+            final URLConnection conn = url.openConnection();
+            final BufferedInputStream deviceZipFileInputStream = new BufferedInputStream(conn.getInputStream());
+            final ZipInputStream formFileStream = new ZipInputStream(deviceZipFileInputStream);
+            formXml = ZipUtil.unZipFile(surveyId + ".xml", formFileStream);
 
             SurveyDto formDto = PublishedForm.parse(formXml).toDto();
             questionMap = new HashMap<>();
@@ -368,7 +362,8 @@ public class GraphicalSurveySummaryExporter extends SurveySummaryExporter {
 
             for (QuestionGroupDto qgd : formDto.getQuestionGroupList()) {
                 //Transform the question maps to question lists
-                //BUT: this is the only use of this map *anywhere*, so it *could* be changed to a list...
+                //An alternative solution (since this is the only use of this map *anywhere*),
+                //  would be to change the map in the dto to a list...
                 List<QuestionDto> qList = new ArrayList<>();
                 for (QuestionDto dto : qgd.getQuestionMap().values()) { //Ordered by key
                     qList.add(dto);

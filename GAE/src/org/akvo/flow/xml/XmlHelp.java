@@ -16,8 +16,6 @@
 
 package org.akvo.flow.xml;
 
-import org.waterforpeople.mapping.app.gwt.client.survey.QuestionOptionDto;
-
 import com.fasterxml.jackson.dataformat.xml.annotation.JacksonXmlElementWrapper;
 import com.fasterxml.jackson.dataformat.xml.annotation.JacksonXmlProperty;
 

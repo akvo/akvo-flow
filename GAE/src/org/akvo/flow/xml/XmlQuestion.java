@@ -19,8 +19,6 @@ package org.akvo.flow.xml;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
-import java.util.TreeMap;
-
 import org.waterforpeople.mapping.app.gwt.client.survey.QuestionDto;
 import org.waterforpeople.mapping.app.gwt.client.survey.QuestionDto.QuestionType;
 import org.waterforpeople.mapping.app.gwt.client.survey.TranslationDto;
@@ -28,17 +26,6 @@ import org.waterforpeople.mapping.app.gwt.client.survey.TranslationDto;
 import com.fasterxml.jackson.dataformat.xml.annotation.JacksonXmlElementWrapper;
 import com.fasterxml.jackson.dataformat.xml.annotation.JacksonXmlProperty;
 
-/*
- * Class for working with form XML like this:
-
- * <question order="1" type="option" mandatory="true" localeNameFlag="false" id="46843002">
- * <options allowOther="false" allowMultiple="false" renderType="radio">
- * <option value="Yes" code="Y"><text>Yes</text></option>
- * <option value="No" code="N"><text>No</text></option>
- * </options>
- * <text>Brand new option question</text>
- * </question>
- */
 
 public class XmlQuestion {
 

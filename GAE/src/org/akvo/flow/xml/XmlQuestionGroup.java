@@ -33,7 +33,7 @@ import com.fasterxml.jackson.dataformat.xml.annotation.JacksonXmlProperty;
  */
 public class XmlQuestionGroup {
 
-    @JacksonXmlElementWrapper(useWrapping = false)
+    @JacksonXmlElementWrapper(localName = "question", useWrapping = false)
     private XmlQuestion[] question;
 
     @JacksonXmlProperty(localName = "heading", isAttribute = false)
@@ -42,7 +42,7 @@ public class XmlQuestionGroup {
     @JacksonXmlProperty(localName = "repeatable", isAttribute = true)
     private boolean repeatable;
 
-    private int order; //Not in XML
+    private int order; //Not in XML; provided by parent
 
     public XmlQuestionGroup() {
     }
@@ -105,6 +105,6 @@ public class XmlQuestionGroup {
                 "order='" + order +
                 "',heading='" + heading +
                 "',questions=" + Arrays.toString(question) +
-                '}';
+                "}";
     }
 }
