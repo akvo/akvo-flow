@@ -1,5 +1,5 @@
 /*
- *  Copyright (C) 2012,2017-2018 Stichting Akvo (Akvo Foundation)
+ *  Copyright (C) 2012,2017-2019 Stichting Akvo (Akvo Foundation)
  *
  *  This file is part of Akvo FLOW.
  *
@@ -35,7 +35,7 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.waterforpeople.mapping.app.web.rest.dto.PlacemarkDto;
-import org.waterforpeople.mapping.app.web.rest.security.AppRole;
+import org.akvo.flow.rest.security.AppRole;
 import com.gallatinsystems.surveyal.dao.SurveyedLocaleDao;
 import com.gallatinsystems.surveyal.domain.SurveyedLocale;
 

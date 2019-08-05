@@ -14,7 +14,7 @@
  *  The full license text can also be seen at <http://www.gnu.org/licenses/agpl.html>.
  */
 
-package org.waterforpeople.mapping.app.web.rest.security;
+package org.akvo.flow.rest.security;
 
 import org.springframework.security.core.GrantedAuthority;
 
@@ -33,7 +33,7 @@ public enum AppRole implements GrantedAuthority {
      * Creates an authority with a specific bit representation. It's important that this doesn't
      * change as it will be used in the database. The enum ordinal is less reliable as the enum may
      * be reordered or have new roles inserted which would change the ordinal values.
-     * 
+     *
      * @param bit the permission bit which will represent this authority in the datastore.
      */
     AppRole(int bit) {

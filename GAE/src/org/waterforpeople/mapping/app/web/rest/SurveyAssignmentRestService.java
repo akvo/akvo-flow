@@ -1,5 +1,5 @@
 /*
- *  Copyright (C) 2012,2017 Stichting Akvo (Akvo Foundation)
+ *  Copyright (C) 2012,2017,2019 Stichting Akvo (Akvo Foundation)
  *
  *  This file is part of Akvo FLOW.
  *
@@ -55,9 +55,11 @@ public class SurveyAssignmentRestService {
 
     private SurveyAssignmentDAO surveyAssignmentDao = new SurveyAssignmentDAO();
 
-    private DeviceDAO deviceDao;
-    private SurveyDAO surveyDao;
-    private DeviceSurveyJobQueueDAO deviceSurveyJobQueueDAO;
+    private DeviceDAO deviceDao = new DeviceDAO();
+
+    private SurveyDAO surveyDao = new SurveyDAO();
+
+    private DeviceSurveyJobQueueDAO deviceSurveyJobQueueDAO = new DeviceSurveyJobQueueDAO();
 
     @RequestMapping(method = RequestMethod.GET, value = "")
     @ResponseBody
@@ -81,7 +83,7 @@ public class SurveyAssignmentRestService {
         final SurveyAssignment sa = surveyAssignmentDao.getByKey(id);
 
         if (sa == null) {
-            throw new HttpMessageNotReadableException(
+            throw new ResourceNotFoundException(
                     "Survey Assignment with id: " + id + " not found");
         }
 
@@ -95,13 +97,11 @@ public class SurveyAssignmentRestService {
     Long id) {
         final HashMap<String, RestStatusDto> response = new HashMap<String, RestStatusDto>();
         final SurveyAssignment sa = surveyAssignmentDao.getByKey(id);
-        DeviceSurveyJobQueueDAO deviceSurveysDao = new DeviceSurveyJobQueueDAO();
-        final List<DeviceSurveyJobQueue> deviceSurveys = deviceSurveysDao.listJobByAssignment(id);
         RestStatusDto statusDto = new RestStatusDto();
         statusDto.setStatus("failed");
-        if (sa != null && deviceSurveys != null) {
+        if (sa != null) {
+            deleteExistingDeviceSurveyJobQueueItems(sa);
             surveyAssignmentDao.delete(sa);
-            deviceSurveysDao.delete(deviceSurveys);
             statusDto.setStatus("ok");
         }
 
@@ -122,15 +122,20 @@ public class SurveyAssignmentRestService {
             throw new HttpMessageNotReadableException("Ids don't match: " + id
                     + " <> " + dto.getKeyId());
         }
-        final SurveyAssignment oldAssignment = surveyAssignmentDao.getByKey(dto.getKeyId());
-        final HashMap<String, SurveyAssignmentDto> response = new HashMap<String, SurveyAssignmentDto>();
-        if (oldAssignment == null) {
-            throw new HttpMessageNotReadableException(
+        final SurveyAssignment assignment = surveyAssignmentDao.getByKey(dto.getKeyId());
+        if (assignment == null) {
+            throw new ResourceNotFoundException(
                     "Survey Assignment with id: " + dto.getKeyId() + " not found");
         }
+
+        deleteExistingDeviceSurveyJobQueueItems(assignment);
+
         final SurveyAssignment sa = marshallToDomain(dto);
         surveyAssignmentDao.save(sa);
-        generateDeviceJobQueueItems(sa, oldAssignment);
+        List<DeviceSurveyJobQueue> deviceSurveyJobQueues = generateDeviceSurveyJobQueueItems(sa);
+        deviceSurveyJobQueueDAO.save(deviceSurveyJobQueues);
+
+        final HashMap<String, SurveyAssignmentDto> response = new HashMap<String, SurveyAssignmentDto>();
         response.put("survey_assignment", marshallToDto(sa));
 
         return response;
@@ -141,10 +146,13 @@ public class SurveyAssignmentRestService {
     public Map<String, SurveyAssignmentDto> newSurveyAssignment(
             @RequestBody
             SurveyAssignmentPayload payload) {
+
         final SurveyAssignmentDto dto = payload.getSurvey_assignment();
         final SurveyAssignment sa  = marshallToDomain(dto);
+
         surveyAssignmentDao.save(sa); //fills in new key
-        generateDeviceJobQueueItems(sa, null);
+        List<DeviceSurveyJobQueue> deviceSurveyJobQueues = generateDeviceSurveyJobQueueItems(sa);
+        deviceSurveyJobQueueDAO.save(deviceSurveyJobQueues);
 
         final HashMap<String, SurveyAssignmentDto> response = new HashMap<String, SurveyAssignmentDto>();
         response.put("survey_assignment", marshallToDto(sa));
@@ -177,117 +185,25 @@ public class SurveyAssignmentRestService {
         return sa;
     }
 
+    private void deleteExistingDeviceSurveyJobQueueItems(SurveyAssignment assignment) {
+        List<DeviceSurveyJobQueue> deviceAssignmentsToDelete = deviceSurveyJobQueueDAO.listJobByAssignment(assignment.getKey().getId());
+        deviceSurveyJobQueueDAO.delete(deviceAssignmentsToDelete);
+    }
+
     /**
      * creates and saves DeviceSurveyJobQueue objects for each device/survey pair in the assignment.
-     * If this takes too long to do, may need to make it async
-     * 
-     * @param assignment
      */
-    private void generateDeviceJobQueueItems(SurveyAssignment assignment,
-            SurveyAssignment oldAssignment) {
-        List<Long> surveyIdsToSave = new ArrayList<Long>(assignment.getSurveyIds());
-        List<Long> deviceIdsToSave = new ArrayList<Long>(assignment.getDeviceIds());
-        List<Long> surveyIdsToDelete = new ArrayList<Long>();
-        List<Long> deviceIdsToDelete = new ArrayList<Long>();
-        surveyAssignmentDao = new SurveyAssignmentDAO();
-        deviceDao = new DeviceDAO();
-        surveyDao = new SurveyDAO();
-        deviceSurveyJobQueueDAO = new DeviceSurveyJobQueueDAO();
+    private List<DeviceSurveyJobQueue> generateDeviceSurveyJobQueueItems(SurveyAssignment assignment) {
+        List<DeviceSurveyJobQueue> deviceSurveyJobQueues = new ArrayList<>();
+        List<Survey> forms = surveyDao.listByKeys(assignment.getSurveyIds());
+        List<Device> devices = deviceDao.listByKeys(assignment.getDeviceIds());
 
-        if (oldAssignment != null) {
-            if (oldAssignment.getSurveyIds() != null) {
-                surveyIdsToSave.removeAll(oldAssignment.getSurveyIds());
-                surveyIdsToDelete = new ArrayList<Long>(oldAssignment.getSurveyIds());
-                surveyIdsToDelete.removeAll(assignment.getSurveyIds());
-            }
-            if (oldAssignment.getDeviceIds() != null) {
-                deviceIdsToSave.removeAll(oldAssignment.getDeviceIds());
-                deviceIdsToDelete = new ArrayList<Long>(oldAssignment.getDeviceIds());
-                deviceIdsToDelete.removeAll(assignment.getDeviceIds());
+        for (Survey form : forms) {
+            for(Device device : devices) {
+                deviceSurveyJobQueues.add(constructQueueObject(device, form, assignment));
             }
         }
-        List<DeviceSurveyJobQueue> queueList = new ArrayList<DeviceSurveyJobQueue>();
-        Map<Long, Survey> surveyMap = new HashMap<Long, Survey>();
-        Map<Long, Device> deviceMap = new HashMap<Long, Device>();
-        if (deviceIdsToSave != null) {
-            // for each new device, we need to save a record for ALL survey IDs
-            // in the assignment
-            for (Long id : deviceIdsToSave) {
-                Device d = deviceMap.get(id);
-                if (d == null) {
-                    d = deviceDao.getByKey(id);
-                    deviceMap.put(d.getKey().getId(), d);
-                }
-                for (Long sId : assignment.getSurveyIds()) {
-                    Survey survey = surveyMap.get(sId);
-                    if (survey == null) {
-                        survey = surveyDao.getByKey(sId);
-                        surveyMap.put(sId, survey);
-                    }
-                    queueList.add(constructQueueObject(d, survey, assignment));
-                }
-            }
-        }
-        // if we added any surveys, we need to save a record for ALL the devices
-        // BUT we don't need to process the items that we already saved above
-        if (surveyIdsToSave != null) {
-            for (Long sId : surveyIdsToSave) {
-                Survey survey = surveyMap.get(sId);
-                if (survey == null) {
-                    survey = surveyDao.getByKey(sId);
-                    surveyMap.put(sId, survey);
-                }
-                for (Long id : assignment.getDeviceIds()) {
-                    // only proceed if we haven't already saved the record above
-                    if (!deviceIdsToSave.contains(id)) {
-                        Device d = deviceMap.get(id);
-                        if (d == null) {
-                            d = deviceDao.getByKey(id);
-                            deviceMap.put(d.getKey().getId(), d);
-                        }
-                        queueList.add(constructQueueObject(d, survey, assignment));
-                    }
-                }
-            }
-        }
-
-        if (queueList.size() > 0) {
-            deviceSurveyJobQueueDAO.save(queueList);
-        }
-        if (deviceIdsToDelete.size() > 0 || surveyIdsToDelete.size() > 0) {
-            StringBuilder builder = new StringBuilder("d");
-            for (int i = 0; i < deviceIdsToDelete.size(); i++) {
-                if (i > 0) {
-                    builder.append("xx");
-                }
-                Device d = deviceMap.get(deviceIdsToDelete.get(i));
-                if (d == null) {
-                    d = deviceDao.getByKey(deviceIdsToDelete.get(i));
-                    deviceMap.put(d.getKey().getId(), d);
-                }
-                builder.append(d.getPhoneNumber());
-            }
-            builder.append("s");
-            for (int i = 0; i < surveyIdsToDelete.size(); i++) {
-                if (i > 0) {
-                    builder.append("xx");
-                }
-                builder.append(surveyIdsToDelete.get(i).toString());
-            }
-
-            DataChangeRecord change = new DataChangeRecord(
-                    SurveyAssignment.class.getName(), assignment.getKey()
-                            .getId() + "", builder.toString(), "n/");
-            Queue queue = QueueFactory.getQueue("dataUpdate");
-            queue.add(TaskOptions.Builder
-                    .withUrl("/app_worker/dataupdate")
-                    .param(DataSummarizationRequest.OBJECT_KEY,
-                            assignment.getKey().getId() + "")
-                    .param(DataSummarizationRequest.OBJECT_TYPE,
-                            "DeviceSurveyJobQueueChange")
-                    .param(DataSummarizationRequest.VALUE_KEY,
-                            change.packString()));
-        }
+        return deviceSurveyJobQueues;
     }
 
     private DeviceSurveyJobQueue constructQueueObject(Device d, Survey survey,

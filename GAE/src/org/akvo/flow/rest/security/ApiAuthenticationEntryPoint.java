@@ -1,5 +1,5 @@
 /*
- *  Copyright (C) 2013 Stichting Akvo (Akvo Foundation)
+ *  Copyright (C) 2014, 2019 Stichting Akvo (Akvo Foundation)
  *
  *  This file is part of Akvo FLOW.
  *
@@ -14,29 +14,25 @@
  *  The full license text can also be seen at <http://www.gnu.org/licenses/agpl.html>.
  */
 
-package org.waterforpeople.mapping.app.web;
+package org.akvo.flow.rest.security;
 
 import java.io.IOException;
 
 import javax.servlet.ServletException;
-import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.AuthenticationException;
+import org.springframework.security.web.AuthenticationEntryPoint;
 
-import com.google.appengine.api.users.UserServiceFactory;
-
-public class LogoutServlet extends HttpServlet {
-    private static final long serialVersionUID = -1911557320125276573L;
+public class ApiAuthenticationEntryPoint implements AuthenticationEntryPoint {
 
     @Override
-    protected void doGet(HttpServletRequest req, HttpServletResponse resp)
-            throws ServletException, IOException {
-        SecurityContextHolder.clearContext();
-        req.getSession().invalidate();
-        resp.sendRedirect(UserServiceFactory.getUserService().createLogoutURL(
-                "/"));
+    public void commence(HttpServletRequest request,
+	    HttpServletResponse response,
+	    AuthenticationException authenticationException)
+	    throws IOException, ServletException {
+	response.sendError(HttpServletResponse.SC_UNAUTHORIZED,
+		"Authentication Required.");
     }
-
 }

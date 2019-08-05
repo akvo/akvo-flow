@@ -1,12 +1,27 @@
+/*
+ * Copyright (C) 2019 Stichting Akvo (Akvo Foundation)
+ *
+ * This file is part of Akvo FLOW.
+ *
+ * Akvo FLOW is free software: you can redistribute it and modify it under the terms of
+ * the GNU Affero General Public License (AGPL) as published by the Free Software Foundation,
+ * either version 3 of the License or any later version.
+ *
+ * Akvo FLOW is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY;
+ * without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+ * See the GNU Affero General Public License included below for more details.
+ *
+ * The full license text can also be seen at <http://www.gnu.org/licenses/agpl.html>.
+ */
 
-package org.waterforpeople.mapping.app.web.rest.security.user;
+package org.akvo.flow.rest.security.user;
 
 import java.io.Serializable;
 import java.util.Collection;
 import java.util.EnumSet;
 import java.util.Set;
 
-import org.waterforpeople.mapping.app.web.rest.security.AppRole;
+import org.akvo.flow.rest.security.AppRole;
 
 /**
  * Custom user object for the application.
@@ -20,27 +35,30 @@ public class GaeUser implements Serializable {
     private final Set<AppRole> authorities;
     private final boolean enabled;
     private Long userId;
+    private boolean authByGAE;
 
     /**
      * Pre-registration constructor. Assigns the user the "ROLE_NEW_USER" role only.
      */
-    public GaeUser(String userName, String email) {
+    public GaeUser(boolean authByGAE, String userName, String email) {
         this.authorities = EnumSet.of(AppRole.ROLE_NEW_USER);
         this.userName = userName;
         this.email = email;
         this.enabled = true;
+        this.authByGAE = authByGAE;
     }
 
     /**
      * Post-registration constructor
      */
     public GaeUser(String userName, String email, Long userId, Set<AppRole> authorities,
-            boolean enabled) {
+            boolean enabled, boolean authByGAE) {
         this.userName = userName;
         this.email = email;
         this.authorities = authorities;
         this.enabled = enabled;
         this.userId = userId;
+        this.authByGAE = authByGAE;
     }
 
     public boolean isEnabled() {
@@ -58,6 +76,8 @@ public class GaeUser implements Serializable {
     public Long getUserId() {
         return userId;
     }
+
+    public boolean isAuthByGAE() {return authByGAE;}
 
     public Collection<AppRole> getAuthorities() {
         return authorities;

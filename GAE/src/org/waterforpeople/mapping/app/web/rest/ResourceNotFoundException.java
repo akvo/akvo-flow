@@ -1,5 +1,5 @@
 /*
- *  Copyright (C) 2014 Stichting Akvo (Akvo Foundation)
+ *  Copyright (C) 2014,2019 Stichting Akvo (Akvo Foundation)
  *
  *  This file is part of Akvo FLOW.
  *
@@ -19,7 +19,15 @@ package org.waterforpeople.mapping.app.web.rest;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.ResponseStatus;
 
+import javax.annotation.Resource;
+
 @ResponseStatus(value = HttpStatus.NOT_FOUND)
 public class ResourceNotFoundException extends RuntimeException {
 	private static final long serialVersionUID = -7254884856692314966L;
+
+    public ResourceNotFoundException() {}
+
+    public ResourceNotFoundException(String message) {
+        super(message);
+	}
 }

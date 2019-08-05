@@ -1,5 +1,5 @@
 /*
- *  Copyright (C) 2015 Stichting Akvo (Akvo Foundation)
+ *  Copyright (C) 2015, 2019 Stichting Akvo (Akvo Foundation)
  *
  *  This file is part of Akvo FLOW.
  *
@@ -28,7 +28,7 @@ import java.util.logging.Logger;
 
 import com.gallatinsystems.common.Constants;
 import org.akvo.flow.util.FlowJsonObjectWriter;
-import org.waterforpeople.mapping.app.web.rest.security.user.GaeUser;
+import org.akvo.flow.rest.security.user.GaeUser;
 
 import com.gallatinsystems.survey.domain.SurveyGroup;
 import com.gallatinsystems.survey.domain.SurveyGroup.PrivacyLevel;

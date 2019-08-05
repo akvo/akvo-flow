@@ -34,7 +34,7 @@ import net.sf.jsr107cache.CacheException;
 
 import org.apache.commons.lang.StringUtils;
 import org.waterforpeople.mapping.app.web.dto.DataProcessorRequest;
-import org.waterforpeople.mapping.app.web.rest.security.AppRole;
+import org.akvo.flow.rest.security.AppRole;
 import org.waterforpeople.mapping.app.web.test.DeleteObjectUtil;
 import org.waterforpeople.mapping.dao.QuestionAnswerStoreDao;
 import org.waterforpeople.mapping.dao.SurveyInstanceDAO;
@@ -72,7 +72,8 @@ public class TestHarnessServlet extends HttpServlet {
     public void doGet(HttpServletRequest req, HttpServletResponse resp) {
         String action = req.getParameter("action");
         if ("setupTestUser".equals(action)) {
-            setupTestUser();
+            String email = req.getParameter("email");
+            setupTestUser(email == null ? "test@example.com" : email);
         } else if ("deleteGeoData".equals(action)) {
             try {
                 OGRFeatureDao ogrFeatureDao = new OGRFeatureDao();
@@ -373,12 +374,12 @@ public class TestHarnessServlet extends HttpServlet {
         }
     }
 
-    private void setupTestUser() {
+    private void setupTestUser(String email) {
         UserDao userDao = new UserDao();
-        User user = userDao.findUserByEmail("test@example.com");
+        User user = userDao.findUserByEmail(email);
         if (user == null) {
             user = new User();
-            user.setEmailAddress("test@example.com");
+            user.setEmailAddress(email);
         }
         user.setSuperAdmin(true);
         user.setPermissionList(String.valueOf(AppRole.ROLE_SUPER_ADMIN.getLevel()));
