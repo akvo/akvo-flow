@@ -179,6 +179,7 @@ public class SurveySummaryExporter extends AbstractDataExporter {
 
     /**
      * loads just enough question data to generate the simplest report
+     * As side effect, creates and populates orderedGroupList and rollupOrder.
      * @param surveyId
      * @param performRollups
      * @param serverBase
@@ -187,7 +188,10 @@ public class SurveySummaryExporter extends AbstractDataExporter {
      * @throws Exception
      */
     protected Map<QuestionGroupDto, List<QuestionDto>> loadAllQuestions(
-            String surveyId, boolean performRollups, String serverBase, String apiKey)
+            String surveyId,
+            boolean performRollups,
+            String serverBase,
+            String apiKey)
             throws Exception {
         Map<QuestionGroupDto, List<QuestionDto>> questionMap = new HashMap<>();
         //we need the ordering of groups and questions in them; fetching in nested loops is inefficient so
@@ -231,11 +235,47 @@ public class SurveySummaryExporter extends AbstractDataExporter {
             }
             questionMap.put(group, questions);
         }
-        
+
         return questionMap;
     }
 
-    
+    /**
+     * calls the server to augment the data already loaded in each QuestionDto in the map
+     * with variable names, if not set already
+     *
+     * @param surveyId
+     * @param serverBase
+     * @param questionMap map of lists of questionDtos keyed by id
+     * @param apiKey
+     */
+    protected void loadVariableNames(
+            String surveyId,
+            String serverBase,
+            Map<QuestionGroupDto, List<QuestionDto>> questionMap,
+            String apiKey) {
+
+        Map<Long, QuestionDto> questionsById = new HashMap<>();
+        for (List<QuestionDto> qList : questionMap.values()) {
+            for (QuestionDto q : qList) {
+                questionsById.put(q.getKeyId(), q);
+            }
+        }
+
+        try {
+            List<QuestionDto> dsQuestions = fetchQuestionsOfSurvey(serverBase, surveyId, apiKey); //unordered
+            for (QuestionDto sdDto : dsQuestions) {
+                QuestionDto dto = questionsById.get(sdDto.getKeyId());
+                if (dto != null && dto.getVariableName() == null) {
+                    dto.setVariableName(sdDto.getVariableName());
+                }
+            }
+
+        } catch (Exception e) {
+            System.err.println("Could not fetch question variableNames");
+            e.printStackTrace(System.err);
+        }
+    }
+
     /**
      * calls the server to augment the data already loaded in each QuestionDto in the map
      * with minimal option info, no translations
@@ -256,7 +296,7 @@ public class SurveySummaryExporter extends AbstractDataExporter {
                     questionsById.put(q.getKeyId(), q);
                 }
             }
-            
+
             List<QuestionOptionDto> optList =
                     BulkDataServiceClient.fetchSurveyQuestionOptions(surveyId, serverBase, apiKey);
             //add them to the container of their question
@@ -353,7 +393,8 @@ public class SurveySummaryExporter extends AbstractDataExporter {
         final List<QuestionDto> qList = jsonReader.readDtoListObject(response, listItemTypeReference);
         return qList;
     }
-    
+
+
     /**
      * converts the string into a JSON array object.
      */
