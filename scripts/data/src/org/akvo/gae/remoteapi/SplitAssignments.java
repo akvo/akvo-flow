@@ -118,14 +118,14 @@ public class SplitAssignments implements Process {
                     part++;
                     if (part == 1) { //change it
                         System.out.println(" changing from " + ass);
-                        ass.setProperty("name", name + " #" + part + " [" + nameOfSurvey.get(surveyId) + "]");
+                        ass.setProperty("name", name + " [" + nameOfSurvey.get(surveyId) + "]");
                         ass.setProperty("surveyIds", formList);
                         System.out.println(" changing to " + ass);
                         toBeSaved.add(ass);
                     } else { // make a new one
                         Entity newAss = new Entity("SurveyAssignment");
                         newAss.setPropertiesFrom(ass);
-                        newAss.setProperty("name", name + " #" + part + " [" + nameOfSurvey.get(surveyId) + "]");
+                        newAss.setProperty("name", name + " [" + nameOfSurvey.get(surveyId) + "]");
                         newAss.setProperty("surveyIds", formList);
                         System.out.println(" creating " + newAss);
                         toBeCreated.add(newAss);
