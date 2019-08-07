@@ -16,7 +16,10 @@
 
 package org.akvo.flow.xml;
 
+import java.util.ArrayList;
+
 import org.waterforpeople.mapping.app.gwt.client.survey.QuestionOptionDto;
+import org.waterforpeople.mapping.app.gwt.client.survey.TranslationDto;
 
 import com.fasterxml.jackson.dataformat.xml.annotation.JacksonXmlElementWrapper;
 import com.fasterxml.jackson.dataformat.xml.annotation.JacksonXmlProperty;
@@ -24,12 +27,8 @@ import com.fasterxml.jackson.dataformat.xml.annotation.JacksonXmlProperty;
 /*
  * Class for working with form XML like this:
  *
- * <question order="1" type="option" mandatory="true" localeNameFlag="false" id="46843002">
- * <options allowOther="false" allowMultiple="false" renderType="radio">
  * <option value="Yes" code="Y"><text>Yes</text></option>
- * <option value="No" code="N"><text>No</text></option>
- * </options>
- * <
+ * <option value="No" code="N"><text>No</text><altText type="translation" language="fr">Non</altText></option>
  */
 
 public class XmlOption {
@@ -46,6 +45,36 @@ public class XmlOption {
     public XmlOption() {
     }
 
+    public XmlOption(QuestionOptionDto dto) {
+        setCode(dto.getCode());
+        setText(dto.getText());
+        setValue(dto.getText());
+        //Translations
+        ArrayList<XmlAltText> oList = new ArrayList<>();
+        for (TranslationDto t: dto.getTranslationMap().values()) {
+            oList.add(new XmlAltText(t));
+        }
+        setAltText((XmlAltText[])oList.toArray());
+    }
+
+    /**
+     * @return a Dto object with relevant fields copied
+     */
+    public QuestionOptionDto toDto() {
+        QuestionOptionDto dto = new QuestionOptionDto();
+        //TODO translations
+        dto.setCode(code);
+        dto.setText(text);
+        return dto;
+    }
+
+    @Override public String toString() {
+        return "option{" +
+                "code='" + code +
+                "',value='" + value +
+                "',text='" + text +
+                "'}";
+    }
 
     public String getCode() {
         return code;
@@ -79,23 +108,5 @@ public class XmlOption {
         this.altText = altText;
     }
 
-    /**
-     * @return a Dto object with relevant fields copied
-     */
-    public QuestionOptionDto toDto() {
-        QuestionOptionDto dto = new QuestionOptionDto();
-        //TODO translations
-        dto.setCode(code);
-        dto.setText(text);
-        return dto;
-    }
-
-    @Override public String toString() {
-        return "option{" +
-                "code='" + code +
-                "',value='" + value +
-                "',text='" + text +
-                "'}";
-    }
 
 }

@@ -39,6 +39,42 @@ public class XmlOptions {
     public XmlOptions() {
     }
 
+    public XmlOptions(OptionContainerDto dto) {
+        setAllowOther(dto.getAllowOtherFlag());
+        setAllowMultiple(dto.getAllowMultipleFlag());
+        option = new XmlOption[dto.getOptionsList().size()];
+        int i = 0;
+        for (QuestionOptionDto o: dto.getOptionsList()) {
+            option[i++] = new XmlOption(o);
+        }
+    }
+
+    /**
+     * @return a Dto with relevant fields copied
+     */
+    public OptionContainerDto toDto() {
+        OptionContainerDto dto = new OptionContainerDto();
+        dto.setAllowOtherFlag(allowOther);
+        dto.setAllowMultipleFlag(allowMultiple);
+        if (option != null) {
+            ArrayList<QuestionOptionDto> oList = new ArrayList<>();
+            for (XmlOption o : option) {
+                oList.add(o.toDto());
+            }
+            dto.setOptionsList(oList);
+        }
+
+        return dto;
+    }
+
+    @Override public String toString() {
+        return "options{" +
+                "allowOther='" + allowOther +
+                "',allowMultiple='" + allowMultiple +
+                "',options=" + option.toString() +
+                "}";
+    }
+
     public XmlOption[] getOption() {
         return option;
     }
@@ -69,32 +105,6 @@ public class XmlOptions {
 
     public void setRenderType(String renderType) {
         this.renderType = renderType;
-    }
-
-    /**
-     * @return a Dto with relevant fields copied
-     */
-    public OptionContainerDto toDto() {
-        OptionContainerDto dto = new OptionContainerDto();
-        dto.setAllowOtherFlag(allowOther);
-        dto.setAllowMultipleFlag(allowMultiple);
-        if (option != null) {
-            ArrayList<QuestionOptionDto> oList = new ArrayList<>();
-            for (XmlOption o : option) {
-                oList.add(o.toDto());
-            }
-            dto.setOptionsList(oList);
-        }
-
-        return dto;
-    }
-
-    @Override public String toString() {
-        return "options{" +
-                "allowOther='" + allowOther +
-                "',allowMultiple='" + allowMultiple +
-                "',options=" + option.toString() +
-                '}';
     }
 
 }

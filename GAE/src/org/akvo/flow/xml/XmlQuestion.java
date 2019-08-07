@@ -78,6 +78,117 @@ public class XmlQuestion {
     public XmlQuestion() {
     }
 
+    public XmlQuestion(QuestionDto dto) {
+        text = dto.getText();
+        mandatory = dto.getMandatoryFlag();
+        id = dto.getKeyId();
+        order = dto.getOrder();
+        localeNameFlag = dto.getLocaleNameFlag();
+        localeLocationFlag = dto.getLocaleLocationFlag();
+        locked = dto.getGeoLocked();
+        allowPoints = dto.getAllowPoints();
+        allowLine = dto.getAllowLine();
+        allowPolygon = dto.getAllowPolygon();
+        caddisflyResourceUuid = dto.getCaddisflyResourceUuid();
+        //TODO cascadeResource = dto.getCascadeResourceId();
+        help = new XmlHelp(dto.getTip()); //Only base language help currently supported?
+        //TODO: too simple; need to account for NUMBERs
+        switch (dto.getType()) {
+            case NUMBER:
+                validationRule = new XmlValidationRule(dto);
+                type = "free";
+                break; //Could have done a fall-through here ;)
+            case FREE_TEXT:
+                type = "free";
+                break;
+            default:
+                type = dto.getType().toString();
+        }
+        if (dto.getDependentFlag()) {
+            dependency = new XmlDependency(dto.getDependentQuestionId(), dto.getDependentQuestionAnswer());
+        }
+        //Translations
+        ArrayList<XmlAltText> oList = new ArrayList<>();
+        for (TranslationDto t: dto.getTranslationMap().values()) {
+            oList.add(new XmlAltText(t));
+        }
+        setAltText((XmlAltText[])oList.toArray());
+        //TODO: many more fields
+
+        //Now copy the option container
+        options = new XmlOptions(dto.getOptionContainerDto());
+    }
+
+    /**
+     * @return a Dto object with relevant fields copied
+     */
+    public QuestionDto toDto() {
+        QuestionDto dto = new QuestionDto();
+        dto.setKeyId(id);
+        dto.setText(text);
+        dto.setOrder(order);
+        dto.setMandatoryFlag(mandatory);
+        dto.setLocaleNameFlag(localeNameFlag);
+        //Type is more complicated:
+        QuestionType t; //FREE_TEXT, OPTION, NUMBER, GEO, PHOTO, VIDEO, SCAN, TRACK, STRENGTH, DATE, CASCADE, GEOSHAPE, SIGNATURE, CADDISFLY
+        if (FREE_TYPE.equalsIgnoreCase(type)) { //Text OR number
+            if (validationRule != null && NUMERIC_VALIDATION_TYPE.equals(validationRule.getValidationType())) {
+                t = QuestionType.NUMBER;
+            } else {
+                t = QuestionType.FREE_TEXT;
+            }
+        } else {
+            try {
+                t = QuestionType.valueOf(type.toUpperCase());
+            } catch (IllegalArgumentException e) {
+                t = QuestionType.FREE_TEXT;
+            }
+        }
+        dto.setType(t);
+
+        if (options != null) {
+            dto.setOptionContainerDto(options.toDto());
+        }
+        //Translations
+        if (altText != null) {
+            HashMap<String,TranslationDto> qMap = new HashMap<>();
+            for (XmlAltText alt : altText) {
+                qMap.put(alt.getLanguage(), alt.toDto());
+            }
+            dto.setTranslationMap(qMap);
+        }
+
+        //return cascade levels as a List<String>
+        if (level != null) {
+            List<String> cl = new ArrayList<>();
+            for (XmlLevel lvl : level) {
+                cl.add(lvl.getText());
+            }
+            dto.setLevelNames(cl);
+        }
+
+        if (caddisflyResourceUuid != null) {
+            dto.setCaddisflyResourceUuid(caddisflyResourceUuid);
+        }
+        return dto;
+    }
+
+    @Override public String toString() {
+        return "question{" +
+                "id='" + id +
+                "',order='" + order +
+                "',type='" + type +
+                "',mandatory='" + mandatory +
+                "',locked='" + locked +
+                "',localeNameFlag='" + localeNameFlag +
+                "',allowPoints='" + allowPoints +
+                "',allowLines='" + allowLine +
+                "',allowPolygon='" + allowPolygon +
+                "',options=" + ((options != null) ? options.toString() : "(null)") +
+                ",level='" + level +
+                "'}";
+    }
+
 
     public long getId() {
         return id;
@@ -221,73 +332,6 @@ public class XmlQuestion {
 
     public void setLevel(XmlLevel[] level) {
         this.level = level;
-    }
-
-    /**
-     * @return a Dto object with relevant fields copied
-     */
-    public QuestionDto toDto() {
-        QuestionDto dto = new QuestionDto();
-        dto.setKeyId(id);
-        dto.setText(text);
-        dto.setOrder(order);
-        dto.setMandatoryFlag(mandatory);
-        dto.setLocaleNameFlag(localeNameFlag);
-        //Type is more complicated:
-        QuestionType t; //FREE_TEXT, OPTION, NUMBER, GEO, PHOTO, VIDEO, SCAN, TRACK, STRENGTH, DATE, CASCADE, GEOSHAPE, SIGNATURE, CADDISFLY
-        if (FREE_TYPE.equalsIgnoreCase(type)) { //Text OR number
-            if (validationRule != null && NUMERIC_VALIDATION_TYPE.equals(validationRule.getValidationType())) {
-                t = QuestionType.NUMBER;
-            } else {
-                t = QuestionType.FREE_TEXT;
-            }
-        } else {
-            try {
-                t = QuestionType.valueOf(type.toUpperCase());
-            } catch (IllegalArgumentException e) {
-                t = QuestionType.FREE_TEXT;
-            }
-        }
-        dto.setType(t);
-
-        if (options != null) {
-            dto.setOptionContainerDto(options.toDto());
-        }
-        //Translations
-        if (altText != null) {
-            HashMap<String,TranslationDto> qMap = new HashMap<>();
-            for (XmlAltText alt : altText) {
-                qMap.put(alt.getLanguage(), alt.toDto());
-            }
-            dto.setTranslationMap(qMap);
-        }
-
-        //return cascade levels as a List<String>
-        if (level != null) {
-            List<String> cl = new ArrayList<>();
-            for (XmlLevel lvl : level) {
-                cl.add(lvl.getText());
-            }
-            dto.setLevelNames(cl);
-        }
-
-        if (caddisflyResourceUuid != null) {
-            dto.setCaddisflyResourceUuid(caddisflyResourceUuid);
-        }
-        return dto;
-    }
-
-    @Override public String toString() {
-        return "question{" +
-                "id='" + id +
-                "',order='" + order +
-                "',type='" + type +
-                "',mandatory='" + mandatory +
-                "',locked='" + locked +
-                "',localeNameFlag='" + localeNameFlag +
-                "',options=" + ((options != null) ? options.toString() : "(null)") +
-                ",level='" + level +
-                "'}";
     }
 
 }

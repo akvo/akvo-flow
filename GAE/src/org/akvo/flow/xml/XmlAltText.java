@@ -39,8 +39,10 @@ public class XmlAltText {
     public XmlAltText() {
     }
 
-    public XmlAltText(QuestionOptionDto dto) {
-        //TODO
+    public XmlAltText(TranslationDto dto) {
+        language = dto.getLangCode();
+        text = dto.getText();
+        type = "translation";
     }
 
     public String getType() {

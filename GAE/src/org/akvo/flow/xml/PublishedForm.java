@@ -42,5 +42,14 @@ public class PublishedForm {
         return form;
     }
 
+    // Generates XML from Java objects
+    public static String generate(XmlForm tree) throws IOException {
+
+        ObjectMapper objectMapper = new XmlMapper();
+
+        // Reads from POJO and converts to XML
+        String xml = objectMapper.writeValueAsString(tree);
+        return xml;
+    }
 
 }

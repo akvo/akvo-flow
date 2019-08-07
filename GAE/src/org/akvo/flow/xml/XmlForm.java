@@ -46,7 +46,7 @@ public final class XmlForm {
     private String app;
 
     @JacksonXmlProperty(localName = "surveyGroupId", isAttribute = true)
-    private String surveyGroupId;
+    private Long surveyGroupId;
 
     @JacksonXmlProperty(localName = "surveyGroupName", isAttribute = true)
     private String surveyGroupName;
@@ -57,24 +57,44 @@ public final class XmlForm {
     public XmlForm() {
     }
 
+    //Create a form XML object from a DTO
+    public XmlForm(SurveyDto dto) {
+        surveyId = dto.getKeyId();
+        surveyGroupId = dto.getSurveyGroupId();
+        //TODO surveyGroupName = dto.getSurveyGroupName();
+        defaultLanguageCode = dto.getDefaultLanguageCode();
+        name = dto.getCode();
+        if (name == null){
+            name = dto.getName();
+        }
+        version = dto.getVersion();
+        //Now copy the tree of child objects
+        questionGroup = new XmlQuestionGroup[dto.getQuestionGroupList().size()];
+        int i = 0;
+        for (QuestionGroupDto g: dto.getQuestionGroupList()) {
+            questionGroup[i++] = new XmlQuestionGroup(g);
+        }
+    }
 
     /**
      * @return a Dto object with relevant fields copied
      */
     public SurveyDto toDto() {
         SurveyDto dto = new SurveyDto();
-        //TODO: need to test against many form files
         dto.setKeyId(surveyId);
         dto.setName(name);
         dto.setCode(name);
         dto.setVersion(version);
-        ArrayList<QuestionGroupDto> gList = new ArrayList<>();
-        int i = 1;
-        for (XmlQuestionGroup g : questionGroup) {
-            g.setOrder(i++);
-            gList.add(g.toDto());
+        if (questionGroup != null) {
+            ArrayList<QuestionGroupDto> gList = new ArrayList<>();
+            int i = 1;
+            for (XmlQuestionGroup g : questionGroup) {
+                g.setOrder(i++);
+                gList.add(g.toDto());
+            }
+            dto.setQuestionGroupList(gList);
         }
-        dto.setQuestionGroupList(gList);
+        //TODO: fields not needed by the export process
 
         return dto;
     }
@@ -123,11 +143,11 @@ public final class XmlForm {
         this.app = app;
     }
 
-    public String getSurveyGroupId() {
+    public Long getSurveyGroupId() {
         return surveyGroupId;
     }
 
-    public void setSurveyGroupId(String surveyGroupId) {
+    public void setSurveyGroupId(Long surveyGroupId) {
         this.surveyGroupId = surveyGroupId;
     }
 

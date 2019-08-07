@@ -16,12 +16,15 @@
 
 package org.akvo.flow.xml;
 
+import org.waterforpeople.mapping.app.gwt.client.survey.QuestionDto;
 import org.waterforpeople.mapping.app.gwt.client.survey.QuestionOptionDto;
 import com.fasterxml.jackson.dataformat.xml.annotation.JacksonXmlProperty;
 
 /*
  * Class for working with form XML like this:
  * <validationRule allowDecimal="false" validationType="numeric" signed="true"/>
+ *
+ * It serves as an extension of XmlQuestion for NUMBER questions.
  */
 
 public class XmlValidationRule {
@@ -40,6 +43,14 @@ public class XmlValidationRule {
     private int maxLength;
 
     public XmlValidationRule() {
+    }
+
+    public XmlValidationRule(QuestionDto dto) {
+        validationType = "numeric";
+        signed = dto.getAllowSign();
+        allowDecimal = dto.getAllowDecimal();
+        maxVal = dto.getMaxVal(); //TODO: what if not set?
+        minVal = dto.getMinVal();
     }
 
     @Override public String toString() {

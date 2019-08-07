@@ -47,6 +47,50 @@ public class XmlQuestionGroup {
     public XmlQuestionGroup() {
     }
 
+    //Create a form XML object from a DTO
+    public XmlQuestionGroup(QuestionGroupDto dto) {
+        heading = dto.getCode();
+        if (heading == null){
+            heading = dto.getName();
+        }
+        repeatable = dto.getRepeatable();
+        //Now copy the question tree
+        question = new XmlQuestion[dto.getQuestionMap().size()];
+        int i = 0;
+        for (QuestionDto q: dto.getQuestionMap().values()) {
+            question[i++] = new XmlQuestion(q);
+        }
+    }
+
+    /**
+     * @return a Dto object with relevant fields copied
+     */
+    public QuestionGroupDto toDto() {
+        QuestionGroupDto dto = new QuestionGroupDto();
+        dto.setName(heading);
+        dto.setCode(heading);
+        dto.setOrder(order);
+        dto.setRepeatable(repeatable);
+        if (question != null) {
+            TreeMap<Integer,QuestionDto> qMap = new TreeMap<>();
+            for (XmlQuestion q : question) {
+                qMap.put(q.getOrder(), q.toDto());
+            }
+            dto.setQuestionMap(qMap);
+        }
+
+        return dto;
+    }
+
+    @Override public String toString() {
+
+        return "questionGroup{" +
+                "order='" + order +
+                "',heading='" + heading +
+                "',questions=" + Arrays.toString(question) +
+                "}";
+    }
+
     public String getHeading() {
         return heading;
     }
@@ -79,32 +123,4 @@ public class XmlQuestionGroup {
         this.order = order;
     }
 
-    /**
-     * @return a Dto object with relevant fields copied
-     */
-    public QuestionGroupDto toDto() {
-        QuestionGroupDto dto = new QuestionGroupDto();
-        dto.setName(heading);
-        dto.setCode(heading);
-        dto.setOrder(order);
-        dto.setRepeatable(repeatable);
-        if (question != null) {
-            TreeMap<Integer,QuestionDto> qMap = new TreeMap<>();
-            for (XmlQuestion q : question) {
-                qMap.put(q.getOrder(), q.toDto());
-            }
-            dto.setQuestionMap(qMap);
-        }
-
-        return dto;
-    }
-
-    @Override public String toString() {
-
-        return "questionGroup{" +
-                "order='" + order +
-                "',heading='" + heading +
-                "',questions=" + Arrays.toString(question) +
-                "}";
-    }
 }
