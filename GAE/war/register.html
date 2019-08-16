@@ -72,15 +72,16 @@ img {
 <body>
 <div class="msgWrap"> 
   	<div class="msgContainer">
-  		<img src="https://a.uguu.se/ZaX7cLfL4L5W_AkvoLogo.svg" title="Welcome to Akvo Flow" alt="Welcome to Akvo Flow" />
-	  <h1>You need permission to access your flow instance: <br><span id="urlLoc"></span></h1>
+  		<img src="https://a.uguu.se/BiGcKocxgocf_AkvoLogo.svg" title="Welcome to Akvo Flow" alt="Welcome to Akvo Flow" />
+	  <h1>You need permission to access:<br><span id="urlLoc"></span></h1>
 	  <p>Request permission from your organisation admin</p>
 	</div>
 </div>
 <script type="text/javascript">
 	function currentUrl() {
 		var currentLocation = window.location.href;
-	  	return currentLocation;
+		var currentLocationMinus = currentLocation.slice(0, -14);
+	  	return currentLocationMinus;
 	}
 	document.getElementById("urlLoc").innerHTML = currentUrl();
 </script>
