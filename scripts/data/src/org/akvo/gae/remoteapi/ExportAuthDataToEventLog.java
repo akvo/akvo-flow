@@ -1,17 +1,21 @@
 package org.akvo.gae.remoteapi;
 
-import com.google.appengine.api.datastore.*;
+import java.util.Date;
+import java.util.Map;
+
 import org.akvo.flow.events.EventUtils;
 import org.akvo.flow.events.EventUtils.EventTypes;
 import org.akvo.flow.events.EventUtils.Kind;
 
-import java.util.Date;
-import java.util.Map;
+import com.google.appengine.api.datastore.DatastoreService;
+import com.google.appengine.api.datastore.Entity;
+import com.google.appengine.api.datastore.FetchOptions;
+import com.google.appengine.api.datastore.Query;
 
 public class ExportAuthDataToEventLog implements Process {
 
     private static final int BATCH_SIZE = 1000;
-    private static final String[] kinds = {Kind.USER_ROLE, Kind.USER, Kind.USER_AUTHORIZATION};
+    private static final String[] kinds = {Kind.USER_ROLE, Kind.USER, Kind.SURVEY_GROUP, Kind.USER_AUTHORIZATION};
 
     // The timestamp used for imported data.
     private static final Date IMPORT_DATE = new Date(0);
@@ -42,6 +46,8 @@ public class ExportAuthDataToEventLog implements Process {
                 Entity eventLogEntity = EventUtils.createEventLogEntity(event, timestamp);
                 ds.put(eventLogEntity);
             }
+
+            System.out.println("amount = " + amount);
 
         }
     }
