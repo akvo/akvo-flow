@@ -42,7 +42,7 @@ public class ExportAuthDataToEventLog implements Process {
                     System.out.println("progress " + amount);
                 }
                 Map<String, Object> event = createEvent(entity, eventTypes, orgId);
-                Date timestamp = (Date) entity.getProperty(EventUtils.Prop.LAST_UPDATE_DATE_TIME);
+                Date timestamp = new Date();
                 Entity eventLogEntity = EventUtils.createEventLogEntity(event, timestamp);
                 ds.put(eventLogEntity);
             }
