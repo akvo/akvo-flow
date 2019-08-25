@@ -64,6 +64,10 @@ public class SurveyInstanceHandler {
             return null;
         }
 
+        return fromFormInstance(formInstance);
+    }
+
+    public static SurveyInstance fromFormInstance(FormInstance formInstance) {
         SurveyInstance si = new SurveyInstance();
 
         si.setUserID(1L);

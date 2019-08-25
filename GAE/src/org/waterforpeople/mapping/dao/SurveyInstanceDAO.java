@@ -92,7 +92,9 @@ public class SurveyInstanceDAO extends BaseDAO<SurveyInstance> {
             //in case app did not send SL name, we may get it from an old SL
             si.setSurveyedLocaleDisplayName(sl.getDisplayName());
         }
-        si.setDeviceFile(deviceFile);
+        if (deviceFile != null) {
+            si.setDeviceFile(deviceFile);
+        }
         si = save(si);// Save the SurveyInstance just once, ensuring the Key is set.
 
         final long surveyInstanceId = si.getKey().getId();
@@ -125,7 +127,7 @@ public class SurveyInstanceDAO extends BaseDAO<SurveyInstance> {
 
         // Now that QAS IDs are set, enqueue imagecheck tasks,
         // whereby the presence of an image in S3 will be checked.
-        if (!images.isEmpty()) {
+        if (!images.isEmpty() && deviceFile != null) {
             Device d = deviceDao.getDevice(deviceFile.getAndroidId(),
                     deviceFile.getImei(), deviceFile.getPhoneNumber());
             String deviceId = d == null ? "null" : String.valueOf(d.getKey().getId());
@@ -156,7 +158,9 @@ public class SurveyInstanceDAO extends BaseDAO<SurveyInstance> {
             }
         }
 
-        deviceFile.setSurveyInstanceId(si.getKey().getId());
+        if (deviceFile != null) {
+            deviceFile.setSurveyInstanceId(si.getKey().getId());
+        }
         DataProcessorRestServlet.queueSynchronizedSummaryUpdate(si, true);
 
         return si;
