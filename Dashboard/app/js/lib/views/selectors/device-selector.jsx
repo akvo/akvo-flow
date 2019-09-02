@@ -3,58 +3,64 @@ import React from 'react';
 import ChildOption from 'akvo-flow/components/ChildOption';
 
 require('akvo-flow/views/react-component');
-
+/* eslint-disable jsx-a11y/click-events-have-key-events */
 FLOW.DeviceGroupSelectorView = FLOW.ReactComponentView.extend({
   init() {
     this._super();
-    this.handleChange = this.handleChange.bind(this);
     this.comparator = this.comparator.bind(this);
-    this.deviceGroupSelector = this.deviceGroupSelector.bind(this);
     this.state = { value: 0 };
-    this.deviceGroups = [];
+    this.deviceGroupNames = {};
   },
 
   didInsertElement(...args) {
     this._super(...args);
+    let dGs = {};
     if (FLOW.deviceGroupControl.content.isLoaded) {
       FLOW.deviceGroupControl.get('content').forEach((item) => {
-        this.deviceGroups.push({
-          keyId: item.get('keyId'),
-          name: item.get('code'),
-        });
+        this.deviceGroupNames[item.get('keyId')] = item.get('code');
+        dGs[item.get('keyId')] = []; // initialize array of devices per group
       });
-      this.deviceGroupSelector(0);
-    }
-  },
-
-  deviceGroupSelector(deviceGroupId) {
-    if (!FLOW.deviceGroupControl.content.isLoaded) return;
-
-    let dgs = [{
-      keyId: 0,
-      name: Ember.String.loc('_select_device_group'),
-    }].concat(this.deviceGroups.sort(this.comparator));
-
-    if (deviceGroupId !== 0) {
-      const selectedDG = FLOW.deviceGroupControl.get('content')
-        .find(dg => dg.get('keyId') == deviceGroupId);
-      if (selectedDG) {
-        FLOW.selectedControl.set('selectedDeviceGroup', selectedDG);
+      if (FLOW.deviceControl.content.isLoaded) {
+        FLOW.deviceControl.get('content').forEach((device) => {
+          dGs[device.get('deviceGroup') ? device.get('deviceGroup') : 1].push({
+            id: device.get('keyId'),
+            name: device.get('deviceIdentifier'),
+          });
+        });
       }
+      this.reactRender(
+        <div className="formSelectorList">
+          {Object.keys(dGs).map(dgId => (
+            <div key={dgId}>
+              <div className="accordion" onClick={this.deviceGroupClick}>
+                {/* Object values accessible only by sqaure braces */}
+                {this.deviceGroupNames[dgId]}
+              </div>
+              <div className="panel">
+                <select multiple className="device-selector">
+                  {dGs[dgId].map(device => (
+                    <ChildOption key={device.id} name={device.name} value={device.id} />
+                  ))}
+                </select>
+              </div>
+            </div>
+          ))}
+        </div>
+      );
     }
-
-    this.reactRender(
-      <select value={this.state.value} onChange={this.handleChange}>
-        {dgs.map(dg => (
-          <ChildOption key={dg.keyId} name={dg.name} value={dg.keyId} />
-        ))}
-      </select>
-    );
   },
 
-  handleChange(event) {
-    if (event.target.value !== 0) {
-      this.deviceGroupSelector(event.target.value);
+  deviceGroupClick(e) {
+    /* Toggle between adding and removing the "active" class,
+    to highlight the button that controls the panel */
+    e.target.classList.toggle('active');
+
+    /* Toggle between hiding and showing the active panel */
+    let panel = e.target.nextElementSibling;
+    if (panel.style.display === 'block') {
+      panel.style.display = 'none';
+    } else {
+      panel.style.display = 'block';
     }
   },
 

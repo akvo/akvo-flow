@@ -160,6 +160,19 @@ FLOW.AssignmentEditView = FLOW.View.extend(observe({
   },
 
   addSelectedDevices() {
+    let deviceSelectors = document.getElementsByClassName('device-selector');
+    let selectedDevices = [];
+    FLOW.selectedControl.set('selectedDevices', []);
+    for (let i = 0; i < deviceSelectors.length; i++) {
+      Array.from(deviceSelectors[i].selectedOptions).map(option => option.value)
+        .forEach((deviceId) => {
+          let device = FLOW.deviceControl.get('content').find(d => d.get('keyId') == deviceId);
+          if (device) {
+            selectedDevices.push(device); // populate array of selected devices
+          }
+        });
+    }
+    FLOW.selectedControl.set('selectedDevices', selectedDevices);
     this.devicesPreview.pushObjects(FLOW.selectedControl.get('selectedDevices'));
     // delete duplicates
     this.set('devicesPreview', FLOW.ArrNoDupe(this.get('devicesPreview')));

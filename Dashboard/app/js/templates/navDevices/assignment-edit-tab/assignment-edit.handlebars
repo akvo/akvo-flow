@@ -101,24 +101,7 @@
             {{#unless FLOW.deviceGroupControl.isLoading}}
               {{view FLOW.DeviceGroupSelectorView}}
             {{/unless}}
-            <div class="formSelectorList">
-              <nav>
-                <ul>
-                  <li><a {{action selectAllDevices target="this"}}>{{t _select_all}}</a></li>
-                  <li><a {{action deselectAllDevices target="this"}}>{{t _deselect_all}}</a></li>
-                </ul>
-              </nav>
-            <label for="devices">{{t _select_devices}}:</label>
-            {{view Ember.Select
-             multiple=true
-             size=10
-          contentBinding="FLOW.devicesInGroupControl.arrangedContent"
-          selectionBinding="FLOW.selectedControl.selectedDevices"
-          optionLabelPath="content.combinedName"
-          optionValuePath="content.keyId"
-         id="devices"}}
-        <a {{action addSelectedDevices target="this"}} class="AddBtn">{{t _add_selected_devices}}</a>
-            </div>
+            <a {{action addSelectedDevices target="this"}} class="AddBtn">{{t _add_selected_devices}}</a>
           </fieldset>
         </div>
         <div class="formRightPanel">
