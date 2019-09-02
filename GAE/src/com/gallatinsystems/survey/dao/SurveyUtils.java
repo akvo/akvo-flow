@@ -100,14 +100,14 @@ public class SurveyUtils {
         return newSurvey;
     }
 
-    
+
     /**
      * @param sourceGroup
      * @param copyGroup
      * @param newSurveyId
      * @param qDependencyResolutionMap
      * @return
-     * 
+     *
      * copies a question group to another survey or within the same survey (which risks creating duplicated question ids).
      */
     public static QuestionGroup copyQuestionGroup(QuestionGroup sourceGroup,
@@ -167,7 +167,7 @@ public class SurveyUtils {
      * @param newSurveyId
      * @param idsInUse the set of all questionIds in use anywhere in the survey group
      * @return the new question
-     * 
+     *
      * copies one question, ensuring that it has a unique questionId
      */
     public static Question copyQuestion(Question source,
@@ -442,7 +442,7 @@ public class SurveyUtils {
             final String postString = "criteria="
                     + URLEncoder.encode(payload.toString(), "UTF-8");
 
-            log.log(Level.FINE, "POST string: " + postString);
+            log.log(Level.FINE, "POST URL: " + flowServiceURL + "POST string: " + postString);
 
             final String response = new String(HttpUtil.doPost(flowServiceURL
                     + "/" + action, postString), "UTF-8");
@@ -512,7 +512,7 @@ public class SurveyUtils {
         List<Survey> childForms = new SurveyDAO().listSurveysByGroup(surveyGroupId);
         surveyGroup.setChildForms(childForms);
     }
-    
+
     /**
      * to prevent collisions, it is useful to collect all ids already in use in a survey group
      * @param surveyId
@@ -521,7 +521,7 @@ public class SurveyUtils {
     public static Set<String> listQuestionIdsUsedInSurveyGroup(Long surveyId) {
         final SurveyDAO sDao = new SurveyDAO();
         final QuestionDao qDao = new QuestionDao();
-        Set<String> idsInUse = new HashSet<>();        
+        Set<String> idsInUse = new HashSet<>();
 
         Survey s0 = sDao.getById(surveyId);
         final Long surveyGroupId = s0.getSurveyGroupId();

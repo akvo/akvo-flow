@@ -16,25 +16,31 @@
 
 package org.akvo.flow.xml;
 
-import java.util.Arrays;
+import java.util.ArrayList;
 import java.util.TreeMap;
 
 import org.waterforpeople.mapping.app.gwt.client.survey.QuestionDto;
 import org.waterforpeople.mapping.app.gwt.client.survey.QuestionGroupDto;
+
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.dataformat.xml.annotation.JacksonXmlElementWrapper;
 import com.fasterxml.jackson.dataformat.xml.annotation.JacksonXmlProperty;
+import com.gallatinsystems.survey.domain.Question;
+import com.gallatinsystems.survey.domain.QuestionGroup;
 
 /* Class for working with XML like this:
 <questionGroup repeatable = "false">
     <heading>G2</heading>
-    <question>
-    </question>
+    <question>...</question>
+    <question>...</question>
 </questionGroup>
  */
+@JsonInclude(JsonInclude.Include.NON_NULL)
 public class XmlQuestionGroup {
 
     @JacksonXmlElementWrapper(localName = "question", useWrapping = false)
-    private XmlQuestion[] question;
+    private ArrayList<XmlQuestion> question;
 
     @JacksonXmlProperty(localName = "heading", isAttribute = false)
     private String heading;
@@ -42,23 +48,27 @@ public class XmlQuestionGroup {
     @JacksonXmlProperty(localName = "repeatable", isAttribute = true)
     private boolean repeatable;
 
-    private int order; //Not in XML; provided by parent
+    //TODO if we want to generate it: @JacksonXmlProperty(localName = "order", isAttribute = true)
+    @JsonIgnore
+    private int order; //Not currently in XML; provided by parent
 
     public XmlQuestionGroup() {
     }
 
     //Create a form XML object from a DTO
-    public XmlQuestionGroup(QuestionGroupDto dto) {
-        heading = dto.getCode();
+    public XmlQuestionGroup(QuestionGroup group) {
+        heading = group.getCode();
         if (heading == null){
-            heading = dto.getName();
+            heading = group.getName();
         }
-        repeatable = dto.getRepeatable();
-        //Now copy the question tree
-        question = new XmlQuestion[dto.getQuestionMap().size()];
-        int i = 0;
-        for (QuestionDto q: dto.getQuestionMap().values()) {
-            question[i++] = new XmlQuestion(q);
+        order = group.getOrder();
+        repeatable = Boolean.TRUE.equals(group.getRepeatable());
+        //Now copy the question tree, if any
+        if (group.getQuestionMap() != null) {
+            question = new ArrayList<XmlQuestion>();
+            for (Question q: group.getQuestionMap().values()) {
+                question.add(new XmlQuestion(q));
+            }
         }
     }
 
@@ -87,7 +97,8 @@ public class XmlQuestionGroup {
         return "questionGroup{" +
                 "order='" + order +
                 "',heading='" + heading +
-                "',questions=" + Arrays.toString(question) +
+                "',repeatable='" + repeatable +
+//                "',questions=" + question==null?"(null)":question.toString() +
                 "}";
     }
 
@@ -99,11 +110,11 @@ public class XmlQuestionGroup {
         this.heading = h;
     }
 
-    public XmlQuestion[] getQuestion() {
+    public ArrayList<XmlQuestion> getQuestion() {
         return question;
     }
 
-    public void setQuestion(XmlQuestion[] qs) {
+    public void setQuestion(ArrayList<XmlQuestion> qs) {
         this.question = qs;
     }
 

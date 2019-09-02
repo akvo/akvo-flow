@@ -17,6 +17,7 @@
 package com.gallatinsystems.survey.dao;
 
 import java.util.List;
+import java.util.TreeMap;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -29,6 +30,7 @@ import com.gallatinsystems.common.Constants;
 import com.gallatinsystems.framework.dao.BaseDAO;
 import com.gallatinsystems.framework.exceptions.IllegalDeletionException;
 import com.gallatinsystems.framework.servlet.PersistenceFilter;
+import com.gallatinsystems.survey.domain.QuestionGroup;
 import com.gallatinsystems.survey.domain.Survey;
 import com.gallatinsystems.survey.domain.SurveyContainer;
 import com.gallatinsystems.survey.domain.SurveyGroup;
@@ -68,16 +70,22 @@ public class SurveyDAO extends BaseDAO<Survey> {
     }
 
     /**
-     * loads a full survey object (whole object graph, including questions). This method can only be
-     * called reliably from a background task
+     * loads a full survey object (whole object graph, including questions). This method takes time;
+     * can only be called reliably from a background task.
+     * TODO: move to SurveyAssemblyServlet?
      *
      * @param surveyId
      * @return
      */
     public Survey loadFullSurvey(Long surveyId) {
         Survey survey = getById(surveyId);
-        survey.setQuestionGroupMap(questionGroupDao
-                .listQuestionGroupsBySurvey(survey.getKey().getId()));
+        TreeMap<Integer, QuestionGroup> qgMap = questionGroupDao.listQuestionGroupsBySurvey(surveyId);
+        survey.setQuestionGroupMap(qgMap);
+
+        QuestionDao questionDao = new QuestionDao();
+        for (QuestionGroup qg:qgMap.values()) {
+            qg.setQuestionMap(questionDao.listQuestionsByQuestionGroup(qg.getKey().getId(), true, false)); //Help and options, please
+        }
         return survey;
     }
 

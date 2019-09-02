@@ -16,9 +16,9 @@
 
 package org.akvo.flow.xml;
 
-import org.waterforpeople.mapping.app.gwt.client.survey.QuestionDto;
-import org.waterforpeople.mapping.app.gwt.client.survey.QuestionOptionDto;
+import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.dataformat.xml.annotation.JacksonXmlProperty;
+import com.gallatinsystems.survey.domain.Question;
 
 /*
  * Class for working with form XML like this:
@@ -27,7 +27,10 @@ import com.fasterxml.jackson.dataformat.xml.annotation.JacksonXmlProperty;
  * It serves as an extension of XmlQuestion for NUMBER questions.
  */
 
+@JsonInclude(JsonInclude.Include.NON_NULL)
 public class XmlValidationRule {
+
+    private static String NUMERIC_TYPE = "numeric";
 
     @JacksonXmlProperty(localName = "validationType", isAttribute = true)
     private String validationType;
@@ -36,21 +39,22 @@ public class XmlValidationRule {
     @JacksonXmlProperty(localName = "signed", isAttribute = true)
     private boolean signed;
     @JacksonXmlProperty(localName = "minVal", isAttribute = true)
-    private double minVal;
+    private Double minVal;
     @JacksonXmlProperty(localName = "maxVal", isAttribute = true)
-    private double maxVal;
+    private Double maxVal;
     @JacksonXmlProperty(localName = "maxLength", isAttribute = true)
     private int maxLength;
 
     public XmlValidationRule() {
     }
 
-    public XmlValidationRule(QuestionDto dto) {
-        validationType = "numeric";
-        signed = dto.getAllowSign();
-        allowDecimal = dto.getAllowDecimal();
-        maxVal = dto.getMaxVal(); //TODO: what if not set?
-        minVal = dto.getMinVal();
+    public XmlValidationRule(Question q) {
+        validationType = NUMERIC_TYPE; //The only type supported so far
+        signed = Boolean.TRUE.equals(q.getAllowSign());
+        allowDecimal = Boolean.TRUE.equals(q.getAllowDecimal());
+        maxVal = q.getMaxVal();
+        minVal = q.getMinVal();
+        //TODO: max length not in DTO, and would not apply to NUMERIC anyway
     }
 
     @Override public String toString() {
@@ -87,19 +91,19 @@ public class XmlValidationRule {
         this.signed = signed;
     }
 
-    public double getMinVal() {
+    public Double getMinVal() {
         return minVal;
     }
 
-    public void setMinVal(double minVal) {
+    public void setMinVal(Double minVal) {
         this.minVal = minVal;
     }
 
-    public double getMaxVal() {
+    public Double getMaxVal() {
         return maxVal;
     }
 
-    public void setMaxVal(double maxVal) {
+    public void setMaxVal(Double maxVal) {
         this.maxVal = maxVal;
     }
 

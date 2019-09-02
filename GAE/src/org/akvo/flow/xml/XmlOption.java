@@ -17,12 +17,13 @@
 package org.akvo.flow.xml;
 
 import java.util.ArrayList;
+import java.util.List;
 
 import org.waterforpeople.mapping.app.gwt.client.survey.QuestionOptionDto;
-import org.waterforpeople.mapping.app.gwt.client.survey.TranslationDto;
-
 import com.fasterxml.jackson.dataformat.xml.annotation.JacksonXmlElementWrapper;
 import com.fasterxml.jackson.dataformat.xml.annotation.JacksonXmlProperty;
+import com.gallatinsystems.survey.domain.QuestionOption;
+import com.gallatinsystems.survey.domain.Translation;
 
 /*
  * Class for working with form XML like this:
@@ -40,25 +41,24 @@ public class XmlOption {
     @JacksonXmlProperty(localName = "text", isAttribute = false)
     private String text;
     @JacksonXmlElementWrapper(localName = "altText", useWrapping = false)
-    private XmlAltText[] altText;
+    private List<XmlAltText> altText;
 
     public XmlOption() {
     }
 
-    public XmlOption(QuestionOptionDto dto) {
-        setCode(dto.getCode());
-        setText(dto.getText());
-        setValue(dto.getText());
+    public XmlOption(QuestionOption o) {
+        setCode(o.getCode());
+        setText(o.getText());
+        setValue(o.getText());
         //Translations
-        ArrayList<XmlAltText> oList = new ArrayList<>();
-        for (TranslationDto t: dto.getTranslationMap().values()) {
-            oList.add(new XmlAltText(t));
+        altText = new ArrayList<>();
+        for (Translation t: o.getTranslationMap().values()) {
+            altText.add(new XmlAltText(t));
         }
-        setAltText((XmlAltText[])oList.toArray());
     }
 
     /**
-     * @return a Dto object with relevant fields copied
+     * @return a DTO object with relevant fields copied
      */
     public QuestionOptionDto toDto() {
         QuestionOptionDto dto = new QuestionOptionDto();
@@ -100,11 +100,11 @@ public class XmlOption {
         this.text = text;
     }
 
-    public XmlAltText[] getAltText() {
+    public List<XmlAltText> getAltText() {
         return altText;
     }
 
-    public void setAltText(XmlAltText[] altText) {
+    public void setAltText(List<XmlAltText> altText) {
         this.altText = altText;
     }
 

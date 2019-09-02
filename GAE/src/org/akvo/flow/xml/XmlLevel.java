@@ -16,8 +16,6 @@
 
 package org.akvo.flow.xml;
 
-import org.waterforpeople.mapping.app.gwt.client.survey.QuestionOptionDto;
-
 import com.fasterxml.jackson.dataformat.xml.annotation.JacksonXmlProperty;
 
 /*
@@ -38,8 +36,8 @@ public class XmlLevel {
     public XmlLevel() {
     }
 
-    public XmlLevel(QuestionOptionDto dto) {
-        //TODO
+    public XmlLevel(String name) {
+        text = name;
     }
 
     public String getText() {

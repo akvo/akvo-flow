@@ -40,6 +40,9 @@ import com.google.appengine.api.taskqueue.Queue;
 import com.google.appengine.api.taskqueue.QueueFactory;
 import com.google.appengine.api.taskqueue.TaskOptions;
 import com.google.appengine.api.utils.SystemProperty;
+
+import org.akvo.flow.xml.PublishedForm;
+import org.akvo.flow.xml.XmlForm;
 import org.apache.commons.lang.StringEscapeUtils;
 import org.apache.log4j.Logger;
 import org.waterforpeople.mapping.app.web.dto.SurveyAssemblyRequest;
@@ -118,8 +121,9 @@ public class SurveyAssemblyServlet extends AbstractRestApiServlet {
             status.setValue("inProgress");
             statusDao.save(status);
 
-            //Need to keep this shorter than task queue limit (600s)
-            boolean ok = assembleSurveyOnePass(importReq.getSurveyId());
+            //Need to keep this shorter than task queue limit (600 seconds)
+//            boolean ok = assembleSurveyOnePass(importReq.getSurveyId());
+            boolean ok = assembleFormWithJackson(importReq.getSurveyId());
             //Clear caches
             List<Long> ids = new ArrayList<Long>();
             ids.add(id);
@@ -347,6 +351,66 @@ public class SurveyAssemblyServlet extends AbstractRestApiServlet {
             }
             log.info("Completed survey assembly for " + surveyId);
         }
+        return uploadOk;
+    }
+
+
+    /*
+     * NEW! Assembly through Jackson classes.
+     *
+     */
+    private boolean assembleFormWithJackson(Long surveyId) {
+        log.info("Starting Jackson assembly of form " + surveyId);
+        SurveyDAO surveyDao = new SurveyDAO();
+        Survey s = surveyDao.loadFullSurvey(surveyId); //TODO How complete?? Options? Cascade levels?
+
+        SurveyGroupDAO surveyGroupDao = new SurveyGroupDAO();
+        SurveyGroup sg = surveyGroupDao.getByKey(s.getSurveyGroupId());
+        Long transactionId = randomNumber.nextLong();
+        String lang = "en";
+        if (s != null && s.getDefaultLanguageCode() != null) {
+            lang = s.getDefaultLanguageCode();
+        }
+
+        XmlForm jacksonForm = new XmlForm(s);
+        String surveyXML;
+        try {
+            surveyXML = PublishedForm.generate(jacksonForm);
+        } catch (IOException e) {
+            log.error("Failed to convert form to XML: "+ e.getMessage());
+            return false;
+        }
+
+        boolean uploadOk = false;
+        log.info("Uploading " + surveyId);
+        UploadStatusContainer uc = uploadSurveyXML(
+                Long.toString(surveyId), //latest version in plain filename
+                Long.toString(surveyId) + "v" + s.getVersion(), //archive copy
+                surveyXML.toString());
+        Message message = new Message();
+        message.setActionAbout("surveyAssembly");
+        message.setObjectId(surveyId);
+        message.setObjectTitle(sg.getCode() + " / " + s.getName());
+        if (uc.getUploadedZip1() && uc.getUploadedZip2()) {
+            log.info("Finishing assembly of " + surveyId);
+            s.setStatus(Survey.Status.PUBLISHED);
+            surveyDao.save(s); //remember PUBLISHED status
+            String messageText = "Published.  Please check: " + uc.getUrl();
+            message.setShortMessage(messageText);
+            message.setTransactionUUID(transactionId.toString());
+            MessageDao messageDao = new MessageDao();
+            messageDao.save(message);
+            uploadOk = true;
+        } else {
+            String messageText = "Failed to publish: " + surveyId + "\n" + uc.getMessage();
+            message.setTransactionUUID(transactionId.toString());
+            message.setShortMessage(messageText);
+            MessageDao messageDao = new MessageDao();
+            messageDao.save(message);
+            log.warn("Failed to upload assembled survey id " + surveyId + "\n"
+                    + uc.getMessage());
+        }
+        log.info("Completed survey assembly for " + surveyId);
         return uploadOk;
     }
 

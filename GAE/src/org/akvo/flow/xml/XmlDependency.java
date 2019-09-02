@@ -40,9 +40,9 @@ public class XmlDependency {
 
     @Override public String toString() {
         return "dependency{" +
-                "question='" + question + '\'' +
-                "answerValue='" + answerValue + '\'' +
-                '}';
+                "question='" + question +
+                "',answerValue='" + answerValue +
+                "'}";
     }
 
 }

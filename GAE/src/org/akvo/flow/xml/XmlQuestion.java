@@ -23,10 +23,14 @@ import org.waterforpeople.mapping.app.gwt.client.survey.QuestionDto;
 import org.waterforpeople.mapping.app.gwt.client.survey.QuestionDto.QuestionType;
 import org.waterforpeople.mapping.app.gwt.client.survey.TranslationDto;
 
+import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.dataformat.xml.annotation.JacksonXmlElementWrapper;
 import com.fasterxml.jackson.dataformat.xml.annotation.JacksonXmlProperty;
+import com.gallatinsystems.survey.domain.Question;
+import com.gallatinsystems.survey.domain.Translation;
 
 
+@JsonInclude(JsonInclude.Include.NON_NULL)
 public class XmlQuestion {
 
     private static String FREE_TYPE = "free";
@@ -41,11 +45,11 @@ public class XmlQuestion {
     @JacksonXmlProperty(localName = "help", isAttribute = false)
     private XmlHelp help;
     @JacksonXmlElementWrapper(localName = "altText", useWrapping = false)
-    private XmlAltText[] altText;
+    private List<XmlAltText> altText;
     @JacksonXmlProperty(localName = "text", isAttribute = false)
     private String text;
     @JacksonXmlElementWrapper(localName = "levels", useWrapping = true)
-    private XmlLevel[] level;
+    private List<XmlLevel> level;
 
     @JacksonXmlProperty(localName = "id", isAttribute = true)
     private long id;
@@ -54,7 +58,7 @@ public class XmlQuestion {
     @JacksonXmlProperty(localName = "type", isAttribute = true)
     private String type;
     @JacksonXmlProperty(localName = "mandatory", isAttribute = true)
-    private boolean mandatory;
+    private Boolean mandatory;
     @JacksonXmlProperty(localName = "requireDoubleEntry", isAttribute = true)
     private boolean requireDoubleEntry;
     @JacksonXmlProperty(localName = "localeNameFlag", isAttribute = true)
@@ -68,55 +72,67 @@ public class XmlQuestion {
     @JacksonXmlProperty(localName = "cascadeResource", isAttribute = true)
     private String cascadeResource;
     @JacksonXmlProperty(localName = "allowPoints", isAttribute = true)
-    private boolean allowPoints;
+    private Boolean allowPoints;
     @JacksonXmlProperty(localName = "allowLine", isAttribute = true)
-    private boolean allowLine;
+    private Boolean allowLine;
     @JacksonXmlProperty(localName = "allowPolygon", isAttribute = true)
-    private boolean allowPolygon;
+    private Boolean allowPolygon;
 
 
     public XmlQuestion() {
     }
 
-    public XmlQuestion(QuestionDto dto) {
-        text = dto.getText();
-        mandatory = dto.getMandatoryFlag();
-        id = dto.getKeyId();
-        order = dto.getOrder();
-        localeNameFlag = dto.getLocaleNameFlag();
-        localeLocationFlag = dto.getLocaleLocationFlag();
-        locked = dto.getGeoLocked();
-        allowPoints = dto.getAllowPoints();
-        allowLine = dto.getAllowLine();
-        allowPolygon = dto.getAllowPolygon();
-        caddisflyResourceUuid = dto.getCaddisflyResourceUuid();
-        //TODO cascadeResource = dto.getCascadeResourceId();
-        help = new XmlHelp(dto.getTip()); //Only base language help currently supported?
-        //TODO: too simple; need to account for NUMBERs
-        switch (dto.getType()) {
+    public XmlQuestion(Question q) {
+        text = q.getText();
+        id = q.getKey().getId();
+        order = q.getOrder();
+        mandatory = q.getMandatoryFlag();
+        localeNameFlag = Boolean.TRUE == q.getLocaleNameFlag();
+        localeLocationFlag = Boolean.TRUE == q.getLocaleLocationFlag();
+        locked = Boolean.TRUE == q.getGeoLocked();
+        allowPoints = Boolean.TRUE == q.getAllowPoints();
+        allowLine = Boolean.TRUE == q.getAllowLine();
+        allowPolygon = Boolean.TRUE == q.getAllowPolygon();
+        caddisflyResourceUuid = q.getCaddisflyResourceUuid();
+        if (q.getCascadeResourceId() != null) {
+            cascadeResource = q.getCascadeResourceId().toString();
+        }
+        if (q.getTip() != null) {
+            help = new XmlHelp(q.getTip());
+        }
+
+        switch (q.getType()) {
             case NUMBER:
-                validationRule = new XmlValidationRule(dto);
-                type = "free";
+                validationRule = new XmlValidationRule(q);
+                type = FREE_TYPE;
                 break; //Could have done a fall-through here ;)
             case FREE_TEXT:
-                type = "free";
+                type = FREE_TYPE;
                 break;
             default:
-                type = dto.getType().toString();
+                type = q.getType().toString();
         }
-        if (dto.getDependentFlag()) {
-            dependency = new XmlDependency(dto.getDependentQuestionId(), dto.getDependentQuestionAnswer());
+        if (Boolean.TRUE == q.getDependentFlag()) {
+            dependency = new XmlDependency(q.getDependentQuestionId(), q.getDependentQuestionAnswer());
         }
-        //Translations
-        ArrayList<XmlAltText> oList = new ArrayList<>();
-        for (TranslationDto t: dto.getTranslationMap().values()) {
-            oList.add(new XmlAltText(t));
+        //Translations, if any
+        if (q.getTranslationMap() != null) {
+            altText = new ArrayList<>();
+            for (Translation t: q.getTranslationMap().values()) {
+                altText.add(new XmlAltText(t));
+            }
         }
-        setAltText((XmlAltText[])oList.toArray());
-        //TODO: many more fields
-
-        //Now copy the option container
-        options = new XmlOptions(dto.getOptionContainerDto());
+        //Cascade level names, if any
+        if (q.getLevelNames() != null) {
+            level = new ArrayList<>();
+            for (String text: q.getLevelNames()) {
+                level.add(new XmlLevel(text));
+            }
+        }
+        //Now copy any options into the transfer container
+        if (q.getQuestionOptionMap() != null) {
+            options = new XmlOptions(q);
+        }
     }
 
     /**
@@ -185,7 +201,7 @@ public class XmlQuestion {
                 "',allowLines='" + allowLine +
                 "',allowPolygon='" + allowPolygon +
                 "',options=" + ((options != null) ? options.toString() : "(null)") +
-                ",level='" + level +
+//                ",level='" + level +
                 "'}";
     }
 
@@ -214,11 +230,11 @@ public class XmlQuestion {
         this.type = type;
     }
 
-    public boolean getMandatory() {
+    public Boolean getMandatory() {
         return mandatory;
     }
 
-    public void setMandatory(boolean mandatory) {
+    public void setMandatory(Boolean mandatory) {
         this.mandatory = mandatory;
     }
 
@@ -230,11 +246,11 @@ public class XmlQuestion {
         this.localeNameFlag = localeNameFlag;
     }
 
-    public XmlAltText[] getAltText() {
+    public List<XmlAltText> getAltText() {
         return altText;
     }
 
-    public void setAltText(XmlAltText[] altText) {
+    public void setAltText(List<XmlAltText> altText) {
         this.altText = altText;
     }
 
@@ -294,27 +310,27 @@ public class XmlQuestion {
         this.locked = locked;
     }
 
-    public boolean getAllowPoints() {
+    public Boolean getAllowPoints() {
         return allowPoints;
     }
 
-    public void setAllowPoints(boolean allowPoints) {
+    public void setAllowPoints(Boolean allowPoints) {
         this.allowPoints = allowPoints;
     }
 
-    public boolean getAllowLine() {
+    public Boolean getAllowLine() {
         return allowLine;
     }
 
-    public void setAllowLine(boolean allowLine) {
+    public void setAllowLine(Boolean allowLine) {
         this.allowLine = allowLine;
     }
 
-    public boolean getAllowPolygon() {
+    public Boolean getAllowPolygon() {
         return allowPolygon;
     }
 
-    public void setAllowPolygon(boolean allowPolygon) {
+    public void setAllowPolygon(Boolean allowPolygon) {
         this.allowPolygon = allowPolygon;
     }
 
@@ -326,11 +342,11 @@ public class XmlQuestion {
         this.help = help;
     }
 
-    public XmlLevel[] getLevel() {
+    public List<XmlLevel> getLevel() {
         return level;
     }
 
-    public void setLevel(XmlLevel[] level) {
+    public void setLevel(List<XmlLevel> level) {
         this.level = level;
     }
 

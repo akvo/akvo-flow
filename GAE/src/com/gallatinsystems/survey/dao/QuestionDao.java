@@ -39,11 +39,13 @@ import javax.jdo.annotations.NotPersistent;
 import net.sf.jsr107cache.Cache;
 import net.sf.jsr107cache.CacheException;
 
+import org.waterforpeople.mapping.app.gwt.client.survey.QuestionDto;
 import org.waterforpeople.mapping.dao.QuestionAnswerStoreDao;
 
 import com.gallatinsystems.framework.dao.BaseDAO;
 import com.gallatinsystems.framework.exceptions.IllegalDeletionException;
 import com.gallatinsystems.framework.servlet.PersistenceFilter;
+import com.gallatinsystems.survey.domain.CascadeResource;
 import com.gallatinsystems.survey.domain.Question;
 import com.gallatinsystems.survey.domain.QuestionGroup;
 import com.gallatinsystems.survey.domain.QuestionHelpMedia;
@@ -182,6 +184,7 @@ public class QuestionDao extends BaseDAO<Question> {
      * @throws IllegalDeletionException
      */
     public void deleteQuestionsForGroup(Long questionGroupId) throws IllegalDeletionException {
+        //TODO why do we ask for details here??
         for (Question q : listQuestionsByQuestionGroup(questionGroupId, Boolean.TRUE).values()) {
             delete(q, Boolean.FALSE);
         }
@@ -209,7 +212,7 @@ public class QuestionDao extends BaseDAO<Question> {
         //We must know the order of the question groups
         QuestionGroupDao qgDao = new QuestionGroupDao();
         List<QuestionGroup> orderedGroupList = qgDao.listQuestionGroupBySurvey(surveyId);
-        
+
         Map<Long, List<Question>> idMap = new HashMap<>();
         for (QuestionGroup group : orderedGroupList) {
             List<Question> questions = new ArrayList<>();
@@ -221,7 +224,7 @@ public class QuestionDao extends BaseDAO<Question> {
         } else {
             unorderedQuestions = getBySurveyAndType(surveyId, type);
         }
-        
+
         // Sort them into their respective lists
         for (Question q:unorderedQuestions) {
             List<Question> myList = idMap.get(q.getQuestionGroupId());
@@ -243,7 +246,7 @@ public class QuestionDao extends BaseDAO<Question> {
             });
             orderedQuestionList.addAll(questions);
         }
-        
+
         return orderedQuestionList;
     }
 
@@ -598,7 +601,15 @@ public class QuestionDao extends BaseDAO<Question> {
                     }
                     q.setTranslationMap(translationDao.findTranslations(
                             ParentType.QUESTION_TEXT, q.getKey().getId()));
+                    //Cascade level names
+                    if (q.getType().equals(Question.Type.CASCADE) && q.getCascadeResourceId() != null) {
+                        CascadeResource cr = new CascadeResourceDao().getByKey(q.getCascadeResourceId());
+                        if (cr != null) {
+                            q.setLevelNames(cr.getLevelNames());
+                        }
+                    }
                 }
+
                 if (q.getOrder() == null) {
                     q.setOrder(qList.size() + 1); //Anything, temporarily, to make a useable list
                 } else if (allowSideEffects) {

@@ -17,7 +17,7 @@
 package org.akvo.flow.xml;
 
 import java.util.ArrayList;
-import java.util.Arrays;
+import java.util.List;
 
 import org.waterforpeople.mapping.app.gwt.client.survey.QuestionGroupDto;
 import org.waterforpeople.mapping.app.gwt.client.survey.SurveyDto;
@@ -25,13 +25,15 @@ import org.waterforpeople.mapping.app.gwt.client.survey.SurveyDto;
 import com.fasterxml.jackson.dataformat.xml.annotation.JacksonXmlElementWrapper;
 import com.fasterxml.jackson.dataformat.xml.annotation.JacksonXmlProperty;
 import com.fasterxml.jackson.dataformat.xml.annotation.JacksonXmlRootElement;
+import com.gallatinsystems.survey.domain.QuestionGroup;
+import com.gallatinsystems.survey.domain.Survey;
 
 
 @JacksonXmlRootElement(localName = "survey")
 public final class XmlForm {
 
     @JacksonXmlElementWrapper(localName = "questionGroup", useWrapping = false)
-    private XmlQuestionGroup[] questionGroup;
+    private List<XmlQuestionGroup> questionGroup;
 
     @JacksonXmlProperty(localName = "version", isAttribute = true)
     private String version;
@@ -57,22 +59,23 @@ public final class XmlForm {
     public XmlForm() {
     }
 
-    //Create a form XML object from a DTO
-    public XmlForm(SurveyDto dto) {
-        surveyId = dto.getKeyId();
-        surveyGroupId = dto.getSurveyGroupId();
+    //Create a form XML object from a form
+    public XmlForm(Survey form) {
+        surveyId = form.getKey().getId();
+        surveyGroupId = form.getSurveyGroupId();
         //TODO surveyGroupName = dto.getSurveyGroupName();
-        defaultLanguageCode = dto.getDefaultLanguageCode();
-        name = dto.getCode();
+        defaultLanguageCode = form.getDefaultLanguageCode();
+        name = form.getCode();
         if (name == null){
-            name = dto.getName();
+            name = form.getName();
         }
-        version = dto.getVersion();
-        //Now copy the tree of child objects
-        questionGroup = new XmlQuestionGroup[dto.getQuestionGroupList().size()];
-        int i = 0;
-        for (QuestionGroupDto g: dto.getQuestionGroupList()) {
-            questionGroup[i++] = new XmlQuestionGroup(g);
+        version = form.getVersion().toString();
+        //Now copy the tree of child objects (if any)
+        questionGroup = new ArrayList<>();//Having an empty list prevents a <questionGroup/> tag
+        if (form.getQuestionGroupMap() != null) {
+            for (QuestionGroup g: form.getQuestionGroupMap().values()) {
+                questionGroup.add(new XmlQuestionGroup(g));
+            }
         }
     }
 
@@ -86,7 +89,7 @@ public final class XmlForm {
         dto.setCode(name);
         dto.setVersion(version);
         if (questionGroup != null) {
-            ArrayList<QuestionGroupDto> gList = new ArrayList<>();
+            List<QuestionGroupDto> gList = new ArrayList<>();
             int i = 1;
             for (XmlQuestionGroup g : questionGroup) {
                 g.setOrder(i++);
@@ -107,16 +110,12 @@ public final class XmlForm {
         this.version = version;
     }
 
-    public XmlForm(XmlQuestionGroup[] questionGroups) {
-        this.questionGroup = questionGroups;
-    }
-
-    public XmlQuestionGroup[] getQuestionGroup() {
+    public List<XmlQuestionGroup> getQuestionGroup() {
         return questionGroup;
     }
 
-    public void setQuestionGroup(XmlQuestionGroup[] qgs) {
-        this.questionGroup = qgs;
+    public void setQuestionGroup(ArrayList<XmlQuestionGroup> qgl) {
+        this.questionGroup = qgl;
     }
 
     public String getName() {
@@ -169,7 +168,7 @@ public final class XmlForm {
 
     @Override public String toString() {
         return "Form{" +
-                "questionGroups=" + Arrays.toString(questionGroup) +
+                "questionGroups=" + questionGroup.toString() +
                 '}';
     }
 }

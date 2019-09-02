@@ -37,7 +37,7 @@ public class QuestionGroupDao extends BaseDAO<QuestionGroup> {
 
     /**
      * saves a question group and associates it with the survey specified
-     * 
+     *
      * @param item
      * @param surveyId
      * @return
@@ -52,7 +52,7 @@ public class QuestionGroupDao extends BaseDAO<QuestionGroup> {
 
     /**
      * Deletes all question groups associated with a survey
-     * 
+     *
      * @param surveyId
      * @throws IllegalDeletionException
      */
@@ -67,20 +67,19 @@ public class QuestionGroupDao extends BaseDAO<QuestionGroup> {
     }
 
     /**
-     * lists all question groups within a survey
-     * 
+     * lists all question groups within a survey.
+     * All groups will have a unique order field, even if datastore is messed up.
+     *
      * @param surveyId
      * @return
      */
-    public TreeMap<Integer, QuestionGroup> listQuestionGroupsBySurvey(
-            Long surveyId) {
-        List<QuestionGroup> groups = listByProperty("surveyId", surveyId,
-                "Long");
+    public TreeMap<Integer, QuestionGroup> listQuestionGroupsBySurvey(Long surveyId) {
+        List<QuestionGroup> groups = listByProperty("surveyId", surveyId, "Long");
         TreeMap<Integer, QuestionGroup> map = new TreeMap<Integer, QuestionGroup>();
         if (groups != null) {
             int i = 1;
             for (QuestionGroup group : groups) {
-                // TODO: Hack because we seem to have quesitongroups with same
+                // TODO: Hack because we seem to have questiongroups with same
                 // order key so put an arbitrary value there for now since it
                 // isn't used.
                 if (map.containsKey(group.getOrder())) {
@@ -98,7 +97,7 @@ public class QuestionGroupDao extends BaseDAO<QuestionGroup> {
 
     /**
      * lists all question groups by survey, ordered by the order field
-     * 
+     *
      * @param surveyId
      * @return
      */
@@ -109,7 +108,7 @@ public class QuestionGroupDao extends BaseDAO<QuestionGroup> {
 
     /**
      * gets a group by its code and survey id
-     * 
+     *
      * @param code
      * @param surveyId
      * @return
@@ -132,7 +131,7 @@ public class QuestionGroupDao extends BaseDAO<QuestionGroup> {
 
     /**
      * finds a group by code and path. Path is "surveyGroupName/surveyName"
-     * 
+     *
      * @param code
      * @param path
      * @return
@@ -154,7 +153,7 @@ public class QuestionGroupDao extends BaseDAO<QuestionGroup> {
 
     /**
      * Deletes a questionGroup
-     * 
+     *
      * @param group
      * @throws IllegalDeletionException
      */

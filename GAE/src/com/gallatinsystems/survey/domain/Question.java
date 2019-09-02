@@ -82,6 +82,9 @@ public class Question extends BaseDomain {
     private String referenceId;
     @NotPersistent
     private List<ScoringRule> scoringRules = null;
+    @NotPersistent
+    private List<String> levelNames = null; //Cascade levels
+
     /*
      * ID of the question from which this question was originally copied.
      * cannot be mapped or is it sourceId?
@@ -439,4 +442,13 @@ public class Question extends BaseDomain {
     public void setCaddisflyResourceUuid(String caddisflyResourceUuid) {
         this.caddisflyResourceUuid = caddisflyResourceUuid;
     }
+
+    public List<String> getLevelNames() {
+        return levelNames;
+    }
+
+    public void setLevelNames(List<String> levelNames) {
+        this.levelNames = levelNames;
+    }
+
 }
