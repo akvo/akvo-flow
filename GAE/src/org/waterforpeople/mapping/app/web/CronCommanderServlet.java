@@ -29,6 +29,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import org.akvo.flow.dao.ReportDao;
+import org.akvo.flow.dao.SurveyAssignmentDAO;
 import org.akvo.flow.domain.persistent.Report;
 import org.waterforpeople.mapping.app.web.dto.SurveyTaskRequest;
 import com.gallatinsystems.common.util.S3Util;
@@ -39,7 +40,6 @@ import com.gallatinsystems.device.domain.DeviceFileJobQueue;
 import com.gallatinsystems.device.domain.DeviceSurveyJobQueue;
 import com.gallatinsystems.notification.helper.NotificationHelper;
 import com.gallatinsystems.survey.dao.DeviceSurveyJobQueueDAO;
-import com.gallatinsystems.survey.dao.SurveyAssignmentDAO;
 import com.gallatinsystems.survey.dao.SurveyDAO;
 import com.gallatinsystems.survey.dao.SurveyTaskUtil;
 import com.google.appengine.api.datastore.Key;

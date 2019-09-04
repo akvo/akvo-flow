@@ -1,5 +1,5 @@
 /*
- *  Copyright (C) 2010-2012 Stichting Akvo (Akvo Foundation)
+ *  Copyright (C) 2010-2012,2019 Stichting Akvo (Akvo Foundation)
  *
  *  This file is part of Akvo FLOW.
  *
@@ -14,7 +14,7 @@
  *  The full license text can also be seen at <http://www.gnu.org/licenses/agpl.html>.
  */
 
-package org.waterforpeople.mapping.domain;
+package org.akvo.flow.domain.persistent;
 
 import java.util.ArrayList;
 import java.util.Date;
@@ -25,20 +25,28 @@ import javax.jdo.annotations.PersistenceCapable;
 import com.gallatinsystems.framework.domain.BaseDomain;
 
 /**
- * domain to store assignment of surveys to devices
- * 
- * @author Christopher Fagiani
+ * domain to store assignment of forms to devices
  */
+//TODO: could be renamed while referencing entities like this: @PersistenceCapable(table="SurveyAssignment")
 @PersistenceCapable
 public class SurveyAssignment extends BaseDomain {
 
     private static final long serialVersionUID = -2028880542041242779L;
-    private List<Long> surveyIds;
+    private Long surveyGroupId; //-> SurveyId
+    private List<Long> surveyIds; //-> FormIds
     private List<Long> deviceIds;
     private String name;
     private String language;
     private Date startDate;
     private Date endDate;
+
+    public Long getSurveyGroupId() {
+        return surveyGroupId;
+    }
+
+    public void setSurveyGroupId(Long surveyGroupId) {
+        this.surveyGroupId = surveyGroupId;
+    }
 
     public String getLanguage() {
         return language;
