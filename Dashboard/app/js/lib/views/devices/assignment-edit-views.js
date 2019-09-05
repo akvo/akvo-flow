@@ -44,7 +44,7 @@ FLOW.AssignmentEditView = FLOW.View.extend(observe({
     this._super();
     this.set('assignmentName', FLOW.selectedControl.selectedSurveyAssignment.get('name'));
     FLOW.selectedControl.set('selectedDevices', null);
-    FLOW.selectedControl.set('selectedSurveys', null);
+    FLOW.selectedControl.set('selectedSurveys', []);
     FLOW.selectedControl.set('selectedSurveyGroup', null);
     FLOW.selectedControl.set('selectedDeviceGroup', null);
     FLOW.surveyControl.set('content', null);
@@ -128,7 +128,7 @@ FLOW.AssignmentEditView = FLOW.View.extend(observe({
     });
     sa.set('devices', devices);
 
-    this.get('surveysPreview').forEach((item) => {
+    FLOW.selectedControl.get('selectedSurveys').forEach((item) => {
       surveys.push(item.get('keyId'));
     });
     sa.set('surveys', surveys);
