@@ -17,10 +17,10 @@ const Checkbox = ({
 );
 
 Checkbox.propTypes = {
-  type: PropTypes.string,
+  type: PropTypes.string.isRequired,
   name: PropTypes.string.isRequired,
-  checked: PropTypes.bool,
+  checked: PropTypes.bool.isRequired,
   onChange: PropTypes.func.isRequired,
-}
+};
 
 export default Checkbox;
