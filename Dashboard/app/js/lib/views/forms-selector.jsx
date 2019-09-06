@@ -44,17 +44,19 @@ FLOW.FormSelectorView = FLOW.ReactComponentView.extend(observe({
   renderFormsList() {
     this.reactRender(
       <div>
-        {Object.keys(this.forms).map(form => (
-          <label key={form}>
+        {Object.keys(this.forms).map(formId => (
+          <div key={formId}>
             <Checkbox
-              name={form.toString()}
+              /* id={formId} */
+              name={formId}
               onChange={this.handleChange}
-              checked={this.forms[form].checked}
+              checked={this.forms[formId].checked}
             />
-            {this.forms[form].name}
-          </label>
+            <label htmlFor={formId}>
+              {this.forms[formId].name}
+            </label>
+          </div>
         ))}
-        Forms list
       </div>
     );
   },
