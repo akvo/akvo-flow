@@ -1,52 +1,93 @@
 import React from 'react';
 
-import ChildOption from 'akvo-flow/components/ChildOption';
-
+import Checkbox from 'akvo-flow/components/Checkbox';
+/* eslint-disable jsx-a11y/label-has-for */
 require('akvo-flow/views/react-component');
 /* eslint-disable jsx-a11y/click-events-have-key-events */
 FLOW.DeviceGroupSelectorView = FLOW.ReactComponentView.extend({
   init() {
     this._super();
-    this.comparator = this.comparator.bind(this);
-    this.state = { value: 0 };
+    this.deviceGroups = {};
     this.deviceGroupNames = {};
+    this.handleChange = this.handleChange.bind(this);
+    this.deviceInAssignment = this.deviceInAssignment.bind(this);
+    this.renderDevices = this.renderDevices.bind(this);
   },
 
   didInsertElement(...args) {
     this._super(...args);
-    let dGs = {};
     if (FLOW.deviceGroupControl.content.isLoaded) {
       FLOW.deviceGroupControl.get('content').forEach((item) => {
         this.deviceGroupNames[item.get('keyId')] = item.get('code');
-        dGs[item.get('keyId')] = []; // initialize array of devices per group
+        this.deviceGroups[item.get('keyId')] = {}; // initialize array of devices per group
       });
       if (FLOW.deviceControl.content.isLoaded) {
+        FLOW.selectedControl.selectedSurveyAssignment.get('devices').forEach((deviceId) => {
+          // populate pre-selected devices
+          const device = FLOW.Device.find(deviceId);
+          if (device && device.get('keyId')) {
+            FLOW.selectedControl.selectedDevices.pushObject(device);
+          }
+        });
         FLOW.deviceControl.get('content').forEach((device) => {
-          dGs[device.get('deviceGroup') ? device.get('deviceGroup') : 1].push({
-            id: device.get('keyId'),
+          this.deviceGroups[device.get('deviceGroup') ? device.get('deviceGroup') : 1][device.get('keyId')] = {
             name: device.get('deviceIdentifier'),
-          });
+            checked: this.deviceInAssignment(device.get('keyId')),
+          };
         });
       }
-      this.reactRender(
-        <div className="formSelectorList">
-          {Object.keys(dGs).map(dgId => (
-            <div key={dgId}>
-              <div className="accordion" onClick={this.deviceGroupClick}>
-                {/* Object values accessible only by sqaure braces */}
-                {this.deviceGroupNames[dgId]}
-              </div>
-              <div className="panel">
-                <select multiple className="device-selector">
-                  {dGs[dgId].map(device => (
-                    <ChildOption key={device.id} name={device.name} value={device.id} />
-                  ))}
-                </select>
-              </div>
+      this.renderDevices();
+    }
+  },
+
+  renderDevices() {
+    this.reactRender(
+      <div className="formSelectorList">
+        {Object.keys(this.deviceGroups).map(dgId => (
+          <div key={dgId}>
+            <div className="accordion" onClick={this.deviceGroupClick}>
+              {/* Object values accessible only by sqaure braces */}
+              {this.deviceGroupNames[dgId]}
             </div>
-          ))}
-        </div>
-      );
+            <div className="panel">
+              {Object.keys(this.deviceGroups[dgId]).map(deviceId => (
+                <div key={deviceId}>
+                  <Checkbox
+                    id={deviceId}
+                    name={deviceId}
+                    onChange={this.handleChange}
+                    checked={this.deviceGroups[dgId][deviceId].checked}
+                  />
+                  <label htmlFor={deviceId}>
+                    {this.deviceGroups[dgId][deviceId].name}
+                  </label>
+                </div>
+              ))}
+            </div>
+          </div>
+        ))}
+      </div>
+    );
+  },
+
+  deviceInAssignment(deviceId) {
+    const devicesInAssignment = FLOW.selectedControl.selectedSurveyAssignment.get('devices');
+    return devicesInAssignment.indexOf(deviceId) > -1;
+  },
+
+  handleChange(e) {
+    const deviceId = e.target.name;
+    const clickedDevice = FLOW.deviceControl.get('content').find(device => device.get('keyId') == deviceId);
+    const groupId = clickedDevice && clickedDevice.get('deviceGroup') ? clickedDevice.get('deviceGroup') : 1;
+    const currentStatus = this.deviceGroups[groupId][deviceId].checked;
+    this.deviceGroups[groupId][deviceId].checked = !currentStatus;
+    this.renderDevices();
+    // add/remove device to/from assignment
+    if (this.deviceGroups[groupId][deviceId].checked) {
+      // push device to FLOW.selectedControl.selectedDevices
+      FLOW.selectedControl.selectedDevices.pushObject(FLOW.Device.find(deviceId));
+    } else {
+      FLOW.selectedControl.selectedDevices.removeObject(FLOW.Device.find(deviceId));
     }
   },
 

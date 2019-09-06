@@ -1337,7 +1337,6 @@ th.action {
   color: #444;
   cursor: pointer;
   padding: 18px;
-  width: 100%;
   text-align: left;
   border: none;
   outline: none;
@@ -1369,6 +1368,10 @@ th.action {
   content: "\2796"; /* Unicode character for "minus" sign (-) */
 }
 
+#assignSurveys .displayInline {
+    display: inline-block;
+    margin-right: 5px;
+}
 /* Survey Groups Menu Bar
 --------------------------------------------- */
 
