@@ -33,7 +33,6 @@ FLOW.AssignmentEditView = FLOW.View.extend(observe({
   'FLOW.router.navigationController.selected': 'detectChangeTab',
   'FLOW.router.devicesSubnavController.selected': 'detectChangeTab',
 }), {
-  devicesPreview: Ember.A([]),
   surveysPreview: Ember.A([]),
   assignmentName: null,
   language: null,
@@ -41,11 +40,10 @@ FLOW.AssignmentEditView = FLOW.View.extend(observe({
   init() {
     let startDate = null;
     let endDate = null;
-    const previewDevices = Ember.A([]);
     const previewSurveys = Ember.A([]);
     this._super();
     this.set('assignmentName', FLOW.selectedControl.selectedSurveyAssignment.get('name'));
-    FLOW.selectedControl.set('selectedDevices', null);
+    FLOW.selectedControl.set('selectedDevices', []);
     FLOW.selectedControl.set('selectedSurveys', null);
     FLOW.selectedControl.set('selectedSurveyGroup', null);
     FLOW.selectedControl.set('selectedDeviceGroup', null);
@@ -62,13 +60,6 @@ FLOW.AssignmentEditView = FLOW.View.extend(observe({
     FLOW.dateControl.set('toDate', FLOW.formatDate(endDate));
 
     this.set('language', FLOW.selectedControl.selectedSurveyAssignment.get('language'));
-
-    const deviceIds = Ember.A(FLOW.selectedControl.selectedSurveyAssignment.get('devices'));
-
-    deviceIds.forEach((item) => {
-      previewDevices.pushObjects(FLOW.store.find(FLOW.Device, item));
-    });
-    this.set('devicesPreview', previewDevices);
 
     const surveyIds = Ember.A(FLOW.selectedControl.selectedSurveyAssignment.get('surveys'));
 
@@ -134,7 +125,7 @@ FLOW.AssignmentEditView = FLOW.View.extend(observe({
     sa.set('startDate', startDateParse);
     sa.set('language', 'en');
 
-    this.get('devicesPreview').forEach((item) => {
+    FLOW.selectedControl.get('selectedDevices').forEach((item) => {
       devices.push(item.get('keyId'));
     });
     sa.set('devices', devices);
@@ -159,25 +150,6 @@ FLOW.AssignmentEditView = FLOW.View.extend(observe({
     FLOW.router.transitionTo('navDevices.assignSurveysOverview');
   },
 
-  addSelectedDevices() {
-    let deviceSelectors = document.getElementsByClassName('device-selector');
-    let selectedDevices = [];
-    FLOW.selectedControl.set('selectedDevices', []);
-    for (let i = 0; i < deviceSelectors.length; i++) {
-      Array.from(deviceSelectors[i].selectedOptions).map(option => option.value)
-        .forEach((deviceId) => {
-          let device = FLOW.deviceControl.get('content').find(d => d.get('keyId') == deviceId);
-          if (device) {
-            selectedDevices.push(device); // populate array of selected devices
-          }
-        });
-    }
-    FLOW.selectedControl.set('selectedDevices', selectedDevices);
-    this.devicesPreview.pushObjects(FLOW.selectedControl.get('selectedDevices'));
-    // delete duplicates
-    this.set('devicesPreview', FLOW.ArrNoDupe(this.get('devicesPreview')));
-  },
-
   addSelectedSurveys() {
     const sgName = FLOW.selectedControl.selectedSurveyGroup.get('code');
     FLOW.selectedControl.get('selectedSurveys').forEach((item) => {
@@ -186,18 +158,6 @@ FLOW.AssignmentEditView = FLOW.View.extend(observe({
     this.surveysPreview.pushObjects(FLOW.selectedControl.get('selectedSurveys'));
     // delete duplicates
     this.set('surveysPreview', FLOW.ArrNoDupe(this.get('surveysPreview')));
-  },
-
-  selectAllDevices() {
-    const selected = Ember.A([]);
-    FLOW.devicesInGroupControl.get('content').forEach((item) => {
-      selected.pushObject(item);
-    });
-    FLOW.selectedControl.set('selectedDevices', selected);
-  },
-
-  deselectAllDevices() {
-    FLOW.selectedControl.set('selectedDevices', []);
   },
 
   selectAllSurveys() {
@@ -222,21 +182,6 @@ FLOW.AssignmentEditView = FLOW.View.extend(observe({
 
   removeAllSurveys() {
     this.set('surveysPreview', Ember.A([]));
-  },
-
-  removeSingleDevice(event) {
-    const id = event.context.get('clientId');
-    const devicesPreview = this.get('devicesPreview');
-    for (let i = 0; i < devicesPreview.length; i++) {
-      if (devicesPreview.objectAt(i).clientId == id) {
-        devicesPreview.removeAt(i);
-      }
-    }
-    this.set('devicesPreview', devicesPreview);
-  },
-
-  removeAllDevices() {
-    this.set('devicesPreview', Ember.A([]));
   },
 
   validateAssignmentObserver() {

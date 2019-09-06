@@ -58,85 +58,20 @@
           </fieldset>
         </div>
         <div class="formRightPanel">
-          <fieldset id="surveyPreview" class="floats-in">
-            <h2>{{t _preview_survey_selection}}:</h2>
-            <div class="">
-              <!-- DEVICES TABLE-->
-              <table id="surveyPreviewList" class="previewList" >
-                <!-- TABLE HEADER-->
-                <thead>
-                  <tr>
-                    <th class="groupPreview">{{t _survey}}</th>
-                    <th class="surveyPreview">{{t _form}}</th>
-                    <th class="action"></th>
-                  </tr>
-                </thead>
-                <!-- TABLE BODY: MAIN CONTENT-->
-                <tbody>
-                  {{#each survey in view.surveysPreview}}
-                  <tr>
-                    <td class="groupPreview">{{survey.surveyGroupName}}</td>
-                    <td class="surveyPreview"{{survey.name}}</td>
-                    <td class="action"><a {{action "removeSingleSurvey" survey target="this"}} class="remove">{{t _remove}}</a></td>
-                  </tr>
-                  {{/each}}
-                </tbody>
-                <!-- TABLE FOOTER-->
-                <tfoot>
-                  <tr>
-                    <td colspan="7"><a {{action "removeAllSurveys" target="this"}}>{{t _clear_all}}</a></td>
-                  </tr>
-                </tfoot>
-              </table>
-            </div>
-          </fieldset>
-        </div>
-      </div>
-
-    <div class="fieldSetWrap makeWhite">
-        <div class="formLeftPanel">
           <fieldset id="devicesSelect" class="floats-in">
             <h2>03. {{t _select_devices}}:</h2>
             <label for="deviceGroup">{{t _select_device_group}}:</label>
             {{#unless FLOW.deviceGroupControl.isLoading}}
               {{view FLOW.DeviceGroupSelectorView}}
             {{/unless}}
-            <a {{action addSelectedDevices target="this"}} class="AddBtn">{{t _add_selected_devices}}</a>
           </fieldset>
         </div>
+      </div>
+
+    <div class="fieldSetWrap makeWhite">
+        <div class="formLeftPanel"></div>
         <div class="formRightPanel">
-          <fieldset id="devicesPreview" class="floats-in">
-            <h2>{{t _preview_device_selection}}:</h2>
-            <div class="">
-              <!-- DEVICES TABLE-->
-              <table id="devicePreviewList" class="previewList" >
-                <!-- TABLE HEADER-->
-                <thead>
-                  <tr>
-                    <th class="groupPreview">{{t _device_group}}</th>
-                    <th class="surveyPreview">{{t _device}}</th>
-                    <th class="action"></th>
-                  </tr>
-                </thead>
-                <!-- TABLE BODY: MAIN CONTENT-->
-                <tbody>
-                  {{#each device in view.devicesPreview}}
-                  <tr>
-                    <td class="deviceGroup">{{device.deviceGroupName}}</td>
-                    <td class="deviceId">{{device.combinedName}}</td>
-                    <td class="action"><a {{action "removeSingleDevice" device target="this"}} class="remove">{{t _remove}}</a></td>
-                  </tr>
-                  {{/each}}
-                </tbody>
-                <!-- TABLE FOOTER-->
-                <tfoot>
-                  <tr>
-                    <td colspan="7"><a {{action "removeAllDevices" target="this"}}>{{t _clear_all}}</a></td>
-                  </tr>
-                </tfoot>
-              </table>
-            </div>
-          </fieldset>
+          {{!-- Data points list will come here --}}
         </div>
       </div>
       <div class="menuConfirm">
