@@ -47,7 +47,7 @@ FLOW.FormSelectorView = FLOW.ReactComponentView.extend(observe({
         {Object.keys(this.forms).map(formId => (
           <div key={formId}>
             <Checkbox
-              /* id={formId} */
+              id={formId}
               name={formId}
               onChange={this.handleChange}
               checked={this.forms[formId].checked}
