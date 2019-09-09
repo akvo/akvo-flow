@@ -41,7 +41,7 @@ import com.google.appengine.api.datastore.KeyFactory;
 
 
 @Controller
-@RequestMapping("/datapoint_assignments")
+@RequestMapping("/data_point_assignments")
 public class DataPointAssignmentRestService {
 
     private DataPointAssignmentDao dataPointAssignmentDao = new DataPointAssignmentDao();
@@ -56,7 +56,7 @@ public class DataPointAssignmentRestService {
             results.add(marshallToDto(dpa));
         }
 
-        response.put("datapoint_assignments", results);
+        response.put("data_point_assignments", results);
         return response;
     }
 
@@ -72,7 +72,7 @@ public class DataPointAssignmentRestService {
                     "Datapoint Assignment with id: " + id + " not found");
         }
 
-        response.put("datapoint_assignment", marshallToDto(dpa));
+        response.put("data_point_assignment", marshallToDto(dpa));
         return response;
     }
 
@@ -117,7 +117,7 @@ public class DataPointAssignmentRestService {
         dataPointAssignmentDao.save(dpa);
 
         final HashMap<String, DataPointAssignmentDto> response = new HashMap<String, DataPointAssignmentDto>();
-        response.put("datapoint_assignment", marshallToDto(dpa));
+        response.put("data_point_assignment", marshallToDto(dpa));
 
         return response;
     }
@@ -134,7 +134,7 @@ public class DataPointAssignmentRestService {
         dataPointAssignmentDao.save(dpa); //fills in new key
 
         final HashMap<String, DataPointAssignmentDto> response = new HashMap<String, DataPointAssignmentDto>();
-        response.put("datapoint_assignment", marshallToDto(dpa));
+        response.put("data_point_assignment", marshallToDto(dpa));
         return response;
     }
 

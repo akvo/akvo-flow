@@ -27,6 +27,7 @@
     <bean name="/cascade_nodes" class="org.waterforpeople.mapping.app.web.rest.CascadeNodeRestService" lazy-init="true" />
     <bean name="/cascade_resources" class="org.waterforpeople.mapping.app.web.rest.CascadeResourceRestService" lazy-init="true" />
     <bean name="/data_point_approvals" class="org.waterforpeople.mapping.app.web.rest.DataPointApprovalRestService" lazy-init="true" />
+    <bean name="/data_point_assignments" class="org.akvo.flow.rest.DataPointAssignmentRestService" lazy-init="true" />
     <bean name="/device_groups" class="org.waterforpeople.mapping.app.web.rest.DeviceGroupRestService" lazy-init="true" />
     <bean name="/devices" class="org.waterforpeople.mapping.app.web.rest.DeviceRestService" lazy-init="true" />
     <bean name="/messages" class="org.waterforpeople.mapping.app.web.rest.MessageRestService" lazy-init="true" />
