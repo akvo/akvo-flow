@@ -1,9 +1,11 @@
 import React from 'react';
 
 import Checkbox from 'akvo-flow/components/Checkbox';
+/* eslint-disable jsx-a11y/label-has-associated-control */
 /* eslint-disable jsx-a11y/label-has-for */
-require('akvo-flow/views/react-component');
 /* eslint-disable jsx-a11y/click-events-have-key-events */
+require('akvo-flow/views/react-component');
+
 FLOW.DeviceGroupSelectorView = FLOW.ReactComponentView.extend({
   init() {
     this._super();

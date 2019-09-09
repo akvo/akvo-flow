@@ -38,22 +38,8 @@
               {{/unless}}
   			    </div>
             <div class="formSelectorList">
-                  <nav>
-                    <ul>
-                      <li><a {{action selectAllSurveys target="this"}}>{{t _select_all}}</a></li>
-                      <li><a {{action deselectAllSurveys target="this"}}>{{t _deselect_all}}</a></li>
-                    </ul>
-                  </nav>
-                  <label for="surveys">{{t _select_forms}}:</label>
-                 {{view Ember.Select
-                 multiple=true
-                 size=10
-              contentBinding="FLOW.surveyControl.publishedContent.arrangedContent"
-              selectionBinding="FLOW.selectedControl.selectedSurveys"
-              optionLabelPath="content.name"
-                id="surveys"
-              optionValuePath="content.keyId"}}
-            <a {{action addSelectedSurveys target="this"}}  class="AddBtn">{{t _add_selected_forms}}</a>
+              <label for="surveys">{{t _select_forms}}:</label>
+              {{view FLOW.FormSelectorView}}
             </div>
           </fieldset>
         </div>
