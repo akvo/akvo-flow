@@ -56,7 +56,7 @@ public class DataPointRestService {
             @RequestParam(value = "androidId", defaultValue = "") String androidId,
             @RequestParam(value = "phoneNumber", defaultValue = "") String phoneNumber,
             @RequestParam(value = "imei", defaultValue = "") String imei,
-            @RequestParam(value = "surveyId", defaultValue = "") Long surveyId, //proper Survey, not Form
+            @RequestParam(value = "surveyId", defaultValue = "") Long surveyId, //this is proper Survey, not Form
             @RequestParam(value = "identifier", defaultValue = "") String identifier,
             @RequestParam(value = "displayName", defaultValue = "") String displayName,
             @RequestParam(value = "since", defaultValue = "") String since) {

@@ -21,7 +21,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import org.akvo.flow.dao.SurveyAssignmentDAO;
 import org.akvo.flow.dao.SurveyAssignmentDao;
 import org.akvo.flow.domain.persistent.SurveyAssignment;
 import org.akvo.flow.rest.dto.SurveyAssignmentDto;
@@ -41,15 +40,10 @@ import com.gallatinsystems.common.Constants;
 import com.gallatinsystems.device.dao.DeviceDAO;
 import com.gallatinsystems.device.domain.Device;
 import com.gallatinsystems.device.domain.DeviceSurveyJobQueue;
-import com.gallatinsystems.framework.analytics.summarization.DataSummarizationRequest;
-import com.gallatinsystems.framework.domain.DataChangeRecord;
 import com.gallatinsystems.survey.dao.DeviceSurveyJobQueueDAO;
 import com.gallatinsystems.survey.dao.SurveyDAO;
 import com.gallatinsystems.survey.domain.Survey;
 import com.google.appengine.api.datastore.KeyFactory;
-import com.google.appengine.api.taskqueue.Queue;
-import com.google.appengine.api.taskqueue.QueueFactory;
-import com.google.appengine.api.taskqueue.TaskOptions;
 
 @Controller
 @RequestMapping("/survey_assignments")

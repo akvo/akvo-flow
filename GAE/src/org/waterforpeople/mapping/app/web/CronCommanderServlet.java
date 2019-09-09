@@ -29,7 +29,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import org.akvo.flow.dao.ReportDao;
-import org.akvo.flow.dao.SurveyAssignmentDAO;
+import org.akvo.flow.dao.SurveyAssignmentDao;
 import org.akvo.flow.domain.persistent.Report;
 import org.waterforpeople.mapping.app.web.dto.SurveyTaskRequest;
 import com.gallatinsystems.common.util.S3Util;
@@ -52,6 +52,7 @@ public class CronCommanderServlet extends HttpServlet {
     private static final long serialVersionUID = 2287175129835274533L;
     private static final Logger log = Logger.getLogger(CronCommanderServlet.class.getName());
 
+    @Override
     public void doGet(HttpServletRequest req, HttpServletResponse resp)
             throws IOException {
         String action = req.getParameter("action");
@@ -87,7 +88,7 @@ public class CronCommanderServlet extends HttpServlet {
         DeviceDAO deviceDao = new DeviceDAO();
         DeviceSurveyJobQueueDAO dsjqDao = new DeviceSurveyJobQueueDAO();
         DeviceFileJobQueueDAO dfjqDao = new DeviceFileJobQueueDAO();
-        SurveyAssignmentDAO saDao = new SurveyAssignmentDAO();
+        SurveyAssignmentDao saDao = new SurveyAssignmentDao();
         List<Device> deviceList = deviceDao.listAllWithBeaconBefore(deadline.getTime());
         log.info("Found " + deviceList.size() + " old Devices");
 
