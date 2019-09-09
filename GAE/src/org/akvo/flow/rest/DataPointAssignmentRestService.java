@@ -69,7 +69,7 @@ public class DataPointAssignmentRestService {
 
         if (dpa == null) {
             throw new ResourceNotFoundException(
-                    "Survey Assignment with id: " + id + " not found");
+                    "Datapoint Assignment with id: " + id + " not found");
         }
 
         response.put("datapoint_assignment", marshallToDto(dpa));
