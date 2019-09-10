@@ -72,7 +72,7 @@ public class SplitAssignments implements Process {
         for (Entity ass : pq.asIterable(FetchOptions.Builder.withChunkSize(500))) {
 
             boolean splitAllowed = true;
-            boolean forceSplit = false;
+            boolean forceSplit = true; //want to write the surveyId and new field names to all
             Long id = ass.getKey().getId();
             String name = (String) ass.getProperty("name");
             Map<Long, List<Long>> surveys = new HashMap<>(); //From survey ids to a list of forms
@@ -109,7 +109,7 @@ public class SplitAssignments implements Process {
             }
 
             if (splitAllowed && (forceSplit || surveys.size() > 1)) { //Must be split!
-                System.out.println("Splitting assignment " + id + " into " + surveys.size());
+                System.out.println("Rewriting assignment " + id + " in " + surveys.size() + " pieces");
 
                 int part = 0;
                 for (Entry<Long, List<Long>> entry: surveys.entrySet()) {
@@ -119,14 +119,17 @@ public class SplitAssignments implements Process {
                     if (part == 1) { //change it
                         System.out.println(" changing from " + ass);
                         ass.setProperty("name", name + " [" + nameOfSurvey.get(surveyId) + "]");
-                        ass.setProperty("surveyIds", formList);
+                        ass.removeProperty("surveyIds");
+                        ass.setProperty("formIds", formList);
+                        ass.setProperty("surveyId", surveyId);
                         System.out.println(" changing to " + ass);
                         toBeSaved.add(ass);
                     } else { // make a new one
                         Entity newAss = new Entity("SurveyAssignment");
                         newAss.setPropertiesFrom(ass);
                         newAss.setProperty("name", name + " [" + nameOfSurvey.get(surveyId) + "]");
-                        newAss.setProperty("surveyIds", formList);
+                        newAss.setProperty("formIds", formList);
+                        newAss.setProperty("surveyId", surveyId);
                         System.out.println(" creating " + newAss);
                         toBeCreated.add(newAss);
                     }
