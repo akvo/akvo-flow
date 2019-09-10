@@ -30,7 +30,7 @@ import com.gallatinsystems.framework.domain.BaseDomain;
 public class DataPointAssignment extends BaseDomain {
 
     private static final long serialVersionUID = -2028880542041242797L;
-    private Long surveyAssignmentId; //Which survey/form assignment this is part of
+    private Long surveyAssignmentId; //Which survey+form assignment this is part of
     private Long deviceId;
     private List<Long> dataPointIds;
 

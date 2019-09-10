@@ -23,16 +23,16 @@ import com.gallatinsystems.framework.gwt.dto.client.BaseDto;
 public class DataPointAssignmentDto extends BaseDto {
 
     private static final long serialVersionUID = -2656272454009393589L;
-    private Long formAssignmentId; //Which form assignment this is part of
+    private Long surveyAssignmentId; //Which survey assignment this is part of
     private Long deviceId;
     private List<Long> dataPointIds;
 
 
     public Long getFormAssignmentId() {
-        return formAssignmentId;
+        return surveyAssignmentId;
     }
     public void setFormAssignmentId(Long formAssignmentId) {
-        this.formAssignmentId = formAssignmentId;
+        this.surveyAssignmentId = formAssignmentId;
     }
     public Long getDeviceId() {
         return deviceId;
