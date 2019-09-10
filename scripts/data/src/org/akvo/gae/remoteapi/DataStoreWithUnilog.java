@@ -31,6 +31,7 @@ public class DataStoreWithUnilog implements DatastoreService {
     private static final Date MANUAL_FIX_START_TIME = new Date();
     private DatastoreService delegate;
     private String orgId;
+    private boolean newEventsPushedToEventQueue;
 
     DataStoreWithUnilog(DatastoreService delegate, String orgId) {
         this.delegate = delegate;
@@ -103,6 +104,7 @@ public class DataStoreWithUnilog implements DatastoreService {
                 .filter(Objects::nonNull)
                 .collect(Collectors.toList());
         if (!events.isEmpty()) {
+            newEventsPushedToEventQueue = true;
             delegate.put(events);
         }
     }
@@ -255,5 +257,9 @@ public class DataStoreWithUnilog implements DatastoreService {
     @Override
     public Collection<Transaction> getActiveTransactions() {
         return delegate.getActiveTransactions();
+    }
+
+    boolean hasToNotifyUnilog() {
+        return newEventsPushedToEventQueue;
     }
 }

@@ -16,7 +16,23 @@
 
 package org.akvo.gae.remoteapi;
 
+import java.io.IOException;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.Arrays;
+
+import javax.xml.parsers.DocumentBuilder;
+import javax.xml.parsers.DocumentBuilderFactory;
+import javax.xml.parsers.ParserConfigurationException;
+import javax.xml.xpath.XPath;
+import javax.xml.xpath.XPathConstants;
+import javax.xml.xpath.XPathExpression;
+import javax.xml.xpath.XPathExpressionException;
+import javax.xml.xpath.XPathFactory;
+
+import org.akvo.flow.events.EventLogger;
+import org.w3c.dom.Document;
+import org.xml.sax.SAXException;
 
 import com.google.appengine.api.datastore.DatastoreService;
 import com.google.appengine.api.datastore.DatastoreServiceFactory;
@@ -60,17 +76,21 @@ public class RemoteAPI {
 
         final RemoteApiInstaller installer = new RemoteApiInstaller();
 
+        String orgId = args[1];
         try {
             installer.install(options);
             String clz = className.indexOf(".") != -1 ? className : "org.akvo.gae.remoteapi."
                     + className;
             DatastoreService ds = DatastoreServiceFactory.getDatastoreService();
-            DatastoreService datastoreServiceWithUnilog = new DataStoreWithUnilog(ds, args[1]);
+            DataStoreWithUnilog datastoreServiceWithUnilog = new DataStoreWithUnilog(ds, orgId);
             Process p = (Process) Class.forName(clz).newInstance();
             if (isLocalDevelopmentServer) {
                 p.execute(datastoreServiceWithUnilog, Arrays.copyOfRange(args, 2, args.length));
             } else {
                 p.execute(datastoreServiceWithUnilog, Arrays.copyOfRange(args, 4, args.length));
+                if (datastoreServiceWithUnilog.hasToNotifyUnilog()) {
+                    notifyUnilog(orgId, serviceAccountPvk);
+                }
             }
             System.out.println("Done");
         } catch (Exception e) {
@@ -78,5 +98,36 @@ public class RemoteAPI {
         } finally {
             installer.uninstall();
         }
+    }
+
+    private static void notifyUnilog(String orgId, String serviceAccountPvk) {
+        try {
+            Path configFile = Paths.get(serviceAccountPvk).getParent().resolve("appengine-web.xml");
+            if (configFile.toFile().exists()) {
+                String unilogUrl = xpath(configFile, "string(//property[@name='eventNotification']/@value)");
+                if (unilogUrl != null && !unilogUrl.equals("")) {
+                    System.out.println("Notify Unilog on " + unilogUrl);
+                    EventLogger.sendNotificationToUnilog(unilogUrl, orgId);
+                }
+            }
+        } catch (ParserConfigurationException e) {
+            e.printStackTrace();
+        } catch (SAXException e) {
+            e.printStackTrace();
+        } catch (IOException e) {
+            e.printStackTrace();
+        } catch (XPathExpressionException e) {
+            e.printStackTrace();
+        }
+    }
+
+    private static String xpath(Path configFile, String xpathExpression) throws ParserConfigurationException, SAXException, IOException, XPathExpressionException {
+        DocumentBuilderFactory domFactory = DocumentBuilderFactory.newInstance();
+        domFactory.setNamespaceAware(false);
+        DocumentBuilder builder = domFactory.newDocumentBuilder();
+        Document doc = builder.parse(configFile.toFile());
+        XPath xpath = XPathFactory.newInstance().newXPath();
+        XPathExpression expr = xpath.compile(xpathExpression);
+        return (String) expr.evaluate(doc, XPathConstants.STRING);
     }
 }
