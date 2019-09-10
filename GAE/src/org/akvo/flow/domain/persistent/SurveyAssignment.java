@@ -32,20 +32,20 @@ import com.gallatinsystems.framework.domain.BaseDomain;
 public class SurveyAssignment extends BaseDomain {
 
     private static final long serialVersionUID = -2028880542041242779L;
-    private Long surveyGroupId; //-> SurveyId
-    private List<Long> surveyIds; //-> FormIds
+    private Long surveyId;
+    private List<Long> formIds;
     private List<Long> deviceIds;
     private String name;
     private String language;
     private Date startDate;
     private Date endDate;
 
-    public Long getSurveyGroupId() {
-        return surveyGroupId;
+    public Long getSurveyId() {
+        return surveyId;
     }
 
-    public void setSurveyGroupId(Long surveyGroupId) {
-        this.surveyGroupId = surveyGroupId;
+    public void setSurveyId(Long surveyId) {
+        this.surveyId = surveyId;
     }
 
     public String getLanguage() {
@@ -80,12 +80,12 @@ public class SurveyAssignment extends BaseDomain {
         this.endDate = endDate;
     }
 
-    public List<Long> getSurveyIds() {
-        return surveyIds;
+    public List<Long> getFormIds() {
+        return formIds;
     }
 
-    public void setSurveyIds(List<Long> surveyIds) {
-        this.surveyIds = surveyIds;
+    public void setFormIds(List<Long> formIds) {
+        this.formIds = formIds;
     }
 
     public List<Long> getDeviceIds() {
@@ -96,10 +96,10 @@ public class SurveyAssignment extends BaseDomain {
         this.deviceIds = deviceIds;
     }
 
-    public void addSurvey(Long surveyId) {
-        if (surveyIds == null)
-            surveyIds = new ArrayList<Long>();
-        surveyIds.add(surveyId);
+    public void addForm(Long formId) {
+        if (formIds == null)
+            formIds = new ArrayList<Long>();
+        formIds.add(formId);
     }
 
 }

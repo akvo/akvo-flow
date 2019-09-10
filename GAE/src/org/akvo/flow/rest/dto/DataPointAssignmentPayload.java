@@ -22,13 +22,13 @@ public class DataPointAssignmentPayload implements Serializable {
 
     private static final long serialVersionUID = -4133374456777431202L;
 
-    private DataPointAssignmentDto datapoint_assignment; //Not camelCaps
+    private DataPointAssignmentDto data_point_assignment; //Not camelCaps
 
     public DataPointAssignmentDto getDatapoint_assignment() {
-        return datapoint_assignment;
+        return data_point_assignment;
     }
 
     public void setDatapoint_assignment(DataPointAssignmentDto dataPointAssignment) {
-        this.datapoint_assignment = dataPointAssignment;
+        this.data_point_assignment = dataPointAssignment;
     }
 }

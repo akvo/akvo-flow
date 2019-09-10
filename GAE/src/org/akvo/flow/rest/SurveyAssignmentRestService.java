@@ -162,8 +162,8 @@ public class SurveyAssignmentRestService {
         if (sa.getKey() != null) {
             dto.setKeyId(sa.getKey().getId());
         }
-        dto.setDevices(sa.getDeviceIds());
-        dto.setSurveys(sa.getSurveyIds());
+        dto.setDeviceIds(sa.getDeviceIds());
+        dto.setFormIds(sa.getFormIds());
 
         return dto;
     }
@@ -175,8 +175,8 @@ public class SurveyAssignmentRestService {
         if (dto.getKeyId() != null) {
             sa.setKey(KeyFactory.createKey("SurveyAssignment", dto.getKeyId()));
         }
-        sa.setDeviceIds(dto.getDevices());
-        sa.setSurveyIds(dto.getSurveys());
+        sa.setDeviceIds(dto.getDeviceIds());
+        sa.setFormIds(dto.getFormIds());
 
         return sa;
     }
@@ -191,7 +191,7 @@ public class SurveyAssignmentRestService {
      */
     private List<DeviceSurveyJobQueue> generateDeviceSurveyJobQueueItems(SurveyAssignment assignment) {
         List<DeviceSurveyJobQueue> deviceSurveyJobQueues = new ArrayList<>();
-        List<Survey> forms = surveyDao.listByKeys(assignment.getSurveyIds());
+        List<Survey> forms = surveyDao.listByKeys(assignment.getFormIds());
         List<Device> devices = deviceDao.listByKeys(assignment.getDeviceIds());
 
         for (Survey form : forms) {

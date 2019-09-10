@@ -25,36 +25,36 @@ public class SurveyAssignmentDto extends BaseDto {
 
     private static final long serialVersionUID = -2656272454003993589L;
 
-    private Long surveyGroupId; //-> SurveyId
+    private Long surveyId;
     private Date startDate;
     private Date endDate;
     private String name;
     private String language;
-    private List<Long> surveys; //-> forms
-    private List<Long> devices;
+    private List<Long> formIds;
+    private List<Long> deviceIds;
 
-    public Long getSurveyGroupId() {
-        return surveyGroupId;
+    public Long getSurveyId() {
+        return surveyId;
     }
 
-    public void setSurveyGroupId(Long surveyGroupId) {
-        this.surveyGroupId = surveyGroupId;
+    public void setSurveyId(Long surveyId) {
+        this.surveyId = surveyId;
     }
 
-    public List<Long> getSurveys() {
-        return surveys;
+    public List<Long> getFormIds() {
+        return formIds;
     }
 
-    public void setSurveys(List<Long> surveyIds) {
-        this.surveys = surveyIds;
+    public void setFormIds(List<Long> formIds) {
+        this.formIds = formIds;
     }
 
-    public List<Long> getDevices() {
-        return devices;
+    public List<Long> getDeviceIds() {
+        return deviceIds;
     }
 
-    public void setDevices(List<Long> deviceIds) {
-        this.devices = deviceIds;
+    public void setDeviceIds(List<Long> deviceIds) {
+        this.deviceIds = deviceIds;
     }
 
     public Date getStartDate() {
