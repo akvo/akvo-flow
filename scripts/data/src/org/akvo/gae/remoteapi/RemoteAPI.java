@@ -65,11 +65,12 @@ public class RemoteAPI {
             String clz = className.indexOf(".") != -1 ? className : "org.akvo.gae.remoteapi."
                     + className;
             DatastoreService ds = DatastoreServiceFactory.getDatastoreService();
+            DatastoreService datastoreServiceWithUnilog = new DataStoreWithUnilog(ds, args[1]);
             Process p = (Process) Class.forName(clz).newInstance();
             if (isLocalDevelopmentServer) {
-                p.execute(ds, Arrays.copyOfRange(args, 2, args.length));
+                p.execute(datastoreServiceWithUnilog, Arrays.copyOfRange(args, 2, args.length));
             } else {
-                p.execute(ds, Arrays.copyOfRange(args, 4, args.length));
+                p.execute(datastoreServiceWithUnilog, Arrays.copyOfRange(args, 4, args.length));
             }
             System.out.println("Done");
         } catch (Exception e) {
