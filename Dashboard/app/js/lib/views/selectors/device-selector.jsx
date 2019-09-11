@@ -48,7 +48,7 @@ FLOW.DeviceGroupSelectorView = FLOW.ReactComponentView.extend({
         {Object.keys(this.deviceGroups).map(dgId => (
           <div key={dgId}>
             <div className="accordion" onClick={this.deviceGroupClick}>
-              {/* Object values accessible only by sqaure braces */}
+              {/* Object values accessible only by square braces */}
               {this.deviceGroupNames[dgId]}
             </div>
             <div className="panel">
