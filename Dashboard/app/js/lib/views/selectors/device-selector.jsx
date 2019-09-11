@@ -44,7 +44,7 @@ FLOW.DeviceGroupSelectorView = FLOW.ReactComponentView.extend({
 
   renderDevices() {
     this.reactRender(
-      <div className="formSelectorList">
+      <div>
         {Object.keys(this.deviceGroups).map(dgId => (
           <div key={dgId}>
             <div className="accordion" onClick={this.deviceGroupClick}>
@@ -77,8 +77,8 @@ FLOW.DeviceGroupSelectorView = FLOW.ReactComponentView.extend({
     return devicesInAssignment.indexOf(deviceId) > -1;
   },
 
-  handleChange(e) {
-    const deviceId = e.target.name;
+  handleChange(event) {
+    const deviceId = event.target.name;
     const clickedDevice = FLOW.deviceControl.get('content').find(device => device.get('keyId') == deviceId);
     const groupId = clickedDevice && clickedDevice.get('deviceGroup') ? clickedDevice.get('deviceGroup') : 1;
     const currentStatus = this.deviceGroups[groupId][deviceId].checked;
@@ -93,13 +93,13 @@ FLOW.DeviceGroupSelectorView = FLOW.ReactComponentView.extend({
     }
   },
 
-  deviceGroupClick(e) {
+  deviceGroupClick(event) {
     /* Toggle between adding and removing the "active" class,
     to highlight the button that controls the panel */
-    e.target.classList.toggle('active');
+    event.target.classList.toggle('active');
 
     /* Toggle between hiding and showing the active panel */
-    let panel = e.target.nextElementSibling;
+    let panel = event.target.nextElementSibling;
     if (panel.style.display === 'block') {
       panel.style.display = 'none';
     } else {
