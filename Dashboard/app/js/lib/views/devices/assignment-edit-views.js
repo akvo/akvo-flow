@@ -33,17 +33,15 @@ FLOW.AssignmentEditView = FLOW.View.extend(observe({
   'FLOW.router.navigationController.selected': 'detectChangeTab',
   'FLOW.router.devicesSubnavController.selected': 'detectChangeTab',
 }), {
-  devicesPreview: Ember.A([]),
   assignmentName: null,
   language: null,
 
   init() {
     let startDate = null;
     let endDate = null;
-    const previewDevices = Ember.A([]);
     this._super();
     this.set('assignmentName', FLOW.selectedControl.selectedSurveyAssignment.get('name'));
-    FLOW.selectedControl.set('selectedDevices', null);
+    FLOW.selectedControl.set('selectedDevices', []);
     FLOW.selectedControl.set('selectedSurveys', []);
     FLOW.selectedControl.set('selectedSurveyGroup', null);
     FLOW.selectedControl.set('selectedDeviceGroup', null);
@@ -60,13 +58,6 @@ FLOW.AssignmentEditView = FLOW.View.extend(observe({
     FLOW.dateControl.set('toDate', FLOW.formatDate(endDate));
 
     this.set('language', FLOW.selectedControl.selectedSurveyAssignment.get('language'));
-
-    const deviceIds = Ember.A(FLOW.selectedControl.selectedSurveyAssignment.get('devices'));
-
-    deviceIds.forEach((item) => {
-      previewDevices.pushObjects(FLOW.store.find(FLOW.Device, item));
-    });
-    this.set('devicesPreview', previewDevices);
   },
 
   detectChangeTab() {
@@ -123,7 +114,7 @@ FLOW.AssignmentEditView = FLOW.View.extend(observe({
     sa.set('startDate', startDateParse);
     sa.set('language', 'en');
 
-    this.get('devicesPreview').forEach((item) => {
+    FLOW.selectedControl.get('selectedDevices').forEach((item) => {
       devices.push(item.get('keyId'));
     });
     sa.set('devices', devices);
@@ -146,39 +137,6 @@ FLOW.AssignmentEditView = FLOW.View.extend(observe({
     }
     FLOW.selectedControl.set('selectedSurveyAssignment', null);
     FLOW.router.transitionTo('navDevices.assignSurveysOverview');
-  },
-
-  addSelectedDevices() {
-    this.devicesPreview.pushObjects(FLOW.selectedControl.get('selectedDevices'));
-    // delete duplicates
-    this.set('devicesPreview', FLOW.ArrNoDupe(this.get('devicesPreview')));
-  },
-
-  selectAllDevices() {
-    const selected = Ember.A([]);
-    FLOW.devicesInGroupControl.get('content').forEach((item) => {
-      selected.pushObject(item);
-    });
-    FLOW.selectedControl.set('selectedDevices', selected);
-  },
-
-  deselectAllDevices() {
-    FLOW.selectedControl.set('selectedDevices', []);
-  },
-
-  removeSingleDevice(event) {
-    const id = event.context.get('clientId');
-    const devicesPreview = this.get('devicesPreview');
-    for (let i = 0; i < devicesPreview.length; i++) {
-      if (devicesPreview.objectAt(i).clientId == id) {
-        devicesPreview.removeAt(i);
-      }
-    }
-    this.set('devicesPreview', devicesPreview);
-  },
-
-  removeAllDevices() {
-    this.set('devicesPreview', Ember.A([]));
   },
 
   validateAssignmentObserver() {

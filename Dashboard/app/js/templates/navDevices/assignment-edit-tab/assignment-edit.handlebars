@@ -44,77 +44,20 @@
           </fieldset>
         </div>
         <div class="formRightPanel">
+          <fieldset id="devicesSelect" class="floats-in">
+            <h2>03. {{t _select_devices}}:</h2>
+            <label for="deviceGroup">{{t _select_device_group}}:</label>
+            {{#unless FLOW.deviceGroupControl.isLoading}}
+              {{view FLOW.DeviceGroupSelectorView}}
+            {{/unless}}
+          </fieldset>
         </div>
       </div>
 
     <div class="fieldSetWrap makeWhite">
-        <div class="formLeftPanel">
-          <fieldset id="devicesSelect" class="floats-in">
-            <h2>03. {{t _select_devices}}:</h2>
-            <div class="">
-            <label for="deviceGroup">{{t _select_device_group}}:</label>
-            {{view Ember.Select
-        contentBinding="FLOW.deviceGroupControl.content"
-        selectionBinding="FLOW.selectedControl.selectedDeviceGroup"
-        optionLabelPath="content.code"
-        optionValuePath="content.keyId"
-        id="deviceGroup"
-        prompt=""
-        promptBinding="Ember.STRINGS._select_device_group"}}
-            </div>
-            <div class="formSelectorList">
-              <nav>
-                <ul>
-                  <li><a {{action selectAllDevices target="this"}}>{{t _select_all}}</a></li>
-                  <li><a {{action deselectAllDevices target="this"}}>{{t _deselect_all}}</a></li>
-                </ul>
-              </nav>
-            <label for="devices">{{t _select_devices}}:</label>
-            {{view Ember.Select
-             multiple=true
-             size=10
-          contentBinding="FLOW.devicesInGroupControl.arrangedContent"
-          selectionBinding="FLOW.selectedControl.selectedDevices"
-          optionLabelPath="content.combinedName"
-          optionValuePath="content.keyId"
-         id="devices"}}
-        <a {{action addSelectedDevices target="this"}} class="AddBtn">{{t _add_selected_devices}}</a>
-            </div>
-          </fieldset>
-        </div>
+        <div class="formLeftPanel"></div>
         <div class="formRightPanel">
-          <fieldset id="devicesPreview" class="floats-in">
-            <h2>{{t _preview_device_selection}}:</h2>
-            <div class="">
-              <!-- DEVICES TABLE-->
-              <table id="devicePreviewList" class="previewList" >
-                <!-- TABLE HEADER-->
-                <thead>
-                  <tr>
-                    <th class="groupPreview">{{t _device_group}}</th>
-                    <th class="surveyPreview">{{t _device}}</th>
-                    <th class="action"></th>
-                  </tr>
-                </thead>
-                <!-- TABLE BODY: MAIN CONTENT-->
-                <tbody>
-                  {{#each device in view.devicesPreview}}
-                  <tr>
-                    <td class="deviceGroup">{{device.deviceGroupName}}</td>
-                    <td class="deviceId">{{device.combinedName}}</td>
-                    <td class="action"><a {{action "removeSingleDevice" device target="this"}} class="remove">{{t _remove}}</a></td>
-                  </tr>
-                  {{/each}}
-                </tbody>
-                <!-- TABLE FOOTER-->
-                <tfoot>
-                  <tr>
-                    <td colspan="7"><a {{action "removeAllDevices" target="this"}}>{{t _clear_all}}</a></td>
-                  </tr>
-                </tfoot>
-              </table>
-            </div>
-          </fieldset>
+          {{!-- Data points list will come here --}}
         </div>
       </div>
       <div class="menuConfirm">

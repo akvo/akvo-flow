@@ -1,6 +1,6 @@
 import React from 'react';
 import Checkbox from 'akvo-flow/components/Checkbox';
-import observe from '../mixins/observe';
+import observe from '../../mixins/observe';
 /* eslint-disable jsx-a11y/label-has-associated-control, jsx-a11y/label-has-for */
 require('akvo-flow/views/react-component');
 
@@ -47,7 +47,7 @@ FLOW.FormSelectorView = FLOW.ReactComponentView.extend(observe({
         {Object.keys(this.forms).map(formId => (
           <div key={formId}>
             <Checkbox
-              /* id={formId} */
+              id={formId}
               name={formId}
               onChange={this.handleChange}
               checked={this.forms[formId].checked}
