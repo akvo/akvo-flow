@@ -45,6 +45,8 @@
         "react/no-unused-prop-types": 0,
         "react/no-multi-comp": 0,
         "react/prefer-stateless-function": 0,
+        "react/jsx-indent": [1, 2],
+        "indent": [1, 2],
         "object-shorthand": 1,
         "prefer-arrow-callback": 1,
         "consistent-return": 1,
