@@ -37,8 +37,8 @@ public class DataPointAssignmentDao extends BaseDAO<DataPointAssignment> {
         super(DataPointAssignment.class);
     }
 
-    public List<DataPointAssignment> listBySurveyAssignment(Long surveyId) {
-        return listByProperty("surveyAssignmentId", surveyId, "Long");
+    public List<DataPointAssignment> listBySurveyAssignment(Long surveyAssignmentId) {
+        return listByProperty("surveyAssignmentId", surveyAssignmentId, "Long");
     }
 
     public List<DataPointAssignment> listByDevice(Long deviceId) {
