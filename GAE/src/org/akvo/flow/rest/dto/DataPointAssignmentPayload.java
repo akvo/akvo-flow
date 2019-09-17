@@ -24,11 +24,11 @@ public class DataPointAssignmentPayload implements Serializable {
 
     private DataPointAssignmentDto data_point_assignment; //Not camelCaps
 
-    public DataPointAssignmentDto getDatapoint_assignment() {
+    public DataPointAssignmentDto getData_point_assignment() {
         return data_point_assignment;
     }
 
-    public void setDatapoint_assignment(DataPointAssignmentDto dataPointAssignment) {
+    public void setData_point_assignment(DataPointAssignmentDto dataPointAssignment) {
         this.data_point_assignment = dataPointAssignment;
     }
 }

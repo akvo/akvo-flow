@@ -34,12 +34,10 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
-import org.waterforpeople.mapping.app.web.dto.ApprovalStepDTO;
 import org.waterforpeople.mapping.app.web.rest.ResourceNotFoundException;
 import org.waterforpeople.mapping.app.web.rest.dto.RestStatusDto;
 
 import com.gallatinsystems.common.Constants;
-import com.gallatinsystems.survey.domain.ApprovalStep;
 import com.google.appengine.api.datastore.KeyFactory;
 
 
@@ -117,7 +115,7 @@ public class DataPointAssignmentRestService {
             @RequestBody
             DataPointAssignmentPayload payload) {
 
-        final DataPointAssignmentDto dto = payload.getDatapoint_assignment();
+        final DataPointAssignmentDto dto = payload.getData_point_assignment();
         if (!id.equals(dto.getKeyId())) {
             throw new HttpMessageNotReadableException("Ids don't match: " + id
                     + " <> " + dto.getKeyId());
@@ -143,7 +141,7 @@ public class DataPointAssignmentRestService {
             @RequestBody
             DataPointAssignmentPayload payload) {
 
-        final DataPointAssignmentDto dto = payload.getDatapoint_assignment();
+        final DataPointAssignmentDto dto = payload.getData_point_assignment();
         final DataPointAssignment dpa  = marshallToDomain(dto);
 
         dataPointAssignmentDao.save(dpa); //fills in new key
