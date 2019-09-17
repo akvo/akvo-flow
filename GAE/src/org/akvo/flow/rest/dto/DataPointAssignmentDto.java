@@ -28,11 +28,11 @@ public class DataPointAssignmentDto extends BaseDto {
     private List<Long> dataPointIds;
 
 
-    public Long getFormAssignmentId() {
+    public Long getSurveyAssignmentId() {
         return surveyAssignmentId;
     }
-    public void setFormAssignmentId(Long formAssignmentId) {
-        this.surveyAssignmentId = formAssignmentId;
+    public void setSurveyAssignmentId(Long surveyAssignmentId) {
+        this.surveyAssignmentId = surveyAssignmentId;
     }
     public Long getDeviceId() {
         return deviceId;
