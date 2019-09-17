@@ -50,7 +50,7 @@ public class DataPointAssignmentDao extends BaseDAO<DataPointAssignment> {
      *
      * @return list of assignments
      */
-    public List<DataPointAssignment> listByDeviceAndSurvey(Long deviceId, Long surveyAssignmentId) {
+    public List<DataPointAssignment> listByDeviceAndSurveyAssignment(Long deviceId, Long surveyAssignmentId) {
         PersistenceManager pm = PersistenceFilter.getManager();
         javax.jdo.Query query = pm.newQuery(DataPointAssignment.class);
         StringBuilder filterString = new StringBuilder();

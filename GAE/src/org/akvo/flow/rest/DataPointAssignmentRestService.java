@@ -56,7 +56,11 @@ public class DataPointAssignmentRestService {
         final HashMap<String, List<DataPointAssignmentDto>> response = new HashMap<String, List<DataPointAssignmentDto>>();
         final List<DataPointAssignmentDto> results = new ArrayList<DataPointAssignmentDto>();
 
-        if (surveyAssignmentId != null) {
+        if (deviceId != null && surveyAssignmentId != null) {
+            for (DataPointAssignment dpa : dataPointAssignmentDao.listByDeviceAndSurveyAssignment(deviceId,surveyAssignmentId)) {
+                results.add(marshallToDto(dpa));
+            }
+        } else if (surveyAssignmentId != null) {
             for (DataPointAssignment dpa : dataPointAssignmentDao.listBySurveyAssignment(surveyAssignmentId)) {
                 results.add(marshallToDto(dpa));
             }
@@ -158,8 +162,6 @@ public class DataPointAssignmentRestService {
         if (dpa.getKey() != null) {
             dto.setKeyId(dpa.getKey().getId());
         }
-        //Lists must be copied separately
-        dto.setDataPointIds(dpa.getDataPointIds());
 
         return dto;
     }
@@ -171,8 +173,6 @@ public class DataPointAssignmentRestService {
         if (dto.getKeyId() != null) {
             dpa.setKey(KeyFactory.createKey("DataPointAssignment", dto.getKeyId()));
         }
-        //Lists must be copied separately
-        dpa.setDataPointIds(dto.getDataPointIds());
 
         return dpa;
     }
