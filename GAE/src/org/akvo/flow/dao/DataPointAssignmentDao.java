@@ -37,38 +37,38 @@ public class DataPointAssignmentDao extends BaseDAO<DataPointAssignment> {
         super(DataPointAssignment.class);
     }
 
+    public List<DataPointAssignment> listBySurvey(Long surveyId) {
+        return listByProperty("surveyId", surveyId, "Long");
+    }
+
+    public List<DataPointAssignment> listByDevice(Long deviceId) {
+        return listByProperty("deviceId", deviceId, "Long");
+    }
+
     /**
-     * Return a set of data point ids for a specified device and survey (in any assignment)
+     * Return a set of data point assignments for a specified Device and surveyAssignment
      *
      * @return list of assignments
      */
-    public Set<Long> listDataPointIds(Long deviceId, Long surveyId) {
-        SurveyAssignmentDao saDao = new SurveyAssignmentDao();
-        Set<Long> result = new HashSet<>();
-        List<SurveyAssignment> assignments = saDao.listBySurveyGroup(surveyId);
-        for (SurveyAssignment sa: assignments) {
-            PersistenceManager pm = PersistenceFilter.getManager();
-            javax.jdo.Query query = pm.newQuery(User.class);
-            StringBuilder filterString = new StringBuilder();
-            StringBuilder paramString = new StringBuilder();
-            Map<String, Object> paramMap = null;
-            paramMap = new HashMap<String, Object>();
-            ///TODO: add this index
-            appendNonNullParam("deviceId", filterString, paramString, "Long", deviceId, paramMap);
-            appendNonNullParam("surveyAssignmentId", filterString, paramString, "Long", sa.getKey().getId(), paramMap);
+    public List<DataPointAssignment> listByDeviceAndSurvey(Long deviceId, Long surveyAssignmentId) {
+        PersistenceManager pm = PersistenceFilter.getManager();
+        javax.jdo.Query query = pm.newQuery(DataPointAssignment.class);
+        StringBuilder filterString = new StringBuilder();
+        StringBuilder paramString = new StringBuilder();
+        Map<String, Object> paramMap = null;
+        paramMap = new HashMap<String, Object>();
+        appendNonNullParam("deviceId", filterString, paramString, "Long", deviceId, paramMap);
+        appendNonNullParam("surveyAssignmentId", filterString, paramString, "Long", surveyAssignmentId, paramMap);
 
-            if (filterString.length() > 0) {
-                query.setFilter(filterString.toString());
-                query.declareParameters(paramString.toString());
-            }
-            //TODO mandatory? Or do we want pagination?: prepareCursor(cursorString, query);
-            @SuppressWarnings("unchecked")
-            List<DataPointAssignment> selected = (List<DataPointAssignment>) query.executeWithMap(paramMap);
-
-            for (DataPointAssignment dpa:selected) {
-                result.addAll(dpa.getDataPointIds());
-            }
+        if (filterString.length() > 0) {
+            query.setFilter(filterString.toString());
+            query.declareParameters(paramString.toString());
         }
-        return result;
+        @SuppressWarnings("unchecked")
+        List<DataPointAssignment> selected = (List<DataPointAssignment>) query.executeWithMap(paramMap);
+
+        return selected;
     }
+
+
 }

@@ -32,11 +32,14 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
+import org.waterforpeople.mapping.app.web.dto.ApprovalStepDTO;
 import org.waterforpeople.mapping.app.web.rest.ResourceNotFoundException;
 import org.waterforpeople.mapping.app.web.rest.dto.RestStatusDto;
 
 import com.gallatinsystems.common.Constants;
+import com.gallatinsystems.survey.domain.ApprovalStep;
 import com.google.appengine.api.datastore.KeyFactory;
 
 
@@ -48,14 +51,26 @@ public class DataPointAssignmentRestService {
 
     @RequestMapping(method = RequestMethod.GET, value = "")
     @ResponseBody
-    public Map<String, List<DataPointAssignmentDto>> listAll() {
+    public Map<String, List<DataPointAssignmentDto>> listSomeOrAll(
+            @RequestParam(value = "surveyId", required = false) Long surveyId,
+            @RequestParam(value = "deviceId", required = false) Long deviceId
+        ) {
         final HashMap<String, List<DataPointAssignmentDto>> response = new HashMap<String, List<DataPointAssignmentDto>>();
         final List<DataPointAssignmentDto> results = new ArrayList<DataPointAssignmentDto>();
 
-        for (DataPointAssignment dpa : dataPointAssignmentDao.list(Constants.ALL_RESULTS)) {
-            results.add(marshallToDto(dpa));
+        if (surveyId != null) {
+            for (DataPointAssignment dpa : dataPointAssignmentDao.listBySurvey(surveyId)) {
+                results.add(marshallToDto(dpa));
+            }
+        } else if (deviceId != null) {
+            for (DataPointAssignment dpa : dataPointAssignmentDao.listByDevice(deviceId)) {
+                results.add(marshallToDto(dpa));
+            }
+        } else { //All of them
+            for (DataPointAssignment dpa : dataPointAssignmentDao.list(Constants.ALL_RESULTS)) {
+                results.add(marshallToDto(dpa));
+            }
         }
-
         response.put("data_point_assignments", results);
         return response;
     }
@@ -96,7 +111,7 @@ public class DataPointAssignmentRestService {
 
     @RequestMapping(method = RequestMethod.PUT, value = "/{id}")
     @ResponseBody
-    public Map<String, DataPointAssignmentDto> updateSurveyAssignment(
+    public Map<String, DataPointAssignmentDto> updateDataPointAssignment(
             @PathVariable("id")
             Long id,
             @RequestBody
@@ -124,7 +139,7 @@ public class DataPointAssignmentRestService {
 
     @RequestMapping(method = RequestMethod.POST, value = "")
     @ResponseBody
-    public Map<String, DataPointAssignmentDto> newSurveyAssignment(
+    public Map<String, DataPointAssignmentDto> newDataPointAssignment(
             @RequestBody
             DataPointAssignmentPayload payload) {
 
