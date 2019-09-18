@@ -22,7 +22,9 @@ import java.util.List;
 import java.util.Map;
 
 import org.akvo.flow.dao.SurveyAssignmentDao;
+import org.akvo.flow.domain.persistent.DataPointAssignment;
 import org.akvo.flow.domain.persistent.SurveyAssignment;
+import org.akvo.flow.rest.dto.DataPointAssignmentPayload;
 import org.akvo.flow.rest.dto.SurveyAssignmentDto;
 import org.akvo.flow.rest.dto.SurveyAssignmentPayload;
 import org.springframework.beans.BeanUtils;
@@ -139,19 +141,29 @@ public class SurveyAssignmentRestService {
 
     @RequestMapping(method = RequestMethod.POST, value = "")
     @ResponseBody
-    public Map<String, SurveyAssignmentDto> newSurveyAssignment(
+    public Map<String, Object> newSurveyAssignment(
             @RequestBody
             SurveyAssignmentPayload payload) {
 
-        final SurveyAssignmentDto dto = payload.getSurvey_assignment();
-        final SurveyAssignment sa  = marshallToDomain(dto);
+        final Map<String, Object> response = new HashMap<String, Object>();
 
-        surveyAssignmentDao.save(sa); //fills in new key
-        List<DeviceSurveyJobQueue> deviceSurveyJobQueues = generateDeviceSurveyJobQueueItems(sa);
-        deviceSurveyJobQueueDAO.save(deviceSurveyJobQueues);
+        RestStatusDto statusDto = new RestStatusDto();
+        statusDto.setStatus("failed");
+        statusDto.setMessage("missing required parameters");
 
-        final HashMap<String, SurveyAssignmentDto> response = new HashMap<String, SurveyAssignmentDto>();
-        response.put("survey_assignment", marshallToDto(sa));
+        final SurveyAssignment sa  = marshallToDomain(payload.getSurvey_assignment());
+        if (sa != null
+                && sa.getDeviceIds() != null
+                && sa.getSurveyId() != null) {
+            surveyAssignmentDao.save(sa); //fills in new key
+
+            List<DeviceSurveyJobQueue> deviceSurveyJobQueues = generateDeviceSurveyJobQueueItems(sa);
+            deviceSurveyJobQueueDAO.save(deviceSurveyJobQueues);
+
+            response.put("survey_assignment", marshallToDto(sa));
+            statusDto.setStatus("ok");
+        }
+        response.put("meta", statusDto);
         return response;
     }
 

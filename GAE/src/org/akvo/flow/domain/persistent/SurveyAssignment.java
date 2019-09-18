@@ -27,7 +27,6 @@ import com.gallatinsystems.framework.domain.BaseDomain;
 /**
  * domain to store assignment of forms to devices
  */
-//TODO: could be renamed while referencing entities like this: @PersistenceCapable(table="SurveyAssignment")
 @PersistenceCapable
 public class SurveyAssignment extends BaseDomain {
 

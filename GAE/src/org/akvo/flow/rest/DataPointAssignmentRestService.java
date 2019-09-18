@@ -1,5 +1,5 @@
 /*
- *  Copyright (C) 2012,2017,2019 Stichting Akvo (Akvo Foundation)
+ *  Copyright (C) 2019 Stichting Akvo (Akvo Foundation)
  *
  *  This file is part of Akvo FLOW.
  *
@@ -34,6 +34,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
+import org.waterforpeople.mapping.app.gwt.client.device.DeviceDto;
 import org.waterforpeople.mapping.app.web.rest.ResourceNotFoundException;
 import org.waterforpeople.mapping.app.web.rest.dto.RestStatusDto;
 
@@ -50,18 +51,18 @@ public class DataPointAssignmentRestService {
     @RequestMapping(method = RequestMethod.GET, value = "")
     @ResponseBody
     public Map<String, List<DataPointAssignmentDto>> listSomeOrAll(
-            @RequestParam(value = "surveyAssignmentId", required = false) Long surveyAssignmentId,
+            @RequestParam(value = "surveyId", required = false) Long surveyId,
             @RequestParam(value = "deviceId", required = false) Long deviceId
         ) {
         final HashMap<String, List<DataPointAssignmentDto>> response = new HashMap<String, List<DataPointAssignmentDto>>();
         final List<DataPointAssignmentDto> results = new ArrayList<DataPointAssignmentDto>();
 
-        if (deviceId != null && surveyAssignmentId != null) {
-            for (DataPointAssignment dpa : dataPointAssignmentDao.listByDeviceAndSurveyAssignment(deviceId,surveyAssignmentId)) {
+        if (deviceId != null && surveyId != null) {
+            for (DataPointAssignment dpa : dataPointAssignmentDao.listByDeviceAndSurvey(deviceId,surveyId)) {
                 results.add(marshallToDto(dpa));
             }
-        } else if (surveyAssignmentId != null) {
-            for (DataPointAssignment dpa : dataPointAssignmentDao.listBySurveyAssignment(surveyAssignmentId)) {
+        } else if (surveyId != null) {
+            for (DataPointAssignment dpa : dataPointAssignmentDao.listBySurveyAssignment(surveyId)) {
                 results.add(marshallToDto(dpa));
             }
         } else if (deviceId != null) {
@@ -141,17 +142,27 @@ public class DataPointAssignmentRestService {
 
     @RequestMapping(method = RequestMethod.POST, value = "")
     @ResponseBody
-    public Map<String, DataPointAssignmentDto> newDataPointAssignment(
+    public Map<String, Object> newDataPointAssignment(
             @RequestBody
             DataPointAssignmentPayload payload) {
 
-        final DataPointAssignmentDto dto = payload.getData_point_assignment();
-        final DataPointAssignment dpa  = marshallToDomain(dto);
+        final Map<String, Object> response = new HashMap<String, Object>();
 
-        dataPointAssignmentDao.save(dpa); //fills in new key
+        RestStatusDto statusDto = new RestStatusDto();
+        statusDto.setStatus("failed");
+        statusDto.setMessage("missing required parameters");
 
-        final HashMap<String, DataPointAssignmentDto> response = new HashMap<String, DataPointAssignmentDto>();
-        response.put("data_point_assignment", marshallToDto(dpa));
+        final DataPointAssignment dpa  = marshallToDomain(payload.getData_point_assignment());
+        if (dpa != null
+                && dpa.getDeviceId() != null
+                && dpa.getSurveyId() != null
+                && dpa.getSurveyAssignmentId() != null) {
+
+            dataPointAssignmentDao.save(dpa); //fills in new key
+            response.put("data_point_assignment", marshallToDto(dpa));
+            statusDto.setStatus("ok");
+        }
+        response.put("meta", statusDto);
         return response;
     }
 

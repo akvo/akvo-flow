@@ -37,6 +37,10 @@ public class DataPointAssignmentDao extends BaseDAO<DataPointAssignment> {
         super(DataPointAssignment.class);
     }
 
+    public List<DataPointAssignment> listBySurvey(Long surveyId) {
+        return listByProperty("surveyId", surveyId, "Long");
+    }
+
     public List<DataPointAssignment> listBySurveyAssignment(Long surveyAssignmentId) {
         return listByProperty("surveyAssignmentId", surveyAssignmentId, "Long");
     }
@@ -46,11 +50,11 @@ public class DataPointAssignmentDao extends BaseDAO<DataPointAssignment> {
     }
 
     /**
-     * Return a set of data point assignments for a specified Device and surveyAssignment
+     * Return a set of data point assignments for a specified Device and survey (UI survey, not Form)
      *
      * @return list of assignments
      */
-    public List<DataPointAssignment> listByDeviceAndSurveyAssignment(Long deviceId, Long surveyAssignmentId) {
+    public List<DataPointAssignment> listByDeviceAndSurvey(Long deviceId, Long surveyId) {
         PersistenceManager pm = PersistenceFilter.getManager();
         javax.jdo.Query query = pm.newQuery(DataPointAssignment.class);
         StringBuilder filterString = new StringBuilder();
@@ -58,7 +62,7 @@ public class DataPointAssignmentDao extends BaseDAO<DataPointAssignment> {
         Map<String, Object> paramMap = null;
         paramMap = new HashMap<String, Object>();
         appendNonNullParam("deviceId", filterString, paramString, "Long", deviceId, paramMap);
-        appendNonNullParam("surveyAssignmentId", filterString, paramString, "Long", surveyAssignmentId, paramMap);
+        appendNonNullParam("surveyId", filterString, paramString, "Long", surveyId, paramMap);
 
         if (filterString.length() > 0) {
             query.setFilter(filterString.toString());
