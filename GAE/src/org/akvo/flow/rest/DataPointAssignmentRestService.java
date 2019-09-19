@@ -51,18 +51,18 @@ public class DataPointAssignmentRestService {
     @RequestMapping(method = RequestMethod.GET, value = "")
     @ResponseBody
     public Map<String, List<DataPointAssignmentDto>> listSomeOrAll(
-            @RequestParam(value = "surveyId", required = false) Long surveyId,
+            @RequestParam(value = "surveyAssignmentId", required = false) Long surveyAssignmentId,
             @RequestParam(value = "deviceId", required = false) Long deviceId
         ) {
         final HashMap<String, List<DataPointAssignmentDto>> response = new HashMap<String, List<DataPointAssignmentDto>>();
         final List<DataPointAssignmentDto> results = new ArrayList<DataPointAssignmentDto>();
 
-        if (deviceId != null && surveyId != null) {
-            for (DataPointAssignment dpa : dataPointAssignmentDao.listByDeviceAndSurvey(deviceId,surveyId)) {
+        if (deviceId != null && surveyAssignmentId != null) {
+            for (DataPointAssignment dpa : dataPointAssignmentDao.listByDeviceAndSurveyAssignment(deviceId,surveyAssignmentId)) {
                 results.add(marshallToDto(dpa));
             }
-        } else if (surveyId != null) {
-            for (DataPointAssignment dpa : dataPointAssignmentDao.listBySurveyAssignment(surveyId)) {
+        } else if (surveyAssignmentId != null) {
+            for (DataPointAssignment dpa : dataPointAssignmentDao.listBySurveyAssignment(surveyAssignmentId)) {
                 results.add(marshallToDto(dpa));
             }
         } else if (deviceId != null) {
