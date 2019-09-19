@@ -93,7 +93,8 @@ public class DataPointServlet extends AbstractRestApiServlet {
             if (device != null) {
                 log.fine("Found device: " + device);
                 //Find which assignments we are part of
-                List<DataPointAssignment> assList = dataPointAssignmentDao.listByDevice(device.getKey().getId());
+                List<DataPointAssignment> assList =
+                        dataPointAssignmentDao.listByDeviceAndSurvey(device.getKey().getId(), dpReq.getSurveyId());
                 //Combine their point lists
                 Set<Long> pointSet = new HashSet<>();
                 for (DataPointAssignment ass: assList) {
