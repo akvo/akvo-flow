@@ -29,11 +29,12 @@ export default class DeviceSelector extends React.Component {
               className={accordionClass}
               onClick={this.onAccordionClick}
               onKeyPress={this.onAccordionClick}
+              data-testid="accordion"
             >
               {deviceGroupNames[dgId]}
             </div>
 
-            <div className="panel" style={panelStyle}>
+            <div className="panel" style={panelStyle} data-testid="panel">
               {Object.keys(deviceGroups[dgId]).map(deviceId => (
                 <div key={deviceId}>
                   <Checkbox
