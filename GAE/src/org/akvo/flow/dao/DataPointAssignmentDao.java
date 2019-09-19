@@ -17,19 +17,13 @@
 package org.akvo.flow.dao;
 
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
-
 import javax.jdo.PersistenceManager;
 
 import org.akvo.flow.domain.persistent.DataPointAssignment;
-import org.akvo.flow.domain.persistent.SurveyAssignment;
-
 import com.gallatinsystems.framework.dao.BaseDAO;
 import com.gallatinsystems.framework.servlet.PersistenceFilter;
-import com.gallatinsystems.user.domain.User;
 
 public class DataPointAssignmentDao extends BaseDAO<DataPointAssignment> {
 
@@ -63,6 +57,31 @@ public class DataPointAssignmentDao extends BaseDAO<DataPointAssignment> {
         paramMap = new HashMap<String, Object>();
         appendNonNullParam("deviceId", filterString, paramString, "Long", deviceId, paramMap);
         appendNonNullParam("surveyId", filterString, paramString, "Long", surveyId, paramMap);
+
+        if (filterString.length() > 0) {
+            query.setFilter(filterString.toString());
+            query.declareParameters(paramString.toString());
+        }
+        @SuppressWarnings("unchecked")
+        List<DataPointAssignment> selected = (List<DataPointAssignment>) query.executeWithMap(paramMap);
+
+        return selected;
+    }
+
+    /**
+     * Return a set of data point assignments for a specified Device and SurveyAssignment)
+     *
+     * @return list of assignments
+     */
+    public List<DataPointAssignment> listByDeviceAndSurveyAssignment(Long deviceId, Long surveyAssignmentId) {
+        PersistenceManager pm = PersistenceFilter.getManager();
+        javax.jdo.Query query = pm.newQuery(DataPointAssignment.class);
+        StringBuilder filterString = new StringBuilder();
+        StringBuilder paramString = new StringBuilder();
+        Map<String, Object> paramMap = null;
+        paramMap = new HashMap<String, Object>();
+        appendNonNullParam("deviceId", filterString, paramString, "Long", deviceId, paramMap);
+        appendNonNullParam("surveyAssignmentId", filterString, paramString, "Long", surveyAssignmentId, paramMap);
 
         if (filterString.length() > 0) {
             query.setFilter(filterString.toString());
