@@ -1,5 +1,5 @@
 /*
- *  Copyright (C) 2010-2019 Stichting Akvo (Akvo Foundation)
+ *  Copyright (C) 2019 Stichting Akvo (Akvo Foundation)
  *
  *  This file is part of Akvo FLOW.
  *
@@ -14,26 +14,26 @@
  *  The full license text can also be seen at <http://www.gnu.org/licenses/agpl.html>.
  */
 
-package org.waterforpeople.mapping.app.web;
+package org.akvo.flow.api.app;
 
-import com.gallatinsystems.device.domain.DeviceSurveyJobQueue;
+import com.gallatinsystems.device.dao.DeviceDAO;
+import com.gallatinsystems.device.domain.Device;
 import com.gallatinsystems.framework.rest.AbstractRestApiServlet;
 import com.gallatinsystems.framework.rest.RestRequest;
 import com.gallatinsystems.framework.rest.RestResponse;
-import com.gallatinsystems.survey.dao.DeviceSurveyJobQueueDAO;
 import com.gallatinsystems.survey.dao.QuestionDao;
-import com.gallatinsystems.survey.dao.SurveyDAO;
 import com.gallatinsystems.survey.domain.Question;
-import com.gallatinsystems.survey.domain.Survey;
 import com.gallatinsystems.surveyal.dao.SurveyedLocaleDao;
 import com.gallatinsystems.surveyal.domain.SurveyedLocale;
 import com.google.api.server.spi.config.Nullable;
+
+import org.akvo.flow.api.app.DataPointServlet;
+import org.akvo.flow.dao.DataPointAssignmentDao;
 import org.akvo.flow.domain.DataUtils;
+import org.akvo.flow.domain.persistent.DataPointAssignment;
 import org.akvo.flow.util.FlowJsonObjectWriter;
 import org.waterforpeople.mapping.app.web.dto.SurveyInstanceDto;
 import org.waterforpeople.mapping.app.web.dto.SurveyedLocaleDto;
-import org.waterforpeople.mapping.app.web.dto.SurveyedLocaleRequest;
-import org.waterforpeople.mapping.app.web.dto.SurveyedLocaleResponse;
 import org.waterforpeople.mapping.dao.QuestionAnswerStoreDao;
 import org.waterforpeople.mapping.dao.SurveyInstanceDAO;
 import org.waterforpeople.mapping.domain.QuestionAnswerStore;
@@ -46,28 +46,32 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
+import java.util.logging.Logger;
 
 /**
- * JSON service for returning the list of records for a specific surveyId
+ * JSON service for returning the list of assigned data point records for a specific device and surveyId
  *
- * @author Mark Tiele Westra
  */
-public class SurveyedLocaleServlet extends AbstractRestApiServlet {
+public class DataPointServlet extends AbstractRestApiServlet {
     private static final long serialVersionUID = 8748650927754433019L;
+    private static final Logger log = Logger.getLogger(DataPointServlet.class.getName());
     private SurveyedLocaleDao surveyedLocaleDao;
-    private static final Integer SL_PAGE_SIZE = 30;
+    private DataPointAssignmentDao dataPointAssignmentDao;
 
-    public SurveyedLocaleServlet() {
+    public DataPointServlet() {
         setMode(JSON_MODE);
         surveyedLocaleDao = new SurveyedLocaleDao();
+        dataPointAssignmentDao = new DataPointAssignmentDao();
     }
 
     @Override
     protected RestRequest convertRequest() throws Exception {
         HttpServletRequest req = getRequest();
-        RestRequest restRequest = new SurveyedLocaleRequest();
+        RestRequest restRequest = new DataPointRequest();
         restRequest.populateFromHttpRequest(req);
         return restRequest;
     }
@@ -79,38 +83,45 @@ public class SurveyedLocaleServlet extends AbstractRestApiServlet {
      */
     @Override
     protected RestResponse handleRequest(RestRequest req) throws Exception {
-        SurveyedLocaleRequest slReq = (SurveyedLocaleRequest) req;
-        List<SurveyedLocale> slList;
-        if (slReq.getSurveyGroupId() != null) {
-            DeviceSurveyJobQueueDAO dsjqDAO = new DeviceSurveyJobQueueDAO();
-            SurveyDAO surveyDao = new SurveyDAO();
-            List<DeviceSurveyJobQueue> deviceSurveyJobQueues = dsjqDAO
-                    .get(slReq.getPhoneNumber(), slReq.getImei(), slReq.getAndroidId());
-            for (DeviceSurveyJobQueue dsjq : deviceSurveyJobQueues) {
-                Survey s = surveyDao.getById(dsjq.getSurveyID());
-                if (s != null && s.getSurveyGroupId().longValue() == slReq.getSurveyGroupId()
-                        .longValue()) {
-                    slList = surveyedLocaleDao.listLocalesBySurveyGroupAndDate(
-                            slReq.getSurveyGroupId(), slReq.getLastUpdateTime(), SL_PAGE_SIZE);
-                    return convertToResponse(slList, slReq.getSurveyGroupId());
-                }
-            }
-        }
-        // A valid assignment has not been found for the given device
+        DataPointRequest dpReq = (DataPointRequest) req;
+        List<SurveyedLocale> dpList;
         RestResponse res = new RestResponse();
-        res.setCode(String.valueOf(HttpServletResponse.SC_FORBIDDEN));
-        res.setMessage("Invalid assignment");
+        if (dpReq.getSurveyId() != null) {
+            //Find the device (if any)
+            DeviceDAO deviceDao = new DeviceDAO();
+            Device device = deviceDao.getDevice(dpReq.getAndroidId(), dpReq.getImei(),dpReq.getPhoneNumber());
+            if (device != null) {
+                log.fine("Found device: " + device);
+                //Find which assignments we are part of
+                List<DataPointAssignment> assList = dataPointAssignmentDao.listByDevice(device.getKey().getId());
+                //Combine their point lists
+                Set<Long> pointSet = new HashSet<>();
+                for (DataPointAssignment ass: assList) {
+                    pointSet.addAll(ass.getDataPointIds());
+                }
+                //Fetch the data points
+                List<Long> pointList = new ArrayList<>();
+                pointList.addAll(pointSet);
+                dpList = surveyedLocaleDao.listByKeys(pointList);
+                log.fine("Found assigned data points: " + dpList);
+                res = convertToResponse(dpList, dpReq.getSurveyId(), new DataPointResponse());
+                log.fine("returning result: " + res);
+                return res;
+            }
+            res.setCode(String.valueOf(HttpServletResponse.SC_NOT_FOUND));
+            res.setMessage("Unknown device");
+        } else {
+            res.setCode(String.valueOf(HttpServletResponse.SC_FORBIDDEN));
+            res.setMessage("Invalid Survey");
+        }
         return res;
     }
 
     /**
-     * converts the domain objects to dtos and then installs them in a RecordDataResponse object
+     * converts the domain objects to dtos and then installs them in a DataPointResponse object
      *
      */
-    private SurveyedLocaleResponse convertToResponse(List<SurveyedLocale> slList,
-            Long surveyGroupId) {
-        SurveyedLocaleResponse resp = new SurveyedLocaleResponse();
-
+    protected static DataPointResponse convertToResponse(List<SurveyedLocale> slList, Long surveyId, DataPointResponse resp) {
         if (slList == null) {
             resp.setCode(String.valueOf(HttpServletResponse.SC_INTERNAL_SERVER_ERROR));
             resp.setMessage("Internal Server Error");
@@ -120,14 +131,13 @@ public class SurveyedLocaleServlet extends AbstractRestApiServlet {
         resp.setCode(String.valueOf(HttpServletResponse.SC_OK));
         resp.setResultCount(slList.size());
 
-        List<SurveyedLocaleDto> dtoList = getSurveyedLocaleDtosList(slList, surveyGroupId);
+        List<SurveyedLocaleDto> dtoList = getSurveyedLocaleDtosList(slList, surveyId);
 
         resp.setSurveyedLocaleData(dtoList);
         return resp;
     }
 
-    private List<SurveyedLocaleDto> getSurveyedLocaleDtosList(List<SurveyedLocale> slList,
-            Long surveyGroupId) {
+    private static List<SurveyedLocaleDto> getSurveyedLocaleDtosList(List<SurveyedLocale> slList, Long surveyId) {
         List<SurveyedLocaleDto> dtoList = new ArrayList<>();
         HashMap<Long, String> questionTypeMap = new HashMap<>();
         QuestionDao questionDao = new QuestionDao();
@@ -139,7 +149,7 @@ public class SurveyedLocaleServlet extends AbstractRestApiServlet {
 
         for (SurveyedLocale surveyedLocale : slList) {
             long surveyedLocaleId = surveyedLocale.getKey().getId();
-            SurveyedLocaleDto dto = createSurveyedLocaleDto(surveyGroupId, questionDao,
+            SurveyedLocaleDto dto = createSurveyedLocaleDto(surveyId, questionDao,
                     questionTypeMap, surveyedLocale, questionAnswerStore,
                     surveyInstancesMap.get(surveyedLocaleId));
             dtoList.add(dto);
@@ -147,7 +157,7 @@ public class SurveyedLocaleServlet extends AbstractRestApiServlet {
         return dtoList;
     }
 
-    private SurveyedLocaleDto createSurveyedLocaleDto(Long surveyGroupId, QuestionDao questionDao,
+    private static SurveyedLocaleDto createSurveyedLocaleDto(Long surveyGroupId, QuestionDao questionDao,
             HashMap<Long, String> questionTypeMap, SurveyedLocale surveyedLocale,
             Map<Long, List<QuestionAnswerStore>> questionAnswerStoreMap,
             @Nullable List<SurveyInstance> surveyInstances) {
@@ -176,7 +186,7 @@ public class SurveyedLocaleServlet extends AbstractRestApiServlet {
      * Returns a map of QuestionAnswerStore lists,
      * keys: surveyInstanceId, value: list of QuestionAnswerStore for that surveyInstance
      */
-    private Map<Long, List<QuestionAnswerStore>> getQuestionAnswerStoreMap(
+    private static Map<Long, List<QuestionAnswerStore>> getQuestionAnswerStoreMap(
             Map<Long, List<SurveyInstance>> surveyInstanceMap) {
         QuestionAnswerStoreDao questionAnswerStoreDao = new QuestionAnswerStoreDao();
         List<Long> surveyInstancesIds = getSurveyInstancesIds(surveyInstanceMap);
@@ -199,7 +209,7 @@ public class SurveyedLocaleServlet extends AbstractRestApiServlet {
         return questionAnswerStoreMap;
     }
 
-    private List<Long> getSurveyInstancesIds(Map<Long, List<SurveyInstance>> surveyInstanceMap) {
+    private static List<Long> getSurveyInstancesIds(Map<Long, List<SurveyInstance>> surveyInstanceMap) {
         List<Long> surveyInstancesIds = new ArrayList<>();
         Collection<List<SurveyInstance>> values = surveyInstanceMap.values();
         for (List<SurveyInstance> surveyInstances : values) {
@@ -214,7 +224,7 @@ public class SurveyedLocaleServlet extends AbstractRestApiServlet {
      * Fetches SurveyInstances using the surveyedLocalesIds and puts them in a map:
      * key: SurveyedLocalesId, value: list of SurveyInstances
      */
-    private Map<Long, List<SurveyInstance>> getSurveyInstances(List<Long> surveyedLocalesIds) {
+    private static Map<Long, List<SurveyInstance>> getSurveyInstances(List<Long> surveyedLocalesIds) {
         SurveyInstanceDAO surveyInstanceDAO = new SurveyInstanceDAO();
         List<SurveyInstance> values = surveyInstanceDAO.fetchItemsByIdBatches(surveyedLocalesIds,
                 "surveyedLocaleId");
@@ -232,7 +242,7 @@ public class SurveyedLocaleServlet extends AbstractRestApiServlet {
         return surveyInstancesMap;
     }
 
-    private List<Long> getSurveyedLocalesIds(List<SurveyedLocale> slList) {
+    private static List<Long> getSurveyedLocalesIds(List<SurveyedLocale> slList) {
         if (slList == null) {
             return Collections.emptyList();
         }
@@ -243,7 +253,7 @@ public class SurveyedLocaleServlet extends AbstractRestApiServlet {
         return surveyedLocaleIds;
     }
 
-    private SurveyInstanceDto createSurveyInstanceDto(QuestionDao qDao,
+    private static SurveyInstanceDto createSurveyInstanceDto(QuestionDao qDao,
             HashMap<Long, String> questionTypeMap,
             @Nullable List<QuestionAnswerStore> questionAnswerStores,
             @Nullable SurveyInstance surveyInstance) {
@@ -268,7 +278,7 @@ public class SurveyedLocaleServlet extends AbstractRestApiServlet {
         return surveyInstanceDto;
     }
 
-    private String getAnswerValue(QuestionAnswerStore questionAnswerStore, String type) {
+    private static String getAnswerValue(QuestionAnswerStore questionAnswerStore, String type) {
         // Make all responses backwards compatible
         String answerValue = questionAnswerStore.getValue();
         String value = answerValue != null ? answerValue : "";
@@ -289,7 +299,7 @@ public class SurveyedLocaleServlet extends AbstractRestApiServlet {
         return value;
     }
 
-    private String getQuestionType(QuestionDao questionDao, HashMap<Long, String> questionTypeMap,
+    private static String getQuestionType(QuestionDao questionDao, HashMap<Long, String> questionTypeMap,
             QuestionAnswerStore questionAnswerStore) {
         String type = questionAnswerStore.getType();
         if (type == null || "".equals(type)) {
@@ -333,7 +343,7 @@ public class SurveyedLocaleServlet extends AbstractRestApiServlet {
         if (sc == HttpServletResponse.SC_OK) {
             FlowJsonObjectWriter writer = new FlowJsonObjectWriter();
             writer.writeValue(getResponse().getOutputStream(), resp);
-            getResponse().getWriter().println();
+//Splat!            getResponse().getWriter().println();
         } else {
             getResponse().getWriter().println(resp.getMessage());
         }

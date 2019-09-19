@@ -14,7 +14,7 @@
  *  The full license text can also be seen at <http://www.gnu.org/licenses/agpl.html>.
  */
 
-package org.waterforpeople.mapping.app.web.dto;
+package org.akvo.flow.api.app;
 
 import java.util.Date;
 
