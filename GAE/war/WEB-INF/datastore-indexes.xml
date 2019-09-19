@@ -372,5 +372,9 @@
         <property name="surveyId" direction="asc"/>
         <property name="deviceId" direction="asc"/>
     </datastore-index>
+    <datastore-index kind="DataPointAssignment" ancestor="false">
+        <property name="surveyAssignmentId" direction="asc"/>
+        <property name="deviceId" direction="asc"/>
+    </datastore-index>
     
 </datastore-indexes>
