@@ -42,6 +42,9 @@ import org.waterforpeople.mapping.serialization.response.MediaResponse;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+
+import java.io.OutputStream;
+import java.io.PrintWriter;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
@@ -343,8 +346,10 @@ public class DataPointServlet extends AbstractRestApiServlet {
         getResponse().setStatus(sc);
         if (sc == HttpServletResponse.SC_OK) {
             FlowJsonObjectWriter writer = new FlowJsonObjectWriter();
-            writer.writeValue(getResponse().getOutputStream(), resp);
-//Splat!            getResponse().getWriter().println();
+            OutputStream stream = getResponse().getOutputStream();
+            writer.writeValue(stream, resp);
+            PrintWriter endwriter = new PrintWriter(stream);
+            endwriter.println();
         } else {
             getResponse().getWriter().println(resp.getMessage());
         }

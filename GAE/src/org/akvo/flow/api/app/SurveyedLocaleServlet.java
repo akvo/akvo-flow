@@ -28,6 +28,9 @@ import com.gallatinsystems.surveyal.domain.SurveyedLocale;
 import org.akvo.flow.util.FlowJsonObjectWriter;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+
+import java.io.OutputStream;
+import java.io.PrintWriter;
 import java.util.List;
 
 /**
@@ -99,8 +102,10 @@ public class SurveyedLocaleServlet extends AbstractRestApiServlet {
         getResponse().setStatus(sc);
         if (sc == HttpServletResponse.SC_OK) {
             FlowJsonObjectWriter writer = new FlowJsonObjectWriter();
-            writer.writeValue(getResponse().getOutputStream(), resp);
-            getResponse().getWriter().println();
+            OutputStream stream = getResponse().getOutputStream();
+            writer.writeValue(stream, resp);
+            PrintWriter endwriter = new PrintWriter(stream);
+            endwriter.println();
         } else {
             getResponse().getWriter().println(resp.getMessage());
         }
