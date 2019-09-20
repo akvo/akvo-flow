@@ -18,9 +18,9 @@ export default class FolderSurveySelector extends React.Component {
     }
   }
 
-  renderForm = (formOptions, id) => (
+  renderForm = (folderSurveyList, id) => (
     <select key={id} onChange={this.handleChange}>
-      {formOptions.map(surveyGroup => (
+      {folderSurveyList.map(surveyGroup => (
         <option key={surveyGroup.keyId} value={surveyGroup.keyId}>
           {surveyGroup.name}
         </option>
