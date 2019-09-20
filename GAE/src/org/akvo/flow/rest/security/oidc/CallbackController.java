@@ -78,9 +78,15 @@ public class CallbackController {
             SecurityContextHolder.getContext().setAuthentication(authentication);
             res.sendRedirect(redirectOnSuccess);
         } catch (AuthenticationException | IdentityVerificationException e) {
-            log.log(Level.SEVERE, e.getMessage());
-            SecurityContextHolder.clearContext();
-            res.sendRedirect(redirectOnFail);
+	    String errorDescriptionId = "error_description";
+	    String errorDescription= req.getParameter(errorDescriptionId);
+	    log.log(Level.SEVERE, errorDescriptionId+": "+errorDescription+" Error Message: "+e.getMessage());
+	    SecurityContextHolder.clearContext();
+	    if(errorDescription != null){
+		res.sendRedirect(redirectOnFail+"?"+errorDescriptionId+"="+errorDescription);
+	    }else{
+		res.sendRedirect(redirectOnFail);
+	    }
         }
     }
 
