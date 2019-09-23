@@ -3,7 +3,8 @@
   "parser": "babel-eslint",
   "env": {
     "browser": true,
-    "node": true
+    "node": true,
+    "jest": true
   },
   "plugins": [
     "react",
@@ -18,24 +19,35 @@
     "import/resolver": {
       "alias": {
         "map": [
-          ["akvo-flow", "./app/js/lib"]
+          [
+            "akvo-flow",
+            "./app/js/lib"
+          ]
         ],
-        "extensions": [".js", ".jsx", ".json"]
+        "extensions": [
+          ".js",
+          ".jsx",
+          ".json"
+        ]
       }
     }
   },
   "rules": {
     "camelcase": 1,
     "class-methods-use-this": 1,
-    "comma-dangle": ["error", {
-      "arrays": "always-multiline",
-      "objects": "always-multiline",
-      "imports": "always-multiline",
-      "exports": "never",
-      "functions": "never"
-    }],
+    "comma-dangle": [
+      "error",
+      {
+        "arrays": "always-multiline",
+        "objects": "always-multiline",
+        "imports": "always-multiline",
+        "exports": "never",
+        "functions": "never"
+      }
+    ],
     "func-names": 0,
     "global-require": 1,
+    "jsx-a11y/label-has-for": 0,
     "jsx-a11y/no-static-element-interactions": 0,
     "jsx-a11y/anchor-is-valid": 1,
     "no-plusplus": 0,
@@ -46,6 +58,17 @@
     "react/forbid-prop-types": 0,
     "react/no-unused-prop-types": 0,
     "react/no-multi-comp": 0,
+    "react/prefer-stateless-function": 0,
+    "react/jsx-indent": [
+      1,
+      2
+    ],
+    "react/no-array-index-key": 0,
+    "react/destructuring-assignment": 0,
+    "indent": [
+      1,
+      2
+    ],
     "object-shorthand": 1,
     "prefer-arrow-callback": 1,
     "consistent-return": 1,
