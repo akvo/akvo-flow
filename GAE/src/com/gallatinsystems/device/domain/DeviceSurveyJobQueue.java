@@ -27,6 +27,7 @@ import javax.jdo.annotations.PrimaryKey;
 
 /**
  * Persistent class for storing an assignment of a survey to a device.
+ * Conceptually a JOIN between the Device and SurveyAssignment "tables"
  */
 @PersistenceCapable(identityType = IdentityType.APPLICATION)
 public class DeviceSurveyJobQueue {

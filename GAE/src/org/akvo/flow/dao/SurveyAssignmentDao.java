@@ -14,17 +14,18 @@
  *  The full license text can also be seen at <http://www.gnu.org/licenses/agpl.html>.
  */
 
-package com.gallatinsystems.survey.dao;
+package org.akvo.flow.dao;
 
 import java.util.List;
 
-import org.waterforpeople.mapping.domain.SurveyAssignment;
+import org.akvo.flow.domain.persistent.SurveyAssignment;
 
 import com.gallatinsystems.framework.dao.BaseDAO;
+import com.gallatinsystems.surveyal.domain.SurveyedLocale;
 
-public class SurveyAssignmentDAO extends BaseDAO<SurveyAssignment> {
+public class SurveyAssignmentDao extends BaseDAO<SurveyAssignment> {
 
-    public SurveyAssignmentDAO() {
+    public SurveyAssignmentDao() {
         super(SurveyAssignment.class);
     }
 
@@ -52,4 +53,11 @@ public class SurveyAssignmentDAO extends BaseDAO<SurveyAssignment> {
         save(all);
         return all.size();
     }
+
+    public List<SurveyAssignment> listBySurveyGroup(Long sgId) {
+        List<SurveyAssignment> sal = listByProperty("surveyGroupId", sgId, "LongString");
+        return sal;
+    }
+
+
 }
