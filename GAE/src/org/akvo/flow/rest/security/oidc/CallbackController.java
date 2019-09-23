@@ -51,7 +51,7 @@ public class CallbackController {
 
     public CallbackController(AppConfig appConfig) {
         this.controller = appConfig.authenticationController();
-        this.redirectOnFail = "/auth0/auth0.html"; // Where to redirect?
+        this.redirectOnFail = "/auth0/error.html";
         this.redirectOnSuccess = "/admin";
     }
 
@@ -80,13 +80,9 @@ public class CallbackController {
         } catch (AuthenticationException | IdentityVerificationException e) {
 	    String errorDescriptionId = "error_description";
 	    String errorDescription= req.getParameter(errorDescriptionId);
-	    log.log(Level.SEVERE, errorDescriptionId+": "+errorDescription+" Error Message: "+e.getMessage());
+	    log.log(Level.INFO, errorDescriptionId+": "+errorDescription+" Error Message: "+e.getMessage());
 	    SecurityContextHolder.clearContext();
-	    if(errorDescription != null){
-		res.sendRedirect(redirectOnFail+"?errorCode="+errorDescription);
-	    }else{
-		res.sendRedirect(redirectOnFail);
-	    }
+	    res.sendRedirect(redirectOnFail+"?errorCode="+errorDescription);
         }
     }
 
