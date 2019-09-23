@@ -345,6 +345,7 @@
                       <include>/vendorjs/**</include>
                       <include>CurrentUser.vm</include>
                       <include>Env.vm</include>
+                      <include>/auth0/*</include>
                       <include>register.html</include>
                       <include>favicon.ico</include>
                       <include>robots.txt</include>

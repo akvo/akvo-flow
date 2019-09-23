@@ -51,7 +51,7 @@ public class CallbackController {
 
     public CallbackController(AppConfig appConfig) {
         this.controller = appConfig.authenticationController();
-        this.redirectOnFail = "/"; // Where to redirect?
+        this.redirectOnFail = "/auth0/auth0.html"; // Where to redirect?
         this.redirectOnSuccess = "/admin";
     }
 
@@ -83,7 +83,7 @@ public class CallbackController {
 	    log.log(Level.SEVERE, errorDescriptionId+": "+errorDescription+" Error Message: "+e.getMessage());
 	    SecurityContextHolder.clearContext();
 	    if(errorDescription != null){
-		res.sendRedirect(redirectOnFail+"?"+errorDescriptionId+"="+errorDescription);
+		res.sendRedirect(redirectOnFail+"?errorCode="+errorDescription);
 	    }else{
 		res.sendRedirect(redirectOnFail);
 	    }
