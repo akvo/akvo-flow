@@ -1,5 +1,5 @@
 /*
- *  Copyright (C) 2012 Stichting Akvo (Akvo Foundation)
+ *  Copyright (C) 2012, 2019 Stichting Akvo (Akvo Foundation)
  *
  *  This file is part of Akvo FLOW.
  *
@@ -14,7 +14,7 @@
  *  The full license text can also be seen at <http://www.gnu.org/licenses/agpl.html>.
  */
 
-package org.waterforpeople.mapping.app.web.rest.dto;
+package org.akvo.flow.rest.dto;
 
 import java.io.Serializable;
 
@@ -22,7 +22,7 @@ public class SurveyAssignmentPayload implements Serializable {
 
     private static final long serialVersionUID = -4133374465777431202L;
 
-    private SurveyAssignmentDto survey_assignment;
+    private SurveyAssignmentDto survey_assignment; //Not camelCaps
 
     public SurveyAssignmentDto getSurvey_assignment() {
         return survey_assignment;
