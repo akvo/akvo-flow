@@ -14,13 +14,19 @@
  *  The full license text can also be seen at <http://www.gnu.org/licenses/agpl.html>.
  */
 
-package org.waterforpeople.mapping.app.web.rest;
+package org.akvo.flow.rest;
 
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.akvo.flow.dao.SurveyAssignmentDao;
+import org.akvo.flow.domain.persistent.DataPointAssignment;
+import org.akvo.flow.domain.persistent.SurveyAssignment;
+import org.akvo.flow.rest.dto.DataPointAssignmentPayload;
+import org.akvo.flow.rest.dto.SurveyAssignmentDto;
+import org.akvo.flow.rest.dto.SurveyAssignmentPayload;
 import org.springframework.beans.BeanUtils;
 import org.springframework.http.converter.HttpMessageNotReadableException;
 import org.springframework.stereotype.Controller;
@@ -29,31 +35,23 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
+import org.waterforpeople.mapping.app.web.rest.ResourceNotFoundException;
 import org.waterforpeople.mapping.app.web.rest.dto.RestStatusDto;
-import org.waterforpeople.mapping.app.web.rest.dto.SurveyAssignmentDto;
-import org.waterforpeople.mapping.app.web.rest.dto.SurveyAssignmentPayload;
-import org.waterforpeople.mapping.domain.SurveyAssignment;
 
 import com.gallatinsystems.common.Constants;
 import com.gallatinsystems.device.dao.DeviceDAO;
 import com.gallatinsystems.device.domain.Device;
 import com.gallatinsystems.device.domain.DeviceSurveyJobQueue;
-import com.gallatinsystems.framework.analytics.summarization.DataSummarizationRequest;
-import com.gallatinsystems.framework.domain.DataChangeRecord;
 import com.gallatinsystems.survey.dao.DeviceSurveyJobQueueDAO;
-import com.gallatinsystems.survey.dao.SurveyAssignmentDAO;
 import com.gallatinsystems.survey.dao.SurveyDAO;
 import com.gallatinsystems.survey.domain.Survey;
 import com.google.appengine.api.datastore.KeyFactory;
-import com.google.appengine.api.taskqueue.Queue;
-import com.google.appengine.api.taskqueue.QueueFactory;
-import com.google.appengine.api.taskqueue.TaskOptions;
 
 @Controller
 @RequestMapping("/survey_assignments")
 public class SurveyAssignmentRestService {
 
-    private SurveyAssignmentDAO surveyAssignmentDao = new SurveyAssignmentDAO();
+    private SurveyAssignmentDao surveyAssignmentDao = new SurveyAssignmentDao();
 
     private DeviceDAO deviceDao = new DeviceDAO();
 
@@ -143,19 +141,29 @@ public class SurveyAssignmentRestService {
 
     @RequestMapping(method = RequestMethod.POST, value = "")
     @ResponseBody
-    public Map<String, SurveyAssignmentDto> newSurveyAssignment(
+    public Map<String, Object> newSurveyAssignment(
             @RequestBody
             SurveyAssignmentPayload payload) {
 
-        final SurveyAssignmentDto dto = payload.getSurvey_assignment();
-        final SurveyAssignment sa  = marshallToDomain(dto);
+        final Map<String, Object> response = new HashMap<String, Object>();
 
-        surveyAssignmentDao.save(sa); //fills in new key
-        List<DeviceSurveyJobQueue> deviceSurveyJobQueues = generateDeviceSurveyJobQueueItems(sa);
-        deviceSurveyJobQueueDAO.save(deviceSurveyJobQueues);
+        RestStatusDto statusDto = new RestStatusDto();
+        statusDto.setStatus("failed");
+        statusDto.setMessage("missing required parameters");
 
-        final HashMap<String, SurveyAssignmentDto> response = new HashMap<String, SurveyAssignmentDto>();
-        response.put("survey_assignment", marshallToDto(sa));
+        final SurveyAssignment sa  = marshallToDomain(payload.getSurvey_assignment());
+        if (sa != null
+                && sa.getDeviceIds() != null
+                && sa.getSurveyId() != null) {
+            surveyAssignmentDao.save(sa); //fills in new key
+
+            List<DeviceSurveyJobQueue> deviceSurveyJobQueues = generateDeviceSurveyJobQueueItems(sa);
+            deviceSurveyJobQueueDAO.save(deviceSurveyJobQueues);
+
+            response.put("survey_assignment", marshallToDto(sa));
+            statusDto.setStatus("ok");
+        }
+        response.put("meta", statusDto);
         return response;
     }
 
@@ -166,8 +174,8 @@ public class SurveyAssignmentRestService {
         if (sa.getKey() != null) {
             dto.setKeyId(sa.getKey().getId());
         }
-        dto.setDevices(sa.getDeviceIds());
-        dto.setSurveys(sa.getSurveyIds());
+        dto.setDeviceIds(sa.getDeviceIds());
+        dto.setFormIds(sa.getFormIds());
 
         return dto;
     }
@@ -179,8 +187,8 @@ public class SurveyAssignmentRestService {
         if (dto.getKeyId() != null) {
             sa.setKey(KeyFactory.createKey("SurveyAssignment", dto.getKeyId()));
         }
-        sa.setDeviceIds(dto.getDevices());
-        sa.setSurveyIds(dto.getSurveys());
+        sa.setDeviceIds(dto.getDeviceIds());
+        sa.setFormIds(dto.getFormIds());
 
         return sa;
     }
@@ -195,7 +203,7 @@ public class SurveyAssignmentRestService {
      */
     private List<DeviceSurveyJobQueue> generateDeviceSurveyJobQueueItems(SurveyAssignment assignment) {
         List<DeviceSurveyJobQueue> deviceSurveyJobQueues = new ArrayList<>();
-        List<Survey> forms = surveyDao.listByKeys(assignment.getSurveyIds());
+        List<Survey> forms = surveyDao.listByKeys(assignment.getFormIds());
         List<Device> devices = deviceDao.listByKeys(assignment.getDeviceIds());
 
         for (Survey form : forms) {
