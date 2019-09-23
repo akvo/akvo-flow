@@ -85,11 +85,11 @@
 	    "EMAIL_VERIFIED_ERROR": "Necesita verificar su dirección de email, por favor revise su buzón de correo y haga click en el enlace de verificación"},
 	  "en" :
 	  { "ERROR_TITLE":"There was an issue verifying your identity",
-	    "ERROR_UNKNOWN":"Please contact with support@akvo.org about this problem",	    
-	    "EMAIL_VERIFIED_ERROR": "You need to verify your email address, please check your inbox email and click the verification link."},
+	    "ERROR_UNKNOWN":"Please contact with support@akvo.org about this problem",
+	    "EMAIL_VERIFIED_ERROR": "You need to verify your email address, please check your inbox email and click the verification link"},
 	  "fr" :
 	  { "ERROR_TITLE":"Un problème est survenu lors de la vérification de votre identité",
-	    "ERROR_UNKNOWN":"Contactez support@akvo.org pour de l’aide",	    
+	    "ERROR_UNKNOWN":"Contactez support@akvo.org pour de l’aide",
 	    "EMAIL_VERIFIED_ERROR": "Vous devez vérifier votre adresse e-mail. Vérifiez votre boîte de courrier electronique et cliquez sur le lien de vérification"}
       };
 
@@ -100,8 +100,8 @@
       }
       
       function errorOnUnknown(i18n_data, urlParams){
-	  var code = urlErrorCode(urlParams);
-	  var codeMessage = code ? ": "+code : "";
+	  var errorCode = urlErrorCode(urlParams);
+	  var codeMessage = ( errorCode && errorCode.length>0 && errorCode.toLowerCase() !== "null" ) ? ": "+errorCode : "";
 	  return i18n_data["ERROR_UNKNOWN"]+codeMessage;
       }
       

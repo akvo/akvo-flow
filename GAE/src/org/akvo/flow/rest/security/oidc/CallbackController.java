@@ -80,9 +80,14 @@ public class CallbackController {
         } catch (AuthenticationException | IdentityVerificationException e) {
 	    String errorDescriptionId = "error_description";
 	    String errorDescription= req.getParameter(errorDescriptionId);
-	    log.log(Level.INFO, errorDescriptionId+": "+errorDescription+" Error Message: "+e.getMessage());
+	    Level logLevel = Level.INFO;
+	    String errorCode = "?errorCode="+errorDescription;
+	    if (errorDescription == null || !errorDescription.equals("EMAIL_VERIFIED_ERROR")){
+		logLevel = Level.SEVERE;
+	    }
+	    log.log(logLevel, errorDescriptionId+": "+errorDescription+" Error Message: "+e.getMessage());
 	    SecurityContextHolder.clearContext();
-	    res.sendRedirect(redirectOnFail+"?errorCode="+errorDescription);
+	    res.sendRedirect(redirectOnFail+errorCode);
         }
     }
 
