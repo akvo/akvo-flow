@@ -94,6 +94,7 @@ public class DataPointServlet extends AbstractRestApiServlet {
             DeviceDAO deviceDao = new DeviceDAO();
             Device device = deviceDao.getDevice(dpReq.getAndroidId(), dpReq.getImei(),dpReq.getPhoneNumber());
             if (device != null) {
+                log.info("Found device id: " + device.getKey().getId());
                 log.fine("Found device: " + device);
                 //Find which assignments we are part of
                 List<DataPointAssignment> assList =
@@ -107,9 +108,7 @@ public class DataPointServlet extends AbstractRestApiServlet {
                 List<Long> pointList = new ArrayList<>();
                 pointList.addAll(pointSet);
                 dpList = surveyedLocaleDao.listByKeys(pointList);
-                log.fine("Found assigned data points: " + dpList);
                 res = convertToResponse(dpList, dpReq.getSurveyId());
-                log.fine("returning result: " + res);
                 return res;
             }
             res.setCode(String.valueOf(HttpServletResponse.SC_NOT_FOUND));
