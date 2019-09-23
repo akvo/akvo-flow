@@ -23,19 +23,19 @@ import org.waterforpeople.mapping.app.web.dto.SurveyedLocaleDto;
 import com.gallatinsystems.framework.rest.RestResponse;
 
 /**
- * response for DataPointServlet service
+ * response for SurveyedLocaleServlet service
  *
  */
-public class DataPointResponse extends RestResponse {
-    private static final long serialVersionUID = 1L;
-    private List<SurveyedLocaleDto> dataPointData;
+public class SurveyedLocaleResponse extends RestResponse {
+    private static final long serialVersionUID = 1548249617327473969L;
+    private List<SurveyedLocaleDto> surveyedLocaleData;
 
-    public List<SurveyedLocaleDto> getDataPointData() {
-        return dataPointData;
+    public List<SurveyedLocaleDto> getSurveyedLocaleData() {
+        return surveyedLocaleData;
     }
 
-    public void setDataPointData(List<SurveyedLocaleDto> dataPointData) {
-        this.dataPointData = dataPointData;
+    public void setSurveyedLocaleData(List<SurveyedLocaleDto> surveyedLocaleData) {
+        this.surveyedLocaleData = surveyedLocaleData;
     }
 
 }

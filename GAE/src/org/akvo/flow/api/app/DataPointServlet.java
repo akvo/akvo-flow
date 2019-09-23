@@ -59,8 +59,8 @@ import java.util.logging.Logger;
  * JSON service for returning the list of assigned data point records for a specific device and surveyId
  *
  */
+@SuppressWarnings("serial")
 public class DataPointServlet extends AbstractRestApiServlet {
-    private static final long serialVersionUID = 8748650927754433019L;
     private static final Logger log = Logger.getLogger(DataPointServlet.class.getName());
     private SurveyedLocaleDao surveyedLocaleDao;
     private DataPointAssignmentDao dataPointAssignmentDao;
@@ -108,7 +108,7 @@ public class DataPointServlet extends AbstractRestApiServlet {
                 pointList.addAll(pointSet);
                 dpList = surveyedLocaleDao.listByKeys(pointList);
                 log.fine("Found assigned data points: " + dpList);
-                res = convertToResponse(dpList, dpReq.getSurveyId(), new DataPointResponse());
+                res = convertToResponse(dpList, dpReq.getSurveyId());
                 log.fine("returning result: " + res);
                 return res;
             }
@@ -125,7 +125,8 @@ public class DataPointServlet extends AbstractRestApiServlet {
      * converts the domain objects to dtos and then installs them in a DataPointResponse object
      *
      */
-    protected static DataPointResponse convertToResponse(List<SurveyedLocale> slList, Long surveyId, DataPointResponse resp) {
+    private DataPointResponse convertToResponse(List<SurveyedLocale> slList, Long surveyId) {
+        DataPointResponse resp = new DataPointResponse();
         if (slList == null) {
             resp.setCode(String.valueOf(HttpServletResponse.SC_INTERNAL_SERVER_ERROR));
             resp.setMessage("Internal Server Error");
@@ -137,11 +138,11 @@ public class DataPointServlet extends AbstractRestApiServlet {
 
         List<SurveyedLocaleDto> dtoList = getSurveyedLocaleDtosList(slList, surveyId);
 
-        resp.setSurveyedLocaleData(dtoList);
+        resp.setDataPointData(dtoList);
         return resp;
     }
 
-    private static List<SurveyedLocaleDto> getSurveyedLocaleDtosList(List<SurveyedLocale> slList, Long surveyId) {
+    protected static List<SurveyedLocaleDto> getSurveyedLocaleDtosList(List<SurveyedLocale> slList, Long surveyId) {
         List<SurveyedLocaleDto> dtoList = new ArrayList<>();
         HashMap<Long, String> questionTypeMap = new HashMap<>();
         QuestionDao questionDao = new QuestionDao();

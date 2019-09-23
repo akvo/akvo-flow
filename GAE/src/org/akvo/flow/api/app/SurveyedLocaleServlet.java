@@ -26,6 +26,8 @@ import com.gallatinsystems.survey.domain.Survey;
 import com.gallatinsystems.surveyal.dao.SurveyedLocaleDao;
 import com.gallatinsystems.surveyal.domain.SurveyedLocale;
 import org.akvo.flow.util.FlowJsonObjectWriter;
+import org.waterforpeople.mapping.app.web.dto.SurveyedLocaleDto;
+
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
@@ -76,7 +78,7 @@ public class SurveyedLocaleServlet extends AbstractRestApiServlet {
                         == slReq.getSurveyGroupId().longValue()) {
                     slList = surveyedLocaleDao.listLocalesBySurveyGroupAndDate(
                             slReq.getSurveyGroupId(), slReq.getLastUpdateTime(), SL_PAGE_SIZE);
-                    return DataPointServlet.convertToResponse(slList, slReq.getSurveyGroupId(), new DataPointResponse());
+                    return convertToResponse(slList, slReq.getSurveyGroupId());
                 }
             }
         }
@@ -85,6 +87,27 @@ public class SurveyedLocaleServlet extends AbstractRestApiServlet {
         res.setCode(String.valueOf(HttpServletResponse.SC_FORBIDDEN));
         res.setMessage("Invalid assignment");
         return res;
+    }
+
+    /**
+     * converts the domain objects to dtos and then installs them in a SurveyedLocaleResponse object
+     *
+     */
+    private SurveyedLocaleResponse convertToResponse(List<SurveyedLocale> slList, Long surveyId) {
+        SurveyedLocaleResponse resp = new SurveyedLocaleResponse();
+        if (slList == null) {
+            resp.setCode(String.valueOf(HttpServletResponse.SC_INTERNAL_SERVER_ERROR));
+            resp.setMessage("Internal Server Error");
+            return resp;
+        }
+        // set meta data
+        resp.setCode(String.valueOf(HttpServletResponse.SC_OK));
+        resp.setResultCount(slList.size());
+
+        List<SurveyedLocaleDto> dtoList = DataPointServlet.getSurveyedLocaleDtosList(slList, surveyId);
+
+        resp.setSurveyedLocaleData(dtoList);
+        return resp;
     }
 
     /**

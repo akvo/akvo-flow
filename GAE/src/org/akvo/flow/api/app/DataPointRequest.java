@@ -27,7 +27,7 @@ import com.gallatinsystems.framework.rest.RestRequest;
  * data structure for transferring data points
  */
 public class DataPointRequest extends RestRequest {
-    private static final long serialVersionUID = 2511686668372190068L;
+    private static final long serialVersionUID = 1L;
     private static final String SURVEY_ID_PARAM = "surveyId";
     private static final String IMEI_PARAM = "imei";
     private static final String PHONE_NUMBER_PARAM = "phoneNumber";
@@ -41,6 +41,7 @@ public class DataPointRequest extends RestRequest {
     private String phoneNumber;
     private String androidId;
     private String deviceId;
+    @Deprecated
     private Date lastUpdateTime;
     @Deprecated
     private String cursor;
