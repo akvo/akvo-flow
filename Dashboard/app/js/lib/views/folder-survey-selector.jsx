@@ -1,16 +1,19 @@
 import React from 'react';
 
-import ChildOption from 'akvo-flow/components/ChildOption';
+// eslint-disable-next-line import/no-unresolved
+import FolderSurveySelector from 'akvo-flow/components/FolderSurveySelector';
 
+// eslint-disable-next-line import/no-unresolved
 require('akvo-flow/views/react-component');
 
 FLOW.FolderSurveySelectorView = FLOW.ReactComponentView.extend({
   init() {
     this._super();
-    this.handleChange = this.handleChange.bind(this);
     this.comparator = this.comparator.bind(this);
     this.folderSurveySelector = this.folderSurveySelector.bind(this);
-    this.state = { value: 0 };
+    this.getLevels = this.getLevels.bind(this);
+    this.handleSelect = this.handleSelect.bind(this);
+
     this.surveyGroups = [];
   },
 
@@ -32,54 +35,44 @@ FLOW.FolderSurveySelectorView = FLOW.ReactComponentView.extend({
     }
   },
 
-  folderSurveySelector(parentId) {
-    if (!FLOW.projectControl.content.isLoaded) return;
-    const levels = [];
-    let surveySelected = false;
-    // if not root level, generate ancestor selectors
-    if (parentId !== 0) {
-      const parent = this.surveyGroups.find(sg => sg.keyId == parentId);
-      for (let i = 0; i < parent.ancestorIds.length; i++) {
-        const level = [{
-          keyId: 0,
-          parentId: null,
-          name: Ember.String.loc('_choose_folder_or_survey'),
-        }].concat(this.surveyGroups.filter(sgs => sgs.parentId == parent.ancestorIds[i])
-          .sort(this.comparator));
-        levels.push(level);
-      }
-      const selectedSG = FLOW.projectControl.get('content').find(sg => sg.get('keyId') == parentId);
-      if (selectedSG && selectedSG.get('projectType') !== 'PROJECT_FOLDER') {
-        surveySelected = true;
-        FLOW.selectedControl.set('selectedSurveyGroup', selectedSG);
-      }
-    }
-
-    if (!surveySelected) {
-      levels.push([{
+  getLevels(parentId = 0) {
+    return [
+      [{
         keyId: 0,
         parentId: null,
         name: Ember.String.loc('_choose_folder_or_survey'),
-      }].concat(this.surveyGroups.filter(sg => sg.parentId == parentId).sort(this.comparator)));
-    }
-
-    this.reactRender(
-      <div>
-        {levels.map(sgs => (
-          <select value={this.state.value} onChange={this.handleChange}>
-            {sgs.map(sg => (
-              <ChildOption key={sg.keyId} name={sg.name} value={sg.keyId} />
-            ))}
-          </select>
-        ))}
-      </div>
-    );
+      }]
+        .concat(this.surveyGroups.filter(sg => sg.parentId == parentId)
+          .sort(this.comparator)),
+    ];
   },
 
-  handleChange(event) {
-    if (event.target.value !== 0) {
-      this.folderSurveySelector(event.target.value);
+  handleSelect(parentId) {
+    // check if a survey has been selected
+    const selectedSG = FLOW.projectControl.get('content').find(sg => sg.get('keyId') == parentId);
+    if (selectedSG && selectedSG.get('projectType') !== 'PROJECT_FOLDER') {
+      FLOW.selectedControl.set('selectedSurveyGroup', selectedSG);
+      return null;
     }
+
+    const newLevels = this.getLevels(parentId);
+    return newLevels;
+  },
+
+  folderSurveySelector(parentId) {
+    // if content isn't loaded, return early
+    if (!FLOW.projectControl.content.isLoaded) {
+      return;
+    }
+
+    const initialLevels = this.getLevels(parentId);
+
+    this.reactRender(
+      <FolderSurveySelector
+        levels={initialLevels}
+        onChange={this.handleSelect}
+      />
+    );
   },
 
   comparator(a, b) {
