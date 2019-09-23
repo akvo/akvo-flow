@@ -1,3 +1,6 @@
 {
-    "testRegex": "((\\.|/*.)(test))\\.(jsx|js)?$"
+    "testRegex": "((\\.|/*.)(test))\\.(jsx|js)?$",
+    "moduleNameMapper": {
+        "^akvo-flow(.*)$": "<rootDir>/app/js/lib$1"
+    }
 }
