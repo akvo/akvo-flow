@@ -95,19 +95,19 @@
 
       const langs = new Set(['en', 'es', 'fr']);
 
-      function code(urlParams){
+      function urlErrorCode(urlParams){
 	  return urlParams.get('errorCode');
       }
       
       function errorOnUnknown(i18n_data, urlParams){
-	  var code = code(urlParams);
+	  var code = urlErrorCode(urlParams);
 	  var codeMessage = code ? ": "+code : "";
 	  return i18n_data["ERROR_UNKNOWN"]+codeMessage;
       }
       
       function errorCode(i18n_data) {
 	  var urlParams = new URLSearchParams(window.location.search);
-	  return i18n_data[code(urlParams)] || errorOnUnknown(i18n_data, urlParams);
+	  return i18n_data[urlErrorCode(urlParams)] || errorOnUnknown(i18n_data, urlParams);
       }
 
       function lang() {
