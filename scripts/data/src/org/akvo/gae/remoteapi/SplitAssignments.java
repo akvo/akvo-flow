@@ -72,7 +72,6 @@ public class SplitAssignments implements Process {
         for (Entity ass : pq.asIterable(FetchOptions.Builder.withChunkSize(500))) {
 
             boolean splitAllowed = true;
-            boolean forceSplit = true; //want to write the surveyId and new field names to all
             Long id = ass.getKey().getId();
             String name = (String) ass.getProperty("name");
             Map<Long, List<Long>> surveys = new HashMap<>(); //From survey ids to a list of forms
@@ -86,7 +85,6 @@ public class SplitAssignments implements Process {
             for (Long formId: forms) {
                 if (formId == 0) { //obviously bogus; fix it
                     System.out.println("ERROR! Form in assignment is 0; removing it " + formId);
-                    forceSplit = true;
                     continue;
                 }
                 Long surveyId = surveyOfForm(ds, formId);
@@ -104,11 +102,10 @@ public class SplitAssignments implements Process {
                     splitAllowed = false;
                 } else {
                     System.out.println("ERROR! Nonexistent form " + formId + " in assignment " + id);
-                    forceSplit = true; //repair the assignment
                 }
             }
 
-            if (splitAllowed && (forceSplit || surveys.size() > 1)) { //Must be split!
+            if (splitAllowed && surveys.size() > 1) { //Must be split!
                 System.out.println("Rewriting assignment " + id + " in " + surveys.size() + " pieces");
 
                 int part = 0;
