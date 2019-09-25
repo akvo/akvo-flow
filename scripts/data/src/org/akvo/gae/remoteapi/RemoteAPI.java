@@ -53,9 +53,10 @@ public class RemoteAPI {
             System.exit(1);
         }
 
-        final boolean isLocalDevelopmentServer = "localhost".equals(args[1]);
+        String orgId = args[1];
+        final boolean isLocalDevelopmentServer = "localhost".equals(orgId);
         final String className = args[0];
-        final String instanceUrl = isLocalDevelopmentServer ? "localhost" : args[1]
+        final String instanceUrl = isLocalDevelopmentServer ? "localhost" : orgId
                 + ".appspot.com";
         final int port = isLocalDevelopmentServer ? 8888 : 443;
         String serviceAccount = null;
@@ -76,7 +77,6 @@ public class RemoteAPI {
 
         final RemoteApiInstaller installer = new RemoteApiInstaller();
 
-        String orgId = args[1];
         try {
             installer.install(options);
             String clz = className.indexOf(".") != -1 ? className : "org.akvo.gae.remoteapi."
