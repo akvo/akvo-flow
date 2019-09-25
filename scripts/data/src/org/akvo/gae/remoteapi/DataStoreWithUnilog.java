@@ -40,31 +40,31 @@ public class DataStoreWithUnilog implements DatastoreService {
 
     @Override
     public Key put(Entity entity) {
-        Key put = delegate.put(entity);
+        Key result = delegate.put(entity);
         storeEntityUpdate(Stream.of(entity));
-        return put;
+        return result;
     }
 
     @Override
     public Key put(Transaction transaction, Entity entity) {
-        Key put = delegate.put(transaction, entity);
+        Key result = delegate.put(transaction, entity);
         storeEntityUpdate(Stream.of(entity));
-        return put;
+        return result;
     }
 
     @Override
     public List<Key> put(Iterable<Entity> iterable) {
-        List<Key> put = delegate.put(iterable);
+        List<Key> result = delegate.put(iterable);
         Stream<Entity> entities = asStream(iterable);
         storeEntityUpdate(entities);
-        return put;
+        return result;
     }
 
     @Override
     public List<Key> put(Transaction transaction, Iterable<Entity> iterable) {
-        List<Key> put = delegate.put(transaction, iterable);
+        List<Key> result = delegate.put(transaction, iterable);
         storeEntityUpdate(asStream(iterable));
-        return put;
+        return result;
     }
 
     @Override
