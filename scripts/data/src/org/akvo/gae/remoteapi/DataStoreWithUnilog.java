@@ -118,7 +118,9 @@ public class DataStoreWithUnilog implements DatastoreService {
         final EventTypes eventTypes = EventUtils
                 .getEventAndActionType(kind);
 
-        if (eventTypes != null) {
+        if (eventTypes == null) {
+            return null;
+        } else {
             Map<String, Object> event = updateOrCreateEvent(entity, eventTypes);
             try {
                 return EventUtils.createEventLogEntity(event, new Date());
@@ -126,7 +128,6 @@ public class DataStoreWithUnilog implements DatastoreService {
                 throw new RuntimeException(e);
             }
         }
-        return entity;
     }
 
     private Map<String, Object> updateOrCreateEvent(Entity entity,
