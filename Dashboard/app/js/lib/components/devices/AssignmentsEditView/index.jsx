@@ -77,7 +77,10 @@ export default class AssignmentsEditView extends React.Component {
                     :
                   </label>
 
-                  <FormSelectorView forms={data.forms} />
+                  <FormSelectorView
+                    forms={data.forms}
+                    onCheck={actions.handleFormCheck}
+                  />
                 </div>
               </fieldset>
             </div>
