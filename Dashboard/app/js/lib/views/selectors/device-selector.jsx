@@ -27,7 +27,7 @@ FLOW.DeviceGroupSelectorView = FLOW.ReactComponentView.extend({
       });
 
       if (FLOW.deviceControl.content.isLoaded) {
-        FLOW.selectedControl.selectedSurveyAssignment.get('devices').forEach((deviceId) => {
+        FLOW.selectedControl.selectedSurveyAssignment.get('deviceIds').forEach((deviceId) => {
           // populate pre-selected devices
           const device = FLOW.Device.find(deviceId);
           if (device && device.get('keyId')) {
@@ -47,7 +47,7 @@ FLOW.DeviceGroupSelectorView = FLOW.ReactComponentView.extend({
   },
 
   deviceInAssignment(deviceId) {
-    const devicesInAssignment = FLOW.selectedControl.selectedSurveyAssignment.get('devices');
+    const devicesInAssignment = FLOW.selectedControl.selectedSurveyAssignment.get('deviceIds');
     return devicesInAssignment.indexOf(deviceId) > -1;
   },
 

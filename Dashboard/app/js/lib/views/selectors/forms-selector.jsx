@@ -17,7 +17,7 @@ FLOW.FormSelectorView = FLOW.ReactComponentView.extend(observe({
 
   didInsertElement(...args) {
     this._super(...args);
-    FLOW.selectedControl.selectedSurveyAssignment.get('surveys').forEach((formId) => {
+    FLOW.selectedControl.selectedSurveyAssignment.get('formIds').forEach((formId) => {
       const form = FLOW.Survey.find(formId);
       if (form && form.get('keyId')) {
         FLOW.selectedControl.selectedSurveys.pushObject(form);
@@ -62,13 +62,13 @@ FLOW.FormSelectorView = FLOW.ReactComponentView.extend(observe({
   },
 
   formInAssignment(formId) {
-    const formsInAssignment = FLOW.selectedControl.selectedSurveyAssignment.get('surveys');
+    const formsInAssignment = FLOW.selectedControl.selectedSurveyAssignment.get('formIds');
     return formsInAssignment.indexOf(formId) > -1;
   },
 
   canAddFormsToAssignment() {
     // only allow if form qualifies
-    const formsInAssignment = FLOW.selectedControl.selectedSurveyAssignment.get('surveys');
+    const formsInAssignment = FLOW.selectedControl.selectedSurveyAssignment.get('formIds');
     const selectedSurveyGroupId = FLOW.selectedControl.selectedSurveyGroup.get('keyId');
     if (formsInAssignment.length > 0) {
       // get survey id of first form currently in assignment
