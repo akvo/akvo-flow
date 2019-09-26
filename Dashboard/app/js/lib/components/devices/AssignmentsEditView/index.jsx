@@ -12,10 +12,24 @@ export default class AssignmentsEditView extends React.Component {
     assignmentName: this.props.inputValues.assignmentName,
     startDate: this.props.inputValues.startDate,
     expireDate: this.props.inputValues.toDate,
+    nameValidationMsg: '',
   }
 
   onChangeState = (key, value) => {
+    if (key === 'assignmentName') this.validateAssignment(value);
     this.setState({ [key]: value });
+  }
+
+  validateAssignment = (assignmentName) => {
+    if ((assignmentName && assignmentName.length > 100) || !assignmentName || assignmentName == '') {
+      if (assignmentName && assignmentName.length > 100) {
+        this.setState({ nameValidationMsg: Ember.String.loc('_assignment_name_over_100_chars') });
+      } else if (!assignmentName || assignmentName == '') {
+        this.setState({ nameValidationMsg: Ember.String.loc('_assignment_name_not_set') });
+      }
+    } else {
+      this.setState({ nameValidationMsg: '' });
+    }
   }
 
   formatStateForComponents = () => {
@@ -47,7 +61,7 @@ export default class AssignmentsEditView extends React.Component {
 
         <form>
           <AssignmentDetails
-            strings={strings}
+            strings={{ ...strings, nameValidationMsg: this.state.nameValidationMsg }}
             values={assignmentDetailsState}
             onChange={this.onChangeState}
           />

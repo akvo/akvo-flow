@@ -35,7 +35,6 @@ FLOW.formatDate = function (value) {
 
 FLOW.AssignmentEditView = FLOW.ReactComponentView.extend(
   observe({
-    'this.assignmentName': 'validateAssignmentObserver',
     'FLOW.router.navigationController.selected': 'detectChangeTab',
     'FLOW.router.devicesSubnavController.selected': 'detectChangeTab',
     'FLOW.surveyControl.content.isLoaded': 'detectSurveyLoaded',
@@ -51,6 +50,7 @@ FLOW.AssignmentEditView = FLOW.ReactComponentView.extend(
       this.renderReactSide = this.renderReactSide.bind(this);
       this.handleFormCheck = this.handleFormCheck.bind(this);
       this.canAddFormsToAssignment = this.canAddFormsToAssignment.bind(this);
+      this.validateAssignment = this.validateAssignment.bind(this);
 
       // object wide varaibles
       this.forms = {};
@@ -93,7 +93,7 @@ FLOW.AssignmentEditView = FLOW.ReactComponentView.extend(
       const actions = {
         cancelEditSurveyAssignment: this.cancelEditSurveyAssignment,
         handleFormCheck: this.handleFormCheck,
-
+        validateAssignment: this.validateAssignment,
       };
 
       const data = {
@@ -175,6 +175,17 @@ FLOW.AssignmentEditView = FLOW.ReactComponentView.extend(
       }
 
       return true; // no forms are currently added to the assignment
+    },
+
+    validateAssignment(assignmentName) {
+      this.set('assignmentValidationFailure', (
+        (assignmentName && assignmentName.length > 100)
+        || !assignmentName || assignmentName == ''));
+      if (assignmentName && assignmentName.length > 100) {
+        this.set('assignmentValidationFailureReason', Ember.String.loc('_assignment_name_over_100_chars'));
+      } else if (!assignmentName || assignmentName == '') {
+        this.set('assignmentValidationFailureReason', Ember.String.loc('_assignment_name_not_set'));
+      }
     },
 
     // handlers

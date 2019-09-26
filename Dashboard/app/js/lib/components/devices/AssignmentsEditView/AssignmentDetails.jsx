@@ -25,6 +25,10 @@ export default class AssignmentDetails extends React.Component {
           {strings.assignmentName}
           :
           {/* TODO:: Add failure message for  */}
+          <span style={{ color: 'red' }}>
+            {' '}
+            {strings.nameValidationMsg}
+          </span>
         </label>
 
         <input
