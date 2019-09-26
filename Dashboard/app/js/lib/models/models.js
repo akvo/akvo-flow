@@ -431,13 +431,6 @@ FLOW.User = FLOW.BaseModel.extend({
   accessKey: DS.attr('string'),
 });
 
-FLOW.UserConfig = FLOW.BaseModel.extend({
-  group: DS.attr('string'),
-  name: DS.attr('string'),
-  value: DS.attr('string'),
-  userId: DS.attr('number'),
-});
-
 FLOW.Message = FLOW.BaseModel.extend({
   objectId: DS.attr('number'),
   lastUpdateDateTime: DS.attr('number'),

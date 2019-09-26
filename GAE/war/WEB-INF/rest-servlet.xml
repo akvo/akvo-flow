@@ -47,7 +47,6 @@
     <bean name="/surveyed_locales" class="org.waterforpeople.mapping.app.web.rest.SurveyedLocaleRestService" lazy-init="true" />
     <bean name="/translations" class="org.waterforpeople.mapping.app.web.rest.TranslationRestService" lazy-init="true" />
     <bean name="/user_auth" class="org.waterforpeople.mapping.app.web.rest.UserAuthorizationRestService" lazy-init="true" />
-    <bean name="/user_configs" class="org.waterforpeople.mapping.app.web.rest.UserConfigRestService" lazy-init="true" />
     <bean name="/users" class="org.waterforpeople.mapping.app.web.rest.UserRestService" lazy-init="true" />
     <bean name="/user_roles" class="org.waterforpeople.mapping.app.web.rest.UserRolesRestService" lazy-init="true" />
 </beans>
