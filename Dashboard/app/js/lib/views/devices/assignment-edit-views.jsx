@@ -51,6 +51,7 @@ FLOW.AssignmentEditView = FLOW.ReactComponentView.extend(
       this.handleFormCheck = this.handleFormCheck.bind(this);
       this.canAddFormsToAssignment = this.canAddFormsToAssignment.bind(this);
       this.validateAssignment = this.validateAssignment.bind(this);
+      this.saveSurveyAssignment = this.saveSurveyAssignment.bind(this);
 
       // object wide varaibles
       this.forms = {};
@@ -81,6 +82,7 @@ FLOW.AssignmentEditView = FLOW.ReactComponentView.extend(
         selectForms: Ember.String.loc('_select_forms'),
         selectDevices: Ember.String.loc('_select_devices'),
         selectDeviceGroup: Ember.String.loc('_select_device_group'),
+        saveAssignment: Ember.String.loc('_save_assignment'),
         cancel: Ember.String.loc('_cancel'),
       };
 
@@ -94,6 +96,7 @@ FLOW.AssignmentEditView = FLOW.ReactComponentView.extend(
         cancelEditSurveyAssignment: this.cancelEditSurveyAssignment,
         handleFormCheck: this.handleFormCheck,
         validateAssignment: this.validateAssignment,
+        onSubmit: this.saveSurveyAssignment,
       };
 
       const data = {
@@ -111,6 +114,62 @@ FLOW.AssignmentEditView = FLOW.ReactComponentView.extend(
       }
       FLOW.selectedControl.set('selectedSurveyAssignment', null);
       FLOW.router.transitionTo('navDevices.assignSurveysOverview');
+    },
+
+    saveSurveyAssignment(data) {
+      let endDateParse;
+      let startDateParse;
+      const devices = [];
+      const surveys = [];
+
+      // set Ember Data
+      FLOW.dateControl.set('fromDate', FLOW.formatDate(new Date(data.startDate)));
+      FLOW.dateControl.set('toDate', FLOW.formatDate(new Date(data.expireDate)));
+
+      // get assignment
+      const sa = FLOW.selectedControl.get('selectedSurveyAssignment');
+
+      // set assignment name
+      sa.set('name', data.assignmentName);
+
+      // parse date
+      if (!Ember.none(FLOW.dateControl.get('toDate'))) {
+        endDateParse = Date.parse(FLOW.dateControl.get('toDate'));
+      } else {
+        endDateParse = null;
+      }
+
+      if (!Ember.none(FLOW.dateControl.get('fromDate'))) {
+        startDateParse = Date.parse(FLOW.dateControl.get('fromDate'));
+      } else {
+        startDateParse = null;
+      }
+
+      // set data and language
+      sa.set('endDate', endDateParse);
+      sa.set('startDate', startDateParse);
+      sa.set('language', 'en');
+
+      FLOW.selectedControl.get('selectedDevices').forEach((item) => {
+        console.log('sd', item);
+        devices.push(item.get('keyId'));
+      });
+      sa.set('devices', devices);
+
+      FLOW.selectedControl.get('selectedSurveys').forEach((item) => {
+        console.log('ss', item);
+        surveys.push(item.get('keyId'));
+      });
+
+      sa.set('surveys', surveys);
+
+      console.log('sa', sa.get('surveys'));
+      FLOW.store.commit();
+
+      // wait half a second before transitioning back to the assignments list
+      // setTimeout(() => {
+      //   FLOW.router.transitionTo('navDevices.assignSurveysOverview');
+      // }, 500);
     },
 
     // setups
@@ -138,6 +197,9 @@ FLOW.AssignmentEditView = FLOW.ReactComponentView.extend(
     // listeners
     detectSurveyLoaded() {
       this.forms = {};
+
+      if (!FLOW.surveyControl.content) return;
+
       FLOW.surveyControl.content.forEach((form) => {
         this.forms[form.get('keyId')] = {
           name: form.get('name'),

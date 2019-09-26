@@ -15,11 +15,25 @@ export default class AssignmentsEditView extends React.Component {
     nameValidationMsg: '',
   }
 
+  // lifecycle methods
+  componentDidMount() {
+    this.validateAssignment(this.props.inputValues.assignmentName);
+  }
+
+  // event handlers
   onChangeState = (key, value) => {
     if (key === 'assignmentName') this.validateAssignment(value);
     this.setState({ [key]: value });
   }
 
+  onSubmit = () => {
+    const { assignmentName, startDate, expireDate } = this.state;
+    if (this.assignmentNotComplete()) return;
+
+    this.props.actions.onSubmit({ assignmentName, startDate, expireDate });
+  }
+
+  // helpers
   validateAssignment = (assignmentName) => {
     if ((assignmentName && assignmentName.length > 100) || !assignmentName || assignmentName == '') {
       if (assignmentName && assignmentName.length > 100) {
@@ -44,6 +58,33 @@ export default class AssignmentsEditView extends React.Component {
     };
   }
 
+  assignmentNotComplete = () => {
+    const { assignmentName, expireDate, startDate } = this.state;
+
+    // if assignment name is empty
+    if (assignmentName.length === 0) {
+      FLOW.dialogControl.set('activeAction', 'ignore');
+      FLOW.dialogControl.set('header', Ember.String.loc('_assignment_name_not_set'));
+      FLOW.dialogControl.set('message', Ember.String.loc('_assignment_name_not_set_text'));
+      FLOW.dialogControl.set('showCANCEL', false);
+      FLOW.dialogControl.set('showDialog', true);
+      return true;
+    }
+
+    // if start date or end date is falsy
+    if (!expireDate.length || !startDate.length) {
+      FLOW.dialogControl.set('activeAction', 'ignore');
+      FLOW.dialogControl.set('header', Ember.String.loc('_date_not_set'));
+      FLOW.dialogControl.set('message', Ember.String.loc('_date_not_set_text'));
+      FLOW.dialogControl.set('showCANCEL', false);
+      FLOW.dialogControl.set('showDialog', true);
+      return true;
+    }
+
+    return false;
+  }
+
+  // render
   render() {
     const { strings, actions, data } = this.props;
     const { assignmentDetailsState } = this.formatStateForComponents();
@@ -123,7 +164,19 @@ export default class AssignmentsEditView extends React.Component {
 
           <div className="menuConfirm">
             <ul>
-              {/* TODO:: Add validation condition */}
+              {!this.state.nameValidationMsg.length ? (
+                <li>
+                  <a
+                    onClick={this.onSubmit}
+                    onKeyPress={this.onSubmit}
+                    className="standardBtn"
+                  >
+                    {strings.saveAssignment}
+                  </a>
+                </li>
+              ) : (
+                <li><a className="button noChanges" id="standardBtn">{strings.saveAssignment}</a></li>
+              )}
               <li>
                 <a
                   onClick={actions.cancelEditSurveyAssignment}
