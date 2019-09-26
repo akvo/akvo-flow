@@ -80,9 +80,8 @@ FLOW.FormSelectorView = FLOW.ReactComponentView.extend(observe({
     return true; // no forms are currently added to the assignment
   },
 
-  handleChange(e) {
+  handleChange(formId) {
     // only allow a form to be checked if a different survey isn't already selected
-    const formId = e.target.name;
     if (this.canAddFormsToAssignment()) {
       this.forms[formId].checked = !this.forms[formId].checked;
     } else {
