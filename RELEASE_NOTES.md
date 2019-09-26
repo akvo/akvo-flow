@@ -1,5 +1,18 @@
 # Akvo Flow Release Notes
 ----
+# Akvo Flow Dashboard v1.9.49 - Vibrant Viburnum
+Date: 05-08-2019
+
+# New and noteworthy
+* **Auth0 user login** - Implemented user login through Auth0 as an open ID connect provider.  This is part of the intergration to enable single-sign-on for Flow and Lumen users [#3125]
+
+# Resolved issues
+* **Performance improvements** - Stop unnecessary loading of all Surveys at application startup [#3139], implement batch fetching of entities from the datastore when we have all the relevant entity IDs [#3142]
+
+* **Assignments** - Refactored and simplified the logic for generating assignments entities that communicate with devices to inform about the creation or update of assignments [#3108]
+
+* **Development environment** - Reverted to a previous version of babel-core as the version used was breaking the development environment [#3138]
+
 # Akvo Flow Dashboard v1.9.48 - Unique Ursinia
 Date: 10-07-2019
 

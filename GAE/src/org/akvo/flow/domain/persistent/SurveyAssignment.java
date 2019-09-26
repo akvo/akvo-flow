@@ -1,5 +1,5 @@
 /*
- *  Copyright (C) 2010-2012 Stichting Akvo (Akvo Foundation)
+ *  Copyright (C) 2010-2012,2019 Stichting Akvo (Akvo Foundation)
  *
  *  This file is part of Akvo FLOW.
  *
@@ -14,7 +14,7 @@
  *  The full license text can also be seen at <http://www.gnu.org/licenses/agpl.html>.
  */
 
-package org.waterforpeople.mapping.domain;
+package org.akvo.flow.domain.persistent;
 
 import java.util.ArrayList;
 import java.util.Date;
@@ -25,20 +25,27 @@ import javax.jdo.annotations.PersistenceCapable;
 import com.gallatinsystems.framework.domain.BaseDomain;
 
 /**
- * domain to store assignment of surveys to devices
- * 
- * @author Christopher Fagiani
+ * domain to store assignment of forms to devices
  */
 @PersistenceCapable
 public class SurveyAssignment extends BaseDomain {
 
     private static final long serialVersionUID = -2028880542041242779L;
-    private List<Long> surveyIds;
+    private Long surveyId;
+    private List<Long> formIds;
     private List<Long> deviceIds;
     private String name;
     private String language;
     private Date startDate;
     private Date endDate;
+
+    public Long getSurveyId() {
+        return surveyId;
+    }
+
+    public void setSurveyId(Long surveyId) {
+        this.surveyId = surveyId;
+    }
 
     public String getLanguage() {
         return language;
@@ -72,12 +79,12 @@ public class SurveyAssignment extends BaseDomain {
         this.endDate = endDate;
     }
 
-    public List<Long> getSurveyIds() {
-        return surveyIds;
+    public List<Long> getFormIds() {
+        return formIds;
     }
 
-    public void setSurveyIds(List<Long> surveyIds) {
-        this.surveyIds = surveyIds;
+    public void setFormIds(List<Long> formIds) {
+        this.formIds = formIds;
     }
 
     public List<Long> getDeviceIds() {
@@ -88,10 +95,10 @@ public class SurveyAssignment extends BaseDomain {
         this.deviceIds = deviceIds;
     }
 
-    public void addSurvey(Long surveyId) {
-        if (surveyIds == null)
-            surveyIds = new ArrayList<Long>();
-        surveyIds.add(surveyId);
+    public void addForm(Long formId) {
+        if (formIds == null)
+            formIds = new ArrayList<Long>();
+        formIds.add(formId);
     }
 
 }

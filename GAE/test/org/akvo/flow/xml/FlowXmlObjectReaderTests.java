@@ -14,22 +14,17 @@
  *  The full license text can also be seen at <http://www.gnu.org/licenses/agpl.html>.
  */
 
-package test.java.org.akvo.flow.xml;
-
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertFalse;
-import static org.junit.jupiter.api.Assertions.assertNotEquals;
-import static org.junit.jupiter.api.Assertions.assertTrue;
+package org.akvo.flow.xml;
 
 import java.io.IOException;
 
-import org.akvo.flow.xml.PublishedForm;
-import org.akvo.flow.xml.XmlForm;
 import org.junit.jupiter.api.Test;
 import org.waterforpeople.mapping.app.gwt.client.survey.QuestionDto;
 import org.waterforpeople.mapping.app.gwt.client.survey.QuestionDto.QuestionType;
 import org.waterforpeople.mapping.app.gwt.client.survey.QuestionGroupDto;
 import org.waterforpeople.mapping.app.gwt.client.survey.SurveyDto;
+
+import static org.junit.jupiter.api.Assertions.*;
 
 class FlowXmlObjectReaderTests {
 

@@ -14,12 +14,12 @@
  *  The full license text can also be seen at <http://www.gnu.org/licenses/agpl.html>.
  */
 
-package test.java.org.waterforpeople.mapping.dataexport;
+package org.waterforpeople.mapping.dataexport;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNotEquals;
-
-import com.gallatinsystems.framework.dataexport.applet.DataImporter;
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.util.Map;
 
 import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.ss.usermodel.Sheet;
@@ -28,11 +28,10 @@ import org.apache.poi.ss.util.CellRangeAddress;
 import org.apache.poi.xssf.streaming.SXSSFWorkbook;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.Test;
-import org.waterforpeople.mapping.dataexport.RawDataSpreadsheetImporter;
-import java.io.File;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.util.Map;
+
+import com.gallatinsystems.framework.dataexport.applet.DataImporter;
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 class RawDataSpreadsheetImporterTests {
 

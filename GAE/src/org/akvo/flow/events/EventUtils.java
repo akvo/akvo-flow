@@ -26,10 +26,10 @@ import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-import com.gallatinsystems.common.Constants;
-import org.akvo.flow.util.FlowJsonObjectWriter;
 import org.akvo.flow.rest.security.user.GaeUser;
+import org.akvo.flow.util.FlowJsonObjectWriter;
 
+import com.gallatinsystems.common.Constants;
 import com.gallatinsystems.survey.domain.SurveyGroup;
 import com.gallatinsystems.survey.domain.SurveyGroup.PrivacyLevel;
 import com.google.appengine.api.datastore.Entity;
@@ -64,7 +64,7 @@ public class EventUtils {
     }
 
     // How we name the actions
-    static class Action {
+    public static class Action {
         public static final String SURVEY_GROUP = "surveyGroup";
         public static final String FORM = "form";
         public static final String QUESTION_GROUP = "questionGroup";
