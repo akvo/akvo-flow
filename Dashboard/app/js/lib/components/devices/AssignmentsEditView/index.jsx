@@ -4,6 +4,7 @@ import PropTypes from 'prop-types';
 
 import FolderSurveySelectorView from 'akvo-flow/components/selectors/FolderSurveySelector';
 import FormSelectorView from 'akvo-flow/components/selectors/FormSelector';
+import DeviceGroupSelectorView from 'akvo-flow/components/selectors/DeviceSelector';
 import AssignmentDetails from './AssignmentDetails';
 
 export default class AssignmentsEditView extends React.Component {
@@ -94,7 +95,7 @@ export default class AssignmentsEditView extends React.Component {
                   :
                 </h2>
                 <label htmlFor="deviceGroup">{strings.selectDeviceGroup}</label>
-                {/* TODO:: Add DeviceGroupSelectorView */}
+                <DeviceGroupSelectorView />
               </fieldset>
             </div>
           </div>

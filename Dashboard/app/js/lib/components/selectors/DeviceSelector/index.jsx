@@ -1,12 +1,47 @@
 import React from 'react';
-import PropTypes from 'prop-types';
+// import PropTypes from 'prop-types';
 
 // eslint-disable-next-line import/no-unresolved
 import Checkbox from 'akvo-flow/components/Checkbox';
 
 export default class DeviceSelector extends React.Component {
   state = {
+    deviceGroups: {},
+    deviceGroupNames: {},
     isAccordionOpen: false,
+  }
+
+  componentDidMount() {
+    const deviceGroupNames = {};
+    const deviceGroups = {};
+
+    if (FLOW.deviceGroupControl.content.isLoaded) {
+      FLOW.deviceGroupControl.get('content').forEach((item) => {
+        deviceGroupNames[item.get('keyId')] = item.get('code');
+        deviceGroups[item.get('keyId')] = {}; // initialize array of devices per group
+      });
+
+      if (FLOW.deviceControl.content.isLoaded) {
+        if (FLOW.selectedControl.selectedSurveyAssignment.get('devices')) {
+          FLOW.selectedControl.selectedSurveyAssignment.get('devices').forEach((deviceId) => {
+            // populate pre-selected devices
+            const device = FLOW.Device.find(deviceId);
+            if (device && device.get('keyId')) {
+              FLOW.selectedControl.selectedDevices.pushObject(device);
+            }
+          });
+        }
+
+        FLOW.deviceControl.get('content').forEach((device) => {
+          deviceGroups[device.get('deviceGroup') ? device.get('deviceGroup') : 1][device.get('keyId')] = {
+            name: device.get('deviceIdentifier'),
+            checked: this.deviceInAssignment(device.get('keyId')),
+          };
+        });
+      }
+    }
+
+    this.setState({ deviceGroupNames, deviceGroups });
   }
 
   onAccordionClick = () => {
@@ -14,9 +49,23 @@ export default class DeviceSelector extends React.Component {
     this.setState({ isAccordionOpen: !isAccordionOpen });
   }
 
+  deviceInAssignment = (deviceId) => {
+    const devicesInAssignment = FLOW.selectedControl.selectedSurveyAssignment.get('devices');
+    return devicesInAssignment ? devicesInAssignment.indexOf(deviceId) > -1 : false;
+  }
+
+  handleCheck = (deviceId, checked) => {
+    if (checked) {
+      // push device to FLOW.selectedControl.selectedDevices
+      FLOW.selectedControl.selectedDevices.pushObject(FLOW.Device.find(deviceId));
+    } else {
+      // remove device to FLOW.selectedControl.selectedDevices
+      FLOW.selectedControl.selectedDevices.removeObject(FLOW.Device.find(deviceId));
+    }
+  }
+
   render() {
-    const { isAccordionOpen } = this.state;
-    const { deviceGroups, deviceGroupNames, onCheck } = this.props;
+    const { isAccordionOpen, deviceGroups, deviceGroupNames } = this.state;
 
     const accordionClass = `accordion ${isAccordionOpen && 'active'}`;
     const panelStyle = isAccordionOpen ? { display: 'block' } : { display: 'none' };
@@ -41,7 +90,7 @@ export default class DeviceSelector extends React.Component {
                     id={deviceId}
                     name={deviceId}
                     checked={deviceGroups[dgId][deviceId].checked}
-                    onChange={onCheck}
+                    onChange={this.handleCheck}
                   />
 
                   <label id={deviceId} htmlFor={deviceId}>
@@ -56,9 +105,3 @@ export default class DeviceSelector extends React.Component {
     );
   }
 }
-
-DeviceSelector.propTypes = {
-  deviceGroups: PropTypes.object.isRequired,
-  deviceGroupNames: PropTypes.object.isRequired,
-  onCheck: PropTypes.func.isRequired,
-};
