@@ -1,7 +1,6 @@
-package test.java.org.akvo.flow.rest.security.google;
+package org.akvo.flow.rest.security.google;
 
 import org.akvo.flow.rest.security.GaeUserAuthentication;
-import org.akvo.flow.rest.security.google.GoogleAuthenticationFilter;
 import org.akvo.flow.rest.security.user.GaeUser;
 import org.junit.jupiter.api.Test;
 import org.springframework.security.core.Authentication;

@@ -14,24 +14,21 @@
  *  The full license text can also be seen at <http://www.gnu.org/licenses/agpl.html>.
  */
 
-package test.java.org.akvo.flow.util;
-
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertFalse;
-import static org.junit.jupiter.api.Assertions.assertNotEquals;
-
-
-import com.fasterxml.jackson.core.type.TypeReference;
-import org.akvo.flow.util.FlowJsonObjectReader;
-import org.junit.jupiter.api.Test;
-import org.waterforpeople.mapping.app.gwt.client.survey.QuestionDto;
-import org.waterforpeople.mapping.app.gwt.client.survey.SurveyGroupDto;
-import org.waterforpeople.mapping.domain.CaddisflyResource;
+package org.akvo.flow.util;
 
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+
+import org.junit.jupiter.api.Test;
+import org.waterforpeople.mapping.app.gwt.client.survey.QuestionDto;
+import org.waterforpeople.mapping.app.gwt.client.survey.SurveyGroupDto;
+import org.waterforpeople.mapping.domain.CaddisflyResource;
+
+import com.fasterxml.jackson.core.type.TypeReference;
+
+import static org.junit.jupiter.api.Assertions.*;
 
 class FlowJsonObjectReaderTests {
 
