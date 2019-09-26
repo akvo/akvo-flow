@@ -34,7 +34,6 @@ import javax.jdo.PersistenceManager;
 import net.sf.jsr107cache.CacheException;
 
 import org.akvo.flow.domain.SecuredObject;
-import com.google.appengine.datanucleus.query.JDOCursorHelper;
 import org.datanucleus.exceptions.NucleusObjectNotFoundException;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -44,13 +43,10 @@ import com.gallatinsystems.framework.domain.BaseDomain;
 import com.gallatinsystems.framework.servlet.PersistenceFilter;
 import com.gallatinsystems.survey.domain.Survey;
 import com.gallatinsystems.survey.domain.SurveyGroup;
-import com.gallatinsystems.user.dao.UserAuthorizationDAO;
-import com.gallatinsystems.user.dao.UserDao;
-import com.gallatinsystems.user.domain.User;
-import com.gallatinsystems.user.domain.UserAuthorization;
 import com.google.appengine.api.datastore.Cursor;
 import com.google.appengine.api.datastore.Key;
 import com.google.appengine.api.datastore.KeyFactory;
+import com.google.appengine.datanucleus.query.JDOCursorHelper;
 
 /**
  * This is a reusable data access object that supports basic operations (save, find by property,
@@ -316,25 +312,18 @@ public class BaseDAO<T extends BaseDomain> {
                     + concreteClass.getSimpleName());
         }
 
-        UserDao userDAO = new UserDao();
-        User user = userDAO.getByKey(userId);
-        if (user.isSuperAdmin()) {
+        AuthzDao authzDao = new AuthzDao();
+        AuthzDao.AllowedResponse allowedObjects = authzDao.getAllowedObjects(userId);
+
+        if (allowedObjects.isSuperAdmin) {
             return allObjectsList;
         }
 
-        UserAuthorizationDAO userAuthorizationDAO = new UserAuthorizationDAO();
-        List<UserAuthorization> userAuthorizationList = userAuthorizationDAO.listByUser(userId);
-        if (userAuthorizationList.isEmpty()) {
+        Set<Long> securedObjectIds = allowedObjects.securedObjectIds;
+
+        if (securedObjectIds.isEmpty()) {
             return Collections.emptyList();
         }
-
-        Set<Long> securedObjectIds = new HashSet<>();
-        for (UserAuthorization auth : userAuthorizationList) {
-            if (auth.getSecuredObjectId() != null) {
-                securedObjectIds.add(auth.getSecuredObjectId());
-            }
-        }
-
         // Set of all ancestor ids of secured objects
         Set<Long> securedAncestorIds = new HashSet<>();
         for (Object obj : allObjectsList) {

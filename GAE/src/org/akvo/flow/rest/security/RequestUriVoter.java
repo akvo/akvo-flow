@@ -26,9 +26,6 @@ import java.util.regex.Pattern;
 
 import javax.servlet.http.HttpServletRequest;
 
-import com.fasterxml.jackson.core.JsonFactory;
-import com.fasterxml.jackson.core.JsonParser;
-import com.fasterxml.jackson.core.JsonToken;
 import org.akvo.flow.domain.RootFolder;
 import org.akvo.flow.domain.SecuredObject;
 import org.springframework.security.access.AccessDecisionVoter;
@@ -38,14 +35,14 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.web.FilterInvocation;
 import org.waterforpeople.mapping.dao.SurveyInstanceDAO;
 
+import com.fasterxml.jackson.core.JsonFactory;
+import com.fasterxml.jackson.core.JsonParser;
+import com.fasterxml.jackson.core.JsonToken;
 import com.gallatinsystems.common.Constants;
+import com.gallatinsystems.framework.dao.AuthzDao;
 import com.gallatinsystems.survey.dao.SurveyDAO;
 import com.gallatinsystems.survey.dao.SurveyGroupDAO;
-import com.gallatinsystems.user.dao.UserAuthorizationDAO;
-import com.gallatinsystems.user.dao.UserRoleDao;
 import com.gallatinsystems.user.domain.Permission;
-import com.gallatinsystems.user.domain.UserAuthorization;
-import com.gallatinsystems.user.domain.UserRole;
 
 public class RequestUriVoter implements AccessDecisionVoter<FilterInvocation> {
 
@@ -70,10 +67,6 @@ public class RequestUriVoter implements AccessDecisionVoter<FilterInvocation> {
     private static final int PREFIX_GROUP = 1;
 
     private static final int OBJECT_ID_GROUP = 3;
-
-    private UserRoleDao userRoleDao = new UserRoleDao();
-
-    private UserAuthorizationDAO userAuthorizationDao = new UserAuthorizationDAO();
 
     private SurveyGroupDAO surveyGroupDao = new SurveyGroupDAO();
 
@@ -253,7 +246,6 @@ public class RequestUriVoter implements AccessDecisionVoter<FilterInvocation> {
      */
     private int checkUserAuthorization(Authentication authentication,
             FilterInvocation securedObject, List<Long> objectIds) {
-        Long userId = (Long) authentication.getCredentials();
 
         if (objectIds == null || objectIds.isEmpty()) {
             // no path found
@@ -261,30 +253,15 @@ public class RequestUriVoter implements AccessDecisionVoter<FilterInvocation> {
                     "Access is Denied. Unable to identify object(s)");
         }
 
-        // retrieve user authorizations containing resource paths that make up this one
-        List<UserAuthorization> authorizations = userAuthorizationDao.listByObjectIds(userId,
-                objectIds);
-        if (authorizations.isEmpty()) {
-            throw new AccessDeniedException("Access is Denied. Insufficient permissions");
-        }
-
-        List<Long> authorizedRoleIds = new ArrayList<Long>();
-        for (UserAuthorization auth : authorizations) {
-            authorizedRoleIds.add(auth.getRoleId());
-        }
-
-        List<UserRole> authorizedRoles = userRoleDao.listByKeys(authorizedRoleIds
-                .toArray(new Long[0]));
-
+        Long userId = (Long) authentication.getCredentials();
         Permission permission = Permission.lookup(securedObject.getHttpRequest().getMethod(),
                 securedObject.getRequestUrl());
-        for (UserRole role : authorizedRoles) {
-            if (role.getPermissions().contains(permission)) {
-                return ACCESS_GRANTED;
-            }
+        AuthzDao authzDao = new AuthzDao();
+        if (authzDao.hasPermInTree(objectIds, userId, permission)) {
+            return ACCESS_GRANTED;
+        } else {
+            throw new AccessDeniedException("Access is Denied. Insufficient permissions");
         }
-
-        throw new AccessDeniedException("Access is Denied. Insufficient permissions");
     }
 
     /**

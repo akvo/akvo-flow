@@ -19,12 +19,6 @@ package org.waterforpeople.mapping.app.web;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.io.StringWriter;
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -33,27 +27,17 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import org.akvo.flow.util.FlowJsonObjectWriter;
+import org.akvo.flow.rest.security.user.GaeUser;
 import org.apache.velocity.Template;
 import org.apache.velocity.VelocityContext;
 import org.apache.velocity.app.VelocityEngine;
 import org.springframework.security.core.context.SecurityContextHolder;
-import org.akvo.flow.rest.security.user.GaeUser;
 
-import com.gallatinsystems.common.Constants;
-import com.gallatinsystems.user.dao.UserAuthorizationDAO;
+import com.gallatinsystems.framework.dao.AuthzDao;
 import com.gallatinsystems.user.dao.UserDao;
-import com.gallatinsystems.user.dao.UserRoleDao;
-import com.gallatinsystems.user.domain.Permission;
 import com.gallatinsystems.user.domain.User;
-import com.gallatinsystems.user.domain.UserAuthorization;
-import com.gallatinsystems.user.domain.UserRole;
 
 public class CurrentUserServlet extends HttpServlet {
-
-    private UserRoleDao userRoleDAO = new UserRoleDao();
-
-    private UserAuthorizationDAO userAuthorizationDAO = new UserAuthorizationDAO();
 
     private static final long serialVersionUID = -430515593814261770L;
     private static final Logger log = Logger.getLogger(CurrentUserServlet.class
@@ -88,7 +72,8 @@ public class CurrentUserServlet extends HttpServlet {
         final User currentUser = getCurrentUser();
 
         context.put("user", currentUser);
-        context.put("permissions", getPermissionsMap(currentUser));
+        String permissionsMap = new AuthzDao().getPermissionsMap(currentUser);
+        context.put("permissions", permissionsMap);
 
         final StringWriter writer = new StringWriter();
         t.merge(context, writer);
@@ -122,69 +107,5 @@ public class CurrentUserServlet extends HttpServlet {
         } else {
             return null;
         }
-
-
-    }
-
-    public static Long getCurrentUserId() {
-        User u = getCurrentUser();
-        if (u == null || u.getKey() == null) {
-            return null;
-        }
-        return u.getKey().getId();
-    }
-    
-    /**
-     * Retrieve a javascript map of the paths and corresponding permissions for the current user
-     *
-     * @param currentUser
-     * @return
-     */
-    private String getPermissionsMap(User currentUser) {
-        List<UserAuthorization> authorizationList = userAuthorizationDAO.listByUser(currentUser
-                .getKey().getId());
-        Map<Long, UserRole> roleMap = new HashMap<Long, UserRole>();
-        for (UserRole role : userRoleDAO.list(Constants.ALL_RESULTS)) {
-            roleMap.put(role.getKey().getId(), role);
-        }
-        Map<Long, Set<Permission>> permissions = new HashMap<Long, Set<Permission>>();
-        for (UserAuthorization auth : authorizationList) {
-            UserRole role = roleMap.get(auth.getRoleId());
-            if (role != null && auth.getSecuredObjectId() != null) {
-                if (permissions.containsKey(auth.getSecuredObjectId())) {
-                    permissions.get(auth.getSecuredObjectId()).addAll(role.getPermissions());
-                } else {
-                    permissions.put(auth.getSecuredObjectId(), role.getPermissions());
-                }
-            }
-        }
-
-        addSuperAdminPermissions(currentUser, permissions);
-
-        FlowJsonObjectWriter writer = new FlowJsonObjectWriter();
-        String permissionsString = null;
-        try {
-            permissionsString = writer.writeAsString(permissions);
-        } catch (IOException e) {
-            // ignore
-        }
-
-        return permissionsString;
-    }
-
-    /**
-     * Enable users designated as superAdmin in the backend complete access to all functionality on
-     * the frontend
-     *
-     * @param currentUser
-     * @param permissions
-     */
-    private void addSuperAdminPermissions(User currentUser, Map<Long, Set<Permission>> permissions) {
-        if (!currentUser.getPermissionList().equals("0")) {
-            return;
-        }
-
-        List<Permission> permissionList = Arrays.asList(Permission.values());
-        permissions.put(Constants.ROOT_FOLDER_ID, new HashSet<Permission>(permissionList));
     }
 }

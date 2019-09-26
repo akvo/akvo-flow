@@ -10,34 +10,12 @@ import javax.jdo.PersistenceManager;
 
 import com.gallatinsystems.framework.dao.BaseDAO;
 import com.gallatinsystems.framework.servlet.PersistenceFilter;
-import com.gallatinsystems.survey.dao.SurveyUtils;
 import com.gallatinsystems.user.domain.UserAuthorization;
 
 public class UserAuthorizationDAO extends BaseDAO<UserAuthorization> {
 
     public UserAuthorizationDAO() {
         super(UserAuthorization.class);
-    }
-
-    /**
-     * List the user authorizations that correspond to a specific object path or set of paths
-     *
-     * @param userId
-     * @param objectPath
-     * @return
-     */
-    @SuppressWarnings("unchecked")
-    public List<UserAuthorization> listByObjectPath(Long userId, String objectPath) {
-        if (objectPath == null) {
-            return Collections.emptyList();
-        }
-        List<String> paths = SurveyUtils.listParentPaths(objectPath, true);
-        paths.add(objectPath); // include path of the object when checking for authorizations
-        PersistenceManager pm = PersistenceFilter.getManager();
-        String queryString = "userId == :p1 && :p2.contains(objectPath)";
-        javax.jdo.Query query = pm.newQuery(UserAuthorization.class, queryString);
-        List<UserAuthorization> results = (List<UserAuthorization>) query.execute(userId, paths);
-        return results;
     }
 
     /**

@@ -176,7 +176,7 @@ public class UserRolesRestService {
             return response;
         }
 
-        if (userAuthorizationDAO.findFirstAssignedByRole(roleId).isEmpty()) {
+        if (userAuthorizationDAO.findFirstAssignedByRole(roleId).isEmpty()) { // Keep until Authz is owner of UserAuths. Just needed when moving the delete user role
             userRoleDao.delete(deleteRole);
             statusDto.setStatus("ok");
             statusDto.setMessage("_role_deleted");

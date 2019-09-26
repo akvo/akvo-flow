@@ -50,7 +50,7 @@ public class UserAuthorizationRestService {
     public Map<String, Object> listAllUserAuthorizations() {
         final Map<String, Object> response = new HashMap<String, Object>();
         List<UserAuthorization> authorizationList = userAuthorizationDAO
-                .list(Constants.ALL_RESULTS);
+                .list(Constants.ALL_RESULTS); // ok to move when Authz is the owner
         List<UserAuthorizationPayload> responsePayloadList = new ArrayList<UserAuthorizationPayload>();
         for (UserAuthorization auth : authorizationList) {
             responsePayloadList.add(new UserAuthorizationPayload(auth));
@@ -73,7 +73,7 @@ public class UserAuthorizationRestService {
 
         final Map<String, Object> response = new HashMap<String, Object>();
         final UserAuthorization newAuth = requestPayload.getUserAuthorisation();
-        final UserAuthorization existingAuth = userAuthorizationDAO.findUserAuthorization(
+        final UserAuthorization existingAuth = userAuthorizationDAO.findUserAuthorization(  // ok to move when authz is the owner
                 newAuth.getUserId(), newAuth.getRoleId(), newAuth.getSecuredObjectId());
 
         UserAuthorizationPayload responsePayload = null;
@@ -100,7 +100,7 @@ public class UserAuthorizationRestService {
             @RequestBody UserAuthorizationPayload requestPayload, @PathVariable Long authId) {
 
         final Map<String, Object> response = new HashMap<String, Object>();
-        final UserAuthorization existingAuth = userAuthorizationDAO.getByKey(authId);
+        final UserAuthorization existingAuth = userAuthorizationDAO.getByKey(authId);  // ok to move when authz is the owner
 
         if (existingAuth != null) {
             BeanUtils.copyProperties(requestPayload, existingAuth,
@@ -120,7 +120,7 @@ public class UserAuthorizationRestService {
     @RequestMapping(method = RequestMethod.DELETE, value = "/{authId}")
     @ResponseBody
     public void deleteUserAuthorization(@PathVariable Long authId) {
-        final UserAuthorization existingAuth = userAuthorizationDAO.getByKey(authId);
+        final UserAuthorization existingAuth = userAuthorizationDAO.getByKey(authId); // ok to move when authz is the owner
         userAuthorizationDAO.delete(existingAuth);
     }
 }
