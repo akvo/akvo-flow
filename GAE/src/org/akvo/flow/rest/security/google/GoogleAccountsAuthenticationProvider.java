@@ -21,6 +21,9 @@ import java.util.Set;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+import org.akvo.flow.rest.security.AppRole;
+import org.akvo.flow.rest.security.GaeUserAuthentication;
+import org.akvo.flow.rest.security.user.GaeUser;
 import org.springframework.context.MessageSource;
 import org.springframework.context.MessageSourceAware;
 import org.springframework.context.support.MessageSourceAccessor;
@@ -30,11 +33,8 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.core.SpringSecurityMessageSource;
 import org.springframework.security.web.authentication.preauth.PreAuthenticatedAuthenticationToken;
-import org.akvo.flow.rest.security.AppRole;
-import org.akvo.flow.rest.security.GaeUserAuthentication;
-import org.akvo.flow.rest.security.user.GaeUser;
 
-import com.gallatinsystems.user.dao.UserDao;
+import com.gallatinsystems.framework.dao.AuthzDao;
 import com.google.appengine.api.users.User;
 
 /**
@@ -56,18 +56,16 @@ public class GoogleAccountsAuthenticationProvider implements AuthenticationProvi
     private static final Logger log = Logger.getLogger(GoogleAccountsAuthenticationProvider.class
             .getName());
 
-    private UserDao userDao = new UserDao();
-
     @Override
     public Authentication authenticate(Authentication authentication)
             throws AuthenticationException {
         User googleUser = (User) authentication.getPrincipal();
 
-        return getAuthentication(true, userDao, authentication, googleUser.getEmail(), googleUser.getNickname());
+        return getAuthentication(true, authentication, googleUser.getEmail(), googleUser.getNickname());
     }
 
-    public static Authentication getAuthentication(boolean authByGAE, UserDao userDao, Authentication authentication, String email, String nickname) {
-        GaeUser user = findUser(userDao, email, authByGAE);
+    public static Authentication getAuthentication(boolean authByGAE, Authentication authentication, String email, String nickname) {
+        GaeUser user = findUser(email, authByGAE);
 
         if (user == null) {
             // User not in registry. Needs to register
@@ -81,8 +79,8 @@ public class GoogleAccountsAuthenticationProvider implements AuthenticationProvi
         return new GaeUserAuthentication(user, authentication.getDetails());
     }
 
-    private static GaeUser findUser(UserDao userDao, String email, boolean authByGAE) {
-        final com.gallatinsystems.user.domain.User user = userDao.findUserByEmail(email);
+    private static GaeUser findUser(String email, boolean authByGAE) {
+        final com.gallatinsystems.user.domain.User user = new AuthzDao().findUserByEmail(email);
 
         if (user == null) {
             return null;

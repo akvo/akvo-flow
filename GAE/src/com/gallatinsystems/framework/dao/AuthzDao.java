@@ -123,6 +123,10 @@ public class AuthzDao {
         permissions.put(Constants.ROOT_FOLDER_ID, new HashSet<Permission>(permissionList));
     }
 
+    public User findUserByEmail(String email) {
+        return new UserDao().findUserByEmail(email);
+    }
+
     public static class AllowedResponse {
         final Set<Long> securedObjectIds;
         final boolean isSuperAdmin;

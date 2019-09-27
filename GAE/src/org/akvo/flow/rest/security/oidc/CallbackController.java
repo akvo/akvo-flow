@@ -24,6 +24,7 @@ import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.akvo.flow.rest.security.google.GoogleAccountsAuthenticationProvider;
 import org.springframework.http.MediaType;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
@@ -31,13 +32,11 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
-import org.akvo.flow.rest.security.google.GoogleAccountsAuthenticationProvider;
 
 import com.auth0.AuthenticationController;
 import com.auth0.IdentityVerificationException;
 import com.auth0.Tokens;
 import com.auth0.jwt.JWT;
-import com.gallatinsystems.user.dao.UserDao;
 
 @SuppressWarnings("unused")
 @Controller
@@ -70,7 +69,7 @@ public class CallbackController {
             Tokens tokens = controller.handle(req);
             TokenAuthentication tokenAuth = new TokenAuthentication(JWT.decode(tokens.getIdToken()));
             Authentication authentication = GoogleAccountsAuthenticationProvider.getAuthentication(
-                    false, new UserDao(),
+                    false,
                     tokenAuth,
                     tokenAuth.getClaims().get("email").asString(),
                     tokenAuth.getClaims().get("nickname").asString()
