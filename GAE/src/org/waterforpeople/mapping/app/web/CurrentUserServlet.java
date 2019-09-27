@@ -101,6 +101,8 @@ public class CurrentUserServlet extends HttpServlet {
             }
 
             final String currentUserEmail = user.getEmail().toLowerCase();
+            // We can use the GaeUser directly as downstream only the email and permission list is used
+            // See CurrentUser.vm
             final UserDao uDao = new UserDao();
             return uDao.findUserByEmail(currentUserEmail);
 
