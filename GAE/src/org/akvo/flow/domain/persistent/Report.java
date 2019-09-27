@@ -41,6 +41,7 @@ public class Report extends BaseDomain {
     private String filename;
     private String message;
     private Long user;
+    private String userEmail;
     //we could also use baseDomain.createUserId, but
     //it will be set wrong if the entity is created by the report engine
     private Date startDate;
@@ -109,6 +110,10 @@ public class Report extends BaseDomain {
     public void setQuestionId(Long questionId) {
         this.questionId = questionId;
     }
-
-
+    public String getUserEmail() {
+        return userEmail;
+    }
+    public void setUserEmail(String userEmail) {
+        this.userEmail = userEmail;
+    }
 }

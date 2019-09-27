@@ -28,6 +28,7 @@ import org.akvo.flow.dao.ReportDao;
 import org.akvo.flow.domain.persistent.Report;
 import org.akvo.flow.rest.dto.ReportDto;
 import org.akvo.flow.rest.dto.ReportPayload;
+import org.akvo.flow.rest.security.user.GaeUser;
 import org.akvo.flow.servlet.ReportServlet;
 import org.springframework.beans.BeanUtils;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -81,7 +82,10 @@ public class ReportRestService {
 
             BeanUtils.copyProperties(reportDto, r, doNotCopy);
 
-            r.setUser((Long)SecurityContextHolder.getContext().getAuthentication().getCredentials());
+            GaeUser currentUser = (GaeUser) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+
+            r.setUser(currentUser.getUserId());
+            r.setUserEmail(currentUser.getEmail());
             r.setState(Report.QUEUED);  //overwrite any supplied state
             // Save it, so we get an id assigned
             r = reportDao.save(r);

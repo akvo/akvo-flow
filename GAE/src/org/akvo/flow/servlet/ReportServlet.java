@@ -27,7 +27,6 @@ import java.util.logging.Logger;
 
 import javax.servlet.http.HttpServletRequest;
 
-import com.google.appengine.api.utils.SystemProperty;
 import org.akvo.flow.dao.ReportDao;
 import org.akvo.flow.domain.persistent.Report;
 import org.akvo.flow.rest.dto.ReportTaskRequest;
@@ -38,10 +37,10 @@ import com.gallatinsystems.common.util.PropertyUtil;
 import com.gallatinsystems.framework.rest.AbstractRestApiServlet;
 import com.gallatinsystems.framework.rest.RestRequest;
 import com.gallatinsystems.framework.rest.RestResponse;
-import com.gallatinsystems.user.dao.UserDao;
 import com.google.appengine.api.taskqueue.Queue;
 import com.google.appengine.api.taskqueue.QueueFactory;
 import com.google.appengine.api.taskqueue.TaskOptions;
+import com.google.appengine.api.utils.SystemProperty;
 
 
 public class ReportServlet extends AbstractRestApiServlet {
@@ -52,7 +51,6 @@ public class ReportServlet extends AbstractRestApiServlet {
     private static final Long MAX_ATTEMPTS = 5L; //Give up after this many attempts to start engine
 
     private ReportDao rDao;
-    private UserDao uDao;
 
     class ReportOptions implements Serializable {
         /**
@@ -87,7 +85,6 @@ public class ReportServlet extends AbstractRestApiServlet {
 
     public ReportServlet() {
         rDao = new ReportDao();
-        uDao = new UserDao();
     }
 
     @Override
@@ -197,9 +194,6 @@ public class ReportServlet extends AbstractRestApiServlet {
     }
 
     private int startReportEngine(String baseUrl, Report r) throws IOException {
-        //look up user
-        final String email = uDao.getByKey(r.getUser()).getEmailAddress();
-
         SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
 
         //Gleaned from export-reports-views.js
@@ -224,7 +218,7 @@ public class ReportServlet extends AbstractRestApiServlet {
         criteria.opts.uploadUrl = PropertyUtil.getProperty("surveyuploadurl");
         criteria.opts.uploadDir = PropertyUtil.getProperty("surveyuploaddir");
         criteria.opts.flowServices = PropertyUtil.getProperty("flowServices");
-        criteria.opts.email = email;
+        criteria.opts.email = r.getUserEmail();
 
         FlowJsonObjectWriter writer = new FlowJsonObjectWriter();
         String crit = java.net.URLEncoder.encode(writer.writeAsString(criteria), "UTF-8");
