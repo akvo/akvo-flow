@@ -312,7 +312,7 @@ public class BaseDAO<T extends BaseDomain> {
                     + concreteClass.getSimpleName());
         }
 
-        AuthzDao authzDao = new AuthzDao();
+        AuthzDao authzDao = new AuthzDaoGaeStorage();
         AuthzDao.AllowedResponse allowedObjects = authzDao.getAllowedObjects(userId);
 
         if (allowedObjects.isSuperAdmin) {

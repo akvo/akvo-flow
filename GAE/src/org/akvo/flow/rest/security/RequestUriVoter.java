@@ -40,6 +40,7 @@ import com.fasterxml.jackson.core.JsonParser;
 import com.fasterxml.jackson.core.JsonToken;
 import com.gallatinsystems.common.Constants;
 import com.gallatinsystems.framework.dao.AuthzDao;
+import com.gallatinsystems.framework.dao.AuthzDaoGaeStorage;
 import com.gallatinsystems.survey.dao.SurveyDAO;
 import com.gallatinsystems.survey.dao.SurveyGroupDAO;
 import com.gallatinsystems.user.domain.Permission;
@@ -256,7 +257,7 @@ public class RequestUriVoter implements AccessDecisionVoter<FilterInvocation> {
         Long userId = (Long) authentication.getCredentials();
         Permission permission = Permission.lookup(securedObject.getHttpRequest().getMethod(),
                 securedObject.getRequestUrl());
-        AuthzDao authzDao = new AuthzDao();
+        AuthzDao authzDao = new AuthzDaoGaeStorage();
         if (authzDao.hasPermInTree(objectIds, userId, permission)) {
             return ACCESS_GRANTED;
         } else {

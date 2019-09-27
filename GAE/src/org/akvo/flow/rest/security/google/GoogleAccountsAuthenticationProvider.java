@@ -34,7 +34,7 @@ import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.core.SpringSecurityMessageSource;
 import org.springframework.security.web.authentication.preauth.PreAuthenticatedAuthenticationToken;
 
-import com.gallatinsystems.framework.dao.AuthzDao;
+import com.gallatinsystems.framework.dao.AuthzDaoGaeStorage;
 import com.google.appengine.api.users.User;
 
 /**
@@ -80,7 +80,7 @@ public class GoogleAccountsAuthenticationProvider implements AuthenticationProvi
     }
 
     private static GaeUser findUser(String email, boolean authByGAE) {
-        final com.gallatinsystems.user.domain.User user = new AuthzDao().findUserByEmail(email);
+        final com.gallatinsystems.user.domain.User user = new AuthzDaoGaeStorage().findUserByEmail(email);
 
         if (user == null) {
             return null;
