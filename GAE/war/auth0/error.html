@@ -74,6 +74,7 @@
   	<img src="https://akvo-public.storage.googleapis.com/AkvoLogo.svg" title="AKVO" alt="Akvo.org logo" />
 	<h1><span id="errorTitle"></span></h1>
 	<p><span id="errorCode"></span></p>
+	<p><span id="contact"></span><a href="mailto:support@akvo.org">support@akvo.org</a></p>
       </div>
     </div>
     <script type="text/javascript">
@@ -81,14 +82,17 @@
       var messages = {
 	  "es" :
 	  { "ERROR_TITLE":"Existe un problema verificando su identidad",
+	    "CONTACT":"¿Tiene problemas para registrarse? Contacte con: ",
 	    "ERROR_UNKNOWN":"Por favor contacte con support@akvo.org acerca de este problema",
 	    "EMAIL_VERIFIED_ERROR": "Necesita verificar su dirección de email, por favor revise su buzón de correo y haga click en el enlace de verificación"},
 	  "en" :
 	  { "ERROR_TITLE":"There was an issue verifying your identity",
+	    "CONTACT":"Having trouble signing up? Contact: ",
 	    "ERROR_UNKNOWN":"Please contact with support@akvo.org about this problem",
 	    "EMAIL_VERIFIED_ERROR": "You need to verify your email address, please check your inbox email and click the verification link"},
 	  "fr" :
 	  { "ERROR_TITLE":"Un problème est survenu lors de la vérification de votre identité",
+	    "CONTACT":"Avoir du mal à s'inscrire? Contact: ",
 	    "ERROR_UNKNOWN":"Contactez support@akvo.org pour de l’aide",
 	    "EMAIL_VERIFIED_ERROR": "Vous devez vérifier votre adresse e-mail. Vérifiez votre boîte de courrier electronique et cliquez sur le lien de vérification"}
       };
@@ -121,6 +125,7 @@
       
       document.getElementById("errorTitle").innerHTML = messages[lang()]["ERROR_TITLE"];
       document.getElementById("errorCode").innerHTML = errorCode(messages[lang()]);
+      document.getElementById("contact").innerHTML = messages[lang()]["CONTACT"];
       
     </script>
   </body>
