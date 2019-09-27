@@ -117,12 +117,12 @@ FLOW.AssignmentEditView = FLOW.View.extend(observe({
     FLOW.selectedControl.get('selectedDevices').forEach((item) => {
       devices.push(item.get('keyId'));
     });
-    sa.set('devices', devices);
+    sa.set('deviceIds', devices);
 
     FLOW.selectedControl.get('selectedSurveys').forEach((item) => {
       surveys.push(item.get('keyId'));
     });
-    sa.set('surveys', surveys);
+    sa.set('formIds', surveys);
 
     FLOW.store.commit();
     // wait half a second before transitioning back to the assignments list
