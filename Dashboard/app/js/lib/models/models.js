@@ -428,7 +428,6 @@ FLOW.User = FLOW.BaseModel.extend({
     defaultValue: 0,
   }),
   permissionList: DS.attr('string'),
-  accessKey: DS.attr('string'),
 });
 
 FLOW.UserConfig = FLOW.BaseModel.extend({

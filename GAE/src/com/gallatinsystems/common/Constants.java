@@ -36,7 +36,6 @@ public class Constants {
     public static final String AWS_ACCESS_ID = "aws_identifier";
     public static final String AWS_SECRET_KEY = "aws_secret_key";
     public static final String ANCESTOR_IDS_FIELD = "ancestorIds";
-    public static final String API_V1_PREFIX = "/api/v1";
     public static final Long ROOT_FOLDER_ID = 0L;
 
     // caddisfly constants

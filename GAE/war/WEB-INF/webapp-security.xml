@@ -31,21 +31,6 @@
       <csrf disabled="true" />
    </http>
 
-   <http pattern="/api/v1/**" use-expressions="true" entry-point-ref="apiEntryPoint" authentication-manager-ref="apiAuthenticationManager" >
-        <intercept-url pattern="/api/v1/survey_groups/**" method="GET" access="hasRole('ROLE_USER')"/>
-        <intercept-url pattern="/api/v1/surveys/**" method="GET" access="hasRole('ROLE_USER')"/>
-        <intercept-url pattern="/api/v1/question_groups/**" method="GET" access="hasRole('ROLE_USER')"/>
-        <intercept-url pattern="/api/v1/questions/**" method="GET" access="hasRole('ROLE_USER')"/>
-        <intercept-url pattern="/api/v1/question_answers" method="GET" access="hasRole('ROLE_USER')"/>
-        <intercept-url pattern="/api/v1/survey_assignments/**" method="GET" access="hasRole('ROLE_USER')"/>
-        <intercept-url pattern="/api/v1/surveyed_locales/**" method="GET" access="hasRole('ROLE_USER')"/>
-        <intercept-url pattern="/api/v1/survey_instances/**" method="GET" access="hasRole('ROLE_USER')"/>
-        <intercept-url pattern="/api/v1/device_groups/**" method="GET" access="hasRole('ROLE_USER')"/>
-        <intercept-url pattern="/api/v1/devices/**" method="GET" access="hasRole('ROLE_USER')"/>
-        <intercept-url pattern="/**" access="denyAll"/>
-        <custom-filter position="PRE_AUTH_FILTER" ref="apiFilter"/>
-	</http>
-
     <http use-expressions="true" entry-point-ref="defaultEntryPoint" authentication-manager-ref="authenticationManager"
         access-decision-manager-ref="accessDecisionManager">
         <headers>
@@ -79,20 +64,6 @@
 			</b:list>
         </b:constructor-arg>
 	</b:bean>
-
-	<!-- API Authentication -->
-
-	<b:bean id="apiEntryPoint" class="org.akvo.flow.rest.security.ApiAuthenticationEntryPoint"/>
-
-	<b:bean id="apiFilter" class="org.akvo.flow.rest.security.ApiAuthenticationFilter">
-		<b:property name="authenticationManager" ref="apiAuthenticationManager"></b:property>
-	</b:bean>
-
-	<authentication-manager id="apiAuthenticationManager">
-		<authentication-provider ref="apiAuthenticationProvider"/>
-	</authentication-manager>
-
-	<b:bean id="apiAuthenticationProvider" class="org.akvo.flow.rest.security.ApiAuthenticationProvider"/>
 
 	<!-- GAE Authentication -->
 
