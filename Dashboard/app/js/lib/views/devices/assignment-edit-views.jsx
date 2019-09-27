@@ -52,6 +52,7 @@ FLOW.AssignmentEditView = FLOW.ReactComponentView.extend(
       this.canAddFormsToAssignment = this.canAddFormsToAssignment.bind(this);
       this.validateAssignment = this.validateAssignment.bind(this);
       this.saveSurveyAssignment = this.saveSurveyAssignment.bind(this);
+      this.setupForms = this.setupForms.bind(this);
 
       // object wide varaibles
       this.forms = {};
@@ -59,6 +60,8 @@ FLOW.AssignmentEditView = FLOW.ReactComponentView.extend(
 
     didInsertElement(...args) {
       this._super(...args);
+
+      this.setupForms();
 
       // react render
       this.renderReactSide();
@@ -151,25 +154,22 @@ FLOW.AssignmentEditView = FLOW.ReactComponentView.extend(
       sa.set('language', 'en');
 
       FLOW.selectedControl.get('selectedDevices').forEach((item) => {
-        console.log('sd', item);
         devices.push(item.get('keyId'));
       });
-      sa.set('devices', devices);
+      sa.set('deviceIds', devices);
 
       FLOW.selectedControl.get('selectedSurveys').forEach((item) => {
-        console.log('ss', item);
         surveys.push(item.get('keyId'));
       });
 
-      sa.set('surveys', surveys);
+      sa.set('formIds', surveys);
 
-      console.log('sa', sa.get('surveys'));
       FLOW.store.commit();
 
       // wait half a second before transitioning back to the assignments list
-      // setTimeout(() => {
-      //   FLOW.router.transitionTo('navDevices.assignSurveysOverview');
-      // }, 500);
+      setTimeout(() => {
+        FLOW.router.transitionTo('navDevices.assignSurveysOverview');
+      }, 500);
     },
 
     // setups
@@ -192,6 +192,19 @@ FLOW.AssignmentEditView = FLOW.ReactComponentView.extend(
       }
       FLOW.dateControl.set('fromDate', FLOW.formatDate(startDate));
       FLOW.dateControl.set('toDate', FLOW.formatDate(endDate));
+    },
+
+    setupForms() {
+      FLOW.selectedControl.selectedSurveyAssignment.get('formIds').forEach((formId) => {
+        const form = FLOW.Survey.find(formId);
+        if (form && form.get('keyId')) {
+          FLOW.selectedControl.selectedSurveys.pushObject(form);
+          this.forms[form.get('keyId')] = { // also load pre-selected forms
+            name: form.get('name'),
+            checked: true,
+          };
+        }
+      });
     },
 
     // listeners
@@ -219,13 +232,13 @@ FLOW.AssignmentEditView = FLOW.ReactComponentView.extend(
 
     // helpers
     formInAssignment(formId) {
-      const formsInAssignment = FLOW.selectedControl.selectedSurveyAssignment.get('surveys');
+      const formsInAssignment = FLOW.selectedControl.selectedSurveyAssignment.get('formIds');
       return formsInAssignment ? formsInAssignment.indexOf(formId) > -1 : false;
     },
 
     canAddFormsToAssignment() {
       // only allow if form qualifies
-      const formsInAssignment = FLOW.selectedControl.selectedSurveyAssignment.get('surveys');
+      const formsInAssignment = FLOW.selectedControl.selectedSurveyAssignment.get('formIds');
       const selectedSurveyGroupId = FLOW.selectedControl.selectedSurveyGroup.get('keyId');
 
       if (formsInAssignment && formsInAssignment.length > 0) {

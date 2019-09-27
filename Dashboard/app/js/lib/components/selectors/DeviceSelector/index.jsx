@@ -12,6 +12,7 @@ export default class DeviceSelector extends React.Component {
   }
 
   componentDidMount() {
+    let isAccordionOpen = false;
     const deviceGroupNames = {};
     const deviceGroups = {};
 
@@ -22,8 +23,8 @@ export default class DeviceSelector extends React.Component {
       });
 
       if (FLOW.deviceControl.content.isLoaded) {
-        if (FLOW.selectedControl.selectedSurveyAssignment.get('devices')) {
-          FLOW.selectedControl.selectedSurveyAssignment.get('devices').forEach((deviceId) => {
+        if (FLOW.selectedControl.selectedSurveyAssignment.get('deviceIds')) {
+          FLOW.selectedControl.selectedSurveyAssignment.get('deviceIds').forEach((deviceId) => {
             // populate pre-selected devices
             const device = FLOW.Device.find(deviceId);
             if (device && device.get('keyId')) {
@@ -33,15 +34,21 @@ export default class DeviceSelector extends React.Component {
         }
 
         FLOW.deviceControl.get('content').forEach((device) => {
+          const checked = this.deviceInAssignment(device.get('keyId'));
+
+          if (checked) {
+            isAccordionOpen = true;
+          }
+
           deviceGroups[device.get('deviceGroup') ? device.get('deviceGroup') : 1][device.get('keyId')] = {
             name: device.get('deviceIdentifier'),
-            checked: this.deviceInAssignment(device.get('keyId')),
+            checked,
           };
         });
       }
     }
 
-    this.setState({ deviceGroupNames, deviceGroups });
+    this.setState({ deviceGroupNames, deviceGroups, isAccordionOpen });
   }
 
   onAccordionClick = () => {
@@ -50,7 +57,7 @@ export default class DeviceSelector extends React.Component {
   }
 
   deviceInAssignment = (deviceId) => {
-    const devicesInAssignment = FLOW.selectedControl.selectedSurveyAssignment.get('devices');
+    const devicesInAssignment = FLOW.selectedControl.selectedSurveyAssignment.get('deviceIds');
     return devicesInAssignment ? devicesInAssignment.indexOf(deviceId) > -1 : false;
   }
 
