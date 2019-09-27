@@ -51,7 +51,7 @@ public class CallbackController {
 
     public CallbackController(AppConfig appConfig) {
         this.controller = appConfig.authenticationController();
-        this.redirectOnFail = "/"; // Where to redirect?
+        this.redirectOnFail = "/auth0/error.html";
         this.redirectOnSuccess = "/admin";
     }
 
@@ -78,9 +78,19 @@ public class CallbackController {
             SecurityContextHolder.getContext().setAuthentication(authentication);
             res.sendRedirect(redirectOnSuccess);
         } catch (AuthenticationException | IdentityVerificationException e) {
-            log.log(Level.SEVERE, e.getMessage());
+            String errorDescriptionId = "error_description";
+            String errorDescription = req.getParameter(errorDescriptionId);
+            log.log(getLogLevel(errorDescription), errorDescriptionId + ": " + errorDescription + " Error Message: " + e.getMessage());
             SecurityContextHolder.clearContext();
-            res.sendRedirect(redirectOnFail);
+            res.sendRedirect(redirectOnFail + "?errorCode=" + errorDescription);
+        }
+    }
+
+    private Level getLogLevel(String errorDescription) {
+        if ("EMAIL_VERIFIED_ERROR".equals(errorDescription)) {
+            return Level.INFO;
+        } else {
+            return Level.SEVERE;
         }
     }
 

@@ -14,14 +14,17 @@
  *  The full license text can also be seen at <http://www.gnu.org/licenses/agpl.html>.
  */
 
-package test.java.org.akvo.flow.util;
-
-import com.gallatinsystems.survey.domain.Question;
-import org.akvo.flow.util.FlowJsonObjectWriter;
-import org.junit.jupiter.api.Test;
+package org.akvo.flow.util;
 
 import java.io.IOException;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.LinkedHashMap;
+import java.util.List;
+import java.util.Map;
+
+import org.junit.jupiter.api.Test;
+
+import com.gallatinsystems.survey.domain.Question;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
