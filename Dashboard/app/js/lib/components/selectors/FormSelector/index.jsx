@@ -34,7 +34,4 @@ export default class FormSelector extends React.Component {
 FormSelector.propTypes = {
   forms: PropTypes.any.isRequired,
   onCheck: PropTypes.func.isRequired,
-  // context: PropTypes.object.isRequired,
 };
-
-// export default contextConnect(Context, context => ({ forms: context.forms }))(FormSelector);
