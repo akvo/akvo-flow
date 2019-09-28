@@ -220,7 +220,33 @@
       <version>${junit.jupiter.version}</version>
       <scope>provided</scope>
     </dependency>
-
+    
+    <!-- datastore unit tests -->
+    <dependency>
+      <groupId>com.google.appengine</groupId>
+      <artifactId>appengine-testing</artifactId>
+      <version>1.9.76</version>
+      <scope>provided</scope>
+    </dependency>
+     <dependency>
+        <groupId>com.google.appengine</groupId>
+        <artifactId>appengine-api-stubs</artifactId>
+        <version>1.9.76</version>
+        <scope>provided</scope>
+     </dependency>
+     <dependency>
+        <groupId>com.google.appengine</groupId>
+        <artifactId>appengine-tools-sdk</artifactId>
+        <version>1.9.76</version>
+        <scope>provided</scope>
+     </dependency>
+     <dependency>
+        <groupId>com.google.api-client</groupId>
+        <artifactId>google-api-client-appengine</artifactId>
+        <version>1.23.0</version>
+        <scope>provided</scope>
+     </dependency>
+     
     <!-- Will this work in place of version 1.0.13? -->
     <dependency>
         <groupId>org.jfree</groupId>

@@ -16,9 +16,6 @@
 
 package test.java.org.akvo.flow.xml;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertFalse;
-import static org.junit.jupiter.api.Assertions.assertNotEquals;
 import java.io.IOException;
 import java.util.List;
 import java.util.TreeMap;
@@ -26,11 +23,14 @@ import java.util.TreeMap;
 import org.akvo.flow.xml.PublishedForm;
 import org.akvo.flow.xml.XmlForm;
 import org.akvo.flow.xml.XmlQuestionGroup;
-import org.junit.After;
-import org.junit.Before;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.waterforpeople.mapping.app.gwt.client.survey.SurveyDto;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNotEquals;
 
+import org.waterforpeople.mapping.app.gwt.client.survey.SurveyDto;
 import com.gallatinsystems.survey.domain.Question;
 import com.gallatinsystems.survey.domain.QuestionGroup;
 import com.gallatinsystems.survey.domain.Survey;
@@ -44,18 +44,19 @@ class FlowXmlObjectWriterTests {
     private final LocalServiceTestHelper helper =
             new LocalServiceTestHelper(new LocalDatastoreServiceTestConfig());
 
-    @Before
+    @BeforeEach
     public void setUp() {
       helper.setUp();
     }
 
-    @After
+    @AfterEach
     public void tearDown() {
       helper.tearDown();
     }
 
     @Test
     void testSerialiseEmptyForm() throws IOException {
+        System.out.println("Foobar!");
         //Mock up a DTO tree
         Survey form1 = new Survey();
         //TODO needs the helper (to register an API environment)?
@@ -68,7 +69,7 @@ class FlowXmlObjectWriterTests {
         XmlForm form = new XmlForm(form1);
         //...and test it
         assertNotEquals(null, form);
-        //assertEquals(17L, form.getSurveyId());
+        assertEquals(17L, form.getSurveyId());
         assertEquals("This is a form", form.getName());
         assertEquals("10.0", form.getVersion());
         assertNotEquals(null, form.getQuestionGroup());
@@ -84,12 +85,12 @@ class FlowXmlObjectWriterTests {
 
         //Mock up a form tree
         Survey form1 = new Survey();
-        //form1.setKey(KeyFactory.createKey("Survey", 17L));
+        form1.setKey(KeyFactory.createKey("Survey", 17L));
         form1.setName("This is a form");
         form1.setVersion(11.0);
         //Add a QuestionGroup
         QuestionGroup qg = new QuestionGroup();
-        //qg.setKey(KeyFactory.createKey("Survey", 18L));
+        qg.setKey(KeyFactory.createKey("Survey", 18L));
         qg.setSurveyId(17L);
         qg.setName("This is a group");
         qg.setOrder(1);
@@ -102,7 +103,7 @@ class FlowXmlObjectWriterTests {
         XmlForm form = new XmlForm(form1);
         //...and test it
         assertNotEquals(null, form);
-//        assertEquals(17L, form.getSurveyId());
+        assertEquals(17L, form.getSurveyId());
         assertEquals("This is a form", form.getName());
         assertEquals("11.0", form.getVersion());
         assertNotEquals(null, form.getQuestionGroup());
@@ -132,12 +133,12 @@ class FlowXmlObjectWriterTests {
 
         //Mock up a DTO tree
         Survey form1 = new Survey();
-//        form1.setKey(KeyFactory.createKey("Survey", 17L));
+        form1.setKey(KeyFactory.createKey("Survey", 17L));
         form1.setName("This is a form");
         form1.setVersion(12.0);
         //Add a QuestionGroup
         QuestionGroup qg = new QuestionGroup();
-//        qg.setKey(KeyFactory.createKey("Survey", 18L));
+        qg.setKey(KeyFactory.createKey("Survey", 18L));
         qg.setSurveyId(17L);
         qg.setName("This is a group");
         qg.setOrder(1);
@@ -147,7 +148,7 @@ class FlowXmlObjectWriterTests {
         //Add a question
         //Intentionally do not set mandatory; it should be null
         Question q = new Question();
-//        q.setKey(KeyFactory.createKey("Survey", 19L)); //Must have a key
+        q.setKey(KeyFactory.createKey("Survey", 19L)); //Must have a key
         q.setOrder(1);
         q.setText("This is a question");
         q.setType(Question.Type.FREE_TEXT);
