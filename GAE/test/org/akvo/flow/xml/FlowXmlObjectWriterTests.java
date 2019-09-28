@@ -14,7 +14,7 @@
  *  The full license text can also be seen at <http://www.gnu.org/licenses/agpl.html>.
  */
 
-package test.java.org.akvo.flow.xml;
+package org.akvo.flow.xml;
 
 import java.io.IOException;
 import java.util.List;
@@ -23,6 +23,7 @@ import java.util.TreeMap;
 import org.akvo.flow.xml.PublishedForm;
 import org.akvo.flow.xml.XmlForm;
 import org.akvo.flow.xml.XmlQuestionGroup;
+import org.akvo.flow.xml.XmlQuestion;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -56,10 +57,8 @@ class FlowXmlObjectWriterTests {
 
     @Test
     void testSerialiseEmptyForm() throws IOException {
-        System.out.println("Foobar!");
         //Mock up a DTO tree
         Survey form1 = new Survey();
-        //TODO needs the helper (to register an API environment)?
         form1.setKey(KeyFactory.createKey("Survey", 17L));
         form1.setName("This is a form");
         form1.setVersion(10.0);
@@ -99,7 +98,7 @@ class FlowXmlObjectWriterTests {
         form1.setQuestionGroupMap(gl);
         //No questions
 
-        //Convert DTO tree to Jackson tree
+        //Convert domain tree to Jackson tree
         XmlForm form = new XmlForm(form1);
         //...and test it
         assertNotEquals(null, form);
@@ -116,14 +115,14 @@ class FlowXmlObjectWriterTests {
         //Convert Jackson tree into an XML string
         String xml = PublishedForm.generate(form);
 
-        //And finally back to DTO again
-        SurveyDto dto2 = PublishedForm.parse(xml, true).toDto(); //be strict
+        //And finally parse to DTO to see that it is valid
+        SurveyDto dto = PublishedForm.parse(xml, true).toDto(); //be strict
 
-        assertNotEquals(null, dto2);
-//        assertEquals(17L, dto2.getKeyId());
-        assertEquals("This is a form", dto2.getName());
-        assertEquals("11.0", dto2.getVersion());
-        assertEquals("This is a form", dto2.getName());
+        assertNotEquals(null, dto);
+        assertEquals(17L, dto.getKeyId());
+        assertEquals("This is a form", dto.getName());
+        assertEquals("11.0", dto.getVersion());
+        assertEquals("This is a form", dto.getName());
     }
 
 
@@ -142,9 +141,9 @@ class FlowXmlObjectWriterTests {
         qg.setSurveyId(17L);
         qg.setName("This is a group");
         qg.setOrder(1);
-        TreeMap<Integer, QuestionGroup> gl = new TreeMap<>();
-        gl.put(1, qg);
-        form1.setQuestionGroupMap(gl);
+        TreeMap<Integer, QuestionGroup> gm = new TreeMap<>();
+        gm.put(1, qg);
+        form1.setQuestionGroupMap(gm);
         //Add a question
         //Intentionally do not set mandatory; it should be null
         Question q = new Question();
@@ -156,7 +155,7 @@ class FlowXmlObjectWriterTests {
         qm.put(1,q);
         qg.setQuestionMap(qm);
 
-        //Convert DTO tree to Jackson tree
+        //Convert domain tree to Jackson tree
         XmlForm form = new XmlForm(form1);
         //...and test it
         assertNotEquals(null, form);
@@ -164,28 +163,30 @@ class FlowXmlObjectWriterTests {
         assertEquals("This is a form", form.getName());
         assertEquals("12.0", form.getVersion());
         assertNotEquals(null, form.getQuestionGroup());
-        List<XmlQuestionGroup> ga = form.getQuestionGroup();
-        assertEquals(1, ga.size());
-        assertEquals("This is a group", ga.get(0).getHeading());
-        assertEquals(1, ga.get(0).getOrder());
-        assertFalse(ga.get(0).getRepeatable());
-        //TODO test the question
+        assertEquals(1, form.getQuestionGroup().size());
+        XmlQuestionGroup xqg = form.getQuestionGroup().get(0);
+        assertNotEquals(null, xqg);
+        assertEquals("This is a group", xqg.getHeading());
+        assertEquals(1, xqg.getOrder());
+        assertFalse(xqg.getRepeatable());
+        assertNotEquals(null, xqg.getQuestion());
+        assertEquals(1, xqg.getQuestion().size());
+        XmlQuestion xq = xqg.getQuestion().get(0);
+        assertNotEquals(null, xq);
+        assertEquals(19L, xq.getId());
+        assertEquals("This is a question", xq.getText());
 
         //Convert Jackson tree into an XML string
         String xml = PublishedForm.generate(form);
 
-        //And finally back to DTO again
-        //TODO: key is mandatory
-        SurveyDto dto2 = PublishedForm.parse(xml, true).toDto(); //be strict
+        //And finally parse it to a DTO
+        SurveyDto dto = PublishedForm.parse(xml, true).toDto(); //be strict
 
-        assertNotEquals(null, dto2);
-        assertEquals(17L, dto2.getKeyId());
-        assertEquals("This is a form", dto2.getName());
-        assertEquals("12.0", dto2.getVersion());
-        assertEquals("This is a form", dto2.getName());
-
-        //Exactly The same? (Platonic ideal - not required)
-        //assertTrue(dto1.equals(dto2));
+        assertNotEquals(null, dto);
+        assertEquals(17L, dto.getKeyId());
+        assertEquals("This is a form", dto.getName());
+        assertEquals("12.0", dto.getVersion());
+        assertEquals("This is a form", dto.getName());
     }
 
 }
