@@ -72,7 +72,6 @@ public class SplitAssignments implements Process {
         for (Entity ass : pq.asIterable(FetchOptions.Builder.withChunkSize(500))) {
 
             boolean splitAllowed = true;
-            boolean forceSplit = false;
             Long id = ass.getKey().getId();
             String name = (String) ass.getProperty("name");
             Map<Long, List<Long>> surveys = new HashMap<>(); //From survey ids to a list of forms
@@ -86,7 +85,6 @@ public class SplitAssignments implements Process {
             for (Long formId: forms) {
                 if (formId == 0) { //obviously bogus; fix it
                     System.out.println("ERROR! Form in assignment is 0; removing it " + formId);
-                    forceSplit = true;
                     continue;
                 }
                 Long surveyId = surveyOfForm(ds, formId);
@@ -104,12 +102,11 @@ public class SplitAssignments implements Process {
                     splitAllowed = false;
                 } else {
                     System.out.println("ERROR! Nonexistent form " + formId + " in assignment " + id);
-                    forceSplit = true; //repair the assignment
                 }
             }
 
-            if (splitAllowed && (forceSplit || surveys.size() > 1)) { //Must be split!
-                System.out.println("Splitting assignment " + id + " into " + surveys.size());
+            if (splitAllowed && surveys.size() > 1) { //Must be split!
+                System.out.println("Rewriting assignment " + id + " in " + surveys.size() + " pieces");
 
                 int part = 0;
                 for (Entry<Long, List<Long>> entry: surveys.entrySet()) {
@@ -119,14 +116,17 @@ public class SplitAssignments implements Process {
                     if (part == 1) { //change it
                         System.out.println(" changing from " + ass);
                         ass.setProperty("name", name + " [" + nameOfSurvey.get(surveyId) + "]");
-                        ass.setProperty("surveyIds", formList);
+                        ass.removeProperty("surveyIds");
+                        ass.setProperty("formIds", formList);
+                        ass.setProperty("surveyId", surveyId);
                         System.out.println(" changing to " + ass);
                         toBeSaved.add(ass);
                     } else { // make a new one
                         Entity newAss = new Entity("SurveyAssignment");
                         newAss.setPropertiesFrom(ass);
                         newAss.setProperty("name", name + " [" + nameOfSurvey.get(surveyId) + "]");
-                        newAss.setProperty("surveyIds", formList);
+                        newAss.setProperty("formIds", formList);
+                        newAss.setProperty("surveyId", surveyId);
                         System.out.println(" creating " + newAss);
                         toBeCreated.add(newAss);
                     }
