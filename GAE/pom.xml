@@ -211,14 +211,14 @@
       <groupId>org.junit.jupiter</groupId>
       <artifactId>junit-jupiter-api</artifactId>
       <version>${junit.jupiter.version}</version>
-      <scope>provided</scope>
+      <scope>test</scope>
     </dependency>
 
     <dependency>
       <groupId>org.junit.jupiter</groupId>
       <artifactId>junit-jupiter-engine</artifactId>
       <version>${junit.jupiter.version}</version>
-      <scope>provided</scope>
+      <scope>test</scope>
     </dependency>
     
     <!-- datastore unit tests -->
@@ -226,25 +226,25 @@
       <groupId>com.google.appengine</groupId>
       <artifactId>appengine-testing</artifactId>
       <version>1.9.76</version>
-      <scope>provided</scope>
+      <scope>test</scope>
     </dependency>
      <dependency>
         <groupId>com.google.appengine</groupId>
         <artifactId>appengine-api-stubs</artifactId>
         <version>1.9.76</version>
-        <scope>provided</scope>
+        <scope>test</scope>
      </dependency>
      <dependency>
         <groupId>com.google.appengine</groupId>
         <artifactId>appengine-tools-sdk</artifactId>
         <version>1.9.76</version>
-        <scope>provided</scope>
+        <scope>test</scope>
      </dependency>
      <dependency>
         <groupId>com.google.api-client</groupId>
         <artifactId>google-api-client-appengine</artifactId>
         <version>1.23.0</version>
-        <scope>provided</scope>
+        <scope>test</scope>
      </dependency>
      
     <!-- Will this work in place of version 1.0.13? -->
