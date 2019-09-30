@@ -92,7 +92,7 @@ public class DataPointServlet extends AbstractRestApiServlet {
         if (dpReq.getSurveyId() != null) {
             //Find the device (if any)
             DeviceDAO deviceDao = new DeviceDAO();
-            Device device = deviceDao.getDevice(dpReq.getAndroidId(), dpReq.getImei(),dpReq.getPhoneNumber());
+            Device device = deviceDao.getDevice(dpReq.getAndroidId(), null, null);
             if (device != null) {
                 log.info("Found device id: " + device.getKey().getId());
                 log.fine("Found device: " + device);

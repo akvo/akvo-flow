@@ -29,22 +29,12 @@ import com.gallatinsystems.framework.rest.RestRequest;
 public class DataPointRequest extends RestRequest {
     private static final long serialVersionUID = 1L;
     private static final String SURVEY_ID_PARAM = "surveyId";
-    private static final String IMEI_PARAM = "imei";
-    private static final String PHONE_NUMBER_PARAM = "phoneNumber";
     private static final String ANDROID_ID_PARAM = "androidId";
     private static final String DEVICE_ID_PARAM = "deviceId";
-    private static final String LAST_UPDATE_TIME_PARAM = "lastUpdateTime";
-    private static final String CURSOR_PARAM = "cursor";
 
     private Long surveyId;
-    private String imei;
-    private String phoneNumber;
     private String androidId;
     private String deviceId;
-    @Deprecated
-    private Date lastUpdateTime;
-    @Deprecated
-    private String cursor;
 
     @Override
     protected void populateErrors() {
@@ -58,21 +48,8 @@ public class DataPointRequest extends RestRequest {
     @Override
     protected void populateFields(HttpServletRequest req) throws Exception {
         surveyId = Long.parseLong(req.getParameter(SURVEY_ID_PARAM));
-        imei = req.getParameter(IMEI_PARAM);
-        phoneNumber = req.getParameter(PHONE_NUMBER_PARAM);
         androidId = req.getParameter(ANDROID_ID_PARAM);
         deviceId = req.getParameter(DEVICE_ID_PARAM);
-        cursor = req.getParameter(CURSOR_PARAM);
-        if (req.getParameter(LAST_UPDATE_TIME_PARAM) != null) {
-            try {
-                Long ts = Long.parseLong(req.getParameter(LAST_UPDATE_TIME_PARAM));
-                setLastUpdateTime(new Date(ts));
-            } catch (Exception e) {
-                addError(new RestError(RestError.BAD_DATATYPE_CODE,
-                        RestError.BAD_DATATYPE_MESSAGE, LAST_UPDATE_TIME_PARAM
-                                + " not a valid timestamp"));
-            }
-        }
     }
 
     public Long getSurveyId() {
@@ -81,22 +58,6 @@ public class DataPointRequest extends RestRequest {
 
     public void setSurveyId(Long surveyId) {
         this.surveyId = surveyId;
-    }
-
-    public String getImei() {
-        return imei;
-    }
-
-    public void setImei(String imei) {
-        this.imei = imei;
-    }
-
-    public String getPhoneNumber() {
-        return phoneNumber;
-    }
-
-    public void setPhoneNumber(String phoneNumber) {
-        this.phoneNumber = phoneNumber;
     }
 
     public String getAndroidId() {
@@ -115,21 +76,4 @@ public class DataPointRequest extends RestRequest {
         this.deviceId = deviceId;
     }
 
-    @Override
-    public String getCursor() {
-        return cursor;
-    }
-
-    @Override
-    public void setCursor(String cursor) {
-        this.cursor = cursor;
-    }
-
-    public Date getLastUpdateTime() {
-        return lastUpdateTime;
-    }
-
-    public void setLastUpdateTime(Date lastUpdateTime) {
-        this.lastUpdateTime = lastUpdateTime;
-    }
 }
