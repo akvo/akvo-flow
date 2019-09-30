@@ -2,6 +2,7 @@ import React from 'react';
 import { render, cleanup, fireEvent } from '@testing-library/react';
 import DeviceSelector from './index';
 import '@testing-library/jest-dom/extend-expect';
+import flowMock from './FLOW.mock';
 
 // https://github.com/testing-library/react-testing-library#suppressing-unnecessary-warnings-on-react-dom-168
 // eslint-disable-next-line no-console
@@ -26,22 +27,9 @@ afterAll(() => {
 describe('DeviceSelector Tests', () => {
   afterEach(cleanup);
 
-
-  const deviceGroupNames = { 1: 'Devices not in a group' };
-  const deviceGroups = {
-    1: {
-      150452032: { name: 'droidxx', checked: false },
-      150482013: { name: 'jana', checked: false },
-    },
-  };
-
   it('+++ renders <snapshot>', () => {
     const wrapper = render(
-      <DeviceSelector
-        deviceGroupNames={deviceGroupNames}
-        deviceGroups={deviceGroups}
-        onCheck={jest.fn()}
-      />
+      <DeviceSelector />
     );
 
     expect(wrapper.container).toMatchSnapshot();
@@ -49,11 +37,7 @@ describe('DeviceSelector Tests', () => {
 
   it('+++ toggles accordion', () => {
     const wrapper = render(
-      <DeviceSelector
-        deviceGroupNames={deviceGroupNames}
-        deviceGroups={deviceGroups}
-        onCheck={jest.fn()}
-      />
+      <DeviceSelector />
     );
 
     // find and click on accordion
@@ -62,26 +46,20 @@ describe('DeviceSelector Tests', () => {
 
     // expect panel display to be block
     const panel = wrapper.getByTestId('panel');
-    expect(panel).toHaveStyle('display: block');
+    expect(panel).toHaveStyle('display: none'); // open by default when one item was checked
     expect(wrapper.container).toMatchSnapshot();
   });
 
   test('+++ checkbox works', () => {
-    const onCheck = jest.fn();
-
     const wrapper = render(
-      <DeviceSelector
-        deviceGroupNames={deviceGroupNames}
-        deviceGroups={deviceGroups}
-        onCheck={onCheck}
-      />
+      <DeviceSelector />
     );
 
     // find input and trigger a check
+    // checked by default
     const inputNode = wrapper.getByLabelText('jana');
     fireEvent.click(inputNode);
 
-    expect(onCheck).toHaveBeenCalledTimes(1);
-    expect(onCheck).toHaveBeenCalledWith('150482013', true);
+    expect(flowMock.FLOW.selectedControl.selectedDevices.removeObject).toHaveBeenCalledTimes(1);
   });
 });
