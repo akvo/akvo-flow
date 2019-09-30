@@ -104,10 +104,6 @@
                        (swap! app-state update-in [:users :by-id] #(dissoc % user-id)))}))))
 
 (dispatch-loop
- :new-access-key {:keys [user access-key]}
- (swap! app-state assoc-in [:users :by-id (get user "keyId") "accessKey"] access-key))
-
-(dispatch-loop
  :fetch-users _
  (ajax/fetch-and-index "/rest/users" :users))
 

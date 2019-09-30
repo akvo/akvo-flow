@@ -71,22 +71,6 @@ public class User extends BaseDomain {
         this.superAdmin = superAdmin;
     }
 
-    public String getAccessKey() {
-        return accessKey;
-    }
-
-    public void setAccessKey(String accessKey) {
-        this.accessKey = accessKey;
-    }
-
-    public String getSecret() {
-        return secret;
-    }
-
-    public void setSecret(String secret) {
-        this.secret = secret;
-    }
-
     public String getLanguage() {
         return language;
     }

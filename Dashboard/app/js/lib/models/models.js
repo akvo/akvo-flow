@@ -329,8 +329,8 @@ FLOW.SurveyAssignment = FLOW.BaseModel.extend({
   name: DS.attr('string'),
   startDate: DS.attr('number'),
   endDate: DS.attr('number'),
-  devices: DS.attr('array'),
-  surveys: DS.attr('array'),
+  deviceIds: DS.attr('array'),
+  formIds: DS.attr('array'),
   language: DS.attr('string'),
 });
 
@@ -428,7 +428,6 @@ FLOW.User = FLOW.BaseModel.extend({
     defaultValue: 0,
   }),
   permissionList: DS.attr('string'),
-  accessKey: DS.attr('string'),
 });
 
 FLOW.Message = FLOW.BaseModel.extend({

@@ -34,7 +34,6 @@ public class UserDto extends BaseDto {
     private boolean admin = false;
     private boolean superAdmin = false;
     private String permissionList;
-    private String accessKey;
     private String language;
 
     public String getPermissionList() {
@@ -83,14 +82,6 @@ public class UserDto extends BaseDto {
 
     public void setEmailAddress(String emailAddress) {
         this.emailAddress = emailAddress;
-    }
-
-    public String getAccessKey() {
-        return accessKey;
-    }
-
-    public void setAccessKey(String accessKey) {
-        this.accessKey = accessKey;
     }
 
     public String getLanguage() {
