@@ -57,7 +57,7 @@ class FlowXmlObjectWriterTests {
 
     @Test
     void testSerialiseEmptyForm() throws IOException {
-        //Mock up a DTO tree
+        //Mock up a domain tree
         Survey form1 = new Survey();
         form1.setKey(KeyFactory.createKey("Survey", 17L));
         form1.setName("This is a form");
@@ -65,13 +65,15 @@ class FlowXmlObjectWriterTests {
         //No question groups. Completely empty form.
 
         //Convert domain tree to Jackson tree
-        XmlForm form = new XmlForm(form1);
+        XmlForm form = new XmlForm(form1, "Name of containing survey");
         //...and test it
         assertNotEquals(null, form);
         assertEquals(17L, form.getSurveyId());
         assertEquals("This is a form", form.getName());
+        assertEquals("Name of containing survey", form.getSurveyGroupName());
         assertEquals("10.0", form.getVersion());
         assertNotEquals(null, form.getQuestionGroup());
+        assertEquals(0, form.getQuestionGroup().size());
 
         //Convert Jackson tree into an XML string
         String xml = PublishedForm.generate(form);
@@ -99,12 +101,9 @@ class FlowXmlObjectWriterTests {
         //No questions
 
         //Convert domain tree to Jackson tree
-        XmlForm form = new XmlForm(form1);
+        XmlForm form = new XmlForm(form1, "Name of containing survey");
         //...and test it
         assertNotEquals(null, form);
-        assertEquals(17L, form.getSurveyId());
-        assertEquals("This is a form", form.getName());
-        assertEquals("11.0", form.getVersion());
         assertNotEquals(null, form.getQuestionGroup());
         List<XmlQuestionGroup> ga = form.getQuestionGroup();
         assertEquals(1, ga.size());
@@ -156,25 +155,19 @@ class FlowXmlObjectWriterTests {
         qg.setQuestionMap(qm);
 
         //Convert domain tree to Jackson tree
-        XmlForm form = new XmlForm(form1);
+        XmlForm form = new XmlForm(form1, "Name of containing survey");
         //...and test it
         assertNotEquals(null, form);
-        assertEquals(17L, form.getSurveyId());
-        assertEquals("This is a form", form.getName());
-        assertEquals("12.0", form.getVersion());
         assertNotEquals(null, form.getQuestionGroup());
-        assertEquals(1, form.getQuestionGroup().size());
         XmlQuestionGroup xqg = form.getQuestionGroup().get(0);
         assertNotEquals(null, xqg);
-        assertEquals("This is a group", xqg.getHeading());
-        assertEquals(1, xqg.getOrder());
-        assertFalse(xqg.getRepeatable());
         assertNotEquals(null, xqg.getQuestion());
         assertEquals(1, xqg.getQuestion().size());
         XmlQuestion xq = xqg.getQuestion().get(0);
         assertNotEquals(null, xq);
         assertEquals(19L, xq.getId());
         assertEquals("This is a question", xq.getText());
+        assertEquals(null, xq.getMandatory());
 
         //Convert Jackson tree into an XML string
         String xml = PublishedForm.generate(form);

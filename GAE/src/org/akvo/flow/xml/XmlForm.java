@@ -38,6 +38,12 @@ public final class XmlForm {
     @JacksonXmlProperty(localName = "version", isAttribute = true)
     private String version;
 
+    @JacksonXmlProperty(localName = "encoding", isAttribute = true)
+    private String encoding;
+
+    @JacksonXmlProperty(localName = "standalone", isAttribute = true)
+    private String standalone;
+
     @JacksonXmlProperty(localName = "name", isAttribute = true)
     private String name;
 
@@ -59,17 +65,22 @@ public final class XmlForm {
     public XmlForm() {
     }
 
-    //Create a form XML object from a form
-    public XmlForm(Survey form) {
+    //Create a form XML object from a form and the name of the containing survey
+    public XmlForm(Survey form, String surveyName) {
         surveyId = form.getKey().getId();
         surveyGroupId = form.getSurveyGroupId();
-        //TODO surveyGroupName = dto.getSurveyGroupName();
+        surveyGroupName = surveyName;
         defaultLanguageCode = form.getDefaultLanguageCode();
+        if (defaultLanguageCode == null) {
+            defaultLanguageCode = "en";
+        }
         name = form.getCode();
         if (name == null){
             name = form.getName();
         }
         version = form.getVersion().toString();
+        encoding = "UTF-8";
+        standalone = "yes";
         //Now copy the tree of child objects (if any)
         questionGroup = new ArrayList<>();//Having an empty list prevents a <questionGroup/> tag
         if (form.getQuestionGroupMap() != null) {
@@ -97,7 +108,7 @@ public final class XmlForm {
             }
             dto.setQuestionGroupList(gList);
         }
-        //TODO: fields not needed by the export process
+        //We could add more fields (not needed by the export process) here
 
         return dto;
     }
@@ -164,6 +175,22 @@ public final class XmlForm {
 
     public void setSurveyId(String surveyId) {
         this.surveyId = Long.parseLong(surveyId);
+    }
+
+    public String getEncoding() {
+        return encoding;
+    }
+
+    public void setEncoding(String encoding) {
+        this.encoding = encoding;
+    }
+
+    public String getStandalone() {
+        return standalone;
+    }
+
+    public void setStandalone(String standalone) {
+        this.standalone = standalone;
     }
 
     @Override public String toString() {

@@ -39,7 +39,7 @@ public class XmlQuestion {
     @JacksonXmlProperty(localName = "options", isAttribute = false)
     private XmlOptions options;
     @JacksonXmlProperty(localName = "validationRule", isAttribute = false)
-    private XmlValidationRule validationRule; //TODO: only one, ever?
+    private XmlValidationRule validationRule; //only one
     @JacksonXmlProperty(localName = "dependency", isAttribute = false)
     private XmlDependency dependency; //only one
     @JacksonXmlProperty(localName = "help", isAttribute = false)
@@ -82,6 +82,7 @@ public class XmlQuestion {
     public XmlQuestion() {
     }
 
+    //Create a jackson object from a domain object
     public XmlQuestion(Question q) {
         text = q.getText();
         id = q.getKey().getId();
@@ -90,25 +91,33 @@ public class XmlQuestion {
         localeNameFlag = Boolean.TRUE == q.getLocaleNameFlag();
         localeLocationFlag = Boolean.TRUE == q.getLocaleLocationFlag();
         locked = Boolean.TRUE == q.getGeoLocked();
-        allowPoints = Boolean.TRUE == q.getAllowPoints();
-        allowLine = Boolean.TRUE == q.getAllowLine();
-        allowPolygon = Boolean.TRUE == q.getAllowPolygon();
-        caddisflyResourceUuid = q.getCaddisflyResourceUuid();
-        if (q.getCascadeResourceId() != null) {
-            cascadeResource = q.getCascadeResourceId().toString();
-        }
         if (q.getTip() != null) {
             help = new XmlHelp(q.getTip());
         }
 
+        //Things specific to a question type
         switch (q.getType()) {
             case NUMBER:
                 validationRule = new XmlValidationRule(q);
                 type = FREE_TYPE;
+                requireDoubleEntry = Boolean.TRUE == q.getRequireDoubleEntry();
                 break; //Could have done a fall-through here ;)
             case FREE_TEXT:
                 type = FREE_TYPE;
+                requireDoubleEntry = Boolean.TRUE == q.getRequireDoubleEntry();
                 break;
+            case GEOSHAPE:
+                type = q.getType().toString();
+                allowPoints = Boolean.TRUE == q.getAllowPoints();
+                allowLine = Boolean.TRUE == q.getAllowLine();
+                allowPolygon = Boolean.TRUE == q.getAllowPolygon();
+                break;
+            case CASCADE:
+                type = q.getType().toString();
+                cascadeResource = q.getCascadeResourceId().toString();
+            case CADDISFLY:
+                type = q.getType().toString();
+                caddisflyResourceUuid = q.getCaddisflyResourceUuid();
             default:
                 type = q.getType().toString();
         }
@@ -145,6 +154,7 @@ public class XmlQuestion {
         dto.setOrder(order);
         dto.setMandatoryFlag(mandatory);
         dto.setLocaleNameFlag(localeNameFlag);
+        dto.setRequireDoubleEntry(requireDoubleEntry);
         //Type is more complicated:
         QuestionType t; //FREE_TEXT, OPTION, NUMBER, GEO, PHOTO, VIDEO, SCAN, TRACK, STRENGTH, DATE, CASCADE, GEOSHAPE, SIGNATURE, CADDISFLY
         if (FREE_TYPE.equalsIgnoreCase(type)) { //Text OR number
@@ -195,13 +205,13 @@ public class XmlQuestion {
                 "',order='" + order +
                 "',type='" + type +
                 "',mandatory='" + mandatory +
+                "',requireDoubleEntry='" + requireDoubleEntry +
                 "',locked='" + locked +
                 "',localeNameFlag='" + localeNameFlag +
                 "',allowPoints='" + allowPoints +
                 "',allowLines='" + allowLine +
                 "',allowPolygon='" + allowPolygon +
                 "',options=" + ((options != null) ? options.toString() : "(null)") +
-//                ",level='" + level +
                 "'}";
     }
 
@@ -348,6 +358,14 @@ public class XmlQuestion {
 
     public void setLevel(List<XmlLevel> level) {
         this.level = level;
+    }
+
+    public boolean getRequireDoubleEntry() {
+        return requireDoubleEntry;
+    }
+
+    public void setRequireDoubleEntry(boolean requireDoubleEntry) {
+        this.requireDoubleEntry = requireDoubleEntry;
     }
 
 }

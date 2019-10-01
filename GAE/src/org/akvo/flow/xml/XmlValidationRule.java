@@ -61,9 +61,9 @@ public class XmlValidationRule {
         return "validationRule{" +
                 "validationType='" + validationType +
                 "',allowDecimal='" + allowDecimal +
-                "', signed='" + signed +
-                "', maxVal='" + maxVal +
-                "', minVal='" + minVal +
+                "',signed='" + signed +
+                "',maxVal='" + maxVal +
+                "',minVal='" + minVal +
                 "'}";
     }
 

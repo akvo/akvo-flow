@@ -367,12 +367,8 @@ public class SurveyAssemblyServlet extends AbstractRestApiServlet {
         SurveyGroupDAO surveyGroupDao = new SurveyGroupDAO();
         SurveyGroup sg = surveyGroupDao.getByKey(s.getSurveyGroupId());
         Long transactionId = randomNumber.nextLong();
-        String lang = "en";
-        if (s != null && s.getDefaultLanguageCode() != null) {
-            lang = s.getDefaultLanguageCode();
-        }
 
-        XmlForm jacksonForm = new XmlForm(s);
+        XmlForm jacksonForm = new XmlForm(s, sg.getCode());
         String surveyXML;
         try {
             surveyXML = PublishedForm.generate(jacksonForm);

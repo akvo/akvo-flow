@@ -39,14 +39,14 @@ import com.gallatinsystems.survey.domain.QuestionGroup;
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public class XmlQuestionGroup {
 
-    @JacksonXmlElementWrapper(localName = "question", useWrapping = false)
-    private ArrayList<XmlQuestion> question;
+    @JacksonXmlProperty(localName = "repeatable", isAttribute = true)
+    private boolean repeatable;
 
     @JacksonXmlProperty(localName = "heading", isAttribute = false)
     private String heading;
 
-    @JacksonXmlProperty(localName = "repeatable", isAttribute = true)
-    private boolean repeatable;
+    @JacksonXmlElementWrapper(localName = "question", useWrapping = false)
+    private ArrayList<XmlQuestion> question;
 
     //TODO if we want to generate it: @JacksonXmlProperty(localName = "order", isAttribute = true)
     @JsonIgnore
@@ -110,14 +110,6 @@ public class XmlQuestionGroup {
         this.heading = h;
     }
 
-    public ArrayList<XmlQuestion> getQuestion() {
-        return question;
-    }
-
-    public void setQuestion(ArrayList<XmlQuestion> qs) {
-        this.question = qs;
-    }
-
     public boolean getRepeatable() {
         return repeatable;
     }
@@ -132,6 +124,14 @@ public class XmlQuestionGroup {
 
     public void setOrder(int order) {
         this.order = order;
+    }
+
+    public ArrayList<XmlQuestion> getQuestion() {
+        return question;
+    }
+
+    public void setQuestion(ArrayList<XmlQuestion> qs) {
+        this.question = qs;
     }
 
 }

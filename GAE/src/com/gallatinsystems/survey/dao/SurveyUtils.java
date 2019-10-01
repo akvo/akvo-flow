@@ -418,8 +418,7 @@ public class SurveyUtils {
      * @return The response from the server or null when `flowServices` is not defined, or an error
      *         in the request happens
      */
-    public static String notifyReportService(Collection<Long> surveyIds,
-            String action) {
+    public static String notifyReportService(Collection<Long> surveyIds, String action) {
         final String flowServiceURL = PropertyUtil.getProperty("flowServices");
         final String baseURL = PropertyUtil.getProperty("alias");
 
@@ -442,7 +441,7 @@ public class SurveyUtils {
             final String postString = "criteria="
                     + URLEncoder.encode(payload.toString(), "UTF-8");
 
-            log.log(Level.FINE, "POST URL: " + flowServiceURL + "POST string: " + postString);
+            log.log(Level.FINE, "POST URL: " + flowServiceURL + "  POST string: " + postString);
 
             final String response = new String(HttpUtil.doPost(flowServiceURL
                     + "/" + action, postString), "UTF-8");
