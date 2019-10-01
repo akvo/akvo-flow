@@ -1,5 +1,5 @@
 /*
- *  Copyright (C) 2010-2014 Stichting Akvo (Akvo Foundation)
+ *  Copyright (C) 2019 Stichting Akvo (Akvo Foundation)
  *
  *  This file is part of Akvo FLOW.
  *
@@ -14,27 +14,28 @@
  *  The full license text can also be seen at <http://www.gnu.org/licenses/agpl.html>.
  */
 
-package org.waterforpeople.mapping.app.web.dto;
+package org.akvo.flow.api.app;
 
 import java.util.List;
+
+import org.waterforpeople.mapping.app.web.dto.SurveyedLocaleDto;
 
 import com.gallatinsystems.framework.rest.RestResponse;
 
 /**
- * response for recordData service
- * 
- * @author Mark Westra
+ * response for DataPointServlet service
+ *
  */
-public class SurveyedLocaleResponse extends RestResponse {
-    private static final long serialVersionUID = 1548249617327473969L;
-    private List<SurveyedLocaleDto> surveyedLocaleData;
+public class DataPointResponse extends RestResponse {
+    private static final long serialVersionUID = 1L;
+    private List<SurveyedLocaleDto> dataPointData;
 
-    public List<SurveyedLocaleDto> getSurveyedLocaleData() {
-        return surveyedLocaleData;
+    public List<SurveyedLocaleDto> getDataPointData() {
+        return dataPointData;
     }
 
-    public void setSurveyedLocaleData(List<SurveyedLocaleDto> surveyedLocaleData) {
-        this.surveyedLocaleData = surveyedLocaleData;
+    public void setDataPointData(List<SurveyedLocaleDto> dataPointData) {
+        this.dataPointData = dataPointData;
     }
 
 }
