@@ -16,8 +16,6 @@
 
 package org.akvo.flow.api.app;
 
-import java.util.Date;
-
 import javax.servlet.http.HttpServletRequest;
 
 import com.gallatinsystems.framework.rest.RestError;
