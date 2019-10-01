@@ -18,7 +18,10 @@ package org.akvo.flow.xml;
 
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.SerializationFeature;
 import com.fasterxml.jackson.dataformat.xml.XmlMapper;
+import com.fasterxml.jackson.dataformat.xml.ser.ToXmlGenerator;
+
 import java.io.IOException;
 
 
@@ -45,7 +48,11 @@ public class PublishedForm {
     // Generates XML from Java objects
     public static String generate(XmlForm tree) throws IOException {
 
-        ObjectMapper objectMapper = new XmlMapper();
+        XmlMapper objectMapper = new XmlMapper();
+        //TODO hand-coded xml declaration:
+        //<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+        objectMapper.enable(ToXmlGenerator.Feature.WRITE_XML_DECLARATION); //Only version and encoding
+        objectMapper.enable(SerializationFeature.INDENT_OUTPUT);
 
         // Reads from POJO and converts to XML
         String xml = objectMapper.writeValueAsString(tree);
