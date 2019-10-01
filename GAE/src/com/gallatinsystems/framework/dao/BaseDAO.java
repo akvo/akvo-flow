@@ -312,8 +312,8 @@ public class BaseDAO<T extends BaseDomain> {
                     + concreteClass.getSimpleName());
         }
 
-        AuthzDao authzDao = new AuthzDaoGaeStorage();
-        AuthzDao.AllowedResponse allowedObjects = authzDao.getAllowedObjects(userId);
+        AuthzDao authzDao = new ForkAndCompareAuthzDao();
+        AllowedResponse allowedObjects = authzDao.getAllowedObjects(userId);
 
         if (allowedObjects.isSuperAdmin) {
             return allObjectsList;

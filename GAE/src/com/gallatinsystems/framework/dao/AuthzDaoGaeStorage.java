@@ -23,18 +23,20 @@ import com.gallatinsystems.user.domain.UserRole;
 
 public class AuthzDaoGaeStorage implements AuthzDao {
 
+    private final UserAuthorizationDAO userAuthorizationDAO = new UserAuthorizationDAO();
+    private final UserRoleDao userRoleDao = new UserRoleDao();
+    private final UserDao userDao = new UserDao();
+
     @Override
     public AllowedResponse getAllowedObjects(Long flowUserId) {
 
-        UserDao userDAO = new UserDao();
-        User user = userDAO.getByKey(flowUserId);
+        User user = this.userDao.getByKey(flowUserId);
 
         if (user.isSuperAdmin()) {
             return new AllowedResponse(true);
         }
 
-        UserAuthorizationDAO userAuthorizationDAO = new UserAuthorizationDAO();
-        List<UserAuthorization> userAuthorizationList = userAuthorizationDAO.listByUser(flowUserId);
+        List<UserAuthorization> userAuthorizationList = this.userAuthorizationDAO.listByUser(flowUserId);
 
         Set<Long> securedObjectIds = new HashSet<>();
         for (UserAuthorization auth : userAuthorizationList) {
@@ -47,7 +49,7 @@ public class AuthzDaoGaeStorage implements AuthzDao {
 
     @Override
     public boolean hasPermInTree(List<Long> objectIds, Long userId, Permission permission) {
-            List<UserAuthorization> authorizations = new UserAuthorizationDAO().listByObjectIds(userId, // merge with call bellow
+            List<UserAuthorization> authorizations = userAuthorizationDAO.listByObjectIds(userId, // merge with call bellow
                     objectIds);
             if (authorizations.isEmpty()) {
                 throw new AccessDeniedException("Access is Denied. Insufficient permissions");
@@ -58,7 +60,7 @@ public class AuthzDaoGaeStorage implements AuthzDao {
                 authorizedRoleIds.add(auth.getRoleId());
             }
 
-            List<UserRole> authorizedRoles = new UserRoleDao().listByKeys(authorizedRoleIds // this one to be merged with call above
+            List<UserRole> authorizedRoles = userRoleDao.listByKeys(authorizedRoleIds // this one to be merged with call above
                     .toArray(new Long[0]));
 
             for (UserRole role : authorizedRoles) {
@@ -79,10 +81,10 @@ public class AuthzDaoGaeStorage implements AuthzDao {
     @Override
     public String getPermissionsMap(User currentUser) {
         // move the whole method
-        List<UserAuthorization> authorizationList = new UserAuthorizationDAO().listByUser(currentUser // OK
+        List<UserAuthorization> authorizationList = userAuthorizationDAO.listByUser(currentUser // OK
                 .getKey().getId());
         Map<Long, UserRole> roleMap = new HashMap<Long, UserRole>();
-        for (UserRole role : new UserRoleDao().list(Constants.ALL_RESULTS)) { // OK
+        for (UserRole role : userRoleDao.list(Constants.ALL_RESULTS)) { // OK
             roleMap.put(role.getKey().getId(), role);
         }
         Map<Long, Set<Permission>> permissions = new HashMap<Long, Set<Permission>>();
@@ -128,7 +130,7 @@ public class AuthzDaoGaeStorage implements AuthzDao {
 
     @Override
     public User findUserByEmail(String email) {
-        return new UserDao().findUserByEmail(email);
+        return userDao.findUserByEmail(email);
     }
 
 }

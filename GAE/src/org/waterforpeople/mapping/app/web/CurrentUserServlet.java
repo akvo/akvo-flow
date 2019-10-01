@@ -33,7 +33,7 @@ import org.apache.velocity.VelocityContext;
 import org.apache.velocity.app.VelocityEngine;
 import org.springframework.security.core.context.SecurityContextHolder;
 
-import com.gallatinsystems.framework.dao.AuthzDaoGaeStorage;
+import com.gallatinsystems.framework.dao.ForkAndCompareAuthzDao;
 import com.gallatinsystems.user.dao.UserDao;
 import com.gallatinsystems.user.domain.User;
 
@@ -72,7 +72,7 @@ public class CurrentUserServlet extends HttpServlet {
         final User currentUser = getCurrentUser();
 
         context.put("user", currentUser);
-        String permissionsMap = new AuthzDaoGaeStorage().getPermissionsMap(currentUser);
+        String permissionsMap = new ForkAndCompareAuthzDao().getPermissionsMap(currentUser);
         context.put("permissions", permissionsMap);
 
         final StringWriter writer = new StringWriter();
