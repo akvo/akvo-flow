@@ -91,14 +91,15 @@ export default class AssignmentsEditView extends React.Component {
 
     return (
       <div>
-        <a
+        <button
           onKeyPress={actions.cancelEditSurveyAssignment}
           onClick={actions.cancelEditSurveyAssignment}
           className="stepBack"
           id="float-right"
+          type="button"
         >
           {strings.backToAssignmentList}
-        </a>
+        </button>
 
         <form>
           <AssignmentDetails
