@@ -157,24 +157,30 @@ export default class AssignmentsEditView extends React.Component {
             <ul>
               {showSubmitBtn ? (
                 <li>
-                  <a
+                  <button
                     onClick={this.onSubmit}
                     onKeyPress={this.onSubmit}
                     className="standardBtn"
+                    type="button"
                   >
                     {strings.saveAssignment}
-                  </a>
+                  </button>
                 </li>
               ) : (
-                  <li><a className="button noChanges" id="standardBtn">{strings.saveAssignment}</a></li>
-                )}
+                <li>
+                  <button type="button" className="button noChanges" id="standardBtn">
+                    {strings.saveAssignment}
+                  </button>
+                </li>
+              )}
               <li>
-                <a
+                <button
                   onClick={actions.cancelEditSurveyAssignment}
                   onKeyPress={actions.cancelEditSurveyAssignment}
+                  type="button"
                 >
                   {strings.cancel}
-                </a>
+                </button>
               </li>
             </ul>
           </div>
