@@ -17,12 +17,12 @@ export default class AssignmentsEditView extends React.Component {
 
   // lifecycle methods
   componentDidMount() {
-    this.validateAssignment(this.props.inputValues.assignmentName);
+    this.validateAssignmentName(this.props.inputValues.assignmentName);
   }
 
   // event handlers
   onChangeState = (key, value) => {
-    if (key === 'assignmentName') this.validateAssignment(value);
+    if (key === 'assignmentName') this.validateAssignmentName(value);
     this.setState({ [key]: value });
   }
 
@@ -34,13 +34,11 @@ export default class AssignmentsEditView extends React.Component {
   }
 
   // helpers
-  validateAssignment = (assignmentName) => {
-    if ((assignmentName && assignmentName.length > 100) || !assignmentName || assignmentName == '') {
-      if (assignmentName && assignmentName.length > 100) {
-        this.setState({ nameValidationMsg: Ember.String.loc('_assignment_name_over_100_chars') });
-      } else if (!assignmentName || assignmentName == '') {
-        this.setState({ nameValidationMsg: Ember.String.loc('_assignment_name_not_set') });
-      }
+  validateAssignmentName = (assignmentName) => {
+    if (!assignmentName || assignmentName == '') {
+      this.setState({ nameValidationMsg: Ember.String.loc('_assignment_name_not_set') });
+    } else if (assignmentName.length > 100) {
+      this.setState({ nameValidationMsg: Ember.String.loc('_assignment_name_over_100_chars') });
     } else {
       this.setState({ nameValidationMsg: '' });
     }
