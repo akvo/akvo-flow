@@ -13,6 +13,8 @@ export default class AssignmentsEditView extends React.Component {
     startDate: this.props.inputValues.startDate,
     expireDate: this.props.inputValues.toDate,
     nameValidationMsg: '',
+    expireDateMsg: '',
+    startDateMsg: '',
   }
 
   // lifecycle methods
@@ -23,12 +25,12 @@ export default class AssignmentsEditView extends React.Component {
   // event handlers
   onChangeState = (key, value) => {
     if (key === 'assignmentName') this.validateAssignmentName(value);
+    if (key === 'startDate' || key === 'expireDate') this.validateDate(`${key}Msg`, value);
     this.setState({ [key]: value });
   }
 
   onSubmit = () => {
     const { assignmentName, startDate, expireDate } = this.state;
-    if (this.assignmentNotComplete()) return;
 
     this.props.actions.onSubmit({ assignmentName, startDate, expireDate });
   }
@@ -44,6 +46,14 @@ export default class AssignmentsEditView extends React.Component {
     }
   }
 
+  validateDate = (stateKey, value) => {
+    if (!value.length) {
+      this.setState({ [stateKey]: Ember.String.loc('_date_not_set_text') });
+    } else {
+      this.setState({ [stateKey]: '' });
+    }
+  }
+
   formatStateForComponents = () => {
     const assignmentDetailsState = {
       assignmentName: this.state.assignmentName,
@@ -56,36 +66,13 @@ export default class AssignmentsEditView extends React.Component {
     };
   }
 
-  assignmentNotComplete = () => {
-    const { assignmentName, expireDate, startDate } = this.state;
-
-    // if assignment name is empty
-    if (assignmentName.length === 0) {
-      FLOW.dialogControl.set('activeAction', 'ignore');
-      FLOW.dialogControl.set('header', Ember.String.loc('_assignment_name_not_set'));
-      FLOW.dialogControl.set('message', Ember.String.loc('_assignment_name_not_set_text'));
-      FLOW.dialogControl.set('showCANCEL', false);
-      FLOW.dialogControl.set('showDialog', true);
-      return true;
-    }
-
-    // if start date or end date is falsy
-    if (!expireDate.length || !startDate.length) {
-      FLOW.dialogControl.set('activeAction', 'ignore');
-      FLOW.dialogControl.set('header', Ember.String.loc('_date_not_set'));
-      FLOW.dialogControl.set('message', Ember.String.loc('_date_not_set_text'));
-      FLOW.dialogControl.set('showCANCEL', false);
-      FLOW.dialogControl.set('showDialog', true);
-      return true;
-    }
-
-    return false;
-  }
-
   // render
   render() {
+    const { nameValidationMsg, startDateMsg, expireDateMsg } = this.state;
     const { strings, actions, data } = this.props;
     const { assignmentDetailsState } = this.formatStateForComponents();
+    const showSubmitBtn =
+      !nameValidationMsg.length && !startDateMsg.length && !expireDateMsg.length;
 
     return (
       <div>
@@ -101,7 +88,12 @@ export default class AssignmentsEditView extends React.Component {
 
         <form>
           <AssignmentDetails
-            strings={{ ...strings, nameValidationMsg: this.state.nameValidationMsg }}
+            strings={{
+              ...strings,
+              nameValidationMsg: this.state.nameValidationMsg,
+              expireDateMsg: this.state.expireDateMsg,
+              startDateMsg: this.state.startDateMsg,
+            }}
             values={assignmentDetailsState}
             onChange={this.onChangeState}
           />
@@ -163,7 +155,7 @@ export default class AssignmentsEditView extends React.Component {
 
           <div className="menuConfirm">
             <ul>
-              {!this.state.nameValidationMsg.length ? (
+              {showSubmitBtn ? (
                 <li>
                   <a
                     onClick={this.onSubmit}
@@ -174,8 +166,8 @@ export default class AssignmentsEditView extends React.Component {
                   </a>
                 </li>
               ) : (
-                <li><a className="button noChanges" id="standardBtn">{strings.saveAssignment}</a></li>
-              )}
+                  <li><a className="button noChanges" id="standardBtn">{strings.saveAssignment}</a></li>
+                )}
               <li>
                 <a
                   onClick={actions.cancelEditSurveyAssignment}
