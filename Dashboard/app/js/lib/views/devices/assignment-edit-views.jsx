@@ -195,6 +195,10 @@ FLOW.AssignmentEditView = FLOW.ReactComponentView.extend(
     },
 
     setupForms() {
+      if (!FLOW.selectedControl.selectedSurveyAssignment.get('formIds')) {
+        return;
+      }
+
       FLOW.selectedControl.selectedSurveyAssignment.get('formIds').forEach((formId) => {
         const form = FLOW.Survey.find(formId);
         if (form && form.get('keyId')) {

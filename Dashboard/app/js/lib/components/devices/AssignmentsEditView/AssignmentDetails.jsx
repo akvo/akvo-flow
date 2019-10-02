@@ -24,7 +24,6 @@ export default class AssignmentDetails extends React.Component {
         <label htmlFor="assignmentName">
           {strings.assignmentName}
           :
-          {/* TODO:: Add failure message for  */}
           <span style={{ color: 'red' }}>
             {' '}
             {strings.nameValidationMsg}
@@ -46,6 +45,10 @@ export default class AssignmentDetails extends React.Component {
             <label htmlFor="startDate">
               {strings.startDate}
               :
+              <span style={{ color: 'red' }}>
+                {' '}
+                {strings.startDateMsg}
+              </span>
             </label>
             <input
               type="date"
@@ -61,6 +64,10 @@ export default class AssignmentDetails extends React.Component {
             <label htmlFor="expireDate">
               {strings.expireDate}
               :
+              <span style={{ color: 'red' }}>
+                {' '}
+                {strings.expireDateMsg}
+              </span>
             </label>
             <input
               type="date"

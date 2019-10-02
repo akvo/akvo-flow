@@ -7,17 +7,18 @@ const FLOW = {
     get: jest.fn().mockReturnValue({
       forEach: jest.fn(cb =>
         cb({
-          get: jest.fn((key) => {
+          get: jest.fn(key => {
             switch (key) {
-            case 'keyId':
-              return 1;
-            case 'code':
-              return 'Devices not in a group';
-            default:
-              return null;
+              case 'keyId':
+                return 1;
+              case 'code':
+                return 'Devices not in a group';
+              default:
+                return null;
             }
           }),
-        })),
+        })
+      ),
     }),
   },
 
@@ -28,30 +29,31 @@ const FLOW = {
     get: jest.fn().mockReturnValue({
       forEach: jest.fn(cb =>
         cb({
-          get: jest.fn((key) => {
+          get: jest.fn(key => {
             switch (key) {
-            case 'keyId':
-              return 150452032;
-            case 'deviceGroup':
-              return 1;
-            case 'deviceIdentifier':
-              return 'jana';
-            default:
-              return null;
+              case 'keyId':
+                return 150452032;
+              case 'deviceGroup':
+                return 1;
+              case 'deviceIdentifier':
+                return 'jana';
+              default:
+                return null;
             }
           }),
-        })),
+        })
+      ),
     }),
   },
 
   selectedControl: {
     selectedSurveyAssignment: {
-      get: jest.fn((key) => {
+      get: jest.fn(key => {
         switch (key) {
-        case 'deviceIds':
-          return [150452032];
-        default:
-          return null;
+          case 'deviceIds':
+            return [150452032];
+          default:
+            return null;
         }
       }),
     },
@@ -64,12 +66,12 @@ const FLOW = {
 
   Device: {
     find: jest.fn().mockReturnValue({
-      get: jest.fn((key) => {
+      get: jest.fn(key => {
         switch (key) {
-        case 'keyId':
-          return 150452032;
-        default:
-          return null;
+          case 'keyId':
+            return 150452032;
+          default:
+            return null;
         }
       }),
     }),
