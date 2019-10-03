@@ -105,7 +105,7 @@ public class SplitAssignments implements Process {
                 }
             }
 
-            if (splitAllowed && surveys.size() > 1) { //Must be split!
+            if (splitAllowed) { //Must be split (or just rewritten if 1 survey)
                 System.out.println("Rewriting assignment " + id + " in " + surveys.size() + " pieces");
 
                 int part = 0;
