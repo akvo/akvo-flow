@@ -28,10 +28,7 @@ import java.util.Set;
 
 import com.google.appengine.api.datastore.DatastoreService;
 import com.google.appengine.api.datastore.Entity;
-import com.google.appengine.api.datastore.EntityNotFoundException;
 import com.google.appengine.api.datastore.FetchOptions;
-import com.google.appengine.api.datastore.Key;
-import com.google.appengine.api.datastore.KeyFactory;
 import com.google.appengine.api.datastore.PreparedQuery;
 import com.google.appengine.api.datastore.Query;
 
@@ -71,7 +68,7 @@ public class SplitAssignments implements Process {
         //Loop over assignments
         for (Entity ass : pq.asIterable(FetchOptions.Builder.withChunkSize(500))) {
 
-            boolean splitAllowed = true;
+            boolean changesAllowed = true;
             Long id = ass.getKey().getId();
             String name = (String) ass.getProperty("name");
             Map<Long, List<Long>> surveys = new HashMap<>(); //From survey ids to a list of forms
@@ -99,13 +96,13 @@ public class SplitAssignments implements Process {
 
                 } else if (surveyId == -1) { //Survey structure needs repair; leave it alone
                     System.out.println("ERROR! Form " + formId + " in assignment is in a nonexistent survey");
-                    splitAllowed = false;
+                    changesAllowed = false;
                 } else {
                     System.out.println("ERROR! Nonexistent form " + formId + " in assignment " + id);
                 }
             }
 
-            if (splitAllowed && surveys.size() > 1) { //Must be split!
+            if (changesAllowed) { //Must be split (or just rewritten if 1 survey)
                 System.out.println("Rewriting assignment " + id + " in " + surveys.size() + " pieces");
 
                 int part = 0;
