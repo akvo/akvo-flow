@@ -47,16 +47,22 @@ public class PublishedForm {
 
     // Generates XML from Java objects
     public static String generate(XmlForm tree) throws IOException {
-
         XmlMapper objectMapper = new XmlMapper();
-        //TODO hand-coded xml declaration:
-        //<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
-        objectMapper.enable(ToXmlGenerator.Feature.WRITE_XML_DECLARATION); //Only version and encoding
-        objectMapper.enable(SerializationFeature.INDENT_OUTPUT);
-
+        StringBuilder xml = new StringBuilder("<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?>");
         // Reads from POJO and converts to XML
-        String xml = objectMapper.writeValueAsString(tree);
-        return xml;
+        xml.append(objectMapper.writeValueAsString(tree));
+
+        return xml.toString();
+    }
+
+    public static String generateIndented(XmlForm tree) throws IOException {
+        XmlMapper objectMapper = new XmlMapper();
+        objectMapper.enable(SerializationFeature.INDENT_OUTPUT);
+        StringBuilder xml = new StringBuilder("<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?>");
+        // Reads from POJO and converts to XML
+        xml.append(objectMapper.writeValueAsString(tree));
+
+        return xml.toString();
     }
 
 }
