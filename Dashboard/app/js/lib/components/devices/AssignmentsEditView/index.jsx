@@ -115,7 +115,11 @@ export default class AssignmentsEditView extends React.Component {
                     :
                   </label>
 
-                  <FolderSurveySelectorView />
+                  <FolderSurveySelectorView
+                    surveyGroups={data.surveyGroups}
+                    onSelectSurvey={actions.handleSurveySelect}
+                    strings={strings}
+                  />
                 </div>
 
                 <div className="formSelectorList">
@@ -141,7 +145,12 @@ export default class AssignmentsEditView extends React.Component {
                   :
                 </h2>
                 <label htmlFor="deviceGroup">{strings.selectDeviceGroup}</label>
-                <DeviceGroupSelectorView />
+                <DeviceGroupSelectorView
+                  deviceGroupNames={data.deviceGroupNames}
+                  deviceGroups={data.deviceGroups}
+                  deviceIsChecked={data.deviceIsChecked}
+                  handleDeviceCheck={actions.handleDeviceCheck}
+                />
               </fieldset>
             </div>
           </div>
@@ -167,12 +176,12 @@ export default class AssignmentsEditView extends React.Component {
                   </button>
                 </li>
               ) : (
-                <li>
-                  <button type="button" className="button noChanges" id="standardBtn">
-                    {strings.saveAssignment}
-                  </button>
-                </li>
-              )}
+                  <li>
+                    <button type="button" className="button noChanges" id="standardBtn">
+                      {strings.saveAssignment}
+                    </button>
+                  </li>
+                )}
               <li>
                 <button
                   onClick={actions.cancelEditSurveyAssignment}

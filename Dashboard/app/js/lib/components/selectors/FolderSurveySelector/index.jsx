@@ -1,35 +1,17 @@
 import React from 'react';
+import PropTypes from 'prop-types';
 
 export default class FolderSurveySelector extends React.Component {
   state = {
-    surveyGroups: [],
     levels: [],
   }
 
   componentDidMount() {
-    const surveyGroups = [];
-
-    if (FLOW.projectControl.content.isLoaded) {
-      FLOW.projectControl.get('content').forEach((item) => {
-        surveyGroups.push({
-          keyId: item.get('keyId'),
-          parentId: item.get('parentId'),
-          name: item.get('name'),
-          published: item.get('published'),
-          projectType: item.get('projectType'),
-          monitoringGroup: item.get('monitoringGroup'),
-          ancestorIds: item.get('ancestorIds'),
-        });
-      });
-    }
-
-    this.setState({ surveyGroups }, () => {
-      this.setState({ levels: this.getLevels() });
-    });
+    this.setState({ levels: this.getLevels() });
   }
 
   getLevels = (parentId = 0) => {
-    const { surveyGroups } = this.state;
+    const { surveyGroups, strings } = this.props;
     const levels = [];
 
     if (parentId !== 0) {
@@ -39,7 +21,7 @@ export default class FolderSurveySelector extends React.Component {
         const level = [{
           keyId: 0,
           parentId: null,
-          name: Ember.String.loc('_choose_folder_or_survey'),
+          name: strings.chooseFolderOrSurvey,
           // eslint-disable-next-line eqeqeq
         }].concat(surveyGroups.filter(sgs => sgs.parentId == parent.ancestorIds[i])
           .sort(this.comparator));
@@ -51,7 +33,7 @@ export default class FolderSurveySelector extends React.Component {
     levels.push([{
       keyId: 0,
       parentId: null,
-      name: Ember.String.loc('_choose_folder_or_survey'),
+      name: strings.chooseFolderOrSurvey,
     }]
       // eslint-disable-next-line eqeqeq
       .concat(surveyGroups.filter(sg => sg.parentId == parentId)
@@ -80,9 +62,7 @@ export default class FolderSurveySelector extends React.Component {
 
     // check if a survey has been selected
     // eslint-disable-next-line eqeqeq
-    const selectedSG = FLOW.projectControl.get('content').find(sg => sg.get('keyId') == parentId);
-    if (selectedSG && selectedSG.get('projectType') !== 'PROJECT_FOLDER') {
-      FLOW.selectedControl.set('selectedSurveyGroup', selectedSG);
+    if (!this.props.onSelectSurvey(parentId)) {
       return null;
     }
 
@@ -117,4 +97,8 @@ export default class FolderSurveySelector extends React.Component {
   }
 }
 
-FolderSurveySelector.propTypes = {};
+FolderSurveySelector.propTypes = {
+  surveyGroups: PropTypes.array.isRequired,
+  onSelectSurvey: PropTypes.func.isRequired,
+  strings: PropTypes.object.isRequired,
+};
