@@ -2,7 +2,6 @@ import React from 'react';
 import { render, cleanup, fireEvent } from '@testing-library/react';
 import DeviceSelector from './index';
 import '@testing-library/jest-dom/extend-expect';
-import flowMock from './FLOW.mock';
 
 // https://github.com/testing-library/react-testing-library#suppressing-unnecessary-warnings-on-react-dom-168
 // eslint-disable-next-line no-console
@@ -27,9 +26,23 @@ afterAll(() => {
 describe('DeviceSelector Tests', () => {
   afterEach(cleanup);
 
+
+  const deviceGroupNames = { 1: 'Devices not in a group' };
+  const deviceGroups = {
+    1: {
+      150452032: { name: 'droidxx', checked: false },
+      150482013: { name: 'jana', checked: false },
+    },
+  };
+
   it('+++ renders <snapshot>', () => {
     const wrapper = render(
-      <DeviceSelector />
+      <DeviceSelector
+        deviceGroupNames={deviceGroupNames}
+        deviceGroups={deviceGroups}
+        handleDeviceCheck={jest.fn()}
+        deviceIsChecked={false}
+      />
     );
 
     expect(wrapper.container).toMatchSnapshot();
@@ -37,7 +50,12 @@ describe('DeviceSelector Tests', () => {
 
   it('+++ toggles accordion', () => {
     const wrapper = render(
-      <DeviceSelector />
+      <DeviceSelector
+        deviceGroupNames={deviceGroupNames}
+        deviceGroups={deviceGroups}
+        handleDeviceCheck={jest.fn()}
+        deviceIsChecked={false}
+      />
     );
 
     // find and click on accordion
@@ -46,20 +64,27 @@ describe('DeviceSelector Tests', () => {
 
     // expect panel display to be block
     const panel = wrapper.getByTestId('panel');
-    expect(panel).toHaveStyle('display: none'); // open by default when one item was checked
+    expect(panel).toHaveStyle('display: block');
     expect(wrapper.container).toMatchSnapshot();
   });
 
   test('+++ checkbox works', () => {
+    const onCheck = jest.fn();
+
     const wrapper = render(
-      <DeviceSelector />
+      <DeviceSelector
+        deviceGroupNames={deviceGroupNames}
+        deviceGroups={deviceGroups}
+        handleDeviceCheck={onCheck}
+        deviceIsChecked={false}
+      />
     );
 
     // find input and trigger a check
-    // checked by default
     const inputNode = wrapper.getByLabelText('jana');
     fireEvent.click(inputNode);
 
-    expect(flowMock.FLOW.selectedControl.selectedDevices.removeObject).toHaveBeenCalledTimes(1);
+    expect(onCheck).toHaveBeenCalledTimes(1);
+    expect(onCheck).toHaveBeenCalledWith('150482013', true);
   });
 });

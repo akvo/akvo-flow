@@ -5,7 +5,7 @@ exports[`DeviceSelector Tests +++ renders <snapshot> 1`] = `
   <div>
     <div>
       <div
-        class="accordion active"
+        class="accordion false"
         data-testid="accordion"
       >
         Devices not in a group
@@ -13,11 +13,10 @@ exports[`DeviceSelector Tests +++ renders <snapshot> 1`] = `
       <div
         class="panel"
         data-testid="panel"
-        style="display: block;"
+        style="display: none;"
       >
         <div>
           <input
-            checked=""
             class="displayInline"
             id="150452032"
             name="150452032"
@@ -26,6 +25,20 @@ exports[`DeviceSelector Tests +++ renders <snapshot> 1`] = `
           <label
             for="150452032"
             id="150452032"
+          >
+            droidxx
+          </label>
+        </div>
+        <div>
+          <input
+            class="displayInline"
+            id="150482013"
+            name="150482013"
+            type="checkbox"
+          />
+          <label
+            for="150482013"
+            id="150482013"
           >
             jana
           </label>
@@ -41,7 +54,7 @@ exports[`DeviceSelector Tests +++ toggles accordion 1`] = `
   <div>
     <div>
       <div
-        class="accordion false"
+        class="accordion active"
         data-testid="accordion"
       >
         Devices not in a group
@@ -49,11 +62,10 @@ exports[`DeviceSelector Tests +++ toggles accordion 1`] = `
       <div
         class="panel"
         data-testid="panel"
-        style="display: none;"
+        style="display: block;"
       >
         <div>
           <input
-            checked=""
             class="displayInline"
             id="150452032"
             name="150452032"
@@ -62,6 +74,20 @@ exports[`DeviceSelector Tests +++ toggles accordion 1`] = `
           <label
             for="150452032"
             id="150452032"
+          >
+            droidxx
+          </label>
+        </div>
+        <div>
+          <input
+            class="displayInline"
+            id="150482013"
+            name="150482013"
+            type="checkbox"
+          />
+          <label
+            for="150482013"
+            id="150482013"
           >
             jana
           </label>
