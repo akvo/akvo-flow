@@ -53,15 +53,19 @@ FLOW.AssignmentEditView = FLOW.ReactComponentView.extend(
       this.validateAssignment = this.validateAssignment.bind(this);
       this.saveSurveyAssignment = this.saveSurveyAssignment.bind(this);
       this.setupForms = this.setupForms.bind(this);
+      this.setupSurveyGroups = this.setupSurveyGroups.bind(this);
+      this.handleSurveySelect = this.handleSurveySelect.bind(this);
 
       // object wide varaibles
       this.forms = {};
+      this.surveyGroups = [];
     },
 
     didInsertElement(...args) {
       this._super(...args);
 
       this.setupForms();
+      this.setupSurveyGroups();
 
       // react render
       this.renderReactSide();
@@ -87,6 +91,7 @@ FLOW.AssignmentEditView = FLOW.ReactComponentView.extend(
         selectDeviceGroup: Ember.String.loc('_select_device_group'),
         saveAssignment: Ember.String.loc('_save_assignment'),
         cancel: Ember.String.loc('_cancel'),
+        chooseFolderOrSurvey: Ember.String.loc('_choose_folder_or_survey'),
       };
 
       const inputValues = {
@@ -104,6 +109,7 @@ FLOW.AssignmentEditView = FLOW.ReactComponentView.extend(
 
       const data = {
         forms: this.forms,
+        surveyGroups: this.surveyGroups,
       };
 
       return {
@@ -211,6 +217,22 @@ FLOW.AssignmentEditView = FLOW.ReactComponentView.extend(
       });
     },
 
+    setupSurveyGroups() {
+      if (FLOW.projectControl.content.isLoaded) {
+        FLOW.projectControl.get('content').forEach((item) => {
+          this.surveyGroups.push({
+            keyId: item.get('keyId'),
+            parentId: item.get('parentId'),
+            name: item.get('name'),
+            published: item.get('published'),
+            projectType: item.get('projectType'),
+            monitoringGroup: item.get('monitoringGroup'),
+            ancestorIds: item.get('ancestorIds'),
+          });
+        });
+      }
+    },
+
     // listeners
     detectSurveyLoaded() {
       this.forms = {};
@@ -288,6 +310,16 @@ FLOW.AssignmentEditView = FLOW.ReactComponentView.extend(
       }
 
       // TODO: load data points in selected form
+    },
+
+    handleSurveySelect(parentId) {
+      const selectedSG = FLOW.projectControl.get('content').find(sg => sg.get('keyId') == parentId);
+      if (selectedSG && selectedSG.get('projectType') !== 'PROJECT_FOLDER') {
+        FLOW.selectedControl.set('selectedSurveyGroup', selectedSG);
+        return false;
+      }
+
+      return true;
     },
   }
 );
