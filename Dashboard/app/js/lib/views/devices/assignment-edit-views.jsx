@@ -55,10 +55,16 @@ FLOW.AssignmentEditView = FLOW.ReactComponentView.extend(
       this.setupForms = this.setupForms.bind(this);
       this.setupSurveyGroups = this.setupSurveyGroups.bind(this);
       this.handleSurveySelect = this.handleSurveySelect.bind(this);
+      this.setupDevices = this.setupDevices.bind(this);
+      this.deviceInAssignment = this.deviceInAssignment.bind(this);
+      this.handleDeviceCheck = this.handleDeviceCheck.bind(this);
 
       // object wide varaibles
       this.forms = {};
       this.surveyGroups = [];
+      this.deviceGroups = {};
+      this.deviceGroupNames = {};
+      this.deviceIsChecked = false;
     },
 
     didInsertElement(...args) {
@@ -66,6 +72,7 @@ FLOW.AssignmentEditView = FLOW.ReactComponentView.extend(
 
       this.setupForms();
       this.setupSurveyGroups();
+      this.setupDevices();
 
       // react render
       this.renderReactSide();
@@ -105,11 +112,16 @@ FLOW.AssignmentEditView = FLOW.ReactComponentView.extend(
         handleFormCheck: this.handleFormCheck,
         validateAssignment: this.validateAssignment,
         onSubmit: this.saveSurveyAssignment,
+        handleSurveySelect: this.handleSurveySelect,
+        handleDeviceCheck: this.handleDeviceCheck,
       };
 
       const data = {
         forms: this.forms,
         surveyGroups: this.surveyGroups,
+        deviceGroups: this.deviceGroups,
+        deviceGroupNames: this.deviceGroupNames,
+        deviceIsChecked: this.deviceIsChecked,
       };
 
       return {
@@ -233,6 +245,40 @@ FLOW.AssignmentEditView = FLOW.ReactComponentView.extend(
       }
     },
 
+    setupDevices() {
+      if (FLOW.deviceGroupControl.content.isLoaded) {
+        FLOW.deviceGroupControl.get('content').forEach((item) => {
+          this.deviceGroupNames[item.get('keyId')] = item.get('code');
+          this.deviceGroups[item.get('keyId')] = {}; // initialize array of devices per group
+        });
+
+        if (FLOW.deviceControl.content.isLoaded) {
+          if (FLOW.selectedControl.selectedSurveyAssignment.get('deviceIds')) {
+            FLOW.selectedControl.selectedSurveyAssignment.get('deviceIds').forEach((deviceId) => {
+              // populate pre-selected devices
+              const device = FLOW.Device.find(deviceId);
+              if (device && device.get('keyId')) {
+                FLOW.selectedControl.selectedDevices.pushObject(device);
+              }
+            });
+          }
+
+          FLOW.deviceControl.get('content').forEach((device) => {
+            const checked = this.deviceInAssignment(device.get('keyId'));
+
+            if (checked) {
+              this.deviceIsChecked = true;
+            }
+
+            this.deviceGroups[device.get('deviceGroup') ? device.get('deviceGroup') : 1][device.get('keyId')] = {
+              name: device.get('deviceIdentifier'),
+              checked,
+            };
+          });
+        }
+      }
+    },
+
     // listeners
     detectSurveyLoaded() {
       this.forms = {};
@@ -289,6 +335,11 @@ FLOW.AssignmentEditView = FLOW.ReactComponentView.extend(
       }
     },
 
+    deviceInAssignment(deviceId) {
+      const devicesInAssignment = FLOW.selectedControl.selectedSurveyAssignment.get('deviceIds');
+      return devicesInAssignment ? devicesInAssignment.indexOf(deviceId) > -1 : false;
+    },
+
     // handlers
     handleFormCheck(e) {
       // only allow a form to be checked if a different survey isn't already selected
@@ -320,6 +371,16 @@ FLOW.AssignmentEditView = FLOW.ReactComponentView.extend(
       }
 
       return true;
+    },
+
+    handleDeviceCheck(deviceId, checked) {
+      if (checked) {
+        // push device to FLOW.selectedControl.selectedDevices
+        FLOW.selectedControl.selectedDevices.pushObject(FLOW.Device.find(deviceId));
+      } else {
+        // remove device to FLOW.selectedControl.selectedDevices
+        FLOW.selectedControl.selectedDevices.removeObject(FLOW.Device.find(deviceId));
+      }
     },
   }
 );
