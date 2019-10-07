@@ -116,6 +116,7 @@ export default class AssignmentsEditView extends React.Component {
                   </label>
 
                   <FolderSurveySelectorView
+                    initialSurveyGroup={data.initialSurveyGroup}
                     surveyGroups={data.surveyGroups}
                     onSelectSurvey={actions.handleSurveySelect}
                     strings={strings}
@@ -176,12 +177,12 @@ export default class AssignmentsEditView extends React.Component {
                   </button>
                 </li>
               ) : (
-                <li>
-                  <button type="button" className="button noChanges" id="standardBtn">
-                    {strings.saveAssignment}
-                  </button>
-                </li>
-              )}
+                  <li>
+                    <button type="button" className="button noChanges" id="standardBtn">
+                      {strings.saveAssignment}
+                    </button>
+                  </li>
+                )}
               <li>
                 <button
                   onClick={actions.cancelEditSurveyAssignment}

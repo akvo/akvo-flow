@@ -65,6 +65,7 @@ FLOW.AssignmentEditView = FLOW.ReactComponentView.extend(
       this.deviceGroups = {};
       this.deviceGroupNames = {};
       this.deviceGroupIsActive = false;
+      this.initialSurveyGroup = null;
     },
 
     didInsertElement(...args) {
@@ -122,6 +123,7 @@ FLOW.AssignmentEditView = FLOW.ReactComponentView.extend(
         deviceGroups: this.deviceGroups,
         deviceGroupNames: this.deviceGroupNames,
         deviceGroupIsActive: this.deviceGroupIsActive,
+        initialSurveyGroup: this.initialSurveyGroup,
       };
 
       return {
@@ -221,6 +223,10 @@ FLOW.AssignmentEditView = FLOW.ReactComponentView.extend(
         const form = FLOW.Survey.find(formId);
         if (form && form.get('keyId')) {
           FLOW.selectedControl.selectedSurveys.pushObject(form);
+
+          // load selected survey group
+          this.initialSurveyGroup = form.get('surveyGroupId');
+
           this.forms[form.get('keyId')] = { // also load pre-selected forms
             name: form.get('name'),
             checked: true,
