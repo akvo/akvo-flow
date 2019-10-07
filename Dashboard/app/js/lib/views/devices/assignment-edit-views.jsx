@@ -64,7 +64,7 @@ FLOW.AssignmentEditView = FLOW.ReactComponentView.extend(
       this.surveyGroups = [];
       this.deviceGroups = {};
       this.deviceGroupNames = {};
-      this.deviceIsChecked = false;
+      this.deviceGroupIsActive = false;
     },
 
     didInsertElement(...args) {
@@ -121,7 +121,7 @@ FLOW.AssignmentEditView = FLOW.ReactComponentView.extend(
         surveyGroups: this.surveyGroups,
         deviceGroups: this.deviceGroups,
         deviceGroupNames: this.deviceGroupNames,
-        deviceIsChecked: this.deviceIsChecked,
+        deviceGroupIsActive: this.deviceGroupIsActive,
       };
 
       return {
@@ -267,7 +267,7 @@ FLOW.AssignmentEditView = FLOW.ReactComponentView.extend(
             const checked = this.deviceInAssignment(device.get('keyId'));
 
             if (checked) {
-              this.deviceIsChecked = true;
+              this.deviceGroupIsActive = true;
             }
 
             this.deviceGroups[device.get('deviceGroup') ? device.get('deviceGroup') : 1][device.get('keyId')] = {

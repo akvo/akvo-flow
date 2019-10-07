@@ -148,7 +148,7 @@ export default class AssignmentsEditView extends React.Component {
                 <DeviceGroupSelectorView
                   deviceGroupNames={data.deviceGroupNames}
                   deviceGroups={data.deviceGroups}
-                  deviceIsChecked={data.deviceIsChecked}
+                  deviceGroupIsActive={data.deviceGroupIsActive}
                   handleDeviceCheck={actions.handleDeviceCheck}
                 />
               </fieldset>
@@ -176,12 +176,12 @@ export default class AssignmentsEditView extends React.Component {
                   </button>
                 </li>
               ) : (
-                  <li>
-                    <button type="button" className="button noChanges" id="standardBtn">
-                      {strings.saveAssignment}
-                    </button>
-                  </li>
-                )}
+                <li>
+                  <button type="button" className="button noChanges" id="standardBtn">
+                    {strings.saveAssignment}
+                  </button>
+                </li>
+              )}
               <li>
                 <button
                   onClick={actions.cancelEditSurveyAssignment}
