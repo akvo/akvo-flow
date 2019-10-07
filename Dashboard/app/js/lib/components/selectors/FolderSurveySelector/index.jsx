@@ -57,7 +57,6 @@ export default class FolderSurveySelector extends React.Component {
   }
 
   handleChange = (e) => {
-    // const { levels } = this.state;
     const parentId = e.target.value;
 
     // check if a survey has been selected
