@@ -162,6 +162,7 @@ public class SurveyAssignmentRestService {
 
             response.put("survey_assignment", marshallToDto(sa));
             statusDto.setStatus("ok");
+            statusDto.setMessage("");
         }
         response.put("meta", statusDto);
         return response;
