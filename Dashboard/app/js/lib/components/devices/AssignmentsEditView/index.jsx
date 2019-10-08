@@ -20,6 +20,8 @@ export default class AssignmentsEditView extends React.Component {
   // lifecycle methods
   componentDidMount() {
     this.validateAssignmentName(this.props.inputValues.assignmentName);
+    this.validateDate('startDateMsg', this.props.inputValues.startDate || '');
+    this.validateDate('expireDateMsg', this.props.inputValues.toDate || '');
   }
 
   // event handlers

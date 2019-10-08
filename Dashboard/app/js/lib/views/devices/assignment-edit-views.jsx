@@ -111,7 +111,6 @@ FLOW.AssignmentEditView = FLOW.ReactComponentView.extend(
       const actions = {
         cancelEditSurveyAssignment: this.cancelEditSurveyAssignment,
         handleFormCheck: this.handleFormCheck,
-        validateAssignment: this.validateAssignment,
         onSubmit: this.saveSurveyAssignment,
         handleSurveySelect: this.handleSurveySelect,
         handleDeviceCheck: this.handleDeviceCheck,
@@ -172,17 +171,34 @@ FLOW.AssignmentEditView = FLOW.ReactComponentView.extend(
       sa.set('endDate', endDateParse);
       sa.set('startDate', startDateParse);
       sa.set('language', 'en');
-      sa.set('surveyId', FLOW.selectedControl.get('selectedSurveyGroup').get('keyId'));
+
+      if (FLOW.selectedControl.get('selectedSurveyGroup')) {
+        sa.set('surveyId', FLOW.selectedControl.get('selectedSurveyGroup').get('keyId'));
+      }
+
 
       FLOW.selectedControl.get('selectedDevices').forEach((item) => {
         devices.push(item.get('keyId'));
       });
+
+      if (!devices.length) {
+        alert('Please select a device to continue');
+        return false;
+      }
+
       sa.set('deviceIds', devices);
 
       FLOW.selectedControl.get('selectedSurveys').forEach((item) => {
         surveys.push(item.get('keyId'));
       });
+
+      if (!surveys || !surveys.length) {
+        alert('Please select a form to continue');
+        return false;
+      }
+
       sa.set('formIds', surveys);
+
 
       FLOW.store.commit();
 
@@ -330,15 +346,18 @@ FLOW.AssignmentEditView = FLOW.ReactComponentView.extend(
       return true; // no forms are currently added to the assignment
     },
 
-    validateAssignment(assignmentName) {
-      this.set('assignmentValidationFailure', (
-        (assignmentName && assignmentName.length > 100)
-        || !assignmentName || assignmentName == ''));
-      if (assignmentName && assignmentName.length > 100) {
-        this.set('assignmentValidationFailureReason', Ember.String.loc('_assignment_name_over_100_chars'));
-      } else if (!assignmentName || assignmentName == '') {
-        this.set('assignmentValidationFailureReason', Ember.String.loc('_assignment_name_not_set'));
+    validateAssignment(data) {
+      if (!data.devices || !data.devices.length) {
+        alert('Please select a device to continue');
+        return false;
       }
+
+      if (!data.surveys || !data.surveys.length) {
+        alert('Please select a form to continue');
+        return false;
+      }
+
+      return true;
     },
 
     deviceInAssignment(deviceId) {
