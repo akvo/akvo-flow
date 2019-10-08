@@ -143,16 +143,35 @@ class FlowXmlObjectWriterTests {
         TreeMap<Integer, QuestionGroup> gm = new TreeMap<>();
         gm.put(1, qg);
         form1.setQuestionGroupMap(gm);
-        //Add a question
-        //Intentionally do not set mandatory; it should be null
-        Question q = new Question();
-        q.setKey(KeyFactory.createKey("Survey", 19L)); //Must have a key
-        q.setOrder(1);
-        q.setText("This is a question");
-        q.setType(Question.Type.FREE_TEXT);
         TreeMap<Integer,Question> qm = new TreeMap<>();
-        qm.put(1,q);
         qg.setQuestionMap(qm);
+
+        //Add some questions
+        //Intentionally do not set mandatory; it should be null
+        Question q1 = new Question();
+        q1.setKey(KeyFactory.createKey("Question", 1001L)); //Must have a key
+        q1.setOrder(1);
+        q1.setText("This is question one");
+        q1.setType(Question.Type.FREE_TEXT);
+        qm.put(1,q1);
+
+        Question q2 = new Question();
+        q2.setKey(KeyFactory.createKey("Question", 1002L)); //Must have a key
+        q2.setOrder(2);
+        q2.setText("This is question two");
+        q2.setType(Question.Type.NUMBER);
+        q2.setMandatoryFlag(true);
+        qm.put(2,q2);
+
+        Question q3 = new Question();
+        q3.setKey(KeyFactory.createKey("Question", 1003L)); //Must have a key
+        q3.setOrder(3);
+        q3.setText("This is question three");
+        q3.setType(Question.Type.GEOSHAPE);
+        q3.setMandatoryFlag(false);
+        qm.put(3,q3);
+
+        int questionCount = qm.size();
 
         //Convert domain tree to Jackson tree
         XmlForm form = new XmlForm(form1, "Name of containing survey");
@@ -162,12 +181,28 @@ class FlowXmlObjectWriterTests {
         XmlQuestionGroup xqg = form.getQuestionGroup().get(0);
         assertNotEquals(null, xqg);
         assertNotEquals(null, xqg.getQuestion());
-        assertEquals(1, xqg.getQuestion().size());
-        XmlQuestion xq = xqg.getQuestion().get(0);
-        assertNotEquals(null, xq);
-        assertEquals(19L, xq.getId());
-        assertEquals("This is a question", xq.getText());
-        assertEquals(null, xq.getMandatory());
+        assertEquals(questionCount, xqg.getQuestion().size());
+
+        XmlQuestion xq1 = xqg.getQuestion().get(0);
+        assertNotEquals(null, xq1);
+        assertEquals(1001L, xq1.getId());
+        assertEquals("This is question one", xq1.getText());
+        assertEquals(null, xq1.getMandatory());
+        assertEquals("free", xq1.getType());
+
+        XmlQuestion xq2 = xqg.getQuestion().get(1);
+        assertNotEquals(null, xq2);
+        assertEquals(1002L, xq2.getId());
+        assertEquals("This is question two", xq2.getText());
+        assertEquals(Boolean.TRUE, xq2.getMandatory());
+        assertEquals("free", xq2.getType());
+
+        XmlQuestion xq3 = xqg.getQuestion().get(2);
+        assertNotEquals(null, xq3);
+        assertEquals(1003L, xq3.getId());
+        assertEquals("This is question three", xq3.getText());
+        assertEquals(Boolean.FALSE, xq3.getMandatory());
+        assertEquals("geoshape", xq3.getType());
 
         //Convert Jackson tree into an XML string
         String xml = PublishedForm.generate(form);

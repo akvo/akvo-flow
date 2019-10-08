@@ -58,7 +58,7 @@ public class PublishedForm {
     public static String generateIndented(XmlForm tree) throws IOException {
         XmlMapper objectMapper = new XmlMapper();
         objectMapper.enable(SerializationFeature.INDENT_OUTPUT);
-        StringBuilder xml = new StringBuilder("<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?>");
+        StringBuilder xml = new StringBuilder("<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?>\n");
         // Reads from POJO and converts to XML
         xml.append(objectMapper.writeValueAsString(tree));
 
