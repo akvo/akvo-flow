@@ -376,6 +376,9 @@ FLOW.AssignmentEditView = FLOW.ReactComponentView.extend(
         return false;
       }
 
+      // empty forms when a new folder is picked
+      this.forms = {};
+      this.renderReactSide();
       return true;
     },
 
