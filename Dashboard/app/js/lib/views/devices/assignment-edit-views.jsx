@@ -172,6 +172,7 @@ FLOW.AssignmentEditView = FLOW.ReactComponentView.extend(
       sa.set('endDate', endDateParse);
       sa.set('startDate', startDateParse);
       sa.set('language', 'en');
+      sa.set('surveyId', FLOW.selectedControl.get('selectedSurveyGroup').get('keyId'));
 
       FLOW.selectedControl.get('selectedDevices').forEach((item) => {
         devices.push(item.get('keyId'));
@@ -181,7 +182,6 @@ FLOW.AssignmentEditView = FLOW.ReactComponentView.extend(
       FLOW.selectedControl.get('selectedSurveys').forEach((item) => {
         surveys.push(item.get('keyId'));
       });
-
       sa.set('formIds', surveys);
 
       FLOW.store.commit();
