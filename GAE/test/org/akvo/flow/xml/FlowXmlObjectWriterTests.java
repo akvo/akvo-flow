@@ -187,7 +187,7 @@ class FlowXmlObjectWriterTests {
         assertNotEquals(null, xq1);
         assertEquals(1001L, xq1.getId());
         assertEquals("This is question one", xq1.getText());
-        assertEquals(null, xq1.getMandatory());
+        assertEquals(Boolean.FALSE, xq1.getMandatory());
         assertEquals("free", xq1.getType());
 
         XmlQuestion xq2 = xqg.getQuestion().get(1);

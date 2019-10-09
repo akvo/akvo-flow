@@ -33,7 +33,7 @@ import com.gallatinsystems.survey.domain.Translation;
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public class XmlQuestion {
 
-    private static String FREE_TYPE = "free";
+    private static String FREE_TYPE = "free"; //Used for both FREE_TEXT and NUMBER
     private static String NUMERIC_VALIDATION_TYPE = "numeric";
 
     @JacksonXmlProperty(localName = "options", isAttribute = false)
@@ -58,15 +58,15 @@ public class XmlQuestion {
     @JacksonXmlProperty(localName = "type", isAttribute = true)
     private String type;
     @JacksonXmlProperty(localName = "mandatory", isAttribute = true)
-    private Boolean mandatory;
+    private boolean mandatory;
     @JacksonXmlProperty(localName = "requireDoubleEntry", isAttribute = true)
-    private boolean requireDoubleEntry;
+    private Boolean requireDoubleEntry;
     @JacksonXmlProperty(localName = "localeNameFlag", isAttribute = true)
     private boolean localeNameFlag;
     @JacksonXmlProperty(localName = "locked", isAttribute = true)
-    private boolean locked;
+    private Boolean locked;
     @JacksonXmlProperty(localName = "localeLocationFlag", isAttribute = true)
-    private boolean localeLocationFlag;
+    private Boolean localeLocationFlag;
     @JacksonXmlProperty(localName = "caddisflyResourceUuid", isAttribute = true)
     private String caddisflyResourceUuid;
     @JacksonXmlProperty(localName = "cascadeResource", isAttribute = true)
@@ -87,39 +87,60 @@ public class XmlQuestion {
         text = q.getText();
         id = q.getKey().getId();
         order = q.getOrder();
-        mandatory = q.getMandatoryFlag();
+        mandatory = Boolean.TRUE == q.getMandatoryFlag();
         localeNameFlag = Boolean.TRUE == q.getLocaleNameFlag();
-        localeLocationFlag = Boolean.TRUE == q.getLocaleLocationFlag();
-        locked = Boolean.TRUE == q.getGeoLocked();
+        if (Boolean.TRUE == q.getLocaleLocationFlag()) {
+            localeLocationFlag = Boolean.TRUE;
+        }
+        if (Boolean.TRUE == q.getGeoLocked()) {
+            locked = Boolean.TRUE;
+        }
         if (q.getTip() != null) {
             help = new XmlHelp(q.getTip());
         }
 
+        type = q.getType().toString().toLowerCase();
         //Things specific to a question type
         switch (q.getType()) {
             case NUMBER:
-                validationRule = new XmlValidationRule(q);
                 type = FREE_TYPE;
-                requireDoubleEntry = Boolean.TRUE == q.getRequireDoubleEntry();
+                validationRule = new XmlValidationRule(q); //This signals number
+                if (Boolean.TRUE == q.getRequireDoubleEntry()) {
+                    requireDoubleEntry = Boolean.TRUE;
+                }
                 break; //Could have done a fall-through here ;)
             case FREE_TEXT:
                 type = FREE_TYPE;
-                requireDoubleEntry = Boolean.TRUE == q.getRequireDoubleEntry();
+                if (Boolean.TRUE == q.getRequireDoubleEntry()) {
+                    requireDoubleEntry = Boolean.TRUE;
+                }
                 break;
             case GEOSHAPE:
-                type = q.getType().toString();
                 allowPoints = Boolean.TRUE == q.getAllowPoints();
                 allowLine = Boolean.TRUE == q.getAllowLine();
                 allowPolygon = Boolean.TRUE == q.getAllowPolygon();
                 break;
             case CASCADE:
-                type = q.getType().toString();
                 cascadeResource = q.getCascadeResourceId().toString();
+                //level names, if any
+                if (q.getLevelNames() != null) {
+                    level = new ArrayList<>();
+                    for (String text: q.getLevelNames()) {
+                        level.add(new XmlLevel(text));
+                    }
+                }
+                break;
             case CADDISFLY:
-                type = q.getType().toString();
                 caddisflyResourceUuid = q.getCaddisflyResourceUuid();
+                break;
+            case OPTION:
+                //Now copy any options into the transfer container
+                if (q.getQuestionOptionMap() != null) {
+                    options = new XmlOptions(q);
+                }
+                break;
             default:
-                type = q.getType().toString();
+                break;
         }
         if (Boolean.TRUE == q.getDependentFlag()) {
             dependency = new XmlDependency(q.getDependentQuestionId(), q.getDependentQuestionAnswer());
@@ -130,17 +151,6 @@ public class XmlQuestion {
             for (Translation t: q.getTranslationMap().values()) {
                 altText.add(new XmlAltText(t));
             }
-        }
-        //Cascade level names, if any
-        if (q.getLevelNames() != null) {
-            level = new ArrayList<>();
-            for (String text: q.getLevelNames()) {
-                level.add(new XmlLevel(text));
-            }
-        }
-        //Now copy any options into the transfer container
-        if (q.getQuestionOptionMap() != null) {
-            options = new XmlOptions(q);
         }
     }
 
@@ -240,19 +250,19 @@ public class XmlQuestion {
         this.type = type;
     }
 
-    public Boolean getMandatory() {
+    public boolean getMandatory() {
         return mandatory;
     }
 
-    public void setMandatory(Boolean mandatory) {
+    public void setMandatory(boolean mandatory) {
         this.mandatory = mandatory;
     }
 
-    public boolean getLocaleNameFlag() {
+    public Boolean getLocaleNameFlag() {
         return localeNameFlag;
     }
 
-    public void setLocaleNameFlag(boolean localeNameFlag) {
+    public void setLocaleNameFlag(Boolean localeNameFlag) {
         this.localeNameFlag = localeNameFlag;
     }
 
@@ -280,11 +290,11 @@ public class XmlQuestion {
         this.text = text;
     }
 
-    public boolean isLocaleLocationFlag() {
+    public Boolean isLocaleLocationFlag() {
         return localeLocationFlag;
     }
 
-    public void setLocaleLocationFlag(boolean localeLocationFlag) {
+    public void setLocaleLocationFlag(Boolean localeLocationFlag) {
         this.localeLocationFlag = localeLocationFlag;
     }
 
@@ -312,11 +322,11 @@ public class XmlQuestion {
         this.validationRule = validationRule;
     }
 
-    public boolean getLocked() {
+    public Boolean getLocked() {
         return locked;
     }
 
-    public void setLocked(boolean locked) {
+    public void setLocked(Boolean locked) {
         this.locked = locked;
     }
 
@@ -360,11 +370,11 @@ public class XmlQuestion {
         this.level = level;
     }
 
-    public boolean getRequireDoubleEntry() {
+    public Boolean getRequireDoubleEntry() {
         return requireDoubleEntry;
     }
 
-    public void setRequireDoubleEntry(boolean requireDoubleEntry) {
+    public void setRequireDoubleEntry(Boolean requireDoubleEntry) {
         this.requireDoubleEntry = requireDoubleEntry;
     }
 
