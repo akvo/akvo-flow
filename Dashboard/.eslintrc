@@ -1,77 +1,77 @@
 {
-    "extends": "airbnb",
-    "parser": "babel-eslint",
-    "env": {
-        "browser": true,
-        "node": true,
-        "jest": true
-    },
-    "plugins": ["react", "babel"],
-    "parserOptions": {
-        "ecmaFeatures": {
-            "jsx": true
-        }
-    },
-    "settings": {
-        "import/resolver": {
-            "alias": {
-                "map": [["akvo-flow", "./app/js/lib"]],
-                "extensions": [".js", ".jsx", ".json"]
-            }
-        }
-    },
-    "rules": {
-        "camelcase": 1,
-        "class-methods-use-this": 1,
-        "comma-dangle": [
-            "error",
-            {
-                "arrays": "always-multiline",
-                "objects": "always-multiline",
-                "imports": "always-multiline",
-                "exports": "never",
-                "functions": "never"
-            }
-        ],
-        "func-names": 0,
-        "global-require": 1,
-        "jsx-a11y/label-has-for": 0,
-        "jsx-a11y/no-static-element-interactions": 0,
-        "jsx-a11y/anchor-is-valid": 1,
-        "no-plusplus": 0,
-        "no-underscore-dangle": 0,
-        "prefer-const": 1,
-        "prefer-destructuring": 1,
-        "radix": 1,
-        "react/forbid-prop-types": 0,
-        "react/no-unused-prop-types": 0,
-        "react/no-multi-comp": 0,
-        "react/prefer-stateless-function": 0,
-        "react/jsx-indent": [1, 2],
-        "react/no-array-index-key": 0,
-        "react/destructuring-assignment": 0,
-        "indent": [1, 2],
-        "object-shorthand": 1,
-        "prefer-arrow-callback": 1,
-        "consistent-return": 1,
-        "prefer-template": 1,
-        "no-param-reassign": 1,
-        "eqeqeq": 1,
-        "no-loop-func": 1,
-        "operator-linebreak": 0,
-        "prefer-spread": 1,
-        "prefer-rest-params": 1
-    },
-    "globals": {
-        "window": true,
-        "document": true,
-        "FLOW": true,
-        "$": true,
-        "jQuery": true,
-        "DS": true,
-        "Ember": true,
-        "L": true,
-        "loader": true,
-        "location": true
+  "extends": "airbnb",
+  "parser": "babel-eslint",
+  "env": {
+    "browser": true,
+    "node": true,
+    "jest": true
+  },
+  "plugins": ["react", "babel"],
+  "parserOptions": {
+    "ecmaFeatures": {
+      "jsx": true
     }
+  },
+  "settings": {
+    "import/resolver": {
+      "alias": {
+        "map": [["akvo-flow", "./app/js/lib"]],
+        "extensions": [".js", ".jsx", ".json"]
+      }
+    }
+  },
+  "rules": {
+    "camelcase": 1,
+    "class-methods-use-this": 1,
+    "comma-dangle": [
+      "error",
+      {
+        "arrays": "always-multiline",
+        "objects": "always-multiline",
+        "imports": "always-multiline",
+        "exports": "never",
+        "functions": "never"
+      }
+    ],
+    "func-names": 0,
+    "global-require": 1,
+    "jsx-a11y/label-has-for": 0,
+    "jsx-a11y/no-static-element-interactions": 0,
+    "jsx-a11y/anchor-is-valid": 1,
+    "no-plusplus": 0,
+    "no-underscore-dangle": 0,
+    "prefer-const": 1,
+    "prefer-destructuring": 1,
+    "radix": 1,
+    "react/forbid-prop-types": 0,
+    "react/no-unused-prop-types": 0,
+    "react/no-multi-comp": 0,
+    "react/prefer-stateless-function": 0,
+    "react/jsx-indent": [1, 2],
+    "react/no-array-index-key": 0,
+    "react/destructuring-assignment": 0,
+    "indent": [1, 2],
+    "object-shorthand": 1,
+    "prefer-arrow-callback": 1,
+    "consistent-return": 1,
+    "prefer-template": 1,
+    "no-param-reassign": 1,
+    "eqeqeq": 1,
+    "no-loop-func": 1,
+    "operator-linebreak": 0,
+    "prefer-spread": 1,
+    "prefer-rest-params": 1
+  },
+  "globals": {
+    "window": true,
+    "document": true,
+    "FLOW": true,
+    "$": true,
+    "jQuery": true,
+    "DS": true,
+    "Ember": true,
+    "L": true,
+    "loader": true,
+    "location": true
+  }
 }
