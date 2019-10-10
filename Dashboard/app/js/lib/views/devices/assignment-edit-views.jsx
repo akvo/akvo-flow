@@ -182,7 +182,11 @@ FLOW.AssignmentEditView = FLOW.ReactComponentView.extend(
       });
 
       if (!devices.length) {
-        alert('Please select a device to continue');
+        FLOW.dialogControl.set('activeAction', 'ignore');
+        FLOW.dialogControl.set('header', 'Devices not set');
+        FLOW.dialogControl.set('message', 'Please select a device to continue');
+        FLOW.dialogControl.set('showCANCEL', false);
+        FLOW.dialogControl.set('showDialog', true);
         return false;
       }
 
@@ -193,7 +197,11 @@ FLOW.AssignmentEditView = FLOW.ReactComponentView.extend(
       });
 
       if (!surveys || !surveys.length) {
-        alert('Please select a form to continue');
+        FLOW.dialogControl.set('activeAction', 'ignore');
+        FLOW.dialogControl.set('header', 'Form not set');
+        FLOW.dialogControl.set('message', 'Please select a form to continue');
+        FLOW.dialogControl.set('showCANCEL', false);
+        FLOW.dialogControl.set('showDialog', true);
         return false;
       }
 

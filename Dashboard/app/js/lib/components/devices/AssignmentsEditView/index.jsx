@@ -17,43 +17,62 @@ export default class AssignmentsEditView extends React.Component {
     startDateMsg: '',
   }
 
-  // lifecycle methods
-  componentDidMount() {
-    this.validateAssignmentName(this.props.inputValues.assignmentName);
-    this.validateDate('startDateMsg', this.props.inputValues.startDate || '');
-    this.validateDate('expireDateMsg', this.props.inputValues.toDate || '');
-  }
-
   // event handlers
   onChangeState = (key, value) => {
-    if (key === 'assignmentName') this.validateAssignmentName(value);
-    if (key === 'startDate' || key === 'expireDate') this.validateDate(`${key}Msg`, value);
     this.setState({ [key]: value });
   }
 
   onSubmit = () => {
     const { assignmentName, startDate, expireDate } = this.state;
 
-    this.props.actions.onSubmit({ assignmentName, startDate, expireDate });
+    if (this.validateData()) {
+      this.props.actions.onSubmit({ assignmentName, startDate, expireDate });
+    }
   }
 
   // helpers
-  validateAssignmentName = (assignmentName) => {
+  validateData = () => {
+    const { assignmentName, startDate, expireDate } = this.state;
+    let isValid = true;
+
+    // validate assignment name
     if (!assignmentName || assignmentName == '') {
       this.setState({ nameValidationMsg: Ember.String.loc('_assignment_name_not_set') });
-    } else if (assignmentName.length > 100) {
+      isValid = false;
+    }
+
+    if (assignmentName.length > 100) {
       this.setState({ nameValidationMsg: Ember.String.loc('_assignment_name_over_100_chars') });
-    } else {
+      isValid = false;
+    }
+
+    // remove validation message incase it was set
+    if (isValid) {
       this.setState({ nameValidationMsg: '' });
     }
-  }
 
-  validateDate = (stateKey, value) => {
-    if (!value.length) {
-      this.setState({ [stateKey]: Ember.String.loc('_date_not_set_text') });
-    } else {
-      this.setState({ [stateKey]: '' });
+
+    // validate dates === start date
+    if (!startDate || !startDate.length) {
+      this.setState({ startDateMsg: Ember.String.loc('_date_not_set_text') });
+      isValid = false;
     }
+
+    if (isValid) {
+      this.setState({ startDateMsg: '' });
+    }
+
+    // validate date === expire date
+    if (!expireDate || !expireDate.length) {
+      this.setState({ expireDateMsg: Ember.String.loc('_date_not_set_text') });
+      isValid = false;
+    }
+
+    if (isValid) {
+      this.setState({ expireDateMsg: '' });
+    }
+
+    return isValid;
   }
 
   formatStateForComponents = () => {
@@ -70,11 +89,8 @@ export default class AssignmentsEditView extends React.Component {
 
   // render
   render() {
-    const { nameValidationMsg, startDateMsg, expireDateMsg } = this.state;
     const { strings, actions, data } = this.props;
     const { assignmentDetailsState } = this.formatStateForComponents();
-    const showSubmitBtn =
-      !nameValidationMsg.length && !startDateMsg.length && !expireDateMsg.length;
 
     return (
       <div>
@@ -167,24 +183,17 @@ export default class AssignmentsEditView extends React.Component {
 
           <div className="menuConfirm">
             <ul>
-              {showSubmitBtn ? (
-                <li>
-                  <button
-                    onClick={this.onSubmit}
-                    onKeyPress={this.onSubmit}
-                    className="standardBtn"
-                    type="button"
-                  >
-                    {strings.saveAssignment}
-                  </button>
-                </li>
-              ) : (
-                  <li>
-                    <button type="button" className="button noChanges" id="standardBtn">
-                      {strings.saveAssignment}
-                    </button>
-                  </li>
-                )}
+              <li>
+                <button
+                  onClick={this.onSubmit}
+                  onKeyPress={this.onSubmit}
+                  className="standardBtn"
+                  type="button"
+                >
+                  {strings.saveAssignment}
+                </button>
+              </li>
+
               <li>
                 <button
                   onClick={actions.cancelEditSurveyAssignment}
