@@ -23,6 +23,7 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
+import javax.annotation.Nullable;
 import javax.servlet.http.HttpServletRequest;
 
 import org.akvo.flow.domain.DataUtils;
@@ -48,7 +49,7 @@ import com.google.appengine.api.datastore.Entity;
 
 /**
  * servlet for backing out survey response data (and corresponding summarizations)
- * 
+ *
  * @author Christopher Fagiani
  */
 public class DataBackoutServlet extends AbstractRestApiServlet {
@@ -91,14 +92,17 @@ public class DataBackoutServlet extends AbstractRestApiServlet {
         } else if (DataBackoutRequest.DELETE_QUESTION_SUMMARY_ACTION
                 .equals(boReq.getAction())) {
             deleteQuestionSummary(boReq.getQuestionId());
-        } else if (DataBackoutRequest.LIST_INSTANCE_ACTION.equals(boReq
-                .getAction())) {
+        } else if (DataBackoutRequest.LIST_INSTANCE_ACTION.equals(boReq.getAction())) {
             response.setMessage(listSurveyInstance(boReq.getSurveyId(),
                     boReq.includeDate(),
                     boReq.getLastCollection(),
                     boReq.getFromDate(),
                     boReq.getToDate(),
                     boReq.getLimit()));
+        } else if (DataBackoutRequest.COUNT_INSTANCE_ACTION.equals(boReq.getAction())) {
+            response.setMessage(countFormInstance(boReq.getSurveyId(),
+                    boReq.getFromDate(),
+                    boReq.getToDate()));
         } else if (DataBackoutRequest.DELETE_SURVEY_INSTANCE_ACTION
                 .equals(boReq.getAction())) {
             deleteSurveyInstance(boReq.getSurveyInstanceId());
@@ -115,16 +119,14 @@ public class DataBackoutServlet extends AbstractRestApiServlet {
 
     /**
      * lists all responses for a single question *
-     * 
+     *
      * @param surveyId
      * @param questionId
      * @return
      */
-    private QuestionAnswerResponse listQuestionResponse(Long questionId,
-            String cursor) {
+    private QuestionAnswerResponse listQuestionResponse(Long questionId, String cursor) {
         List<QuestionAnswerStore> answers = instanceDao
-                .listQuestionAnswerStoreForQuestion(questionId.toString(),
-                        cursor);
+                .listQuestionAnswerStoreForQuestion(questionId.toString(), cursor);
         return convertToAnswerResponse(answers,
                 SurveyInstanceDAO.getCursor(answers));
     }
@@ -132,7 +134,7 @@ public class DataBackoutServlet extends AbstractRestApiServlet {
     /**
      * lists all questionAnswerStore records for a given instance... in a csv like format TODO: We
      * should probably quote the values somehow, otherwise, what happens if a response contains \n?
-     * 
+     *
      * @param surveyInstanceId
      * @return
      */
@@ -176,7 +178,7 @@ public class DataBackoutServlet extends AbstractRestApiServlet {
 
     /**
      * returns a comma separated list of survyeInstanceIds for the survey passed in
-     * 
+     *
      * @param surveyId
      * @return
      */
@@ -194,8 +196,7 @@ public class DataBackoutServlet extends AbstractRestApiServlet {
             boolean isFirst = true;
             for (Entity result : instances) {
                 if (lastCollection
-                        && processed.contains((Long) result
-                                .getProperty("surveyedLocaleId"))) {
+                        && processed.contains(result.getProperty("surveyedLocaleId"))) {
                     continue; // skip
                 }
                 if (!isFirst) {
@@ -206,8 +207,7 @@ public class DataBackoutServlet extends AbstractRestApiServlet {
                 buffer.append(result.getKey().getId());
                 if (includeDate && result.getProperty("collectionDate") != null) {
                     buffer.append("|").append(
-                            OUT_FMT.get().format(
-                                    result.getProperty("collectionDate")));
+                            OUT_FMT.get().format(result.getProperty("collectionDate")));
                 }
                 if (lastCollection) {
                     processed.add((Long) result.getProperty("surveyedLocaleId"));
@@ -218,8 +218,27 @@ public class DataBackoutServlet extends AbstractRestApiServlet {
     }
 
     /**
+     * returns a count of formInstances for the form and dates passed in
+     *
+     * @param formId
+     * @param fromDate
+     * @param toDate
+     * @return
+     */
+    private String countFormInstance(Long formId, @Nullable Date fromDate, @Nullable Date toDate) {
+        Iterable<Entity> instances = instanceDao.listRawEntity(true, fromDate, toDate, null, formId);
+        long count = 0;
+        if (instances != null) {
+            for (Entity e : instances) {
+                count++;
+            }
+        }
+        return Long.toString(count);
+    }
+
+    /**
      * deletes a survey instance and it's associated questionAnswerStore objects
-     * 
+     *
      * @param surveyInstanceId
      */
     private void deleteSurveyInstance(Long surveyInstanceId) {
@@ -231,7 +250,7 @@ public class DataBackoutServlet extends AbstractRestApiServlet {
 
     /**
      * deletes all the SurveyQuestionSummary objects for a specific questionId
-     * 
+     *
      * @param questionId
      */
     private void deleteQuestionSummary(Long questionId) {
@@ -244,7 +263,7 @@ public class DataBackoutServlet extends AbstractRestApiServlet {
 
     /**
      * returns a comma separated list of question IDs contained in the survey passed in
-     * 
+     *
      * @param surveyId
      * @return
      */
