@@ -14,7 +14,7 @@ export default class AssignmentDetails extends React.Component {
 
     return (
       <fieldset id="assignmentDetails">
-        <h2>0.1 {strings.assignmentDetails}</h2>
+        <h2>{strings.assignmentDetails}</h2>
 
         {/* Assignment Name */}
         <label htmlFor="assignmentName">
