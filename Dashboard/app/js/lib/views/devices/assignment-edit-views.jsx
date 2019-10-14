@@ -100,6 +100,7 @@ FLOW.AssignmentEditView = FLOW.ReactComponentView.extend(
         selectSurvey: Ember.String.loc('_select_survey'),
         cantFindYourSurvey: Ember.String.loc('_cant_find_your_survey_'),
         selectForms: Ember.String.loc('_select_forms'),
+        selectFormNote: Ember.String.loc('_select_forms_note'),
         selectDevices: Ember.String.loc('_select_devices'),
         selectDeviceGroup: Ember.String.loc('_select_device_group'),
         saveAssignment: Ember.String.loc('_save_assignment'),

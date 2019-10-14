@@ -123,11 +123,8 @@ export default class AssignmentsEditView extends React.Component {
             <div className="formLeftPanel">
               <fieldset id="surveySelect" className="floats-in">
                 <h2>{strings.selectSurvey}:</h2>
-                <p className="infoText">{strings.cantFindYourSurvey}</p>
 
                 <div className="SelectLayout">
-                  <label htmlFor="surveyGroup">{strings.selectSurvey}:</label>
-
                   <FolderSurveySelectorView
                     initialSurveyGroup={data.initialSurveyGroup}
                     surveyGroups={data.surveyGroups}
@@ -138,6 +135,8 @@ export default class AssignmentsEditView extends React.Component {
 
                 <div className="formSelectorList">
                   <label htmlFor="surveys">{strings.selectForms}:</label>
+                  <span className="infoText">{strings.selectFormNote}</span>
+                  <br />
 
                   <FormSelectorView
                     forms={data.forms}
@@ -150,7 +149,7 @@ export default class AssignmentsEditView extends React.Component {
             <div className="formRightPanel">
               <fieldset id="surveySelect" className="floats-in">
                 <h2>{strings.selectDevices}:</h2>
-                <label htmlFor="deviceGroup">{strings.selectDeviceGroup}</label>
+
                 <DeviceGroupSelectorView
                   deviceGroupNames={data.deviceGroupNames}
                   deviceGroups={data.deviceGroups}
