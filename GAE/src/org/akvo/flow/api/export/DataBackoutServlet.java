@@ -14,7 +14,7 @@
  *  The full license text can also be seen at <http://www.gnu.org/licenses/agpl.html>.
  */
 
-package org.waterforpeople.mapping.app.web;
+package org.akvo.flow.api.export;
 
 import java.nio.charset.StandardCharsets;
 import java.text.DateFormat;
@@ -89,8 +89,7 @@ public class DataBackoutServlet extends AbstractRestApiServlet {
         RestResponse response = new RestResponse();
         if (DataBackoutRequest.GET_QUESTION_ACTION.equals(boReq.getAction())) {
             response.setMessage(listQuestionIds(boReq.getSurveyId()));
-        } else if (DataBackoutRequest.DELETE_QUESTION_SUMMARY_ACTION
-                .equals(boReq.getAction())) {
+        } else if (DataBackoutRequest.DELETE_QUESTION_SUMMARY_ACTION.equals(boReq.getAction())) {
             deleteQuestionSummary(boReq.getQuestionId());
         } else if (DataBackoutRequest.LIST_INSTANCE_ACTION.equals(boReq.getAction())) {
             response.setMessage(listSurveyInstance(boReq.getSurveyId(),
@@ -103,16 +102,12 @@ public class DataBackoutServlet extends AbstractRestApiServlet {
             response.setMessage(countFormInstance(boReq.getSurveyId(),
                     boReq.getFromDate(),
                     boReq.getToDate()));
-        } else if (DataBackoutRequest.DELETE_SURVEY_INSTANCE_ACTION
-                .equals(boReq.getAction())) {
+        } else if (DataBackoutRequest.DELETE_SURVEY_INSTANCE_ACTION.equals(boReq.getAction())) {
             deleteSurveyInstance(boReq.getSurveyInstanceId());
-        } else if (DataBackoutRequest.LIST_INSTANCE_RESPONSE_ACTION
-                .equals(boReq.getAction())) {
+        } else if (DataBackoutRequest.LIST_INSTANCE_RESPONSE_ACTION.equals(boReq.getAction())) {
             response.setMessage(listResponses(boReq.getSurveyInstanceId()));
-        } else if (DataBackoutRequest.LIST_QUESTION_RESPONSE_ACTION
-                .equals(boReq.getAction())) {
-            response = listQuestionResponse(boReq.getQuestionId(),
-                    boReq.getCursor());
+        } else if (DataBackoutRequest.LIST_QUESTION_RESPONSE_ACTION.equals(boReq.getAction())) {
+            response = listQuestionResponse(boReq.getQuestionId(), boReq.getCursor());
         }
         return response;
     }

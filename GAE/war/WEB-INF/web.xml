@@ -327,7 +327,7 @@
 
     <servlet>
         <servlet-name>SurveyRestApi</servlet-name>
-        <servlet-class>org.waterforpeople.mapping.app.web.SurveyRestServlet</servlet-class>
+        <servlet-class>org.akvo.flow.api.export.SurveyRestServlet</servlet-class>
     </servlet>
     <servlet-mapping>
         <servlet-name>SurveyRestApi</servlet-name>
@@ -367,7 +367,7 @@
     </servlet-mapping>
     <servlet>
         <servlet-name>DataBackoutApi</servlet-name>
-        <servlet-class>org.waterforpeople.mapping.app.web.DataBackoutServlet</servlet-class>
+        <servlet-class>org.akvo.flow.api.export.DataBackoutServlet</servlet-class>
     </servlet>
     <servlet>
         <servlet-name>RawDataRestApi</servlet-name>

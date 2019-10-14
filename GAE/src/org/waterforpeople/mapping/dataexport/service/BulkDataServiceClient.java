@@ -171,7 +171,12 @@ public class BulkDataServiceClient {
 
         Long count = null;
         if (instanceString != null && instanceString.trim().length() != 0) {
-            count = Long.parseLong(instanceString);
+            try {
+                count = Long.parseLong(instanceString);
+            } catch (Exception e) {
+                // Leave it as null
+            }
+
         }
         return count;
     }

@@ -14,7 +14,7 @@
  *  The full license text can also be seen at <http://www.gnu.org/licenses/agpl.html>.
  */
 
-package org.waterforpeople.mapping.app.web;
+package org.akvo.flow.api.export;
 
 import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;

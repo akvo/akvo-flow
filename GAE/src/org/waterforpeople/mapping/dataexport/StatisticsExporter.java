@@ -48,6 +48,7 @@ import org.waterforpeople.mapping.app.web.dto.SurveyRestRequest;
 import org.waterforpeople.mapping.dataexport.service.BulkDataServiceClient;
 
 import com.gallatinsystems.framework.dataexport.applet.DataExporter;
+import com.gallatinsystems.survey.domain.SurveyGroup.ProjectType;
 
 /**
  * Data exporter to write excel files containing survey statistics
@@ -58,12 +59,11 @@ public class StatisticsExporter implements DataExporter {
     private static final Logger log = Logger.getLogger(StatisticsExporter.class);
 
     private static final String INSTANCE_COUNT_SHEET_NAME = "Form instance counts";
-//TODO more pages?    private static final String FULL_SHEET_NAME = "Football stats";
 
     private static final String SURVEY_HEADER = "Survey";
-    private static final String FORM_HEADER = "Form";
-    private static final String FORM_ID_HEADER = "Id";
-    private static final String COUNT_HEADER = "Count";
+    private static final String FORM_HEADER = "Form name";
+    private static final String FORM_ID_HEADER = "Form Id";
+    private static final String COUNT_HEADER = "Instance Count";
 
     private static final int COL_WIDTH = 10000;
     private static final String FROM_OPT = "from";
@@ -90,7 +90,7 @@ public class StatisticsExporter implements DataExporter {
 
             for (SurveyGroupDto sg: groupList) {
                 groupMap.put(sg.getKeyId(), sg);
-                if ("PROJECT".equals(sg.getProjectType())) {
+                if (ProjectType.PROJECT.equals(sg.getProjectType())) {
                     List<SurveyDto> formList = BulkDataServiceClient.fetchSurveys(sg.getKeyId(), serverBase, apiKey);
                     formMap.put(sg, formList);
                     for (SurveyDto form: formList) {
@@ -100,7 +100,17 @@ public class StatisticsExporter implements DataExporter {
                 }
             }
 
-            writeStats("Foobar", fileName, groupMap, formMap, instanceCounts);
+            log.info("Surveys and SurveyGroups: " + groupMap.size());
+            log.info("Forms: " + formMap.size());
+            log.info("Counts: " + instanceCounts.size());
+            String title = "Form instances";
+            if (from != null && from.trim() != "") {
+                title += " From " + from;
+            }
+            if (to != null && to.trim() != "") {
+                title += " to " + to;
+            }
+            writeStats("Form instances", fileName, groupMap, formMap, instanceCounts);
         } catch (Exception e) {
             log.error("Could not write stats", e);
         }
@@ -158,7 +168,7 @@ public class StatisticsExporter implements DataExporter {
 
         int curRow = 0;
         HSSFRow row = sheet.createRow(curRow++);
-        sheet.addMergedRegion(new CellRangeAddress(curRow - 1, curRow - 1, 0, 1));
+ //       sheet.addMergedRegion(new CellRangeAddress(curRow - 1, curRow - 1, 0, 1));
         createCell(row, 0, title, headerStyle);
         row = sheet.createRow(curRow++);
         createCell(row, 0, SURVEY_HEADER, headerStyle);
@@ -168,12 +178,17 @@ public class StatisticsExporter implements DataExporter {
 
         //Loop over surveys
         for (SurveyGroupDto s: groupMap.values()) {
-            if ("PROJECT".equals(s.getProjectType())) {
-                String name = s.getName();
+            if (ProjectType.PROJECT.equals(s.getProjectType())) {
+                String name = s.getCode();
                 SurveyGroupDto parent = groupMap.get(s.getParentId());
-                while (parent != null) {
-                    name = parent.getName() + PATH_DELIM + name;
+                int loops = 0;
+                while (parent != null && loops < 100) { //No infinite loops!
+                    loops++;
+                    name = parent.getCode() + PATH_DELIM + name;
                     parent = groupMap.get(parent.getParentId());
+                }
+                if (loops == 100) {
+                    log.error("Infinite Survey Group loop for " + s.getKeyId());
                 }
                 List<SurveyDto> formList = formMap.get(s);
                 for (SurveyDto form: formList) {
@@ -275,7 +290,7 @@ public class StatisticsExporter implements DataExporter {
         // Log4j stuff - http://stackoverflow.com/a/9003191
         ConsoleAppender console = new ConsoleAppender();
         console.setLayout(new PatternLayout("%d{ISO8601} [%t] %-5p %c - %m%n"));
-        console.setThreshold(Level.DEBUG);
+        console.setThreshold(Level.DEBUG); //Show everything
         console.activateOptions();
         Logger.getRootLogger().addAppender(console);
 
@@ -284,9 +299,8 @@ public class StatisticsExporter implements DataExporter {
         Map<String, String> options = new HashMap<String, String>();
 
         criteria.put("apiKey", args[2]);
-
-        options.put(FROM_OPT, args[3]);
-        options.put(TO_OPT, args[4]);
+        if (args.length > 3) options.put(FROM_OPT, args[3]);
+        if (args.length > 4) options.put(TO_OPT, args[4]);
 
         exporter.export(criteria, new File(args[0]), args[1], options);
     }
