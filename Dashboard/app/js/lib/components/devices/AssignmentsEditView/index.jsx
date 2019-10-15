@@ -153,8 +153,9 @@ export default class AssignmentsEditView extends React.Component {
                 <DeviceGroupSelectorView
                   deviceGroupNames={data.deviceGroupNames}
                   deviceGroups={data.deviceGroups}
-                  deviceGroupIsActive={data.deviceGroupIsActive}
+                  activeDeviceGroups={data.activeDeviceGroups}
                   handleDeviceCheck={actions.handleDeviceCheck}
+                  onSelectAll={actions.handleSelectAllDevice}
                 />
               </fieldset>
             </div>
