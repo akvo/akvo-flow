@@ -27,9 +27,7 @@ export default class DeviceSelector extends React.Component {
                   id={deviceId}
                   name={deviceId}
                   checked={deviceGroups[dgId][deviceId].checked}
-                  onChange={(...args) =>
-                    handleDeviceCheck(...args, deviceId == 0 ? dgId : null)
-                  }
+                  onChange={(...args) => handleDeviceCheck(...args, dgId)}
                 />
 
                 <label id={deviceId} htmlFor={deviceId}>

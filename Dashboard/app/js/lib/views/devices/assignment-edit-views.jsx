@@ -491,6 +491,7 @@ FLOW.AssignmentEditView = FLOW.ReactComponentView.extend(
         return this.handleSelectAllDevice(deviceGroupId, checked);
       }
 
+      const device = FLOW.Device.find(deviceId);
       if (checked) {
         // push device to FLOW.selectedControl.selectedDevices
         FLOW.selectedControl.selectedDevices.pushObject(
@@ -503,7 +504,15 @@ FLOW.AssignmentEditView = FLOW.ReactComponentView.extend(
         );
       }
 
-      return true;
+      // check devices
+      this.deviceGroups[device.get('deviceGroup') || '1'][
+        device.get('keyId')
+      ] = {
+        name: device.get('deviceIdentifier'),
+        checked,
+      };
+
+      return this.renderReactSide();
     },
 
     handleSelectAllDevice(deviceGroupId, checked) {
@@ -530,7 +539,7 @@ FLOW.AssignmentEditView = FLOW.ReactComponentView.extend(
       this.deviceGroups[deviceGroupId][0].checked = checked;
 
       // rerender react side
-      this.renderReactSide();
+      return this.renderReactSide();
     },
   }
 );
