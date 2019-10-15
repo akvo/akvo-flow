@@ -94,23 +94,24 @@ public class StatisticsExporter implements DataExporter {
                     List<SurveyDto> formList = BulkDataServiceClient.fetchSurveys(sg.getKeyId(), serverBase, apiKey);
                     formMap.put(sg, formList);
                     for (SurveyDto form: formList) {
-                        instanceCounts.put(form, BulkDataServiceClient.fetchInstanceCount(
-                                form.getKeyId().toString(), serverBase, apiKey, from, to));
+                        Long c = BulkDataServiceClient.fetchInstanceCount(
+                                form.getKeyId().toString(), serverBase, apiKey, from, to);
+                        instanceCounts.put(form, c);
                     }
                 }
             }
 
-            log.info("Surveys and SurveyGroups: " + groupMap.size());
-            log.info("Forms: " + formMap.size());
-            log.info("Counts: " + instanceCounts.size());
+            log.debug("Surveys and Groups: " + groupMap.size());
+            log.debug("Surveys: " + formMap.size());
+            log.debug("Instance Counts: " + instanceCounts.size());
             String title = "Form instances";
             if (from != null && from.trim() != "") {
-                title += " From " + from;
+                title += " from " + from;
             }
             if (to != null && to.trim() != "") {
                 title += " to " + to;
             }
-            writeStats("Form instances", fileName, groupMap, formMap, instanceCounts);
+            writeStats(title, fileName, groupMap, formMap, instanceCounts);
         } catch (Exception e) {
             log.error("Could not write stats", e);
         }
@@ -161,14 +162,10 @@ public class StatisticsExporter implements DataExporter {
             HSSFCellStyle bodyStyle) {
 
         HSSFSheet sheet = wb.createSheet(INSTANCE_COUNT_SHEET_NAME);
-        sheet.setColumnWidth(0, COL_WIDTH);
-        sheet.setColumnWidth(1, COL_WIDTH);
-        sheet.setColumnWidth(2, COL_WIDTH);
-        sheet.setColumnWidth(3, COL_WIDTH);
 
         int curRow = 0;
         HSSFRow row = sheet.createRow(curRow++);
- //       sheet.addMergedRegion(new CellRangeAddress(curRow - 1, curRow - 1, 0, 1));
+        sheet.addMergedRegion(new CellRangeAddress(curRow - 1, curRow - 1, 0, 4));
         createCell(row, 0, title, headerStyle);
         row = sheet.createRow(curRow++);
         createCell(row, 0, SURVEY_HEADER, headerStyle);

@@ -170,13 +170,13 @@ public class BulkDataServiceClient {
                 apiKey);
 
         Long count = null;
-        if (instanceString != null && instanceString.trim().length() != 0) {
+        if (instanceString != null) {
             try {
-                count = Long.parseLong(instanceString);
+                count = Long.parseLong(instanceString.trim()); //remove trailing newline
             } catch (Exception e) {
+                log.error("Unparsable instance count " + e.getMessage());
                 // Leave it as null
             }
-
         }
         return count;
     }

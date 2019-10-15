@@ -22,6 +22,7 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.logging.Logger;
 
 import javax.annotation.Nullable;
 import javax.servlet.http.HttpServletRequest;
@@ -44,7 +45,6 @@ import com.gallatinsystems.framework.rest.RestRequest;
 import com.gallatinsystems.framework.rest.RestResponse;
 import com.gallatinsystems.survey.dao.QuestionDao;
 import com.gallatinsystems.survey.domain.Question;
-import com.gallatinsystems.surveyal.dao.SurveyedLocaleDao;
 import com.google.appengine.api.datastore.Entity;
 
 /**
@@ -55,11 +55,11 @@ import com.google.appengine.api.datastore.Entity;
 public class DataBackoutServlet extends AbstractRestApiServlet {
 
     private static final long serialVersionUID = 4608959174864994769L;
+    private static final Logger log = Logger.getLogger(DataBackoutServlet.class.getName());
 
     private QuestionDao qDao;
     private SurveyQuestionSummaryDao questionSummaryDao;
     private SurveyInstanceDAO instanceDao;
-    private SurveyedLocaleDao localeDao;
     private static final ThreadLocal<DateFormat> OUT_FMT = new ThreadLocal<DateFormat>() {
         @Override
         protected DateFormat initialValue() {
@@ -70,7 +70,6 @@ public class DataBackoutServlet extends AbstractRestApiServlet {
     public DataBackoutServlet() {
         setMode(PLAINTEXT_MODE);
         qDao = new QuestionDao();
-        localeDao = new SurveyedLocaleDao();
         questionSummaryDao = new SurveyQuestionSummaryDao();
         instanceDao = new SurveyInstanceDAO();
     }
@@ -213,7 +212,7 @@ public class DataBackoutServlet extends AbstractRestApiServlet {
     }
 
     /**
-     * returns a count of formInstances for the form and dates passed in
+     * returns a count of form instances for the form and dates passed in
      *
      * @param formId
      * @param fromDate
@@ -224,10 +223,12 @@ public class DataBackoutServlet extends AbstractRestApiServlet {
         Iterable<Entity> instances = instanceDao.listRawEntity(true, fromDate, toDate, null, formId);
         long count = 0;
         if (instances != null) {
-            for (Entity e : instances) {
+            for (@SuppressWarnings("unused") Entity e : instances) {
                 count++;
             }
         }
+        log.fine("Counted " + count + " instances of form " + formId
+                + " between " + fromDate + " and " + toDate);
         return Long.toString(count);
     }
 
