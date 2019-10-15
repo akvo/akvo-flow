@@ -40,7 +40,8 @@ describe('DeviceSelector Tests', () => {
       <DeviceSelector
         deviceGroupNames={deviceGroupNames}
         deviceGroups={deviceGroups}
-        onCheck={jest.fn()}
+        handleDeviceCheck={jest.fn()}
+        deviceIsChecked={false}
       />
     );
 
@@ -52,7 +53,8 @@ describe('DeviceSelector Tests', () => {
       <DeviceSelector
         deviceGroupNames={deviceGroupNames}
         deviceGroups={deviceGroups}
-        onCheck={jest.fn()}
+        handleDeviceCheck={jest.fn()}
+        deviceIsChecked={false}
       />
     );
 
@@ -73,7 +75,8 @@ describe('DeviceSelector Tests', () => {
       <DeviceSelector
         deviceGroupNames={deviceGroupNames}
         deviceGroups={deviceGroups}
-        onCheck={onCheck}
+        handleDeviceCheck={onCheck}
+        deviceIsChecked={false}
       />
     );
 

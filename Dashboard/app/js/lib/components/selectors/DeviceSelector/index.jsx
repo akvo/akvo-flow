@@ -7,19 +7,21 @@ import Checkbox from 'akvo-flow/components/Checkbox';
 export default class DeviceSelector extends React.Component {
   state = {
     isAccordionOpen: this.props.deviceGroupIsActive,
-  }
+  };
 
   onAccordionClick = () => {
     const { isAccordionOpen } = this.state;
     this.setState({ isAccordionOpen: !isAccordionOpen });
-  }
+  };
 
   render() {
     const { isAccordionOpen } = this.state;
     const { deviceGroups, deviceGroupNames, handleDeviceCheck } = this.props;
 
     const accordionClass = `accordion ${isAccordionOpen && 'active'}`;
-    const panelStyle = isAccordionOpen ? { display: 'block' } : { display: 'none' };
+    const panelStyle = isAccordionOpen
+      ? { display: 'block' }
+      : { display: 'none' };
 
     return (
       <div>
