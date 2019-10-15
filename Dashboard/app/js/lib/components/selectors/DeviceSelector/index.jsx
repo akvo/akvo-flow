@@ -6,20 +6,30 @@ import Checkbox from 'akvo-flow/components/Checkbox';
 import DeviceAccordion from './DeviceAccordion';
 
 export default class DeviceSelector extends React.Component {
+  accordionIsActive = id => {
+    return this.props.activeDeviceGroups.has(id);
+  };
+
   render() {
     const { deviceGroups, handleDeviceCheck, deviceGroupNames } = this.props;
 
     return (
       <div>
         {Object.keys(deviceGroups).map(dgId => (
-          <DeviceAccordion name={deviceGroupNames[dgId]}>
+          <DeviceAccordion
+            key={dgId}
+            name={deviceGroupNames[dgId]}
+            deviceGroupIsActive={this.accordionIsActive(dgId)}
+          >
             {Object.keys(deviceGroups[dgId]).map(deviceId => (
               <div key={deviceId}>
                 <Checkbox
                   id={deviceId}
                   name={deviceId}
                   checked={deviceGroups[dgId][deviceId].checked}
-                  onChange={handleDeviceCheck}
+                  onChange={(...args) =>
+                    handleDeviceCheck(...args, deviceId == 0 ? dgId : null)
+                  }
                 />
 
                 <label id={deviceId} htmlFor={deviceId}>
@@ -37,6 +47,7 @@ export default class DeviceSelector extends React.Component {
 DeviceSelector.propTypes = {
   deviceGroups: PropTypes.object.isRequired,
   deviceGroupNames: PropTypes.object.isRequired,
-  deviceGroupIsActive: PropTypes.bool.isRequired,
+  activeDeviceGroups: PropTypes.any.isRequired,
   handleDeviceCheck: PropTypes.func.isRequired,
+  onSelectAll: PropTypes.func.isRequired,
 };
