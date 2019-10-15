@@ -5,7 +5,7 @@ exports[`DeviceSelector Tests +++ renders <snapshot> 1`] = `
   <div>
     <div>
       <div
-        class="accordion undefined"
+        class="accordion false"
         data-testid="accordion"
       >
         Devices not in a group
