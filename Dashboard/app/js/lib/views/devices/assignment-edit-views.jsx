@@ -357,7 +357,9 @@ FLOW.AssignmentEditView = FLOW.ReactComponentView.extend(
             this.deviceGroups[dgId] = {
               0: {
                 name: 'Select all devices',
-                checked: numberOfDevices === numberOfSelectedDevices,
+                checked:
+                  numberOfDevices !== 0 &&
+                  numberOfDevices === numberOfSelectedDevices,
               },
               ...this.deviceGroups[dgId],
             };
