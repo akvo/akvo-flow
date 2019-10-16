@@ -59,11 +59,18 @@ public class StatisticsExporter implements DataExporter {
     private static final Logger log = Logger.getLogger(StatisticsExporter.class);
 
     private static final String INSTANCE_COUNT_SHEET_NAME = "Form instance counts";
+    private static final String SURVEY_STATS_SHEET_NAME = "Survey statistics";
+    private static final String SURVEY_STATS_HEADER1 = "Items";
+    private static final String SURVEY_STATS_HEADER2 = "Count";
 
     private static final String SURVEY_HEADER = "Survey";
     private static final String FORM_HEADER = "Form name";
     private static final String FORM_ID_HEADER = "Form Id";
     private static final String COUNT_HEADER = "Instance Count";
+
+    private static final String SURVEY_GROUP_COUNT_LABEL = "Survey groups";
+    private static final String SURVEY_COUNT_LABEL = "Surveys";
+    private static final String FORM_COUNT_LABEL = "Forms";
 
     private static final int COL_WIDTH = 10000;
     private static final String FROM_OPT = "from";
@@ -139,6 +146,7 @@ public class StatisticsExporter implements DataExporter {
         questionStyle.setWrapText(true);
 
         writeInstanceSheet(title, groupMap, formMap, instanceCounts, wb, headerStyle, questionStyle);
+        writeSurveyStatsSheet(SURVEY_STATS_HEADER1, SURVEY_STATS_HEADER2, groupMap, formMap, wb, headerStyle, questionStyle);
 
         FileOutputStream fileOut = new FileOutputStream(fileName);
         wb.write(fileOut);
@@ -186,6 +194,7 @@ public class StatisticsExporter implements DataExporter {
                 }
                 if (loops == 100) {
                     log.error("Infinite Survey Group loop for " + s.getKeyId());
+                    name = "### structure error - infinite loop ###";
                 }
                 List<SurveyDto> formList = formMap.get(s);
                 for (SurveyDto form: formList) {
@@ -198,6 +207,48 @@ public class StatisticsExporter implements DataExporter {
 
             }
         }
+    }
+
+    /**
+     * @param title
+     * @param groupList
+     * @param questions
+     * @param wb
+     * @param headerStyle
+     * @param bodyStyle
+     */
+    private void writeSurveyStatsSheet(String title1,
+            String title2,
+            Map<Long, SurveyGroupDto> groupMap,
+            Map<SurveyGroupDto, List<SurveyDto>> formMap,
+            HSSFWorkbook wb,
+            HSSFCellStyle headerStyle,
+            HSSFCellStyle bodyStyle) {
+
+        HSSFSheet sheet = wb.createSheet(SURVEY_STATS_SHEET_NAME);
+
+        //Sum up all the forms
+        long formCount = 0;
+        for (List<SurveyDto> formList : formMap.values()) {
+            formCount += formList.size();
+        }
+
+        sheet.setColumnWidth(0, COL_WIDTH);
+        sheet.setColumnWidth(1, COL_WIDTH);
+
+        int curRow = 0;
+        HSSFRow row = sheet.createRow(curRow++);
+        createCell(row, 0, title1, headerStyle);
+        createCell(row, 1, title2, headerStyle);
+        row = sheet.createRow(curRow++);
+        createCell(row, 0, SURVEY_GROUP_COUNT_LABEL, bodyStyle);
+        createCell(row, 1, Long.valueOf((groupMap.size() - formMap.size())), bodyStyle);
+        row = sheet.createRow(curRow++);
+        createCell(row, 0, SURVEY_COUNT_LABEL, bodyStyle);
+        createCell(row, 1, Long.valueOf(formMap.size()), bodyStyle);
+        row = sheet.createRow(curRow++);
+        createCell(row, 0, FORM_COUNT_LABEL, bodyStyle);
+        createCell(row, 1, formCount, bodyStyle);
     }
 
 
