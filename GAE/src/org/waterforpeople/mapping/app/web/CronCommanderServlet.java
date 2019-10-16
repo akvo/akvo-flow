@@ -28,8 +28,10 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.akvo.flow.dao.MessageDao;
 import org.akvo.flow.dao.ReportDao;
 import org.akvo.flow.dao.SurveyAssignmentDao;
+import org.akvo.flow.domain.Message;
 import org.akvo.flow.domain.persistent.Report;
 import org.waterforpeople.mapping.app.web.dto.SurveyTaskRequest;
 import com.gallatinsystems.common.util.S3Util;
@@ -75,6 +77,8 @@ public class CronCommanderServlet extends HttpServlet {
             purgeExpiredDevices();
         } else if ("purgeReportRecords".equals(action)) {
             purgeReportRecords();
+        } else if ("purgeExpiredMessages".equals(action)) {
+            purgeExpiredMessages();
         }
     }
 
@@ -212,4 +216,18 @@ public class CronCommanderServlet extends HttpServlet {
             }
         }
     }
+
+    /**
+     * scans for and deletes Message entries that are more than one year old
+     */
+    private void purgeExpiredMessages() {
+        Calendar deadline = Calendar.getInstance();
+        deadline.add(Calendar.YEAR, ONE_YEAR_AGO);
+        log.info("Starting scan for Message entries older than: " + deadline.getTime());
+        MessageDao messageDao = new MessageDao();
+        List<Message> messageList = messageDao.listAllCreatedBefore(deadline.getTime());
+        log.fine("Deleting " + messageList.size() + " old Message entries");
+        messageDao.delete(messageList);
+    }
+
 }

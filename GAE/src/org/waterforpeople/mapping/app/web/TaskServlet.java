@@ -39,6 +39,8 @@ import java.util.zip.ZipInputStream;
 
 import javax.servlet.http.HttpServletRequest;
 
+import org.akvo.flow.dao.MessageDao;
+import org.akvo.flow.domain.Message;
 import org.apache.commons.io.IOUtils;
 import org.waterforpeople.mapping.app.web.dto.TaskRequest;
 import org.waterforpeople.mapping.dao.DeviceFilesDao;
@@ -57,8 +59,6 @@ import com.gallatinsystems.framework.exceptions.SignedDataException;
 import com.gallatinsystems.framework.rest.AbstractRestApiServlet;
 import com.gallatinsystems.framework.rest.RestRequest;
 import com.gallatinsystems.framework.rest.RestResponse;
-import com.gallatinsystems.messaging.dao.MessageDao;
-import com.gallatinsystems.messaging.domain.Message;
 import com.gallatinsystems.survey.dao.SurveyDAO;
 import com.gallatinsystems.survey.dao.SurveyUtils;
 import com.gallatinsystems.survey.domain.Survey;

@@ -31,4 +31,9 @@
         <description>Purge expired Devices</description>
         <schedule>every monday 00:10</schedule>
     </cron>
+    <cron>
+        <url>/cron/croncommander?action=purgeExpiredMessages</url>
+        <description>Purge expired Messages</description>
+        <schedule>every monday 00:15</schedule>
+    </cron>
 </cronentries>

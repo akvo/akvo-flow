@@ -39,7 +39,9 @@ import net.sf.jsr107cache.Cache;
 import net.sf.jsr107cache.CacheFactory;
 import net.sf.jsr107cache.CacheManager;
 
+import org.akvo.flow.dao.MessageDao;
 import org.akvo.flow.domain.DataUtils;
+import org.akvo.flow.domain.Message;
 import org.waterforpeople.mapping.analytics.dao.SurveyQuestionSummaryDao;
 import org.waterforpeople.mapping.analytics.domain.SurveyQuestionSummary;
 import org.waterforpeople.mapping.app.web.dto.DataProcessorRequest;
@@ -54,8 +56,6 @@ import com.gallatinsystems.framework.rest.AbstractRestApiServlet;
 import com.gallatinsystems.framework.rest.RestRequest;
 import com.gallatinsystems.framework.rest.RestResponse;
 import com.gallatinsystems.framework.servlet.PersistenceFilter;
-import com.gallatinsystems.messaging.dao.MessageDao;
-import com.gallatinsystems.messaging.domain.Message;
 import com.gallatinsystems.operations.dao.ProcessingStatusDao;
 import com.gallatinsystems.operations.domain.ProcessingStatus;
 import com.gallatinsystems.survey.dao.CascadeNodeDao;

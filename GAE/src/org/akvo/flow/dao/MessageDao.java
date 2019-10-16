@@ -1,5 +1,5 @@
 /*
- *  Copyright (C) 2010-2012 Stichting Akvo (Akvo Foundation)
+ *  Copyright (C) 2010-2012, 2019 Stichting Akvo (Akvo Foundation)
  *
  *  This file is part of Akvo FLOW.
  *
@@ -14,21 +14,22 @@
  *  The full license text can also be seen at <http://www.gnu.org/licenses/agpl.html>.
  */
 
-package com.gallatinsystems.messaging.dao;
+package org.akvo.flow.dao;
 
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
 import javax.jdo.PersistenceManager;
 
+import org.akvo.flow.domain.Message;
 import com.gallatinsystems.framework.dao.BaseDAO;
 import com.gallatinsystems.framework.servlet.PersistenceFilter;
-import com.gallatinsystems.messaging.domain.Message;
 
 /**
  * Data access object for manipulating Message objects
- * 
+ *
  * @author Christopher Fagiani
  */
 public class MessageDao extends BaseDAO<Message> {
@@ -39,7 +40,7 @@ public class MessageDao extends BaseDAO<Message> {
 
     /**
      * lists all messages
-     * 
+     *
      * @param about - optional subject
      * @param id - optional ID
      * @param cursor - cursor string
@@ -66,6 +67,14 @@ public class MessageDao extends BaseDAO<Message> {
         prepareCursor(cursor, query);
         List<Message> results = (List<Message>) query.executeWithMap(paramMap);
         return results;
+    }
+
+    /**
+     * lists all messages older than a specific date
+     */
+    public List<Message> listAllCreatedBefore(Date date) {
+        return listByProperty("createdDateTime", date, "Date",
+                "createdDateTime", null, LTE_OP, Message.class);
     }
 
 }
