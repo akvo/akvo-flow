@@ -70,7 +70,8 @@ public class StatisticsExporter implements DataExporter {
 
     private static final String SURVEY_GROUP_COUNT_LABEL = "Survey groups";
     private static final String SURVEY_COUNT_LABEL = "Surveys";
-    private static final String FORM_COUNT_LABEL = "Forms";
+    private static final String FORM_COUNT_LABEL = "Total Forms";
+    private static final String PUBLISHED_COUNT_LABEL = "Published Forms";
 
     private static final int COL_WIDTH = 10000;
     private static final String FROM_OPT = "from";
@@ -171,9 +172,12 @@ public class StatisticsExporter implements DataExporter {
 
         HSSFSheet sheet = wb.createSheet(INSTANCE_COUNT_SHEET_NAME);
 
+        sheet.setColumnWidth(0, COL_WIDTH);
+        sheet.setColumnWidth(1, COL_WIDTH);
+
         int curRow = 0;
         HSSFRow row = sheet.createRow(curRow++);
-        sheet.addMergedRegion(new CellRangeAddress(curRow - 1, curRow - 1, 0, 4));
+        sheet.addMergedRegion(new CellRangeAddress(curRow - 1, curRow - 1, 0, 3));
         createCell(row, 0, title, headerStyle);
         row = sheet.createRow(curRow++);
         createCell(row, 0, SURVEY_HEADER, headerStyle);
@@ -229,8 +233,14 @@ public class StatisticsExporter implements DataExporter {
 
         //Sum up all the forms
         long formCount = 0;
+        long publishedCount = 0;
         for (List<SurveyDto> formList : formMap.values()) {
             formCount += formList.size();
+            for (SurveyDto form: formList) {
+                if ("PUBLISHED".equals(form.getStatus())) {
+                    publishedCount++;
+                }
+            }
         }
 
         sheet.setColumnWidth(0, COL_WIDTH);
@@ -249,6 +259,9 @@ public class StatisticsExporter implements DataExporter {
         row = sheet.createRow(curRow++);
         createCell(row, 0, FORM_COUNT_LABEL, bodyStyle);
         createCell(row, 1, formCount, bodyStyle);
+        row = sheet.createRow(curRow++);
+        createCell(row, 0, PUBLISHED_COUNT_LABEL, bodyStyle);
+        createCell(row, 1, publishedCount, bodyStyle);
     }
 
 
