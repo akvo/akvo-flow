@@ -1,5 +1,31 @@
 # Akvo Flow Release Notes
 ----
+# Akvo Flow Dashboard v1.10 - Worshipped Wolfbane
+Date: 17-10-2019
+
+Remove Flow landing/log in page [#2559]
+Remove UI middle line in assignments page [#3224]
+When splitting assignments, add survey id, rename fields [#3173]
+Showing selected devices in existing assignments [#3225]
+Fixes for device selection in assignment ui [#3230]
+Change the generated name for split assignments [#3153]
+Fix duplication issue in assignments ui [#3227]
+Selection of devices for an assignment [#31377]
+Assignments form selector [#3136]
+Remove phone number from Assignments UI [#2316]
+write tests for device selector class [#3188]
+Move assignments edit views to react view [#3192]
+Flow datastore exports [#3161]
+Remove /api/v1 [#3203]
+Remove UserConfig kind [#3201]
+Convert options in survey selector to a class selector [#3181]
+Upgrade to babel v7 Deployment & infrastructure [#3162]
+Convert options in device selector to a class component [#3185]
+Rebrand user access denied page [#3141]
+Add a list of datapoints to the device assignment endpoints [#3166]
+Update /surveyedlocale endpoint to enable datapoint filtering [#3167]
+
+
 # Akvo Flow Dashboard v1.9.49 - Vibrant Viburnum
 Date: 05-08-2019
 

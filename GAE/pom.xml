@@ -169,6 +169,11 @@
         <version>${jackson.version}</version>
     </dependency>
     <dependency>
+        <groupId>com.fasterxml.jackson.dataformat</groupId>
+        <artifactId>jackson-dataformat-xml</artifactId>
+        <version>${jackson.version}</version>
+    </dependency>
+    <dependency>
        <groupId>com.google.appengine</groupId>
        <artifactId>appengine-jsr107cache</artifactId>
        <version>${appengine.sdk.version}</version>
@@ -258,6 +263,7 @@
 
   <build>
     <sourceDirectory>${project.basedir}/src</sourceDirectory>
+    <testSourceDirectory>${project.basedir}/test</testSourceDirectory>
     <finalName>${project.artifactId}</finalName>
     <outputDirectory>${project.build.directory}/${project.build.finalName}/WEB-INF/classes</outputDirectory>
     <resources>
@@ -340,6 +346,7 @@
                       <include>/vendorjs/**</include>
                       <include>CurrentUser.vm</include>
                       <include>Env.vm</include>
+                      <include>/auth0/*</include>
                       <include>register.html</include>
                       <include>favicon.ico</include>
                       <include>robots.txt</include>

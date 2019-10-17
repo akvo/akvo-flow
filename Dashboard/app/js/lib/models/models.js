@@ -6,25 +6,35 @@ import observe from '../mixins/observe';
 require('akvo-flow/core-common');
 require('akvo-flow/models/store_def-common');
 
-FLOW.BaseModel = DS.Model.extend(observe({
-  isSaving: 'anySaving',
-  isDirty: 'anySaving',
-}), {
-  keyId: DS.attr('number'),
-  savingStatus: null,
+FLOW.BaseModel = DS.Model.extend(
+  observe({
+    isSaving: 'anySaving',
+    isDirty: 'anySaving',
+  }),
+  {
+    keyId: DS.attr('number'),
+    savingStatus: null,
 
-  // this method calls the checkSaving method on the savingMessageControl, which
-  // checks if there are any records inflight. If yes, it sets a boolean,
-  // so a saving message can be displayed. savingStatus is used to capture the
-  // moment that nothing is being saved anymore, but in the previous event it was
-  // so we can turn off the saving message.
-  anySaving() {
-    if (this.get('isSaving') || this.get('isDirty') || this.get('savingStatus')) {
-      FLOW.savingMessageControl.checkSaving();
-    }
-    this.set('savingStatus', (this.get('isSaving') || this.get('isDirty')));
-  },
-});
+    // this method calls the checkSaving method on the savingMessageControl, which
+    // checks if there are any records inflight. If yes, it sets a boolean,
+    // so a saving message can be displayed. savingStatus is used to capture the
+    // moment that nothing is being saved anymore, but in the previous event it was
+    // so we can turn off the saving message.
+    anySaving() {
+      if (
+        this.get('isSaving') ||
+        this.get('isDirty') ||
+        this.get('savingStatus')
+      ) {
+        FLOW.savingMessageControl.checkSaving();
+      }
+      this.set(
+        'savingStatus',
+        this.get('isSaving') || this.get('isDirty')
+      );
+    },
+  }
+);
 
 FLOW.CaddisflyTestDefinition = Ember.Object.extend({
   name: null,
@@ -128,12 +138,9 @@ FLOW.SurveyGroup = FLOW.BaseModel.extend({
   surveyList: DS.attr('array', {
     defaultValue: null,
   }),
-
 });
 
-
 FLOW.Survey = FLOW.BaseModel.extend({
-
   defaultLanguageCode: DS.attr('string'),
   status: DS.attr('string'),
   sector: DS.attr('string'),
@@ -167,9 +174,7 @@ FLOW.Survey = FLOW.BaseModel.extend({
   allowEdit: Ember.computed(function () {
     return !this.get('isNew') && this.get('status') !== 'COPYING';
   }).property('status', 'isNew'),
-
 });
-
 
 FLOW.QuestionGroup = FLOW.BaseModel.extend({
   order: DS.attr('number'),
@@ -185,7 +190,6 @@ FLOW.QuestionGroup = FLOW.BaseModel.extend({
     defaultValue: false,
   }),
 });
-
 
 FLOW.Question = FLOW.BaseModel.extend({
   questionOptions: DS.hasMany('FLOW.QuestionOption'),
@@ -267,7 +271,6 @@ FLOW.Question = FLOW.BaseModel.extend({
   }),
 });
 
-
 FLOW.QuestionOption = FLOW.BaseModel.extend({
   question: DS.belongsTo('FLOW.Question'),
   order: DS.attr('number'),
@@ -275,7 +278,6 @@ FLOW.QuestionOption = FLOW.BaseModel.extend({
   text: DS.attr('string'),
   code: DS.attr('string'),
 });
-
 
 FLOW.DeviceGroup = FLOW.BaseModel.extend({
   code: DS.attr('string', {
@@ -329,9 +331,10 @@ FLOW.SurveyAssignment = FLOW.BaseModel.extend({
   name: DS.attr('string'),
   startDate: DS.attr('number'),
   endDate: DS.attr('number'),
-  devices: DS.attr('array'),
-  surveys: DS.attr('array'),
+  deviceIds: DS.attr('array'),
+  formIds: DS.attr('array'),
   language: DS.attr('string'),
+  surveyId: DS.attr('number'),
 });
 
 FLOW.SurveyedLocale = DS.Model.extend({
@@ -428,14 +431,6 @@ FLOW.User = FLOW.BaseModel.extend({
     defaultValue: 0,
   }),
   permissionList: DS.attr('string'),
-  accessKey: DS.attr('string'),
-});
-
-FLOW.UserConfig = FLOW.BaseModel.extend({
-  group: DS.attr('string'),
-  name: DS.attr('string'),
-  value: DS.attr('string'),
-  userId: DS.attr('number'),
 });
 
 FLOW.Message = FLOW.BaseModel.extend({
@@ -449,45 +444,65 @@ FLOW.Message = FLOW.BaseModel.extend({
 
 FLOW.Action = FLOW.BaseModel.extend({});
 
-FLOW.Translation = FLOW.BaseModel.extend(observe({
-  'this.keyId': 'didCreateId',
-}), {
-  didUpdate() {
-    FLOW.translationControl.putSingleTranslationInList(this.get('parentType'), this.get('parentId'), this.get('text'), this.get('keyId'), false);
-  },
+FLOW.Translation = FLOW.BaseModel.extend(
+  observe({
+    'this.keyId': 'didCreateId',
+  }),
+  {
+    didUpdate() {
+      FLOW.translationControl.putSingleTranslationInList(
+        this.get('parentType'),
+        this.get('parentId'),
+        this.get('text'),
+        this.get('keyId'),
+        false
+      );
+    },
 
-  // can't use this at the moment, as the didCreate is fired before the id is back from the
-  // ajax call
-  // didCreate: function(){
-  //   console.log('didCreate',this.get('keyId'));
-  // FLOW.translationControl.putSingleTranslationInList(
-  //   this.get('parentType'),
-  //   this.get('parentId'),
-  //   this.get('text'),
-  //   this.get('keyId'),
-  //   false
-  // );
-  // },
+    // can't use this at the moment, as the didCreate is fired before the id is back from the
+    // ajax call
+    // didCreate: function(){
+    //   console.log('didCreate',this.get('keyId'));
+    // FLOW.translationControl.putSingleTranslationInList(
+    //   this.get('parentType'),
+    //   this.get('parentId'),
+    //   this.get('text'),
+    //   this.get('keyId'),
+    //   false
+    // );
+    // },
 
-  // temporary hack to fire the didCreate event after the keyId is known
-  didCreateId() {
-    if (!Ember.none(this.get('keyId')) && this.get('keyId') > 0) {
-      FLOW.translationControl.putSingleTranslationInList(this.get('parentType'), this.get('parentId'), this.get('text'), this.get('keyId'), false);
-    }
-  },
+    // temporary hack to fire the didCreate event after the keyId is known
+    didCreateId() {
+      if (!Ember.none(this.get('keyId')) && this.get('keyId') > 0) {
+        FLOW.translationControl.putSingleTranslationInList(
+          this.get('parentType'),
+          this.get('parentId'),
+          this.get('text'),
+          this.get('keyId'),
+          false
+        );
+      }
+    },
 
-  didDelete() {
-    FLOW.translationControl.putSingleTranslationInList(this.get('parentType'), this.get('parentId'), null, null, true);
-  },
+    didDelete() {
+      FLOW.translationControl.putSingleTranslationInList(
+        this.get('parentType'),
+        this.get('parentId'),
+        null,
+        null,
+        true
+      );
+    },
 
-  parentType: DS.attr('string'),
-  parentId: DS.attr('string'),
-  surveyId: DS.attr('string'),
-  questionGroupId: DS.attr('string'),
-  text: DS.attr('string'),
-  langCode: DS.attr('string'),
-});
-
+    parentType: DS.attr('string'),
+    parentId: DS.attr('string'),
+    surveyId: DS.attr('string'),
+    questionGroupId: DS.attr('string'),
+    text: DS.attr('string'),
+    langCode: DS.attr('string'),
+  }
+);
 
 FLOW.NotificationSubscription = FLOW.BaseModel.extend({
   notificationDestination: DS.attr('string'),

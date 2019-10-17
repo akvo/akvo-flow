@@ -15,10 +15,6 @@
         <property name="parentNodeId" direction="asc"/>
         <property name="name" direction="asc"/>
     </datastore-index>
-	<datastore-index kind="UserConfig" ancestor="true"
-		source="manual">
-		<property name="config_INTEGER_IDX" direction="asc" />
-	</datastore-index>
 	<datastore-index kind="SurveyXMLFragment" ancestor="false"
 		source="manual">
 		<property name="surveyId" direction="asc" />
@@ -368,6 +364,13 @@
         <property name="surveyId" direction="asc"/>
         <property name="collectionDate" direction="asc"/>
     </datastore-index>
-
-
+    <datastore-index kind="DataPointAssignment" ancestor="false">
+        <property name="surveyId" direction="asc"/>
+        <property name="deviceId" direction="asc"/>
+    </datastore-index>
+    <datastore-index kind="DataPointAssignment" ancestor="false">
+        <property name="surveyAssignmentId" direction="asc"/>
+        <property name="deviceId" direction="asc"/>
+    </datastore-index>
+    
 </datastore-indexes>

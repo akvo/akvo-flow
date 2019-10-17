@@ -96,3 +96,5 @@ tmp/
 
 # Webpack
 Dashboard/package-lock.json
+build.dev.log
+.vscode

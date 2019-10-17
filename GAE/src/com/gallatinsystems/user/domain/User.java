@@ -16,15 +16,12 @@
 
 package com.gallatinsystems.user.domain;
 
-import java.util.List;
 import javax.jdo.annotations.PersistenceCapable;
-import javax.jdo.annotations.Persistent;
 
 import com.gallatinsystems.framework.domain.BaseDomain;
 
 /**
- * User of the web application. This object also can be used to persist (via a cascade save)
- * UserConfig.
+ * User of the web application.
  *
  * @author Christopher Fagiani
  */
@@ -38,8 +35,6 @@ public class User extends BaseDomain {
     private String emailAddress;
     private String permissionList;
     private Boolean superAdmin;
-    @Persistent
-    private List<UserConfig> config;
     private String accessKey;
     private String secret;
     private String language;
@@ -50,14 +45,6 @@ public class User extends BaseDomain {
 
     public void setPermissionList(String permissionList) {
         this.permissionList = permissionList;
-    }
-
-    public List<UserConfig> getConfig() {
-        return config;
-    }
-
-    public void setConfig(List<UserConfig> config) {
-        this.config = config;
     }
 
     public String getUserName() {
@@ -82,22 +69,6 @@ public class User extends BaseDomain {
 
     public void setSuperAdmin(Boolean superAdmin) {
         this.superAdmin = superAdmin;
-    }
-
-    public String getAccessKey() {
-        return accessKey;
-    }
-
-    public void setAccessKey(String accessKey) {
-        this.accessKey = accessKey;
-    }
-
-    public String getSecret() {
-        return secret;
-    }
-
-    public void setSecret(String secret) {
-        this.secret = secret;
     }
 
     public String getLanguage() {

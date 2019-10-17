@@ -16,14 +16,10 @@
 
 package com.gallatinsystems.user.app.gwt.client;
 
-import java.util.Map;
-import java.util.Set;
-
 import com.gallatinsystems.framework.gwt.dto.client.BaseDto;
 
 /**
- * dto representing the user objects. When returned, this object usually will have a set of
- * UserConfigDtos enumerating the per-user configuration as well as a list of UserPermissionDtos
+ * dto representing the user objects. When returned, this object usually will have a list of UserPermissionDtos
  *
  * @author Christopher Fagiani
  */
@@ -33,13 +29,11 @@ public class UserDto extends BaseDto {
 
     private String userName;
     private String emailAddress;
-    private Map<String, Set<UserConfigDto>> config;
     private String logoutUrl;
     private boolean hasAccess = true;
     private boolean admin = false;
     private boolean superAdmin = false;
     private String permissionList;
-    private String accessKey;
     private String language;
 
     public String getPermissionList() {
@@ -74,14 +68,6 @@ public class UserDto extends BaseDto {
         this.logoutUrl = logoutUrl;
     }
 
-    public Map<String, Set<UserConfigDto>> getConfig() {
-        return config;
-    }
-
-    public void setConfig(Map<String, Set<UserConfigDto>> config) {
-        this.config = config;
-    }
-
     public String getUserName() {
         return userName;
     }
@@ -96,14 +82,6 @@ public class UserDto extends BaseDto {
 
     public void setEmailAddress(String emailAddress) {
         this.emailAddress = emailAddress;
-    }
-
-    public String getAccessKey() {
-        return accessKey;
-    }
-
-    public void setAccessKey(String accessKey) {
-        this.accessKey = accessKey;
     }
 
     public String getLanguage() {

@@ -24,7 +24,6 @@ import java.util.Map;
 
 import javax.servlet.http.HttpServletRequest;
 
-import org.akvo.flow.domain.DataUtils;
 import org.apache.commons.lang.StringUtils;
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -48,7 +47,6 @@ import org.waterforpeople.mapping.domain.QuestionAnswerStore;
 import org.waterforpeople.mapping.domain.SurveyInstance;
 import org.waterforpeople.mapping.serialization.response.MediaResponse;
 
-import com.gallatinsystems.common.Constants;
 import com.gallatinsystems.survey.dao.CascadeNodeDao;
 import com.gallatinsystems.survey.dao.QuestionDao;
 import com.gallatinsystems.survey.dao.SurveyUtils;
@@ -138,41 +136,8 @@ public class QuestionAnswerRestService {
      * Process the response returned to take into account formats for the API versions
      */
     private void processApiResponse(QuestionAnswerStoreDto response,
-            HttpServletRequest httpRequest) {
-        if (httpRequest.getRequestURI().startsWith(Constants.API_V1_PREFIX)) {
-            // V1 API
-            formatResponseAPIV1(response);
-        } else {
-            // Latest API
-            formatResponseLatestAPI(response);
-        }
-    }
-
-    /**
-     * Format Question response according to API v1
-     */
-    private void formatResponseAPIV1(QuestionAnswerStoreDto response) {
-        String value = response.getValue();
-        String type = response.getType();
-
-        if (StringUtils.isEmpty(value)) {
-            return;
-        }
-
-        switch (type) {
-            case "OPTION":
-            case "OTHER":
-                if (value.startsWith("[")) {
-                    response.setValue(DataUtils.jsonResponsesToPipeSeparated(value));
-                }
-                break;
-            case "IMAGE":
-            case "VIDEO":
-                response.setValue(MediaResponse.format(value, MediaResponse.VERSION_STRING));
-                break;
-            default:
-                break;
-        }
+                                    HttpServletRequest httpRequest) {
+        formatResponseLatestAPI(response);
     }
 
     /**

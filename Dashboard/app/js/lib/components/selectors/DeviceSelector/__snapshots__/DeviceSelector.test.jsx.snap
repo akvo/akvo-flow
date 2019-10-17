@@ -1,0 +1,99 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`DeviceSelector Tests +++ renders <snapshot> 1`] = `
+<div>
+  <div>
+    <div>
+      <div
+        class="accordion false"
+        data-testid="accordion"
+      >
+        Devices not in a group
+      </div>
+      <div
+        class="panel"
+        data-testid="panel"
+        style="display: none;"
+      >
+        <div>
+          <input
+            class="displayInline"
+            id="150452032"
+            name="150452032"
+            type="checkbox"
+          />
+          <label
+            for="150452032"
+            id="150452032"
+          >
+            droidxx
+          </label>
+        </div>
+        <div>
+          <input
+            class="displayInline"
+            id="150482013"
+            name="150482013"
+            type="checkbox"
+          />
+          <label
+            for="150482013"
+            id="150482013"
+          >
+            jana
+          </label>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+`;
+
+exports[`DeviceSelector Tests +++ toggles accordion 1`] = `
+<div>
+  <div>
+    <div>
+      <div
+        class="accordion active"
+        data-testid="accordion"
+      >
+        Devices not in a group
+      </div>
+      <div
+        class="panel"
+        data-testid="panel"
+        style="display: block;"
+      >
+        <div>
+          <input
+            class="displayInline"
+            id="150452032"
+            name="150452032"
+            type="checkbox"
+          />
+          <label
+            for="150452032"
+            id="150452032"
+          >
+            droidxx
+          </label>
+        </div>
+        <div>
+          <input
+            class="displayInline"
+            id="150482013"
+            name="150482013"
+            type="checkbox"
+          />
+          <label
+            for="150482013"
+            id="150482013"
+          >
+            jana
+          </label>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+`;
