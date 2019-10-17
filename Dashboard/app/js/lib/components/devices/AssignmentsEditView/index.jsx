@@ -90,10 +90,28 @@ export default class AssignmentsEditView extends React.Component {
     };
   };
 
+  getNumberOfSelectedDevices = () => {
+    let selectedDevices = 0;
+
+    Object.keys(this.props.data.deviceGroups).forEach(dgId => {
+      const noOfSelectedDevicesInThisGroup = Object.keys(
+        this.props.data.deviceGroups[dgId]
+      ).filter(
+        deviceId =>
+          deviceId != 0 && this.props.data.deviceGroups[dgId][deviceId].checked
+      ).length;
+
+      selectedDevices += noOfSelectedDevicesInThisGroup;
+    });
+
+    return selectedDevices;
+  };
+
   // render
   render() {
     const { strings, actions, data } = this.props;
     const { assignmentDetailsState } = this.formatStateForComponents();
+    const selectedDevices = this.getNumberOfSelectedDevices();
 
     return (
       <div>
@@ -148,7 +166,12 @@ export default class AssignmentsEditView extends React.Component {
 
             <div className="formRightPanel">
               <fieldset id="surveySelect" className="floats-in">
-                <h2>{strings.selectDevices}:</h2>
+                <h2>
+                  {strings.selectDevices}:{' '}
+                  <span className="infoText">
+                    {selectedDevices} devices selected
+                  </span>
+                </h2>
 
                 <DeviceGroupSelectorView
                   deviceGroupNames={data.deviceGroupNames}
