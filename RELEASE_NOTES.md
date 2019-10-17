@@ -1,11 +1,8 @@
 # Akvo Flow Release Notes
 ----
-# Akvo Flow Dashboard v1.10 - W... W...
+# Akvo Flow Dashboard v1.10 - Worshipped Wolfbane
 Date: 10-10-2019
 
-# New and noteworthy
-
-# Resolved issues
 
 # Akvo Flow Dashboard v1.9.49 - Vibrant Viburnum
 Date: 05-08-2019
