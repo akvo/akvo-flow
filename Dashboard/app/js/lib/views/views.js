@@ -31,6 +31,7 @@ require('akvo-flow/views/devices/devices-views');
 require('akvo-flow/views/devices/assignments-list-view');
 require('akvo-flow/views/devices/assignment-edit-views');
 require('akvo-flow/views/devices/survey-bootstrap-view');
+require('akvo-flow/views/stats');
 
 FLOW.ApplicationView = Ember.View.extend(template('application/application'));
 
