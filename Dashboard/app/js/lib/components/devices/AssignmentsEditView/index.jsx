@@ -15,12 +15,12 @@ export default class AssignmentsEditView extends React.Component {
     nameValidationMsg: '',
     expireDateMsg: '',
     startDateMsg: '',
-  }
+  };
 
   // event handlers
   onChangeState = (key, value) => {
     this.setState({ [key]: value });
-  }
+  };
 
   onSubmit = () => {
     const { assignmentName, startDate, expireDate } = this.state;
@@ -28,7 +28,7 @@ export default class AssignmentsEditView extends React.Component {
     if (this.validateData()) {
       this.props.actions.onSubmit({ assignmentName, startDate, expireDate });
     }
-  }
+  };
 
   // helpers
   validateData = () => {
@@ -37,12 +37,16 @@ export default class AssignmentsEditView extends React.Component {
 
     // validate assignment name
     if (!assignmentName || assignmentName == '') {
-      this.setState({ nameValidationMsg: Ember.String.loc('_assignment_name_not_set') });
+      this.setState({
+        nameValidationMsg: Ember.String.loc('_assignment_name_not_set'),
+      });
       isValid = false;
     }
 
     if (assignmentName.length > 100) {
-      this.setState({ nameValidationMsg: Ember.String.loc('_assignment_name_over_100_chars') });
+      this.setState({
+        nameValidationMsg: Ember.String.loc('_assignment_name_over_100_chars'),
+      });
       isValid = false;
     }
 
@@ -50,7 +54,6 @@ export default class AssignmentsEditView extends React.Component {
     if (isValid) {
       this.setState({ nameValidationMsg: '' });
     }
-
 
     // validate dates === start date
     if (!startDate || !startDate.length) {
@@ -73,7 +76,7 @@ export default class AssignmentsEditView extends React.Component {
     }
 
     return isValid;
-  }
+  };
 
   formatStateForComponents = () => {
     const assignmentDetailsState = {
@@ -85,7 +88,7 @@ export default class AssignmentsEditView extends React.Component {
     return {
       assignmentDetailsState,
     };
-  }
+  };
 
   // render
   render() {
@@ -119,20 +122,9 @@ export default class AssignmentsEditView extends React.Component {
           <div className="fieldSetWrap floats-in">
             <div className="formLeftPanel">
               <fieldset id="surveySelect" className="floats-in">
-                <h2>
-                  02.
-                  {' '}
-                  {strings.selectSurvey}
-                  :
-                </h2>
-                <p className="infoText">{strings.cantFindYourSurvey}</p>
+                <h2>{strings.selectSurvey}:</h2>
 
                 <div className="SelectLayout">
-                  <label htmlFor="surveyGroup">
-                    {strings.selectSurvey}
-                    :
-                  </label>
-
                   <FolderSurveySelectorView
                     initialSurveyGroup={data.initialSurveyGroup}
                     surveyGroups={data.surveyGroups}
@@ -142,10 +134,9 @@ export default class AssignmentsEditView extends React.Component {
                 </div>
 
                 <div className="formSelectorList">
-                  <label htmlFor="surveys">
-                    {strings.selectForms}
-                    :
-                  </label>
+                  <label htmlFor="surveys">{strings.selectForms}:</label>
+                  <span className="infoText">{strings.selectFormNote}</span>
+                  <br />
 
                   <FormSelectorView
                     forms={data.forms}
@@ -157,18 +148,14 @@ export default class AssignmentsEditView extends React.Component {
 
             <div className="formRightPanel">
               <fieldset id="surveySelect" className="floats-in">
-                <h2>
-                  03.
-                  {' '}
-                  {strings.selectDevices}
-                  :
-                </h2>
-                <label htmlFor="deviceGroup">{strings.selectDeviceGroup}</label>
+                <h2>{strings.selectDevices}:</h2>
+
                 <DeviceGroupSelectorView
                   deviceGroupNames={data.deviceGroupNames}
                   deviceGroups={data.deviceGroups}
-                  deviceGroupIsActive={data.deviceGroupIsActive}
+                  activeDeviceGroups={data.activeDeviceGroups}
                   handleDeviceCheck={actions.handleDeviceCheck}
+                  onSelectAll={actions.handleSelectAllDevice}
                 />
               </fieldset>
             </div>

@@ -4,14 +4,16 @@ import PropTypes from 'prop-types';
 export default class FolderSurveySelector extends React.Component {
   state = {
     levels: [],
-  }
+  };
 
   componentDidMount() {
     const { initialSurveyGroup, surveyGroups } = this.props;
 
     if (initialSurveyGroup) {
       // if initial form is available, generate levels and mark it as selected
-      const { parentId } = surveyGroups.find(sg => sg.keyId == initialSurveyGroup);
+      const { parentId } = surveyGroups.find(
+        sg => sg.keyId == initialSurveyGroup
+      );
 
       this.setState({ levels: this.getLevels(parentId) }, () => {
         this.props.onSelectSurvey(initialSurveyGroup);
@@ -23,7 +25,9 @@ export default class FolderSurveySelector extends React.Component {
 
   getLevels = (parentId = 0) => {
     const { surveyGroups, strings, initialSurveyGroup } = this.props;
-    const initialSurvey = surveyGroups.find(sg => sg.keyId == initialSurveyGroup);
+    const initialSurvey = surveyGroups.find(
+      sg => sg.keyId == initialSurveyGroup
+    );
     const levels = [];
 
     if (parentId !== 0) {
@@ -37,7 +41,9 @@ export default class FolderSurveySelector extends React.Component {
             if (sgs.parentId == parent.ancestorIds[i]) {
               return total.concat({
                 ...sgs,
-                selected: initialSurvey && initialSurvey.ancestorIds.includes(sgs.keyId),
+                selected:
+                  initialSurvey &&
+                  initialSurvey.ancestorIds.includes(sgs.keyId),
               });
             }
 
@@ -45,11 +51,13 @@ export default class FolderSurveySelector extends React.Component {
           }, [])
           .sort(this.comparator);
 
-        const level = [{
-          keyId: 0,
-          parentId: null,
-          name: strings.chooseFolderOrSurvey,
-        }].concat(parentSurveys);
+        const level = [
+          {
+            keyId: 0,
+            parentId: null,
+            name: strings.chooseFolderOrSurvey,
+          },
+        ].concat(parentSurveys);
 
         levels.push(level);
       }
@@ -69,16 +77,20 @@ export default class FolderSurveySelector extends React.Component {
       }, [])
       .sort(this.comparator);
 
-    levels.push([{
-      keyId: 0,
-      parentId: null,
-      name: strings.chooseFolderOrSurvey,
-    }]
-      // eslint-disable-next-line eqeqeq
-      .concat(surveys));
+    levels.push(
+      [
+        {
+          keyId: 0,
+          parentId: null,
+          name: strings.chooseFolderOrSurvey,
+        },
+      ]
+        // eslint-disable-next-line eqeqeq
+        .concat(surveys)
+    );
 
     return levels;
-  }
+  };
 
   comparator = (a, b) => {
     const nameA = a.name.toUpperCase(); // ignore upper and lowercase
@@ -92,9 +104,9 @@ export default class FolderSurveySelector extends React.Component {
 
     // names must be equal
     return 0;
-  }
+  };
 
-  handleChange = (e) => {
+  handleChange = e => {
     const parentId = e.target.value;
 
     // check if a survey has been selected
@@ -110,10 +122,12 @@ export default class FolderSurveySelector extends React.Component {
     }
 
     return null;
-  }
+  };
 
   renderForm = (folderSurveyList, id) => {
-    const defaultSurveyGroup = folderSurveyList.find(sgs => sgs.selected === true);
+    const defaultSurveyGroup = folderSurveyList.find(
+      sgs => sgs.selected === true
+    );
 
     return (
       <select
@@ -129,7 +143,7 @@ export default class FolderSurveySelector extends React.Component {
         ))}
       </select>
     );
-  }
+  };
 
   render() {
     const { levels } = this.state;
