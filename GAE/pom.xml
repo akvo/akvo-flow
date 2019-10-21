@@ -42,7 +42,7 @@
     <spring.version>4.3.23.RELEASE</spring.version>
     <spring.security.version>4.2.12.RELEASE</spring.security.version>
     <appengine.sdk.version>1.9.63</appengine.sdk.version>
-    <jackson.version>[2.9.9]</jackson.version>
+    <jackson.version>2.9.9</jackson.version>
     <junit.jupiter.version>5.4.0</junit.jupiter.version>
   </properties>
 

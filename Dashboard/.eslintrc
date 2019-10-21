@@ -52,6 +52,7 @@
     "react/jsx-indent": [1, 2],
     "react/no-array-index-key": 0,
     "react/destructuring-assignment": 0,
+    "react/jsx-one-expression-per-line": 0,
     "indent": [1, 2],
     "object-shorthand": 1,
     "prefer-arrow-callback": 1,
