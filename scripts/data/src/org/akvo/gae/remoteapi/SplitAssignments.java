@@ -80,8 +80,8 @@ public class SplitAssignments implements Process {
             }
 
             for (Long formId: forms) {
-                if (formId == 0) { //obviously bogus; fix it
-                    System.out.println("ERROR! Form in assignment is 0; removing it " + formId);
+                if (formId == null || formId.equals(0L)) { //obviously bogus; fix it
+                    System.out.println("ERROR! Invalid form in assignment; removing it :" + formId);
                     continue;
                 }
                 Long surveyId = surveyOfForm(ds, formId);
