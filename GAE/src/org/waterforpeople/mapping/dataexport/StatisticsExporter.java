@@ -58,7 +58,7 @@ public class StatisticsExporter implements DataExporter {
 
     private static final Logger log = Logger.getLogger(StatisticsExporter.class);
 
-    private static final String INSTANCE_COUNT_SHEET_NAME = "Form instance counts";
+    private static final String INSTANCE_COUNT_SHEET_NAME = "Form submissions";
     private static final String SURVEY_STATS_SHEET_NAME = "Survey statistics";
     private static final String SURVEY_STATS_HEADER1 = "Items";
     private static final String SURVEY_STATS_HEADER2 = "Count";
@@ -66,9 +66,9 @@ public class StatisticsExporter implements DataExporter {
     private static final String SURVEY_HEADER = "Survey";
     private static final String FORM_HEADER = "Form name";
     private static final String FORM_ID_HEADER = "Form Id";
-    private static final String COUNT_HEADER = "Instance Count";
+    private static final String COUNT_HEADER = "Submissions";
 
-    private static final String SURVEY_GROUP_COUNT_LABEL = "Survey groups";
+    private static final String SURVEY_GROUP_COUNT_LABEL = "Folders";
     private static final String SURVEY_COUNT_LABEL = "Surveys";
     private static final String FORM_COUNT_LABEL = "Total Forms";
     private static final String PUBLISHED_COUNT_LABEL = "Published Forms";
@@ -112,7 +112,7 @@ public class StatisticsExporter implements DataExporter {
             log.debug("Surveys and Groups: " + groupMap.size());
             log.debug("Surveys: " + formMap.size());
             log.debug("Instance Counts: " + instanceCounts.size());
-            String title = "Form instances";
+            String title = "Form submissions";
             if (from != null && from.trim() != "") {
                 title += " from " + from;
             }
