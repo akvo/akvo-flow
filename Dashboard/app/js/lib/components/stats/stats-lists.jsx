@@ -1,4 +1,5 @@
 import React from 'react';
+import PropTypes from 'prop-types';
 
 export default class StatsList extends React.Component {
   renderNoStats = () => {
@@ -10,7 +11,27 @@ export default class StatsList extends React.Component {
     );
   };
 
+  renderStat = stat => {
+    return (
+      <div key={stat.id} className="generated-stat">
+        <div className="stats-details">
+          <span className="stat-icon" />
+          <div>
+            <a href="/">{stat.name}</a>
+            <span className="stat-date">
+              {stat.startDate} - {stat.endDate} Submissions
+            </span>
+          </div>
+        </div>
+
+        <p className="stats-status">{stat.status}</p>
+      </div>
+    );
+  };
+
   render() {
+    const { stats } = this.props;
+
     return (
       <div id="stats-listing-page">
         <div className="page-header">
@@ -22,22 +43,14 @@ export default class StatsList extends React.Component {
 
         <div className="main-page">
           <div className="generated-stats">
-            <div className="generated-stat">
-              <div className="stats-details">
-                <span className="stat-icon" />
-                <div>
-                  <a href="/">Form submission stats - 231509125.xls</a>
-                  <span className="stat-date">
-                    13 Mar 2016 - 31 Oct 2019 Submissions
-                  </span>
-                </div>
-              </div>
-
-              <p className="stats-status">Generating...</p>
-            </div>
+            {stats.length ? stats.map(this.renderStat) : this.renderNoStats()}
           </div>
         </div>
       </div>
     );
   }
 }
+
+StatsList.propTypes = {
+  stats: PropTypes.array.isRequired,
+};
