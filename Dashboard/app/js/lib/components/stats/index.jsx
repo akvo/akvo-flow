@@ -1,4 +1,5 @@
 import React from 'react';
+import PropTypes from 'prop-types';
 
 export default class Stats extends React.Component {
   state = {
@@ -11,7 +12,12 @@ export default class Stats extends React.Component {
   };
 
   onSubmit = () => {
-    console.log('Im going to be sending these inputs to the api', this.state);
+    const data = {
+      startDate: new Date(this.state.startDate).toISOString(),
+      endDate: new Date(this.state.endDate).toISOString(),
+    };
+
+    this.props.generateReport(data);
   };
 
   render() {
@@ -45,6 +51,7 @@ export default class Stats extends React.Component {
               onChange={this.onChange}
               className="datePicker"
               style={{ width: '95%' }}
+              min={this.state.startDate}
             />
           </label>
         </div>
@@ -56,3 +63,7 @@ export default class Stats extends React.Component {
     );
   }
 }
+
+Stats.propTypes = {
+  generateReport: PropTypes.func.isRequired,
+};
