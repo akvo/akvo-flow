@@ -18,14 +18,11 @@ package org.waterforpeople.mapping.dataexport;
 
 import java.io.File;
 import java.io.FileOutputStream;
-import java.util.ArrayList;
+import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Map.Entry;
-import java.util.TreeMap;
-
 import org.apache.log4j.ConsoleAppender;
 import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
@@ -37,14 +34,8 @@ import org.apache.poi.hssf.usermodel.HSSFRow;
 import org.apache.poi.hssf.usermodel.HSSFSheet;
 import org.apache.poi.hssf.usermodel.HSSFWorkbook;
 import org.apache.poi.ss.util.CellRangeAddress;
-import org.waterforpeople.mapping.app.gwt.client.survey.QuestionDto;
-import org.waterforpeople.mapping.app.gwt.client.survey.QuestionDto.QuestionType;
-import org.waterforpeople.mapping.app.gwt.client.survey.QuestionGroupDto;
-import org.waterforpeople.mapping.app.gwt.client.survey.QuestionOptionDto;
 import org.waterforpeople.mapping.app.gwt.client.survey.SurveyDto;
 import org.waterforpeople.mapping.app.gwt.client.survey.SurveyGroupDto;
-import org.waterforpeople.mapping.app.gwt.client.survey.TranslationDto;
-import org.waterforpeople.mapping.app.web.dto.SurveyRestRequest;
 import org.waterforpeople.mapping.dataexport.service.BulkDataServiceClient;
 
 import com.gallatinsystems.framework.dataexport.applet.DataExporter;
@@ -78,6 +69,8 @@ public class StatisticsExporter implements DataExporter {
     private static final String TO_OPT = "to";
 
     private static final String PATH_DELIM = " / ";
+    private static final SimpleDateFormat idf = new SimpleDateFormat("yyyy-MM-dd");
+    private static final SimpleDateFormat odf = new SimpleDateFormat("yyyy-MM-dd");  //Could be different, if desired
 
     @Override
     public void export(Map<String, String> criteria,
@@ -114,10 +107,12 @@ public class StatisticsExporter implements DataExporter {
             log.debug("Instance Counts: " + instanceCounts.size());
             String title = "Form submissions";
             if (from != null && from.trim() != "") {
-                title += " from " + from;
+                Date fromDate = idf.parse(from);  //Removes any ISO8601 "time" part
+                title += " from " + odf.format(fromDate);
             }
             if (to != null && to.trim() != "") {
-                title += " to " + to;
+                Date toDate = idf.parse(to);
+                title += " to " + odf.format(toDate);
             }
             writeStats(title, fileName, groupMap, formMap, instanceCounts);
         } catch (Exception e) {
