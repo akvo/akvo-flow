@@ -1142,17 +1142,17 @@ input.hasDatepicker {
 }
 
 .fieldSetWrap {
-    position: relative;
-    clear: both;
-    overflow: hidden;
-    margin: 3px auto;
-    padding: 0;
-    width: 99%;
-    background: rgb(242, 242, 242) center center no-repeat;
+  position: relative;
+  clear: both;
+  overflow: hidden;
+  margin: 3px auto;
+  padding: 0;
+  width: 99%;
+  background: rgb(242, 242, 242) center center no-repeat;
 }
 
 .fieldSetWrap.makeWhite {
-    background: white center center no-repeat;
+  background: white center center no-repeat;
 }
 
 #assignSurveys .fieldSetWrap fieldset table {
@@ -6572,5 +6572,70 @@ svg {
 
   button {
     margin-top: 25px;
+  }
+}
+
+#stats-listing-page {
+  .page-header {
+    display: flex;
+    padding: 2em 1.5em;
+    justify-content: space-between;
+    align-items: center;
+
+    .newStats {
+      padding: 12px 15px;
+    }
+  }
+
+  .main-page {
+    padding: 1em 1.5em;
+
+    .no-stats {
+      width: 100%;
+      text-align: center;
+
+      p {
+        color: #757575;
+      }
+    }
+
+    .generated-stats {
+      .generated-stat {
+        display: flex;
+        justify-content: space-between;
+        padding: 17px 25px;
+        background: #efefef;
+
+        .stats-details {
+          display: flex;
+
+          .stat-icon {
+            background: url(/admin/images/Export05.svg) no-repeat;
+            width: 40px;
+            height: 40px;
+          }
+
+          div {
+            padding-left: 13px;
+            color: #424242;
+
+            a {
+              font-size: 17px;
+              display: block;
+              font-weight: 500;
+              color: #424242;
+            }
+
+            span {
+              font-size: 14px;
+            }
+          }
+        }
+
+        .stats-status {
+          align-self: center;
+        }
+      }
+    }
   }
 }
