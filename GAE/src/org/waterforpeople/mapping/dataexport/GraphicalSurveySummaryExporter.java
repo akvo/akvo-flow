@@ -186,7 +186,6 @@ public class GraphicalSurveySummaryExporter extends SurveySummaryExporter {
     private Map<String, Integer> columnIndexMap = new HashMap<>();
 
     // maps from a (repeatable) question group dto to the sheet that contains the raw data for it (if split)
-    //private Map<Long, Sheet> qgSheetMap = new HashMap<>();
     private Map<QuestionGroupDto, Sheet> qgSheetMap = new HashMap<>();
 
     // data about questions gathered while writing headers
@@ -320,9 +319,8 @@ public class GraphicalSurveySummaryExporter extends SurveySummaryExporter {
         for (QuestionGroupDto groupDto : groupList) {
             if (separateSheetsForRepeatableGroups && safeTrue(groupDto.getRepeatable())) {
                 // breaking this qg out, so create the sheet for it
-                //Long gid = groupEntry.getKeyId(); //not ḱnown for published groups
                 Sheet repSheet = wb.createSheet("Group " + groupDto.getOrder());
-                qgSheetMap.put(groupDto, repSheet);
+                qgSheetMap.put(groupDto, repSheet);  //Key not ḱnown for published groups
             }
         }
 
@@ -514,9 +512,8 @@ public class GraphicalSurveySummaryExporter extends SurveySummaryExporter {
 
                 //For each group, write the repeats from top to bottom
                 for (Entry<QuestionGroupDto, List<QuestionDto>> groupEntry : questionMap.entrySet()) {
-                    Long gid = groupEntry.getKey().getKeyId();
                     if (safeTrue(groupEntry.getKey().getRepeatable())) {
-                        writeInstanceDataSplit(qgSheetMap.get(gid),
+                        writeInstanceDataSplit(qgSheetMap.get(groupEntry.getKey()),
                                 instanceData,
                                 groupEntry.getValue(),
                                 digest,
