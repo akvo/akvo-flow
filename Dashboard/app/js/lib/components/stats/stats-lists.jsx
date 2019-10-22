@@ -36,7 +36,11 @@ export default class StatsList extends React.Component {
       <div id="stats-listing-page">
         <div className="page-header">
           <h2>Generated stats</h2>
-          <button className="standardBtn newStats" type="button">
+          <button
+            className="standardBtn newStats"
+            type="button"
+            onClick={this.props.goToExport}
+          >
             Export stats
           </button>
         </div>
@@ -53,4 +57,5 @@ export default class StatsList extends React.Component {
 
 StatsList.propTypes = {
   stats: PropTypes.array.isRequired,
+  goToExport: PropTypes.func.isRequired,
 };

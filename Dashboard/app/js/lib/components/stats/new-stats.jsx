@@ -23,7 +23,7 @@ export default class Stats extends React.Component {
   render() {
     return (
       <div id="stats-page">
-        <h2>Download form submission stats</h2>
+        <h2>Generate form submission stats</h2>
 
         <p>Form submission time frame</p>
 

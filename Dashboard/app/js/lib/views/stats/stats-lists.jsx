@@ -14,6 +14,7 @@ FLOW.StatsListsView = FLOW.ReactComponentView.extend(
     init() {
       this._super();
       this.getStatsLists = this.getStatsLists.bind(this);
+      this.newExport = this.newExport.bind(this);
     },
 
     didInsertElement(...args) {
@@ -44,7 +45,11 @@ FLOW.StatsListsView = FLOW.ReactComponentView.extend(
           });
         });
 
-      this.reactRender(<StatsList stats={stats} />);
+      this.reactRender(<StatsList stats={stats} goToExport={this.newExport} />);
+    },
+
+    newExport() {
+      FLOW.router.transitionTo('navStats.newStats');
     },
   }
 );

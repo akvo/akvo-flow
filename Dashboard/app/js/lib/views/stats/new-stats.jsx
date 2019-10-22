@@ -4,7 +4,7 @@ import NewStats from 'akvo-flow/components/stats/new-stats';
 
 require('akvo-flow/views/react-component');
 
-FLOW.NewStatsView = FLOW.ReactComponentView.extend({
+FLOW.NewStatsReactView = FLOW.ReactComponentView.extend({
   init() {
     this._super();
     this.generateReport = this.generateReport.bind(this);
@@ -31,5 +31,8 @@ FLOW.NewStatsView = FLOW.ReactComponentView.extend({
     newReport.set('state', 'QUEUED');
 
     FLOW.store.commit();
+    setTimeout(() => {
+      FLOW.router.transitionTo('navStats.statsLists');
+    }, 500);
   },
 });
