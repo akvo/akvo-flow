@@ -31,8 +31,20 @@ FLOW.NewStatsReactView = FLOW.ReactComponentView.extend({
     newReport.set('state', 'QUEUED');
 
     FLOW.store.commit();
-    setTimeout(() => {
-      FLOW.router.transitionTo('navStats.statsLists');
-    }, 500);
+
+    this.showDialogMessage(
+      Ember.String.loc('_your_report_is_being_prepared'),
+      Ember.String.loc('_we_will_notify_via_email')
+    );
+
+    FLOW.router.transitionTo('navStats.index');
+  },
+
+  showDialogMessage(header, message) {
+    FLOW.savingMessageControl.numLoadingChange(-1);
+    FLOW.dialogControl.set('header', header);
+    FLOW.dialogControl.set('message', message);
+    FLOW.dialogControl.set('showCANCEL', false);
+    FLOW.dialogControl.set('showDialog', true);
   },
 });

@@ -19,7 +19,6 @@ FLOW.StatsListsView = FLOW.ReactComponentView.extend(
 
     didInsertElement(...args) {
       this._super(...args);
-      FLOW.router.reportsController.populate();
     },
 
     getStatsLists() {

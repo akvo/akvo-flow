@@ -499,6 +499,7 @@ FLOW.Router = Ember.Router.extend({
         route: '/stats-lists',
         connectOutlets(router) {
           router.get('applicationController').connectOutlet('stats');
+          FLOW.router.reportsController.populate();
           router.set('navigationController.selected', 'navStats');
         },
       }),
