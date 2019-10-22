@@ -2124,7 +2124,7 @@ public class GraphicalSurveySummaryExporter extends SurveySummaryExporter {
                 lastCollection = true;
             }
 
-            Object po = options.get(LAST_COLLECTION_OPT);
+            Object po = options.get(PUBLISHED_OPT);
             if (po != null
                     && "false".equalsIgnoreCase(po.toString())) {
                 usePublishedForm = false;
