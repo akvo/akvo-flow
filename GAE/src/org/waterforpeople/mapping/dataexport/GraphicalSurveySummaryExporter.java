@@ -2119,12 +2119,12 @@ public class GraphicalSurveySummaryExporter extends SurveySummaryExporter {
             selectionLimit = options.get(MAX_ROWS_OPT);
 
             if (options.get(LAST_COLLECTION_OPT) != null
-                    && "true".equalsIgnoreCase(options.get(LAST_COLLECTION_OPT))) {
+                    && "true".equalsIgnoreCase(options.get(LAST_COLLECTION_OPT).toString())) {
                 lastCollection = true;
             }
 
             if (options.get(PUBLISHED_OPT) != null
-                    && "false".equalsIgnoreCase(options.get(PUBLISHED_OPT))) {
+                    && "false".equalsIgnoreCase(options.get(PUBLISHED_OPT).toString())) {
                 usePublishedForm = false;
             }
 
