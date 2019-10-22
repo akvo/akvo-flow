@@ -31,7 +31,8 @@ require('akvo-flow/views/devices/devices-views');
 require('akvo-flow/views/devices/assignments-list-view');
 require('akvo-flow/views/devices/assignment-edit-views');
 require('akvo-flow/views/devices/survey-bootstrap-view');
-require('akvo-flow/views/stats');
+require('akvo-flow/views/stats/new-stats');
+require('akvo-flow/views/stats/stats-lists');
 
 FLOW.ApplicationView = Ember.View.extend(template('application/application'));
 
@@ -839,7 +840,8 @@ FLOW.HeaderView = FLOW.View.extend(template('application/header-common'));
 FLOW.FooterView = FLOW.View.extend(template('application/footer'));
 
 // Stats Views
-FLOW.NavStatsView = FLOW.View.extend(template('navStats/nav-stats'));
+FLOW.StatsView = FLOW.View.extend(template('navStats/stats-list'));
+FLOW.NewStatsView = FLOW.View.extend(template('navStats/new-stats'));
 
 // ********************************************************//
 //             Subnavigation for the Data tabs

@@ -1,10 +1,10 @@
 /* eslint-disable import/no-unresolved */
 import React from 'react';
-import Stats from 'akvo-flow/components/stats';
+import NewStats from 'akvo-flow/components/stats/new-stats';
 
 require('akvo-flow/views/react-component');
 
-FLOW.StatsView = FLOW.ReactComponentView.extend({
+FLOW.NewStatsView = FLOW.ReactComponentView.extend({
   init() {
     this._super();
     this.generateReport = this.generateReport.bind(this);
@@ -12,7 +12,7 @@ FLOW.StatsView = FLOW.ReactComponentView.extend({
 
   didInsertElement(...args) {
     this._super(...args);
-    this.reactRender(<Stats generateReport={this.generateReport} />);
+    this.reactRender(<NewStats generateReport={this.generateReport} />);
   },
 
   generateReport(dates) {

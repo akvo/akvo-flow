@@ -48,7 +48,7 @@ FLOW.Router = Ember.Router.extend({
       router.transitionTo('navMessages');
     },
     doNavStats(router) {
-      router.transitionTo('navStats');
+      router.transitionTo('navStats.index');
     },
 
     // non-working code for transitioning to navHome at first entry of the app
@@ -485,10 +485,31 @@ FLOW.Router = Ember.Router.extend({
     // ************************** STATS ROUTER **********************************
     navStats: Ember.Route.extend({
       route: '/stats',
-      connectOutlets(router) {
-        router.get('applicationController').connectOutlet('navStats');
-        router.set('navigationController.selected', 'navStats');
+
+      doNewStats(router) {
+        router.transitionTo('navStats.newStats');
       },
+
+      index: Ember.Route.extend({
+        route: '/',
+        redirectsTo: 'statsLists',
+      }),
+
+      statsLists: Ember.Route.extend({
+        route: '/stats-lists',
+        connectOutlets(router) {
+          router.get('applicationController').connectOutlet('stats');
+          router.set('navigationController.selected', 'navStats');
+        },
+      }),
+
+      newStats: Ember.Route.extend({
+        route: '/new-stats',
+        connectOutlets(router) {
+          router.get('applicationController').connectOutlet('newStats');
+          router.set('navigationController.selected', 'navStats');
+        },
+      }),
     }),
   }),
 });
