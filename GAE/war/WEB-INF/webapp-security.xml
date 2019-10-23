@@ -51,6 +51,7 @@
         <intercept-url pattern="/admin/**" access="hasRole('ROLE_USER')"/>
         <intercept-url pattern="/**" access="permitAll"/>
         <logout logout-url="/admin/logout.html" success-handler-ref="oidcLogout"/>
+        <custom-filter position="FIRST" ref="indexRedirectFilter" />
         <custom-filter position="PRE_AUTH_FILTER" ref="gaeFilter"/>
         <custom-filter after="PRE_AUTH_FILTER" ref="newUserRegistrationRedirect"/>
         <csrf disabled="true" />
@@ -65,7 +66,10 @@
         </b:constructor-arg>
 	</b:bean>
 
-	<!-- GAE Authentication -->
+    <!-- Filter to bypass public (map) index page -->
+    <b:bean id="indexRedirectFilter" class="org.akvo.flow.rest.security.RedirectIndexFilter" />
+
+    <!-- GAE Authentication -->
 
     <b:bean id="gaeEntryPoint" class="org.akvo.flow.rest.security.google.GoogleAccountsAuthenticationEntryPoint" />
 
