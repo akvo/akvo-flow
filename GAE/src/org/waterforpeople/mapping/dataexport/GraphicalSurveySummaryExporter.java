@@ -186,7 +186,6 @@ public class GraphicalSurveySummaryExporter extends SurveySummaryExporter {
     private Map<String, Integer> columnIndexMap = new HashMap<>();
 
     // maps from a (repeatable) question group dto to the sheet that contains the raw data for it (if split)
-    //private Map<Long, Sheet> qgSheetMap = new HashMap<>();
     private Map<QuestionGroupDto, Sheet> qgSheetMap = new HashMap<>();
 
     // data about questions gathered while writing headers
@@ -320,9 +319,8 @@ public class GraphicalSurveySummaryExporter extends SurveySummaryExporter {
         for (QuestionGroupDto groupDto : groupList) {
             if (separateSheetsForRepeatableGroups && safeTrue(groupDto.getRepeatable())) {
                 // breaking this qg out, so create the sheet for it
-                //Long gid = groupEntry.getKeyId(); //not ḱnown for published groups
                 Sheet repSheet = wb.createSheet("Group " + groupDto.getOrder());
-                qgSheetMap.put(groupDto, repSheet);
+                qgSheetMap.put(groupDto, repSheet);  //Key not ḱnown for published groups
             }
         }
 
@@ -514,9 +512,8 @@ public class GraphicalSurveySummaryExporter extends SurveySummaryExporter {
 
                 //For each group, write the repeats from top to bottom
                 for (Entry<QuestionGroupDto, List<QuestionDto>> groupEntry : questionMap.entrySet()) {
-                    Long gid = groupEntry.getKey().getKeyId();
                     if (safeTrue(groupEntry.getKey().getRepeatable())) {
-                        writeInstanceDataSplit(qgSheetMap.get(gid),
+                        writeInstanceDataSplit(qgSheetMap.get(groupEntry.getKey()),
                                 instanceData,
                                 groupEntry.getValue(),
                                 digest,
@@ -2121,13 +2118,15 @@ public class GraphicalSurveySummaryExporter extends SurveySummaryExporter {
             selectionTo = options.get(TO_OPT);
             selectionLimit = options.get(MAX_ROWS_OPT);
 
-            if (options.get(LAST_COLLECTION_OPT) != null
-                    && "true".equalsIgnoreCase(options.get(LAST_COLLECTION_OPT))) {
+            Object lc = options.get(LAST_COLLECTION_OPT);
+            if (lc != null
+                    && "true".equalsIgnoreCase(lc.toString())) {
                 lastCollection = true;
             }
 
-            if (options.get(PUBLISHED_OPT) != null
-                    && "false".equalsIgnoreCase(options.get(PUBLISHED_OPT))) {
+            Object po = options.get(PUBLISHED_OPT);
+            if (po != null
+                    && "false".equalsIgnoreCase(po.toString())) {
                 usePublishedForm = false;
             }
 
