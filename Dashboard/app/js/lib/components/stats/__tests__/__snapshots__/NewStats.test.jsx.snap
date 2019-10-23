@@ -1,0 +1,55 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`News Stats Tests +++ renders snapshots 1`] = `
+<div>
+  <div
+    id="stats-page"
+  >
+    <h2>
+      Generate form submission stats
+    </h2>
+    <p>
+      Form submission time frame
+    </p>
+    <div
+      class="date-picker"
+    >
+      <label
+        for="startDate"
+      >
+        <p>
+          Start Date:
+        </p>
+        <input
+          class="datePicker"
+          id="startDate"
+          style="width: 95%;"
+          type="date"
+          value=""
+        />
+      </label>
+      <label
+        for="endDate"
+      >
+        <p>
+          To Date:
+        </p>
+        <input
+          class="datePicker"
+          id="endDate"
+          min=""
+          style="width: 95%;"
+          type="date"
+          value=""
+        />
+      </label>
+    </div>
+    <button
+      class="standardBtn"
+      type="button"
+    >
+      Download Stats
+    </button>
+  </div>
+</div>
+`;
