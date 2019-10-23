@@ -3,31 +3,23 @@ import PropTypes from 'prop-types';
 import moment from 'moment';
 
 export default class AssignmentDetails extends React.Component {
-  formatMomentDate = date => moment(date, 'YYYY/MM/DD').format('YYYY-MM-DD')
+  formatMomentDate = date => moment(date, 'YYYY/MM/DD').format('YYYY-MM-DD');
 
-  onInputChange = (e) => {
+  onInputChange = e => {
     this.props.onChange(e.target.id, e.target.value);
-  }
+  };
 
   render() {
     const { strings, values } = this.props;
 
     return (
       <fieldset id="assignmentDetails">
-        <h2>
-          0.1
-          {' '}
-          {strings.assignmentDetails}
-        </h2>
+        <h2>{strings.assignmentDetails}</h2>
 
         {/* Assignment Name */}
         <label htmlFor="assignmentName">
-          {strings.assignmentName}
-          :
-          <span style={{ color: 'red' }}>
-            {' '}
-            {strings.nameValidationMsg}
-          </span>
+          {strings.assignmentName}:
+          <span style={{ color: 'red' }}> {strings.nameValidationMsg}</span>
         </label>
 
         <input
@@ -43,12 +35,8 @@ export default class AssignmentDetails extends React.Component {
         <div className="dateRange">
           <div className="activeDate">
             <label htmlFor="startDate">
-              {strings.startDate}
-              :
-              <span style={{ color: 'red' }}>
-                {' '}
-                {strings.startDateMsg}
-              </span>
+              {strings.startDate}:
+              <span style={{ color: 'red' }}> {strings.startDateMsg}</span>
             </label>
             <input
               type="date"
@@ -62,12 +50,8 @@ export default class AssignmentDetails extends React.Component {
 
           <div className="expireDate">
             <label htmlFor="expireDate">
-              {strings.expireDate}
-              :
-              <span style={{ color: 'red' }}>
-                {' '}
-                {strings.expireDateMsg}
-              </span>
+              {strings.expireDate}:
+              <span style={{ color: 'red' }}> {strings.expireDateMsg}</span>
             </label>
             <input
               type="date"

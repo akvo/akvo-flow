@@ -21,12 +21,11 @@ afterAll(() => {
   console.error = originalError;
 });
 
-
 // Main Tests
 describe('DeviceSelector Tests', () => {
   afterEach(cleanup);
 
-
+  const activeDeviceGroups = new Set();
   const deviceGroupNames = { 1: 'Devices not in a group' };
   const deviceGroups = {
     1: {
@@ -40,7 +39,9 @@ describe('DeviceSelector Tests', () => {
       <DeviceSelector
         deviceGroupNames={deviceGroupNames}
         deviceGroups={deviceGroups}
-        onCheck={jest.fn()}
+        handleDeviceCheck={jest.fn()}
+        deviceIsChecked={false}
+        activeDeviceGroups={activeDeviceGroups}
       />
     );
 
@@ -52,7 +53,9 @@ describe('DeviceSelector Tests', () => {
       <DeviceSelector
         deviceGroupNames={deviceGroupNames}
         deviceGroups={deviceGroups}
-        onCheck={jest.fn()}
+        handleDeviceCheck={jest.fn()}
+        deviceIsChecked={false}
+        activeDeviceGroups={activeDeviceGroups}
       />
     );
 
@@ -73,7 +76,9 @@ describe('DeviceSelector Tests', () => {
       <DeviceSelector
         deviceGroupNames={deviceGroupNames}
         deviceGroups={deviceGroups}
-        onCheck={onCheck}
+        handleDeviceCheck={onCheck}
+        deviceIsChecked={false}
+        activeDeviceGroups={activeDeviceGroups}
       />
     );
 
@@ -82,6 +87,6 @@ describe('DeviceSelector Tests', () => {
     fireEvent.click(inputNode);
 
     expect(onCheck).toHaveBeenCalledTimes(1);
-    expect(onCheck).toHaveBeenCalledWith('150482013', true);
+    expect(onCheck).toHaveBeenCalledWith('150482013', true, '1');
   });
 });

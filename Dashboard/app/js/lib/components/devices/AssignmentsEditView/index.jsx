@@ -15,44 +15,68 @@ export default class AssignmentsEditView extends React.Component {
     nameValidationMsg: '',
     expireDateMsg: '',
     startDateMsg: '',
-  }
-
-  // lifecycle methods
-  componentDidMount() {
-    this.validateAssignmentName(this.props.inputValues.assignmentName);
-  }
+  };
 
   // event handlers
   onChangeState = (key, value) => {
-    if (key === 'assignmentName') this.validateAssignmentName(value);
-    if (key === 'startDate' || key === 'expireDate') this.validateDate(`${key}Msg`, value);
     this.setState({ [key]: value });
-  }
+  };
 
   onSubmit = () => {
     const { assignmentName, startDate, expireDate } = this.state;
 
-    this.props.actions.onSubmit({ assignmentName, startDate, expireDate });
-  }
+    if (this.validateData()) {
+      this.props.actions.onSubmit({ assignmentName, startDate, expireDate });
+    }
+  };
 
   // helpers
-  validateAssignmentName = (assignmentName) => {
+  validateData = () => {
+    const { assignmentName, startDate, expireDate } = this.state;
+    let isValid = true;
+
+    // validate assignment name
     if (!assignmentName || assignmentName == '') {
-      this.setState({ nameValidationMsg: Ember.String.loc('_assignment_name_not_set') });
-    } else if (assignmentName.length > 100) {
-      this.setState({ nameValidationMsg: Ember.String.loc('_assignment_name_over_100_chars') });
-    } else {
+      this.setState({
+        nameValidationMsg: Ember.String.loc('_assignment_name_not_set'),
+      });
+      isValid = false;
+    }
+
+    if (assignmentName.length > 100) {
+      this.setState({
+        nameValidationMsg: Ember.String.loc('_assignment_name_over_100_chars'),
+      });
+      isValid = false;
+    }
+
+    // remove validation message incase it was set
+    if (isValid) {
       this.setState({ nameValidationMsg: '' });
     }
-  }
 
-  validateDate = (stateKey, value) => {
-    if (!value.length) {
-      this.setState({ [stateKey]: Ember.String.loc('_date_not_set_text') });
-    } else {
-      this.setState({ [stateKey]: '' });
+    // validate dates === start date
+    if (!startDate || !startDate.length) {
+      this.setState({ startDateMsg: Ember.String.loc('_date_not_set_text') });
+      isValid = false;
     }
-  }
+
+    if (isValid) {
+      this.setState({ startDateMsg: '' });
+    }
+
+    // validate date === expire date
+    if (!expireDate || !expireDate.length) {
+      this.setState({ expireDateMsg: Ember.String.loc('_date_not_set_text') });
+      isValid = false;
+    }
+
+    if (isValid) {
+      this.setState({ expireDateMsg: '' });
+    }
+
+    return isValid;
+  };
 
   formatStateForComponents = () => {
     const assignmentDetailsState = {
@@ -64,15 +88,12 @@ export default class AssignmentsEditView extends React.Component {
     return {
       assignmentDetailsState,
     };
-  }
+  };
 
   // render
   render() {
-    const { nameValidationMsg, startDateMsg, expireDateMsg } = this.state;
     const { strings, actions, data } = this.props;
     const { assignmentDetailsState } = this.formatStateForComponents();
-    const showSubmitBtn =
-      !nameValidationMsg.length && !startDateMsg.length && !expireDateMsg.length;
 
     return (
       <div>
@@ -101,21 +122,11 @@ export default class AssignmentsEditView extends React.Component {
           <div className="fieldSetWrap floats-in">
             <div className="formLeftPanel">
               <fieldset id="surveySelect" className="floats-in">
-                <h2>
-                  02.
-                  {' '}
-                  {strings.selectSurvey}
-                  :
-                </h2>
-                <p className="infoText">{strings.cantFindYourSurvey}</p>
+                <h2>{strings.selectSurvey}:</h2>
 
                 <div className="SelectLayout">
-                  <label htmlFor="surveyGroup">
-                    {strings.selectSurvey}
-                    :
-                  </label>
-
                   <FolderSurveySelectorView
+                    initialSurveyGroup={data.initialSurveyGroup}
                     surveyGroups={data.surveyGroups}
                     onSelectSurvey={actions.handleSurveySelect}
                     strings={strings}
@@ -123,10 +134,9 @@ export default class AssignmentsEditView extends React.Component {
                 </div>
 
                 <div className="formSelectorList">
-                  <label htmlFor="surveys">
-                    {strings.selectForms}
-                    :
-                  </label>
+                  <label htmlFor="surveys">{strings.selectForms}:</label>
+                  <span className="infoText">{strings.selectFormNote}</span>
+                  <br />
 
                   <FormSelectorView
                     forms={data.forms}
@@ -138,18 +148,14 @@ export default class AssignmentsEditView extends React.Component {
 
             <div className="formRightPanel">
               <fieldset id="surveySelect" className="floats-in">
-                <h2>
-                  03.
-                  {' '}
-                  {strings.selectDevices}
-                  :
-                </h2>
-                <label htmlFor="deviceGroup">{strings.selectDeviceGroup}</label>
+                <h2>{strings.selectDevices}:</h2>
+
                 <DeviceGroupSelectorView
                   deviceGroupNames={data.deviceGroupNames}
                   deviceGroups={data.deviceGroups}
-                  deviceIsChecked={data.deviceIsChecked}
+                  activeDeviceGroups={data.activeDeviceGroups}
                   handleDeviceCheck={actions.handleDeviceCheck}
+                  onSelectAll={actions.handleSelectAllDevice}
                 />
               </fieldset>
             </div>
@@ -164,24 +170,17 @@ export default class AssignmentsEditView extends React.Component {
 
           <div className="menuConfirm">
             <ul>
-              {showSubmitBtn ? (
-                <li>
-                  <button
-                    onClick={this.onSubmit}
-                    onKeyPress={this.onSubmit}
-                    className="standardBtn"
-                    type="button"
-                  >
-                    {strings.saveAssignment}
-                  </button>
-                </li>
-              ) : (
-                  <li>
-                    <button type="button" className="button noChanges" id="standardBtn">
-                      {strings.saveAssignment}
-                    </button>
-                  </li>
-                )}
+              <li>
+                <button
+                  onClick={this.onSubmit}
+                  onKeyPress={this.onSubmit}
+                  className="standardBtn"
+                  type="button"
+                >
+                  {strings.saveAssignment}
+                </button>
+              </li>
+
               <li>
                 <button
                   onClick={actions.cancelEditSurveyAssignment}

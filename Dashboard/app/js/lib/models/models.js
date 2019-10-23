@@ -23,8 +23,8 @@ FLOW.BaseModel = DS.Model.extend(
     anySaving() {
       if (
         this.get('isSaving') ||
-                this.get('isDirty') ||
-                this.get('savingStatus')
+        this.get('isDirty') ||
+        this.get('savingStatus')
       ) {
         FLOW.savingMessageControl.checkSaving();
       }
@@ -334,6 +334,7 @@ FLOW.SurveyAssignment = FLOW.BaseModel.extend({
   deviceIds: DS.attr('array'),
   formIds: DS.attr('array'),
   language: DS.attr('string'),
+  surveyId: DS.attr('number'),
 });
 
 FLOW.SurveyedLocale = DS.Model.extend({
@@ -430,14 +431,6 @@ FLOW.User = FLOW.BaseModel.extend({
     defaultValue: 0,
   }),
   permissionList: DS.attr('string'),
-  accessKey: DS.attr('string'),
-});
-
-FLOW.UserConfig = FLOW.BaseModel.extend({
-  group: DS.attr('string'),
-  name: DS.attr('string'),
-  value: DS.attr('string'),
-  userId: DS.attr('number'),
 });
 
 FLOW.Message = FLOW.BaseModel.extend({
