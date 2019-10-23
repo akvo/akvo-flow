@@ -1,6 +1,6 @@
 /* eslint-disable import/no-unresolved */
 import React from 'react';
-import NewStats from 'akvo-flow/components/stats/new-stats';
+import NewStats from 'akvo-flow/components/stats/NewStats';
 
 require('akvo-flow/views/react-component');
 

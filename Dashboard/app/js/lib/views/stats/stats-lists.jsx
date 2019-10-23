@@ -1,6 +1,6 @@
 /* eslint-disable import/no-unresolved */
 import React from 'react';
-import StatsList from 'akvo-flow/components/stats/stats-lists';
+import StatsList from 'akvo-flow/components/stats/StatsLists';
 import observe from '../../mixins/observe';
 
 require('akvo-flow/views/react-component');
