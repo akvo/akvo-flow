@@ -109,6 +109,7 @@ FLOW.AssignmentEditView = FLOW.ReactComponentView.extend(
         saveAssignment: Ember.String.loc('_save_assignment'),
         cancel: Ember.String.loc('_cancel'),
         chooseFolderOrSurvey: Ember.String.loc('_choose_folder_or_survey'),
+        selectedDevices: Ember.String.loc('_devices_selected'),
       };
 
       const inputValues = {
