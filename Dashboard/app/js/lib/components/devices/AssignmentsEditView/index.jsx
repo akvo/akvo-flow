@@ -9,12 +9,48 @@ export default class AssignmentsEdit extends React.Component {
         <div className="assignment-topbar">
           <div className="assignment-name">
             <i className="fa fa-arrow-left" />
-            <h3>Unnamed assignment</h3>
+            <h3>
+              <span>Unnamed assignment</span>
+              <span className="infoText">0 datapoints / 20k assigned</span>
+            </h3>
           </div>
 
           <button type="button">Save</button>
         </div>
-        {/* <p>Assignments Edit Page</p> */}
+
+        <div className="assignment-body">
+          <div className="settings">
+            <p>Settings</p>
+
+            <div className="assignment-date">
+              <p className="heading">
+                <span className="title">Duration</span>
+                <span className="info">1 Day</span>
+              </p>
+
+              {/* date picker */}
+              <div className="date-picker">
+                <div className="startDate">
+                  <i className="fa fa-calendar" />
+                  <span>21 Aug 2019</span>
+                </div>
+                <span> - </span>
+                <div className="startDate">
+                  <i className="fa fa-calendar" />
+                  <span>21 Aug 2019</span>
+                </div>
+              </div>
+
+              <span className="infoText">
+                Data will only be submittable within this timeframe
+              </span>
+            </div>
+          </div>
+
+          <div className="devices">
+            <p>Devices</p>
+          </div>
+        </div>
       </div>
     );
   }
