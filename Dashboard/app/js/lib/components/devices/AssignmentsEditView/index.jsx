@@ -169,7 +169,7 @@ export default class AssignmentsEditView extends React.Component {
                 <h2>
                   {strings.selectDevices}:{' '}
                   <span className="infoText">
-                    {selectedDevices} devices selected
+                    {selectedDevices} {Ember.String.loc('_devices_selected')}
                   </span>
                 </h2>
 

@@ -356,7 +356,7 @@ FLOW.AssignmentEditView = FLOW.ReactComponentView.extend(
             // add select all device option
             this.deviceGroups[dgId] = {
               0: {
-                name: 'Select all devices',
+                name: Ember.String.loc('_select_all_devices'),
                 checked: numberOfDevices === numberOfSelectedDevices,
               },
               ...this.deviceGroups[dgId],
