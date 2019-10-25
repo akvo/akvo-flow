@@ -2,6 +2,8 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import FolderSurveySelectorView from 'akvo-flow/components/selectors/FolderSurveySelector';
+import FormSelectorView from 'akvo-flow/components/selectors/FormSelector';
+
 import './styles.scss';
 
 export default class AssignmentsEdit extends React.Component {
@@ -52,17 +54,42 @@ export default class AssignmentsEdit extends React.Component {
             </div>
 
             <div className="assignment-survery-folder">
-              <div className="folder-selector">
-                <p className="heading">
-                  <span className="title">Survey</span>
-                </p>
+              <p className="heading">
+                <span className="title">Survey</span>
+              </p>
 
+              <div className="folder-selector">
                 <FolderSurveySelectorView
                   initialSurveyGroup={data.initialSurveyGroup}
                   surveyGroups={data.surveyGroups}
                   onSelectSurvey={actions.handleSurveySelect}
                   strings={strings}
                 />
+              </div>
+            </div>
+
+            <div className="assignment-form-selector">
+              <p className="heading">
+                <span className="title">Forms</span>
+                <span className="info">1 Enabled</span>
+              </p>
+
+              <div className="form-selector">
+                <span className="infoText">
+                  Only enabled forms can be submitted
+                </span>
+                <br />
+
+                {Object.keys(data.forms).length ? (
+                  <FormSelectorView
+                    forms={data.forms}
+                    onCheck={actions.handleFormCheck}
+                  />
+                ) : (
+                  <p className="noForms">
+                    No forms available. Please select a survey with forms
+                  </p>
+                )}
               </div>
             </div>
           </div>

@@ -21,7 +21,8 @@
     }
 
     .info {
-      font-size: 14px;
+      font-size: 13px;
+      text-transform: uppercase;
     }
   }
 
@@ -79,6 +80,17 @@
           i.fa {
             margin-right: 5px;
           }
+        }
+      }
+
+      .assignment-survery-folder {
+        margin-bottom: 1.5em;
+      }
+
+      .assignment-form-selector {
+        .noForms {
+          color: hsl(0, 0%, 35%);
+          margin-top: 10px;
         }
       }
     }
