@@ -92,13 +92,13 @@ export default class AssignmentsEditView extends React.Component {
 
   getNumberOfSelectedDevices = () => {
     let selectedDevices = 0;
+    const { deviceGroups } = this.props.data;
 
-    Object.keys(this.props.data.deviceGroups).forEach(dgId => {
+    Object.keys(deviceGroups).forEach(dgId => {
       const noOfSelectedDevicesInThisGroup = Object.keys(
-        this.props.data.deviceGroups[dgId]
+        deviceGroups[dgId]
       ).filter(
-        deviceId =>
-          deviceId != 0 && this.props.data.deviceGroups[dgId][deviceId].checked
+        deviceId => deviceId != 0 && deviceGroups[dgId][deviceId].checked
       ).length;
 
       selectedDevices += noOfSelectedDevicesInThisGroup;
