@@ -15,7 +15,6 @@
         <pathelement path="${gwtlibs.dir}/gwt-user.jar" />
         <pathelement path="${gwtlibs.dir}/gwt-dev.jar" />
         <fileset dir="war">
-            <include name="poi-3.5-signed.jar" />
             <include name="poi-3.8-20120326.jar" />
             <include name="poi-ooxml-3.8-20120326.jar" />
             <include name="poi-ooxml-schemas-3.8-20120326.jar" />
@@ -48,7 +47,6 @@
             <include name="com/gallatinsystems/framework/dataexport/**" />
             <include name="com/gallatinsystems/framework/gwt/dto/client/**" />
             <include name="org/waterforpeople/mapping/dataexport/**" />
-            <include name="org/waterforpeople/mapping/app/gwt/client/accesspoint/**" />
             <include name="org/waterforpeople/mapping/app/gwt/client/survey/**" />
             <include name="org/waterforpeople/mapping/app/gwt/client/surveyinstance/**" />
             <include name="org/waterforpeople/mapping/app/gwt/client/location/**" />
@@ -65,7 +63,6 @@
                 <include name="*.vm" />
             </fileset>
         </copy>
-        <copy file="src/resources/caddisfly/caddisfly-tests.json" tofile="${build}/resources/caddisfly/caddisfly-tests.json" />
         <jar destfile="${dist}/exporterapplet.jar" basedir="${build}" />
     </target>
 

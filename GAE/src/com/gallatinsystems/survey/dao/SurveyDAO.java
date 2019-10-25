@@ -69,9 +69,9 @@ public class SurveyDAO extends BaseDAO<Survey> {
 
     /**
      * loads a full survey object (whole object graph, including questions). This method can only be
-     * called reliably from a background task or backend
+     * called reliably from a background task
      *
-     * @param id
+     * @param surveyId
      * @return
      */
     public Survey loadFullSurvey(Long surveyId) {

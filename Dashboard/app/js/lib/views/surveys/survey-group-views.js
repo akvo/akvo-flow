@@ -1,22 +1,22 @@
-function capitaliseFirstLetter(string) {
-  return string.charAt(0).toUpperCase() + string.slice(1);
-}
+/* eslint-disable no-extend-native */
+
+import observe from '../../mixins/observe';
+import template from '../../mixins/template';
 
 if (!String.prototype.trim) {
-  String.prototype.trim = function(){
+  String.prototype.trim = function () {
     return this.replace(/^\s+|\s+$/g, '');
   };
 }
 
-FLOW.ProjectListView = FLOW.View.extend({
-  templateName: 'navSurveys/project-list'
-});
+FLOW.ProjectListView = FLOW.View.extend(template('navSurveys/project-list'));
 
-FLOW.ProjectView = FLOW.View.extend({
-  templateName: 'navSurveys/project',
-});
+FLOW.ProjectView = FLOW.View.extend(template('navSurveys/project'));
 
-FLOW.Project = FLOW.View.extend({
+FLOW.Project = FLOW.View.extend(observe({
+  'this.selectedLanguage': 'updateSelectedLanguage',
+  currentRegistrationForm: 'updateSelectedRegistrationForm',
+}), {
 
   showProjectDetails: false,
   showAdvancedSettings: false,
@@ -27,40 +27,34 @@ FLOW.Project = FLOW.View.extend({
 
   /* computer property for setting / getting the value of the current
   registration form */
-  selectedRegistrationForm: function(key, value, previousValue){
-    var registrationForm, formId;
-
-    if(arguments.length > 1) {
-        this.set('currentRegistrationForm', value);
+  selectedRegistrationForm: Ember.computed(function (key, value) {
+    if (arguments.length > 1) {
+      this.set('currentRegistrationForm', value);
     }
 
-    registrationForm = this.get('currentRegistrationForm');
-    if(!registrationForm) {
-        formId = FLOW.projectControl.currentProject.get('newLocaleSurveyId');
-        registrationForm = FLOW.surveyControl.content.filter(function(item){
-                return item.get('keyId') === formId;
-        })[0];
-        this.set('currentRegistrationForm', registrationForm);
+    let registrationForm = this.get('currentRegistrationForm');
+    if (!registrationForm) {
+      const formId = FLOW.projectControl.currentProject.get('newLocaleSurveyId');
+      registrationForm = FLOW.surveyControl.content.filter(item => item.get('keyId') === formId)[0];
+      this.set('currentRegistrationForm', registrationForm);
     }
     return registrationForm;
-  }.property('FLOW.projectControl.currentProject'),
+  }).property('FLOW.projectControl.currentProject'),
 
   /*
    * property for setting the currently selected approval group
    */
-  selectedApprovalGroup: function () {
-      var approvalGroupId = FLOW.projectControl.currentProject.get('dataApprovalGroupId');
-      var approvalGroupList = FLOW.router.approvalGroupListController.get('content');
-      var approvalGroup = approvalGroupList &&
-                              approvalGroupList.filterProperty('keyId', approvalGroupId).get('firstObject');
-      return approvalGroup;
-  }.property('FLOW.projectControl.currentProject'),
+  selectedApprovalGroup: Ember.computed(() => {
+    const approvalGroupId = FLOW.projectControl.currentProject.get('dataApprovalGroupId');
+    const approvalGroupList = FLOW.router.approvalGroupListController.get('content');
+    const approvalGroup = approvalGroupList
+                              && approvalGroupList.filterProperty('keyId', approvalGroupId).get('firstObject');
+    return approvalGroup;
+  }).property('FLOW.projectControl.currentProject'),
 
-  project: function() {
-    return FLOW.projectControl.get('currentProject');
-  }.property(),
+  project: Ember.computed(() => FLOW.projectControl.get('currentProject')).property(),
 
-  toggleShowProjectDetails: function() {
+  toggleShowProjectDetails() {
     this.set('showProjectDetails', !this.get('showProjectDetails'));
   },
 
@@ -68,212 +62,179 @@ FLOW.Project = FLOW.View.extend({
    * Toggle advanced settings and load data approval
    * groups if data approval is enabled on the instance
    */
-  toggleShowAdvancedSettings: function() {
-      var approvalGroupListController = FLOW.router.get('approvalGroupListController');
-      if(FLOW.Env.enableDataApproval && !approvalGroupListController.content) {
-          var self = this;
+  toggleShowAdvancedSettings() {
+    const approvalGroupListController = FLOW.router.get('approvalGroupListController');
+    if (FLOW.Env.enableDataApproval && !approvalGroupListController.content) {
+      const self = this;
 
-          var groups = FLOW.ApprovalGroup.find({});
-          approvalGroupListController.set('content', groups);
+      const groups = FLOW.ApprovalGroup.find({});
+      approvalGroupListController.set('content', groups);
 
-          // only toggle the property after approval groups are retrieved
-          groups.on('didLoad', function () {
-              self.toggleProperty('showAdvancedSettings');
-          });
-      } else {
-          this.toggleProperty('showAdvancedSettings');
-      }
+      // only toggle the property after approval groups are retrieved
+      groups.on('didLoad', () => {
+        self.toggleProperty('showAdvancedSettings');
+      });
+    } else {
+      this.toggleProperty('showAdvancedSettings');
+    }
   },
 
-  isNewProject: function() {
-    var currentProject = FLOW.projectControl.get('currentProject');
-    return currentProject && currentProject.get('code') == "New survey";
-  }.property('FLOW.projectControl.currentProject'),
+  isNewProject: Ember.computed(() => {
+    const currentProject = FLOW.projectControl.get('currentProject');
+    return currentProject && currentProject.get('code') == 'New survey';
+  }).property('FLOW.projectControl.currentProject'),
 
-  visibleProjectBasics: function() {
+  visibleProjectBasics: Ember.computed(function () {
     return this.get('isNewProject') || this.get('showProjectDetails');
-  }.property('showProjectDetails'),
+  }).property('showProjectDetails'),
 
-  updateSelectedLanguage: function() {
-    var currentProject = FLOW.projectControl.get('currentProject');
-    if (currentProject)
-      currentProject.set('defaultLanguageCode', this.selectedLanguage.get('value'));
-  }.observes('this.selectedLanguage'),
+  updateSelectedLanguage() {
+    const currentProject = FLOW.projectControl.get('currentProject');
+    if (currentProject) currentProject.set('defaultLanguageCode', this.selectedLanguage.get('value'));
+  },
 
-  showMonitoringGroupCheckbox: function() {
-    return FLOW.projectControl.get('formCount') < 2;
-  }.property("FLOW.projectControl.formCount"),
+  showMonitoringGroupCheckbox: Ember.computed(() => FLOW.projectControl.get('formCount') < 2).property('FLOW.projectControl.formCount'),
 
-  updateSelectedRegistrationForm: function() {
+  updateSelectedRegistrationForm() {
     if (!this.get('currentRegistrationForm')) return;
     FLOW.projectControl.currentProject.set('newLocaleSurveyId', this.currentRegistrationForm.get('keyId'));
-  }.observes('currentRegistrationForm'),
+  },
 
-  isPublished: function() {
-    var form = FLOW.selectedControl.get('selectedSurvey');
-    return form.get('status') === 'PUBLISHED'
-  }.property('FLOW.selectedControl.selectedSurvey.status'),
+  isPublished: Ember.computed(() => {
+    let form;
+    if (!Ember.none(FLOW.selectedControl.get('selectedSurvey'))) {
+      form = FLOW.selectedControl.get('selectedSurvey');
+    } else if (FLOW.surveyControl.content.get('isLoaded')) {
+      form = FLOW.surveyControl.content.get('firstObject');
+      FLOW.selectedControl.set('selectedSurvey', form);
+    }
+    return form && form.get('status') === 'PUBLISHED';
+  }).property('FLOW.selectedControl.selectedSurvey.status'),
 
-  disableFolderSurveyInputField: function() {
-    var permissions = FLOW.projectControl.get('currentFolderPermissions');
-    return permissions.indexOf("PROJECT_FOLDER_UPDATE") < 0;
-  }.property('FLOW.projectControl.currentProjectPath'),
+  disableFolderSurveyInputField: Ember.computed(() => {
+    const permissions = FLOW.projectControl.get('currentFolderPermissions');
+    return permissions.indexOf('PROJECT_FOLDER_UPDATE') < 0;
+  }).property('FLOW.projectControl.currentProjectPath'),
 
-  showAddNewFormButton: function () {
-    var survey = FLOW.projectControl.get('currentProject');
+  showAddNewFormButton: Ember.computed(() => {
+    const survey = FLOW.projectControl.get('currentProject');
     return FLOW.permControl.canEditSurvey(survey);
-  }.property(),
+  }).property(),
 
-  showDataApproval: function () {
-      return FLOW.Env.enableDataApproval;
-  }.property(),
+  showDataApproval: Ember.computed(() => FLOW.Env.enableDataApproval).property(),
 
-  showDataApprovalList: function () {
-      return FLOW.projectControl.currentProject.get('requireDataApproval');
-  }.property('FLOW.projectControl.currentProject.requireDataApproval'),
+  showDataApprovalList: Ember.computed(() => FLOW.projectControl.currentProject.get('requireDataApproval')).property('FLOW.projectControl.currentProject.requireDataApproval'),
 
-  toggleShowDataApprovalDetails: function () {
-      this.set('showDataApprovalDetails', !this.get('showDataApprovalDetails'));
+  toggleShowDataApprovalDetails() {
+    this.set('showDataApprovalDetails', !this.get('showDataApprovalDetails'));
   },
 });
 
 FLOW.SurveyApprovalView = FLOW.View.extend({});
 
 FLOW.SurveyApprovalStepView = FLOW.View.extend({
-    step: null,
+  step: null,
 
-    showResponsibleUsers: false,
+  showResponsibleUsers: false,
 
 
-    toggleShowResponsibleUsers: function () {
-        this.toggleProperty('showResponsibleUsers');
-        this.loadUsers();
-    },
+  toggleShowResponsibleUsers() {
+    this.toggleProperty('showResponsibleUsers');
+    this.loadUsers();
+  },
 
-    /*
+  /*
      * load the users list if not present
      */
-    loadUsers: function() {
-        var users = FLOW.router.userListController.get('content');
-        if(Ember.empty(users)) {
-            FLOW.router.userListController.set('content', FLOW.User.find());
-        }
-    },
+  loadUsers() {
+    const users = FLOW.router.userListController.get('content');
+    if (Ember.empty(users)) {
+      FLOW.router.userListController.set('content', FLOW.User.find());
+    }
+  },
 });
 
 FLOW.ApprovalResponsibleUserView = FLOW.View.extend({
-    user: null,
+  user: null,
 
-    step: null,
+  step: null,
 
-    isResponsibleUser: function (key, isCheckedValue, previousCheckedValue) {
-        var step = this.get('step');
-        var user = this.get('user');
+  isResponsibleUser: Ember.computed(function (key, isCheckedValue) {
+    const step = this.get('step');
+    const user = this.get('user');
 
-        if (!step || !user) {
-            return false;
-        }
+    if (!step || !user) {
+      return false;
+    }
 
-        // create a new list to force enabling of 'Save' button for surveys
-        // when a user is added or removed from approver list
-        var approverUserList = Ember.A();
-        if(!Ember.empty(step.get('approverUserList'))) {
-            approverUserList.pushObjects(step.get('approverUserList'));
-        }
+    // create a new list to force enabling of 'Save' button for surveys
+    // when a user is added or removed from approver list
+    const approverUserList = Ember.A();
+    if (!Ember.empty(step.get('approverUserList'))) {
+      approverUserList.pushObjects(step.get('approverUserList'));
+    }
 
-        // setter
-        if(arguments.length > 1) {
-            if (isCheckedValue) {
-                approverUserList.addObject(user.get('keyId'));
-            } else {
-                approverUserList.removeObject(user.get('keyId'));
-            }
-            step.set('approverUserList', approverUserList);
-        }
+    // setter
+    if (arguments.length > 1) {
+      if (isCheckedValue) {
+        approverUserList.addObject(user.get('keyId'));
+      } else {
+        approverUserList.removeObject(user.get('keyId'));
+      }
+      step.set('approverUserList', approverUserList);
+    }
 
-        // getter
-        return approverUserList.contains(user.get('keyId'));
-    }.property('this.step.approverUserList'),
+    // getter
+    return approverUserList.contains(user.get('keyId'));
+  }).property('this.step.approverUserList'),
 });
 
 FLOW.ProjectMainView = FLOW.View.extend({
+  hasUnsavedChanges: Ember.computed(() => {
+    const selectedProject = FLOW.projectControl.get('currentProject');
+    const isProjectDirty = selectedProject ? selectedProject.get('isDirty') : false;
 
-  doSave: function() {
-    var currentProject = FLOW.projectControl.get('currentProject');
-    var currentForm = FLOW.selectedControl.get('selectedSurvey');
+    const selectedForm = FLOW.selectedControl.get('selectedSurvey');
+    const isFormDirty = selectedForm ? selectedForm.get('isDirty') : false;
 
-    if (currentProject && currentProject.get('isDirty')) {
-      var name = currentProject.get('name').trim();
-      currentProject.set('name', name);
-      currentProject.set('code', name);
-      currentProject.set('path', FLOW.projectControl.get('currentProjectPath'));
-    }
-
-    if (currentForm && currentForm.get('isDirty')) {
-      var name = currentForm.get('name').trim();
-      currentForm.set('name', name);
-      currentForm.set('code', name);
-      var path = FLOW.projectControl.get('currentProjectPath') + "/" + name;
-      currentForm.set('path', path);
-    }
-
-    FLOW.store.commit();
-  },
-
-  hasUnsavedChanges: function() {
-    var selectedProject = FLOW.projectControl.get('currentProject');
-    var isProjectDirty = selectedProject ? selectedProject.get('isDirty') : false;
-
-    var selectedForm = FLOW.selectedControl.get('selectedSurvey');
-    var isFormDirty = selectedForm ? selectedForm.get('isDirty') : false;
-
-    var approvalSteps = FLOW.router.approvalStepsController.get('content');
-    var isApprovalStepDirty = false;
+    const approvalSteps = FLOW.router.approvalStepsController.get('content');
+    let isApprovalStepDirty = false;
 
     if (approvalSteps) {
-        approvalSteps.forEach(function (step) {
-            if (!isApprovalStepDirty && step.get('isDirty')) {
-                isApprovalStepDirty = true;
-            }
-        });
+      approvalSteps.forEach((step) => {
+        if (!isApprovalStepDirty && step.get('isDirty')) {
+          isApprovalStepDirty = true;
+        }
+      });
     }
 
     return isProjectDirty || isFormDirty || isApprovalStepDirty;
+  }).property('FLOW.projectControl.currentProject.isDirty',
+    'FLOW.selectedControl.selectedSurvey.isDirty',
+    'FLOW.router.approvalStepsController.content.@each.approverUserList'),
 
-  }.property('FLOW.projectControl.currentProject.isDirty',
-              'FLOW.selectedControl.selectedSurvey.isDirty',
-              'FLOW.router.approvalStepsController.content.@each.approverUserList'),
+  projectView: Ember.computed(() => FLOW.projectControl.isProject(FLOW.projectControl.get('currentProject'))).property('FLOW.projectControl.currentProject'),
 
-  projectView: function() {
-    return FLOW.projectControl.isProject(FLOW.projectControl.get('currentProject'));
-  }.property('FLOW.projectControl.currentProject'),
+  projectListView: Ember.computed(() => FLOW.projectControl.isProjectFolder(FLOW.projectControl.get('currentProject'))).property('FLOW.projectControl.currentProject'),
 
-  projectListView: function() {
-    return FLOW.projectControl.isProjectFolder(FLOW.projectControl.get('currentProject'));
-  }.property('FLOW.projectControl.currentProject'),
+  disableAddFolderButton: Ember.computed(() => {
+    const permissions = FLOW.projectControl.get('currentFolderPermissions');
+    return permissions.indexOf('PROJECT_FOLDER_CREATE') < 0;
+  }).property('FLOW.projectControl.currentProjectPath'),
 
-  disableAddFolderButton: function() {
-    var permissions = FLOW.projectControl.get('currentFolderPermissions');
-    return permissions.indexOf("PROJECT_FOLDER_CREATE") < 0;
-  }.property('FLOW.projectControl.currentProjectPath'),
+  disableAddSurveyButtonInRoot: Ember.computed(() => FLOW.projectControl.get('currentProjectPath').length == 0).property('FLOW.projectControl.currentProjectPath'),
 
-  disableAddSurveyButtonInRoot: function() {
-    return FLOW.projectControl.get('currentProjectPath').length == 0;
-  }.property('FLOW.projectControl.currentProjectPath'),
-
-  disableAddSurveyButton: function() {
-    var permissions = FLOW.projectControl.get('currentFolderPermissions');
-    return permissions.indexOf("PROJECT_FOLDER_CREATE") < 0;
-  }.property('FLOW.projectControl.currentProjectPath'),
+  disableAddSurveyButton: Ember.computed(() => {
+    const permissions = FLOW.projectControl.get('currentFolderPermissions');
+    return permissions.indexOf('PROJECT_FOLDER_CREATE') < 0;
+  }).property('FLOW.projectControl.currentProjectPath'),
 });
 
 
 FLOW.ProjectList = FLOW.View.extend({
   tagName: 'ul',
   classNameBindings: ['classProperty'],
-  classProperty: function() {
-    return FLOW.projectControl.moveTarget || FLOW.projectControl.copyTarget ? 'actionProcess' : '';
-  }.property('FLOW.projectControl.moveTarget', 'FLOW.projectControl.copyTarget')
+  classProperty: Ember.computed(() => (FLOW.projectControl.moveTarget || FLOW.projectControl.copyTarget ? 'actionProcess' : '')).property('FLOW.projectControl.moveTarget', 'FLOW.projectControl.copyTarget'),
 });
 
 FLOW.ProjectItemView = FLOW.View.extend({
@@ -282,95 +243,96 @@ FLOW.ProjectItemView = FLOW.View.extend({
   classNameBindings: ['classProperty'],
   folderEdit: false,
 
-  classProperty: function() {
-    var isFolder = FLOW.projectControl.isProjectFolder(this.content);
-    var isFolderEmpty = FLOW.projectControl.isProjectFolderEmpty(this.content);
-    var isMoving = this.content === FLOW.projectControl.get('moveTarget');
-    var isCopying = this.content === FLOW.projectControl.get('copyTarget');
+  classProperty: Ember.computed(function () {
+    const isFolder = FLOW.projectControl.isProjectFolder(this.content);
+    const isFolderEmpty = FLOW.projectControl.isProjectFolderEmpty(this.content);
+    const isMoving = this.content === FLOW.projectControl.get('moveTarget');
+    const isCopying = this.content === FLOW.projectControl.get('copyTarget');
 
-    var classes = "aSurvey";
-    if (isFolder) classes += " aFolder";
-    if (isFolderEmpty) classes += " folderEmpty";
-    if (isMoving || isCopying) classes += " highLighted";
-    if (FLOW.projectControl.get('newlyCreated') === this.get('content')) classes += " newlyCreated";
+    let classes = 'aSurvey';
+    if (isFolder) classes += ' aFolder';
+    if (isFolderEmpty) classes += ' folderEmpty';
+    if (isMoving || isCopying) classes += ' highLighted';
+    if (FLOW.projectControl.get('newlyCreated') === this.get('content')) classes += ' newlyCreated';
 
     return classes;
-  }.property('FLOW.projectControl.moveTarget', 'FLOW.projectControl.copyTarget', 'FLOW.projectControl.currentProject'),
+  }).property('FLOW.projectControl.moveTarget', 'FLOW.projectControl.copyTarget', 'FLOW.projectControl.currentProject'),
 
-  toggleEditFolderName: function(evt) {
+  toggleEditFolderName() {
     this.set('folderEdit', !this.get('folderEdit'));
   },
 
-  isFolder: function() {
+  isFolder: Ember.computed(function () {
     return FLOW.projectControl.isProjectFolder(this.content);
-  }.property(),
+  }).property(),
 
-  formatDate: function(datetime) {
-    if (datetime === "") return "";
-    var date = new Date(parseInt(datetime, 10));
-    return date.getFullYear() + "-" + (date.getMonth() + 1) + "-" + date.getDate();
+  formatDate(datetime) {
+    if (datetime === '') return '';
+    const date = new Date(parseInt(datetime, 10));
+    return `${date.getFullYear()}-${date.getMonth() + 1}-${date.getDate()}`;
   },
 
-  created: function() {
+  created: Ember.computed(function () {
     return this.formatDate(this.content.get('createdDateTime'));
-  }.property('this.content.createdDateTime'),
+  }).property('this.content.createdDateTime'),
 
-  modified: function() {
+  modified: Ember.computed(function () {
     return this.formatDate(this.content.get('lastUpdateDateTime'));
-  }.property('this.content.lastUpdateDateTime'),
+  }).property('this.content.lastUpdateDateTime'),
 
-  isPrivate: function() {
-    return this.content.get('privacyLevel') === "PRIVATE";
-  }.property(),
+  isPrivate: Ember.computed(function () {
+    return this.content.get('privacyLevel') === 'PRIVATE';
+  }).property(),
 
-  language: function() {
-    var langs = {en: "English", es: "Español", fr: "Français"};
+  language: Ember.computed(function () {
+    const langs = { en: 'English', es: 'Español', fr: 'Français' };
     return langs[this.content.get('defaultLanguageCode')];
-  }.property(),
+  }).property(),
 
-  hideFolderSurveyDeleteButton: function () {
-    var c = this.get('content');
-    var permissions = FLOW.projectControl.get('currentFolderPermissions');
-    return permissions.indexOf("PROJECT_FOLDER_DELETE") < 0 || !Ember.empty(c.get('surveyList'));
-  }.property(),
+  hideFolderSurveyDeleteButton: Ember.computed(function () {
+    const c = this.get('content');
+    const permissions = FLOW.projectControl.get('currentFolderPermissions');
+    return permissions.indexOf('PROJECT_FOLDER_DELETE') < 0 || !Ember.empty(c.get('surveyList'));
+  }).property(),
 
-  showSurveyEditButton: function() {
-    var survey = this.get('content');
+  showSurveyEditButton: Ember.computed(function () {
+    const survey = this.get('content');
+    return FLOW.permControl.canEditSurvey(survey) || FLOW.projectControl.get('newlyCreated') === survey;
+  }).property(),
+
+  showSurveyMoveButton: Ember.computed(function () {
+    const survey = this.get('content');
     return FLOW.permControl.canEditSurvey(survey);
-  }.property(),
+  }).property(),
 
-  showSurveyMoveButton: function() {
-    var survey = this.get('content');
+  showSurveyCopyButton: Ember.computed(function () {
+    const survey = this.get('content');
     return FLOW.permControl.canEditSurvey(survey);
-  }.property(),
-
-  showSurveyCopyButton: function () {
-    var survey = this.get('content');
-    return FLOW.permControl.canEditSurvey(survey);
-  }.property()
+  }).property(),
 });
 
 FLOW.FolderEditView = Ember.TextField.extend({
   content: null,
   path: null,
 
-  saveFolderName: function() {
-    var name = this.content.get('code').trim();
+  saveFolderName() {
+    const name = this.content.get('code').trim();
     this.content.set('name', name);
     this.content.set('code', name);
-    var path = FLOW.projectControl.get('currentProjectPath') + "/" + name;
+    const path = `${FLOW.projectControl.get('currentProjectPath')}/${name}`;
     this.content.set('path', path);
     FLOW.store.commit();
   },
 
-  focusOut: function() {
+  focusOut() {
     this.get('parentView').set('folderEdit', false);
     this.saveFolderName();
   },
 
-  insertNewline: function() {
+  insertNewline() {
     this.get('parentView').set('folderEdit', false);
-  }
+    this.saveFolderName();
+  },
 });
 
 FLOW.FormTabView = Ember.View.extend({
@@ -378,292 +340,22 @@ FLOW.FormTabView = Ember.View.extend({
   content: null,
   classNameBindings: ['classProperty'],
 
-  classProperty: function() {
-
-    var form = this.get('content');
-    var currentProject = FLOW.projectControl.get('currentProject');
-    var classString = 'aFormTab';
+  classProperty: Ember.computed(function () {
+    const form = this.get('content');
+    const currentProject = FLOW.projectControl.get('currentProject');
+    let classString = 'aFormTab';
 
     if (form === null || currentProject === null) return classString;
 
     // Return "aFormTab" "current" and/or "registrationForm"
-    var isActive = form === FLOW.selectedControl.get('selectedSurvey');
-    var isRegistrationForm = currentProject.get('monitoringGroup') && form.get('keyId') === currentProject.get('newLocaleSurveyId');
-    var isPublished = form.get('status') === 'PUBLISHED';
+    const isActive = form === FLOW.selectedControl.get('selectedSurvey');
+    const isRegistrationForm = currentProject.get('monitoringGroup') && form.get('keyId') === currentProject.get('newLocaleSurveyId');
+    const isPublished = form.get('status') === 'PUBLISHED';
 
     if (isActive) classString += ' current';
     if (isRegistrationForm) classString += ' registrationForm';
-    if (isPublished) classString += ' published'
+    if (isPublished) classString += ' published';
 
     return classString;
-  }.property('FLOW.selectedControl.selectedSurvey', 'FLOW.projectControl.currentProject.newLocaleSurveyId', 'content.status' ),
-});
-
-// displays survey groups in left sidebar
-FLOW.SurveyGroupMenuItemView = FLOW.View.extend({
-  content: null,
-  tagName: 'li',
-  classNameBindings: ['classProperty'],
-  monitoringGroup: false,
-
-  classProperty: function() {
-
-    var className = this.get('amFolder') ? "aFolder" : "aSurvey";
-    return className;
-  }.property('this.amFolder'),
-
-  // true if the survey group is selected. Used to set proper display class
-  amSelected: function () {
-    var selected = FLOW.selectedControl.get('selectedSurveyGroup');
-    if (selected) {
-      var amSelected = (this.content.get('keyId') === FLOW.selectedControl.selectedSurveyGroup.get('keyId'));
-      return amSelected;
-    } else {
-      return null;
-    }
-  }.property('FLOW.selectedControl.selectedSurveyGroup', 'content').cacheable(),
-
-  amFolder: function () {
-    return this.content.get('projectType') === 'PROJECT_FOLDER';
-  }.property('this.projectType').cacheable(),
-
-  amMonitoringGroup: function () {
-    return this.content.get('monitoringGroup');
-  }.property('this.monitoringGroup').cacheable(),
-
-  // fired when a survey group is clicked
-  makeSelected: function () {
-    if (this.content.get('projectType') === "PROJECT_FOLDER") {
-      FLOW.surveyGroupControl.setCurrentFolder(this.content.get('keyId'));
-    } else {
-      FLOW.selectedControl.set('selectedSurveyGroup', this.content);
-    }
-  }
-});
-
-// displays single survey in content area of survey group page
-// doEditSurvey is defined in the Router. It transfers to the nav-surveys-edit handlebar view
-FLOW.SurveyGroupSurveyView = FLOW.View.extend({
-
-  // fired when 'preview survey' is clicked in the survey item display
-  previewSurvey: function () {
-    FLOW.selectedControl.set('selectedSurvey', this.content);
-  },
-
-  showPreview: function () {
-    if (FLOW.questionControl.content.get('isLoaded')) {
-      FLOW.previewControl.set('showPreviewPopup', true);
-    }
-  }.observes('FLOW.questionControl.content.isLoaded'),
-
-  // fired when 'delete survey' is clicked in the survey item display
-  deleteSurvey: function () {
-    var sId = this.content.get('id');
-    var survey = FLOW.store.find(FLOW.Survey, sId);
-
-    // do preflight check if deleting this survey is allowed
-    // if successful, the deletion action will be called from DS.FLOWrestadaptor.sideload
-    FLOW.store.findQuery(FLOW.Survey, {
-      preflight: 'delete',
-      surveyId: sId
-    });
-  },
-
-  // fired when 'inspect data' is clicked in the survey item display
-  inspectData: function () {
-    console.log("TODO inspect Data");
-  }
-
-});
-
-// handles all survey-group interaction elements on survey group page
-FLOW.SurveyGroupMainView = FLOW.View.extend({
-  showEditField: false,
-  showNewGroupField: false,
-  surveyGroupName: null,
-  showSGDeleteDialog: false,
-  showSGDeleteNotPossibleDialog: false,
-  showCopySurveyDialogBool: false,
-  newSurveyName: null,
-  monitoringGroup:false,
-
-  // true if at least one survey group is active
-  oneSelected: function () {
-    var selected = FLOW.selectedControl.get('selectedSurveyGroup');
-    if (selected) {
-      return true;
-    } else {
-      return false;
-    }
-  }.property('FLOW.selectedControl.selectedSurveyGroup'),
-
-  initVars: function () {
-    if (FLOW.selectedControl && FLOW.selectedControl.selectedSurveyGroup) {
-      this.set('monitoringGroup', FLOW.selectedControl.selectedSurveyGroup.get('monitoringGroup'));
-    }
-  }.observes('FLOW.selectedControl.selectedSurveyGroup', 'FLOW.selectedControl.selectedSurvey'),
-
-  // fired when 'edit name' is clicked, shows edit field to change survey group name
-  editSurveyGroupName: function () {
-    this.set('surveyGroupName', FLOW.selectedControl.selectedSurveyGroup.get('code'));
-    this.set('showEditField', true);
-  },
-
-  // fired when 'save' is clicked while showing edit group name field. Saves the new group name
-  saveSurveyGroupNameEdit: function () {
-    if (!Ember.empty(this.get('surveyGroupName').trim())){
-      var sgId = FLOW.selectedControl.selectedSurveyGroup.get('id');
-      var surveyGroup = FLOW.store.find(FLOW.SurveyGroup, sgId);
-      surveyGroup.set('code', capitaliseFirstLetter(this.get('surveyGroupName')));
-      surveyGroup.set('name', capitaliseFirstLetter(this.get('surveyGroupName')));
-      FLOW.store.commit();
-      FLOW.selectedControl.set('selectedSurveyGroup', FLOW.store.find(FLOW.SurveyGroup, sgId));
-    } else {
-      this.cancelSurveyGroupNameEdit();
-    }
-    this.set('showEditField', false);
-  },
-
-  // fired when 'cancel' is clicked while showing edit group name field. Cancels the edit.
-  cancelSurveyGroupNameEdit: function () {
-    this.set('surveyGroupName', FLOW.selectedControl.selectedSurveyGroup.get('code'));
-    this.set('showEditField', false);
-  },
-
-  // fired when 'add a group' is clicked. Displays a new group text field in the left sidebar
-  addGroup: function () {
-    FLOW.selectedControl.set('selectedSurveyGroup', null);
-    this.set('surveyGroupName', null);
-    this.set('showNewGroupField', true);
-  },
-
-  deleteSurveyGroup: function () {
-    var sgId = FLOW.selectedControl.selectedSurveyGroup.get('id');
-    var surveyGroup = FLOW.store.find(FLOW.SurveyGroup, sgId);
-
-    // do preflight check if deleting this survey is allowed
-    // if successful, the deletion action will be called from DS.FLOWrestadaptor.sideload
-    FLOW.store.findQuery(FLOW.SurveyGroup, {
-      preflight: 'delete',
-      surveyGroupId: sgId
-    });
-  },
-
-  // fired when 'save' is clicked while showing new group text field in left sidebar. Saves new survey group to the data store
-  saveNewSurveyGroupName: function () {
-    if (!Ember.empty(this.get('surveyGroupName').trim())){
-      FLOW.store.createRecord(FLOW.SurveyGroup, {
-        "code": capitaliseFirstLetter(this.get('surveyGroupName')),
-        "name": capitaliseFirstLetter(this.get('surveyGroupName'))
-      });
-      FLOW.store.commit();
-    }
-    this.set('showNewGroupField', false);
-  },
-
-  // fired when 'cancel' is clicked while showing new group text field in left sidebar. Cancels the new survey group creation
-  cancelNewSurveyGroupName: function () {
-    this.set('surveyGroupName', null);
-    this.set('showNewGroupField', false);
-  },
-
-  makeMonitorGroup: function () {
-    this.set('monitoringGroup', true);
-    FLOW.selectedControl.selectedSurveyGroup.set('monitoringGroup', true);
-    FLOW.store.commit();
-  },
-
-  saveNewLocaleSurveyIdChoice: function () {
-    var newLocaleSurvey = FLOW.surveyControl.get('newLocaleSurvey');
-    if (!Ember.none(newLocaleSurvey) && !Ember.none(newLocaleSurvey.get('keyId'))){
-      FLOW.selectedControl.selectedSurveyGroup.set('newLocaleSurveyId', newLocaleSurvey.get('keyId'));
-      FLOW.store.commit();
-    }
-  }.observes('FLOW.surveyControl.newLocaleSurvey'),
-
-  showCopySurveyDialog: function (event) {
-    FLOW.selectedControl.set('selectedForCopySurvey', event.context);
-    this.set('showCopySurveyDialogBool', true);
-    this.set('newSurveyName', event.context.get('name') + " (copy)");
-    this.set('selectedSurveyGroup', FLOW.selectedControl.get('selectedSurveyGroup'));
-  },
-
-  copySurvey: function () {
-    var source = FLOW.selectedControl.selectedForCopySurvey;
-
-    FLOW.store.createRecord(FLOW.Survey, {
-      sourceId: source.get('id'),
-      surveyGroupId: this.selectedSurveyGroup.get('keyId'),
-      code: this.get('newSurveyName'),
-      name: this.get('newSurveyName'),
-      createdDateTime: source.get('createdDateTime'),
-      lastUpdateDateTime: source.get('lastUpdateDateTime'),
-      pointType: source.get('pointType'),
-      defaultLanguageCode: source.get('defaultLanguageCode'),
-      instanceCount: 0
-    });
-
-    FLOW.store.commit();
-    FLOW.selectedControl.set('selectedForCopySurvey', null);
-    this.set('showCopySurveyDialogBool', false);
-
-    FLOW.dialogControl.set('activeAction', "ignore");
-    FLOW.dialogControl.set('header', Ember.String.loc('_copying_survey'));
-    FLOW.dialogControl.set('message', Ember.String.loc('_copying_published_text_'));
-    FLOW.dialogControl.set('showCANCEL', false);
-    FLOW.dialogControl.set('showDialog', true);
-  },
-
-  cancelMoveSurvey: function () {
-    FLOW.selectedControl.set('selectedForCopySurvey', null);
-    this.set('showCopySurveyDialogBool', false);
-  }
-});
-
-FLOW.JavascriptSurveyGroupListView = FLOW.View.extend({
-  didInsertElement: function () {
-    var menuHeight, scroll;
-    this._super();
-    $('.scrollUp').addClass("FadeIt");
-    $('.scrollUp').click(function (e) {
-      e.preventDefault();
-      menuHeight = $('.menuGroupWrap').height();
-      scroll = $('.menuGroupWrap').scrollTop();
-      $('.scrollDown').removeClass("FadeIt");
-      $('.menuGroupWrap').animate({
-        'scrollTop': scroll - 72
-      }, 155);
-
-      //the value used for scroll is the old one
-      if (scroll < 73) {
-        $('.scrollUp').addClass("FadeIt");
-      }
-    });
-    $('.scrollDown').click(function (e) {
-      e.preventDefault();
-      menuHeight = $('.menuGroupWrap').height();
-      scroll = $('.menuGroupWrap').scrollTop();
-      $('.scrollUp').removeClass("FadeIt");
-      $('.menuGroupWrap').animate({
-        'scrollTop': scroll + 72
-      }, 155);
-    });
-  },
-
-  checkHeight: function () {
-    var scroll;
-
-    if (FLOW.surveyGroupControl.content.content.length < 10) {
-      $('.scrollDown').addClass("FadeIt");
-      $('.scrollUp').addClass("FadeIt");
-    } else {
-      scroll = $('.menuGroupWrap').scrollTop();
-      $('.scrollDown').removeClass("FadeIt");
-      if (scroll < 73) {
-        $('.scrollUp').addClass("FadeIt");
-      } else {
-        $('.scrollUp').removeClass("FadeIt");
-      }
-    }
-  }.observes('FLOW.surveyGroupControl.content.content.length')
+  }).property('FLOW.selectedControl.selectedSurvey', 'FLOW.projectControl.currentProject.newLocaleSurveyId', 'content.status'),
 });

@@ -1,76 +1,58 @@
+import { isNaN } from 'lodash';
+import observe from '../mixins/observe';
+
 /**
   Controllers related to the map tab
   Definition:
     "placemark" is an FLOW object that represents a single survey point.
     "marker" is a map object that is rendered as a pin. Each marker have
       a placemark counterpart.
-**/
+* */
 
-FLOW.placemarkController = Ember.ArrayController.create({
+FLOW.MapsController = Ember.ArrayController.extend(observe({
+  'this.content.isLoaded': 'populateMap',
+}), {
   content: null,
   map: null,
   geocellCache: [],
   currentGcLevel: null,
   allPlacemarks: null,
-  selectedMarker:null,
+  selectedMarker: null,
+  selectedSI: null,
+  surveyDataLayer: null,
 
-  populateMap: function () {
-    var gcLevel, placemarks, placemarkArray=[];
-    if (this.content.get('isLoaded') === true) {
-      gcLevel = this.get('currentGcLevel');
-      // filter placemarks
-      placemarks = FLOW.store.filter(FLOW.Placemark, function(item){
-        return item.get('level') == gcLevel;
-      });
+  populateMap() {
+    if (this.content.get('isLoaded') && FLOW.selectedControl.selectedSurveyGroup) {
+      const surveyId = FLOW.selectedControl.selectedSurveyGroup.get('keyId');
 
-      placemarks.forEach(function (placemark) {
-        marker = this.addMarker(placemark);
-        placemarkArray.push(marker);
-      }, this);
+      const placemarks = FLOW.store.filter(FLOW.Placemark, item => item.get('surveyId') === surveyId);
 
-      if (!Ember.none(this.allPlacemarks)){
-        this.allPlacemarks.clearLayers();
+      if (!this.allPlacemarks) {
+        this.set('allPlacemarks', L.layerGroup());
+        this.allPlacemarks.addTo(this.map);
       }
 
-      this.allPlacemarks = L.layerGroup(placemarkArray);
-      this.allPlacemarks.addTo(this.map);
+      placemarks.forEach(function (placemark) {
+        const marker = this.addMarker(placemark);
+        this.allPlacemarks.addLayer(marker);
+      }, this);
     }
-  }.observes('this.content.isLoaded'),
+  },
 
-  adaptMap: function(bestBB, zoomlevel){
-    var bbString = "", gcLevel, listToRetrieve = [];
+  adaptMap(bestBB, zoomlevel) {
+    let bbString = '';
+    const gcLevel = 0;
+    const listToRetrieve = [];
 
-    // determine the geocell cluster level we want to show
-    if (zoomlevel < 4){
-      gcLevel = 2;
-    } else if (zoomlevel < 6) {
-      gcLevel = 3;
-    } else if (zoomlevel < 8) {
-      gcLevel = 4;
-    } else if (zoomlevel < 11) {
-      gcLevel = 5;
-    } else {
-      gcLevel = 0;
-    }
-    this.set('currentGcLevel',gcLevel);
+    this.set('currentGcLevel', gcLevel);
     // on zoomlevel 2, the map repeats itself, leading to wrong results
     // therefore, we force to download the highest level on all the world.
     if (zoomlevel == 2) {
-    	bestBB = "0123456789abcdef".split("");
+      bestBB = '0123456789abcdef'.split('');
     }
 
-    // see if we already have it in the cache
-    // in the cache, we use a combination of geocell and gcLevel requested as the key:
-    // for example "af-3", "4ee-5", etc.
-    // TODO this is not optimal at high zoom levels, as we will already have loaded the same points on a level before
-    for (var i = 0; i < bestBB.length; i++){
-      if (this.get('geocellCache').indexOf(bestBB[i]+"-"+gcLevel) < 0 ) {
-        // if we don't have it in the cache add it to the list of items to be loaded
-    	listToRetrieve.push(bestBB[i]);
-
-    	// now add this key to cache
-        this.get('geocellCache').push(bestBB[i] + "-" + gcLevel);
-      }
+    for (let i = 0; i < bestBB.length; i++) {
+      listToRetrieve.push(bestBB[i]);
     }
 
     // pack best bounding box values in a string for sending to the server
@@ -78,136 +60,164 @@ FLOW.placemarkController = Ember.ArrayController.create({
 
     // go get it in the datastore
     // when the points come in, populateMap will trigger and place the points
-    if (!Ember.empty(bbString)){
-      this.set('content',FLOW.store.findQuery(FLOW.Placemark,
-        {bbString: bbString, gcLevel: gcLevel}));
+    if (!Ember.empty(bbString)) {
+      const requestParams = { bbString, gcLevel };
+      if (FLOW.selectedControl.selectedSurveyGroup) {
+        requestParams.surveyId = FLOW.selectedControl.selectedSurveyGroup.get('keyId');
+      }
+      this.set('content', FLOW.store.findQuery(FLOW.Placemark, requestParams));
     } else {
-    	// we might have stuff in cache, so draw anyway
-    	this.populateMap();
+      // we might have stuff in cache, so draw anyway
+      this.populateMap();
     }
   },
 
-  addMarker: function (placemark) {
-    var marker;
-    if (placemark.get('level') > 0){
-    	count = placemark.get('count');
-    	if (count == 1) {
-    		marker = L.circleMarker([placemark.get('latitude'),placemark.get('longitude')],{
-    			radius:7,
-    			color:'#d46f12',
-    			fillColor:'#edb660',
-    			opacity:0.9,
-    			fillOpacity:0.7,
-    			placemarkId: placemark.get('detailsId'),
-    			collectionDate:placemark.get('collectionDate')});
-    		marker.on('click', onMarkerClick);
-    		return marker;
-    	}
+  addMarker(placemark) {
+    let marker;
+    let count;
 
-      myIcon = L.divIcon({
-    	  html: '<div><span>' + count + '</span></div>',
-    	  className: 'marker-cluster',
-    	  iconSize: new L.Point(40, 40)});
+    function onMarkerClick(_marker) {
+      // first deselect others
+      if (!Ember.none(FLOW.router.mapsController.get('selectedMarker'))) {
+        if (FLOW.router.mapsController.selectedMarker.target.options.placemarkId != _marker.target.options.placemarkId) { // eslint-disable-line max-len
+          FLOW.router.mapsController.clearMarker();
+        }
+      }
 
-      marker = L.marker([placemark.get('latitude'),placemark.get('longitude')], {
-    	  icon: myIcon,
-    	  placemarkId: placemark.get('keyId')});
+      // now toggle this one
+      _marker.target.setStyle({
+        color: '#d46f12',
+        fillColor: '#433ec9',
+      });
+      _marker.target.options.selected = true;
+      FLOW.router.mapsController.set('selectedMarker', _marker);
+    }
+
+    if (placemark.get('level') > 0) {
+      count = placemark.get('count');
+      if (count == 1) {
+        marker = L.circleMarker([placemark.get('latitude'), placemark.get('longitude')], {
+          radius: 7,
+          color: '#d46f12',
+          fillColor: '#edb660',
+          opacity: 0.9,
+          fillOpacity: 0.7,
+          placemarkId: placemark.get('keyId'),
+          collectionDate: placemark.get('collectionDate'),
+        });
+        marker.on('click', onMarkerClick);
+        return marker;
+      }
+
+      const myIcon = L.divIcon({
+        html: `<div><span>${count}</span></div>`,
+        className: 'marker-cluster',
+        iconSize: new L.Point(40, 40),
+      });
+
+      marker = L.marker([placemark.get('latitude'), placemark.get('longitude')], {
+        icon: myIcon,
+        placemarkId: placemark.get('keyId'),
+      });
       return marker;
-    } else {
-    	// if we are here, we are at level 0, and we have normal placemark icons.
-    	marker = L.circleMarker([placemark.get('latitude'),placemark.get('longitude')],{
-    		radius:7,
-    		color:'#d46f12',
-    		fillColor:'#edb660',
-    		placemarkId: placemark.get('detailsId'),
-    		collectionDate:placemark.get('collectionDate')});
-		marker.on('click', onMarkerClick);
-    	return marker;
     }
+    // if we are here, we are at level 0, and we have normal placemark icons.
+    marker = L.circleMarker([placemark.get('latitude'), placemark.get('longitude')], {
+      radius: 7,
+      color: '#d46f12',
+      fillColor: '#edb660',
+      placemarkId: placemark.get('keyId'),
+      collectionDate: placemark.get('collectionDate'),
+    });
+    marker.on('click', onMarkerClick);
+    return marker;
+  },
 
-    function onMarkerClick(marker){
-    	// first deselect others
-    	if (!Ember.none(FLOW.placemarkController.get('selectedMarker'))){
-    		if (FLOW.placemarkController.selectedMarker.target.options.placemarkId != marker.target.options.placemarkId){
-    			FLOW.placemarkController.selectedMarker.target.options.selected = false;
-                FLOW.placemarkController.selectedMarker.target.setStyle({color:'#d46f12',
-    	    		fillColor:'#edb660'});
-    			FLOW.placemarkController.set('selectedMarker',null);
-    		}
-    	}
-
-    	// now toggle this one
-    	if (marker.target.options.selected) {
-    		marker.target.setStyle({color:'#d46f12',
-    	    		fillColor:'#edb660'});
-    		marker.target.options.selected = false;
-    		FLOW.placemarkController.set('selectedMarker',null);
-    	} else {
-    		marker.target.setStyle({color:'#d46f12',
-	    		fillColor:'#433ec9'});
-    		marker.target.options.selected = true;
-    		FLOW.placemarkController.set('selectedMarker',marker);
-    	}
+  clearMarker() {
+    if (!Ember.none(FLOW.router.mapsController.get('selectedMarker'))) {
+      FLOW.router.mapsController.selectedMarker.target.options.selected = false;
+      FLOW.router.mapsController.selectedMarker.target.setStyle({
+        color: '#d46f12',
+        fillColor: '#edb660',
+      });
     }
-  }
+    FLOW.router.mapsController.set('selectedMarker', null);
+    FLOW.questionAnswerControl.set('content', null); // clear answers from side bar
+    FLOW.placemarkDetailController.set('dataPoint', null); // clear details panel header
+    FLOW.placemarkDetailController.set('dataPointCollectionDate', null); // in case previous point's collection date is still cached
+    FLOW.placemarkDetailController.set('noSubmissions', false); // can't confirm absence of data if we haven't checked
+  },
 
+  formatDate(date) {
+    if (date && !isNaN(date.getTime())) {
+      return `${date.getFullYear()}-${date.getMonth() + 1}-${date.getDate()}`;
+    }
+    return null;
+  },
 });
 
-FLOW.placemarkDetailController = Ember.ArrayController.create({
+FLOW.placemarkDetailController = Ember.ArrayController.create(observe({
+  'FLOW.router.mapsController.selectedMarker': 'mapPointClickHandler',
+  'FLOW.surveyInstanceControl.content.isLoaded': 'mapPointRetrieveDetailsHandler',
+}), {
   content: Ember.A(),
-  sortProperties: ['order'],
-  sortAscending: true,
-  collectionDate: null,
 
-  populate: function (placemarkId) {
-	  if (placemarkId) {
-		  this.set('content', FLOW.store.findQuery(FLOW.PlacemarkDetail, {
-			  placemarkId: placemarkId
-		  }));
-	  } else {
-		  this.set('content', Ember.A());
-	  }
+  dataPoint: null,
+
+  dataPointCollectionDate: null,
+  noSubmissions: false,
+
+  dataPointDisplayName: Ember.computed(function () {
+    return this.dataPoint && this.dataPoint.get('displayName');
+  }).property('this.dataPoint.isLoaded'),
+
+  dataPointIdentifier: Ember.computed(function () {
+    return this.dataPoint && this.dataPoint.get('identifier');
+  }).property('this.dataPoint.isLoaded'),
+
+  /*
+  * Observer that loads a datapoint and its associated details when clicked
+  */
+  mapPointClickHandler() {
+    const mapsController = FLOW.router.get('mapsController');
+    if (mapsController && mapsController.get('selectedMarker')) {
+      const selectedPlacemarkId = mapsController.selectedMarker.target.options.placemarkId;
+      this.set('dataPoint', FLOW.store.find(FLOW.SurveyedLocale, selectedPlacemarkId));
+      FLOW.surveyInstanceControl.set('content', FLOW.store.findQuery(FLOW.SurveyInstance, {
+        surveyedLocaleId: selectedPlacemarkId,
+      }));
+    }
   },
 
-  handlePlacemarkSelection: function () {
-    var selectedPlacemarkId = null;
-    if (!Ember.none(FLOW.placemarkController.get('selectedMarker'))) {
-    	selectedPlacemarkId = FLOW.placemarkController.selectedMarker.target.options.placemarkId;
-    	this.set('collectionDate',FLOW.placemarkController.selectedMarker.target.options.collectionDate);
-    }
-    this.populate(selectedPlacemarkId);
-  }.observes('FLOW.placemarkController.selectedMarker'),
+  /*
+  * Observer that retrieves question answers associated with a datapoint
+  * when it is clicked on.
+  *
+  * !!! Only data from the REGISTRATION FORMS is loaded at the moment !!!
+  */
+  mapPointRetrieveDetailsHandler() {
+    const formInstances = FLOW.surveyInstanceControl.content;
+    const mapsController = FLOW.router.get('mapsController');
 
-  photoUrl: function () {
-    var photoDetails, photoUrls = [],
-      rawPhotoUrl, photoJson;
-
-    if (!this.get('content').get('isLoaded')) {
-      return null;
-    }
-
-    // filter out details with images
-    photoDetails = this.get('content').filter(function (detail) {
-      return detail.get('questionType') === 'PHOTO';
-    });
-
-    if (Ember.empty(photoDetails)) {
-      return null;
+    if (Ember.empty(formInstances)
+        || !formInstances.isLoaded
+        || !mapsController.get('selectedMarker')) {
+      return;
     }
 
-    photoDetails.forEach(function (photo) {
-      rawPhotoUrl = photo.get('stringValue') || '';
-      if (rawPhotoUrl.charAt(0) === '{') {
-        photoJson = JSON.parse(rawPhotoUrl);
-        rawPhotoUrl = photoJson.filename;
-      }
-      // Since photos have a leading path from devices that we need to trim
-      photoUrls.push(FLOW.Env.photo_url_root + rawPhotoUrl.split('/').pop());
-    });
+    const survey = FLOW.selectedControl.get('selectedSurvey');
+    if (!survey) return;
 
-    return Ember.ArrayController.create({
-      content: photoUrls
-    });
-  }.property('content.isLoaded')
+    const formId = survey.get('keyId');
+    const formInstance = formInstances.filterProperty('surveyId', formId).get('firstObject');
 
+    if (formInstance) {
+      this.set('noSubmissions', false);
+      this.set('dataPointCollectionDate', formInstance.get('collectionDate'));
+      FLOW.questionAnswerControl.doQuestionAnswerQuery(formInstance);
+    } else {
+      this.set('noSubmissions', true);
+      this.set('dataPointCollectionDate', null);
+    }
+  },
 });

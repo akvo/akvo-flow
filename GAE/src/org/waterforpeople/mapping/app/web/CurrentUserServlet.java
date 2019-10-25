@@ -1,5 +1,5 @@
 /*
- *  Copyright (C) 2012-2016 Stichting Akvo (Akvo Foundation)
+ *  Copyright (C) 2012-2016, 2018-2019 Stichting Akvo (Akvo Foundation)
  *
  *  This file is part of Akvo FLOW.
  *
@@ -33,12 +33,12 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.akvo.flow.util.FlowJsonObjectWriter;
 import org.apache.velocity.Template;
 import org.apache.velocity.VelocityContext;
 import org.apache.velocity.app.VelocityEngine;
-import org.codehaus.jackson.JsonGenerationException;
-import org.codehaus.jackson.map.JsonMappingException;
-import org.codehaus.jackson.map.ObjectMapper;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.akvo.flow.rest.security.user.GaeUser;
 
 import com.gallatinsystems.common.Constants;
 import com.gallatinsystems.user.dao.UserAuthorizationDAO;
@@ -48,7 +48,6 @@ import com.gallatinsystems.user.domain.Permission;
 import com.gallatinsystems.user.domain.User;
 import com.gallatinsystems.user.domain.UserAuthorization;
 import com.gallatinsystems.user.domain.UserRole;
-import com.google.appengine.api.users.UserServiceFactory;
 
 public class CurrentUserServlet extends HttpServlet {
 
@@ -102,17 +101,39 @@ public class CurrentUserServlet extends HttpServlet {
     }
 
     public static User getCurrentUser() {
-        final com.google.appengine.api.users.User currentGoogleUser = UserServiceFactory
-                .getUserService().getCurrentUser();
-        if (currentGoogleUser == null) {
+        if (SecurityContextHolder.getContext() == null
+                || SecurityContextHolder.getContext().getAuthentication() == null) {
             return null;
         }
 
-        final String currentUserEmail = currentGoogleUser.getEmail().toLowerCase();
-        final UserDao uDao = new UserDao();
-        return uDao.findUserByEmail(currentUserEmail);
+        Object principal = SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+
+        if (principal instanceof GaeUser) {
+            GaeUser user = (GaeUser) principal;
+
+            if (user.getEmail() == null) {
+                return null;
+            }
+
+            final String currentUserEmail = user.getEmail().toLowerCase();
+            final UserDao uDao = new UserDao();
+            return uDao.findUserByEmail(currentUserEmail);
+
+        } else {
+            return null;
+        }
+
+
     }
 
+    public static Long getCurrentUserId() {
+        User u = getCurrentUser();
+        if (u == null || u.getKey() == null) {
+            return null;
+        }
+        return u.getKey().getId();
+    }
+    
     /**
      * Retrieve a javascript map of the paths and corresponding permissions for the current user
      *
@@ -140,19 +161,15 @@ public class CurrentUserServlet extends HttpServlet {
 
         addSuperAdminPermissions(currentUser, permissions);
 
-        ObjectMapper jsonObjectMapper = new ObjectMapper();
-        StringWriter writer = new StringWriter();
+        FlowJsonObjectWriter writer = new FlowJsonObjectWriter();
+        String permissionsString = null;
         try {
-            jsonObjectMapper.writeValue(writer, permissions);
-        } catch (JsonGenerationException e) {
-            // ignore
-        } catch (JsonMappingException e) {
-            // ignore
+            permissionsString = writer.writeAsString(permissions);
         } catch (IOException e) {
             // ignore
         }
 
-        return writer.toString();
+        return permissionsString;
     }
 
     /**

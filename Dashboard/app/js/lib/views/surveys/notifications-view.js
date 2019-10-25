@@ -1,5 +1,6 @@
-FLOW.NotificationsView = FLOW.View.extend({
-  templateName: 'navSurveys/manage-notifications',
+import template from '../../mixins/template';
+
+FLOW.NotificationsView = FLOW.View.extend(template('navSurveys/manage-notifications'), {
   notificationOption: null,
   notificationType: null,
   expiryDate: null,
@@ -9,8 +10,8 @@ FLOW.NotificationsView = FLOW.View.extend({
   destinationEmpty: false,
   dateEmpty: false,
 
-  addNotification: function () {
-    var date;
+  addNotification() {
+    let date;
 
     this.set('optionEmpty', Ember.none(this.get('notificationOption')));
     this.set('typeEmpty', Ember.none(this.get('notificationType')));
@@ -26,12 +27,12 @@ FLOW.NotificationsView = FLOW.View.extend({
       // do nothing
     } else {
       FLOW.store.createRecord(FLOW.NotificationSubscription, {
-        "notificationOption": this.notificationOption.get('value'),
-        "notificationType": this.notificationType.get('value'),
-        "expiryDate": date,
-        "notificationDestination": this.get('notificationDestination'),
-        "notificationMethod": "EMAIL",
-        "entityId": FLOW.selectedControl.selectedSurvey.get('keyId')
+        notificationOption: this.notificationOption.get('value'),
+        notificationType: this.notificationType.get('value'),
+        expiryDate: date,
+        notificationDestination: this.get('notificationDestination'),
+        notificationMethod: 'EMAIL',
+        entityId: FLOW.selectedControl.selectedSurvey.get('keyId'),
       });
       this.set('notificationOption', null);
       this.set('notificationType', null);
@@ -41,23 +42,21 @@ FLOW.NotificationsView = FLOW.View.extend({
     }
   },
 
-  cancelNotification: function () {
+  cancelNotification() {
     this.set('notificationEvent', null);
     this.set('notificationType', null);
     this.set('notificationDestination', null);
     this.set('expiryDate', null);
   },
 
-  closeNotifications: function (router, event) {
+  closeNotifications() {
     this.get('parentView').set('manageNotifications', false);
   },
 
-  removeNotification: function (event) {
-    var nDeleteId, notification;
-    nDeleteId = event.context.get('keyId');
-
-    notification = FLOW.store.find(FLOW.NotificationSubscription, nDeleteId);
+  removeNotification(event) {
+    const nDeleteId = event.context.get('keyId');
+    const notification = FLOW.store.find(FLOW.NotificationSubscription, nDeleteId);
     notification.deleteRecord();
     FLOW.store.commit();
-  }
+  },
 });

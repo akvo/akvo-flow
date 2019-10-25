@@ -1,12 +1,12 @@
-FLOW.TranslationsView = FLOW.View.extend({
-  templateName: 'navSurveys/manage-translations',
+import template from '../../mixins/template';
 
-  saveTranslationsAndClose: function () {
+FLOW.TranslationsView = FLOW.View.extend(template('navSurveys/manage-translations'), {
+  saveTranslationsAndClose() {
     FLOW.translationControl.saveTranslations();
     this.get('parentView').set('manageTranslations', false);
   },
 
-  closeTranslations: function (router, event) {
+  closeTranslations() {
     this.get('parentView').set('manageTranslations', false);
   },
 });

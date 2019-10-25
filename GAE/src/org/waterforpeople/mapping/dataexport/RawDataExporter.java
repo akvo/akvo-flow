@@ -196,14 +196,14 @@ public class RawDataExporter extends AbstractDataExporter {
                                     if (qdto != null && QuestionType.GEO == qdto.getType()) {
                                         String[] geoParts = val.split("\\|");
                                         int count = 0;
-                                        for (count = 0; count < geoParts.length; count++) {
+                                        for (count = 0; count < Math.min(geoParts.length, 3); count++) {
                                             if (count > 0) {
                                                 pw.write("\t");
                                             }
                                             pw.write(geoParts[count]);
                                         }
                                         // now handle any missing fields
-                                        for (int j = count; j < 4; j++) {
+                                        for (int j = count; j < 3; j++) {
                                             pw.write("\t");
                                         }
                                     } else {

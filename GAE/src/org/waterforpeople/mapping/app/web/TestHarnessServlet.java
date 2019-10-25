@@ -1,5 +1,5 @@
 /*
- *  Copyright (C) 2010-2015 Stichting Akvo (Akvo Foundation)
+ *  Copyright (C) 2010-2019 Stichting Akvo (Akvo Foundation)
  *
  *  This file is part of Akvo FLOW.
  *
@@ -16,12 +16,9 @@
 
 package org.waterforpeople.mapping.app.web;
 
-import static com.gallatinsystems.common.util.MemCacheUtils.initCache;
-
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.io.Writer;
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
@@ -33,23 +30,17 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import net.sf.jsr107cache.Cache;
 import net.sf.jsr107cache.CacheException;
 
 import org.apache.commons.lang.StringUtils;
 import org.waterforpeople.mapping.app.web.dto.DataProcessorRequest;
-import org.waterforpeople.mapping.app.web.rest.security.AppRole;
+import org.akvo.flow.rest.security.AppRole;
 import org.waterforpeople.mapping.app.web.test.DeleteObjectUtil;
-import org.waterforpeople.mapping.dao.AccessPointDao;
 import org.waterforpeople.mapping.dao.QuestionAnswerStoreDao;
 import org.waterforpeople.mapping.dao.SurveyInstanceDAO;
-import org.waterforpeople.mapping.domain.AccessPoint;
 import org.waterforpeople.mapping.domain.QuestionAnswerStore;
 import org.waterforpeople.mapping.domain.SurveyInstance;
 
-import com.beoui.geocell.GeocellManager;
-import com.beoui.geocell.model.Point;
-import com.gallatinsystems.common.Constants;
 import com.gallatinsystems.framework.dao.BaseDAO;
 import com.gallatinsystems.gis.map.dao.OGRFeatureDao;
 import com.gallatinsystems.gis.map.domain.Geometry;
@@ -60,17 +51,12 @@ import com.gallatinsystems.survey.dao.QuestionDao;
 import com.gallatinsystems.survey.dao.QuestionGroupDao;
 import com.gallatinsystems.survey.dao.SurveyDAO;
 import com.gallatinsystems.survey.dao.SurveyGroupDAO;
-import com.gallatinsystems.survey.dao.SurveyUtils;
 import com.gallatinsystems.survey.domain.CascadeResource;
 import com.gallatinsystems.survey.domain.Question;
 import com.gallatinsystems.survey.domain.QuestionGroup;
 import com.gallatinsystems.survey.domain.Survey;
 import com.gallatinsystems.survey.domain.SurveyGroup;
-import com.gallatinsystems.survey.domain.SurveyGroup.PrivacyLevel;
-import com.gallatinsystems.survey.domain.SurveyGroup.ProjectType;
 import com.gallatinsystems.surveyal.app.web.SurveyalRestRequest;
-import com.gallatinsystems.surveyal.dao.SurveyedLocaleClusterDao;
-import com.gallatinsystems.surveyal.domain.SurveyedLocaleCluster;
 import com.gallatinsystems.user.dao.UserDao;
 import com.gallatinsystems.user.domain.User;
 import com.google.appengine.api.backends.BackendServiceFactory;
@@ -86,7 +72,8 @@ public class TestHarnessServlet extends HttpServlet {
     public void doGet(HttpServletRequest req, HttpServletResponse resp) {
         String action = req.getParameter("action");
         if ("setupTestUser".equals(action)) {
-            setupTestUser();
+            String email = req.getParameter("email");
+            setupTestUser(email == null ? "test@example.com" : email);
         } else if ("deleteGeoData".equals(action)) {
             try {
                 OGRFeatureDao ogrFeatureDao = new OGRFeatureDao();
@@ -127,21 +114,6 @@ public class TestHarnessServlet extends HttpServlet {
             } catch (IOException e) {
                 // TODO Auto-generated catch block
                 e.printStackTrace();
-            }
-        } else if ("generateGeocells".equals(action)) {
-            AccessPointDao apDao = new AccessPointDao();
-            List<AccessPoint> apList = apDao.list(null);
-            if (apList != null) {
-                for (AccessPoint ap : apList) {
-
-                    if (ap.getGeocells() == null || ap.getGeocells().size() == 0) {
-                        if (ap.getLatitude() != null && ap.getLongitude() != null) {
-                            ap.setGeocells(GeocellManager.generateGeoCell(new Point(ap
-                                    .getLatitude(), ap.getLongitude())));
-                            apDao.save(ap);
-                        }
-                    }
-                }
             }
         } else if ("importsinglesurvey".equals(action)) {
             TaskOptions options = TaskOptions.Builder
@@ -216,33 +188,6 @@ public class TestHarnessServlet extends HttpServlet {
                     .withUrl("/app_worker/dataprocessor")
                     .param(DataProcessorRequest.ACTION_PARAM,
                             DataProcessorRequest.DELETE_DUPLICATE_QAS)
-                    .header("Host",
-                            BackendServiceFactory.getBackendService().getBackendAddress(
-                                    "dataprocessor"));
-            Queue queue = QueueFactory.getDefaultQueue();
-            queue.add(options);
-            try {
-                resp.getWriter().print("Request Processed - Check the logs");
-            } catch (Exception e) {
-                // no-op
-            }
-        } else if (DataProcessorRequest.RECOMPUTE_LOCALE_CLUSTERS.equals(action)) {
-            SurveyedLocaleClusterDao slcDao = new SurveyedLocaleClusterDao();
-            // first, delete all clusters
-            for (SurveyedLocaleCluster slc : slcDao.list("all")) {
-                slcDao.delete(slc);
-            }
-
-            // initialize the memcache
-            Cache cache = initCache(60 * 60 * 1);
-            if (cache != null) {
-                cache.clear();
-            }
-
-            final TaskOptions options = TaskOptions.Builder
-                    .withUrl("/app_worker/dataprocessor")
-                    .param(DataProcessorRequest.ACTION_PARAM,
-                            DataProcessorRequest.RECOMPUTE_LOCALE_CLUSTERS)
                     .header("Host",
                             BackendServiceFactory.getBackendService().getBackendAddress(
                                     "dataprocessor"));
@@ -346,33 +291,6 @@ public class TestHarnessServlet extends HttpServlet {
                             "surveyId provided not valid: " + req.getParameter("surveyId"));
                 }
             }
-        } else if ("populateQuestionOrders".equals(action)) {
-            log.log(Level.INFO, "Populating question and question group orders: ");
-            Queue queue = QueueFactory.getDefaultQueue();
-            TaskOptions to = TaskOptions.Builder
-                    .withUrl("/app_worker/dataprocessor")
-                    .param(DataProcessorRequest.ACTION_PARAM,
-                            DataProcessorRequest.POP_QUESTION_ORDER_FIELDS_ACTION)
-                    .param("cursor", "")
-                    .header("host",
-                            BackendServiceFactory.getBackendService().getBackendAddress(
-                                    "dataprocessor"));
-            if (req.getParameter("surveyId") != null) {
-                try {
-                    // if we have a surveyId, try to parse it to long here
-                    // if we fail, we break of the whole operation
-                    // we don't use the parsed value
-                    Long surveyId = Long.parseLong(req.getParameter("surveyId"));
-                    queue.add(to.param(DataProcessorRequest.SURVEY_ID_PARAM, surveyId.toString()));
-                } catch (NumberFormatException e) {
-                    log.log(Level.SEVERE,
-                            "surveyId provided not valid: " + req.getParameter("surveyId"));
-                }
-            } else {
-                // if we don't have a surveyId, we want to populate all surveys
-                // so we fire the task without the surveyId parameter.
-                queue.add(to);
-            }
         } else if ("testTextQAS".equals(action)) {
 
             final StringBuffer sb = new StringBuffer();
@@ -456,17 +374,15 @@ public class TestHarnessServlet extends HttpServlet {
         }
     }
 
-    private void setupTestUser() {
+    private void setupTestUser(String email) {
         UserDao userDao = new UserDao();
-        User user = userDao.findUserByEmail("test@example.com");
+        User user = userDao.findUserByEmail(email);
         if (user == null) {
             user = new User();
-            user.setEmailAddress("test@example.com");
+            user.setEmailAddress(email);
         }
         user.setSuperAdmin(true);
-        user.setPermissionList(String.valueOf(AppRole.SUPER_ADMIN.getLevel()));
-        user.setAccessKey(UUID.randomUUID().toString().replaceAll("-", ""));
-        user.setSecret(UUID.randomUUID().toString().replaceAll("-", ""));
+        user.setPermissionList(String.valueOf(AppRole.ROLE_SUPER_ADMIN.getLevel()));
         userDao.save(user);
     }
 

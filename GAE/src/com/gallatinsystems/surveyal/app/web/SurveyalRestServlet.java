@@ -1,5 +1,5 @@
 /*
- *  Copyright (C) 2010-2016 Stichting Akvo (Akvo Foundation)
+ *  Copyright (C) 2010-2019 Stichting Akvo (Akvo Foundation)
  *
  *  This file is part of Akvo FLOW.
  *
@@ -16,9 +16,7 @@
 
 package com.gallatinsystems.surveyal.app.web;
 
-import java.util.ArrayList;
-import java.util.Calendar;
-import java.util.GregorianCalendar;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -27,10 +25,10 @@ import java.util.logging.Logger;
 
 import javax.servlet.http.HttpServletRequest;
 
+import com.gallatinsystems.common.Constants;
 import net.sf.jsr107cache.Cache;
 
 import org.waterforpeople.mapping.dao.SurveyInstanceDAO;
-import org.waterforpeople.mapping.domain.QuestionAnswerStore;
 import org.waterforpeople.mapping.domain.SurveyInstance;
 
 import com.beoui.geocell.GeocellManager;
@@ -44,18 +42,9 @@ import com.gallatinsystems.gis.geography.dao.CountryDao;
 import com.gallatinsystems.gis.geography.domain.Country;
 import com.gallatinsystems.gis.location.GeoLocationServiceGeonamesImpl;
 import com.gallatinsystems.gis.location.GeoPlace;
-import com.gallatinsystems.gis.map.MapUtils;
 import com.gallatinsystems.gis.map.domain.OGRFeature;
-import com.gallatinsystems.metric.dao.MetricDao;
-import com.gallatinsystems.metric.dao.SurveyMetricMappingDao;
-import com.gallatinsystems.metric.domain.Metric;
-import com.gallatinsystems.metric.domain.SurveyMetricMapping;
 import com.gallatinsystems.survey.dao.QuestionDao;
-import com.gallatinsystems.survey.dao.QuestionGroupDao;
-import com.gallatinsystems.survey.domain.Question;
-import com.gallatinsystems.survey.domain.QuestionGroup;
 import com.gallatinsystems.surveyal.dao.SurveyedLocaleDao;
-import com.gallatinsystems.surveyal.domain.SurveyalValue;
 import com.gallatinsystems.surveyal.domain.SurveyedLocale;
 import com.google.appengine.api.datastore.Entity;
 import com.google.appengine.api.taskqueue.Queue;
@@ -78,10 +67,7 @@ public class SurveyalRestServlet extends AbstractRestApiServlet {
 
     private SurveyInstanceDAO surveyInstanceDao;
     private SurveyedLocaleDao surveyedLocaleDao;
-    private QuestionDao qDao;
     private CountryDao countryDao;
-    private SurveyMetricMappingDao metricMappingDao;
-    private MetricDao metricDao;
     private String statusFragment;
     private Map<String, String> scoredVals;
 
@@ -92,10 +78,7 @@ public class SurveyalRestServlet extends AbstractRestApiServlet {
     public SurveyalRestServlet() {
         surveyInstanceDao = new SurveyInstanceDAO();
         surveyedLocaleDao = new SurveyedLocaleDao();
-        qDao = new QuestionDao();
         countryDao = new CountryDao();
-        metricDao = new MetricDao();
-        metricMappingDao = new SurveyMetricMappingDao();
         // TODO: once the appropriate metric types are defined and reliably
         // assigned, consider removing this in favor of metrics
         statusFragment = PropertyUtil.getProperty("statusQuestionText");
@@ -230,7 +213,6 @@ public class SurveyalRestServlet extends AbstractRestApiServlet {
      * surveyInstance. This method is unlikely to run in under 1 minute (based on datastore latency)
      * so it is best invoked via a task queue
      *
-     * @param surveyInstanceId
      */
     private void ingestSurveyInstance(SurveyInstance surveyInstance) {
         Boolean adaptClusterData = Boolean.FALSE;
@@ -243,14 +225,9 @@ public class SurveyalRestServlet extends AbstractRestApiServlet {
                     + "for SurveyInstance " + surveyInstance.toString());
         }
 
-        // try to construct geoPlace. Geo information can come from two sources:
-        // 1) the META_GEO information in the surveyInstance, and
-        // 2) a geo question.
-        // If we can't find geo information in 1), we try 2)
-
         GeoPlace geoPlace = null;
-        Double latitude = UNSET_VAL;
-        Double longitude = UNSET_VAL;
+        Double latitude;
+        Double longitude;
         Map<String, Object> geoLocationMap = null;
 
         try {
@@ -262,8 +239,8 @@ public class SurveyalRestServlet extends AbstractRestApiServlet {
         }
 
         if (geoLocationMap != null && !geoLocationMap.isEmpty()) {
-            latitude = (Double) geoLocationMap.get(MapUtils.LATITUDE);
-            longitude = (Double) geoLocationMap.get(MapUtils.LONGITUDE);
+            latitude = (Double) geoLocationMap.get(Constants.LATITUDE);
+            longitude = (Double) geoLocationMap.get(Constants.LONGITUDE);
 
             if (!latitude.equals(locale.getLatitude()) || !longitude.equals(locale.getLongitude())
                     || locale.getGeocells() == null || locale.getGeocells().isEmpty()) {
@@ -292,19 +269,13 @@ public class SurveyalRestServlet extends AbstractRestApiServlet {
             // TODO: move this to survey instance processing logic
             // if we have a geoPlace, set it on the instance
             surveyInstance.setCountryCode(geoPlace.getCountryCode());
-            surveyInstance.setSublevel1(geoPlace.getSub1());
-            surveyInstance.setSublevel2(geoPlace.getSub2());
-            surveyInstance.setSublevel3(geoPlace.getSub3());
-            surveyInstance.setSublevel4(geoPlace.getSub4());
-            surveyInstance.setSublevel5(geoPlace.getSub5());
-            surveyInstance.setSublevel6(geoPlace.getSub6());
         }
 
         // add surveyInstanceId to list of contributed surveyInstances
         locale.addContributingSurveyInstance(surveyInstance.getKey().getId());
 
         // last update of the locale information
-        locale.setLastSurveyedDate(surveyInstance.getCollectionDate());
+        locale.setLastSurveyedDate(new Date(surveyInstance.getCollectionDate().getTime()));
         locale.setLastSurveyalInstanceId(surveyInstance.getKey().getId());
 
         log.log(Level.FINE, "SurveyLocale at this point " + locale.toString());
@@ -313,10 +284,6 @@ public class SurveyalRestServlet extends AbstractRestApiServlet {
         // save the surveyalValues
         if (savedLocale.getKey() != null) {
             surveyInstance.setSurveyedLocaleId(savedLocale.getKey().getId());
-            List<SurveyalValue> values = constructValues(savedLocale);
-            if (values != null) {
-                surveyedLocaleDao.save(values);
-            }
             surveyedLocaleDao.save(savedLocale);
             surveyInstanceDao.save(surveyInstance);
         }
@@ -369,8 +336,6 @@ public class SurveyalRestServlet extends AbstractRestApiServlet {
             return;
         }
 
-        MapUtils.recomputeCluster(cache, locale, delta);
-
         // delete locale if the Delta was a subtraction
         if (delta < 0) {
             slDao.delete(locale);
@@ -416,173 +381,7 @@ public class SurveyalRestServlet extends AbstractRestApiServlet {
     private void setGeoData(GeoPlace geoPlace, SurveyedLocale l) {
         if (geoPlace != null) {
             l.setCountryCode(geoPlace.getCountryCode());
-            l.setSublevel1(geoPlace.getSub1());
-            l.setSublevel2(geoPlace.getSub2());
-            l.setSublevel3(geoPlace.getSub3());
-            l.setSublevel4(geoPlace.getSub4());
-            l.setSublevel5(geoPlace.getSub5());
-            l.setSublevel6(geoPlace.getSub6());
         }
-    }
-
-    /**
-     * converts QuestionAnswerStore objects into SurveyalValues, copying the overlapping values from
-     * SurveyedLocale as needed. The surveydLocale must have been saved prior to calling this method
-     * if one expects the surveyedLocaleId member to be populated.
-     *
-     * @param l
-     * @param answers
-     * @return
-     */
-    @SuppressWarnings({
-            "unchecked", "rawtypes"
-    })
-    private List<SurveyalValue> constructValues(SurveyedLocale l) {
-        List<QuestionAnswerStore> answers = surveyInstanceDao.listQuestionAnswerStore(
-                l.getLastSurveyalInstanceId(), null);
-        List<SurveyalValue> values = new ArrayList<SurveyalValue>();
-        if (answers != null && answers.size() > 0) {
-            String key = null;
-            Integer questionGroupOrder = null;
-            Question q = null;
-            Long questionId = null;
-            QuestionGroupDao qgDao = new QuestionGroupDao();
-
-            Cache cache = MemCacheUtils.initCache(12 * 60 * 60); // 12 hours
-
-            List<SurveyMetricMapping> mappings = null;
-            List<SurveyalValue> oldVals = surveyedLocaleDao
-                    .listSurveyalValuesByInstance(answers.get(0)
-                            .getSurveyInstanceId());
-            List<Metric> metrics = null;
-            boolean loadedItems = false;
-            List<Question> questionList = qDao.listQuestionsBySurvey(answers.get(0).getSurveyId());
-
-            // put questions in map for easy retrieval
-            Map qMap = new HashMap<Long, Integer>();
-            Integer index = 0;
-            if (questionList != null) {
-                for (Question qu : questionList) {
-                    qMap.put(qu.getKey().getId(), index);
-                    index++;
-                }
-            }
-
-            // date value
-            Calendar cal = new GregorianCalendar();
-            for (QuestionAnswerStore ans : answers) {
-                if (!loadedItems && ans.getSurveyId() != null) {
-                    metrics = metricDao.listMetrics(null, null, null,
-                            l.getOrganization(), "all");
-                    mappings = metricMappingDao.listMappingsBySurvey(ans
-                            .getSurveyId());
-                    loadedItems = true;
-                }
-                SurveyalValue val = null;
-                if (oldVals != null) {
-                    for (SurveyalValue oldVal : oldVals) {
-                        if (oldVal.getSurveyQuestionId() != null
-                                && oldVal.getSurveyQuestionId().toString()
-                                        .equals(ans.getQuestionID())) {
-                            val = oldVal;
-                        }
-                    }
-                }
-                if (val == null) {
-                    val = new SurveyalValue();
-                }
-                val.setSurveyedLocaleId(l.getKey().getId());
-                val.setCollectionDate(ans.getCollectionDate());
-                val.setCountryCode(l.getCountryCode());
-
-                if (ans.getCollectionDate() != null) {
-                    cal.setTime(ans.getCollectionDate());
-                }
-                val.setDay(cal.get(Calendar.DAY_OF_MONTH));
-                val.setMonth(cal.get(Calendar.MONTH) + 1);
-                val.setYear(cal.get(Calendar.YEAR));
-                val.setLocaleType(l.getLocaleType());
-                val.setStringValue(ans.getValue());
-                val.setValueType(SurveyalValue.STRING_VAL_TYPE);
-                val.setSurveyId(ans.getSurveyId());
-                if (ans.getValue() != null) {
-                    try {
-
-                        Double d = Double.parseDouble(ans.getValue().trim());
-                        val.setNumericValue(d);
-                        val.setValueType(SurveyalValue.NUM_VAL_TYPE);
-                    } catch (Exception e) {
-                        // no-op
-                    }
-                }
-                if (metrics != null && mappings != null) {
-                    metriccheck: for (SurveyMetricMapping mapping : mappings) {
-                        if (ans.getQuestionID() != null
-                                && Long.parseLong(ans.getQuestionID()) == mapping
-                                        .getSurveyQuestionId()) {
-                            for (Metric m : metrics) {
-                                if (mapping.getMetricId() == m.getKey().getId()) {
-                                    val.setMetricId(m.getKey().getId());
-                                    val.setMetricName(m.getName());
-                                    val.setMetricGroup(m.getGroup());
-                                    break metriccheck;
-                                }
-                            }
-                        }
-                    }
-                }
-                // TODO: resolve score
-                val.setOrganization(l.getOrganization());
-                val.setSublevel1(l.getSublevel1());
-                val.setSublevel2(l.getSublevel2());
-                val.setSublevel3(l.getSublevel3());
-                val.setSublevel4(l.getSublevel4());
-                val.setSublevel5(l.getSublevel5());
-                val.setSublevel6(l.getSublevel6());
-                val.setSurveyInstanceId(ans.getSurveyInstanceId());
-                val.setSystemIdentifier(l.getSystemIdentifier());
-
-                questionId = null;
-                if (ans.getQuestionID() != null) {
-                    try {
-                        questionId = Long.parseLong(ans.getQuestionID());
-                    } catch (NumberFormatException e) {
-                        log.log(Level.SEVERE,
-                                "Could not create surveyal value for question answer: "
-                                        + ans.getKey().getId() + ": "
-                                        + "can't parse questionId.");
-                    }
-                }
-
-                if (questionId != null &&
-                        qMap.containsKey(questionId)) {
-                    q = questionList.get((Integer) qMap.get(questionId));
-                    val.setQuestionText(q.getText());
-                    val.setSurveyQuestionId(q.getKey().getId());
-                    val.setQuestionType(q.getType().toString());
-                    val.setQuestionOrder(q.getOrder());
-                    val.setSurveyId(q.getSurveyId());
-
-                    // try to get question group order from cache
-                    key = "qg-order-" + q.getQuestionGroupId();
-                    if (cache != null && cache.containsKey(key)) {
-                        questionGroupOrder = (Integer) cache.get(key);
-                    } else {
-                        // if not in cache, find it in datastore
-                        QuestionGroup qg = qgDao.getByKey(q.getQuestionGroupId());
-                        if (qg != null) {
-                            questionGroupOrder = qg.getOrder();
-                            if (cache != null) {
-                                MemCacheUtils.putObject(cache, key, questionGroupOrder);
-                            }
-                        }
-                    }
-                    val.setQuestionGroupOrder(questionGroupOrder);
-                }
-                values.add(val);
-            }
-        }
-        return values;
     }
 
     @Override

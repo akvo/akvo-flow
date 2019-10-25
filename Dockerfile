@@ -1,36 +1,48 @@
-FROM ruby:2.4.1
+FROM alpine:3.7
 
-RUN echo "deb http://ftp.debian.org/debian jessie-backports main" >> /etc/apt/sources.list && \
-    apt-get update && \
-    apt-get -t jessie-backports install -y -q --no-install-recommends openjdk-8-jdk git maven ant && \
-    apt-get clean && \
-    rm -rf /var/lib/apt/lists/* && \
-    update-java-alternatives -s java-1.8.0-openjdk-amd64 && \
-    curl -L https://nodejs.org/dist/v8.2.1/node-v8.2.1-linux-x64.tar.xz | tar -xJf - --strip-components=1 -C /usr
+RUN set -ex ; \
+    apk add --no-cache git build-base libffi-dev
 
-RUN mkdir /akvo-flow
-
-WORKDIR /akvo-flow
-
-COPY Dashboard/Gemfile Dashboard/Gemfile.lock Dashboard/app/cljs/project.clj ./
-
-# throw errors if Gemfile has been modified since Gemfile.lock
-RUN bundle config --global frozen 1
-
-RUN bundle install
-
-# Leinigen
+ARG CLOUD_SDK_VERSION=198.0.0
 ENV LEIN_ROOT=1
+ENV PATH="/google-cloud-sdk/bin:${PATH}"
+ENV CLOUDSDK_PYTHON_SITEPACKAGES=1
+ENV BUNDLE_GEMFILE=/app/src/Dashboard/Gemfile
 
-RUN curl -L -O https://raw.githubusercontent.com/technomancy/leiningen/stable/bin/lein && \
-    mv lein /usr/local/bin/ && \
+RUN set -ex ; \
+    apk add --no-cache \
+    bash~=4.4 \
+    curl~=7 \
+    git~=2 \
+    nodejs~=8 \
+    openjdk8~=8 \
+    openssh-client~=7 \
+    python2~=2.7 \
+    py-crcmod~=1.7 \
+    py-openssl~=17.5 \
+    maven~=3.5 \
+    nss~=3.34 \
+    libc6-compat~=1.1 \
+    su-exec~=0.2 \
+    shadow~=4.5 \
+    zip~=3.0 && \
+    curl -O "https://dl.google.com/dl/cloudsdk/channels/rapid/downloads/google-cloud-sdk-${CLOUD_SDK_VERSION}-linux-x86_64.tar.gz" && \
+    tar xzf "google-cloud-sdk-${CLOUD_SDK_VERSION}-linux-x86_64.tar.gz" && \
+    rm "google-cloud-sdk-${CLOUD_SDK_VERSION}-linux-x86_64.tar.gz" && \
+    ln -s /lib /lib64 && \
+    gcloud config set core/disable_usage_reporting true && \
+    gcloud config set component_manager/disable_update_check true && \
+    gcloud components install app-engine-java && \
+    rm -rf /google-cloud-sdk/.install/.backup && \
+    rm -rf /google-cloud-sdk/.install/.download && \
+    curl -L -o /usr/local/bin/lein https://raw.githubusercontent.com/technomancy/leiningen/stable/bin/lein && \
     chmod a+x /usr/local/bin/lein && \
-    lein
+    lein && \
+    adduser -D -h /home/akvo -s /bin/bash akvo akvo
 
-COPY docker/startup.sh docker/build.sh /usr/local/bin/
+COPY Dashboard/package.json Dashboard/package-lock.json /
 
-RUN chmod a+x /usr/local/bin/*.sh
+RUN set -ex ; \
+    npm install
 
-ENTRYPOINT ["/usr/local/bin/startup.sh"]
-
-CMD ["/usr/local/bin/build.sh"]
+WORKDIR /app/src

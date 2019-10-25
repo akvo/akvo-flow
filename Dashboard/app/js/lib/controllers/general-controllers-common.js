@@ -1,38 +1,30 @@
-FLOW.dashboardLanguageControl = Ember.Object.create({
+import observe from '../mixins/observe';
+
+FLOW.dashboardLanguageControl = Ember.Object.create(observe({ dashboardLanguage: 'languageChanged' }), {
   dashboardLanguage: FLOW.Env.locale,
 
-  content: [{ label: "English (Default)", value: "en"},
-            { label: "Español", value: "es" },
-            { label: "Français", value: "fr" },
-            { label: "Bahasa Indonesia", value: "id"},
-            { label: "Português", value: "pt" },
-            { label: "Tiếng Việt", value: "vi"}],
+  content: [{ label: 'English (Default)', value: 'en' },
+    { label: 'Español', value: 'es' },
+    { label: 'Français', value: 'fr' },
+    { label: 'Bahasa Indonesia', value: 'id' },
+    { label: 'Português', value: 'pt' },
+    { label: 'Tiếng Việt', value: 'vi' }],
 
-  languageChanged: function () {
-    var localeUrl = '/ui-strings.js?locale=' + this.dashboardLanguage;
+  languageChanged() {
+    const localeUrl = `/ui-strings.js?locale=${this.dashboardLanguage}`;
     $.ajax({
       url: localeUrl,
-      complete: function () {
-        location.reload(false);
+      complete() {
+        window.location.reload(false);
       },
     });
-  }.observes('dashboardLanguage'),
+  },
 });
 
-FLOW.reportLanguageControl = Ember.ArrayController.create({
-  content: [
-    Ember.Object.create({
-	  label: "English (Default)",
-	  value: "en"
-	}),
-	Ember.Object.create({
-	  label: "Español",
-	  value: "es"
-	})]
-});
-
-
-FLOW.selectedControl = Ember.Controller.create({
+FLOW.selectedControl = Ember.Controller.create(observe({
+  'this.selectedSurveyGroup': 'deselectSurveyGroupChildren',
+  'this.selectedSurvey': 'deselectSurveyChildren',
+}), {
   selectedSurveyGroup: null,
   selectedSurvey: null,
   selectedSurveys: [],
@@ -52,28 +44,24 @@ FLOW.selectedControl = Ember.Controller.create({
   selectedForCopyQuestion: null,
   selectedCreateNewGroup: false,
   selectedSurveyOPTIONQuestions: null,
-  selectedCascadeResource:null,
-  selectedCaddisflyResource:null,
-  radioOptions: "",
+  selectedCascadeResource: null,
+  selectedCaddisflyResource: null,
+  radioOptions: '',
   cascadeImportNumLevels: null,
   cascadeImportIncludeCodes: null,
 
-  // OptionQuestions:function (){
-  //   console.log('optionquestions 1');
-  // }.observes('this.selectedSurveyOPTIONQuestions'),
-
   // when selected survey changes, deselect selected surveys and question groups
-  deselectSurveyGroupChildren: function () {
+  deselectSurveyGroupChildren() {
     FLOW.selectedControl.set('selectedSurvey', null);
     FLOW.selectedControl.set('selectedSurveyAllQuestions', null);
     FLOW.selectedControl.set('selectedQuestionGroup', null);
     FLOW.selectedControl.set('selectedQuestion', null);
-  }.observes('this.selectedSurveyGroup'),
+  },
 
-  deselectSurveyChildren: function () {
+  deselectSurveyChildren() {
     FLOW.selectedControl.set('selectedQuestionGroup', null);
     FLOW.selectedControl.set('selectedQuestion', null);
-  }.observes('this.selectedSurvey')
+  },
 });
 
 
@@ -89,7 +77,7 @@ FLOW.editControl = Ember.Controller.create({
   editAttributeName: null,
   editAttributeGroup: null,
   editAttributeType: null,
-  editAttributeId: null
+  editAttributeId: null,
 });
 
 
@@ -97,9 +85,8 @@ FLOW.tableColumnControl = Ember.Object.create({
   sortProperties: null,
   sortAscending: true,
   selected: null,
-  content: null
+  content: null,
 });
-
 
 // set by restadapter sideLoad meta
 FLOW.metaControl = Ember.Object.create({
@@ -110,8 +97,7 @@ FLOW.metaControl = Ember.Object.create({
   message: null,
   status: null,
   cursorType: null,
-}),
-
+});
 
 // set by javacript datepickers in views.js
 FLOW.dateControl = Ember.Object.create({
@@ -119,7 +105,7 @@ FLOW.dateControl = Ember.Object.create({
   // binding. This makes sure we can both pick a date with the datepicker, and enter
   // a date manually
   fromDate: null,
-  toDate: null
+  toDate: null,
 });
 
 
@@ -128,23 +114,23 @@ FLOW.savingMessageControl = Ember.Object.create({
   areLoadingBool: false,
   numberLoading: 0,
 
-  numLoadingChange: function (delta) {
-	  this.set('numberLoading',this.get('numberLoading') + delta);
-	  if (this.get('numberLoading') < 0){
-		  this.set('numberLoading', 0);
-	  }
-	  if (this.get('numberLoading') > 0) {
-		  this.set('areLoadingBool', true);
-	  } else {
-		  this.set('areLoadingBool', false);
-	  }
+  numLoadingChange(delta) {
+    this.set('numberLoading', this.get('numberLoading') + delta);
+    if (this.get('numberLoading') < 0) {
+      this.set('numberLoading', 0);
+    }
+    if (this.get('numberLoading') > 0) {
+      this.set('areLoadingBool', true);
+    } else {
+      this.set('areLoadingBool', false);
+    }
   },
 
-  checkSaving: function () {
+  checkSaving() {
     if (FLOW.store.defaultTransaction.buckets.inflight.list.get('length') > 0) {
       this.set('areSavingBool', true);
     } else {
       this.set('areSavingBool', false);
     }
-  }
+  },
 });

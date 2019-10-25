@@ -1,5 +1,5 @@
 /*
- *  Copyright (C) 2010-2016 Stichting Akvo (Akvo Foundation)
+ *  Copyright (C) 2010-2016,2019 Stichting Akvo (Akvo Foundation)
  *
  *  This file is part of Akvo FLOW.
  *
@@ -26,7 +26,6 @@ import java.util.Map;
 import java.util.Set;
 import java.util.UUID;
 
-import javax.jdo.annotations.NotPersistent;
 import javax.jdo.annotations.PersistenceCapable;
 
 import org.waterforpeople.mapping.domain.QuestionAnswerStore;
@@ -57,12 +56,6 @@ public class SurveyedLocale extends BaseDomain {
     private String identifier;
     private String displayName;
     private String countryCode;
-    private String sublevel1;
-    private String sublevel2;
-    private String sublevel3;
-    private String sublevel4;
-    private String sublevel5;
-    private String sublevel6;
     private Set<Long> surveyInstanceContrib;
     private List<String> geocells;
     private String localeType;
@@ -74,8 +67,6 @@ public class SurveyedLocale extends BaseDomain {
     private Date lastSurveyedDate;
     private Long lastSurveyalInstanceId;
     private Long creationSurveyId;
-    @NotPersistent
-    private List<SurveyalValue> surveyalValues;
 
     public Long getLastSurveyalInstanceId() {
         return lastSurveyalInstanceId;
@@ -129,54 +120,6 @@ public class SurveyedLocale extends BaseDomain {
         this.countryCode = countryCode;
     }
 
-    public String getSublevel1() {
-        return sublevel1;
-    }
-
-    public void setSublevel1(String sublevel1) {
-        this.sublevel1 = sublevel1;
-    }
-
-    public String getSublevel2() {
-        return sublevel2;
-    }
-
-    public void setSublevel2(String sublevel2) {
-        this.sublevel2 = sublevel2;
-    }
-
-    public String getSublevel3() {
-        return sublevel3;
-    }
-
-    public void setSublevel3(String sublevel3) {
-        this.sublevel3 = sublevel3;
-    }
-
-    public String getSublevel4() {
-        return sublevel4;
-    }
-
-    public void setSublevel4(String sublevel4) {
-        this.sublevel4 = sublevel4;
-    }
-
-    public String getSublevel5() {
-        return sublevel5;
-    }
-
-    public void setSublevel5(String sublevel5) {
-        this.sublevel5 = sublevel5;
-    }
-
-    public String getSublevel6() {
-        return sublevel6;
-    }
-
-    public void setSublevel6(String sublevel6) {
-        this.sublevel6 = sublevel6;
-    }
-
     public String getLocaleType() {
         return localeType;
     }
@@ -207,14 +150,6 @@ public class SurveyedLocale extends BaseDomain {
 
     public void setSystemIdentifier(String systemIdentifier) {
         this.systemIdentifier = systemIdentifier;
-    }
-
-    public List<SurveyalValue> getSurveyalValues() {
-        return surveyalValues;
-    }
-
-    public void setSurveyalValues(List<SurveyalValue> surveyalValues) {
-        this.surveyalValues = surveyalValues;
     }
 
     public void setCurrentStatus(String currentStatus) {
@@ -272,9 +207,9 @@ public class SurveyedLocale extends BaseDomain {
     public void setCreationSurveyId(Long creationSurveyId) {
         this.creationSurveyId = creationSurveyId;
     }
-    
+
     /**
-     * Given a list of datapoint name questions, and the list of responses for 
+     * Given a list of datapoint name questions, and the list of responses for
      * this locale's registration form, reassemble the display name
      */
     public void assembleDisplayName(List<Question> nameQuestions, List<QuestionAnswerStore> responses) {
@@ -286,7 +221,7 @@ public class SurveyedLocale extends BaseDomain {
                 nameResponses.put(qId, qas.getDatapointNameValue());
             }
         }
-                
+
         StringBuilder sb = new StringBuilder();
         boolean first = true;
         for (Question q : nameQuestions) {
@@ -300,7 +235,7 @@ public class SurveyedLocale extends BaseDomain {
             sb.append(nameResponses.get(id));
             first = false;
         }
-        
+
         displayName = sb.toString();
     }
 
@@ -322,6 +257,9 @@ public class SurveyedLocale extends BaseDomain {
         try {
             Long id = Long.parseLong(strippedUUID, 16);
             result = Long.toString(id, 32).replace("l", "w").replace("o", "x").replace("i", "y");
+            while (result.length() < 12) { //un-suppress leading zeroes; we must have 12 characters
+                result = "0" + result;
+            }
         } catch (NumberFormatException e) {
             // if we can't create the base32 UUID string, return the original uuid.
             result = uuid;
@@ -350,5 +288,19 @@ public class SurveyedLocale extends BaseDomain {
                 oldStyleIdentifier.substring(4, 8),
                 base32Uuid.substring(10));
     }
-    
+
+    public void setGeoLocation(String geoLocationString) {
+        if (geoLocationString == null) {
+            return;
+        }
+
+        String[] geoParts = geoLocationString.split("\\|");
+        if (geoParts == null || geoParts.length < 2 || geoParts[0] == null || geoParts[1] == null) {
+            return;
+        }
+
+        this.latitude = Double.parseDouble(geoParts[0]);
+        this.longitude = Double.parseDouble(geoParts[1]);
+    }
+
 }

@@ -1,5 +1,5 @@
 /*
- *  Copyright (C) 2012-2017 Stichting Akvo (Akvo Foundation)
+ *  Copyright (C) 2013-2019 Stichting Akvo (Akvo Foundation)
  *
  *  This file is part of Akvo FLOW.
  *
@@ -32,10 +32,8 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
-import org.waterforpeople.mapping.analytics.dao.SurveyInstanceSummaryDao;
-import org.waterforpeople.mapping.analytics.domain.SurveyInstanceSummary;
 import org.waterforpeople.mapping.app.gwt.client.survey.SurveyDto;
-import org.waterforpeople.mapping.app.gwt.server.survey.SurveyServiceImpl;
+import org.waterforpeople.mapping.app.web.SurveyAssemblyServlet;
 import org.waterforpeople.mapping.app.web.dto.BootstrapGeneratorRequest;
 import org.waterforpeople.mapping.app.web.dto.DataProcessorRequest;
 import org.waterforpeople.mapping.app.web.rest.dto.RestStatusDto;
@@ -90,9 +88,7 @@ public class ActionRestService {
         RestStatusDto statusDto = new RestStatusDto();
 
         // perform the required action
-        if ("recomputeSurveyInstanceSummaries".equals(action)) {
-            status = recomputeSurveyInstanceSummaries();
-        } else if ("publishSurvey".equals(action) && surveyId != null) {
+        if ("publishSurvey".equals(action) && surveyId != null) {
             status = publishSurvey(surveyId);
         } else if ("generateBootstrapFile".equals(action) && surveyIds != null
                 && email != null) {
@@ -209,45 +205,9 @@ public class ActionRestService {
         return "updated " + counter + " questions";
     }
 
-    @SuppressWarnings("unused")
-    private String recomputeSurveyInstanceSummaries() {
-        List<Survey> surveys = surveyDao.list(Constants.ALL_RESULTS);
-        String status = "failed";
-        if (surveys != null) {
-            SurveyInstanceSummary sis = null;
-            SurveyInstanceSummaryDao sisDao = new SurveyInstanceSummaryDao();
-            for (Survey s : surveys) {
-
-                // need to do it per page
-                Iterable<Entity> siList = null;
-                SurveyInstanceDAO dao = new SurveyInstanceDAO();
-                siList = dao.listSurveyInstanceKeysBySurveyId(s.getKey()
-                        .getId());
-
-                Long count = 0L;
-                for (Entity si : siList) {
-                    count++;
-                }
-
-                sis = sisDao.findBySurveyId(s.getKey().getId());
-
-                if (sis == null) {
-                    sis = new SurveyInstanceSummary();
-                    sis.setCount(count);
-                    sis.setSurveyId(s.getKey().getId());
-                } else {
-                    sis.setCount(count);
-                }
-                sisDao.save(sis);
-            }
-            status = "success";
-        }
-        return status;
-    }
 
     private String publishSurvey(Long surveyId) {
-        SurveyServiceImpl surveyService = new SurveyServiceImpl();
-        surveyService.publishSurveyAsync(surveyId);
+        SurveyAssemblyServlet.runAsTask(surveyId);
         return "publishing requested";
     }
 
@@ -366,8 +326,8 @@ public class ActionRestService {
             surveyDto.setPath(projectCopy.getPath() + "/" + sourceSurvey.getName());
             surveyDto.setSurveyGroupId(savedProjectCopy.getKey().getId());
             Survey surveyCopy = SurveyUtils.copySurvey(sourceSurvey, surveyDto);
+            surveyCopy.setAncestorIds(surveysAncestorIds);
             surveyCopy.setSurveyGroupId(savedProjectCopy.getKey().getId());
-            sourceSurvey.setAncestorIds(surveysAncestorIds);
             long copyId = surveyDao.save(surveyCopy).getKey().getId();
             if (isRegistrationFormId(sourceSurvey.getKey().getId(),
                     projectSource.getNewLocaleSurveyId())) {

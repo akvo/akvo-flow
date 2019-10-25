@@ -1,5 +1,5 @@
 /*
- *  Copyright (C) 2012-2014,2017 Stichting Akvo (Akvo Foundation)
+ *  Copyright (C) 2012-2014,2017,2019 Stichting Akvo (Akvo Foundation)
  *
  *  This file is part of Akvo FLOW.
  *
@@ -16,13 +16,11 @@
 
 package org.waterforpeople.mapping.app.web.rest;
 
-import java.security.SecureRandom;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import org.apache.commons.codec.binary.Base64;
 import org.springframework.beans.BeanUtils;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -34,7 +32,7 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import org.waterforpeople.mapping.app.web.CurrentUserServlet;
 import org.waterforpeople.mapping.app.web.rest.dto.RestStatusDto;
 import org.waterforpeople.mapping.app.web.rest.dto.UserPayload;
-import org.waterforpeople.mapping.app.web.rest.security.AppRole;
+import org.akvo.flow.rest.security.AppRole;
 
 import com.gallatinsystems.common.Constants;
 import com.gallatinsystems.user.app.gwt.client.UserDto;
@@ -101,15 +99,15 @@ public class UserRestService {
     }
 
     private boolean isUserAdminRole(User user) {
-        return user.getPermissionList().equals(Integer.toString(AppRole.ADMIN.getLevel()))
+        return user.getPermissionList().equals(Integer.toString(AppRole.ROLE_ADMIN.getLevel()))
                 || user.getPermissionList()
-                        .equals(Integer.toString(AppRole.SUPER_ADMIN.getLevel()));
+                        .equals(Integer.toString(AppRole.ROLE_SUPER_ADMIN.getLevel()));
     }
 
     private boolean isSuperAdminRole(User user) {
         return user.isSuperAdmin()
                 || user.getPermissionList()
-                        .equals(Integer.toString(AppRole.SUPER_ADMIN.getLevel()));
+                        .equals(Integer.toString(AppRole.ROLE_SUPER_ADMIN.getLevel()));
     }
 
     // find a single user by the userId
@@ -182,8 +180,8 @@ public class UserRestService {
                     });
 
                     if (u.getPermissionList().equals(
-                            String.valueOf(AppRole.SUPER_ADMIN.getLevel()))) {
-                        u.setPermissionList(String.valueOf(AppRole.USER
+                            String.valueOf(AppRole.ROLE_SUPER_ADMIN.getLevel()))) {
+                        u.setPermissionList(String.valueOf(AppRole.ROLE_USER
                                 .getLevel()));
                     }
 
@@ -227,8 +225,8 @@ public class UserRestService {
             });
 
             if (u.getPermissionList().equals(
-                    String.valueOf(AppRole.SUPER_ADMIN.getLevel()))) {
-                u.setPermissionList(String.valueOf(AppRole.USER.getLevel()));
+                    String.valueOf(AppRole.ROLE_SUPER_ADMIN.getLevel()))) {
+                u.setPermissionList(String.valueOf(AppRole.ROLE_USER.getLevel()));
             }
 
             u = userDao.save(u);
@@ -248,53 +246,4 @@ public class UserRestService {
         return response;
     }
 
-    // Create new API keys
-    @RequestMapping(method = RequestMethod.POST, value = "/{id}/apikeys")
-    @ResponseBody
-    public Map<String, Map<String, String>> createApiKeys(@PathVariable("id") Long id) {
-
-        final Map<String, Map<String, String>> response = new HashMap<String, Map<String, String>>();
-        Map<String, String> result = new HashMap<String, String>();
-
-        User user = userDao.getByKey(id);
-
-        if (user == null) {
-            throw new ResourceNotFoundException();
-        }
-        String accessKey = createRandomKey();
-        String secret = createRandomKey();
-        user.setAccessKey(accessKey);
-        user.setSecret(secret);
-        userDao.save(user);
-        result.put("secret", secret);
-        result.put("accessKey", accessKey);
-        response.put("apikeys", result);
-        return response;
-    }
-
-    // Delete existing API keys
-    @RequestMapping(method = RequestMethod.DELETE, value = "/{id}/apikeys")
-    @ResponseBody
-    public Map<String, String> deleteApiKeys(@PathVariable("id") Long id) {
-
-        final Map<String, String> response = new HashMap<String, String>();
-
-        User user = userDao.getByKey(id);
-
-        if (user == null) {
-            throw new ResourceNotFoundException();
-        }
-        user.setAccessKey(null);
-        user.setSecret(null);
-        userDao.save(user);
-        response.put("apikeys", "deleted");
-        return response;
-    }
-
-    static String createRandomKey() {
-        SecureRandom secureRandom = new SecureRandom();
-        byte bytes[] = new byte[32];
-        secureRandom.nextBytes(bytes);
-        return Base64.encodeBase64String(bytes).trim();
-    }
 }

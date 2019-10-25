@@ -1,5 +1,5 @@
 /*
- *  Copyright (C) 2010-2012, 2017 Stichting Akvo (Akvo Foundation)
+ *  Copyright (C) 2010-2012, 2017-2019 Stichting Akvo (Akvo Foundation)
  *
  *  This file is part of Akvo FLOW.
  *
@@ -21,6 +21,7 @@ import static com.gallatinsystems.common.util.MemCacheUtils.putObjects;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -31,9 +32,11 @@ import javax.jdo.PersistenceManager;
 import net.sf.jsr107cache.Cache;
 import net.sf.jsr107cache.CacheException;
 
+import org.akvo.flow.domain.DataUtils;
 import org.waterforpeople.mapping.analytics.domain.SurveyQuestionSummary;
 import org.waterforpeople.mapping.domain.QuestionAnswerStore;
 
+import com.gallatinsystems.common.Constants;
 import com.gallatinsystems.common.util.MemCacheUtils;
 import com.gallatinsystems.framework.dao.BaseDAO;
 import com.gallatinsystems.framework.domain.BaseDomain;
@@ -58,37 +61,31 @@ public class SurveyQuestionSummaryDao extends BaseDAO<SurveyQuestionSummary> {
      * inefficient but is the only way we can be sure we're keeping the count consistent since there
      * is no "select for update" or sql dml-like construct
      *
-     * @param answer
+     * @param questionAnswer
      */
     @SuppressWarnings("rawtypes")
-    public static synchronized void incrementCount(QuestionAnswerStore answer,
-            int unit) {
+    public static synchronized void incrementCount(QuestionAnswerStore questionAnswer, int unit) {
         PersistenceManager pm = PersistenceFilter.getManager();
-        String answerText = answer.getValue();
-        String[] answers;
-        if (answerText != null && answerText.contains("|")) {
-            answers = answerText.split("\\|");
-        } else {
-            answers = new String[] {
-                    answerText
-            };
-        }
+        String[] answers = DataUtils.optionResponsesTextArray(questionAnswer.getValue()); //JSON or |
+
         for (int i = 0; i < answers.length; i++) {
+            String answer = answers[i];
+            if (answer.length() > Constants.MAX_LENGTH) {
+                answer = answer.substring(0, Constants.MAX_LENGTH);
+            }
             // find surveyQuestionSummary objects with the right question id and answer text
             javax.jdo.Query query = pm.newQuery(SurveyQuestionSummary.class);
-            query
-                    .setFilter("questionId == questionIdParam && response == answerParam");
-            query
-                    .declareParameters("String questionIdParam, String answerParam");
-            List results = (List) query.execute(answer.getQuestionID(),
-                    answers[i]);
+            query.setFilter("questionId == questionIdParam && response == answerParam");
+            query.declareParameters("String questionIdParam, String answerParam");
+            List results = (List) query.execute(questionAnswer.getQuestionID(), answer);
+
             SurveyQuestionSummary summary = null;
             if ((results == null || results.size() == 0) && unit > 0) {
                 // no previous surveyQuestionSummary for this answer, make a new one
                 summary = new SurveyQuestionSummary();
                 summary.setCount(new Long(unit));
-                summary.setQuestionId(answer.getQuestionID());
-                summary.setResponse(answers[i]);
+                summary.setQuestionId(questionAnswer.getQuestionID());
+                summary.setResponse(answer);
             } else if (results != null && results.size() > 0) {
                 // update an existing questionAnswerSummary
                 summary = (SurveyQuestionSummary) results.get(0);
@@ -122,11 +119,21 @@ public class SurveyQuestionSummaryDao extends BaseDAO<SurveyQuestionSummary> {
      * @param questionResponse
      * @return
      */
+    @SuppressWarnings("unchecked")
     public List<SurveyQuestionSummary> listByResponse(String questionId, String questionResponse) {
+        if (questionResponse == null) {
+            return Collections.emptyList();
+        }
+        //Truncate too-long key
+        String answer = questionResponse;
+        if (answer.length() > Constants.MAX_LENGTH) {
+            answer = answer.substring(0, Constants.MAX_LENGTH);
+        }
+
         List<SurveyQuestionSummary> result = null;
         String cacheKey = null;
         try {
-            cacheKey = getCacheKey(questionId + "-" + questionResponse);
+            cacheKey = getCacheKey(questionId + "-" + answer);
             if (MemCacheUtils.containsKey(cache, cacheKey)) { //let's try to get it
                 SurveyQuestionSummary sqs = (SurveyQuestionSummary)cache.get(cacheKey);
                 if (sqs != null) {
@@ -148,8 +155,7 @@ public class SurveyQuestionSummaryDao extends BaseDAO<SurveyQuestionSummary> {
         paramMap = new HashMap<String, Object>();
 
         appendNonNullParam("questionId", filterString, paramString, "String", questionId, paramMap);
-        appendNonNullParam("response", filterString, paramString, "String", questionResponse,
-                paramMap);
+        appendNonNullParam("response", filterString, paramString, "String", answer, paramMap);
 
         query.setFilter(filterString.toString());
         query.declareParameters(paramString.toString());
@@ -232,8 +238,8 @@ public class SurveyQuestionSummaryDao extends BaseDAO<SurveyQuestionSummary> {
      * @param summary
      */
     public List<SurveyQuestionSummary> save(List<SurveyQuestionSummary> summary) {
-        List<SurveyQuestionSummary> savedSummaryList = (List<SurveyQuestionSummary>) super
-                .save(summary);
+        List<SurveyQuestionSummary> savedSummaryList =
+                (List<SurveyQuestionSummary>) super.save(summary);
         cache(savedSummaryList);
         return savedSummaryList;
     }

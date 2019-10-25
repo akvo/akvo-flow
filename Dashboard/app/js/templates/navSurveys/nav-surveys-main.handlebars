@@ -17,7 +17,11 @@
           <nav class="menuTopbar actionHighLighted">
             <ul>
               <li><p>{{t _moving}} <span class="itemMoved">{{FLOW.projectControl.moveTarget.code}}</span> {{FLOW.projectControl.moveTargetType}}</p></li>
+              {{#if view.disableAddSurveyButtonInRoot}}
+              <li><a class="moveAction button noChanges">{{t _move_here}}</a></li>
+              {{else}}
               <li><a class="moveAction button" {{action "endMoveProject" target="FLOW.projectControl"}}>{{t _move_here}}</a></li>
+              {{/if}}
               <li><a class="redCancel  btnOutline" {{action "cancelMoveProject" target="FLOW.projectControl"}}>{{t _cancel}}</a></li>
             </ul>
           </nav>
@@ -26,7 +30,11 @@
             <nav class="menuTopbar actionHighLighted">
               <ul>
                 <li><p>{{t _copying}} <span class="itemMoved">{{FLOW.projectControl.copyTarget.code}}</span></p></li>
+                {{#if view.disableAddSurveyButtonInRoot}}
+                <li><a class="moveAction button noChanges">{{t _copy_here}}</a></li>
+                {{else}}
                 <li><a class="moveAction button" {{action "endCopyProject" target="FLOW.projectControl"}}>{{t _copy_here}}</a></li>
+                {{/if}}
                 <li><a class="redCancel btnOutline" {{action "cancelCopyProject" target="FLOW.projectControl"}}>{{t _cancel}}</a></li>
               </ul>
             </nav>
@@ -55,7 +63,7 @@
         <nav class="menuTopbar">
           <ul>
             {{#if view.hasUnsavedChanges}}
-              <li><a class="saveProject" {{action "doSave" target="this"}}>{{t _save}}</a></li>
+              <li><a class="saveProject" {{action 'saveProject' target="FLOW.projectControl"}}>{{t _save}}</a></li>
             {{else}}
               <li><a class="saveProject noChanges">{{t _save}}</a></li>
             {{/if}}

@@ -1,5 +1,5 @@
 /*
- *  Copyright (C) 2010-2017 Stichting Akvo (Akvo Foundation)
+ *  Copyright (C) 2010-2018 Stichting Akvo (Akvo Foundation)
  *
  *  This file is part of Akvo FLOW.
  *
@@ -27,6 +27,7 @@ public class Constants {
             "createUserId"
     };
     public static final int MAX_LENGTH = 500;
+    public static final int MAX_DS_STRING_LENGTH = 1500;
     public static final int CONNECTION_TIMEOUT = 60 * 1000; // 1min
     public static final int READ_TIMEOUT = 2 * 60 * 1000; // 2min
     public static final int TASK_RETRY_INTERVAL = 2 * 10 * 1000; // 2 mins
@@ -35,7 +36,6 @@ public class Constants {
     public static final String AWS_ACCESS_ID = "aws_identifier";
     public static final String AWS_SECRET_KEY = "aws_secret_key";
     public static final String ANCESTOR_IDS_FIELD = "ancestorIds";
-    public static final String API_V1_PREFIX = "/api/v1";
     public static final Long ROOT_FOLDER_ID = 0L;
 
     // caddisfly constants
@@ -46,5 +46,8 @@ public class Constants {
     public static final String CADDISFLY_RESULT_ID = "id";
 
     public static final String DEFAULT_SURVEY_FILE_NAME = "survey";
+
+    public static final String LATITUDE = "latitude";
+    public static final String LONGITUDE = "longitude";
 
 }

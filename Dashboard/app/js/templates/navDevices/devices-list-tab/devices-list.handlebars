@@ -24,11 +24,9 @@
       <table class="dataTable" id="surveyDataTable">
         <!-- TABLE HEADER-->
         <thead>
-          <tr> {{#view FLOW.ColumnView item="select" }}
-            {{view Ember.Checkbox checkedBinding="FLOW.deviceControl.allAreSelected"}}
-            {{/view}}
+          <tr>
+            {{#view FLOW.ColumnView item="select" class="noArrows"}}{{/view}}
             {{#view FLOW.ColumnView item="IMEI" type="device"}} <a {{action "sort" target="this"}}>{{t _imei}} {{tooltip _imei_tooltip}}</a> {{/view}}
-            {{#view FLOW.ColumnView item="phoneNumber" type="device"}} <a {{action "sort" target="this"}}>{{t _phone_number}}</a> {{/view}}
             {{#view FLOW.ColumnView item="deviceIdentifier" type="device"}} <a {{action "sort" target="this"}}>{{t _device_id}}</a> {{/view}}
             {{#view FLOW.ColumnView item="deviceGroup" type="device"}} <a {{action "sort" target="this"}}>{{t _device_group}}</a> {{/view}}
             {{#view FLOW.ColumnView item="lastPositionDate" type="device"}} <a {{action "sort" target="this"}}>{{t _last_contact}}</a> {{/view}}
@@ -40,7 +38,6 @@
             <tr>
               <td class="selection"> {{view Ember.Checkbox checkedBinding="isSelected"}}</td>
               <td class="EMEI">{{esn}}</td>
-              <td class="phoneNumber" >{{phoneNumber}}</td>
               <td class="deviceId" >{{deviceIdentifier}}</td>
               <td class="deviceGroup">{{deviceGroupName}}</td>
               <td class="lastBeacon">{{date1 lastPositionDate}}</td>
@@ -73,7 +70,7 @@
               <div class="buttons menuCentre">
                 <ul>
                   <li><a {{action "doAddToGroup" target="this"}} class="ok smallBtn">{{t _ok}}</a></li>
-                  <li><a {{action "cancelAddToGroup" target="this"}}} class="cancel">{{t _cancel}}</a></li>
+                  <li><a {{action "cancelAddToGroup" target="this"}} class="cancel">{{t _cancel}}</a></li>
                 </ul>
               </div>
             </div>
@@ -90,7 +87,7 @@
               <div class="buttons menuCentre">
                 <ul>
                   <li><a {{action "doRemoveFromGroup" target="this"}} class="ok smallBtn">{{t _ok}}</a></li>
-                  <li><a {{action "cancelRemoveFromGroup" target="this"}}} class="cancel">{{t _cancel}}</a></li>
+                  <li><a {{action "cancelRemoveFromGroup" target="this"}} class="cancel">{{t _cancel}}</a></li>
                 </ul>
               </div>
             </div>
@@ -130,7 +127,7 @@
               <div class="buttons menuCentre">
                 <ul>
                   <li><a {{action "doManageDeviceGroups" target="this"}} class="ok smallBtn">{{t _save}}</a></li>
-                  <li><a {{action "cancelManageDeviceGroups" target="this"}}} class="cancel">{{t _cancel}}</a></li>
+                  <li><a {{action "cancelManageDeviceGroups" target="this"}} class="cancel">{{t _cancel}}</a></li>
                 </ul>
               </div>
             </div>

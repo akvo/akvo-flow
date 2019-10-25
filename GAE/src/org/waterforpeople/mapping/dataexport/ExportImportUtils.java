@@ -1,4 +1,4 @@
-/*  Copyright (C) 2015-2016 Stichting Akvo (Akvo Foundation)
+/*  Copyright (C) 2015-2019 Stichting Akvo (Akvo Foundation)
  *
  *  This file is part of Akvo FLOW.
  *
@@ -28,6 +28,7 @@ import org.apache.log4j.Logger;
 import org.apache.poi.ss.usermodel.Cell;
 import org.apache.poi.ss.usermodel.DataFormatter;
 import org.apache.poi.ss.usermodel.Row;
+import org.apache.poi.ss.usermodel.Sheet;
 import org.waterforpeople.mapping.domain.response.value.Media;
 import org.waterforpeople.mapping.serialization.response.MediaResponse;
 
@@ -77,14 +78,14 @@ public class ExportImportUtils {
      * @return
      * @throws NoSuchAlgorithmException
      */
-    public static String md5Digest(List<Row> rows, int lastColumnIndex)
+    public static String md5Digest(List<Row> rows, int lastColumnIndex, Sheet limitedSheet)
             throws NoSuchAlgorithmException {
 
         MessageDigest digest = MessageDigest.getInstance("MD5");
 
         for (Row row : rows) {
             for (Cell cell : row) {
-                if (cell.getColumnIndex() > lastColumnIndex) {
+                if (row.getSheet() == limitedSheet && cell.getColumnIndex() > lastColumnIndex) {
                     break;
                 } else {
                     String val = parseCellAsString(cell);
@@ -129,7 +130,7 @@ public class ExportImportUtils {
         try {
             return new Date(Long.valueOf(value));
         } catch (NumberFormatException e) {
-            log.error("Value is not a valid timestamp: " + value);
+            log.info("Value is not a valid timestamp: " + value);
         }
 
         // Value is not a timestamp. Try to parse as a spreadsheet value
@@ -159,7 +160,7 @@ public class ExportImportUtils {
             // Date is not ISO 8601
         }
 
-        log.warn("Response doesn't contain a valid format: " + dateString);
+        log.warn("Response is not in a valid date format: " + dateString);
         return null;
     }
 
@@ -167,11 +168,12 @@ public class ExportImportUtils {
         String cell = "";
         Media media = MediaResponse.parse(value);
         String filename = media.getFilename();
-        final int filenameIndex = filename != null ? filename.lastIndexOf("/") + 1 : -1;
-        if (filenameIndex > 0 && filenameIndex < filename.length()) {
-            cell = prefix + filename.substring(filenameIndex);
+        if (filename != null) {
+            final int filenameIndex = filename.lastIndexOf("/") + 1;
+            if (filenameIndex > 0 && filenameIndex < filename.length()) {
+                cell = prefix + filename.substring(filenameIndex);
+            }
         }
-
         return cell;
     }
 

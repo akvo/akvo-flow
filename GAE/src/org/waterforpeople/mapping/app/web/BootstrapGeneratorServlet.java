@@ -1,5 +1,5 @@
 /*
- *  Copyright (C) 2010-2017 Stichting Akvo (Akvo Foundation)
+ *  Copyright (C) 2010-2019 Stichting Akvo (Akvo Foundation)
  *
  *  This file is part of Akvo FLOW.
  *
@@ -29,11 +29,11 @@ import com.gallatinsystems.survey.dao.SurveyDAO;
 import com.gallatinsystems.survey.domain.CascadeResource;
 import com.gallatinsystems.survey.domain.Question;
 import com.gallatinsystems.survey.domain.Survey;
-import com.google.gdata.util.common.base.Nullable;
-import com.google.gdata.util.common.base.StringUtil;
 import org.apache.commons.io.IOUtils;
+import org.apache.commons.lang.StringUtils;
 import org.waterforpeople.mapping.app.web.dto.BootstrapGeneratorRequest;
 
+import javax.annotation.Nullable;
 import javax.servlet.http.HttpServletRequest;
 import java.io.*;
 import java.net.URLConnection;
@@ -43,6 +43,8 @@ import java.util.Map;
 import java.util.Set;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import java.util.zip.ZipEntry;
+import java.util.zip.ZipInputStream;
 
 import static com.gallatinsystems.common.Constants.DEFAULT_SURVEY_FILE_NAME;
 
@@ -114,18 +116,13 @@ public class BootstrapGeneratorServlet extends AbstractRestApiServlet {
                 try {
                     Survey s = surveyDao.getById(id);
                     String surveyFilename = generateSanitizedFilename(s.getName());
-                    StringBuilder buf = new StringBuilder();
+                    long formId = s.getKey().getId();
                     URLConnection conn = S3Util.getConnection(bucketName, keyPrefix + "/"
-                            + s.getKey().getId() + ".xml");
-                    BufferedReader reader = new BufferedReader(
-                            new InputStreamReader(conn.getInputStream(), "UTF-8"));
-                    String line;
-                    while ((line = reader.readLine()) != null) {
-                        buf.append(line).append("\n");
-                    }
-                    reader.close();
-                    contentMap.put(s.getKey().getId() + "/" + surveyFilename + ".xml",
-                            buf.toString());
+                            + formId + ".zip");
+                    String formName = formId + ".xml";
+                    String xmlContents = ZipUtil.unZipFile(formName,
+                            new ZipInputStream(new BufferedInputStream(conn.getInputStream())));
+                    contentMap.put(formId + "/" + surveyFilename + ".xml", xmlContents);
 
                     resourcesSet.addAll(getSurveyResources(id));// Add survey resources
                 } catch (Exception e) {
@@ -169,7 +166,7 @@ public class BootstrapGeneratorServlet extends AbstractRestApiServlet {
      */
     private String generateSanitizedFilename(@Nullable String name) {
         String filename;
-        if (StringUtil.isEmpty(name)) {
+        if (StringUtils.isEmpty(name)) {
             filename = DEFAULT_SURVEY_FILE_NAME;
         } else {
             filename = name.trim().replaceAll(FILENAME_REGEX, FILENAME_REPLACEMENT);

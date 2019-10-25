@@ -22,7 +22,7 @@
 			{{#unless view.isNewForm}}
 				<a {{action "toggleShowFormBasics" target="this"}} class="button">{{t _collapse}}</a>
 			{{/unless}}
-			<form class="surveyDetailForm">
+			<form class="surveyDetailForm" {{action 'saveProject' on='submit' target="FLOW.projectControl"}}>
 				<label>{{t _form_title}}</label>
 				{{view Ember.TextField valueBinding="form.name" disabledBinding="view.disableFormFields"}}
 				<nav class="newSurveyNav">

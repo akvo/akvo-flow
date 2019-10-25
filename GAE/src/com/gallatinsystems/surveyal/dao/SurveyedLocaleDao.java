@@ -1,5 +1,5 @@
 /*
- *  Copyright (C) 2010-2015 Stichting Akvo (Akvo Foundation)
+ *  Copyright (C) 2010-2015,2019 Stichting Akvo (Akvo Foundation)
  *
  *  This file is part of Akvo FLOW.
  *
@@ -31,7 +31,6 @@ import org.waterforpeople.mapping.domain.SurveyInstance;
 import com.gallatinsystems.framework.dao.BaseDAO;
 import com.gallatinsystems.framework.servlet.PersistenceFilter;
 import com.gallatinsystems.survey.dao.SurveyUtils;
-import com.gallatinsystems.surveyal.domain.SurveyalValue;
 import com.gallatinsystems.surveyal.domain.SurveyedLocale;
 
 /**
@@ -67,12 +66,12 @@ public class SurveyedLocaleDao extends BaseDAO<SurveyedLocale> {
      * @return
      */
     @SuppressWarnings("unchecked")
-    public List<SurveyedLocale> listLocalesByGeocell(List<String> geocells, int pageSize) {
+    public List<SurveyedLocale> listLocalesByGeocell(Long surveyId, List<String> geocells, int pageSize) {
         PersistenceManager pm = PersistenceFilter.getManager();
-        String queryString = ":p1.contains(geocells)";
+        String queryString = "surveyGroupId == :p1 && :p2.contains(geocells)";
         javax.jdo.Query query = pm.newQuery(SurveyedLocale.class, queryString);
         prepareCursor(null, pageSize, query);
-        List<SurveyedLocale> results = (List<SurveyedLocale>) query.execute(geocells);
+        List<SurveyedLocale> results = (List<SurveyedLocale>) query.execute(surveyId, geocells);
         return results;
     }
 
@@ -155,17 +154,6 @@ public class SurveyedLocaleDao extends BaseDAO<SurveyedLocale> {
             }
         }
         return results;
-    }
-
-    /**
-     * lists all SurveyalValues for a single Locale
-     *
-     * @param surveyedLocaleId
-     * @return
-     */
-    public List<SurveyalValue> listValuesByLocale(Long surveyedLocaleId) {
-        return listByProperty("surveyedLocaleId", surveyedLocaleId, "Long",
-                SurveyalValue.class);
     }
 
     /**
@@ -271,73 +259,6 @@ public class SurveyedLocaleDao extends BaseDAO<SurveyedLocale> {
     }
 
     /**
-     * returns all the SurveyalValues corresponding to the metric id/value pair passed in
-     *
-     * @param metricId
-     * @param metricValue
-     * @return
-     */
-    @SuppressWarnings("unchecked")
-    public List<SurveyalValue> listSurveyalValueByMetric(Long metricId,
-            String metricValue, Integer pageSize, String cursor) {
-        PersistenceManager pm = PersistenceFilter.getManager();
-        javax.jdo.Query query = pm.newQuery(SurveyalValue.class);
-        StringBuilder filterString = new StringBuilder();
-        StringBuilder paramString = new StringBuilder();
-        Map<String, Object> paramMap = new HashMap<String, Object>();
-
-        appendNonNullParam("metricId", filterString, paramString, "Long",
-                metricId, paramMap);
-
-        appendNonNullParam("stringValue", filterString, paramString, "String",
-                metricValue, paramMap);
-        query.setFilter(filterString.toString());
-        query.declareParameters(paramString.toString());
-        prepareCursor(cursor, pageSize, query);
-        return (List<SurveyalValue>) query.executeWithMap(paramMap);
-    }
-
-    /**
-     * returns all the SurveyalValues corresponding to the surveyInstanceId and questionId passed
-     * in. This uniquely identifies the surveyalValue corresponding to a single questionAnswerStore
-     * object
-     *
-     * @param surveyInstanceId
-     * @param questionId
-     * @return
-     */
-    @SuppressWarnings("unchecked")
-    public List<SurveyalValue> listSVByQuestionAndSurveyInstance(Long surveyInstanceId,
-            Long surveyQuestionId) {
-        PersistenceManager pm = PersistenceFilter.getManager();
-        javax.jdo.Query query = pm.newQuery(SurveyalValue.class);
-        StringBuilder filterString = new StringBuilder();
-        StringBuilder paramString = new StringBuilder();
-        Map<String, Object> paramMap = new HashMap<String, Object>();
-
-        appendNonNullParam("surveyInstanceId", filterString, paramString, "Long",
-                surveyInstanceId, paramMap);
-
-        appendNonNullParam("surveyQuestionId", filterString, paramString, "String",
-                surveyQuestionId, paramMap);
-        query.setFilter(filterString.toString());
-        query.declareParameters(paramString.toString());
-        return (List<SurveyalValue>) query.executeWithMap(paramMap);
-    }
-
-    /**
-     * lists all values for a given survey instance
-     *
-     * @param surveyInstanceId
-     * @return
-     */
-    public List<SurveyalValue> listSurveyalValuesByInstance(
-            Long surveyInstanceId) {
-        return listByProperty("surveyInstanceId", surveyInstanceId, "Long",
-                "questionText, metricName asc", SurveyalValue.class);
-    }
-
-    /**
      * returns all the locales by surveyGroupId survey instance only.
      *
      * @param surveyGroupId
@@ -419,49 +340,9 @@ public class SurveyedLocaleDao extends BaseDAO<SurveyedLocale> {
         return (List<SurveyedLocale>) query.executeWithMap(paramMap);
     }
 
-    /**
-     * returns all the locales with the identifier passed in. If needDetails is true, it will list
-     * the surveyalValues for the locale from the most recent survey instance only.
-     *
-     * @param identifier
-     * @param needDetails
-     * @return
-     */
-    public List<SurveyedLocale> listLocalesByCode(String identifier,
-            boolean needDetails) {
-        List<SurveyedLocale> locales = listByProperty("identifier", identifier,
-                "String");
-        if (locales != null && needDetails) {
-            for (SurveyedLocale l : locales) {
-                if (l.getLastSurveyalInstanceId() != null) {
-                    l.setSurveyalValues(listSurveyalValuesByInstance(l
-                            .getLastSurveyalInstanceId()));
-                } else {
-                    // get the most recent instance and use its id
-                    l.setSurveyalValues(getSurveyalValues(l.getKey().getId()));
-                }
-            }
-        }
-        return locales;
-    }
-
     public SurveyedLocale getById(Long id) {
         final SurveyedLocale sl = getByKey(id);
-        if (sl != null) {
-            sl.setSurveyalValues(getSurveyalValues(id));
-        }
         return sl;
-    }
-
-    private List<SurveyalValue> getSurveyalValues(Long id) {
-        SurveyInstanceDAO instanceDao = new SurveyInstanceDAO();
-        List<SurveyInstance> instList = instanceDao.listInstancesByLocale(id,
-                null, null, 1, null);
-        if (instList != null && instList.size() > 0) {
-            return listSurveyalValuesByInstance(instList.get(0).getKey()
-                    .getId());
-        }
-        return null;
     }
 
     /**

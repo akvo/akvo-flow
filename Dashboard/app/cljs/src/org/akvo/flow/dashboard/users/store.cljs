@@ -1,4 +1,4 @@
-;; Copyright (C) 2014-2015 Stichting Akvo (Akvo Foundation)
+;; Copyright (C) 2014-2015,2018 Stichting Akvo (Akvo Foundation)
 ;;
 ;; This file is part of Akvo FLOW.
 ;;
@@ -67,7 +67,7 @@
 ;; Dispatch loops
 
 (dispatch-loop
- :new-user new-user
+ :new-user [new-user callback]
  (assert new-user)
  (POST "/rest/users"
        (merge ajax/default-ajax-config
@@ -75,7 +75,9 @@
                :handler (fn [response]
                           (let [user (get response "user")
                                 user-id (get user "keyId")]
-                            (swap! app-state assoc-in [:users :by-id user-id] user)))})))
+                            (swap! app-state assoc-in [:users :by-id user-id] user)
+                            (callback user)))})))
+
 
 (dispatch-loop
  :edit-user user
@@ -100,10 +102,6 @@
            {:format (url-request-format)
             :handler (fn [response]
                        (swap! app-state update-in [:users :by-id] #(dissoc % user-id)))}))))
-
-(dispatch-loop
- :new-access-key {:keys [user access-key]}
- (swap! app-state assoc-in [:users :by-id (get user "keyId") "accessKey"] access-key))
 
 (dispatch-loop
  :fetch-users _

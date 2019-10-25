@@ -1,5 +1,5 @@
 /*
- *  Copyright (C) 2010-2012 Stichting Akvo (Akvo Foundation)
+ *  Copyright (C) 2010-2012, 2018 Stichting Akvo (Akvo Foundation)
  *
  *  This file is part of Akvo FLOW.
  *
@@ -36,6 +36,10 @@ public class SurveyedLocaleDto extends BaseDto {
     private String displayName;
     private Double lat;
     private Double lon;
+    //  We duplicate the latitude and longitude because the lat/lon are used in
+    //  the app whereas latitude/longitude are used in the frontend
+    private Double latitude;
+    private Double longitude;
     private List<SurveyInstanceDto> surveyInstances;
     private Long lastUpdateDateTime;
     private String identifier;
@@ -66,6 +70,22 @@ public class SurveyedLocaleDto extends BaseDto {
 
     public void setLon(Double lon) {
         this.lon = lon;
+    }
+
+    public Double getLatitude() {
+        return latitude;
+    }
+
+    public void setLatitude(Double latitude) {
+        this.latitude = latitude;
+    }
+
+    public Double getLongitude() {
+        return longitude;
+    }
+
+    public void setLongitude(Double longitude) {
+        this.longitude = longitude;
     }
 
     public List<SurveyInstanceDto> getSurveyInstances() {

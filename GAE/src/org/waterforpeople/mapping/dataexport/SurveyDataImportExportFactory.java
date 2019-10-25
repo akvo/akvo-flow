@@ -16,12 +16,12 @@
 
 package org.waterforpeople.mapping.dataexport;
 
-import java.util.HashMap;
-import java.util.Map;
-
 import com.gallatinsystems.framework.dataexport.applet.DataExporter;
 import com.gallatinsystems.framework.dataexport.applet.DataImportExportFactory;
 import com.gallatinsystems.framework.dataexport.applet.DataImporter;
+
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  * Factory to create a DataExporter or DataImporter instance based on the type passed in
@@ -35,11 +35,10 @@ public class SurveyDataImportExportFactory implements DataImportExportFactory {
 
         {
             put("SURVEY_SUMMARY", SurveySummaryExporter.class);
-            put("RAW_DATA", GraphicalSurveySummaryExporter.class);
+            put("DATA_CLEANING", GraphicalSurveySummaryExporter.class);
+            put("DATA_ANALYSIS", GraphicalSurveySummaryExporter.class);
+            put("COMPREHENSIVE", GraphicalSurveySummaryExporter.class);
             put("SURVEY_FORM", SurveyFormExporter.class);
-            put("GRAPHICAL_SURVEY_SUMMARY",
-                    GraphicalSurveySummaryExporter.class);
-            put("OFFLINE_REPORT", OfflineExport.class);
         }
     };
 
@@ -49,7 +48,6 @@ public class SurveyDataImportExportFactory implements DataImportExportFactory {
         {
             put("SURVEY_SPREADSHEET", SurveySpreadsheetImporter.class);
             put("RAW_DATA", RawDataSpreadsheetImporter.class);
-            put("BULK_SURVEY", SurveyBulkUploader.class);
         }
     };
 
@@ -60,7 +58,7 @@ public class SurveyDataImportExportFactory implements DataImportExportFactory {
             try {
                 return exporterClass.newInstance();
             } catch (Exception e) {
-                throw new RuntimeException("Could not initilaize constructor");
+                throw new RuntimeException("Could not initialize constructor");
             }
         } else {
             throw new RuntimeException("Unknown Exporter Type: " + type);
@@ -74,7 +72,7 @@ public class SurveyDataImportExportFactory implements DataImportExportFactory {
             try {
                 return importerClass.newInstance();
             } catch (Exception e) {
-                throw new RuntimeException("Could not initilaize constructor");
+                throw new RuntimeException("Could not initialize constructor");
             }
         } else {
             throw new RuntimeException("Unknown Importer Type: " + type);

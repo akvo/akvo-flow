@@ -1,5 +1,5 @@
 /*
- *  Copyright (C) 2014-2015,2017 Stichting Akvo (Akvo Foundation)
+ *  Copyright (C) 2014-2015,2017,2019 Stichting Akvo (Akvo Foundation)
  *
  *  This file is part of Akvo FLOW.
  *
@@ -22,6 +22,7 @@ import java.util.List;
 
 import com.google.appengine.api.datastore.DatastoreService;
 import com.google.appengine.api.datastore.Entity;
+import com.google.appengine.api.datastore.EntityNotFoundException;
 import com.google.appengine.api.datastore.FetchOptions;
 import com.google.appengine.api.datastore.Key;
 import com.google.appengine.api.datastore.KeyFactory;
@@ -44,11 +45,16 @@ public class DeleteData implements Process {
         for (String kind : kinds) {
             deleteEntities(ds, kind, surveyId);
         }
-
-        Entity survey = ds.get(KeyFactory.createKey("Survey", surveyId));
-        Long surveyGroupId = (Long) survey.getProperty("surveyGroupId");
-        if (surveyGroupId != null) {
-            deleteSurveyedLocale(ds, surveyGroupId);
+        try { //May be linked entities around, even if form is not
+            Entity survey = ds.get(KeyFactory.createKey("Survey", surveyId));
+            Long surveyGroupId = (Long) survey.getProperty("surveyGroupId");
+            if (surveyGroupId != null) {
+                deleteSurveyedLocale(ds, surveyGroupId);
+            }
+        }
+        catch (EntityNotFoundException e) {
+            System.out.println("Form not found: " + surveyId);
+            return;
         }
     }
 
@@ -60,12 +66,11 @@ public class DeleteData implements Process {
         for (Entity e : pq.asList(FetchOptions.Builder.withChunkSize(500))) {
             keys.add(e.getKey());
         }
-        System.out.println(String.format("%s - deleting %s enties - surveyId = %s", kind,
+        System.out.println(String.format("%s - deleting %s entities - surveyId = %s", kind,
                 keys.size(), surveyId));
         ds.delete(keys);
     }
 
-    @SuppressWarnings("unchecked")
     private static void deleteSurveyedLocale(DatastoreService ds, Long surveyGroupId) {
         final Filter f = new FilterPredicate("surveyGroupId", FilterOperator.EQUAL, surveyGroupId);
         final Query q = new Query("SurveyedLocale").setFilter(f).setKeysOnly();
@@ -76,7 +81,7 @@ public class DeleteData implements Process {
             keys.add(e.getKey());
         }
         System.out.println(String.format(
-                "SurveyedLocale - deleting %s enties - surveyGroupId = %s",
+                "SurveyedLocale - deleting %s entities - surveyGroupId = %s",
                 keys.size(), surveyGroupId));
         ds.delete(keys);
     }

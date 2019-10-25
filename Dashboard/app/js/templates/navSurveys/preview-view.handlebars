@@ -1,4 +1,4 @@
-<div class="fixedMenu"><a {{action "closePreviewPopup" target="this"}} class="ok clodeDialog">{{t _close_window}}</a>
+<div class="fixedMenu"><a {{action "closePreviewPopup" target="this"}} class="ok closeDialog">{{t _close_window}}</a>
 <h2>{{t _survey_preview}}</h2></div>
 <div class="surveyPreviewWrap">
 {{#each QG in FLOW.questionGroupControl}}
@@ -11,11 +11,11 @@
            {{#view FLOW.PreviewQuestionView contentBinding="Q"}}
              {{#if view.isVisible}}
 			 <div class="previewQuestion"> 
-                <h1 class="questionNbr"><span>{{Q.order}}} </span>{{Q.text}}</h1>
+                <h1 class="questionNbr"><span>{{Q.order}} </span>{{Q.text}}</h1>
                     {{#if view.isOptionType}}
                        {{#each view.optionsList}}
                        <!-- FIXME this should be checkbuttons if Allow Multiple is true -->
-                          {{view Em.RadioButton title=this.value option=this.value group="options" valueBinding="view.optionChoice"}} 
+                          {{view Ember.RadioButton title=this.value option=this.value group="options" valueBinding="view.optionChoice"}}
                         {{/each}}
                     {{else}}
                       {{#if view.isNumberType}}
@@ -49,8 +49,6 @@
                                      		{{#each item in view.levelNameList}}
                                      			<h4>{{item}}</h4> {{view Ember.TextField valueBinding="view.answer" size=10 }}
                                      		{{/each}}
-                                     		<h4>{{t _cascade_preview_text}}</h4>
-                                     		<h4><a href="http://flow.readthedocs.org/en/latest/docs/dashboard/4-data.html#cascading-resources-tab" target="_blank">{{t _link_to_documentation}}</a></h4>
                                      	{{/if}}
                                      {{/if}}
                                   {{/if}}

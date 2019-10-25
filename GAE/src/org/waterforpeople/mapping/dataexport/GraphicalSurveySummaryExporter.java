@@ -1,5 +1,5 @@
 /*
- *  Copyright (C) 2010-2017 Stichting Akvo (Akvo Foundation)
+ *  Copyright (C) 2010-2019 Stichting Akvo (Akvo Foundation)
  *
  *  This file is part of Akvo FLOW.
  *
@@ -16,9 +16,13 @@
 
 package org.waterforpeople.mapping.dataexport;
 
+import java.io.BufferedInputStream;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.net.URL;
+import java.net.URLConnection;
+import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.text.DecimalFormat;
 import java.text.NumberFormat;
@@ -27,6 +31,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Comparator;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -38,8 +43,15 @@ import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicLong;
+import java.util.zip.ZipInputStream;
 
+import javax.annotation.Nonnull;
+
+import com.fasterxml.jackson.core.type.TypeReference;
 import org.akvo.flow.domain.DataUtils;
+import org.akvo.flow.util.FlowJsonObjectReader;
+import org.akvo.flow.util.JFreechartChartUtil;
+import org.akvo.flow.xml.PublishedForm;
 import org.apache.log4j.ConsoleAppender;
 import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
@@ -57,15 +69,13 @@ import org.apache.poi.ss.util.CellRangeAddress;
 import org.apache.poi.ss.util.WorkbookUtil;
 import org.apache.poi.xssf.streaming.SXSSFSheet;
 import org.apache.poi.xssf.streaming.SXSSFWorkbook;
-import org.codehaus.jackson.map.ObjectMapper;
-import org.codehaus.jackson.type.TypeReference;
 import org.waterforpeople.mapping.app.gwt.client.survey.OptionContainerDto;
 import org.waterforpeople.mapping.app.gwt.client.survey.QuestionDto;
 import org.waterforpeople.mapping.app.gwt.client.survey.QuestionDto.QuestionType;
 import org.waterforpeople.mapping.app.gwt.client.survey.QuestionGroupDto;
 import org.waterforpeople.mapping.app.gwt.client.survey.QuestionOptionDto;
+import org.waterforpeople.mapping.app.gwt.client.survey.SurveyDto;
 import org.waterforpeople.mapping.app.gwt.client.survey.SurveyGroupDto;
-import org.waterforpeople.mapping.app.gwt.client.survey.TranslationDto;
 import org.waterforpeople.mapping.app.gwt.client.surveyinstance.SurveyInstanceDto;
 import org.waterforpeople.mapping.app.web.dto.InstanceDataDto;
 import org.waterforpeople.mapping.app.web.dto.SurveyRestRequest;
@@ -74,8 +84,11 @@ import org.waterforpeople.mapping.domain.CaddisflyResource;
 import org.waterforpeople.mapping.domain.CaddisflyResult;
 import org.waterforpeople.mapping.domain.response.value.Media;
 import org.waterforpeople.mapping.serialization.response.MediaResponse;
+import static org.waterforpeople.mapping.dataexport.ExportImportConstants.*;
+import static org.waterforpeople.mapping.dataexport.ExportImportUtils.parseCellAsString;
 
-import com.gallatinsystems.common.util.JFreechartChartUtil;
+import com.gallatinsystems.common.util.StringUtil;
+import com.gallatinsystems.common.util.ZipUtil;
 import com.gallatinsystems.survey.dao.CaddisflyResourceDao;
 
 import static com.gallatinsystems.common.Constants.*;
@@ -83,7 +96,6 @@ import static com.gallatinsystems.common.Constants.*;
 /**
  * Enhancement of the SurveySummaryExporter to support writing to Excel and including chart images.
  *
- * @author Christopher Fagiani
  */
 public class GraphicalSurveySummaryExporter extends SurveySummaryExporter {
 
@@ -91,239 +103,78 @@ public class GraphicalSurveySummaryExporter extends SurveySummaryExporter {
             .getLogger(GraphicalSurveySummaryExporter.class);
 
     private static final String IMAGE_PREFIX_OPT = "imgPrefix";
-    private static final String DO_ROLLUP_OPT = "performRollup";
-    private static final String LOCALE_OPT = "locale";
     private static final String TYPE_OPT = "exportMode";
-    private static final String RAW_ONLY_TYPE = "RAW_DATA";
-    private static final String NO_CHART_OPT = "nocharts";
+    private static final String DATA_CLEANING_TYPE = "DATA_CLEANING";
+    private static final String DATA_ANALYSIS_TYPE = "DATA_ANALYSIS";
+    private static final String COMPREHENSIVE_TYPE = "COMPREHENSIVE";
     private static final String LAST_COLLECTION_OPT = "lastCollection";
+    private static final String MAX_ROWS_OPT = "maxDataReportRows";
+    private static final String FROM_OPT = "from";
+    private static final String TO_OPT = "to";
+    private static final String EMAIL_OPT = "email";
+    private static final String UPLOAD_URL_OPT = "uploadUrl";
+    private static final String UPLOAD_DIR_OPT = "uploadDir";
+    private static final String PUBLISHED_OPT = "use PublishedForm";
+
     private static final String CADDISFLY_TESTS_FILE_URL_OPT = "caddisflyTestsFileUrl";
 
     private static final String DEFAULT_IMAGE_PREFIX = "http://waterforpeople.s3.amazonaws.com/images/";
 
     private static final String DIGEST_COLUMN = "NO_TITLE_DIGEST_COLUMN";
 
-    private static final Map<String, String> REPORT_HEADER;
-    private static final Map<String, String> FREQ_LABEL;
-    private static final Map<String, String> PCT_LABEL;
-    private static final Map<String, String> SUMMARY_LABEL;
-    private static final Map<String, String> RAW_DATA_LABEL;
-    private static final Map<String, String> INSTANCE_LABEL;
-    private static final Map<String, String> SUB_DATE_LABEL;
-    private static final Map<String, String> SUBMITTER_LABEL;
-    private static final Map<String, String> DURATION_LABEL;
-    private static final Map<String, String> REPEAT_LABEL;
-    private static final Map<String, String> MEAN_LABEL;
-    private static final Map<String, String> MODE_LABEL;
-    private static final Map<String, String> MEDIAN_LABEL;
-    private static final Map<String, String> MIN_LABEL;
-    private static final Map<String, String> MAX_LABEL;
-    private static final Map<String, String> VAR_LABEL;
-    private static final Map<String, String> STD_E_LABEL;
-    private static final Map<String, String> STD_D_LABEL;
-    private static final Map<String, String> TOTAL_LABEL;
-    private static final Map<String, String> RANGE_LABEL;
-    private static final Map<String, String> LOADING_QUESTIONS;
-    private static final Map<String, String> LOADING_DETAILS;
-    private static final Map<String, String> LOADING_INSTANCES;
-    private static final Map<String, String> LOADING_INSTANCE_DETAILS;
-    private static final Map<String, String> WRITING_SUMMARY;
-    private static final Map<String, String> WRITING_RAW_DATA;
-    private static final Map<String, String> WRITING_ROLLUPS;
-    private static final Map<String, String> COMPLETE;
-    private static final Map<String, String> LAT_LABEL;
-    private static final Map<String, String> LON_LABEL;
-    private static final Map<String, String> IMAGE_LABEL;
-    private static final Map<String, String> ELEV_LABEL;
-    private static final Map<String, String> ACC_LABEL;
-    private static final Map<String, String> CODE_LABEL;
-    private static final Map<String, String> IDENTIFIER_LABEL;
-    private static final Map<String, String> DISPLAY_NAME_LABEL;
-    private static final Map<String, String> DEVICE_IDENTIFIER_LABEL;
-    private static final Map<String, String> DATA_APPROVAL_STATUS_LABEL;
+    //Statistics page header and labels
+    private static final String REPORT_HEADER = "Survey Summary Report";
+    private static final String FREQ_LABEL = "Frequency";
+    private static final String PCT_LABEL = "Percent";
+    private static final String SUMMARY_LABEL = "Summary";
+    private static final String RAW_DATA_LABEL = "Raw Data";
+    private static final String MEAN_LABEL = "Mean";
+    private static final String MEDIAN_LABEL = "Median";
+    private static final String MIN_LABEL = "Min";
+    private static final String MAX_LABEL = "Max";
+    private static final String VAR_LABEL = "Variance";
+    private static final String STD_E_LABEL = "Std Error";
+    private static final String STD_D_LABEL = "Std Deviation";
+    private static final String TOTAL_LABEL = "Total";
+    private static final String RANGE_LABEL = "Range";
 
+    // Maximum number of rows of a sheet kept in memory by the streaming API
+    // We must take care to never go back up longer than this
+    // Max repeats in one instance we have seen as of 2019-04-15 is 172(!)
+    private static final int WORKBOOK_WINDOW = 100;
+
+    // Formatting for comprehensive summary sheet graphs
     private static final int CHART_WIDTH = 600;
     private static final int CHART_HEIGHT = 400;
     private static final int CHART_CELL_WIDTH = 10;
     private static final int CHART_CELL_HEIGHT = 22;
-    private static final String DEFAULT_LOCALE = "en";
-    private static final String DEFAULT = "default";
-    private static final NumberFormat PCT_FMT = DecimalFormat
-            .getPercentInstance();
-
-    static {
-        // populate all translations
-        RANGE_LABEL = new HashMap<String, String>();
-        RANGE_LABEL.put("en", "Range");
-        RANGE_LABEL.put("es", "Distribución");
-
-        MEAN_LABEL = new HashMap<String, String>();
-        MEAN_LABEL.put("en", "Mean");
-        MEAN_LABEL.put("es", "Media");
-
-        MODE_LABEL = new HashMap<String, String>();
-        MODE_LABEL.put("en", "Mode");
-        MODE_LABEL.put("es", "Moda");
-
-        MEDIAN_LABEL = new HashMap<String, String>();
-        MEDIAN_LABEL.put("en", "Median");
-        MEDIAN_LABEL.put("es", "Número medio");
-
-        MIN_LABEL = new HashMap<String, String>();
-        MIN_LABEL.put("en", "Min");
-        MIN_LABEL.put("es", "Mínimo");
-
-        MAX_LABEL = new HashMap<String, String>();
-        MAX_LABEL.put("en", "Max");
-        MAX_LABEL.put("es", "Máximo");
-
-        VAR_LABEL = new HashMap<String, String>();
-        VAR_LABEL.put("en", "Variance");
-        VAR_LABEL.put("es", "Varianza");
-
-        STD_D_LABEL = new HashMap<String, String>();
-        STD_D_LABEL.put("en", "Std Deviation");
-        STD_D_LABEL.put("es", "Desviación Estándar");
-
-        STD_E_LABEL = new HashMap<String, String>();
-        STD_E_LABEL.put("en", "Std Error");
-        STD_E_LABEL.put("es", "Error Estándar");
-
-        TOTAL_LABEL = new HashMap<String, String>();
-        TOTAL_LABEL.put("en", "Total");
-        TOTAL_LABEL.put("es", "Suma");
-
-        REPORT_HEADER = new HashMap<String, String>();
-        REPORT_HEADER.put("en", "Survey Summary Report");
-        REPORT_HEADER.put("es", "Encuesta Informe Resumen");
-
-        FREQ_LABEL = new HashMap<String, String>();
-        FREQ_LABEL.put("en", "Frequency");
-        FREQ_LABEL.put("es", "Frecuencia");
-
-        PCT_LABEL = new HashMap<String, String>();
-        PCT_LABEL.put("en", "Percent");
-        PCT_LABEL.put("es", "Por ciento");
-
-        SUMMARY_LABEL = new HashMap<String, String>();
-        SUMMARY_LABEL.put("en", "Summary");
-        SUMMARY_LABEL.put("es", "Resumen");
-
-        RAW_DATA_LABEL = new HashMap<String, String>();
-        RAW_DATA_LABEL.put("en", "Raw Data");
-        RAW_DATA_LABEL.put("es", "Primas de Datos");
-
-        INSTANCE_LABEL = new HashMap<String, String>();
-        INSTANCE_LABEL.put("en", "Instance");
-        INSTANCE_LABEL.put("es", "Instancia");
-
-        SUB_DATE_LABEL = new HashMap<String, String>();
-        SUB_DATE_LABEL.put("en", "Submission Date");
-        SUB_DATE_LABEL.put("es", "Fecha de Presentación");
-
-        SUBMITTER_LABEL = new HashMap<String, String>();
-        SUBMITTER_LABEL.put("en", "Submitter");
-        SUBMITTER_LABEL.put("es", "Peticionario");
-
-        DURATION_LABEL = new HashMap<String, String>();
-        DURATION_LABEL.put("en", "Duration");
-        DURATION_LABEL.put("es", "Duración");
-
-        REPEAT_LABEL = new HashMap<String, String>();
-        REPEAT_LABEL.put("en", "Repeat no.");
-        REPEAT_LABEL.put("es", "No. repetición");
-
-        LOADING_QUESTIONS = new HashMap<String, String>();
-        LOADING_QUESTIONS.put("en", "Loading Questions");
-        LOADING_QUESTIONS.put("es", "Cargando de preguntas");
-
-        LOADING_DETAILS = new HashMap<String, String>();
-        LOADING_DETAILS.put("en", "Loading Question Details");
-        LOADING_DETAILS.put("es", "Cargando Detalles Pregunta");
-
-        LOADING_INSTANCES = new HashMap<String, String>();
-        LOADING_INSTANCES.put("en", "Loading Instances");
-        LOADING_INSTANCES.put("es", "Cargando instancias");
-
-        LOADING_INSTANCE_DETAILS = new HashMap<String, String>();
-        LOADING_INSTANCE_DETAILS.put("en", "Loading Instance Details");
-        LOADING_INSTANCE_DETAILS.put("es", "Cargando Datos Instancia");
-
-        WRITING_SUMMARY = new HashMap<String, String>();
-        WRITING_SUMMARY.put("en", "Writing Summary");
-        WRITING_SUMMARY.put("es", "Escribiendo Resumen");
-
-        WRITING_RAW_DATA = new HashMap<String, String>();
-        WRITING_RAW_DATA.put("en", "Writing Raw Data");
-        WRITING_RAW_DATA.put("es", "Escribiendo Primas de Datos");
-
-        WRITING_ROLLUPS = new HashMap<String, String>();
-        WRITING_ROLLUPS.put("en", "Writing Rollups");
-        WRITING_ROLLUPS.put("es", "Escribiendo Resumen Municipales");
-
-        COMPLETE = new HashMap<String, String>();
-        COMPLETE.put("en", "Export Complete");
-        COMPLETE.put("es", "Exportación Completa");
-
-        LAT_LABEL = new HashMap<String, String>();
-        LAT_LABEL.put("en", "Latitude");
-        LAT_LABEL.put("es", "Latitud");
-
-        LON_LABEL = new HashMap<String, String>();
-        LON_LABEL.put("en", "Longitude");
-        LON_LABEL.put("es", "Longitud");
-
-        IMAGE_LABEL = new HashMap<String, String>();
-        IMAGE_LABEL.put("en", "Image");
-        IMAGE_LABEL.put("es", "Imagen");
-
-        ELEV_LABEL = new HashMap<String, String>();
-        ELEV_LABEL.put("en", "Elevation");
-        ELEV_LABEL.put("es", "Elevación");
-
-        CODE_LABEL = new HashMap<String, String>();
-        CODE_LABEL.put("en", "Geo Code");
-        CODE_LABEL.put("es", "Código Geo");
-
-        ACC_LABEL = new HashMap<String, String>();
-        ACC_LABEL.put("en", "Accuracy (m)");
-        ACC_LABEL.put("es", "Precisión (m)");
-
-        IDENTIFIER_LABEL = new HashMap<String, String>();
-        IDENTIFIER_LABEL.put("en", "Identifier");
-        IDENTIFIER_LABEL.put("es", "Identificador");
-
-        DISPLAY_NAME_LABEL = new HashMap<String, String>();
-        DISPLAY_NAME_LABEL.put("en", "Display Name");
-        DISPLAY_NAME_LABEL.put("es", "Nombre");
-
-        DEVICE_IDENTIFIER_LABEL = new HashMap<String, String>();
-        DEVICE_IDENTIFIER_LABEL.put("en", "Device identifier");
-        DEVICE_IDENTIFIER_LABEL.put("es", "Identificador de dispositivo");
-
-        DATA_APPROVAL_STATUS_LABEL = new HashMap<String, String>();
-        DATA_APPROVAL_STATUS_LABEL.put("en", "Data approval status");
-        DATA_APPROVAL_STATUS_LABEL.put("es", "Estado de aprobación");
-    }
+    private static final NumberFormat PCT_FMT = DecimalFormat.getPercentInstance();
+    private static final int GEO_COLUMN_COUNT = 3;
 
     private CellStyle headerStyle;
-    private CellStyle mTextStyle;
-    // private CellStyle mNumberStyle;
-    private String locale;
+    private CellStyle textStyle;
     private String imagePrefix;
     private String serverBase;
-    private boolean isFullReport;
+    private boolean includeSummarySheet;
     private boolean performGeoRollup;
     private boolean generateCharts;
+    private boolean variableNamesInHeaders; // Also turns on splitting of answers into separate columns (options, geo, etc.) and turns off digests
+    private boolean splitIntoColumns; // Turns on splitting of answers into separate columns (options, geo, etc.) and turns off digests
+    private boolean separateSheetsForRepeatableGroups;
+    private boolean justCodes; //Only output the codes from multiple-choice answers (option and cascade)
+    private boolean doGroupHeaders; //First header line is group names spanned over the group columns
+    private boolean usePublishedForm = true; //use the XML of last publication, not the current datastore state
+
     private Map<Long, QuestionDto> questionsById;
     private SurveyGroupDto surveyGroupDto;
     private boolean lastCollection = false;
-    private static final ObjectMapper OBJECT_MAPPER = new ObjectMapper();
     private CaddisflyResourceDao caddisflyResourceDao = new CaddisflyResourceDao();
     private String caddisflyTestsFileUrl;
+    private String selectionFrom = null;
+    private String selectionTo = null;
+    private String selectionLimit = null;
+    private String reportType = null;
 
-    // for caddisfly-specific metadata
-    //TODO private Map<Long, Integer> numResultsMap = new HashMap<>();
     private Map<Long, Boolean> hasImageMap = new HashMap<>();
     private Map<Long, List<Integer>> resultIdMap = new HashMap<>();
 
@@ -334,40 +185,53 @@ public class GraphicalSurveySummaryExporter extends SurveySummaryExporter {
     // store indices of file columns for lookup when generating responses
     private Map<String, Integer> columnIndexMap = new HashMap<>();
 
-    // stores the questions whose answers will make up the display name, in order
+    // maps from a (repeatable) question group dto to the sheet that contains the raw data for it (if split)
+    private Map<QuestionGroupDto, Sheet> qgSheetMap = new HashMap<>();
+
+    // data about questions gathered while writing headers
+    private List<String> questionIdList = new ArrayList<>();
+    private List<String> unsummarizable = new ArrayList<>();
+
+    Map<String, CaddisflyResource> caddisflyResourceMap = null;
+
+    //data about the data
+    private int totalInstances = 0;
+    private int approvedInstances = 0;
+    private Date firstSubmission = null;
+    private Date lastSubmission = null;
+    private Map<String, Integer> instancesByUser = new HashMap<>();
+    private Map<String, Integer> instancesByDevice = new HashMap<>();
+    private long totalDuration = 0L;
+    private long minDuration = Long.MAX_VALUE;
+    private long maxDuration = 0;
 
     @Override
     public void export(Map<String, String> criteria, File fileName,
-            String serverBase, Map<String, String> options) {
+            String serverBaseUrl, Map<String, String> options) {
         final String surveyId = criteria.get(SurveyRestRequest.SURVEY_ID_PARAM).trim();
-        final String apiKey = criteria.get("apiKey").trim();
+        final String apiKey = criteria.get("apiKey").trim(); //To access cloud datastore
+        final String s3formDir = options.get(UPLOAD_URL_OPT) + options.get(UPLOAD_DIR_OPT);
 
-        processOptions(options);
+        log.debug("### Export criteria=" + criteria.toString() +
+        		" filename=" + fileName.toString() +
+        		" options=" + options.toString() );
+        if (!processOptions(options)) {
+            return;
+        }
 
         questionsById = new HashMap<Long, QuestionDto>();
 
-        surveyGroupDto = BulkDataServiceClient.fetchSurveyGroup(surveyId, serverBase, apiKey);
+        surveyGroupDto = BulkDataServiceClient.fetchSurveyGroup(surveyId, serverBaseUrl, apiKey);
 
-        this.serverBase = serverBase;
-        boolean useQuestionId = "true".equals(options.get("useQuestionId"));
-        String from = options.get("from");
-        String to = options.get("to");
-        String limit = options.get("maxDataReportRows");
+        serverBase = serverBaseUrl;
+
+        orderedGroupList = new ArrayList<QuestionGroupDto>(); //Must exist
+
         try {
-            Map<QuestionGroupDto, List<QuestionDto>> questionMap = 
-                    loadAllQuestions(surveyId, performGeoRollup, serverBase, apiKey);
-            //minimal data plus cascade level names
-            if (useQuestionId && DEFAULT_LOCALE.equals(locale)) {
-                loadQuestionOptions(surveyId, serverBase, questionMap, apiKey);
-            }
-            
+            Map<QuestionGroupDto, List<QuestionDto>> questionMap =
+                    fetchQuestionMap(usePublishedForm, surveyId, serverBaseUrl, apiKey, s3formDir, orderedGroupList);
 
             if (questionMap.size() > 0) {
-                if (!DEFAULT_LOCALE.equals(locale)) {
-                    // we are using some other locale; need to check for translations.
-                    // also gets option and cascade names for columns
-                    loadFullQuestions(questionMap, apiKey); //modifies questionMap
-                }
                 //questionMap is now stable; make the id-to-dto map
                 for (List<QuestionDto> qList : questionMap.values()) {
                     for (QuestionDto q : qList) {
@@ -375,33 +239,20 @@ public class GraphicalSurveySummaryExporter extends SurveySummaryExporter {
                     }
                 }
 
-                Workbook wb = new SXSSFWorkbook(100);
+                Workbook wb = createWorkbookAndFormats();
 
-                headerStyle = wb.createCellStyle();
-                headerStyle.setAlignment(CellStyle.ALIGN_CENTER);
-                Font headerFont = wb.createFont();
-                headerFont.setBoldweight(Font.BOLDWEIGHT_BOLD);
-                headerStyle.setFont(headerFont);
-
-                short textFormat = wb.createDataFormat().getFormat("@"); // built-in text format
-                mTextStyle = wb.createCellStyle();
-                mTextStyle.setDataFormat(textFormat);
-                // This was intended to suppress scientific notation in number
-                // answer cells,
-                // but it looked bad in Excel - "3" was shown as "3."
-                // short numberFormat =
-                // wb.createDataFormat().getFormat("0.###");//Show 0-3
-                // decimals, never scientific
-                // mNumberStyle = wb.createCellStyle();
-                // mNumberStyle.setDataFormat(numberFormat);
+                Sheet baseSheet = createDataSheets(wb, orderedGroupList);
 
                 SummaryModel model = fetchAndWriteRawData(
-                        criteria.get(SurveyRestRequest.SURVEY_ID_PARAM),
-                        serverBase, questionMap, wb, isFullReport, fileName,
-                        criteria.get("apiKey"), lastCollection, useQuestionId,
-                        from, to, limit);
-                if (isFullReport) {
-                    writeSummaryReport(questionMap, model, null, wb);
+                        surveyId,
+                        questionMap,
+                        wb, baseSheet,
+                        includeSummarySheet,
+                        fileName,
+                        apiKey);
+
+                if (includeSummarySheet) {
+                    writeStatsAndGraphsSheet(questionMap, model, null, wb);
                 }
                 if (model.getSectorList() != null
                         && model.getSectorList().size() > 0) {
@@ -419,47 +270,159 @@ public class GraphicalSurveySummaryExporter extends SurveySummaryExporter {
                                 }
                             });
                     for (String sector : model.getSectorList()) {
-                        writeSummaryReport(questionMap, model, sector, wb);
+                        writeStatsAndGraphsSheet(questionMap, model, sector, wb);
                     }
                 }
 
                 FileOutputStream fileOut = new FileOutputStream(fileName);
-                wb.setActiveSheet(isFullReport ? 1 : 0);
+                wb.setActiveSheet(includeSummarySheet ? wb.getNumberOfSheets()-1 : 0);
                 wb.write(fileOut);
                 fileOut.close();
 
             } else {
                 log.info("No questions for survey: "
                         + criteria.get(SurveyRestRequest.SURVEY_ID_PARAM)
-                        + " - instance: " + serverBase);
+                        + " - instance: " + serverBaseUrl);
             }
         } catch (Exception e) {
             log.error("Error generating report: " + e.getMessage(), e);
+            for (StackTraceElement ste: e.getStackTrace()) {
+                log.debug(ste);
+            }
+            //TODO: return info to user
         }
     }
 
+    private Workbook createWorkbookAndFormats() {
+        Workbook wb = new SXSSFWorkbook(WORKBOOK_WINDOW);
+        headerStyle = wb.createCellStyle();
+        headerStyle.setAlignment(CellStyle.ALIGN_LEFT);
+        Font headerFont = wb.createFont();
+        headerFont.setBoldweight(Font.BOLDWEIGHT_BOLD);
+        headerStyle.setFont(headerFont);
+
+        short textFormat = wb.createDataFormat().getFormat("@"); // built-in text format
+
+        textStyle = wb.createCellStyle();
+        textStyle.setDataFormat(textFormat);
+        // We tried a format like "0.###" to suppress scientific notation in number
+        // answer cells, but it looked bad in Excel - "3" was shown as "3."
+
+        return wb;
+    };
+
+
+    private Sheet createDataSheets(Workbook wb, List<QuestionGroupDto> groupList) {
+        //make base sheet (for non-repeated data)
+        Sheet baseSheet = wb.createSheet(RAW_DATA_LABEL);
+
+        for (QuestionGroupDto groupDto : groupList) {
+            if (separateSheetsForRepeatableGroups && safeTrue(groupDto.getRepeatable())) {
+                // breaking this qg out, so create the sheet for it
+                Sheet repSheet = wb.createSheet("Group " + groupDto.getOrder());
+                qgSheetMap.put(groupDto, repSheet);  //Key not ḱnown for published groups
+            }
+        }
+
+        return baseSheet;
+    }
+
+
+    private Map<QuestionGroupDto, List<QuestionDto>> fetchQuestionMap(
+            boolean usingPublishedForm,
+            String surveyId,
+            String serverBaseUrl,
+            String apiKey,
+            String s3FormDir,
+            List<QuestionGroupDto> groupList) throws Exception {
+        Map<QuestionGroupDto, List<QuestionDto>> questionMap = null;
+        if (!usingPublishedForm) {
+            //Legacy method - use datastore current (potentially unpublished) form structure
+            // Get minimal data plus cascade level names
+            questionMap = loadAllQuestions(surveyId, performGeoRollup, serverBaseUrl, apiKey);
+            // Need options to be able to split out "other" value
+            loadQuestionOptions(surveyId, serverBaseUrl, questionMap, apiKey);
+        } else {
+            //Fetch the published form from S3, latest version
+            String fileName = s3FormDir + "/" + surveyId + ".zip"; //no "v2.0" etc at end
+            String formXml = null;
+            final URL url = new URL(fileName);
+            log.debug("Getting form XML from " + url);
+            final URLConnection conn = url.openConnection();
+            final BufferedInputStream deviceZipFileInputStream = new BufferedInputStream(conn.getInputStream());
+            final ZipInputStream formFileStream = new ZipInputStream(deviceZipFileInputStream);
+            formXml = ZipUtil.unZipFile(surveyId + ".xml", formFileStream);
+
+            SurveyDto formDto = PublishedForm.parse(formXml).toDto();
+            questionMap = new HashMap<>();
+            rollupOrder = new ArrayList<QuestionDto>();
+            boolean anyQuestionsWithoutVariableNames = false;
+
+            for (QuestionGroupDto qgd : formDto.getQuestionGroupList()) {
+                //Transform the question maps to question lists
+                //An alternative solution (since this is the only use of this map *anywhere*),
+                //  would be to change the map in the dto to a list...
+                List<QuestionDto> qList = new ArrayList<>();
+                for (QuestionDto dto : qgd.getQuestionMap().values()) { //Ordered by key
+                    qList.add(dto);
+                    if (dto.getVariableName() == null) {
+                        anyQuestionsWithoutVariableNames = true;
+                    }
+                    //See if any questions have names that indicate they belong in rollups
+                    if (performGeoRollup) {
+                        for (int i = 0; i < ROLLUP_QUESTIONS.length; i++) {
+                            if (ROLLUP_QUESTIONS[i].equalsIgnoreCase(dto.getText())) {
+                                rollupOrder.add(dto);
+                            }
+                        }
+                    }
+                }
+               questionMap.put(qgd, qList);
+               groupList.add(qgd); //The XML is written with the groups in order (but without any attributes saying so)
+            }
+
+            //Fall back to getting variable names from the datastore, since VNs in XML is a recent addition
+            if (variableNamesInHeaders && anyQuestionsWithoutVariableNames) {
+                loadVariableNames(surveyId, serverBaseUrl, questionMap, apiKey); //expensive and imperfect fallback
+            }
+
+        }
+        return questionMap;
+    }
+
+
     private boolean hasDataApproval() {
         return surveyGroupDto != null
-                && surveyGroupDto.getRequireDataApproval() != null
-                && surveyGroupDto.getRequireDataApproval()
+                && safeTrue(surveyGroupDto.getRequireDataApproval())
                 && surveyGroupDto.getDataApprovalGroupId() != null;
     }
 
-    @SuppressWarnings("unchecked")
+    private boolean safeTrue(Boolean b) {
+        return b != null && b.booleanValue();
+    }
+
+    private String neverNull(String s) {
+        if (s == null) {
+            return "";
+        }
+        return s;
+    }
+
     /*
      * Fetches data from FLOW instance, and writes it to a file row by row. Called from export
      * method.
      */
     protected SummaryModel fetchAndWriteRawData(String surveyId,
-            final String serverBase,
-            Map<QuestionGroupDto, List<QuestionDto>> questionMap, Workbook wb,
-            final boolean generateSummary, File outputFile, String apiKey,
-            boolean lastCollection, boolean useQuestionId, String from,
-            String to, String limit) throws Exception {
+            Map<QuestionGroupDto, List<QuestionDto>> questionMap,
+            Workbook wb,
+            Sheet baseSheet,
+            final boolean generateSummary,
+            File outputFile,
+            String apiKey
+            ) throws Exception {
 
         BlockingQueue<Runnable> jobQueue = new LinkedBlockingQueue<Runnable>();
-        ThreadPoolExecutor threadPool = new ThreadPoolExecutor(5, 5, 10,
-                TimeUnit.SECONDS, jobQueue);
+        ThreadPoolExecutor threadPool = new ThreadPoolExecutor(5, 5, 10, TimeUnit.SECONDS, jobQueue);
 
         final AtomicLong threadsCompleted = new AtomicLong();
         final Object lock = new Object();
@@ -467,13 +430,11 @@ public class GraphicalSurveySummaryExporter extends SurveySummaryExporter {
         final SummaryModel model = new SummaryModel();
         final String key = apiKey;
 
-        final Sheet sheet = wb.createSheet(RAW_DATA_LABEL.get(locale));
-
         final Map<String, String> collapseIdMap = new HashMap<String, String>();
         final Map<String, String> nameToIdMap = new HashMap<String, String>();
         for (Entry<QuestionGroupDto, List<QuestionDto>> groupEntry : questionMap.entrySet()) {
             for (QuestionDto q : groupEntry.getValue()) {
-                if (q.getCollapseable() != null && q.getCollapseable()) {
+                if (safeTrue(q.getCollapseable())) {
                     if (collapseIdMap.get(q.getText()) == null) {
                         collapseIdMap.put(q.getText(), q.getKeyId().toString());
                     }
@@ -482,13 +443,11 @@ public class GraphicalSurveySummaryExporter extends SurveySummaryExporter {
             }
         }
 
-        Object[] results = createRawDataHeader(wb, sheet, questionMap, useQuestionId);
-        final List<String> questionIdList = (List<String>) results[0];
-        final List<String> unsummarizable = (List<String>) results[1];
+        createRawDataHeader(wb, baseSheet, questionMap);
 
-        Map<String, String> instanceMap = BulkDataServiceClient
-                .fetchInstanceIds(surveyId, serverBase, key, lastCollection,
-                        from, to, limit);
+        Map<String, String> instanceMap = BulkDataServiceClient.fetchInstanceIds(
+                surveyId, serverBase, key, lastCollection, selectionFrom, selectionTo, selectionLimit
+                );
 
         final List<InstanceData> allData = new ArrayList<>();
         int started = 0;
@@ -503,9 +462,7 @@ public class GraphicalSurveySummaryExporter extends SurveySummaryExporter {
 
                     while (!done && attempts < 10) {
                         try {
-
-                            // responseMap is a map from question-id ->
-                            // iteration -> value
+                            // responseMap is a map from question-id -> iteration -> value
                             Map<Long, Map<Long, String>> responseMap = BulkDataServiceClient
                                     .fetchQuestionResponses(instanceId,
                                             serverBase, key);
@@ -543,113 +500,245 @@ public class GraphicalSurveySummaryExporter extends SurveySummaryExporter {
                 e.printStackTrace();
             }
         }
-        // write the data now
-        int currentRow = 1;
+
+        sortDataOnCollectionDate(allData);
+        analyseData(allData);
+
+        // write the data now, row by row
         for (InstanceData instanceData : allData) {
-            currentRow = writeInstanceData(sheet, currentRow, instanceData,
-                    generateSummary, questionIdList, unsummarizable,
-                    nameToIdMap, collapseIdMap, model, useQuestionId);
+            MessageDigest digest = MessageDigest.getInstance("MD5");
+            if (separateSheetsForRepeatableGroups) {
+                List<QuestionDto> baseSheetQuestions = new ArrayList<>(); //Could be empty if all repeatable!
+
+                //For each group, write the repeats from top to bottom
+                for (Entry<QuestionGroupDto, List<QuestionDto>> groupEntry : questionMap.entrySet()) {
+                    if (safeTrue(groupEntry.getKey().getRepeatable())) {
+                        writeInstanceDataSplit(qgSheetMap.get(groupEntry.getKey()),
+                                instanceData,
+                                groupEntry.getValue(),
+                                digest,
+                                true);
+                    } else { //might never be called
+                        baseSheetQuestions.addAll(groupEntry.getValue());
+                    }
+                }
+                // Now do the rest on the base sheet
+                writeInstanceDataSplit(baseSheet,
+                        instanceData,
+                        baseSheetQuestions,
+                        digest,
+                        false);
+
+                if (!variableNamesInHeaders) {
+                    String digestStr = StringUtil.toHexString(digest.digest());
+                    // now add 1 more column on the base sheet that contains the digest
+                    createCell(getRow(baseSheet.getLastRowNum(), baseSheet),
+                            columnIndexMap.get(DIGEST_COLUMN),
+                            digestStr,
+                            null);
+                }
+
+
+            } else { //just one sheet - do all at once with a global repeat column, no digest
+                int baseCurrentRow = baseSheet.getLastRowNum() + 1;
+                baseCurrentRow = writeInstanceData(baseSheet, baseCurrentRow, instanceData,
+                        generateSummary, nameToIdMap, collapseIdMap, model);
+            }
         }
 
         threadPool.shutdown();
         return model;
     }
 
+    private void sortDataOnCollectionDate(final List<InstanceData> allData) {
+        log.debug("Starting data sort");
+        Collections.sort(allData, new Comparator<InstanceData>() {
+            @Override
+            public int compare(InstanceData o1, InstanceData o2) {
+                // by submission date
+                return safeCompare(
+                        o1.surveyInstanceDto.getCollectionDate(),
+                        o2.surveyInstanceDto.getCollectionDate()
+                        );
+            }
+            private int safeCompare(Date date1 , Date date2 ) {
+                if (date1 == null || date2 == null) {
+                    return 0;
+                }
+                return date1.compareTo(date2);
+            }
+        });
+        log.debug("Finished data sort");
+    }
+
+    //gather some statistics on the data collection
+    private void analyseData(final List<InstanceData> allData) {
+        totalInstances = allData.size();
+
+        for (InstanceData instance : allData) {
+            SurveyInstanceDto sid = instance.surveyInstanceDto;
+            if (sid.getApprovedFlag() != null && sid.getApprovedFlag().equalsIgnoreCase("true")) {
+                approvedInstances++;
+            }
+
+            Date cd = sid.getCollectionDate();
+            if (firstSubmission == null || cd.before(firstSubmission)) {
+                firstSubmission = cd;
+            }
+            if (lastSubmission == null || cd.after(lastSubmission)) {
+                lastSubmission = cd;
+            }
+            String u = sid.getSubmitterName();
+            if (instancesByUser.containsKey(u)) {
+                instancesByUser.put(u, instancesByUser.get(u) + 1);
+            } else {
+                instancesByUser.put(u, Integer.valueOf(1));
+            }
+            String dev = sid.getDeviceIdentifier();
+            if (instancesByDevice.containsKey(dev)) {
+                instancesByDevice.put(dev, instancesByDevice.get(dev) + 1);
+            } else {
+                instancesByDevice.put(dev, Integer.valueOf(1));
+            }
+            Long durationSeconds = sid.getSurveyalTime();
+            if (durationSeconds != null) {
+                totalDuration += durationSeconds;
+                maxDuration = Math.max(maxDuration, durationSeconds);
+                minDuration = Math.min(minDuration, durationSeconds);
+            }
+
+        }
+    }
+
     /**
-     * Writes the data for a single row (form instance) to a file Called from fetchAndWriteRawData
+     * @param sheet
+     * @param instanceData
+     * @param whichQuestions
+     * @param md
+     * @param groupSheet
+     * @throws NoSuchAlgorithmException
+     */
+    private synchronized void writeInstanceDataSplit(
+            Sheet sheet,
+            InstanceData instanceData,
+            List<QuestionDto> whichQuestions,
+            MessageDigest md,
+            boolean groupSheet)
+            throws NoSuchAlgorithmException {
+
+        int startRow = sheet.getLastRowNum() + 1;
+        //maxIterationsCount is for entire instance. We need it for this sheet only!
+        int maxIter = 0;
+        if (!groupSheet) { //Must have one row of metadata on base sheet, even if no values
+            maxIter = 1;
+        }
+        for (QuestionDto qd : whichQuestions) {
+            final Long questionId = qd.getKeyId();
+            SortedMap<Long, String> iterationsMap = instanceData.responseMap.get(questionId);
+            if (iterationsMap != null) {
+                maxIter = Math.max(maxIter, iterationsMap.size());
+            }
+        }
+
+        for (int i = 0; i < maxIter; i++) {
+            Row iterationRow = getRow(startRow + i, sheet);
+            writeMetadataRow(iterationRow, instanceData, i + 1, groupSheet);
+            for (QuestionDto qd : whichQuestions) {
+                final Long questionId = qd.getKeyId();
+                SortedMap<Long, String> iterationsMap = instanceData.responseMap.get(questionId);
+                if (iterationsMap == null) {
+                    continue; //No answers on this sheet
+                }
+                String val = iterationsMap.get(Long.valueOf(i));
+                if (val != null) {
+                    writeAnswer(iterationRow, columnIndexMap.get(questionId.toString()), qd, val);
+                }
+            }
+            //Include this row in the digest
+            for (Cell cell : iterationRow) {
+                String val = parseCellAsString(cell);
+                if (val != null && !val.equals("")) {
+                    md.update(val.getBytes());
+                }
+            }
+        }
+    }
+
+
+    //We write one row at a time to stay in window
+    private void writeMetadataRow(Row r,
+            InstanceData instanceData,
+            final int iteration,
+            final boolean showRepeatColumn) {
+        SurveyInstanceDto dto = instanceData.surveyInstanceDto;
+        int col = 0;
+        // Write the identifier
+        createCell(r, col++, dto.getSurveyedLocaleIdentifier());
+        // Write data approval status
+        if (hasDataApproval()) {
+            createCell(r, col++, instanceData.latestApprovalStatus);
+        }
+        // Write the "Repeat" column
+        if (showRepeatColumn) {
+            createCell(r, col++, String.valueOf(iteration), null, Cell.CELL_TYPE_NUMERIC);
+        }
+        // Write other metadata
+        createCell(r, col++, dto.getSurveyedLocaleDisplayName());
+        createCell(r, col++, dto.getDeviceIdentifier());
+        createCell(r, col++, dto.getKeyId().toString());
+        createCell(r, col++, ExportImportUtils.formatDateTime(dto.getCollectionDate()));
+        createCell(r, col++, sanitize(dto.getSubmitterName()));
+        String duration = getDurationText(dto.getSurveyalTime());
+        createCell(r, col++, duration);
+        Double v = dto.getFormVersion();
+        if (v != null) {
+            createCell(r, col++, v);
+        }
+        //TODO else a cell with 0.0??
+    }
+
+    /**
+     * Writes all the data for a single survey instance (form instance) to the same sheet.
      *
      * @param sheet
      * @param startRow The start row for this instance
      * @param instanceData
      * @param generateSummary
-     * @param questionIdList
-     * @param unsummarizable
      * @param nameToIdMap
      * @param collapseIdMap
      * @param model
-     * @param useQuestionId
      * @return The row where the next instance should be written
      * @throws NoSuchAlgorithmException
      */
-    private synchronized int writeInstanceData(Sheet sheet, final int startRow,
-            InstanceData instanceData, boolean generateSummary,
-            List<String> questionIdList, List<String> unsummarizable,
-            Map<String, String> nameToIdMap, Map<String, String> collapseIdMap,
-            SummaryModel model, boolean useQuestionId)
-            throws NoSuchAlgorithmException {
+    private synchronized int writeInstanceData(
+            Sheet sheet,
+            final int startRow,
+            InstanceData instanceData,
+            boolean generateSummary,
+            Map<String, String> nameToIdMap,
+            Map<String, String> collapseIdMap,
+            SummaryModel model) {
 
-        // maxRow will increase when we write repeatable question groups
-        int maxRow = startRow;
-
-        SurveyInstanceDto dto = instanceData.surveyInstanceDto;
-
-        Row row = getRow(startRow, sheet);
-
-        for (int i = 0; i <= instanceData.maxIterationsCount; i++) {
-
-            Row r = getRow(row.getRowNum() + i, sheet);
-            // Write the identifier
-            createCell(r, columnIndexMap.get(IDENTIFIER_LABEL.get(locale)),
-                    dto.getSurveyedLocaleIdentifier());
-            // Write data approval status
-            if (hasDataApproval()) {
-                createCell(r, columnIndexMap.get(DATA_APPROVAL_STATUS_LABEL.get(locale)),
-                        instanceData.latestApprovalStatus);
+        //maxIterationsCount is actually the max iteration index; 0 for 1 iteration...
+        for (int i = 0; i <= (int) instanceData.maxIterationsCount; i++) {
+            Row iterationRow = getRow(startRow + i, sheet);
+            writeMetadataRow(iterationRow, instanceData, i + 1, true);
+            for (String q : questionIdList) {
+                final Long questionId = Long.valueOf(q);
+                final QuestionDto questionDto = questionsById.get(questionId);
+                SortedMap<Long, String> iterationsMap = instanceData.responseMap.get(questionId);
+                if (iterationsMap == null) {
+                    continue;
+                }
+                String val = iterationsMap.get(new Long(i));
+                if (val != null) {
+                    writeAnswer(iterationRow, columnIndexMap.get(q), questionDto, val);
+                }
             }
-            // Write the "Repeat" column
-            createCell(r, columnIndexMap.get(REPEAT_LABEL.get(locale)),
-                    String.valueOf(i + 1), null, Cell.CELL_TYPE_NUMERIC);
-            // Write other metadata
-            createCell(r, columnIndexMap.get(DISPLAY_NAME_LABEL.get(locale)),
-                    dto.getSurveyedLocaleDisplayName());
-            createCell(r, columnIndexMap.get(DEVICE_IDENTIFIER_LABEL.get(locale)),
-                    dto.getDeviceIdentifier());
-            createCell(r, columnIndexMap.get(INSTANCE_LABEL.get(locale)),
-                    dto.getKeyId().toString());
-            createCell(r, columnIndexMap.get(SUB_DATE_LABEL.get(locale)),
-                    ExportImportUtils.formatDateTime(dto.getCollectionDate()));
-            createCell(r, columnIndexMap.get(SUBMITTER_LABEL.get(locale)),
-                    sanitize(dto.getSubmitterName()));
-            String duration = getDurationText(dto.getSurveyalTime());
-            createCell(r, columnIndexMap.get(DURATION_LABEL.get(locale)),
-                    duration);
-        }
-        
-        for (String q : questionIdList) {
-            final Long questionId = Long.valueOf(q);
-            final QuestionDto questionDto = questionsById.get(questionId);
-
-            SortedMap<Long, String> iterationsMap = instanceData.responseMap.get(questionId);
-
-            if (iterationsMap == null) {
-                continue;
-            }
-
-            // Write downwards (and possibly rightwards) per iteration
-            int rowOffset = -1;
-            for (Map.Entry<Long, String> iteration : iterationsMap.entrySet()) {
-                String val = iteration.getValue();
-                rowOffset++;
-                Row iterationRow = getRow(startRow + rowOffset, sheet);
-                writeAnswer(sheet, iterationRow, columnIndexMap.get(q),
-                        questionDto, val, useQuestionId);
-            }
-            maxRow = Math.max(maxRow, startRow + rowOffset);
         }
 
-        // Calculate the digest
-        List<Row> rows = new ArrayList<>();
-        for (int r = startRow; r <= maxRow; r++) {
-            rows.add(sheet.getRow(r));
-        }
+        int maxRow = startRow + (int) instanceData.maxIterationsCount + 1;
 
-        String digest = ExportImportUtils.md5Digest(rows,
-                columnIndexMap.get(DIGEST_COLUMN));
-
-        if (!useQuestionId) {
-            // now add 1 more col that contains the digest
-            createCell(row, columnIndexMap.get(DIGEST_COLUMN), digest, null);
-        }
 
         // Rebuild old response map format for from instanceData.responseMap
         // Question id -> response
@@ -672,8 +761,12 @@ public class GraphicalSurveySummaryExporter extends SurveySummaryExporter {
             if (rollupOrder != null && rollupOrder.size() > 0) {
                 rollups = formRollupStrings(responseMap);
             }
+            FlowJsonObjectReader jsonReader = new FlowJsonObjectReader();
+            TypeReference<List<Map<String, String>>> typeReference = new TypeReference<List<Map<String, String>>>() {};
+
+
             for (Entry<String, String> entry : responseMap.entrySet()) {
-                //TODO: only OPTION and NUMBER summarizable now. Simple to add CASCADE.
+                //OPTION, NUMBER and CASCADE summarizable now.
                 if (!unsummarizable.contains(entry.getKey())) {
                     String effectiveId = entry.getKey();
                     if (nameToIdMap.get(effectiveId) != null) {
@@ -683,13 +776,15 @@ public class GraphicalSurveySummaryExporter extends SurveySummaryExporter {
                     String[] vals;
                     if (entry.getValue().startsWith("[")) { //JSON
                         try {
-                            List<Map<String, String>> optionNodes = OBJECT_MAPPER.readValue(
-                                    entry.getValue(),
-                                    new TypeReference<List<Map<String, String>>>() {}
-                                    );
+                            List<Map<String, String>> optionNodes = jsonReader.readObject(entry.getValue(), typeReference);
                             List<String> valsList = new ArrayList<>();
                             for (Map<String, String> optionNode : optionNodes) {
-                                valsList.add(optionNode.get("text")); //get "name" for CASCADE
+                                if (optionNode.containsKey("text")) {
+                                    valsList.add(optionNode.get("text")); // OPTION and NUMBER
+                                } else if (optionNode.containsKey("name")) {
+                                    valsList.clear(); // Keep only the last one
+                                    valsList.add(optionNode.get("name")); // "name" for CASCADE
+                                }
                             }
                             vals = valsList.toArray(new String[valsList.size()]);
                         } catch (IOException e) {
@@ -700,10 +795,10 @@ public class GraphicalSurveySummaryExporter extends SurveySummaryExporter {
                     }
 
                     synchronized (model) {
-                        for (int i = 0; i < vals.length; i++) {
-                            if (vals[i] != null && vals[i].trim().length() > 0) {
+                        for (int j = 0; j < vals.length; j++) {
+                            if (vals[j] != null && vals[j].trim().length() > 0) {
                                 QuestionDto q = questionsById.get(Long.valueOf(effectiveId));
-                                model.tallyResponse(effectiveId, rollups, vals[i], q);
+                                model.tallyResponse(effectiveId, rollups, vals[j], q);
                             }
                         }
                     }
@@ -718,18 +813,17 @@ public class GraphicalSurveySummaryExporter extends SurveySummaryExporter {
      * Write the cells for a single answer. Some answers are split into multiple cells. Called from
      * writeInstanceData method
      *
-     * @param sheet
      * @param row
      * @param startColumn
      * @param questionDto
      * @param value
-     * @param useQuestionId
-     * @param digest
      */
-    private void writeAnswer(Sheet sheet, Row row, int startColumn,
-            QuestionDto questionDto, String value, boolean useQuestionId) {
+    private void writeAnswer(@Nonnull Row row,
+            int startColumn,
+            @Nonnull QuestionDto questionDto,
+            @Nonnull String value) {
 
-        assert value != null;
+        assert value != null; //did not work when debugging in Eclipse
 
         // Some question types splits the value into several columns.
         List<String> cells = new ArrayList<>();
@@ -743,7 +837,7 @@ public class GraphicalSurveySummaryExporter extends SurveySummaryExporter {
 
             case PHOTO:
             case VIDEO:
-                cells.addAll(mediaCellValues(value, useQuestionId, imagePrefix));
+                cells.addAll(mediaCellValues(value, imagePrefix));
                 break;
 
             case GEO:
@@ -752,8 +846,7 @@ public class GraphicalSurveySummaryExporter extends SurveySummaryExporter {
 
             case CASCADE:
                 if (questionDto.getLevelNames() != null) {
-                    cells.addAll(cascadeCellValues(value, useQuestionId,
-                            questionDto.getLevelNames().size()));
+                    cells.addAll(cascadeCellValues(value, questionDto.getLevelNames().size()));
                 } else {
                     log.warn("No CASCADE resource for question '" + questionDto.getText() + "'");
                 }
@@ -763,12 +856,15 @@ public class GraphicalSurveySummaryExporter extends SurveySummaryExporter {
             case OPTION:
                 qId = questionDto.getKeyId();
                 cells.addAll(optionCellValues(questionDto.getKeyId(), value,
-                        useQuestionId, optionMap.get(qId), allowOtherMap.get(qId)));
+                        optionMap.get(qId),
+                        safeTrue(allowOtherMap.get(qId)),
+                        safeTrue(questionDto.getAllowMultipleFlag()))
+                        );
                 break;
 
             case CADDISFLY:
                 qId = questionDto.getKeyId();
-                boolean hasMap = hasImageMap.get(qId) != null && hasImageMap.get(qId);
+                boolean hasMap = safeTrue(hasImageMap.get(qId));
                 cells.addAll(caddisflyCellValues(qId, value, hasMap, imagePrefix));
                 break;
 
@@ -780,10 +876,15 @@ public class GraphicalSurveySummaryExporter extends SurveySummaryExporter {
         int col = startColumn;
         for (String cellValue : cells) {
             if (questionType == QuestionType.NUMBER) {
-                createCell(row, col, cellValue, null, Cell.CELL_TYPE_NUMERIC);
+                //Normally numeric, unless that would cause rounding
+                if (cellValue.length() < 16) {
+                    createCell(row, col, cellValue, null, Cell.CELL_TYPE_NUMERIC);
+                } else {
+                    createCell(row, col, cellValue, textStyle);
+                }
             } else if (questionType == QuestionType.PHOTO) {
                 if (col == startColumn) { // URL is text
-                    createCell(row, col, cellValue, mTextStyle);
+                    createCell(row, col, cellValue, textStyle);
                 } else { // Coordinates numerical
                     createCell(row, col, cellValue, null, Cell.CELL_TYPE_NUMERIC);
                 }
@@ -795,7 +896,7 @@ public class GraphicalSurveySummaryExporter extends SurveySummaryExporter {
                 // expanded columns.
                 createCell(row, col, cellValue, null, Cell.CELL_TYPE_NUMERIC);
             } else {
-                createCell(row, col, cellValue, mTextStyle);
+                createCell(row, col, cellValue, textStyle);
             }
             col++; // also takes care of padding in case no cell content added
         }
@@ -805,19 +906,19 @@ public class GraphicalSurveySummaryExporter extends SurveySummaryExporter {
         return ExportImportUtils.formatDateResponse(value);
     }
 
-    private static List<String> mediaCellValues(String value,
-            boolean useQuestionId, String imagePrefix) {
+    private List<String> mediaCellValues(String value, String imagePrefix) {
         List<String> cells = new ArrayList<>();
         Media media = MediaResponse.parse(value);
         String filename = media.getFilename();
-        final int filenameIndex = filename != null ? filename.lastIndexOf("/") + 1
-                : -1;
-        if (filenameIndex > 0 && filenameIndex < filename.length()) {
-            cells.add(imagePrefix + filename.substring(filenameIndex));
-            if (useQuestionId && media.getLocation() != null) {
-                cells.add(Double.toString(media.getLocation().getLatitude()));
-                cells.add(Double.toString(media.getLocation().getLongitude()));
-                cells.add(Double.toString(media.getLocation().getAccuracy()));
+        if (filename != null) {
+            final int filenameIndex = filename.lastIndexOf("/") + 1;
+            if (filenameIndex > 0 && filenameIndex < filename.length()) {
+                cells.add(imagePrefix + filename.substring(filenameIndex));
+                if (splitIntoColumns && media.getLocation() != null) {
+                    cells.add(Double.toString(media.getLocation().getLatitude()));
+                    cells.add(Double.toString(media.getLocation().getLongitude()));
+                    cells.add(Double.toString(media.getLocation().getAccuracy()));
+                }
             }
         }
         return cells;
@@ -831,11 +932,13 @@ public class GraphicalSurveySummaryExporter extends SurveySummaryExporter {
         String[] geoParts = value.split("\\|");
         List<String> cells = new ArrayList<>();
         int count = 0;
-        for (count = 0; count < geoParts.length; count++) {
+        //discard geocode (if present)
+        int partsToCopy = Math.min(geoParts.length, GEO_COLUMN_COUNT);
+        for (count = 0; count < partsToCopy; count++) {
             cells.add(geoParts[count]);
         }
         // now handle any missing fields
-        for (int j = count; j < 4; j++) {
+        for (int j = count; j < GEO_COLUMN_COUNT; j++) {
             cells.add("");
         }
 
@@ -896,7 +999,7 @@ public class GraphicalSurveySummaryExporter extends SurveySummaryExporter {
             return caddisflyCellValues;
         }
 
-        List<Map<String, Object>> caddisflyTestResultsList = 
+        List<Map<String, Object>> caddisflyTestResultsList =
                 (List<Map<String, Object>>) caddisflyResponseMap.get(CADDISFLY_RESULT);
 
         Map<Integer, Map<String, Object>> caddisflyTestResultsMap = mapCaddisflyResultsById(caddisflyTestResultsList);
@@ -914,7 +1017,7 @@ public class GraphicalSurveySummaryExporter extends SurveySummaryExporter {
                 }
             }
         }
-        
+
         // add image URL if available
         if (hasImage) {
             final String imageName = (String) caddisflyResponseMap.get(CADDISFLY_IMAGE);
@@ -941,16 +1044,16 @@ public class GraphicalSurveySummaryExporter extends SurveySummaryExporter {
      * Creates the cell values for a cascade question. The different levels are split into multiple
      * cells.
      */
-    private static List<String> cascadeCellValues(String value,
-            boolean useQuestionId, int levels) {
+    private /*static*/ List<String> cascadeCellValues(String value, int levels) {
         List<String> cells = new ArrayList<>();
         List<Map<String, String>> cascadeNodes = new ArrayList<>();
 
         if (value.startsWith("[")) {
+            FlowJsonObjectReader jsonReader = new FlowJsonObjectReader();
+            TypeReference<List<Map<String, String>>> typeReference = new TypeReference<List<Map<String, String>>>() {};
+
             try {
-                cascadeNodes = OBJECT_MAPPER.readValue(value,
-                        new TypeReference<List<Map<String, String>>>() {
-                        });
+                cascadeNodes = jsonReader.readObject(value, typeReference);
             } catch (IOException e) {
                 log.warn("Unable to parse CASCADE response - " + value, e);
             }
@@ -962,13 +1065,13 @@ public class GraphicalSurveySummaryExporter extends SurveySummaryExporter {
             }
         }
 
+        //We used to always set code=name if not otherwise set
+        //and users did not like getting a:a, b:b, etc. everywhere
         boolean allCodesEqualsName = true;
         for (Map<String, String> cascadeNode : cascadeNodes) {
             String code = cascadeNode.get("code");
             String name = cascadeNode.get("name");
-
-            if (code != null && name != null
-                    && !code.toLowerCase().equals(name.toLowerCase())) {
+            if (code != null && !code.equalsIgnoreCase(name)) {
                 allCodesEqualsName = false;
                 break;
             }
@@ -979,7 +1082,8 @@ public class GraphicalSurveySummaryExporter extends SurveySummaryExporter {
             }
         }
 
-        if (useQuestionId) {
+
+        if (splitIntoColumns) {
             // +------------+------------+-----
             // |code1:value1|code2:value2| ...
             // +------------+------------+-----
@@ -989,7 +1093,16 @@ public class GraphicalSurveySummaryExporter extends SurveySummaryExporter {
             for (Map<String, String> map : cascadeNodes) {
                 String code = map.get("code");
                 String name = map.get("name");
-                String nodeVal = (code == null ? "" : code + ":") + name;
+                String nodeVal;
+                if (code != null  && !code.isEmpty()) {
+                    if (justCodes) {
+                        nodeVal = code;
+                    } else {
+                        nodeVal = code + ":" + name;
+                    }
+                } else {
+                    nodeVal = name;
+                }
 
                 if (cells.size() == levels) {
                     // Don't create too many cells
@@ -1013,7 +1126,15 @@ public class GraphicalSurveySummaryExporter extends SurveySummaryExporter {
                 String code = node.get("code");
                 String name = node.get("name");
                 cascadeString.append("|");
-                cascadeString.append((code == null ? "" : code + ":") + name);
+                if (code != null  && !code.isEmpty()) {
+                    if (justCodes) {
+                        cascadeString.append(code);
+                    } else {
+                        cascadeString.append(code + ":" + name);
+                    }
+                } else {
+                    cascadeString.append(name);
+                }
             }
             if (cascadeString.length() > 0) {
                 // Drop the first pipe character.
@@ -1026,17 +1147,19 @@ public class GraphicalSurveySummaryExporter extends SurveySummaryExporter {
 
     /*
      * Takes a option question value in either the old or new format, and returns a list of option
-     * maps. The response can be either: old format: text1|text2|text3 new format: [{"code":
-     * "code1", "text": "text1"},{"code": "code2", "text": "text2"}]
+     * maps. The response can be either:
+     *  old format: text1|text2|text3
+     *  new format: [{"code":"code1", "text":"text1"},{"code":"code2", "text":"text2"}]
      */
     private List<Map<String, String>> getNodes(String value) {
         boolean isNewFormat = value.startsWith("[");
         List<Map<String, String>> optionNodes = new ArrayList<>();
+        FlowJsonObjectReader jsonReader = new FlowJsonObjectReader();
+        TypeReference<List<Map<String, String>>> typeReference = new TypeReference<List<Map<String, String>>>() {};
+
         if (isNewFormat) {
             try {
-                optionNodes = OBJECT_MAPPER.readValue(value,
-                        new TypeReference<List<Map<String, String>>>() {
-                        });
+                optionNodes = jsonReader.readObject(value, typeReference);
             } catch (IOException e) {
                 log.warn("Could not parse option response: " + value, e);
             }
@@ -1052,7 +1175,7 @@ public class GraphicalSurveySummaryExporter extends SurveySummaryExporter {
     }
 
     /*
-     * Build pipe-separated value from option nodes To be included in reports
+     * Build pipe-separated value from option nodes
      */
     private String buildOptionString(List<Map<String, String>> optionNodes) {
         StringBuilder optionString = new StringBuilder();
@@ -1061,57 +1184,61 @@ public class GraphicalSurveySummaryExporter extends SurveySummaryExporter {
             String text = node.get("text");
             optionString.append("|");
             if (code != null) {
-                optionString.append(code + ":" + text);
+                if (justCodes) {
+                    optionString.append(code);
+                } else {
+                    optionString.append(code + ":" + text);
+                }
             } else {
                 optionString.append(text);
             }
         }
         if (optionString.length() > 0) {
-            // Remove the first |
+            // Remove the first "|"
             optionString.deleteCharAt(0);
         }
         return optionString.toString();
     }
 
     /*
-     * Creates list of option values. The first value is always the pipe-separated format Depending
-     * on the useQuestionId parameter, each option is given its own column A 0 or 1 denotes if that
-     * option was selected or not if the AllowOther flag is true, a column is created for the Other
-     * option. We first try to match on text, and if that fails, we try to match on code. This
+     * Creates list of option values. The value is always the pipe-separated format.
+     * Depending on the splitIntoColumns variable, each option is given its own column.
+     * A 0 or 1 denotes if that option was selected or not.
+     * If the AllowOther flag is true, a column is created for the Other option.
+     *  We first try to match on text, and if that fails, we try to match on code. This
      * guards against texts that are slightly changed during the evolution of a survey
      */
     private List<String> optionCellValues(Long questionId, String value,
-            boolean useQuestionId, List<QuestionOptionDto> options,
-            Boolean allowOther) {
+            List<QuestionOptionDto> options, boolean allowOther, boolean allowMultiple) {
         List<String> cells = new ArrayList<>();
+        if (options == null) {
+            return cells;
+        }
 
         // get optionNodes from packed string value
         List<Map<String, String>> optionNodes = getNodes(value);
+        //'Other' value may or may not be tagged
+        //Latest: isOther = true
+        //If codes: code = OTHER
+        //otherwise: if last and the text is not in option list
+        Map<String, String> otherNode = null;
+        String other = null;
+        int numOptions = options.size();
 
-        // build pipe-separated format and add this to cell list
-        String optionString = buildOptionString(optionNodes);
-        cells.add(optionString);
+        boolean[] optionFound = new boolean[numOptions]; //Zero-length array ok
 
-        // if needed, build cells for options
-        if (useQuestionId) {
-            String text;
-            String code;
-            String cacheId;
-            String other = null;
+        // if needed, scan options
+        if (allowOther || (splitIntoColumns && allowMultiple)) { //Split options into own columns, if multiselect
             boolean found;
-            int numOptions = options.size();
-            boolean[] optionFound = new boolean[numOptions];
             String qId = questionId.toString();
 
             for (Map<String, String> optAnswer : optionNodes) {
-                text = optAnswer.get("text") != null ? optAnswer.get("text")
-                        : "";
-                code = optAnswer.get("code") != null ? optAnswer.get("code")
-                        : "";
+                String text = neverNull(optAnswer.get("text"));
+                String code = neverNull(optAnswer.get("code"));
                 found = false;
 
                 // try cache first
-                cacheId = qId + text + code;
+                String cacheId = qId + text + code;
                 if (optionsPositionCache.containsKey(cacheId)) {
                     optionFound[optionsPositionCache.get(cacheId)] = true;
                     found = true;
@@ -1122,8 +1249,7 @@ public class GraphicalSurveySummaryExporter extends SurveySummaryExporter {
                     for (int i = 0; i < numOptions; i++) {
                         if (text != null
                                 && text.length() > 0
-                                && text.equalsIgnoreCase(options.get(i)
-                                        .getText())) {
+                                && text.equalsIgnoreCase(options.get(i).getText())) {
                             optionFound[i] = true;
                             found = true;
                             // put in cache
@@ -1138,8 +1264,7 @@ public class GraphicalSurveySummaryExporter extends SurveySummaryExporter {
                     for (int i = 0; i < numOptions; i++) {
                         if (code != null
                                 && code.length() > 0
-                                && code.equalsIgnoreCase(options.get(i)
-                                        .getCode())) {
+                                && code.equalsIgnoreCase(options.get(i).getCode())) {
                             optionFound[i] = true;
                             found = true;
                             // put in cache
@@ -1150,20 +1275,31 @@ public class GraphicalSurveySummaryExporter extends SurveySummaryExporter {
                 }
 
                 // if still not found, keep this value as other
+                //TODO: this guess is unnecessary when an isOther flag (or OTHER code) is present.
                 if (!found) {
+                    otherNode = optAnswer;
                     other = text;
                 }
             }
+        }
+        if (otherNode != null) {
+            optionNodes.remove(otherNode); //goes in it's own cell
+        }
+        // First build pipe-separated format to start the cell list
+        String optionString = buildOptionString(optionNodes);
+        cells.add(optionString);
 
-            // create cells with 0 or 1
+        // if splitting multiples, create cells with 0 or 1
+        if (variableNamesInHeaders && allowMultiple) {
             for (int i = 0; i < numOptions; i++) {
                 cells.add(optionFound[i] ? "1" : "0");
             }
-
-            if (allowOther) {
-                cells.add(other != null ? other : "");
-            }
         }
+
+        if (allowOther) {
+            cells.add(other != null ? other : "");
+        }
+
         return cells;
     }
 
@@ -1176,167 +1312,172 @@ public class GraphicalSurveySummaryExporter extends SurveySummaryExporter {
     }
 
     /**
-     * creates the column header for the raw data in the file for all questions. Some questions lead
+     * creates the column headers for the raw data sheets. Some questions lead
      * to multiple column headers.
      *
-     * @param row
-     * @param questionMap
-     * @return - returns a 2 element array. The first element is a List of String objects
-     *         representing all the question Ids. The second element is a List of Strings
-     *         representing all the non-summarizable question Ids (i.e. those that aren't OPTION or
-     *         NUMBER questions)
      */
-    protected Object[] createRawDataHeader(Workbook wb, Sheet sheet,
-            Map<QuestionGroupDto, List<QuestionDto>> questionMap,
-            boolean useQuestionId) {
-        Row row = null;
+    protected void createRawDataHeader(Workbook wb,
+            Sheet baseSheet,
+            Map<QuestionGroupDto,
+            List<QuestionDto>> questionMap
+            ) {
 
-        row = getRow(0, sheet);
-
-        int columnIdx = -1;
-
-        addMetaDataColumnHeader(IDENTIFIER_LABEL.get(locale), ++columnIdx, row);
-
-        if (hasDataApproval()) {
-            addMetaDataColumnHeader(DATA_APPROVAL_STATUS_LABEL.get(locale), ++columnIdx, row);
-        }
-
-        addMetaDataColumnHeader(REPEAT_LABEL.get(locale), ++columnIdx, row);
-        addMetaDataColumnHeader(DISPLAY_NAME_LABEL.get(locale), ++columnIdx, row);
-        addMetaDataColumnHeader(DEVICE_IDENTIFIER_LABEL.get(locale), ++columnIdx, row);
-        addMetaDataColumnHeader(INSTANCE_LABEL.get(locale), ++columnIdx, row);
-        addMetaDataColumnHeader(SUB_DATE_LABEL.get(locale), ++columnIdx, row);
-        addMetaDataColumnHeader(SUBMITTER_LABEL.get(locale), ++columnIdx, row);
-        addMetaDataColumnHeader(DURATION_LABEL.get(locale), ++columnIdx, row);
-
-        List<String> questionIdList = new ArrayList<String>();
-        List<String> nonSummarizableList = new ArrayList<String>();
+        int columnIdx = addMetaDataHeaders(baseSheet, !separateSheetsForRepeatableGroups);
 
         if (questionMap != null) {
             int offset = ++columnIdx;
-            for (QuestionGroupDto group : orderedGroupList) {
-                if (questionMap.get(group) != null) {
-                    for (QuestionDto q : questionMap.get(group)) {
-                        questionIdList.add(q.getKeyId().toString());
-
-                        String questionId = q.getQuestionId();
-                        final boolean useQID = useQuestionId && questionId != null
-                                && !questionId.equals("");
-
-                        String columnLocale = useQID ? "en" : locale;
-                        columnIndexMap.put(q.getKeyId().toString(), offset);
-
-                        if (QuestionType.GEO == q.getType()) {
-                            offset = addGeoDataColumnHeader(q, row, offset, questionId, useQuestionId,
-                                    useQID, columnLocale);
-                        } else if (QuestionType.PHOTO == q.getType()) {
-                            offset = addPhotoDataColumnHeader(q, row, offset, questionId,
-                                    useQuestionId, useQID, columnLocale);
-                        } else if (QuestionType.CASCADE == q.getType()
-                                && q.getLevelNames() != null && useQuestionId) {
-                            // if no cascade assigned, column is not shown
-                            for (String level : q.getLevelNames()) {
-                                String levelName = useQID ? questionId + "_"
-                                        + level.replaceAll(" ", "_")
-                                        : getLocalizedText(q.getText(),
-                                                q.getTranslationMap())
-                                                + " - " + level;
-                                createCell(row, offset++, levelName, headerStyle);
-                            }
-                        } else if (QuestionType.CADDISFLY == q.getType()) {
-                            offset = addCaddisflyDataHeaderColumns(q, row, offset, questionId,
-                                    useQID, columnLocale);
-                        } else { // All other types
-                            String header = "";
-                            if (useQID) {
-                                header = questionId;
-                            } else if (useQuestionId) {
-                                header = getLocalizedText(q.getText(),
-                                        q.getTranslationMap()).replaceAll("\n", "").trim();
-                            } else {
-                                header = q.getKeyId().toString()
-                                        + "|"
-                                        + getLocalizedText(q.getText(),
-                                                q.getTranslationMap())
-                                                .replaceAll("\n", "").trim();
-                            }
-
-                            createCell(row, offset++, header, headerStyle);
-
-                            // check if we need to create columns for all options
-                            //TODO cascade
-                            if (QuestionType.OPTION == q.getType() && useQuestionId) {
-
-                                // get options for question and create columns
-                                OptionContainerDto ocDto = q.getOptionContainerDto();
-                                if (ocDto != null) { //used to be legal
-                                    List<QuestionOptionDto> qoList = ocDto.getOptionsList();
-                                    if (qoList != null) {
-                                        for (QuestionOptionDto qo : qoList) {
-                                            // create header column
-                                            header = (qo.getCode() != null
-                                                    && !qo.getCode().equals("null")
-                                                    && qo.getCode().length() > 0)
-                                                    ? qo.getCode() + ":"
-                                                    : "";
-                                            createCell(row,
-                                                    offset++,
-                                                    "--OPTION--|" + header + qo.getText(),
-                                                    headerStyle);
-                                        }
-        
-                                        // add 'other' column if needed
-                                        if (q.getAllowOtherFlag()) {
-                                            createCell(row,
-                                                    offset++,
-                                                    "--OTHER--",
-                                                    headerStyle);
-                                        }
-        
-                                        optionMap.put(q.getKeyId(), qoList);
-                                        allowOtherMap.put(q.getKeyId(), q.getAllowOtherFlag());
-                                    }
-                                }
-                            }
-                        }
-                        //TODO: add cascade
-                        if (!(QuestionType.NUMBER == q.getType() 
-                                || QuestionType.OPTION == q.getType())) {
-                            nonSummarizableList.add(q.getKeyId().toString());
-                        }
+            for (QuestionGroupDto grpDto : orderedGroupList) {
+                if (questionMap.get(grpDto) != null) {
+                    // if RQG, do on separate sheet
+                    if (qgSheetMap.containsKey(grpDto))   {
+                        Sheet groupSheet = qgSheetMap.get(grpDto);
+                        int metaEnd = addMetaDataHeaders(groupSheet, true);
+                        writeRawDataGroupHeaders(groupSheet, grpDto, questionMap.get(grpDto), metaEnd + 1);
+                    } else {
+                        // if not, keep adding it on to base sheet and return new offset
+                        offset = writeRawDataGroupHeaders(baseSheet, grpDto, questionMap.get(grpDto), offset);
                     }
                 }
             }
 
-            // add digest column index
+            // add digest column index; it has no header
             columnIndexMap.put(DIGEST_COLUMN, offset);
         }
-        Object[] temp = new Object[2];
-        temp[0] = questionIdList;
-        temp[1] = nonSummarizableList;
-        return temp;
     }
 
+
+    private int addMetaDataHeaders(Sheet sheet, boolean showRepeatColumn) {
+        Row row = getRow(doGroupHeaders ? 1 : 0, sheet);
+        int columnIdx = -1;
+        addMetaDataColumnHeader(IDENTIFIER_LABEL, ++columnIdx, row);
+        if (hasDataApproval()) {
+            addMetaDataColumnHeader(DATA_APPROVAL_STATUS_LABEL, ++columnIdx, row);
+        }
+        if (showRepeatColumn) {
+            addMetaDataColumnHeader(REPEAT_LABEL, ++columnIdx, row);
+        }
+        addMetaDataColumnHeader(DISPLAY_NAME_LABEL, ++columnIdx, row);
+        addMetaDataColumnHeader(DEVICE_IDENTIFIER_LABEL, ++columnIdx, row);
+        addMetaDataColumnHeader(INSTANCE_LABEL, ++columnIdx, row);
+        addMetaDataColumnHeader(SUB_DATE_LABEL, ++columnIdx, row);
+        addMetaDataColumnHeader(SUBMITTER_LABEL, ++columnIdx, row);
+        addMetaDataColumnHeader(DURATION_LABEL, ++columnIdx, row);
+        addMetaDataColumnHeader(FORM_VER_LABEL, ++columnIdx, row);
+        //Always put something in the top-left corner to identify the format
+        if (doGroupHeaders) {
+            row = getRow(0, sheet);
+            addMetaDataColumnHeader(METADATA_LABEL, 0, row); //constant (locale is going away)
+            sheet.addMergedRegion(new CellRangeAddress(0, 0, 0, columnIdx));
+        }
+        return columnIdx;
+    }
+
+    /*
+     * Add a meta data column header to the report.
+     */
+    private void addMetaDataColumnHeader(String columnHeaderName, int columnIdx, Row row) {
+        //columnIndexMap.put(columnHeaderName, columnIdx);
+        //metadata no longer in map since it is different on different sheets
+        createCell(row, columnIdx, columnHeaderName, headerStyle);
+    }
+
+
+    /**
+     * writes the raw data headers for one question group
+     * @param sheet
+     * @param grpDto
+     * @param questions
+     * @param startOffset
+     * @return
+     */
+    private int writeRawDataGroupHeaders(Sheet sheet, QuestionGroupDto grpDto, List<QuestionDto> questions, final int startOffset) {
+        int offset = startOffset;
+        Row row = getRow(doGroupHeaders ? 1 : 0, sheet);
+
+        for (QuestionDto q : questions) {
+            questionIdList.add(q.getKeyId().toString());
+
+            String varName = q.getVariableName();
+            // Can we tag the column(s) with the variable name?
+            final boolean useVarName = variableNamesInHeaders
+                    && varName != null
+                    && !varName.equals(""); //TODO other whitespace?
+
+            columnIndexMap.put(q.getKeyId().toString(), offset);
+
+            if (QuestionType.GEO == q.getType()) {
+                offset = addGeoDataColumnHeaders(q, row, offset, varName,
+                        variableNamesInHeaders, useVarName);
+            } else if (QuestionType.PHOTO == q.getType()) {
+                offset = addPhotoDataColumnHeader(q, row, offset, varName,
+                        splitIntoColumns, useVarName);
+            } else if (QuestionType.CASCADE == q.getType()
+                    && q.getLevelNames() != null && splitIntoColumns) {
+                // if no cascade assigned, column is not shown
+                for (String level : q.getLevelNames()) {
+                    String levelName = useVarName ? varName + "_"
+                            + level.replaceAll(" ", "_")
+                            : q.getText() + " - " + level;
+                    createHeaderCell(row, offset++, levelName);
+                }
+            } else if (QuestionType.CADDISFLY == q.getType()) {
+                offset = addCaddisflyDataHeaderColumns(q, row, offset, varName, useVarName);
+            } else { // All other cases
+                String header = "";
+                if (useVarName) {
+                    header = varName;
+                } else if (variableNamesInHeaders) { //fall back to sanitised text
+                    header = q.getText().replaceAll("\n", "").trim();
+                } else {
+                    header = q.getKeyId().toString()
+                            + "|"
+                            + q.getText().replaceAll("\n", "").trim();
+                }
+
+                createHeaderCell(row, offset++, header);
+
+                if (QuestionType.OPTION == q.getType()){
+                    offset = addExtraOptionColumnHeaders(header, offset, row, q);
+                }
+            }
+
+            if (!(QuestionType.NUMBER == q.getType()
+                    || QuestionType.OPTION == q.getType()
+                    || QuestionType.CASCADE == q.getType()
+                    )) {
+                unsummarizable.add(q.getKeyId().toString());
+            }
+        }
+
+        if (doGroupHeaders) {
+            //Now we know the width; write the group name spanned over entire group
+            createCell(getRow(0, sheet), startOffset,
+                    "Group " + grpDto.getOrder() + " - " + grpDto.getCode(), headerStyle);
+            sheet.addMergedRegion(new CellRangeAddress(0, 0, startOffset, offset - 1));
+        }
+        return offset;
+    }
+
+
     @SuppressWarnings("unchecked")
-    private int addCaddisflyDataHeaderColumns(QuestionDto q, Row row, int originalOffset,
-            String questionId, final boolean useQID, String columnLocale) {
+    private int addCaddisflyDataHeaderColumns(QuestionDto q, Row row, final int originalOffset,
+            final String variableName, final boolean useVariableName) {
         int offset = originalOffset;
-        Map<String, CaddisflyResource> caddisflyResourceMap = null;
         StringBuilder caddisflyFirstResultColumnHeaderPrefix = new StringBuilder();
-        if (useQID) {
-            caddisflyFirstResultColumnHeaderPrefix.append(questionId);
+        if (useVariableName) {
+            caddisflyFirstResultColumnHeaderPrefix.append(variableName);
         } else {
             caddisflyFirstResultColumnHeaderPrefix.append(q.getKeyId());
         }
         caddisflyFirstResultColumnHeaderPrefix.append("|").append(q.getText()).append("|");
 
-        if (caddisflyResourceMap == null) {
+        if (caddisflyResourceMap == null) { //retrieve this only once
             caddisflyResourceMap = new HashMap<String, CaddisflyResource>();
             for (CaddisflyResource r : retrieveCaddisflyTestsDefinitions()) {
                 caddisflyResourceMap.put(r.getUuid().trim(), r);
             }
         }
-        
+
         CaddisflyResource cr = null;
         String resId = q.getCaddisflyResourceUuid();
         if (resId != null) {
@@ -1373,22 +1514,21 @@ public class GraphicalSurveySummaryExporter extends SurveySummaryExporter {
                 } else {
                     columnHeader = "--CADDISFLY--|" + columnHeaderSuffix;
                 }
-                createCell(row, offset++, columnHeader, headerStyle);
+                createHeaderCell(row, offset++, columnHeader);
             }
 
-            if (cr.getHasImage()) {
-                createCell(
+            if (Boolean.TRUE.equals(cr.getHasImage())) {
+                createHeaderCell(
                         row,
                         offset++,
                         "--CADDISFLY--|" + q.getText()
                                 + "--"
-                                + IMAGE_LABEL.get(columnLocale),
-                        headerStyle);
+                                + IMAGE_LABEL);
             }
 
             // store hasImage in hashmap
             resultIdMap.put(q.getKeyId(), resultIds);
-            hasImageMap.put(q.getKeyId(), cr.getHasImage());
+            hasImageMap.put(q.getKeyId(), Boolean.TRUE.equals(cr.getHasImage()));
         }
         return offset;
     }
@@ -1401,83 +1541,117 @@ public class GraphicalSurveySummaryExporter extends SurveySummaryExporter {
         }
     }
 
-    private int addPhotoDataColumnHeader(QuestionDto q, Row row, int originalOffset, String questionId,
-            boolean useQuestionId, final boolean useQID, String columnLocale) {
+    private int addPhotoDataColumnHeader(QuestionDto q, Row row, final int originalOffset, String variableName,
+            boolean analysisFormat, final boolean useVariableName) {
         int offset = originalOffset;
         // Always a URL column
         String header = "";
-        if (useQID) {
-            header = questionId;
-        } else if (useQuestionId) {
-            header = getLocalizedText(q.getText(),
-                    q.getTranslationMap()).replaceAll("\n", "").trim();
+        if (useVariableName) {
+            header = variableName;
+        } else if (analysisFormat) {
+            header = q.getText().replaceAll("\n", "").trim();
         } else {
             header = q.getKeyId().toString()
                     + "|"
-                    + getLocalizedText(q.getText(),
-                            q.getTranslationMap()).replaceAll("\n", "").trim();
+                    + q.getText().replaceAll("\n", "").trim();
         }
-        createCell(row, offset++, header, headerStyle);
-        if (useQuestionId) {
+        createHeaderCell(row, offset++, header);
+        if (analysisFormat) {
             // Media gets 3 extra columns: Latitude, Longitude and Accuracy
             String prefix = "--PHOTO--|";
-            createCell(row, offset++,
-                    prefix + LAT_LABEL.get(columnLocale), headerStyle);
-            createCell(row, offset++,
-                    prefix + LON_LABEL.get(columnLocale), headerStyle);
-            createCell(row, offset++,
-                    prefix + ACC_LABEL.get(columnLocale), headerStyle);
+            createHeaderCell(row, offset++, prefix + LAT_LABEL);
+            createHeaderCell(row, offset++, prefix + LON_LABEL);
+            createHeaderCell(row, offset++, prefix + ACC_LABEL);
         }
         return offset;
     }
 
-    private int addGeoDataColumnHeader(QuestionDto q, Row row, int originalOffset, String questionId,
-            boolean useQuestionId, final boolean useQID, String columnLocale) {
-        int offset = originalOffset;
-        if (useQuestionId) {
-            createCell(
-                    row,
-                    offset++,
-                    (useQID ? questionId + "_"
-                            : getLocalizedText(q.getText(),
-                                    q.getTranslationMap())
-                                    + " - ")
-                            + LAT_LABEL.get(columnLocale),
-                    headerStyle);
-        } else {
-            createCell(row, offset++, q.getKeyId() + "|"
-                    + LAT_LABEL.get(columnLocale),
-                    headerStyle);
-        }
-        createCell(row, offset++, (useQID ? questionId
-                + "_" : "--GEOLON--|")
-                + LON_LABEL.get(columnLocale), headerStyle);
-        createCell(row, offset++, (useQID ? questionId
-                + "_" : "--GEOELE--|")
-                + ELEV_LABEL.get(columnLocale), headerStyle);
-        String codeLabel = CODE_LABEL.get(columnLocale);
-        createCell(row, offset++, useQID ? questionId + "_"
-                + codeLabel.replaceAll("\\s", "")
-                : "--GEOCODE--|" + codeLabel, headerStyle);
-        return offset;
-    }
-
-    /*
-     * Add a meta data column header to the report. The row should be == 0
-     */
-    private void addMetaDataColumnHeader(String columnHeaderName, int columnIdx, Row row) {
-        columnIndexMap.put(columnHeaderName, columnIdx);
-        createCell(row, columnIdx, columnHeaderName, headerStyle);
-    }
 
     /**
-     * Writes the report as an XLS document
+     * @param q
+     * @param row
+     * @param originalOffset
+     * @param variableName
+     * @param analysisFormat
+     * @param useVariableName
+     * @return the new offset
+     *
      */
-    private void writeSummaryReport(
-            Map<QuestionGroupDto, List<QuestionDto>> questionMap,
-            SummaryModel summaryModel, String sector, Workbook wb)
+    private int addGeoDataColumnHeaders(QuestionDto q, Row row,
+            final int originalOffset,
+            final String variableName,
+            final boolean analysisFormat,
+            final boolean useVariableName) {
+        int offset = originalOffset;
+        if (analysisFormat) {
+            if (useVariableName) {
+                createHeaderCell(row, offset++, variableName + "_" + LAT_LABEL);
+                createHeaderCell(row, offset++, variableName + "_" + LON_LABEL);
+                createHeaderCell(row, offset++, variableName + "_" + ELEV_LABEL);
+            } else {
+                createHeaderCell(row, offset++, q.getText() + " - " + LAT_LABEL);
+                createHeaderCell(row, offset++, q.getText() + " - " + LON_LABEL);
+                createHeaderCell(row, offset++, q.getText() + " - " + ELEV_LABEL);
+            }
+        } else { //Import currently relies on the --GEO header prefix
+            createHeaderCell(row, offset++, q.getKeyId() + "|" + LAT_LABEL);
+            createHeaderCell(row, offset++, "--GEOLON--|"      + LON_LABEL);
+            createHeaderCell(row, offset++, "--GEOELE--|"      + ELEV_LABEL);
+        }
+        return offset;
+    }
+
+
+    private int addExtraOptionColumnHeaders(String header,
+            final int initialOffset,
+            Row row,
+            QuestionDto q) {
+        int offset = initialOffset;
+        // get options for question and create columns
+        OptionContainerDto ocDto = q.getOptionContainerDto();
+        if (ocDto != null) { //null used to be legal if no options
+            List<QuestionOptionDto> qoList = ocDto.getOptionsList();
+            if (qoList != null) {
+                if ( splitIntoColumns & safeTrue(q.getAllowMultipleFlag())) {
+                    for (QuestionOptionDto qo : qoList) {
+                        // create split header column
+                        String hdr = (qo.getCode() != null
+                                && !qo.getCode().equals("null")
+                                && qo.getCode().length() > 0)
+                                ? qo.getCode() + ":"
+                                : "";
+                        createHeaderCell(row, offset++, "--OPTION--|" + hdr + qo.getText());
+                    }
+                }
+
+                // add 'other' column if needed
+                if (safeTrue(q.getAllowOtherFlag())){
+                  createHeaderCell(row, offset++, header + OTHER_SUFFIX);
+                }
+
+                optionMap.put(q.getKeyId(), qoList);
+                allowOtherMap.put(q.getKeyId(), q.getAllowOtherFlag());
+            }
+        }
+        return offset;
+    }
+
+
+    /**
+     * Writes the stats and graphs sheet
+     */
+    private void writeStatsAndGraphsSheet(
+            Map<QuestionGroupDto,
+            List<QuestionDto>> questionMap,
+            SummaryModel summaryModel,
+            String sector,
+            Workbook wb)
             throws Exception {
-        String title = sector == null ? SUMMARY_LABEL.get(locale) : sector;
+
+        final int variableNameColumnIndex = 3;
+        final int descriptiveStatsColumnIndex = 4;
+
+        String title = sector == null ? SUMMARY_LABEL : sector;
         Sheet sheet = null;
         int sheetCount = 2;
         String curTitle = WorkbookUtil.createSafeSheetName(title); //first try the whole sector name
@@ -1495,78 +1669,90 @@ public class GraphicalSurveySummaryExporter extends SurveySummaryExporter {
                 }
             }
         }
+
         CreationHelper creationHelper = wb.getCreationHelper();
         Drawing patriarch = sheet.createDrawingPatriarch();
-        int curRow = 0;
-        Row row = getRow(curRow++, sheet);
+        int rowIndex = 0;
+        Row row = getRow(rowIndex++, sheet);
         if (sector == null) {
-            createCell(row, 0, REPORT_HEADER.get(locale), headerStyle);
+            createCell(row, 0, REPORT_HEADER, headerStyle);
+            rowIndex = writeCollectionStats(questionMap, sheet, rowIndex);
         } else {
-            createCell(row, 0, sector + " " + REPORT_HEADER.get(locale), headerStyle);
+            createCell(row, 0, sector + " " + REPORT_HEADER, headerStyle);
         }
+
         for (QuestionGroupDto group : orderedGroupList) {
             if (questionMap.get(group) != null) {
                 for (QuestionDto question : questionMap.get(group)) {
-                    if (!(QuestionType.OPTION == question.getType() //TODO: add cascade
-                            || QuestionType.NUMBER == question.getType())) {
-                        continue;
+                    boolean doDescriptiveStats = false;
+                    boolean doChart = false;
+                    boolean doDataTable = false;
+
+                    if (QuestionType.OPTION == question.getType()) {
+                        doChart = true;
+                        doDataTable = true;
+                    } else if (QuestionType.CASCADE == question.getType()) {
+                        doChart = true;
+                        doDataTable = true;
+                    } else if (QuestionType.NUMBER == question.getType()) {
+                        doDescriptiveStats = true;
+                        //skip table and chart (phone numbers etc get ridiculous)
                     } else {
-                        if (summaryModel.getResponseCountsForQuestion(
-                                question.getKeyId(), sector).size() == 0) {
-                            // if there is no data, skip the question
-                            continue;
-                        }
+                        continue;
                     }
-                    // for both options and numeric, we want a pie chart and
-                    // data table. for numeric, we also want descriptive
-                    // statistics.
-                    int tableTopRow = curRow++;
-                    int tableBottomRow = curRow;
+
+                    if (summaryModel.getResponseCountsForQuestion(
+                            question.getKeyId(), sector).size() == 0) {
+                        // if there is no data, skip the question
+                        continue;
+                    }
+
+                    //We want a header, spanned across 2 columns
+                    int tableTopRow = rowIndex++;
+                    int bottomRow = rowIndex;
+
                     row = getRow(tableTopRow, sheet);
-                    // span the question heading over the data table
-                    sheet.addMergedRegion(new CellRangeAddress(curRow - 1, curRow - 1, 0, 2));
+                    // Span the question text over any data table
+                    sheet.addMergedRegion(new CellRangeAddress(rowIndex - 1, rowIndex - 1, 0, 2));
                     createCell(
                             row,
                             0,
-                            getLocalizedText(question.getText(), question.getTranslationMap()),
+                            question.getText(),
                             headerStyle);
-                    DescriptiveStats stats = summaryModel
-                            .getDescriptiveStatsForQuestion(
+                    // Variable name
+                    createCell(row, variableNameColumnIndex,
+                            question.getVariableName(),
+                            headerStyle);
+
+                    DescriptiveStats stats = summaryModel.getDescriptiveStatsForQuestion(
                                     question.getKeyId(), sector);
-                    if (stats != null && stats.getSampleCount() > 0) {
-                        sheet.addMergedRegion(new CellRangeAddress(curRow - 1, curRow - 1, 4, 5));
+                    if (doDescriptiveStats && stats != null && stats.getSampleCount() > 0) {
+                        // span the question text over the stats table
+                        sheet.addMergedRegion(new CellRangeAddress(rowIndex - 1, rowIndex - 1, 4, 5));
                         createCell(
                                 row,
-                                4,
-                                getLocalizedText(question.getText(),
-                                        question.getTranslationMap()),
-                                headerStyle);
+                                descriptiveStatsColumnIndex,
+                                question.getText(), headerStyle);
                     }
-                    row = getRow(curRow++, sheet);
-                    createCell(row, 1, FREQ_LABEL.get(locale), headerStyle);
-                    createCell(row, 2, PCT_LABEL.get(locale), headerStyle);
 
-                    // now create the data table for the option count
+                    // Collect data for use in table, stats and chart
                     Map<String, Long> counts = summaryModel
                             .getResponseCountsForQuestion(question.getKeyId(), sector);
                     int sampleTotal = 0;
                     List<String> labels = new ArrayList<String>();
                     List<String> values = new ArrayList<String>();
-                    int firstOptRow = curRow;
                     for (Entry<String, Long> count : counts.entrySet()) {
-                        row = getRow(curRow++, sheet);
                         String labelText = count.getKey();
                         if (labelText == null) {
                             labelText = "";
                         } else {
                             // Handle the json option question response type
                             if (labelText.startsWith("[")) {
+                                FlowJsonObjectReader jsonReader = new FlowJsonObjectReader();
+                                TypeReference<List<Map<String, String>>> typeReference = new TypeReference<List<Map<String, String>>>() {};
+
                                 try {
-                                    List<Map<String, String>> optionNodes = OBJECT_MAPPER
-                                            .readValue(
-                                                    labelText,
-                                                    new TypeReference<List<Map<String, String>>>() {
-                                                    });
+                                    List<Map<String, String>> optionNodes = jsonReader.readObject(labelText, typeReference);
                                     StringBuilder labelTextBuilder = new StringBuilder();
 
                                     for (Map<String, String> optionNode : optionNodes) {
@@ -1581,104 +1767,50 @@ public class GraphicalSurveySummaryExporter extends SurveySummaryExporter {
                                 }
                             }
                         }
-                        StringBuilder builder = new StringBuilder();
-                        if (QuestionType.OPTION == question.getType()
-                                && !DEFAULT_LOCALE.equals(locale)) {
-                            String[] tokens = labelText.split("\\|");
-                            // see if we have a translation for this option
-                            for (int i = 0; i < tokens.length; i++) {
-                                if (i > 0) {
-                                    builder.append("|");
-                                }
-                                if (question.getOptionContainerDto() != null
-                                        && question.getOptionContainerDto()
-                                                .getOptionsList() != null) {
-                                    boolean found = false;
-                                    for (QuestionOptionDto opt : question
-                                            .getOptionContainerDto()
-                                            .getOptionsList()) {
-                                        if (opt.getText() != null
-                                                && opt.getText()
-                                                        .trim()
-                                                        .equalsIgnoreCase(
-                                                                tokens[i])) {
-                                            builder.append(getLocalizedText(
-                                                    tokens[i],
-                                                    opt.getTranslationMap()));
-                                            found = true;
-                                            break;
-                                        }
-                                    }
-                                    if (!found) {
-                                        builder.append(tokens[i]);
-                                    }
-                                }
-                            }
-                        } else {
-                            builder.append(labelText);
-                        }
-                        createCell(row, 0, builder.toString(), null);
-                        createCell(row, 1, count.getValue().toString(), null);
-
-                        labels.add(builder.toString());
+                        labels.add(labelText);
                         values.add(count.getValue().toString());
                         sampleTotal += count.getValue();
                     }
-                    row = getRow(curRow++, sheet);
-                    createCell(row, 0, TOTAL_LABEL.get(locale), null);
-                    createCell(row, 1, sampleTotal + "", null);
-                    for (int i = 0; i < values.size(); i++) {
-                        row = getRow(firstOptRow + i, sheet);
-                        if (sampleTotal > 0) {
-                            createCell(row, 2,
-                                    PCT_FMT.format((Double.parseDouble(values
-                                            .get(i)) / sampleTotal)), null);
-                        } else {
-                            createCell(row, 2, PCT_FMT.format(0), null);
-                        }
-                    }
 
-                    tableBottomRow = curRow;
-
-                    if (stats != null && stats.getSampleCount() > 0) {
+                    //Output the descriptive stats;
+                    // this section is short enough to stay within window
+                    if (doDescriptiveStats && stats != null && stats.getSampleCount() > 0) {
                         int tempRow = tableTopRow + 1;
+                        int c1 = descriptiveStatsColumnIndex;
+                        int c2 = c1 + 1;
                         row = getRow(tempRow++, sheet);
-                        createCell(row, 4, "N", null);
-                        createCell(row, 5, sampleTotal + "", null);
+                        createCell(row, c1, "N");
+                        createCell(row, c2, sampleTotal);
                         row = getRow(tempRow++, sheet);
-                        createCell(row, 4, MEAN_LABEL.get(locale), null);
-                        createCell(row, 5, stats.getMean() + "", null);
+                        createCell(row, c1, MEAN_LABEL);
+                        createCell(row, c2, stats.getMean());
                         row = getRow(tempRow++, sheet);
-                        createCell(row, 4, STD_E_LABEL.get(locale), null);
-                        createCell(row, 5, stats.getStandardError() + "", null);
+                        createCell(row, c1, STD_E_LABEL);
+                        createCell(row, c2, stats.getStandardError());
                         row = getRow(tempRow++, sheet);
-                        createCell(row, 4, MEDIAN_LABEL.get(locale), null);
-                        createCell(row, 5, stats.getMedian() + "", null);
+                        createCell(row, c1, MEDIAN_LABEL);
+                        createCell(row, c2, stats.getMedian());
                         row = getRow(tempRow++, sheet);
-                        createCell(row, 4, MODE_LABEL.get(locale), null);
-                        createCell(row, 5, stats.getMode() + "", null);
+                        createCell(row, c1, STD_D_LABEL);
+                        createCell(row, c2, stats.getStandardDeviation());
                         row = getRow(tempRow++, sheet);
-                        createCell(row, 4, STD_D_LABEL.get(locale), null);
-                        createCell(row, 5, stats.getStandardDeviation() + "",
-                                null);
+                        createCell(row, c1, VAR_LABEL);
+                        createCell(row, c2, stats.getVariance());
                         row = getRow(tempRow++, sheet);
-                        createCell(row, 4, VAR_LABEL.get(locale), null);
-                        createCell(row, 5, stats.getVariance() + "", null);
+                        createCell(row, c1, RANGE_LABEL);
+                        createCell(row, c2, stats.getRange());
                         row = getRow(tempRow++, sheet);
-                        createCell(row, 4, RANGE_LABEL.get(locale), null);
-                        createCell(row, 5, stats.getRange() + "", null);
+                        createCell(row, c1, MIN_LABEL);
+                        createCell(row, c2, stats.getMin());
                         row = getRow(tempRow++, sheet);
-                        createCell(row, 4, MIN_LABEL.get(locale), null);
-                        createCell(row, 5, stats.getMin() + "", null);
-                        row = getRow(tempRow++, sheet);
-                        createCell(row, 4, MAX_LABEL.get(locale), null);
-                        createCell(row, 5, stats.getMax() + "", null);
-                        if (tableBottomRow < tempRow) {
-                            tableBottomRow = tempRow;
-                        }
+                        createCell(row, c1, MAX_LABEL);
+                        createCell(row, c2, stats.getMax());
+
+                        bottomRow = tempRow;
                     }
-                    curRow = tableBottomRow;
-                    if (labels.size() > 0) {
+
+                    //bar chart
+                    if (doChart && labels.size() > 0) {
                         boolean hasVals = false;
                         if (values != null) {
                             for (String val : values) {
@@ -1697,14 +1829,12 @@ public class GraphicalSurveySummaryExporter extends SurveySummaryExporter {
                         if (hasVals && generateCharts) {
                             // now insert the graph
                             int indx = wb.addPicture(
-                                    JFreechartChartUtil.getPieChart(
+                                    JFreechartChartUtil.getBarChart(
                                             labels,
                                             values,
-                                            getLocalizedText(
-                                                    question.getText(),
-                                                    question.getTranslationMap()),
-                                                    CHART_WIDTH,
-                                                    CHART_HEIGHT),
+                                            question.getText(),
+                                            CHART_WIDTH,
+                                            CHART_HEIGHT),
                                             Workbook.PICTURE_TYPE_PNG);
                             ClientAnchor anchor = creationHelper.createClientAnchor();
                             anchor.setDx1(0);
@@ -1717,36 +1847,179 @@ public class GraphicalSurveySummaryExporter extends SurveySummaryExporter {
                             anchor.setRow2(tableTopRow + CHART_CELL_HEIGHT);
                             anchor.setAnchorType(2);
                             patriarch.createPicture(anchor, indx);
-                            if (tableTopRow + CHART_CELL_HEIGHT > tableBottomRow) {
-                                curRow = tableTopRow + CHART_CELL_HEIGHT;
+                            if (tableTopRow + CHART_CELL_HEIGHT > bottomRow) {
+                                bottomRow = tableTopRow + CHART_CELL_HEIGHT;
                             }
                         }
                     }
 
+                    if (doDataTable) {
+                        rowIndex = tableTopRow;
+                        //header
+                        row = getRow(rowIndex++, sheet);
+                        createCell(row, 1, FREQ_LABEL, headerStyle);
+                        createCell(row, 2, PCT_LABEL, headerStyle);
+
+                        //items
+                        for (int i=0; i<labels.size(); i++) {
+                            row = getRow(rowIndex++, sheet);
+                            createCell(row, 0, labels.get(i));
+                            createCell(row, 1, values.get(i));
+                            if (sampleTotal > 0) {
+                                createCell(row, 2,
+                                        PCT_FMT.format((Double.parseDouble(values.get(i))
+                                                / sampleTotal)));
+                            } else {
+                                createCell(row, 2, PCT_FMT.format(0));
+                            }
+                        }
+
+                        //total
+                        row = getRow(rowIndex++, sheet);
+                        createCell(row, 0, TOTAL_LABEL);
+                        createCell(row, 1, sampleTotal + "");
+                        if (rowIndex > bottomRow) {
+                            bottomRow = rowIndex;
+                        }
+                    }
+                    rowIndex = bottomRow;
+
                     // add a blank row between questions
-                    getRow(curRow++, sheet);
+                    getRow(rowIndex++, sheet);
                     // flush the sheet so far to disk; we will not go back up
+                    // File will be broken if we write outside the window!
                     ((SXSSFSheet) sheet).flushRows(0); // retain 0 last rows and
                     // flush all others
-
                 }
             }
         }
     }
 
     /**
-     * creates a cell in the row passed in and sets the style and value (if non-null)
+     * Write statitics on the collection itself
+     * @param questionMap
+     * @param sheet
+     * @param rowIndex
+     * @return
      */
+    private int writeCollectionStats(Map<QuestionGroupDto,
+            List<QuestionDto>> questionMap,
+            Sheet sheet,
+            int firstRowIndex) {
+        final int tagCol = 0;
+        final int valCol = 3;
+
+        //Calculate them first (due to the window, we cannot sum this while looping and
+        // then go back up and draw it last)
+        int totalQuestions = 0;
+        for (List<QuestionDto> group : questionMap.values()) {
+            totalQuestions += group.size();
+        }
+        //Now draw them
+        int rowIndex = firstRowIndex + 1;
+        Row statRow = getRow(rowIndex++, sheet);
+        createCell(statRow, tagCol, "Questions");
+        createCell(statRow, valCol, totalQuestions);
+
+        statRow = getRow(rowIndex++, sheet);
+        createCell(statRow, tagCol, "Form submissions");
+        createCell(statRow, valCol, totalInstances);
+
+        if (totalInstances == 0) {
+            return rowIndex + 2; //add a little space
+        }
+
+        if (safeTrue(surveyGroupDto.getRequireDataApproval())) {
+            statRow = getRow(rowIndex++, sheet);
+            createCell(statRow, tagCol, "Approved submissions");
+            createCell(statRow, valCol, approvedInstances);
+        }
+
+        //The following two cells could also be made into date cells
+        statRow = getRow(rowIndex++, sheet);
+        createCell(statRow, tagCol, "First submission");
+        createCell(statRow, valCol, ExportImportUtils.formatDateTime(firstSubmission));
+
+        statRow = getRow(rowIndex++, sheet);
+        createCell(statRow, tagCol, "Last submission");
+        createCell(statRow, valCol, ExportImportUtils.formatDateTime(lastSubmission));
+
+        statRow = getRow(rowIndex++, sheet);
+        createCell(statRow, tagCol, "Shortest duration");
+        createCell(statRow, valCol, getDurationText(minDuration));
+
+        statRow = getRow(rowIndex++, sheet);
+        createCell(statRow, tagCol, "Longest duration");
+        createCell(statRow, valCol, getDurationText(maxDuration));
+
+        statRow = getRow(rowIndex++, sheet);
+        createCell(statRow, tagCol, "Average duration");
+        try {
+            createCell(statRow, valCol, getDurationText(totalDuration / totalInstances));
+        } catch (Exception e) {
+            // swallow exception, leave cell empty
+        }
+
+        for (String user : instancesByUser.keySet()) {
+            statRow = getRow(rowIndex++, sheet);
+            if (user != null) {
+                createCell(statRow, tagCol, "User " + user);
+            } else {
+                createCell(statRow, tagCol, "No user");
+            }
+            createCell(statRow, valCol, instancesByUser.get(user));
+        }
+
+        for (String device : instancesByDevice.keySet()) {
+            statRow = getRow(rowIndex++, sheet);
+            createCell(statRow, tagCol, "Device " + device);
+            createCell(statRow, valCol, instancesByDevice.get(device));
+        }
+
+        return rowIndex + 2; //add a little space
+    }
+
+
+    // Create a string cell
     protected Cell createCell(Row row, int col, String value) {
         return createCell(row, col, value, null, -1);
+    }
+
+    // Create a number cell
+    protected Cell createCell(Row row, int col, int value) {
+        Cell cell = row.createCell(col);
+        cell.setCellType(Cell.CELL_TYPE_NUMERIC);
+        cell.setCellValue(value);
+        return cell;
+    }
+
+    // Create a number cell
+    protected Cell createCell(Row row, int col, double value) {
+        Cell cell = row.createCell(col);
+        cell.setCellType(Cell.CELL_TYPE_NUMERIC);
+        cell.setCellValue(value);
+        return cell;
+    }
+
+    // Create a date cell
+    //TODO: set date formatting on this cell
+    protected Cell createCell(Row row, int col, Date value) {
+        Cell cell = row.createCell(col);
+        cell.setCellType(Cell.CELL_TYPE_NUMERIC);
+        cell.setCellValue(value);
+        return cell;
+    }
+
+    // Create a header cell
+    protected Cell createHeaderCell(Row row, int col, String value) {
+        return createCell(row, col, value, headerStyle, -1);
     }
 
     protected Cell createCell(Row row, int col, String value, CellStyle style) {
         return createCell(row, col, value, style, -1);
     }
 
-    protected Cell createCell(Row row, int col, String value, CellStyle style,
-            int type) {
+    protected Cell createCell(Row row, int col, String value, CellStyle style, int type) {
         Cell cell = row.createCell(col);
 
         if (style != null) {
@@ -1797,46 +2070,70 @@ public class GraphicalSurveySummaryExporter extends SurveySummaryExporter {
      *
      * @param options
      */
-    protected void processOptions(Map<String, String> options) {
-        isFullReport = true;
+    protected boolean processOptions(Map<String, String> options) {
+        includeSummarySheet = true;
         performGeoRollup = true;
         generateCharts = true;
+        separateSheetsForRepeatableGroups = false;
+        doGroupHeaders = false;
+        variableNamesInHeaders = false;
+
         if (options != null) {
             log.debug(options);
 
-            locale = options.get(LOCALE_OPT);
+            //What kind of report?
+            reportType = options.get(TYPE_OPT);
+            if (reportType == null || reportType.isEmpty()) {
+                log.error(TYPE_OPT + " was not set.");
+                return false;
+            } else
+            if (DATA_CLEANING_TYPE.equalsIgnoreCase(reportType)) {
+                includeSummarySheet = false;
+                doGroupHeaders = true;
+                separateSheetsForRepeatableGroups = true;
+                variableNamesInHeaders = false; //So we can import - also enables digests
+                splitIntoColumns = false;
+                justCodes = false;
+            } else if (DATA_ANALYSIS_TYPE.equalsIgnoreCase(reportType)) {
+                includeSummarySheet = false;
+                doGroupHeaders = false;
+                separateSheetsForRepeatableGroups = false;
+                variableNamesInHeaders = true;
+                splitIntoColumns = true;
+                justCodes = true;
+            } else if (COMPREHENSIVE_TYPE.equalsIgnoreCase(reportType)) {
+                includeSummarySheet = true;
+                doGroupHeaders = false;
+                separateSheetsForRepeatableGroups = false;
+                variableNamesInHeaders = true;
+                splitIntoColumns = true;
+                justCodes = true;
+            } else {
+                log.error("Unknown value " + reportType + " for " + TYPE_OPT);
+                return false;
+            }
+
             imagePrefix = options.get(IMAGE_PREFIX_OPT);
-            if (RAW_ONLY_TYPE.equalsIgnoreCase(options.get(TYPE_OPT))) {
-                isFullReport = false;
-            }
-            if (options.get(DO_ROLLUP_OPT) != null) {
-                if ("false".equalsIgnoreCase(options.get(DO_ROLLUP_OPT))) {
-                    performGeoRollup = false;
-                }
-            }
-            if (options.get(NO_CHART_OPT) != null) {
-                if ("true".equalsIgnoreCase(options.get(NO_CHART_OPT))) {
-                    generateCharts = false;
-                }
-            }
-            if (options.get(LAST_COLLECTION_OPT) != null
-                    && "true".equals(options.get(LAST_COLLECTION_OPT))) {
+            selectionFrom = options.get(FROM_OPT);
+            selectionTo = options.get(TO_OPT);
+            selectionLimit = options.get(MAX_ROWS_OPT);
+
+            Object lc = options.get(LAST_COLLECTION_OPT);
+            if (lc != null
+                    && "true".equalsIgnoreCase(lc.toString())) {
                 lastCollection = true;
+            }
+
+            Object po = options.get(PUBLISHED_OPT);
+            if (po != null
+                    && "false".equalsIgnoreCase(po.toString())) {
+                usePublishedForm = false;
             }
 
             if (options.get(CADDISFLY_TESTS_FILE_URL_OPT) != null
                     && !options.get(CADDISFLY_TESTS_FILE_URL_OPT).isEmpty()) {
                 caddisflyTestsFileUrl = options.get(CADDISFLY_TESTS_FILE_URL_OPT);
             }
-        }
-        if (locale != null) {
-            locale = locale.trim().toLowerCase();
-            if (DEFAULT.equalsIgnoreCase(locale)) {
-                locale = DEFAULT_LOCALE;
-            }
-
-        } else {
-            locale = DEFAULT_LOCALE;
         }
         if (imagePrefix != null) {
             imagePrefix = imagePrefix.trim();
@@ -1846,54 +2143,7 @@ public class GraphicalSurveySummaryExporter extends SurveySummaryExporter {
         } else {
             imagePrefix = DEFAULT_IMAGE_PREFIX;
         }
-    }
-
-    /**
-     * call the server to augment the data already loaded in each QuestionDto in the map passed in.
-     *
-     * @param questionMap
-     * @param apiKey
-     */
-    private void loadFullQuestions(
-            Map<QuestionGroupDto, List<QuestionDto>> questionMap, String apiKey) {
-        for (List<QuestionDto> questionList : questionMap.values()) {
-            for (int i = 0; i < questionList.size(); i++) {
-                try {
-                    QuestionDto newQ = BulkDataServiceClient.loadQuestionDetails(
-                            serverBase, questionList.get(i).getKeyId(), apiKey);
-                    if (newQ != null) {
-                        questionList.set(i, newQ);
-                    }
-                } catch (Exception e) {
-                    System.err.println("Could not fetch question details");
-                    e.printStackTrace(System.err);
-                }
-            }
-        }
-    }
-
-
-    /**
-     * uses the locale and the translation map passed in to determine what value to use for the
-     * string
-     *
-     * @param text
-     * @param translationMap
-     * @return
-     */
-    private String getLocalizedText(String text,
-            Map<String, TranslationDto> translationMap) {
-        TranslationDto trans = null;
-        if (translationMap != null) {
-            trans = translationMap.get(locale);
-        }
-        if (trans != null && trans.getText() != null
-                && trans.getText().trim().length() > 0) {
-            return trans.getText();
-        } else {
-            return text;
-
-        }
+        return true;
     }
 
     private String getDurationText(Long duration) {
@@ -1915,6 +2165,17 @@ public class GraphicalSurveySummaryExporter extends SurveySummaryExporter {
         return this.imagePrefix;
     }
 
+    /**
+     * This main() method is only used for debugging;
+     * when deployed on server, export() is called from Clojure code
+     * @param args
+     * [0] Output filename
+     * [1] Flow instance URL, like https://akvoflowsandbox.appspot.com
+     * [2] Survey id
+     * [3] API key
+     * [4] report type, DATA_CLEANING|DATA_ANALYSIS|COMPREHENSIVE
+     * [5] usePublishedForm, true or false
+     */
     public static void main(String[] args) {
 
         // Log4j stuff - http://stackoverflow.com/a/9003191
@@ -1927,17 +2188,30 @@ public class GraphicalSurveySummaryExporter extends SurveySummaryExporter {
         GraphicalSurveySummaryExporter exporter = new GraphicalSurveySummaryExporter();
         Map<String, String> criteria = new HashMap<String, String>();
         Map<String, String> options = new HashMap<String, String>();
-        options.put(LOCALE_OPT, "en");
-        // options.put(TYPE_OPT, RAW_ONLY_TYPE);
+        if (args.length < 5) {
+            // Uncomment one of the following three lines
+            options.put(TYPE_OPT, DATA_CLEANING_TYPE);
+//          options.put(TYPE_OPT, DATA_ANALYSIS_TYPE);
+//          options.put(TYPE_OPT, COMPREHENSIVE_TYPE);
+        } else {
+            options.put(TYPE_OPT, args[4]);
+        }
+        if (args.length >=6) {
+            options.put(PUBLISHED_OPT, args[5]);
+        }
         options.put(LAST_COLLECTION_OPT, "false");
-        options.put("useQuestionId", "false");
-        options.put("email", "email@example.com");
-        options.put("from", null);
-        options.put("to", null);
-        options.put("maxDataReportRows", null);
+        options.put(EMAIL_OPT, "email@example.com");
+        options.put(FROM_OPT, null);
+        options.put(TO_OPT, null);
+        options.put(MAX_ROWS_OPT, null);
+        String instance = args[1].replace(".appspot.com", "").replace("https://", "").replace("http://", "");
+        options.put(UPLOAD_URL_OPT, String.format("https://%s.s3.amazonaws.com/", instance));
+        options.put(UPLOAD_DIR_OPT, "surveys");
+
 
         criteria.put(SurveyRestRequest.SURVEY_ID_PARAM, args[2]);
         criteria.put("apiKey", args[3]);
+
         exporter.export(criteria, new File(args[0]), args[1], options);
     }
 }

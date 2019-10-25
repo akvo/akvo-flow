@@ -1,5 +1,5 @@
 /*
- *  Copyright (C) 2010-2017 Stichting Akvo (Akvo Foundation)
+ *  Copyright (C) 2010-2019 Stichting Akvo (Akvo Foundation)
  *
  *  This file is part of Akvo FLOW.
  *
@@ -29,11 +29,10 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
 
+import com.fasterxml.jackson.core.type.TypeReference;
 import org.akvo.flow.domain.DataUtils;
+import org.akvo.flow.util.FlowJsonObjectReader;
 import org.apache.log4j.Logger;
-import org.codehaus.jackson.JsonNode;
-import org.codehaus.jackson.map.ObjectMapper;
-import org.codehaus.jackson.type.TypeReference;
 import org.json.JSONArray;
 import org.json.JSONObject;
 import org.waterforpeople.mapping.app.gwt.client.survey.OptionContainerDto;
@@ -180,6 +179,7 @@ public class SurveySummaryExporter extends AbstractDataExporter {
 
     /**
      * loads just enough question data to generate the simplest report
+     * As side effect, creates and populates orderedGroupList and rollupOrder.
      * @param surveyId
      * @param performRollups
      * @param serverBase
@@ -188,7 +188,10 @@ public class SurveySummaryExporter extends AbstractDataExporter {
      * @throws Exception
      */
     protected Map<QuestionGroupDto, List<QuestionDto>> loadAllQuestions(
-            String surveyId, boolean performRollups, String serverBase, String apiKey)
+            String surveyId,
+            boolean performRollups,
+            String serverBase,
+            String apiKey)
             throws Exception {
         Map<QuestionGroupDto, List<QuestionDto>> questionMap = new HashMap<>();
         //we need the ordering of groups and questions in them; fetching in nested loops is inefficient so
@@ -232,11 +235,47 @@ public class SurveySummaryExporter extends AbstractDataExporter {
             }
             questionMap.put(group, questions);
         }
-        
+
         return questionMap;
     }
 
-    
+    /**
+     * calls the server to augment the data already loaded in each QuestionDto in the map
+     * with variable names, if not set already
+     *
+     * @param surveyId
+     * @param serverBase
+     * @param questionMap map of lists of questionDtos keyed by id
+     * @param apiKey
+     */
+    protected void loadVariableNames(
+            String surveyId,
+            String serverBase,
+            Map<QuestionGroupDto, List<QuestionDto>> questionMap,
+            String apiKey) {
+
+        Map<Long, QuestionDto> questionsById = new HashMap<>();
+        for (List<QuestionDto> qList : questionMap.values()) {
+            for (QuestionDto q : qList) {
+                questionsById.put(q.getKeyId(), q);
+            }
+        }
+
+        try {
+            List<QuestionDto> dsQuestions = fetchQuestionsOfSurvey(serverBase, surveyId, apiKey); //unordered
+            for (QuestionDto sdDto : dsQuestions) {
+                QuestionDto dto = questionsById.get(sdDto.getKeyId());
+                if (dto != null && dto.getVariableName() == null) {
+                    dto.setVariableName(sdDto.getVariableName());
+                }
+            }
+
+        } catch (Exception e) {
+            System.err.println("Could not fetch question variableNames");
+            e.printStackTrace(System.err);
+        }
+    }
+
     /**
      * calls the server to augment the data already loaded in each QuestionDto in the map
      * with minimal option info, no translations
@@ -257,7 +296,7 @@ public class SurveySummaryExporter extends AbstractDataExporter {
                     questionsById.put(q.getKeyId(), q);
                 }
             }
-            
+
             List<QuestionOptionDto> optList =
                     BulkDataServiceClient.fetchSurveyQuestionOptions(surveyId, serverBase, apiKey);
             //add them to the container of their question
@@ -325,6 +364,12 @@ public class SurveySummaryExporter extends AbstractDataExporter {
                         if (json.has("keyId")) {
                             dto.setKeyId(json.getLong("keyId"));
                         }
+                        if (json.has("repeatable")) {
+                            dto.setRepeatable(json.getBoolean("repeatable"));
+                        }
+                        if (json.has("order")) {
+                            dto.setOrder(json.getInt("order"));
+                        }
                         dtoList.add(dto);
                     } catch (Exception e) {
                         log.error("Error in json parsing: " + e.getMessage(), e);
@@ -343,16 +388,13 @@ public class SurveySummaryExporter extends AbstractDataExporter {
      * @throws Exception
      */
     protected List<QuestionDto> parseQuestions(String response) throws Exception {
-        final ObjectMapper JSON_RESPONSE_PARSER = new ObjectMapper();
-
-        final JsonNode questionListNode =
-                JSON_RESPONSE_PARSER.readTree(response).get("dtoList");
-        final List<QuestionDto> qList = JSON_RESPONSE_PARSER.readValue(
-                questionListNode, new TypeReference<List<QuestionDto>>() {
-                });
+        final FlowJsonObjectReader jsonReader = new FlowJsonObjectReader();
+        final TypeReference<QuestionDto> listItemTypeReference = new TypeReference<QuestionDto>(){};
+        final List<QuestionDto> qList = jsonReader.readDtoListObject(response, listItemTypeReference);
         return qList;
     }
-    
+
+
     /**
      * converts the string into a JSON array object.
      */

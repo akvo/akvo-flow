@@ -1,5 +1,5 @@
 /*
- *  Copyright (C) 2010-2017 Stichting Akvo (Akvo Foundation)
+ *  Copyright (C) 2010-2019 Stichting Akvo (Akvo Foundation)
  *
  *  This file is part of Akvo FLOW.
  *
@@ -52,6 +52,7 @@ public class QuestionDto extends BaseDto {
     private Long questionGroupId;
     private Long surveyId;
     private String questionId;
+    private String variableName;
     private Integer order;
     private Boolean mandatoryFlag = null;
     private String path;
@@ -150,7 +151,7 @@ public class QuestionDto extends BaseDto {
     /**
      * adds the translation to the translation map. If a translation already
      * exists (based on language code), it will be replaced
-     * 
+     *
      * @param trans
      */
     public void addTranslation(TranslationDto trans) {
@@ -386,16 +387,19 @@ public class QuestionDto extends BaseDto {
         this.requireDoubleEntry = requireDoubleEntry;
     }
 
-    public String getQuestionId() {
+    public String getVariableName() {
+        if (variableName != null) {
+            return variableName;
+        }
         return questionId;
     }
 
-    public void setQuestionId(String questionId) {
+    public void setVariableName(String variableName) {
         // Missing questionId is represented as null
-        if (questionId != null && questionId.matches("\\s*")) {
-            this.questionId = null;
+        if (variableName != null && variableName.matches("\\s*")) {
+            this.variableName = null;
         } else {
-            this.questionId = questionId;
+            this.variableName = variableName;
         }
     }
 
@@ -446,9 +450,9 @@ public class QuestionDto extends BaseDto {
     public void setCaddisflyResourceUuid(String caddisflyResourceUuid) {
         this.caddisflyResourceUuid = caddisflyResourceUuid;
     }
-    
+
     @Override
     public String toString() {
-      return text + "(" + type + ")"; 
+      return type + "'" + text + "' #" + order + (mandatoryFlag?" *":"");
     }
 }

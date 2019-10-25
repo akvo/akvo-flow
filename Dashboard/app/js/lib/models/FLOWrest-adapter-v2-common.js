@@ -1,39 +1,37 @@
-/*global DS*/
-var get = Ember.get,
-  set = Ember.set;
+/* global DS */
+const { get } = Ember;
 
 DS.FLOWRESTAdapter = DS.RESTAdapter.extend({
   serializer: DS.RESTSerializer.extend({
-    primaryKey: function (type) {
-      return "keyId";
+    primaryKey() {
+      return 'keyId';
     },
-    keyForAttributeName: function (type, name) {
+    keyForAttributeName(type, name) {
       return name;
-    }
+    },
   }),
 
-  sideload: function (store, type, json, root) {
-    var msg, status, metaObj;
+  sideload(store, type, json, root) {
     this._super(store, type, json, root);
 
     this.setQueryCursor(type, json);
 
     // only change metaControl info if there is actual meta info in the server response
     // and if it does not come from a delete action. We detect this by looking if num == null
-    metaObj = this.extractMeta(json);
+    const metaObj = this.extractMeta(json);
     if (metaObj && !Ember.none(metaObj.message)) {
-
-      if (type == FLOW.SurveyInstance
-          || type == FLOW.SurveyedLocale
-          && !Ember.none(this.extractMeta(json).num)) {
+      if (
+        type == FLOW.SurveyInstance
+        || (type == FLOW.SurveyedLocale && !Ember.none(this.extractMeta(json).num))
+      ) {
         FLOW.metaControl.set(type == FLOW.SurveyInstance ? 'numSILoaded' : 'numSLLoaded', this.extractMeta(json).num);
         FLOW.metaControl.set('since', this.extractMeta(json).since);
         FLOW.metaControl.set('num', this.extractMeta(json).num);
         FLOW.metaControl.set('cursorType', type);
       }
-      msg = this.extractMeta(json).message;
-      status = this.extractMeta(json).status;
-      keyId = this.extractMeta(json).keyId;
+      let msg = this.extractMeta(json).message;
+      const { status } = this.extractMeta(json);
+      const { keyId } = this.extractMeta(json);
 
       if (msg.indexOf('_') === 0) { // Response is a translatable message
         msg = Ember.String.loc(msg);
@@ -102,7 +100,7 @@ DS.FLOWRESTAdapter = DS.RESTAdapter.extend({
 
       if (this.extractMeta(json).status === 'failed' || FLOW.metaControl.get('message') !== '') {
         FLOW.dialogControl.set('activeAction', 'ignore');
-        FLOW.dialogControl.set('header', '' /*Ember.String.loc('_action_failed')*/ ); //FIXME
+        FLOW.dialogControl.set('header', '' /* Ember.String.loc('_action_failed') */); // FIXME
         FLOW.dialogControl.set('message', FLOW.metaControl.get('message'));
         FLOW.dialogControl.set('showCANCEL', false);
         FLOW.dialogControl.set('showDialog', true);
@@ -112,8 +110,8 @@ DS.FLOWRESTAdapter = DS.RESTAdapter.extend({
 
   /*  Process the cursor returned by the query. The cursor is used for pagination requests
       and is based on the type of entities queried */
-  setQueryCursor: function(type, json) {
-    var cursorArray, cursorStart, cursorIndex;
+  setQueryCursor(type, json) {
+    let cursorArray;
     if (type === FLOW.SurveyedLocale) {
       cursorArray = FLOW.router.surveyedLocaleController.get('sinceArray');
     } else if (type === FLOW.SurveyInstance) {
@@ -122,12 +120,12 @@ DS.FLOWRESTAdapter = DS.RESTAdapter.extend({
       return;
     }
 
-    cursorStart = this.extractSince(json);
+    const cursorStart = this.extractSince(json);
     if (!cursorStart) {
       return;
     }
 
-    cursorIndex = cursorArray.indexOf(cursorStart);
+    const cursorIndex = cursorArray.indexOf(cursorStart);
     if (cursorIndex === -1) {
       cursorArray.pushObject(cursorStart);
     } else {
@@ -142,14 +140,14 @@ DS.FLOWRESTAdapter = DS.RESTAdapter.extend({
     }
   },
 
-  ajax: function (url, type, hash) {
+  ajax(url, type, hash) {
     if (type === 'GET' && url.indexOf('rest/survey_groups/0') >= 0) {
       // Don't fetch the root folder. It doesn't exist.
       return;
     }
 
     this._super(url, type, hash);
-    if (type == "GET") {
+    if (type == 'GET') {
       if (url.indexOf('rest/survey_groups') >= 0) {
         FLOW.projectControl.set('isLoading', true);
       }
@@ -157,7 +155,34 @@ DS.FLOWRESTAdapter = DS.RESTAdapter.extend({
     }
   },
 
-  didFindRecord: function (store, type, json, id) {
+  find(store, type, id) {
+    const root = this.rootForType(type);
+
+    this.ajax(this.buildURL(root, id), 'GET', {
+      success(json) {
+        if (type === FLOW.SurveyGroup) {
+          if (json.survey_group) {
+            this.didFindRecord(store, type, json, id);
+          } else {
+            // missing survey so no further action
+            FLOW.projectControl.set('isLoading', false);
+            FLOW.savingMessageControl.numLoadingChange(-1);
+          }
+        } else {
+          this.didFindRecord(store, type, json, id);
+        }
+      },
+      error() {
+        // TODO: Handle various error response codes
+        if (type === FLOW.SurveyGroup) {
+          FLOW.projectControl.set('isLoading', false);
+        }
+        FLOW.savingMessageControl.numLoadingChange(-1);
+      },
+    });
+  },
+
+  didFindRecord(store, type, json, id) {
     this._super(store, type, json, id);
     if (type === FLOW.SurveyGroup) {
       FLOW.projectControl.set('isLoading', false);
@@ -165,15 +190,15 @@ DS.FLOWRESTAdapter = DS.RESTAdapter.extend({
     FLOW.savingMessageControl.numLoadingChange(-1);
   },
 
-  didFindAll: function (store, type, json) {
+  didFindAll(store, type, json) {
+    this._super(store, type, json);
     if (type === FLOW.SurveyGroup) {
       FLOW.projectControl.set('isLoading', false);
     }
     FLOW.savingMessageControl.numLoadingChange(-1);
-    this._super(store, type, json);
   },
 
-  didFindQuery: function (store, type, json, recordArray) {
+  didFindQuery(store, type, json, recordArray) {
     this._super(store, type, json, recordArray);
     if (type === FLOW.SurveyGroup) {
       FLOW.projectControl.set('isLoading', false);
@@ -184,28 +209,50 @@ DS.FLOWRESTAdapter = DS.RESTAdapter.extend({
   // adapted from standard ember rest_adapter
   // includes 'bulk' in the POST call, to allign
   // with updateRecords and deleteRecords behaviour.
-  createRecords: function (store, type, records) {
+  createRecords(store, type, records) {
+    // do not bulk commit when creating questions and question groups
+    if (FLOW.questionControl.get('bulkCommit')) {
+      this.set('bulkCommit', false);
+    }
+
     if (get(this, 'bulkCommit') === false) {
       return this._super(store, type, records);
     }
 
-    var root = this.rootForType(type),
-      plural = this.pluralize(root);
+    const root = this.rootForType(type);
+    const plural = this.pluralize(root);
 
-    var data = {};
+    const data = {};
     data[plural] = [];
     records.forEach(function (record) {
       data[plural].push(this.serialize(record, {
-        includeId: true
+        includeId: true,
       }));
     }, this);
 
-    this.ajax(this.buildURL(root, 'bulk'), "POST", {
-      data: data,
+    this.ajax(this.buildURL(root, 'bulk'), 'POST', {
+      data,
       context: this,
-      success: function (json) {
+      success(json) {
         this.didCreateRecords(store, type, records, json);
-      }
+      },
     });
-  }
+  },
+
+
+  updateRecords(store, type, records) {
+    // if updating questions and question groups ordering, enable bulkCommit
+    if (FLOW.questionControl.get('bulkCommit')) {
+      this.set('bulkCommit', true);
+    }
+    this._super(store, type, records);
+  },
+
+  deleteRecords(store, type, records) {
+    // do not bulk commit when deleting questions and question groups
+    if (FLOW.questionControl.get('bulkCommit')) {
+      this.set('bulkCommit', false);
+    }
+    this._super(store, type, records);
+  },
 });

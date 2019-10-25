@@ -1,17 +1,18 @@
-language: java
+language: generic
 
 sudo: required
-
 services:
-  - docker
-
+- docker
 cache:
   directories:
     - $HOME/.m2
-    - $HOME/.cache
-
-before_install:
-  - docker pull akvo/flow-build
 
 script:
-  - ./docker/bootstrap-build.sh
+  - docker build -t akvo/flow-builder .
+  - "./ci/bootstrap-build.sh /app/src/ci/build.sh && ./ci/deploy.sh"
+
+before_cache:
+ - find $HOME/.m2 -name resolver-status.properties -exec rm {} \;
+ 
+notifications:
+  slack: akvo:ZLetmotGiT22QryK6pR5bnFS

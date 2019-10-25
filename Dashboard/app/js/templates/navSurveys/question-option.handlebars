@@ -1,3 +1,13 @@
 {{view Ember.TextField valueBinding="view.content.code" placeholderBinding="Ember.STRINGS._code" size=5}}
 {{view Ember.TextField valueBinding="view.content.text" placeholderBinding="Ember.STRINGS._text_placeholder" size=15}}
+{{#if view.topOption}}
+<a class="not-active">{{t _move_up}}</a>
+{{else}}
+<a {{action moveOptionUp target="FLOW.questionOptionsControl"}}>{{t _move_up}}</a>
+{{/if}}
+{{#if view.bottomOption}}
+<a class="not-active">{{t _move_down}}</a>
+{{else}}
+<a {{action moveOptionDown target="FLOW.questionOptionsControl"}}>{{t _move_down}}</a>
+{{/if}}
 <a {{action deleteOption target="FLOW.questionOptionsControl"}}>{{t _delete_option}}</a>

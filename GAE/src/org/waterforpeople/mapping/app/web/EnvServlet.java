@@ -1,5 +1,5 @@
 /*
- *  Copyright (C) 2013-2017 Stichting Akvo (Akvo Foundation)
+ *  Copyright (C) 2013-2019 Stichting Akvo (Akvo Foundation)
  *
  *  This file is part of Akvo FLOW.
  *
@@ -36,12 +36,10 @@ import org.akvo.flow.locale.UIStrings;
 import org.apache.velocity.Template;
 import org.apache.velocity.VelocityContext;
 import org.apache.velocity.app.VelocityEngine;
-import org.waterforpeople.mapping.app.web.rest.security.AppRole;
+import org.akvo.flow.rest.security.AppRole;
 
 import com.gallatinsystems.common.util.PropertyUtil;
-import com.gallatinsystems.user.dao.UserDao;
 import com.gallatinsystems.user.domain.User;
-import com.google.appengine.api.users.UserServiceFactory;
 import com.google.appengine.api.utils.SystemProperty;
 
 public class EnvServlet extends HttpServlet {
@@ -59,8 +57,8 @@ public class EnvServlet extends HttpServlet {
         properties.add("photo_url_root");
         properties.add("imageroot");
         properties.add("flowServices");
+        properties.add("showAltAuthButton");
         properties.add("surveyuploadurl");
-        properties.add("showStatisticsFeature");
         properties.add("showMonitoringFeature");
         properties.add("mandatoryQuestionID");
         properties.add("showExternalSourcesFeature");
@@ -68,7 +66,6 @@ public class EnvServlet extends HttpServlet {
         properties.add("mapsProvider");
         properties.add(SHOW_MAPS_PROPERTY_KEY);
         properties.add("googleMapsRegionBias");
-        properties.add("cartodbHost");
         properties.add("hereMapsAppId");
         properties.add("hereMapsAppCode");
         properties.add("enableDataApproval");
@@ -103,13 +100,13 @@ public class EnvServlet extends HttpServlet {
         final Map<String, String> props = PropertyUtil
                 .getPropertiesMap(properties);
 
-        // if the showStatisticsFeature is not present in appengine-web.xml, we want it to be false.
-        if (props.get("showStatisticsFeature") == null) {
-            props.put("showStatisticsFeature", "false");
-        }
-
+        // if a feature flag is not present in appengine-web.xml, we want it to be false.
         if (props.get("showMonitoringFeature") == null) {
             props.put("showMonitoringFeature", "false");
+        }
+
+        if (props.get("showAltAuthButton") == null) {
+            props.put("showAltAuthButton", "false");
         }
 
         if (props.get("mandatoryQuestionID") == null) {
@@ -149,7 +146,7 @@ public class EnvServlet extends HttpServlet {
         if (props.get(CADDISFLY_TESTS_FILE_URL_KEY) == null
                 || props.get(CADDISFLY_TESTS_FILE_URL_KEY).isEmpty()) {
             props.put("caddisflyTestsFileUrl",
-                    "https://akvoflow-public.s3.amazonaws.com/caddisfly-tests.json");
+                    "https://s3-eu-west-1.amazonaws.com/akvoflow-public/caddisfly-tests-v2.json");
         }
 
         // load language configuration and strings if present
@@ -171,7 +168,7 @@ public class EnvServlet extends HttpServlet {
         final List<Map<String, String>> roles = new ArrayList<Map<String, String>>();
         for (AppRole r : AppRole.values()) {
             if (r.getLevel() < 10) {
-                continue; // don't expose NEW_USER, nor SUPER_USER
+                continue; // don't expose ROLE_NEW_USER, nor ROLE_SUPER_USER
             }
             Map<String, String> role = new HashMap<String, String>();
             role.put("value", String.valueOf(r.getLevel()));
@@ -196,10 +193,8 @@ public class EnvServlet extends HttpServlet {
      * @param props
      */
     private void addLocale(Map<String, String> props) {
-        final com.google.appengine.api.users.User currentGoogleUser = UserServiceFactory
-                .getUserService().getCurrentUser();
-        if (currentGoogleUser != null && currentGoogleUser.getEmail() != null) {
-            final User currentUser = new UserDao().findUserByEmail(currentGoogleUser.getEmail());
+        final User currentUser = CurrentUserServlet.getCurrentUser();
+        if (currentUser != null) {
             final String locale = currentUser.getLanguage();
             if (locale != null) {
                 props.put("locale", locale);

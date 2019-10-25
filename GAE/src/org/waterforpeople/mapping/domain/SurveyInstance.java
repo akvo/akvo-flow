@@ -1,5 +1,5 @@
 /*
- *  Copyright (C) 2010-2016 Stichting Akvo (Akvo Foundation)
+ *  Copyright (C) 2010-2016,2018 Stichting Akvo (Akvo Foundation)
  *
  *  This file is part of Akvo FLOW.
  *
@@ -16,33 +16,22 @@
 
 package org.waterforpeople.mapping.domain;
 
+import com.gallatinsystems.common.Constants;
+import com.gallatinsystems.device.domain.DeviceFiles;
+import com.gallatinsystems.framework.domain.BaseDomain;
+import com.gallatinsystems.survey.dao.SurveyDAO;
+import org.akvo.flow.domain.SecuredObject;
+import org.apache.commons.lang.StringUtils;
+import javax.jdo.annotations.IdentityType;
+import javax.jdo.annotations.NotPersistent;
+import javax.jdo.annotations.PersistenceCapable;
+import javax.jdo.annotations.Persistent;
 import java.lang.reflect.Field;
-import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-
-import javax.jdo.annotations.IdentityType;
-import javax.jdo.annotations.NotPersistent;
-import javax.jdo.annotations.PersistenceCapable;
-import javax.jdo.annotations.Persistent;
-
-import org.akvo.flow.domain.DataUtils;
-import org.akvo.flow.domain.SecuredObject;
-import org.apache.commons.lang.StringUtils;
-import org.waterforpeople.mapping.analytics.dao.SurveyQuestionSummaryDao;
-import org.waterforpeople.mapping.analytics.domain.SurveyQuestionSummary;
-import org.waterforpeople.mapping.app.gwt.client.survey.QuestionDto.QuestionType;
-import org.waterforpeople.mapping.dao.SurveyInstanceDAO;
-
-import com.gallatinsystems.device.domain.DeviceFiles;
-import com.gallatinsystems.framework.domain.BaseDomain;
-import com.gallatinsystems.gis.map.MapUtils;
-import com.gallatinsystems.survey.dao.QuestionDao;
-import com.gallatinsystems.survey.dao.SurveyDAO;
-import com.gallatinsystems.survey.domain.Question;
 
 import static com.gallatinsystems.common.Constants.MAX_LENGTH;
 
@@ -65,24 +54,18 @@ public class SurveyInstance extends BaseDomain implements SecuredObject {
     private List<QuestionAnswerStore> questionAnswersStore;
 
     private Long surveyId;
-
+    private Double formVersion; //What form version was used to collect the data
+    
     private String deviceIdentifier;
     private String submitterName;
     private String approvedFlag;
     private String uuid;
-    private String approximateLocationFlag;
     private Long surveyedLocaleId;
     private String surveyedLocaleIdentifier;
     private String surveyedLocaleDisplayName;
     private String countryCode;
     private String community;
     private String localeGeoLocation;
-    private String sublevel1;
-    private String sublevel2;
-    private String sublevel3;
-    private String sublevel4;
-    private String sublevel5;
-    private String sublevel6;
 
     private Long surveyalTime;
 
@@ -102,53 +85,6 @@ public class SurveyInstance extends BaseDomain implements SecuredObject {
         this.community = community;
     }
 
-    public String getSublevel1() {
-        return sublevel1;
-    }
-
-    public void setSublevel1(String sublevel1) {
-        this.sublevel1 = sublevel1;
-    }
-
-    public String getSublevel2() {
-        return sublevel2;
-    }
-
-    public void setSublevel2(String sublevel2) {
-        this.sublevel2 = sublevel2;
-    }
-
-    public String getSublevel3() {
-        return sublevel3;
-    }
-
-    public void setSublevel3(String sublevel3) {
-        this.sublevel3 = sublevel3;
-    }
-
-    public String getSublevel4() {
-        return sublevel4;
-    }
-
-    public void setSublevel4(String sublevel4) {
-        this.sublevel4 = sublevel4;
-    }
-
-    public String getSublevel5() {
-        return sublevel5;
-    }
-
-    public void setSublevel5(String sublevel5) {
-        this.sublevel5 = sublevel5;
-    }
-
-    public String getSublevel6() {
-        return sublevel6;
-    }
-
-    public void setSublevel6(String sublevel6) {
-        this.sublevel6 = sublevel6;
-    }
 
     public Long getSurveyedLocaleId() {
         return surveyedLocaleId;
@@ -156,16 +92,6 @@ public class SurveyInstance extends BaseDomain implements SecuredObject {
 
     public void setSurveyedLocaleId(Long surveyedLocaleId) {
         this.surveyedLocaleId = surveyedLocaleId;
-    }
-
-    @Deprecated
-    public String getApproximateLocationFlag() {
-        return approximateLocationFlag;
-    }
-
-    @Deprecated
-    public void setApproximateLocationFlag(String approximateLocationFlag) {
-        this.approximateLocationFlag = approximateLocationFlag;
     }
 
     public String getUuid() {
@@ -320,7 +246,6 @@ public class SurveyInstance extends BaseDomain implements SecuredObject {
     /**
      * Extract geolocation information from a survey instance
      *
-     * @param surveyInstance
      * @return a map containing latitude and longitude entries null if a null string is provided
      */
     public static Map<String, Object> retrieveGeoLocation(
@@ -332,83 +257,18 @@ public class SurveyInstance extends BaseDomain implements SecuredObject {
         // if the GEO information was present as Meta data, get it from there
         if (StringUtils.isNotBlank(surveyInstance.getLocaleGeoLocation())) {
             geoLocationString = surveyInstance.getLocaleGeoLocation();
-        } else {
-            // else, try to look for a GEO question
-            List<QuestionAnswerStore> geoAnswers = new SurveyInstanceDAO()
-                    .listQuestionAnswerStoreByType(surveyInstance.getKey()
-                            .getId(), QuestionType.GEO.toString());
-            if (geoAnswers != null && !geoAnswers.isEmpty()) {
-                geoLocationString = geoAnswers.get(0).getValue();
-            }
         }
 
         String[] tokens = StringUtils.split(geoLocationString, "\\|");
         if (tokens != null && tokens.length >= 2) {
-            geoLocationMap = new HashMap<String, Object>();
-            geoLocationMap.put(MapUtils.LATITUDE, Double.parseDouble(tokens[0]));
-            geoLocationMap.put(MapUtils.LONGITUDE, Double.parseDouble(tokens[1]));
-            // if(tokens.length > 2) {
-            // TODO: currently a string is generated for altitude. need to fix
-            // geoLocationMap.put(ALTITUDE, Long.parseLong(tokens[2]));
-            // }
+            geoLocationMap = new HashMap<>();
+            geoLocationMap.put(Constants.LATITUDE, Double.parseDouble(tokens[0]));
+            geoLocationMap.put(Constants.LONGITUDE, Double.parseDouble(tokens[1]));
         }
 
         return geoLocationMap;
     }
 
-    /**
-     * Update counts of SurveyQuestionSummary entities related to responses from this survey
-     * instance.
-     */
-    public void updateSummaryCounts(boolean increment) {
-
-        // retrieve all summary objects
-        SurveyQuestionSummaryDao summaryDao = new SurveyQuestionSummaryDao();
-        QuestionDao qDao = new QuestionDao();
-
-        List<SurveyQuestionSummary> saveList = new ArrayList<SurveyQuestionSummary>();
-        List<SurveyQuestionSummary> deleteList = new ArrayList<SurveyQuestionSummary>();
-
-        for (QuestionAnswerStore response : questionAnswersStore) {
-            final Long questionId = Long.parseLong(response.getQuestionID());
-            Question question = qDao.getByKey(questionId);
-            if (question == null || !question.canBeCharted()) {
-                continue;
-            }
-
-            final String questionIdStr = response.getQuestionID();
-            final String[] questionResponse = DataUtils.optionResponsesTextArray(response
-                    .getValue());
-
-            for (int i = 0; i < questionResponse.length; i++) {
-                List<SurveyQuestionSummary> questionSummaryList = summaryDao
-                        .listByResponse(questionIdStr, questionResponse[i]);
-                SurveyQuestionSummary questionSummary = null;
-                if (questionSummaryList.isEmpty()) {
-                    questionSummary = new SurveyQuestionSummary();
-                    questionSummary.setQuestionId(response.getQuestionID());
-                    questionSummary.setResponse(questionResponse[i]);
-                    questionSummary.setCount(0L);
-                } else {
-                    questionSummary = questionSummaryList.get(0);
-                }
-
-                // update and save or delete
-                long count = questionSummary.getCount() == null ? 0 : questionSummary.getCount();
-                count = increment ? ++count : --count;
-                questionSummary.setCount(count);
-
-                if (count > 0) {
-                    saveList.add(questionSummary);
-                } else {
-                    deleteList.add(questionSummary);
-                }
-            }
-        }
-
-        summaryDao.save(saveList);
-        summaryDao.delete(deleteList);
-    }
 
     @Override
     public SecuredObject getParentObject() {
@@ -446,4 +306,12 @@ public class SurveyInstance extends BaseDomain implements SecuredObject {
         // do not update or return any child objects. Survey entities are the leaves
         return Collections.emptyList();
     }
+
+	public Double getFormVersion() {
+		return formVersion;
+	}
+
+	public void setFormVersion(Double formVersion) {
+		this.formVersion = formVersion;
+	}
 }

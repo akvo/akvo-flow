@@ -1,57 +1,56 @@
-FLOW.FormView = Ember.View.extend({
-	templateName: 'navSurveys/form',
-	showFormBasics: false,
+import template from '../../mixins/template';
 
-	manageTranslations: false,
-	manageNotifications: false,
+FLOW.FormView = Ember.View.extend(template('navSurveys/form'), {
+  showFormBasics: false,
 
-	form: function() {
-		return FLOW.selectedControl.get('selectedSurvey');
-	}.property('FLOW.selectedControl.selectedSurvey'),
+  manageTranslations: false,
+  manageNotifications: false,
 
-	toggleShowFormBasics: function () {
-		this.set('showFormBasics', !this.get('showFormBasics'));
-	},
+  form: Ember.computed(() => FLOW.selectedControl.get('selectedSurvey')).property('FLOW.selectedControl.selectedSurvey'),
 
-	isNewForm: function() {
-		var form = FLOW.selectedControl.get('selectedSurvey');
-		return form && form.get('code') == "New Form";
-	}.property('FLOW.selectedControl.selectedSurvey'),
+  toggleShowFormBasics() {
+    this.set('showFormBasics', !this.get('showFormBasics'));
+  },
 
-	visibleFormBasics: function() {
-		return this.get('isNewForm') || this.get('showFormBasics');
-	}.property('showFormBasics'),
+  isNewForm: Ember.computed(() => {
+    const form = FLOW.selectedControl.get('selectedSurvey');
+    return form && form.get('code') == 'New Form';
+  }).property('FLOW.selectedControl.selectedSurvey'),
+
+  visibleFormBasics: Ember.computed(function () {
+    return this.get('isNewForm') || this.get('showFormBasics');
+  }).property('showFormBasics'),
 
 
-	doManageTranslations: function() {
-		FLOW.translationControl.populate();
-		this.set('manageNotifications', false);
-		this.set('manageTranslations', true);
-	},
+  doManageTranslations() {
+    FLOW.translationControl.populate();
+    this.set('manageNotifications', false);
+    this.set('manageTranslations', true);
+  },
 
-	doManageNotifications: function() {
-		FLOW.notificationControl.populate();
-		this.set('manageTranslations', false);
-		this.set('manageNotifications', true);
-	},
+  doManageNotifications() {
+    FLOW.notificationControl.populate();
+    this.set('manageTranslations', false);
+    this.set('manageNotifications', true);
+  },
 
-	disableFormFields: function () {
-		var form = this.get('form');
-		return !FLOW.permControl.canEditForm(form);
-	}.property('this.form'),
+  disableFormFields: Ember.computed(function () {
+    const form = this.get('form');
+    return !FLOW.permControl.canEditForm(form);
+  }).property('this.form'),
 
-	showFormTranslationsButton: function() {
-		var form = this.get('form');
-		return FLOW.permControl.canEditForm(form);
-	}.property('this.form'),
+  showFormTranslationsButton: Ember.computed(function () {
+    const form = this.get('form');
+    return FLOW.permControl.canEditForm(form);
+  }).property('this.form'),
 
-	showFormDeleteButton: function () {
-		var form = this.get('form');
-		return FLOW.permControl.canEditForm(form);
-	}.property('this.form'),
+  showFormDeleteButton: Ember.computed(function () {
+    const form = this.get('form');
+    return FLOW.permControl.canEditForm(form);
+  }).property('this.form'),
 
-	showFormPublishButton: function () {
-		var form = this.get('form');
-		return FLOW.permControl.canEditForm(form);
-	}.property('this.form')
+  showFormPublishButton: Ember.computed(function () {
+    const form = this.get('form');
+    return FLOW.permControl.canEditForm(form);
+  }).property('this.form'),
 });

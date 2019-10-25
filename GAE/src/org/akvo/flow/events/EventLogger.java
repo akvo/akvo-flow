@@ -1,5 +1,5 @@
 /*
- *  Copyright (C) 2015 Stichting Akvo (Akvo Foundation)
+ *  Copyright (C) 2015,2019 Stichting Akvo (Akvo Foundation)
  *
  *  This file is part of Akvo FLOW.
  *
@@ -16,17 +16,7 @@
 
 package org.akvo.flow.events;
 
-import static com.gallatinsystems.common.util.MemCacheUtils.initCache;
-import static org.akvo.flow.events.EventUtils.getEventAndActionType;
-import static org.akvo.flow.events.EventUtils.newContext;
-import static org.akvo.flow.events.EventUtils.newEntity;
-import static org.akvo.flow.events.EventUtils.newEvent;
-import static org.akvo.flow.events.EventUtils.newSource;
-import static org.akvo.flow.events.EventUtils.populateEntityProperties;
-
 import java.io.IOException;
-import java.io.OutputStreamWriter;
-import java.io.StringWriter;
 import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.URL;
@@ -38,15 +28,11 @@ import java.util.logging.Logger;
 
 import net.sf.jsr107cache.Cache;
 
-import org.akvo.flow.events.EventUtils.Action;
-import org.akvo.flow.events.EventUtils.EventTypes;
-import org.akvo.flow.events.EventUtils.Key;
-import org.akvo.flow.events.EventUtils.Prop;
-import org.codehaus.jackson.map.ObjectMapper;
+import org.akvo.flow.events.EventUtils.*;
+import org.akvo.flow.util.FlowJsonObjectWriter;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 
-import com.gallatinsystems.common.Constants;
 import com.gallatinsystems.common.util.PropertyUtil;
 import com.google.appengine.api.datastore.DatastoreService;
 import com.google.appengine.api.datastore.DatastoreServiceFactory;
@@ -55,8 +41,10 @@ import com.google.appengine.api.datastore.Entity;
 import com.google.appengine.api.datastore.PostDelete;
 import com.google.appengine.api.datastore.PostPut;
 import com.google.appengine.api.datastore.PutContext;
-import com.google.appengine.api.datastore.Text;
 import com.google.appengine.api.utils.SystemProperty;
+
+import static com.gallatinsystems.common.util.MemCacheUtils.initCache;
+import static org.akvo.flow.events.EventUtils.*;
 
 public class EventLogger {
     private static Logger logger = Logger.getLogger(EventLogger.class.getName());
@@ -64,11 +52,12 @@ public class EventLogger {
     private static final long MIN_TIME_DIFF = 60000; // 60 seconds
 
     private void sendNotification() {
-        try {
-            String urlPath = PropertyUtil.getProperty(Prop.EVENT_NOTIFICATION);
+        sendNotificationToUnilog(PropertyUtil.getProperty(Prop.EVENT_NOTIFICATION), SystemProperty.applicationId.get());
+    }
 
+    public static void sendNotificationToUnilog(String urlPath, String appId) {
+        try {
             if (urlPath == null || urlPath.trim().length() == 0) {
-                logger.log(Level.SEVERE, "Event notification URL not present in appengine-web.xml");
                 return;
             }
 
@@ -79,18 +68,17 @@ public class EventLogger {
             connection.setRequestProperty("Content-Type", "application/json");
 
             Map<String, String> messageMap = new HashMap<String, String>();
-            String appId = SystemProperty.applicationId.get();
             messageMap.put(Key.APP_ID, appId);
             messageMap.put(Key.URL, appId + ".appspot.com");
 
-            ObjectMapper m = new ObjectMapper();
-            OutputStreamWriter writer = new OutputStreamWriter(connection.getOutputStream());
-            m.writeValue(writer, messageMap);
-            writer.close();
+            FlowJsonObjectWriter writer = new FlowJsonObjectWriter();
+            writer.writeValue(connection.getOutputStream(), messageMap);
+
             if (connection.getResponseCode() != HttpURLConnection.HTTP_NO_CONTENT) {
                 logger.log(Level.SEVERE, "Unified log notification failed with status code: "
                         + connection.getResponseCode());
             }
+            connection.disconnect();
         } catch (MalformedURLException e) {
             logger.log(Level.SEVERE,
                     "Unified log notification failed with malformed URL exception", e);
@@ -134,20 +122,7 @@ public class EventLogger {
         try {
             DatastoreService datastore = DatastoreServiceFactory.getDatastoreService();
 
-            ObjectMapper m = new ObjectMapper();
-            StringWriter w = new StringWriter();
-            m.writeValue(w, event);
-
-            Entity entity = new Entity("EventQueue");
-            entity.setProperty("createdDateTime", timestamp);
-            entity.setProperty("lastUpdateDateTime", timestamp);
-
-            String payload = w.toString();
-            if (payload.length() > Constants.MAX_LENGTH) {
-                entity.setProperty("payloadText", new Text(payload));
-            } else {
-                entity.setProperty("payload", payload);
-            }
+            Entity entity = EventUtils.createEventLogEntity(event, timestamp);
 
             datastore.put(entity);
             notifyLog();
@@ -159,7 +134,7 @@ public class EventLogger {
 
     @PostPut(kinds = {
             "SurveyGroup", "Survey", "QuestionGroup", "Question", "SurveyInstance",
-            "QuestionAnswerStore", "SurveyedLocale", "DeviceFiles"
+            "QuestionAnswerStore", "SurveyedLocale", "DeviceFiles", "UserRole", "User", "UserAuthorization"
     })
     void logPut(PutContext context) {
 
@@ -212,7 +187,7 @@ public class EventLogger {
 
     @PostDelete(kinds = {
             "SurveyGroup", "Survey", "QuestionGroup", "Question", "SurveyInstance",
-            "QuestionAnswerStore", "SurveyedLocale", "DeviceFiles"
+            "QuestionAnswerStore", "SurveyedLocale", "DeviceFiles", "UserRole", "User", "UserAuthorization"
     })
     void logDelete(DeleteContext context) {
         try {

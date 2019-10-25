@@ -1,5 +1,5 @@
 /*
- *  Copyright (C) 2010-2016 Stichting Akvo (Akvo Foundation)
+ *  Copyright (C) 2010-2016, 2019 Stichting Akvo (Akvo Foundation)
  *
  *  This file is part of Akvo FLOW.
  *
@@ -17,6 +17,7 @@
 package com.gallatinsystems.device.dao;
 
 import java.util.Date;
+import java.util.List;
 import java.util.logging.Logger;
 
 import org.apache.commons.lang.StringUtils;
@@ -118,4 +119,14 @@ public class DeviceDAO extends BaseDAO<Device> {
         }
         save(d);
     }
+
+    /**
+     * lists all devices where lastLocationBeaconTime is older than a specific date
+     */
+    public List<Device> listAllWithBeaconBefore(Date date) {
+        return listByProperty("lastLocationBeaconTime", date, "Date",
+                "lastLocationBeaconTime", null, LTE_OP, Device.class);
+    }
+
+
 }

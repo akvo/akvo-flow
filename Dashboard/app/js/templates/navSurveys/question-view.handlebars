@@ -2,10 +2,10 @@
 
 <div class="innerContent" id="innerContent_01">
   {{#if view.amOpenQuestion}}
-    <h1 class="questionNbr"><span>{{view.content.order}}} </span>{{view.content.text}}</h1>
+    <h1 class="questionNbr"><span>{{view.content.order}} </span>{{view.content.text}}</h1>
     <label>{{t _question_text}}:
     {{#if view.questionValidationFailure }}
-      <span style="color:red">{{t _question_over_500_chars_header}}</span>
+      <span style="color:red">{{view.questionValidationFailureReason}}</span>
       {{/if}}
       {{view Ember.TextField valueBinding="view.text" size=100 }}</label>
     <label>{{t _question_help_tooltip}}: <span class="fadedText">({{t _optional}})</span>
@@ -14,25 +14,13 @@
       {{/if}}
       {{view Ember.TextField valueBinding="view.tip" size=100 }} </label>
     <label>
-      {{t _question_id}}: <span class="fadedText">({{t _optional}})</span> {{tooltip _question_id_tooltip}}
-      {{#if view.questionIdValidationFailure }}
-      <span style="color:red">{{view.questionIdValidationFailureReason}}</span>
+      {{t _variable_name}}: <span class="fadedText">({{t _optional}})</span> {{tooltip _variable_name_tooltip}}
+      {{#if view.variableNameValidationFailure }}
+      <span style="color:red">{{view.variableNameValidationFailureReason}}</span>
       {{/if}}
-      {{view Ember.TextField valueBinding="view.questionId" size=100}}
+      {{view Ember.TextField valueBinding="view.variableName" size=100}}
     </label>
     <label class="labelcheckbox">{{view Ember.Checkbox checkedBinding="view.mandatoryFlag"}}{{t _mandatory}}</label>
-
-  {{#if FLOW.Env.showStatisticsFeature}}
-    <label class="selectinLabel"><span>{{t _tag}} {{tooltip _what_is_tag}}:</span> {{view Ember.Select
-      contentBinding="FLOW.attributeControl.content"
-      optionLabelPath="content.name"
-      optionValuePath="content.keyId"
-      selectionBinding="view.attribute"
-      prompt=""
-      promptBinding="Ember.STRINGS._select_tag"}}
-     <a {{action "showAddAttributeDialog" target="this"}} class="addAttribute"><span>+</span>{{t _create_new_tag}} </a> </label>
-      {{#if view.attribute}}<label class="labelcheckbox">{{view Ember.Checkbox checkedBinding="view.includeInMap"}}{{t _include_in_map}}</label>{{/if}}
-  {{/if}}
 
   <label class="selectinLabel">
     <span>
@@ -62,16 +50,43 @@
   {{/if}}
 
     <!-- Question specific material -->
+{{#if view.hasExtraSettings}}
 <div class="questionOption floats-in">
-
     {{#if view.amOptionType}}
+
       <h1 class="answerNbr">{{t _settings}}: </h1>
       <ul>
         <li><label class="labelcheckbox"> {{view Ember.Checkbox checkedBinding="view.allowMultipleFlag"}}{{t _allow_multiple}} </label></li>
         <li><label class="labelcheckbox"> {{view Ember.Checkbox checkedBinding="view.allowOtherFlag"}}{{t _allow_other}} </label>
         </li>
       </ul>
-      <p class="optionTitle"><strong>{{t _options}}:&nbsp;</strong></p>
+      <p class="optionTitle">
+        <strong>{{t _options}}:&nbsp;</strong>
+        {{#if FLOW.questionOptionsControl.emptyOptions}}
+        <br><span style="color:red">{{t _empty_options_not_allowed}}</span>
+        {{/if}}
+        {{#if FLOW.questionOptionsControl.duplicateOptionNames}}
+        <br><span style="color:red">{{t _duplicate_option_text}}</span>
+        {{/if}}
+        {{#if FLOW.questionOptionsControl.emptyOptionNames}}
+        <br><span style="color:red">{{t _missing_option_text}}</span>
+        {{/if}}
+        {{#if FLOW.questionOptionsControl.partialOptionCodes}}
+        <br><span style="color:red">{{t _all_option_codes_have_values}}</span>
+        {{/if}}
+        {{#if FLOW.questionOptionsControl.duplicateOptionCodes}}
+        <br><span style="color:red">{{t _duplicate_option_codes}}</span>
+        {{/if}}
+        {{#if FLOW.questionOptionsControl.disallowedCharacters}}
+        <br><span style="color:red">{{t _disallowed_xters_in_code}}</span>
+        {{/if}}
+        {{#if FLOW.questionOptionsControl.reservedCode}}
+        <br><span style="color:red">{{t _reserved_code}}</span>
+        {{/if}}
+        {{#if FLOW.questionOptionsControl.maxLength}}
+        <br><span style="color:red">{{t _option_max_length}}</span>
+        {{/if}}
+      </p>
       <div class="optionListView">
     	  {{view FLOW.OptionListView contentBinding="FLOW.questionOptionsControl"}}
     	  <a {{action addOption target="FLOW.questionOptionsControl"}} class="optionAdd">{{t _add_option}}</a>
@@ -127,14 +142,41 @@
         <h1 class="answerNbr">{{t _settings}}: </h1>
          <label class="selectinLabel dependencySelect">
          {{#if view.showCaddisflyTests}}
-         {{t _choose_caddisfly_question_resource}}: {{tooltip _choose_caddisfly_question_resource_tooltip}}
+         {{t _choose_caddisfly_question_resource}}: {{tooltip _choose_caddisfly_question_resource_tooltip}}<br>
             {{view Ember.Select
-            contentBinding="FLOW.router.caddisflyResourceController"
-            selectionBinding="FLOW.selectedControl.selectedCaddisflyResource"
-            optionLabelPath="content.displayName"
+            contentBinding="view.caddisflyTestSamples"
+            selectionBinding="view.selectedCaddisflyTestSample"
+            optionLabelPath="content.sample"
             optionValuePath="content.keyId"
             prompt=""
-            promptBinding="Ember.STRINGS._select_caddisfly_test"}}
+            promptBinding="Ember.STRINGS._select_caddisfly_test_sample"}}
+            {{#if view.selectedCaddisflyTestSample}}
+            {{view Ember.Select
+            contentBinding="view.caddisflyTestNames"
+            selectionBinding="view.selectedCaddisflyTestName"
+            optionLabelPath="content.name"
+            optionValuePath="content.keyId"
+            prompt=""
+            promptBinding="Ember.STRINGS._select_caddisfly_test_name"}}
+            {{/if}}
+            {{#if view.selectedCaddisflyTestName}}
+            {{view Ember.Select
+            contentBinding="view.caddisflyTestBrands"
+            selectionBinding="view.selectedCaddisflyTestBrand"
+            optionLabelPath="content.brandDisplayName"
+            optionValuePath="content.keyId"
+            prompt=""
+            promptBinding="Ember.STRINGS._select_caddisfly_test_brand"}}
+            {{/if}}
+            {{#if view.selectedCaddisflyTestBrand}}
+            {{view Ember.Select
+            contentBinding="view.caddisflyTestDetails"
+            selectionBinding="FLOW.selectedControl.selectedCaddisflyResource"
+            optionLabelPath="content.detailsDisplayName"
+            optionValuePath="content.keyId"
+            prompt=""
+            promptBinding="Ember.STRINGS._select_caddisfly_test_details"}}
+            {{/if}}
         {{else}}
         <div class="errorLoading">{{t _failed_load_caddisfly_tests}}</div>
         {{/if}}
@@ -149,14 +191,9 @@
         <li><label class="labelcheckbox"> {{view Ember.Checkbox checkedBinding="view.geoLocked"}}{{t _disable_manual_geo_edit}} </label></li>
       </ul>
     {{/if}}
-
-    {{#if view.amNoOptionsType}}
-    <p class="noOptions">
-      {{t _no_additional_settings_for_this_type_of_question}}
-    </p>
-    {{/if}}
-
 </div>
+{{/if}}
+<!-- End of question specific material -->
 <div class="dependencyBlock">
     <label class="labelcheckbox">{{view Ember.Checkbox checkedBinding="view.dependentFlag"}}{{t _dependent}}
     </label>
@@ -180,39 +217,52 @@
       {{/if}}
   {{/if}}
 </div>
-<!-- add attribute dialog-->
-    <div {{bindAttr class="view.showAddAttributeDialogBool:display :overlay"}}>
-      <div class="blanket"></div>
-          <div class="dialogWrap">
-        <!-- the dialog contents -->
-        <div class="confirmDialog dialog">
-          <h2>{{t _add_attribute}}</h2>
-          <p class="dialogMsg">{{t _please_provide_name_for_attribute}}</p>
-          <br/>
-         <label for="newAttributeName">{{t _attribute_name}}:</label> {{view Ember.TextField valueBinding="view.newAttributeName" id="newAttributeName" size=40}}
-         <label for="newAttributeGroup">{{t _group}}:</label> {{view Ember.TextField valueBinding="view.newAttributeGroup" id="newAttributeGroup" size=40}}
-          <label>{{t _value_type}}:</label>
-             {{view Ember.Select
-            contentBinding="FLOW.attributeTypeControl.content"
-            selectionBinding="view.newAttributeType"
-            optionLabelPath="content.label"
-            optionValuePath="content.value"
-            prompt=""
-            promptBinding="Ember.STRINGS._select_value_type"}}
-
-          <div class="buttons menuCentre">
-            <ul>
-               <li><a {{action "doAddAttribute" target="this"}} class="ok smallBtn">{{t _save}}</a></li>
-              <li><a {{action "cancelAddAttribute" target="this"}} class="cancel">{{t _cancel}}</a></li>
-            </ul>
-          </div>
-        </div>
-      </div>
-    </div>
     <!-- End question specific material -->
     <nav>
       <ul>
+        {{#if view.variableNameValidationFailure }}
+        <li><a class="button noChanges" id="standardBtn_01">{{t _save_question}}</a> </li>
+        {{else}}
+        {{#if view.questionValidationFailure }}
+        <li><a class="button noChanges" id="standardBtn_01">{{t _save_question}}</a> </li>
+        {{else}}
+        {{#if view.amOptionType}}
+        {{#if FLOW.questionOptionsControl.emptyOptions }}
+        <li><a class="button noChanges" id="standardBtn_01">{{t _save_question}}</a> </li>
+        {{else}}
+        {{#if FLOW.questionOptionsControl.emptyOptionNames}}
+        <li><a class="button noChanges" id="standardBtn_01">{{t _save_question}}</a> </li>
+        {{else}}
+        {{#if FLOW.questionOptionsControl.duplicateOptionNames}}
+        <li><a class="button noChanges" id="standardBtn_01">{{t _save_question}}</a> </li>
+        {{else}}
+        {{#if FLOW.questionOptionsControl.partialOptionCodes}}
+        <li><a class="button noChanges" id="standardBtn_01">{{t _save_question}}</a> </li>
+        {{else}}
+        {{#if FLOW.questionOptionsControl.duplicateOptionCodes}}
+        <li><a class="button noChanges" id="standardBtn_01">{{t _save_question}}</a> </li>
+        {{else}}
+        {{#if FLOW.questionOptionsControl.disallowedCharacters}}
+        <li><a class="button noChanges" id="standardBtn_01">{{t _save_question}}</a> </li>
+        {{else}}
+        {{#if FLOW.questionOptionsControl.reservedCode}}
+        <li><a class="button noChanges" id="standardBtn_01">{{t _save_question}}</a> </li>
+        {{else}}
+        {{#if FLOW.questionOptionsControl.maxLength}}
+        <li><a class="button noChanges" id="standardBtn_01">{{t _save_question}}</a> </li>
+        {{else}}
         <li><a class="button" id="standardBtn_01" {{action "doSaveEditQuestion" target="this"}}>{{t _save_question}}</a> </li>
+        {{/if}}{{/if}}{{/if}}{{/if}}{{/if}}{{/if}}{{/if}}{{/if}}
+        {{else}}
+        {{#if view.amCaddisflyType}}
+        {{#unless FLOW.selectedControl.selectedCaddisflyResource}}
+        <li><a class="button noChanges" id="standardBtn_01">{{t _save_question}}</a> </li>
+        {{else}}
+        <li><a class="button" id="standardBtn_01" {{action "doSaveEditQuestion" target="this"}}>{{t _save_question}}</a> </li>
+        {{/unless}}
+        {{else}}
+        <li><a class="button" id="standardBtn_01" {{action "doSaveEditQuestion" target="this"}}>{{t _save_question}}</a> </li>
+        {{/if}}{{/if}}{{/if}}{{/if}}
         <li><a class="cancel" id="standardBtn_01" {{action "doCancelEditQuestion" target="this"}}>{{t _cancel}}</a> </li>
       </ul>
     </nav>

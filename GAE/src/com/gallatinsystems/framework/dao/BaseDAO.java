@@ -1,5 +1,5 @@
 /*
- *  Copyright (C) 2010-2017 Stichting Akvo (Akvo Foundation)
+ *  Copyright (C) 2010-2019 Stichting Akvo (Akvo Foundation)
  *
  *  This file is part of Akvo FLOW.
  *
@@ -16,6 +16,29 @@
 
 package com.gallatinsystems.framework.dao;
 
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+import java.util.logging.Logger;
+
+import javax.jdo.JDOObjectNotFoundException;
+import javax.jdo.PersistenceManager;
+
+import net.sf.jsr107cache.CacheException;
+
+import org.akvo.flow.domain.SecuredObject;
+import com.google.appengine.datanucleus.query.JDOCursorHelper;
+import org.datanucleus.exceptions.NucleusObjectNotFoundException;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
+
 import com.gallatinsystems.common.Constants;
 import com.gallatinsystems.framework.domain.BaseDomain;
 import com.gallatinsystems.framework.servlet.PersistenceFilter;
@@ -28,24 +51,6 @@ import com.gallatinsystems.user.domain.UserAuthorization;
 import com.google.appengine.api.datastore.Cursor;
 import com.google.appengine.api.datastore.Key;
 import com.google.appengine.api.datastore.KeyFactory;
-import net.sf.jsr107cache.CacheException;
-import org.akvo.flow.domain.SecuredObject;
-import org.datanucleus.store.appengine.query.JDOCursorHelper;
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.context.SecurityContextHolder;
-
-import javax.jdo.JDOObjectNotFoundException;
-import javax.jdo.PersistenceManager;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-import java.util.logging.Logger;
 
 /**
  * This is a reusable data access object that supports basic operations (save, find by property,
@@ -97,9 +102,20 @@ public class BaseDAO<T extends BaseDomain> {
      */
     public <E extends BaseDomain> E save(E obj) {
         PersistenceManager pm = PersistenceFilter.getManager();
+        Long who = 0L;
+        if (SecurityContextHolder.getContext() != null
+                && SecurityContextHolder.getContext().getAuthentication() != null ) {
+            final Object credentials = SecurityContextHolder.getContext()
+                    .getAuthentication().getCredentials();
+            if (credentials instanceof Long) {
+                who = (Long) credentials;
+            }
+        }
         obj.setLastUpdateDateTime(new Date());
+        obj.setLastUpdateUserId(who);
         if (obj.getCreatedDateTime() == null) {
             obj.setCreatedDateTime(obj.getLastUpdateDateTime());
+            obj.setCreateUserId(who);
         }
         obj = pm.makePersistent(obj);
         return obj;
@@ -115,10 +131,18 @@ public class BaseDAO<T extends BaseDomain> {
      */
     public <E extends BaseDomain> Collection<E> save(Collection<E> objList) {
         if (objList != null) {
+            Long who = 0L;
+            final Object credentials = SecurityContextHolder.getContext()
+                    .getAuthentication().getCredentials();
+            if (credentials instanceof Long) {
+                who = (Long) credentials;
+            }
             for (E item : objList) {
                 item.setLastUpdateDateTime(new Date());
+                item.setLastUpdateUserId(who);
                 if (item.getCreatedDateTime() == null) {
                     item.setCreatedDateTime(item.getLastUpdateDateTime());
+                    item.setCreateUserId(who);
                 }
             }
             PersistenceManager pm = PersistenceFilter.getManager();
@@ -397,14 +421,7 @@ public class BaseDAO<T extends BaseDomain> {
         if (ids == null) {
             return null;
         }
-        final List<T> list = new ArrayList<T>();
-        for (Long id : ids) {
-            final T obj = getByKey(id);
-            if (obj != null) {
-                list.add(obj);
-            }
-        }
-        return list;
+        return listByKeys(Arrays.asList(ids));
     }
 
     /**
@@ -414,17 +431,60 @@ public class BaseDAO<T extends BaseDomain> {
      * @return empty list if ids is null, otherwise a list of objects
      */
     public List<T> listByKeys(List<Long> ids) {
-        if (ids == null) {
+        return listByKeys(ids, concreteClass);
+    }
+
+    /*
+     * Retrieve a list of datastore entities by the keys provided
+     */
+    public List<T> listByKeys(List<Long> idsList, Class<T> clazz){
+        if (idsList == null || idsList.isEmpty()) {
             return Collections.emptyList();
         }
-        final List<T> list = new ArrayList<T>();
-        for (Long id : ids) {
-            final T obj = getByKey(id);
-            if (obj != null) {
-                list.add(obj);
+
+        PersistenceManager pm = PersistenceFilter.getManager();
+        List<Object> datastoreKeysList = new ArrayList<>();
+        for (Long id : idsList) {
+            Key key = KeyFactory.createKey(clazz.getSimpleName(), id);
+            Object objectId = pm.newObjectIdInstance(clazz, key);
+            datastoreKeysList.add(objectId);
+        }
+
+        final List<T> resultsList = new ArrayList<>();
+
+        try {
+            resultsList.addAll(pm.getObjectsById(datastoreKeysList));
+        } catch (NucleusObjectNotFoundException nfe) {
+            log.warning(nfe.getMessage());
+            return listByKeysIndividually(idsList);
+        } catch (ArrayIndexOutOfBoundsException exception) {
+            /* when some of the entities are missing, we encounter an ArrayIndexOutOfBoundsException
+             *  the exception happens within the com.google.appengine.datanucleus.EntityUtils.getEntitiesFromDatastore()
+             * function which we dont have access to.  We catch the exception and run the fall back
+             * function.
+             */
+            log.warning("Some entities were not found");
+            return listByKeysIndividually(idsList);
+        }
+
+        return resultsList;
+    }
+
+    /*
+     * Takes a list of IDs and retrieve the items on the list individually.
+     * This is only a fall back method for when there may be some elements
+     * missing when attempting to batch retrieve with `listByKeys()`
+     *
+     */
+    private List<T> listByKeysIndividually(List<Long> idsList) {
+        List<T> resultsList = new ArrayList<>();
+        for (Long id : idsList) {
+            T item = getByKey(id);
+            if (item != null) {
+                resultsList.add(item);
             }
         }
-        return list;
+        return resultsList;
     }
 
     /**
@@ -754,6 +814,7 @@ public class BaseDAO<T extends BaseDomain> {
         PersistenceManager pm = PersistenceFilter.getManager();
         String queryString = ":p1.contains(" + fieldName + ")";
         javax.jdo.Query query = pm.newQuery(concreteClass, queryString);
+        @SuppressWarnings("unchecked")
         List<T> results = (List<T>) query.execute(idsList);
         return results;
     }

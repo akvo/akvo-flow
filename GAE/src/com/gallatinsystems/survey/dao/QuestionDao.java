@@ -1,5 +1,5 @@
 /*
- *  Copyright (C) 2010-2017 Stichting Akvo (Akvo Foundation)
+ *  Copyright (C) 2010-2019 Stichting Akvo (Akvo Foundation)
  *
  *  This file is part of Akvo FLOW.
  *
@@ -50,7 +50,6 @@ import com.gallatinsystems.survey.domain.QuestionHelpMedia;
 import com.gallatinsystems.survey.domain.QuestionOption;
 import com.gallatinsystems.survey.domain.Translation;
 import com.gallatinsystems.survey.domain.Translation.ParentType;
-import com.gallatinsystems.surveyal.dao.SurveyalValueDao;
 import com.google.appengine.api.datastore.DatastoreService;
 import com.google.appengine.api.datastore.DatastoreServiceFactory;
 import com.google.appengine.api.datastore.Entity;
@@ -96,8 +95,7 @@ public class QuestionDao extends BaseDAO<Question> {
      * @return
      */
     public List<Question> listQuestionsBySurvey(Long surveyId) {
-        List<Question> questionsList = listByProperty("surveyId", surveyId,
-                "Long", "order", "asc");
+        List<Question> questionsList = listByProperty("surveyId", surveyId, "Long", "order", "asc");
 
         if (questionsList == null) {
             return Collections.emptyList();
@@ -124,7 +122,7 @@ public class QuestionDao extends BaseDAO<Question> {
      * @param question
      */
     public void delete(Question question) throws IllegalDeletionException {
-        delete(question, Boolean.TRUE);
+        delete(question, Boolean.FALSE);
     }
 
     /**
@@ -137,15 +135,14 @@ public class QuestionDao extends BaseDAO<Question> {
     public void delete(Question question, Boolean adjustQuestionOrder)
             throws IllegalDeletionException {
         QuestionAnswerStoreDao qasDao = new QuestionAnswerStoreDao();
-        SurveyalValueDao svDao = new SurveyalValueDao();
-        if (qasDao.listByQuestion(question.getKey().getId()).size() > 0
-                || svDao.listByQuestion(question.getKey().getId()).size() > 0) {
+        if (qasDao.listByQuestion(question.getKey().getId()).size() > 0) {
             throw new IllegalDeletionException(
                     "Cannot delete question with id "
                             + question.getKey().getId()
                             + " ("
                             + question.getText()
-                            + ") because there are already survey responses stored for this question. Please delete all survey responses first.");
+                            + ") because there are already survey responses stored for this question."
+                            + " Please delete all survey responses first.");
         }
 
         helpDao.deleteHelpMediaForQuestion(question.getKey().getId());
@@ -197,8 +194,7 @@ public class QuestionDao extends BaseDAO<Question> {
      * @return
      */
     public List<Question> listQuestionsInOrderForGroup(Long groupId) {
-        return listByProperty("questionGroupId", groupId, "Long", "order",
-                "asc");
+        return listByProperty("questionGroupId", groupId, "Long", "order", "asc");
     }
 
 
@@ -242,35 +238,13 @@ public class QuestionDao extends BaseDAO<Question> {
                     //order should never be null, but accidents happen...
                     int v1 = o1.getOrder() != null ? o1.getOrder() : 0;
                     int v2 = o2.getOrder() != null ? o2.getOrder() : 0;
-                    return v1-v2;
+                    return v1 - v2;
                 }
             });
             orderedQuestionList.addAll(questions);
         }
         
         return orderedQuestionList;
-    }
-
-    /**
-     * Lists questions by questionGroupId and type
-     *
-     * @param questionGroupId
-     * @param type
-     * @return
-     */
-    @SuppressWarnings("unchecked")
-    private List<Question> getByQuestiongroupAndType(long questionGroupId, Question.Type type) {
-        PersistenceManager pm = PersistenceFilter.getManager();
-        javax.jdo.Query query = pm.newQuery(Question.class);
-        query.setFilter(" questionGroupId == questionGroupIdParam && type == questionTypeParam");
-        query.declareParameters("Long questionGroupIdParam, String questionTypeParam");
-        query.setOrdering("order asc");
-        List<Question> results = (List<Question>) query.execute(questionGroupId, type.toString());
-        if (results != null && results.size() > 0) {
-            return results;
-        } else {
-            return null;
-        }
     }
 
     /**
@@ -310,8 +284,7 @@ public class QuestionDao extends BaseDAO<Question> {
                 try {
                     question = datastore.get(q.getKey());
                 } catch (Exception e) {
-                    log.log(Level.WARNING,
-                            "Key is set but not found. Assuming this is an import");
+                    log.log(Level.WARNING, "Key is set but not found. Assuming this is an import");
                     question = new Entity(q.getKey());
                 }
             } else {
@@ -407,8 +380,7 @@ public class QuestionDao extends BaseDAO<Question> {
         }
 
         if (question.getQuestionHelpMediaMap() != null) {
-            for (QuestionHelpMedia help : question.getQuestionHelpMediaMap()
-                    .values()) {
+            for (QuestionHelpMedia help : question.getQuestionHelpMediaMap().values()) {
                 help.setQuestionId(question.getKey().getId());
 
                 save(help);
@@ -527,11 +499,9 @@ public class QuestionDao extends BaseDAO<Question> {
     public Question getByKey(Long id, boolean needDetails) {
         Question q = getByKey(id);
         if (needDetails) {
-            q.setQuestionHelpMediaMap(helpDao.listHelpByQuestion(q.getKey()
-                    .getId()));
+            q.setQuestionHelpMediaMap(helpDao.listHelpByQuestion(q.getKey().getId()));
             if (Question.Type.OPTION == q.getType()) {
-                q.setQuestionOptionMap(optionDao.listOptionByQuestion(q
-                        .getKey().getId()));
+                q.setQuestionOptionMap(optionDao.listOptionByQuestion(q.getKey().getId()));
             }
             q.setTranslationMap(translationDao.findTranslations(
                     Translation.ParentType.QUESTION_TEXT, q.getKey().getId()));
@@ -539,8 +509,7 @@ public class QuestionDao extends BaseDAO<Question> {
             if (Question.Type.OPTION == q.getType()
                     || Question.Type.FREE_TEXT == q.getType()
                     || Question.Type.NUMBER == q.getType()) {
-                q.setScoringRules(scoringRuleDao.listRulesByQuestion(q.getKey()
-                        .getId()));
+                q.setScoringRules(scoringRuleDao.listRulesByQuestion(q.getKey().getId()));
             }
         }
         return q;
@@ -585,16 +554,14 @@ public class QuestionDao extends BaseDAO<Question> {
      * @param questionGroupId
      * @return
      */
-    public List<Question> listQuestionsByQuestionGroupOrderByCreatedDateTime(
-            Long questionGroupId) {
-        return listByProperty("questionGroupId", questionGroupId, "Long",
-                "createdDateTime", "asc");
+    public List<Question> listQuestionsByQuestionGroupOrderByCreatedDateTime(Long questionGroupId) {
+        return listByProperty("questionGroupId", questionGroupId, "Long", "createdDateTime", "asc");
     }
 
     /**
      * lists questions within a group. If needDetails flag is true, the child objects will be loaded
      * for each question. Due to processing constraints on GAE, needDetails should only be true when
-     * calling this method if being called from a backend or task.
+     * calling this method from a task.
      *
      * @param questionGroupId
      * @param needDetails
@@ -608,7 +575,7 @@ public class QuestionDao extends BaseDAO<Question> {
     /**
      * lists all the questions in a group, optionally loading details. If allowSideEffects is true,
      * it will attempt to reorder any duplicated question orderings on retrieval. New users of this
-     * method should ALWAY call this with allowSideEffects = false
+     * method should ALWAYS call this with allowSideEffects = false
      *
      * @param questionGroupId
      * @param needDetails
@@ -617,35 +584,27 @@ public class QuestionDao extends BaseDAO<Question> {
      */
     public TreeMap<Integer, Question> listQuestionsByQuestionGroup(
             Long questionGroupId, boolean needDetails, boolean allowSideEffects) {
-        List<Question> qList = listByProperty("questionGroupId",
-                questionGroupId, "Long", "order", "asc");
+        List<Question> qList =
+                listByProperty("questionGroupId", questionGroupId, "Long", "order", "asc");
         TreeMap<Integer, Question> map = new TreeMap<Integer, Question>();
         if (qList != null) {
             for (Question q : qList) {
 
                 if (needDetails) {
-                    q.setQuestionHelpMediaMap(helpDao.listHelpByQuestion(q
-                            .getKey().getId()));
+                    q.setQuestionHelpMediaMap(helpDao.listHelpByQuestion(q.getKey().getId()));
                     if (Question.Type.OPTION == q.getType()
                             || Question.Type.STRENGTH == q.getType()) {
-                        q.setQuestionOptionMap(optionDao.listOptionByQuestion(q
-                                .getKey().getId()));
+                        q.setQuestionOptionMap(optionDao.listOptionByQuestion(q.getKey().getId()));
                     }
                     q.setTranslationMap(translationDao.findTranslations(
                             ParentType.QUESTION_TEXT, q.getKey().getId()));
-                    // only load scoring rules for types that support
-                    // scoring
-                    if (Question.Type.OPTION == q.getType()
-                            || Question.Type.FREE_TEXT == q.getType()
-                            || Question.Type.NUMBER == q.getType()) {
-                        q.setScoringRules(scoringRuleDao.listRulesByQuestion(q
-                                .getKey().getId()));
-                    }
                 }
                 if (q.getOrder() == null) {
-                    q.setOrder(qList.size() + 1);
+                    q.setOrder(qList.size() + 1); //Anything, temporarily, to make a useable list
                 } else if (allowSideEffects) {
-                    if (map.size() > 0 && !(q.getOrder() > map.size())) {
+                    if (q.getOrder() != map.size() + 1) { //Not next in sequence
+                        log.log(Level.WARNING, "Reordering question in group " + questionGroupId
+                                + " from " + q.getOrder() + " to " + (map.size() + 1));
                         q.setOrder(map.size() + 1);
                         super.save(q);
                     } else if (map.size() == 0) {
@@ -694,8 +653,7 @@ public class QuestionDao extends BaseDAO<Question> {
         javax.jdo.Query query = pm.newQuery(Question.class);
         query.setFilter(" questionGroupId == questionGroupIdParam && text == questionTextParam");
         query.declareParameters("Long questionGroupIdParam, String questionTextParam");
-        List<Question> results = (List<Question>) query.execute(
-                questionGroupId, questionText);
+        List<Question> results = (List<Question>) query.execute(questionGroupId, questionText);
         if (results != null && results.size() > 0) {
             return results.get(0);
         } else {
@@ -717,8 +675,7 @@ public class QuestionDao extends BaseDAO<Question> {
         javax.jdo.Query query = pm.newQuery(Question.class);
         query.setFilter(" questionGroupId == questionGroupIdParam && order == orderParam");
         query.declareParameters("Long questionGroupIdParam, Integer orderParam");
-        List<Question> results = (List<Question>) query.execute(
-                questionGroupId, order);
+        List<Question> results = (List<Question>) query.execute(questionGroupId, order);
         if (results != null && results.size() > 0) {
             return results.get(0);
         } else {
@@ -752,8 +709,7 @@ public class QuestionDao extends BaseDAO<Question> {
     public void updateQuestionGroupOrder(List<QuestionGroup> groupList) {
         if (groupList != null) {
             for (QuestionGroup q : groupList) {
-                QuestionGroup persistentGroup = getByKey(q.getKey(),
-                        QuestionGroup.class);
+                QuestionGroup persistentGroup = getByKey(q.getKey(), QuestionGroup.class);
                 persistentGroup.setOrder(q.getOrder());
                 // since the object is still attached, we don't need to call
                 // save. It will be saved on flush of the Persistent session

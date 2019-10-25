@@ -1,5 +1,5 @@
 /*
- *  Copyright (C) 2010-2017 Stichting Akvo (Akvo Foundation)
+ *  Copyright (C) 2010-2018 Stichting Akvo (Akvo Foundation)
  *
  *  This file is part of Akvo FLOW.
  *
@@ -21,7 +21,6 @@ import com.gallatinsystems.framework.domain.BaseDomain;
 import javax.jdo.annotations.NotPersistent;
 import javax.jdo.annotations.PersistenceCapable;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
@@ -55,14 +54,15 @@ public class Question extends BaseDomain {
     private String dependentQuestionAnswer;
     private Long cascadeResourceId;
     private String caddisflyResourceUuid;
-    private Long metricId;
     @NotPersistent
     private TreeMap<Integer, QuestionOption> questionOptionMap = null;
     @NotPersistent
     private TreeMap<Integer, QuestionHelpMedia> questionHelpMediaMap = null;
     private Long questionGroupId;
     private Long surveyId;
-    private String questionId;
+    @Deprecated
+    private String questionId; //Renamed to variableName
+    private String variableName; //Getter will fetch legacy data from questionId
     private Integer order = null;
     private Boolean mandatoryFlag = null;
     private String path = null;
@@ -165,13 +165,6 @@ public class Question extends BaseDomain {
         this.dependentQuestionId = dependentQuestionId;
     }
 
-    public Long getMetricId() {
-        return metricId;
-    }
-
-    public void setMetricId(Long metricId) {
-        this.metricId = metricId;
-    }
 
     public Long getQuestionGroupId() {
         return questionGroupId;
@@ -187,12 +180,6 @@ public class Question extends BaseDomain {
 
     public void setTranslationMap(Map<String, Translation> translationMap) {
         this.translationMap = translationMap;
-    }
-
-    public void setTranslationMap(HashMap<String, Translation> transMap) {
-        if (transMap != null) {
-            translationMap = new TreeMap<String, Translation>(transMap);
-        }
     }
 
     public void addQuestionOption(QuestionOption questionOption) {
@@ -393,12 +380,16 @@ public class Question extends BaseDomain {
         return key != null && q.getKey() != null && key.equals(q.getKey());
     }
 
-    public String getQuestionId() {
+    public String getVariableName() {
+        if (variableName != null) {
+            return variableName;
+        }
         return questionId;
     }
 
-    public void setQuestionId(String questionId) {
-        this.questionId = questionId;
+    public void setVariableName(String variableName) {
+        this.variableName = variableName;
+        questionId = null; //ensure correct fallback
     }
 
     public Long getCascadeResourceId() {

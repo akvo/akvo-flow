@@ -1,10 +1,15 @@
 // ***********************************************//
 //                 models and stores
 // ***********************************************//
+import observe from '../mixins/observe';
+
 require('akvo-flow/core-common');
 require('akvo-flow/models/store_def-common');
 
-FLOW.BaseModel = DS.Model.extend({
+FLOW.BaseModel = DS.Model.extend(observe({
+  isSaving: 'anySaving',
+  isDirty: 'anySaving',
+}), {
   keyId: DS.attr('number'),
   savingStatus: null,
 
@@ -13,56 +18,42 @@ FLOW.BaseModel = DS.Model.extend({
   // so a saving message can be displayed. savingStatus is used to capture the
   // moment that nothing is being saved anymore, but in the previous event it was
   // so we can turn off the saving message.
-  anySaving: function () {
+  anySaving() {
     if (this.get('isSaving') || this.get('isDirty') || this.get('savingStatus')) {
       FLOW.savingMessageControl.checkSaving();
     }
     this.set('savingStatus', (this.get('isSaving') || this.get('isDirty')));
-  }.observes('isSaving', 'isDirty')
+  },
 
 });
 
 FLOW.SurveyGroup = FLOW.BaseModel.extend({
-  didDelete: function () {
+  didDelete() {
     FLOW.surveyGroupControl.populate();
   },
-  didUpdate: function () {
+  didUpdate() {
     FLOW.surveyGroupControl.populate();
   },
-  didCreate: function () {
+  didCreate() {
     FLOW.surveyGroupControl.populate();
   },
 
   description: DS.attr('string', {
-    defaultValue: ''
+    defaultValue: '',
   }),
   name: DS.attr('string', {
-    defaultValue: ''
+    defaultValue: '',
   }),
   createdDateTime: DS.attr('string', {
-    defaultValue: ''
+    defaultValue: '',
   }),
   lastUpdateDateTime: DS.attr('string', {
-    defaultValue: ''
+    defaultValue: '',
   }),
   // the code field is used as name
   code: DS.attr('string', {
-    defaultValue: ''
-  })
-});
-
-
-// Explicitly avoid to use belongTo and hasMany as
-// Ember-Data lacks of partial loading
-// https://github.com/emberjs/data/issues/51
-FLOW.PlacemarkDetail = FLOW.BaseModel.extend({
-  placemarkId: DS.attr('number'),
-  collectionDate: DS.attr('number'),
-  order: DS.attr('number'),
-  questionText: DS.attr('string'),
-  metricName: DS.attr('string'),
-  stringValue: DS.attr('string'),
-  questionType: DS.attr('string')
+    defaultValue: '',
+  }),
 });
 
 FLOW.Placemark = FLOW.BaseModel.extend({
@@ -70,7 +61,5 @@ FLOW.Placemark = FLOW.BaseModel.extend({
   longitude: DS.attr('number'),
   count: DS.attr('number'),
   level: DS.attr('number'),
-  surveyId: DS.attr('number'),
-  detailsId: DS.attr('number'),
-  collectionDate: DS.attr('number')
+  collectionDate: DS.attr('number'),
 });

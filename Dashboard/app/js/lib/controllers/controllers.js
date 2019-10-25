@@ -3,10 +3,10 @@
 // ***********************************************//
 // Define the main application controller. This is automatically picked up by
 // the application and initialized.
+loader.require('akvo-flow/flowenv');
+loader.require('akvo-flow/currentuser');
 require('akvo-flow/core-common');
-require('akvo-flow/flowenv');
 require('akvo-flow/controllers/languages');
-require('akvo-flow/currentuser');
 require('akvo-flow/controllers/permissions');
 require('akvo-flow/controllers/general-controllers-common');
 require('akvo-flow/controllers/survey-controllers');
@@ -21,45 +21,32 @@ require('akvo-flow/controllers/survey-selection');
 FLOW.ApplicationController = Ember.Controller.extend({});
 
 FLOW.role = Ember.Object.create({
-	SUPER_ADMIN: function () {
-		return FLOW.currentUser && FLOW.currentUser.permissionList === 0;
-	}.property(),
+  SUPER_ADMIN: Ember
+    .computed(() => FLOW.currentUser && FLOW.currentUser.permissionList === 0)
+    .property(),
 
-	ADMIN: function () {
-		return FLOW.currentUser && FLOW.currentUser.permissionList <= 10;
-	}.property(),
+  ADMIN: Ember.computed(() => FLOW.currentUser && FLOW.currentUser.permissionList <= 10).property(),
 
-	USER: function () {
-		return FLOW.currentUser && FLOW.currentUser.permissionList <= 20;
-	}.property()
+  USER: Ember.computed(() => FLOW.currentUser && FLOW.currentUser.permissionList <= 20).property(),
 });
-
-//require('akvo-flow/currentuser');
 
 // Navigation controllers
-FLOW.NavigationController = Em.Controller.extend({
-  selected: null
-});
+FLOW.NavigationController = Ember.Controller.extend({ selected: null });
 FLOW.NavHomeController = Ember.Controller.extend();
 FLOW.NavSurveysController = Ember.Controller.extend();
 FLOW.NavSurveysEditController = Ember.Controller.extend();
 FLOW.NavDevicesController = Ember.Controller.extend();
-FLOW.DevicesSubnavController = Em.Controller.extend();
-FLOW.DevicesTableHeaderController = Em.Controller.extend({
-  selected: null
-});
+FLOW.DevicesSubnavController = Ember.Controller.extend();
+FLOW.DevicesTableHeaderController = Ember.Controller.extend({ selected: null });
 
 FLOW.NavDataController = Ember.Controller.extend();
-FLOW.DatasubnavController = Em.Controller.extend();
+FLOW.DatasubnavController = Ember.Controller.extend();
 FLOW.InspectDataController = Ember.ArrayController.extend();
 FLOW.BulkUploadController = Ember.Controller.extend();
 FLOW.DataCleaningController = Ember.Controller.extend();
 
-FLOW.NavReportsController = Ember.Controller.extend();
-FLOW.ReportsSubnavController = Em.Controller.extend();
-FLOW.ExportReportsController = Ember.ArrayController.extend();
-FLOW.ChartReportsController = Ember.Controller.extend();
-FLOW.StatisticsController = Ember.Controller.extend();
+FLOW.NavResourcesController = Ember.Controller.extend();
+FLOW.ResourcesSubnavController = Ember.Controller.extend();
 
 FLOW.NavMapsController = Ember.Controller.extend();
 FLOW.NavUsersController = Ember.Controller.extend();

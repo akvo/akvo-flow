@@ -1,12 +1,12 @@
  <section class="fullWidth reportTools" id="reportBlocks">
     {{#view FLOW.chartView}}
       {{#unless FLOW.projectControl.isLoading}}
-        {{view FLOW.SurveySelectionView}}
+        {{view FLOW.SurveySelectionView showDataReadSurveysOnly=true}}
       {{/unless}}
       <span class=""></span>
       {{#if FLOW.selectedControl.selectedSurvey}}
         {{view Ember.Select
-            contentBinding="FLOW.surveyControl.arrangedContent"
+            contentBinding="FLOW.surveyControl.readDataContent"
             selectionBinding="view.selectedSurvey"
             optionLabelPath="content.name"
             optionValuePath="content.keyId"

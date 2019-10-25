@@ -2,16 +2,16 @@
   {{#view view.NavItemView item="navSurveys" }}
     <a {{action doNavSurveys}}>{{t _surveys}}</a>
   {{/view}}
+  {{#if view.showDevicesButton}}
   {{#view view.NavItemView item="navDevices" }}
-	{{#if view.showDevicesButton}}
     <a {{action doNavDevices}}>{{t _devices}}</a>
-	{{/if}}
   {{/view}}
-	{{#view view.NavItemView item="navData" }}
+  {{/if}}
+  {{#view view.NavItemView item="navData" }}
     <a {{action doNavData}}>{{t _data}}</a>
   {{/view}}
-	{{#view view.NavItemView item="navReports" }}
-    <a {{action doNavReports}}>{{t _reports}}</a>
+  {{#view view.NavItemView item="navResources" }}
+    <a {{action doNavResources}}>{{t _resources}}</a>
   {{/view}}
   {{#if view.showMapsButton}}
   {{#view view.NavItemView item="navMaps" }}

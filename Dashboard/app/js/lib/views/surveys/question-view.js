@@ -1,11 +1,21 @@
-function sortByOrder(a , b) {
+import { isNaN } from 'lodash';
+import observe from '../../mixins/observe';
+import template from '../../mixins/template';
+
+function sortByOrder(a, b) {
   return a.get('order') - b.get('order');
 }
 
-FLOW.QuestionView = FLOW.View.extend({
-  templateName: 'navSurveys/question-view',
+FLOW.QuestionView = FLOW.View.extend(template('navSurveys/question-view'), observe({
+  'FLOW.selectedControl.dependentQuestion': 'fillOptionList',
+  'this.text': 'validateQuestionObserver',
+  'FLOW.questionOptionsControl.emptyOptions': 'validateQuestionObserver',
+  'this.tip': 'validateQuestionTooltipObserver',
+  'this.variableName': 'validateVariableNameObserver',
+  'this.selectedCaddisflyTestBrand': 'brandsObserver',
+}), {
   content: null,
-  questionId: null,
+  variableName: null,
   text: null,
   tip: null,
   type: null,
@@ -17,17 +27,13 @@ FLOW.QuestionView = FLOW.View.extend({
   allowMultipleFlag: null,
   allowOtherFlag: null,
   allowExternalSources: false,
-  localeNameFlag:false,
-  localeLocationFlag:false,
+  localeNameFlag: false,
+  localeLocationFlag: false,
   geoLocked: null,
   requireDoubleEntry: null,
   dependentFlag: false,
   dependentQuestion: null,
   includeInMap: null,
-  showAddAttributeDialogBool: false,
-  newAttributeName: null,
-  newAttributeGroup: null,
-  newAttributeType: null,
   allowPoints: true,
   allowLine: true,
   allowPolygon: true,
@@ -35,151 +41,120 @@ FLOW.QuestionView = FLOW.View.extend({
   questionTooltipValidationFailure: false,
   caddisflyResourceUuid: null,
 
-  showCaddisflyTests: function () {
-      return FLOW.router.caddisflyResourceController.get("testsFileLoaded");
-  }.property('FLOW.router.caddisflyResourceController.testsFileLoaded'),
+  showCaddisflyTests: Ember.computed(() => FLOW.router.caddisflyResourceController.get('testsFileLoaded')).property('FLOW.router.caddisflyResourceController.testsFileLoaded'),
 
-  showMetaConfig: function () {
-    return FLOW.Env.showMonitoringFeature;
-  }.property('FLOW.Env.showMonitoringFeature'),
+  showMetaConfig: Ember.computed(() => FLOW.Env.showMonitoringFeature).property('FLOW.Env.showMonitoringFeature'),
 
-  amOpenQuestion: function () {
-    var selected = FLOW.selectedControl.get('selectedQuestion');
+  amOpenQuestion: Ember.computed(function () {
+    const selected = FLOW.selectedControl.get('selectedQuestion');
     if (selected && this.get('content')) {
-      var isOpen = (this.content.get('keyId') == FLOW.selectedControl.selectedQuestion.get('keyId'));
+      const isOpen = (this.content.get('keyId') == FLOW.selectedControl.selectedQuestion.get('keyId'));
       return isOpen;
-    } else {
-      return false;
     }
-  }.property('FLOW.selectedControl.selectedQuestion', 'content.keyId').cacheable(),
+    return false;
+  }).property('FLOW.selectedControl.selectedQuestion', 'content.keyId').cacheable(),
 
-  amTextType: function () {
+  amTextType: Ember.computed(function () {
     if (this.type) {
       return this.type.get('value') == 'FREE_TEXT';
-    } else {
-      return false;
     }
-  }.property('this.type').cacheable(),
+    return false;
+  }).property('this.type').cacheable(),
 
-  amOptionType: function () {
+  amOptionType: Ember.computed(function () {
     return this.type && this.type.get('value') === 'OPTION';
-  }.property('this.type'),
+  }).property('this.type'),
 
-  amNumberType: function () {
+  amNumberType: Ember.computed(function () {
     if (this.type) {
       return this.type.get('value') == 'NUMBER';
-    } else {
-      return false;
     }
-  }.property('this.type').cacheable(),
+    return false;
+  }).property('this.type').cacheable(),
 
-  amBarcodeType: function () {
-      if (this.type) {
-          return this.type.get('value') === 'SCAN';
-      } else {
-          return false;
-      }
-  }.property('this.type').cacheable(),
+  amBarcodeType: Ember.computed(function () {
+    if (this.type) {
+      return this.type.get('value') === 'SCAN';
+    }
+    return false;
+  }).property('this.type').cacheable(),
 
-  amFreeTextType: function () {
+  amFreeTextType: Ember.computed(function () {
     if (this.type) {
       return this.type.get('value') == 'FREE_TEXT';
-    } else {
-      return false;
     }
-  }.property('this.type').cacheable(),
+    return false;
+  }).property('this.type').cacheable(),
 
-  amGeoType: function () {
+  amGeoType: Ember.computed(function () {
     if (this.type) {
       return this.type.get('value') == 'GEO';
-    } else {
-      return false;
     }
-  }.property('this.type').cacheable(),
+    return false;
+  }).property('this.type').cacheable(),
 
-  amNumberType: function () {
+  amCascadeType: Ember.computed(function () {
     if (this.type) {
-      return this.type.get('value') == 'NUMBER';
-    } else {
-      return false;
+      return this.type.get('value') == 'CASCADE';
     }
-  }.property('this.type').cacheable(),
+    return false;
+  }).property('this.type').cacheable(),
 
-  amCascadeType: function () {
-    if (this.type) {
-	  return this.type.get('value') == 'CASCADE';
-	} else {
-	  return false;
-	}
-  }.property('this.type').cacheable(),
-
-  amNoOptionsType: function () {
-    var val;
+  hasExtraSettings: Ember.computed(function () {
     if (!Ember.none(this.type)) {
-      val = this.type.get('value');
-      return val === 'PHOTO' || val === 'VIDEO' || val === 'DATE' || val === 'SIGNATURE';
+      const val = this.type.get('value');
+      return val === 'GEOSHAPE' || val === 'CASCADE' || val === 'NUMBER' || val === 'GEO'
+      || val === 'FREE_TEXT' || val === 'SCAN' || val === 'OPTION' || val === 'CADDISFLY';
     }
-  }.property('this.type').cacheable(),
+  }).property('this.type').cacheable(),
 
-  amGeoshapeType: function () {
+  amGeoshapeType: Ember.computed(function () {
     if (this.type) {
-	  return this.type.get('value') == 'GEOSHAPE';
-	} else {
-	  return false;
-	}
-  }.property('this.type').cacheable(),
+      return this.type.get('value') == 'GEOSHAPE';
+    }
+    return false;
+  }).property('this.type').cacheable(),
 
-  amDateType: function () {
+  amDateType: Ember.computed(function () {
     if (this.type) {
       return this.type.get('value') == 'DATE';
-    } else {
-      return false;
     }
-  }.property('this.type').cacheable(),
+    return false;
+  }).property('this.type').cacheable(),
 
-  amSignatureType: function () {
+  amSignatureType: Ember.computed(function () {
     return (this.content && this.content.get('type') === 'SIGNATURE')
             || (this.type && this.type.get('value') === 'SIGNATURE');
-  }.property('this.type'),
+  }).property('this.type'),
 
-  amCaddisflyType: function () {
-	return (this.content && this.content.get('type') === 'CADDISFLY'
-		|| (this.type && this.type.get('value') === 'CADDISFLY'));
-	}.property('this.type').cacheable(),
+  amCaddisflyType: Ember.computed(function () {
+    return this.type && this.type.get('value') == 'CADDISFLY';
+  }).property('this.type').cacheable(),
 
-  showLocaleName: function () {
+  showLocaleName: Ember.computed(function () {
     if (!this.type) {
       return false;
     }
     return this.type.get('value') == 'FREE_TEXT'
         || this.type.get('value') == 'NUMBER'
         || this.type.get('value') == 'OPTION'
+        || this.type.get('value') == 'SCAN'
         || this.type.get('value') == 'CASCADE';
-  }.property('this.type').cacheable(),
-
-  // when we change the question type to GEO, we turn on the
-  // localeLocationFLag by default. If we change to something else, we
-  // turn the flag of.
-  enableLocaleLocation: function() {
-    this.set('localeLocationFlag', this.type.get('value') == 'GEO');
-  }.observes('this.type'),
+  }).property('this.type').cacheable(),
 
   // TODO dependencies
   // TODO options
-  doQuestionEdit: function () {
-    var questionType = null,
-    attribute = null,
-    dependentQuestion, dependentAnswer, dependentAnswerArray,cascadeResource;
+  doQuestionEdit() {
     if (this.content && (this.content.get('isDirty') || this.content.get('isSaving'))) {
       this.showMessageDialog(Ember.String.loc('_question_is_being_saved'),
-			     Ember.String.loc('_question_is_being_saved_text'));
+        Ember.String.loc('_question_is_being_saved_text'));
       return;
     }
 
     this.loadQuestionOptions();
 
     FLOW.selectedControl.set('selectedQuestion', this.get('content'));
-    this.set('questionId', FLOW.selectedControl.selectedQuestion.get('questionId'));
+    this.set('variableName', FLOW.selectedControl.selectedQuestion.get('variableName'));
     this.set('text', FLOW.selectedControl.selectedQuestion.get('text'));
     this.set('tip', FLOW.selectedControl.selectedQuestion.get('tip'));
     this.set('mandatoryFlag', FLOW.selectedControl.selectedQuestion.get('mandatoryFlag'));
@@ -206,33 +181,35 @@ FLOW.QuestionView = FLOW.View.extend({
 
     // if the cascadeResourceId is not null, get the resource
     if (!Ember.empty(FLOW.selectedControl.selectedQuestion.get('cascadeResourceId'))) {
-    	cascadeResource = FLOW.store.find(FLOW.CascadeResource,FLOW.selectedControl.selectedQuestion.get('cascadeResourceId'));
-    	FLOW.selectedControl.set('selectedCascadeResource', cascadeResource);
+      const cascadeResource = FLOW.store.find(FLOW.CascadeResource, FLOW.selectedControl.selectedQuestion.get('cascadeResourceId'));
+      FLOW.selectedControl.set('selectedCascadeResource', cascadeResource);
     }
 
     // reset selected caddisfly resource
     FLOW.selectedControl.set('selectedCaddisflyResource', null);
     // if the caddisflyResourceUuid is not null, get the resource
     if (!Ember.empty(FLOW.selectedControl.selectedQuestion.get('caddisflyResourceUuid'))) {
-      var caddResource = FLOW.router.caddisflyResourceController.content.findProperty('uuid', FLOW.selectedControl.selectedQuestion.get('caddisflyResourceUuid'));
+      const caddResource = FLOW.router.caddisflyResourceController.content.findProperty('uuid', FLOW.selectedControl.selectedQuestion.get('caddisflyResourceUuid'));
       if (!Ember.empty(caddResource)) {
-        FLOW.selectedControl.set('selectedCaddisflyResource',caddResource);
+        this.set('selectedCaddisflyTestSample', this.get('caddisflyTestSamples').findProperty('sample', caddResource.get('sample')));
+        this.set('selectedCaddisflyTestName', this.get('caddisflyTestNames').findProperty('name', caddResource.get('name')));
+        this.set('selectedCaddisflyTestBrand', this.get('caddisflyTestBrands').find(item => item.brand === caddResource.get('brand') && item.model === caddResource.get('model') && item.device === caddResource.get('device')));
+        FLOW.selectedControl.set('selectedCaddisflyResource', caddResource);
       }
     }
-
     // if the dependentQuestionId is not null, get the question
     if (!Ember.empty(FLOW.selectedControl.selectedQuestion.get('dependentQuestionId'))) {
-      dependentQuestion = FLOW.store.find(FLOW.Question, FLOW.selectedControl.selectedQuestion.get('dependentQuestionId'));
-      dependentAnswer = FLOW.selectedControl.selectedQuestion.get('dependentQuestionAnswer');
+      const dependentQuestion = FLOW.store.find(FLOW.Question, FLOW.selectedControl.selectedQuestion.get('dependentQuestionId'));
+      const dependentAnswer = FLOW.selectedControl.selectedQuestion.get('dependentQuestionAnswer');
 
       // if we have found the question, fill the options
-      if (dependentQuestion.get('id') !== "0") {
+      if (dependentQuestion.get('id') !== '0') {
         FLOW.selectedControl.set('dependentQuestion', dependentQuestion);
         this.fillOptionList();
 
-        dependentAnswerArray = dependentAnswer.split('|');
+        const dependentAnswerArray = dependentAnswer.split('|');
         // find the answer already set and set it to true in the optionlist
-        FLOW.optionListControl.get('content').forEach(function (item) {
+        FLOW.optionListControl.get('content').forEach((item) => {
           if (dependentAnswerArray.indexOf(item.get('value')) > -1) {
             item.set('isSelected', true);
           }
@@ -240,16 +217,9 @@ FLOW.QuestionView = FLOW.View.extend({
       }
     }
 
-    // set the attribute to the original choice
-    FLOW.attributeControl.get('content').forEach(function (item) {
-      if (item.get('keyId') == FLOW.selectedControl.selectedQuestion.get('metricId')) {
-        attribute = item;
-      }
-    });
-    this.set('attribute', attribute);
-
+    let questionType = null;
     // set the type to the original choice
-    FLOW.questionTypeControl.get('content').forEach(function (item) {
+    FLOW.questionTypeControl.get('content').forEach((item) => {
       if (item.get('value') == FLOW.selectedControl.selectedQuestion.get('type')) {
         questionType = item;
       }
@@ -260,92 +230,87 @@ FLOW.QuestionView = FLOW.View.extend({
   /*
    *  Load the question options for question editing
    */
-  loadQuestionOptions: function () {
-    var c = this.content;
+  loadQuestionOptions() {
+    const c = this.content;
     FLOW.questionOptionsControl.set('content', []);
     FLOW.questionOptionsControl.set('questionId', c.get('keyId'));
 
-    options = FLOW.store.filter(FLOW.QuestionOption, function (optionItem) {
-        return optionItem.get('questionId') === c.get('keyId');
-    });
+    const options = FLOW.store.filter(FLOW.QuestionOption, optionItem => optionItem.get('questionId') === c.get('keyId'));
 
     if (options.get('length')) {
-      optionArray = Ember.A(options.toArray().sort(sortByOrder));
+      const optionArray = Ember.A(options.toArray().sort(sortByOrder));
       FLOW.questionOptionsControl.set('content', optionArray);
     } else {
       FLOW.questionOptionsControl.loadDefaultOptions();
     }
   },
 
-  fillOptionList: function () {
-    var optionList, optionListArray, i, sizeList;
-    if (FLOW.selectedControl.get('dependentQuestion') !== null) {
+  fillOptionList() {
+    if (FLOW.selectedControl.get('dependentQuestion')) {
+      const dependentQuestion = FLOW.selectedControl.get('dependentQuestion');
       FLOW.optionListControl.set('content', []);
       FLOW.optionListControl.set('currentActive', null);
 
-      options = FLOW.store.filter(FLOW.QuestionOption, function (item) {
+      const options = FLOW.store.filter(FLOW.QuestionOption, (item) => {
         if (!Ember.none(FLOW.selectedControl.selectedQuestion)) {
-          return item.get('questionId') == FLOW.selectedControl.dependentQuestion.get('keyId');
-        } else {
-          return false;
+          return item.get('questionId') == dependentQuestion.get('keyId');
         }
+        return false;
       });
 
-      optionArray = options.toArray();
-      optionArray.sort(function (a, b) {
-    	  return a.get('order') - b.get('order');
-      });
+      const optionArray = options.toArray();
+      optionArray.sort((a, b) => a.get('order') - b.get('order'));
 
-      optionArray.forEach(function (item) {
+      optionArray.forEach((item) => {
         FLOW.optionListControl.get('content').push(Ember.Object.create({
           isSelected: false,
-          value: item.get('text')
+          value: item.get('text'),
         }));
       });
     }
-  }.observes('FLOW.selectedControl.dependentQuestion'),
+  },
 
-  doCancelEditQuestion: function () {
+  doCancelEditQuestion() {
     FLOW.selectedControl.set('selectedQuestion', null);
   },
 
 
-  doSaveEditQuestion: function() {
-    var path, anyActive, first, dependentQuestionAnswer, minVal, maxVal, options, found, optionsToDelete;
-
-    if (this.questionIdValidationFailure) {
-      this.showMessageDialog(Ember.String.loc('_question_id_must_be_valid_and_unique'), this.questionIdValidationFailureReason);
+  doSaveEditQuestion() {
+    if (this.variableNameValidationFailure) {
+      this.showMessageDialog(Ember.String.loc('_variable_name_must_be_valid_and_unique'), this.variableNameValidationFailureReason);
       return;
     }
 
     if (this.questionValidationFailure) {
-        this.showMessageDialog(Ember.String.loc('_question_over_500_chars_header'), Ember.String.loc('_question_over_500_chars_text'));
-        return;
-      }
+      this.showMessageDialog(Ember.String.loc('_question_over_500_chars_header'), Ember.String.loc('_question_over_500_chars_text'));
+      return;
+    }
 
     if (this.questionTooltipValidationFailure) {
-        this.showMessageDialog(Ember.String.loc('_tooltip_over_500_chars_header'), Ember.String.loc('_tooltip_over_500_chars_text'));
-        return;
-      }
+      this.showMessageDialog(Ember.String.loc('_tooltip_over_500_chars_header'), Ember.String.loc('_tooltip_over_500_chars_text'));
+      return;
+    }
 
     if (this.get('amOptionType')) {
-      var invalidOptions = FLOW.questionOptionsControl.validateOptions();
-      if (invalidOptions) {
-        this.showMessageDialog(Ember.String.loc('_invalid_options_header'), invalidOptions);
-        return;
-      }
-
       // save options to the datastore
       FLOW.questionOptionsControl.persistOptions();
     }
 
+    if (this.type.get('value') === 'GEOSHAPE'
+      && this.get('allowPoints') === false
+      && this.get('allowLine') === false
+      && this.get('allowPolygon') === false) {
+      this.showMessageDialog(Ember.String.loc('_no_geoshape_types_header'), Ember.String.loc('_no_geoshape_types_text'));
+      return;
+    }
+
     if (this.type.get('value') === 'CASCADE' && Ember.empty(FLOW.selectedControl.get('selectedCascadeResource'))) {
-        FLOW.dialogControl.set('activeAction', 'ignore');
-        FLOW.dialogControl.set('header', Ember.String.loc('_cascade_resources'));
-        FLOW.dialogControl.set('message', Ember.String.loc('_cascade_select_resource'));
-        FLOW.dialogControl.set('showCANCEL', false);
-        FLOW.dialogControl.set('showDialog', true);
-        return false;
+      FLOW.dialogControl.set('activeAction', 'ignore');
+      FLOW.dialogControl.set('header', Ember.String.loc('_cascade_resources'));
+      FLOW.dialogControl.set('message', Ember.String.loc('_cascade_select_resource'));
+      FLOW.dialogControl.set('showCANCEL', false);
+      FLOW.dialogControl.set('showDialog', true);
+      return false;
     }
 
     if (this.type.get('value') !== 'NUMBER') {
@@ -370,14 +335,14 @@ FLOW.QuestionView = FLOW.View.extend({
       this.set('caddisflyResourceUuid', null);
     }
 
-    path = FLOW.selectedControl.selectedSurveyGroup.get('code') + "/" + FLOW.selectedControl.selectedSurvey.get('name') + "/" + FLOW.selectedControl.selectedQuestionGroup.get('code');
-    FLOW.selectedControl.selectedQuestion.set('questionId', this.get('questionId'));
+    const path = `${FLOW.selectedControl.selectedSurveyGroup.get('code')}/${FLOW.selectedControl.selectedSurvey.get('name')}/${FLOW.selectedControl.selectedQuestionGroup.get('code')}`;
+    FLOW.selectedControl.selectedQuestion.set('variableName', this.get('variableName'));
     FLOW.selectedControl.selectedQuestion.set('text', this.get('text'));
     FLOW.selectedControl.selectedQuestion.set('tip', this.get('tip'));
     FLOW.selectedControl.selectedQuestion.set('mandatoryFlag', this.get('mandatoryFlag'));
 
-    minVal = (Ember.empty(this.get('minVal'))) ? null : this.get('minVal');
-    maxVal = (Ember.empty(this.get('maxVal'))) ? null : this.get('maxVal');
+    const minVal = (Ember.empty(this.get('minVal'))) ? null : this.get('minVal');
+    const maxVal = (Ember.empty(this.get('maxVal'))) ? null : this.get('maxVal');
     FLOW.selectedControl.selectedQuestion.set('minVal', minVal);
     FLOW.selectedControl.selectedQuestion.set('maxVal', maxVal);
 
@@ -395,23 +360,23 @@ FLOW.QuestionView = FLOW.View.extend({
     FLOW.selectedControl.selectedQuestion.set('allowLine', this.get('allowLine'));
     FLOW.selectedControl.selectedQuestion.set('allowPolygon', this.get('allowPolygon'));
 
-    var allowExternalSources = (this.type.get('value') !== 'FREE_TEXT') ? false : this.get('allowExternalSources');
+    const allowExternalSources = (this.type.get('value') !== 'FREE_TEXT') ? false : this.get('allowExternalSources');
     FLOW.selectedControl.selectedQuestion.set('allowExternalSources', allowExternalSources);
 
-    dependentQuestionAnswer = "";
-    first = true;
+    let dependentQuestionAnswer = '';
+    let first = true;
 
-    FLOW.optionListControl.get('content').forEach(function (item) {
+    FLOW.optionListControl.get('content').forEach((item) => {
       if (item.isSelected) {
         if (!first) {
-          dependentQuestionAnswer += "|";
+          dependentQuestionAnswer += '|';
         }
         first = false;
         dependentQuestionAnswer += item.value;
       }
     });
 
-    if (this.get('dependentFlag') && dependentQuestionAnswer !== "") {
+    if (this.get('dependentFlag') && dependentQuestionAnswer !== '') {
       FLOW.selectedControl.selectedQuestion.set('dependentFlag', this.get('dependentFlag'));
       FLOW.selectedControl.selectedQuestion.set('dependentQuestionId', FLOW.selectedControl.dependentQuestion.get('keyId'));
       FLOW.selectedControl.selectedQuestion.set('dependentQuestionAnswer', dependentQuestionAnswer);
@@ -421,27 +386,23 @@ FLOW.QuestionView = FLOW.View.extend({
       FLOW.selectedControl.selectedQuestion.set('dependentQuestionAnswer', null);
     }
 
-    if (this.get('attribute')) {
-      FLOW.selectedControl.selectedQuestion.set('metricId', this.attribute.get('keyId'));
-    }
-
     if (this.get('type')) {
       FLOW.selectedControl.selectedQuestion.set('type', this.type.get('value'));
     }
 
     // deal with cascadeResource
     if (this.type.get('value') == 'CASCADE') {
-        if (!Ember.empty(FLOW.selectedControl.get('selectedCascadeResource'))){
-            FLOW.selectedControl.selectedQuestion.set('cascadeResourceId',
-                FLOW.selectedControl.selectedCascadeResource.get('keyId'));
-        }
+      if (!Ember.empty(FLOW.selectedControl.get('selectedCascadeResource'))) {
+        FLOW.selectedControl.selectedQuestion.set('cascadeResourceId',
+          FLOW.selectedControl.selectedCascadeResource.get('keyId'));
+      }
     }
 
     // deal with caddisflyResource
     if (this.type.get('value') == 'CADDISFLY') {
-      if (!Ember.empty(FLOW.selectedControl.get('selectedCaddisflyResource'))){
+      if (!Ember.empty(FLOW.selectedControl.get('selectedCaddisflyResource'))) {
         FLOW.selectedControl.selectedQuestion.set('caddisflyResourceUuid',
-            FLOW.selectedControl.selectedCaddisflyResource.get('uuid'));
+          FLOW.selectedControl.selectedCaddisflyResource.get('uuid'));
       }
     }
 
@@ -449,19 +410,19 @@ FLOW.QuestionView = FLOW.View.extend({
     FLOW.store.commit();
     FLOW.selectedControl.set('selectedQuestion', null);
     FLOW.selectedControl.set('dependentQuestion', null);
-    FLOW.selectedControl.set('selectedCascadeResource',null);
+    FLOW.selectedControl.set('selectedCascadeResource', null);
   },
 
-  isPartOfMonitoringGroup: function(questionKeyId) {
-    var surveyId = FLOW.store.findById(FLOW.Question, questionKeyId).get('surveyId');
-    var surveyGroupId = FLOW.store.findById(FLOW.Survey, surveyId).get('surveyGroupId');
+  isPartOfMonitoringGroup(questionKeyId) {
+    const surveyId = FLOW.store.findById(FLOW.Question, questionKeyId).get('surveyId');
+    const surveyGroupId = FLOW.store.findById(FLOW.Survey, surveyId).get('surveyGroupId');
     return FLOW.store.findById(FLOW.SurveyGroup, surveyGroupId).get('monitoringGroup');
   },
 
   /**
-   * QuestionId validation
+   * Variable name validation
    *
-   * A valid questionId must match /^[A-Za-z0-9_\-]*$/. Uniqueness
+   * A valid variable name must match /^[A-Za-z0-9_\-]*$/. Uniqueness
    * constraints depends on wether the question is part of a
    * monitoring group or not. If the question is part of a
    * monitoring group, uniqueness validation _must_ happen on the
@@ -471,70 +432,69 @@ FLOW.QuestionView = FLOW.View.extend({
    */
   throttleTimer: null,
 
-  validateQuestionId: function(args) {
-    var selectedQuestion = FLOW.selectedControl.selectedQuestion
-    var questionKeyId = selectedQuestion.get('keyId');
-    var questionId = this.get('questionId') || "";
-    if (FLOW.Env.mandatoryQuestionID && questionId.match(/^\s*$/)) {
-      args.failure(Ember.String.loc('_question_id_mandatory'));
-    } else if (!questionId.match(/^[A-Za-z0-9_\-]*$/)) {
-      args.failure(Ember.String.loc('_question_id_only_alphanumeric'))
+  validateVariableName(args) {
+    const self = this;
+    const { selectedQuestion } = FLOW.selectedControl;
+    const questionKeyId = selectedQuestion.get('keyId');
+    const variableName = this.get('variableName') || '';
+    if (FLOW.Env.mandatoryQuestionID && variableName.match(/^\s*$/)) {
+      args.failure(Ember.String.loc('_variable_name_mandatory'));
+    } else if (!variableName.match(/^[A-Za-z0-9_-]*$/)) {
+      args.failure(Ember.String.loc('_variable_name_only_alphanumeric'));
     } else {
-      var monitoring = this.isPartOfMonitoringGroup(questionKeyId);
+      const monitoring = this.isPartOfMonitoringGroup(questionKeyId);
       if (monitoring) {
         clearTimeout(this.throttleTimer);
-        this.throttleTimer = setTimeout(function () {
+        this.throttleTimer = setTimeout(() => {
           $.ajax({
-            url: '/rest/questions/' + questionKeyId + '/validate?questionId=' + questionId,
+            url: `/rest/questions/${questionKeyId}/validate?variableName=${variableName}`,
             type: 'POST',
-            success: function(data) {
+            success(data) {
               if (data.success) {
-                args.success();
+                // check for special characters once more
+                if (!self.get('variableName').match(/^[A-Za-z0-9_-]*$/)) {
+                  args.failure(Ember.String.loc('_variable_name_only_alphanumeric'));
+                } else {
+                  args.success();
+                }
               } else {
                 args.failure(data.reason);
               }
             },
-            error: function() {
-              args.failure(Ember.String.loc('_could_not_validate_question_id_with_server'));
-            }
+            error() {
+              args.failure(Ember.String.loc('_could_not_validate_variable_name_with_server'));
+            },
           });
         }, 1000);
       } else {
-        var otherQuestionIds = FLOW.store.filter(FLOW.Question, function(question) {
-          var keyId = question.get('keyId');
-          return (selectedQuestion.get('surveyId') === question.get('surveyId'))
-            && (questionKeyId !== question.get('keyId'));
-        }).map(function(question) {
-          return question.get('questionId');
-        }).filter(function(questionId) {
-          return questionId !== "";
-        });
-        var isUnique = !otherQuestionIds.contains(questionId);
+        const otherVariableNames = FLOW.store.filter(FLOW.Question, question => (selectedQuestion.get('surveyId') === question.get('surveyId'))
+            && (questionKeyId !== question.get('keyId'))).map(question => question.get('variableName')).filter(_variableName => _variableName !== '');
+        const isUnique = !otherVariableNames.contains(variableName);
         if (isUnique) {
           args.success();
         } else {
-          args.failure('the question id is not unique');
+          args.failure(Ember.String.loc('_variable_name_not_unique'));
         }
       }
     }
   },
 
-  validateMinAndMax: function(args) {
+  validateMinAndMax(args) {
     if (this.type.get('value') == 'NUMBER') {
       if (!Ember.empty(this.get('minVal')) && !Ember.empty(this.get('maxVal'))) {
         if (isNaN(this.get('minVal')) || isNaN(this.get('maxVal'))) {
-	  args.NaNFailure();
-	  return;
-        } else if (parseFloat(this.get('minVal')) >= parseFloat(this.get('maxVal'))) {
+          args.NaNFailure();
+          return;
+        } if (parseFloat(this.get('minVal')) >= parseFloat(this.get('maxVal'))) {
           args.valueFailure();
-	  return;
+          return;
         }
       }
     }
     args.success();
   },
 
-  showMessageDialog: function(header, message) {
+  showMessageDialog(header, message) {
     FLOW.dialogControl.set('activeAction', 'ignore');
     FLOW.dialogControl.set('header', header);
     FLOW.dialogControl.set('message', message);
@@ -542,27 +502,25 @@ FLOW.QuestionView = FLOW.View.extend({
     FLOW.dialogControl.set('showDialog', true);
   },
 
-  deleteQuestion: function () {
-    var qDeleteId;
-    qDeleteId = this.content.get('keyId');
+  deleteQuestion() {
+    const qDeleteId = this.content.get('keyId');
 
     // check if anything is being saved at the moment
     if (this.checkQuestionsBeingSaved()) {
       this.showMessageDialog(Ember.String.loc('_please_wait'),
-			     Ember.String.loc('_please_wait_until_previous_request'));
+        Ember.String.loc('_please_wait_until_previous_request'));
       return;
     }
 
     // Check if there is another question that is dependant on this question
     if (this.content.get('type') === 'OPTION') {
-      var hasDependant = FLOW.store.find(FLOW.Question).some(function (q) {
-        return qDeleteId === q.get('dependentQuestionId');
-      });
+      const hasDependant = FLOW.store.find(FLOW.Question).some(q => qDeleteId === q.get('dependentQuestionId'));
 
       if (hasDependant) {
         this.showMessageDialog(
           Ember.String.loc('_cant_delete_question'),
-          Ember.String.loc('_another_question_depends_on_this'));
+          Ember.String.loc('_another_question_depends_on_this')
+        );
         return;
       }
     }
@@ -571,22 +529,20 @@ FLOW.QuestionView = FLOW.View.extend({
     // if successful, the deletion action will be called from DS.FLOWrestadaptor.sideload
     FLOW.store.findQuery(FLOW.Question, {
       preflight: 'delete',
-      questionId: qDeleteId
+      questionId: qDeleteId,
     });
   },
 
-  checkQuestionsBeingSaved: function () {
-    var question;
-    question = FLOW.store.filter(FLOW.Question, function(item){
-      return item.get('isSaving');
-    });
+  checkQuestionsBeingSaved() {
+    const question = FLOW.store.filter(FLOW.Question, item => item.get('isSaving'));
     return question.content.length > 0;
   },
 
   // move question to selected location
-  doQuestionMoveHere: function () {
-    var selectedOrder, insertAfterOrder, selectedQ, useMoveQuestion;
-    selectedOrder = FLOW.selectedControl.selectedForMoveQuestion.get('order');
+  doQuestionMoveHere() {
+    let insertAfterOrder;
+    let selectedQ;
+    const selectedOrder = FLOW.selectedControl.selectedForMoveQuestion.get('order');
 
     if (this.get('zeroItemQuestion')) {
       insertAfterOrder = 0;
@@ -597,7 +553,7 @@ FLOW.QuestionView = FLOW.View.extend({
     // check if anything is being saved at the moment
     if (this.checkQuestionsBeingSaved()) {
       this.showMessageDialog(Ember.String.loc('_please_wait'),
-			     Ember.String.loc('_please_wait_until_previous_request'));
+        Ember.String.loc('_please_wait_until_previous_request'));
       return;
     }
 
@@ -605,65 +561,38 @@ FLOW.QuestionView = FLOW.View.extend({
     if (FLOW.selectedControl.selectedForMoveQuestion.get('questionGroupId') != FLOW.selectedControl.selectedQuestionGroup.get('keyId')) {
       selectedQ = FLOW.store.find(FLOW.Question, FLOW.selectedControl.selectedForMoveQuestion.get('keyId'));
       if (selectedQ !== null) {
+        const qgIdSource = FLOW.selectedControl.selectedForMoveQuestion.get('questionGroupId');
+        const qgIdDest = FLOW.selectedControl.selectedQuestionGroup.get('keyId');
 
         // restore order
-        qgIdSource = FLOW.selectedControl.selectedForMoveQuestion.get('questionGroupId');
-        qgIdDest = FLOW.selectedControl.selectedQuestionGroup.get('keyId');
-
-        questionsInSourceGroup = FLOW.store.filter(FLOW.Question, function (item) {
-          return item.get('questionGroupId') == qgIdSource;
-        });
-
-        questionsInDestGroup = FLOW.store.filter(FLOW.Question, function (item) {
-          return item.get('questionGroupId') == qgIdDest;
-        });
-
-        // restore order in source group, where the question dissapears
-        questionsInSourceGroup.forEach(function (item) {
-          if (item.get('order') > selectedOrder) {
-            item.set('order', item.get('order') - 1);
-          }
-        });
-
-        // make room in destination group
-        questionsInDestGroup.forEach(function (item) {
-          if (item.get('order') > insertAfterOrder) {
-            item.set('order', item.get('order') + 1);
-          }
-        });
+        FLOW.questionControl.reorderQuestions(qgIdSource, selectedOrder, 'decrement');
+        FLOW.questionControl.reorderQuestions(qgIdDest, insertAfterOrder, 'increment');
 
         // move question
         selectedQ.set('order', insertAfterOrder + 1);
         selectedQ.set('questionGroupId', qgIdDest);
 
-        // recompute questions in groups so we can correct any order problems
-        questionsInSourceGroup = FLOW.store.filter(FLOW.Question, function (item) {
-          return item.get('questionGroupId') == qgIdSource;
-        });
-
-        questionsInDestGroup = FLOW.store.filter(FLOW.Question, function (item) {
-          return item.get('questionGroupId') == qgIdDest;
-        });
-
-        FLOW.questionControl.restoreOrder(questionsInSourceGroup);
-        FLOW.questionControl.restoreOrder(questionsInDestGroup);
+        FLOW.questionControl.submitBulkQuestionsReorder([qgIdSource, qgIdDest]);
       }
     // if we are not moving to another group, we must be moving inside a group
     // only do something if we are not moving to the same place
-    } else if (!((selectedOrder == insertAfterOrder) || (selectedOrder == (insertAfterOrder + 1)))) {
+    } else if (
+      !(
+        (selectedOrder == insertAfterOrder) ||
+        (selectedOrder == (insertAfterOrder + 1))
+      )
+    ) {
       selectedQ = FLOW.store.find(FLOW.Question, FLOW.selectedControl.selectedForMoveQuestion.get('keyId'));
       if (selectedQ !== null) {
         // restore order
-        qgId = FLOW.selectedControl.selectedQuestionGroup.get('keyId');
-        questionsInGroup = FLOW.store.filter(FLOW.Question, function (item) {
-          return item.get('questionGroupId') == qgId;
-        });
+        const qgId = FLOW.selectedControl.selectedQuestionGroup.get('keyId');
+        const questionsInGroup = FLOW.store.filter(FLOW.Question, item => item.get('questionGroupId') == qgId);
 
-        origOrder = FLOW.selectedControl.selectedForMoveQuestion.get('order');
-        movingUp = origOrder < insertAfterOrder;
+        const origOrder = FLOW.selectedControl.selectedForMoveQuestion.get('order');
+        const movingUp = origOrder < insertAfterOrder;
 
-        questionsInGroup.forEach(function (item) {
-          currentOrder = item.get('order');
+        questionsInGroup.forEach((item) => {
+          const currentOrder = item.get('order');
           if (movingUp) {
             if (currentOrder == origOrder) {
               // move moving item to right location
@@ -672,25 +601,18 @@ FLOW.QuestionView = FLOW.View.extend({
               // move item down
               item.set('order', item.get('order') - 1);
             }
-          } else {
-            // Moving down
-            if (currentOrder == origOrder) {
-              // move moving item to right location
-              selectedQ.set('order', insertAfterOrder + 1);
-            } else if ((currentOrder < origOrder) && (currentOrder > insertAfterOrder)) {
-              // move item up
-              item.set('order', item.get('order') + 1);
-            }
+          // Moving down
+          } else if (currentOrder == origOrder) {
+            // move moving item to right location
+            selectedQ.set('order', insertAfterOrder + 1);
+          } else if ((currentOrder < origOrder) && (currentOrder > insertAfterOrder)) {
+            // move item up
+            item.set('order', item.get('order') + 1);
           }
         });
 
-        questionsInGroup = FLOW.store.filter(FLOW.Question, function (item) {
-        	return item.get('questionGroupId') == qgId;
-       	});
-
-        // restore order in case the order has gone haywire
-        FLOW.questionControl.restoreOrder(questionsInGroup);
-      	}
+        FLOW.questionControl.submitBulkQuestionsReorder([qgId]);
+      }
     }
     FLOW.selectedControl.selectedSurvey.set('status', 'NOT_PUBLISHED');
     FLOW.store.commit();
@@ -698,9 +620,8 @@ FLOW.QuestionView = FLOW.View.extend({
   },
 
   // execute question copy to selected location
-  doQuestionCopyHere: function () {
-    var insertAfterOrder, path, qgId, questionsInGroup, question;
-    //path = FLOW.selectedControl.selectedSurveyGroup.get('code') + "/" + FLOW.selectedControl.selectedSurvey.get('name') + "/" + FLOW.selectedControl.selectedQuestionGroup.get('code');
+  doQuestionCopyHere() {
+    let insertAfterOrder;
 
     if (this.get('zeroItemQuestion')) {
       insertAfterOrder = 0;
@@ -711,47 +632,35 @@ FLOW.QuestionView = FLOW.View.extend({
     // check if anything is being saved at the moment
     if (this.checkQuestionsBeingSaved()) {
       this.showMessageDialog(Ember.String.loc('_please_wait'),
-			     Ember.String.loc('_please_wait_until_previous_request'));
+        Ember.String.loc('_please_wait_until_previous_request'));
       return;
     }
 
-    // restore order
-    qgId = FLOW.selectedControl.selectedQuestionGroup.get('keyId');
-    questionsInGroup = FLOW.store.filter(FLOW.Question, function (item) {
-      return item.get('questionGroupId') == qgId;
-    });
-    // move items up to make space
-    questionsInGroup.forEach(function (item) {
-      if (item.get('order') > insertAfterOrder) {
-        item.set('order', item.get('order') + 1);
-      }
-    });
+    const qgId = FLOW.selectedControl.selectedQuestionGroup.get('keyId');
 
-    question = FLOW.selectedControl.get('selectedForCopyQuestion');
+    // restore order
+    FLOW.questionControl.reorderQuestions(qgId, insertAfterOrder, 'increment');
+
+    const question = FLOW.selectedControl.get('selectedForCopyQuestion');
     // create copy of Question item in the store
     FLOW.store.createRecord(FLOW.Question, {
-      "order": insertAfterOrder + 1,
-      "surveyId": question.get('surveyId'),
-      "questionGroupId": qgId,
-      "sourceId":question.get('keyId')
+      order: insertAfterOrder + 1,
+      surveyId: question.get('surveyId'),
+      questionGroupId: qgId,
+      sourceId: question.get('keyId'),
     });
 
-    questionsInGroup = FLOW.store.filter(FLOW.Question, function (item) {
-      return item.get('questionGroupId') == qgId;
-    });
+    FLOW.questionControl.submitBulkQuestionsReorder([qgId]);
 
-    // restore order in case the order has gone haywire
-    FLOW.questionControl.restoreOrder(questionsInGroup);
     FLOW.selectedControl.selectedSurvey.set('status', 'NOT_PUBLISHED');
     FLOW.store.commit();
-
     FLOW.selectedControl.set('selectedForCopyQuestion', null);
   },
 
   // create new question
-  doInsertQuestion: function () {
-    var insertAfterOrder, path, qgId, questionsInGroup;
-    path = FLOW.selectedControl.selectedSurveyGroup.get('code') + "/" + FLOW.selectedControl.selectedSurvey.get('name') + "/" + FLOW.selectedControl.selectedQuestionGroup.get('code');
+  doInsertQuestion() {
+    let insertAfterOrder;
+    const path = `${FLOW.selectedControl.selectedSurveyGroup.get('code')}/${FLOW.selectedControl.selectedSurvey.get('name')}/${FLOW.selectedControl.selectedQuestionGroup.get('code')}`;
 
     if (this.get('zeroItemQuestion')) {
       insertAfterOrder = 0;
@@ -762,130 +671,219 @@ FLOW.QuestionView = FLOW.View.extend({
     // check if anything is being saved at the moment
     if (this.checkQuestionsBeingSaved()) {
       this.showMessageDialog(Ember.String.loc('_please_wait'),
-			     Ember.String.loc('_please_wait_until_previous_request'));
+        Ember.String.loc('_please_wait_until_previous_request'));
       return;
     }
 
 
-    // restore order
-    qgId = FLOW.selectedControl.selectedQuestionGroup.get('keyId');
-    questionsInGroup = FLOW.store.filter(FLOW.Question, function (item) {
-      return item.get('questionGroupId') == qgId;
-    });
+    const qgId = FLOW.selectedControl.selectedQuestionGroup.get('keyId');
 
-    // move items up to make space
-    questionsInGroup.forEach(function (item) {
-      if (item.get('order') > insertAfterOrder) {
-        item.set('order', item.get('order') + 1);
-      }
-    });
+    // reorder the rest of the questions
+    FLOW.questionControl.reorderQuestions(qgId, insertAfterOrder, 'increment');
 
     // create new Question item in the store
     FLOW.store.createRecord(FLOW.Question, {
-      "order": insertAfterOrder + 1,
-      "type": "FREE_TEXT",
-      "path": path,
-      "text": Ember.String.loc('_new_question_please_change_name'),
-      "surveyId": FLOW.selectedControl.selectedSurvey.get('keyId'),
-      "questionGroupId": FLOW.selectedControl.selectedQuestionGroup.get('keyId')
+      order: insertAfterOrder + 1,
+      type: 'FREE_TEXT',
+      path,
+      text: Ember.String.loc('_new_question_please_change_name'),
+      surveyId: FLOW.selectedControl.selectedSurvey.get('keyId'),
+      questionGroupId: qgId,
     });
 
-    questionsInGroup = FLOW.store.filter(FLOW.Question, function (item) {
-      return item.get('questionGroupId') == qgId;
-    });
-    // restore order in case the order has gone haywire
-    FLOW.questionControl.restoreOrder(questionsInGroup);
+    FLOW.questionControl.submitBulkQuestionsReorder([qgId]);
+
     FLOW.selectedControl.selectedSurvey.set('status', 'NOT_PUBLISHED');
     FLOW.store.commit();
   },
 
   // true if one question has been selected for Move
-  oneSelectedForMove: function () {
-    var selectedForMove = FLOW.selectedControl.get('selectedForMoveQuestion');
+  oneSelectedForMove: Ember.computed(() => {
+    const selectedForMove = FLOW.selectedControl.get('selectedForMoveQuestion');
     if (selectedForMove) {
       return true;
-    } else {
-      return false;
     }
-  }.property('FLOW.selectedControl.selectedForMoveQuestion'),
+    return false;
+  }).property('FLOW.selectedControl.selectedForMoveQuestion'),
 
   // true if one question has been selected for Copy
-  oneSelectedForCopy: function () {
-    var selectedForCopy = FLOW.selectedControl.get('selectedForCopyQuestion');
+  oneSelectedForCopy: Ember.computed(() => {
+    const selectedForCopy = FLOW.selectedControl.get('selectedForCopyQuestion');
     if (selectedForCopy) {
       return true;
-    } else {
-      return false;
     }
-  }.property('FLOW.selectedControl.selectedForCopyQuestion'),
+    return false;
+  }).property('FLOW.selectedControl.selectedForCopyQuestion'),
 
   // prepare for question copy. Shows 'copy to here' buttons
-  doQuestionCopy: function () {
+  doQuestionCopy() {
     FLOW.selectedControl.set('selectedForCopyQuestion', this.get('content'));
     FLOW.selectedControl.set('selectedForMoveQuestion', null);
   },
 
   // cancel question copy
-  doQuestionCopyCancel: function () {
+  doQuestionCopyCancel() {
     FLOW.selectedControl.set('selectedForCopyQuestion', null);
   },
 
   // prepare for question move. Shows 'move here' buttons
-  doQuestionMove: function () {
+  doQuestionMove() {
     FLOW.selectedControl.set('selectedForMoveQuestion', this.get('content'));
     FLOW.selectedControl.set('selectedForCopyQuestion', null);
   },
 
   // cancel group move
-  doQuestionMoveCancel: function () {
+  doQuestionMoveCancel() {
     FLOW.selectedControl.set('selectedForMoveQuestion', null);
   },
-  showAddAttributeDialog: function () {
-    this.set('showAddAttributeDialogBool', true);
-  },
 
-  doAddAttribute: function () {
-    if ((this.get('newAttributeName') !== null) && (this.get('newAttributeType') !== null)) {
-      FLOW.store.createRecord(FLOW.Metric, {
-        "name": this.get('newAttributeName'),
-        "group": this.get('newAttributeGroup'),
-        "valueType": this.newAttributeType.get('value')
-      });
-      FLOW.store.commit();
+  validateQuestionObserver() {
+    this.set('questionValidationFailure', ((this.text && this.text.length > 500) || !this.text || this.text == ''));
+    if (this.text && this.text.length > 500) {
+      this.set('questionValidationFailureReason', Ember.String.loc('_question_over_500_chars_header'));
+    } else if (!this.text || this.text == '') {
+      this.set('questionValidationFailureReason', Ember.String.loc('_question_text_empty'));
     }
-    this.set('showAddAttributeDialogBool', false);
   },
 
-  cancelAddAttribute: function () {
-    this.set('showAddAttributeDialogBool', false);
+  validateQuestionTooltipObserver() {
+    this.set('questionTooltipValidationFailure', (this.tip != null && this.tip.length > 500));
   },
 
-  validateQuestionObserver: function(){
-      this.set('questionValidationFailure', (this.text != null && this.text.length > 500));
-  }.observes('this.text'),
-
-  validateQuestionTooltipObserver: function(){
-      this.set('questionTooltipValidationFailure', (this.tip != null && this.tip.length > 500));
-  }.observes('this.tip'),
-
-  validateQuestionIdObserver: function() {
-    var self = this;
-    self.validateQuestionId({
-      success: function() {
-        self.set('questionIdValidationFailure', false);
-        self.set('questionIdValidationFailureReason', null);
+  validateVariableNameObserver() {
+    const self = this;
+    self.validateVariableName({
+      success() {
+        self.set('variableNameValidationFailure', false);
+        self.set('variableNameValidationFailureReason', null);
       },
-      failure: function(msg) {
-        self.set('questionIdValidationFailure', true);
-        self.set('questionIdValidationFailureReason', msg);
-      }
+      failure(msg) {
+        self.set('variableNameValidationFailure', true);
+        self.set('variableNameValidationFailureReason', msg);
+      },
     });
-  }.observes('this.questionId'),
+  },
 
-  showQuestionModifyButtons: function () {
-    var form = FLOW.selectedControl.get('selectedSurvey');
+  showQuestionModifyButtons: Ember.computed(() => {
+    const form = FLOW.selectedControl.get('selectedSurvey');
     return FLOW.permControl.canEditForm(form);
-  }.property('FLOW.selectedControl.selectedSurvey'),
+  }).property('FLOW.selectedControl.selectedSurvey'),
+
+  caddisflyTestSamples: Ember.computed(function () {
+    const tests = FLOW.router.caddisflyResourceController.get('content');
+    const distinct = {};
+    const testSamples = [];
+    FLOW.selectedControl.set('selectedCaddisflyResource', null);
+    this.set('selectedCaddisflyTestSample', null);
+    tests.forEach((obj) => {
+      if (!(obj.sample in distinct)) {
+        testSamples.push(obj);
+      }
+      distinct[obj.sample] = 0;
+    });
+    return this.sortedList(testSamples, 'sample');
+  }).property('FLOW.router.caddisflyResourceController.content'),
+
+  caddisflyTestNames: Ember.computed(function () {
+    const tests = FLOW.router.caddisflyResourceController.get('content');
+    const distinct = {};
+    const testNames = [];
+    FLOW.selectedControl.set('selectedCaddisflyResource', null);
+    this.set('selectedCaddisflyTestName', null);
+    if (this.get('selectedCaddisflyTestSample')) {
+      const sample = this.get('selectedCaddisflyTestSample');
+      const names = tests.filter(item => item.sample === sample.sample);
+      names.forEach((obj) => {
+        if (!(obj.name in distinct)) {
+          testNames.push(obj);
+        }
+        distinct[obj.name] = 0;
+      });
+    }
+    return this.sortedList(testNames, 'name');
+  }).property('this.selectedCaddisflyTestSample'),
+
+  caddisflyTestBrands: Ember.computed(function () {
+    const tests = FLOW.router.caddisflyResourceController.get('content');
+    const distinct = {};
+    const testBrands = [];
+    FLOW.selectedControl.set('selectedCaddisflyResource', null);
+    this.set('selectedCaddisflyTestBrand', null);
+    if (this.get('selectedCaddisflyTestName')) {
+      const name = this.get('selectedCaddisflyTestName');
+      const brands = tests.filter(item => item.sample == name.sample && item.name === name.name);
+      brands.forEach((obj) => {
+        let displayName = 'brand' in obj && obj.brand ? obj.brand : '';
+        displayName += 'model' in obj && obj.model ? ` - ${obj.model}` : '';
+        displayName += 'device' in obj && obj.device ? ` - ${obj.device}` : '';
+
+        if (!(displayName in distinct)) {
+          obj.brandDisplayName = displayName;
+          testBrands.push(obj);
+        }
+        distinct[displayName] = 0;
+      });
+    } else {
+      this.set('selectedCaddisflyTestBrand', null);
+    }
+    return this.sortedList(testBrands, 'brandDisplayName');
+  }).property('this.selectedCaddisflyTestName'),
+
+  caddisflyTestDetails: Ember.computed(function () {
+    const tests = FLOW.router.caddisflyResourceController.get('content');
+    const distinct = {};
+    const testDetails = [];
+    if (this.get('selectedCaddisflyTestBrand')) {
+      const brands = this.get('selectedCaddisflyTestBrand');
+      const details = tests.filter(item => item.sample == brands.sample && item.name === brands.name
+          && item.brand === brands.brand && item.model === brands.model
+            && item.device === brands.device);
+      details.forEach((obj) => {
+        const { results } = obj;
+        let displayName = '';
+        for (let i = 0; i < results.length; i++) {
+          displayName += 'name' in results[i] ? results[i].name : '';
+          displayName += 'chemical' in results[i] ? ` (${results[i].chemical})` : '';
+          displayName += 'range' in results[i] ? ` ${results[i].range}` : '';
+          displayName += 'unit' in results[i] ? ` ${results[i].unit}` : '';
+          displayName += (i + 1) < results.length ? ', ' : '';
+        }
+
+        const { reagents } = obj;
+        for (let i = 0; i < reagents.length; i++) {
+          displayName += ` ${reagents[i].code}`;
+        }
+
+        if (!(displayName in distinct)) {
+          obj.detailsDisplayName = displayName;
+          testDetails.push(obj);
+        }
+        distinct[displayName] = 0;
+      });
+    }
+    return this.sortedList(testDetails, 'detailsDisplayName');
+  }).property('this.selectedCaddisflyTestBrand'),
+
+  sortedList(arr, prop) {
+    return arr.sort((a, b) => {
+      const nameA = a[prop].toUpperCase(); // ignore upper and lowercase
+      const nameB = b[prop].toUpperCase(); // ignore upper and lowercase
+      if (nameA < nameB) {
+        return -1;
+      }
+      if (nameA > nameB) {
+        return 1;
+      }
+
+      // names must be equal
+      return 0;
+    });
+  },
+
+  brandsObserver() {
+    // needed to disable save button when no resource brand is specified
+    FLOW.selectedControl.set('selectedCaddisflyResource', null);
+  },
 });
 
 /*
@@ -894,7 +892,19 @@ FLOW.QuestionView = FLOW.View.extend({
 FLOW.OptionListView = Ember.CollectionView.extend({
   tagName: 'ul',
   content: null,
-  itemViewClass: Ember.View.extend({
-    templateName: 'navSurveys/question-option',
+  itemViewClass: Ember.View.extend(template('navSurveys/question-option'), {
+    topOption: Ember.computed(function () {
+      const option = this.get('content');
+      if (option) {
+        return option.get('order') == 1;
+      }
+    }).property('content.order'),
+    bottomOption: Ember.computed(function () {
+      const option = this.get('content');
+      const options = FLOW.questionOptionsControl.get('content');
+      if (option && options) {
+        return option.get('order') == options.get('length');
+      }
+    }).property('content.order', 'FLOW.questionOptionsControl.content.length'),
   }),
 });
