@@ -110,6 +110,7 @@ FLOW.AssignmentEditView = FLOW.ReactComponentView.extend(
         saveAssignment: Ember.String.loc('_save_assignment'),
         cancel: Ember.String.loc('_cancel'),
         chooseFolderOrSurvey: Ember.String.loc('_choose_folder_or_survey'),
+        selectedDevices: Ember.String.loc('_devices_selected'),
       };
 
       const inputValues = {
@@ -447,7 +448,7 @@ FLOW.AssignmentEditView = FLOW.ReactComponentView.extend(
         this.deviceGroups[dgId] = {
           ...this.deviceGroups[dgId],
           0: {
-            name: 'Select all devices',
+            name: Ember.String.loc('_select_all_devices'),
             checked:
               numberOfDevices !== 0 &&
               numberOfDevices === numberOfSelectedDevices,
