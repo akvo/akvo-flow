@@ -1,8 +1,13 @@
+/* eslint-disable import/no-unresolved */
 import React from 'react';
+import PropTypes from 'prop-types';
+import FolderSurveySelectorView from 'akvo-flow/components/selectors/FolderSurveySelector';
 import './styles.scss';
 
 export default class AssignmentsEdit extends React.Component {
   render() {
+    const { strings, actions, data } = this.props;
+
     return (
       <div className="assignments-edit">
         {/* topbar */}
@@ -45,6 +50,21 @@ export default class AssignmentsEdit extends React.Component {
                 Data will only be submittable within this timeframe
               </span>
             </div>
+
+            <div className="assignment-survery-folder">
+              <div className="folder-selector">
+                <p className="heading">
+                  <span className="title">Survey</span>
+                </p>
+
+                <FolderSurveySelectorView
+                  initialSurveyGroup={data.initialSurveyGroup}
+                  surveyGroups={data.surveyGroups}
+                  onSelectSurvey={actions.handleSurveySelect}
+                  strings={strings}
+                />
+              </div>
+            </div>
           </div>
 
           <div className="devices">
@@ -55,3 +75,10 @@ export default class AssignmentsEdit extends React.Component {
     );
   }
 }
+
+AssignmentsEdit.propTypes = {
+  strings: PropTypes.object.isRequired,
+  actions: PropTypes.object.isRequired,
+  inputValues: PropTypes.object.isRequired,
+  data: PropTypes.object.isRequired,
+};

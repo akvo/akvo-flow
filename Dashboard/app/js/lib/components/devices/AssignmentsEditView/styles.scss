@@ -8,6 +8,21 @@
     font-size: 14px;
     color: hsl(0, 0%, 35%);
     margin-top: 5px;
+    padding: 0px;
+  }
+
+  .heading {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+
+    .title {
+      font-weight: bold;
+    }
+
+    .info {
+      font-size: 14px;
+    }
   }
 
   .assignment-topbar {
@@ -32,7 +47,6 @@
 
         span {
           display: block;
-          padding: 0px;
         }
       }
     }
@@ -53,27 +67,14 @@
       background: #f0f0f0;
 
       .assignment-date {
-        margin-top: 2.5em;
-
-        .heading {
-          display: flex;
-          justify-content: space-between;
-          align-items: center;
-
-          .title {
-            font-weight: bold;
-          }
-
-          .info {
-            font-size: 14px;
-          }
-        }
+        margin-top: 2.4em;
+        margin-bottom: 1.5em;
 
         .date-picker {
           display: flex;
           width: 50%;
           justify-content: space-between;
-          padding: 15px 0px;
+          padding: 15px 0px 3px;
 
           i.fa {
             margin-right: 5px;
