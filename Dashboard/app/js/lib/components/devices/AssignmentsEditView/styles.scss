@@ -1,0 +1,34 @@
+.assignments-edit {
+  margin: 10px 2%;
+  border: 1px solid #e6e6e6;
+  border-radius: 5px;
+  padding: 7px 0px;
+
+  .assignment-topbar {
+    display: flex;
+    justify-content: space-between;
+    padding: 12px 15px;
+    border-bottom: 1px solid #e6e6e6;
+
+    .assignment-name {
+      display: flex;
+      align-items: center;
+      color: #4d4d4d;
+
+      i.fa {
+        font-size: 21px;
+      }
+
+      h3 {
+        font-size: 16px;
+        margin-left: 16px;
+      }
+    }
+
+    button {
+      background: transparent;
+      padding: 5px 2.7em;
+      font-size: 14px;
+    }
+  }
+}
