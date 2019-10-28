@@ -4,6 +4,28 @@
   border-radius: 5px;
   padding: 7px 0px;
 
+  .infoText {
+    font-size: 14px;
+    color: hsl(0, 0%, 35%);
+    margin-top: 5px;
+    padding: 0px;
+  }
+
+  .heading {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+
+    .title {
+      font-weight: bold;
+    }
+
+    .info {
+      font-size: 13px;
+      text-transform: uppercase;
+    }
+  }
+
   .assignment-topbar {
     display: flex;
     justify-content: space-between;
@@ -22,6 +44,11 @@
       h3 {
         font-size: 16px;
         margin-left: 16px;
+        width: 300px;
+
+        span {
+          display: block;
+        }
       }
     }
 
@@ -29,6 +56,48 @@
       background: transparent;
       padding: 5px 2.7em;
       font-size: 14px;
+    }
+  }
+
+  .assignment-body {
+    display: flex;
+
+    .settings {
+      flex: 1;
+      padding: 15px;
+      background: #f0f0f0;
+
+      .assignment-date {
+        margin-top: 2.4em;
+        margin-bottom: 1.5em;
+
+        .date-picker {
+          display: flex;
+          width: 50%;
+          justify-content: space-between;
+          padding: 15px 0px 3px;
+
+          i.fa {
+            margin-right: 5px;
+          }
+        }
+      }
+
+      .assignment-survery-folder {
+        margin-bottom: 1.5em;
+      }
+
+      .assignment-form-selector {
+        .noForms {
+          color: hsl(0, 0%, 35%);
+          margin-top: 10px;
+        }
+      }
+    }
+
+    .devices {
+      flex: 1;
+      padding: 15px;
     }
   }
 }
