@@ -4087,7 +4087,7 @@ label.languageSelector:after {
        padding:2px;
        display: inline-block;
        border-radius:8px;
-       border: 2px red solid;   
+       border: 2px red solid;
     }
 }
 
@@ -4956,6 +4956,8 @@ nav.cascadeBreadCrumb {
         text-indent: 29px;
         position: relative;
         transition: all 0.4s ease-in;
+        white-space: nowrap;
+        max-width: 175px;
     }
     ul li:before {
         content: " ";
@@ -5077,6 +5079,7 @@ nav.cascadeBreadCrumb {
         }
         .cascadeEntryCode {
             width: 15%;
+            margin-top: 10px;
         }
         button {
             width: 15%;
@@ -5093,18 +5096,22 @@ nav.cascadeBreadCrumb {
         }
         .levelHead {
             padding-left: 5px;
+            max-width: calc(100% - 10px);
             width: calc(100% - 10px);
             padding-bottom: 15px;
+
+            @include noWrapTxt;
+
             label {
-                margin-bottom: 10px;
-                a {
-                    display: inline-block;
-                    width: 20px;
+                max-width: 60%;
+                display: inline-block !important;
+
+                @include noWrapTxt;
+
+                & + a {
                     margin-left: 10px;
-                    &.editSurvey {
-                        background-size: 18px 18px;
-                        &:hover {}
-                    }
+                    top: -5px;
+                    position: relative;
                 }
             }
         }
