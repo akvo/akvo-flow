@@ -8,7 +8,6 @@ import template from '../mixins/template';
 /* global tooltip */
 
 require('akvo-flow/core-common');
-require('akvo-flow/views/selectors/folder-survey-selector');
 require('akvo-flow/views/selectors/device-selector');
 require('akvo-flow/views/selectors/forms-selector');
 require('akvo-flow/views/surveys/preview-view');

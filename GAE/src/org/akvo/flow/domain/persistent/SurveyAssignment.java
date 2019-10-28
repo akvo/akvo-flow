@@ -33,6 +33,13 @@ public class SurveyAssignment extends BaseDomain {
     private static final long serialVersionUID = -2028880542041242779L;
     private Long surveyId;
     private List<Long> formIds;
+
+    /*
+    * We will no longer use the surveyIds but we need the property in there until
+    * we are done migrating the contents to formIds.
+    * */
+    @Deprecated
+    private List<Long> surveyIds;
     private List<Long> deviceIds;
     private String name;
     private String language;
@@ -80,7 +87,13 @@ public class SurveyAssignment extends BaseDomain {
     }
 
     public List<Long> getFormIds() {
-        return formIds;
+        // we return the surveyIds for the time being till we migrate the
+        // surveyIds property on all entities to the formIds property
+        if (formIds == null || formIds.isEmpty()&& !surveyIds.isEmpty()) {
+            return surveyIds;
+        } else {
+            return formIds;
+        }
     }
 
     public void setFormIds(List<Long> formIds) {

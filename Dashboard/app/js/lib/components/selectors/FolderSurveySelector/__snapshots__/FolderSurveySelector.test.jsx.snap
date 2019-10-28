@@ -1,6 +1,6 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
-exports[`FolderSurveySelector Tests +++ calls for new levels and update state when option is selected 1`] = `
+exports[`FolderSurveySelector Tests +++ checks if a survey is selected when options is clicked 1`] = `
 <div>
   <div>
     <select
@@ -9,12 +9,12 @@ exports[`FolderSurveySelector Tests +++ calls for new levels and update state wh
       <option
         value="0"
       >
-        Choose a folder or survey
+        Choose folder or survey
       </option>
       <option
         value="153142013"
       >
-        Folder with few large data sets
+        Folder with a few large data sets
       </option>
     </select>
     <select
@@ -23,12 +23,17 @@ exports[`FolderSurveySelector Tests +++ calls for new levels and update state wh
       <option
         value="0"
       >
-        Choose a folder or survey
+        Choose folder or survey
       </option>
       <option
         value="152342023"
       >
         BAR-handpump
+      </option>
+      <option
+        value="148412306"
+      >
+        NR-handpump
       </option>
     </select>
   </div>
@@ -44,12 +49,12 @@ exports[`FolderSurveySelector Tests +++ renders <snapshot> 1`] = `
       <option
         value="0"
       >
-        Choose a folder or survey
+        Choose folder or survey
       </option>
       <option
         value="153142013"
       >
-        Folder with few large data sets
+        Folder with a few large data sets
       </option>
     </select>
   </div>
