@@ -20,21 +20,31 @@ export default class DeviceSelector extends React.Component {
             key={dgId}
             name={deviceGroupNames[dgId]}
             deviceGroupIsActive={this.accordionIsActive(dgId)}
+            selectAllCheckbox={() => (
+              <Checkbox
+                id="0"
+                name="0"
+                checked={deviceGroups[dgId][0].checked}
+                onChange={(...args) => handleDeviceCheck(...args, dgId)}
+              />
+            )}
           >
-            {Object.keys(deviceGroups[dgId]).map(deviceId => (
-              <div key={deviceId}>
-                <Checkbox
-                  id={deviceId}
-                  name={deviceId}
-                  checked={deviceGroups[dgId][deviceId].checked}
-                  onChange={(...args) => handleDeviceCheck(...args, dgId)}
-                />
+            {Object.keys(deviceGroups[dgId])
+              .filter(deviceId => deviceId != 0)
+              .map(deviceId => (
+                <div key={deviceId}>
+                  <Checkbox
+                    id={deviceId}
+                    name={deviceId}
+                    checked={deviceGroups[dgId][deviceId].checked}
+                    onChange={(...args) => handleDeviceCheck(...args, dgId)}
+                  />
 
-                <label id={deviceId} htmlFor={deviceId}>
-                  {deviceGroups[dgId][deviceId].name}
-                </label>
-              </div>
-            ))}
+                  <label id={deviceId} htmlFor={deviceId}>
+                    {deviceGroups[dgId][deviceId].name}
+                  </label>
+                </div>
+              ))}
           </DeviceAccordion>
         ))}
       </div>

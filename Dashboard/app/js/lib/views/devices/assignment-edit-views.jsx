@@ -62,6 +62,7 @@ FLOW.AssignmentEditView = FLOW.ReactComponentView.extend(
       this.deviceInAssignment = this.deviceInAssignment.bind(this);
       this.handleDeviceCheck = this.handleDeviceCheck.bind(this);
       this.handleSelectAllDevice = this.handleSelectAllDevice.bind(this);
+      this.addDevicesCheckedOption = this.addDevicesCheckedOption.bind(this);
 
       // object wide varaibles
       this.forms = {};
@@ -109,6 +110,7 @@ FLOW.AssignmentEditView = FLOW.ReactComponentView.extend(
         saveAssignment: Ember.String.loc('_save_assignment'),
         cancel: Ember.String.loc('_cancel'),
         chooseFolderOrSurvey: Ember.String.loc('_choose_folder_or_survey'),
+        selectedDevices: Ember.String.loc('_devices_selected'),
       };
 
       const inputValues = {
@@ -344,24 +346,7 @@ FLOW.AssignmentEditView = FLOW.ReactComponentView.extend(
           });
 
           // check if all items in device group is selected
-          Object.keys(this.deviceGroups).forEach(dgId => {
-            // get length of all devices in this group
-            const numberOfDevices = Object.keys(this.deviceGroups[dgId]).length;
-            const numberOfSelectedDevices = Object.keys(
-              this.deviceGroups[dgId]
-            ).filter(deviceId => {
-              return this.deviceGroups[dgId][deviceId].checked;
-            }).length;
-
-            // add select all device option
-            this.deviceGroups[dgId] = {
-              0: {
-                name: 'Select all devices',
-                checked: numberOfDevices === numberOfSelectedDevices,
-              },
-              ...this.deviceGroups[dgId],
-            };
-          });
+          this.addDevicesCheckedOption();
         }
       }
     },
@@ -444,6 +429,34 @@ FLOW.AssignmentEditView = FLOW.ReactComponentView.extend(
         : false;
     },
 
+    addDevicesCheckedOption() {
+      // check if all items in device group is selected
+      Object.keys(this.deviceGroups).forEach(dgId => {
+        const deviceGroupKeys = Object.keys(this.deviceGroups[dgId]).filter(
+          deviceId => deviceId != 0
+        );
+
+        // get length of all devices in this group
+        const numberOfDevices = deviceGroupKeys.length;
+
+        // get length of all selected devices in this group
+        const numberOfSelectedDevices = deviceGroupKeys.filter(
+          deviceId => this.deviceGroups[dgId][deviceId].checked
+        ).length;
+
+        // add select all device option
+        this.deviceGroups[dgId] = {
+          ...this.deviceGroups[dgId],
+          0: {
+            name: Ember.String.loc('_select_all_devices'),
+            checked:
+              numberOfDevices !== 0 &&
+              numberOfDevices === numberOfSelectedDevices,
+          },
+        };
+      });
+    },
+
     // handlers
     handleFormCheck(e) {
       // only allow a form to be checked if a different survey isn't already selected
@@ -512,6 +525,9 @@ FLOW.AssignmentEditView = FLOW.ReactComponentView.extend(
         name: device.get('deviceIdentifier'),
         checked,
       };
+
+      // check if all items in device group is selected
+      this.addDevicesCheckedOption();
 
       return this.renderReactSide();
     },
