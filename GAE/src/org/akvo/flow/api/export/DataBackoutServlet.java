@@ -48,7 +48,7 @@ import com.gallatinsystems.survey.domain.Question;
 import com.google.appengine.api.datastore.Entity;
 
 /**
- * servlet for backing out survey response data (and corresponding summarizations)
+ * servlet used by exporters for fetching response data (and corresponding summarizations)
  *
  * @author Christopher Fagiani
  */
@@ -98,9 +98,9 @@ public class DataBackoutServlet extends AbstractRestApiServlet {
                     boReq.getToDate(),
                     boReq.getLimit()));
         } else if (DataBackoutRequest.COUNT_INSTANCE_ACTION.equals(boReq.getAction())) {
-            response.setMessage(countFormInstance(boReq.getSurveyId(),
+            response.setMessage(Long.toString(countFormInstance(boReq.getSurveyId(),
                     boReq.getFromDate(),
-                    boReq.getToDate()));
+                    boReq.getToDate())));
         } else if (DataBackoutRequest.DELETE_SURVEY_INSTANCE_ACTION.equals(boReq.getAction())) {
             deleteSurveyInstance(boReq.getSurveyInstanceId());
         } else if (DataBackoutRequest.LIST_INSTANCE_RESPONSE_ACTION.equals(boReq.getAction())) {
@@ -112,11 +112,7 @@ public class DataBackoutServlet extends AbstractRestApiServlet {
     }
 
     /**
-     * lists all responses for a single question *
-     *
-     * @param surveyId
-     * @param questionId
-     * @return
+     * lists all responses for a single question
      */
     private QuestionAnswerResponse listQuestionResponse(Long questionId, String cursor) {
         List<QuestionAnswerStore> answers = instanceDao
@@ -128,9 +124,6 @@ public class DataBackoutServlet extends AbstractRestApiServlet {
     /**
      * lists all questionAnswerStore records for a given instance... in a csv like format TODO: We
      * should probably quote the values somehow, otherwise, what happens if a response contains \n?
-     *
-     * @param surveyInstanceId
-     * @return
      */
     private String listResponses(Long surveyInstanceId) {
         StringBuilder result = new StringBuilder();
@@ -172,9 +165,6 @@ public class DataBackoutServlet extends AbstractRestApiServlet {
 
     /**
      * returns a comma separated list of survyeInstanceIds for the survey passed in
-     *
-     * @param surveyId
-     * @return
      */
     private String listSurveyInstance(Long surveyId, boolean includeDate,
             boolean lastCollection, Date fromDate, Date toDate, Integer limit) {
@@ -213,13 +203,8 @@ public class DataBackoutServlet extends AbstractRestApiServlet {
 
     /**
      * returns a count of form instances for the form and dates passed in
-     *
-     * @param formId
-     * @param fromDate
-     * @param toDate
-     * @return
      */
-    private String countFormInstance(Long formId, @Nullable Date fromDate, @Nullable Date toDate) {
+    private long countFormInstance(Long formId, @Nullable Date fromDate, @Nullable Date toDate) {
         Iterable<Entity> instances = instanceDao.listRawEntity(true, fromDate, toDate, null, formId);
         long count = 0;
         if (instances != null) {
@@ -229,7 +214,7 @@ public class DataBackoutServlet extends AbstractRestApiServlet {
         }
         log.fine("Counted " + count + " instances of form " + formId
                 + " between " + fromDate + " and " + toDate);
-        return Long.toString(count);
+        return count;
     }
 
     /**
@@ -258,10 +243,7 @@ public class DataBackoutServlet extends AbstractRestApiServlet {
     }
 
     /**
-     * returns a comma separated list of question IDs contained in the survey passed in
-     *
-     * @param surveyId
-     * @return
+     * returns a comma separated list of question IDs contained in the form passed in
      */
     private String listQuestionIds(Long surveyId) {
         List<Question> questions = qDao.listQuestionsBySurvey(surveyId);

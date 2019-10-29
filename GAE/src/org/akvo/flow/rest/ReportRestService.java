@@ -63,9 +63,6 @@ public class ReportRestService {
 
     /**
      * Create a new Report from posted payload.
-     *
-     * @param requestPayload
-     * @return
      */
     @RequestMapping(method = RequestMethod.POST, value = "")
     @ResponseBody
@@ -83,8 +80,7 @@ public class ReportRestService {
         // Otherwise, server will respond with 400 Bad Request
         if (reportDto != null) {
             //Check if it is a statistics report, which only admins can get
-            if (statsType.equalsIgnoreCase(reportDto.getReportType()) && !isAdminRole())
-            {
+            if (statsType.equalsIgnoreCase(reportDto.getReportType()) && !isAdminRole()) {
                 statusDto.setMessage("Must be Admin");
             } else {
 
@@ -92,14 +88,15 @@ public class ReportRestService {
 
                 BeanUtils.copyProperties(reportDto, r, doNotCopy);
 
-                r.setUser((Long)SecurityContextHolder.getContext().getAuthentication().getCredentials());
+                r.setUser((Long)SecurityContextHolder.getContext().getAuthentication()
+                        .getCredentials());
                 r.setState(Report.QUEUED);  //overwrite any supplied state
                 // Save it, so we get an id assigned
                 r = reportDao.save(r);
                 String baseUrl = null;
                 HttpServletRequest request = ((ServletRequestAttributes) RequestContextHolder
                         .getRequestAttributes()).getRequest();
-                if (request == null){
+                if (request == null) {
                 	throw new RuntimeException("Request details not available!");
                 } else {
                 	baseUrl = request.getScheme() + "://" + host;
@@ -120,7 +117,7 @@ public class ReportRestService {
     private boolean isAdminRole() {
         User u = CurrentUserServlet.getCurrentUser();
         return u.getPermissionList().equals(Integer.toString(AppRole.ROLE_ADMIN.getLevel()))
-                || u.getPermissionList().equals(Integer.toString(AppRole.ROLE_SUPER_ADMIN.getLevel()));
+            || u.getPermissionList().equals(Integer.toString(AppRole.ROLE_SUPER_ADMIN.getLevel()));
     }
 
     // find all reports belonging to the current user
@@ -142,8 +139,10 @@ public class ReportRestService {
         return response;
     }
 
-    // find a single report by the reportId
-    // TODO: restrict use to owner+superAdmins
+    /*
+     *  find a single report by the reportId
+     *  TODO: restrict use to owner+superAdmins
+     */
     @RequestMapping(method = RequestMethod.GET, value = "/{id}")
     @ResponseBody
     public Map<String, ReportDto> findReport(@PathVariable("id") Long id) {

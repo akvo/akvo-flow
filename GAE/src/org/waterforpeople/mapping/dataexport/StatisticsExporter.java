@@ -43,7 +43,6 @@ import com.gallatinsystems.survey.domain.SurveyGroup.ProjectType;
 
 /**
  * Data exporter to write excel files containing survey statistics
- *
  */
 public class StatisticsExporter implements DataExporter {
 
@@ -150,12 +149,7 @@ public class StatisticsExporter implements DataExporter {
     }
 
     /**
-     * @param title
-     * @param groupList
-     * @param questions
-     * @param wb
-     * @param headerStyle
-     * @param bodyStyle
+     * Writes the sheet with the list of forms and their instance counts
      */
     private void writeInstanceSheet(String title,
             Map<Long, SurveyGroupDto> groupMap,
@@ -209,12 +203,7 @@ public class StatisticsExporter implements DataExporter {
     }
 
     /**
-     * @param title
-     * @param groupList
-     * @param questions
-     * @param wb
-     * @param headerStyle
-     * @param bodyStyle
+     * Writes a sheet with counts of survey folders, surveys, forms, etc
      */
     private void writeSurveyStatsSheet(String title1,
             String title2,
@@ -258,8 +247,6 @@ public class StatisticsExporter implements DataExporter {
         createCell(row, 0, PUBLISHED_COUNT_LABEL, bodyStyle);
         createCell(row, 1, publishedCount, bodyStyle);
     }
-
-
 
     /**
      * creates a cell in the row passed in and sets the style and value (if non-null)
