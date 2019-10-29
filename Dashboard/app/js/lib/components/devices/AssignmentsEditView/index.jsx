@@ -20,6 +20,12 @@ export default class AssignmentsEdit extends React.Component {
     this.setState({ [e.target.id]: e.target.value });
   };
 
+  onSubmit = () => {
+    const { assignmentName, startDate, endDate } = this.state;
+
+    this.props.actions.onSubmit({ assignmentName, startDate, endDate });
+  };
+
   // helpers
   formatMomentDate = date => moment(date, 'YYYY/MM/DD').format('YYYY-MM-DD');
 
@@ -43,6 +49,7 @@ export default class AssignmentsEdit extends React.Component {
               <input
                 type="text"
                 id="assignmentName"
+                placeholder="Untitled Assignment"
                 value={this.state.assignmentName}
                 onChange={this.onChangeState}
               />
@@ -50,7 +57,7 @@ export default class AssignmentsEdit extends React.Component {
             </h3>
           </div>
 
-          <button type="button" className="standardBtn">
+          <button onClick={this.onSubmit} type="button" className="standardBtn">
             Save
           </button>
         </div>
@@ -82,6 +89,7 @@ export default class AssignmentsEdit extends React.Component {
                   <input
                     type="date"
                     id="endDate"
+                    min={this.formatMomentDate(this.state.startDate)}
                     value={this.formatMomentDate(this.state.endDate)}
                     onChange={this.onChangeState}
                   />

@@ -163,15 +163,27 @@ FLOW.AssignmentEditView = FLOW.ReactComponentView.extend(
       const devices = [];
       const surveys = [];
 
+      // set devices and surveys
+      FLOW.selectedControl.get('selectedDevices').forEach(item => {
+        devices.push(item.get('keyId'));
+      });
+
+      FLOW.selectedControl.get('selectedSurveys').forEach(item => {
+        surveys.push(item.get('keyId'));
+      });
+
+      // validate data before continuing
+      const isValid = this.validateAssignment({ ...data, devices, surveys });
+      if (!isValid) {
+        return false;
+      }
+
       // set Ember Data
       FLOW.dateControl.set(
         'fromDate',
         FLOW.formatDate(new Date(data.startDate))
       );
-      FLOW.dateControl.set(
-        'toDate',
-        FLOW.formatDate(new Date(data.expireDate))
-      );
+      FLOW.dateControl.set('toDate', FLOW.formatDate(new Date(data.endDate)));
 
       // get assignment
       const sa = FLOW.selectedControl.get('selectedSurveyAssignment');
@@ -202,34 +214,6 @@ FLOW.AssignmentEditView = FLOW.ReactComponentView.extend(
           'surveyId',
           FLOW.selectedControl.get('selectedSurveyGroup').get('keyId')
         );
-      }
-
-      FLOW.selectedControl.get('selectedDevices').forEach(item => {
-        devices.push(item.get('keyId'));
-      });
-
-      if (!devices.length) {
-        FLOW.dialogControl.set('activeAction', 'ignore');
-        FLOW.dialogControl.set('header', 'Devices not set');
-        FLOW.dialogControl.set('message', 'Please select a device to continue');
-        FLOW.dialogControl.set('showCANCEL', false);
-        FLOW.dialogControl.set('showDialog', true);
-        return false;
-      }
-
-      sa.set('deviceIds', devices);
-
-      FLOW.selectedControl.get('selectedSurveys').forEach(item => {
-        surveys.push(item.get('keyId'));
-      });
-
-      if (!surveys || !surveys.length) {
-        FLOW.dialogControl.set('activeAction', 'ignore');
-        FLOW.dialogControl.set('header', 'Form not set');
-        FLOW.dialogControl.set('message', 'Please select a form to continue');
-        FLOW.dialogControl.set('showCANCEL', false);
-        FLOW.dialogControl.set('showDialog', true);
-        return false;
       }
 
       sa.set('formIds', surveys);
@@ -377,6 +361,14 @@ FLOW.AssignmentEditView = FLOW.ReactComponentView.extend(
     },
 
     // helpers
+    showPopup(header, message) {
+      FLOW.dialogControl.set('activeAction', 'ignore');
+      FLOW.dialogControl.set('header', header);
+      FLOW.dialogControl.set('message', message);
+      FLOW.dialogControl.set('showCANCEL', false);
+      FLOW.dialogControl.set('showDialog', true);
+    },
+
     formInAssignment(formId) {
       const formsInAssignment = FLOW.selectedControl.selectedSurveyAssignment.get(
         'formIds'
@@ -407,13 +399,54 @@ FLOW.AssignmentEditView = FLOW.ReactComponentView.extend(
     },
 
     validateAssignment(data) {
-      if (!data.devices || !data.devices.length) {
-        alert('Please select a device to continue');
+      const { assignmentName, startDate, endDate, devices, surveys } = data;
+
+      // validate assignment name
+      if (!assignmentName || assignmentName == '') {
+        this.showPopup(
+          'Error with assignment name',
+          Ember.String.loc('_assignment_name_not_set')
+        );
+
         return false;
       }
 
-      if (!data.surveys || !data.surveys.length) {
-        alert('Please select a form to continue');
+      if (assignmentName.length > 100) {
+        this.showPopup(
+          'Error with assignment name',
+          Ember.String.loc('_assignment_name_over_100_chars')
+        );
+
+        return false;
+      }
+
+      // validate dates ==== start date
+      if (!startDate || !startDate.length) {
+        this.showPopup(
+          'Error with date',
+          Ember.String.loc('_date_not_set_text')
+        );
+
+        return false;
+      }
+
+      // validate date ==== expire date
+      if (!endDate || !endDate.length) {
+        this.showPopup(
+          'Error with date',
+          Ember.String.loc('_date_not_set_text')
+        );
+
+        return false;
+      }
+
+      if (!devices || !devices.length) {
+        this.showPopup('Devices not set', 'Please select a device to continue');
+        return false;
+      }
+
+      if (!surveys || !surveys.length) {
+        this.showPopup('Form not set', 'Please select a form to continue');
         return false;
       }
 
