@@ -911,9 +911,9 @@ public class GraphicalSurveySummaryExporter extends SurveySummaryExporter {
         Media media = MediaResponse.parse(value);
         String filename = media.getFilename();
         if (filename != null) {
-            final int filenameIndex = filename.lastIndexOf("/") + 1;
-            if (filenameIndex > 0 && filenameIndex < filename.length()) {
-                cells.add(imagePrefix + filename.substring(filenameIndex));
+            filename = filename.substring(filename.lastIndexOf("/") + 1); //strip path, if any
+            if (filename.length() > 0) {
+                cells.add(imagePrefix + filename);
                 if (splitIntoColumns && media.getLocation() != null) {
                     cells.add(Double.toString(media.getLocation().getLatitude()));
                     cells.add(Double.toString(media.getLocation().getLongitude()));
