@@ -1,6 +1,7 @@
 /* eslint-disable import/no-unresolved */
 import React from 'react';
 import PropTypes from 'prop-types';
+import moment from 'moment';
 import FolderSurveySelectorView from 'akvo-flow/components/selectors/FolderSurveySelector';
 import FormSelectorView from 'akvo-flow/components/selectors/FormSelector';
 import DeviceGroupSelectorView from 'akvo-flow/components/selectors/DeviceSelector';
@@ -8,6 +9,20 @@ import DeviceGroupSelectorView from 'akvo-flow/components/selectors/DeviceSelect
 import './styles.scss';
 
 export default class AssignmentsEdit extends React.Component {
+  state = {
+    assignmentName: this.props.inputValues.assignmentName,
+    startDate: this.props.inputValues.startDate,
+    endDate: this.props.inputValues.toDate,
+  };
+
+  // event handlers
+  onChangeState = e => {
+    this.setState({ [e.target.id]: e.target.value });
+  };
+
+  // helpers
+  formatMomentDate = date => moment(date, 'YYYY/MM/DD').format('YYYY-MM-DD');
+
   render() {
     const { strings, actions, data } = this.props;
 
@@ -18,17 +33,24 @@ export default class AssignmentsEdit extends React.Component {
           <div className="assignment-name">
             <i className="fa fa-arrow-left" />
             <h3>
-              <span>Unnamed assignment</span>
-              <span className="infoText">0 datapoints / 20k assigned</span>
+              <input
+                type="text"
+                id="assignmentName"
+                value={this.state.assignmentName}
+                onChange={this.onChangeState}
+              />
+              {/* <span className="infoText">0 datapoints / 20k assigned</span> */}
             </h3>
           </div>
 
-          <button type="button">Save</button>
+          <button type="button" className="standardBtn">
+            Save
+          </button>
         </div>
 
         <div className="assignment-body">
           <div className="settings">
-            <p>Settings</p>
+            <h3>Settings</h3>
 
             <div className="assignment-date">
               <p className="heading">
@@ -40,12 +62,22 @@ export default class AssignmentsEdit extends React.Component {
               <div className="date-picker">
                 <div className="startDate">
                   <i className="fa fa-calendar" />
-                  <span>21 Aug 2019</span>
+                  <input
+                    type="date"
+                    id="startDate"
+                    value={this.formatMomentDate(this.state.startDate)}
+                    onChange={this.onChangeState}
+                  />
                 </div>
                 <span> - </span>
                 <div className="startDate">
                   <i className="fa fa-calendar" />
-                  <span>21 Aug 2019</span>
+                  <input
+                    type="date"
+                    id="endDate"
+                    value={this.formatMomentDate(this.state.endDate)}
+                    onChange={this.onChangeState}
+                  />
                 </div>
               </div>
 
@@ -96,7 +128,7 @@ export default class AssignmentsEdit extends React.Component {
           </div>
 
           <div className="devices">
-            <p>Devices</p>
+            <h3>Devices</h3>
 
             <div className="assignment-device-selector">
               <DeviceGroupSelectorView
