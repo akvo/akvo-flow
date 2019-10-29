@@ -2,7 +2,7 @@ import React from 'react';
 import PropTypes from 'prop-types';
 
 // eslint-disable-next-line import/no-unresolved
-// import Checkbox from 'akvo-flow/components/Checkbox';
+// import Checkbox from 'akvo-flow/components/reusable/Checkbox';
 
 export default class FormSelector extends React.Component {
   render() {
@@ -21,9 +21,7 @@ export default class FormSelector extends React.Component {
               className="displayInline"
             />
 
-            <label htmlFor={formId}>
-              {forms[formId].name}
-            </label>
+            <label htmlFor={formId}>{forms[formId].name}</label>
           </div>
         ))}
       </div>

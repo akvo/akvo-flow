@@ -1,0 +1,52 @@
+/* Customize the label (the container) */
+.checkbox-container {
+  display: inline;
+  position: relative;
+  padding-left: 25px;
+  cursor: pointer;
+  -webkit-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
+  user-select: none;
+
+  input {
+    position: absolute;
+    opacity: 0;
+    cursor: pointer;
+    height: 0;
+    width: 0;
+
+    &:checked ~ .checkmark {
+      background-color: #424242;
+
+      &::after {
+        display: block;
+      }
+    }
+  }
+
+  .checkmark {
+    position: absolute;
+    top: 0;
+    left: 0;
+    height: 16px;
+    width: 16px;
+    border-radius: 2px;
+    border: 1px solid #424242;
+
+    &:after {
+      content: '';
+      position: absolute;
+      display: none;
+      left: 5px;
+      top: 0px;
+      width: 5px;
+      height: 9px;
+      border: solid white;
+      border-width: 0 2px 2px 0;
+      -webkit-transform: rotate(45deg);
+      -ms-transform: rotate(45deg);
+      transform: rotate(45deg);
+    }
+  }
+}

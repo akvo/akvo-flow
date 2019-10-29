@@ -3,6 +3,7 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import FolderSurveySelectorView from 'akvo-flow/components/selectors/FolderSurveySelector';
 import FormSelectorView from 'akvo-flow/components/selectors/FormSelector';
+import DeviceGroupSelectorView from 'akvo-flow/components/selectors/DeviceSelector';
 
 import './styles.scss';
 
@@ -96,6 +97,16 @@ export default class AssignmentsEdit extends React.Component {
 
           <div className="devices">
             <p>Devices</p>
+
+            <div className="assignment-device-selector">
+              <DeviceGroupSelectorView
+                deviceGroupNames={data.deviceGroupNames}
+                deviceGroups={data.deviceGroups}
+                activeDeviceGroups={data.activeDeviceGroups}
+                handleDeviceCheck={actions.handleDeviceCheck}
+                onSelectAll={actions.handleSelectAllDevice}
+              />
+            </div>
           </div>
         </div>
       </div>
