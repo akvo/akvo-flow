@@ -31,7 +31,14 @@ export default class AssignmentsEdit extends React.Component {
         {/* topbar */}
         <div className="assignment-topbar">
           <div className="assignment-name">
-            <i className="fa fa-arrow-left" />
+            <button
+              type="button"
+              className="go-back"
+              onClick={actions.cancelEditSurveyAssignment}
+            >
+              <i className="fa fa-arrow-left" />
+            </button>
+
             <h3>
               <input
                 type="text"
