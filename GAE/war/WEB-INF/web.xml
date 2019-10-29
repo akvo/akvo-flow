@@ -425,7 +425,11 @@
         <filter-name>restAuthFilter</filter-name>
         <url-pattern>/rawdatarestapi</url-pattern>
     </filter-mapping>
-    
+
+    <session-config>
+        <tracking-mode>COOKIE</tracking-mode>
+    </session-config>
+
     <security-constraint>
         <web-resource-collection>
         <web-resource-name>devicetimerest</web-resource-name>
