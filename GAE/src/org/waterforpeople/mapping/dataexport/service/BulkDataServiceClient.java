@@ -93,11 +93,13 @@ public class BulkDataServiceClient {
      */
     public static Map<Long, Map<Long, String>> fetchQuestionResponses(String instanceId,
             String serverBase, String apiKey) throws Exception {
-        String instanceValues = fetchDataFromServer(serverBase
-                + DATA_SERVLET_PATH, "?action="
-                + DataBackoutRequest.LIST_INSTANCE_RESPONSE_ACTION + "&"
-                + DataBackoutRequest.SURVEY_INSTANCE_ID_PARAM + "="
-                + instanceId, true, apiKey);
+        String instanceValues = fetchDataFromServer(serverBase + DATA_SERVLET_PATH,
+                "?action="
+                        + DataBackoutRequest.LIST_INSTANCE_RESPONSE_ACTION + "&"
+                        + DataBackoutRequest.SURVEY_INSTANCE_ID_PARAM + "="
+                        + instanceId,
+                true,
+                apiKey);
         return parseSurveyInstanceResponse(instanceValues);
     }
 
@@ -115,16 +117,18 @@ public class BulkDataServiceClient {
             String from, String to, String limit) throws Exception {
         Map<String, String> values = new HashMap<String, String>();
 
-        String instanceString = fetchDataFromServer(serverBase
-                + DATA_SERVLET_PATH, "?action="
-                + DataBackoutRequest.LIST_INSTANCE_ACTION + "&"
-                + DataBackoutRequest.SURVEY_ID_PARAM + "=" + surveyId + "&"
-                + DataBackoutRequest.INCLUDE_DATE_PARAM + "=true" + "&"
-                + DataBackoutRequest.LAST_COLLECTION_PARAM + "="
-                + lastCollection + "&"
-                + DataBackoutRequest.FROM_DATE_PARAM + "=" + from + "&"
-                + DataBackoutRequest.TO_DATE_PARAM + "=" + to + "&"
-                + DataBackoutRequest.LIMIT_PARAM + "=" + limit, true, apiKey);
+        String instanceString = fetchDataFromServer(serverBase + DATA_SERVLET_PATH,
+                "?action="
+                        + DataBackoutRequest.LIST_INSTANCE_ACTION + "&"
+                        + DataBackoutRequest.SURVEY_ID_PARAM + "=" + surveyId + "&"
+                        + DataBackoutRequest.INCLUDE_DATE_PARAM + "=true" + "&"
+                        + DataBackoutRequest.LAST_COLLECTION_PARAM + "="
+                        + lastCollection + "&"
+                        + DataBackoutRequest.FROM_DATE_PARAM + "=" + from + "&"
+                        + DataBackoutRequest.TO_DATE_PARAM + "=" + to + "&"
+                        + DataBackoutRequest.LIMIT_PARAM + "=" + limit,
+                    true,
+                    apiKey);
 
         if (instanceString != null && instanceString.trim().length() != 0) {
             StringTokenizer strTok = new StringTokenizer(instanceString, ",");
@@ -141,6 +145,40 @@ public class BulkDataServiceClient {
             }
         }
         return values;
+    }
+
+    /**
+     * form instance count for a single form.
+     *
+     * @param formId
+     * @param serverBase
+     * @return count
+     * @throws Exception
+     */
+    public static Long fetchInstanceCount(String formId,
+            String serverBase,
+            String apiKey,
+            String from,
+            String to) throws Exception {
+
+        String instanceString = fetchDataFromServer(serverBase + DATA_SERVLET_PATH,
+                "?action=" + DataBackoutRequest.COUNT_INSTANCE_ACTION + "&"
+                        + DataBackoutRequest.SURVEY_ID_PARAM + "=" + formId + "&"
+                        + DataBackoutRequest.FROM_DATE_PARAM + "=" + from + "&"
+                        + DataBackoutRequest.TO_DATE_PARAM + "=" + to,
+                true,
+                apiKey);
+
+        Long count = null;
+        if (instanceString != null) {
+            try {
+                count = Long.parseLong(instanceString.trim()); //remove trailing newline
+            } catch (Exception e) {
+                log.error("Unparsable instance count " + e.getMessage());
+                // Leave it as null
+            }
+        }
+        return count;
     }
 
     public static void main(String[] args) {
@@ -261,11 +299,12 @@ public class BulkDataServiceClient {
      */
     public static List<QuestionDto> fetchQuestions(String serverBase,
             Long groupId, String apiKey) throws Exception {
-        return parseQuestions(fetchDataFromServer(serverBase
-                + SURVEY_SERVLET_PATH, "?action="
-                + SurveyRestRequest.LIST_QUESTION_ACTION + "&"
-                + SurveyRestRequest.QUESTION_GROUP_ID_PARAM + "=" + groupId,
-                true, apiKey));
+        return parseQuestions(fetchDataFromServer(serverBase + SURVEY_SERVLET_PATH,
+                "?action="
+                        + SurveyRestRequest.LIST_QUESTION_ACTION + "&"
+                        + SurveyRestRequest.QUESTION_GROUP_ID_PARAM + "=" + groupId,
+                true,
+                apiKey));
     }
 
     /**
@@ -305,11 +344,11 @@ public class BulkDataServiceClient {
             String surveyId, String serverBase, String apiKey) throws Exception {
         return parseQuestionOptions(
                 fetchDataFromServer(serverBase + SURVEY_SERVLET_PATH,
-                                            "?action="
-                                            + SurveyRestRequest.LIST_SURVEY_QUESTION_OPTIONS_ACTION + "&"
-                                            + SurveyRestRequest.SURVEY_ID_PARAM + "=" + surveyId,
-                                    true,
-                                    apiKey));
+                        "?action="
+                                + SurveyRestRequest.LIST_SURVEY_QUESTION_OPTIONS_ACTION + "&"
+                                + SurveyRestRequest.SURVEY_ID_PARAM + "=" + surveyId,
+                        true,
+                        apiKey));
     }
 
     /**
@@ -322,10 +361,11 @@ public class BulkDataServiceClient {
      */
     public static SurveyInstanceDto findSurveyInstance(Long id,
             String serverBase, String apiKey) throws Exception {
-        return parseSurveyInstance(fetchDataFromServer(serverBase
-                + SURVEY_SERVLET_PATH, "?action="
-                + SurveyRestRequest.GET_SURVEY_INSTANCE_ACTION + "&"
-                + SurveyRestRequest.INSTANCE_PARAM + "=" + id, true,
+        return parseSurveyInstance(fetchDataFromServer(serverBase + SURVEY_SERVLET_PATH,
+                "?action="
+                        + SurveyRestRequest.GET_SURVEY_INSTANCE_ACTION + "&"
+                        + SurveyRestRequest.INSTANCE_PARAM + "=" + id,
+                true,
                 apiKey));
     }
 
@@ -391,10 +431,13 @@ public class BulkDataServiceClient {
         SurveyGroupDto surveyGroupDto = null;
         try {
             final String surveyGroupResponse = fetchDataFromServer(
-                    serverBase + SURVEY_SERVLET_PATH, "action="
+                    serverBase + SURVEY_SERVLET_PATH,
+                    "action="
                             + SurveyRestRequest.GET_SURVEY_GROUP_ACTION + "&"
                             + SurveyRestRequest.SURVEY_ID_PARAM + "="
-                            + surveyId, true, apiKey);
+                            + surveyId,
+                    true,
+                    apiKey);
 
             log.debug("response: " + surveyGroupResponse);
 
@@ -413,10 +456,10 @@ public class BulkDataServiceClient {
     }
 
     /**
-     * gets question groups from the server for a specific survey
+     * gets survey groups from the server
      *
      * @param serverBase
-     * @param surveyId
+     * @param apiKey
      * @return
      * @throws Exception
      */
@@ -428,8 +471,7 @@ public class BulkDataServiceClient {
 
         do {
 
-            String qs = "?action="
-                    + SurveyRestRequest.LIST_SURVEY_GROUPS_ACTION;
+            String qs = "?action=" + SurveyRestRequest.LIST_SURVEY_GROUPS_ACTION;
 
             if (cursor != null && !"".equals(cursor)) {
                 qs = qs + "&cursor=" + cursor;
@@ -440,8 +482,7 @@ public class BulkDataServiceClient {
 
             try {
                 JSONObject jsonResp = new JSONObject(resp);
-                cursor = jsonResp.isNull("cursor") ? null : jsonResp
-                        .getString("cursor");
+                cursor = jsonResp.isNull("cursor") ? null : jsonResp.getString("cursor");
             } catch (JSONException e) {
                 cursor = null;
             }
@@ -454,10 +495,10 @@ public class BulkDataServiceClient {
     }
 
     /**
-     * gets survey list from the server for a specific survey
+     * gets survey list from the server for a specific survey group
      *
      * @param serverBase
-     * @param surveyId
+     * @param surveyGroupId
      * @return
      * @throws Exception
      */
@@ -550,8 +591,7 @@ public class BulkDataServiceClient {
      * @return
      * @throws Exception
      */
-    private static List<QuestionGroupDto> parseQuestionGroups(String response)
-            throws Exception {
+    private static List<QuestionGroupDto> parseQuestionGroups(String response) throws Exception {
         List<QuestionGroupDto> dtoList = new ArrayList<QuestionGroupDto>();
         JSONArray arr = getJsonArray(response);
         if (arr != null) {
@@ -599,8 +639,7 @@ public class BulkDataServiceClient {
      * @return
      * @throws Exception
      */
-    private static List<SurveyGroupDto> parseSurveyGroups(String response)
-            throws Exception {
+    private static List<SurveyGroupDto> parseSurveyGroups(String response) throws Exception {
         List<SurveyGroupDto> dtoList = new ArrayList<SurveyGroupDto>();
         JSONArray arr = getJsonArray(response);
         if (arr != null) {
@@ -667,8 +706,7 @@ public class BulkDataServiceClient {
      * @return
      * @throws Exception
      */
-    private static List<SurveyDto> parseSurveys(String response)
-            throws Exception {
+    private static List<SurveyDto> parseSurveys(String response) throws Exception {
         List<SurveyDto> dtoList = new ArrayList<SurveyDto>();
         JSONArray arr = getJsonArray(response);
         if (arr != null) {
@@ -731,8 +769,7 @@ public class BulkDataServiceClient {
         return dtoList;
     }
 
-    private static List<DeviceFilesDto> parseDeviceFiles(String response)
-            throws Exception {
+    private static List<DeviceFilesDto> parseDeviceFiles(String response) throws Exception {
         if (response.startsWith("{")) {
             List<DeviceFilesDto> dtoList = new ArrayList<DeviceFilesDto>();
             JSONArray arr = getJsonArray(response);
@@ -750,8 +787,7 @@ public class BulkDataServiceClient {
         return null;
     }
 
-    public static DeviceFilesDto parseDeviceFile(JSONObject json)
-            throws JSONException {
+    public static DeviceFilesDto parseDeviceFile(JSONObject json) throws JSONException {
         DeviceFilesDto dto = new DeviceFilesDto();
         if (json != null) {
             if (json.has("processingMessage")) {
@@ -793,8 +829,7 @@ public class BulkDataServiceClient {
      * @return
      * @throws Exception
      */
-    private static List<QuestionDto> parseQuestions(String response)
-            throws Exception {
+    private static List<QuestionDto> parseQuestions(String response) throws Exception {
         if (response.startsWith("{")) {
             List<QuestionDto> dtoList = new ArrayList<QuestionDto>();
             JSONArray arr = getJsonArray(response);
@@ -1097,8 +1132,7 @@ public class BulkDataServiceClient {
     /**
      * executes a post to invoke a rest api
      */
-    private static String fetchDataFromServerPOST(String fullUrl)
-            throws Exception {
+    private static String fetchDataFromServerPOST(String fullUrl) throws Exception {
         BufferedReader reader = null;
         String result = null;
         try {
@@ -1107,10 +1141,11 @@ public class BulkDataServiceClient {
             if (fullUrl.contains("?")) {
                 baseUrl = fullUrl.substring(0, fullUrl.indexOf("?"));
                 queryString = fullUrl.substring(fullUrl.indexOf("?") + 1);
+            } else {
+                queryString = "";
             }
             URL url = new URL(baseUrl);
-            log.debug("Calling: " + baseUrl + " with params: "
-                    + queryString);
+            log.debug("Calling: " + baseUrl + " with params: " + queryString);
             HttpURLConnection conn = (HttpURLConnection) url.openConnection();
 
             conn.setConnectTimeout(30000);
@@ -1118,8 +1153,7 @@ public class BulkDataServiceClient {
             conn.setUseCaches(false);
             conn.setRequestProperty("Content-Length",
                     "" + Integer.toString(queryString.getBytes().length));
-            conn.setRequestProperty("Content-Type",
-                    "application/x-www-form-urlencoded");
+            conn.setRequestProperty("Content-Type", "application/x-www-form-urlencoded");
 
             conn.setDoInput(true);
             conn.setDoOutput(true);
@@ -1160,8 +1194,7 @@ public class BulkDataServiceClient {
     /**
      * executes a GET to invoke a rest api
      */
-    private static String fetchDataFromServerGET(String fullUrl)
-            throws Exception {
+    private static String fetchDataFromServerGET(String fullUrl) throws Exception {
         BufferedReader reader = null;
         String result = null;
         try {
@@ -1240,7 +1273,7 @@ public class BulkDataServiceClient {
         }
         return result.toString();
     }
-    
+
     /**
      * converts the string into a JSON array object.
      */

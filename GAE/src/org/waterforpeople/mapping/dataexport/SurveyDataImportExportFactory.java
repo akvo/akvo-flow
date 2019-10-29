@@ -1,5 +1,5 @@
 /*
- *  Copyright (C) 2010-2017 Stichting Akvo (Akvo Foundation)
+ *  Copyright (C) 2010-2017, 2019 Stichting Akvo (Akvo Foundation)
  *
  *  This file is part of Akvo FLOW.
  *
@@ -39,6 +39,7 @@ public class SurveyDataImportExportFactory implements DataImportExportFactory {
             put("DATA_ANALYSIS", GraphicalSurveySummaryExporter.class);
             put("COMPREHENSIVE", GraphicalSurveySummaryExporter.class);
             put("SURVEY_FORM", SurveyFormExporter.class);
+            put("STATISTICS", StatisticsExporter.class);
         }
     };
 
