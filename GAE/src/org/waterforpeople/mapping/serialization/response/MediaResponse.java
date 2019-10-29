@@ -67,6 +67,35 @@ public class MediaResponse {
         return media.getFilename();
     }
 
+
+    /**
+     * Format media value as JSON with a geotag location, whether null or not.
+     */
+    public static String formatWithGeotag(Media media) {
+            try {
+                return jsonObjectWriter.writeAsString(media);
+            } catch (IOException e) {
+                log.warning(e.getMessage());
+                return "";
+            }
+        }
+
+
+    /**
+     * Format media value as JSON without a geotag location.
+     */
+    public static String formatWithoutGeotag(Media media) {
+            media.setLocation(null);
+            FlowJsonObjectWriter nonullWriter = new FlowJsonObjectWriter().withExcludeNullValues();
+            try {
+                return nonullWriter.writeAsString(media);
+            } catch (IOException e) {
+                log.warning(e.getMessage());
+                return "";
+            }
+        }
+
+
     public static Media parse(String value) {
         try {
             return jsonObjectReader.readObject(value, new TypeReference<Media>() {});
