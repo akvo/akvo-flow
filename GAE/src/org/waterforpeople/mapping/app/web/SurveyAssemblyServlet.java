@@ -164,7 +164,7 @@ public class SurveyAssemblyServlet extends AbstractRestApiServlet {
      *
      */
     private boolean assembleFormWithJackson(Long formId) {
-        log.info("Starting Jackson assembly of form " + formId);
+        log.debug("Starting Jackson assembly of form " + formId);
         SurveyDAO surveyDao = new SurveyDAO();
         Survey form = surveyDao.loadFullSurvey(formId);
 
@@ -182,7 +182,7 @@ public class SurveyAssemblyServlet extends AbstractRestApiServlet {
         }
 
         boolean uploadOk = false;
-        log.info("Uploading " + formId);
+        log.debug("Uploading " + formId);
         UploadStatusContainer uc = uploadFormXML(
                 Long.toString(formId), //latest version in plain filename
                 Long.toString(formId) + "v" + form.getVersion(), //archive copy
@@ -192,7 +192,7 @@ public class SurveyAssemblyServlet extends AbstractRestApiServlet {
         message.setObjectId(formId);
         message.setObjectTitle(sg.getCode() + " / " + form.getName());
         if (uc.getUploadedZip1() && uc.getUploadedZip2()) {
-            log.info("Finishing assembly of " + formId);
+            log.debug("Finishing assembly of " + formId);
             form.setStatus(Survey.Status.PUBLISHED);
             surveyDao.save(form); //remember PUBLISHED status
             String messageText = "Published.  Please check: " + uc.getUrl();
@@ -215,7 +215,7 @@ public class SurveyAssemblyServlet extends AbstractRestApiServlet {
             log.warn("Failed to upload assembled form, id " + formId + "\n"
                     + uc.getMessage());
         }
-        log.info("Completed form assembly for " + formId);
+        log.debug("Completed form assembly for " + formId);
         return uploadOk;
     }
 

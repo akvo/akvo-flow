@@ -74,7 +74,7 @@ public final class XmlForm {
         }
         version = form.getVersion().toString();
         //Now copy the tree of child objects (if any)
-        questionGroup = new ArrayList<>();//Having an empty list prevents a <questionGroup/> tag
+        questionGroup = new ArrayList<>(); //Having an empty list prevents a <questionGroup/> tag
         if (form.getQuestionGroupMap() != null) {
             for (QuestionGroup g: form.getQuestionGroupMap().values()) {
                 questionGroup.add(new XmlQuestionGroup(g));
@@ -117,7 +117,7 @@ public final class XmlForm {
         return questionGroup;
     }
 
-    public void setQuestionGroup(ArrayList<XmlQuestionGroup> qgl) {
+    public void setQuestionGroup(List<XmlQuestionGroup> qgl) {
         this.questionGroup = qgl;
     }
 

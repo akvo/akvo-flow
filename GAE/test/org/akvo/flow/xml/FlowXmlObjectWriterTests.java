@@ -41,6 +41,9 @@ import com.google.appengine.tools.development.testing.LocalServiceTestHelper;
 
 
 class FlowXmlObjectWriterTests {
+    private final String expectedQuestionlessXml = "<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?><survey version=\"11.0\" name=\"This is a form\" defaultLanguageCode=\"en\" surveyGroupName=\"Name of containing survey\" surveyId=\"17\"><questionGroup repeatable=\"false\"><heading>This is a group</heading></questionGroup></survey>";
+
+    private final String expectedMinimaXml = "<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?><survey version=\"12.0\" name=\"This is a form\" defaultLanguageCode=\"en\" surveyGroupName=\"Name of containing survey\" surveyId=\"17\"><questionGroup repeatable=\"false\"><question id=\"1001\" order=\"1\" type=\"free\" mandatory=\"false\" localeNameFlag=\"false\"><text>This is question one</text></question><question id=\"1002\" order=\"2\" type=\"free\" mandatory=\"true\" localeNameFlag=\"false\"><validationRule validationType=\"numeric\" allowDecimal=\"false\" signed=\"false\" maxLength=\"0\"/><text>This is question two</text></question><question id=\"1003\" order=\"3\" type=\"geoshape\" mandatory=\"false\" localeNameFlag=\"false\" allowPoints=\"false\" allowLine=\"false\" allowPolygon=\"false\"><text>This is question three</text></question><heading>This is a group</heading></questionGroup></survey>";
 
     private final LocalServiceTestHelper helper =
             new LocalServiceTestHelper(new LocalDatastoreServiceTestConfig());
@@ -113,6 +116,7 @@ class FlowXmlObjectWriterTests {
 
         //Convert Jackson tree into an XML string
         String xml = PublishedForm.generate(form);
+        assertEquals(xml,  expectedQuestionlessXml);
 
         //And finally parse to DTO to see that it is valid
         SurveyDto dto = PublishedForm.parse(xml, true).toDto(); //be strict
@@ -206,6 +210,7 @@ class FlowXmlObjectWriterTests {
 
         //Convert Jackson tree into an XML string
         String xml = PublishedForm.generate(form);
+        assertEquals(xml,  expectedMinimaXml);
 
         //And finally parse it to a DTO
         SurveyDto dto = PublishedForm.parse(xml, true).toDto(); //be strict

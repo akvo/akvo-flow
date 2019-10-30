@@ -62,7 +62,7 @@ public class XmlOption {
      */
     public QuestionOptionDto toDto() {
         QuestionOptionDto dto = new QuestionOptionDto();
-        //TODO translations
+        //We could also handle translations here but they are not needed for reports
         dto.setCode(code);
         dto.setText(text);
         return dto;

@@ -180,11 +180,10 @@ public class QuestionDao extends BaseDAO<Question> {
     /**
      * Delete all the questions in a group
      *
-     * @param surveyId
+     * @param questionGroupId
      * @throws IllegalDeletionException
      */
     public void deleteQuestionsForGroup(Long questionGroupId) throws IllegalDeletionException {
-        //TODO why do we ask for details here??
         for (Question q : listQuestionsByQuestionGroup(questionGroupId, Boolean.TRUE).values()) {
             delete(q, Boolean.FALSE);
         }
@@ -573,6 +572,46 @@ public class QuestionDao extends BaseDAO<Question> {
     public TreeMap<Integer, Question> listQuestionsByQuestionGroup(
             Long questionGroupId, boolean needDetails) {
         return listQuestionsByQuestionGroup(questionGroupId, needDetails, true);
+    }
+
+
+    /**
+     * lists all the questions in a form, optionally loading details.
+     * Could be unrolled further for datastore performance gains.
+     *
+     * @param formId
+     * @param needDetails
+     * @return
+     */
+    public List<Question> listQuestionsByForm(Long formId, boolean needDetails) {
+        List<Question> qList = listByProperty("surveyId", formId, "Long", "order", "asc");
+        TreeMap<Integer, Question> map = new TreeMap<Integer, Question>();
+        if (qList != null) {
+            for (Question q : qList) {
+
+                if (needDetails) {
+                    q.setQuestionHelpMediaMap(helpDao.listHelpByQuestion(q.getKey().getId()));
+                    if (Question.Type.OPTION == q.getType()) {
+                        q.setQuestionOptionMap(optionDao.listOptionByQuestion(q.getKey().getId()));
+                    }
+                    q.setTranslationMap(translationDao.findTranslations(
+                            ParentType.QUESTION_TEXT, q.getKey().getId()));
+                    //Cascade level names
+                    if (q.getType().equals(Question.Type.CASCADE) && q.getCascadeResourceId() != null) {
+                        CascadeResource cr = new CascadeResourceDao().getByKey(q.getCascadeResourceId());
+                        if (cr != null) {
+                            q.setLevelNames(cr.getLevelNames());
+                        }
+                    }
+                }
+
+                if (q.getOrder() == null) {
+                    q.setOrder(qList.size() + 1); //Anything, temporarily, to make a useable list
+                }
+                map.put(q.getOrder(), q);
+            }
+        }
+        return qList;
     }
 
     /**

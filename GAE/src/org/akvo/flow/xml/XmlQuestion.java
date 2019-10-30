@@ -87,12 +87,12 @@ public class XmlQuestion {
         text = q.getText();
         id = q.getKey().getId();
         order = q.getOrder();
-        mandatory = Boolean.TRUE == q.getMandatoryFlag();
-        localeNameFlag = Boolean.TRUE == q.getLocaleNameFlag();
-        if (Boolean.TRUE == q.getLocaleLocationFlag()) {
+        mandatory = Boolean.TRUE.equals(q.getMandatoryFlag());
+        localeNameFlag = Boolean.TRUE.equals(q.getLocaleNameFlag());
+        if (Boolean.TRUE.equals(q.getLocaleLocationFlag())) {
             localeLocationFlag = Boolean.TRUE;
         }
-        if (Boolean.TRUE == q.getGeoLocked()) {
+        if (Boolean.TRUE.equals(q.getGeoLocked())) {
             locked = Boolean.TRUE;
         }
         if (q.getTip() != null) {
@@ -105,20 +105,20 @@ public class XmlQuestion {
             case NUMBER:
                 type = FREE_TYPE;
                 validationRule = new XmlValidationRule(q); //This signals number
-                if (Boolean.TRUE == q.getRequireDoubleEntry()) {
+                if (Boolean.TRUE.equals(q.getRequireDoubleEntry())) {
                     requireDoubleEntry = Boolean.TRUE;
                 }
                 break; //Could have done a fall-through here ;)
             case FREE_TEXT:
                 type = FREE_TYPE;
-                if (Boolean.TRUE == q.getRequireDoubleEntry()) {
+                if (Boolean.TRUE.equals(q.getRequireDoubleEntry())) {
                     requireDoubleEntry = Boolean.TRUE;
                 }
                 break;
             case GEOSHAPE:
-                allowPoints = Boolean.TRUE == q.getAllowPoints();
-                allowLine = Boolean.TRUE == q.getAllowLine();
-                allowPolygon = Boolean.TRUE == q.getAllowPolygon();
+                allowPoints = Boolean.TRUE.equals(q.getAllowPoints());
+                allowLine = Boolean.TRUE.equals(q.getAllowLine());
+                allowPolygon = Boolean.TRUE.equals(q.getAllowPolygon());
                 break;
             case CASCADE:
                 cascadeResource = q.getCascadeResourceId().toString();

@@ -182,7 +182,6 @@ class FlowXmlObjectReaderTests {
         QuestionGroupDto qg4 = testFormDto.getQuestionGroupList().get(3);
         assertEquals(4, qg4.getOrder());
 
-        //TODO more tests here
     }
 
     /*
