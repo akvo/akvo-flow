@@ -8,7 +8,15 @@ exports[`DeviceSelector Tests +++ renders <snapshot> 1`] = `
         class="accordion false"
         data-testid="accordion"
       >
-        Devices not in a group
+        <input
+          class="displayInline"
+          id="0"
+          name="0"
+          type="checkbox"
+        />
+        <span>
+          Devices not in a group
+        </span>
       </div>
       <div
         class="panel"
@@ -54,15 +62,23 @@ exports[`DeviceSelector Tests +++ toggles accordion 1`] = `
   <div>
     <div>
       <div
-        class="accordion active"
+        class="accordion false"
         data-testid="accordion"
       >
-        Devices not in a group
+        <input
+          class="displayInline"
+          id="0"
+          name="0"
+          type="checkbox"
+        />
+        <span>
+          Devices not in a group
+        </span>
       </div>
       <div
         class="panel"
         data-testid="panel"
-        style="display: block;"
+        style="display: none;"
       >
         <div>
           <input

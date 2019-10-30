@@ -29,6 +29,7 @@ describe('DeviceSelector Tests', () => {
   const deviceGroupNames = { 1: 'Devices not in a group' };
   const deviceGroups = {
     1: {
+      0: { name: 'select all', checked: false },
       150452032: { name: 'droidxx', checked: false },
       150482013: { name: 'jana', checked: false },
     },
@@ -65,7 +66,7 @@ describe('DeviceSelector Tests', () => {
 
     // expect panel display to be block
     const panel = wrapper.getByTestId('panel');
-    expect(panel).toHaveStyle('display: block');
+    expect(panel).toHaveStyle('display: none');
     expect(wrapper.container).toMatchSnapshot();
   });
 
