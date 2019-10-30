@@ -29,8 +29,16 @@ export default class AssignmentsEdit extends React.Component {
   // helpers
   formatMomentDate = date => moment(date, 'YYYY/MM/DD').format('YYYY-MM-DD');
 
+  getNumberOfDays = () => {
+    const startDate = moment(this.state.startDate, 'YYYY/MM/DD');
+    const endDate = moment(this.state.endDate, 'YYYY/MM/DD');
+
+    return endDate.diff(startDate, 'days');
+  };
+
   render() {
     const { strings, actions, data } = this.props;
+    const numberOfDays = this.getNumberOfDays();
 
     return (
       <div className="assignments-edit">
@@ -69,7 +77,10 @@ export default class AssignmentsEdit extends React.Component {
             <div className="assignment-date">
               <p className="heading">
                 <span className="title">{strings.duration}</span>
-                <span className="info">1 {strings.day}</span>
+                <span className="info">
+                  {numberOfDays}{' '}
+                  {numberOfDays === 1 ? strings.day : strings.days}
+                </span>
               </p>
 
               {/* date picker */}
@@ -117,7 +128,9 @@ export default class AssignmentsEdit extends React.Component {
             <div className="assignment-form-selector">
               <p className="heading">
                 <span className="title">{strings.forms}</span>
-                <span className="info">1 {strings.enabled}</span>
+                <span className="info">
+                  {data.numberOfForms} {strings.enabled}
+                </span>
               </p>
 
               <div className="form-selector">

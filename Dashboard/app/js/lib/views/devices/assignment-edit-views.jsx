@@ -97,6 +97,7 @@ FLOW.AssignmentEditView = FLOW.ReactComponentView.extend(
         settings: Ember.String.loc('_settings'),
         duration: Ember.String.loc('_duration'),
         day: Ember.String.loc('_day'),
+        days: Ember.String.loc('_days'),
         durationWarning: Ember.String.loc('_duration_warning'),
         survey: Ember.String.loc('_survey'),
         forms: Ember.String.loc('_forms'),
@@ -133,6 +134,7 @@ FLOW.AssignmentEditView = FLOW.ReactComponentView.extend(
         deviceGroupNames: this.deviceGroupNames,
         activeDeviceGroups: this.activeDeviceGroups,
         initialSurveyGroup: this.initialSurveyGroup,
+        numberOfForms: FLOW.selectedControl.get('selectedSurveys').length,
       };
 
       return {
@@ -504,8 +506,6 @@ FLOW.AssignmentEditView = FLOW.ReactComponentView.extend(
         // TODO: display error that form cannot be added unless currently added forms are removed
       }
 
-      this.renderReactSide();
-
       // add/remove form to/from assignment
       if (this.forms[formId].checked) {
         // push survey to FLOW.selectedControl.selectedSurveys
@@ -517,6 +517,8 @@ FLOW.AssignmentEditView = FLOW.ReactComponentView.extend(
           FLOW.Survey.find(formId)
         );
       }
+
+      this.renderReactSide();
 
       // TODO: load data points in selected form
     },
