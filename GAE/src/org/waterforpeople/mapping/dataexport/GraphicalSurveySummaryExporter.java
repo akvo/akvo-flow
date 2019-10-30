@@ -22,6 +22,7 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.net.URL;
 import java.net.URLConnection;
+import java.nio.file.Paths;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.text.DecimalFormat;
@@ -911,7 +912,7 @@ public class GraphicalSurveySummaryExporter extends SurveySummaryExporter {
         Media media = MediaResponse.parse(value);
         String filename = media.getFilename();
         if (filename != null) {
-            filename = filename.substring(filename.lastIndexOf("/") + 1); //strip path, if any
+            filename = Paths.get(filename).getFileName().toString(); //strip path, if any
             if (filename.length() > 0) {
                 cells.add(imagePrefix + filename);
                 if (splitIntoColumns && media.getLocation() != null) {
