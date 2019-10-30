@@ -308,6 +308,9 @@ public class SurveySummaryExporter extends AbstractDataExporter {
                     if (container == null) {
                         container = new OptionContainerDto();
                         q.setOptionContainerDto(container);
+                        //For symmetry, since these exist in two places:
+                        container.setAllowMultipleFlag(q.getAllowMultipleFlag());
+                        container.setAllowOtherFlag(q.getAllowOtherFlag());
                     }
                     container.addQuestionOption(o);
                 }
