@@ -93,24 +93,20 @@ FLOW.AssignmentEditView = FLOW.ReactComponentView.extend(
 
     getProps() {
       const strings = {
-        backToAssignmentList: Ember.String.loc('_go_back_to_assignment_list'),
-        assignmentDetails: Ember.String.loc('_assignment_details'),
-        assignmentName: Ember.String.loc('_assignment_name'),
+        saveAssignment: Ember.String.loc('_save'),
+        settings: Ember.String.loc('_settings'),
+        duration: Ember.String.loc('_duration'),
+        day: Ember.String.loc('_day'),
+        durationWarning: Ember.String.loc('_duration_warning'),
+        survey: Ember.String.loc('_survey'),
+        forms: Ember.String.loc('_forms'),
+        enabled: Ember.String.loc('_enabled'),
+        formsWarning: Ember.String.loc('_forms_warning'),
+        noForms: Ember.String.loc('_no_forms_in_this_survey'),
+        devices: Ember.String.loc('_devices'),
         assignmentNamePlaceholder: Ember.String.loc(
           '_enter_a_name_for_this_assignment'
         ),
-        startDate: Ember.String.loc('_start_date'),
-        expireDate: Ember.String.loc('_expiration_date'),
-        selectSurvey: Ember.String.loc('_select_survey'),
-        cantFindYourSurvey: Ember.String.loc('_cant_find_your_survey_'),
-        selectForms: Ember.String.loc('_select_forms'),
-        selectFormNote: Ember.String.loc('_select_forms_note'),
-        selectDevices: Ember.String.loc('_select_devices'),
-        selectDeviceGroup: Ember.String.loc('_select_device_group'),
-        saveAssignment: Ember.String.loc('_save_assignment'),
-        cancel: Ember.String.loc('_cancel'),
-        chooseFolderOrSurvey: Ember.String.loc('_choose_folder_or_survey'),
-        selectedDevices: Ember.String.loc('_devices_selected'),
       };
 
       const inputValues = {
@@ -404,8 +400,8 @@ FLOW.AssignmentEditView = FLOW.ReactComponentView.extend(
       // validate assignment name
       if (!assignmentName || assignmentName == '') {
         this.showPopup(
-          'Error with assignment name',
-          Ember.String.loc('_assignment_name_not_set')
+          Ember.String.loc('_assignment_name_not_set'),
+          Ember.String.loc('_assignment_name_not_set_text')
         );
 
         return false;
@@ -413,7 +409,7 @@ FLOW.AssignmentEditView = FLOW.ReactComponentView.extend(
 
       if (assignmentName.length > 100) {
         this.showPopup(
-          'Error with assignment name',
+          Ember.String.loc('_assignment_name_error'),
           Ember.String.loc('_assignment_name_over_100_chars')
         );
 
@@ -423,7 +419,7 @@ FLOW.AssignmentEditView = FLOW.ReactComponentView.extend(
       // validate dates ==== start date
       if (!startDate || !startDate.length) {
         this.showPopup(
-          'Error with date',
+          Ember.String.loc('_date_not_set'),
           Ember.String.loc('_date_not_set_text')
         );
 
@@ -433,7 +429,7 @@ FLOW.AssignmentEditView = FLOW.ReactComponentView.extend(
       // validate date ==== expire date
       if (!endDate || !endDate.length) {
         this.showPopup(
-          'Error with date',
+          Ember.String.loc('_date_not_set'),
           Ember.String.loc('_date_not_set_text')
         );
 
@@ -441,12 +437,20 @@ FLOW.AssignmentEditView = FLOW.ReactComponentView.extend(
       }
 
       if (!devices || !devices.length) {
-        this.showPopup('Devices not set', 'Please select a device to continue');
+        this.showPopup(
+          Ember.String.loc('_device_not_set'),
+          Ember.String.loc('_device_not_set_text')
+        );
+
         return false;
       }
 
       if (!surveys || !surveys.length) {
-        this.showPopup('Form not set', 'Please select a form to continue');
+        this.showPopup(
+          Ember.String.loc('_form_not_set'),
+          Ember.String.loc('_form_not_set_text')
+        );
+
         return false;
       }
 

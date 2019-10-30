@@ -49,7 +49,7 @@ export default class AssignmentsEdit extends React.Component {
               <input
                 type="text"
                 id="assignmentName"
-                placeholder="Untitled Assignment"
+                placeholder={strings.assignmentNamePlaceholder}
                 value={this.state.assignmentName}
                 onChange={this.onChangeState}
               />
@@ -58,18 +58,18 @@ export default class AssignmentsEdit extends React.Component {
           </div>
 
           <button onClick={this.onSubmit} type="button" className="standardBtn">
-            Save
+            {strings.saveAssignment}
           </button>
         </div>
 
         <div className="assignment-body">
           <div className="settings">
-            <h3>Settings</h3>
+            <h3>{strings.settings}</h3>
 
             <div className="assignment-date">
               <p className="heading">
-                <span className="title">Duration</span>
-                <span className="info">1 Day</span>
+                <span className="title">{strings.duration}</span>
+                <span className="info">1 {strings.day}</span>
               </p>
 
               {/* date picker */}
@@ -96,14 +96,12 @@ export default class AssignmentsEdit extends React.Component {
                 </div>
               </div>
 
-              <span className="infoText">
-                Data will only be submittable within this timeframe
-              </span>
+              <span className="infoText">{strings.durationWarning}</span>
             </div>
 
             <div className="assignment-survery-folder">
               <p className="heading">
-                <span className="title">Survey</span>
+                <span className="title">{strings.survey}</span>
               </p>
 
               <div className="folder-selector">
@@ -118,14 +116,12 @@ export default class AssignmentsEdit extends React.Component {
 
             <div className="assignment-form-selector">
               <p className="heading">
-                <span className="title">Forms</span>
-                <span className="info">1 Enabled</span>
+                <span className="title">{strings.forms}</span>
+                <span className="info">1 {strings.enabled}</span>
               </p>
 
               <div className="form-selector">
-                <span className="infoText">
-                  Only enabled forms can be submitted
-                </span>
+                <span className="infoText">{strings.formsWarning}</span>
                 <br />
 
                 {Object.keys(data.forms).length ? (
@@ -134,16 +130,14 @@ export default class AssignmentsEdit extends React.Component {
                     onCheck={actions.handleFormCheck}
                   />
                 ) : (
-                  <p className="noForms">
-                    No forms available. Please select a survey with forms
-                  </p>
+                  <p className="noForms">{strings.noForms}</p>
                 )}
               </div>
             </div>
           </div>
 
           <div className="devices">
-            <h3>Devices</h3>
+            <h3>{strings.devices}</h3>
 
             <div className="assignment-device-selector">
               <DeviceGroupSelectorView
