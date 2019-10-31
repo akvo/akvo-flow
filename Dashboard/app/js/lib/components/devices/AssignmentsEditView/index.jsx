@@ -85,7 +85,7 @@ export default class AssignmentsEdit extends React.Component {
 
               {/* date picker */}
               <div className="date-picker">
-                <div className="startDate">
+                <div className="date">
                   <i className="fa fa-calendar" />
                   <input
                     type="date"
@@ -95,7 +95,7 @@ export default class AssignmentsEdit extends React.Component {
                   />
                 </div>
                 <span> - </span>
-                <div className="startDate">
+                <div className="date">
                   <i className="fa fa-calendar" />
                   <input
                     type="date"

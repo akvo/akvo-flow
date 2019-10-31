@@ -92,12 +92,17 @@
 
           .date-picker {
             display: flex;
-            width: 55%;
+            width: 85%;
             justify-content: space-between;
             padding: 15px 0px 3px;
 
             i.fa {
               margin-right: 5px;
+            }
+
+            .date {
+              display: flex;
+              align-items: center;
             }
           }
         }
@@ -115,7 +120,7 @@
       }
 
       .devices {
-        flex: 1;
+        flex: 2;
         padding: 15px;
 
         .assignment-device-selector {
