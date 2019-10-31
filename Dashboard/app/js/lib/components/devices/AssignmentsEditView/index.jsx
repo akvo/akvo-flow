@@ -110,21 +110,6 @@ export default class AssignmentsEdit extends React.Component {
               <span className="infoText">{strings.durationWarning}</span>
             </div>
 
-            <div className="assignment-survery-folder">
-              <p className="heading">
-                <span className="title">{strings.survey}</span>
-              </p>
-
-              <div className="folder-selector">
-                <FolderSurveySelectorView
-                  initialSurveyGroup={data.initialSurveyGroup}
-                  surveyGroups={data.surveyGroups}
-                  onSelectSurvey={actions.handleSurveySelect}
-                  strings={strings}
-                />
-              </div>
-            </div>
-
             <div className="assignment-form-selector">
               <p className="heading">
                 <span className="title">{strings.forms}</span>
@@ -135,6 +120,16 @@ export default class AssignmentsEdit extends React.Component {
 
               <div className="form-selector">
                 <span className="infoText">{strings.formsWarning}</span>
+                <br />
+
+                <div className="folder-selector">
+                  <FolderSurveySelectorView
+                    initialSurveyGroup={data.initialSurveyGroup}
+                    surveyGroups={data.surveyGroups}
+                    onSelectSurvey={actions.handleSurveySelect}
+                    strings={strings}
+                  />
+                </div>
                 <br />
 
                 {Object.keys(data.forms).length ? (

@@ -103,6 +103,15 @@
             .date {
               display: flex;
               align-items: center;
+              background: #fff8e1;
+              padding: 0px 4px;
+              border: 1px solid #ccc;
+
+              input {
+                outline: none;
+                border: none;
+                background-color: transparent;
+              }
             }
           }
         }
