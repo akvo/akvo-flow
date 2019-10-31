@@ -17,10 +17,10 @@ export default class StatsList extends React.Component {
         <div className="stats-details">
           <span className="stat-icon" />
           <div>
-            <a href="/">{stat.name}</a>
-            <span className="stat-date">
+            <a href={stat.url}>
               {stat.startDate} - {stat.endDate} Submissions
-            </span>
+            </a>
+            <span className="stat-date">{stat.name}</span>
           </div>
         </div>
 

@@ -35,9 +35,10 @@ FLOW.StatsListsView = FLOW.ReactComponentView.extend(
         .forEach(item => {
           stats.push({
             id: item.get('keyId'),
+            url: item.get('filename').length ? item.get('filename') : '#',
             name: item.get('filename').length
               ? item.get('filename')
-              : 'Unnamed',
+              : 'No file generated',
             startDate: FLOW.renderTimeStamp(item.get('startDate')) || 'N/A',
             endDate: FLOW.renderTimeStamp(item.get('endDate')) || 'N/A',
             status: item.get('state'),
