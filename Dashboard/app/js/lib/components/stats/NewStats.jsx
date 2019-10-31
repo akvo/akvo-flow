@@ -12,9 +12,11 @@ export default class Stats extends React.Component {
   };
 
   onSubmit = () => {
+    const { startDate, endDate } = this.state;
+
     const data = {
-      startDate: new Date(this.state.startDate).toISOString(),
-      endDate: new Date(this.state.endDate).toISOString(),
+      startDate: startDate.length ? new Date(startDate).toISOString() : null,
+      endDate: endDate.length ? new Date(endDate).toISOString() : null,
     };
 
     this.props.generateReport(data);

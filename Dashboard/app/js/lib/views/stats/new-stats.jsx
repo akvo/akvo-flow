@@ -37,7 +37,9 @@ FLOW.NewStatsReactView = FLOW.ReactComponentView.extend({
       Ember.String.loc('_we_will_notify_via_email')
     );
 
-    FLOW.router.transitionTo('navStats.index');
+    setTimeout(() => {
+      FLOW.router.transitionTo('navStats.index');
+    }, 500);
   },
 
   showDialogMessage(header, message) {
