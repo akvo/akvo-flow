@@ -28,6 +28,7 @@ public class MediaResponse {
     private static final Logger log = Logger.getLogger(MediaResponse.class.getName());
     private static FlowJsonObjectReader jsonObjectReader = new FlowJsonObjectReader();
     private static FlowJsonObjectWriter jsonObjectWriter = new FlowJsonObjectWriter();
+    private static FlowJsonObjectWriter jsonObjectWriterNoNulls = new FlowJsonObjectWriter().withExcludeNullValues();
 
     public static final int VERSION_STRING = 0;
     public static final int VERSION_GEOTAGGING = 1;
@@ -86,9 +87,8 @@ public class MediaResponse {
      */
     public static String formatWithoutGeotag(Media media) {
             media.setLocation(null);
-            FlowJsonObjectWriter nonullWriter = new FlowJsonObjectWriter().withExcludeNullValues();
             try {
-                return nonullWriter.writeAsString(media);
+                return jsonObjectWriterNoNulls.writeAsString(media);
             } catch (IOException e) {
                 log.warning(e.getMessage());
                 return "";

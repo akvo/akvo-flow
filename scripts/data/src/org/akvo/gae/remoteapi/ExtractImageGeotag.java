@@ -24,6 +24,7 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.File;
 import java.net.URLConnection;
+import java.nio.file.Paths;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -87,7 +88,7 @@ public class ExtractImageGeotag implements Process {
             System.out.printf("#Arguments: S3-bucketname S3-id S3-secret [--doit to execute]\n");
             return;
         }
-        System.out.printf("#S3-bucketname %s, S3-id %s, S3-secret %s\n", S3bucket, S3id, S3secret);
+        //System.out.printf("#S3-bucketname %s, S3-id %s, S3-secret %s\n", S3bucket, S3id, S3secret);
 
         processQuestions(ds);
 
@@ -109,8 +110,6 @@ public class ExtractImageGeotag implements Process {
 
         for (Entity q : qpq.asIterable(FetchOptions.Builder.withChunkSize(500))) {
             total++;
-            //String type = (String) q.getProperty("type");
-            //System.out.println("QAS type " + type);
             boolean forceSave = false;
             Media media;
             String v = (String) q.getProperty("value"); //Assume valueText was not used for this image
@@ -123,8 +122,8 @@ public class ExtractImageGeotag implements Process {
                     json++;
                 } else {
                     nonjson++;
-                    forceSave = true;//TODO: handle legacy values: convert them to JSON while we're here
-                    v = v.substring(v.lastIndexOf("/") + 1); //strip path
+                    forceSave = true;//handle legacy values: convert them to JSON while we're here
+                    v = Paths.get(v).getFileName().toString(); //strip path, it is never used
                 }
                 String filename;
                 //Parse it
@@ -151,9 +150,10 @@ public class ExtractImageGeotag implements Process {
             Location loc = new Location();
             Boolean tagFound = fetchLocationFromJpegInS3(media.getFilename(), loc);
             if (tagFound != null || forceSave) {
-                if (tagFound == null) { // We cannot know. right now (file *may* arrive late)
+
+                if (tagFound == null) { // We cannot know (right now - file may arrive later)
                     v = MediaResponse.formatWithoutGeotag(media);
-                } else { //Now we know!
+                } else { //We do know!
                     if (tagFound.equals(Boolean.FALSE)) {
                         loc = null; //There is no tag!
                     }
@@ -184,9 +184,9 @@ public class ExtractImageGeotag implements Process {
     }
 
     /*
-     *
-     * [GPS] GPS Latitude - 59/1 17/1 25324/1000 (unable to formulate description)
-[GPS] GPS Longitude - 17/1 57/1 7827/1000 (unable to formulate description)
+     * Sample exif command output:
+[GPS] GPS Latitude - 59/1 17/1 25324/1000
+[GPS] GPS Longitude - 17/1 57/1 7827/1000
 [GPS] GPS Altitude - 0 metres
 [GPS] GPS Time-Stamp - 00:42:48.000 UTC
 [GPS] GPS Processing Method - NETWORK
@@ -204,7 +204,7 @@ public class ExtractImageGeotag implements Process {
                 if (directory == null) { //No GPS tag
                     return false;
                 }
-                print(metadata);//DEbug
+
                 Rational[] latTag = directory.getRationalArray(GpsDirectory.TAG_LATITUDE);
                 String latRefTag = directory.getString(GpsDirectory.TAG_LATITUDE_REF);
                 Rational[] lonTag = directory.getRationalArray(GpsDirectory.TAG_LONGITUDE);
@@ -236,7 +236,7 @@ public class ExtractImageGeotag implements Process {
                 } else {
                     alt = 0.0; //Optional; default to 0
                 }
-                if (altRefTag!= null && altRefTag.equals(1)) { //0 = above, 1 below sea level
+                if (altRefTag != null && altRefTag.equals(1)) { //0 = above, 1 below sea level
                     alt = -alt;
                 }
                 Float acc;
@@ -249,7 +249,7 @@ public class ExtractImageGeotag implements Process {
                 loc.setLongitude(lon);
                 loc.setAltitude(alt);
                 loc.setAccuracy(acc);
-                System.out.printf("#Location N %f, E %f, up %f, acc %f\n", lat, lon, alt, acc);//Debug
+                //System.out.printf("#Location N %f, E %f, up %f, acc %f\n", lat, lon, alt, acc);//Debug
                 return true;
             } catch (JpegProcessingException e) {
                 System.out.println(e);
@@ -259,36 +259,6 @@ public class ExtractImageGeotag implements Process {
             f.delete();
         }
         return null; //Can't tell
-    }
-
-    /**
-     * Write all extracted values to stdout.
-     */
-    private static void print(Metadata metadata)
-    {
-
-        System.out.println("-------------------------------------------------");
-        System.out.println();
-
-        //
-        // A Metadata object contains multiple Directory objects
-        //
-        for (Directory directory : metadata.getDirectories()) {
-
-            //
-            // Each Directory stores values in Tag objects
-            //
-            for (Tag tag : directory.getTags()) {
-                System.out.println(tag);
-            }
-
-            //
-            // Each Directory may also contain error messages
-            //
-            for (String error : directory.getErrors()) {
-                System.err.println("ERROR: " + error);
-            }
-        }
     }
 
 
