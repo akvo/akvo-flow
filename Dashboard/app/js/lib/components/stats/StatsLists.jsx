@@ -13,19 +13,21 @@ export default class StatsList extends React.Component {
 
   renderStat = stat => {
     return (
-      <div key={stat.id} className="generated-stat">
-        <div className="stats-details">
-          <span className="stat-icon" />
-          <div>
-            <a href={stat.url}>
-              {stat.startDate} - {stat.endDate} Submissions
-            </a>
-            <span className="stat-date">{stat.name}</span>
+      <a href={stat.url} key={stat.id}>
+        <div className="generated-stat">
+          <div className="stats-details">
+            <span className="stat-icon" />
+            <div>
+              <span className="date">
+                {stat.startDate} - {stat.endDate} Submissions
+              </span>
+              <span className="filename">{stat.name}</span>
+            </div>
           </div>
-        </div>
 
-        <p className="stats-status">{stat.status}</p>
-      </div>
+          <p className="stats-status">{stat.status}</p>
+        </div>
+      </a>
     );
   };
 
