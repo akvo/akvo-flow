@@ -8,6 +8,7 @@ FLOW.NewStatsReactView = FLOW.ReactComponentView.extend({
   init() {
     this._super();
     this.generateReport = this.generateReport.bind(this);
+    this.getProps = this.getProps.bind(this);
   },
 
   didInsertElement(...args) {

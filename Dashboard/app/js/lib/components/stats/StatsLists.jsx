@@ -5,8 +5,8 @@ export default class StatsList extends React.Component {
   renderNoStats = () => {
     return (
       <div className="no-stats">
-        <p>No stats generated yet</p>
-        <p>Click {'"Export stats"'} to get started</p>
+        <p>{this.props.strings.noStats}</p>
+        <p>{this.props.strings.clickToExport}</p>
       </div>
     );
   };
@@ -19,7 +19,8 @@ export default class StatsList extends React.Component {
             <span className="stat-icon" />
             <div>
               <span className="date">
-                {stat.startDate} - {stat.endDate} Submissions
+                {stat.startDate} - {stat.endDate}{' '}
+                {this.props.strings.submissions}
               </span>
               <span className="filename">{stat.name}</span>
             </div>
@@ -37,13 +38,13 @@ export default class StatsList extends React.Component {
     return (
       <div id="stats-listing-page">
         <div className="page-header">
-          <h2>Generated stats</h2>
+          <h2>{this.props.strings.generatedStats}</h2>
           <button
             className="standardBtn newStats"
             type="button"
             onClick={this.props.goToExport}
           >
-            Export stats
+            {this.props.strings.exportStats}
           </button>
         </div>
 
@@ -60,4 +61,5 @@ export default class StatsList extends React.Component {
 StatsList.propTypes = {
   stats: PropTypes.array.isRequired,
   goToExport: PropTypes.func.isRequired,
+  strings: PropTypes.object.isRequired,
 };
