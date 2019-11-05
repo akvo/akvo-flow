@@ -24,35 +24,40 @@ afterAll(() => {
 describe('Stats Lists Tests', () => {
   afterEach(cleanup);
 
-  const stats = [
-    {
-      id: 345598,
-      name: 'Test export',
-      startDate: '2019-10-01',
-      endDate: '2019-10-11',
-      status: 'Finished Error',
+  const props = {
+    strings: {
+      noStats: 'No stats generated yet',
+      clickToExport: 'Click "New export" to get started',
+      submissions: 'Submissions',
+      generatedStats: 'Generated stats',
+      exportStats: 'Export stats',
     },
-  ];
-
-  const goToNewExports = jest.fn();
+    goToExport: jest.fn(),
+    stats: [
+      {
+        id: 345598,
+        url: '#',
+        name: 'Test export',
+        startDate: '2019-10-01',
+        endDate: '2019-10-11',
+        status: 'Finished Error',
+      },
+    ],
+  };
 
   it('+++ renders snapshots', () => {
-    const wrapper = render(
-      <StatsList stats={stats} goToExport={goToNewExports} />
-    );
+    const wrapper = render(<StatsList {...props} />);
 
     expect(wrapper.container).toMatchSnapshot();
   });
 
   it('+++ goes to export page on button press', () => {
-    const wrapper = render(
-      <StatsList stats={stats} goToExport={goToNewExports} />
-    );
+    const wrapper = render(<StatsList {...props} />);
 
     // find and click on button
     const button = wrapper.getByTestId('newStatsBtn');
     fireEvent.click(button);
 
-    expect(goToNewExports).toHaveBeenCalledTimes(1);
+    expect(props.goToExport).toHaveBeenCalledTimes(1);
   });
 });

@@ -25,37 +25,42 @@ exports[`Stats Lists Tests +++ renders snapshots 1`] = `
       <div
         class="generated-stats"
       >
-        <div
-          class="generated-stat"
+        <a
+          href="#"
         >
           <div
-            class="stats-details"
+            class="generated-stat"
           >
-            <span
-              class="stat-icon"
-            />
-            <div>
-              <a
-                href="/"
-              >
-                Test export
-              </a>
+            <div
+              class="stats-details"
+            >
               <span
-                class="stat-date"
-              >
-                2019-10-01
-                 - 
-                2019-10-11
-                 Submissions
-              </span>
+                class="stat-icon"
+              />
+              <div>
+                <span
+                  class="date"
+                >
+                  2019-10-01
+                   - 
+                  2019-10-11
+                   
+                  Submissions
+                </span>
+                <span
+                  class="filename"
+                >
+                  Test export
+                </span>
+              </div>
             </div>
+            <p
+              class="stats-status"
+            >
+              Finished Error
+            </p>
           </div>
-          <p
-            class="stats-status"
-          >
-            Finished Error
-          </p>
-        </div>
+        </a>
       </div>
     </div>
   </div>
