@@ -29,7 +29,7 @@ import com.gallatinsystems.framework.rest.RestRequest;
 
 /**
  * request dto for data backout utility
- * 
+ *
  * @author Christopher Fagiani
  */
 public class DataBackoutRequest extends RestRequest {
@@ -40,6 +40,7 @@ public class DataBackoutRequest extends RestRequest {
     public static final String DELETE_SURVEY_INSTANCE_ACTION = "deleteQuestionAnswer";
     public static final String DELETE_QUESTION_SUMMARY_ACTION = "deleteQuestionSummary";
     public static final String LIST_INSTANCE_ACTION = "listInstance";
+    public static final String COUNT_INSTANCE_ACTION = "countInstance";
     public static final String LIST_INSTANCE_RESPONSE_ACTION = "listInstanceResponse";
     public static final String LIST_QUESTION_RESPONSE_ACTION = "listQuestionResponse";
 

@@ -13,7 +13,7 @@ export default class DeviceAccordion extends React.Component {
 
   render() {
     const { isAccordionOpen } = this.state;
-    const { name } = this.props;
+    const { name, selectAllCheckbox } = this.props;
     const accordionClass = `accordion ${isAccordionOpen && 'active'}`;
     const panelStyle = isAccordionOpen
       ? { display: 'block' }
@@ -21,13 +21,15 @@ export default class DeviceAccordion extends React.Component {
 
     return (
       <div>
-        <div
-          className={accordionClass}
-          onClick={this.onAccordionClick}
-          onKeyPress={this.onAccordionClick}
-          data-testid="accordion"
-        >
-          {name}
+        <div className={accordionClass} data-testid="accordion">
+          {selectAllCheckbox()}
+
+          <span
+            onClick={this.onAccordionClick}
+            onKeyPress={this.onAccordionClick}
+          >
+            {name}
+          </span>
         </div>
 
         <div className="panel" style={panelStyle} data-testid="panel">
@@ -42,4 +44,5 @@ DeviceAccordion.propTypes = {
   deviceGroupIsActive: PropTypes.bool.isRequired,
   name: PropTypes.string.isRequired,
   children: PropTypes.any.isRequired,
+  selectAllCheckbox: PropTypes.func.isRequired,
 };

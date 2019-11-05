@@ -8,11 +8,27 @@ FLOW.NewStatsReactView = FLOW.ReactComponentView.extend({
   init() {
     this._super();
     this.generateReport = this.generateReport.bind(this);
+    this.getProps = this.getProps.bind(this);
   },
 
   didInsertElement(...args) {
     this._super(...args);
-    this.reactRender(<NewStats generateReport={this.generateReport} />);
+
+    const props = this.getProps();
+    this.reactRender(<NewStats {...props} />);
+  },
+
+  getProps() {
+    return {
+      generateReport: this.generateReport,
+      strings: {
+        generateStats: Ember.String.loc('_generate_form_submission_stats'),
+        formTimeFrame: Ember.String.loc('_form_submission_time_frame'),
+        startDate: Ember.String.loc('_start_date'),
+        toDate: Ember.String.loc('_to_date'),
+        downloadStats: Ember.String.loc('_download_stats'),
+      },
+    };
   },
 
   generateReport(dates) {
@@ -37,7 +53,9 @@ FLOW.NewStatsReactView = FLOW.ReactComponentView.extend({
       Ember.String.loc('_we_will_notify_via_email')
     );
 
-    FLOW.router.transitionTo('navStats.index');
+    setTimeout(() => {
+      FLOW.router.transitionTo('navStats.index');
+    }, 500);
   },
 
   showDialogMessage(header, message) {

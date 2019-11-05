@@ -1,14 +1,17 @@
+{{#if view.isNotStats}}
 <li id="list-{{unbound view.content.keyId}}" {{bindAttr class="view.reportType view.reportStatus"}}>
   <div class="exportInfo">
     <a id="link-{{unbound view.content.keyId}}" {{bindAttr href="view.reportLink"}}>
 
       <h5>
-        {{view.reportTypeString}} - <span class="exportFileName" id="filename-{{unbound view.content.keyId}}">{{view.reportFilename}}</span>
+        {{view.reportTypeString}} - <span class="exportFileName"
+          id="filename-{{unbound view.content.keyId}}">{{view.reportFilename}}</span>
         <span class="submissionsDate">
           {{#if view.content.lastCollectionOnly}}
           {{t _recent_submissions}}
           {{else}}
-          {{#if view.startDate}}{{t _from}} {{view.startDate}} {{/if}}{{#if view.endDate}}{{t _to}} {{view.endDate}}{{/if}}
+          {{#if view.startDate}}{{t _from}} {{view.startDate}} {{/if}}{{#if view.endDate}}{{t _to}}
+          {{view.endDate}}{{/if}}
           {{/if}}
         </span>
       </h5>
@@ -21,3 +24,4 @@
     <span class="exportDate">{{#if view.lastUpdateDateTime}}{{view.lastUpdateDateTime}}{{/if}}</span>
   </div>
 </li>
+{{/if}}

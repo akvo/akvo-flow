@@ -12,24 +12,27 @@ export default class Stats extends React.Component {
   };
 
   onSubmit = () => {
+    const { startDate, endDate } = this.state;
+
     const data = {
-      startDate: new Date(this.state.startDate).toISOString(),
-      endDate: new Date(this.state.endDate).toISOString(),
+      startDate: startDate.length ? new Date(startDate).toISOString() : null,
+      endDate: endDate.length ? new Date(endDate).toISOString() : null,
     };
 
     this.props.generateReport(data);
   };
 
   render() {
+    const { strings } = this.props;
     return (
       <div id="stats-page">
-        <h2>Generate form submission stats</h2>
+        <h2>{strings.generateStats}</h2>
 
-        <p>Form submission time frame</p>
+        <p>{strings.formTimeFrame}</p>
 
         <div className="date-picker">
           <label htmlFor="startDate">
-            <p>Start Date:</p>
+            <p>{strings.startDate}:</p>
 
             <input
               type="date"
@@ -42,7 +45,7 @@ export default class Stats extends React.Component {
           </label>
 
           <label htmlFor="endDate">
-            <p>To Date:</p>
+            <p>{strings.toDate}:</p>
 
             <input
               type="date"
@@ -57,7 +60,7 @@ export default class Stats extends React.Component {
         </div>
 
         <button onClick={this.onSubmit} className="standardBtn" type="button">
-          Download Stats
+          {strings.downloadStats}
         </button>
       </div>
     );
@@ -66,4 +69,5 @@ export default class Stats extends React.Component {
 
 Stats.propTypes = {
   generateReport: PropTypes.func.isRequired,
+  strings: PropTypes.object.isRequired,
 };
