@@ -87,13 +87,4 @@ public class UserDao extends BaseDAO<User> {
         return results;
     }
 
-    /**
-     * finds a single user by accessKey
-     *
-     * @param accessKey
-     * @return
-     */
-    public User findByAccessKey(String accessKey) {
-        return findByProperty("accessKey", accessKey, STRING_TYPE);
-    }
 }

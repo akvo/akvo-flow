@@ -8,7 +8,6 @@ import template from '../mixins/template';
 /* global tooltip */
 
 require('akvo-flow/core-common');
-require('akvo-flow/views/selectors/folder-survey-selector');
 require('akvo-flow/views/selectors/device-selector');
 require('akvo-flow/views/selectors/forms-selector');
 require('akvo-flow/views/surveys/preview-view');
@@ -32,7 +31,6 @@ require('akvo-flow/views/devices/devices-views');
 require('akvo-flow/views/devices/assignments-list-view');
 require('akvo-flow/views/devices/assignment-edit-views');
 require('akvo-flow/views/devices/survey-bootstrap-view');
-require('akvo-flow/views/users/user-view');
 
 FLOW.ApplicationView = Ember.View.extend(template('application/application'));
 

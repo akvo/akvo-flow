@@ -1,89 +1,124 @@
 <html>
-<head id="akvoFlow">
-<meta charset="UTF-8">
-<meta name="description" content="Akvo Flow: field level operations watch" />
-<meta http-equiv="refresh" content="15;URL='./admin/logout.html'">
-<title>Akvo Flow - Register</title>
-<link rel="shortcut icon" href="/favicon.ico" />
-<!--[if lt IE 9]>
-      <script src="https://html5shiv.googlecode.com/svn/trunk/html5.js"></script>
-    <![endif]-->
+  <head id="akvoFlow">
+    <meta charset="UTF-8">
+    <meta name="description" content="Akvo Flow: field level operations watch" />
+    <meta http-equiv="refresh" content="15;URL='./admin/logout.html'">
+    <title>Akvo Flow - Register</title>
+    <link rel="shortcut icon" href="/favicon.ico" />
+    <!--[if lt IE 9]>
+	<script src="https://html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+	<![endif]-->
 
-<style>
-body, html {
-	margin: 0;
-	padding: 0;
-	font-family: 'Helvetica Neue', helvetica, Arial, sans-serif;
+	 <style>
+	   body, html {
+	       margin: 0;
+	       padding: 0;
+	       font-family: 'Helvetica Neue', helvetica, Arial, sans-serif;
 
-}
-.msgWrap {
-	position: relative;
-	width: 100%;
-	height: 100%;
-	background: #fffff;
-}
-.msgContainer {
-	position: absolute;
-	max-height: calc(100vh - 40px);
-	width: 25%;
-    min-height: auto;
-    height: auto;
-    top: 50%;
-    left: 50%; 
-    padding:20px 0;
-    -webkit-transform: translate(-50%, -50%);
-    -moz-transform: translate(-50%, -50%); 
-    -ms-transform: translate(-50%, -50%); 
-    -o-transform: translate(-50%, -50%); 
-    transform: translate(-50%, -50%); 
-    box-shadow: 0 0 20px rgba(32,32,36,0.2);
-    }
-h1 {
-	padding: 0 10px;
-	text-align: center;
-	font-size: 1.2em;
-}
-p {
-	text-align: center;	
-	font-size: 1.2em;
+	   }
+	   .msgWrap {
+	       position: relative;
+	       width: 100%;
+	       height: 100%;
+	       background: #fffff;
+	   }
+	   .msgContainer {
+	       position: absolute;
+	       max-height: calc(100vh - 40px);
+	       width: 25%;
+	       min-height: auto;
+	       height: auto;
+	       top: 50%;
+	       left: 50%; 
+	       padding:20px;
+	       -webkit-transform: translate(-50%, -50%);
+	       -moz-transform: translate(-50%, -50%); 
+	       -ms-transform: translate(-50%, -50%); 
+	       -o-transform: translate(-50%, -50%); 
+	       transform: translate(-50%, -50%); 
+	       box-shadow: 0 0 20px rgba(32,32,36,0.2);
+	   }
+	   h1 {
+	       padding: 0 10px;
+	       text-align: center;
+	       font-size: 1em;
+	   }
+	   p {
+	       text-align: center;	
+	       font-size: 1em;
 
-}
-p:after {
-	content: "";
-	width: 50%;
-	border-bottom: 1px solid rgba(100,100,100,0.5);
-	display: block;
-	margin: 3em auto;
-	padding: 0 5px;
-}
-img {
-	position: relative;
-	display: block;
-	width:25%;
-	margin: 0 auto 1em auto;
-	max-width: 280px;
-	min-width:150px;
-}
-#urlLoc {
-	font-weight: normal;
-}
-</style>
-</head>
-<body>
-<div class="msgWrap"> 
-  	<div class="msgContainer">
-  		<img src="https://akvo-public.storage.googleapis.com/AkvoLogo.svg" title="Welcome to Akvo Flow" alt="Welcome to Akvo Flow" />
-	  <h1>You need permission to access:<br><span id="urlLoc"></span></h1>
-	  <p>Request permission from your organisation admin</p>
-	</div>
-</div>
-<script type="text/javascript">
-	function currentUrl() {
-		var currentLocation = window.location.href;
-		var currentLocationMinus = currentLocation.substr(8).slice(0, -14);
-	  	return currentLocationMinus;
-	}
-	document.getElementById("urlLoc").innerHTML = currentUrl();
-</script>
-</body>
+	   }
+	   p:after {
+	       content: "";
+	       width: 50%;
+	       display: block;
+	       padding: 0 5px;
+	   }
+	   img {
+	       position: relative;
+	       display: block;
+	       width:25%;
+	       margin: 0 auto 1em auto;
+	       max-width: 280px;
+	       min-width:150px;
+	   }
+	   #urlLoc {
+	       font-weight: normal;
+	   }
+	 </style>
+  </head>
+  <body>
+    <div class="msgWrap"> 
+      <div class="msgContainer">
+  	<img src="https://akvo-public.storage.googleapis.com/AkvoLogo.svg" title="Welcome to Akvo Flow" alt="Welcome to Akvo Flow" />
+	<h1><span id="needPermissions"></span>:<br><span id="urlLoc"></span></h1>
+	<p><span id="requestPermissions"></span><br><a href="./admin/logout.html" id="logout">logout</span></a> <span id="toTry"></span></p>
+      </div>
+    </div>
+    <script type="text/javascript">
+      var messages = {
+	  "en" :
+	  { "YOU_NEED_PERMISSIONS":"You need permission to access",
+	    "REQUEST_PERMISSIONS":"Request permission from your organisation admin.",
+	    "TO_TRY":" to try with another account",
+	    "LOGOUT": "Logout"
+	  },
+	  "fr" :
+	  { "YOU_NEED_PERMISSIONS":"Vous devez être authoriser pour accéder",
+	    "REQUEST_PERMISSIONS":"Demander l’authorisation à votre administrateur.",
+	    "TO_TRY": " essyer avec un autre compte",
+	    "LOGOUT": "Se déconnecter"
+	  },
+	  "es" :
+	  { "YOU_NEED_PERMISSIONS":"Necesita permisos para acceder",
+	    "REQUEST_PERMISSIONS": "Solicite permisos al administrador de su organización.",
+	    "TO_TRY":" para probar con otra cuenta",
+	    "LOGOUT": "Cerrar session"
+	  }
+      };
+      
+      function currentUrl() {
+	  var currentLocation = window.location.href;
+	  var currentLocationMinus = currentLocation.substr(8).slice(0, -14);
+	  return currentLocationMinus;
+      }
+
+      const langs = new Set(['en', 'es', 'fr']);
+      
+      function lang() {
+	  var l = navigator.language.substring(0, 2);
+	  if (langs.has(l)) {
+	      return l;
+	  } else {
+	      return 'en';
+	  }
+      }
+      var language= lang();
+      document.getElementById("needPermissions").innerHTML = messages[language]["YOU_NEED_PERMISSIONS"];
+      document.getElementById("requestPermissions").innerHTML = messages[language]["REQUEST_PERMISSIONS"];
+      document.getElementById("logout").innerHTML = messages[language]["LOGOUT"];
+      document.getElementById("toTry").innerHTML = messages[language]["TO_TRY"];
+      document.getElementById("urlLoc").innerHTML = currentUrl();
+    </script>
+  </body>
 </html>

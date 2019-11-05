@@ -1139,11 +1139,11 @@ input.hasDatepicker {
     margin: 3px auto;
     padding: 0;
     width: 99%;
-    background: rgb(242, 242, 242) url(/admin/images/FieldSetSep.png) center center no-repeat;
+    background: rgb(242, 242, 242) center center no-repeat;
 }
 
 .fieldSetWrap.makeWhite {
-    background: white url(/admin/images/FieldSetSep.png) center center no-repeat;
+    background: white center center no-repeat;
 }
 
 #assignSurveys .fieldSetWrap fieldset table {
@@ -1993,6 +1993,7 @@ ul.cancelMenu {
 a.addGroup,
 a.addSurvey,
 a.stepBack,
+button.stepBack,
 a.editGroupName, a.addMenuAction,
 a.makeMonitorGroup, a.manageNotifications,
 a.deleteGroup, a.addFolder, a.editFolder, a.cancelFolder, a.saveMenuAction {
@@ -4086,7 +4087,7 @@ label.languageSelector:after {
        padding:2px;
        display: inline-block;
        border-radius:8px;
-       border: 2px red solid;   
+       border: 2px red solid;
     }
 }
 
@@ -4955,6 +4956,8 @@ nav.cascadeBreadCrumb {
         text-indent: 29px;
         position: relative;
         transition: all 0.4s ease-in;
+        white-space: nowrap;
+        max-width: 175px;
     }
     ul li:before {
         content: " ";
@@ -5076,6 +5079,7 @@ nav.cascadeBreadCrumb {
         }
         .cascadeEntryCode {
             width: 15%;
+            margin-top: 10px;
         }
         button {
             width: 15%;
@@ -5092,18 +5096,22 @@ nav.cascadeBreadCrumb {
         }
         .levelHead {
             padding-left: 5px;
+            max-width: calc(100% - 10px);
             width: calc(100% - 10px);
             padding-bottom: 15px;
+
+            @include noWrapTxt;
+
             label {
-                margin-bottom: 10px;
-                a {
-                    display: inline-block;
-                    width: 20px;
+                max-width: 60%;
+                display: inline-block !important;
+
+                @include noWrapTxt;
+
+                & + a {
                     margin-left: 10px;
-                    &.editSurvey {
-                        background-size: 18px 18px;
-                        &:hover {}
-                    }
+                    top: -5px;
+                    position: relative;
                 }
             }
         }

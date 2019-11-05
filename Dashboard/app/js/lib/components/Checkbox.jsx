@@ -2,27 +2,16 @@ import React from 'react';
 import PropTypes from 'prop-types';
 
 class Checkbox extends React.Component {
-  state = {
-    isChecked: this.props.checked,
-  }
-
-  onCheck = () => {
-    const { isChecked } = this.state;
-    this.setState({ isChecked: !isChecked }, () => {
-      this.props.onChange(this.props.name, this.state.isChecked);
-    });
-  }
-
   render() {
-    const { id, name } = this.props;
+    const { id, name, checked } = this.props;
 
     return (
       <input
         type="checkbox"
         id={id}
         name={name}
-        checked={this.state.isChecked}
-        onChange={this.onCheck}
+        checked={checked}
+        onChange={() => this.props.onChange(name, !checked)}
         className="displayInline"
       />
     );

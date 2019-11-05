@@ -383,8 +383,6 @@ public class TestHarnessServlet extends HttpServlet {
         }
         user.setSuperAdmin(true);
         user.setPermissionList(String.valueOf(AppRole.ROLE_SUPER_ADMIN.getLevel()));
-        user.setAccessKey(UUID.randomUUID().toString().replaceAll("-", ""));
-        user.setSecret(UUID.randomUUID().toString().replaceAll("-", ""));
         userDao.save(user);
     }
 

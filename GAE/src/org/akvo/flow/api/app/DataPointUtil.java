@@ -1,5 +1,5 @@
 /*
- *  Copyright (C) 2010-2019 Stichting Akvo (Akvo Foundation)
+ *  Copyright (C) 2019 Stichting Akvo (Akvo Foundation)
  *
  *  This file is part of Akvo FLOW.
  *
@@ -14,34 +14,8 @@
  *  The full license text can also be seen at <http://www.gnu.org/licenses/agpl.html>.
  */
 
-package org.waterforpeople.mapping.app.web;
+package org.akvo.flow.api.app;
 
-import com.gallatinsystems.device.domain.DeviceSurveyJobQueue;
-import com.gallatinsystems.framework.rest.AbstractRestApiServlet;
-import com.gallatinsystems.framework.rest.RestRequest;
-import com.gallatinsystems.framework.rest.RestResponse;
-import com.gallatinsystems.survey.dao.DeviceSurveyJobQueueDAO;
-import com.gallatinsystems.survey.dao.QuestionDao;
-import com.gallatinsystems.survey.dao.SurveyDAO;
-import com.gallatinsystems.survey.domain.Question;
-import com.gallatinsystems.survey.domain.Survey;
-import com.gallatinsystems.surveyal.dao.SurveyedLocaleDao;
-import com.gallatinsystems.surveyal.domain.SurveyedLocale;
-import com.google.api.server.spi.config.Nullable;
-import org.akvo.flow.domain.DataUtils;
-import org.akvo.flow.util.FlowJsonObjectWriter;
-import org.waterforpeople.mapping.app.web.dto.SurveyInstanceDto;
-import org.waterforpeople.mapping.app.web.dto.SurveyedLocaleDto;
-import org.waterforpeople.mapping.app.web.dto.SurveyedLocaleRequest;
-import org.waterforpeople.mapping.app.web.dto.SurveyedLocaleResponse;
-import org.waterforpeople.mapping.dao.QuestionAnswerStoreDao;
-import org.waterforpeople.mapping.dao.SurveyInstanceDAO;
-import org.waterforpeople.mapping.domain.QuestionAnswerStore;
-import org.waterforpeople.mapping.domain.SurveyInstance;
-import org.waterforpeople.mapping.serialization.response.MediaResponse;
-
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
@@ -49,85 +23,23 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-/**
- * JSON service for returning the list of records for a specific surveyId
- *
- * @author Mark Tiele Westra
- */
-public class SurveyedLocaleServlet extends AbstractRestApiServlet {
-    private static final long serialVersionUID = 8748650927754433019L;
-    private SurveyedLocaleDao surveyedLocaleDao;
-    private static final Integer SL_PAGE_SIZE = 30;
+import org.akvo.flow.domain.DataUtils;
+import org.waterforpeople.mapping.app.web.dto.SurveyInstanceDto;
+import org.waterforpeople.mapping.app.web.dto.SurveyedLocaleDto;
+import org.waterforpeople.mapping.dao.QuestionAnswerStoreDao;
+import org.waterforpeople.mapping.dao.SurveyInstanceDAO;
+import org.waterforpeople.mapping.domain.QuestionAnswerStore;
+import org.waterforpeople.mapping.domain.SurveyInstance;
+import org.waterforpeople.mapping.serialization.response.MediaResponse;
 
-    public SurveyedLocaleServlet() {
-        setMode(JSON_MODE);
-        surveyedLocaleDao = new SurveyedLocaleDao();
-    }
+import com.gallatinsystems.survey.dao.QuestionDao;
+import com.gallatinsystems.survey.domain.Question;
+import com.gallatinsystems.surveyal.domain.SurveyedLocale;
+import com.google.api.server.spi.config.Nullable;
 
-    @Override
-    protected RestRequest convertRequest() throws Exception {
-        HttpServletRequest req = getRequest();
-        RestRequest restRequest = new SurveyedLocaleRequest();
-        restRequest.populateFromHttpRequest(req);
-        return restRequest;
-    }
+public class DataPointUtil {
 
-    /**
-     * calls the surveyedLocaleDao to get the list of surveyedLocales for a certain surveyGroupId
-     * passed in via the request, or the total number of available surveyedLocales if the
-     * checkAvailable flag is set.
-     */
-    @Override
-    protected RestResponse handleRequest(RestRequest req) throws Exception {
-        SurveyedLocaleRequest slReq = (SurveyedLocaleRequest) req;
-        List<SurveyedLocale> slList;
-        if (slReq.getSurveyGroupId() != null) {
-            DeviceSurveyJobQueueDAO dsjqDAO = new DeviceSurveyJobQueueDAO();
-            SurveyDAO surveyDao = new SurveyDAO();
-            List<DeviceSurveyJobQueue> deviceSurveyJobQueues = dsjqDAO
-                    .get(slReq.getPhoneNumber(), slReq.getImei(), slReq.getAndroidId());
-            for (DeviceSurveyJobQueue dsjq : deviceSurveyJobQueues) {
-                Survey s = surveyDao.getById(dsjq.getSurveyID());
-                if (s != null && s.getSurveyGroupId().longValue() == slReq.getSurveyGroupId()
-                        .longValue()) {
-                    slList = surveyedLocaleDao.listLocalesBySurveyGroupAndDate(
-                            slReq.getSurveyGroupId(), slReq.getLastUpdateTime(), SL_PAGE_SIZE);
-                    return convertToResponse(slList, slReq.getSurveyGroupId());
-                }
-            }
-        }
-        // A valid assignment has not been found for the given device
-        RestResponse res = new RestResponse();
-        res.setCode(String.valueOf(HttpServletResponse.SC_FORBIDDEN));
-        res.setMessage("Invalid assignment");
-        return res;
-    }
-
-    /**
-     * converts the domain objects to dtos and then installs them in a RecordDataResponse object
-     *
-     */
-    private SurveyedLocaleResponse convertToResponse(List<SurveyedLocale> slList,
-            Long surveyGroupId) {
-        SurveyedLocaleResponse resp = new SurveyedLocaleResponse();
-
-        if (slList == null) {
-            resp.setCode(String.valueOf(HttpServletResponse.SC_INTERNAL_SERVER_ERROR));
-            resp.setMessage("Internal Server Error");
-            return resp;
-        }
-        // set meta data
-        resp.setCode(String.valueOf(HttpServletResponse.SC_OK));
-        resp.setResultCount(slList.size());
-
-        List<SurveyedLocaleDto> dtoList = getSurveyedLocaleDtosList(slList, surveyGroupId);
-
-        resp.setSurveyedLocaleData(dtoList);
-        return resp;
-    }
-
-    private List<SurveyedLocaleDto> getSurveyedLocaleDtosList(List<SurveyedLocale> slList,
-            Long surveyGroupId) {
+    public List<SurveyedLocaleDto> getSurveyedLocaleDtosList(List<SurveyedLocale> slList, Long surveyId) {
         List<SurveyedLocaleDto> dtoList = new ArrayList<>();
         HashMap<Long, String> questionTypeMap = new HashMap<>();
         QuestionDao questionDao = new QuestionDao();
@@ -139,7 +51,7 @@ public class SurveyedLocaleServlet extends AbstractRestApiServlet {
 
         for (SurveyedLocale surveyedLocale : slList) {
             long surveyedLocaleId = surveyedLocale.getKey().getId();
-            SurveyedLocaleDto dto = createSurveyedLocaleDto(surveyGroupId, questionDao,
+            SurveyedLocaleDto dto = createSurveyedLocaleDto(surveyId, questionDao,
                     questionTypeMap, surveyedLocale, questionAnswerStore,
                     surveyInstancesMap.get(surveyedLocaleId));
             dtoList.add(dto);
@@ -315,27 +227,5 @@ public class SurveyedLocaleServlet extends AbstractRestApiServlet {
             }
         }
         return type;
-    }
-
-    /**
-     * writes response as a JSON string
-     */
-    @Override
-    protected void writeOkResponse(RestResponse resp) throws Exception {
-        int sc;
-        try {
-            sc = Integer.valueOf(resp.getCode());
-        } catch (NumberFormatException ignored) {
-            // Status code was not properly set in the RestResponse
-            sc = HttpServletResponse.SC_INTERNAL_SERVER_ERROR;
-        }
-        getResponse().setStatus(sc);
-        if (sc == HttpServletResponse.SC_OK) {
-            FlowJsonObjectWriter writer = new FlowJsonObjectWriter();
-            writer.writeValue(getResponse().getOutputStream(), resp);
-            getResponse().getWriter().println();
-        } else {
-            getResponse().getWriter().println(resp.getMessage());
-        }
     }
 }

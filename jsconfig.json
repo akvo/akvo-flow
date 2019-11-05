@@ -1,0 +1,13 @@
+{
+    "compilerOptions": {
+        "baseUrl": "./",
+        "paths": {
+            "akvo-flow/*": [
+                "Dashboard/app/js/lib/*"
+            ],
+            "templates/*": [
+                "Dashboard/app/js/templates/*"
+            ]
+        }
+    }
+}

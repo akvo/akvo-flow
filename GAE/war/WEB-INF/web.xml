@@ -24,7 +24,6 @@
     <servlet-mapping>
         <servlet-name>rest</servlet-name>
         <url-pattern>/rest/*</url-pattern>
-        <url-pattern>/api/v1/*</url-pattern>
     </servlet-mapping>
 
     <servlet>
@@ -154,6 +153,14 @@
     </servlet-mapping>
 
     <servlet>
+        <servlet-name>DataPointServlet</servlet-name>
+        <servlet-class>org.akvo.flow.api.app.DataPointServlet</servlet-class>
+    </servlet>
+    <servlet-mapping>
+        <servlet-name>DataPointServlet</servlet-name>
+        <url-pattern>/datapoints</url-pattern>
+    </servlet-mapping>
+    <servlet>
         <servlet-name>DataProcessorServlet</servlet-name>
         <servlet-class>org.waterforpeople.mapping.app.web.DataProcessorRestServlet</servlet-class>
     </servlet>
@@ -178,15 +185,15 @@
         <servlet-name>SurveyalServlet</servlet-name>
         <url-pattern>/app_worker/surveyalservlet</url-pattern>
     </servlet-mapping>
-       <servlet>
+    <servlet>
         <servlet-name>SurveyedLocaleServlet</servlet-name>
-        <servlet-class>org.waterforpeople.mapping.app.web.SurveyedLocaleServlet</servlet-class>
+        <servlet-class>org.akvo.flow.api.app.SurveyedLocaleServlet</servlet-class>
     </servlet>
     <servlet-mapping>
         <servlet-name>SurveyedLocaleServlet</servlet-name>
         <url-pattern>/surveyedlocale</url-pattern>
     </servlet-mapping>
-
+    
     <servlet>
         <servlet-name>Task</servlet-name>
         <servlet-class>org.waterforpeople.mapping.app.web.TaskServlet</servlet-class>
@@ -408,13 +415,21 @@
     </filter-mapping>
     <filter-mapping>
         <filter-name>restAuthFilter</filter-name>
+        <url-pattern>/datapoints</url-pattern>
+    </filter-mapping>
+    <filter-mapping>
+        <filter-name>restAuthFilter</filter-name>
         <url-pattern>/surveyrestapi</url-pattern>
     </filter-mapping>
     <filter-mapping>
         <filter-name>restAuthFilter</filter-name>
         <url-pattern>/rawdatarestapi</url-pattern>
     </filter-mapping>
-    
+
+    <session-config>
+        <tracking-mode>COOKIE</tracking-mode>
+    </session-config>
+
     <security-constraint>
         <web-resource-collection>
         <web-resource-name>devicetimerest</web-resource-name>

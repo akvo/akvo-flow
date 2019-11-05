@@ -1,5 +1,5 @@
 /*
- *  Copyright (C) 2010-2012 Stichting Akvo (Akvo Foundation)
+ *  Copyright (C) 2019 Stichting Akvo (Akvo Foundation)
  *
  *  This file is part of Akvo FLOW.
  *
@@ -14,25 +14,28 @@
  *  The full license text can also be seen at <http://www.gnu.org/licenses/agpl.html>.
  */
 
-package com.gallatinsystems.user.dao;
+package org.akvo.flow.api.app;
 
 import java.util.List;
 
-import com.gallatinsystems.framework.dao.BaseDAO;
-import com.gallatinsystems.user.domain.UserConfig;
+import org.waterforpeople.mapping.app.web.dto.SurveyedLocaleDto;
+
+import com.gallatinsystems.framework.rest.RestResponse;
 
 /**
- * Dao for UserConfig objects
- * 
- * @author Mark Westra
+ * response for DataPointServlet service
+ *
  */
-public class UserConfigDao extends BaseDAO<UserConfig> {
+public class DataPointResponse extends RestResponse {
+    private static final long serialVersionUID = 1L;
+    private List<SurveyedLocaleDto> dataPointData;
 
-    public UserConfigDao() {
-        super(UserConfig.class);
+    public List<SurveyedLocaleDto> getDataPointData() {
+        return dataPointData;
     }
 
-    public List<UserConfig> listConfigsByUser(Long userId) {
-        return listByProperty("userId", userId, "Long");
+    public void setDataPointData(List<SurveyedLocaleDto> dataPointData) {
+        this.dataPointData = dataPointData;
     }
+
 }
