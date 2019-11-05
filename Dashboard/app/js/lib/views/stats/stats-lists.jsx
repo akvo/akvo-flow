@@ -64,7 +64,7 @@ FLOW.StatsListsView = FLOW.ReactComponentView.extend(
     getProps() {
       return {
         strings: {
-          noStats: Ember.String.loc('No stats generated yet'),
+          noStats: Ember.String.loc('_no_stats_generated'),
           clickToExport: Ember.String.loc('_click_new_export'),
           submissions: Ember.String.loc('_submissions'),
           generatedStats: Ember.String.loc('_generated_stats'),
