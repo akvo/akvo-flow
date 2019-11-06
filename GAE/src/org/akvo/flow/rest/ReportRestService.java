@@ -28,6 +28,7 @@ import org.akvo.flow.dao.ReportDao;
 import org.akvo.flow.domain.persistent.Report;
 import org.akvo.flow.rest.dto.ReportDto;
 import org.akvo.flow.rest.dto.ReportPayload;
+import org.akvo.flow.rest.security.AppRole;
 import org.akvo.flow.servlet.ReportServlet;
 import org.springframework.beans.BeanUtils;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -40,7 +41,10 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.context.request.ServletRequestAttributes;
 import org.springframework.web.context.request.RequestContextHolder;
+import org.waterforpeople.mapping.app.web.CurrentUserServlet;
 import org.waterforpeople.mapping.app.web.rest.dto.RestStatusDto;
+
+import com.gallatinsystems.user.domain.User;
 
 
 @Controller
@@ -49,6 +53,7 @@ public class ReportRestService {
 
 	private static final Logger log = Logger.getLogger(ReportRestService.class.getName());
 
+    private final String statsType = "STATISTICS";
     private final String[] doNotCopy = {
             "createdDateTime",
             "lastUpdateDateTime"
@@ -58,16 +63,13 @@ public class ReportRestService {
 
     /**
      * Create a new Report from posted payload.
-     *
-     * @param requestPayload
-     * @return
      */
     @RequestMapping(method = RequestMethod.POST, value = "")
     @ResponseBody
     public Map<String, Object> saveNewReport(@RequestBody
     ReportPayload payLoad,
     @RequestHeader(value = "Host", required = false) String host) {
-    	
+
         final ReportDto reportDto = payLoad.getReport();
         final Map<String, Object> response = new HashMap<String, Object>();
         ReportDto dto = null;
@@ -77,35 +79,46 @@ public class ReportRestService {
         // if the POST data contains a valid ReportDto, continue.
         // Otherwise, server will respond with 400 Bad Request
         if (reportDto != null) {
-            Report r = new Report();
-
-            BeanUtils.copyProperties(reportDto, r, doNotCopy);
-
-            r.setUser((Long)SecurityContextHolder.getContext().getAuthentication().getCredentials());
-            r.setState(Report.QUEUED);  //overwrite any supplied state
-            // Save it, so we get an id assigned
-            r = reportDao.save(r);
-            String baseUrl = null;
-            HttpServletRequest request = ((ServletRequestAttributes) RequestContextHolder
-                    .getRequestAttributes()).getRequest();
-            if (request == null){
-            	throw new RuntimeException("Request details not available!");
+            //Check if it is a statistics report, which only admins can get
+            if (statsType.equalsIgnoreCase(reportDto.getReportType()) && !isAdminRole()) {
+                statusDto.setMessage("Must be Admin");
             } else {
-            	baseUrl = request.getScheme() + "://" + host;
+
+                Report r = new Report();
+
+                BeanUtils.copyProperties(reportDto, r, doNotCopy);
+
+                r.setUser((Long)SecurityContextHolder.getContext().getAuthentication()
+                        .getCredentials());
+                r.setState(Report.QUEUED);  //overwrite any supplied state
+                // Save it, so we get an id assigned
+                r = reportDao.save(r);
+                String baseUrl = null;
+                HttpServletRequest request = ((ServletRequestAttributes) RequestContextHolder
+                        .getRequestAttributes()).getRequest();
+                if (request == null) {
+                	throw new RuntimeException("Request details not available!");
+                } else {
+                	baseUrl = request.getScheme() + "://" + host;
+                }
+                ReportServlet.queueStart(baseUrl, r);
+
+                dto = new ReportDto();
+                BeanUtils.copyProperties(r, dto);
+                dto.setKeyId(r.getKey().getId());
+                statusDto.setStatus("ok");
+                response.put("report", dto);
             }
-            ReportServlet.queueStart(baseUrl, r);
-
-            dto = new ReportDto();
-            BeanUtils.copyProperties(r, dto);
-            dto.setKeyId(r.getKey().getId());
-            statusDto.setStatus("ok");
         }
-
         response.put("meta", statusDto);
-        response.put("report", dto);
         return response;
     }
 
+    private boolean isAdminRole() {
+        User u = CurrentUserServlet.getCurrentUser();
+        return u.getPermissionList().equals(Integer.toString(AppRole.ROLE_ADMIN.getLevel()))
+            || u.getPermissionList().equals(Integer.toString(AppRole.ROLE_SUPER_ADMIN.getLevel()));
+    }
 
     // find all reports belonging to the current user
     @RequestMapping(method = RequestMethod.GET, value = "")
@@ -126,8 +139,10 @@ public class ReportRestService {
         return response;
     }
 
-    // find a single report by the reportId
-    // TODO: restrict use to owner+superAdmins
+    /*
+     *  find a single report by the reportId
+     *  TODO: restrict use to owner+superAdmins
+     */
     @RequestMapping(method = RequestMethod.GET, value = "/{id}")
     @ResponseBody
     public Map<String, ReportDto> findReport(@PathVariable("id") Long id) {

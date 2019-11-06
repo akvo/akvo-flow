@@ -184,6 +184,9 @@ public class XmlQuestion {
 
         if (options != null) {
             dto.setOptionContainerDto(options.toDto());
+            //exporter code expects these in the QuestionDto:
+            dto.setAllowMultipleFlag(options.getAllowMultiple());
+            dto.setAllowOtherFlag(options.getAllowOther());
         }
         //Translations
         if (altText != null) {

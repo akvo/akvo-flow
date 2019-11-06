@@ -90,7 +90,7 @@ public class XmlOptions {
         this.option = option;
     }
 
-    public boolean isAllowOther() {
+    public boolean getAllowOther() {
         return allowOther;
     }
 
@@ -98,7 +98,7 @@ public class XmlOptions {
         this.allowOther = allowOther;
     }
 
-    public boolean isAllowMultiple() {
+    public boolean getAllowMultiple() {
         return allowMultiple;
     }
 
