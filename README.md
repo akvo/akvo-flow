@@ -81,7 +81,7 @@ If you want to use a configuration different from the dev one, checkout the akvo
 
 To switch back to the dev setup:
 
-    swith_to_local_tenant.sh
+    switch_to_local_tenant.sh
 
 To deploy the current state of the docker container to whatever tenant you last switched to, run:
 
