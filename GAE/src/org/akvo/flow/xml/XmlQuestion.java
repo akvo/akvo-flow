@@ -142,7 +142,7 @@ public class XmlQuestion {
             default:
                 break;
         }
-        if (Boolean.TRUE == q.getDependentFlag()) {
+        if (Boolean.TRUE.equals(q.getDependentFlag())) {
             dependency = new XmlDependency(q.getDependentQuestionId(), q.getDependentQuestionAnswer());
         }
         //Translations, if any
