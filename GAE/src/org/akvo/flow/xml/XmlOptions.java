@@ -50,7 +50,7 @@ public class XmlOptions {
         allowMultiple = Boolean.TRUE.equals(q.getAllowMultipleFlag());
         if (q.getQuestionOptionMap() != null) {
             option = new ArrayList<XmlOption>();
-            for (QuestionOption o: q.getQuestionOptionMap().values()) { //TODO In order?
+            for (QuestionOption o: q.getQuestionOptionMap().values()) { //In key order
                 option.add(new XmlOption(o));
             }
         }
