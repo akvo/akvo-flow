@@ -3,6 +3,7 @@
     border: 1px solid #e6e6e6;
     border-radius: 5px;
     padding: 7px 0px;
+    border-bottom: none;
 
     .infoText {
       font-size: 14px;
@@ -64,7 +65,8 @@
             font-size: 17px;
             font-weight: 500;
             border: none;
-            padding: 4px 0px;
+            padding: 4px 5px;
+            border: 1px solid transparent;
 
             &:hover,
             &:focus {
@@ -111,6 +113,11 @@
                 outline: none;
                 border: none;
                 background-color: transparent;
+                font-family: inherit;
+
+                &:hover {
+                  background: transparent;
+                }
               }
             }
           }
