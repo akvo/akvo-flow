@@ -55,7 +55,7 @@ FLOW.NewStatsReactView = FLOW.ReactComponentView.extend({
 
     setTimeout(() => {
       FLOW.router.transitionTo('navStats.index');
-    }, 500);
+    }, 1000);
   },
 
   showDialogMessage(header, message) {

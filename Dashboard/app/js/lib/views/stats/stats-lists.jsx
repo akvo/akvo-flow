@@ -48,7 +48,9 @@ FLOW.StatsListsView = FLOW.ReactComponentView.extend(
             name: item.get('filename').length
               ? item.get('filename')
               : Ember.String.loc('_no_file_generated'),
-            startDate: FLOW.renderTimeStamp(item.get('startDate')) || 'N/A',
+            startDate:
+              FLOW.renderTimeStamp(item.get('startDate')) ||
+              Ember.String.loc('_beginning_of_time'),
             endDate: FLOW.renderTimeStamp(item.get('endDate')) || 'N/A',
             status: item.get('state'),
           });
