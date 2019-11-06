@@ -339,12 +339,15 @@ FLOW.AssignmentEditView = FLOW.ReactComponentView.extend(
 
       if (!FLOW.surveyControl.content) return;
 
-      FLOW.surveyControl.content.forEach(form => {
-        this.forms[form.get('keyId')] = {
-          name: form.get('name'),
-          checked: this.formInAssignment(form.get('keyId')),
-        };
-      });
+      // filter to show only published forms here
+      FLOW.surveyControl.content
+        .filter(form => form.get('status') === 'PUBLISHED')
+        .forEach(form => {
+          this.forms[form.get('keyId')] = {
+            name: form.get('name'),
+            checked: this.formInAssignment(form.get('keyId')),
+          };
+        });
 
       this.renderReactSide();
     },
