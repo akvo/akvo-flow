@@ -124,7 +124,6 @@ FLOW.AssignmentEditView = FLOW.ReactComponentView.extend(
         onSubmit: this.saveSurveyAssignment,
         handleSurveySelect: this.handleSurveySelect,
         handleDeviceCheck: this.handleDeviceCheck,
-        // handleSelectAllDevice: this.handleSelectAllDevice,
       };
 
       const data = {
