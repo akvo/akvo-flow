@@ -40,7 +40,6 @@ import org.waterforpeople.mapping.domain.response.value.Location;
 import org.waterforpeople.mapping.domain.response.value.Media;
 import org.waterforpeople.mapping.serialization.response.MediaResponse;
 
-//import com.fasterxml.jackson.core.type.TypeReference;
 import com.gallatinsystems.common.Constants;
 import com.gallatinsystems.common.util.S3Util;
 import com.google.appengine.api.datastore.DatastoreService;
@@ -60,8 +59,6 @@ import com.drew.metadata.exif.GpsDirectory;
 import com.drew.metadata.Tag;
 import com.drew.metadata.exif.ExifReader;
 import com.drew.metadata.iptc.IptcReader;
-
-
 
 /*
  * - Bring question answers up to date
