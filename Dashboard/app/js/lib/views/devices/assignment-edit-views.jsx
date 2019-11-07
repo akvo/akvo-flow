@@ -124,7 +124,7 @@ FLOW.AssignmentEditView = FLOW.ReactComponentView.extend(
         onSubmit: this.saveSurveyAssignment,
         handleSurveySelect: this.handleSurveySelect,
         handleDeviceCheck: this.handleDeviceCheck,
-        handleSelectAllDevice: this.handleSelectAllDevice,
+        // handleSelectAllDevice: this.handleSelectAllDevice,
       };
 
       const data = {
@@ -542,6 +542,7 @@ FLOW.AssignmentEditView = FLOW.ReactComponentView.extend(
     },
 
     handleDeviceCheck(deviceId, checked, deviceGroupId) {
+      console.log(deviceId);
       // if it's the select all option
       if (deviceId == 0) {
         return this.handleSelectAllDevice(deviceGroupId, checked);

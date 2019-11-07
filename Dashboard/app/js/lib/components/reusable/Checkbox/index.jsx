@@ -6,10 +6,9 @@ class Checkbox extends React.Component {
   render() {
     const { id, name, checked, label } = this.props;
 
-    // Label has no id because select all checkboxes has the same id of 0
-    // so if two labels has the same id, when i click on one the other one gets checked too
+    // using name because id is used to control the label and input
     return (
-      <label htmlFor="no_id" className="checkbox-container">
+      <label htmlFor={id} className="checkbox-container">
         {label}
         <input
           type="checkbox"
