@@ -16,20 +16,20 @@
 
 package org.akvo.flow.xml;
 
-import org.waterforpeople.mapping.app.gwt.client.survey.QuestionOptionDto;
+import java.util.ArrayList;
+import java.util.List;
 
+import org.waterforpeople.mapping.app.gwt.client.survey.QuestionOptionDto;
 import com.fasterxml.jackson.dataformat.xml.annotation.JacksonXmlElementWrapper;
 import com.fasterxml.jackson.dataformat.xml.annotation.JacksonXmlProperty;
+import com.gallatinsystems.survey.domain.QuestionOption;
+import com.gallatinsystems.survey.domain.Translation;
 
 /*
  * Class for working with form XML like this:
  *
- * <question order="1" type="option" mandatory="true" localeNameFlag="false" id="46843002">
- * <options allowOther="false" allowMultiple="false" renderType="radio">
  * <option value="Yes" code="Y"><text>Yes</text></option>
- * <option value="No" code="N"><text>No</text></option>
- * </options>
- * <
+ * <option value="No" code="N"><text>No</text><altText type="translation" language="fr">Non</altText></option>
  */
 
 public class XmlOption {
@@ -41,11 +41,40 @@ public class XmlOption {
     @JacksonXmlProperty(localName = "text", isAttribute = false)
     private String text;
     @JacksonXmlElementWrapper(localName = "altText", useWrapping = false)
-    private XmlAltText[] altText;
+    private List<XmlAltText> altText;
 
     public XmlOption() {
     }
 
+    public XmlOption(QuestionOption o) {
+        setCode(o.getCode());
+        setText(o.getText());
+        setValue(o.getText());
+        //Translations
+        altText = new ArrayList<>();
+        for (Translation t: o.getTranslationMap().values()) {
+            altText.add(new XmlAltText(t));
+        }
+    }
+
+    /**
+     * @return a DTO object with relevant fields copied
+     */
+    public QuestionOptionDto toDto() {
+        QuestionOptionDto dto = new QuestionOptionDto();
+        //We could also handle translations here but they are not needed for reports
+        dto.setCode(code);
+        dto.setText(text);
+        return dto;
+    }
+
+    @Override public String toString() {
+        return "option{" +
+                "code='" + code +
+                "',value='" + value +
+                "',text='" + text +
+                "'}";
+    }
 
     public String getCode() {
         return code;
@@ -71,31 +100,13 @@ public class XmlOption {
         this.text = text;
     }
 
-    public XmlAltText[] getAltText() {
+    public List<XmlAltText> getAltText() {
         return altText;
     }
 
-    public void setAltText(XmlAltText[] altText) {
+    public void setAltText(List<XmlAltText> altText) {
         this.altText = altText;
     }
 
-    /**
-     * @return a Dto object with relevant fields copied
-     */
-    public QuestionOptionDto toDto() {
-        QuestionOptionDto dto = new QuestionOptionDto();
-        //TODO translations
-        dto.setCode(code);
-        dto.setText(text);
-        return dto;
-    }
-
-    @Override public String toString() {
-        return "option{" +
-                "code='" + code +
-                "',value='" + value +
-                "',text='" + text +
-                "'}";
-    }
 
 }
