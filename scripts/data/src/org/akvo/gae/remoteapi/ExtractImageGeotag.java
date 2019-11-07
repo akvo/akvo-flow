@@ -64,7 +64,7 @@ import com.drew.metadata.iptc.IptcReader;
 
 
 /*
- * - Bring questions up to date
+ * - Bring question answers up to date
  */
 public class ExtractImageGeotag implements Process {
 
@@ -75,7 +75,6 @@ public class ExtractImageGeotag implements Process {
 
     @Override
     public void execute(DatastoreService ds, String[] args) throws Exception {
-
 
         if (args.length >= 3 ) {
             S3bucket = args[0];
@@ -89,9 +88,7 @@ public class ExtractImageGeotag implements Process {
             return;
         }
         //System.out.printf("#S3-bucketname %s, S3-id %s, S3-secret %s\n", S3bucket, S3id, S3secret);
-
         processQuestions(ds);
-
     }
 
     private void processQuestions(DatastoreService ds) throws ParseException {
@@ -139,13 +136,10 @@ public class ExtractImageGeotag implements Process {
                     tagged++;
                     continue; //Skip
                 }
-
-
             } else {
                 System.out.printf("#ERROR null or empty value for IMAGE %d: '%s'\n", q.getKey().getId(), v);
                 continue; //TODO convert this to JSON too?
             }
-
             //No location known; must read the file
             Location loc = new Location();
             Boolean tagFound = fetchLocationFromJpegInS3(media.getFilename(), loc);
@@ -171,7 +165,6 @@ public class ExtractImageGeotag implements Process {
                     questionsToFix.clear();
                 }
             }
-
         }
         System.out.println("Found " + total + " images.");
         System.out.println("  Non-JSON " + nonjson + " answers.");
@@ -212,8 +205,6 @@ public class ExtractImageGeotag implements Process {
                 Rational[] altTag = directory.getRationalArray(GpsDirectory.TAG_ALTITUDE);
                 Integer altRefTag = directory.getInteger(GpsDirectory.TAG_ALTITUDE_REF);
                 Rational[] accTag = directory.getRationalArray(GpsDirectory.TAG_H_POSITIONING_ERROR);
-                //Rational[] timTag = directory.getRationalArray(GpsDirectory.TAG_TIME_STAMP);
-                //Rational[] datTag = directory.getRationalArray(GpsDirectory.TAG_DATE_STAMP);
                 if (latTag == null || lonTag == null) {
                     f.delete();
                     return false; //Bad GPS tag
@@ -288,5 +279,4 @@ public class ExtractImageGeotag implements Process {
             return null;
         }
     }
-
 }
