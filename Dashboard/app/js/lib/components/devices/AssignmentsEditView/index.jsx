@@ -1,148 +1,114 @@
 /* eslint-disable import/no-unresolved */
 import React from 'react';
 import PropTypes from 'prop-types';
-
+import moment from 'moment';
 import FolderSurveySelectorView from 'akvo-flow/components/selectors/FolderSurveySelector';
 import FormSelectorView from 'akvo-flow/components/selectors/FormSelector';
 import DeviceGroupSelectorView from 'akvo-flow/components/selectors/DeviceSelector';
-import AssignmentDetails from './AssignmentDetails';
 
-export default class AssignmentsEditView extends React.Component {
+import './styles.scss';
+
+export default class AssignmentsEdit extends React.Component {
   state = {
     assignmentName: this.props.inputValues.assignmentName,
     startDate: this.props.inputValues.startDate,
-    expireDate: this.props.inputValues.toDate,
-    nameValidationMsg: '',
-    expireDateMsg: '',
-    startDateMsg: '',
+    endDate: this.props.inputValues.toDate,
   };
 
   // event handlers
-  onChangeState = (key, value) => {
-    this.setState({ [key]: value });
+  onChangeState = e => {
+    this.setState({ [e.target.id]: e.target.value });
   };
 
   onSubmit = () => {
-    const { assignmentName, startDate, expireDate } = this.state;
+    const { assignmentName, startDate, endDate } = this.state;
 
-    if (this.validateData()) {
-      this.props.actions.onSubmit({ assignmentName, startDate, expireDate });
-    }
+    this.props.actions.onSubmit({ assignmentName, startDate, endDate });
   };
 
   // helpers
-  validateData = () => {
-    const { assignmentName, startDate, expireDate } = this.state;
-    let isValid = true;
+  formatMomentDate = date => moment(date, 'YYYY/MM/DD').format('YYYY-MM-DD');
 
-    // validate assignment name
-    if (!assignmentName || assignmentName == '') {
-      this.setState({
-        nameValidationMsg: Ember.String.loc('_assignment_name_not_set'),
-      });
-      isValid = false;
-    }
-
-    if (assignmentName.length > 100) {
-      this.setState({
-        nameValidationMsg: Ember.String.loc('_assignment_name_over_100_chars'),
-      });
-      isValid = false;
-    }
-
-    // remove validation message incase it was set
-    if (isValid) {
-      this.setState({ nameValidationMsg: '' });
-    }
-
-    // validate dates === start date
-    if (!startDate || !startDate.length) {
-      this.setState({ startDateMsg: Ember.String.loc('_date_not_set_text') });
-      isValid = false;
-    }
-
-    if (isValid) {
-      this.setState({ startDateMsg: '' });
-    }
-
-    // validate date === expire date
-    if (!expireDate || !expireDate.length) {
-      this.setState({ expireDateMsg: Ember.String.loc('_date_not_set_text') });
-      isValid = false;
-    }
-
-    if (isValid) {
-      this.setState({ expireDateMsg: '' });
-    }
-
-    return isValid;
-  };
-
-  formatStateForComponents = () => {
-    const assignmentDetailsState = {
-      assignmentName: this.state.assignmentName,
-      startDate: this.state.startDate,
-      expireDate: this.state.expireDate,
-    };
-
-    return {
-      assignmentDetailsState,
-    };
-  };
-
-  getNumberOfSelectedDevices = () => {
-    let selectedDevices = 0;
-    const { deviceGroups } = this.props.data;
-
-    Object.keys(deviceGroups).forEach(dgId => {
-      const noOfSelectedDevicesInThisGroup = Object.keys(
-        deviceGroups[dgId]
-      ).filter(
-        deviceId => deviceId != 0 && deviceGroups[dgId][deviceId].checked
-      ).length;
-
-      selectedDevices += noOfSelectedDevicesInThisGroup;
-    });
-
-    return selectedDevices;
-  };
-
-  // render
   render() {
     const { strings, actions, data } = this.props;
-    const { assignmentDetailsState } = this.formatStateForComponents();
-    const selectedDevices = this.getNumberOfSelectedDevices();
 
     return (
-      <div>
-        <button
-          onKeyPress={actions.cancelEditSurveyAssignment}
-          onClick={actions.cancelEditSurveyAssignment}
-          className="stepBack"
-          id="float-right"
-          type="button"
-        >
-          {strings.backToAssignmentList}
-        </button>
+      <div className="assignments-edit">
+        {/* topbar */}
+        <div className="assignment-topbar">
+          <div className="assignment-name">
+            <button
+              type="button"
+              className="go-back"
+              onClick={actions.cancelEditSurveyAssignment}
+            >
+              <i className="fa fa-arrow-left" />
+            </button>
 
-        <form>
-          <AssignmentDetails
-            strings={{
-              ...strings,
-              nameValidationMsg: this.state.nameValidationMsg,
-              expireDateMsg: this.state.expireDateMsg,
-              startDateMsg: this.state.startDateMsg,
-            }}
-            values={assignmentDetailsState}
-            onChange={this.onChangeState}
-          />
+            <h3>
+              <input
+                type="text"
+                id="assignmentName"
+                placeholder={strings.assignmentNamePlaceholder}
+                value={this.state.assignmentName}
+                onChange={this.onChangeState}
+              />
+              {/* <span className="infoText">0 datapoints / 20k assigned</span> */}
+            </h3>
+          </div>
 
-          <div className="fieldSetWrap floats-in">
-            <div className="formLeftPanel">
-              <fieldset id="surveySelect" className="floats-in">
-                <h2>{strings.selectSurvey}:</h2>
+          <button onClick={this.onSubmit} type="button" className="standardBtn">
+            {strings.saveAssignment}
+          </button>
+        </div>
 
-                <div className="SelectLayout">
+        <div className="assignment-body">
+          <div className="settings">
+            <h3>{strings.settings}</h3>
+
+            <div className="assignment-date">
+              <p className="heading">
+                <span className="title">{strings.duration}</span>
+              </p>
+
+              {/* date picker */}
+              <div className="date-picker">
+                <div className="date">
+                  <i className="fa fa-calendar" />
+                  <input
+                    type="date"
+                    id="startDate"
+                    value={this.formatMomentDate(this.state.startDate)}
+                    onChange={this.onChangeState}
+                  />
+                </div>
+                <span> - </span>
+                <div className="date">
+                  <i className="fa fa-calendar" />
+                  <input
+                    type="date"
+                    id="endDate"
+                    min={this.formatMomentDate(this.state.startDate)}
+                    value={this.formatMomentDate(this.state.endDate)}
+                    onChange={this.onChangeState}
+                  />
+                </div>
+              </div>
+            </div>
+
+            <div className="assignment-form-selector">
+              <p className="heading">
+                <span className="title">{strings.forms}</span>
+                <span className="info">
+                  {data.numberOfForms} {strings.enabled}
+                </span>
+              </p>
+
+              <div className="form-selector">
+                <span className="infoText">{strings.formsWarning}</span>
+                <br />
+
+                <div className="folder-selector">
                   <FolderSurveySelectorView
                     initialSurveyGroup={data.initialSurveyGroup}
                     surveyGroups={data.surveyGroups}
@@ -150,78 +116,40 @@ export default class AssignmentsEditView extends React.Component {
                     strings={strings}
                   />
                 </div>
+                <br />
 
-                <div className="formSelectorList">
-                  <label htmlFor="surveys">{strings.selectForms}:</label>
-                  <span className="infoText">{strings.selectFormNote}</span>
-                  <br />
-
+                {Object.keys(data.forms).length ? (
                   <FormSelectorView
                     forms={data.forms}
                     onCheck={actions.handleFormCheck}
                   />
-                </div>
-              </fieldset>
-            </div>
-
-            <div className="formRightPanel">
-              <fieldset id="surveySelect" className="floats-in">
-                <h2>
-                  {strings.selectDevices}:{' '}
-                  <span className="infoText">
-                    {selectedDevices} {strings.selectedDevices}
-                  </span>
-                </h2>
-
-                <DeviceGroupSelectorView
-                  deviceGroupNames={data.deviceGroupNames}
-                  deviceGroups={data.deviceGroups}
-                  activeDeviceGroups={data.activeDeviceGroups}
-                  handleDeviceCheck={actions.handleDeviceCheck}
-                  onSelectAll={actions.handleSelectAllDevice}
-                />
-              </fieldset>
+                ) : (
+                  <p className="noForms">{strings.noForms}</p>
+                )}
+              </div>
             </div>
           </div>
 
-          <div className="fieldSetWrap makeWhite">
-            <div className="formLeftPanel" />
-            <div className="formRightPanel">
-              {/* Data points list will come here */}
+          <div className="devices">
+            <h3>{strings.devices}</h3>
+
+            <div className="assignment-device-selector">
+              <DeviceGroupSelectorView
+                deviceGroupNames={data.deviceGroupNames}
+                deviceGroups={data.deviceGroups}
+                activeDeviceGroups={data.activeDeviceGroups}
+                handleDeviceCheck={actions.handleDeviceCheck}
+                onSelectAll={actions.handleSelectAllDevice}
+              />
             </div>
           </div>
-
-          <div className="menuConfirm">
-            <ul>
-              <li>
-                <button
-                  onClick={this.onSubmit}
-                  onKeyPress={this.onSubmit}
-                  className="standardBtn"
-                  type="button"
-                >
-                  {strings.saveAssignment}
-                </button>
-              </li>
-
-              <li>
-                <button
-                  onClick={actions.cancelEditSurveyAssignment}
-                  onKeyPress={actions.cancelEditSurveyAssignment}
-                  type="button"
-                >
-                  {strings.cancel}
-                </button>
-              </li>
-            </ul>
-          </div>
-        </form>
+        </div>
       </div>
     );
   }
 }
 
-AssignmentsEditView.propTypes = {
+AssignmentsEdit.propTypes = {
   strings: PropTypes.object.isRequired,
   actions: PropTypes.object.isRequired,
   inputValues: PropTypes.object.isRequired,

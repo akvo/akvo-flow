@@ -23,29 +23,33 @@ import org.waterforpeople.mapping.app.gwt.client.survey.QuestionDto;
 import org.waterforpeople.mapping.app.gwt.client.survey.QuestionDto.QuestionType;
 import org.waterforpeople.mapping.app.gwt.client.survey.TranslationDto;
 
+import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.dataformat.xml.annotation.JacksonXmlElementWrapper;
 import com.fasterxml.jackson.dataformat.xml.annotation.JacksonXmlProperty;
+import com.gallatinsystems.survey.domain.Question;
+import com.gallatinsystems.survey.domain.Translation;
 
 
+@JsonInclude(JsonInclude.Include.NON_NULL)
 public class XmlQuestion {
 
-    private static String FREE_TYPE = "free";
+    private static String FREE_TYPE = "free"; //Used for both FREE_TEXT and NUMBER
     private static String NUMERIC_VALIDATION_TYPE = "numeric";
 
     @JacksonXmlProperty(localName = "options", isAttribute = false)
     private XmlOptions options;
     @JacksonXmlProperty(localName = "validationRule", isAttribute = false)
-    private XmlValidationRule validationRule; //TODO: only one, ever?
+    private XmlValidationRule validationRule; //only one
     @JacksonXmlProperty(localName = "dependency", isAttribute = false)
     private XmlDependency dependency; //only one
     @JacksonXmlProperty(localName = "help", isAttribute = false)
     private XmlHelp help;
     @JacksonXmlElementWrapper(localName = "altText", useWrapping = false)
-    private XmlAltText[] altText;
+    private List<XmlAltText> altText;
     @JacksonXmlProperty(localName = "text", isAttribute = false)
     private String text;
     @JacksonXmlElementWrapper(localName = "levels", useWrapping = true)
-    private XmlLevel[] level;
+    private List<XmlLevel> level;
 
     @JacksonXmlProperty(localName = "id", isAttribute = true)
     private long id;
@@ -56,26 +60,172 @@ public class XmlQuestion {
     @JacksonXmlProperty(localName = "mandatory", isAttribute = true)
     private boolean mandatory;
     @JacksonXmlProperty(localName = "requireDoubleEntry", isAttribute = true)
-    private boolean requireDoubleEntry;
+    private Boolean requireDoubleEntry;
     @JacksonXmlProperty(localName = "localeNameFlag", isAttribute = true)
     private boolean localeNameFlag;
     @JacksonXmlProperty(localName = "locked", isAttribute = true)
-    private boolean locked;
+    private Boolean locked;
     @JacksonXmlProperty(localName = "localeLocationFlag", isAttribute = true)
-    private boolean localeLocationFlag;
+    private Boolean localeLocationFlag;
     @JacksonXmlProperty(localName = "caddisflyResourceUuid", isAttribute = true)
     private String caddisflyResourceUuid;
     @JacksonXmlProperty(localName = "cascadeResource", isAttribute = true)
     private String cascadeResource;
     @JacksonXmlProperty(localName = "allowPoints", isAttribute = true)
-    private boolean allowPoints;
+    private Boolean allowPoints;
     @JacksonXmlProperty(localName = "allowLine", isAttribute = true)
-    private boolean allowLine;
+    private Boolean allowLine;
     @JacksonXmlProperty(localName = "allowPolygon", isAttribute = true)
-    private boolean allowPolygon;
+    private Boolean allowPolygon;
 
 
     public XmlQuestion() {
+    }
+
+    //Create a jackson object from a domain object
+    public XmlQuestion(Question q) {
+        text = q.getText();
+        id = q.getKey().getId();
+        order = q.getOrder();
+        mandatory = Boolean.TRUE.equals(q.getMandatoryFlag());
+        localeNameFlag = Boolean.TRUE.equals(q.getLocaleNameFlag());
+        if (Boolean.TRUE.equals(q.getLocaleLocationFlag())) {
+            localeLocationFlag = Boolean.TRUE;
+        }
+        if (Boolean.TRUE.equals(q.getGeoLocked())) {
+            locked = Boolean.TRUE;
+        }
+        if (q.getTip() != null) {
+            help = new XmlHelp(q.getTip());
+        }
+
+        type = q.getType().toString().toLowerCase();
+        //Things specific to a question type
+        switch (q.getType()) {
+            case NUMBER:
+                type = FREE_TYPE;
+                validationRule = new XmlValidationRule(q); //This signals number
+                if (Boolean.TRUE.equals(q.getRequireDoubleEntry())) {
+                    requireDoubleEntry = Boolean.TRUE;
+                }
+                break; //Could have done a fall-through here ;)
+            case FREE_TEXT:
+                type = FREE_TYPE;
+                if (Boolean.TRUE.equals(q.getRequireDoubleEntry())) {
+                    requireDoubleEntry = Boolean.TRUE;
+                }
+                break;
+            case GEOSHAPE:
+                allowPoints = Boolean.TRUE.equals(q.getAllowPoints());
+                allowLine = Boolean.TRUE.equals(q.getAllowLine());
+                allowPolygon = Boolean.TRUE.equals(q.getAllowPolygon());
+                break;
+            case CASCADE:
+                cascadeResource = q.getCascadeResourceId().toString();
+                //level names, if any
+                if (q.getLevelNames() != null) {
+                    level = new ArrayList<>();
+                    for (String text: q.getLevelNames()) {
+                        level.add(new XmlLevel(text));
+                    }
+                }
+                break;
+            case CADDISFLY:
+                caddisflyResourceUuid = q.getCaddisflyResourceUuid();
+                break;
+            case OPTION:
+                //Now copy any options into the transfer container
+                if (q.getQuestionOptionMap() != null) {
+                    options = new XmlOptions(q);
+                }
+                break;
+            default:
+                break;
+        }
+        if (Boolean.TRUE.equals(q.getDependentFlag())) {
+            dependency = new XmlDependency(q.getDependentQuestionId(), q.getDependentQuestionAnswer());
+        }
+        //Translations, if any
+        if (q.getTranslationMap() != null) {
+            altText = new ArrayList<>();
+            for (Translation t: q.getTranslationMap().values()) {
+                altText.add(new XmlAltText(t));
+            }
+        }
+    }
+
+    /**
+     * @return a Dto object with relevant fields copied
+     */
+    public QuestionDto toDto() {
+        QuestionDto dto = new QuestionDto();
+        dto.setKeyId(id);
+        dto.setText(text);
+        dto.setOrder(order);
+        dto.setMandatoryFlag(mandatory);
+        dto.setLocaleNameFlag(localeNameFlag);
+        dto.setRequireDoubleEntry(requireDoubleEntry);
+        //Type is more complicated:
+        QuestionType t; //FREE_TEXT, OPTION, NUMBER, GEO, PHOTO, VIDEO, SCAN, TRACK, STRENGTH, DATE, CASCADE, GEOSHAPE, SIGNATURE, CADDISFLY
+        if (FREE_TYPE.equalsIgnoreCase(type)) { //Text OR number
+            if (validationRule != null && NUMERIC_VALIDATION_TYPE.equals(validationRule.getValidationType())) {
+                t = QuestionType.NUMBER;
+            } else {
+                t = QuestionType.FREE_TEXT;
+            }
+        } else {
+            try {
+                t = QuestionType.valueOf(type.toUpperCase());
+            } catch (IllegalArgumentException e) {
+                t = QuestionType.FREE_TEXT;
+            }
+        }
+        dto.setType(t);
+
+        if (options != null) {
+            dto.setOptionContainerDto(options.toDto());
+            //exporter code expects these in the QuestionDto:
+            dto.setAllowMultipleFlag(options.getAllowMultiple());
+            dto.setAllowOtherFlag(options.getAllowOther());
+        }
+        //Translations
+        if (altText != null) {
+            HashMap<String,TranslationDto> qMap = new HashMap<>();
+            for (XmlAltText alt : altText) {
+                qMap.put(alt.getLanguage(), alt.toDto());
+            }
+            dto.setTranslationMap(qMap);
+        }
+
+        //return cascade levels as a List<String>
+        if (level != null) {
+            List<String> cl = new ArrayList<>();
+            for (XmlLevel lvl : level) {
+                cl.add(lvl.getText());
+            }
+            dto.setLevelNames(cl);
+        }
+
+        if (caddisflyResourceUuid != null) {
+            dto.setCaddisflyResourceUuid(caddisflyResourceUuid);
+        }
+        return dto;
+    }
+
+    @Override public String toString() {
+        return "question{" +
+                "id='" + id +
+                "',order='" + order +
+                "',type='" + type +
+                "',mandatory='" + mandatory +
+                "',requireDoubleEntry='" + requireDoubleEntry +
+                "',locked='" + locked +
+                "',localeNameFlag='" + localeNameFlag +
+                "',allowPoints='" + allowPoints +
+                "',allowLines='" + allowLine +
+                "',allowPolygon='" + allowPolygon +
+                "',options=" + ((options != null) ? options.toString() : "(null)") +
+                "'}";
     }
 
 
@@ -111,19 +261,19 @@ public class XmlQuestion {
         this.mandatory = mandatory;
     }
 
-    public boolean getLocaleNameFlag() {
+    public Boolean getLocaleNameFlag() {
         return localeNameFlag;
     }
 
-    public void setLocaleNameFlag(boolean localeNameFlag) {
+    public void setLocaleNameFlag(Boolean localeNameFlag) {
         this.localeNameFlag = localeNameFlag;
     }
 
-    public XmlAltText[] getAltText() {
+    public List<XmlAltText> getAltText() {
         return altText;
     }
 
-    public void setAltText(XmlAltText[] altText) {
+    public void setAltText(List<XmlAltText> altText) {
         this.altText = altText;
     }
 
@@ -143,11 +293,11 @@ public class XmlQuestion {
         this.text = text;
     }
 
-    public boolean isLocaleLocationFlag() {
+    public Boolean isLocaleLocationFlag() {
         return localeLocationFlag;
     }
 
-    public void setLocaleLocationFlag(boolean localeLocationFlag) {
+    public void setLocaleLocationFlag(Boolean localeLocationFlag) {
         this.localeLocationFlag = localeLocationFlag;
     }
 
@@ -175,35 +325,35 @@ public class XmlQuestion {
         this.validationRule = validationRule;
     }
 
-    public boolean getLocked() {
+    public Boolean getLocked() {
         return locked;
     }
 
-    public void setLocked(boolean locked) {
+    public void setLocked(Boolean locked) {
         this.locked = locked;
     }
 
-    public boolean getAllowPoints() {
+    public Boolean getAllowPoints() {
         return allowPoints;
     }
 
-    public void setAllowPoints(boolean allowPoints) {
+    public void setAllowPoints(Boolean allowPoints) {
         this.allowPoints = allowPoints;
     }
 
-    public boolean getAllowLine() {
+    public Boolean getAllowLine() {
         return allowLine;
     }
 
-    public void setAllowLine(boolean allowLine) {
+    public void setAllowLine(Boolean allowLine) {
         this.allowLine = allowLine;
     }
 
-    public boolean getAllowPolygon() {
+    public Boolean getAllowPolygon() {
         return allowPolygon;
     }
 
-    public void setAllowPolygon(boolean allowPolygon) {
+    public void setAllowPolygon(Boolean allowPolygon) {
         this.allowPolygon = allowPolygon;
     }
 
@@ -215,79 +365,20 @@ public class XmlQuestion {
         this.help = help;
     }
 
-    public XmlLevel[] getLevel() {
+    public List<XmlLevel> getLevel() {
         return level;
     }
 
-    public void setLevel(XmlLevel[] level) {
+    public void setLevel(List<XmlLevel> level) {
         this.level = level;
     }
 
-    /**
-     * @return a Dto object with relevant fields copied
-     */
-    public QuestionDto toDto() {
-        QuestionDto dto = new QuestionDto();
-        dto.setKeyId(id);
-        dto.setText(text);
-        dto.setOrder(order);
-        dto.setMandatoryFlag(mandatory);
-        dto.setLocaleNameFlag(localeNameFlag);
-        //Type is more complicated:
-        QuestionType t; //FREE_TEXT, OPTION, NUMBER, GEO, PHOTO, VIDEO, SCAN, TRACK, STRENGTH, DATE, CASCADE, GEOSHAPE, SIGNATURE, CADDISFLY
-        if (FREE_TYPE.equalsIgnoreCase(type)) { //Text OR number
-            if (validationRule != null && NUMERIC_VALIDATION_TYPE.equals(validationRule.getValidationType())) {
-                t = QuestionType.NUMBER;
-            } else {
-                t = QuestionType.FREE_TEXT;
-            }
-        } else {
-            try {
-                t = QuestionType.valueOf(type.toUpperCase());
-            } catch (IllegalArgumentException e) {
-                t = QuestionType.FREE_TEXT;
-            }
-        }
-        dto.setType(t);
-
-        if (options != null) {
-            dto.setOptionContainerDto(options.toDto());
-        }
-        //Translations
-        if (altText != null) {
-            HashMap<String,TranslationDto> qMap = new HashMap<>();
-            for (XmlAltText alt : altText) {
-                qMap.put(alt.getLanguage(), alt.toDto());
-            }
-            dto.setTranslationMap(qMap);
-        }
-
-        //return cascade levels as a List<String>
-        if (level != null) {
-            List<String> cl = new ArrayList<>();
-            for (XmlLevel lvl : level) {
-                cl.add(lvl.getText());
-            }
-            dto.setLevelNames(cl);
-        }
-
-        if (caddisflyResourceUuid != null) {
-            dto.setCaddisflyResourceUuid(caddisflyResourceUuid);
-        }
-        return dto;
+    public Boolean getRequireDoubleEntry() {
+        return requireDoubleEntry;
     }
 
-    @Override public String toString() {
-        return "question{" +
-                "id='" + id +
-                "',order='" + order +
-                "',type='" + type +
-                "',mandatory='" + mandatory +
-                "',locked='" + locked +
-                "',localeNameFlag='" + localeNameFlag +
-                "',options=" + ((options != null) ? options.toString() : "(null)") +
-                ",level='" + level +
-                "'}";
+    public void setRequireDoubleEntry(Boolean requireDoubleEntry) {
+        this.requireDoubleEntry = requireDoubleEntry;
     }
 
 }

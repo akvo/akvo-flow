@@ -16,7 +16,10 @@
 
 package com.gallatinsystems.survey.dao;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+import java.util.TreeMap;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -29,6 +32,8 @@ import com.gallatinsystems.common.Constants;
 import com.gallatinsystems.framework.dao.BaseDAO;
 import com.gallatinsystems.framework.exceptions.IllegalDeletionException;
 import com.gallatinsystems.framework.servlet.PersistenceFilter;
+import com.gallatinsystems.survey.domain.Question;
+import com.gallatinsystems.survey.domain.QuestionGroup;
 import com.gallatinsystems.survey.domain.Survey;
 import com.gallatinsystems.survey.domain.SurveyContainer;
 import com.gallatinsystems.survey.domain.SurveyGroup;
@@ -68,17 +73,35 @@ public class SurveyDAO extends BaseDAO<Survey> {
     }
 
     /**
-     * loads a full survey object (whole object graph, including questions). This method can only be
-     * called reliably from a background task
+     * loads a full form object (whole object tree, including questions).
+     * This method takes time; can only be called reliably from a background task.
+     * TODO: move to SurveyAssemblyServlet?
      *
-     * @param surveyId
-     * @return
+     * @param formId
+     * @return the form tree
      */
-    public Survey loadFullSurvey(Long surveyId) {
-        Survey survey = getById(surveyId);
-        survey.setQuestionGroupMap(questionGroupDao
-                .listQuestionGroupsBySurvey(survey.getKey().getId()));
-        return survey;
+    public Survey loadFullSurvey(Long formId) {
+        //Fetch form
+        Survey form = getById(formId);
+        //Fetch groups
+        TreeMap<Integer, QuestionGroup> qgMap = questionGroupDao.listQuestionGroupsBySurvey(formId);
+        form.setQuestionGroupMap(qgMap);
+
+        //Fetch all the questions for the form
+        QuestionDao questionDao = new QuestionDao();
+        List<Question> ql = questionDao.listQuestionsByForm(formId, true); //Help and options, please
+        HashMap<Long, Map<Integer, Question>> mapMap = new HashMap<>();
+        //Make question maps for all the groups, and remember them by qgId
+        for (QuestionGroup qg:qgMap.values()) {
+            TreeMap<Integer, Question> map = new TreeMap<>();
+            qg.setQuestionMap(map);
+            mapMap.put(qg.getKey().getId(), map);
+        }
+        //Sort them into their respective groups' maps
+        for (Question q : ql) {
+            mapMap.get(q.getQuestionGroupId()).put(q.getOrder(), q);
+        }
+        return form;
     }
 
     /**
