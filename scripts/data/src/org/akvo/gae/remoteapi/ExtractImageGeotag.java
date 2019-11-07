@@ -95,14 +95,14 @@ public class ExtractImageGeotag implements Process {
     }
 
     private void processQuestions(DatastoreService ds) throws ParseException {
-        System.out.println("#Processing Questions from 2019");
+        System.out.println("#Processing Questions from 2018 and later");
         int total = 0;
         int nontagged = 0;
         int json = 0;
         int nonjson = 0;
         int tagged = 0;
         SimpleDateFormat df = new SimpleDateFormat("YYYY-MM-dd");
-        Date tooOld = df.parse("2019-01-01");
+        Date tooOld = df.parse("2018-01-01");
 
         final Query qq = new Query("QuestionAnswerStore").setFilter(new Query.FilterPredicate("type", FilterOperator.EQUAL, "IMAGE"));
         final PreparedQuery qpq = ds.prepare(qq);
