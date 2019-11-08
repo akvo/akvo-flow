@@ -22,20 +22,17 @@ export default class DeviceAccordion extends React.Component {
     return (
       <div className="accordion-container">
         <div className={accordionClass} data-testid="accordion">
-          <div>
-            {selectAllCheckbox()}
+          {selectAllCheckbox()}
+          <div
+            onClick={this.onAccordionClick}
+            onKeyPress={this.onAccordionClick}
+          >
+            <span>{name}</span>
 
             <span
-              onClick={this.onAccordionClick}
-              onKeyPress={this.onAccordionClick}
-            >
-              {name}
-            </span>
+              className={`fa fa-chevron-${isAccordionOpen ? 'up' : 'down'}`}
+            />
           </div>
-
-          <span
-            className={`fa fa-chevron-${isAccordionOpen ? 'up' : 'down'}`}
-          />
         </div>
 
         <div className="panel" style={panelStyle} data-testid="panel">

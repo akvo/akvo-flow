@@ -105,6 +105,8 @@ FLOW.AssignmentEditView = FLOW.ReactComponentView.extend(
         formsWarning: Ember.String.loc('_forms_warning'),
         noForms: Ember.String.loc('_no_forms_in_this_survey'),
         devices: Ember.String.loc('_devices'),
+        device: Ember.String.loc('_device'),
+        selected: Ember.String.loc('_selected'),
         assignmentNamePlaceholder: Ember.String.loc(
           '_enter_a_name_for_this_assignment'
         ),
@@ -206,6 +208,7 @@ FLOW.AssignmentEditView = FLOW.ReactComponentView.extend(
       sa.set('startDate', startDateParse);
       sa.set('language', 'en');
 
+      // set survey group
       if (FLOW.selectedControl.get('selectedSurveyGroup')) {
         sa.set(
           'surveyId',
@@ -213,7 +216,9 @@ FLOW.AssignmentEditView = FLOW.ReactComponentView.extend(
         );
       }
 
+      // set form and devices
       sa.set('formIds', surveys);
+      sa.set('deviceIds', devices);
 
       FLOW.store.commit();
 
