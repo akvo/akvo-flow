@@ -206,6 +206,7 @@ FLOW.AssignmentEditView = FLOW.ReactComponentView.extend(
       sa.set('startDate', startDateParse);
       sa.set('language', 'en');
 
+      // set survey group
       if (FLOW.selectedControl.get('selectedSurveyGroup')) {
         sa.set(
           'surveyId',
@@ -213,7 +214,9 @@ FLOW.AssignmentEditView = FLOW.ReactComponentView.extend(
         );
       }
 
+      // set form and devices
       sa.set('formIds', surveys);
+      sa.set('deviceIds', devices);
 
       FLOW.store.commit();
 
