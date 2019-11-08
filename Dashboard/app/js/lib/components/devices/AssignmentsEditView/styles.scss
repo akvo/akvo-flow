@@ -167,10 +167,21 @@
 
               & > div {
                 margin-right: auto;
-              }
+                margin-top: 5px;
+                width: 100%;
+                display: flex;
 
-              .fa {
-                font-size: 14px;
+                span {
+                  display: block;
+
+                  &:first-of-type {
+                    margin-right: auto;
+                  }
+
+                  &.fa {
+                    font-size: 14px;
+                  }
+                }
               }
             }
 
