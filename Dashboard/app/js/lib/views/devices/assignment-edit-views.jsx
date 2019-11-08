@@ -105,6 +105,8 @@ FLOW.AssignmentEditView = FLOW.ReactComponentView.extend(
         formsWarning: Ember.String.loc('_forms_warning'),
         noForms: Ember.String.loc('_no_forms_in_this_survey'),
         devices: Ember.String.loc('_devices'),
+        device: Ember.String.loc('_device'),
+        selected: Ember.String.loc('_selected'),
         assignmentNamePlaceholder: Ember.String.loc(
           '_enter_a_name_for_this_assignment'
         ),

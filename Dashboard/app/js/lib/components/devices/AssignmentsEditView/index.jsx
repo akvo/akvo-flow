@@ -23,14 +23,36 @@ export default class AssignmentsEdit extends React.Component {
   onSubmit = () => {
     const { assignmentName, startDate, endDate } = this.state;
 
-    this.props.actions.onSubmit({ assignmentName, startDate, endDate });
+    this.props.actions.onSubmit({
+      assignmentName,
+      startDate,
+      endDate,
+    });
   };
 
   // helpers
   formatMomentDate = date => moment(date, 'YYYY/MM/DD').format('YYYY-MM-DD');
 
+  getNumberOfSelectedDevices = () => {
+    let selectedDevices = 0;
+    const { deviceGroups } = this.props.data;
+
+    Object.keys(deviceGroups).forEach(dgId => {
+      const noOfSelectedDevicesInThisGroup = Object.keys(
+        deviceGroups[dgId]
+      ).filter(
+        deviceId => deviceId != 0 && deviceGroups[dgId][deviceId].checked
+      ).length;
+
+      selectedDevices += noOfSelectedDevicesInThisGroup;
+    });
+
+    return selectedDevices;
+  };
+
   render() {
     const { strings, actions, data } = this.props;
+    const numberOfDevices = this.getNumberOfSelectedDevices();
 
     return (
       <div className="assignments-edit">
@@ -131,7 +153,14 @@ export default class AssignmentsEdit extends React.Component {
           </div>
 
           <div className="devices">
-            <h3>{strings.devices}</h3>
+            <div className="heading">
+              <h3>{strings.devices}</h3>
+              <span className="info">
+                {numberOfDevices}{' '}
+                {numberOfDevices === 1 ? strings.device : strings.devices}{' '}
+                {strings.selected}
+              </span>
+            </div>
 
             <div className="assignment-device-selector">
               <DeviceGroupSelectorView
