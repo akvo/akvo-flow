@@ -39,11 +39,13 @@ import javax.jdo.annotations.NotPersistent;
 import net.sf.jsr107cache.Cache;
 import net.sf.jsr107cache.CacheException;
 
+import org.waterforpeople.mapping.app.gwt.client.survey.QuestionDto;
 import org.waterforpeople.mapping.dao.QuestionAnswerStoreDao;
 
 import com.gallatinsystems.framework.dao.BaseDAO;
 import com.gallatinsystems.framework.exceptions.IllegalDeletionException;
 import com.gallatinsystems.framework.servlet.PersistenceFilter;
+import com.gallatinsystems.survey.domain.CascadeResource;
 import com.gallatinsystems.survey.domain.Question;
 import com.gallatinsystems.survey.domain.QuestionGroup;
 import com.gallatinsystems.survey.domain.QuestionHelpMedia;
@@ -178,7 +180,7 @@ public class QuestionDao extends BaseDAO<Question> {
     /**
      * Delete all the questions in a group
      *
-     * @param surveyId
+     * @param questionGroupId
      * @throws IllegalDeletionException
      */
     public void deleteQuestionsForGroup(Long questionGroupId) throws IllegalDeletionException {
@@ -209,7 +211,7 @@ public class QuestionDao extends BaseDAO<Question> {
         //We must know the order of the question groups
         QuestionGroupDao qgDao = new QuestionGroupDao();
         List<QuestionGroup> orderedGroupList = qgDao.listQuestionGroupBySurvey(surveyId);
-        
+
         Map<Long, List<Question>> idMap = new HashMap<>();
         for (QuestionGroup group : orderedGroupList) {
             List<Question> questions = new ArrayList<>();
@@ -221,7 +223,7 @@ public class QuestionDao extends BaseDAO<Question> {
         } else {
             unorderedQuestions = getBySurveyAndType(surveyId, type);
         }
-        
+
         // Sort them into their respective lists
         for (Question q:unorderedQuestions) {
             List<Question> myList = idMap.get(q.getQuestionGroupId());
@@ -243,7 +245,7 @@ public class QuestionDao extends BaseDAO<Question> {
             });
             orderedQuestionList.addAll(questions);
         }
-        
+
         return orderedQuestionList;
     }
 
@@ -572,6 +574,46 @@ public class QuestionDao extends BaseDAO<Question> {
         return listQuestionsByQuestionGroup(questionGroupId, needDetails, true);
     }
 
+
+    /**
+     * lists all the questions in a form, optionally loading details.
+     * Could be unrolled further for datastore performance gains.
+     *
+     * @param formId
+     * @param needDetails
+     * @return
+     */
+    public List<Question> listQuestionsByForm(Long formId, boolean needDetails) {
+        List<Question> qList = listByProperty("surveyId", formId, "Long", "order", "asc");
+        TreeMap<Integer, Question> map = new TreeMap<Integer, Question>();
+        if (qList != null) {
+            for (Question q : qList) {
+
+                if (needDetails) {
+                    q.setQuestionHelpMediaMap(helpDao.listHelpByQuestion(q.getKey().getId()));
+                    if (Question.Type.OPTION == q.getType()) {
+                        q.setQuestionOptionMap(optionDao.listOptionByQuestion(q.getKey().getId()));
+                    }
+                    q.setTranslationMap(translationDao.findTranslations(
+                            ParentType.QUESTION_TEXT, q.getKey().getId()));
+                    //Cascade level names
+                    if (q.getType().equals(Question.Type.CASCADE) && q.getCascadeResourceId() != null) {
+                        CascadeResource cr = new CascadeResourceDao().getByKey(q.getCascadeResourceId());
+                        if (cr != null) {
+                            q.setLevelNames(cr.getLevelNames());
+                        }
+                    }
+                }
+
+                if (q.getOrder() == null) {
+                    q.setOrder(qList.size() + 1); //Anything, temporarily, to make a useable list
+                }
+                map.put(q.getOrder(), q);
+            }
+        }
+        return qList;
+    }
+
     /**
      * lists all the questions in a group, optionally loading details. If allowSideEffects is true,
      * it will attempt to reorder any duplicated question orderings on retrieval. New users of this
@@ -598,7 +640,15 @@ public class QuestionDao extends BaseDAO<Question> {
                     }
                     q.setTranslationMap(translationDao.findTranslations(
                             ParentType.QUESTION_TEXT, q.getKey().getId()));
+                    //Cascade level names
+                    if (q.getType().equals(Question.Type.CASCADE) && q.getCascadeResourceId() != null) {
+                        CascadeResource cr = new CascadeResourceDao().getByKey(q.getCascadeResourceId());
+                        if (cr != null) {
+                            q.setLevelNames(cr.getLevelNames());
+                        }
+                    }
                 }
+
                 if (q.getOrder() == null) {
                     q.setOrder(qList.size() + 1); //Anything, temporarily, to make a useable list
                 } else if (allowSideEffects) {

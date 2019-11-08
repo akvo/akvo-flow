@@ -2,7 +2,7 @@ import React from 'react';
 import PropTypes from 'prop-types';
 
 // eslint-disable-next-line import/no-unresolved
-import Checkbox from 'akvo-flow/components/Checkbox';
+import Checkbox from 'akvo-flow/components/reusable/Checkbox';
 import DeviceAccordion from './DeviceAccordion';
 
 export default class DeviceSelector extends React.Component {
@@ -22,10 +22,11 @@ export default class DeviceSelector extends React.Component {
             deviceGroupIsActive={this.accordionIsActive(dgId)}
             selectAllCheckbox={() => (
               <Checkbox
-                id="0"
+                id={dgId}
                 name="0"
                 checked={deviceGroups[dgId][0].checked}
                 onChange={(...args) => handleDeviceCheck(...args, dgId)}
+                label=""
               />
             )}
           >
@@ -38,11 +39,8 @@ export default class DeviceSelector extends React.Component {
                     name={deviceId}
                     checked={deviceGroups[dgId][deviceId].checked}
                     onChange={(...args) => handleDeviceCheck(...args, dgId)}
+                    label={deviceGroups[dgId][deviceId].name}
                   />
-
-                  <label id={deviceId} htmlFor={deviceId}>
-                    {deviceGroups[dgId][deviceId].name}
-                  </label>
                 </div>
               ))}
           </DeviceAccordion>
@@ -57,5 +55,4 @@ DeviceSelector.propTypes = {
   deviceGroupNames: PropTypes.object.isRequired,
   activeDeviceGroups: PropTypes.any.isRequired,
   handleDeviceCheck: PropTypes.func.isRequired,
-  onSelectAll: PropTypes.func.isRequired,
 };

@@ -1,52 +1,88 @@
 <!DOCTYPE html>
 <html lang="en">
-
-<head id="akvoFlow">
-    <meta charset="UTF-8">
+  <head id="akvoFlow">
+    <meta charset="UTF-8" />
     <meta name="description" content="Akvo Flow Dashboard" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1" />
     <title>Akvo Flow</title>
-    <link rel="shortcut icon" href="/favicon.ico" type="image/x-icon">
+    <link rel="shortcut icon" href="/favicon.ico" type="image/x-icon" />
+    <!-- Fonts -->
+    <link
+      href="//maxcdn.bootstrapcdn.com/font-awesome/4.2.0/css/font-awesome.min.css"
+      rel="stylesheet"
+    />
     <!-- HTML5 shim and Respond.js IE8 support of HTML5 elements and media queries -->
     <!--[if lt IE 9]>
-            <script src="https://oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
-            <script src="https://oss.maxcdn.com/libs/respond.js/1.4.2/respond.min.js"></script>
-        <![endif]-->
-    
+      <script src="https://oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
+      <script src="https://oss.maxcdn.com/libs/respond.js/1.4.2/respond.min.js"></script>
+    <![endif]-->
+
     <script type="text/javascript">
-        window.FLOW = window.FLOW || {};
+      window.FLOW = window.FLOW || {};
     </script>
 
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/1.8.2/jquery.min.js" integrity="sha384-TlirNbKpD2RIgh6I9thXvaNiNhPn2e4sI0Adwq4SwWXvDMdol60LTz9m/24VynHW" crossorigin="anonymous"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/handlebars.js/1.0.rc.1/handlebars.min.js" integrity="sha384-1cdj3p3bIpU9pC5rwhdr9KuOyIAzATeDl8CzvgeeEAX2+04CDEMTCKHzURcqkLU6" crossorigin="anonymous"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/ember.js/1.0.0-pre.2/ember-1.0.0-pre.2.min.js"  crossorigin="anonymous"></script>
+    <script
+      src="https://cdnjs.cloudflare.com/ajax/libs/jquery/1.8.2/jquery.min.js"
+      integrity="sha384-TlirNbKpD2RIgh6I9thXvaNiNhPn2e4sI0Adwq4SwWXvDMdol60LTz9m/24VynHW"
+      crossorigin="anonymous"
+    ></script>
+    <script
+      src="https://cdnjs.cloudflare.com/ajax/libs/handlebars.js/1.0.rc.1/handlebars.min.js"
+      integrity="sha384-1cdj3p3bIpU9pC5rwhdr9KuOyIAzATeDl8CzvgeeEAX2+04CDEMTCKHzURcqkLU6"
+      crossorigin="anonymous"
+    ></script>
+    <script
+      src="https://cdnjs.cloudflare.com/ajax/libs/ember.js/1.0.0-pre.2/ember-1.0.0-pre.2.min.js"
+      crossorigin="anonymous"
+    ></script>
     <script src="/vendorjs/js/vendor/ember-data-rev10.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/jqueryui/1.8.21/jquery-ui.min.js" integrity="sha384-TRmDLt6CvOQBqWp02sWDp/VVYxlkm9lvqzMt7OwAoSHqmGtELVfE/pfkH3zcea8j" crossorigin="anonymous"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/datatables/1.9.2/jquery.dataTables.min.js" integrity="sha384-l4ztyMkjOikIXT8yH7aYF35ElUqxfPgSf9d+fUgST1ZgUFJ8/PD4ZNc8tk49GQxx" crossorigin="anonymous"></script>
-    <script src="https://d3js.org/d3.v2.min.js" integrity="sha384-gx6v00JjfKi4ORqjqvNMGihiXcXyB12C+0TucXBJiJsSG5n6e3fBGqMJXUwcSrG+" crossorigin="anonymous"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/resumable.js/1.0.3/resumable.min.js" integrity="sha384-iybtPyEliVnE9VSRDxi4RtPJDCth3R0Gj90w5Puf1cT/R8GYnPiXu10MMWITqiit" crossorigin="anonymous"></script>
+    <script
+      src="https://cdnjs.cloudflare.com/ajax/libs/jqueryui/1.8.21/jquery-ui.min.js"
+      integrity="sha384-TRmDLt6CvOQBqWp02sWDp/VVYxlkm9lvqzMt7OwAoSHqmGtELVfE/pfkH3zcea8j"
+      crossorigin="anonymous"
+    ></script>
+    <script
+      src="https://cdnjs.cloudflare.com/ajax/libs/datatables/1.9.2/jquery.dataTables.min.js"
+      integrity="sha384-l4ztyMkjOikIXT8yH7aYF35ElUqxfPgSf9d+fUgST1ZgUFJ8/PD4ZNc8tk49GQxx"
+      crossorigin="anonymous"
+    ></script>
+    <script
+      src="https://d3js.org/d3.v2.min.js"
+      integrity="sha384-gx6v00JjfKi4ORqjqvNMGihiXcXyB12C+0TucXBJiJsSG5n6e3fBGqMJXUwcSrG+"
+      crossorigin="anonymous"
+    ></script>
+    <script
+      src="https://cdnjs.cloudflare.com/ajax/libs/resumable.js/1.0.3/resumable.min.js"
+      integrity="sha384-iybtPyEliVnE9VSRDxi4RtPJDCth3R0Gj90w5Puf1cT/R8GYnPiXu10MMWITqiit"
+      crossorigin="anonymous"
+    ></script>
     <script src="/vendorjs/js/vendor/Math.uuid.js"></script>
 
-    
     <script src="js/loader.js"></script>
     <script src="/flowenv.js"></script>
     <script src="/currentuser.js"></script>
 
     <script>
       //default leaflet library
-      var jsSrc = "https://api.mapbox.com/mapbox.js/v3.1.1/mapbox.js";
-      var cssSrc = "https://api.mapbox.com/mapbox.js/v3.1.1/mapbox.css";
-      var jsIntegrity = 'integrity="sha384-DmQhW9kLmOXK0xubm8w+Bd34nJq7Plt9clKmd2XxjgUNuoHcWdxV3GCeO7YSFc74" crossorigin="anonymous"';
-      var cssIntegrity = 'integrity="sha384-codniTXEGsozlodYdGbtcNHSm0452RDVJyCJ3eEw+jagZXmaz9RIFHaBD+g/wrvS" crossorigin="anonymous"';
-      document.write("<link rel=\"stylesheet\" href=\""+cssSrc+"\"/>");
-      document.write("<script type=\"text/javascript\" src=\""+jsSrc+"\"><\/script>");
+      var jsSrc = 'https://api.mapbox.com/mapbox.js/v3.1.1/mapbox.js';
+      var cssSrc = 'https://api.mapbox.com/mapbox.js/v3.1.1/mapbox.css';
+      var jsIntegrity =
+        'integrity="sha384-DmQhW9kLmOXK0xubm8w+Bd34nJq7Plt9clKmd2XxjgUNuoHcWdxV3GCeO7YSFc74" crossorigin="anonymous"';
+      var cssIntegrity =
+        'integrity="sha384-codniTXEGsozlodYdGbtcNHSm0452RDVJyCJ3eEw+jagZXmaz9RIFHaBD+g/wrvS" crossorigin="anonymous"';
+      document.write('<link rel="stylesheet" href="' + cssSrc + '"/>');
+      document.write(
+        '<script type="text/javascript" src="' + jsSrc + '"><\/script>'
+      );
     </script>
 
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/iframe-resizer/2.6.3/iframeResizer.min.js" integrity="sha384-igiKnCW1DXdmgq8oZzcdRos1LdPeHVAjU2xu1GOJ9aTxgmsB5NRTrOWQqn26MERR" crossorigin="anonymous"></script>
-</head>
+    <script
+      src="https://cdnjs.cloudflare.com/ajax/libs/iframe-resizer/2.6.3/iframeResizer.min.js"
+      integrity="sha384-igiKnCW1DXdmgq8oZzcdRos1LdPeHVAjU2xu1GOJ9aTxgmsB5NRTrOWQqn26MERR"
+      crossorigin="anonymous"
+    ></script>
+  </head>
 
-<body class="appPage">
-</body>
-
+  <body class="appPage"></body>
 </html>

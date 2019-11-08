@@ -93,24 +93,23 @@ FLOW.AssignmentEditView = FLOW.ReactComponentView.extend(
 
     getProps() {
       const strings = {
-        backToAssignmentList: Ember.String.loc('_go_back_to_assignment_list'),
-        assignmentDetails: Ember.String.loc('_assignment_details'),
-        assignmentName: Ember.String.loc('_assignment_name'),
+        saveAssignment: Ember.String.loc('_save'),
+        settings: Ember.String.loc('_settings'),
+        duration: Ember.String.loc('_duration'),
+        day: Ember.String.loc('_day'),
+        days: Ember.String.loc('_days'),
+        durationWarning: Ember.String.loc('_duration_warning'),
+        survey: Ember.String.loc('_survey'),
+        forms: Ember.String.loc('_forms'),
+        enabled: Ember.String.loc('_enabled'),
+        formsWarning: Ember.String.loc('_forms_warning'),
+        noForms: Ember.String.loc('_no_forms_in_this_survey'),
+        devices: Ember.String.loc('_devices'),
+        device: Ember.String.loc('_device'),
+        selected: Ember.String.loc('_selected'),
         assignmentNamePlaceholder: Ember.String.loc(
           '_enter_a_name_for_this_assignment'
         ),
-        startDate: Ember.String.loc('_start_date'),
-        expireDate: Ember.String.loc('_expiration_date'),
-        selectSurvey: Ember.String.loc('_select_survey'),
-        cantFindYourSurvey: Ember.String.loc('_cant_find_your_survey_'),
-        selectForms: Ember.String.loc('_select_forms'),
-        selectFormNote: Ember.String.loc('_select_forms_note'),
-        selectDevices: Ember.String.loc('_select_devices'),
-        selectDeviceGroup: Ember.String.loc('_select_device_group'),
-        saveAssignment: Ember.String.loc('_save_assignment'),
-        cancel: Ember.String.loc('_cancel'),
-        chooseFolderOrSurvey: Ember.String.loc('_choose_folder_or_survey'),
-        selectedDevices: Ember.String.loc('_devices_selected'),
       };
 
       const inputValues = {
@@ -127,7 +126,6 @@ FLOW.AssignmentEditView = FLOW.ReactComponentView.extend(
         onSubmit: this.saveSurveyAssignment,
         handleSurveySelect: this.handleSurveySelect,
         handleDeviceCheck: this.handleDeviceCheck,
-        handleSelectAllDevice: this.handleSelectAllDevice,
       };
 
       const data = {
@@ -137,6 +135,7 @@ FLOW.AssignmentEditView = FLOW.ReactComponentView.extend(
         deviceGroupNames: this.deviceGroupNames,
         activeDeviceGroups: this.activeDeviceGroups,
         initialSurveyGroup: this.initialSurveyGroup,
+        numberOfForms: FLOW.selectedControl.get('selectedSurveys').length,
       };
 
       return {
@@ -163,15 +162,27 @@ FLOW.AssignmentEditView = FLOW.ReactComponentView.extend(
       const devices = [];
       const surveys = [];
 
+      // set devices and surveys
+      FLOW.selectedControl.get('selectedDevices').forEach(item => {
+        devices.push(item.get('keyId'));
+      });
+
+      FLOW.selectedControl.get('selectedSurveys').forEach(item => {
+        surveys.push(item.get('keyId'));
+      });
+
+      // validate data before continuing
+      const isValid = this.validateAssignment({ ...data, devices, surveys });
+      if (!isValid) {
+        return false;
+      }
+
       // set Ember Data
       FLOW.dateControl.set(
         'fromDate',
         FLOW.formatDate(new Date(data.startDate))
       );
-      FLOW.dateControl.set(
-        'toDate',
-        FLOW.formatDate(new Date(data.expireDate))
-      );
+      FLOW.dateControl.set('toDate', FLOW.formatDate(new Date(data.endDate)));
 
       // get assignment
       const sa = FLOW.selectedControl.get('selectedSurveyAssignment');
@@ -197,6 +208,7 @@ FLOW.AssignmentEditView = FLOW.ReactComponentView.extend(
       sa.set('startDate', startDateParse);
       sa.set('language', 'en');
 
+      // set survey group
       if (FLOW.selectedControl.get('selectedSurveyGroup')) {
         sa.set(
           'surveyId',
@@ -204,35 +216,9 @@ FLOW.AssignmentEditView = FLOW.ReactComponentView.extend(
         );
       }
 
-      FLOW.selectedControl.get('selectedDevices').forEach(item => {
-        devices.push(item.get('keyId'));
-      });
-
-      if (!devices.length) {
-        FLOW.dialogControl.set('activeAction', 'ignore');
-        FLOW.dialogControl.set('header', 'Devices not set');
-        FLOW.dialogControl.set('message', 'Please select a device to continue');
-        FLOW.dialogControl.set('showCANCEL', false);
-        FLOW.dialogControl.set('showDialog', true);
-        return false;
-      }
-
-      sa.set('deviceIds', devices);
-
-      FLOW.selectedControl.get('selectedSurveys').forEach(item => {
-        surveys.push(item.get('keyId'));
-      });
-
-      if (!surveys || !surveys.length) {
-        FLOW.dialogControl.set('activeAction', 'ignore');
-        FLOW.dialogControl.set('header', 'Form not set');
-        FLOW.dialogControl.set('message', 'Please select a form to continue');
-        FLOW.dialogControl.set('showCANCEL', false);
-        FLOW.dialogControl.set('showDialog', true);
-        return false;
-      }
-
+      // set form and devices
       sa.set('formIds', surveys);
+      sa.set('deviceIds', devices);
 
       FLOW.store.commit();
 
@@ -357,12 +343,15 @@ FLOW.AssignmentEditView = FLOW.ReactComponentView.extend(
 
       if (!FLOW.surveyControl.content) return;
 
-      FLOW.surveyControl.content.forEach(form => {
-        this.forms[form.get('keyId')] = {
-          name: form.get('name'),
-          checked: this.formInAssignment(form.get('keyId')),
-        };
-      });
+      // filter to show only published forms here
+      FLOW.surveyControl.content
+        .filter(form => form.get('status') === 'PUBLISHED')
+        .forEach(form => {
+          this.forms[form.get('keyId')] = {
+            name: form.get('name'),
+            checked: this.formInAssignment(form.get('keyId')),
+          };
+        });
 
       this.renderReactSide();
     },
@@ -377,6 +366,14 @@ FLOW.AssignmentEditView = FLOW.ReactComponentView.extend(
     },
 
     // helpers
+    showPopup(header, message) {
+      FLOW.dialogControl.set('activeAction', 'ignore');
+      FLOW.dialogControl.set('header', header);
+      FLOW.dialogControl.set('message', message);
+      FLOW.dialogControl.set('showCANCEL', false);
+      FLOW.dialogControl.set('showDialog', true);
+    },
+
     formInAssignment(formId) {
       const formsInAssignment = FLOW.selectedControl.selectedSurveyAssignment.get(
         'formIds'
@@ -407,13 +404,62 @@ FLOW.AssignmentEditView = FLOW.ReactComponentView.extend(
     },
 
     validateAssignment(data) {
-      if (!data.devices || !data.devices.length) {
-        alert('Please select a device to continue');
+      const { assignmentName, startDate, endDate, devices, surveys } = data;
+
+      // validate assignment name
+      if (!assignmentName || assignmentName == '') {
+        this.showPopup(
+          Ember.String.loc('_assignment_name_not_set'),
+          Ember.String.loc('_assignment_name_not_set_text')
+        );
+
         return false;
       }
 
-      if (!data.surveys || !data.surveys.length) {
-        alert('Please select a form to continue');
+      if (assignmentName.length > 100) {
+        this.showPopup(
+          Ember.String.loc('_assignment_name_error'),
+          Ember.String.loc('_assignment_name_over_100_chars')
+        );
+
+        return false;
+      }
+
+      // validate dates ==== start date
+      if (!startDate || !startDate.length) {
+        this.showPopup(
+          Ember.String.loc('_date_not_set'),
+          Ember.String.loc('_date_not_set_text')
+        );
+
+        return false;
+      }
+
+      // validate date ==== expire date
+      if (!endDate || !endDate.length) {
+        this.showPopup(
+          Ember.String.loc('_date_not_set'),
+          Ember.String.loc('_date_not_set_text')
+        );
+
+        return false;
+      }
+
+      if (!devices || !devices.length) {
+        this.showPopup(
+          Ember.String.loc('_device_not_set'),
+          Ember.String.loc('_device_not_set_text')
+        );
+
+        return false;
+      }
+
+      if (!surveys || !surveys.length) {
+        this.showPopup(
+          Ember.String.loc('_form_not_set'),
+          Ember.String.loc('_form_not_set_text')
+        );
+
         return false;
       }
 
@@ -467,8 +513,6 @@ FLOW.AssignmentEditView = FLOW.ReactComponentView.extend(
         // TODO: display error that form cannot be added unless currently added forms are removed
       }
 
-      this.renderReactSide();
-
       // add/remove form to/from assignment
       if (this.forms[formId].checked) {
         // push survey to FLOW.selectedControl.selectedSurveys
@@ -480,6 +524,8 @@ FLOW.AssignmentEditView = FLOW.ReactComponentView.extend(
           FLOW.Survey.find(formId)
         );
       }
+
+      this.renderReactSide();
 
       // TODO: load data points in selected form
     },
@@ -500,6 +546,7 @@ FLOW.AssignmentEditView = FLOW.ReactComponentView.extend(
     },
 
     handleDeviceCheck(deviceId, checked, deviceGroupId) {
+      console.log(deviceId);
       // if it's the select all option
       if (deviceId == 0) {
         return this.handleSelectAllDevice(deviceGroupId, checked);

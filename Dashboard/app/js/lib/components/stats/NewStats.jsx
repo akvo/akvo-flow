@@ -16,7 +16,9 @@ export default class Stats extends React.Component {
 
     const data = {
       startDate: startDate.length ? new Date(startDate).toISOString() : null,
-      endDate: endDate.length ? new Date(endDate).toISOString() : null,
+      endDate: endDate.length
+        ? new Date(endDate).toISOString()
+        : new Date().toISOString(),
     };
 
     this.props.generateReport(data);

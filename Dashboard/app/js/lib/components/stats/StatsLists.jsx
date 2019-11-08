@@ -33,19 +33,19 @@ export default class StatsList extends React.Component {
   };
 
   render() {
-    const { stats } = this.props;
+    const { stats, strings, goToExport } = this.props;
 
     return (
       <div id="stats-listing-page">
         <div className="page-header">
-          <h2>{this.props.strings.generatedStats}</h2>
+          <h2>{strings.generatedStats}</h2>
           <button
             className="standardBtn newStats"
             type="button"
-            onClick={this.props.goToExport}
             data-testid="newStatsBtn"
+            onClick={goToExport}
           >
-            {this.props.strings.exportStats}
+            {strings.exportStats}
           </button>
         </div>
 

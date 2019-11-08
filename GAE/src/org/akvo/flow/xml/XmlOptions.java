@@ -17,17 +17,23 @@
 package org.akvo.flow.xml;
 
 import java.util.ArrayList;
+import java.util.List;
+
 import org.waterforpeople.mapping.app.gwt.client.survey.OptionContainerDto;
 import org.waterforpeople.mapping.app.gwt.client.survey.QuestionOptionDto;
 
+import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.dataformat.xml.annotation.JacksonXmlElementWrapper;
 import com.fasterxml.jackson.dataformat.xml.annotation.JacksonXmlProperty;
+import com.gallatinsystems.survey.domain.Question;
+import com.gallatinsystems.survey.domain.QuestionOption;
 
 
+@JsonInclude(JsonInclude.Include.NON_NULL)
 public class XmlOptions {
 
     @JacksonXmlElementWrapper(localName = "option", useWrapping = false)
-    private XmlOption[] option;
+    private List<XmlOption> option;
     @JacksonXmlProperty(localName = "allowOther", isAttribute = true)
     private boolean allowOther;
     @JacksonXmlProperty(localName = "allowMultiple", isAttribute = true)
@@ -39,40 +45,19 @@ public class XmlOptions {
     public XmlOptions() {
     }
 
-    public XmlOption[] getOption() {
-        return option;
-    }
-
-    public void setOption(XmlOption[] option) {
-        this.option = option;
-    }
-
-    public boolean isAllowOther() {
-        return allowOther;
-    }
-
-    public void setAllowOther(boolean allowOther) {
-        this.allowOther = allowOther;
-    }
-
-    public boolean isAllowMultiple() {
-        return allowMultiple;
-    }
-
-    public void setAllowMultiple(boolean allowMultiple) {
-        this.allowMultiple = allowMultiple;
-    }
-
-    public String getRenderType() {
-        return renderType;
-    }
-
-    public void setRenderType(String renderType) {
-        this.renderType = renderType;
+    public XmlOptions(Question q) {
+        allowOther = Boolean.TRUE.equals(q.getAllowOtherFlag());
+        allowMultiple = Boolean.TRUE.equals(q.getAllowMultipleFlag());
+        if (q.getQuestionOptionMap() != null) {
+            option = new ArrayList<XmlOption>();
+            for (QuestionOption o: q.getQuestionOptionMap().values()) { //In key order
+                option.add(new XmlOption(o));
+            }
+        }
     }
 
     /**
-     * @return a Dto with relevant fields copied
+     * @return a DTO with relevant fields copied
      */
     public OptionContainerDto toDto() {
         OptionContainerDto dto = new OptionContainerDto();
@@ -93,8 +78,40 @@ public class XmlOptions {
         return "options{" +
                 "allowOther='" + allowOther +
                 "',allowMultiple='" + allowMultiple +
-                "',options=" + option.toString() +
-                '}';
+                "',options=" + option==null?"(null)":option.toString() +
+                "}";
+    }
+
+    public List<XmlOption> getOption() {
+        return option;
+    }
+
+    public void setOption(List<XmlOption> option) {
+        this.option = option;
+    }
+
+    public boolean getAllowOther() {
+        return allowOther;
+    }
+
+    public void setAllowOther(boolean allowOther) {
+        this.allowOther = allowOther;
+    }
+
+    public boolean getAllowMultiple() {
+        return allowMultiple;
+    }
+
+    public void setAllowMultiple(boolean allowMultiple) {
+        this.allowMultiple = allowMultiple;
+    }
+
+    public String getRenderType() {
+        return renderType;
+    }
+
+    public void setRenderType(String renderType) {
+        this.renderType = renderType;
     }
 
 }

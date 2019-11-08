@@ -37,6 +37,11 @@ class FlowXmlObjectReaderTests {
             + "<text>The Only Question</text>"
             + "</question></questionGroup></survey>";
 
+    private String GROUPLESS_XML_FORM = "<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?>"
+            + "<survey name=\"Foo\" defaultLanguageCode=\"en\" version='1.0' app=\"akvoflowsandbox\" "
+            + "surveyGroupId=\"12345\" surveyGroupName=\"Bar\" surveyId=\"67890\">"
+            + "</survey>";
+
     private String QUESTIONLESS_XML_FORM = "<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?>"
             + "<survey name=\"Foo\" defaultLanguageCode=\"en\" version='1.0' app=\"akvoflowsandbox\" "
             + "surveyGroupId=\"12345\" surveyGroupName=\"Bar\" surveyId=\"67890\">"
@@ -126,6 +131,17 @@ class FlowXmlObjectReaderTests {
     }
 
     @Test
+    void testParseGrouplessForm() throws IOException {
+
+        SurveyDto testFormDto = PublishedForm.parse(GROUPLESS_XML_FORM, true).toDto(); //be strict
+        assertNotEquals(null, testFormDto);
+
+        assertEquals("Foo", testFormDto.getName());
+        assertEquals("1.0", testFormDto.getVersion());
+        assertEquals(null, testFormDto.getQuestionGroupList());
+    }
+
+    @Test
     void testParseQuestionlessForm() throws IOException {
 
         SurveyDto testFormDto = PublishedForm.parse(QUESTIONLESS_XML_FORM, true).toDto(); //be strict
@@ -166,7 +182,6 @@ class FlowXmlObjectReaderTests {
         QuestionGroupDto qg4 = testFormDto.getQuestionGroupList().get(3);
         assertEquals(4, qg4.getOrder());
 
-        //TODO more tests here
     }
 
     /*

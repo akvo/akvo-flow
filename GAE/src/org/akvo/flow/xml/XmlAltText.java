@@ -16,11 +16,11 @@
 
 package org.akvo.flow.xml;
 
-import org.waterforpeople.mapping.app.gwt.client.survey.QuestionOptionDto;
 import org.waterforpeople.mapping.app.gwt.client.survey.TranslationDto;
 
 import com.fasterxml.jackson.dataformat.xml.annotation.JacksonXmlProperty;
 import com.fasterxml.jackson.dataformat.xml.annotation.JacksonXmlText;
+import com.gallatinsystems.survey.domain.Translation;
 
 /*
  * Class for working with form XML tags like this:
@@ -28,6 +28,8 @@ import com.fasterxml.jackson.dataformat.xml.annotation.JacksonXmlText;
  */
 
 public class XmlAltText {
+
+    private static String TRANSLATION_TYPE = "translation";
 
     @JacksonXmlProperty(localName = "type", isAttribute = true)
     private String type;
@@ -39,8 +41,28 @@ public class XmlAltText {
     public XmlAltText() {
     }
 
-    public XmlAltText(QuestionOptionDto dto) {
-        //TODO
+    public XmlAltText(Translation t) {
+        language = t.getLanguageCode();
+        text = t.getText();
+        type = TRANSLATION_TYPE;
+    }
+
+    /**
+     * @return a DTO object with relevant fields copied
+     */
+    public TranslationDto toDto() {
+        TranslationDto dto = new TranslationDto();
+        dto.setLangCode(language);
+        dto.setText(text);
+        return dto;
+    }
+
+    @Override public String toString() {
+        return "translation{" +
+                "langCode='" + language +
+                "',type='" + type +
+                "',text='" + text +
+                "'}";
     }
 
     public String getType() {
@@ -65,24 +87,6 @@ public class XmlAltText {
 
     public void setText(String text) {
         this.text = text;
-    }
-
-    /**
-     * @return a Dto object with relevant fields copied
-     */
-    public TranslationDto toDto() {
-        TranslationDto dto = new TranslationDto();
-        dto.setLangCode(language);
-        dto.setText(text);
-        return dto;
-    }
-
-    @Override public String toString() {
-        return "translation{" +
-                "langCode='" + language +
-                "',type='" + type +
-                "',text='" + text +
-                "'}";
     }
 
 }

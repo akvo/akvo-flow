@@ -32,13 +32,25 @@ import com.fasterxml.jackson.dataformat.xml.annotation.JacksonXmlProperty;
 public class XmlHelp {
 
     @JacksonXmlProperty(localName = "type", isAttribute = true)
-    private String type; //Should be "tip"
+    private String type; //Should always be "tip"
     @JacksonXmlProperty(localName = "text", isAttribute = false)
     private String text;
     @JacksonXmlElementWrapper(localName = "altText", useWrapping = false)
     private XmlAltText[] altText;
 
     public XmlHelp() {
+    }
+
+    public XmlHelp(String txt) {
+        type = "tip";
+        text = txt;
+    }
+
+    @Override public String toString() {
+        return "help{" +
+                "type='" + type +
+                "',text='" + text +
+                "'}";
     }
 
     public String getText() {
@@ -55,14 +67,6 @@ public class XmlHelp {
 
     public void setAltText(XmlAltText[] altText) {
         this.altText = altText;
-    }
-
-
-    @Override public String toString() {
-        return "help{" +
-                "type='" + type +
-                "',text='" + text +
-                "'}";
     }
 
 }

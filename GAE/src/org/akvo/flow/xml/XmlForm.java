@@ -17,7 +17,7 @@
 package org.akvo.flow.xml;
 
 import java.util.ArrayList;
-import java.util.Arrays;
+import java.util.List;
 
 import org.waterforpeople.mapping.app.gwt.client.survey.QuestionGroupDto;
 import org.waterforpeople.mapping.app.gwt.client.survey.SurveyDto;
@@ -25,13 +25,15 @@ import org.waterforpeople.mapping.app.gwt.client.survey.SurveyDto;
 import com.fasterxml.jackson.dataformat.xml.annotation.JacksonXmlElementWrapper;
 import com.fasterxml.jackson.dataformat.xml.annotation.JacksonXmlProperty;
 import com.fasterxml.jackson.dataformat.xml.annotation.JacksonXmlRootElement;
+import com.gallatinsystems.survey.domain.QuestionGroup;
+import com.gallatinsystems.survey.domain.Survey;
 
 
 @JacksonXmlRootElement(localName = "survey")
 public final class XmlForm {
 
     @JacksonXmlElementWrapper(localName = "questionGroup", useWrapping = false)
-    private XmlQuestionGroup[] questionGroup;
+    private List<XmlQuestionGroup> questionGroup;
 
     @JacksonXmlProperty(localName = "version", isAttribute = true)
     private String version;
@@ -46,7 +48,7 @@ public final class XmlForm {
     private String app;
 
     @JacksonXmlProperty(localName = "surveyGroupId", isAttribute = true)
-    private String surveyGroupId;
+    private Long surveyGroupId;
 
     @JacksonXmlProperty(localName = "surveyGroupName", isAttribute = true)
     private String surveyGroupName;
@@ -57,24 +59,48 @@ public final class XmlForm {
     public XmlForm() {
     }
 
+    //Create a form XML object from a form and the name of the containing survey
+    public XmlForm(Survey form, String surveyName) {
+        surveyId = form.getKey().getId();
+        surveyGroupId = form.getSurveyGroupId();
+        surveyGroupName = surveyName;
+        defaultLanguageCode = form.getDefaultLanguageCode();
+        if (defaultLanguageCode == null) {
+            defaultLanguageCode = "en";
+        }
+        name = form.getCode();
+        if (name == null){
+            name = form.getName();
+        }
+        version = form.getVersion().toString();
+        //Now copy the tree of child objects (if any)
+        questionGroup = new ArrayList<>(); //Having an empty list prevents a <questionGroup/> tag
+        if (form.getQuestionGroupMap() != null) {
+            for (QuestionGroup g: form.getQuestionGroupMap().values()) {
+                questionGroup.add(new XmlQuestionGroup(g));
+            }
+        }
+    }
 
     /**
      * @return a Dto object with relevant fields copied
      */
     public SurveyDto toDto() {
         SurveyDto dto = new SurveyDto();
-        //TODO: need to test against many form files
         dto.setKeyId(surveyId);
         dto.setName(name);
         dto.setCode(name);
         dto.setVersion(version);
-        ArrayList<QuestionGroupDto> gList = new ArrayList<>();
-        int i = 1;
-        for (XmlQuestionGroup g : questionGroup) {
-            g.setOrder(i++);
-            gList.add(g.toDto());
+        if (questionGroup != null) {
+            List<QuestionGroupDto> gList = new ArrayList<>();
+            int i = 1;
+            for (XmlQuestionGroup g : questionGroup) {
+                g.setOrder(i++);
+                gList.add(g.toDto());
+            }
+            dto.setQuestionGroupList(gList);
         }
-        dto.setQuestionGroupList(gList);
+        //We could add more fields (not needed by the export process) here
 
         return dto;
     }
@@ -87,16 +113,12 @@ public final class XmlForm {
         this.version = version;
     }
 
-    public XmlForm(XmlQuestionGroup[] questionGroups) {
-        this.questionGroup = questionGroups;
-    }
-
-    public XmlQuestionGroup[] getQuestionGroup() {
+    public List<XmlQuestionGroup> getQuestionGroup() {
         return questionGroup;
     }
 
-    public void setQuestionGroup(XmlQuestionGroup[] qgs) {
-        this.questionGroup = qgs;
+    public void setQuestionGroup(List<XmlQuestionGroup> qgl) {
+        this.questionGroup = qgl;
     }
 
     public String getName() {
@@ -123,11 +145,11 @@ public final class XmlForm {
         this.app = app;
     }
 
-    public String getSurveyGroupId() {
+    public Long getSurveyGroupId() {
         return surveyGroupId;
     }
 
-    public void setSurveyGroupId(String surveyGroupId) {
+    public void setSurveyGroupId(Long surveyGroupId) {
         this.surveyGroupId = surveyGroupId;
     }
 
@@ -149,7 +171,7 @@ public final class XmlForm {
 
     @Override public String toString() {
         return "Form{" +
-                "questionGroups=" + Arrays.toString(questionGroup) +
+                "questionGroups=" + questionGroup.toString() +
                 '}';
     }
 }
