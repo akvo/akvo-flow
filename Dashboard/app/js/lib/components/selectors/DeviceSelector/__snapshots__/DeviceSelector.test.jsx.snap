@@ -10,29 +10,29 @@ exports[`DeviceSelector Tests +++ renders <snapshot> 1`] = `
         class="accordion "
         data-testid="accordion"
       >
+        <label
+          class="checkbox-container"
+          for="1"
+        >
+          
+          <input
+            class="displayInline"
+            id="1"
+            name="0"
+            type="checkbox"
+          />
+          <span
+            class="checkmark"
+          />
+        </label>
         <div>
-          <label
-            class="checkbox-container"
-            for="1"
-          >
-            
-            <input
-              class="displayInline"
-              id="1"
-              name="0"
-              type="checkbox"
-            />
-            <span
-              class="checkmark"
-            />
-          </label>
           <span>
             Devices not in a group
           </span>
+          <span
+            class="fa fa-chevron-down"
+          />
         </div>
-        <span
-          class="fa fa-chevron-down"
-        />
       </div>
       <div
         class="panel"
@@ -89,29 +89,29 @@ exports[`DeviceSelector Tests +++ toggles accordion 1`] = `
         class="accordion "
         data-testid="accordion"
       >
+        <label
+          class="checkbox-container"
+          for="1"
+        >
+          
+          <input
+            class="displayInline"
+            id="1"
+            name="0"
+            type="checkbox"
+          />
+          <span
+            class="checkmark"
+          />
+        </label>
         <div>
-          <label
-            class="checkbox-container"
-            for="1"
-          >
-            
-            <input
-              class="displayInline"
-              id="1"
-              name="0"
-              type="checkbox"
-            />
-            <span
-              class="checkmark"
-            />
-          </label>
           <span>
             Devices not in a group
           </span>
+          <span
+            class="fa fa-chevron-down"
+          />
         </div>
-        <span
-          class="fa fa-chevron-down"
-        />
       </div>
       <div
         class="panel"
