@@ -22,7 +22,7 @@ export default class DeviceSelector extends React.Component {
             deviceGroupIsActive={this.accordionIsActive(dgId)}
             selectAllCheckbox={() => (
               <Checkbox
-                id="0"
+                id={dgId}
                 name="0"
                 checked={deviceGroups[dgId][0].checked}
                 onChange={(...args) => handleDeviceCheck(...args, dgId)}
@@ -55,5 +55,4 @@ DeviceSelector.propTypes = {
   deviceGroupNames: PropTypes.object.isRequired,
   activeDeviceGroups: PropTypes.any.isRequired,
   handleDeviceCheck: PropTypes.func.isRequired,
-  onSelectAll: PropTypes.func.isRequired,
 };
