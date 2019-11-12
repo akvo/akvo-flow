@@ -80,7 +80,7 @@ public class SurveyDAO extends BaseDAO<Survey> {
      * @param formId
      * @return the form tree
      */
-    public Survey loadFullSurvey(Long formId) {
+    public Survey loadFullForm(Long formId) {
         //Fetch form
         Survey form = getById(formId);
         //Fetch groups

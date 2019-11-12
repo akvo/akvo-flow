@@ -36,7 +36,6 @@ import org.akvo.flow.xml.PublishedForm;
 import org.akvo.flow.xml.XmlForm;
 import org.apache.log4j.Logger;
 import org.waterforpeople.mapping.app.web.dto.SurveyAssemblyRequest;
-import org.waterforpeople.mapping.domain.SurveyInstance;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -166,7 +165,7 @@ public class SurveyAssemblyServlet extends AbstractRestApiServlet {
     private boolean assembleFormWithJackson(Long formId) {
         log.debug("Starting Jackson assembly of form " + formId);
         SurveyDAO surveyDao = new SurveyDAO();
-        Survey form = surveyDao.loadFullSurvey(formId);
+        Survey form = surveyDao.loadFullForm(formId);
 
         SurveyGroupDAO surveyGroupDao = new SurveyGroupDAO();
         SurveyGroup sg = surveyGroupDao.getByKey(form.getSurveyGroupId());

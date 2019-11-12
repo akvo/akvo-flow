@@ -590,7 +590,6 @@ public class QuestionDao extends BaseDAO<Question> {
             for (Question q : qList) {
 
                 if (needDetails) {
-                    q.setQuestionHelpMediaMap(helpDao.listHelpByQuestion(q.getKey().getId()));
                     if (Question.Type.OPTION == q.getType()) {
                         q.setQuestionOptionMap(optionDao.listOptionByQuestion(q.getKey().getId()));
                     }
