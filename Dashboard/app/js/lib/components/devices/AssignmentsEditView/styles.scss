@@ -135,6 +135,18 @@
               align-items: center;
               flex-direction: row;
               justify-content: space-between;
+
+              label {
+                p {
+                  font-size: 16px;
+                  color: initial;
+                }
+
+                span {
+                  font-size: 14px;
+                  color: #4f4f4f;
+                }
+              }
             }
           }
 

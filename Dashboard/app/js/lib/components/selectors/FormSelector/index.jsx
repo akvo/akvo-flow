@@ -11,7 +11,10 @@ export default class FormSelector extends React.Component {
       <div>
         {Object.keys(forms).map(formId => (
           <div className="form" key={formId}>
-            <label htmlFor={formId}>{forms[formId].name}</label>
+            <label htmlFor={formId}>
+              <p>{forms[formId].name}</p>
+              <span>{formId}</span>
+            </label>
 
             <Switch
               id={formId}
