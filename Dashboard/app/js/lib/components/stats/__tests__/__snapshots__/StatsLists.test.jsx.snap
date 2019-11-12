@@ -1,0 +1,68 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`Stats Lists Tests +++ renders snapshots 1`] = `
+<div>
+  <div
+    id="stats-listing-page"
+  >
+    <div
+      class="page-header"
+    >
+      <h2>
+        Generated stats
+      </h2>
+      <button
+        class="standardBtn newStats"
+        data-testid="newStatsBtn"
+        type="button"
+      >
+        Export stats
+      </button>
+    </div>
+    <div
+      class="main-page"
+    >
+      <div
+        class="generated-stats"
+      >
+        <a
+          href="#"
+        >
+          <div
+            class="generated-stat"
+          >
+            <div
+              class="stats-details"
+            >
+              <span
+                class="stat-icon"
+              />
+              <div>
+                <span
+                  class="date"
+                >
+                  2019-10-01
+                   - 
+                  2019-10-11
+                   
+                  Submissions
+                </span>
+                <span
+                  class="filename"
+                >
+                  Test export
+                </span>
+              </div>
+            </div>
+            <p
+              class="stats-status"
+            >
+              Finished Error
+            </p>
+          </div>
+        </a>
+      </div>
+    </div>
+  </div>
+</div>
+`;

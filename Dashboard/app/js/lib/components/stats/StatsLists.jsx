@@ -42,6 +42,7 @@ export default class StatsList extends React.Component {
           <button
             className="standardBtn newStats"
             type="button"
+            data-testid="newStatsBtn"
             onClick={goToExport}
           >
             {strings.exportStats}
