@@ -52,7 +52,6 @@ FLOW.AssignmentEditView = FLOW.ReactComponentView.extend(
       this.detectSurveyLoaded = this.detectSurveyLoaded.bind(this);
       this.renderReactSide = this.renderReactSide.bind(this);
       this.handleFormCheck = this.handleFormCheck.bind(this);
-      this.canAddFormsToAssignment = this.canAddFormsToAssignment.bind(this);
       this.validateAssignment = this.validateAssignment.bind(this);
       this.saveSurveyAssignment = this.saveSurveyAssignment.bind(this);
       this.setupForms = this.setupForms.bind(this);
@@ -385,29 +384,6 @@ FLOW.AssignmentEditView = FLOW.ReactComponentView.extend(
         : false;
     },
 
-    canAddFormsToAssignment() {
-      // only allow if form qualifies
-      const formsInAssignment = FLOW.selectedControl
-        .get('selectedSurveys')
-        .map(item => item.get('id'));
-
-      const selectedSurveyGroupId = FLOW.selectedControl.selectedSurveyGroup.get(
-        'keyId'
-      );
-
-      if (formsInAssignment && formsInAssignment.length > 0) {
-        // get survey id of first form currently in assignment
-        const preSelectedSurvey = FLOW.Survey.find(formsInAssignment[0]);
-        if (preSelectedSurvey && preSelectedSurvey.get('keyId')) {
-          return (
-            preSelectedSurvey.get('surveyGroupId') == selectedSurveyGroupId
-          );
-        }
-      }
-
-      return true; // no forms are currently added to the assignment
-    },
-
     shouldRemoveForms() {
       const formsInAssignment = FLOW.selectedControl
         .get('selectedSurveys')
@@ -575,7 +551,6 @@ FLOW.AssignmentEditView = FLOW.ReactComponentView.extend(
     },
 
     handleDeviceCheck(deviceId, checked, deviceGroupId) {
-      console.log(deviceId);
       // if it's the select all option
       if (deviceId == 0) {
         return this.handleSelectAllDevice(deviceGroupId, checked);
