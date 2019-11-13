@@ -72,6 +72,7 @@ FLOW.AssignmentEditView = FLOW.ReactComponentView.extend(
 
       // selected attributes
       this.selectedDevices = [];
+      this.selectedSurveys = [];
 
       // using Set to avoia duplication
       this.activeDeviceGroups = new Set();
@@ -138,7 +139,7 @@ FLOW.AssignmentEditView = FLOW.ReactComponentView.extend(
         deviceGroupNames: this.deviceGroupNames,
         activeDeviceGroups: this.activeDeviceGroups,
         initialSurveyGroup: this.initialSurveyGroup,
-        numberOfForms: FLOW.selectedControl.get('selectedSurveys').length,
+        numberOfForms: this.selectedSurveys.length,
       };
 
       return {
@@ -165,11 +166,7 @@ FLOW.AssignmentEditView = FLOW.ReactComponentView.extend(
 
       // set devices and surveys
       const devices = this.selectedDevices.map(item => item.get('keyId'));
-
-      const surveys = [];
-      FLOW.selectedControl.get('selectedSurveys').forEach(item => {
-        surveys.push(item.get('keyId'));
-      });
+      const surveys = this.selectedSurveys.map(item => item.get('keyId'));
 
       // validate data before continuing
       const isValid = this.validateAssignment({ ...data, devices, surveys });
@@ -232,8 +229,6 @@ FLOW.AssignmentEditView = FLOW.ReactComponentView.extend(
 
     // setups
     setupControls() {
-      FLOW.selectedControl.set('selectedDevices', []);
-      FLOW.selectedControl.set('selectedSurveys', []);
       FLOW.selectedControl.set('selectedSurveyGroup', null);
       FLOW.selectedControl.set('selectedDeviceGroup', null);
       FLOW.surveyControl.set('content', null);
@@ -266,7 +261,7 @@ FLOW.AssignmentEditView = FLOW.ReactComponentView.extend(
         .forEach(formId => {
           const form = FLOW.Survey.find(formId);
           if (form && form.get('keyId')) {
-            FLOW.selectedControl.selectedSurveys.pushObject(form);
+            this.selectedSurveys.push(form);
 
             // load selected survey group
             this.initialSurveyGroup = form.get('surveyGroupId');
@@ -515,14 +510,10 @@ FLOW.AssignmentEditView = FLOW.ReactComponentView.extend(
 
       // add/remove form to/from assignment
       if (this.forms[formId].checked) {
-        // push survey to FLOW.selectedControl.selectedSurveys
-        FLOW.selectedControl.selectedSurveys.pushObject(
-          FLOW.Survey.find(formId)
-        );
+        // push survey to selectedSurveys
+        this.selectedSurveys.push(FLOW.Survey.find(formId));
       } else {
-        FLOW.selectedControl.selectedSurveys.removeObject(
-          FLOW.Survey.find(formId)
-        );
+        this.selectedSurveys.pop(FLOW.Survey.find(formId));
       }
 
       this.renderReactSide();
