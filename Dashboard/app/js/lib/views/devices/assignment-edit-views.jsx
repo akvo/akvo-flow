@@ -70,6 +70,9 @@ FLOW.AssignmentEditView = FLOW.ReactComponentView.extend(
       this.deviceGroups = {};
       this.deviceGroupNames = {};
 
+      // selected attributes
+      this.selectedDevices = [];
+
       // using Set to avoia duplication
       this.activeDeviceGroups = new Set();
       this.initialSurveyGroup = null;
@@ -159,14 +162,11 @@ FLOW.AssignmentEditView = FLOW.ReactComponentView.extend(
     saveSurveyAssignment(data) {
       let endDateParse;
       let startDateParse;
-      const devices = [];
-      const surveys = [];
 
       // set devices and surveys
-      FLOW.selectedControl.get('selectedDevices').forEach(item => {
-        devices.push(item.get('keyId'));
-      });
+      const devices = this.selectedDevices.map(item => item.get('keyId'));
 
+      const surveys = [];
       FLOW.selectedControl.get('selectedSurveys').forEach(item => {
         surveys.push(item.get('keyId'));
       });
@@ -311,7 +311,7 @@ FLOW.AssignmentEditView = FLOW.ReactComponentView.extend(
                 // populate pre-selected devices
                 const device = FLOW.Device.find(deviceId);
                 if (device && device.get('keyId')) {
-                  FLOW.selectedControl.selectedDevices.pushObject(device);
+                  this.selectedDevices.push(device);
                 }
               });
           }
@@ -546,7 +546,6 @@ FLOW.AssignmentEditView = FLOW.ReactComponentView.extend(
     },
 
     handleDeviceCheck(deviceId, checked, deviceGroupId) {
-      console.log(deviceId);
       // if it's the select all option
       if (deviceId == 0) {
         return this.handleSelectAllDevice(deviceGroupId, checked);
@@ -554,15 +553,11 @@ FLOW.AssignmentEditView = FLOW.ReactComponentView.extend(
 
       const device = FLOW.Device.find(deviceId);
       if (checked) {
-        // push device to FLOW.selectedControl.selectedDevices
-        FLOW.selectedControl.selectedDevices.pushObject(
-          FLOW.Device.find(deviceId)
-        );
+        // push device to selectedDevices
+        this.selectedDevices.push(FLOW.Device.find(deviceId));
       } else {
-        // remove device to FLOW.selectedControl.selectedDevices
-        FLOW.selectedControl.selectedDevices.removeObject(
-          FLOW.Device.find(deviceId)
-        );
+        // remove device to selectedDevices
+        this.selectedDevices.pop(FLOW.Device.find(deviceId));
       }
 
       // check devices
@@ -586,9 +581,7 @@ FLOW.AssignmentEditView = FLOW.ReactComponentView.extend(
         .map(deviceId => FLOW.Device.find(deviceId));
 
       allDevices.forEach(device => {
-        FLOW.selectedControl.selectedDevices[
-          checked ? 'pushObject' : 'removeObject'
-        ](device);
+        this.selectedDevices[checked ? 'push' : 'pop'](device);
 
         // check devices
         this.deviceGroups[device.get('deviceGroup') || '1'][
