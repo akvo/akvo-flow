@@ -512,7 +512,6 @@ FLOW.AssignmentEditView = FLOW.ReactComponentView.extend(
       if (this.shouldRemoveForms()) {
         // remove all currently selected forms
         FLOW.selectedControl.set('selectedSurveys', []);
-        // FLOW.selectedControl.get('selectedSurveys').forEach(item => {});
       }
 
       // check form
