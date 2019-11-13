@@ -52,7 +52,6 @@ FLOW.AssignmentEditView = FLOW.ReactComponentView.extend(
       this.detectSurveyLoaded = this.detectSurveyLoaded.bind(this);
       this.renderReactSide = this.renderReactSide.bind(this);
       this.handleFormCheck = this.handleFormCheck.bind(this);
-      this.canAddFormsToAssignment = this.canAddFormsToAssignment.bind(this);
       this.validateAssignment = this.validateAssignment.bind(this);
       this.saveSurveyAssignment = this.saveSurveyAssignment.bind(this);
       this.setupForms = this.setupForms.bind(this);
@@ -370,17 +369,21 @@ FLOW.AssignmentEditView = FLOW.ReactComponentView.extend(
     },
 
     formInAssignment(formId) {
-      const formsInAssignment = FLOW.selectedControl.selectedSurveyAssignment.get(
-        'formIds'
-      );
-      return formsInAssignment ? formsInAssignment.indexOf(formId) > -1 : false;
+      const formsInAssignment = FLOW.selectedControl
+        .get('selectedSurveys')
+        .map(item => item.get('id'));
+
+      // convert id to string
+      return formsInAssignment
+        ? formsInAssignment.indexOf(`${formId}`) > -1
+        : false;
     },
 
-    canAddFormsToAssignment() {
-      // only allow if form qualifies
-      const formsInAssignment = FLOW.selectedControl.selectedSurveyAssignment.get(
-        'formIds'
-      );
+    shouldRemoveForms() {
+      const formsInAssignment = FLOW.selectedControl
+        .get('selectedSurveys')
+        .map(item => item.get('id'));
+
       const selectedSurveyGroupId = FLOW.selectedControl.selectedSurveyGroup.get(
         'keyId'
       );
@@ -390,12 +393,12 @@ FLOW.AssignmentEditView = FLOW.ReactComponentView.extend(
         const preSelectedSurvey = FLOW.Survey.find(formsInAssignment[0]);
         if (preSelectedSurvey && preSelectedSurvey.get('keyId')) {
           return (
-            preSelectedSurvey.get('surveyGroupId') == selectedSurveyGroupId
+            preSelectedSurvey.get('surveyGroupId') != selectedSurveyGroupId
           );
         }
       }
 
-      return true; // no forms are currently added to the assignment
+      return false;
     },
 
     validateAssignment(data) {
@@ -499,14 +502,15 @@ FLOW.AssignmentEditView = FLOW.ReactComponentView.extend(
     },
 
     // handlers
-    handleFormCheck(e) {
-      // only allow a form to be checked if a different survey isn't already selected
-      const formId = e.target.name;
-      if (this.canAddFormsToAssignment()) {
-        this.forms[formId].checked = !this.forms[formId].checked;
-      } else {
-        // TODO: display error that form cannot be added unless currently added forms are removed
+    handleFormCheck(formId) {
+      // if checking a form in a new survey, remove all forms
+      if (this.shouldRemoveForms()) {
+        // remove all currently selected forms
+        FLOW.selectedControl.set('selectedSurveys', []);
       }
+
+      // check form
+      this.forms[formId].checked = !this.forms[formId].checked;
 
       // add/remove form to/from assignment
       if (this.forms[formId].checked) {

@@ -127,7 +127,6 @@ export default class AssignmentsEdit extends React.Component {
               </p>
 
               <div className="form-selector">
-                <span className="infoText">{strings.formsWarning}</span>
                 <br />
 
                 <div className="folder-selector">
