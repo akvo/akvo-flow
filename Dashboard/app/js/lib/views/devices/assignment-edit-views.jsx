@@ -95,6 +95,8 @@ FLOW.AssignmentEditView = FLOW.ReactComponentView.extend(
     },
 
     getProps() {
+      console.log(this.selectedSurveys, this.forms);
+
       const strings = {
         saveAssignment: Ember.String.loc('_save'),
         settings: Ember.String.loc('_settings'),
@@ -260,6 +262,7 @@ FLOW.AssignmentEditView = FLOW.ReactComponentView.extend(
         .forEach(formId => {
           const form = FLOW.Survey.find(formId);
           if (form && form.get('keyId')) {
+            console.log('PUSHING AT:: SETUP');
             this.selectedSurveys.push(form);
 
             // load selected survey group
@@ -369,9 +372,9 @@ FLOW.AssignmentEditView = FLOW.ReactComponentView.extend(
     },
 
     formInAssignment(formId) {
-      const formsInAssignment = FLOW.selectedControl
-        .get('selectedSurveys')
-        .map(item => item.get('id'));
+      const formsInAssignment = this.selectedSurveys.map(item =>
+        item.get('id')
+      );
 
       // convert id to string
       return formsInAssignment
@@ -465,9 +468,10 @@ FLOW.AssignmentEditView = FLOW.ReactComponentView.extend(
     },
 
     deviceInAssignment(deviceId) {
-      const devicesInAssignment = FLOW.selectedControl.selectedSurveyAssignment.get(
-        'deviceIds'
+      const devicesInAssignment = this.selectedDevices.map(item =>
+        item.get('id')
       );
+
       return devicesInAssignment
         ? devicesInAssignment.indexOf(deviceId) > -1
         : false;
@@ -506,7 +510,7 @@ FLOW.AssignmentEditView = FLOW.ReactComponentView.extend(
       // if checking a form in a new survey, remove all forms
       if (this.shouldRemoveForms()) {
         // remove all currently selected forms
-        FLOW.selectedControl.set('selectedSurveys', []);
+        this.selectedSurveys = [];
       }
 
       // check form
@@ -515,6 +519,7 @@ FLOW.AssignmentEditView = FLOW.ReactComponentView.extend(
       // add/remove form to/from assignment
       if (this.forms[formId].checked) {
         // push survey to selectedSurveys
+        console.log('PUSHING AT:: CHECK');
         this.selectedSurveys.push(FLOW.Survey.find(formId));
       } else {
         this.selectedSurveys.pop(FLOW.Survey.find(formId));
@@ -529,6 +534,7 @@ FLOW.AssignmentEditView = FLOW.ReactComponentView.extend(
       const selectedSG = FLOW.projectControl
         .get('content')
         .find(sg => sg.get('keyId') == parentId);
+
       if (selectedSG && selectedSG.get('projectType') !== 'PROJECT_FOLDER') {
         FLOW.selectedControl.set('selectedSurveyGroup', selectedSG);
         return false;
@@ -536,6 +542,8 @@ FLOW.AssignmentEditView = FLOW.ReactComponentView.extend(
 
       // empty forms when a new folder is picked
       this.forms = {};
+      this.selectedSurveys = [];
+
       this.renderReactSide();
       return true;
     },
