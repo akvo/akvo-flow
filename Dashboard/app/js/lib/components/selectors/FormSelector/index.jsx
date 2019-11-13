@@ -1,8 +1,7 @@
+/* eslint-disable import/no-unresolved */
 import React from 'react';
 import PropTypes from 'prop-types';
-
-// eslint-disable-next-line import/no-unresolved
-// import Checkbox from 'akvo-flow/components/reusable/Checkbox';
+import Switch from 'akvo-flow/components/reusable/SwitchBox';
 
 export default class FormSelector extends React.Component {
   render() {
@@ -11,17 +10,18 @@ export default class FormSelector extends React.Component {
     return (
       <div>
         {Object.keys(forms).map(formId => (
-          <div key={formId}>
-            <input
-              type="checkbox"
+          <div className="form" key={formId}>
+            <label htmlFor={formId}>
+              <p>{forms[formId].name}</p>
+              <span>{formId}</span>
+            </label>
+
+            <Switch
               id={formId}
               name={formId}
-              defaultChecked={forms[formId].checked}
+              checked={forms[formId].checked}
               onChange={onCheck}
-              className="displayInline"
             />
-
-            <label htmlFor={formId}>{forms[formId].name}</label>
           </div>
         ))}
       </div>
