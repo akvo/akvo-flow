@@ -69,6 +69,10 @@ FLOW.AssignmentEditView = FLOW.ReactComponentView.extend(
       this.deviceGroups = {};
       this.deviceGroupNames = {};
 
+      // selected attributes
+      this.selectedDevices = [];
+      this.selectedSurveys = [];
+
       // using Set to avoia duplication
       this.activeDeviceGroups = new Set();
       this.initialSurveyGroup = null;
@@ -91,6 +95,8 @@ FLOW.AssignmentEditView = FLOW.ReactComponentView.extend(
     },
 
     getProps() {
+      console.log(this.selectedSurveys, this.forms);
+
       const strings = {
         saveAssignment: Ember.String.loc('_save'),
         settings: Ember.String.loc('_settings'),
@@ -134,7 +140,7 @@ FLOW.AssignmentEditView = FLOW.ReactComponentView.extend(
         deviceGroupNames: this.deviceGroupNames,
         activeDeviceGroups: this.activeDeviceGroups,
         initialSurveyGroup: this.initialSurveyGroup,
-        numberOfForms: FLOW.selectedControl.get('selectedSurveys').length,
+        numberOfForms: this.selectedSurveys.length,
       };
 
       return {
@@ -158,17 +164,10 @@ FLOW.AssignmentEditView = FLOW.ReactComponentView.extend(
     saveSurveyAssignment(data) {
       let endDateParse;
       let startDateParse;
-      const devices = [];
-      const surveys = [];
 
       // set devices and surveys
-      FLOW.selectedControl.get('selectedDevices').forEach(item => {
-        devices.push(item.get('keyId'));
-      });
-
-      FLOW.selectedControl.get('selectedSurveys').forEach(item => {
-        surveys.push(item.get('keyId'));
-      });
+      const devices = this.selectedDevices.map(item => item.get('keyId'));
+      const surveys = this.selectedSurveys.map(item => item.get('keyId'));
 
       // validate data before continuing
       const isValid = this.validateAssignment({ ...data, devices, surveys });
@@ -231,8 +230,6 @@ FLOW.AssignmentEditView = FLOW.ReactComponentView.extend(
 
     // setups
     setupControls() {
-      FLOW.selectedControl.set('selectedDevices', []);
-      FLOW.selectedControl.set('selectedSurveys', []);
       FLOW.selectedControl.set('selectedSurveyGroup', null);
       FLOW.selectedControl.set('selectedDeviceGroup', null);
       FLOW.surveyControl.set('content', null);
@@ -265,7 +262,8 @@ FLOW.AssignmentEditView = FLOW.ReactComponentView.extend(
         .forEach(formId => {
           const form = FLOW.Survey.find(formId);
           if (form && form.get('keyId')) {
-            FLOW.selectedControl.selectedSurveys.pushObject(form);
+            console.log('PUSHING AT:: SETUP');
+            this.selectedSurveys.push(form);
 
             // load selected survey group
             this.initialSurveyGroup = form.get('surveyGroupId');
@@ -310,7 +308,7 @@ FLOW.AssignmentEditView = FLOW.ReactComponentView.extend(
                 // populate pre-selected devices
                 const device = FLOW.Device.find(deviceId);
                 if (device && device.get('keyId')) {
-                  FLOW.selectedControl.selectedDevices.pushObject(device);
+                  this.selectedDevices.push(device);
                 }
               });
           }
@@ -374,9 +372,9 @@ FLOW.AssignmentEditView = FLOW.ReactComponentView.extend(
     },
 
     formInAssignment(formId) {
-      const formsInAssignment = FLOW.selectedControl
-        .get('selectedSurveys')
-        .map(item => item.get('id'));
+      const formsInAssignment = this.selectedSurveys.map(item =>
+        item.get('id')
+      );
 
       // convert id to string
       return formsInAssignment
@@ -470,9 +468,10 @@ FLOW.AssignmentEditView = FLOW.ReactComponentView.extend(
     },
 
     deviceInAssignment(deviceId) {
-      const devicesInAssignment = FLOW.selectedControl.selectedSurveyAssignment.get(
-        'deviceIds'
+      const devicesInAssignment = this.selectedDevices.map(item =>
+        item.get('id')
       );
+
       return devicesInAssignment
         ? devicesInAssignment.indexOf(deviceId) > -1
         : false;
@@ -511,7 +510,7 @@ FLOW.AssignmentEditView = FLOW.ReactComponentView.extend(
       // if checking a form in a new survey, remove all forms
       if (this.shouldRemoveForms()) {
         // remove all currently selected forms
-        FLOW.selectedControl.set('selectedSurveys', []);
+        this.selectedSurveys = [];
       }
 
       // check form
@@ -519,14 +518,11 @@ FLOW.AssignmentEditView = FLOW.ReactComponentView.extend(
 
       // add/remove form to/from assignment
       if (this.forms[formId].checked) {
-        // push survey to FLOW.selectedControl.selectedSurveys
-        FLOW.selectedControl.selectedSurveys.pushObject(
-          FLOW.Survey.find(formId)
-        );
+        // push survey to selectedSurveys
+        console.log('PUSHING AT:: CHECK');
+        this.selectedSurveys.push(FLOW.Survey.find(formId));
       } else {
-        FLOW.selectedControl.selectedSurveys.removeObject(
-          FLOW.Survey.find(formId)
-        );
+        this.selectedSurveys.pop(FLOW.Survey.find(formId));
       }
 
       this.renderReactSide();
@@ -538,6 +534,7 @@ FLOW.AssignmentEditView = FLOW.ReactComponentView.extend(
       const selectedSG = FLOW.projectControl
         .get('content')
         .find(sg => sg.get('keyId') == parentId);
+
       if (selectedSG && selectedSG.get('projectType') !== 'PROJECT_FOLDER') {
         FLOW.selectedControl.set('selectedSurveyGroup', selectedSG);
         return false;
@@ -545,6 +542,8 @@ FLOW.AssignmentEditView = FLOW.ReactComponentView.extend(
 
       // empty forms when a new folder is picked
       this.forms = {};
+      this.selectedSurveys = [];
+
       this.renderReactSide();
       return true;
     },
@@ -557,15 +556,11 @@ FLOW.AssignmentEditView = FLOW.ReactComponentView.extend(
 
       const device = FLOW.Device.find(deviceId);
       if (checked) {
-        // push device to FLOW.selectedControl.selectedDevices
-        FLOW.selectedControl.selectedDevices.pushObject(
-          FLOW.Device.find(deviceId)
-        );
+        // push device to selectedDevices
+        this.selectedDevices.push(FLOW.Device.find(deviceId));
       } else {
-        // remove device to FLOW.selectedControl.selectedDevices
-        FLOW.selectedControl.selectedDevices.removeObject(
-          FLOW.Device.find(deviceId)
-        );
+        // remove device to selectedDevices
+        this.selectedDevices.pop(FLOW.Device.find(deviceId));
       }
 
       // check devices
@@ -589,9 +584,7 @@ FLOW.AssignmentEditView = FLOW.ReactComponentView.extend(
         .map(deviceId => FLOW.Device.find(deviceId));
 
       allDevices.forEach(device => {
-        FLOW.selectedControl.selectedDevices[
-          checked ? 'pushObject' : 'removeObject'
-        ](device);
+        this.selectedDevices[checked ? 'push' : 'pop'](device);
 
         // check devices
         this.deviceGroups[device.get('deviceGroup') || '1'][
