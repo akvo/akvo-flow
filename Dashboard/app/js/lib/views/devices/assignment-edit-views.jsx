@@ -95,8 +95,6 @@ FLOW.AssignmentEditView = FLOW.ReactComponentView.extend(
     },
 
     getProps() {
-      console.log(this.selectedSurveys, this.forms);
-
       const strings = {
         saveAssignment: Ember.String.loc('_save'),
         settings: Ember.String.loc('_settings'),

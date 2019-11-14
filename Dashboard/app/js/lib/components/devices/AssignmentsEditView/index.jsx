@@ -2,22 +2,30 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import moment from 'moment';
-import FolderSurveySelectorView from 'akvo-flow/components/selectors/FolderSurveySelector';
-import FormSelectorView from 'akvo-flow/components/selectors/FormSelector';
-import DeviceGroupSelectorView from 'akvo-flow/components/selectors/DeviceSelector';
+import FormSection from './FormSection';
+// import DeviceGroupSelectorView from 'akvo-flow/components/selectors/DeviceSelector';
 
 import './styles.scss';
 
 export default class AssignmentsEdit extends React.Component {
   state = {
-    assignmentName: this.props.inputValues.assignmentName,
-    startDate: this.props.inputValues.startDate,
-    endDate: this.props.inputValues.toDate,
+    data: {
+      assignmentName: this.props.inputValues.assignmentName,
+      startDate: this.props.inputValues.startDate,
+      endDate: this.props.inputValues.toDate,
+    },
+    currentTab: 'FORMS',
   };
 
   // event handlers
   onChangeState = e => {
-    this.setState({ [e.target.id]: e.target.value });
+    this.setState(state => ({
+      data: { [e.target.id]: e.target.value, ...state.data },
+    }));
+  };
+
+  onChangeTab = tab => {
+    this.setState({ currentTab: tab });
   };
 
   onSubmit = () => {
@@ -52,7 +60,7 @@ export default class AssignmentsEdit extends React.Component {
 
   render() {
     const { strings, actions, data } = this.props;
-    const numberOfDevices = this.getNumberOfSelectedDevices();
+    // const numberOfDevices = this.getNumberOfSelectedDevices();
 
     return (
       <div className="assignments-edit">
@@ -72,7 +80,7 @@ export default class AssignmentsEdit extends React.Component {
                 type="text"
                 id="assignmentName"
                 placeholder={strings.assignmentNamePlaceholder}
-                value={this.state.assignmentName}
+                value={this.state.data.assignmentName}
                 onChange={this.onChangeState}
               />
               {/* <span className="infoText">0 datapoints / 20k assigned</span> */}
@@ -85,71 +93,31 @@ export default class AssignmentsEdit extends React.Component {
         </div>
 
         <div className="assignment-body">
-          <div className="settings">
-            <h3>{strings.settings}</h3>
+          <div className="assignment-sidebar">
+            <ul>
+              <li className={this.state.currentTab === 'FORMS' ? 'active' : ''}>
+                <a href="/">Forms</a>
+              </li>
 
-            <div className="assignment-date">
-              <p className="heading">
-                <span className="title">{strings.duration}</span>
-              </p>
-
-              {/* date picker */}
-              <div className="date-picker">
-                <div className="date">
-                  <i className="fa fa-calendar" />
-                  <input
-                    type="date"
-                    id="startDate"
-                    value={this.formatMomentDate(this.state.startDate)}
-                    onChange={this.onChangeState}
-                  />
-                </div>
-                <span> - </span>
-                <div className="date">
-                  <i className="fa fa-calendar" />
-                  <input
-                    type="date"
-                    id="endDate"
-                    min={this.formatMomentDate(this.state.startDate)}
-                    value={this.formatMomentDate(this.state.endDate)}
-                    onChange={this.onChangeState}
-                  />
-                </div>
-              </div>
-            </div>
-
-            <div className="assignment-form-selector">
-              <p className="heading">
-                <span className="title">{strings.forms}</span>
-                <span className="info">
-                  {data.numberOfForms} {strings.enabled}
-                </span>
-              </p>
-
-              <div className="form-selector">
-                <br />
-
-                <div className="folder-selector">
-                  <FolderSurveySelectorView
-                    initialSurveyGroup={data.initialSurveyGroup}
-                    surveyGroups={data.surveyGroups}
-                    onSelectSurvey={actions.handleSurveySelect}
-                    strings={strings}
-                  />
-                </div>
-                <br />
-
-                {Object.keys(data.forms).length ? (
-                  <FormSelectorView
-                    forms={data.forms}
-                    onCheck={actions.handleFormCheck}
-                  />
-                ) : (
-                  <p className="noForms">{strings.noForms}</p>
-                )}
-              </div>
-            </div>
+              <li
+                className={this.state.currentTab === 'DEVICES' ? 'active' : ''}
+              >
+                <a href="/">Devices</a>
+              </li>
+            </ul>
           </div>
+
+          <div className="assignment-main">
+            <FormSection
+              actions={actions}
+              strings={strings}
+              data={data}
+              inputValues={this.state.data}
+              onInputChange={this.onChangeState}
+            />
+          </div>
+        </div>
+        {/* <div className="assignment-body">
 
           <div className="devices">
             <div className="heading">
@@ -171,7 +139,7 @@ export default class AssignmentsEdit extends React.Component {
               />
             </div>
           </div>
-        </div>
+        </div> */}
       </div>
     );
   }

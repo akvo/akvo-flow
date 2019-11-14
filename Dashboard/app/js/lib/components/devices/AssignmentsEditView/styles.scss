@@ -83,76 +83,125 @@
     .assignment-body {
       display: flex;
 
-      .settings {
+      .assignment-sidebar {
         flex: 1;
-        padding: 15px;
-        background: #f0f0f0;
+        background: #fafafa;
+        padding: 5px 0px;
+        min-height: 300px;
 
-        .assignment-date {
-          margin-top: 2.4em;
-          margin-bottom: 1.5em;
+        li {
+          padding: 15px 25px;
+          font-weight: 500;
 
-          .date-picker {
-            display: flex;
-            width: 85%;
-            justify-content: space-between;
-            padding: 15px 0px 3px;
+          &.active {
+            background: #4ab1cf1a;
 
-            i.fa {
-              margin-right: 5px;
+            &::after {
+              content: unset;
             }
 
-            .date {
-              display: flex;
-              align-items: center;
-              background: #fff8e1;
-              padding: 0px 4px;
-              border: 1px solid #ccc;
-
-              input {
-                outline: none;
-                border: none;
-                background-color: transparent;
-                font-family: inherit;
-
-                &:hover {
-                  background: transparent;
-                }
-              }
+            a {
+              color: #4f4f4f;
             }
           }
         }
+      }
 
-        .assignment-survery-folder {
-          margin-bottom: 1.5em;
-        }
+      .assignment-main {
+        flex: 4;
+        color: #444;
 
-        .assignment-form-selector {
-          .form-selector {
-            .form {
-              width: 100%;
+        .settings {
+          padding: 15px 25px;
+          width: 45%;
+
+          .assignment-date {
+            margin-top: 15px;
+            margin-bottom: 1.5em;
+
+            .date-picker {
               display: flex;
-              align-items: center;
-              flex-direction: row;
+              width: 85%;
               justify-content: space-between;
+              padding: 15px 0px 3px;
 
-              label {
-                p {
-                  font-size: 16px;
-                  color: initial;
-                }
+              i.fa {
+                margin-right: 5px;
+              }
 
-                span {
-                  font-size: 14px;
-                  color: #4f4f4f;
+              .date {
+                display: flex;
+                align-items: center;
+                background: #fff8e1;
+                padding: 0px 4px;
+                border: 1px solid #ccc;
+
+                input {
+                  outline: none;
+                  border: none;
+                  background-color: transparent;
+                  font-family: inherit;
+
+                  &:hover {
+                    background: transparent;
+                  }
                 }
               }
             }
           }
 
-          .noForms {
-            color: hsl(0, 0%, 35%);
-            margin-top: 10px;
+          .assignment-survery-folder {
+            margin-bottom: 1.5em;
+          }
+
+          .assignment-form-selector {
+            .folder-selector {
+              select {
+                width: 150px;
+                height: 38px;
+                background: transparent;
+                border: 1px solid #4d4d4d;
+                border-radius: 5px;
+                padding: 5px;
+                padding-right: 26px;
+                margin-right: 10px;
+
+                -webkit-appearance: none;
+                -moz-appearance: none;
+                appearance: none;
+
+                background-image: url('data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABQAAAAUCAYAAACNiR0NAAAA20lEQVQ4T+3SL0tDcRjF8c8V2YrJqHF1VTAIK5rtewGCb2BNWBIcmKy+gYW9ATGJIPblwZLNZBqMyQ9+Vy4/7j/wxj31Oc8XzjlPpuPJOubZA/+faJphDxPMsGnA96P2oahNgUd4xRpjbCugh5jjFJf4yXVlLR/jDR+4wS6BHuAZZxjhu7ivepsTvGMRbeXQoH/ENS7wlTqo+8NBhD7hPh7e4TbCVmVxND32MNoPoGB1Gm0uqwprAoa7c7xEwBU+69pvAwz3ockw4QNqpy2wifO33wNbR1Up7DzDX2zcHRV0yPnBAAAAAElFTkSuQmCC');
+                background-repeat: no-repeat;
+                background-position: 125px center;
+              }
+            }
+
+            .form-selector {
+              .form {
+                width: 100%;
+                display: flex;
+                align-items: center;
+                flex-direction: row;
+                justify-content: space-between;
+
+                label {
+                  p {
+                    font-size: 16px;
+                    color: initial;
+                  }
+
+                  span {
+                    font-size: 14px;
+                    color: #4f4f4f;
+                  }
+                }
+              }
+            }
+
+            .noForms {
+              color: hsl(0, 0%, 35%);
+              margin-top: 10px;
+            }
           }
         }
       }
