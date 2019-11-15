@@ -467,11 +467,11 @@ FLOW.AssignmentEditView = FLOW.ReactComponentView.extend(
 
     deviceInAssignment(deviceId) {
       const devicesInAssignment = this.selectedDevices.map(item =>
-        item.get('id')
+        item.get('keyId')
       );
 
       return devicesInAssignment
-        ? devicesInAssignment.indexOf(`${deviceId}`) > -1
+        ? devicesInAssignment.indexOf(deviceId) > -1
         : false;
     },
 
