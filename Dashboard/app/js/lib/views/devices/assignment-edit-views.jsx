@@ -95,8 +95,6 @@ FLOW.AssignmentEditView = FLOW.ReactComponentView.extend(
     },
 
     getProps() {
-      console.log(this.selectedSurveys, this.forms);
-
       const strings = {
         saveAssignment: Ember.String.loc('_save'),
         settings: Ember.String.loc('_settings'),
@@ -141,6 +139,7 @@ FLOW.AssignmentEditView = FLOW.ReactComponentView.extend(
         activeDeviceGroups: this.activeDeviceGroups,
         initialSurveyGroup: this.initialSurveyGroup,
         numberOfForms: this.selectedSurveys.length,
+        numberOfDevices: this.selectedDevices.length,
       };
 
       return {
@@ -262,7 +261,6 @@ FLOW.AssignmentEditView = FLOW.ReactComponentView.extend(
         .forEach(formId => {
           const form = FLOW.Survey.find(formId);
           if (form && form.get('keyId')) {
-            console.log('PUSHING AT:: SETUP');
             this.selectedSurveys.push(form);
 
             // load selected survey group
@@ -469,7 +467,7 @@ FLOW.AssignmentEditView = FLOW.ReactComponentView.extend(
 
     deviceInAssignment(deviceId) {
       const devicesInAssignment = this.selectedDevices.map(item =>
-        item.get('id')
+        item.get('keyId')
       );
 
       return devicesInAssignment
@@ -519,7 +517,6 @@ FLOW.AssignmentEditView = FLOW.ReactComponentView.extend(
       // add/remove form to/from assignment
       if (this.forms[formId].checked) {
         // push survey to selectedSurveys
-        console.log('PUSHING AT:: CHECK');
         this.selectedSurveys.push(FLOW.Survey.find(formId));
       } else {
         this.selectedSurveys.pop(FLOW.Survey.find(formId));
