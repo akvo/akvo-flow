@@ -2,8 +2,6 @@
   .assignments-edit {
     border: 1px solid #e6e6e6;
     border-radius: 5px;
-    padding: 7px 0px;
-    border-bottom: none;
 
     .infoText {
       font-size: 14px;
@@ -85,13 +83,12 @@
 
       .assignment-sidebar {
         flex: 1;
-        background: #fafafa;
+        background: #e8e8e8;
         padding: 5px 0px;
         min-height: 300px;
 
         li {
           padding: 15px 25px;
-          font-weight: 500;
 
           &.active {
             background: #4ab1cf1a;
@@ -100,9 +97,18 @@
               content: unset;
             }
 
-            a {
+            button {
               color: #4f4f4f;
             }
+          }
+
+          button {
+            color: #4ab1cf;
+            border: none;
+            background: none;
+            outline: none;
+            font-size: 15px;
+            font-weight: 500;
           }
         }
       }
@@ -117,7 +123,7 @@
 
           .assignment-date {
             margin-top: 15px;
-            margin-bottom: 1.5em;
+            margin-bottom: 2em;
 
             .date-picker {
               display: flex;
@@ -132,9 +138,9 @@
               .date {
                 display: flex;
                 align-items: center;
-                background: #fff8e1;
-                padding: 0px 4px;
-                border: 1px solid #ccc;
+                padding: 3px 8px;
+                border: 1px solid #4d4d4d;
+                border-radius: 5px;
 
                 input {
                   outline: none;
@@ -155,6 +161,8 @@
           }
 
           .assignment-form-selector {
+            margin-top: 2.3em;
+
             .folder-selector {
               select {
                 width: 150px;

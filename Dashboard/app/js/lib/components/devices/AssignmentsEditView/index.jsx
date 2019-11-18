@@ -18,9 +18,9 @@ export default class AssignmentsEdit extends React.Component {
   };
 
   // event handlers
-  onChangeState = e => {
+  onChangeState = ({ target }) => {
     this.setState(state => ({
-      data: { [e.target.id]: e.target.value, ...state.data },
+      data: { ...state.data, [target.id]: target.value },
     }));
   };
 
@@ -96,13 +96,20 @@ export default class AssignmentsEdit extends React.Component {
           <div className="assignment-sidebar">
             <ul>
               <li className={this.state.currentTab === 'FORMS' ? 'active' : ''}>
-                <a href="/">Forms</a>
+                <button type="button" onClick={() => this.onChangeTab('FORMS')}>
+                  Forms
+                </button>
               </li>
 
               <li
                 className={this.state.currentTab === 'DEVICES' ? 'active' : ''}
               >
-                <a href="/">Devices</a>
+                <button
+                  type="button"
+                  onClick={() => this.onChangeTab('DEVICES')}
+                >
+                  Devices
+                </button>
               </li>
             </ul>
           </div>
