@@ -113,6 +113,7 @@ FLOW.AssignmentEditView = FLOW.ReactComponentView.extend(
         assignmentNamePlaceholder: Ember.String.loc(
           '_enter_a_name_for_this_assignment'
         ),
+        chooseFolderOrSurvey: Ember.String.loc('_choose_folder_or_survey'),
       };
 
       const inputValues = {

@@ -30,7 +30,8 @@ export default class FolderSurveySelector extends React.Component {
     );
     const levels = [];
 
-    if (parentId !== 0) {
+    // eslint-disable-next-line eqeqeq
+    if (parentId != 0) {
       // eslint-disable-next-line eqeqeq
       const parent = surveyGroups.find(sg => sg.keyId == parentId);
 
