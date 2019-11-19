@@ -44,8 +44,8 @@ FLOW.StatsListsView = FLOW.ReactComponentView.extend(
         .forEach(item => {
           this.stats.push({
             id: item.get('keyId'),
-            url: item.get('filename').length ? item.get('filename') : '#',
-            name: item.get('filename').length
+            url: item.get('filename') ? item.get('filename') : '#',
+            name: item.get('filename')
               ? item.get('filename')
               : Ember.String.loc('_no_file_generated'),
             startDate:
