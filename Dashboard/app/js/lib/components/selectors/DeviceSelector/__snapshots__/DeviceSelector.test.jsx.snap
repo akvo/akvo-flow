@@ -3,12 +3,36 @@
 exports[`DeviceSelector Tests +++ renders <snapshot> 1`] = `
 <div>
   <div>
-    <div>
+    <div
+      class="accordion-container"
+    >
       <div
-        class="accordion false"
+        class="accordion "
         data-testid="accordion"
       >
-        Devices not in a group
+        <label
+          class="checkbox-container"
+          for="1"
+        >
+          
+          <input
+            class="displayInline"
+            id="1"
+            name="0"
+            type="checkbox"
+          />
+          <span
+            class="checkmark"
+          />
+        </label>
+        <div>
+          <span>
+            Devices not in a group
+          </span>
+          <span
+            class="fa fa-chevron-down"
+          />
+        </div>
       </div>
       <div
         class="panel"
@@ -16,31 +40,37 @@ exports[`DeviceSelector Tests +++ renders <snapshot> 1`] = `
         style="display: none;"
       >
         <div>
-          <input
-            class="displayInline"
-            id="150452032"
-            name="150452032"
-            type="checkbox"
-          />
           <label
+            class="checkbox-container"
             for="150452032"
-            id="150452032"
           >
             droidxx
+            <input
+              class="displayInline"
+              id="150452032"
+              name="150452032"
+              type="checkbox"
+            />
+            <span
+              class="checkmark"
+            />
           </label>
         </div>
         <div>
-          <input
-            class="displayInline"
-            id="150482013"
-            name="150482013"
-            type="checkbox"
-          />
           <label
+            class="checkbox-container"
             for="150482013"
-            id="150482013"
           >
             jana
+            <input
+              class="displayInline"
+              id="150482013"
+              name="150482013"
+              type="checkbox"
+            />
+            <span
+              class="checkmark"
+            />
           </label>
         </div>
       </div>
@@ -52,44 +82,74 @@ exports[`DeviceSelector Tests +++ renders <snapshot> 1`] = `
 exports[`DeviceSelector Tests +++ toggles accordion 1`] = `
 <div>
   <div>
-    <div>
+    <div
+      class="accordion-container"
+    >
       <div
-        class="accordion active"
+        class="accordion "
         data-testid="accordion"
       >
-        Devices not in a group
+        <label
+          class="checkbox-container"
+          for="1"
+        >
+          
+          <input
+            class="displayInline"
+            id="1"
+            name="0"
+            type="checkbox"
+          />
+          <span
+            class="checkmark"
+          />
+        </label>
+        <div>
+          <span>
+            Devices not in a group
+          </span>
+          <span
+            class="fa fa-chevron-down"
+          />
+        </div>
       </div>
       <div
         class="panel"
         data-testid="panel"
-        style="display: block;"
+        style="display: none;"
       >
         <div>
-          <input
-            class="displayInline"
-            id="150452032"
-            name="150452032"
-            type="checkbox"
-          />
           <label
+            class="checkbox-container"
             for="150452032"
-            id="150452032"
           >
             droidxx
+            <input
+              class="displayInline"
+              id="150452032"
+              name="150452032"
+              type="checkbox"
+            />
+            <span
+              class="checkmark"
+            />
           </label>
         </div>
         <div>
-          <input
-            class="displayInline"
-            id="150482013"
-            name="150482013"
-            type="checkbox"
-          />
           <label
+            class="checkbox-container"
             for="150482013"
-            id="150482013"
           >
             jana
+            <input
+              class="displayInline"
+              id="150482013"
+              name="150482013"
+              type="checkbox"
+            />
+            <span
+              class="checkmark"
+            />
           </label>
         </div>
       </div>

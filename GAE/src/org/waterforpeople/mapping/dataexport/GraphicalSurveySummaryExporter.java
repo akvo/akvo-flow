@@ -22,6 +22,7 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.net.URL;
 import java.net.URLConnection;
+import java.nio.file.Paths;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.text.DecimalFormat;
@@ -186,7 +187,6 @@ public class GraphicalSurveySummaryExporter extends SurveySummaryExporter {
     private Map<String, Integer> columnIndexMap = new HashMap<>();
 
     // maps from a (repeatable) question group dto to the sheet that contains the raw data for it (if split)
-    //private Map<Long, Sheet> qgSheetMap = new HashMap<>();
     private Map<QuestionGroupDto, Sheet> qgSheetMap = new HashMap<>();
 
     // data about questions gathered while writing headers
@@ -320,9 +320,8 @@ public class GraphicalSurveySummaryExporter extends SurveySummaryExporter {
         for (QuestionGroupDto groupDto : groupList) {
             if (separateSheetsForRepeatableGroups && safeTrue(groupDto.getRepeatable())) {
                 // breaking this qg out, so create the sheet for it
-                //Long gid = groupEntry.getKeyId(); //not ḱnown for published groups
                 Sheet repSheet = wb.createSheet("Group " + groupDto.getOrder());
-                qgSheetMap.put(groupDto, repSheet);
+                qgSheetMap.put(groupDto, repSheet);  //Key not ḱnown for published groups
             }
         }
 
@@ -514,9 +513,8 @@ public class GraphicalSurveySummaryExporter extends SurveySummaryExporter {
 
                 //For each group, write the repeats from top to bottom
                 for (Entry<QuestionGroupDto, List<QuestionDto>> groupEntry : questionMap.entrySet()) {
-                    Long gid = groupEntry.getKey().getKeyId();
                     if (safeTrue(groupEntry.getKey().getRepeatable())) {
-                        writeInstanceDataSplit(qgSheetMap.get(gid),
+                        writeInstanceDataSplit(qgSheetMap.get(groupEntry.getKey()),
                                 instanceData,
                                 groupEntry.getValue(),
                                 digest,
@@ -914,9 +912,9 @@ public class GraphicalSurveySummaryExporter extends SurveySummaryExporter {
         Media media = MediaResponse.parse(value);
         String filename = media.getFilename();
         if (filename != null) {
-            final int filenameIndex = filename.lastIndexOf("/") + 1;
-            if (filenameIndex > 0 && filenameIndex < filename.length()) {
-                cells.add(imagePrefix + filename.substring(filenameIndex));
+            filename = Paths.get(filename).getFileName().toString(); //strip path, if any
+            if (filename.length() > 0) {
+                cells.add(imagePrefix + filename);
                 if (splitIntoColumns && media.getLocation() != null) {
                     cells.add(Double.toString(media.getLocation().getLatitude()));
                     cells.add(Double.toString(media.getLocation().getLongitude()));
@@ -2121,13 +2119,15 @@ public class GraphicalSurveySummaryExporter extends SurveySummaryExporter {
             selectionTo = options.get(TO_OPT);
             selectionLimit = options.get(MAX_ROWS_OPT);
 
-            if (options.get(LAST_COLLECTION_OPT) != null
-                    && "true".equalsIgnoreCase(options.get(LAST_COLLECTION_OPT))) {
+            Object lc = options.get(LAST_COLLECTION_OPT);
+            if (lc != null
+                    && "true".equalsIgnoreCase(lc.toString())) {
                 lastCollection = true;
             }
 
-            if (options.get(PUBLISHED_OPT) != null
-                    && "false".equalsIgnoreCase(options.get(PUBLISHED_OPT))) {
+            Object po = options.get(PUBLISHED_OPT);
+            if (po != null
+                    && "false".equalsIgnoreCase(po.toString())) {
                 usePublishedForm = false;
             }
 

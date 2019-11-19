@@ -52,7 +52,6 @@ FLOW.AssignmentEditView = FLOW.ReactComponentView.extend(
       this.detectSurveyLoaded = this.detectSurveyLoaded.bind(this);
       this.renderReactSide = this.renderReactSide.bind(this);
       this.handleFormCheck = this.handleFormCheck.bind(this);
-      this.canAddFormsToAssignment = this.canAddFormsToAssignment.bind(this);
       this.validateAssignment = this.validateAssignment.bind(this);
       this.saveSurveyAssignment = this.saveSurveyAssignment.bind(this);
       this.setupForms = this.setupForms.bind(this);
@@ -62,12 +61,17 @@ FLOW.AssignmentEditView = FLOW.ReactComponentView.extend(
       this.deviceInAssignment = this.deviceInAssignment.bind(this);
       this.handleDeviceCheck = this.handleDeviceCheck.bind(this);
       this.handleSelectAllDevice = this.handleSelectAllDevice.bind(this);
+      this.addDevicesCheckedOption = this.addDevicesCheckedOption.bind(this);
 
       // object wide varaibles
       this.forms = {};
       this.surveyGroups = [];
       this.deviceGroups = {};
       this.deviceGroupNames = {};
+
+      // selected attributes
+      this.selectedDevices = [];
+      this.selectedSurveys = [];
 
       // using Set to avoia duplication
       this.activeDeviceGroups = new Set();
@@ -92,23 +96,23 @@ FLOW.AssignmentEditView = FLOW.ReactComponentView.extend(
 
     getProps() {
       const strings = {
-        backToAssignmentList: Ember.String.loc('_go_back_to_assignment_list'),
-        assignmentDetails: Ember.String.loc('_assignment_details'),
-        assignmentName: Ember.String.loc('_assignment_name'),
+        saveAssignment: Ember.String.loc('_save'),
+        settings: Ember.String.loc('_settings'),
+        duration: Ember.String.loc('_duration'),
+        day: Ember.String.loc('_day'),
+        days: Ember.String.loc('_days'),
+        durationWarning: Ember.String.loc('_duration_warning'),
+        survey: Ember.String.loc('_survey'),
+        forms: Ember.String.loc('_forms'),
+        enabled: Ember.String.loc('_enabled'),
+        formsWarning: Ember.String.loc('_forms_warning'),
+        noForms: Ember.String.loc('_no_forms_in_this_survey'),
+        devices: Ember.String.loc('_devices'),
+        device: Ember.String.loc('_device'),
+        selected: Ember.String.loc('_selected'),
         assignmentNamePlaceholder: Ember.String.loc(
           '_enter_a_name_for_this_assignment'
         ),
-        startDate: Ember.String.loc('_start_date'),
-        expireDate: Ember.String.loc('_expiration_date'),
-        selectSurvey: Ember.String.loc('_select_survey'),
-        cantFindYourSurvey: Ember.String.loc('_cant_find_your_survey_'),
-        selectForms: Ember.String.loc('_select_forms'),
-        selectFormNote: Ember.String.loc('_select_forms_note'),
-        selectDevices: Ember.String.loc('_select_devices'),
-        selectDeviceGroup: Ember.String.loc('_select_device_group'),
-        saveAssignment: Ember.String.loc('_save_assignment'),
-        cancel: Ember.String.loc('_cancel'),
-        chooseFolderOrSurvey: Ember.String.loc('_choose_folder_or_survey'),
       };
 
       const inputValues = {
@@ -125,7 +129,6 @@ FLOW.AssignmentEditView = FLOW.ReactComponentView.extend(
         onSubmit: this.saveSurveyAssignment,
         handleSurveySelect: this.handleSurveySelect,
         handleDeviceCheck: this.handleDeviceCheck,
-        handleSelectAllDevice: this.handleSelectAllDevice,
       };
 
       const data = {
@@ -135,6 +138,8 @@ FLOW.AssignmentEditView = FLOW.ReactComponentView.extend(
         deviceGroupNames: this.deviceGroupNames,
         activeDeviceGroups: this.activeDeviceGroups,
         initialSurveyGroup: this.initialSurveyGroup,
+        numberOfForms: this.selectedSurveys.length,
+        numberOfDevices: this.selectedDevices.length,
       };
 
       return {
@@ -158,18 +163,23 @@ FLOW.AssignmentEditView = FLOW.ReactComponentView.extend(
     saveSurveyAssignment(data) {
       let endDateParse;
       let startDateParse;
-      const devices = [];
-      const surveys = [];
+
+      // set devices and surveys
+      const deviceIds = this.selectedDevices.map(item => item.get('keyId'));
+      const formIds = this.selectedSurveys.map(item => item.get('keyId'));
+
+      // validate data before continuing
+      const isValid = this.validateAssignment({ ...data, deviceIds, formIds });
+      if (!isValid) {
+        return false;
+      }
 
       // set Ember Data
       FLOW.dateControl.set(
         'fromDate',
         FLOW.formatDate(new Date(data.startDate))
       );
-      FLOW.dateControl.set(
-        'toDate',
-        FLOW.formatDate(new Date(data.expireDate))
-      );
+      FLOW.dateControl.set('toDate', FLOW.formatDate(new Date(data.endDate)));
 
       // get assignment
       const sa = FLOW.selectedControl.get('selectedSurveyAssignment');
@@ -195,6 +205,7 @@ FLOW.AssignmentEditView = FLOW.ReactComponentView.extend(
       sa.set('startDate', startDateParse);
       sa.set('language', 'en');
 
+      // set survey group
       if (FLOW.selectedControl.get('selectedSurveyGroup')) {
         sa.set(
           'surveyId',
@@ -202,35 +213,9 @@ FLOW.AssignmentEditView = FLOW.ReactComponentView.extend(
         );
       }
 
-      FLOW.selectedControl.get('selectedDevices').forEach(item => {
-        devices.push(item.get('keyId'));
-      });
-
-      if (!devices.length) {
-        FLOW.dialogControl.set('activeAction', 'ignore');
-        FLOW.dialogControl.set('header', 'Devices not set');
-        FLOW.dialogControl.set('message', 'Please select a device to continue');
-        FLOW.dialogControl.set('showCANCEL', false);
-        FLOW.dialogControl.set('showDialog', true);
-        return false;
-      }
-
-      sa.set('deviceIds', devices);
-
-      FLOW.selectedControl.get('selectedSurveys').forEach(item => {
-        surveys.push(item.get('keyId'));
-      });
-
-      if (!surveys || !surveys.length) {
-        FLOW.dialogControl.set('activeAction', 'ignore');
-        FLOW.dialogControl.set('header', 'Form not set');
-        FLOW.dialogControl.set('message', 'Please select a form to continue');
-        FLOW.dialogControl.set('showCANCEL', false);
-        FLOW.dialogControl.set('showDialog', true);
-        return false;
-      }
-
-      sa.set('formIds', surveys);
+      // set form and devices
+      sa.set('formIds', formIds);
+      sa.set('deviceIds', deviceIds);
 
       FLOW.store.commit();
 
@@ -244,8 +229,6 @@ FLOW.AssignmentEditView = FLOW.ReactComponentView.extend(
 
     // setups
     setupControls() {
-      FLOW.selectedControl.set('selectedDevices', []);
-      FLOW.selectedControl.set('selectedSurveys', []);
       FLOW.selectedControl.set('selectedSurveyGroup', null);
       FLOW.selectedControl.set('selectedDeviceGroup', null);
       FLOW.surveyControl.set('content', null);
@@ -278,7 +261,7 @@ FLOW.AssignmentEditView = FLOW.ReactComponentView.extend(
         .forEach(formId => {
           const form = FLOW.Survey.find(formId);
           if (form && form.get('keyId')) {
-            FLOW.selectedControl.selectedSurveys.pushObject(form);
+            this.selectedSurveys.push(form);
 
             // load selected survey group
             this.initialSurveyGroup = form.get('surveyGroupId');
@@ -323,7 +306,7 @@ FLOW.AssignmentEditView = FLOW.ReactComponentView.extend(
                 // populate pre-selected devices
                 const device = FLOW.Device.find(deviceId);
                 if (device && device.get('keyId')) {
-                  FLOW.selectedControl.selectedDevices.pushObject(device);
+                  this.selectedDevices.push(device);
                 }
               });
           }
@@ -344,24 +327,7 @@ FLOW.AssignmentEditView = FLOW.ReactComponentView.extend(
           });
 
           // check if all items in device group is selected
-          Object.keys(this.deviceGroups).forEach(dgId => {
-            // get length of all devices in this group
-            const numberOfDevices = Object.keys(this.deviceGroups[dgId]).length;
-            const numberOfSelectedDevices = Object.keys(
-              this.deviceGroups[dgId]
-            ).filter(deviceId => {
-              return this.deviceGroups[dgId][deviceId].checked;
-            }).length;
-
-            // add select all device option
-            this.deviceGroups[dgId] = {
-              0: {
-                name: 'Select all devices',
-                checked: numberOfDevices === numberOfSelectedDevices,
-              },
-              ...this.deviceGroups[dgId],
-            };
-          });
+          this.addDevicesCheckedOption();
         }
       }
     },
@@ -372,12 +338,15 @@ FLOW.AssignmentEditView = FLOW.ReactComponentView.extend(
 
       if (!FLOW.surveyControl.content) return;
 
-      FLOW.surveyControl.content.forEach(form => {
-        this.forms[form.get('keyId')] = {
-          name: form.get('name'),
-          checked: this.formInAssignment(form.get('keyId')),
-        };
-      });
+      // filter to show only published forms here
+      FLOW.surveyControl.content
+        .filter(form => form.get('status') === 'PUBLISHED')
+        .forEach(form => {
+          this.forms[form.get('keyId')] = {
+            name: form.get('name'),
+            checked: this.formInAssignment(form.get('keyId')),
+          };
+        });
 
       this.renderReactSide();
     },
@@ -392,18 +361,30 @@ FLOW.AssignmentEditView = FLOW.ReactComponentView.extend(
     },
 
     // helpers
-    formInAssignment(formId) {
-      const formsInAssignment = FLOW.selectedControl.selectedSurveyAssignment.get(
-        'formIds'
-      );
-      return formsInAssignment ? formsInAssignment.indexOf(formId) > -1 : false;
+    showPopup(header, message) {
+      FLOW.dialogControl.set('activeAction', 'ignore');
+      FLOW.dialogControl.set('header', header);
+      FLOW.dialogControl.set('message', message);
+      FLOW.dialogControl.set('showCANCEL', false);
+      FLOW.dialogControl.set('showDialog', true);
     },
 
-    canAddFormsToAssignment() {
-      // only allow if form qualifies
-      const formsInAssignment = FLOW.selectedControl.selectedSurveyAssignment.get(
-        'formIds'
+    formInAssignment(formId) {
+      const formsInAssignment = this.selectedSurveys.map(item =>
+        item.get('id')
       );
+
+      // convert id to string
+      return formsInAssignment
+        ? formsInAssignment.indexOf(`${formId}`) > -1
+        : false;
+    },
+
+    shouldRemoveForms() {
+      const formsInAssignment = FLOW.selectedControl
+        .get('selectedSurveys')
+        .map(item => item.get('id'));
+
       const selectedSurveyGroupId = FLOW.selectedControl.selectedSurveyGroup.get(
         'keyId'
       );
@@ -413,22 +394,71 @@ FLOW.AssignmentEditView = FLOW.ReactComponentView.extend(
         const preSelectedSurvey = FLOW.Survey.find(formsInAssignment[0]);
         if (preSelectedSurvey && preSelectedSurvey.get('keyId')) {
           return (
-            preSelectedSurvey.get('surveyGroupId') == selectedSurveyGroupId
+            preSelectedSurvey.get('surveyGroupId') != selectedSurveyGroupId
           );
         }
       }
 
-      return true; // no forms are currently added to the assignment
+      return false;
     },
 
     validateAssignment(data) {
-      if (!data.devices || !data.devices.length) {
-        alert('Please select a device to continue');
+      const { assignmentName, startDate, endDate, deviceIds, formIds } = data;
+
+      // validate assignment name
+      if (!assignmentName || assignmentName == '') {
+        this.showPopup(
+          Ember.String.loc('_assignment_name_not_set'),
+          Ember.String.loc('_assignment_name_not_set_text')
+        );
+
         return false;
       }
 
-      if (!data.surveys || !data.surveys.length) {
-        alert('Please select a form to continue');
+      if (assignmentName.length > 100) {
+        this.showPopup(
+          Ember.String.loc('_assignment_name_error'),
+          Ember.String.loc('_assignment_name_over_100_chars')
+        );
+
+        return false;
+      }
+
+      // validate dates ==== start date
+      if (!startDate || !startDate.length) {
+        this.showPopup(
+          Ember.String.loc('_date_not_set'),
+          Ember.String.loc('_date_not_set_text')
+        );
+
+        return false;
+      }
+
+      // validate date ==== expire date
+      if (!endDate || !endDate.length) {
+        this.showPopup(
+          Ember.String.loc('_date_not_set'),
+          Ember.String.loc('_date_not_set_text')
+        );
+
+        return false;
+      }
+
+      if (!deviceIds || !deviceIds.length) {
+        this.showPopup(
+          Ember.String.loc('_device_not_set'),
+          Ember.String.loc('_device_not_set_text')
+        );
+
+        return false;
+      }
+
+      if (!formIds || !formIds.length) {
+        this.showPopup(
+          Ember.String.loc('_form_not_set'),
+          Ember.String.loc('_form_not_set_text')
+        );
+
         return false;
       }
 
@@ -436,37 +466,63 @@ FLOW.AssignmentEditView = FLOW.ReactComponentView.extend(
     },
 
     deviceInAssignment(deviceId) {
-      const devicesInAssignment = FLOW.selectedControl.selectedSurveyAssignment.get(
-        'deviceIds'
+      const devicesInAssignment = this.selectedDevices.map(item =>
+        item.get('keyId')
       );
+
       return devicesInAssignment
         ? devicesInAssignment.indexOf(deviceId) > -1
         : false;
     },
 
+    addDevicesCheckedOption() {
+      // check if all items in device group is selected
+      Object.keys(this.deviceGroups).forEach(dgId => {
+        const deviceGroupKeys = Object.keys(this.deviceGroups[dgId]).filter(
+          deviceId => deviceId != 0
+        );
+
+        // get length of all devices in this group
+        const numberOfDevices = deviceGroupKeys.length;
+
+        // get length of all selected devices in this group
+        const numberOfSelectedDevices = deviceGroupKeys.filter(
+          deviceId => this.deviceGroups[dgId][deviceId].checked
+        ).length;
+
+        // add select all device option
+        this.deviceGroups[dgId] = {
+          ...this.deviceGroups[dgId],
+          0: {
+            name: Ember.String.loc('_select_all_devices'),
+            checked:
+              numberOfDevices !== 0 &&
+              numberOfDevices === numberOfSelectedDevices,
+          },
+        };
+      });
+    },
+
     // handlers
-    handleFormCheck(e) {
-      // only allow a form to be checked if a different survey isn't already selected
-      const formId = e.target.name;
-      if (this.canAddFormsToAssignment()) {
-        this.forms[formId].checked = !this.forms[formId].checked;
-      } else {
-        // TODO: display error that form cannot be added unless currently added forms are removed
+    handleFormCheck(formId) {
+      // if checking a form in a new survey, remove all forms
+      if (this.shouldRemoveForms()) {
+        // remove all currently selected forms
+        this.selectedSurveys = [];
       }
 
-      this.renderReactSide();
+      // check form
+      this.forms[formId].checked = !this.forms[formId].checked;
 
       // add/remove form to/from assignment
       if (this.forms[formId].checked) {
-        // push survey to FLOW.selectedControl.selectedSurveys
-        FLOW.selectedControl.selectedSurveys.pushObject(
-          FLOW.Survey.find(formId)
-        );
+        // push survey to selectedSurveys
+        this.selectedSurveys.push(FLOW.Survey.find(formId));
       } else {
-        FLOW.selectedControl.selectedSurveys.removeObject(
-          FLOW.Survey.find(formId)
-        );
+        this.selectedSurveys.pop(FLOW.Survey.find(formId));
       }
+
+      this.renderReactSide();
 
       // TODO: load data points in selected form
     },
@@ -475,6 +531,7 @@ FLOW.AssignmentEditView = FLOW.ReactComponentView.extend(
       const selectedSG = FLOW.projectControl
         .get('content')
         .find(sg => sg.get('keyId') == parentId);
+
       if (selectedSG && selectedSG.get('projectType') !== 'PROJECT_FOLDER') {
         FLOW.selectedControl.set('selectedSurveyGroup', selectedSG);
         return false;
@@ -482,6 +539,8 @@ FLOW.AssignmentEditView = FLOW.ReactComponentView.extend(
 
       // empty forms when a new folder is picked
       this.forms = {};
+      this.selectedSurveys = [];
+
       this.renderReactSide();
       return true;
     },
@@ -494,15 +553,11 @@ FLOW.AssignmentEditView = FLOW.ReactComponentView.extend(
 
       const device = FLOW.Device.find(deviceId);
       if (checked) {
-        // push device to FLOW.selectedControl.selectedDevices
-        FLOW.selectedControl.selectedDevices.pushObject(
-          FLOW.Device.find(deviceId)
-        );
+        // push device to selectedDevices
+        this.selectedDevices.push(FLOW.Device.find(deviceId));
       } else {
-        // remove device to FLOW.selectedControl.selectedDevices
-        FLOW.selectedControl.selectedDevices.removeObject(
-          FLOW.Device.find(deviceId)
-        );
+        // remove device to selectedDevices
+        this.selectedDevices.pop(FLOW.Device.find(deviceId));
       }
 
       // check devices
@@ -512,6 +567,9 @@ FLOW.AssignmentEditView = FLOW.ReactComponentView.extend(
         name: device.get('deviceIdentifier'),
         checked,
       };
+
+      // check if all items in device group is selected
+      this.addDevicesCheckedOption();
 
       return this.renderReactSide();
     },
@@ -523,9 +581,7 @@ FLOW.AssignmentEditView = FLOW.ReactComponentView.extend(
         .map(deviceId => FLOW.Device.find(deviceId));
 
       allDevices.forEach(device => {
-        FLOW.selectedControl.selectedDevices[
-          checked ? 'pushObject' : 'removeObject'
-        ](device);
+        this.selectedDevices[checked ? 'push' : 'pop'](device);
 
         // check devices
         this.deviceGroups[device.get('deviceGroup') || '1'][

@@ -1,29 +1,34 @@
 <ul class="floats-in">
   {{#view view.NavItemView item="navSurveys" }}
-    <a {{action doNavSurveys}}>{{t _surveys}}</a>
+  <a {{action doNavSurveys}}>{{t _surveys}}</a>
   {{/view}}
   {{#if view.showDevicesButton}}
   {{#view view.NavItemView item="navDevices" }}
-    <a {{action doNavDevices}}>{{t _devices}}</a>
+  <a {{action doNavDevices}}>{{t _devices}}</a>
   {{/view}}
   {{/if}}
   {{#view view.NavItemView item="navData" }}
-    <a {{action doNavData}}>{{t _data}}</a>
+  <a {{action doNavData}}>{{t _data}}</a>
   {{/view}}
   {{#view view.NavItemView item="navResources" }}
-    <a {{action doNavResources}}>{{t _resources}}</a>
+  <a {{action doNavResources}}>{{t _resources}}</a>
   {{/view}}
   {{#if view.showMapsButton}}
   {{#view view.NavItemView item="navMaps" }}
-    <a {{action doNavMaps}}>{{t _maps}}</a>
+  <a {{action doNavMaps}}>{{t _maps}}</a>
   {{/view}}
   {{/if}}
   {{#if FLOW.currentUser.showUserTab }}
-	  {{#view view.NavItemView item="navUsers" }}
-      <a {{action doNavUsers}}>{{t _users}}</a>
-    {{/view}}
+  {{#view view.NavItemView item="navUsers" }}
+  <a {{action doNavUsers}}>{{t _users}}</a>
+  {{/view}}
   {{/if}}
   {{#view view.NavItemView item="navMessages" }}
-    <a {{action doNavMessages}}>{{t _messages}}</a>
+  <a {{action doNavMessages}}>{{t _messages}}</a>
   {{/view}}
+  {{#if FLOW.currentUser.showUserTab }}
+  {{#view view.NavItemView item="navStats" }}
+  <a {{action doNavStats}}>Stats</a>
+  {{/view}}
+  {{/if}}
 </ul>

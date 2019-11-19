@@ -28,6 +28,7 @@ public class MediaResponse {
     private static final Logger log = Logger.getLogger(MediaResponse.class.getName());
     private static FlowJsonObjectReader jsonObjectReader = new FlowJsonObjectReader();
     private static FlowJsonObjectWriter jsonObjectWriter = new FlowJsonObjectWriter();
+    private static FlowJsonObjectWriter jsonObjectWriterNoNulls = new FlowJsonObjectWriter().withExcludeNullValues();
 
     public static final int VERSION_STRING = 0;
     public static final int VERSION_GEOTAGGING = 1;
@@ -66,6 +67,34 @@ public class MediaResponse {
         // VERSION_INITIAL
         return media.getFilename();
     }
+
+
+    /**
+     * Format media value as JSON with a geotag location, whether null or not.
+     */
+    public static String formatWithGeotag(Media media) {
+            try {
+                return jsonObjectWriter.writeAsString(media);
+            } catch (IOException e) {
+                log.warning(e.getMessage());
+                return "";
+            }
+        }
+
+
+    /**
+     * Format media value as JSON without a geotag location.
+     */
+    public static String formatWithoutGeotag(Media media) {
+            media.setLocation(null);
+            try {
+                return jsonObjectWriterNoNulls.writeAsString(media);
+            } catch (IOException e) {
+                log.warning(e.getMessage());
+                return "";
+            }
+        }
+
 
     public static Media parse(String value) {
         try {
