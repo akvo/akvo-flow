@@ -4,7 +4,7 @@ import moment from 'moment';
 import FolderSurveySelectorView from 'akvo-flow/components/selectors/FolderSurveySelector';
 import FormSelectorView from 'akvo-flow/components/selectors/FormSelector';
 
-import AssignmentsContext from './assignment-context';
+import AssignmentsContext from '../assignment-context';
 
 export default class FormSection extends React.Component {
   formatMomentDate = date => moment(date, 'YYYY/MM/DD').format('YYYY-MM-DD');

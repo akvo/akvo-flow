@@ -1,6 +1,5 @@
 /* eslint-disable import/no-unresolved */
 import React from 'react';
-import PropTypes from 'prop-types';
 // import DeviceGroupSelectorView from 'akvo-flow/components/selectors/DeviceSelector';
 
 export default class DevicesSection extends React.Component {
@@ -34,9 +33,3 @@ export default class DevicesSection extends React.Component {
     );
   }
 }
-
-DevicesSection.propTypes = {
-  strings: PropTypes.object.isRequired,
-  data: PropTypes.object.isRequired,
-  actions: PropTypes.object.isRequired,
-};
