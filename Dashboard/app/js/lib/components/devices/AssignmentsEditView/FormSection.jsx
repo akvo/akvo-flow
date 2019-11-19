@@ -1,15 +1,16 @@
 /* eslint-disable import/no-unresolved */
 import React from 'react';
-import PropTypes from 'prop-types';
 import moment from 'moment';
 import FolderSurveySelectorView from 'akvo-flow/components/selectors/FolderSurveySelector';
 import FormSelectorView from 'akvo-flow/components/selectors/FormSelector';
+
+import AssignmentsContext from './assignment-context';
 
 export default class FormSection extends React.Component {
   formatMomentDate = date => moment(date, 'YYYY/MM/DD').format('YYYY-MM-DD');
 
   render() {
-    const { strings, actions, data, inputValues, onInputChange } = this.props;
+    const { strings, actions, data, inputValues } = this.context;
 
     return (
       <div className="settings">
@@ -25,7 +26,7 @@ export default class FormSection extends React.Component {
                 type="date"
                 id="startDate"
                 value={this.formatMomentDate(inputValues.startDate)}
-                onChange={onInputChange}
+                onChange={actions.onInputChange}
               />
             </div>
             <span> - </span>
@@ -36,7 +37,7 @@ export default class FormSection extends React.Component {
                 id="endDate"
                 min={this.formatMomentDate(inputValues.startDate)}
                 value={this.formatMomentDate(inputValues.endDate)}
-                onChange={onInputChange}
+                onChange={actions.onInputChange}
               />
             </div>
           </div>
@@ -78,10 +79,4 @@ export default class FormSection extends React.Component {
   }
 }
 
-FormSection.propTypes = {
-  strings: PropTypes.object.isRequired,
-  actions: PropTypes.object.isRequired,
-  data: PropTypes.object.isRequired,
-  inputValues: PropTypes.object.isRequired,
-  onInputChange: PropTypes.func.isRequired,
-};
+FormSection.contextType = AssignmentsContext;
