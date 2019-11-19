@@ -32,24 +32,6 @@ export default class AssignmentsEdit extends React.Component {
     });
   };
 
-  // helpers
-  getNumberOfSelectedDevices = () => {
-    let selectedDevices = 0;
-    const { deviceGroups } = this.props.data;
-
-    Object.keys(deviceGroups).forEach(dgId => {
-      const noOfSelectedDevicesInThisGroup = Object.keys(
-        deviceGroups[dgId]
-      ).filter(
-        deviceId => deviceId != 0 && deviceGroups[dgId][deviceId].checked
-      ).length;
-
-      selectedDevices += noOfSelectedDevicesInThisGroup;
-    });
-
-    return selectedDevices;
-  };
-
   // renders
   renderTopBar() {
     const { strings, actions } = this.props;
@@ -91,10 +73,7 @@ export default class AssignmentsEdit extends React.Component {
         ...this.props.actions,
         onInputChange: this.onChangeState,
       },
-      data: {
-        ...this.props.data,
-        numberOfDevices: this.getNumberOfSelectedDevices(),
-      },
+      data: this.props.data,
       inputValues: this.state.data,
     };
 

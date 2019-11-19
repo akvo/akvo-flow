@@ -95,6 +95,8 @@ FLOW.AssignmentEditView = FLOW.ReactComponentView.extend(
     },
 
     getProps() {
+      console.log(this.selectedDevices);
+
       const strings = {
         saveAssignment: Ember.String.loc('_save'),
         settings: Ember.String.loc('_settings'),

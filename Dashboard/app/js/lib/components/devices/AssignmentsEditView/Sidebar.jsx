@@ -5,7 +5,7 @@ import DevicesSection from './DevicesSection';
 
 export default class Sidebar extends React.Component {
   state = {
-    currentTab: 'FORMS',
+    currentTab: 'ADD_DEVICE',
   };
 
   changeTab = tab => {
