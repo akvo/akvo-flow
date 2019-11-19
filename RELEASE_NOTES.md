@@ -1,5 +1,30 @@
 # Akvo Flow Release Notes
 ----
+# Akvo Flow Dashboard v1.10.1 - Yappy Yucca
+Date: 19-11-2019
+* **Show/export Flow instance usage** - #2612
+* **Tests for assignments ui move to react** - #3212
+* **Published-form based reports cannot handle RQGs** - #3249
+* **Assignments - Small UI improvements** - #3285
+* **Assignments form UI fixes** - #3290
+* **Stats page tests** - #3256
+* **Remove redundant state handler from assignments** - #3295
+* **Saved devices are not shown when reopening an assignment** - #3302
+* **Stats - list does not load if you request the export without dates** - #3299
+* **Add a Stats main tab UI** - #3235
+* **Publish form using Jackson fasterxml library** - #3115
+* **Parse boolean options correctly** - #3252
+* **Make assignment-splitting script more robust** - #3240
+* **Checkbox not working in new implementation of assignments ui** - #3281
+* **Unpublished forms can be assigned when registration form is published** - #3270
+* **Stop updating dependencies to minor version** - #3257
+* **Assignments not saving** - #3284
+* **Change assignments UI to match mock ups** - #3226
+* **Data analysis export does not create separate columns for multiple option questions** - #3260
+* **Handle differently 'Select all' devices in assignments** - #3234
+* **Long names break cascade layout - in levels** - #2266
+* **Add number of selected devices in assignment UI** - #3232
+
 # Akvo Flow Dashboard v1.10 - Worshipped Wolfbane
 Date: 17-10-2019
 

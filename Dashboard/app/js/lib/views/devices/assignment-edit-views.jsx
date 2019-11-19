@@ -95,8 +95,6 @@ FLOW.AssignmentEditView = FLOW.ReactComponentView.extend(
     },
 
     getProps() {
-      console.log(this.selectedSurveys, this.forms);
-
       const strings = {
         saveAssignment: Ember.String.loc('_save'),
         settings: Ember.String.loc('_settings'),
@@ -141,6 +139,7 @@ FLOW.AssignmentEditView = FLOW.ReactComponentView.extend(
         activeDeviceGroups: this.activeDeviceGroups,
         initialSurveyGroup: this.initialSurveyGroup,
         numberOfForms: this.selectedSurveys.length,
+        numberOfDevices: this.selectedDevices.length,
       };
 
       return {
@@ -166,11 +165,11 @@ FLOW.AssignmentEditView = FLOW.ReactComponentView.extend(
       let startDateParse;
 
       // set devices and surveys
-      const devices = this.selectedDevices.map(item => item.get('keyId'));
-      const surveys = this.selectedSurveys.map(item => item.get('keyId'));
+      const deviceIds = this.selectedDevices.map(item => item.get('keyId'));
+      const formIds = this.selectedSurveys.map(item => item.get('keyId'));
 
       // validate data before continuing
-      const isValid = this.validateAssignment({ ...data, devices, surveys });
+      const isValid = this.validateAssignment({ ...data, deviceIds, formIds });
       if (!isValid) {
         return false;
       }
@@ -215,8 +214,8 @@ FLOW.AssignmentEditView = FLOW.ReactComponentView.extend(
       }
 
       // set form and devices
-      sa.set('formIds', surveys);
-      sa.set('deviceIds', devices);
+      sa.set('formIds', formIds);
+      sa.set('deviceIds', deviceIds);
 
       FLOW.store.commit();
 
@@ -262,7 +261,6 @@ FLOW.AssignmentEditView = FLOW.ReactComponentView.extend(
         .forEach(formId => {
           const form = FLOW.Survey.find(formId);
           if (form && form.get('keyId')) {
-            console.log('PUSHING AT:: SETUP');
             this.selectedSurveys.push(form);
 
             // load selected survey group
@@ -405,7 +403,7 @@ FLOW.AssignmentEditView = FLOW.ReactComponentView.extend(
     },
 
     validateAssignment(data) {
-      const { assignmentName, startDate, endDate, devices, surveys } = data;
+      const { assignmentName, startDate, endDate, deviceIds, formIds } = data;
 
       // validate assignment name
       if (!assignmentName || assignmentName == '') {
@@ -446,7 +444,7 @@ FLOW.AssignmentEditView = FLOW.ReactComponentView.extend(
         return false;
       }
 
-      if (!devices || !devices.length) {
+      if (!deviceIds || !deviceIds.length) {
         this.showPopup(
           Ember.String.loc('_device_not_set'),
           Ember.String.loc('_device_not_set_text')
@@ -455,7 +453,7 @@ FLOW.AssignmentEditView = FLOW.ReactComponentView.extend(
         return false;
       }
 
-      if (!surveys || !surveys.length) {
+      if (!formIds || !formIds.length) {
         this.showPopup(
           Ember.String.loc('_form_not_set'),
           Ember.String.loc('_form_not_set_text')
@@ -469,7 +467,7 @@ FLOW.AssignmentEditView = FLOW.ReactComponentView.extend(
 
     deviceInAssignment(deviceId) {
       const devicesInAssignment = this.selectedDevices.map(item =>
-        item.get('id')
+        item.get('keyId')
       );
 
       return devicesInAssignment
@@ -519,7 +517,6 @@ FLOW.AssignmentEditView = FLOW.ReactComponentView.extend(
       // add/remove form to/from assignment
       if (this.forms[formId].checked) {
         // push survey to selectedSurveys
-        console.log('PUSHING AT:: CHECK');
         this.selectedSurveys.push(FLOW.Survey.find(formId));
       } else {
         this.selectedSurveys.pop(FLOW.Survey.find(formId));
