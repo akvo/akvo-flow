@@ -1,5 +1,5 @@
 import React from 'react';
-import FormSection from './FormSection';
+import FormSection from './screens/FormSection';
 import DevicesSection from './DevicesSection';
 
 export default class Sidebar extends React.Component {
