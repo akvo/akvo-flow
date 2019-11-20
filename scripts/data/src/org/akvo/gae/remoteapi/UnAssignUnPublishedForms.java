@@ -69,13 +69,14 @@ public class UnAssignUnPublishedForms implements Process {
             for (Entity e : surveyAssignments) {
                 ArrayList<Long> formIds = ((ArrayList<Long>) e.getProperty("formIds"));
                 ArrayList<Long> fixedFormIds = new ArrayList<>();
-                for (Long id : surveyIds) {
+                for (Long id : formIds) {
                     if (!forms.contains(id)) {
                         fixedFormIds.add(id);
                     }
                 }
-                if (fixedFormIds.size() != surveyIds.size()) {
+                if (fixedFormIds.size() != formIds.size()) {
                     e.setProperty("formIds", fixedFormIds);
+                    e.setProperty("lastUpdateDateTime", new Date());
                     surveyAssignmentsToSave.add(e);
                 }
             }
