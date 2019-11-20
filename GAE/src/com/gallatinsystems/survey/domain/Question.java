@@ -55,6 +55,10 @@ public class Question extends BaseDomain {
     private Long dependentQuestionId;
     private String dependentQuestionAnswer;
     private Long cascadeResourceId;
+
+    @NotPersistent
+    private String cascadeResource;
+
     private String caddisflyResourceUuid;
     @NotPersistent
     private TreeMap<Integer, QuestionOption> questionOptionMap = null;
@@ -403,6 +407,14 @@ public class Question extends BaseDomain {
 
     public void setCascadeResourceId(Long cascadeResourceId) {
         this.cascadeResourceId = cascadeResourceId;
+    }
+
+    public String getCascadeResource() {
+        return cascadeResource;
+    }
+
+    public void setCascadeResource(String cascadeResource) {
+        this.cascadeResource = cascadeResource;
     }
 
     public void setAllowPoints(Boolean allowPoints) {
