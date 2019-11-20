@@ -67,7 +67,7 @@ public class UnAssignUnPublishedForms implements Process {
     private void fixSurveyAssignments(DatastoreService ds) {
         if (surveyAssignments.size() > 0) {
             for (Entity e : surveyAssignments) {
-                ArrayList<Long> surveyIds = ((ArrayList<Long>) e.getProperty("formIds"));
+                ArrayList<Long> formIds = ((ArrayList<Long>) e.getProperty("formIds"));
                 ArrayList<Long> fixedFormIds = new ArrayList<>();
                 for (Long id : surveyIds) {
                     if (!forms.contains(id)) {
