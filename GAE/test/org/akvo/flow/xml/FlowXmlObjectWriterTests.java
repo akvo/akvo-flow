@@ -33,6 +33,7 @@ import static org.junit.jupiter.api.Assertions.assertNotEquals;
 
 import org.waterforpeople.mapping.app.gwt.client.survey.SurveyDto;
 import com.gallatinsystems.survey.domain.Question;
+import com.gallatinsystems.survey.domain.CascadeResource;
 import com.gallatinsystems.survey.domain.QuestionGroup;
 import com.gallatinsystems.survey.domain.Survey;
 import com.google.appengine.api.datastore.KeyFactory;
@@ -41,6 +42,8 @@ import com.google.appengine.tools.development.testing.LocalServiceTestHelper;
 
 
 class FlowXmlObjectWriterTests {
+    private final static String EXPECTED_CASCADE_QUESTION = "<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?><survey version=\"12.0\" name=\"This is a form\" defaultLanguageCode=\"en\" surveyGroupName=\"Name of containing survey\" surveyId=\"17\"><questionGroup repeatable=\"false\"><question id=\"1001\" order=\"1\" type=\"cascade\" mandatory=\"false\" localeNameFlag=\"false\" cascadeResource=\"cascade-123456789-v1.sqlite\"><text>This is question one</text></question><heading>This is a group</heading></questionGroup></survey>";
+
     private final String expectedQuestionlessXml = "<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?><survey version=\"11.0\" name=\"This is a form\" defaultLanguageCode=\"en\" surveyGroupName=\"Name of containing survey\" surveyId=\"17\"><questionGroup repeatable=\"false\"><heading>This is a group</heading></questionGroup></survey>";
 
     private final String expectedMinimaXml = "<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?><survey version=\"12.0\" name=\"This is a form\" defaultLanguageCode=\"en\" surveyGroupName=\"Name of containing survey\" surveyId=\"17\"><questionGroup repeatable=\"false\"><question id=\"1001\" order=\"1\" type=\"free\" mandatory=\"false\" localeNameFlag=\"false\"><text>This is question one</text></question><question id=\"1002\" order=\"2\" type=\"free\" mandatory=\"true\" localeNameFlag=\"false\"><validationRule validationType=\"numeric\" allowDecimal=\"false\" signed=\"false\"/><text>This is question two</text></question><question id=\"1003\" order=\"3\" type=\"geoshape\" mandatory=\"false\" localeNameFlag=\"false\" allowPoints=\"false\" allowLine=\"false\" allowPolygon=\"false\"><text>This is question three</text></question><heading>This is a group</heading></questionGroup></survey>";
@@ -116,7 +119,7 @@ class FlowXmlObjectWriterTests {
 
         //Convert Jackson tree into an XML string
         String xml = PublishedForm.generate(form);
-        assertEquals(xml,  expectedQuestionlessXml);
+        assertEquals(expectedQuestionlessXml, xml);
 
         //And finally parse to DTO to see that it is valid
         SurveyDto dto = PublishedForm.parse(xml, true).toDto(); //be strict
@@ -129,7 +132,6 @@ class FlowXmlObjectWriterTests {
     }
 
 
-    /* Now we add a question */
     @Test
     void testSerialiseMinimalForm() throws IOException {
 
@@ -210,7 +212,74 @@ class FlowXmlObjectWriterTests {
 
         //Convert Jackson tree into an XML string
         String xml = PublishedForm.generate(form);
-        assertEquals(xml,  expectedMinimaXml);
+        assertEquals(expectedMinimaXml, xml);
+
+        //And finally parse it to a DTO
+        SurveyDto dto = PublishedForm.parse(xml, true).toDto(); //be strict
+
+        assertNotEquals(null, dto);
+        assertEquals(17L, dto.getKeyId());
+        assertEquals("This is a form", dto.getName());
+        assertEquals("12.0", dto.getVersion());
+        assertEquals("This is a form", dto.getName());
+    }
+
+    @Test
+    void testSerialiseFormWithCascade() throws IOException {
+
+        //Mock up a DTO tree
+        Survey form1 = new Survey();
+        form1.setKey(KeyFactory.createKey("Survey", 17L));
+        form1.setName("This is a form");
+        form1.setVersion(12.0);
+        //Add a QuestionGroup
+        QuestionGroup qg = new QuestionGroup();
+        qg.setKey(KeyFactory.createKey("Survey", 18L));
+        qg.setSurveyId(17L);
+        qg.setName("This is a group");
+        qg.setOrder(1);
+        TreeMap<Integer, QuestionGroup> gm = new TreeMap<>();
+        gm.put(1, qg);
+        form1.setQuestionGroupMap(gm);
+        TreeMap<Integer,Question> qm = new TreeMap<>();
+        qg.setQuestionMap(qm);
+
+        //Add some questions
+        //Intentionally do not set mandatory; it should be null
+        Question q1 = new Question();
+        q1.setKey(KeyFactory.createKey("Question", 1001L)); //Must have a key
+        q1.setOrder(1);
+        q1.setText("This is question one");
+        q1.setType(Question.Type.CASCADE);
+        CascadeResource cr = new CascadeResource();
+        cr.setKey(KeyFactory.createKey("CascadeResource", 123456789L));
+        cr.setVersion(1);
+        q1.setCascadeResource(cr.getResourceId());
+        qm.put(1, q1);
+
+        int questionCount = qm.size();
+
+        //Convert domain tree to Jackson tree
+        XmlForm form = new XmlForm(form1, "Name of containing survey");
+        //...and test it
+        assertNotEquals(null, form);
+        assertNotEquals(null, form.getQuestionGroup());
+        XmlQuestionGroup xqg = form.getQuestionGroup().get(0);
+        assertNotEquals(null, xqg);
+        assertNotEquals(null, xqg.getQuestion());
+        assertEquals(questionCount, xqg.getQuestion().size());
+
+        XmlQuestion xq1 = xqg.getQuestion().get(0);
+        assertNotEquals(null, xq1);
+        assertEquals(1001L, xq1.getId());
+        assertEquals("This is question one", xq1.getText());
+        assertEquals(Boolean.FALSE, xq1.getMandatory());
+        assertEquals("cascade", xq1.getType());
+        assertEquals("cascade-123456789-v1.sqlite", xq1.getCascadeResource());
+
+        //Convert Jackson tree into an XML string
+        String xml = PublishedForm.generate(form);
+        assertEquals(EXPECTED_CASCADE_QUESTION, xml);
 
         //And finally parse it to a DTO
         SurveyDto dto = PublishedForm.parse(xml, true).toDto(); //be strict
