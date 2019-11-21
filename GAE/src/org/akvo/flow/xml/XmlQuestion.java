@@ -121,7 +121,7 @@ public class XmlQuestion {
                 allowPolygon = Boolean.TRUE.equals(q.getAllowPolygon());
                 break;
             case CASCADE:
-                cascadeResource = q.getCascadeResourceId().toString();
+                cascadeResource = "cascade-"+q.getCascadeResourceId().toString()+"-v1.sqlite";
                 //level names, if any
                 if (q.getLevelNames() != null) {
                     level = new ArrayList<>();
