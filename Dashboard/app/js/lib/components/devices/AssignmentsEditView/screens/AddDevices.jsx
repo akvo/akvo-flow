@@ -1,12 +1,45 @@
 /* eslint-disable import/no-unresolved */
 import React from 'react';
+import { groupBy as _groupBy } from 'lodash';
 import DeviceGroupSelectorView from 'akvo-flow/components/selectors/DeviceSelector';
 
 import AssignmentsContext from '../assignment-context';
 
 export default class AddDevice extends React.Component {
+  state = {
+    deviceGroups: {},
+    selectedDevices: [],
+  };
+
+  componentDidMount() {
+    // filter out selected devices
+    const { devices, selectedDevices } = this.context.data;
+
+    const filteredDevices = devices.filter(
+      device => !selectedDevices.includes(device.id)
+    );
+
+    this.setState({
+      deviceGroups: _groupBy(filteredDevices, device => device.deviceGroup.id),
+    });
+  }
+
+  onSelectDevice = (id, checked) => {
+    const { selectedDevices } = this.state;
+
+    if (checked) {
+      this.setState({
+        selectedDevices: selectedDevices.concat(id),
+      });
+    } else {
+      this.setState({
+        selectedDevices: selectedDevices.filter(device => device !== id),
+      });
+    }
+  };
+
   render() {
-    const { actions, data } = this.context;
+    const { deviceGroups, selectedDevices } = this.state;
 
     return (
       <div className="add-devices">
@@ -18,11 +51,9 @@ export default class AddDevice extends React.Component {
         <div className="body">
           <div className="assignment-device-selector">
             <DeviceGroupSelectorView
-              deviceGroupNames={data.deviceGroupNames}
-              deviceGroups={data.deviceGroups}
-              activeDeviceGroups={data.activeDeviceGroups}
-              handleDeviceCheck={actions.handleDeviceCheck}
-              onSelectAll={actions.handleSelectAllDevice}
+              deviceGroups={deviceGroups}
+              handleSelectDevice={this.onSelectDevice}
+              selectedDevices={selectedDevices}
             />
           </div>
         </div>
@@ -30,10 +61,17 @@ export default class AddDevice extends React.Component {
         <div className="footer">
           <div className="footer-inner">
             <div>
-              <p>{data.numberOfDevices} selected</p>
+              <p>{selectedDevices.length} selected</p>
             </div>
 
-            <button type="button">Add to assignment</button>
+            <button
+              type="button"
+              className={`btnOutline ${
+                selectedDevices.length === 0 ? 'disabled' : ''
+              }`}
+            >
+              Add to assignment
+            </button>
           </div>
         </div>
       </div>

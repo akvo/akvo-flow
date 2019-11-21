@@ -66,6 +66,7 @@ FLOW.AssignmentEditView = FLOW.ReactComponentView.extend(
       // object wide varaibles
       this.forms = {};
       this.surveyGroups = [];
+      this.devices = [];
       this.deviceGroups = {};
       this.deviceGroupNames = {};
 
@@ -83,7 +84,7 @@ FLOW.AssignmentEditView = FLOW.ReactComponentView.extend(
 
       this.setupForms();
       this.setupSurveyGroups();
-      this.setupDevices();
+      this.setupDevices2();
 
       // react render
       this.renderReactSide();
@@ -95,8 +96,6 @@ FLOW.AssignmentEditView = FLOW.ReactComponentView.extend(
     },
 
     getProps() {
-      console.log(this.selectedDevices);
-
       const strings = {
         saveAssignment: Ember.String.loc('_save'),
         settings: Ember.String.loc('_settings'),
@@ -136,13 +135,14 @@ FLOW.AssignmentEditView = FLOW.ReactComponentView.extend(
 
       const data = {
         forms: this.forms,
+        devices: this.devices,
         surveyGroups: this.surveyGroups,
         deviceGroups: this.deviceGroups,
         deviceGroupNames: this.deviceGroupNames,
         activeDeviceGroups: this.activeDeviceGroups,
         initialSurveyGroup: this.initialSurveyGroup,
         numberOfForms: this.selectedSurveys.length,
-        numberOfDevices: this.selectedDevices.length,
+        selectedDevices: this.selectedDevices,
       };
 
       return {
@@ -313,6 +313,31 @@ FLOW.AssignmentEditView = FLOW.ReactComponentView.extend(
                 }
               });
           }
+
+          this.devices = FLOW.deviceControl.get('content').map(device => {
+            const formattedDevice = {
+              name: device.get('deviceIdentifier'),
+              id: device.get('id'),
+              checked: this.deviceInAssignment(device.get('keyId')),
+              deviceGroup: {
+                id: '1',
+                name: 'Device not in group',
+              },
+            };
+
+            if (device.get('deviceGroup')) {
+              const deviceGroup = FLOW.DeviceGroup.find(
+                device.get('deviceGroup')
+              );
+
+              formattedDevice.deviceGroup = {
+                id: deviceGroup.get('id'),
+                name: deviceGroup.get('code'),
+              };
+            }
+
+            return formattedDevice;
+          });
 
           FLOW.deviceControl.get('content').forEach(device => {
             const checked = this.deviceInAssignment(device.get('keyId'));
@@ -600,6 +625,51 @@ FLOW.AssignmentEditView = FLOW.ReactComponentView.extend(
 
       // rerender react side
       return this.renderReactSide();
+    },
+
+    // handle devices functionality
+    setupDevices2() {
+      if (
+        FLOW.deviceGroupControl.content.isLoaded &&
+        FLOW.deviceControl.content.isLoaded
+      ) {
+        this.devices = FLOW.deviceControl.get('content').map(device => {
+          const formattedDevice = {
+            name: device.get('deviceIdentifier'),
+            id: device.get('id'),
+            deviceGroup: {
+              id: '1',
+              name: 'Device not in group',
+            },
+          };
+
+          if (device.get('deviceGroup')) {
+            const deviceGroup = FLOW.DeviceGroup.find(
+              device.get('deviceGroup')
+            );
+
+            formattedDevice.deviceGroup = {
+              id: deviceGroup.get('id'),
+              name: deviceGroup.get('code'),
+            };
+          }
+
+          return formattedDevice;
+        });
+
+        // initialize with previous selected devices [if editing survey]
+        if (FLOW.selectedControl.selectedSurveyAssignment.get('deviceIds')) {
+          FLOW.selectedControl.selectedSurveyAssignment
+            .get('deviceIds')
+            .forEach(deviceId => {
+              // populate pre-selected devices
+              const device = FLOW.Device.find(deviceId);
+              if (device && device.get('id')) {
+                this.selectedDevices.push(device.get('id'));
+              }
+            });
+        }
+      }
     },
   }
 );
