@@ -242,6 +242,21 @@
           }
         }
 
+        .device-empty {
+          margin-top: auto;
+          width: 100%;
+          text-align: center;
+          height: 75%;
+
+          color: #7a7a7a;
+          font-weight: 500;
+
+          .fa {
+            font-size: 4em;
+            margin-bottom: 7px;
+          }
+        }
+
         .add-devices {
           position: relative;
           height: 100%;

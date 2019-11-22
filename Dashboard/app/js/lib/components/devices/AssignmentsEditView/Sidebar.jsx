@@ -40,9 +40,15 @@ export default class Sidebar extends React.Component {
         </div>
 
         <div className="assignment-main">
-          {this.state.currentTab === 'FORMS' && <FormSection />}
-          {this.state.currentTab === 'ADD_DEVICE' && <AddDevices />}
-          {this.state.currentTab === 'DEVICES' && <DevicesSection />}
+          {this.state.currentTab === 'FORMS' && (
+            <FormSection changeTab={this.changeTab} />
+          )}
+          {this.state.currentTab === 'ADD_DEVICE' && (
+            <AddDevices changeTab={this.changeTab} />
+          )}
+          {this.state.currentTab === 'DEVICES' && (
+            <DevicesSection changeTab={this.changeTab} />
+          )}
         </div>
       </React.Fragment>
     );

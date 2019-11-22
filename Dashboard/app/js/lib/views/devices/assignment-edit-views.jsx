@@ -62,6 +62,7 @@ FLOW.AssignmentEditView = FLOW.ReactComponentView.extend(
       this.handleDeviceCheck = this.handleDeviceCheck.bind(this);
       this.handleSelectAllDevice = this.handleSelectAllDevice.bind(this);
       this.addDevicesCheckedOption = this.addDevicesCheckedOption.bind(this);
+      this.addDevicesToAssignment = this.addDevicesToAssignment.bind(this);
 
       // object wide varaibles
       this.forms = {};
@@ -131,6 +132,7 @@ FLOW.AssignmentEditView = FLOW.ReactComponentView.extend(
         onSubmit: this.saveSurveyAssignment,
         handleSurveySelect: this.handleSurveySelect,
         handleDeviceCheck: this.handleDeviceCheck,
+        addDevicesToAssignment: this.addDevicesToAssignment,
       };
 
       const data = {
@@ -670,6 +672,18 @@ FLOW.AssignmentEditView = FLOW.ReactComponentView.extend(
             });
         }
       }
+    },
+
+    addDevicesToAssignment(devices) {
+      devices.forEach(deviceId => {
+        // populate pre-selected devices
+        const device = FLOW.Device.find(deviceId);
+        if (device && device.get('id')) {
+          this.selectedDevices.push(device.get('id'));
+        }
+      });
+
+      return this.renderReactSide();
     },
   }
 );
