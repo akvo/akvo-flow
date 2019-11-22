@@ -1,4 +1,5 @@
 import React from 'react';
+import PropTypes from 'prop-types';
 
 export default class SidebarDropdow extends React.Component {
   state = {
@@ -24,6 +25,7 @@ export default class SidebarDropdow extends React.Component {
 
   render() {
     const { fontClass, panelStyle } = this.getStyleProps();
+    const { devices } = this.props;
 
     return (
       <div className="sidebar-dropdown">
@@ -32,15 +34,20 @@ export default class SidebarDropdow extends React.Component {
           onClick={this.toggleDropdown}
           className="dd-header"
         >
-          <span>Partner 1</span>
+          <span>{devices[0].deviceGroup.name}</span>
           <i className={fontClass} />
         </div>
 
         <div style={panelStyle} className="sidebar-panel">
-          <button type="button">Water mapping 2</button>
-          <button type="button">Water mapping 3</button>
+          {devices.map(device => (
+            <button type="button">{device.name}</button>
+          ))}
         </div>
       </div>
     );
   }
 }
+
+SidebarDropdow.propTypes = {
+  devices: PropTypes.array.isRequired,
+};

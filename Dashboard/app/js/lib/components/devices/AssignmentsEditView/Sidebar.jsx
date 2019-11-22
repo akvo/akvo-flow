@@ -1,20 +1,36 @@
 import React from 'react';
+import { groupBy as _groupBy } from 'lodash';
 import FormSection from './screens/FormSection';
 import AddDevices from './screens/AddDevices';
 import EditDevices from './screens/EditDevices';
 import DevicesSection from './DevicesSection';
 import SidebarDropdown from './__partials/SidebarDropdown';
 
+import AssignmentsContext from './assignment-context';
+
 export default class Sidebar extends React.Component {
   state = {
-    currentTab: 'EDIT_DEVICE',
+    currentTab: 'ADD_DEVICE',
   };
 
   changeTab = tab => {
     this.setState({ currentTab: tab });
   };
 
+  getDeviceGroups = () => {
+    // filter out selected devices
+    const { devices, selectedDevices } = this.context.data;
+
+    const filteredDevices = devices.filter(device =>
+      selectedDevices.includes(device.id)
+    );
+
+    return _groupBy(filteredDevices, device => device.deviceGroup.id);
+  };
+
   render() {
+    const deviceGroups = this.getDeviceGroups();
+
     return (
       <React.Fragment>
         <div className="assignment-sidebar">
@@ -47,8 +63,14 @@ export default class Sidebar extends React.Component {
               </button>
             </li>
 
-            <li className="sidebar-dropdown-container active">
-              <SidebarDropdown />
+            <li
+              className={`sidebar-dropdown-container ${
+                this.state.currentTab !== 'FORMS' ? 'active' : ''
+              }`}
+            >
+              {Object.keys(deviceGroups).map(dgId => (
+                <SidebarDropdown devices={deviceGroups[dgId]} />
+              ))}
             </li>
           </ul>
         </div>
@@ -71,3 +93,5 @@ export default class Sidebar extends React.Component {
     );
   }
 }
+
+Sidebar.contextType = AssignmentsContext;

@@ -120,20 +120,26 @@
           }
         }
 
-        .sidebar-dropdown {
-          padding: 0px 5px;
-          font-size: 15px;
-          width: 100%;
+        .sidebar-dropdown-container {
+          display: block;
 
-          .dd-header {
-            display: flex;
-            justify-content: space-between;
-            padding-bottom: 10px;
-            cursor: pointer;
-          }
+          .sidebar-dropdown {
+            padding: 0px 5px;
+            font-size: 15px;
+            width: 100%;
+            display: block;
+            padding-bottom: 15px;
 
-          .sidebar-panel {
-            padding-left: 20px;
+            .dd-header {
+              display: flex;
+              justify-content: space-between;
+              padding-bottom: 10px;
+              cursor: pointer;
+            }
+
+            .sidebar-panel {
+              padding-left: 20px;
+            }
           }
         }
       }
