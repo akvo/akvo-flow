@@ -3,6 +3,7 @@ import FormSection from './screens/FormSection';
 import AddDevices from './screens/AddDevices';
 import EditDevices from './screens/EditDevices';
 import DevicesSection from './DevicesSection';
+import SidebarDropdown from './__partials/SidebarDropdown';
 
 export default class Sidebar extends React.Component {
   state = {
@@ -44,6 +45,10 @@ export default class Sidebar extends React.Component {
               >
                 Add
               </button>
+            </li>
+
+            <li className="sidebar-dropdown-container active">
+              <SidebarDropdown />
             </li>
           </ul>
         </div>
