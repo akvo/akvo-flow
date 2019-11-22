@@ -21,10 +21,6 @@ import java.util.List;
 import java.util.TreeMap;
 
 import com.gallatinsystems.survey.domain.SurveyGroup;
-import org.akvo.flow.xml.PublishedForm;
-import org.akvo.flow.xml.XmlForm;
-import org.akvo.flow.xml.XmlQuestionGroup;
-import org.akvo.flow.xml.XmlQuestion;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -43,11 +39,24 @@ import com.google.appengine.tools.development.testing.LocalServiceTestHelper;
 
 
 class FlowXmlObjectWriterTests {
-    private final static String EXPECTED_CASCADE_QUESTION = "<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?><survey version=\"12.0\" name=\"This is a form\" defaultLanguageCode=\"en\" surveyGroupName=\"Name of containing survey\" surveyId=\"17\"><questionGroup repeatable=\"false\"><question id=\"1001\" order=\"1\" type=\"cascade\" mandatory=\"false\" localeNameFlag=\"false\" cascadeResource=\"cascade-123456789-v1.sqlite\"><text>This is question one</text></question><heading>This is a group</heading></questionGroup></survey>";
+    private final static String EXPECTED_CASCADE_QUESTION = "<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?><survey name=\"This is a form\" defaultLanguageCode=\"en\" version=\"12.0\" surveyGroupId=\"123\" surveyGroupName=\"Name of containing survey\" surveyId=\"17\"><questionGroup repeatable=\"false\"><question id=\"1001\" order=\"1\" type=\"cascade\" mandatory=\"false\" localeNameFlag=\"false\" cascadeResource=\"cascade-123456789-v1.sqlite\"><text>This is question one</text></question><heading>This is a group</heading></questionGroup></survey>";
 
-    private final String expectedQuestionlessXml = "<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?><survey version=\"11.0\" name=\"This is a form\" defaultLanguageCode=\"en\" surveyGroupName=\"Name of containing survey\" surveyId=\"17\"><questionGroup repeatable=\"false\"><heading>This is a group</heading></questionGroup></survey>";
+    private final String EXPECTED_QUESTIONLESS_XML = "<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?><survey name=\"This is a form\" defaultLanguageCode=\"en\" version=\"11.0\" surveyGroupId=\"123\" surveyGroupName=\"Name of containing survey\" surveyId=\"17\"><questionGroup repeatable=\"false\"><heading>This is a group</heading></questionGroup></survey>";
 
-    private final String expectedMinimaXml = "<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?><survey version=\"12.0\" name=\"This is a form\" defaultLanguageCode=\"en\" surveyGroupName=\"Name of containing survey\" surveyId=\"17\"><questionGroup repeatable=\"false\"><question id=\"1001\" order=\"1\" type=\"free\" mandatory=\"false\" localeNameFlag=\"false\"><text>This is question one</text></question><question id=\"1002\" order=\"2\" type=\"free\" mandatory=\"true\" localeNameFlag=\"false\"><validationRule validationType=\"numeric\" allowDecimal=\"false\" signed=\"false\"/><text>This is question two</text></question><question id=\"1003\" order=\"3\" type=\"geoshape\" mandatory=\"false\" localeNameFlag=\"false\" allowPoints=\"false\" allowLine=\"false\" allowPolygon=\"false\"><text>This is question three</text></question><heading>This is a group</heading></questionGroup></survey>";
+    private final String EXPECTED_MINIMAL_XML = "<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?>" +
+            "<survey name=\"This is a form\" defaultLanguageCode=\"en\" version=\"12.0\" " +
+            "surveyGroupId=\"123\" surveyGroupName=\"Name of containing survey\" surveyId=\"17\">" +
+            "<questionGroup repeatable=\"false\">" +
+            "<question id=\"1001\" order=\"1\" type=\"free\" mandatory=\"false\" localeNameFlag=\"false\">" +
+            "<text>This is question one</text>" +
+            "</question><question id=\"1002\" order=\"2\" type=\"free\" mandatory=\"true\" localeNameFlag=\"false\">" +
+            "<validationRule validationType=\"numeric\" allowDecimal=\"false\" signed=\"false\"/>" +
+            "<text>This is question two</text></question>" +
+            "<question id=\"1003\" order=\"3\" type=\"geoshape\" mandatory=\"false\" " +
+            "localeNameFlag=\"false\" allowPoints=\"false\" allowLine=\"false\" allowPolygon=\"false\">" +
+            "<text>This is question three</text></question>" +
+            "<heading>This is a group</heading>" +
+            "</questionGroup></survey>";
 
     private final LocalServiceTestHelper helper =
             new LocalServiceTestHelper(new LocalDatastoreServiceTestConfig());
@@ -99,6 +108,8 @@ class FlowXmlObjectWriterTests {
         form1.setKey(KeyFactory.createKey("Survey", 17L));
         form1.setName("This is a form");
         form1.setVersion(11.0);
+        form1.setSurveyGroupId(123L);
+
         //Add a QuestionGroup
         QuestionGroup qg = new QuestionGroup();
         qg.setKey(KeyFactory.createKey("Survey", 18L));
@@ -126,7 +137,7 @@ class FlowXmlObjectWriterTests {
 
         //Convert Jackson tree into an XML string
         String xml = PublishedForm.generate(form);
-        assertEquals(expectedQuestionlessXml, xml);
+        assertEquals(EXPECTED_QUESTIONLESS_XML, xml);
 
         //And finally parse to DTO to see that it is valid
         SurveyDto dto = PublishedForm.parse(xml, true).toDto(); //be strict
@@ -188,6 +199,8 @@ class FlowXmlObjectWriterTests {
 
         SurveyGroup survey = new SurveyGroup();
         survey.setCode("Name of containing survey");
+        survey.setKey(KeyFactory.createKey("SurveyGroup", 123L));
+        form1.setSurveyGroupId(survey.getKey().getId());
 
         //Convert domain tree to Jackson tree
         XmlForm form = new XmlForm(form1, survey);
@@ -222,7 +235,7 @@ class FlowXmlObjectWriterTests {
 
         //Convert Jackson tree into an XML string
         String xml = PublishedForm.generate(form);
-        assertEquals(expectedMinimaXml, xml);
+        assertEquals(EXPECTED_MINIMAL_XML, xml);
 
         //And finally parse it to a DTO
         SurveyDto dto = PublishedForm.parse(xml, true).toDto(); //be strict
@@ -242,6 +255,8 @@ class FlowXmlObjectWriterTests {
         form1.setKey(KeyFactory.createKey("Survey", 17L));
         form1.setName("This is a form");
         form1.setVersion(12.0);
+        form1.setSurveyGroupId(123L);
+
         //Add a QuestionGroup
         QuestionGroup qg = new QuestionGroup();
         qg.setKey(KeyFactory.createKey("QuestionGroup", 18L));

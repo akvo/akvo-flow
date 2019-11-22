@@ -36,14 +36,14 @@ public final class XmlForm {
     @JacksonXmlElementWrapper(localName = "questionGroup", useWrapping = false)
     private List<XmlQuestionGroup> questionGroup;
 
-    @JacksonXmlProperty(localName = "version", isAttribute = true)
-    private String version;
-
     @JacksonXmlProperty(localName = "name", isAttribute = true)
     private String name;
 
     @JacksonXmlProperty(localName = "defaultLanguageCode", isAttribute = true)
     private String defaultLanguageCode;
+
+    @JacksonXmlProperty(localName = "version", isAttribute = true)
+    private String version;
 
     @JacksonXmlProperty(localName = "app", isAttribute = true)
     private String app;
