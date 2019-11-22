@@ -72,31 +72,52 @@ class FlowXmlObjectWriterTests {
     }
 
     @Test
-    void testSerialiseEmptyForm() throws IOException {
-        //Mock up a domain tree
+    void testSerialiseQuestionlessForm() throws IOException {
+
+        //Mock up a form tree
         Survey form1 = new Survey();
         form1.setKey(KeyFactory.createKey("Survey", 17L));
         form1.setName("This is a form");
-        form1.setVersion(10.0);
-        //No question groups. Completely empty form.
+        form1.setVersion(11.0);
+        form1.setSurveyGroupId(123L);
 
-        //Convert domain tree to Jackson tree
+        //Add a QuestionGroup
+        QuestionGroup qg = new QuestionGroup();
+        qg.setKey(KeyFactory.createKey("Survey", 18L));
+        qg.setSurveyId(17L);
+        qg.setName("This is a group");
+        qg.setOrder(1);
+        TreeMap<Integer, QuestionGroup> gl = new TreeMap<>();
+        gl.put(1, qg);
+        form1.setQuestionGroupMap(gl);
+        //No questions
+
         SurveyGroup survey = new SurveyGroup();
         survey.setCode("Name of containing survey");
 
+        //Convert domain tree to Jackson tree
         XmlForm form = new XmlForm(form1, survey);
         //...and test it
         assertNotEquals(null, form);
-        assertEquals(17L, form.getSurveyId());
-        assertEquals("This is a form", form.getName());
-        assertEquals("Name of containing survey", form.getSurveyGroupName());
-        assertEquals("10.0", form.getVersion());
         assertNotEquals(null, form.getQuestionGroup());
-        assertEquals(0, form.getQuestionGroup().size());
+        List<XmlQuestionGroup> ga = form.getQuestionGroup();
+        assertEquals(1, ga.size());
+        assertEquals("This is a group", ga.get(0).getHeading());
+        assertEquals(1, ga.get(0).getOrder());
+        assertFalse(ga.get(0).getRepeatable());
 
         //Convert Jackson tree into an XML string
         String xml = PublishedForm.generate(form);
+        assertEquals(EXPECTED_QUESTIONLESS_XML, xml);
 
+        //And finally parse to DTO to see that it is valid
+        SurveyDto dto = PublishedForm.parse(xml, true).toDto(); //be strict
+
+        assertNotEquals(null, dto);
+        assertEquals(17L, dto.getKeyId());
+        assertEquals("This is a form", dto.getName());
+        assertEquals("11.0", dto.getVersion());
+        assertEquals("This is a form", dto.getName());
     }
 
     @Test
