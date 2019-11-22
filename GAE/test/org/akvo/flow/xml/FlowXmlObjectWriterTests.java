@@ -20,6 +20,7 @@ import java.io.IOException;
 import java.util.List;
 import java.util.TreeMap;
 
+import com.gallatinsystems.survey.domain.SurveyGroup;
 import org.akvo.flow.xml.PublishedForm;
 import org.akvo.flow.xml.XmlForm;
 import org.akvo.flow.xml.XmlQuestionGroup;
@@ -71,7 +72,10 @@ class FlowXmlObjectWriterTests {
         //No question groups. Completely empty form.
 
         //Convert domain tree to Jackson tree
-        XmlForm form = new XmlForm(form1, "Name of containing survey");
+        SurveyGroup survey = new SurveyGroup();
+        survey.setCode("Name of containing survey");
+
+        XmlForm form = new XmlForm(form1, survey);
         //...and test it
         assertNotEquals(null, form);
         assertEquals(17L, form.getSurveyId());
@@ -106,8 +110,11 @@ class FlowXmlObjectWriterTests {
         form1.setQuestionGroupMap(gl);
         //No questions
 
+        SurveyGroup survey = new SurveyGroup();
+        survey.setCode("Name of containing survey");
+
         //Convert domain tree to Jackson tree
-        XmlForm form = new XmlForm(form1, "Name of containing survey");
+        XmlForm form = new XmlForm(form1, survey);
         //...and test it
         assertNotEquals(null, form);
         assertNotEquals(null, form.getQuestionGroup());
@@ -179,8 +186,11 @@ class FlowXmlObjectWriterTests {
 
         int questionCount = qm.size();
 
+        SurveyGroup survey = new SurveyGroup();
+        survey.setCode("Name of containing survey");
+
         //Convert domain tree to Jackson tree
-        XmlForm form = new XmlForm(form1, "Name of containing survey");
+        XmlForm form = new XmlForm(form1, survey);
         //...and test it
         assertNotEquals(null, form);
         assertNotEquals(null, form.getQuestionGroup());
@@ -258,9 +268,11 @@ class FlowXmlObjectWriterTests {
         qm.put(1, q1);
 
         int questionCount = qm.size();
+        SurveyGroup survey = new SurveyGroup();
+        survey.setCode("Name of containing survey");
 
         //Convert domain tree to Jackson tree
-        XmlForm form = new XmlForm(form1, "Name of containing survey");
+        XmlForm form = new XmlForm(form1, survey);
         //...and test it
         assertNotEquals(null, form);
         assertNotEquals(null, form.getQuestionGroup());
