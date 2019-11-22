@@ -599,6 +599,7 @@ public class QuestionDao extends BaseDAO<Question> {
                     if (q.getType().equals(Question.Type.CASCADE) && q.getCascadeResourceId() != null) {
                         CascadeResource cr = new CascadeResourceDao().getByKey(q.getCascadeResourceId());
                         if (cr != null) {
+                            q.setCascadeResource(cr.getResourceId());
                             q.setLevelNames(cr.getLevelNames());
                         }
                     }
