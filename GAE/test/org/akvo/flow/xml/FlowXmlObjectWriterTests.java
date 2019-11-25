@@ -308,9 +308,9 @@ class FlowXmlObjectWriterTests {
         qg.setSurveyId(17L);
         qg.setName("This is a group");
         qg.setOrder(1);
-        TreeMap<Integer, QuestionGroup> gl = new TreeMap<>();
-        gl.put(1, qg);
-        form1.setQuestionGroupMap(gl);
+        TreeMap<Integer, QuestionGroup> gm = new TreeMap<>();
+        gm.put(1, qg);
+        form1.setQuestionGroupMap(gm);
         TreeMap<Integer, Question> qm = new TreeMap<>();
         qg.setQuestionMap(qm);
 
