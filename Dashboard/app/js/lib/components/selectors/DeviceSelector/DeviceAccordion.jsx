@@ -36,6 +36,22 @@ export default class DeviceAccordion extends React.Component {
     });
   };
 
+  allDevicesSelected = () => {
+    const { selectedDevices, devices } = this.props;
+    let allSelected = true;
+
+    // loop through and check if devices is selected
+    for (let i = 0; i < devices.length; i++) {
+      const device = devices[i];
+
+      if (!selectedDevices.includes(device.id)) {
+        allSelected = false;
+      }
+    }
+
+    return allSelected;
+  };
+
   render() {
     const {
       name,
@@ -52,7 +68,7 @@ export default class DeviceAccordion extends React.Component {
           <Checkbox
             id={id}
             name={id}
-            checked={selectedDevices.length === devices.length}
+            checked={this.allDevicesSelected()}
             onChange={this.selectAllDevice}
             label=""
           />
