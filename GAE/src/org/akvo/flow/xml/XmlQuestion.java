@@ -48,6 +48,8 @@ public class XmlQuestion {
     private List<XmlAltText> altText;
     @JacksonXmlProperty(localName = "text", isAttribute = false)
     private String text;
+    @JacksonXmlProperty(localName = "variableName", isAttribute = true)
+    private String variableName;
     @JacksonXmlElementWrapper(localName = "levels", useWrapping = true)
     private List<XmlLevel> level;
 
@@ -97,6 +99,9 @@ public class XmlQuestion {
         }
         if (q.getTip() != null) {
             help = new XmlHelp(q.getTip());
+        }
+        if (q.getVariableName() != null && !q.getVariableName().trim().equals("")) {
+            variableName = q.getVariableName();
         }
 
         type = q.getType().toString().toLowerCase();
@@ -165,6 +170,7 @@ public class XmlQuestion {
         dto.setMandatoryFlag(mandatory);
         dto.setLocaleNameFlag(localeNameFlag);
         dto.setRequireDoubleEntry(requireDoubleEntry);
+        dto.setVariableName(variableName);
         //Type is more complicated:
         QuestionType t; //FREE_TEXT, OPTION, NUMBER, GEO, PHOTO, VIDEO, SCAN, TRACK, STRENGTH, DATE, CASCADE, GEOSHAPE, SIGNATURE, CADDISFLY
         if (FREE_TYPE.equalsIgnoreCase(type)) { //Text OR number
@@ -220,6 +226,7 @@ public class XmlQuestion {
                 "',mandatory='" + mandatory +
                 "',requireDoubleEntry='" + requireDoubleEntry +
                 "',locked='" + locked +
+                "',variableName='" + variableName +
                 "',localeNameFlag='" + localeNameFlag +
                 "',allowPoints='" + allowPoints +
                 "',allowLines='" + allowLine +
@@ -380,5 +387,15 @@ public class XmlQuestion {
     public void setRequireDoubleEntry(Boolean requireDoubleEntry) {
         this.requireDoubleEntry = requireDoubleEntry;
     }
+
+    public String getVariableName() {
+        return variableName;
+    }
+
+    public void setVariableName(String variableName) {
+        this.variableName = variableName;
+    }
+
+
 
 }

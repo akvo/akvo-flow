@@ -49,7 +49,7 @@ class FlowXmlObjectWriterTests {
             "<questionGroup repeatable=\"false\">" +
             "<question id=\"1001\" order=\"1\" type=\"free\" mandatory=\"false\" localeNameFlag=\"false\">" +
             "<text>This is question one</text>" +
-            "</question><question id=\"1002\" order=\"2\" type=\"free\" mandatory=\"true\" localeNameFlag=\"false\">" +
+            "</question><question variableName=\"questionTwo\" id=\"1002\" order=\"2\" type=\"free\" mandatory=\"true\" localeNameFlag=\"false\">" +
             "<validationRule validationType=\"numeric\" allowDecimal=\"false\" signed=\"false\"/>" +
             "<text>This is question two</text></question>" +
             "<question id=\"1003\" order=\"3\" type=\"geoshape\" mandatory=\"false\" " +
@@ -155,6 +155,7 @@ class FlowXmlObjectWriterTests {
         q2.setText("This is question two");
         q2.setType(Question.Type.NUMBER);
         q2.setMandatoryFlag(true);
+        q2.setVariableName("questionTwo");
         qm.put(2,q2);
 
         Question q3 = new Question();
@@ -195,6 +196,7 @@ class FlowXmlObjectWriterTests {
         assertEquals("This is question two", xq2.getText());
         assertEquals(Boolean.TRUE, xq2.getMandatory());
         assertEquals("free", xq2.getType());
+        assertEquals("questionTwo", xq2.getVariableName());
 
         XmlQuestion xq3 = xqg.getQuestion().get(2);
         assertNotEquals(null, xq3);
