@@ -14,7 +14,7 @@ export default class Sidebar extends React.Component {
 
   render() {
     return (
-      <React.Fragment>
+      <div className="assignment-body">
         <div className="assignment-sidebar">
           <ul>
             <li className={this.state.currentTab === 'FORMS' ? 'active' : ''}>
@@ -50,7 +50,7 @@ export default class Sidebar extends React.Component {
             <DevicesSection changeTab={this.changeTab} />
           )}
         </div>
-      </React.Fragment>
+      </div>
     );
   }
 }

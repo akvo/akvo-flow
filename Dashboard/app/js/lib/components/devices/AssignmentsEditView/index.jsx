@@ -82,11 +82,9 @@ export default class AssignmentsEdit extends React.Component {
         {/* topbar */}
         {this.renderTopBar()}
 
-        <div className="assignment-body">
-          <AssignmentContext.Provider value={contextData}>
-            <Sidebar />
-          </AssignmentContext.Provider>
-        </div>
+        <AssignmentContext.Provider value={contextData}>
+          <Sidebar />
+        </AssignmentContext.Provider>
       </div>
     );
   }
