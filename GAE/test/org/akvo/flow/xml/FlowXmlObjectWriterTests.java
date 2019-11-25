@@ -16,29 +16,29 @@
 
 package org.akvo.flow.xml;
 
-import java.io.IOException;
-import java.util.List;
-import java.util.TreeMap;
-
-import com.gallatinsystems.survey.domain.SurveyGroup;
-import org.junit.jupiter.api.AfterEach;
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Test;
-
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNull;
-import static org.junit.jupiter.api.Assertions.assertFalse;
-import static org.junit.jupiter.api.Assertions.assertTrue;
-import static org.junit.jupiter.api.Assertions.assertNotEquals;
-
-import org.waterforpeople.mapping.app.gwt.client.survey.SurveyDto;
-import com.gallatinsystems.survey.domain.Question;
 import com.gallatinsystems.survey.domain.CascadeResource;
+import com.gallatinsystems.survey.domain.Question;
 import com.gallatinsystems.survey.domain.QuestionGroup;
+import com.gallatinsystems.survey.domain.QuestionOption;
 import com.gallatinsystems.survey.domain.Survey;
+import com.gallatinsystems.survey.domain.SurveyGroup;
 import com.google.appengine.api.datastore.KeyFactory;
 import com.google.appengine.tools.development.testing.LocalDatastoreServiceTestConfig;
 import com.google.appengine.tools.development.testing.LocalServiceTestHelper;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.waterforpeople.mapping.app.gwt.client.survey.SurveyDto;
+
+import java.io.IOException;
+import java.util.HashMap;
+import java.util.List;
+import java.util.TreeMap;
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotEquals;
+import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 
 class FlowXmlObjectWriterTests {
@@ -61,11 +61,23 @@ class FlowXmlObjectWriterTests {
             "<heading>This is a group</heading>" +
             "</questionGroup></survey>";
 
-
     private static final String EXPECTED_REPEATABLE_XML = "<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?>" +
             "<survey name=\"This is a form\" defaultLanguageCode=\"en\" version=\"12.0\" " +
             "surveyGroupId=\"123\" surveyGroupName=\"Name of containing survey\" surveyId=\"17\">" +
             "<questionGroup repeatable=\"true\">" +
+            "<heading>This is a group</heading>" +
+            "</questionGroup></survey>";
+
+    private static final String EXPECTED_OPTIONS_XML = "<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?>" +
+            "<survey name=\"This is a form\" defaultLanguageCode=\"en\" version=\"11.0\" " +
+            "surveyGroupId=\"123\" surveyGroupName=\"Name of containing survey\" surveyId=\"17\">" +
+            "<questionGroup>" +
+            "<question id=\"1001\" order=\"1\" type=\"option\" mandatory=\"false\" localeNameFlag=\"false\">" +
+            "<options allowOther=\"true\" allowMultiple=\"true\"><option value=\"1\" code=\"1\"><text>1</text></option><option value=\"2\" code=\"2\"><text>2</text></option></options>" +
+            "<text>This is question one</text>" +
+            "</question><question id=\"1002\" order=\"2\" type=\"option\" mandatory=\"false\" localeNameFlag=\"false\">" +
+            "<options allowOther=\"false\" allowMultiple=\"false\" renderType=\"radio\"><option value=\"3\" code=\"3\"><text>3</text></option><option value=\"4\" code=\"4\"><text>4</text></option></options>" +
+            "<text>This is question two</text></question>" +
             "<heading>This is a group</heading>" +
             "</questionGroup></survey>";
 
@@ -350,6 +362,100 @@ class FlowXmlObjectWriterTests {
         assertEquals(17L, dto.getKeyId());
         assertEquals("This is a form", dto.getName());
         assertEquals("12.0", dto.getVersion());
+        assertEquals("This is a form", dto.getName());
+    }
+
+    @Test
+    void testOptionQuestionForm() throws IOException {
+
+        //Mock up a form tree
+        Survey form1 = new Survey();
+        form1.setKey(KeyFactory.createKey("Survey", 17L));
+        form1.setName("This is a form");
+        form1.setVersion(11.0);
+        form1.setSurveyGroupId(123L);
+
+        //Add a QuestionGroup
+        QuestionGroup qg = new QuestionGroup();
+        qg.setKey(KeyFactory.createKey("QuestionGroup", 18L));
+        qg.setSurveyId(17L);
+        qg.setName("This is a group");
+        qg.setOrder(1);
+        TreeMap<Integer, QuestionGroup> gl = new TreeMap<>();
+        gl.put(1, qg);
+        form1.setQuestionGroupMap(gl);
+        TreeMap<Integer, Question> qm = new TreeMap<>();
+        qg.setQuestionMap(qm);
+
+        Question q1 = new Question();
+        q1.setKey(KeyFactory.createKey("Question", 1001L));
+        q1.setOrder(1);
+        q1.setText("This is question one");
+        q1.setType(Question.Type.OPTION);
+        q1.setAllowOtherFlag(true);
+        q1.setAllowMultipleFlag(true);
+
+        TreeMap<Integer, QuestionOption> optionMap = new TreeMap<>();
+        QuestionOption opt1 = new QuestionOption();
+        opt1.setCode("1");
+        opt1.setText("1");
+        opt1.setKey(KeyFactory.createKey("QuestionOption", 11111L));
+        opt1.setTranslationMap(new HashMap<>());
+        optionMap.put(1, opt1);
+
+        QuestionOption opt2 = new QuestionOption();
+        opt2.setCode("2");
+        opt2.setText("2");
+        opt2.setKey(KeyFactory.createKey("QuestionOption", 222222L));
+        opt2.setTranslationMap(new HashMap<>());
+        optionMap.put(2, opt2);
+
+        q1.setQuestionOptionMap(optionMap);
+        qm.put(1, q1);
+
+        Question q2 = new Question();
+        q2.setKey(KeyFactory.createKey("Question", 1002L));
+        q2.setOrder(2);
+        q2.setText("This is question two");
+        q2.setType(Question.Type.OPTION);
+        q2.setAllowOtherFlag(false);
+        q2.setAllowMultipleFlag(false);
+
+        TreeMap<Integer, QuestionOption> optionMap2 = new TreeMap<>();
+        QuestionOption opt3 = new QuestionOption();
+        opt3.setCode("3");
+        opt3.setText("3");
+        opt3.setKey(KeyFactory.createKey("QuestionOption", 333333L));
+        opt3.setTranslationMap(new HashMap<>());
+        optionMap2.put(1, opt3);
+
+        QuestionOption opt4 = new QuestionOption();
+        opt4.setCode("4");
+        opt4.setText("4");
+        opt4.setKey(KeyFactory.createKey("QuestionOption", 44444L));
+        opt4.setTranslationMap(new HashMap<>());
+        optionMap2.put(2, opt4);
+
+        q2.setQuestionOptionMap(optionMap2);
+        qm.put(2, q2);
+
+        SurveyGroup survey = new SurveyGroup();
+        survey.setCode("Name of containing survey");
+
+        //Convert domain tree to Jackson tree
+        XmlForm form = new XmlForm(form1, survey);
+
+        //Convert Jackson tree into an XML string
+        String xml = PublishedForm.generate(form);
+        assertEquals(EXPECTED_OPTIONS_XML, xml);
+
+        //And finally parse to DTO to see that it is valid
+        SurveyDto dto = PublishedForm.parse(xml, true).toDto(); //be strict
+
+        assertNotEquals(null, dto);
+        assertEquals(17L, dto.getKeyId());
+        assertEquals("This is a form", dto.getName());
+        assertEquals("11.0", dto.getVersion());
         assertEquals("This is a form", dto.getName());
     }
 
