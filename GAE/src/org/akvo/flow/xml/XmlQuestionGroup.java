@@ -40,7 +40,7 @@ import com.gallatinsystems.survey.domain.QuestionGroup;
 public class XmlQuestionGroup {
 
     @JacksonXmlProperty(localName = "repeatable", isAttribute = true)
-    private boolean repeatable;
+    private Boolean repeatable;
 
     @JacksonXmlProperty(localName = "heading", isAttribute = false)
     private String heading;
@@ -62,7 +62,7 @@ public class XmlQuestionGroup {
             heading = group.getName();
         }
         order = group.getOrder();
-        repeatable = Boolean.TRUE.equals(group.getRepeatable());
+        repeatable = group.getRepeatable();
         //Now copy the question tree, if any
         if (group.getQuestionMap() != null) {
             question = new ArrayList<XmlQuestion>();
@@ -110,11 +110,11 @@ public class XmlQuestionGroup {
         this.heading = h;
     }
 
-    public boolean getRepeatable() {
+    public Boolean getRepeatable() {
         return repeatable;
     }
 
-    public void setRepeatable(boolean repeatable) {
+    public void setRepeatable(Boolean repeatable) {
         this.repeatable = repeatable;
     }
 

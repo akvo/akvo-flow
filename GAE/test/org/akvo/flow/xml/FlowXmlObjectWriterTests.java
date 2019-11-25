@@ -24,8 +24,11 @@ import com.gallatinsystems.survey.domain.SurveyGroup;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.junit.jupiter.api.Assertions.assertNotEquals;
 
 import org.waterforpeople.mapping.app.gwt.client.survey.SurveyDto;
@@ -39,14 +42,14 @@ import com.google.appengine.tools.development.testing.LocalServiceTestHelper;
 
 
 class FlowXmlObjectWriterTests {
-    private final static String EXPECTED_CASCADE_QUESTION = "<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?><survey name=\"This is a form\" defaultLanguageCode=\"en\" version=\"12.0\" surveyGroupId=\"123\" surveyGroupName=\"Name of containing survey\" surveyId=\"17\"><questionGroup repeatable=\"false\"><question id=\"1001\" order=\"1\" type=\"cascade\" mandatory=\"false\" localeNameFlag=\"false\" cascadeResource=\"cascade-123456789-v1.sqlite\"><text>This is question one</text></question><heading>This is a group</heading></questionGroup></survey>";
+    private static final String EXPECTED_CASCADE_QUESTION = "<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?><survey name=\"This is a form\" defaultLanguageCode=\"en\" version=\"12.0\" surveyGroupId=\"123\" surveyGroupName=\"Name of containing survey\" surveyId=\"17\"><questionGroup><question id=\"1001\" order=\"1\" type=\"cascade\" mandatory=\"false\" localeNameFlag=\"false\" cascadeResource=\"cascade-123456789-v1.sqlite\"><text>This is question one</text></question><heading>This is a group</heading></questionGroup></survey>";
 
-    private final String EXPECTED_QUESTIONLESS_XML = "<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?><survey name=\"This is a form\" defaultLanguageCode=\"en\" version=\"11.0\" surveyGroupId=\"123\" surveyGroupName=\"Name of containing survey\" surveyId=\"17\"><questionGroup repeatable=\"false\"><heading>This is a group</heading></questionGroup></survey>";
+    private static final String EXPECTED_QUESTIONLESS_XML = "<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?><survey name=\"This is a form\" defaultLanguageCode=\"en\" version=\"11.0\" surveyGroupId=\"123\" surveyGroupName=\"Name of containing survey\" surveyId=\"17\"><questionGroup><heading>This is a group</heading></questionGroup></survey>";
 
-    private final String EXPECTED_MINIMAL_XML = "<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?>" +
+    private static final String EXPECTED_MINIMAL_XML = "<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?>" +
             "<survey name=\"This is a form\" defaultLanguageCode=\"en\" version=\"12.0\" " +
             "surveyGroupId=\"123\" surveyGroupName=\"Name of containing survey\" surveyId=\"17\">" +
-            "<questionGroup repeatable=\"false\">" +
+            "<questionGroup>" +
             "<question id=\"1001\" order=\"1\" type=\"free\" mandatory=\"false\" localeNameFlag=\"false\">" +
             "<text>This is question one</text>" +
             "</question><question id=\"1002\" order=\"2\" type=\"free\" mandatory=\"true\" localeNameFlag=\"false\">" +
@@ -58,17 +61,25 @@ class FlowXmlObjectWriterTests {
             "<heading>This is a group</heading>" +
             "</questionGroup></survey>";
 
+
+    private static final String EXPECTED_REPEATABLE_XML = "<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?>" +
+            "<survey name=\"This is a form\" defaultLanguageCode=\"en\" version=\"12.0\" " +
+            "surveyGroupId=\"123\" surveyGroupName=\"Name of containing survey\" surveyId=\"17\">" +
+            "<questionGroup repeatable=\"true\">" +
+            "<heading>This is a group</heading>" +
+            "</questionGroup></survey>";
+
     private final LocalServiceTestHelper helper =
             new LocalServiceTestHelper(new LocalDatastoreServiceTestConfig());
 
     @BeforeEach
     public void setUp() {
-      helper.setUp();
+        helper.setUp();
     }
 
     @AfterEach
     public void tearDown() {
-      helper.tearDown();
+        helper.tearDown();
     }
 
     @Test
@@ -104,7 +115,7 @@ class FlowXmlObjectWriterTests {
         assertEquals(1, ga.size());
         assertEquals("This is a group", ga.get(0).getHeading());
         assertEquals(1, ga.get(0).getOrder());
-        assertFalse(ga.get(0).getRepeatable());
+        assertNull(ga.get(0).getRepeatable());
 
         //Convert Jackson tree into an XML string
         String xml = PublishedForm.generate(form);
@@ -137,7 +148,7 @@ class FlowXmlObjectWriterTests {
         TreeMap<Integer, QuestionGroup> gm = new TreeMap<>();
         gm.put(1, qg);
         form1.setQuestionGroupMap(gm);
-        TreeMap<Integer,Question> qm = new TreeMap<>();
+        TreeMap<Integer, Question> qm = new TreeMap<>();
         qg.setQuestionMap(qm);
 
         //Add some questions
@@ -147,7 +158,7 @@ class FlowXmlObjectWriterTests {
         q1.setOrder(1);
         q1.setText("This is question one");
         q1.setType(Question.Type.FREE_TEXT);
-        qm.put(1,q1);
+        qm.put(1, q1);
 
         Question q2 = new Question();
         q2.setKey(KeyFactory.createKey("Question", 1002L)); //Must have a key
@@ -155,7 +166,7 @@ class FlowXmlObjectWriterTests {
         q2.setText("This is question two");
         q2.setType(Question.Type.NUMBER);
         q2.setMandatoryFlag(true);
-        qm.put(2,q2);
+        qm.put(2, q2);
 
         Question q3 = new Question();
         q3.setKey(KeyFactory.createKey("Question", 1003L)); //Must have a key
@@ -163,7 +174,7 @@ class FlowXmlObjectWriterTests {
         q3.setText("This is question three");
         q3.setType(Question.Type.GEOSHAPE);
         q3.setMandatoryFlag(false);
-        qm.put(3,q3);
+        qm.put(3, q3);
 
         int questionCount = qm.size();
 
@@ -218,6 +229,58 @@ class FlowXmlObjectWriterTests {
     }
 
     @Test
+    void testSerialiseRepeatableGroupForm() throws IOException {
+
+        //Mock up a DTO tree
+        Survey form1 = new Survey();
+        form1.setKey(KeyFactory.createKey("Survey", 17L));
+        form1.setName("This is a form");
+        form1.setVersion(12.0);
+        //Add a QuestionGroup
+        QuestionGroup qg = new QuestionGroup();
+        qg.setKey(KeyFactory.createKey("Survey", 18L));
+        qg.setSurveyId(17L);
+        qg.setName("This is a group");
+        qg.setOrder(1);
+        qg.setRepeatable(true);
+        TreeMap<Integer, QuestionGroup> gm = new TreeMap<>();
+        gm.put(1, qg);
+        form1.setQuestionGroupMap(gm);
+        TreeMap<Integer, Question> qm = new TreeMap<>();
+        qg.setQuestionMap(qm);
+        int questionCount = qm.size();
+
+        SurveyGroup survey = new SurveyGroup();
+        survey.setCode("Name of containing survey");
+        survey.setKey(KeyFactory.createKey("SurveyGroup", 123L));
+        form1.setSurveyGroupId(survey.getKey().getId());
+
+        //Convert domain tree to Jackson tree
+        XmlForm form = new XmlForm(form1, survey);
+        //...and test it
+        assertNotEquals(null, form);
+        assertNotEquals(null, form.getQuestionGroup());
+        XmlQuestionGroup xqg = form.getQuestionGroup().get(0);
+        assertNotEquals(null, xqg);
+        assertNotEquals(null, xqg.getQuestion());
+        assertEquals(questionCount, xqg.getQuestion().size());
+        assertTrue(xqg.getRepeatable());
+
+        //Convert Jackson tree into an XML string
+        String xml = PublishedForm.generate(form);
+        assertEquals(EXPECTED_REPEATABLE_XML, xml);
+
+        //And finally parse it to a DTO
+        SurveyDto dto = PublishedForm.parse(xml, true).toDto(); //be strict
+
+        assertNotEquals(null, dto);
+        assertEquals(17L, dto.getKeyId());
+        assertEquals("This is a form", dto.getName());
+        assertEquals("12.0", dto.getVersion());
+        assertEquals("This is a form", dto.getName());
+    }
+
+    @Test
     void testSerialiseFormWithCascade() throws IOException {
 
         //Mock up a DTO tree
@@ -236,7 +299,7 @@ class FlowXmlObjectWriterTests {
         TreeMap<Integer, QuestionGroup> gm = new TreeMap<>();
         gm.put(1, qg);
         form1.setQuestionGroupMap(gm);
-        TreeMap<Integer,Question> qm = new TreeMap<>();
+        TreeMap<Integer, Question> qm = new TreeMap<>();
         qg.setQuestionMap(qm);
 
         //Add some questions
