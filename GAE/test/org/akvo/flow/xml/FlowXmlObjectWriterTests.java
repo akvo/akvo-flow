@@ -94,7 +94,7 @@ class FlowXmlObjectWriterTests {
 
         //Add a QuestionGroup
         QuestionGroup qg = new QuestionGroup();
-        qg.setKey(KeyFactory.createKey("Survey", 18L));
+        qg.setKey(KeyFactory.createKey("QuestionGroup", 18L));
         qg.setSurveyId(17L);
         qg.setName("This is a group");
         qg.setOrder(1);
@@ -141,7 +141,7 @@ class FlowXmlObjectWriterTests {
         form1.setVersion(12.0);
         //Add a QuestionGroup
         QuestionGroup qg = new QuestionGroup();
-        qg.setKey(KeyFactory.createKey("Survey", 18L));
+        qg.setKey(KeyFactory.createKey("QuestionGroup", 18L));
         qg.setSurveyId(17L);
         qg.setName("This is a group");
         qg.setOrder(1);
