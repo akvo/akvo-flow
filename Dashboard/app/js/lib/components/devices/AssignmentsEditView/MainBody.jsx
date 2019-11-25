@@ -3,7 +3,7 @@ import FormSection from './screens/FormSection';
 import AddDevices from './screens/AddDevices';
 import DevicesSection from './DevicesSection';
 
-export default class Sidebar extends React.Component {
+export default class AssignmentMain extends React.Component {
   state = {
     currentTab: 'ADD_DEVICE',
   };
