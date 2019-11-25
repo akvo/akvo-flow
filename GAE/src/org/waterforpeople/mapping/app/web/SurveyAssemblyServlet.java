@@ -168,10 +168,10 @@ public class SurveyAssemblyServlet extends AbstractRestApiServlet {
         Survey form = surveyDao.loadFullForm(formId);
 
         SurveyGroupDAO surveyGroupDao = new SurveyGroupDAO();
-        SurveyGroup sg = surveyGroupDao.getByKey(form.getSurveyGroupId());
+        SurveyGroup survey = surveyGroupDao.getByKey(form.getSurveyGroupId());
         Long transactionId = randomNumber.nextLong();
 
-        XmlForm jacksonForm = new XmlForm(form, sg.getCode());
+        XmlForm jacksonForm = new XmlForm(form, survey);
         String formXML;
         try {
             formXML = PublishedForm.generate(jacksonForm);
@@ -189,7 +189,7 @@ public class SurveyAssemblyServlet extends AbstractRestApiServlet {
         Message message = new Message();
         message.setActionAbout("surveyAssembly");
         message.setObjectId(formId);
-        message.setObjectTitle(sg.getCode() + " / " + form.getName());
+        message.setObjectTitle(survey.getCode() + " / " + form.getName());
         if (uc.getUploadedZip1() && uc.getUploadedZip2()) {
             log.debug("Finishing assembly of " + formId);
             form.setStatus(Survey.Status.PUBLISHED);

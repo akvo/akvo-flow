@@ -19,6 +19,7 @@ package org.akvo.flow.xml;
 import java.util.ArrayList;
 import java.util.List;
 
+import com.gallatinsystems.survey.domain.SurveyGroup;
 import org.waterforpeople.mapping.app.gwt.client.survey.QuestionGroupDto;
 import org.waterforpeople.mapping.app.gwt.client.survey.SurveyDto;
 
@@ -35,14 +36,14 @@ public final class XmlForm {
     @JacksonXmlElementWrapper(localName = "questionGroup", useWrapping = false)
     private List<XmlQuestionGroup> questionGroup;
 
-    @JacksonXmlProperty(localName = "version", isAttribute = true)
-    private String version;
-
     @JacksonXmlProperty(localName = "name", isAttribute = true)
     private String name;
 
     @JacksonXmlProperty(localName = "defaultLanguageCode", isAttribute = true)
     private String defaultLanguageCode;
+
+    @JacksonXmlProperty(localName = "version", isAttribute = true)
+    private String version;
 
     @JacksonXmlProperty(localName = "app", isAttribute = true)
     private String app;
@@ -60,10 +61,10 @@ public final class XmlForm {
     }
 
     //Create a form XML object from a form and the name of the containing survey
-    public XmlForm(Survey form, String surveyName) {
+    public XmlForm(Survey form, SurveyGroup survey) {
         surveyId = form.getKey().getId();
         surveyGroupId = form.getSurveyGroupId();
-        surveyGroupName = surveyName;
+        surveyGroupName = survey.getCode();
         defaultLanguageCode = form.getDefaultLanguageCode();
         if (defaultLanguageCode == null) {
             defaultLanguageCode = "en";
