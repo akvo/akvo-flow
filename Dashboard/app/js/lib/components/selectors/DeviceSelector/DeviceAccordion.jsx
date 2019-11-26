@@ -29,11 +29,15 @@ export default class DeviceAccordion extends React.Component {
   };
 
   selectAllDevice = (_, checked) => {
-    const { devices, handleSelectDevice } = this.props;
+    const { devices, handleSelectAllDevices } = this.props;
+    const selectedDevices = [];
 
-    devices.forEach(device => {
-      handleSelectDevice(device.id, checked);
-    });
+    for (let index = 0; index < devices.length; index++) {
+      const device = devices[index];
+      selectedDevices.push(device.id);
+    }
+
+    handleSelectAllDevices(selectedDevices, checked);
   };
 
   allDevicesSelected = () => {
@@ -111,5 +115,6 @@ DeviceAccordion.propTypes = {
   name: PropTypes.string.isRequired,
   devices: PropTypes.array.isRequired,
   handleSelectDevice: PropTypes.func.isRequired,
+  handleSelectAllDevices: PropTypes.func.isRequired,
   selectedDevices: PropTypes.array.isRequired,
 };
