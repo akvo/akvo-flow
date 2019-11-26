@@ -32,6 +32,8 @@ import com.gallatinsystems.survey.domain.Survey;
 import com.google.appengine.api.taskqueue.Queue;
 import com.google.appengine.api.taskqueue.QueueFactory;
 import com.google.appengine.api.taskqueue.TaskOptions;
+import com.google.appengine.api.utils.SystemProperty;
+
 import org.akvo.flow.xml.PublishedForm;
 import org.akvo.flow.xml.XmlForm;
 import org.apache.log4j.Logger;
@@ -171,7 +173,7 @@ public class SurveyAssemblyServlet extends AbstractRestApiServlet {
         SurveyGroup survey = surveyGroupDao.getByKey(form.getSurveyGroupId());
         Long transactionId = randomNumber.nextLong();
 
-        XmlForm jacksonForm = new XmlForm(form, survey);
+        XmlForm jacksonForm = new XmlForm(form, survey, SystemProperty.applicationId.get());
         String formXML;
         try {
             formXML = PublishedForm.generate(jacksonForm);

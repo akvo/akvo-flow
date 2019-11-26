@@ -42,12 +42,12 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 
 
 class FlowXmlObjectWriterTests {
-    private static final String EXPECTED_CASCADE_QUESTION = "<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?><survey name=\"This is a form\" defaultLanguageCode=\"en\" version=\"12.0\" surveyGroupId=\"123\" surveyGroupName=\"Name of containing survey\" surveyId=\"17\"><questionGroup><question id=\"1001\" order=\"1\" type=\"cascade\" mandatory=\"false\" localeNameFlag=\"false\" cascadeResource=\"cascade-123456789-v1.sqlite\"><text>This is question one</text></question><heading>This is a group</heading></questionGroup></survey>";
+    private static final String EXPECTED_CASCADE_QUESTION = "<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?><survey name=\"This is a form\" defaultLanguageCode=\"en\" version=\"12.0\" app=\"akvoflowsandbox\" surveyGroupId=\"123\" surveyGroupName=\"Name of containing survey\" surveyId=\"17\"><questionGroup><question id=\"1001\" order=\"1\" type=\"cascade\" mandatory=\"false\" localeNameFlag=\"false\" cascadeResource=\"cascade-123456789-v1.sqlite\"><text>This is question one</text></question><heading>This is a group</heading></questionGroup></survey>";
 
-    private static final String EXPECTED_QUESTIONLESS_XML = "<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?><survey name=\"This is a form\" defaultLanguageCode=\"en\" version=\"11.0\" surveyGroupId=\"123\" surveyGroupName=\"Name of containing survey\" surveyId=\"17\"><questionGroup><heading>This is a group</heading></questionGroup></survey>";
+    private static final String EXPECTED_QUESTIONLESS_XML = "<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?><survey name=\"This is a form\" defaultLanguageCode=\"en\" version=\"11.0\" app=\"akvoflowsandbox\" surveyGroupId=\"123\" surveyGroupName=\"Name of containing survey\" surveyId=\"17\"><questionGroup><heading>This is a group</heading></questionGroup></survey>";
 
     private static final String EXPECTED_MINIMAL_XML = "<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?>" +
-            "<survey name=\"This is a form\" defaultLanguageCode=\"en\" version=\"12.0\" " +
+            "<survey name=\"This is a form\" defaultLanguageCode=\"en\" version=\"12.0\" app=\"akvoflowsandbox\" " +
             "surveyGroupId=\"123\" surveyGroupName=\"Name of containing survey\" surveyId=\"17\">" +
             "<questionGroup>" +
             "<question id=\"1001\" order=\"1\" type=\"free\" mandatory=\"false\" localeNameFlag=\"false\">" +
@@ -62,14 +62,14 @@ class FlowXmlObjectWriterTests {
             "</questionGroup></survey>";
 
     private static final String EXPECTED_REPEATABLE_XML = "<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?>" +
-            "<survey name=\"This is a form\" defaultLanguageCode=\"en\" version=\"12.0\" " +
+            "<survey name=\"This is a form\" defaultLanguageCode=\"en\" version=\"12.0\" app=\"akvoflowsandbox\" " +
             "surveyGroupId=\"123\" surveyGroupName=\"Name of containing survey\" surveyId=\"17\">" +
             "<questionGroup repeatable=\"true\">" +
             "<heading>This is a group</heading>" +
             "</questionGroup></survey>";
 
     private static final String EXPECTED_OPTIONS_XML = "<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?>" +
-            "<survey name=\"This is a form\" defaultLanguageCode=\"en\" version=\"11.0\" " +
+            "<survey name=\"This is a form\" defaultLanguageCode=\"en\" version=\"11.0\" app=\"akvoflowsandbox\" " +
             "surveyGroupId=\"123\" surveyGroupName=\"Name of containing survey\" surveyId=\"17\">" +
             "<questionGroup>" +
             "<question id=\"1001\" order=\"1\" type=\"option\" mandatory=\"false\" localeNameFlag=\"false\">" +
@@ -119,7 +119,7 @@ class FlowXmlObjectWriterTests {
         survey.setCode("Name of containing survey");
 
         //Convert domain tree to Jackson tree
-        XmlForm form = new XmlForm(form1, survey);
+        XmlForm form = new XmlForm(form1, survey, "akvoflowsandbox");
         //...and test it
         assertNotEquals(null, form);
         assertNotEquals(null, form.getQuestionGroup());
@@ -197,7 +197,7 @@ class FlowXmlObjectWriterTests {
         form1.setSurveyGroupId(survey.getKey().getId());
 
         //Convert domain tree to Jackson tree
-        XmlForm form = new XmlForm(form1, survey);
+        XmlForm form = new XmlForm(form1, survey, "akvoflowsandbox");
         //...and test it
         assertNotEquals(null, form);
         assertNotEquals(null, form.getQuestionGroup());
@@ -270,7 +270,7 @@ class FlowXmlObjectWriterTests {
         form1.setSurveyGroupId(survey.getKey().getId());
 
         //Convert domain tree to Jackson tree
-        XmlForm form = new XmlForm(form1, survey);
+        XmlForm form = new XmlForm(form1, survey, "akvoflowsandbox");
         //...and test it
         assertNotEquals(null, form);
         assertNotEquals(null, form.getQuestionGroup());
@@ -334,7 +334,7 @@ class FlowXmlObjectWriterTests {
         survey.setCode("Name of containing survey");
 
         //Convert domain tree to Jackson tree
-        XmlForm form = new XmlForm(form1, survey);
+        XmlForm form = new XmlForm(form1, survey, "akvoflowsandbox");
         //...and test it
         assertNotEquals(null, form);
         assertNotEquals(null, form.getQuestionGroup());
@@ -443,7 +443,7 @@ class FlowXmlObjectWriterTests {
         survey.setCode("Name of containing survey");
 
         //Convert domain tree to Jackson tree
-        XmlForm form = new XmlForm(form1, survey);
+        XmlForm form = new XmlForm(form1, survey, "akvoflowsandbox");
 
         //Convert Jackson tree into an XML string
         String xml = PublishedForm.generate(form);

@@ -61,7 +61,7 @@ public final class XmlForm {
     }
 
     //Create a form XML object from a form and the name of the containing survey
-    public XmlForm(Survey form, SurveyGroup survey) {
+    public XmlForm(Survey form, SurveyGroup survey, String appStr) {
         surveyId = form.getKey().getId();
         surveyGroupId = form.getSurveyGroupId();
         surveyGroupName = survey.getCode();
@@ -74,6 +74,7 @@ public final class XmlForm {
             name = form.getName();
         }
         version = form.getVersion().toString();
+        app = appStr;
         //Now copy the tree of child objects (if any)
         questionGroup = new ArrayList<>(); //Having an empty list prevents a <questionGroup/> tag
         if (form.getQuestionGroupMap() != null) {
