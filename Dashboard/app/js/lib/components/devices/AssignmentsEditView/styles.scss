@@ -85,10 +85,11 @@
         flex: 1;
         background: #e8e8e8;
         padding: 5px 0px;
-        min-height: 300px;
+        min-height: 350px;
 
         li {
           padding: 15px 25px;
+          display: flex;
 
           &.active {
             background: #4ab1cf1a;
@@ -109,6 +110,13 @@
             outline: none;
             font-size: 15px;
             font-weight: 500;
+            text-align: left;
+            flex: 1;
+
+            &.sub-action {
+              flex: 0;
+              color: #4ab1cf;
+            }
           }
         }
       }
@@ -212,60 +220,126 @@
             }
           }
         }
-      }
 
-      .devices {
-        flex: 2;
-        padding: 15px;
+        .devices {
+          padding: 15px;
+          display: flex;
+          height: 100%;
 
-        .assignment-device-selector {
-          margin-top: 2.4em;
-          margin-bottom: 1.5em;
+          .device-empty {
+            margin-top: auto;
+            width: 100%;
+            text-align: center;
+            height: 75%;
 
-          .accordion-container {
-            padding: 20px 0px;
-            border-bottom: 1px solid #d9d9d9;
+            color: #7a7a7a;
+            font-weight: 500;
 
-            &:first-of-type {
-              padding-top: 0px;
+            .fa {
+              font-size: 4em;
+              margin-bottom: 7px;
             }
+          }
+        }
 
-            .accordion {
-              background: transparent;
-              padding: 0px;
-              margin-bottom: 17px;
-              display: flex;
+        .device-empty {
+          margin-top: auto;
+          width: 100%;
+          text-align: center;
+          height: 75%;
 
-              &::after {
-                content: '';
-              }
+          color: #7a7a7a;
+          font-weight: 500;
 
-              &.active::after {
-                content: '';
-              }
+          .fa {
+            font-size: 4em;
+            margin-bottom: 7px;
+          }
+        }
 
-              & > div {
-                margin-right: auto;
-                margin-top: 5px;
-                width: 100%;
-                display: flex;
+        .add-devices {
+          position: relative;
+          height: 100%;
 
-                span {
-                  display: block;
+          .header {
+            display: flex;
+            justify-content: space-between;
+            padding: 15px 3em;
+            align-items: center;
+            font-weight: 500;
+            border-bottom: 1px solid #e6e6e6;
 
-                  &:first-of-type {
+            .fa {
+              font-size: 2em;
+            }
+          }
+
+          .body {
+            padding: 15px 3em;
+
+            .assignment-device-selector {
+              margin-bottom: 1.5em;
+
+              .accordion-container {
+                padding: 10px 0px;
+                font-weight: 500;
+
+                &:first-of-type {
+                  padding-top: 0px;
+                }
+
+                .accordion {
+                  background: transparent;
+                  padding: 0px;
+                  margin-bottom: 17px;
+                  display: flex;
+
+                  &::after {
+                    content: '';
+                  }
+
+                  &.active::after {
+                    content: '';
+                  }
+
+                  & > div {
                     margin-right: auto;
-                  }
+                    margin-top: 5px;
+                    width: 100%;
+                    display: flex;
 
-                  &.fa {
-                    font-size: 14px;
+                    span {
+                      display: block;
+
+                      &:first-of-type {
+                        margin-right: auto;
+                      }
+
+                      &.fa {
+                        font-size: 14px;
+                      }
+                    }
                   }
+                }
+
+                .panel {
+                  padding: 0 3em;
                 }
               }
             }
+          }
 
-            .panel {
-              padding: 0 3em;
+          .footer {
+            position: absolute;
+            bottom: 0;
+            width: 100%;
+
+            .footer-inner {
+              display: flex;
+              padding: 15px 3em;
+              justify-content: space-between;
+              align-items: center;
+              border-top: 1px solid #e6e6e6;
             }
           }
         }
