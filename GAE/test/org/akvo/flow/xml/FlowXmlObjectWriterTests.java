@@ -81,6 +81,12 @@ class FlowXmlObjectWriterTests {
             "<heading>This is a group</heading>" +
             "</questionGroup></survey>";
 
+    private static final String EXPECTED_BARCODE_QUESTION = "<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?>" +
+            "<survey name=\"This is a form\" defaultLanguageCode=\"en\" version=\"12.0\" " +
+            "surveyGroupId=\"123\" surveyGroupName=\"Name of containing survey\" surveyId=\"17\"><questionGroup>" +
+            "<question id=\"1001\" order=\"1\" locked=\"true\" allowMultiple=\"true\" type=\"scan\" mandatory=\"false\" localeNameFlag=\"false\">" +
+            "<text>This is question one</text></question><heading>This is a group</heading></questionGroup></survey>";
+
     private final LocalServiceTestHelper helper =
             new LocalServiceTestHelper(new LocalDatastoreServiceTestConfig());
 
@@ -459,4 +465,50 @@ class FlowXmlObjectWriterTests {
         assertEquals("This is a form", dto.getName());
     }
 
+    @Test
+    void testSerialiseFormWithBarcode() throws IOException {
+
+        //Mock up a DTO tree
+        Survey form1 = new Survey();
+        form1.setKey(KeyFactory.createKey("Survey", 17L));
+        form1.setName("This is a form");
+        form1.setVersion(12.0);
+        form1.setSurveyGroupId(123L);
+
+        //Add a QuestionGroup
+        QuestionGroup qg = new QuestionGroup();
+        qg.setKey(KeyFactory.createKey("QuestionGroup", 18L));
+        qg.setSurveyId(17L);
+        qg.setName("This is a group");
+        qg.setOrder(1);
+        TreeMap<Integer, QuestionGroup> gm = new TreeMap<>();
+        gm.put(1, qg);
+        form1.setQuestionGroupMap(gm);
+        TreeMap<Integer, Question> qm = new TreeMap<>();
+        qg.setQuestionMap(qm);
+
+        //Add some questions
+        //Intentionally do not set mandatory; it should be null
+        Question q1 = new Question();
+        q1.setKey(KeyFactory.createKey("Question", 1001L)); //Must have a key
+        q1.setOrder(1);
+        q1.setText("This is question one");
+        q1.setType(Question.Type.SCAN);
+        q1.setAllowMultipleFlag(true);
+        q1.setGeoLocked(true); //this is used for geolocation and barcodes
+        qm.put(1, q1);
+
+        SurveyGroup survey = new SurveyGroup();
+        survey.setCode("Name of containing survey");
+
+        //Convert domain tree to Jackson tree
+        XmlForm form = new XmlForm(form1, survey);
+
+        //Convert Jackson tree into an XML string
+        String xml = PublishedForm.generate(form);
+        assertEquals(EXPECTED_BARCODE_QUESTION, xml);
+
+        //And finally parse it to a DTO
+        SurveyDto dto = PublishedForm.parse(xml, true).toDto(); //be strict
+    }
 }

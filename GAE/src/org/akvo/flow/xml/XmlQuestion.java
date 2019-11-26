@@ -16,25 +16,25 @@
 
 package org.akvo.flow.xml;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import org.waterforpeople.mapping.app.gwt.client.survey.QuestionDto;
-import org.waterforpeople.mapping.app.gwt.client.survey.QuestionDto.QuestionType;
-import org.waterforpeople.mapping.app.gwt.client.survey.TranslationDto;
-
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.dataformat.xml.annotation.JacksonXmlElementWrapper;
 import com.fasterxml.jackson.dataformat.xml.annotation.JacksonXmlProperty;
 import com.gallatinsystems.survey.domain.Question;
 import com.gallatinsystems.survey.domain.Translation;
+import org.waterforpeople.mapping.app.gwt.client.survey.QuestionDto;
+import org.waterforpeople.mapping.app.gwt.client.survey.QuestionDto.QuestionType;
+import org.waterforpeople.mapping.app.gwt.client.survey.TranslationDto;
+
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
 
 
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public class XmlQuestion {
 
-    private static String FREE_TYPE = "free"; //Used for both FREE_TEXT and NUMBER
-    private static String NUMERIC_VALIDATION_TYPE = "numeric";
+    private static final String FREE_TYPE = "free"; //Used for both FREE_TEXT and NUMBER
+    private static final String NUMERIC_VALIDATION_TYPE = "numeric";
 
     @JacksonXmlProperty(localName = "options", isAttribute = false)
     private XmlOptions options;
@@ -52,11 +52,14 @@ public class XmlQuestion {
     private String variableName;
     @JacksonXmlElementWrapper(localName = "levels", useWrapping = true)
     private List<XmlLevel> level;
-
     @JacksonXmlProperty(localName = "id", isAttribute = true)
     private long id;
     @JacksonXmlProperty(localName = "order", isAttribute = true)
     private int order;
+    @JacksonXmlProperty(localName = "locked", isAttribute = true)
+    private Boolean locked;
+    @JacksonXmlProperty(localName = "allowMultiple", isAttribute = true)
+    private Boolean allowMultiple;
     @JacksonXmlProperty(localName = "type", isAttribute = true)
     private String type;
     @JacksonXmlProperty(localName = "mandatory", isAttribute = true)
@@ -65,8 +68,6 @@ public class XmlQuestion {
     private Boolean requireDoubleEntry;
     @JacksonXmlProperty(localName = "localeNameFlag", isAttribute = true)
     private boolean localeNameFlag;
-    @JacksonXmlProperty(localName = "locked", isAttribute = true)
-    private Boolean locked;
     @JacksonXmlProperty(localName = "localeLocationFlag", isAttribute = true)
     private Boolean localeLocationFlag;
     @JacksonXmlProperty(localName = "caddisflyResourceUuid", isAttribute = true)
@@ -142,6 +143,11 @@ public class XmlQuestion {
                 //Now copy any options into the transfer container
                 if (q.getQuestionOptionMap() != null) {
                     options = new XmlOptions(q);
+                }
+                break;
+            case SCAN:
+                if (q.getAllowMultipleFlag() != null && q.getAllowMultipleFlag()) {
+                    allowMultiple = true;
                 }
                 break;
             default:
@@ -395,7 +401,4 @@ public class XmlQuestion {
     public void setVariableName(String variableName) {
         this.variableName = variableName;
     }
-
-
-
 }
