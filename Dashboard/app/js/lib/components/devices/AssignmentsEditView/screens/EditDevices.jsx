@@ -7,7 +7,7 @@ import DeviceGroupSelectorView from 'akvo-flow/components/selectors/DeviceSelect
 import AssignmentsContext from '../assignment-context';
 import DeviceEmpty from '../__partials/DeviceEmpty';
 
-export default class AddDevice extends React.Component {
+export default class EditDevices extends React.Component {
   state = {
     selectedDevices: [],
   };
@@ -16,8 +16,8 @@ export default class AddDevice extends React.Component {
     // filter out selected devices
     const { devices, selectedDevices } = this.context.data;
 
-    const filteredDevices = devices.filter(
-      device => !selectedDevices.includes(device.id)
+    const filteredDevices = devices.filter(device =>
+      selectedDevices.includes(device.id)
     );
 
     return _groupBy(filteredDevices, device => device.deviceGroup.id);
@@ -48,14 +48,16 @@ export default class AddDevice extends React.Component {
       );
     }
 
-    this.setState({ selectedDevices: [...new Set(newSelectedDevices)] });
+    this.setState({
+      selectedDevices: [...new Set(newSelectedDevices)],
+    });
   };
 
-  addToAssignment = () => {
+  removeFromAssignment = () => {
     const { selectedDevices } = this.state;
-    const { addDevicesToAssignment } = this.context.actions;
+    const { removeDevicesFromAssignment } = this.context.actions;
 
-    addDevicesToAssignment(selectedDevices);
+    removeDevicesFromAssignment(selectedDevices);
 
     // empty selected devices
     this.setState({ selectedDevices: [] });
@@ -68,7 +70,7 @@ export default class AddDevice extends React.Component {
     return (
       <div className="devices-action-page">
         <div className="header">
-          <p>Add devices to assignment</p>
+          <p>Remove devices from assignment</p>
           <i
             className="fa fa-times"
             onClick={() => this.props.changeTab('DEVICES')}
@@ -99,12 +101,12 @@ export default class AddDevice extends React.Component {
 
             <button
               type="button"
-              onClick={this.addToAssignment}
+              onClick={this.removeFromAssignment}
               className={`btnOutline ${
                 selectedDevices.length === 0 ? 'disabled' : ''
               }`}
             >
-              Add to assignment
+              Remove from assignment
             </button>
           </div>
         </div>
@@ -113,7 +115,7 @@ export default class AddDevice extends React.Component {
   }
 }
 
-AddDevice.contextType = AssignmentsContext;
-AddDevice.propTypes = {
+EditDevices.contextType = AssignmentsContext;
+EditDevices.propTypes = {
   changeTab: PropTypes.func.isRequired,
 };

@@ -63,6 +63,9 @@ FLOW.AssignmentEditView = FLOW.ReactComponentView.extend(
       this.handleSelectAllDevice = this.handleSelectAllDevice.bind(this);
       this.addDevicesCheckedOption = this.addDevicesCheckedOption.bind(this);
       this.addDevicesToAssignment = this.addDevicesToAssignment.bind(this);
+      this.removeDevicesFromAssignment = this.removeDevicesFromAssignment.bind(
+        this
+      );
 
       // object wide varaibles
       this.forms = {};
@@ -85,7 +88,7 @@ FLOW.AssignmentEditView = FLOW.ReactComponentView.extend(
 
       this.setupForms();
       this.setupSurveyGroups();
-      this.setupDevices2();
+      this.setupDevices();
 
       // react render
       this.renderReactSide();
@@ -133,6 +136,7 @@ FLOW.AssignmentEditView = FLOW.ReactComponentView.extend(
         handleSurveySelect: this.handleSurveySelect,
         handleDeviceCheck: this.handleDeviceCheck,
         addDevicesToAssignment: this.addDevicesToAssignment,
+        removeDevicesFromAssignment: this.removeDevicesFromAssignment,
       };
 
       const data = {
@@ -293,72 +297,6 @@ FLOW.AssignmentEditView = FLOW.ReactComponentView.extend(
             ancestorIds: item.get('ancestorIds'),
           });
         });
-      }
-    },
-
-    setupDevices() {
-      if (FLOW.deviceGroupControl.content.isLoaded) {
-        FLOW.deviceGroupControl.get('content').forEach(item => {
-          this.deviceGroupNames[item.get('keyId')] = item.get('code');
-          this.deviceGroups[item.get('keyId')] = {}; // initialize array of devices per group
-        });
-
-        if (FLOW.deviceControl.content.isLoaded) {
-          if (FLOW.selectedControl.selectedSurveyAssignment.get('deviceIds')) {
-            FLOW.selectedControl.selectedSurveyAssignment
-              .get('deviceIds')
-              .forEach(deviceId => {
-                // populate pre-selected devices
-                const device = FLOW.Device.find(deviceId);
-                if (device && device.get('keyId')) {
-                  this.selectedDevices.push(device);
-                }
-              });
-          }
-
-          this.devices = FLOW.deviceControl.get('content').map(device => {
-            const formattedDevice = {
-              name: device.get('deviceIdentifier'),
-              id: device.get('id'),
-              checked: this.deviceInAssignment(device.get('keyId')),
-              deviceGroup: {
-                id: '1',
-                name: 'Device not in group',
-              },
-            };
-
-            if (device.get('deviceGroup')) {
-              const deviceGroup = FLOW.DeviceGroup.find(
-                device.get('deviceGroup')
-              );
-
-              formattedDevice.deviceGroup = {
-                id: deviceGroup.get('id'),
-                name: deviceGroup.get('code'),
-              };
-            }
-
-            return formattedDevice;
-          });
-
-          FLOW.deviceControl.get('content').forEach(device => {
-            const checked = this.deviceInAssignment(device.get('keyId'));
-
-            if (checked) {
-              this.activeDeviceGroups.add(device.get('deviceGroup') || '1');
-            }
-
-            this.deviceGroups[device.get('deviceGroup') || '1'][
-              device.get('keyId')
-            ] = {
-              name: device.get('deviceIdentifier'),
-              checked,
-            };
-          });
-
-          // check if all items in device group is selected
-          this.addDevicesCheckedOption();
-        }
       }
     },
 
@@ -630,7 +568,7 @@ FLOW.AssignmentEditView = FLOW.ReactComponentView.extend(
     },
 
     // handle devices functionality
-    setupDevices2() {
+    setupDevices() {
       if (
         FLOW.deviceGroupControl.content.isLoaded &&
         FLOW.deviceControl.content.isLoaded
@@ -680,6 +618,20 @@ FLOW.AssignmentEditView = FLOW.ReactComponentView.extend(
         const device = FLOW.Device.find(deviceId);
         if (device && device.get('id')) {
           this.selectedDevices.push(device.get('id'));
+        }
+      });
+
+      return this.renderReactSide();
+    },
+
+    removeDevicesFromAssignment(devices) {
+      devices.forEach(deviceId => {
+        // populate pre-selected devices
+        const device = FLOW.Device.find(deviceId);
+        if (device && device.get('id')) {
+          this.selectedDevices = this.selectedDevices.filter(
+            d => d !== device.get('id')
+          );
         }
       });
 
