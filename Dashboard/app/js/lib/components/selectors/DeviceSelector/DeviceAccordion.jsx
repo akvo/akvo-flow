@@ -29,11 +29,31 @@ export default class DeviceAccordion extends React.Component {
   };
 
   selectAllDevice = (_, checked) => {
-    const { devices, handleSelectDevice } = this.props;
+    const { devices, handleSelectAllDevices } = this.props;
+    const selectedDevices = [];
 
-    devices.forEach(device => {
-      handleSelectDevice(device.id, checked);
-    });
+    for (let index = 0; index < devices.length; index++) {
+      const device = devices[index];
+      selectedDevices.push(device.id);
+    }
+
+    handleSelectAllDevices(selectedDevices, checked);
+  };
+
+  allDevicesSelected = () => {
+    const { selectedDevices, devices } = this.props;
+    let allSelected = true;
+
+    // loop through and check if devices is selected
+    for (let i = 0; i < devices.length; i++) {
+      const device = devices[i];
+
+      if (!selectedDevices.includes(device.id)) {
+        allSelected = false;
+      }
+    }
+
+    return allSelected;
   };
 
   render() {
@@ -52,7 +72,7 @@ export default class DeviceAccordion extends React.Component {
           <Checkbox
             id={id}
             name={id}
-            checked={selectedDevices.length === devices.length}
+            checked={this.allDevicesSelected()}
             onChange={this.selectAllDevice}
             label=""
           />
@@ -95,5 +115,6 @@ DeviceAccordion.propTypes = {
   name: PropTypes.string.isRequired,
   devices: PropTypes.array.isRequired,
   handleSelectDevice: PropTypes.func.isRequired,
+  handleSelectAllDevices: PropTypes.func.isRequired,
   selectedDevices: PropTypes.array.isRequired,
 };

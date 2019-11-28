@@ -4,7 +4,12 @@ import DeviceAccordion from './DeviceAccordion';
 
 export default class DeviceSelector extends React.Component {
   render() {
-    const { deviceGroups, handleSelectDevice, selectedDevices } = this.props;
+    const {
+      deviceGroups,
+      handleSelectDevice,
+      selectedDevices,
+      handleSelectAllDevices,
+    } = this.props;
 
     return (
       <div>
@@ -15,6 +20,7 @@ export default class DeviceSelector extends React.Component {
             name={deviceGroups[dgId][0].deviceGroup.name}
             devices={deviceGroups[dgId]}
             handleSelectDevice={handleSelectDevice}
+            handleSelectAllDevices={handleSelectAllDevices}
             selectedDevices={selectedDevices}
           />
         ))}
@@ -26,5 +32,6 @@ export default class DeviceSelector extends React.Component {
 DeviceSelector.propTypes = {
   deviceGroups: PropTypes.object.isRequired,
   handleSelectDevice: PropTypes.func.isRequired,
+  handleSelectAllDevices: PropTypes.func.isRequired,
   selectedDevices: PropTypes.array.isRequired,
 };
