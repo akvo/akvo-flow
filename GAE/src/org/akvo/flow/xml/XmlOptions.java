@@ -19,6 +19,7 @@ package org.akvo.flow.xml;
 import java.util.ArrayList;
 import java.util.List;
 
+import com.gallatinsystems.common.util.PropertyUtil;
 import org.waterforpeople.mapping.app.gwt.client.survey.OptionContainerDto;
 import org.waterforpeople.mapping.app.gwt.client.survey.QuestionOptionDto;
 
@@ -32,6 +33,8 @@ import com.gallatinsystems.survey.domain.QuestionOption;
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public class XmlOptions {
 
+    public static final String DEFAULT_RENDER_TYPE = "radio";
+
     @JacksonXmlElementWrapper(localName = "option", useWrapping = false)
     private List<XmlOption> option;
     @JacksonXmlProperty(localName = "allowOther", isAttribute = true)
@@ -39,7 +42,7 @@ public class XmlOptions {
     @JacksonXmlProperty(localName = "allowMultiple", isAttribute = true)
     private boolean allowMultiple;
     @JacksonXmlProperty(localName = "renderType", isAttribute = true)
-    private String renderType; //Ignore for now
+    private String renderType;
 
 
     public XmlOptions() {
@@ -48,8 +51,11 @@ public class XmlOptions {
     public XmlOptions(Question q) {
         allowOther = Boolean.TRUE.equals(q.getAllowOtherFlag());
         allowMultiple = Boolean.TRUE.equals(q.getAllowMultipleFlag());
+        if (!allowMultiple) {
+            renderType = DEFAULT_RENDER_TYPE;
+        }
         if (q.getQuestionOptionMap() != null) {
-            option = new ArrayList<XmlOption>();
+            option = new ArrayList<>();
             for (QuestionOption o: q.getQuestionOptionMap().values()) { //In key order
                 option.add(new XmlOption(o));
             }

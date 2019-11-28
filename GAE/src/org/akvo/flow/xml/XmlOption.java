@@ -17,6 +17,7 @@
 package org.akvo.flow.xml;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 
 import org.waterforpeople.mapping.app.gwt.client.survey.QuestionOptionDto;
@@ -34,10 +35,10 @@ import com.gallatinsystems.survey.domain.Translation;
 
 public class XmlOption {
 
-    @JacksonXmlProperty(localName = "code", isAttribute = true)
-    private String code;
     @JacksonXmlProperty(localName = "value", isAttribute = true)
     private String value;
+    @JacksonXmlProperty(localName = "code", isAttribute = true)
+    private String code;
     @JacksonXmlProperty(localName = "text", isAttribute = false)
     private String text;
     @JacksonXmlElementWrapper(localName = "altText", useWrapping = false)
@@ -52,8 +53,11 @@ public class XmlOption {
         setValue(o.getText());
         //Translations
         altText = new ArrayList<>();
-        for (Translation t: o.getTranslationMap().values()) {
-            altText.add(new XmlAltText(t));
+        HashMap<String, Translation> translationMap = o.getTranslationMap();
+        if (translationMap != null) {
+            for (Translation t: translationMap.values()) {
+                altText.add(new XmlAltText(t));
+            }
         }
     }
 

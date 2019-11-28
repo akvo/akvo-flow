@@ -16,7 +16,7 @@
 
 package com.gallatinsystems.surveyal.domain;
 
-import static com.gallatinsystems.common.Constants.MAX_LENGTH;
+import static com.gallatinsystems.common.Constants.MAX_DS_STRING_LENGTH;;
 
 import java.util.Date;
 import java.util.HashMap;
@@ -169,7 +169,7 @@ public class SurveyedLocale extends BaseDomain {
     }
 
     public void setDisplayName(String displayName) {
-        this.displayName = displayName.length() > MAX_LENGTH ? displayName.substring(0, MAX_LENGTH)
+        this.displayName = displayName.length() > MAX_DS_STRING_LENGTH ? displayName.substring(0, MAX_DS_STRING_LENGTH)
                 .trim() : displayName;
     }
 
@@ -236,7 +236,7 @@ public class SurveyedLocale extends BaseDomain {
             first = false;
         }
 
-        displayName = sb.toString();
+        setDisplayName(sb.toString());
     }
 
     /**
