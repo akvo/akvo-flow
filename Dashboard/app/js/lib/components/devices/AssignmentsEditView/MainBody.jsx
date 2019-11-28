@@ -8,7 +8,7 @@ import SidebarDropdown from './__partials/SidebarDropdown';
 
 import AssignmentsContext from './assignment-context';
 
-export default class Sidebar extends React.Component {
+export default class AssignmentMain extends React.Component {
   state = {
     currentTab: 'ADD_DEVICE',
   };
@@ -32,7 +32,7 @@ export default class Sidebar extends React.Component {
     const deviceGroups = this.getDeviceGroups();
 
     return (
-      <React.Fragment>
+      <div className="assignment-body">
         <div className="assignment-sidebar">
           <ul>
             <li className={this.state.currentTab === 'FORMS' ? 'active' : ''}>
@@ -89,7 +89,7 @@ export default class Sidebar extends React.Component {
             <DevicesSection changeTab={this.changeTab} />
           )}
         </div>
-      </React.Fragment>
+      </div>
     );
   }
 }
