@@ -94,4 +94,4 @@ export default class AssignmentMain extends React.Component {
   }
 }
 
-Sidebar.contextType = AssignmentsContext;
+AssignmentMain.contextType = AssignmentsContext;
