@@ -69,7 +69,7 @@ export default class AssignmentMain extends React.Component {
               }`}
             >
               {Object.keys(deviceGroups).map(dgId => (
-                <SidebarDropdown devices={deviceGroups[dgId]} />
+                <SidebarDropdown key={dgId} devices={deviceGroups[dgId]} />
               ))}
             </li>
           </ul>
