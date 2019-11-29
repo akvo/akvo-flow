@@ -103,7 +103,7 @@
             }
           }
 
-          button {
+          a {
             color: #4ab1cf;
             border: none;
             background: none;
@@ -116,6 +116,7 @@
             &.sub-action {
               flex: 0;
               color: #4ab1cf;
+              padding: 0px 7px;
             }
           }
         }
@@ -124,7 +125,6 @@
           display: block;
 
           .sidebar-dropdown {
-            padding: 0px 5px;
             font-size: 15px;
             width: 100%;
             display: block;
@@ -140,8 +140,9 @@
             .sidebar-panel {
               padding-left: 20px;
 
-              button {
+              a {
                 display: block;
+                padding: 4px 0px;
               }
             }
           }

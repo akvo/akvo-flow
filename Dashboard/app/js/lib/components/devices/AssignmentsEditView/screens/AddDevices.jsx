@@ -14,10 +14,10 @@ export default class AddDevice extends React.Component {
 
   getDeviceGroups() {
     // filter out selected devices
-    const { devices, selectedDevices } = this.context.data;
+    const { devices, selectedDeviceIds } = this.context.data;
 
     const filteredDevices = devices.filter(
-      device => !selectedDevices.includes(device.id)
+      device => !selectedDeviceIds.includes(device.id)
     );
 
     return _groupBy(filteredDevices, device => device.deviceGroup.id);

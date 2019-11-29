@@ -40,9 +40,9 @@ export default class SidebarDropdown extends React.Component {
 
         <div style={panelStyle} className="sidebar-panel">
           {devices.map(device => (
-            <button key={device.id} type="button">
+            <a key={device.id} href="#">
               {device.name}
-            </button>
+            </a>
           ))}
         </div>
       </div>

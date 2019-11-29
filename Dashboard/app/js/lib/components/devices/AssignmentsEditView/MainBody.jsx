@@ -1,3 +1,4 @@
+/* eslint-disable jsx-a11y/anchor-is-valid */
 import React from 'react';
 import { groupBy as _groupBy } from 'lodash';
 import FormSection from './screens/FormSection';
@@ -19,10 +20,10 @@ export default class AssignmentMain extends React.Component {
 
   getDeviceGroups = () => {
     // filter out selected devices
-    const { devices, selectedDevices } = this.context.data;
+    const { devices, selectedDeviceIds } = this.context.data;
 
     const filteredDevices = devices.filter(device =>
-      selectedDevices.includes(device.id)
+      selectedDeviceIds.includes(device.id)
     );
 
     return _groupBy(filteredDevices, device => device.deviceGroup.id);
@@ -36,31 +37,31 @@ export default class AssignmentMain extends React.Component {
         <div className="assignment-sidebar">
           <ul>
             <li className={this.state.currentTab === 'FORMS' ? 'active' : ''}>
-              <button type="button" onClick={() => this.changeTab('FORMS')}>
+              <a href="#" onClick={() => this.changeTab('FORMS')}>
                 Forms
-              </button>
+              </a>
             </li>
 
             <li className={this.state.currentTab !== 'FORMS' ? 'active' : ''}>
-              <button type="button" onClick={() => this.changeTab('DEVICES')}>
+              <a href="#" onClick={() => this.changeTab('DEVICES')}>
                 Devices
-              </button>
+              </a>
 
-              <button
+              <a
+                href="#"
                 className="sub-action"
-                type="button"
                 onClick={() => this.changeTab('EDIT_DEVICE')}
               >
                 Edit
-              </button>
+              </a>
 
-              <button
+              <a
+                href="#"
                 className="sub-action"
-                type="button"
                 onClick={() => this.changeTab('ADD_DEVICE')}
               >
                 Add
-              </button>
+              </a>
             </li>
 
             <li
