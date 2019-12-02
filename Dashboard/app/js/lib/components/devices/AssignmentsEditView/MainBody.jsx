@@ -11,7 +11,7 @@ import AssignmentsContext from './assignment-context';
 
 export default class AssignmentMain extends React.Component {
   state = {
-    currentTab: 'ADD_DEVICE',
+    currentTab: 'FORMS',
   };
 
   changeTab = tab => {
@@ -29,24 +29,32 @@ export default class AssignmentMain extends React.Component {
     return _groupBy(filteredDevices, device => device.deviceGroup.id);
   };
 
-  render() {
+  renderSidebar = () => {
     const deviceGroups = this.getDeviceGroups();
+    const { selectedDeviceIds } = this.context.data;
+    const deviceIsSelected = selectedDeviceIds.length > 0;
 
     return (
-      <div className="assignment-body">
-        <div className="assignment-sidebar">
-          <ul>
-            <li className={this.state.currentTab === 'FORMS' ? 'active' : ''}>
-              <a href="#" onClick={() => this.changeTab('FORMS')}>
-                Forms
-              </a>
-            </li>
+      <div className="assignment-sidebar">
+        <ul>
+          <li className={this.state.currentTab === 'FORMS' ? 'active' : ''}>
+            <a href="#" onClick={() => this.changeTab('FORMS')}>
+              Forms
+            </a>
+          </li>
 
-            <li className={this.state.currentTab !== 'FORMS' ? 'active' : ''}>
-              <a href="#" onClick={() => this.changeTab('DEVICES')}>
-                Devices
-              </a>
+          <li className={this.state.currentTab !== 'FORMS' ? 'active' : ''}>
+            <a
+              className={deviceIsSelected ? 'disabled' : undefined}
+              href="#"
+              onClick={
+                deviceIsSelected ? undefined : () => this.changeTab('DEVICES')
+              }
+            >
+              Devices
+            </a>
 
+            {deviceIsSelected && (
               <a
                 href="#"
                 className="sub-action"
@@ -54,27 +62,35 @@ export default class AssignmentMain extends React.Component {
               >
                 Edit
               </a>
+            )}
 
-              <a
-                href="#"
-                className="sub-action"
-                onClick={() => this.changeTab('ADD_DEVICE')}
-              >
-                Add
-              </a>
-            </li>
-
-            <li
-              className={`sidebar-dropdown-container ${
-                this.state.currentTab !== 'FORMS' ? 'active' : ''
-              }`}
+            <a
+              href="#"
+              className="sub-action"
+              onClick={() => this.changeTab('ADD_DEVICE')}
             >
-              {Object.keys(deviceGroups).map(dgId => (
-                <SidebarDropdown key={dgId} devices={deviceGroups[dgId]} />
-              ))}
-            </li>
-          </ul>
-        </div>
+              Add
+            </a>
+          </li>
+
+          <li
+            className={`sidebar-dropdown-container ${
+              this.state.currentTab !== 'FORMS' ? 'active' : ''
+            }`}
+          >
+            {Object.keys(deviceGroups).map(dgId => (
+              <SidebarDropdown key={dgId} devices={deviceGroups[dgId]} />
+            ))}
+          </li>
+        </ul>
+      </div>
+    );
+  };
+
+  render() {
+    return (
+      <div className="assignment-body">
+        {this.renderSidebar()}
 
         <div className="assignment-main">
           {this.state.currentTab === 'FORMS' && (
