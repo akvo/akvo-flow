@@ -148,7 +148,7 @@ FLOW.AssignmentEditView = FLOW.ReactComponentView.extend(
         activeDeviceGroups: this.activeDeviceGroups,
         initialSurveyGroup: this.initialSurveyGroup,
         numberOfForms: this.selectedSurveys.length,
-        selectedDevices: this.selectedDevices,
+        selectedDeviceIds: this.selectedDevices,
       };
 
       return {

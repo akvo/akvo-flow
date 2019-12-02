@@ -103,7 +103,7 @@
             }
           }
 
-          button {
+          a {
             color: #4ab1cf;
             border: none;
             background: none;
@@ -116,6 +116,34 @@
             &.sub-action {
               flex: 0;
               color: #4ab1cf;
+              padding: 0px 7px;
+            }
+          }
+        }
+
+        .sidebar-dropdown-container {
+          display: block;
+
+          .sidebar-dropdown {
+            font-size: 15px;
+            width: 100%;
+            display: block;
+            padding-bottom: 15px;
+
+            .dd-header {
+              display: flex;
+              justify-content: space-between;
+              padding-bottom: 10px;
+              cursor: pointer;
+            }
+
+            .sidebar-panel {
+              padding-left: 20px;
+
+              a {
+                display: block;
+                padding: 4px 0px;
+              }
             }
           }
         }
