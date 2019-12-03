@@ -148,7 +148,7 @@ FLOW.AssignmentEditView = FLOW.ReactComponentView.extend(
         activeDeviceGroups: this.activeDeviceGroups,
         initialSurveyGroup: this.initialSurveyGroup,
         numberOfForms: this.selectedSurveys.length,
-        selectedDevices: this.selectedDevices,
+        selectedDeviceIds: this.selectedDevices,
       };
 
       return {
@@ -174,7 +174,7 @@ FLOW.AssignmentEditView = FLOW.ReactComponentView.extend(
       let startDateParse;
 
       // set devices and surveys
-      const deviceIds = this.selectedDevices.map(item => item.get('keyId'));
+      const deviceIds = this.selectedDevices;
       const formIds = this.selectedSurveys.map(item => item.get('keyId'));
 
       // validate data before continuing

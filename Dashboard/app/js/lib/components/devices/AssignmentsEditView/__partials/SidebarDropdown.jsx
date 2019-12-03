@@ -1,7 +1,7 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 
-export default class SidebarDropdow extends React.Component {
+export default class SidebarDropdown extends React.Component {
   state = {
     isOpen: true,
   };
@@ -40,7 +40,9 @@ export default class SidebarDropdow extends React.Component {
 
         <div style={panelStyle} className="sidebar-panel">
           {devices.map(device => (
-            <button type="button">{device.name}</button>
+            <a key={device.id} href="#">
+              {device.name}
+            </a>
           ))}
         </div>
       </div>
@@ -48,6 +50,6 @@ export default class SidebarDropdow extends React.Component {
   }
 }
 
-SidebarDropdow.propTypes = {
+SidebarDropdown.propTypes = {
   devices: PropTypes.array.isRequired,
 };

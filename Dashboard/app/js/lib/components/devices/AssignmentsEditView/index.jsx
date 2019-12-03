@@ -1,7 +1,7 @@
 /* eslint-disable import/no-unresolved */
 import React from 'react';
 import PropTypes from 'prop-types';
-import Sidebar from './Sidebar';
+import MainBody from './MainBody';
 
 import AssignmentContext from './assignment-context';
 import './styles.scss';
@@ -82,11 +82,9 @@ export default class AssignmentsEdit extends React.Component {
         {/* topbar */}
         {this.renderTopBar()}
 
-        <div className="assignment-body">
-          <AssignmentContext.Provider value={contextData}>
-            <Sidebar />
-          </AssignmentContext.Provider>
-        </div>
+        <AssignmentContext.Provider value={contextData}>
+          <MainBody />
+        </AssignmentContext.Provider>
       </div>
     );
   }
