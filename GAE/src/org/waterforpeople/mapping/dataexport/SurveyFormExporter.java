@@ -227,6 +227,7 @@ public class SurveyFormExporter implements DataExporter {
                         createCell(tempRow, 1, BLANK, null);
                     }
                 }
+                curRow++;  //Add an empty line after each group. Makes layout clearer when there are empty groups.
             }
         }
     }
