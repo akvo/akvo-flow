@@ -58,7 +58,7 @@ public class SurveyFormExporter implements DataExporter {
 
     private static final String PAPER_SHEET_NAME = "Paper Survey";
     private static final String FULL_SHEET_NAME = "Full Survey";
-    
+
     private static final int COL_WIDTH = 10000;
 
     private static final String LANG_DELIM = " / ";
@@ -269,6 +269,7 @@ public class SurveyFormExporter implements DataExporter {
             }
             for (int i = 0; i < groupList.size(); i++) {
                 int firstRowInGroup = startRow + count;
+                //TODO: handle an empty group differently?
                 for (QuestionDto q : questions.get(groupList.get(i))) {
 
                     // create the row
@@ -285,12 +286,14 @@ public class SurveyFormExporter implements DataExporter {
                     createCell(row,  4, Long.valueOf(count), headerCtr);
                     createCell(row,  5, formText(q.getText(), q.getTranslationMap()), headerLeft);
                     // Scrolling part:
-                    writeScrollingRowPart(optionStyle, qTextFromId, q, row);                    
+                    writeScrollingRowPart(optionStyle, qTextFromId, q, row);
                 }
                 // all rows created; merge all-group cells vertically
-                sheet.addMergedRegion(new CellRangeAddress(firstRowInGroup, startRow + count - 1, 0, 0));
-                sheet.addMergedRegion(new CellRangeAddress(firstRowInGroup, startRow + count - 1, 1, 1));
-                sheet.addMergedRegion(new CellRangeAddress(firstRowInGroup, startRow + count - 1, 2, 2));
+               if (questions.get(groupList.get(i)).size() > 0) { //But only if there are *any* questions in the group
+                    sheet.addMergedRegion(new CellRangeAddress(firstRowInGroup, startRow + count - 1, 0, 0));
+                    sheet.addMergedRegion(new CellRangeAddress(firstRowInGroup, startRow + count - 1, 1, 1));
+                    sheet.addMergedRegion(new CellRangeAddress(firstRowInGroup, startRow + count - 1, 2, 2));
+                }
             }
         }
     }
@@ -319,10 +322,10 @@ public class SurveyFormExporter implements DataExporter {
         createCell(row, 21, q.getAllowOtherFlag(), null);
         // Geopos
         createCell(row, 22, q.getLocaleLocationFlag(), null);
-        createCell(row, 23, q.getType() == QuestionType.GEO ? 
+        createCell(row, 23, q.getType() == QuestionType.GEO ?
                 q.getGeoLocked() : null, null);
         // CASCADE
-        createCell(row, 24, q.getCascadeResourceId(), null);                        
+        createCell(row, 24, q.getCascadeResourceId(), null);
         // geoshapes
         createCell(row, 25, q.getAllowPoints(), null);
         createCell(row, 26, q.getAllowLine(), null);
@@ -330,9 +333,9 @@ public class SurveyFormExporter implements DataExporter {
         // caddisfly
         createCell(row, 28, q.getCaddisflyResourceUuid(), null);
         // barcode (just reusing other flags)
-        createCell(row, 29, q.getType() == QuestionType.SCAN ? 
+        createCell(row, 29, q.getType() == QuestionType.SCAN ?
                 q.getAllowMultipleFlag() : null, null);
-        createCell(row, 30, q.getType() == QuestionType.SCAN ? 
+        createCell(row, 30, q.getType() == QuestionType.SCAN ?
                 q.getGeoLocked() : null, null);
     }
 
@@ -486,8 +489,8 @@ public class SurveyFormExporter implements DataExporter {
         }
         return cell;
     }
-    
-    
+
+
     /**
      * Return a string listing all the options for a question
      */
@@ -504,8 +507,8 @@ public class SurveyFormExporter implements DataExporter {
         }
         return s;
     }
-    
-    
+
+
     /**
      * Return a string similar to the type labels in the UI
      */
@@ -531,7 +534,7 @@ public class SurveyFormExporter implements DataExporter {
         }
         return null;
     }
-    
+
     /**
      * forms a string that has all languages in the translation map delimited by the LANG_DELIM
      */
@@ -547,7 +550,7 @@ public class SurveyFormExporter implements DataExporter {
                 sortedMap = new TreeMap<String, TranslationDto>(translationMap);
             }
             for (Entry<String, TranslationDto> trans : sortedMap.entrySet()) {
-                if (trans.getValue() != null 
+                if (trans.getValue() != null
                         && trans.getValue().getText() != null
                         && !trans.getValue().getText().trim().equalsIgnoreCase("null")) {
                             buff.append(LANG_DELIM);
