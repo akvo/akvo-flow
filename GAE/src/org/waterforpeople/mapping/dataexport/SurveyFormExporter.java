@@ -258,7 +258,8 @@ public class SurveyFormExporter implements DataExporter {
 
         final int startRow = createFullHeader(sheet, 0, title, headerCtr);
 
-        int count = 0; // running count of all questions
+        int count = 0; // running count of all questions (+ 1 for each empty group)
+        int qCount = 0; // running count of all questions
         if (questions != null) {
             // So we can output dependent question text
             Map<Long, String> qTextFromId = new HashMap<>();
@@ -269,27 +270,32 @@ public class SurveyFormExporter implements DataExporter {
             }
             for (int i = 0; i < groupList.size(); i++) {
                 int firstRowInGroup = startRow + count;
-                //TODO: handle an empty group differently?
-                for (QuestionDto q : questions.get(groupList.get(i))) {
+                List<QuestionDto> qList = questions.get(groupList.get(i));
 
-                    // create the row
-                    int r = startRow + count;
+                if (qList.size() == 0) { //Just show the name of the empty group
+                    HSSFRow row = sheet.createRow(startRow + count);
                     count++;
-                    HSSFRow row = sheet.createRow(r);
+                    createCell(row, 0, Long.valueOf(i + 1), headerCtr);
+                    createCell(row, 1, groupList.get(i).getDisplayName(), headerCtr);
+                    createCell(row, 2, groupList.get(i).getRepeatable(), headerCtr);
+                } else { //List the questions
+                    for (QuestionDto q : qList) {
 
-                    if (r == firstRowInGroup) { // only once per group
-                        createCell(row, 0, Long.valueOf(i + 1), headerCtr);
-                        createCell(row, 1, groupList.get(i).getDisplayName(), headerCtr);
-                        createCell(row, 2, groupList.get(i).getRepeatable(), headerCtr);
+                        HSSFRow row = sheet.createRow(startRow + count);
+                        if (startRow + count == firstRowInGroup) { // only once per group
+                            createCell(row, 0, Long.valueOf(i + 1), headerCtr);
+                            createCell(row, 1, groupList.get(i).getDisplayName(), headerCtr);
+                            createCell(row, 2, groupList.get(i).getRepeatable(), headerCtr);
+                        }
+                        count++;
+                        qCount++;
+                        createCell(row,  3, Long.valueOf(q.getOrder()), headerCtr);
+                        createCell(row,  4, Long.valueOf(qCount), headerCtr);
+                        createCell(row,  5, formText(q.getText(), q.getTranslationMap()), headerLeft);
+                        // Scrolling part:
+                        writeScrollingRowPart(optionStyle, qTextFromId, q, row);
                     }
-                    createCell(row,  3, Long.valueOf(q.getOrder()), headerCtr);
-                    createCell(row,  4, Long.valueOf(count), headerCtr);
-                    createCell(row,  5, formText(q.getText(), q.getTranslationMap()), headerLeft);
-                    // Scrolling part:
-                    writeScrollingRowPart(optionStyle, qTextFromId, q, row);
-                }
-                // all rows created; merge all-group cells vertically
-               if (questions.get(groupList.get(i)).size() > 0) { //But only if there are *any* questions in the group
+                    // all rows created; merge all-group cells vertically
                     sheet.addMergedRegion(new CellRangeAddress(firstRowInGroup, startRow + count - 1, 0, 0));
                     sheet.addMergedRegion(new CellRangeAddress(firstRowInGroup, startRow + count - 1, 1, 1));
                     sheet.addMergedRegion(new CellRangeAddress(firstRowInGroup, startRow + count - 1, 2, 2));
