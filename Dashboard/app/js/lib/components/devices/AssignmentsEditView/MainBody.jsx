@@ -1,9 +1,12 @@
 /* eslint-disable jsx-a11y/anchor-is-valid */
 import React from 'react';
 import { groupBy as _groupBy } from 'lodash';
+
 import FormSection from './screens/FormSection';
 import AddDevices from './screens/AddDevices';
 import EditDevices from './screens/EditDevices';
+import AssignDatapoints from './screens/AssignDatapoints';
+
 import DevicesSection from './DevicesSection';
 import SidebarDropdown from './__partials/SidebarDropdown';
 
@@ -11,11 +14,12 @@ import AssignmentsContext from './assignment-context';
 
 export default class AssignmentMain extends React.Component {
   state = {
-    currentTab: 'FORMS',
+    currentTab: 'ASSIGN_DATAPOINTS',
+    selectedDevice: '150482013',
   };
 
-  changeTab = tab => {
-    this.setState({ currentTab: tab });
+  changeTab = (tab, selectedDevice = null) => {
+    this.setState({ currentTab: tab, selectedDevice });
   };
 
   getDeviceGroups = () => {
@@ -79,7 +83,11 @@ export default class AssignmentMain extends React.Component {
             }`}
           >
             {Object.keys(deviceGroups).map(dgId => (
-              <SidebarDropdown key={dgId} devices={deviceGroups[dgId]} />
+              <SidebarDropdown
+                key={dgId}
+                devices={deviceGroups[dgId]}
+                changeTab={this.changeTab}
+              />
             ))}
           </li>
         </ul>
@@ -88,22 +96,24 @@ export default class AssignmentMain extends React.Component {
   };
 
   render() {
+    const { currentTab, selectedDevice } = this.state;
     return (
       <div className="assignment-body">
         {this.renderSidebar()}
 
         <div className="assignment-main">
-          {this.state.currentTab === 'FORMS' && (
-            <FormSection changeTab={this.changeTab} />
-          )}
-          {this.state.currentTab === 'ADD_DEVICE' && (
+          {currentTab === 'FORMS' && <FormSection changeTab={this.changeTab} />}
+          {currentTab === 'ADD_DEVICE' && (
             <AddDevices changeTab={this.changeTab} />
           )}
-          {this.state.currentTab === 'EDIT_DEVICE' && (
+          {currentTab === 'EDIT_DEVICE' && (
             <EditDevices changeTab={this.changeTab} />
           )}
-          {this.state.currentTab === 'DEVICES' && (
+          {currentTab === 'DEVICES' && (
             <DevicesSection changeTab={this.changeTab} />
+          )}
+          {currentTab === 'ASSIGN_DATAPOINTS' && (
+            <AssignDatapoints selectedDevice={selectedDevice} />
           )}
         </div>
       </div>

@@ -1,3 +1,4 @@
+/* eslint-disable jsx-a11y/anchor-is-valid */
 import React from 'react';
 import PropTypes from 'prop-types';
 
@@ -25,7 +26,7 @@ export default class SidebarDropdown extends React.Component {
 
   render() {
     const { fontClass, panelStyle } = this.getStyleProps();
-    const { devices } = this.props;
+    const { devices, changeTab } = this.props;
 
     return (
       <div className="sidebar-dropdown">
@@ -40,7 +41,11 @@ export default class SidebarDropdown extends React.Component {
 
         <div style={panelStyle} className="sidebar-panel">
           {devices.map(device => (
-            <a key={device.id} href="#">
+            <a
+              key={device.id}
+              href="#"
+              onClick={() => changeTab('ASSIGN_DATAPOINTS', device.id)}
+            >
               {device.name}
             </a>
           ))}
@@ -52,4 +57,5 @@ export default class SidebarDropdown extends React.Component {
 
 SidebarDropdown.propTypes = {
   devices: PropTypes.array.isRequired,
+  changeTab: PropTypes.func.isRequired,
 };

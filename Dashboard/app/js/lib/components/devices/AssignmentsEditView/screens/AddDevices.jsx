@@ -70,7 +70,7 @@ export default class AddDevice extends React.Component {
         <div className="header">
           <p>Add devices to assignment</p>
           <i
-            className="fa fa-times"
+            className="fa fa-times icon"
             onClick={() => this.props.changeTab('DEVICES')}
             onKeyDown={() => this.props.changeTab('DEVICES')}
           />

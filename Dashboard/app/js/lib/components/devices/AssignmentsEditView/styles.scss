@@ -139,6 +139,7 @@
               justify-content: space-between;
               padding-bottom: 10px;
               cursor: pointer;
+              align-items: center;
             }
 
             .sidebar-panel {
@@ -301,8 +302,12 @@
             font-weight: 500;
             border-bottom: 1px solid #e6e6e6;
 
-            .fa {
+            .icon {
               font-size: 2em;
+            }
+
+            .device-details p {
+              margin-bottom: 3px;
             }
           }
 
