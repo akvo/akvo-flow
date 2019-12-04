@@ -85,7 +85,7 @@
         flex: 1;
         background: #e8e8e8;
         padding: 5px 0px;
-        min-height: 350px;
+        min-height: 450px;
 
         li {
           padding: 15px 25px;
@@ -377,6 +377,60 @@
               justify-content: space-between;
               align-items: center;
               border-top: 1px solid #e6e6e6;
+            }
+          }
+        }
+
+        .assign-datapoints {
+          position: relative;
+
+          .search-datapoints {
+            position: absolute;
+            background: #e8e8e8;
+            height: 100%;
+            top: 0;
+            right: 0;
+            width: 40%;
+
+            .header {
+              padding: 15px 20px;
+            }
+
+            .body {
+              padding: 10px 20px;
+
+              .search-bar {
+                display: flex;
+                align-items: center;
+                padding: 3px 8px;
+                border: 1px solid #4d4d4d;
+                border-radius: 5px;
+                background: #fff;
+
+                input {
+                  outline: none;
+                  border: none;
+                  background-color: transparent;
+                  font-family: inherit;
+                  width: 100%;
+
+                  &:hover {
+                    background: transparent;
+                  }
+                }
+              }
+
+              .search-results {
+                padding-top: 15px;
+
+                label {
+                  display: block;
+                }
+              }
+            }
+
+            .footer-inner {
+              padding: 15px 20px;
             }
           }
         }
