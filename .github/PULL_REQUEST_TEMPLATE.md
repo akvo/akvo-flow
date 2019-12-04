@@ -11,3 +11,4 @@
 * [ ] Updated the copyright header (when relevant)
 * [ ] Formatted the code
 * [ ] Added a documentation (if relevant)
+* [ ] Added some unit tests (if relevant)
