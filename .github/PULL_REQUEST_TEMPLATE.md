@@ -1,10 +1,13 @@
 #### Before the PR (what is the issue or what needed to be done)
+
 #### The solution
+
 #### Screenshots (if appropriate)
 
-## Checklist
-* [ ] Connect the issue
-* [ ] Test plan
-* [ ] Copyright header
-* [ ] Code formatting
-* [ ] Documentation
+#### Reviewer Checklist
+* [ ] Added an explanation about the work done
+* [ ] Connected the PR and the issue on Zenhub
+* [ ] Added a test plan to the issue
+* [ ] Updated the copyright header (when relevant)
+* [ ] Formatted the code
+* [ ] Added a documentation (if relevant)
