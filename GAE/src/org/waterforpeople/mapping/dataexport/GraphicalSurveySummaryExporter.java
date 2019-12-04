@@ -364,22 +364,24 @@ public class GraphicalSurveySummaryExporter extends SurveySummaryExporter {
                 //An alternative solution (since this is the only use of this map *anywhere*),
                 //  would be to change the map in the dto to a list...
                 List<QuestionDto> qList = new ArrayList<>();
-                for (QuestionDto dto : qgd.getQuestionMap().values()) { //Ordered by key
-                    qList.add(dto);
-                    if (dto.getVariableName() == null) {
-                        anyQuestionsWithoutVariableNames = true;
-                    }
-                    //See if any questions have names that indicate they belong in rollups
-                    if (performGeoRollup) {
-                        for (int i = 0; i < ROLLUP_QUESTIONS.length; i++) {
-                            if (ROLLUP_QUESTIONS[i].equalsIgnoreCase(dto.getText())) {
-                                rollupOrder.add(dto);
+                if (qgd.getQuestionMap() != null) {
+                    for (QuestionDto dto : qgd.getQuestionMap().values()) { //Ordered by key
+                        qList.add(dto);
+                        if (dto.getVariableName() == null) {
+                            anyQuestionsWithoutVariableNames = true;
+                        }
+                        //See if any questions have names that indicate they belong in rollups
+                        if (performGeoRollup) {
+                            for (int i = 0; i < ROLLUP_QUESTIONS.length; i++) {
+                                if (ROLLUP_QUESTIONS[i].equalsIgnoreCase(dto.getText())) {
+                                    rollupOrder.add(dto);
+                                }
                             }
                         }
                     }
                 }
-               questionMap.put(qgd, qList);
-               groupList.add(qgd); //The XML is written with the groups in order (but without any attributes saying so)
+                questionMap.put(qgd, qList);
+                groupList.add(qgd); //The XML is written with the groups in order (but without any attributes saying so)
             }
 
             //Fall back to getting variable names from the datastore, since VNs in XML is a recent addition

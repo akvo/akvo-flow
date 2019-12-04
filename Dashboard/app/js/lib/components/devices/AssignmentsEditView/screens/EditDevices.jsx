@@ -14,10 +14,10 @@ export default class EditDevices extends React.Component {
 
   getDeviceGroups() {
     // filter out selected devices
-    const { devices, selectedDevices } = this.context.data;
+    const { devices, selectedDeviceIds } = this.context.data;
 
     const filteredDevices = devices.filter(device =>
-      selectedDevices.includes(device.id)
+      selectedDeviceIds.includes(device.id)
     );
 
     return _groupBy(filteredDevices, device => device.deviceGroup.id);
@@ -25,16 +25,32 @@ export default class EditDevices extends React.Component {
 
   onSelectDevice = (id, checked) => {
     const { selectedDevices } = this.state;
+    let newSelectedDevices = [];
 
     if (checked) {
-      this.setState({
-        selectedDevices: selectedDevices.concat(id),
-      });
+      newSelectedDevices = selectedDevices.concat(id);
     } else {
-      this.setState({
-        selectedDevices: selectedDevices.filter(device => device !== id),
-      });
+      newSelectedDevices = selectedDevices.filter(device => device !== id);
     }
+
+    this.setState({ selectedDevices: newSelectedDevices });
+  };
+
+  onSelectMultipleDevices = (ids, checked) => {
+    const { selectedDevices } = this.state;
+    let newSelectedDevices = [...selectedDevices];
+
+    if (checked) {
+      newSelectedDevices = selectedDevices.concat(ids);
+    } else {
+      newSelectedDevices = selectedDevices.filter(
+        device => !ids.includes(device)
+      );
+    }
+
+    this.setState({
+      selectedDevices: [...new Set(newSelectedDevices)],
+    });
   };
 
   removeFromAssignment = () => {
@@ -71,6 +87,7 @@ export default class EditDevices extends React.Component {
             <DeviceGroupSelectorView
               deviceGroups={deviceGroups}
               handleSelectDevice={this.onSelectDevice}
+              handleSelectAllDevices={this.onSelectMultipleDevices}
               selectedDevices={selectedDevices}
             />
           </div>
