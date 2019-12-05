@@ -62,10 +62,15 @@ FLOW.AssignmentEditView = FLOW.ReactComponentView.extend(
       this.handleDeviceCheck = this.handleDeviceCheck.bind(this);
       this.handleSelectAllDevice = this.handleSelectAllDevice.bind(this);
       this.addDevicesCheckedOption = this.addDevicesCheckedOption.bind(this);
+      this.addDevicesToAssignment = this.addDevicesToAssignment.bind(this);
+      this.removeDevicesFromAssignment = this.removeDevicesFromAssignment.bind(
+        this
+      );
 
       // object wide varaibles
       this.forms = {};
       this.surveyGroups = [];
+      this.devices = [];
       this.deviceGroups = {};
       this.deviceGroupNames = {};
 
@@ -113,6 +118,7 @@ FLOW.AssignmentEditView = FLOW.ReactComponentView.extend(
         assignmentNamePlaceholder: Ember.String.loc(
           '_enter_a_name_for_this_assignment'
         ),
+        chooseFolderOrSurvey: Ember.String.loc('_choose_folder_or_survey'),
       };
 
       const inputValues = {
@@ -129,17 +135,20 @@ FLOW.AssignmentEditView = FLOW.ReactComponentView.extend(
         onSubmit: this.saveSurveyAssignment,
         handleSurveySelect: this.handleSurveySelect,
         handleDeviceCheck: this.handleDeviceCheck,
+        addDevicesToAssignment: this.addDevicesToAssignment,
+        removeDevicesFromAssignment: this.removeDevicesFromAssignment,
       };
 
       const data = {
         forms: this.forms,
+        devices: this.devices,
         surveyGroups: this.surveyGroups,
         deviceGroups: this.deviceGroups,
         deviceGroupNames: this.deviceGroupNames,
         activeDeviceGroups: this.activeDeviceGroups,
         initialSurveyGroup: this.initialSurveyGroup,
         numberOfForms: this.selectedSurveys.length,
-        numberOfDevices: this.selectedDevices.length,
+        selectedDeviceIds: this.selectedDevices,
       };
 
       return {
@@ -165,7 +174,7 @@ FLOW.AssignmentEditView = FLOW.ReactComponentView.extend(
       let startDateParse;
 
       // set devices and surveys
-      const deviceIds = this.selectedDevices.map(item => item.get('keyId'));
+      const deviceIds = this.selectedDevices;
       const formIds = this.selectedSurveys.map(item => item.get('keyId'));
 
       // validate data before continuing
@@ -288,47 +297,6 @@ FLOW.AssignmentEditView = FLOW.ReactComponentView.extend(
             ancestorIds: item.get('ancestorIds'),
           });
         });
-      }
-    },
-
-    setupDevices() {
-      if (FLOW.deviceGroupControl.content.isLoaded) {
-        FLOW.deviceGroupControl.get('content').forEach(item => {
-          this.deviceGroupNames[item.get('keyId')] = item.get('code');
-          this.deviceGroups[item.get('keyId')] = {}; // initialize array of devices per group
-        });
-
-        if (FLOW.deviceControl.content.isLoaded) {
-          if (FLOW.selectedControl.selectedSurveyAssignment.get('deviceIds')) {
-            FLOW.selectedControl.selectedSurveyAssignment
-              .get('deviceIds')
-              .forEach(deviceId => {
-                // populate pre-selected devices
-                const device = FLOW.Device.find(deviceId);
-                if (device && device.get('keyId')) {
-                  this.selectedDevices.push(device);
-                }
-              });
-          }
-
-          FLOW.deviceControl.get('content').forEach(device => {
-            const checked = this.deviceInAssignment(device.get('keyId'));
-
-            if (checked) {
-              this.activeDeviceGroups.add(device.get('deviceGroup') || '1');
-            }
-
-            this.deviceGroups[device.get('deviceGroup') || '1'][
-              device.get('keyId')
-            ] = {
-              name: device.get('deviceIdentifier'),
-              checked,
-            };
-          });
-
-          // check if all items in device group is selected
-          this.addDevicesCheckedOption();
-        }
       }
     },
 
@@ -596,6 +564,77 @@ FLOW.AssignmentEditView = FLOW.ReactComponentView.extend(
       this.deviceGroups[deviceGroupId][0].checked = checked;
 
       // rerender react side
+      return this.renderReactSide();
+    },
+
+    // handle devices functionality
+    setupDevices() {
+      if (
+        FLOW.deviceGroupControl.content.isLoaded &&
+        FLOW.deviceControl.content.isLoaded
+      ) {
+        this.devices = FLOW.deviceControl.get('content').map(device => {
+          const formattedDevice = {
+            name: device.get('deviceIdentifier'),
+            id: device.get('id'),
+            deviceGroup: {
+              id: '1',
+              name: 'Device not in group',
+            },
+          };
+
+          if (device.get('deviceGroup')) {
+            const deviceGroup = FLOW.DeviceGroup.find(
+              device.get('deviceGroup')
+            );
+
+            formattedDevice.deviceGroup = {
+              id: deviceGroup.get('id'),
+              name: deviceGroup.get('code'),
+            };
+          }
+
+          return formattedDevice;
+        });
+
+        // initialize with previous selected devices [if editing survey]
+        if (FLOW.selectedControl.selectedSurveyAssignment.get('deviceIds')) {
+          FLOW.selectedControl.selectedSurveyAssignment
+            .get('deviceIds')
+            .forEach(deviceId => {
+              // populate pre-selected devices
+              const device = FLOW.Device.find(deviceId);
+              if (device && device.get('id')) {
+                this.selectedDevices.push(device.get('id'));
+              }
+            });
+        }
+      }
+    },
+
+    addDevicesToAssignment(devices) {
+      devices.forEach(deviceId => {
+        // populate pre-selected devices
+        const device = FLOW.Device.find(deviceId);
+        if (device && device.get('id')) {
+          this.selectedDevices.push(device.get('id'));
+        }
+      });
+
+      return this.renderReactSide();
+    },
+
+    removeDevicesFromAssignment(devices) {
+      devices.forEach(deviceId => {
+        // populate pre-selected devices
+        const device = FLOW.Device.find(deviceId);
+        if (device && device.get('id')) {
+          this.selectedDevices = this.selectedDevices.filter(
+            d => d !== device.get('id')
+          );
+        }
+      });
+
       return this.renderReactSide();
     },
   }

@@ -2,8 +2,6 @@
   .assignments-edit {
     border: 1px solid #e6e6e6;
     border-radius: 5px;
-    padding: 7px 0px;
-    border-bottom: none;
 
     .infoText {
       font-size: 14px;
@@ -83,132 +81,297 @@
     .assignment-body {
       display: flex;
 
-      .settings {
+      .assignment-sidebar {
         flex: 1;
-        padding: 15px;
-        background: #f0f0f0;
+        background: #e8e8e8;
+        padding: 5px 0px;
+        min-height: 350px;
 
-        .assignment-date {
-          margin-top: 2.4em;
-          margin-bottom: 1.5em;
+        li {
+          padding: 15px 25px;
+          display: flex;
 
-          .date-picker {
-            display: flex;
-            width: 85%;
-            justify-content: space-between;
-            padding: 15px 0px 3px;
+          &.active {
+            background: #4ab1cf1a;
 
-            i.fa {
-              margin-right: 5px;
+            &::after {
+              content: unset;
             }
 
-            .date {
-              display: flex;
-              align-items: center;
-              background: #fff8e1;
-              padding: 0px 4px;
-              border: 1px solid #ccc;
+            button {
+              color: #4f4f4f;
+            }
+          }
 
-              input {
-                outline: none;
-                border: none;
-                background-color: transparent;
-                font-family: inherit;
+          a {
+            color: #4ab1cf;
+            border: none;
+            background: none;
+            outline: none;
+            font-size: 15px;
+            font-weight: 500;
+            text-align: left;
+            flex: 1;
 
-                &:hover {
-                  background: transparent;
-                }
-              }
+            &.sub-action {
+              flex: 0;
+              color: #4ab1cf;
+              padding: 0px 7px;
+            }
+
+            &.disabled {
+              color: #444;
             }
           }
         }
 
-        .assignment-survery-folder {
-          margin-bottom: 1.5em;
-        }
+        .sidebar-dropdown-container {
+          display: block;
 
-        .assignment-form-selector {
-          .form-selector {
-            .form {
-              width: 100%;
+          .sidebar-dropdown {
+            font-size: 15px;
+            width: 100%;
+            display: block;
+            padding-bottom: 15px;
+
+            .dd-header {
               display: flex;
-              align-items: center;
-              flex-direction: row;
               justify-content: space-between;
+              padding-bottom: 10px;
+              cursor: pointer;
+            }
 
-              label {
-                p {
-                  font-size: 16px;
-                  color: initial;
-                }
+            .sidebar-panel {
+              padding-left: 20px;
 
-                span {
-                  font-size: 14px;
-                  color: #4f4f4f;
-                }
+              a {
+                display: block;
+                padding: 4px 0px;
               }
             }
-          }
-
-          .noForms {
-            color: hsl(0, 0%, 35%);
-            margin-top: 10px;
           }
         }
       }
 
-      .devices {
-        flex: 2;
-        padding: 15px;
+      .assignment-main {
+        flex: 4;
+        color: #444;
 
-        .assignment-device-selector {
-          margin-top: 2.4em;
-          margin-bottom: 1.5em;
+        .settings {
+          padding: 15px 25px;
+          width: 45%;
 
-          .accordion-container {
-            padding: 20px 0px;
-            border-bottom: 1px solid #d9d9d9;
+          .assignment-date {
+            margin-top: 15px;
+            margin-bottom: 2em;
 
-            &:first-of-type {
-              padding-top: 0px;
+            .date-picker {
+              display: flex;
+              width: 85%;
+              justify-content: space-between;
+              padding: 15px 0px 3px;
+
+              i.fa {
+                margin-right: 5px;
+              }
+
+              .date {
+                display: flex;
+                align-items: center;
+                padding: 3px 8px;
+                border: 1px solid #4d4d4d;
+                border-radius: 5px;
+
+                input {
+                  outline: none;
+                  border: none;
+                  background-color: transparent;
+                  font-family: inherit;
+
+                  &:hover {
+                    background: transparent;
+                  }
+                }
+              }
+            }
+          }
+
+          .assignment-survery-folder {
+            margin-bottom: 1.5em;
+          }
+
+          .assignment-form-selector {
+            margin-top: 2.3em;
+
+            .folder-selector {
+              select {
+                width: 150px;
+                height: 38px;
+                background: transparent;
+                border: 1px solid #4d4d4d;
+                border-radius: 5px;
+                padding: 5px;
+                padding-right: 26px;
+                margin-right: 10px;
+
+                -webkit-appearance: none;
+                -moz-appearance: none;
+                appearance: none;
+
+                background-image: url('data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABQAAAAUCAYAAACNiR0NAAAA20lEQVQ4T+3SL0tDcRjF8c8V2YrJqHF1VTAIK5rtewGCb2BNWBIcmKy+gYW9ATGJIPblwZLNZBqMyQ9+Vy4/7j/wxj31Oc8XzjlPpuPJOubZA/+faJphDxPMsGnA96P2oahNgUd4xRpjbCugh5jjFJf4yXVlLR/jDR+4wS6BHuAZZxjhu7ivepsTvGMRbeXQoH/ENS7wlTqo+8NBhD7hPh7e4TbCVmVxND32MNoPoGB1Gm0uqwprAoa7c7xEwBU+69pvAwz3ockw4QNqpy2wifO33wNbR1Up7DzDX2zcHRV0yPnBAAAAAElFTkSuQmCC');
+                background-repeat: no-repeat;
+                background-position: 125px center;
+              }
             }
 
-            .accordion {
-              background: transparent;
-              padding: 0px;
-              margin-bottom: 17px;
-              display: flex;
-
-              &::after {
-                content: '';
-              }
-
-              &.active::after {
-                content: '';
-              }
-
-              & > div {
-                margin-right: auto;
-                margin-top: 5px;
+            .form-selector {
+              .form {
                 width: 100%;
                 display: flex;
+                align-items: center;
+                flex-direction: row;
+                justify-content: space-between;
 
-                span {
-                  display: block;
-
-                  &:first-of-type {
-                    margin-right: auto;
+                label {
+                  p {
+                    font-size: 16px;
+                    color: initial;
                   }
 
-                  &.fa {
+                  span {
                     font-size: 14px;
+                    color: #4f4f4f;
                   }
                 }
               }
             }
 
-            .panel {
-              padding: 0 3em;
+            .noForms {
+              color: hsl(0, 0%, 35%);
+              margin-top: 10px;
+            }
+          }
+        }
+
+        .devices {
+          padding: 15px;
+          display: flex;
+          height: 100%;
+
+          .device-empty {
+            margin-top: auto;
+            width: 100%;
+            text-align: center;
+            height: 75%;
+
+            color: #7a7a7a;
+            font-weight: 500;
+
+            .fa {
+              font-size: 4em;
+              margin-bottom: 7px;
+            }
+          }
+        }
+
+        .device-empty {
+          margin-top: auto;
+          width: 100%;
+          text-align: center;
+          height: 75%;
+
+          color: #7a7a7a;
+          font-weight: 500;
+
+          .fa {
+            font-size: 4em;
+            margin-bottom: 7px;
+          }
+        }
+
+        .devices-action-page {
+          position: relative;
+          height: 100%;
+
+          .header {
+            display: flex;
+            justify-content: space-between;
+            padding: 15px 3em;
+            align-items: center;
+            font-weight: 500;
+            border-bottom: 1px solid #e6e6e6;
+
+            .fa {
+              font-size: 2em;
+            }
+          }
+
+          .body {
+            padding: 15px 3em;
+
+            .assignment-device-selector {
+              margin-bottom: 1.5em;
+
+              .accordion-container {
+                padding: 10px 0px;
+                font-weight: 500;
+
+                &:first-of-type {
+                  padding-top: 0px;
+                }
+
+                .accordion {
+                  background: transparent;
+                  padding: 0px;
+                  margin-bottom: 17px;
+                  display: flex;
+
+                  &::after {
+                    content: '';
+                  }
+
+                  &.active::after {
+                    content: '';
+                  }
+
+                  & > div {
+                    margin-right: auto;
+                    margin-top: 5px;
+                    width: 100%;
+                    display: flex;
+
+                    span {
+                      display: block;
+
+                      &:first-of-type {
+                        margin-right: auto;
+                      }
+
+                      &.fa {
+                        font-size: 14px;
+                      }
+                    }
+                  }
+                }
+
+                .panel {
+                  padding: 0 3em;
+                }
+              }
+            }
+          }
+
+          .footer {
+            position: absolute;
+            bottom: 0;
+            width: 100%;
+
+            .footer-inner {
+              display: flex;
+              padding: 15px 3em;
+              justify-content: space-between;
+              align-items: center;
+              border-top: 1px solid #e6e6e6;
             }
           }
         }

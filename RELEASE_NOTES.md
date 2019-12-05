@@ -1,5 +1,15 @@
 # Akvo Flow Release Notes
 ----
+# Akvo Flow Dashboard v1.10.1.1 - Yappy Yucca hotfix
+Date: 06-11-2019
+
+* **Number questions are broken** - [#3311]
+* **Cascade questions are broken** - [#3312]
+* **Jackson XML publishing missing elements/attributes** - [#3316]
+* **Redesign assignments to accommodate assigning data points** - [#3297]
+* **Data export missing rows due to datapoint name bug** - [#3317]
+* **Form export fails on empty QG** - [#3334]
+
 # Akvo Flow Dashboard v1.10.1 - Yappy Yucca
 Date: 19-11-2019
 * **Show/export Flow instance usage** - #2612

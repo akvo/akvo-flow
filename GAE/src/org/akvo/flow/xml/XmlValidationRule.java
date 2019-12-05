@@ -43,7 +43,7 @@ public class XmlValidationRule {
     @JacksonXmlProperty(localName = "maxVal", isAttribute = true)
     private Double maxVal;
     @JacksonXmlProperty(localName = "maxLength", isAttribute = true)
-    private int maxLength;
+    private Integer maxLength;
 
     public XmlValidationRule() {
     }
