@@ -1,21 +1,16 @@
 /* eslint-disable import/no-unresolved */
 import React from 'react';
-import PropTypes from 'prop-types';
-import Dropdown from 'akvo-flow/components/reusable/Dropdown';
 import Checkbox from 'akvo-flow/components/reusable/Checkbox';
 
-export default class AssignDatapoints extends React.Component {
-  state = {
-    currentSubTab: 'SEARCH_DATAPOINTS',
+export default class SearchDatapoints extends React.Component {
+  onSearch = e => {
+    e.preventDefault();
+
+    const searchKey = e.target.searchDatapoints.value;
+    console.log(searchKey);
   };
 
-  changeTab = tab => {
-    this.setState({
-      currentSubTab: tab,
-    });
-  };
-
-  renderDatapointsSearch = () => {
+  render() {
     return (
       <div className="search-datapoints">
         <div className="header">
@@ -30,14 +25,14 @@ export default class AssignDatapoints extends React.Component {
 
         <div className="body">
           {/* search bar */}
-          <div className="search-bar">
+          <form className="search-bar" onSubmit={this.onSearch}>
             <i className="fa fa-search" />
             <input
               type="search"
               id="searchDatapoints"
               placeholder="Search datapoint by name or ID"
             />
-          </div>
+          </form>
 
           <div className="search-results">
             <Checkbox
@@ -71,40 +66,5 @@ export default class AssignDatapoints extends React.Component {
         </div>
       </div>
     );
-  };
-
-  render() {
-    const { selectedDevice } = this.props;
-
-    return (
-      <div className="devices-action-page assign-datapoints">
-        <div>
-          <div className="header">
-            <div className="device-details">
-              <p>Device name</p>
-              <p>0 Datapoints assigned</p>
-            </div>
-
-            <Dropdown title="Assign Datapoints">
-              <button type="button">By datapoints name or ID</button>
-              <button type="button">Assign all datapoints</button>
-            </Dropdown>
-          </div>
-
-          <div className="body">
-            <p>Body of datapoints {selectedDevice}</p>
-          </div>
-        </div>
-
-        <div>
-          {this.state.currentSubTab === 'SEARCH_DATAPOINTS' &&
-            this.renderDatapointsSearch()}
-        </div>
-      </div>
-    );
   }
 }
-
-AssignDatapoints.propTypes = {
-  selectedDevice: PropTypes.string.isRequired,
-};
