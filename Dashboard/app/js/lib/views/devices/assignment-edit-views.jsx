@@ -119,6 +119,15 @@ FLOW.AssignmentEditView = FLOW.ReactComponentView.extend(
           '_enter_a_name_for_this_assignment'
         ),
         chooseFolderOrSurvey: Ember.String.loc('_choose_folder_or_survey'),
+        edit: Ember.String.loc('_edit'),
+        add: Ember.String.loc('_add'),
+        addDevicesToAssignment: Ember.String.loc('_add_devices_to_assignment'),
+        removeDevicesFromAssignment: Ember.String.loc(
+          '_remove_devices_to_assignment'
+        ),
+        addToAssignment: Ember.String.loc('_add_to_assignment'),
+        removeFromAssignment: Ember.String.loc('_remove_from_assignment'),
+        noDeviceInAssignment: Ember.String.loc('_no_devices_in_assignments'),
       };
 
       const inputValues = {
