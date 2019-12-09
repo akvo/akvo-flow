@@ -295,10 +295,12 @@ public class SurveyedLocaleDao extends BaseDAO<SurveyedLocale> {
             String endString = displayNamePrefix + Character.MAX_VALUE;
             appendNonNullParam("displayName", filterString, paramString, "String", displayNamePrefix, paramMap, GTE_OP);
             appendNonNullParam("displayName", filterString, paramString, "String", endString, paramMap, LT_OP);
+            query.setOrdering("displayName asc"); //necessary if inequality ops present
+        } else {
+            query.setOrdering("lastUpdateDateTime desc");
         }
 
 
-        query.setOrdering("lastUpdateDateTime desc");
 
         query.setFilter(filterString.toString());
         query.declareParameters(paramString.toString());
