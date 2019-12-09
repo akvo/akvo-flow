@@ -32,6 +32,9 @@ import org.akvo.flow.dao.ReportDao;
 import org.akvo.flow.dao.SurveyAssignmentDao;
 import org.akvo.flow.domain.persistent.Report;
 import org.waterforpeople.mapping.app.web.dto.SurveyTaskRequest;
+import org.waterforpeople.mapping.dao.QuestionAnswerStoreDao;
+import org.waterforpeople.mapping.domain.QuestionAnswerStore;
+
 import com.gallatinsystems.common.util.S3Util;
 import com.gallatinsystems.device.dao.DeviceDAO;
 import com.gallatinsystems.device.dao.DeviceFileJobQueueDAO;
@@ -212,4 +215,46 @@ public class CronCommanderServlet extends HttpServlet {
             }
         }
     }
+
+    /**
+     * scans for and extracts geotags from image answers less than 1 year old
+     */
+    private void extractImageFileGeotags() {
+        Calendar deadline = Calendar.getInstance();
+        deadline.add(Calendar.YEAR, ONE_YEAR_AGO);
+        log.info("Starting scan for image answers, newer than: " + deadline.getTime());
+        QuestionAnswerStoreDao qaDao = new QuestionAnswerStoreDao();
+        String cursor = null;
+        List<QuestionAnswerStore> dfjqList;
+        int retirees = 0;
+        do {
+            dfjqList = qaDao.listByTypeAndDate("IMAGE", null, deadline.getTime(), null, 1000);
+            if (dfjqList.size() == 0) break; //no more
+            //loop over this batch
+            for (QuestionAnswerStore item : dfjqList) {
+                { //check the (now protected) image file in S3 store - need credentials
+                    try {
+                        String bucket =
+                                com.gallatinsystems.common.util.PropertyUtil.getProperty("s3bucket");
+                        HttpURLConnection conn = (HttpURLConnection)
+                                S3Util.getConnection(bucket, "images/" + item.getFileName());
+                        log.fine("Checking for " + item.getFileName() +
+                                " : " + conn.getResponseCode() + " " + conn.getResponseMessage());
+                        if (conn.getResponseCode() == 200) {
+                            // best case - fulfilled
+                            log.fine("Deleting fulfilled DFJQ entry: " + item.getKey().getId());
+                            SurveyTaskUtil.spawnDeleteTask(SurveyTaskRequest.DELETE_DFJQ_ACTION,
+                                    item.getKey().getId());
+                        }
+                    } catch (Exception e) {
+                        log.warning("Error while connecing to " + item.getFileName() + "\n" + e.getMessage());
+                    }
+                }
+            }
+        } while (true);
+
+        log.fine("Attempted to retire " + retirees + " of " + dfjqList.size());
+    }
+
+
 }

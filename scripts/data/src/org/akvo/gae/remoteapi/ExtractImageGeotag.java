@@ -30,17 +30,10 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
-import java.util.Map;
-import java.util.logging.Level;
-
-import org.akvo.flow.util.FlowJsonObjectReader;
-import org.apache.commons.io.IOUtils;
-import org.waterforpeople.mapping.domain.SurveyInstance;
 import org.waterforpeople.mapping.domain.response.value.Location;
 import org.waterforpeople.mapping.domain.response.value.Media;
 import org.waterforpeople.mapping.serialization.response.MediaResponse;
 
-import com.gallatinsystems.common.Constants;
 import com.gallatinsystems.common.util.S3Util;
 import com.google.appengine.api.datastore.DatastoreService;
 import com.google.appengine.api.datastore.Entity;
@@ -51,14 +44,10 @@ import com.google.appengine.api.datastore.Query.FilterOperator;
 
 import com.drew.imaging.jpeg.JpegMetadataReader;
 import com.drew.imaging.jpeg.JpegProcessingException;
-import com.drew.imaging.jpeg.JpegSegmentMetadataReader;
 import com.drew.lang.Rational;
 import com.drew.metadata.Metadata;
 import com.drew.metadata.Directory;
 import com.drew.metadata.exif.GpsDirectory;
-import com.drew.metadata.Tag;
-import com.drew.metadata.exif.ExifReader;
-import com.drew.metadata.iptc.IptcReader;
 
 /*
  * - Bring question answers up to date
@@ -85,6 +74,8 @@ public class ExtractImageGeotag implements Process {
             return;
         }
         //System.out.printf("#S3-bucketname %s, S3-id %s, S3-secret %s\n", S3bucket, S3id, S3secret);
+        File tmpdir = new File("/tmp/exif/");
+        tmpdir.mkdir();
         processQuestions(ds);
     }
 
@@ -114,24 +105,25 @@ public class ExtractImageGeotag implements Process {
             if (v != null && !v.trim().equals("")) {
                 if (v.startsWith("{")) {
                     json++;
+                    //Parse it
+                    media = MediaResponse.parse(v);
+                    if (media.getLocation() != null) { //Best case: Already known (could check validity)
+                        //System.out.println("Location in " + q);
+                        tagged++;
+                        continue; //Skip
+                    }
+                    //also want to skip if location is present, but null, to avoid re-evaluation
+                    if (v.matches("\"location\":null")) {
+                        System.out.printf("Null location in IMAGE %d: '%s'\n", q.getKey().getId(), v);
+                        tagged++;
+                        continue; //Skip
+                    }
                 } else {
                     nonjson++;
                     forceSave = true;//handle legacy values: convert them to JSON while we're here
                     v = Paths.get(v).getFileName().toString(); //strip path, it is never used
-                }
-                String filename;
-                //Parse it
-                media = MediaResponse.parse(v);
-                if (media.getLocation() != null) { //Already known TODO check validity?
-                    //System.out.println("Location in " + q);
-                    tagged++;
-                    continue; //Skip
-                }
-                //also want to skip if location is present, but null, to avoid re-evaluation
-                if (v.matches("\"location\":null")) {
-                    System.out.printf("Null location in IMAGE %d: '%s'\n", q.getKey().getId(), v);
-                    tagged++;
-                    continue; //Skip
+                    media = new Media();
+                    media.setFilename(v);
                 }
             } else {
                 System.out.printf("#ERROR null or empty value for IMAGE %d: '%s'\n", q.getKey().getId(), v);
@@ -164,6 +156,7 @@ public class ExtractImageGeotag implements Process {
             }
         }
         System.out.println("Found " + total + " images.");
+        System.out.println("  JSON " + json + " answers.");
         System.out.println("  Non-JSON " + nonjson + " answers.");
         if (doIt) {
             System.out.printf("#Fixing last %d Questions of %d\n", questionsToFix.size(), total);
@@ -237,7 +230,7 @@ public class ExtractImageGeotag implements Process {
                 loc.setLongitude(lon);
                 loc.setAltitude(alt);
                 loc.setAccuracy(acc);
-                //System.out.printf("#Location N %f, E %f, up %f, acc %f\n", lat, lon, alt, acc);//Debug
+                System.out.printf("#  Extracted location N %f, E %f, up %f, acc %f\n", lat, lon, alt, acc);//Debug
                 return true;
             } catch (JpegProcessingException e) {
                 System.out.println(e);
