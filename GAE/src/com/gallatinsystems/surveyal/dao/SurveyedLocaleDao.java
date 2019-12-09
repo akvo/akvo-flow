@@ -40,6 +40,8 @@ import com.gallatinsystems.surveyal.domain.SurveyedLocale;
  */
 public class SurveyedLocaleDao extends BaseDAO<SurveyedLocale> {
 
+    private static final String LT_OP = "<";
+
     public SurveyedLocaleDao() {
         super(SurveyedLocale.class);
     }
@@ -272,7 +274,7 @@ public class SurveyedLocaleDao extends BaseDAO<SurveyedLocale> {
 
     @SuppressWarnings("unchecked")
     public List<SurveyedLocale> listSurveyedLocales(String cursor, Long surveyGroupId,
-            String identifier, String displayName) {
+            String identifier, String displayName, String displayNamePrefix) {
 
         PersistenceManager pm = PersistenceFilter.getManager();
         javax.jdo.Query query = pm.newQuery(SurveyedLocale.class);
@@ -289,6 +291,12 @@ public class SurveyedLocaleDao extends BaseDAO<SurveyedLocale> {
                 "String", identifier, paramMap);
         appendNonNullParam("displayName", filterString, paramString,
                 "String", displayName, paramMap);
+        if (displayNamePrefix != null && !"".equals(displayNamePrefix)) {
+            String endString = displayNamePrefix + Character.MAX_VALUE;
+            appendNonNullParam("displayName", filterString, paramString, "String", displayNamePrefix, paramMap, GTE_OP);
+            appendNonNullParam("displayName", filterString, paramString, "String", endString, paramMap, LT_OP);
+        }
+
 
         query.setOrdering("lastUpdateDateTime desc");
 
@@ -303,8 +311,7 @@ public class SurveyedLocaleDao extends BaseDAO<SurveyedLocale> {
     }
 
     public List<SurveyedLocale> listLocalesByDisplayName(String displayName) {
-        List<SurveyedLocale> locales = listByProperty("displayName", displayName,
-                "String");
+        List<SurveyedLocale> locales = listByProperty("displayName", displayName, "String");
         return locales;
     }
 
