@@ -22,6 +22,7 @@ import java.io.BufferedInputStream;
 import java.io.OutputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.File;
 import java.net.URLConnection;
 import java.nio.file.Paths;
@@ -177,11 +178,10 @@ public class ExtractImageGeotag implements Process {
 
      */
     Boolean fetchLocationFromJpegInS3(String filename, Location loc) {
-        File f = fetchImageFileFromS3(filename);
-        if (f != null) {
+        InputStream s = fetchImageFileFromS3(filename);
+        if (s != null) {
             try {
-                Metadata metadata = JpegMetadataReader.readMetadata(f);
-
+                Metadata metadata = JpegMetadataReader.readMetadata(s);
                 System.out.println("Using JpegMetadataReader");
                 Directory directory = metadata.getFirstDirectoryOfType(GpsDirectory.class);
                 if (directory == null) { //No GPS tag
@@ -243,27 +243,16 @@ public class ExtractImageGeotag implements Process {
     }
 
 
-    File fetchImageFileFromS3(String filename) {
+    InputStream fetchImageFileFromS3(String filename) {
         // attempt to retrieve image file
         URLConnection conn = null;
-        BufferedInputStream inputStream = null;
-        int s = filename.lastIndexOf("/");
-        if (s >= 0) {filename = filename.substring(s+1);}
+        String s3bucket = com.gallatinsystems.common.util.PropertyUtil.getProperty("s3bucket");
+        filename = Paths.get(filename).getFileName().toString(); //strip path, it is not used in S3
         System.out.println("Fetching " + filename);
 
         try {
             conn = S3Util.getConnection(S3bucket, "images/" + filename, S3id, S3secret);
-            inputStream = new BufferedInputStream(conn.getInputStream());
-            File targetFile = new File("/tmp/exif/" + filename);
-            OutputStream outStream = new FileOutputStream(targetFile);
-            byte[] buffer = new byte[64 * 1024];
-            int bytesRead;
-            while ((bytesRead = inputStream.read(buffer)) != -1) {
-                outStream.write(buffer, 0, bytesRead);
-            }
-            inputStream.close();
-            outStream.close();
-            return targetFile;
+            return new BufferedInputStream(conn.getInputStream());
         } catch (Exception e) {
             System.out.println(e);
             return null;
