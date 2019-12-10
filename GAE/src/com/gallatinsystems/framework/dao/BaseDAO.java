@@ -67,6 +67,7 @@ public class BaseDAO<T extends BaseDomain> {
     protected static final String EQ_OP = " == ";
     protected static final String GTE_OP = " >= ";
     protected static final String LTE_OP = " <= ";
+    protected static final String LT_OP = "<";
     private static final int MAX_ALLOWED_FILTERED_ITEMS = 30;
 
     private Class<T> concreteClass;
