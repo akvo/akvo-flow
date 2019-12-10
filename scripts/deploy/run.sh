@@ -2,7 +2,7 @@
 
 set -euo pipefail
 
-CLOUD_SDK_VERSION="${CLOUD_SDK_VERSION:=198.0.0}"
+CLOUD_SDK_VERSION="${CLOUD_SDK_VERSION:=272.0.0}"
 
 if [[ ! -d "tmp" ]]; then
     mkdir "tmp"

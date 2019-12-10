@@ -47,6 +47,7 @@ public class SurveyedLocaleRestService {
             @RequestParam(value = "surveyGroupId", defaultValue = "") Long surveyGroupId,
             @RequestParam(value = "identifier", defaultValue = "") String identifier,
             @RequestParam(value = "displayName", defaultValue = "") String displayName,
+            @RequestParam(value = "displayNamePrefix", defaultValue = "") String displayNamePrefix,
             @RequestParam(value = "since", defaultValue = "") String since) {
 
         Map<String, Object> response = new HashMap<String, Object>();
@@ -59,11 +60,13 @@ public class SurveyedLocaleRestService {
         List<SurveyedLocaleDto> locales = new ArrayList<SurveyedLocaleDto>();
 
         if (identifier != null && !"".equals(identifier)) {
-            sls = surveyedLocaleDao.listSurveyedLocales(since, null, identifier, null);
+            sls = surveyedLocaleDao.listSurveyedLocales(since, null, identifier, null, null);
         } else if (displayName != null && !"".equals(displayName)) {
-            sls = surveyedLocaleDao.listSurveyedLocales(since, null, null, displayName);
+            sls = surveyedLocaleDao.listSurveyedLocales(since, null, null, displayName, null);
+        } else if (displayNamePrefix != null && !"".equals(displayNamePrefix)) {
+            sls = surveyedLocaleDao.listSurveyedLocales(since, null, null, null, displayNamePrefix);
         } else if (surveyGroupId != null) {
-            sls = surveyedLocaleDao.listSurveyedLocales(since, surveyGroupId, null, null);
+            sls = surveyedLocaleDao.listSurveyedLocales(since, surveyGroupId, null, null, null);
         }
 
         for (SurveyedLocale sl : sls) {
