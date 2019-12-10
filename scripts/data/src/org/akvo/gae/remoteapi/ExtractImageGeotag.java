@@ -196,7 +196,6 @@ public class ExtractImageGeotag implements Process {
                 Integer altRefTag = directory.getInteger(GpsDirectory.TAG_ALTITUDE_REF);
                 Rational[] accTag = directory.getRationalArray(GpsDirectory.TAG_H_POSITIONING_ERROR);
                 if (latTag == null || lonTag == null) {
-                    f.delete();
                     return false; //Bad GPS tag
                 }
                 Double lat = latTag[0].doubleValue() + latTag[1].doubleValue()/60.0 + latTag[2].doubleValue()/3600.0;
@@ -208,7 +207,6 @@ public class ExtractImageGeotag implements Process {
                     lon = -lon;
                 }
                 if (lat == 0.0 || lon == 0.0) {
-                    f.delete();
                     return false; //While technically valid, treat as Bad GPS tag
                 }
                 Double alt;
@@ -237,7 +235,6 @@ public class ExtractImageGeotag implements Process {
             } catch (IOException e) {
                 System.out.println(e);
             }
-            f.delete();
         }
         return null; //Can't tell
     }
