@@ -40,8 +40,6 @@ import com.gallatinsystems.surveyal.domain.SurveyedLocale;
  */
 public class SurveyedLocaleDao extends BaseDAO<SurveyedLocale> {
 
-    private static final String LT_OP = "<";
-
     public SurveyedLocaleDao() {
         super(SurveyedLocale.class);
     }
@@ -293,8 +291,10 @@ public class SurveyedLocaleDao extends BaseDAO<SurveyedLocale> {
                 "String", displayName, paramMap);
         if (displayNamePrefix != null && !"".equals(displayNamePrefix)) {
             String endString = displayNamePrefix + Character.MAX_VALUE;
-            appendNonNullParam("displayName", filterString, paramString, "String", displayNamePrefix, paramMap, GTE_OP);
-            appendNonNullParam("displayName", filterString, paramString, "String", endString, paramMap, LT_OP);
+            appendNonNullParam("displayName", filterString, paramString,
+                    "String", displayNamePrefix, paramMap, GTE_OP);
+            appendNonNullParam("displayName", filterString, paramString,
+                    "String", endString, paramMap, LT_OP);
             query.setOrdering("displayName asc"); //necessary if inequality ops present
         } else {
             query.setOrdering("lastUpdateDateTime desc");
