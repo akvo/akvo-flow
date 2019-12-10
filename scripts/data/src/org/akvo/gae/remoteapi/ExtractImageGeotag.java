@@ -73,7 +73,7 @@ public class ExtractImageGeotag implements Process {
             System.out.printf("#Arguments: S3-bucketname S3-id S3-secret [--doit to execute]\n");
             return;
         }
-        //System.out.printf("#S3-bucketname %s, S3-id %s, S3-secret %s\n", S3bucket, S3id, S3secret);
+        System.out.printf("#S3-bucketname %s, S3-id %s, S3-secret %s\n", S3bucket, S3id, S3secret);
         File tmpdir = new File("/tmp/exif/");
         tmpdir.mkdir();
         processQuestions(ds);
@@ -200,11 +200,11 @@ public class ExtractImageGeotag implements Process {
                     return false; //Bad GPS tag
                 }
                 Double lat = latTag[0].doubleValue() + latTag[1].doubleValue()/60.0 + latTag[2].doubleValue()/3600.0;
-                if (latRefTag.contentEquals("S")) {
+                if (latRefTag != null && latRefTag.contentEquals("S")) {
                     lat = -lat;
                 }
                 Double lon = lonTag[0].doubleValue() + lonTag[1].doubleValue()/60.0 + lonTag[2].doubleValue()/3600.0;
-                if (lonRefTag.contentEquals("W")) {
+                if (lonRefTag != null && lonRefTag.contentEquals("W")) {
                     lon = -lon;
                 }
                 if (lat == 0.0 || lon == 0.0) {
