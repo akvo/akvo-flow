@@ -14,7 +14,7 @@
  *  The full license text can also be seen at <http://www.gnu.org/licenses/agpl.html>.
  */
 
-package com.gallatinsystems.messaging.dao;
+package org.akvo.flow.dao;
 
 import java.util.Date;
 import java.util.HashMap;
@@ -23,9 +23,10 @@ import java.util.Map;
 
 import javax.jdo.PersistenceManager;
 
+import org.akvo.flow.domain.Message;
+
 import com.gallatinsystems.framework.dao.BaseDAO;
 import com.gallatinsystems.framework.servlet.PersistenceFilter;
-import com.gallatinsystems.messaging.domain.Message;
 
 /**
  * Data access object for manipulating Message objects

@@ -1,5 +1,5 @@
 /*
- *  Copyright (C) 2010-2012 Stichting Akvo (Akvo Foundation)
+ *  Copyright (C) 2010-2012, 2019 Stichting Akvo (Akvo Foundation)
  *
  *  This file is part of Akvo FLOW.
  *
@@ -14,27 +14,29 @@
  *  The full license text can also be seen at <http://www.gnu.org/licenses/agpl.html>.
  */
 
-package com.gallatinsystems.messaging.app.gwt.client;
+package org.akvo.flow.domain;
 
-import java.util.Date;
+import javax.jdo.annotations.PersistenceCapable;
 
-import com.gallatinsystems.framework.gwt.dto.client.BaseDto;
+import com.gallatinsystems.framework.domain.BaseDomain;
+import com.google.appengine.api.datastore.Text;
 
 /**
- * transfer object for Messages.
+ * persistent object for storing system messages that are to be displayed to the user.
  * 
  * @author Christopher Fagiani
  */
-public class MessageDto extends BaseDto {
+@PersistenceCapable
+public class Message extends BaseDomain {
 
-    private static final long serialVersionUID = -7560107313339712237L;
+    private static final long serialVersionUID = -7829182245275723095L;
+
     private String actionAbout;
     private Long objectId;
-    private String message;
+    private Text message;
     private String objectTitle;
     private String shortMessage;
     private String transactionUUID;
-    private Date lastUpdateDateTime;
     private String userName;
 
     public String getUserName() {
@@ -45,12 +47,12 @@ public class MessageDto extends BaseDto {
         this.userName = userName;
     }
 
-    public Date getLastUpdateDateTime() {
-        return lastUpdateDateTime;
+    public String getObjectTitle() {
+        return objectTitle;
     }
 
-    public void setLastUpdateDateTime(Date lastUpdateDateTime) {
-        this.lastUpdateDateTime = lastUpdateDateTime;
+    public void setObjectTitle(String objectTitle) {
+        this.objectTitle = objectTitle;
     }
 
     public String getActionAbout() {
@@ -70,35 +72,38 @@ public class MessageDto extends BaseDto {
     }
 
     public String getMessage() {
-        return message;
+        if (message != null) {
+            return message.getValue();
+        } else {
+            return null;
+        }
     }
 
     public void setMessage(String message) {
-        this.message = message;
+        this.message = new Text(message);
     }
 
-    public String getObjectTitle() {
-        return objectTitle;
-    }
-
-    public void setObjectTitle(String objectTitle) {
-        this.objectTitle = objectTitle;
-    }
-
-    public String getShortMessage() {
-        return shortMessage;
-    }
-
-    public void setShortMessage(String shortMessage) {
-        this.shortMessage = shortMessage;
+    public void setTransactionUUID(String transactionUUID) {
+        this.transactionUUID = transactionUUID;
     }
 
     public String getTransactionUUID() {
         return transactionUUID;
     }
 
-    public void setTransactionUUID(String transactionUUID) {
-        this.transactionUUID = transactionUUID;
+    public String getShortMessage() {
+        return shortMessage;
+    }
+
+    //Max 1500 chars
+    //TODO If the UI displayed the long msg instead if it exists, we should clear shortMessage.
+    public void setShortMessage(String shortMessage) {
+        if (shortMessage.length() > 1500) {
+            setMessage(shortMessage);
+            this.shortMessage = shortMessage.substring(0, 1495) + " ...";
+        } else {
+            this.shortMessage = shortMessage;
+        }
     }
 
 }
