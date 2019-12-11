@@ -24,8 +24,8 @@ mvn appengine:stage
 log Copying missing jar
 
 staging_lib="./target/appengine-staging/WEB-INF/lib"
-if [[ ! -f "${staging_lib}/appengine-api-1.0-sdk-1.9.63.jar" ]]; then
-    cp -v ./target/akvo-flow/WEB-INF/lib/appengine-api-1.0-sdk-1.9.63.jar ${staging_lib}
+if [[ ! -f "${staging_lib}/appengine-api-1.0-sdk-1.9.77.jar" ]]; then
+    cp -v ./target/akvo-flow/WEB-INF/lib/appengine-api-1.0-sdk-1.9.77.jar ${staging_lib}
 fi
 
 log Deploying version 1
