@@ -241,15 +241,14 @@ public class CronCommanderServlet extends HttpServlet {
         deadline.add(Calendar.MONTH, ONE_MONTH_AGO);
         log.info("Starting scan for image answers, newer than: " + deadline.getTime());
         QuestionAnswerStoreDao qaDao = new QuestionAnswerStoreDao();
-        Long cursor = null;
+        String cursor = null;
         List<QuestionAnswerStore> dfjqList;
-        int retirees = 0;
         int json = 0;
         int nonjson = 0;
         Media media;
 
         do {
-            dfjqList = qaDao.listByTypeAndDate("IMAGE", cursor, deadline.getTime(), null, 1000);
+            dfjqList = qaDao.listByTypeAndDate("IMAGE", null, deadline.getTime(), cursor, 1000);
             if (dfjqList.size() == 0) break; //no more answers
 
             //loop over this batch
@@ -263,7 +262,6 @@ public class CronCommanderServlet extends HttpServlet {
                         //Parse it
                         media = MediaResponse.parse(v);
                         if (media.getLocation() != null) { //Best case: Already known (could check validity)
-                            //System.out.println("Location in " + q);
                             continue; //Skip
                         }
                         //also want to skip if location is present, but null, to avoid re-evaluation
