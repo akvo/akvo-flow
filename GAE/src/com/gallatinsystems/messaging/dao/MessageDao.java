@@ -16,6 +16,7 @@
 
 package com.gallatinsystems.messaging.dao;
 
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -28,7 +29,7 @@ import com.gallatinsystems.messaging.domain.Message;
 
 /**
  * Data access object for manipulating Message objects
- * 
+ *
  * @author Christopher Fagiani
  */
 public class MessageDao extends BaseDAO<Message> {
@@ -39,7 +40,7 @@ public class MessageDao extends BaseDAO<Message> {
 
     /**
      * lists all messages
-     * 
+     *
      * @param about - optional subject
      * @param id - optional ID
      * @param cursor - cursor string
@@ -67,5 +68,32 @@ public class MessageDao extends BaseDAO<Message> {
         List<Message> results = (List<Message>) query.executeWithMap(paramMap);
         return results;
     }
+
+    /**
+     * lists messages older than a specific date
+     */
+    @SuppressWarnings("unchecked")
+    public List<Message> listCreatedBefore(Date beforeDate, String cursor, Integer pageSize) {
+
+        PersistenceManager pm = PersistenceFilter.getManager();
+        javax.jdo.Query query = pm.newQuery(Message.class);
+
+        Map<String, Object> paramMap = null;
+        StringBuilder filterString = new StringBuilder();
+        StringBuilder paramString = new StringBuilder();
+        paramMap = new HashMap<String, Object>();
+
+        appendNonNullParam("createdDateTime", filterString, paramString,
+                "Date", beforeDate, paramMap, LTE_OP);
+        if (beforeDate != null) {
+            query.declareImports("import java.util.Date");
+        }
+        query.setFilter(filterString.toString());
+        query.declareParameters(paramString.toString());
+        prepareCursor(cursor, pageSize, query);
+        return (List<Message>) query.executeWithMap(paramMap);
+    }
+
+
 
 }
