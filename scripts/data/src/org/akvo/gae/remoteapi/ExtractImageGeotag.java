@@ -22,6 +22,7 @@ import java.io.BufferedInputStream;
 import java.io.OutputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.File;
 import java.net.URLConnection;
 import java.nio.file.Paths;
@@ -30,17 +31,10 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
-import java.util.Map;
-import java.util.logging.Level;
-
-import org.akvo.flow.util.FlowJsonObjectReader;
-import org.apache.commons.io.IOUtils;
-import org.waterforpeople.mapping.domain.SurveyInstance;
 import org.waterforpeople.mapping.domain.response.value.Location;
 import org.waterforpeople.mapping.domain.response.value.Media;
 import org.waterforpeople.mapping.serialization.response.MediaResponse;
 
-import com.gallatinsystems.common.Constants;
 import com.gallatinsystems.common.util.S3Util;
 import com.google.appengine.api.datastore.DatastoreService;
 import com.google.appengine.api.datastore.Entity;
@@ -51,14 +45,10 @@ import com.google.appengine.api.datastore.Query.FilterOperator;
 
 import com.drew.imaging.jpeg.JpegMetadataReader;
 import com.drew.imaging.jpeg.JpegProcessingException;
-import com.drew.imaging.jpeg.JpegSegmentMetadataReader;
 import com.drew.lang.Rational;
 import com.drew.metadata.Metadata;
 import com.drew.metadata.Directory;
 import com.drew.metadata.exif.GpsDirectory;
-import com.drew.metadata.Tag;
-import com.drew.metadata.exif.ExifReader;
-import com.drew.metadata.iptc.IptcReader;
 
 /*
  * - Bring question answers up to date
@@ -84,7 +74,9 @@ public class ExtractImageGeotag implements Process {
             System.out.printf("#Arguments: S3-bucketname S3-id S3-secret [--doit to execute]\n");
             return;
         }
-        //System.out.printf("#S3-bucketname %s, S3-id %s, S3-secret %s\n", S3bucket, S3id, S3secret);
+        System.out.printf("#S3-bucketname %s, S3-id %s, S3-secret %s\n", S3bucket, S3id, S3secret);
+        File tmpdir = new File("/tmp/exif/");
+        tmpdir.mkdir();
         processQuestions(ds);
     }
 
@@ -114,24 +106,25 @@ public class ExtractImageGeotag implements Process {
             if (v != null && !v.trim().equals("")) {
                 if (v.startsWith("{")) {
                     json++;
+                    //Parse it
+                    media = MediaResponse.parse(v);
+                    if (media.getLocation() != null) { //Best case: Already known (could check validity)
+                        //System.out.println("Location in " + q);
+                        tagged++;
+                        continue; //Skip
+                    }
+                    //also want to skip if location is present, but null, to avoid re-evaluation
+                    if (v.matches("\"location\":null")) {
+                        System.out.printf("Null location in IMAGE %d: '%s'\n", q.getKey().getId(), v);
+                        tagged++;
+                        continue; //Skip
+                    }
                 } else {
                     nonjson++;
                     forceSave = true;//handle legacy values: convert them to JSON while we're here
                     v = Paths.get(v).getFileName().toString(); //strip path, it is never used
-                }
-                String filename;
-                //Parse it
-                media = MediaResponse.parse(v);
-                if (media.getLocation() != null) { //Already known TODO check validity?
-                    //System.out.println("Location in " + q);
-                    tagged++;
-                    continue; //Skip
-                }
-                //also want to skip if location is present, but null, to avoid re-evaluation
-                if (v.matches("\"location\":null")) {
-                    System.out.printf("Null location in IMAGE %d: '%s'\n", q.getKey().getId(), v);
-                    tagged++;
-                    continue; //Skip
+                    media = new Media();
+                    media.setFilename(v);
                 }
             } else {
                 System.out.printf("#ERROR null or empty value for IMAGE %d: '%s'\n", q.getKey().getId(), v);
@@ -164,6 +157,7 @@ public class ExtractImageGeotag implements Process {
             }
         }
         System.out.println("Found " + total + " images.");
+        System.out.println("  JSON " + json + " answers.");
         System.out.println("  Non-JSON " + nonjson + " answers.");
         if (doIt) {
             System.out.printf("#Fixing last %d Questions of %d\n", questionsToFix.size(), total);
@@ -184,11 +178,10 @@ public class ExtractImageGeotag implements Process {
 
      */
     Boolean fetchLocationFromJpegInS3(String filename, Location loc) {
-        File f = fetchImageFileFromS3(filename);
-        if (f != null) {
+        InputStream s = fetchImageFileFromS3(filename);
+        if (s != null) {
             try {
-                Metadata metadata = JpegMetadataReader.readMetadata(f);
-
+                Metadata metadata = JpegMetadataReader.readMetadata(s);
                 System.out.println("Using JpegMetadataReader");
                 Directory directory = metadata.getFirstDirectoryOfType(GpsDirectory.class);
                 if (directory == null) { //No GPS tag
@@ -203,19 +196,17 @@ public class ExtractImageGeotag implements Process {
                 Integer altRefTag = directory.getInteger(GpsDirectory.TAG_ALTITUDE_REF);
                 Rational[] accTag = directory.getRationalArray(GpsDirectory.TAG_H_POSITIONING_ERROR);
                 if (latTag == null || lonTag == null) {
-                    f.delete();
                     return false; //Bad GPS tag
                 }
                 Double lat = latTag[0].doubleValue() + latTag[1].doubleValue()/60.0 + latTag[2].doubleValue()/3600.0;
-                if (latRefTag.contentEquals("S")) {
+                if (latRefTag != null && latRefTag.contentEquals("S")) {
                     lat = -lat;
                 }
                 Double lon = lonTag[0].doubleValue() + lonTag[1].doubleValue()/60.0 + lonTag[2].doubleValue()/3600.0;
-                if (lonRefTag.contentEquals("W")) {
+                if (lonRefTag != null && lonRefTag.contentEquals("W")) {
                     lon = -lon;
                 }
                 if (lat == 0.0 || lon == 0.0) {
-                    f.delete();
                     return false; //While technically valid, treat as Bad GPS tag
                 }
                 Double alt;
@@ -237,40 +228,28 @@ public class ExtractImageGeotag implements Process {
                 loc.setLongitude(lon);
                 loc.setAltitude(alt);
                 loc.setAccuracy(acc);
-                //System.out.printf("#Location N %f, E %f, up %f, acc %f\n", lat, lon, alt, acc);//Debug
+                System.out.printf("#  Extracted location N %f, E %f, up %f, acc %f\n", lat, lon, alt, acc);//Debug
                 return true;
             } catch (JpegProcessingException e) {
                 System.out.println(e);
             } catch (IOException e) {
                 System.out.println(e);
             }
-            f.delete();
         }
         return null; //Can't tell
     }
 
 
-    File fetchImageFileFromS3(String filename) {
+    InputStream fetchImageFileFromS3(String filename) {
         // attempt to retrieve image file
         URLConnection conn = null;
-        BufferedInputStream inputStream = null;
-        int s = filename.lastIndexOf("/");
-        if (s >= 0) {filename = filename.substring(s+1);}
+        String s3bucket = com.gallatinsystems.common.util.PropertyUtil.getProperty("s3bucket");
+        filename = Paths.get(filename).getFileName().toString(); //strip path, it is not used in S3
         System.out.println("Fetching " + filename);
 
         try {
             conn = S3Util.getConnection(S3bucket, "images/" + filename, S3id, S3secret);
-            inputStream = new BufferedInputStream(conn.getInputStream());
-            File targetFile = new File("/tmp/exif/" + filename);
-            OutputStream outStream = new FileOutputStream(targetFile);
-            byte[] buffer = new byte[64 * 1024];
-            int bytesRead;
-            while ((bytesRead = inputStream.read(buffer)) != -1) {
-                outStream.write(buffer, 0, bytesRead);
-            }
-            inputStream.close();
-            outStream.close();
-            return targetFile;
+            return new BufferedInputStream(conn.getInputStream());
         } catch (Exception e) {
             System.out.println(e);
             return null;

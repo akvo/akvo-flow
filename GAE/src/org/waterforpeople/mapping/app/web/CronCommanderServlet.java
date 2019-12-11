@@ -16,8 +16,12 @@
 
 package org.waterforpeople.mapping.app.web;
 
+import java.io.BufferedInputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.net.HttpURLConnection;
+import java.net.URLConnection;
+import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
@@ -32,6 +36,18 @@ import org.akvo.flow.dao.ReportDao;
 import org.akvo.flow.dao.SurveyAssignmentDao;
 import org.akvo.flow.domain.persistent.Report;
 import org.waterforpeople.mapping.app.web.dto.SurveyTaskRequest;
+import org.waterforpeople.mapping.dao.QuestionAnswerStoreDao;
+import org.waterforpeople.mapping.domain.QuestionAnswerStore;
+import org.waterforpeople.mapping.domain.response.value.Location;
+import org.waterforpeople.mapping.domain.response.value.Media;
+import org.waterforpeople.mapping.serialization.response.MediaResponse;
+
+import com.drew.imaging.jpeg.JpegMetadataReader;
+import com.drew.imaging.jpeg.JpegProcessingException;
+import com.drew.lang.Rational;
+import com.drew.metadata.Directory;
+import com.drew.metadata.Metadata;
+import com.drew.metadata.exif.GpsDirectory;
 import com.gallatinsystems.common.util.S3Util;
 import com.gallatinsystems.device.dao.DeviceDAO;
 import com.gallatinsystems.device.dao.DeviceFileJobQueueDAO;
@@ -48,6 +64,7 @@ import com.google.appengine.api.datastore.Key;
 public class CronCommanderServlet extends HttpServlet {
 
     private static final int ONE_YEAR_AGO = -1;
+    private static final int ONE_MONTH_AGO = -1;
     private static final int TWO_YEARS_AGO = -2;
     private static final long serialVersionUID = 2287175129835274533L;
     private static final Logger log = Logger.getLogger(CronCommanderServlet.class.getName());
@@ -73,6 +90,8 @@ public class CronCommanderServlet extends HttpServlet {
             purgeDeviceFileJobQueueRecords();
         } else if ("purgeExpiredDevices".equals(action)) {
             purgeExpiredDevices();
+        } else if ("extractImageFileGeotags".equals(action)) {
+            extractImageFileGeotags();
         } else if ("purgeReportRecords".equals(action)) {
             purgeReportRecords();
         }
@@ -212,4 +231,170 @@ public class CronCommanderServlet extends HttpServlet {
             }
         }
     }
+
+    /**
+     * scans for and extracts geotags from image answers less than 1 month old
+     * Intended to be run every day
+     */
+    private void extractImageFileGeotags() {
+        Calendar deadline = Calendar.getInstance();
+        deadline.add(Calendar.MONTH, ONE_MONTH_AGO);
+        log.info("Starting scan for image answers, newer than: " + deadline.getTime());
+        QuestionAnswerStoreDao qaDao = new QuestionAnswerStoreDao();
+        String cursor = null;
+        List<QuestionAnswerStore> dfjqList;
+        int json = 0;
+        int nonjson = 0;
+        Media media;
+
+        do {
+            dfjqList = qaDao.listByTypeAndDate("IMAGE", null, deadline.getTime(), cursor, 1000);
+            if (dfjqList.size() == 0) break; //no more answers
+
+            //loop over this batch
+            for (QuestionAnswerStore item : dfjqList) {
+                boolean forceSave = false;
+                String v = item.getValue();
+                log.fine(String.format(" Old IMAGE value '%s'", v));
+                if (v != null && !v.trim().equals("")) {
+                    if (v.startsWith("{")) {
+                        json++;
+                        //Parse it
+                        media = MediaResponse.parse(v);
+                        if (media.getLocation() != null) { //Best case: Already known (could check validity)
+                            continue; //Skip
+                        }
+                        //also want to skip if location is present, but null, to avoid re-evaluation
+                        if (v.matches("\"location\":null")) {
+                            log.fine(String.format("Null location in IMAGE %d: '%s'", item.getKey().getId(), v));
+                            continue; //Skip
+                        }
+                    } else {
+                        nonjson++;
+                        forceSave = true; //handle legacy values: convert them to JSON while we're here
+                        v = Paths.get(v).getFileName().toString(); //strip path, it is never used
+                        media = new Media();
+                        media.setFilename(v);
+                    }
+                } else {
+                    log.warning(String.format("null or empty value for IMAGE %d: '%s'", item.getKey().getId(), v));
+                    continue; //Bad data - punt
+                }
+                //No location known; must read the file
+                Location loc = new Location();
+                Boolean tagFound = fetchLocationFromJpegInS3(media.getFilename(), loc);
+                if (tagFound != null || forceSave) {
+
+                    if (tagFound == null) { // We cannot know (right now - the file may arrive later)
+                        v = MediaResponse.formatWithoutGeotag(media);
+                    } else { //We do know!
+                        if (tagFound.equals(Boolean.FALSE)) {
+                            loc = null; //There is no tag!
+                        }
+                        media.setLocation(loc);
+                        v = MediaResponse.formatWithGeotag(media);
+                    }
+                    log.fine(String.format("New IMAGE value '%s'", v));
+                    item.setValue(v);
+
+                    qaDao.save(item);
+                }
+
+            }
+        } while (true);
+
+        log.fine("Found " + json + " JSON answers.");
+        log.fine("Found " + nonjson + " Non-JSON answers.");
+    }
+
+
+    /*
+     * Sample exif command output:
+    [GPS] GPS Latitude - 59/1 17/1 25324/1000
+    [GPS] GPS Longitude - 17/1 57/1 7827/1000
+    [GPS] GPS Altitude - 0 metres
+    [GPS] GPS Time-Stamp - 00:42:48.000 UTC
+    [GPS] GPS Processing Method - NETWORK
+    [GPS] GPS Date Stamp - 2013:04:13
+     */
+    Boolean fetchLocationFromJpegInS3(String filename, Location loc) {
+        InputStream s = fetchImageFileFromS3(filename);
+        if (s != null) {
+            try {
+                Metadata metadata = JpegMetadataReader.readMetadata(s);
+
+                log.fine("Using JpegMetadataReader");
+                Directory directory = metadata.getFirstDirectoryOfType(GpsDirectory.class);
+                if (directory == null) { //No GPS tag
+                    return false;
+                }
+
+                Rational[] latTag = directory.getRationalArray(GpsDirectory.TAG_LATITUDE);
+                String latRefTag = directory.getString(GpsDirectory.TAG_LATITUDE_REF);
+                Rational[] lonTag = directory.getRationalArray(GpsDirectory.TAG_LONGITUDE);
+                String lonRefTag = directory.getString(GpsDirectory.TAG_LONGITUDE_REF);
+                Rational[] altTag = directory.getRationalArray(GpsDirectory.TAG_ALTITUDE);
+                Integer altRefTag = directory.getInteger(GpsDirectory.TAG_ALTITUDE_REF);
+                Rational[] accTag = directory.getRationalArray(GpsDirectory.TAG_H_POSITIONING_ERROR);
+                if (latTag == null || lonTag == null) {
+                    return false; //Bad GPS tag
+                }
+                Double lat = latTag[0].doubleValue() + latTag[1].doubleValue()/60.0 + latTag[2].doubleValue()/3600.0;
+                if (latRefTag != null && latRefTag.contentEquals("S")) {
+                    lat = -lat;
+                }
+                Double lon = lonTag[0].doubleValue() + lonTag[1].doubleValue()/60.0 + lonTag[2].doubleValue()/3600.0;
+                if (lonRefTag != null && lonRefTag.contentEquals("W")) {
+                    lon = -lon;
+                }
+                if (lat == 0.0 || lon == 0.0) {
+                    return false; //While technically valid, treat as Bad GPS tag
+                }
+                Double alt;
+                if (altTag != null) {
+                    alt = altTag[0].doubleValue();
+                } else {
+                    alt = 0.0; //Optional; default to 0
+                }
+                if (altRefTag != null && altRefTag.equals(1)) { //0 = above, 1 below sea level
+                    alt = -alt;
+                }
+                Float acc;
+                if (accTag != null) {
+                    acc = accTag[0].floatValue();
+                } else {
+                    acc = 0.0f; //Optional; default to 0
+                }
+                loc.setLatitude(lat);
+                loc.setLongitude(lon);
+                loc.setAltitude(alt);
+                loc.setAccuracy(acc);
+                log.fine(String.format(" Extracted location N %f, E %f, up %f, acc %f\n", lat, lon, alt, acc));//Debug
+                return true;
+            } catch (JpegProcessingException e) {
+                log.warning("Could not process JPEG file: " + e.getMessage());
+            } catch (IOException e) {
+                log.warning("Could not read image file: " + e.getMessage());
+            }
+        }
+        return null; //Can't tell
+    }
+
+
+    InputStream fetchImageFileFromS3(String filename) {
+        // attempt to retrieve image file
+        URLConnection conn = null;
+        String s3bucket = com.gallatinsystems.common.util.PropertyUtil.getProperty("s3bucket");
+        filename = Paths.get(filename).getFileName().toString(); //strip path, it is not used in S3
+        log.fine("Fetching " + filename);
+
+        try {
+            conn = S3Util.getConnection(s3bucket, "images/" + filename);
+            return new BufferedInputStream(conn.getInputStream());
+        } catch (Exception e) {
+            log.warning("Could not fetch image file: " + e.getMessage());
+            return null;
+        }
+    }
+
 }

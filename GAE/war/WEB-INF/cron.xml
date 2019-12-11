@@ -31,4 +31,9 @@
         <description>Purge expired Devices</description>
         <schedule>every monday 00:10</schedule>
     </cron>
+    <cron>
+        <url>/cron/croncommander?action=extractImageFileGeotags</url>
+        <description>Extract geotags from legacy image answers</description>
+        <schedule>every 24 hours</schedule>
+    </cron>
 </cronentries>
