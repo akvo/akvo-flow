@@ -44,10 +44,11 @@ public class TranslationGenerator {
         PATTERNS.put("placeholderBinding=\"Ember.STRINGS.", "\"");
         PATTERNS.put("String.loc('", "'");
         PATTERNS.put("(t> ", ")");
+        PATTERNS.put("Ember.String.loc('", "'");
     }
 
     private static final String[] EXTS = {
-            "handlebars", "js", "cljs"
+            "handlebars", "js", "cljs", "jsx"
     };
 
     public static void main(String[] args) throws Exception {
