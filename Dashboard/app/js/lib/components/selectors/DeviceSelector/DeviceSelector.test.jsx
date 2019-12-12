@@ -25,24 +25,29 @@ afterAll(() => {
 describe('DeviceSelector Tests', () => {
   afterEach(cleanup);
 
-  const activeDeviceGroups = new Set();
-  const deviceGroupNames = { 1: 'Devices not in a group' };
   const deviceGroups = {
-    1: {
-      0: { name: 'select all', checked: false },
-      150452032: { name: 'droidxx', checked: false },
-      150482013: { name: 'jana', checked: false },
-    },
+    // key is the device group id
+    1: [
+      {
+        name: 'droidxx',
+        id: '150452032',
+        deviceGroup: { id: '1', name: 'Device not in group' },
+      },
+      {
+        name: 'jana',
+        id: '150482013',
+        deviceGroup: { id: '1', name: 'Device not in group' },
+      },
+    ],
   };
 
-  it('+++ renders <snapshot>', () => {
+  it('+++ renders initial <snapshot>', () => {
     const wrapper = render(
       <DeviceSelector
-        deviceGroupNames={deviceGroupNames}
         deviceGroups={deviceGroups}
-        handleDeviceCheck={jest.fn()}
-        deviceIsChecked={false}
-        activeDeviceGroups={activeDeviceGroups}
+        handleSelectDevice={jest.fn()}
+        handleSelectAllDevices={jest.fn()}
+        selectedDevices={[]}
       />
     );
 
@@ -52,34 +57,39 @@ describe('DeviceSelector Tests', () => {
   it('+++ toggles accordion', () => {
     const wrapper = render(
       <DeviceSelector
-        deviceGroupNames={deviceGroupNames}
         deviceGroups={deviceGroups}
-        handleDeviceCheck={jest.fn()}
-        deviceIsChecked={false}
-        activeDeviceGroups={activeDeviceGroups}
+        handleSelectDevice={jest.fn()}
+        handleSelectAllDevices={jest.fn()}
+        selectedDevices={[]}
       />
     );
 
     // find and click on accordion
     const accordion = wrapper.getByTestId('accordion');
+    const panel = wrapper.getByTestId('panel');
+
+    // close accordion
     fireEvent.click(accordion);
 
-    // expect panel display to be block
-    const panel = wrapper.getByTestId('panel');
+    // expect panel display to be closed
     expect(panel).toHaveStyle('display: none');
-    expect(wrapper.container).toMatchSnapshot();
+
+    // open accordion
+    fireEvent.click(accordion);
+
+    // expect panel display to be opened
+    expect(panel).toHaveStyle('display: block');
   });
 
-  test('+++ checkbox works', () => {
-    const onCheck = jest.fn();
+  test('+++ select device works', () => {
+    const handleSelectDevice = jest.fn();
 
     const wrapper = render(
       <DeviceSelector
-        deviceGroupNames={deviceGroupNames}
         deviceGroups={deviceGroups}
-        handleDeviceCheck={onCheck}
-        deviceIsChecked={false}
-        activeDeviceGroups={activeDeviceGroups}
+        handleSelectDevice={handleSelectDevice}
+        handleSelectAllDevices={jest.fn()}
+        selectedDevices={[]}
       />
     );
 
@@ -87,7 +97,30 @@ describe('DeviceSelector Tests', () => {
     const inputNode = wrapper.getByLabelText('jana');
     fireEvent.click(inputNode);
 
-    expect(onCheck).toHaveBeenCalledTimes(1);
-    expect(onCheck).toHaveBeenCalledWith('150482013', true, '1');
+    expect(handleSelectDevice).toHaveBeenCalledTimes(1);
+    expect(handleSelectDevice).toHaveBeenCalledWith('150482013', true);
+  });
+
+  test('+++ select all device works', () => {
+    const handleSelectAllDevice = jest.fn();
+
+    const wrapper = render(
+      <DeviceSelector
+        deviceGroups={deviceGroups}
+        handleSelectDevice={jest.fn()}
+        handleSelectAllDevices={handleSelectAllDevice}
+        selectedDevices={[]}
+      />
+    );
+
+    // find input and trigger a check
+    const inputNode = wrapper.getByLabelText('');
+    fireEvent.click(inputNode);
+
+    expect(handleSelectAllDevice).toHaveBeenCalledTimes(1);
+    expect(handleSelectAllDevice).toHaveBeenCalledWith(
+      ['150452032', '150482013'],
+      true
+    );
   });
 });

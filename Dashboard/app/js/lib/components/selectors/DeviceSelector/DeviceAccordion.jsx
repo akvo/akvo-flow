@@ -68,7 +68,7 @@ export default class DeviceAccordion extends React.Component {
 
     return (
       <div className="accordion-container">
-        <div className={accordionClass} data-testid="accordion">
+        <div className={accordionClass}>
           <Checkbox
             id={id}
             name={id}
@@ -80,6 +80,7 @@ export default class DeviceAccordion extends React.Component {
           <div
             onClick={this.onAccordionClick}
             onKeyPress={this.onAccordionClick}
+            data-testid="accordion"
           >
             <span>{name}</span>
 
