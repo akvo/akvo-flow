@@ -5,12 +5,12 @@ services:
     command: tail -f /dev/null
     links:
      - s3:akvoflowsandbox.s3.amazonaws.com
+     - fake-flow-services:services.akvoflow.local
     ports:
      - 8888:8888
      - 5005:5005
   fake-flow-services:
     image: solsson/http-echo
-    network_mode: service:mainnetwork
     environment:
       - PORT=3000
   s3:
