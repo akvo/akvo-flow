@@ -21,6 +21,7 @@ exports[`FormSelector Tests +++ renders <snapshot> correctly 1`] = `
         for="145492013"
       >
         <input
+          data-testid="switch-box"
           id="145492013"
           name="145492013"
           type="checkbox"
