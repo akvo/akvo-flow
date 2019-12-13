@@ -21,38 +21,38 @@ DISABLE_API="${DISABLE_API:=yes}"
 ts="$(date +%s)"
 job_name="deletejob-${ts}"
 
-gcloud config set project "${project}"
-
-project_location=$(gcloud app describe --format=json | jq -r -M .locationId)
+project_location=$(gcloud app describe --project="${project}" --format=json | jq -r -M .locationId)
 region="${project_location}1"
 
 gsutil rm -r "gs://tmpdelete${bucket}/"
-gsutil mb "gs://tmpdelete${bucket}/"
+gsutil mb -l "${region}" "gs://tmpdelete${bucket}/"
 
-if gcloud services list | grep DataF; then
+if gcloud services list --project="${project}" | grep DataF; then
     echo "Dataflow API was enabled"
     DISABLE_API=no
 else
     echo "Enabling dataflow api"
     DISABLE_API=yes
-    gcloud services enable dataflow.googleapis.com
+    gcloud services enable dataflow.googleapis.com --project="${project}"
     sleep 60
 fi
 
 gcloud dataflow jobs run "${job_name}" \
---region "${region}" \
+--project="${project}" \
+--region="${region}" \
 --gcs-location gs://dataflow-templates/latest/Datastore_to_Datastore_Delete \
 --parameters datastoreReadGqlQuery="SELECT __key__ from ${kind}",\
 datastoreReadProjectId="${project}",\
 datastoreDeleteProjectId="${project}"
 
 until gcloud dataflow jobs list \
+	     --project="${project}" \
 	     --region="${region}" \
 	     --filter="name=${job_name}" \
 	     --limit=1 \
 	     --status=terminated \
 	     --format=json | jq -M -r .[0].state | grep Done; do
-    gcloud dataflow jobs list --region "${region}" --filter="name=${job_name}"
+    gcloud dataflow jobs list --project="${project}" --region="${region}" --filter="name=${job_name}"
     sleep 600;
 done
 
@@ -60,5 +60,5 @@ gsutil rm -r "gs://tmpdelete${bucket}/"
 
 if [[ "${DISABLE_API}" == "yes" ]]; then
     echo "Disabling Dataflow API"
-    gcloud services disable dataflow.googleapis.com
+    gcloud services disable dataflow.googleapis.com --project="${project}"
 fi
