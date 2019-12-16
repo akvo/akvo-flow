@@ -16,6 +16,7 @@
 
 package org.akvo.flow.dao;
 
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
@@ -27,6 +28,15 @@ import org.akvo.flow.domain.Message;
 
 import com.gallatinsystems.framework.dao.BaseDAO;
 import com.gallatinsystems.framework.servlet.PersistenceFilter;
+import com.google.appengine.api.datastore.DatastoreService;
+import com.google.appengine.api.datastore.DatastoreServiceFactory;
+import com.google.appengine.api.datastore.Entity;
+import com.google.appengine.api.datastore.FetchOptions;
+import com.google.appengine.api.datastore.Key;
+import com.google.appengine.api.datastore.PreparedQuery;
+import com.google.appengine.api.datastore.Query;
+import com.google.appengine.api.datastore.Query.Filter;
+import com.google.appengine.api.datastore.Query.FilterOperator;
 
 /**
  * Data access object for manipulating Message objects
@@ -93,6 +103,27 @@ public class MessageDao extends BaseDAO<Message> {
         query.declareParameters(paramString.toString());
         prepareCursor(cursor, pageSize, query);
         return (List<Message>) query.executeWithMap(paramMap);
+    }
+
+    /**
+     * lists keys of messages older than a specific date
+     */
+    public List<Key> listKeysCreatedBefore(Date beforeDate) {
+        DatastoreService datastore = DatastoreServiceFactory.getDatastoreService();
+        // The Query interface assembles a query
+        com.google.appengine.api.datastore.Query q =
+                new com.google.appengine.api.datastore.Query("Message");
+        q.setKeysOnly();
+        q.setFilter(new Query.FilterPredicate(
+                "createdDateTime", FilterOperator.LESS_THAN_OR_EQUAL, beforeDate));
+        PreparedQuery pq = datastore.prepare(q);
+        FetchOptions fetchOptions;
+        fetchOptions = FetchOptions.Builder.withDefaults();
+        List<Key> result = new ArrayList<>();
+        for (Entity e: pq.asIterable(fetchOptions)) {
+            result.add(e.getKey());
+        }
+        return result;
     }
 
 

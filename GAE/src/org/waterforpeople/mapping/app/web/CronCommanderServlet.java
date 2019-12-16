@@ -35,7 +35,6 @@ import javax.servlet.http.HttpServletResponse;
 import org.akvo.flow.dao.MessageDao;
 import org.akvo.flow.dao.ReportDao;
 import org.akvo.flow.dao.SurveyAssignmentDao;
-import org.akvo.flow.domain.Message;
 import org.akvo.flow.domain.persistent.Report;
 import org.waterforpeople.mapping.app.web.dto.SurveyTaskRequest;
 import org.waterforpeople.mapping.dao.QuestionAnswerStoreDao;
@@ -409,17 +408,7 @@ public class CronCommanderServlet extends HttpServlet {
         deadline.add(Calendar.YEAR, ONE_YEAR_AGO);
         log.info("Starting scan for Message entries older than: " + deadline.getTime());
         MessageDao messageDao = new MessageDao();
-        List<Key> purgable = new ArrayList<>();
-        String cursor = "";
-        do { //Do this in batches - there might be half a million
-            List<Message> messageList = messageDao.listCreatedBefore(deadline.getTime(), cursor, 1000);
-            if (messageList == null || messageList.size() == 0) break; //no more messages
-            cursor = MessageDao.getCursor(messageList);
-
-            for (Message message : messageList) {
-                purgable.add(message.getKey());
-            }
-        } while (true);
+        List<Key> purgable = messageDao.listKeysCreatedBefore(deadline.getTime());
         log.fine("Deleting " + purgable.size() + " old Message entries");
         messageDao.deleteByKeys(purgable);
     }
