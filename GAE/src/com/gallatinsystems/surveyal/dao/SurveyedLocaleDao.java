@@ -312,6 +312,50 @@ public class SurveyedLocaleDao extends BaseDAO<SurveyedLocale> {
 
     }
 
+
+    //TODO filter by survey[group], too?
+    //TODO: page size?
+    @SuppressWarnings("unchecked")
+    public List<SurveyedLocale> searchSurveyedLocales(String cursor, Long surveyGroupId,
+            String searchString) {
+
+        String endString = searchString + Character.MAX_VALUE;
+
+        PersistenceManager pm = PersistenceFilter.getManager();
+        javax.jdo.Query query = pm.newQuery(SurveyedLocale.class);
+
+        Map<String, Object> paramMap = null;
+
+        StringBuilder filterString = new StringBuilder();
+        StringBuilder paramString = new StringBuilder();
+        paramMap = new HashMap<String, Object>();
+
+        appendNonNullParam("displayName", filterString, paramString,
+                "String", searchString, paramMap, GTE_OP);
+        appendNonNullParam("displayName", filterString, paramString,
+                "String", endString, paramMap, LT_OP);
+
+        if (searchString.matches(SurveyedLocale.IDENTIFIER_PATTERN)) {    //TODO consider a2a2-a2a2-a2a too?
+            //search for either identifier OR name
+            appendNonNullParam("identifier", filterString, paramString,
+                    "String", searchString, paramMap);
+
+            //combination other than AND requires a custom filterString
+            filterString = new StringBuilder();
+            filterString.append("(displayName >= displayNameParam0 && displayName < displayNameParam1) || (identifier == identifierParam2)");
+        }
+        query.setOrdering("displayName asc"); //necessary if inequality ops present
+
+        query.setFilter(filterString.toString());
+        query.declareParameters(paramString.toString());
+
+        if (cursor != null && cursor != "")
+            prepareCursor(cursor, query);
+
+        return (List<SurveyedLocale>) query.executeWithMap(paramMap);
+
+    }
+
     public List<SurveyedLocale> listLocalesByDisplayName(String displayName) {
         List<SurveyedLocale> locales = listByProperty("displayName", displayName, "String");
         return locales;
