@@ -3,17 +3,32 @@
 exports[`FormSelector Tests +++ renders <snapshot> correctly 1`] = `
 <div>
   <div>
-    <div>
-      <input
-        class="displayInline"
-        id="145492013"
-        name="145492013"
-        type="checkbox"
-      />
+    <div
+      class="form"
+    >
       <label
         for="145492013"
       >
-        Handpump
+        <p>
+          Handpump
+        </p>
+        <span>
+          145492013
+        </span>
+      </label>
+      <label
+        class="switch"
+        for="145492013"
+      >
+        <input
+          data-testid="switch-box"
+          id="145492013"
+          name="145492013"
+          type="checkbox"
+        />
+        <span
+          class="slider round"
+        />
       </label>
     </div>
   </div>

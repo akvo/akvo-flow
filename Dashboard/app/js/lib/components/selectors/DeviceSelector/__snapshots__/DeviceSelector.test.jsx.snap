@@ -1,14 +1,13 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
-exports[`DeviceSelector Tests +++ renders <snapshot> 1`] = `
+exports[`DeviceSelector Tests +++ renders initial <snapshot> 1`] = `
 <div>
   <div>
     <div
       class="accordion-container"
     >
       <div
-        class="accordion "
-        data-testid="accordion"
+        class="accordion active"
       >
         <label
           class="checkbox-container"
@@ -18,105 +17,28 @@ exports[`DeviceSelector Tests +++ renders <snapshot> 1`] = `
           <input
             class="displayInline"
             id="1"
-            name="0"
+            name="1"
             type="checkbox"
           />
           <span
             class="checkmark"
           />
         </label>
-        <div>
-          <span>
-            Devices not in a group
-          </span>
-          <span
-            class="fa fa-chevron-down"
-          />
-        </div>
-      </div>
-      <div
-        class="panel"
-        data-testid="panel"
-        style="display: none;"
-      >
-        <div>
-          <label
-            class="checkbox-container"
-            for="150452032"
-          >
-            droidxx
-            <input
-              class="displayInline"
-              id="150452032"
-              name="150452032"
-              type="checkbox"
-            />
-            <span
-              class="checkmark"
-            />
-          </label>
-        </div>
-        <div>
-          <label
-            class="checkbox-container"
-            for="150482013"
-          >
-            jana
-            <input
-              class="displayInline"
-              id="150482013"
-              name="150482013"
-              type="checkbox"
-            />
-            <span
-              class="checkmark"
-            />
-          </label>
-        </div>
-      </div>
-    </div>
-  </div>
-</div>
-`;
-
-exports[`DeviceSelector Tests +++ toggles accordion 1`] = `
-<div>
-  <div>
-    <div
-      class="accordion-container"
-    >
-      <div
-        class="accordion "
-        data-testid="accordion"
-      >
-        <label
-          class="checkbox-container"
-          for="1"
+        <div
+          data-testid="accordion"
         >
-          
-          <input
-            class="displayInline"
-            id="1"
-            name="0"
-            type="checkbox"
-          />
-          <span
-            class="checkmark"
-          />
-        </label>
-        <div>
           <span>
-            Devices not in a group
+            Device not in group
           </span>
           <span
-            class="fa fa-chevron-down"
+            class="fa fa-chevron-up"
           />
         </div>
       </div>
       <div
         class="panel"
         data-testid="panel"
-        style="display: none;"
+        style="display: block;"
       >
         <div>
           <label
