@@ -1,5 +1,6 @@
 // I18N
 // Ember.String.loc('_request_submitted_email_will_be_sent');
+import { ArrNoDupe } from '../../utils';
 
 FLOW.SurveyBootstrap = FLOW.View.extend({
   surveysPreview: Ember.A([]),
@@ -13,7 +14,9 @@ FLOW.SurveyBootstrap = FLOW.View.extend({
   },
 
   selectAllSurveys() {
-    const selected = FLOW.surveyControl.get('content').filter(item => item.get('status') === 'PUBLISHED');
+    const selected = FLOW.surveyControl
+      .get('content')
+      .filter(item => item.get('status') === 'PUBLISHED');
     FLOW.selectedControl.set('selectedSurveys', selected);
   },
 
@@ -24,13 +27,15 @@ FLOW.SurveyBootstrap = FLOW.View.extend({
   addSelectedSurveys() {
     const sgName = FLOW.selectedControl.selectedSurveyGroup.get('code');
 
-    FLOW.selectedControl.get('selectedSurveys').forEach((item) => {
+    FLOW.selectedControl.get('selectedSurveys').forEach(item => {
       item.set('surveyGroupName', sgName);
     });
 
-    this.surveysPreview.pushObjects(FLOW.selectedControl.get('selectedSurveys'));
+    this.surveysPreview.pushObjects(
+      FLOW.selectedControl.get('selectedSurveys')
+    );
     // delete duplicates
-    this.set('surveysPreview', FLOW.ArrNoDupe(this.get('surveysPreview')));
+    this.set('surveysPreview', ArrNoDupe(this.get('surveysPreview')));
   },
 
   removeSingleSurvey(event) {
@@ -49,12 +54,18 @@ FLOW.SurveyBootstrap = FLOW.View.extend({
   },
 
   sendSurveys() {
-    if (this.get('surveysPreview').length === 0 && !this.get('includeDBInstructions')) {
+    if (
+      this.get('surveysPreview').length === 0 &&
+      !this.get('includeDBInstructions')
+    ) {
       this.showMessage(Ember.String.loc('_survey_or_db_instructions_required'));
       return;
     }
 
-    if (this.get('includeDBInstructions') && this.get('dbInstructions') === '') {
+    if (
+      this.get('includeDBInstructions') &&
+      this.get('dbInstructions') === ''
+    ) {
       this.showMessage(Ember.String.loc('_missing_db_instructions'));
       return;
     }
@@ -71,7 +82,7 @@ FLOW.SurveyBootstrap = FLOW.View.extend({
 
     const surveyIds = [];
 
-    this.get('surveysPreview').forEach((item) => {
+    this.get('surveysPreview').forEach(item => {
       surveyIds.push(item.get('keyId'));
     });
 
@@ -88,7 +99,10 @@ FLOW.SurveyBootstrap = FLOW.View.extend({
 
   showMessage(msg) {
     FLOW.dialogControl.set('activeAction', 'ignore');
-    FLOW.dialogControl.set('header', Ember.String.loc('_manual_survey_transfer'));
+    FLOW.dialogControl.set(
+      'header',
+      Ember.String.loc('_manual_survey_transfer')
+    );
     FLOW.dialogControl.set('message', msg);
     FLOW.dialogControl.set('showCANCEL', false);
     FLOW.dialogControl.set('showDialog', true);
