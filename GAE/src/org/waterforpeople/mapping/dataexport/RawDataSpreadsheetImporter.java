@@ -1267,6 +1267,8 @@ public class RawDataSpreadsheetImporter implements DataImporter {
         Map<String, String> configMap = new HashMap<String, String>();
         configMap.put(SURVEY_CONFIG_KEY, args[2].trim());
         configMap.put("apiKey", args[3].trim());
+        configMap.put(UPLOAD_URL_OPT, args[4].trim());
+        configMap.put(UPLOAD_DIR_OPT, "/surveys");
 
         Map<Integer, String> validationErrors = r.validate(file);
         if (validationErrors.isEmpty()) {
