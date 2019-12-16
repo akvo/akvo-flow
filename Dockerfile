@@ -3,7 +3,7 @@ FROM alpine:3.7
 RUN set -ex ; \
     apk add --no-cache git build-base libffi-dev
 
-ARG CLOUD_SDK_VERSION=198.0.0
+ARG CLOUD_SDK_VERSION=272.0.0
 ENV LEIN_ROOT=1
 ENV PATH="/google-cloud-sdk/bin:${PATH}"
 ENV CLOUDSDK_PYTHON_SITEPACKAGES=1

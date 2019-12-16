@@ -16,25 +16,25 @@
 
 package org.akvo.flow.xml;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import org.waterforpeople.mapping.app.gwt.client.survey.QuestionDto;
-import org.waterforpeople.mapping.app.gwt.client.survey.QuestionDto.QuestionType;
-import org.waterforpeople.mapping.app.gwt.client.survey.TranslationDto;
-
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.dataformat.xml.annotation.JacksonXmlElementWrapper;
 import com.fasterxml.jackson.dataformat.xml.annotation.JacksonXmlProperty;
 import com.gallatinsystems.survey.domain.Question;
 import com.gallatinsystems.survey.domain.Translation;
+import org.waterforpeople.mapping.app.gwt.client.survey.QuestionDto;
+import org.waterforpeople.mapping.app.gwt.client.survey.QuestionDto.QuestionType;
+import org.waterforpeople.mapping.app.gwt.client.survey.TranslationDto;
+
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
 
 
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public class XmlQuestion {
 
-    private static String FREE_TYPE = "free"; //Used for both FREE_TEXT and NUMBER
-    private static String NUMERIC_VALIDATION_TYPE = "numeric";
+    private static final String FREE_TYPE = "free"; //Used for both FREE_TEXT and NUMBER
+    private static final String NUMERIC_VALIDATION_TYPE = "numeric";
 
     @JacksonXmlProperty(localName = "options", isAttribute = false)
     private XmlOptions options;
@@ -48,13 +48,18 @@ public class XmlQuestion {
     private List<XmlAltText> altText;
     @JacksonXmlProperty(localName = "text", isAttribute = false)
     private String text;
+    @JacksonXmlProperty(localName = "variableName", isAttribute = true)
+    private String variableName;
     @JacksonXmlElementWrapper(localName = "levels", useWrapping = true)
     private List<XmlLevel> level;
-
     @JacksonXmlProperty(localName = "id", isAttribute = true)
     private long id;
     @JacksonXmlProperty(localName = "order", isAttribute = true)
     private int order;
+    @JacksonXmlProperty(localName = "locked", isAttribute = true)
+    private Boolean locked;
+    @JacksonXmlProperty(localName = "allowMultiple", isAttribute = true)
+    private Boolean allowMultiple;
     @JacksonXmlProperty(localName = "type", isAttribute = true)
     private String type;
     @JacksonXmlProperty(localName = "mandatory", isAttribute = true)
@@ -63,8 +68,6 @@ public class XmlQuestion {
     private Boolean requireDoubleEntry;
     @JacksonXmlProperty(localName = "localeNameFlag", isAttribute = true)
     private boolean localeNameFlag;
-    @JacksonXmlProperty(localName = "locked", isAttribute = true)
-    private Boolean locked;
     @JacksonXmlProperty(localName = "localeLocationFlag", isAttribute = true)
     private Boolean localeLocationFlag;
     @JacksonXmlProperty(localName = "caddisflyResourceUuid", isAttribute = true)
@@ -97,6 +100,9 @@ public class XmlQuestion {
         }
         if (q.getTip() != null) {
             help = new XmlHelp(q.getTip());
+        }
+        if (q.getVariableName() != null && !q.getVariableName().trim().equals("")) {
+            variableName = q.getVariableName();
         }
 
         type = q.getType().toString().toLowerCase();
@@ -139,6 +145,11 @@ public class XmlQuestion {
                     options = new XmlOptions(q);
                 }
                 break;
+            case SCAN:
+                if (q.getAllowMultipleFlag() != null && q.getAllowMultipleFlag()) {
+                    allowMultiple = true;
+                }
+                break;
             default:
                 break;
         }
@@ -165,6 +176,7 @@ public class XmlQuestion {
         dto.setMandatoryFlag(mandatory);
         dto.setLocaleNameFlag(localeNameFlag);
         dto.setRequireDoubleEntry(requireDoubleEntry);
+        dto.setVariableName(variableName);
         //Type is more complicated:
         QuestionType t; //FREE_TEXT, OPTION, NUMBER, GEO, PHOTO, VIDEO, SCAN, TRACK, STRENGTH, DATE, CASCADE, GEOSHAPE, SIGNATURE, CADDISFLY
         if (FREE_TYPE.equalsIgnoreCase(type)) { //Text OR number
@@ -220,6 +232,7 @@ public class XmlQuestion {
                 "',mandatory='" + mandatory +
                 "',requireDoubleEntry='" + requireDoubleEntry +
                 "',locked='" + locked +
+                "',variableName='" + variableName +
                 "',localeNameFlag='" + localeNameFlag +
                 "',allowPoints='" + allowPoints +
                 "',allowLines='" + allowLine +
@@ -381,4 +394,11 @@ public class XmlQuestion {
         this.requireDoubleEntry = requireDoubleEntry;
     }
 
+    public String getVariableName() {
+        return variableName;
+    }
+
+    public void setVariableName(String variableName) {
+        this.variableName = variableName;
+    }
 }

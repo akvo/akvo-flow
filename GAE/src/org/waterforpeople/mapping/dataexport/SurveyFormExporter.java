@@ -58,7 +58,7 @@ public class SurveyFormExporter implements DataExporter {
 
     private static final String PAPER_SHEET_NAME = "Paper Survey";
     private static final String FULL_SHEET_NAME = "Full Survey";
-    
+
     private static final int COL_WIDTH = 10000;
 
     private static final String LANG_DELIM = " / ";
@@ -227,6 +227,7 @@ public class SurveyFormExporter implements DataExporter {
                         createCell(tempRow, 1, BLANK, null);
                     }
                 }
+                curRow++;  //Add an empty line after each group. Makes layout clearer when there are empty groups.
             }
         }
     }
@@ -258,7 +259,8 @@ public class SurveyFormExporter implements DataExporter {
 
         final int startRow = createFullHeader(sheet, 0, title, headerCtr);
 
-        int count = 0; // running count of all questions
+        int count = 0; // running count of all questions (+ 1 for each empty group)
+        int qCount = 0; // running count of all questions
         if (questions != null) {
             // So we can output dependent question text
             Map<Long, String> qTextFromId = new HashMap<>();
@@ -269,28 +271,36 @@ public class SurveyFormExporter implements DataExporter {
             }
             for (int i = 0; i < groupList.size(); i++) {
                 int firstRowInGroup = startRow + count;
-                for (QuestionDto q : questions.get(groupList.get(i))) {
+                List<QuestionDto> qList = questions.get(groupList.get(i));
 
-                    // create the row
-                    int r = startRow + count;
+                if (qList.size() == 0) { //Just show the name of the empty group
+                    HSSFRow row = sheet.createRow(startRow + count);
                     count++;
-                    HSSFRow row = sheet.createRow(r);
+                    createCell(row, 0, Long.valueOf(i + 1), headerCtr);
+                    createCell(row, 1, groupList.get(i).getDisplayName(), headerCtr);
+                    createCell(row, 2, groupList.get(i).getRepeatable(), headerCtr);
+                } else { //List the questions
+                    for (QuestionDto q : qList) {
 
-                    if (r == firstRowInGroup) { // only once per group
-                        createCell(row, 0, Long.valueOf(i + 1), headerCtr);
-                        createCell(row, 1, groupList.get(i).getDisplayName(), headerCtr);
-                        createCell(row, 2, groupList.get(i).getRepeatable(), headerCtr);
+                        HSSFRow row = sheet.createRow(startRow + count);
+                        if (startRow + count == firstRowInGroup) { // only once per group
+                            createCell(row, 0, Long.valueOf(i + 1), headerCtr);
+                            createCell(row, 1, groupList.get(i).getDisplayName(), headerCtr);
+                            createCell(row, 2, groupList.get(i).getRepeatable(), headerCtr);
+                        }
+                        count++;
+                        qCount++;
+                        createCell(row,  3, Long.valueOf(q.getOrder()), headerCtr);
+                        createCell(row,  4, Long.valueOf(qCount), headerCtr);
+                        createCell(row,  5, formText(q.getText(), q.getTranslationMap()), headerLeft);
+                        // Scrolling part:
+                        writeScrollingRowPart(optionStyle, qTextFromId, q, row);
                     }
-                    createCell(row,  3, Long.valueOf(q.getOrder()), headerCtr);
-                    createCell(row,  4, Long.valueOf(count), headerCtr);
-                    createCell(row,  5, formText(q.getText(), q.getTranslationMap()), headerLeft);
-                    // Scrolling part:
-                    writeScrollingRowPart(optionStyle, qTextFromId, q, row);                    
+                    // all rows created; merge all-group cells vertically
+                    sheet.addMergedRegion(new CellRangeAddress(firstRowInGroup, startRow + count - 1, 0, 0));
+                    sheet.addMergedRegion(new CellRangeAddress(firstRowInGroup, startRow + count - 1, 1, 1));
+                    sheet.addMergedRegion(new CellRangeAddress(firstRowInGroup, startRow + count - 1, 2, 2));
                 }
-                // all rows created; merge all-group cells vertically
-                sheet.addMergedRegion(new CellRangeAddress(firstRowInGroup, startRow + count - 1, 0, 0));
-                sheet.addMergedRegion(new CellRangeAddress(firstRowInGroup, startRow + count - 1, 1, 1));
-                sheet.addMergedRegion(new CellRangeAddress(firstRowInGroup, startRow + count - 1, 2, 2));
             }
         }
     }
@@ -319,10 +329,10 @@ public class SurveyFormExporter implements DataExporter {
         createCell(row, 21, q.getAllowOtherFlag(), null);
         // Geopos
         createCell(row, 22, q.getLocaleLocationFlag(), null);
-        createCell(row, 23, q.getType() == QuestionType.GEO ? 
+        createCell(row, 23, q.getType() == QuestionType.GEO ?
                 q.getGeoLocked() : null, null);
         // CASCADE
-        createCell(row, 24, q.getCascadeResourceId(), null);                        
+        createCell(row, 24, q.getCascadeResourceId(), null);
         // geoshapes
         createCell(row, 25, q.getAllowPoints(), null);
         createCell(row, 26, q.getAllowLine(), null);
@@ -330,9 +340,9 @@ public class SurveyFormExporter implements DataExporter {
         // caddisfly
         createCell(row, 28, q.getCaddisflyResourceUuid(), null);
         // barcode (just reusing other flags)
-        createCell(row, 29, q.getType() == QuestionType.SCAN ? 
+        createCell(row, 29, q.getType() == QuestionType.SCAN ?
                 q.getAllowMultipleFlag() : null, null);
-        createCell(row, 30, q.getType() == QuestionType.SCAN ? 
+        createCell(row, 30, q.getType() == QuestionType.SCAN ?
                 q.getGeoLocked() : null, null);
     }
 
@@ -486,8 +496,8 @@ public class SurveyFormExporter implements DataExporter {
         }
         return cell;
     }
-    
-    
+
+
     /**
      * Return a string listing all the options for a question
      */
@@ -504,8 +514,8 @@ public class SurveyFormExporter implements DataExporter {
         }
         return s;
     }
-    
-    
+
+
     /**
      * Return a string similar to the type labels in the UI
      */
@@ -531,7 +541,7 @@ public class SurveyFormExporter implements DataExporter {
         }
         return null;
     }
-    
+
     /**
      * forms a string that has all languages in the translation map delimited by the LANG_DELIM
      */
@@ -547,7 +557,7 @@ public class SurveyFormExporter implements DataExporter {
                 sortedMap = new TreeMap<String, TranslationDto>(translationMap);
             }
             for (Entry<String, TranslationDto> trans : sortedMap.entrySet()) {
-                if (trans.getValue() != null 
+                if (trans.getValue() != null
                         && trans.getValue().getText() != null
                         && !trans.getValue().getText().trim().equalsIgnoreCase("null")) {
                             buff.append(LANG_DELIM);
