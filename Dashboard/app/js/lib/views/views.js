@@ -8,7 +8,6 @@ import template from '../mixins/template';
 /* global tooltip */
 
 require('akvo-flow/core-common');
-require('akvo-flow/views/selectors/forms-selector');
 require('akvo-flow/views/surveys/preview-view');
 require('akvo-flow/views/surveys/notifications-view');
 require('akvo-flow/views/surveys/translations-view');
@@ -74,8 +73,8 @@ Ember.Handlebars.registerHelper('if_blank', function(item) {
   return text && text.replace(/\s/g, '').length
     ? new Ember.Handlebars.SafeString('')
     : new Ember.Handlebars.SafeString(
-        '&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;'
-      );
+      '&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;'
+    );
 });
 
 Ember.Handlebars.registerHelper('tooltip', i18nKey => {
@@ -154,8 +153,8 @@ Ember.Handlebars.registerHelper('placemarkDetail', function() {
       }' href="${mediaFileURL}" target="_blank"><img src="${mediaFileURL}" alt=""/></a><br>${
         photoJson.location
           ? `<a class="media-location" data-coordinates='${answer}'>${Ember.String.loc(
-              '_show_photo_on_map'
-            )}</a>`
+            '_show_photo_on_map'
+          )}</a>`
           : ''
       }</div>`;
     } else if (responseType === 'VIDEO') {
@@ -168,8 +167,8 @@ Ember.Handlebars.registerHelper('placemarkDetail', function() {
         )}</a>${
           photoJson.location
             ? `&nbsp;|&nbsp;<a class="media-location" data-coordinates='${answer}'>${Ember.String.loc(
-                '_show_photo_on_map'
-              )}</a>`
+              '_show_photo_on_map'
+            )}</a>`
             : ''
         }</div>`;
     }
