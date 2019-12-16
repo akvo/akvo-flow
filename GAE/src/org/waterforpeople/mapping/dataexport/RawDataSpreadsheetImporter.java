@@ -16,12 +16,16 @@
 
 package org.waterforpeople.mapping.dataexport;
 
+import java.io.BufferedInputStream;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.PushbackInputStream;
 import java.io.UnsupportedEncodingException;
+import java.net.MalformedURLException;
+import java.net.URL;
+import java.net.URLConnection;
 import java.net.URLEncoder;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -36,8 +40,10 @@ import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
+import java.util.zip.ZipInputStream;
 
 import org.akvo.flow.util.FlowJsonObjectWriter;
+import org.akvo.flow.xml.PublishedForm;
 import org.apache.log4j.BasicConfigurator;
 import org.apache.log4j.Logger;
 import org.apache.poi.ss.usermodel.Cell;
@@ -47,14 +53,18 @@ import org.apache.poi.ss.usermodel.Workbook;
 import org.apache.poi.ss.usermodel.WorkbookFactory;
 import org.apache.poi.ss.util.CellReference;
 import org.waterforpeople.mapping.app.gwt.client.survey.QuestionDto;
+import org.waterforpeople.mapping.app.gwt.client.survey.QuestionGroupDto;
 import org.waterforpeople.mapping.app.gwt.client.survey.QuestionDto.QuestionType;
 import org.waterforpeople.mapping.app.gwt.client.survey.QuestionOptionDto;
+import org.waterforpeople.mapping.app.gwt.client.survey.SurveyDto;
 import org.waterforpeople.mapping.app.gwt.client.surveyinstance.SurveyInstanceDto;
 import org.waterforpeople.mapping.app.web.dto.RawDataImportRequest;
 import org.waterforpeople.mapping.dataexport.service.BulkDataServiceClient;
 import static org.waterforpeople.mapping.dataexport.ExportImportConstants.*;
 
+import com.gallatinsystems.common.util.ZipUtil;
 import com.gallatinsystems.framework.dataexport.applet.DataImporter;
+import com.gallatinsystems.survey.domain.Question.Type;
 
 public class RawDataSpreadsheetImporter implements DataImporter {
 
@@ -63,6 +73,9 @@ public class RawDataSpreadsheetImporter implements DataImporter {
     private static final String SERVLET_URL = "/rawdatarestapi";
     public static final String SURVEY_CONFIG_KEY = "surveyId";
     protected static final String KEY_PARAM = "apiKey";
+    private static final String UPLOAD_URL_OPT = "uploadUrl";
+    private static final String UPLOAD_DIR_OPT = "uploadDir";
+
     private InputStream stream;
     private ThreadPoolExecutor threadPool;
     private BlockingQueue<Runnable> jobQueue;
@@ -140,10 +153,16 @@ public class RawDataSpreadsheetImporter implements DataImporter {
                 }
             }
 
-            Map<Long, QuestionDto> questionIdToQuestionDto = fetchQuestions(serverBase, criteria);
+            final String s3formDir = criteria.get(UPLOAD_URL_OPT) + criteria.get(UPLOAD_DIR_OPT);
 
-            Map<Long, List<QuestionOptionDto>> optionNodes = fetchOptionNodes(serverBase,
-                    criteria, questionIdToQuestionDto.values());
+            //Legacy: DS-direct:
+            //questionIdToQuestionDto = fetchQuestions(serverBase, criteria);
+            //optionNodes = fetchOptionNodes(serverBase, criteria, questionIdToQuestionDto.values());
+            //Use published form:
+            //TODO: what if it has never been published?
+            Map<Long, QuestionDto> questionIdToQuestionDto = new HashMap<>();
+            Map<Long, List<QuestionOptionDto>> optionNodes = new HashMap<>();
+            fetchFormStructure(s3formDir, criteria.get(SURVEY_CONFIG_KEY), questionIdToQuestionDto, optionNodes);
 
             List<InstanceData> instanceDataList = parseSplitSheets(wb.getSheetAt(0), //Assume base sheet is 0
                     sheetMap,
@@ -205,6 +224,39 @@ public class RawDataSpreadsheetImporter implements DataImporter {
         }
 
     }
+
+    public void fetchFormStructure(String s3FormDir,
+            String formId,
+            Map<Long, QuestionDto> questionIdToQuestionDto,
+            Map<Long, List<QuestionOptionDto>> optionNodes) throws IOException {
+      //Legacy: DS-direct:
+        //questionIdToQuestionDto = fetchQuestions(serverBase, criteria);
+        //optionNodes = fetchOptionNodes(serverBase, criteria, questionIdToQuestionDto.values());
+
+        //Fetch the published form from S3, latest version
+        String fileName = s3FormDir + "/" + formId + ".zip"; //no "v2.0" etc at end
+        String formXml = null;
+        final URL url = new URL(fileName);
+        log.debug("Getting form XML from " + url);
+        final URLConnection conn = url.openConnection();
+        final BufferedInputStream deviceZipFileInputStream = new BufferedInputStream(conn.getInputStream());
+        final ZipInputStream formFileStream = new ZipInputStream(deviceZipFileInputStream);
+        formXml = ZipUtil.unZipFile(formId + ".xml", formFileStream);
+
+        SurveyDto formDto = PublishedForm.parse(formXml).toDto();
+
+        for (QuestionGroupDto qgd : formDto.getQuestionGroupList()) {
+            if (qgd.getQuestionMap() != null) {
+                for (QuestionDto dto : qgd.getQuestionMap().values()) {
+                    questionIdToQuestionDto.put(dto.getKeyId(), dto);
+                    if (Type.OPTION.equals(dto.getType())) {
+                        optionNodes.put(dto.getKeyId(), dto.getOptionContainerDto().getOptionsList());
+                    }
+                }
+            }
+        }
+    }
+
 
     /**
      * Parse a raw data report file into a list of InstanceData
