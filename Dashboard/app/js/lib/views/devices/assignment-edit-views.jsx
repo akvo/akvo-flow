@@ -81,24 +81,18 @@ FLOW.AssignmentEditView = FLOW.ReactComponentView.extend(
 
     getProps() {
       const strings = {
-        saveAssignment: Ember.String.loc('_save'),
-        settings: Ember.String.loc('_settings'),
-        duration: Ember.String.loc('_duration'),
-        day: Ember.String.loc('_day'),
-        days: Ember.String.loc('_days'),
-        durationWarning: Ember.String.loc('_duration_warning'),
-        survey: Ember.String.loc('_survey'),
-        forms: Ember.String.loc('_forms'),
-        enabled: Ember.String.loc('_enabled'),
-        formsWarning: Ember.String.loc('_forms_warning'),
-        noForms: Ember.String.loc('_no_forms_in_this_survey'),
-        devices: Ember.String.loc('_devices'),
-        device: Ember.String.loc('_device'),
-        selected: Ember.String.loc('_selected'),
         assignmentNamePlaceholder: Ember.String.loc(
           '_enter_a_name_for_this_assignment'
         ),
         chooseFolderOrSurvey: Ember.String.loc('_choose_folder_or_survey'),
+        saveAssignment: Ember.String.loc('_save'),
+        duration: Ember.String.loc('_duration'),
+        forms: Ember.String.loc('_forms'),
+        enabled: Ember.String.loc('_enabled'),
+        noForms: Ember.String.loc('_no_forms_in_this_survey'),
+        devices: Ember.String.loc('_devices'),
+        device: Ember.String.loc('_device'),
+        selected: Ember.String.loc('_selected'),
       };
 
       const inputValues = {
