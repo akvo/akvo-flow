@@ -39,6 +39,8 @@ FLOW.AssignmentEditView = FLOW.ReactComponentView.extend(
     'FLOW.router.navigationController.selected': 'detectChangeTab',
     'FLOW.router.devicesSubnavController.selected': 'detectChangeTab',
     'FLOW.surveyControl.content.isLoaded': 'detectSurveyLoaded',
+    'FLOW.router.surveyedLocaleController.content.isLoaded':
+      'detectDatapointsLoaded',
   }),
   {
     init() {
@@ -66,6 +68,11 @@ FLOW.AssignmentEditView = FLOW.ReactComponentView.extend(
       this.removeDevicesFromAssignment = this.removeDevicesFromAssignment.bind(
         this
       );
+      this.findDatapoints = this.findDatapoints.bind(this);
+      this.detectDatapointsLoaded = this.detectDatapointsLoaded.bind(this);
+      this.addDatapointsToAssignment = this.addDatapointsToAssignment.bind(
+        this
+      );
 
       // object wide varaibles
       this.forms = {};
@@ -73,10 +80,12 @@ FLOW.AssignmentEditView = FLOW.ReactComponentView.extend(
       this.devices = [];
       this.deviceGroups = {};
       this.deviceGroupNames = {};
+      this.datapoints = [];
 
       // selected attributes
       this.selectedDevices = [];
       this.selectedSurveys = [];
+      this.selectedDatapoints = [];
 
       // using Set to avoia duplication
       this.activeDeviceGroups = new Set();
@@ -137,11 +146,14 @@ FLOW.AssignmentEditView = FLOW.ReactComponentView.extend(
         handleDeviceCheck: this.handleDeviceCheck,
         addDevicesToAssignment: this.addDevicesToAssignment,
         removeDevicesFromAssignment: this.removeDevicesFromAssignment,
+        findDatapoints: this.findDatapoints,
+        addDatapointsToAssignment: this.addDatapointsToAssignment,
       };
 
       const data = {
         forms: this.forms,
         devices: this.devices,
+        datapoints: this.datapoints,
         surveyGroups: this.surveyGroups,
         deviceGroups: this.deviceGroups,
         deviceGroupNames: this.deviceGroupNames,
@@ -636,6 +648,32 @@ FLOW.AssignmentEditView = FLOW.ReactComponentView.extend(
       });
 
       return this.renderReactSide();
+    },
+
+    // search datapoints
+    findDatapoints(displayName) {
+      FLOW.router.surveyedLocaleController.populate({ displayName });
+    },
+
+    detectDatapointsLoaded() {
+      const datapoints = FLOW.router.surveyedLocaleController.get('content');
+      this.datapoints = datapoints.map(datapoint => {
+        return {
+          name: datapoint.get('displayName'),
+          id: datapoint.get('id'),
+        };
+      });
+
+      this.renderReactSide();
+    },
+
+    addDatapointsToAssignment(datapoints) {
+      datapoints.forEach(dp => {
+        // check if datapoint is already selected to avoid duplicates
+        if (!this.selectedDatapoints.includes(dp)) {
+          this.selectedDatapoints.push(dp);
+        }
+      });
     },
   }
 );

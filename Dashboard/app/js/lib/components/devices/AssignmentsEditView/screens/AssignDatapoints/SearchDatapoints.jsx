@@ -1,25 +1,59 @@
 /* eslint-disable import/no-unresolved */
 import React from 'react';
+import PropTypes from 'prop-types';
 import Checkbox from 'akvo-flow/components/reusable/Checkbox';
+import AssignmentContext from '../../assignment-context';
 
 export default class SearchDatapoints extends React.Component {
+  state = {
+    selectedDatapoints: [],
+  };
+
   onSearch = e => {
     e.preventDefault();
 
     const searchKey = e.target.searchDatapoints.value;
-    console.log(searchKey);
+    this.context.actions.findDatapoints(searchKey);
+  };
+
+  onSelectDatapoint = (id, checked) => {
+    const { selectedDatapoints } = this.state;
+    let newSelectedDatapoints = [];
+
+    if (checked) {
+      newSelectedDatapoints = selectedDatapoints.concat(id);
+    } else {
+      newSelectedDatapoints = selectedDatapoints.filter(
+        device => device !== id
+      );
+    }
+
+    this.setState({ selectedDatapoints: newSelectedDatapoints });
+  };
+
+  addToAssignment = () => {
+    const { selectedDatapoints } = this.state;
+    const { addDatapointsToAssignment } = this.context.actions;
+
+    addDatapointsToAssignment(selectedDatapoints);
+
+    // empty selected devices
+    this.setState({ selectedDatapoints: [] });
   };
 
   render() {
+    const { datapoints } = this.context.data;
+    const { selectedDatapoints } = this.state;
+
     return (
       <div className="search-datapoints">
         <div className="header">
-          <p>Assign datapoints by name of ID</p>
+          <p>Assign datapoints by name</p>
 
           <i
             className="fa fa-times icon"
-            onClick={() => this.changeTab('')}
-            onKeyDown={() => this.changeTab('')}
+            onClick={() => this.props.changeTab('')}
+            onKeyDown={() => this.props.changeTab('')}
           />
         </div>
 
@@ -30,36 +64,35 @@ export default class SearchDatapoints extends React.Component {
             <input
               type="search"
               id="searchDatapoints"
-              placeholder="Search datapoint by name or ID"
+              placeholder="Search datapoint by name"
             />
           </form>
 
           <div className="search-results">
-            <Checkbox
-              id="001"
-              name="001"
-              checked={false}
-              onChange={() => null}
-              label="Type A built borehole Street 1"
-            />
-
-            <Checkbox
-              id="002"
-              name="002"
-              checked
-              onChange={() => null}
-              label="Type A built borehole Street 1"
-            />
+            {datapoints.map(dp => (
+              <Checkbox
+                key={dp.id}
+                id={dp.id}
+                name={dp.id}
+                checked={selectedDatapoints.includes(dp.id)}
+                onChange={this.onSelectDatapoint}
+                label={dp.name}
+              />
+            ))}
           </div>
         </div>
 
         <div className="footer">
           <div className="footer-inner">
             <div>
-              <p>0 selected</p>
+              <p>{selectedDatapoints.length} selected</p>
             </div>
 
-            <button type="button" onClick={() => null} className="btnOutline">
+            <button
+              type="button"
+              onClick={this.addToAssignment}
+              className="btnOutline"
+            >
               Assign
             </button>
           </div>
@@ -68,3 +101,9 @@ export default class SearchDatapoints extends React.Component {
     );
   }
 }
+
+SearchDatapoints.contextType = AssignmentContext;
+
+SearchDatapoints.propTypes = {
+  changeTab: PropTypes.func.isRequired,
+};

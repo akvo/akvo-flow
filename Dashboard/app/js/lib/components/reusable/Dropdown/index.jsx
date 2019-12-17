@@ -36,7 +36,7 @@ export default class Dropdown extends React.Component {
 
         {this.state.showMenu && (
           <div className="dd-menu" ref={this.dropdownMenu}>
-            {this.props.children}
+            {this.props.children(this.closeMenu)}
           </div>
         )}
       </div>
