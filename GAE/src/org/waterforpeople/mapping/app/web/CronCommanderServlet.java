@@ -32,6 +32,7 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.akvo.flow.dao.MessageDao;
 import org.akvo.flow.dao.ReportDao;
 import org.akvo.flow.dao.SurveyAssignmentDao;
 import org.akvo.flow.domain.persistent.Report;
@@ -94,6 +95,8 @@ public class CronCommanderServlet extends HttpServlet {
             extractImageFileGeotags();
         } else if ("purgeReportRecords".equals(action)) {
             purgeReportRecords();
+        } else if ("purgeOldMessages".equals(action)) {
+            purgeOldMessages();
         }
     }
 
@@ -241,18 +244,18 @@ public class CronCommanderServlet extends HttpServlet {
         deadline.add(Calendar.MONTH, ONE_MONTH_AGO);
         log.info("Starting scan for image answers, newer than: " + deadline.getTime());
         QuestionAnswerStoreDao qaDao = new QuestionAnswerStoreDao();
-        String cursor = null;
-        List<QuestionAnswerStore> dfjqList;
+        String cursor = "";
         int json = 0;
         int nonjson = 0;
         Media media;
 
         do {
-            dfjqList = qaDao.listByTypeAndDate("IMAGE", null, deadline.getTime(), cursor, 1000);
-            if (dfjqList.size() == 0) break; //no more answers
+            List<QuestionAnswerStore> qaList = qaDao.listByTypeAndDate("IMAGE", null, deadline.getTime(), cursor, 1000);
+            if (qaList == null || qaList.size() == 0) break; //no more answers
+            cursor = QuestionAnswerStoreDao.getCursor(qaList);
 
             //loop over this batch
-            for (QuestionAnswerStore item : dfjqList) {
+            for (QuestionAnswerStore item : qaList) {
                 boolean forceSave = false;
                 String v = item.getValue();
                 log.fine(String.format(" Old IMAGE value '%s'", v));
@@ -396,5 +399,19 @@ public class CronCommanderServlet extends HttpServlet {
             return null;
         }
     }
+
+    /**
+     * scans for and deletes Message entries that are more than one year old
+     */
+    private void purgeOldMessages() {
+        Calendar deadline = Calendar.getInstance();
+        deadline.add(Calendar.YEAR, ONE_YEAR_AGO);
+        log.info("Starting scan for Message entries older than: " + deadline.getTime());
+        MessageDao messageDao = new MessageDao();
+        List<Key> purgable = messageDao.listKeysCreatedBefore(deadline.getTime());
+        log.fine("Deleting " + purgable.size() + " old Message entries");
+        messageDao.deleteByKeys(purgable);
+    }
+
 
 }

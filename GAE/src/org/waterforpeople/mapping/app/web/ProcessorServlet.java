@@ -20,8 +20,6 @@ import com.gallatinsystems.device.dao.DeviceDAO;
 import com.gallatinsystems.device.dao.DeviceFileJobQueueDAO;
 import com.gallatinsystems.device.domain.Device;
 import com.gallatinsystems.device.domain.DeviceFileJobQueue;
-import com.gallatinsystems.messaging.dao.MessageDao;
-import com.gallatinsystems.messaging.domain.Message;
 import com.gallatinsystems.survey.dao.CascadeResourceDao;
 import com.gallatinsystems.survey.dao.SurveyDAO;
 import com.gallatinsystems.survey.domain.CascadeResource;
@@ -29,6 +27,9 @@ import com.gallatinsystems.survey.domain.CascadeResource.Status;
 import com.google.appengine.api.taskqueue.Queue;
 import com.google.appengine.api.taskqueue.QueueFactory;
 import com.google.appengine.api.taskqueue.TaskOptions;
+
+import org.akvo.flow.dao.MessageDao;
+import org.akvo.flow.domain.Message;
 import org.apache.commons.lang.StringUtils;
 import org.waterforpeople.mapping.app.web.dto.TaskRequest;
 
