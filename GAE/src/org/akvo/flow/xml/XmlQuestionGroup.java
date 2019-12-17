@@ -16,18 +16,17 @@
 
 package org.akvo.flow.xml;
 
-import java.util.ArrayList;
-import java.util.TreeMap;
-
-import org.waterforpeople.mapping.app.gwt.client.survey.QuestionDto;
-import org.waterforpeople.mapping.app.gwt.client.survey.QuestionGroupDto;
-
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.dataformat.xml.annotation.JacksonXmlElementWrapper;
 import com.fasterxml.jackson.dataformat.xml.annotation.JacksonXmlProperty;
 import com.gallatinsystems.survey.domain.Question;
 import com.gallatinsystems.survey.domain.QuestionGroup;
+import org.waterforpeople.mapping.app.gwt.client.survey.QuestionDto;
+import org.waterforpeople.mapping.app.gwt.client.survey.QuestionGroupDto;
+
+import java.util.ArrayList;
+import java.util.TreeMap;
 
 /* Class for working with XML like this:
 <questionGroup repeatable = "false">
@@ -62,7 +61,7 @@ public class XmlQuestionGroup {
             heading = group.getName();
         }
         order = group.getOrder();
-        repeatable = group.getRepeatable();
+        repeatable = Boolean.TRUE.equals(group.getRepeatable()) ? true : null;
         //Now copy the question tree, if any
         if (group.getQuestionMap() != null) {
             question = new ArrayList<XmlQuestion>();

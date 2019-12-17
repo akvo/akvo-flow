@@ -131,6 +131,7 @@ class FlowXmlObjectWriterTests {
         qg.setSurveyId(17L);
         qg.setName("This is a group");
         qg.setOrder(1);
+        qg.setRepeatable(false);
         TreeMap<Integer, QuestionGroup> gl = new TreeMap<>();
         gl.put(1, qg);
         form1.setQuestionGroupMap(gl);
@@ -178,6 +179,7 @@ class FlowXmlObjectWriterTests {
         qg.setSurveyId(17L);
         qg.setName("This is a group");
         qg.setOrder(1);
+        qg.setRepeatable(false);
         TreeMap<Integer, QuestionGroup> gm = new TreeMap<>();
         gm.put(1, qg);
         form1.setQuestionGroupMap(gm);
@@ -277,6 +279,7 @@ class FlowXmlObjectWriterTests {
         qg.setSurveyId(17L);
         qg.setName("This is a group");
         qg.setOrder(1);
+        qg.setRepeatable(false);
         TreeMap<Integer, QuestionGroup> gm = new TreeMap<>();
         gm.put(1, qg);
         monitoringForm.setQuestionGroupMap(gm);
@@ -423,6 +426,7 @@ class FlowXmlObjectWriterTests {
         qg.setSurveyId(17L);
         qg.setName("This is a group");
         qg.setOrder(1);
+        qg.setRepeatable(false);
         TreeMap<Integer, QuestionGroup> gm = new TreeMap<>();
         gm.put(1, qg);
         form1.setQuestionGroupMap(gm);
@@ -494,6 +498,7 @@ class FlowXmlObjectWriterTests {
         qg.setSurveyId(17L);
         qg.setName("This is a group");
         qg.setOrder(1);
+        qg.setRepeatable(false);
         TreeMap<Integer, QuestionGroup> gl = new TreeMap<>();
         gl.put(1, qg);
         form1.setQuestionGroupMap(gl);
@@ -588,6 +593,7 @@ class FlowXmlObjectWriterTests {
         qg.setSurveyId(17L);
         qg.setName("This is a group");
         qg.setOrder(1);
+        qg.setRepeatable(false);
         TreeMap<Integer, QuestionGroup> gm = new TreeMap<>();
         gm.put(1, qg);
         form1.setQuestionGroupMap(gm);
