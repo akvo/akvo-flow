@@ -77,7 +77,6 @@ public class MessageDao extends BaseDAO<Message> {
         return results;
     }
 
-
     /**
      * lists keys of messages older than a specific date
      */
