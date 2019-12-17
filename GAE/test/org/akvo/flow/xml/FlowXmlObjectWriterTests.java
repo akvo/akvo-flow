@@ -61,6 +61,21 @@ class FlowXmlObjectWriterTests {
             "<heading>This is a group</heading>" +
             "</questionGroup></survey>";
 
+    private static final String EXPECTED_MINIMAL_MONITORING_XML = "<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?>" +
+            "<survey name=\"This is a form\" defaultLanguageCode=\"en\" version=\"12.0\" app=\"akvoflowsandbox\" " +
+            "registrationSurvey=\"17\" surveyGroupId=\"123\" surveyGroupName=\"Name of containing survey\" surveyId=\"17\">" +
+            "<questionGroup>" +
+            "<question id=\"1001\" order=\"1\" type=\"free\" mandatory=\"false\" localeNameFlag=\"false\">" +
+            "<text>This is question one</text>" +
+            "</question><question variableName=\"questionTwo\" id=\"1002\" order=\"2\" type=\"free\" mandatory=\"true\" localeNameFlag=\"false\">" +
+            "<validationRule validationType=\"numeric\" allowDecimal=\"false\" signed=\"false\"/>" +
+            "<text>This is question two</text></question>" +
+            "<question id=\"1003\" order=\"3\" type=\"geoshape\" mandatory=\"false\" " +
+            "localeNameFlag=\"false\" allowPoints=\"false\" allowLine=\"false\" allowPolygon=\"false\">" +
+            "<text>This is question three</text></question>" +
+            "<heading>This is a group</heading>" +
+            "</questionGroup></survey>";
+
     private static final String EXPECTED_REPEATABLE_XML = "<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?>" +
             "<survey name=\"This is a form\" defaultLanguageCode=\"en\" version=\"12.0\" app=\"akvoflowsandbox\" " +
             "surveyGroupId=\"123\" surveyGroupName=\"Name of containing survey\" surveyId=\"17\">" +
@@ -246,6 +261,98 @@ class FlowXmlObjectWriterTests {
         assertEquals("This is a form", dto.getName());
         assertEquals("12.0", dto.getVersion());
         assertEquals("This is a form", dto.getName());
+    }
+
+    @Test
+    void testSerialiseMinimalMonitoringForm() throws IOException {
+
+        Survey monitoringForm = new Survey();
+        monitoringForm.setKey(KeyFactory.createKey("Survey", 17L));
+        monitoringForm.setName("This is a form");
+        monitoringForm.setVersion(12.0);
+
+        //Add a QuestionGroup
+        QuestionGroup qg = new QuestionGroup();
+        qg.setKey(KeyFactory.createKey("QuestionGroup", 18L));
+        qg.setSurveyId(17L);
+        qg.setName("This is a group");
+        qg.setOrder(1);
+        TreeMap<Integer, QuestionGroup> gm = new TreeMap<>();
+        gm.put(1, qg);
+        monitoringForm.setQuestionGroupMap(gm);
+        TreeMap<Integer, Question> qm = new TreeMap<>();
+        qg.setQuestionMap(qm);
+
+        //Add some questions
+        //Intentionally do not set mandatory; it should be null
+        Question q1 = new Question();
+        q1.setKey(KeyFactory.createKey("Question", 1001L)); //Must have a key
+        q1.setOrder(1);
+        q1.setText("This is question one");
+        q1.setType(Question.Type.FREE_TEXT);
+        qm.put(1, q1);
+
+        Question q2 = new Question();
+        q2.setKey(KeyFactory.createKey("Question", 1002L)); //Must have a key
+        q2.setOrder(2);
+        q2.setText("This is question two");
+        q2.setType(Question.Type.NUMBER);
+        q2.setMandatoryFlag(true);
+        q2.setVariableName("questionTwo");
+        qm.put(2,q2);
+
+        Question q3 = new Question();
+        q3.setKey(KeyFactory.createKey("Question", 1003L)); //Must have a key
+        q3.setOrder(3);
+        q3.setText("This is question three");
+        q3.setType(Question.Type.GEOSHAPE);
+        q3.setMandatoryFlag(false);
+        qm.put(3, q3);
+
+        int questionCount = qm.size();
+
+        SurveyGroup survey = new SurveyGroup();
+        survey.setCode("Name of containing survey");
+        survey.setKey(KeyFactory.createKey("SurveyGroup", 123L));
+        monitoringForm.setSurveyGroupId(survey.getKey().getId());
+        survey.setMonitoringGroup(true);
+        survey.setNewLocaleSurveyId(monitoringForm.getKey().getId());
+
+        //Convert domain tree to Jackson tree
+        XmlForm form = new XmlForm(monitoringForm, survey, "akvoflowsandbox");
+        //...and test it
+        assertNotEquals(null, form);
+        assertNotEquals(null, form.getQuestionGroup());
+        XmlQuestionGroup xqg = form.getQuestionGroup().get(0);
+        assertNotEquals(null, xqg);
+        assertNotEquals(null, xqg.getQuestion());
+        assertEquals(questionCount, xqg.getQuestion().size());
+
+        XmlQuestion xq1 = xqg.getQuestion().get(0);
+        assertNotEquals(null, xq1);
+        assertEquals(1001L, xq1.getId());
+        assertEquals("This is question one", xq1.getText());
+        assertEquals(Boolean.FALSE, xq1.getMandatory());
+        assertEquals("free", xq1.getType());
+
+        XmlQuestion xq2 = xqg.getQuestion().get(1);
+        assertNotEquals(null, xq2);
+        assertEquals(1002L, xq2.getId());
+        assertEquals("This is question two", xq2.getText());
+        assertEquals(Boolean.TRUE, xq2.getMandatory());
+        assertEquals("free", xq2.getType());
+        assertEquals("questionTwo", xq2.getVariableName());
+
+        XmlQuestion xq3 = xqg.getQuestion().get(2);
+        assertNotEquals(null, xq3);
+        assertEquals(1003L, xq3.getId());
+        assertEquals("This is question three", xq3.getText());
+        assertEquals(Boolean.FALSE, xq3.getMandatory());
+        assertEquals("geoshape", xq3.getType());
+
+        //Convert Jackson tree into an XML string
+        String xml = PublishedForm.generate(form);
+        assertEquals(EXPECTED_MINIMAL_MONITORING_XML, xml);
     }
 
     @Test

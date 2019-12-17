@@ -48,6 +48,9 @@ public final class XmlForm {
     @JacksonXmlProperty(localName = "app", isAttribute = true)
     private String app;
 
+    @JacksonXmlProperty(localName = "registrationSurvey", isAttribute = true)
+    private String registrationSurvey;
+
     @JacksonXmlProperty(localName = "surveyGroupId", isAttribute = true)
     private Long surveyGroupId;
 
@@ -65,6 +68,9 @@ public final class XmlForm {
         surveyId = form.getKey().getId();
         surveyGroupId = form.getSurveyGroupId();
         surveyGroupName = survey.getCode();
+        if(Boolean.TRUE.equals(survey.getMonitoringGroup())) {
+            registrationSurvey = survey.getNewLocaleSurveyId().toString();
+        }
         defaultLanguageCode = form.getDefaultLanguageCode();
         if (defaultLanguageCode == null) {
             defaultLanguageCode = "en";
@@ -169,6 +175,14 @@ public final class XmlForm {
 
     public void setSurveyId(String surveyId) {
         this.surveyId = Long.parseLong(surveyId);
+    }
+
+    public String getRegistrationSurvey() {
+        return registrationSurvey;
+    }
+
+    public void setRegistrationSurvey(String registrationSurvey) {
+        this.registrationSurvey = registrationSurvey;
     }
 
     @Override public String toString() {
