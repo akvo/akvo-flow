@@ -1,5 +1,5 @@
 /*
- *  Copyright (C) 2010-2012 Stichting Akvo (Akvo Foundation)
+ *  Copyright (C) 2010-2012, 2019 Stichting Akvo (Akvo Foundation)
  *
  *  This file is part of Akvo FLOW.
  *
@@ -31,17 +31,14 @@ import com.gallatinsystems.framework.servlet.PersistenceFilter;
 import com.google.appengine.api.datastore.DatastoreService;
 import com.google.appengine.api.datastore.DatastoreServiceFactory;
 import com.google.appengine.api.datastore.Entity;
-import com.google.appengine.api.datastore.FetchOptions;
 import com.google.appengine.api.datastore.Key;
 import com.google.appengine.api.datastore.PreparedQuery;
 import com.google.appengine.api.datastore.Query;
-import com.google.appengine.api.datastore.Query.Filter;
 import com.google.appengine.api.datastore.Query.FilterOperator;
 
 /**
  * Data access object for manipulating Message objects
  *
- * @author Christopher Fagiani
  */
 public class MessageDao extends BaseDAO<Message> {
 
@@ -80,30 +77,6 @@ public class MessageDao extends BaseDAO<Message> {
         return results;
     }
 
-    /**
-     * lists messages older than a specific date
-     */
-    @SuppressWarnings("unchecked")
-    public List<Message> listCreatedBefore(Date beforeDate, String cursor, Integer pageSize) {
-
-        PersistenceManager pm = PersistenceFilter.getManager();
-        javax.jdo.Query query = pm.newQuery(Message.class);
-
-        Map<String, Object> paramMap = null;
-        StringBuilder filterString = new StringBuilder();
-        StringBuilder paramString = new StringBuilder();
-        paramMap = new HashMap<String, Object>();
-
-        appendNonNullParam("createdDateTime", filterString, paramString,
-                "Date", beforeDate, paramMap, LTE_OP);
-        if (beforeDate != null) {
-            query.declareImports("import java.util.Date");
-        }
-        query.setFilter(filterString.toString());
-        query.declareParameters(paramString.toString());
-        prepareCursor(cursor, pageSize, query);
-        return (List<Message>) query.executeWithMap(paramMap);
-    }
 
     /**
      * lists keys of messages older than a specific date
@@ -117,15 +90,12 @@ public class MessageDao extends BaseDAO<Message> {
         q.setFilter(new Query.FilterPredicate(
                 "createdDateTime", FilterOperator.LESS_THAN_OR_EQUAL, beforeDate));
         PreparedQuery pq = datastore.prepare(q);
-        FetchOptions fetchOptions;
-        fetchOptions = FetchOptions.Builder.withDefaults();
         List<Key> result = new ArrayList<>();
-        for (Entity e: pq.asIterable(fetchOptions)) {
+        for (Entity e: pq.asIterable()) {
             result.add(e.getKey());
         }
         return result;
     }
-
 
 
 }
