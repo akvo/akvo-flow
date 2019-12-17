@@ -384,6 +384,18 @@
         .assign-datapoints {
           position: relative;
 
+          .datapoint {
+            padding-bottom: 20px;
+
+            p {
+              font-weight: 500;
+            }
+
+            span {
+              font-size: 14px;
+            }
+          }
+
           .search-datapoints {
             position: absolute;
             background: #e8e8e8;

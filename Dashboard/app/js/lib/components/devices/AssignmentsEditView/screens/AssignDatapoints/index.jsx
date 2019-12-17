@@ -15,9 +15,16 @@ export default class AssignDatapoints extends React.Component {
     });
   };
 
-  render() {
-    const { selectedDevice } = this.props;
+  renderDatapoint = () => {
+    return (
+      <div className="datapoint">
+        <p>Datapoint Name</p>
+        <span>Datapont ID</span>
+      </div>
+    );
+  };
 
+  render() {
     return (
       <div className="devices-action-page assign-datapoints">
         <div>
@@ -36,7 +43,8 @@ export default class AssignDatapoints extends React.Component {
           </div>
 
           <div className="body">
-            <p>Body of datapoints {selectedDevice}</p>
+            {this.renderDatapoint()}
+            {this.renderDatapoint()}
           </div>
         </div>
 
