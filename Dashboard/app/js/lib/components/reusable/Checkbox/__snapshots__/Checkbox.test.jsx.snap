@@ -1,0 +1,21 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`Checkbox Tests +++ renders <snapshot> 1`] = `
+<div>
+  <label
+    class="checkbox-container"
+    for="fake-id"
+  >
+    Fake checkbox
+    <input
+      class="displayInline"
+      id="fake-id"
+      name="fake-id"
+      type="checkbox"
+    />
+    <span
+      class="checkmark"
+    />
+  </label>
+</div>
+`;

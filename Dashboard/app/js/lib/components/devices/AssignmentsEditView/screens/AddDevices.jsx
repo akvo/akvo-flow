@@ -62,13 +62,14 @@ export default class AddDevice extends React.Component {
   };
 
   render() {
+    const { strings } = this.context;
     const deviceGroups = this.getDeviceGroups();
     const { selectedDevices } = this.state;
 
     return (
       <div className="devices-action-page">
         <div className="header">
-          <p>Add devices to assignment</p>
+          <p>{strings.addDevicesToAssignment}</p>
           <i
             className="fa fa-times"
             onClick={() => this.props.changeTab('DEVICES')}
@@ -94,7 +95,9 @@ export default class AddDevice extends React.Component {
         <div className="footer">
           <div className="footer-inner">
             <div>
-              <p>{selectedDevices.length} selected</p>
+              <p>
+                {selectedDevices.length} {strings.selected}
+              </p>
             </div>
 
             <button
@@ -104,7 +107,7 @@ export default class AddDevice extends React.Component {
                 selectedDevices.length === 0 ? 'disabled' : ''
               }`}
             >
-              Add to assignment
+              {strings.addToAssignment}
             </button>
           </div>
         </div>

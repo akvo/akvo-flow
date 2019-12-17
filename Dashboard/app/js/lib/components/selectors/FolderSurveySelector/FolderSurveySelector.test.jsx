@@ -1,23 +1,6 @@
 import React from 'react';
 import { render, cleanup, fireEvent } from '@testing-library/react';
 import FolderSurveySelector from './index';
-import '@testing-library/jest-dom/extend-expect';
-
-// https://github.com/testing-library/react-testing-library#suppressing-unnecessary-warnings-on-react-dom-168
-const originalError = console.error;
-beforeAll(() => {
-  console.error = (...args) => {
-    if (/supports * the "act"/.test(args[0])) {
-      return;
-    }
-    originalError.call(console, ...args);
-  };
-});
-
-afterAll(() => {
-  console.error = originalError;
-});
-
 
 // Main Tests
 describe('FolderSurveySelector Tests', () => {
@@ -57,7 +40,9 @@ describe('FolderSurveySelector Tests', () => {
   };
 
   it('+++ renders <snapshot>', () => {
-    const wrapper = render(<FolderSurveySelector {...props} onSelectSurvey={jest.fn()} />);
+    const wrapper = render(
+      <FolderSurveySelector {...props} onSelectSurvey={jest.fn()} />
+    );
     expect(wrapper.container).toMatchSnapshot();
   });
 
@@ -66,7 +51,9 @@ describe('FolderSurveySelector Tests', () => {
     const onChangeFn = jest.fn();
     onChangeFn.mockReturnValue(true);
 
-    const wrapper = render(<FolderSurveySelector {...props} onSelectSurvey={onChangeFn} />);
+    const wrapper = render(
+      <FolderSurveySelector {...props} onSelectSurvey={onChangeFn} />
+    );
 
     // select a select form and trigger a value change
     const select = wrapper.getByTestId('folder-survey-select-0');
@@ -85,12 +72,14 @@ describe('FolderSurveySelector Tests', () => {
     expect(wrapper.container).toMatchSnapshot();
   });
 
-  it('+++ doesn\'t update state when a survey is selected', () => {
+  it("+++ doesn't update state when a survey is selected", () => {
     // create mock function and make it return null when called
     const onChangeFn = jest.fn();
     onChangeFn.mockReturnValue(false);
 
-    const wrapper = render(<FolderSurveySelector {...props} onSelectSurvey={onChangeFn} />);
+    const wrapper = render(
+      <FolderSurveySelector {...props} onSelectSurvey={onChangeFn} />
+    );
 
     // select a select form and trigger a value change
     const select = wrapper.getByTestId('folder-survey-select-0');
