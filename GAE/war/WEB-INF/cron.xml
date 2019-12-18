@@ -39,6 +39,6 @@
     <cron>
         <url>/cron/croncommander?action=purgeOldMessages</url>
         <description>Purge old messages</description>
-        <schedule>every monday at 00:15</schedule>
+        <schedule>every monday 00:15</schedule>
     </cron>
 </cronentries>
