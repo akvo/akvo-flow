@@ -314,27 +314,6 @@ public class SurveyedLocaleDao extends BaseDAO<SurveyedLocale> {
 
     }
 
-    /*
-     * returns list of matching data points,
-     * checking display name and (if it matches the identifier format) identifier.
-     * */
-    //TODO: page size?
-    public List<SurveyedLocale> searchSurveyedLocales(String cursor, Long surveyGroupId,
-            String searchString) {
-
-        List<SurveyedLocale> result = new ArrayList<>();
-        List<SurveyedLocale> result1 = listSurveyedLocales(cursor, surveyGroupId, null, null, searchString);
-        result.addAll(result1);
-        if (searchString.matches(SurveyedLocale.IDENTIFIER_PATTERN)) {    //TODO consider a2a2-a2a2-a2a too?
-            //JDO implementation cannot handle both OR and a prefix in a filter expression,
-            //so we have to search twice
-            List<SurveyedLocale> result2 = listSurveyedLocales(cursor, surveyGroupId, searchString, null, null);
-            if (result2.size() > 0) {
-                result.addAll(result2); //should only be one, but just in case...
-            }
-        }
-        return result;
-    }
 
     public List<SurveyedLocale> listLocalesByDisplayName(String displayName) {
         List<SurveyedLocale> locales = listByProperty("displayName", displayName, "String");

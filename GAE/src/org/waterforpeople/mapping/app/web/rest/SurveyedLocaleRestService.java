@@ -59,9 +59,11 @@ public class SurveyedLocaleRestService {
 
         List<SurveyedLocale> sls = new ArrayList<SurveyedLocale>();
         List<SurveyedLocaleDto> locales = new ArrayList<SurveyedLocaleDto>();
+        boolean searchIdentifiers = false;
 
         if (search != null && !"".equals(search) && surveyGroupId != null) {
-            sls = surveyedLocaleDao.searchSurveyedLocales(since, surveyGroupId, search);
+            sls = surveyedLocaleDao.listSurveyedLocales(since, null, null, null, search);
+            searchIdentifiers = search.matches(SurveyedLocale.IDENTIFIER_PATTERN); //TODO consider a2a2-a2a2-a2a too?
         } else if (identifier != null && !"".equals(identifier)) {
             sls = surveyedLocaleDao.listSurveyedLocales(since, null, identifier, null, null);
         } else if (displayName != null && !"".equals(displayName)) {
@@ -72,13 +74,16 @@ public class SurveyedLocaleRestService {
             sls = surveyedLocaleDao.listSurveyedLocales(since, surveyGroupId, null, null, null);
         }
 
-        for (SurveyedLocale sl : sls) {
-            SurveyedLocaleDto dto = new SurveyedLocaleDto();
-            DtoMarshaller.copyToDto(sl, dto);
-            locales.add(dto);
+        copyListToDtoList(sls, locales);
+
+        if (searchIdentifiers) {
+            //JDO implementation cannot handle both OR and a prefix in a filter expression,
+            //so we have to search again and concatenate
+            List<SurveyedLocale> sls2 = surveyedLocaleDao.listSurveyedLocales(since, null, search, null, null);
+            copyListToDtoList(sls2, locales);
         }
 
-        Integer num = sls.size();
+        Integer num = locales.size();
         String newSince = SurveyedLocaleDao.getCursor(sls);
         statusDto.setNum(num);
         statusDto.setSince(newSince);
@@ -124,5 +129,14 @@ public class SurveyedLocaleRestService {
         }
         response.put("meta", statusDto);
         return response;
+    }
+
+    private void copyListToDtoList(List<SurveyedLocale>list1, List<SurveyedLocaleDto> list2) {
+        for (SurveyedLocale sl : list1) {
+            SurveyedLocaleDto dto = new SurveyedLocaleDto();
+            DtoMarshaller.copyToDto(sl, dto);
+            list2.add(dto);
+        }
+
     }
 }
