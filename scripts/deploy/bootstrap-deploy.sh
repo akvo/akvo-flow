@@ -3,15 +3,15 @@
 set -eu
 
 apk add --no-cache \
-    bash~=4.4 \
+    bash~=5.0 \
     git~=2 \
-    jq~=1.5 \
+    jq~=1.6 \
     unzip~=6 \
     openjdk8~=8 \
     parallel \
-    shadow~=4.5 \
+    shadow~=4.6 \
     su-exec~=0.2 \
-    nss~=3.34 \
+    nss~=3.44 \
 
 gcloud components install app-engine-java --quiet
 rm -rf /google-cloud-sdk/.install/.backup
