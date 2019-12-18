@@ -1,5 +1,19 @@
 # Akvo Flow Release Notes
 ----
+# Akvo Flow Dashboard v1.10.1.2 - Zenithal Zauschneria
+Date: 18-12-2019
+
+* **Jackson XML publishing missing elements/attributes** - [#3316]
+* **Remove unused code for assignments - [#3355]
+* ** Use project as parameter to be able to execute in parallel - [#3349]
+* ** Fix footer on add/edit tab - [#3339]
+* ** Tests for assignments UI- [#3341]
+* ** Add translation support for .jsx files - [#3352]
+* ** Purge year-old messages - [#3236]
+* ** Geotag extraction by cron - [#3305]
+* ** Use Dataflow for deleting all entities of a Kind - [#3349]
+* ** Update SDKs - [#3346]
+
 # Akvo Flow Dashboard v1.10.1.1 - Yappy Yucca hotfix
 Date: 06-11-2019
 
