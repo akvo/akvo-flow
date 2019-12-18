@@ -14,6 +14,7 @@ export default class SwitchBox extends React.Component {
           name={name}
           checked={checked}
           onChange={() => this.props.onChange(name, !checked)}
+          data-testid="switch-box"
         />
         <span className="slider round" />
       </label>

@@ -49,6 +49,8 @@ import com.gallatinsystems.user.dao.UserDao;
 import com.gallatinsystems.user.domain.User;
 import com.gallatinsystems.user.domain.UserAuthorization;
 import com.google.appengine.api.datastore.Cursor;
+import com.google.appengine.api.datastore.DatastoreService;
+import com.google.appengine.api.datastore.DatastoreServiceFactory;
 import com.google.appengine.api.datastore.Key;
 import com.google.appengine.api.datastore.KeyFactory;
 
@@ -633,6 +635,25 @@ public class BaseDAO<T extends BaseDomain> {
     public <E extends BaseDomain> void delete(Collection<E> obj) {
         PersistenceManager pm = PersistenceFilter.getManager();
         pm.deletePersistentAll(obj);
+    }
+
+    /**
+     * deletes an object from the db, by key
+     *
+     * @param <E>
+     * @param obj
+     */
+    public <E extends BaseDomain> void deleteByKey(Key k) {
+        DatastoreService datastore = DatastoreServiceFactory.getDatastoreService();
+        datastore.delete(k);
+    }
+
+    /**
+     * deletes a list of objects, by key, in a single datastore interaction
+     */
+    public <E extends BaseDomain> void deleteByKeys(Collection<Key> kList) {
+        DatastoreService datastore = DatastoreServiceFactory.getDatastoreService();
+        datastore.delete(kList);
     }
 
     /**

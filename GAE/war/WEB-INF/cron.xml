@@ -36,4 +36,9 @@
         <description>Extract geotags from legacy image answers</description>
         <schedule>every 24 hours</schedule>
     </cron>
+    <cron>
+        <url>/cron/croncommander?action=purgeOldMessages</url>
+        <description>Purge old messages</description>
+        <schedule>every monday 00:15</schedule>
+    </cron>
 </cronentries>

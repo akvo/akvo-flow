@@ -14,13 +14,16 @@
  *  The full license text can also be seen at <http://www.gnu.org/licenses/agpl.html>.
  */
 
-package org.waterforpeople.mapping.app.web.rest;
+package org.akvo.flow.rest;
 
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.akvo.flow.dao.MessageDao;
+import org.akvo.flow.domain.Message;
+import org.akvo.flow.rest.dto.MessageDto;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -29,10 +32,6 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.waterforpeople.mapping.app.util.DtoMarshaller;
 import org.waterforpeople.mapping.app.web.rest.dto.RestStatusDto;
-
-import com.gallatinsystems.messaging.app.gwt.client.MessageDto;
-import com.gallatinsystems.messaging.dao.MessageDao;
-import com.gallatinsystems.messaging.domain.Message;
 
 @Controller
 @RequestMapping("/messages")
