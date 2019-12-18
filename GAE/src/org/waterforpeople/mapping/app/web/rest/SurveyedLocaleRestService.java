@@ -60,7 +60,7 @@ public class SurveyedLocaleRestService {
         List<SurveyedLocale> sls = new ArrayList<SurveyedLocale>();
         List<SurveyedLocaleDto> locales = new ArrayList<SurveyedLocaleDto>();
 
-        if (search != null && !"".equals(search)) {
+        if (search != null && !"".equals(search) && surveyGroupId != null) {
             sls = surveyedLocaleDao.searchSurveyedLocales(since, surveyGroupId, search);
         } else if (identifier != null && !"".equals(identifier)) {
             sls = surveyedLocaleDao.listSurveyedLocales(since, null, identifier, null, null);

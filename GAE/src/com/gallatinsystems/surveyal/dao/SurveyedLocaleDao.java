@@ -296,6 +296,8 @@ public class SurveyedLocaleDao extends BaseDAO<SurveyedLocale> {
             appendNonNullParam("displayName", filterString, paramString,
                     "String", endString, paramMap, LT_OP);
             query.setOrdering("displayName asc"); //necessary if inequality ops present
+            //Alternative custom filterString:
+            // surveyGroupId == surveyGroupIdParam0 && displayName.startsWith(displayNameParam1)
         } else {
             query.setOrdering("lastUpdateDateTime desc");
         }
@@ -312,48 +314,26 @@ public class SurveyedLocaleDao extends BaseDAO<SurveyedLocale> {
 
     }
 
-
-    //TODO filter by survey[group], too?
+    /*
+     * returns list of matching data points,
+     * checking display name and (if it matches the identifier format) identifier.
+     * */
     //TODO: page size?
-    @SuppressWarnings("unchecked")
     public List<SurveyedLocale> searchSurveyedLocales(String cursor, Long surveyGroupId,
             String searchString) {
 
-        String endString = searchString + Character.MAX_VALUE;
-
-        PersistenceManager pm = PersistenceFilter.getManager();
-        javax.jdo.Query query = pm.newQuery(SurveyedLocale.class);
-
-        Map<String, Object> paramMap = null;
-
-        StringBuilder filterString = new StringBuilder();
-        StringBuilder paramString = new StringBuilder();
-        paramMap = new HashMap<String, Object>();
-
-        appendNonNullParam("displayName", filterString, paramString,
-                "String", searchString, paramMap, GTE_OP);
-        appendNonNullParam("displayName", filterString, paramString,
-                "String", endString, paramMap, LT_OP);
-
+        List<SurveyedLocale> result = new ArrayList<>();
+        List<SurveyedLocale> result1 = listSurveyedLocales(cursor, surveyGroupId, null, null, searchString);
+        result.addAll(result1);
         if (searchString.matches(SurveyedLocale.IDENTIFIER_PATTERN)) {    //TODO consider a2a2-a2a2-a2a too?
-            //search for either identifier OR name
-            appendNonNullParam("identifier", filterString, paramString,
-                    "String", searchString, paramMap);
-
-            //combination other than AND requires a custom filterString
-            filterString = new StringBuilder();
-            filterString.append("(displayName >= displayNameParam0 && displayName < displayNameParam1) || (identifier == identifierParam2)");
+            //JDO implementation cannot handle both OR and a prefix in a filter expression,
+            //so we have to search twice
+            List<SurveyedLocale> result2 = listSurveyedLocales(cursor, surveyGroupId, searchString, null, null);
+            if (result2.size() > 0) {
+                result.addAll(result2); //should only be one, but just in case...
+            }
         }
-        query.setOrdering("displayName asc"); //necessary if inequality ops present
-
-        query.setFilter(filterString.toString());
-        query.declareParameters(paramString.toString());
-
-        if (cursor != null && cursor != "")
-            prepareCursor(cursor, query);
-
-        return (List<SurveyedLocale>) query.executeWithMap(paramMap);
-
+        return result;
     }
 
     public List<SurveyedLocale> listLocalesByDisplayName(String displayName) {
