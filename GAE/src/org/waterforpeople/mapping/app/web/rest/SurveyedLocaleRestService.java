@@ -63,7 +63,7 @@ public class SurveyedLocaleRestService {
 
         if (search != null && !"".equals(search) && surveyGroupId != null) {
             sls = surveyedLocaleDao.listSurveyedLocales(since, null, null, null, search);
-            searchIdentifiers = search.matches(SurveyedLocale.IDENTIFIER_PATTERN); //TODO consider a2a2-a2a2-a2a too?
+            searchIdentifiers = search.matches(SurveyedLocale.IDENTIFIER_PATTERN); //could consider a2a2-a2a2-a2a too
         } else if (identifier != null && !"".equals(identifier)) {
             sls = surveyedLocaleDao.listSurveyedLocales(since, null, identifier, null, null);
         } else if (displayName != null && !"".equals(displayName)) {
@@ -74,13 +74,13 @@ public class SurveyedLocaleRestService {
             sls = surveyedLocaleDao.listSurveyedLocales(since, surveyGroupId, null, null, null);
         }
 
-        copyListToDtoList(sls, locales);
+        copyToDtoList(sls, locales);
 
         if (searchIdentifiers) {
             //JDO implementation cannot handle both OR and a prefix in a filter expression,
             //so we have to search again and concatenate
             List<SurveyedLocale> sls2 = surveyedLocaleDao.listSurveyedLocales(since, null, search, null, null);
-            copyListToDtoList(sls2, locales);
+            copyToDtoList(sls2, locales);
         }
 
         Integer num = locales.size();
@@ -131,7 +131,7 @@ public class SurveyedLocaleRestService {
         return response;
     }
 
-    private void copyListToDtoList(List<SurveyedLocale>list1, List<SurveyedLocaleDto> list2) {
+    private void copyToDtoList(List<SurveyedLocale>list1, List<SurveyedLocaleDto> list2) {
         for (SurveyedLocale sl : list1) {
             SurveyedLocaleDto dto = new SurveyedLocaleDto();
             DtoMarshaller.copyToDto(sl, dto);
