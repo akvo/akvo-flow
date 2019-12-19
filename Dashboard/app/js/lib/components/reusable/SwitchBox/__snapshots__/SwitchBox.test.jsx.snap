@@ -1,0 +1,20 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`SwitchBox Tests +++ renders <snapshot> 1`] = `
+<div>
+  <label
+    class="switch"
+    for="fake-id"
+  >
+    <input
+      data-testid="switch-box"
+      id="fake-id"
+      name="fake-id"
+      type="checkbox"
+    />
+    <span
+      class="slider round"
+    />
+  </label>
+</div>
+`;

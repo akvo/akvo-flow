@@ -34,16 +34,16 @@ export default class AssignmentMain extends React.Component {
   };
 
   renderSidebar = () => {
+    const { strings, data } = this.context;
     const deviceGroups = this.getDeviceGroups();
-    const { selectedDeviceIds } = this.context.data;
-    const deviceIsSelected = selectedDeviceIds.length > 0;
+    const deviceIsSelected = data.selectedDeviceIds.length > 0;
 
     return (
       <div className="assignment-sidebar">
         <ul>
           <li className={this.state.currentTab === 'FORMS' ? 'active' : ''}>
             <a href="#" onClick={() => this.changeTab('FORMS')}>
-              Forms
+              {strings.forms}
             </a>
           </li>
 
@@ -55,7 +55,7 @@ export default class AssignmentMain extends React.Component {
                 deviceIsSelected ? undefined : () => this.changeTab('DEVICES')
               }
             >
-              Devices
+              {strings.devices}
             </a>
 
             {deviceIsSelected && (
@@ -64,7 +64,7 @@ export default class AssignmentMain extends React.Component {
                 className="sub-action"
                 onClick={() => this.changeTab('EDIT_DEVICE')}
               >
-                Edit
+                {strings.edit}
               </a>
             )}
 
@@ -73,7 +73,7 @@ export default class AssignmentMain extends React.Component {
               className="sub-action"
               onClick={() => this.changeTab('ADD_DEVICE')}
             >
-              Add
+              {strings.add}
             </a>
           </li>
 

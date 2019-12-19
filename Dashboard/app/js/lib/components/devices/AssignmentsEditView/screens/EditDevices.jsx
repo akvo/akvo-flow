@@ -64,13 +64,14 @@ export default class EditDevices extends React.Component {
   };
 
   render() {
+    const { strings } = this.context;
     const deviceGroups = this.getDeviceGroups();
     const { selectedDevices } = this.state;
 
     return (
       <div className="devices-action-page">
         <div className="header">
-          <p>Remove devices from assignment</p>
+          <p>{strings.removeDevicesFromAssignment}</p>
           <i
             className="fa fa-times icon"
             onClick={() => this.props.changeTab('DEVICES')}
@@ -96,7 +97,9 @@ export default class EditDevices extends React.Component {
         <div className="footer">
           <div className="footer-inner">
             <div>
-              <p>{selectedDevices.length} selected</p>
+              <p>
+                {selectedDevices.length} {strings.selected}
+              </p>
             </div>
 
             <button
@@ -106,7 +109,7 @@ export default class EditDevices extends React.Component {
                 selectedDevices.length === 0 ? 'disabled' : ''
               }`}
             >
-              Remove from assignment
+              {strings.removeFromAssignment}
             </button>
           </div>
         </div>
