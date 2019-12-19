@@ -1,8 +1,8 @@
 /* eslint-disable import/no-unresolved */
 import React from 'react';
 import PropTypes from 'prop-types';
-// import Dropdown from 'akvo-flow/components/reusable/Dropdown';
 import SearchDatapoints from './SearchDatapoints';
+import AssignmentContext from '../../assignment-context';
 
 export default class AssignDatapoints extends React.Component {
   state = {
@@ -15,23 +15,45 @@ export default class AssignDatapoints extends React.Component {
     });
   };
 
-  renderDatapoint = () => {
+  renderDatapoint = dp => {
     return (
-      <div className="datapoint">
-        <p>Datapoint Name</p>
-        <span>Datapont ID</span>
+      <div key={dp.id} className="datapoint">
+        <p>{dp.name}</p>
+        <span>{dp.id}</span>
       </div>
     );
   };
 
+  getDeviceData = () => {
+    const { selectedDevice } = this.props;
+    const { devices, selectedDatapoints } = this.context.data;
+
+    const deviceData = devices.find(device => device.id === selectedDevice);
+    const selectedDatapoint = selectedDatapoints.find(
+      dp => dp.deviceId === selectedDevice
+    );
+    let datapointsData = [];
+
+    if (selectedDatapoint) {
+      datapointsData = selectedDatapoint.datapoints;
+    }
+
+    return {
+      deviceData,
+      datapointsData,
+    };
+  };
+
   render() {
+    const { deviceData, datapointsData } = this.getDeviceData();
+
     return (
       <div className="devices-action-page assign-datapoints">
         <div>
           <div className="header">
             <div className="device-details">
-              <p>Device name</p>
-              <p>0 Datapoints assigned</p>
+              <p>{deviceData.name}</p>
+              <p>{datapointsData.length} Datapoints assigned</p>
             </div>
 
             <button
@@ -42,15 +64,15 @@ export default class AssignDatapoints extends React.Component {
             </button>
           </div>
 
-          <div className="body">
-            {this.renderDatapoint()}
-            {this.renderDatapoint()}
-          </div>
+          <div className="body">{datapointsData.map(this.renderDatapoint)}</div>
         </div>
 
         <div>
           {this.state.currentSubTab === 'SEARCH_DATAPOINTS' && (
-            <SearchDatapoints changeTab={this.changeTab} />
+            <SearchDatapoints
+              deviceId={this.props.selectedDevice}
+              changeTab={this.changeTab}
+            />
           )}
         </div>
       </div>
@@ -58,6 +80,7 @@ export default class AssignDatapoints extends React.Component {
   }
 }
 
+AssignDatapoints.contextType = AssignmentContext;
 AssignDatapoints.propTypes = {
   selectedDevice: PropTypes.string.isRequired,
 };

@@ -33,9 +33,14 @@ export default class SearchDatapoints extends React.Component {
 
   addToAssignment = () => {
     const { selectedDatapoints } = this.state;
+    const { datapoints } = this.context.data;
     const { addDatapointsToAssignment } = this.context.actions;
 
-    addDatapointsToAssignment(selectedDatapoints);
+    const formattedSelectedDps = selectedDatapoints.map(sDp =>
+      datapoints.find(dp => dp.id === sDp)
+    );
+
+    addDatapointsToAssignment(formattedSelectedDps, this.props.deviceId);
 
     // empty selected devices
     this.setState({ selectedDatapoints: [] });
@@ -105,5 +110,6 @@ export default class SearchDatapoints extends React.Component {
 SearchDatapoints.contextType = AssignmentContext;
 
 SearchDatapoints.propTypes = {
+  deviceId: PropTypes.string.isRequired,
   changeTab: PropTypes.func.isRequired,
 };

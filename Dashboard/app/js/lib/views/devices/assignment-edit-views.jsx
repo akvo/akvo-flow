@@ -88,7 +88,6 @@ FLOW.AssignmentEditView = FLOW.ReactComponentView.extend(
       this.selectedDatapoints = [];
 
       // using Set to avoia duplication
-      this.activeDeviceGroups = new Set();
       this.initialSurveyGroup = null;
     },
 
@@ -161,6 +160,7 @@ FLOW.AssignmentEditView = FLOW.ReactComponentView.extend(
         initialSurveyGroup: this.initialSurveyGroup,
         numberOfForms: this.selectedSurveys.length,
         selectedDeviceIds: this.selectedDevices,
+        selectedDatapoints: this.selectedDatapoints,
       };
 
       return {
@@ -667,13 +667,28 @@ FLOW.AssignmentEditView = FLOW.ReactComponentView.extend(
       this.renderReactSide();
     },
 
-    addDatapointsToAssignment(datapoints) {
-      datapoints.forEach(dp => {
-        // check if datapoint is already selected to avoid duplicates
-        if (!this.selectedDatapoints.includes(dp)) {
-          this.selectedDatapoints.push(dp);
-        }
-      });
+    addDatapointsToAssignment(datapoints, deviceId) {
+      const selectedDps = this.selectedDatapoints;
+      const selectedDp = selectedDps.find(sDp => sDp.deviceId === deviceId);
+
+      // check if device is already has datapoints
+      if (selectedDp) {
+        datapoints.forEach(dp => {
+          // check if datapoints isn't already added to this device
+          if (!selectedDp.datapoints.find(sDp => sDp.id === dp.id)) {
+            // push datapoints to device
+            selectedDp.datapoints.push(dp);
+          }
+        });
+      } else {
+        // push new device into selected datapoints
+        this.selectedDatapoints.push({
+          deviceId,
+          datapoints,
+        });
+      }
+
+      this.renderReactSide();
     },
   }
 );
