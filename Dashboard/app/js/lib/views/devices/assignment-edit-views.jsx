@@ -46,6 +46,7 @@ FLOW.AssignmentEditView = FLOW.ReactComponentView.extend(
       this.findDatapoints = this.findDatapoints.bind(this);
       this.detectDatapointsLoaded = this.detectDatapointsLoaded.bind(this);
       this.addDatapointsToAssignment = this.addDatapointsToAssignment.bind(this);
+      this.saveDatapoints = this.saveDatapoints.bind(this);
 
       // object wide varaibles
       this.forms = {};
@@ -149,6 +150,7 @@ FLOW.AssignmentEditView = FLOW.ReactComponentView.extend(
       FLOW.router.transitionTo('navDevices.assignSurveysOverview');
     },
 
+    // saving functionality
     saveSurveyAssignment(data) {
       let endDateParse;
       let startDateParse;
@@ -202,12 +204,34 @@ FLOW.AssignmentEditView = FLOW.ReactComponentView.extend(
 
       FLOW.store.commit();
 
+      // save datapoints
+      this.saveDatapoints();
+
       // wait half a second before transitioning back to the assignments list
       setTimeout(() => {
         FLOW.router.transitionTo('navDevices.assignSurveysOverview');
       }, 500);
 
       return true;
+    },
+
+    saveDatapoints() {
+      const surveyAssignmentId = FLOW.selectedControl.get('selectedSurveyAssignment').get('keyId');
+      const surveyFolderId = FLOW.selectedControl.get('selectedSurveyGroup').get('keyId');
+
+      // create records for each device datapoints
+      this.selectedDatapoints.forEach(sDp => {
+        const data = {
+          surveyAssignmentId,
+          surveyId: surveyFolderId,
+          deviceId: sDp.deviceId,
+          dataPointIds: sDp.datapoints.map(dp => dp.id),
+        };
+
+        FLOW.store.createRecord(FLOW.DataPointAssignment, data);
+      });
+
+      FLOW.store.commit();
     },
 
     // setups
