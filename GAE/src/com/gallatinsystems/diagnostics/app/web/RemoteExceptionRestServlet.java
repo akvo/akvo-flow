@@ -26,7 +26,7 @@ import java.io.IOException;
 /**
  * Servlet for saving stack traces posted by the devices
  * <p>
- * NOTE: This servlet is keep for backward compatibility with old mobile Apps.
+ * NOTE: This servlet is kept for backward compatibility with old mobile Apps.
  * Sending a stacktrace is a no-op, we return HTTP 200 (OK)
  *
  * @author Christopher Fagiani
