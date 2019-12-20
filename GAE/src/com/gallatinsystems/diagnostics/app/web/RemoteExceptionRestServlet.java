@@ -1,5 +1,5 @@
 /*
- *  Copyright (C) 2010-2016 Stichting Akvo (Akvo Foundation)
+ *  Copyright (C) 2010-2016,2019 Stichting Akvo (Akvo Foundation)
  *
  *  This file is part of Akvo FLOW.
  *
@@ -16,69 +16,33 @@
 
 package com.gallatinsystems.diagnostics.app.web;
 
-import java.util.Date;
 
+import javax.servlet.ServletException;
+import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
-
-import com.gallatinsystems.diagnostics.app.web.dto.RemoteExceptionRequest;
-import com.gallatinsystems.diagnostics.dao.RemoteStacktraceDao;
-import com.gallatinsystems.diagnostics.domain.RemoteStacktrace;
-import com.gallatinsystems.framework.rest.AbstractRestApiServlet;
-import com.gallatinsystems.framework.rest.RestError;
-import com.gallatinsystems.framework.rest.RestRequest;
-import com.gallatinsystems.framework.rest.RestResponse;
-import com.gallatinsystems.framework.rest.exception.RestException;
-import com.google.appengine.api.datastore.Text;
+import javax.servlet.http.HttpServletResponse;
+import java.io.IOException;
 
 /**
- * servlet for saving stack traces posted by the devices
- * 
+ * Servlet for saving stack traces posted by the devices
+ * <p>
+ * NOTE: This servlet is keep for backward compatibility with old mobile Apps.
+ * Sending a stacktrace is a no-op, we return HTTP 200 (OK)
+ *
  * @author Christopher Fagiani
  */
-public class RemoteExceptionRestServlet extends AbstractRestApiServlet {
+public class RemoteExceptionRestServlet extends HttpServlet {
 
     private static final long serialVersionUID = 1831040260541847041L;
-    private RemoteStacktraceDao stacktraceDao;
 
-    public RemoteExceptionRestServlet() {
-        stacktraceDao = new RemoteStacktraceDao();
+    @Override
+    protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
+        doPost(req, resp);
     }
 
     @Override
-    protected RestRequest convertRequest() throws Exception {
-        HttpServletRequest req = getRequest();
-        RestRequest exReq = new RemoteExceptionRequest();
-        exReq.populateFromHttpRequest(req);
-        return exReq;
+    protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
+        // no op
+        resp.setStatus(HttpServletResponse.SC_OK);
     }
-
-    @Override
-    protected RestResponse handleRequest(RestRequest req) throws Exception {
-        RestResponse resp = new RestResponse();
-        RemoteExceptionRequest exReq = (RemoteExceptionRequest) req;
-        // saves a stacktrace
-        if (RemoteExceptionRequest.SAVE_TRACE_ACTION.equals(req.getAction())) {
-            RemoteStacktrace trace = new RemoteStacktrace();
-            trace.setErrorDate(exReq.getDate() != null ? exReq.getDate()
-                    : new Date());
-            trace.setSoftwareVersion(exReq.getVersion());
-            trace.setDeviceIdentifier(exReq.getDeviceIdent());
-            trace.setPhoneNumber(exReq.getPhoneNumber());
-            trace.setStackTrace(new Text(exReq.getStackTrace()));
-            trace.setAndroidId(exReq.getAndroidId());
-            stacktraceDao.save(trace);
-        } else {
-            throw new RestException(new RestError(RestError.BAD_DATATYPE_CODE,
-                    RestError.BAD_DATATYPE_MESSAGE, "Action: "
-                            + req.getAction() + " not supported"),
-                    "Bad Action value", null);
-        }
-        return resp;
-    }
-
-    @Override
-    protected void writeOkResponse(RestResponse resp) throws Exception {
-        getResponse().setStatus(200);
-    }
-
 }
