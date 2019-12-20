@@ -16,9 +16,7 @@ export default class EditDevices extends React.Component {
     // filter out selected devices
     const { devices, selectedDeviceIds } = this.context.data;
 
-    const filteredDevices = devices.filter(device =>
-      selectedDeviceIds.includes(device.id)
-    );
+    const filteredDevices = devices.filter(device => selectedDeviceIds.includes(device.id));
 
     return _groupBy(filteredDevices, device => device.deviceGroup.id);
   }
@@ -43,9 +41,7 @@ export default class EditDevices extends React.Component {
     if (checked) {
       newSelectedDevices = selectedDevices.concat(ids);
     } else {
-      newSelectedDevices = selectedDevices.filter(
-        device => !ids.includes(device)
-      );
+      newSelectedDevices = selectedDevices.filter(device => !ids.includes(device));
     }
 
     this.setState({
@@ -105,9 +101,7 @@ export default class EditDevices extends React.Component {
             <button
               type="button"
               onClick={this.removeFromAssignment}
-              className={`btnOutline ${
-                selectedDevices.length === 0 ? 'disabled' : ''
-              }`}
+              className={`btnOutline ${selectedDevices.length === 0 ? 'disabled' : ''}`}
             >
               {strings.removeFromAssignment}
             </button>

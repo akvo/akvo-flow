@@ -29,9 +29,7 @@ export default class AssignDatapoints extends React.Component {
     const { devices, selectedDatapoints } = this.context.data;
 
     const deviceData = devices.find(device => device.id === selectedDevice);
-    const selectedDatapoint = selectedDatapoints.find(
-      dp => dp.deviceId === selectedDevice
-    );
+    const selectedDatapoint = selectedDatapoints.find(dp => dp.deviceId === selectedDevice);
     let datapointsData = [];
 
     if (selectedDatapoint) {
@@ -56,10 +54,7 @@ export default class AssignDatapoints extends React.Component {
               <p>{datapointsData.length} Datapoints assigned</p>
             </div>
 
-            <button
-              onClick={() => this.changeTab('SEARCH_DATAPOINTS')}
-              type="button"
-            >
+            <button onClick={() => this.changeTab('SEARCH_DATAPOINTS')} type="button">
               By datapoints name or ID
             </button>
           </div>
@@ -69,10 +64,7 @@ export default class AssignDatapoints extends React.Component {
 
         <div>
           {this.state.currentSubTab === 'SEARCH_DATAPOINTS' && (
-            <SearchDatapoints
-              deviceId={this.props.selectedDevice}
-              changeTab={this.changeTab}
-            />
+            <SearchDatapoints deviceId={this.props.selectedDevice} changeTab={this.changeTab} />
           )}
         </div>
       </div>

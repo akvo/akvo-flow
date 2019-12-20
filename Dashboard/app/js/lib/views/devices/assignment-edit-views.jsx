@@ -54,7 +54,7 @@ FLOW.AssignmentEditView = FLOW.ReactComponentView.extend(
       this.devices = [];
       this.deviceGroups = {};
       this.deviceGroupNames = {};
-      this.datapoints = [];
+      this.datapointsResults = [];
 
       // selected attributes
       this.selectedDevices = [];
@@ -123,7 +123,7 @@ FLOW.AssignmentEditView = FLOW.ReactComponentView.extend(
       const data = {
         forms: this.forms,
         devices: this.devices,
-        datapoints: this.datapoints,
+        datapointsResults: this.datapointsResults,
         surveyGroups: this.surveyGroups,
         deviceGroups: this.deviceGroups,
         deviceGroupNames: this.deviceGroupNames,
@@ -597,7 +597,7 @@ FLOW.AssignmentEditView = FLOW.ReactComponentView.extend(
 
     detectDatapointsLoaded() {
       const datapoints = FLOW.router.surveyedLocaleController.get('content');
-      this.datapoints = datapoints.map(datapoint => {
+      this.datapointsResults = datapoints.map(datapoint => {
         return {
           name: datapoint.get('displayName'),
           id: datapoint.get('id'),

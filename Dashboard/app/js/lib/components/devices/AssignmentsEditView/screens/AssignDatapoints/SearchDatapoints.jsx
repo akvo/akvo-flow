@@ -23,9 +23,7 @@ export default class SearchDatapoints extends React.Component {
     if (checked) {
       newSelectedDatapoints = selectedDatapoints.concat(id);
     } else {
-      newSelectedDatapoints = selectedDatapoints.filter(
-        device => device !== id
-      );
+      newSelectedDatapoints = selectedDatapoints.filter(device => device !== id);
     }
 
     this.setState({ selectedDatapoints: newSelectedDatapoints });
@@ -33,11 +31,11 @@ export default class SearchDatapoints extends React.Component {
 
   addToAssignment = () => {
     const { selectedDatapoints } = this.state;
-    const { datapoints } = this.context.data;
+    const { datapointsResults } = this.context.data;
     const { addDatapointsToAssignment } = this.context.actions;
 
     const formattedSelectedDps = selectedDatapoints.map(sDp =>
-      datapoints.find(dp => dp.id === sDp)
+      datapointsResults.find(dp => dp.id === sDp)
     );
 
     addDatapointsToAssignment(formattedSelectedDps, this.props.deviceId);
@@ -47,7 +45,7 @@ export default class SearchDatapoints extends React.Component {
   };
 
   render() {
-    const { datapoints } = this.context.data;
+    const { datapointsResults } = this.context.data;
     const { selectedDatapoints } = this.state;
 
     return (
@@ -66,15 +64,11 @@ export default class SearchDatapoints extends React.Component {
           {/* search bar */}
           <form className="search-bar" onSubmit={this.onSearch}>
             <i className="fa fa-search" />
-            <input
-              type="search"
-              id="searchDatapoints"
-              placeholder="Search datapoint by name"
-            />
+            <input type="search" id="searchDatapoints" placeholder="Search datapoint by name" />
           </form>
 
           <div className="search-results">
-            {datapoints.map(dp => (
+            {datapointsResults.map(dp => (
               <Checkbox
                 key={dp.id}
                 id={dp.id}
@@ -93,11 +87,7 @@ export default class SearchDatapoints extends React.Component {
               <p>{selectedDatapoints.length} selected</p>
             </div>
 
-            <button
-              type="button"
-              onClick={this.addToAssignment}
-              className="btnOutline"
-            >
+            <button type="button" onClick={this.addToAssignment} className="btnOutline">
               Assign
             </button>
           </div>

@@ -14,7 +14,7 @@ import AssignmentsContext from './assignment-context';
 
 export default class AssignmentMain extends React.Component {
   state = {
-    currentTab: 'ASSIGN_DATAPOINTS',
+    currentTab: 'FORMS',
     selectedDevice: '150482013',
   };
 
@@ -26,9 +26,7 @@ export default class AssignmentMain extends React.Component {
     // filter out selected devices
     const { devices, selectedDeviceIds } = this.context.data;
 
-    const filteredDevices = devices.filter(device =>
-      selectedDeviceIds.includes(device.id)
-    );
+    const filteredDevices = devices.filter(device => selectedDeviceIds.includes(device.id));
 
     return _groupBy(filteredDevices, device => device.deviceGroup.id);
   };
@@ -51,28 +49,18 @@ export default class AssignmentMain extends React.Component {
             <a
               className={deviceIsSelected ? 'disabled' : undefined}
               href="#"
-              onClick={
-                deviceIsSelected ? undefined : () => this.changeTab('DEVICES')
-              }
+              onClick={deviceIsSelected ? undefined : () => this.changeTab('DEVICES')}
             >
               {strings.devices}
             </a>
 
             {deviceIsSelected && (
-              <a
-                href="#"
-                className="sub-action"
-                onClick={() => this.changeTab('EDIT_DEVICE')}
-              >
+              <a href="#" className="sub-action" onClick={() => this.changeTab('EDIT_DEVICE')}>
                 {strings.edit}
               </a>
             )}
 
-            <a
-              href="#"
-              className="sub-action"
-              onClick={() => this.changeTab('ADD_DEVICE')}
-            >
+            <a href="#" className="sub-action" onClick={() => this.changeTab('ADD_DEVICE')}>
               {strings.add}
             </a>
           </li>
@@ -83,11 +71,7 @@ export default class AssignmentMain extends React.Component {
             }`}
           >
             {Object.keys(deviceGroups).map(dgId => (
-              <SidebarDropdown
-                key={dgId}
-                devices={deviceGroups[dgId]}
-                changeTab={this.changeTab}
-              />
+              <SidebarDropdown key={dgId} devices={deviceGroups[dgId]} changeTab={this.changeTab} />
             ))}
           </li>
         </ul>
@@ -103,15 +87,9 @@ export default class AssignmentMain extends React.Component {
 
         <div className="assignment-main">
           {currentTab === 'FORMS' && <FormSection changeTab={this.changeTab} />}
-          {currentTab === 'ADD_DEVICE' && (
-            <AddDevices changeTab={this.changeTab} />
-          )}
-          {currentTab === 'EDIT_DEVICE' && (
-            <EditDevices changeTab={this.changeTab} />
-          )}
-          {currentTab === 'DEVICES' && (
-            <DevicesSection changeTab={this.changeTab} />
-          )}
+          {currentTab === 'ADD_DEVICE' && <AddDevices changeTab={this.changeTab} />}
+          {currentTab === 'EDIT_DEVICE' && <EditDevices changeTab={this.changeTab} />}
+          {currentTab === 'DEVICES' && <DevicesSection changeTab={this.changeTab} />}
           {currentTab === 'ASSIGN_DATAPOINTS' && (
             <AssignDatapoints selectedDevice={selectedDevice} />
           )}

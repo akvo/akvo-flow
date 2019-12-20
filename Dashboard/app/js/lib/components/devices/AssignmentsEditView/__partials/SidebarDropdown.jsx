@@ -30,22 +30,14 @@ export default class SidebarDropdown extends React.Component {
 
     return (
       <div className="sidebar-dropdown">
-        <div
-          onKeyDown={this.toggleDropdown}
-          onClick={this.toggleDropdown}
-          className="dd-header"
-        >
+        <div onKeyDown={this.toggleDropdown} onClick={this.toggleDropdown} className="dd-header">
           <span>{devices[0].deviceGroup.name}</span>
           <i className={fontClass} />
         </div>
 
         <div style={panelStyle} className="sidebar-panel">
           {devices.map(device => (
-            <a
-              key={device.id}
-              href="#"
-              onClick={() => changeTab('ASSIGN_DATAPOINTS', device.id)}
-            >
+            <a key={device.id} href="#" onClick={() => changeTab('ASSIGN_DATAPOINTS', device.id)}>
               {device.name}
             </a>
           ))}
