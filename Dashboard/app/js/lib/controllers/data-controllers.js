@@ -5,106 +5,122 @@ function capitaliseFirstLetter(string) {
   return string.charAt(0).toUpperCase() + string.slice(1);
 }
 
-FLOW.cascadeResourceControl = Ember.ArrayController.create(observe({
-  'FLOW.selectedControl.selectedCascadeResource': 'hasQuestions',
-}), {
-  content: null,
-  published: null,
-  statusUpdateTrigger: false,
-  levelNames: null,
-  displayLevelName1: null,
-  displayLevelName2: null,
-  displayLevelName3: null,
-  displayLevelNum1: null,
-  displayLevelNum2: null,
-  displayLevelNum3: null,
-  sortProperties: ['name'],
-  sortAscending: true,
+FLOW.cascadeResourceControl = Ember.ArrayController.create(
+  observe({
+    'FLOW.selectedControl.selectedCascadeResource': 'hasQuestions',
+  }),
+  {
+    content: null,
+    published: null,
+    statusUpdateTrigger: false,
+    levelNames: null,
+    displayLevelName1: null,
+    displayLevelName2: null,
+    displayLevelName3: null,
+    displayLevelNum1: null,
+    displayLevelNum2: null,
+    displayLevelNum3: null,
+    sortProperties: ['name'],
+    sortAscending: true,
 
-  populate() {
-    this.set('content', FLOW.store.find(FLOW.CascadeResource));
-    this.set('published', Ember.ArrayController.create({
-      sortProperties: ['name'],
-      sortAscending: true,
-      content: FLOW.store.filter(FLOW.CascadeResource, item => item.get('status') === 'PUBLISHED'),
-    }));
-  },
+    populate() {
+      this.set('content', FLOW.store.find(FLOW.CascadeResource));
+      this.set(
+        'published',
+        Ember.ArrayController.create({
+          sortProperties: ['name'],
+          sortAscending: true,
+          content: FLOW.store.filter(
+            FLOW.CascadeResource,
+            item => item.get('status') === 'PUBLISHED'
+          ),
+        })
+      );
+    },
 
-  setLevelNamesArray() {
-    let i = 1;
-    const levelNamesArray = [];
-    const numLevels = FLOW.selectedControl.selectedCascadeResource.get('numLevels');
+    setLevelNamesArray() {
+      let i = 1;
+      const levelNamesArray = [];
+      const numLevels = FLOW.selectedControl.selectedCascadeResource.get('numLevels');
 
-    // store the level names in an array
-    FLOW.selectedControl.selectedCascadeResource.get('levelNames').forEach((item) => {
-      if (i <= numLevels) {
-        levelNamesArray.push(Ember.Object.create({
-          levelName: item,
-          level: i,
-        }));
-        i++;
+      // store the level names in an array
+      FLOW.selectedControl.selectedCascadeResource.get('levelNames').forEach(item => {
+        if (i <= numLevels) {
+          levelNamesArray.push(
+            Ember.Object.create({
+              levelName: item,
+              level: i,
+            })
+          );
+          i++;
+        }
+      });
+      this.set('levelNames', levelNamesArray);
+    },
+
+    setDisplayLevelNames() {
+      const skip = FLOW.cascadeNodeControl.get('skip');
+      const names = this.get('levelNames');
+      const numLevels = FLOW.selectedControl.selectedCascadeResource.get('numLevels');
+      this.set('displayLevelName1', names[skip].get('levelName'));
+      if (numLevels > 1) {
+        this.set('displayLevelName2', names[skip + 1].get('levelName'));
+      } else {
+        this.set('displayLevelName2', '');
       }
-    });
-    this.set('levelNames', levelNamesArray);
-  },
+      if (numLevels > 2) {
+        this.set('displayLevelName3', names[skip + 2].get('levelName'));
+      } else {
+        this.set('displayLevelName3', '');
+      }
+      this.set('displayLevelNum1', skip + 1);
+      this.set('displayLevelNum2', skip + 2);
+      this.set('displayLevelNum3', skip + 3);
+    },
 
-  setDisplayLevelNames() {
-    const skip = FLOW.cascadeNodeControl.get('skip');
-    const names = this.get('levelNames');
-    const numLevels = FLOW.selectedControl.selectedCascadeResource.get('numLevels');
-    this.set('displayLevelName1', names[skip].get('levelName'));
-    if (numLevels > 1) {
-      this.set('displayLevelName2', names[skip + 1].get('levelName'));
-    } else {
-      this.set('displayLevelName2', '');
-    }
-    if (numLevels > 2) {
-      this.set('displayLevelName3', names[skip + 2].get('levelName'));
-    } else {
-      this.set('displayLevelName3', '');
-    }
-    this.set('displayLevelNum1', skip + 1);
-    this.set('displayLevelNum2', skip + 2);
-    this.set('displayLevelNum3', skip + 3);
-  },
+    publish(cascadeResourceId) {
+      FLOW.store.findQuery(FLOW.Action, {
+        action: 'publishCascade',
+        cascadeResourceId,
+      });
+    },
 
-  publish(cascadeResourceId) {
-    FLOW.store.findQuery(FLOW.Action, {
-      action: 'publishCascade',
-      cascadeResourceId,
-    });
-  },
+    hasQuestions() {
+      if (
+        !FLOW.selectedControl.selectedCascadeResource ||
+        !FLOW.selectedControl.selectedCascadeResource.get('keyId')
+      ) {
+        return;
+      }
+      FLOW.store.findQuery(FLOW.Question, {
+        cascadeResourceId: FLOW.selectedControl.selectedCascadeResource.get('keyId'),
+      });
+    },
 
-  hasQuestions() {
-    if (!FLOW.selectedControl.selectedCascadeResource || !FLOW.selectedControl.selectedCascadeResource.get('keyId')) {
-      return;
-    }
-    FLOW.store.findQuery(FLOW.Question, { cascadeResourceId: FLOW.selectedControl.selectedCascadeResource.get('keyId') });
-  },
+    triggerStatusUpdate() {
+      this.toggleProperty('statusUpdateTrigger');
+    },
 
-  triggerStatusUpdate() {
-    this.toggleProperty('statusUpdateTrigger');
-  },
+    currentStatus: Ember.computed(() => {
+      // hack to get translation keys, don't delete them
+      // {{t _not_published}}
+      // {{t _publishing}}
+      // {{t _published}}
+      if (!FLOW.selectedControl.selectedCascadeResource) {
+        return '';
+      }
+      const status = `_${FLOW.selectedControl.selectedCascadeResource.get('status')}`.toLowerCase();
+      return Ember.String.loc(status);
+    }).property('FLOW.selectedControl.selectedCascadeResource', 'this.statusUpdateTrigger'),
 
-  currentStatus: Ember.computed(() => {
-    // hack to get translation keys, don't delete them
-    // {{t _not_published}}
-    // {{t _publishing}}
-    // {{t _published}}
-    if (!FLOW.selectedControl.selectedCascadeResource) {
-      return '';
-    }
-    const status = (`_${FLOW.selectedControl.selectedCascadeResource.get('status')}`).toLowerCase();
-    return Ember.String.loc(status);
-  }).property('FLOW.selectedControl.selectedCascadeResource', 'this.statusUpdateTrigger'),
-
-  isPublished: Ember.computed(() => {
-    if (!FLOW.selectedControl.selectedCascadeResource) {
-      return false;
-    }
-    return FLOW.selectedControl.selectedCascadeResource.get('status') === 'PUBLISHED';
-  }).property('FLOW.selectedControl.selectedCascadeResource', 'this.statusUpdateTrigger'),
-});
+    isPublished: Ember.computed(() => {
+      if (!FLOW.selectedControl.selectedCascadeResource) {
+        return false;
+      }
+      return FLOW.selectedControl.selectedCascadeResource.get('status') === 'PUBLISHED';
+    }).property('FLOW.selectedControl.selectedCascadeResource', 'this.statusUpdateTrigger'),
+  }
+);
 
 FLOW.cascadeNodeControl = Ember.ArrayController.create({
   content: null,
@@ -145,11 +161,22 @@ FLOW.cascadeNodeControl = Ember.ArrayController.create({
     if (!cascadeResourceId) {
       return;
     }
-    this.set('content', FLOW.store.findQuery(FLOW.CascadeNode, {
-      cascadeResourceId,
-      parentNodeId,
-    }));
-    this.set(`level${level}`, FLOW.store.filter(FLOW.CascadeNode, item => (item.get('parentNodeId') == parentNodeId && item.get('cascadeResourceId') == cascadeResourceId)));
+    this.set(
+      'content',
+      FLOW.store.findQuery(FLOW.CascadeNode, {
+        cascadeResourceId,
+        parentNodeId,
+      })
+    );
+    this.set(
+      `level${level}`,
+      FLOW.store.filter(
+        FLOW.CascadeNode,
+        item =>
+          item.get('parentNodeId') == parentNodeId &&
+          item.get('cascadeResourceId') == cascadeResourceId
+      )
+    );
     this.parentNode[level] = parentNodeId;
     FLOW.cascadeNodeControl.setDisplayLevels();
   },
@@ -177,35 +204,24 @@ FLOW.cascadeNodeControl = Ember.ArrayController.create({
   },
 });
 
+FLOW.surveyInstanceControl = Ember.ArrayController.create(
+  observe({
+    content: 'contentChanged',
+    'content.isLoaded': 'contentChanged',
+  }),
+  {
+    sortProperties: ['collectionDate'],
+    sortAscending: false,
+    selectedSurvey: null,
+    content: null,
+    sinceArray: [],
+    pageNumber: 0,
 
-FLOW.surveyInstanceControl = Ember.ArrayController.create(observe({
-  content: 'contentChanged',
-  'content.isLoaded': 'contentChanged',
-}), {
-  sortProperties: ['collectionDate'],
-  sortAscending: false,
-  selectedSurvey: null,
-  content: null,
-  sinceArray: [],
-  pageNumber: 0,
+    populate() {
+      this.set('content', FLOW.store.findQuery(FLOW.SurveyInstance, {}));
+    },
 
-  populate() {
-    this.set('content', FLOW.store.findQuery(FLOW.SurveyInstance, {}));
-  },
-
-  doInstanceQuery(
-    surveyInstanceId,
-    surveyId,
-    deviceId,
-    since,
-    beginDate,
-    endDate,
-    submitterName,
-    countryCode,
-    level1,
-    level2
-  ) {
-    this.set('content', FLOW.store.findQuery(FLOW.SurveyInstance, {
+    doInstanceQuery(
       surveyInstanceId,
       surveyId,
       deviceId,
@@ -215,91 +231,118 @@ FLOW.surveyInstanceControl = Ember.ArrayController.create(observe({
       submitterName,
       countryCode,
       level1,
-      level2,
-    }));
-  },
+      level2
+    ) {
+      this.set(
+        'content',
+        FLOW.store.findQuery(FLOW.SurveyInstance, {
+          surveyInstanceId,
+          surveyId,
+          deviceId,
+          since,
+          beginDate,
+          endDate,
+          submitterName,
+          countryCode,
+          level1,
+          level2,
+        })
+      );
+    },
 
-  contentChanged() {
-    const mutableContents = [];
+    contentChanged() {
+      const mutableContents = [];
 
-    this.get('arrangedContent').forEach((item) => {
-      mutableContents.pushObject(item);
-    });
+      this.get('arrangedContent').forEach(item => {
+        mutableContents.pushObject(item);
+      });
 
-    this.set('currentContents', mutableContents);
-  },
+      this.set('currentContents', mutableContents);
+    },
 
-  removeInstance(instance) {
-    this.get('currentContents').forEach((item, i, currentContents) => {
-      if (item.get('id') == instance.get('id')) {
-        currentContents.removeAt(i, 1);
+    removeInstance(instance) {
+      this.get('currentContents').forEach((item, i, currentContents) => {
+        if (item.get('id') == instance.get('id')) {
+          currentContents.removeAt(i, 1);
+        }
+      });
+    },
+
+    allAreSelected: Ember.computed(function(key, value) {
+      if (arguments.length === 2) {
+        this.setEach('isSelected', value);
+        return value;
       }
-    });
-  },
+      return !this.get('isEmpty') && this.everyProperty('isSelected', true);
+    }).property('@each.isSelected'),
 
-  allAreSelected: Ember.computed(function (key, value) {
-    if (arguments.length === 2) {
-      this.setEach('isSelected', value);
-      return value;
-    }
-    return !this.get('isEmpty') && this.everyProperty('isSelected', true);
-  }).property('@each.isSelected'),
+    atLeastOneSelected: Ember.computed(function() {
+      return this.filterProperty('isSelected', true).get('length');
+    }).property('@each.isSelected'),
 
-  atLeastOneSelected: Ember.computed(function () {
-    return this.filterProperty('isSelected', true).get('length');
-  }).property('@each.isSelected'),
+    // fired from tableColumnView.sort
+    getSortInfo() {
+      this.set('sortProperties', FLOW.tableColumnControl.get('sortProperties'));
+      this.set('sortAscending', FLOW.tableColumnControl.get('sortAscending'));
+    },
+  }
+);
 
-  // fired from tableColumnView.sort
-  getSortInfo() {
-    this.set('sortProperties', FLOW.tableColumnControl.get('sortProperties'));
-    this.set('sortAscending', FLOW.tableColumnControl.get('sortAscending'));
-  },
-});
+FLOW.SurveyedLocaleController = Ember.ArrayController.extend(
+  observe({
+    content: 'contentChanged',
+    'content.isLoaded': 'contentChanged',
+  }),
+  {
+    sortProperties: ['collectionDate'],
+    sortAscending: false,
+    selectedSurvey: null,
+    sinceArray: [],
+    pageNumber: 0,
 
-FLOW.SurveyedLocaleController = Ember.ArrayController.extend(observe({
-  content: 'contentChanged',
-  'content.isLoaded': 'contentChanged',
-}), {
-  sortProperties: ['collectionDate'],
-  sortAscending: false,
-  selectedSurvey: null,
-  sinceArray: [],
-  pageNumber: 0,
+    populate(criteria) {
+      this.set('content', FLOW.store.find(FLOW.SurveyedLocale, criteria));
+    },
 
-  populate(criteria) {
-    this.set('content', FLOW.store.find(FLOW.SurveyedLocale, criteria));
-  },
+    contentChanged() {
+      const mutableContents = [];
 
-  contentChanged() {
-    const mutableContents = [];
+      this.get('arrangedContent').forEach(item => {
+        mutableContents.pushObject(item);
+      });
 
-    this.get('arrangedContent').forEach((item) => {
-      mutableContents.pushObject(item);
-    });
+      this.set('currentContents', mutableContents);
+    },
 
-    this.set('currentContents', mutableContents);
-  },
+    removeLocale(locale) {
+      this.get('currentContents').forEach((item, i, currentContents) => {
+        if (item.get('id') == locale.get('id')) {
+          currentContents.removeAt(i, 1);
+        }
+      });
+    },
 
-  removeLocale(locale) {
-    this.get('currentContents').forEach((item, i, currentContents) => {
-      if (item.get('id') == locale.get('id')) {
-        currentContents.removeAt(i, 1);
-      }
-    });
-  },
-
-  /* the current user is able to delete surveyed locales
+    /* the current user is able to delete surveyed locales
     stored in the 'content' property of this controller */
-  userCanDelete: Ember.computed(function () {
-    if (this.get('content') === null) {
-      return false;
-    }
-    const surveyedLocale = this.get('content').get('firstObject'); // locale delete only allowed if enabled for the entire monitoring group
-    if (surveyedLocale && surveyedLocale.get('surveyGroupId')) {
-      return FLOW.surveyGroupControl.userCanDeleteData(surveyedLocale.get('surveyGroupId'));
-    }
-    return false; // prevents deletion incase no surveyId found
-  }).property('content'),
+    userCanDelete: Ember.computed(function() {
+      if (this.get('content') === null) {
+        return false;
+      }
+      const surveyedLocale = this.get('content').get('firstObject'); // locale delete only allowed if enabled for the entire monitoring group
+      if (surveyedLocale && surveyedLocale.get('surveyGroupId')) {
+        return FLOW.surveyGroupControl.userCanDeleteData(surveyedLocale.get('surveyGroupId'));
+      }
+      return false; // prevents deletion incase no surveyId found
+    }).property('content'),
+  }
+);
+
+FLOW.dataPointAssignmentControl = Ember.ArrayController.create({
+  content: null,
+
+  populate(surveyAssignmentId) {
+    this.set('content', FLOW.store.find(FLOW.DataPointAssignment, { surveyAssignmentId }));
+  },
 });
 
 FLOW.questionAnswerControl = Ember.ArrayController.create({
@@ -310,8 +353,10 @@ FLOW.questionAnswerControl = Ember.ArrayController.create({
   // over a set of responses to questions in a specific question group, ordered
   // by question order. For repeat question groups two adjacent sub lists
   // represent two iterations of responses for that group
-  contentByGroup: Ember.computed('content.isLoaded',
-    'FLOW.questionContol.content.isLoaded', function () {
+  contentByGroup: Ember.computed(
+    'content.isLoaded',
+    'FLOW.questionContol.content.isLoaded',
+    function() {
       const content = Ember.get(this, 'content');
       const self = this;
       const questions = FLOW.questionControl.get('content');
@@ -347,7 +392,7 @@ FLOW.questionAnswerControl = Ember.ArrayController.create({
           if (isRepeatable) {
             groupIteration = 0;
 
-            this.splitIterationAnswers(answersInGroup).forEach((iterationAnswers) => {
+            this.splitIterationAnswers(answersInGroup).forEach(iterationAnswers => {
               if (iterationAnswers && iterationAnswers.length) {
                 groupIteration++;
                 iterationAnswers.groupName = `${groupName} - ${groupIteration}`;
@@ -365,7 +410,8 @@ FLOW.questionAnswerControl = Ember.ArrayController.create({
         return Ember.A(allResponses);
       }
       return content;
-    }),
+    }
+  ),
 
   /* take a list of question answer objects containing multiple iterations
    * and split into a list of sublists, each sublist containing a single iteration
@@ -392,69 +438,80 @@ FLOW.questionAnswerControl = Ember.ArrayController.create({
       FLOW.selectedControl.set('selectedSurvey', form);
     }
 
-    this.set('content', FLOW.store.findQuery(FLOW.QuestionAnswer, {
-      surveyInstanceId: surveyInstance.get('keyId'),
-    }));
+    this.set(
+      'content',
+      FLOW.store.findQuery(FLOW.QuestionAnswer, {
+        surveyInstanceId: surveyInstance.get('keyId'),
+      })
+    );
   },
 });
 
-FLOW.locationControl = Ember.ArrayController.create(observe({
-  'this.selectedCountry': 'populateLevel1',
-  'this.selectedLevel1': 'populateLevel2',
-}), {
-  selectedCountry: null,
-  content: null,
-  level1Content: null,
-  level2Content: null,
-  selectedLevel1: null,
-  selectedLevel2: null,
+FLOW.locationControl = Ember.ArrayController.create(
+  observe({
+    'this.selectedCountry': 'populateLevel1',
+    'this.selectedLevel1': 'populateLevel2',
+  }),
+  {
+    selectedCountry: null,
+    content: null,
+    level1Content: null,
+    level2Content: null,
+    selectedLevel1: null,
+    selectedLevel2: null,
 
-  populateLevel1() {
-    if (!Ember.none(this.get('selectedCountry')) && this.selectedCountry.get('iso').length > 0) {
-      this.set('level1Content', FLOW.store.findQuery(FLOW.SubCountry, {
-        countryCode: this.selectedCountry.get('iso'),
-        level: 1,
-        parentId: null,
-      }));
-    }
-  },
+    populateLevel1() {
+      if (!Ember.none(this.get('selectedCountry')) && this.selectedCountry.get('iso').length > 0) {
+        this.set(
+          'level1Content',
+          FLOW.store.findQuery(FLOW.SubCountry, {
+            countryCode: this.selectedCountry.get('iso'),
+            level: 1,
+            parentId: null,
+          })
+        );
+      }
+    },
 
-  populateLevel2() {
-    if (!Ember.none(this.get('selectedLevel1')) && this.selectedLevel1.get('name').length > 0) {
-      this.set('level2Content', FLOW.store.findQuery(FLOW.SubCountry, {
-        countryCode: this.selectedCountry.get('iso'),
-        level: 2,
-        parentId: this.selectedLevel1.get('keyId'),
-      }));
-    }
-  },
-
-});
+    populateLevel2() {
+      if (!Ember.none(this.get('selectedLevel1')) && this.selectedLevel1.get('name').length > 0) {
+        this.set(
+          'level2Content',
+          FLOW.store.findQuery(FLOW.SubCountry, {
+            countryCode: this.selectedCountry.get('iso'),
+            level: 2,
+            parentId: this.selectedLevel1.get('keyId'),
+          })
+        );
+      }
+    },
+  }
+);
 
 FLOW.DataApprovalController = Ember.Controller.extend({});
 
 FLOW.ApprovalGroupListController = Ember.ArrayController.extend({
   /* ---------------------
-     * Controller Properties
-     * ---------------------
-     */
+   * Controller Properties
+   * ---------------------
+   */
   sortProperties: ['name'],
 
   /* ---------------------
-     * Controller Functions
-     * ---------------------
-     */
+   * Controller Functions
+   * ---------------------
+   */
 
   /*
-     * Load the list of approval groups
-     */
+   * Load the list of approval groups
+   */
   load() {
     this.set('content', FLOW.ApprovalGroup.find());
   },
 
   /*
-     * Delete an approval group from the list
-     */
+   * Delete an approval group from the list
+   */
   delete(group) {
     if (!group || !group.get('keyId')) {
       return;
@@ -462,7 +519,7 @@ FLOW.ApprovalGroupListController = Ember.ArrayController.extend({
 
     const steps = FLOW.ApprovalStep.find({ approvalGroupId: group.get('keyId') });
     steps.on('didLoad', () => {
-      steps.forEach((step) => {
+      steps.forEach(step => {
         step.deleteRecord();
       });
       group.deleteRecord();
@@ -472,18 +529,17 @@ FLOW.ApprovalGroupListController = Ember.ArrayController.extend({
 });
 
 FLOW.ApprovalGroupController = Ember.ObjectController.extend({
-
   /* ---------------------
-     * Controller Properties
-     * ---------------------
-     */
+   * Controller Properties
+   * ---------------------
+   */
 
   /*
-     * Transform the `ordered` property on the ApprovalGroup model
-     * to a string representation in order to bind successfully to
-     * value attribute of the generated <option> entities
-     */
-  isOrderedApprovalGroup: Ember.computed(function (key, value) {
+   * Transform the `ordered` property on the ApprovalGroup model
+   * to a string representation in order to bind successfully to
+   * value attribute of the generated <option> entities
+   */
+  isOrderedApprovalGroup: Ember.computed(function(key, value) {
     const group = this.content;
 
     // setter
@@ -498,15 +554,14 @@ FLOW.ApprovalGroupController = Ember.ObjectController.extend({
     return 'unordered';
   }).property('this.content'),
 
-
   /* ---------------------
-     * Controller Functions
-     * ---------------------
-     */
+   * Controller Functions
+   * ---------------------
+   */
 
   /*
-     * Create a new approval group
-     */
+   * Create a new approval group
+   */
   add() {
     const group = FLOW.ApprovalGroup.createRecord({
       name: Ember.String.loc('_new_approval_group'),
@@ -517,8 +572,8 @@ FLOW.ApprovalGroupController = Ember.ObjectController.extend({
   },
 
   /*
-     * Load the approval group by groupId
-     */
+   * Load the approval group by groupId
+   */
   load(groupId) {
     if (groupId) {
       this.set('content', FLOW.ApprovalGroup.find(groupId));
@@ -526,8 +581,8 @@ FLOW.ApprovalGroupController = Ember.ObjectController.extend({
   },
 
   /*
-     * Save an approval group and associated steps
-     */
+   * Save an approval group and associated steps
+   */
   save() {
     const validationError = this.validate();
     if (validationError) {
@@ -543,8 +598,8 @@ FLOW.ApprovalGroupController = Ember.ObjectController.extend({
   },
 
   /*
-     * Validate approval group and associated steps
-     */
+   * Validate approval group and associated steps
+   */
   validate() {
     const stepsController = FLOW.router.get('approvalStepsController');
     let error = stepsController.validate();
@@ -566,34 +621,33 @@ FLOW.ApprovalGroupController = Ember.ObjectController.extend({
   },
 
   /*
-     * Cancel the editing of an approval group and its related
-     * steps
-     */
+   * Cancel the editing of an approval group and its related
+   * steps
+   */
   cancel() {
     FLOW.store.get('defaultTransaction').rollback();
   },
 });
 
 FLOW.ApprovalStepsController = Ember.ArrayController.extend({
-
   /* ---------------------
-     * Controller Properties
-     * ---------------------
-     */
+   * Controller Properties
+   * ---------------------
+   */
   sortProperties: ['order'],
 
   /* ---------------------
-     * Controller Functions
-     * ---------------------
-     */
+   * Controller Functions
+   * ---------------------
+   */
 
   /*
-     * Load approval steps for a given approval group
-     */
+   * Load approval steps for a given approval group
+   */
   loadByGroupId(groupId) {
     const steps = Ember.A();
     if (groupId) {
-      FLOW.ApprovalStep.find({ approvalGroupId: groupId }).on('didLoad', function () {
+      FLOW.ApprovalStep.find({ approvalGroupId: groupId }).on('didLoad', function() {
         steps.addObjects(this);
       });
     }
@@ -601,10 +655,13 @@ FLOW.ApprovalStepsController = Ember.ArrayController.extend({
   },
 
   /*
-     * Add an approval step for a given approval group
-     */
+   * Add an approval step for a given approval group
+   */
   addApprovalStep() {
-    const groupId = FLOW.router.get('approvalGroupController').get('content').get('keyId');
+    const groupId = FLOW.router
+      .get('approvalGroupController')
+      .get('content')
+      .get('keyId');
     if (!groupId) {
       FLOW.store.commit();
     }
@@ -626,13 +683,13 @@ FLOW.ApprovalStepsController = Ember.ArrayController.extend({
   },
 
   /*
-     * Validate steps for erroneous input
-     */
+   * Validate steps for erroneous input
+   */
   validate() {
     const steps = this.content;
     let valid = true;
 
-    steps.forEach((step) => {
+    steps.forEach(step => {
       const hasTitle = step.get('title') && step.get('title').trim();
       if (!hasTitle) {
         valid = false;
@@ -649,11 +706,11 @@ FLOW.ApprovalStepsController = Ember.ArrayController.extend({
   },
 
   /*
-     * Save approval steps
-     */
+   * Save approval steps
+   */
   save(group) {
     const steps = this.content || [];
-    steps.forEach((step) => {
+    steps.forEach(step => {
       if (step.get('code') && step.get('code').trim()) {
         step.set('code', step.get('code').trim());
       } else {
@@ -670,8 +727,8 @@ FLOW.ApprovalStepsController = Ember.ArrayController.extend({
   },
 
   /*
-     * Delete an approval step
-     */
+   * Delete an approval step
+   */
   deleteApprovalStep(event) {
     const step = event.context;
     const steps = this.content;
@@ -681,12 +738,11 @@ FLOW.ApprovalStepsController = Ember.ArrayController.extend({
 });
 
 FLOW.DataPointApprovalController = Ember.ArrayController.extend({
-
   content: Ember.A(),
 
   /**
-     * add an approval element
-     */
+   * add an approval element
+   */
   add(dataPointApproval) {
     const dataPointApprovalList = this.content;
     const approval = FLOW.store.createRecord(FLOW.DataPointApproval, dataPointApproval);
@@ -698,8 +754,8 @@ FLOW.DataPointApprovalController = Ember.ArrayController.extend({
   },
 
   /**
-     * Update an existing approval element
-     */
+   * Update an existing approval element
+   */
   update(dataPointApproval) {
     const dataPointApprovalList = this.content;
     dataPointApproval.on('didUpdate', () => {
@@ -709,12 +765,12 @@ FLOW.DataPointApprovalController = Ember.ArrayController.extend({
   },
 
   /**
-     * Load approval elements based on the surveyedLocaleId (data point id)
-     */
+   * Load approval elements based on the surveyedLocaleId (data point id)
+   */
   loadBySurveyedLocaleId(surveyedLocaleId) {
     const dataPointApprovalList = this.content;
     const approvals = FLOW.DataPointApproval.find({ surveyedLocaleId });
-    approvals.on('didLoad', function () {
+    approvals.on('didLoad', function() {
       dataPointApprovalList.addObjects(this);
     });
   },

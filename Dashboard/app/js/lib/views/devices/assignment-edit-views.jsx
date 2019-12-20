@@ -47,6 +47,7 @@ FLOW.AssignmentEditView = FLOW.ReactComponentView.extend(
       this.detectDatapointsLoaded = this.detectDatapointsLoaded.bind(this);
       this.addDatapointsToAssignment = this.addDatapointsToAssignment.bind(this);
       this.saveDatapoints = this.saveDatapoints.bind(this);
+      this.setupDatapoints = this.setupDatapoints.bind(this);
 
       // object wide varaibles
       this.forms = {};
@@ -71,6 +72,7 @@ FLOW.AssignmentEditView = FLOW.ReactComponentView.extend(
       this.setupForms();
       this.setupSurveyGroups();
       this.setupDevices();
+      this.setupDatapoints();
 
       // react render
       this.renderReactSide();
@@ -590,7 +592,11 @@ FLOW.AssignmentEditView = FLOW.ReactComponentView.extend(
       return this.renderReactSide();
     },
 
-    // search datapoints
+    // handle datapoints functionality
+    setupDatapoints() {
+      // TODO:: setup datapoints to match structure in the `addDatapointsToAssignment` method
+    },
+
     findDatapoints(displayName) {
       FLOW.router.surveyedLocaleController.populate({ displayName });
     },
