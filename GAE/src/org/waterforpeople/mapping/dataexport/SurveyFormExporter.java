@@ -394,8 +394,8 @@ public class SurveyFormExporter implements DataExporter {
         // Numbers
         createCell(row, ++c, "Allow sign", style);
         createCell(row, ++c, "Allow decimal point", style);
-        createCell(row, ++c, "Max value", style);
         createCell(row, ++c, "Min value", style);
+        createCell(row, ++c, "Max value", style);
         // OPTION
         createCell(row, ++c, "Options", style);
         createCell(row, ++c, "Allow multiple", style);
