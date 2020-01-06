@@ -69,18 +69,13 @@ function deploy_instance {
     echo "Copying staging dir to ${staging_dir}"
     cp -r appengine-staging "${staging_dir}"
 
-    echo "Deleting dataprocessor version"
-    gcloud app versions delete dataprocessor --project="${instance_id}" --quiet
-
     echo "Deploying ${instance_id} from ${staging_dir}"
 
     cp "${config_repo}/${instance_id}/appengine-web.xml" "${staging_dir}/WEB-INF/appengine-web.xml"
 
-    java -cp /google-cloud-sdk/platform/google_appengine/google/appengine/tools/java/lib/appengine-tools-api.jar \
-	 com.google.appengine.tools.admin.AppCfg \
-	 --retain_upload_dir \
-	 --application="${instance_id}" \
-	 update "${staging_dir}"
+    cd "${staging_dir}"
+
+    gcloud app deploy --promote --quiet --version=1 --project="${instance_id}"
 }
 
 export -f deploy_instance
