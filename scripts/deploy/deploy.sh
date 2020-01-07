@@ -73,22 +73,14 @@ function deploy_instance {
 
     cp "${config_repo}/${instance_id}/appengine-web.xml" "${staging_dir}/WEB-INF/appengine-web.xml"
 
-    cd "${staging_dir}"
-
-    gcloud app deploy --promote --quiet --version=1 --project="${instance_id}"
+    gcloud app deploy "${staging_dir}/WEB-INF/appengine-web.xml" \
+	   --promote \
+	   --quiet \
+	   --version=1 \
+	   --project="${instance_id}"
 }
 
 export -f deploy_instance
-
-# Deploy first instance to be able to grab OAuth2 token in $HOME/.appcfg_oauth2_tokens_java
-deploy_instance "${1}"
-
-# Deploy rest if present
-shift 1
-
-if [[ "$#" -eq 0 ]]; then
-    exit 0
-fi
 
 echo "Deploying instances... $*"
 
