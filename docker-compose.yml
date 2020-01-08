@@ -16,7 +16,7 @@ services:
   s3:
     image:  technekes/fake-s3-ssl:latest
   akvo-flow:
-    build: .
+    image: akvo/akvo-flow-builder:20200106.165448.593bee7
     entrypoint: /app/src/ci/run-as-user.sh
     network_mode: service:mainnetwork
     command: /app/src/ci/devserver.sh
@@ -27,3 +27,5 @@ services:
      - .:/app/src/:delegated
      - ~/.m2:/home/akvo/.m2:delegated
      - ~/.m2:/root/.m2:delegated
+     - ~/.cache:/home/akvo/.cache:delegated
+     - ~/.cache:/root/.cache:delegated
