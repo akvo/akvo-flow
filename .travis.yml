@@ -11,7 +11,7 @@ script:
   - "./ci/bootstrap-build.sh /app/src/ci/build.sh && ./ci/deploy.sh"
 
 before_cache:
- - find $HOME/.m2 -name resolver-status.properties -or -name maven-metadata-clojars.xml.sha1 -exec rm {} \;
+ - find $HOME/.m2 \( -name resolver-status.properties -o -name maven-metadata-clojars.xml.sha1 \) -exec rm {} \;
 
 notifications:
   slack: akvo:ZLetmotGiT22QryK6pR5bnFS
