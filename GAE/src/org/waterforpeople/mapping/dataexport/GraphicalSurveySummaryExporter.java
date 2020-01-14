@@ -1,5 +1,5 @@
 /*
- *  Copyright (C) 2010-2019 Stichting Akvo (Akvo Foundation)
+ *  Copyright (C) 2010-2020 Stichting Akvo (Akvo Foundation)
  *
  *  This file is part of Akvo FLOW.
  *
@@ -39,6 +39,7 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
 import java.util.SortedMap;
+import java.util.TreeSet;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.ThreadPoolExecutor;
@@ -508,6 +509,7 @@ public class GraphicalSurveySummaryExporter extends SurveySummaryExporter {
         analyseData(allData);
 
         // write the data now, row by row
+        // (We cannot go back up more than the Spreadsheet writer window)
         for (InstanceData instanceData : allData) {
             MessageDigest digest = MessageDigest.getInstance("MD5");
             if (separateSheetsForRepeatableGroups) {
@@ -630,22 +632,26 @@ public class GraphicalSurveySummaryExporter extends SurveySummaryExporter {
             throws NoSuchAlgorithmException {
 
         int startRow = sheet.getLastRowNum() + 1;
-        //maxIterationsCount is for entire instance. We need it for this sheet only!
-        int maxIter = 0;
+        //iterationsPresent is for entire instance. We need it for this sheet only!
+        //int maxIter = 0;
+        Set<Long> iterationsOnThisSheet = new TreeSet<>(); //Ordered
         if (!groupSheet) { //Must have one row of metadata on base sheet, even if no values
-            maxIter = 1;
+            //maxIter = 1;
+            iterationsOnThisSheet.add(0L);
         }
         for (QuestionDto qd : whichQuestions) {
             final Long questionId = qd.getKeyId();
             SortedMap<Long, String> iterationsMap = instanceData.responseMap.get(questionId);
             if (iterationsMap != null) {
-                maxIter = Math.max(maxIter, iterationsMap.size());
+                iterationsOnThisSheet.addAll(iterationsMap.keySet());
+                //maxIter = Math.max(maxIter, iterationsMap.size());
             }
         }
 
-        for (int i = 0; i < maxIter; i++) {
-            Row iterationRow = getRow(startRow + i, sheet);
-            writeMetadataRow(iterationRow, instanceData, i + 1, groupSheet);
+        int rowOffset = 0;
+        for (long i : iterationsOnThisSheet) {
+            Row iterationRow = getRow(startRow + rowOffset, sheet);
+            writeMetadataRow(iterationRow, instanceData, (int) i + 1, groupSheet); //assume <2 billion repeats
             for (QuestionDto qd : whichQuestions) {
                 final Long questionId = qd.getKeyId();
                 SortedMap<Long, String> iterationsMap = instanceData.responseMap.get(questionId);
@@ -664,6 +670,7 @@ public class GraphicalSurveySummaryExporter extends SurveySummaryExporter {
                     md.update(val.getBytes());
                 }
             }
+            rowOffset++;
         }
     }
 
@@ -723,9 +730,11 @@ public class GraphicalSurveySummaryExporter extends SurveySummaryExporter {
             SummaryModel model) {
 
         //maxIterationsCount is actually the max iteration index; 0 for 1 iteration...
-        for (int i = 0; i <= (int) instanceData.maxIterationsCount; i++) {
-            Row iterationRow = getRow(startRow + i, sheet);
-            writeMetadataRow(iterationRow, instanceData, i + 1, true);
+        //even worse, there may be gaps in the index
+        int rowOffset = 0;
+        for (long i : instanceData.iterationsPresent) { //TODO sorted?
+            Row iterationRow = getRow(startRow + rowOffset, sheet);
+            writeMetadataRow(iterationRow, instanceData, (int)i + 1, true); //assume <2 billion repeats
             for (String q : questionIdList) {
                 final Long questionId = Long.valueOf(q);
                 final QuestionDto questionDto = questionsById.get(questionId);
@@ -733,17 +742,18 @@ public class GraphicalSurveySummaryExporter extends SurveySummaryExporter {
                 if (iterationsMap == null) {
                     continue;
                 }
-                String val = iterationsMap.get(new Long(i));
+                String val = iterationsMap.get(i);
                 if (val != null) {
                     writeAnswer(iterationRow, columnIndexMap.get(q), questionDto, val);
                 }
             }
+            rowOffset++;
         }
 
-        int maxRow = startRow + (int) instanceData.maxIterationsCount + 1;
+        int maxRow = startRow + rowOffset; //TODO: fencepost error??
 
 
-        // Rebuild old response map format for from instanceData.responseMap
+        // Rebuild old response map format for rollups from instanceData.responseMap
         // Question id -> response
         Map<String, String> responseMap = new HashMap<>();
 
