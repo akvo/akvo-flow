@@ -525,7 +525,7 @@ public class RawDataSpreadsheetImporter implements DataImporter {
                 if (row == null // no row
                         || isEmptyCell(row.getCell(repeatIterationColumnIndex))
                         || ExportImportUtils.parseCellAsString(
-                                row.getCell(repeatIterationColumnIndex)).equals("1") // next q
+                                row.getCell(repeatIterationColumnIndex)).equals("1") // next q //PROBLEM
                 ) {
                     break;
                 }
@@ -577,7 +577,7 @@ public class RawDataSpreadsheetImporter implements DataImporter {
         surveyInstanceDto.setFormVersion(formVer);
 
         InstanceData instanceData = new InstanceData(surveyInstanceDto, responseMap); //Copies and sorts the responseMap
-        instanceData.maxIterationsCount = iterations;
+        //instanceData.maxIterationsCount = iterations;
         return instanceData;
     }
 
