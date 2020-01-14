@@ -1,5 +1,5 @@
 /*
- *  Copyright (C) 2014-2015,2017-2018 Stichting Akvo (Akvo Foundation)
+ *  Copyright (C) 2014-2015,2017-2018,2020 Stichting Akvo (Akvo Foundation)
  *
  *  This file is part of Akvo FLOW.
  *
@@ -43,9 +43,10 @@ public class SurveyedLocaleRestService {
 
     @RequestMapping(method = RequestMethod.GET)
     @ResponseBody
-    public Map<String, Object> listQuestions(
+    public Map<String, Object> listDataPoints(
             @RequestParam(value = "surveyGroupId", defaultValue = "") Long surveyGroupId,
             @RequestParam(value = "identifier", defaultValue = "") String identifier,
+            @RequestParam(value = "ids[]", defaultValue = "") Long[] ids,
             @RequestParam(value = "displayName", defaultValue = "") String displayName,
             @RequestParam(value = "displayNamePrefix", defaultValue = "") String displayNamePrefix,
             @RequestParam(value = "search", defaultValue = "") String search,
@@ -72,6 +73,8 @@ public class SurveyedLocaleRestService {
             sls = surveyedLocaleDao.listSurveyedLocales(since, null, null, null, displayNamePrefix);
         } else if (surveyGroupId != null) {
             sls = surveyedLocaleDao.listSurveyedLocales(since, surveyGroupId, null, null, null);
+        } else if (ids[0] != null) {
+            sls = surveyedLocaleDao.listByKeys(ids);
         }
 
         copyToDtoList(sls, locales);
