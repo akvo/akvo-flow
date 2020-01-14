@@ -20,11 +20,9 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
-import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import javax.jdo.PersistenceManager;
-import javax.xml.bind.JAXBException;
 
 import org.waterforpeople.mapping.domain.SurveyQuestion;
 
@@ -37,7 +35,6 @@ import com.gallatinsystems.survey.domain.QuestionGroup;
 import com.gallatinsystems.survey.domain.Survey;
 import com.gallatinsystems.survey.domain.SurveyContainer;
 import com.gallatinsystems.survey.domain.SurveyGroup;
-import com.gallatinsystems.survey.xml.SurveyXMLAdapter;
 import com.google.appengine.api.datastore.Key;
 
 /**
@@ -119,26 +116,6 @@ public class SurveyDAO extends BaseDAO<Survey> {
         sc.setSurveyDocument(surveyText);
         sc = super.save(sc);
         return sc.getKey().getId();
-    }
-
-    /**
-     * returns a Survey xml pojo obtained after unmarshalling the SurveyContainer
-     *
-     * @param id
-     * @return
-     */
-    public com.gallatinsystems.survey.domain.xml.Survey get(Long id) {
-        SurveyContainer surveyContainer = getByKey(id, SurveyContainer.class);
-
-        SurveyXMLAdapter sxa = new SurveyXMLAdapter();
-        com.gallatinsystems.survey.domain.xml.Survey survey = null;
-        try {
-            survey = sxa.unmarshall(surveyContainer.getSurveyDocument()
-                    .toString());
-        } catch (JAXBException e) {
-            log.log(Level.SEVERE, "Could not unmarshal xml", e);
-        }
-        return survey;
     }
 
     /**

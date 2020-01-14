@@ -37,7 +37,6 @@ import com.gallatinsystems.gis.map.domain.Geometry;
 import com.gallatinsystems.gis.map.domain.Geometry.GeometryType;
 import com.gallatinsystems.gis.map.domain.OGRFeature;
 import com.gallatinsystems.gis.map.domain.OGRFeature.FeatureType;
-import com.gallatinsystems.survey.xml.SurveyXMLAdapter;
 import com.vividsolutions.jts.geom.Coordinate;
 import com.vividsolutions.jts.geom.GeometryFactory;
 import com.vividsolutions.jts.geom.MultiPolygon;
@@ -54,7 +53,7 @@ import com.vividsolutions.jts.io.WKTReader;
  */
 
 public class GeoLocationServiceGeonamesImpl implements GeoLocationService {
-    private static final Logger log = Logger.getLogger(SurveyXMLAdapter.class
+    private static final Logger log = Logger.getLogger(GeoLocationServiceGeonamesImpl.class
             .getName());
     // private static final String COUNTRY_SERVICE_URL = "http://ws.geonames.org/countryCode?";
     private static final String PLACE_SERVICE_URL = "http://api.geonames.org/findNearbyPlaceName?username=akvo&";
