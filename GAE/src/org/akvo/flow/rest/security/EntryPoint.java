@@ -14,7 +14,7 @@
  * The full license text can also be seen at <http://www.gnu.org/licenses/agpl.html>.
  */
 
-package org.akvo.flow.rest.security.featureflag;
+package org.akvo.flow.rest.security;
 
 import java.io.IOException;
 

@@ -94,12 +94,12 @@
 
     <b:bean id="gaeAuthenticationProvider" class="org.akvo.flow.rest.security.google.GoogleAccountsAuthenticationProvider" />
 
-    <b:bean id="defaultEntryPoint" class="org.akvo.flow.rest.security.featureflag.EntryPoint">
+    <b:bean id="defaultEntryPoint" class="org.akvo.flow.rest.security.EntryPoint">
        <b:constructor-arg ref="gaeEntryPoint"/>
        <b:constructor-arg ref="oidcEntryPoint"/>
     </b:bean>
 
-    <b:bean id="alternativeEntryPoint" class="org.akvo.flow.rest.security.featureflag.EntryPoint">
+    <b:bean id="alternativeEntryPoint" class="org.akvo.flow.rest.security.EntryPoint">
        <b:constructor-arg ref="oidcEntryPoint"/>
        <b:constructor-arg ref="gaeEntryPoint"/>
     </b:bean>
