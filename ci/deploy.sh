@@ -40,4 +40,4 @@ docker run \
     --env SERVICE_ACCOUNT_ID \
     --env "PROJECT_ID=${project_id}" \
     --entrypoint /app/src/ci/run-as-user.sh \
-    akvo/flow-builder /app/src/ci/mvn-deploy.sh
+    akvo/akvo-flow-builder:20200106.165448.593bee7 /app/src/ci/mvn-deploy.sh

@@ -296,6 +296,8 @@ public class SurveyedLocaleDao extends BaseDAO<SurveyedLocale> {
             appendNonNullParam("displayName", filterString, paramString,
                     "String", endString, paramMap, LT_OP);
             query.setOrdering("displayName asc"); //necessary if inequality ops present
+            //Alternative custom filterString:
+            // surveyGroupId == surveyGroupIdParam0 && displayName.startsWith(displayNameParam1)
         } else {
             query.setOrdering("lastUpdateDateTime desc");
         }
@@ -311,6 +313,7 @@ public class SurveyedLocaleDao extends BaseDAO<SurveyedLocale> {
         return (List<SurveyedLocale>) query.executeWithMap(paramMap);
 
     }
+
 
     public List<SurveyedLocale> listLocalesByDisplayName(String displayName) {
         List<SurveyedLocale> locales = listByProperty("displayName", displayName, "String");

@@ -1,4 +1,4 @@
-language: generic
+language: bash
 
 sudo: required
 services:
@@ -8,11 +8,10 @@ cache:
     - $HOME/.m2
 
 script:
-  - docker build -t akvo/flow-builder .
   - "./ci/bootstrap-build.sh /app/src/ci/build.sh && ./ci/deploy.sh"
 
 before_cache:
- - find $HOME/.m2 -name resolver-status.properties -exec rm {} \;
- 
+ - find $HOME/.m2 \( -name resolver-status.properties -o -name maven-metadata-clojars.xml.sha1 \) -exec rm {} \;
+
 notifications:
   slack: akvo:ZLetmotGiT22QryK6pR5bnFS
