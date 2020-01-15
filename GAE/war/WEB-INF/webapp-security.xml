@@ -24,13 +24,6 @@
       <b:constructor-arg ref="oidcConfig"/>
    </b:bean>
 
-   <http pattern="/altlogin" use-expressions="true" entry-point-ref="alternativeEntryPoint" authentication-manager-ref="authenticationManager"
-         access-decision-manager-ref="accessDecisionManager">
-      <intercept-url pattern="/**" access="hasRole('ROLE_USER')"/>
-      <custom-filter position="PRE_AUTH_FILTER" ref="gaeFilter"/>
-      <csrf disabled="true" />
-   </http>
-
     <http use-expressions="true" entry-point-ref="defaultEntryPoint" authentication-manager-ref="authenticationManager"
         access-decision-manager-ref="accessDecisionManager">
         <headers>
@@ -95,12 +88,8 @@
     <b:bean id="gaeAuthenticationProvider" class="org.akvo.flow.rest.security.google.GoogleAccountsAuthenticationProvider" />
 
     <b:bean id="defaultEntryPoint" class="org.akvo.flow.rest.security.EntryPoint">
-       <b:constructor-arg ref="gaeEntryPoint"/>
-       <b:constructor-arg ref="oidcEntryPoint"/>
+        <b:constructor-arg ref="oidcEntryPoint"/> <!-- production -->
+        <b:constructor-arg ref="gaeEntryPoint"/> <!-- development -->
     </b:bean>
 
-    <b:bean id="alternativeEntryPoint" class="org.akvo.flow.rest.security.EntryPoint">
-       <b:constructor-arg ref="oidcEntryPoint"/>
-       <b:constructor-arg ref="gaeEntryPoint"/>
-    </b:bean>
 </b:beans>

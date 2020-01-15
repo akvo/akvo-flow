@@ -25,26 +25,24 @@ import javax.servlet.http.HttpServletResponse;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.web.AuthenticationEntryPoint;
 
-import com.gallatinsystems.common.util.PropertyUtil;
+import com.google.appengine.api.utils.SystemProperty;
 
 public class EntryPoint implements AuthenticationEntryPoint {
-    private final AuthenticationEntryPoint defaultEntryPoint;
-    private final AuthenticationEntryPoint alternativeEntryPoint;
-    private final String defaultAuthProvider;
+    private final AuthenticationEntryPoint devEntryPoint;
+    private final AuthenticationEntryPoint prodEntryPoint;
 
-    public EntryPoint(AuthenticationEntryPoint defaultEntryPoint, AuthenticationEntryPoint alternativeEntryPoint) {
-        this.defaultEntryPoint = defaultEntryPoint;
-        this.alternativeEntryPoint = alternativeEntryPoint;
-        this.defaultAuthProvider =PropertyUtil.getProperty("defaultAuthProvider");
+
+    public EntryPoint(AuthenticationEntryPoint prodEntryPoint, AuthenticationEntryPoint devEntryPoint) {
+        this.devEntryPoint = devEntryPoint;
+        this.prodEntryPoint = prodEntryPoint;
     }
 
     @Override
     public void commence(HttpServletRequest request, HttpServletResponse response, AuthenticationException authException) throws IOException, ServletException {
-        if ("auth0".equals(defaultAuthProvider)) {
-            alternativeEntryPoint.commence(request, response, authException);
+        if (SystemProperty.environment.value() == SystemProperty.Environment.Value.Production) {
+            prodEntryPoint.commence(request, response, authException);
         } else {
-            defaultEntryPoint.commence(request, response, authException);
+            devEntryPoint.commence(request, response, authException);
         }
-
     }
 }
