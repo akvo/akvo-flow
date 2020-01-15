@@ -5,7 +5,8 @@ services:
 - docker
 cache:
   directories:
-    - $HOME/.m2
+    - "$HOME/.m2"
+    - "$HOME/.npm"
 
 script:
   - "./ci/bootstrap-build.sh /app/src/ci/build.sh && ./ci/deploy.sh"
