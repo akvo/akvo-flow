@@ -24,8 +24,8 @@
       <b:constructor-arg ref="oidcConfig"/>
    </b:bean>
 
-    <http use-expressions="true" entry-point-ref="defaultEntryPoint" authentication-manager-ref="authenticationManager"
-        access-decision-manager-ref="accessDecisionManager">
+   <http use-expressions="true" entry-point-ref="#{systemProperties['authEntryPoint'] ?: 'oidcEntryPoint'}"
+          authentication-manager-ref="authenticationManager" access-decision-manager-ref="accessDecisionManager">
         <headers>
             <frame-options policy="SAMEORIGIN" />
         </headers>
@@ -86,10 +86,5 @@
     </authentication-manager>
 
     <b:bean id="gaeAuthenticationProvider" class="org.akvo.flow.rest.security.google.GoogleAccountsAuthenticationProvider" />
-
-    <b:bean id="defaultEntryPoint" class="org.akvo.flow.rest.security.EntryPoint">
-        <b:constructor-arg ref="oidcEntryPoint"/> <!-- production -->
-        <b:constructor-arg ref="gaeEntryPoint"/> <!-- development -->
-    </b:bean>
 
 </b:beans>

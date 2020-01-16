@@ -58,5 +58,6 @@
         <property name="serviceAccountId" value="sa-akvoflowsandbox@akvoflowsandbox.iam.gserviceaccount.com"/>
         <property name="hereMapsAppId" value="none"/>
         <property name="hereMapsAppCode" value="neither"/>
+        <property name="authEntryPoint" value="gaeEntryPoint"/>
     </system-properties>
 </appengine-web-app>
