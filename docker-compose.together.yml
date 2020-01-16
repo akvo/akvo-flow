@@ -1,7 +1,7 @@
 version: "3.5"
 services:
   akvo-flow:
-    image: akvo/akvo-flow-builder:20200106.165448.593bee7
+    image: akvo/akvo-flow-builder:20200115.154607.012ea0b
     entrypoint: /app/src/ci/run-as-user.sh
     command: /app/src/ci/devserver.sh
     working_dir: /app/src
