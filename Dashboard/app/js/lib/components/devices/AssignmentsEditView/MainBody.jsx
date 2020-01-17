@@ -19,7 +19,12 @@ export default class AssignmentMain extends React.Component {
   };
 
   changeTab = (tab, selectedDevice = null) => {
-    this.setState({ currentTab: tab, selectedDevice });
+    this.setState({ currentTab: tab, selectedDevice }, () => {
+      if (tab === 'ASSIGN_DATAPOINTS') {
+        // load full details for each datapoint when viewing device datapoints
+        this.context.actions.getDeviceDatapoints(selectedDevice);
+      }
+    });
   };
 
   getDeviceGroups = () => {

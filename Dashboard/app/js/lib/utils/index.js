@@ -21,3 +21,10 @@ export function ArrNoDupe(a) {
   }
   return tempa;
 }
+
+export function formatDate(value) {
+  if (!Ember.none(value)) {
+    return `${value.getFullYear()}/${value.getMonth() + 1}/${value.getDate()}`;
+  }
+  return null;
+}
