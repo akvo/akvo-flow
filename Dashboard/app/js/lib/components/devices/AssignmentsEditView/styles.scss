@@ -386,6 +386,12 @@
         .assign-datapoints {
           position: relative;
 
+          .header {
+            .divider {
+              margin: 0px 5px;
+            }
+          }
+
           .datapoint {
             padding-bottom: 20px;
 

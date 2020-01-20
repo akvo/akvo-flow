@@ -1,4 +1,5 @@
 /* eslint-disable import/no-unresolved */
+/* eslint-disable jsx-a11y/anchor-is-valid */
 import React from 'react';
 import PropTypes from 'prop-types';
 import SearchDatapoints from './SearchDatapoints';
@@ -6,7 +7,7 @@ import AssignmentContext from '../../assignment-context';
 
 export default class AssignDatapoints extends React.Component {
   state = {
-    currentSubTab: 'SEARCH_DATAPOINTS',
+    currentSubTab: '',
   };
 
   changeTab = tab => {
@@ -51,7 +52,13 @@ export default class AssignDatapoints extends React.Component {
           <div className="header">
             <div className="device-details">
               <p>{deviceData.name}</p>
-              <p>{datapointsData.length} Datapoints assigned</p>
+              <p>
+                <span>{datapointsData.length} Datapoints assigned</span>
+                <span className="divider">.</span>
+                <a href="#" onClick={() => this.props.changeTab('EDIT_DATAPOINTS', deviceData.id)}>
+                  Edit
+                </a>
+              </p>
             </div>
 
             <button onClick={() => this.changeTab('SEARCH_DATAPOINTS')} type="button">
@@ -75,4 +82,5 @@ export default class AssignDatapoints extends React.Component {
 AssignDatapoints.contextType = AssignmentContext;
 AssignDatapoints.propTypes = {
   selectedDevice: PropTypes.string.isRequired,
+  changeTab: PropTypes.func.isRequired,
 };

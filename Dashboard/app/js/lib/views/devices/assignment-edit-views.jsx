@@ -103,6 +103,7 @@ FLOW.AssignmentEditView = FLOW.ReactComponentView.extend(
         addToAssignment: Ember.String.loc('_add_to_assignment'),
         removeFromAssignment: Ember.String.loc('_remove_from_assignment'),
         noDeviceInAssignment: Ember.String.loc('_no_devices_in_assignments'),
+        editDatapoints: Ember.String.loc('_edit_datapoints'),
       };
 
       const inputValues = {
@@ -122,6 +123,7 @@ FLOW.AssignmentEditView = FLOW.ReactComponentView.extend(
         findDatapoints: this.findDatapoints,
         addDatapointsToAssignment: this.addDatapointsToAssignment,
         getDeviceDatapoints: this.getDeviceDatapoints,
+        removeDatapointsFromAssignments: this.removeDatapointsFromAssignments,
       };
 
       const data = {
@@ -603,6 +605,7 @@ FLOW.AssignmentEditView = FLOW.ReactComponentView.extend(
         this.selectedDatapoints = FLOW.dataPointAssignmentControl
           .get('content')
           .map(datapointAssignment => ({
+            id: datapointAssignment.get('id'),
             deviceId: `${datapointAssignment.get('deviceId')}`,
             datapoints: datapointAssignment.get('dataPointIds').map(id => ({
               id,
@@ -696,6 +699,10 @@ FLOW.AssignmentEditView = FLOW.ReactComponentView.extend(
       }
 
       this.renderReactSide();
+    },
+
+    removeDatapointsFromAssignments(datapoints, deviceId) {
+      // remove dp from selected datapoints
     },
   }
 );
