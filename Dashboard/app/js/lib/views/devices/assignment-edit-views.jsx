@@ -47,6 +47,7 @@ FLOW.AssignmentEditView = FLOW.ReactComponentView.extend(
       this.detectSearchedDatapointLoaded = this.detectSearchedDatapointLoaded.bind(this);
       this.addDatapointsToAssignment = this.addDatapointsToAssignment.bind(this);
       this.getDeviceDatapoints = this.getDeviceDatapoints.bind(this);
+      this.removeDatapointsFromAssignments = this.removeDatapointsFromAssignments.bind(this);
 
       // object wide varaibles
       this.forms = {};
@@ -59,7 +60,7 @@ FLOW.AssignmentEditView = FLOW.ReactComponentView.extend(
       // selected attributes
       this.selectedDevices = [];
       this.selectedSurveys = [];
-      this.selectedDatapoints = [];
+      this.datapointAssignments = [];
 
       // global object variables
       this.initialSurveyGroup = null;
@@ -137,7 +138,7 @@ FLOW.AssignmentEditView = FLOW.ReactComponentView.extend(
         initialSurveyGroup: this.initialSurveyGroup,
         numberOfForms: this.selectedSurveys.length,
         selectedDeviceIds: this.selectedDevices,
-        selectedDatapoints: this.selectedDatapoints,
+        selectedDatapoints: this.datapointAssignments,
       };
 
       return {
@@ -226,7 +227,7 @@ FLOW.AssignmentEditView = FLOW.ReactComponentView.extend(
       const surveyFolderId = FLOW.selectedControl.get('selectedSurveyGroup').get('keyId');
 
       // create records for each device datapoints
-      this.selectedDatapoints.forEach(sDp => {
+      this.datapointAssignments.forEach(sDp => {
         const data = {
           surveyAssignmentId,
           surveyId: surveyFolderId,
@@ -602,7 +603,7 @@ FLOW.AssignmentEditView = FLOW.ReactComponentView.extend(
         FLOW.dataPointAssignmentControl.content &&
         FLOW.dataPointAssignmentControl.content.isLoaded
       ) {
-        this.selectedDatapoints = FLOW.dataPointAssignmentControl
+        this.datapointAssignments = FLOW.dataPointAssignmentControl
           .get('content')
           .map(datapointAssignment => ({
             id: datapointAssignment.get('id'),
@@ -617,7 +618,7 @@ FLOW.AssignmentEditView = FLOW.ReactComponentView.extend(
 
     getDeviceDatapoints(deviceId) {
       // get datapoints information for this device
-      const selectedDatapoint = this.selectedDatapoints.find(sDp => sDp.deviceId === deviceId);
+      const selectedDatapoint = this.datapointAssignments.find(sDp => sDp.deviceId === deviceId);
 
       // if no datapoint is available for this device, then return early
       if (!selectedDatapoint) {
@@ -640,7 +641,7 @@ FLOW.AssignmentEditView = FLOW.ReactComponentView.extend(
       }
 
       // update datapoints with complete information
-      this.selectedDatapoints = this.selectedDatapoints.map(selectedDp => {
+      this.datapointAssignments = this.datapointAssignments.map(selectedDp => {
         if (selectedDp.deviceId !== this.deviceInView) {
           return selectedDp;
         }
@@ -678,7 +679,7 @@ FLOW.AssignmentEditView = FLOW.ReactComponentView.extend(
     },
 
     addDatapointsToAssignment(datapoints, deviceId) {
-      const selectedDps = this.selectedDatapoints;
+      const selectedDps = this.datapointAssignments;
       const selectedDp = selectedDps.find(sDp => sDp.deviceId === deviceId);
 
       // check if device already has datapoints
@@ -692,7 +693,7 @@ FLOW.AssignmentEditView = FLOW.ReactComponentView.extend(
         });
       } else {
         // push new device into selected datapoints
-        this.selectedDatapoints.push({
+        this.datapointAssignments.push({
           deviceId,
           datapoints,
         });
@@ -702,7 +703,25 @@ FLOW.AssignmentEditView = FLOW.ReactComponentView.extend(
     },
 
     removeDatapointsFromAssignments(datapoints, deviceId) {
-      // remove dp from selected datapoints
+      // get the selected datapoint assignment
+      this.datapointAssignments = this.datapointAssignments.map(dpAssignment => {
+        // get the datapoints in the selected assignment
+        if (dpAssignment.deviceId !== deviceId) {
+          return dpAssignment;
+        }
+
+        // remove the selected datapoints from the list
+        const dps = dpAssignment.datapoints.filter(dp => {
+          return !datapoints.includes(dp.id);
+        });
+
+        return {
+          ...dpAssignment,
+          datapoints: dps,
+        };
+      });
+
+      this.renderReactSide();
     },
   }
 );

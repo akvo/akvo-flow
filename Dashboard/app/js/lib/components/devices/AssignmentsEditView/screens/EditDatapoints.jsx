@@ -40,7 +40,15 @@ export default class EditDatapoints extends React.Component {
     };
   };
 
-  removeFromAssignment = () => {};
+  removeFromAssignment = () => {
+    const { selectedDatapoints } = this.state;
+    const { removeDatapointsFromAssignments } = this.context.actions;
+
+    removeDatapointsFromAssignments(selectedDatapoints, this.props.selectedDevice);
+
+    // empty selected devices
+    this.setState({ selectedDatapoints: [] });
+  };
 
   render() {
     const { strings } = this.context;
