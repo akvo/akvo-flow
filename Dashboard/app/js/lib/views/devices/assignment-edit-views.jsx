@@ -668,7 +668,9 @@ FLOW.AssignmentEditView = FLOW.ReactComponentView.extend(
     },
 
     findDatapoints(displayName) {
-      this.set('searchedDatapoints', FLOW.SurveyedLocale.find({ displayName }));
+      // find datapoints in the selected survey group
+      const surveyId = FLOW.selectedControl.get('selectedSurveyGroup').get('keyId');
+      this.set('searchedDatapoints', FLOW.SurveyedLocale.find({ displayName, surveyId }));
     },
 
     detectSearchedDatapointLoaded() {
