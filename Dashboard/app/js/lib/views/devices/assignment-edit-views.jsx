@@ -473,8 +473,6 @@ FLOW.AssignmentEditView = FLOW.ReactComponentView.extend(
       }
 
       this.renderReactSide();
-
-      // TODO: load data points in selected form
     },
 
     handleSurveySelect(parentId) {
@@ -482,6 +480,13 @@ FLOW.AssignmentEditView = FLOW.ReactComponentView.extend(
 
       if (selectedSG && selectedSG.get('projectType') !== 'PROJECT_FOLDER') {
         FLOW.selectedControl.set('selectedSurveyGroup', selectedSG);
+
+        // TODO:: Add confirmation from user
+        // empty all currently selected datapoints
+        if (this.datapointAssignments.length) {
+          this.datapointAssignments = [];
+        }
+
         return false;
       }
 
