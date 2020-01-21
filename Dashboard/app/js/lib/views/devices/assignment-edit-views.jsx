@@ -227,15 +227,23 @@ FLOW.AssignmentEditView = FLOW.ReactComponentView.extend(
       const surveyFolderId = FLOW.selectedControl.get('selectedSurveyGroup').get('keyId');
 
       // create records for each device datapoints
-      this.datapointAssignments.forEach(sDp => {
+      this.datapointAssignments.forEach(dpAssignment => {
         const data = {
           surveyAssignmentId,
           surveyId: surveyFolderId,
-          deviceId: sDp.deviceId,
-          dataPointIds: sDp.datapoints.map(dp => dp.id),
+          deviceId: dpAssignment.deviceId,
+          dataPointIds: dpAssignment.datapoints.map(dp => dp.id),
         };
 
-        FLOW.store.createRecord(FLOW.DataPointAssignment, data);
+        if (dpAssignment.id) {
+          // find and update old record with data
+          const dpAssignmentRecord = FLOW.DataPointAssignment.find(dpAssignment.id);
+          dpAssignmentRecord.set('surveyId', surveyFolderId);
+          dpAssignmentRecord.set('dataPointIds', data.dataPointIds);
+        } else {
+          // create new record with data
+          FLOW.store.createRecord(FLOW.DataPointAssignment, data);
+        }
       });
 
       FLOW.store.commit();
