@@ -35,7 +35,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 
 class RawDataSpreadsheetImporterTests {
 
-    private void createSheet(Workbook wb, String name, String topleft, boolean app, boolean rep, int questionColumns) {
+    private Sheet createSheet(Workbook wb, String name, String topleft, boolean app, boolean rep, int questionColumns) {
         Sheet sheet = wb.createSheet(name);
 
         Row row0 = sheet.createRow(0);
@@ -58,6 +58,7 @@ class RawDataSpreadsheetImporterTests {
         for (int j = 0; j < questionColumns; j++) {
             row1.createCell(i + j).setCellValue((123000 + j) + "|Question" + j);
         }
+        return sheet;
     }
 
     private File createValidTestSpreadsheet(String fileName) throws IOException {
@@ -65,6 +66,21 @@ class RawDataSpreadsheetImporterTests {
         createSheet(wb, "Raw Data", "Metadata", false, false, 0); //Right name, right index for base
         createSheet(wb, "Group 2", "Metadata", false, true, 1); //Right name for group sheet
         createSheet(wb, "Foobar", "Not metadata", false, true, 0); //Should be completely ignored
+
+        FileOutputStream fileOut = new FileOutputStream(fileName);
+        wb.setActiveSheet(0);
+        wb.write(fileOut);
+        fileOut.close();
+
+        return new File(fileName);
+    }
+
+    private File createValidTestSpreadsheetWithData(String fileName, xyzzy questions) throws IOException {
+        Workbook wb = new SXSSFWorkbook(10); //Only need a tiny window
+        Sheet baseSheet = createSheet(wb, "Raw Data", "Metadata", false, false, 1); //Right name, right index for base
+        Row row = baseSheet.createRow(2);
+
+        Sheet groupSheet = createSheet(wb, "Group 2", "Metadata", false, true, 1); //Right name for group sheet
 
         FileOutputStream fileOut = new FileOutputStream(fileName);
         wb.setActiveSheet(0);
@@ -91,7 +107,18 @@ class RawDataSpreadsheetImporterTests {
     public void testValidSheets() throws IOException {
         DataImporter dimp = new RawDataSpreadsheetImporter();
 
-        //Check that a canonical file passes
+        //Check that a canonical file passes validation
+        File file1 = createValidTestSpreadsheet("/tmp/valid1.xlsx");
+        Map<Integer,String> errors = dimp.validate(file1);
+        assertEquals(0, errors.size());
+
+    }
+
+    @Test
+    public void testValidSheetsWithData() throws IOException {
+        DataImporter dimp = new RawDataSpreadsheetImporter();
+
+        //Check that a canonical file passes validation
         File file1 = createValidTestSpreadsheet("/tmp/valid1.xlsx");
         Map<Integer,String> errors = dimp.validate(file1);
         assertEquals(0, errors.size());
