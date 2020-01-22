@@ -1,5 +1,5 @@
 /*
- *  Copyright (C) 2019 Stichting Akvo (Akvo Foundation)
+ *  Copyright (C) 2019-2020 Stichting Akvo (Akvo Foundation)
  *
  *  This file is part of Akvo FLOW.
  *
@@ -23,17 +23,21 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
+import java.util.SortedMap;
+import java.util.TreeMap;
+
 import org.apache.log4j.ConsoleAppender;
 import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
 import org.apache.log4j.PatternLayout;
-import org.apache.poi.hssf.usermodel.HSSFCell;
-import org.apache.poi.hssf.usermodel.HSSFCellStyle;
-import org.apache.poi.hssf.usermodel.HSSFFont;
-import org.apache.poi.hssf.usermodel.HSSFRow;
-import org.apache.poi.hssf.usermodel.HSSFSheet;
-import org.apache.poi.hssf.usermodel.HSSFWorkbook;
 import org.apache.poi.ss.util.CellRangeAddress;
+import org.apache.poi.xssf.usermodel.XSSFCell;
+import org.apache.poi.xssf.usermodel.XSSFCellStyle;
+import org.apache.poi.xssf.usermodel.XSSFFont;
+import org.apache.poi.xssf.usermodel.XSSFRow;
+import org.apache.poi.xssf.usermodel.XSSFSheet;
+import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import org.waterforpeople.mapping.app.gwt.client.survey.SurveyDto;
 import org.waterforpeople.mapping.app.gwt.client.survey.SurveyGroupDto;
 import org.waterforpeople.mapping.dataexport.service.BulkDataServiceClient;
@@ -121,23 +125,23 @@ public class StatisticsExporter implements DataExporter {
 
 
     /**
-     * Writes the stats in an XLS document
+     * Writes the stats in an XLSX document
      */
     private void writeStats(String title,
             File fileName,
             Map<Long, SurveyGroupDto> groupMap,
             Map<SurveyGroupDto, List<SurveyDto>> formMap,
             Map<SurveyDto, Long> instanceCounts) throws Exception {
-        HSSFWorkbook wb = new HSSFWorkbook();
+        XSSFWorkbook wb = new XSSFWorkbook();
 
-        HSSFCellStyle headerStyle = wb.createCellStyle();
-        headerStyle.setAlignment(HSSFCellStyle.ALIGN_CENTER);
-        HSSFFont headerFont = wb.createFont();
-        headerFont.setBoldweight(HSSFFont.BOLDWEIGHT_BOLD);
+        XSSFCellStyle headerStyle = wb.createCellStyle();
+        headerStyle.setAlignment(XSSFCellStyle.ALIGN_CENTER);
+        XSSFFont headerFont = wb.createFont();
+        headerFont.setBoldweight(XSSFFont.BOLDWEIGHT_BOLD);
         headerStyle.setFont(headerFont);
 
-        HSSFCellStyle questionStyle = wb.createCellStyle();
-        questionStyle.setVerticalAlignment(HSSFCellStyle.VERTICAL_TOP);
+        XSSFCellStyle questionStyle = wb.createCellStyle();
+        questionStyle.setVerticalAlignment(XSSFCellStyle.VERTICAL_TOP);
         questionStyle.setWrapText(true);
 
         writeInstanceSheet(title, groupMap, formMap, instanceCounts, wb, headerStyle, questionStyle);
@@ -155,17 +159,17 @@ public class StatisticsExporter implements DataExporter {
             Map<Long, SurveyGroupDto> groupMap,
             Map<SurveyGroupDto, List<SurveyDto>> formMap,
             Map<SurveyDto, Long> instanceCounts,
-            HSSFWorkbook wb,
-            HSSFCellStyle headerStyle,
-            HSSFCellStyle bodyStyle) {
+            XSSFWorkbook wb,
+            XSSFCellStyle headerStyle,
+            XSSFCellStyle questionStyle) {
 
-        HSSFSheet sheet = wb.createSheet(INSTANCE_COUNT_SHEET_NAME);
+        XSSFSheet sheet = wb.createSheet(INSTANCE_COUNT_SHEET_NAME);
 
         sheet.setColumnWidth(0, COL_WIDTH);
         sheet.setColumnWidth(1, COL_WIDTH);
 
         int curRow = 0;
-        HSSFRow row = sheet.createRow(curRow++);
+        XSSFRow row = sheet.createRow(curRow++);
         sheet.addMergedRegion(new CellRangeAddress(curRow - 1, curRow - 1, 0, 3));
         createCell(row, 0, title, headerStyle);
         row = sheet.createRow(curRow++);
@@ -174,7 +178,8 @@ public class StatisticsExporter implements DataExporter {
         createCell(row, 2, FORM_ID_HEADER, headerStyle);
         createCell(row, 3, COUNT_HEADER, headerStyle);
 
-        //Loop over surveys
+        //Loop over surveys, saving the generated pathname in a sorted list
+        TreeMap<String, SurveyGroupDto> surveyMap = new TreeMap<>();
         for (SurveyGroupDto s: groupMap.values()) {
             if (ProjectType.PROJECT.equals(s.getProjectType())) {
                 String name = s.getCode();
@@ -189,17 +194,22 @@ public class StatisticsExporter implements DataExporter {
                     log.error("Infinite Survey Group loop for " + s.getKeyId());
                     name = "### structure error - infinite loop ###";
                 }
-                List<SurveyDto> formList = formMap.get(s);
-                for (SurveyDto form: formList) {
-                    row = sheet.createRow(curRow++);
-                    createCell(row, 0, name, bodyStyle);
-                    createCell(row, 1, form.getCode(), bodyStyle);
-                    createCell(row, 2, form.getKeyId(), bodyStyle);
-                    createCell(row, 3, instanceCounts.get(form), bodyStyle);
-                }
-
+                surveyMap.put(name, s);
             }
         }
+
+        //Loop over the survey path->dto map
+        for (Entry<String, SurveyGroupDto> e: surveyMap.entrySet()) {
+            List<SurveyDto> formList = formMap.get(e.getValue());
+            for (SurveyDto form: formList) {
+                row = sheet.createRow(curRow++);
+                createCell(row, 0, e.getKey(), questionStyle);
+                createCell(row, 1, form.getCode(), questionStyle);
+                createCell(row, 2, form.getKeyId(), questionStyle);
+                createCell(row, 3, instanceCounts.get(form), questionStyle);
+            }
+        }
+
     }
 
     /**
@@ -209,11 +219,11 @@ public class StatisticsExporter implements DataExporter {
             String title2,
             Map<Long, SurveyGroupDto> groupMap,
             Map<SurveyGroupDto, List<SurveyDto>> formMap,
-            HSSFWorkbook wb,
-            HSSFCellStyle headerStyle,
-            HSSFCellStyle bodyStyle) {
+            XSSFWorkbook wb,
+            XSSFCellStyle headerStyle,
+            XSSFCellStyle bodyStyle) {
 
-        HSSFSheet sheet = wb.createSheet(SURVEY_STATS_SHEET_NAME);
+        XSSFSheet sheet = wb.createSheet(SURVEY_STATS_SHEET_NAME);
 
         //Sum up all the forms
         long formCount = 0;
@@ -231,7 +241,7 @@ public class StatisticsExporter implements DataExporter {
         sheet.setColumnWidth(1, COL_WIDTH);
 
         int curRow = 0;
-        HSSFRow row = sheet.createRow(curRow++);
+        XSSFRow row = sheet.createRow(curRow++);
         createCell(row, 0, title1, headerStyle);
         createCell(row, 1, title2, headerStyle);
         row = sheet.createRow(curRow++);
@@ -251,9 +261,22 @@ public class StatisticsExporter implements DataExporter {
     /**
      * creates a cell in the row passed in and sets the style and value (if non-null)
      */
-    private HSSFCell createCell(HSSFRow row, int col, String value,
-            HSSFCellStyle style) {
-        HSSFCell cell = row.createCell(col);
+    private XSSFCell createCell(XSSFRow row, int col, String value, XSSFCellStyle headerStyle) {
+        XSSFCell cell = row.createCell(col);
+        if (headerStyle != null) {
+            cell.setCellStyle(headerStyle);
+        }
+        if (value != null) {
+            cell.setCellValue(value);
+        }
+        return cell;
+    }
+
+    /**
+     * creates a cell in the row passed in and sets the style and value (if non-null)
+     */
+    private XSSFCell createCell(XSSFRow row, int col, Double value, XSSFCellStyle style) {
+        XSSFCell cell = row.createCell(col);
         if (style != null) {
             cell.setCellStyle(style);
         }
@@ -266,8 +289,8 @@ public class StatisticsExporter implements DataExporter {
     /**
      * creates a cell in the row passed in and sets the style and value (if non-null)
      */
-    private HSSFCell createCell(HSSFRow row, int col, Double value, HSSFCellStyle style) {
-        HSSFCell cell = row.createCell(col);
+    private XSSFCell createCell(XSSFRow row, int col, Long value, XSSFCellStyle style) {
+        XSSFCell cell = row.createCell(col);
         if (style != null) {
             cell.setCellStyle(style);
         }
@@ -280,22 +303,8 @@ public class StatisticsExporter implements DataExporter {
     /**
      * creates a cell in the row passed in and sets the style and value (if non-null)
      */
-    private HSSFCell createCell(HSSFRow row, int col, Long value, HSSFCellStyle style) {
-        HSSFCell cell = row.createCell(col);
-        if (style != null) {
-            cell.setCellStyle(style);
-        }
-        if (value != null) {
-            cell.setCellValue(value);
-        }
-        return cell;
-    }
-
-    /**
-     * creates a cell in the row passed in and sets the style and value (if non-null)
-     */
-    private HSSFCell createCell(HSSFRow row, int col, Boolean value, HSSFCellStyle style) {
-        HSSFCell cell = row.createCell(col);
+    private XSSFCell createCell(XSSFRow row, int col, Boolean value, XSSFCellStyle style) {
+        XSSFCell cell = row.createCell(col);
         if (style != null) {
             cell.setCellStyle(style);
         }
@@ -309,8 +318,8 @@ public class StatisticsExporter implements DataExporter {
      * creates a cell in the row passed in, makes it 'width' columns wide
      *  and sets the style and value (if non-null)
      */
-    private HSSFCell createCellBlock(HSSFRow row, int col, String value, HSSFCellStyle style, int width) {
-        HSSFCell cell = row.createCell(col);
+    private XSSFCell createCellBlock(XSSFRow row, int col, String value, XSSFCellStyle style, int width) {
+        XSSFCell cell = row.createCell(col);
         if (width > 1) {
             row.getSheet().addMergedRegion(new CellRangeAddress(row.getRowNum(), row.getRowNum(), col, col + width - 1));
         }
