@@ -65,6 +65,7 @@ FLOW.AssignmentEditView = FLOW.ReactComponentView.extend(
       // global object variables
       this.initialSurveyGroup = null;
       this.searchedDatapoints = null;
+      this.datapointsEnabled = null;
       this.deviceInView = null;
     },
 
@@ -139,6 +140,7 @@ FLOW.AssignmentEditView = FLOW.ReactComponentView.extend(
         numberOfForms: this.selectedSurveys.length,
         selectedDeviceIds: this.selectedDevices,
         selectedDatapoints: this.datapointAssignments,
+        datapointsEnabled: this.datapointsEnabled,
       };
 
       return {
@@ -486,6 +488,9 @@ FLOW.AssignmentEditView = FLOW.ReactComponentView.extend(
         if (this.datapointAssignments.length) {
           this.datapointAssignments = [];
         }
+
+        // if selected survey has monitoring disabled, disable datapoint assignments
+        this.datapointsEnabled = selectedSG.get('monitoringGroup');
 
         return false;
       }
