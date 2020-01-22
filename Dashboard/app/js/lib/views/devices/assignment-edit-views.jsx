@@ -16,6 +16,7 @@ FLOW.AssignmentEditView = FLOW.ReactComponentView.extend(
     'searchedDatapoints.isLoaded': 'detectSearchedDatapointLoaded',
   }),
   {
+    // init methods
     init() {
       this._super();
       this.setupControls();
@@ -58,12 +59,12 @@ FLOW.AssignmentEditView = FLOW.ReactComponentView.extend(
       this.datapointsResults = [];
 
       // selected attributes
+      this.selectedSurveyGroup = null;
       this.selectedDevices = [];
       this.selectedSurveys = [];
       this.datapointAssignments = [];
 
       // global object variables
-      this.initialSurveyGroup = null;
       this.searchedDatapoints = null;
       this.datapointsEnabled = null;
       this.deviceInView = null;
@@ -81,6 +82,7 @@ FLOW.AssignmentEditView = FLOW.ReactComponentView.extend(
       this.renderReactSide();
     },
 
+    // react side
     renderReactSide() {
       const props = this.getProps();
       this.reactRender(<AssignmentsEditView {...props} />);
@@ -136,7 +138,7 @@ FLOW.AssignmentEditView = FLOW.ReactComponentView.extend(
         deviceGroups: this.deviceGroups,
         deviceGroupNames: this.deviceGroupNames,
         activeDeviceGroups: this.activeDeviceGroups,
-        initialSurveyGroup: this.initialSurveyGroup,
+        initialSurveyGroup: this.selectedSurveyGroup,
         numberOfForms: this.selectedSurveys.length,
         selectedDeviceIds: this.selectedDevices,
         selectedDatapoints: this.datapointAssignments,
@@ -151,6 +153,7 @@ FLOW.AssignmentEditView = FLOW.ReactComponentView.extend(
       };
     },
 
+    // global actions
     cancelEditSurveyAssignment() {
       if (Ember.none(FLOW.selectedControl.selectedSurveyAssignment.get('keyId'))) {
         FLOW.selectedControl.get('selectedSurveyAssignment').deleteRecord();
@@ -271,63 +274,7 @@ FLOW.AssignmentEditView = FLOW.ReactComponentView.extend(
       FLOW.dateControl.set('toDate', formatDate(endDate));
     },
 
-    setupForms() {
-      if (!FLOW.selectedControl.selectedSurveyAssignment.get('formIds')) {
-        return;
-      }
-
-      FLOW.selectedControl.selectedSurveyAssignment.get('formIds').forEach(formId => {
-        const form = FLOW.Survey.find(formId);
-        if (form && form.get('keyId')) {
-          this.selectedSurveys.push(form);
-
-          // load selected survey group
-          this.initialSurveyGroup = form.get('surveyGroupId');
-
-          this.forms[form.get('keyId')] = {
-            // also load pre-selected forms
-            name: form.get('name'),
-            checked: true,
-          };
-        }
-      });
-    },
-
-    setupSurveyGroups() {
-      if (FLOW.projectControl.content.isLoaded) {
-        FLOW.projectControl.get('content').forEach(item => {
-          this.surveyGroups.push({
-            keyId: item.get('keyId'),
-            parentId: item.get('parentId'),
-            name: item.get('name'),
-            published: item.get('published'),
-            projectType: item.get('projectType'),
-            monitoringGroup: item.get('monitoringGroup'),
-            ancestorIds: item.get('ancestorIds'),
-          });
-        });
-      }
-    },
-
     // listeners
-    detectSurveyLoaded() {
-      this.forms = {};
-
-      if (!FLOW.surveyControl.content) return;
-
-      // filter to show only published forms here
-      FLOW.surveyControl.content
-        .filter(form => form.get('status') === 'PUBLISHED')
-        .forEach(form => {
-          this.forms[form.get('keyId')] = {
-            name: form.get('name'),
-            checked: this.formInAssignment(form.get('keyId')),
-          };
-        });
-
-      this.renderReactSide();
-    },
-
     detectChangeTab() {
       if (Ember.none(FLOW.selectedControl.selectedSurveyAssignment.get('keyId'))) {
         FLOW.selectedControl.get('selectedSurveyAssignment').deleteRecord();
@@ -342,13 +289,6 @@ FLOW.AssignmentEditView = FLOW.ReactComponentView.extend(
       FLOW.dialogControl.set('message', message);
       FLOW.dialogControl.set('showCANCEL', false);
       FLOW.dialogControl.set('showDialog', true);
-    },
-
-    formInAssignment(formId) {
-      const formsInAssignment = this.selectedSurveys.map(item => item.get('id'));
-
-      // convert id to string
-      return formsInAssignment ? formsInAssignment.indexOf(`${formId}`) > -1 : false;
     },
 
     shouldRemoveForms() {
@@ -477,32 +417,6 @@ FLOW.AssignmentEditView = FLOW.ReactComponentView.extend(
       this.renderReactSide();
     },
 
-    handleSurveySelect(parentId) {
-      const selectedSG = FLOW.projectControl.get('content').find(sg => sg.get('keyId') == parentId);
-
-      if (selectedSG && selectedSG.get('projectType') !== 'PROJECT_FOLDER') {
-        FLOW.selectedControl.set('selectedSurveyGroup', selectedSG);
-
-        // TODO:: Add confirmation from user
-        // empty all currently selected datapoints
-        if (this.datapointAssignments.length) {
-          this.datapointAssignments = [];
-        }
-
-        // if selected survey has monitoring disabled, disable datapoint assignments
-        this.datapointsEnabled = selectedSG.get('monitoringGroup');
-
-        return false;
-      }
-
-      // empty forms when a new folder is picked
-      this.forms = {};
-      this.selectedSurveys = [];
-
-      this.renderReactSide();
-      return true;
-    },
-
     handleDeviceCheck(deviceId, checked, deviceGroupId) {
       // if it's the select all option
       if (deviceId == 0) {
@@ -551,6 +465,102 @@ FLOW.AssignmentEditView = FLOW.ReactComponentView.extend(
 
       // rerender react side
       return this.renderReactSide();
+    },
+
+    // handle forms functionality
+    setupForms() {
+      if (!FLOW.selectedControl.selectedSurveyAssignment.get('formIds')) {
+        return;
+      }
+
+      FLOW.selectedControl.selectedSurveyAssignment.get('formIds').forEach(formId => {
+        const form = FLOW.Survey.find(formId);
+        if (form && form.get('keyId')) {
+          this.selectedSurveys.push(form);
+
+          // load selected survey group
+          this.selectedSurveyGroup = form.get('surveyGroupId');
+
+          this.forms[form.get('keyId')] = {
+            // also load pre-selected forms
+            name: form.get('name'),
+            checked: true,
+          };
+        }
+      });
+    },
+
+    detectSurveyLoaded() {
+      this.forms = {};
+
+      if (!FLOW.surveyControl.content) return;
+
+      // filter to show only published forms here
+      FLOW.surveyControl.content
+        .filter(form => form.get('status') === 'PUBLISHED')
+        .forEach(form => {
+          // load selected survey group
+          this.selectedSurveyGroup = form.get('surveyGroupId');
+
+          this.forms[form.get('keyId')] = {
+            name: form.get('name'),
+            checked: this.formInAssignment(form.get('keyId')),
+          };
+        });
+
+      this.renderReactSide();
+    },
+
+    formInAssignment(formId) {
+      const formsInAssignment = this.selectedSurveys.map(item => item.get('id'));
+
+      // convert id to string
+      return formsInAssignment ? formsInAssignment.indexOf(`${formId}`) > -1 : false;
+    },
+
+    // handle survey group functionality
+    setupSurveyGroups() {
+      if (FLOW.projectControl.content.isLoaded) {
+        FLOW.projectControl.get('content').forEach(item => {
+          this.surveyGroups.push({
+            keyId: item.get('keyId'),
+            parentId: item.get('parentId'),
+            name: item.get('name'),
+            published: item.get('published'),
+            projectType: item.get('projectType'),
+            monitoringGroup: item.get('monitoringGroup'),
+            ancestorIds: item.get('ancestorIds'),
+          });
+        });
+      }
+    },
+
+    handleSurveySelect(parentId) {
+      const selectedSG = FLOW.projectControl.get('content').find(sg => sg.get('keyId') == parentId);
+
+      if (selectedSG && selectedSG.get('projectType') !== 'PROJECT_FOLDER') {
+        FLOW.selectedControl.set('selectedSurveyGroup', selectedSG);
+
+        // TODO:: Add confirmation from user
+        // empty all currently selected datapoints
+        if (this.datapointAssignments.length) {
+          this.datapointAssignments = [];
+        }
+
+        // if selected survey has monitoring disabled, disable datapoint assignments
+        this.datapointsEnabled = selectedSG.get('monitoringGroup');
+
+        // obsevers will load forms now and rerender react
+
+        return false;
+      }
+
+      // empty forms when a new folder is picked
+      this.forms = {};
+      this.selectedSurveys = [];
+
+      this.renderReactSide();
+      return true;
     },
 
     // handle devices functionality
