@@ -291,24 +291,6 @@ FLOW.AssignmentEditView = FLOW.ReactComponentView.extend(
       FLOW.dialogControl.set('showDialog', true);
     },
 
-    shouldRemoveForms() {
-      const formsInAssignment = FLOW.selectedControl
-        .get('selectedSurveys')
-        .map(item => item.get('id'));
-
-      const selectedSurveyGroupId = FLOW.selectedControl.selectedSurveyGroup.get('keyId');
-
-      if (formsInAssignment && formsInAssignment.length > 0) {
-        // get survey id of first form currently in assignment
-        const preSelectedSurvey = FLOW.Survey.find(formsInAssignment[0]);
-        if (preSelectedSurvey && preSelectedSurvey.get('keyId')) {
-          return preSelectedSurvey.get('surveyGroupId') != selectedSurveyGroupId;
-        }
-      }
-
-      return false;
-    },
-
     validateAssignment(data) {
       const { assignmentName, startDate, endDate, deviceIds, formIds } = data;
 
@@ -396,27 +378,6 @@ FLOW.AssignmentEditView = FLOW.ReactComponentView.extend(
     },
 
     // handlers
-    handleFormCheck(formId) {
-      // if checking a form in a new survey, remove all forms
-      if (this.shouldRemoveForms()) {
-        // remove all currently selected forms
-        this.selectedSurveys = [];
-      }
-
-      // check form
-      this.forms[formId].checked = !this.forms[formId].checked;
-
-      // add/remove form to/from assignment
-      if (this.forms[formId].checked) {
-        // push survey to selectedSurveys
-        this.selectedSurveys.push(FLOW.Survey.find(formId));
-      } else {
-        this.selectedSurveys.pop(FLOW.Survey.find(formId));
-      }
-
-      this.renderReactSide();
-    },
-
     handleDeviceCheck(deviceId, checked, deviceGroupId) {
       // if it's the select all option
       if (deviceId == 0) {
@@ -473,15 +434,16 @@ FLOW.AssignmentEditView = FLOW.ReactComponentView.extend(
         return;
       }
 
+      // setup forms from the selected survey assignment
       FLOW.selectedControl.selectedSurveyAssignment.get('formIds').forEach(formId => {
         const form = FLOW.Survey.find(formId);
-        if (form && form.get('keyId')) {
+        if (form && form.get('id')) {
           this.selectedSurveys.push(form);
 
           // load selected survey group
           this.selectedSurveyGroup = form.get('surveyGroupId');
 
-          this.forms[form.get('keyId')] = {
+          this.forms[form.get('id')] = {
             // also load pre-selected forms
             name: form.get('name'),
             checked: true,
@@ -502,9 +464,9 @@ FLOW.AssignmentEditView = FLOW.ReactComponentView.extend(
           // load selected survey group
           this.selectedSurveyGroup = form.get('surveyGroupId');
 
-          this.forms[form.get('keyId')] = {
+          this.forms[form.get('id')] = {
             name: form.get('name'),
-            checked: this.formInAssignment(form.get('keyId')),
+            checked: this.formInAssignment(form.get('id')),
           };
         });
 
@@ -515,7 +477,46 @@ FLOW.AssignmentEditView = FLOW.ReactComponentView.extend(
       const formsInAssignment = this.selectedSurveys.map(item => item.get('id'));
 
       // convert id to string
-      return formsInAssignment ? formsInAssignment.indexOf(`${formId}`) > -1 : false;
+      return formsInAssignment ? formsInAssignment.indexOf(formId) > -1 : false;
+    },
+
+    handleFormCheck(formId) {
+      // if checking a form in a new survey, remove all forms
+      if (this.shouldRemoveForms()) {
+        // remove all currently selected forms
+        this.selectedSurveys = [];
+      }
+
+      // check form
+      this.forms[formId].checked = !this.forms[formId].checked;
+
+      // add/remove form to/from assignment
+      if (this.forms[formId].checked) {
+        // push survey to selectedSurveys
+        this.selectedSurveys.push(formId);
+      } else {
+        this.selectedSurveys = this.selectedSurveys.filter(surveys => surveys !== formId);
+      }
+
+      this.renderReactSide();
+    },
+
+    shouldRemoveForms() {
+      const formsInAssignment = FLOW.selectedControl
+        .get('selectedSurveys')
+        .map(item => item.get('id'));
+
+      const selectedSurveyGroupId = FLOW.selectedControl.selectedSurveyGroup.get('keyId');
+
+      if (formsInAssignment && formsInAssignment.length > 0) {
+        // get survey id of first form currently in assignment
+        const preSelectedSurvey = FLOW.Survey.find(formsInAssignment[0]);
+        if (preSelectedSurvey && preSelectedSurvey.get('keyId')) {
+          return preSelectedSurvey.get('surveyGroupId') !== selectedSurveyGroupId;
+        }
+      }
+
+      return false;
     },
 
     // handle survey group functionality
@@ -557,7 +558,6 @@ FLOW.AssignmentEditView = FLOW.ReactComponentView.extend(
 
       // empty forms when a new folder is picked
       this.forms = {};
-      this.selectedSurveys = [];
 
       this.renderReactSide();
       return true;
