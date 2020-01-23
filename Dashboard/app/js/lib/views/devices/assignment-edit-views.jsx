@@ -587,7 +587,7 @@ FLOW.AssignmentEditView = FLOW.ReactComponentView.extend(
       const selectedDps = this.selectedDatapoints;
       const selectedDp = selectedDps.find(sDp => sDp.deviceId === deviceId);
 
-      // check if device is already has datapoints
+      // check if device already has datapoints
       if (selectedDp) {
         datapoints.forEach(dp => {
           // check if datapoints isn't already added to this device
