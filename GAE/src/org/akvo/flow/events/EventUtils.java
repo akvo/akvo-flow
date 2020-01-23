@@ -119,6 +119,7 @@ public class EventUtils {
         public static final String APP_ID = "orgId";
         public static final String URL = "url";
         public static final String ITERATION = "iteration";
+        public static final String STATUS = "status";
     }
 
     public static class Prop {
@@ -152,6 +153,7 @@ public class EventUtils {
         public static final String EVENT_NOTIFICATION = "eventNotification";
         public static final String ENABLE_CHANGE_EVENTS = "enableChangeEvents";
         public static final String ITERATION = "iteration";
+        public static final String STATUS = "status";
     }
 
     public static final String SURVEY_GROUP_TYPE_SURVEY = "SURVEY";
@@ -267,6 +269,7 @@ public class EventUtils {
                 addProperty(Key.NAME, e.getProperty(Prop.NAME), data);
                 addProperty(Key.DESCRIPTION, e.getProperty(Prop.DESC), data);
                 addProperty(Key.SURVEY_ID, e.getProperty(Prop.SURVEY_GROUP_ID), data);
+                addProperty(Key.STATUS, e.getProperty(Prop.STATUS), data);
                 break;
             case QUESTION_GROUP:
                 addProperty(Key.NAME, e.getProperty(Prop.NAME), "<name missing>", data);
