@@ -24,7 +24,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
-import java.util.SortedMap;
 import java.util.TreeMap;
 
 import org.apache.log4j.ConsoleAppender;
@@ -178,7 +177,7 @@ public class StatisticsExporter implements DataExporter {
         createCell(row, 2, FORM_ID_HEADER, headerStyle);
         createCell(row, 3, COUNT_HEADER, headerStyle);
 
-        //Loop over surveys, saving the generated pathname in a sorted list
+        //Loop over surveys, saving the generated pathname as the key in a sorted map
         TreeMap<String, SurveyGroupDto> surveyMap = new TreeMap<>();
         for (SurveyGroupDto s: groupMap.values()) {
             if (ProjectType.PROJECT.equals(s.getProjectType())) {
