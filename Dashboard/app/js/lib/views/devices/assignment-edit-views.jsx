@@ -23,12 +23,12 @@ FLOW.AssignmentEditView = FLOW.ReactComponentView.extend(
 
       this.getProps = this.getProps.bind(this);
       this.cancelEditSurveyAssignment = this.cancelEditSurveyAssignment.bind(this);
-      this.detectSurveyLoaded = this.detectSurveyLoaded.bind(this);
+
       this.renderReactSide = this.renderReactSide.bind(this);
-      this.handleFormCheck = this.handleFormCheck.bind(this);
+
       this.validateAssignment = this.validateAssignment.bind(this);
       this.saveSurveyAssignment = this.saveSurveyAssignment.bind(this);
-      this.setupForms = this.setupForms.bind(this);
+
       this.setupSurveyGroups = this.setupSurveyGroups.bind(this);
       this.handleSurveySelect = this.handleSurveySelect.bind(this);
       this.setupDevices = this.setupDevices.bind(this);
@@ -38,6 +38,11 @@ FLOW.AssignmentEditView = FLOW.ReactComponentView.extend(
       this.addDevicesCheckedOption = this.addDevicesCheckedOption.bind(this);
       this.addDevicesToAssignment = this.addDevicesToAssignment.bind(this);
       this.removeDevicesFromAssignment = this.removeDevicesFromAssignment.bind(this);
+
+      // form methods
+      this.setupForms = this.setupForms.bind(this);
+      this.handleFormCheck = this.handleFormCheck.bind(this);
+      this.detectSurveyLoaded = this.detectSurveyLoaded.bind(this);
 
       // datapoints methods
       this.saveDatapoints = this.saveDatapoints.bind(this);
@@ -162,6 +167,13 @@ FLOW.AssignmentEditView = FLOW.ReactComponentView.extend(
       FLOW.router.transitionTo('navDevices.assignSurveysOverview');
     },
 
+    detectChangeTab() {
+      if (Ember.none(FLOW.selectedControl.selectedSurveyAssignment.get('keyId'))) {
+        FLOW.selectedControl.get('selectedSurveyAssignment').deleteRecord();
+      }
+      FLOW.selectedControl.set('selectedSurveyAssignment', null);
+    },
+
     // saving functionality
     saveSurveyAssignment(data) {
       let endDateParse;
@@ -272,14 +284,6 @@ FLOW.AssignmentEditView = FLOW.ReactComponentView.extend(
       }
       FLOW.dateControl.set('fromDate', formatDate(startDate));
       FLOW.dateControl.set('toDate', formatDate(endDate));
-    },
-
-    // listeners
-    detectChangeTab() {
-      if (Ember.none(FLOW.selectedControl.selectedSurveyAssignment.get('keyId'))) {
-        FLOW.selectedControl.get('selectedSurveyAssignment').deleteRecord();
-      }
-      FLOW.selectedControl.set('selectedSurveyAssignment', null);
     },
 
     // helpers
@@ -437,13 +441,14 @@ FLOW.AssignmentEditView = FLOW.ReactComponentView.extend(
       // setup forms from the selected survey assignment
       FLOW.selectedControl.selectedSurveyAssignment.get('formIds').forEach(formId => {
         const form = FLOW.Survey.find(formId);
-        if (form && form.get('id')) {
-          this.selectedSurveys.push(form);
+
+        if (form && form.get('keyId')) {
+          this.selectedSurveys.push(form.get('keyId'));
 
           // load selected survey group
           this.selectedSurveyGroup = form.get('surveyGroupId');
 
-          this.forms[form.get('id')] = {
+          this.forms[form.get('keyId')] = {
             // also load pre-selected forms
             name: form.get('name'),
             checked: true,
@@ -464,20 +469,13 @@ FLOW.AssignmentEditView = FLOW.ReactComponentView.extend(
           // load selected survey group
           this.selectedSurveyGroup = form.get('surveyGroupId');
 
-          this.forms[form.get('id')] = {
+          this.forms[form.get('keyId')] = {
             name: form.get('name'),
-            checked: this.formInAssignment(form.get('id')),
+            checked: this.selectedSurveys.includes(form.get('keyId')),
           };
         });
 
       this.renderReactSide();
-    },
-
-    formInAssignment(formId) {
-      const formsInAssignment = this.selectedSurveys.map(item => item.get('id'));
-
-      // convert id to string
-      return formsInAssignment ? formsInAssignment.indexOf(formId) > -1 : false;
     },
 
     handleFormCheck(formId) {
@@ -495,18 +493,16 @@ FLOW.AssignmentEditView = FLOW.ReactComponentView.extend(
         // push survey to selectedSurveys
         this.selectedSurveys.push(formId);
       } else {
-        this.selectedSurveys = this.selectedSurveys.filter(surveys => surveys !== formId);
+        // convert to string to check
+        this.selectedSurveys = this.selectedSurveys.filter(surveys => `${surveys}` !== formId);
       }
 
       this.renderReactSide();
     },
 
     shouldRemoveForms() {
-      const formsInAssignment = FLOW.selectedControl
-        .get('selectedSurveys')
-        .map(item => item.get('id'));
-
-      const selectedSurveyGroupId = FLOW.selectedControl.selectedSurveyGroup.get('keyId');
+      const formsInAssignment = this.selectedSurveys;
+      const selectedSurveyGroupId = this.selectedSurveyGroup;
 
       if (formsInAssignment && formsInAssignment.length > 0) {
         // get survey id of first form currently in assignment
@@ -569,7 +565,7 @@ FLOW.AssignmentEditView = FLOW.ReactComponentView.extend(
         this.devices = FLOW.deviceControl.get('content').map(device => {
           const formattedDevice = {
             name: device.get('deviceIdentifier'),
-            id: device.get('id'),
+            id: device.get('keyId'),
             deviceGroup: {
               id: '1',
               name: 'Device not in group',
@@ -580,7 +576,7 @@ FLOW.AssignmentEditView = FLOW.ReactComponentView.extend(
             const deviceGroup = FLOW.DeviceGroup.find(device.get('deviceGroup'));
 
             formattedDevice.deviceGroup = {
-              id: deviceGroup.get('id'),
+              id: deviceGroup.get('keyId'),
               name: deviceGroup.get('code'),
             };
           }
@@ -593,8 +589,8 @@ FLOW.AssignmentEditView = FLOW.ReactComponentView.extend(
           FLOW.selectedControl.selectedSurveyAssignment.get('deviceIds').forEach(deviceId => {
             // populate pre-selected devices
             const device = FLOW.Device.find(deviceId);
-            if (device && device.get('id')) {
-              this.selectedDevices.push(device.get('id'));
+            if (device && device.get('keyId')) {
+              this.selectedDevices.push(device.get('keyId'));
             }
           });
         }
@@ -605,8 +601,8 @@ FLOW.AssignmentEditView = FLOW.ReactComponentView.extend(
       devices.forEach(deviceId => {
         // populate pre-selected devices
         const device = FLOW.Device.find(deviceId);
-        if (device && device.get('id')) {
-          this.selectedDevices.push(device.get('id'));
+        if (device && device.get('keyId')) {
+          this.selectedDevices.push(device.get('keyId'));
         }
       });
 
@@ -617,8 +613,8 @@ FLOW.AssignmentEditView = FLOW.ReactComponentView.extend(
       devices.forEach(deviceId => {
         // populate pre-selected devices
         const device = FLOW.Device.find(deviceId);
-        if (device && device.get('id')) {
-          this.selectedDevices = this.selectedDevices.filter(d => d !== device.get('id'));
+        if (device && device.get('keyId')) {
+          this.selectedDevices = this.selectedDevices.filter(d => d !== device.get('keyId'));
         }
       });
 
@@ -634,7 +630,7 @@ FLOW.AssignmentEditView = FLOW.ReactComponentView.extend(
         this.datapointAssignments = FLOW.dataPointAssignmentControl
           .get('content')
           .map(datapointAssignment => ({
-            id: datapointAssignment.get('id'),
+            id: datapointAssignment.get('keyId'),
             deviceId: `${datapointAssignment.get('deviceId')}`,
             datapoints: datapointAssignment.get('dataPointIds').map(id => ({
               id,
@@ -679,7 +675,7 @@ FLOW.AssignmentEditView = FLOW.ReactComponentView.extend(
           ...selectedDp,
           datapoints: datapoints.map(dp => ({
             name: dp.get('displayName'),
-            id: dp.get('id'),
+            id: dp.get('keyId'),
           })),
         };
       });
@@ -701,7 +697,7 @@ FLOW.AssignmentEditView = FLOW.ReactComponentView.extend(
       this.datapointsResults = this.searchedDatapoints.map(datapoint => {
         return {
           name: datapoint.get('displayName'),
-          id: datapoint.get('id'),
+          id: datapoint.get('keyId'),
         };
       });
 
