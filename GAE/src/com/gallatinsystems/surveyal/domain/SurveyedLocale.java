@@ -16,7 +16,7 @@
 
 package com.gallatinsystems.surveyal.domain;
 
-import static com.gallatinsystems.common.Constants.MAX_DS_STRING_LENGTH;;
+import static com.gallatinsystems.common.Constants.MAX_DS_STRING_LENGTH;
 
 import java.util.Date;
 import java.util.HashMap;

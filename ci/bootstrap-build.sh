@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 
 #
-#  Copyright (C) 2017-2018 Stichting Akvo (Akvo Foundation)
+#  Copyright (C) 2017-2019 Stichting Akvo (Akvo Foundation)
 #
 #  This file is part of Akvo FLOW.
 #
@@ -19,9 +19,14 @@
 set -eu
 
 MAVEN_REPO="$HOME/.m2"
+NPM_CACHE="$HOME/.npm"
 
 if [[ ! -d "$MAVEN_REPO" ]]; then
     mkdir "$MAVEN_REPO"
+fi
+
+if [[ ! -d "$NPM_CACHE" ]]; then
+    mkdir "$NPM_CACHE"
 fi
 
 FLOW_GIT_VERSION=$(git describe)
@@ -34,6 +39,8 @@ docker run \
        -e TRAVIS_TAG="${TRAVIS_TAG}" \
        --volume "${MAVEN_REPO}:/root/.m2:delegated" \
        --volume "${MAVEN_REPO}:/home/akvo/.m2:delegated" \
+       --volume "${NPM_CACHE}:/root/.npm:delegated" \
+       --volume "${NPM_CACHE}:/home/akvo/.npm:delegated" \
        --volume "$(pwd):/app/src:delegated" \
        --entrypoint /app/src/ci/run-as-user.sh \
-       akvo/flow-builder "$@"
+       akvo/akvo-flow-builder:20200115.154607.012ea0b "$@"

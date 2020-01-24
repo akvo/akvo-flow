@@ -1,7 +1,7 @@
 version: "3.5"
 services:
   akvo-flow:
-    build: .
+    image: akvo/akvo-flow-builder:20200115.154607.012ea0b
     entrypoint: /app/src/ci/run-as-user.sh
     command: /app/src/ci/devserver.sh
     working_dir: /app/src
@@ -18,6 +18,8 @@ services:
      - .:/app/src/:delegated
      - ~/.m2:/root/.m2:delegated
      - ~/.m2:/home/akvo/.m2:delegated
+     - ~/.cache:/home/akvo/.cache:delegated
+     - ~/.cache:/root/.cache:delegated
 
 networks:
   akvoflow_together:

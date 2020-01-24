@@ -50,6 +50,6 @@ if [[ ! -f "$SRC_DIR/GAE/target/akvo-flow/WEB-INF/appengine-web.xml" ]]; then
     cp "$SRC_DIR/tests/dev-appengine-web.xml" "$SRC_DIR/GAE/target/akvo-flow/WEB-INF/appengine-web.xml"
 fi
 
-mvn appengine:start
+mvn package appengine:start
 
 tail -F -n 5000  "$SRC_DIR/build.dev.log" ./target/akvo-flow/flow0.log
