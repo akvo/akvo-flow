@@ -16,7 +16,7 @@ import AssignmentsContext from './assignment-context';
 export default class AssignmentMain extends React.Component {
   state = {
     currentTab: 'FORMS',
-    selectedDevice: '', // 150482013
+    selectedDevice: null,
   };
 
   changeTab = (tab, selectedDevice = null) => {

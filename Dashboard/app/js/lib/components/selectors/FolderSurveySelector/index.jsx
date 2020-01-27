@@ -84,8 +84,9 @@ export default class FolderSurveySelector extends React.Component {
   };
 
   comparator = (a, b) => {
-    const nameA = a.name.toUpperCase(); // ignore upper and lowercase
-    const nameB = b.name.toUpperCase(); // ignore upper and lowercase
+    const nameA = (a.name || '').toUpperCase(); // ignore upper and lowercase
+    const nameB = (b.name || '').toUpperCase(); // ignore upper and lowercase
+
     if (nameA < nameB) {
       return -1;
     }
