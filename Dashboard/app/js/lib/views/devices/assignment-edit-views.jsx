@@ -677,17 +677,13 @@ FLOW.AssignmentEditView = FLOW.ReactComponentView.extend(
       this.renderReactSide();
     },
 
-    findDatapoints(displayName) {
+    findDatapoints(search) {
       // find datapoints in the selected survey group
-      const surveyId = FLOW.selectedControl.get('selectedSurveyGroup').get('keyId');
-      this.set('searchedDatapoints', FLOW.SurveyedLocale.find({ displayName, surveyId }));
+      const surveyGroupId = FLOW.selectedControl.get('selectedSurveyGroup').get('keyId');
+      this.set('searchedDatapoints', FLOW.SurveyedLocale.find({ search, surveyGroupId }));
     },
 
     detectSearchedDatapointLoaded() {
-      if (!this.searchedDatapoints.get('length')) {
-        return;
-      }
-
       this.datapointsResults = this.searchedDatapoints.map(datapoint => {
         return {
           name: datapoint.get('displayName'),
