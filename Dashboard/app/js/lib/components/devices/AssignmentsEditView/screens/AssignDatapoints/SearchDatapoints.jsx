@@ -69,14 +69,21 @@ export default class SearchDatapoints extends React.Component {
 
           <div className="search-results">
             {datapointsResults.map(dp => (
-              <Checkbox
-                key={dp.id}
-                id={dp.id}
-                name={dp.id}
-                checked={selectedDatapoints.includes(dp.id)}
-                onChange={this.onSelectDatapoint}
-                label={dp.name}
-              />
+              <div key={dp.id} className="search-result">
+                <Checkbox
+                  key={dp.id}
+                  id={dp.id}
+                  name={dp.id}
+                  checked={selectedDatapoints.includes(dp.id)}
+                  onChange={this.onSelectDatapoint}
+                  label=""
+                />
+
+                <label htmlFor={dp.id}>
+                  <p>{dp.name}</p>
+                  <span>{dp.id}</span>
+                </label>
+              </div>
             ))}
           </div>
         </div>

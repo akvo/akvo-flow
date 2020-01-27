@@ -67,14 +67,20 @@ export default class EditDatapoints extends React.Component {
 
         <div className="body">
           {datapointsData.map(dp => (
-            <Checkbox
-              key={dp.id}
-              id={dp.id}
-              name={dp.id}
-              checked={this.state.selectedDatapoints.includes(dp.id)}
-              onChange={this.onSelectDatapoint}
-              label={dp.name}
-            />
+            <div key={dp.id} className="datapoint">
+              <Checkbox
+                id={dp.id}
+                name={dp.id}
+                checked={this.state.selectedDatapoints.includes(dp.id)}
+                onChange={this.onSelectDatapoint}
+                label=""
+              />
+
+              <label htmlFor={dp.id}>
+                <p>{dp.name}</p>
+                <span>{dp.id}</span>
+              </label>
+            </div>
           ))}
         </div>
 
