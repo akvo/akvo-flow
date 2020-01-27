@@ -89,7 +89,6 @@
         min-height: 450px;
 
         li {
-          padding: 15px 25px;
           display: flex;
 
           &.active {
@@ -105,6 +104,7 @@
           }
 
           a {
+            padding: 15px 25px;
             color: #4ab1cf;
             border: none;
             background: none;
@@ -117,7 +117,8 @@
             &.sub-action {
               flex: 0;
               color: #4ab1cf;
-              padding: 0px 7px;
+              padding-left: 10px;
+              padding-right: 10px;
             }
 
             &.disabled {
@@ -131,7 +132,7 @@
 
           .sidebar-dropdown {
             font-size: 15px;
-            width: 100%;
+            padding: 15px 25px;
             display: block;
             padding-bottom: 15px;
 
