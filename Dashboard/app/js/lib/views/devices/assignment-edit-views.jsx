@@ -181,7 +181,7 @@ FLOW.AssignmentEditView = FLOW.ReactComponentView.extend(
 
       // set devices and surveys
       const deviceIds = this.selectedDevices;
-      const formIds = this.selectedSurveys.map(item => item.get('keyId'));
+      const formIds = this.selectedSurveys;
 
       // validate data before continuing
       const isValid = this.validateAssignment({ ...data, deviceIds, formIds });

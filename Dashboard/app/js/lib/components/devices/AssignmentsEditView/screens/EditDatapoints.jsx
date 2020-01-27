@@ -111,5 +111,5 @@ export default class EditDatapoints extends React.Component {
 EditDatapoints.contextType = AssignmentsContext;
 EditDatapoints.propTypes = {
   changeTab: PropTypes.func.isRequired,
-  selectedDevice: PropTypes.string.isRequired,
+  selectedDevice: PropTypes.number.isRequired,
 };
