@@ -410,6 +410,7 @@
             flex-direction: column;
             position: absolute;
             background: #e8e8e8;
+            border: 1px solid #d9d6d6;
             height: 100%;
             top: 0;
             right: 0;
@@ -423,7 +424,7 @@
             .body {
               padding: 15px 20px;
               flex: 1 1 auto;
-              overflow: auto;
+              overflow: hidden;
               height: 100%;
 
               .search-bar {
@@ -449,6 +450,9 @@
 
               .search-results {
                 padding-top: 15px;
+                height: 80%;
+                overflow: auto;
+                padding-bottom: 4em;
 
                 label {
                   display: block;
@@ -460,7 +464,8 @@
               position: relative;
               bottom: initial;
               flex: 1;
-              border-top: 1px solid #7a7a7a;
+              border-top: 1px solid #d9d6d6;
+              margin-top: 5px;
 
               .footer-inner {
                 padding: 15px 20px;

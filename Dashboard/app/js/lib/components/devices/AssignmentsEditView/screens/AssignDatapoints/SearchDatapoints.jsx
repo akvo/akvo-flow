@@ -100,6 +100,6 @@ export default class SearchDatapoints extends React.Component {
 SearchDatapoints.contextType = AssignmentContext;
 
 SearchDatapoints.propTypes = {
-  deviceId: PropTypes.string.isRequired,
+  deviceId: PropTypes.number.isRequired,
   changeTab: PropTypes.func.isRequired,
 };

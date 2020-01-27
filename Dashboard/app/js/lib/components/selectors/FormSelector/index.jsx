@@ -16,12 +16,7 @@ export default class FormSelector extends React.Component {
               <span>{formId}</span>
             </label>
 
-            <Switch
-              id={formId}
-              name={formId}
-              checked={forms[formId].checked}
-              onChange={onCheck}
-            />
+            <Switch id={formId} name={formId} checked={forms[formId].checked} onChange={onCheck} />
           </div>
         ))}
       </div>

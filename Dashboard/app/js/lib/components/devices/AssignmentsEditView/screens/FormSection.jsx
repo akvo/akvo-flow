@@ -65,10 +65,7 @@ export default class FormSection extends React.Component {
             <br />
 
             {Object.keys(data.forms).length ? (
-              <FormSelectorView
-                forms={data.forms}
-                onCheck={actions.handleFormCheck}
-              />
+              <FormSelectorView forms={data.forms} onCheck={actions.handleFormCheck} />
             ) : (
               <p className="noForms">{strings.noForms}</p>
             )}
