@@ -17,9 +17,7 @@ export default class DeviceAccordion extends React.Component {
     const { isAccordionOpen } = this.state;
     const accordionClass = `accordion ${isAccordionOpen ? 'active' : ''}`;
     const fontClass = `fa fa-chevron-${isAccordionOpen ? 'up' : 'down'}`;
-    const panelStyle = isAccordionOpen
-      ? { display: 'block' }
-      : { display: 'none' };
+    const panelStyle = isAccordionOpen ? { display: 'block' } : { display: 'none' };
 
     return {
       accordionClass,
@@ -57,21 +55,15 @@ export default class DeviceAccordion extends React.Component {
   };
 
   render() {
-    const {
-      name,
-      devices,
-      handleSelectDevice,
-      selectedDevices,
-      id,
-    } = this.props;
+    const { name, devices, handleSelectDevice, selectedDevices, id } = this.props;
     const { accordionClass, fontClass, panelStyle } = this.getStyleProps();
 
     return (
       <div className="accordion-container">
         <div className={accordionClass}>
           <Checkbox
-            id={id}
-            name={id}
+            id={parseInt(id, 10)}
+            name={parseInt(id, 10)}
             checked={this.allDevicesSelected()}
             onChange={this.selectAllDevice}
             label=""

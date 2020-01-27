@@ -21,7 +21,10 @@ export default class AddDevice extends React.Component {
     return _groupBy(filteredDevices, device => device.deviceGroup.id);
   }
 
-  onSelectDevice = (id, checked) => {
+  onSelectDevice = (stringId, checked) => {
+    // convert id to number
+    const id = parseInt(stringId, 10);
+
     const { selectedDevices } = this.state;
     let newSelectedDevices = [];
 

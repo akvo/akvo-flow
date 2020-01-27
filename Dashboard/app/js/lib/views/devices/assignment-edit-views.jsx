@@ -567,7 +567,7 @@ FLOW.AssignmentEditView = FLOW.ReactComponentView.extend(
             name: device.get('deviceIdentifier'),
             id: device.get('keyId'),
             deviceGroup: {
-              id: '1',
+              id: 1,
               name: 'Device not in group',
             },
           };

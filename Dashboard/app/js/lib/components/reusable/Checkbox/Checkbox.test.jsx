@@ -7,8 +7,8 @@ describe('Checkbox Tests', () => {
   afterEach(cleanup);
 
   const props = {
-    id: 'fake-id',
-    name: 'fake-id',
+    id: 809082,
+    name: 809082,
     checked: false,
     label: 'Fake checkbox',
     onChange: jest.fn(),
