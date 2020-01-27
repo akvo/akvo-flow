@@ -786,7 +786,7 @@ public class RawDataSpreadsheetImporter implements DataImporter {
      * @param baseSheet
      * @return A map from column index to question id.
      */
-    private static Map<Integer, Long> processHeader(Sheet sheet, int headerRowIndex) {
+    public static Map<Integer, Long> processHeader(Sheet sheet, int headerRowIndex) {
         Map<Integer, Long> columnIndexToQuestionId = new HashMap<>();
 
         Row headerRow = sheet.getRow(headerRowIndex);
