@@ -31,12 +31,12 @@ export default class SearchDatapoints extends React.Component {
 
   addToAssignment = () => {
     const { selectedDatapointsIds } = this.state;
-    const { datapoints } = this.context.data;
+    const { datapointsResults } = this.context.data;
     const { addDatapointsToAssignment } = this.context.actions;
 
     // format datapoints to datapoints object when adding to assignment
     addDatapointsToAssignment(
-      selectedDatapointsIds.map(sDp => datapoints.find(dp => dp.id === sDp)),
+      selectedDatapointsIds.map(sDp => datapointsResults.find(dp => dp.id === sDp)),
       this.props.deviceId
     );
 
@@ -45,7 +45,7 @@ export default class SearchDatapoints extends React.Component {
   };
 
   render() {
-    const { datapoints } = this.context.data;
+    const { datapointsResults } = this.context.data;
     const { selectedDatapointsIds } = this.state;
 
     return (
@@ -68,7 +68,7 @@ export default class SearchDatapoints extends React.Component {
           </form>
 
           <div className="search-results">
-            {datapoints.map(dp => (
+            {datapointsResults.map(dp => (
               <Checkbox
                 key={dp.id}
                 id={dp.id}
