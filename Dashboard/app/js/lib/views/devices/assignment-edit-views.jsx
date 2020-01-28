@@ -19,6 +19,7 @@ FLOW.AssignmentEditView = FLOW.ReactComponentView.extend(
     'FLOW.router.navigationController.selected': 'detectChangeTab',
     'FLOW.router.devicesSubnavController.selected': 'detectChangeTab',
     'FLOW.surveyControl.content.isLoaded': 'detectSurveyLoaded',
+    'FLOW.router.surveyedLocaleController.content.isLoaded': 'detectDatapointsLoaded',
   }),
   {
     init() {
@@ -42,6 +43,9 @@ FLOW.AssignmentEditView = FLOW.ReactComponentView.extend(
       this.addDevicesCheckedOption = this.addDevicesCheckedOption.bind(this);
       this.addDevicesToAssignment = this.addDevicesToAssignment.bind(this);
       this.removeDevicesFromAssignment = this.removeDevicesFromAssignment.bind(this);
+      this.findDatapoints = this.findDatapoints.bind(this);
+      this.detectDatapointsLoaded = this.detectDatapointsLoaded.bind(this);
+      this.assignDataPointsToDevice = this.assignDataPointsToDevice.bind(this);
 
       // object wide varaibles
       this.forms = {};
@@ -49,13 +53,14 @@ FLOW.AssignmentEditView = FLOW.ReactComponentView.extend(
       this.devices = [];
       this.deviceGroups = {};
       this.deviceGroupNames = {};
+      this.datapoints = [];
 
       // selected attributes
       this.selectedDevices = [];
       this.selectedSurveys = [];
+      this.datapointAssignments = [];
 
       // using Set to avoia duplication
-      this.activeDeviceGroups = new Set();
       this.initialSurveyGroup = null;
     },
 
@@ -94,6 +99,9 @@ FLOW.AssignmentEditView = FLOW.ReactComponentView.extend(
         addToAssignment: Ember.String.loc('_add_to_assignment'),
         removeFromAssignment: Ember.String.loc('_remove_from_assignment'),
         noDeviceInAssignment: Ember.String.loc('_no_devices_in_assignments'),
+        assignDatapointByNameOrId: Ember.String.loc('_assign_datapoint_by_name_or_id'),
+        searchDatapointByNameOrId: Ember.String.loc('_search_datapoint_by_name_or_id'),
+        datapointAssigned: Ember.String.loc('_datapoints_assigned'),
       };
 
       const inputValues = {
@@ -110,11 +118,14 @@ FLOW.AssignmentEditView = FLOW.ReactComponentView.extend(
         handleDeviceCheck: this.handleDeviceCheck,
         addDevicesToAssignment: this.addDevicesToAssignment,
         removeDevicesFromAssignment: this.removeDevicesFromAssignment,
+        findDatapoints: this.findDatapoints,
+        assignDataPointsToDevice: this.assignDataPointsToDevice,
       };
 
       const data = {
         forms: this.forms,
         devices: this.devices,
+        datapoints: this.datapoints,
         surveyGroups: this.surveyGroups,
         deviceGroups: this.deviceGroups,
         deviceGroupNames: this.deviceGroupNames,
@@ -122,6 +133,7 @@ FLOW.AssignmentEditView = FLOW.ReactComponentView.extend(
         initialSurveyGroup: this.initialSurveyGroup,
         numberOfForms: this.selectedSurveys.length,
         selectedDeviceIds: this.selectedDevices,
+        datapointAssignments: this.datapointAssignments,
       };
 
       return {
@@ -555,6 +567,46 @@ FLOW.AssignmentEditView = FLOW.ReactComponentView.extend(
       });
 
       return this.renderReactSide();
+    },
+
+    // search datapoints
+    findDatapoints(displayName) {
+      FLOW.router.surveyedLocaleController.populate({ displayName });
+    },
+
+    detectDatapointsLoaded() {
+      const datapoints = FLOW.router.surveyedLocaleController.get('content');
+      this.datapoints = datapoints.map(datapoint => {
+        return {
+          name: datapoint.get('displayName'),
+          id: datapoint.get('id'),
+        };
+      });
+
+      this.renderReactSide();
+    },
+
+    assignDataPointsToDevice(datapoints, deviceId) {
+      const datapointAssignment = this.datapointAssignments.find(sDp => sDp.deviceId === deviceId);
+
+      // check if device already has datapoints
+      if (datapointAssignment) {
+        datapoints.forEach(dp => {
+          // check if datapoints isn't already added to this device
+          if (!datapointAssignment.datapoints.find(sDp => sDp.id === dp.id)) {
+            // push datapoints to device
+            datapointAssignment.datapoints.push(dp);
+          }
+        });
+      } else {
+        // push new device into selected datapoints
+        this.datapointAssignments.push({
+          deviceId,
+          datapoints,
+        });
+      }
+
+      this.renderReactSide();
     },
   }
 );

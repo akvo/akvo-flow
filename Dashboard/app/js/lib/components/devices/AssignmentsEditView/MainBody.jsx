@@ -1,9 +1,12 @@
 /* eslint-disable jsx-a11y/anchor-is-valid */
 import React from 'react';
 import { groupBy as _groupBy } from 'lodash';
+
 import FormSection from './screens/FormSection';
 import AddDevices from './screens/AddDevices';
 import EditDevices from './screens/EditDevices';
+import AssignDatapoints from './screens/AssignDatapoints';
+
 import DevicesSection from './DevicesSection';
 import SidebarDropdown from './__partials/SidebarDropdown';
 
@@ -12,21 +15,20 @@ import AssignmentsContext from './assignment-context';
 export default class AssignmentMain extends React.Component {
   state = {
     currentTab: 'FORMS',
+    selectedDeviceId: null,
   };
 
-  changeTab = tab => {
-    this.setState({ currentTab: tab });
+  changeTab = (tab, selectedDeviceId = null) => {
+    this.setState({ currentTab: tab, selectedDeviceId });
   };
 
   getDeviceGroups = () => {
     // filter out selected devices
     const { devices, selectedDeviceIds } = this.context.data;
 
-    const filteredDevices = devices.filter(device =>
-      selectedDeviceIds.includes(device.id)
-    );
+    const selectedDevices = devices.filter(device => selectedDeviceIds.includes(device.id));
 
-    return _groupBy(filteredDevices, device => device.deviceGroup.id);
+    return _groupBy(selectedDevices, device => device.deviceGroup.id);
   };
 
   renderSidebar = () => {
@@ -47,28 +49,18 @@ export default class AssignmentMain extends React.Component {
             <a
               className={deviceIsSelected ? 'disabled' : undefined}
               href="#"
-              onClick={
-                deviceIsSelected ? undefined : () => this.changeTab('DEVICES')
-              }
+              onClick={deviceIsSelected ? undefined : () => this.changeTab('DEVICES')}
             >
               {strings.devices}
             </a>
 
             {deviceIsSelected && (
-              <a
-                href="#"
-                className="sub-action"
-                onClick={() => this.changeTab('EDIT_DEVICE')}
-              >
+              <a href="#" className="sub-action" onClick={() => this.changeTab('EDIT_DEVICE')}>
                 {strings.edit}
               </a>
             )}
 
-            <a
-              href="#"
-              className="sub-action"
-              onClick={() => this.changeTab('ADD_DEVICE')}
-            >
+            <a href="#" className="sub-action" onClick={() => this.changeTab('ADD_DEVICE')}>
               {strings.add}
             </a>
           </li>
@@ -79,7 +71,7 @@ export default class AssignmentMain extends React.Component {
             }`}
           >
             {Object.keys(deviceGroups).map(dgId => (
-              <SidebarDropdown key={dgId} devices={deviceGroups[dgId]} />
+              <SidebarDropdown key={dgId} devices={deviceGroups[dgId]} changeTab={this.changeTab} />
             ))}
           </li>
         </ul>
@@ -88,22 +80,19 @@ export default class AssignmentMain extends React.Component {
   };
 
   render() {
+    const { currentTab, selectedDeviceId } = this.state;
+
     return (
       <div className="assignment-body">
         {this.renderSidebar()}
 
         <div className="assignment-main">
-          {this.state.currentTab === 'FORMS' && (
-            <FormSection changeTab={this.changeTab} />
-          )}
-          {this.state.currentTab === 'ADD_DEVICE' && (
-            <AddDevices changeTab={this.changeTab} />
-          )}
-          {this.state.currentTab === 'EDIT_DEVICE' && (
-            <EditDevices changeTab={this.changeTab} />
-          )}
-          {this.state.currentTab === 'DEVICES' && (
-            <DevicesSection changeTab={this.changeTab} />
+          {currentTab === 'FORMS' && <FormSection changeTab={this.changeTab} />}
+          {currentTab === 'ADD_DEVICE' && <AddDevices changeTab={this.changeTab} />}
+          {currentTab === 'EDIT_DEVICE' && <EditDevices changeTab={this.changeTab} />}
+          {currentTab === 'DEVICES' && <DevicesSection changeTab={this.changeTab} />}
+          {currentTab === 'ASSIGN_DATAPOINTS' && (
+            <AssignDatapoints selectedDeviceId={selectedDeviceId} />
           )}
         </div>
       </div>

@@ -73,7 +73,7 @@ export default class EditDevices extends React.Component {
         <div className="header">
           <p>{strings.removeDevicesFromAssignment}</p>
           <i
-            className="fa fa-times"
+            className="fa fa-times icon"
             onClick={() => this.props.changeTab('DEVICES')}
             onKeyDown={() => this.props.changeTab('DEVICES')}
           />
