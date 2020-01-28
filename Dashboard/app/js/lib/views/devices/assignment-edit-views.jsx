@@ -45,7 +45,7 @@ FLOW.AssignmentEditView = FLOW.ReactComponentView.extend(
       this.removeDevicesFromAssignment = this.removeDevicesFromAssignment.bind(this);
       this.findDatapoints = this.findDatapoints.bind(this);
       this.detectDatapointsLoaded = this.detectDatapointsLoaded.bind(this);
-      this.addDatapointsToAssignment = this.addDatapointsToAssignment.bind(this);
+      this.assignDataPointsToDevice = this.assignDataPointsToDevice.bind(this);
 
       // object wide varaibles
       this.forms = {};
@@ -99,8 +99,8 @@ FLOW.AssignmentEditView = FLOW.ReactComponentView.extend(
         addToAssignment: Ember.String.loc('_add_to_assignment'),
         removeFromAssignment: Ember.String.loc('_remove_from_assignment'),
         noDeviceInAssignment: Ember.String.loc('_no_devices_in_assignments'),
-        assignDatatpointByNameOrId: Ember.String.loc('_assign_datapoint_by_name_or_id'),
-        searchDatatpointByNameOrId: Ember.String.loc('_search_datapoint_by_name_or_id'),
+        assignDatapointByNameOrId: Ember.String.loc('_assign_datapoint_by_name_or_id'),
+        searchDatapointByNameOrId: Ember.String.loc('_search_datapoint_by_name_or_id'),
         datapointAssigned: Ember.String.loc('_datapoints_assigned'),
       };
 
@@ -119,7 +119,7 @@ FLOW.AssignmentEditView = FLOW.ReactComponentView.extend(
         addDevicesToAssignment: this.addDevicesToAssignment,
         removeDevicesFromAssignment: this.removeDevicesFromAssignment,
         findDatapoints: this.findDatapoints,
-        addDatapointsToAssignment: this.addDatapointsToAssignment,
+        assignDataPointsToDevice: this.assignDataPointsToDevice,
       };
 
       const data = {
@@ -586,17 +586,16 @@ FLOW.AssignmentEditView = FLOW.ReactComponentView.extend(
       this.renderReactSide();
     },
 
-    addDatapointsToAssignment(datapoints, deviceId) {
-      const selectedDps = this.datapointAssignments;
-      const selectedDp = selectedDps.find(sDp => sDp.deviceId === deviceId);
+    assignDataPointsToDevice(datapoints, deviceId) {
+      const datapointAssignment = this.datapointAssignments.find(sDp => sDp.deviceId === deviceId);
 
       // check if device already has datapoints
-      if (selectedDp) {
+      if (datapointAssignment) {
         datapoints.forEach(dp => {
           // check if datapoints isn't already added to this device
-          if (!selectedDp.datapoints.find(sDp => sDp.id === dp.id)) {
+          if (!datapointAssignment.datapoints.find(sDp => sDp.id === dp.id)) {
             // push datapoints to device
-            selectedDp.datapoints.push(dp);
+            datapointAssignment.datapoints.push(dp);
           }
         });
       } else {
