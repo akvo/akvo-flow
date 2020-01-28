@@ -14,6 +14,7 @@ FLOW.AssignmentEditView = FLOW.ReactComponentView.extend(
     'FLOW.router.surveyedLocaleController.content.isLoaded': 'detectDatapointsLoaded',
     'FLOW.dataPointAssignmentControl.content.isLoaded': 'setupDatapoints',
     'searchedDatapoints.isLoaded': 'detectSearchedDatapointLoaded',
+    'FLOW.selectedControl.selectedSurveyAssignment.keyId': 'saveDatapoints',
   }),
   {
     // init methods
@@ -228,19 +229,11 @@ FLOW.AssignmentEditView = FLOW.ReactComponentView.extend(
 
       FLOW.store.commit();
 
-      // save datapoints
-      this.saveDatapoints();
-
-      // wait half a second before transitioning back to the assignments list
-      setTimeout(() => {
-        FLOW.router.transitionTo('navDevices.assignSurveysOverview');
-      }, 500);
-
       return true;
     },
 
     saveDatapoints() {
-      const surveyAssignmentId = FLOW.selectedControl.get('selectedSurveyAssignment').get('keyId');
+      const surveyAssignmentId = FLOW.selectedControl.selectedSurveyAssignment.get('keyId');
       const surveyFolderId = FLOW.selectedControl.get('selectedSurveyGroup').get('keyId');
 
       // create records for each device datapoints
@@ -264,6 +257,11 @@ FLOW.AssignmentEditView = FLOW.ReactComponentView.extend(
       });
 
       FLOW.store.commit();
+
+      // wait half a second before transitioning back to the assignments list
+      setTimeout(() => {
+        FLOW.router.transitionTo('navDevices.assignSurveysOverview');
+      }, 500);
     },
 
     // setups
