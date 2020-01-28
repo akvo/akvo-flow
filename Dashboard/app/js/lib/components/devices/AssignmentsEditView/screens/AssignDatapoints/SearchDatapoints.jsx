@@ -45,13 +45,14 @@ export default class SearchDatapoints extends React.Component {
   };
 
   render() {
+    const { strings } = this.context;
     const { datapoints } = this.context.data;
     const { selectedDatapointsIds } = this.state;
 
     return (
       <div className="search-datapoints">
         <div className="header">
-          <p>Assign datapoints by name</p>
+          <p>{strings.assignDatatpointByNameOrId}</p>
 
           <i
             className="fa fa-times icon"
@@ -64,7 +65,11 @@ export default class SearchDatapoints extends React.Component {
           {/* search bar */}
           <form className="search-bar" onSubmit={this.onSearch}>
             <i className="fa fa-search" />
-            <input type="search" id="searchDatapoints" placeholder="Search datapoint by name" />
+            <input
+              type="search"
+              id="searchDatapoints"
+              placeholder={strings.searchDatatpointByNameOrId}
+            />
           </form>
 
           <div className="search-results">

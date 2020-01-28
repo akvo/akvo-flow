@@ -58,7 +58,7 @@ FLOW.AssignmentEditView = FLOW.ReactComponentView.extend(
       // selected attributes
       this.selectedDevices = [];
       this.selectedSurveys = [];
-      this.selectedDatapoints = [];
+      this.datapointAssignments = [];
 
       // using Set to avoia duplication
       this.initialSurveyGroup = null;
@@ -99,6 +99,9 @@ FLOW.AssignmentEditView = FLOW.ReactComponentView.extend(
         addToAssignment: Ember.String.loc('_add_to_assignment'),
         removeFromAssignment: Ember.String.loc('_remove_from_assignment'),
         noDeviceInAssignment: Ember.String.loc('_no_devices_in_assignments'),
+        assignDatatpointByNameOrId: Ember.String.loc('_assign_datapoint_by_name_or_id'),
+        searchDatatpointByNameOrId: Ember.String.loc('_search_datapoint_by_name_or_id'),
+        datapointAssigned: Ember.String.loc('_datapoints_assigned'),
       };
 
       const inputValues = {
@@ -130,7 +133,7 @@ FLOW.AssignmentEditView = FLOW.ReactComponentView.extend(
         initialSurveyGroup: this.initialSurveyGroup,
         numberOfForms: this.selectedSurveys.length,
         selectedDeviceIds: this.selectedDevices,
-        selectedDatapoints: this.selectedDatapoints,
+        datapointAssignments: this.datapointAssignments,
       };
 
       return {
@@ -584,7 +587,7 @@ FLOW.AssignmentEditView = FLOW.ReactComponentView.extend(
     },
 
     addDatapointsToAssignment(datapoints, deviceId) {
-      const selectedDps = this.selectedDatapoints;
+      const selectedDps = this.datapointAssignments;
       const selectedDp = selectedDps.find(sDp => sDp.deviceId === deviceId);
 
       // check if device already has datapoints
@@ -598,7 +601,7 @@ FLOW.AssignmentEditView = FLOW.ReactComponentView.extend(
         });
       } else {
         // push new device into selected datapoints
-        this.selectedDatapoints.push({
+        this.datapointAssignments.push({
           deviceId,
           datapoints,
         });
