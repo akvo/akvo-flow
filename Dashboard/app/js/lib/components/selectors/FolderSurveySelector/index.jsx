@@ -11,9 +11,7 @@ export default class FolderSurveySelector extends React.Component {
 
     if (initialSurveyGroup) {
       // if initial form is available, generate levels and mark it as selected
-      const { parentId } = surveyGroups.find(
-        sg => sg.keyId == initialSurveyGroup
-      );
+      const { parentId } = surveyGroups.find(sg => sg.keyId == initialSurveyGroup);
 
       this.setState({ levels: this.getLevels(parentId) }, () => {
         this.props.onSelectSurvey(initialSurveyGroup);
@@ -25,9 +23,7 @@ export default class FolderSurveySelector extends React.Component {
 
   getLevels = (parentId = 0) => {
     const { surveyGroups, strings, initialSurveyGroup } = this.props;
-    const initialSurvey = surveyGroups.find(
-      sg => sg.keyId == initialSurveyGroup
-    );
+    const initialSurvey = surveyGroups.find(sg => sg.keyId == initialSurveyGroup);
     const levels = [];
 
     // eslint-disable-next-line eqeqeq
@@ -42,9 +38,7 @@ export default class FolderSurveySelector extends React.Component {
             if (sgs.parentId == parent.ancestorIds[i]) {
               return total.concat({
                 ...sgs,
-                selected:
-                  initialSurvey &&
-                  initialSurvey.ancestorIds.includes(sgs.keyId),
+                selected: initialSurvey && initialSurvey.ancestorIds.includes(sgs.keyId),
               });
             }
 
@@ -94,8 +88,9 @@ export default class FolderSurveySelector extends React.Component {
   };
 
   comparator = (a, b) => {
-    const nameA = a.name.toUpperCase(); // ignore upper and lowercase
-    const nameB = b.name.toUpperCase(); // ignore upper and lowercase
+    const nameA = (a.name || '').toUpperCase(); // ignore upper and lowercase
+    const nameB = (b.name || '').toUpperCase(); // ignore upper and lowercase
+
     if (nameA < nameB) {
       return -1;
     }
@@ -126,9 +121,7 @@ export default class FolderSurveySelector extends React.Component {
   };
 
   renderForm = (folderSurveyList, id) => {
-    const defaultSurveyGroup = folderSurveyList.find(
-      sgs => sgs.selected === true
-    );
+    const defaultSurveyGroup = folderSurveyList.find(sgs => sgs.selected === true);
 
     return (
       <select

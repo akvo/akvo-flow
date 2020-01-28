@@ -15,14 +15,14 @@ import AssignmentsContext from './assignment-context';
 export default class AssignmentMain extends React.Component {
   state = {
     currentTab: 'FORMS',
-    selectedDevice: '150482013',
+    selectedDeviceId: null,
   };
 
-  changeTab = (tab, selectedDevice = null) => {
-    this.setState({ currentTab: tab, selectedDevice }, () => {
+  changeTab = (tab, selectedDeviceId = null) => {
+    this.setState({ currentTab: tab, selectedDeviceId }, () => {
       if (tab === 'ASSIGN_DATAPOINTS') {
         // load full details for each datapoint when viewing device datapoints
-        this.context.actions.getDeviceDatapoints(selectedDevice);
+        this.context.actions.getDeviceDatapoints(selectedDeviceId);
       }
     });
   };
@@ -31,9 +31,9 @@ export default class AssignmentMain extends React.Component {
     // filter out selected devices
     const { devices, selectedDeviceIds } = this.context.data;
 
-    const filteredDevices = devices.filter(device => selectedDeviceIds.includes(device.id));
+    const selectedDevices = devices.filter(device => selectedDeviceIds.includes(device.id));
 
-    return _groupBy(filteredDevices, device => device.deviceGroup.id);
+    return _groupBy(selectedDevices, device => device.deviceGroup.id);
   };
 
   renderSidebar = () => {
@@ -85,7 +85,8 @@ export default class AssignmentMain extends React.Component {
   };
 
   render() {
-    const { currentTab, selectedDevice } = this.state;
+    const { currentTab, selectedDeviceId } = this.state;
+
     return (
       <div className="assignment-body">
         {this.renderSidebar()}
@@ -96,7 +97,7 @@ export default class AssignmentMain extends React.Component {
           {currentTab === 'EDIT_DEVICE' && <EditDevices changeTab={this.changeTab} />}
           {currentTab === 'DEVICES' && <DevicesSection changeTab={this.changeTab} />}
           {currentTab === 'ASSIGN_DATAPOINTS' && (
-            <AssignDatapoints selectedDevice={selectedDevice} />
+            <AssignDatapoints selectedDeviceId={selectedDeviceId} />
           )}
         </div>
       </div>

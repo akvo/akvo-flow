@@ -1,4 +1,4 @@
-/*  Copyright (C) 2015, 2017 Stichting Akvo (Akvo Foundation)
+/*  Copyright (C) 2015, 2017, 2020 Stichting Akvo (Akvo Foundation)
  *
  *  This file is part of Akvo FLOW.
  *
@@ -15,12 +15,13 @@
 
 package org.waterforpeople.mapping.dataexport;
 
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.Set;
 import java.util.SortedMap;
 import java.util.TreeMap;
+import java.util.TreeSet;
 
 import org.waterforpeople.mapping.app.gwt.client.surveyinstance.SurveyInstanceDto;
 import org.waterforpeople.mapping.app.web.dto.InstanceDataDto;
@@ -30,7 +31,7 @@ public class InstanceData {
     // QuestionId -> Iteration -> Answer
     public final Map<Long, SortedMap<Long, String>> responseMap;
     public final SurveyInstanceDto surveyInstanceDto;
-    public long maxIterationsCount;
+    public Set<Long> iterationsPresent;
     public String latestApprovalStatus;
 
     public InstanceData(InstanceDataDto instanceDataDto, Map<Long, Map<Long, String>> responseMap) {
@@ -41,30 +42,34 @@ public class InstanceData {
     public InstanceData(SurveyInstanceDto surveyInstanceDto,
             Map<Long, Map<Long, String>> responseMap) {
 
-        // Need to normalize the response map and add empty answers for missing iterations
+        // Need to normalize the response map and add empty answers for missing iterations WHY??
         // as well as make sure that the iterations are sorted
-        // TODO: Drop iterations with all empty answers (?).
+        // Drop iterations with all empty answers
         Map<Long, SortedMap<Long, String>> sortedResponseMap = new HashMap<>();
 
-        long maxIter = 0L;
+        iterationsPresent = new TreeSet<>(); //Ordered
 
+        //Find which iterations have answers
+        for (Entry<Long, Map<Long, String>> entry : responseMap.entrySet()) {
+            Map<Long, String> iterationsMap = entry.getValue();
+            iterationsPresent.addAll(iterationsMap.keySet());
+        }
+        //Sort the nonempty answers into new instance maps
         for (Entry<Long, Map<Long, String>> entry : responseMap.entrySet()) {
             Map<Long, String> iterationsMap = entry.getValue();
             SortedMap<Long, String> sortedMap = new TreeMap<>();
-            Long maxIteration = Collections.max(iterationsMap.keySet());
-            maxIter = Math.max(maxIter, maxIteration);
-            for (long i = 0; i <= maxIteration; i++) {
+            for (long i : iterationsPresent) {
                 String value = iterationsMap.get(i);
-                sortedMap.put(i, value == null ? "" : value);
+                //sortedMap.put(i, value == null ? "" : value);
+                if (value != null) sortedMap.put(i, value);
             }
             sortedResponseMap.put(entry.getKey(), sortedMap);
         }
 
         this.responseMap = sortedResponseMap;
         this.surveyInstanceDto = surveyInstanceDto;
-        this.maxIterationsCount = maxIter;
     }
-    
+
     /**
      * Add responses for questions that don't yet have any.
      * Intended for RQG sheets.
@@ -72,12 +77,16 @@ public class InstanceData {
      * @return true if they were inserted, false if any responses overlap others
      */
     public boolean addResponses(Map<Long, Map<Long, String>> additionalResponsesMap) {
+        //Find which iterations have answers
+        //TODO do we have to go back and plug in empties for iterations not present before?
+        for (Entry<Long, Map<Long, String>> entry : additionalResponsesMap.entrySet()) {
+            Map<Long, String> iterationsMap = entry.getValue();
+            iterationsPresent.addAll(iterationsMap.keySet());
+        }
         for (Entry<Long, Map<Long, String>> entry : additionalResponsesMap.entrySet()) {
             Map<Long, String> iterationsMap = entry.getValue();
             SortedMap<Long, String> sortedMap = new TreeMap<>();
-            Long maxIteration = Collections.max(iterationsMap.keySet());
-            maxIterationsCount = Math.max(maxIterationsCount, maxIteration);
-            for (long i = 0; i <= maxIteration; i++) {
+            for (long i : iterationsPresent) {
                 String value = iterationsMap.get(i);
                 sortedMap.put(i, value == null ? "" : value);
             }
@@ -87,15 +96,15 @@ public class InstanceData {
             }
             responseMap.put(entry.getKey(), sortedMap);
         }
-        return true;  
+        return true;
     }
-    
+
     @Override
     public String toString() {
         if (surveyInstanceDto != null) {
             return surveyInstanceDto.getKeyId() + " '" + surveyInstanceDto.getSurveyedLocaleIdentifier() + "'";
         } else {
-            return "InstanceData with max iteration index " + Long.toString(maxIterationsCount);
+            return "InstanceData iterations " + iterationsPresent.toString();
         }
     }
 }
