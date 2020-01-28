@@ -633,10 +633,8 @@ public class GraphicalSurveySummaryExporter extends SurveySummaryExporter {
 
         int startRow = sheet.getLastRowNum() + 1;
         //iterationsPresent is for entire instance. We need it for this sheet only!
-        //int maxIter = 0;
         Set<Long> iterationsOnThisSheet = new TreeSet<>(); //Ordered
         if (!groupSheet) { //Must have one row of metadata on base sheet, even if no values
-            //maxIter = 1;
             iterationsOnThisSheet.add(0L);
         }
         for (QuestionDto qd : whichQuestions) {
@@ -644,7 +642,6 @@ public class GraphicalSurveySummaryExporter extends SurveySummaryExporter {
             SortedMap<Long, String> iterationsMap = instanceData.responseMap.get(questionId);
             if (iterationsMap != null) {
                 iterationsOnThisSheet.addAll(iterationsMap.keySet());
-                //maxIter = Math.max(maxIter, iterationsMap.size());
             }
         }
 
@@ -729,12 +726,11 @@ public class GraphicalSurveySummaryExporter extends SurveySummaryExporter {
             Map<String, String> collapseIdMap,
             SummaryModel model) {
 
-        //maxIterationsCount is actually the max iteration index; 0 for 1 iteration...
-        //even worse, there may be gaps in the index
+        //iterationsPresent is a set because there may be gaps
         int rowOffset = 0;
-        for (long i : instanceData.iterationsPresent) { //TODO sorted?
+        for (long i : instanceData.iterationsPresent) { //sorted
             Row iterationRow = getRow(startRow + rowOffset, sheet);
-            writeMetadataRow(iterationRow, instanceData, (int)i + 1, true); //assume <2 billion repeats
+            writeMetadataRow(iterationRow, instanceData, (int)i + 1, true); //assume <2 billion iterations
             for (String q : questionIdList) {
                 final Long questionId = Long.valueOf(q);
                 final QuestionDto questionDto = questionsById.get(questionId);
@@ -750,7 +746,7 @@ public class GraphicalSurveySummaryExporter extends SurveySummaryExporter {
             rowOffset++;
         }
 
-        int maxRow = startRow + rowOffset; //TODO: fencepost error??
+        int maxRow = startRow + rowOffset;
 
 
         // Rebuild old response map format for rollups from instanceData.responseMap
