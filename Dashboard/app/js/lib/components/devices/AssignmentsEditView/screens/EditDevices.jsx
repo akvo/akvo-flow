@@ -9,60 +9,60 @@ import DeviceEmpty from '../__partials/DeviceEmpty';
 
 export default class EditDevices extends React.Component {
   state = {
-    selectedDevices: [],
+    selectedDevicesIds: [],
   };
 
   getDeviceGroups() {
-    // filter out selected devices
+    // filter selected devices
     const { devices, selectedDeviceIds } = this.context.data;
 
-    const filteredDevices = devices.filter(device => selectedDeviceIds.includes(device.id));
+    const selectedDevices = devices.filter(device => selectedDeviceIds.includes(device.id));
 
-    return _groupBy(filteredDevices, device => device.deviceGroup.id);
+    return _groupBy(selectedDevices, device => device.deviceGroup.id);
   }
 
   onSelectDevice = (id, checked) => {
-    const { selectedDevices } = this.state;
-    let newSelectedDevices = [];
+    const { selectedDevicesIds } = this.state;
+    let newSelectedDevicesIds = [];
 
     if (checked) {
-      newSelectedDevices = selectedDevices.concat(id);
+      newSelectedDevicesIds = selectedDevicesIds.concat(id);
     } else {
-      newSelectedDevices = selectedDevices.filter(device => device !== id);
+      newSelectedDevicesIds = selectedDevicesIds.filter(device => device !== id);
     }
 
-    this.setState({ selectedDevices: newSelectedDevices });
+    this.setState({ selectedDevicesIds: newSelectedDevicesIds });
   };
 
   onSelectMultipleDevices = (ids, checked) => {
-    const { selectedDevices } = this.state;
-    let newSelectedDevices = [...selectedDevices];
+    const { selectedDevicesIds } = this.state;
+    let newSelectedDevicesIds = [...selectedDevicesIds];
 
     if (checked) {
-      newSelectedDevices = selectedDevices.concat(ids);
+      newSelectedDevicesIds = selectedDevicesIds.concat(ids);
     } else {
-      newSelectedDevices = selectedDevices.filter(device => !ids.includes(device));
+      newSelectedDevicesIds = selectedDevicesIds.filter(device => !ids.includes(device));
     }
 
     this.setState({
-      selectedDevices: [...new Set(newSelectedDevices)],
+      selectedDevicesIds: [...new Set(newSelectedDevicesIds)],
     });
   };
 
   removeFromAssignment = () => {
-    const { selectedDevices } = this.state;
+    const { selectedDevicesIds } = this.state;
     const { removeDevicesFromAssignment } = this.context.actions;
 
-    removeDevicesFromAssignment(selectedDevices);
+    removeDevicesFromAssignment(selectedDevicesIds);
 
     // empty selected devices
-    this.setState({ selectedDevices: [] });
+    this.setState({ selectedDevicesIds: [] });
   };
 
   render() {
     const { strings } = this.context;
     const deviceGroups = this.getDeviceGroups();
-    const { selectedDevices } = this.state;
+    const { selectedDevicesIds } = this.state;
 
     return (
       <div className="devices-action-page">
@@ -85,7 +85,7 @@ export default class EditDevices extends React.Component {
               deviceGroups={deviceGroups}
               handleSelectDevice={this.onSelectDevice}
               handleSelectAllDevices={this.onSelectMultipleDevices}
-              selectedDevices={selectedDevices}
+              selectedDevices={selectedDevicesIds}
             />
           </div>
         </div>
@@ -94,14 +94,14 @@ export default class EditDevices extends React.Component {
           <div className="footer-inner">
             <div>
               <p>
-                {selectedDevices.length} {strings.selected}
+                {selectedDevicesIds.length} {strings.selected}
               </p>
             </div>
 
             <button
               type="button"
               onClick={this.removeFromAssignment}
-              className={`btnOutline ${selectedDevices.length === 0 ? 'disabled' : ''}`}
+              className={`btnOutline ${selectedDevicesIds.length === 0 ? 'disabled' : ''}`}
             >
               {strings.removeFromAssignment}
             </button>
