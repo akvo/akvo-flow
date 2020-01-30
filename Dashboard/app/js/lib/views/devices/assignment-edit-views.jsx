@@ -45,7 +45,6 @@ FLOW.AssignmentEditView = FLOW.ReactComponentView.extend(
       this.detectDatapointsLoaded = this.detectDatapointsLoaded.bind(this);
       this.findDatapoints = this.findDatapoints.bind(this);
       this.detectSearchedDatapointLoaded = this.detectSearchedDatapointLoaded.bind(this);
-      this.getDeviceDatapoints = this.getDeviceDatapoints.bind(this);
       this.assignDataPointsToDevice = this.assignDataPointsToDevice.bind(this);
 
       // object wide varaibles
