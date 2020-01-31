@@ -28,7 +28,7 @@ export default class EditDevices extends React.Component {
     if (checked) {
       newSelectedDevicesIds = selectedDevicesIds.concat(id);
     } else {
-      newSelectedDevicesIds = selectedDevicesIds.filter(device => device !== id);
+      newSelectedDevicesIds = selectedDevicesIds.filter(deviceId => deviceId !== id);
     }
 
     this.setState({ selectedDevicesIds: newSelectedDevicesIds });
@@ -41,7 +41,7 @@ export default class EditDevices extends React.Component {
     if (checked) {
       newSelectedDevicesIds = selectedDevicesIds.concat(ids);
     } else {
-      newSelectedDevicesIds = selectedDevicesIds.filter(device => !ids.includes(device));
+      newSelectedDevicesIds = selectedDevicesIds.filter(deviceId => !ids.includes(deviceId));
     }
 
     this.setState({
