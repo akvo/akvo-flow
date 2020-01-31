@@ -31,12 +31,12 @@ export default class SearchDatapoints extends React.Component {
 
   addToAssignment = () => {
     const { selectedDatapointsIds } = this.state;
-    const { datapoints } = this.context.data;
+    const { datapointsResults } = this.context.data;
     const { assignDataPointsToDevice } = this.context.actions;
 
     // format datapoints to datapoints object when adding to assignment
     assignDataPointsToDevice(
-      selectedDatapointsIds.map(sDp => datapoints.find(dp => dp.id === sDp)),
+      selectedDatapointsIds.map(sDp => datapointsResults.find(dp => dp.id === sDp)),
       this.props.deviceId
     );
 

@@ -226,7 +226,7 @@ FLOW.AssignmentEditView = FLOW.ReactComponentView.extend(
       const surveyFolderId = FLOW.selectedControl.get('selectedSurveyGroup').get('keyId');
 
       // create records for each device datapoints
-      this.selectedDatapoints.forEach(sDp => {
+      this.datapointAssignments.forEach(sDp => {
         const data = {
           surveyAssignmentId,
           surveyId: surveyFolderId,
@@ -615,19 +615,49 @@ FLOW.AssignmentEditView = FLOW.ReactComponentView.extend(
     },
 
     getDeviceDatapoints(deviceId) {
-      // get datapoints information for this device
-      const selectedDatapoint = this.selectedDatapoints.find(sDp => sDp.deviceId === deviceId);
+      const surveyAssignmentId = FLOW.selectedControl.get('selectedSurveyAssignment').get('keyId');
 
-      // if no datapoint is available for this device, then return early
-      if (!selectedDatapoint) {
+      // if creating a new assignment then no need to make a fetch
+      // return early
+      if (!surveyAssignmentId) {
         return;
       }
 
-      const { datapoints } = selectedDatapoint;
-      this.deviceInView = deviceId;
+      // if datapoint details is already exist no need to fetch
+      if (this.datapointAssignments.find(item => item.deviceId === deviceId)) {
+        return;
+      }
 
-      FLOW.router.surveyedLocaleController.populate({
-        ids: datapoints.map(dp => dp.id),
+      // assign current `this` to that
+      const that = this;
+
+      // get datapoints information for this device
+      FLOW.DataPointAssignment.find({ deviceId, surveyAssignmentId }).on('didLoad', function() {
+        // we're only expecting one datapoint at max
+        const datapointAssignment = this.map(item => ({
+          deviceId: item.get('deviceId'),
+          datapoints: item.get('dataPointIds'),
+        }))[0];
+
+        if (!datapointAssignment) {
+          return;
+        }
+
+        // get all datapoints for this assignment
+        FLOW.SurveyedLocale.find({ ids: datapointAssignment.datapoints }).on('didLoad', function() {
+          // combine data and add to datapoint assignments
+          const completeDatapointAssignment = {
+            ...datapointAssignment,
+            datapoints: this.map(dp => ({
+              name: dp.get('displayName'),
+              id: dp.get('id'),
+            })),
+          };
+
+          // add to assignment
+          that.datapointAssignments.push(completeDatapointAssignment);
+          that.renderReactSide();
+        });
       });
     },
 
