@@ -20,7 +20,9 @@ export default class AssignDatapoints extends React.Component {
     const { devices, datapointAssignments } = this.context.data;
 
     const deviceData = devices.find(device => device.id === selectedDeviceId);
-    const datapointAssignment = datapointAssignments.find(dp => dp.deviceId === selectedDeviceId);
+    const datapointAssignment = datapointAssignments.find(
+      dp => dp.deviceId === parseInt(selectedDeviceId, 10)
+    );
 
     let datapointsData = [];
 
