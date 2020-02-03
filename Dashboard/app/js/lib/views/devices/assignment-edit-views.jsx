@@ -706,7 +706,10 @@ FLOW.AssignmentEditView = FLOW.ReactComponentView.extend(
       this.renderReactSide();
     },
 
-    assignDataPointsToDevice(datapoints, deviceId) {
+    assignDataPointsToDevice(datapoints, deviceIdInString) {
+      // convert devieId to number
+      const deviceId = parseInt(deviceIdInString, 10);
+
       const datapointAssignment = this.datapointAssignments.find(sDp => sDp.deviceId === deviceId);
 
       // check if device already has datapoints
