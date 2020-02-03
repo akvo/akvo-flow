@@ -16,6 +16,27 @@ export default class AssignDatapoints extends React.Component {
     });
   };
 
+  getAssignmentData = () => {
+    const { selectedDeviceId } = this.props;
+    const { devices, datapointAssignments } = this.context.data;
+
+    const deviceData = devices.find(device => device.id === selectedDeviceId);
+    const datapointAssignment = datapointAssignments.find(
+      dp => dp.deviceId === parseInt(selectedDeviceId, 10)
+    );
+
+    let datapointsData = [];
+
+    if (datapointAssignment) {
+      datapointsData = datapointAssignment.datapoints;
+    }
+
+    return {
+      deviceData,
+      datapointsData,
+    };
+  };
+
   renderDatapoint = dp => {
     return (
       <div key={dp.id} className="datapoint">
@@ -25,26 +46,9 @@ export default class AssignDatapoints extends React.Component {
     );
   };
 
-  getDeviceData = () => {
-    const { selectedDevice } = this.props;
-    const { devices, selectedDatapoints } = this.context.data;
-
-    const deviceData = devices.find(device => device.id === selectedDevice);
-    const selectedDatapoint = selectedDatapoints.find(dp => dp.deviceId === selectedDevice);
-    let datapointsData = [];
-
-    if (selectedDatapoint) {
-      datapointsData = selectedDatapoint.datapoints;
-    }
-
-    return {
-      deviceData,
-      datapointsData,
-    };
-  };
-
   render() {
-    const { deviceData, datapointsData } = this.getDeviceData();
+    const { strings } = this.context;
+    const { deviceData, datapointsData } = this.getAssignmentData();
 
     return (
       <div className="devices-action-page assign-datapoints">
@@ -53,7 +57,9 @@ export default class AssignDatapoints extends React.Component {
             <div className="device-details">
               <p>{deviceData.name}</p>
               <p>
-                <span>{datapointsData.length} Datapoints assigned</span>
+                <span>
+                  {datapointsData.length} {strings.datapointAssigned}
+                </span>
                 <span className="divider">.</span>
                 <a href="#" onClick={() => this.props.changeTab('EDIT_DATAPOINTS', deviceData.id)}>
                   Edit
@@ -62,7 +68,7 @@ export default class AssignDatapoints extends React.Component {
             </div>
 
             <button onClick={() => this.changeTab('SEARCH_DATAPOINTS')} type="button">
-              By datapoints name or ID
+              {strings.assignDatatpointByNameOrId}
             </button>
           </div>
 
@@ -71,7 +77,7 @@ export default class AssignDatapoints extends React.Component {
 
         <div>
           {this.state.currentSubTab === 'SEARCH_DATAPOINTS' && (
-            <SearchDatapoints deviceId={this.props.selectedDevice} changeTab={this.changeTab} />
+            <SearchDatapoints deviceId={this.props.selectedDeviceId} changeTab={this.changeTab} />
           )}
         </div>
       </div>
@@ -81,6 +87,6 @@ export default class AssignDatapoints extends React.Component {
 
 AssignDatapoints.contextType = AssignmentContext;
 AssignDatapoints.propTypes = {
-  selectedDevice: PropTypes.string.isRequired,
+  selectedDeviceId: PropTypes.string.isRequired,
   changeTab: PropTypes.func.isRequired,
 };

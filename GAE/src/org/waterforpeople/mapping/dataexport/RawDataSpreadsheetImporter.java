@@ -515,17 +515,17 @@ public class RawDataSpreadsheetImporter implements DataImporter {
 
 
         int iterations = 1;
-        int repeatIterationColumnIndex = -1;
+        int siColumnIndex = -1;
 
         // Count the maximum number of iterations for this instance
         if (singleOrRepSheet) {
-            repeatIterationColumnIndex = metadataColumnHeaderIndex.get(REPEAT_COLUMN_KEY);//unsafe assignment
+            siColumnIndex = metadataColumnHeaderIndex.get(SURVEY_INSTANCE_COLUMN_KEY); //unsafe assignment
             while (true) {
                 Row row = sheet.getRow(startRow + iterations);
                 if (row == null // no row
-                        || isEmptyCell(row.getCell(repeatIterationColumnIndex))
+                        || isEmptyCell(row.getCell(siColumnIndex))
                         || ExportImportUtils.parseCellAsString(
-                                row.getCell(repeatIterationColumnIndex)).equals("1") // next q
+                                row.getCell(siColumnIndex)).equals(surveyInstanceId) // next q
                 ) {
                     break;
                 }
@@ -552,9 +552,9 @@ public class RawDataSpreadsheetImporter implements DataImporter {
 
                 long iteration = 1;
                 if (singleOrRepSheet) {
-                    Cell cell = iterationRow.getCell(repeatIterationColumnIndex);
+                    Cell cell = iterationRow.getCell(siColumnIndex);
                     if (cell != null) {
-                        iteration = (long) iterationRow.getCell(repeatIterationColumnIndex)
+                        iteration = (long) iterationRow.getCell(siColumnIndex)
                                 .getNumericCellValue();
                     }
                 }
@@ -577,7 +577,7 @@ public class RawDataSpreadsheetImporter implements DataImporter {
         surveyInstanceDto.setFormVersion(formVer);
 
         InstanceData instanceData = new InstanceData(surveyInstanceDto, responseMap); //Copies and sorts the responseMap
-        instanceData.maxIterationsCount = iterations;
+        //instanceData.maxIterationsCount = iterations;
         return instanceData;
     }
 
@@ -762,7 +762,8 @@ public class RawDataSpreadsheetImporter implements DataImporter {
     }
 
     private static String getMetadataCellContent(Row baseRow,
-            Map<String, Integer> metadataColumnHeaderIndex, String metadataCellColumnKey) {
+            Map<String, Integer> metadataColumnHeaderIndex,
+            String metadataCellColumnKey) {
         Cell metadataCell = baseRow.getCell(metadataColumnHeaderIndex.get(metadataCellColumnKey));
         return ExportImportUtils.parseCellAsString(metadataCell);
     }
@@ -785,7 +786,7 @@ public class RawDataSpreadsheetImporter implements DataImporter {
      * @param baseSheet
      * @return A map from column index to question id.
      */
-    private static Map<Integer, Long> processHeader(Sheet sheet, int headerRowIndex) {
+    public static Map<Integer, Long> processHeader(Sheet sheet, int headerRowIndex) {
         Map<Integer, Long> columnIndexToQuestionId = new HashMap<>();
 
         Row headerRow = sheet.getRow(headerRowIndex);

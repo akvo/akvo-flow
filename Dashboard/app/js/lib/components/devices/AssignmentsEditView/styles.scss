@@ -405,6 +405,8 @@
           }
 
           .search-datapoints {
+            display: flex;
+            flex-direction: column;
             position: absolute;
             background: #e8e8e8;
             height: 100%;
@@ -414,10 +416,14 @@
 
             .header {
               padding: 15px 20px;
+              flex: 1;
             }
 
             .body {
-              padding: 10px 20px;
+              padding: 15px 20px;
+              flex: 1 1 auto;
+              overflow: auto;
+              height: 100%;
 
               .search-bar {
                 display: flex;
@@ -466,8 +472,15 @@
               }
             }
 
-            .footer-inner {
-              padding: 15px 20px;
+            .footer {
+              position: relative;
+              bottom: initial;
+              flex: 1;
+              border-top: 1px solid #7a7a7a;
+
+              .footer-inner {
+                padding: 15px 20px;
+              }
             }
           }
         }

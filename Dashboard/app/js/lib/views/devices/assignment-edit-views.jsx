@@ -45,7 +45,7 @@ FLOW.AssignmentEditView = FLOW.ReactComponentView.extend(
       this.detectDatapointsLoaded = this.detectDatapointsLoaded.bind(this);
       this.findDatapoints = this.findDatapoints.bind(this);
       this.detectSearchedDatapointLoaded = this.detectSearchedDatapointLoaded.bind(this);
-      this.addDatapointsToAssignment = this.addDatapointsToAssignment.bind(this);
+      this.assignDataPointsToDevice = this.assignDataPointsToDevice.bind(this);
       this.getDeviceDatapoints = this.getDeviceDatapoints.bind(this);
       this.removeDatapointsFromAssignments = this.removeDatapointsFromAssignments.bind(this);
 
@@ -104,6 +104,9 @@ FLOW.AssignmentEditView = FLOW.ReactComponentView.extend(
         addToAssignment: Ember.String.loc('_add_to_assignment'),
         removeFromAssignment: Ember.String.loc('_remove_from_assignment'),
         noDeviceInAssignment: Ember.String.loc('_no_devices_in_assignments'),
+        assignDatapointByNameOrId: Ember.String.loc('_assign_datapoint_by_name_or_id'),
+        searchDatapointByNameOrId: Ember.String.loc('_search_datapoint_by_name_or_id'),
+        datapointAssigned: Ember.String.loc('_datapoints_assigned'),
         editDatapoints: Ember.String.loc('_edit_datapoints'),
       };
 
@@ -122,9 +125,9 @@ FLOW.AssignmentEditView = FLOW.ReactComponentView.extend(
         addDevicesToAssignment: this.addDevicesToAssignment,
         removeDevicesFromAssignment: this.removeDevicesFromAssignment,
         findDatapoints: this.findDatapoints,
-        addDatapointsToAssignment: this.addDatapointsToAssignment,
         getDeviceDatapoints: this.getDeviceDatapoints,
         removeDatapointsFromAssignments: this.removeDatapointsFromAssignments,
+        assignDataPointsToDevice: this.assignDataPointsToDevice,
       };
 
       const data = {
@@ -138,7 +141,7 @@ FLOW.AssignmentEditView = FLOW.ReactComponentView.extend(
         initialSurveyGroup: this.initialSurveyGroup,
         numberOfForms: this.selectedSurveys.length,
         selectedDeviceIds: this.selectedDevices,
-        selectedDatapoints: this.datapointAssignments,
+        datapointAssignments: this.datapointAssignments,
       };
 
       return {
@@ -625,19 +628,49 @@ FLOW.AssignmentEditView = FLOW.ReactComponentView.extend(
     },
 
     getDeviceDatapoints(deviceId) {
-      // get datapoints information for this device
-      const selectedDatapoint = this.datapointAssignments.find(sDp => sDp.deviceId === deviceId);
+      const surveyAssignmentId = FLOW.selectedControl.get('selectedSurveyAssignment').get('keyId');
 
-      // if no datapoint is available for this device, then return early
-      if (!selectedDatapoint) {
+      // if creating a new assignment then no need to make a fetch
+      // return early
+      if (!surveyAssignmentId) {
         return;
       }
 
-      const { datapoints } = selectedDatapoint;
-      this.deviceInView = deviceId;
+      // if datapoint details is already exist no need to fetch
+      if (this.datapointAssignments.find(item => item.deviceId === deviceId)) {
+        return;
+      }
 
-      FLOW.router.surveyedLocaleController.populate({
-        ids: datapoints.map(dp => dp.id),
+      // assign current `this` to that
+      const that = this;
+
+      // get datapoints information for this device
+      FLOW.DataPointAssignment.find({ deviceId, surveyAssignmentId }).on('didLoad', function() {
+        // we're only expecting one datapoint at max
+        const datapointAssignment = this.map(item => ({
+          deviceId: item.get('deviceId'),
+          datapoints: item.get('dataPointIds'),
+        }))[0];
+
+        if (!datapointAssignment) {
+          return;
+        }
+
+        // get all datapoints for this assignment
+        FLOW.SurveyedLocale.find({ ids: datapointAssignment.datapoints }).on('didLoad', function() {
+          // combine data and add to datapoint assignments
+          const completeDatapointAssignment = {
+            ...datapointAssignment,
+            datapoints: this.map(dp => ({
+              name: dp.get('displayName'),
+              id: dp.get('id'),
+            })),
+          };
+
+          // add to assignment
+          that.datapointAssignments.push(completeDatapointAssignment);
+          that.renderReactSide();
+        });
       });
     },
 
@@ -686,17 +719,19 @@ FLOW.AssignmentEditView = FLOW.ReactComponentView.extend(
       this.renderReactSide();
     },
 
-    addDatapointsToAssignment(datapoints, deviceId) {
-      const selectedDps = this.datapointAssignments;
-      const selectedDp = selectedDps.find(sDp => sDp.deviceId === deviceId);
+    assignDataPointsToDevice(datapoints, deviceIdInString) {
+      // convert devieId to number
+      const deviceId = parseInt(deviceIdInString, 10);
+
+      const datapointAssignment = this.datapointAssignments.find(sDp => sDp.deviceId === deviceId);
 
       // check if device already has datapoints
-      if (selectedDp) {
+      if (datapointAssignment) {
         datapoints.forEach(dp => {
           // check if datapoints isn't already added to this device
-          if (!selectedDp.datapoints.find(sDp => sDp.id === dp.id)) {
+          if (!datapointAssignment.datapoints.find(sDp => sDp.id === dp.id)) {
             // push datapoints to device
-            selectedDp.datapoints.push(dp);
+            datapointAssignment.datapoints.push(dp);
           }
         });
       } else {

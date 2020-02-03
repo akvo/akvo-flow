@@ -6,7 +6,7 @@ import AssignmentContext from '../../assignment-context';
 
 export default class SearchDatapoints extends React.Component {
   state = {
-    selectedDatapoints: [],
+    selectedDatapointsIds: [],
   };
 
   onSearch = e => {
@@ -17,41 +17,42 @@ export default class SearchDatapoints extends React.Component {
   };
 
   onSelectDatapoint = (id, checked) => {
-    const { selectedDatapoints } = this.state;
-    let newSelectedDatapoints = [];
+    const { selectedDatapointsIds } = this.state;
+    let newSelectedDatapointsIds = [];
 
     if (checked) {
-      newSelectedDatapoints = selectedDatapoints.concat(id);
+      newSelectedDatapointsIds = selectedDatapointsIds.concat(id);
     } else {
-      newSelectedDatapoints = selectedDatapoints.filter(device => device !== id);
+      newSelectedDatapointsIds = selectedDatapointsIds.filter(datapointId => datapointId !== id);
     }
 
-    this.setState({ selectedDatapoints: newSelectedDatapoints });
+    this.setState({ selectedDatapointsIds: newSelectedDatapointsIds });
   };
 
   addToAssignment = () => {
-    const { selectedDatapoints } = this.state;
+    const { selectedDatapointsIds } = this.state;
     const { datapointsResults } = this.context.data;
-    const { addDatapointsToAssignment } = this.context.actions;
+    const { assignDataPointsToDevice } = this.context.actions;
 
-    const formattedSelectedDps = selectedDatapoints.map(sDp =>
-      datapointsResults.find(dp => dp.id === sDp)
+    // format datapoints to datapoints object when adding to assignment
+    assignDataPointsToDevice(
+      selectedDatapointsIds.map(sDp => datapointsResults.find(dp => dp.id === sDp)),
+      this.props.deviceId
     );
 
-    addDatapointsToAssignment(formattedSelectedDps, this.props.deviceId);
-
     // empty selected devices
-    this.setState({ selectedDatapoints: [] });
+    this.setState({ selectedDatapointsIds: [] });
   };
 
   render() {
     const { datapointsResults } = this.context.data;
-    const { selectedDatapoints } = this.state;
+    const { strings } = this.context;
+    const { selectedDatapointsIds } = this.state;
 
     return (
       <div className="search-datapoints">
         <div className="header">
-          <p>Assign datapoints by name</p>
+          <p>{strings.assignDatapointByNameOrId}</p>
 
           <i
             className="fa fa-times icon"
@@ -64,7 +65,12 @@ export default class SearchDatapoints extends React.Component {
           {/* search bar */}
           <form className="search-bar" onSubmit={this.onSearch}>
             <i className="fa fa-search" />
-            <input type="search" id="searchDatapoints" placeholder="Search datapoint by name" />
+            <input
+              type="search"
+              id="searchDatapoints"
+              tyoe="search"
+              placeholder={strings.searchDatapointByNameOrId}
+            />
           </form>
 
           <div className="search-results">
@@ -74,7 +80,7 @@ export default class SearchDatapoints extends React.Component {
                   key={dp.id}
                   id={dp.id}
                   name={dp.id}
-                  checked={selectedDatapoints.includes(dp.id)}
+                  checked={selectedDatapointsIds.includes(dp.id)}
                   onChange={this.onSelectDatapoint}
                   label=""
                 />
@@ -91,7 +97,7 @@ export default class SearchDatapoints extends React.Component {
         <div className="footer">
           <div className="footer-inner">
             <div>
-              <p>{selectedDatapoints.length} selected</p>
+              <p>{selectedDatapointsIds.length} selected</p>
             </div>
 
             <button type="button" onClick={this.addToAssignment} className="btnOutline">
