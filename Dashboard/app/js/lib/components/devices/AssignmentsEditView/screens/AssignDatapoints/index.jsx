@@ -68,7 +68,7 @@ export default class AssignDatapoints extends React.Component {
             </div>
 
             <button onClick={() => this.changeTab('SEARCH_DATAPOINTS')} type="button">
-              {strings.assignDatatpointByNameOrId}
+              {strings.assignDatapointByNameOrId}
             </button>
           </div>
 

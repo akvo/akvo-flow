@@ -12,7 +12,6 @@ FLOW.AssignmentEditView = FLOW.ReactComponentView.extend(
     'FLOW.router.devicesSubnavController.selected': 'detectChangeTab',
     'FLOW.surveyControl.content.isLoaded': 'detectSurveyLoaded',
     'FLOW.router.surveyedLocaleController.content.isLoaded': 'detectDatapointsLoaded',
-    'FLOW.dataPointAssignmentControl.content.isLoaded': 'setupDatapoints',
     'searchedDatapoints.isLoaded': 'detectSearchedDatapointLoaded',
   }),
   {
@@ -40,7 +39,6 @@ FLOW.AssignmentEditView = FLOW.ReactComponentView.extend(
 
       // datapoints methods
       this.saveDatapoints = this.saveDatapoints.bind(this);
-      this.setupDatapoints = this.setupDatapoints.bind(this);
       this.getDeviceDatapoints = this.getDeviceDatapoints.bind(this);
       this.detectDatapointsLoaded = this.detectDatapointsLoaded.bind(this);
       this.findDatapoints = this.findDatapoints.bind(this);
@@ -74,7 +72,6 @@ FLOW.AssignmentEditView = FLOW.ReactComponentView.extend(
       this.setupForms();
       this.setupSurveyGroups();
       this.setupDevices();
-      this.setupDatapoints();
 
       // react render
       this.renderReactSide();
@@ -609,24 +606,6 @@ FLOW.AssignmentEditView = FLOW.ReactComponentView.extend(
     },
 
     // handle datapoints functionality
-    setupDatapoints() {
-      if (
-        FLOW.dataPointAssignmentControl.content &&
-        FLOW.dataPointAssignmentControl.content.isLoaded
-      ) {
-        this.datapointAssignments = FLOW.dataPointAssignmentControl
-          .get('content')
-          .map(datapointAssignment => ({
-            id: datapointAssignment.get('id'),
-            deviceId: `${datapointAssignment.get('deviceId')}`,
-            datapoints: datapointAssignment.get('dataPointIds').map(id => ({
-              id,
-              name: '',
-            })),
-          }));
-      }
-    },
-
     getDeviceDatapoints(deviceId) {
       const surveyAssignmentId = FLOW.selectedControl.get('selectedSurveyAssignment').get('keyId');
 
@@ -637,7 +616,7 @@ FLOW.AssignmentEditView = FLOW.ReactComponentView.extend(
       }
 
       // if datapoint details is already exist no need to fetch
-      if (this.datapointAssignments.find(item => item.deviceId === deviceId)) {
+      if (this.datapointAssignments.find(item => item.deviceId === parseInt(deviceId, 10))) {
         return;
       }
 
@@ -648,6 +627,7 @@ FLOW.AssignmentEditView = FLOW.ReactComponentView.extend(
       FLOW.DataPointAssignment.find({ deviceId, surveyAssignmentId }).on('didLoad', function() {
         // we're only expecting one datapoint at max
         const datapointAssignment = this.map(item => ({
+          id: item.get('keyId'),
           deviceId: item.get('deviceId'),
           datapoints: item.get('dataPointIds'),
         }))[0];
@@ -745,7 +725,10 @@ FLOW.AssignmentEditView = FLOW.ReactComponentView.extend(
       this.renderReactSide();
     },
 
-    removeDatapointsFromAssignments(datapoints, deviceId) {
+    removeDatapointsFromAssignments(datapoints, deviceIdInString) {
+      // convert devieId to number
+      const deviceId = parseInt(deviceIdInString, 10);
+
       // get the selected datapoint assignment
       this.datapointAssignments = this.datapointAssignments.map(dpAssignment => {
         // get the datapoints in the selected assignment
@@ -755,6 +738,7 @@ FLOW.AssignmentEditView = FLOW.ReactComponentView.extend(
 
         // remove the selected datapoints from the list
         const dps = dpAssignment.datapoints.filter(dp => {
+          // filter out datapoints that's in the array
           return !datapoints.includes(dp.id);
         });
 
