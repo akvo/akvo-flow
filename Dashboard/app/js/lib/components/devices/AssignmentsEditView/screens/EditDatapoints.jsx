@@ -27,13 +27,13 @@ export default class EditDatapoints extends React.Component {
     const { devices, datapointAssignments } = this.context.data;
 
     const deviceData = devices.find(device => device.id === selectedDeviceId);
-    const selectedDatapoint = datapointAssignments.find(
+    const selectedDatapointAssignment = datapointAssignments.find(
       dp => dp.deviceId === parseInt(selectedDeviceId, 10)
     );
     let datapointsData = [];
 
-    if (selectedDatapoint) {
-      datapointsData = selectedDatapoint.datapoints;
+    if (selectedDatapointAssignment) {
+      datapointsData = selectedDatapointAssignment.datapoints;
     }
 
     return {

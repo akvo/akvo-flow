@@ -725,23 +725,25 @@ FLOW.AssignmentEditView = FLOW.ReactComponentView.extend(
       this.renderReactSide();
     },
 
-    removeDatapointsFromAssignments(datapoints, deviceIdInString) {
+    removeDatapointsFromAssignments(datapointIds, deviceIdInString) {
       // convert devieId to number
       const deviceId = parseInt(deviceIdInString, 10);
 
-      // get the selected datapoint assignment
+      // create a new datapoint assignment and update the datapoint assignment immutably
       this.datapointAssignments = this.datapointAssignments.map(dpAssignment => {
-        // get the datapoints in the selected assignment
+        // return any datapoint assignment we're not trying to update
         if (dpAssignment.deviceId !== deviceId) {
           return dpAssignment;
         }
 
+        // once we've gotten the datapoint assignment we need
         // remove the selected datapoints from the list
         const dps = dpAssignment.datapoints.filter(dp => {
           // filter out datapoints that's in the array
-          return !datapoints.includes(dp.id);
+          return !datapointIds.includes(dp.id);
         });
 
+        // add the updated datapoints to the datapoint assignment
         return {
           ...dpAssignment,
           datapoints: dps,

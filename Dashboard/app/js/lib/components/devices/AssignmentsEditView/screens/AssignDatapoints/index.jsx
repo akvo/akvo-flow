@@ -49,6 +49,7 @@ export default class AssignDatapoints extends React.Component {
   render() {
     const { strings } = this.context;
     const { deviceData, datapointsData } = this.getAssignmentData();
+    const datapointsCount = datapointsData.length;
 
     return (
       <div className="devices-action-page assign-datapoints">
@@ -58,11 +59,19 @@ export default class AssignDatapoints extends React.Component {
               <p>{deviceData.name}</p>
               <p>
                 <span>
-                  {datapointsData.length} {strings.datapointAssigned}
+                  {datapointsCount} {strings.datapointAssigned}
                 </span>
                 <span className="divider">.</span>
-                <a href="#" onClick={() => this.props.changeTab('EDIT_DATAPOINTS', deviceData.id)}>
-                  Edit
+                <a
+                  className={datapointsCount ? undefined : 'disabled'}
+                  href="#"
+                  onClick={
+                    datapointsCount
+                      ? () => this.props.changeTab('EDIT_DATAPOINTS', deviceData.id)
+                      : undefined
+                  }
+                >
+                  {strings.edit}
                 </a>
               </p>
             </div>
