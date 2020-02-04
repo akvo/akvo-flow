@@ -229,13 +229,6 @@ FLOW.Router = Ember.Router.extend({
         connectOutlets(router) {
           router.get('navDevicesController').connectOutlet('editSurveyAssignment');
 
-          // if editing fetch datapoints assignments,
-          // else well, no need for datapoints assignments in a new assignments
-          const assignmentId = FLOW.selectedControl.selectedSurveyAssignment.get('keyId');
-          if (assignmentId) {
-            FLOW.dataPointAssignmentControl.populate(assignmentId);
-          }
-
           router.set('devicesSubnavController.selected', 'assignSurveys');
         },
       }),

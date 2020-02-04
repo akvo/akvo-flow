@@ -32,10 +32,10 @@ export default class SearchDatapoints extends React.Component {
   addToAssignment = () => {
     const { selectedDatapointsIds } = this.state;
     const { datapointsResults } = this.context.data;
-    const { addDatapointsToAssignment } = this.context.actions;
+    const { assignDataPointsToDevice } = this.context.actions;
 
     // format datapoints to datapoints object when adding to assignment
-    addDatapointsToAssignment(
+    assignDataPointsToDevice(
       selectedDatapointsIds.map(sDp => datapointsResults.find(dp => dp.id === sDp)),
       this.props.deviceId
     );
@@ -46,12 +46,13 @@ export default class SearchDatapoints extends React.Component {
 
   render() {
     const { datapointsResults } = this.context.data;
+    const { strings } = this.context;
     const { selectedDatapointsIds } = this.state;
 
     return (
       <div className="search-datapoints">
         <div className="header">
-          <p>Assign datapoints by name</p>
+          <p>{strings.assignDatapointByNameOrId}</p>
 
           <i
             className="fa fa-times icon"
@@ -64,19 +65,31 @@ export default class SearchDatapoints extends React.Component {
           {/* search bar */}
           <form className="search-bar" onSubmit={this.onSearch}>
             <i className="fa fa-search" />
-            <input type="search" id="searchDatapoints" placeholder="Search datapoint by name" />
+            <input
+              type="search"
+              id="searchDatapoints"
+              tyoe="search"
+              placeholder={strings.searchDatapointByNameOrId}
+            />
           </form>
 
           <div className="search-results">
             {datapointsResults.map(dp => (
-              <Checkbox
-                key={dp.id}
-                id={dp.id}
-                name={dp.id}
-                checked={selectedDatapointsIds.includes(dp.id)}
-                onChange={this.onSelectDatapoint}
-                label={dp.name}
-              />
+              <div key={dp.id} className="search-result">
+                <Checkbox
+                  key={dp.id}
+                  id={dp.id}
+                  name={dp.id}
+                  checked={selectedDatapointsIds.includes(dp.id)}
+                  onChange={this.onSelectDatapoint}
+                  label=""
+                />
+
+                <label htmlFor={dp.id}>
+                  <p>{dp.name}</p>
+                  <span>{dp.id}</span>
+                </label>
+              </div>
             ))}
           </div>
         </div>

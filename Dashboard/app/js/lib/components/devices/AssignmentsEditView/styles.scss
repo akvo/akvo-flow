@@ -392,6 +392,10 @@
             }
           }
 
+          a.disabled {
+            color: #444;
+          }
+
           .datapoint {
             padding-bottom: 20px;
 
@@ -449,8 +453,25 @@
               .search-results {
                 padding-top: 15px;
 
-                label {
-                  display: block;
+                .search-result {
+                  display: flex;
+                  align-items: center;
+                  padding-bottom: 20px;
+
+                  & > label {
+                    &.checkbox-container {
+                      margin-top: -15px;
+                      padding-right: 10px;
+                    }
+
+                    p {
+                      font-weight: 500;
+                    }
+
+                    span {
+                      font-size: 14px;
+                    }
+                  }
                 }
               }
             }
@@ -463,6 +484,29 @@
 
               .footer-inner {
                 padding: 15px 20px;
+              }
+            }
+          }
+        }
+
+        .edit-datapoints {
+          .datapoint {
+            display: flex;
+            align-items: center;
+            padding-bottom: 20px;
+
+            & > label {
+              &.checkbox-container {
+                margin-top: -15px;
+                padding-right: 20px;
+              }
+
+              p {
+                font-weight: 500;
+              }
+
+              span {
+                font-size: 14px;
               }
             }
           }

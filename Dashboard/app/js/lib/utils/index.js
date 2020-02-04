@@ -23,7 +23,7 @@ export function ArrNoDupe(a) {
 }
 
 export function formatDate(value) {
-  if (!Ember.none(value)) {
+  if (value) {
     return `${value.getFullYear()}/${value.getMonth() + 1}/${value.getDate()}`;
   }
   return null;
