@@ -33,7 +33,7 @@ public class SurveyDto extends BaseDto {
     private List<QuestionGroupDto> questionGroupList;
     private String path;
     private Long surveyGroupId = null;
-    private String pointType;
+//    private String pointType;
     private String defaultLanguageCode;
     private Boolean requireApproval;
     private Date createdDateTime;
@@ -136,7 +136,7 @@ public class SurveyDto extends BaseDto {
         return code;
     }
 
-    public String getPointType() {
+/*    public String getPointType() {
         return pointType;
     }
 
@@ -144,7 +144,7 @@ public class SurveyDto extends BaseDto {
         this.pointType = pointType;
     }
 
-    public void setDefaultLanguageCode(String defaultLanguageCode) {
+*/    public void setDefaultLanguageCode(String defaultLanguageCode) {
         this.defaultLanguageCode = defaultLanguageCode;
     }
 

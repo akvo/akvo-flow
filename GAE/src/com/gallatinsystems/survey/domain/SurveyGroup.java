@@ -48,7 +48,7 @@ public class SurveyGroup extends BaseDomain implements SecuredObject {
     private String path = null;
     private ProjectType projectType;
     private String defaultLanguageCode;
-    private PrivacyLevel privacyLevel;
+//    private PrivacyLevel privacyLevel;
     private Boolean published;
     private Boolean requireDataApproval = false;
     private Long dataApprovalGroupId;
@@ -68,9 +68,9 @@ public class SurveyGroup extends BaseDomain implements SecuredObject {
         PROJECT_FOLDER, PROJECT
     }
 
-    public enum PrivacyLevel {
-        PRIVATE, PUBLIC
-    }
+//    public enum PrivacyLevel {
+//        PRIVATE, PUBLIC
+//    }
 
     public HashMap<String, Translation> getAltTextMap() {
         return altTextMap;
@@ -166,7 +166,7 @@ public class SurveyGroup extends BaseDomain implements SecuredObject {
         this.defaultLanguageCode = defaultLanuageCode;
     }
 
-    public PrivacyLevel getPrivacyLevel() {
+/*    public PrivacyLevel getPrivacyLevel() {
         return privacyLevel;
     }
 
@@ -174,7 +174,7 @@ public class SurveyGroup extends BaseDomain implements SecuredObject {
         this.privacyLevel = privacyLevel;
     }
 
-    public Boolean getPublished() {
+*/    public Boolean getPublished() {
         return published;
     }
 

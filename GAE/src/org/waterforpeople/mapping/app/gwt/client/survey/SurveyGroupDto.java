@@ -24,7 +24,6 @@ import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
 import com.gallatinsystems.framework.gwt.dto.client.BaseDto;
 import com.gallatinsystems.survey.domain.SurveyGroup;
-import com.gallatinsystems.survey.domain.SurveyGroup.PrivacyLevel;
 import com.gallatinsystems.survey.domain.SurveyGroup.ProjectType;
 
 @JsonIgnoreProperties(ignoreUnknown = true)
@@ -43,7 +42,6 @@ public class SurveyGroupDto extends BaseDto {
     private ProjectType projectType;
     private Long parentId;
     private String defaultLanguageCode;
-    private PrivacyLevel privacyLevel;
     private Boolean published;
     private Boolean requireDataApproval;
     private Long dataApprovalGroupId;
@@ -195,17 +193,6 @@ public class SurveyGroupDto extends BaseDto {
 
     public void setDefaultLanguageCode(String defaultLanguageCode) {
         this.defaultLanguageCode = defaultLanguageCode;
-    }
-
-    public PrivacyLevel getPrivacyLevel() {
-        if (surveyGroup != null) {
-            return surveyGroup.getPrivacyLevel();
-        }
-        return privacyLevel;
-    }
-
-    public void setPrivacyLevel(PrivacyLevel privacyLevel) {
-        this.privacyLevel = privacyLevel;
     }
 
     public Boolean getPublished() {

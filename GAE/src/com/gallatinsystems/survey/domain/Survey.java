@@ -50,7 +50,6 @@ public class Survey extends BaseDomain implements SecuredObject {
     private Double version = null;
     private String path = null;
     private Long surveyGroupId;
-    private String pointType;
     private String defaultLanguageCode;
     private Boolean requireApproval;
 
@@ -177,14 +176,6 @@ public class Survey extends BaseDomain implements SecuredObject {
             translationMap = new HashMap<String, Translation>();
         }
         translationMap.put(t.getLanguageCode(), t);
-    }
-
-    public String getPointType() {
-        return pointType;
-    }
-
-    public void setPointType(String pointType) {
-        this.pointType = pointType;
     }
 
     public void setDefaultLanguageCode(String defaultLanguageCode) {
