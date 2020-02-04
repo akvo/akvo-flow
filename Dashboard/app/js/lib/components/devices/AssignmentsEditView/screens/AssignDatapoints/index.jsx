@@ -1,4 +1,5 @@
 /* eslint-disable import/no-unresolved */
+/* eslint-disable jsx-a11y/anchor-is-valid */
 import React from 'react';
 import PropTypes from 'prop-types';
 import SearchDatapoints from './SearchDatapoints';
@@ -6,7 +7,7 @@ import AssignmentContext from '../../assignment-context';
 
 export default class AssignDatapoints extends React.Component {
   state = {
-    currentSubTab: 'SEARCH_DATAPOINTS',
+    currentSubTab: '',
   };
 
   changeTab = tab => {
@@ -48,6 +49,7 @@ export default class AssignDatapoints extends React.Component {
   render() {
     const { strings } = this.context;
     const { deviceData, datapointsData } = this.getAssignmentData();
+    const datapointsCount = datapointsData.length;
 
     return (
       <div className="devices-action-page assign-datapoints">
@@ -56,12 +58,26 @@ export default class AssignDatapoints extends React.Component {
             <div className="device-details">
               <p>{deviceData.name}</p>
               <p>
-                {datapointsData.length} {strings.datapointAssigned}
+                <span>
+                  {datapointsCount} {strings.datapointAssigned}
+                </span>
+                <span className="divider">.</span>
+                <a
+                  className={datapointsCount ? undefined : 'disabled'}
+                  href="#"
+                  onClick={
+                    datapointsCount
+                      ? () => this.props.changeTab('EDIT_DATAPOINTS', deviceData.id)
+                      : undefined
+                  }
+                >
+                  {strings.edit}
+                </a>
               </p>
             </div>
 
             <button onClick={() => this.changeTab('SEARCH_DATAPOINTS')} type="button">
-              {strings.assignDatatpointByNameOrId}
+              {strings.assignDatapointByNameOrId}
             </button>
           </div>
 
@@ -81,4 +97,5 @@ export default class AssignDatapoints extends React.Component {
 AssignDatapoints.contextType = AssignmentContext;
 AssignDatapoints.propTypes = {
   selectedDeviceId: PropTypes.string.isRequired,
+  changeTab: PropTypes.func.isRequired,
 };

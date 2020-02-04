@@ -6,6 +6,7 @@ import FormSection from './screens/FormSection';
 import AddDevices from './screens/AddDevices';
 import EditDevices from './screens/EditDevices';
 import AssignDatapoints from './screens/AssignDatapoints';
+import EditDatapoints from './screens/EditDatapoints';
 
 import DevicesSection from './DevicesSection';
 import SidebarDropdown from './__partials/SidebarDropdown';
@@ -97,7 +98,10 @@ export default class AssignmentMain extends React.Component {
           {currentTab === 'EDIT_DEVICE' && <EditDevices changeTab={this.changeTab} />}
           {currentTab === 'DEVICES' && <DevicesSection changeTab={this.changeTab} />}
           {currentTab === 'ASSIGN_DATAPOINTS' && (
-            <AssignDatapoints selectedDeviceId={selectedDeviceId} />
+            <AssignDatapoints changeTab={this.changeTab} selectedDeviceId={selectedDeviceId} />
+          )}
+          {currentTab === 'EDIT_DATAPOINTS' && (
+            <EditDatapoints changeTab={this.changeTab} selectedDeviceId={selectedDeviceId} />
           )}
         </div>
       </div>
