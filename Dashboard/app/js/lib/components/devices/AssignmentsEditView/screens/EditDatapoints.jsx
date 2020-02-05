@@ -23,15 +23,17 @@ export default class EditDatapoints extends React.Component {
   };
 
   getDeviceData = () => {
-    const { selectedDevice } = this.props;
-    const { devices, selectedDatapoints } = this.context.data;
+    const { selectedDeviceId } = this.props;
+    const { devices, datapointAssignments } = this.context.data;
 
-    const deviceData = devices.find(device => device.id === selectedDevice);
-    const selectedDatapoint = selectedDatapoints.find(dp => dp.deviceId === selectedDevice);
+    const deviceData = devices.find(device => device.id === selectedDeviceId);
+    const selectedDatapointAssignment = datapointAssignments.find(
+      dp => dp.deviceId === parseInt(selectedDeviceId, 10)
+    );
     let datapointsData = [];
 
-    if (selectedDatapoint) {
-      datapointsData = selectedDatapoint.datapoints;
+    if (selectedDatapointAssignment) {
+      datapointsData = selectedDatapointAssignment.datapoints;
     }
 
     return {
@@ -44,7 +46,7 @@ export default class EditDatapoints extends React.Component {
     const { selectedDatapoints } = this.state;
     const { removeDatapointsFromAssignments } = this.context.actions;
 
-    removeDatapointsFromAssignments(selectedDatapoints, this.props.selectedDevice);
+    removeDatapointsFromAssignments(selectedDatapoints, this.props.selectedDeviceId);
 
     // empty selected devices
     this.setState({ selectedDatapoints: [] });
@@ -111,5 +113,5 @@ export default class EditDatapoints extends React.Component {
 EditDatapoints.contextType = AssignmentsContext;
 EditDatapoints.propTypes = {
   changeTab: PropTypes.func.isRequired,
-  selectedDevice: PropTypes.number.isRequired,
+  selectedDeviceId: PropTypes.string.isRequired,
 };

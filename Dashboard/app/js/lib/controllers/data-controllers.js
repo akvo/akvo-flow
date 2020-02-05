@@ -340,8 +340,8 @@ FLOW.SurveyedLocaleController = Ember.ArrayController.extend(
 FLOW.dataPointAssignmentControl = Ember.ArrayController.create({
   content: null,
 
-  populate(surveyAssignmentId) {
-    this.set('content', FLOW.store.find(FLOW.DataPointAssignment, { surveyAssignmentId }));
+  populate(criteria) {
+    this.set('content', FLOW.store.find(FLOW.DataPointAssignment, criteria));
   },
 });
 

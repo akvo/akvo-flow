@@ -1,5 +1,5 @@
 /*
- *  Copyright (C) 2010-2019 Stichting Akvo (Akvo Foundation)
+ *  Copyright (C) 2010-2020 Stichting Akvo (Akvo Foundation)
  *
  *  This file is part of Akvo FLOW.
  *
@@ -701,7 +701,7 @@ public class SurveySummaryExporter extends AbstractDataExporter {
             }
         }
 
-        public double getMode() {
+        public Double getMode() {
             if (!isSorted) {
                 Collections.sort(valueList);
                 isSorted = true;
