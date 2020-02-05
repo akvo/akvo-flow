@@ -238,7 +238,10 @@ FLOW.AssignmentEditView = FLOW.ReactComponentView.extend(
     },
 
     saveDatapoints() {
+      if (!FLOW.selectedControl.selectedSurveyAssignment) return;
       const surveyAssignmentId = FLOW.selectedControl.selectedSurveyAssignment.get('keyId');
+
+      if (!surveyAssignmentId) return;
       const surveyFolderId = FLOW.selectedControl.get('selectedSurveyGroup').get('keyId');
 
       // create records for each device datapoints
