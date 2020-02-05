@@ -63,6 +63,7 @@ FLOW.AssignmentEditView = FLOW.ReactComponentView.extend(
       // global object variables
       this.initialSurveyGroup = null;
       this.searchedDatapoints = null;
+      this.datapointsEnabled = null;
       this.deviceInView = null;
     },
 
@@ -138,6 +139,7 @@ FLOW.AssignmentEditView = FLOW.ReactComponentView.extend(
         initialSurveyGroup: this.initialSurveyGroup,
         numberOfForms: this.selectedSurveys.length,
         selectedDeviceIds: this.selectedDevices,
+        datapointsEnabled: this.datapointsEnabled,
         datapointAssignments: this.datapointAssignments,
       };
 
@@ -473,8 +475,6 @@ FLOW.AssignmentEditView = FLOW.ReactComponentView.extend(
       }
 
       this.renderReactSide();
-
-      // TODO: load data points in selected form
     },
 
     handleSurveySelect(parentId) {
@@ -482,6 +482,16 @@ FLOW.AssignmentEditView = FLOW.ReactComponentView.extend(
 
       if (selectedSG && selectedSG.get('projectType') !== 'PROJECT_FOLDER') {
         FLOW.selectedControl.set('selectedSurveyGroup', selectedSG);
+
+        // TODO:: Add confirmation from user
+        // empty all currently selected datapoints
+        if (this.datapointAssignments.length) {
+          this.datapointAssignments = [];
+        }
+
+        // if selected survey has monitoring disabled, disable datapoint assignments
+        this.datapointsEnabled = selectedSG.get('monitoringGroup');
+
         return false;
       }
 
@@ -680,15 +690,13 @@ FLOW.AssignmentEditView = FLOW.ReactComponentView.extend(
       this.renderReactSide();
     },
 
-    findDatapoints(displayName) {
-      this.set('searchedDatapoints', FLOW.SurveyedLocale.find({ displayName }));
+    findDatapoints(search) {
+      // find datapoints in the selected survey group
+      const surveyGroupId = FLOW.selectedControl.get('selectedSurveyGroup').get('keyId');
+      this.set('searchedDatapoints', FLOW.SurveyedLocale.find({ search, surveyGroupId }));
     },
 
     detectSearchedDatapointLoaded() {
-      if (!this.searchedDatapoints.get('length')) {
-        return;
-      }
-
       this.datapointsResults = this.searchedDatapoints.map(datapoint => {
         return {
           name: datapoint.get('displayName'),
