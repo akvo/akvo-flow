@@ -14,6 +14,7 @@ FLOW.AssignmentEditView = FLOW.ReactComponentView.extend(
     'FLOW.router.surveyedLocaleController.content.isLoaded': 'detectDatapointsLoaded',
     'searchedDatapoints.isLoaded': 'detectSearchedDatapointLoaded',
     'FLOW.selectedControl.selectedSurveyAssignment.keyId': 'saveDatapoints',
+    selectedSurveyGroupId: 'setDatapointEnabled',
   }),
   {
     // init methods
@@ -53,6 +54,7 @@ FLOW.AssignmentEditView = FLOW.ReactComponentView.extend(
       this.assignDataPointsToDevice = this.assignDataPointsToDevice.bind(this);
       this.getDeviceDatapoints = this.getDeviceDatapoints.bind(this);
       this.removeDatapointsFromAssignments = this.removeDatapointsFromAssignments.bind(this);
+      this.setDatapointEnabled = this.setDatapointEnabled.bind(this);
 
       // object wide varaibles
       this.forms = {};
@@ -63,7 +65,7 @@ FLOW.AssignmentEditView = FLOW.ReactComponentView.extend(
       this.datapointsResults = [];
 
       // selected attributes
-      this.selectedSurveyGroup = null;
+      this.selectedSurveyGroupId = null;
       this.selectedDevices = [];
       this.selectedSurveys = [];
       this.datapointAssignments = [];
@@ -77,8 +79,11 @@ FLOW.AssignmentEditView = FLOW.ReactComponentView.extend(
     didInsertElement(...args) {
       this._super(...args);
 
-      this.setupForms();
       this.setupSurveyGroups();
+      this.setupForms();
+
+      // load intial forms for selected survey group
+      this.handleSurveySelect(this.selectedSurveyGroupId);
       this.setupDevices();
 
       // react render
@@ -144,7 +149,7 @@ FLOW.AssignmentEditView = FLOW.ReactComponentView.extend(
         deviceGroups: this.deviceGroups,
         deviceGroupNames: this.deviceGroupNames,
         activeDeviceGroups: this.activeDeviceGroups,
-        initialSurveyGroup: this.selectedSurveyGroup,
+        initialSurveyGroup: this.selectedSurveyGroupId,
         numberOfForms: this.selectedSurveys.length,
         selectedDeviceIds: this.selectedDevices,
         datapointsEnabled: this.datapointsEnabled,
@@ -444,7 +449,7 @@ FLOW.AssignmentEditView = FLOW.ReactComponentView.extend(
           this.selectedSurveys.push(form.get('keyId'));
 
           // load selected survey group
-          this.selectedSurveyGroup = form.get('surveyGroupId');
+          this.set('selectedSurveyGroupId', form.get('surveyGroupId'));
 
           this.forms[form.get('keyId')] = {
             // also load pre-selected forms
@@ -465,7 +470,7 @@ FLOW.AssignmentEditView = FLOW.ReactComponentView.extend(
         .filter(form => form.get('status') === 'PUBLISHED')
         .forEach(form => {
           // load selected survey group
-          this.selectedSurveyGroup = form.get('surveyGroupId');
+          this.set('selectedSurveyGroupId', form.get('surveyGroupId'));
 
           this.forms[form.get('keyId')] = {
             name: form.get('name'),
@@ -500,13 +505,12 @@ FLOW.AssignmentEditView = FLOW.ReactComponentView.extend(
 
     shouldRemoveForms() {
       const formsInAssignment = this.selectedSurveys;
-      const selectedSurveyGroupId = this.selectedSurveyGroup;
 
       if (formsInAssignment && formsInAssignment.length > 0) {
         // get survey id of first form currently in assignment
         const preSelectedSurvey = FLOW.Survey.find(formsInAssignment[0]);
         if (preSelectedSurvey && preSelectedSurvey.get('keyId')) {
-          return preSelectedSurvey.get('surveyGroupId') !== selectedSurveyGroupId;
+          return preSelectedSurvey.get('surveyGroupId') !== this.selectedSurveyGroupId;
         }
       }
 
@@ -534,18 +538,14 @@ FLOW.AssignmentEditView = FLOW.ReactComponentView.extend(
       const selectedSG = FLOW.projectControl.get('content').find(sg => sg.get('keyId') == parentId);
 
       if (selectedSG && selectedSG.get('projectType') !== 'PROJECT_FOLDER') {
-        FLOW.selectedControl.set('selectedSurveyGroup', selectedSG);
-
         // TODO:: Add confirmation from user
         // empty all currently selected datapoints
         if (this.datapointAssignments.length) {
           this.datapointAssignments = [];
         }
 
-        // if selected survey has monitoring disabled, disable datapoint assignments
-        this.datapointsEnabled = selectedSG.get('monitoringGroup');
-
-        // obsevers will load forms now and rerender react
+        // using this to trigger an onserver which will load forms and rerender react
+        FLOW.selectedControl.set('selectedSurveyGroup', selectedSG);
 
         return false;
       }
@@ -620,6 +620,15 @@ FLOW.AssignmentEditView = FLOW.ReactComponentView.extend(
     },
 
     // handle datapoints functionality
+    setDatapointEnabled() {
+      const surveyGroup = this.surveyGroups.find(sg => sg.keyId === this.selectedSurveyGroupId);
+
+      if (surveyGroup) {
+        // if selected survey has monitoring disabled, disable datapoint assignments
+        this.datapointsEnabled = surveyGroup.monitoringGroup;
+      }
+    },
+
     getDeviceDatapoints(deviceId) {
       const surveyAssignmentId = FLOW.selectedControl.get('selectedSurveyAssignment').get('keyId');
 
