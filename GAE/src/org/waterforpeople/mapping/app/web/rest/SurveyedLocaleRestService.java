@@ -82,7 +82,7 @@ public class SurveyedLocaleRestService {
         if (searchIdentifiers) {
             //JDO implementation cannot handle both OR and a prefix in a filter expression,
             //so we have to search again and concatenate
-            List<SurveyedLocale> sls2 = surveyedLocaleDao.listSurveyedLocales(since, null, search, null, null);
+            List<SurveyedLocale> sls2 = surveyedLocaleDao.listSurveyedLocales(null, null, search, null, null);
             copyToDtoList(sls2, locales);
         }
 
