@@ -22,9 +22,6 @@ export default class AddDevice extends React.Component {
   }
 
   onSelectDevice = (id, checked) => {
-    // convert id to number
-    // const id = parseInt(stringId, 10);
-
     const { selectedDevicesIds } = this.state;
     let newSelectedDevicesIds = [];
 

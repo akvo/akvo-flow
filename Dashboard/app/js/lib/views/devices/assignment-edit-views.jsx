@@ -67,7 +67,7 @@ FLOW.AssignmentEditView = FLOW.ReactComponentView.extend(
       // selected attributes
       this.selectedSurveyGroupId = null;
       this.selectedDevices = [];
-      this.selectedSurveys = [];
+      this.selectedFormIds = [];
       this.datapointAssignments = [];
 
       // global object variables
@@ -150,7 +150,7 @@ FLOW.AssignmentEditView = FLOW.ReactComponentView.extend(
         deviceGroupNames: this.deviceGroupNames,
         activeDeviceGroups: this.activeDeviceGroups,
         initialSurveyGroup: this.selectedSurveyGroupId,
-        numberOfForms: this.selectedSurveys.length,
+        numberOfForms: this.selectedFormIds.length,
         selectedDeviceIds: this.selectedDevices,
         datapointsEnabled: this.datapointsEnabled,
         datapointAssignments: this.datapointAssignments,
@@ -187,7 +187,7 @@ FLOW.AssignmentEditView = FLOW.ReactComponentView.extend(
 
       // set devices and surveys
       const deviceIds = this.selectedDevices;
-      const formIds = this.selectedSurveys;
+      const formIds = this.selectedFormIds;
 
       // validate data before continuing
       const isValid = this.validateAssignment({ ...data, deviceIds, formIds });
@@ -449,7 +449,7 @@ FLOW.AssignmentEditView = FLOW.ReactComponentView.extend(
         const form = FLOW.Survey.find(formId);
 
         if (form && form.get('keyId')) {
-          this.selectedSurveys.push(form.get('keyId'));
+          this.selectedFormIds.push(form.get('keyId'));
 
           // load selected survey group
           this.set('selectedSurveyGroupId', form.get('surveyGroupId'));
@@ -477,7 +477,7 @@ FLOW.AssignmentEditView = FLOW.ReactComponentView.extend(
 
           this.forms[form.get('keyId')] = {
             name: form.get('name'),
-            checked: this.selectedSurveys.includes(form.get('keyId')),
+            checked: this.selectedFormIds.includes(form.get('keyId')),
           };
         });
 
@@ -488,7 +488,7 @@ FLOW.AssignmentEditView = FLOW.ReactComponentView.extend(
       // if checking a form in a new survey, remove all forms
       if (this.shouldRemoveForms()) {
         // remove all currently selected forms
-        this.selectedSurveys = [];
+        this.selectedFormIds = [];
       }
 
       // check form
@@ -496,18 +496,18 @@ FLOW.AssignmentEditView = FLOW.ReactComponentView.extend(
 
       // add/remove form to/from assignment
       if (this.forms[formId].checked) {
-        // push survey to selectedSurveys
-        this.selectedSurveys.push(formId);
+        // push survey to selectedFormIds
+        this.selectedFormIds.push(formId);
       } else {
         // convert to string to check
-        this.selectedSurveys = this.selectedSurveys.filter(surveys => `${surveys}` !== formId);
+        this.selectedFormIds = this.selectedFormIds.filter(surveys => `${surveys}` !== formId);
       }
 
       this.renderReactSide();
     },
 
     shouldRemoveForms() {
-      const formsInAssignment = this.selectedSurveys;
+      const formsInAssignment = this.selectedFormIds;
 
       if (formsInAssignment && formsInAssignment.length > 0) {
         // get survey id of first form currently in assignment
@@ -669,7 +669,7 @@ FLOW.AssignmentEditView = FLOW.ReactComponentView.extend(
             ...datapointAssignment,
             datapoints: this.map(dp => ({
               name: dp.get('displayName'),
-              id: dp.get('id'),
+              id: dp.get('keyId'),
             })),
           };
 
@@ -723,10 +723,7 @@ FLOW.AssignmentEditView = FLOW.ReactComponentView.extend(
       this.renderReactSide();
     },
 
-    assignDataPointsToDevice(datapoints, deviceIdInString) {
-      // convert devieId to number
-      const deviceId = parseInt(deviceIdInString, 10);
-
+    assignDataPointsToDevice(datapoints, deviceId) {
       const datapointAssignment = this.datapointAssignments.find(sDp => sDp.deviceId === deviceId);
 
       // check if device already has datapoints
@@ -749,10 +746,7 @@ FLOW.AssignmentEditView = FLOW.ReactComponentView.extend(
       this.renderReactSide();
     },
 
-    removeDatapointsFromAssignments(datapointIds, deviceIdInString) {
-      // convert devieId to number
-      const deviceId = parseInt(deviceIdInString, 10);
-
+    removeDatapointsFromAssignments(datapointIds, deviceId) {
       // create a new datapoint assignment and update the datapoint assignment immutably
       this.datapointAssignments = this.datapointAssignments.map(dpAssignment => {
         // return any datapoint assignment we're not trying to update
