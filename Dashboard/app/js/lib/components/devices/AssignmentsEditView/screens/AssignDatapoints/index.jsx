@@ -96,6 +96,6 @@ export default class AssignDatapoints extends React.Component {
 
 AssignDatapoints.contextType = AssignmentContext;
 AssignDatapoints.propTypes = {
-  selectedDeviceId: PropTypes.string.isRequired,
+  selectedDeviceId: PropTypes.number.isRequired,
   changeTab: PropTypes.func.isRequired,
 };

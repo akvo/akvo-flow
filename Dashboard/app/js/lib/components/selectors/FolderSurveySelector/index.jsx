@@ -13,11 +13,9 @@ export default class FolderSurveySelector extends React.Component {
       // if initial form is available, generate levels and mark it as selected
       const { parentId } = surveyGroups.find(sg => sg.keyId == initialSurveyGroup);
 
-      this.setState({ levels: this.getLevels(parentId) }, () => {
-        this.props.onSelectSurvey(initialSurveyGroup);
-      });
+      this.setState({ levels: this.getLevels(parentId) });
     } else {
-      this.setState({ levels: this.getLevels(0) });
+      this.setState({ levels: this.getLevels() });
     }
   }
 
@@ -79,9 +77,7 @@ export default class FolderSurveySelector extends React.Component {
           parentId: null,
           name: strings.chooseFolderOrSurvey,
         },
-      ]
-        // eslint-disable-next-line eqeqeq
-        .concat(surveys)
+      ].concat(surveys)
     );
 
     return levels;
