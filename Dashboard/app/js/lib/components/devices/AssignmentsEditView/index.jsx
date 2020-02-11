@@ -22,6 +22,15 @@ export default class AssignmentsEdit extends React.Component {
     }));
   };
 
+  onChangeDate = (date, id) => {
+    this.setState(state => ({
+      data: {
+        ...state.data,
+        [id]: date,
+      },
+    }));
+  };
+
   onSubmit = () => {
     const { assignmentName, startDate, endDate } = this.state.data;
 
@@ -67,6 +76,7 @@ export default class AssignmentsEdit extends React.Component {
       actions: {
         ...this.props.actions,
         onInputChange: this.onChangeState,
+        onDateChange: this.onChangeDate,
       },
       data: this.props.data,
       inputValues: this.state.data,

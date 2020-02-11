@@ -3,6 +3,7 @@ import React from 'react';
 import moment from 'moment';
 import FolderSurveySelectorView from 'akvo-flow/components/selectors/FolderSurveySelector';
 import FormSelectorView from 'akvo-flow/components/selectors/FormSelector';
+import Datepicker from 'akvo-flow/components/reusable/DatePicker';
 
 import AssignmentsContext from '../assignment-context';
 
@@ -22,22 +23,19 @@ export default class FormSection extends React.Component {
           <div className="date-picker">
             <div className="date">
               <i className="fa fa-calendar" />
-              <input
-                type="date"
+              <Datepicker
                 id="startDate"
-                value={this.formatMomentDate(inputValues.startDate)}
-                onChange={actions.onInputChange}
+                value={inputValues.startDate}
+                onChange={actions.onDateChange}
               />
             </div>
             <span> - </span>
             <div className="date">
               <i className="fa fa-calendar" />
-              <input
-                type="date"
+              <Datepicker
                 id="endDate"
-                min={this.formatMomentDate(inputValues.startDate)}
-                value={this.formatMomentDate(inputValues.endDate)}
-                onChange={actions.onInputChange}
+                value={inputValues.endDate}
+                onChange={actions.onDateChange}
               />
             </div>
           </div>
