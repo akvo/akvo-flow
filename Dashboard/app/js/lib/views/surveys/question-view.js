@@ -351,8 +351,8 @@ FLOW.QuestionView = FLOW.View.extend(template('navSurveys/question-view'), obser
     FLOW.selectedControl.selectedQuestion.set('allowDecimal', this.get('allowDecimal'));
     FLOW.selectedControl.selectedQuestion.set('allowMultipleFlag', this.get('allowMultipleFlag'));
     FLOW.selectedControl.selectedQuestion.set('allowOtherFlag', this.get('allowOtherFlag'));
-    FLOW.selectedControl.selectedQuestion.set('localeNameFlag', this.get('localeNameFlag'));
-    FLOW.selectedControl.selectedQuestion.set('localeLocationFlag', this.get('localeLocationFlag'));
+    FLOW.selectedControl.selectedQuestion.set('localeNameFlag', this.get('showLocaleName') && this.get('localeNameFlag'));
+    FLOW.selectedControl.selectedQuestion.set('localeLocationFlag', this.get('amGeoType') && this.get('localeLocationFlag'));
     FLOW.selectedControl.selectedQuestion.set('geoLocked', this.get('geoLocked'));
     FLOW.selectedControl.selectedQuestion.set('requireDoubleEntry', this.get('requireDoubleEntry'));
     FLOW.selectedControl.selectedQuestion.set('includeInMap', this.get('includeInMap'));
