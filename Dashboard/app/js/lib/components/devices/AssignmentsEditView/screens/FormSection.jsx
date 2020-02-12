@@ -1,6 +1,5 @@
 /* eslint-disable import/no-unresolved */
 import React from 'react';
-import moment from 'moment';
 import FolderSurveySelectorView from 'akvo-flow/components/selectors/FolderSurveySelector';
 import FormSelectorView from 'akvo-flow/components/selectors/FormSelector';
 import Datepicker from 'akvo-flow/components/reusable/DatePicker';
@@ -8,8 +7,6 @@ import Datepicker from 'akvo-flow/components/reusable/DatePicker';
 import AssignmentsContext from '../assignment-context';
 
 export default class FormSection extends React.Component {
-  formatMomentDate = date => moment(date, 'YYYY/MM/DD').format('YYYY-MM-DD');
-
   render() {
     const { strings, actions, data, inputValues } = this.context;
 
