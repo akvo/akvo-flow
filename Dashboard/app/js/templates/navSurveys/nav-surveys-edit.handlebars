@@ -16,10 +16,6 @@
             <dd><span id="surveyIdNbr">{{FLOW.selectedControl.selectedSurvey.keyId}}</span>
             </dd>
         </dl>
-        <label for="surveyType"><span>{{t _type}}<span class="isRequired">({{t _required}})</span>:</span>
-            {{view Ember.Select contentBinding="FLOW.surveyPointTypeControl.content" optionLabelPath="content.label" optionValuePath="content.value" selectionBinding="view.surveyPointType" prompt="" promptBinding="Ember.STRINGS._select_survey_type"}}
-        </label>
-
         <label for="surveyLanguage"><span>{{t _master_language}}:</span>{{tooltip _master_lang_no_change}} {{view Ember.Select contentBinding="FLOW.translationControl.isoLangs" selectionBinding="view.language" optionLabelPath="content.labelShort" optionValuePath="content.value" prompt="" promptBinding="Ember.STRINGS._select_language"}}
         </label>
     </form>

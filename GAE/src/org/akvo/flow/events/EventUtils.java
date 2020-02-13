@@ -31,7 +31,6 @@ import org.akvo.flow.util.FlowJsonObjectWriter;
 
 import com.gallatinsystems.common.Constants;
 import com.gallatinsystems.survey.domain.SurveyGroup;
-import com.gallatinsystems.survey.domain.SurveyGroup.PrivacyLevel;
 import com.google.appengine.api.datastore.Entity;
 import com.google.appengine.api.datastore.Text;
 
@@ -138,7 +137,6 @@ public class EventUtils {
         public static final String NAME = "name";
         public static final String PARENT_ID = "parentId";
         public static final String DESCRIPTION = "description";
-        public static final String PRIVACY_LEVEL = "privacyLevel";
         public static final String DESC = "desc";
         public static final String SURVEY_GROUP_ID = "surveyGroupId";
         public static final String ORDER = "order";
@@ -262,8 +260,6 @@ public class EventUtils {
                 }
 
                 addProperty(Key.DESCRIPTION, e.getProperty(Prop.DESCRIPTION), data);
-                addProperty(Key.PUBLIC, String.valueOf(e.getProperty(Prop.PRIVACY_LEVEL))
-                        .equals(PrivacyLevel.PUBLIC.toString()), data);
                 break;
             case FORM:
                 addProperty(Key.NAME, e.getProperty(Prop.NAME), data);

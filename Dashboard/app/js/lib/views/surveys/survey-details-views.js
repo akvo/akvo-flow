@@ -5,23 +5,15 @@ import observe from '../../mixins/observe';
 FLOW.SurveySidebarView = FLOW.View.extend({
   surveyTitle: null,
   surveyDescription: null,
-  surveyPointType: null,
   language: null,
   isDirty: false,
 
   init() {
-    let pointType = null;
     let language = null;
     this._super();
     this.set('surveyTitle', FLOW.selectedControl.selectedSurvey.get('name'));
     this.set('surveyDescription', FLOW.selectedControl.selectedSurvey.get('description'));
 
-    FLOW.surveyPointTypeControl.get('content').forEach((item) => {
-      if (item.get('value') == FLOW.selectedControl.selectedSurvey.get('pointType')) {
-        pointType = item;
-      }
-    });
-    this.set('surveyPointType', pointType);
     FLOW.translationControl.get('isoLangs').forEach((item) => {
       if (item.get('value') == FLOW.selectedControl.selectedSurvey.get('defaultLanguageCode')) {
         language = item;
@@ -41,16 +33,6 @@ FLOW.SurveySidebarView = FLOW.View.extend({
     } else {
       // if we don't have one now, but we had one before, it has also changed
       isDirty = isDirty || !Ember.none(survey.get('surveyDescription'));
-    }
-
-    if (!Ember.none(this.get('surveyPointType'))) {
-      // if we have a surveyPointType, compare them
-      isDirty = isDirty || this.surveyPointType.get('value') != survey.get('pointType');
-    } else {
-      isDirty = isDirty || this.get('surveyPointType') === null;
-      // if we don't have one now, but we had one before, it has also changed
-      // TODO - this breaks when the pointType is an old point Type
-      // isDirty = isDirty || !Ember.none(survey.get('pointType'));
     }
 
     if (!Ember.none(this.get('language'))) {
@@ -82,14 +64,6 @@ FLOW.SurveySidebarView = FLOW.View.extend({
       FLOW.dialogControl.set('activeAction', 'ignore');
       FLOW.dialogControl.set('header', Ember.String.loc('_survey_title_not_set'));
       FLOW.dialogControl.set('message', Ember.String.loc('_survey_title_not_set_text'));
-      FLOW.dialogControl.set('showCANCEL', false);
-      FLOW.dialogControl.set('showDialog', true);
-      return true;
-    }
-    if (Ember.empty(this.get('surveyPointType'))) {
-      FLOW.dialogControl.set('activeAction', 'ignore');
-      FLOW.dialogControl.set('header', Ember.String.loc('_survey_type_not_set'));
-      FLOW.dialogControl.set('message', Ember.String.loc('_survey_type_not_set_text'));
       FLOW.dialogControl.set('showCANCEL', false);
       FLOW.dialogControl.set('showDialog', true);
       return true;
@@ -165,11 +139,6 @@ FLOW.SurveySidebarView = FLOW.View.extend({
     survey.set('status', 'NOT_PUBLISHED');
     survey.set('path', FLOW.selectedControl.selectedSurveyGroup.get('code'));
     survey.set('description', this.get('surveyDescription'));
-    if (this.get('surveyPointType') !== null) {
-      survey.set('pointType', this.surveyPointType.get('value'));
-    } else {
-      survey.set('pointType', null);
-    }
     if (this.get('language') !== null) {
       survey.set('defaultLanguageCode', this.language.get('value'));
     } else {
@@ -183,16 +152,6 @@ FLOW.SurveySidebarView = FLOW.View.extend({
   },
 
   doPublishSurvey() {
-    // validation
-    if (this.get('surveyPointType') === null) {
-      FLOW.dialogControl.set('activeAction', 'ignore');
-      FLOW.dialogControl.set('header', Ember.String.loc('_survey_type_not_set'));
-      FLOW.dialogControl.set('message', Ember.String.loc('_survey_type_not_set_text'));
-      FLOW.dialogControl.set('showCANCEL', false);
-      FLOW.dialogControl.set('showDialog', true);
-      return;
-    }
-
     // check if survey has unsaved changes
     const survey = FLOW.store.find(FLOW.Survey, FLOW.selectedControl.selectedSurvey.get('keyId'));
     this.setIsDirty();

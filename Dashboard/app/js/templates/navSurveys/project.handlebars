@@ -37,13 +37,6 @@
 
                 <ul class="projectSelect floats-in">
                   <li>
-                    <label>{{t _privacy_type}}:</label>
-                    {{view Ember.Select
-                      contentBinding="FLOW.privacyLevelControl.content"
-                      selectionBinding="FLOW.projectControl.currentProject.privacyLevel"
-                      disabledBinding="view.disableFolderSurveyInputField"}}
-                  </li>
-                  <li>
                     <label>{{t _language}}:</label>
                     {{view Ember.Select
                       contentBinding="FLOW.languageControl.content"

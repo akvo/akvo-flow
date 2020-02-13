@@ -108,10 +108,6 @@ FLOW.SurveyGroup = FLOW.BaseModel.extend({
     defaultValue: 'PROJECT',
   }),
 
-  privacyLevel: DS.attr('string', {
-    defaultValue: 'PRIVATE',
-  }),
-
   defaultLanguageCode: DS.attr('string', {
     defaultValue: 'en',
   }),
@@ -144,7 +140,6 @@ FLOW.Survey = FLOW.BaseModel.extend({
   name: DS.attr('string'),
   path: DS.attr('string'),
   ancestorIds: DS.attr('array'),
-  pointType: DS.attr('string'),
   surveyGroupId: DS.attr('number'),
   createdDateTime: DS.attr('number'),
   lastUpdateDateTime: DS.attr('number'),

@@ -280,10 +280,6 @@ FLOW.ProjectItemView = FLOW.View.extend({
     return this.formatDate(this.content.get('lastUpdateDateTime'));
   }).property('this.content.lastUpdateDateTime'),
 
-  isPrivate: Ember.computed(function () {
-    return this.content.get('privacyLevel') === 'PRIVATE';
-  }).property(),
-
   language: Ember.computed(function () {
     const langs = { en: 'English', es: 'Español', fr: 'Français' };
     return langs[this.content.get('defaultLanguageCode')];

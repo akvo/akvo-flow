@@ -1,5 +1,5 @@
 /*
- *  Copyright (C) 2012,2017-2019 Stichting Akvo (Akvo Foundation)
+ *  Copyright (C) 2012,2017-2020 Stichting Akvo (Akvo Foundation)
  *
  *  This file is part of Akvo FLOW.
  *
@@ -63,58 +63,33 @@ public class PlacemarkRestService {
         final Map<String, Object> response = new HashMap<String, Object>();
         final List<PlacemarkDto> placemarkList = new ArrayList<PlacemarkDto>();
         final List<SurveyedLocale> dataPointList = new ArrayList<>();
-        final boolean isAuthorizedUser = isAuthorizedUser();
 
-        if(isAuthorizedUser) {
-            dataPointList.addAll(listAllDataPoints(surveyId, geocells));
-        } else {
-            dataPointList.addAll(listOnlyPublicDataPoints(geocells));
-        }
-
-        placemarkList.addAll(marshallDataPointListToDto(dataPointList, isAuthorizedUser));
+        dataPointList.addAll(listAllDataPoints(surveyId, geocells));
+        placemarkList.addAll(marshallDataPointListToDto(dataPointList));
 
         response.put("placemarks", placemarkList);
         return response;
-    }
-
-    private boolean isAuthorizedUser() {
-        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        if (authentication == null) {
-            return false;
-        } else {
-            Collection<? extends GrantedAuthority> auths = authentication.getAuthorities();
-            return auths.contains(AppRole.ROLE_USER)
-                    || auths.contains(AppRole.ROLE_ADMIN)
-                    || auths.contains(AppRole.ROLE_SUPER_ADMIN);
-        }
     }
 
     private List<SurveyedLocale> listAllDataPoints(Long surveyId, List<String> geocells) {
         return localeDao.listLocalesByGeocell(surveyId, geocells, LIMIT_PLACEMARK_POINTS);
     }
 
-    private List<SurveyedLocale> listOnlyPublicDataPoints(List<String> geocells) {
-        return localeDao.listPublicLocalesByGeocell(geocells, LIMIT_PLACEMARK_POINTS);
-    }
-
-    private List<PlacemarkDto> marshallDataPointListToDto(List<SurveyedLocale> dataPointList, boolean isAuthorisedUser) {
+    private List<PlacemarkDto> marshallDataPointListToDto(List<SurveyedLocale> dataPointList) {
         if (dataPointList == null) {
             return Collections.emptyList();
         }
 
         final List<PlacemarkDto> placemarkList = new ArrayList<PlacemarkDto>();
         for (SurveyedLocale dataPoint : dataPointList) {
-            if(isAuthorisedUser) {
-                placemarkList.add(marshallDataPointToDto(dataPoint));
-            } else {
-                placemarkList.add(marshallPublicDataPointToDto(dataPoint));
-            }
+            placemarkList.add(marshallDataPointToDto(dataPoint));
         }
         return placemarkList;
     }
 
     private PlacemarkDto marshallDataPointToDto(SurveyedLocale dataPoint) {
         final PlacemarkDto dataPointDto = marshallPublicDataPointToDto(dataPoint);
+        //The following data used to be reserved for logged-in users
         dataPointDto.setSurveyId(dataPoint.getSurveyGroupId());
         dataPointDto.setFormId(dataPoint.getCreationSurveyId());
         dataPointDto.setKeyId(dataPoint.getKey().getId());
