@@ -73,11 +73,11 @@ function deploy_instance {
 
     cp "${config_repo}/${instance_id}/appengine-web.xml" "${staging_dir}/WEB-INF/appengine-web.xml"
 
-    gcloud app deploy "${staging_dir}/WEB-INF/appengine-web.xml" \
-	   --promote \
-	   --quiet \
-	   --version=1 \
-	   --project="${instance_id}"
+    gcloud app deploy "${staging_dir}/app.yaml" \
+	   "${staging_dir}/WEB-INF/appengine-generated/queue.yaml" \
+	   "${staging_dir}/WEB-INF/appengine-generated/index.yaml" \
+	   "${staging_dir}/WEB-INF/appengine-generated/cron.yaml" \
+	   --promote --quiet --version=1 --project="${instance_id}"
 }
 
 export -f deploy_instance
