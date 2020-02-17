@@ -25,7 +25,11 @@ log Deploying version 1
 
 (
     cd "./target/appengine-staging"
-    gcloud app deploy --promote --quiet --version=1 --project="${PROJECT_ID}"
+    gcloud app deploy app.yaml \
+	   WEB-INF/appengine-generated/queue.yaml \
+	   WEB-INF/appengine-generated/index.yaml \
+	   WEB-INF/appengine-generated/cron.yaml \
+	   --promote --quiet --version=1 --project="${PROJECT_ID}"
 )
 
 version=$(git describe)
