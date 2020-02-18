@@ -1,5 +1,5 @@
 /*
- *  Copyright (C) 2019 Stichting Akvo (Akvo Foundation)
+ *  Copyright (C) 2019,2020 Stichting Akvo (Akvo Foundation)
  *
  *  This file is part of Akvo FLOW.
  *
@@ -160,6 +160,7 @@ public class DataPointAssignmentRestService {
             dataPointAssignmentDao.save(dpa); //fills in new key
             response.put("data_point_assignment", marshallToDto(dpa));
             statusDto.setStatus("ok");
+            statusDto.setMessage("");
         }
         response.put("meta", statusDto);
         return response;
