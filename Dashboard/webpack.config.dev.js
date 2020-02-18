@@ -37,7 +37,7 @@ export default {
   target: 'web',
   output: {
     path: path.resolve(__dirname, '../GAE/target/akvo-flow/admin'), // Note: Physical files are only output by the production build task `npm run build`.
-    filename: '[name].bundle.js',
+    filename: '[name].[contenthash].bundle.js',
     publicPath: '/admin/',
   },
   plugins: [
@@ -147,9 +147,7 @@ export default {
           {
             loader: 'postcss-loader',
             options: {
-              plugins: () => [
-                require('autoprefixer'),
-              ],
+              plugins: () => [require('autoprefixer')],
               sourceMap: true,
             },
           },
