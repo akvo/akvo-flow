@@ -57,7 +57,18 @@ export default {
   ],
 
   optimization: {
+    moduleIds: 'hashed',
     minimize: true,
+    runtimeChunk: 'single',
+    splitChunks: {
+      cacheGroups: {
+        vendor: {
+          test: /[\\/]node_modules[\\/]/,
+          name: 'vendors',
+          chunks: 'all',
+        },
+      },
+    },
   },
 
   module: {
@@ -138,15 +149,15 @@ export default {
           use: [
             {
               loader: 'css-loader',
-            }, {
+            },
+            {
               loader: 'postcss-loader',
               options: {
-                plugins: () => [
-                  require('autoprefixer'),
-                ],
+                plugins: () => [require('autoprefixer')],
                 sourceMap: true,
               },
-            }, {
+            },
+            {
               loader: 'sass-loader',
               options: {
                 includePaths: [path.resolve(__dirname, 'app', 'css')],
