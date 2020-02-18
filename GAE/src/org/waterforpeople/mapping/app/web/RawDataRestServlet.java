@@ -232,10 +232,6 @@ public class RawDataRestServlet extends AbstractRestApiServlet {
                 locale.setIdentifier(SurveyedLocale.generateBase32Uuid());
                 instance.setSurveyedLocaleIdentifier(locale.getIdentifier());
 
-                String privacyLevel = sg.getPrivacyLevel() != null
-                        ? sg.getPrivacyLevel().toString()
-                        : SurveyGroup.PrivacyLevel.PRIVATE.toString();
-                locale.setLocaleType(privacyLevel);
                 locale.setSurveyGroupId(sg.getKey().getId());
                 locale.setCreationSurveyId(s.getKey().getId());
                 locale.assembleDisplayName(

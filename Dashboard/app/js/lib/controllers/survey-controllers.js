@@ -94,21 +94,6 @@ FLOW.languageControl = Ember.Object.create({
   ],
 });
 
-FLOW.surveyPointTypeControl = Ember.Object.create({
-  content: [
-    Ember.Object.create({
-      label: Ember.String.loc('_point'),
-      value: 'Point',
-    }), Ember.Object.create({
-      label: Ember.String.loc('_household'),
-      value: 'Household',
-    }), Ember.Object.create({
-      label: Ember.String.loc('_public_institution'),
-      value: 'PublicInstitution',
-    }),
-  ],
-});
-
 FLOW.surveySectorTypeControl = Ember.Object.create({
   content: [
     Ember.Object.create({
@@ -134,10 +119,6 @@ FLOW.surveySectorTypeControl = Ember.Object.create({
       value: 'OTHER',
     }),
   ],
-});
-
-FLOW.privacyLevelControl = Ember.Object.create({
-  content: ['PRIVATE', 'PUBLIC'],
 });
 
 FLOW.alwaysTrue = function () {

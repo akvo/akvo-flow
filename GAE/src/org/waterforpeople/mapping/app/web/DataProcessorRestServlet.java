@@ -216,9 +216,6 @@ public class DataProcessorRestServlet extends AbstractRestApiServlet {
         } else if (DataProcessorRequest.DELETE_DUPLICATE_QAS
                 .equalsIgnoreCase(dpReq.getAction())) {
             deleteDuplicatedQAS(dpReq.getOffset());
-        } else if (DataProcessorRequest.CHANGE_LOCALE_TYPE_ACTION
-                .equalsIgnoreCase(dpReq.getAction())) {
-            changeLocaleType(dpReq.getSurveyId());
         } else if (DataProcessorRequest.ADD_TRANSLATION_FIELDS
                 .equalsIgnoreCase(dpReq.getAction())) {
             addTranslationFields(dpReq.getCursor());
@@ -342,58 +339,6 @@ public class DataProcessorRestServlet extends AbstractRestApiServlet {
         } while (cursor != null);
     }
 
-    /**
-     * changes the surveyedLocales attached to a survey to a different type 1 = Point 2 = Household
-     * 3 = Public Institutions
-     */
-    private void changeLocaleType(Long surveyId) {
-        SurveyInstanceDAO siDao = new SurveyInstanceDAO();
-        SurveyedLocaleDao slDao = new SurveyedLocaleDao();
-        SurveyDAO sDao = new SurveyDAO();
-        String cursor = null;
-        // get the desired type from the survey definition
-        Survey s = sDao.getByKey(surveyId);
-        if (s != null && s.getPointType() != null && s.getPointType().length() > 0) {
-            String localeType = s.getPointType();
-
-            do {
-                List<SurveyInstance> siList = siDao.listSurveyInstanceBySurvey(surveyId,
-                        QAS_PAGE_SIZE, cursor);
-                if (siList != null && siList.size() > 0) {
-                    for (SurveyInstance si : siList) {
-                        if (si.getSurveyedLocaleId() != null) {
-                            SurveyedLocale sl = slDao.getByKey(si.getSurveyedLocaleId());
-                            if (sl != null) {
-                                // if the locale type is not set or if it is not equal to the survey
-                                // setting,
-                                // reset the local type
-                                if (sl.getLocaleType() == null
-                                        || !sl.getLocaleType().equals(localeType)) {
-                                    sl.setLocaleType(localeType);
-                                    // Ensure the save time is unique. See
-                                    // https://github.com/akvo/akvo-flow/issues/605
-                                    slDao.save(sl);
-                                }
-                            }
-                        }
-                    }
-                    if (siList.size() == QAS_PAGE_SIZE) {
-                        cursor = SurveyInstanceDAO.getCursor(siList);
-                    } else {
-                        cursor = null;
-                    }
-                }
-            } while (cursor != null);
-
-            // recompute all clusters
-            final TaskOptions options = TaskOptions.Builder
-                    .withUrl("/app_worker/dataprocessor")
-                    .param(DataProcessorRequest.ACTION_PARAM,
-                            DataProcessorRequest.RECOMPUTE_LOCALE_CLUSTERS);
-            Queue queue = QueueFactory.getDefaultQueue();
-            queue.add(options);
-        }
-    }
 
     @SuppressWarnings({
             "unchecked", "rawtypes"

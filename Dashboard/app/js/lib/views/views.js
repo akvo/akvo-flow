@@ -337,19 +337,6 @@ Ember.Handlebars.registerHelper('toLanguage', function(value) {
   return label;
 });
 
-// translates values to labels for surveyPointTypes
-Ember.Handlebars.registerHelper('toPointType', function(value) {
-  let label = '';
-  const valueLoc = Ember.get(this, value);
-
-  FLOW.surveyPointTypeControl.get('content').forEach(item => {
-    if (item.get('value') === valueLoc) {
-      label = item.get('label');
-    }
-  });
-  return label;
-});
-
 // add space to vertical bar helper
 Ember.Handlebars.registerHelper('addSpace', function(property) {
   return Ember.get(this, property).replace(/\|/g, ' | ');

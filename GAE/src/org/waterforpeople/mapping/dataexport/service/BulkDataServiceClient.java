@@ -42,7 +42,6 @@ import java.util.zip.GZIPInputStream;
 
 import com.gallatinsystems.common.util.MD5Util;
 import com.gallatinsystems.framework.rest.RestRequest;
-import com.gallatinsystems.survey.domain.SurveyGroup.PrivacyLevel;
 import com.gallatinsystems.survey.domain.SurveyGroup.ProjectType;
 import com.fasterxml.jackson.core.type.TypeReference;
 import org.akvo.flow.util.FlowJsonObjectReader;
@@ -680,9 +679,6 @@ public class BulkDataServiceClient {
                         if (!json.isNull("defaultLanguageCode")) {
                             dto.setDefaultLanguageCode(json.getString("defaultLanguageCode"));
                         }
-                        if (!json.isNull("privacyLevel")) {
-                            dto.setPrivacyLevel(PrivacyLevel.valueOf(json.getString("privacyLevel")));
-                        }
                         if (!json.isNull("monitoringGroup")) {
                             dto.setMonitoringGroup(json.getBoolean("monitoringGroup"));
                         }
@@ -732,9 +728,6 @@ public class BulkDataServiceClient {
                         }
                         if (!json.isNull("path")) {
                             dto.setPath(json.getString("path"));
-                        }
-                        if (!json.isNull("pointType")) {
-                            dto.setPointType(json.getString("pointType"));
                         }
                         if (!json.isNull("requireApproval")) {
                             dto.setRequireApproval(json.getBoolean("requireApproval"));

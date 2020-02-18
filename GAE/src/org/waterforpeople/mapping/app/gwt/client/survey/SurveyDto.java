@@ -1,5 +1,5 @@
 /*
- *  Copyright (C) 2010-2012 Stichting Akvo (Akvo Foundation)
+ *  Copyright (C) 2010-2012,2020 Stichting Akvo (Akvo Foundation)
  *
  *  This file is part of Akvo FLOW.
  *
@@ -33,7 +33,6 @@ public class SurveyDto extends BaseDto {
     private List<QuestionGroupDto> questionGroupList;
     private String path;
     private Long surveyGroupId = null;
-    private String pointType;
     private String defaultLanguageCode;
     private Boolean requireApproval;
     private Date createdDateTime;
@@ -134,14 +133,6 @@ public class SurveyDto extends BaseDto {
 
     public String getCode() {
         return code;
-    }
-
-    public String getPointType() {
-        return pointType;
-    }
-
-    public void setPointType(String pointType) {
-        this.pointType = pointType;
     }
 
     public void setDefaultLanguageCode(String defaultLanguageCode) {

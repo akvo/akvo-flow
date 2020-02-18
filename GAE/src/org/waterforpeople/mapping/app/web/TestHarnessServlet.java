@@ -1,5 +1,5 @@
 /*
- *  Copyright (C) 2010-2019 Stichting Akvo (Akvo Foundation)
+ *  Copyright (C) 2010-2020 Stichting Akvo (Akvo Foundation)
  *
  *  This file is part of Akvo FLOW.
  *
@@ -59,7 +59,6 @@ import com.gallatinsystems.survey.domain.SurveyGroup;
 import com.gallatinsystems.surveyal.app.web.SurveyalRestRequest;
 import com.gallatinsystems.user.dao.UserDao;
 import com.gallatinsystems.user.domain.User;
-import com.google.appengine.api.backends.BackendServiceFactory;
 import com.google.appengine.api.taskqueue.Queue;
 import com.google.appengine.api.taskqueue.QueueFactory;
 import com.google.appengine.api.taskqueue.TaskOptions;
@@ -123,33 +122,6 @@ public class TestHarnessServlet extends HttpServlet {
                     .param(DataProcessorRequest.SOURCE_PARAM, req.getParameter("source"))
                     .param(DataProcessorRequest.SURVEY_ID_PARAM, req.getParameter("surveyId"))
                     .param(DataProcessorRequest.API_KEY_PARAM, req.getParameter("apiKey"));
-            com.google.appengine.api.taskqueue.Queue queue = com.google.appengine.api.taskqueue.QueueFactory
-                    .getDefaultQueue();
-            queue.add(options);
-        } else if ("changeLocaleType".equals(action)) {
-            String surveyId = req.getParameter(DataProcessorRequest.SURVEY_ID_PARAM);
-            if (surveyId == null) {
-                try {
-                    resp.getWriter().println("surveyId parameter missing");
-                } catch (IOException e) {
-                    // TODO Auto-generated catch block
-                    e.printStackTrace();
-                }
-                return;
-            }
-
-            TaskOptions options = TaskOptions.Builder.withUrl("/app_worker/dataprocessor").param(
-                    DataProcessorRequest.ACTION_PARAM,
-                    DataProcessorRequest.CHANGE_LOCALE_TYPE_ACTION);
-
-            if (req.getParameter("bypassBackend") == null
-                    || !req.getParameter("bypassBackend").equals("true")) {
-                // change the host so the queue invokes the backend
-                options = options.header("Host",
-                        BackendServiceFactory.getBackendService()
-                                .getBackendAddress("dataprocessor"));
-            }
-            options.param(DataProcessorRequest.SURVEY_ID_PARAM, surveyId);
             com.google.appengine.api.taskqueue.Queue queue = com.google.appengine.api.taskqueue.QueueFactory
                     .getDefaultQueue();
             queue.add(options);

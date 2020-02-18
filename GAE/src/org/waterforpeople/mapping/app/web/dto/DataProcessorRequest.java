@@ -61,7 +61,6 @@ public class DataProcessorRequest extends RestRequest {
     public static final String OFFSET_PARAM = "offset";
     public static final String DEPENDENT_QUESTION_PARAM = "depedentQuestionId";
     public static final String RETRY_PARAM = "retry";
-    public static final String CHANGE_LOCALE_TYPE_ACTION = "changeLocaleType";
     public static final String ADD_SURVEY_INSTANCE_TO_LOCALES_ACTION = "addSurveyInstanceToLocales";
     public static final String ADD_CREATION_SURVEY_ID_TO_LOCALE = "addCreationSurveyIdToLocale";
     public static final String ADD_TRANSLATION_FIELDS = "addTranslationFields";
@@ -200,7 +199,7 @@ public class DataProcessorRequest extends RestRequest {
                 // no-op
             }
         }
-        
+
         if (req.getParameter(LOCALE_ID_PARAM) != null) {
             try {
                 setSurveyedLocaleId(Long.valueOf(req.getParameter(LOCALE_ID_PARAM)));
@@ -208,7 +207,7 @@ public class DataProcessorRequest extends RestRequest {
                 // no-op
             }
         }
-        
+
         if (req.getParameter(SURVEY_GROUP_PARAM) != null) {
             try {
                 setSurveyGroupId(Long.valueOf(req.getParameter(SURVEY_GROUP_PARAM)));
@@ -337,7 +336,7 @@ public class DataProcessorRequest extends RestRequest {
     public void setRetry(int retry) {
         this.retry = retry;
     }
-    
+
     public Long getSurveyedLocaleId() {
         return surveyedLocaleId;
     }
@@ -345,7 +344,7 @@ public class DataProcessorRequest extends RestRequest {
     public void setSurveyedLocaleId(Long surveyedLocaleId) {
         this.surveyedLocaleId = surveyedLocaleId;
     }
-    
+
     public Long getSurveyGroupId() {
         return surveyGroupId;
     }
@@ -353,5 +352,5 @@ public class DataProcessorRequest extends RestRequest {
     public void setSurveyGroupId(Long surveyGroupId) {
         this.surveyGroupId = surveyGroupId;
     }
-    
+
 }

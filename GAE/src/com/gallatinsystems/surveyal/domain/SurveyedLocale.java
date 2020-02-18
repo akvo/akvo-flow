@@ -58,7 +58,6 @@ public class SurveyedLocale extends BaseDomain {
     private String countryCode;
     private Set<Long> surveyInstanceContrib;
     private List<String> geocells;
-    private String localeType;
     private Double latitude;
     private Double longitude;
     private boolean ambiguous;
@@ -118,14 +117,6 @@ public class SurveyedLocale extends BaseDomain {
 
     public void setCountryCode(String countryCode) {
         this.countryCode = countryCode;
-    }
-
-    public String getLocaleType() {
-        return localeType;
-    }
-
-    public void setLocaleType(String localeType) {
-        this.localeType = localeType;
     }
 
     public Double getLatitude() {
