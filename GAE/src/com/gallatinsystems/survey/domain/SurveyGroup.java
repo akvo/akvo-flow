@@ -1,5 +1,5 @@
 /*
- *  Copyright (C) 2010-2015 Stichting Akvo (Akvo Foundation)
+ *  Copyright (C) 2010-2015, 2020 Stichting Akvo (Akvo Foundation)
  *
  *  This file is part of Akvo FLOW.
  *
@@ -48,7 +48,6 @@ public class SurveyGroup extends BaseDomain implements SecuredObject {
     private String path = null;
     private ProjectType projectType;
     private String defaultLanguageCode;
-//    private PrivacyLevel privacyLevel;
     private Boolean published;
     private Boolean requireDataApproval = false;
     private Long dataApprovalGroupId;
@@ -67,10 +66,6 @@ public class SurveyGroup extends BaseDomain implements SecuredObject {
     public enum ProjectType {
         PROJECT_FOLDER, PROJECT
     }
-
-//    public enum PrivacyLevel {
-//        PRIVATE, PUBLIC
-//    }
 
     public HashMap<String, Translation> getAltTextMap() {
         return altTextMap;
@@ -166,15 +161,7 @@ public class SurveyGroup extends BaseDomain implements SecuredObject {
         this.defaultLanguageCode = defaultLanuageCode;
     }
 
-/*    public PrivacyLevel getPrivacyLevel() {
-        return privacyLevel;
-    }
-
-    public void setPrivacyLevel(PrivacyLevel privacyLevel) {
-        this.privacyLevel = privacyLevel;
-    }
-
-*/    public Boolean getPublished() {
+    public Boolean getPublished() {
         return published;
     }
 
