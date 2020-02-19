@@ -1,5 +1,5 @@
 /*
- *  Copyright (C) 2012,2017,2019 Stichting Akvo (Akvo Foundation)
+ *  Copyright (C) 2012,2017,2019,2020 Stichting Akvo (Akvo Foundation)
  *
  *  This file is part of Akvo FLOW.
  *
@@ -21,6 +21,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.akvo.flow.dao.DataPointAssignmentDao;
 import org.akvo.flow.dao.SurveyAssignmentDao;
 import org.akvo.flow.domain.persistent.DataPointAssignment;
 import org.akvo.flow.domain.persistent.SurveyAssignment;
@@ -58,6 +59,8 @@ public class SurveyAssignmentRestService {
     private SurveyDAO surveyDao = new SurveyDAO();
 
     private DeviceSurveyJobQueueDAO deviceSurveyJobQueueDAO = new DeviceSurveyJobQueueDAO();
+
+    private DataPointAssignmentDao dataPointAssignmentDao = new DataPointAssignmentDao();
 
     @RequestMapping(method = RequestMethod.GET, value = "")
     @ResponseBody
@@ -99,6 +102,7 @@ public class SurveyAssignmentRestService {
         statusDto.setStatus("failed");
         if (sa != null) {
             deleteExistingDeviceSurveyJobQueueItems(sa);
+            deleteExistingDatapointAssignments(sa);
             surveyAssignmentDao.delete(sa);
             statusDto.setStatus("ok");
         }
@@ -197,6 +201,11 @@ public class SurveyAssignmentRestService {
     private void deleteExistingDeviceSurveyJobQueueItems(SurveyAssignment assignment) {
         List<DeviceSurveyJobQueue> deviceAssignmentsToDelete = deviceSurveyJobQueueDAO.listJobByAssignment(assignment.getKey().getId());
         deviceSurveyJobQueueDAO.delete(deviceAssignmentsToDelete);
+    }
+
+    private void deleteExistingDatapointAssignments(SurveyAssignment assignment) {
+        List<DataPointAssignment> dataPointAssignments = dataPointAssignmentDao.listBySurveyAssignment(assignment.getKey().getId());
+        dataPointAssignmentDao.delete(dataPointAssignments);
     }
 
     /**

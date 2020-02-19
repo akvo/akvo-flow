@@ -63,7 +63,7 @@ public class SurveyedLocaleRestService {
         boolean searchIdentifiers = false;
 
         if (search != null && !"".equals(search) && surveyGroupId != null) {
-            sls = surveyedLocaleDao.listSurveyedLocales(since, null, null, null, search);
+            sls = surveyedLocaleDao.listSurveyedLocales(since, surveyGroupId, null, null, search);
             searchIdentifiers = search.matches(SurveyedLocale.IDENTIFIER_PATTERN); //could consider a2a2-a2a2-a2a too
         } else if (identifier != null && !"".equals(identifier)) {
             sls = surveyedLocaleDao.listSurveyedLocales(since, null, identifier, null, null);
@@ -82,7 +82,7 @@ public class SurveyedLocaleRestService {
         if (searchIdentifiers) {
             //JDO implementation cannot handle both OR and a prefix in a filter expression,
             //so we have to search again and concatenate
-            List<SurveyedLocale> sls2 = surveyedLocaleDao.listSurveyedLocales(null, null, search, null, null);
+            List<SurveyedLocale> sls2 = surveyedLocaleDao.listSurveyedLocales(null, surveyGroupId, search, null, null);
             copyToDtoList(sls2, locales);
         }
 
