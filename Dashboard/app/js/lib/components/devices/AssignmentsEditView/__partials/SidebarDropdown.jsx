@@ -1,5 +1,7 @@
+/* eslint-disable jsx-a11y/anchor-is-valid */
 import React from 'react';
 import PropTypes from 'prop-types';
+import AssignmentsContext from '../assignment-context';
 
 export default class SidebarDropdown extends React.Component {
   state = {
@@ -24,23 +26,27 @@ export default class SidebarDropdown extends React.Component {
   };
 
   render() {
+    const { data } = this.context;
     const { fontClass, panelStyle } = this.getStyleProps();
-    const { devices } = this.props;
+    const { devices, changeTab } = this.props;
 
     return (
       <div className="sidebar-dropdown">
-        <div
-          onKeyDown={this.toggleDropdown}
-          onClick={this.toggleDropdown}
-          className="dd-header"
-        >
+        <div onKeyDown={this.toggleDropdown} onClick={this.toggleDropdown} className="dd-header">
           <span>{devices[0].deviceGroup.name}</span>
           <i className={fontClass} />
         </div>
 
         <div style={panelStyle} className="sidebar-panel">
           {devices.map(device => (
-            <a key={device.id} href="#">
+            <a
+              key={device.id}
+              href="#"
+              onClick={
+                data.datapointsEnabled ? () => changeTab('ASSIGN_DATAPOINTS', device.id) : undefined
+              }
+              className={data.datapointsEnabled ? undefined : 'disabled'}
+            >
               {device.name}
             </a>
           ))}
@@ -50,6 +56,8 @@ export default class SidebarDropdown extends React.Component {
   }
 }
 
+SidebarDropdown.contextType = AssignmentsContext;
 SidebarDropdown.propTypes = {
   devices: PropTypes.array.isRequired,
+  changeTab: PropTypes.func.isRequired,
 };

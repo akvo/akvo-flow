@@ -164,13 +164,6 @@ public class TestHarnessServlet extends HttpServlet {
                     DataProcessorRequest.ACTION_PARAM,
                     DataProcessorRequest.REBUILD_QUESTION_SUMMARY_ACTION);
 
-            if (req.getParameter("bypassBackend") == null
-                    || !req.getParameter("bypassBackend").equals("true")) {
-                // change the host so the queue invokes the backend
-                options = options.header("Host",
-                        BackendServiceFactory.getBackendService()
-                                .getBackendAddress("dataprocessor"));
-            }
             String surveyId = req.getParameter(DataProcessorRequest.SURVEY_ID_PARAM);
             if (surveyId != null && surveyId.trim().length() > 0) {
                 options.param(DataProcessorRequest.SURVEY_ID_PARAM, surveyId);
@@ -187,10 +180,7 @@ public class TestHarnessServlet extends HttpServlet {
             final TaskOptions options = TaskOptions.Builder
                     .withUrl("/app_worker/dataprocessor")
                     .param(DataProcessorRequest.ACTION_PARAM,
-                            DataProcessorRequest.DELETE_DUPLICATE_QAS)
-                    .header("Host",
-                            BackendServiceFactory.getBackendService().getBackendAddress(
-                                    "dataprocessor"));
+                            DataProcessorRequest.DELETE_DUPLICATE_QAS);
             Queue queue = QueueFactory.getDefaultQueue();
             queue.add(options);
             try {
@@ -236,9 +226,6 @@ public class TestHarnessServlet extends HttpServlet {
                         // fire processing task
                         final TaskOptions options = TaskOptions.Builder
                                 .withUrl("/app_worker/dataprocessor")
-                                .header("Host",
-                                        BackendServiceFactory.getBackendService()
-                                                .getBackendAddress("dataprocessor"))
                                 .param(DataProcessorRequest.ACTION_PARAM,
                                         DataProcessorRequest.POPULATE_MONITORING_FIELDS_LOCALE_ACTION)
                                 .param(DataProcessorRequest.SURVEY_ID_PARAM, surveyId.toString());
@@ -271,9 +258,6 @@ public class TestHarnessServlet extends HttpServlet {
                         // fire processing task
                         final TaskOptions options = TaskOptions.Builder
                                 .withUrl("/app_worker/dataprocessor")
-                                .header("Host",
-                                        BackendServiceFactory.getBackendService()
-                                                .getBackendAddress("dataprocessor"))
                                 .param(DataProcessorRequest.ACTION_PARAM,
                                         DataProcessorRequest.CREATE_NEW_IDENTIFIERS_LOCALES_ACTION)
                                 .param(DataProcessorRequest.SURVEY_ID_PARAM, surveyId.toString());

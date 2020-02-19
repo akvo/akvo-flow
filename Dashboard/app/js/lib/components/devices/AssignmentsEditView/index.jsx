@@ -39,11 +39,7 @@ export default class AssignmentsEdit extends React.Component {
     return (
       <div className="assignment-topbar">
         <div className="assignment-name">
-          <button
-            type="button"
-            className="go-back"
-            onClick={actions.cancelEditSurveyAssignment}
-          >
+          <button type="button" className="go-back" onClick={actions.cancelEditSurveyAssignment}>
             <i className="fa fa-arrow-left" />
           </button>
 
@@ -55,7 +51,6 @@ export default class AssignmentsEdit extends React.Component {
               value={this.state.data.assignmentName}
               onChange={this.onChangeState}
             />
-            {/* <span className="infoText">0 datapoints / 20k assigned</span> */}
           </h3>
         </div>
 

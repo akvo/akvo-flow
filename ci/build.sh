@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 
 #
-#  Copyright (C) 2017-2018 Stichting Akvo (Akvo Foundation)
+#  Copyright (C) 2017-2019 Stichting Akvo (Akvo Foundation)
 #
 #  This file is part of Akvo FLOW.
 #
@@ -19,15 +19,10 @@
 set -e
 
 SRC_DIR="/app/src"
-BUNDLE_GEMFILE="${SRC_DIR}/Dashboard/Gemfile"
-RAKEP_MODE=production
-
-export BUNDLE_GEMFILE
-export RAKEP_MODE
 
 cd "${SRC_DIR}/Dashboard"
 
-npm install
+npm ci
 npm rebuild node-sass
 npm run lint:quiet
 npm run build:prod
@@ -45,10 +40,10 @@ if [[ "${TRAVIS_BRANCH:0:8}" != "release/" ]] && [[ "${TRAVIS_BRANCH}" != "devel
 fi
 
 echo "Setting project version to $FLOW_GIT_VERSION"
-mvn versions:set -DnewVersion=${FLOW_GIT_VERSION}
+mvn versions:set -DnewVersion="${FLOW_GIT_VERSION}"
 
-mvn deploy:deploy-file -s "$SRC_DIR/maven-ci-settings.xml" \
-                       -Dgpg.passphrase=${CLOJARS_GPG_PASSWORD} \
+mvn deploy:deploy-file -s "${SRC_DIR}/maven-ci-settings.xml" \
+                       -Dgpg.passphrase="${CLOJARS_GPG_PASSWORD}" \
                        -Durl="https://clojars.org/repo" \
                        -DrepositoryId=clojars \
                        -Dfile=target/akvo-flow-classes.jar \

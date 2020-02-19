@@ -33,6 +33,8 @@ docker run \
     --rm \
     --volume "${HOME}/.m2:/root/.m2:delegated" \
     --volume "${HOME}/.m2:/home/akvo/.m2:delegated" \
+    --volume "${HOME}/.cache:/home/root/.cache:delegated"\
+    --volume "${HOME}/.cache:/home/akvo/.cache:delegated" \
     --volume "$(pwd):/app/src:delegated" \
     --env GH_USER \
     --env GH_TOKEN \
@@ -40,4 +42,4 @@ docker run \
     --env SERVICE_ACCOUNT_ID \
     --env "PROJECT_ID=${project_id}" \
     --entrypoint /app/src/ci/run-as-user.sh \
-    akvo/flow-builder /app/src/ci/mvn-deploy.sh
+    akvo/akvo-flow-builder:20200115.154607.012ea0b /app/src/ci/mvn-deploy.sh

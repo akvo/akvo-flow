@@ -40,6 +40,7 @@
         button.go-back {
           border: none;
           padding: 2px;
+          background: transparent;
 
           i.fa {
             font-size: 21px;
@@ -80,15 +81,15 @@
 
     .assignment-body {
       display: flex;
+      height: 100%;
 
       .assignment-sidebar {
         flex: 1;
         background: #e8e8e8;
         padding: 5px 0px;
-        min-height: 350px;
+        height: 470px;
 
         li {
-          padding: 15px 25px;
           display: flex;
 
           &.active {
@@ -104,6 +105,7 @@
           }
 
           a {
+            padding: 15px 25px;
             color: #4ab1cf;
             border: none;
             background: none;
@@ -116,7 +118,8 @@
             &.sub-action {
               flex: 0;
               color: #4ab1cf;
-              padding: 0px 7px;
+              padding-left: 10px;
+              padding-right: 10px;
             }
 
             &.disabled {
@@ -130,7 +133,7 @@
 
           .sidebar-dropdown {
             font-size: 15px;
-            width: 100%;
+            padding: 15px 25px;
             display: block;
             padding-bottom: 15px;
 
@@ -139,6 +142,7 @@
               justify-content: space-between;
               padding-bottom: 10px;
               cursor: pointer;
+              align-items: center;
             }
 
             .sidebar-panel {
@@ -156,6 +160,7 @@
       .assignment-main {
         flex: 4;
         color: #444;
+        height: 470px;
 
         .settings {
           padding: 15px 25px;
@@ -292,23 +297,33 @@
         .devices-action-page {
           position: relative;
           height: 100%;
+          display: flex;
+          flex-direction: column;
 
           .header {
             display: flex;
+            flex: 1;
             justify-content: space-between;
             padding: 15px 3em;
             align-items: center;
             font-weight: 500;
             border-bottom: 1px solid #e6e6e6;
 
-            .fa {
+            .icon {
               font-size: 2em;
+            }
+
+            .device-details p {
+              margin-bottom: 3px;
             }
           }
 
           .body {
             padding: 15px 3em;
             padding-bottom: 3em;
+            flex: 1 1 auto;
+            overflow: auto;
+            height: 100%;
 
             .assignment-device-selector {
               margin-bottom: 1.5em;
@@ -363,9 +378,8 @@
           }
 
           .footer {
-            position: absolute;
-            bottom: 0;
             width: 100%;
+            flex: 1;
 
             .footer-inner {
               display: flex;
@@ -373,6 +387,140 @@
               justify-content: space-between;
               align-items: center;
               border-top: 1px solid #e6e6e6;
+            }
+          }
+        }
+
+        .assign-datapoints {
+          position: relative;
+
+          .header {
+            .divider {
+              margin: 0px 5px;
+            }
+          }
+
+          a.disabled {
+            color: #444;
+          }
+
+          .datapoint {
+            padding-bottom: 20px;
+
+            p {
+              font-weight: 500;
+            }
+
+            span {
+              font-size: 14px;
+            }
+          }
+
+          .search-datapoints {
+            display: flex;
+            flex-direction: column;
+            position: absolute;
+            background: #e8e8e8;
+            border: 1px solid #d9d6d6;
+            height: 100%;
+            top: 0;
+            right: 0;
+            width: 40%;
+
+            .header {
+              padding: 15px 20px;
+              flex: 1;
+            }
+
+            .body {
+              padding: 15px 20px;
+              flex: 1 1 auto;
+              overflow: hidden;
+              height: 100%;
+
+              .search-bar {
+                display: flex;
+                align-items: center;
+                padding: 3px 8px;
+                border: 1px solid #4d4d4d;
+                border-radius: 5px;
+                background: #fff;
+
+                input {
+                  outline: none;
+                  border: none;
+                  background-color: transparent;
+                  font-family: inherit;
+                  width: 100%;
+
+                  &:hover {
+                    background: transparent;
+                  }
+                }
+              }
+
+              .search-results {
+                padding-top: 15px;
+                height: 80%;
+                overflow: auto;
+                padding-bottom: 4em;
+
+                .search-result {
+                  display: flex;
+                  align-items: center;
+                  padding-bottom: 20px;
+
+                  & > label {
+                    &.checkbox-container {
+                      margin-top: -15px;
+                      padding-right: 10px;
+                    }
+
+                    p {
+                      font-weight: 500;
+                    }
+
+                    span {
+                      font-size: 14px;
+                    }
+                  }
+                }
+              }
+            }
+
+            .footer {
+              position: relative;
+              bottom: initial;
+              flex: 1;
+              border-top: 1px solid #d9d6d6;
+              margin-top: 5px;
+
+              .footer-inner {
+                padding: 15px 20px;
+              }
+            }
+          }
+        }
+
+        .edit-datapoints {
+          .datapoint {
+            display: flex;
+            align-items: center;
+            padding-bottom: 20px;
+
+            & > label {
+              &.checkbox-container {
+                margin-top: -15px;
+                padding-right: 20px;
+              }
+
+              p {
+                font-weight: 500;
+              }
+
+              span {
+                font-size: 14px;
+              }
             }
           }
         }

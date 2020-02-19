@@ -1,5 +1,5 @@
 /*
- *  Copyright (C) 2014-2015,2017-2018 Stichting Akvo (Akvo Foundation)
+ *  Copyright (C) 2014-2015,2017-2018,2020 Stichting Akvo (Akvo Foundation)
  *
  *  This file is part of Akvo FLOW.
  *
@@ -43,11 +43,13 @@ public class SurveyedLocaleRestService {
 
     @RequestMapping(method = RequestMethod.GET)
     @ResponseBody
-    public Map<String, Object> listQuestions(
+    public Map<String, Object> listDataPoints(
             @RequestParam(value = "surveyGroupId", defaultValue = "") Long surveyGroupId,
             @RequestParam(value = "identifier", defaultValue = "") String identifier,
+            @RequestParam(value = "ids[]", defaultValue = "") Long[] ids,
             @RequestParam(value = "displayName", defaultValue = "") String displayName,
             @RequestParam(value = "displayNamePrefix", defaultValue = "") String displayNamePrefix,
+            @RequestParam(value = "search", defaultValue = "") String search,
             @RequestParam(value = "since", defaultValue = "") String since) {
 
         Map<String, Object> response = new HashMap<String, Object>();
@@ -58,8 +60,12 @@ public class SurveyedLocaleRestService {
 
         List<SurveyedLocale> sls = new ArrayList<SurveyedLocale>();
         List<SurveyedLocaleDto> locales = new ArrayList<SurveyedLocaleDto>();
+        boolean searchIdentifiers = false;
 
-        if (identifier != null && !"".equals(identifier)) {
+        if (search != null && !"".equals(search) && surveyGroupId != null) {
+            sls = surveyedLocaleDao.listSurveyedLocales(since, surveyGroupId, null, null, search);
+            searchIdentifiers = search.matches(SurveyedLocale.IDENTIFIER_PATTERN); //could consider a2a2-a2a2-a2a too
+        } else if (identifier != null && !"".equals(identifier)) {
             sls = surveyedLocaleDao.listSurveyedLocales(since, null, identifier, null, null);
         } else if (displayName != null && !"".equals(displayName)) {
             sls = surveyedLocaleDao.listSurveyedLocales(since, null, null, displayName, null);
@@ -67,15 +73,20 @@ public class SurveyedLocaleRestService {
             sls = surveyedLocaleDao.listSurveyedLocales(since, null, null, null, displayNamePrefix);
         } else if (surveyGroupId != null) {
             sls = surveyedLocaleDao.listSurveyedLocales(since, surveyGroupId, null, null, null);
+        } else if (ids[0] != null) {
+            sls = surveyedLocaleDao.listByKeys(ids);
         }
 
-        for (SurveyedLocale sl : sls) {
-            SurveyedLocaleDto dto = new SurveyedLocaleDto();
-            DtoMarshaller.copyToDto(sl, dto);
-            locales.add(dto);
+        copyToDtoList(sls, locales);
+
+        if (searchIdentifiers) {
+            //JDO implementation cannot handle both OR and a prefix in a filter expression,
+            //so we have to search again and concatenate
+            List<SurveyedLocale> sls2 = surveyedLocaleDao.listSurveyedLocales(null, surveyGroupId, search, null, null);
+            copyToDtoList(sls2, locales);
         }
 
-        Integer num = sls.size();
+        Integer num = locales.size();
         String newSince = SurveyedLocaleDao.getCursor(sls);
         statusDto.setNum(num);
         statusDto.setSince(newSince);
@@ -121,5 +132,14 @@ public class SurveyedLocaleRestService {
         }
         response.put("meta", statusDto);
         return response;
+    }
+
+    private void copyToDtoList(List<SurveyedLocale>list1, List<SurveyedLocaleDto> list2) {
+        for (SurveyedLocale sl : list1) {
+            SurveyedLocaleDto dto = new SurveyedLocaleDto();
+            DtoMarshaller.copyToDto(sl, dto);
+            list2.add(dto);
+        }
+
     }
 }

@@ -1,38 +1,35 @@
+/* eslint-disable import/no-unresolved */
 import React from 'react';
-// eslint-disable-next-line import/no-unresolved
 import AssignmentsEditView from 'akvo-flow/components/devices/AssignmentsEditView';
-import observe from '../../mixins/observe';
+import { formatDate } from 'akvo-flow/utils';
+import observe from 'akvo-flow/mixins/observe';
 
-// eslint-disable-next-line import/no-unresolved
 require('akvo-flow/views/react-component');
-
-// utils
-FLOW.formatDate = function(value) {
-  if (!Ember.none(value)) {
-    return `${value.getFullYear()}/${value.getMonth() + 1}/${value.getDate()}`;
-  }
-  return null;
-};
 
 FLOW.AssignmentEditView = FLOW.ReactComponentView.extend(
   observe({
     'FLOW.router.navigationController.selected': 'detectChangeTab',
     'FLOW.router.devicesSubnavController.selected': 'detectChangeTab',
     'FLOW.surveyControl.content.isLoaded': 'detectSurveyLoaded',
+    'FLOW.router.surveyedLocaleController.content.isLoaded': 'detectDatapointsLoaded',
+    'searchedDatapoints.isLoaded': 'detectSearchedDatapointLoaded',
+    'FLOW.selectedControl.selectedSurveyAssignment.keyId': 'saveDatapoints',
+    selectedSurveyGroupId: 'setDatapointEnabled',
   }),
   {
+    // init methods
     init() {
       this._super();
       this.setupControls();
 
       this.getProps = this.getProps.bind(this);
       this.cancelEditSurveyAssignment = this.cancelEditSurveyAssignment.bind(this);
-      this.detectSurveyLoaded = this.detectSurveyLoaded.bind(this);
+
       this.renderReactSide = this.renderReactSide.bind(this);
-      this.handleFormCheck = this.handleFormCheck.bind(this);
+
       this.validateAssignment = this.validateAssignment.bind(this);
       this.saveSurveyAssignment = this.saveSurveyAssignment.bind(this);
-      this.setupForms = this.setupForms.bind(this);
+
       this.setupSurveyGroups = this.setupSurveyGroups.bind(this);
       this.handleSurveySelect = this.handleSurveySelect.bind(this);
       this.setupDevices = this.setupDevices.bind(this);
@@ -43,33 +40,57 @@ FLOW.AssignmentEditView = FLOW.ReactComponentView.extend(
       this.addDevicesToAssignment = this.addDevicesToAssignment.bind(this);
       this.removeDevicesFromAssignment = this.removeDevicesFromAssignment.bind(this);
 
+      // form methods
+      this.setupForms = this.setupForms.bind(this);
+      this.handleFormCheck = this.handleFormCheck.bind(this);
+      this.detectSurveyLoaded = this.detectSurveyLoaded.bind(this);
+
+      // datapoints methods
+      this.saveDatapoints = this.saveDatapoints.bind(this);
+      this.getDeviceDatapoints = this.getDeviceDatapoints.bind(this);
+      this.detectDatapointsLoaded = this.detectDatapointsLoaded.bind(this);
+      this.findDatapoints = this.findDatapoints.bind(this);
+      this.detectSearchedDatapointLoaded = this.detectSearchedDatapointLoaded.bind(this);
+      this.assignDataPointsToDevice = this.assignDataPointsToDevice.bind(this);
+      this.getDeviceDatapoints = this.getDeviceDatapoints.bind(this);
+      this.removeDatapointsFromAssignments = this.removeDatapointsFromAssignments.bind(this);
+      this.setDatapointEnabled = this.setDatapointEnabled.bind(this);
+
       // object wide varaibles
       this.forms = {};
       this.surveyGroups = [];
       this.devices = [];
       this.deviceGroups = {};
       this.deviceGroupNames = {};
+      this.datapointsResults = [];
 
       // selected attributes
+      this.selectedSurveyGroupId = null;
       this.selectedDevices = [];
-      this.selectedSurveys = [];
+      this.selectedFormIds = [];
+      this.datapointAssignments = [];
 
-      // using Set to avoia duplication
-      this.activeDeviceGroups = new Set();
-      this.initialSurveyGroup = null;
+      // global object variables
+      this.searchedDatapoints = null;
+      this.datapointsEnabled = null;
+      this.deviceInView = null;
     },
 
     didInsertElement(...args) {
       this._super(...args);
 
-      this.setupForms();
       this.setupSurveyGroups();
+      this.setupForms();
+
+      // load intial forms for selected survey group
+      this.handleSurveySelect(this.selectedSurveyGroupId);
       this.setupDevices();
 
       // react render
       this.renderReactSide();
     },
 
+    // react side
     renderReactSide() {
       const props = this.getProps();
       this.reactRender(<AssignmentsEditView {...props} />);
@@ -94,6 +115,10 @@ FLOW.AssignmentEditView = FLOW.ReactComponentView.extend(
         addToAssignment: Ember.String.loc('_add_to_assignment'),
         removeFromAssignment: Ember.String.loc('_remove_from_assignment'),
         noDeviceInAssignment: Ember.String.loc('_no_devices_in_assignments'),
+        assignDatapointByNameOrId: Ember.String.loc('_assign_datapoint_by_name_or_id'),
+        searchDatapointByNameOrId: Ember.String.loc('_search_datapoint_by_name_or_id'),
+        datapointAssigned: Ember.String.loc('_datapoints_assigned'),
+        editDatapoints: Ember.String.loc('_edit_datapoints'),
       };
 
       const inputValues = {
@@ -110,18 +135,25 @@ FLOW.AssignmentEditView = FLOW.ReactComponentView.extend(
         handleDeviceCheck: this.handleDeviceCheck,
         addDevicesToAssignment: this.addDevicesToAssignment,
         removeDevicesFromAssignment: this.removeDevicesFromAssignment,
+        findDatapoints: this.findDatapoints,
+        getDeviceDatapoints: this.getDeviceDatapoints,
+        removeDatapointsFromAssignments: this.removeDatapointsFromAssignments,
+        assignDataPointsToDevice: this.assignDataPointsToDevice,
       };
 
       const data = {
         forms: this.forms,
         devices: this.devices,
+        datapointsResults: this.datapointsResults,
         surveyGroups: this.surveyGroups,
         deviceGroups: this.deviceGroups,
         deviceGroupNames: this.deviceGroupNames,
         activeDeviceGroups: this.activeDeviceGroups,
-        initialSurveyGroup: this.initialSurveyGroup,
-        numberOfForms: this.selectedSurveys.length,
+        initialSurveyGroup: this.selectedSurveyGroupId,
+        numberOfForms: this.selectedFormIds.length,
         selectedDeviceIds: this.selectedDevices,
+        datapointsEnabled: this.datapointsEnabled,
+        datapointAssignments: this.datapointAssignments,
       };
 
       return {
@@ -132,6 +164,7 @@ FLOW.AssignmentEditView = FLOW.ReactComponentView.extend(
       };
     },
 
+    // global actions
     cancelEditSurveyAssignment() {
       if (Ember.none(FLOW.selectedControl.selectedSurveyAssignment.get('keyId'))) {
         FLOW.selectedControl.get('selectedSurveyAssignment').deleteRecord();
@@ -140,13 +173,21 @@ FLOW.AssignmentEditView = FLOW.ReactComponentView.extend(
       FLOW.router.transitionTo('navDevices.assignSurveysOverview');
     },
 
+    detectChangeTab() {
+      if (Ember.none(FLOW.selectedControl.selectedSurveyAssignment.get('keyId'))) {
+        FLOW.selectedControl.get('selectedSurveyAssignment').deleteRecord();
+      }
+      FLOW.selectedControl.set('selectedSurveyAssignment', null);
+    },
+
+    // saving functionality
     saveSurveyAssignment(data) {
       let endDateParse;
       let startDateParse;
 
       // set devices and surveys
       const deviceIds = this.selectedDevices;
-      const formIds = this.selectedSurveys.map(item => item.get('keyId'));
+      const formIds = this.selectedFormIds;
 
       // validate data before continuing
       const isValid = this.validateAssignment({ ...data, deviceIds, formIds });
@@ -155,8 +196,8 @@ FLOW.AssignmentEditView = FLOW.ReactComponentView.extend(
       }
 
       // set Ember Data
-      FLOW.dateControl.set('fromDate', FLOW.formatDate(new Date(data.startDate)));
-      FLOW.dateControl.set('toDate', FLOW.formatDate(new Date(data.endDate)));
+      FLOW.dateControl.set('fromDate', formatDate(new Date(data.startDate)));
+      FLOW.dateControl.set('toDate', formatDate(new Date(data.endDate)));
 
       // get assignment
       const sa = FLOW.selectedControl.get('selectedSurveyAssignment');
@@ -193,12 +234,42 @@ FLOW.AssignmentEditView = FLOW.ReactComponentView.extend(
 
       FLOW.store.commit();
 
+      return true;
+    },
+
+    saveDatapoints() {
+      if (!FLOW.selectedControl.selectedSurveyAssignment) return;
+      const surveyAssignmentId = FLOW.selectedControl.selectedSurveyAssignment.get('keyId');
+
+      if (!surveyAssignmentId) return;
+      const surveyFolderId = FLOW.selectedControl.get('selectedSurveyGroup').get('keyId');
+
+      // create records for each device datapoints
+      this.datapointAssignments.forEach(dpAssignment => {
+        const data = {
+          surveyAssignmentId,
+          surveyId: surveyFolderId,
+          deviceId: dpAssignment.deviceId,
+          dataPointIds: dpAssignment.datapoints.map(dp => dp.id),
+        };
+
+        if (dpAssignment.id) {
+          // find and update old record with data
+          const dpAssignmentRecord = FLOW.DataPointAssignment.find(dpAssignment.id);
+          dpAssignmentRecord.set('surveyId', surveyFolderId);
+          dpAssignmentRecord.set('dataPointIds', data.dataPointIds);
+        } else {
+          // create new record with data
+          FLOW.store.createRecord(FLOW.DataPointAssignment, data);
+        }
+      });
+
+      FLOW.store.commit();
+
       // wait half a second before transitioning back to the assignments list
       setTimeout(() => {
         FLOW.router.transitionTo('navDevices.assignSurveysOverview');
       }, 500);
-
-      return true;
     },
 
     // setups
@@ -217,72 +288,8 @@ FLOW.AssignmentEditView = FLOW.ReactComponentView.extend(
       if (FLOW.selectedControl.selectedSurveyAssignment.get('endDate') > 0) {
         endDate = new Date(FLOW.selectedControl.selectedSurveyAssignment.get('endDate'));
       }
-      FLOW.dateControl.set('fromDate', FLOW.formatDate(startDate));
-      FLOW.dateControl.set('toDate', FLOW.formatDate(endDate));
-    },
-
-    setupForms() {
-      if (!FLOW.selectedControl.selectedSurveyAssignment.get('formIds')) {
-        return;
-      }
-
-      FLOW.selectedControl.selectedSurveyAssignment.get('formIds').forEach(formId => {
-        const form = FLOW.Survey.find(formId);
-        if (form && form.get('keyId')) {
-          this.selectedSurveys.push(form);
-
-          // load selected survey group
-          this.initialSurveyGroup = form.get('surveyGroupId');
-
-          this.forms[form.get('keyId')] = {
-            // also load pre-selected forms
-            name: form.get('name'),
-            checked: true,
-          };
-        }
-      });
-    },
-
-    setupSurveyGroups() {
-      if (FLOW.projectControl.content.isLoaded) {
-        FLOW.projectControl.get('content').forEach(item => {
-          this.surveyGroups.push({
-            keyId: item.get('keyId'),
-            parentId: item.get('parentId'),
-            name: item.get('name'),
-            published: item.get('published'),
-            projectType: item.get('projectType'),
-            monitoringGroup: item.get('monitoringGroup'),
-            ancestorIds: item.get('ancestorIds'),
-          });
-        });
-      }
-    },
-
-    // listeners
-    detectSurveyLoaded() {
-      this.forms = {};
-
-      if (!FLOW.surveyControl.content) return;
-
-      // filter to show only published forms here
-      FLOW.surveyControl.content
-        .filter(form => form.get('status') === 'PUBLISHED')
-        .forEach(form => {
-          this.forms[form.get('keyId')] = {
-            name: form.get('name'),
-            checked: this.formInAssignment(form.get('keyId')),
-          };
-        });
-
-      this.renderReactSide();
-    },
-
-    detectChangeTab() {
-      if (Ember.none(FLOW.selectedControl.selectedSurveyAssignment.get('keyId'))) {
-        FLOW.selectedControl.get('selectedSurveyAssignment').deleteRecord();
-      }
-      FLOW.selectedControl.set('selectedSurveyAssignment', null);
+      FLOW.dateControl.set('fromDate', formatDate(startDate));
+      FLOW.dateControl.set('toDate', formatDate(endDate));
     },
 
     // helpers
@@ -292,31 +299,6 @@ FLOW.AssignmentEditView = FLOW.ReactComponentView.extend(
       FLOW.dialogControl.set('message', message);
       FLOW.dialogControl.set('showCANCEL', false);
       FLOW.dialogControl.set('showDialog', true);
-    },
-
-    formInAssignment(formId) {
-      const formsInAssignment = this.selectedSurveys.map(item => item.get('id'));
-
-      // convert id to string
-      return formsInAssignment ? formsInAssignment.indexOf(`${formId}`) > -1 : false;
-    },
-
-    shouldRemoveForms() {
-      const formsInAssignment = FLOW.selectedControl
-        .get('selectedSurveys')
-        .map(item => item.get('id'));
-
-      const selectedSurveyGroupId = FLOW.selectedControl.selectedSurveyGroup.get('keyId');
-
-      if (formsInAssignment && formsInAssignment.length > 0) {
-        // get survey id of first form currently in assignment
-        const preSelectedSurvey = FLOW.Survey.find(formsInAssignment[0]);
-        if (preSelectedSurvey && preSelectedSurvey.get('keyId')) {
-          return preSelectedSurvey.get('surveyGroupId') != selectedSurveyGroupId;
-        }
-      }
-
-      return false;
     },
 
     validateAssignment(data) {
@@ -406,45 +388,6 @@ FLOW.AssignmentEditView = FLOW.ReactComponentView.extend(
     },
 
     // handlers
-    handleFormCheck(formId) {
-      // if checking a form in a new survey, remove all forms
-      if (this.shouldRemoveForms()) {
-        // remove all currently selected forms
-        this.selectedSurveys = [];
-      }
-
-      // check form
-      this.forms[formId].checked = !this.forms[formId].checked;
-
-      // add/remove form to/from assignment
-      if (this.forms[formId].checked) {
-        // push survey to selectedSurveys
-        this.selectedSurveys.push(FLOW.Survey.find(formId));
-      } else {
-        this.selectedSurveys.pop(FLOW.Survey.find(formId));
-      }
-
-      this.renderReactSide();
-
-      // TODO: load data points in selected form
-    },
-
-    handleSurveySelect(parentId) {
-      const selectedSG = FLOW.projectControl.get('content').find(sg => sg.get('keyId') == parentId);
-
-      if (selectedSG && selectedSG.get('projectType') !== 'PROJECT_FOLDER') {
-        FLOW.selectedControl.set('selectedSurveyGroup', selectedSG);
-        return false;
-      }
-
-      // empty forms when a new folder is picked
-      this.forms = {};
-      this.selectedSurveys = [];
-
-      this.renderReactSide();
-      return true;
-    },
-
     handleDeviceCheck(deviceId, checked, deviceGroupId) {
       // if it's the select all option
       if (deviceId == 0) {
@@ -495,15 +438,137 @@ FLOW.AssignmentEditView = FLOW.ReactComponentView.extend(
       return this.renderReactSide();
     },
 
+    // handle forms functionality
+    setupForms() {
+      if (!FLOW.selectedControl.selectedSurveyAssignment.get('formIds')) {
+        return;
+      }
+
+      // setup forms from the selected survey assignment
+      FLOW.selectedControl.selectedSurveyAssignment.get('formIds').forEach(formId => {
+        const form = FLOW.Survey.find(formId);
+
+        if (form && form.get('keyId')) {
+          this.selectedFormIds.push(form.get('keyId'));
+
+          // load selected survey group
+          this.set('selectedSurveyGroupId', form.get('surveyGroupId'));
+
+          this.forms[form.get('keyId')] = {
+            // also load pre-selected forms
+            name: form.get('name'),
+            checked: true,
+          };
+        }
+      });
+    },
+
+    detectSurveyLoaded() {
+      this.forms = {};
+
+      if (!FLOW.surveyControl.content) return;
+
+      // filter to show only published forms here
+      FLOW.surveyControl.content
+        .filter(form => form.get('status') === 'PUBLISHED')
+        .forEach(form => {
+          // load selected survey group
+          this.set('selectedSurveyGroupId', form.get('surveyGroupId'));
+
+          this.forms[form.get('keyId')] = {
+            name: form.get('name'),
+            checked: this.selectedFormIds.includes(form.get('keyId')),
+          };
+        });
+
+      this.renderReactSide();
+    },
+
+    handleFormCheck(formId) {
+      // if checking a form in a new survey, remove all forms
+      if (this.shouldRemoveForms()) {
+        // remove all currently selected forms
+        this.selectedFormIds = [];
+      }
+
+      // check form
+      this.forms[formId].checked = !this.forms[formId].checked;
+
+      // add/remove form to/from assignment
+      if (this.forms[formId].checked) {
+        // push survey to selectedFormIds
+        this.selectedFormIds.push(formId);
+      } else {
+        // convert to string to check
+        this.selectedFormIds = this.selectedFormIds.filter(surveys => `${surveys}` !== formId);
+      }
+
+      this.renderReactSide();
+    },
+
+    shouldRemoveForms() {
+      const formsInAssignment = this.selectedFormIds;
+
+      if (formsInAssignment && formsInAssignment.length > 0) {
+        // get survey id of first form currently in assignment
+        const preSelectedSurvey = FLOW.Survey.find(formsInAssignment[0]);
+        if (preSelectedSurvey && preSelectedSurvey.get('keyId')) {
+          return preSelectedSurvey.get('surveyGroupId') !== this.selectedSurveyGroupId;
+        }
+      }
+
+      return false;
+    },
+
+    // handle survey group functionality
+    setupSurveyGroups() {
+      if (FLOW.projectControl.content.isLoaded) {
+        FLOW.projectControl.get('content').forEach(item => {
+          this.surveyGroups.push({
+            keyId: item.get('keyId'),
+            parentId: item.get('parentId'),
+            name: item.get('name'),
+            published: item.get('published'),
+            projectType: item.get('projectType'),
+            monitoringGroup: item.get('monitoringGroup'),
+            ancestorIds: item.get('ancestorIds'),
+          });
+        });
+      }
+    },
+
+    handleSurveySelect(parentId) {
+      const selectedSG = FLOW.projectControl.get('content').find(sg => sg.get('keyId') == parentId);
+
+      if (selectedSG && selectedSG.get('projectType') !== 'PROJECT_FOLDER') {
+        // TODO:: Add confirmation from user
+        // empty all currently selected datapoints
+        if (this.datapointAssignments.length) {
+          this.datapointAssignments = [];
+        }
+
+        // using this to trigger an onserver which will load forms and rerender react
+        FLOW.selectedControl.set('selectedSurveyGroup', selectedSG);
+
+        return false;
+      }
+
+      // empty forms when a new folder is picked
+      this.forms = {};
+
+      this.renderReactSide();
+      return true;
+    },
+
     // handle devices functionality
     setupDevices() {
       if (FLOW.deviceGroupControl.content.isLoaded && FLOW.deviceControl.content.isLoaded) {
         this.devices = FLOW.deviceControl.get('content').map(device => {
           const formattedDevice = {
             name: device.get('deviceIdentifier'),
-            id: device.get('id'),
+            id: device.get('keyId'),
             deviceGroup: {
-              id: '1',
+              id: 1,
               name: 'Device not in group',
             },
           };
@@ -512,7 +577,7 @@ FLOW.AssignmentEditView = FLOW.ReactComponentView.extend(
             const deviceGroup = FLOW.DeviceGroup.find(device.get('deviceGroup'));
 
             formattedDevice.deviceGroup = {
-              id: deviceGroup.get('id'),
+              id: deviceGroup.get('keyId'),
               name: deviceGroup.get('code'),
             };
           }
@@ -525,8 +590,8 @@ FLOW.AssignmentEditView = FLOW.ReactComponentView.extend(
           FLOW.selectedControl.selectedSurveyAssignment.get('deviceIds').forEach(deviceId => {
             // populate pre-selected devices
             const device = FLOW.Device.find(deviceId);
-            if (device && device.get('id')) {
-              this.selectedDevices.push(device.get('id'));
+            if (device && device.get('keyId')) {
+              this.selectedDevices.push(device.get('keyId'));
             }
           });
         }
@@ -537,8 +602,8 @@ FLOW.AssignmentEditView = FLOW.ReactComponentView.extend(
       devices.forEach(deviceId => {
         // populate pre-selected devices
         const device = FLOW.Device.find(deviceId);
-        if (device && device.get('id')) {
-          this.selectedDevices.push(device.get('id'));
+        if (device && device.get('keyId')) {
+          this.selectedDevices.push(device.get('keyId'));
         }
       });
 
@@ -549,12 +614,161 @@ FLOW.AssignmentEditView = FLOW.ReactComponentView.extend(
       devices.forEach(deviceId => {
         // populate pre-selected devices
         const device = FLOW.Device.find(deviceId);
-        if (device && device.get('id')) {
-          this.selectedDevices = this.selectedDevices.filter(d => d !== device.get('id'));
+        if (device && device.get('keyId')) {
+          this.selectedDevices = this.selectedDevices.filter(d => d !== device.get('keyId'));
         }
       });
 
       return this.renderReactSide();
+    },
+
+    // handle datapoints functionality
+    setDatapointEnabled() {
+      const surveyGroup = this.surveyGroups.find(sg => sg.keyId === this.selectedSurveyGroupId);
+
+      if (surveyGroup) {
+        // if selected survey has monitoring disabled, disable datapoint assignments
+        this.datapointsEnabled = surveyGroup.monitoringGroup;
+      }
+    },
+
+    getDeviceDatapoints(deviceId) {
+      const surveyAssignmentId = FLOW.selectedControl.get('selectedSurveyAssignment').get('keyId');
+
+      // if creating a new assignment then no need to make a fetch
+      // return early
+      if (!surveyAssignmentId) {
+        return;
+      }
+
+      // if datapoint details is already exist no need to fetch
+      if (this.datapointAssignments.find(item => item.deviceId === parseInt(deviceId, 10))) {
+        return;
+      }
+
+      // assign current `this` to that
+      const that = this;
+
+      // get datapoints information for this device
+      FLOW.DataPointAssignment.find({ deviceId, surveyAssignmentId }).on('didLoad', function() {
+        // we're only expecting one datapoint at max
+        const datapointAssignment = this.map(item => ({
+          id: item.get('keyId'),
+          deviceId: item.get('deviceId'),
+          datapoints: item.get('dataPointIds'),
+        }))[0];
+
+        if (!datapointAssignment) {
+          return;
+        }
+
+        // get all datapoints for this assignment
+        FLOW.SurveyedLocale.find({ ids: datapointAssignment.datapoints }).on('didLoad', function() {
+          // combine data and add to datapoint assignments
+          const completeDatapointAssignment = {
+            ...datapointAssignment,
+            datapoints: this.map(dp => ({
+              name: dp.get('displayName'),
+              id: dp.get('keyId'),
+            })),
+          };
+
+          // add to assignment
+          that.datapointAssignments.push(completeDatapointAssignment);
+          that.renderReactSide();
+        });
+      });
+    },
+
+    detectDatapointsLoaded() {
+      const datapoints = FLOW.router.surveyedLocaleController.get('content');
+
+      if (!datapoints.get('length')) {
+        return;
+      }
+
+      // update datapoints with complete information
+      this.datapointAssignments = this.datapointAssignments.map(selectedDp => {
+        if (selectedDp.deviceId !== this.deviceInView) {
+          return selectedDp;
+        }
+
+        // update device
+        return {
+          ...selectedDp,
+          datapoints: datapoints.map(dp => ({
+            name: dp.get('displayName'),
+            id: dp.get('keyId'),
+          })),
+        };
+      });
+
+      this.renderReactSide();
+    },
+
+    findDatapoints(search) {
+      // find datapoints in the selected survey group
+      const surveyGroupId = FLOW.selectedControl.get('selectedSurveyGroup').get('keyId');
+      this.set('searchedDatapoints', FLOW.SurveyedLocale.find({ search, surveyGroupId }));
+    },
+
+    detectSearchedDatapointLoaded() {
+      this.datapointsResults = this.searchedDatapoints.map(datapoint => {
+        return {
+          name: datapoint.get('displayName'),
+          id: datapoint.get('keyId'),
+        };
+      });
+
+      this.renderReactSide();
+    },
+
+    assignDataPointsToDevice(datapoints, deviceId) {
+      const datapointAssignment = this.datapointAssignments.find(sDp => sDp.deviceId === deviceId);
+
+      // check if device already has datapoints
+      if (datapointAssignment) {
+        datapoints.forEach(dp => {
+          // check if datapoints isn't already added to this device
+          if (!datapointAssignment.datapoints.find(sDp => sDp.id === dp.id)) {
+            // push datapoints to device
+            datapointAssignment.datapoints.push(dp);
+          }
+        });
+      } else {
+        // push new device into selected datapoints
+        this.datapointAssignments.push({
+          deviceId,
+          datapoints,
+        });
+      }
+
+      this.renderReactSide();
+    },
+
+    removeDatapointsFromAssignments(datapointIds, deviceId) {
+      // create a new datapoint assignment and update the datapoint assignment immutably
+      this.datapointAssignments = this.datapointAssignments.map(dpAssignment => {
+        // return any datapoint assignment we're not trying to update
+        if (dpAssignment.deviceId !== deviceId) {
+          return dpAssignment;
+        }
+
+        // once we've gotten the datapoint assignment we need
+        // remove the selected datapoints from the list
+        const dps = dpAssignment.datapoints.filter(dp => {
+          // filter out datapoints that's in the array
+          return !datapointIds.includes(dp.id);
+        });
+
+        // add the updated datapoints to the datapoint assignment
+        return {
+          ...dpAssignment,
+          datapoints: dps,
+        };
+      });
+
+      this.renderReactSide();
     },
   }
 );

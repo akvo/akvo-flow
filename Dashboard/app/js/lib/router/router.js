@@ -116,9 +116,7 @@ FLOW.Router = Ember.Router.extend({
             defaultLanguageCode: 'en',
             requireApproval: false,
             status: 'NOT_PUBLISHED',
-            surveyGroupId: FLOW.selectedControl.selectedSurveyGroup.get(
-              'keyId'
-            ),
+            surveyGroupId: FLOW.selectedControl.selectedSurveyGroup.get('keyId'),
             version: '1.0',
           });
 
@@ -220,9 +218,7 @@ FLOW.Router = Ember.Router.extend({
       assignSurveysOverview: Ember.Route.extend({
         route: '/assign-surveys',
         connectOutlets(router) {
-          router
-            .get('navDevicesController')
-            .connectOutlet('assignSurveysOverview');
+          router.get('navDevicesController').connectOutlet('assignSurveysOverview');
           FLOW.surveyAssignmentControl.populate();
           router.set('devicesSubnavController.selected', 'assignSurveys');
         },
@@ -231,9 +227,8 @@ FLOW.Router = Ember.Router.extend({
       editSurveysAssignment: Ember.Route.extend({
         route: '/assign-surveys',
         connectOutlets(router) {
-          router
-            .get('navDevicesController')
-            .connectOutlet('editSurveyAssignment');
+          router.get('navDevicesController').connectOutlet('editSurveyAssignment');
+
           router.set('devicesSubnavController.selected', 'assignSurveys');
         },
       }),
@@ -373,9 +368,7 @@ FLOW.Router = Ember.Router.extend({
       cascadeResources: Ember.Route.extend({
         route: '/cascaderesources',
         connectOutlets(router) {
-          router
-            .get('navResourcesController')
-            .connectOutlet('cascadeResources');
+          router.get('navResourcesController').connectOutlet('cascadeResources');
           router.set('resourcesSubnavController.selected', 'cascadeResources');
           FLOW.cascadeResourceControl.populate();
         },
@@ -397,9 +390,7 @@ FLOW.Router = Ember.Router.extend({
 
         doEditApprovalGroup(router, event) {
           const groupId = event.context.get('keyId');
-          const lastLoadedGroup = router
-            .get('approvalGroupController')
-            .get('content');
+          const lastLoadedGroup = router.get('approvalGroupController').get('content');
           if (!lastLoadedGroup || lastLoadedGroup.get('keyId') !== groupId) {
             router.get('approvalGroupController').load(groupId);
             router.get('approvalStepsController').loadByGroupId(groupId);
@@ -427,9 +418,7 @@ FLOW.Router = Ember.Router.extend({
           route: '/list',
 
           connectOutlets(router) {
-            router
-              .get('dataApprovalController')
-              .connectOutlet('approvalMain', 'approvalGroupList');
+            router.get('dataApprovalController').connectOutlet('approvalMain', 'approvalGroupList');
             const approvalList = router.get('approvalGroupListController');
             if (!approvalList.get('content')) {
               approvalList.set('content', FLOW.ApprovalGroup.find());
@@ -441,9 +430,7 @@ FLOW.Router = Ember.Router.extend({
           route: '/approvalsteps',
 
           connectOutlets(router) {
-            router
-              .get('dataApprovalController')
-              .connectOutlet('approvalMain', 'approvalGroup');
+            router.get('dataApprovalController').connectOutlet('approvalMain', 'approvalGroup');
             router
               .get('approvalGroupController')
               .connectOutlet('approvalStepsOutlet', 'approvalSteps');

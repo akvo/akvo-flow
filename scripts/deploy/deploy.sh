@@ -69,31 +69,18 @@ function deploy_instance {
     echo "Copying staging dir to ${staging_dir}"
     cp -r appengine-staging "${staging_dir}"
 
-    echo "Deleting dataprocessor version"
-    gcloud app versions delete dataprocessor --project="${instance_id}" --quiet
-
     echo "Deploying ${instance_id} from ${staging_dir}"
 
     cp "${config_repo}/${instance_id}/appengine-web.xml" "${staging_dir}/WEB-INF/appengine-web.xml"
 
-    java -cp /google-cloud-sdk/platform/google_appengine/google/appengine/tools/java/lib/appengine-tools-api.jar \
-	 com.google.appengine.tools.admin.AppCfg \
-	 --retain_upload_dir \
-	 --application="${instance_id}" \
-	 update "${staging_dir}"
+    gcloud app deploy "${staging_dir}/app.yaml" \
+	   "${staging_dir}/WEB-INF/appengine-generated/queue.yaml" \
+	   "${staging_dir}/WEB-INF/appengine-generated/index.yaml" \
+	   "${staging_dir}/WEB-INF/appengine-generated/cron.yaml" \
+	   --promote --quiet --version=1 --project="${instance_id}"
 }
 
 export -f deploy_instance
-
-# Deploy first instance to be able to grab OAuth2 token in $HOME/.appcfg_oauth2_tokens_java
-deploy_instance "${1}"
-
-# Deploy rest if present
-shift 1
-
-if [[ "$#" -eq 0 ]]; then
-    exit 0
-fi
 
 echo "Deploying instances... $*"
 

@@ -21,20 +21,16 @@ log Staging app
 
 mvn appengine:stage
 
-log Copying missing jar
-
-staging_lib="./target/appengine-staging/WEB-INF/lib"
-if [[ ! -f "${staging_lib}/appengine-api-1.0-sdk-1.9.77.jar" ]]; then
-    cp -v ./target/akvo-flow/WEB-INF/lib/appengine-api-1.0-sdk-1.9.77.jar ${staging_lib}
-fi
-
 log Deploying version 1
 
-java -cp /google-cloud-sdk/platform/google_appengine/google/appengine/tools/java/lib/appengine-tools-api.jar \
-     com.google.appengine.tools.admin.AppCfg \
-     --service_account_json_key_file=/app/src/ci/akvoflow-uat1.json \
-     --application="${PROJECT_ID}" \
-     update ./target/appengine-staging
+(
+    cd "./target/appengine-staging"
+    gcloud app deploy app.yaml \
+	   WEB-INF/appengine-generated/queue.yaml \
+	   WEB-INF/appengine-generated/index.yaml \
+	   WEB-INF/appengine-generated/cron.yaml \
+	   --promote --quiet --version=1 --project="${PROJECT_ID}"
+)
 
 version=$(git describe)
 archive_name="${version}.zip"

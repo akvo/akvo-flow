@@ -31,25 +31,26 @@
 		<property name="fragmentType" direction="asc" />
 		<property name="createdDateTime" direction="desc" />
 	</datastore-index>
-	<datastore-index kind="QuestionAnswerStore" ancestor="false"
-		source="manual">
-		<property name="type" direction="asc" />
-		<property name="createdDateTime" direction="desc" />
-	</datastore-index>
-	<datastore-index kind="QuestionAnswerStore" ancestor="false"
-		source="manual">
-		<property name="__key__" direction="desc" />
-	</datastore-index>
-	<datastore-index kind="QuestionAnswerStore" ancestor="false"
-	    source="manual">
-		<property name="questionID" direction="asc"/>
-		<property name="surveyInstanceId" direction="asc"/>
-		<property name="createdDateTime" direction="desc"/>
-	</datastore-index>
-	<datastore-index kind="QuestionAnswerStore" ancestor="false" source="manual">
+    <datastore-index kind="QuestionAnswerStore" ancestor="false" source="manual">
+        <property name="type" direction="asc" />
+        <property name="createdDateTime" direction="desc" />
+    </datastore-index>
+    <datastore-index kind="QuestionAnswerStore" ancestor="false" source="manual">
+        <property name="type" direction="asc"/>
+        <property name="lastUpdateDateTime" direction="asc"/>
+    </datastore-index>
+    <datastore-index kind="QuestionAnswerStore" ancestor="false" source="manual">
+        <property name="__key__" direction="desc" />
+    </datastore-index>
+    <datastore-index kind="QuestionAnswerStore" ancestor="false" source="manual">
+        <property name="questionID" direction="asc"/>
+        <property name="surveyInstanceId" direction="asc"/>
+        <property name="createdDateTime" direction="desc"/>
+    </datastore-index>
+    <datastore-index kind="QuestionAnswerStore" ancestor="false" source="manual">
         <property name="questionID" direction="asc"/>
         <property name="createdDateTime" direction="asc"/>
-	</datastore-index>
+    </datastore-index>
 	<datastore-index kind="DeviceSurveyJobQueue" ancestor="false"
 		source="manual">
 		<property name="devicePhoneNumber" direction="asc" />
@@ -253,14 +254,20 @@
         <property name="countryCode" direction="asc"/>
         <property name="localeType" direction="asc"/>
     </datastore-index>
-	
 	 <datastore-index kind="SurveyedLocale" ancestor="false" source="manual">
         <property name="countryCode" direction="asc"/>
         <property name="localeType" direction="asc"/>
         <property name="createdDateTime" direction="desc"/>
     </datastore-index>
-    
-   <datastore-index kind="SurveyInstance" ancestor="false"
+    <datastore-index kind="SurveyedLocale" ancestor="false" source="manual">
+        <property name="surveyGroupId" direction="asc"/>
+        <property name="displayName" direction="asc"/>
+    </datastore-index>    
+    <datastore-index kind="SurveyedLocale" ancestor="false" source="manual">
+        <property name="surveyGroupId" direction="asc"/>
+        <property name="identifier" direction="asc"/>
+    </datastore-index>    
+    <datastore-index kind="SurveyInstance" ancestor="false"
 		source="manual">
 		<property name="__key__" direction="desc" />
 	</datastore-index> 

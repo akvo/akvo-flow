@@ -21,17 +21,10 @@ FLOW.BaseModel = DS.Model.extend(
     // moment that nothing is being saved anymore, but in the previous event it was
     // so we can turn off the saving message.
     anySaving() {
-      if (
-        this.get('isSaving') ||
-        this.get('isDirty') ||
-        this.get('savingStatus')
-      ) {
+      if (this.get('isSaving') || this.get('isDirty') || this.get('savingStatus')) {
         FLOW.savingMessageControl.checkSaving();
       }
-      this.set(
-        'savingStatus',
-        this.get('isSaving') || this.get('isDirty')
-      );
+      this.set('savingStatus', this.get('isSaving') || this.get('isDirty'));
     },
   }
 );
@@ -164,14 +157,14 @@ FLOW.Survey = FLOW.BaseModel.extend({
 
   /* computed property that is used in the assignment edit page but never saved to backend.
   it should ideally appear as a view property. to be refactored */
-  surveyGroupName: Ember.computed(function () {
+  surveyGroupName: Ember.computed(function() {
     const surveyId = this.get('surveyGroupId');
     const survey = surveyId && FLOW.store.find(FLOW.SurveyGroup, surveyId);
     if (!Ember.empty(survey)) return survey.get('name');
     return '';
   }).property(''),
 
-  allowEdit: Ember.computed(function () {
+  allowEdit: Ember.computed(function() {
     return !this.get('isNew') && this.get('status') !== 'COPYING';
   }).property('status', 'isNew'),
 });
@@ -349,6 +342,13 @@ FLOW.SurveyedLocale = DS.Model.extend({
   surveyGroupId: DS.attr('number'),
   identifier: DS.attr('string'),
   primaryKey: 'keyId',
+});
+
+FLOW.DataPointAssignment = FLOW.BaseModel.extend({
+  surveyAssignmentId: DS.attr('number'),
+  surveyId: DS.attr('number'),
+  deviceId: DS.attr('number'),
+  dataPointIds: DS.attr('array'),
 });
 
 FLOW.Placemark = FLOW.BaseModel.extend({
