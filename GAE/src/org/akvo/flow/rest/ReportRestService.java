@@ -31,6 +31,8 @@ import org.akvo.flow.rest.dto.ReportPayload;
 import org.akvo.flow.rest.security.AppRole;
 import org.akvo.flow.servlet.ReportServlet;
 import org.springframework.beans.BeanUtils;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContext;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -38,6 +40,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.context.request.ServletRequestAttributes;
 import org.springframework.web.context.request.RequestContextHolder;
@@ -88,8 +91,7 @@ public class ReportRestService {
 
                 BeanUtils.copyProperties(reportDto, r, doNotCopy);
 
-                r.setUser((Long)SecurityContextHolder.getContext().getAuthentication()
-                        .getCredentials());
+                r.setUser(reportDao.currentUserId());
                 r.setState(Report.QUEUED);  //overwrite any supplied state
                 // Save it, so we get an id assigned
                 r = reportDao.save(r);
@@ -123,10 +125,17 @@ public class ReportRestService {
     // find all reports belonging to the current user
     @RequestMapping(method = RequestMethod.GET, value = "")
     @ResponseBody
-    public Map<String, Object> listMyReports() {
+    public Map<String, Object> listMyReports(
+            @RequestParam(value = "reportType", defaultValue = "") String reportType
+            ) {
         final Map<String, Object> response = new HashMap<String, Object>();
         List<ReportDto> results = new ArrayList<ReportDto>();
-        List<Report> reports = reportDao.listAllByCurrentUser();
+        List<Report> reports;
+        if (reportType != "") {
+            reports = reportDao.listAllByCurrentUserAndType(reportType);
+        } else {
+            reports = reportDao.listAllByCurrentUserAndType(null);
+        }
         if (reports != null) {
             for (Report r : reports) {
                 ReportDto dto = new ReportDto();
