@@ -16,13 +16,11 @@
 
 package org.akvo.flow.dao;
 
-import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import javax.jdo.PersistenceManager;
 
@@ -63,8 +61,6 @@ public class ReportDao extends BaseDAO<Report> {
             query.setFilter(filterString.toString());
             query.declareParameters(paramString.toString());
         }
-//        query.setOrdering("lastUpdateDateTime desc");
-//        prepareCursor(cursor, query);
         return (List<Report>) query.executeWithMap(paramMap);
     }
 
@@ -72,14 +68,7 @@ public class ReportDao extends BaseDAO<Report> {
      * lists all reports by the current user
      */
     public List<Report> listAllByCurrentUserAndType(@Nullable String reportType) {
-        final Object credentials = SecurityContextHolder.getContext()
-                .getAuthentication().getCredentials();
-        if (credentials instanceof Long) {
-            return listByUserAndType(currentUserId(), reportType);
-        } else {
-            return Collections.emptyList();
-        }
-
+        return listByUserAndType(currentUserId(), reportType);
     }
 
     /**

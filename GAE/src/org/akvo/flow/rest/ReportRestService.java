@@ -131,11 +131,11 @@ public class ReportRestService {
         final Map<String, Object> response = new HashMap<String, Object>();
         List<ReportDto> results = new ArrayList<ReportDto>();
         List<Report> reports;
-        if (reportType != "") {
-            reports = reportDao.listAllByCurrentUserAndType(reportType);
-        } else {
-            reports = reportDao.listAllByCurrentUserAndType(null);
+        if (reportType.equals("")) { //Cannot have null as the defaultValue
+            reportType = null;
         }
+        reports = reportDao.listAllByCurrentUserAndType(reportType);
+
         if (reports != null) {
             for (Report r : reports) {
                 ReportDto dto = new ReportDto();
