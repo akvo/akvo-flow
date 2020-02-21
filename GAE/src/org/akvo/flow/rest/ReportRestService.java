@@ -1,5 +1,5 @@
 /*
- *  Copyright (C) 2018 Stichting Akvo (Akvo Foundation)
+ *  Copyright (C) 2018, 2020 Stichting Akvo (Akvo Foundation)
  *
  *  This file is part of Akvo FLOW.
  *
@@ -31,8 +31,6 @@ import org.akvo.flow.rest.dto.ReportPayload;
 import org.akvo.flow.rest.security.AppRole;
 import org.akvo.flow.servlet.ReportServlet;
 import org.springframework.beans.BeanUtils;
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.context.SecurityContext;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.PathVariable;
