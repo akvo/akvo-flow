@@ -55,6 +55,7 @@ FLOW.AssignmentEditView = FLOW.ReactComponentView.extend(
       this.getDeviceDatapoints = this.getDeviceDatapoints.bind(this);
       this.removeDatapointsFromAssignments = this.removeDatapointsFromAssignments.bind(this);
       this.setDatapointEnabled = this.setDatapointEnabled.bind(this);
+      this.clearSearchedDatapoints = this.clearSearchedDatapoints.bind(this);
 
       // object wide varaibles
       this.forms = {};
@@ -136,6 +137,7 @@ FLOW.AssignmentEditView = FLOW.ReactComponentView.extend(
         addDevicesToAssignment: this.addDevicesToAssignment,
         removeDevicesFromAssignment: this.removeDevicesFromAssignment,
         findDatapoints: this.findDatapoints,
+        clearSearchedDatapoints: this.clearSearchedDatapoints,
         getDeviceDatapoints: this.getDeviceDatapoints,
         removeDatapointsFromAssignments: this.removeDatapointsFromAssignments,
         assignDataPointsToDevice: this.assignDataPointsToDevice,
@@ -719,6 +721,13 @@ FLOW.AssignmentEditView = FLOW.ReactComponentView.extend(
           id: datapoint.get('keyId'),
         };
       });
+
+      this.renderReactSide();
+    },
+
+    clearSearchedDatapoints() {
+      this.searchedDatapoints = null;
+      this.datapointsResults = [];
 
       this.renderReactSide();
     },

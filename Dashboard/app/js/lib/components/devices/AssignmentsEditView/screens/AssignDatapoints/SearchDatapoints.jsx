@@ -9,6 +9,10 @@ export default class SearchDatapoints extends React.Component {
     selectedDatapointsIds: [],
   };
 
+  componentWillUnmount() {
+    this.context.actions.clearSearchedDatapoints();
+  }
+
   onSearch = e => {
     e.preventDefault();
 
