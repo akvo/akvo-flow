@@ -1,5 +1,5 @@
 /*
- *  Copyright (C) 2015 Stichting Akvo (Akvo Foundation)
+ *  Copyright (C) 2015,2020 Stichting Akvo (Akvo Foundation)
  *
  *  This file is part of Akvo FLOW.
  *
@@ -28,6 +28,10 @@ import com.google.appengine.api.datastore.Query.Filter;
 import com.google.appengine.api.datastore.Query.FilterOperator;
 import com.google.appengine.api.datastore.Query.FilterPredicate;
 
+/*
+ * Counts the number of SurveyInstances for each Survey. Used to indicate PUBLIC/PRIVATE
+ * status of each form. Mostly replaced by the stats report inside Flow.
+*/
 public class PublicPrivateInstanceCount implements Process {
 
     @Override
@@ -54,18 +58,7 @@ public class PublicPrivateInstanceCount implements Process {
                 sgs.put(surveyGroupId, sg);
             }
 
-            String type = "PRIVATE";
-            Entity sg = sgs.get(surveyGroupId);
-            if (sg != null) {
-                String pl = (String) sg.getProperty("privacyLevel");
-                if (pl == null) {
-                    type = getPrivacyLevelFromSurvey(s);
-                } else {
-                    type = pl.toUpperCase();
-                }
-            } else {
-                type = getPrivacyLevelFromSurvey(s);
-            }
+            String type = ""; //Removed, but keep the column for possible backwards compatibility
             Filter fsi = new FilterPredicate("surveyId", FilterOperator.EQUAL, s.getKey().getId());
             Query si = new Query("SurveyInstance").setFilter(fsi).setKeysOnly();
             long count = 0;
@@ -81,10 +74,4 @@ public class PublicPrivateInstanceCount implements Process {
         }
 
     }
-
-    private String getPrivacyLevelFromSurvey(Entity s) {
-        String pointType = (String) s.getProperty("pointType");
-        return "Household".equals(pointType) ? "PRIVATE" : "PUBLIC";
-    }
-
 }

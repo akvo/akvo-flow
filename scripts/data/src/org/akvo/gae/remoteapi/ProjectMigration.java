@@ -1,5 +1,5 @@
 /*
- *  Copyright (C) 2015 Stichting Akvo (Akvo Foundation)
+ *  Copyright (C) 2015, 2020 Stichting Akvo (Akvo Foundation)
  *
  *  This file is part of Akvo FLOW.
  *
@@ -29,8 +29,7 @@ public class ProjectMigration implements Process {
     @Override
     public void execute(DatastoreService ds, String[] args) throws Exception {
 
-        for (Entity surveyGroup : ds.prepare(new Query("SurveyGroup"))
-                .asIterable()) {
+        for (Entity surveyGroup : ds.prepare(new Query("SurveyGroup")).asIterable()) {
 
             // If the surveyGroup already has projectType set, don't touch it.
             if (surveyGroup.getProperty("projectType") != null) {
@@ -52,15 +51,10 @@ public class ProjectMigration implements Process {
 
             if (isMonitoring || surveys.size() <= 1) {
                 surveyGroup.setProperty("projectType", "PROJECT");
-                String privacyLevel = "PUBLIC";
                 String defaultLanguageCode = "en";
                 for (Entity survey : surveys) {
-                    if ("Household".equals(survey.getProperty("pointType"))) {
-                        privacyLevel = "PRIVATE";
-                    }
                     survey.setProperty("path",
                             surveyGroupPath + "/" + survey.getProperty("name"));
-
                 }
 
                 if (surveys.size() >= 1) {
@@ -69,9 +63,7 @@ public class ProjectMigration implements Process {
                 }
 
                 surveyGroup.setProperty("parentId", null);
-                surveyGroup.setProperty("privacyLevel", privacyLevel);
-                surveyGroup.setProperty("defaultLanguageCode",
-                        defaultLanguageCode);
+                surveyGroup.setProperty("defaultLanguageCode", defaultLanguageCode);
                 surveyGroup.setProperty("path", surveyGroupPath);
 
                 ds.put(surveys);
@@ -82,8 +74,7 @@ public class ProjectMigration implements Process {
                 for (Entity survey : surveys) {
                     Entity newSurveyGroup = new Entity("SurveyGroup");
                     Object surveyName = survey.getProperty("name");
-                    String newSurveyGroupPath = surveyGroupPath + "/"
-                            + surveyName;
+                    String newSurveyGroupPath = surveyGroupPath + "/" + surveyName;
 
                     newSurveyGroup.setProperty("name", surveyName);
                     newSurveyGroup.setProperty("code", surveyName);
@@ -93,18 +84,11 @@ public class ProjectMigration implements Process {
                     newSurveyGroup.setProperty("defaultLanguageCode",
                             survey.getProperty("defaultLanguageCode"));
                     newSurveyGroup.setProperty("path", newSurveyGroupPath);
-                    newSurveyGroup
-                            .setProperty(
-                                    "privacyLevel",
-                                    "Household".equals(survey
-                                            .getProperty("pointType")) ? "PRIVATE"
-                                            : "PUBLIC");
 
                     long newSurveyGroupId = ds.put(newSurveyGroup).getId();
 
                     survey.setProperty("surveyGroupId", newSurveyGroupId);
-                    survey.setProperty("path", newSurveyGroupPath + "/"
-                            + surveyName);
+                    survey.setProperty("path", newSurveyGroupPath + "/" + surveyName);
                 }
                 ds.put(surveys);
             }
