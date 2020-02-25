@@ -1,5 +1,5 @@
 /*
- *  Copyright (C) 2018 Stichting Akvo (Akvo Foundation)
+ *  Copyright (C) 2018, 2020 Stichting Akvo (Akvo Foundation)
  *
  *  This file is part of Akvo Flow.
  *
@@ -16,14 +16,22 @@
 
 package org.akvo.flow.dao;
 
-import java.util.Collections;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
+import javax.annotation.Nullable;
+import javax.jdo.PersistenceManager;
+
+import org.akvo.flow.domain.Message;
 import org.akvo.flow.domain.persistent.Report;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContext;
 import org.springframework.security.core.context.SecurityContextHolder;
 
 import com.gallatinsystems.framework.dao.BaseDAO;
+import com.gallatinsystems.framework.servlet.PersistenceFilter;
 
 public class ReportDao extends BaseDAO<Report> {
 
@@ -32,25 +40,35 @@ public class ReportDao extends BaseDAO<Report> {
     }
 
     /**
-     * lists all reports with a given user
+     * lists all reports with a given user and optionally type
      */
-    public List<Report> listByUser(Long user) {
-        return listByProperty("user", user, "Long",
-                Report.class);
+    @SuppressWarnings("unchecked")
+    public List<Report> listByUserAndType(long user, @Nullable String reportType) {
+        if (reportType == null) {
+            return listByProperty("user", user, "Long", Report.class);
+        }
+
+        PersistenceManager pm = PersistenceFilter.getManager();
+        javax.jdo.Query query = pm.newQuery(Message.class);
+        StringBuilder filterString = new StringBuilder();
+        StringBuilder paramString = new StringBuilder();
+        Map<String, Object> paramMap = null;
+        paramMap = new HashMap<String, Object>();
+        appendNonNullParam("user", filterString, paramString, "Long", user, paramMap);
+        appendNonNullParam("reportType", filterString, paramString, "String", reportType, paramMap);
+
+        if (filterString.toString().trim().length() > 0) {
+            query.setFilter(filterString.toString());
+            query.declareParameters(paramString.toString());
+        }
+        return (List<Report>) query.executeWithMap(paramMap);
     }
 
     /**
      * lists all reports by the current user
      */
-    public List<Report> listAllByCurrentUser() {
-        final Object credentials = SecurityContextHolder.getContext()
-                .getAuthentication().getCredentials();
-        if (credentials instanceof Long) {
-            return listByUser((Long) credentials);
-        } else {
-            return Collections.emptyList();
-        }
-
+    public List<Report> listAllByCurrentUserAndType(@Nullable String reportType) {
+        return listByUserAndType(currentUserId(), reportType);
     }
 
     /**
@@ -61,6 +79,15 @@ public class ReportDao extends BaseDAO<Report> {
                 "createdDateTime", null, LTE_OP, Report.class);
     }
 
+    //prevent crashes if user info unavailable
+    public long currentUserId() {
+        SecurityContext c = SecurityContextHolder.getContext();
+        if (c == null) return 0;
+        Authentication a = c.getAuthentication();
+        if (a == null) return 0;
+        if (a.getCredentials() instanceof Long)return (Long)a.getCredentials();
+        return 0;
+    }
 
 
 }

@@ -1,5 +1,5 @@
 /*
- *  Copyright (C) 2018 Stichting Akvo (Akvo Foundation)
+ *  Copyright (C) 2018, 2020 Stichting Akvo (Akvo Foundation)
  *
  *  This file is part of Akvo FLOW.
  *
@@ -38,6 +38,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.context.request.ServletRequestAttributes;
 import org.springframework.web.context.request.RequestContextHolder;
@@ -88,8 +89,7 @@ public class ReportRestService {
 
                 BeanUtils.copyProperties(reportDto, r, doNotCopy);
 
-                r.setUser((Long)SecurityContextHolder.getContext().getAuthentication()
-                        .getCredentials());
+                r.setUser(reportDao.currentUserId());
                 r.setState(Report.QUEUED);  //overwrite any supplied state
                 // Save it, so we get an id assigned
                 r = reportDao.save(r);
@@ -123,10 +123,17 @@ public class ReportRestService {
     // find all reports belonging to the current user
     @RequestMapping(method = RequestMethod.GET, value = "")
     @ResponseBody
-    public Map<String, Object> listMyReports() {
+    public Map<String, Object> listMyReports(
+            @RequestParam(value = "reportType", defaultValue = "") String reportType
+            ) {
         final Map<String, Object> response = new HashMap<String, Object>();
         List<ReportDto> results = new ArrayList<ReportDto>();
-        List<Report> reports = reportDao.listAllByCurrentUser();
+        List<Report> reports;
+        if (reportType.equals("")) { //Cannot have null as the defaultValue
+            reportType = null;
+        }
+        reports = reportDao.listAllByCurrentUserAndType(reportType);
+
         if (reports != null) {
             for (Report r : reports) {
                 ReportDto dto = new ReportDto();
