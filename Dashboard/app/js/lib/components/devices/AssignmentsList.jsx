@@ -15,7 +15,7 @@ const AssignmentsList = ({ assignments, strings, sortProperties, onEdit, onDelet
     <div className="dataTables_length" />
     {!assignments.length && <div className="noAssignments">{strings.noAssignments}</div>}
     {assignments.length > 0 && (
-      <table className="dataTable">
+      <table className="dataTable assignmentListTable">
         {/* TABLE HEADER */}
         <thead>
           <tr>
