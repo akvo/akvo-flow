@@ -1,14 +1,7 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 /* eslint-disable no-nested-ternary */
-const AssignmentsList = ({
-  assignments,
-  strings,
-  sortProperties,
-  onEdit,
-  onDelete,
-  onSort,
-}) => (
+const AssignmentsList = ({ assignments, strings, sortProperties, onEdit, onDelete, onSort }) => (
   <div>
     <div className="deviceControls">
       <a
@@ -19,55 +12,54 @@ const AssignmentsList = ({
         {strings.newAssignment}
       </a>
     </div>
-    <div
-      className="dataTables_length"
-    />
-    {!assignments.length && (
-      <div
-        className="noAssignments"
-      >
-        {strings.noAssignments}
-      </div>
-    )}
+    <div className="dataTables_length" />
+    {!assignments.length && <div className="noAssignments">{strings.noAssignments}</div>}
     {assignments.length > 0 && (
       <table className="dataTable">
         {/* TABLE HEADER */}
         <thead>
           <tr>
             <th
-              className={sortProperties.column == 'name' ? (sortProperties.ascending ? 'sorting_asc' : 'sorting_desc') : ''}
+              className={
+                sortProperties.column == 'name'
+                  ? sortProperties.ascending
+                    ? 'sorting_asc'
+                    : 'sorting_desc'
+                  : ''
+              }
             >
-              <a
-                onClick={() => onSort('name')}
-                onKeyDown={() => onSort('name')}
-              >
+              <a onClick={() => onSort('name')} onKeyDown={() => onSort('name')}>
                 {strings.name}
               </a>
             </th>
             <th
-              className={sortProperties.column == 'startDate' ? (sortProperties.ascending ? 'sorting_asc' : 'sorting_desc') : ''}
+              className={
+                sortProperties.column == 'startDate'
+                  ? sortProperties.ascending
+                    ? 'sorting_asc'
+                    : 'sorting_desc'
+                  : ''
+              }
             >
-              <a
-                onClick={() => onSort('startDate')}
-                onKeyDown={() => onSort('startDate')}
-              >
+              <a onClick={() => onSort('startDate')} onKeyDown={() => onSort('startDate')}>
                 {strings.startDate}
               </a>
             </th>
             <th
-              className={sortProperties.column == 'endDate' ? (sortProperties.ascending ? 'sorting_asc' : 'sorting_desc') : ''}
+              className={
+                sortProperties.column == 'endDate'
+                  ? sortProperties.ascending
+                    ? 'sorting_asc'
+                    : 'sorting_desc'
+                  : ''
+              }
             >
-              <a
-                onClick={() => onSort('endDate')}
-                onKeyDown={() => onSort('endDate')}
-              >
+              <a onClick={() => onSort('endDate')} onKeyDown={() => onSort('endDate')}>
                 {strings.endDate}
               </a>
             </th>
             <th className="noArrows cursorStyle">
-              <a>
-                {strings.action}
-              </a>
+              <a>{strings.action}</a>
             </th>
           </tr>
         </thead>
