@@ -815,6 +815,17 @@ table.dataTable {
   }
 }
 
+// Assignment Data table
+table.dataTable.assignmentListTable thead tr th {
+  text-align: left;
+  padding-left: 2em;
+}
+
+table.dataTable.assignmentListTable td {
+  text-align: left;
+    padding-left: 2em;
+}
+
 table.dataTable tbody tr,
 table.dataTable tbody tr:nth-child(2n + 1),
 table.dataTable tbody tr.odd {
