@@ -23,7 +23,7 @@ export default class EditDatapoints extends React.Component {
   };
 
   getDeviceData = () => {
-    const { selectedDeviceId } = this.props;
+    const { deviceId: selectedDeviceId } = this.props.routeData;
     const { devices, datapointAssignments } = this.context.data;
 
     const deviceData = devices.find(device => device.id === selectedDeviceId);
@@ -43,10 +43,11 @@ export default class EditDatapoints extends React.Component {
   };
 
   removeFromAssignment = () => {
+    const { deviceId: selectedDeviceId } = this.props.routeData;
     const { selectedDatapoints } = this.state;
     const { removeDatapointsFromAssignments } = this.context.actions;
 
-    removeDatapointsFromAssignments(selectedDatapoints, this.props.selectedDeviceId);
+    removeDatapointsFromAssignments(selectedDatapoints, selectedDeviceId);
 
     // empty selected devices
     this.setState({ selectedDatapoints: [] });
@@ -62,8 +63,8 @@ export default class EditDatapoints extends React.Component {
           <p>{strings.editDatapoints}</p>
           <i
             className="fa fa-times icon"
-            onClick={() => this.props.changeTab('ASSIGN_DATAPOINTS', deviceData.id)}
-            onKeyDown={() => this.props.changeTab('ASSIGN_DATAPOINTS', deviceData.id)}
+            onClick={() => this.props.goTo('ASSIGN_DATAPOINTS', { deviceId: deviceData.id })}
+            onKeyDown={() => this.props.goTo('ASSIGN_DATAPOINTS', { deviceId: deviceData.id })}
           />
         </div>
 
@@ -112,6 +113,6 @@ export default class EditDatapoints extends React.Component {
 
 EditDatapoints.contextType = AssignmentsContext;
 EditDatapoints.propTypes = {
-  changeTab: PropTypes.func.isRequired,
-  selectedDeviceId: PropTypes.number.isRequired,
+  goTo: PropTypes.func.isRequired,
+  routeData: PropTypes.object.isRequired,
 };

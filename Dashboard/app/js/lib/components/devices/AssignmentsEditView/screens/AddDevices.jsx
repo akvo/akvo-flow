@@ -68,8 +68,8 @@ export default class AddDevice extends React.Component {
           <p>{strings.addDevicesToAssignment}</p>
           <i
             className="fa fa-times icon"
-            onClick={() => this.props.changeTab('DEVICES')}
-            onKeyDown={() => this.props.changeTab('DEVICES')}
+            onClick={() => this.props.goTo('DEVICES')}
+            onKeyDown={() => this.props.goTo('DEVICES')}
           />
         </div>
 
@@ -112,5 +112,5 @@ export default class AddDevice extends React.Component {
 
 AddDevice.contextType = AssignmentsContext;
 AddDevice.propTypes = {
-  changeTab: PropTypes.func.isRequired,
+  goTo: PropTypes.func.isRequired,
 };

@@ -43,7 +43,9 @@ export default class SidebarDropdown extends React.Component {
               key={device.id}
               href="#"
               onClick={
-                data.datapointsEnabled ? () => changeTab('ASSIGN_DATAPOINTS', device.id) : undefined
+                data.datapointsEnabled
+                  ? () => changeTab('ASSIGN_DATAPOINTS', { deviceId: device.id })
+                  : undefined
               }
               className={data.datapointsEnabled ? undefined : 'disabled'}
             >

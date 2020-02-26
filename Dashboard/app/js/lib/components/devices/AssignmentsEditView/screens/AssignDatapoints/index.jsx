@@ -17,7 +17,7 @@ export default class AssignDatapoints extends React.Component {
   };
 
   getAssignmentData = () => {
-    const { selectedDeviceId } = this.props;
+    const { deviceId: selectedDeviceId } = this.props.routeData;
     const { devices, datapointAssignments } = this.context.data;
 
     const deviceData = devices.find(device => device.id === selectedDeviceId);
@@ -48,6 +48,7 @@ export default class AssignDatapoints extends React.Component {
 
   render() {
     const { strings } = this.context;
+    const { deviceId: selectedDeviceId } = this.props.routeData;
     const { deviceData, datapointsData } = this.getAssignmentData();
     const datapointsCount = datapointsData.length;
 
@@ -67,7 +68,7 @@ export default class AssignDatapoints extends React.Component {
                   href="#"
                   onClick={
                     datapointsCount
-                      ? () => this.props.changeTab('EDIT_DATAPOINTS', deviceData.id)
+                      ? () => this.props.goTo('EDIT_DATAPOINTS', { deviceId: deviceData.id })
                       : undefined
                   }
                 >
@@ -86,7 +87,7 @@ export default class AssignDatapoints extends React.Component {
 
         <div>
           {this.state.currentSubTab === 'SEARCH_DATAPOINTS' && (
-            <SearchDatapoints deviceId={this.props.selectedDeviceId} changeTab={this.changeTab} />
+            <SearchDatapoints deviceId={selectedDeviceId} changeTab={this.changeTab} />
           )}
         </div>
       </div>
@@ -96,6 +97,6 @@ export default class AssignDatapoints extends React.Component {
 
 AssignDatapoints.contextType = AssignmentContext;
 AssignDatapoints.propTypes = {
-  selectedDeviceId: PropTypes.number.isRequired,
-  changeTab: PropTypes.func.isRequired,
+  routeData: PropTypes.object.isRequired,
+  goTo: PropTypes.func.isRequired,
 };
