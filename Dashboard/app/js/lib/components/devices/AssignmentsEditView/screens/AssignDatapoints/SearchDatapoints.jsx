@@ -70,9 +70,8 @@ export default class SearchDatapoints extends React.Component {
           <form className="search-bar" onSubmit={this.onSearch}>
             <i className="fa fa-search" />
             <input
-              type="search"
+              type="text"
               id="searchDatapoints"
-              tyoe="search"
               placeholder={strings.searchDatapointByNameOrId}
             />
           </form>
