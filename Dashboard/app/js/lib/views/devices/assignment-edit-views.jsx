@@ -116,6 +116,7 @@ FLOW.AssignmentEditView = FLOW.ReactComponentView.extend(
         addToAssignment: Ember.String.loc('_add_to_assignment'),
         removeFromAssignment: Ember.String.loc('_remove_from_assignment'),
         noDeviceInAssignment: Ember.String.loc('_no_devices_in_assignments'),
+        selectAMonitoringSurveyMessage: Ember.String.loc('_please_select_a_monitoring_survey'),
         assignDatapointByNameOrId: Ember.String.loc('_assign_datapoint_by_name_or_id'),
         searchDatapointByNameOrId: Ember.String.loc('_search_datapoint_by_name_or_id'),
         datapointAssigned: Ember.String.loc('_datapoints_assigned'),
