@@ -7,8 +7,8 @@ import AddDevices from './screens/AddDevices';
 import EditDevices from './screens/EditDevices';
 import AssignDatapoints from './screens/AssignDatapoints';
 import EditDatapoints from './screens/EditDatapoints';
+import DevicesSection from './screens/DevicesSection';
 
-import DevicesSection from './DevicesSection';
 import SidebarDropdown from './__partials/SidebarDropdown';
 
 import AssignmentsContext from './assignment-context';
