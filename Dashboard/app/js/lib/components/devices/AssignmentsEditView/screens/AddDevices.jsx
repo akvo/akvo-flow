@@ -1,7 +1,7 @@
 /* eslint-disable import/no-unresolved */
 import React from 'react';
 import PropTypes from 'prop-types';
-import { groupBy as _groupBy } from 'lodash';
+import { groupBy as _groupBy, sortBy as _sortBy } from 'lodash';
 import DeviceGroupSelectorView from 'akvo-flow/components/selectors/DeviceSelector';
 
 import AssignmentsContext from '../assignment-context';
@@ -18,7 +18,11 @@ export default class AddDevice extends React.Component {
 
     const unSelectedDevices = devices.filter(device => !selectedDeviceIds.includes(device.id));
 
-    return _groupBy(unSelectedDevices, device => device.deviceGroup.id);
+    // sort device groups
+    return _groupBy(
+      _sortBy(unSelectedDevices, device => device.deviceGroup.name),
+      device => device.deviceGroup.id
+    );
   }
 
   onSelectDevice = (id, checked) => {
