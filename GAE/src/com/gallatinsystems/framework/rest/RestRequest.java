@@ -1,5 +1,5 @@
 /*
- *  Copyright (C) 2010-2012 Stichting Akvo (Akvo Foundation)
+ *  Copyright (C) 2010-2012,2020 Stichting Akvo (Akvo Foundation)
  *
  *  This file is part of Akvo FLOW.
  *
@@ -46,6 +46,7 @@ public abstract class RestRequest implements Serializable {
     public static final String API_KEY_PARAM = "k";
     public static final String HASH_PARAM = "h";
     public static final String TIMESTAMP_PARAM = "ts";
+    public static final String RUN_AS_TASK_PARAM = "runAsTask";
 
     private List<RestError> validationErrorList;
 
