@@ -116,6 +116,7 @@ FLOW.AssignmentEditView = FLOW.ReactComponentView.extend(
         addToAssignment: Ember.String.loc('_add_to_assignment'),
         removeFromAssignment: Ember.String.loc('_remove_from_assignment'),
         noDeviceInAssignment: Ember.String.loc('_no_devices_in_assignments'),
+        selectAMonitoringSurveyMessage: Ember.String.loc('_please_select_a_monitoring_survey'),
         assignDatapointByNameOrId: Ember.String.loc('_assign_datapoint_by_name_or_id'),
         searchDatapointByNameOrId: Ember.String.loc('_search_datapoint_by_name_or_id'),
         datapointAssigned: Ember.String.loc('_datapoints_assigned'),
@@ -565,27 +566,43 @@ FLOW.AssignmentEditView = FLOW.ReactComponentView.extend(
     // handle devices functionality
     setupDevices() {
       if (FLOW.deviceGroupControl.content.isLoaded && FLOW.deviceControl.content.isLoaded) {
-        this.devices = FLOW.deviceControl.get('content').map(device => {
-          const formattedDevice = {
-            name: device.get('deviceIdentifier'),
-            id: device.get('keyId'),
-            deviceGroup: {
-              id: 1,
-              name: 'Device not in group',
-            },
-          };
-
-          if (device.get('deviceGroup')) {
-            const deviceGroup = FLOW.DeviceGroup.find(device.get('deviceGroup'));
-
-            formattedDevice.deviceGroup = {
-              id: deviceGroup.get('keyId'),
-              name: deviceGroup.get('code'),
+        this.devices = FLOW.deviceControl
+          .get('content')
+          .map(device => {
+            const formattedDevice = {
+              name: device.get('deviceIdentifier'),
+              id: device.get('keyId'),
+              deviceGroup: {
+                id: 1,
+                name: 'Device not in group',
+              },
             };
-          }
 
-          return formattedDevice;
-        });
+            if (device.get('deviceGroup')) {
+              const deviceGroup = FLOW.DeviceGroup.find(device.get('deviceGroup'));
+
+              formattedDevice.deviceGroup = {
+                id: deviceGroup.get('keyId'),
+                name: deviceGroup.get('code'),
+              };
+            }
+
+            return formattedDevice;
+          })
+          .sort((a, b) => {
+            const nameA = (a.name || '').toUpperCase(); // ignore upper and lowercase
+            const nameB = (b.name || '').toUpperCase(); // ignore upper and lowercase
+
+            if (nameA < nameB) {
+              return -1;
+            }
+            if (nameA > nameB) {
+              return 1;
+            }
+
+            // names must be equal
+            return 0;
+          });
 
         // initialize with previous selected devices [if editing survey]
         if (FLOW.selectedControl.selectedSurveyAssignment.get('deviceIds')) {

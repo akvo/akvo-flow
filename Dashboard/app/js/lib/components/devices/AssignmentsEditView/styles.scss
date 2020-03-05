@@ -65,11 +65,11 @@
             font-weight: 500;
             border: none;
             padding: 4px 5px;
-            border: 1px solid transparent;
+            border: 1px solid #b8b8bc;
 
             &:hover,
             &:focus {
-              border: 1px solid #b8b8bc;
+              border: 1px solid #4d4d4d;
             }
           }
         }

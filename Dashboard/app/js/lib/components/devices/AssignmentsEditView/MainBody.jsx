@@ -3,11 +3,11 @@ import React from 'react';
 
 // screens
 import FormSection from './screens/FormSection';
-import DevicesSection from './DevicesSection';
 import AddDevices from './screens/AddDevices';
 import EditDevices from './screens/EditDevices';
 import AssignDatapoints from './screens/AssignDatapoints';
 import EditDatapoints from './screens/EditDatapoints';
+import DevicesSection from './screens/DevicesSection';
 
 import Sidebar from './__partials/Sidebar';
 import { TabRouter, TabRoute } from './__partials/TabRouter';
