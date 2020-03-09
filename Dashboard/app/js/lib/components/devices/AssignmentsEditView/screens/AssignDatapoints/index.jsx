@@ -4,7 +4,7 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import { Dropdown, DropdownItem } from 'akvo-flow/components/reusable/Dropdown';
 import AllDatapoints from './AllDatapoints';
-// import DatapointList from './DatapointList';
+import DatapointList from './DatapointList';
 import SearchDatapoints from './SearchDatapoints';
 import AssignmentContext from '../../assignment-context';
 
@@ -41,7 +41,7 @@ export default class AssignDatapoints extends React.Component {
   };
 
   renderHeader = (deviceData, datapointsData) => {
-    const { strings } = this.context;
+    const { strings, data, actions } = this.context;
     const datapointsCount = datapointsData.length;
 
     return (
@@ -52,22 +52,26 @@ export default class AssignDatapoints extends React.Component {
             <span>
               {datapointsCount} {strings.datapointAssigned}
             </span>
-            <span className="divider">.</span>
-            <a
-              className={datapointsCount ? undefined : 'disabled'}
-              href="#"
-              onClick={
-                datapointsCount
-                  ? () => this.props.changeTab('EDIT_DATAPOINTS', deviceData.id)
-                  : undefined
-              }
-            >
-              {strings.edit}
-            </a>
+            {!data.allDataPointsAssigned && (
+              <>
+                <span className="divider">.</span>
+                <a
+                  className={datapointsCount ? undefined : 'disabled'}
+                  href="#"
+                  onClick={
+                    datapointsCount
+                      ? () => this.props.changeTab('EDIT_DATAPOINTS', deviceData.id)
+                      : undefined
+                  }
+                >
+                  {strings.edit}
+                </a>
+              </>
+            )}
           </p>
         </div>
 
-        <Dropdown title="Assign Datapoints">
+        <Dropdown disabled={data.allDataPointsAssigned} title="Assign Datapoints">
           {closeMenu => (
             <React.Fragment>
               <DropdownItem
@@ -77,11 +81,8 @@ export default class AssignDatapoints extends React.Component {
                 {strings.assignDatapointByNameOrId}
               </DropdownItem>
 
-              <DropdownItem
-                closeMenu={closeMenu}
-                onClick={() => this.changeTab('SEARCH_DATAPOINTS')}
-              >
-                {strings.assignDatapointByNameOrId}
+              <DropdownItem closeMenu={closeMenu} onClick={actions.assignAllDatapointsToDevice}>
+                {strings.assignAllDatapoint}
               </DropdownItem>
             </React.Fragment>
           )}
@@ -91,6 +92,7 @@ export default class AssignDatapoints extends React.Component {
   };
 
   render() {
+    const { data } = this.context;
     const { deviceData, datapointsData } = this.getAssignmentData();
 
     return (
@@ -99,8 +101,11 @@ export default class AssignDatapoints extends React.Component {
           {this.renderHeader(deviceData, datapointsData)}
 
           <div className="body">
-            {/* <DatapointList datapointsData={datapointsData} /> */}
-            <AllDatapoints />
+            {data.allDataPointsAssigned ? (
+              <AllDatapoints />
+            ) : (
+              <DatapointList datapointsData={datapointsData} />
+            )}
           </div>
         </div>
 

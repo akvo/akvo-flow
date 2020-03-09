@@ -26,7 +26,12 @@ export class Dropdown extends React.Component {
   render() {
     return (
       <div className="dd-wrapper">
-        <button onClick={this.showMenu} type="button" className="dropbtn">
+        <button
+          disabled={this.props.disabled}
+          onClick={this.showMenu}
+          type="button"
+          className="dropbtn"
+        >
           {this.props.title}
           <i className="fa fa-chevron-down" />
         </button>
@@ -56,6 +61,7 @@ export function DropdownItem(props) {
 
 Dropdown.propTypes = {
   title: PropTypes.string.isRequired,
+  disabled: PropTypes.bool.isRequired,
   children: PropTypes.any.isRequired,
 };
 

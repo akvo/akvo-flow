@@ -56,6 +56,8 @@ FLOW.AssignmentEditView = FLOW.ReactComponentView.extend(
       this.removeDatapointsFromAssignments = this.removeDatapointsFromAssignments.bind(this);
       this.setDatapointEnabled = this.setDatapointEnabled.bind(this);
       this.clearSearchedDatapoints = this.clearSearchedDatapoints.bind(this);
+      this.assignAllDatapointsToDevice = this.assignAllDatapointsToDevice.bind(this);
+      this.unassignAllDatapointsToDevice = this.unassignAllDatapointsToDevice.bind(this);
 
       // object wide varaibles
       this.forms = {};
@@ -74,6 +76,7 @@ FLOW.AssignmentEditView = FLOW.ReactComponentView.extend(
       // global object variables
       this.searchedDatapoints = null;
       this.datapointsEnabled = null;
+      this.allDataPointsAssigned = false;
       this.deviceInView = null;
     },
 
@@ -118,9 +121,12 @@ FLOW.AssignmentEditView = FLOW.ReactComponentView.extend(
         noDeviceInAssignment: Ember.String.loc('_no_devices_in_assignments'),
         selectAMonitoringSurveyMessage: Ember.String.loc('_please_select_a_monitoring_survey'),
         assignDatapointByNameOrId: Ember.String.loc('_assign_datapoint_by_name_or_id'),
+        assignAllDatapoint: Ember.String.loc('_assign_all_datapoints'),
         searchDatapointByNameOrId: Ember.String.loc('_search_datapoint_by_name_or_id'),
         datapointAssigned: Ember.String.loc('_datapoints_assigned'),
         editDatapoints: Ember.String.loc('_edit_datapoints'),
+        unassign: Ember.String.loc('_unassign'),
+        unassignNote: Ember.String.loc('_unassign_all_datapoints_to_assign_by_other_options'),
       };
 
       const inputValues = {
@@ -142,6 +148,8 @@ FLOW.AssignmentEditView = FLOW.ReactComponentView.extend(
         getDeviceDatapoints: this.getDeviceDatapoints,
         removeDatapointsFromAssignments: this.removeDatapointsFromAssignments,
         assignDataPointsToDevice: this.assignDataPointsToDevice,
+        assignAllDatapointsToDevice: this.assignAllDatapointsToDevice,
+        unassignAllDatapointsToDevice: this.unassignAllDatapointsToDevice,
       };
 
       const data = {
@@ -157,6 +165,7 @@ FLOW.AssignmentEditView = FLOW.ReactComponentView.extend(
         selectedDeviceIds: this.selectedDevices,
         datapointsEnabled: this.datapointsEnabled,
         datapointAssignments: this.datapointAssignments,
+        allDataPointsAssigned: this.allDataPointsAssigned,
       };
 
       return {
@@ -670,7 +679,7 @@ FLOW.AssignmentEditView = FLOW.ReactComponentView.extend(
 
       // get datapoints information for this device
       FLOW.DataPointAssignment.find({ deviceId, surveyAssignmentId }).on('didLoad', function() {
-        // we're only expecting one datapoint at max
+        // we're only expecting one datapoint assignment at max
         const datapointAssignment = this.map(item => ({
           id: item.get('keyId'),
           deviceId: item.get('deviceId'),
@@ -749,6 +758,11 @@ FLOW.AssignmentEditView = FLOW.ReactComponentView.extend(
       this.renderReactSide();
     },
 
+    assignAllDatapointsToDevice() {
+      this.allDataPointsAssigned = true;
+      this.renderReactSide();
+    },
+
     assignDataPointsToDevice(datapoints, deviceId) {
       const datapointAssignment = this.datapointAssignments.find(sDp => sDp.deviceId === deviceId);
 
@@ -769,6 +783,11 @@ FLOW.AssignmentEditView = FLOW.ReactComponentView.extend(
         });
       }
 
+      this.renderReactSide();
+    },
+
+    unassignAllDatapointsToDevice() {
+      this.allDataPointsAssigned = false;
       this.renderReactSide();
     },
 
