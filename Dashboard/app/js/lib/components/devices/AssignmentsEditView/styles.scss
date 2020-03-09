@@ -416,6 +416,28 @@
             }
           }
 
+          .all-dp-assigned {
+            display: flex;
+            align-items: center;
+            padding: 1.2em;
+            border: 1px solid #b3b3b3;
+            border-radius: 7px;
+
+            p {
+              font-weight: bold;
+              color: #000;
+
+              &.info {
+                font-weight: normal;
+                color: hsl(0, 0%, 40%);
+              }
+            }
+
+            .dp-info {
+              margin-right: auto;
+            }
+          }
+
           .search-datapoints {
             display: flex;
             flex-direction: column;

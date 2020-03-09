@@ -2,7 +2,7 @@ import React, { createRef } from 'react';
 import PropTypes from 'prop-types';
 import './styles.scss';
 
-export default class Dropdown extends React.Component {
+export class Dropdown extends React.Component {
   state = {
     showMenu: false,
   };
@@ -18,12 +18,9 @@ export default class Dropdown extends React.Component {
 
   closeMenu = e => {
     e.preventDefault();
-
-    if (!this.dropdownMenu.current.contains(e.target)) {
-      this.setState({ showMenu: false }, () => {
-        document.removeEventListener('click', this.closeMenu);
-      });
-    }
+    this.setState({ showMenu: false }, () => {
+      document.removeEventListener('click', this.closeMenu);
+    });
   };
 
   render() {
@@ -44,7 +41,26 @@ export default class Dropdown extends React.Component {
   }
 }
 
+export function DropdownItem(props) {
+  const onClick = e => {
+    props.closeMenu(e);
+    props.onClick();
+  };
+
+  return (
+    <button onClick={onClick} type="button">
+      {props.children}
+    </button>
+  );
+}
+
 Dropdown.propTypes = {
   title: PropTypes.string.isRequired,
+  children: PropTypes.any.isRequired,
+};
+
+DropdownItem.propTypes = {
+  onClick: PropTypes.func.isRequired,
+  closeMenu: PropTypes.func.isRequired,
   children: PropTypes.any.isRequired,
 };
