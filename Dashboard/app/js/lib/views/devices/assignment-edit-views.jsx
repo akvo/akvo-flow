@@ -185,6 +185,7 @@ FLOW.AssignmentEditView = FLOW.ReactComponentView.extend(
 
     // saving functionality
     saveSurveyAssignment(data) {
+      console.log(data);
       let endDateParse;
       let startDateParse;
 
@@ -327,14 +328,14 @@ FLOW.AssignmentEditView = FLOW.ReactComponentView.extend(
       }
 
       // validate dates ==== start date
-      if (!startDate || !startDate.length) {
+      if (!startDate) {
         this.showPopup(Ember.String.loc('_date_not_set'), Ember.String.loc('_date_not_set_text'));
 
         return false;
       }
 
       // validate date ==== expire date
-      if (!endDate || !endDate.length) {
+      if (!endDate) {
         this.showPopup(Ember.String.loc('_date_not_set'), Ember.String.loc('_date_not_set_text'));
 
         return false;
