@@ -185,7 +185,6 @@ FLOW.AssignmentEditView = FLOW.ReactComponentView.extend(
 
     // saving functionality
     saveSurveyAssignment(data) {
-      console.log(data);
       let endDateParse;
       let startDateParse;
 
