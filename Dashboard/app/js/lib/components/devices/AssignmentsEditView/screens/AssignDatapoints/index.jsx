@@ -71,7 +71,7 @@ export default class AssignDatapoints extends React.Component {
           </p>
         </div>
 
-        <Dropdown disabled={data.allDataPointsAssigned} title="Assign Datapoints">
+        <Dropdown disabled={data.allDataPointsAssigned} title={strings.assignDatapoints}>
           {closeMenu => (
             <React.Fragment>
               <DropdownItem
