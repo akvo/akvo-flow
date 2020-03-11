@@ -264,7 +264,14 @@ FLOW.AssignmentEditView = FLOW.ReactComponentView.extend(
           surveyAssignmentId,
           surveyId: surveyFolderId,
           deviceId: dpAssignment.deviceId,
-          dataPointIds: dpAssignment.datapoints.map(dp => dp.id),
+          dataPointIds: dpAssignment.datapoints.map(dp => {
+            // if it's an object get the ID
+            if (typeof dp === 'object') {
+              return dp.id;
+            }
+
+            return dp;
+          }),
         };
 
         if (dpAssignment.id) {
