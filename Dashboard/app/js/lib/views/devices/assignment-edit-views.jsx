@@ -641,10 +641,9 @@ FLOW.AssignmentEditView = FLOW.ReactComponentView.extend(
         const device = FLOW.Device.find(deviceId);
         if (device && device.get('keyId')) {
           this.selectedDevices.push(device.get('keyId'));
+          this.assignAllDatapointsToDevice(device.get('keyId'));
         }
       });
-
-      return this.renderReactSide();
     },
 
     removeDevicesFromAssignment(devices) {
