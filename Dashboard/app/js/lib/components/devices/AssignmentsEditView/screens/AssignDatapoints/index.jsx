@@ -29,18 +29,21 @@ export default class AssignDatapoints extends React.Component {
     );
 
     let datapointsData = [];
+    let allDPAssigned = false;
 
     if (datapointAssignment) {
       datapointsData = datapointAssignment.datapoints;
+      allDPAssigned = datapointAssignment.allDataPointsAssigned;
     }
 
     return {
       deviceData,
       datapointsData,
+      allDPAssigned,
     };
   };
 
-  renderHeader = (deviceData, datapointsData) => {
+  renderHeader = (deviceData, datapointsData, allDPAssigned) => {
     const { strings, data, actions } = this.context;
     const datapointsCount = datapointsData.length;
 
@@ -50,9 +53,11 @@ export default class AssignDatapoints extends React.Component {
           <p>{deviceData.name}</p>
           <p>
             <span>
-              {datapointsCount} {strings.datapointAssigned}
+              {allDPAssigned
+                ? strings.allDatapointsAssigned
+                : `${datapointsCount} ${strings.datapointAssigned}`}
             </span>
-            {!data.allDataPointsAssigned && (
+            {!allDPAssigned && (
               <>
                 <span className="divider">.</span>
                 <a
@@ -81,7 +86,10 @@ export default class AssignDatapoints extends React.Component {
                 {strings.assignDatapointByNameOrId}
               </DropdownItem>
 
-              <DropdownItem closeMenu={closeMenu} onClick={actions.assignAllDatapointsToDevice}>
+              <DropdownItem
+                closeMenu={closeMenu}
+                onClick={() => actions.assignAllDatapointsToDevice(deviceData.id)}
+              >
                 {strings.assignAllDatapoint}
               </DropdownItem>
             </React.Fragment>
@@ -92,17 +100,16 @@ export default class AssignDatapoints extends React.Component {
   };
 
   render() {
-    const { data } = this.context;
-    const { deviceData, datapointsData } = this.getAssignmentData();
+    const { deviceData, datapointsData, allDPAssigned } = this.getAssignmentData();
 
     return (
       <div className="devices-action-page assign-datapoints">
         <div>
-          {this.renderHeader(deviceData, datapointsData)}
+          {this.renderHeader(deviceData, datapointsData, allDPAssigned)}
 
           <div className="body">
-            {data.allDataPointsAssigned ? (
-              <AllDatapoints />
+            {allDPAssigned ? (
+              <AllDatapoints deviceId={deviceData.id} />
             ) : (
               <DatapointList datapointsData={datapointsData} />
             )}

@@ -128,6 +128,7 @@ FLOW.AssignmentEditView = FLOW.ReactComponentView.extend(
         editDatapoints: Ember.String.loc('_edit_datapoints'),
         unassign: Ember.String.loc('_unassign'),
         unassignNote: Ember.String.loc('_unassign_all_datapoints_to_assign_by_other_options'),
+        allDatapointsAssigned: Ember.String.loc('_all_datapoints_assigned'),
       };
 
       const inputValues = {
@@ -691,6 +692,21 @@ FLOW.AssignmentEditView = FLOW.ReactComponentView.extend(
           return;
         }
 
+        // check if all datapoints has been assigned
+        if (datapointAssignment.datapoints[0] === 0) {
+          // return early and check that all datapoints is set
+          const completeDatapointAssignment = {
+            ...datapointAssignment,
+            allDataPointsAssigned: true,
+          };
+
+          // add to assignment
+          that.datapointAssignments.push(completeDatapointAssignment);
+          that.renderReactSide();
+
+          return;
+        }
+
         // get all datapoints for this assignment
         FLOW.SurveyedLocale.find({ ids: datapointAssignment.datapoints }).on('didLoad', function() {
           // combine data and add to datapoint assignments
@@ -759,8 +775,22 @@ FLOW.AssignmentEditView = FLOW.ReactComponentView.extend(
       this.renderReactSide();
     },
 
-    assignAllDatapointsToDevice() {
-      this.allDataPointsAssigned = true;
+    assignAllDatapointsToDevice(deviceId) {
+      const datapointAssignment = this.datapointAssignments.find(sDp => sDp.deviceId === deviceId);
+
+      // check if device already has datapoints
+      if (datapointAssignment) {
+        datapointAssignment.allDataPointsAssigned = true;
+        datapointAssignment.datapoints = [0];
+      } else {
+        // push new device into selected datapoints
+        this.datapointAssignments.push({
+          deviceId,
+          datapoints: [0],
+          allDataPointsAssigned: true,
+        });
+      }
+
       this.renderReactSide();
     },
 
@@ -787,8 +817,12 @@ FLOW.AssignmentEditView = FLOW.ReactComponentView.extend(
       this.renderReactSide();
     },
 
-    unassignAllDatapointsToDevice() {
-      this.allDataPointsAssigned = false;
+    unassignAllDatapointsToDevice(deviceId) {
+      const datapointAssignment = this.datapointAssignments.find(sDp => sDp.deviceId === deviceId);
+
+      datapointAssignment.allDataPointsAssigned = false;
+      datapointAssignment.datapoints = [];
+
       this.renderReactSide();
     },
 
