@@ -152,6 +152,9 @@ public class DataPointAssignmentRestService {
         statusDto.setMessage("missing required parameters");
 
         final DataPointAssignment dpa  = marshallToDomain(payload.getData_point_assignment());
+        if (dpa.getDataPointIds().contains(null)) {
+            throw new HttpMessageNotReadableException("dataPointIds contain nulls");
+        }
         if (dpa != null
                 && dpa.getDeviceId() != null
                 && dpa.getSurveyId() != null
