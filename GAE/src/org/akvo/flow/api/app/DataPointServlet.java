@@ -28,26 +28,29 @@ import org.akvo.flow.dao.DataPointAssignmentDao;
 import org.akvo.flow.domain.persistent.DataPointAssignment;
 import org.akvo.flow.util.FlowJsonObjectWriter;
 import org.waterforpeople.mapping.app.web.dto.SurveyedLocaleDto;
+
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import java.io.OutputStream;
 import java.io.PrintWriter;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 import java.util.logging.Logger;
 
+
 /**
  * JSON service for returning the list of assigned data point records for a specific device and surveyId
- *
  */
 @SuppressWarnings("serial")
 public class DataPointServlet extends AbstractRestApiServlet {
     private static final Logger log = Logger.getLogger(DataPointServlet.class.getName());
     private SurveyedLocaleDao surveyedLocaleDao;
     private DataPointAssignmentDao dataPointAssignmentDao;
+    private static Set<Long> ALL_DATAPOINTS = new HashSet<>(Arrays.asList(0L));
 
     public DataPointServlet() {
         setMode(JSON_MODE);
@@ -85,13 +88,17 @@ public class DataPointServlet extends AbstractRestApiServlet {
                         dataPointAssignmentDao.listByDeviceAndSurvey(device.getKey().getId(), dpReq.getSurveyId());
                 //Combine their point lists
                 Set<Long> pointSet = new HashSet<>();
-                for (DataPointAssignment ass: assList) {
+                for (DataPointAssignment ass : assList) {
                     pointSet.addAll(ass.getDataPointIds());
                 }
                 //Fetch the data points
-                List<Long> pointList = new ArrayList<>();
-                pointList.addAll(pointSet);
-                dpList = surveyedLocaleDao.listByKeys(pointList);
+                if (ALL_DATAPOINTS.equals(pointSet)) {
+                    dpList = surveyedLocaleDao.listLocalesBySurveyGroupId(dpReq.getSurveyId());
+                } else {
+                    List<Long> pointList = new ArrayList<>();
+                    pointList.addAll(pointSet);
+                    dpList = surveyedLocaleDao.listByKeys(pointList);
+                }
                 res = convertToResponse(dpList, dpReq.getSurveyId());
                 return res;
             }
@@ -106,7 +113,6 @@ public class DataPointServlet extends AbstractRestApiServlet {
 
     /**
      * converts the domain objects to dtos and then installs them in a DataPointResponse object
-     *
      */
     private DataPointResponse convertToResponse(List<SurveyedLocale> slList, Long surveyId) {
         DataPointResponse resp = new DataPointResponse();
