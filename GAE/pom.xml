@@ -227,12 +227,6 @@
         <version>${spring.version}</version>
         <scope>test</scope>
     </dependency>
-    <dependency>
-        <groupId>org.mockito</groupId>
-        <artifactId>mockito-core</artifactId>
-        <version>3.3.0</version>
-        <scope>test</scope>
-    </dependency>
 
       <!-- datastore unit tests -->
     <dependency>
