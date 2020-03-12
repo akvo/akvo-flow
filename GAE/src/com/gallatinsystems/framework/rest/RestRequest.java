@@ -47,6 +47,7 @@ public abstract class RestRequest implements Serializable {
     public static final String HASH_PARAM = "h";
     public static final String TIMESTAMP_PARAM = "ts";
     public static final String RUN_AS_TASK_PARAM = "runAsTask";
+    public static final String QUEUED_TASK_HEADER = "X-Akvo-Queued-Task";
 
     private List<RestError> validationErrorList;
 

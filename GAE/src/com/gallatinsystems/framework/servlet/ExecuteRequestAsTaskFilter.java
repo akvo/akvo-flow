@@ -16,10 +16,7 @@
 
 package com.gallatinsystems.framework.servlet;
 
-import com.gallatinsystems.common.util.MD5Util;
-import com.gallatinsystems.common.util.PropertyUtil;
 import com.gallatinsystems.framework.rest.RestRequest;
-import com.gallatinsystems.task.domain.Task;
 import com.google.appengine.api.taskqueue.Queue;
 import com.google.appengine.api.taskqueue.QueueFactory;
 import com.google.appengine.api.taskqueue.TaskOptions;
@@ -30,14 +27,9 @@ import javax.servlet.FilterConfig;
 import javax.servlet.ServletException;
 import javax.servlet.ServletRequest;
 import javax.servlet.ServletResponse;
-import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import java.io.IOException;
-import java.io.UnsupportedEncodingException;
-import java.net.URLEncoder;
 import java.util.Map;
-import java.util.SortedMap;
-import java.util.TreeMap;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -49,7 +41,7 @@ public class ExecuteRequestAsTaskFilter implements Filter {
     private static Logger log = Logger.getLogger(ExecuteRequestAsTaskFilter.class
             .getName());
 
-    private static final String RUN_AS_TASK = "1";
+    private static final String RUN_AS_TASK_VALUE = "1";
 
     @Override
     public void init(FilterConfig filterConfig) throws ServletException {
@@ -61,23 +53,29 @@ public class ExecuteRequestAsTaskFilter implements Filter {
     @Override
     public void doFilter(ServletRequest servletRequest, ServletResponse servletResponse, FilterChain filterChain) throws IOException, ServletException {
         HttpServletRequest request = (HttpServletRequest) servletRequest;
-        if (isTaskRequest(request)) {
-            executeRequestAsTask(new RequestToTaskMapper(request));
-        } else {
+        if (isQueuedTask(request) || !isTaskRequest(request)) {
             filterChain.doFilter(servletRequest, servletResponse);
+        } else {
+            addRequestToTaskQueue(new RequestToTaskMapper(request));
         }
     }
 
     public boolean isTaskRequest(HttpServletRequest request) {
-        String runAsTask = request.getParameter(RestRequest.RUN_AS_TASK_PARAM);
-        return RUN_AS_TASK.equals(runAsTask);
+        String runAsTaskParamValue = request.getParameter(RestRequest.RUN_AS_TASK_PARAM);
+        return RUN_AS_TASK_VALUE.equals(runAsTaskParamValue);
+    }
+
+    public boolean isQueuedTask(HttpServletRequest request) {
+        String isQueuedTaskHeaderValue = request.getHeader(RestRequest.QUEUED_TASK_HEADER);
+        return isTaskRequest(request)
+                && RUN_AS_TASK_VALUE.equals(isQueuedTaskHeaderValue);
     }
 
     @Override
     public void destroy() {
     }
 
-    private void executeRequestAsTask(final RequestToTaskMapper requestToTaskMapper) {
+    private void addRequestToTaskQueue(final RequestToTaskMapper requestToTaskMapper) {
         final Queue defaultQueue = QueueFactory.getDefaultQueue();
         defaultQueue.add(requestToTaskMapper.getTaskOptions());
     }
@@ -101,6 +99,7 @@ public class ExecuteRequestAsTaskFilter implements Filter {
             final TaskOptions options = withDefaults();
             options.url(request.getRequestURI())
                     .header("Content-Type", "application/x-www-form-urlencoded")
+                    .header(RestRequest.QUEUED_TASK_HEADER, "1")
                     .method(TaskOptions.Method.POST)
                     .retryOptions(withTaskRetryLimit(5)
                             .minBackoffSeconds(5)

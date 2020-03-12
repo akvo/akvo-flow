@@ -17,6 +17,7 @@
 
 package com.gallatinsystems.framework.servlet;
 
+import com.gallatinsystems.framework.rest.RestRequest;
 import com.google.appengine.api.taskqueue.QueueFactory;
 import com.google.appengine.api.taskqueue.dev.LocalTaskQueue;
 import com.google.appengine.api.taskqueue.dev.QueueStateInfo;
@@ -78,8 +79,6 @@ class ExecuteRequestAsTaskFilterTests {
         ExecuteRequestAsTaskFilter filter = new ExecuteRequestAsTaskFilter();
         ExecuteRequestAsTaskFilter.RequestToTaskMapper requestToTaskMapper = filter.new RequestToTaskMapper(this.httpRequest);
 
-        assertTrue(filter.isTaskRequest(this.httpRequest), "The *original* request MUST have a runAsTask parameter whose value is == 1");
-
         Map<String, List<String>> taskRequestParams = requestToTaskMapper.getTaskOptions().getStringParams();
         assertEquals(10, taskRequestParams.size(), "Unexpected number of params for the request");
         assertEquals("/testservletapi", requestToTaskMapper.getTaskOptions().getUrl());
@@ -88,18 +87,42 @@ class ExecuteRequestAsTaskFilterTests {
         assertEquals("30-03-2017+10%3A05%3A57+CEST", taskRequestParams.get("collectionDate").get(0));
         assertEquals("41", taskRequestParams.get("duration").get(0));
         assertEquals("CmuehPsWW6//5Q4i8O1P5AjS/8Y=", taskRequestParams.get("h").get(0));
+
+        Map<String, List<String>> headers = requestToTaskMapper.getTaskOptions().getHeaders();
+        assertTrue(headers.containsKey(RestRequest.QUEUED_TASK_HEADER), "The task queued header was not added");
     }
 
     @Test
-    void testExecuteRequestAsTaskFilter() throws IOException, ServletException {
+    void testAddRequestToTaskQueue() throws IOException, ServletException {
 
         ExecuteRequestAsTaskFilter filter = new ExecuteRequestAsTaskFilter();
         filter.doFilter(this.httpRequest, new MockHttpServletResponse(), new MockFilterChain());
+
+        assertTrue(filter.isTaskRequest(this.httpRequest), "The request MUST have a runAsTask parameter whose value is == 1");
+        assertFalse(filter.isQueuedTask(this.httpRequest), "The request should not have an X-Akvo-Queued-Task header set");
 
         LocalTaskQueue localTaskQueue = LocalTaskQueueTestConfig.getLocalTaskQueue();
         QueueStateInfo queueStateInfo = localTaskQueue.getQueueStateInfo().get(QueueFactory.getDefaultQueue().getQueueName());
 
         Assertions.assertEquals(1, queueStateInfo.getTaskInfo().size());
+    }
+
+    @Test
+    void testExecuteRequestIfQueued() throws IOException, ServletException {
+
+        // comes from queued task
+        this.httpRequest.addHeader(RestRequest.QUEUED_TASK_HEADER, "1");
+
+        ExecuteRequestAsTaskFilter filter = new ExecuteRequestAsTaskFilter();
+        filter.doFilter(this.httpRequest, new MockHttpServletResponse(), new MockFilterChain());
+
+        assertTrue(filter.isTaskRequest(this.httpRequest), "The request MUST have a runAsTask parameter whose value is == 1");
+        assertTrue(filter.isQueuedTask(this.httpRequest), "The request MUST have an X-Akvo-Queued-Task header set");
+
+        LocalTaskQueue localTaskQueue = LocalTaskQueueTestConfig.getLocalTaskQueue();
+        QueueStateInfo queueStateInfo = localTaskQueue.getQueueStateInfo().get(QueueFactory.getDefaultQueue().getQueueName());
+
+        Assertions.assertEquals(0, queueStateInfo.getTaskInfo().size());
     }
 
     @AfterEach
